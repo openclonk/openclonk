@@ -41,6 +41,7 @@
 
 local indexed_inventory;
 local disableautosort;
+local force_collection;
 local inventory;
 
 /* Item limit */
@@ -54,6 +55,7 @@ public func GetItem(int i)
 {
 	if (i >= GetLength(inventory))
 		return nil;
+	if (i < 0) return nil;
 		
 	return inventory[i];
 }
@@ -122,30 +124,41 @@ public func Switch2Items(int one, int two)
 
 /* Overload of Collect function */
 
-public func Collect(object item, bool ignoreOCF, int pos)
+public func Collect(object item, bool ignoreOCF, int pos, bool force)
 {
-	if (pos == nil) return _inherited(item,ignoreOCF);
-	// fail if the specified slot is full
-	if (GetItem(pos) != nil) return false;
-	if (!item) return false;
-	
-	pos = BoundBy(pos,0,MaxContentsCount()-1);
-	
-	disableautosort = true;
-	// collect but do not sort in_
-	// Collection2 will be called which attempts to automatically sort in
-	// the collected item into the next free inventory slot. Since 'pos'
-	// is given as a parameter, we don't want that to happen and sort it
-	// in manually afterwards
-	var success = _inherited(item);
-	disableautosort = false;
-	if (success)
+	force_collection = force;
+	var success = false;
+	if (pos == nil)
 	{
-		inventory[pos] = item;
-		if (pos < HandObjects())
-			this->~OnSlotFull(pos);
+		success = _inherited(item,ignoreOCF);
+		force_collection = false;
+		return success;
 	}
-		
+	// fail if the specified slot is full
+	if (GetItem(pos) == nil)
+	{
+		if (item)
+		{
+			pos = BoundBy(pos,0,MaxContentsCount()-1);
+			
+			disableautosort = true;
+			// collect but do not sort in_
+			// Collection2 will be called which attempts to automatically sort in
+			// the collected item into the next free inventory slot. Since 'pos'
+			// is given as a parameter, we don't want that to happen and sort it
+			// in manually afterwards
+			var success = _inherited(item);
+			disableautosort = false;
+			if (success)
+			{
+				inventory[pos] = item;
+				if (pos < HandObjects())
+					this->~OnSlotFull(pos);
+			}
+		}
+	}
+	
+	force_collection = false;
 	return success;
 }
 
@@ -169,6 +182,8 @@ protected func Construction()
 	indexed_inventory = 0;
 	inventory = CreateArray();
 
+	force_collection = false;
+	
 	// using variables
 	alt = false;
 	using = nil;
@@ -300,7 +315,7 @@ protected func RejectCollect(id objid, object obj)
 
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
-	if (!disableautosort)
+	if (!force_collection)
 		if (GetItem(0) && GetItem(1))
 			return true;
 	
@@ -581,6 +596,20 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 	}
 
+	// Collecting
+	if (ctrl == CON_Collect)
+	{
+		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
+		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
+		if(obj)
+		{
+			// hackery to prevent the clonk from rejecting the collect because it is not being
+			// collected into the hands
+			Collect(obj,nil,nil,true);
+		}
+	}
+	
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
 	if (!house && (!vehicle || proc == "ATTACH"))

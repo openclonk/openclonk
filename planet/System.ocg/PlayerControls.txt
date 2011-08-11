@@ -11,7 +11,7 @@
 	# Summary
 	# --------
 	# Left Right Up Down Jump
-	# Throw Drop Use
+	# Throw Drop Use Collect
 	# ThrowAlt DropAlt UseAlt
 	# 
 	# CancelUse CancelMenu
@@ -145,6 +145,10 @@
 	GUIName=Drop
 	GUIDesc=Drop selected inventory item
 	Hold=1
+
+	[ControlDef]
+	Identifier=Collect
+	GUIName=Collect
 	
 	[ControlDef]
 	Identifier=ThrowAlt
@@ -508,6 +512,7 @@
 	# Interact							Space
 	#
 	# Backpack							Q
+	# Collect							A,D,W,S
 	#
 	# NextCrew							T
 	# PreviousCrew						R
@@ -1167,13 +1172,34 @@
 		Key=Shift+Hotkey0
 		Control=PlayerHotkey0				
 	
-	
 	# ======================================================================= #
-	#                                Menu controls                            #
+	#                      Menu controls & Collect sets                       #
 	# ======================================================================= #
 	
 	[ControlSet]
 	Name=*
+	
+		# Collect
+	
+		[Assignment]
+		Key=CON_Left
+		Priority=10
+		Control=Collect
+		
+		[Assignment]
+		Key=CON_Right
+		Priority=10
+		Control=Collect
+		
+		[Assignment]
+		Key=CON_Up
+		Priority=10
+		Control=Collect
+		
+		[Assignment]
+		Key=CON_Down
+		Priority=10
+		Control=Collect
 	
 		# Menu control
 	

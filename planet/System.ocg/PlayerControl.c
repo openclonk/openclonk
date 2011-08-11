@@ -294,7 +294,10 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release,
 			if(proc == "WALK" && GetComDir() == COMD_Up)
 				SetComDir(COMD_Stop);
 			if(proc == "WALK")
-				return this->ObjectCommand("Jump");
+			{
+				this->ObjectCommand("Jump");
+				return true;
+			}
 		}
 		if (proc == "SWIM" && !GBackSemiSolid(0,-5)) //Water jump
 		{
