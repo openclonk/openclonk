@@ -159,7 +159,12 @@ const char *GetExtension(const char *szFilename)
 void RealPath(const char *szFilename, char *pFullFilename)
 {
 #ifdef _WIN32
-	_fullpath(pFullFilename, szFilename, _MAX_PATH);
+	wchar_t *wpath = _wfullpath(0, GetWideChar(szFilename), 0);
+	StdStrBuf path(wpath);
+	// I'm pretty sure pFullFilename will always have at least a size of _MAX_PATH, but ughh
+	// This should return a StdStrBuf
+	SCopy(path.getData(), pFullFilename, _MAX_PATH);
+	free(wpath);
 #else
 	char *pSuffix = NULL;
 	char szCopy[_MAX_PATH + 1];
@@ -450,14 +455,25 @@ void MakeFilenameFromTitle(char *szTitle)
 
 bool FileExists(const char *szFilename)
 {
+#ifdef _WIN32
+	return GetFileAttributes(GetWideChar(szFilename)) != INVALID_FILE_ATTRIBUTES;
+#else
 	return (!access(szFilename,F_OK));
+#endif
 }
 
 size_t FileSize(const char *szFilename)
 {
+#ifdef _WIN32
+	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
+		return 0;
+	return (static_cast<size_t>(attributes.nFileSizeHigh) << (sizeof(attributes.nFileSizeLow) * 8)) | attributes.nFileSizeLow;
+#else
 	struct stat stStats;
 	if (stat(szFilename,&stStats)) return 0;
 	return stStats.st_size;
+#endif
 }
 
 // operates on a filedescriptor from open or fileno
@@ -474,17 +490,41 @@ size_t FileSize(int fdes)
 
 int FileTime(const char *szFilename)
 {
+#ifdef _WIN32
+	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
+		return 0;
+	int64_t ft = (static_cast<int64_t>(attributes.ftLastWriteTime.dwHighDateTime) << (sizeof(attributes.ftLastWriteTime.dwLowDateTime) * 8)) | attributes.ftLastWriteTime.dwLowDateTime;
+	ft -= 116444736000000000;
+	ft /= 10000000;
+	return ft;
+#else
 	struct stat stStats;
 	if (stat(szFilename,&stStats)!=0) return 0;
 	return stStats.st_mtime;
+#endif
 }
 
 bool EraseFile(const char *szFilename)
 {
-	//chmod(szFilename,200);
 #ifdef _WIN32
 	SetFileAttributesW(GetWideChar(szFilename), FILE_ATTRIBUTE_NORMAL);
-#endif
+	if (DeleteFileW(GetWideChar(szFilename)) == 0)
+	{
+		switch (GetLastError())
+		{
+		case ERROR_PATH_NOT_FOUND:
+		case ERROR_FILE_NOT_FOUND:
+			// While deleting it didn't work, the file doesn't exist (anymore).
+			// Pretend everything is fine.
+			return true;
+		default:
+			// Some other error left us unable to delete the file.
+			return false;
+		}
+	}
+	return true;
+#else
 	// either unlink or remove could be used. Well, stick to ANSI C where possible.
 	if (remove(szFilename))
 	{
@@ -497,6 +537,7 @@ bool EraseFile(const char *szFilename)
 		return false;
 	}
 	return true;
+#endif
 }
 
 bool EraseFiles(const char *szFilePath)
@@ -569,10 +610,11 @@ bool MakeOriginalFilename(char *szFilename)
 			if (GetDriveTypeW(GetWideChar(szFilename)) == DRIVE_NO_ROOT_DIR) return false;
 			return true;
 		}
-	struct _finddata_t fdt; long shnd;
-	if ((shnd=_findfirst((char*)szFilename,&fdt))<0) return false;
+	struct _wfinddata_t fdt; long shnd;
+	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
-	SCopy(GetFilename(fdt.name),GetFilename(szFilename),_MAX_FNAME);
+	StdStrBuf name(fdt.name);
+	SCopy(GetFilename(name.getData()),GetFilename(szFilename),_MAX_FNAME);
 #else
 	if (SCharPos('*', szFilename) != -1)
 	{
@@ -588,8 +630,23 @@ bool MakeOriginalFilename(char *szFilename)
 
 const char *GetWorkingDirectory()
 {
+#ifdef _WIN32
+	static char *buffer = 0;
+	if (buffer) StdBuf::DeletePointer(buffer);
+	wchar_t *widebuf = 0;
+	DWORD widebufsz = GetCurrentDirectoryW(0, 0);
+	widebuf = new wchar_t[widebufsz];
+	if (GetCurrentDirectoryW(widebufsz, widebuf) == 0) {
+		delete[] widebuf;
+		return 0;
+	}
+	StdStrBuf path(widebuf);
+	delete[] widebuf;
+	return buffer = path.GrabPointer();
+#else
 	static char buf[_MAX_PATH+1];
 	return getcwd(buf,_MAX_PATH);
+#endif
 }
 
 bool SetWorkingDirectory(const char *path)
@@ -670,8 +727,8 @@ bool DirectoryExists(const char *szFilename)
 	}
 	// Check file attributes
 #ifdef _WIN32
-	struct _finddata_t fdt; int shnd;
-	if ((shnd=_findfirst(szFilename,&fdt))<0) return false;
+	struct _wfinddata_t fdt; int shnd;
+	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
 	if (fdt.attrib & _A_SUBDIR) return true;
 #else
@@ -697,22 +754,22 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	// Create target directory
 	bool status=true;
 #ifdef _WIN32
-	if (_mkdir(szTarget)!=0) return false;
+	if (_wmkdir(GetWideChar(szTarget))!=0) return false;
 	// Copy contents to target directory
 	char contents[_MAX_PATH+1];
 	SCopy(szSource,contents); AppendBackslash(contents);
 	SAppend("*",contents);
-	_finddata_t fdt; int hfdt;
-	if ( (hfdt=_findfirst(contents,&fdt)) > -1 )
+	_wfinddata_t fdt; int hfdt;
+	if ( (hfdt=_wfindfirst(GetWideChar(contents),&fdt)) > -1 )
 	{
 		do
 		{
 			char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
-			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(fdt.name,itemsource);
-			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(fdt.name,itemtarget);
+			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(StdStrBuf(fdt.name).getData(),itemsource);
+			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(StdStrBuf(fdt.name).getData(),itemtarget);
 			if (!CopyItem(itemsource,itemtarget, fResetAttributes)) status=false;
 		}
-		while (_findnext(hfdt,&fdt)==0);
+		while (_wfindnext(hfdt,&fdt)==0);
 		_findclose(hfdt);
 	}
 #else
@@ -798,7 +855,11 @@ bool CreateItem(const char *szItemname)
 	EraseItem(szItemname);
 	// Create dummy item
 	FILE *fhnd;
+#ifdef _WIN32
+	if (!(fhnd=_wfopen(GetWideChar(szItemname), L"wb"))) return false;
+#else
 	if (!(fhnd=fopen(szItemname,"wb"))) return false;
+#endif
 	fclose(fhnd);
 	// Success
 	return true;
@@ -1003,19 +1064,20 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
 		AppendBackslash(szFilename);
 	int iFileCount = 0;
 #ifdef _WIN32
-	struct _finddata_t fdt; int fdthnd;
+	struct _wfinddata_t fdt; int fdthnd;
 	if (!fHasWildcard) // parameter without wildcard: Append "/*.*" or "\*.*"
 		SAppend("*",szFilename,_MAX_PATH);
-	if ((fdthnd = _findfirst ((char *)szFilename, &fdt)) < 0)
+	if ((fdthnd = _wfindfirst (GetWideChar(szFilename), &fdt)) < 0)
 		return 0;
 	do
 	{
-		if (SEqual(fdt.name, ".") || SEqual(fdt.name, "..")) continue;
-		SCopy(fdt.name,GetFilename(szFilename));
+		if (!wcscmp(fdt.name, L".") || !wcscmp(fdt.name, L"..")) continue;
+		StdStrBuf name(fdt.name);
+		SCopy(name.getData(),GetFilename(szFilename));
 		if ((*fnCallback)(szFilename))
 			iFileCount++;
 	}
-	while (_findnext(fdthnd,&fdt)==0);
+	while (_wfindnext(fdthnd,&fdt)==0);
 	_findclose(fdthnd);
 #else
 	if (fHasWildcard) fprintf(stderr, "Warning: ForEachFile with * (%s)\n", szDirName);

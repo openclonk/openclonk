@@ -22,6 +22,9 @@
 /* A handy wrapper class to gzio files */
 
 #include "C4Include.h"
+#ifdef _WIN32
+#	include "platform/C4windowswrapper.h"
+#endif
 #include <StdFile.h>
 #include <CStdFile.h>
 
@@ -66,33 +69,29 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 #ifdef _WIN32
 		int mode = _S_IREAD|_S_IWRITE;
 		int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
+		int fd = _wopen(GetWideChar(Name), flags, mode);
 #else
 		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
 		int flags = O_CREAT|O_WRONLY|O_TRUNC;
-#endif
 		int fd = open(Name, flags, mode);
+#endif
 		if (!(hgzFile = gzdopen(fd,"wb1"))) return false;
 	}
 	else
 	{
-		if (fExecutable)
-		{
-			// Create an executable file
 #ifdef _WIN32
-			int mode = _S_IREAD|_S_IWRITE;
-			int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
+		int mode = _S_IREAD|_S_IWRITE;
+		int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
+		int fd = _wopen(GetWideChar(Name), flags, mode);
 #else
-			mode_t mode = S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH;
-			int flags = O_CREAT|O_WRONLY|O_TRUNC;
+		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+		if (fExecutable)
+			mode |= S_IXUSR|S_IXGRP|S_IXOTH;
+		int flags = O_CREAT|O_WRONLY|O_TRUNC;
+		int fd = open(Name, flags, mode);
 #endif
-			int fd = open(Name, flags, mode);
-			if (fd == -1) return false;
-			if (!(hFile = fdopen(fd,"wb"))) return false;
-		}
-		else
-		{
-			if (!(hFile = fopen(Name,"wb"))) return false;
-		}
+		if (fd == -1) return false;
+		if (!(hFile = fdopen(fd,"wb"))) return false;
 	}
 	// Reset buffer
 	ClearBuffer();
@@ -112,15 +111,22 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 #ifdef _WIN32
 		int mode = _S_IREAD|_S_IWRITE;
 		int flags = _O_BINARY|_O_RDONLY;
+		int fd = _wopen(GetWideChar(Name), flags, mode);
 #else
 		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
 		int flags = O_RDONLY;
-#endif
 		int fd = open(Name, flags, mode);
+#endif
 		if (!(hgzFile = gzdopen(fd,"rb"))) return false;
 	}
 	else
-		{ if (!(hFile=fopen(Name,"rb"))) return false; }
+	{ 
+#ifdef _WIN32
+		if (!(hFile=_wfopen(GetWideChar(Name),L"rb"))) return false;
+#else
+		if (!(hFile=fopen(Name,"rb"))) return false;
+#endif
+	}
 	// Reset buffer
 	ClearBuffer();
 	// Set status
@@ -134,7 +140,11 @@ bool CStdFile::Append(const char *szFilename)
 	// Set modes
 	ModeWrite=true;
 	// Open standard file
+#ifdef _WIN32
+	if (!(hFile=_wfopen(GetWideChar(Name),L"ab"))) return false;
+#else
 	if (!(hFile=fopen(Name,"ab"))) return false;
+#endif
 	// Reset buffer
 	ClearBuffer();
 	// Set status
@@ -296,11 +306,12 @@ int UncompressedFileSize(const char *szFilename)
 #ifdef _WIN32
 	int mode = _S_IREAD|_S_IWRITE;
 	int flags = _O_BINARY|_O_RDONLY;
+	int fd = _wopen(GetWideChar(szFilename), flags, mode);
 #else
 	mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
 	int flags = O_RDONLY;
-#endif
 	int fd = open(szFilename, flags, mode);
+#endif
 	gzFile hFile;
 	if (!(hFile = gzdopen(fd,"rb"))) return 0;
 	do

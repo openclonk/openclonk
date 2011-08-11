@@ -46,7 +46,11 @@
 bool StdBuf::LoadFromFile(const char *szFile)
 {
 	// Open file
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#else
 	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Create buf
 	New(FileSize(fh));
@@ -63,7 +67,11 @@ bool StdBuf::LoadFromFile(const char *szFile)
 bool StdBuf::SaveToFile(const char *szFile) const
 {
 	// Open file
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#else
 	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Write data
 	if (write(fh, getData(), getSize()) != (signed int) getSize())
@@ -79,7 +87,11 @@ bool StdBuf::SaveToFile(const char *szFile) const
 bool StdStrBuf::LoadFromFile(const char *szFile)
 {
 	// Open file
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#else
 	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Create buf
 	SetLength(FileSize(fh));
@@ -96,7 +108,11 @@ bool StdStrBuf::LoadFromFile(const char *szFile)
 bool StdStrBuf::SaveToFile(const char *szFile) const
 {
 	// Open file
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#else
 	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Write data
 	if (write(fh, getData(), getLength()) != (ssize_t) getLength())
