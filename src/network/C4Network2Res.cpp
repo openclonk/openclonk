@@ -637,7 +637,7 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 
 	// do optimizations (delete unneeded entries)
 	if (!OptimizeStandalone(fSilent))
-		{ if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0'; return false; }
+		{ if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0'; return false; }
 
 	// get file size
 	size_t iSize = FileSize(szStandalone);
@@ -649,7 +649,7 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if (!fSetOfficial && iSize != Core.getFileSize())
 	{
 		// remove file
-		if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
 		// sorry, this version isn't good enough :(
 		return false;
 	}
@@ -662,7 +662,7 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if (!fSetOfficial && iCRC32 != Core.getFileCRC())
 	{
 		// remove file, return
-		if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
 		return false;
 	}
 
@@ -981,12 +981,12 @@ void C4Network2Res::Clear()
 	// delete files
 	if (fTempFile)
 		if (FileExists(szFile))
-			if (remove(szFile))
+			if (!EraseFile(szFile))
 				//Log(_strerror("Network: Could not delete temporary ressource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	if (szStandalone[0] && !SEqual(szFile, szStandalone))
 		if (FileExists(szStandalone))
-			if (remove(szStandalone))
+			if (!EraseFile(szStandalone))
 				//Log(_strerror("Network: Could not delete temporary ressource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	szFile[0] = szStandalone[0] = '\0';
@@ -1700,20 +1700,12 @@ bool C4Network2ResList::CreateNetworkFolder()
 	// but make sure that the configured path has one
 	AppendBackslash(Config.Network.WorkPath);
 	// does not exist?
-	if (access(szNetworkPath, 00))
+	if (!DirectoryExists(szNetworkPath))
 	{
 		if (!CreatePath(szNetworkPath))
 			{ LogFatal("Network: could not create network path!"); return false; }
 		return true;
 	}
-	// stat
-	struct stat s;
-	if (stat(szNetworkPath, &s))
-		{ LogFatal("Network: could not stat network path!"); return false; }
-	// not a subdir?
-	if (!(s.st_mode & S_IFDIR))
-		{ LogFatal("Network: could not create network path: blocked by a file!"); return false; }
-	// ok
 	return true;
 }
 
@@ -1740,7 +1732,7 @@ bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarge
 	// create temporary file
 	SCopy(Config.AtNetworkPath(GetFilename(szFilename)), pTarget, _MAX_PATH);
 	// file name is free?
-	if (access(pTarget, F_OK)) return true;
+	if (!ItemExists(pTarget)) return true;
 	// find another file name
 	char szFileMask[_MAX_PATH+1];
 	SCopy(pTarget, szFileMask, GetExtension(pTarget)-1-pTarget);
@@ -1750,7 +1742,7 @@ bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarge
 	{
 		snprintf(pTarget, _MAX_PATH, szFileMask, i);
 		// doesn't exist?
-		if (access(pTarget, F_OK))
+		if (!ItemExists(pTarget))
 			return true;
 	}
 	// not found

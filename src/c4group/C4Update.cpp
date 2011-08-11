@@ -701,7 +701,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	if (!fSuccess)
 	{
 		WriteLog("Update package not created.\n");
-		remove(strUpdateFile);
+		EraseItem(strUpdateFile);
 		return false;
 	}
 
@@ -790,8 +790,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			else
 				// delete group (do not remove groups that existed before!)
 				if (strTempGroupName[0])
-					if (remove(strTempGroupName))
-						if (rmdir(strTempGroupName))
+					if (!EraseItem(strTempGroupName))
 							{ WriteLog("Error: could not delete temporary directory\n"); return false; }
 			delete pChildGrp1;
 		}

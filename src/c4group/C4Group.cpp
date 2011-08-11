@@ -546,13 +546,7 @@ void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 	ZeroMem(this,sizeof(C4GroupEntry));
 	SCopy(GetFilename(*iter),FileName,_MAX_FNAME);
 	SCopy(*iter, DiskPath, _MAX_PATH-1);
-	struct stat buf;
-	if (!stat(DiskPath, &buf))
-	{
-		Size = buf.st_size;
-	}
-	else
-		Size = 0;
+	Size = FileSize(*iter);
 	//SCopy(path,DiskPath,_MAX_PATH-1); AppendBackslash(DiskPath); SAppend(FileName,DiskPath,_MAX_PATH);
 	Status=C4GRES_OnDisk;
 	Packed=false;
