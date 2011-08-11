@@ -152,7 +152,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		{
 #if defined(_DEBUG) && defined(_WIN32)
 			// debug: output to VC console
-			OutputDebugString(Line.getData());
+			OutputDebugString(Line.GetWideChar());
 #endif
 			fputs(Line.getData(),stdout);
 			fflush(stdout);

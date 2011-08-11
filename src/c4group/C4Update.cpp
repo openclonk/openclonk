@@ -524,11 +524,11 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 	}
 	else
 	{
+#ifdef _WIN32
+		OutputDebugString(FormatString("updating %s\\%s\n", pGrpTo->GetFullName().getData(), strFileName).GetWideChar());
+#elif _DEBUG
 		char strMsg[1024];
 		sprintf(strMsg, "updating %s\\%s\n", pGrpTo->GetFullName().getData(), strFileName);
-#ifdef _MSC_VER
-		OutputDebugString(strMsg);
-#elif _DEBUG
 		puts(strMsg);
 #endif
 		if (!C4Group_CopyEntry(pGrpFrom, pGrpTo, strFileName))
