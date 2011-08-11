@@ -325,7 +325,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	FirstCrash = false;
 
 	// Open dump file
-	const char *szFilename = "Clonk.dmp"; // dump to working directory
+	const wchar_t *szFilename = L"Clonk.dmp"; // dump to working directory
 	HANDLE file = CreateFile(szFilename, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, 0);
 
 	// Write dump (human readable format)
