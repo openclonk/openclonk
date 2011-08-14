@@ -31,6 +31,29 @@
 #include <config.h>
 #endif // HAVE_CONFIG_H
 
+// We need to #define the target Windows version selector macros before we
+// including any MinGW header.
+#ifdef _WIN64
+# define WINVER 0x0501
+# define _WIN32_WINDOWS 0x0501
+# define _WIN32_WINNT  0x0501
+# define _WIN32_IE 0x0501
+# define _AMD64_ 1
+#elif defined(_WIN32)
+# define WINVER 0x0500
+# define _WIN32_WINDOWS 0x0500
+# define _WIN32_WINNT  0x0501
+# define _WIN32_IE 0x0501
+# define _X86_ 1
+#endif
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#define UNICODE
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
+#endif
+
 #ifdef _MSC_VER
 #define DEPRECATED __declspec(deprecated)
 #elif defined(__GNUC__)
