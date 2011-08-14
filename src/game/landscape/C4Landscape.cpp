@@ -2837,10 +2837,10 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 C4Rect C4Landscape::getBoundingBox(int *vtcs, int length) const
 {
-	C4Rect BoundingBox(vtcs[0],vtcs[1],vtcs[2]-vtcs[0]+1,vtcs[3]-vtcs[1]+1);
-	for(int32_t i=5; i < length; i+=2)
+	C4Rect BoundingBox(vtcs[0],vtcs[1],1,1);
+	for(int32_t i=2; i+1 < length; i+=2)
 	{
-		BoundingBox.Add(C4Rect(vtcs[i-3],vtcs[i-2],vtcs[i-1]-vtcs[i-3]+1,vtcs[i]-vtcs[i-2]+1));
+		BoundingBox.Add(C4Rect(vtcs[i],vtcs[i+1],1,1));
 	}
 	return BoundingBox;
 }
