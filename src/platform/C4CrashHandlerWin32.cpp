@@ -305,7 +305,7 @@ namespace {
 			module->dwSize = sizeof(*module);
 			for (BOOL success = Module32First(snapshot, module); success; success = Module32Next(snapshot, module))
 			{
-				LOG_DYNAMIC_TEXT("%32s loaded at " POINTER_FORMAT " - " POINTER_FORMAT " (%s)\n", module->szModule,
+				LOG_DYNAMIC_TEXT("%32ls loaded at " POINTER_FORMAT " - " POINTER_FORMAT " (%ls)\n", module->szModule,
 					reinterpret_cast<size_t>(module->modBaseAddr), reinterpret_cast<size_t>(module->modBaseAddr + module->modBaseSize),
 					module->szExePath);
 			}
