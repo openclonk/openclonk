@@ -464,11 +464,15 @@ bool FileExists(const char *szFilename)
 
 size_t FileSize(const char *szFilename)
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_WIN64)
 	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
 	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
 		return 0;
+#ifdef _WIN64
 	return (static_cast<size_t>(attributes.nFileSizeHigh) << (sizeof(attributes.nFileSizeLow) * 8)) | attributes.nFileSizeLow;
+#else
+	return attributes.nFileSizeLow;
+#endif
 #else
 	struct stat stStats;
 	if (stat(szFilename,&stStats)) return 0;
@@ -480,7 +484,7 @@ size_t FileSize(const char *szFilename)
 size_t FileSize(int fdes)
 {
 #ifdef _WIN32
-	return filelength(fdes);
+	return _filelength(fdes);
 #else
 	struct stat stStats;
 	if (fstat(fdes,&stStats)) return 0;
@@ -588,12 +592,12 @@ bool RenameFile(const char *szFilename, const char *szNewFilename)
 #undef CopyFile
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 {
-	return CopyFileW(GetWideChar(szSource), GetWideChar(szTarget), FailIfExists);
+	return !!CopyFileW(GetWideChar(szSource), GetWideChar(szTarget), FailIfExists);
 }
 
 bool RenameFile(const char *szFilename, const char *szNewFilename)
 {
-	return MoveFileExW(GetWideChar(szFilename), GetWideChar(szNewFilename), MOVEFILE_COPY_ALLOWED);
+	return !!MoveFileExW(GetWideChar(szFilename), GetWideChar(szNewFilename), MOVEFILE_COPY_ALLOWED);
 }
 
 #endif
