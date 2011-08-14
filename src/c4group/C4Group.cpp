@@ -538,9 +538,6 @@ C4GroupEntry::~C4GroupEntry()
 		}
 }
 
-#ifdef WIN32
-#define stat _stat
-#endif
 void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 {
 	ZeroMem(this,sizeof(C4GroupEntry));
