@@ -95,6 +95,10 @@ namespace {
 		LOG_EXCEPTION(EXCEPTION_PRIV_INSTRUCTION,         "The thread tried to execute an instruction whose operation is not allowed in the current machine mode.");
 		LOG_EXCEPTION(EXCEPTION_STACK_OVERFLOW,           "The thread used up its stack.");
 		LOG_EXCEPTION(EXCEPTION_GUARD_PAGE,               "The thread accessed memory allocated with the PAGE_GUARD modifier.");
+#ifndef STATUS_ASSERTION_FAILURE
+#	define STATUS_ASSERTION_FAILURE ((DWORD)0xC0000420L)
+#endif
+		LOG_EXCEPTION(STATUS_ASSERTION_FAILURE,           "The thread specified a pre- or postcondition that did not hold.");
 #undef LOG_EXCEPTION
 		default:
 			LOG_DYNAMIC_TEXT("%#08x: The thread raised an unknown exception.\n", static_cast<unsigned int>(exc->ExceptionRecord->ExceptionCode));
@@ -136,6 +140,21 @@ namespace {
 				else
 					LOG_STATIC_TEXT("The NTSTATUS code that resulted in this exception was not provided.\n");
 			}
+			break;
+
+		case STATUS_ASSERTION_FAILURE:
+			if (exc->ExceptionRecord->NumberParameters < 3)
+			{
+				LOG_STATIC_TEXT("Additional information for the exception was not provided.\n");
+				break;
+			}
+#ifdef __CRT_WIDE
+#	define ASSERTION_INFO_FORMAT "%ls"
+#else
+#	define ASSERTION_INFO_FORMAT "%s"
+#endif
+			LOG_DYNAMIC_TEXT("Additional information for the exception:\n    Assertion that failed: " ASSERTION_INFO_FORMAT "\n    File: " ASSERTION_INFO_FORMAT "\n    Line: %d\n",
+				exc->ExceptionRecord->ExceptionInformation[0], exc->ExceptionRecord->ExceptionInformation[1], exc->ExceptionRecord->ExceptionInformation[2]);
 			break;
 		}
 
@@ -313,6 +332,7 @@ namespace {
 		}
 
 		// (Try to) log it
+		if (exc->ExceptionRecord->ExceptionCode != STATUS_ASSERTION_FAILURE)
 		LOG_STATIC_TEXT("FATAL: Clonk crashed! Some developer might be interested in Clonk.dmp...");
 #undef LOG_SNPRINTF
 #undef LOG_DYNAMIC_TEXT
@@ -343,9 +363,153 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
+namespace {
+	// Assertion logging hook. This will replace the prologue of the standard assertion
+	// handler with a trampoline to assertion_handler(), which logs the assertion, then
+	// replaces the trampoline with the original prologue, and calls the handler.
+	// If the standard handler returns control to assertion_handler(), it will then
+	// restore the hook.
+#ifdef __CRT_WIDE
+	typedef void (__cdecl *ASSERT_FUNC)(const wchar_t *, const wchar_t *, unsigned);
+	const ASSERT_FUNC assert_func = 
+		&_wassert;
+#else
+	typedef void (__cdecl *ASSERT_FUNC)(const char *, const char *, unsigned);
+	const ASSERT_FUNC assert_func = 
+		&_assert;
+#endif
+	unsigned char trampoline[] = {
+#if OC_MACHINE == OC_MACHINE_X64
+		// MOV rax, 0xCCCCCCCCCCCCCCCC
+		0x48 /* REX.W */, 0xB8, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,
+		// JMP rax
+		0xFF, 0xE0
+#elif OC_MACHINE == OC_MACHINE_X86
+		// NOP ; to align jump target
+		0x90,
+		// MOV eax, 0xCCCCCCCC
+		0xB8, 0xCC, 0xCC, 0xCC, 0xCC,
+		// JMP eax
+		0xFF, 0xE0
+#endif
+	};
+	unsigned char trampoline_backup[sizeof(trampoline)];
+	void HookAssert(ASSERT_FUNC hook)
+	{
+		// Write hook function address to trampoline
+		memcpy(trampoline + 2, (void*)&hook, sizeof(void*));
+		// Make target location writable
+		DWORD old_protect = 0;
+		if (!VirtualProtect((LPVOID)assert_func, sizeof(trampoline), PAGE_EXECUTE_READWRITE, &old_protect))
+			return;
+		// Take backup of old target function and replace it with trampoline
+		memcpy(trampoline_backup, (void*)assert_func, sizeof(trampoline_backup));
+		memcpy((void*)assert_func, trampoline, sizeof(trampoline));
+		// Restore memory protection
+		VirtualProtect((LPVOID)assert_func, sizeof(trampoline), old_protect, &old_protect);
+		// Flush processor caches. Not strictly necessary on x86 and x64.
+		FlushInstructionCache(GetCurrentProcess(), (LPCVOID)assert_func, sizeof(trampoline));
+	}
+	void UnhookAssert()
+	{
+		DWORD old_protect = 0;
+		if (!VirtualProtect((LPVOID)assert_func, sizeof(trampoline_backup), PAGE_EXECUTE_READWRITE, &old_protect))
+			// Couldn't make assert function writable. Abort program (it's what assert() is supposed to do anyway).
+			abort();
+		// Replace function with backup
+		memcpy((void*)assert_func, trampoline_backup, sizeof(trampoline_backup));
+		VirtualProtect((LPVOID)assert_func, sizeof(trampoline_backup), old_protect, &old_protect);
+		FlushInstructionCache(GetCurrentProcess(), (LPCVOID)assert_func, sizeof(trampoline_backup));
+	}
+
+	struct dump_thread_t {
+		HANDLE thread;
+#ifdef __CRT_WIDE
+		const wchar_t
+#else
+		const char
+#endif
+			*expression, *file;
+		size_t line;
+	};
+	// Helper function to get a valid thread context for the main thread
+	static DWORD WINAPI dump_thread(LPVOID t)
+	{
+		dump_thread_t *data = static_cast<dump_thread_t*>(t);
+
+		// Stop calling thread so we can take a snapshot
+		if (SuspendThread(data->thread) == -1)
+			return FALSE;
+
+		// Get thread info
+		CONTEXT ctx = {0};
+		ctx.ContextFlags = CONTEXT_ALL;
+		BOOL result = GetThreadContext(data->thread, &ctx);
+
+		// Setup a fake exception to log
+		EXCEPTION_RECORD erec = {0};
+		erec.ExceptionCode = STATUS_ASSERTION_FAILURE;
+		erec.ExceptionFlags = 0L;
+		erec.ExceptionInformation[0] = (ULONG_PTR)data->expression;
+		erec.ExceptionInformation[1] = (ULONG_PTR)data->file;
+		erec.ExceptionInformation[2] = (ULONG_PTR)data->line;
+		erec.NumberParameters = 3;
+
+		erec.ExceptionAddress = (LPVOID)
+#if OC_MACHINE == OC_MACHINE_X64
+			ctx.Rip
+#elif OC_MACHINE == OC_MACHINE_X86
+			ctx.Eip
+#else
+			0
+#endif
+			;
+		EXCEPTION_POINTERS eptr;
+		eptr.ContextRecord = &ctx;
+		eptr.ExceptionRecord = &erec;
+
+		// Log
+		SafeTextDump(&eptr, GetLogFD());
+
+		// Continue caller
+		if (ResumeThread(data->thread) == -1)
+			abort();
+		return result;
+	}
+
+	// Replacement assertion handler
+#ifdef __CRT_WIDE
+	void __cdecl assertion_handler(const wchar_t *expression, const wchar_t *file, unsigned line)
+#else
+	void __cdecl assertion_handler(const char *expression, const char *file, unsigned line)
+#endif
+	{
+		// Dump thread status on a different thread because we can't get a valid thread context otherwise
+		HANDLE this_thread;
+		DuplicateHandle(GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &this_thread, 0, FALSE, DUPLICATE_SAME_ACCESS);
+		dump_thread_t dump_thread_data = {
+			this_thread,
+			expression, file, line
+		};
+		HANDLE ctx_thread = CreateThread(NULL, 0L, &dump_thread, &dump_thread_data, 0L, NULL);
+		WaitForSingleObject(ctx_thread, INFINITE);
+		CloseHandle(this_thread);
+		CloseHandle(ctx_thread);
+		// Unhook _wassert/_assert
+		UnhookAssert();
+		// Call old _wassert/_assert
+		assert_func(expression, file, line);
+		// If we get here: rehook
+		HookAssert(&assertion_handler);
+	}
+}
+
 void InstallCrashHandler()
 {
 	SetUnhandledExceptionFilter(GenerateDump);
+	
+	// Hook _wassert/_assert
+	HookAssert(&assertion_handler);
 }
 
 #else
