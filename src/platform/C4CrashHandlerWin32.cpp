@@ -443,6 +443,10 @@ namespace {
 
 		// Get thread info
 		CONTEXT ctx = {0};
+#ifndef CONTEXT_ALL
+#define CONTEXT_ALL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS | \
+	CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS | CONTEXT_EXTENDED_REGISTERS)
+#endif
 		ctx.ContextFlags = CONTEXT_ALL;
 		BOOL result = GetThreadContext(data->thread, &ctx);
 
