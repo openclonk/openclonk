@@ -374,7 +374,7 @@ namespace {
 	const ASSERT_FUNC assert_func = 
 		&_wassert;
 #else
-	typedef void (__cdecl *ASSERT_FUNC)(const char *, const char *, unsigned);
+	typedef void (__cdecl *ASSERT_FUNC)(const char *, const char *, int);
 	const ASSERT_FUNC assert_func = 
 		&_assert;
 #endif
@@ -485,7 +485,7 @@ namespace {
 #ifdef __CRT_WIDE
 	void __cdecl assertion_handler(const wchar_t *expression, const wchar_t *file, unsigned line)
 #else
-	void __cdecl assertion_handler(const char *expression, const char *file, unsigned line)
+	void __cdecl assertion_handler(const char *expression, const char *file, int line)
 #endif
 	{
 		// Dump thread status on a different thread because we can't get a valid thread context otherwise
