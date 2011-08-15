@@ -394,8 +394,22 @@ bool C4Player::Save()
 	char szPath[_MAX_PATH + 1];
 	SCopy(Config.AtTempPath(C4CFN_TempPlayer), szPath, _MAX_PATH);
 	MakeTempFilename(szPath);
-	// so full hard (flgr stupid) disks won't corrupt any player files...
-	C4Group_CopyItem(Filename, szPath);
+	// For local players, we save over the old player file, as there might
+	// be all kinds of non-essential stuff in it. For non-local players, we
+	// just re-create it every time (it's temporary anyway).
+	if (LocalControl)
+	{
+		// But make sure to copy it first so full hard (flgr stupid) disks
+		// won't corrupt any player files...
+		C4Group_CopyItem(Filename, szPath);
+	}
+	else
+	{
+		// For non-local players, we can actually use the loaded definition
+		// list to strip out all non-existant definitions. This is only valid
+		// because we know the file to be temporary.
+		CrewInfoList.Strip(::Definitions);
+	}
 	// Open group
 	if (!hGroup.Open(szPath,true))
 		return false;
