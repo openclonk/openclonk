@@ -195,7 +195,10 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 		{
 			try
 			{
-				::MeshMaterialManager.Parse(material.getData(), Filename, loader);
+				StdStrBuf buf;
+				buf.Copy(hGroup.GetName());
+				buf.Append("/"); buf.Append(Filename);
+				::MeshMaterialManager.Parse(material.getData(), buf.getData(), loader);
 			}
 			catch (const StdMeshMaterialError& ex)
 			{
