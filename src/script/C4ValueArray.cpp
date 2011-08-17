@@ -27,12 +27,12 @@
 #include <C4FindObject.h>
 
 C4ValueArray::C4ValueArray()
-		: iSize(0), pData(NULL), iRefCnt(0)
+		: iRefCnt(0), iSize(0), pData(NULL)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iSize(0), pData(NULL), iRefCnt(0)
+		: iRefCnt(0), iSize(0), pData(NULL)
 {
 	SetSize(inSize);
 }

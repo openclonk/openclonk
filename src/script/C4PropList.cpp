@@ -157,8 +157,8 @@ C4Set<C4PropList *> C4PropList::PropLists;
 #endif
 
 C4PropList::C4PropList(C4PropList * prototype):
-		Status(1),
-		FirstRef(NULL), prototype(prototype), constant(false)
+		FirstRef(NULL), prototype(prototype),
+		constant(false), Status(1)
 {
 	if (prototype)
 		SetProperty(P_Prototype, C4VPropList(prototype));

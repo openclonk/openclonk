@@ -389,7 +389,7 @@ public:
 
 	bool IsMoveableBySolidMask(int ComparisonPlane)
 	{
-		C4PropList* pActionDef = GetAction();
+		//C4PropList* pActionDef = GetAction();
 		return (Status == C4OS_NORMAL)
 		       && !(Category & C4D_StaticBack)
 		       && (ComparisonPlane < GetPlane())
