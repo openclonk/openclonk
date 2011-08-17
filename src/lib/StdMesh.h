@@ -234,6 +234,7 @@ class StdSubMesh
 {
 	friend class StdMesh;
 	friend class StdMeshLoader;
+	friend class StdMeshMaterialUpdate;
 public:
 	// Remember bone assignments for vertices
 	class Vertex: public StdMeshVertex
@@ -262,6 +263,8 @@ private:
 class StdMesh
 {
 	friend class StdMeshLoader;
+	friend class StdMeshMaterialUpdate;
+
 	StdMesh();
 public:
 	~StdMesh();
@@ -300,6 +303,7 @@ private:
 class StdSubMeshInstance
 {
 	friend class StdMeshInstance;
+	friend class StdMeshMaterialUpdate;
 public:
 	StdSubMeshInstance(const StdSubMesh& submesh);
 
@@ -354,6 +358,7 @@ private:
 
 class StdMeshInstance
 {
+	friend class StdMeshMaterialUpdate;
 public:
 	StdMeshInstance(const StdMesh& mesh);
 	~StdMeshInstance();
@@ -418,8 +423,6 @@ public:
 			const std::type_info& type;
 			NewFunc newfunc;
 		};
-
-		
 
 		template<typename T>
 		struct ID: IDBase

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Mark Haßelbusch
- * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009-2011  Armin Burgmeier
  * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -21,6 +21,7 @@
 
 #include "C4Include.h"
 #include <StdMeshMaterial.h>
+#include <StdMeshUpdate.h>
 #include <StdDDraw2.h>
 
 #include <cctype>
@@ -1035,6 +1036,12 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 	std::map<StdCopyStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdCopyStrBuf(material_name));
 	if (iter == Materials.end()) return NULL;
 	return &iter->second;
+}
+
+StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdMeshMaterialUpdate* update)
+{
+  if(update) update->Add(&*iter);
+  return Iterator(Materials.erase(iter.iter_));
 }
 
 StdMeshMatManager MeshMaterialManager;

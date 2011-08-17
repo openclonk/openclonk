@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009-2011  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -320,7 +320,29 @@ public:
 
 class StdMeshMatManager
 {
+	friend class StdMeshMaterialUpdate;
+private:
+	typedef std::map<StdCopyStrBuf, StdMeshMaterial> MaterialMap;
+
 public:
+	class Iterator
+	{
+		friend class StdMeshMatManager;
+	public:
+		Iterator(const MaterialMap::iterator& iter): iter_(iter) {}
+		Iterator(const Iterator& iter): iter_(iter.iter_) {}
+
+		Iterator operator=(const Iterator& iter) { iter_ = iter.iter_; return *this; }
+		Iterator& operator++() { ++iter_; return *this; }
+		bool operator==(const Iterator& other) const { return iter_ == other.iter_; }
+		bool operator!=(const Iterator& other) const { return iter_ != other.iter_; }
+
+		const StdMeshMaterial& operator*() const { return iter_->second; }
+		const StdMeshMaterial* operator->() const { return &iter_->second; }
+	private:
+		MaterialMap::iterator iter_;
+	};
+
 	// Remove all materials from manager. Make sure there is no StdMesh
 	// referencing any out there before calling this.
 	void Clear();
@@ -334,8 +356,12 @@ public:
 	// Get material by name. NULL if there is no such material with this name.
 	const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
+	Iterator Begin() { return Iterator(Materials.begin()); }
+	Iterator End() { return Iterator(Materials.end()); }
+	Iterator Remove(const Iterator& iter, class StdMeshMaterialUpdate* update);
+
 private:
-	std::map<StdCopyStrBuf, StdMeshMaterial> Materials;
+	MaterialMap Materials;
 };
 
 extern StdMeshMatManager MeshMaterialManager;

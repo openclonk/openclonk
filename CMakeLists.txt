@@ -391,6 +391,8 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshLoaderXml.cpp
 	src/lib/StdMeshMaterial.cpp
 	src/lib/StdMeshMaterial.h
+	src/lib/StdMeshUpdate.cpp
+	src/lib/StdMeshUpdate.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/lib/StdResStr.h

@@ -29,6 +29,7 @@
 #include "C4ObjectPtr.h"
 #include "C4InputValidation.h"
 #include "C4Id.h"
+#include "StdMeshUpdate.h"
 
 class C4Def;
 
@@ -110,6 +111,7 @@ protected:
 	C4Def *pDef;                 // definition of dead graphics
 	char Name[C4MaxName+1];        // name of graphics
 	C4DefGraphicsPtrBackup *pNext; // next member of linked list
+	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
 
 public:
 	C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics); // ctor
@@ -117,6 +119,9 @@ public:
 
 	void AssignUpdate(C4DefGraphics *pNewGraphics); // update all game objects with new graphics pointers
 	void AssignRemoval();                           // remove graphics of this def from all game objects
+
+private:
+	void UpdateMeshMaterials();
 };
 
 // Helper to compile C4DefGraphics-Pointer
@@ -136,6 +141,7 @@ public:
 // graphics overlay used to attach additional graphics to objects
 class C4GraphicsOverlay
 {
+	friend class C4DefGraphicsPtrBackup;
 public:
 	enum Mode
 	{

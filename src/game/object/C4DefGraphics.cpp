@@ -334,7 +334,8 @@ C4AdditionalDefGraphics::C4AdditionalDefGraphics(C4Def *pOwnDef, const char *szN
 	SCopy(szName, Name, C4MaxName);
 }
 
-C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics)
+C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics):
+	MeshMaterialUpdate(::MeshMaterialManager)
 {
 	// assign graphics + def
 	pGraphicsPtr = pSourceGraphics;
@@ -342,6 +343,20 @@ C4DefGraphicsPtrBackup::C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics)
 	// assign name
 	const char *szName = pGraphicsPtr->GetName();
 	if (szName) SCopy(szName, Name, C4MaxName); else *Name=0;
+
+	// Remove all mesh materials that were loaded from this definition
+	for(StdMeshMatManager::Iterator iter = ::MeshMaterialManager.Begin(); iter != MeshMaterialManager.End(); )
+	{
+		StdStrBuf Filename;
+		Filename.Copy(pDef->Filename);
+		Filename.Append("/"); Filename.Append(GetFilename(iter->FileName.getData()));
+
+		if(Filename == iter->FileName)
+			iter = ::MeshMaterialManager.Remove(iter, &MeshMaterialUpdate);
+		else
+			++iter;
+	}
+
 	// create next graphics recursively
 	C4DefGraphics *pNextGfx = pGraphicsPtr->pNext;
 	if (pNextGfx)
@@ -360,6 +375,8 @@ C4DefGraphicsPtrBackup::~C4DefGraphicsPtrBackup()
 
 void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 {
+	UpdateMeshMaterials();
+
 	// only if graphics are assigned
 	if (pGraphicsPtr)
 	{
@@ -378,6 +395,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 								pObj->AssignRemoval(); pObj->pGraphics=NULL;
 							}
 					}
+
 					// remove any overlay graphics
 					for (;;)
 					{
@@ -406,8 +424,36 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 	if (pNext) pNext->AssignUpdate(pNewGraphics);
 }
 
+void C4DefGraphicsPtrBackup::UpdateMeshMaterials()
+{
+	// Update mesh materials for all meshes
+	for(C4DefList::Table::iterator iter = Definitions.table.begin(); iter != Definitions.table.end(); ++iter)
+		if(iter->second->Graphics.Type == C4DefGraphics::TYPE_Mesh)
+			MeshMaterialUpdate.Update(iter->second->Graphics.Mesh);
+
+	// Update mesh materials for all mesh instances, except ones which belong
+	// to this definition. Such graphics have an invalid pointer to the underlying
+	// StdMesh, and they will be updated separately below.
+	C4Object *pObj;
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
+		if ((pObj=pLnk->Obj)) if (pObj->Status)
+		{
+			//if(pObj->pGraphics != pGraphicsPtr)
+				if(pObj->pMeshInstance)
+					MeshMaterialUpdate.Update(pObj->pMeshInstance);
+			for (C4GraphicsOverlay* pGfxOverlay = pObj->pGfxOverlay; pGfxOverlay; pGfxOverlay = pGfxOverlay->GetNext())
+				//if (pGfxOverlay->GetGfx() != pGraphicsPtr)
+					if(pGfxOverlay->pMeshInstance)
+						MeshMaterialUpdate.Update(pGfxOverlay->pMeshInstance);
+		}
+}
+
 void C4DefGraphicsPtrBackup::AssignRemoval()
 {
+	// Reset all mesh materials to what they were before the update
+	MeshMaterialUpdate.Cancel();
+	UpdateMeshMaterials();
+
 	// only if graphics are assigned
 	if (pGraphicsPtr)
 	{
