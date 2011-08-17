@@ -1041,7 +1041,10 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdMeshMaterialUpdate* update)
 {
   if(update) update->Add(&*iter);
-  return Iterator(Materials.erase(iter.iter_));
+  Iterator next_iter = iter;
+  ++next_iter;
+  Materials.erase(iter.iter_);
+  return next_iter;
 }
 
 StdMeshMatManager MeshMaterialManager;
