@@ -49,6 +49,7 @@ public:
 
 	float GetZoom() { return Zoom; }
 	void SetZoom(float zoomValue);
+	float GetGUIZoom() const { return BoundBy<float>(float(ViewWdt)/1280,0.5f,1.0f); }
 	void Default();
 	void Clear();
 	void Execute();

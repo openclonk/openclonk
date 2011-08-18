@@ -1895,7 +1895,7 @@ bool C4Object::SetPhase(int32_t iPhase)
 void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
 	C4Facet ccgo;
-
+	
 	// Status
 	if (!Status || !Def) return;
 
@@ -2710,12 +2710,12 @@ void C4Object::DrawSelectMark(C4TargetFacet &cgo)
 	if (!Inside<float>(offX, cgo.X, cgo.X + cgo.Wdt)
 	    || !Inside<float>(offY, cgo.Y, cgo.Y + cgo.Hgt)) return;
 	// Draw select marks
-	float cox = (offX + Shape.GetX() - cgo.X) * newzoom + cgo.X - 2;
-	float coy = (offY + Shape.GetY() - cgo.Y) * newzoom + cgo.Y - 2;
+	float cox = offX + Shape.GetX() - cgo.X + cgo.X - 2;
+	float coy = offY + Shape.GetY() - cgo.Y + cgo.Y - 2;
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy,0);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy,1);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt*newzoom,2);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy+Shape.Hgt*newzoom,3);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt,coy,1);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt,2);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt,coy+Shape.Hgt,3);
 }
 
 void C4Object::ClearCommands()
@@ -4481,28 +4481,30 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom)
 {
+	// for HUD
+	if(Category & C4D_Foreground)
+	{
+		resultzoom = zoom;
+
+		if(fix_x < 0)
+			resultx = cgo.X + objx + cgo.Wdt;
+		else
+			resultx = cgo.X + objx;
+
+		if(fix_y < 0)
+			resulty = cgo.Y + objy + cgo.Hgt;
+		else
+			resulty = cgo.Y + objy;
+
+		return true;
+	}
+
+	// zoom with parallaxity
 	int iParX, iParY;
 	GetParallaxity(&iParX, &iParY);
 	float targetx = cgo.TargetX; float targety = cgo.TargetY;
-
 	float parx = iParX / 100.0f; float pary = iParY / 100.0f;
-	float par = parx; //todo: pary?
-	// Old
-	/*resultzoom = zoom;
-
-	if(parx == 0 && fix_x < 0)
-		resultx = cgo.X + objx + cgo.Wdt;
-	else
-		resultx = cgo.X + objx - targetx*parx;
-
-	if(pary == 0 && fix_y < 0)
-		resulty = cgo.Y + objy + cgo.Hgt;
-	else
-		resulty = cgo.Y + objy - targety*pary;
-
-	return true;*/
-
-	// New
+	float par = parx; // and pary?
 
 	// Step 1: project to landscape coordinates
 	resultzoom = 1.0 / (1.0 - (par - par/zoom));
@@ -4523,6 +4525,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 		resulty = cgo.Y + (objy + cgo.Hgt) * zoom / resultzoom;
 	else
 		resulty = cgo.Y + (ry - targety) * zoom / resultzoom;
+
 	return true;
 }
 
