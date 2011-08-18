@@ -290,12 +290,7 @@ bool C4GraphicsResource::LoadCursorGfx()
 {
 	// Determine appropriate GFX file by screen resolution
 	const char *szCursorFilename;
-	if (C4GUI::GetScreenWdt() >= 1280)
-		szCursorFilename = "CursorLarge";
-	else if (C4GUI::GetScreenWdt() >= 800)
-		szCursorFilename = "CursorMedium";
-	else
-		szCursorFilename = "CursorSmall";
+	szCursorFilename = "Cursor";
 	if (!LoadFile(fctMouseCursor, szCursorFilename, Files, C4FCT_Height))
 		return false;
 	// adjust dependant faces
