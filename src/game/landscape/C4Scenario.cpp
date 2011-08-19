@@ -491,7 +491,7 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 
 bool C4SGame::IsMelee()
 {
-	return (Goals.GetIDCount(C4ID::Melee));
+	return !!(Goals.GetIDCount(C4ID::Melee));
 }
 
 // scenario sections
