@@ -1949,7 +1949,7 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 		Instance = Attached->Child;
 	}
 
-	const StdMeshAnimation* animation = Instance->Mesh.GetAnimationByName(szAnimation->GetData());
+	const StdMeshAnimation* animation = Instance->GetMesh().GetAnimationByName(szAnimation->GetData());
 	if (!animation) return C4Void();
 	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical
 }

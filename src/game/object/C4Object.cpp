@@ -476,15 +476,20 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 			CheckSolidMaskRect();
 		}
 
-		delete pMeshInstance;
-		if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+		// Keep mesh instance if it uses the same underlying mesh
+		if(!pMeshInstance || !pGraphics->Type == C4DefGraphics::TYPE_Mesh ||
+		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
 		{
-			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
-		}
-		else
-		{
-			pMeshInstance = NULL;
+			delete pMeshInstance;
+			if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+			{
+				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+				pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
+			}
+			else
+			{
+				pMeshInstance = NULL;
+			}
 		}
 
 		// update face - this also puts any SolidMask
@@ -4599,7 +4604,7 @@ bool C4Object::SetGraphics(const char *szGraphicsName, C4Def *pSourceDef)
 	C4DefGraphics *pGrp = pSourceDef->Graphics.Get(szGraphicsName);
 	if (!pGrp) return false;
 	// no change? (no updates need to be done, then)
-	if (pGraphics == pGrp) return true;
+	//if (pGraphics == pGrp) return true; // that's not exactly true because the graphics itself might have changed, for example on def reload
 	// set new graphics
 	pGraphics = pGrp;
 	// update Color, SolidMask, etc.

@@ -18,6 +18,7 @@
 #ifndef INC_StdMeshUpdate
 #define INC_StdMeshUpdate
 
+#include <StdMesh.h>
 #include <StdMeshMaterial.h>
 
 // This is a helper class to fix pointers after an update of StdMeshMaterials.
@@ -34,17 +35,36 @@ public:
 	StdMeshMaterialUpdate(StdMeshMatManager& manager);
 
 	void Update(StdMesh* mesh) const;
-	void Update(StdMeshInstance* instance) const;
+	void Update(StdMeshInstance* instance) const; // not this is NOT recursive
 
 	void Cancel() const;
 
 private:
-	void UpdateSingle(StdMeshInstance* instance) const;
-
 	void Add(const StdMeshMaterial* material);
 
 	StdMeshMatManager& MaterialManager;
 	std::map<const StdMeshMaterial*, StdMeshMaterial> Materials;
+};
+
+// This is a helper class to update the underlying StdMesh of certain mesh
+// instances. It tries to preserve all animations, attached meshes etc.,
+// however might not be able to do so in which case animations/attached
+// meshes are removed.
+class StdMeshUpdate
+{
+public:
+	StdMeshUpdate(const StdMesh& old_mesh);
+
+	void Update(StdMeshInstance* instance, const StdMesh& new_mesh) const;
+
+	const StdMesh& GetOldMesh() const { return *OldMesh; }
+private:
+	bool UpdateAnimationNode(StdMeshInstance* instance, const StdMesh& new_mesh, StdMeshInstance::AnimationNode* node) const;
+
+	const StdMesh* OldMesh;
+
+	std::map<const StdMeshAnimation*, StdCopyStrBuf> AnimationNames;
+	std::vector<StdCopyStrBuf> BoneNames;
 };
 
 #endif

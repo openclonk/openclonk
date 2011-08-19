@@ -112,6 +112,7 @@ protected:
 	char Name[C4MaxName+1];        // name of graphics
 	C4DefGraphicsPtrBackup *pNext; // next member of linked list
 	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
+	StdMeshUpdate* pMeshUpdate;    // Dead mesh
 
 public:
 	C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics); // ctor
@@ -121,7 +122,8 @@ public:
 	void AssignRemoval();                           // remove graphics of this def from all game objects
 
 private:
-	void UpdateMeshMaterials();
+	void UpdateMeshes();
+	void UpdateMesh(StdMeshInstance* instance);
 };
 
 // Helper to compile C4DefGraphics-Pointer

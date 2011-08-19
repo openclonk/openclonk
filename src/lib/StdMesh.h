@@ -264,6 +264,7 @@ class StdMesh
 {
 	friend class StdMeshLoader;
 	friend class StdMeshMaterialUpdate;
+	friend class StdMeshUpdate;
 
 	StdMesh();
 public:
@@ -359,6 +360,7 @@ private:
 class StdMeshInstance
 {
 	friend class StdMeshMaterialUpdate;
+	friend class StdMeshUpdate;
 public:
 	StdMeshInstance(const StdMesh& mesh);
 	~StdMeshInstance();
@@ -462,6 +464,7 @@ public:
 	class AnimationNode
 	{
 		friend class StdMeshInstance;
+		friend class StdMeshUpdate;
 	public:
 		enum NodeType { LeafNode, LinearInterpolationNode };
 
@@ -536,6 +539,7 @@ public:
 	class AttachedMesh
 	{
 		friend class StdMeshInstance;
+		friend class StdMeshUpdate;
 	public:
 		// The job of this class is to help serialize the Child and OwnChild members of AttachedMesh
 		class Denumerator
@@ -628,13 +632,15 @@ public:
 	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
 	void DenumeratePointers();
 
-	const StdMesh& Mesh;
+	const StdMesh& GetMesh() const { assert(Mesh != NULL); return *Mesh; }
 
 protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
 	bool ExecuteAnimationNode(AnimationNode* node);
+
+	const StdMesh* Mesh;
 
 	FaceOrdering CurrentFaceOrdering; // NoSave
 

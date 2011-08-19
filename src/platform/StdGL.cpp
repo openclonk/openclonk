@@ -1069,7 +1069,7 @@ namespace
 
 	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
-		const StdMesh& mesh = instance.Mesh;
+		const StdMesh& mesh = instance.GetMesh();
 
 		// Render AM_DrawBefore attached meshes
 		StdMeshInstance::AttachedMeshIter attach_iter = instance.AttachedMeshesBegin();
@@ -1156,7 +1156,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	static const bool OgreToClonkParity = CStdDDraw::OgreToClonk.Determinant() > 0.0f;
 
-	const StdMesh& mesh = instance.Mesh;
+	const StdMesh& mesh = instance.GetMesh();
 
 	bool parity = OgreToClonkParity;
 

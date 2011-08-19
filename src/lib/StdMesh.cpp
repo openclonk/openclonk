@@ -1220,7 +1220,7 @@ StdMeshInstance::AttachedMesh::~AttachedMesh()
 
 bool StdMeshInstance::AttachedMesh::SetParentBone(const StdStrBuf& bone)
 {
-	const StdMeshBone* bone_obj = Parent->Mesh.GetBoneByName(bone);
+	const StdMeshBone* bone_obj = Parent->GetMesh().GetBoneByName(bone);
 	if (!bone_obj) return false;
 	ParentBone = bone_obj->Index;
 
@@ -1230,7 +1230,7 @@ bool StdMeshInstance::AttachedMesh::SetParentBone(const StdStrBuf& bone)
 
 bool StdMeshInstance::AttachedMesh::SetChildBone(const StdStrBuf& bone)
 {
-	const StdMeshBone* bone_obj = Child->Mesh.GetBoneByName(bone);
+	const StdMeshBone* bone_obj = Child->GetMesh().GetBoneByName(bone);
 	if (!bone_obj) return false;
 	ChildBone = bone_obj->Index;
 
@@ -1277,14 +1277,14 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
-		Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
-		BoneTransforms(Mesh.GetNumBones(), StdMeshMatrix::Identity()),
-		SubMeshInstances(Mesh.GetNumSubMeshes()), AttachParent(NULL),
+		Mesh(&mesh), CurrentFaceOrdering(FO_Fixed),
+		BoneTransforms(Mesh->GetNumBones(), StdMeshMatrix::Identity()),
+		SubMeshInstances(Mesh->GetNumSubMeshes()), AttachParent(NULL),
 		BoneTransformsDirty(false)
 {
-	for (unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
+	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 	{
-		const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+		const StdSubMesh& submesh = Mesh->GetSubMesh(i);
 		SubMeshInstances[i] = new StdSubMeshInstance(submesh);
 	}
 }
@@ -1316,9 +1316,9 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 		if (ordering == FO_Fixed)
 		{
 			// Copy original face ordering from StdMesh
-			for (unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
+			for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 			{
-				const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+				const StdSubMesh& submesh = Mesh->GetSubMesh(i);
 				//SubMeshInstances[i]->Faces = submesh.GetFaces();
 				for (unsigned int j = 0; j < submesh.GetNumFaces(); ++j)
 					SubMeshInstances[i]->Faces[j] = submesh.GetFace(j);
@@ -1354,7 +1354,7 @@ void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
-	const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
+	const StdMeshAnimation* animation = Mesh->GetAnimationByName(animation_name);
 	if (!animation) { delete position; delete weight; return NULL; }
 
 	return PlayAnimation(*animation, slot, sibling, position, weight);
@@ -1522,9 +1522,10 @@ void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* wei
 
 void StdMeshInstance::ExecuteAnimation(float dt)
 {
-	// Iterate from the back since slots might get removed
+	// Iterate from the back since slots might be removed
 	for (unsigned int i = AnimationStack.size(); i > 0; --i)
-		ExecuteAnimationNode(AnimationStack[i-1]);
+		if(!ExecuteAnimationNode(AnimationStack[i-1]))
+			StopAnimation(AnimationStack[i-1]);
 
 	// Update animated textures
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
@@ -1591,8 +1592,8 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& inst
 		if ((*iter)->Number >= number)
 			number = (*iter)->Number + 1;
 
-	const StdMeshBone* parent_bone_obj = Mesh.GetBoneByName(parent_bone);
-	const StdMeshBone* child_bone_obj = instance.Mesh.GetBoneByName(child_bone);
+	const StdMeshBone* parent_bone_obj = Mesh->GetBoneByName(parent_bone);
+	const StdMeshBone* child_bone_obj = instance.Mesh->GetBoneByName(child_bone);
 	if (!parent_bone_obj || !child_bone_obj) return NULL;
 
 	// TODO: Face Ordering is not lined up... can't do that properly here
@@ -1647,7 +1648,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 		{
 			StdMeshTransformation Transformation;
 
-			const StdMeshBone& bone = Mesh.GetBone(i);
+			const StdMeshBone& bone = Mesh->GetBone(i);
 			const StdMeshBone* parent = bone.GetParent();
 			assert(!parent || parent->Index < i);
 
@@ -1686,7 +1687,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 		// (can only work for fixed face ordering though)
 		for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 		{
-			const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+			const StdSubMesh& submesh = Mesh->GetSubMesh(i);
 			std::vector<StdMeshVertex>& instance_vertices = SubMeshInstances[i]->Vertices;
 			assert(submesh.GetNumVertices() == instance_vertices.size());
 			for (unsigned int j = 0; j < instance_vertices.size(); ++j)
@@ -1737,9 +1738,9 @@ bool StdMeshInstance::UpdateBoneTransforms()
 			// TODO: We might also be able to cache child inverse, and only recomupte it if
 			// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
 			attach->FinalTrans = BoneTransforms[attach->ParentBone]
-			                     * StdMeshMatrix::Transform(Mesh.GetBone(attach->ParentBone).Transformation)
+			                     * StdMeshMatrix::Transform(Mesh->GetBone(attach->ParentBone).Transformation)
 			                     * attach->AttachTrans
-			                     * StdMeshMatrix::Transform(attach->Child->Mesh.GetBone(attach->ChildBone).InverseTransformation)
+			                     * StdMeshMatrix::Transform(attach->Child->Mesh->GetBone(attach->ChildBone).InverseTransformation)
 			                     * StdMeshMatrix::Inverse(attach->Child->BoneTransforms[attach->ChildBone]);
 
 			attach->FinalTransformDirty = false;
@@ -1784,7 +1785,7 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		for(int32_t i = 0; i < iAnimCnt; ++i)
 		{
 			AnimationNode* node = NULL;
-			pComp->Value(mkParAdapt(mkNamingPtrAdapt(node, "AnimationNode"), &Mesh));
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(node, "AnimationNode"), Mesh));
 			AnimationNodeList::iterator iter = GetStackIterForSlot(node->Slot, true);
 			if(*iter != NULL) { delete node; pComp->excCorrupt("Duplicate animation slot index"); }
 			*iter = node;
@@ -1834,7 +1835,7 @@ void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorF
 		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
 
 		for(AnimationNodeList::iterator iter = AnimationStack.begin(); iter != AnimationStack.end(); ++iter)
-			pComp->Value(mkParAdapt(mkNamingPtrAdapt(*iter, "AnimationNode"), &Mesh));
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(*iter, "AnimationNode"), Mesh));
 
 		int32_t iAttachedCnt = AttachChildren.size();
 		pComp->Value(mkNamingCountAdapt(iAttachedCnt, "Attached"));
