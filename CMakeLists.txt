@@ -10,6 +10,8 @@ set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
+set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
+separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
 ############################################################################
 # User selectable options
@@ -104,6 +106,8 @@ if(MSVC_VERSION GREATER 1499)
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
 		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
 	endif()
+	# do not link the release CRT in debug builds
+	list(APPEND OC_EXE_LINKER_FLAGS_DEBUG "/NODEFAULTLIB:MSVCRT")
 	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
 endif()
 if(MSVC_VERSION)
@@ -1035,6 +1039,13 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
 foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+endforeach()
+if(OC_EXE_LINKER_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
+	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the linker during debug builds." FORCE)
 endforeach()
 
 ############################################################################
