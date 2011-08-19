@@ -363,6 +363,7 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
+#ifndef NDEBUG
 namespace {
 	// Assertion logging hook. This will replace the prologue of the standard assertion
 	// handler with a trampoline to assertion_handler(), which logs the assertion, then
@@ -507,13 +508,16 @@ namespace {
 		HookAssert(&assertion_handler);
 	}
 }
+#endif
 
 void InstallCrashHandler()
 {
 	SetUnhandledExceptionFilter(GenerateDump);
-	
+
+#ifndef NDEBUG
 	// Hook _wassert/_assert
 	HookAssert(&assertion_handler);
+#endif
 }
 
 #else
