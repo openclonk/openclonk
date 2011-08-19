@@ -136,7 +136,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				else
 					wdt = BoundBy<int32_t>(wdt, 10, cgo.Wdt-10);
 			}
-			iTextWdt = wdt;
+			iTextWdt = wdt * cgo.Zoom;
 			iTextHgt = ::GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
 		}
 		else
@@ -158,6 +158,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			// draw decoration
 			if (pFrameDeco)
 			{
+				iDrawX *= cgo.Zoom; iDrawY *= cgo.Zoom;
 				C4Rect rect(iDrawX-cgo.TargetX, iDrawY-cgo.TargetY, iTextWdt + PictureWidth + PictureIndent + pFrameDeco->iBorderLeft + pFrameDeco->iBorderRight, Max(iTextHgt, PictureWidth) + pFrameDeco->iBorderTop + pFrameDeco->iBorderBottom);
 				if (dwFlags & C4GM_Bottom) { rect.y -= rect.Hgt; iDrawY -= rect.Hgt; }
 				else if (dwFlags & C4GM_VCenter) { rect.y -= rect.Hgt/2; iDrawY -= rect.Hgt/2; }
@@ -184,8 +185,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		else
 		{
 			// message without picture
-			iDrawX += cgo.Wdt/2;
-			iDrawY += 2 * cgo.Hgt / 3 + 50;
+			iDrawX += (cgo.Wdt/2) * cgo.Zoom;
+			iDrawY += (2 * cgo.Hgt / 3 + 50) * cgo.Zoom;
 			if (!(dwFlags & C4GM_Bottom)) iDrawY += DrawMessageOffset;
 			lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
 		}

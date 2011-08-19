@@ -116,7 +116,7 @@ private func GuideMessage(int show_index)
 	if (!message)
 		return false;
 	// Message as regular one, don't stop the player.
-	CustomMessage(message, nil, GetOwner(), 0, 16 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
+	CustomMessage(message, nil, GetOwner(), 0, 64 + TutorialGuide->GetDefHeight(), 0xffffff, GUI_MenuDeco, this, MSG_HCenter);
 	var effect = AddEffect("MessageShown", this, 100, 2 * GetLength(message), this);
 	effect.show_index = show_index;
 	// Messages with @ in front are shown infinetely long.
