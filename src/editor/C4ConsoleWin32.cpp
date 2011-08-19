@@ -58,6 +58,8 @@
 #include <commdlg.h>
 #include "resource.h"
 
+#define GetWideLPARAM(c) reinterpret_cast<LPARAM>(static_cast<wchar_t*>(GetWideChar(c)))
+
 inline StdStrBuf::wchar_t_holder LoadResStrW(const char *id) { return GetWideChar(LoadResStr(id)); }
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText);
@@ -492,10 +494,10 @@ INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			{
 			case CBN_SELCHANGE:
 			{
-				char str[100];
+				wchar_t str[100];
 				int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETCURSEL,0,0);
 				SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETLBTEXT,cursel,(LPARAM)str);
-				Console.ToolsDlg.SetMaterial(str);
+				Console.ToolsDlg.SetMaterial(StdStrBuf(str).getData());
 				break;
 			}
 			}
@@ -506,10 +508,10 @@ INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			{
 			case CBN_SELCHANGE:
 			{
-				char str[100];
+				wchar_t str[100];
 				int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETCURSEL,0,0);
 				SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETLBTEXT,cursel,(LPARAM)str);
-				Console.ToolsDlg.SetTexture(str);
+				Console.ToolsDlg.SetTexture(StdStrBuf(str).getData());
 				break;
 			}
 			}
@@ -854,12 +856,12 @@ void C4ConsoleGUI::ToolsDlgClose()
 
 void C4ConsoleGUI::ToolsDlgSetTexture(class C4ToolsDlg *dlg, const char *texture)
 {
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)texture);
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,GetWideLPARAM(texture));
 }
 
 void C4ConsoleGUI::ToolsDlgSetMaterial(class C4ToolsDlg *dlg, const char *material)
 {
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)material);
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,GetWideLPARAM(material));
 }
 
 bool C4ConsoleGUI::PropertyDlgOpen()
@@ -895,9 +897,9 @@ static void SetComboItems(HWND hCombo, std::list<char*> &items)
 	{
 		char *item = *it;
 		if (!item)
-			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------");
+			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)L"----------");
 		else
-			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)*it);
+			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(*it));
 	}
 }
 
@@ -981,10 +983,10 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 {
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)C4TLS_MatSky);
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,GetWideLPARAM(C4TLS_MatSky));
 	for (int32_t cnt=0; cnt< ::MaterialMap.Num; cnt++)
-		SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)::MaterialMap.Map[cnt].Name);
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)dlg->Material);
+		SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,GetWideLPARAM(::MaterialMap.Map[cnt].Name));
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,GetWideLPARAM(dlg->Material));
 }
 
 void C4ToolsDlg::UpdateToolCtrls()
@@ -1005,12 +1007,12 @@ void C4ToolsDlg::UpdateToolCtrls()
 
 void C4ConsoleGUI::ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture)
 {
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)texture);
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,GetWideLPARAM(texture));
 }
 
 void C4ConsoleGUI::ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material)
 {
-	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)material);
+	SendDlgItemMessage(dlg->state->hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,GetWideLPARAM(material));
 }
 
 void C4ToolsDlg::UpdateTextures()
@@ -1025,13 +1027,13 @@ void C4ToolsDlg::UpdateTextures()
 			if (!::TextureMap.GetIndex(Material, szTexture, false))
 			{
 				fAnyEntry = true;
-				SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
+				SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,GetWideLPARAM(szTexture));
 			}
 		}
 	// separator
 	if (fAnyEntry)
 	{
-		SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)"-------");
+		SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)L"-------");
 	}
 
 	// atop: valid textures
@@ -1040,11 +1042,11 @@ void C4ToolsDlg::UpdateTextures()
 		// Current material-texture valid? Always valid for exact mode
 		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
 		{
-			SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
+			SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,GetWideLPARAM(szTexture));
 		}
 	}
 	// reselect current
-	SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)Texture);
+	SendDlgItemMessage(state->hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,GetWideLPARAM(Texture));
 }
 
 void C4ToolsDlg::NeedPreviewUpdate()
