@@ -142,6 +142,7 @@ public:
 	int32_t  BlastFree;
 	C4ID Dig2Object;
 	int32_t  Dig2ObjectRatio;
+	int32_t  Dig2ObjectCollect;
 	C4ID Blast2Object;
 	int32_t  Blast2ObjectRatio;
 	int32_t  Blast2PXSRatio;

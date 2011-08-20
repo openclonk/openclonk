@@ -240,6 +240,7 @@ void C4MaterialCore::Clear()
 	BlastFree = 0;
 	Dig2Object = C4ID::None;
 	Dig2ObjectRatio = 0;
+	Dig2ObjectCollect = 0;
 	Blast2Object = C4ID::None;
 	Blast2ObjectRatio = 0;
 	Blast2PXSRatio = 0;
@@ -313,6 +314,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Blast2Object,"Blast2Object",     C4ID::None                  ));
 	pComp->Value(mkNamingAdapt(Dig2Object,  "Dig2Object",         C4ID::None                  ));
 	pComp->Value(mkNamingAdapt(Dig2ObjectRatio,         "Dig2ObjectRatio",    0                 ));
+	pComp->Value(mkNamingAdapt(Dig2ObjectCollect,       "Dig2ObjectCollect",  0                 ));
 	pComp->Value(mkNamingAdapt(Blast2ObjectRatio,       "Blast2ObjectRatio",  0                 ));
 	pComp->Value(mkNamingAdapt(Blast2PXSRatio,          "Blast2PXSRatio",     0                 ));
 	pComp->Value(mkNamingAdapt(Instable,                "Instable",           0                 ));

@@ -421,7 +421,7 @@ void C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
 			if(by_object->MaterialContents)
 			{
 				int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetBottom();
-				DigMaterial2Objects(tx,ty,by_object->MaterialContents);
+				DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
 			}
 	}
 }
@@ -487,7 +487,7 @@ void C4Landscape::BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *
 	}
 }
 
-void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list)
+void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect)
 {
 	for (int32_t mat=0; mat< ::MaterialMap.Num; mat++)
 	{
@@ -495,11 +495,19 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 		{
 			if (::MaterialMap.Map[mat].Dig2Object != C4ID::None)
 				if (::MaterialMap.Map[mat].Dig2ObjectRatio != 0)
-					if (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
+					while (mat_list->Amount[mat] >= ::MaterialMap.Map[mat].Dig2ObjectRatio)
 					{
-						int32_t amount = mat_list->Amount[mat]/::MaterialMap.Map[mat].Dig2ObjectRatio;
-						Game.CastObjects(::MaterialMap.Map[mat].Dig2Object, NULL, amount, 0, tx, ty);
-						mat_list->Amount[mat] -= amount*::MaterialMap.Map[mat].Dig2ObjectRatio;;
+						C4Object *pObj = Game.CreateObject(::MaterialMap.Map[mat].Dig2Object, NULL, NO_OWNER, tx, ty);
+						// Try to collect object
+						if(::MaterialMap.Map[mat].Dig2ObjectCollect && pCollect && pObj)
+							if(!pCollect->Collect(pObj))
+								// Collection forced? Don't generate objects
+								if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
+								{
+									pObj->AssignRemoval();
+									return;
+								}
+						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 					}
 		}
 	}

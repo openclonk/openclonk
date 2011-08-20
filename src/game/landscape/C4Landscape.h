@@ -257,7 +257,7 @@ private:
 	std::vector<int32_t> GetRectangle(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt) const;
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
-	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list);
+	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str);
 
 	bool DigFreePix(int32_t tx, int32_t ty);
