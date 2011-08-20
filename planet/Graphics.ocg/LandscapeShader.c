@@ -37,7 +37,7 @@ float queryMatMap(int pix)
 {
 #ifdef BROKEN_ARRAYS_WORKAROUND
 	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
-	return (float(idx) + 0.5) / float(materialDepth);
+	return float(idx) / 256.0 + 0.5 / float(materialDepth);
 #else
 	return matMap[pix];
 #endif

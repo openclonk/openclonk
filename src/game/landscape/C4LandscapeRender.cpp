@@ -16,11 +16,11 @@
 // Automatically reload shaders when changed at runtime?
 #define AUTO_RELOAD_SHADERS
 
+#ifdef _DEBUG
+
 // Generate seperator textures into 3D texture so we can make sure that
 // we are addressing textures using the right coordinates
 #define DEBUG_SEPERATOR_TEXTURES
-
-#ifdef _DEBUG
 
 // Replace all textures by solid colors
 //#define DEBUG_SOLID_COLOR_TEXTURES
@@ -39,6 +39,9 @@ const char *C4LR_ShaderWorkarounds[] = {
 	"#define SCALER_IN_GPU\n",
 };
 const int C4LR_ShaderWorkaroundCount = sizeof(C4LR_ShaderWorkarounds) / sizeof(*C4LR_ShaderWorkarounds);
+
+// Name used for the seperator texture
+const char *const SEPERATOR_TEXTURE = "--SEP--";
 
 // Map of uniforms to names in shader
 static const char *GetUniformName(int iUniform)
@@ -59,8 +62,7 @@ static const char *GetUniformName(int iUniform)
 
 C4LandscapeRenderGL::C4LandscapeRenderGL()
 	: iLandscapeShaderTime(0),
-	hVert(0), hFrag(0), hProg(0),
-	iTexCount(0)
+	hVert(0), hFrag(0), hProg(0)
 {
 	ZeroMem(Surfaces, sizeof(Surfaces));
 	ZeroMem(hMaterialTexture, sizeof(hMaterialTexture));
@@ -91,11 +93,6 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	this->iWidth = iWidth;
 	this->iHeight = iHeight;
 	this->pTexs = pTexs;
-
-	// Count the textures
-	iTexCount = 0;
-	while(pTexs->GetTexture(iTexCount))
-		iTexCount++;
 
 	// Build texture, er, texture
 	if (!InitMaterialTexture(pTexs))
@@ -145,16 +142,14 @@ void C4LandscapeRenderGL::Clear()
 
 bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 {
-#ifdef DEBUG_SEPERATOR_TEXTURES
-	int iTexCountP = 2 * iTexCount;
-#else
-	int iTexCountP = iTexCount;
-#endif
 
-	// Determine depth to use. Might have more complicated
-	// mappings in future.
+	// Populate our map with all needed textures
+	MaterialTextureMap.push_back(StdCopyStrBuf(""));
+	AddTexturesFromMap(pTexs);
+
+	// Determine depth to use
 	iMaterialTextureDepth = 1;
-	while(iMaterialTextureDepth < iTexCountP + 1)
+	while(iMaterialTextureDepth < int32_t(MaterialTextureMap.size()))
 		iMaterialTextureDepth <<= 1;
 
 	// Find first (actual) texture
@@ -189,48 +184,53 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	for(int i = 0; i < iMaterialTextureDepth; i++)
 	{
 		BYTE *p = pData + i * iTexSize;
-#ifdef DEBUG_SEPERATOR_TEXTURES
-		if (i % 2)
+		// Get texture at position
+		const char *szTexture;
+		if(i < int32_t(MaterialTextureMap.size()))
+			szTexture = MaterialTextureMap[i].getData();
+		else
+			szTexture = "";
+		// Try to find the texture
+		C4Texture *pTex; CSurface *pSurface;
+		if((pTex = pTexs->GetTexture(szTexture)) && (pSurface = pTex->Surface32))
 		{
-			// Make every second texture ugly stripes
+#ifdef DEBUG_SOLID_COLOR_TEXTURES
+			// Just write a solid color that depends on the texture index
+			DWORD *texdata = reinterpret_cast<DWORD *>(p);
+			for (int y = 0; y < iTexHgt; ++y)
+				for (int x = 0; x < iTexWdt; ++x)
+					*texdata++ = RGBA((iTex & 48), (iTex & 3) * 16, (i & 12) * 4, 255);
+			continue;
+#else
+			if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
+				Log("   gl: Halp! Material texture is fragmented!");
+			else
+			{
+				// Size recheck
+				if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
+					LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", szTexture, pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+				// Copy bytes
+				DWORD *texdata = reinterpret_cast<DWORD *>(p);
+				pSurface->Lock();
+				for (int y = 0; y < iTexHgt; ++y)
+					for (int x = 0; x < iTexWdt; ++x)
+						*texdata++ = pSurface->GetPixDw(x % pSurface->Wdt, y % pSurface->Hgt, false);
+				pSurface->Unlock();
+				continue;
+			}
+#endif
+		}
+		// Seperator texture?
+		if(SEqual(szTexture, SEPERATOR_TEXTURE))
+		{
+			// Make some ugly stripes
 			DWORD *texdata = reinterpret_cast<DWORD *>(p);
 			for (int y = 0; y < iTexHgt; ++y)
 				for (int x = 0; x < iTexWdt; ++x)
 					*texdata++ = ((x + y) % 32 < 16 ? RGBA(255, 0, 0, 255) : RGBA(0, 255, 255, 255));
 			continue;
 		}
-		int iTex = i / 2;
-#else
-		int iTex = i;
-#endif
-#ifdef DEBUG_SOLID_COLOR_TEXTURES
-		DWORD *texdata = reinterpret_cast<DWORD *>(p);
-		for (int y = 0; y < iTexHgt; ++y)
-			for (int x = 0; x < iTexWdt; ++x)
-				*texdata++ = RGBA((iTex & 48), (iTex & 3) * 16, (i & 12) * 4, 255);
-		continue;
-#endif
-		C4Texture *pTex; CSurface *pSurface;
-		if(!(pTex = pTexs->GetTexture(pTexs->GetTexture(iTex))))
-			{}
-		else if(!(pSurface = pTex->Surface32))
-			{}
-		else if(pSurface->iTexX != 1 || pSurface->iTexY != 1)
-			Log("   gl: Halp! Material texture is fragmented!");
-		else
-		{
-			// Size recheck
-			if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-				LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", pTexs->GetTexture(iTex), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
-			// Copy bytes
-			DWORD *texdata = reinterpret_cast<DWORD *>(p);
-			pSurface->Lock();
-			for (int y = 0; y < iTexHgt; ++y)
-				for (int x = 0; x < iTexWdt; ++x)
-					*texdata++ = pSurface->GetPixDw(x % pSurface->Wdt, y % pSurface->Hgt, false);
-			pSurface->Unlock();
-			continue;
-		}
+		// If we didn't "continue" yet, we haven't written the texture yet. Make it transparent.
 		memset(p, 0, iTexSize);
 	}
 
@@ -731,6 +731,97 @@ void C4LandscapeRenderGL::RefreshShaders()
 	}
 }
 
+int32_t C4LandscapeRenderGL::LookupTextureTransition(const char *szFrom, const char *szTo)
+{
+	// Is this actually a transition? Otherwise we're looking for a single texture
+	bool fTransit = !SEqual(szFrom, szTo);
+	// Look for a position in the map where the textures appear in sequence
+	uint32_t i;
+	for(i = 1; i < MaterialTextureMap.size(); i++)
+	{
+		if(SEqual(szFrom, MaterialTextureMap[i].getData()))
+		{
+			// Single texture: We're done
+			if(!fTransit) return i;
+			// Check next texture as well
+			if(i + 1 >= MaterialTextureMap.size())
+				return -1;
+			if(SEqual(szTo, MaterialTextureMap[i+1].getData()))
+				return i;
+		}
+	}
+	return -1;
+}
+
+void C4LandscapeRenderGL::AddTextureTransition(const char *szFrom, const char *szTo)
+{
+	// Empty?
+	if (!szFrom || !szTo) return;
+	// First try the lookup (both directions)
+	if (LookupTextureTransition(szFrom, szTo) >= 0) return;
+	if (LookupTextureTransition(szTo, szFrom) >= 0) return;
+	// Single texture? Add it as single
+	if (SEqual(szTo, szFrom))
+		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
+	// Have one of the textures at the end of the list?
+	else if(SEqual(MaterialTextureMap.back().getData(), szFrom))
+		MaterialTextureMap.push_back(StdCopyStrBuf(szTo));
+	else if(SEqual(MaterialTextureMap.back().getData(), szTo))
+		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
+	else
+	{
+		// Otherwise add both
+		MaterialTextureMap.push_back(StdCopyStrBuf(szFrom));
+		MaterialTextureMap.push_back(StdCopyStrBuf(szTo));
+	}
+}
+
+void C4LandscapeRenderGL::AddTextureAnim(const char *szTextureAnim)
+{
+	if(!szTextureAnim) return;
+#ifdef DEBUG_SEPERATOR_TEXTURES
+	// Save back count of textures at start
+	uint32_t iStartTexCount = MaterialTextureMap.size();
+#endif
+	// Add all individual transitions
+	const char *pFrom = szTextureAnim;
+	for(;;)
+	{
+		// Get next phase
+		const char *pTo = strchr(pFrom, '-');
+		if(!pTo) pTo = szTextureAnim; else pTo++;
+		// Add transition
+		StdStrBuf From, To;
+		From.CopyUntil(pFrom, '-');
+		To.CopyUntil(pTo, '-');
+		AddTextureTransition(From.getData(), To.getData());
+		// Advance
+		if(pTo == szTextureAnim) break;
+		pFrom = pTo;
+	}
+#ifdef DEBUG_SEPERATOR_TEXTURES
+	// Add a seperator texture, if we added any new ones
+	if(MaterialTextureMap.size() > iStartTexCount)
+		MaterialTextureMap.push_back(StdCopyStrBuf(SEPERATOR_TEXTURE));
+#endif
+}
+
+void C4LandscapeRenderGL::AddTexturesFromMap(C4TextureMap *pMap)
+{
+	// Go through used texture (animations) and add all phases to our map
+
+	// Note: We can be smarter here, for example add longer animations
+	//       first in order to make better reuse of 3D texture slots.
+	//       We could even make a full-blown optimization problem out of it.
+	//       Future work...
+
+	const C4TexMapEntry *pEntry;
+	for(int32_t i = 0; pEntry = pMap->GetEntry(i); i++)
+		// ToDo: Properly handle jumping back
+		AddTextureAnim(pEntry->GetTextureName());
+
+}
+
 void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 {
 	// TODO: Still merely an inefficient placeholder for things to come...
@@ -742,19 +833,48 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		const C4TexMapEntry *pEntry = pTexs->GetEntry(PixCol2Tex(BYTE(pix)));
 		if(!pEntry->GetTextureName())
 		{
-			// Textures over iTexCount are transparent
-			if(pFMap) pFMap[pix] = (float(iMaterialTextureDepth) - 1.5) / iMaterialTextureDepth;
-			if(pIMap) pIMap[pix] = iMaterialTextureDepth - 2;
+			// Undefined textures transparent
+			if(pFMap) pFMap[pix] = 0.5 / iMaterialTextureDepth;
+			if(pIMap) pIMap[pix] = 0;
 			continue;
 		}
+
+		// Got animation?
+		int iPhases = 1; const char *p = pEntry->GetTextureName();
+		if(p = strchr(p, '-')) { p++; iPhases++; }
+		// Hard-coded hack. Fix me!
+		const int iPhaseLength = 1000;
+		float phase = (iPhases == 1 ? 0 : float(GetTime() % (iPhases * iPhaseLength)) / iPhaseLength);
+
+		// Find our transition
+		const char *pFrom = pEntry->GetTextureName();
+		float gTexCoo = 0;
+		for(int iP = 0;; iP++)
+		{
+			// Get next phase
+			const char *pTo = strchr(pFrom, '-');
+			if(!pTo) pTo = pEntry->GetTextureName(); else pTo++;
+			// Add transition
+			if(iP == int(phase))
+			{
+				StdStrBuf From, To;
+				From.CopyUntil(pFrom, '-');
+				To.CopyUntil(pTo, '-');
+				// Find transition
+				int iTrans;
+				if ((iTrans = LookupTextureTransition(From.getData(), To.getData())) >= 0)
+					gTexCoo = float(iTrans) + fmod(phase, 1.0f);
+				else if ((iTrans = LookupTextureTransition(To.getData(), From.getData())) >= 0)
+					gTexCoo = float(iTrans) + 1.0 - fmod(phase, 1.0f);
+				break;
+			}
+			// Advance
+			pFrom = pTo;
+		}
+
 		// Assign texture
-		int32_t iTexIndex = pTexs->GetTextureIndex(pEntry->GetTextureName());
-		if(iTexIndex < 0) iTexIndex = 0;
-#ifdef DEBUG_SEPERATOR_TEXTURES
-		iTexIndex *= 2;
-#endif
-		if(pFMap) pFMap[pix] = (float(iTexIndex) + 0.5) / iMaterialTextureDepth;
-		if(pIMap) pIMap[pix] = iTexIndex;
+		if(pFMap) pFMap[pix] = (gTexCoo + 0.5) / iMaterialTextureDepth;
+		if(pIMap) pIMap[pix] = int((gTexCoo * 256.0 / iMaterialTextureDepth) + 0.5);
 	}
 }
 

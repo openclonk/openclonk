@@ -90,15 +90,16 @@ private:
 	// shader variables
 	GLhandleARB hUniforms[C4LRU_Count];
 
-	// Texture count
-	int32_t iTexCount;
 	// 3D texture of material textures
 	GLuint hMaterialTexture[C4LR_MipMapCount];
+	// material texture positions in 3D texture
+	std::vector<StdCopyStrBuf> MaterialTextureMap;
 	// depth of material texture in layers
 	int32_t iMaterialTextureDepth;
 
 	// scaler image
 	C4FacetSurface fctScaler;
+
 
 public:
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);
@@ -123,6 +124,10 @@ private:
 	bool InitShaders();
 	void ClearShaders();
 
+	int32_t LookupTextureTransition(const char *szFrom, const char *szTo);
+	void AddTextureTransition(const char *szFrom, const char *szTo);
+	void AddTextureAnim(const char *szTextureAnim);
+	void AddTexturesFromMap(C4TextureMap *pMap);
 	void BuildMatMap(GLfloat *pFMap, GLubyte *pIMap);
 };
 #endif
