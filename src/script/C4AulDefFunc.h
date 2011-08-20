@@ -141,7 +141,7 @@ struct C4ValueConv<Nillable<T> >
 template<>
 struct C4ValueConv<Nillable<void> >
 {
-	inline static C4V_Type Type() { return C4VNull.GetType(); }
+	inline static C4V_Type Type() { return C4V_Nil; }
 	inline static C4Value ToC4V(const Nillable<void> &) { return C4Value(); }
 };
 template <> struct C4ValueConv<int32_t>

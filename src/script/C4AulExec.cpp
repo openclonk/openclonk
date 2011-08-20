@@ -229,7 +229,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_PROP:
-				if (!pCurVal->ConvertToNoNil(C4V_PropList))
+				if (!pCurVal->CheckConversion(C4V_PropList))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
 				if (!pCurVal->_getPropList()->GetPropertyByS(pCPos->Par.s, pCurVal))
 					pCurVal->Set0();
@@ -237,7 +237,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_PROP_SET:
 			{
 				C4Value *pPropList = pCurVal - 1;
-				if (!pPropList->ConvertToNoNil(C4V_PropList))
+				if (!pPropList->CheckConversion(C4V_PropList))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
 				if (pPropList->_getPropList()->IsFrozen())
 					throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");
@@ -490,11 +490,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value &EndIndex = pCurVal[0];
 
 				// Typcheck
-				if (!Array.ConvertToNoNil(C4V_Array))
+				if (!Array.CheckConversion(C4V_Array))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
-				if (!StartIndex.ConvertTo(C4V_Int))
+				if (!StartIndex.CheckConversion(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
-				if (!EndIndex.ConvertTo(C4V_Int))
+				if (!EndIndex.CheckConversion(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
 
 				Array.SetArray(Array.GetData().Array->GetSlice(StartIndex._getInt(), EndIndex._getInt()));
@@ -512,11 +512,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value &Value = pCurVal[0];
 
 				// Typcheck
-				if (!Array.ConvertToNoNil(C4V_Array))
+				if (!Array.CheckConversion(C4V_Array))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
-				if (!StartIndex.ConvertTo(C4V_Int))
+				if (!StartIndex.CheckConversion(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
-				if (!EndIndex.ConvertTo(C4V_Int))
+				if (!EndIndex.CheckConversion(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
 
 				C4ValueArray *pArray = Array._getArray();
@@ -645,7 +645,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 
 			case AB_PAR:
-				if (!pCurVal->ConvertTo(C4V_Int))
+				if (!pCurVal->CheckConversion(C4V_Int))
 					throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected", pCurVal->GetTypeName()).getData());
 				// Push reference to parameter on the stack
 				if (pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->Func->GetParCount())
@@ -657,12 +657,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			case AB_FOREACH_NEXT:
 			{
 				// This should always hold
-				assert(pCurVal->ConvertTo(C4V_Int));
+				assert(pCurVal->CheckConversion(C4V_Int));
 				int iItem = pCurVal->_getInt();
 				// Check array the first time only
 				if (!iItem)
 				{
-					if (!pCurVal[-1].ConvertToNoNil(C4V_Array))
+					if (!pCurVal[-1].CheckConversion(C4V_Array))
 						throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got %s", pCurVal[-1].GetTypeName()).getData());
 				}
 				C4ValueArray *pArray = pCurVal[-1]._getArray();
@@ -692,13 +692,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Get call target - "object" or "id" are allowed
 				C4Object *pDestObj; C4Def *pDestDef;
-				if (pTargetVal->ConvertToNoNil(C4V_C4Object))
+				if (pTargetVal->CheckConversion(C4V_C4Object))
 				{
 					// object call
 					pDestObj = pTargetVal->_getObj();
 					pDestDef = pDestObj->Def;
 				}
-				else if (pTargetVal->ConvertToNoNil(C4V_PropList))
+				else if (pTargetVal->CheckConversion(C4V_PropList))
 				{
 					// definition call
 					pDestObj = NULL;
@@ -814,7 +814,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	// Convert parameters (typecheck)
 	C4V_Type *pTypes = pFunc->GetParType();
 	for (int i = 0; i < pFunc->GetParCount(); i++)
-		if (!pPars[i].ConvertTo(pTypes[i]))
+		if (!pPars[i].CheckParConversion(pTypes[i]))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
 			                                      pFunc->Name, i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])

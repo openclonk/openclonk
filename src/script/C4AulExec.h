@@ -167,11 +167,11 @@ private:
 		C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 
 		// Typecheck parameters
-		if (!pPar1->ConvertTo(Type1))
+		if (!pPar1->CheckParConversion(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" left side got %s, but expected %s",
 			                                      opname, pPar1->GetTypeInfo(), GetC4VName(Type1)).getData());
-		if (!pPar2->ConvertTo(Type2))
+		if (!pPar2->CheckParConversion(Type2))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" right side got %s, but expected %s",
 			                                      opname, pPar2->GetTypeInfo(), GetC4VName(Type2)).getData());
@@ -179,7 +179,7 @@ private:
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
-		if (!pCurVal->ConvertTo(Type1))
+		if (!pCurVal->CheckParConversion(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\": got %s, but expected %s",
 			                                      opname, pCurVal->GetTypeInfo(), GetC4VName(Type1)).getData());
@@ -187,15 +187,15 @@ private:
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)
 	{
-		if (pStructure->ConvertToNoNil(C4V_Array))
+		if (pStructure->CheckConversion(C4V_Array))
 		{
-			if (!pIndex->ConvertTo(C4V_Int))
+			if (!pIndex->CheckConversion(C4V_Int))
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
-		else if (pStructure->ConvertToNoNil(C4V_PropList))
+		else if (pStructure->CheckConversion(C4V_PropList))
 		{
-			if (!pIndex->ConvertToNoNil(C4V_String))
+			if (!pIndex->CheckConversion(C4V_String))
 				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
 			return C4V_PropList;
 		}

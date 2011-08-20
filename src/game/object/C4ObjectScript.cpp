@@ -468,7 +468,7 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Set
 	cthr->Obj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,false,Data,iRetries,szText);
 	// Success
@@ -491,7 +491,7 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,false,iRetries,szText,iBaseMode));
 }
@@ -512,7 +512,7 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,true,iRetries,szText,iBaseMode));
 }

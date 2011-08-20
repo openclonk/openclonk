@@ -88,13 +88,13 @@ public:
 	~C4Value() { DelDataRef(Data, Type, NextRef); }
 
 	// Checked getters
-	int32_t getInt() const { return ConvertTo(C4V_Int) ? Data.Int : 0; }
-	bool getBool() const { return ConvertTo(C4V_Bool) ? !! Data : 0; }
+	int32_t getInt() const { return CheckConversion(C4V_Int) ? Data.Int : 0; }
+	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : 0; }
 	C4ID getC4ID() const;
-	C4Object * getObj() const { return ConvertToNoNil(C4V_C4Object) ? Data.Obj : NULL; }
-	C4PropList * getPropList() const { return ConvertToNoNil(C4V_PropList) ? Data.PropList : NULL; }
-	C4String * getStr() const { return ConvertToNoNil(C4V_String) ? Data.Str : NULL; }
-	C4ValueArray * getArray() const { return ConvertToNoNil(C4V_Array) ? Data.Array : NULL; }
+	C4Object * getObj() const { return CheckConversion(C4V_C4Object) ? Data.Obj : NULL; }
+	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : NULL; }
+	C4String * getStr() const { return CheckConversion(C4V_String) ? Data.Str : NULL; }
+	C4ValueArray * getArray() const { return CheckConversion(C4V_Array) ? Data.Array : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -147,7 +147,7 @@ public:
 
 	StdStrBuf GetDataString(int depth = 1) const;
 
-	ALWAYS_INLINE bool ConvertTo(C4V_Type vtToType) const // convert to dest type
+	ALWAYS_INLINE bool CheckParConversion(C4V_Type vtToType) const // convert to dest type
 	{
 		switch (vtToType)
 		{
@@ -159,22 +159,22 @@ public:
 		case C4V_String:   return Type == C4V_String || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Array:    return Type == C4V_Array || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Any:      return true;
-		default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
+		default: assert(!"C4Value::CheckParConversion: impossible conversion target"); return false;
 		}
 	}
-	ALWAYS_INLINE bool ConvertToNoNil(C4V_Type vtToType) const // convert to dest type
+	ALWAYS_INLINE bool CheckConversion(C4V_Type vtToType) const // convert to dest type
 	{
 		switch (vtToType)
 		{
-		case C4V_Nil:      return Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_Int:      return Type == C4V_Int || Type == C4V_Bool;
-		case C4V_Bool:     return Type != C4V_Nil;
+		case C4V_Nil:      return Type == C4V_Nil;
+		case C4V_Int:      return Type == C4V_Nil || Type == C4V_Int || Type == C4V_Bool;
+		case C4V_Bool:     return true;
 		case C4V_PropList: return Type == C4V_PropList || Type == C4V_C4Object;
 		case C4V_C4Object: return Type == C4V_C4Object || (Type == C4V_PropList && FnCnvObject());
 		case C4V_String:   return Type == C4V_String;
 		case C4V_Array:    return Type == C4V_Array;
-		case C4V_Any:      return Type != C4V_Nil;
-		default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
+		case C4V_Any:      return true;
+		default: assert(!"C4Value::CheckConversion: impossible conversion target"); return false;
 		}
 	}
 	static bool WarnAboutConversion(C4V_Type Type, C4V_Type vtToType);
