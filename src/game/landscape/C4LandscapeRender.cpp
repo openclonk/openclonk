@@ -841,9 +841,9 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 
 		// Got animation?
 		int iPhases = 1; const char *p = pEntry->GetTextureName();
-		if(p = strchr(p, '-')) { p++; iPhases++; }
+		while(p = strchr(p, '-')) { p++; iPhases++; }
 		// Hard-coded hack. Fix me!
-		const int iPhaseLength = 1000;
+		const int iPhaseLength = 300;
 		float phase = (iPhases == 1 ? 0 : float(GetTime() % (iPhases * iPhaseLength)) / iPhaseLength);
 
 		// Find our transition

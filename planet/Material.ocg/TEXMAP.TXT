@@ -5,7 +5,7 @@
 12=Tunnel-brickback
 13=BrickSoft-brick1
 19=DuroLava-lava_red
-20=Water-water
+20=Water-water1-water2-water3
 #21=Oil-Liquid
 22=Acid-acid
 23=Lava-lava_red
