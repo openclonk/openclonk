@@ -170,11 +170,11 @@ private:
 		if (!pPar1->CheckParConversion(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" left side got %s, but expected %s",
-			                                      opname, pPar1->GetTypeInfo(), GetC4VName(Type1)).getData());
+			                                      opname, pPar1->GetTypeName(), GetC4VName(Type1)).getData());
 		if (!pPar2->CheckParConversion(Type2))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\" right side got %s, but expected %s",
-			                                      opname, pPar2->GetTypeInfo(), GetC4VName(Type2)).getData());
+			                                      opname, pPar2->GetTypeName(), GetC4VName(Type2)).getData());
 	}
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
@@ -182,7 +182,7 @@ private:
 		if (!pCurVal->CheckParConversion(Type1))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("operator \"%s\": got %s, but expected %s",
-			                                      opname, pCurVal->GetTypeInfo(), GetC4VName(Type1)).getData());
+			                                      opname, pCurVal->GetTypeName(), GetC4VName(Type1)).getData());
 	}
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)

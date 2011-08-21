@@ -141,7 +141,6 @@ public:
 	C4V_Type GetType()    const { return Type; }
 
 	const char *GetTypeName() const { return GetC4VName(GetType()); }
-	const char *GetTypeInfo();
 
 	void Denumerate(C4ValueNumbers *);
 

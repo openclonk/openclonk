@@ -59,11 +59,6 @@ const char* GetC4VName(const C4V_Type Type)
 	}
 }
 
-const char* C4Value::GetTypeInfo()
-{
-	return GetC4VName(GetType());
-}
-
 bool C4Value::FnCnvObject() const
 {
 	// try casting
