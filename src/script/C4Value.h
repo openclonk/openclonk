@@ -107,7 +107,7 @@ public:
 	// Template versions
 
 	bool operator ! () const { return !GetData(); }
-	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions
+	inline operator const void* () const { return GetData() ? this : 0; }  // To allow use of C4Value in conditions
 
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
@@ -122,7 +122,7 @@ public:
 	bool operator == (const C4Value& Value2) const;
 	bool operator != (const C4Value& Value2) const;
 
-	// Change and set Type to int in case it was any before (avoids GuessType())
+	// Change and set Type to int in case it was nil or bool before
 	C4Value & operator += (int32_t by) { Data.Int += by; Type=C4V_Int; return *this; }
 	C4Value & operator -= (int32_t by) { Data.Int -= by; Type=C4V_Int; return *this; }
 	C4Value & operator *= (int32_t by) { Data.Int *= by; Type=C4V_Int; return *this; }
