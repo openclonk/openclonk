@@ -265,6 +265,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	glGenTextures(iMMLevels, hMaterialTexture);
 	
 	// Generate textures (mipmaps too!)
+	int iFullWdt = iTexWdt, iFullHgt = iTexHgt;
+	int iSizeSum = 0;
 	BYTE *pLastData = new BYTE [iSize / 4];
 	for(int iMMLevel = 0; iMMLevel < C4LR_MipMapCount; iMMLevel++)
 	{
@@ -315,6 +317,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		pLastData = pData;
 		pData = tmp;
 
+		// Statistics
+		iSizeSum += iTexWdt * iTexHgt * iMaterialTextureDepth * iBytesPP;
 	}
 	
 	// Dispose of data
@@ -328,6 +332,14 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		LogF("   gl: Could not load textures (error %d)", err);
 		return false;
 	}
+
+	// Announce the good news
+	LogF(" gl: Texturing uses %d slots at %dx%d, %d levels (%d MB total)",
+		MaterialTextureMap.size(),
+		iFullWdt, iFullHgt,
+		C4LR_MipMapCount,
+		iSizeSum / 1000000);
+
 	return true;
 }
 
@@ -491,7 +503,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 
 }
 
-void C4LandscapeRenderGL::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
+void C4LandscapeRenderGL::DumpInfoLog(const char *szWhat, GLhandleARB hShader, int32_t iWorkaround)
 {
 	// Get length of info line
 	int iLength = 0;
@@ -506,7 +518,8 @@ void C4LandscapeRenderGL::DumpInfoLog(const char *szWhat, GLhandleARB hShader)
 	
 	// Terminate, log
 	pBuf[iActualLength + 1] = '\0';
-	Log(pBuf);
+	LogSilentF("  gl: Compiling %s %d:", szWhat, iWorkaround);
+	LogSilent(pBuf);
 	delete[] pBuf;
 }
 
@@ -517,18 +530,26 @@ int C4LandscapeRenderGL::GetObjectStatus(GLhandleARB hObj, GLenum type)
 	return iStatus;
 }
 
-GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, const char *szWorkaround)
+GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, int32_t iWorkaround)
 {
 	// Create shader
 	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
 
 	// Build code
-	const char *szCodes[2] = { szWorkaround, szCode };
-	glShaderSourceARB(hShader, 2, szCodes, 0);
+	const char *szCodes[C4LR_ShaderWorkaroundCount + 1];
+	for(int i = 0; i < C4LR_ShaderWorkaroundCount; i++)
+		if(iWorkaround & (1 >> i))
+			szCodes[i] = C4LR_ShaderWorkarounds[i];
+		else
+			szCodes[i] = "";
+	szCodes[C4LR_ShaderWorkaroundCount] = szCode;
+
+	// Compile
+	glShaderSourceARB(hShader, C4LR_ShaderWorkaroundCount + 1, szCodes, 0);
 	glCompileShaderARB(hShader);
 
 	// Dump any information to log
-	DumpInfoLog(szWhat, hShader);
+	DumpInfoLog(szWhat, hShader, iWorkaround);
 
 	// Success?
 	if(GetObjectStatus(hShader, GL_OBJECT_COMPILE_STATUS_ARB) == 1)
@@ -553,13 +574,13 @@ bool C4LandscapeRenderGL::InitShaders()
 	}
 
 	// Try all workarounds until one works
-	for(int iWorkaround = 0; iWorkaround < C4LR_ShaderWorkaroundCount; iWorkaround++)
+	int iWorkaround;
+	for(iWorkaround = 0; iWorkaround < (1 << C4LR_ShaderWorkaroundCount); iWorkaround++)
 	{
 		// Create trivial fragment shader
 		const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
-		const char *szWorkaround = C4LR_ShaderWorkarounds[iWorkaround];
-		hVert = CreateShader(GL_VERTEX_SHADER_ARB, "Vertex shader", szVert, szWorkaround);
-		hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "Fragment shader", LandscapeShader.getData(), szWorkaround);
+		hVert = CreateShader(GL_VERTEX_SHADER_ARB, "vertex shader", szVert, iWorkaround);
+		hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "fragment shader", LandscapeShader.getData(), iWorkaround);
 		if(!hFrag || !hVert)
 			continue;
 
@@ -570,7 +591,7 @@ bool C4LandscapeRenderGL::InitShaders()
 		glLinkProgramARB(hProg);
 
 		// Link successful?
-		DumpInfoLog("Shader program", hProg);
+		DumpInfoLog("shader program", hProg, iWorkaround);
 		if(GetObjectStatus(hProg, GL_OBJECT_LINK_STATUS_ARB) == 1)
 			break;
 
@@ -584,7 +605,12 @@ bool C4LandscapeRenderGL::InitShaders()
 	}
 	
 	// Did not get it to work?
-	if(!hProg) return false;
+	if(!hProg)
+	{
+		Log("  gl: Failed to link shader!");
+		return false;
+	}
+	LogF("  gl: Shader %d linked successfully", iWorkaround);
 
 	// Get uniform locations. Note this is expected to fail for a few of them
 	// because the respective uniforms got optimized out!
@@ -594,7 +620,7 @@ bool C4LandscapeRenderGL::InitShaders()
 	// Success?
 	if(int err = glGetError())
 	{
-		LogF("  gl: error code %d", err);
+		LogF("  gl: Error code %d while linking shader!", err);
 		return false;
 	}
 	return true;

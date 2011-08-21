@@ -118,9 +118,9 @@ private:
 	bool LoadShaders(C4GroupSet *pGraphics);
 	bool LoadScaler(C4GroupSet *pGraphics);
 
-	void DumpInfoLog(const char *szWhat, GLhandleARB hShader);
+	void DumpInfoLog(const char *szWhat, GLhandleARB hShader, int32_t iWorkaround);
 	int GetObjectStatus(GLhandleARB hObj, GLenum type);
-	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, const char *szWorkaround);
+	GLhandleARB CreateShader(GLenum iShaderType, const char *szWhat, const char *szCode, int32_t iWorkaround);
 
 	bool InitShaders();
 	void ClearShaders();
