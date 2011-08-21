@@ -113,6 +113,7 @@ public:
 	void RefreshShaders();
 
 private:
+	bool InitLandscapeTexture();
 	bool InitMaterialTexture(C4TextureMap *pMap);
 	bool LoadShaders(C4GroupSet *pGraphics);
 	bool LoadScaler(C4GroupSet *pGraphics);

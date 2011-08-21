@@ -78,21 +78,17 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 {
 	Clear();
 
-	// Create our surfaces
-	for(int i = 0; i < C4LR_SurfaceCount; i++)
-	{
-		Surfaces[i] = new CSurface();
-		if(!Surfaces[i]->Create(iWidth, iHeight))
-		{
-			Clear();
-			return false;
-		}
-	}
-
 	// Safe info
 	this->iWidth = iWidth;
 	this->iHeight = iHeight;
 	this->pTexs = pTexs;
+
+	// Allocate landscape textures
+	if (!InitLandscapeTexture())
+	{
+		LogFatal("[!] Could not initialize landscape texture!");
+		return false;
+	}
 
 	// Build texture, er, texture
 	if (!InitMaterialTexture(pTexs))
@@ -138,6 +134,29 @@ void C4LandscapeRenderGL::Clear()
 	LandscapeShader.Clear();
 	LandscapeShaderPath.Clear();
 	iLandscapeShaderTime = 0;
+}
+
+bool C4LandscapeRenderGL::InitLandscapeTexture()
+{
+
+	// Round up to nearest power of two
+	int iSfcWdt = 1, iSfcHgt = 1;
+	while(iSfcWdt < iWidth) iSfcWdt *= 2;
+	while(iSfcHgt < iHeight) iSfcHgt *= 2;
+
+	// One bit more of information to safe more space
+	if(iSfcWdt * 3 / 4 >= iWidth) iSfcWdt = iSfcWdt * 3 / 4;
+	if(iSfcHgt * 3 / 4 >= iHeight) iSfcHgt = iSfcHgt * 3 / 4;
+
+	// Create our surfaces
+	for(int i = 0; i < C4LR_SurfaceCount; i++)
+	{
+		Surfaces[i] = new CSurface();
+		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt))
+			return false;
+	}
+
+	return true;
 }
 
 bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
@@ -899,7 +918,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 
 	// Bind data
 	if (hUniforms[C4LRU_Resolution] != GLhandleARB(-1))
-		glUniform2fARB(hUniforms[C4LRU_Resolution], iWidth, iHeight);
+		glUniform2fARB(hUniforms[C4LRU_Resolution], Surfaces[0]->Wdt, Surfaces[0]->Hgt);
 	if (hUniforms[C4LRU_MatMap] != GLhandleARB(-1))
 	{
 		GLfloat MatMap[256];
@@ -1000,8 +1019,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	Vtx[3].tx = fTexBlt.left;  Vtx[3].ty = fTexBlt.bottom;
 	for (int i=0; i<4; ++i)
 	{
-		Vtx[i].tx /= float(iWidth);
-		Vtx[i].ty /= float(iHeight);
+		Vtx[i].tx /= float(Surfaces[0]->Wdt);
+		Vtx[i].ty /= float(Surfaces[0]->Hgt);
 		Vtx[i].ftz = 0;
 		Vtx[i].color[0] = 255;
 		Vtx[i].color[1] = 255;
