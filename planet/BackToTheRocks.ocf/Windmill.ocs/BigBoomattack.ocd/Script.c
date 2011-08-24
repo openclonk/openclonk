@@ -62,7 +62,6 @@ public func OnProjectileHit(object shot)
 	if(hits > 10 * GetPlayerCount())
 	{
 		var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-		if(gol)	gol->DoEvaluationData();
 		DoFireworks();
 	}
 		

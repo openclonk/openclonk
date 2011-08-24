@@ -93,7 +93,7 @@ protected func RemovePlayer(int plr)
 	return _inherited(plr, ...);
 }
 
-public func DoEvaluationData()
+public func OnGameOver()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
