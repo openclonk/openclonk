@@ -33,7 +33,6 @@
 #include <StdRegistry.h>
 #include <StdResStr.h>
 #include <StdSurface2.h>
-#include <StdFacet.h>
 #include <StdDDraw2.h>
 #include <StdD3D.h>
 #include <Bitmap256.h>

@@ -28,7 +28,6 @@
 #include "StdApp.h"
 #include <StdWindow.h>
 #include <StdDDraw2.h>
-#include <StdFacet.h>
 #include <StdD3D.h>
 #include <StdGL.h>
 #include <StdNoGfx.h>

@@ -22,7 +22,7 @@
 #define INC_STDFONT
 
 #include <StdMarkup.h>
-#include <StdFacet.h>
+#include <C4Facet.h>
 #include <StdBuf.h>
 #include <stdio.h>
 #include <map>
@@ -43,7 +43,6 @@
 #endif
 
 class CMarkup;
-class CFacet;
 class CStdVectorFont;
 
 class CStdFont
@@ -53,7 +52,7 @@ public:
 	class CustomImages
 	{
 	protected:
-		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet) = 0;
+		virtual bool GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet) = 0;
 
 		friend class CStdFont;
 	public:
@@ -82,8 +81,8 @@ protected:
 	DWORD dwWeight; // font weight (usually FW_NORMAL or FW_BOLD)
 	bool fDoShadow; // if the font is shadowed
 
-	CFacet fctAsciiTexCoords[256-' '];     // texture coordinates of ASCII letters
-	std::map<uint32_t, CFacet> fctUnicodeMap; // texture coordinates of Unicode letters
+	C4Facet fctAsciiTexCoords[256-' '];     // texture coordinates of ASCII letters
+	std::map<uint32_t, C4Facet> fctUnicodeMap; // texture coordinates of Unicode letters
 
 	CustomImages *pCustomImages; // callback class for custom images
 
@@ -98,13 +97,13 @@ protected:
 
 	bool AddSurface();
 	bool CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt);
-	bool AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget);
+	bool AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget);
 
-	CFacet &GetCharacterFacet(uint32_t c)
+	C4Facet &GetCharacterFacet(uint32_t c)
 	{
 		if (c<128) return fctAsciiTexCoords[c-' ']; else return GetUnicodeCharacterFacet(c);
 	}
-	CFacet &GetUnicodeCharacterFacet(uint32_t c);
+	C4Facet &GetUnicodeCharacterFacet(uint32_t c);
 
 public:
 	int iLineHgt;        // height of one line of font (in pixels)

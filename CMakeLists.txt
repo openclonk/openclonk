@@ -502,7 +502,6 @@ set(OC_CLONK_SOURCES
 	src/platform/StdD3DShader.h
 	src/platform/StdDDraw2.cpp
 	src/platform/StdDDraw2.h
-	src/platform/StdFacet.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
 	src/platform/StdFont.cpp

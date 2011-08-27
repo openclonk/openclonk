@@ -415,7 +415,7 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	return true;
 }
 
-bool C4DefList::GetFontImage(const char *szImageTag, CFacet &rOutImgFacet)
+bool C4DefList::GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet)
 {
 	// extended: images by game
 	C4FacetSurface fctOut;

@@ -212,7 +212,7 @@ bool CStdFont::CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt)
 	return true;
 }
 
-bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
+bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 {
 #if defined HAVE_FREETYPE
 	if (!pVectorFont) return false;
@@ -298,10 +298,10 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 	return true;
 }
 
-CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
+C4Facet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 {
 	// find/add facet in map
-	CFacet &rFacet = fctUnicodeMap[c];
+	C4Facet &rFacet = fctUnicodeMap[c];
 	// create character on the fly if necessary and possible
 	if (!rFacet.Surface) AddRenderedChar(c, &rFacet);
 	// rendering might have failed, in which case rFacet remains empty. Should be OK; char won't be printed then
@@ -387,7 +387,7 @@ void CStdFont::Clear()
 	}
 	sfcCurrent = NULL;
 	iNumFontSfcs = 0;
-	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Clear();
+	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Default();
 	fctUnicodeMap.clear();
 	// set default values
 	dwDefFontHeight=iLineHgt=10;
@@ -430,7 +430,7 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 		{
 			char imgbuf[101];
 			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
-			CFacet fct;
+			C4Facet fct;
 			// image renderer initialized?
 			if (pCustomImages)
 				// try to get an image then
@@ -510,7 +510,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				CFacet fct;
+				C4Facet fct;
 				// image renderer initialized?
 				if (pCustomImages)
 					// try to get an image then
@@ -666,7 +666,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				CFacet fct;
+				C4Facet fct;
 				// image renderer initialized?
 				if (pCustomImages)
 					// try to get an image then
@@ -855,7 +855,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	if (!Markup.Clean()) pbt=&bt;
 	// output text
 	uint32_t c;
-	CFacet fctFromBlt; // source facet
+	C4Facet fctFromBlt; // source facet
 	while ((c = GetNextCharacter(&szText)))
 	{
 		// ignore system characters

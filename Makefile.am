@@ -470,7 +470,6 @@ src/platform/StdD3DShader.cpp \
 src/platform/StdD3DShader.h \
 src/platform/StdDDraw2.cpp \
 src/platform/StdDDraw2.h \
-src/platform/StdFacet.h \
 src/platform/StdFont.cpp \
 src/platform/StdFont.h \
 src/platform/StdGL.cpp \
