@@ -33,7 +33,6 @@ const int C4LR_BiasDistanceY = 8;
 
 // Workarounds to try if shader fails to compile
 const char *C4LR_ShaderWorkarounds[] = {
-	"",
 	"#define NO_TEXTURE_LOD_IN_FRAGMENT\n",
 	"#define BROKEN_ARRAYS_WORKAROUND\n",
 	"#define SCALER_IN_GPU\n",
@@ -538,7 +537,7 @@ GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *sz
 	// Build code
 	const char *szCodes[C4LR_ShaderWorkaroundCount + 1];
 	for(int i = 0; i < C4LR_ShaderWorkaroundCount; i++)
-		if(iWorkaround & (1 >> i))
+		if(iWorkaround & (1 << i))
 			szCodes[i] = C4LR_ShaderWorkarounds[i];
 		else
 			szCodes[i] = "";
