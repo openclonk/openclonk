@@ -519,6 +519,10 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 					Map[cnt].OverlayType &= ~C4MatOv_None;
 				}
 			}
+		// default to first texture in texture map
+		int iTexMapIx;
+		if (!szTextureOverlay && (iTexMapIx = ::TextureMap.GetIndex(Map[cnt].Name, NULL, false)))
+			szTextureOverlay = TextureMap.GetEntry(iTexMapIx)->GetTextureName();
 		// default to smooth
 		if (!szTextureOverlay)
 			szTextureOverlay = "Smooth";
