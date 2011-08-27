@@ -24,7 +24,7 @@
 # See clonk_trademark_license.txt for full license.
 
 cmake_minimum_required (VERSION 2.6.0)
-project (clonk CXX C)
+project (openclonk CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
