@@ -74,14 +74,14 @@ namespace
 	}
 }
 
-CStdAppPrivate::WindowListT CStdAppPrivate::WindowList;
+C4X11AppImpl::WindowListT C4X11AppImpl::WindowList;
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
 #endif
-		DoNotDelay(false), Priv(new CStdAppPrivate(this)), fDspModeSet(false)
+		DoNotDelay(false), Priv(new C4X11AppImpl(this)), fDspModeSet(false)
 {
 	Add(&Priv->X11Proc);
 #ifdef WITH_GLIB
@@ -291,7 +291,7 @@ void C4AbstractApp::HandleXMessage()
 	{
 		// We should compare the timestamp with the timespan when we owned the selection
 		// But slow network connections are not supported anyway, so do not bother
-		CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
+		C4X11AppImpl::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
 		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
 		XEvent responseevent;
 		XSelectionEvent & re = responseevent.xselection;
@@ -317,7 +317,7 @@ void C4AbstractApp::HandleXMessage()
 	}
 	case SelectionClear:
 	{
-		CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
+		C4X11AppImpl::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
 		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
 		d.Text.Clear();
 		break;
@@ -477,7 +477,7 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	return r;
 }
 
-void CStdAppPrivate::SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd)
+void C4X11AppImpl::SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd)
 {
 	static Atom atoms[2];
 	static const char * names[] = { "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN" };
@@ -502,7 +502,7 @@ void CStdAppPrivate::SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, 
 	XSendEvent(pApp->dpy, DefaultRootWindow(pApp->dpy), false, SubstructureNotifyMask | SubstructureRedirectMask, &e);
 }
 
-bool CStdAppPrivate::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
+bool C4X11AppImpl::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
 {
 	if (pApp->xrandr_major_version >= 0)
 	{
@@ -554,7 +554,7 @@ bool CStdAppPrivate::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
 	return true;
 }
 
-void CStdAppPrivate::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
+void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
 {
 	XUngrabPointer(pApp->dpy, LastEventTime);
 	// Restore resolution
@@ -582,7 +582,7 @@ void CStdAppPrivate::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
 // Copy the text to the clipboard or the primary selection
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
-	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
+	C4X11AppImpl::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
 	Window owner = XGetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 	if (owner != pWindow->wnd) return false;
@@ -638,20 +638,20 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 // Give up Selection ownership
 void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
-	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
+	C4X11AppImpl::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	if (!d.Text.getData()) return;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY,
 	                   None, d.AcquirationTime);
 	d.Text.Clear();
 }
 
-CStdWindow * CStdAppPrivate::GetWindow(unsigned long wnd)
+CStdWindow * C4X11AppImpl::GetWindow(unsigned long wnd)
 {
 	WindowListT::iterator i = WindowList.find(wnd);
 	if (i != WindowList.end()) return i->second;
 	return 0;
 }
-void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow)
+void C4X11AppImpl::SetWindow(unsigned long wnd, CStdWindow * pWindow)
 {
 	if (!pWindow)
 	{

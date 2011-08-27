@@ -26,12 +26,12 @@
 
 #include <StdApp.h>
 
-class CX11Proc: public StdSchedulerProc
+class C4X11Proc: public StdSchedulerProc
 {
 
 public:
-	CX11Proc(C4AbstractApp *pApp): pApp(pApp) { }
-	~CX11Proc() { }
+	C4X11Proc(C4AbstractApp *pApp): pApp(pApp) { }
+	~C4X11Proc() { }
 
 	C4AbstractApp *pApp;
 
@@ -53,11 +53,11 @@ public:
 };
 
 #ifdef WITH_GLIB
-class CGLibProc: public StdSchedulerProc
+class C4GLibProc: public StdSchedulerProc
 {
 public:
-	CGLibProc(GMainContext *context): context(context), query_time(-1) { fds.resize(1); g_main_context_ref(context); }
-	~CGLibProc() { g_main_context_unref(context); }
+	C4GLibProc(GMainContext *context): context(context), query_time(-1) { fds.resize(1); g_main_context_ref(context); }
+	~C4GLibProc() { g_main_context_unref(context); }
 
 	GMainContext *context;
 	std::vector<pollfd> fds;
@@ -96,7 +96,7 @@ private:
 public:
 	// Iterate the Glib main loop until all pending events have been
 	// processed. Don't use g_main_context_pending() directly as the
-	// CGLibProc might have initiated a loop iteration already.
+	// C4GLibProc might have initiated a loop iteration already.
 	// This is mainly used to update the log in the editor window while
 	// a scenario is being loaded.
 	void IteratePendingEvents()
@@ -152,14 +152,14 @@ public:
 };
 #endif // WITH_GLIB
 
-class CStdAppPrivate
+class C4X11AppImpl
 {
 public:
 #ifdef WITH_GLIB
-	CGLibProc GLibProc;
+	C4GLibProc GLibProc;
 #endif
 
-	CStdAppPrivate(C4AbstractApp *pApp):
+	C4X11AppImpl(C4AbstractApp *pApp):
 #ifdef WITH_GLIB
 			GLibProc(g_main_context_default()),
 #endif // WITH_GLIB
@@ -189,7 +189,7 @@ public:
 	XIM xim;
 	XIC xic;
 	Bool detectable_autorepeat_supported;
-	CX11Proc X11Proc;
+	C4X11Proc X11Proc;
 	int argc; char ** argv;
 };
 

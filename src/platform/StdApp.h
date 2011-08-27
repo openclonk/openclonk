@@ -195,7 +195,7 @@ protected:
 	void OnXInput();
 protected:
 #  ifdef USE_X11
-	class CStdAppPrivate * Priv;
+	class C4X11AppImpl * Priv;
 	void HandleXMessage();
 #  endif
 	unsigned int KeyMask;

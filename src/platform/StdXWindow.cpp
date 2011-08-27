@@ -365,7 +365,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp *
 	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
 
 	// Update XWindow<->StdWindow map
-	CStdAppPrivate::SetWindow(wnd, this);
+	C4X11AppImpl::SetWindow(wnd, this);
 
 	// Create the subwindow which we render into
 	renderwnd = CreateRenderWindow(dpy, wnd, static_cast<XVisualInfo*>(Info));
@@ -430,7 +430,7 @@ void CStdWindow::Clear()
 	// Destroy window
 	if (wnd)
 	{
-		CStdAppPrivate::SetWindow(wnd, 0);
+		C4X11AppImpl::SetWindow(wnd, 0);
 		XUnmapWindow(dpy, wnd);
 		XDestroyWindow(dpy, renderwnd);
 		XDestroyWindow(dpy, wnd);
