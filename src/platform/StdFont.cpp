@@ -30,7 +30,7 @@
 #include <StdBuf.h>
 #include <StdDDraw2.h>
 #include <StdSurface2.h>
-#include <StdMarkup.h>
+#include <C4Markup.h>
 #include <stdexcept>
 #include <string>
 
@@ -410,7 +410,7 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 	// keep track of each row's size
 	int iRowWdt=0,iWdt=0,iHgt=iLineHgt;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*szText)
 	{
@@ -490,7 +490,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 	                                  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*(szLastPos = szPos))
 	{
@@ -646,7 +646,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	                                  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*(szLastPos = szPos))
 	{
@@ -819,7 +819,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 /* Text drawing */
 
 
-void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom)
+void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
 {
 	assert(IsValidUtf8(szText));
 	C4BltTransform bt, *pbt=NULL;

@@ -126,8 +126,8 @@ src/lib/StdBuf.cpp \
 src/lib/StdBuf.h \
 src/lib/StdCompiler.cpp \
 src/lib/StdCompiler.h \
-src/lib/StdMarkup.cpp \
-src/lib/StdMarkup.h \
+src/lib/C4Markup.cpp \
+src/lib/C4Markup.h \
 src/lib/StdResStr2.cpp \
 src/lib/StdResStr2.h \
 src/network/C4NetIO.cpp \

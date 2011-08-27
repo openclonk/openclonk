@@ -408,8 +408,8 @@ set(OC_CLONK_SOURCES
 	src/lib/StdColors.h
 	src/lib/StdCompiler.cpp
 	src/lib/StdCompiler.h
-	src/lib/StdMarkup.cpp
-	src/lib/StdMarkup.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
 	src/lib/StdMeshLoader.h
@@ -886,7 +886,7 @@ add_executable(c4group
 	src/c4group/C4Update.cpp
 	src/lib/Standard.cpp
 	src/c4group/CStdFile.cpp
-	src/lib/StdMarkup.cpp
+	src/lib/C4Markup.cpp
 	src/lib/StdBuf.cpp
 	src/lib/StdCompiler.cpp
 	src/platform/StdFile.cpp
@@ -920,8 +920,8 @@ add_executable(c4script
 	src/lib/StdBuf.h
 	src/lib/StdCompiler.cpp
 	src/lib/StdCompiler.h
-	src/lib/StdMarkup.cpp
-	src/lib/StdMarkup.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/platform/GetTime.cpp

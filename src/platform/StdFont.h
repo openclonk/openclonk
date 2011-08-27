@@ -21,7 +21,7 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <StdMarkup.h>
+#include <C4Markup.h>
 #include <C4Facet.h>
 #include <StdBuf.h>
 #include <stdio.h>
@@ -42,7 +42,7 @@
 #define FW_BOLD 700
 #endif
 
-class CMarkup;
+class C4Markup;
 class CStdVectorFont;
 
 class CStdFont
@@ -108,7 +108,7 @@ protected:
 public:
 	int iLineHgt;        // height of one line of font (in pixels)
 	// draw ine line of text
-	void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom);
+	void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom);
 
 	// get text size
 	bool GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup = true);

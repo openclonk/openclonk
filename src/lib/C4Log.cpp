@@ -113,7 +113,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		char *pDest = TimeMessage.getMData() + 11;
 
 		// copy rest of message, skip tags
-		CMarkup Markup(false);
+		C4Markup Markup(false);
 		while (*pSrc)
 		{
 			Markup.SkipTags(&pSrc);

@@ -31,7 +31,7 @@
 #include <StdD3D.h>
 #include <StdGL.h>
 #include <StdNoGfx.h>
-#include <StdMarkup.h>
+#include <C4Markup.h>
 #include <StdFont.h>
 #include "C4Rect.h"
 #include <C4Config.h>
@@ -987,7 +987,7 @@ bool CStdDDraw::BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX
 
 bool CStdDDraw::TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
 {
-	CMarkup Markup(true);
+	C4Markup Markup(true);
 	static char szLinebuf[2500+1];
 	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.iLineHgt))
 		if (!StringOut(szLinebuf,sfcDest,iTx,iTy,dwFCol,byForm,fDoMarkup,Markup,&rFont,fZoom)) return false;
@@ -997,12 +997,12 @@ bool CStdDDraw::TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFAC
 bool CStdDDraw::StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
 {
 	// init markup
-	CMarkup Markup(true);
+	C4Markup Markup(true);
 	// output string
 	return StringOut(szText, sfcDest, iTx, iTy, dwFCol, byForm, fDoMarkup, Markup, &rFont, fZoom);
 }
 
-bool CStdDDraw::StringOut(const char *szText, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, CMarkup &Markup, CStdFont *pFont, float fZoom)
+bool CStdDDraw::StringOut(const char *szText, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom)
 {
 	// clip
 	if (ClipAll) return true;

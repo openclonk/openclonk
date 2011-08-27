@@ -28,7 +28,7 @@
 #include <StdD3DShader.h>
 
 #include <StdApp.h>
-#include <StdMarkup.h>
+#include <C4Markup.h>
 #include <StdWindow.h>
 #include <C4Config.h>
 

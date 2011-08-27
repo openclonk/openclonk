@@ -88,7 +88,7 @@ void C4MenuItem::DoTextProgress(int32_t &riByVal)
 	if (IsSelectable || !*Caption) { TextDisplayProgress=-1; return; }
 	// normal text: move forward in unbroken message, ignoring markup
 	StdStrBuf sText(Caption);
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	const char *szPos = sText.getPtr(Min<int>(TextDisplayProgress, sText.getLength()));
 	while (riByVal && *szPos)
 	{

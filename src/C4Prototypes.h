@@ -124,7 +124,7 @@ class C4ValueNumbers;
 class C4Viewport;
 class C4ViewportList;
 class C4ViewportWindow;
-class CMarkup;
+class C4Markup;
 class CStdFont;
 class CStdStream;
 class CStdVectorFont;

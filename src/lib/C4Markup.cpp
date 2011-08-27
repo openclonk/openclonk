@@ -18,24 +18,24 @@
 // markup tags for fonts
 
 #include "C4Include.h"
-#include <StdMarkup.h>
+#include <C4Markup.h>
 #include <StdDDraw2.h>
 
-void CMarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
+void C4MarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// do sheering
 	rBltTrf.mat[1]-=0.3f;
 }
 
-void CMarkupTagColor::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
+void C4MarkupTagColor::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// set color
 	if (fDoClr) dwClr = this->dwClr;
 }
 
-bool CMarkup::Read(const char **ppText, bool fSkip)
+bool C4Markup::Read(const char **ppText, bool fSkip)
 {
-	char Tag[50]; CMarkupTag *pNewTag=0; int iTagLen,iParLen;
+	char Tag[50]; C4MarkupTag *pNewTag=0; int iTagLen,iParLen;
 	// get tag
 	if (!SCopyEnclosed(*ppText, '<', '>', Tag, 49)) return false;
 	iTagLen=SLen(Tag);
@@ -66,7 +66,7 @@ bool CMarkup::Read(const char **ppText, bool fSkip)
 		// no parameters
 		if (szPars) return false;
 		// create italic tag
-		if (!fSkip) pNewTag=new CMarkupTagItalic();
+		if (!fSkip) pNewTag=new C4MarkupTagItalic();
 	}
 	// colored
 	else if (SEqual(Tag, "c"))
@@ -89,7 +89,7 @@ bool CMarkup::Read(const char **ppText, bool fSkip)
 			// adjust alpha if not given
 			if (iParLen<=6) dwClr|=0xff000000;
 			// create color tag
-			pNewTag=new CMarkupTagColor(dwClr);
+			pNewTag=new C4MarkupTagColor(dwClr);
 		}
 	}
 	// unknown tag
@@ -104,7 +104,7 @@ bool CMarkup::Read(const char **ppText, bool fSkip)
 
 
 
-bool CMarkup::SkipTags(const char **ppText)
+bool C4Markup::SkipTags(const char **ppText)
 {
 	// read tags as long as found
 	while (**ppText=='<') if (!Read(ppText, true)) break;
@@ -112,10 +112,10 @@ bool CMarkup::SkipTags(const char **ppText)
 	return !**ppText;
 }
 
-bool CMarkup::StripMarkup(char *szText)
+bool C4Markup::StripMarkup(char *szText)
 {
 	// skip any tags and inline-images
-	CMarkup mkup(false);
+	C4Markup mkup(false);
 	const char *szRead = szText, *szPos2;
 	do
 	{
@@ -137,7 +137,7 @@ bool CMarkup::StripMarkup(char *szText)
 	return szText != szRead;
 }
 
-bool CMarkup::StripMarkup(StdStrBuf *sText)
+bool C4Markup::StripMarkup(StdStrBuf *sText)
 {
 	// strip any markup codes from given text buffer
 	char *buf = sText->GrabPointer();

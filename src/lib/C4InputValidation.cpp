@@ -22,7 +22,7 @@
 #include "C4Include.h"
 #include <C4InputValidation.h>
 #include <C4Log.h>
-#include "StdMarkup.h"
+#include "C4Markup.h"
 
 #include <cctype>
 
@@ -94,7 +94,7 @@ namespace C4InVal
 		case VAL_NameNoEmpty:
 		case VAL_NameAllowEmpty:
 			// no markup
-			if (CMarkup::StripMarkup(&rsString)) { fValid = false; }
+			if (C4Markup::StripMarkup(&rsString)) { fValid = false; }
 			// trim spaces
 			if (rsString.TrimSpaces()) fValid = false;
 			// min length
