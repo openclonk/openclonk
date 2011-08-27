@@ -215,12 +215,12 @@ DWORD C4GammaControl::ApplyTo(DWORD dwClr)
 
 //--------------------------------------------------------------------
 
-CClrModAddMap::~CClrModAddMap()
+C4FogOfWar::~C4FogOfWar()
 {
 	delete[]pMap; delete pSurface;
 }
 
-void CClrModAddMap::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY, unsigned char StartVis, int x0, int y0, uint32_t dwBackClr, class CSurface *backsfc)
+void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY, unsigned char StartVis, int x0, int y0, uint32_t dwBackClr, class CSurface *backsfc)
 {
 	// set values
 	ResolutionX = ResX; ResolutionY = ResY;
@@ -259,7 +259,7 @@ void CClrModAddMap::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, in
 	pSurface->ClearBoxDw(0, 0, Wdt, Hgt);
 }
 
-CSurface *CClrModAddMap::GetSurface()
+CSurface *C4FogOfWar::GetSurface()
 {
 	if (pSurface->IsLocked())
 	{
@@ -272,7 +272,7 @@ CSurface *CClrModAddMap::GetSurface()
 	return pSurface;
 }
 
-void CClrModAddMap::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int))
+void C4FogOfWar::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int))
 {
 	// landscape coordinates: cx, cy, VisProc
 	// display coordinates: zx, zy, x, y
@@ -298,7 +298,7 @@ void CClrModAddMap::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(
 	}
 }
 
-void CClrModAddMap::AddModulation(int cx, int cy, int Radius, uint8_t Transparency)
+void C4FogOfWar::AddModulation(int cx, int cy, int Radius, uint8_t Transparency)
 {
 	{
 		float x=float(cx); float y=float(cy);
@@ -320,7 +320,7 @@ void CClrModAddMap::AddModulation(int cx, int cy, int Radius, uint8_t Transparen
 	}
 }
 
-uint32_t CClrModAddMap::GetModAt(int x, int y) const
+uint32_t C4FogOfWar::GetModAt(int x, int y) const
 {
 #if 0
 	// fast but inaccurate method
@@ -1305,8 +1305,8 @@ void CStdDDraw::DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, flo
 	// apply modulation map: Must sectionize blit
 	if (fUseClrModMap)
 	{
-		int iModResX = pClrModMap ? pClrModMap->GetResolutionX() : CClrModAddMap::DefResolutionX;
-		int iModResY = pClrModMap ? pClrModMap->GetResolutionY() : CClrModAddMap::DefResolutionY;
+		int iModResX = pClrModMap ? pClrModMap->GetResolutionX() : C4FogOfWar::DefResolutionX;
+		int iModResY = pClrModMap ? pClrModMap->GetResolutionY() : C4FogOfWar::DefResolutionY;
 		iBoxOffX %= iModResX;
 		iBoxOffY %= iModResY;
 		if (iWdt+iBoxOffX > iModResX || iHgt+iBoxOffY > iModResY)

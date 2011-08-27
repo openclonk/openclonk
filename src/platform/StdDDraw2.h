@@ -214,7 +214,7 @@ protected:
 	bool BlitModulated;             // set if blits should be modulated with BlitModulateClr
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
-	CClrModAddMap *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
+	C4FogOfWar *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
 	bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
 	unsigned char Saturation;   // if < 255, an extra filter is used to reduce the saturation
 	int ZoomX; int ZoomY;
@@ -306,7 +306,7 @@ public:
 		// apply modulation if activated
 		if (BlitModulated) ModulateClr(rdwClr, BlitModulateClr);
 	}
-	void SetClrModMap(CClrModAddMap *pClrModMap) { this->pClrModMap = pClrModMap; }
+	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
 	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
 	bool GetClrModMapEnabled() const { return fUseClrModMap; }
 	unsigned char SetSaturation(unsigned char s) { unsigned char o = Saturation; Saturation = s; return o; }

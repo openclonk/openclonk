@@ -291,7 +291,7 @@ void C4SLandscape::Default()
 	KeepMapCreator=0;
 	SkyScrollMode=0;
 	NewStyleLandscape=0;
-	FoWRes=CClrModAddMap::DefResolutionX;
+	FoWRes=C4FogOfWar::DefResolutionX;
 }
 
 void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
@@ -334,7 +334,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     0));
-	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(CClrModAddMap::DefResolutionX)));
+	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
 }
 
 void C4SWeather::Default()

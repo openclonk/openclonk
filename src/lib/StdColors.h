@@ -307,7 +307,7 @@ struct CStdPalette
 };
 
 // clrmod-add-map to cover a drawing range in which all draws shall be adjusted by the map
-class CClrModAddMap
+class C4FogOfWar
 {
 private:
 	class CSurface * pSurface;
@@ -320,9 +320,9 @@ public:
 	int OffX, OffY; // offset to add to drawing positions before applying the map
 	enum { DefResolutionX = 64, DefResolutionY = 64 };
 
-	CClrModAddMap() : pSurface(0), pMap(NULL), MapSize(0), Wdt(0), Hgt(0),
+	C4FogOfWar() : pSurface(0), pMap(NULL), MapSize(0), Wdt(0), Hgt(0),
 			FadeTransparent(false), ResolutionX(DefResolutionX), ResolutionY(DefResolutionY), dwBackClr(0), OffX(0), OffY(0) { }
-	~CClrModAddMap();
+	~C4FogOfWar();
 
 	// reset all of map to given values; uses transparent mode and clears rect if a back color is given
 	void Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY,

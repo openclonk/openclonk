@@ -1493,7 +1493,7 @@ int VisibilityCheck(int iVis, int sx, int sy, int cx, int cy)
 	return iVis;
 }
 
-void C4Player::FoW2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
+void C4Player::FoW2Map(C4FogOfWar &rMap, int iOffX, int iOffY)
 {
 	// No fog of war
 	if (!fFogOfWar) return;
@@ -1525,7 +1525,7 @@ void C4Player::FoW2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
 	if (fAnyGenerators) FoWGenerators2Map(rMap, iOffX, iOffY);
 }
 
-void C4Player::FoWGenerators2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
+void C4Player::FoWGenerators2Map(C4FogOfWar &rMap, int iOffX, int iOffY)
 {
 	// add fog to any generator pos (view range
 	C4Object *cobj; C4ObjectLink *clnk;
