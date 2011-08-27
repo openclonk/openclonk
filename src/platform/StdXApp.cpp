@@ -45,7 +45,7 @@
 #include <time.h>
 #include <errno.h>
 
-/* CStdApp */
+/* C4AbstractApp */
 
 #ifdef WITH_GLIB
 # include <glib.h>
@@ -76,7 +76,7 @@ namespace
 
 CStdAppPrivate::WindowListT CStdAppPrivate::WindowList;
 
-CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
@@ -89,7 +89,7 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location("")
 #endif
 }
 
-CStdApp::~CStdApp()
+C4AbstractApp::~C4AbstractApp()
 {
 	Remove(&Priv->X11Proc);
 #ifdef WITH_GLIB
@@ -98,7 +98,7 @@ CStdApp::~CStdApp()
 	delete Priv;
 }
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
@@ -208,7 +208,7 @@ gtk_clipboard_store_all (void)
 }
 #endif
 
-void CStdApp::Clear()
+void C4AbstractApp::Clear()
 {
 #ifdef WITH_GLIB
 	gtk_clipboard_store_all();
@@ -220,12 +220,12 @@ void CStdApp::Clear()
 #endif
 }
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 
 	// Always fail after quit message
@@ -239,7 +239,7 @@ bool CStdApp::FlushMessages()
 	return Priv->X11Proc.Execute(0);
 }
 
-void CStdApp::HandleXMessage()
+void C4AbstractApp::HandleXMessage()
 {
 	XEvent event;
 	XNextEvent(dpy, &event);
@@ -389,7 +389,7 @@ void CStdApp::HandleXMessage()
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	if (Priv->tasked_out)
 		return false;
@@ -439,7 +439,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return fDspModeSet;
 }
 
-void CStdApp::RestoreVideoMode()
+void C4AbstractApp::RestoreVideoMode()
 {
 	if (fDspModeSet)
 	{
@@ -459,7 +459,7 @@ void CStdApp::RestoreVideoMode()
 	}
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	if (xf86vmode_major_version < 0) return false;
 	bool r = false;
@@ -477,7 +477,7 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return r;
 }
 
-void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd)
+void CStdAppPrivate::SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd)
 {
 	static Atom atoms[2];
 	static const char * names[] = { "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN" };
@@ -502,7 +502,7 @@ void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window
 	XSendEvent(pApp->dpy, DefaultRootWindow(pApp->dpy), false, SubstructureNotifyMask | SubstructureRedirectMask, &e);
 }
 
-bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd)
+bool CStdAppPrivate::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
 {
 	if (pApp->xrandr_major_version >= 0)
 	{
@@ -554,7 +554,7 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd)
 	return true;
 }
 
-void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd)
+void CStdAppPrivate::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
 {
 	XUngrabPointer(pApp->dpy, LastEventTime);
 	// Restore resolution
@@ -580,7 +580,7 @@ void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd)
 }
 
 // Copy the text to the clipboard or the primary selection
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
@@ -592,7 +592,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 }
 
 // Paste the text from the clipboard or the primary selection
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	Window owner = XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 	if (owner == None) return StdStrBuf(0);
@@ -630,13 +630,13 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 }
 
 // Is there something in the clipboard?
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 }
 
 // Give up Selection ownership
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	if (!d.Text.getData()) return;
@@ -663,7 +663,7 @@ void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow)
 	}
 }
 
-void CStdApp::OnXInput()
+void C4AbstractApp::OnXInput()
 {
 	while (XEventsQueued(dpy, QueuedAfterReading))
 	{
@@ -683,7 +683,7 @@ void CStdApp::OnXInput()
 	XFlush(dpy);
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 #ifdef WITH_DEVELOPER_MODE
 	GtkWidget * dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", message);

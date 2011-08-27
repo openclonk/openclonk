@@ -1606,7 +1606,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	ResetTexture();
 }
 
-CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
+CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, C4AbstractApp *pApp)
 {
 	DebugLog("  gl: Create Context...");
 	// safety
@@ -1626,7 +1626,7 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 }
 
 #ifdef _WIN32
-CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
+CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 {
 	// safety
 	if (!hWindow) return NULL;

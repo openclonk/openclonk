@@ -1953,7 +1953,7 @@ namespace C4GUI
 		Dialog* pDialog;
 		DialogWindow(): CStdWindow(), pDialog(NULL) {}
 		using CStdWindow::Init;
-		CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
+		CStdWindow * Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
 #ifdef USE_X11
 		virtual void HandleMessage (XEvent &);

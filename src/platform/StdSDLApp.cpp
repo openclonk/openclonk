@@ -38,18 +38,18 @@
 #include <time.h>
 #include <errno.h>
 
-/* CStdApp */
+/* C4AbstractApp */
 
-CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
 		Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 
-CStdApp::~CStdApp()
+C4AbstractApp::~C4AbstractApp()
 {
 }
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
@@ -75,17 +75,17 @@ bool CStdApp::Init(int argc, char * argv[])
 }
 
 
-void CStdApp::Clear()
+void C4AbstractApp::Clear()
 {
 	SDL_Quit();
 }
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 	// Always fail after quit message
 	if (fQuitMsgReceived)
@@ -100,7 +100,7 @@ bool CStdApp::FlushMessages()
 	return true;
 }
 
-void CStdApp::HandleSDLEvent(SDL_Event& event)
+void C4AbstractApp::HandleSDLEvent(SDL_Event& event)
 {
 	// Directly handle QUIT messages.
 	switch (event.type)
@@ -119,7 +119,7 @@ void CStdApp::HandleSDLEvent(SDL_Event& event)
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	if (iMonitor != 0)
@@ -151,7 +151,7 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int RefreshRate,  unsigned int iMonitor, bool fFullScreen)
 {
 	//RECT r;
 	//pWindow->GetSize(&r);
@@ -168,7 +168,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return true;
 }
 
-void CStdApp::RestoreVideoMode()
+void C4AbstractApp::RestoreVideoMode()
 {
 }
 
@@ -176,26 +176,26 @@ void CStdApp::RestoreVideoMode()
 #ifndef __APPLE__
 
 // stubs
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	return false;
 }
 
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	return StdStrBuf(0);
 }
 
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return false;
 }
 
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 }
 

@@ -234,7 +234,7 @@ CStdWindow::~CStdWindow ()
 	Clear();
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
@@ -388,7 +388,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp,
 	return this;
 }
 
-bool CStdWindow::ReInit(CStdApp* pApp)
+bool CStdWindow::ReInit(C4AbstractApp* pApp)
 {
 	// Can only re-init if we have been initialized already
 	if(!wnd) return false;

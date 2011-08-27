@@ -648,7 +648,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	return true;
 }
 
-bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
+bool C4Viewport::Init(CStdWindow * pParent, C4AbstractApp * pApp, int32_t iPlayer)
 {
 	// Console viewport initialization
 	// Set Player

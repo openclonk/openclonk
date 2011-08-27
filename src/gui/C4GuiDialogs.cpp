@@ -194,7 +194,7 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef _WIN32
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;
 		// calculate required size
@@ -316,7 +316,7 @@ namespace C4GUI
 		return !!RegisterClassExW(&WndClass);
 	}
 #else
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		CStdWindow *result;
 		if (CStdWindow::Init(windowKind, pApp, Title, pParent, false))

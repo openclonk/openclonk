@@ -824,7 +824,7 @@ void C4ViewportWindow::PerformUpdate()
 }
 
 
-CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, CStdApp * pApp, int32_t Player)
+CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, C4AbstractApp * pApp, int32_t Player)
 {
 	CStdWindow* result;
 	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();

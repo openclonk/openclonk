@@ -46,7 +46,7 @@ CStdGtkWindow::~CStdGtkWindow()
 	Clear();
 }
 
-CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
@@ -148,7 +148,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 	return this;
 }
 
-bool CStdGtkWindow::ReInit(CStdApp* pApp)
+bool CStdGtkWindow::ReInit(C4AbstractApp* pApp)
 {
 	// TODO: Recreate the window with a newly chosen visual
 	// Probably we don't need this, since there is no way to change
@@ -224,7 +224,7 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
 	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
 
-	static_cast<CStdApp*>(user_data)->KeyMask = mask;
+	static_cast<C4AbstractApp*>(user_data)->KeyMask = mask;
 	return false;
 }
 

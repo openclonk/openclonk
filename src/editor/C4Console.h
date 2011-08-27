@@ -59,7 +59,7 @@ public:
 	virtual void Clear();
 	virtual void Close();
 	using C4ConsoleBase::Init;
-	virtual CStdWindow * Init(CStdApp * app);
+	virtual CStdWindow * Init(C4AbstractApp * app);
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	bool Message(const char *szMessage, bool fQuery=false);

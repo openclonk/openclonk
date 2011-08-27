@@ -100,7 +100,7 @@ public:
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<char*> &functions);
 	
-	CStdWindow* CreateConsoleWindow(CStdApp *application);
+	CStdWindow* CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);

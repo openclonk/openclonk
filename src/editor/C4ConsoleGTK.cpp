@@ -312,7 +312,7 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 		Console.EditCursor.In(text);
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
+CStdWindow* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
 	// Calls InitGUI
 	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);

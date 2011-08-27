@@ -45,7 +45,7 @@ CStdWindow::~CStdWindow ()
 	Clear();
 }
 
-CStdWindow * CStdWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow * CStdWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 	// SDL doesn't support multiple monitors.
@@ -60,7 +60,7 @@ CStdWindow * CStdWindow::Init(WindowKind windowKind, CStdApp * pApp, const char 
 	return this;
 }
 
-bool CStdWindow::ReInit(CStdApp* pApp)
+bool CStdWindow::ReInit(C4AbstractApp* pApp)
 {
 	// TODO: How do we enable multisampling with SDL?
 	// Maybe re-call SDL_SetVideoMode?
@@ -78,7 +78,7 @@ bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; 
 
 bool CStdWindow::RestorePosition(const char *, const char *, bool) { return true; }
 
-// Window size is automatically managed by CStdApp's display mode management.
+// Window size is automatically managed by C4AbstractApp's display mode management.
 // Just remember the size for others to query.
 
 bool CStdWindow::GetSize(C4Rect * pRect)

@@ -48,10 +48,10 @@ public:
 	void Clear();               // clear objects
 
 #ifdef _WIN32
-	bool Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow = NULL);
+	bool Init(CStdWindow * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
 	std::vector<int> EnumerateMultiSamples() const;
 #else
-	bool Init(CStdWindow * pWindow, CStdApp *pApp);
+	bool Init(CStdWindow * pWindow, C4AbstractApp *pApp);
 #endif
 
 #ifdef USE_COCOA
@@ -117,9 +117,9 @@ public:
 	bool PrepareMaterial(StdMeshMaterial& mat);
 	// Surface
 	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
-	virtual CStdGLCtx *CreateContext(CStdWindow * pWindow, CStdApp *pApp);
+	virtual CStdGLCtx *CreateContext(CStdWindow * pWindow, C4AbstractApp *pApp);
 #ifdef _WIN32
-	virtual CStdGLCtx *CreateContext(HWND hWindow, CStdApp *pApp);
+	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);

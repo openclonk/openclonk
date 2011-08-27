@@ -36,7 +36,7 @@ class C4GamePadControl;
 
 /* Main class to initialize configuration and execute the game */
 
-class C4Application: public CStdApp
+class C4Application: public C4AbstractApp
 {
 public:
 	C4Application();

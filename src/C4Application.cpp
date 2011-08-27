@@ -561,7 +561,7 @@ void C4Application::Clear()
 	FullScreen.Clear();
 	Console.Clear();
 	// The very final stuff
-	CStdApp::Clear();
+	C4AbstractApp::Clear();
 }
 
 void C4Application::Quit()
@@ -575,7 +575,7 @@ void C4Application::Quit()
 	// fonts are loaded at start and never unloaded
 	::GraphicsResource.ClearFonts();
 	// quit app
-	CStdApp::Quit();
+	C4AbstractApp::Quit();
 	AppState = C4AS_Quit;
 }
 

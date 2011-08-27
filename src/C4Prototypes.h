@@ -137,7 +137,7 @@ class CTexMgr;
 class CPattern;
 class CStdDDraw;
 class CBlitRememberer;
-class CStdApp;
+class C4AbstractApp;
 class CStdWindow;
 class CSurface;
 

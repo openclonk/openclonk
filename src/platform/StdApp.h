@@ -63,10 +63,10 @@ public:
 	~CStdMessageProc() { }
 
 private:
-	CStdApp *pApp;
+	C4AbstractApp *pApp;
 
 public:
-	void SetApp(CStdApp *pnApp) { pApp = pnApp; }
+	void SetApp(C4AbstractApp *pnApp) { pApp = pnApp; }
 
 	// StdSchedulerProc overrides
 	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
@@ -96,11 +96,11 @@ private:
 };
 #endif
 
-class CStdApp : public StdScheduler
+class C4AbstractApp : public StdScheduler
 {
 public:
-	CStdApp ();
-	virtual ~CStdApp ();
+	C4AbstractApp ();
+	virtual ~C4AbstractApp ();
 
 	bool Active;
 

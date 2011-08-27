@@ -415,7 +415,7 @@ C4FullScreen::~C4FullScreen()
 }
 
 
-CStdWindow * C4FullScreen::Init(CStdApp * pApp)
+CStdWindow * C4FullScreen::Init(C4AbstractApp * pApp)
 {
 	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
 }

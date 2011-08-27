@@ -84,7 +84,7 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	return !!RegisterClassExW(&WndClass);
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
 {
 	Active = true;
 
@@ -119,7 +119,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp,
 	return this;
 }
 
-bool CStdWindow::ReInit(CStdApp* pApp)
+bool CStdWindow::ReInit(C4AbstractApp* pApp)
 {
 	// We don't need to change anything with the window for any
 	// configuration option changes on Windows.
@@ -237,9 +237,9 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 	return true;
 }
 
-/* CStdApp */
+/* C4AbstractApp */
 
-CStdApp::CStdApp() :
+C4AbstractApp::C4AbstractApp() :
 		Active(false), pWindow(NULL), fQuitMsgReceived(false),
 		hInstance(NULL), fDspModeSet(false)
 {
@@ -253,13 +253,13 @@ CStdApp::CStdApp() :
 #endif
 }
 
-CStdApp::~CStdApp()
+C4AbstractApp::~C4AbstractApp()
 {
 }
 
 const char *LoadResStr(const char *id);
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set instance vars
 	hMainThread = ::GetCurrentThread();
@@ -267,17 +267,17 @@ bool CStdApp::Init(int argc, char * argv[])
 	return DoInit (argc, argv);
 }
 
-void CStdApp::Clear()
+void C4AbstractApp::Clear()
 {
 	hMainThread = NULL;
 }
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	PostQuitMessage(0);
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 
 	// Always fail after quit message
@@ -294,13 +294,13 @@ static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LP
 	// get to indexed monitor
 	if (GLMonitorInfoEnumCount--) return true;
 	// store it
-	CStdApp *pApp = (CStdApp *) dwData;
+	C4AbstractApp *pApp = (C4AbstractApp *) dwData;
 	pApp->hMon = hMonitor;
 	pApp->MonitorRect = *lprcMonitor;
 	return true;
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// prepare search struct
 	DEVMODEW dmode;
@@ -318,11 +318,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-void CStdApp::RestoreVideoMode()
+void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 #ifdef USE_DIRECTX
 	if (pD3D)
@@ -404,13 +404,13 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 #endif
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
 }
 
 // Clipboard functions
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	if (!fClipboard) return false;
 	bool fSuccess = true;
@@ -433,7 +433,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return fSuccess;
 }
 
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	if (!fClipboard) return StdStrBuf();
 	// open clipboard
@@ -449,13 +449,13 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 	return text;
 }
 
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	if (!fClipboard) return false;
 	return !!IsClipboardFormatAvailable(CF_UNICODETEXT);
 }
 
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 }
 

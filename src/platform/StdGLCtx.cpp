@@ -267,7 +267,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0; hWindow = NULL;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
+bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *pApp, HWND hWindow)
 {
 	// safety
 	if (!pGL) return false;
@@ -460,7 +460,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
+bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -571,7 +571,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
+bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;

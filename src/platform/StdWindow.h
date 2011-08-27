@@ -273,14 +273,14 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual CStdWindow * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
 	// at which it makes sense for this function to be called is when the
 	// multisampling configuration option changes, since, for the change to
 	// take effect, we need to choose another visual or pixel format, respectively.
-	virtual bool ReInit(CStdApp* pApp);
+	virtual bool ReInit(C4AbstractApp* pApp);
 
 	// Creates a list of available samples for multisampling
 	virtual void EnumerateMultiSamples(std::vector<int>& samples) const;
@@ -333,7 +333,7 @@ public:
 	friend class CStdDDraw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
-	friend class CStdApp;
+	friend class C4AbstractApp;
 	friend class CStdGtkWindow;
 };
 

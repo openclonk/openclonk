@@ -34,8 +34,8 @@ public:
 	virtual void Clear();
 
 	using CStdWindow::Init;
-	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
-	virtual bool ReInit(CStdApp* pApp);
+	virtual CStdWindow * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual bool ReInit(C4AbstractApp* pApp);
 
 	GtkWidget* window;
 protected:

@@ -30,10 +30,10 @@ class CX11Proc: public StdSchedulerProc
 {
 
 public:
-	CX11Proc(CStdApp *pApp): pApp(pApp) { }
+	CX11Proc(C4AbstractApp *pApp): pApp(pApp) { }
 	~CX11Proc() { }
 
-	CStdApp *pApp;
+	C4AbstractApp *pApp;
 
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & fds)
@@ -159,7 +159,7 @@ public:
 	CGLibProc GLibProc;
 #endif
 
-	CStdAppPrivate(CStdApp *pApp):
+	CStdAppPrivate(C4AbstractApp *pApp):
 #ifdef WITH_GLIB
 			GLibProc(g_main_context_default()),
 #endif // WITH_GLIB
@@ -169,9 +169,9 @@ public:
 			argc(0), argv(0) { }
 	static CStdWindow * GetWindow(unsigned long wnd);
 	static void SetWindow(unsigned long wnd, CStdWindow * pWindow);
-	bool SwitchToFullscreen(CStdApp * pApp, Window wnd);
-	void SwitchToDesktop(CStdApp * pApp, Window wnd);
-	void SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd);
+	bool SwitchToFullscreen(C4AbstractApp * pApp, Window wnd);
+	void SwitchToDesktop(C4AbstractApp * pApp, Window wnd);
+	void SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd);
 	struct ClipboardData
 	{
 		StdStrBuf Text;

@@ -37,7 +37,7 @@ class CTexRef;
 class CSurface;
 struct CStdPalette;
 class CStdGLCtx;
-class CStdApp;
+class C4AbstractApp;
 class CStdWindow;
 
 class StdMeshMatrix;
@@ -195,7 +195,7 @@ public:
 	CStdDDraw(): MaxTexSize(0), Saturation(255) { }
 	virtual ~CStdDDraw() { lpDDraw=NULL; }
 public:
-	CStdApp * pApp; // the application
+	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
 	CGammaControl Gamma;            // gamma
 	CGammaControl DefRamp;            // default gamma ramp
@@ -223,12 +223,12 @@ protected:
 public:
 	float Zoom;
 	// General
-	bool Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+	bool Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
-	virtual CStdGLCtx *CreateContext(CStdWindow *, CStdApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(CStdWindow *, C4AbstractApp *) { return NULL; }
 #ifdef _WIN32
-	virtual CStdGLCtx *CreateContext(HWND, CStdApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
 	virtual int GetEngine() = 0;    // get indexed engine
 	virtual void TaskOut() = 0; // user taskswitched the app away
@@ -359,5 +359,5 @@ bool UnLockSurfaceGlobal(SURFACE sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-bool DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

@@ -88,7 +88,7 @@ void C4Console::HandleMessage (XEvent & e)
 }
 #endif // USE_X11
 
-CStdWindow * C4Console::Init(CStdApp * pApp)
+CStdWindow * C4Console::Init(C4AbstractApp * pApp)
 {
 	return C4ConsoleGUI::CreateConsoleWindow(pApp);
 }
@@ -580,7 +580,7 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-CStdWindow * C4ConsoleGUI::CreateConsoleWindow(CStdApp*) {return 0;}
+CStdWindow * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

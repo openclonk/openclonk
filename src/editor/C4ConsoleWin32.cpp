@@ -136,7 +136,7 @@ public:
 		if (hbmHalt2) DeleteObject(hbmHalt2);
 	}
 
-	void CreateBitmaps(CStdApp *application)
+	void CreateBitmaps(C4AbstractApp *application)
 	{
 		HINSTANCE instance = application->GetInstance();
 		hbmMouse=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_MOUSE));
@@ -604,7 +604,7 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
+CStdWindow* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)
