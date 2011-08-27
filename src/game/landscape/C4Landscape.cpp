@@ -781,6 +781,13 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		}
 	}
 
+	// Insert as dead material
+	return InsertDeadMaterial(mat, tx, ty);
+}
+
+bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
+{
+	// Save back original material so we can insert it later
 	int omat = 0;
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
 		omat = GetMat(tx, ty);
@@ -807,7 +814,6 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 
 	return true;
 }
-
 
 bool C4Landscape::Incinerate(int32_t x, int32_t y)
 {
