@@ -268,7 +268,7 @@ void C4AbstractApp::HandleXMessage()
 			}
 			if (c[0])
 			{
-				CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
+				C4Window * pWindow = Priv->GetWindow(event.xany.window);
 				if (pWindow)
 				{
 					pWindow->CharIn(c);
@@ -327,7 +327,7 @@ void C4AbstractApp::HandleXMessage()
 		{
 			if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "WM_DELETE_WINDOW"))
 			{
-				CStdWindow * pWindow = Priv->GetWindow(event.xclient.window);
+				C4Window * pWindow = Priv->GetWindow(event.xclient.window);
 				if (pWindow) pWindow->Close();
 			}
 			else if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "_NET_WM_PING"))
@@ -344,7 +344,7 @@ void C4AbstractApp::HandleXMessage()
 		break;
 	case DestroyNotify:
 	{
-		CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
+		C4Window * pWindow = Priv->GetWindow(event.xany.window);
 		if (pWindow)
 		{
 			pWindow->wnd = 0;
@@ -384,7 +384,7 @@ void C4AbstractApp::HandleXMessage()
 			XRRUpdateConfiguration(&event);
 		break;
 	}
-	CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
+	C4Window * pWindow = Priv->GetWindow(event.xany.window);
 	if (pWindow)
 		pWindow->HandleMessage(event);
 }
@@ -645,13 +645,13 @@ void C4AbstractApp::ClearClipboard(bool fClipboard)
 	d.Text.Clear();
 }
 
-CStdWindow * C4X11AppImpl::GetWindow(unsigned long wnd)
+C4Window * C4X11AppImpl::GetWindow(unsigned long wnd)
 {
 	WindowListT::iterator i = WindowList.find(wnd);
 	if (i != WindowList.end()) return i->second;
 	return 0;
 }
-void C4X11AppImpl::SetWindow(unsigned long wnd, CStdWindow * pWindow)
+void C4X11AppImpl::SetWindow(unsigned long wnd, C4Window * pWindow)
 {
 	if (!pWindow)
 	{

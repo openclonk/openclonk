@@ -115,7 +115,7 @@ public:
 	void RestoreVideoMode();
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
-	CStdWindow * pWindow;
+	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
 
 	// Copy the text to the clipboard or the primary selection
@@ -210,8 +210,8 @@ protected:
 
 	friend class CStdGL;
 	friend class CStdGLCtx;
-	friend class CStdWindow;
-	friend class CStdGtkWindow;
+	friend class C4Window;
+	friend class C4GtkWindow;
 };
 
 #endif // INC_STDAPP

@@ -149,7 +149,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case SIZE_RESTORED:
 		case SIZE_MAXIMIZED:
 			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
-			if(Application.pWindow) // this might be called from CStdWindow::Init in which case Application.pWindow is not yet set
+			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
 				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
@@ -164,7 +164,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 void C4FullScreen::HandleMessage (XEvent &e)
 {
 	// Parent handling
-	CStdWindow::HandleMessage(e);
+	C4Window::HandleMessage(e);
 
 	switch (e.type)
 	{
@@ -415,9 +415,9 @@ C4FullScreen::~C4FullScreen()
 }
 
 
-CStdWindow * C4FullScreen::Init(C4AbstractApp * pApp)
+C4Window * C4FullScreen::Init(C4AbstractApp * pApp)
 {
-	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
+	return Init(C4Window::W_Fullscreen, pApp, C4ENGINENAME);
 }
 
 void C4FullScreen::Close()
@@ -432,7 +432,7 @@ void C4FullScreen::Clear()
 {
 	if (pSurface) delete pSurface;
 	pSurface = 0;
-	CStdWindow::Clear();
+	C4Window::Clear();
 }
 
 void C4FullScreen::Execute()

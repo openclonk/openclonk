@@ -604,7 +604,7 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)

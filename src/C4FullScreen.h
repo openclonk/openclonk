@@ -28,7 +28,7 @@
 
 bool IsKeyDown(int iKey);
 
-class C4FullScreen: public CStdWindow
+class C4FullScreen: public C4Window
 {
 public:
 	C4MainMenu *pMenu;
@@ -43,8 +43,8 @@ public:
 	bool MenuCommand(const char *szCommand);
 	void CloseMenu();
 	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
-	using CStdWindow::Init;
-	virtual CStdWindow * Init(C4AbstractApp * pApp);
+	using C4Window::Init;
+	virtual C4Window * Init(C4AbstractApp * pApp);
 	// User requests close
 	virtual void Close();
 	virtual void Clear();

@@ -687,7 +687,7 @@ namespace C4GUI
 		return NULL;
 	}
 #endif
-	Dialog *Screen::GetDialog(CStdWindow * pWindow)
+	Dialog *Screen::GetDialog(C4Window * pWindow)
 	{
 		// get dialog with matching window
 		Dialog *pDlg;

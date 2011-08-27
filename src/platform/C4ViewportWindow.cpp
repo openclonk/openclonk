@@ -824,9 +824,9 @@ void C4ViewportWindow::PerformUpdate()
 }
 
 
-CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, C4AbstractApp * pApp, int32_t Player)
+C4Window * C4ViewportWindow::Init(C4Window * pParent, C4AbstractApp * pApp, int32_t Player)
 {
-	CStdWindow* result;
+	C4Window* result;
 	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();
 #ifdef _WIN32
 	Active = true;
@@ -844,7 +844,7 @@ CStdWindow * C4ViewportWindow::Init(CStdWindow * pParent, C4AbstractApp * pApp, 
 
 	result = this;
 #else
-	result = C4ViewportBase::Init(CStdWindow::W_Viewport, pApp, Title, pParent, false);
+	result = C4ViewportBase::Init(C4Window::W_Viewport, pApp, Title, pParent, false);
 #endif
 	if (!result) return result;
 

@@ -25,16 +25,16 @@
 
 #include <gtk/gtk.h>
 
-class CStdGtkWindow: public CStdWindow
+class C4GtkWindow: public C4Window
 {
 public:
-	CStdGtkWindow();
-	virtual ~CStdGtkWindow();
+	C4GtkWindow();
+	virtual ~C4GtkWindow();
 
 	virtual void Clear();
 
-	using CStdWindow::Init;
-	virtual CStdWindow * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	using C4Window::Init;
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 	virtual bool ReInit(C4AbstractApp* pApp);
 
 	GtkWidget* window;

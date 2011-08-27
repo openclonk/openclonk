@@ -118,7 +118,7 @@ public:
 	// General
 	void Clear();
 	void Default();
-	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL, CStdWindow * pWindow = NULL);
+	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL, C4Window * pWindow = NULL);
 	bool BeginScene(); // prepare device for drawing
 	void EndScene();   // prepare device for surface locking, flipping etc.
 	virtual int GetEngine() { return fSoftware ? 2 : 0; }   // get indexed engine
@@ -144,7 +144,7 @@ public:
 	void DrawPixPrimary(SURFACE sfcDest, int tx, int ty, DWORD dwCol);
 	// Gamma
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
+	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);
 	// device objects
 	bool InitDeviceObjects();       // init device dependent objects
 	bool InitShaders();             // parse and set shaders

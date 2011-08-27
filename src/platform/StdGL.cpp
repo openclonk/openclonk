@@ -1606,7 +1606,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	ResetTexture();
 }
 
-CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, C4AbstractApp *pApp)
+CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	DebugLog("  gl: Create Context...");
 	// safety

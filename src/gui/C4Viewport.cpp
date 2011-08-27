@@ -376,7 +376,7 @@ void C4Viewport::Execute()
 	AdjustPosition();
 	// Current graphics output
 	C4TargetFacet cgo;
-	CStdWindow * w = pWindow;
+	C4Window * w = pWindow;
 	if (!w) w = &FullScreen;
 	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),ViewX,ViewY,Zoom);
 	lpDDraw->PrepareRendering(w->pSurface);
@@ -648,7 +648,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	return true;
 }
 
-bool C4Viewport::Init(CStdWindow * pParent, C4AbstractApp * pApp, int32_t iPlayer)
+bool C4Viewport::Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer)
 {
 	// Console viewport initialization
 	// Set Player

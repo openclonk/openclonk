@@ -33,19 +33,19 @@
 #include <C4Rect.h>
 #include <C4Config.h>
 
-/* CStdWindow */
+/* C4Window */
 
-CStdWindow::CStdWindow ():
+C4Window::C4Window ():
 		Active(false), pSurface(0)
 {
 }
 
-CStdWindow::~CStdWindow ()
+C4Window::~C4Window ()
 {
 	Clear();
 }
 
-CStdWindow * CStdWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 	// SDL doesn't support multiple monitors.
@@ -60,40 +60,40 @@ CStdWindow * CStdWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const
 	return this;
 }
 
-bool CStdWindow::ReInit(C4AbstractApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// TODO: How do we enable multisampling with SDL?
 	// Maybe re-call SDL_SetVideoMode?
 	return false;
 }
 
-void CStdWindow::Clear() {}
+void C4Window::Clear() {}
 
-void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 	// TODO: Enumerate multi samples
 }
 
-bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
+bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
 
-bool CStdWindow::RestorePosition(const char *, const char *, bool) { return true; }
+bool C4Window::RestorePosition(const char *, const char *, bool) { return true; }
 
 // Window size is automatically managed by C4AbstractApp's display mode management.
 // Just remember the size for others to query.
 
-bool CStdWindow::GetSize(C4Rect * pRect)
+bool C4Window::GetSize(C4Rect * pRect)
 {
 	pRect->x = pRect->y = 0;
 	pRect->Wdt = width, pRect->Hgt = height;
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int X, unsigned int Y)
+void C4Window::SetSize(unsigned int X, unsigned int Y)
 {
 	width = X, height = Y;
 }
 
-void CStdWindow::SetTitle(const char * Title)
+void C4Window::SetTitle(const char * Title)
 {
 	SDL_WM_SetCaption(Title, 0);
 }
@@ -101,7 +101,7 @@ void CStdWindow::SetTitle(const char * Title)
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 
-void CStdWindow::FlashWindow()
+void C4Window::FlashWindow()
 {
 }
 

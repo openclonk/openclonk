@@ -204,7 +204,7 @@ static void readline_callback (char * line)
 }
 #endif
 
-bool CStdDDraw::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdDDraw::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	return true;
 }
@@ -221,16 +221,16 @@ bool C4AbstractApp::FlushMessages()
 	return true;
 }
 
-void CStdWindow::Clear() {}
-CStdWindow::CStdWindow() {}
-CStdWindow::~CStdWindow() {}
-void CStdWindow::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
-void CStdWindow::FlashWindow() {}
-bool CStdWindow::GetSize(C4Rect*) {return 0;}
-CStdWindow* CStdWindow::Init(CStdWindow::WindowKind, C4AbstractApp*, char const*, CStdWindow*, bool) {return this;}
-bool CStdWindow::ReInit(C4AbstractApp*) {return 0;}
-bool CStdWindow::RestorePosition(char const*, char const*, bool) {return 0;}
-void CStdWindow::SetSize(unsigned int, unsigned int) {}
-void CStdWindow::SetTitle(char const*) {}
+void C4Window::Clear() {}
+C4Window::C4Window() {}
+C4Window::~C4Window() {}
+void C4Window::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
+void C4Window::FlashWindow() {}
+bool C4Window::GetSize(C4Rect*) {return 0;}
+C4Window* C4Window::Init(C4Window::WindowKind, C4AbstractApp*, char const*, C4Window*, bool) {return this;}
+bool C4Window::ReInit(C4AbstractApp*) {return 0;}
+bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
+void C4Window::SetSize(unsigned int, unsigned int) {}
+void C4Window::SetTitle(char const*) {}
 
 #endif // USE_CONSOLE

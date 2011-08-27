@@ -83,7 +83,7 @@ public:
 	CSurface();
 	~CSurface();
 	CSurface(int iWdt, int iHgt); // create new surface and init it
-	CSurface(C4AbstractApp * pApp, CStdWindow * pWindow); // create new surface for a window
+	CSurface(C4AbstractApp * pApp, C4Window * pWindow); // create new surface for a window
 public:
 	int Wdt,Hgt; // size of surface
 	int Scale; // scale of image; divide coordinates by this value to get the "original" image size
@@ -128,7 +128,7 @@ public:
 	void MoveFrom(CSurface *psfcFrom); // grab data from other surface - invalidates other surface
 	bool IsRenderTarget();        // surface can be used as a render target?
 protected:
-	CStdWindow * pWindow;
+	C4Window * pWindow;
 	int Locked;
 	bool Attached;
 	bool fPrimary;

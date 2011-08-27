@@ -253,7 +253,7 @@ typedef union _XEvent XEvent;
 typedef struct _XDisplay Display;
 #endif
 
-class CStdWindow
+class C4Window
 {
 public:
 	enum WindowKind
@@ -263,8 +263,8 @@ public:
 		W_Fullscreen
 	};
 public:
-	CStdWindow ();
-	virtual ~CStdWindow ();
+	C4Window ();
+	virtual ~C4Window ();
 	bool Active;
 	CSurface * pSurface;
 	virtual void Clear();
@@ -273,7 +273,7 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual CStdWindow * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -334,7 +334,7 @@ public:
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;
-	friend class CStdGtkWindow;
+	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

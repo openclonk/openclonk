@@ -55,7 +55,7 @@ bool EraseItemSafe(const char *szFilename)
 
 #endif
 
-void CStdWindow::PerformUpdate()
+void C4Window::PerformUpdate()
 {
 }
 

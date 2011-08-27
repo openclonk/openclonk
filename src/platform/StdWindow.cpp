@@ -63,14 +63,14 @@
 #define C4FullScreenClassName L"C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-CStdWindow::CStdWindow (): Active(false), pSurface(0), hWindow(0)
+C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
 {
 }
-CStdWindow::~CStdWindow ()
+C4Window::~C4Window ()
 {
 }
 
-bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
+bool C4Window::RegisterWindowClass(HINSTANCE hInst)
 {
 	WNDCLASSEXW WndClass = {0};
 	WndClass.cbSize        = sizeof(WNDCLASSEX);
@@ -84,7 +84,7 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	return !!RegisterClassExW(&WndClass);
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 
@@ -119,7 +119,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp *
 	return this;
 }
 
-bool CStdWindow::ReInit(C4AbstractApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// We don't need to change anything with the window for any
 	// configuration option changes on Windows.
@@ -141,7 +141,7 @@ bool CStdWindow::ReInit(C4AbstractApp* pApp)
 	return true;
 }
 
-void CStdWindow::Clear()
+void C4Window::Clear()
 {
 	// Destroy window
 	if (hRenderWindow) DestroyWindow(hRenderWindow);
@@ -150,24 +150,24 @@ void CStdWindow::Clear()
 	hWindow = NULL;
 }
 
-bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
+bool C4Window::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
 {
 	return StoreWindowPosition(hWindow, szWindowName, szSubKey, fStoreSize) != 0;
 }
 
-bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
+bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
 {
 	if (!RestoreWindowPosition(hWindow, szWindowName, szSubKey, fHidden))
 		ShowWindow(hWindow,SW_SHOWNORMAL);
 	return true;
 }
 
-void CStdWindow::SetTitle(const char *szToTitle)
+void C4Window::SetTitle(const char *szToTitle)
 {
 	if (hWindow) SetWindowTextW(hWindow, szToTitle ? GetWideChar(szToTitle) : L"");
 }
 
-bool CStdWindow::GetSize(C4Rect * pRect)
+bool C4Window::GetSize(C4Rect * pRect)
 {
 	RECT r;
 	if (!(hWindow && GetClientRect(hWindow,&r))) return false;
@@ -178,7 +178,7 @@ bool CStdWindow::GetSize(C4Rect * pRect)
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
+void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	if (hWindow)
 	{
@@ -195,14 +195,14 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
 	}
 }
 
-void CStdWindow::FlashWindow()
+void C4Window::FlashWindow()
 {
 	// please activate me!
 	if (hWindow)
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
 }
 
-void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 #ifdef USE_GL
 	if(pGL && pGL->pMainCtx)
@@ -459,7 +459,7 @@ void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 }
 
-void CStdWindow::RequestUpdate()
+void C4Window::RequestUpdate()
 {
 	// just invoke directly
 	PerformUpdate();

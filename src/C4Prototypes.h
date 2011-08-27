@@ -139,7 +139,7 @@ class CTexRef;
 class CTexMgr;
 class CStdDDraw;
 class C4AbstractApp;
-class CStdWindow;
+class C4Window;
 class CSurface;
 
 namespace C4GUI

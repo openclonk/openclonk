@@ -88,7 +88,7 @@ void C4Console::HandleMessage (XEvent & e)
 }
 #endif // USE_X11
 
-CStdWindow * C4Console::Init(C4AbstractApp * pApp)
+C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
 	return C4ConsoleGUI::CreateConsoleWindow(pApp);
 }
@@ -580,7 +580,7 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-CStdWindow * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
+C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
@@ -612,7 +612,7 @@ void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
 bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
 bool C4Viewport::TogglePlayerLock() {return 0;}
-void CStdWindow::RequestUpdate() {}
+void C4Window::RequestUpdate() {}
 bool OpenURL(char const*) {return 0;}
 #include "C4ConsoleGUICommon.h"
 #endif

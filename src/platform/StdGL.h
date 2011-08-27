@@ -36,7 +36,7 @@
 #endif
 #include <StdDDraw2.h>
 
-class CStdWindow;
+class C4Window;
 
 // one OpenGL context
 class CStdGLCtx
@@ -48,10 +48,10 @@ public:
 	void Clear();               // clear objects
 
 #ifdef _WIN32
-	bool Init(CStdWindow * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
 	std::vector<int> EnumerateMultiSamples() const;
 #else
-	bool Init(CStdWindow * pWindow, C4AbstractApp *pApp);
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
 #endif
 
 #ifdef USE_COCOA
@@ -66,7 +66,7 @@ public:
 protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
-	CStdWindow * pWindow; // window to draw in
+	C4Window * pWindow; // window to draw in
 #ifdef _WIN32
 	HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
@@ -117,7 +117,7 @@ public:
 	bool PrepareMaterial(StdMeshMaterial& mat);
 	// Surface
 	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
-	virtual CStdGLCtx *CreateContext(CStdWindow * pWindow, C4AbstractApp *pApp);
+	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef _WIN32
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
@@ -134,7 +134,7 @@ public:
 	void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
 	// Gamma
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
+	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
@@ -158,7 +158,7 @@ protected:
 	friend class CStdGLCtx;
 	friend class C4StartupOptionsDlg;
 	friend class C4FullScreen;
-	friend class CStdWindow;
+	friend class C4Window;
 };
 
 // Global access pointer

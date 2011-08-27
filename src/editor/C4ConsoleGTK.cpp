@@ -312,10 +312,10 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 		Console.EditCursor.In(text);
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
 	// Calls InitGUI
-	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();

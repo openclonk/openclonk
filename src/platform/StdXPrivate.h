@@ -167,8 +167,8 @@ public:
 			LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
 			xim(0), xic(0), X11Proc(pApp),
 			argc(0), argv(0) { }
-	static CStdWindow * GetWindow(unsigned long wnd);
-	static void SetWindow(unsigned long wnd, CStdWindow * pWindow);
+	static C4Window * GetWindow(unsigned long wnd);
+	static void SetWindow(unsigned long wnd, C4Window * pWindow);
 	bool SwitchToFullscreen(C4AbstractApp * pApp, Window wnd);
 	void SwitchToDesktop(C4AbstractApp * pApp, Window wnd);
 	void SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd);
@@ -178,7 +178,7 @@ public:
 		unsigned long AcquirationTime;
 	} PrimarySelection, ClipboardSelection;
 	unsigned long LastEventTime;
-	typedef std::map<unsigned long, CStdWindow *> WindowListT;
+	typedef std::map<unsigned long, C4Window *> WindowListT;
 	static WindowListT WindowList;
 	XF86VidModeModeInfo xf86vmode_oldmode, xf86vmode_targetmode;
 	int xrandr_oldmode;

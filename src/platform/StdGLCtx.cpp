@@ -267,7 +267,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0; hWindow = NULL;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *pApp, HWND hWindow)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 {
 	// safety
 	if (!pGL) return false;
@@ -411,7 +411,7 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)
@@ -460,7 +460,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -539,7 +539,7 @@ bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	                               ramp.red, ramp.green, ramp.blue);
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	if (pApp->xf86vmode_major_version < 2) return false;
 	// Get the Display
@@ -571,7 +571,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, C4AbstractApp *)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -626,7 +626,7 @@ bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }

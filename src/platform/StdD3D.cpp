@@ -89,7 +89,7 @@ void CStdD3D::Clear()
 
 /* Direct3D initialization */
 
-bool CStdD3D::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt, CStdWindow * pWindow)
+bool CStdD3D::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt, C4Window * pWindow)
 {
 	RECT SrcRt, DstRt;
 	if (pSrcRt)
@@ -1140,7 +1140,7 @@ bool CStdD3D::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 	return true;
 }
 
-bool CStdD3D::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdD3D::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	if (!lpDevice) return false;
 	lpDevice->GetGammaRamp(0, &DefRamp.ramp);

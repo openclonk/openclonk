@@ -63,7 +63,7 @@ CSurface::CSurface(int iWdt, int iHgt) : fIsBackground(false)
 	Create(iWdt, iHgt);
 }
 
-CSurface::CSurface(C4AbstractApp * pApp, CStdWindow * pWindow):
+CSurface::CSurface(C4AbstractApp * pApp, C4Window * pWindow):
 		Wdt(0), Hgt(0)
 {
 	Default();

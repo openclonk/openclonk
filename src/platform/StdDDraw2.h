@@ -37,7 +37,7 @@ class CSurface;
 struct CStdPalette;
 class CStdGLCtx;
 class C4AbstractApp;
-class CStdWindow;
+class C4Window;
 
 class StdMeshMatrix;
 class StdMeshMaterial;
@@ -225,7 +225,7 @@ public:
 	bool Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
-	virtual CStdGLCtx *CreateContext(CStdWindow *, C4AbstractApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return NULL; }
 #ifdef _WIN32
 	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
@@ -292,7 +292,7 @@ public:
 	void EnableGamma();                                       // set current gamma ramp
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)=0;       // really apply gamma ramp
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow)=0;
+	virtual bool SaveDefaultGammaRamp(C4Window * pWindow)=0;
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
 	void DeactivateBlitModulation() { BlitModulated=false; }  // stop color modulation of blits

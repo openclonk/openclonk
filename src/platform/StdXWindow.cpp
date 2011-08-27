@@ -223,18 +223,18 @@ static Window CreateRenderWindow(Display* dpy, Window parent, XVisualInfo* info)
 	                     info->depth, InputOutput, info->visual, attrmask, &attr);
 }
 
-/* CStdWindow */
+/* C4Window */
 
-CStdWindow::CStdWindow ():
+C4Window::C4Window ():
 		Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
 {
 }
-CStdWindow::~CStdWindow ()
+C4Window::~C4Window ()
 {
 	Clear();
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
@@ -388,7 +388,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, C4AbstractApp *
 	return this;
 }
 
-bool CStdWindow::ReInit(C4AbstractApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Can only re-init if we have been initialized already
 	if(!wnd) return false;
@@ -425,7 +425,7 @@ bool CStdWindow::ReInit(C4AbstractApp* pApp)
 	return true;
 }
 
-void CStdWindow::Clear()
+void C4Window::Clear()
 {
 	// Destroy window
 	if (wnd)
@@ -446,7 +446,7 @@ void CStdWindow::Clear()
 	Info = NULL;
 }
 
-bool CStdWindow::FindInfo(int samples, void** info)
+bool C4Window::FindInfo(int samples, void** info)
 {
 #ifdef USE_GL
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
@@ -470,7 +470,7 @@ bool CStdWindow::FindInfo(int samples, void** info)
 	return false;
 }
 
-void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 #ifdef USE_GL
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
@@ -485,15 +485,15 @@ void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
 #endif
 }
 
-bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
+bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
 
-bool CStdWindow::RestorePosition(const char *, const char *, bool)
+bool C4Window::RestorePosition(const char *, const char *, bool)
 {
 	// The Windowmanager is responsible for window placement.
 	return true;
 }
 
-bool CStdWindow::GetSize(C4Rect * pRect)
+bool C4Window::GetSize(C4Rect * pRect)
 {
 	Window winDummy;
 	unsigned int borderDummy;
@@ -509,11 +509,11 @@ bool CStdWindow::GetSize(C4Rect * pRect)
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int X, unsigned int Y)
+void C4Window::SetSize(unsigned int X, unsigned int Y)
 {
 	XResizeWindow(dpy, wnd, X, Y);
 }
-void CStdWindow::SetTitle(const char * Title)
+void C4Window::SetTitle(const char * Title)
 {
 	XTextProperty title_property;
 	StdStrBuf tbuf(Title, true);
@@ -522,7 +522,7 @@ void CStdWindow::SetTitle(const char * Title)
 	XSetWMName(dpy, wnd, &title_property);
 }
 
-void CStdWindow::FlashWindow()
+void C4Window::FlashWindow()
 {
 	// This tries to implement flashing via
 	// _NET_WM_STATE_DEMANDS_ATTENTION, but it simply does not work for me.
@@ -551,7 +551,7 @@ void CStdWindow::FlashWindow()
 	}
 }
 
-void CStdWindow::HandleMessage(XEvent& event)
+void C4Window::HandleMessage(XEvent& event)
 {
 	if (event.type == FocusIn)
 	{

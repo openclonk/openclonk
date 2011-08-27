@@ -45,9 +45,9 @@ const int C4CNS_ModePlay = 0,
 
 #ifdef WITH_DEVELOPER_MODE
 #include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ConsoleBase;
+typedef C4GtkWindow C4ConsoleBase;
 #else
-typedef CStdWindow C4ConsoleBase;
+typedef C4Window C4ConsoleBase;
 #endif
 
 class C4Console: public C4ConsoleGUI
@@ -59,7 +59,7 @@ public:
 	virtual void Clear();
 	virtual void Close();
 	using C4ConsoleBase::Init;
-	virtual CStdWindow * Init(C4AbstractApp * app);
+	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	bool Message(const char *szMessage, bool fQuery=false);

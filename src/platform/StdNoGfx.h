@@ -45,7 +45,7 @@ public:
 	virtual void DrawQuadDw(SURFACE, float *, DWORD, DWORD, DWORD, DWORD) { }
 	virtual void PerformPix(SURFACE, float, float, DWORD) { }
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &, bool ) { return true; }
-	virtual bool SaveDefaultGammaRamp(CStdWindow *) { return true; }
+	virtual bool SaveDefaultGammaRamp(C4Window *) { return true; }
 	virtual void SetTexture() { }
 	virtual void ResetTexture() { }
 	virtual bool InitDeviceObjects() { return true; }
