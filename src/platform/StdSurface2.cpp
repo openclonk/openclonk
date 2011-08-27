@@ -543,14 +543,14 @@ IDirect3DSurface9 *CSurface::GetSurface()
 bool CSurface::ReadBMP(CStdStream &hGroup)
 {
 	int lcnt;
-	CBitmap256Info BitmapInfo;
+	C4BMP256Info BitmapInfo;
 	// read bmpinfo-header
-	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
+	if (!hGroup.Read(&BitmapInfo,sizeof(C4BMPInfo))) return false;
 	// is it 8bpp?
 	if (BitmapInfo.Info.biBitCount == 8)
 	{
-		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),
-		                 Min(sizeof(BitmapInfo)-sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo)+BitmapInfo.FileBitsOffset())))
+		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(C4BMPInfo),
+		                 Min(sizeof(BitmapInfo)-sizeof(C4BMPInfo),sizeof(BitmapInfo)-sizeof(C4BMPInfo)+BitmapInfo.FileBitsOffset())))
 			return false;
 		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return false;
 	}
@@ -558,7 +558,7 @@ bool CSurface::ReadBMP(CStdStream &hGroup)
 	{
 		// read 24bpp
 		if (BitmapInfo.Info.biBitCount != 24) return false;
-		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return false;
+		if (!hGroup.Advance(((C4BMPInfo) BitmapInfo).FileBitsOffset())) return false;
 	}
 
 	// Create and lock surface
@@ -600,8 +600,8 @@ bool CSurface::ReadBMP(CStdStream &hGroup)
 
 /*bool CSurface::Save(const char *szFilename)
   {
-  CBitmapInfo BitmapInfo2;
-  CBitmap256Info BitmapInfo;
+  C4BMPInfo BitmapInfo2;
+  C4BMP256Info BitmapInfo;
   // Set bitmap info
   if (fPrimary)
     {

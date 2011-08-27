@@ -104,20 +104,20 @@ bool CSurface8::Create(int iWdt, int iHgt)
 bool CSurface8::Read(CStdStream &hGroup)
 {
 	int cnt,lcnt;
-	CBitmap256Info BitmapInfo;
+	C4BMP256Info BitmapInfo;
 	// read bmpinfo-header
-	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
+	if (!hGroup.Read(&BitmapInfo,sizeof(C4BMPInfo))) return false;
 	// is it 8bpp?
 	if (BitmapInfo.Info.biBitCount == 8)
 	{
-		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo))) return false;
+		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(C4BMPInfo),sizeof(BitmapInfo)-sizeof(C4BMPInfo))) return false;
 		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return false;
 	}
 	else
 	{
 		// read 24bpp
 		if (BitmapInfo.Info.biBitCount != 24) return false;
-		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return false;
+		if (!hGroup.Advance(((C4BMPInfo) BitmapInfo).FileBitsOffset())) return false;
 	}
 	// no 8bpp-surface in newgfx!
 	// needs to be kept for some special surfaces
@@ -166,7 +166,7 @@ bool CSurface8::Read(CStdStream &hGroup)
 
 bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
 {
-	CBitmap256Info BitmapInfo;
+	C4BMP256Info BitmapInfo;
 	BitmapInfo.Set(Wdt,Hgt,bpPalette ? bpPalette : pPal->Colors);
 
 	// Create file & write info
