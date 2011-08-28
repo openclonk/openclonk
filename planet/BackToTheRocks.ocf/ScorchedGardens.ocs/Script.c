@@ -9,6 +9,7 @@
 
 protected func Initialize()
 {
+	SetMatAdjust(RGB(255,127,127));
 
 	// Goal.
 	CreateObject(Goal_DeathMatch, 0, 0, NO_OWNER);
