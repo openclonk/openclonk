@@ -3,7 +3,7 @@
 global func BlueExplode(int level)
 {
 	// Shake the viewport.
-	ShakeViewPort(level, nil, GetX(), GetY());
+	ShakeViewPort(level, GetX(), GetY());
 
 	// Sound must be created before object removal, for it to be played at the right position.
 	var grade = BoundBy(level / 10 - 1, 1, 3);

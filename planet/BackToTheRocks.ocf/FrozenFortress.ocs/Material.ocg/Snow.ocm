@@ -18,7 +18,6 @@ PXSGfx=Snow
 PXSGfxRt=0,0,16,16,-8,-8
 Dig2Object=Snow
 Dig2ObjectRatio=1500
-Dig2ObjectRequest=0
 InMatConvert=Water
 InMatConvertTo=Sky
 InMatConvertDepth=1

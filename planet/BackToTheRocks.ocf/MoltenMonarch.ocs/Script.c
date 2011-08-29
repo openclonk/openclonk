@@ -94,10 +94,10 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 }
 global func FxDeathByFireTimer(object target, effect, int timer)
 {
-	for(var obj in FindObjects(Find_InRect(55,0,50,50,70),Find_OCF(OCF_Alive)))
+	for(var obj in FindObjects(Find_InRect(55,0,50,70),Find_OCF(OCF_Alive)))
 		obj->~Kill();
 
-	for(var obj in FindObjects(Find_InRect(55,0,50,50,30),Find_OCF(OCF_Alive),Find_Not(Find_ID(MovingBrick))))
+	for(var obj in FindObjects(Find_InRect(55,0,50,30),Find_OCF(OCF_Alive),Find_Not(Find_ID(MovingBrick))))
 		obj->RemoveObject();	
 		
 	for(var i=0; i<20; i++)
