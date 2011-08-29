@@ -525,7 +525,7 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 			szTextureOverlay = TextureMap.GetEntry(iTexMapIx)->GetTextureName();
 		// default to smooth
 		if (!szTextureOverlay)
-			szTextureOverlay = "Smooth";
+			szTextureOverlay = "none";
 		// search/create entry in texmap
 		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, true,
 		                         FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());

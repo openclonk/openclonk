@@ -8379,8 +8379,8 @@ msgid "If <code>true</code>, the material will be drawn as 'underground'."
 msgstr "Wenn <code>true</code>, wird das Material unterirdisch gezeichnet."
 
 #: sdk/script/fn/DrawMaterialQuad.xml:65(desc)
-msgid "Draws a four-cornered polygon of the specified material and texture into the landscape. If no texture is specified, Smooth is assumed."
-msgstr "Zeichnet ein viereckiges Polygon im angegebenen Material mit der angegebenen Textur. Wenn keine Textur angegeben ist, wird Smooth angenommen."
+msgid "Draws a four-cornered polygon of the specified material and texture into the landscape."
+msgstr "Zeichnet ein viereckiges Polygon im angegebenen Material mit der angegebenen Textur."
 
 #: sdk/script/fn/DrawMaterialQuad.xml:66(remark)
 msgid "The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you make multiple calls to this function."

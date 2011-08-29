@@ -62,7 +62,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Draws a four-cornered polygon of the specified material and texture into the landscape. If no texture is specified, Smooth is assumed.</desc>
+    <desc>Draws a four-cornered polygon of the specified material and texture into the landscape.</desc>
     <remark>The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you make multiple calls to this function.</remark>
     <examples>
       <example>
