@@ -155,8 +155,8 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 	{
 		cLnk = NULL; cPrev = Last;
 
-		// Sort override or line? Leave default as is.
-		bool fUnsorted = nObj->Unsorted || nObj->Def->Line;
+		// Sort override? Leave default as is.
+		bool fUnsorted = nObj->Unsorted;
 		if (!fUnsorted)
 		{
 
