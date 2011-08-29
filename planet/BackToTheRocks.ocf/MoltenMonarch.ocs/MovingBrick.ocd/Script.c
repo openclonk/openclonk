@@ -61,9 +61,9 @@ SetProperty("ActMap", {
 			X = 0,
 			Y = 0,
 			Wdt = 40,
-			Hgt = 10,
+			Hgt = 8,
 			NextAction = "Moving",
 		},
 	}, def);
-	SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "MovingBrick", def);
 }
