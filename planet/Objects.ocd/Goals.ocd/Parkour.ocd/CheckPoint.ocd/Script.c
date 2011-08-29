@@ -317,5 +317,24 @@ protected func GetColorByAngle(int angle)
 	return RGBa(255, 255, 255, 192);
 }
 
+/*-- Misc --*/
+
+// Clears all materials behind a checkpoint.
+public func ClearCPBack()
+{
+	var x = GetX();
+	var y = GetY();
+	// Approximate by rectangles for now.
+	for (var d = 0; d <= cp_size; d++)
+	{
+		var dx = x - d;
+		var dy = y - Sqrt(cp_size**2 - d**2);
+		var wdt = 2 * d;
+		var hgt = 2 * Sqrt(cp_size**2 - d**2);		
+		ClearFreeRect(dx, dy, wdt, hgt);		
+	}
+	return;
+}
+
 /*-- Proplist --*/
 local Name = "$Name$";
