@@ -39,9 +39,8 @@ protected func Initialize()
 			if (!GBackSolid(x, y))
 				break;
 		}
-		goal->AddCheckpoint(x, y, cp_mode);
-		CreateObject(Dynamite,x,y,-1)->Explode(25); //Safety for materials
-		CreateObject(Dynamite,x,y,-1)->Explode(25); //Safety granite
+		var cp = goal->AddCheckpoint(x, y, cp_mode);
+		cp->ClearCPBack();
 	}
 	
 	/* --Environmental Effects-- */
@@ -52,8 +51,8 @@ protected func Initialize()
 	time->SetTime(900);
 
 	// Clouds
-//	for (var i = 0; i < 30; i++)
-//		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
+	//	for (var i = 0; i < 30; i++)
+	//		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
 	// Snow
 	AddEffect("Snowfall", 0, 1, 2);
 	//Wind
@@ -74,7 +73,7 @@ protected func Initialize()
 global func PlaceChest()
 {
 	// Place powderkegs and dynamite boxes
-	var spawnlist = [PowderKeg, PowderKeg, DynamiteBox, Boompack, Musket, LeadShot, LeadShot];
+	var spawnlist = [PowderKeg, DynamiteBox, Dynamite, Loam, Pickaxe, Ropeladder];
 
 	var pos = FindPosInMat("Tunnel", 0, 0, LandscapeWidth(), LandscapeHeight());
 	var chest = CreateObject(Chest, pos[0], pos[1]);
@@ -94,7 +93,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 	clonk->CreateContents(Shovel);
-	clonk->CreateContents(GrappleBow);
+	clonk->CreateContents(Loam);
 	clonk->CreateContents(Dynamite);
 	return;
 }
@@ -111,7 +110,7 @@ private func MapBottomFix()
 	{
 		var sway = Sin(i, 10);
 		if (GetMaterial(i, LandscapeHeight() - 1) == Material("Tunnel"))
-			DrawMaterialQuad("Granite", i - 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight(), i - 1, LandscapeHeight());
+			DrawMaterialQuad("Granite", i - 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight() - 13 + sway, i + 1, LandscapeHeight(), i - 1, LandscapeHeight(), true);
 	}
 	return;
 }

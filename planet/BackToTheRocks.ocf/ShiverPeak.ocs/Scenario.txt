@@ -22,7 +22,7 @@ Crew=Clonk=1
 [Landscape]
 Vegetation=Tree_Coniferous;
 VegetationLevel=100,0,0,100
-InEarth=Rock=1;Gold=1;Dynamite=2;Loam=2
+InEarth=Rock=1;Gold=1;Dynamite=2;Loam=2;Firestone=1
 InEarthLevel=40,0,0,100
 Sky=WinterMountains
 BottomOpen=1

@@ -39,9 +39,8 @@ protected func Initialize()
 			if (!GBackSolid(x, y) && !GBackSky(x, y))
 				break;
 		}
-		goal->AddCheckpoint(x, y, cp_mode);
-		CreateObject(Dynamite, x, y, NO_OWNER)->Explode(25);
-		CreateObject(Dynamite, x, y, NO_OWNER)->Explode(25);
+	var cp = goal->AddCheckpoint(x, y, cp_mode);
+	cp->ClearCPBack();
 	}
 	
 	// Create a little mood.
