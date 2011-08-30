@@ -28,6 +28,31 @@ protected func TurnWheel()
 	  );
 }
 
+// Check whether I am a railway station
+// If so, set up new graphics
+// If not, disable graphics if needed
+private func CheckRailStation()
+{
+	if (GetLength(FindObjects(Find_Func("IsConnectedTo", this))) == 1 || bManualSetting)
+	{
+		if (!is_station)
+		{
+			SetGraphics("Station", Library_CableStation, 2, GFXOV_MODE_Base);
+			is_station = true;
+		}
+	}
+	else if (is_station)
+	{
+		SetGraphics(nil, nil, 2, GFXOV_MODE_Base);
+		is_station = false;
+	}
+}
+
+public func IsInteractable()
+{
+	return true;
+}
+
 local ActMap = {
 	Active = {
 		Prototype = Action,

@@ -1,0 +1,4 @@
+[DefCore]
+id=Appendto_CableCar_ToolsWorkshop
+Version=4,10,0,0
+Category=C4D_StaticBack
