@@ -104,7 +104,6 @@ protected:
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);
 	static void OnGrabContents(GtkWidget* widget, gpointer data);
-	static void OnProperties(GtkWidget* widget, gpointer data);
 #endif
 };
 

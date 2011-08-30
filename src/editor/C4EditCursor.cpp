@@ -107,18 +107,14 @@ bool C4EditCursor::Init()
 	itemDelete = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DELETE"));
 	itemDuplicate = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DUPLICATE"));
 	itemGrabContents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CONTENTS"));
-	itemProperties = gtk_menu_item_new_with_label(""); // Set dynamically in DoContextMenu
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDelete);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDuplicate);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemGrabContents);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), GTK_WIDGET(gtk_separator_menu_item_new()));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemProperties);
 
 	g_signal_connect(G_OBJECT(itemDelete), "activate", G_CALLBACK(OnDelete), this);
 	g_signal_connect(G_OBJECT(itemDuplicate), "activate", G_CALLBACK(OnDuplicate), this);
 	g_signal_connect(G_OBJECT(itemGrabContents), "activate", G_CALLBACK(OnGrabContents), this);
-	g_signal_connect(G_OBJECT(itemProperties), "activate", G_CALLBACK(OnProperties), this);
 
 	gtk_widget_show_all(menuContext);
 #endif // WITH_DEVELOPER_MODe
@@ -542,21 +538,22 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Update prop tools by mode
 	switch (Mode)
 	{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
 		Console.ToolsDlgClose();
-		OpenPropTools();
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
 		Console.PropertyDlgClose();
-		OpenPropTools();
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	// Update cursor
-	if (Mode==C4CNS_ModePlay) ::MouseControl.ShowCursor();
-	else ::MouseControl.HideCursor();
+	if (Mode == C4CNS_ModePlay)
+	{
+		::MouseControl.ShowCursor();
+	}
+	else
+	{
+		OpenPropTools();
+		::MouseControl.HideCursor();
+	}
 	// Restore focus
 #ifdef _WIN32
 	SetFocus(hFocus);
@@ -628,11 +625,9 @@ bool C4EditCursor::DoContextMenu()
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_PROPERTIES, Mode!=C4CNS_ModePlay);
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
-	SetMenuItemText(hContext,IDM_VIEWPORT_PROPERTIES,LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
 	int32_t iItem = TrackPopupMenu(
 	                  hContext,
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
@@ -644,17 +639,12 @@ bool C4EditCursor::DoContextMenu()
 	case IDM_VIEWPORT_DELETE: Delete(); break;
 	case IDM_VIEWPORT_DUPLICATE: Duplicate(); break;
 	case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
-	case IDM_VIEWPORT_PROPERTIES: OpenPropTools();  break;
 	}
 #else
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
-	gtk_widget_set_sensitive(itemProperties, Mode!=C4CNS_ModePlay);
-
-	GtkLabel* label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(itemProperties)));
-	gtk_label_set_text(label, LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
 
 	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, 0);
 #endif
@@ -803,10 +793,6 @@ void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 	static_cast<C4EditCursor*>(data)->GrabContents();
 }
 
-void C4EditCursor::OnProperties(GtkWidget* widget, gpointer data)
-{
-	static_cast<C4EditCursor*>(data)->OpenPropTools();
-}
 #endif
 
 bool C4EditCursor::AltDown()
