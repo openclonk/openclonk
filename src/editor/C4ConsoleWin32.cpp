@@ -114,6 +114,7 @@ public:
 		hbmPlay2=NULL;
 		hbmHalt=NULL;
 		hbmHalt2=NULL;
+		hPropertyDlg=NULL;
 		MenuIndexFile       =  0;
 		MenuIndexPlayer     =  1;
 		MenuIndexViewport   =  2;

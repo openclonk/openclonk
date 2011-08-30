@@ -544,11 +544,8 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		if (Console.ToolsDlg.Active)
-		{
-			Console.ToolsDlg.Clear();
-			OpenPropTools();
-		}
+		Console.ToolsDlgClose();
+		OpenPropTools();
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
