@@ -470,6 +470,13 @@ void C4Viewport::SetZoom(float zoomValue)
 
 void C4Viewport::AdjustPosition()
 {
+	if (ViewWdt == 0 || ViewHgt == 0)
+	{
+		// zero-sized viewport, possibly minimized editor window
+		// don't do anything then
+		return;
+	}
+
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	C4Player *pPlr = ::Players.Get(Player);
 	if (ZoomTarget < 0.000001f) InitZoom();
