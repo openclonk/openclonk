@@ -21,11 +21,6 @@ protected func Initialize()
 
 	// Smooth brick edges.
 	PlaceEdges();
-	//NoLoam
-	RemoveAll(Find_ID(Loam));
-	
-	//Exploded Deco
-	CreateObject(Dynamite,240,125)->Explode(25);
 	
 	//Water needs to be OK
 	AddEffect("Refiller",0,100,6);
@@ -36,11 +31,12 @@ global func FxRefillerTimer(object pTarget, effect, int timer)
 {
 	for(var i=0; i<10; i++) if(!GBackLiquid(100,315)) InsertMaterial(Material("Water"),135,385);
 }
+
 global func PlaceEdges()
 {
-	var x=[145, 205, 205, 195, 205, 275, 265, 25, 45, 55, 145, 135, 125];
-	var y=[295, 315, 325, 185, 195, 295, 305, 285, 295, 305, 275, 265, 255];
-	var d=[2, 1, 3, 3, 3, 1, 1, 0, 0, 0, 0, 0, 0];
+	var x=[268, 61, 149, 125, 133, 141, 53, 45, 29, 260, 276, 212, 197, 212];
+	var y=[300, 308, 276, 252, 260, 268, 300, 292, 284, 308, 292, 197, 181, 316];
+	var d=[1, nil, nil, 0, 0, 0, 0, 0, 0, 1, 1, 3, 3, 1];
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);

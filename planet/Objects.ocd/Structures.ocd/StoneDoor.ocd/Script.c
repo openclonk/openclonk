@@ -58,7 +58,7 @@ func Definition(def)
 			Delay = 1,
 			X = 0,
 			Y = 0,
-			Wdt = 10,
+			Wdt = 8,
 			Hgt = 40,
 			NextAction = "Door",
 		},

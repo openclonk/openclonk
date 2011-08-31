@@ -23,12 +23,8 @@ Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1
-MapWidth=60
-MapHeight=50
 SkyScrollMode=1
-
-[Animals]
-Nest=Firestone=50;Loam=15;Rock=20;
+MapZoom=8
 
 [Weather]
 Climate=00,0,0,00

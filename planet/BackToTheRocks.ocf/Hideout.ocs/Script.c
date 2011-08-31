@@ -24,29 +24,29 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(StoneDoor, 366, 420, NO_OWNER);
+	gate = CreateObject(StoneDoor, 365, 420, NO_OWNER);
 	gate->DoDamage(50);		//Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
 	//wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 346, 550, NO_OWNER);
+	gate = CreateObject(StoneDoor, 341, 550, NO_OWNER);
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
 	//wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 695, 539, NO_OWNER);
+	gate = CreateObject(StoneDoor, 693, 539, NO_OWNER);
 	gate->DoDamage(80);		//Middle dors even easier
 	wheel = CreateObject(SpinWheel, 660, 500, NO_OWNER);
 	wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 420, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 365, 420, NO_OWNER);
 	gate->DoDamage(50);		//Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
 	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 344, 550, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 341, 550, NO_OWNER);
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
 	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
 	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 695, 539, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 693, 539, NO_OWNER);
 	gate->DoDamage(80);		//Middle dors even easier
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 500, NO_OWNER);
 	wheel->SetStoneDoor(gate);
@@ -88,27 +88,28 @@ protected func Initialize()
 	return;
 }
 
-
-
-
 global func PlaceEdges()
 {
-	var x=[565, 595, 675, 635, 385, 255, 275, 295, 105, 95, 45, 185, 155, 145, 395, 335, 265, 245, 225, 215, 105, 95, 75, 315, 625, 615, 605, 655, 665, 675, 555, 515, 685, 555, 605];
-	var y=[415, 415, 495, 495, 385, 485, 475, 465, 365, 375, 465, 545, 575, 585, 445, 455, 575, 565, 555, 545, 495, 485, 475, 545, 485, 475, 465, 435, 425, 415, 555, 565, 545, 425, 425];
+	var x=[324, 278, 109, 94, 661, 613, 556, 684, 516, 556, 676, 668, 653, 621, 629, 317, 85, 94, 101, 213, 229, 245, 261, 331, 396, 149, 188, 45, 102, 109, 283, 268, 252, 381, 636, 677, 595, 564, 614];
+	var y=[460, 581, 500, 380, 428, 429, 428, 548, 565, 557, 413, 421, 436, 476, 484, 549, 476, 485, 492, 548, 556, 564, 572, 453, 445, 588, 548, 468, 372, 365, 468, 476, 484, 389, 491, 493, 412, 413, 469];
+	var d=[1, nil, nil, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 0, 0, 3, 0, 0, nil, 0, 0, nil, nil, 1, 1, 1, 1, nil, 2, 2, 1, 1, 1, 2, nil, 3, 1, nil, 0];
+	var o=[1,0,3,2];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
 		edge->Initialize();
-		edge->PermaEdge();
-
-		var edge=CreateObject(BrickEdge, LandscapeWidth()-x[i]+5, y[i] + 5, NO_OWNER);
-		edge->Initialize();
+		edge->SetP(d[i]);
+		edge->SetPosition(x[i],y[i]);
 		edge->PermaEdge();
 		
+		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
+		edge->Initialize();
+		edge->SetP(o[d[i]]);
+		edge->SetPosition(LandscapeWidth()-x[i],y[i]);
+		edge->PermaEdge();
 	}
 	return 1;
 }
-
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);

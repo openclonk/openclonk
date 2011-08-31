@@ -21,12 +21,8 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Vegetation=NONE=1
-VegetationLevel=35
 Sky=Clouds2
 BottomOpen=0
-MapWidth=500
-MapHeight=100
 SkyScrollMode=2
 
 [Weather]

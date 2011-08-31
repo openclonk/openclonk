@@ -26,9 +26,9 @@ protected func Initialize()
 	CreateObject(SwordTarget, 190, 671, NO_OWNER)->SetR(RandomX(-10, 10));
 	CreateObject(SwordTarget, 280, 620, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	CreateObject(SwordTarget, 340, 648, NO_OWNER)->SetR(RandomX(-10, 10));
-	CreateObject(SwordTarget, 430, 600, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObject(SwordTarget, 430, 595, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(StoneDoor, 556, 640, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 557, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
@@ -36,12 +36,12 @@ protected func Initialize()
 	CreateScriptPlayer("$NameOpponent$", RGB(40,30,20), nil, CSPF_FixedAttributes);
 	
 	// Second section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1216, 550, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1221, 552, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Third section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1856, 500, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1853, 496, NO_OWNER);
 	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
@@ -50,13 +50,27 @@ protected func Initialize()
 	chest->CreateContents(Club);
 	
 	// Brick edges.
-	var edges = [[620,640],[630,630],[540,560],[530,550],[530,480],[520,470],[1160,570],[1170,560],[1830,450],[1840,440],[1850,430],[1830,370],[1800,360]];
-	for(var i = 0; i < GetLength(edges); i++)
-		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
+	PlaceEdges();
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
+}
+
+global func PlaceEdges()
+{
+	var x=[628, 1795, 1822, 1843, 1835, 1827, 1164, 1155, 515, 525, 525, 533, 620, 612];
+	var y=[620, 356, 364, 427, 435, 443, 556, 565, 465, 475, 548, 556, 628, 636];
+	var d=[1, 0, nil, 1, 1, 1, 1, 1, nil, 0, nil, nil, 1, 1];
+	for (var i = 0; i < GetLength(x); i++)
+	{
+		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		edge->Initialize();
+		edge->SetP(d[i]);
+		edge->SetPosition(x[i],y[i]);
+		edge->PermaEdge();
+	}
+	return 1;
 }
 
 // Gamecall from goals, set next mission.

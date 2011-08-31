@@ -22,8 +22,6 @@ Crew=Clonk=1
 [Landscape]
 Sky=Clouds1
 BottomOpen=1
-MapWidth=500,0,64,500
-MapHeight=100,0,40,100
 SkyScrollMode=2
 
 [Weather]

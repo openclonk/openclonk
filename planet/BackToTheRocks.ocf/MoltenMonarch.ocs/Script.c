@@ -23,34 +23,36 @@ protected func Initialize()
 
 	// Chests with weapons.
 	CreateObject(Chest, 320, 60, NO_OWNER);
-	CreateObject(Chest, 730, 100, NO_OWNER);
+	CreateObject(Chest, 730, 160, NO_OWNER);
 	CreateObject(Chest, 665, 300, NO_OWNER);
 	CreateObject(Chest, 310, 400, NO_OWNER);
 	CreateObject(Chest, 48, 250, NO_OWNER);
 	AddEffect("IntFillChests", nil, 100, 5 * 36, this);
 	
+	var brck;
 	CreateObject(MovingBrick,590,170)->Room(0,300,0,0,8);
-	var brck=CreateObject(MovingBrick,540,180);
+	
+	brck=CreateObject(MovingBrick,540,180);
 	brck->Room(0,300,3,0,8);
 	brck->SetPosition(540,215);
 	
-	var brck=CreateObject(MovingBrick,80,0);
+	brck=CreateObject(MovingBrick,77,0);
 	brck->Room(0,LandscapeHeight()+60,4,0,6);
 	AddEffect("LavaBrickReset",brck,100,10,nil);
 	
-	var brck=CreateObject(MovingBrick,80,0);
+	brck=CreateObject(MovingBrick,77,0);
 	brck->Room(0,LandscapeHeight()+60,4,0,6);
 	AddEffect("LavaBrickReset",brck,100,10,nil);
-	brck->SetPosition(80,LandscapeHeight()/3 *2);
+	brck->SetPosition(77,LandscapeHeight()/3 *2);
 	brck->SetYDir(-15);
 	
-		var brck=CreateObject(MovingBrick,80,0);
+	brck=CreateObject(MovingBrick,77,0);
 	brck->Room(0,LandscapeHeight()+60,4,0,6);
 	AddEffect("LavaBrickReset",brck,100,10,nil);
-	brck->SetPosition(80,LandscapeHeight()/3);
+	brck->SetPosition(77,LandscapeHeight()/3);
 	brck->SetYDir(-15);
 	
-		PlaceEdges();
+	PlaceEdges();
 	AddEffect("DeathByFire",nil,100,2,nil);
 	AddEffect("RemoveCorpses",nil,100,2,nil);
 	return;
@@ -119,9 +121,9 @@ global func FxLavaBrickResetTimer(object target, effect, int timer)
 
 global func PlaceEdges()
 {
-	var x=[675, 635, 375, 365, 305, 265, 265, 695, 375, 695, 485, 695, 645, 725, 715, 705, 645, 465, 345, 365, 395, 395, 375, 375, 385, 385, 365, 365, 355, 355, 415, 415, 105, 105, 105, 105, 195, 195, 185, 205, 195, 235, 245, 225, 215, 265, 255, 175, 185, 265, 275, 225, 235, 255, 245, 205, 215, 195];
-	var y=[195, 185, 415, 415, 255, 315, 385, 465, 455, 185, 205, 345, 345, 445, 455, 425, 425, 395, 445, 405, 215, 205, 235, 225, 215, 225, 245, 235, 245, 255, 405, 395, 375, 325, 135, 185, 325, 375, 125, 105, 115, 75, 65, 85, 95, 45, 55, 135, 175, 95, 85, 135, 125, 105, 115, 155, 145, 165];
-	var d=[3, 3, 2, 3, 3, 2, 0, 1, 0, 0, 2, 2, 3, 1, 1, 2, 3, 2, 0, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 3, 3, 1, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+	var x=[692, 181, 189, 268, 260, 108, 361, 362, 355, 354, 213, 188, 204, 196, 228, 236, 220, 212, 252, 244, 180, 197, 261, 269, 229, 237, 253, 245, 213, 221, 205, 261, 205, 100, 100, 100, 100, 412, 413, 369, 368, 375, 376, 390, 389, 382, 383, 396, 397, 364, 341, 461, 644, 701, 708, 716, 644, 693, 485, 693, 373, 700, 269, 269, 308, 364, 372, 636, 676];
+	var y=[468, 133, 125, 84, 92, 180, 239, 247, 254, 246, 372, 164, 148, 156, 124, 116, 132, 140, 100, 108, 172, 117, 53, 45, 85, 77, 61, 69, 101, 93, 109, 380, 325, 188, 133, 325, 372, 396, 404, 240, 232, 225, 233, 219, 211, 218, 226, 204, 212, 405, 444, 396, 420, 420, 452, 444, 340, 340, 204, 188, 451, 460, 388, 317, 252, 413, 413, 188, 197];
+	var d=[1, 2, 2, 1, 1, 1, 1, 2, 2, 1, nil, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 1, 3, 3, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 1, 2, 1, 0, 2, 3, 2, 1, 1, 3, 2, 2, 0, 0, 1, 0, 2, 3, 3, 2, 3, 3];
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
@@ -196,6 +198,5 @@ protected func JoinPlayer(int plr)
 	relaunch->StartRelaunch(clonk);
 	return;
 }
-
 
 func RelaunchWeaponList() { return [Bow, Shield, Sword, Javelin, Musket, Club]; }

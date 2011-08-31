@@ -2,10 +2,10 @@
 id=StoneDoor
 Version=4,10,0,0
 Category=C4D_Structure
-Width=10
+Width=8
 Height=40
-Offset=-5,-20
-SolidMask=11,0,10,40,0,0
+Offset=-4,-20
+SolidMask=9,0,8,40,0,0
 Value=10
 Mass=1000
 Components=Rock=10;

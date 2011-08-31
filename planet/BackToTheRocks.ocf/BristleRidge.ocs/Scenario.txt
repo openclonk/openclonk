@@ -24,8 +24,6 @@ InEarth=Rock=1;Dynamite=1;Firestone=1;Loam=1
 InEarthLevel=60
 Sky=Clouds2
 BottomOpen=1
-MapWidth=400
-MapHeight=200
 SkyScrollMode=2
 
 [Weather]

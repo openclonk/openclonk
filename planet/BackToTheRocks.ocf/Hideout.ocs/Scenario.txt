@@ -21,14 +21,9 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-Vegetation=Seaweed=4;Fern=4
-VegetationLevel=70
-InEarth=Rock=1;Loam=1;Firestone=1
-InEarthLevel=40
 Sky=Clouds2
-MapWidth=280
-MapHeight=70
 SkyScrollMode=2
+MapZoom=8
 
 [Weather]
 Climate=0,0,0,100
