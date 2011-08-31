@@ -799,6 +799,27 @@ if(USE_CONSOLE)
 	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 endif()
 
+# Set GTK link directory. This needs to be done before add_executable,
+# otherwise the path is not used for linking clonk
+if(USE_GTK)
+	include(FindPkgConfig)
+	if (USE_GTK3)
+		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.27.5" "gtk+-3.0 >= 2.99.0")
+		include_directories(${GTK3_INCLUDE_DIRS})
+		link_directories(${GTK3_LIBRARY_DIRS})
+	else()
+		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.8" "gtk+-2.0 >= 2.8")
+		include_directories(${GTK_INCLUDE_DIRS})
+		link_directories(${GTK_LIBRARY_DIRS})
+	endif()
+endif()
+
+if(USE_OPEN_AL)
+	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
+	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
+	FINDLIB(OGG_LIBRARY NAMES ogg)
+endif()
+
 ############################################################################
 # Precompiled header support, part 1 (pre-target)
 ############################################################################
@@ -851,29 +872,6 @@ endif()
 ############################################################################
 # Generate output files
 ############################################################################
-
-# Set GTK link directory. This needs to be done before add_executable,
-# otherwise the path is not used for linking clonk
-if(USE_GTK)
-	include(FindPkgConfig)
-	if (PKG_CONFIG_FOUND)
-		if (USE_GTK3)
-			pkg_check_modules(GTK glib-2.0>=2.4 gtk+-3.0)
-		else()
-			pkg_check_modules(GTK glib-2.0>=2.4 gtk+-2.0>=2.4)
-		endif()
-	endif()
-	if(GTK_FOUND)
-		include_directories(${GTK_INCLUDE_DIRS})
-		link_directories(${GTK_LIBRARY_DIRS})
-	endif()
-endif()
-
-if(USE_OPEN_AL)
-	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
-	FINDLIB(OGG_LIBRARY NAMES ogg)
-endif()
 
 add_definitions(-DHAVE_CONFIG_H)
 add_executable(clonk WIN32 MACOSX_BUNDLE
@@ -1142,10 +1140,13 @@ if(USE_DIRECTX)
 	)
 endif()
 if(USE_GTK)
-	if(GTK_FOUND)
-		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
-		SET(WITH_GLIB ${GTK_FOUND})
-		SET(WITH_GTK3 ${USE_GTK3})
+	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
+	SET(WITH_GLIB ${GTK_FOUND})
+	if(USE_GTK3)
+		target_link_libraries(clonk
+			${GTK3_LIBRARIES}
+		)
+	else()
 		target_link_libraries(clonk
 			${GTK_LIBRARIES}
 		)
