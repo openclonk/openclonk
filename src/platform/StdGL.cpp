@@ -3,13 +3,11 @@
  *
  * Copyright (c) 2002, 2005-2006, 2010  Sven Eberhardt
  * Copyright (c) 2005-2010  Günther Brammer
- * Copyright (c) 2005-2009  Günther Brammer <gbrammer@gmx.de>
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009  Carli@Carli-PC
+ * Copyright (c) 2009  Carl-Philip Hänsch
  * Copyright (c) 2009-2011  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2009  Carl-Philip Hänsch <c-p.haensch@vr-web.de>
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
