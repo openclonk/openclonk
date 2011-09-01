@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2002, 2004-2006  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 2008, 2011  Günther Brammer
  * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *

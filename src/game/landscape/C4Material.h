@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2005-2007, 2011  Sven Eberhardt
  * Copyright (c) 2005, 2007  Peter Wortmann
  * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake

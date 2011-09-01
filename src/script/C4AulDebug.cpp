@@ -2,8 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2009, 2011  Günther Brammer
  * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2010  Benjamin Herr
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

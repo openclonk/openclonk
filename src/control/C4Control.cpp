@@ -2,12 +2,12 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
  * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2006, 2009-2010  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006, 2011  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht

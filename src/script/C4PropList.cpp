@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2007, 2009-2010  Günther Brammer
+ * Copyright (c) 2007, 2009-2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  *
  * Permission to use, copy, modify, and/or distribute this software for any

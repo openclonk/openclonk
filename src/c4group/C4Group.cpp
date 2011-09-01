@@ -4,11 +4,11 @@
  * Copyright (c) 1998-2000, 2003-2005, 2007  Matthes Bender
  * Copyright (c) 2001-2003, 2005-2008  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
- * Copyright (c) 2004-2009  Günther Brammer
+ * Copyright (c) 2004-2009, 2011  Günther Brammer
  * Copyright (c) 2005  Armin Burgmeier
- * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010  Carl-Philip Hänsch
+ * Copyright (c) 2010-2011  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

@@ -3,10 +3,10 @@
  *
  * Copyright (c) 1998-2000, 2003  Matthes Bender
  * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
  * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005-2007, 2009-2011  Günther Brammer
  * Copyright (c) 2009  David Dormagen
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009, 2011  Nicolas Hake
  * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.

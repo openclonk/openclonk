@@ -5,7 +5,7 @@
  * Copyright (c) 2001-2010  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
  * Copyright (c) 2004, 2010  Armin Burgmeier
- * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2009  Tobias Zwick
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr

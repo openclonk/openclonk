@@ -3,7 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
  * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009, 2011  Armin Burgmeier
+ * Copyright (c) 2011  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

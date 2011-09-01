@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010  Günther Brammer
+ * Copyright (c) 2009-2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  *

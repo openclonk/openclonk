@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2011  Günther Brammer
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *

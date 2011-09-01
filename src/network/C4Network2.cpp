@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2004-2009  Peter Wortmann
  * Copyright (c) 2004-2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
+ * Copyright (c) 2005-2006, 2009-2011  Günther Brammer
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake

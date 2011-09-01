@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007  Sven Eberhardt
  * Copyright (c) 2005-2008  Peter Wortmann
- * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2005-2008, 2011  Günther Brammer
+ * Copyright (c) 2005-2007  Sven Eberhardt
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
