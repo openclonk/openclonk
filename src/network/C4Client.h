@@ -3,7 +3,6 @@
  *
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2010  carli
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

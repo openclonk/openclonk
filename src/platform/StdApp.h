@@ -5,7 +5,7 @@
  * Copyright (c) 2005-2006, 2010-2011  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *

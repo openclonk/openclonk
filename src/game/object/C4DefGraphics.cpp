@@ -8,7 +8,7 @@
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Randrian
+ * Copyright (c) 2010  Richard Gerum
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

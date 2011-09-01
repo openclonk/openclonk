@@ -6,8 +6,8 @@
  * Copyright (c) 2005  Sven Eberhardt
  * Copyright (c) 2006  Julian Raschke
  * Copyright (c) 2006, 2008  Armin Burgmeier
- * Copyright (c) 2007  Alex
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2007  Alexander Post
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

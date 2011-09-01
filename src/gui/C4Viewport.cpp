@@ -7,7 +7,7 @@
  * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
  * Copyright (c) 2005-2010  Günther Brammer
  * Copyright (c) 2006, 2010  Armin Burgmeier
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *

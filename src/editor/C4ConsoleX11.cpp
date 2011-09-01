@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

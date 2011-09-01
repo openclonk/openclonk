@@ -1,8 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Alex
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2007  Alexander Post
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *

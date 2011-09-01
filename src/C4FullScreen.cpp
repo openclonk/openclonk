@@ -5,7 +5,7 @@
  * Copyright (c) 2001-2003, 2005, 2008  Sven Eberhardt
  * Copyright (c) 2005-2007, 2010  Günther Brammer
  * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2009-2010  Mortimer
+ * Copyright (c) 2009-2010  Martin Plicht
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de

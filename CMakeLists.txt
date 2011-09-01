@@ -7,6 +7,7 @@
 # Copyright (c) 2009-2010  Sven Eberhardt
 # Copyright (c) 2009  Tobias Zwick
 # Copyright (c) 2009  Richard Gerum
+# Copyright (c) 2010-2011  Julius Michaelis
 # Copyright (c) 2010-2011  Peter Wortmann
 # Copyright (c) 2010-2011  Martin Plicht
 # Copyright (c) 2010  Manuel Riecke

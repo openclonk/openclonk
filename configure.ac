@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 # Copyright (c) 2005, 2008  Peter Wortmann
 # Copyright (c) 2006  Julian Raschke
 # Copyright (c) 2010  Armin Burgmeier
-# Copyright (c) 2010  Mortimer
+# Copyright (c) 2010  Martin Plicht
 # Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
 
 # Permission to use, copy, modify, and/or distribute this software for any

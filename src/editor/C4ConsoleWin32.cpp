@@ -7,7 +7,7 @@
  * Copyright (c) 2005, 2007  Sven Eberhardt
  * Copyright (c) 2009  David Dormagen
  * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
