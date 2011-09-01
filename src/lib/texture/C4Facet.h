@@ -93,11 +93,11 @@ public:
 		FlipDir = iNewFlipDir; mat[0] = -mat[0];
 	}
 
-	bool IsIdentity()
+	bool IsIdentity() const
 	{
-		return (mat[0]==1.0f) && (mat[1]==0.0f) && (mat[2]=0.0f)
-		       && (mat[3]==0.0f) && (mat[4]==1.0f) && (mat[5]=0.0f)
-		       && (mat[6]==0.0f) && (mat[7]==0.0f) && (mat[8]=1.0f)
+		return (mat[0]==1.0f) && (mat[1]==0.0f) && (mat[2]==0.0f)
+		       && (mat[3]==0.0f) && (mat[4]==1.0f) && (mat[5]==0.0f)
+		       && (mat[6]==0.0f) && (mat[7]==0.0f) && (mat[8]==1.0f)
 		       && (FlipDir==1); // flipdir must be 1, because otherwise matrices flipped by action+script would be removed
 	}
 
