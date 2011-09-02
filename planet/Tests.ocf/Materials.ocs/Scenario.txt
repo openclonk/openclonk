@@ -3,4 +3,4 @@
 Definition1=Objects.ocd/Clonk.ocd
 
 [Landscape]
-MapZoom=8
+MapZoom=10

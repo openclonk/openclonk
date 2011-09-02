@@ -26,6 +26,7 @@ InEarthLevel=65
 Sky=Clouds1;Default
 MapWidth=120
 MapHeight=80
+MapZoom=10
 
 [Weather]
 Climate=40

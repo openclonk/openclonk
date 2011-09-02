@@ -6,7 +6,6 @@
 
 local dir;
 protected func Initialize() {
-	Snap();
 	AutoP();
 	return true;
 }
@@ -14,20 +13,21 @@ protected func Initialize() {
 func PermaEdge()
 {
 	var p=dir;
-	if(p==0) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX(),GetY(),GetX()+5,GetY()+5,GetX()-5,GetY()+5);
-	if(p==1) DrawMaterialQuad("Brick-brick1",GetX(),GetY(),GetX()+5,GetY()-5,GetX()+5,GetY()+5,GetX()-5,GetY()+5);
-	if(p==3) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX()+5,GetY()-5,GetX()+5,GetY()+5,GetX(),GetY());
-	if(p==2) DrawMaterialQuad("Brick-brick1",GetX()-5,GetY()-5,GetX()+5,GetY()-5,GetX(),GetY(),GetX()-5,GetY()+5);
+	if(p==0) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX(),GetY(),GetX()+4,GetY()+4,GetX()-4,GetY()+4);
+	if(p==1) DrawMaterialQuad("Brick-brick1",GetX(),GetY(),GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX()-4,GetY()+4);
+	if(p==3) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX()+4,GetY()+4,GetX(),GetY());
+	if(p==2) DrawMaterialQuad("Brick-brick1",GetX()-4,GetY()-4,GetX()+4,GetY()-4,GetX(),GetY(),GetX()-4,GetY()+4);
 	this->RemoveObject();
 }
+
 
 protected func AutoP()
 {
 	var dir=[];
-	dir[0]=GBackSolid(6 ,0);
-	dir[1]=GBackSolid(0,-6);
-	dir[2]=GBackSolid(-6,0);
-	dir[3]=GBackSolid(0 ,6);
+	dir[0]=GBackSolid(5 ,0);
+	dir[1]=GBackSolid(0,-5);
+	dir[2]=GBackSolid(-5,0);
+	dir[3]=GBackSolid(0 ,5);
 	if(dir[0] && dir[1]) SetP(3);
 	if(dir[1] && dir[2]) SetP(2);
 	if(dir[0] && dir[3]) SetP(1);
@@ -35,18 +35,14 @@ protected func AutoP()
 }
 
 
-public func Snap(int o,int p)
-{
-	SetPosition((GetX()+5)/10*10-5+o, (GetY()+5)/10*10-5+p);
-}
-
 public func SetP(int p)
 {
 	SetObjDrawTransform(1000-((p%2)*2000),0,0,0,1000-((p/2)*2000));
 	SetAction("Edge"); SetPhase(p);
-	SetSolidMask(p*10,0,10,10);
+	SetSolidMask(p*8,0,8,8);
 	dir=p;
 }
+
 public func GetD() { return dir; }
 
 global func MakeEdgeFunction(bool fExact)
@@ -67,7 +63,7 @@ global func MakeEdgeFunction(bool fExact)
 	if(fExact) Log("	var d=%v;",d);
 	Log("	for (var i = 0; i < GetLength(x); i++)");
 	Log("	{");
-	Log("		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);");
+	Log("		var edge=CreateObject(BrickEdge, x[i], y[i] + 4, NO_OWNER);");
 	Log("		edge->Initialize();"); //additional initialize for anti self blocking
 	if(fExact)
 	{

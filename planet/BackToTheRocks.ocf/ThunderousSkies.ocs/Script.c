@@ -113,7 +113,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 
 global func MovingBricks()
 {
-	CreateObject(MovingBrick,370,424)->Room(140,0,0,10,0);
+	CreateObject(MovingBrick,370,424)->Room(148,0,0,10,0);
 	CreateObject(MovingBrick,550,250)->Room(0,50,0,0,9);
 }
 
@@ -168,9 +168,9 @@ global func FxBalloonsTimer()
 
 global func PlaceEdges()
 {
-	var x=[213, 780, 285, 285, 220, 220, 235, 414, 404, 668, 676, 684, 781, 694, 781, 229, 772, 364, 534];
-	var y=[276, 212, 325, 404, 404, 421, 495, 285, 276, 372, 364, 356, 356, 277, 413, 309, 252, 445, 446];
-	var d=[nil, 1, 2, 0, 1, 3, 3, 2, 1, 1, 1, 1, 0, 3, 2, 0, 1, 3, 2];
+	var x=[213, 780, 285, 285, 220, 220, 235, 414, 404, 668, 676, 684, 781, 694, 781, 229, 772, 364, 534, 380];
+	var y=[276, 212, 325, 404, 404, 421, 495, 285, 276, 372, 364, 356, 356, 277, 413, 309, 252, 445, 446, 412];
+	var d=[nil, 1, 2, 0, 1, 3, 3, 2, 1, 1, 1, 1, 0, 3, 2, 0, 1, 3, 2, nil];
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);

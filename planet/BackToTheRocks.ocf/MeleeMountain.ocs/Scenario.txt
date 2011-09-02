@@ -26,6 +26,7 @@ Crew=Clonk=1
 [Landscape]
 InEarth=Rock=1;Gold=1;Firestone=5;Loam=2;
 Sky=Mountains2
+MapZoom=10
 
 [Weather]
 Climate=0,0,0,100

@@ -26,8 +26,8 @@ InEarth=Rock=1;Gold=1;Dynamite=2;Loam=2;Firestone=1
 InEarthLevel=40,0,0,100
 Sky=WinterMountains
 BottomOpen=1
-MapWidth=200
-MapHeight=250
+MapWidth=250
+MapHeight=320
 SkyScrollMode=2
 
 [Weather]

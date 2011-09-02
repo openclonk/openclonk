@@ -15,16 +15,16 @@ protected func Initialize()
 	
 	// Goal: flag goal also checks if all targets are destroyed.
 	var goal = CreateObject(Goal_ReachFlag, 0, 0, NO_OWNER);
-	goal->CreateGoalFlag(2230, 290);
+	goal->CreateGoalFlag(2230, 292);
 
 	// A chest with javelins.
-	var chest = CreateObject(Chest, 240, 650, NO_OWNER);
+	var chest = CreateObject(Chest, 240, 656, NO_OWNER);
 	var javelin = CreateObject(Javelin, 0, 0, NO_OWNER);
 	javelin->Enter(chest);
 	//javelin->AddRestoreMode(chest);
 	
 	// A chest with bow & arrows.
-	var chest = CreateObject(Chest, 785, 550, NO_OWNER);
+	var chest = CreateObject(Chest, 785, 560, NO_OWNER);
 	var bow = CreateObject(Bow, 0, 0, NO_OWNER);
 	bow->CreateContents(Arrow);
 	bow->Enter(chest);

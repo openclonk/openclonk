@@ -27,7 +27,6 @@ MapWidth=100,0,64,10000
 MapHeight=250,0,40,10000
 SkyScrollMode=2
 NewStyleLandscape=2
-MapZoom=8
 
 [Animals]
 Nest=Loam=50;Firestone=20

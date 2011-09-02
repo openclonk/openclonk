@@ -26,7 +26,6 @@ VegetationLevel=70
 InEarth=Rock=1;Gold=1;Loam=1
 InEarthLevel=20,0,0,100
 Sky=Clouds2
-MapZoom=8
 SkyScrollMode=2
 
 [Weather]

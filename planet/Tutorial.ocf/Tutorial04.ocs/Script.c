@@ -23,10 +23,10 @@ protected func Initialize()
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);
 	
 	// First section: Some straw targets to be struck with the sword.
-	CreateObject(SwordTarget, 190, 671, NO_OWNER)->SetR(RandomX(-10, 10));
-	CreateObject(SwordTarget, 280, 620, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
-	CreateObject(SwordTarget, 340, 648, NO_OWNER)->SetR(RandomX(-10, 10));
-	CreateObject(SwordTarget, 430, 595, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObject(SwordTarget, 190, 673, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObject(SwordTarget, 280, 619, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
+	CreateObject(SwordTarget, 340, 649, NO_OWNER)->SetR(RandomX(-10, 10));
+	CreateObject(SwordTarget, 430, 603, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
 	var gate = CreateObject(StoneDoor, 557, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
@@ -37,40 +37,26 @@ protected func Initialize()
 	
 	// Second section: gate that can be opened with a spin wheel.
 	var gate = CreateObject(StoneDoor, 1221, 552, NO_OWNER);
-	var wheel = CreateObject(SpinWheel, 1140, 560, NO_OWNER);
+	var wheel = CreateObject(SpinWheel, 1140, 568, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Third section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1853, 496, NO_OWNER);
-	var wheel = CreateObject(SpinWheel, 1782, 341, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1853, 504, NO_OWNER);
+	var wheel = CreateObject(SpinWheel, 1782, 352, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chest with some extra weapons.
-	var chest = CreateObject(Chest, 2260, 620, NO_OWNER);
+	var chest = CreateObject(Chest, 2260, 632, NO_OWNER);
 	chest->CreateContents(Club);
 	
 	// Brick edges.
-	PlaceEdges();
+	var edges = [[612,640],[620,632],[628,624],[532,560],[524,552],[524,480],[516,472],[1156,568],[1164,560],[1820,448],[1828,440],[1836,432],[1844,424],[1820,368],[1796,360]];
+	for(var i = 0; i < GetLength(edges); i++)
+		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
 	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
-}
-
-global func PlaceEdges()
-{
-	var x=[628, 1795, 1822, 1843, 1835, 1827, 1164, 1155, 515, 525, 525, 533, 620, 612];
-	var y=[620, 356, 364, 427, 435, 443, 556, 565, 465, 475, 548, 556, 628, 636];
-	var d=[1, 0, nil, 1, 1, 1, 1, 1, nil, 0, nil, nil, 1, 1];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
-	return 1;
 }
 
 // Gamecall from goals, set next mission.
@@ -122,7 +108,7 @@ private func InitializeScriptPlayer(int plr)
 	}
 
 	// Second section: Weak opponent with javelins.
-	var spearman1 = CreateObject(Clonk, 1050, 560, plr);
+	var spearman1 = CreateObject(Clonk, 1050, 592, plr);
 	spearman1->MakeCrewMember(plr);
 	spearman1->SetMaxEnergy(40);
 	spearman1->CreateContents(Javelin);
@@ -132,7 +118,7 @@ private func InitializeScriptPlayer(int plr)
 	
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
-	var spearman2 = CreateObject(Clonk, 1753, 410, plr);
+	var spearman2 = CreateObject(Clonk, 1756, 432, plr);
 	spearman2->MakeCrewMember(plr);
 	spearman2->SetMaxEnergy(40);
 	spearman2->CreateContents(Javelin);
@@ -140,7 +126,7 @@ private func InitializeScriptPlayer(int plr)
 	AddEffect("IntContentRemoval", spearman2, 100, 0);
 	CreateObject(EnergyBar)->SetTarget(spearman2);
 	// Upper part: a normal bowman.
-	var bowman = CreateObject(Clonk, 1732, 330, plr);
+	var bowman = CreateObject(Clonk, 1732, 352, plr);
 	bowman->MakeCrewMember(plr);
 	bowman->SetMaxEnergy(45);
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
@@ -149,7 +135,7 @@ private func InitializeScriptPlayer(int plr)
 	CreateObject(EnergyBar)->SetTarget(bowman);
 	
 	// Fourth section: Opponent with sword and shield.
-	var swordman = CreateObject(Clonk, 2250, 330, plr);
+	var swordman = CreateObject(Clonk, 2250, 360, plr);
 	swordman->MakeCrewMember(plr);
 	swordman->SetMaxEnergy(60);
 	swordman->CreateContents(Shield);

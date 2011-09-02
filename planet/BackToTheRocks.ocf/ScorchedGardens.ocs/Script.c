@@ -90,7 +90,7 @@ global func PlaceEdges()
 	var d=[3, 1, 3, 2, 0, 0, 1, 3, 2, 3, 2, 1, 0, 1, 1, 1, 1, 0, 1, 3, 1, 1, 1, 1, 0, 3, 3, 2, 1, 1, 1, 1, 0, 3, 2, 1, 1, 0, 0, 1, 1, 3, 3, 2, 3, 1];
 	for (var i = 0; i < GetLength(x); i++)
 	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
+		var edge=CreateObject(BrickEdge, x[i], y[i] + 4, NO_OWNER);
 		edge->Initialize();
 		edge->SetP(d[i]);
 		edge->SetPosition(x[i],y[i]);

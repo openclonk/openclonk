@@ -21,6 +21,7 @@ Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1
+MapZoom=10
 BottomOpen=1
 SkyScrollMode=2
 

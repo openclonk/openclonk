@@ -34,6 +34,7 @@ InEarthLevel=65,0,0,100
 Sky=Clouds2
 MapWidth=240
 MapHeight=160
+MapZoom=10
 Amplitude=10
 
 [Weather]

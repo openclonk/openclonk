@@ -2,9 +2,9 @@
 id=BrickEdge
 Version=4,10,0,0
 Category=C4D_StaticBack|C4D_MouseIgnore
-Width=10
-Height=10
-Offset=-5,-5
-SolidMask=0,0,10,10,0,0
+Width=8
+Height=8
+Offset=-4,-4
+SolidMask=0,0,8,8,0,0
 Mass=10
-Picture=0,0,10,10
+Picture=0,0,8,8

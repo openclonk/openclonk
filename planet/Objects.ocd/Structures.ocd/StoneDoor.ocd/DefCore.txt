@@ -5,7 +5,7 @@ Category=C4D_Structure
 Width=8
 Height=40
 Offset=-4,-20
-SolidMask=9,0,8,40,0,0
+SolidMask=32,0,8,40,0,0
 Value=10
 Mass=1000
 Components=Rock=10;

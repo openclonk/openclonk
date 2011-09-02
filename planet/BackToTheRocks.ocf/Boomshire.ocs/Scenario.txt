@@ -24,6 +24,7 @@ Crew=Clonk=1
 InEarth=Rock=1;Gold=1;Loam=1
 InEarthLevel=65,0,0,100
 Sky=Clouds2
+MapZoom=10
 BottomOpen=1
 SkyScrollMode=2
 
