@@ -1579,21 +1579,21 @@ bool C4Landscape::MapToLandscape()
 }
 
 
-int32_t C4Landscape::ChunkyRandom(int32_t &iOffset, int32_t iRange)
+uint32_t C4Landscape::ChunkyRandom(uint32_t & iOffset, uint32_t iRange)
 {
 	if (!iRange) return 0;
-	iOffset+=3;
-	return (iOffset^MapSeed)%iRange;
+	iOffset = (iOffset * 16807) % 2147483647;
+	return (iOffset ^ MapSeed) % iRange;
 }
 
-void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, int32_t iChunkType, int32_t cro)
+void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, int32_t iChunkType, uint32_t cro)
 {
 	BYTE top_rough = 0; BYTE side_rough = 0;
 	// what to do?
 	switch (iChunkType)
 	{
 	case C4M_Flat:
-		Surface8->Box(tx,ty,tx+wdt,ty+hgt,mcol);
+		Surface8->Box(tx, ty, tx + wdt, ty + hgt, mcol);
 		return;
 	case C4M_TopFlat:
 		top_rough = 0; side_rough = 1;
@@ -1608,36 +1608,36 @@ void C4Landscape::DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, in
 		return;
 	}
 	int vtcs[16];
-	int32_t rx=Max(wdt/2,1);
+	uint32_t rx = Max(wdt / 2, 1);
 
-	vtcs[0]=tx-ChunkyRandom(cro,rx/2); vtcs[1]=ty-ChunkyRandom(cro,rx/2*top_rough);
-	vtcs[2]=tx-ChunkyRandom(cro,rx*side_rough); vtcs[3]=ty+hgt/2;
-	vtcs[4]=tx-ChunkyRandom(cro,rx); vtcs[5]=ty+hgt+ChunkyRandom(cro,rx);
-	vtcs[6]=tx+wdt/2; vtcs[7]=ty+hgt+ChunkyRandom(cro,2*rx);
-	vtcs[8]=tx+wdt+ChunkyRandom(cro,rx); vtcs[9]=ty+hgt+ChunkyRandom(cro,rx);
-	vtcs[10]=tx+wdt+ChunkyRandom(cro,rx*side_rough); vtcs[11]=ty+hgt/2;
-	vtcs[12]=tx+wdt+ChunkyRandom(cro,rx/2); vtcs[13]=ty-ChunkyRandom(cro,rx/2*top_rough);
-	vtcs[14]=tx+wdt/2; vtcs[15]=ty-ChunkyRandom(cro,rx*top_rough);
+	vtcs[0] =  tx - ChunkyRandom(cro, rx / 2);                vtcs[1] =  ty - ChunkyRandom(cro, rx / 2 * top_rough);
+	vtcs[2] =  tx - ChunkyRandom(cro, rx * side_rough);       vtcs[3] =  ty + hgt / 2;
+	vtcs[4] =  tx - ChunkyRandom(cro, rx);                    vtcs[5] =  ty + hgt + ChunkyRandom(cro, rx);
+	vtcs[6] =  tx + wdt / 2;                                  vtcs[7] =  ty + hgt + ChunkyRandom(cro, 2 * rx);
+	vtcs[8] =  tx + wdt + ChunkyRandom(cro, rx);              vtcs[9] =  ty + hgt + ChunkyRandom(cro, rx);
+	vtcs[10] = tx + wdt + ChunkyRandom(cro, rx * side_rough); vtcs[11] = ty + hgt / 2;
+	vtcs[12] = tx + wdt + ChunkyRandom(cro, rx / 2);          vtcs[13] = ty - ChunkyRandom(cro, rx / 2 * top_rough);
+	vtcs[14] = tx + wdt / 2;                                  vtcs[15] = ty - ChunkyRandom(cro, rx * top_rough);
 
-	ForPolygon(vtcs,8,NULL,NULL,mcol);
+	ForPolygon(vtcs, 8, NULL, NULL, mcol);
 }
 
-void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, BYTE flip, int32_t cro)
+void C4Landscape::DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, BYTE flip, uint32_t cro)
 {
 	int vtcs[8];
-	int32_t rx=Max(wdt/2,1);
+	uint32_t rx = Max(wdt / 2, 1);
 
-	vtcs[0]=tx; vtcs[1]=ty-ChunkyRandom(cro,rx/2);
-	vtcs[2]=tx; vtcs[3]=ty+hgt;
-	vtcs[4]=tx+wdt; vtcs[5]=ty+hgt;
-	vtcs[6]=tx+wdt; vtcs[7]=ty-ChunkyRandom(cro,rx/2);
+	vtcs[0] = tx;       vtcs[1] = ty - ChunkyRandom(cro, rx / 2);
+	vtcs[2] = tx;       vtcs[3] = ty + hgt;
+	vtcs[4] = tx + wdt; vtcs[5] = ty + hgt;
+	vtcs[6] = tx + wdt; vtcs[7] = ty - ChunkyRandom(cro, rx / 2);
 
 	if (flip)
-		{ vtcs[0]=tx+wdt/2; vtcs[1]=ty+hgt/3; }
+		{ vtcs[0] = tx + wdt / 2; vtcs[1] = ty + hgt / 3; }
 	else
-		{ vtcs[6]=tx+wdt/2; vtcs[7]=ty+hgt/3; }
+		{ vtcs[6] = tx + wdt / 2; vtcs[7] = ty + hgt / 3; }
 
-	ForPolygon(vtcs,4,NULL,NULL,mcol);
+	ForPolygon(vtcs, 4, NULL, NULL, mcol);
 }
 
 void C4Landscape::DrawCustomShapePoly(const C4MaterialShape::Poly &poly, int32_t off_x, int32_t off_y, int32_t mcol)
@@ -1737,7 +1737,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 					// Determine IFT
 					iIFT=0; if (byMapPixel>=128) iIFT=IFT;
 					// Draw chunk
-					DrawChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,pMaterial->MapChunkType,(iX<<2)+iY);
+					DrawChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,pMaterial->MapChunkType,(iX<<16)+iY);
 				}
 				// Other chunk, check for slope smoothers
 				else
@@ -1750,7 +1750,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 							// Determine IFT
 							iIFT=0; if (sfcMap->GetPix(iX-1, iY) >= 128) iIFT=IFT;
 							// Draw smoother
-							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,0,(iX<<2)+iY);
+							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,0,(iX<<16)+iY);
 						}
 						// Same texture-material on right
 						if ((iX<iMapWidth-1) && ((sfcMap->GetPix(iX+1, iY) & 127)==iTexture))
@@ -1758,7 +1758,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 							// Determine IFT
 							iIFT=0; if (sfcMap->GetPix(iX+1, iY) >= 128) iIFT=IFT;
 							// Draw smoother
-							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,1,(iX<<2)+iY);
+							DrawSmoothOChunk(iToX,iToY,iChunkWidth,iChunkHeight,byColor+iIFT,1,(iX<<16)+iY);
 						}
 					}
 			}
