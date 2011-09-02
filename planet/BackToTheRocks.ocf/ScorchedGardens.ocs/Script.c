@@ -74,7 +74,6 @@ global func FxMeteorsparkleTimer(obj, effect, time)
 	else effect.count=0;
 	if(effect.count>10) obj->Hit();
 }
-
 global func FxMeteorsparkleStop (obj, effect, reason, iTemp)
 {
 	if(iTemp) return;

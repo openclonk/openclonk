@@ -87,7 +87,7 @@ global func PlaceEdges()
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var gras=CreateObject(Grass, x[i], y[i], NO_OWNER);
-		while(!GBackSolid(x[i],gras->GetY())) gras->SetPosition(x[i],gras->GetY()+1);
+		//while(!GBackSolid(x[i],gras->GetY())) gras->SetPosition(x[i],gras->GetY()+1);
 		gras->SetPosition(x[i],gras->GetY()-2+Random(2));
 		gras->SetCategory(C4D_StaticBack);
 		gras->DoCon(Random(25));

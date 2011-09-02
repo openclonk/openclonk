@@ -13,14 +13,16 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);
 	
 	// Chests with weapons.
-	CreateObject(Chest, 108, 230, NO_OWNER);
+	CreateObject(Chest, 108, 248, NO_OWNER);
 	AddEffect("IntFillChests", nil, 100, 3 * 36, this);
 
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 
 	// Smooth brick edges.
-	PlaceEdges();
+	var edges = [[268,304],[60,312],[148,280],[124,256],[132,264],[140,272],[52,304],[44,296],[28,288],[260,312],[276,296],[212,200],[204,192],[196,184],[212,320]];
+	for (var i = 0; i < GetLength(edges); i++)
+		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
 	
 	//Water needs to be OK
 	AddEffect("Refiller",0,100,6);
@@ -30,22 +32,6 @@ protected func Initialize()
 global func FxRefillerTimer(object pTarget, effect, int timer)
 {
 	for(var i=0; i<10; i++) if(!GBackLiquid(100,315)) InsertMaterial(Material("Water"),135,385);
-}
-
-global func PlaceEdges()
-{
-	var x=[268, 61, 149, 125, 133, 141, 53, 45, 29, 260, 276, 212, 197, 212];
-	var y=[300, 308, 276, 252, 260, 268, 300, 292, 284, 308, 292, 197, 181, 316];
-	var d=[1, nil, nil, 0, 0, 0, 0, 0, 0, 1, 1, 3, 3, 1];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i] + 5, NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
-	return 1;
 }
 
 // Gamecall from LastManStanding goal, on respawning.
