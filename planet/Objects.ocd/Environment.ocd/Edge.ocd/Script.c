@@ -56,7 +56,7 @@ global func MakeEdgeFunction(bool fExact)
 		y[GetLength(y)]=e->GetY();
 		if(fExact) d[GetLength(d)]=e->GetD();
 	}
-	Log("global func PlaceEdges()");
+	Log("private func PlaceEdges()");
 	Log("{");
 	Log("	var x=%v;",x);
 	Log("	var y=%v;",y);
@@ -72,7 +72,7 @@ global func MakeEdgeFunction(bool fExact)
 	}
 	Log("		edge->PermaEdge();");
 	Log("	}");
-	Log("	return 1;");
+	Log("	return;");
 	Log("}");
 }
 

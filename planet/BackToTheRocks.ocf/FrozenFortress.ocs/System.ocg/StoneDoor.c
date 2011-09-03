@@ -51,7 +51,7 @@ private func IsClosed()
 protected func FxAutoControlStart(object target, effect, int temporary, int team)
 {
 	if (temporary == 0)
-	effect.team =  team;
+		effect.team = team;
 	return 1;
 }
 
