@@ -14,8 +14,8 @@ protected func Initialize()
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 120, 500);
-	goal->SetFlagBase(2, LandscapeWidth() - 120, 500);
+	goal->SetFlagBase(1, 120, 504);
+	goal->SetFlagBase(2, LandscapeWidth() - 120, 504);
 	
 	// Rules
 	CreateObject(Rule_Restart);
@@ -24,49 +24,42 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(StoneDoor, 365, 420, NO_OWNER);
-	gate->DoDamage(50);		//Upper doors are easier to destroy
+	gate = CreateObject(StoneDoor, 365, 449, NO_OWNER);
+	gate->DoDamage(50);		// Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
-	//wheel = CreateObject(SpinWheel, 320, 460, NO_OWNER);
-	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 341, 550, NO_OWNER);
+	gate = CreateObject(StoneDoor, 341, 585, NO_OWNER);
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
-	//wheel = CreateObject(SpinWheel, 280, 580, NO_OWNER);
-	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, 693, 539, NO_OWNER);
-	gate->DoDamage(80);		//Middle dors even easier
-	wheel = CreateObject(SpinWheel, 660, 500, NO_OWNER);
+	gate = CreateObject(StoneDoor, 693, 544, NO_OWNER);
+	gate->DoDamage(80);		// Middle doors even easier
+	wheel = CreateObject(SpinWheel, 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 365, 420, NO_OWNER);
-	gate->DoDamage(50);		//Upper doors are easier to destroy
+	
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 449, NO_OWNER);
+	gate->DoDamage(50);		// Upper doors are easier to destroy
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
-	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 320, 460, NO_OWNER);
-	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 341, 550, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 340, 585, NO_OWNER);
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
-	//wheel = CreateObject(SpinWheel, LandscapeWidth() - 280, 580, NO_OWNER);
-	//wheel->SetStoneDoor(gate);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 693, 539, NO_OWNER);
-	gate->DoDamage(80);		//Middle dors even easier
-	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 500, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 692, 544, NO_OWNER);
+	gate->DoDamage(80);		// Middle doors even easier
+	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
 	var chest;
-	chest = CreateObject(Chest, 110, 590, NO_OWNER);
+	chest = CreateObject(Chest, 110, 592, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	chest = CreateObject(Chest, 25, 460, NO_OWNER);
+	chest = CreateObject(Chest, 25, 464, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, 730, 400, NO_OWNER);
+	chest = CreateObject(Chest, 730, 408, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
-	chest = CreateObject(Chest, LandscapeWidth() - 110, 590, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 110, 592, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	chest = CreateObject(Chest, LandscapeWidth() - 25, 460, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 25, 464, NO_OWNER);
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, LandscapeWidth() - 730, 400, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth() - 730, 408, NO_OWNER);
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
 	
-	chest = CreateObject(Chest, LandscapeWidth()/2, 0, NO_OWNER);
+	chest = CreateObject(Chest, LandscapeWidth()/2, 512, NO_OWNER);
 	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
 	
 	/*
@@ -90,9 +83,9 @@ protected func Initialize()
 
 global func PlaceEdges()
 {
-	var x=[324, 278, 109, 94, 661, 613, 556, 684, 516, 556, 676, 668, 653, 621, 629, 317, 85, 94, 101, 213, 229, 245, 261, 331, 396, 149, 188, 45, 102, 109, 283, 268, 252, 381, 636, 677, 595, 564, 614];
-	var y=[460, 581, 500, 380, 428, 429, 428, 548, 565, 557, 413, 421, 436, 476, 484, 549, 476, 485, 492, 548, 556, 564, 572, 453, 445, 588, 548, 468, 372, 365, 468, 476, 484, 389, 491, 493, 412, 413, 469];
-	var d=[1, nil, nil, 2, 1, 2, 3, 1, 1, 1, 1, 1, 1, 0, 0, 3, 0, 0, nil, 0, 0, nil, nil, 1, 1, 1, 1, nil, 2, 2, 1, 1, 1, 2, nil, 3, 1, nil, 0];
+	var x=[613, 565, 596, 676, 637, 381, 252, 268, 284, 109, 102, 45, 188, 149, 396, 332, 261, 245, 229, 213, 101, 93, 85, 316, 629, 621, 652, 668, 676, 556, 516, 684, 556, 613, 660, 94, 109, 277, 324];
+	var y=[468, 412, 412, 493, 492, 389, 484, 476, 468, 365, 372, 468, 548, 588, 444, 452, 572, 564, 556, 548, 492, 484, 476, 549, 484, 476, 436, 420, 412, 556, 564, 548, 429, 429, 428, 380, 500, 580, 460];
+	var d=[0, 0, 1, 3, 0, 2, 1, 1, 1, 2, 2, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 0, 0, 1];
 	var o=[1,0,3,2];
 	for (var i = 0; i < GetLength(x); i++)
 	{
