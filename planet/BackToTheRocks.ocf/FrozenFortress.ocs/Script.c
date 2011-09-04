@@ -25,10 +25,10 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);	
 	
 	var gate = CreateObject(StoneDoor, 345, 273, NO_OWNER);
-	gate->SetClrModulation(RGB(130,190,255));
+	gate->SetClrModulation(RGB(180,205,255));
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
 	var gate = CreateObject(StoneDoor, LandscapeWidth()-344, 273, NO_OWNER);
-	gate->SetClrModulation(RGB(130,190,255));
+	gate->SetClrModulation(RGB(180,205,255));
 	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
 
 	// Chests with weapons.
