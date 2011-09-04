@@ -1,6 +1,6 @@
 /*
 		Shows an icon for the ringmenu.
-		Author: Mimmo
+		Author: Mimmo, Clonkonaut
 		Overlays:
 		0=Grey Circle
 		1=Icon of the Object
@@ -23,6 +23,16 @@ protected func Construction()
 	// parallaxity
 	this["Parallaxity"] = [0,0];
 	size=1000;
+}
+
+public func SetNothing() // No item, no image, no whatever, just a plain button
+{
+	SetAmount(0);
+	SetSymbol();
+	SetGraphics(nil,nil,9);
+	SetGraphics(nil,nil,10);
+	SetGraphics(nil,nil,11);
+	SetGraphics(nil,nil,12);
 }
 
 public func SetSize(int s) // in px *1000
@@ -129,6 +139,3 @@ public func SetAmount(Amount)
 	else
 		SetGraphics(nil,nil,10);
 }
-
-
-

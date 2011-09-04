@@ -1,6 +1,6 @@
 /*
  * 	Breathe Bar
- *	Author: Mimmo
+ *	Author: Mimmo, Clonkonaut
  *	
  *	Displays the Breathe in a curved way.
  *
@@ -44,6 +44,11 @@ public func Update()
     	+fcos, +fsin, 0,
     	-fsin, +fcos, 0
       	);
+	}
+	if(! crew->GetMaxBreath())
+	{
+		FadeOut();
+		return;
 	}
 	if(current == crew->GetMaxBreath() && crew->GetAction()!="Swim")
 	{

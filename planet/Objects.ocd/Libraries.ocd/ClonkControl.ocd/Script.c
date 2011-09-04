@@ -60,6 +60,9 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+// For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
+public func HUDShowItems() { return true; }
+
 /* Search the index of an item */
 
 public func GetItemPos(object item)

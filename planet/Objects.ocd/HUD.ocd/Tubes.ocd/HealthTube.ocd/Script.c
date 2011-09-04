@@ -1,6 +1,6 @@
 /*
  * 	Health Bar
- *	Author: Mimmo
+ *	Author: Mimmo, Clonkonaut
  *	
  *	Displays the Health in a curved way.
  *
@@ -49,7 +49,8 @@ public func Update()
 	}
 	//if(!crew) return 1;
 	CustomMessage(Format("<c dd0000>%v</c>",current),this,crew->GetOwner(),16,-72);
-	
+
+	if(! crew->GetMaxEnergy()) return;
 	if(Abs(current - crew->GetEnergy()))
 	{
 		if(Abs(current - crew->GetEnergy()) > 6 )

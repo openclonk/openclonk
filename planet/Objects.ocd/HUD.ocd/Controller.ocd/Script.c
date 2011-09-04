@@ -167,6 +167,12 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 global func FxUpdateBackpackTimer(target) { 
 	if(!target) return -1;
 	if(!GetCursor(target->GetOwner())) return 1;
+	if(!GetCursor(target->GetOwner())->~HUDShowItems())
+	{
+		for (var i = 0; i < GetLength(target.backpack); i++)
+			target.backpack[i]->SetNothing();
+		return 1;
+	}
 	for(var i=0; i<GetLength(target.backpack); i++)
 	{
 		target.backpack[i]->SetAmount(0);  
