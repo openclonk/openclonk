@@ -411,12 +411,13 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	if (!(pSolidMask = new BYTE [iNeededBufSize])) return;
 	SURFACE sfcBitmap = pForObject->GetGraphics()->GetBitmap();
 	if (!sfcBitmap->Lock()) return;
-	int xcnt, ycnt;
-	for (ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
-		for (xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
+	for (int ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
+		for (int xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
 		{
-			// Solid mask target x/y is relative to def bitmap top-left, not object center.
-			pSolidMask[xcnt+ycnt*pForObject->SolidMask.Wdt] = sfcBitmap->IsPixTransparent(pForObject->SolidMask.x+xcnt,pForObject->SolidMask.y+ycnt) ? 0x00 : 0xff;
+			// Solid mask target x/y is relative to def bitmap top-left, not object center
+			int dx = sfcBitmap->Scale*(pForObject->SolidMask.x+xcnt);
+			int dy = sfcBitmap->Scale*(pForObject->SolidMask.y+ycnt);
+			pSolidMask[xcnt+ycnt*pForObject->SolidMask.Wdt] = sfcBitmap->IsPixTransparent(dx,dy) ? 0x00 : 0xff;
 		}
 	// create mat buff to store the material replaced by the solid mask
 	// the upper left corner is here the [objpos]+rot([shapexy]+[targetxy]+[realWH]/2)-maxWH/2
