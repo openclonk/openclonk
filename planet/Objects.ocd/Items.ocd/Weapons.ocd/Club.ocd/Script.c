@@ -60,7 +60,7 @@ func ControlUseHolding(object clonk, ix, iy)
 	return true;
 }
 
-protected func ControlUseStop(object clonk, ix, iy)
+public func ControlUseStop(object clonk, ix, iy)
 {
 	clonk->StopAim();
 	return true;
