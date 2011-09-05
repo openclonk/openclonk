@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Object Categories</title>
-  <h id="Objektkategorien">Object Categories</h>
+  <h>Object Categories</h>
   <part>
     <text>An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
     <text>

@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Animations</title>
-  <h id="Animations">Animations</h>
+  <h>Animations</h>
   <part>
     <text>One of the new possibilities in OC to use 3D models as an object's graphics (see <emlink href="definition/meshes.html">meshes</emlink>) is to combine individual animations. This way the Clonk can easily throw an object while running or jumping, or there can be smooth transitions between single animations.</text>
     <text>Every object has a so-called animation stack. It consists of an arbitrary number of entries with a unique priority, called slots. Slots with higher priority overwrite slots with lower priority, however this is only <code>true</code> for bones affected by one of the animations in the higher priority slot. To expand on the example above the throwing animation should be assigned a higher priority then the walking animation so that the movement of the Clonk's arms is taken from the throwing, not from the walking or jumping animation. However since there is no leg movement in the throwing animation the clonk continues to run or jump, respectively.</text>

@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Scenarios</title>
-  <h id="Szenarien">Scenarios</h>
+  <h>Scenarios</h>
   <part>
     <text>Scenarios are the playing worlds which the player can select and start from the menu. With their components the scenario designer can adjust freely everything from the landscape, the goals and rules, the available objects and materials to the look in the menu.</text>
 	

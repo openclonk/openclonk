@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Procedures</title>
-  <h id="Prozeduren">Procedures</h>
+  <h>Procedures</h>
   <text>For object activity the engine offers various standard procedures which perform typical physcial behaviour. In procedure WALK, for instance, the activity automatically changes to "Jump" if the ground under the feet is lost.</text>
   <text>
     <table>

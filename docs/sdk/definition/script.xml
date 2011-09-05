@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Object Scripts</title>
-  <h id="Objektscripte">Object Scripts</h>
+  <h>Object Scripts</h>
   <part>
     <text>Object scripts control the complex behaviour of an object. For details on scripting see the <emlink href="script/index.html">C4Script</emlink> documentation.</text>
     <h>Creation</h>

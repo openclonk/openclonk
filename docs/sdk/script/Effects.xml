@@ -7,7 +7,7 @@
   <h>Effects</h>
   <part>
     <text>Any number of effects can be attached to an object. Effects can perform various tasks, thus eliminating the need for helper objects. This is especially of interest for magic spells that act with a given duration.</text>
-    <h id="Intro">Introduction</h>
+    <h>Introduction</h>
     <text>Effects are, roughly put, dynamic timers with properties that can be attached to objects. Effects themselves have no visible or acoustic representation - for this you would use objects or particles instead - effects are pure scripting helpers. They also offer a general interface that can be used to resolve conflicts of temporary status changes made to objects by other objects at the same time.</text>
     <text>Here an example of implementing an invisibility spell without effects:</text>
     <code>/* Invisibility spell without effect system */

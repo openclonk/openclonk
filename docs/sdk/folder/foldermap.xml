@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>FolderMap.txt</title>
-  <h id="FolderMaptxt">FolderMap.txt</h>
+  <h>FolderMap.txt</h>
   <part>
     <text>Scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
     <text>

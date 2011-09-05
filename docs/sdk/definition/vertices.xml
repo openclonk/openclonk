@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Vertices</title>
-  <h id="Vertices">Vertices</h>
+  <h>Vertices</h>
   <text>Vertices are the collision points of an object. The outer shape of the object should be rougly marked by vertices. In most cases, four to five vertices are sufficient. Vertex coordinates are relative to the object center.<br/><br/>At these points it is checked whether the object has collided with solid material in the landscape. If an object collides with the landscape, it is slowed down, rotated and/or deviated into another direction. If a vertex gets covered by solid material teh object will be stuck. The friction value of a vertex determines how easily the object will slide at that corner.<br/><br/>If a vertex contains a direction indication (see <emlink href="definition/cnat.html">CNAT - ContactAttachment</emlink>) and ContactCalls are specified, the corresponding contact functions are called in the object script. In this way, an object might react to hitting a wall on the left, the ground at the bottom, etc.<br/><br/>If the object has a SolidMask you should take care that each vertex has at least one pixel of space from the solid area, else the object will be stuck in itself.</text>
   <author>Sven2</author><date>2002-04</date>
 </doc>

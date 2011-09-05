@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Visibility</title>
-  <h id="Visibility">Visibility</h>
+  <h>Visibility</h>
   <part>
     <text>Every object has a <emlink href="definition/properties.html">property</emlink>, which controls its visibility for players. It may be either <funclink>VIS_All</funclink> or <funclink>VIS_None</funclink> or a bit mask of <funclink>VIS_Owner</funclink>, <funclink>VIS_Allies</funclink>, <funclink>VIS_Enemies</funclink> and <funclink>VIS_God</funclink>, or an array starting with <funclink>VIS_Select</funclink> followed by bools setting the visibility for each player. If the object has a layer, it will only be visible if the layer is visible, unless <funclink>VIS_LayerToggle</funclink> is set for the layer.</text>
     <code>this.Visibility = <funclink>VIS_God</funclink> | <funclink>VIS_Owner</funclink> // The object will only be visible for it's owner and the spectators.

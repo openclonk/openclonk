@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>break and continue</title>
-  <h id="BreakContinue">break and continue</h>
+  <h>break and continue</h>
   <part>
     <text>The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:</text>
     <text>

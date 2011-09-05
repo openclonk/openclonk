@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Material Definitions (ocm)</title>
-  <h id="ocm">Material Definitions (ocm)</h>
+  <h>Material Definitions (ocm)</h>
   <part>
     <text>Material definitions determine looks and behaviour of landscape materials.</text>
     <text>

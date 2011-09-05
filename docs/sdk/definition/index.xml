@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Object Definitions</title>
-  <h id="Objektdefinitionen">Object Definitions</h>
+  <h>Object Definitions</h>
   <part>
     <text>Object definitions are used for all game objects in clonk: fire monsters, the wooden hut, and the clonk himself. An object definition is a group file composed from the following components:</text>
     <h id="Properties">Object properties</h>

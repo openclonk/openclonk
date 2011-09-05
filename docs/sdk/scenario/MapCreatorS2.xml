@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Map Generator</title>
-  <h id="Kartengenerator">Map Generator</h>
+  <h>Map Generator</h>
   <part>
     <text>Besides simple dynamic maps defined in Scenario.txt there is also a powerful dynamic map generator for highly complex yet fully random maps.</text>
     <text>This generator works with nested layers that can be combined using various operators and to which a material value and various attributes can be assigned to describe their resulting shape. The map generator will generate a map using these layers. The map is then later zoomed to the landscape as a static map would be.</text>

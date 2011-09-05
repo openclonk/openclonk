@@ -4,16 +4,16 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Script</title>
-  <h id="C4ScriptDokumentation">Script</h>
+  <h>Script</h>
   <part>
-    <h id="Scripte">Introduction</h>
+    <h>Introduction</h>
     <text>Clonk supports its own scripting language: C4Script.</text>
     <text>Object definitions and scenarios can contain a script. Function calls made from scenario scripts are considered "global" calls. Function calls made within an object script are considered "local" calls.</text>
     <text>For further information on the two types of script see <emlink href="definition/script.html">object scripts</emlink> and <emlink href="scenario/script.html">scenario scripts</emlink>.</text>
     <text>C4Script uses a C-style syntax. It includes <emlink href="script/operatoren.html">operators</emlink>, <emlink href="script/NamedVar.html">variable declarations</emlink>, compound statements, conditional statements (<funclink>if</funclink>) and loops (<funclink>for</funclink> and <funclink>while</funclink>).</text>
     <h id="Debugging">Debugging</h>
     <text>Activate the debug mode in the developer section of the game options to have additional error messages displayed. Anyone writing scripts should do this.</text>
-    <h id="Funktionen">Functions</h>
+    <h>Functions</h>
     <text>As in other programming languages you can define <emlink href="script/Funcs.html">functions</emlink> in C4Script:</text>
     <code>func CreateRock()
 {

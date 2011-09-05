@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Command Line Parameters</title>
-  <h id="cmdline">Command Line Parameters</h>
+  <h>Command Line Parameters</h>
   <text>The installation directory of Clonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified.</text>
   <part>
     <h id="Clonk">Clonk.exe (Windows) clonk (Linux) Clonk (Mac)</h>

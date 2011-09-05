@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Properties</title>
-  <h id="Properties">Properties</h>
+  <h>Properties</h>
   <part>
     <text>Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href="definition/index.html#Objektdefinitionen">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href="definition/script.html#Objektscripte">Definition's script</emlink>:</text>
     <code>local Name = "$Name$";
@@ -19,7 +19,7 @@ Stand = {
 </code>
     <text>
       <table>
-        <caption id="PropertiesTable">Properties</caption>
+        <caption id="PropertiesTable">Object Properties</caption>
         <rowh>
           <col>Name</col>
           <col>Data type</col>

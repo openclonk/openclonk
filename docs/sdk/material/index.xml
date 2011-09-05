@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Material Definitions</title>
-  <h id="Materialdefinitionen">Material Definitions</h>
+  <h>Material Definitions</h>
   <part>
     <text>Using material definitions you can specify looks and behaviour of the landscape materials.</text>
     <h id="MaterialdefinitionsKomponentenMaterialocg">Material Definition Components (Material.ocg)</h>

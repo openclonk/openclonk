@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Scenario Folder</title>
-  <h id="Folders">Scenario Folder</h>
+  <h>Scenario Folder</h>
   <part>
     <text>Scenario folders are used to group a number of scenarios. Scenario folders are displayed with a book icon in the startup screen which can then be opened to list contained scenarios.</text>
     <h id="Components">Scenario Components (ocs)</h>

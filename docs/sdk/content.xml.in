@@ -115,13 +115,14 @@
 <!-- Insert Functions here -->
 	</ul>
 	</li>
+<!-- Insert Index here -->
 </ul>
 </part>
 <script>
 <![CDATA[
 	(function() {
 		if (parent == window) return;
-		var l = parent.location.pathname;
+		var l = parent.location.href;
 		// recognize index file as such
 		if(l.charAt(l.length-1) == "/") l += "index";
 		
@@ -129,10 +130,10 @@
 		var i = 0, a;
 		var firsta;
 		while (a = as[i++]) {
-			if (a.pathname.indexOf(l) != -1) {
-				//if (!firsta) {
+			if (a.href.indexOf(l) != -1) {
+				if (!firsta) {
 					firsta = a;
-				//}
+				}
 				if (a.parentNode.tagName == "LI") {
 					if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
 				}

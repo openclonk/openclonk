@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>CNAT - Contact Attachment</title>
-  <h id="CNAT">CNAT - Contact Attachment</h>
+  <h>CNAT - Contact Attachment</h>
   <text>In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the CNAT bit <em>left</em>. If that object has <emlink href="definition/defcore.html">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:</text>
   <text>
     <table>

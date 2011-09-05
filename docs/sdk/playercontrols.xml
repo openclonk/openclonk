@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Player controls</title>
-  <h id="Controls">Player controls</h>
+  <h>Player controls</h>
   <part>
     <text>The engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
     <h id="ControlFiles">PlayerControls.txt</h>

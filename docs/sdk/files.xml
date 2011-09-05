@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Game Data</title>
-  <h id="Spieldaten">Game Data</h>
+  <h>Game Data</h>
   <text>The game data of clonk is stored in compressed group files which each contain one component or further group files.</text>
   <dl>
     <dt id="Spielerdateienocp"><img height="16" src="../images/icon_player.png" width="16"/>Player Files (ocp)</dt>

@@ -31,12 +31,23 @@ class Clonkparser(xml.sax.handler.ContentHandler):
         if self.curcat not in self.cats:
             self.cats[self.curcat] = { }
             self.subcats[self.curcat] = { }
+    def _addToIndex(self, title, href):
+        if not title in self.files:
+            self.files[title] = { self.title: href }
+        else:
+            if self.title in self.files[title]:
+                print "WARNING: duplicate " + title + " in " + href + " and " + self.files[title][self.title]
+            self.files[title][self.title] = href
     def startDocument(self):
         self.cur = ""
         self.curcat = ""
         self.title = ""
         self.func = 0
         self.state = None
+        self.id = None
+        self.idTitle = None
+        self.idStackdepth = 0
+        self.Stackdepth = 0
     def startElement(self, name, attr):
         # subcat inside category?
         if self.state == 'category' and self.cur != "":
@@ -44,11 +55,18 @@ class Clonkparser(xml.sax.handler.ContentHandler):
         # is func
         if name == 'funcs':
             self.func = 1
-        self.cur = ""
+        self.cur = unicode("")
         self.state = name
+        self.Stackdepth = self.Stackdepth + 1
+        if 'id' in attr:
+            self.id = attr["id"]
+            self.idTitle = unicode("")
+            self.idStackdepth = self.Stackdepth
     def characters(self, content):
         if self.state in ['category', 'subcat', 'version', 'extversion', 'title', 'funcs']:
             self.cur += content
+        if self.id:
+            self.idTitle += content
     def endElement(self, name):
         self.cur = self.cur.strip()
         if name == 'category':
@@ -87,78 +105,26 @@ class Clonkparser(xml.sax.handler.ContentHandler):
             self.func = 0
         elif name == 'title':
             self.title = self.cur
-            self.files[self.title] = self.htmlfilename
             if self.func == 1:
+                self._addToIndex(self.title, self.htmlfilename + '#' + self.title.encode('utf-8'))
                 self.funcs[self.title] = self.htmlfilename
+            else:
+                self._addToIndex(self.title, self.htmlfilename)
 
+        self.Stackdepth = self.Stackdepth - 1
+        if self.id and (self.idStackdepth > self.Stackdepth or name == 'col' or name == 'literal_col'):
+            title = self.idTitle.strip()
+            href = self.htmlfilename + '#' + self.id.encode('utf-8')
+            if title == "":
+                print "WARNING: id " + self.id.encode('utf-8') + " without text content in " + self.filename
+            else:
+                self._addToIndex(title, href)
+            self.id = None
+            self.idTitle = None
         self.cur = ""
         self.state = None
 
-def printcontents1(f, _):
-    f.write('\n      <UL>\n')
-    cats = parser.cats.keys()
-    cats.sort()
-    for cat in cats:
-        f.write('        <LI> <OBJECT type="text/sitemap">\n' +
-            '          <param name="Name" value="' + _(cat) + '">\n' +
-            '          </OBJECT>\n' +
-            '        <UL>\n')
-        subcats = parser.subcats[cat].keys()
-        subcats.sort()
-        for subcat in subcats:
-            f.write('          <LI> <OBJECT type="text/sitemap">\n' +
-                '            <param name="Name" value="' + _(subcat) + '">\n' +
-                '            </OBJECT>\n' +
-                '          <UL>\n')
-            titles = parser.subcats[cat][subcat].keys()
-            titles.sort()
-            for title in titles:
-                f.write('            <LI> <OBJECT type="text/sitemap">\n' +
-                    '              <param name="Name" value="' + _(title) + '">\n' +
-                    '              <param name="Local" value="' +
-                    parser.subcats[cat][subcat][title] + '#' + _(title) + '">\n' +
-                    '              </OBJECT>\n')
-            f.write('          </UL>\n')
-        titles = parser.cats[cat].keys()
-        titles.sort()
-        for title in titles:
-            f.write('          <LI> <OBJECT type="text/sitemap">\n' +
-                '            <param name="Name" value="' + _(title) + '">\n' +
-                '            <param name="Local" value="' +
-                parser.cats[cat][title] + '#' + _(title) + '">\n' +
-                '            </OBJECT>\n')
-        f.write('        </UL>\n')
-    f.write('        </UL>\n')
-
-def printcontents2(f, _):
-    f.write('        <UL>\n')
-    versions = parser.versions.keys()
-    versions.sort()
-    for version in versions:
-        f.write('        <LI> <OBJECT type="text/sitemap">\n' +
-            '          <param name="Name" value="' + _(version) + '">\n' +
-            '          </OBJECT>\n' +
-            '        <UL>\n')
-        titles = parser.versions[version].keys()
-        titles.sort()
-        for title in titles:
-            f.write('          <LI> <OBJECT type="text/sitemap">\n' +
-                '            <param name="Name" value="' + _(title) + '">\n' +
-                '            <param name="Local" value="' +
-                parser.versions[version][title] + '#' + _(title) + '">\n' +
-                '            </OBJECT>\n')
-        titles = parser.extversions[version].keys()
-        titles.sort()
-        for title in titles:
-            f.write('          <LI> <OBJECT type="text/sitemap">\n' +
-                '            <param name="Name" value="' + _(title) + ' (' + _('erweitert') + ')">\n' +
-                '            <param name="Local" value="' +
-                parser.extversions[version][title] + '#' + _(title) + '">\n' +
-                '            </OBJECT>\n')
-        f.write('        </UL>\n')
-    f.write('      </UL>\n')
-
-def printcontents3(f, _):
+def printfunctions(f, _):
     def folder(name):
         f.write("<li>" + name + "\n<ul>\n")
     def sheet(url, name):
@@ -185,26 +151,23 @@ def printcontents3(f, _):
             sheet(parser.cats[cat][title] + '#' + _(title), _(title))
         f.write('</ul></li>\n')
     f.write('</ul></li>\n')
-    # folder("Functions by Version")
-    # versions = parser.versions.keys()
-    # versions.sort()
-    # for version in versions:
-        # folder(_(version))
-        # titles = parser.versions[version].keys()
-        # titles.sort()
-        # for title in titles:
-            # sheet(parser.versions[version][title] + '#' + _(title), _(title))
-        # titles = parser.extversions[version].keys()
-        # titles.sort()
-        # for title in titles:
-            # sheetE(parser.extversions[version][title] + '#' + _(title), _(title))
-        # f.write('</ul></li>\n')
-    # f.write('</ul></li>\n')
-    folder("All functions")
-    funcs = parser.funcs.keys()
-    funcs.sort()
-    for func in funcs:
-        sheet(parser.funcs[func] + '#' + _(func), _(func))
+
+def printindex(f, _):
+    def folder(name):
+        f.write("<li>" + name + "\n<ul>\n")
+    def sheet(url, name):
+        f.write("<li><emlink href='" + url[4:] + "'>" + name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') + "</emlink></li>\n")
+    folder("Index")
+    titles = parser.files.keys()
+    titles.sort(key=unicode.lower)
+    for title in titles:
+        ctitles = parser.files[title].keys()
+        ctitles.sort(key=unicode.lower)
+        if len(ctitles) == 1:
+            sheet(parser.files[title][ctitles[0]], _(title))
+        else:
+            for ctitle in ctitles:
+                sheet(parser.files[title][ctitle], _(title + " (" + ctitle + ")"))
     f.write('</ul></li>\n')
 
 parser = Clonkparser()
@@ -244,7 +207,9 @@ _ = lambda s: s.encode('utf-8')
 f, fin = (file("sdk/content.xml", "w"), file("sdk/content.xml.in", "r"))
 for line in fin:
     if line.find("<!-- Insert Functions here -->") != -1:
-        printcontents3(f, _)
+        printfunctions(f, _)
+    elif line.find("<!-- Insert Index here -->") != -1:
+        printindex(f, _)
     else:
         f.write(line)
 f.close()
@@ -265,12 +230,14 @@ for f, fin in ((file("chm/en/Output.hhk", "w"), file("Template.hhk", "r")),
                (file("chm/de/Output.hhk", "w"), file("Template.de.hhk", "r"))):
     for line in fin:
         if line.find("</UL>") != -1:
-            for title, filename in parser.files.iteritems():
-                f.write("  <LI> <OBJECT type=\"text/sitemap\">\n" +
-                    "    <param name=\"Name\" value=\"" + _(title) + "\">\n" +
-                    "    <param name=\"Local\" value=\"" + filename + "#" + _(title) + "\">\n" +
-                    "    </OBJECT>\n")
+            for title, filenames in parser.files.iteritems():
+                for ctitle, filename in filenames.iteritems():
+                    f.write("  <LI> <OBJECT type=\"text/sitemap\">\n" +
+                        "    <param name=\"Name\" value=\"" + _(title) + "\">\n" +
+                        "    <param name=\"Local\" value=\"" + filename + "\">\n" +
+                        "    </OBJECT>\n")
         f.write(line)
     f.close()
     fin.close()
     _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
+

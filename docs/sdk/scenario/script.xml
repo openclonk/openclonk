@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Scenario Scripts</title>
-  <h id="SzenarioScripte">Scenario Scripts</h>
+  <h>Scenario Scripts</h>
   <part>
      <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
     <h id="Callbacks">Callbacks overview</h>
