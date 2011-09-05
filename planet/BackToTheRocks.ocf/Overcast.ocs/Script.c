@@ -149,7 +149,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 		var speed = obj->GetYDir(100);
 		if (speed < -360)
 			continue;
-		obj->SetYDir(speed - 32, 100);
+		obj->SetYDir(speed - 36, 100);
 	}
 	CreateParticle("AirIntake", 464+Random(40), 344+Random(112), RandomX(-1,1), -30, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
 	
@@ -163,7 +163,7 @@ global func FxWindChannelTimer(object target, proplist effect)
 			var speed = obj->GetYDir(100);
 			if (speed < -360)
 				continue;
-			obj->SetYDir(speed - 32, 100);
+			obj->SetYDir(speed - 36, 100);
 		}
 		if (effect.Divider == 0)
 		{
@@ -186,12 +186,29 @@ global func FxWindChannelTimer(object target, proplist effect)
 		CreateParticle("AirIntake", 464+Random(40), 280+Random(10), RandomX(10,20), -20, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
 		
 	// Second shaft with upward wind.
-	for (var obj in FindObjects(Find_InRect(464, 104, 40, 136)))
+	for (var obj in FindObjects(Find_InRect(464, 96, 40, 144)))
 	{
+		// Divert at top.
+		if (obj->GetY() < 104)
+		{
+			if (obj->GetX() < 484)
+			{
+				var speed = obj->GetXDir(100);
+				if (speed > -200)
+				obj->SetXDir(speed - 16, 100);					
+			}
+			else
+			{
+				var speed = obj->GetXDir(100);
+				if (speed < 200)
+				obj->SetXDir(speed + 16, 100);				
+			}			
+			//continue;
+		}
 		var speed = obj->GetYDir(100);
 		if (speed < -360)
 			continue;
-		obj->SetYDir(speed - 32, 100);
+		obj->SetYDir(speed - 36, 100);
 	}
 	CreateParticle("AirIntake", 464+Random(40), 160+Random(96), RandomX(-1,1), -30, 60+Random(10), RGB(100+Random(25),128+Random(20),255));
 	
@@ -237,9 +254,11 @@ global func FxFillBlueChestTimer(object target, proplist effect)
 	if (Random(5))
 		return 1;
 	var w_list = [Firestone, Boompack, FireballScroll, WindScroll];
-
 	if (target->ContentsCount() < 6)
 		target->CreateContents(w_list[Random(GetLength(w_list))]);
+		
+	if (!FindObject(Find_ID(JarOfWinds)))
+		target->CreateContents(JarOfWinds);
 	return 1;
 }
 
@@ -259,9 +278,12 @@ global func FxFillRedChestTimer(object target, proplist effect)
 	if (Random(5))
 		return 1;
 	var w_list = [Firestone, Boompack, FireballScroll, WindScroll];
-
 	if (target->ContentsCount() < 6)
 		target->CreateContents(w_list[Random(GetLength(w_list))]);
+		
+	if (!FindObject(Find_ID(Club)))
+		target->CreateContents(Club);
+		
 	return 1;
 }
 
