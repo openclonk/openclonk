@@ -219,47 +219,6 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
-global func CheckVisibility(int plr)
-{
-	var visible = this["Visibility"];
-	if (GetType(visible) == C4V_Array)
-		visible = visible[0];
-
-	// Not visible at all.
-	if (visible == VIS_None)
-		return false;
-	// Visible for all.
-	if (visible == VIS_All)
-		return true;
-
-	// Object is owned by the indicated player.
-	if (GetOwner() == plr)
-	{
-		if (visible & VIS_Owner)
-			return true;
-	}
-	// Object belongs to a player, hostile to plr.
-	else if (Hostile(GetOwner(), plr))
-	{
-		if (visible & VIS_Enemies)
-			return true;
-	}
-	// Object belongs to a player, friendly to plr.
-	else
-	{
-		if (visible & VIS_Allies)
-			return true;
-	}
-
-	if (visible & VIS_Select)
-		if (this["Visibility"][1 + plr / 32] & 1 << plr)
-		return true;
-
-	return false;
-}
-
-
-
 global func MaterialDepthCheck(int x, int y, string mat, int depth)
 {
 	var travelled;

@@ -1377,6 +1377,10 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	return pActionDef->GetPropertyStr(P_Procedure);
 }
 
+static bool FnCheckVisibility(C4AulObjectContext *cthr, int plr) {
+	return cthr->Obj->IsVisible(plr, false);
+}
+
 static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, long iOverlayID)
 {
 	uint32_t clr = 0xffffffff;
@@ -2451,6 +2455,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
 	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);
 	AddFunc(pEngine, "ShowInfo", FnShowInfo);
+	AddFunc(pEngine, "CheckVisibility", FnCheckVisibility);
 	AddFunc(pEngine, "SetClrModulation", FnSetClrModulation);
 	AddFunc(pEngine, "GetClrModulation", FnGetClrModulation);
 	AddFunc(pEngine, "CloseMenu", FnCloseMenu);
