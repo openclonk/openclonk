@@ -1137,7 +1137,7 @@ void C4Object::AssignDeath(bool fForced)
 		if(!pPlr->Crew.ObjectCount())
 			::GameScript.GRBroadcast(PSF_RelaunchPlayer,
 			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer)));
-			
+
 }
 
 bool C4Object::ChangeDef(C4ID idNew)
@@ -1902,7 +1902,7 @@ bool C4Object::SetPhase(int32_t iPhase)
 void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
 	C4Facet ccgo;
-	
+
 	// Status
 	if (!Status || !Def) return;
 
@@ -4230,12 +4230,6 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	{
 		Visibility = vis.getInt();
 	}
-	// check overlay
-	if (Visibility & VIS_OverlayOnly)
-	{
-		if (!fAsOverlay) return false;
-		if (Visibility == VIS_OverlayOnly) return true;
-	}
 	// check layer
 	if (Layer && Layer != this && !fAsOverlay)
 	{
@@ -4245,6 +4239,12 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	}
 	// no flags set?
 	if (!Visibility) return true;
+	// check overlay
+	if (Visibility & VIS_OverlayOnly)
+	{
+		if (!fAsOverlay) return false;
+		if (Visibility == VIS_OverlayOnly) return true;
+	}
 	// check visibility
 	fDraw=false;
 	if (Visibility & VIS_Owner) fDraw = fDraw || (iForPlr==Owner);

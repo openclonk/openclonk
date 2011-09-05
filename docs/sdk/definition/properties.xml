@@ -52,8 +52,8 @@ Stand = {
         </row>
         <row>
           <col><code>Visibility</code></col>
-          <col></col>
-          <col></col>
+          <col>int/array</col>
+          <col>Controls the visibility of the object. See the <emlink href="definition/visibility.html">detailed documentation of possible values</emlink>.</col>
         </row>
         <row>
           <col><code>LineColors</code></col>

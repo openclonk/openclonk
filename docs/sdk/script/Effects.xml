@@ -23,11 +23,11 @@ func Activate(object caster, object caster2)
   if (caster2) caster = caster2; target = caster;
 
   // save previous visibility and color modulation of the caster
-  old_visibility = caster-&gt;<funclink>GetVisibility</funclink>();
+  old_visibility = caster.Visibility;
   old_modulation = caster-&gt;<funclink>GetClrModulation</funclink>();
   
   // make caster only visible to himself and allies, color him like a ghost
-  caster-&gt;<funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>);
+  caster.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
   caster-&gt;<funclink>SetClrModulation</funclink>(<funclink>ModulateColor</funclink>(old_modulation, <funclink>RGBa</funclink>(127,127,255,127)));
   
   // start timer: 30 seconds invisible
@@ -46,7 +46,7 @@ func Destruction()
 {
   // spell is being removed: end invisibility
   target-&gt;<funclink>SetClrModulation</funclink>(old_modulation);
-  target-&gt;<funclink>SetVisibility</funclink>(old_visibility);
+  target.Visibility = old_visibility;
 }</code>
     <text>The magic spell object exists until the spell has ended and then makes the clonk visible again. Also, if the spell object is deleted for other reasons (e.g. a scenario section change), the clonk is made visible in the Destruction callback (if this wasn't so, the clonk would remain invisible for ever). Also there is a Timer (defined in the DefCore) called every second. Notice you couldn't just have a single timer call to mark the end of the spell because timer intervals are marked in the engine beginning with the start of the round and you wouldn't know at what point within an engine timer interval the spell would start.</text>
     <text>However, there are some problems with this implementation: for example, the magician can not cast a second invisibility spell while he's already invisible - the second spell would have practically no effect, because the end of the first spell would make the clonk visible again. The spell script would have to do some special handling for this case - but not only for multiple invisibility spells, but also for any other spell or script that might affect visibility or coloration of the clonk. Even if this spell would remember the previous value e.g. for coloration it could not handle a situation in which other scripts change the color of their own in the middle of the spell. The same problems occur when multiple scripts modify temporary clonk physcials such as jumping, walking speed, fight strength or visibility range, energy, magic energy etc. Using effects, these conflicts can be avoided.</text>
@@ -72,10 +72,10 @@ func Activate(object caster, object caster2)
 func FxInvisPSpellStart(object target, proplist effect)
 {
   // Vorherige Sichtbarkeit des Zauberers speichern
-  effect.visibility = target-&gt;<funclink>GetVisibility</funclink>();
+  effect.visibility = target.Visibility;
   effect.old_mod = target-&gt;<funclink>GetClrModulation</funclink>();
   // Zauberer unsichtbar machen
-  target-&gt;<funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>);
+  target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
   // Halbdurchsichtig bläulich für den Besitzer und Verbündete
   target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(effect.old_mod, RGBa(127,127,255,127)));
   // Fertig
@@ -86,7 +86,7 @@ func FxInvisPSpellStop(object target, proplist effect)
 {
   // restore previous values
   target-&gt;<funclink>SetClrModulation</funclink>(effect.old_mod);
-  target-&gt;<funclink>SetVisibility</funclink>(effect.visibility);
+  target.Visibility = effect.visibility;
   // done
   return true;
 }</code>

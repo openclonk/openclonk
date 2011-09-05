@@ -10,14 +10,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-02 16:15+0200\n"
+"POT-Creation-Date: 2011-09-05 22:05+0200\n"
 "PO-Revision-Date: 2011-07-01 15:00+0100\n"
 "Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
 "Language-Team: German <>\n"
+"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: German\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sdk/content.xml.in:5(title)
@@ -388,6 +388,7 @@ msgstr "Operator"
 #: sdk/folder/foldermap.xml:16(col)
 #: sdk/folder/foldermap.xml:46(col)
 #: sdk/folder/foldermap.xml:71(col)
+#: sdk/definition/visibility.xml:19(col)
 #: sdk/definition/script.xml:53(col)
 #: sdk/definition/properties.xml:26(col)
 #: sdk/definition/procedures.xml:13(col)
@@ -1347,13 +1348,6 @@ msgstr "Entfernt alle Objekte."
 
 #: sdk/script/fn/this.xml:8(category)
 #: sdk/script/fn/VerticesStuck.xml:8(category)
-#: sdk/script/fn/VIS_Owner.xml:8(category)
-#: sdk/script/fn/VIS_None.xml:8(category)
-#: sdk/script/fn/VIS_Local.xml:8(category)
-#: sdk/script/fn/VIS_God.xml:8(category)
-#: sdk/script/fn/VIS_Enemies.xml:8(category)
-#: sdk/script/fn/VIS_Allies.xml:8(category)
-#: sdk/script/fn/VIS_All.xml:8(category)
 #: sdk/script/fn/Stuck.xml:8(category)
 #: sdk/script/fn/Split2Components.xml:8(category)
 #: sdk/script/fn/Sort_Value.xml:8(category)
@@ -1370,7 +1364,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/ShakeObjects.xml:8(category)
 #: sdk/script/fn/SetYDir.xml:8(category)
 #: sdk/script/fn/SetXDir.xml:8(category)
-#: sdk/script/fn/SetVisibility.xml:8(category)
 #: sdk/script/fn/SetVertexXY.xml:8(category)
 #: sdk/script/fn/SetVertex.xml:8(category)
 #: sdk/script/fn/SetTransferZone.xml:8(category)
@@ -1462,7 +1455,6 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/GetY.xml:8(category)
 #: sdk/script/fn/GetXDir.xml:8(category)
 #: sdk/script/fn/GetX.xml:8(category)
-#: sdk/script/fn/GetVisibility.xml:8(category)
 #: sdk/script/fn/GetVertexNum.xml:8(category)
 #: sdk/script/fn/GetVertex.xml:8(category)
 #: sdk/script/fn/GetValue.xml:8(category)
@@ -1764,83 +1756,6 @@ msgstr "Liefert die Anzahl feststeckender Vertices von *obj"
 #: sdk/script/fn/VerticesStuck.xml:27(text)
 msgid "Removes obj if two or more of its vertices are stuck."
 msgstr "Entfernt obj wenn zwei oder mehr seiner Vertices feststecken."
-
-#: sdk/script/fn/VIS_Owner.xml:9(subcat)
-#: sdk/script/fn/VIS_None.xml:9(subcat)
-#: sdk/script/fn/VIS_Local.xml:9(subcat)
-#: sdk/script/fn/VIS_God.xml:9(subcat)
-#: sdk/script/fn/VIS_Enemies.xml:9(subcat)
-#: sdk/script/fn/VIS_Allies.xml:9(subcat)
-#: sdk/script/fn/VIS_All.xml:9(subcat)
-#: sdk/script/fn/SetVisibility.xml:9(subcat)
-#: sdk/script/fn/GetVisibility.xml:9(subcat)
-#: sdk/script/fn/CheckVisibility.xml:9(subcat)
-msgid "Visibility"
-msgstr "Sichtbarkeit"
-
-#: sdk/script/fn/VIS_Owner.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for its owner."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für den Besitzer sichtbar."
-
-#: sdk/script/fn/VIS_Owner.xml:16(text)
-msgid "Makes all clonks that are in a crew visible for their owners only."
-msgstr "Macht alle Clonks in Crews nur noch für ihre Besitzer sichtbar."
-
-#: sdk/script/fn/VIS_None.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is not visible for anybody."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für niemanden sichtbar."
-
-#: sdk/script/fn/VIS_None.xml:16(text)
-msgid "Makes all wipfs invisible."
-msgstr "Macht alle Wipfe unsichtbar."
-
-#: sdk/script/fn/VIS_Local.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object's visibility depends on the values in the object's indexed local variables. Each local variable may contain bits for 32 players in a bit mask."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Die Sichtbarkeit eines Objekts richtet sich jeweils nach den unbenannten, lokalen Variablen in diesem Objekt. Dabei können in jeder lokalen Variable 32 Spieler in einer Bitmaske festgelegt werden."
-
-#: sdk/script/fn/VIS_Local.xml:16(text)
-msgid "The calling object is only visible for players 0 and 3."
-msgstr "Das aufrufende Objekt ist nur noch für Spieler 0 und Spieler 3 sichtbar"
-
-#: sdk/script/fn/VIS_Local.xml:20(text)
-msgid "The calling object is only visible for player 33."
-msgstr "Das aufrufende Objekt ist nur noch für Spieler 33 sichtbar"
-
-#: sdk/script/fn/VIS_Local.xml:24(text)
-msgid "The calling object will be visible to its owner only (same as <placeholder-1/>)."
-msgstr "Das aufrufende Objekt ist nur noch von seinem Besitzer sichtbar (entspricht <placeholder-1/>)"
-
-#: sdk/script/fn/VIS_God.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is only visible in general viewports (editor or observer viewports)."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist nur im allgemeinen Viewport (Sichtfenster im Entwicklermodus oder Spielfläche im Netzwerk ohne Spieler) sichtbar."
-
-#: sdk/script/fn/VIS_God.xml:16(text)
-msgid "A chest is now only visible in general viewports."
-msgstr "Eine Truhe ist nur noch in allgemeinen Viewports sichtbar."
-
-#: sdk/script/fn/VIS_Enemies.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all enemires of the owner."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle Feinde des Besitzers sichtbar."
-
-#: sdk/script/fn/VIS_Enemies.xml:17(text)
-msgid "All banners are only visible for the individual enemies of their owners."
-msgstr "Alle Banner sind nur noch für die jeweiligen Gegner der besitzenden Spieler sichtbar."
-
-#: sdk/script/fn/VIS_Allies.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all allies of the owner."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle Verbündeten des Besitzers sichtbar."
-
-#: sdk/script/fn/VIS_Allies.xml:16(text)
-msgid "Makes all selected clonks visible to their owners or their allies only."
-msgstr "Macht alle gesteuerten Clonks nur noch für ihre Besitzer und deren Verbündete sichtbar."
-
-#: sdk/script/fn/VIS_All.xml:12(desc)
-msgid "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible for all. This is the default value 0 and kann logically not be combined with other VIS_x values."
-msgstr "Konstante für <placeholder-1/>/<placeholder-2/>. Das Objekt ist für alle sichtbar. Dieser Wert entspricht 0, und kann logischerweise nicht mit anderen VIS_x-Werten kombiniert werden."
-
-#: sdk/script/fn/VIS_All.xml:16(text)
-msgid "Makes all objects visible."
-msgstr "Macht alle Objekte sichtbar."
 
 #: sdk/script/fn/Translate.xml:17(desc)
 msgid "String to translate"
@@ -2763,22 +2678,6 @@ msgstr "Setzt das Vermögen eines Spielers."
 #: sdk/script/fn/SetWealth.xml:29(text)
 msgid "Brankrupts player number six."
 msgstr "Ruiniert den sechsten Spieler."
-
-#: sdk/script/fn/SetVisibility.xml:17(desc)
-msgid "Bit mask defining the new visibility.<br/> Either <placeholder-1/> or <placeholder-2/> or a bit mask of <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, and <placeholder-7/>."
-msgstr "Bitmaske, die die neue Sichtbarkeit angibt.<br/> Entweder <placeholder-1/> oder <placeholder-2/>, oder eine Bitmaske aus <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/> und <placeholder-7/>."
-
-#: sdk/script/fn/SetVisibility.xml:21(desc)
-msgid "Changes the visibility of an object. Objects can be made invisible for any group of players by providing a bit mask in dwVisibility."
-msgstr "Verändert die Sichtbarkeit eines Objekts. Objekte können für beliebige Gruppen sichtbar gemacht werden, indem für dwVisibility eine Bitmaske angegeben wird."
-
-#: sdk/script/fn/SetVisibility.xml:25(text)
-msgid "Makes the selected clonk of player 0 completely invisible."
-msgstr "Macht den ausgewählten Clonk von Spieler 0 völlig unsichtbar."
-
-#: sdk/script/fn/SetVisibility.xml:29(text)
-msgid "Makes the selected clonk of player 0 only visible for his owner and allies."
-msgstr "Macht den ausgewählten Clonk von Spieler 0 nur für sich und Verbündete sichtbar."
 
 #: sdk/script/fn/SetViewOffset.xml:9(subcat)
 #: sdk/script/fn/SetPlrViewRange.xml:9(subcat)
@@ -6296,18 +6195,6 @@ msgstr "Liefert die Windstärke und Richtung an der Position X, Y. Wird die Funk
 msgid "Returns the wealth of a player."
 msgstr "Liefert das Vermögen von owner."
 
-#: sdk/script/fn/GetVisibility.xml:17(desc)
-msgid "Player of which to retrieve the visibility. Can be 0 in local calls."
-msgstr "Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf."
-
-#: sdk/script/fn/GetVisibility.xml:22(desc)
-msgid "Returns the current visibility of an object. Also see <placeholder-1/>."
-msgstr "Fragt die Sichtbarkeit eines Objekts ab. Siehe dazu auch <placeholder-1/>."
-
-#: sdk/script/fn/GetVisibility.xml:27(text)
-msgid "If the calling object is not visible for its owner, it will be made so."
-msgstr "Wenn das aufrufende Objekt nicht für den Besitzer sichtbar war, wird es für ihn sichtbar gemacht."
-
 #: sdk/script/fn/GetVertexNum.xml:12(desc)
 msgid "Returns the number of vertices of an object."
 msgstr "Liefert die Anzahl der Vertices des aufrufenden Objekts."
@@ -9239,6 +9126,13 @@ msgstr "Entfernt alle Einträge aus einem Menü."
 msgid "Opens a text window containing the entry \"Old Text\" for the selected clonk. Then changes the entry to \"New Text\"."
 msgstr "Öffnet zunächst ein Textfenster mit dem Inhalt \"Alter Text\" für den ausgewählten Clonk des ersten Spielers, und ändert die Beschriftung dann später auf \"Neuer Text\"."
 
+#: sdk/script/fn/CheckVisibility.xml:9(subcat)
+#: sdk/script/fn/CheckVisibility.xml:24(emlink)
+#: sdk/definition/visibility.xml:6(title)
+#: sdk/definition/visibility.xml:7(h)
+msgid "Visibility"
+msgstr "Sichtbarkeit"
+
 #: sdk/script/fn/CheckVisibility.xml:17(desc)
 msgid "Player whose visibility to determine."
 msgstr "Spieler für den die Sichtbarkeit abgefragt wird."
@@ -9246,6 +9140,10 @@ msgstr "Spieler für den die Sichtbarkeit abgefragt wird."
 #: sdk/script/fn/CheckVisibility.xml:22(desc)
 msgid "Checks whether this object is visible for the given player."
 msgstr "Prüft ob dieses Objekt für den angegebenen Spieler sichtbar ist."
+
+#: sdk/script/fn/CheckVisibility.xml:23(related)
+msgid "<placeholder-1/>-Property"
+msgstr "<placeholder-1/>-Eigenschaft"
 
 #: sdk/script/fn/CheckEffect.xml:16(desc)
 #: sdk/script/fn/AddEffect.xml:16(desc)
@@ -10083,6 +9981,7 @@ msgstr "base_mode"
 #: sdk/material/ocm.xml:288(col)
 #: sdk/material/ocm.xml:313(col)
 #: sdk/material/ocm.xml:342(col)
+#: sdk/definition/visibility.xml:18(col)
 #: sdk/definition/properties.xml:24(col)
 msgid "Name"
 msgstr "Name"
@@ -14980,6 +14879,50 @@ msgstr "Mit dem Menüsystem von Clonk lassen sich Gruppendateien bearbeiten und/
 msgid "Unpacking group files greatly increases speed while editing large or deeply nested groups."
 msgstr "Das Entpacken von Gruppen liefert vor allem einen Geschwindigkeitsvorteil beim Bearbeiten von größeren oder verschachtelten Dateien."
 
+#: sdk/definition/visibility.xml:9(text)
+msgid "Every object has a <emlink href=\"definition/properties.html\">property</emlink>, which controls its visibility for players. It may be either <placeholder-1/> or <placeholder-2/> or a bit mask of <placeholder-3/>, <placeholder-4/>, <placeholder-5/> and <placeholder-6/>, or an array starting with <placeholder-7/> followed by bools setting the visibility for each player. If the object has a layer, it will only be visible if the layer is visible, unless <placeholder-8/> is set for the layer."
+msgstr "Jedes Objekt hat eine <emlink href=\"properties.html\">Property</emlink>, die seine Sichtbarkeit steuert. Diese Property verschieden gesetzt werden: entweder auf <placeholder-1/> oder auf <placeholder-2/> oder auf eine Bitmaske aus <placeholder-3/>, <placeholder-4/>, <placeholder-5/> und <placeholder-6/> oder auf ein Array, dessen erstes Element <placeholder-7/> ist, die weiteren Elemente geben dann boolsch die Sichtbarkeit für jeden Spieler einzeln an. Wenn ein Objekt ein Layer hat ist es nur sichtbar, wenn das Layer sichtbar ist, es sei denn <placeholder-8/> ist für das layer gesetzt."
+
+#: sdk/definition/visibility.xml:16(caption)
+msgid "VIS_-Constants"
+msgstr "VIS_-Konstanten"
+
+#: sdk/definition/visibility.xml:23(col)
+msgid "Visible for anyone"
+msgstr "Sichtbar für jeden"
+
+#: sdk/definition/visibility.xml:27(col)
+msgid "Visible for noone"
+msgstr "Sichtbar für niemanden"
+
+#: sdk/definition/visibility.xml:31(col)
+msgid "Visible for the owner"
+msgstr "Sichtbar für den Besitzer"
+
+#: sdk/definition/visibility.xml:35(col)
+msgid "Visible for the owners allies (not for the owner)"
+msgstr "Sichtbar für Spieler, die mit dem Besitzer verbündet sind"
+
+#: sdk/definition/visibility.xml:39(col)
+msgid "Visible for any player hostile to the owner"
+msgstr "Sichtbar für Spieler, die mit dem Besitzer verfeindet sind."
+
+#: sdk/definition/visibility.xml:43(col)
+msgid "Is ignored when the property is not an array. If set, the object is visible if the element at position (playernumber+1) is true. Try and avoid using it, you will have to update it on hostility changes and player joins."
+msgstr "Wird ignoriert wenn Visibility kein Array ist. Wenn gesetzt, ist das Objekt für die Spieler sichtbar, für die das Element bei (Spielernummer+1) boolsch wahr ist."
+
+#: sdk/definition/visibility.xml:47(col)
+msgid "Visible for spectators and in playerless editor windows"
+msgstr "Sichtbar für Zuschauer und spielerlose Editorfenster"
+
+#: sdk/definition/visibility.xml:51(col)
+msgid "For layers. Make the layer's objects visible when their layer is invisible and vice versa."
+msgstr "Für Layer. Macht die Objekte des Layers sichtbar wenn das Layer unsichtbar ist und umgekehrt."
+
+#: sdk/definition/visibility.xml:55(col)
+msgid "Only overlays will be visible, other visibility-rules still apply."
+msgstr "Nur Overlays sind sichtbar, andere Regeln werden weiterhin angewendet."
+
 #: sdk/definition/vertices.xml:8(text)
 msgid "Vertices are the collision points of an object. The outer shape of the object should be rougly marked by vertices. In most cases, four to five vertices are sufficient. Vertex coordinates are relative to the object center.<br/><br/>At these points it is checked whether the object has collided with solid material in the landscape. If an object collides with the landscape, it is slowed down, rotated and/or deviated into another direction. If a vertex gets covered by solid material teh object will be stuck. The friction value of a vertex determines how easily the object will slide at that corner.<br/><br/>If a vertex contains a direction indication (see <emlink href=\"definition/cnat.html\">CNAT - ContactAttachment</emlink>) and ContactCalls are specified, the corresponding contact functions are called in the object script. In this way, an object might react to hitting a wall on the left, the ground at the bottom, etc.<br/><br/>If the object has a SolidMask you should take care that each vertex has at least one pixel of space from the solid area, else the object will be stuck in itself."
 msgstr "Vertices sind die Kollisionspunkte eines Objekts. Der Umriss eines Objekts sollte grob durch Vertices markiert sein. Meist reichen hierbei vier bis fünf Eckpunkte. Die Koordinaten der Eckpunkte gelten in Relation zur Objektmitte. An diesen Punkten wird überprüft, ob das Objekt mit festen Materialien in der Landschaft kollidiert. Stößt ein Objekt mit einem Vertex gegen festes Material, so wird es entsprechend anhalten, seine Richtung ändern oder sich drehen (die Vertices drehen sich hierbei natürlich mit). Wird ein Eckpunkt eines Objekts durch ein festes Material verschüttet, so hängt das Objekt fest. Die Reibung eines Vertex bestimmt, wie leicht das Objekt an diesem Punkt abrutscht. Ist einem Vertex eine Ausrichtung zugeordnet (siehe <emlink href=\"definition/cnat.html\">CNAT - ContactAttachment</emlink>), so wird bei aktivierten ContactCalls die entsprechende Funktion im Script des Objekts aufgerufen, sobald der Vertex mit der Landschaft kollidiert, so dass das Objekt merkt, dass es z.B. links gegen eine Wand gefahren ist und entsprechend reagieren kann. Bei Objekten mit SolidMask ist zu beachten, dass jeder Vertex mindestens einen Punkt Abstand zum festen Bereich hat, sonst bleibt das Objekt in der eigenen SolidMask hängen."
@@ -15422,7 +15365,7 @@ msgstr "Die Engine ruft zu Zeiten die folgenden Funktionen in Objektscripten auf
 
 #: sdk/definition/properties.xml:9(text)
 msgid "Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href=\"definition/index.html#Objektdefinitionen\">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href=\"definition/script.html#Objektscripte\">Definition's script</emlink>:"
-msgstr ""
+msgstr "Jedes Objekt besitzt Properties die von der engine interpretiert werden. Normalerweise werden diese vom Prototyp des objekts abgeleitet, seiner <emlink href=\"definition/index.html#Objektdefinitionen\">Objektdefinition</emlink>. Eine Property einer Objektdefinition wird mit dem <code>local</code>-Schlüsselwort im <emlink href=\"definition/script.html#Objektscripte\">Definitionsscript</emlink> definiert."
 
 #: sdk/definition/properties.xml:30(col)
 #: sdk/definition/properties.xml:50(col)
@@ -15433,6 +15376,14 @@ msgstr "proplist"
 #: sdk/definition/properties.xml:35(col)
 msgid "string"
 msgstr "string"
+
+#: sdk/definition/properties.xml:55(col)
+msgid "int/array"
+msgstr "int/array"
+
+#: sdk/definition/properties.xml:56(col)
+msgid "Controls the visibility of the object. See the <emlink href=\"definition/visibility.html\">detailed documentation of possible values</emlink>."
+msgstr "Steuert die Sichtbarkeit des Objekts. <emlink href=\"./visibility.xml\">Detailierte Dokumentation möglicher Werte</emlink>"
 
 #: sdk/definition/properties.xml:105(col)
 #: sdk/definition/properties.xml:110(col)
@@ -17037,6 +16988,15 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "The object will only be visible for it's owner and the spectators."
+#~ msgstr "Das Objekt wird nur für seinen Besitzer und Zuschauer sichtbar."
+
+#~ msgid "Visible for player 0 and 3"
+#~ msgstr "Sichtbar für Spieler 0 und 3"
+
+#~ msgid "This is also possible (as long as it is not done for a layer)"
+#~ msgstr "Auch dies ist möglich (Aber nicht in einem Layer)"
 
 #~ msgid "Developer Mode <placeholder-1/>"
 #~ msgstr "Entwicklermodus <placeholder-1/>"
