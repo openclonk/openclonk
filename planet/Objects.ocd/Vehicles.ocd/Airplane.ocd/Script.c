@@ -257,13 +257,17 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 	}
 }
 
+local newrot;
+
 public func RollPlane(int rolldir, bool instant)
 {
 	if(dir != rolldir)
 	{
 		var i = 36;
 		if(instant) i = 1;
-		PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Remove), Anim_Const(1000));
+		if(newrot) StopAnimation(newrot);
+		newrot = PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Hold), Anim_Const(1000));
+		Message(Format("%d",newrot));
 		dir = rolldir;
 	}
 }
