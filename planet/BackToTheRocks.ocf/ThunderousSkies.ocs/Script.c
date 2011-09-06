@@ -9,7 +9,6 @@
 
 protected func Initialize()
 {
-
 	// Goal.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(8 * 36);
 	var goal = CreateObject(Goal_KingOfTheHill, 450, 380, NO_OWNER);
@@ -39,8 +38,16 @@ protected func Initialize()
 	// Smooth brick edges.
 	AddEffect("ChanneledWind", nil, 100, 1, this);
 	AddEffect("Balloons", nil, 100, 100, this);
+	
+	// Moving bricks.
+	var brick;
+	brick = CreateObject(MovingBrick,370,424);
+	brick->MoveHorizontal(344, 544);
+	brick = CreateObject(MovingBrick,550,250);
+	brick->MoveVertical(240, 296);
+
 	PlaceEdges();
-	MovingBricks();
+	
 	PlaceGras();
 	return;
 }
@@ -109,12 +116,6 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 	}
 	CreateParticle("AirIntake",king->GetX()+Sin(r + 180,6-Random(5)),king->GetY()-Cos(r+180,6-Random(5)),0,-25,20+Random(20),king->GetPlayerColor());
 	return 1;
-}
-
-global func MovingBricks()
-{
-	CreateObject(MovingBrick,370,424)->Room(148,0,0,10,0);
-	CreateObject(MovingBrick,550,250)->Room(0,50,0,0,9);
 }
 
 global func FxChanneledWindTimer()
