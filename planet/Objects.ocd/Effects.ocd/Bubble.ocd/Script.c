@@ -14,7 +14,7 @@ global func Bubble(int amount, int x, int y)
 protected func Initialize()
 {
 	DoCon(RandomX(25, 100));
-	AddEffect("Move", this, 100, 1, this);
+	AddEffect("Move", this, 100, 2, this);
 	return;
 }
 
@@ -24,12 +24,12 @@ public func FxMoveTimer(object target, effect, int time)
 		AddEffect("Fade", target, 100, 1, target);
 
 	// Bubbles burst into smaller bubles
-	if (!Random(30) && target->GetCon() > 100)
+	if (!Random(25) && target->GetCon() > 100)
 	{
-		for (var i = 0; i < 3; i++)
+		for (var i = 0; i < 2; i++)
 		{
 			var bubble = CreateObject(Fx_Bubble);
-			bubble->SetCon(10 * target->GetCon() / 15);
+			bubble->SetCon(2 * target->GetCon() / 3);
 			bubble->SetYDir(target->GetYDir());
 		}
 		RemoveObject();
@@ -37,7 +37,7 @@ public func FxMoveTimer(object target, effect, int time)
 	}
 
 	// Jittery movement
-	SetYDir(GetYDir() - 2 + Random(5));
+	SetYDir(GetYDir() - 3 + Random(7));
 	if (Inside(GetXDir(), -6, 6))
 		SetXDir(GetXDir() + 2 * Random(2) - 1);
 
