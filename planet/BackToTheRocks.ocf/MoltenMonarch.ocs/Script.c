@@ -29,28 +29,24 @@ protected func Initialize()
 	CreateObject(Chest, 48, 256, NO_OWNER);
 	AddEffect("IntFillChests", nil, 100, 5 * 36, this);
 	
-	var brck;
-	CreateObject(MovingBrick,590,170)->Room(0,300,0,0,8);
+	// Moving bricks.
+	var brick;
+	brick = CreateObject(MovingBrick, 542, 176);
+	brick->SetSize(3);
+	brick->MoveVertical(168, 472, 8);
+	brick = CreateObject(MovingBrick, 588, 192);
+	brick->SetSize(3);
+	brick->MoveVertical(160, 464, 8);
 	
-	brck=CreateObject(MovingBrick,540,180);
-	brck->Room(0,300,3,0,8);
-	brck->SetPosition(540,215);
-	
-	brck=CreateObject(MovingBrick,77,0);
-	brck->Room(0,LandscapeHeight()+60,4,0,6);
-	AddEffect("LavaBrickReset",brck,100,10,nil);
-	
-	brck=CreateObject(MovingBrick,77,0);
-	brck->Room(0,LandscapeHeight()+60,4,0,6);
-	AddEffect("LavaBrickReset",brck,100,10,nil);
-	brck->SetPosition(77,LandscapeHeight()/3 *2);
-	brck->SetYDir(-15);
-	
-	brck=CreateObject(MovingBrick,77,0);
-	brck->Room(0,LandscapeHeight()+60,4,0,6);
-	AddEffect("LavaBrickReset",brck,100,10,nil);
-	brck->SetPosition(77,LandscapeHeight()/3);
-	brck->SetYDir(-15);
+	brick = CreateObject(MovingBrick, 77, 0);
+	brick->MoveVertical(0, LandscapeHeight(), 6);
+	AddEffect("LavaBrickReset", brick, 100, 10);
+	brick = CreateObject(MovingBrick, 77, LandscapeHeight() / 3);
+	brick->MoveVertical(0, LandscapeHeight(), 6);
+	AddEffect("LavaBrickReset", brick, 100, 10);
+	brick = CreateObject(MovingBrick, 77, 2 * LandscapeHeight() / 3);
+	brick->MoveVertical(0, LandscapeHeight(), 6);
+	AddEffect("LavaBrickReset", brick, 100, 10);
 	
 	PlaceEdges();
 	AddEffect("DeathByFire",nil,100,2,nil);
@@ -78,8 +74,6 @@ global func FxRemoveCorpsesTimer()
 
 global func FxBlessTheKingTimer(object target, effect, int timer)
 {
-
-
 	if(!FindObject(Find_ID(KingOfTheHill_Location))) return 1;
 	if(FindObject(Find_ID(KingOfTheHill_Location))->GetKing() == nil) return 1;
 	
@@ -94,6 +88,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 	CreateParticle("MagicFire2",king->GetX()+RandomX(-4,4),king->GetY()+RandomX(-7,8),RandomX(-6,6),RandomX(-10,3),30+Random(30),RGBa(255,255-Random(100),255-Random(100),10+Random(20)));
 	return 1;
 }
+
 global func FxDeathByFireTimer(object target, effect, int timer)
 {
 	for(var obj in FindObjects(Find_InRect(55,0,50,70),Find_OCF(OCF_Alive)))
@@ -112,12 +107,9 @@ global func FxDeathByFireTimer(object target, effect, int timer)
 global func FxLavaBrickResetTimer(object target, effect, int timer)
 {
 	if(target->GetY() < 10)
-	{
 		target->SetPosition(target->GetX(),LandscapeHeight()-10);
-		target->SetYDir(-15);
-	}
+	return 1;
 }
-
 
 private func PlaceEdges()
 {

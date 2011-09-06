@@ -5,13 +5,16 @@
 --*/
 
 local size; // Length of the brick.
-local speed; // Movement speed.
 
 protected func Initialize()
 {
 	// Size defaults to four.
 	SetSize(4);
-
+	
+	// Allow for dynamically changing speeds.
+	ActMap = { Prototype = this.Prototype.ActMap };
+	ActMap.Moving = { Prototype = ActMap.Moving };
+	
 	// Set floating action.
 	SetAction("Moving");
 	SetComDir(COMD_None);
@@ -28,21 +31,20 @@ public func SetSize(int to_size)
 	return;
 }
 
-public func SetMoveSpeed(int to_speed)
+public func SetMoveSpeed(int speed)
 {
-	speed = to_speed;
+	ActMap.Moving.Speed = speed;
 	return;
 }
 
 /*-- Horizontal movement --*/
 
-public func MoveHorizontal(int left, int right, int move_speed)
+public func MoveHorizontal(int left, int right, int speed)
 {
 	var effect = AddEffect("MoveHorizontal", this, 100, 1, this);
 	effect.Left = left;
 	effect.Right = right;
-	effect.Speed = move_speed;
-	//this.Action.Speed = 10 * move_speed;
+	SetMoveSpeed(10 * speed);
 	SetComDir(COMD_Left);
 	return;
 }
@@ -60,16 +62,14 @@ private func FxMoveHorizontalTimer(object target, proplist effect)
 	return 1;
 }
 
-
 /*-- Vertical movement --*/
 
-public func MoveVertical(int top, int bottom, int move_speed)
+public func MoveVertical(int top, int bottom, int speed)
 {
 	var effect = AddEffect("MoveVertical", this, 100, 1, this);
 	effect.Top = top;
 	effect.Bottom = bottom;
-	effect.Speed = move_speed;
-	//this.Action.Speed = 10 * move_speed;
+	SetMoveSpeed(10 * speed);
 	SetComDir(COMD_Up);
 	return;
 }
