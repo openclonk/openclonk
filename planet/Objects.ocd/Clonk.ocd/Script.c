@@ -1705,6 +1705,11 @@ func SetSkin(int skin)
 	{	SetGraphics(nil, Skin_Steampunk);
 		gender = 1; }
 
+	//Alchemist
+	if(skin == 2)
+	{	SetGraphics(nil, Skin_Alchemist);
+		gender = 0;	}
+
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
 	SetAction("Jump"); //refreshes animation
