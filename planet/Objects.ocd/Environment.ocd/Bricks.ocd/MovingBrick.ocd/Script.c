@@ -33,7 +33,7 @@ public func SetSize(int to_size)
 
 public func SetMoveSpeed(int speed)
 {
-	ActMap.Moving.Speed = speed;
+	ActMap.Moving.Speed = Max(0, speed);
 	return;
 }
 
@@ -44,7 +44,8 @@ public func MoveHorizontal(int left, int right, int speed)
 	var effect = AddEffect("MoveHorizontal", this, 100, 1, this);
 	effect.Left = left;
 	effect.Right = right;
-	SetMoveSpeed(10 * speed);
+	if (speed != nil)
+		SetMoveSpeed(10 * speed);
 	SetComDir(COMD_Left);
 	return;
 }
@@ -69,7 +70,8 @@ public func MoveVertical(int top, int bottom, int speed)
 	var effect = AddEffect("MoveVertical", this, 100, 1, this);
 	effect.Top = top;
 	effect.Bottom = bottom;
-	SetMoveSpeed(10 * speed);
+	if (speed != nil)
+		SetMoveSpeed(10 * speed);
 	SetComDir(COMD_Up);
 	return;
 }
