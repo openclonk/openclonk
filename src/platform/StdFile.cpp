@@ -21,7 +21,6 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-/* Linux conversion by Günther Brammer, 2005 */
 
 /* Lots of file helpers */
 
@@ -426,7 +425,6 @@ bool WildcardMatch(const char *szWildcard, const char *szString)
 	return !*pWild && !*pPos;
 }
 
-#define SStripChars "!\"§%&/=?+*#:;<>\\."
 // create a valid file name from some title
 void MakeFilenameFromTitle(char *szTitle)
 {
@@ -437,8 +435,10 @@ void MakeFilenameFromTitle(char *szTitle)
 		bool fStrip;
 		if (IsWhiteSpace(*szTitle2))
 			fStrip = (szFilename==szTitle);
+		else if (static_cast<unsigned int>(*szTitle2) > 127)
+			fStrip = true;
 		else
-			fStrip = (SCharPos(*szTitle2, SStripChars)>=0);
+			fStrip = (SCharPos(*szTitle2, "!\"'%&/=?+*#:;<>\\.") >= 0);
 		if (!fStrip) *szFilename++ = *szTitle2;
 		++szTitle2;
 	}
