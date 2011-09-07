@@ -79,7 +79,8 @@ doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 
 %.po: doku.pot
 	@echo update $@
-	@msgmerge --no-wrap -w 1 -U $@ $<
+	#@msgmerge --no-wrap -w 1 -U $@ $<
+	@msgmerge --no-wrap -w 1 -o $@ $@ $<
 
 %.mo: %.po
 	@echo compile $@

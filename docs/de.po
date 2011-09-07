@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-06 23:32+0200\n"
-"PO-Revision-Date: 2011-09-06 23:16+0200\n"
+"POT-Creation-Date: 2011-09-07 15:53+0200\n"
+"PO-Revision-Date: 2011-09-07 15:52+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
@@ -253,7 +253,6 @@ msgid "Data Types"
 msgstr "Datentypen"
 
 #: sdk/content.xml.in:107(emlink)
-#: sdk/script/fn/IsRef.xml:8(category)
 #: sdk/script/fn/GetType.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:8(category)
 #: sdk/script/fn/C4V_PropList.xml:8(category)
@@ -4484,7 +4483,7 @@ msgstr "Kaufen-Menü für angegebene Basis öffnen."
 #: sdk/script/fn/SetCommand.xml:135(col)
 #: sdk/script/fn/SetCommand.xml:287(col)
 #: sdk/script/fn/SetCommand.xml:313(col)
-#: sdk/script/Typechecks.xml:50(col)
+#: sdk/script/Typechecks.xml:44(col)
 msgid "Object"
 msgstr "Objekt"
 
@@ -6004,14 +6003,6 @@ msgstr "Tötet ein Lebewesen."
 #: sdk/script/fn/Jump.xml:12(desc)
 msgid "Makes an object jump. The same limitations apply as they would with a keyboard controlled jump: the object can jump only from the WALK activity or SWIM activity (jumping from the latter will cause a dive jump).<br/>Returns whether the jump was successfully initiated."
 msgstr "Veranlasst das Objekt dazu, zu springen. Dabei gelten sämtliche Beschränkungen, die auch bei Ansteuerung über die Tastatur gelten: Das Objekt kann nur springen, wenn es gerade steht (seine Action die Procedure \"WALK\" hat).<br/> Im Wasser wird die Action \"Dive\" aktiviert.<br/> Die Funktion gibt zurück, ob die Aktion erfolgreich durchgeführt wurde."
-
-#: sdk/script/fn/IsRef.xml:16(desc)
-msgid "Value of which to determine the type."
-msgstr "Wert, dessen Typ geprüft werden soll"
-
-#: sdk/script/fn/IsRef.xml:20(desc)
-msgid "Checks wether Value is a reference."
-msgstr "Prüft, ob Value eine Referenz ist."
 
 #: sdk/script/fn/IsNetwork.xml:11(desc)
 msgid "Returns whether the current game is a network game."
@@ -7614,7 +7605,7 @@ msgid "s"
 msgstr "s"
 
 #: sdk/script/fn/Format.xml:51(col)
-#: sdk/script/Typechecks.xml:38(col)
+#: sdk/script/Typechecks.xml:32(col)
 #: sdk/scenario/scenario.xml:50(col)
 #: sdk/scenario/scenario.xml:55(col)
 #: sdk/scenario/scenario.xml:70(col)
@@ -10348,175 +10339,120 @@ msgstr "Boolean"
 msgid "\"true\" (value <code>true</code>) or \"false\" (value <code>false</code>). Expected as parameter by many structures such as <placeholder-1/> and <placeholder-2/>."
 msgstr "\"wahr\" (Wert <code>true</code>) oder \"falsch\" (Wert <code>false</code>). Wird von vielen Kontrollstrukturen wie <placeholder-1/> und <placeholder-2/> als Parameter erwartet."
 
-#: sdk/script/Typechecks.xml:32(col)
+#: sdk/script/Typechecks.xml:33(col)
+msgid "Any text."
+msgstr "Ein beliebiger Text."
+
+#: sdk/script/Typechecks.xml:38(col)
+msgid "Array"
+msgstr "Array"
+
+#: sdk/script/Typechecks.xml:39(col)
+msgid "A type containing multiple variables, whose number can be enquired with <placeholder-1/>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>."
+msgstr "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können."
+
+#: sdk/script/Typechecks.xml:45(col)
+msgid "A general purpose object type. <placeholder-1/> and <placeholder-2/> can get respectively set properties. If the property <code>\"Prototype\"</code> is set, and a property that is not set is gotten, the prototype is asked."
+msgstr "Ein allgemeiner Objekttyp. Mit <placeholder-1/> und <placeholder-2/> können Eigenschaften abgefragt bzw. gesetzt werden. Wenn die Eigenschaft <code>\"Prototype\"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt."
+
+#: sdk/script/Typechecks.xml:50(col)
+msgid "Ingame Object"
+msgstr "Spielobjekt"
+
+#: sdk/script/Typechecks.xml:51(col)
+msgid "Reference to an existing object at runtime. No direct representation. See <placeholder-1/>()"
+msgstr "Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <placeholder-1/>()"
+
+#: sdk/script/Typechecks.xml:57(col)
+msgid "The type of <code>nil</code>."
+msgstr "Der Typ von <code>nil</code>."
+
+#: sdk/script/Typechecks.xml:63(col)
+msgid "When used as a function parameter type, the type check is skipped."
+msgstr "Wenn als Parametertyp für eine Funktion benutzt wird die Typüberprüfung nicht vorgenommen."
+
+#: sdk/script/Typechecks.xml:68(col)
 #: sdk/material/ocm.xml:55(col)
 #: sdk/material/ocm.xml:60(col)
 #: sdk/definition/defcore.xml:20(col)
 msgid "definition id"
 msgstr "Definitions-ID"
 
-#: sdk/script/Typechecks.xml:33(col)
+#: sdk/script/Typechecks.xml:69(col)
 msgid "ID of an object definition (see <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>).Will be changed into a proplist immediately."
 msgstr "ID einer Objektdefinition (siehe <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">Objektdefinitionen</emlink>). Wird sofort in eine Proplist umgewandelt."
 
-#: sdk/script/Typechecks.xml:39(col)
-msgid "Any text."
-msgstr "Ein beliebiger Text."
-
-#: sdk/script/Typechecks.xml:44(col)
-msgid "Array"
-msgstr "Array"
-
-#: sdk/script/Typechecks.xml:45(col)
-msgid "A type containing multiple variables, whose number can be enquired with <placeholder-1/>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>."
-msgstr "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können."
-
-#: sdk/script/Typechecks.xml:51(col)
-msgid "A general purpose object type. <placeholder-1/> and <placeholder-2/> can get respectively set properties. If the property <code>\"Prototype\"</code> is set, and a property that is not set is gotten, the prototype is asked."
-msgstr "Ein allgemeiner Objekttyp. Mit <placeholder-1/> und <placeholder-2/> können Eigenschaften abgefragt bzw. gesetzt werden. Wenn die Eigenschaft <code>\"Prototype\"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt."
-
-#: sdk/script/Typechecks.xml:56(col)
-msgid "Ingame Object"
-msgstr "Spielobjekt"
-
-#: sdk/script/Typechecks.xml:57(col)
-msgid "Reference to an existing object at runtime. No direct representation. See <placeholder-1/>()"
-msgstr "Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <placeholder-1/>()"
-
-#: sdk/script/Typechecks.xml:63(col)
-msgid "The type of <code>nil</code>. When used as a function parameter type, the type check is skipped."
-msgstr "Der Typ von <code>nil</code>. Wenn als Parametertyp für eine Funktion benutzt wird die Typüberprüfung nicht vorgenommen."
-
-#. <text>Additionally, there are two special types:</text>
-#.     <text>
-#.       <ul>
-#.         <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
-#.         <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
-#.       </ul>
-#.     </text>
-#: sdk/script/Typechecks.xml:75(h)
+#: sdk/script/Typechecks.xml:74(h)
 msgid "Arrays"
 msgstr "Arrays"
 
-#: sdk/script/Typechecks.xml:77(text)
+#: sdk/script/Typechecks.xml:76(text)
 msgid "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used."
 msgstr "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <placeholder-1/>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden."
 
-#: sdk/script/Typechecks.xml:78(text)
+#: sdk/script/Typechecks.xml:77(text)
 msgid "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array."
 msgstr "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element. Für negative Indizes wird vom Ende des Arrays gezählt, so dass <code>a[-1]</code> auf das letzte Element des Arrays zugreift."
 
-#: sdk/script/Typechecks.xml:79(text)
+#: sdk/script/Typechecks.xml:78(text)
 msgid "A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code><placeholder-1/>(a)</code> respectively if not given."
 msgstr "Man kann eine Kopie eines Teilbereichs eines Arrays mit <code>a[i:j]</code> erzeugen. Das resultierende Array enthält alle Einträge, deren Indizes im halboffenen Intervall <code>[i,j)</code> liegen. Negative Indizes werden dabei wie beim Zugriff auf einzelne Elemente interpretiert. Beide Indizes sind optional und werden als <code>0</code> bzw. <code><placeholder-1/>(a)</code> aufgefasst, falls sie nicht angegeben sind."
 
-#: sdk/script/Typechecks.xml:80(h)
+#: sdk/script/Typechecks.xml:79(h)
 msgid "Example 1"
 msgstr "Beispiel 1"
 
-#: sdk/script/Typechecks.xml:91(text)
+#: sdk/script/Typechecks.xml:90(text)
 msgid "This function adds up all elements of an array."
 msgstr "Diese Funktion summiert alle Elemente eines Arrays."
 
-#: sdk/script/Typechecks.xml:92(h)
+#: sdk/script/Typechecks.xml:91(h)
 msgid "Example 2"
 msgstr "Beispiel 2"
 
-#: sdk/script/Typechecks.xml:98(text)
+#: sdk/script/Typechecks.xml:97(text)
 msgid "This function randomly chooses one out of four ids and returns it."
 msgstr "Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück."
 
-#: sdk/script/Typechecks.xml:99(h)
+#: sdk/script/Typechecks.xml:98(h)
 msgid "Example 3"
 msgstr "Beispiel 3"
 
-#: sdk/script/Typechecks.xml:108(text)
+#: sdk/script/Typechecks.xml:107(text)
 msgid "This function calls <code>DoExplode()</code> on the six nearest Dynamite objects."
 msgstr "Diese Funktion ruft <code>DoExplode()</code> auf die sechs naheliegendsten Dynamit-Objekte auf."
 
-#: sdk/script/Typechecks.xml:110(h)
+#: sdk/script/Typechecks.xml:109(h)
 msgid "Proplists"
 msgstr "Proplisten"
 
+#: sdk/script/Typechecks.xml:111(text)
+msgid "Proplists are a datatype that maps values to strings and supports prototype inheritance."
+msgstr "Proplists sind ein Datentyp der Strings Werte zuordnet und Prototyp-Vererbung unterstützt."
+
 #: sdk/script/Typechecks.xml:112(text)
-msgid "Proplists can be created with <code>{<em>key 1</em>=<em>expression 1</em>, <em>key 1</em>=<em>expression 1</em>, ...}</code> or with <placeholder-1/>."
-msgstr "Proplisten können mit <code>{<em>Schlüssel 1</em>=<em>Ausdruck 1</em>, <em>Schlüssel 1</em>=<em>Ausdruck 1</em>, ...}</code> oder mit <placeholder-1/> erzeugt werden."
+msgid "Proplists can be created with <code>{<i>key 1</i>=<i>expression 1</i>, <i>key 2</i>=<i>expression 2</i>, ...}</code> or with <placeholder-1/>."
+msgstr "Proplisten können mit <code>{<i>Schlüssel 1</i>=<i>Ausdruck 1</i>, <i>Schlüssel 1</i>=<i>Ausdruck 1</i>, ...}</code> oder mit <placeholder-1/> erzeugt werden."
 
 #: sdk/script/Typechecks.xml:114(h)
 msgid "Conversion"
 msgstr "Konvertierung"
 
-#: sdk/script/Typechecks.xml:115(text)
-msgid "Consult the following table to determine which types can be converted and which conversions might cause errors:"
-msgstr "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
+#: sdk/script/Typechecks.xml:117(li)
+msgid "All values except for <code>false</code>, <code>nil</code> and <code>0</code> are treated as <code>true</code> when a bool is required."
+msgstr "Alle Werte bis auf <code>false</code>, <code>nil</code> und <code>0</code> werden als <code>true</code> behandelt wenn ein boolescher Werte verlangt ist."
 
-#: sdk/script/Typechecks.xml:119(col)
-msgid "to -&gt;"
-msgstr "nach -&gt;"
+#: sdk/script/Typechecks.xml:118(li)
+msgid "<code>nil</code> and <code>false</code> can be converted to <code>0</code>. <code>true</code> can be converted to <code>1</code>."
+msgstr "<code>nil</code> und <code>false</code> können zu <code>0</code> konvertiert werden. <code>true</code> kann zu <code>1</code> konvertiert werden."
 
-#: sdk/script/Typechecks.xml:129(col)
-#: sdk/script/Typechecks.xml:130(col)
-#: sdk/script/Typechecks.xml:138(col)
-#: sdk/script/Typechecks.xml:139(col)
-#: sdk/script/Typechecks.xml:148(col)
-#: sdk/script/Typechecks.xml:149(col)
-#: sdk/script/Typechecks.xml:152(col)
-#: sdk/script/Typechecks.xml:157(col)
-#: sdk/script/Typechecks.xml:159(col)
-#: sdk/script/Typechecks.xml:166(col)
-#: sdk/script/Typechecks.xml:169(col)
-#: sdk/script/Typechecks.xml:175(col)
-#: sdk/script/Typechecks.xml:179(col)
-msgid "OK"
-msgstr "OK"
+#: sdk/script/Typechecks.xml:119(li)
+msgid "<code>nil</code> can always be used as a function parameter, if the function doesn't implement a separate check."
+msgstr "<code>nil</code> kann immer als Funktionsparameter verwendet werden wenn die Funktion keine separate Überprüfung vornimmt."
 
-#: sdk/script/Typechecks.xml:131(col)
-#: sdk/script/Typechecks.xml:132(col)
-#: sdk/script/Typechecks.xml:133(col)
-#: sdk/script/Typechecks.xml:134(col)
-msgid "if 0"
-msgstr "wenn 0"
-
-#: sdk/script/Typechecks.xml:140(col)
-#: sdk/script/Typechecks.xml:141(col)
-#: sdk/script/Typechecks.xml:142(col)
-#: sdk/script/Typechecks.xml:143(col)
-#: sdk/script/Typechecks.xml:147(col)
-#: sdk/script/Typechecks.xml:150(col)
-#: sdk/script/Typechecks.xml:151(col)
-#: sdk/script/Typechecks.xml:156(col)
-#: sdk/script/Typechecks.xml:158(col)
-#: sdk/script/Typechecks.xml:160(col)
-#: sdk/script/Typechecks.xml:161(col)
-#: sdk/script/Typechecks.xml:165(col)
-#: sdk/script/Typechecks.xml:167(col)
-#: sdk/script/Typechecks.xml:168(col)
-#: sdk/script/Typechecks.xml:170(col)
-#: sdk/script/Typechecks.xml:174(col)
-#: sdk/script/Typechecks.xml:177(col)
-#: sdk/script/Typechecks.xml:178(col)
-msgid "Error"
-msgstr "Error"
-
-#: sdk/script/Typechecks.xml:176(col)
-msgid "maybe"
-msgstr "maybe"
-
-#: sdk/script/Typechecks.xml:183(h)
-msgid "Additional information:"
-msgstr "Erklärung der Tabelle:"
-
-#: sdk/script/Typechecks.xml:186(li)
-msgid "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
-msgstr "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
-
-#: sdk/script/Typechecks.xml:187(li)
+#: sdk/script/Typechecks.xml:120(li)
 msgid "If an object has been converted into a proplist then it can be converted back to an object. Otherwise proplists cannot be converted into objects."
 msgstr "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
-
-#: sdk/script/Typechecks.xml:188(li)
-msgid "<code>0</code> can be converted into anything. In that case it behaves the same way as <code>any</code>"
-msgstr "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 
 #: sdk/script/ScriptPlayers.xml:10(text)
 msgid "It is possible to create non-human players by script. These players have all the properties of normal players. They have a crew, wealth, build knowledge, home base material, hostility, teams, etc. However, script players do not have a game view port and they can not be controlled by human users."
@@ -16991,6 +16927,39 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Value of which to determine the type."
+#~ msgstr "Wert, dessen Typ geprüft werden soll"
+
+#~ msgid "Checks wether Value is a reference."
+#~ msgstr "Prüft, ob Value eine Referenz ist."
+
+#~ msgid "Consult the following table to determine which types can be converted and which conversions might cause errors:"
+#~ msgstr "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
+
+#~ msgid "to -&gt;"
+#~ msgstr "nach -&gt;"
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgid "if 0"
+#~ msgstr "wenn 0"
+
+#~ msgid "Error"
+#~ msgstr "Error"
+
+#~ msgid "maybe"
+#~ msgstr "maybe"
+
+#~ msgid "Additional information:"
+#~ msgstr "Erklärung der Tabelle:"
+
+#~ msgid "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
+#~ msgstr "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
+
+#~ msgid "<code>0</code> can be converted into anything. In that case it behaves the same way as <code>any</code>"
+#~ msgstr "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
 
 #~ msgid "Shape of surface: 0 smooth, 1 smooth on top, 2 semi rough, 3 rough."
 #~ msgstr "Landschaftsform: 0 glatt, 1 oben glatt, 2 halbrauh, 3 komplett rauh."
