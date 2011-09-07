@@ -46,7 +46,7 @@ protected func Initialize()
 	brick = CreateObject(MovingBrick,550,250);
 	brick->MoveVertical(240, 296);
 
-	PlaceEdges();
+	CreateObject(BrickEdge, 380, 416)->PermaEdge();
 	
 	PlaceGras();
 	return;
@@ -178,7 +178,7 @@ global func PlaceEdges()
 		edge->Initialize();
 		edge->SetP(d[i]);
 		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
+		//edge->PermaEdge();
 	}
 	return 1;
 }

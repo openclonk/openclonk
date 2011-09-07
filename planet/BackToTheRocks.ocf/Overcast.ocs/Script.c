@@ -9,7 +9,6 @@
 
 protected func Initialize()
 {
-
 	// Goal.
 	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
@@ -20,10 +19,10 @@ protected func Initialize()
 	SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
 	Sound("BirdsLoop.ogg", true, 100, nil, 1);
 	
-	// Smooth brick edges.
-	var x=[557, 565, 124, 213, 213, 172, 149, 909, 804, 909, 828, 692, 804, 812, 820, 828, 836, 844, 852, 860, 901, 893, 885, 877, 829, 837, 724, 581, 573, 364, 372, 372, 380, 589, 508, 461, 412, 508, 452, 517, 461, 781, 773, 829, 837, 549, 325, 292, 221, 180, 44, 109, 117, 125, 133, 261, 269, 277, 285, 293, 236, 228, 220, 212, 309, 197, 205, 213, 221, 229, 124, 100, 92, 380, 573, 573, 716, 789, 797, 805, 813, 821, 829, 909, 852, 716, 812, 812, 868, 525, 436, 436, 525];
-	var y=[517, 509, 676, 692, 677, 525, 524, 445, 277, 396, 396, 340, 260, 252, 244, 236, 228, 220, 212, 204, 228, 220, 212, 204, 165, 157, 132, 45, 53, 109, 117, 45, 53, 109, 100, 100, 293, 284, 237, 237, 284, 348, 340, 132, 140, 284, 148, 148, 148, 148, 212, 212, 220, 228, 236, 236, 244, 252, 260, 268, 236, 244, 252, 260, 285, 396, 404, 412, 420, 428, 396, 404, 412, 484, 485, 500, 485, 484, 492, 500, 508, 516, 524, 524, 524, 500, 668, 653, 644, 677, 692, 677, 692];
-	var d=[2, 2, 1, 2, 0, 1, 0, 2, 3, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 1, 2, 2, 3, 3, 3, 3, 2, 1, 0, 3, 1, 3, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 1, 1, 0, 3, 1, 2];
+	// Brick edges at horizontal moving bricks.
+	var x=[525, 436, 436, 525, 812, 812, 716, 716, 573, 573, 213, 213];
+	var y=[692, 677, 692, 677, 653, 668, 500, 485, 500, 485, 677, 692];
+	var d=[2, 1, 3, 0, 1, 3, 3, 1, 2, 0, 0, 2];
 	for (var i = 0; i < GetLength(x); i++)
 	{
 		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
@@ -73,14 +72,14 @@ protected func Initialize()
 	var brick = CreateObject(MovingBrick, 498, 560);
 	brick->SetSize(2);
 	brick->MoveVertical(480, 680);
-	DrawMaterialQuad("Tunnel-Brickback", 478, 480, 497, 480, 497, 552, 478, 552);
-	DrawMaterialQuad("Tunnel-Brickback", 478, 672, 497, 672, 497, 680, 478, 680);
+	DrawMaterialQuad("Tunnel-Brickback", 478, 478, 497, 478, 497, 552, 478, 552);
+	DrawMaterialQuad("Tunnel-Brickback", 478, 670, 497, 670, 497, 680, 478, 680);
 	
 	var brick = CreateObject(MovingBrick, 170, 600);
 	brick->SetSize(2);
 	brick->MoveVertical(528, 680);
 	DrawMaterialQuad("Tunnel-Brickback", 150, 524, 169, 524, 169, 576, 150, 576);
-	DrawMaterialQuad("Tunnel-Brickback", 150, 672, 169, 672, 169, 680, 150, 680);
+	DrawMaterialQuad("Tunnel-Brickback", 150, 670, 169, 670, 169, 680, 150, 680);
 	
 	// Horizontally moving bricks.
 	var brick = CreateObject(MovingBrick, 600, 496);

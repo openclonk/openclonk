@@ -49,11 +49,6 @@ protected func Initialize()
 	var chest = CreateObject(Chest, 2260, 632, NO_OWNER);
 	chest->CreateContents(Club);
 	
-	// Brick edges.
-	var edges = [[612,640],[620,632],[628,624],[532,560],[524,552],[524,480],[516,472],[1156,568],[1164,560],[1820,448],[1828,440],[1836,432],[1844,424],[1820,368],[1796,360]];
-	for (var i = 0; i < GetLength(edges); i++)
-		CreateObject(BrickEdge, edges[i][0], edges[i][1], NO_OWNER)->PermaEdge();
-	
 	// Dialogue options -> repeat round.
 	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;

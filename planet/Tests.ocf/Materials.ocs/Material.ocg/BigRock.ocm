@@ -1,6 +1,6 @@
 [Material]
 Name=BigRock
-Shape=0
+Shape=Flat
 ShapeTexture=ShapeBigRock.txt
 Density=50
 Friction=100

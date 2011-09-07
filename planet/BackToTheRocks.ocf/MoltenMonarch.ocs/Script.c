@@ -48,7 +48,6 @@ protected func Initialize()
 	brick->MoveVertical(0, LandscapeHeight(), 6);
 	AddEffect("LavaBrickReset", brick, 100, 10);
 	
-	PlaceEdges();
 	AddEffect("DeathByFire",nil,100,2,nil);
 	AddEffect("RemoveCorpses",nil,100,2,nil);
 	return;
@@ -109,22 +108,6 @@ global func FxLavaBrickResetTimer(object target, effect, int timer)
 	if(target->GetY() < 10)
 		target->SetPosition(target->GetX(),LandscapeHeight()-10);
 	return 1;
-}
-
-private func PlaceEdges()
-{
-	var x=[652, 693, 652, 685, 676, 636, 372, 364, 308, 269, 269, 700, 373, 693, 485, 693, 644, 716, 708, 701, 644, 461, 341, 364, 397, 396, 383, 382, 389, 390, 376, 375, 368, 369, 413, 412, 100, 100, 100, 100, 205, 261, 205, 221, 213, 245, 253, 237, 229, 269, 261, 197, 180, 244, 252, 212, 220, 236, 228, 196, 204, 188, 213, 354, 355, 362, 361, 108, 260, 268, 189, 181, 692];
-	var y=[429, 429, 349, 349, 197, 188, 413, 413, 252, 317, 388, 460, 451, 188, 204, 340, 340, 444, 452, 420, 420, 396, 444, 405, 212, 204, 226, 218, 211, 219, 233, 225, 232, 240, 404, 396, 372, 325, 133, 188, 325, 380, 109, 93, 101, 69, 61, 77, 85, 45, 53, 117, 172, 108, 100, 140, 132, 116, 124, 156, 148, 164, 372, 246, 254, 247, 239, 180, 92, 84, 125, 133, 468];
-	var d=[3, 2, 3, 2, 3, 3, 2, 3, 3, 2, 0, 1, 0, 0, 2, 2, 3, 1, 1, 2, 3, 2, 0, 1, 2, 1, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 3, 3, 1, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
-	return;
 }
 
 // Refill/fill chests.

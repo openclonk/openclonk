@@ -75,34 +75,10 @@ protected func Initialize()
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
 	*/
-	// Brick edges, notice the symmetric landscape.
-	PlaceEdges();
 
 	return;
 }
 
-global func PlaceEdges()
-{
-	var x=[613, 565, 596, 676, 637, 381, 252, 268, 284, 109, 102, 45, 188, 149, 396, 332, 261, 245, 229, 213, 101, 93, 85, 316, 629, 621, 652, 668, 676, 556, 516, 684, 556, 613, 660, 94, 109, 277, 324];
-	var y=[468, 412, 412, 493, 492, 389, 484, 476, 468, 365, 372, 468, 548, 588, 444, 452, 572, 564, 556, 548, 492, 484, 476, 549, 484, 476, 436, 420, 412, 556, 564, 548, 429, 429, 428, 380, 500, 580, 460];
-	var d=[0, 0, 1, 3, 0, 2, 1, 1, 1, 2, 2, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 0, 0, 1];
-	var o=[1,0,3,2];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-		
-		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(o[d[i]]);
-		edge->SetPosition(LandscapeWidth()-x[i],y[i]);
-		edge->PermaEdge();
-	}
-	return 1;
-}
 protected func InitializePlayer(int plr)
 {
 	SetPlayerZoomByViewRange(plr, 600, nil, PLRZOOM_Direct);

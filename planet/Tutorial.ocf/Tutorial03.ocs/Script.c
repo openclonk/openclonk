@@ -49,7 +49,7 @@ protected func Initialize()
 	AddEffect("HorizontalMoving", target, 1, 1, target);
 	MakeTarget(1250, 450, true);
 	// A flying target dropping a flint.
-	var target = MakeTarget(1364, 300, true);
+	var target = MakeTarget(1367, 300, true);
 	AddEffect("FlintDrop", target, 1, 0, target);
 	// Three flying targets and a moving target.
 	MakeTarget(1660, 450, true);
