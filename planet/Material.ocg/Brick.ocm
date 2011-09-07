@@ -1,6 +1,6 @@
 [Material]
 Name=Brick
-Shape=0
+Shape=Flat
 Density=50
 Friction=15
 Placement=80

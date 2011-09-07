@@ -3,16 +3,16 @@
 # PeterW <Peter.Wortmann@gmx.de>
 # Sven2 <sven2@goldwipf.de>
 # Armin Burgmeier <armin@arbur.net>, 2010.
-# Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011.
 # Benedict Etzel <benedict.etzel@gmail.com>, 2011.
+# Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-05 22:05+0200\n"
-"PO-Revision-Date: 2011-07-01 15:00+0100\n"
-"Last-Translator: Benedict Etzel <benedict.etzel@gmail.com>\n"
+"POT-Creation-Date: 2011-09-06 23:32+0200\n"
+"PO-Revision-Date: 2011-09-06 23:16+0200\n"
+"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
 "MIME-Version: 1.0\n"
@@ -153,7 +153,6 @@ msgstr "Scripte"
 #: sdk/particle/index.xml:161(h)
 #: sdk/definition/properties.xml:6(title)
 #: sdk/definition/properties.xml:7(h)
-#: sdk/definition/properties.xml:22(caption)
 msgid "Properties"
 msgstr "Eigenschaften"
 
@@ -13822,8 +13821,8 @@ msgid "Shape"
 msgstr "Shape"
 
 #: sdk/material/ocm.xml:31(col)
-msgid "Shape of surface: 0 smooth, 1 smooth on top, 2 semi rough, 3 rough."
-msgstr "Landschaftsform: 0 glatt, 1 oben glatt, 2 halbrauh, 3 komplett rauh."
+msgid "Shape of surface: Flat (0), Octagon, FlatTop (1), Smoother, Smooth (2) or Rough (3)."
+msgstr "Form der Oberfläche: Flat (0, flach), Octagon (achteckig), FlatTop (1, oben flach), Smoother (weicher), Smooth (2, weich) oder Rough (3, rau)."
 
 #: sdk/material/ocm.xml:34(col)
 msgid "Density"
@@ -15367,6 +15366,10 @@ msgstr "Die Engine ruft zu Zeiten die folgenden Funktionen in Objektscripten auf
 msgid "Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href=\"definition/index.html#Objektdefinitionen\">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href=\"definition/script.html#Objektscripte\">Definition's script</emlink>:"
 msgstr "Jedes Objekt besitzt Properties die von der engine interpretiert werden. Normalerweise werden diese vom Prototyp des objekts abgeleitet, seiner <emlink href=\"definition/index.html#Objektdefinitionen\">Objektdefinition</emlink>. Eine Property einer Objektdefinition wird mit dem <code>local</code>-Schlüsselwort im <emlink href=\"definition/script.html#Objektscripte\">Definitionsscript</emlink> definiert."
 
+#: sdk/definition/properties.xml:22(caption)
+msgid "Object Properties"
+msgstr "Objekteigenschaften"
+
 #: sdk/definition/properties.xml:30(col)
 #: sdk/definition/properties.xml:50(col)
 #: sdk/definition/properties.xml:90(col)
@@ -15398,11 +15401,11 @@ msgstr "[int, int]"
 
 #: sdk/definition/properties.xml:121(col)
 msgid "The Objects's major Z-Position. See <placeholder-1/>."
-msgstr ""
+msgstr "Die hauptsächliche Z-Position des Objekts. Siehe auch <placeholder-1/>."
 
 #: sdk/definition/properties.xml:126(col)
 msgid "The Object's minor Z-Position. Negative values are behind the landscape, positive values before it."
-msgstr ""
+msgstr "Die sekundäre Z-Position des Objekts. Negative Werte sind hinter der Landschaft, positive vor ihr."
 
 #: sdk/definition/procedures.xml:8(text)
 msgid "For object activity the engine offers various standard procedures which perform typical physcial behaviour. In procedure WALK, for instance, the activity automatically changes to \"Jump\" if the ground under the feet is lost."
@@ -16988,6 +16991,9 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Shape of surface: 0 smooth, 1 smooth on top, 2 semi rough, 3 rough."
+#~ msgstr "Landschaftsform: 0 glatt, 1 oben glatt, 2 halbrauh, 3 komplett rauh."
 
 #~ msgid "The object will only be visible for it's owner and the spectators."
 #~ msgstr "Das Objekt wird nur für seinen Besitzer und Zuschauer sichtbar."

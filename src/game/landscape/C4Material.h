@@ -124,17 +124,27 @@ public:
 
 typedef std::map<StdCopyStrBuf, C4MaterialShape> C4MaterialShapeMap;
 
+enum C4MaterialCoreShape
+{
+	C4M_Flat    = 0,
+	C4M_TopFlat = 1,
+	C4M_Smooth  = 2,
+	C4M_Rough   = 3,
+	C4M_Octagon = 4,
+	C4M_Smoother= 5,
+};
+
 class C4MaterialCore
 {
 public:
 	C4MaterialCore();
 	~C4MaterialCore() { Clear(); }
 
-public:
 	std::vector<C4MaterialReaction> CustomReactionList;
-public:
+
 	char Name[C4M_MaxName+1];
-	int32_t  MapChunkType;
+
+	C4MaterialCoreShape MapChunkType;
 	StdCopyStrBuf ShapeTexture;
 	int32_t  Density;
 	int32_t  Friction;
@@ -176,7 +186,7 @@ public:
 	int32_t  TempConvStrength;
 	int32_t  MinHeightCount; // minimum material thickness in order for it to be counted
 	int32_t  SplashRate;
-public:
+
 	void Clear();
 	void Default();
 	bool Load(C4Group &hGroup, const char *szEntryName);
@@ -248,13 +258,8 @@ protected:
 
 extern C4MaterialMap MaterialMap;
 
-const int32_t C4M_Flat    = 0,
-              C4M_TopFlat = 1,
-              C4M_Smooth  = 2,
-              C4M_Rough   = 3,
-              C4M_None    = 4,
-              // Material Density Levels
-              C4M_Vehicle   = 100,
+// Material Density Levels
+const int32_t C4M_Vehicle   = 100,
               C4M_Solid     = 50,
               C4M_SemiSolid = 25,
               C4M_Liquid    = 25,

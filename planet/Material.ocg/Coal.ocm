@@ -1,6 +1,6 @@
 [Material]
 Name=Coal
-Shape=3
+Shape=Rough
 Density=50
 Friction=75
 DigFree=1

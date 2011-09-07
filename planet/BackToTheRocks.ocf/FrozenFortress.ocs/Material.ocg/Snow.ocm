@@ -1,6 +1,6 @@
 [Material]
 Name=Snow
-Shape=2
+Shape=Smooth
 Density=50
 Friction=40
 DigFree=1

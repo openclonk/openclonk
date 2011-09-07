@@ -1,6 +1,6 @@
 [Material]
 Name=Ametyst
-Shape=3
+Shape=Rough
 Density=50
 Friction=15
 BlastFree=1

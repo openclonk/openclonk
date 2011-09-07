@@ -28,7 +28,7 @@
         <row>
           <col>Shape</col>
           <col>Integer</col>
-          <col>Shape of surface: 0 smooth, 1 smooth on top, 2 semi rough, 3 rough.</col>
+          <col>Shape of surface: Flat (0), Octagon, FlatTop (1), Smoother, Smooth (2) or Rough (3).</col>
         </row>
         <row>
           <col>Density</col>
