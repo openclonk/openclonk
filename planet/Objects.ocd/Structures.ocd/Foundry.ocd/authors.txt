@@ -1,5 +1,5 @@
 FurnaceLoop.ogg, FurnaceStart.ogg, FurnaceStop.ogg
-  by Dynamicell (http://www.freesound.org/samplesViewSingle.php?id=17548), License: CC Sampling Plus 1.0
+  by Dynamicell (http://www.freesound.org/people/Dynamicell/sounds/17548/), License: CC Sampling Plus 1.0
   
 Pop.ogg
-  by Traveler (http://www.freesound.org/samplesViewSingle.php?id=16064), License: CC Sampling Plus 1.0
+  by Traveler (http://www.freesound.org/people/Traveler/sounds/16064/), License: CC Sampling Plus 1.0

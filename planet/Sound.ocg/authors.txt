@@ -4,24 +4,20 @@ CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
 Author        Work(s)
 ===============================================================================
 
-Ringwaul   - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
-          
-Clonkonaut - Confirm*
+Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
+Clonkonaut      - Confirm*
+Checkmaty       - ProjectileHitLiving*
+dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
+Benboncan       - Blast* (http://www.freesound.org/people/Benboncan/sounds/73005/)
 
-Checkmaty  - ProjectileHitLiving*
+The following sound effects are licensed under the CC Sampling plus license:
 
-Taken from freesound.org
-------------------------
-These sound effects are licensed under the CC Sampling plus license.
-
-TicTacShutUp    - Click
-Benboncan       - Blast*
-kwandalist      - RockHit*
-thecheeseman    - Hurt*, Die 
-tobyk           - Fanfare
-ERH             - WindLoop (http://www.freesound.org/samplesViewSingle.php?id=115759)
-dobroide        - BirdsLoop 
-m_O_M           - Fuse/FuseLoop
-CGEffex         - Splash*
-Mirors_         - Sizzle
-Stickinthemud   - Clonk
+TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
+kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
+thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
+tobyk           - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
+ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
+Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
+CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
+Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
+Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
