@@ -76,7 +76,9 @@ public func IsProjectileTarget(target,shooter)
 
 public func OnProjectileHit()
 {
+	//Pop!
 	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
+	Sound("BalloonPop");
 	if(rider!=nil) rider->SetAction("Tumble");
 	rider->SetSpeed(GetXDir(),GetYDir());
 	parent->RemoveObject();

@@ -21,3 +21,5 @@ Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/10
 CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
+mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
+gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)

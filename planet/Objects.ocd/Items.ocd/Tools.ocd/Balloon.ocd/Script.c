@@ -8,6 +8,9 @@ func ControlUseStart(object clonk, int ix, int iy)
 	var balloon = CreateObject(BalloonDeployed,0,-5);
 	balloon->SetSpeed(clonk->GetXDir(),clonk->GetYDir());
 
+	//sound
+	Sound("BalloonInflate");
+
 	//Lots of object pointers
 	user = clonk;
 	clonk->SetAction("Ride",balloon);
