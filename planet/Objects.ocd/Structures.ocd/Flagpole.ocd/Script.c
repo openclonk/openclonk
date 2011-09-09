@@ -11,4 +11,8 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-
+protected func Construction()
+{
+	SetProperty("MeshTransformation", Trans_Translate(0,5250,0));
+	return _inherited(...);
+}
