@@ -6,7 +6,7 @@
   <title>OpenClonk Documentation</title>
   <h>OpenClonk Documentation</h>
   <part>
-	<img src="../images/cpem.gif" width="52" height="52" alt=""/>
+	<img src="../images/cpem.gif" width="52" height="52" alt="" class="cpem" />
 	<text>Welcome to the developer documentation for the creation of custom game content. This documentation includes a thorough reference of the game data and its file hierarchy. <br/>	
 	Also included is a script reference which explains the syntax and semantics of Clonk's own scripting language - C4Script. In the script reference, all functions, constants and callbacks that are available for the scripter are documented with example usages. 
 	</text>

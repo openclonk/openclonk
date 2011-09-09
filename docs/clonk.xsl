@@ -6,7 +6,7 @@
 
   <xsl:variable name="procinst" select="processing-instruction('xml-stylesheet')" />
   <xsl:param name="relpath" select="substring-after(substring-before($procinst, 'clonk.xsl'),'href=&quot;')" />
-  <xsl:param name="webnotes" />
+  <xsl:param name="chm" />
   <xsl:param name="fileext" select="'.xml'" />
   <xsl:template name="head">
     <head>
@@ -14,7 +14,7 @@
       <link rel="stylesheet">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
-      <xsl:if test="$webnotes">
+      <xsl:if test="not($chm)">
       <link rel="stylesheet" href="http://www.openclonk.org/header/header.css" />
       </xsl:if>
       <xsl:if test="descendant::table[bitmask]">
@@ -47,21 +47,8 @@
   <xsl:template match="title" />
 
   <xsl:template name="header">
-    <xsl:if test="$webnotes">
-<!--<xsl:processing-instruction name="php">
-  <xsl:choose><xsl:when test='lang("en")'>
-  readfile("http://www.openclonk.org/header/header.html?p=docs");
-  </xsl:when><xsl:otherwise>
-  readfile("http://www.openclonk.org/header/header.html?p=docsde");
-  </xsl:otherwise></xsl:choose>
-?</xsl:processing-instruction> -->
-      <!-- <xsl:copy-of select='document("header.xml")/*/*' /> -->
-      <xsl:apply-templates select="document('header.xml')" />
-    </xsl:if>
+    <xsl:apply-templates select="document('header.xml')" />
   </xsl:template>
-<!--  <xsl:template match="header//@action">
-    <xsl:attribute name="action"><xsl:value-of select="concat($relpath, current())" /></xsl:attribute>
-  </xsl:template>-->
   <xsl:template match="header|header//*|header//@*">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
@@ -76,13 +63,19 @@
     <html>
       <xsl:call-template name="head" />
       <body>
-      <xsl:call-template name="header" />
-      <div id="iframe"><iframe>
-        <xsl:attribute name="src"><xsl:value-of select="$relpath" />sdk/content<xsl:value-of select="$fileext" /></xsl:attribute>
-      </iframe></div>
-      <div id="content">
+      <xsl:if test="$chm">
+        <xsl:attribute name="id">chm</xsl:attribute>
         <xsl:apply-templates />
-      </div>
+      </xsl:if>
+      <xsl:if test="not($chm)">
+        <xsl:call-template name="header" />
+        <div id="iframe"><iframe>
+          <xsl:attribute name="src"><xsl:value-of select="$relpath" />sdk/content<xsl:value-of select="$fileext" /></xsl:attribute>
+        </iframe></div>
+        <div id="content">
+          <xsl:apply-templates />
+        </div>
+      </xsl:if>
       </body>
     </html>
   </xsl:template>

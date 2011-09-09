@@ -92,10 +92,10 @@ sdk-de/%.xml: sdk/%.xml de.mo xml2po.py clonk.py
 
 define run-xslt
 @echo generate $@
-@xsltproc -o $@ --param webnotes $(webnotes) --param fileext "'.html'" $(XSLTFLAGS) $(stylesheet) $<
+@xsltproc -o $@ --param chm $(chm) --param fileext "'.html'" $(XSLTFLAGS) $(stylesheet) $<
 endef
-online/%: webnotes=1
-chm/%: webnotes=0
+online/%: chm=0
+chm/%: chm=1
 online/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 online/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
@@ -118,3 +118,4 @@ chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(ad
 	"$(HHC)" $<
 chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
 	"$(HHC)" $<
+

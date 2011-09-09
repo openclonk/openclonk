@@ -31,11 +31,11 @@ and needs at least some of the whitespace added with xsl:text below, and perhaps
 <LI><xsl:text> </xsl:text><OBJECT type="text/sitemap"><xsl:text>
 </xsl:text>
 	<param name="Name">
-		<xsl:attribute name="value"><xsl:for-each select="text()|a/text()"><xsl:value-of select="normalize-space(string(.))" /></xsl:for-each></xsl:attribute>
+		<xsl:attribute name="value"><xsl:for-each select="text()|emlink/text()"><xsl:value-of select="normalize-space(string(.))" /></xsl:for-each></xsl:attribute>
 	</param><xsl:text>
 </xsl:text>
-	<xsl:if test="a/@href"><param name="Local">
-		<xsl:attribute name="value">sdk\<xsl:value-of select="translate(string(a/@href), '/', '\\')" /></xsl:attribute>
+	<xsl:if test="emlink/@href"><param name="Local">
+		<xsl:attribute name="value">sdk\<xsl:value-of select="translate(string(emlink/@href), '/', '\\')" /></xsl:attribute>
 	</param><xsl:text>
 </xsl:text></xsl:if>
 </OBJECT>

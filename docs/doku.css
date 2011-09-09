@@ -4,9 +4,6 @@ body {
 	font-family: Verdana, Arial, 'Trebuchet MS';
 	background-color: white;
 	color: black;
-}
-
-body {
 	font-size: small;
 	line-height: 1.6em;
 }
@@ -32,6 +29,16 @@ body {
 	margin-bottom: 10px;
 }
 
+#chm {
+	margin: 1em;
+}
+
+#content {
+	padding: 0 1em;
+	margin: 0 auto;
+	position: absolute; top: 145px; left: 300px; right: 0; bottom: 0; overflow: auto;
+}
+
 .text, pre.code, ul, ol, dl {
 	padding-top: 5px;
 	padding-bottom: 5px;
@@ -41,15 +48,6 @@ body {
 div.fnsyntax {
 	text-indent: -1em;
 	margin-left: 1em;
-}
-
-#toc {
-}
-
-#content {
-	padding: 0 1em;
-	margin: 0 auto;
-	position: absolute; top: 145px; left: 300px; right: 0; bottom: 0; overflow: auto;
 }
 
 div.example {
@@ -66,7 +64,7 @@ dd {
 	margin-right: 6px;
 }
 
-img#cpem {
+img.cpem {
 	float: left;
 	margin: 12px;
 }

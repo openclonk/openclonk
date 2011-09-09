@@ -2,7 +2,7 @@
 Compatibility=1.1 or later
 Compiled file=Developer.chm
 Contents file=Output.hhc
-Default topic=sdk\content.html
+Default topic=sdk\index.html
 Display compile progress=No
 Full-text search=Yes
 Index file=Output.hhk
