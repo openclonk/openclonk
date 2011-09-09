@@ -51,6 +51,8 @@ protected func Initialize()
 	AddEffect("FlyEffect",this,1,1,this);
 }
 
+local enginesound;
+
 public func FxFlyEffectTimer(object target, int num, int timer)
 {
 	//Cancel effect if there is no graphic.
@@ -68,6 +70,21 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 			if(animdir == 1) i = -25; //Is the airship facing right?
 		if(graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
 			CreateParticle("EngineSmoke", i, 18,0,0,RandomX(20,40),RGBa(colour,colour,colour,colour));
+
+		//Fan-blade sound
+		if(!enginesound)
+		{
+			enginesound = true;
+			Sound("FanLoop.ogg",nil,nil,nil,1);
+		}
+	}
+	else
+	{
+		if(enginesound == true)
+		{
+			Sound("FanLoop.ogg",nil,nil,nil,-1);
+			enginesound = nil;
+		}
 	}
 
 	//Control proxy
@@ -114,14 +131,16 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	//Turn the airship right
 	if(animdir == -1 && GetXDir() > 1 && xthrottle == 1)
 	{
-		turnanim = graphic->PlayAnimation("TurnRight", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnRight"), 36, ANIM_Remove), Anim_Const(1000));
+		StopAnimation(turnanim);
+		turnanim = graphic->PlayAnimation("TurnRight", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnRight"), 36, ANIM_Hold), Anim_Const(1000));
 		animdir = 1;
 	}
 
 	//turn the airship left
 	if(animdir == 1 && GetXDir() < -1 && xthrottle == -1)
 	{
-		turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnLeft"), 36, ANIM_Remove), Anim_Const(1000));
+		StopAnimation(turnanim);
+		turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnLeft"), 36, ANIM_Hold), Anim_Const(1000));
 		animdir = -1;
 	}
 
@@ -192,6 +211,9 @@ func AirshipDeath()
 	graphic->RemoveObject();
 	//Remove the hitbox
 	hitbox->RemoveObject();
+
+	//Make sure engine sound is gone
+	Sound("FanLoop.ogg",nil,nil,nil,-1);
 
 	//This object has served its purpose.
 	Explode(27);
