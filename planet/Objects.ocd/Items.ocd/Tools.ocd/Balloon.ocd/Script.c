@@ -17,6 +17,12 @@ func ControlUseStart(object clonk, int ix, int iy)
 	balloon["rider"] = clonk;
 	balloon["parent"] = this;
 
+	//make sure clonk is not diving
+	var side = "R";
+	if(Random(2)) side = "L";
+	user->PlayAnimation(Format("Jump.%s",side), 5, Anim_Linear(user->GetAnimationLength("Jump.L"), 0,
+		user->GetAnimationLength("Jump.L"), 36, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
 	AddEffect("NoDrop",this,1,1,this);
 	return 1;
 }
