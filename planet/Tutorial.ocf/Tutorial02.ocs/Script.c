@@ -22,11 +22,13 @@ protected func Initialize()
 	var dyn2 = CreateObject(Dynamite, 272, 665, NO_OWNER);
 	var dyn3 = CreateObject(Dynamite, 272, 685, NO_OWNER);
 	var dyn4 = CreateObject(Dynamite, 242, 685, NO_OWNER);
+	var dyn5 = CreateObject(Dynamite, 257, 675, NO_OWNER);
 	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn1, dyn2);
 	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn2, dyn3);
 	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn3, dyn4);
+	CreateObject(Fuse, 255, 675, NO_OWNER)->Connect(dyn4, dyn5);
 	var igniter = CreateObject(Igniter, 110, 710, NO_OWNER);
-	CreateObject(Fuse, 240, 685, NO_OWNER)->Connect(dyn4, igniter);
+	CreateObject(Fuse, 240, 685, NO_OWNER)->Connect(dyn5, igniter);
 	igniter->SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 	
 	// Miner's hut and chest with cannon stuff.
