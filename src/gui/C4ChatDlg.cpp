@@ -113,7 +113,7 @@ C4ChatControl::ChatSheet::ChatSheet(C4ChatControl *pChatControl, const char *szT
 	if (szIdent) sIdent.Copy(szIdent);
 	// create elements - positioned later
 	C4Rect rcDefault(0,0,10,10);
-	pChatBox = new C4GUI::TextWindow(rcDefault);
+	pChatBox = new C4GUI::TextWindow(rcDefault,0,0,0,100,4096,"  ",false,0,0,true);
 	//pChatBox->SetToolTip(LoadResStr("IDS_DLGTIP_CHATWIN")); tooltip doesn't really help, only makes things unübersichtlich
 	pChatBox->SetDecoration(false, false, NULL, false);
 	AddElement(pChatBox);
