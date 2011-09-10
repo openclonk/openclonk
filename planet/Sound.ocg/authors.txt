@@ -9,18 +9,19 @@ Clonkonaut      - Confirm*
 Checkmaty       - ProjectileHitLiving*
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast* (http://www.freesound.org/people/Benboncan/sounds/73005/)
+Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
+Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 
 The following sound effects are licensed under the CC Sampling plus license:
 
 TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
 kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
 thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
-tobyk           - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
 CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
-Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
+
 mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
