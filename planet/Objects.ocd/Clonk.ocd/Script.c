@@ -39,6 +39,10 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
+
+	//The clonk's appearance
+	var skin = GetCrewExtraData("Skin");
+	if(skin) SetSkin(skin);
 }
 
 
@@ -1695,6 +1699,9 @@ local gender;
 
 func SetSkin(int skin)
 {
+	//Save to player's crew-member file which skin they are using
+	SetCrewExtraData("Skin", skin);
+
 	//Adventurer
 	if(skin == 0)
 	{	SetGraphics();
