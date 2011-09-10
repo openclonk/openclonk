@@ -50,4 +50,30 @@ global func PlaceGrass(int amount, int start, int end)
 	}
 }
 
+global func MakeGrasFunction()
+{
+	var x=[];
+	var y=[];
+	var r=[];
+	for(var e in FindObjects(Find_ID(Grass)))
+	{
+		x[GetLength(x)]=e->GetX();
+		y[GetLength(y)]=e->GetY();
+		r[GetLength(r)]=e->GetR();
+	}
+	Log("private func PlaceGras()");
+	Log("{");
+	Log("	var x=%v;",x);
+	Log("	var y=%v;",y);
+	Log("	var r=%v;",r);
+
+	Log("	for (var i = 0; i < GetLength(x); i++)");
+	Log("	{");
+	Log("		var grass=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);");
+	Log("		grass->SetR(r[i]); ");
+	Log("	}");
+	Log("	return;");
+	Log("}");
+}
+
 local Name = "Grass";

@@ -196,34 +196,6 @@ global func PlaceGras()
 	}
 	return 1;
 }
-global func MakeGrasFunction(bool fExact)
-{
-	var x=[];
-	var y=[];
-	var r=[];
-	for(var e in FindObjects(Find_ID(Grass)))
-	{
-		x[GetLength(x)]=e->GetX();
-		y[GetLength(y)]=e->GetY();
-		r[GetLength(r)]=e->GetR();
-	}
-	Log("global func PlaceGras()");
-	Log("{");
-	Log("	var x=%v;",x);
-	Log("	var y=%v;",y);
-	Log("	var r=%v;",r);
-
-	Log("	for (var i = 0; i < GetLength(x); i++)");
-	Log("	{");
-	Log("		var edge=CreateObject(Grass, x[i], y[i] + 5, NO_OWNER);");
-	Log("		edge->SetR(r[i]); ");
-	Log("		edge->Initialize();"); //additional initialize for anti self blocking
-
-	Log("	}");
-	Log("	return 1;");
-	Log("}");
-}
-
 
 private func MakeTarget(int x, int y)
 {
