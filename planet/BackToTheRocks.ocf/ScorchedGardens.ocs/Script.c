@@ -18,8 +18,8 @@ protected func Initialize()
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
 	SetSkyAdjust(RGB(255,128,0));	
-	CreateObject(Column,160,304);
-	CreateObject(Column,448,272);
+	CreateObject(Column,160,304)->SetClrModulation(RGB(255,100,80));
+	CreateObject(Column,448,272)->SetClrModulation(RGB(255,100,80));
 	
 	AddEffect("RandomMeteor", nil, 100, 36-Min(GetPlayerCount()*3,20), this);
 	AddEffect("RemoveCorpses", nil, 100, 1, this);
