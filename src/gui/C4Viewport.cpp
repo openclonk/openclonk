@@ -139,10 +139,6 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 {
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
 	{
-		C4ST_STARTNEW(FoWStat, "C4Viewport::DrawOverlay: FoW")
-		// Player fog of war
-		DrawPlayerFogOfWar(cgo);
-		C4ST_STOP(FoWStat)
 		// Player info
 		C4ST_STARTNEW(PInfoStat, "C4Viewport::DrawOverlay: Player Info")
 		DrawPlayerInfo(cgo);
@@ -169,7 +165,6 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 {
-
 	// Get player
 	C4Player *pPlr = ::Players.Get(Player);
 
@@ -254,6 +249,9 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	last_game_draw_cgo = cgo;
 
 	// landscape mod by FoW
+	/*
+	Fog of war disabled until proper Shader-implementation is around
+
 	C4Player *pPlr=::Players.Get(Player);
 	if (pPlr && pPlr->fFogOfWar)
 	{
@@ -264,6 +262,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	}
 	else
 		lpDDraw->SetClrModMapEnabled(false);
+		*/
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
@@ -296,8 +295,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
 
+	/* Fog of war disabled, see above 
 	// FogOfWar-mod off
 	lpDDraw->SetClrModMapEnabled(false);
+
+	*/
 
 	if (fDrawOverlay)
 	{
@@ -727,14 +729,6 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 void C4Viewport::ClearPointers(C4Object *pObj)
 {
 	Regions.ClearPointers(pObj);
-}
-
-void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
-{
-	/*
-	C4Player *pPlr=::Players.Get(Player);
-	if (!pPlr || !pPlr->FogOfWar) return;
-	pPlr->FogOfWar->Draw(cgo);*/ // now done by modulation
 }
 
 void C4Viewport::NextPlayer()

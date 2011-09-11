@@ -89,7 +89,6 @@ protected:
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
 	CClrModAddMap ClrModMap; // color modulation map for viewport drawing
-	void DrawPlayerFogOfWar(C4TargetFacet &cgo);
 	void DrawPlayerStartup(C4TargetFacet &cgo);
 	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
