@@ -151,6 +151,7 @@ public:
 	bool Init();
 	bool PreInit();
 	void SetScenarioFilename(const char*);
+	bool HasScenario() { return *DirectJoinAddress || *ScenarioFilename || RecordStream.getSize(); }
 	bool Execute();
 	C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	bool DoGameOver();

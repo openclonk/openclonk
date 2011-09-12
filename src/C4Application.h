@@ -92,8 +92,8 @@ protected:
 	static bool ProcessCallback(const char *szMessage, int iProcess);
 	void ApplyResolutionConstraints();
 
-	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
-	int UseStartupDialog;
+	// set by ParseCommandLine, if neither editor, scenario nor direct join adress has been specified
+	int QuitAfterGame;
 	// set by ParseCommandLine, for installing registration keys
 	StdStrBuf IncomingKeyfile;
 private:

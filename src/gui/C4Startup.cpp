@@ -257,10 +257,6 @@ void C4Startup::DoStartup()
 	// make sure loader is drawn after splash
 	::GraphicsSystem.EnableLoaderDrawing();
 
-	// Play some music!
-	if (Config.Sound.FEMusic)
-		Application.MusicSystem.Play();
-
 	// clear any previous
 	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
 	if (pCurrDlg) { delete pCurrDlg; pCurrDlg = NULL; }
