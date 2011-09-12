@@ -262,9 +262,7 @@ public:
 	inline bool IsPacked() { return Status == GRPF_File; }
 	inline bool HasPackedMother() { if (!Mother) return false; return Mother->IsPacked(); }
 	inline bool SetNoSort(bool fNoSort) { NoSort = fNoSort; return true; }
-#ifdef _DEBUG
 	void PrintInternals(const char *szIndent=NULL);
-#endif
 
 protected:
 	void Init();

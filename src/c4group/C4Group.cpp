@@ -2353,7 +2353,6 @@ bool C4Group::OpenMother()
 	return true;
 }
 
-#ifdef _DEBUG
 void C4Group::PrintInternals(const char *szIndent)
 {
 	if (!szIndent) szIndent = "";
@@ -2378,4 +2377,3 @@ void C4Group::PrintInternals(const char *szIndent)
 		}
 	}
 }
-#endif

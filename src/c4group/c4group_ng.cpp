@@ -294,11 +294,9 @@ bool ProcessGroup(const char *FilenamePar)
 							if(have_pid) ++iArg;
 						}
 						break;
-#ifdef _DEBUG
 					case 'z':
 						hGroup.PrintInternals();
 						break;
-#endif
 						// Undefined
 					default:
 						fprintf(stderr, "Unknown command: %s\n", argv[iArg]);
