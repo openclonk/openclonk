@@ -506,7 +506,7 @@ bool C4Application::PreInit()
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
 
-	Game.SetInitProgress(fUsePlayerStartupDialog ? 35.0f : 3.0f);
+	Game.SetInitProgress(fUseStartupDialog ? 35.0f : 3.0f);
 
 	if (fUseStartupDialog)
 	{
