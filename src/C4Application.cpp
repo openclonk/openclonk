@@ -217,8 +217,10 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 	int c;
 	while (1)
 	{
+
 		static struct option long_options[] =
 		{
+			// option, w/ argument?, set directly, set to...
 			{"editor", no_argument, &isEditor, 1},
 			{"fullscreen", no_argument, &isEditor, 0},
 			{"debugwait", no_argument, &Game.DebugWait, 1},
@@ -467,7 +469,9 @@ void C4Application::ApplyResolutionConstraints()
 bool C4Application::PreInit()
 {
 	// startup dialog: Only use if no next mission has been provided
-	bool fDoUseStartupDialog = (UseStartupDialog || isEditor) && !*Game.ScenarioFilename;
+	bool fUsePlayerStartupDialog = UseStartupDialog && !*Game.ScenarioFilename;
+	// editor startup: Only use if no (or invalid) scenario filename and no direct join address provided
+	bool fUseEditorStartupDialog = isEditor && !*Game.ScenarioFilename && !*Game.DirectJoinAddress;
 
 	// Startup message board
 	if (!isEditor)
@@ -479,30 +483,31 @@ bool C4Application::PreInit()
 	Game.SetInitProgress(0.0f);
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
-	if (fDoUseStartupDialog && !isEditor)
+	if (fUsePlayerStartupDialog)
 	{
 		//Log(LoadResStr("IDS_PRC_INITLOADER"));
 		bool fUseBlackScreenLoader = UseStartupDialog && !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
 		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
-	Game.SetInitProgress(fDoUseStartupDialog ? 10.0f : 1.0f);
+	Game.SetInitProgress(fUsePlayerStartupDialog ? 10.0f : 1.0f);
 
 	if (!Game.PreInit()) return false;
 
 	// Music
-	if (!MusicSystem.Init("Frontend.*"))
-		Log(LoadResStr("IDS_PRC_NOMUSIC"));
+	if (fUsePlayerStartupDialog)
+		if (!MusicSystem.Init("Frontend.*"))
+			Log(LoadResStr("IDS_PRC_NOMUSIC"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 34.0f : 2.0f);
+	Game.SetInitProgress(fUsePlayerStartupDialog ? 34.0f : 2.0f);
 
 	// Sound
 	if (!SoundSystem.Init())
 		Log(LoadResStr("IDS_PRC_NOSND"));
 
-	Game.SetInitProgress(fDoUseStartupDialog ? 35.0f : 3.0f);
+	Game.SetInitProgress(fUsePlayerStartupDialog ? 35.0f : 3.0f);
 
-	if (fDoUseStartupDialog)
+	if (fUsePlayerStartupDialog || fUseEditorStartupDialog)
 	{
 		AppState = C4AS_Startup;
 		// default record?
@@ -511,6 +516,7 @@ bool C4Application::PreInit()
 		if (!isEditor)
 			C4Startup::InitStartup();
 	}
+	// directly launch scenario / network game
 	else
 	{
 		AppState = C4AS_StartGame;
