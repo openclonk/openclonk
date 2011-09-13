@@ -15,7 +15,7 @@ public func IsToolProduct() { return 1; }
 
 protected func Initialize()
 {
-	dir = 0;
+	dir = 1;
 	SetAction("Roll");
 	olddir = 1;
 	aim_anim =  PlayAnimation("ArmPosition", 1,  Anim_Const(0),Anim_Const(1000));
@@ -38,7 +38,6 @@ protected func ContactRight()
 func ControlLeft(object clonk)
 {
 	dir = 0;
-	Message(Format("%d|%d", dir, olddir));
 	if(dir != olddir)
 	{
 		olddir = dir;
@@ -50,8 +49,6 @@ func ControlLeft(object clonk)
 			animstart = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
 		}
 
-		Message(Format("%d", animstart));
-
 		StopAnimation(turn_anim);
 		turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnLeft"), 36 - (animstart * 204617 / 10000000), ANIM_Hold), Anim_Const(1000));
 	}
@@ -60,7 +57,6 @@ func ControlLeft(object clonk)
 func ControlRight(object clonk)
 {
 	dir = 1;
-	Message(Format("%d|%d", dir, olddir));
 	if(dir != olddir)
 	{
 		olddir = dir;
@@ -72,8 +68,6 @@ func ControlRight(object clonk)
 			animstart = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
 		}
 
-		Message(Format("%d", animstart));
-
 		StopAnimation(turn_anim);
 		turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(animstart, 0, GetAnimationLength("TurnRight"), 36 - (animstart * 204617 / 10000000), ANIM_Hold), Anim_Const(1000));
 	}
@@ -84,11 +78,26 @@ public func ControlUseStart(object clonk)
 	return true;
 }
 
+public func ControlUseAltStart(object clonk)
+{
+	return true;
+}
+
 public func HoldingEnabled()	{	return true;	}
+
+public func ControlUseAnyHolding(object clonk, int x, int y)
+{
+	ArmAnimation(x,y);
+}
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	ArmAnimation(x,y);
+	ControlUseAnyHolding(clonk,x,y);
+}
+
+public func ControlUseAltHolding(object clonk, int x, int y)
+{
+	ControlUseAnyHolding(clonk,x,y);
 }
 
 public func DefinePower(int x, int y)
@@ -112,7 +121,6 @@ public func ArmAnimation(int x, int y)
 {
 	var power = DefinePower(x,y);
 	SetAnimationPosition(aim_anim, Anim_Const(759 - (power * 759 / 100)));
-	Message(Format("%d",power));
 }
 
 public func ControlUseStop(object clonk, int x, int y)
@@ -124,6 +132,18 @@ public func ControlUseStop(object clonk, int x, int y)
 	if(Contents(0))	projectile = Contents(0);
 	else
 		if(clonk->GetItem(0)) projectile = clonk->GetItem(0);
+	if(projectile) DoFire(projectile, clonk, DefinePower(x,y));
+}
+
+public func ControlUseAltStop(object clonk, int x, int y)
+{
+	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
+	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
+
+	var projectile = nil;
+	if(Contents(0))	projectile = Contents(0);
+	else
+		if(clonk->GetItem(1)) projectile = clonk->GetItem(1);
 	if(projectile) DoFire(projectile, clonk, DefinePower(x,y));
 }
 
@@ -144,6 +164,9 @@ protected func DoFire(object iammo, object clonk, int power)
 		CatapultDismount(iammo);
 		iammo->SetAction("Tumble");
 	}
+
+	//Sound
+	Sound("CatapultLaunch.ogg");
 
 	var angle = -45;
 	if(dir == 1) angle = 45;
