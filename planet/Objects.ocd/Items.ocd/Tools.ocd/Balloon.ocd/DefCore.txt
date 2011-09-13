@@ -6,10 +6,11 @@ Width=8
 Height=8
 Offset=-4,-4
 Vertices=4
-VertexX=0,0,-3,3
-VertexY=-3,3,0,0
+VertexX=-3,3,-3,3
+VertexY=3,-3,-3,3
 VertexFriction=50,50,50,50
 Value=10
 Mass=15
 Components=Balloon=1
+Float=1
 Rotate=1
