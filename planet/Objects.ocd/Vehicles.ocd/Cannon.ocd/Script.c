@@ -290,7 +290,8 @@ func Timer()
 		{
 			if(!GetEffect("IntTurning",this))
 			{
-				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(0, 0, GetAnimationLength("TurnRight"), 36, ANIM_Remove), Anim_Const(1000));
+				StopAnimation(turn_anim);
+				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(0, 0, GetAnimationLength("TurnRight"), 36, ANIM_Hold), Anim_Const(1000));
 				AddEffect("IntTurning",this,1,1,this);
 			}
 			else
@@ -305,7 +306,8 @@ func Timer()
 		{
 			if(!GetEffect("IntTurning",this))
 			{
-				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(0, 0, GetAnimationLength("TurnLeft"), 36, ANIM_Remove), Anim_Const(1000));
+				StopAnimation(turn_anim);
+				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(0, 0, GetAnimationLength("TurnLeft"), 36, ANIM_Hold), Anim_Const(1000));
 				AddEffect("IntTurning",this,1,1,this);
 			}
 			else
