@@ -269,6 +269,12 @@ func FxIntShieldSuspendTimer(object target, effect)
 	}
 }
 
+/* Colour by owner */
+public func Entrance(object container)
+{
+	if(container->GetOwner() != NO_OWNER) SetOwner(container->GetOwner());
+}
+
 /* Shield animation */
 
 public func GetCarryMode() { return CARRY_HandBack; }
