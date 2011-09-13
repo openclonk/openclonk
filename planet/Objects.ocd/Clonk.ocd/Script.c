@@ -778,7 +778,13 @@ func StopWalk()
 func GetCurrentWalkAnimation()
 {
 	if(Contained())
-		return Clonk_WalkInside;
+	{
+		if(Contained()->GetCategory() & C4D_Structure)
+		{
+			return Clonk_WalkInside;
+		}
+		return;
+	}
 	else SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,1000,5000), Trans_Rotate(70,0,1,0)), this);
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
 	if(velocity < 1) return Clonk_WalkStand;
