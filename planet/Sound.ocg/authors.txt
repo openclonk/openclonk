@@ -25,6 +25,8 @@ ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
 CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
-
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
+
+110110010		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/)
+schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
