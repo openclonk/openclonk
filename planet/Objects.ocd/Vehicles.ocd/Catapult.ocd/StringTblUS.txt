@@ -1,0 +1,2 @@
+Name=Catapult
+Description=Hold [Use] and pull the mouse to determine the strength of the throw. With the help of another clonk, you can be launched from it!

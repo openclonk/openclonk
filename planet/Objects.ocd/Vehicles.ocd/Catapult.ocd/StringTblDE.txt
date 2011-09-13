@@ -1,0 +1,2 @@
+Name=Katapult
+Description=translation needed
