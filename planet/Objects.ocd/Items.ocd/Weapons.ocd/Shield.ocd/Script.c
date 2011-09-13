@@ -272,7 +272,7 @@ func FxIntShieldSuspendTimer(object target, effect)
 /* Colour by owner */
 public func Entrance(object container)
 {
-	if(container->GetOwner() != NO_OWNER) SetOwner(container->GetOwner());
+	if(container->GetOwner() != NO_OWNER) SetColor(GetPlayerColor(container->GetOwner()));
 }
 
 /* Shield animation */
