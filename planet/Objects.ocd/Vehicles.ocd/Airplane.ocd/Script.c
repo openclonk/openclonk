@@ -242,7 +242,15 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 	}
 
 	//No pilot?
-	if(!FindObject(Find_OCF(OCF_CrewMember),Find_Container(this)) && throttle != 0) CancelFlight();
+	var pilot = FindObject(Find_OCF(OCF_CrewMember),Find_Container(this));
+	if(!pilot && throttle != 0) CancelFlight();
+
+	//Planes cannot fly underwater!
+	if(GBackLiquid())
+	{
+		if(pilot) Ejection(pilot);
+		if(throttle != 0) CancelFlight();
+	}
 
 	//Pilot, but no mesh? In case they are scripted into the plane.
 	if(FindContents(Clonk) && !clonkmesh)
@@ -267,7 +275,6 @@ public func RollPlane(int rolldir, bool instant)
 		if(instant) i = 1;
 		if(newrot) StopAnimation(newrot);
 		newrot = PlayAnimation(Format("Roll%d",rolldir), 10, Anim_Linear(0, 0, GetAnimationLength(Format("Roll%d",rolldir)), i, ANIM_Hold), Anim_Const(1000));
-		Message(Format("%d",newrot));
 		dir = rolldir;
 	}
 }
@@ -315,6 +322,9 @@ public func ActivateEntrance(object clonk)
 		else
 			return;
 
+	//Clonk cannot get into the plane if it is underwater
+	if(GBackLiquid()) return;
+
 	if(cnt == 0)
 	{
 		clonk->Enter(this);
@@ -326,6 +336,7 @@ public func ActivateEntrance(object clonk)
 public func Ejection(object obj)
 {
 	PlaneDismount(obj);
+	if(obj->Contained()) Exit();
 	obj->SetSpeed(this->GetXDir(),this->GetYDir());
 }
 
