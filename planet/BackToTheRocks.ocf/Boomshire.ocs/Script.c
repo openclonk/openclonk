@@ -39,12 +39,27 @@ func Initialize()
 	CreateObject(Dynamite,1904,878);
 	CreateObject(Dynamite,1905,878);
 	CreateObject(Dynamite,1906,878);
+	CreateObject(Dynamite,2567,918);
 	CreateObject(Dynamite,2568,918);
+	CreateObject(Dynamite,2569,918);
 	
 
-	PlaceEdges();
+	//PlaceEdges();
 	Doors();
 	Decoration();
+	DrawMaterialQuad("Tunnel-brickback",339,687,350,687,350,761,339,761);
+	DrawMaterialQuad("Tunnel-brickback",1889,866,1955,866,1955,882,1889,882);
+	DrawMaterialQuad("Tunnel-brickback",1920,874,1955,874,1930,1000,1920,1000);
+	DrawMaterialQuad("Tunnel-brickback",1920,1000,1930,1000,1970,1100,1960,1100);
+	DrawMaterialQuad("Tunnel-brickback",1960,1100,1970,1100,1930,1201,1919,1201);
+	
+	DrawMaterialQuad("Tunnel-brickback",2549,907,2590,907,2590,920,2549,920);
+	DrawMaterialQuad("Tunnel-brickback",2549,920,2560,920,2560,1000,2550,1000);
+	DrawMaterialQuad("Tunnel-brickback",2550,1000,2560,1000,2720,1160,2710,1160);
+	DrawMaterialQuad("Tunnel-brickback",2710,1160,2720,1160,2710,1190,2700,1190);
+	DrawMaterialQuad("Tunnel-brickback",2680,1185,2750,1185,2750,1195,2680,1195);
+	DrawMaterialQuad("Tunnel-brickback",2737,1195,2750,1190,2775,1255,2765,1255);
+	
 	AddEffect("DynamiteEruption",0,100,130);
 	return 1;
 }
