@@ -97,7 +97,7 @@ private func FxFloatTimer(object target, effect, int time)
 	SetXDir(GetXDir() + idir);
 	//Message(Format("%d",idir));
 
-	if(GetContact(-1)) //Has any vertex hit? Then deflate.
+	if(GetContact(-1) & CNAT_Bottom) //Has a bottom vertex hit? Then deflate.
 	{
 		Deflate();
 		return -1;
