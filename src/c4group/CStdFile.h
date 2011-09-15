@@ -78,5 +78,7 @@ protected:
 };
 
 int UncompressedFileSize(const char *szFileName);
+bool GetFileCRC(const char *szFilename, uint32_t *pCRC32);
+bool GetFileSHA1(const char *szFilename, BYTE *pSHA1);
 
 #endif // INC_CSTDFILE

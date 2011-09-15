@@ -47,7 +47,6 @@
 #include <StdPNG.h>
 #include <zlib.h>
 #include <fcntl.h>
-#include <openssl/sha.h>
 
 
 //------------------------------ File Sort Lists -------------------------------------------
@@ -407,82 +406,6 @@ bool C4Group_ReadFile(const char *szFile, char **pData, size_t *iSize)
 	// ok
 	MotherGroup.Close();
 	if (iSize) *iSize = iFileSize;
-	return true;
-}
-
-bool C4Group_GetFileCRC(const char *szFilename, uint32_t *pCRC32)
-{
-	if (!pCRC32) return false;
-	// doesn't exist physically?
-	char szPath[_MAX_PATH + 1];
-	if (FileExists(szFilename))
-		SCopy(szFilename, szPath, _MAX_PATH);
-	else
-	{
-		// Expect file to be packed: Extract to temporary
-		SCopy(GetFilename(szFilename), szPath, _MAX_PATH);
-		MakeTempFilename(szPath);
-		if (!C4Group_CopyItem(szFilename, szPath)) return false;
-	}
-	// open file
-	CStdFile File;
-	if (!File.Open(szFilename))
-		return false;
-	// calculcate CRC
-	uint32_t iCRC32 = 0;
-	for (;;)
-	{
-		// read a chunk of data
-		BYTE szData[CStdFileBufSize]; size_t iSize = 0;
-		if (!File.Read(szData, CStdFileBufSize, &iSize))
-			if (!iSize)
-				break;
-		// update CRC
-		iCRC32 = crc32(iCRC32, szData, iSize);
-	}
-	// close file
-	File.Close();
-	// okay
-	*pCRC32 = iCRC32;
-	return true;
-}
-
-bool C4Group_GetFileSHA1(const char *szFilename, BYTE *pSHA1)
-{
-	if (!pSHA1) return false;
-	// doesn't exist physically?
-	char szPath[_MAX_PATH + 1];
-	if (FileExists(szFilename))
-		SCopy(szFilename, szPath, _MAX_PATH);
-	else
-	{
-		// Expect file to be packed: Extract to temporary
-		SCopy(GetFilename(szFilename), szPath, _MAX_PATH);
-		MakeTempFilename(szPath);
-		if (!C4Group_CopyItem(szFilename, szPath)) return false;
-	}
-	// open file
-	CStdFile File;
-	if (!File.Open(szFilename))
-		return false;
-	// calculcate CRC
-	SHA_CTX ctx;
-	if (!SHA1_Init(&ctx)) return false;
-	for (;;)
-	{
-		// read a chunk of data
-		BYTE szData[CStdFileBufSize]; size_t iSize = 0;
-		if (!File.Read(szData, CStdFileBufSize, &iSize))
-			if (!iSize)
-				break;
-		// update CRC
-		if (!SHA1_Update(&ctx, szData, iSize))
-			return false;
-	}
-	// close file
-	File.Close();
-	// finish calculation
-	SHA1_Final(pSHA1, &ctx);
 	return true;
 }
 
@@ -1329,7 +1252,7 @@ bool C4Group::View(const char *szFiles)
 
 	// Calculate group file crc
 	uint32_t crc = 0;
-	C4Group_GetFileCRC(GetFullName().getData(), &crc);
+	GetFileCRC(GetFullName().getData(), &crc);
 
 	// Display list
 	ResetSearch();

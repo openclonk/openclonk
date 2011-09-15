@@ -224,7 +224,7 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 	if (pRecordName)
 		pRecordName->Copy(sFilename);
 	if (pRecordSHA1)
-		if (!C4Group_GetFileSHA1(sFilename.getData(), pRecordSHA1))
+		if (!GetFileSHA1(sFilename.getData(), pRecordSHA1))
 			return false;
 
 	// ok
