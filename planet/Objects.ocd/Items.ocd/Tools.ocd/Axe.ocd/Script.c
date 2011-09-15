@@ -6,6 +6,17 @@ private func Hit()
 	return 1;
 }
 
+public func GetCarryMode() { return CARRY_HandBack; }
+public func GetCarryBone() { return "main"; }
+public func GetCarryTransform()
+{
+	var act = Contained()->GetAction();
+	if(act != "Walk" && act != "Jump")
+		return Trans_Mul(Trans_Translate(0,4500,0), Trans_Rotate(90,0,1,0), Trans_Rotate(180,0,0,1) );
+
+	return Trans_Rotate(90, 0, 1, 0);
+}
+
 public func ControlUse(object pByClonk, int iX, int iY)
 {
 	var tree = FindObject(Find_AtPoint(iX, iY), Find_Func("IsTree"), Find_Func("IsStanding"),
