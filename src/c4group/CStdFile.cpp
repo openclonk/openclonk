@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <openssl/sha.h>
 
 CStdFile::CStdFile()
 {
@@ -332,4 +333,58 @@ size_t CStdFile::AccessedEntrySize()
 		return FileSize(fileno(hFile));
 	assert(!hgzFile);
 	return 0;
+}
+
+bool GetFileCRC(const char *szFilename, uint32_t *pCRC32)
+{
+	if (!pCRC32) return false;
+	// open file
+	CStdFile File;
+	if (!File.Open(szFilename))
+		return false;
+	// calculcate CRC
+	uint32_t iCRC32 = 0;
+	for (;;)
+	{
+		// read a chunk of data
+		BYTE szData[CStdFileBufSize]; size_t iSize = 0;
+		if (!File.Read(szData, CStdFileBufSize, &iSize))
+			if (!iSize)
+				break;
+		// update CRC
+		iCRC32 = crc32(iCRC32, szData, iSize);
+	}
+	// close file
+	File.Close();
+	// okay
+	*pCRC32 = iCRC32;
+	return true;
+}
+
+bool GetFileSHA1(const char *szFilename, BYTE *pSHA1)
+{
+	if (!pSHA1) return false;
+	// open file
+	CStdFile File;
+	if (!File.Open(szFilename))
+		return false;
+	// calculcate CRC
+	SHA_CTX ctx;
+	if (!SHA1_Init(&ctx)) return false;
+	for (;;)
+	{
+		// read a chunk of data
+		BYTE szData[CStdFileBufSize]; size_t iSize = 0;
+		if (!File.Read(szData, CStdFileBufSize, &iSize))
+			if (!iSize)
+				break;
+		// update CRC
+		if (!SHA1_Update(&ctx, szData, iSize))
+			return false;
+	}
+	// close file
+	File.Close();
+	// finish calculation
+	SHA1_Final(pSHA1, &ctx);
+	return true;
 }
