@@ -20,3 +20,6 @@ public func IsInteractable()
 	if (GetLength(this->~GetDestinations())) return true;
 	return _inherited(...);
 }
+
+public func GetCableXOffset() { return 15; }
+public func GetCableYOffset() { return 5; }

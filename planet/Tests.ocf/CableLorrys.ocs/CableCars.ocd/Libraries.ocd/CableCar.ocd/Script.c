@@ -5,6 +5,8 @@
 	@author Randrian, Clonkonaut, Maikel
 */
 
+#appendto Lorry
+
 local iMovementSpeed;
 
 local pRailTarget;
@@ -21,7 +23,9 @@ public func EngageRail(object pRailpoint)
 {
 	if (! pRailpoint->IsCableCrossing()) return false;
 
-	SetPosition(pRailpoint->GetX(), pRailpoint->GetY());
+	var position = CreateArray(2);
+	pRailpoint->GetCablePosition(position);
+	SetPosition(position[0], position[1]);
 	SetSpeed(0,0);
 	SetR(0);
 	SetAction("OnRail");
@@ -212,7 +216,7 @@ private func MoveTo(dest)
 		Message("No Rail available!");
 		return;
 	}
-	// Target the first or section action target?
+	// Target the first or second action target?
 	if(rail->GetActionTarget(0) == dest)
 	{
 		rail_direction = 1;
@@ -226,7 +230,10 @@ private func MoveTo(dest)
 	rail->GetActionTarget(0)->AddActive(0);
 	rail->GetActionTarget(1)->AddActive(0);
 	rail->AddActive(0);
-	rail_max_prog = ObjectDistance(dest, pRailTarget);
+	var origin = CreateArray(2), ending = CreateArray(2);
+	rail->GetActionTarget(0)->GetCablePosition(origin);
+	rail->GetActionTarget(1)->GetCablePosition(ending);
+	rail_max_prog = Distance(origin[0], origin[1], ending[0], ending[1]);
 	pRailTarget = rail;
 }
 
@@ -248,17 +255,20 @@ protected func OnRail()
 		pRailTarget->GetActionTarget(1)->AddActive(1);
 		pRailTarget->AddActive(1);
 		pRailTarget = pRailTarget->GetActionTarget(end);
-		SetPosition(pRailTarget->GetX(), pRailTarget->GetY());
+		var position = CreateArray(2);
+		pRailTarget->GetCablePosition(position);
+		SetPosition(position[0], position[1]);
 		rail_direction = 0;
 		CrossingReached();
 		return;
 	}
 
 	var prec = 100;
-	var x = pRailTarget->GetActionTarget(start)->GetX(prec)+
-			(pRailTarget->GetActionTarget(end)->GetX(prec)-pRailTarget->GetActionTarget(start)->GetX(prec))*rail_progress/rail_max_prog;
-	var y = pRailTarget->GetActionTarget(start)->GetY(prec)+
-			(pRailTarget->GetActionTarget(end)->GetY(prec)-pRailTarget->GetActionTarget(start)->GetY(prec))*rail_progress/rail_max_prog;
+	var origin = CreateArray(2), ending = CreateArray(2);
+	pRailTarget->GetActionTarget(start)->GetCablePosition(origin, prec);
+	pRailTarget->GetActionTarget(end)->GetCablePosition(ending, prec);
+	var x = origin[0] + (ending[0] - origin[0]) * rail_progress/rail_max_prog;
+	var y = origin[1] + (ending[1] - origin[1]) * rail_progress/rail_max_prog;
 	SetPosition(x, y, 1, prec);
 }
 

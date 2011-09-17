@@ -18,21 +18,26 @@ public func UpdateDraw()
 {
   prec = 100;
   prec2 = 1000/prec;
-  SetPosition(GetActionTarget(0)->GetX(), GetActionTarget(0)->GetY());
-  var Length = ObjectDistance(GetActionTarget(0), GetActionTarget(1))*prec;
+  var origin = CreateArray(2);
+  var ending = CreateArray(2);
+  GetActionTarget(0)->GetCablePosition(origin);
+  GetActionTarget(1)->GetCablePosition(ending);
+  SetPosition(origin[0], origin[1]);
+  var Length = Distance(origin[0], origin[1], ending[0], ending[1])*prec;
   var pos = 0;
   var i = 0;
-  var startX = GetActionTarget(0)->GetX(prec), startY = GetActionTarget(0)->GetY(prec), endX = GetActionTarget(1)->GetX(prec), endY = GetActionTarget(1)->GetY(prec);
-  var angle = Angle(startX, startY, endX, endY);
+  GetActionTarget(0)->GetCablePosition(origin, prec);
+  GetActionTarget(1)->GetCablePosition(ending, prec);
+  var angle = Angle(origin[0], origin[1], ending[0], ending[1]);
 //  Log("Length %d Angle %d", Length, angle);
   var xoff = 0;//Cos(angle, 6*prec);
   var yoff = 0;//Sin(angle, 6*prec);
   while(pos < Length)
   {
     SetGraphics("Line0", GetID(), i*2+1, GFXOV_MODE_Base);
-    SetLineTransform(-angle, xoff+(endX-startX)*pos/Length, yoff+(endY-startY)*pos/Length, 1000, i*2+1, 1);
+    SetLineTransform(-angle, xoff+(ending[0]-origin[0])*pos/Length, yoff+(ending[1]-origin[1])*pos/Length, 1000, i*2+1, 1);
     SetGraphics("Line0", GetID(), i*2+2, GFXOV_MODE_Base);
-    SetLineTransform(-angle, -xoff+(endX-startX)*pos/Length, -yoff+(endY-startY)*pos/Length, 1000, i*2+2, 1);
+    SetLineTransform(-angle, -xoff+(ending[0]-origin[0])*pos/Length, -yoff+(ending[1]-origin[1])*pos/Length, 1000, i*2+2, 1);
     SetClrModulation(RGB(255,255*pos/Length), i*2+1);
     SetClrModulation(RGB(255,255*pos/Length), i*2+2);
     i++;

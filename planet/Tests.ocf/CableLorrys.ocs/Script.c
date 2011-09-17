@@ -23,6 +23,8 @@ protected func Initialize()
 	CreateObject(CableLine)->SetConnectedObjects(c3, c4);
 	CreateObject(CableLine)->SetConnectedObjects(c4, cabin);
 
+	CreateObject(Lorry, 835, 360);
+
 	// Forest on the left side of the map, with sawmill.
 /*	for (var i = 0; i < 20; i++)
 		PlaceVegetation(Tree_Coniferous, 0, 200, 180, 300, 1000 * RandomX(60, 90));

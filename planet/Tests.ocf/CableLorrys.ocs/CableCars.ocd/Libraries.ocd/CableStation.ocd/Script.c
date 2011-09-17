@@ -24,6 +24,16 @@ public func IsCableCrossing() { return true; }
 */
 public func IsCableStation() { return is_station; }
 
+// For setting up the cable
+public func GetCablePosition(array coordinates, int prec)
+{
+	if (!prec) prec = 1;
+	coordinates[0] = GetX(prec);
+	coordinates[1] = GetY(prec);
+	if (this->~GetCableXOffset()) coordinates[0] += this->~GetCableXOffset() * prec;
+	if (this->~GetCableYOffset()) coordinates[1] += this->~GetCableYOffset() * prec;
+}
+
 /* Local */
 
 // Stores the next crossing (waypoint) to take when advancing to a certain final point
