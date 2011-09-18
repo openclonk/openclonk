@@ -11,22 +11,26 @@ dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/547
 Benboncan       - Blast* (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
+ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
+TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
+CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
+Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
 mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
 
+Unfree sound effects
+===============================================================================
+The following sound effects are licensed under the CC Attribution-NonCommercial license:
+
+Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
+
 The following sound effects are licensed under the CC Sampling plus license:
 
-TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
 kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
 thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
-ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
-Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
-CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
-Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
-
 110110010		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/)
 schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
