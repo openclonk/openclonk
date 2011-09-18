@@ -11,6 +11,8 @@ local visual;
 local btub,ftub;
 local crew;
 
+local visible;
+
 protected func Construction()
 {
 	// parallaxity
@@ -18,9 +20,17 @@ protected func Construction()
 	// visibility
 	this["Visibility"] = VIS_Owner;
 	visual=0;
+	visible = false;
 }
 
-public func FxUpdateTimer() { Update(); }
+public func FxUpdateTimer(target, effect, time)
+{
+	if(!visible)
+		effect.Interval = 20;
+	else effect.Interval = 1;
+	Update();
+}
+
 public func Update()
 {
 	
@@ -76,7 +86,11 @@ ftub=b;
 
 public func FadeOut()
 {
-	if(visual>11) return ;
+	if(visual>11) 
+	{
+		visible = false;
+		return ;
+	}
 	visual++;
 	if(visual<1) return;
 	SetR(GetR()+10);
@@ -87,8 +101,13 @@ public func FadeOut()
 }
 public func FadeIn()
 {
+	visible = true;
+	
 	if(visual>-36) visual--;
-	if(visual<0) return ;
+	if(visual<0) 
+	{
+		return ;
+	}
 	SetR(GetR()-10);
 	//btub->SetR(btub->GetR()-10);
 	ftub->SetR(ftub->GetR()-10);
@@ -98,6 +117,8 @@ public func FadeIn()
 
 public func InstantFadeOut()
 {
+	visible = false;
+	
 	visual=11;
 	SetR(110);
 	//btub->SetR(110);
@@ -107,6 +128,8 @@ public func InstantFadeOut()
 
 public func InstantFadeIn()
 {
+	visible = true;
+	
 	visual=-36;
 	SetR(0);
 //	btub->SetR(0);

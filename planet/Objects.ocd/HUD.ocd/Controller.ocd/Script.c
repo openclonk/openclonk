@@ -15,6 +15,9 @@ local tubes;
 local markers;
 local backpack;
 
+// optimizations
+local updated_health_tube;
+
 protected func Construction()
 {
 	actionbar = CreateArray();
@@ -66,7 +69,7 @@ protected func Construction()
 		bt->SetObjDrawTransform(1,0,0,0,1,0,0);
 		backpack[GetLength(backpack)] = bt;
 	}
-	AddEffect("UpdateBackpack",this,1,1,nil,nil);		
+	//AddEffect("UpdateBackpack",this,1,1,nil,nil);		
 	
 
 	
@@ -90,7 +93,8 @@ protected func MakeHealthTube()
 	ftube->SetPosition(1,-1);
 	ftube->MakeTop();
 	tube->Update();
-	AddEffect("Update",tube,100,1,tube);
+	//AddEffect("Update",tube,100,1,tube);
+	updated_health_tube = tube;
 	
 	tubes[GetLength(tubes)] = btube;
 	tubes[GetLength(tubes)] =  tube;
@@ -164,6 +168,37 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 }
 
 
+global func UpdateHUDHealthBar(player)
+{
+	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
+	if(!o) return;
+	o.updated_health_tube->Update();
+}
+
+global func UpdateBackpack(player)
+{
+	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
+	if(!o) return;
+	o->UpdateBackpack();
+}
+
+private func UpdateBackpack()
+{
+	var c = GetCursor(GetOwner());
+	if(!c) return 1;
+	
+	for(var i=0; i<GetLength(backpack); i++)
+	{
+		backpack[i]->SetAmount(0);  
+		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetExtraData())); 
+		backpack[i]->SetGraphics(nil,nil,9);
+		backpack[i]->SetGraphics(nil,nil,10);
+		backpack[i]->SetGraphics(nil,nil,11);
+		backpack[i]->SetGraphics(nil,nil,12);
+	}
+}	
+
+/*
 global func FxUpdateBackpackTimer(target) { 
 	if(!target) return -1;
 	if(!GetCursor(target->GetOwner())) return 1;
@@ -182,7 +217,7 @@ global func FxUpdateBackpackTimer(target) {
 		target.backpack[i]->SetGraphics(nil,nil,11);
 		target.backpack[i]->SetGraphics(nil,nil,12);
 	}
-}
+}*/
 
 protected func OnWealthChanged(int plr)
 {

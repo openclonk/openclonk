@@ -27,7 +27,7 @@ public func UpdateNumber()
 		current = GetCursor(GetOwner())->GetEnergy();
 	} 
 	crew = GetCursor(GetOwner());
-	Message("<c ff3300>%v",crew->GetEnergy());
+	Message("@<c ff3300>%v",crew->GetEnergy());
 }
 public func Update()
 {
@@ -48,7 +48,7 @@ public func Update()
    	   	
 	}
 	//if(!crew) return 1;
-	CustomMessage(Format("<c dd0000>%v</c>",current),this,crew->GetOwner(),16,-72);
+	CustomMessage(Format("@<c dd0000>%v</c>",current),this,crew->GetOwner(),16,-72);
 
 	if(! crew->GetMaxEnergy()) return;
 	if(Abs(current - crew->GetEnergy()))
