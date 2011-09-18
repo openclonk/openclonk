@@ -129,18 +129,21 @@ protected func OnSlotEmpty(int slot)
 
 func Collection2()
 {
-	HUDcontroller->ScheduleUpdateBackpack();
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateBackpack();
 	return _inherited(...);
 }
 
 func Ejection()
 {
-	HUDcontroller->ScheduleUpdateBackpack();
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateBackpack();
 	return _inherited(...);
 }
 
 func ControlContents()
 {
-	HUDcontroller->ScheduleUpdateBackpack();
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateBackpack();
 	return _inherited(...);
 }
