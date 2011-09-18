@@ -17,7 +17,10 @@ protected func Construction()
 	this["Visibility"] = VIS_Owner;
 }
 
-public func FxUpdateTimer() { Update(); }
+public func FxUpdateTimer(target, effect, time)
+{
+	if(!Update()) return -1;
+}
 public func FxUpdateNumberTimer() { UpdateNumber(); }
 public func UpdateNumber()
 {
@@ -31,7 +34,7 @@ public func UpdateNumber()
 }
 public func Update()
 {
-	if(!GetCursor(GetOwner())) return 1;
+	if(!GetCursor(GetOwner())) return 0;
 	if(GetCursor(GetOwner()) != crew)
 	{
 		crew = GetCursor(GetOwner());
@@ -50,7 +53,7 @@ public func Update()
 	//if(!crew) return 1;
 	CustomMessage(Format("@<c dd0000>%v</c>",current),this,crew->GetOwner(),16,-72);
 
-	if(! crew->GetMaxEnergy()) return;
+	if(! crew->GetMaxEnergy()) return 0;
 	if(Abs(current - crew->GetEnergy()))
 	{
 		if(Abs(current - crew->GetEnergy()) > 6 )
@@ -64,7 +67,7 @@ public func Update()
 			else
 				current+=1;
 	}
-	else return 1;
+	else return 0;
 
 	var r = - 210 - ((( current * 1000) / crew->GetMaxEnergy()) * 69) / 100; 
 	var fsin=Sin(r, 1000,10), fcos=Cos(r, 1000,10);
@@ -77,6 +80,7 @@ public func Update()
 
     
 	//SetR(r);
+	return 1;
 }
 
 

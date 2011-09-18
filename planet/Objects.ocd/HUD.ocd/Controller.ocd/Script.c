@@ -173,6 +173,8 @@ global func UpdateHUDHealthBar(player)
 	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
 	if(!o) return;
 	o.updated_health_tube->Update();
+	if(!GetEffect("Update", o.updated_health_tube))
+		AddEffect("Update", o.updated_health_tube, 1, 1, o.updated_health_tube);
 }
 
 global func UpdateBackpack(player)

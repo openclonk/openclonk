@@ -21,12 +21,12 @@ func FxHUDBarUpdaterDamage(target, effect, int damage, int cause)
 
 private func ScheduleUpdateHUDHealthBar()
 {
-	Schedule(Format("UpdateHUDHealthBar(%d)", GetOwner()), 1, 0);
+	Schedule(nil, Format("UpdateHUDHealthBar(%d)", GetOwner()), 1, 0);
 }
 
 private func ScheduleUpdateBackpack()
 {
-	Schedule(Format("UpdateBackpack(%d)", GetOwner()), 1, 0);
+	Schedule(nil, Format("UpdateBackpack(%d)", GetOwner()), 1, 0);
 }
 
 func Collection2()
