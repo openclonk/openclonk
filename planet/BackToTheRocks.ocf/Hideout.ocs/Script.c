@@ -216,7 +216,7 @@ global func CreateChestContents(id obj_id)
 	return;
 }
 
-protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
+protected func CaptureFlagCount() { return 2;} //4 + GetPlayerCount()) / 2; }
 
 global func FxNotTooLongTimer(object target, effect)
 {	if (!(target->Contained())) return 1;

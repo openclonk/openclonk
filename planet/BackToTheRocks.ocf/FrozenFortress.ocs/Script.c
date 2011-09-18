@@ -54,7 +54,7 @@ protected func Initialize()
 	return;
 }
 
-protected func CaptureFlagCount() { return (4 + GetPlayerCount()) / 2; }
+protected func CaptureFlagCount() { return 2;} //4 + GetPlayerCount()) / 2; }
 
 global func FxGeysirExplosionTimer(object target, effect)
 {
