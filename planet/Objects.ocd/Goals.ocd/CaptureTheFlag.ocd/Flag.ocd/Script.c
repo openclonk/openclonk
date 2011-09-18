@@ -145,7 +145,7 @@ private func ReducePhysicals(object clonk, effect)
 {
 	effect.clonk_jumpspeed = clonk.JumpSpeed;
 	clonk.JumpSpeed = clonk.JumpSpeed * 8 / 10;
-	var phys = ["Walk", "Scale", "Hangle", "Swim"];
+	var phys = ["Walk"/*, "Scale"*/, "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PushActionSpeed(phys[i], 8 * clonk.ActMap[phys[i]].Speed / 10);
 	return;
@@ -155,7 +155,7 @@ private func ReducePhysicals(object clonk, effect)
 private func ResetPhysicals(object clonk, effect)
 {
 	clonk.JumpSpeed = effect.clonk_jumpspeed;
-	var phys = ["Walk", "Scale", "Hangle", "Swim"];
+	var phys = ["Walk"/*, "Scale"*/, "Hangle", "Swim"];
 	for (var i = 0; i < GetLength(phys); i++)
 		clonk->PopActionSpeed(phys[i]);
 	return;
