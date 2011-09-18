@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FatalError</title>
+    <category>Developer</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+		  <optional/>
+          <type>string</type>
+          <name>message</name>
+          <desc>Error message to be displayed</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Prints out the specified error message and the call stack, then cancels the execution of the function it was called in. This function can e.g. be used to effectively debug scripts or to throw an error if required parameters of a function are not given by the user of the function. </desc>
+    <examples>
+      <example>
+        <code>global func Explode(int level)
+{
+	if(!this) FatalError("Function Explode must be called from object context");
+	...
+}</code>
+        <text>A snippet from the actual implementation of the Explode function. If Explode is called without object context, the error message and call stack are printed into the log file and the execution of the function is canceled.<br/>This is better than the following behaviour of Explode...</text>
+        <code>global func Explode(int level)
+{
+	if(!this) return;
+	...
+}</code><text>...because it just silently stops the execution of Explode without notifying the developer about this error. This would make it harder for the developer to trace down the actual bug that led to the illegal call.</text>
+      </example>
+	  <example>
+		<text>Let's say we want to trace down a bug where clonks are unexplicably removed from the landscape seemingly at random and we have no clues which object, effect or scenario script could be responsible for it. We can trace down this bug easily by temporarily overloading <funclink>RemoveObject</funclink> and triggering a fatal error each time a clonk is removed. As soon as a Clonk is about to be deleted, the execution of RemoveObject is stopped and the call stack is printed out. (Don't forget to remove that function again when you are done.)</text>
+        <code>global func RemoveObject()
+{
+	if(this->GetID() == Clonk) FatalError("See call stack for who is responsible for the removal of Clonks");
+	return <funclink>inherited</funclink>(...);
+}</code><text></text>
+      </example>
+    </examples>
+  </func>
+  <author>Newton</author><date>2011-09</date>
+</funcs>

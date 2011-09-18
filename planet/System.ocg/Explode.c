@@ -11,7 +11,7 @@
 
 global func Explode(int level)
 {
-	if(!this) return;
+	if(!this) FatalError("Function Explode must be called from object context");
 
 	// Shake the viewport.
 	ShakeViewPort(level, GetX(), GetY());
@@ -34,7 +34,6 @@ global func Explode(int level)
 	// There is no possibility to interact with the global context, apart from GameCall.
 	// So at least remove the object context.
 	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer);
-	return;
 }
 
 global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
