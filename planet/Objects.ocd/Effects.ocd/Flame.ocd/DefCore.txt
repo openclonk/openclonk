@@ -1,0 +1,15 @@
+[DefCore]
+id=Flame
+Version=4,10,0,0
+Category=C4D_Object
+Width=15
+Height=20
+Offset=-7,-10
+Vertices=3
+VertexX=0,5,-5
+VertexY=10,8,8
+VertexFriction=60, 60, 60
+NoGet=1
+TimerCall=Burning
+StretchGrowth=1
+
