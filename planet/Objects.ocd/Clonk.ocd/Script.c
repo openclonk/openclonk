@@ -6,14 +6,12 @@
 */
 
 
-// selectable by HUD
+// selectable by HUD and some performance optimizations for the HUD updates
 #include Library_HUDAdapter
 // standard controls
 #include Library_ClonkControl
 // manager for aiming
 #include Library_AimManager
-// performance optimizations for the HUD
-#include Library_CrewHUDUser
 
 // un-comment them as soon as the new controls work with context menus etc.^
 // Context menu

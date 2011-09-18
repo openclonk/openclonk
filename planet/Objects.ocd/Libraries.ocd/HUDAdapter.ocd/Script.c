@@ -20,6 +20,21 @@ public func HUDAdapter()
 	return true;
 }
 
+func Initialize()
+{
+	AddEffect("HUDBarUpdater", this, 1, 0, this);
+	return _inherited(...);
+}
+
+func FxHUDBarUpdaterDamage(target, effect, int damage, int cause)
+{
+	if(effect.last == effect.Time) return damage;
+	effect.last = effect.Time;
+	
+	HUDcontroller->ScheduleUpdateHealthBar();
+	return damage;
+}
+
 // hotkey control
 public func ControlHotkey(int hotindex)
 {
@@ -35,6 +50,10 @@ protected func Recruitment(int plr)
 	HUDcontroller = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
 	if (!HUDcontroller)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
+	
+	HUDcontroller->ScheduleUpdateBackpack();
+	HUDcontroller->ScheduleUpdateHealthBar();
+	
 	return _inherited(plr, ...);
 }
 
@@ -106,4 +125,22 @@ protected func OnSlotEmpty(int slot)
 	if (HUDcontroller)
 		HUDcontroller->OnSlotObjectChanged(slot);
 	return _inherited(slot, ...);
+}
+
+func Collection2()
+{
+	HUDcontroller->ScheduleUpdateBackpack();
+	return _inherited(...);
+}
+
+func Ejection()
+{
+	HUDcontroller->ScheduleUpdateBackpack();
+	return _inherited(...);
+}
+
+func ControlContents()
+{
+	HUDcontroller->ScheduleUpdateBackpack();
+	return _inherited(...);
 }

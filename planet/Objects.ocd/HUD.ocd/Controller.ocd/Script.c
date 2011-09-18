@@ -74,6 +74,17 @@ protected func Construction()
 
 	
 }
+
+private func ScheduleUpdateHealthBar()
+{
+	Schedule(this, "UpdateHUDHealthBar()", 1, 0);
+}
+
+private func ScheduleUpdateBackpack()
+{
+	Schedule(this, "UpdateBackpack()", 1, 0);
+}
+
 protected func OnWealthChanged(int plr)
 {
 	if(plr != GetOwner()) return;
@@ -184,7 +195,7 @@ global func UpdateBackpack(player)
 	o->UpdateBackpack();
 }
 
-private func UpdateBackpack()
+func UpdateBackpack()
 {
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
@@ -257,6 +268,10 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	
 	// reorder the crew selectors
 	ReorderCrewSelectors();
+	
+	// update
+	ScheduleUpdateBackpack();
+	ScheduleUpdateHealthBar();
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
@@ -352,6 +367,10 @@ public func OnCrewDisabled(object clonk)
 		selector->CrewGone();
 		ReorderCrewSelectors(clonk);
 	}
+	
+	// update
+	ScheduleUpdateBackpack();
+	ScheduleUpdateHealthBar();
 }
 
 public func OnCrewEnabled(object clonk)
@@ -387,6 +406,10 @@ public func OnCrewSelection(object clonk, bool deselect)
 		RemoveEffect("IntSearchInteractionObjects",clonk,0);
 		ClearButtons();
 	}
+	
+	// update
+	ScheduleUpdateBackpack();
+	ScheduleUpdateHealthBar();
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)
@@ -486,6 +509,9 @@ public func OnSlotObjectChanged(int slot)
 	if(!cursor) return;
 	var obj = cursor->GetItem(slot);
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
+	
+	// refresh backpack
+	ScheduleUpdateBackpack();
 }
 
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
