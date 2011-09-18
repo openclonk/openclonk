@@ -3158,14 +3158,8 @@ void C4Object::ContactAction()
 			ObjectActionStand(this);
 			return;
 		case DFA_DIG:
-			// Redirect downleft/downright
-			if (Action.ComDir==COMD_DownLeft)
-				{ Action.ComDir=COMD_Left; break; }
-			if (Action.ComDir==COMD_DownRight)
-				{ Action.ComDir=COMD_Right; break; }
-			// Else stop
-			ObjectComStopDig(this);
-			return;
+			// no special action
+			break;
 		case DFA_SWIM:
 			// Try corner scale out
 			if (!GBackLiquid(GetX(), GetY() - 1))
@@ -3198,8 +3192,8 @@ void C4Object::ContactAction()
 			if (ObjectActionHangle(this,Action.Dir)) return;
 			break;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Top)) ObjectComStopDig(this); return;
+			// No action
+			break;
 		case DFA_HANGLE:
 			Action.ComDir=COMD_Stop;
 			break;
@@ -3246,9 +3240,8 @@ void C4Object::ContactAction()
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Left)) ObjectComStopDig(this);
-			return;
+			// Dig: no action
+			break;
 		}
 	}
 
@@ -3293,9 +3286,8 @@ void C4Object::ContactAction()
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Right)) ObjectComStopDig(this);
-			return;
+			// Dig: no action
+			break;
 		}
 	}
 
