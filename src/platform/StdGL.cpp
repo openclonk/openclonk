@@ -432,7 +432,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	}
 	if (rBltData.pTransform)
 	{
-		float * mat = rBltData.pTransform->mat;
+		const float * mat = rBltData.pTransform->mat;
 		float matrix[16];
 		matrix[0]=mat[0];  matrix[1]=mat[3];  matrix[2]=0;  matrix[3]=mat[6];
 		matrix[4]=mat[1];  matrix[5]=mat[4];  matrix[6]=0;  matrix[7]=mat[7];

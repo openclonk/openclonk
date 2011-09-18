@@ -91,7 +91,7 @@ public:
 		// scale and move back so tx and ty remain fixpoints
 		MoveScale(-tx*(sx-1), -ty*(sy-1), sx, sy);
 	}
-	CBltTransform &operator *= (CBltTransform &r)
+	CBltTransform &operator *= (const CBltTransform &r)
 	{
 		// transform transformation
 		Set(mat[0]*r.mat[0] + mat[3]*r.mat[1] + mat[6]*r.mat[2],
@@ -105,7 +105,7 @@ public:
 		    mat[2]*r.mat[6] + mat[5]*r.mat[7] + mat[8]*r.mat[8]);
 		return *this;
 	}
-	void TransformPoint(float &rX, float &rY); // rotate point by angle
+	void TransformPoint(float &rX, float &rY) const; // rotate point by angle
 };
 
 // pattern
@@ -143,7 +143,7 @@ struct CBltData
 {
 	BYTE byNumVertices;  // number of valid vertices
 	CBltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
-	CBltTransform *pTransform; // Vertex transformation
+	const CBltTransform *pTransform; // Vertex transformation
 };
 
 
@@ -260,13 +260,13 @@ public:
 	               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
 	bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-	          bool fSrcColKey=false, CBltTransform *pTransform=NULL);
+	          bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
 	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
 	bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-	           bool fSrcColKey=false, CBltTransform *pTransform=NULL);
+	           bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
 	bool BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 	                int iAngle, bool fTransparency=true);

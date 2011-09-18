@@ -93,7 +93,7 @@ bool CBltTransform::SetAsInv(CBltTransform &r)
 	return true;
 }
 
-void CBltTransform::TransformPoint(float &rX, float &rY)
+void CBltTransform::TransformPoint(float &rX, float &rY) const
 {
 	// apply matrix
 	float fW = mat[6] * rX + mat[7] * rY + mat[8];
@@ -504,21 +504,21 @@ void CStdDDraw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 
 bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
                      SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-                     bool fSrcColKey, CBltTransform *pTransform)
+                     bool fSrcColKey, const CBltTransform *pTransform)
 {
 	// safety
 	if (!sfcSource || !sfcTarget || !twdt || !thgt || !fwdt || !fhgt) return false;
 	// Apply Zoom
+	CBltTransform t;
 	if (pTransform && Zoom != 1.0)
 	{
 		//tx = tx * Zoom - ZoomX * Zoom + ZoomX;
 		//ty = ty * Zoom - ZoomY * Zoom + ZoomY;
 		// The transformation is not location-independant, thus has to be zoomed, too.
-		CBltTransform t;
-		t.Set(Zoom, 0, ZoomX * (1 - Zoom),
-		      0, Zoom, ZoomY * (1 - Zoom),
-		      0, 0, 1);
-		*pTransform *= t;
+		t.Set(pTransform->mat[0]*Zoom, pTransform->mat[1]*Zoom, pTransform->mat[2]*Zoom + ZoomX*(1-Zoom),
+		      pTransform->mat[3]*Zoom, pTransform->mat[4]*Zoom, pTransform->mat[5]*Zoom + ZoomY*(1-Zoom),
+		      pTransform->mat[6], pTransform->mat[7], pTransform->mat[8]);
+		pTransform = &t;
 	}
 	else if (Zoom != 1.0)
 	{
@@ -743,7 +743,7 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 
 bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
                       SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-                      bool fSrcColKey, CBltTransform *pTransform)
+                      bool fSrcColKey, const CBltTransform *pTransform)
 {
 	if (!pTransform) return BlitRotate(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, 0, fSrcColKey!=false);
 	// safety
