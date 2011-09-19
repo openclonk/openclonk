@@ -113,7 +113,7 @@ public:
 	StdStrBuf GetNameList(C4DefList &rDefs);
 	StdStrBuf GetDataString();
 	bool IsClear() const;
-	bool DenumerateRead();
+	bool DenumeratePointers();
 	bool Write(char *szTarget);
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * = 0);
 	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers *);

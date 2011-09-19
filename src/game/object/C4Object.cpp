@@ -2466,7 +2466,7 @@ void C4Object::Denumerate(C4ValueNumbers * numbers)
 	Layer.DenumeratePointers();
 
 	// Post-compile object list
-	Contents.DenumerateRead();
+	Contents.DenumeratePointers();
 
 	// Commands
 	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)

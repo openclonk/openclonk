@@ -1346,7 +1346,7 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 void C4Player::DenumeratePointers()
 {
 	// Crew
-	Crew.DenumerateRead();
+	Crew.DenumeratePointers();
 	// Cursor
 	Cursor.DenumeratePointers();
 	// ViewCursor

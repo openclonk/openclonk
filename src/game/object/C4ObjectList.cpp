@@ -471,7 +471,7 @@ bool C4ObjectList::IsClear() const
 	return (ObjectCount()==0);
 }
 
-bool C4ObjectList::DenumerateRead()
+bool C4ObjectList::DenumeratePointers()
 {
 	if (!pEnumerated) return false;
 	// Denumerate all object pointers
