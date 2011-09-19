@@ -112,7 +112,7 @@ public func DefinePower(int x, int y)
 	var power = Distance(x2,y2,x2+x,y2+y) - padding;
 
 	if(power > 100) power = 100;
-	if(power < 0) power = 0;
+	if(power < 20) power = 20;
 	
 	return power;
 }
@@ -125,52 +125,56 @@ public func ArmAnimation(int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
-	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
-
-	var projectile = nil;
-	if(Contents(0))	projectile = Contents(0);
-	else
-		if(clonk->GetItem(0)) projectile = clonk->GetItem(0);
-	if(projectile) DoFire(projectile, clonk, DefinePower(x,y));
+	DoFire(clonk,DefinePower(x,y),0);
 }
 
 public func ControlUseAltStop(object clonk, int x, int y)
 {
-	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
-	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
-
-	var projectile = nil;
-	if(Contents(0))	projectile = Contents(0);
-	else
-		if(clonk->GetItem(1)) projectile = clonk->GetItem(1);
-	if(projectile) DoFire(projectile, clonk, DefinePower(x,y));
+	DoFire(clonk,DefinePower(x,y),1);
 }
 
-protected func DoFire(object iammo, object clonk, int power)
+public func ContainedUse(object clonk, int x, int y)
 {
-	//finding the spot of the catapult's arm depending on rotation
-	var i = 1;
-	if(dir == 0) i = -1; 
-	var x = 8*i;
-	var y = 28;
+	DoFire(clonk, 70, nil);
+}
 
-	iammo->Exit();
-	//Put the ammo at the catapult's arm
-	iammo->SetPosition(GetX() + x, GetY() - y);
-
-	if(iammo->~IsClonk())
-	{
-		CatapultDismount(iammo);
-		iammo->SetAction("Tumble");
-	}
+protected func DoFire(object clonk, int power, int hand)
+{
+	//Fire the catapult!
+	PlayAnimation("Launch", 5, Anim_Linear(0,0, GetAnimationLength("Launch"), 10, ANIM_Remove), Anim_Const(1000));
+	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
 
 	//Sound
 	Sound("Catapult_Launch.ogg");
 
-	var angle = -45;
-	if(dir == 1) angle = 45;
-	iammo->SetVelocity(angle + GetR(), power);
+	var projectile = nil;
+	if(Contents(0))	projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!
+	else
+		if(clonk->GetItem(hand)) projectile = clonk->GetItem(hand); //otherwise, fire what is in the clonk's hand
+	if(projectile)
+	{
+		//finding the spot of the catapult's arm depending on rotation
+		var i = 1;
+		if(dir == 0) i = -1; 
+		var x = 8*i;
+		var y = -28;
+
+		projectile->Exit();
+		//Put the ammo at the catapult's arm
+		projectile->SetPosition(GetX() + x, GetY() + y);
+
+		//Launch the clonk!
+		if(projectile->~IsClonk())
+		{
+			CatapultDismount(projectile);
+			projectile->SetAction("Tumble");
+		}
+
+		//Catapult is facing left or right?
+		var angle = -45;
+		if(dir == 1) angle = 45;
+		projectile->SetVelocity(angle + GetR(), power);
+	}
 }
 
 public func ActivateEntrance(object clonk)
@@ -188,7 +192,7 @@ public func ActivateEntrance(object clonk)
 
 	if(cnt == 0)
 	{
-		SetAnimationPosition(aim_anim, Anim_Const(0));
+		SetAnimationPosition(aim_anim, Anim_Const(150));
 		clonk->Enter(this);
 		SetOwner(clonk->GetController());
 		clonkmesh = AttachMesh(clonk,"shot","skeleton_body",Trans_Mul(Trans_Rotate(180,0,1,0), Trans_Translate(0,-3000,-1000)),AM_DrawBefore);
