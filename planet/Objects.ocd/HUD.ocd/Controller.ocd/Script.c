@@ -17,6 +17,7 @@ local backpack;
 
 // optimizations
 local updated_health_tube;
+local updated_breath_tube;
 
 protected func Construction()
 {
@@ -77,12 +78,12 @@ protected func Construction()
 
 private func ScheduleUpdateHealthBar()
 {
-	Schedule(this, "UpdateHUDHealthBar()", 1, 0);
+	ScheduleCall(this, "UpdateHUDHealthBar", 1, 0, this->GetOwner());
 }
 
 private func ScheduleUpdateBackpack()
 {
-	Schedule(this, "UpdateBackpack()", 1, 0);
+	ScheduleCall(this, "UpdateBackpack", 1, 0, this->GetOwner());
 }
 
 protected func OnWealthChanged(int plr)
@@ -94,6 +95,7 @@ protected func OnWealthChanged(int plr)
 
 protected func MakeHealthTube()
 {
+	
 	var btube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
 	btube->SetPosition(1,-1);
 	btube->MakeBot();
@@ -125,7 +127,7 @@ protected func MakeBreathTube()
 	tube->SetTubes(ftube);
 	tube->Update();
 	AddEffect("Update",tube,100,1,tube);
-
+	updated_breath_tube=tube;
 	tubes[GetLength(tubes)] =  tube;
 	tubes[GetLength(tubes)] = ftube;
 }
@@ -179,7 +181,7 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 }
 
 
-global func UpdateHUDHealthBar(player)
+private func UpdateHUDHealthBar(player)
 {
 	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
 	if(!o) return;
@@ -188,7 +190,7 @@ global func UpdateHUDHealthBar(player)
 		AddEffect("Update", o.updated_health_tube, 1, 1, o.updated_health_tube);
 }
 
-global func UpdateBackpack(player)
+private func UpdateBackpack(player)
 {
 	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
 	if(!o) return;

@@ -23,12 +23,18 @@ protected func Construction()
 	visible = false;
 }
 
+public func ShowBreathTube()
+{
+	if(!GetEffect("Update", this))
+		AddEffect("Update", this, 1, 1, this);
+}
+
 public func FxUpdateTimer(target, effect, time)
 {
-	if(!visible)
-		effect.Interval = 20;
-	else effect.Interval = 1;
+	visible=true;
 	Update();
+	if(!visible)
+		return -1;
 }
 
 public func Update()
