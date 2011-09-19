@@ -12,22 +12,11 @@ and needs at least some of the whitespace added with xsl:text below, and perhaps
 	<HEAD>
 	</HEAD>
 	<BODY>
-		<OBJECT type="text/site properties">
-			<param name="Window Styles" value="0x800025" />
-		</OBJECT>
-		<xsl:apply-templates />
+		<UL>
+			<xsl:apply-templates select=".//li[@class='index']/ul/li" />
+		</UL>
 	</BODY>
 </HTML>
-</xsl:template>
-
-<xsl:template match="ul"><xsl:text>
-</xsl:text>
-<UL>
-	<xsl:apply-templates />
-</UL>
-</xsl:template>
-
-<xsl:template match="li[@class='index']">
 </xsl:template>
 
 <xsl:template match="li">

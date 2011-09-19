@@ -227,6 +227,9 @@
   <!-- content.xml -->
   <xsl:template match="toc//li">
     <xsl:copy>
+      <xsl:for-each select="@*">
+        <xsl:copy />
+      </xsl:for-each>
       <xsl:choose><xsl:when test="ul">
         <xsl:if test="ancestor::ul/ancestor::ul/ancestor::ul">
           <xsl:attribute name="class">invisi</xsl:attribute>
@@ -247,9 +250,6 @@
       </xsl:when><xsl:otherwise>
         <img src='../images/bullet_sheet.png' alt='' />
       </xsl:otherwise></xsl:choose>
-      <xsl:for-each select="@*">
-        <xsl:copy />
-      </xsl:for-each>
       <xsl:apply-templates />
     </xsl:copy>
   </xsl:template>

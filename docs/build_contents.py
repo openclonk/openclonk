@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 import sys
 import xml.sax
 import experimental
-import gettext
 
 class ClonkEntityResolver(xml.sax.handler.EntityResolver):
     def resolveEntity(self, publicId, systemId):
@@ -154,7 +153,7 @@ def printfunctions(f, _):
 
 def printindex(f, _):
     def folder(name):
-        f.write("<li>" + name + "\n<ul>\n")
+        f.write("<li class='index'>" + name + "\n<ul>\n")
     def sheet(url, name):
         f.write("<li><emlink href='" + url[4:] + "'>" + name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') + "</emlink></li>\n")
     folder("Index")
@@ -186,23 +185,6 @@ if 0:
         reader.parse(filename)
     experimental.Result()
 
-mofile = open("de.mo", "rb")
-gt = gettext.GNUTranslations(mofile)
-
-#_ = lambda s: s.encode('iso-8859-1')
-#for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
-#               (file("chm/en/Output.hhc", "w"), file("Template.en.hhc", "r"))):
-#    for line in fin:
-#        if line.find("<!-- Insert Functions here 1-->") != -1:
-#            printcontents1(f, _)
-#        elif line.find("<!-- Insert Functions here 2-->") != -1:
-#            printcontents2(f, _)
-#        else:
-#            f.write(line)
-#    f.close()
-#    fin.close()
-#    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
-
 _ = lambda s: s.encode('utf-8')
 f, fin = (file("sdk/content.xml", "w"), file("sdk/content.xml.in", "r"))
 for line in fin:
@@ -214,30 +196,3 @@ for line in fin:
         f.write(line)
 f.close()
 fin.close()
-
-for f, fin in ((file("chm/en/Output.hhp", "w"), file("Template.hhp", "r")),
-               (file("chm/de/Output.hhp", "w"), file("Template.de.hhp", "r"))):
-    for line in fin:
-        if line.find("[INFOTYPES]") != -1:
-            for filename in sys.argv[1:]:
-                f.write(filename[:-3].replace("/", "\\") + 'html\r\n')
-        f.write(line)
-    f.close()
-    fin.close()
-
-_ = lambda s: s.encode('iso-8859-1')
-for f, fin in ((file("chm/en/Output.hhk", "w"), file("Template.hhk", "r")),
-               (file("chm/de/Output.hhk", "w"), file("Template.de.hhk", "r"))):
-    for line in fin:
-        if line.find("</UL>") != -1:
-            for title, filenames in parser.files.iteritems():
-                for ctitle, filename in filenames.iteritems():
-                    f.write("  <LI> <OBJECT type=\"text/sitemap\">\n" +
-                        "    <param name=\"Name\" value=\"" + _(title) + "\">\n" +
-                        "    <param name=\"Local\" value=\"" + filename + "\">\n" +
-                        "    </OBJECT>\n")
-        f.write(line)
-    f.close()
-    fin.close()
-    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
-
