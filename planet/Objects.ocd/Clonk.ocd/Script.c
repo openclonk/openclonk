@@ -501,7 +501,7 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	var iRot = effect.rot;
-	if(effect.dir != GetDirection() || effect.var5 != iLastTurn)
+	if( (effect.dir != GetDirection() || effect.var5 != iLastTurn) && GetAction() != "Jump")
 	{
 		effect.dir = GetDirection();
 		if(effect.dir == COMD_Right)
@@ -585,7 +585,7 @@ func GetDirection()
 		if(turn_forced == 2) return COMD_Right;
 	}
 	// Get direction from ComDir
-	if(GetAction() != "Scale" && GetAction() != "Jump")
+	if(GetAction() != "Scale")
 	{
 		if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
 		else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
