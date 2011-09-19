@@ -129,18 +129,8 @@ void C4DefScriptHost::AfterLink()
 
 /*--- C4GameScriptHost ---*/
 
-C4GameScriptHost::C4GameScriptHost(): Counter(0), Go(false) { }
+C4GameScriptHost::C4GameScriptHost() { }
 C4GameScriptHost::~C4GameScriptHost() { }
-
-bool C4GameScriptHost::Execute(int iTick10)
-{
-	if (!Script) return false;
-	if (Go && !iTick10)
-	{
-		return !! Call(FormatString(PSF_Script,Counter++).getData());
-	}
-	return false;
-}
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
@@ -150,12 +140,6 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
 	return Call(szFunction, 0, pPars, fPassError);
-}
-
-void C4GameScriptHost::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(Go,             "Go",                    false));
-	pComp->Value(mkNamingAdapt(Counter,        "Counter",               0));
 }
 
 C4GameScriptHost GameScript;

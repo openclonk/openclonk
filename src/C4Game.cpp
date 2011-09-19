@@ -684,7 +684,6 @@ C4ST_NEW(PlayersStat,       "C4Game::Execute Players.Execute")
 C4ST_NEW(LandscapeStat,     "C4Game::Execute Landscape.Execute")
 C4ST_NEW(MusicSystemStat,   "C4Game::Execute MusicSystem.Execute")
 C4ST_NEW(MessagesStat,      "C4Game::Execute Messages.Execute")
-C4ST_NEW(ScriptStat,        "C4Game::Execute ::GameScript.Execute")
 
 #define EXEC_S(Expressions, Stat) \
   { C4ST_START(Stat) Expressions C4ST_STOP(Stat) }
@@ -744,7 +743,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	//FIXME: C4Application::Execute should do this, but what about the stats?
 	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
-	EXEC_S_DR(  ::GameScript.Execute(iTick10);    , ScriptStat          , "Scrpt")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
@@ -1652,7 +1650,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	pComp->Name("Script");
 	if (!comp.fScenarioSection)
 	{
-		pComp->Value(::GameScript);
 		pComp->Value(mkParAdapt(ScriptEngine, numbers));
 	}
 	pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));

@@ -61,7 +61,6 @@ public:
 	{
 		CONSOLE_Cursor,
 		CONSOLE_FrameCounter,
-		CONSOLE_ScriptCounter,
 		CONSOLE_TimeFPS
 	};
 

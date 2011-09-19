@@ -51,7 +51,6 @@
 #define IDC_STATICCURSOR                2023
 #define IDC_STATICFRAME                 2024
 #define IDC_STATICMATERIAL              2025
-#define IDC_STATICSCRIPT                2026
 #define IDC_STATICTEXTURE               2027
 #define IDC_STATICTIME                  2028
 #define IDD_COMPONENT                   3000

@@ -77,16 +77,6 @@ public:
 	~C4GameScriptHost();
 	bool Delete() { return false; } // do NOT delete this - it's a global!
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
-
-	// Global script data
-	int32_t Counter;
-	bool Go;
-	bool Execute(int);
-	void Clear() { Counter = 0; Go = false; C4ScriptHost::Clear(); }
-
-	// Compile scenario script data
-	void CompileFunc(StdCompiler *pComp);
-
 };
 
 extern C4GameScriptHost GameScript;

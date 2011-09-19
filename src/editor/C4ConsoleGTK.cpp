@@ -146,7 +146,6 @@ public:
 
 	GtkWidget* lblCursor;
 	GtkWidget* lblFrame;
-	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
 	GtkWidget* propertydlg;
@@ -374,20 +373,15 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_container_add(GTK_CONTAINER(status_frame), statusbar);
 
 	lblFrame = gtk_label_new("Frame: 0");
-	lblScript = gtk_label_new("Script: 0");
 	lblTime = gtk_label_new("00:00:00 (0 FPS)");
 
 	gtk_misc_set_alignment(GTK_MISC(lblFrame), 0.0, 0.5);
-	gtk_misc_set_alignment(GTK_MISC(lblScript), 0.0, 0.5);
 	gtk_misc_set_alignment(GTK_MISC(lblTime), 0.0, 0.5);
 
 	GtkWidget* sep1 = gtk_vseparator_new();
-	GtkWidget* sep2 = gtk_vseparator_new();
 
 	gtk_box_pack_start(GTK_BOX(statusbar), lblFrame, true, true, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), sep1, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), lblScript, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), sep2, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), lblTime, true, true, 0);
 
 	// ------------ Log view and script entry ---------------------
@@ -551,7 +545,6 @@ void C4ConsoleGUI::State::Clear()
 
 	lblCursor = NULL;
 	lblFrame = NULL;
-	lblScript = NULL;
 	lblTime = NULL;
 
 	handlerDestroy = 0;
@@ -576,9 +569,6 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 		break;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
-		break;
-	case CONSOLE_ScriptCounter:
-		label = state->lblScript;
 		break;
 	case CONSOLE_TimeFPS:
 		label = state->lblTime;

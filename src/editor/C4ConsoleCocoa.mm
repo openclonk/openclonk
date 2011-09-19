@@ -99,9 +99,6 @@ void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& t
 	case CONSOLE_FrameCounter:
 		label = ctrler(this).frameLabel;
 		break;
-	case CONSOLE_ScriptCounter:
-		label = ctrler(this).scriptLabel;
-		break;
 	case CONSOLE_TimeFPS:
 		label = ctrler(this).timeLabel;
 		break;

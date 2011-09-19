@@ -15,7 +15,6 @@
         <text>Ends the game if it has been running for more than 5 minutes.</text>
       </example>
     </examples>
-    <related><funclink>ScriptCounter</funclink></related>
   </func>
   <author>Sven2</author><date>2002-04</date>
 </funcs>

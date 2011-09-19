@@ -52,13 +52,6 @@
 #include <C4Weather.h>
 #include <C4Viewport.h>
 
-
-static C4Void Fn_goto(C4AulContext *cthr, long iCounter)
-{
-	::GameScript.Counter=iCounter;
-	return C4Void();
-}
-
 static bool FnIncinerateLandscape(C4AulContext *cthr, long iX, long iY)
 {
 	if (cthr->Obj) { iX += cthr->Obj->GetX(); iY += cthr->Obj->GetY(); }
@@ -538,12 +531,6 @@ static C4Value FnAddMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value
 	::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData(),cthr->Obj,NO_OWNER,0,0,C4RGB(0xff, 0xff, 0xff));
 
 	return C4VBool(true);
-}
-
-static bool FnScriptGo(C4AulContext *cthr, bool go)
-{
-	::GameScript.Go=!!go;
-	return true;
 }
 
 static long FnMaterial(C4AulContext *cthr, C4String *mat_name)
@@ -1191,11 +1178,6 @@ static bool FnOnMessageBoardAnswer(C4AulContext *cthr, C4Object *pObj, long iFor
 	if (pObj) scr = &pObj->Def->Script; else scr = &::GameScript;
 	// exec func
 	return !!scr->Call(PSF_InputCallback, pObj, &C4AulParSet(C4VString(FnStringPar(szAnswerString)), C4VInt(iForPlr)));
-}
-
-static long FnScriptCounter(C4AulContext *cthr)
-{
-	return ::GameScript.Counter;
 }
 
 static C4Void FnSetFoW(C4AulContext *cthr, bool fEnabled, long iPlr)
@@ -2428,7 +2410,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PlaceVegetation", FnPlaceVegetation);
 	AddFunc(pEngine, "PlaceAnimal", FnPlaceAnimal);
 	AddFunc(pEngine, "GameOver", FnGameOver);
-	AddFunc(pEngine, "ScriptGo", FnScriptGo);
 	AddFunc(pEngine, "GetHiRank", FnGetHiRank);
 	AddFunc(pEngine, "GetCrew", FnGetCrew);
 	AddFunc(pEngine, "GetCrewCount", FnGetCrewCount);
@@ -2470,7 +2451,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CallMessageBoard", FnCallMessageBoard, false);
 	AddFunc(pEngine, "AbortMessageBoard", FnAbortMessageBoard, false);
 	AddFunc(pEngine, "OnMessageBoardAnswer", FnOnMessageBoardAnswer, false);
-	AddFunc(pEngine, "ScriptCounter", FnScriptCounter);
 	AddFunc(pEngine, "SetFoW", FnSetFoW);
 	AddFunc(pEngine, "SetMaxPlayer", FnSetMaxPlayer);
 	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
@@ -2539,7 +2519,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 
-	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
 	AddFunc(pEngine, "SetGravity", FnSetGravity);
