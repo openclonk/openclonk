@@ -1663,7 +1663,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	pComp->NameEnd();
 }
 
-bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbers * numbers, bool exact)
+bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, C4ValueNumbers * numbers)
 {
 	::Objects.Clear(!fLoadSection);
 	GameText.Load(hGroup,C4CFN_Game);
@@ -1687,7 +1687,7 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, C4ValueNumbe
 	return true;
 }
 
-bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact, C4ValueNumbers * numbers)
+bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4ValueNumbers * numbers)
 {
 	StdStrBuf Buf;
 	// Decompile (without players for scenario sections)
@@ -2089,7 +2089,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 	if (!fLoadSection) InitValueOverloads();
 
 	// runtime data
-	if (!CompileRuntimeData(hGroup, fLoadSection, numbers, C4S.Head.SaveGame))
+	if (!CompileRuntimeData(hGroup, fLoadSection, C4S.Head.SaveGame, numbers))
 		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	SetInitProgress(93);
@@ -3200,7 +3200,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		{
 			C4ValueNumbers numbers;
 			// objects: do not save info objects or inactive objects
-			if (!SaveData(*pGrp,true,false,false, &numbers))
+			if (!SaveData(*pGrp,true,false, &numbers))
 			{
 				DebugLog("LoadScenarioSection: Error saving objects");
 				return false;
