@@ -166,7 +166,7 @@ protected func DoFire(object iammo, object clonk, int power)
 	}
 
 	//Sound
-	Sound("CatapultLaunch.ogg");
+	Sound("Catapult_Launch.ogg");
 
 	var angle = -45;
 	if(dir == 1) angle = 45;
