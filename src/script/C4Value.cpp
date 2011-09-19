@@ -157,8 +157,8 @@ C4Value C4VString(StdStrBuf Str)
 
 const C4Value & C4ValueNumbers::GetValue(uint32_t n)
 {
-	if (n < LoadedValues.size())
-		return LoadedValues[n];
+	if (n <= LoadedValues.size())
+		return LoadedValues[n - 1];
 	LogF("ERROR: Value number %d is missing.", n);
 	return C4VNull;
 }
@@ -206,8 +206,8 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 	if (ValueNumbers.find(v->_getObj()) == ValueNumbers.end())
 	{
 		ValuesToSave.push_back(v);
-		ValueNumbers[v->_getObj()] = ValuesToSave.size() - 1;
-		return ValuesToSave.size() - 1;
+		ValueNumbers[v->_getObj()] = ValuesToSave.size();
+		return ValuesToSave.size();
 	}
 	return ValueNumbers[v->_getObj()];
 }
