@@ -521,8 +521,8 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4Va
 	}
 	else
 	{
-		// this mode not supported
-		assert(!fSkipPlayerObjects);
+		// FIXME: Check that no PlayerObjects are loaded when fSkipPlayerObjects is true
+		// i.e. that loading and saving was done with the same flag.
 		// Remove previous data
 		Clear();
 		// Load objects, add them to the list.
