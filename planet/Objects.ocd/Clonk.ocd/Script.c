@@ -39,17 +39,18 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
-
-	//The clonk's appearance
-	var skin = GetCrewExtraData("Skin");
-	if(skin) SetSkin(skin);
 }
 
 
 
 /* When adding to the crew of a player */
 
-protected func Recruitment(int iPlr) {
+protected func Recruitment(int iPlr)
+{
+	//The clonk's appearance
+	var skin = GetCrewExtraData("Skin");
+	if(skin) SetSkin(skin);
+
 	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
 	
