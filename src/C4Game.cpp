@@ -1620,6 +1620,12 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(NextMissionText,       "NextMissionText",       StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
 		pComp->NameEnd();
+
+		// scoreboard compiles into main level [Scoreboard]
+		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
+		// as keys might be released between a savegame save and its resume
+		//pComp->Value(GlobalPlayerControl);
 	}
 
 	if (comp.fExact)
@@ -1627,17 +1633,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
-	}
-
-	pComp->Value(mkNamingAdapt(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), numbers), "Effects"));
-
-	if (!comp.fScenarioSection && comp.fExact)
-	{
-		// scoreboard compiles into main level [Scoreboard]
-		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
-		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
-		// as keys might be released between a savegame save and its resume
-		//pComp->Value(GlobalPlayerControl);
 	}
 
 	if (comp.fPlayers)
@@ -1659,6 +1654,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(::GameScript);
 		pComp->Value(mkParAdapt(ScriptEngine, numbers));
 	}
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
 	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 	pComp->NameEnd();
 }

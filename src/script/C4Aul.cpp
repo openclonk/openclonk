@@ -499,7 +499,7 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 {
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
-	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "GlobalNamed", GlobalNamedDefault));
+	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
 }
 
 std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
