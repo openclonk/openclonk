@@ -190,22 +190,23 @@ func UpdateLines()
 		}
 		
 		var diff = Vec_Sub(end,start);
-    var point = Vec_Add(start, Vec_Div(diff, 2));
-    var diffangle = Vec_Angle(diff, [0,0]);
-    var length = Vec_Length(diff)*1000/Rope_Precision/10;
-    
+		var point = Vec_Add(start, Vec_Div(diff, 2));
+		var diffangle = Vec_Angle(diff, [0,0]);
+		var length = Vec_Length(diff)*1000/Rope_Precision/10;
+	
 		if(i ==  ParticleCount-1)
-    {
-      var old = particles[i-2][0][:];
-      var old_diff = Vec_Sub(start,old);
-      var o_length = Vec_Length(old_diff)*1000/Rope_Precision/10;
-      diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
-//      objects[1][0]->Message("%d", Vec_Length(diff)*1000/Rope_Precision/10);
-      diffangle = Vec_Angle(diff, [0,0]);
-      point = Vec_Add(start, Vec_Div(diff, 2));
-      //length = o_length;
-      last_point = point;
-    }
+		{
+			var old = particles[i-2][0][:];
+			var old_diff = Vec_Sub(start,old);
+			var o_length = Vec_Length(old_diff)*1000/Rope_Precision/10;
+			if(!o_length) diff = old_diff;
+			else diff = Vec_Div(Vec_Mul(old_diff, length),o_length);
+	//		objects[1][0]->Message("%d", Vec_Length(diff)*1000/Rope_Precision/10);
+			diffangle = Vec_Angle(diff, [0,0]);
+			point = Vec_Add(start, Vec_Div(diff, 2));
+			//length = o_length;
+			last_point = point;
+		}
 
 		if(i == 1)
 		{
@@ -233,12 +234,12 @@ local ClonkOldSpeed;
 
 func GetClonkPos()
 {
-  return particles[-1][0];
+	return particles[-1][0];
 }
 
 func GetClonkOff()
 {
-  return Vec_Sub(particles[-1][0],last_point);
+	return Vec_Sub(particles[-1][0],last_point);
 	var clonk = objects[1][0];
 	var speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
 	var offset = speed;
