@@ -9,13 +9,11 @@
 !define PRODUCT_USER_ROOT_KEY "HKCU"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
-; zlib compression creates a corrupted installer!?
 SetCompressor lzma
 
-; MUI 1.67 compatible ------
-!include "MUI.nsh"
-
 ; MUI Settings
+!include MUI2.nsh
+
 !define MUI_ICON "${SRCDIR}/tools/install/inst.ico"
 !define MUI_UNICON "${SRCDIR}/tools/install/uninst.ico"
 
@@ -23,30 +21,24 @@ SetCompressor lzma
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install/header.bmp"
 
-; Directory page
+; Installer pages
 !insertmacro MUI_PAGE_DIRECTORY
-; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 
 ; Uninstaller pages
+!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "English"
 
-; Overwrite language strings
-LangString MUI_TEXT_WELCOME_INFO_TITLE ${LANG_German} "Willkommen zu ${PRODUCT_NAME}!"
-LangString MUI_TEXT_WELCOME_INFO_TITLE ${LANG_English} "Welcome to ${PRODUCT_NAME}!"
-LangString MUI_TEXT_FINISH_INFO_TITLE ${LANG_German} "Die Installation wird abgeschlossen."
-
 ; Additional language strings
 LangString MUI_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
 LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 
-; Reserve files
-!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-
+!insertmacro MUI_RESERVEFILE_LANGDLL
+ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
 Name "${PRODUCT_NAME}"
@@ -54,7 +46,7 @@ InstallDir "${PROGRAMFILES}\OpenClonk"
 ShowInstDetails show
 ShowUnInstDetails show
 
-Section "MainSection" SEC01
+Section
   SetOutPath "$INSTDIR"
   SetOverwrite on
 
@@ -92,9 +84,6 @@ Section "MainSection" SEC01
   CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
-SectionEnd
-
-Section -Post
 ; Uninstaller info
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
@@ -153,17 +142,9 @@ Section -Post
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
 ; Remove old use of App Paths   
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Clonk.exe"    
+
 SectionEnd
 
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) wurde erfolgreich deinstalliert."
-FunctionEnd
-
-Function un.onInit
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Sind Sie sicher, dass Sie $(^Name) deinstallieren wollen?" IDYES +2
-  Abort
-FunctionEnd
 
 Section Uninstall
 
@@ -224,5 +205,4 @@ Section Uninstall
   Delete "$SMPROGRAMS\OpenClonk\*.lnk"
   RMDir "$SMPROGRAMS\OpenClonk"
   
-  SetAutoClose true
 SectionEnd
