@@ -65,7 +65,7 @@ Section "MainSection" SEC01
 
   File "*.dll"
 
-  File "*.c4?"
+  File "*.oc?"
   
   File "AUTHORS"
   File "COPYING"
@@ -173,7 +173,7 @@ Section Uninstall
 
   Delete "$INSTDIR\*.dll"
 
-  Delete "$INSTDIR\*.c4?"
+  Delete "$INSTDIR\*.oc?"
 
   Delete "$INSTDIR\AUTHORS"
   Delete "$INSTDIR\COPYING"
