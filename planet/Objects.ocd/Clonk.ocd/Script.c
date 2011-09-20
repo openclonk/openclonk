@@ -1082,6 +1082,7 @@ func StartJump()
 	//Walk kick jump
 	if(GetEffect("WallKick",this))
 	{
+		SetAction("WallJump");
 		var side = "L";
 		if(GetDir() == DIR_Left) side = "R";
 		PlayAnimation(Format("JumpWall.%s", side), 5, Anim_Linear(0, 0, GetAnimationLength("JumpWall.L"), 8*5, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
@@ -1925,8 +1926,23 @@ Jump = {
 	Hgt = 20,
 	InLiquidAction = "Swim",
 	PhaseCall = "CheckStuck",
-//	Animation = "Jump",
 	StartCall = "StartJump",
+},
+WallJump = {
+	Prototype = Action,
+	Name = "WallJump",
+	Procedure = DFA_FLIGHT,
+	Speed = 200,
+	Accel = 14,
+	Directions = 2,
+	Length = 1,
+	Delay = 0,
+	X = 0,
+	Y = 120,
+	Wdt = 8,
+	Hgt = 20,
+	InLiquidAction = "Swim",
+	PhaseCall = "CheckStuck",
 },
 Dive = {
 	Prototype = Action,
