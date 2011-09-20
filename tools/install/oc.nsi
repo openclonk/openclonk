@@ -16,12 +16,12 @@ SetCompressor lzma
 !include "MUI.nsh"
 
 ; MUI Settings
-!define MUI_ICON "inst.ico"
-!define MUI_UNICON "uninst.ico"
+!define MUI_ICON "${SRCDIR}/tools/install/inst.ico"
+!define MUI_UNICON "${SRCDIR}/tools/install/uninst.ico"
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install/header.bmp"
 
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
@@ -50,8 +50,7 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ; MUI end ------
 
 Name "${PRODUCT_NAME}"
-OutFile "..\oc.exe"
-InstallDir "@PROGRAMFILES@\OpenClonk"
+InstallDir "${PROGRAMFILES}\OpenClonk"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -67,10 +66,11 @@ Section "MainSection" SEC01
 
   File "*.oc?"
   
-  File "AUTHORS"
-  File "COPYING"
-  File "LGPL.txt"
-  File "OpenSSL.txt"
+  File "${SRCDIR}\planet\AUTHORS"
+  File "${SRCDIR}\planet\COPYING"
+  File "${SRCDIR}\licenses\LGPL.txt"
+  File "${SRCDIR}\licenses\OpenSSL.txt"
+  File "${SRCDIR}\Credits.txt"
   
 ; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
   CreateDirectory "$APPDATA\OpenClonk"
@@ -179,6 +179,7 @@ Section Uninstall
   Delete "$INSTDIR\COPYING"
   Delete "$INSTDIR\LGPL.txt"
   Delete "$INSTDIR\OpenSSL.txt"
+  Delete "$INSTDIR\Credits.txt"
   
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"

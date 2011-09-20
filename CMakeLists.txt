@@ -1279,6 +1279,41 @@ ENDFOREACH()
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
 
 ############################################################################
+# setup_openclonk.exe
+############################################################################
+
+set(OC_C4GROUPS
+  Graphics.ocg
+  Material.ocg
+  Music.ocg
+  Sound.ocg
+  System.ocg
+  Objects.ocd
+  BackToTheRocks.ocf
+  Tests.ocf
+  Tutorial.ocf
+)
+
+get_target_property(run_c4group c4group LOCATION)
+foreach(group ${OC_C4GROUPS})
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+    COMMAND ${run_c4group} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
+    DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+    VERBATIM
+  )
+endforeach()
+
+add_custom_command(
+  OUTPUT setup_openclonk.exe
+  COMMAND makensis -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi ${OC_C4GROUPS} clonk c4group
+  VERBATIM
+)
+
+add_custom_target(setup DEPENDS setup_openclonk.exe)
+
+############################################################################
 # CPack support
 ############################################################################
 set(CPACK_PACKAGE_NAME "openclonk")

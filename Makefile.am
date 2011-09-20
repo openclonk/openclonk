@@ -711,6 +711,9 @@ AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
 %.ocf: planet/%.ocf c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
 
+setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
+	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' $< "-XOutFile $@"
+
 ## other stuff
 
 EXTRA_DIST = \
