@@ -9,10 +9,29 @@
 !define PRODUCT_USER_KEY "Software\OpenClonk\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\OpenClonk"
 !define PRODUCT_USER_ROOT_KEY "HKCU"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define PRODUCT_UNINST_ROOT_KEY "SHELL_CONTEXT"
 
 Name "${PRODUCT_NAME}"
 SetCompressor lzma
+
+; MultiUser Settings
+!define MULTIUSER_EXECUTIONLEVEL Highest
+;!define MULTIUSER_MUI
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+!define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT_INSTDIR}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallLocation"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallLocation"
+!include MultiUser.nsh
+
+Function .onInit
+  !insertmacro MULTIUSER_INIT
+FunctionEnd
+
+Function un.onInit
+  !insertmacro MULTIUSER_UNINIT
+FunctionEnd
 
 ; MUI Settings
 !include MUI2.nsh
@@ -25,6 +44,7 @@ SetCompressor lzma
 !define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install/header.bmp"
 
 ; Installer pages
+;!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -44,7 +64,6 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
-InstallDir "${PROGRAMFILES}\OpenClonk"
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -78,8 +97,7 @@ Section
 ; Create user path shortcut in program directory
   CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
-  ; Start menu shortcuts (All Users)
-  SetShellVarContext all
+  ; Start menu shortcuts
   CreateDirectory "$SMPROGRAMS\OpenClonk"
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
   CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
@@ -93,6 +111,7 @@ Section
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Clonk.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
 ; Register file types  
   WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
   WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
@@ -142,8 +161,6 @@ Section
 ; Register additional file handling
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update" "" "Update"
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
-; Remove old use of App Paths   
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Clonk.exe"    
 
 SectionEnd
 
@@ -202,8 +219,7 @@ Section Uninstall
   DeleteRegKey HKCR ".ocu"
   DeleteRegKey HKCR "OpenClonk.Update"
   
-  ; Start menu shortcuts (All Users)
-  SetShellVarContext all
+  ; Start menu shortcuts
   Delete "$SMPROGRAMS\OpenClonk\*.lnk"
   RMDir "$SMPROGRAMS\OpenClonk"
   
