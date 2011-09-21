@@ -34,3 +34,5 @@ gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 110110010		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/)
 schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
+acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
+suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
