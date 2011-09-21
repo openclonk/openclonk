@@ -649,18 +649,17 @@ if(USE_GTK)
 endif()
 
 if(PROJECT_FOLDERS)
-  source_group("Unsorted" .*)
-  source_group("Library\\Platform abstraction" src/platform/.*)
-  source_group("Library\\Utility" src/lib/.*)
-  source_group("Library\\C4Group" src/c4group/.*)
-  source_group("Library\\Graphics" src/lib/texture/.*)
+  source_group("Core" src/.*)
+  source_group("Platform abstraction" src/platform/.*)
+  source_group("Utility" src/lib/.*)
+  source_group("C4Group" src/c4group/.*)
+  source_group("Texture" src/lib/texture/.*)
   source_group("GUI" src/gui/.*)
   source_group("Network" src/network/.*)
-  source_group("Game\\Objects" src/game/object/.*)
-  source_group("Game\\Scenario" src/game/landscape/.*)
-  source_group("Game\\Player" src/game/player/.*)
-  source_group("Game\\Script" src/game/script/.*)
-  source_group("Scripting" src/script/.*)
+  source_group("Object" src/game/object/.*)
+  source_group("Landscape" src/game/landscape/.*)
+  source_group("Player" src/game/player/.*)
+  source_group("Script" REGULAR_EXPRESSION .*/script/.*)
   source_group("Config" src/config/.*)
   source_group("Control" src/control/.*)
   source_group("Editing" src/editor/.*)
@@ -1283,35 +1282,44 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c
 ############################################################################
 
 set(OC_C4GROUPS
-  Graphics.ocg
-  Material.ocg
-  Music.ocg
-  Sound.ocg
-  System.ocg
-  Objects.ocd
-  BackToTheRocks.ocf
-  Tests.ocf
-  Tutorial.ocf
+	Graphics.ocg
+	Material.ocg
+	Music.ocg
+	Sound.ocg
+	System.ocg
+	Objects.ocd
+	BackToTheRocks.ocf
+	Tests.ocf
+	Tutorial.ocf
 )
 
-get_target_property(run_c4group c4group LOCATION)
+get_target_property(C4GROUP_LOCATION c4group LOCATION)
+get_target_property(CLONK_LOCATION clonk LOCATION)
 foreach(group ${OC_C4GROUPS})
-  add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-    COMMAND ${run_c4group} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
-    DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-    VERBATIM
-  )
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+		COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
+		DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+		VERBATIM
+	)
 endforeach()
 
+find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
+
+string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
+string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
+
 add_custom_command(
-  OUTPUT setup_openclonk.exe
-  COMMAND makensis -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES -DPRODUCT_NAME="${C4ENGINENAME} ${C4VERSIONBUILDNAME}"  ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi ${OC_C4GROUPS} clonk c4group
-  VERBATIM
+	OUTPUT setup_openclonk.exe
+	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME} ${C4VERSIONBUILDNAME}" "-DCLONK=${CLONK_LOCATION}" "-DC4GROUP=${C4GROUP_LOCATION}" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi ${OC_C4GROUPS} clonk c4group
+	VERBATIM
 )
 
-add_custom_target(setup DEPENDS setup_openclonk.exe)
+add_custom_target(setup
+	DEPENDS setup_openclonk.exe
+	SOURCES tools/install/oc.nsi tools/install/header.bmp tools/install/inst.ico tools/install/uninst.ico
+)
 
 ############################################################################
 # CPack support

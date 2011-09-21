@@ -1,6 +1,12 @@
 !ifndef PRODUCT_NAME
 !define PRODUCT_NAME "OpenClonk"
 !endif
+!ifndef CLONK
+!define CLONK "clonk.exe"
+!endif
+!ifndef C4GROUP
+!define C4GROUP "c4group.exe"
+!endif
 !define PRODUCT_PUBLISHER "OpenClonk Development Team"
 !define PRODUCT_WEB_SITE "http://www.openclonk.org"
 !define PRODUCT_WEB_SITE_NAME "OpenClonk Website"
@@ -41,7 +47,7 @@ FunctionEnd
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install/header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install\header.bmp"
 
 ; Installer pages
 ;!insertmacro MULTIUSER_PAGE_INSTALLMODE
@@ -72,8 +78,8 @@ Section
   SetOverwrite on
 
 ; Main program files  
-  File "Clonk.exe"
-  File "c4group.exe"
+  File "${CLONK}"
+  File "${C4GROUP}"
 
   File "*.dll"
 
