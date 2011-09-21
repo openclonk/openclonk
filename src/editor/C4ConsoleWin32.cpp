@@ -609,7 +609,7 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)
 	{
-		char * lpMsgBuf;
+		wchar_t * lpMsgBuf;
 		FormatMessage(
 		  FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		  FORMAT_MESSAGE_FROM_SYSTEM |
@@ -617,10 +617,10 @@ CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
 		  NULL,
 		  GetLastError(),
 		  0,
-		  (LPTSTR) &lpMsgBuf,
+		  (wchar_t *)&lpMsgBuf, // really.
 		  0,
 		  NULL);
-		Log(FormatString("Error creating dialog window: %s", lpMsgBuf).getData());
+		Log(FormatString("Error creating dialog window: %s", StdStrBuf(lpMsgBuf).getData()).getData());
 		// Free the buffer.
 		LocalFree(lpMsgBuf);
 		return NULL;
