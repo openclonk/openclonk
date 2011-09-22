@@ -31,7 +31,8 @@ func FxHUDBarUpdaterDamage(target, effect, int damage, int cause)
 	if(effect.last == effect.Time) return damage;
 	effect.last = effect.Time;
 	
-	HUDcontroller->ScheduleUpdateHealthBar();
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateHealthBar();
 	return damage;
 }
 
@@ -59,7 +60,8 @@ protected func Recruitment(int plr)
 
 public func OnDisplayInfoMessage()
 {
-	HUDcontroller->ClearButtonMessages();
+	if (HUDcontroller)
+		HUDcontroller->ClearButtonMessages();
 }
 	
 // calls to the crew selector hud
