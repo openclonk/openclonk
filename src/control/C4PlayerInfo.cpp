@@ -115,7 +115,7 @@ bool C4PlayerInfo::SetAsScriptPlayer(const char *szName, uint32_t dwColor, uint3
 	Clear();
 	// set parameters
 	eType = C4PT_Script;
-	dwColor = dwOriginalColor = 0xff000000 | (dwColor & 0xffffff); // ignore alpha
+	this->dwColor = dwOriginalColor = 0xff000000 | (dwColor & 0xffffff); // ignore alpha
 	dwAlternateColor = 0;
 	this->sName.CopyValidated(szName);
 	idExtraData = idExtra;
