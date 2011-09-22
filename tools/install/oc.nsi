@@ -1,14 +1,17 @@
-; TODO: PRODUCT_VERSION
+!ifndef PRODUCT_NAME
 !define PRODUCT_NAME "OpenClonk"
+!endif
 !define PRODUCT_PUBLISHER "OpenClonk Development Team"
 !define PRODUCT_WEB_SITE "http://www.openclonk.org"
 !define PRODUCT_WEB_SITE_NAME "OpenClonk Website"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define PRODUCT_INSTDIR "OpenClonk"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
 !define PRODUCT_USER_KEY "Software\OpenClonk\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\OpenClonk"
 !define PRODUCT_USER_ROOT_KEY "HKCU"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
+Name "${PRODUCT_NAME}"
 SetCompressor lzma
 
 ; MUI Settings
@@ -41,7 +44,6 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
-Name "${PRODUCT_NAME}"
 InstallDir "${PROGRAMFILES}\OpenClonk"
 ShowInstDetails show
 ShowUnInstDetails show

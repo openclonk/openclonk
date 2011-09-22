@@ -1306,7 +1306,7 @@ endforeach()
 
 add_custom_command(
   OUTPUT setup_openclonk.exe
-  COMMAND makensis -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
+  COMMAND makensis -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES -DPRODUCT_NAME="${C4ENGINENAME} ${C4VERSIONBUILDNAME}"  ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi ${OC_C4GROUPS} clonk c4group
   VERBATIM
 )
