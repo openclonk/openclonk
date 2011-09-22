@@ -298,6 +298,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		}
 
 		// Init control method before scenario init, because script callbacks may need to know it!
+		ClearControl();
 		InitControl();
 
 		// defaultdisabled controls
@@ -1211,7 +1212,7 @@ bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 	const char *pSource;
 	// Use loaded game text component
 	if (!(pSource = Game.GameText.GetData())) return false;
-	// safety: Do nothing if playeer section is not even present (could kill initialized values)
+	// safety: Do nothing if player section is not even present (could kill initialized values)
 	if (!SSearch(pSource, FormatString("[Player%i]", ID).getData())) return false;
 	// Compile (Search player section - runtime data is stored by unique player ID)
 	// Always compile exact. Exact data will not be present for savegame load, so it does not matter
@@ -1430,8 +1431,6 @@ void C4Player::ClearControl()
 
 void C4Player::InitControl()
 {
-	// clear any previous
-	ClearControl();
 	// Check local control
 	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)

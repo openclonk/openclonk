@@ -1206,8 +1206,6 @@ void C4PlayerControl::Clear()
 
 void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset)
 {
-	// clear any previous settings
-	Clear();
 	// setup
 	pControlSet = pKeyset;
 	this->iPlr = iPlr;
