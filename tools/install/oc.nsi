@@ -1,6 +1,9 @@
 !ifndef PRODUCT_NAME
 !define PRODUCT_NAME "OpenClonk"
 !endif
+!ifndef PRODUCT_COMPANY
+!define PRODUCT_COMPANY "OpenClonk"
+!endif
 !ifndef CLONK
 !define CLONK "clonk.exe"
 !endif
@@ -12,8 +15,8 @@
 !define PRODUCT_WEB_SITE_NAME "OpenClonk Website"
 !define PRODUCT_INSTDIR "OpenClonk"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
-!define PRODUCT_USER_KEY "Software\OpenClonk\OpenClonk"
-!define PRODUCT_COMPANY_KEY "Software\OpenClonk"
+!define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
+!define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
 !define PRODUCT_USER_ROOT_KEY "HKCU"
 !define PRODUCT_UNINST_ROOT_KEY "SHELL_CONTEXT"
 
