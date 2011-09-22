@@ -17,8 +17,6 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
 !define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
-!define PRODUCT_USER_ROOT_KEY "HKCU"
-!define PRODUCT_UNINST_ROOT_KEY "SHELL_CONTEXT"
 
 Name "${PRODUCT_NAME}"
 SetCompressor lzma
@@ -70,7 +68,7 @@ LangString MUI_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
 LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
-ReserveFile "${NSISDIR}\Plugins\*.dll"
+;ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
 ShowInstDetails show
@@ -115,12 +113,17 @@ Section
 
 ; Uninstaller info
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Clonk.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "UninstallString" \
+    "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "QuietUninstallString" \
+    "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode /S"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$\"$INSTDIR\Clonk.exe$\""
+  WriteRegDWORD SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "NoModify" 1
+  WriteRegDWORD SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "NoRepair" 1
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
 ; Register file types  
   WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
   WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
@@ -200,9 +203,10 @@ Section Uninstall
   Delete "$DESKTOP\OpenClonk.lnk"
 	
   ; Registry: config
-  DeleteRegKey ${PRODUCT_USER_ROOT_KEY} "${PRODUCT_USER_KEY}"
-  DeleteRegKey /ifempty ${PRODUCT_USER_ROOT_KEY} "${PRODUCT_COMPANY_KEY}"
-  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey HKCU "${PRODUCT_USER_KEY}"
+  DeleteRegKey /ifempty HKCU "${PRODUCT_COMPANY_KEY}"
+  ; Registry: Uninstaller info
+  DeleteRegKey SHELL_CONTEXT "${PRODUCT_UNINST_KEY}"
   
   ; Registry: classes
   DeleteRegKey HKCR ".ocs"
