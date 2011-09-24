@@ -46,12 +46,6 @@
           <col><code>{ foo = 0, &quot;bar baz&quot; = 13, Prototype = Clonk }</code></col>
         </row>
         <row>
-          <col><code>object</code></col>
-          <col>Ingame Object</col>
-          <col>Reference to an existing object at runtime. No direct representation. See <funclink>FindObject</funclink>()</col>
-          <col><code>CreateObject(Clonk)</code></col>
-        </row>
-        <row>
           <col><code>nil</code></col>
           <col></col>
           <col>The type of <code>nil</code>.</col>
@@ -64,10 +58,22 @@
           <col></col>
         </row>
         <row>
-          <col><code>id</code></col>
-          <col>definition id</col>
-          <col>ID of an object definition (see <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Object Definitions</emlink>).Will be changed into a proplist immediately.</col>
+          <col><code>def</code></col>
+          <col><emlink href="definition/index.html">Object Definition</emlink></col>
+          <col>Represents a DefCore.txt and the associated Script.c. A special kind of proplist.</col>
           <col><code>Clonk</code></col>
+        </row>
+        <row>
+          <col><code>object</code></col>
+          <col>Ingame Object</col>
+          <col>An instance of an Object Definition. A special kind of proplist.</col>
+          <col><code><funclink>CreateObject</funclink>(Clonk)</code></col>
+        </row>
+        <row>
+          <col><code>effect</code></col>
+          <col><emlink href="script/Effects.html">Effect</emlink></col>
+          <col>A special kind of proplist with associated timers and stacking callbacks.</col>
+          <col><code><funclink>AddEffect</funclink>("Shiny", nil, 1)</code></col>
         </row>
       </table>
     </text>
@@ -118,7 +124,7 @@
         <li>All values except for <code>false</code>, <code>nil</code> and <code>0</code> are treated as <code>true</code> when a bool is required.</li>
         <li><code>nil</code> and <code>false</code> can be converted to <code>0</code>. <code>true</code> can be converted to <code>1</code>.</li>
         <li><code>nil</code> can always be used as a function parameter, if the function doesn't implement a separate check.</li>
-        <li>If an object has been converted into a proplist then it can be converted back to an object. Otherwise proplists cannot be converted into objects.</li>
+        <li>Objects, Definitions and Effects can be converted to proplists, and then back. Normal proplists cannot be converted into them.</li>
       </ul>
     </text>
   </part>

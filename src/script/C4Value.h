@@ -41,6 +41,8 @@ enum C4V_Type
 	// for typechecks
 	C4V_Any,
 	C4V_Object,
+	C4V_Def,
+	C4V_Effect,
 };
 // last C4V_Type that doesn't vanish in Denumerate
 #define C4V_Last ((int) C4V_Array)
@@ -157,6 +159,8 @@ public:
 		case C4V_Array:    return Type == C4V_Array || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Any:      return true;
 		case C4V_Object:   return (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Def:      return (Type == C4V_PropList && FnCnvDef()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Effect:   return (Type == C4V_PropList && FnCnvEffect()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		default: assert(!"C4Value::CheckParConversion: impossible conversion target"); return false;
 		}
 	}
@@ -172,6 +176,8 @@ public:
 		case C4V_Array:    return Type == C4V_Array;
 		case C4V_Any:      return true;
 		case C4V_Object:   return Type == C4V_PropList && FnCnvObject();
+		case C4V_Def:      return Type == C4V_PropList && FnCnvDef();
+		case C4V_Effect:   return Type == C4V_PropList && FnCnvEffect();
 		default: assert(!"C4Value::CheckConversion: impossible conversion target"); return false;
 		}
 	}
@@ -202,6 +208,8 @@ protected:
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef);
 
 	bool FnCnvObject() const;
+	bool FnCnvDef() const;
+	bool FnCnvEffect() const;
 	void LogDeletedObjectWarning(C4PropList *);
 
 	friend class C4PropList;

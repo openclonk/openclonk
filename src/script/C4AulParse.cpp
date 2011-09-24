@@ -82,6 +82,8 @@
 #define C4AUL_TypeInt       "int"
 #define C4AUL_TypeBool      "bool"
 #define C4AUL_TypeC4ID      "id"
+#define C4AUL_TypeDef       "def"
+#define C4AUL_TypeEffect    "effect"
 #define C4AUL_TypeC4Object  "object"
 #define C4AUL_TypePropList  "proplist"
 #define C4AUL_TypeString    "string"
@@ -1496,12 +1498,21 @@ void C4AulParseState::Parse_FuncHead()
 		// type identifier?
 		if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_Def; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeDef)) { Fn->ParType[cpar] = C4V_Def; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeEffect)) { Fn->ParType[cpar] = C4V_Effect; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_Object; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
-		if (TokenType != ATT_IDTF)
+		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
+		{
+			Fn->ParNamed.AddName(Idtf);
+			++Fn->ParCount;
+			if (Config.Developer.ExtraWarnings)
+				Warn(FormatString("'%s' used as parameter name", Idtf).getData());
+		}
+		else if (TokenType != ATT_IDTF)
 		{
 			UnexpectedToken("parameter name");
 		}

@@ -54,16 +54,13 @@ const char* GetC4VName(const C4V_Type Type)
 		return "any";
 	case C4V_Object:
 		return "object";
+	case C4V_Def:
+		return "def";
+	case C4V_Effect:
+		return "effect";
 	default:
 		return "!Fehler!";
 	}
-}
-
-bool C4Value::FnCnvObject() const
-{
-	// try casting
-	if (Data.PropList->GetObject()) return true;
-	return false;
 }
 
 C4Value::C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_PropList : C4V_Nil)
@@ -83,6 +80,27 @@ C4Object * C4Value::_getObj() const
 
 C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
 
+bool C4Value::FnCnvObject() const
+{
+	// try casting
+	if (Data.PropList->GetObject()) return true;
+	return false;
+}
+
+bool C4Value::FnCnvDef() const
+{
+	// try casting
+	if (Data.PropList->GetDef()) return true;
+	return false;
+}
+
+bool C4Value::FnCnvEffect() const
+{
+	// try casting
+	if (Data.PropList->GetEffect()) return true;
+	return false;
+}
+
 bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 {
 	switch (vtToType)
@@ -90,11 +108,13 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	case C4V_Nil:      return Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Int:      return Type != C4V_Int && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
 	case C4V_Bool:     return false;
-	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Effect && Type != C4V_Def && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Array:    return Type != C4V_Array && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Any:      return false;
+	case C4V_Def:      return Type != C4V_Def && Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Object:   return Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Effect:   return Type != C4V_Effect && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
 }
