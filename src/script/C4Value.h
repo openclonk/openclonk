@@ -34,6 +34,7 @@ enum C4V_Type
 	C4V_PropList=3,
 	C4V_String=4,
 	C4V_Array=5,
+	C4V_Function=6,
 
 	C4V_Enum=8, // enumerated array or proplist
 	C4V_C4ObjectEnum=9, // enumerated object
@@ -58,6 +59,7 @@ union C4V_Data
 	C4PropList * PropList;
 	C4String * Str;
 	C4ValueArray * Array;
+	C4AulFunc * Fn;
 	// cheat a little - assume that all members have the same length
 	operator void * () { return Ptr; }
 	operator const void * () const { return Ptr; }
@@ -82,6 +84,8 @@ public:
 	{ Data.Str = pStr; AddDataRef(); }
 	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), Type(pArray ? C4V_Array : C4V_Nil)
 	{ Data.Array = pArray; AddDataRef(); }
+	explicit C4Value(C4AulFunc * pFn): NextRef(NULL), Type(pFn ? C4V_Function : C4V_Nil)
+	{ Data.Fn = pFn; AddDataRef(); }
 	explicit C4Value(C4PropList *p): NextRef(NULL), Type(p ? C4V_PropList : C4V_Nil)
 	{ Data.PropList = p; AddDataRef(); }
 
@@ -97,6 +101,7 @@ public:
 	C4PropList * getPropList() const { return CheckConversion(C4V_PropList) ? Data.PropList : NULL; }
 	C4String * getStr() const { return CheckConversion(C4V_String) ? Data.Str : NULL; }
 	C4ValueArray * getArray() const { return CheckConversion(C4V_Array) ? Data.Array : NULL; }
+	C4AulFunc * getFunction() const { return CheckConversion(C4V_Function) ? Data.Fn : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -104,6 +109,7 @@ public:
 	C4Object *_getObj() const;
 	C4String *_getStr() const { return Data.Str; }
 	C4ValueArray *_getArray() const { return Data.Array; }
+	C4AulFunc *_getFunction() const { return Data.Fn; }
 	C4PropList *_getPropList() const { return Data.PropList; }
 
 	// Template versions
@@ -117,6 +123,7 @@ public:
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
+	void SetFunction(C4AulFunc * Fn) { C4V_Data d; d.Fn = Fn; Set(d, C4V_Function); }
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
 	void Set0();
 
@@ -157,6 +164,7 @@ public:
 		case C4V_PropList: return Type == C4V_PropList || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_String:   return Type == C4V_String || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Array:    return Type == C4V_Array || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Function: return Type == C4V_Function || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Any:      return true;
 		case C4V_Object:   return (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
 		case C4V_Def:      return (Type == C4V_PropList && FnCnvDef()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
@@ -174,6 +182,7 @@ public:
 		case C4V_PropList: return Type == C4V_PropList;
 		case C4V_String:   return Type == C4V_String;
 		case C4V_Array:    return Type == C4V_Array;
+		case C4V_Function: return Type == C4V_Function;
 		case C4V_Any:      return true;
 		case C4V_Object:   return Type == C4V_PropList && FnCnvObject();
 		case C4V_Def:      return Type == C4V_PropList && FnCnvDef();
@@ -222,6 +231,7 @@ C4Value C4VObj(C4Object *pObj);
 inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
 inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
+inline C4Value C4VFunction(C4AulFunc * pFn) { return C4Value(pFn); }
 
 C4Value C4VString(StdStrBuf strString);
 C4Value C4VString(const char *strString);

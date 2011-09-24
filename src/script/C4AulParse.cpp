@@ -88,6 +88,7 @@
 #define C4AUL_TypePropList  "proplist"
 #define C4AUL_TypeString    "string"
 #define C4AUL_TypeArray     "array"
+#define C4AUL_TypeFunction  "func"
 
 #define C4AUL_True          "true"
 #define C4AUL_False         "false"
@@ -728,6 +729,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_STRING: return "STRING";  // constant: string
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
 	case AB_CARRAY: return "CARRAY";  // constant: array
+	case AB_CFUNCTION: return "CFUNCTION";  // constant: function
 	case AB_NIL: return "NIL";    // constant: nil
 	case AB_NEW_ARRAY: return "NEW_ARRAY";    // semi-constant: array
 	case AB_DUP: return "DUP";    // duplicate value from stack
@@ -872,6 +874,7 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_STRING:
 	case AB_CPROPLIST:
 	case AB_CARRAY:
+	case AB_CFUNCTION:
 	case AB_NIL:
 	case AB_PARN_CONTEXT:
 	case AB_VARN_CONTEXT:
@@ -1070,6 +1073,7 @@ C4V_Type C4AulParseState::GetLastRetType(C4V_Type to)
 	case AB_INT: from = Config.Developer.ExtraWarnings || a->GetLastCode()->Par.i ? C4V_Int : C4V_Any; break;
 	case AB_STRING: from = C4V_String; break;
 	case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
+	case AB_CFUNCTION: from = C4V_Function; break;
 	case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 	case AB_BOOL: from = C4V_Bool; break;
 	case AB_FUNC:
@@ -1515,6 +1519,7 @@ void C4AulParseState::Parse_FuncHead()
 		else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFunction)) { Fn->ParType[cpar] = C4V_Function; Shift(); }
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
 		{
 			Fn->ParNamed.AddName(Idtf);
@@ -2335,6 +2340,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 						break;
 					case C4V_Array:
 						AddBCC(AB_CARRAY, reinterpret_cast<intptr_t>(val._getArray()));
+						break;
+					case C4V_Function:
+						AddBCC(AB_CFUNCTION, reinterpret_cast<intptr_t>(val._getFunction()));
 						break;
 					default:
 						throw new C4AulParseError(this,FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());

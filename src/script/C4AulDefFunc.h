@@ -186,6 +186,13 @@ template <> struct C4ValueConv<C4ValueArray *>
 	inline static C4ValueArray *_FromC4V(C4Value &v) { return v._getArray(); }
 	inline static C4Value ToC4V(C4ValueArray *v) { return C4VArray(v); }
 };
+template <> struct C4ValueConv<C4AulFunc *>
+{
+	inline static C4V_Type Type() { return C4V_Function; }
+	inline static C4AulFunc *FromC4V(C4Value &v) { return v.getFunction(); }
+	inline static C4AulFunc *_FromC4V(C4Value &v) { return v._getFunction(); }
+	inline static C4Value ToC4V(C4AulFunc *v) { return C4VFunction(v); }
+};
 template <> struct C4ValueConv<C4PropList *>
 {
 	inline static C4V_Type Type() { return C4V_PropList; }

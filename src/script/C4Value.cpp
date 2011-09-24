@@ -111,6 +111,7 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Effect && Type != C4V_Def && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Array:    return Type != C4V_Array && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Function: return Type != C4V_Function && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Any:      return false;
 	case C4V_Def:      return Type != C4V_Def && Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Object:   return Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
@@ -166,6 +167,8 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		DataString.AppendChar(']');
 		return DataString;
 	}
+	case C4V_Function:
+		return Data.Fn->GetFullName();
 	case C4V_Nil:
 		return StdStrBuf("nil");
 	default:
@@ -276,6 +279,8 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			break;
 		case C4V_Array:
 			cC4VID = 'E'; break;
+		case C4V_Function:
+			cC4VID = 'F'; break;
 		case C4V_String:
 			cC4VID = 's'; break;
 		default:
@@ -376,6 +381,8 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// doesn't have a value, so nothing to store
 		break;
 
+	case 'F':
+		// FIXME
 	default:
 		// shouldn't happen
 		pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);

@@ -609,6 +609,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4V_Def",         C4V_Int, C4V_Def},
 	{ "C4V_String",      C4V_Int, C4V_String},
 	{ "C4V_Array",       C4V_Int, C4V_Array},
+	{ "C4V_Function",    C4V_Int, C4V_Function},
 	{ "C4V_PropList",    C4V_Int, C4V_PropList},
 
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},

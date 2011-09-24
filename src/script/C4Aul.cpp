@@ -124,7 +124,7 @@ void C4AulFunc::DestroyLinked()
 		delete LinkedTo;
 }
 
-StdStrBuf C4AulScriptFunc::GetFullName()
+StdStrBuf C4AulFunc::GetFullName()
 {
 	// "lost" function?
 	StdStrBuf sOwner;

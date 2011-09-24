@@ -105,6 +105,12 @@ private:
 		(++pCurVal)->SetArray(Array);
 	}
 
+	void PushFunction(C4AulFunc * Fn)
+	{
+		CheckOverflow(1);
+		(++pCurVal)->SetFunction(Fn);
+	}
+
 	void PushPropList(C4PropList * PropList)
 	{
 		CheckOverflow(1);

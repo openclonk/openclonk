@@ -180,6 +180,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushArray(pCPos->Par.a);
 				break;
 
+			case AB_CFUNCTION:
+				PushFunction(pCPos->Par.f);
+				break;
+
 			case AB_NIL:
 				PushValue(C4VNull);
 				break;

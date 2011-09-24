@@ -150,6 +150,7 @@ enum C4AulBCCType
 	AB_STRING,  // constant: string
 	AB_CPROPLIST, // constant: proplist
 	AB_CARRAY,  // constant: array
+	AB_CFUNCTION, // constant: function
 	AB_NIL,     // constant: nil
 	AB_NEW_ARRAY,   // semi-constant: array
 	AB_NEW_PROPLIST, // create a new proplist
@@ -219,6 +220,7 @@ public:
 
 	C4AulScript *Owner; // owner
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
+	virtual StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
 
 protected:
 	C4RefCntPointer<C4String> Name; // function name
@@ -285,7 +287,6 @@ public:
 
 	void CopyBody(C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 
-	StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
 	C4ScriptHost * GetCodeOwner();
