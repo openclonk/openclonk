@@ -78,12 +78,12 @@ protected func Construction()
 
 private func ScheduleUpdateHealthBar()
 {
-	ScheduleCall(this, "UpdateHUDHealthBar", 1, 0, this->GetOwner());
+	ScheduleCall(this, "UpdateHUDHealthBar", 1, 0);
 }
 
 private func ScheduleUpdateBackpack()
 {
-	ScheduleCall(this, "UpdateBackpack", 1, 0, this->GetOwner());
+	ScheduleCall(this, "UpdateBackpack", 1, 0);
 }
 
 protected func OnWealthChanged(int plr)
@@ -180,21 +180,16 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	return hud.markers[number];
 }
 
-
-private func UpdateHUDHealthBar(player)
+private func UpdateHUDBreathBar()
 {
-	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
-	if(!o) return;
-	o.updated_health_tube->Update();
-	if(!GetEffect("Update", o.updated_health_tube))
-		AddEffect("Update", o.updated_health_tube, 1, 1, o.updated_health_tube);
+	updated_breath_tube->ShowBreathTube();
 }
 
-private func UpdateBackpack(player)
+private func UpdateHUDHealthBar()
 {
-	var o = FindObject(Find_ID(GUI_Controller), Find_Owner(player));
-	if(!o) return;
-	o->UpdateBackpack();
+	updated_health_tube->Update();
+	if(!GetEffect("Update", updated_health_tube))
+		AddEffect("Update", updated_health_tube, 1, 1, updated_health_tube);
 }
 
 func UpdateBackpack()

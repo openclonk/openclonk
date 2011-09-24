@@ -67,7 +67,7 @@ public func OnDisplayInfoMessage()
 // calls to the crew selector hud
 protected func OnPromotion() { if (HUDselector) HUDselector->UpdateRank(); return _inherited(...); }
 protected func OnEnergyChange() { if (HUDselector) HUDselector->UpdateHealthBar(); return _inherited(...); }
-protected func OnBreathChange() { if (HUDselector) HUDselector->UpdateBreathBar(); return _inherited(...); }
+protected func OnBreathChange() { HUDcontroller->UpdateHUDBreathBar();  if (HUDselector) HUDselector->UpdateBreathBar(); return _inherited(...); }
 protected func OnMagicEnergyChange() { if (HUDselector) HUDselector->UpdateMagicBar(); return _inherited(...); }
 protected func OnNameChanged() { if (HUDselector) HUDselector->UpdateName(); return _inherited(...); }
 
