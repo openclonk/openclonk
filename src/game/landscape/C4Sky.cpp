@@ -184,22 +184,6 @@ void C4Sky::Clear()
 	Modulation=0xffffffff;
 }
 
-bool C4Sky::Save(C4Group &hGroup)
-{
-	// Sky-saving disabled by scenario core
-	// (With this option enabled, script-defined changes to sky palette will not be saved!)
-	if (Game.C4S.Landscape.NoSky)
-	{
-		hGroup.Delete(C4CFN_Sky);
-		return true;
-	}
-	// no sky?
-	if (!Surface) return true;
-	// FIXME?
-	// Success
-	return true;
-}
-
 void C4Sky::Execute()
 {
 	// surface exists?

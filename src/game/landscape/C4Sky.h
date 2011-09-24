@@ -39,7 +39,6 @@ public:
 	void Default(); // zero fields
 
 	bool Init(bool fSavegame);
-	bool Save(C4Group &hGroup);
 	void Clear();
 	void SetColor(int32_t iIndex, int32_t iRed, int32_t iGreen, int32_t iBlue);
 	void SetFadePalette(int32_t *ipColors);

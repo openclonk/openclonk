@@ -104,7 +104,6 @@ global func GetScenFilm()      { return GetScenarioVal("Film", "Head"); } //(!)
 global func GetScenMissionAccess() { return GetScenarioVal("MissionAccess", "Head"); } //(!)
 global func GetScenNetworkGame() { return GetScenarioVal("NetworkGame", "Head"); } //(!)
 global func GetScenNetworkClients() { return GetScenarioVal("StartupPlayerCount", "Head"); } //(!)
-global func GetScenNoSky()     { return GetScenarioVal("NoSky", "Landscape"); }
 global func GetScenBottomOpen() { return GetScenarioVal("BottomOpen", "Landscape"); }
 global func GetScenTopOpen()   { return GetScenarioVal("TopOpen", "Landscape"); }
 global func GetScenLeftOpen()  { return GetScenarioVal("LeftOpen", "Landscape"); }

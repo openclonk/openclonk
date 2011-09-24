@@ -1290,10 +1290,6 @@ bool C4Landscape::DebugSave(const char *szFilename)
 
 bool C4Landscape::SaveInternal(C4Group &hGroup)
 {
-	// Save members
-	if (!Sky.Save(hGroup))
-		return false;
-
 	// Save landscape surface
 	char szTempLandscape[_MAX_PATH+1];
 	SCopy(Config.AtTempPath(C4CFN_TempLandscape), szTempLandscape);
