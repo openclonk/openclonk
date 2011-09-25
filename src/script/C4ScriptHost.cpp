@@ -81,7 +81,7 @@ void C4ScriptHost::MakeScript()
 	Preparse();
 }
 
-C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
+C4Value C4DefScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
 {
 	// get function
 	C4AulScriptFunc *pFn;
@@ -157,6 +157,15 @@ void C4GameScriptHost::AfterLink()
 	ScenPrototype->Freeze();
 }
 
+C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
+{
+	// get function
+	C4AulScriptFunc *pFn;
+	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
+	// Call code
+	return pFn->Exec(ScenPropList, Pars, fPassError);
+}
+
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {
 	// call objects first - scenario script might overwrite hostility, etc...
@@ -164,7 +173,7 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	// rejection tests abort on first nonzero result
 	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
-	return Call(szFunction, 0, pPars, fPassError);
+	return Call(szFunction, pPars, fPassError);
 }
 
 C4GameScriptHost GameScript;

@@ -38,7 +38,6 @@ public:
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, C4LangStringTable *pLocalTable);
-	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 protected:
 	void SetError(const char *szMessage);
 	void MakeScript();
@@ -52,6 +51,7 @@ class C4DefScriptHost : public C4ScriptHost
 {
 public:
 	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
+	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
@@ -74,6 +74,7 @@ public:
 	void Clear();
 	void AfterLink();
 	bool Delete() { return false; } // do NOT delete this - it's a global!
+	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 	C4PropList * ScenPropList;
 	C4PropList * ScenPrototype;

@@ -1092,7 +1092,7 @@ static C4Value FnGameCall_C4V(C4AulContext *cthr,
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
 	// Call
-	return ::GameScript.Call(szFunc2, 0, &Pars, true);
+	return ::GameScript.Call(szFunc2, &Pars, true);
 }
 
 static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
@@ -1173,11 +1173,12 @@ static bool FnOnMessageBoardAnswer(C4AulContext *cthr, C4Object *pObj, long iFor
 	// if no answer string is provided, the user did not answer anything
 	// just remove the query
 	if (!szAnswerString || !szAnswerString->GetCStr()) return true;
+	C4AulParSet ps = C4AulParSet(C4VString(szAnswerString), C4VInt(iForPlr));
 	// get script
-	C4ScriptHost *scr;
-	if (pObj) scr = &pObj->Def->Script; else scr = &::GameScript;
-	// exec func
-	return !!scr->Call(PSF_InputCallback, pObj, &C4AulParSet(C4VString(FnStringPar(szAnswerString)), C4VInt(iForPlr)));
+	if (pObj)
+		return pObj->Call(PSF_InputCallback, &ps);
+	else
+		return ::GameScript.Call(PSF_InputCallback, &ps);
 }
 
 static C4Void FnSetFoW(C4AulContext *cthr, bool fEnabled, long iPlr)
