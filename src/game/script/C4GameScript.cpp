@@ -1078,20 +1078,17 @@ static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
                                     C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
                                     C4Value* par5, C4Value* par6, C4Value* par7/*, C4Value* par8, C4Value* par9*/)
 {
-	C4ID idID = idID_C4V->getC4ID();
+	C4PropList * p = idID_C4V->getPropList();
+	if (!p) return C4Value();
+	C4Def * pDef = p->GetDef();
 	C4String *szFunction = szFunction_C4V->getStr();
+	if (!pDef || !szFunction) return C4Value();
 
-	if (!idID || !szFunction) return C4Value();
-	// Make failsafe
-	char szFunc2[500+1]; sprintf(szFunc2,"~%s",FnStringPar(szFunction));
-	// Get definition
-	C4Def *pDef;
-	if (!(pDef=C4Id2Def(idID))) return C4Value();
 	// copy parameters
 	C4AulParSet Pars;
 	Copy2ParSet8(Pars, *par);
 	// Call
-	return pDef->Script.Call(szFunc2, 0, &Pars, true);
+	return pDef->Script.Call(FnStringPar(szFunction), 0, &Pars);
 }
 
 static C4Value FnGameCall_C4V(C4AulContext *cthr,

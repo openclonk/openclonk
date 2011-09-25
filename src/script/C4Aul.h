@@ -236,7 +236,7 @@ public:
 	virtual C4V_Type* GetParType() { return 0; }
 	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false) { return C4Value(); } // execute func (script call)
-	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
+	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 	virtual void UnLink() { OverloadedBy = NULL; }
 
 protected:
@@ -277,7 +277,7 @@ public:
 	virtual C4V_Type *GetParType() { return ParType; }
 	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
-	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
+	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 
 	void SetError(C4AulContext *ctx, const char *szMessage); // set error message
 

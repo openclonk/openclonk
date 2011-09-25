@@ -108,7 +108,7 @@ void C4AulExec::LogCallStack()
 		pCtx->dump(StdStrBuf(" by: "));
 }
 
-C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
+C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 {
 	// Push parameters
 	C4Value *pPars = pCurVal + 1;
@@ -121,7 +121,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 		PushNullVals(pSFunc->GetParCount() - (pCurVal + 1 - pPars));
 
 	// Derive definition context from function owner (legacy)
-	C4Def *pDef = pObj ? pObj->Def : pSFunc->Owner->Def;
+	C4Def *pDef = p ? p->GetDef() : pSFunc->Owner->Def;
 
 	// Executing function in right context?
 	// This must hold: The scripter might try to access local variables that don't exist!
@@ -130,8 +130,8 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 	// Push a new context
 	C4AulScriptContext ctx;
 	ctx.tTime = 0;
-	ctx.Obj = pObj;
-	ctx.Def = pObj ? static_cast<C4PropList *>(pObj) : static_cast<C4PropList *>(pDef);
+	ctx.Obj = p ? p->GetObject() : NULL;
+	ctx.Def = p ? p : pDef;
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
@@ -1039,12 +1039,12 @@ void C4AulProfiler::Show()
 }
 
 
-C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
+C4Value C4AulFunc::Exec(C4PropList * p, C4AulParSet* pPars, bool fPassErrors)
 {
 	// construct a dummy caller context
 	C4AulContext ctx;
-	ctx.Obj = pObj;
-	ctx.Def = pObj ? pObj : NULL;
+	ctx.Obj = p ? p->GetObject() : NULL;
+	ctx.Def = p;
 	ctx.Caller = NULL;
 	// execute
 	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
@@ -1056,20 +1056,17 @@ C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErr
 	if (Owner->State != ASS_PARSED) return C4VNull;
 
 	// execute
-	return AulExec.Exec(this, pCtx->Obj, pPars, fPassErrors);
-
+	return AulExec.Exec(this, pCtx->Obj ? pCtx->Obj : pCtx->Def, pPars, fPassErrors);
 }
 
 
-C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErrors)
+C4Value C4AulScriptFunc::Exec(C4PropList * p, C4AulParSet *pPars, bool fPassErrors)
 {
-
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
 
 	// execute
-	return AulExec.Exec(this, pObj, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-
+	return AulExec.Exec(this, p, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
 }
 
 

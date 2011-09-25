@@ -57,7 +57,7 @@ private:
 	C4Value Values[MAX_VALUE_STACK];
 
 public:
-	C4Value Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
+	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 
 	void StartTrace();
