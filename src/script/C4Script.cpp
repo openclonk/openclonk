@@ -156,9 +156,9 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 
 //=============================== C4Script Functions ====================================
 
-static C4Object *Fn_this(C4AulContext *cthr)
+static C4PropList *Fn_this(C4AulContext *cthr)
 {
-	return cthr->Obj;
+	return cthr->Obj ? cthr->Obj : cthr->Def;
 }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
