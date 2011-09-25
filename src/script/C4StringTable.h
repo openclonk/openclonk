@@ -50,6 +50,55 @@ public:
 
 };
 
+template <class T>
+class C4RefCntPointer
+{
+public:
+	C4RefCntPointer(T* p): p(p) { IncRef(); }
+	C4RefCntPointer(): p(0) { }
+	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
+#ifdef HAVE_RVALUE_REF
+	// Move constructor
+	template <class U> C4RefCntPointer(const C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
+	// Move assignment
+	template <class U> C4RefCntPointer& operator = (C4RefCntPointer<U> RREF r)
+	{
+		if (p != r.p)
+		{
+			DecRef();
+			p = r.p;
+			r.p = 0;
+		}
+		return *this;
+	}
+#endif
+	~C4RefCntPointer() { DecRef(); }
+	template <class U> C4RefCntPointer& operator = (U* new_p)
+	{
+		if (p != new_p)
+		{
+			DecRef();
+			p = new_p;
+			IncRef();
+		}
+		return *this;
+	}
+	template <class U> C4RefCntPointer& operator = (const C4RefCntPointer<U>& r)
+	{
+		return *this = r.p;
+	}
+	T& operator * () { return *p; }
+	const T& operator * () const { return *p; }
+	T* operator -> () { return p; }
+	const T* operator -> () const { return p; }
+	operator T * () { return p; }
+	operator const T * () const { return p; }
+private:
+	void IncRef() { if (p) p->IncRef(); }
+	void DecRef() { if (p) p->DecRef(); }
+	T * p;
+};
+
 template<typename T> class C4Set
 {
 	unsigned int Capacity;

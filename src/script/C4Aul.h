@@ -217,10 +217,10 @@ public:
 	virtual ~C4AulFunc(); // destructor
 
 	C4AulScript *Owner; // owner
-	char Name[C4AUL_MAX_Identifier]; // function name
-	const char * GetName() const { return *Name ? Name : 0; }
+	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
 
 protected:
+	C4RefCntPointer<C4String> Name; // function name
 	C4AulFunc *Prev, *Next; // linked list members
 	C4AulFunc *MapNext; // map member
 	C4AulFunc *LinkedTo; // points to next linked function; destructor will destroy linked func, too

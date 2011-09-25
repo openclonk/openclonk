@@ -46,6 +46,7 @@ void C4AulError::show()
 }
 
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
+		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL),
 		LinkedTo (NULL),
 		OverloadedBy (NULL)
@@ -80,9 +81,6 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
 		}
 		Prev = NULL;
 	}
-
-	// store name
-	SCopy(pName, (char *) &Name, C4AUL_MAX_Identifier);
 	// add to global lookuptable with this name
 	if (GetName())
 		Owner->Engine->FuncLookUp.Add(this, bAtEnd);
