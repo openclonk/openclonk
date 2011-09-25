@@ -77,6 +77,11 @@ C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 	return r;
 }
 
+C4PropList * C4PropList::NewScen(C4PropList * prototype)
+{
+	return new C4PropList(prototype);
+}
+
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 

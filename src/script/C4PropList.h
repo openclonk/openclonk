@@ -89,6 +89,7 @@ public:
 
 	static C4PropList * New(C4PropList * prototype = 0);
 	static C4PropList * NewAnon(C4PropList * prototype = 0);
+	static C4PropList * NewScen(C4PropList * prototype = 0);
 
 	// only freeze proplists which are not going to be modified
 	void Freeze() { constant = true; }

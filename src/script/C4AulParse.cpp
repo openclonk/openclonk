@@ -2665,7 +2665,7 @@ void C4AulParseState::Parse_Local()
 			if (!a->Def)
 				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
 			Shift();
-			// register as constant
+			// register as constant (FIXME: do this in the parser, not the preparser)
 			if (Type == PREPARSER)
 				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
 			else

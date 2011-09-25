@@ -30,6 +30,8 @@
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
+#include <C4Components.h>
+#include <C4Config.h>
 
 /*--- C4ScriptHost ---*/
 
@@ -129,8 +131,31 @@ void C4DefScriptHost::AfterLink()
 
 /*--- C4GameScriptHost ---*/
 
-C4GameScriptHost::C4GameScriptHost() { }
+C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
 C4GameScriptHost::~C4GameScriptHost() { }
+
+bool C4GameScriptHost::LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable)
+{
+	// Script
+	ScenPrototype = C4PropList::NewScen();
+	ScenPropList = C4PropList::NewScen(ScenPrototype);
+	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
+	Reg2List(&ScriptEngine, &ScriptEngine);
+	return Load(hGroup,C4CFN_Script,Config.General.LanguageEx,NULL,pLocalTable);
+}
+
+void C4GameScriptHost::Clear()
+{
+	C4ScriptHost::Clear();
+	delete ScenPropList; ScenPropList = 0;
+	delete ScenPrototype; ScenPrototype = 0;
+}
+
+void C4GameScriptHost::AfterLink()
+{
+	C4ScriptHost::AfterLink();
+	ScenPrototype->Freeze();
+}
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
 {

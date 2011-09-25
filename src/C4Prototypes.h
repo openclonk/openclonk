@@ -64,6 +64,7 @@ class C4Group;
 class C4GroupSet;
 class C4IDList;
 class C4KeyboardInput;
+class C4LangStringTable;
 class C4LChunk;
 class C4League;
 class C4LoaderScreen;

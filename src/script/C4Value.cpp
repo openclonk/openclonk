@@ -263,6 +263,10 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 				cC4VID = 'D';
 			else if (getPropList()->IsNumbered())
 				cC4VID = 'O';
+			else if (getPropList() == GameScript.ScenPropList)
+				cC4VID = 'c';
+			else if (getPropList() == GameScript.ScenPrototype)
+				cC4VID = 't';
 			else
 				cC4VID = 'E';
 			break;
@@ -345,6 +349,16 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			SetString(::Strings.RegString(s));
 		break;
 	}
+
+	case 'c':
+		if (fCompiler)
+			SetPropList(GameScript.ScenPropList);
+		break;
+
+	case 't':
+		if (fCompiler)
+			SetPropList(GameScript.ScenPrototype);
+		break;
 
 	case 'n':
 	case 'A': // compat with OC 5.1

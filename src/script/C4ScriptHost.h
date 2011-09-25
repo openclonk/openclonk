@@ -25,12 +25,7 @@
 #define INC_C4ScriptHost
 
 #include <C4ComponentHost.h>
-
 #include <C4Aul.h>
-
-const int32_t C4SCR_MaxIDLen = 100,
-                               C4SCR_MaxDesc  = 256;
-
 
 // generic script host for objects
 class C4ScriptHost : public C4AulScript
@@ -42,7 +37,7 @@ public:
 public:
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
-	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, class C4LangStringTable *pLocalTable);
+	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, C4LangStringTable *pLocalTable);
 	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 protected:
 	void SetError(const char *szMessage);
@@ -75,8 +70,13 @@ class C4GameScriptHost : public C4ScriptHost
 public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
+	bool LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable);
+	void Clear();
+	void AfterLink();
 	bool Delete() { return false; } // do NOT delete this - it's a global!
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
+	C4PropList * ScenPropList;
+	C4PropList * ScenPrototype;
 };
 
 extern C4GameScriptHost GameScript;

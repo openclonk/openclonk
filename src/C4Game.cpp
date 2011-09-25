@@ -2014,8 +2014,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetInitProgress(55);
 
 		// Scenario scripts (and local system.ocg)
+		GameScript.LoadScenarioScripts(ScenarioFile, &ScenarioLangStringTable);
 		// After defs to get overloading priority
-		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
+		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(57);
 
@@ -2646,14 +2647,6 @@ bool C4Game::LoadScenarioComponents()
 	}
 
 	// Success
-	return true;
-}
-
-bool C4Game::LoadScenarioScripts()
-{
-	// Script
-	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
-	::GameScript.Load(ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
 	return true;
 }
 
