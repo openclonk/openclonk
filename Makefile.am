@@ -70,25 +70,23 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = C4Version.h
 CLEANFILES =
 DISTCLEANFILES = C4Version.h
-do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
-  -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
-  -e 's,[@]C4PROJECT_TLD[@],org,g' \
-  -e 's,[@]C4PROJECT_URL[@],http://wiki.openclonk.org,g' \
-  -e 's,[@]C4COPYRIGHT_YEAR[@],'$$(sed -n 's/SET(C4COPYRIGHT_YEAR\s\+\(.\+\)).\+/\1/ p' $(srcdir)/Version.txt)',g' \
+do_subst = sed -e 's,[@]C4PROJECT[@],'"$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_DOMAIN[@],'"$$(sed -n 's/SET(C4PROJECT_DOMAIN\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_TLD[@],'"$$(sed -n 's/SET(C4PROJECT_TLD\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_URL[@],http://www.openclonk.org,g' \
+  -e 's,[@]C4COPYRIGHT_YEAR[@],'"$$(date '+%Y')"',g' \
   -e 's,[@]C4ENGINENAME[@],'"$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4ENGINENICK[@],'$$(sed -n 's/SET(C4ENGINENICK\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)',g' \
+  -e 's,[@]C4ENGINENICK[@],'"$$(sed -n 's/SET(C4ENGINENICK\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4ENGINEID[@],org.openclonk." C4ENGINENICK ",g' \
-  -e 's,[@]C4XVER1[@],'$$(sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER2[@],'$$(sed -n 's/SET(C4XVER2\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER3[@],'$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER4[@],'$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
+  -e 's,[@]C4XVER1[@],'"$$(sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER2[@],'"$$(sed -n 's/SET(C4XVER2\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER3[@],'"$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER4[@],'"$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4VERSIONBUILDNAME[@],'"$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4VERSIONEXTRA[@],'$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)',g'
+  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g'
 
 C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
-
-
 
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
@@ -713,7 +711,7 @@ AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
 
 setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
 	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
-	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt) $$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
+	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  -DPRODUCT_COMPANY="$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  $< "-XOutFile $@"
 
