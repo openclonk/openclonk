@@ -163,23 +163,26 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	}
 }
 
-void C4Viewport::DrawMenu(C4TargetFacet &cgo)
+void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 {
 	// Get player
 	C4Player *pPlr = ::Players.Get(Player);
+
+	// for menus, cgo is using GUI-syntax: TargetX/Y marks the drawing offset; x/y/Wdt/Hgt marks the offset rect
+	C4TargetFacet cgo; cgo.Set(cgo0);
+	cgo.X = 0; cgo.Y = 0;
+	cgo.Wdt = cgo0.Wdt * cgo0.Zoom; cgo.Hgt = cgo0.Hgt * cgo0.Zoom;
+	cgo.TargetX = float(cgo0.X); cgo.TargetY = float(cgo0.Y);
+	cgo.Zoom = 1;
+	lpDDraw->SetZoom(cgo.X, cgo.Y, cgo.Zoom);
 
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
 	{
 		lpDDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
-		                           ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
+		                           ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.TargetX+cgo.Wdt/2,cgo.TargetY+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
 	}
-
-	// for menus, cgo is using GUI-syntax: TargetX/Y marks the drawing offset; x/y/Wdt/Hgt marks the offset rect
-	float iOldTx = cgo.TargetX; float iOldTy = cgo.TargetY;
-	cgo.TargetX = float(cgo.X); cgo.TargetY = float(cgo.Y);
-	cgo.X = 0; cgo.Y = 0;
 
 	// Player cursor object menu
 	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu)
@@ -213,9 +216,8 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	// Flag done
 	ResetMenuPositions=false;
 
-	// restore cgo
-	cgo.X = int32_t(cgo.TargetX); cgo.Y = int32_t(cgo.TargetY);
-	cgo.TargetX = iOldTx; cgo.TargetY = iOldTy;
+	// restore Zoom
+	lpDDraw->SetZoom(cgo0.X, cgo0.Y, cgo0.Zoom);
 }
 
 void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
