@@ -686,31 +686,21 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPars = pCurVal - C4AUL_MAX_Par + 1;
 				C4Value *pTargetVal = pCurVal - C4AUL_MAX_Par;
 
-				// Check for call to null
-				if (!*pTargetVal)
-					throw new C4AulExecError(pCurCtx->Obj, "object call: target is zero");
-
 				// Get call target - "object" or "id" are allowed
 				C4Object *pDestObj; C4Def *pDestDef;
-				if (pTargetVal->CheckConversion(C4V_Object))
-				{
-					// object call
-					pDestObj = pTargetVal->_getObj();
-					pDestDef = pDestObj->Def;
-				}
-				else if (pTargetVal->CheckConversion(C4V_PropList))
+				if (pTargetVal->CheckConversion(C4V_PropList))
 				{
 					// definition call
-					pDestObj = NULL;
+					pDestObj = pTargetVal->_getPropList()->GetObject();
 					pDestDef = pTargetVal->_getPropList()->GetDef();
 					// definition must be known
 					if (!pDestDef)
 						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("definition call: definition for %s not found", pTargetVal->_getPropList()->GetName()).getData());
+						                         FormatString("'->': target not an object or definition").getData());
 				}
 				else
 					throw new C4AulExecError(pCurCtx->Obj,
-					                         FormatString("object call: invalid target type %s, expected object or id", pTargetVal->GetTypeName()).getData());
+					                         FormatString("'->': invalid target type %s, expected object or definition", pTargetVal->GetTypeName()).getData());
 
 				// Search function for given context
 				const char * szFuncName = pCPos->Par.s->GetCStr();
@@ -727,10 +717,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				{
 					if (pDestObj)
 						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("object call: no function \"%s\" in object \"%s\"", szFuncName, pTargetVal->GetDataString().getData()).getData());
+						                         FormatString("'->': no function \"%s\" in object \"%s\"", szFuncName, pTargetVal->GetDataString().getData()).getData());
 					else
 						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("definition call: no function \"%s\" in definition \"%s\"", szFuncName, pDestDef->GetName()).getData());
+						                         FormatString("'->': no function \"%s\" in definition \"%s\"", szFuncName, pDestDef->GetName()).getData());
 				}
 
 				// Resolve overloads
