@@ -167,7 +167,7 @@ template <> struct C4ValueConv<C4ID>
 };
 template <> struct C4ValueConv<C4Object *>
 {
-	inline static C4V_Type Type() { return C4V_C4Object; }
+	inline static C4V_Type Type() { return C4V_Object; }
 	inline static C4Object *FromC4V(C4Value &v) { return v.getObj(); }
 	inline static C4Object *_FromC4V(C4Value &v) { return v._getObj(); }
 	inline static C4Value ToC4V(C4Object *v) { return C4VObj(v); }

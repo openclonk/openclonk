@@ -354,9 +354,12 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
 	return SafeRandom(iRange);
 }
 
-static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)
+static int FnGetType(C4AulContext *cthr, const C4Value & Value)
 {
-	return C4VInt(Value->GetType());
+	// dynamic types
+	if (Value.CheckConversion(C4V_Object)) return C4V_Object;
+	// static types
+	return Value.GetType();
 }
 
 static C4ValueArray * FnCreateArray(C4AulContext *cthr, int iSize)
@@ -597,18 +600,18 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
-	{ "C4V_Nil"                ,C4V_Int,          C4V_Nil},
-	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
-	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
-	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
-	{ "C4V_String"             ,C4V_Int,          C4V_String},
-	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
-	{ "C4V_PropList"           ,C4V_Int,          C4V_PropList},
+	{ "C4V_Nil",         C4V_Int, C4V_Nil},
+	{ "C4V_Int",         C4V_Int, C4V_Int},
+	{ "C4V_Bool",        C4V_Int, C4V_Bool},
+	{ "C4V_C4Object",    C4V_Int, C4V_Object},
+	{ "C4V_String",      C4V_Int, C4V_String},
+	{ "C4V_Array",       C4V_Int, C4V_Array},
+	{ "C4V_PropList",    C4V_Int, C4V_PropList},
 
-	{ "C4X_Ver1"               ,C4V_Int,          C4XVER1},
-	{ "C4X_Ver2"               ,C4V_Int,          C4XVER2},
-	{ "C4X_Ver3"               ,C4V_Int,          C4XVER3},
-	{ "C4X_Ver4"               ,C4V_Int,          C4XVER4},
+	{ "C4X_Ver1",        C4V_Int, C4XVER1},
+	{ "C4X_Ver2",        C4V_Int, C4XVER2},
+	{ "C4X_Ver3",        C4V_Int, C4XVER3},
+	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
 	{ NULL, C4V_Nil, 0}
 };
@@ -625,8 +628,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "Log",                  1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnLog_C4V,                   0 },
 	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
-
-	{ "GetType",              1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetType,                   0 },
 
 	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
 	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
@@ -668,6 +669,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Distance", FnDistance);
 	AddFunc(pEngine, "Angle", FnAngle);
 	AddFunc(pEngine, "GetChar", FnGetChar);
+	AddFunc(pEngine, "GetType", FnGetType);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
 	AddFunc(pEngine, "FatalError", FnFatalError);

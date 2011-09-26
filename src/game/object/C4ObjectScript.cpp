@@ -918,7 +918,6 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4V_Bool:
 		SCopy(Parameter.getBool() ? "true" : "false", parameter);
 		break;
-	case C4V_C4Object:
 	case C4V_PropList:
 		if (Parameter.getPropList()->GetObject())
 			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
@@ -1027,7 +1026,7 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObjRank:
 	{
 		// draw current gfx of XPar_C4V including rank
-		if (XPar.GetType() != C4V_C4Object) return false;
+		if (!XPar.CheckConversion(C4V_Object)) return false;
 		C4Object *pGfxObj = XPar.getObj();
 		if (pGfxObj && pGfxObj->Status)
 		{
@@ -1080,10 +1079,10 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObject:
 	{
 		// draw object picture
-		if (XPar.GetType() != C4V_C4Object)
+		if (!XPar.CheckConversion(C4V_Object))
 			throw new C4AulExecError(cthr->Obj,
 			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
-			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_C4Object)
+			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		C4Object *pGfxObj = XPar.getObj();
 		fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
@@ -2336,9 +2335,9 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 
 C4ScriptFnDef C4ScriptObjectFnMap[]=
 {
-	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
-	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
-	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
+	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
+	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
+	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },

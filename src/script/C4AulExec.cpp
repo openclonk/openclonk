@@ -453,7 +453,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				}
 				else
 				{
-					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
+					assert(pStruct->GetType() == C4V_PropList);
 					C4PropList *pPropList = pStruct->_getPropList();
 					if (!pPropList->GetPropertyByS(pIndex->_getStr(), pResult))
 						pResult->Set0();
@@ -472,7 +472,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				}
 				else
 				{
-					assert(pStruct->GetType() == C4V_PropList || pStruct->GetType() == C4V_C4Object);
+					assert(pStruct->GetType() == C4V_PropList);
 					C4PropList *pPropList = pStruct->_getPropList();
 					if (pPropList->IsFrozen())
 						throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");					
@@ -692,7 +692,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Get call target - "object" or "id" are allowed
 				C4Object *pDestObj; C4Def *pDestDef;
-				if (pTargetVal->CheckConversion(C4V_C4Object))
+				if (pTargetVal->CheckConversion(C4V_Object))
 				{
 					// object call
 					pDestObj = pTargetVal->_getObj();

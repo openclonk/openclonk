@@ -44,8 +44,6 @@ const char* GetC4VName(const C4V_Type Type)
 		return "int";
 	case C4V_Bool:
 		return "bool";
-	case C4V_C4Object:
-		return "object";
 	case C4V_String:
 		return "string";
 	case C4V_Array:
@@ -54,6 +52,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "proplist";
 	case C4V_Any:
 		return "any";
+	case C4V_Object:
+		return "object";
 	default:
 		return "!Fehler!";
 	}
@@ -66,6 +66,22 @@ bool C4Value::FnCnvObject() const
 	return false;
 }
 
+C4Value::C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_PropList : C4V_Nil)
+{
+	Data.PropList = pObj; AddDataRef();
+}
+
+C4Object * C4Value::getObj() const
+{
+	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : NULL;
+}
+
+C4Object * C4Value::_getObj() const
+{
+	return Data.PropList ? Data.PropList->GetObject() : NULL;
+}
+
+C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
 
 bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 {
@@ -74,11 +90,11 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	case C4V_Nil:      return Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Int:      return Type != C4V_Int && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
 	case C4V_Bool:     return false;
-	case C4V_PropList: return Type != C4V_PropList && Type != C4V_C4Object && Type != C4V_Nil && Type != C4V_Any;
-	case C4V_C4Object: return Type != C4V_C4Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Array:    return Type != C4V_Array && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Any:      return false;
+	case C4V_Object:   return Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
 }
@@ -93,17 +109,16 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		return FormatString("%ld", static_cast<long>(Data.Int));
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
-	case C4V_C4Object:
 	case C4V_PropList:
 	{
 		StdStrBuf DataString;
 		DataString = "{";
 		if (Data.PropList->GetObject())
 		{
-			if (Data.Obj->Status == C4OS_NORMAL)
-				DataString.AppendFormat("#%d, ", Data.Obj->Number);
+			if (Data.PropList->GetObject()->Status == C4OS_NORMAL)
+				DataString.AppendFormat("#%d, ", Data.PropList->GetObject()->Number);
 			else
-				DataString.AppendFormat("(#%d), ", Data.Obj->Number);
+				DataString.AppendFormat("(#%d), ", Data.PropList->GetObject()->Number);
 		}
 		else if (Data.PropList->GetDef())
 			DataString.AppendFormat("%s, ", Data.PropList->GetDef()->id.ToString());
@@ -198,13 +213,13 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 {
 	// This is only used for C4Values containing pointers
 	// Assume that all pointers have the same size
-	if (ValueNumbers.find(v->_getObj()) == ValueNumbers.end())
+	if (ValueNumbers.find(v->GetData()) == ValueNumbers.end())
 	{
 		ValuesToSave.push_back(v);
-		ValueNumbers[v->_getObj()] = ValuesToSave.size();
+		ValueNumbers[v->GetData()] = ValuesToSave.size();
 		return ValuesToSave.size();
 	}
-	return ValueNumbers[v->_getObj()];
+	return ValueNumbers[v->GetData()];
 }
 
 static char GetC4VID(const C4V_Type Type)
@@ -221,7 +236,6 @@ static char GetC4VID(const C4V_Type Type)
 	case C4V_Array:
 	case C4V_Enum:
 		return 'E';
-	case C4V_C4Object:
 	case C4V_C4ObjectEnum:
 		return 'O';
 	case C4V_String:
@@ -313,7 +327,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 
 		// object: save object number instead
-	case C4V_C4Object: case C4V_PropList:
+	case C4V_PropList:
 	{
 		assert(!fCompiler);
 		C4PropList * p = getPropList();
@@ -494,8 +508,8 @@ bool C4Value::operator == (const C4Value& Value2) const
 		default:
 			return false;
 		}
-	case C4V_C4Object: case C4V_PropList:
-		if (Value2.Type == C4V_C4Object || Value2.Type == C4V_PropList)
+	case C4V_PropList:
+		if (Value2.Type == C4V_PropList)
 		{
 			// Compare as equal if and only if the proplists are indistinguishable
 			// If one or both are mutable, they have to be the same

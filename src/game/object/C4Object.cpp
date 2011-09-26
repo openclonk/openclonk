@@ -4430,7 +4430,7 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 	if (!parV) return false;
 	// determine drag object/id
 	C4Object *obj=NULL; C4ID id;
-	if (parV.GetType() == C4V_C4Object) obj = parV.getObj();
+	if (parV.CheckConversion(C4V_Object)) obj = parV.getObj();
 	else if (parV.GetType() == C4V_PropList) id = parV.getC4ID();
 	if (drag_object) *drag_object = obj;
 	if (drag_id) *drag_id = id;
