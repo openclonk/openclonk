@@ -222,187 +222,120 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 	return ValueNumbers[v->GetData()];
 }
 
-static char GetC4VID(const C4V_Type Type)
-{
-	switch (Type)
-	{
-	case C4V_Nil:
-		return 'n';
-	case C4V_Int:
-		return 'i';
-	case C4V_Bool:
-		return 'b';
-	case C4V_PropList:
-	case C4V_Array:
-	case C4V_Enum:
-		return 'E';
-	case C4V_C4ObjectEnum:
-		return 'O';
-	case C4V_String:
-		return 's';
-	case C4V_C4DefEnum:
-		return 'D';
-	default:
-		assert(false);
-	}
-	return ' ';
-}
-
-static C4V_Type GetC4VFromID(const char C4VID)
-{
-	switch (C4VID)
-	{
-	case 'n':
-	case 'A': // compat with OC 5.1
-		return C4V_Nil;
-	case 'i':
-		return C4V_Int;
-	case 'b':
-		return C4V_Bool;
-	case 's':
-		return C4V_String;
-	case 'O':
-		return C4V_C4ObjectEnum;
-	case 'D':
-		return C4V_C4DefEnum;
-	case 'E':
-		return C4V_Enum;
-	}
-	return C4V_Any;
-}
-
 void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Type
 	bool fCompiler = pComp->isCompiler();
+	char cC4VID;
 	if (!fCompiler)
 	{
-		// Get type
 		assert(Type != C4V_Nil || !Data);
-		char cC4VID = GetC4VID(Type);
-		// special cases:
-		if (Type == C4V_PropList && getPropList()->IsDef())
-			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if (Type == C4V_PropList && getPropList()->IsNumbered())
-			cC4VID = GetC4VID(C4V_C4ObjectEnum);
-		// Write
-		pComp->Character(cC4VID);
-	}
-	else
-	{
-		// Clear
-		Set0();
-		// Read type
-		char cC4VID;
-		try
+		switch (Type)
 		{
-			pComp->Character(cC4VID);
-		}
-		catch (StdCompiler::NotFoundException *pExc)
-		{
-			delete pExc;
-			cC4VID = 'n';
-		}
-		Type = GetC4VFromID(cC4VID);
-		if (Type == C4V_Any)
-		{
-			Type = C4V_Nil;
-			pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
+		case C4V_Nil:
+			cC4VID = 'n'; break;
+		case C4V_Int:
+			cC4VID = 'i'; break;
+		case C4V_Bool:
+			cC4VID = 'b'; break;
+		case C4V_PropList:
+			if (getPropList()->IsDef())
+				cC4VID = 'D';
+			else if (getPropList()->IsNumbered())
+				cC4VID = 'O';
+			else
+				cC4VID = 'E';
+			break;
+		case C4V_Array:
+			cC4VID = 'E'; break;
+		case C4V_String:
+			cC4VID = 's'; break;
+		default:
+			assert(false);
 		}
 	}
+	pComp->Character(cC4VID);
 	// Data
 	int32_t iTmp;
-	switch (Type)
+	switch (cC4VID)
 	{
-
-		// simple data types: just save
-	case C4V_Int:
-	case C4V_Bool:
-
-		// these are 32-bit integers
+	case 'i':
 		iTmp = Data.Int;
 		pComp->Value(iTmp);
-		Data.Int = iTmp;
-
+		SetInt(iTmp);
 		break;
 
-		// object: save object number instead
-	case C4V_PropList:
-	{
-		assert(!fCompiler);
-		C4PropList * p = getPropList();
-		if (p->IsDef())
-			pComp->Value(p->GetDef()->id);
-		else if (p->IsNumbered())
-		{
-			iTmp = getPropList()->GetPropListNumbered()->Number;
-			pComp->Value(iTmp);
-		}
-		else
-		{
+	case 'b':
+		iTmp = Data.Int;
+		pComp->Value(iTmp);
+		SetBool(iTmp);
+		break;
+
+	case 'E':
+		if (!fCompiler)
 			iTmp = numbers->GetNumberForValue(this);
-			pComp->Value(iTmp);
-		}
-		break;
-	}
-
-	case C4V_C4ObjectEnum: case C4V_Enum:
-		assert(fCompiler);
-		pComp->Value(iTmp); // must be denumerated later
-		Data.Int = iTmp;
-		break;
-
-	case C4V_C4DefEnum:
-	{
-		assert(fCompiler);
-		C4ID id;
-		pComp->Value(id);
-		C4PropList * p = Definitions.ID2Def(id);
-		if (!p)
-		{
-			Set0();
-			pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
-		}
-		else
-		{
-			SetPropList(p);
-		}
-		break;
-	}
-
-	case C4V_String:
-	{
-		// search
-		StdStrBuf s;
-		if (!fCompiler) s = Data.Str->GetData();
-		pComp->Value(s);
+		pComp->Value(iTmp);
 		if (fCompiler)
 		{
-			C4String *pString = ::Strings.RegString(s);
-			Data.Str = pString;
-			if (pString)
+			Data.Int = iTmp; // must be denumerated later
+			Type = C4V_Enum;
+		}
+		break;
+
+	case 'O':
+		if (!fCompiler)
+			iTmp = getPropList()->GetPropListNumbered()->Number;
+		pComp->Value(iTmp);
+		if (fCompiler)
+		{
+			Data.Int = iTmp; // must be denumerated later
+			Type = C4V_C4ObjectEnum;
+		}
+		break;
+
+	case 'D':
+	{
+		C4ID id;
+		if (!fCompiler)
+			id = getPropList()->GetDef()->id;
+		pComp->Value(id);
+		if (fCompiler)
+		{
+			C4PropList * p = Definitions.ID2Def(id);
+			if (!p)
 			{
-				pString->IncRef();
+				Set0();
+				pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
 			}
 			else
-				Type = C4V_Nil;
+			{
+				SetPropList(p);
+			}
 		}
 		break;
 	}
 
-	case C4V_Array:
-		iTmp = numbers->GetNumberForValue(this);
-		pComp->Value(iTmp);
+	case 's':
+	{
+		StdStrBuf s;
+		if (!fCompiler)
+			s = Data.Str->GetData();
+		pComp->Value(s);
+		if (fCompiler)
+			SetString(::Strings.RegString(s));
 		break;
+	}
 
-	case C4V_Nil:
-		assert(!Data);
+	case 'n':
+	case 'A': // compat with OC 5.1
+		if (fCompiler)
+			Set0();
 		// doesn't have a value, so nothing to store
 		break;
 
 	default:
 		// shouldn't happen
-		assert(false);
+		pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
 		break;
 	}
 }

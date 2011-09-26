@@ -37,7 +37,6 @@ enum C4V_Type
 
 	C4V_Enum=8, // enumerated array or proplist
 	C4V_C4ObjectEnum=9, // enumerated object
-	C4V_C4DefEnum=10, // enumerated definition
 
 	// for typechecks
 	C4V_Any,
@@ -251,7 +250,7 @@ private:
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {
-	assert(Type <= C4V_C4ObjectEnum);
+	assert(Type < C4V_Any);
 	assert(Type != C4V_Nil || !Data);
 	switch (Type)
 	{
@@ -273,7 +272,7 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 
 ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pNextRef)
 {
-	assert(Type <= C4V_C4DefEnum);
+	assert(Type < C4V_Any);
 	assert(Type != C4V_Nil || !Data);
 	// clean up
 	switch (Type)
