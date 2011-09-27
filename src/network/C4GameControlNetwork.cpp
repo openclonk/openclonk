@@ -765,7 +765,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
 		if (eMode != CNM_Async || iWaitStart == -1 || GetTime() <= uint32_t(iWaitStart + iMaxWait))
-			return false;
+			return NULL;
 	}
 
 	// create packet

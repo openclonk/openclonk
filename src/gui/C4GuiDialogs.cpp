@@ -1288,7 +1288,7 @@ namespace C4GUI
 		// create progress dlg
 		ProgressDialog *pDlg = new ProgressDialog(szMessage, szCaption, iMaxProgress, iInitialProgress, icoIcon);
 		// show it
-		if (!pDlg->Show(this, true)) { delete pDlg; return false; }
+		if (!pDlg->Show(this, true)) { delete pDlg; return NULL; }
 		// return dlg pointer
 		return pDlg;
 	}

@@ -1657,7 +1657,7 @@ namespace C4GUI
 		virtual void ElementPosChanged(Element *pOfElement);  // called when an element position is changed
 		virtual void UpdateSize();
 
-		virtual Control *IsFocusElement() { return false; }; // no focus element for now, because there's nothing to do (2do: scroll?)
+		virtual Control *IsFocusElement() { return NULL; }; // no focus element for now, because there's nothing to do (2do: scroll?)
 
 	public:
 		TextWindow(C4Rect &rtBounds, size_t iPicWdt=0, size_t iPicHgt=0, size_t iPicPadding=0, size_t iMaxLines=100, size_t iMaxTextLen=4096, const char *szIndentChars="    ", bool fAutoGrow=false, const C4Facet *pOverlayPic=NULL, int iOverlayBorder=0, bool fMarkup=false); // ctor

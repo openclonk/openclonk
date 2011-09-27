@@ -388,7 +388,7 @@ C4Team *C4TeamList::GetTeamByID(int32_t iID) const
 C4Team *C4TeamList::GetGenerateTeamByID(int32_t iID)
 {
 	// only if enabled
-	if (!IsMultiTeams()) return false;
+	if (!IsMultiTeams()) return NULL;
 	// new team?
 	if (iID == TEAMID_New) iID = GetLargestTeamID()+1;
 	// find in list

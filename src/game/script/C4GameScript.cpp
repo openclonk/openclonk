@@ -187,7 +187,7 @@ static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * Pro
 {
 	// Get def
 	C4Def *pDef;
-	if (!(pDef=PropList->GetDef())) return false;
+	if (!(pDef=PropList->GetDef())) return NULL;
 	// Construction check at starting position
 	if (ConstructionCheck(PropList,v1,v2))
 		return NULL;
@@ -809,13 +809,13 @@ static long FnGetPlayerScoreGain(C4AulContext *cthr, long iPlr)
 
 static C4Object *FnGetHiRank(C4AulContext *cthr, long iPlr)
 {
-	if (!ValidPlr(iPlr)) return false;
+	if (!ValidPlr(iPlr)) return NULL;
 	return ::Players.Get(iPlr)->GetHiRankActiveCrew();
 }
 
 static C4Object *FnGetCrew(C4AulContext *cthr, long iPlr, long index)
 {
-	if (!ValidPlr(iPlr)) return false;
+	if (!ValidPlr(iPlr)) return NULL;
 	return ::Players.Get(iPlr)->Crew.GetObject(index);
 }
 

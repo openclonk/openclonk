@@ -2501,7 +2501,7 @@ C4Object* C4Game::PlaceAnimal(C4ID idAnimal)
 		iX=Random(GBackWdt); iY=Random(GBackHgt);
 		if (!FindSurfaceLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 			if (!FindLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
-				return false;
+				return NULL;
 		iY+=pDef->Shape.Hgt/2;
 		break;
 		// Floating in air
