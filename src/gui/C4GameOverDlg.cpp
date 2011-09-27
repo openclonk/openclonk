@@ -175,7 +175,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 			szNetResult = Game.RoundResults.GetNetResultString();
 		else
 			szNetResult = LoadResStr("IDS_TEXT_LEAGUEWAITINGFOREVALUATIO");
-		pNetResultLabel = new C4GUI::Label("", caMain.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, NULL, false, false, true);
+		pNetResultLabel = new C4GUI::Label(szNetResult, caMain.GetFromTop(::GraphicsResource.TextFont.GetLineHeight()*2, iMainTextWidth), ACenter, C4GUI_Caption2FontClr, NULL, false, false, true);
 		AddElement(pNetResultLabel);
 		// only add label - contents and fIsNetDone will be set in next update
 	}
