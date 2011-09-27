@@ -143,7 +143,7 @@ typedef ptrdiff_t ssize_t;
 
 
 // Temporary-To-Reference-Fix
-#if defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
+#if !defined(__clang__) && defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
 #define ALLOW_TEMP_TO_REF(ClassName) operator ClassName & () { return *this; }
 #else
 #define ALLOW_TEMP_TO_REF(ClassName)
