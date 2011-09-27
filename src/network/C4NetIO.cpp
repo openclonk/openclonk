@@ -2997,7 +2997,7 @@ bool C4NetIOUDP::DoLoopbackTest()
 	if (!C4NetIOSimpleUDP::getMCLoopback()) return false;
 
 	// send test packet
-	const PacketHdr TestPacket = { IPID_Test | char(0x80), rand() };
+	const PacketHdr TestPacket = { IPID_Test | char(0x80), static_cast<uint32_t>(rand()) };
 	if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&TestPacket, sizeof(TestPacket))))
 		return false;
 
