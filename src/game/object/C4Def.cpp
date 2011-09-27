@@ -199,7 +199,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(id,                "id",                 C4ID::None          ));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),             "Version"                               ));
-	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),             "Name",               "Undefined"       ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false), "RequireDef",         C4IDList()        ));
 
 	const StdBitfieldEntry<int32_t> Categories[] =

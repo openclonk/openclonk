@@ -2569,7 +2569,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
-	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);

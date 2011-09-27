@@ -209,7 +209,6 @@ void C4ValueMapData::OnNameListChanged(const char **pOldNames, int32_t iOldSize)
 	int32_t i, j;
 	for (i = 0; i < iOldSize; i++)
 	{
-		//FIXME: This optimization is ugly.
 		if (i < pNames->iSize && SEqual(pNames->pNames[i], pOldNames[i]))
 		{
 			pData[i] = pOldData[i];

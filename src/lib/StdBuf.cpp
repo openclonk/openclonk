@@ -417,7 +417,7 @@ void StdStrBuf::AppendCharacter(uint32_t unicodechar)
 		*getMPtr(getLength() - 2) = (0x80 | ((unicodechar >> 6) & 0x3F));
 		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
 	}
-	else /* not an unicode code point, ignore */;
+	else /* not an unicode code point, ignore */ {}
 }
 
 void StdStrBuf::EnsureUnicode()

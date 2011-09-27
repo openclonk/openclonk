@@ -141,6 +141,9 @@ if(MSVC_VERSION)
 	list(APPEND OC_CXX_FLAGS "/wd4267")
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
