@@ -263,11 +263,8 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
-	bool fOkay=true;
 	// Close current scenario file
-	if (!Game.ScenarioFile.Close()) fOkay=false;
-	// Copy current scenario file to target
-	if (!C4Group_CopyItem(Game.ScenarioFilename,filename.getData())) fOkay=false;
+	Game.ScenarioFile.Close();
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
