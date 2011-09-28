@@ -284,7 +284,7 @@ bool TruncatePath(char *szPath)
 void AppendBackslash(char *szFilename)
 {
 	int i=SLen(szFilename);
-	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) return;
+	if (i>0) if (szFilename[i-1]==DirectorySeparator) return;
 	SAppendChar(DirectorySeparator,szFilename);
 }
 
@@ -293,7 +293,7 @@ void AppendBackslash(char *szFilename)
 void TruncateBackslash(char *szFilename)
 {
 	int i=SLen(szFilename);
-	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) szFilename[i-1]=0;
+	if (i>0) if (szFilename[i-1]==DirectorySeparator) szFilename[i-1]=0;
 }
 
 // Append extension if no extension.
