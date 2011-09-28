@@ -1,6 +1,5 @@
-/*
+/**
 	Crew selector HUD
-	Author: Newton
 	
 	For each crew member, one of these HUD elements exist in the top bar.
 	It shows the rank, health, breath and magic bars as well as the title
@@ -8,7 +7,8 @@
 	get's selected.
 	HUD elements are passive, they don't update their status by themselves
 	but rely on the HUD controller to be notified of any changes.
-
+	
+	@authors Newton
 */
 
 #include Library_Bars

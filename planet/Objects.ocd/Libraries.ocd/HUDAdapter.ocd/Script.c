@@ -1,13 +1,17 @@
-/*
+/**
 	HUD Adapter
-	Author: Newton
-	
+		
 	Clonk-side scripts for the HUD. This object basically redirects the
 	engine callbacks for the clonk to the HUD. All crew members that
 	are to be shown in the HUD have to include this object and return
 	_inherited(); if they overload one of the callbacks used here.
 
+	This adapter redirects to the per player HUD controller and also
+	directly to the per clonk HUD selector.
+
 	Requires the ClonkControl.ocd to be included in the clonk too.
+
+	@authors Newton
 */
 
 local HUDselector, HUDcontroller;
@@ -18,22 +22,6 @@ public func GetSelector() { return HUDselector; }
 public func HUDAdapter()
 {
 	return true;
-}
-
-func Initialize()
-{
-	AddEffect("HUDBarUpdater", this, 1, 0, this);
-	return _inherited(...);
-}
-
-func FxHUDBarUpdaterDamage(target, effect, int damage, int cause)
-{
-	if(effect.last == effect.Time) return damage;
-	effect.last = effect.Time;
-	
-	if (HUDcontroller)
-		HUDcontroller->ScheduleUpdateHealthBar();
-	return damage;
 }
 
 // hotkey control
@@ -53,7 +41,7 @@ protected func Recruitment(int plr)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
 	
 	HUDcontroller->ScheduleUpdateBackpack();
-	HUDcontroller->ScheduleUpdateHealthBar();
+	HUDcontroller->UpdateHealthTube();
 	
 	return _inherited(plr, ...);
 }
@@ -65,11 +53,42 @@ public func OnDisplayInfoMessage()
 }
 	
 // calls to the crew selector hud
-protected func OnPromotion() { if (HUDselector) HUDselector->UpdateRank(); return _inherited(...); }
-protected func OnEnergyChange() { if (HUDselector) HUDselector->UpdateHealthBar(); return _inherited(...); }
-protected func OnBreathChange() { HUDcontroller->UpdateHUDBreathBar();  if (HUDselector) HUDselector->UpdateBreathBar(); return _inherited(...); }
-protected func OnMagicEnergyChange() { if (HUDselector) HUDselector->UpdateMagicBar(); return _inherited(...); }
-protected func OnNameChanged() { if (HUDselector) HUDselector->UpdateName(); return _inherited(...); }
+protected func OnPromotion()
+{
+	if (HUDselector)
+		HUDselector->UpdateRank();
+	return _inherited(...); 
+}
+
+protected func OnEnergyChange()	
+{
+	if (HUDcontroller) 
+		HUDcontroller->UpdateHealthTube();
+	if (HUDselector)
+		HUDselector->UpdateHealthBar();
+	return _inherited(...);
+
+}
+protected func OnBreathChange() {
+	if (HUDcontroller)
+		HUDcontroller->UpdateBreathTube();
+	if (HUDselector)
+		HUDselector->UpdateBreathBar();
+	return _inherited(...);
+}
+
+protected func OnMagicEnergyChange() {
+	if (HUDselector)
+		HUDselector->UpdateMagicBar();
+	return _inherited(...);
+}
+
+protected func OnNameChanged()
+{
+	if (HUDselector)
+		HUDselector->UpdateName();
+	return _inherited(...);
+}
 
 protected func OnPhysicalChange(string physical, int change)
 {

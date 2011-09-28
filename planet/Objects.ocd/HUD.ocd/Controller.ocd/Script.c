@@ -1,30 +1,38 @@
-/*
+/**
 	Per-Player Controller (HUD)
 	Author: Newton, Mimmo
 
+	Controls the player HUD and all its subsystems, which are:
+		* Backpack
+		* Hand items
+		* Energy/Breath tubes
+		* Actionbar
+		* Crew selectors
+		* Goal
+		* Wealth
+		
 	Creates and removes the crew selectors as well as reorders them and
 	manages when a crew changes it's controller. Responsible for taking
 	care of the action (inventory) bar.
 	
+	@authors Newton, Mimmo
 */
 
 local actionbar;
 local wealth;
 local deco;
-local tubes;
 local markers;
 local backpack;
 
-// optimizations
-local updated_health_tube;
-local updated_breath_tube;
+// Tubes.
+local healthtube;
+local breathtube;
 
 protected func Construction()
 {
-	actionbar = CreateArray();
-	tubes = CreateArray();
-	markers = CreateArray();
-	backpack = CreateArray();
+	actionbar = [];
+	markers = [];
+	backpack = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
@@ -76,60 +84,56 @@ protected func Construction()
 	
 }
 
-private func ScheduleUpdateHealthBar()
-{
-	ScheduleCall(this, "UpdateHUDHealthBar", 1, 0);
-}
-
 private func ScheduleUpdateBackpack()
 {
 	ScheduleCall(this, "UpdateBackpack", 1, 0);
 }
 
+/*-- Wealth --*/
+
 protected func OnWealthChanged(int plr)
 {
-	if(plr != GetOwner()) return;
-	if(wealth) wealth->Update();
+	if (plr != GetOwner()) 
+		return;
+	if (wealth) 
+		wealth->Update();
+	return;
 }
 
+/*-- Health tube --*/
 
-protected func MakeHealthTube()
-{
-	
-	var btube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
-	btube->SetPosition(1,-1);
-	btube->MakeBot();
-	var tube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
-	tube->SetPosition(1,-1);
-	tube->SetAction("Swirl");
-	var ftube = CreateObject(GUI_HealthTube,0,0,this->GetOwner());
-	ftube->SetPosition(1,-1);
-	ftube->MakeTop();
+private func MakeHealthTube()
+{	
+	var tube = CreateObject(GUI_HealthTube, 0, 0, GetOwner());
+	tube->MakeTube();
 	tube->Update();
-	//AddEffect("Update",tube,100,1,tube);
-	updated_health_tube = tube;
-	
-	tubes[GetLength(tubes)] = btube;
-	tubes[GetLength(tubes)] =  tube;
-	tubes[GetLength(tubes)] = ftube;
-
+	healthtube = tube;
+	return;
 }
 
-protected func MakeBreathTube()
+public func UpdateHealthTube()
 {
-	var tube = CreateObject(GUI_BreathTube,0,0,this->GetOwner());
-	tube->SetPosition(1,-1);
-	tube->SetAction("Swirl");
-	var ftube = CreateObject(GUI_BreathTube,0,0,this->GetOwner());
-	ftube->SetPosition(1,-1);
-	ftube->MakeTop();
-	//tube->SetTubes(btube,ftube);
-	tube->SetTubes(ftube);
+	if (healthtube)
+		healthtube->Update();
+	return;
+}
+
+/*-- Breath tube --*/
+
+private func MakeBreathTube()
+{
+	var tube = CreateObject(GUI_BreathTube, 0, 0, GetOwner());
+	tube->MakeTube();
 	tube->Update();
-	AddEffect("Update",tube,100,1,tube);
-	updated_breath_tube=tube;
-	tubes[GetLength(tubes)] =  tube;
-	tubes[GetLength(tubes)] = ftube;
+	breathtube = tube;
+	return;
+}
+
+public func UpdateBreathTube()
+{
+	if (breathtube)
+		breathtube->Update();
+	return;
 }
 
 /*
@@ -178,18 +182,6 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	if(text) hud.markers[number]->SetName(text);
 	
 	return hud.markers[number];
-}
-
-private func UpdateHUDBreathBar()
-{
-	updated_breath_tube->ShowBreathTube();
-}
-
-private func UpdateHUDHealthBar()
-{
-	updated_health_tube->Update();
-	if(!GetEffect("Update", updated_health_tube))
-		AddEffect("Update", updated_health_tube, 1, 1, updated_health_tube);
 }
 
 func UpdateBackpack()
@@ -268,7 +260,7 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	
 	// update
 	ScheduleUpdateBackpack();
-	ScheduleUpdateHealthBar();
+	UpdateHealthTube();
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
@@ -330,14 +322,11 @@ public func Destruction()
 		}
 	}
 	
-	if(tubes)
-	{
-		for(var i=0; i<GetLength(tubes); ++i)
-		{
-			if(tubes[i])
-				tubes[i]->RemoveObject();
-		}
-	}
+	if(healthtube)
+		healthtube->RemoveObject();
+		
+	if (breathtube)
+		breathtube->RemoveObject();
 	
 	if(markers)
 	{
@@ -367,7 +356,7 @@ public func OnCrewDisabled(object clonk)
 	
 	// update
 	ScheduleUpdateBackpack();
-	ScheduleUpdateHealthBar();
+	UpdateHealthTube();
 }
 
 public func OnCrewEnabled(object clonk)
@@ -406,7 +395,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	
 	// update
 	ScheduleUpdateBackpack();
-	ScheduleUpdateHealthBar();
+	UpdateHealthTube();
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)
