@@ -334,7 +334,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Announce the good news
 	LogF(" gl: Texturing uses %d slots at %dx%d, %d levels (%d MB total)",
-		MaterialTextureMap.size(),
+		static_cast<int>(MaterialTextureMap.size()),
 		iFullWdt, iFullHgt,
 		C4LR_MipMapCount,
 		iSizeSum / 1000000);
