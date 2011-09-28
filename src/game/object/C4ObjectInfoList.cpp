@@ -163,7 +163,7 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	C4Def *pDef = NULL;
 	if (pDefs)
 		if (!(pDef = pDefs->ID2Def(n_id)))
-			{ delete pInfo; return false; }
+			{ delete pInfo; return NULL; }
 	// Set name source
 	const char *cpNames = Game.Names.GetData();
 	if (pDef->pClonkNames) cpNames = pDef->pClonkNames->GetData();

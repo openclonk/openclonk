@@ -1040,7 +1040,7 @@ namespace C4GUI
 					if (pDlg->IsFullscreenDialog())
 						if (fIncludeFading || !pDlg->IsFading())
 							return pDlg;
-		return false;
+		return NULL;
 	}
 
 	void Screen::UpdateGamepadGUIControlEnabled()

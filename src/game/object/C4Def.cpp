@@ -680,8 +680,8 @@ C4PropList *C4Def::GetActionByName(C4String *actname)
 	if (!actname || actname == &Strings.P[P_Idle]) return NULL;
 	// otherwise, query actmap
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
-	if (!ActMap.getPropList()) return false;
+	if (!ActMap.getPropList()) return NULL;
 	C4Value Action; ActMap.getPropList()->GetPropertyByS(actname, &Action);
-	if (!Action.getPropList()) return false;
+	if (!Action.getPropList()) return NULL;
 	return Action.getPropList();
 }

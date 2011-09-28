@@ -575,10 +575,10 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
 {
 	// Sound not active
-	if (!Config.Sound.RXSound) return false;
+	if (!Config.Sound.RXSound) return NULL;
 	// Get sound
 	C4SoundEffect *csfx;
-	if (!(csfx=GetEffect(szSndName))) return false;
+	if (!(csfx=GetEffect(szSndName))) return NULL;
 	// Play
 	return csfx->New(fLoop, iVolume, pObj, iCustomFalloffDistance);
 }
@@ -665,7 +665,7 @@ void C4SoundSystem::ClearPointers(C4Object *pObj)
 C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return false;
+	if (!Config.Sound.RXSound) return NULL;
 	// Start new
 	return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
 }
@@ -673,7 +673,7 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
 {
 	// Sound check
-	if (!Config.Sound.RXSound) return false;
+	if (!Config.Sound.RXSound) return NULL;
 	// Create
 	C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
 	// Set volume by position
