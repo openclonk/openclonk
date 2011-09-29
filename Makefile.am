@@ -695,7 +695,6 @@ c4groups = \
   System.ocg \
   Objects.ocd \
   BackToTheRocks.ocf \
-  Tests.ocf \
   Tutorial.ocf
 
 CLEANFILES += $(c4groups)

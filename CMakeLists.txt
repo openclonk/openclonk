@@ -1289,7 +1289,6 @@ set(OC_C4GROUPS
 	System.ocg
 	Objects.ocd
 	BackToTheRocks.ocf
-	Tests.ocf
 	Tutorial.ocf
 )
 
