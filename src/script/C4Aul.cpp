@@ -388,12 +388,6 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 {
 	// copy some members, that are set before linking
 	Access = FromFunc.Access;
-	Desc.Copy(FromFunc.Desc);
-	DescText.Copy(FromFunc.DescText);
-	DescLong.Copy(FromFunc.DescLong);
-	Condition = FromFunc.Condition;
-	idImage = FromFunc.idImage;
-	iImagePhase = FromFunc.iImagePhase;
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;

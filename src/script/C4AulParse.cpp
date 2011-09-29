@@ -147,7 +147,6 @@ public:
 	C4AulScriptContext* ContextToExecIn;
 	void Parse_Script();
 	void Parse_FuncHead();
-	void Parse_Desc();
 	void Parse_Function();
 	void Parse_Statement();
 	void Parse_Block();
@@ -299,68 +298,6 @@ C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const c
 		sMessage.AppendFormat(" (%s)",
 		                      pScript->ScriptName.getData());
 	}
-}
-
-void C4AulScriptFunc::ParseDesc()
-{
-	// do nothing if no desc is given
-	if (!Desc.getLength()) return;
-	const char *DPos = Desc.getData();
-	// parse desc
-	while (*DPos)
-	{
-		const char *DPos0 = DPos; // beginning of segment
-		const char *DPos2 = NULL; // pos of equal sign, if found
-		// parse until end of segment
-		while (*DPos && (*DPos != '|'))
-		{
-			// store break pos if found
-			if (*DPos == '=') if (!DPos2) DPos2 = DPos;
-			DPos++;
-		}
-
-		// if this was an assignment segment, get value to assign
-		if (DPos2)
-		{
-			StdCopyStrBuf Val;
-			Val.Append(DPos2 + 1, DPos - DPos2 - 1);
-			// Image
-			if (SEqual2(DPos0, C4AUL_Image))
-			{
-				// image: special contents-image?
-				if (Val == C4AUL_Contents)
-					idImage = C4ID::Contents;
-				else
-				{
-					// Find phase separator (:)
-					char *colon;
-					for (colon = Val.getMData(); *colon != ':' && *colon != '\0'; ++ colon) {}
-					if (*colon == ':') *colon = '\0';
-					else colon = NULL;
-					// get image id
-					idImage = C4ID(Val.getData());
-					// get image phase
-					if (colon)
-						iImagePhase = atoi(colon + 1);
-				}
-			}
-			// Condition
-			else if (SEqual2(DPos0, C4AUL_Condition))
-				// condition? get condition func
-				Condition = Owner->GetFuncRecursive(Val.getData());
-			// Long Description
-			else if (SEqual2(DPos0, C4AUL_Desc))
-			{
-				DescLong.Take(std::move(Val));
-			}
-			// unrecognized? never mind
-		}
-
-		if (*DPos) DPos++;
-	}
-	assert(!Condition || !Condition->Owner->Def || Condition->Owner->Def == Owner->Def);
-	// copy desc text
-	DescText.CopyUntil(Desc.getData(), '|');
 }
 
 bool C4AulParseState::AdvanceSpaces()
@@ -1570,43 +1507,8 @@ void C4AulParseState::Parse_FuncHead()
 	}
 	Fn->Script = SPos;
 	Match(ATT_BLOPEN);
-	Parse_Desc();
 	Parse_Function();
 	Match(ATT_BLCLOSE);
-}
-
-void C4AulParseState::Parse_Desc()
-{
-	// check for function desc
-	if (TokenType == ATT_BOPEN2)
-	{
-		// parse for end of desc
-		const char *SPos0 = SPos;
-		int Len = 0;
-		int iBracketsOpen = 1;
-		while (true)
-		{
-			// another bracket open
-			if (*SPos == '[') iBracketsOpen++;
-			// a bracket closed
-			if (*SPos == ']') iBracketsOpen--;
-			// last bracket closed: at end of desc block
-			if (iBracketsOpen == 0) break;
-			// check for eof
-			if (!*SPos)
-				// -> function desc not closed
-				throw new C4AulParseError(this, "function desc not closed");
-			// next char
-			SPos++; Len++;
-		}
-		SPos++;
-		// extract desc
-		Fn->Desc.Copy(SPos0, Len);
-		Fn->Script = SPos;
-		Shift();
-	}
-	else
-		Fn->Desc.Clear();
 }
 
 void C4AulParseState::Parse_Function()
@@ -3131,19 +3033,6 @@ bool C4AulScript::Parse()
 	State = ASS_PARSED;
 
 	return true;
-}
-
-
-void C4AulScript::ParseDescs()
-{
-	// parse children
-	C4AulScript *s = Child0;
-	while (s) { s->ParseDescs();  s = s->Next; }
-	// check state
-	if (State < ASS_LINKED) return;
-	// parse descs of all script funcs
-	for (C4AulFunc *f = Func0; f; f = f->Next)
-		if (C4AulScriptFunc *Fn = f->SFunc()) Fn->ParseDesc();
 }
 
 C4AulScript *C4AulScript::FindFirstNonStrictScript()

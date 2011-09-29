@@ -198,11 +198,6 @@ void C4AulScriptFunc::UnLink()
 {
 	OwnerOverloaded = NULL;
 
-	// clear desc information, ParseDesc will set these later on
-	idImage = C4ID::None;
-	iImagePhase = 0;
-	Condition = NULL;
-
 	C4AulFunc::UnLink();
 }
 
@@ -233,9 +228,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 
 		// resolve includes
 		ResolveIncludes(rDefs);
-
-		// parse script funcs descs
-		ParseDescs();
 
 		// parse the scripts to byte code
 		Parse();

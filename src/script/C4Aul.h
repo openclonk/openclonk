@@ -250,17 +250,10 @@ public:
 	C4AulFunc *OwnerOverloaded; // overloaded owner function; if present
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
-	void ParseDesc(); // evaluate desc (i.e. get idImage and Condition
 	int CodePos; // code pos
 
 public:
 	C4AulAccess Access;
-	StdCopyStrBuf Desc; // full function description block, including image and condition
-	StdCopyStrBuf DescText; // short function description text (name of menu entry)
-	StdCopyStrBuf DescLong; // secondary function description
-	C4ID idImage; // associated image
-	int32_t iImagePhase; // Image phase
-	C4AulFunc *Condition; // func condition
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
@@ -269,7 +262,7 @@ public:
 	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ParCount(0),
+			OwnerOverloaded(NULL), ParCount(0),
 			tProfileTime(0)
 	{
 		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
@@ -453,7 +446,6 @@ protected:
 	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false, C4AulScriptContext* context = NULL); // parse single script function
 
 	bool Parse(); // parse preparsed script; return if successfull
-	void ParseDescs(); // parse function descs
 
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
