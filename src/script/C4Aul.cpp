@@ -341,29 +341,6 @@ C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf)
 	return f->SFunc();
 }
 
-
-C4AulScriptFunc *C4AulScript::GetSFunc(int iIndex, const char *szPattern)
-{
-	C4AulFunc *f;
-	C4AulScriptFunc *sf;
-	// loop through script funcs
-	f = FuncL;
-	while (f)
-	{
-		if ((sf = f->SFunc()))
-			if (!szPattern || SEqual2(sf->Name, szPattern))
-			{
-				if (!iIndex) return sf;
-				--iIndex;
-			}
-		f = f->Prev;
-	}
-
-	// indexed script func not found
-	return NULL;
-
-}
-
 std::string C4AulScript::Translate(const std::string &text) const
 {
 	const C4AulScript *cursor = this;
@@ -509,19 +486,26 @@ std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 	// Add object or scenario script functions
 	if (script)
 	{
-		// Insert divider if necessary
-		if (script->GetSFunc(0))
-			functions.push_back(static_cast<char*>(0));
+		bool divider = false;
+		C4AulFunc *f = script->FuncL;
 		C4AulScriptFunc *pRef;
 		// Scan all functions
-		for (int cnt=0; (pRef=script->GetSFunc(cnt)); cnt++)
+		while (f)
 		{
-			// Public functions only
-			if ((pRef->Access=AA_PUBLIC))
+			if ((pRef = f->SFunc()))
 			{
-				// Add function
-				functions.push_back(pRef->Name);
+				// Public functions only
+				if (pRef->Access == AA_PUBLIC)
+				{
+					// Insert divider if necessary
+					if (!divider)
+						functions.push_back(static_cast<char*>(0));
+					divider = true;
+					// Add function
+					functions.push_back(pRef->Name);
+				}
 			}
+			f = f->Prev;
 		}
 	}
 	return functions;
