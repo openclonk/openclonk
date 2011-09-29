@@ -1,17 +1,14 @@
-/*
- * 	Item background decoration
- *
- * 	Author: Mimmo
- *
- *	A decoration for the action bar, inventory items and backpack.
- *
- *	Layers:
- *	0 - unused
- *	
- *  1 - horizontal connection
- *	5-15 - Extra Slots
- *	50 - Actual Graphic
- *
+/**
+	HUD Background
+	
+	Decoration for the action bar, inventory items and backpack.
+	Used layers:
+	0 - unused
+	1 - horizontal connection
+	5-15 - Extra Slots
+	50 - Actual Graphic
+	
+	@authors Mimmo_O
 */
 
 local current;	//extendation by 5
@@ -22,9 +19,9 @@ local parent;
 protected func Construction()
 {
 	// parallaxity
-	this["Parallaxity"] = [0,0];
+	this.Parallaxity = [0, 0];
 	// visibility
-	this["Visibility"] = VIS_Owner;
+	this.Visibility = VIS_Owner;
 	padding = 90;
 
 	SetGraphics(0,GetID(),50,GFXOV_MODE_Base);

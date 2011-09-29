@@ -1,7 +1,5 @@
-/*
-	Object selector HUD
-	Author: Newton
-	
+/**
+	HUD	Object Selector
 	For each inventory item (and each vehicle, house etc on the same pos)
 	one of this objects exists in the bottom bar. If clicked, the associated
 	object is selected (inventory item is selected, vehicle is grabbed
@@ -12,6 +10,8 @@
 
 	This object works only for crew members that included the standard clonk
 	controls (see Libraries.c4d/ClonkControl.c4d)
+	
+	@authors Newton
 	
 */
 

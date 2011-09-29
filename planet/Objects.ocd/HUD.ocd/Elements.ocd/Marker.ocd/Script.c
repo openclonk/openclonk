@@ -1,19 +1,15 @@
-/*
-	Marker
-	Author: Mimmo_O
+/**
+	HUD Marker
 	Informs the player about various events.
-	
-*/
-
-/*
 	Marker will inform the toInform object via:
-	MarkerSelected(marker)
-	MarkerAltSelected(marker)
-	MarkerRemoved(marker)
+	* MarkerSelected(marker)
+	* MarkerAltSelected(marker)
+	* MarkerRemoved(marker)
+	
+	@authors Mimmo_O
 */
 
 local picture, toInform;
-
 
 protected func FxIntRemoveMarkerTimer()
 {

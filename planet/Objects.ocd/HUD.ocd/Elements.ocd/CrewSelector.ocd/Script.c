@@ -1,6 +1,5 @@
 /**
-	Crew selector HUD
-	
+	HUD	Crew Selector
 	For each crew member, one of these HUD elements exist in the top bar.
 	It shows the rank, health, breath and magic bars as well as the title
 	(or portrait) and is clickable. If clicked, the associated crew member

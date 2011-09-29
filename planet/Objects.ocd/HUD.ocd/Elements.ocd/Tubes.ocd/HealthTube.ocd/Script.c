@@ -2,7 +2,7 @@
 	Health Tube
 	Displays the health of the controlled clonk in the HUD.
 	 
-	@authors Mimmo, Clonkonaut
+	@authors Mimmo_O, Clonkonaut
 */
 
 
@@ -83,13 +83,13 @@ protected func FxUpdateTubeTimer(object target, proplist effect, int time)
 	if (energy == crew->GetEnergy())
 		return -1;
 
-	if(Abs(energy - crew->GetEnergy()) > 6 )
-		if(energy > crew->GetEnergy()) 
+	if (Abs(energy - crew->GetEnergy()) > 6 )
+		if (energy > crew->GetEnergy()) 
 			energy -= 3;
 		else
 			energy += 3;
 	else
-		if(energy > crew->GetEnergy()) 
+		if (energy > crew->GetEnergy()) 
 			energy -= 1;
 		else
 			energy += 1;
@@ -117,7 +117,6 @@ private func UpdateTube(int promille)
 	return;
 }
 
-local Name = "$Name$";
 local ActMap = {
 	Swirl = {
 		Prototype = Action,

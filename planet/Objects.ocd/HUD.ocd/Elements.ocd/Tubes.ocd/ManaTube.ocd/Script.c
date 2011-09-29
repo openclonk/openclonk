@@ -1,23 +1,25 @@
-/*
- * 	Mana Bar
- *	Author: Mimmo
- *	
- *	Displays the Mana in a curved way.
- *
- */ 
+/**
+	Mana Tube
+	Displays the mana of the controlled clonk in the HUD.
+	 
+	@authors Mimmo_O
+*/
 
 local current;
 local visual;
 local btub,ftub;
 local crew;
-protected func Construction()
+
+protected func Initialize()
 {
-	// parallaxity
-	this["Parallaxity"] = [0,0];
-	// visibility
-	this["Visibility"] = VIS_Owner;
-	visual=0;
+	// Set parallaxity
+	this.Parallaxity = [0, 0];
+	// Set visibility
+	this.Visibility = VIS_Owner;
+	visual = 0;
+	return;
 }
+
 
 public func FxUpdateTimer() { Update(); }
 
@@ -125,22 +127,17 @@ public func MakeBot()
 	SetGraphics("1");
 }
 
-func Definition(def) 
-{
-
-SetProperty("ActMap", {
-		Swirl = {
-			Prototype = Action,
-			Name = "Swirl",
-			Procedure = DFA_NONE,
-			Length = 25,
-			Delay = 3,
-			X = 0,
-			Y = 0,
-			Wdt = 400,
-			Hgt = 200,
-			NextAction = "Swirl",
-		},
-	}, def);
-	SetProperty("Name", "$Name$", def);
-}
+local ActMap = {
+	Swirl = {
+		Prototype = Action,
+		Name = "Swirl",
+		Procedure = DFA_NONE,
+		Length = 25,
+		Delay = 3,
+		X = 0,
+		Y = 0,
+		Wdt = 400,
+		Hgt = 220,
+		NextAction = "Swirl",
+	},
+};

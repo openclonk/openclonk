@@ -1,6 +1,5 @@
 /**
-	Per-Player Controller (HUD)
-	Author: Newton, Mimmo
+	HUD Controller
 
 	Controls the player HUD and all its subsystems, which are:
 		* Backpack
@@ -14,8 +13,8 @@
 	Creates and removes the crew selectors as well as reorders them and
 	manages when a crew changes it's controller. Responsible for taking
 	care of the action (inventory) bar.
-	
-	@authors Newton, Mimmo
+		
+	@authors Newton, Mimmo_O
 */
 
 local actionbar;
@@ -49,8 +48,8 @@ protected func Construction()
 	ReorderCrewSelectors();
 	
 	// background decoration
-	deco =  CreateObject(GUI_Background,0,0,this->GetOwner());
-	deco -> SetPosition(1,-1);
+	deco = CreateObject(GUI_Background,0,0,GetOwner());
+	deco->SetPosition(1,-1);
 	deco->SetControllerObject(this);
 	
 	// wealth display
@@ -70,7 +69,7 @@ protected func Construction()
 	// backpack display
 	for(var i=0; i<5; i++)
 	{
-		var bt = CreateObject(GUI_RingMenu_Icon,0,0,this->GetOwner());
+		var bt = CreateObject(GUI_RingMenu_Icon,0,0,GetOwner());
 		bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43));	
 		bt->SetExtraData(i+2);
 		bt->SetSize(48000);
@@ -98,6 +97,23 @@ protected func OnWealthChanged(int plr)
 	if (wealth) 
 		wealth->Update();
 	return;
+}
+
+/*-- Goal --*/
+
+public func OnGoalUpdate(object goal)
+{
+	var HUDgoal = FindObject(Find_ID(GUI_Goal), Find_Owner(GetOwner()));
+	if (!goal)
+	{
+		if (HUDgoal) HUDgoal->RemoveObject();
+	}
+	else
+	{
+		if (!HUDgoal) HUDgoal = CreateObject(GUI_Goal, 0, 0, GetOwner());
+		HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
+		HUDgoal->SetGoal(goal);
+	}
 }
 
 /*-- Health tube --*/
@@ -221,12 +237,6 @@ global func FxUpdateBackpackTimer(target) {
 	}
 }*/
 
-protected func OnWealthChanged(int plr)
-{
-	if(plr != GetOwner()) return;
-	if(wealth) wealth->Update();
-}
-
 protected func OnClonkRecruitment(object clonk, int plr)
 {
 	// not my business
@@ -261,6 +271,7 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	// update
 	ScheduleUpdateBackpack();
 	UpdateHealthTube();
+	UpdateBreathTube();
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
@@ -280,20 +291,7 @@ protected func OnClonkDeath(object clonk, int killer)
 	OnCrewDisabled(clonk);
 }
 
-public func OnGoalUpdate(object goal)
-{
-	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
-	if(!goal)
-	{
-		if(HUDgoal) HUDgoal->RemoveObject();
-	}
-	else
-	{
-		if(!HUDgoal) HUDgoal = CreateObject(GUI_Goal,0,0,GetOwner());
-		HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
-		HUDgoal->SetGoal(goal);
-	}
-}
+
 
 // called from engine on player eliminated
 public func RemovePlayer(int plr, int team)
@@ -305,7 +303,7 @@ public func RemovePlayer(int plr, int team)
 	// removed already. Whats left to do is to remove this object,
 	// the lower hud and the upper right hud
 	// (which are handled by Destruction()
-	this->RemoveObject();
+	return RemoveObject();
 }
 
 public func Destruction()
@@ -357,6 +355,7 @@ public func OnCrewDisabled(object clonk)
 	// update
 	ScheduleUpdateBackpack();
 	UpdateHealthTube();
+	UpdateBreathTube();
 }
 
 public func OnCrewEnabled(object clonk)
@@ -396,6 +395,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	// update
 	ScheduleUpdateBackpack();
 	UpdateHealthTube();
+	UpdateBreathTube();
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)

@@ -2,7 +2,7 @@
 	Breath Tube
 	Displays the breath of the controlled clonk in the HUD.
 	 
-	@authors Mimmo, Clonkonaut
+	@authors Mimmo_O, Clonkonaut
 */ 
 
 // Current crew and breath
@@ -153,7 +153,6 @@ protected func FxFadeTubeTimer(object target, proplist effect, int time)
 	return 1;
 }
 
-local Name = "$Name$";
 local ActMap = {
 	Swirl = {
 		Prototype = Action,

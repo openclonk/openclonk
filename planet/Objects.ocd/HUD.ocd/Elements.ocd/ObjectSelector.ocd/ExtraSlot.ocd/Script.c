@@ -1,9 +1,9 @@
-/*
-	Object selector HUD for ExtraSlot
-	Author: Newton
-	
+/**
+	HUD ExtraSlot		
 	Little spin-off of the big Object selector
 	Is shown for ExtraSlots for weapons with munition etc.
+	
+	@authors Newton
 */
 
 local container, myobject, crew;
