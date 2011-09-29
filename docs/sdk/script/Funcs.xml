@@ -89,8 +89,6 @@ ShowSum(1, 2, 3, 4, 5, 6);</code>
   // This function may only be called from the same script
 }</code>
       <text>Calling this function from another object script will cause an error.</text>
-      <h>Remark</h>
-      <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> function.</text>
     </part>
     <h>Global Functions</h>
     <part>

@@ -1128,47 +1128,6 @@ static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
 	return ::GameScript.GRBroadcast(szFunc2,&Pars, true);
 }
 
-static C4Value FnProtectedCall_C4V(C4AulContext *cthr,
-                                   C4Value* pObj_C4V, C4Value* szFunction_C4V,
-                                   C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                                   C4Value* par5, C4Value* par6, C4Value* par7/*, C4Value* par8, C4Value* par9*/)
-{
-	C4Object *pObj = pObj_C4V->getObj();
-	C4String *szFunction = szFunction_C4V->getStr();
-
-	if (!pObj || !szFunction) return C4Value();
-	if (!pObj->Def) return C4Value();
-	// get func
-	C4AulScriptFunc *f;
-	if (!(f = pObj->Def->Script.GetSFunc(FnStringPar(szFunction), AA_PROTECTED, true))) return C4Value();
-	// copy parameters
-	C4AulParSet Pars;
-	Copy2ParSet8(Pars, *par);
-	// exec
-	return f->Exec(pObj,&Pars, true);
-}
-
-
-static C4Value FnPrivateCall_C4V(C4AulContext *cthr,
-                                 C4Value* pObj_C4V, C4Value* szFunction_C4V,
-                                 C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                                 C4Value* par5, C4Value* par6, C4Value* par7/*, C4Value* par8, C4Value* par9*/)
-{
-	C4Object *pObj = pObj_C4V->getObj();
-	C4String *szFunction = szFunction_C4V->getStr();
-
-	if (!pObj || !szFunction) return C4Value();
-	if (!pObj->Def) return C4Value();
-	// get func
-	C4AulScriptFunc *f;
-	if (!(f = pObj->Def->Script.GetSFunc(FnStringPar(szFunction), AA_PRIVATE, true))) return C4Value();
-	// copy parameters
-	C4AulParSet Pars;
-	Copy2ParSet8(Pars, *par);
-	// exec
-	return f->Exec(pObj,&Pars, true);
-}
-
 static C4Value FnEditCursor(C4AulContext *cth, C4Value *pPars)
 {
 	if (::Control.SyncMode()) return C4VNull;
@@ -2723,8 +2682,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "FindObject",           1  ,C4V_C4Object ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObject },
 	{ "FindObjects",          1  ,C4V_Array    ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObjects },
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
-	{ "ProtectedCall",        0  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnProtectedCall_C4V ,         0 },
-	{ "PrivateCall",          0  ,C4V_Any      ,{ C4V_C4Object,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnPrivateCall_C4V ,           0 },
 	{ "GameCall",             1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
 	{ "GameCallEx",           1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCallEx_C4V ,            0 },
 	{ "DefinitionCall",       0  ,C4V_Any      ,{ C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
