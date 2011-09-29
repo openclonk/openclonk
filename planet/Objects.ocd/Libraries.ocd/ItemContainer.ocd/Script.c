@@ -38,7 +38,7 @@ public func IsInteractable() { return MenuOnInteraction(); }
 public func Interact(object clonk)
 {
 	if (MenuOnInteraction())
-		OpenMenu(clonk);
+		return OpenMenu(clonk);
 	else
 		return _inherited(clonk, ...);
 }
@@ -46,19 +46,17 @@ public func Interact(object clonk)
 public func ControlUse(object clonk)
 {
 	if (MenuOnControlUse())
-		OpenMenu(clonk);
+		return OpenMenu(clonk);
 	else
 		return _inherited(clonk, ...);
-	return true;
 }
 
 public func ControlUseAlt(object clonk)
 {
 	if (MenuOnControlUseAlt())
-		OpenMenu(clonk);
+		return OpenMenu(clonk);
 	else
 		return _inherited(clonk, ...);
-	return true;
 }
 
 public func OpenMenu(object clonk)

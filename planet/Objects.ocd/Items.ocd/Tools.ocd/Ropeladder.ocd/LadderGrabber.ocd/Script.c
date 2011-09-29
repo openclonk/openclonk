@@ -7,6 +7,7 @@ public func Interact(object clonk)
 		GetActionTarget()->StartRollUp();
 	else
 		RemoveObject();
+	return true;
 }
 
 public func IsInteractable(object clonk)

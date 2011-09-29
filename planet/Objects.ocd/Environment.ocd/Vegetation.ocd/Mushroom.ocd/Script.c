@@ -22,6 +22,7 @@ public func Interact(object clonk)
 	this.Collectible = 1;
 	if(clonk->ContentsCount() < clonk->MaxContentsCount())
 		Enter(clonk);
+	return true;
 }
 
 public func IsInteractable(object clonk)
