@@ -384,14 +384,13 @@ public:
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	C4Def *Def; // owning def file
 	C4ValueMapNames LocalNamed;
 	enum Strict { NONSTRICT = 0, STRICT1 = 1, STRICT2 = 2, MAXSTRICT=STRICT2 };
 	enum Strict Strict; // new or even newer syntax?
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	const char *GetScript() const { return Script.getData(); }
-
+	virtual C4PropList * GetPropList() { return 0; }
 	C4AulFunc *GetFuncRecursive(const char *pIdtf); // search function by identifier, including global funcs
 	C4AulScriptFunc *GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailSafe = false); // get local sfunc, check access, check '~'-safety
 	C4AulScriptFunc *GetSFunc(const char *pIdtf); // get local script function by name
@@ -399,7 +398,7 @@ public:
 
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
-	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, enum Strict Strict = MAXSTRICT, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
+	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
 	void ResetProfilerTimes(); // zero all profiler times of owned functions
 	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 

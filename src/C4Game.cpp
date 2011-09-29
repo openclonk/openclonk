@@ -2218,7 +2218,7 @@ bool C4Game::InitScriptEngine()
 		// host will be destroyed by script engine, so drop the references
 		C4ScriptHost *scr = new C4ScriptHost();
 		scr->Reg2List(&ScriptEngine, &ScriptEngine);
-		scr->Load(File, fn, Config.General.LanguageEx, NULL, &MainSysLangStringTable);
+		scr->Load(File, fn, Config.General.LanguageEx, &MainSysLangStringTable);
 	}
 
 	// if it's a physical group: watch out for changes
@@ -2684,7 +2684,7 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();
 			scr->Reg2List(&ScriptEngine, &ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)

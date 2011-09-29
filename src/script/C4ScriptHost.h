@@ -37,7 +37,7 @@ public:
 public:
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
-	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, C4LangStringTable *pLocalTable);
+	          const char *szLanguage, C4LangStringTable *pLocalTable);
 protected:
 	void SetError(const char *szMessage);
 	void MakeScript();
@@ -50,12 +50,14 @@ protected:
 class C4DefScriptHost : public C4ScriptHost
 {
 public:
-	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
+	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
 	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
+	virtual C4PropList * GetPropList();
 protected:
+	C4Def *Def; // owning def file
 	void AfterLink(); // get common funcs
 public:
 	C4AulScriptFunc *SFn_CalcValue; // get object value
@@ -73,7 +75,8 @@ public:
 	bool LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable);
 	void Clear();
 	void AfterLink();
-	bool Delete() { return false; } // do NOT delete this - it's a global!
+	virtual bool Delete() { return false; } // do NOT delete this - it's a global!
+	virtual C4PropList * GetPropList() { return ScenPrototype; }
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 	C4PropList * ScenPropList;

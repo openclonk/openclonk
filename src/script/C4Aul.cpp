@@ -132,9 +132,9 @@ StdStrBuf C4AulScriptFunc::GetFullName()
 	{
 		sOwner.Ref("(unknown) ");
 	}
-	else if (Owner->Def)
+	else if (Owner->GetPropList() && Owner->GetPropList()->GetDef())
 	{
-		sOwner.Format("%s::", Owner->Def->id.ToString());
+		sOwner.Format("%s.", Owner->GetPropList()->GetDef()->id.ToString());
 	}
 	else if (Owner->Engine == Owner)
 	{

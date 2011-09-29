@@ -112,7 +112,7 @@ int main(int argc, const char * argv[])
 	}
 	// host will be destroyed by script engine, so drop the references
 	GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
-	GameScript.Load(File, fn.getData(), NULL, NULL, NULL);
+	GameScript.Load(File, fn.getData(), NULL, NULL);
 	
 	// Link script engine (resolve includes/appends, generate code)
 	ScriptEngine.Link(&::Definitions);

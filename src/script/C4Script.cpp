@@ -428,13 +428,12 @@ static Nillable<long> FnGetChar(C4AulContext* cthr, C4String *pString, long iInd
 static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 {
 	// execute script in the same object
-	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
 	if (cthr->Obj)
-		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true);
 	else if (cthr->Def && cthr->Def->GetDef())
-		return cthr->Def->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return cthr->Def->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 	else
-		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 }
 
 static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj, C4ID idDef)

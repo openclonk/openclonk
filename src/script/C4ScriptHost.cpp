@@ -45,10 +45,8 @@ void C4ScriptHost::Clear()
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
-                        const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable)
+                        const char *szLanguage, class C4LangStringTable *pLocalTable)
 {
-	// Set definition and id
-	Def = pDef;
 	// Base load
 	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
 	// String Table
@@ -99,7 +97,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(ParentGrp, NULL, szLanguage, NULL, stringTable))
+				if (Load(ParentGrp, NULL, szLanguage, stringTable))
 					return true;
 	}
 	// call for childs
@@ -127,7 +125,7 @@ void C4DefScriptHost::AfterLink()
 	}
 }
 
-
+C4PropList * C4DefScriptHost::GetPropList() { return Def; }
 
 /*--- C4GameScriptHost ---*/
 
@@ -141,7 +139,7 @@ bool C4GameScriptHost::LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *p
 	ScenPropList = C4PropList::NewScen(ScenPrototype);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
 	Reg2List(&ScriptEngine, &ScriptEngine);
-	return Load(hGroup,C4CFN_Script,Config.General.LanguageEx,NULL,pLocalTable);
+	return Load(hGroup,C4CFN_Script,Config.General.LanguageEx,pLocalTable);
 }
 
 void C4GameScriptHost::Clear()

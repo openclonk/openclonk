@@ -58,7 +58,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 			{
 				C4Def *pDef = rDefs->GetDef(i);
 				if (!pDef) break;
-				if (pDef == Def) continue;
+				if (pDef == GetPropList()) continue;
 				// append
 				AppendTo(pDef->Script, true);
 			}
@@ -115,7 +115,8 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
 {
 	// definition appends
-	if (Def && Scr.Def) Scr.Def->IncludeDefinition(Def);
+	if (GetPropList() && GetPropList()->GetDef() && Scr.GetPropList() && Scr.GetPropList()->GetDef())
+		Scr.GetPropList()->GetDef()->IncludeDefinition(GetPropList()->GetDef());
 	// append all funcs
 	// (in reverse order if inserted at begin of list)
 	C4AulScriptFunc *sf;
@@ -144,15 +145,8 @@ void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
 	// mark as linked
 	// increase code size needed
 	// append all local vars (if any existing)
-	assert(!Def || this == &Def->Script);
-	assert(!Scr.Def || &Scr.Def->Script == &Scr);
 	if (LocalNamed.iSize == 0)
 		return;
-	if (!Scr.Def)
-	{
-		Warn("could not append local variables to global script!", "");
-		return;
-	}
 	// copy local var definitions
 	for (int ivar = 0; ivar < LocalNamed.iSize; ivar ++)
 		Scr.LocalNamed.AddName(LocalNamed.pNames[ivar]);
@@ -170,7 +164,7 @@ void C4AulScript::UnLink()
 	// check if byte code needs to be freed
 	ClearCode();
 
-	if (Def) Def->C4PropList::Clear();
+	if (GetPropList()) GetPropList()->C4PropList::Clear();
 
 	// delete included/appended functions
 	C4AulFunc* pFunc = Func0;

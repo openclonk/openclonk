@@ -85,8 +85,8 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		else
 			Dump.AppendFormat(" (obj (#%d))", Obj->Number);
 	}
-	else if (Func->Owner->Def != NULL)
-		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
+	else if (Func->Owner->GetPropList())
+		Dump.AppendFormat(" (def %s)", Func->Owner->GetPropList()->GetName());
 	// Script
 	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
@@ -120,18 +120,11 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	else
 		PushNullVals(pSFunc->GetParCount() - (pCurVal + 1 - pPars));
 
-	// Derive definition context from function owner (legacy)
-	C4Def *pDef = p ? p->GetDef() : pSFunc->Owner->Def;
-
-	// Executing function in right context?
-	// This must hold: The scripter might try to access local variables that don't exist!
-	assert(!pSFunc->Owner->Def || pDef == pSFunc->Owner->Def);
-
 	// Push a new context
 	C4AulScriptContext ctx;
 	ctx.tTime = 0;
 	ctx.Obj = p ? p->GetObject() : NULL;
-	ctx.Def = p ? p : pDef;
+	ctx.Def = p;
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
@@ -217,15 +210,19 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_LOCALN:
-				if (!pCurCtx->Obj)
-					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
+				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
+				if (!pCurCtx->Def)
+					throw new C4AulExecError(0, "can't access local variables without this");
 				PushNullVals(1);
-				pCurCtx->Obj->GetPropertyByS(pCPos->Par.s, pCurVal);
+				pCurCtx->Def->GetPropertyByS(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
-				if (!pCurCtx->Obj)
-					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call");
-				pCurCtx->Obj->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
+				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
+				if (!pCurCtx->Def)
+					throw new C4AulExecError(0, "can't access local variables without this");
+				if (pCurCtx->Def->IsFrozen())
+					throw new C4AulExecError(pCurCtx->Obj, "local variable: this is readonly");
+				pCurCtx->Def->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				break;
 
 			case AB_PROP:
@@ -813,9 +810,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();
 	if (pSFunc)
 	{
-		// Check context
-		assert(!pSFunc->Owner->Def || pContext->GetDef() == pSFunc->Owner->Def);
-
 		// Push a new context
 		C4AulScriptContext ctx;
 		ctx.Obj = pContext ? pContext->GetObject() : 0;
@@ -1089,7 +1083,29 @@ C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPass
 
 }
 
-C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, enum Strict Strict, C4AulScriptContext* context)
+
+class C4DirectExecScript: public C4AulScript
+{
+public:
+	C4DirectExecScript(C4AulScript * a, C4Object * pObj, const char *szContext): p(NULL)
+	{
+		ScriptName = FormatString("%s in %s", szContext, a->ScriptName.getData());
+		Strict = a->Strict;
+		Temporary = true;
+		State = ASS_LINKED;
+		if (pObj)
+		{
+			p = pObj->Def;
+			LocalNamed = pObj->Def->Script.LocalNamed;
+		}
+		// FIXME: calls from definitions
+		ClearCode();
+	}
+	virtual C4PropList * GetPropList() { return p; }
+	C4PropList * p;
+};
+
+C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
 {
 #ifdef DEBUGREC_SCRIPT
 	AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
@@ -1099,27 +1115,12 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// profiler
 	AulExec.StartDirectExec();
 	// Create a new temporary script as child of this script
-	C4AulScript* pScript = new C4AulScript();
-	pScript->Script.Copy(szScript);
-	pScript->ScriptName = FormatString("%s in %s", szContext, ScriptName.getData());
-	pScript->Strict = Strict;
-	pScript->Temporary = true;
-	pScript->State = ASS_LINKED;
+	C4AulScript* pScript = new C4DirectExecScript(this, pObj, szContext);
 	pScript->stringTable = stringTable;
-	if (pObj)
-	{
-		pScript->Def = pObj->Def;
-		pScript->LocalNamed = pObj->Def->Script.LocalNamed;
-	}
-	else
-	{
-		pScript->Def = NULL;
-	}
-	pScript->ClearCode();
 	pScript->Reg2List(Engine, this);
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, "");
-	pFunc->Script = pScript->Script.getData();
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, 0);
+	pFunc->Script = szScript;
 	pFunc->pOrgScript = pScript;
 	// Parse function
 	try

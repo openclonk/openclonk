@@ -306,7 +306,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def()
+C4Def::C4Def(): Script(this)
 {
 	Graphics.pDef = this;
 	Default();
@@ -425,7 +425,7 @@ bool C4Def::Load(C4Group &hGroup,
 		// reg script to engine
 		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
 		// Load script
-		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable);
+		Script.Load(hGroup, C4CFN_Script, szLanguage, &StringTable);
 	}
 
 	// read clonknames

@@ -234,7 +234,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 {
 	// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-	if (Fn && !Fn->Owner->Def && !Fn->Owner->Appends.empty()) return;
+	if (Fn && !Fn->Owner->GetPropList() && !Fn->Owner->Appends.empty()) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
 	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
@@ -1444,7 +1444,7 @@ void C4AulParseState::Parse_FuncHead()
 	case AA_PUBLIC:
 		if (a->LocalNamed.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (local variable)");
-		if (a->Def)
+		if (a->GetPropList())
 			break;
 		// func in global context: fallthru
 	case AA_GLOBAL:
@@ -2662,12 +2662,12 @@ void C4AulParseState::Parse_Local()
 		Match(ATT_IDTF);
 		if (TokenType == ATT_SET)
 		{
-			if (!a->Def)
-				throw new C4AulParseError(this, "local variables can only be initialized on object definitions");
+			if (!a->GetPropList())
+				throw new C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
 			// register as constant (FIXME: do this in the parser, not the preparser)
 			if (Type == PREPARSER)
-				a->Def->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
+				a->GetPropList()->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
 			else
 				Parse_ConstExpression();
 		}
@@ -2929,10 +2929,7 @@ bool C4AulScript::Parse()
 {
 	if (DEBUG_BYTECODE_DUMP)
 	{
-		C4ScriptHost * scripthost = 0;
-		if (Def) scripthost = &Def->Script;
-		if (scripthost) fprintf(stderr, "parsing %s...\n", scripthost->ScriptName.getData());
-		else fprintf(stderr, "parsing unknown...\n");
+		fprintf(stderr, "parsing %s...\n", ScriptName.getData());
 	}
 	// parse children
 	C4AulScript *s = Child0;
@@ -2966,7 +2963,7 @@ bool C4AulScript::Parse()
 			catch (C4AulError *err)
 			{
 				// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-				if (Fn->Owner->Def || Fn->Owner->Appends.empty())
+				if (Fn->Owner->GetPropList() || Fn->Owner->Appends.empty())
 				{
 					// show
 					err->show();
