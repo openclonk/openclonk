@@ -1304,7 +1304,7 @@ void C4ToolsDlg::State::UpdatePreview()
 
 	// fill bg
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
 	{

@@ -221,7 +221,7 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	return true;
 }
 
-void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdD3D::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	if (!lpDevice || !pVB) return;
 
@@ -287,7 +287,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 	}
 }
 
-void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform *pTransform)
+void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform *pTransform)
 {
 	// TODO: Implement this
 	for (int x = 0; x < twdt; x += 10)

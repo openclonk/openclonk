@@ -132,8 +132,8 @@ public:
 	// Surface
 	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
 	// Blit
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
-	void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
+	void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	bool BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
 	bool BlitSurface2Window(SURFACE sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
 	void FillBG(DWORD dwClr=0);
@@ -167,7 +167,7 @@ protected:
 
 	friend class CSurface;
 	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Pattern;
 };
 
 // Global D3D access pointer

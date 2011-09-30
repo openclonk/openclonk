@@ -58,20 +58,20 @@ extern int iGfxEngine;
 // font def color indices
 
 // rotation info class
-class CBltTransform
+class C4BltTransform
 {
 public:
 	float mat[9]; // transformation matrix
 public:
-	CBltTransform() {} // default: don't init fields
+	C4BltTransform() {} // default: don't init fields
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
 	void SetRotate(int iAngle, float fOffX, float fOffY); // set by angle and rotation offset
-	bool SetAsInv(CBltTransform &rOfTransform);
+	bool SetAsInv(C4BltTransform &rOfTransform);
 	void Rotate(int iAngle, float fOffX, float fOffY) // rotate by angle around rotation offset
 	{
 		// multiply matrix as seen in SetRotate by own matrix
-		CBltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
+		C4BltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
 		(*this) *= rot;
 	}
 	void SetMoveScale(float dx, float dy, float sx, float sy)
@@ -83,7 +83,7 @@ public:
 	void MoveScale(float dx, float dy, float sx, float sy)
 	{
 		// multiply matrix by movescale matrix
-		CBltTransform move; move.SetMoveScale(dx,dy,sx,sy);
+		C4BltTransform move; move.SetMoveScale(dx,dy,sx,sy);
 		(*this) *= move;
 	}
 	void ScaleAt(float sx, float sy, float tx, float ty)
@@ -91,7 +91,7 @@ public:
 		// scale and move back so tx and ty remain fixpoints
 		MoveScale(-tx*(sx-1), -ty*(sy-1), sx, sy);
 	}
-	CBltTransform &operator *= (const CBltTransform &r)
+	C4BltTransform &operator *= (const C4BltTransform &r)
 	{
 		// transform transformation
 		Set(mat[0]*r.mat[0] + mat[3]*r.mat[1] + mat[6]*r.mat[2],
@@ -109,7 +109,7 @@ public:
 };
 
 // pattern
-class CPattern
+class C4Pattern
 {
 private:
 	// pattern surface for new-style patterns
@@ -119,19 +119,19 @@ private:
 	// pattern zoom factor; 0 means no zoom
 	int Zoom;
 public:
-	CPattern& operator=(const CPattern&);
+	C4Pattern& operator=(const C4Pattern&);
 	const CSurface *getSurface() const { return sfcPattern32; }
 	DWORD PatternClr(unsigned int iX, unsigned int iY) const; // apply pattern to color
 	bool Set(class CSurface *sfcSource, int iZoom=0); // set and enable pattern
 	void SetZoom(int iZoom) { Zoom = iZoom; }
 	void Clear();                     // clear pattern
-	CPattern();         // ctor
-	~CPattern() { Clear(); }          // dtor
+	C4Pattern();         // ctor
+	~C4Pattern() { Clear(); }          // dtor
 };
 
 // blit position on screen
 // This is the format required by GL_T2F_C4UB_V3F
-struct CBltVertex
+struct C4BltVertex
 {
 	float tx, ty; // texture positions
 	unsigned char color[4]; // color modulation
@@ -139,11 +139,11 @@ struct CBltVertex
 };
 
 // blit bounds polygon - note that blitting procedures are not designed for inner angles (>pi)
-struct CBltData
+struct C4BltData
 {
 	BYTE byNumVertices;  // number of valid vertices
-	CBltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
-	const CBltTransform *pTransform; // Vertex transformation
+	C4BltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
+	const C4BltTransform *pTransform; // Vertex transformation
 };
 
 
@@ -158,7 +158,7 @@ typedef struct _D3DGAMMARAMP
 #endif
 
 // gamma ramp control
-class CGammaControl
+class C4GammaControl
 {
 private:
 	void SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3); // set color channel ramp
@@ -167,7 +167,7 @@ protected:
 	D3DGAMMARAMP ramp;
 
 public:
-	CGammaControl() { Default(); } // ctor
+	C4GammaControl() { Default(); } // ctor
 	void Default() { Set(0x000000, 0x808080, 0xffffff); } // set default ramp
 
 	void Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3); // set color ramp
@@ -197,8 +197,8 @@ public:
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
-	CGammaControl Gamma;            // gamma
-	CGammaControl DefRamp;            // default gamma ramp
+	C4GammaControl Gamma;            // gamma
+	C4GammaControl DefRamp;            // default gamma ramp
 	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
 	int MaxTexSize;
 protected:
@@ -260,13 +260,13 @@ public:
 	               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
 	bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-	          bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
-	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
-	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
+	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
+	virtual void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
 	bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-	           bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
+	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
 	bool BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 	                int iAngle, bool fTransparency=true);
@@ -282,7 +282,7 @@ public:
 	virtual void DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
 	void DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 	void DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
-	void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal);
+	void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
 	void DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
 	virtual void DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
 	virtual void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
@@ -343,7 +343,7 @@ protected:
 
 	friend class CSurface;
 	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Pattern;
 	friend class CStdD3DShader;
 };
 

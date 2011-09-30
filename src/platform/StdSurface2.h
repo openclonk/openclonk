@@ -180,7 +180,7 @@ protected:
 	void FreeTextures();      // free ppTex-array if existant
 
 	friend class CStdDDraw;
-	friend class CPattern;
+	friend class C4Pattern;
 	friend class CStdD3D;
 	friend class CStdGL;
 };

@@ -376,7 +376,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
 }
 
-void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdGL::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	// global modulation map
 	int i;
@@ -463,18 +463,18 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	}
 	if (vbo)
 	{
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, rBltData.byNumVertices*sizeof(CBltVertex), rBltData.vtVtx, GL_STREAM_DRAW_ARB);
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), 0);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, rBltData.byNumVertices*sizeof(C4BltVertex), rBltData.vtVtx, GL_STREAM_DRAW_ARB);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), 0);
 	}
 	else
 	{
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), rBltData.vtVtx);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), rBltData.vtVtx);
 	}
 	if (shaders[0] && fUseClrModMap)
 	{
 		glClientActiveTexture(GL_TEXTURE3);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &rBltData.vtVtx[0].ftx);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &rBltData.vtVtx[0].ftx);
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
@@ -1107,7 +1107,7 @@ namespace
 
 	// Apply Zoom and Transformation to the current matrix stack. Return
 	// parity of the transformation.
-	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, CBltTransform* pTransform)
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
 	{
 		// Apply zoom
 		glTranslatef(ZoomX, ZoomY, 0.0f);
@@ -1135,7 +1135,7 @@ namespace
 	}
 }
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
@@ -1511,7 +1511,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * Zoom + tx;
 			fTexBlt.bottom= Min<float>((float)(fy + hgt - iBlitY), (float)iTexSizeY);
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * Zoom + ty;
-			CBltVertex Vtx[4];
+			C4BltVertex Vtx[4];
 			// blit positions
 			Vtx[0].ftx = tTexBlt.left;  Vtx[0].fty = tTexBlt.top;
 			Vtx[1].ftx = tTexBlt.right; Vtx[1].fty = tTexBlt.top;
@@ -1535,7 +1535,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 
 				glClientActiveTexture(GL_TEXTURE3);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &Vtx[0].ftx);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &Vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
 			}
 			if (!shaders[0] && fUseClrModMap && dwModClr)
@@ -1576,14 +1576,14 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 						glActiveTexture(GL_TEXTURE0);
 
-						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 						glDrawArrays(GL_QUADS, 0, 4);
 					}
 				}
 			}
 			else
 			{
-				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 				glDrawArrays(GL_QUADS, 0, 4);
 			}
 
@@ -1729,7 +1729,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		l += 0.000000005f;
 		offx /= l; offx *= Zoom;
 		offy /= l; offy *= Zoom;
-		CBltVertex vtx[4];
+		C4BltVertex vtx[4];
 		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
 		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;
 		vtx[2].ftx = x2 - offx; vtx[2].fty = y2 - offy; vtx[2].ftz = 0;
@@ -1750,7 +1750,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 
 				glClientActiveTexture(GL_TEXTURE3);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &vtx[0].ftx);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
 			}
 			else
@@ -1772,7 +1772,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		// draw two triangles
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, lines_tex);
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), vtx);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), vtx);
 		glDrawArrays(GL_POLYGON, 0, 4);
 		glClientActiveTexture(GL_TEXTURE3);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1866,7 +1866,7 @@ bool CStdGL::RestoreDeviceObjects()
 	{
 		glGenBuffersARB(1, &vbo);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(CBltVertex), 0, GL_STREAM_DRAW_ARB);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(C4BltVertex), 0, GL_STREAM_DRAW_ARB);
 	}
 
 	if (!Config.Graphics.EnableShaders)

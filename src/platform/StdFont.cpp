@@ -822,7 +822,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom)
 {
 	assert(IsValidUtf8(szText));
-	CBltTransform bt, *pbt=NULL;
+	C4BltTransform bt, *pbt=NULL;
 	// set blit color
 	DWORD dwOldModClr;
 	bool fWasModulated = lpDDraw->GetBlitModulation(dwOldModClr);

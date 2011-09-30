@@ -187,7 +187,7 @@ void C4Facet::DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWOR
 void C4Facet::DrawXR(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iSectionX, int32_t iSectionY, int32_t r)
 {
 	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
-	CBltTransform rot;
+	C4BltTransform rot;
 	rot.SetRotate(r, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
 	lpDDraw->Blit(Surface,
 	              float(X+Wdt*iSectionX),float(Y+Hgt*iSectionY),float(Wdt),float(Hgt),
@@ -501,7 +501,7 @@ void C4DrawTransform::SetTransformAt(C4DrawTransform &r, float iOffX, float iOff
 	float B = r.mat[1] + r.mat[7]*iOffX;
 	float D = r.mat[3] + r.mat[6]*iOffY;
 	float E = r.mat[4] + r.mat[7]*iOffY;
-	CBltTransform::Set(
+	C4BltTransform::Set(
 	  A,        B,        r.mat[2] - A       *iOffX - B       *iOffY + r.mat[8]*iOffX,
 	  D,        E,        r.mat[5] - D       *iOffX - E       *iOffY + r.mat[8]*iOffY,
 	  r.mat[6], r.mat[7], r.mat[8] - r.mat[6]*iOffX - r.mat[7]*iOffY);

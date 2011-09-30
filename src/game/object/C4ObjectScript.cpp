@@ -1697,7 +1697,7 @@ static bool FnSetObjDrawTransform2(C4AulObjectContext *ctx, long iA, long iB, lo
 	}
 	// assign values
 #define L2F(l) ((float)l/1000)
-	CBltTransform matrix;
+	C4BltTransform matrix;
 	matrix.Set(L2F(iA), L2F(iB), L2F(iC), L2F(iD), L2F(iE), L2F(iF), L2F(iG), L2F(iH), L2F(iI));
 	*pTransform *= matrix;
 #undef L2F

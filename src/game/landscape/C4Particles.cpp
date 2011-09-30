@@ -888,7 +888,7 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 
 	if (r)
 	{
-		CBltTransform rot;
+		C4BltTransform rot;
 		rot.SetRotate(r, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
 		lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
 		                    cgo.Surface,tx,ty,twdt,thgt,

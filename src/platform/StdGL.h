@@ -123,8 +123,8 @@ public:
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);
-	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
+	virtual void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 	void FillBG(DWORD dwClr=0);
@@ -154,7 +154,7 @@ protected:
 
 	friend class CSurface;
 	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Pattern;
 	friend class CStdGLCtx;
 	friend class C4StartupOptionsDlg;
 	friend class C4FullScreen;

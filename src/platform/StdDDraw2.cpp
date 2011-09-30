@@ -53,7 +53,7 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
-void CBltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by angle and rotation offset
+void C4BltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
 	// iAngle is in 1/100-degrees (cycling from 0 to 36000)
 	// determine sine and cos of reversed angle in radians
@@ -74,7 +74,7 @@ void CBltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by an
 	     = x1*-fsin + y1*fcos + fsin*fOffX + (1-fcos)*fOffY */
 }
 
-bool CBltTransform::SetAsInv(CBltTransform &r)
+bool C4BltTransform::SetAsInv(C4BltTransform &r)
 {
 	// calc inverse of matrix
 	float det = r.mat[0]*r.mat[4]*r.mat[8] + r.mat[1]*r.mat[5]*r.mat[6]
@@ -93,7 +93,7 @@ bool CBltTransform::SetAsInv(CBltTransform &r)
 	return true;
 }
 
-void CBltTransform::TransformPoint(float &rX, float &rY) const
+void C4BltTransform::TransformPoint(float &rX, float &rY) const
 {
 	// apply matrix
 	float fW = mat[6] * rX + mat[7] * rY + mat[8];
@@ -103,7 +103,7 @@ void CBltTransform::TransformPoint(float &rX, float &rY) const
 	rX = fX; // apply temp
 }
 
-CPattern& CPattern::operator=(const CPattern& nPattern)
+C4Pattern& C4Pattern::operator=(const C4Pattern& nPattern)
 {
 	sfcPattern32 = nPattern.sfcPattern32;
 	if (sfcPattern32) sfcPattern32->Lock();
@@ -123,7 +123,7 @@ CPattern& CPattern::operator=(const CPattern& nPattern)
 	return *this;
 }
 
-bool CPattern::Set(SURFACE sfcSource, int iZoom)
+bool C4Pattern::Set(SURFACE sfcSource, int iZoom)
 {
 	// Safety
 	if (!sfcSource) return false;
@@ -147,7 +147,7 @@ bool CPattern::Set(SURFACE sfcSource, int iZoom)
 	return true;
 }
 
-CPattern::CPattern()
+C4Pattern::C4Pattern()
 {
 	// disable
 	sfcPattern32=NULL;
@@ -155,7 +155,7 @@ CPattern::CPattern()
 	Zoom=0;
 }
 
-void CPattern::Clear()
+void C4Pattern::Clear()
 {
 	// pattern assigned
 	if (sfcPattern32)
@@ -168,7 +168,7 @@ void CPattern::Clear()
 	delete[] CachedPattern; CachedPattern = 0;
 }
 
-DWORD CPattern::PatternClr(unsigned int iX, unsigned int iY) const
+DWORD C4Pattern::PatternClr(unsigned int iX, unsigned int iY) const
 {
 	if (!CachedPattern) return 0;
 	// wrap position
@@ -176,7 +176,7 @@ DWORD CPattern::PatternClr(unsigned int iX, unsigned int iY) const
 	return CachedPattern[iY * Wdt + iX];
 }
 
-void CGammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
+void C4GammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
 {
 	// Using this minimum value, gamma ramp errors on some cards can be avoided
 	int MinGamma = 0x100;
@@ -198,7 +198,7 @@ void CGammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
 	}
 }
 
-void CGammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
+void C4GammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
 {
 	// set red, green and blue channel
 	SetClrChannel(ramp.red  , GetRedValue(dwClr1), GetRedValue(dwClr2), GetRedValue(dwClr3));
@@ -206,7 +206,7 @@ void CGammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
 	SetClrChannel(ramp.blue , GetBlueValue(dwClr1), GetBlueValue(dwClr2), GetBlueValue(dwClr3));
 }
 
-DWORD CGammaControl::ApplyTo(DWORD dwClr)
+DWORD C4GammaControl::ApplyTo(DWORD dwClr)
 {
 	// apply to red, green and blue color component
 	return RGBA(ramp.red[GetRedValue(dwClr)]>>8, ramp.green[GetGreenValue(dwClr)]>>8, ramp.blue[GetBlueValue(dwClr)]>>8, dwClr>>24);
@@ -504,12 +504,12 @@ void CStdDDraw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 
 bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
                      SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-                     bool fSrcColKey, const CBltTransform *pTransform)
+                     bool fSrcColKey, const C4BltTransform *pTransform)
 {
 	// safety
 	if (!sfcSource || !sfcTarget || !twdt || !thgt || !fwdt || !fhgt) return false;
 	// Apply Zoom
-	CBltTransform t;
+	C4BltTransform t;
 	if (pTransform && Zoom != 1.0)
 	{
 		//tx = tx * Zoom - ZoomX * Zoom + ZoomX;
@@ -593,7 +593,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 		return false;
 	}
 	// create blitting struct
-	CBltData BltData;
+	C4BltData BltData;
 	// pass down pTransform
 	BltData.pTransform=pTransform;
 	// blit with basesfc?
@@ -720,7 +720,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	return true;
 }
 
-bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
+bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform)
 {
 	// TODO: Emulate rendering
 	if (!sfcTarget->IsRenderTarget()) return false;
@@ -743,7 +743,7 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 
 bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
                       SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-                      bool fSrcColKey, const CBltTransform *pTransform)
+                      bool fSrcColKey, const C4BltTransform *pTransform)
 {
 	if (!pTransform) return BlitRotate(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, 0, fSrcColKey!=false);
 	// safety
@@ -755,10 +755,10 @@ bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 		{ sfcSource->Unlock(); return false; }
 	// transformed, emulated blit
 	// Calculate transform target rect
-	CBltTransform Transform;
+	C4BltTransform Transform;
 	Transform.SetMoveScale(tx-(float)fx*twdt/fwdt, ty-(float)fy*thgt/fhgt, (float) twdt/fwdt, (float) thgt/fhgt);
 	Transform *=* pTransform;
-	CBltTransform TransformBack;
+	C4BltTransform TransformBack;
 	TransformBack.SetAsInv(Transform);
 	float ttx0=(float)tx, tty0=(float)ty, ttx1=(float)(tx+twdt), tty1=(float)(ty+thgt);
 	float ttx2=(float)ttx0, tty2=(float)tty1, ttx3=(float)ttx1, tty3=(float)tty0;
@@ -793,7 +793,7 @@ bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 	// rendertarget?
 	if (sfcTarget->IsRenderTarget())
 	{
-		CBltTransform rot;
+		C4BltTransform rot;
 		rot.SetRotate(iAngle, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
 		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true, &rot);
 	}
@@ -1125,7 +1125,7 @@ bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
 	return true;
 }
 
-void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal)
+void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
 {
 	if (!sfcDest->Lock()) return;
 	for (int ycnt = -r; ycnt < r; ycnt++)

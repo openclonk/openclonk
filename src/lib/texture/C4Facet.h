@@ -48,7 +48,7 @@ struct C4Vec2D
 	C4Vec2D(int32_t x=0, int32_t y=0) : x(x), y(y) {}
 };
 
-class C4DrawTransform : public CBltTransform
+class C4DrawTransform : public C4BltTransform
 {
 public:
 	int32_t FlipDir; // +1 or -1; multiplied as x-flip
@@ -82,7 +82,7 @@ public:
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{
 		// set values; apply flipdir
-		CBltTransform::Set(fA*FlipDir, fB, fC, fD, fE, fF, fG, fH, fI);
+		C4BltTransform::Set(fA*FlipDir, fB, fC, fD, fE, fF, fG, fH, fI);
 	}
 
 	void SetFlipDir(int32_t iNewFlipDir)

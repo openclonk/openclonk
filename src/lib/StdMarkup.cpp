@@ -21,13 +21,13 @@
 #include <StdMarkup.h>
 #include <StdDDraw2.h>
 
-void CMarkupTagItalic::Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
+void CMarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// do sheering
 	rBltTrf.mat[1]-=0.3f;
 }
 
-void CMarkupTagColor::Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
+void CMarkupTagColor::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {
 	// set color
 	if (fDoClr) dwClr = this->dwClr;

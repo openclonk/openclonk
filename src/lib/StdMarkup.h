@@ -22,8 +22,6 @@
 
 struct FONT2DVERTEX;
 
-class CBltTransform;
-
 // one markup tag
 class CMarkupTag
 {
@@ -33,7 +31,7 @@ public:
 	CMarkupTag(): pPrev(0), pNext(0) { }; // ctor
 	virtual ~CMarkupTag() { };    // dtor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
 	virtual const char *TagName()=0;  // get character string for this tag
 };
 
@@ -43,7 +41,7 @@ class CMarkupTagItalic : public CMarkupTag
 public:
 	CMarkupTagItalic() : CMarkupTag() { } // ctor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
 	virtual const char *TagName() { return "i"; }
 };
 
@@ -55,7 +53,7 @@ private:
 public:
 	CMarkupTagColor(DWORD dwClr) : CMarkupTag(), dwClr(dwClr) { } // ctor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
 	virtual const char *TagName() { return "c"; }
 };
 
@@ -77,7 +75,7 @@ public:
 
 	bool Read(const char **ppText, bool fSkip=false);   // get markup from text
 	bool SkipTags(const char **ppText); // extract markup from text; return whether end is reached
-	void Apply(CBltTransform &rBltTrf, DWORD &dwClr)  // assign markup to vertices
+	void Apply(C4BltTransform &rBltTrf, DWORD &dwClr)  // assign markup to vertices
 	{ for (CMarkupTag *pTag=pTags; pTag; pTag=pTag->pNext) pTag->Apply(rBltTrf, fDoClr, dwClr); }
 	bool Clean() { return !pTags; } // empty?
 

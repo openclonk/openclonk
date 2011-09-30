@@ -1033,7 +1033,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	tTexBlt.bottom= ty + float(cgo.Hgt) * pGL->Zoom;
 
 	// blit positions
-	CBltVertex Vtx[4];
+	C4BltVertex Vtx[4];
 	Vtx[0].ftx = tTexBlt.left;  Vtx[0].fty = tTexBlt.top;
 	Vtx[1].ftx = tTexBlt.right; Vtx[1].fty = tTexBlt.top;
 	Vtx[2].ftx = tTexBlt.right; Vtx[2].fty = tTexBlt.bottom;
@@ -1063,7 +1063,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Blit
-	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 	glDrawArrays(GL_QUADS, 0, 4);
 
 	// Remove shader
