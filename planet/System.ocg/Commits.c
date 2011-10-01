@@ -62,8 +62,13 @@ global func SetSpeed(int x_dir, int y_dir, int prec)
 }
 
 // Sets an objects's speed and its direction, doesn't it?
+// Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 {
+	if(!speed)
+		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
+	if(!angle)
+		angle = Angle(0,0, GetXDir(precSpd), GetYDir(precSpd), precAng);
 	if(!precAng) precAng = 1;
 	var x_dir = Sin(angle, speed, precAng);
 	var y_dir = -Cos(angle, speed, precAng);
