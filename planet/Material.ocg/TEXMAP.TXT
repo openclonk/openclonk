@@ -30,7 +30,7 @@
 41=Granite-granite
 42=Granite-rock
 
-45=Gold-gold
+45=GoldOre-gold_ore
 
 50=Rock-rock
 51=Rock-rock_cracked
