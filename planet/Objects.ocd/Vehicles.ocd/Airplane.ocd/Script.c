@@ -330,6 +330,7 @@ public func ActivateEntrance(object clonk)
 		clonk->Enter(this);
 		clonk->SetAction("Walk");
 		PlaneMount(clonk);
+		clonk->PlayAnimation("Drive", 5, Anim_Const(10), Anim_Const(1000));
 	}
 }
 
