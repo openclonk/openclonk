@@ -7,9 +7,11 @@
 
 #include Library_ItemContainer
 
+local chestanim;
+
 protected func Construction()
 {
-	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
+	chestanim = PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
 	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
 }
 
@@ -40,13 +42,13 @@ private func OnContentMenuOpen() { Open(); }
 
 private func Open()
 {
-	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+	chestanim = PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
 	Sound("ChestOpen.ogg");
 }
 
 private func Close()
 {
-	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Remove), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
 	Sound("ChestClose.ogg");
 }
 
