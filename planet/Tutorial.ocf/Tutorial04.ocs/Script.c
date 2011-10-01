@@ -81,8 +81,8 @@ protected func InitializePlayer(int plr)
 	effect.var1 = 30;
 	effect.var2 = 620;
 	// Clonk starts with sword and shield.
-	clonk->CreateContents(Sword);
 	clonk->CreateContents(Shield);
+	clonk->CreateContents(Sword);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
