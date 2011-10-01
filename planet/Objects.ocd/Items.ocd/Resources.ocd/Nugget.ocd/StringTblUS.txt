@@ -1,2 +1,2 @@
-Name=Chunk of gold
+Name=Nugget
 Description=A very prized find, indeed!

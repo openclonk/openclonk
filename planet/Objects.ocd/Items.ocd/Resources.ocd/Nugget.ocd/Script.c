@@ -1,4 +1,4 @@
-/*--- Gold ---*/
+/*--- Nugget ---*/
 
 protected func Construction()
 {

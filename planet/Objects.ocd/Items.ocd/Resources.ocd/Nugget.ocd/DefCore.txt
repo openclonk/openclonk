@@ -1,5 +1,5 @@
 [DefCore]
-id=Gold
+id=Nugget
 Version=4,10,0,0
 Category=C4D_Object
 Width=8
@@ -9,7 +9,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40,40
-Value=25
+Value=5
 Mass=12
-Components=Gold=1
+Components=Nugget=1
 Rotate=1
