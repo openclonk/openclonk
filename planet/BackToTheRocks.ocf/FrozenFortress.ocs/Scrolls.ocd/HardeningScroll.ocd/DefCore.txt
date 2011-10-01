@@ -1,6 +1,6 @@
 [DefCore]
 id=HardeningScroll
-Version=4,9,10,10
+Version=5,2,0,1
 Category=C4D_Object
 Width=8
 Height=8

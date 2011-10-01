@@ -1,7 +1,7 @@
 [Head]
 Icon=13
 Title=FrozenFortress
-Version=4,10,0,0
+Version=5,2,0,1
 MinPlayer=2
 MaxPlayer=8
 

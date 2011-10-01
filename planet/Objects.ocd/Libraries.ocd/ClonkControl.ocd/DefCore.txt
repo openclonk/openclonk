@@ -1,5 +1,5 @@
 [DefCore]
 id=Library_ClonkControl
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_StaticBack
 Picture=0,0,64,64

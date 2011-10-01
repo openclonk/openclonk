@@ -1,6 +1,6 @@
 [DefCore]
 id=Seaweed
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_Object
 Width=6
 Height=16

@@ -1,4 +1,4 @@
 [DefCore]
 id=Library_Producer
-Version=5,0,0,0
+Version=5,2,0,1
 Category=C4D_StaticBack
