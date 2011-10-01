@@ -787,6 +787,10 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 
 bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 {
+	// Check bounds
+	if (tx < 0 || ty < 0 || tx >= Width || ty >= Height)
+		return false;
+
 	// Save back original material so we can insert it later
 	int omat = 0;
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
