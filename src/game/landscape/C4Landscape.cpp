@@ -2093,6 +2093,33 @@ bool FindLiquidHeight(int32_t cx, int32_t &ry, int32_t hgt)
 	return false;
 }
 
+bool FindTunnelHeight(int32_t cx, int32_t &ry, int32_t hgt)
+{
+	int32_t cy1=ry,cy2=ry,rl1=0,rl2=0;
+
+	while ((cy1>=0) || (cy2<GBackHgt))
+	{
+		// Check upwards
+		if (cy1>=0)
+		{
+			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < 25)
+				{ rl1++; if (rl1>=hgt) { ry=cy1+hgt/2; return true; } }
+			else rl1=0;
+		}
+		// Check downwards
+		if (cy2+1<GBackHgt)
+		{
+			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < 25)
+				{ rl2++; if (rl2>=hgt) { ry=cy2-hgt/2; return true; } }
+			else rl2=0;
+		}
+		// Advance
+		cy1--; cy2++;
+	}
+
+	return false;
+}
+
 // Starting from rx/ry, searches for a width of solid ground.
 // Returns bottom center of surface space found.
 bool FindSolidGround(int32_t &rx, int32_t &ry, int32_t width)
@@ -2181,6 +2208,34 @@ bool FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height)
 		if (cx2<GBackWdt)
 		{
 			if (FindLiquidHeight(cx2,cy2,height)) rl2++;
+			else rl2=0;
+		}
+		// Check runs
+		if (rl1>=width) { rx=cx1+rl1/2; ry=cy1; return true; }
+		if (rl2>=width) { rx=cx2-rl2/2; ry=cy2; return true; }
+	}
+
+	return false;
+}
+
+// Starting from rx/ry, searches for tunnel background
+// Tunnel background == no sky && no semi/solid material (density < 25)
+bool FindTunnel(int32_t &rx, int32_t &ry, int32_t width, int32_t height)
+{
+	int32_t cx1,cx2,cy1,cy2,rl1=0,rl2=0;
+
+	for (cx1=cx2=rx,cy1=cy2=ry; (cx1>0) || (cx2<GBackWdt); cx1--,cx2++)
+	{
+		// Left search
+		if (cx1>0)
+		{
+			if (FindTunnelHeight(cx1,cy1,height)) rl1++;
+			else rl1=0;
+		}
+		// Right search
+		if (cx2<GBackWdt)
+		{
+			if (FindTunnelHeight(cx2,cy2,height)) rl2++;
 			else rl2=0;
 		}
 		// Check runs

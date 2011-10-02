@@ -279,6 +279,7 @@ bool AboveSemiSolid(int32_t &rx, int32_t &ry);
 bool SemiAboveSolid(int32_t &rx, int32_t &ry);
 bool FindSolidGround(int32_t &rx, int32_t &ry, int32_t width);
 bool FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
+bool FindTunnel(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
 bool FindSurfaceLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
 bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange);
 bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, int32_t Plane, int32_t hrange=-1);

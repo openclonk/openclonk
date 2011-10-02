@@ -2476,6 +2476,54 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 		iTy+=3;
 		// Create object
 		return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+		break;
+
+		// Underground/Tunnel
+	case C4D_Place_Subsurface:
+		for (cnt=0; cnt<5; cnt++)
+		{
+			// Random range
+			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			// Find tunnel
+			if (!FindTunnel(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
+				continue;
+			// Tunnel bottom
+			if (!AboveSemiSolid(iTx,iTy)) continue;
+			// Soil check
+			iTy+=3; // two pix into ground
+			iMaterial = GBackMat(iTx,iTy);
+			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
+				{
+					// Create object
+					iTy+=5;
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+				}
+		}
+
+		// Under- or aboveground
+	case C4D_Place_BothSurface:
+		for (cnt=0; cnt<20; cnt++)
+		{
+			// Random hit within target area
+			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			// Above semi solid
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+				continue;
+			// Free above
+			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
+				continue;
+			// Free upleft and upright
+			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3))
+				continue;
+			// Soil check
+			iTy+=3; // two pix into ground
+			iMaterial = GBackMat(iTx,iTy);
+			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
+				{
+					iTy+=5;
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+				}
+		}
 
 	}
 

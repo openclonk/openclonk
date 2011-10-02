@@ -75,9 +75,11 @@ C4D_Border_Top    = 2,
 C4D_Border_Bottom = 4,
 C4D_Border_Layer  = 8,
 
-C4D_Place_Surface    = 0,
-C4D_Place_Liquid     = 1,
-C4D_Place_Air        = 2;
+C4D_Place_Surface     = 0,
+C4D_Place_Liquid      = 1,
+C4D_Place_Air         = 2,
+C4D_Place_Subsurface  = 3,
+C4D_Place_BothSurface = 4;
 
 const int32_t C4D_VehicleControl_None     = 0,
 C4D_VehicleControl_Outside  = 1,
