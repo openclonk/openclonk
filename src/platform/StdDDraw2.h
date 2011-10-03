@@ -30,31 +30,14 @@
 #include <C4windowswrapper.h>
 #endif
 
-// texref-predef
-class C4Draw;
-class C4TexRef;
-class C4Surface;
-struct CStdPalette;
-class CStdGLCtx;
-class C4AbstractApp;
-class C4Window;
-
-class StdMeshMatrix;
-class StdMeshMaterial;
-class StdMeshInstance;
-
 // engines
 #define GFXENGN_DIRECTX  0
 #define GFXENGN_OPENGL   1
 #define GFXENGN_DIRECTXS 2
 #define GFXENGN_NOGFX    3
 
-// Global DDraw access pointer
+// Global Draw access pointer
 extern C4Draw *pDraw;
-
-extern int iGfxEngine;
-
-// font def color indices
 
 // rotation info class
 class C4BltTransform

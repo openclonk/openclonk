@@ -136,6 +136,7 @@ class StdMesh;
 class StdMeshBone;
 class StdMeshInstance;
 class StdMeshMaterial;
+class StdMeshMatrix;
 class StdMeshSkeletonLoader;
 class C4Draw;
 class C4AbstractApp;

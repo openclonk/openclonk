@@ -42,7 +42,6 @@
 
 // Global access pointer
 C4Draw *pDraw=NULL;
-int iGfxEngine=-1;
 
 // Transformation matrix to convert meshes from Ogre to Clonk coordinate system
 const StdMeshMatrix C4Draw::OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
@@ -1250,7 +1249,7 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
 {
 	// create engine
-	switch (iGfxEngine = Engine)
+	switch (Engine)
 	{
 	default: // Use the first engine possible if none selected
 #ifdef USE_DIRECTX
