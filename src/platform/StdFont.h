@@ -108,7 +108,7 @@ protected:
 public:
 	int iLineHgt;        // height of one line of font (in pixels)
 	// draw ine line of text
-	void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom);
+	void DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom);
 
 	// get text size
 	bool GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup = true);

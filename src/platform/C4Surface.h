@@ -275,6 +275,4 @@ public:
 
 extern CTexMgr *pTexMgr;
 
-#define SURFACE C4Surface *
-
 #endif

@@ -130,18 +130,18 @@ public:
 	bool UpdateClipper(); // set current clipper to render target
 	virtual bool PrepareMaterial(StdMeshMaterial &mat);
 	// Surface
-	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
+	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	// Blit
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
 	void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	bool BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
-	bool BlitSurface2Window(SURFACE sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
+	bool BlitSurface2Window(C4Surface * sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
-	void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
-	void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
-	void DrawPixPrimary(SURFACE sfcDest, int tx, int ty, DWORD dwCol);
+	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	void DrawPixPrimary(C4Surface * sfcDest, int tx, int ty, DWORD dwCol);
 	// Gamma
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
 	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);

@@ -37,13 +37,13 @@ public:
 	virtual bool UpdateClipper() { return true; }
 	virtual bool OnResolutionChanged(unsigned int, unsigned int) { return true; }
 	virtual bool PrepareMaterial(StdMeshMaterial& mesh);
-	virtual bool PrepareRendering(SURFACE) { return true; }
+	virtual bool PrepareRendering(C4Surface *) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformBlt(C4BltData &, CTexRef *, DWORD, bool, bool) { }
 	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, DWORD, C4BltTransform* pTransform) { }
-	virtual void PerformLine(SURFACE, float, float, float, float, DWORD) { }
-	virtual void DrawQuadDw(SURFACE, float *, DWORD, DWORD, DWORD, DWORD) { }
-	virtual void PerformPix(SURFACE, float, float, DWORD) { }
+	virtual void PerformLine(C4Surface *, float, float, float, float, DWORD) { }
+	virtual void DrawQuadDw(C4Surface *, float *, DWORD, DWORD, DWORD, DWORD) { }
+	virtual void PerformPix(C4Surface *, float, float, DWORD) { }
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &, bool ) { return true; }
 	virtual bool SaveDefaultGammaRamp(C4Window *) { return true; }
 	virtual void SetTexture() { }

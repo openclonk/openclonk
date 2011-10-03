@@ -184,7 +184,7 @@ bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
 	return false;
 }
 
-bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
+bool CStdD3D::PrepareRendering(C4Surface * sfcToSurface)
 {
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
@@ -339,7 +339,7 @@ bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT
 	return true;
 }
 
-bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
+bool CStdD3D::BlitSurface2Window(C4Surface * sfcSource,
                                  int fX, int fY, int fWdt, int fHgt,
                                  HWND hWnd,
                                  int tX, int tY, int tWdt, int tHgt)
@@ -655,7 +655,7 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return true;
 }
 
-void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
+void CStdD3D::PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 {
 	// is render target?
 	if (!sfcDest->IsRenderTarget())
@@ -684,7 +684,7 @@ void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	DrawQuadDw(sfcDest, vtx, dwClr, dwClr, dwClr, dwClr);
 }
 
-void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
+void CStdD3D::DrawPixPrimary(C4Surface * sfcDest, int iX, int iY, DWORD dwClr)
 {
 	// Must be render target and locked
 	if (!sfcDest->IsRenderTarget() || !sfcDest->IsLocked()) return;
@@ -719,7 +719,7 @@ void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
 	}
 }
 
-void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
+void CStdD3D::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
 {
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
@@ -765,7 +765,7 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 	lpDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 2 );
 }
 
-void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	// FIXME: zoom width
 	//dwClr |= 0xf0000000;

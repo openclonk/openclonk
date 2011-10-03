@@ -333,7 +333,7 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
 	return true;
 }
 
-/*void C4PathFinderRay::DrawLine(SURFACE sfcSurface, int32_t rX, int32_t rY, int32_t iToX, int32_t iToY, BYTE byCol)
+/*void C4PathFinderRay::DrawLine(C4Surface * sfcSurface, int32_t rX, int32_t rY, int32_t iToX, int32_t iToY, BYTE byCol)
   {
   int32_t d,dx,dy,aincr,bincr,xincr,yincr,x,y;
   // Y based

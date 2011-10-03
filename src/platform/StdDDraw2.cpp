@@ -122,7 +122,7 @@ C4Pattern& C4Pattern::operator=(const C4Pattern& nPattern)
 	return *this;
 }
 
-bool C4Pattern::Set(SURFACE sfcSource, int iZoom)
+bool C4Pattern::Set(C4Surface * sfcSource, int iZoom)
 {
 	// Safety
 	if (!sfcSource) return false;
@@ -410,7 +410,7 @@ void CStdDDraw::Clear()
 	dwBlitMode = 0;
 }
 
-bool CStdDDraw::GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt)
+bool CStdDDraw::GetSurfaceSize(C4Surface * sfcSurface, int &iWdt, int &iHgt)
 {
 	return sfcSurface->GetSurfaceSize(iWdt, iHgt);
 }
@@ -446,13 +446,13 @@ bool CStdDDraw::SetPrimaryClipper(int iX1, int iY1, int iX2, int iY2)
 	return true;
 }
 
-bool CStdDDraw::ApplyPrimaryClipper(SURFACE sfcSurface)
+bool CStdDDraw::ApplyPrimaryClipper(C4Surface * sfcSurface)
 {
 	//sfcSurface->SetClipper(lpClipper);
 	return true;
 }
 
-bool CStdDDraw::DetachPrimaryClipper(SURFACE sfcSurface)
+bool CStdDDraw::DetachPrimaryClipper(C4Surface * sfcSurface)
 {
 	//sfcSurface->SetClipper(NULL);
 	return true;
@@ -466,14 +466,14 @@ bool CStdDDraw::NoPrimaryClipper()
 	return true;
 }
 
-void CStdDDraw::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-                              SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
+void CStdDDraw::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+                              C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[])
 {
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, false);
 }
 
 void CStdDDraw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
-                          SURFACE sfcTarget, int tx, int ty, int wdt, int hgt)
+                          C4Surface * sfcTarget, int tx, int ty, int wdt, int hgt)
 {
 	// blit 8bit-sfc
 	// lock surfaces
@@ -719,7 +719,7 @@ bool CStdDDraw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, floa
 	return true;
 }
 
-bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform)
+bool CStdDDraw::RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform)
 {
 	// TODO: Emulate rendering
 	if (!sfcTarget->IsRenderTarget()) return false;
@@ -740,8 +740,8 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 	return true;
 }
 
-bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
-                      SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
+bool CStdDDraw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+                      C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
                       bool fSrcColKey, const C4BltTransform *pTransform)
 {
 	if (!pTransform) return BlitRotate(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, 0, fSrcColKey!=false);
@@ -785,8 +785,8 @@ bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 	return true;
 }
 
-bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
-                           SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
+bool CStdDDraw::BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+                           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
                            int iAngle, bool fTransparency)
 {
 	// rendertarget?
@@ -896,7 +896,7 @@ bool CStdDDraw::CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes)
 	return true;
 }
 
-bool CStdDDraw::BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int ty, bool fBlitBase)
+bool CStdDDraw::BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase)
 {
 	if (fBlitBase)
 	{
@@ -914,7 +914,7 @@ bool CStdDDraw::BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int t
 	}
 }
 
-bool CStdDDraw::BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
+bool CStdDDraw::BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
 {
 	int iSourceWdt,iSourceHgt,iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// Get source surface size
@@ -939,7 +939,7 @@ bool CStdDDraw::BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX,
 	return true;
 }
 
-bool CStdDDraw::BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
+bool CStdDDraw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
 {
 	// if it's a render target, simply blit with repeating texture
 	// repeating textures, however, aren't currently supported
@@ -985,7 +985,7 @@ bool CStdDDraw::BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX
 	return true;
 }
 
-bool CStdDDraw::TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
+bool CStdDDraw::TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
 {
 	C4Markup Markup(true);
 	static char szLinebuf[2500+1];
@@ -994,7 +994,7 @@ bool CStdDDraw::TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFAC
 	return true;
 }
 
-bool CStdDDraw::StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
+bool CStdDDraw::StringOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup)
 {
 	// init markup
 	C4Markup Markup(true);
@@ -1002,7 +1002,7 @@ bool CStdDDraw::StringOut(const char *szText, CStdFont &rFont, float fZoom, SURF
 	return StringOut(szText, sfcDest, iTx, iTy, dwFCol, byForm, fDoMarkup, Markup, &rFont, fZoom);
 }
 
-bool CStdDDraw::StringOut(const char *szText, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom)
+bool CStdDDraw::StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom)
 {
 	// clip
 	if (ClipAll) return true;
@@ -1022,7 +1022,7 @@ bool CStdDDraw::StringOut(const char *szText, SURFACE sfcDest, float iTx, float 
 	return true;
 }
 
-void CStdDDraw::DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
+void CStdDDraw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 {
 	ApplyZoom(tx, ty);
 	// FIXME: zoom to a box
@@ -1043,7 +1043,7 @@ void CStdDDraw::DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	PerformPix(sfcDest, tx, ty, dwClr);
 }
 
-void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdDDraw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
@@ -1090,7 +1090,7 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr);
 }
 
-void CStdDDraw::DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
+void CStdDDraw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
 {
 	DrawLineDw(sfcDest,(float)x1,(float)y1,(float)x2,(float)y1, dwClr);
 	DrawLineDw(sfcDest,(float)x2,(float)y1,(float)x2,(float)y2, dwClr);
@@ -1102,14 +1102,14 @@ void CStdDDraw::DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWO
 
 C4Surface *GLSBuffer=NULL;
 
-bool LockSurfaceGlobal(SURFACE sfcTarget)
+bool LockSurfaceGlobal(C4Surface * sfcTarget)
 {
 	if (GLSBuffer) return false;
 	GLSBuffer=sfcTarget;
 	return !!sfcTarget->Lock();
 }
 
-bool UnLockSurfaceGlobal(SURFACE sfcTarget)
+bool UnLockSurfaceGlobal(C4Surface * sfcTarget)
 {
 	if (!GLSBuffer) return false;
 	sfcTarget->Unlock();
@@ -1124,7 +1124,7 @@ bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
 	return true;
 }
 
-void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
+void CStdDDraw::DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal)
 {
 	if (!sfcDest->Lock()) return;
 	for (int ycnt = -r; ycnt < r; ycnt++)
@@ -1139,7 +1139,7 @@ void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE c
 	sfcDest->Unlock();
 }
 
-void CStdDDraw::Grayscale(SURFACE sfcSfc, int32_t iOffset)
+void CStdDDraw::Grayscale(C4Surface * sfcSfc, int32_t iOffset)
 {
 	// safety
 	if (!sfcSfc) return;
@@ -1295,7 +1295,7 @@ bool CStdDDraw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsig
 	return true;
 }
 
-void CStdDDraw::DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY)
+void CStdDDraw::DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY)
 {
 	ApplyZoom(iX, iY);
 	iWdt *= Zoom;
@@ -1347,7 +1347,7 @@ void CStdDDraw::DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, flo
 	DrawQuadDw(sfcDest, vtx, dwClr1, dwClr3, dwClr4, dwClr2);
 }
 
-void CStdDDraw::DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
+void CStdDDraw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
 	// manual clipping?
 	if (Config.Graphics.ClipManuallyE)

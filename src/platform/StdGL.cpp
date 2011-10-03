@@ -307,7 +307,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 	return mat.BestTechniqueIndex != -1;
 }
 
-bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
+bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 {
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
@@ -1385,8 +1385,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
+void CStdGL::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * mattextures[])
 {
 	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
@@ -1658,7 +1658,7 @@ bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorD
 	return RestoreDeviceObjects();
 }
 
-void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
+void CStdGL::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
 {
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
@@ -1713,7 +1713,7 @@ static inline long int lrintf(float f)
 }
 #endif
 
-void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -1788,7 +1788,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 	}
 }
 
-void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
+void CStdGL::PerformPix(C4Surface * sfcTarget, float tx, float ty, DWORD dwClr)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())

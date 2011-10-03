@@ -819,7 +819,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 /* Text drawing */
 
 
-void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
+void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
 {
 	assert(IsValidUtf8(szText));
 	C4BltTransform bt, *pbt=NULL;

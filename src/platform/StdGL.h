@@ -116,7 +116,7 @@ public:
 	bool UpdateClipper(); // set current clipper to render target
 	bool PrepareMaterial(StdMeshMaterial& mat);
 	// Surface
-	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
+	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef _WIN32
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
@@ -125,13 +125,13 @@ public:
 	void SetupTextureEnv(bool fMod2, bool landscape);
 	virtual void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
-	virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
-	                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
+	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[]);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
-	void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
-	void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
+	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
 	// Gamma
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
 	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);

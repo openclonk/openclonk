@@ -856,7 +856,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	//lpDDraw->SetPrimaryClipper(iX1,iY1,iX2,iY2);
 }
 
-void C4Menu::DrawFrame(SURFACE sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+void C4Menu::DrawFrame(C4Surface * sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 {
 	lpDDraw->DrawFrameDw(sfcSurface, iX+1, iY+1, iX+iWdt-1,iY+iHgt-1, C4RGB(0x44, 0, 0));
 }

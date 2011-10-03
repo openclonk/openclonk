@@ -69,7 +69,7 @@ void C4Video::Clear()
 	Stop();
 }
 
-void C4Video::Init(SURFACE sfcSource, int iWidth, int iHeight)
+void C4Video::Init(C4Surface * sfcSource, int iWidth, int iHeight)
 {
 	// Activate
 	Active=true;

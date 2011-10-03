@@ -29,13 +29,13 @@
 #include <C4Group.h>
 
 
-void C4TargetFacet::Set(SURFACE nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty, float Zoom)
+void C4TargetFacet::Set(C4Surface * nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty, float Zoom)
 {
 	C4Facet::Set(nsfc, nx, ny, nwdt, nhgt);
 	TargetX = ntx; TargetY = nty; this->Zoom = Zoom;
 }
 
-void C4TargetFacet::Set(SURFACE nsfc, const C4Rect & r, float ntx, float nty, float Zoom)
+void C4TargetFacet::Set(C4Surface * nsfc, const C4Rect & r, float ntx, float nty, float Zoom)
 {
 	Set(nsfc, r.x, r.y, r.Wdt, r.Hgt, ntx, nty, Zoom);
 }

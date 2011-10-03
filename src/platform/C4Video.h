@@ -46,7 +46,7 @@ protected:
 	int BufferSize;
 	int InfoSize;
 	bool Recording;
-	SURFACE Surface;
+	C4Surface * Surface;
 	int ShowFlash;
 public:
 	void Draw();
@@ -54,7 +54,7 @@ public:
 	void Resize(int iChange);
 	bool Start(const char *szFilename);
 	void Default();
-	void Init(SURFACE sfcSource, int iWidth=768, int iHeight=576);
+	void Init(C4Surface * sfcSource, int iWidth=768, int iHeight=576);
 	void Clear();
 	bool Start();
 	bool Stop();

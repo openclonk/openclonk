@@ -409,7 +409,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// copy solid mask from bitmap
 	int iNeededBufSize = pForObject->SolidMask.Wdt * pForObject->SolidMask.Hgt;
 	if (!(pSolidMask = new BYTE [iNeededBufSize])) return;
-	SURFACE sfcBitmap = pForObject->GetGraphics()->GetBitmap();
+	C4Surface * sfcBitmap = pForObject->GetGraphics()->GetBitmap();
 	if (!sfcBitmap->Lock()) return;
 	for (int ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
 		for (int xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
