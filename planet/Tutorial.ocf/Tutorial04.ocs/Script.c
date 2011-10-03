@@ -147,7 +147,7 @@ global func FxIntOpenGateTimer(object target)
 	if (ObjectCount(Find_ID(SwordTarget)) == 0)
 	{
 		// Open gate.
-		target->OpenGateDoor();
+		target->OpenDoor();
 		return -1;
 	}
 	return 1;
