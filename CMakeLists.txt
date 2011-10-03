@@ -25,6 +25,7 @@
 
 cmake_minimum_required (VERSION 2.6.0)
 project (clonk CXX C)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
 
@@ -793,7 +794,7 @@ FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 if(USE_CONSOLE)
-	include(./FindReadline.cmake)
+	find_package(Readline)
 	include_directories(${READLINE_INCLUDE_DIRS})
 	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 endif()
@@ -1073,7 +1074,7 @@ endforeach()
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################
 
-include(GccPchSupport.cmake)
+include(GccPchSupport)
 if(CMAKE_COMPILER_IS_GNUCXX)
 	if(NOT DEFINED USE_GCC_PCH)
 		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
