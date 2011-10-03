@@ -27,7 +27,7 @@
 
 #include "C4Include.h"
 #include <StdGL.h>
-#include <StdSurface2.h>
+#include <C4Surface.h>
 #include <StdWindow.h>
 #include "C4Rect.h"
 #include "StdMesh.h"
@@ -426,7 +426,7 @@ void CStdGL::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 	{
 		glActiveTexture(GL_TEXTURE3);
 		glLoadIdentity();
-		CSurface * pSurface = pClrModMap->GetSurface();
+		C4Surface * pSurface = pClrModMap->GetSurface();
 		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 	}
@@ -1529,7 +1529,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
-				CSurface * pSurface = pClrModMap->GetSurface();
+				C4Surface * pSurface = pClrModMap->GetSurface();
 				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 
@@ -1744,7 +1744,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
-				CSurface * pSurface = pClrModMap->GetSurface();
+				C4Surface * pSurface = pClrModMap->GetSurface();
 				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 

@@ -26,7 +26,7 @@
 #include <StdGL.h>
 
 #include <StdApp.h>
-#include <StdSurface2.h>
+#include <C4Surface.h>
 #include <StdWindow.h>
 #include <C4Config.h>
 

@@ -1054,7 +1054,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 {
 	if (!state->hDialog) return;
 
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 	int32_t iPrvWdt,iPrvHgt;
 	RECT rect;
 
@@ -1063,7 +1063,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	iPrvWdt=rect.right-rect.left;
 	iPrvHgt=rect.bottom-rect.top;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
 	lpDDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));

@@ -538,7 +538,7 @@ void C4Object::UpdateFlipDir()
 
 void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform)
 {
-	CSurface* sfc;
+	C4Surface* sfc;
 	switch (GetGraphics()->Type)
 	{
 	case C4DefGraphics::TYPE_Bitmap:
@@ -2676,7 +2676,7 @@ bool C4Object::CheckSolidMaskRect()
 
 	// check NewGfx only, because invalid SolidMask-rects are OK in OldGfx
 	// the bounds-check is done in CStdDDraw::GetPixel()
-	CSurface *sfcGraphics = GetGraphics()->GetBitmap();
+	C4Surface *sfcGraphics = GetGraphics()->GetBitmap();
 	SolidMask.Set(Max<int32_t>(SolidMask.x,0), Max<int32_t>(SolidMask.y,0),
 	              Min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), Min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
 	              SolidMask.tx, SolidMask.ty);

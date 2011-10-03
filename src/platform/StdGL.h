@@ -79,7 +79,7 @@ protected:
 #endif
 
 	friend class CStdGL;
-	friend class CSurface;
+	friend class C4Surface;
 };
 
 // OpenGL encapsulation
@@ -152,7 +152,7 @@ protected:
 	int gammasize;
 #endif
 
-	friend class CSurface;
+	friend class C4Surface;
 	friend class CTexRef;
 	friend class C4Pattern;
 	friend class CStdGLCtx;

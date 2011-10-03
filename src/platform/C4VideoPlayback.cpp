@@ -251,7 +251,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 #ifdef HAVE_LIBSMPEG
 	// FIXME
 	return;
-	CSurface * sfc = &fctBuffer.GetFace();
+	C4Surface * sfc = &fctBuffer.GetFace();
 	sfc->Lock();
 	sfc->CopyBytes((BYTE*)surface->pixels);
 	sfc->Unlock();

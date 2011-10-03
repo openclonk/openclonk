@@ -140,7 +140,8 @@ class CTexMgr;
 class CStdDDraw;
 class C4AbstractApp;
 class C4Window;
-class CSurface;
+class C4Surface;
+class CStdStream;
 
 namespace C4GUI
 {

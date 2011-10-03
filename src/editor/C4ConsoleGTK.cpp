@@ -1292,7 +1292,7 @@ void C4ToolsDlg::State::UpdatePreview()
 	if (!hbox) return;
 	C4ToolsDlg* dlg = GetOwner();
 
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 
 	int32_t iPrvWdt,iPrvHgt;
 
@@ -1300,7 +1300,7 @@ void C4ToolsDlg::State::UpdatePreview()
 	iPrvWdt=64;
 	iPrvHgt=64;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
 	BYTE bCol = 0;

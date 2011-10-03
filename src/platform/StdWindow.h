@@ -266,7 +266,7 @@ public:
 	C4Window ();
 	virtual ~C4Window ();
 	bool Active;
-	CSurface * pSurface;
+	C4Surface * pSurface;
 	virtual void Clear();
 	// Only when the wm requests a close
 	// For example, when the user clicks the little x in the corner or uses Alt-F4

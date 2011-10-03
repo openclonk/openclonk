@@ -256,7 +256,7 @@ void CStdD3D::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, boo
 		pShader = pShaders[fMod2 * SHIDX_Mod2 + fColoredFoW * SHIDX_ColoredFoW];
 		lpDevice->SetPixelShader(pShader->GetInterface());
 		lpDevice->SetTexture(pShader->iInTexIndex, pTex->pTex);
-		CSurface * pModSurface = pClrModMap->GetSurface();
+		C4Surface * pModSurface = pClrModMap->GetSurface();
 		if (pModSurface->ppTex) lpDevice->SetTexture(pShader->iFoWTexIndex, (*(pModSurface->ppTex))->pTex);
 		const float mod_proj[4] = { 1.0f/(pClrModMap->GetResolutionX()* (*(pModSurface->ppTex))->iSizeX),
 		                            1.0f/(pClrModMap->GetResolutionY()* (*(pModSurface->ppTex))->iSizeY),

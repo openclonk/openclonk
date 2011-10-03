@@ -68,12 +68,12 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	CSurface **psfcFontData; // font recource surfaces - additional surfaces created as needed
+	C4Surface **psfcFontData; // font recource surfaces - additional surfaces created as needed
 	int iNumFontSfcs;       // number of created font surfaces
 	int iSfcSizes;          // size for font surfaces
 	int iFontZoom;          // zoom of font in texture
 
-	CSurface *sfcCurrent;  // current surface font data can be written to at runtime
+	C4Surface *sfcCurrent;  // current surface font data can be written to at runtime
 	int32_t iCurrentSfcX, iCurrentSfcY; // current character rendering position
 
 	int iHSpace; // horizontal space to be added betwen two characters

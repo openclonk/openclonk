@@ -29,7 +29,7 @@
 #include "Standard.h"
 #include <StdBuf.h>
 #include <StdDDraw2.h>
-#include <StdSurface2.h>
+#include <C4Surface.h>
 #include <C4Markup.h>
 #include <stdexcept>
 #include <string>
@@ -177,11 +177,11 @@ CStdFont::CStdFont()
 bool CStdFont::AddSurface()
 {
 	// add new surface as render target; copy old ones
-	CSurface **pNewSfcs = new CSurface *[iNumFontSfcs+1];
-	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (CSurface *));
+	C4Surface **pNewSfcs = new C4Surface *[iNumFontSfcs+1];
+	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (C4Surface *));
 	delete [] psfcFontData;
 	psfcFontData = pNewSfcs;
-	CSurface *sfcNew = psfcFontData[iNumFontSfcs] = new CSurface();
+	C4Surface *sfcNew = psfcFontData[iNumFontSfcs] = new C4Surface();
 	++iNumFontSfcs;
 	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
 	// If old surface was locked, unlock it and lock the new one in its stead

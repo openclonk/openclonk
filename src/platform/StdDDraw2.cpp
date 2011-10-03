@@ -219,7 +219,7 @@ C4FogOfWar::~C4FogOfWar()
 	delete[]pMap; delete pSurface;
 }
 
-void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY, unsigned char StartVis, int x0, int y0, uint32_t dwBackClr, class CSurface *backsfc)
+void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY, unsigned char StartVis, int x0, int y0, uint32_t dwBackClr, class C4Surface *backsfc)
 {
 	// set values
 	ResolutionX = ResX; ResolutionY = ResY;
@@ -240,7 +240,7 @@ void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int O
 	if (!pSurface || pSurface->Wdt<Wdt || pSurface->Hgt<Hgt)
 	{
 		delete pSurface;
-		pSurface = new CSurface(Max(Wdt, Hgt), Max(Wdt, Hgt)); // force larger texture size by making it squared!
+		pSurface = new C4Surface(Max(Wdt, Hgt), Max(Wdt, Hgt)); // force larger texture size by making it squared!
 	}
 	// is a background color desired?
 	if (dwBackClr && backsfc)
@@ -258,7 +258,7 @@ void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int O
 	pSurface->ClearBoxDw(0, 0, Wdt, Hgt);
 }
 
-CSurface *C4FogOfWar::GetSurface()
+C4Surface *C4FogOfWar::GetSurface()
 {
 	if (pSurface->IsLocked())
 	{
@@ -501,8 +501,8 @@ void CStdDDraw::Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 	if (!fRender) sfcTarget->Unlock();
 }
 
-bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
-                     SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
+bool CStdDDraw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
+                     C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
                      bool fSrcColKey, const C4BltTransform *pTransform)
 {
 	// safety
@@ -906,7 +906,7 @@ bool CStdDDraw::BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int t
 	else
 	{
 		if (!sfcSurface) return false;
-		CSurface *pSfcBase = sfcSurface->pMainSfc;
+		C4Surface *pSfcBase = sfcSurface->pMainSfc;
 		sfcSurface->pMainSfc = NULL;
 		Blit(sfcSurface, 0.0f, 0.0f, (float)sfcSurface->Wdt, (float)sfcSurface->Hgt, sfcTarget, float(tx), float(ty), float(sfcSurface->Wdt), float(sfcSurface->Hgt), false);
 		sfcSurface->pMainSfc = pSfcBase;
@@ -1100,7 +1100,7 @@ void CStdDDraw::DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWO
 
 // Globally locked surface variables - for DrawLine callback crap
 
-CSurface *GLSBuffer=NULL;
+C4Surface *GLSBuffer=NULL;
 
 bool LockSurfaceGlobal(SURFACE sfcTarget)
 {
@@ -1280,7 +1280,7 @@ bool CStdDDraw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsig
 	// store default gamma
 	SaveDefaultGammaRamp(pApp->pWindow);
 
-	pApp->pWindow->pSurface = new CSurface(pApp, pApp->pWindow);
+	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 
 	if (!CreatePrimarySurfaces(Editor, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;

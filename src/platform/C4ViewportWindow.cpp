@@ -848,7 +848,7 @@ C4Window * C4ViewportWindow::Init(C4Window * pParent, C4AbstractApp * pApp, int3
 #endif
 	if (!result) return result;
 
-	pSurface = new CSurface(pApp, this);
+	pSurface = new C4Surface(pApp, this);
 	// Position and size
 	RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	return result;

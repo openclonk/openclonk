@@ -475,7 +475,7 @@ namespace C4GUI
 			return false;
 		}
 		// create rendering context
-		pWindow->pSurface = new CSurface(&Application, pWindow);
+		pWindow->pSurface = new C4Surface(&Application, pWindow);
 		pWindow->pDialog = this;
 		return true;
 	}

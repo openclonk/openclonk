@@ -1716,8 +1716,8 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	// Fullscreen screenshot
 	else if (!Application.isEditor && Application.Active)
 	{
-		SURFACE sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
-		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
+		C4Surface * sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
+		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
 		lpDDraw->Blit(FullScreen.pSurface,

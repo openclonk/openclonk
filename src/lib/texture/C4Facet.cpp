@@ -405,7 +405,7 @@ void C4Facet::DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &g
 	}
 }
 
-void C4Facet::Set(CSurface &rSfc)
+void C4Facet::Set(C4Surface &rSfc)
 {
 	Set(&rSfc,0,0,rSfc.Wdt,rSfc.Hgt);
 }

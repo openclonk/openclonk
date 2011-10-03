@@ -402,8 +402,7 @@ src/lib/texture/C4FacetEx.h \
 src/lib/texture/C4Facet.h \
 src/lib/texture/C4GraphicsResource.cpp \
 src/lib/texture/C4GraphicsResource.h \
-src/lib/texture/C4Surface.cpp \
-src/lib/texture/C4Surface.h \
+src/lib/texture/C4SurfaceLoaders.cpp \
 src/lib/texture/StdPNG.cpp \
 src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
@@ -477,8 +476,8 @@ src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
 src/platform/StdNoGfx.cpp \
 src/platform/StdNoGfx.h \
-src/platform/StdSurface2.cpp \
-src/platform/StdSurface2.h \
+src/platform/C4Surface.cpp \
+src/platform/C4Surface.h \
 src/platform/StdSurface8.cpp \
 src/platform/StdSurface8.h \
 src/platform/StdSync.h \

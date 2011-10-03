@@ -128,7 +128,7 @@ public:
 			: Surface(pSfc), X(iX), Y(iY), Wdt(iWdt), Hgt(iHgt) {  }
 public:
 	void Default();
-	void Set(CSurface &rSfc);
+	void Set(C4Surface &rSfc);
 	void Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);

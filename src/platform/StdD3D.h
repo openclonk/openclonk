@@ -165,7 +165,7 @@ protected:
 	inline bool HasShaders() const { return !!pShaders[0]; }
 
 
-	friend class CSurface;
+	friend class C4Surface;
 	friend class CTexRef;
 	friend class C4Pattern;
 };

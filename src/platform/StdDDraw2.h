@@ -23,7 +23,7 @@
 #ifndef INC_STDDDRAW2
 #define INC_STDDDRAW2
 
-#include <StdSurface2.h>
+#include <C4Surface.h>
 #include <StdSurface8.h>
 #include <StdBuf.h>
 #ifdef _WIN32
@@ -33,7 +33,7 @@
 // texref-predef
 class CStdDDraw;
 class CTexRef;
-class CSurface;
+class C4Surface;
 struct CStdPalette;
 class CStdGLCtx;
 class C4AbstractApp;
@@ -112,16 +112,16 @@ class C4Pattern
 {
 private:
 	// pattern surface for new-style patterns
-	class CSurface *sfcPattern32;
+	class C4Surface *sfcPattern32;
 	// Faster access
 	uint32_t * CachedPattern; int Wdt; int Hgt;
 	// pattern zoom factor; 0 means no zoom
 	int Zoom;
 public:
 	C4Pattern& operator=(const C4Pattern&);
-	const CSurface *getSurface() const { return sfcPattern32; }
+	const C4Surface *getSurface() const { return sfcPattern32; }
 	DWORD PatternClr(unsigned int iX, unsigned int iY) const; // apply pattern to color
-	bool Set(class CSurface *sfcSource, int iZoom=0); // set and enable pattern
+	bool Set(class C4Surface *sfcSource, int iZoom=0); // set and enable pattern
 	void SetZoom(int iZoom) { Zoom = iZoom; }
 	void Clear();                     // clear pattern
 	C4Pattern();         // ctor
@@ -209,7 +209,7 @@ protected:
 	int32_t iClipX1,iClipY1,iClipX2,iClipY2; // clipper in pixel coordinates
 	bool ClipAll; // set if clipper clips everything away
 	bool PrimaryLocked;             // set if primary surface is locked (-> can't blit)
-	CSurface *RenderTarget;         // current render target
+	C4Surface *RenderTarget;         // current render target
 	bool BlitModulated;             // set if blits should be modulated with BlitModulateClr
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
@@ -340,7 +340,7 @@ protected:
 #endif
 	}
 
-	friend class CSurface;
+	friend class C4Surface;
 	friend class CTexRef;
 	friend class C4Pattern;
 	friend class CStdD3DShader;

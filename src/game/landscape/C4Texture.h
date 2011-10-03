@@ -34,7 +34,7 @@ class C4Texture
 public:
 	C4Texture();
 	~C4Texture();
-	CSurface * Surface32;
+	C4Surface * Surface32;
 
 	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
@@ -99,7 +99,7 @@ public:
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
 	int32_t GetTextureIndex(const char *pTexName);
 protected:
-	bool AddTexture(const char *szTexture, CSurface * sfcSurface);
+	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 };
 
 extern C4TextureMap TextureMap;

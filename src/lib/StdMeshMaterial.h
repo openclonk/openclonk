@@ -21,7 +21,6 @@
 #define INC_StdMeshMaterial
 
 #include <StdBuf.h>
-#include <StdSurface2.h>
 #include <C4Surface.h>
 
 #include <vector>
@@ -170,7 +169,7 @@ public:
 
 		unsigned int RefCount;
 
-		// TODO: Note this cannot be CSurface here, because CSurface
+		// TODO: Note this cannot be C4Surface here, because C4Surface
 		// does not have a virtual destructor, so we couldn't delete it
 		// properly in that case. I am a bit annoyed that this
 		// currently requires a cross-ref to lib/texture. I think

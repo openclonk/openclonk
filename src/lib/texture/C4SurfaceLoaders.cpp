@@ -20,7 +20,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Extension to CSurface that handles bitmaps in C4Group files */
+/* Extension to C4Surface that handles bitmaps in C4Group files */
 
 #include <C4Include.h>
 #include <C4Surface.h>
@@ -32,15 +32,6 @@
 #include <Bitmap256.h>
 #include <StdPNG.h>
 #include <StdDDraw2.h>
-
-#ifdef _DEBUG
-C4Surface::~C4Surface()
-{
-	/*  for (C4ObjectLink *lnk = ::Objects.First; lnk; lnk=lnk->Next)
-	    if (lnk->Obj->Menu)
-	      lnk->Obj->Menu->AssertSurfaceNotUsed(this);*/
-}
-#endif
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
 {
@@ -250,7 +241,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
   SAppend(GetFilename(szFilename),szTemp);
   MakeTempFilename(szTemp);
   // Save to temporary file
-  if (!CSurface::Save(szTemp)) return false;
+  if (!C4Surface::Save(szTemp)) return false;
   // Move temp file to group
   if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
   // Success
@@ -265,24 +256,9 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
 	// Save to temporary file
-	if (!CSurface::SavePNG(szTemp, fSaveAlpha, fApplyGamma, fSaveOverlayOnly)) return false;
+	if (!C4Surface::SavePNG(szTemp, fSaveAlpha, fApplyGamma, fSaveOverlayOnly)) return false;
 	// Move temp file to group
 	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
-	// Success
-	return true;
-}
-
-bool C4Surface::Copy(C4Surface &fromSfc)
-{
-	// Clear anything old
-	Clear();
-	// Default to other surface's color depth
-	Default();
-	// Create surface
-	if (!Create(fromSfc.Wdt, fromSfc.Hgt)) return false;
-	// Blit copy
-	if (!lpDDraw->BlitSurface(&fromSfc, this, 0, 0, false))
-		{ Clear(); return false; }
 	// Success
 	return true;
 }

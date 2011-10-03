@@ -310,7 +310,7 @@ struct CStdPalette
 class C4FogOfWar
 {
 private:
-	class CSurface * pSurface;
+	class C4Surface * pSurface;
 	unsigned char *pMap; size_t MapSize;
 	int Wdt, Hgt;   // number of sections in the map
 	bool FadeTransparent; // if set, ReduceModulation and AddModulation fade transparent instead of black
@@ -326,8 +326,8 @@ public:
 
 	// reset all of map to given values; uses transparent mode and clears rect if a back color is given
 	void Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY,
-	           unsigned char StartVis, int x0, int y0, uint32_t dwBackClr=0, class CSurface *backsfc=NULL);
-	class CSurface *GetSurface();
+	           unsigned char StartVis, int x0, int y0, uint32_t dwBackClr=0, class C4Surface *backsfc=NULL);
+	class C4Surface *GetSurface();
 	// "landscape" coordinates
 	void ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int));                              // reveal all within iRadius1; fade off until iRadius2
 	void AddModulation(int cx, int cy, int Radius, uint8_t Transparency);                                 // hide all within iRadius1; fade off until iRadius2

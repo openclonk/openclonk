@@ -448,7 +448,7 @@ namespace C4GUI
 	void PaintBox::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
 		// only if a valid surface is present
-		// CSurface::Surface was always != 0
+		// C4Surface::Surface was always != 0
 		//if (!fctPaint.GetFace().Surface) return;
 	}
 

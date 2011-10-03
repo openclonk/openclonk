@@ -71,7 +71,7 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	return true;
 }
 
-bool C4FacetSurface::CreateClrByOwner(CSurface *pBySurface)
+bool C4FacetSurface::CreateClrByOwner(C4Surface *pBySurface)
 {
 	Clear();
 	// create surface
@@ -90,7 +90,7 @@ bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
 	int iWdt=Face.Wdt,iHgt=Face.Hgt;
 	if (iWdt>=iMinWdt && iHgt>=iMinHgt) return true;
 	// create temp surface
-	CSurface *sfcDup=new CSurface(iWdt,iHgt);
+	C4Surface *sfcDup=new C4Surface(iWdt,iHgt);
 	if (!sfcDup) return false;
 	if (!lpDDraw->BlitSurface(&Face,sfcDup,0,0,false))
 		{ delete sfcDup; return false; }
