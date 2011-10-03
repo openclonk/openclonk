@@ -46,7 +46,7 @@ option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32)
+if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
 	option(USE_DIRECTX "Enable DirectX support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
 		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
