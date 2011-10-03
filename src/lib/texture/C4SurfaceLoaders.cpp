@@ -183,7 +183,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
 		{
 			assert (tX>=0 && tY>=0 && tX<iTexX && tY<iTexY);
 			// Get Texture and lock it
-			CTexRef *pTexRef = *(ppTex+tY*iTexX+tX);
+			C4TexRef *pTexRef = *(ppTex+tY*iTexX+tX);
 			if (!pTexRef->Lock()) continue;
 			// At the edges, not the whole texture is used
 			int maxY = Min(iTexSize, Hgt - tY * iTexSize), maxX = Min(iTexSize, Wdt - tX * iTexSize);

@@ -133,8 +133,8 @@ public:
 	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	// Blit
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
-	void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-	bool BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
+	void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+	bool BlitTex2Window(C4TexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
 	bool BlitSurface2Window(C4Surface * sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
@@ -166,7 +166,7 @@ protected:
 
 
 	friend class C4Surface;
-	friend class CTexRef;
+	friend class C4TexRef;
 	friend class C4Pattern;
 };
 

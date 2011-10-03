@@ -120,7 +120,7 @@ public:
 		};
 	};
 #endif
-	CTexRef **ppTex;              // textures
+	C4TexRef **ppTex;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
 	C4Surface *pMainSfc;           // main surface for simple ColorByOwner-surfaces
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
@@ -142,8 +142,8 @@ public:
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 	bool Unlock();
 	bool Lock();
-	bool GetTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
-	bool GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
+	bool GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
+	bool GetLockTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
@@ -207,7 +207,7 @@ typedef struct _D3DLOCKED_RECT
 #endif
 
 // one texture encapsulation
-class CTexRef
+class C4TexRef
 {
 public:
 	D3DLOCKED_RECT texLock;   // current lock-data
@@ -237,8 +237,8 @@ public:
 	bool fIntLock;    // if set, texref is locked internally only
 	C4Rect LockSize;
 
-	CTexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
-	~CTexRef();           // release texture
+	C4TexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
+	~C4TexRef();           // release texture
 	bool Lock();          // lock texture
 	// Lock a part of the rect, discarding the content
 	// Note: Calling Lock afterwards without an Unlock first is undefined
@@ -257,22 +257,22 @@ public:
 };
 
 // texture management
-class CTexMgr
+class C4TexMgr
 {
 public:
-	std::list<CTexRef *> Textures;
+	std::list<C4TexRef *> Textures;
 
 public:
-	CTexMgr();    // ctor
-	~CTexMgr();   // dtor
+	C4TexMgr();    // ctor
+	~C4TexMgr();   // dtor
 
-	void RegTex(CTexRef *pTex);
-	void UnregTex(CTexRef *pTex);
+	void RegTex(C4TexRef *pTex);
+	void UnregTex(C4TexRef *pTex);
 
 	void IntLock();   // do an internal lock
 	void IntUnlock(); // undo internal lock
 };
 
-extern CTexMgr *pTexMgr;
+extern C4TexMgr *pTexMgr;
 
 #endif

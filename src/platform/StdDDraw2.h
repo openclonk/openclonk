@@ -32,7 +32,7 @@
 
 // texref-predef
 class CStdDDraw;
-class CTexRef;
+class C4TexRef;
 class C4Surface;
 struct CStdPalette;
 class CStdGLCtx;
@@ -261,7 +261,7 @@ public:
 	          C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
 	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
 	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
-	virtual void PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
+	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
@@ -341,7 +341,7 @@ protected:
 	}
 
 	friend class C4Surface;
-	friend class CTexRef;
+	friend class C4TexRef;
 	friend class C4Pattern;
 	friend class CStdD3DShader;
 };

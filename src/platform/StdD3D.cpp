@@ -221,7 +221,7 @@ bool CStdD3D::PrepareRendering(C4Surface * sfcToSurface)
 	return true;
 }
 
-void CStdD3D::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdD3D::PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	if (!lpDevice || !pVB) return;
 
@@ -315,7 +315,7 @@ unsigned int Format2BitDepth(D3DFORMAT format)
 	}
 }
 
-bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
+bool CStdD3D::BlitTex2Window(C4TexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
 {
 	// lock
 	if (!pTexRef->Lock()) return false;
@@ -363,9 +363,9 @@ bool CStdD3D::BlitSurface2Window(C4Surface * sfcSource,
 		int iTexY=fY/iTexSizeY;
 		int iTexX2=Min((fX+fWdt-1)/iTexSizeX +1, sfcSource->iTexX);
 		int iTexY2=Min((fY+fHgt-1)/iTexSizeY +1, sfcSource->iTexY);
-		CTexRef **ppTex=sfcSource->ppTex+iTexY*sfcSource->iTexX+iTexX;
+		C4TexRef **ppTex=sfcSource->ppTex+iTexY*sfcSource->iTexX+iTexX;
 		// blit from all these textures
-		CTexRef **ppTexRow, *pBaseTex=NULL;
+		C4TexRef **ppTexRow, *pBaseTex=NULL;
 		for (int iY=iTexY; iY<iTexY2; ++iY)
 		{
 			ppTexRow=ppTex;

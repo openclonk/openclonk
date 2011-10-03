@@ -616,7 +616,7 @@ bool CStdDDraw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, floa
 	{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
 		{
-			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
+			C4TexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			// get current blitting offset in texture
 			int iBlitX=sfcSource->iTexSize*iX;
 			int iBlitY=sfcSource->iTexSize*iY;
@@ -691,7 +691,7 @@ bool CStdDDraw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, floa
 			BltData.vtVtx[2].tx = fTexBlt.right / iTexSizeX; BltData.vtVtx[2].ty = fTexBlt.bottom / iTexSizeY;
 			BltData.vtVtx[3].tx = fTexBlt.left / iTexSizeX; BltData.vtVtx[3].ty = fTexBlt.bottom / iTexSizeY;
 
-			CTexRef * pBaseTex = pTex;
+			C4TexRef * pBaseTex = pTex;
 			// is there a base-surface to be blitted first?
 			if (fBaseSfc)
 			{

@@ -381,7 +381,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	}
 
 	// Get tex refs (shortcut, we will use them quite heavily)
-	CTexRef *TexRefs[C4LR_SurfaceCount];
+	C4TexRef *TexRefs[C4LR_SurfaceCount];
 	x = y = 0;
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
 		Surfaces[i]->GetTexAt(&TexRefs[i], x, y);

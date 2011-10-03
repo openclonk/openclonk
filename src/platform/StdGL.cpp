@@ -151,7 +151,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
 				for (unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
 				{
-					const CTexRef& texture = texunit.GetTexture(l);
+					const C4TexRef& texture = texunit.GetTexture(l);
 					glBindTexture(GL_TEXTURE_2D, texture.texName);
 					switch (texunit.TexAddressMode)
 					{
@@ -185,10 +185,10 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
 						// efficient though.
 
-						// Disabled for now, until we find a better place for this (CTexRef?)
+						// Disabled for now, until we find a better place for this (C4TexRef?)
 #if 0
 						if (GLEW_VERSION_1_4)
-							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
+							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<C4TexRef*>(&texunit.GetTexture())->Lock(); const_cast<C4TexRef*>(&texunit.GetTexture())->Unlock(); }
 						else
 							technique.Available = false;
 #else
@@ -376,7 +376,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
 }
 
-void CStdGL::PerformBlt(C4BltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdGL::PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	// global modulation map
 	int i;
@@ -1477,7 +1477,7 @@ void CStdGL::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
 			glActiveTexture(GL_TEXTURE0);
-			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
+			C4TexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
 			if (!mattextures && Zoom != 1.0)
 			{
