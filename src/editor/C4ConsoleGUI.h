@@ -25,7 +25,7 @@
 #include "StdBuf.h"
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
+#include <C4WindowGTK.h>
 typedef C4GtkWindow C4ConsoleBase;
 #else
 typedef C4Window C4ConsoleBase;

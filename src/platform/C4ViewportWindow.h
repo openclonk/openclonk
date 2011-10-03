@@ -24,10 +24,10 @@
 #ifndef INC_C4ViewportWindow
 #define INC_C4ViewportWindow
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
+#include <C4WindowGTK.h>
 typedef C4GtkWindow C4ViewportBase;
 #else
 typedef C4Window C4ViewportBase;

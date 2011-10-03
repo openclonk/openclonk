@@ -36,9 +36,8 @@
 
 #include <utility>
 #include <StdFile.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdRegistry.h>
-#include <StdWindow.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>

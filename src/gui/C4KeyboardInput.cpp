@@ -30,7 +30,7 @@
 
 #include <C4Components.h>
 #include <C4Game.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef USE_X11
 #include <X11/Xlib.h>
@@ -329,7 +329,6 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Undefined, NULL, NULL }
 };
 #elif defined(USE_COCOA)
-#include "StdWindow.h"
 #include "CocoaKeycodeMap.h"
 #endif
 

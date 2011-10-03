@@ -28,7 +28,7 @@
 #include <C4SoundSystem.h>
 #include <C4Components.h>
 #include <C4InteractiveThread.h>
-#include <StdApp.h>
+#include <C4App.h>
 
 class C4ApplicationGameTimer;
 class C4GamePadControl;

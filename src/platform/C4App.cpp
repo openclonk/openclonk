@@ -16,8 +16,8 @@
  */
 
 #include <C4Include.h>
-#include "StdApp.h"
-#include "StdWindow.h"
+#include "C4App.h"
+#include "C4Window.h"
 
 void C4AbstractApp::Run()
 {

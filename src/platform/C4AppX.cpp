@@ -23,7 +23,7 @@
 
 #include <C4Include.h>
 #ifdef USE_X11
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
 #include <StdFile.h>
@@ -56,7 +56,7 @@
 # include <gtk/gtk.h>
 #endif
 
-#include "StdXPrivate.h"
+#include "C4AppXImpl.h"
 
 namespace
 {

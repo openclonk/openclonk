@@ -24,9 +24,9 @@
 #include <C4Include.h>
 
 #ifdef USE_X11
-#include <StdWindow.h>
+#include <C4Window.h>
 
-#include <StdApp.h>
+#include <C4App.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
 #include <StdFile.h>
@@ -50,7 +50,7 @@
 #include <time.h>
 #include <errno.h>
 
-#include "StdXPrivate.h"
+#include "C4AppXImpl.h"
 
 // Some helper functions for choosing a proper visual
 

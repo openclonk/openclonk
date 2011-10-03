@@ -27,9 +27,9 @@
 
 #include <StdFile.h>
 #include <CStdFile.h>
-#include "StdApp.h"
+#include "C4App.h"
 #include <StdGL.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdRegistry.h>
 #include <StdResStr.h>
 #include <StdDDraw2.h>

@@ -30,7 +30,7 @@
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 const int C4CNS_ModePlay = 0,
           C4CNS_ModeEdit = 1,
@@ -44,7 +44,7 @@ const int C4CNS_ModePlay = 0,
 #define IDM_VIEWPORT_NEW2 10500
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
+#include <C4WindowGTK.h>
 typedef C4GtkWindow C4ConsoleBase;
 #else
 typedef C4Window C4ConsoleBase;

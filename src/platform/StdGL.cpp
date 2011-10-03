@@ -28,7 +28,7 @@
 #include "C4Include.h"
 #include <StdGL.h>
 #include <C4Surface.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include "C4Rect.h"
 #include "StdMesh.h"
 #include "C4Config.h"

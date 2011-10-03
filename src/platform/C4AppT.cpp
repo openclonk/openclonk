@@ -24,7 +24,7 @@
 
 #include <C4Include.h>
 #ifdef USE_CONSOLE
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdDDraw2.h>
 #include <C4Application.h>
 

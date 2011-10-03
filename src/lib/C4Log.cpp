@@ -36,7 +36,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Config.h>
 #include <C4Components.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef HAVE_SYS_FILE_H
 #include <sys/file.h>

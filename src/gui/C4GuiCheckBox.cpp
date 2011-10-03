@@ -25,7 +25,7 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 namespace C4GUI
 {

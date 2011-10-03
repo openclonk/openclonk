@@ -25,8 +25,8 @@
 #include "C4Include.h"
 #include <StdDDraw2.h>
 
-#include "StdApp.h"
-#include <StdWindow.h>
+#include "C4App.h"
+#include <C4Window.h>
 #include <StdDDraw2.h>
 #include <StdD3D.h>
 #include <StdGL.h>

@@ -47,7 +47,7 @@
 #include <C4Id.h>
 
 #include <StdResStr2.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 
 // consts (load those from a def file some time)

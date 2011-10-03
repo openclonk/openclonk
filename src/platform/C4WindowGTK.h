@@ -21,7 +21,7 @@
 #ifndef INC_STDGTKWINDOW
 #define INC_STDGTKWINDOW
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #include <gtk/gtk.h>
 

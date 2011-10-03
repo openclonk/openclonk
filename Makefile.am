@@ -461,8 +461,8 @@ src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.h \
-src/platform/StdApp.h \
-src/platform/StdAppCommon.cpp \
+src/platform/C4App.h \
+src/platform/C4App.cpp \
 src/platform/StdD3D.cpp \
 src/platform/StdD3D.h \
 src/platform/StdD3DShader.cpp \
@@ -481,10 +481,10 @@ src/platform/C4Surface.h \
 src/platform/StdSurface8.cpp \
 src/platform/StdSurface8.h \
 src/platform/StdSync.h \
-src/platform/StdTApp.cpp \
+src/platform/C4AppT.cpp \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
-src/platform/StdWindow.h \
+src/platform/C4Window.h \
 src/res/Brush.h \
 src/res/Cursor.h \
 src/res/Dynamic.h \
@@ -540,9 +540,9 @@ src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \
-src/platform/StdMacApp.mm \
+src/platform/C4AppMac.mm \
 src/platform/C4FileMonitorMac.mm \
-src/platform/StdMacWindow.mm \
+src/platform/C4WindowMac.mm \
 src/platform/ClonkAppDelegate.h \
 src/platform/ClonkAppDelegate.mm \
 src/platform/ConsoleWindowController.h \
@@ -557,16 +557,16 @@ src/platform/ClonkMainMenuActions.h \
 src/platform/ClonkMainMenuActions.mm
 endif
 if SDL_MAIN_LOOP
-clonk_SOURCES += src/platform/StdSDLApp.cpp src/platform/StdSDLWindow.cpp
+clonk_SOURCES += src/platform/C4AppSDL.cpp src/platform/C4WindowSDL.cpp
 else
 if WIN32
-clonk_SOURCES += src/platform/StdWindow.cpp
+clonk_SOURCES += src/platform/C4WindowWin32.cpp
 else
-clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h
+clonk_SOURCES += src/platform/C4AppX.cpp src/platform/C4WindowX.cpp src/platform/C4AppXImpl.h
 endif
 endif
 if DEVELOPER_MODE
-clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h src/editor/C4ConsoleGTK.cpp
+clonk_SOURCES += src/platform/C4WindowGTK.cpp src/platform/C4WindowGTK.h src/editor/C4ConsoleGTK.cpp
 endif
 
 clonk_LDADD = \

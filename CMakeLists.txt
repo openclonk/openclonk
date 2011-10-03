@@ -161,9 +161,9 @@ set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
 	src/C4GraphicsSystem.cpp
 	src/C4GraphicsSystem.h
-	src/c4group/C4Components.h
 	src/c4group/C4ComponentHost.cpp
 	src/c4group/C4ComponentHost.h
+	src/c4group/C4Components.h
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
 	src/c4group/C4Group.cpp
@@ -210,9 +210,9 @@ set(OC_CLONK_SOURCES
 	src/control/C4Teams.cpp
 	src/control/C4Teams.h
 	src/editor/C4Console.cpp
-	src/editor/C4Console.h
-	src/editor/C4ConsoleGUI.h
 	src/editor/C4ConsoleGUICommon.h
+	src/editor/C4ConsoleGUI.h
+	src/editor/C4Console.h
 	src/editor/C4DevmodeDlg.cpp
 	src/editor/C4DevmodeDlg.h
 	src/editor/C4EditCursor.cpp
@@ -225,8 +225,8 @@ set(OC_CLONK_SOURCES
 	src/game/C4Physics.h
 	src/game/landscape/C4Landscape.cpp
 	src/game/landscape/C4Landscape.h
-	src/game/landscape/C4LandscapeRender.cpp
 	src/game/landscape/C4LandscapeRenderClassic.cpp
+	src/game/landscape/C4LandscapeRender.cpp
 	src/game/landscape/C4LandscapeRender.h
 	src/game/landscape/C4Map.cpp
 	src/game/landscape/C4MapCreatorS2.cpp
@@ -262,9 +262,9 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4Def.cpp
 	src/game/object/C4DefGraphics.cpp
 	src/game/object/C4DefGraphics.h
+	src/game/object/C4Def.h
 	src/game/object/C4DefList.cpp
 	src/game/object/C4DefList.h
-	src/game/object/C4Def.h
 	src/game/object/C4GameObjects.cpp
 	src/game/object/C4GameObjects.h
 	src/game/object/C4Id.cpp
@@ -288,9 +288,9 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4ObjectList.h
 	src/game/object/C4ObjectMenu.cpp
 	src/game/object/C4ObjectMenu.h
-	src/game/object/C4ObjectScript.cpp
 	src/game/object/C4ObjectPtr.cpp
 	src/game/object/C4ObjectPtr.h
+	src/game/object/C4ObjectScript.cpp
 	src/game/object/C4Sector.cpp
 	src/game/object/C4Sector.h
 	src/game/object/C4Shape.cpp
@@ -384,6 +384,8 @@ set(OC_CLONK_SOURCES
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
 	src/lib/C4Random.cpp
@@ -408,15 +410,13 @@ set(OC_CLONK_SOURCES
 	src/lib/StdColors.h
 	src/lib/StdCompiler.cpp
 	src/lib/StdCompiler.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
-	src/lib/StdMeshLoader.h
-	src/lib/StdMeshLoaderBinary.cpp
 	src/lib/StdMeshLoaderBinaryChunks.cpp
 	src/lib/StdMeshLoaderBinaryChunks.h
+	src/lib/StdMeshLoaderBinary.cpp
 	src/lib/StdMeshLoaderDataStream.h
+	src/lib/StdMeshLoader.h
 	src/lib/StdMeshLoaderXml.cpp
 	src/lib/StdMeshMaterial.cpp
 	src/lib/StdMeshMaterial.h
@@ -469,6 +469,9 @@ set(OC_CLONK_SOURCES
 	src/network/C4PacketBase.h
 	src/platform/Bitmap256.cpp
 	src/platform/Bitmap256.h
+	src/platform/C4App.cpp
+	src/platform/C4App.h
+	src/platform/C4AppT.cpp
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
 	src/platform/C4Fonts.cpp
@@ -479,22 +482,22 @@ set(OC_CLONK_SOURCES
 	src/platform/C4MusicFile.h
 	src/platform/C4MusicSystem.cpp
 	src/platform/C4MusicSystem.h
+	src/platform/C4SoundLoaders.cpp
+	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
-	src/platform/C4SoundLoaders.h
-	src/platform/C4SoundLoaders.cpp
-	src/platform/StdTApp.cpp
+	src/platform/C4Surface.cpp
+	src/platform/C4Surface.h
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
 	src/platform/C4VideoPlayback.h
 	src/platform/C4ViewportWindow.cpp
 	src/platform/C4ViewportWindow.h
+	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.h
-	src/platform/StdApp.h
-	src/platform/StdAppCommon.cpp
 	src/platform/StdD3D.cpp
 	src/platform/StdD3D.h
 	src/platform/StdD3DShader.cpp
@@ -514,20 +517,17 @@ set(OC_CLONK_SOURCES
 	src/platform/StdRegistry.h
 	src/platform/StdScheduler.cpp
 	src/platform/StdScheduler.h
-	src/platform/C4Surface.cpp
-	src/platform/C4Surface.h
 	src/platform/StdSurface8.cpp
 	src/platform/StdSurface8.h
 	src/platform/StdSync.h
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
-	src/platform/StdWindow.h
 	src/script/C4Aul.cpp
-	src/script/C4AulExec.h
-	src/script/C4AulExec.cpp
-	src/script/C4AulDebug.h
 	src/script/C4AulDebug.cpp
+	src/script/C4AulDebug.h
 	src/script/C4AulDefFunc.h
+	src/script/C4AulExec.cpp
+	src/script/C4AulExec.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
@@ -538,21 +538,22 @@ set(OC_CLONK_SOURCES
 	src/script/C4ScriptHost.h
 	src/script/C4StringTable.cpp
 	src/script/C4StringTable.h
-	src/script/C4Value.cpp
-	src/script/C4Value.h
 	src/script/C4ValueArray.cpp
 	src/script/C4ValueArray.h
+	src/script/C4Value.cpp
+	src/script/C4Value.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
 	src/zlib/gzio.c
 	src/zlib/zutil.h
+
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
 
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdWindow.cpp
+		src/platform/C4WindowWin32.cpp
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4CrashHandlerWin32.cpp
@@ -584,14 +585,14 @@ if(WIN32)
 	endif(MINGW)
 elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdSDLApp.cpp
-		src/platform/StdSDLWindow.cpp
+		src/platform/C4AppSDL.cpp
+		src/platform/C4WindowSDL.cpp
 	)
 elseif(USE_X11)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdXApp.cpp
-		src/platform/StdXWindow.cpp
-		src/platform/StdXPrivate.h
+		src/platform/C4AppX.cpp
+		src/platform/C4WindowX.cpp
+		src/platform/C4AppXImpl.h
 	)
 endif()
 
@@ -601,9 +602,9 @@ endif()
 
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdMacApp.mm
+		src/platform/C4AppMac.mm
 		src/platform/C4FileMonitorMac.mm
-		src/platform/StdMacWindow.mm
+		src/platform/C4WindowMac.mm
 		src/platform/ClonkAppDelegate.h
 		src/platform/ClonkAppDelegate.mm
 	)
@@ -641,8 +642,8 @@ if(USE_GTK)
 	)
 
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdGtkWindow.cpp
-		src/platform/StdGtkWindow.h
+		src/platform/C4WindowGTK.cpp
+		src/platform/C4WindowGTK.h
 		src/editor/C4ConsoleGTK.cpp
 	)
 endif()

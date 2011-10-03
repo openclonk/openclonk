@@ -24,10 +24,10 @@
 #import "ClonkWindowController.h"
 
 #include <C4Include.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <string>
 
-#include "StdApp.h"
+#include "C4App.h"
 
 bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 {

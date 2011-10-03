@@ -27,9 +27,9 @@
 #include <StdD3D.h>
 #include <StdD3DShader.h>
 
-#include <StdApp.h>
+#include <C4App.h>
 #include <C4Markup.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <C4Config.h>
 
 #ifdef USE_DIRECTX
