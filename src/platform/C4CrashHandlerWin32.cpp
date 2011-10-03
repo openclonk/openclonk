@@ -27,7 +27,7 @@
 
 #include "C4Include.h"
 
-#ifdef GENERATE_MINI_DUMP
+#ifdef HAVE_DBGHELP
 
 // Dump generation on crash
 #include <C4windowswrapper.h>
@@ -527,4 +527,4 @@ void InstallCrashHandler()
 	// no-op
 }
 
-#endif // GENERATE_MINI_DUMP
+#endif // HAVE_DBGHELP
