@@ -155,13 +155,13 @@ namespace C4GUI
 		if (!fReadOnly && !fSimple)
 		{
 			// draw background
-			lpDDraw->DrawBoxDw(cgo.Surface, x0,y0,x0+rcBounds.Wdt-1,y0+rcBounds.Hgt-1,dwBGClr);
+			pDraw->DrawBoxDw(cgo.Surface, x0,y0,x0+rcBounds.Wdt-1,y0+rcBounds.Hgt-1,dwBGClr);
 			// draw frame
 			if (dwBorderClr)
 			{
 				int32_t x1=cgo.TargetX+rcBounds.x,y1=cgo.TargetY+rcBounds.y,x2=x1+rcBounds.Wdt,y2=y1+rcBounds.Hgt;
-				lpDDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderClr);
-				lpDDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderClr);
+				pDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderClr);
+				pDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderClr);
 			}
 			else
 				// default frame color
@@ -177,17 +177,17 @@ namespace C4GUI
 		// draw text
 		if (*Text)
 		{
-			lpDDraw->StorePrimaryClipper();
-			lpDDraw->SubPrimaryClipper(x0,y0,iRightTextEnd-1,y0+rcBounds.Hgt-1);
-			lpDDraw->TextOut(Text, *pUseFont, 1.0f, cgo.Surface, x0 + ::GraphicsResource.fctContext.Wdt + 2, y0 + (rcBounds.Hgt-pUseFont->GetLineHeight())/2, dwFontClr, ALeft);
-			lpDDraw->RestorePrimaryClipper();
+			pDraw->StorePrimaryClipper();
+			pDraw->SubPrimaryClipper(x0,y0,iRightTextEnd-1,y0+rcBounds.Hgt-1);
+			pDraw->TextOut(Text, *pUseFont, 1.0f, cgo.Surface, x0 + ::GraphicsResource.fctContext.Wdt + 2, y0 + (rcBounds.Hgt-pUseFont->GetLineHeight())/2, dwFontClr, ALeft);
+			pDraw->RestorePrimaryClipper();
 		}
 		// draw selection highlight
 		if ((HasDrawFocus() || iOpenMenu || fMouseOver) && !fReadOnly)
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 	}
 

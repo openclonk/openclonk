@@ -296,11 +296,11 @@ namespace C4GUI
 		C4Rect &rcClipArea = (IsComponentOutsideClientArea() ? GetBounds() : GetClientRect());
 		// clip to window area
 		int clx1, cly1, clx2, cly2;
-		lpDDraw->GetPrimaryClipper(clx1, cly1, clx2, cly2);
+		pDraw->GetPrimaryClipper(clx1, cly1, clx2, cly2);
 		float nclx1 = cgo.TargetX+rcClipArea.x, ncly1 = cgo.TargetY+rcClipArea.y, nclx2 = cgo.TargetX+rcClipArea.x+rcClipArea.Wdt-1, ncly2 = cgo.TargetY+rcClipArea.y+rcClipArea.Hgt-1;
-		lpDDraw->ApplyZoom(nclx1, ncly1);
-		lpDDraw->ApplyZoom(nclx2, ncly2);
-		lpDDraw->SubPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
+		pDraw->ApplyZoom(nclx1, ncly1);
+		pDraw->ApplyZoom(nclx2, ncly2);
+		pDraw->SubPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
 		// update target area
 		cgo.TargetX += rcClientRect.x; cgo.TargetY += rcClientRect.y;
 		// draw contents
@@ -308,7 +308,7 @@ namespace C4GUI
 		// reset target area
 		cgo.TargetX -= rcClientRect.x; cgo.TargetY -= rcClientRect.y;
 		// reset clipper
-		lpDDraw->SetPrimaryClipper(clx1, cly1, clx2, cly2);
+		pDraw->SetPrimaryClipper(clx1, cly1, clx2, cly2);
 	}
 
 	Window::Window() : Container()
@@ -659,7 +659,7 @@ namespace C4GUI
 		// draw background
 		if (dwBackClr != 0xffffffff)
 		{
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, dwBackClr);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, dwBackClr);
 		}
 		// draw title label
 		int32_t iBorderYOff = 0;
@@ -671,7 +671,7 @@ namespace C4GUI
 			iBorderYOff = pTitleFont->GetLineHeight()/2;
 			pTitleFont->GetTextExtent(sTitle.getData(), iTitleGapWdt, iTitleGapX, true);
 			iTitleGapX = 7; iTitleGapWdt += 4;
-			lpDDraw->TextOut(sTitle.getData(), *pTitleFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+iTitleGapX+2, cgo.TargetY+rcBounds.y, dwTitleClr);
+			pDraw->TextOut(sTitle.getData(), *pTitleFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+iTitleGapX+2, cgo.TargetY+rcBounds.y, dwTitleClr);
 		}
 		// draw frame
 		if (dwFrameClr)
@@ -681,17 +681,17 @@ namespace C4GUI
 			{
 				for (int i=0; i<2; ++i)
 				{
-					lpDDraw->DrawLineDw(cgo.Surface, (float) x1+i, (float)y1, (float)(x1+i), (float)(y2-1), dwFrameClr); // left
-					lpDDraw->DrawLineDw(cgo.Surface, (float) (x1+2), (float)(y1+i), (float)(x1+iTitleGapX), (float)(y1+i), dwFrameClr); // top - left side
-					lpDDraw->DrawLineDw(cgo.Surface, (float) (x1+iTitleGapX+iTitleGapWdt), (float)(y1+i), (float)(x2-3), (float)(y1+i), dwFrameClr); // top - right side
-					lpDDraw->DrawLineDw(cgo.Surface, (float) (x2-1-i), (float)y1, (float)(x2-1-i), (float)(y2-1), dwFrameClr); // right
-					lpDDraw->DrawLineDw(cgo.Surface, (float) (x1+2), (float)(y2-1-i), (float)(x2-3), (float)(y2-1-i), dwFrameClr); // bottom
+					pDraw->DrawLineDw(cgo.Surface, (float) x1+i, (float)y1, (float)(x1+i), (float)(y2-1), dwFrameClr); // left
+					pDraw->DrawLineDw(cgo.Surface, (float) (x1+2), (float)(y1+i), (float)(x1+iTitleGapX), (float)(y1+i), dwFrameClr); // top - left side
+					pDraw->DrawLineDw(cgo.Surface, (float) (x1+iTitleGapX+iTitleGapWdt), (float)(y1+i), (float)(x2-3), (float)(y1+i), dwFrameClr); // top - right side
+					pDraw->DrawLineDw(cgo.Surface, (float) (x2-1-i), (float)y1, (float)(x2-1-i), (float)(y2-1), dwFrameClr); // right
+					pDraw->DrawLineDw(cgo.Surface, (float) (x1+2), (float)(y2-1-i), (float)(x2-3), (float)(y2-1-i), dwFrameClr); // bottom
 				}
 			}
 			else
 			{
-				lpDDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, (y2-1), dwFrameClr);
-				lpDDraw->DrawFrameDw(cgo.Surface, (x1+1), (y1+1), (x2-1), (y2-2), dwFrameClr);
+				pDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, (y2-1), dwFrameClr);
+				pDraw->DrawFrameDw(cgo.Surface, (x1+1), (y1+1), (x2-1), (y2-2), dwFrameClr);
 			}
 		}
 		else

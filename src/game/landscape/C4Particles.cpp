@@ -646,18 +646,18 @@ void fxSmokeDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	int32_t px = i/4;
 	int32_t py = i%4;
 	// draw at pos
-	lpDDraw->ActivateBlitModulation(particle->b);
+	pDraw->ActivateBlitModulation(particle->b);
 
 	float fx = float(def->Gfx.X + def->Gfx.Wdt * px);
 	float fy = float(def->Gfx.Y + def->Gfx.Hgt * py);
 	float fwdt = float(def->Gfx.Wdt);
 	float fhgt = float(def->Gfx.Hgt);
 
-	lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+	pDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
 	              cgo.Surface, cx - particle->a, cy - particle->a, particle->a * 2, particle->a * 2,
 	              true);
 
-	lpDDraw->DeactivateBlitModulation();
+	pDraw->DeactivateBlitModulation();
 }
 
 bool fxStdInit(C4Particle *particle, C4Object *target)
@@ -864,11 +864,11 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	if (def->RByV == 3) // random rotation - currently a pseudo random rotation by x/y position
 		r = (((int32_t)(particle->x * 23 + particle->y * 12)) % 360) * 100;
 	// draw at pos
-	lpDDraw->ActivateBlitModulation(particle->b);
-	lpDDraw->StorePrimaryClipper();
-	lpDDraw->SubPrimaryClipper(cgox, cgoy+def->YOff, 100000, 100000);
+	pDraw->ActivateBlitModulation(particle->b);
+	pDraw->StorePrimaryClipper();
+	pDraw->SubPrimaryClipper(cgox, cgoy+def->YOff, 100000, 100000);
 	if (def->Additive)
-		lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+		pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 
 	// draw
 	float draw_width = particle->a;
@@ -890,20 +890,20 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	{
 		C4BltTransform rot;
 		rot.SetRotate(r, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
-		lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+		pDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
 		                    cgo.Surface,tx,ty,twdt,thgt,
 		                    true,&rot);
 	}
 	else
 	{
-		lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+		pDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
 		              cgo.Surface,tx,ty,twdt,thgt,
 		              true);
 	}
 
-	lpDDraw->ResetBlitMode();
-	lpDDraw->RestorePrimaryClipper();
-	lpDDraw->DeactivateBlitModulation();
+	pDraw->ResetBlitMode();
+	pDraw->RestorePrimaryClipper();
+	pDraw->DeactivateBlitModulation();
 }
 
 C4ParticleProcRec C4ParticleProcMap[] =

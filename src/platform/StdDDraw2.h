@@ -50,7 +50,7 @@ class StdMeshInstance;
 #define GFXENGN_NOGFX    3
 
 // Global DDraw access pointer
-extern CStdDDraw *lpDDraw;
+extern CStdDDraw *pDraw;
 
 extern int iGfxEngine;
 
@@ -192,7 +192,7 @@ public:
 	static const StdMeshMatrix OgreToClonk;
 
 	CStdDDraw(): MaxTexSize(0), Saturation(255) { }
-	virtual ~CStdDDraw() { lpDDraw=NULL; }
+	virtual ~CStdDDraw() { pDraw=NULL; }
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
@@ -348,9 +348,9 @@ protected:
 
 struct ZoomDataStackItem: public ZoomData
 {
-	ZoomDataStackItem(float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
-	ZoomDataStackItem(int X, int Y, float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
-	~ZoomDataStackItem() { lpDDraw->SetZoom(*this); }
+	ZoomDataStackItem(float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
+	ZoomDataStackItem(int X, int Y, float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
+	~ZoomDataStackItem() { pDraw->SetZoom(*this); }
 };
 
 bool LockSurfaceGlobal(C4Surface * sfcTarget);

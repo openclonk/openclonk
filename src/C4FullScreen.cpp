@@ -56,12 +56,12 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		// fall through to next case
 	case WM_ACTIVATEAPP:
 		Application.Active = wParam != 0;
-		if (lpDDraw)
+		if (pDraw)
 		{
 			if (Application.Active)
-				lpDDraw->TaskIn();
+				pDraw->TaskIn();
 			else
-				lpDDraw->TaskOut();
+				pDraw->TaskOut();
 		}
 		// redraw background
 		::GraphicsSystem.InvalidateBg();
@@ -253,11 +253,11 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		break;
 	case FocusIn:
 		Application.Active = true;
-		if (lpDDraw) lpDDraw->TaskIn();
+		if (pDraw) pDraw->TaskIn();
 		break;
 	case FocusOut: case UnmapNotify:
 		Application.Active = false;
-		if (lpDDraw) lpDDraw->TaskOut();
+		if (pDraw) pDraw->TaskOut();
 		break;
 	}
 }
@@ -351,8 +351,8 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
 			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-			lpDDraw->InvalidateDeviceObjects();
-			lpDDraw->RestoreDeviceObjects();
+			pDraw->InvalidateDeviceObjects();
+			pDraw->RestoreDeviceObjects();
 
 			break;
 		}

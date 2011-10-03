@@ -515,7 +515,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		if (!fctImage.Surface)
 		{
 			// not loaded yet
-			lpDDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), ::GraphicsResource.MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-::GraphicsResource.MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
+			pDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), ::GraphicsResource.MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-::GraphicsResource.MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
 		}
 		else
 		{
@@ -523,7 +523,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		}
 	}
 	// draw filename
-	lpDDraw->TextOut(sFilenameLabelText.getData(), *pUseFont, 1.0f, cgo.Surface, cgoPicture.X+rcBounds.Wdt/2, cgoPicture.Y+cgoPicture.Hgt, C4GUI_MessageFontClr, ACenter, false);
+	pDraw->TextOut(sFilenameLabelText.getData(), *pUseFont, 1.0f, cgo.Surface, cgoPicture.X+rcBounds.Wdt/2, cgoPicture.Y+cgoPicture.Hgt, C4GUI_MessageFontClr, ACenter, false);
 }
 
 

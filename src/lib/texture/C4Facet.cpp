@@ -70,9 +70,9 @@ C4Facet C4Facet::GetPhase(int iPhaseX, int iPhaseY)
 
 void C4Facet::Draw(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY)
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
 	              sfcTarget,
 	              iX,iY,Wdt,Hgt,true);
@@ -80,9 +80,9 @@ void C4Facet::Draw(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, i
 
 void C4Facet::DrawT(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
 	              sfcTarget,
 	              iX,iY,Wdt,Hgt,true,pTransform);
@@ -90,7 +90,7 @@ void C4Facet::DrawT(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, 
 
 void C4Facet::DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
 {
-	if (!lpDDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
 
 	// Drawing area
 	C4Facet ccgo = cgo;
@@ -111,7 +111,7 @@ void C4Facet::DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY
 		}
 	}
 
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
 	              ccgo.Surface,ccgo.X,ccgo.Y,ccgo.Wdt,ccgo.Hgt,
 	              true,pTransform);
@@ -120,7 +120,7 @@ void C4Facet::DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY
 void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, bool fTransparent)
 {
 	// Valid parameter check
-	if (!lpDDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
 	// Drawing area
 	C4Facet ccgo = cgo;
 	// Adjust for fixed aspect ratio
@@ -140,7 +140,7 @@ void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY,
 		}
 	}
 	// Blit
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
 	              ccgo.Surface,
 	              ccgo.X,ccgo.Y,ccgo.Wdt,ccgo.Hgt,
@@ -152,8 +152,8 @@ void C4Facet::DrawFullScreen(C4Facet &cgo)
 	// stretched fullscreen blit: make sure right and lower side are cleared, because this may be missed due to stretching
 	if (cgo.Wdt > Wdt+2 || cgo.Hgt > Wdt+2)
 	{
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
+		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
+		pDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
 	}
 	// normal blit OK
 	Draw(cgo, false);
@@ -186,10 +186,10 @@ void C4Facet::DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWOR
 
 void C4Facet::DrawXR(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iSectionX, int32_t iSectionY, int32_t r)
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 	C4BltTransform rot;
 	rot.SetRotate(r, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iSectionX),float(Y+Hgt*iSectionY),float(Wdt),float(Hgt),
 	              sfcTarget,
 	              iX,iY,iWdt,iHgt,
@@ -256,20 +256,20 @@ C4Facet C4Facet::Truncate(int32_t iAlign, int32_t iSize)
 
 void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t iSectionY, int32_t iAlign)
 {
-	if (!lpDDraw) return;
+	if (!pDraw) return;
 	char ostr[25]; sprintf(ostr,"%i",iValue);
 	switch (iAlign)
 	{
 	case C4FCT_Center:
 		Draw(cgo, true, iSectionX, iSectionY);
-		lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 		break;
 	case C4FCT_Right:
 	{
 		int32_t textwdt, texthgt;
 		::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
-		lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 		                 cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 		cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - 1 - textwdt - 2 * cgo.Hgt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 		Draw(cgo, true, iSectionX, iSectionY);
@@ -280,13 +280,13 @@ void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t
 
 void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iSectionX, int32_t iSectionY, int32_t iAlign, int32_t *piUsedWidth)
 {
-	if (!lpDDraw) return;
+	if (!pDraw) return;
 	char ostr[25]; sprintf(ostr,"%i/%i",iValue1,iValue2);
 	switch (iAlign)
 	{
 	case C4FCT_Center:
 		Draw(cgo, true, iSectionX, iSectionY);
-		lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 		break;
 	case C4FCT_Right:
@@ -294,7 +294,7 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 		int32_t textwdt, texthgt;
 		::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
 		textwdt += Wdt + 3;
-		lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 		                 cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 		cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - textwdt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 		Draw(cgo, true, iSectionX, iSectionY);
@@ -306,8 +306,8 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 
 void C4Facet::DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iSectionX, int32_t iSectionY) const
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
-	lpDDraw->Blit(Surface,
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iSectionX),float(Y+Hgt*iSectionY),float(Wdt),float(Hgt),
 	              sfcTarget,
 	              iX,iY,iWdt,iHgt,
@@ -316,14 +316,14 @@ void C4Facet::DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float
 
 void C4Facet::DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, float fHgt) const
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt || fWdt<=0 || fHgt<=0) return;
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt || fWdt<=0 || fHgt<=0) return;
 	// Since only source coordinates are available as floats for blitting, go inwards into this facet to match blit
 	// for closest integer target coordinates
 	float zx = fWdt / float(Wdt), zy = fHgt / float(Hgt);
 	int32_t iX = (int32_t) ceilf(fX), iY = (int32_t) ceilf(fY), iX2 = (int32_t) floorf(fX+fWdt), iY2 = (int32_t) floorf(fY+fHgt);
 	float ox = (-fX+iX)/zx, oy = (-fY+iY)/zy;
 	float oxs = (+fX+fWdt-iX2)/zx, oys = (+fY+fHgt-iY2)/zy;
-	lpDDraw->Blit(Surface,
+	pDraw->Blit(Surface,
 	              float(X)+ox, float(Y)+oy, float(Wdt)-ox-oxs, float(Hgt)-oy-oys,
 	              sfcTarget,
 	              iX,iY,iX2-iX,iY2-iY,
@@ -331,7 +331,7 @@ void C4Facet::DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, 
 	zx=(iX2-iX)/(float(Wdt)-ox-oxs);
 	zy=(iY2-iY)/(float(Hgt)-oy-oys);
 	/*  int32_t iX = floorf(fX+0.5)-1, iY = floorf(fY+0.5)-1, iX2 = floorf(fX+fWdt+0.5)-1, iY2 = floorf(fY+fHgt+0.5)-1;
-	  lpDDraw->Blit(Surface,
+	  pDraw->Blit(Surface,
 	                X, Y, Wdt, Hgt,
 	                sfcTarget,
 	                iX,iY,iX2-iX+1,iY2-iY+1,
@@ -340,8 +340,8 @@ void C4Facet::DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, 
 
 void C4Facet::DrawXT(C4Surface * sfcTarget, float iX, float iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
 {
-	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
-	lpDDraw->Blit(Surface,
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+	pDraw->Blit(Surface,
 	              float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
 	              sfcTarget,
 	              iX,iY,iWdt,iHgt,
@@ -351,7 +351,7 @@ void C4Facet::DrawXT(C4Surface * sfcTarget, float iX, float iY, int32_t iWdt, in
 void C4Facet::DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx)
 {
 	// draw energy level using graphics
-	if (!lpDDraw || !gfx.Surface) return;
+	if (!pDraw || !gfx.Surface) return;
 	int32_t h=gfx.Hgt;
 	int32_t yBar = Hgt - BoundBy<int32_t>(iLevel,0,iRange) * Hgt / Max<int32_t>(iRange,1);
 	int32_t iY = 0, vidx=0;
@@ -412,9 +412,9 @@ void C4Facet::Set(C4Surface &rSfc)
 
 void C4Facet::DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 {
-	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !Wdt || !Hgt) return;
 	// Blits whole source surface, not surface facet area
-	lpDDraw->BlitSurfaceTile(Surface,sfcTarget,iX,iY,iWdt,iHgt,0,0,true);
+	pDraw->BlitSurfaceTile(Surface,sfcTarget,iX,iY,iWdt,iHgt,0,0,true);
 }
 
 void C4Facet::Expand(int32_t iLeft, int32_t iRight, int32_t iTop, int32_t iBottom)

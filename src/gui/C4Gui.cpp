@@ -274,14 +274,14 @@ namespace C4GUI
 		             y0 = cgo.TargetY + rcBounds.y + iTopOff,
 		                  x1 = cgo.TargetX + rcBounds.x + rcBounds.Wdt - 1,
 		                       y1 = cgo.TargetY + rcBounds.y + rcBounds.Hgt - 1;
-		if (fDrawTop) lpDDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y0,(float)x1,(float)y0, C4GUI_BorderColor1 | dwAlpha);
-		if (fDrawLeft) lpDDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y0,(float)x0,(float)y1, C4GUI_BorderColor1 | dwAlpha);
-		if (fDrawTop) lpDDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)(x1-1),(float)(y0+1), C4GUI_BorderColor2 | dwAlpha);
-		if (fDrawLeft) lpDDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)(x0+1),(float)(y1-1), C4GUI_BorderColor2 | dwAlpha);
-		lpDDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y1,(float)x1,(float)y1, C4GUI_BorderColor3 | dwAlpha);
-		lpDDraw->DrawLineDw(cgo.Surface, (float)x1,(float)y0,(float)x1,(float)y1, C4GUI_BorderColor3 | dwAlpha);
-		lpDDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y1-1),(float)(x1-1),(float)(y1-1), C4GUI_BorderColor1 | dwAlpha);
-		lpDDraw->DrawLineDw(cgo.Surface, (float)(x1-1),(float)(y0+1),(float)(x1-1),(float)(y1-1), C4GUI_BorderColor1 | dwAlpha);
+		if (fDrawTop) pDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y0,(float)x1,(float)y0, C4GUI_BorderColor1 | dwAlpha);
+		if (fDrawLeft) pDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y0,(float)x0,(float)y1, C4GUI_BorderColor1 | dwAlpha);
+		if (fDrawTop) pDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)(x1-1),(float)(y0+1), C4GUI_BorderColor2 | dwAlpha);
+		if (fDrawLeft) pDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)(x0+1),(float)(y1-1), C4GUI_BorderColor2 | dwAlpha);
+		pDraw->DrawLineDw(cgo.Surface, (float)x0,(float)y1,(float)x1,(float)y1, C4GUI_BorderColor3 | dwAlpha);
+		pDraw->DrawLineDw(cgo.Surface, (float)x1,(float)y0,(float)x1,(float)y1, C4GUI_BorderColor3 | dwAlpha);
+		pDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y1-1),(float)(x1-1),(float)(y1-1), C4GUI_BorderColor1 | dwAlpha);
+		pDraw->DrawLineDw(cgo.Surface, (float)(x1-1),(float)(y0+1),(float)(x1-1),(float)(y1-1), C4GUI_BorderColor1 | dwAlpha);
 	}
 
 	void Element::DrawBar(C4TargetFacet &cgo, DynBarFacet &rFacets)
@@ -457,7 +457,7 @@ namespace C4GUI
 		// only if owned
 		if (!fActive) return;
 		// dbg: some cursor...
-		//lpDDraw->DrawFrame(lpDDraw->lpBack, x-5,y-5,x+5,y+5,2);
+		//pDraw->DrawFrame(pDraw->lpBack, x-5,y-5,x+5,y+5,2);
 
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
@@ -475,7 +475,7 @@ namespace C4GUI
 			}
 		}
 		// drag line
-		//if (LDown) lpDDraw->DrawLine(cgo.Surface, LDownX, LDownY, x,y, 4);
+		//if (LDown) pDraw->DrawLine(cgo.Surface, LDownX, LDownY, x,y, 4);
 	}
 
 	void CMouse::ReleaseElements()
@@ -724,7 +724,7 @@ namespace C4GUI
 					::GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
 				else
 					// loader not yet loaded: black BG
-					lpDDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);
+					pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);
 			}
 		}
 		// draw contents (if GUI-gfx are loaded, which is assumed in GUI-drawing-functions)
@@ -1017,10 +1017,10 @@ namespace C4GUI
 			if (y < cgo.Y+cgo.TargetY+tHgt+5) tY = Min<int32_t>(y+5, cgo.TargetY+cgo.Hgt-tHgt); else tY = y-tHgt-5;
 			tX = BoundBy<int32_t>(x-tWdt/2, cgo.TargetX+cgo.X, cgo.TargetX+cgo.Wdt-tWdt);
 			// draw tooltip box
-			lpDDraw->DrawBoxDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-2, C4GUI_ToolTipBGColor);
-			lpDDraw->DrawFrameDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-1, C4GUI_ToolTipFrameColor);
+			pDraw->DrawBoxDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-2, C4GUI_ToolTipBGColor);
+			pDraw->DrawFrameDw(cgo.Surface, tX,tY,tX+tWdt-1,tY+tHgt-1, C4GUI_ToolTipFrameColor);
 			// draw tooltip
-			lpDDraw->TextOut(sText.getData(), *pUseFont, 1.0f, cgo.Surface, tX+3,tY+1, C4GUI_ToolTipColor, ALeft);
+			pDraw->TextOut(sText.getData(), *pUseFont, 1.0f, cgo.Surface, tX+3,tY+1, C4GUI_ToolTipColor, ALeft);
 			// while there's a tooltip, redraw the bg, because it might overlap
 			::GraphicsSystem.InvalidateBg();
 		}

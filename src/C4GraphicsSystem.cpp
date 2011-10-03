@@ -87,8 +87,8 @@ void C4GraphicsSystem::Clear()
 bool C4GraphicsSystem::StartDrawing()
 {
 	// only if ddraw is ready
-	if (!lpDDraw) return false;
-	if (!lpDDraw->Active) return false;
+	if (!pDraw) return false;
+	if (!pDraw->Active) return false;
 
 	// only if application is active or windowed (if config allows)
 	if (!Application.Active && (!Application.isEditor || !Config.Graphics.RenderInactiveEM)) return false;
@@ -165,7 +165,7 @@ void C4GraphicsSystem::Execute()
 	}
 
 	// gamma update
-	lpDDraw->ApplyGamma();
+	pDraw->ApplyGamma();
 
 	// Video record & status (fullsrceen)
 	if (!Application.isEditor)
@@ -196,7 +196,7 @@ void C4GraphicsSystem::Default()
 
 void C4GraphicsSystem::ClearFullscreenBackground()
 {
-	lpDDraw->FillBG(0);
+	pDraw->FillBG(0);
 	--iRedrawBackground;
 }
 
@@ -209,7 +209,7 @@ bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlac
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;
 	// apply user gamma for loader
-	lpDDraw->ApplyGamma();
+	pDraw->ApplyGamma();
 	// done, success
 	return true;
 }
@@ -285,7 +285,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 					// transfer each pixel - slooow...
 					for (int32_t iY2=0; iY2<bkHgt2; ++iY2)
 						for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
-							png.SetPix(iX+iX2, iY+iY2, lpDDraw->ApplyGammaTo(FullScreen.pSurface->GetPixDw(iX2, iY2, false)));
+							png.SetPix(iX+iX2, iY+iY2, pDraw->ApplyGammaTo(FullScreen.pSurface->GetPixDw(iX2, iY2, false)));
 					// done; unlock
 					FullScreen.pSurface->Unlock();
 				}
@@ -317,7 +317,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 {
 	if (!Application.isEditor && Game.HaltCount)
 	{
-		lpDDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
+		pDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 		                           FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
 		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
 		                           CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
@@ -355,7 +355,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 {
 	if (!FlashMessageTime) return;
 	if (Application.isEditor) return;
-	lpDDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
+	pDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           (FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 	                           (FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
 	                           CStdDDraw::DEFAULT_MESSAGE_COLOR,
@@ -391,7 +391,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("\n<c ffff00>%s</c> - %s\n", GetKeyboardInputName("Screenshot").getData(), LoadResStr("IDS_CTL_SCREENSHOT"));
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("ScreenshotEx").getData(), LoadResStr("IDS_CTL_SCREENSHOTEX"));
 
-	lpDDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
+	pDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           iX + 128, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 
 	// right coloumn
@@ -405,7 +405,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowVtxToggle").getData(), "Entrance+Vertices");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
-	lpDDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
+	pDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 }
 

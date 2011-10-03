@@ -68,14 +68,14 @@ namespace C4GUI
 			int32_t iLabelHgt = rUseFont.GetLineHeight(); int32_t iIconLabelSpacing = 2;
 			int32_t yTop = yCenter - (pfctIcon->Hgt+iIconLabelSpacing+iLabelHgt)/2;
 			pfctIcon->Draw(cgo.Surface, xCenter-pfctIcon->Wdt/2, yTop, icoTitle);
-			lpDDraw->TextOut(sTitle.getData(), rUseFont, 1.0f, cgo.Surface, xCenter, yTop + pfctIcon->Hgt+iIconLabelSpacing, fActive ? C4GUI_GfxTabCaptActiveClr : C4GUI_GfxTabCaptInactiveClr , ACenter);
+			pDraw->TextOut(sTitle.getData(), rUseFont, 1.0f, cgo.Surface, xCenter, yTop + pfctIcon->Hgt+iIconLabelSpacing, fActive ? C4GUI_GfxTabCaptActiveClr : C4GUI_GfxTabCaptInactiveClr , ACenter);
 		}
 		// focus highlight
 		if (fFocus)
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, (fLarge ? x : x - iTxtWdt/2)+5, y+3, (fLarge ? iMaxWdt : iTxtWdt)-10, iTxtHgt-6);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 		if (!(pfctClip && pfctIcon))
 		{
@@ -103,15 +103,15 @@ namespace C4GUI
 			if (!fLarge && fHasCloseButton) x -= iTxtHgt/2;
 			uint32_t dwClr = dwCaptionClr;
 			if (!dwClr) dwClr = fActive ? C4GUI_CaptionFontClr : C4GUI_InactCaptionFontClr;
-			lpDDraw->TextOut(sTitle.getData(), rUseFont, fLarge ? 1.2f : 1.0f, cgo.Surface, x, y, dwClr, fLarge ? ALeft : ACenter, fTitleMarkup);
+			pDraw->TextOut(sTitle.getData(), rUseFont, fLarge ? 1.2f : 1.0f, cgo.Surface, x, y, dwClr, fLarge ? ALeft : ACenter, fTitleMarkup);
 			// close button
 			if (fHasCloseButton)
 			{
 				xo += iTxtWdt / (2 - fLarge) - iTxtHgt + 1;
 				C4Facet cgoCloseBtn(cgo.Surface, xo, y+1, iTxtHgt-2, iTxtHgt-2);
-				if (!fCloseButtonHighlighted) lpDDraw->ActivateBlitModulation(0x7f7f7f);
+				if (!fCloseButtonHighlighted) pDraw->ActivateBlitModulation(0x7f7f7f);
 				Icon::GetIconFacet(Ico_Close).Draw(cgoCloseBtn);
-				if (!fCloseButtonHighlighted) lpDDraw->DeactivateBlitModulation();
+				if (!fCloseButtonHighlighted) pDraw->DeactivateBlitModulation();
 			}
 		}
 	}
@@ -386,7 +386,7 @@ namespace C4GUI
 		                  x1 = cgo.TargetX + rcBounds.x + rcBounds.Wdt - 1,
 		                       y1 = cgo.TargetY + rcBounds.y + rcBounds.Hgt - 1;
 		// main area BG
-		if (!fGfx) lpDDraw->DrawBoxDw(cgo.Surface, x0,y0,x1,y1, C4GUI_StandardBGColor);
+		if (!fGfx) pDraw->DrawBoxDw(cgo.Surface, x0,y0,x1,y1, C4GUI_StandardBGColor);
 		// no tabs?
 		if (!eTabPos) return;
 		bool fLeft = (eTabPos == tbLeft);
@@ -425,14 +425,14 @@ namespace C4GUI
 					vtx[6] = d+iTabWidth; vtx[7] = y0;
 				}
 				DWORD dwClr = (pSheet == pActiveSheet) ? C4GUI_ActiveTabBGColor : C4GUI_StandardBGColor;
-				lpDDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr);
+				pDraw->DrawQuadDw(cgo.Surface, vtx, dwClr, dwClr, dwClr, dwClr);
 				// draw caption frame
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[0]-1     , (float)vtx[1]      , (float)vtx[2]-1    ,(float)vtx[3]        , C4GUI_BorderColorA1);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[2]-1     , (float)vtx[3]      , (float)vtx[4]-fLeft,(float)vtx[5]        , C4GUI_BorderColorA1);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[4]       , (float)vtx[5]      , (float)vtx[6]      ,(float)vtx[7]        , C4GUI_BorderColorA1);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[0]       , (float)vtx[1]+fLeft, (float)vtx[2]      ,(float)vtx[3]+fLeft  , C4GUI_BorderColorA2);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[2]-!fLeft, (float)vtx[3]+1    , (float)vtx[4]      ,(float)vtx[5]+!fLeft , C4GUI_BorderColorA2);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)vtx[4]+1     , (float)vtx[5]+fLeft, (float)vtx[6]      ,(float)vtx[7]+fLeft  , C4GUI_BorderColorA2);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[0]-1     , (float)vtx[1]      , (float)vtx[2]-1    ,(float)vtx[3]        , C4GUI_BorderColorA1);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[2]-1     , (float)vtx[3]      , (float)vtx[4]-fLeft,(float)vtx[5]        , C4GUI_BorderColorA1);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[4]       , (float)vtx[5]      , (float)vtx[6]      ,(float)vtx[7]        , C4GUI_BorderColorA1);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[0]       , (float)vtx[1]+fLeft, (float)vtx[2]      ,(float)vtx[3]+fLeft  , C4GUI_BorderColorA2);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[2]-!fLeft, (float)vtx[3]+1    , (float)vtx[4]      ,(float)vtx[5]+!fLeft , C4GUI_BorderColorA2);
+				pDraw->DrawLineDw(cgo.Surface, (float)vtx[4]+1     , (float)vtx[5]+fLeft, (float)vtx[6]      ,(float)vtx[7]+fLeft  , C4GUI_BorderColorA2);
 			}
 			// draw caption text
 			int32_t iCptTextX = fLeft ? (x0-GetLeftSize()+10) : (d+iTabWidth/2);
@@ -456,10 +456,10 @@ namespace C4GUI
 		// draw tab border line across everything but active tab
 		if (!fGfx) if (ad0||ad1)
 			{
-				lpDDraw->DrawLineDw(cgo.Surface, (float)x0  ,(float)y0  ,(float)(fLeft ? x0 : ad0), (float)(fLeft ? ad0 : y0), C4GUI_BorderColorA1);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)((fLeft ? x0 : ad0)+1), (float)((fLeft ? ad0 : y0)+1) , C4GUI_BorderColorA2);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)(fLeft ? x0 : ad1), (float)(fLeft ? ad1 : y0), (float)(fLeft ? x0 : x1), (float)(fLeft ? y1 : y0), C4GUI_BorderColorA1);
-				lpDDraw->DrawLineDw(cgo.Surface, (float)((fLeft ? x0 : ad1)+1), (float)((fLeft ? ad1 : y0)+1), (float)((fLeft ? x0 : x1)+1), (float)((fLeft ? y1 : y0)+1), C4GUI_BorderColorA2);
+				pDraw->DrawLineDw(cgo.Surface, (float)x0  ,(float)y0  ,(float)(fLeft ? x0 : ad0), (float)(fLeft ? ad0 : y0), C4GUI_BorderColorA1);
+				pDraw->DrawLineDw(cgo.Surface, (float)(x0+1),(float)(y0+1),(float)((fLeft ? x0 : ad0)+1), (float)((fLeft ? ad0 : y0)+1) , C4GUI_BorderColorA2);
+				pDraw->DrawLineDw(cgo.Surface, (float)(fLeft ? x0 : ad1), (float)(fLeft ? ad1 : y0), (float)(fLeft ? x0 : x1), (float)(fLeft ? y1 : y0), C4GUI_BorderColorA1);
+				pDraw->DrawLineDw(cgo.Surface, (float)((fLeft ? x0 : ad1)+1), (float)((fLeft ? ad1 : y0)+1), (float)((fLeft ? x0 : x1)+1), (float)((fLeft ? y1 : y0)+1), C4GUI_BorderColorA2);
 			}
 		// main area bg in gfx: Atop inactive tabs
 		if (fGfx)

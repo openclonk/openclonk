@@ -131,9 +131,9 @@ static void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
 	{
-		lpDDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
-		lpDDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
-		if (contact) lpDDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
+		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
+		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
+		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 
@@ -544,7 +544,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 	case C4DefGraphics::TYPE_Bitmap:
 		sfc = action ? Action.Facet.Surface : GetGraphics()->GetBitmap(Color);
 
-		lpDDraw->Blit(sfc,
+		pDraw->Blit(sfc,
 		              fx, fy, fwdt, fhgt,
 		              cgo.Surface, tx, ty, twdt, thgt,
 		              true, transform);
@@ -564,10 +564,10 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 			matrix = StdMeshMatrix::Scale(twdt/fwdt,thgt/fhgt,std::sqrt(twdt*thgt/(fwdt*fhgt))) * matrix;
 		}
 
-		lpDDraw->SetMeshTransform(&matrix);
+		pDraw->SetMeshTransform(&matrix);
 
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
-		lpDDraw->SetMeshTransform(NULL);
+		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
+		pDraw->SetMeshTransform(NULL);
 		break;
 	}
 }
@@ -602,7 +602,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*    lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, NULL);*/
@@ -621,7 +621,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 			rot.SetRotate(r * 100, offX, offY);
 		}
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, &rot);*/
@@ -675,7 +675,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*lpDDraw->Blit(Action.Facet.Surface,
+		/*pDraw->Blit(Action.Facet.Surface,
 		  fx, fy, fwdt, fhgt,
 		  cgo.Surface, tx, ty, twdt, thgt,
 		  true, NULL);*/
@@ -696,7 +696,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 			rot.SetRotate(r * 100, offX, offY);
 		}
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    lpDDraw->Blit(Action.Facet.Surface,
+		/*    pDraw->Blit(Action.Facet.Surface,
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, &rot);*/
@@ -1976,8 +1976,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
 					ZoomDataStackItem zdsi(newzoom);
-					lpDDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
-					lpDDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
+					pDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
+					pDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
 				}
 
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
@@ -2006,8 +2006,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
 					ZoomDataStackItem zdsi(newzoom);
-					lpDDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
-					lpDDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
+					pDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
+					pDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
 				}
 
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
@@ -2034,7 +2034,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
 		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		lpDDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		pDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 	}
 	// Debug Display ///////////////////////////////////////////////////////////////////////////////
 
@@ -2053,8 +2053,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	bool fOldClrModEnabled = !!(Category & C4D_IgnoreFoW);
 	if (fOldClrModEnabled)
 	{
-		fOldClrModEnabled = lpDDraw->GetClrModMapEnabled();
-		lpDDraw->SetClrModMapEnabled(false);
+		fOldClrModEnabled = pDraw->GetClrModMapEnabled();
+		pDraw->SetClrModMapEnabled(false);
 	}
 
 	// Fire facet - always draw, even if particles are drawn as well
@@ -2100,7 +2100,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		if (Action.Facet.Surface && pActionDef->GetPropertyInt(P_FacetTargetStretch))
 		{
 			if (Action.Target)
-				lpDDraw->Blit(Action.Facet.Surface,
+				pDraw->Blit(Action.Facet.Surface,
 				              float(Action.Facet.X),float(Action.Facet.Y),float(Action.Facet.Wdt),float(Action.Facet.Hgt),
 				              cgo.Surface,
 				              offX + Shape.GetX() + Action.FacetX, offY + Shape.GetY() + Action.FacetY,Action.Facet.Wdt,
@@ -2141,13 +2141,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 			if (OCF & OCF_Entrance)
-				lpDDraw->DrawFrameDw(cgo.Surface,offX+Def->Entrance.x,
+				pDraw->DrawFrameDw(cgo.Surface,offX+Def->Entrance.x,
 				                             offY+Def->Entrance.y,
 				                             offX+Def->Entrance.x+Def->Entrance.Wdt-1,
 				                             offY+Def->Entrance.y+Def->Entrance.Hgt-1,
 				                             C4RGB(0, 0, 0xff));
 			if (OCF & OCF_Collection)
-				lpDDraw->DrawFrameDw(cgo.Surface,offX+Def->Collection.x,
+				pDraw->DrawFrameDw(cgo.Surface,offX+Def->Collection.x,
 				                             offY+Def->Collection.y,
 				                             offX+Def->Collection.x+Def->Collection.Wdt-1,
 				                             offY+Def->Collection.y+Def->Collection.Hgt-1,
@@ -2161,7 +2161,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				StdStrBuf str;
 				str.Format("%s (%d)",pActionDef->GetName(),Action.Phase);
 				int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-				lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
+				pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
 				                           1.0, cgo.Surface, offX, offY + Shape.GetY() - cmhgt,
 				                           InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
 			}
@@ -2169,7 +2169,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Debug Display ///////////////////////////////////////////////////////////////////////
 
 	// Restore visibility inside FoW
-	if (fOldClrModEnabled) lpDDraw->SetClrModMapEnabled(fOldClrModEnabled);
+	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
 
 }
 
@@ -2219,7 +2219,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 								iTX = BoundBy<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
 								iTY = BoundBy<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
 								// Draw
-								lpDDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
+								pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
 								                           pOwner->ColorDw|0x7f000000,ACenter);
 							}
 				}
@@ -2238,7 +2238,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		if (eDrawMode!=ODM_BaseOnly)
 		{
 			C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
-			lpDDraw->Blit(fctConSign.Surface,
+			pDraw->Blit(fctConSign.Surface,
 			              fctConSign.X, fctConSign.Y,
 			              fctConSign.Wdt, fctConSign.Hgt,
 			              cgo.Surface,
@@ -2261,7 +2261,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Draw top face bitmap
 	if (Con!=FullCon && Def->GrowthType)
 		// stretched
-		lpDDraw->Blit(TopFace.Surface,
+		pDraw->Blit(TopFace.Surface,
 		              TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
 		              cgo.Surface,
 		              offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
@@ -2269,7 +2269,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	else
 		// normal
-		lpDDraw->Blit(TopFace.Surface,
+		pDraw->Blit(TopFace.Surface,
 		              TopFace.X,TopFace.Y,
 		              TopFace.Wdt,TopFace.Hgt,
 		              cgo.Surface,
@@ -4275,17 +4275,17 @@ void C4Object::SetRotation(int32_t nr)
 void C4Object::PrepareDrawing()
 {
 	// color modulation
-	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) lpDDraw->ActivateBlitModulation(ColorMod);
+	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) pDraw->ActivateBlitModulation(ColorMod);
 	// other blit modes
-	lpDDraw->SetBlitMode(BlitMode);
+	pDraw->SetBlitMode(BlitMode);
 }
 
 void C4Object::FinishedDrawing()
 {
 	// color modulation
-	lpDDraw->DeactivateBlitModulation();
+	pDraw->DeactivateBlitModulation();
 	// extra blitting flags
-	lpDDraw->ResetBlitMode();
+	pDraw->ResetBlitMode();
 }
 
 void C4Object::DrawSolidMask(C4TargetFacet &cgo)

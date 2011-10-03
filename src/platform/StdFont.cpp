@@ -825,7 +825,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 	C4BltTransform bt, *pbt=NULL;
 	// set blit color
 	DWORD dwOldModClr;
-	bool fWasModulated = lpDDraw->GetBlitModulation(dwOldModClr);
+	bool fWasModulated = pDraw->GetBlitModulation(dwOldModClr);
 	if (fWasModulated) ModulateClr(dwColor, dwOldModClr);
 	// get alpha fade percentage
 	DWORD dwAlphaMod = Min<uint32_t>(((dwColor>>0x18)*0xff)/0xaf, 255)<<0x18 | 0xffffff;
@@ -902,9 +902,9 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			}
 			//normal: not modulated, unless done by transform or alpha fadeout
 			if ((dwColor>>0x18) >= 0xaf)
-				lpDDraw->DeactivateBlitModulation();
+				pDraw->DeactivateBlitModulation();
 			else
-				lpDDraw->ActivateBlitModulation((dwColor&0xff000000) | 0xffffff);
+				pDraw->ActivateBlitModulation((dwColor&0xff000000) | 0xffffff);
 		}
 		else
 		{
@@ -912,7 +912,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			// get texture coordinates
 			fctFromBlt = GetCharacterFacet(c);
 			w2=int(fctFromBlt.Wdt*fZoom); h2=int(fctFromBlt.Hgt*fZoom);
-			lpDDraw->ActivateBlitModulation(dwColor);
+			pDraw->ActivateBlitModulation(dwColor);
 		}
 		// do color/markup
 		if (pbt)
@@ -923,7 +923,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			// apply markup
 			Markup.Apply(bt, dwBlitClr);
 			if (dwBlitClr != dwColor) ModulateClrA(dwBlitClr, dwAlphaMod);
-			lpDDraw->ActivateBlitModulation(dwBlitClr);
+			pDraw->ActivateBlitModulation(dwBlitClr);
 			// move transformation center to center of letter
 			float fOffX=(float) w2/2 + iX;
 			float fOffY=(float) h2/2 + iY;
@@ -931,7 +931,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			bt.mat[5] += fOffY - fOffX*bt.mat[3] - fOffY*bt.mat[4];
 		}
 		// blit character or image
-		lpDDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
+		pDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
 		              sfcDest, iX, iY, float(w2), float(h2),
 		              true, pbt);
 		// advance pos and skip character indent
@@ -939,7 +939,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 	}
 	// reset blit modulation
 	if (fWasModulated)
-		lpDDraw->ActivateBlitModulation(dwOldModClr);
+		pDraw->ActivateBlitModulation(dwOldModClr);
 	else
-		lpDDraw->DeactivateBlitModulation();
+		pDraw->DeactivateBlitModulation();
 }

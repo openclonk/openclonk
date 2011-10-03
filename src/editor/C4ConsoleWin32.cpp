@@ -972,8 +972,8 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
 #ifdef USE_GL
-	if (lpDDraw && !dlg->state->pGLCtx)
-		dlg->state->pGLCtx = lpDDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
+	if (pDraw && !dlg->state->pGLCtx)
+		dlg->state->pGLCtx = pDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
 #endif
 	// Show window
 	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
@@ -1066,7 +1066,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
-	lpDDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
+	pDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
 	BYTE bCol = 0;
 	C4Pattern Pattern;
 	// Sky material: sky as pattern only
@@ -1093,7 +1093,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 		}
 	}
 	if (IsWindowEnabled(GetDlgItem(state->hDialog,IDC_PREVIEW)))
-		lpDDraw->DrawPatternedCircle( sfcPreview,
+		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              Grade,
 		                              bCol, Pattern, *::Landscape.GetPal());

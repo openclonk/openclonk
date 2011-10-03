@@ -129,7 +129,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 {
 #ifdef _WIN32
 	// load video file
-	if (!AVIFile.OpenFile(pVideoFile->GetFilename(), FullScreen.hWindow, lpDDraw->GetByteCnt()*8)) return false;
+	if (!AVIFile.OpenFile(pVideoFile->GetFilename(), FullScreen.hWindow, pDraw->GetByteCnt()*8)) return false;
 	// prepare surface for display
 	if (!fctBuffer.Create(AVIFile.GetWdt(), AVIFile.GetHgt(), C4FCT_Full, C4FCT_Full)) return false;
 	iStartFrameTime = 0; // no frame shown yet

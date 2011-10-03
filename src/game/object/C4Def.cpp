@@ -548,7 +548,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
 
 	if (fSelected)
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
+		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
 
 	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
 
@@ -581,12 +581,12 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 
 		StdMeshMatrix matrix;
 		if (C4ValueToMatrix(value, &matrix))
-			lpDDraw->SetMeshTransform(&matrix);
+			pDraw->SetMeshTransform(&matrix);
 
-		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
-		lpDDraw->SetPerspective(false);
-		lpDDraw->SetMeshTransform(NULL);
+		pDraw->SetPerspective(true);
+		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
+		pDraw->SetPerspective(false);
+		pDraw->SetMeshTransform(NULL);
 
 		break;
 	}

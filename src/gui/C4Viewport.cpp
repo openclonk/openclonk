@@ -174,12 +174,12 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 	cgo.Wdt = cgo0.Wdt * cgo0.Zoom; cgo.Hgt = cgo0.Hgt * cgo0.Zoom;
 	cgo.TargetX = float(cgo0.X); cgo.TargetY = float(cgo0.Y);
 	cgo.Zoom = 1;
-	lpDDraw->SetZoom(cgo.X, cgo.Y, cgo.Zoom);
+	pDraw->SetZoom(cgo.X, cgo.Y, cgo.Zoom);
 
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
 	{
-		lpDDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
+		pDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
 		                           ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.TargetX+cgo.Wdt/2,cgo.TargetY+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
 	}
@@ -193,12 +193,12 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
 		{
 			fDragging = true;
-			lpDDraw->ActivateBlitModulation(0x4fffffff);
+			pDraw->ActivateBlitModulation(0x4fffffff);
 		}
 		// draw menu
 		pPlr->Cursor->Menu->Draw(cgo);
 		// reset modulation for dragging
-		if (fDragging) lpDDraw->DeactivateBlitModulation();
+		if (fDragging) pDraw->DeactivateBlitModulation();
 	}
 	// Player menu
 	if (pPlr && pPlr->Menu.IsActive())
@@ -217,7 +217,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo0)
 	ResetMenuPositions=false;
 
 	// restore Zoom
-	lpDDraw->SetZoom(cgo0.X, cgo0.Y, cgo0.Zoom);
+	pDraw->SetZoom(cgo0.X, cgo0.Y, cgo0.Zoom);
 }
 
 void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
@@ -235,18 +235,18 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	if (fDrawOverlay)
 	{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
-		if (BorderLeft)  lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
-		if (BorderTop)   lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
-		if (BorderRight) lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
-		if (BorderBottom)lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
+		if (BorderLeft)  pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
+		if (BorderTop)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
+		if (BorderRight) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
+		if (BorderBottom)pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 
 		// Set clippers
 		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
 		GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
 		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
 		// Apply Zoom
-		lpDDraw->SetZoom(GameZoom);
-		lpDDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
+		pDraw->SetZoom(GameZoom);
+		pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
 	last_game_draw_cgo = cgo;
 
@@ -259,11 +259,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	{
 		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
 		pPlr->FoW2Map(ClrModMap, int(float(cgo.X)/Zoom-cgo.TargetX), int(float(cgo.Y)/Zoom-cgo.TargetY));
-		lpDDraw->SetClrModMap(&ClrModMap);
-		lpDDraw->SetClrModMapEnabled(true);
+		pDraw->SetClrModMap(&ClrModMap);
+		pDraw->SetClrModMapEnabled(true);
 	}
 	else
-		lpDDraw->SetClrModMapEnabled(false);
+		pDraw->SetClrModMapEnabled(false);
 		*/
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
@@ -299,7 +299,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	/* Fog of war disabled, see above 
 	// FogOfWar-mod off
-	lpDDraw->SetClrModMapEnabled(false);
+	pDraw->SetClrModMapEnabled(false);
 
 	*/
 
@@ -308,8 +308,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// Determine zoom of overlay
 		float fGUIZoom = GetGUIZoom();
 		// now restore complete cgo range for overlay drawing
-		lpDDraw->SetZoom(DrawX,DrawY, fGUIZoom);
-		lpDDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
+		pDraw->SetZoom(DrawX,DrawY, fGUIZoom);
+		pDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1),DrawY+(ViewHgt-1));
 		C4TargetFacet gui_cgo;
 		gui_cgo.Set(cgo0);
 
@@ -331,7 +331,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		// Game messages
 		C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
-		lpDDraw->SetZoom(0, 0, 1.0);
+		pDraw->SetZoom(0, 0, 1.0);
 		::Messages.Draw(gui_cgo, cgo, Player);
 		C4ST_STOP(MsgStat)
 
@@ -342,8 +342,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		C4ST_STOP(OvrStat)
 
 		// Remove zoom n clippers
-		lpDDraw->SetZoom(0, 0, 1.0);
-		lpDDraw->NoPrimaryClipper();
+		pDraw->SetZoom(0, 0, 1.0);
+		pDraw->NoPrimaryClipper();
 	}
 
 }
@@ -379,7 +379,7 @@ void C4Viewport::Execute()
 	C4Window * w = pWindow;
 	if (!w) w = &FullScreen;
 	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(ceilf(float(ViewWdt)/Zoom)),int32_t(ceilf(float(ViewHgt)/Zoom)),ViewX,ViewY,Zoom);
-	lpDDraw->PrepareRendering(w->pSurface);
+	pDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);
 	// Video record & status (developer mode, first player viewport)
@@ -699,7 +699,7 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	}
 
 	// Name
-	lpDDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+	pDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 	                           cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
 	                           pPlr->ColorDw | 0xff000000, ACenter);
 }
@@ -807,7 +807,7 @@ void C4ViewportList::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 	{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		lpDDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
+		pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
 	}
 }
 

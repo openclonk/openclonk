@@ -54,7 +54,7 @@ namespace C4GUI
 		}
 		// print out label
 		if (!!sText)
-			lpDDraw->TextOut(sText.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+GetIconIndent(), rcBounds.y + cgo.TargetY, C4GUI_ContextFontClr, ALeft);
+			pDraw->TextOut(sText.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.x+GetIconIndent(), rcBounds.y + cgo.TargetY, C4GUI_ContextFontClr, ALeft);
 		// submenu arrow
 		if (pSubmenuHandler)
 		{
@@ -182,7 +182,7 @@ namespace C4GUI
 	void ContextMenu::DrawElement(C4TargetFacet &cgo)
 	{
 		// draw context menu bg
-		lpDDraw->DrawBoxDw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY,
+		pDraw->DrawBoxDw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY,
 		                   rcBounds.x+rcBounds.Wdt+cgo.TargetX-1, rcBounds.y+rcBounds.Hgt+cgo.TargetY-1,
 		                   C4GUI_ContextBGColor);
 		// context bg: mark selected item
@@ -194,7 +194,7 @@ namespace C4GUI
 			rcSelArea.x += GetClientRect().x;
 			rcSelArea.y += GetClientRect().y;
 			// draw
-			lpDDraw->DrawBoxDw(cgo.Surface, rcSelArea.x+cgo.TargetX, rcSelArea.y+cgo.TargetY,
+			pDraw->DrawBoxDw(cgo.Surface, rcSelArea.x+cgo.TargetX, rcSelArea.y+cgo.TargetY,
 			                   rcSelArea.x+rcSelArea.Wdt+cgo.TargetX-1, rcSelArea.y+rcSelArea.Hgt+cgo.TargetY-1,
 			                   C4GUI_ContextSelColor);
 		}
@@ -628,9 +628,9 @@ namespace C4GUI
 		// draw selection highlight
 		if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)) || iOpenMenu)
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 	}
 

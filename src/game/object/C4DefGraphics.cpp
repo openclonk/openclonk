@@ -865,8 +865,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->PrepareDrawing();
 	else
 	{
-		lpDDraw->SetBlitMode(dwBlitMode);
-		if (dwClrModulation != 0xffffff) lpDDraw->ActivateBlitModulation(dwClrModulation);
+		pDraw->SetBlitMode(dwBlitMode);
+		if (dwClrModulation != 0xffffff) pDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
@@ -953,10 +953,10 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			pDef->GetProperty(P_MeshTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
-				lpDDraw->SetMeshTransform(&matrix);
+				pDraw->SetMeshTransform(&matrix);
 
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
-			lpDDraw->SetMeshTransform(NULL);
+			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
+			pDraw->SetMeshTransform(NULL);
 		}
 		else
 		{
@@ -978,13 +978,13 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			pDef->GetProperty(P_PictureTransformation, &value);
 			StdMeshMatrix matrix;
 			if (C4ValueToMatrix(value, &matrix))
-				lpDDraw->SetMeshTransform(&matrix);
+				pDraw->SetMeshTransform(&matrix);
 
 			C4DrawTransform trf(Transform, offX, offY);
-			lpDDraw->SetPerspective(true);
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - twdt/2, offY - thgt/2, twdt, thgt, pForObj->Color, &trf);
-			lpDDraw->SetPerspective(false);
-			lpDDraw->SetMeshTransform(NULL);
+			pDraw->SetPerspective(true);
+			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - twdt/2, offY - thgt/2, twdt, thgt, pForObj->Color, &trf);
+			pDraw->SetPerspective(false);
+			pDraw->SetMeshTransform(NULL);
 		}
 	}
 
@@ -993,8 +993,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->FinishedDrawing();
 	else
 	{
-		lpDDraw->ResetBlitMode();
-		lpDDraw->DeactivateBlitModulation();
+		pDraw->ResetBlitMode();
+		pDraw->DeactivateBlitModulation();
 	}
 }
 
@@ -1031,8 +1031,8 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 	}
 	else
 	{
-		lpDDraw->SetBlitMode(dwBlitMode);
-		if (dwClrModulation != 0xffffff) lpDDraw->ActivateBlitModulation(dwClrModulation);
+		pDraw->SetBlitMode(dwBlitMode);
+		if (dwClrModulation != 0xffffff) pDraw->ActivateBlitModulation(dwClrModulation);
 
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
@@ -1056,7 +1056,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		pDef->GetProperty(P_PictureTransformation, &value);
 		StdMeshMatrix matrix;
 		if (C4ValueToMatrix(value, &matrix))
-			lpDDraw->SetMeshTransform(&matrix);
+			pDraw->SetMeshTransform(&matrix);
 
 		// the picture we are rendering is the one with trans applied, and the overlay transformation
 		// is applied to the picture we are rendering, so apply it afterwards. Note that
@@ -1064,10 +1064,10 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		C4DrawTransform trf(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2);
 		if(trans) trf *= *trans;
 
-		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
-		lpDDraw->SetPerspective(false);
-		lpDDraw->SetMeshTransform(NULL);
+		pDraw->SetPerspective(true);
+		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
+		pDraw->SetPerspective(false);
+		pDraw->SetMeshTransform(NULL);
 	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
@@ -1076,8 +1076,8 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 	}
 	else
 	{
-		lpDDraw->ResetBlitMode();
-		lpDDraw->DeactivateBlitModulation();
+		pDraw->ResetBlitMode();
+		pDraw->DeactivateBlitModulation();
 	}
 }
 

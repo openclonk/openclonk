@@ -2536,7 +2536,7 @@ namespace C4GUI
 		void Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt);
 		void Clear();
 
-		void Render(bool fDoBG);                 // render to lpDDraw
+		void Render(bool fDoBG);                 // render to pDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
 		bool Execute();                // handle messages; execute all dialogs
 

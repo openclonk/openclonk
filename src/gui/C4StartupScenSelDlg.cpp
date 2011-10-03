@@ -156,7 +156,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 			C4FacetSurface fctDump; bool fSuccess=false;
 			if (fctDump.Create(pScen->rcOverlayPos.Wdt, pScen->rcOverlayPos.Hgt, C4FCT_Full, C4FCT_Full))
 			{
-				lpDDraw->Blit(fctBackgroundPicture.Surface,
+				pDraw->Blit(fctBackgroundPicture.Surface,
 				              (float) pScen->rcOverlayPos.x, (float) pScen->rcOverlayPos.y,
 				              (float) pScen->rcOverlayPos.Wdt, (float) pScen->rcOverlayPos.Hgt,
 				              fctDump.Surface,

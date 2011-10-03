@@ -99,9 +99,9 @@ namespace C4GUI
 		// draw selection highlight
 		if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
-				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+				pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 				::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+5, y0+3, rcBounds.Wdt-10, rcBounds.Hgt-6);
-				lpDDraw->ResetBlitMode();
+				pDraw->ResetBlitMode();
 			}
 		// draw text
 		int32_t iTextHgt = rcBounds.Hgt-2;
@@ -113,8 +113,8 @@ namespace C4GUI
 				   ::GraphicsResource.TitleFont);
 		iTextHgt = rUseFont.GetLineHeight();
 		//CStdFont &rShadowFont = GetRes()->MiniFont;
-		//lpDDraw->TextOut(Text, rShadowFont, (float) iTextHgt/rShadowFont.GetLineHeight(), cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontShadowClr, ACenter, true);
-		lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontClr, ACenter, true);
+		//pDraw->TextOut(Text, rShadowFont, (float) iTextHgt/rShadowFont.GetLineHeight(), cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontShadowClr, ACenter, true);
+		pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4GUI_ButtonFontClr, ACenter, true);
 	}
 
 	bool Button::KeyButtonDown()
@@ -220,9 +220,9 @@ namespace C4GUI
 		// draw selection highlight
 		if (fEnabled) if (fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
-				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+				pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
-				lpDDraw->ResetBlitMode();
+				pDraw->ResetBlitMode();
 			}
 		// draw the icon
 		if (fHasClr && fctIcon.Surface) fctIcon.Surface->SetClr(dwClr);
@@ -230,15 +230,15 @@ namespace C4GUI
 		// "button" down?
 		if (fEnabled) if (fDown || fHighlight)
 			{
-				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+				pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
-				lpDDraw->ResetBlitMode();
+				pDraw->ResetBlitMode();
 			}
 		// some icon buttons have captions. draw caption below button
 		if (sText.getLength())
 		{
 			CStdFont &rUseFont = pCustomFont ? *pCustomFont : ::GraphicsResource.TextFont;
-			lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt-rUseFont.GetLineHeight()*4/5, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
+			pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt-rUseFont.GetLineHeight()*4/5, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
 		}
 	}
 
@@ -274,9 +274,9 @@ namespace C4GUI
 		// draw selection highlight
 		if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 			{
-				lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+				pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 				::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0, y0, rcBounds.Wdt, rcBounds.Hgt);
-				lpDDraw->ResetBlitMode();
+				pDraw->ResetBlitMode();
 			}
 		// draw the arrow - down if pressed
 		int32_t iFctIdx = eDir;
@@ -330,14 +330,14 @@ namespace C4GUI
 		if (sText.getLength()>0)
 		{
 			CStdFont *pUseFont = pFont ? pFont : &(::GraphicsResource.GetFontByHeight(rcBounds.Hgt, &fFontZoom));
-			lpDDraw->TextOut(sText.getData(), *pUseFont, fFontZoom, cgo.Surface, (int)(x0+iTxtOffX), (int)(y0+iTxtOffY), dwTextClr, byTxtAlign, true);
+			pDraw->TextOut(sText.getData(), *pUseFont, fFontZoom, cgo.Surface, (int)(x0+iTxtOffX), (int)(y0+iTxtOffY), dwTextClr, byTxtAlign, true);
 		}
 		/*
 		if (fEnabled) if (fMouseOver && IsInActiveDlg(false))
 		  {
-		  lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+		  pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 		  GetRes()->fctButtonHighlight.DrawXFloat(cgo.Surface, x0, y0, rcfDrawBounds.right-rcfDrawBounds.left, rcfDrawBounds.bottom-rcfDrawBounds.top);
-		  lpDDraw->ResetBlitMode();
+		  pDraw->ResetBlitMode();
 		  }*/
 	}
 

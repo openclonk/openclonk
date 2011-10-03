@@ -1333,7 +1333,7 @@ void C4ToolsDlg::State::UpdatePreview()
 #else
 	if (GTK_WIDGET_SENSITIVE(preview))
 #endif
-		lpDDraw->DrawPatternedCircle( sfcPreview,
+		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              dlg->Grade,
 		                              bCol, Pattern, *::Landscape.GetPal());

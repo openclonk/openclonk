@@ -569,24 +569,24 @@ namespace C4GUI
 	void Edit::DrawElement(C4TargetFacet &cgo)
 	{
 		// draw background
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt+cgo.TargetX-1,rcClientRect.y+rcClientRect.Hgt+cgo.TargetY, dwBGClr);
+		pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt+cgo.TargetX-1,rcClientRect.y+rcClientRect.Hgt+cgo.TargetY, dwBGClr);
 		// draw frame
 		if (dwBorderColor)
 		{
 			int32_t x1=cgo.TargetX+rcBounds.x,y1=cgo.TargetY+rcBounds.y,x2=x1+rcBounds.Wdt,y2=y1+rcBounds.Hgt;
-			lpDDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderColor);
-			lpDDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderColor);
+			pDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderColor);
+			pDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderColor);
 		}
 		else
 			// default frame color
 			Draw3DFrame(cgo);
 		// clipping
 		int cx0,cy0,cx1,cy1; bool fClip, fOwnClip;
-		fClip = lpDDraw->GetPrimaryClipper(cx0,cy0,cx1,cy1);
+		fClip = pDraw->GetPrimaryClipper(cx0,cy0,cx1,cy1);
 		float nclx1 = rcClientRect.x+cgo.TargetX-2, ncly1 = rcClientRect.y+cgo.TargetY, nclx2 = rcClientRect.x+rcClientRect.Wdt+cgo.TargetX+1, ncly2 = rcClientRect.y+rcClientRect.Hgt+cgo.TargetY;
-		lpDDraw->ApplyZoom(nclx1, ncly1);
-		lpDDraw->ApplyZoom(nclx2, ncly2);
-		fOwnClip = lpDDraw->SetPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
+		pDraw->ApplyZoom(nclx1, ncly1);
+		pDraw->ApplyZoom(nclx2, ncly2);
+		fOwnClip = pDraw->SetPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
 		// get usable height of edit field
 		int32_t iHgt = pFont->GetLineHeight(), iY0;
 		if (rcClientRect.Hgt <= iHgt)
@@ -623,10 +623,10 @@ namespace C4GUI
 			c = pDrawText[iSelEnd]; pDrawText[iSelEnd]=0; pFont->GetTextExtent(pDrawText, iSelX2, h, false); pDrawText[iSelEnd]=c;
 			iSelX1 -= iXScroll; iSelX2 -= iXScroll;
 			// draw selection box around it
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcClientRect.x+iSelX1,cgo.TargetY+iY0,rcClientRect.x+iSelX2-1+cgo.TargetX,iY0+iHgt-1+cgo.TargetY,0x7f7f7f00);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcClientRect.x+iSelX1,cgo.TargetY+iY0,rcClientRect.x+iSelX2-1+cgo.TargetX,iY0+iHgt-1+cgo.TargetY,0x7f7f7f00);
 		}
 		// draw edit text
-		lpDDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
+		pDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
 		// draw cursor
 		if (HasDrawFocus() && !(((dwLastInputTime-GetTime())/500)%2))
 		{
@@ -634,13 +634,13 @@ namespace C4GUI
 			pFont->GetTextExtent(pDrawText, w, h, false);
 			pDrawText[iCursorPos] = cAtCursor;
 			pFont->GetTextExtent(CursorRepresentation, wc, h, false); wc/=2;
-			lpDDraw->TextOut(CursorRepresentation, *pFont, 1.5f, cgo.Surface, rcClientRect.x + cgo.TargetX + w - wc - iXScroll, iY0 + cgo.TargetY - h/3, dwFontClr, ALeft, false);
+			pDraw->TextOut(CursorRepresentation, *pFont, 1.5f, cgo.Surface, rcClientRect.x + cgo.TargetX + w - wc - iXScroll, iY0 + cgo.TargetY - h/3, dwFontClr, ALeft, false);
 		}
 		// unclip
 		if (fOwnClip)
 		{
-			if (fClip) lpDDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
-			else lpDDraw->NoPrimaryClipper();
+			if (fClip) pDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
+			else pDraw->NoPrimaryClipper();
 		}
 	}
 

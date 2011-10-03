@@ -255,27 +255,27 @@ void C4PathFinderRay::Draw(C4TargetFacet &cgo)
 	if (Status==C4PF_Ray_Crawl)
 	{
 		int32_t iX=0,iY=0; CrawlToAttach(iX,iY,CrawlAttach);
-		lpDDraw->DrawLineDw(cgo.Surface,
+		pDraw->DrawLineDw(cgo.Surface,
 		                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
 		                  cgo.X+X2-cgo.TargetX+7*iX,cgo.Y+Y2-cgo.TargetY+7*iY,
 		                  C4RGB(0xff, 0, 0));
-		//sprintf(OSTR,"%d",Depth); lpDDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
+		//sprintf(OSTR,"%d",Depth); pDraw->TextOut(OSTR,cgo.Surface,cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY+20,CGray4);
 	}
 
 	// Ray line
-	lpDDraw->DrawLineDw(cgo.Surface,
+	pDraw->DrawLineDw(cgo.Surface,
 	                  cgo.X+X-cgo.TargetX,cgo.Y+Y-cgo.TargetY,
 	                  cgo.X+X2-cgo.TargetX,cgo.Y+Y2-cgo.TargetY,
 	                  Color);
 
 	// Crawler point
-	lpDDraw->DrawFrameDw(cgo.Surface,
+	pDraw->DrawFrameDw(cgo.Surface,
 	                   cgo.X+X2-cgo.TargetX-1,cgo.Y+Y2-cgo.TargetY-1,
 	                   cgo.X+X2-cgo.TargetX+1,cgo.Y+Y2-cgo.TargetY+1,
 	                   (Status==C4PF_Ray_Crawl) ? ((Direction==C4PF_Direction_Left) ? C4RGB(0, 0xff, 0) : C4RGB(0, 0, 0xff)) : Color);
 
 	// Search target point
-	lpDDraw->DrawFrameDw(cgo.Surface,
+	pDraw->DrawFrameDw(cgo.Surface,
 	                   cgo.X+TargetX-cgo.TargetX-2,cgo.Y+TargetY-cgo.TargetY-2,
 	                   cgo.X+TargetX-cgo.TargetX+2,cgo.Y+TargetY-cgo.TargetY+2,
 	                   C4RGB(0xff, 0xff, 0));
@@ -345,7 +345,7 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
     d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=rX; y=rY;
     for (y=rY; y!=iToY; y+=yincr)
       {
-      lpDDraw->SetPixel(sfcSurface,x,y,byCol);
+      pDraw->SetPixel(sfcSurface,x,y,byCol);
       if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
       }
     }
@@ -358,7 +358,7 @@ bool C4PathFinderRay::PathFree(int32_t &rX, int32_t &rY, int32_t iToX, int32_t i
     d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=rX; y=rY;
     for (x=rX; x!=iToX; x+=xincr)
       {
-      lpDDraw->SetPixel(sfcSurface,x,y,byCol);
+      pDraw->SetPixel(sfcSurface,x,y,byCol);
       if (d>=0) { y+=yincr; d+=aincr; } else d+=bincr;
       }
     }

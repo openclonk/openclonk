@@ -43,16 +43,16 @@ static bool SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
 	while (iDstWdt<iMinWdt) iDstWdt+=iWdt;
 	while (iDstHgt<iMinHgt) iDstHgt+=iHgt;
 	// Without shaders, the textures need to be small for the FoW.
-	if (iDstWdt==iWdt && iDstHgt==iHgt && lpDDraw->IsShaderific()) return true;
+	if (iDstWdt==iWdt && iDstHgt==iHgt && pDraw->IsShaderific()) return true;
 	// create new surface
 	C4Surface *pNewSfc=new C4Surface();
-	if (!pNewSfc->Create(iDstWdt, iDstHgt, false, false, lpDDraw->IsShaderific() ? 0 : 64))
+	if (!pNewSfc->Create(iDstWdt, iDstHgt, false, false, pDraw->IsShaderific() ? 0 : 64))
 	{
 		delete pNewSfc;
 		return false;
 	}
 	// blit tiled into dest surface
-	lpDDraw->BlitSurfaceTile2(*ppSfc, pNewSfc, 0, 0, iDstWdt, iDstHgt, 0, 0, false);
+	pDraw->BlitSurfaceTile2(*ppSfc, pNewSfc, 0, 0, iDstWdt, iDstHgt, 0, 0, false);
 	// destroy old surface, assign new
 	delete *ppSfc; *ppSfc=pNewSfc;
 	// success
@@ -200,9 +200,9 @@ void C4Sky::Execute()
 void C4Sky::Draw(C4TargetFacet &cgo)
 {
 	// background color?
-	if (BackClrEnabled) lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X+cgo.Wdt, cgo.Y+cgo.Hgt, BackClr);
+	if (BackClrEnabled) pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X+cgo.Wdt, cgo.Y+cgo.Hgt, BackClr);
 	// sky surface?
-	if (Modulation != 0xffffffff) lpDDraw->ActivateBlitModulation(Modulation);
+	if (Modulation != 0xffffffff) pDraw->ActivateBlitModulation(Modulation);
 	if (Surface)
 	{
 		// blit parallax sky
@@ -224,16 +224,16 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 
 		ZoomDataStackItem zdsi(resultzoom);
 
-		lpDDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
+		pDraw->BlitSurfaceTile2(Surface, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt * zoom / resultzoom, cgo.Hgt * zoom / resultzoom, -resultx, -resulty, false);
 	}
 	else
 	{
 		// no sky surface: blit sky fade
 		DWORD dwClr1=GetSkyFadeClr(cgo.TargetY);
 		DWORD dwClr2=GetSkyFadeClr(cgo.TargetY+cgo.Hgt);
-		lpDDraw->DrawBoxFade(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, dwClr1, dwClr1, dwClr2, dwClr2, cgo.TargetX, cgo.TargetY);
+		pDraw->DrawBoxFade(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, dwClr1, dwClr1, dwClr2, dwClr2, cgo.TargetX, cgo.TargetY);
 	}
-	if (Modulation != 0xffffffff) lpDDraw->DeactivateBlitModulation();
+	if (Modulation != 0xffffffff) pDraw->DeactivateBlitModulation();
 	// done
 }
 

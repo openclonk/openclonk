@@ -90,7 +90,7 @@ void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
 {
 	// draw background - do not use bg drawing proc, because it stretches
 	// pre-clear background instead to prevent blinking borders
-	if (!IsFading()) lpDDraw->FillBG();
+	if (!IsFading()) pDraw->FillBG();
 	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false);
 }
 

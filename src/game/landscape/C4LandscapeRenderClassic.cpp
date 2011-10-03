@@ -22,7 +22,7 @@ bool C4LandscapeRenderClassic::Init(int32_t iWidth, int32_t iHeight, C4TextureMa
 	// Create surface
 	Surface32 = new C4Surface();
 	// without shaders, the FoW is only as detailed as the landscape has tiles.
-	if(!Surface32->Create(iWidth, iHeight,false,false,lpDDraw->IsShaderific() ? 0 : 64))
+	if(!Surface32->Create(iWidth, iHeight,false,false,pDraw->IsShaderific() ? 0 : 64))
 		return false;
 	// Safe back info
 	this->iWidth = iWidth;
@@ -116,6 +116,6 @@ void C4LandscapeRenderClassic::Update(C4Rect To, C4Landscape *pSource)
 
 void C4LandscapeRenderClassic::Draw(const C4TargetFacet &cgo)
 {
-	lpDDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
+	pDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
 	                                  cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, 0);
 }

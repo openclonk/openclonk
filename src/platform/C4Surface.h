@@ -71,8 +71,6 @@ class CStdGLCtx;
 extern CStdGL *pGL;
 #endif
 
-extern CStdDDraw *lpDDraw;
-
 class C4Surface
 {
 private:

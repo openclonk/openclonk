@@ -71,7 +71,7 @@ bool C4PlayerInfoListBox::ListItem::CanLocalChooseTeams(int32_t idPlayer) const
 
 void C4PlayerInfoListBox::ListItem::DrawElement(C4TargetFacet &cgo)
 {
-	if (dwBackground) lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, dwBackground);
+	if (dwBackground) pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, dwBackground);
 	typedef C4GUI::Window BaseClass;
 	BaseClass::DrawElement(cgo);
 }
@@ -309,10 +309,10 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		fctDraw.Wdt = iSizeMax/2;
 		fctDraw.X = 2;
 		// shadow
-		DWORD dwPrevMod; bool fPrevMod = lpDDraw->GetBlitModulation(dwPrevMod);
-		lpDDraw->ActivateBlitModulation(1);
+		DWORD dwPrevMod; bool fPrevMod = pDraw->GetBlitModulation(dwPrevMod);
+		pDraw->ActivateBlitModulation(1);
 		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, true, dwJoinedInfoClr);
-		if (fPrevMod) lpDDraw->ActivateBlitModulation(dwPrevMod); else lpDDraw->DeactivateBlitModulation();
+		if (fPrevMod) pDraw->ActivateBlitModulation(dwPrevMod); else pDraw->DeactivateBlitModulation();
 		fctDraw.X = 0;
 		// gfx
 		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, true, dwJoinedInfoClr);

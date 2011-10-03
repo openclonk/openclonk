@@ -797,19 +797,19 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 		int iYLegendDraw = (th - iSeriesCount*Q)/2 + ty;
 		while ((pSeries = pDisplayGraph->GetSeries(iSeries++)))
 		{
-			lpDDraw->TextOut(pSeries->GetTitle(), rFont, 1.0f, cgo.Surface, tx+tw, iYLegendDraw, pSeries->GetColorDw() | 0xff000000, ALeft, true);
+			pDraw->TextOut(pSeries->GetTitle(), rFont, 1.0f, cgo.Surface, tx+tw, iYLegendDraw, pSeries->GetColorDw() | 0xff000000, ALeft, true);
 			iYLegendDraw += Q;
 		}
 	}
 	// safety: too small?
 	if (tw < 10 || th < 10) return;
 	// draw axis
-	lpDDraw->DrawLineDw(cgo.Surface, tx, ty+th, tx+tw-1, ty+th, C4RGB(0x91, 0x91, 0x91));
-	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
-	lpDDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
-	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx, ty+th, C4RGB(0x91, 0x91, 0x91));
-	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
-	lpDDraw->DrawLineDw(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx, ty+th, tx+tw-1, ty+th, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th-AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx+tw-1, ty+th, tx+tw-1-AxisArrowLen, ty+th+AxisArrowThickness, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx, ty, tx, ty+th, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx, ty, tx-AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
+	pDraw->DrawLineDw(cgo.Surface, tx, ty, tx+AxisArrowThickness, ty+AxisArrowLen, C4RGB(0x91, 0x91, 0x91));
 	tw -= AxisArrowLen + AxisArrowIndent;
 	th -= AxisArrowLen + AxisArrowIndent; ty += AxisArrowLen + AxisArrowIndent;
 	// do axis numbering
@@ -821,17 +821,17 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	for (; iTime <= iMaxTime; iTime += iXAxisSteps)
 	{
 		iX = tx + tw * (iTime-iMinTime) / dt;
-		lpDDraw->DrawLineDw(cgo.Surface, iX, ty+th+1, iX, ty+th+AxisMarkerLen, C4RGB(0x91, 0x91, 0x91));
+		pDraw->DrawLineDw(cgo.Surface, iX, ty+th+1, iX, ty+th+AxisMarkerLen, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iTime);
-		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, iX, ty+th+AxisMarkerLen, 0xff7f7f7f, ACenter, false);
+		pDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, iX, ty+th+AxisMarkerLen, 0xff7f7f7f, ACenter, false);
 	}
 	iVal = int( ((iMinVal-(iMinVal>0))/iYAxisSteps+(iMinVal>0))*iYAxisSteps );
 	for (; iVal <= iMaxVal; iVal += iYAxisSteps)
 	{
 		iY = ty+th - int((iVal-iMinVal) / dv * th);
-		lpDDraw->DrawLineDw(cgo.Surface, tx-AxisMarkerLen, iY, tx-1, iY, C4RGB(0x91, 0x91, 0x91));
+		pDraw->DrawLineDw(cgo.Surface, tx-AxisMarkerLen, iY, tx-1, iY, C4RGB(0x91, 0x91, 0x91));
 		sbuf.Format("%d", (int) iVal);
-		lpDDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, tx-AxisMarkerLen, iY-rFont.GetLineHeight()/2, 0xff7f7f7f, ARight, false);
+		pDraw->TextOut(sbuf.getData(), rFont, 1.0f, cgo.Surface, tx-AxisMarkerLen, iY-rFont.GetLineHeight()/2, 0xff7f7f7f, ARight, false);
 	}
 	// draw graph series(es)
 	int iSeries = 0;
@@ -845,7 +845,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 			iTime = iMinTime + dt*iX/tw;
 			if (!Inside(iTime, iThisMinTime, iThisMaxTime)) continue;
 			int iY2 = int((-pSeries->GetValue(iTime) + iMinVal) * th / dv) + ty+th;
-			if (fAnyVal) lpDDraw->DrawLineDw(cgo.Surface, (float) (tx+iX-1), (float) iY, (float) (tx+iX), (float) iY2, pSeries->GetColorDw());
+			if (fAnyVal) pDraw->DrawLineDw(cgo.Surface, (float) (tx+iX-1), (float) iY, (float) (tx+iX), (float) iY2, pSeries->GetColorDw());
 			iY = iY2;
 			fAnyVal = true;
 		}

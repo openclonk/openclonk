@@ -107,7 +107,7 @@ void CStdD3DShader::Discard()
 
 bool CStdD3DShader::Error(const char *szMsg)
 {
-	return lpDDraw->Error(FormatString("Direct3D Shader error: %s", szMsg).getData());
+	return pDraw->Error(FormatString("Direct3D Shader error: %s", szMsg).getData());
 }
 
 bool CStdD3DShader::Compile(bool fMod2, bool fColoredFoW)

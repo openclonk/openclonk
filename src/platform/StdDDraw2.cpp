@@ -41,7 +41,7 @@
 #include <limits.h>
 
 // Global access pointer
-CStdDDraw *lpDDraw=NULL;
+CStdDDraw *pDraw=NULL;
 int iGfxEngine=-1;
 
 // Transformation matrix to convert meshes from Ogre to Clonk coordinate system
@@ -247,7 +247,7 @@ void C4FogOfWar::Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int O
 	{
 		// then draw a background now and fade against transparent later
 		// FIXME: don't do this if shaders are used
-		lpDDraw->DrawBoxDw(backsfc, x0,y0, x0+WdtPx-1, y0+HgtPx-1, dwBackClr);
+		pDraw->DrawBoxDw(backsfc, x0,y0, x0+WdtPx-1, y0+HgtPx-1, dwBackClr);
 		FadeTransparent = true;
 	}
 	else
@@ -277,8 +277,8 @@ void C4FogOfWar::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int
 	// display coordinates: zx, zy, x, y
 	float zx = float(cx);
 	float zy = float(cy);
-	lpDDraw->ApplyZoom(zx, zy);
-	Radius = int(lpDDraw->Zoom * Radius);
+	pDraw->ApplyZoom(zx, zy);
+	Radius = int(pDraw->Zoom * Radius);
 	// reveal all within iRadius1; fade off squared until iRadius2
 	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
 	int RadiusSq = Radius*Radius;
@@ -288,7 +288,7 @@ void C4FogOfWar::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int
 		{
 			float lx = float(x);
 			float ly = float(y);
-			lpDDraw->RemoveZoom(lx, ly);
+			pDraw->RemoveZoom(lx, ly);
 			pMap[i] = Max<int>(pMap[i], VisProc(255, int(lx), int(ly), int(cx), int(cy)));
 		}
 		// next pos
@@ -301,10 +301,10 @@ void C4FogOfWar::AddModulation(int cx, int cy, int Radius, uint8_t Transparency)
 {
 	{
 		float x=float(cx); float y=float(cy);
-		lpDDraw->ApplyZoom(x,y);
+		pDraw->ApplyZoom(x,y);
 		cx=int(x); cy=int(y);
 	}
-	Radius = int(lpDDraw->Zoom * Radius);
+	Radius = int(pDraw->Zoom * Radius);
 	// hide all within iRadius1; fade off squared until iRadius2
 	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
 	int RadiusSq = Radius*Radius;
@@ -1254,19 +1254,19 @@ bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned in
 	{
 	default: // Use the first engine possible if none selected
 #ifdef USE_DIRECTX
-	case GFXENGN_DIRECTX: lpDDraw = new CStdD3D(false); break;
-	case GFXENGN_DIRECTXS: lpDDraw = new CStdD3D(true); break;
+	case GFXENGN_DIRECTX: pDraw = new CStdD3D(false); break;
+	case GFXENGN_DIRECTXS: pDraw = new CStdD3D(true); break;
 #endif
 #ifdef USE_GL
-	case GFXENGN_OPENGL: lpDDraw = new CStdGL(); break;
+	case GFXENGN_OPENGL: pDraw = new CStdGL(); break;
 #endif
-	case GFXENGN_NOGFX: lpDDraw = new CStdNoGfx(); break;
+	case GFXENGN_NOGFX: pDraw = new CStdNoGfx(); break;
 	}
-	if (!lpDDraw) return false;
+	if (!pDraw) return false;
 	// init it
-	if (!lpDDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
+	if (!pDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))
 	{
-		delete lpDDraw;
+		delete pDraw;
 		return false;
 	}
 	// done, success

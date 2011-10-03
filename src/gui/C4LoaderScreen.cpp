@@ -142,7 +142,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	// simple black screen loader?
 	if (fBlackScreen)
 	{
-		lpDDraw->FillBG();
+		pDraw->FillBG();
 		return;
 	}
 	// cgo.X/Y is assumed 0 here...
@@ -159,13 +159,13 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);
 	// draw scenario title
-	lpDDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.iLineHgt, 0xdddddddd, ARight, false);
+	pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.iLineHgt, 0xdddddddd, ARight, false);
 	// draw info
 	/*if (szInfo)
-	  lpDDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
+	  pDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
 	//
 	// draw progress bar
-	lpDDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
+	pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
 	int iProgressBarWdt=cgo.Wdt-iHIndent*2-2;
 	if (::GraphicsResource.fctProgressBar.Surface)
 	{
@@ -173,15 +173,15 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	}
 	else
 	{
-		lpDDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
+		pDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
 	}
-	lpDDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
+	pDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
 	                             cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff,
 	                             ACenter, true);
 	// draw log box
 	if (pLog)
 	{
-		lpDDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
+		pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
 		int iLineHgt=int(fLogBoxFontZoom*LogFont.iLineHgt); if (!iLineHgt) iLineHgt=5;
 		int iLinesVisible = (iLogBoxHgt-2*iLogBoxMargin)/iLineHgt;
 		int iX = iHIndent+iLogBoxMargin;
@@ -192,14 +192,14 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 			const char *szLine = pLog->GetLine(i, NULL, NULL, NULL);
 			if (!szLine || !*szLine) continue;
 			LogFont.GetTextExtent(szLine, w,h, true);
-			lpDDraw->TextOut(szLine,LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
+			pDraw->TextOut(szLine,LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
 			iY += h;
 		}
 		// append process text
 		if (Process)
 		{
 			iY -= h; iX += w;
-			lpDDraw->TextOut(FormatString("%i%%", (int) Process).getData(),LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
+			pDraw->TextOut(FormatString("%i%%", (int) Process).getData(),LogFont,fLogBoxFontZoom,cgo.Surface,iX,iY);
 		}
 	}
 }
