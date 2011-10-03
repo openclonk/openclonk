@@ -88,7 +88,7 @@ void CStdGL::Clear()
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
 	pMainCtx=0;
-	CStdDDraw::Clear();
+	C4Draw::Clear();
 }
 
 void CStdGL::FillBG(DWORD dwClr)
@@ -1142,17 +1142,17 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
 
 	// Convert OgreToClonk matrix to column-major order
-	// TODO: This must be executed after CStdDDraw::OgreToClonk was
+	// TODO: This must be executed after C4Draw::OgreToClonk was
 	// initialized - is this guaranteed at this position?
 	static const float OgreToClonkGL[16] =
 	{
-		CStdDDraw::OgreToClonk(0,0), CStdDDraw::OgreToClonk(1,0), CStdDDraw::OgreToClonk(2,0), 0,
-		CStdDDraw::OgreToClonk(0,1), CStdDDraw::OgreToClonk(1,1), CStdDDraw::OgreToClonk(2,1), 0,
-		CStdDDraw::OgreToClonk(0,2), CStdDDraw::OgreToClonk(1,2), CStdDDraw::OgreToClonk(2,2), 0,
-		CStdDDraw::OgreToClonk(0,3), CStdDDraw::OgreToClonk(1,3), CStdDDraw::OgreToClonk(2,3), 1
+		C4Draw::OgreToClonk(0,0), C4Draw::OgreToClonk(1,0), C4Draw::OgreToClonk(2,0), 0,
+		C4Draw::OgreToClonk(0,1), C4Draw::OgreToClonk(1,1), C4Draw::OgreToClonk(2,1), 0,
+		C4Draw::OgreToClonk(0,2), C4Draw::OgreToClonk(1,2), C4Draw::OgreToClonk(2,2), 0,
+		C4Draw::OgreToClonk(0,3), C4Draw::OgreToClonk(1,3), C4Draw::OgreToClonk(2,3), 1
 	};
 
-	static const bool OgreToClonkParity = CStdDDraw::OgreToClonk.Determinant() > 0.0f;
+	static const bool OgreToClonkParity = C4Draw::OgreToClonk.Determinant() > 0.0f;
 
 	const StdMesh& mesh = instance.GetMesh();
 
@@ -1998,7 +1998,7 @@ bool CStdGL::Error(const char *szMsg)
 	LogF("  gl: %s", glGetString(GL_RENDERER));
 	LogF("  gl: %s", glGetString(GL_VERSION));
 	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
-	return CStdDDraw::Error(szMsg);
+	return C4Draw::Error(szMsg);
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)
@@ -2063,7 +2063,7 @@ bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 
 void CStdGL::Default()
 {
-	CStdDDraw::Default();
+	C4Draw::Default();
 	pCurrCtx = NULL;
 	iPixelFormat=0;
 	sfcFmt=0;

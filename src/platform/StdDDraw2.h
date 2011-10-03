@@ -31,7 +31,7 @@
 #endif
 
 // texref-predef
-class CStdDDraw;
+class C4Draw;
 class C4TexRef;
 class C4Surface;
 struct CStdPalette;
@@ -50,7 +50,7 @@ class StdMeshInstance;
 #define GFXENGN_NOGFX    3
 
 // Global DDraw access pointer
-extern CStdDDraw *pDraw;
+extern C4Draw *pDraw;
 
 extern int iGfxEngine;
 
@@ -173,7 +173,7 @@ public:
 
 	DWORD ApplyTo(DWORD dwClr);   // apply gamma to color value
 
-	friend class CStdDDraw;
+	friend class C4Draw;
 	friend class CStdD3D;
 	friend class CStdGL;
 };
@@ -186,13 +186,13 @@ struct ZoomData
 };
 
 // direct draw encapsulation
-class CStdDDraw
+class C4Draw
 {
 public:
 	static const StdMeshMatrix OgreToClonk;
 
-	CStdDDraw(): MaxTexSize(0), Saturation(255) { }
-	virtual ~CStdDDraw() { pDraw=NULL; }
+	C4Draw(): MaxTexSize(0), Saturation(255) { }
+	virtual ~C4Draw() { pDraw=NULL; }
 public:
 	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.

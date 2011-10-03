@@ -147,7 +147,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	switch (iStyle)
 	{
 	case C4MN_Style_Context:
-		pDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+		pDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,C4Draw::DEFAULT_MESSAGE_COLOR,ALeft);
 		break;
 	case C4MN_Style_Info:
 	{
@@ -181,7 +181,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	{
 		char szCount[10+1];
 		sprintf(szCount,"%ix",Count);
-		pDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+		pDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,C4Draw::DEFAULT_MESSAGE_COLOR,ARight);
 	}
 }
 

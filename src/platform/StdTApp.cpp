@@ -204,7 +204,7 @@ static void readline_callback (char * line)
 }
 #endif
 
-bool CStdDDraw::SaveDefaultGammaRamp(C4Window * pWindow)
+bool C4Draw::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	return true;
 }

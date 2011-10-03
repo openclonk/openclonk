@@ -21,7 +21,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-// text drawing facility for CStdDDraw
+// text drawing facility for C4Draw
 
 #include "C4Include.h"
 #include <StdFont.h>

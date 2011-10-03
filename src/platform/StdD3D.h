@@ -81,7 +81,7 @@ typedef C4CTVERTEX C4CTVERTEXQUAD[4];
 class CStdD3DShader;
 
 // direct draw encapsulation
-class CStdD3D : public CStdDDraw
+class CStdD3D : public C4Draw
 {
 public:
 	CStdD3D(bool fSoftware);

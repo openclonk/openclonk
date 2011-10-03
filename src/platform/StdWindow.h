@@ -330,7 +330,7 @@ public:
 	// Invokes actual drawing code - should not be called directly
 	virtual void PerformUpdate();
 public:
-	friend class CStdDDraw;
+	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;

@@ -30,7 +30,6 @@
 #include <C4InteractiveThread.h>
 #include <StdApp.h>
 
-class CStdDDraw;
 class C4ApplicationGameTimer;
 class C4GamePadControl;
 

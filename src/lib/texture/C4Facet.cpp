@@ -263,14 +263,14 @@ void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t
 	case C4FCT_Center:
 		Draw(cgo, true, iSectionX, iSectionY);
 		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
+		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
 		break;
 	case C4FCT_Right:
 	{
 		int32_t textwdt, texthgt;
 		::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
 		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-		                 cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
+		                 cgo.X + cgo.Wdt - 1, cgo.Y, C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
 		cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - 1 - textwdt - 2 * cgo.Hgt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 		Draw(cgo, true, iSectionX, iSectionY);
 		break;
@@ -287,7 +287,7 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 	case C4FCT_Center:
 		Draw(cgo, true, iSectionX, iSectionY);
 		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
+		                 cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
 		break;
 	case C4FCT_Right:
 	{
@@ -295,7 +295,7 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 		::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
 		textwdt += Wdt + 3;
 		pDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-		                 cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
+		                 cgo.X + cgo.Wdt - 1, cgo.Y, C4Draw::DEFAULT_MESSAGE_COLOR, ARight);
 		cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - textwdt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 		Draw(cgo, true, iSectionX, iSectionY);
 		if (piUsedWidth) *piUsedWidth = textwdt;

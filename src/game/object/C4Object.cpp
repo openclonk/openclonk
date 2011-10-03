@@ -2034,7 +2034,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
 		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		pDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		pDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,C4Draw::DEFAULT_MESSAGE_COLOR,ACenter);
 	}
 	// Debug Display ///////////////////////////////////////////////////////////////////////////////
 
@@ -2163,7 +2163,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
 				pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
 				                           1.0, cgo.Surface, offX, offY + Shape.GetY() - cmhgt,
-				                           InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
+				                           InLiquid ? 0xfa0000FF : C4Draw::DEFAULT_MESSAGE_COLOR, ACenter);
 			}
 		}
 	// Debug Display ///////////////////////////////////////////////////////////////////////
@@ -2675,7 +2675,7 @@ bool C4Object::CheckSolidMaskRect()
 	if (GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap) return false;
 
 	// check NewGfx only, because invalid SolidMask-rects are OK in OldGfx
-	// the bounds-check is done in CStdDDraw::GetPixel()
+	// the bounds-check is done in C4Draw::GetPixel()
 	C4Surface *sfcGraphics = GetGraphics()->GetBitmap();
 	SolidMask.Set(Max<int32_t>(SolidMask.x,0), Max<int32_t>(SolidMask.y,0),
 	              Min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), Min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),

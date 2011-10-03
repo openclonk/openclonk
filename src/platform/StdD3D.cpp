@@ -55,7 +55,7 @@ CStdD3D::~CStdD3D()
 
 void CStdD3D::Default()
 {
-	CStdDDraw::Default();
+	C4Draw::Default();
 	SceneOpen=false;
 	lpD3D=NULL;
 	lpDevice=NULL;
@@ -83,7 +83,7 @@ void CStdD3D::Clear()
 		lpD3D->Release(); lpD3D=NULL;
 	}
 	SceneOpen=false;
-	CStdDDraw::Clear();
+	C4Draw::Clear();
 }
 
 

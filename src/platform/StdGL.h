@@ -83,7 +83,7 @@ protected:
 };
 
 // OpenGL encapsulation
-class CStdGL : public CStdDDraw
+class CStdGL : public C4Draw
 {
 public:
 	CStdGL();

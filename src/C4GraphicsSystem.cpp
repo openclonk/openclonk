@@ -320,7 +320,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 		pDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 		                           FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
 		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
-		                           CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
+		                           C4Draw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
 	}
 }
@@ -358,7 +358,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 	pDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           (FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 	                           (FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
-	                           CStdDDraw::DEFAULT_MESSAGE_COLOR,
+	                           C4Draw::DEFAULT_MESSAGE_COLOR,
 	                           (FlashMessageX==-1) ? ACenter : ALeft);
 	FlashMessageTime--;
 	// Flash message timed out: redraw background
@@ -392,7 +392,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("ScreenshotEx").getData(), LoadResStr("IDS_CTL_SCREENSHOTEX"));
 
 	pDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
-	                           iX + 128, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
+	                           iX + 128, iY + 64, C4Draw::DEFAULT_MESSAGE_COLOR, ALeft);
 
 	// right coloumn
 	strText.Clear();
@@ -406,7 +406,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
 	pDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
-	                           iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
+	                           iX + iWdt/2 + 64, iY + 64, C4Draw::DEFAULT_MESSAGE_COLOR, ALeft);
 }
 
 bool C4GraphicsSystem::ToggleShowNetStatus()

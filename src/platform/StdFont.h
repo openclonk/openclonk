@@ -16,7 +16,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// text drawing facility for CStdDDraw
+// text drawing facility for C4Draw
 
 #ifndef INC_STDFONT
 #define INC_STDFONT

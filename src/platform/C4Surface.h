@@ -190,7 +190,7 @@ protected:
 	void FreeTextures();      // free ppTex-array if existant
 //	C4Surface *Duplicate(); // create identical copy
 
-	friend class CStdDDraw;
+	friend class C4Draw;
 	friend class C4Pattern;
 	friend class CStdD3D;
 	friend class CStdGL;

@@ -23,7 +23,7 @@
 
 #include <StdDDraw2.h>
 
-class CStdNoGfx : public CStdDDraw
+class CStdNoGfx : public C4Draw
 {
 public:
 	CStdNoGfx();
