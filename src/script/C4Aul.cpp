@@ -377,7 +377,7 @@ void C4AulScript::AddFunc(const char *pIdtf, C4ScriptFnDef* Def)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		warnCnt(0), errCnt(0), nonStrictCnt(0), lineCnt(0)
+		GlobalPropList(0), warnCnt(0), errCnt(0), nonStrictCnt(0), lineCnt(0)
 {
 	// /me r b engine
 	Engine = this;
@@ -392,6 +392,15 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConsts.SetNameList(&GlobalConstNames);
 }
 
+C4PropList * C4AulScriptEngine::GetPropList()
+{
+	if (!GlobalPropList)
+	{
+		GlobalPropList = C4PropList::NewScen();
+		RegisterGlobalConstant("Global", C4VPropList(GlobalPropList));
+	}
+	return GlobalPropList;
+}
 
 C4AulScriptEngine::~C4AulScriptEngine() { Clear(); }
 
@@ -404,6 +413,7 @@ void C4AulScriptEngine::Clear()
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
+	GetPropList()->Clear();
 	// reset values
 	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too

@@ -209,8 +209,6 @@ bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
 {
-
-
 	try
 	{
 
@@ -228,6 +226,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 
 		// get common funcs
 		AfterLink();
+		GlobalPropList->Freeze();
 
 		// non-strict scripts?
 		if (nonStrictCnt)

@@ -131,6 +131,8 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		return StdStrBuf(Data ? "true" : "false");
 	case C4V_PropList:
 	{
+		if (Data.PropList == ScriptEngine.GetPropList())
+			return StdStrBuf("Global");
 		StdStrBuf DataString;
 		DataString = "{";
 		if (Data.PropList->GetObject())
@@ -267,6 +269,8 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 				cC4VID = 'c';
 			else if (getPropList() == GameScript.ScenPrototype)
 				cC4VID = 't';
+			else if (getPropList() == ScriptEngine.GetPropList())
+				cC4VID = 'g';
 			else
 				cC4VID = 'E';
 			break;
@@ -358,6 +362,11 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 't':
 		if (fCompiler)
 			SetPropList(GameScript.ScenPrototype);
+		break;
+
+	case 'g':
+		if (fCompiler)
+			SetPropList(ScriptEngine.GetPropList());
 		break;
 
 	case 'n':

@@ -143,7 +143,8 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable)
 {
 	// Script
-	ScenPrototype = C4PropList::NewScen();
+	assert(ScriptEngine.GetPropList());
+	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
 	ScenPropList = C4PropList::NewScen(ScenPrototype);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
 	Reg2List(&ScriptEngine, &ScriptEngine);

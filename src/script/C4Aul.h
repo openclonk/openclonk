@@ -449,6 +449,7 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
+	C4PropList * GlobalPropList;
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
@@ -470,6 +471,7 @@ public:
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
+	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
 	C4AulFunc * GetFirstFunc(const char * Name)
