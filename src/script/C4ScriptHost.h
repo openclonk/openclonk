@@ -36,7 +36,7 @@ public:
 	bool Delete() { return true; }
 public:
 	void Clear();
-	bool Load(C4Group &hGroup, const char *szFilename,
+	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
@@ -75,6 +75,7 @@ public:
 	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
+	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	virtual C4PropList * GetPropList();
 protected:
 	C4Def *Def; // owning def file

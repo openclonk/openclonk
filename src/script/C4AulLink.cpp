@@ -161,7 +161,6 @@ void C4AulScript::UnLink()
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;
 
-	if (GetPropList()) GetPropList()->C4PropList::Clear();
 
 	// delete included/appended functions
 	C4AulFunc* pFunc = Func0;

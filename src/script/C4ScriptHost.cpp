@@ -119,6 +119,47 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 /*--- C4DefScriptHost ---*/
 
+bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
+{
+	bool r = C4ScriptHost::Load(g, f, l, t);
+	assert(Def);
+
+	// Check category
+	if (!Def->GetPlane() && Def->Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
+	{
+		int Plane; bool gotplane = true;
+		switch (Def->Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
+		{
+			case C4D_StaticBack: Plane = 100; break;
+			case C4D_Structure: Plane = C4Plane_Structure; break;
+			case C4D_Vehicle: Plane = 300; break;
+			case C4D_Living: Plane = 400; break;
+			case C4D_Object: Plane = 500; break;
+			case C4D_StaticBack | C4D_Background: Plane = -500; break;
+			case C4D_Structure | C4D_Background: Plane = -400; break;
+			case C4D_Vehicle | C4D_Background: Plane = -300; break;
+			case C4D_Living | C4D_Background: Plane = -200; break;
+			case C4D_Object | C4D_Background: Plane = -100; break;
+			case C4D_StaticBack | C4D_Foreground: Plane = 1100; break;
+			case C4D_Structure | C4D_Foreground: Plane = 1200; break;
+			case C4D_Vehicle | C4D_Foreground: Plane = 1300; break;
+			case C4D_Living | C4D_Foreground: Plane = 1400; break;
+			case C4D_Object | C4D_Foreground: Plane = 1500; break;
+			default:
+				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+				gotplane = false;
+				break;
+		}
+		if (gotplane) Def->SetProperty(P_Plane, C4VInt(Plane));
+	}
+	if (!Def->GetPlane())
+	{
+		DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+		Def->SetProperty(P_Plane, C4VInt(1));
+	}
+	return r;
+}
+
 void C4DefScriptHost::AfterLink()
 {
 	C4AulScript::AfterLink();

@@ -825,6 +825,13 @@ bool C4ScriptHost::Preparse()
 
 	// clear stuff
 	Includes.clear(); Appends.clear();
+
+	if (GetPropList())
+		{
+		GetPropList()->C4PropList::Clear();
+		GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
+		}
+
 	// reset code
 	ClearCode();
 	while (Func0)
