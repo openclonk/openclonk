@@ -2,12 +2,12 @@
 
 #include Library_Plant
 
-private func SeedAreaSize() { return 500; }
-private func SeedAmount() { return 10; }
+private func SeedAreaSize() { return 400; }
 
 func Construction()
 {
 	StartGrowth(1);
+	inherited(...);
 }
 
 private func Initialize()
