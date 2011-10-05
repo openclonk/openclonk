@@ -373,7 +373,19 @@ template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 {
 	assert(e);
-	return e->Hash;
+	unsigned int hash = 4, tmp;
+	hash += ((uintptr_t)e) >> 16;
+	tmp   = ((((uintptr_t)e) & 0xffff) << 11) ^ hash;
+	hash  = (hash << 16) ^ tmp;
+	hash += hash >> 11;
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+	return hash;
+	//return e->Hash;
 }
 
 template<> template<>
@@ -385,7 +397,7 @@ bool C4Set<C4Property>::Equals<C4String *>(C4Property a, C4String * b)
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
 {
-	return p.Key->Hash;
+	return C4Set<C4Property>::Hash(p.Key);
 }
 
 bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
