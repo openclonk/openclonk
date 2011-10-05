@@ -24,7 +24,7 @@ Crew=Clonk=1
 Crew=Clonk=1
 
 [Landscape]
-InEarth=Rock=1;Gold=1;Firestone=5;Loam=2;
+InEarth=Rock=1;Nugget=1;Firestone=5;Loam=2;
 Sky=Mountains2
 MapZoom=10
 
