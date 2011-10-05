@@ -1,1 +1,2 @@
-Name=Mushroom
+Name=Plant
+Harvest= Harvest %s
