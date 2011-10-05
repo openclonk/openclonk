@@ -20,65 +20,61 @@
 #ifndef INC_STDMARKUP
 #define INC_STDMARKUP
 
-struct FONT2DVERTEX;
-
-class CBltTransform;
-
 // one markup tag
-class CMarkupTag
+class C4MarkupTag
 {
 public:
-	CMarkupTag *pPrev, *pNext;
+	C4MarkupTag *pPrev, *pNext;
 
-	CMarkupTag(): pPrev(0), pNext(0) { }; // ctor
-	virtual ~CMarkupTag() { };    // dtor
+	C4MarkupTag(): pPrev(0), pNext(0) { }; // ctor
+	virtual ~C4MarkupTag() { };    // dtor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)=0; // assign markup
 	virtual const char *TagName()=0;  // get character string for this tag
 };
 
 // markup tag for italic text
-class CMarkupTagItalic : public CMarkupTag
+class C4MarkupTagItalic : public C4MarkupTag
 {
 public:
-	CMarkupTagItalic() : CMarkupTag() { } // ctor
+	C4MarkupTagItalic() : C4MarkupTag() { } // ctor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
 	virtual const char *TagName() { return "i"; }
 };
 
 // markup tag for colored text
-class CMarkupTagColor : public CMarkupTag
+class C4MarkupTagColor : public C4MarkupTag
 {
 private:
 	DWORD dwClr;    // color
 public:
-	CMarkupTagColor(DWORD dwClr) : CMarkupTag(), dwClr(dwClr) { } // ctor
+	C4MarkupTagColor(DWORD dwClr) : C4MarkupTag(), dwClr(dwClr) { } // ctor
 
-	virtual void Apply(CBltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
+	virtual void Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr); // assign markup
 	virtual const char *TagName() { return "c"; }
 };
 
 // markup rendering functionality for text
-class CMarkup
+class C4Markup
 {
 private:
-	CMarkupTag *pTags, *pLast;    // tag list; single linked
+	C4MarkupTag *pTags, *pLast;    // tag list; single linked
 	bool fDoClr;                  // set if color changes should be made (not in text shadow!)
 
-	void Push(CMarkupTag *pTag)
+	void Push(C4MarkupTag *pTag)
 	{ if ((pTag->pPrev=pLast)) pLast->pNext=pTag; else pTags=pTag; pLast=pTag; }
-	CMarkupTag *Pop()
-	{ CMarkupTag *pL=pLast; if (!pL) return 0; if ((pLast=pL->pPrev)) pLast->pNext=0; else pTags=0; return pL; }
+	C4MarkupTag *Pop()
+	{ C4MarkupTag *pL=pLast; if (!pL) return 0; if ((pLast=pL->pPrev)) pLast->pNext=0; else pTags=0; return pL; }
 public:
-	CMarkup(bool fDoClr) { pTags=pLast=0; this->fDoClr=fDoClr; };   // ctor
-	~CMarkup() // dtor
-	{ CMarkupTag *pTag=pTags,*pNext; while (pTag) { pNext=pTag->pNext; delete pTag; pTag=pNext; } }
+	C4Markup(bool fDoClr) { pTags=pLast=0; this->fDoClr=fDoClr; };   // ctor
+	~C4Markup() // dtor
+	{ C4MarkupTag *pTag=pTags,*pNext; while (pTag) { pNext=pTag->pNext; delete pTag; pTag=pNext; } }
 
 	bool Read(const char **ppText, bool fSkip=false);   // get markup from text
 	bool SkipTags(const char **ppText); // extract markup from text; return whether end is reached
-	void Apply(CBltTransform &rBltTrf, DWORD &dwClr)  // assign markup to vertices
-	{ for (CMarkupTag *pTag=pTags; pTag; pTag=pTag->pNext) pTag->Apply(rBltTrf, fDoClr, dwClr); }
+	void Apply(C4BltTransform &rBltTrf, DWORD &dwClr)  // assign markup to vertices
+	{ for (C4MarkupTag *pTag=pTags; pTag; pTag=pTag->pNext) pTag->Apply(rBltTrf, fDoClr, dwClr); }
 	bool Clean() { return !pTags; } // empty?
 
 	static bool StripMarkup(char *szText); // strip any markup codes from given text buffer

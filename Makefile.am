@@ -25,20 +25,18 @@ noinst_LIBRARIES = lib.a
 
 # Some defines and warning options
 if RECENT_GCC
-GCC_FLAGS = -pipe
 WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
 -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
 ##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
 else
-GCC_FLAGS =
 WARNING_FLAGS = -Wall
 endif
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS)
+AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS)
 
-AM_CFLAGS = -Wall $(GCC_FLAGS)
+AM_CFLAGS = -Wall
 
 AM_CPPFLAGS = \
   -I$(builddir) \
@@ -128,8 +126,8 @@ src/lib/StdBuf.cpp \
 src/lib/StdBuf.h \
 src/lib/StdCompiler.cpp \
 src/lib/StdCompiler.h \
-src/lib/StdMarkup.cpp \
-src/lib/StdMarkup.h \
+src/lib/C4Markup.cpp \
+src/lib/C4Markup.h \
 src/lib/StdResStr2.cpp \
 src/lib/StdResStr2.h \
 src/network/C4NetIO.cpp \
@@ -404,8 +402,7 @@ src/lib/texture/C4FacetEx.h \
 src/lib/texture/C4Facet.h \
 src/lib/texture/C4GraphicsResource.cpp \
 src/lib/texture/C4GraphicsResource.h \
-src/lib/texture/C4Surface.cpp \
-src/lib/texture/C4Surface.h \
+src/lib/texture/C4SurfaceLoaders.cpp \
 src/lib/texture/StdPNG.cpp \
 src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
@@ -464,15 +461,14 @@ src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.h \
-src/platform/StdApp.h \
-src/platform/StdAppCommon.cpp \
+src/platform/C4App.h \
+src/platform/C4App.cpp \
 src/platform/StdD3D.cpp \
 src/platform/StdD3D.h \
 src/platform/StdD3DShader.cpp \
 src/platform/StdD3DShader.h \
 src/platform/StdDDraw2.cpp \
 src/platform/StdDDraw2.h \
-src/platform/StdFacet.h \
 src/platform/StdFont.cpp \
 src/platform/StdFont.h \
 src/platform/StdGL.cpp \
@@ -480,15 +476,15 @@ src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
 src/platform/StdNoGfx.cpp \
 src/platform/StdNoGfx.h \
-src/platform/StdSurface2.cpp \
-src/platform/StdSurface2.h \
+src/platform/C4Surface.cpp \
+src/platform/C4Surface.h \
 src/platform/StdSurface8.cpp \
 src/platform/StdSurface8.h \
 src/platform/StdSync.h \
-src/platform/StdTApp.cpp \
+src/platform/C4AppT.cpp \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
-src/platform/StdWindow.h \
+src/platform/C4Window.h \
 src/res/Brush.h \
 src/res/Cursor.h \
 src/res/Dynamic.h \
@@ -544,9 +540,9 @@ src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \
-src/platform/StdMacApp.mm \
+src/platform/C4AppMac.mm \
 src/platform/C4FileMonitorMac.mm \
-src/platform/StdMacWindow.mm \
+src/platform/C4WindowMac.mm \
 src/platform/ClonkAppDelegate.h \
 src/platform/ClonkAppDelegate.mm \
 src/platform/ConsoleWindowController.h \
@@ -561,16 +557,16 @@ src/platform/ClonkMainMenuActions.h \
 src/platform/ClonkMainMenuActions.mm
 endif
 if SDL_MAIN_LOOP
-clonk_SOURCES += src/platform/StdSDLApp.cpp src/platform/StdSDLWindow.cpp
+clonk_SOURCES += src/platform/C4AppSDL.cpp src/platform/C4WindowSDL.cpp
 else
 if WIN32
-clonk_SOURCES += src/platform/StdWindow.cpp
+clonk_SOURCES += src/platform/C4WindowWin32.cpp
 else
-clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h
+clonk_SOURCES += src/platform/C4AppX.cpp src/platform/C4WindowX.cpp src/platform/C4AppXImpl.h
 endif
 endif
 if DEVELOPER_MODE
-clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h src/editor/C4ConsoleGTK.cpp
+clonk_SOURCES += src/platform/C4WindowGTK.cpp src/platform/C4WindowGTK.h src/editor/C4ConsoleGTK.cpp
 endif
 
 clonk_LDADD = \

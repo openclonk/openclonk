@@ -290,7 +290,7 @@ namespace
 
 CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 {
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 	int32_t iPrvWdt,iPrvHgt;
 
 	iPrvWdt = [ctrler(&Console).previewView frame].size.width;

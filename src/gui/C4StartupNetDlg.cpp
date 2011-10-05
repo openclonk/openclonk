@@ -101,7 +101,7 @@ void C4StartupNetListEntry::DrawElement(C4TargetFacet &cgo)
 	{
 		int32_t x1 = cgo.X+cgo.TargetX+rcBounds.x;
 		int32_t y1 = cgo.Y+cgo.TargetY+rcBounds.y;
-		lpDDraw->DrawBoxDw(cgo.Surface, x1,y1, x1+rcBounds.Wdt, y1+rcBounds.Hgt, C4GUI_ImportantBGColor);
+		pDraw->DrawBoxDw(cgo.Surface, x1,y1, x1+rcBounds.Wdt, y1+rcBounds.Hgt, C4GUI_ImportantBGColor);
 	}
 	// inherited
 	ParentClass::DrawElement(cgo);

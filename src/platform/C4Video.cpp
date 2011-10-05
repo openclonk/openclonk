@@ -69,7 +69,7 @@ void C4Video::Clear()
 	Stop();
 }
 
-void C4Video::Init(SURFACE sfcSource, int iWidth, int iHeight)
+void C4Video::Init(C4Surface * sfcSource, int iWidth, int iHeight)
 {
 	// Activate
 	Active=true;
@@ -195,14 +195,14 @@ void C4Video::Draw(C4TargetFacet &cgo)
 	// No show
 	if (!ShowFlash) return;
 	// Draw frame
-	lpDDraw->DrawFrameDw(cgo.Surface, X+cgo.X,Y+cgo.Y,
+	pDraw->DrawFrameDw(cgo.Surface, X+cgo.X,Y+cgo.Y,
 	                             X+cgo.X+Width-1,Y+cgo.Y+Height-1,
 	                             Recording ? C4RGB(0xca, 0, 0) : C4RGB(0xff, 0xff, 0xff));
 	// Draw status
 	StdStrBuf str;
 	if (Recording) str.Format("%dx%d Frame %d",Width,Height,AviFrame);
 	else str.Format("%dx%d",Width,Height);
-	lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
+	pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
 }
 
 bool C4Video::AdjustPosition()

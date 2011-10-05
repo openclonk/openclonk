@@ -7,14 +7,14 @@ protected func Initialize()
 	return;
 }
 
-public func OpenGateDoor()
+public func OpenDoor()
 {
 	AddEffect("IntMoveGateUp", this, 100, 1, this);
 	Sound("GateMove");
 	return;
 }
 
-public func CloseGateDoor()
+public func CloseDoor()
 {
 	AddEffect("IntMoveGateDown", this, 100, 1, this);
 	Sound("GateMove");

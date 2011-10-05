@@ -16,17 +16,17 @@
  */
 
 #include <C4Include.h>
-#include "StdApp.h"
-#include "StdWindow.h"
+#include "C4App.h"
+#include "C4Window.h"
 
-void CStdApp::Run()
+void C4AbstractApp::Run()
 {
 	// Main message loop
 	while (!fQuitMsgReceived)
 		ScheduleProcs();
 }
 
-bool CStdApp::ScheduleProcs(int iTimeout)
+bool C4AbstractApp::ScheduleProcs(int iTimeout)
 {
 	// Always fail after quit message
 	if(fQuitMsgReceived)
@@ -55,11 +55,11 @@ bool EraseItemSafe(const char *szFilename)
 
 #endif
 
-void CStdWindow::PerformUpdate()
+void C4Window::PerformUpdate()
 {
 }
 
-void CStdApp::NotifyUserIfInactive()
+void C4AbstractApp::NotifyUserIfInactive()
 {
 #ifdef _WIN32
 		if (!Active && pWindow) pWindow->FlashWindow();

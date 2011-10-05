@@ -130,7 +130,7 @@ bool C4TextureMap::AddEntry(BYTE byIndex, const char *szMaterial, const char *sz
 	return true;
 }
 
-bool C4TextureMap::AddTexture(const char *szTexture, CSurface * sfcSurface)
+bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 {
 	C4Texture *pTexture;
 	if (!(pTexture=new C4Texture)) return false;

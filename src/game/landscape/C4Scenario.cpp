@@ -268,7 +268,6 @@ void C4SLandscape::Default()
 	LeftOpen=0; RightOpen=0;
 	AutoScanSideOpen=1;
 	SkyDef[0]=0;
-	NoSky=0;
 	for (int32_t cnt=0; cnt<6; cnt++) SkyDefFade[cnt]=0;
 	VegLevel.Set(50,30,0,100);
 	Vegetation.Default();
@@ -292,7 +291,7 @@ void C4SLandscape::Default()
 	KeepMapCreator=0;
 	SkyScrollMode=0;
 	NewStyleLandscape=0;
-	FoWRes=CClrModAddMap::DefResolutionX;
+	FoWRes=C4FogOfWar::DefResolutionX;
 }
 
 void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
@@ -313,7 +312,6 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
 	pComp->Value(mkNamingAdapt(mkStringAdaptMA(SkyDef), "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
-	pComp->Value(mkNamingAdapt(NoSky,                   "NoSky",                 false));
 	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            false));
 	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               true));
 	pComp->Value(mkNamingAdapt(LeftOpen,                "LeftOpen",              0));
@@ -336,7 +334,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     0));
-	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(CClrModAddMap::DefResolutionX)));
+	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
 }
 
 void C4SWeather::Default()

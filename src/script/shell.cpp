@@ -64,7 +64,7 @@ C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
-bool C4DefList::GetFontImage(char const*, CFacet&) {return false;}
+bool C4DefList::GetFontImage(char const*, C4Facet&) {return false;}
 
 C4MaterialMap MaterialMap;
 C4MaterialMap::C4MaterialMap() {}

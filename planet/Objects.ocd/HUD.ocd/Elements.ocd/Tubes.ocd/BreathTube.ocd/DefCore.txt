@@ -1,6 +1,6 @@
 [DefCore]
 id=GUI_BreathTube
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax
 Width=500
 Height=250

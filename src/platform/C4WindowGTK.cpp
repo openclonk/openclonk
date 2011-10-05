@@ -21,9 +21,9 @@
 /* A wrapper class to OS dependent event and window interfaces, GTK+ version */
 
 #include <C4Include.h>
-#include <StdGtkWindow.h>
+#include <C4WindowGTK.h>
 
-#include <StdApp.h>
+#include <C4App.h>
 #include "C4Version.h"
 #include "C4Config.h"
 
@@ -34,19 +34,19 @@
 #include <gtk/gtk.h>
 
 
-/* CStdGtkWindow */
+/* C4GtkWindow */
 
-CStdGtkWindow::CStdGtkWindow():
-		CStdWindow(), window(NULL)
+C4GtkWindow::C4GtkWindow():
+		C4Window(), window(NULL)
 {
 }
 
-CStdGtkWindow::~CStdGtkWindow()
+C4GtkWindow::~C4GtkWindow()
 {
 	Clear();
 }
 
-CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
@@ -148,7 +148,7 @@ CStdWindow* CStdGtkWindow::Init(WindowKind windowKind, CStdApp * pApp, const cha
 	return this;
 }
 
-bool CStdGtkWindow::ReInit(CStdApp* pApp)
+bool C4GtkWindow::ReInit(C4AbstractApp* pApp)
 {
 	// TODO: Recreate the window with a newly chosen visual
 	// Probably we don't need this, since there is no way to change
@@ -156,7 +156,7 @@ bool CStdGtkWindow::ReInit(CStdApp* pApp)
 	return false;
 }
 
-void CStdGtkWindow::Clear()
+void C4GtkWindow::Clear()
 {
 	if (window != NULL)
 	{
@@ -171,7 +171,7 @@ void CStdGtkWindow::Clear()
 	window = NULL;
 	Active = false;
 
-	// We must free it here since we do not call CStdWindow::Clear()
+	// We must free it here since we do not call C4Window::Clear()
 	if (Info)
 	{
 		delete static_cast<XVisualInfo*>(Info);
@@ -179,9 +179,9 @@ void CStdGtkWindow::Clear()
 	}
 }
 
-void CStdGtkWindow::OnDestroyStatic(GtkWidget* widget, gpointer data)
+void C4GtkWindow::OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
-	CStdGtkWindow* wnd = static_cast<CStdGtkWindow*>(data);
+	C4GtkWindow* wnd = static_cast<C4GtkWindow*>(data);
 
 	g_signal_handler_disconnect(wnd->window, wnd->handlerDestroy);
 	//gtk_widget_destroy(wnd->window);
@@ -193,14 +193,14 @@ void CStdGtkWindow::OnDestroyStatic(GtkWidget* widget, gpointer data)
 	wnd->Close();
 }
 
-GdkFilterReturn CStdGtkWindow::OnFilter(GdkXEvent* xevent, GdkEvent* event, gpointer user_data)
+GdkFilterReturn C4GtkWindow::OnFilter(GdkXEvent* xevent, GdkEvent* event, gpointer user_data)
 {
 	// Handle raw X message, then let GTK+ process it
-	static_cast<CStdGtkWindow*>(user_data)->HandleMessage(*reinterpret_cast<XEvent*>(xevent));
+	static_cast<C4GtkWindow*>(user_data)->HandleMessage(*reinterpret_cast<XEvent*>(xevent));
 	return GDK_FILTER_CONTINUE;
 }
 
-gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+gboolean C4GtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
 	// Update mask so that Application.IsShiftDown,
 	// Application.IsControlDown etc. work.
@@ -224,16 +224,16 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
 	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
 
-	static_cast<CStdApp*>(user_data)->KeyMask = mask;
+	static_cast<C4AbstractApp*>(user_data)->KeyMask = mask;
 	return false;
 }
 
-GtkWidget* CStdGtkWindow::InitGUI()
+GtkWidget* C4GtkWindow::InitGUI()
 {
 	return window;
 }
 
-void CStdWindow::RequestUpdate()
+void C4Window::RequestUpdate()
 {
 	// just invoke directly
 	PerformUpdate();

@@ -844,7 +844,7 @@ func FxIntWalkTimer(pTarget, effect)
 {
 
 	// Test Waterlevel
-	if(GBackLiquid(0, -5))
+	if(GBackLiquid(0, -5) && !Contained())
 	{
 		SetAction("Swim");
 		if(GetComDir() == COMD_Left)

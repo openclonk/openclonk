@@ -2,7 +2,7 @@
 #ifndef C4LANDSCAPE_RENDER_H
 #define C4LANDSCAPE_RENDER_H
 
-#include "StdSurface2.h"
+#include "C4Surface.h"
 #include "C4FacetEx.h"
 
 // Data we want to store per landscape pixel
@@ -79,7 +79,7 @@ public:
 
 private:
 	// surfaces
-	CSurface *Surfaces[C4LR_SurfaceCount];
+	C4Surface *Surfaces[C4LR_SurfaceCount];
 
 	// shader sources
 	StdStrBuf LandscapeShader;
@@ -140,7 +140,7 @@ public:
 	~C4LandscapeRenderClassic();
 
 private:
-	CSurface *Surface32;
+	C4Surface *Surface32;
 
 public:
 	virtual bool Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pMap, C4GroupSet *pGraphics);

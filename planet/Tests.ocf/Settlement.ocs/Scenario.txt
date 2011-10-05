@@ -1,7 +1,7 @@
 [Head]
 Icon=14
 Title=Settlement
-Version=5,0,0,0
+Version=5,2,0,1
 
 [Definitions]
 Definition1=Objects.ocd

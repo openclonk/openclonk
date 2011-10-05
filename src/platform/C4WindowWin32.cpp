@@ -25,9 +25,9 @@
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
 #include "C4Include.h"
-#include <StdWindow.h>
+#include <C4Window.h>
 
-#include <StdApp.h>
+#include <C4App.h>
 #include <StdRegistry.h>
 #include <C4Config.h>
 #include <C4Rect.h>
@@ -63,14 +63,14 @@
 #define C4FullScreenClassName L"C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-CStdWindow::CStdWindow (): Active(false), pSurface(0), hWindow(0)
+C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
 {
 }
-CStdWindow::~CStdWindow ()
+C4Window::~C4Window ()
 {
 }
 
-bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
+bool C4Window::RegisterWindowClass(HINSTANCE hInst)
 {
 	WNDCLASSEXW WndClass = {0};
 	WndClass.cbSize        = sizeof(WNDCLASSEX);
@@ -84,7 +84,7 @@ bool CStdWindow::RegisterWindowClass(HINSTANCE hInst)
 	return !!RegisterClassExW(&WndClass);
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 
@@ -119,7 +119,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp,
 	return this;
 }
 
-bool CStdWindow::ReInit(CStdApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// We don't need to change anything with the window for any
 	// configuration option changes on Windows.
@@ -141,7 +141,7 @@ bool CStdWindow::ReInit(CStdApp* pApp)
 	return true;
 }
 
-void CStdWindow::Clear()
+void C4Window::Clear()
 {
 	// Destroy window
 	if (hRenderWindow) DestroyWindow(hRenderWindow);
@@ -150,24 +150,24 @@ void CStdWindow::Clear()
 	hWindow = NULL;
 }
 
-bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
+bool C4Window::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
 {
 	return StoreWindowPosition(hWindow, szWindowName, szSubKey, fStoreSize) != 0;
 }
 
-bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
+bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
 {
 	if (!RestoreWindowPosition(hWindow, szWindowName, szSubKey, fHidden))
 		ShowWindow(hWindow,SW_SHOWNORMAL);
 	return true;
 }
 
-void CStdWindow::SetTitle(const char *szToTitle)
+void C4Window::SetTitle(const char *szToTitle)
 {
 	if (hWindow) SetWindowTextW(hWindow, szToTitle ? GetWideChar(szToTitle) : L"");
 }
 
-bool CStdWindow::GetSize(C4Rect * pRect)
+bool C4Window::GetSize(C4Rect * pRect)
 {
 	RECT r;
 	if (!(hWindow && GetClientRect(hWindow,&r))) return false;
@@ -178,7 +178,7 @@ bool CStdWindow::GetSize(C4Rect * pRect)
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
+void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	if (hWindow)
 	{
@@ -195,14 +195,14 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
 	}
 }
 
-void CStdWindow::FlashWindow()
+void C4Window::FlashWindow()
 {
 	// please activate me!
 	if (hWindow)
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
 }
 
-void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 #ifdef USE_GL
 	if(pGL && pGL->pMainCtx)
@@ -237,9 +237,9 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 	return true;
 }
 
-/* CStdApp */
+/* C4AbstractApp */
 
-CStdApp::CStdApp() :
+C4AbstractApp::C4AbstractApp() :
 		Active(false), pWindow(NULL), fQuitMsgReceived(false),
 		hInstance(NULL), fDspModeSet(false)
 {
@@ -253,13 +253,13 @@ CStdApp::CStdApp() :
 #endif
 }
 
-CStdApp::~CStdApp()
+C4AbstractApp::~C4AbstractApp()
 {
 }
 
 const char *LoadResStr(const char *id);
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set instance vars
 	hMainThread = ::GetCurrentThread();
@@ -267,17 +267,17 @@ bool CStdApp::Init(int argc, char * argv[])
 	return DoInit (argc, argv);
 }
 
-void CStdApp::Clear()
+void C4AbstractApp::Clear()
 {
 	hMainThread = NULL;
 }
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	PostQuitMessage(0);
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 
 	// Always fail after quit message
@@ -294,13 +294,13 @@ static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LP
 	// get to indexed monitor
 	if (GLMonitorInfoEnumCount--) return true;
 	// store it
-	CStdApp *pApp = (CStdApp *) dwData;
+	C4AbstractApp *pApp = (C4AbstractApp *) dwData;
 	pApp->hMon = hMonitor;
 	pApp->MonitorRect = *lprcMonitor;
 	return true;
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// prepare search struct
 	DEVMODEW dmode;
@@ -318,11 +318,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-void CStdApp::RestoreVideoMode()
+void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 #ifdef USE_DIRECTX
 	if (pD3D)
@@ -404,13 +404,13 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 #endif
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);
 }
 
 // Clipboard functions
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	if (!fClipboard) return false;
 	bool fSuccess = true;
@@ -433,7 +433,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return fSuccess;
 }
 
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	if (!fClipboard) return StdStrBuf();
 	// open clipboard
@@ -449,17 +449,17 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 	return text;
 }
 
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	if (!fClipboard) return false;
 	return !!IsClipboardFormatAvailable(CF_UNICODETEXT);
 }
 
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 }
 
-void CStdWindow::RequestUpdate()
+void C4Window::RequestUpdate()
 {
 	// just invoke directly
 	PerformUpdate();

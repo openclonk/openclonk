@@ -15,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef USE_COCOA
 

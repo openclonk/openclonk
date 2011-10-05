@@ -393,7 +393,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	int32_t iOffsetX,iOffsetY;
 
 	ZoomData GuiZoom;
-	lpDDraw->GetZoom(&GuiZoom);
+	pDraw->GetZoom(&GuiZoom);
 
 	// Hidden
 	if (!Visible || !fMouseOwned) return;
@@ -442,7 +442,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			float XDraw, YDraw, ZoomDraw;
 			if (fIsGameZoom)
 			{
-				lpDDraw->SetZoom(GameZoom);
+				pDraw->SetZoom(GameZoom);
 				XDraw = GameX; YDraw = GameY;
 				ZoomDraw = 1.0f;
 				// for drag construct: draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
@@ -454,22 +454,22 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				XDraw = GuiX; YDraw = GuiY;
 			}
 			// draw in special modulation mode
-			lpDDraw->SetBlitMode(C4GFXBLIT_MOD2);
+			pDraw->SetBlitMode(C4GFXBLIT_MOD2);
 			// draw DragImage in red or green, according to the phase to be used
 			iOffsetX=int(ZoomDraw*DragImage.Wdt/2);
 			if (Drag == C4MC_Drag_Construct)
 				iOffsetY=int(ZoomDraw*DragImage.Hgt);
 			else
 				iOffsetY=int(ZoomDraw*DragImage.Hgt/2);
-			lpDDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
-			lpDDraw->Blit(DragImage.Surface,
+			pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
+			pDraw->Blit(DragImage.Surface,
 			              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
 			              cgo.Surface,
 			              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt)*ZoomDraw, float(DragImage.Hgt)*ZoomDraw,true);
 			// reset color
-			lpDDraw->DeactivateBlitModulation();
-			lpDDraw->SetBlitMode(0);
-			if (fIsGameZoom) lpDDraw->SetZoom(GuiZoom);
+			pDraw->DeactivateBlitModulation();
+			pDraw->SetBlitMode(0);
+			if (fIsGameZoom) pDraw->SetZoom(GuiZoom);
 			// reset cursor hotspot offset for script drawing
 			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
 			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
@@ -493,7 +493,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		//------------------------------------------------------------------------------------------
 	case C4MC_Drag_Selecting:
 		// Draw frame
-		lpDDraw->DrawFrameDw(cgo.Surface,
+		pDraw->DrawFrameDw(cgo.Surface,
 		                              int32_t(cgo.X + GuiX),
 		                              int32_t(cgo.Y + GuiY),
 		                              int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
@@ -517,7 +517,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			// Otherwise red mouse control style
 			int32_t iWdt,iHgt;
 			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			lpDDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
+			pDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
 			                           cgo.Surface,
 			                           float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
 			                           float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),

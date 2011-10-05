@@ -117,7 +117,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	// draw version info
 	StdStrBuf sVer;
 	sVer.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
-	lpDDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt*38/40, 0xffffffff, ALeft, true);
+	pDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt*38/40, 0xffffffff, ALeft, true);
 }
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY)

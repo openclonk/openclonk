@@ -396,7 +396,7 @@ bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2Res
 		{ if (!fSilent) LogF("SetByFile: file %s not found!", strFilePath); return false; }
 	// calc checksum
 	uint32_t iCRC32;
-	if (!C4Group_GetFileCRC(szFullFile.getData(), &iCRC32)) return false;
+	if (!GetFileCRC(szFullFile.getData(), &iCRC32)) return false;
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
 	LogSilentF("Network: Resource: complete %d:%s is file %s (%s)", iResID, szResName, szFile, fTemp ? "temp" : "static");
@@ -658,7 +658,7 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 
 	// calc checksum
 	uint32_t iCRC32;
-	if (!C4Group_GetFileCRC(szStandalone, &iCRC32))
+	if (!GetFileCRC(szStandalone, &iCRC32))
 		{ if (!fSilent) Log("GetStandalone: could not calculate checksum!"); return false; }
 	// set / check
 	if (!fSetOfficial && iCRC32 != Core.getFileCRC())
@@ -688,7 +688,7 @@ bool C4Network2Res::CalculateSHA()
 		SCopy(szFile, szStandalone, _MAX_PATH);
 	// get the hash
 	BYTE hash[SHA_DIGEST_LENGTH];
-	if (!C4Group_GetFileSHA1(szStandalone, hash))
+	if (!GetFileSHA1(szStandalone, hash))
 		return false;
 	// save it back
 	Core.SetFileSHA(hash);

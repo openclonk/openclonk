@@ -51,7 +51,6 @@ void C4Action::Default()
 void C4Action::CompileFunc(StdCompiler *pComp)
 {
 	// Note: Compiled directly into "Object"-categories, so beware of name clashes (see C4Object::CompileFunc)
-	// FIXME pComp->Value(mkNamingAdapt( toC4CStr(Name),            "Action",             ""                ));
 	pComp->Value(mkNamingAdapt( Dir,                      "Dir",                DIR_None          ));
 	pComp->Value(mkNamingAdapt( ComDir,                   "ComDir",             COMD_Stop         ));
 	pComp->Value(mkNamingAdapt( Time,                     "ActionTime",         0                 ));

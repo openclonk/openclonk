@@ -56,21 +56,21 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
 	float iDrawQuadBottom[8] = { x1,y1, x0,y1, x0+iIndent,y1-iIndent, x1,y1-iIndent };
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	//lpDDraw->DrawFrameDw(cgo.Surface, x0+1, y0+1, x1-1, y1-1, aC4StartupBtnBorderColor2);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
+	//pDraw->DrawFrameDw(cgo.Surface, x0+1, y0+1, x1-1, y1-1, aC4StartupBtnBorderColor2);
 	// draw selection highlight
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 	// draw button text
-	lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4StartupBtnFontClr, ACenter, true);
+	pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4StartupBtnFontClr, ACenter, true);
 }
 
 int32_t C4StartupOptionsDlg::SmallButton::GetDefaultButtonHeight()
@@ -1170,7 +1170,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 {
 	if(pTexMgr) pTexMgr->IntLock();
 #ifdef USE_GL
-	lpDDraw->InvalidateDeviceObjects();
+	pDraw->InvalidateDeviceObjects();
 	// Note: This assumes there is only one GL context (the main context). This
 	// is true in fullscreen mode, and since the startup dlg is only shown in
 	// fullscreen mode we are safe this way.
@@ -1182,7 +1182,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 	// stops until the Window is being moved again (or tasked-out and back in
 	// in fullscreen mode). This does not happen when only reinitializing the
 	// GL context instead of whole DDraw so that's why we do this currently.
-	if(pD3D) lpDDraw->Clear();
+	if(pD3D) pDraw->Clear();
 #endif
 
 	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
@@ -1191,12 +1191,12 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 
 #ifdef USE_GL
 	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
-	lpDDraw->RestoreDeviceObjects();
+	pDraw->RestoreDeviceObjects();
 #endif
 #ifdef USE_DIRECTX
 	// Note: Editor is hardcoded to false at this point... I guess that's OK
 	// because C4StartupOptionsDlg is never shown in editor mode anyway.
-	if(pD3D) lpDDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
+	if(pD3D) pDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
 #endif
 
 	if(pTexMgr) pTexMgr->IntUnlock();
@@ -1537,9 +1537,9 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// and apply them directly, if the engine is current
-	if (fUseGL == lpDDraw->IsOpenGL())
+	if (fUseGL == pDraw->IsOpenGL())
 	{
-		lpDDraw->RestoreDeviceObjects();
+		pDraw->RestoreDeviceObjects();
 	}
 }
 

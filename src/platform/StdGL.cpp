@@ -27,8 +27,8 @@
 
 #include "C4Include.h"
 #include <StdGL.h>
-#include <StdSurface2.h>
-#include <StdWindow.h>
+#include <C4Surface.h>
+#include <C4Window.h>
 #include "C4Rect.h"
 #include "StdMesh.h"
 #include "C4Config.h"
@@ -88,7 +88,7 @@ void CStdGL::Clear()
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
 	pMainCtx=0;
-	CStdDDraw::Clear();
+	C4Draw::Clear();
 }
 
 void CStdGL::FillBG(DWORD dwClr)
@@ -151,7 +151,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
 				for (unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
 				{
-					const CTexRef& texture = texunit.GetTexture(l);
+					const C4TexRef& texture = texunit.GetTexture(l);
 					glBindTexture(GL_TEXTURE_2D, texture.texName);
 					switch (texunit.TexAddressMode)
 					{
@@ -185,10 +185,10 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
 						// efficient though.
 
-						// Disabled for now, until we find a better place for this (CTexRef?)
+						// Disabled for now, until we find a better place for this (C4TexRef?)
 #if 0
 						if (GLEW_VERSION_1_4)
-							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
+							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<C4TexRef*>(&texunit.GetTexture())->Lock(); const_cast<C4TexRef*>(&texunit.GetTexture())->Unlock(); }
 						else
 							technique.Available = false;
 #else
@@ -307,7 +307,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 	return mat.BestTechniqueIndex != -1;
 }
 
-bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
+bool CStdGL::PrepareRendering(C4Surface * sfcToSurface)
 {
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
@@ -376,7 +376,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
 }
 
-void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdGL::PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	// global modulation map
 	int i;
@@ -426,7 +426,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	{
 		glActiveTexture(GL_TEXTURE3);
 		glLoadIdentity();
-		CSurface * pSurface = pClrModMap->GetSurface();
+		C4Surface * pSurface = pClrModMap->GetSurface();
 		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 	}
@@ -463,18 +463,18 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	}
 	if (vbo)
 	{
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, rBltData.byNumVertices*sizeof(CBltVertex), rBltData.vtVtx, GL_STREAM_DRAW_ARB);
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), 0);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, rBltData.byNumVertices*sizeof(C4BltVertex), rBltData.vtVtx, GL_STREAM_DRAW_ARB);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), 0);
 	}
 	else
 	{
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), rBltData.vtVtx);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), rBltData.vtVtx);
 	}
 	if (shaders[0] && fUseClrModMap)
 	{
 		glClientActiveTexture(GL_TEXTURE3);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &rBltData.vtVtx[0].ftx);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &rBltData.vtVtx[0].ftx);
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
@@ -1107,7 +1107,7 @@ namespace
 
 	// Apply Zoom and Transformation to the current matrix stack. Return
 	// parity of the transformation.
-	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, CBltTransform* pTransform)
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
 	{
 		// Apply zoom
 		glTranslatef(ZoomX, ZoomY, 0.0f);
@@ -1135,24 +1135,24 @@ namespace
 	}
 }
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform)
 {
 	// Field of View for perspective projection, in degrees
 	static const float FOV = 60.0f;
 	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
 
 	// Convert OgreToClonk matrix to column-major order
-	// TODO: This must be executed after CStdDDraw::OgreToClonk was
+	// TODO: This must be executed after C4Draw::OgreToClonk was
 	// initialized - is this guaranteed at this position?
 	static const float OgreToClonkGL[16] =
 	{
-		CStdDDraw::OgreToClonk(0,0), CStdDDraw::OgreToClonk(1,0), CStdDDraw::OgreToClonk(2,0), 0,
-		CStdDDraw::OgreToClonk(0,1), CStdDDraw::OgreToClonk(1,1), CStdDDraw::OgreToClonk(2,1), 0,
-		CStdDDraw::OgreToClonk(0,2), CStdDDraw::OgreToClonk(1,2), CStdDDraw::OgreToClonk(2,2), 0,
-		CStdDDraw::OgreToClonk(0,3), CStdDDraw::OgreToClonk(1,3), CStdDDraw::OgreToClonk(2,3), 1
+		C4Draw::OgreToClonk(0,0), C4Draw::OgreToClonk(1,0), C4Draw::OgreToClonk(2,0), 0,
+		C4Draw::OgreToClonk(0,1), C4Draw::OgreToClonk(1,1), C4Draw::OgreToClonk(2,1), 0,
+		C4Draw::OgreToClonk(0,2), C4Draw::OgreToClonk(1,2), C4Draw::OgreToClonk(2,2), 0,
+		C4Draw::OgreToClonk(0,3), C4Draw::OgreToClonk(1,3), C4Draw::OgreToClonk(2,3), 1
 	};
 
-	static const bool OgreToClonkParity = CStdDDraw::OgreToClonk.Determinant() > 0.0f;
+	static const bool OgreToClonkParity = C4Draw::OgreToClonk.Determinant() > 0.0f;
 
 	const StdMesh& mesh = instance.GetMesh();
 
@@ -1385,8 +1385,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
+void CStdGL::BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * mattextures[])
 {
 	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
@@ -1477,7 +1477,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
 			glActiveTexture(GL_TEXTURE0);
-			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
+			C4TexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
 			if (!mattextures && Zoom != 1.0)
 			{
@@ -1511,7 +1511,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			tTexBlt.right = (fTexBlt.right + iBlitX - fx) * Zoom + tx;
 			fTexBlt.bottom= Min<float>((float)(fy + hgt - iBlitY), (float)iTexSizeY);
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * Zoom + ty;
-			CBltVertex Vtx[4];
+			C4BltVertex Vtx[4];
 			// blit positions
 			Vtx[0].ftx = tTexBlt.left;  Vtx[0].fty = tTexBlt.top;
 			Vtx[1].ftx = tTexBlt.right; Vtx[1].fty = tTexBlt.top;
@@ -1529,13 +1529,13 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
-				CSurface * pSurface = pClrModMap->GetSurface();
+				C4Surface * pSurface = pClrModMap->GetSurface();
 				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 
 				glClientActiveTexture(GL_TEXTURE3);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &Vtx[0].ftx);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &Vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
 			}
 			if (!shaders[0] && fUseClrModMap && dwModClr)
@@ -1576,14 +1576,14 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 						glActiveTexture(GL_TEXTURE0);
 
-						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 						glDrawArrays(GL_QUADS, 0, 4);
 					}
 				}
 			}
 			else
 			{
-				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 				glDrawArrays(GL_QUADS, 0, 4);
 			}
 
@@ -1606,7 +1606,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	ResetTexture();
 }
 
-CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
+CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 {
 	DebugLog("  gl: Create Context...");
 	// safety
@@ -1626,7 +1626,7 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 }
 
 #ifdef _WIN32
-CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
+CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 {
 	// safety
 	if (!hWindow) return NULL;
@@ -1658,7 +1658,7 @@ bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorD
 	return RestoreDeviceObjects();
 }
 
-void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
+void CStdGL::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
 {
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
@@ -1713,7 +1713,7 @@ static inline long int lrintf(float f)
 }
 #endif
 
-void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -1729,7 +1729,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		l += 0.000000005f;
 		offx /= l; offx *= Zoom;
 		offy /= l; offy *= Zoom;
-		CBltVertex vtx[4];
+		C4BltVertex vtx[4];
 		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
 		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;
 		vtx[2].ftx = x2 - offx; vtx[2].fty = y2 - offy; vtx[2].ftz = 0;
@@ -1744,13 +1744,13 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
-				CSurface * pSurface = pClrModMap->GetSurface();
+				C4Surface * pSurface = pClrModMap->GetSurface();
 				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSizeX), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSizeY), 1.0f);
 				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
 
 				glClientActiveTexture(GL_TEXTURE3);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &vtx[0].ftx);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(C4BltVertex), &vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
 			}
 			else
@@ -1772,7 +1772,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		// draw two triangles
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, lines_tex);
-		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), vtx);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), vtx);
 		glDrawArrays(GL_POLYGON, 0, 4);
 		glClientActiveTexture(GL_TEXTURE3);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -1788,7 +1788,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 	}
 }
 
-void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
+void CStdGL::PerformPix(C4Surface * sfcTarget, float tx, float ty, DWORD dwClr)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -1866,7 +1866,7 @@ bool CStdGL::RestoreDeviceObjects()
 	{
 		glGenBuffersARB(1, &vbo);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(CBltVertex), 0, GL_STREAM_DRAW_ARB);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(C4BltVertex), 0, GL_STREAM_DRAW_ARB);
 	}
 
 	if (!Config.Graphics.EnableShaders)
@@ -1998,7 +1998,7 @@ bool CStdGL::Error(const char *szMsg)
 	LogF("  gl: %s", glGetString(GL_RENDERER));
 	LogF("  gl: %s", glGetString(GL_VERSION));
 	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
-	return CStdDDraw::Error(szMsg);
+	return C4Draw::Error(szMsg);
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)
@@ -2063,7 +2063,7 @@ bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 
 void CStdGL::Default()
 {
-	CStdDDraw::Default();
+	C4Draw::Default();
 	pCurrCtx = NULL;
 	iPixelFormat=0;
 	sfcFmt=0;

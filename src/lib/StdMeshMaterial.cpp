@@ -1018,7 +1018,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			mat.Load(ctx);
 
 			// To Gfxspecific setup of the material; choose working techniques
-			if (lpDDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
+			if (pDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
 				Materials[material_name] = mat;
 			else
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");

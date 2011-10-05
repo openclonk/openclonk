@@ -25,7 +25,7 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 namespace C4GUI
 {
@@ -130,13 +130,13 @@ namespace C4GUI
 			yOff = 0;
 			fZoom = (float) rcBounds.Hgt / Max(pUseFont->GetLineHeight(), 1);
 		}
-		lpDDraw->TextOut(sCaption.getData(), *pUseFont, fZoom, cgo.Surface, x0 + rcBounds.Hgt + C4GUI_CheckBoxLabelSpacing, y0 + yOff, fEnabled ? dwEnabledClr : dwDisabledClr, ALeft, true);
+		pDraw->TextOut(sCaption.getData(), *pUseFont, fZoom, cgo.Surface, x0 + rcBounds.Hgt + C4GUI_CheckBoxLabelSpacing, y0 + yOff, fEnabled ? dwEnabledClr : dwDisabledClr, ALeft, true);
 		// selection marker
 		if ((fMouseOn && IsInActiveDlg(false)) || HasDrawFocus())
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlightRound.DrawX(cgo.Surface, x0+rcBounds.Hgt*1/4, y0+rcBounds.Hgt*1/4, rcBounds.Hgt*1/2, rcBounds.Hgt*1/2);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 	}
 

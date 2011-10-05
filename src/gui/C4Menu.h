@@ -219,7 +219,7 @@ protected:
 	bool RefillInternal();
 	void DrawButton(C4Facet &cgo);
 	void DrawScrollbar(C4Facet &cgo, int32_t iTotal, int32_t iVisible, int32_t iPosition);
-	void DrawFrame(SURFACE sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
+	void DrawFrame(C4Surface * sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 	void InitLocation(C4Facet &cgo);
 	void InitSize();
 	void UpdateScrollBar(); // call InitSize if a scroll bar is needed but not present or vice vera

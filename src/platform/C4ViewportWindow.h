@@ -24,13 +24,13 @@
 #ifndef INC_C4ViewportWindow
 #define INC_C4ViewportWindow
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ViewportBase;
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4ViewportBase;
 #else
-typedef CStdWindow C4ViewportBase;
+typedef C4Window C4ViewportBase;
 #endif
 
 class C4ViewportWindow: public C4ViewportBase
@@ -66,7 +66,7 @@ public:
 	virtual void HandleMessage (XEvent &);
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
-	CStdWindow * Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
+	C4Window * Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer);
 	virtual void Close();
 	virtual void PerformUpdate();
 };

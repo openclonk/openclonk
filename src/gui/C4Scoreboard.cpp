@@ -421,7 +421,7 @@ void C4ScoreboardDlg::DrawElement(C4TargetFacet &cgo)
 		{
 			const char *szText = pBrd->GetCell(iCol, iRow)->Text.getData();
 			if (szText && *szText && (iRow || iCol))
-				lpDDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
+				pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
 			iX += piColWidths[iCol];
 		}
 		iY += ::GraphicsResource.FontRegular.GetLineHeight() + YIndent;

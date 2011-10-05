@@ -81,7 +81,7 @@ typedef C4CTVERTEX C4CTVERTEXQUAD[4];
 class CStdD3DShader;
 
 // direct draw encapsulation
-class CStdD3D : public CStdDDraw
+class CStdD3D : public C4Draw
 {
 public:
 	CStdD3D(bool fSoftware);
@@ -118,7 +118,7 @@ public:
 	// General
 	void Clear();
 	void Default();
-	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL, CStdWindow * pWindow = NULL);
+	bool PageFlip(C4Rect *pSrcRt=NULL, C4Rect *pDstRt=NULL, C4Window * pWindow = NULL);
 	bool BeginScene(); // prepare device for drawing
 	void EndScene();   // prepare device for surface locking, flipping etc.
 	virtual int GetEngine() { return fSoftware ? 2 : 0; }   // get indexed engine
@@ -130,21 +130,21 @@ public:
 	bool UpdateClipper(); // set current clipper to render target
 	virtual bool PrepareMaterial(StdMeshMaterial &mat);
 	// Surface
-	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
+	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	// Blit
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
-	void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-	bool BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
-	bool BlitSurface2Window(SURFACE sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
+	void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+	bool BlitTex2Window(C4TexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
+	bool BlitSurface2Window(C4Surface * sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
-	void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
-	void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
-	void DrawPixPrimary(SURFACE sfcDest, int tx, int ty, DWORD dwCol);
+	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	void DrawPixPrimary(C4Surface * sfcDest, int tx, int ty, DWORD dwCol);
 	// Gamma
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
+	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);
 	// device objects
 	bool InitDeviceObjects();       // init device dependent objects
 	bool InitShaders();             // parse and set shaders
@@ -165,9 +165,9 @@ protected:
 	inline bool HasShaders() const { return !!pShaders[0]; }
 
 
-	friend class CSurface;
-	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Surface;
+	friend class C4TexRef;
+	friend class C4Pattern;
 };
 
 // Global D3D access pointer

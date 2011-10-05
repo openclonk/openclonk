@@ -136,7 +136,7 @@ public:
 		if (hbmHalt2) DeleteObject(hbmHalt2);
 	}
 
-	void CreateBitmaps(CStdApp *application)
+	void CreateBitmaps(C4AbstractApp *application)
 	{
 		HINSTANCE instance = application->GetInstance();
 		hbmMouse=(HBITMAP)LoadBitmapW(instance,MAKEINTRESOURCEW(IDB_MOUSE));
@@ -604,7 +604,7 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	hWindow = CreateDialog(application->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)
@@ -972,8 +972,8 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
 #ifdef USE_GL
-	if (lpDDraw && !dlg->state->pGLCtx)
-		dlg->state->pGLCtx = lpDDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
+	if (pDraw && !dlg->state->pGLCtx)
+		dlg->state->pGLCtx = pDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
 #endif
 	// Show window
 	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
@@ -1054,7 +1054,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 {
 	if (!state->hDialog) return;
 
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 	int32_t iPrvWdt,iPrvHgt;
 	RECT rect;
 
@@ -1063,12 +1063,12 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	iPrvWdt=rect.right-rect.left;
 	iPrvHgt=rect.bottom-rect.top;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
-	lpDDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
+	pDraw->DrawBoxDw(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,C4RGB(0x80,0x80,0x80));
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(Material,C4TLS_MatSky))
 	{
@@ -1093,7 +1093,7 @@ void C4ToolsDlg::NeedPreviewUpdate()
 		}
 	}
 	if (IsWindowEnabled(GetDlgItem(state->hDialog,IDC_PREVIEW)))
-		lpDDraw->DrawPatternedCircle( sfcPreview,
+		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              Grade,
 		                              bCol, Pattern, *::Landscape.GetPal());

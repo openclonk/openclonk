@@ -253,7 +253,7 @@ typedef union _XEvent XEvent;
 typedef struct _XDisplay Display;
 #endif
 
-class CStdWindow
+class C4Window
 {
 public:
 	enum WindowKind
@@ -263,24 +263,24 @@ public:
 		W_Fullscreen
 	};
 public:
-	CStdWindow ();
-	virtual ~CStdWindow ();
+	C4Window ();
+	virtual ~C4Window ();
 	bool Active;
-	CSurface * pSurface;
+	C4Surface * pSurface;
 	virtual void Clear();
 	// Only when the wm requests a close
 	// For example, when the user clicks the little x in the corner or uses Alt-F4
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual CStdWindow * Init(WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent = 0, bool HideCursor = true);
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
 	// at which it makes sense for this function to be called is when the
 	// multisampling configuration option changes, since, for the change to
 	// take effect, we need to choose another visual or pixel format, respectively.
-	virtual bool ReInit(CStdApp* pApp);
+	virtual bool ReInit(C4AbstractApp* pApp);
 
 	// Creates a list of available samples for multisampling
 	virtual void EnumerateMultiSamples(std::vector<int>& samples) const;
@@ -330,11 +330,11 @@ public:
 	// Invokes actual drawing code - should not be called directly
 	virtual void PerformUpdate();
 public:
-	friend class CStdDDraw;
+	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
-	friend class CStdApp;
-	friend class CStdGtkWindow;
+	friend class C4AbstractApp;
+	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

@@ -1,6 +1,6 @@
 [DefCore]
 id=Airship
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_Vehicle
 Width=64
 Height=54

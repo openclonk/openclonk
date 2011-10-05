@@ -16,13 +16,13 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// text drawing facility for CStdDDraw
+// text drawing facility for C4Draw
 
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <StdMarkup.h>
-#include <StdFacet.h>
+#include <C4Markup.h>
+#include <C4Facet.h>
 #include <StdBuf.h>
 #include <stdio.h>
 #include <map>
@@ -42,8 +42,7 @@
 #define FW_BOLD 700
 #endif
 
-class CMarkup;
-class CFacet;
+class C4Markup;
 class CStdVectorFont;
 
 class CStdFont
@@ -53,7 +52,7 @@ public:
 	class CustomImages
 	{
 	protected:
-		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet) = 0;
+		virtual bool GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet) = 0;
 
 		friend class CStdFont;
 	public:
@@ -69,12 +68,12 @@ protected:
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
-	CSurface **psfcFontData; // font recource surfaces - additional surfaces created as needed
+	C4Surface **psfcFontData; // font recource surfaces - additional surfaces created as needed
 	int iNumFontSfcs;       // number of created font surfaces
 	int iSfcSizes;          // size for font surfaces
 	int iFontZoom;          // zoom of font in texture
 
-	CSurface *sfcCurrent;  // current surface font data can be written to at runtime
+	C4Surface *sfcCurrent;  // current surface font data can be written to at runtime
 	int32_t iCurrentSfcX, iCurrentSfcY; // current character rendering position
 
 	int iHSpace; // horizontal space to be added betwen two characters
@@ -82,8 +81,8 @@ protected:
 	DWORD dwWeight; // font weight (usually FW_NORMAL or FW_BOLD)
 	bool fDoShadow; // if the font is shadowed
 
-	CFacet fctAsciiTexCoords[256-' '];     // texture coordinates of ASCII letters
-	std::map<uint32_t, CFacet> fctUnicodeMap; // texture coordinates of Unicode letters
+	C4Facet fctAsciiTexCoords[256-' '];     // texture coordinates of ASCII letters
+	std::map<uint32_t, C4Facet> fctUnicodeMap; // texture coordinates of Unicode letters
 
 	CustomImages *pCustomImages; // callback class for custom images
 
@@ -98,18 +97,18 @@ protected:
 
 	bool AddSurface();
 	bool CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt);
-	bool AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget);
+	bool AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget);
 
-	CFacet &GetCharacterFacet(uint32_t c)
+	C4Facet &GetCharacterFacet(uint32_t c)
 	{
 		if (c<128) return fctAsciiTexCoords[c-' ']; else return GetUnicodeCharacterFacet(c);
 	}
-	CFacet &GetUnicodeCharacterFacet(uint32_t c);
+	C4Facet &GetUnicodeCharacterFacet(uint32_t c);
 
 public:
 	int iLineHgt;        // height of one line of font (in pixels)
 	// draw ine line of text
-	void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom);
+	void DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom);
 
 	// get text size
 	bool GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup = true);

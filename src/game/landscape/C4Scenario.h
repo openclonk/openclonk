@@ -178,7 +178,6 @@ public:
 	bool AutoScanSideOpen;
 	char SkyDef[C4MaxDefString+1];
 	int32_t SkyDefFade[6];
-	bool NoSky;
 	bool NoScan;
 	C4SVal Gravity;
 	// Dynamic map

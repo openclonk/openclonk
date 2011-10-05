@@ -136,7 +136,7 @@ namespace C4GUI
 	{
 		// draw BG
 		int ox = cgo.TargetX+rcBounds.x, oy = cgo.TargetY+rcBounds.y;
-		lpDDraw->DrawBoxDw(cgo.Surface, ox,oy,ox+rcBounds.Wdt-1,oy+rcBounds.Hgt-1,dwBackClr);
+		pDraw->DrawBoxDw(cgo.Surface, ox,oy,ox+rcBounds.Wdt-1,oy+rcBounds.Hgt-1,dwBackClr);
 		// draw borders
 		int x,y,Q;
 		// top
@@ -194,7 +194,7 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef _WIN32
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;
 		// calculate required size
@@ -316,10 +316,10 @@ namespace C4GUI
 		return !!RegisterClassExW(&WndClass);
 	}
 #else
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
-		CStdWindow *result;
-		if (CStdWindow::Init(windowKind, pApp, Title, pParent, false))
+		C4Window *result;
+		if (C4Window::Init(windowKind, pApp, Title, pParent, false))
 		{
 			// update pos
 			if (szID && *szID)
@@ -336,7 +336,7 @@ namespace C4GUI
 	void DialogWindow::HandleMessage (XEvent &e)
 	{
 		// Parent handling
-		CStdWindow::HandleMessage(e);
+		C4Window::HandleMessage(e);
 
 		// Determine dialog
 		Dialog *pDlg = ::pGUI->GetDialog(this);
@@ -468,14 +468,14 @@ namespace C4GUI
 		if (pWindow) return true;
 		// create it!
 		pWindow = new DialogWindow();
-		if (!pWindow->Init(CStdWindow::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
+		if (!pWindow->Init(C4Window::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
 		{
 			delete pWindow;
 			pWindow = NULL;
 			return false;
 		}
 		// create rendering context
-		pWindow->pSurface = new CSurface(&Application, pWindow);
+		pWindow->pSurface = new C4Surface(&Application, pWindow);
 		pWindow->pDialog = this;
 		return true;
 	}
@@ -703,15 +703,15 @@ namespace C4GUI
 		if (iFade < 100)
 		{
 			if (iFade <= 0) return;
-			lpDDraw->ActivateBlitModulation((iFade*255/100)<<24 | 0xffffff);
+			pDraw->ActivateBlitModulation((iFade*255/100)<<24 | 0xffffff);
 		}
 		// separate window: Clear background
 		if (pWindow)
-			lpDDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, (0xff << 24) | (C4GUI_StandardBGColor & 0xffffff) );
+			pDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, (0xff << 24) | (C4GUI_StandardBGColor & 0xffffff) );
 		// draw window + contents (evaluates IsVisible)
 		Window::Draw(cgo);
 		// reset blit modulation
-		if (iFade<100) lpDDraw->DeactivateBlitModulation();
+		if (iFade<100) pDraw->DeactivateBlitModulation();
 		// blit output to own window
 		if (pWindow)
 		{
@@ -731,7 +731,7 @@ namespace C4GUI
 		{
 			// standard border/bg then
 			// draw background
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,C4GUI_StandardBGColor);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,C4GUI_StandardBGColor);
 			// draw frame
 			Draw3DFrame(cgo);
 		}
@@ -1051,7 +1051,7 @@ namespace C4GUI
 	{
 		// draw upper board
 		if (HasUpperBoard())
-			lpDDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
+			pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
 	}
 
 	void FullscreenDialog::UpdateOwnPos()

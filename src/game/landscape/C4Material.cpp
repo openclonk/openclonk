@@ -549,7 +549,7 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, true,
 		                         FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());
 		// init PXS facet
-		SURFACE sfcTexture;
+		C4Surface * sfcTexture;
 		C4Texture * Texture;
 		if (Map[cnt].sPXSGfx.getLength())
 			if ((Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData())))

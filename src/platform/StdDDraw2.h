@@ -23,26 +23,12 @@
 #ifndef INC_STDDDRAW2
 #define INC_STDDDRAW2
 
-#include <StdSurface2.h>
+#include <C4Surface.h>
 #include <StdSurface8.h>
-#include <StdFont.h>
 #include <StdBuf.h>
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
-
-// texref-predef
-class CStdDDraw;
-class CTexRef;
-class CSurface;
-struct CStdPalette;
-class CStdGLCtx;
-class CStdApp;
-class CStdWindow;
-
-class StdMeshMatrix;
-class StdMeshMaterial;
-class StdMeshInstance;
 
 // engines
 #define GFXENGN_DIRECTX  0
@@ -50,28 +36,24 @@ class StdMeshInstance;
 #define GFXENGN_DIRECTXS 2
 #define GFXENGN_NOGFX    3
 
-// Global DDraw access pointer
-extern CStdDDraw *lpDDraw;
-
-extern int iGfxEngine;
-
-// font def color indices
+// Global Draw access pointer
+extern C4Draw *pDraw;
 
 // rotation info class
-class CBltTransform
+class C4BltTransform
 {
 public:
 	float mat[9]; // transformation matrix
 public:
-	CBltTransform() {} // default: don't init fields
+	C4BltTransform() {} // default: don't init fields
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
 	void SetRotate(int iAngle, float fOffX, float fOffY); // set by angle and rotation offset
-	bool SetAsInv(CBltTransform &rOfTransform);
+	bool SetAsInv(C4BltTransform &rOfTransform);
 	void Rotate(int iAngle, float fOffX, float fOffY) // rotate by angle around rotation offset
 	{
 		// multiply matrix as seen in SetRotate by own matrix
-		CBltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
+		C4BltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
 		(*this) *= rot;
 	}
 	void SetMoveScale(float dx, float dy, float sx, float sy)
@@ -83,7 +65,7 @@ public:
 	void MoveScale(float dx, float dy, float sx, float sy)
 	{
 		// multiply matrix by movescale matrix
-		CBltTransform move; move.SetMoveScale(dx,dy,sx,sy);
+		C4BltTransform move; move.SetMoveScale(dx,dy,sx,sy);
 		(*this) *= move;
 	}
 	void ScaleAt(float sx, float sy, float tx, float ty)
@@ -91,7 +73,7 @@ public:
 		// scale and move back so tx and ty remain fixpoints
 		MoveScale(-tx*(sx-1), -ty*(sy-1), sx, sy);
 	}
-	CBltTransform &operator *= (const CBltTransform &r)
+	C4BltTransform &operator *= (const C4BltTransform &r)
 	{
 		// transform transformation
 		Set(mat[0]*r.mat[0] + mat[3]*r.mat[1] + mat[6]*r.mat[2],
@@ -109,29 +91,29 @@ public:
 };
 
 // pattern
-class CPattern
+class C4Pattern
 {
 private:
 	// pattern surface for new-style patterns
-	class CSurface *sfcPattern32;
+	class C4Surface *sfcPattern32;
 	// Faster access
 	uint32_t * CachedPattern; int Wdt; int Hgt;
 	// pattern zoom factor; 0 means no zoom
 	int Zoom;
 public:
-	CPattern& operator=(const CPattern&);
-	const CSurface *getSurface() const { return sfcPattern32; }
+	C4Pattern& operator=(const C4Pattern&);
+	const C4Surface *getSurface() const { return sfcPattern32; }
 	DWORD PatternClr(unsigned int iX, unsigned int iY) const; // apply pattern to color
-	bool Set(class CSurface *sfcSource, int iZoom=0); // set and enable pattern
+	bool Set(class C4Surface *sfcSource, int iZoom=0); // set and enable pattern
 	void SetZoom(int iZoom) { Zoom = iZoom; }
 	void Clear();                     // clear pattern
-	CPattern();         // ctor
-	~CPattern() { Clear(); }          // dtor
+	C4Pattern();         // ctor
+	~C4Pattern() { Clear(); }          // dtor
 };
 
 // blit position on screen
 // This is the format required by GL_T2F_C4UB_V3F
-struct CBltVertex
+struct C4BltVertex
 {
 	float tx, ty; // texture positions
 	unsigned char color[4]; // color modulation
@@ -139,11 +121,11 @@ struct CBltVertex
 };
 
 // blit bounds polygon - note that blitting procedures are not designed for inner angles (>pi)
-struct CBltData
+struct C4BltData
 {
 	BYTE byNumVertices;  // number of valid vertices
-	CBltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
-	const CBltTransform *pTransform; // Vertex transformation
+	C4BltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
+	const C4BltTransform *pTransform; // Vertex transformation
 };
 
 
@@ -158,7 +140,7 @@ typedef struct _D3DGAMMARAMP
 #endif
 
 // gamma ramp control
-class CGammaControl
+class C4GammaControl
 {
 private:
 	void SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3); // set color channel ramp
@@ -167,14 +149,14 @@ protected:
 	D3DGAMMARAMP ramp;
 
 public:
-	CGammaControl() { Default(); } // ctor
+	C4GammaControl() { Default(); } // ctor
 	void Default() { Set(0x000000, 0x808080, 0xffffff); } // set default ramp
 
 	void Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3); // set color ramp
 
 	DWORD ApplyTo(DWORD dwClr);   // apply gamma to color value
 
-	friend class CStdDDraw;
+	friend class C4Draw;
 	friend class CStdD3D;
 	friend class CStdGL;
 };
@@ -187,18 +169,18 @@ struct ZoomData
 };
 
 // direct draw encapsulation
-class CStdDDraw
+class C4Draw
 {
 public:
 	static const StdMeshMatrix OgreToClonk;
 
-	CStdDDraw(): MaxTexSize(0), Saturation(255) { }
-	virtual ~CStdDDraw() { lpDDraw=NULL; }
+	C4Draw(): MaxTexSize(0), Saturation(255) { }
+	virtual ~C4Draw() { pDraw=NULL; }
 public:
-	CStdApp * pApp; // the application
+	C4AbstractApp * pApp; // the application
 	bool Active;                    // set if device is ready to render, etc.
-	CGammaControl Gamma;            // gamma
-	CGammaControl DefRamp;            // default gamma ramp
+	C4GammaControl Gamma;            // gamma
+	C4GammaControl DefRamp;            // default gamma ramp
 	uint32_t dwGamma[C4MaxGammaRamps*3];    // gamma ramps
 	int MaxTexSize;
 protected:
@@ -210,11 +192,11 @@ protected:
 	int32_t iClipX1,iClipY1,iClipX2,iClipY2; // clipper in pixel coordinates
 	bool ClipAll; // set if clipper clips everything away
 	bool PrimaryLocked;             // set if primary surface is locked (-> can't blit)
-	CSurface *RenderTarget;         // current render target
+	C4Surface *RenderTarget;         // current render target
 	bool BlitModulated;             // set if blits should be modulated with BlitModulateClr
 	DWORD BlitModulateClr;          // modulation color for blitting
 	DWORD dwBlitMode;               // extra flags for blit
-	CClrModAddMap *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
+	C4FogOfWar *pClrModMap;      // map to be used for global color modulation (invalid if !fUseClrModMap)
 	bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
 	unsigned char Saturation;   // if < 255, an extra filter is used to reduce the saturation
 	int ZoomX; int ZoomY;
@@ -223,12 +205,12 @@ protected:
 public:
 	float Zoom;
 	// General
-	bool Init(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+	bool Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 	virtual void Clear();
 	virtual void Default();
-	virtual CStdGLCtx *CreateContext(CStdWindow *, CStdApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(C4Window *, C4AbstractApp *) { return NULL; }
 #ifdef _WIN32
-	virtual CStdGLCtx *CreateContext(HWND, CStdApp *) { return NULL; }
+	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
 	virtual int GetEngine() = 0;    // get indexed engine
 	virtual void TaskOut() = 0; // user taskswitched the app away
@@ -243,49 +225,49 @@ public:
 	bool StorePrimaryClipper();
 	bool RestorePrimaryClipper();
 	bool NoPrimaryClipper();
-	bool ApplyPrimaryClipper(SURFACE sfcSurface);
-	bool DetachPrimaryClipper(SURFACE sfcSurface);
+	bool ApplyPrimaryClipper(C4Surface * sfcSurface);
+	bool DetachPrimaryClipper(C4Surface * sfcSurface);
 	virtual bool UpdateClipper() = 0; // set current clipper to render target
 	// Surface
-	bool GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt);
-	void Grayscale(SURFACE sfcSfc, int32_t iOffset = 0);
+	bool GetSurfaceSize(C4Surface * sfcSurface, int &iWdt, int &iHgt);
+	void Grayscale(C4Surface * sfcSfc, int32_t iOffset = 0);
 	void LockingPrimary() { PrimaryLocked=true; }
 	void PrimaryUnlocked() { PrimaryLocked=false; }
 	virtual bool PrepareMaterial(StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
-	virtual bool PrepareRendering(SURFACE sfcToSurface) = 0; // check if/make rendering possible to given surface
+	virtual bool PrepareRendering(C4Surface * sfcToSurface) = 0; // check if/make rendering possible to given surface
 	// Blit
-	virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
-	                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
+	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[]);
 	void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
-	               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
-	bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
-	          SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-	          bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
-	bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
-	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
-	bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
-	           SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-	           bool fSrcColKey=false, const CBltTransform *pTransform=NULL);
-	bool BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
-	                SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
+	               C4Surface * sfcTarget, int tx, int ty, int wdt, int hgt);
+	bool Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
+	          C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
+	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
+	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;
+	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
+	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
+	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	bool BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	                int iAngle, bool fTransparency=true);
-	bool BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int ty, bool fBlitBase);
-	bool BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
-	bool BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
+	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
+	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
+	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
 	virtual void FillBG(DWORD dwClr=0) = 0;
 	// Text
 	enum { DEFAULT_MESSAGE_COLOR = 0xffffffff };
-	bool TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
-	bool StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
+	bool TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
+	bool StringOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 	// Drawing
-	virtual void DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
-	void DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
-	void DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
-	void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal);
-	void DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
-	virtual void DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
-	virtual void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
+	virtual void DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
+	void DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
+	void DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
+	void DrawPatternedCircle(C4Surface * sfcDest, int x, int y, int r, BYTE col, C4Pattern & Pattern, CStdPalette &rPal);
+	void DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr);
+	virtual void DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	virtual void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
 	void ApplyGamma();                                        // apply gamma ramp to ddraw
@@ -293,7 +275,7 @@ public:
 	void EnableGamma();                                       // set current gamma ramp
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)=0;       // really apply gamma ramp
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow)=0;
+	virtual bool SaveDefaultGammaRamp(C4Window * pWindow)=0;
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
 	void DeactivateBlitModulation() { BlitModulated=false; }  // stop color modulation of blits
@@ -306,7 +288,7 @@ public:
 		// apply modulation if activated
 		if (BlitModulated) ModulateClr(rdwClr, BlitModulateClr);
 	}
-	void SetClrModMap(CClrModAddMap *pClrModMap) { this->pClrModMap = pClrModMap; }
+	void SetClrModMap(C4FogOfWar *pClrModMap) { this->pClrModMap = pClrModMap; }
 	void SetClrModMapEnabled(bool fToVal) { fUseClrModMap = fToVal; }
 	bool GetClrModMapEnabled() const { return fUseClrModMap; }
 	unsigned char SetSaturation(unsigned char s) { unsigned char o = Saturation; Saturation = s; return o; }
@@ -328,9 +310,9 @@ public:
 	int GetByteCnt() { return byByteCnt; } // return bytes per pixel
 
 protected:
-	bool StringOut(const char *szText, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, CMarkup &Markup, CStdFont *pFont, float fZoom);
-	virtual void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol) = 0; // without ClrModMap
-	virtual void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr) = 0;
+	bool StringOut(const char *szText, C4Surface * sfcDest, float iTx, float iTy, DWORD dwFCol, BYTE byForm, bool fDoMarkup, C4Markup &Markup, CStdFont *pFont, float fZoom);
+	virtual void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol) = 0; // without ClrModMap
+	virtual void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr) = 0;
 	bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 	virtual bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 	virtual bool Error(const char *szMsg);
@@ -341,23 +323,23 @@ protected:
 #endif
 	}
 
-	friend class CSurface;
-	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Surface;
+	friend class C4TexRef;
+	friend class C4Pattern;
 	friend class CStdD3DShader;
 };
 
 struct ZoomDataStackItem: public ZoomData
 {
-	ZoomDataStackItem(float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
-	ZoomDataStackItem(int X, int Y, float newzoom) { lpDDraw->GetZoom(this); lpDDraw->SetZoom(X, Y, newzoom); }
-	~ZoomDataStackItem() { lpDDraw->SetZoom(*this); }
+	ZoomDataStackItem(float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
+	ZoomDataStackItem(int X, int Y, float newzoom) { pDraw->GetZoom(this); pDraw->SetZoom(X, Y, newzoom); }
+	~ZoomDataStackItem() { pDraw->SetZoom(*this); }
 };
 
-bool LockSurfaceGlobal(SURFACE sfcTarget);
-bool UnLockSurfaceGlobal(SURFACE sfcTarget);
+bool LockSurfaceGlobal(C4Surface * sfcTarget);
+bool UnLockSurfaceGlobal(C4Surface * sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-bool DDrawInit(CStdApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

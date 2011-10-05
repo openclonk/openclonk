@@ -24,7 +24,7 @@
 
 #include <C4Include.h>
 #ifdef USE_CONSOLE
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdDDraw2.h>
 #include <C4Application.h>
 
@@ -45,9 +45,9 @@ static void readline_callback (char *);
 #  endif
 #endif /* HAVE_READLINE_HISTORY */
 
-/* CStdApp */
+/* C4AbstractApp */
 
-CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
 		Location(""), DoNotDelay(false),
 		// main thread
 #ifdef HAVE_PTHREAD
@@ -58,12 +58,12 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
 	Add(&InProc);
 }
 
-CStdApp::~CStdApp()
+C4AbstractApp::~C4AbstractApp()
 {
 	Remove(&InProc);
 }
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
@@ -85,42 +85,42 @@ bool CStdApp::Init(int argc, char * argv[])
 	return DoInit (argc, argv);
 }
 
-void CStdApp::Clear()
+void C4AbstractApp::Clear()
 {
 }
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	return false;
 }
 
-void CStdApp::RestoreVideoMode() {}
+void C4AbstractApp::RestoreVideoMode() {}
 
-bool CStdApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
+bool C4AbstractApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
 
 // Copy the text to the clipboard or the primary selection
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	return false;
 }
 
 // Paste the text from the clipboard or the primary selection
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	return StdStrBuf("");
 }
 // Is there something in the clipboard?
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return false;
 }
 // Give up Selection ownership
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 }
 
@@ -204,16 +204,16 @@ static void readline_callback (char * line)
 }
 #endif
 
-bool CStdDDraw::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool C4Draw::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	return true;
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 	// Always fail after quit message
 	if (fQuitMsgReceived)
@@ -221,16 +221,16 @@ bool CStdApp::FlushMessages()
 	return true;
 }
 
-void CStdWindow::Clear() {}
-CStdWindow::CStdWindow() {}
-CStdWindow::~CStdWindow() {}
-void CStdWindow::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
-void CStdWindow::FlashWindow() {}
-bool CStdWindow::GetSize(C4Rect*) {return 0;}
-CStdWindow* CStdWindow::Init(CStdWindow::WindowKind, CStdApp*, char const*, CStdWindow*, bool) {return this;}
-bool CStdWindow::ReInit(CStdApp*) {return 0;}
-bool CStdWindow::RestorePosition(char const*, char const*, bool) {return 0;}
-void CStdWindow::SetSize(unsigned int, unsigned int) {}
-void CStdWindow::SetTitle(char const*) {}
+void C4Window::Clear() {}
+C4Window::C4Window() {}
+C4Window::~C4Window() {}
+void C4Window::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
+void C4Window::FlashWindow() {}
+bool C4Window::GetSize(C4Rect*) {return 0;}
+C4Window* C4Window::Init(C4Window::WindowKind, C4AbstractApp*, char const*, C4Window*, bool) {return this;}
+bool C4Window::ReInit(C4AbstractApp*) {return 0;}
+bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
+void C4Window::SetSize(unsigned int, unsigned int) {}
+void C4Window::SetTitle(char const*) {}
 
 #endif // USE_CONSOLE

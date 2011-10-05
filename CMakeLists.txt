@@ -24,7 +24,8 @@
 # See clonk_trademark_license.txt for full license.
 
 cmake_minimum_required (VERSION 2.6.0)
-project (clonk CXX C)
+project (openclonk CXX C)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
 
@@ -45,7 +46,7 @@ option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32)
+if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
 	option(USE_DIRECTX "Enable DirectX support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
 		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
@@ -57,12 +58,9 @@ if(WIN32)
 	else()
 		
 	endif()
-
-	option(GENERATE_MINI_DUMP "Generate a minidump on crash" ON)
 else()
 	SET(USE_DIRECTX OFF)
 	SET(HAVE_FMOD OFF)
-	SET(GENERATE_MINI_DUMP OFF)
 endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
@@ -143,6 +141,9 @@ if(MSVC_VERSION)
 	list(APPEND OC_CXX_FLAGS "/wd4267")
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
@@ -160,9 +161,9 @@ set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
 	src/C4GraphicsSystem.cpp
 	src/C4GraphicsSystem.h
-	src/c4group/C4Components.h
 	src/c4group/C4ComponentHost.cpp
 	src/c4group/C4ComponentHost.h
+	src/c4group/C4Components.h
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
 	src/c4group/C4Group.cpp
@@ -209,9 +210,9 @@ set(OC_CLONK_SOURCES
 	src/control/C4Teams.cpp
 	src/control/C4Teams.h
 	src/editor/C4Console.cpp
-	src/editor/C4Console.h
-	src/editor/C4ConsoleGUI.h
 	src/editor/C4ConsoleGUICommon.h
+	src/editor/C4ConsoleGUI.h
+	src/editor/C4Console.h
 	src/editor/C4DevmodeDlg.cpp
 	src/editor/C4DevmodeDlg.h
 	src/editor/C4EditCursor.cpp
@@ -224,8 +225,8 @@ set(OC_CLONK_SOURCES
 	src/game/C4Physics.h
 	src/game/landscape/C4Landscape.cpp
 	src/game/landscape/C4Landscape.h
-	src/game/landscape/C4LandscapeRender.cpp
 	src/game/landscape/C4LandscapeRenderClassic.cpp
+	src/game/landscape/C4LandscapeRender.cpp
 	src/game/landscape/C4LandscapeRender.h
 	src/game/landscape/C4Map.cpp
 	src/game/landscape/C4MapCreatorS2.cpp
@@ -261,9 +262,9 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4Def.cpp
 	src/game/object/C4DefGraphics.cpp
 	src/game/object/C4DefGraphics.h
+	src/game/object/C4Def.h
 	src/game/object/C4DefList.cpp
 	src/game/object/C4DefList.h
-	src/game/object/C4Def.h
 	src/game/object/C4GameObjects.cpp
 	src/game/object/C4GameObjects.h
 	src/game/object/C4Id.cpp
@@ -287,9 +288,9 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4ObjectList.h
 	src/game/object/C4ObjectMenu.cpp
 	src/game/object/C4ObjectMenu.h
-	src/game/object/C4ObjectScript.cpp
 	src/game/object/C4ObjectPtr.cpp
 	src/game/object/C4ObjectPtr.h
+	src/game/object/C4ObjectScript.cpp
 	src/game/object/C4Sector.cpp
 	src/game/object/C4Sector.h
 	src/game/object/C4Shape.cpp
@@ -383,6 +384,8 @@ set(OC_CLONK_SOURCES
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
 	src/lib/C4Random.cpp
@@ -407,15 +410,13 @@ set(OC_CLONK_SOURCES
 	src/lib/StdColors.h
 	src/lib/StdCompiler.cpp
 	src/lib/StdCompiler.h
-	src/lib/StdMarkup.cpp
-	src/lib/StdMarkup.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
-	src/lib/StdMeshLoader.h
-	src/lib/StdMeshLoaderBinary.cpp
 	src/lib/StdMeshLoaderBinaryChunks.cpp
 	src/lib/StdMeshLoaderBinaryChunks.h
+	src/lib/StdMeshLoaderBinary.cpp
 	src/lib/StdMeshLoaderDataStream.h
+	src/lib/StdMeshLoader.h
 	src/lib/StdMeshLoaderXml.cpp
 	src/lib/StdMeshMaterial.cpp
 	src/lib/StdMeshMaterial.h
@@ -430,8 +431,7 @@ set(OC_CLONK_SOURCES
 	src/lib/texture/C4Facet.h
 	src/lib/texture/C4GraphicsResource.cpp
 	src/lib/texture/C4GraphicsResource.h
-	src/lib/texture/C4Surface.cpp
-	src/lib/texture/C4Surface.h
+	src/lib/texture/C4SurfaceLoaders.cpp
 	src/lib/texture/StdPNG.cpp
 	src/lib/texture/StdPNG.h
 	src/network/C4Client.cpp
@@ -469,6 +469,9 @@ set(OC_CLONK_SOURCES
 	src/network/C4PacketBase.h
 	src/platform/Bitmap256.cpp
 	src/platform/Bitmap256.h
+	src/platform/C4App.cpp
+	src/platform/C4App.h
+	src/platform/C4AppT.cpp
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
 	src/platform/C4Fonts.cpp
@@ -479,29 +482,28 @@ set(OC_CLONK_SOURCES
 	src/platform/C4MusicFile.h
 	src/platform/C4MusicSystem.cpp
 	src/platform/C4MusicSystem.h
+	src/platform/C4SoundLoaders.cpp
+	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
-	src/platform/C4SoundLoaders.h
-	src/platform/C4SoundLoaders.cpp
-	src/platform/StdTApp.cpp
+	src/platform/C4Surface.cpp
+	src/platform/C4Surface.h
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
 	src/platform/C4VideoPlayback.h
 	src/platform/C4ViewportWindow.cpp
 	src/platform/C4ViewportWindow.h
+	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.h
-	src/platform/StdApp.h
-	src/platform/StdAppCommon.cpp
 	src/platform/StdD3D.cpp
 	src/platform/StdD3D.h
 	src/platform/StdD3DShader.cpp
 	src/platform/StdD3DShader.h
 	src/platform/StdDDraw2.cpp
 	src/platform/StdDDraw2.h
-	src/platform/StdFacet.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
 	src/platform/StdFont.cpp
@@ -515,20 +517,17 @@ set(OC_CLONK_SOURCES
 	src/platform/StdRegistry.h
 	src/platform/StdScheduler.cpp
 	src/platform/StdScheduler.h
-	src/platform/StdSurface2.cpp
-	src/platform/StdSurface2.h
 	src/platform/StdSurface8.cpp
 	src/platform/StdSurface8.h
 	src/platform/StdSync.h
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
-	src/platform/StdWindow.h
 	src/script/C4Aul.cpp
-	src/script/C4AulExec.h
-	src/script/C4AulExec.cpp
-	src/script/C4AulDebug.h
 	src/script/C4AulDebug.cpp
+	src/script/C4AulDebug.h
 	src/script/C4AulDefFunc.h
+	src/script/C4AulExec.cpp
+	src/script/C4AulExec.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
@@ -539,21 +538,22 @@ set(OC_CLONK_SOURCES
 	src/script/C4ScriptHost.h
 	src/script/C4StringTable.cpp
 	src/script/C4StringTable.h
-	src/script/C4Value.cpp
-	src/script/C4Value.h
 	src/script/C4ValueArray.cpp
 	src/script/C4ValueArray.h
+	src/script/C4Value.cpp
+	src/script/C4Value.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
 	src/zlib/gzio.c
 	src/zlib/zutil.h
+
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
 
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdWindow.cpp
+		src/platform/C4WindowWin32.cpp
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4CrashHandlerWin32.cpp
@@ -585,14 +585,14 @@ if(WIN32)
 	endif(MINGW)
 elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdSDLApp.cpp
-		src/platform/StdSDLWindow.cpp
+		src/platform/C4AppSDL.cpp
+		src/platform/C4WindowSDL.cpp
 	)
 elseif(USE_X11)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdXApp.cpp
-		src/platform/StdXWindow.cpp
-		src/platform/StdXPrivate.h
+		src/platform/C4AppX.cpp
+		src/platform/C4WindowX.cpp
+		src/platform/C4AppXImpl.h
 	)
 endif()
 
@@ -602,9 +602,9 @@ endif()
 
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdMacApp.mm
+		src/platform/C4AppMac.mm
 		src/platform/C4FileMonitorMac.mm
-		src/platform/StdMacWindow.mm
+		src/platform/C4WindowMac.mm
 		src/platform/ClonkAppDelegate.h
 		src/platform/ClonkAppDelegate.mm
 	)
@@ -642,8 +642,8 @@ if(USE_GTK)
 	)
 
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/StdGtkWindow.cpp
-		src/platform/StdGtkWindow.h
+		src/platform/C4WindowGTK.cpp
+		src/platform/C4WindowGTK.h
 		src/editor/C4ConsoleGTK.cpp
 	)
 endif()
@@ -793,7 +793,7 @@ FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 if(USE_CONSOLE)
-	include(./FindReadline.cmake)
+	find_package(Readline)
 	include_directories(${READLINE_INCLUDE_DIRS})
 	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 endif()
@@ -886,7 +886,7 @@ add_executable(c4group
 	src/c4group/C4Update.cpp
 	src/lib/Standard.cpp
 	src/c4group/CStdFile.cpp
-	src/lib/StdMarkup.cpp
+	src/lib/C4Markup.cpp
 	src/lib/StdBuf.cpp
 	src/lib/StdCompiler.cpp
 	src/platform/StdFile.cpp
@@ -920,8 +920,8 @@ add_executable(c4script
 	src/lib/StdBuf.h
 	src/lib/StdCompiler.cpp
 	src/lib/StdCompiler.h
-	src/lib/StdMarkup.cpp
-	src/lib/StdMarkup.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/platform/GetTime.cpp
@@ -1073,7 +1073,7 @@ endforeach()
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################
 
-include(GccPchSupport.cmake)
+include(GccPchSupport)
 if(CMAKE_COMPILER_IS_GNUCXX)
 	if(NOT DEFINED USE_GCC_PCH)
 		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
@@ -1107,11 +1107,13 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 add_subdirectory(thirdparty/tinyxml)
 target_link_libraries(clonk tinyxml)
 
-if(GENERATE_MINI_DUMP)
-	FIND_PATH(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
-	FINDLIB(DBGHELP_LIBRARIES NAMES dbghelp)
-	target_link_libraries(clonk ${DBGHELP_LIBRARIES})
-	include_directories(${DBGHELP_INCLUDE_DIR})
+if(WIN32)
+	find_package(DbgHelp)
+	if(DBGHELP_FOUND)
+		target_link_libraries(clonk ${DBGHELP_LIBRARIES})
+		include_directories(${DBGHELP_INCLUDE_DIR})
+	endif()
+	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
 if(USE_GL)

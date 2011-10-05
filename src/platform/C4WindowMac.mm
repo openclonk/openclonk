@@ -17,7 +17,7 @@
 #include <Standard.h>
 #include <StdRegistry.h>
 #include <StdGL.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <C4Version.h>
 #include <C4Application.h>
 #include <C4Rect.h>

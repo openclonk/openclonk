@@ -1,10 +1,14 @@
 [DefCore]
 id=StoneDoor
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_Structure
 Width=8
 Height=40
 Offset=-4,-20
+Vertices=2
+VertexX=0,0,
+VertexY=-19,19
+VertexCNAT=4,8
 SolidMask=8,0,8,40,0,0
 Value=10
 Mass=1000

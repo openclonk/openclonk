@@ -30,7 +30,7 @@
 
 #include <C4Components.h>
 #include <C4Game.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef USE_X11
 #include <X11/Xlib.h>
@@ -55,11 +55,11 @@ namespace
 		if (result == "unknown key")
 			result = FormatString("\\x%x", (DWORD) k).getData();
 		// some special cases
-		if (result == "world 0") result = "´";
-		if (result == "world 1") result = "ß";
-		if (result == "world 2") result = "Ü";
-		if (result == "world 3") result = "Ä";
-		if (result == "world 4") result = "Ö";
+		if (result == "world 0") result = "Â´";
+		if (result == "world 1") result = "ÃŸ";
+		if (result == "world 2") result = "Ãœ";
+		if (result == "world 3") result = "Ã„";
+		if (result == "world 4") result = "Ã–";
 		// capitalize first letter
 		result[0] = toupper(result[0]);
 		// return key name
@@ -278,17 +278,17 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ VK_LAUNCH_APP1         , "LAUNCH_APP1"          , NULL },
 	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
 
-	{ VK_OEM_1          , "OEM Ü"    , "Ü" }, // German hax
+	{ VK_OEM_1          , "OEM Ãœ"    , "Ãœ" }, // German hax
 	{ VK_OEM_PLUS       , "OEM +"   , "+" },
 	{ VK_OEM_COMMA      , "OEM ,"   , "," },
 	{ VK_OEM_MINUS      , "OEM -"   , "-" },
 	{ VK_OEM_PERIOD     , "OEM ."   , "." },
 	{ VK_OEM_2          , "OEM 2"    , "2" },
-	{ VK_OEM_3          , "OEM Ö"    , "Ö" }, // German hax
+	{ VK_OEM_3          , "OEM Ã–"    , "Ã–" }, // German hax
 	{ VK_OEM_4          , "OEM 4"    , "4" },
 	{ VK_OEM_5          , "OEM 5"    , "5" },
 	{ VK_OEM_6          , "OEM 6"    , "6" },
-	{ VK_OEM_7          , "OEM Ä"    , "Ä" }, // German hax
+	{ VK_OEM_7          , "OEM Ã„"    , "Ã„" }, // German hax
 	{ VK_OEM_8          , "OEM 8"   , "8" },
 	{ VK_OEM_AX         , "AX"      , "AX" },
 	{ VK_OEM_102        , "< > |"    , "<" }, // German hax
@@ -329,7 +329,6 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Undefined, NULL, NULL }
 };
 #elif defined(USE_COCOA)
-#include "StdWindow.h"
 #include "CocoaKeycodeMap.h"
 #endif
 
@@ -594,7 +593,6 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 		// reading from file
 		StdStrBuf sCode;
 		DWORD dwSetShift = 0;
-		int shift_idx = 0;
 		for (;;)
 		{
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));

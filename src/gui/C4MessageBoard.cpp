@@ -156,7 +156,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
-			lpDDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
+			pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
 		return;
 	}
 
@@ -200,7 +200,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 		//	dwFade = 0xff000000;
 		dwColor |= dwFade;
 		// Draw
-		lpDDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
+		pDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
 	}
 }
 

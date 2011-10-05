@@ -1,5 +1,5 @@
 [DefCore]
 id=Goal_Parkour
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_StaticBack|C4D_Goal
 Picture=0,0,128,128

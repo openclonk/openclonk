@@ -312,10 +312,10 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 		Console.EditCursor.In(text);
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
 	// Calls InitGUI
-	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();
@@ -1292,7 +1292,7 @@ void C4ToolsDlg::State::UpdatePreview()
 	if (!hbox) return;
 	C4ToolsDlg* dlg = GetOwner();
 
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 
 	int32_t iPrvWdt,iPrvHgt;
 
@@ -1300,11 +1300,11 @@ void C4ToolsDlg::State::UpdatePreview()
 	iPrvWdt=64;
 	iPrvHgt=64;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
 	{
@@ -1333,7 +1333,7 @@ void C4ToolsDlg::State::UpdatePreview()
 #else
 	if (GTK_WIDGET_SENSITIVE(preview))
 #endif
-		lpDDraw->DrawPatternedCircle( sfcPreview,
+		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              dlg->Grade,
 		                              bCol, Pattern, *::Landscape.GetPal());

@@ -24,7 +24,6 @@
 #define INC_C4DefList
 
 #include <StdFont.h>
-#include <StdFacet.h>
 
 const int32_t C4D_None           =    0,
 C4D_All            =    ~C4D_None;
@@ -72,7 +71,7 @@ public:
 	void Synchronize();
 
 	// callback from font renderer: get ID image
-	virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
+	virtual bool GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet);
 };
 
 extern C4DefList Definitions;

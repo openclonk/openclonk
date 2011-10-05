@@ -21,7 +21,6 @@
 #define INC_StdMeshMaterial
 
 #include <StdBuf.h>
-#include <StdSurface2.h>
 #include <C4Surface.h>
 
 #include <vector>
@@ -161,7 +160,7 @@ public:
 	};
 
 	// Ref-counted texture. When a meterial inherits from one which contains
-	// a TextureUnit, then they will share the same CTexRef.
+	// a TextureUnit, then they will share the same C4TexRef.
 	class Tex
 	{
 	public:
@@ -170,16 +169,16 @@ public:
 
 		unsigned int RefCount;
 
-		// TODO: Note this cannot be CSurface here, because CSurface
+		// TODO: Note this cannot be C4Surface here, because C4Surface
 		// does not have a virtual destructor, so we couldn't delete it
 		// properly in that case. I am a bit annoyed that this
 		// currently requires a cross-ref to lib/texture. I think
 		// C4Surface should go away and the file loading/saving
 		// should be free functions instead. I also think the file
 		// loading/saving should be decoupled from the surfaces, so we
-		// can skip the surface here and simply use a CTexRef. armin.
+		// can skip the surface here and simply use a C4TexRef. armin.
 		C4Surface* Surf;
-		CTexRef& Texture;
+		C4TexRef& Texture;
 	};
 
 	// Simple wrapper which handles refcounting of Tex
@@ -202,7 +201,7 @@ public:
 
 	bool HasTexture() const { return !Textures.empty(); }
 	size_t GetNumTextures() const { return Textures.size(); }
-	const CTexRef& GetTexture(unsigned int i) const { return Textures[i].pTex->Texture; }
+	const C4TexRef& GetTexture(unsigned int i) const { return Textures[i].pTex->Texture; }
 	bool HasFrameAnimation() const { return Duration > 0; }
 	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
 

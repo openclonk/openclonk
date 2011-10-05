@@ -95,7 +95,7 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 		PrefColorDw &= 0xffffff;
 		PrefColor2Dw &= 0xffffff;
 		// Validate name
-		CMarkup::StripMarkup(PrefName);
+		C4Markup::StripMarkup(PrefName);
 		// Success
 		return true;
 	}

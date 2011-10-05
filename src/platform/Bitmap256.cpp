@@ -22,22 +22,22 @@
 #include "C4Include.h"
 #include <Bitmap256.h>
 
-CBitmapInfo::CBitmapInfo()
+C4BMPInfo::C4BMPInfo()
 {
 	Default();
 }
 
-void CBitmapInfo::Default()
+void C4BMPInfo::Default()
 {
-	ZeroMem(this,sizeof(CBitmapInfo));
+	ZeroMem(this,sizeof(C4BMPInfo));
 }
 
-int CBitmapInfo::FileBitsOffset()
+int C4BMPInfo::FileBitsOffset()
 {
-	return Head.bfOffBits-sizeof(CBitmapInfo);
+	return Head.bfOffBits-sizeof(C4BMPInfo);
 }
 
-void CBitmapInfo::Set(int iWdt, int iHgt, int iBitDepth)
+void C4BMPInfo::Set(int iWdt, int iHgt, int iBitDepth)
 {
 	Default();
 	// Set header
@@ -56,24 +56,24 @@ void CBitmapInfo::Set(int iWdt, int iHgt, int iBitDepth)
 }
 
 
-CBitmap256Info::CBitmap256Info()
+C4BMP256Info::C4BMP256Info()
 {
 	Default();
 }
 
-bool CBitmap256Info::Valid()
+bool C4BMP256Info::Valid()
 {
 	if (Head.bfType != *((WORD*)"BM") ) return false;
 	if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return false;
 	return true;
 }
 
-int CBitmap256Info::FileBitsOffset()
+int C4BMP256Info::FileBitsOffset()
 {
-	return Head.bfOffBits-sizeof(CBitmap256Info);
+	return Head.bfOffBits-sizeof(C4BMP256Info);
 }
 
-void CBitmap256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
+void C4BMP256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 {
 	Default();
 	// Set header
@@ -98,8 +98,8 @@ void CBitmap256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 	}
 }
 
-void CBitmap256Info::Default()
+void C4BMP256Info::Default()
 {
-	ZeroMem(this,sizeof(CBitmap256Info));
+	ZeroMem(this,sizeof(C4BMP256Info));
 }
 

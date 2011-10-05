@@ -102,7 +102,7 @@ public:
 	bool GetFrameByTime(time_t iTime, int32_t *piFrame);
 
 	// dump RGBa-data for specified frame
-	bool GrabFrame(int32_t iFrame, class CSurface *sfc) const;
+	bool GrabFrame(int32_t iFrame, class C4Surface *sfc) const;
 
 	// getting audio data
 	bool OpenAudioStream();

@@ -25,10 +25,10 @@
 #include "StdBuf.h"
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ConsoleBase;
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4ConsoleBase;
 #else
-typedef CStdWindow C4ConsoleBase;
+typedef C4Window C4ConsoleBase;
 #endif
 
 namespace OpenFileFlags
@@ -100,7 +100,7 @@ public:
 	void ClearPlayerMenu();
 	void SetInputFunctions(std::list<char*> &functions);
 	
-	CStdWindow* CreateConsoleWindow(CStdApp *application);
+	C4Window* CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);

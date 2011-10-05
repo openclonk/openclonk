@@ -37,7 +37,7 @@ namespace C4GUI
 	void Label::DrawElement(C4TargetFacet &cgo)
 	{
 		// print out
-		lpDDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX, rcBounds.y + cgo.TargetY, dwFgClr, iAlign, fMarkup);
+		pDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX, rcBounds.y + cgo.TargetY, dwFgClr, iAlign, fMarkup);
 	}
 
 	Label::Label(const char *szLblText, int32_t iX0, int32_t iTop, int32_t iAlign, DWORD dwFClr, CStdFont *pFont, bool fMakeReadableOnBlack, bool fMarkup)
@@ -174,10 +174,10 @@ namespace C4GUI
 			iXOff -= iScrollPos;
 		}
 		// print out text; clipped
-		lpDDraw->StorePrimaryClipper();
-		lpDDraw->SetPrimaryClipper(rcBounds.x + GetLeftIndent() + cgo.TargetX, rcBounds.y + cgo.TargetY, rcBounds.x+rcBounds.Wdt - GetRightIndent() + cgo.TargetX, rcBounds.y+rcBounds.Hgt + cgo.TargetY);
-		lpDDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX + iXOff, rcBounds.y + cgo.TargetY + (rcBounds.Hgt-pFont->GetLineHeight())/2-1, dwFgClr, iAlign);
-		lpDDraw->RestorePrimaryClipper();
+		pDraw->StorePrimaryClipper();
+		pDraw->SetPrimaryClipper(rcBounds.x + GetLeftIndent() + cgo.TargetX, rcBounds.y + cgo.TargetY, rcBounds.x+rcBounds.Wdt - GetRightIndent() + cgo.TargetX, rcBounds.y+rcBounds.Hgt + cgo.TargetY);
+		pDraw->TextOut(sText.getData(), *pFont, 1.0f, cgo.Surface, x0 + cgo.TargetX + iXOff, rcBounds.y + cgo.TargetY + (rcBounds.Hgt-pFont->GetLineHeight())/2-1, dwFgClr, iAlign);
+		pDraw->RestorePrimaryClipper();
 	}
 
 	int32_t WoodenLabel::GetDefaultHeight(CStdFont *pUseFont)
@@ -215,7 +215,7 @@ namespace C4GUI
 	{
 		// get clipping
 		int iClipX, iClipY, iClipX2, iClipY2;
-		lpDDraw->GetPrimaryClipper(iClipX, iClipY, iClipX2, iClipY2);
+		pDraw->GetPrimaryClipper(iClipX, iClipY, iClipX2, iClipY2);
 		// draw all lines
 		int32_t iIndex = 0; const char *szLine;
 		int32_t iY = rcBounds.y + cgo.TargetY;
@@ -230,7 +230,7 @@ namespace C4GUI
 			if (iY >= iClipY-iFontLineHeight)
 			{
 				// draw line
-				lpDDraw->TextOut(szLine, *pLineFont, 1.0f, cgo.Surface, rcBounds.x + cgo.TargetX, iY, dwLineClr, ALeft, fMarkup);
+				pDraw->TextOut(szLine, *pLineFont, 1.0f, cgo.Surface, rcBounds.x + cgo.TargetX, iY, dwLineClr, ALeft, fMarkup);
 			}
 			// advance line
 			iY += iFontLineHeight;
@@ -292,8 +292,8 @@ namespace C4GUI
 		// draw horizontal line
 		int32_t iX1 = rcBounds.x + cgo.TargetX, iX2 = iX1 + rcBounds.Wdt,
 		              iY = rcBounds.y + cgo.TargetY;
-		lpDDraw->DrawLineDw(cgo.Surface, (float)(iX1+1), (float)(iY+1), (float)(iX2-1), (float)(iY+1), dwShadowClr);
-		lpDDraw->DrawLineDw(cgo.Surface, (float)iX1, (float)iY, (float)(iX2-2), (float)iY, dwClr);
+		pDraw->DrawLineDw(cgo.Surface, (float)(iX1+1), (float)(iY+1), (float)(iX2-1), (float)(iY+1), dwShadowClr);
+		pDraw->DrawLineDw(cgo.Surface, (float)iX1, (float)iY, (float)(iX2-2), (float)iY, dwClr);
 	}
 
 
@@ -310,12 +310,12 @@ namespace C4GUI
 		// calc progress width
 		int32_t iProgressWdt = (rcBounds.Wdt-4) * iProgress / iMax;
 		// draw progress
-		//lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, cgo.TargetX+rcBounds.x+iProgressWdt, cgo.TargetY+rcBounds.y+rcBounds.Hgt-2, C4GUI_ProgressBarColor);
+		//pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, cgo.TargetX+rcBounds.x+iProgressWdt, cgo.TargetY+rcBounds.y+rcBounds.Hgt-2, C4GUI_ProgressBarColor);
 		::GraphicsResource.fctProgressBar.DrawX(cgo.Surface, cgo.TargetX+rcBounds.x+2, cgo.TargetY+rcBounds.y+2, iProgressWdt, rcBounds.Hgt-2);
 		// print out progress text
 		char szPrg[32+1];
 		sprintf(szPrg, "%i%%", 100 * iProgress / iMax);
-		lpDDraw->TextOut(szPrg, rFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.GetMiddleX(), rcBounds.y + cgo.TargetY + (rcBounds.Hgt-rFont.GetLineHeight())/2-1, C4GUI_ProgressBarFontClr, ACenter);
+		pDraw->TextOut(szPrg, rFont, 1.0f, cgo.Surface, cgo.TargetX+rcBounds.GetMiddleX(), rcBounds.y + cgo.TargetY + (rcBounds.Hgt-rFont.GetLineHeight())/2-1, C4GUI_ProgressBarFontClr, ACenter);
 	}
 
 
@@ -448,7 +448,7 @@ namespace C4GUI
 	void PaintBox::MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 	{
 		// only if a valid surface is present
-		// CSurface::Surface was always != 0
+		// C4Surface::Surface was always != 0
 		//if (!fctPaint.GetFace().Surface) return;
 	}
 
@@ -529,7 +529,7 @@ namespace C4GUI
 	void TextWindow::DrawElement(C4TargetFacet &cgo)
 	{
 		// draw background
-		if (fDrawBackground) lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,0x7f000000);
+		if (fDrawBackground) pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,0x7f000000);
 		// draw frame
 		if (fDrawFrame) Draw3DFrame(cgo);
 	}

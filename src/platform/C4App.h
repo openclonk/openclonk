@@ -63,10 +63,10 @@ public:
 	~CStdMessageProc() { }
 
 private:
-	CStdApp *pApp;
+	C4AbstractApp *pApp;
 
 public:
-	void SetApp(CStdApp *pnApp) { pApp = pnApp; }
+	void SetApp(C4AbstractApp *pnApp) { pApp = pnApp; }
 
 	// StdSchedulerProc overrides
 	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
@@ -96,11 +96,11 @@ private:
 };
 #endif
 
-class CStdApp : public StdScheduler
+class C4AbstractApp : public StdScheduler
 {
 public:
-	CStdApp ();
-	virtual ~CStdApp ();
+	C4AbstractApp ();
+	virtual ~C4AbstractApp ();
 
 	bool Active;
 
@@ -115,7 +115,7 @@ public:
 	void RestoreVideoMode();
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
-	CStdWindow * pWindow;
+	C4Window * pWindow;
 	bool fQuitMsgReceived; // if true, a quit message has been received and the application should terminate
 
 	// Copy the text to the clipboard or the primary selection
@@ -195,7 +195,7 @@ protected:
 	void OnXInput();
 protected:
 #  ifdef USE_X11
-	class CStdAppPrivate * Priv;
+	class C4X11AppImpl * Priv;
 	void HandleXMessage();
 #  endif
 	unsigned int KeyMask;
@@ -210,8 +210,8 @@ protected:
 
 	friend class CStdGL;
 	friend class CStdGLCtx;
-	friend class CStdWindow;
-	friend class CStdGtkWindow;
+	friend class C4Window;
+	friend class C4GtkWindow;
 };
 
 #endif // INC_STDAPP

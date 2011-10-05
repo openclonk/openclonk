@@ -308,7 +308,7 @@ bool C4Game::PreInit()
 	// Timer flags
 	GameGo=false;
 	// set gamma
-	lpDDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -488,7 +488,7 @@ bool C4Game::Init()
 	SetInitProgress(99);
 
 	// Gamma
-	lpDDraw->ApplyGamma();
+	pDraw->ApplyGamma();
 
 	// Message board and upper board
 	if (!Application.isEditor)
@@ -1559,7 +1559,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 							}
 							else str = cursor->GetName();
 
-							lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                           cgo.X + cox + fctCursor.Wdt / 2,
 							                           cgo.Y + coy - 2 - texthgt,
 							                           0xffff0000, ACenter);
@@ -1716,11 +1716,11 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	// Fullscreen screenshot
 	else if (!Application.isEditor && Application.Active)
 	{
-		SURFACE sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
-		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
+		C4Surface * sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
+		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
-		lpDDraw->Blit(FullScreen.pSurface,
+		pDraw->Blit(FullScreen.pSurface,
 		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 

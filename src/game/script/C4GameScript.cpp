@@ -1777,13 +1777,13 @@ static long FnReloadParticle(C4AulContext* ctx, C4String *szParticleName)
 
 static bool FnSetGamma(C4AulContext* ctx, long dwClr1, long dwClr2, long dwClr3, long iRampIndex)
 {
-	lpDDraw->SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
+	pDraw->SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
 	return true;
 }
 
 static bool FnResetGamma(C4AulContext* ctx, long iRampIndex)
 {
-	lpDDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
+	pDraw->SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
 	return true;
 }
 
@@ -2288,7 +2288,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, N
 
 /*static long FnSetSaturation(C4AulContext *ctx, long s)
   {
-  return lpDDraw->SetSaturation(BoundBy(s,0l,255l));
+  return pDraw->SetSaturation(BoundBy(s,0l,255l));
   }*/
 
 static bool FnPauseGame(C4AulContext *ctx, bool fToggle)
@@ -2569,7 +2569,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
-	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);

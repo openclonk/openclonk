@@ -47,7 +47,7 @@
 #include <C4Id.h>
 
 #include <StdResStr2.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 
 // consts (load those from a def file some time)
@@ -1947,13 +1947,13 @@ namespace C4GUI
 	class Dialog;
 
 	// EM window class
-	class DialogWindow : public CStdWindow
+	class DialogWindow : public C4Window
 	{
 	public:
 		Dialog* pDialog;
-		DialogWindow(): CStdWindow(), pDialog(NULL) {}
-		using CStdWindow::Init;
-		CStdWindow * Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
+		DialogWindow(): C4Window(), pDialog(NULL) {}
+		using C4Window::Init;
+		C4Window * Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
 #ifdef USE_X11
 		virtual void HandleMessage (XEvent &);
@@ -2536,7 +2536,7 @@ namespace C4GUI
 		void Init(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt);
 		void Clear();
 
-		void Render(bool fDoBG);                 // render to lpDDraw
+		void Render(bool fDoBG);                 // render to pDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
 		bool Execute();                // handle messages; execute all dialogs
 
@@ -2567,7 +2567,7 @@ namespace C4GUI
 #ifdef _WIN32
 		Dialog *GetDialog(HWND hWindow); // get console dialog
 #endif
-		Dialog *GetDialog(CStdWindow * pWindow); // get console dialog
+		Dialog *GetDialog(C4Window * pWindow); // get console dialog
 		void DoContext(ContextMenu *pNewCtx, Element *pAtElement, int32_t iX, int32_t iY); // open context menu (closes any other contextmenu)
 		void AbortContext(bool fByUser) { if (pContext) pContext->Abort(fByUser); } // close context menu
 		int32_t GetContextMenuIndex() { return pContext ? pContext->GetMenuIndex() : 0; } // get current context-menu (lowest level)

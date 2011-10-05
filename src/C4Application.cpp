@@ -556,12 +556,12 @@ void C4Application::Clear()
 	SoundSystem.Clear();
 	RestoreVideoMode();
 	// Clear direct draw (late, because it's needed for e.g. Log)
-	if (lpDDraw) { delete lpDDraw; lpDDraw=NULL; }
+	if (pDraw) { delete pDraw; pDraw=NULL; }
 	// Close window
 	FullScreen.Clear();
 	Console.Clear();
 	// The very final stuff
-	CStdApp::Clear();
+	C4AbstractApp::Clear();
 }
 
 void C4Application::Quit()
@@ -575,7 +575,7 @@ void C4Application::Quit()
 	// fonts are loaded at start and never unloaded
 	::GraphicsResource.ClearFonts();
 	// quit app
-	CStdApp::Quit();
+	C4AbstractApp::Quit();
 	AppState = C4AS_Quit;
 }
 
@@ -688,10 +688,10 @@ void C4Application::SetGameTickDelay(int iDelay)
 void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	// notify game
-	if (lpDDraw)
+	if (pDraw)
 	{
 		Game.OnResolutionChanged(iXRes, iYRes);
-		lpDDraw->OnResolutionChanged(iXRes, iYRes);
+		pDraw->OnResolutionChanged(iXRes, iYRes);
 	}
 	if (pWindow && pWindow->pSurface)
 		pWindow->pSurface->UpdateSize(iXRes, iYRes);

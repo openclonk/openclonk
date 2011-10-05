@@ -273,16 +273,16 @@ void C4Landscape::ScanSideOpen()
 
 void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 {
-	if (Modulation) lpDDraw->ActivateBlitModulation(Modulation);
+	if (Modulation) pDraw->ActivateBlitModulation(Modulation);
 	// blit landscape
 	if (::GraphicsSystem.ShowSolidMask)
-		lpDDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
+		pDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else if(pLandscapeRender)
 	{
 		DoRelights();
 		pLandscapeRender->Draw(cgo);
 	}
-	if (Modulation) lpDDraw->DeactivateBlitModulation();
+	if (Modulation) pDraw->DeactivateBlitModulation();
 }
 
 bool C4Landscape::DoRelights()
@@ -787,6 +787,10 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 
 bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 {
+	// Check bounds
+	if (tx < 0 || ty < 0 || tx >= Width || ty >= Height)
+		return false;
+
 	// Save back original material so we can insert it later
 	int omat = 0;
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
@@ -1286,10 +1290,6 @@ bool C4Landscape::DebugSave(const char *szFilename)
 
 bool C4Landscape::SaveInternal(C4Group &hGroup)
 {
-	// Save members
-	if (!Sky.Save(hGroup))
-		return false;
-
 	// Save landscape surface
 	char szTempLandscape[_MAX_PATH+1];
 	SCopy(Config.AtTempPath(C4CFN_TempLandscape), szTempLandscape);
@@ -1845,7 +1845,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
-	lpDDraw->NoPrimaryClipper();
+	pDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
 	iMapX-=2+MaterialMap.max_shape_width/MapZoom;
@@ -2921,7 +2921,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 
 	// assign clipper
 	Surface8->Clip(BoundingBox.x,BoundingBox.y,BoundingBox.x+BoundingBox.Wdt,BoundingBox.y+BoundingBox.Hgt);
-	lpDDraw->NoPrimaryClipper();
+	pDraw->NoPrimaryClipper();
 
 	// draw all chunks
 	int32_t x, y;

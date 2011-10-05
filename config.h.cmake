@@ -209,4 +209,4 @@
 #cmakedefine HAVE_STATIC_ASSERT 1
 
 /* Generate minidumps on crash */
-#cmakedefine GENERATE_MINI_DUMP 1
+#cmakedefine HAVE_DBGHELP 1

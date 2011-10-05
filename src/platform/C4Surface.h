@@ -71,19 +71,17 @@ class CStdGLCtx;
 extern CStdGL *pGL;
 #endif
 
-extern CStdDDraw *lpDDraw;
-
-class CSurface
+class C4Surface
 {
 private:
-	CSurface(const CSurface &cpy); // do NOT copy
-	CSurface &operator = (const CSurface &rCpy);  // do NOT copy
+	C4Surface(const C4Surface &cpy); // do NOT copy
+	C4Surface &operator = (const C4Surface &rCpy);  // do NOT copy
 
 public:
-	CSurface();
-	~CSurface();
-	CSurface(int iWdt, int iHgt); // create new surface and init it
-	CSurface(CStdApp * pApp, CStdWindow * pWindow); // create new surface for a window
+	C4Surface();
+	~C4Surface();
+	C4Surface(int iWdt, int iHgt); // create new surface and init it
+	C4Surface(C4AbstractApp * pApp, C4Window * pWindow); // create new surface for a window
 public:
 	int Wdt,Hgt; // size of surface
 	int Scale; // scale of image; divide coordinates by this value to get the "original" image size
@@ -120,15 +118,15 @@ public:
 		};
 	};
 #endif
-	CTexRef **ppTex;              // textures
+	C4TexRef **ppTex;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
-	CSurface *pMainSfc;           // main surface for simple ColorByOwner-surfaces
+	C4Surface *pMainSfc;           // main surface for simple ColorByOwner-surfaces
 	DWORD ClrByOwnerClr;          // current color to be used for ColorByOwner-blits
 
-	void MoveFrom(CSurface *psfcFrom); // grab data from other surface - invalidates other surface
+	void MoveFrom(C4Surface *psfcFrom); // grab data from other surface - invalidates other surface
 	bool IsRenderTarget();        // surface can be used as a render target?
 protected:
-	CStdWindow * pWindow;
+	C4Window * pWindow;
 	int Locked;
 	bool Attached;
 	bool fPrimary;
@@ -142,16 +140,17 @@ public:
 	void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 	bool Unlock();
 	bool Lock();
-	bool GetTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
-	bool GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
+	bool GetTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture and adjust x/y
+	bool GetLockTexAt(C4TexRef **ppTexRef, int &rX, int &rY);  // get texture; ensure it's locked and adjust x/y
 	DWORD GetPixDw(int iX, int iY, bool fApplyModulation);  // get 32bit-px
 	bool IsPixTransparent(int iX, int iY);  // is pixel's alpha value <= 0x7f?
 	bool SetPixDw(int iX, int iY, DWORD dwCol);       // set pix in surface only
 	bool SetPixAlpha(int iX, int iY, BYTE byAlpha);   // adjust alpha value of pixel
-	bool BltPix(int iX, int iY, CSurface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
+	bool BltPix(int iX, int iY, C4Surface *sfcSource, int iSrcX, int iSrcY, bool fTransparency); // blit pixel from source to this surface (assumes clipped coordinates!)
 	bool Create(int iWdt, int iHgt, bool fOwnPal=false, bool fIsRenderTarget=false, int MaxTextureSize = 0);
-	bool CreateColorByOwner(CSurface *pBySurface);  // create ColorByOwner-surface
-	bool SetAsClrByOwnerOf(CSurface *pOfSurface);   // assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
+	bool Copy(C4Surface &fromSfc);
+	bool CreateColorByOwner(C4Surface *pBySurface);  // create ColorByOwner-surface
+	bool SetAsClrByOwnerOf(C4Surface *pOfSurface);   // assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
 #ifdef USE_GL
 	bool CreatePrimaryGLTextures();                 // create primary textures from back buffer
 #endif
@@ -163,8 +162,19 @@ public:
 	void Default();
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();
-	bool ReadBMP(class CStdStream &hGroup);
+
+	// In C4SurfaceLoaders.cpp
+	bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool Save(C4Group &hGroup, const char *szFilename);
+	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
 	bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
+	bool Read(CStdStream &hGroup, const char * extension);
+	bool ReadPNG(CStdStream &hGroup);
+	bool ReadJPEG(CStdStream &hGroup);
+	bool ReadBMP(CStdStream &hGroup);
+
 	bool AttachPalette();
 #ifdef USE_DIRECTX
 	IDirect3DSurface9 *GetSurface(); // get internal surface
@@ -178,14 +188,13 @@ protected:
 	bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
 	bool CreateTextures(int MaxTextureSize = 0);    // create ppTex-array
 	void FreeTextures();      // free ppTex-array if existant
+//	C4Surface *Duplicate(); // create identical copy
 
-	friend class CStdDDraw;
-	friend class CPattern;
+	friend class C4Draw;
+	friend class C4Pattern;
 	friend class CStdD3D;
 	friend class CStdGL;
 };
-
-typedef CSurface * SURFACE;
 
 #ifndef USE_DIRECTX
 typedef struct _D3DLOCKED_RECT
@@ -196,7 +205,7 @@ typedef struct _D3DLOCKED_RECT
 #endif
 
 // one texture encapsulation
-class CTexRef
+class C4TexRef
 {
 public:
 	D3DLOCKED_RECT texLock;   // current lock-data
@@ -226,8 +235,8 @@ public:
 	bool fIntLock;    // if set, texref is locked internally only
 	C4Rect LockSize;
 
-	CTexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
-	~CTexRef();           // release texture
+	C4TexRef(int iSizeX, int iSizeY, bool fAsRenderTarget);   // create texture with given size
+	~C4TexRef();           // release texture
 	bool Lock();          // lock texture
 	// Lock a part of the rect, discarding the content
 	// Note: Calling Lock afterwards without an Unlock first is undefined
@@ -246,24 +255,22 @@ public:
 };
 
 // texture management
-class CTexMgr
+class C4TexMgr
 {
 public:
-	std::list<CTexRef *> Textures;
+	std::list<C4TexRef *> Textures;
 
 public:
-	CTexMgr();    // ctor
-	~CTexMgr();   // dtor
+	C4TexMgr();    // ctor
+	~C4TexMgr();   // dtor
 
-	void RegTex(CTexRef *pTex);
-	void UnregTex(CTexRef *pTex);
+	void RegTex(C4TexRef *pTex);
+	void UnregTex(C4TexRef *pTex);
 
 	void IntLock();   // do an internal lock
 	void IntUnlock(); // undo internal lock
 };
 
-extern CTexMgr *pTexMgr;
-
-#define SURFACE CSurface *
+extern C4TexMgr *pTexMgr;
 
 #endif

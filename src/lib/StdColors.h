@@ -307,10 +307,10 @@ struct CStdPalette
 };
 
 // clrmod-add-map to cover a drawing range in which all draws shall be adjusted by the map
-class CClrModAddMap
+class C4FogOfWar
 {
 private:
-	class CSurface * pSurface;
+	class C4Surface * pSurface;
 	unsigned char *pMap; size_t MapSize;
 	int Wdt, Hgt;   // number of sections in the map
 	bool FadeTransparent; // if set, ReduceModulation and AddModulation fade transparent instead of black
@@ -320,14 +320,14 @@ public:
 	int OffX, OffY; // offset to add to drawing positions before applying the map
 	enum { DefResolutionX = 64, DefResolutionY = 64 };
 
-	CClrModAddMap() : pSurface(0), pMap(NULL), MapSize(0), Wdt(0), Hgt(0),
+	C4FogOfWar() : pSurface(0), pMap(NULL), MapSize(0), Wdt(0), Hgt(0),
 			FadeTransparent(false), ResolutionX(DefResolutionX), ResolutionY(DefResolutionY), dwBackClr(0), OffX(0), OffY(0) { }
-	~CClrModAddMap();
+	~C4FogOfWar();
 
 	// reset all of map to given values; uses transparent mode and clears rect if a back color is given
 	void Reset(int ResX, int ResY, int WdtPx, int HgtPx, int OffX, int OffY,
-	           unsigned char StartVis, int x0, int y0, uint32_t dwBackClr=0, class CSurface *backsfc=NULL);
-	class CSurface *GetSurface();
+	           unsigned char StartVis, int x0, int y0, uint32_t dwBackClr=0, class C4Surface *backsfc=NULL);
+	class C4Surface *GetSurface();
 	// "landscape" coordinates
 	void ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int));                              // reveal all within iRadius1; fade off until iRadius2
 	void AddModulation(int cx, int cy, int Radius, uint8_t Transparency);                                 // hide all within iRadius1; fade off until iRadius2

@@ -369,7 +369,7 @@ bool C4Network2::DoLobby()
 		ChangeGameStatus(GS_Lobby, 0);
 
 	// determine lobby type
-	bool fFullscreenLobby = !Console.Active && (lpDDraw->GetEngine() != GFXENGN_NOGFX);
+	bool fFullscreenLobby = !Console.Active && (pDraw->GetEngine() != GFXENGN_NOGFX);
 
 	if (!fFullscreenLobby)
 	{
@@ -1022,7 +1022,7 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 		Stat.Append("| - none -");
 
 	// draw
-	lpDDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
+	pDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
 }
 
 bool C4Network2::InitNetIO(bool fNoClientID, bool fHost)

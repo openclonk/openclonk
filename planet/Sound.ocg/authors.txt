@@ -36,3 +36,7 @@ cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
 acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
 suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
+Nikolino		- BlastLiquid*
+					(http://www.freesound.org/people/Nikolino/sounds/106694/)
+					(http://www.freesound.org/people/Nikolino/sounds/106650/)
+					(http://www.freesound.org/people/Nikolino/sounds/106640/)

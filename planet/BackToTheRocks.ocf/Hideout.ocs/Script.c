@@ -24,21 +24,21 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(StoneDoor, 365, 449, NO_OWNER);
+	gate = CreateObject(StoneDoor, 365, 448, NO_OWNER);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
-	gate = CreateObject(StoneDoor, 341, 585, NO_OWNER);
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
+	gate->SetAutoControl(1);
+	gate = CreateObject(StoneDoor, 341, 584, NO_OWNER);
+	gate->SetAutoControl(1);
 	gate = CreateObject(StoneDoor, 693, 544, NO_OWNER);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObject(SpinWheel, 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 449, NO_OWNER);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 448, NO_OWNER);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 340, 585, NO_OWNER);
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
+	gate->SetAutoControl(2);
+	gate = CreateObject(StoneDoor, LandscapeWidth() - 340, 584, NO_OWNER);
+	gate->SetAutoControl(2);
 	gate = CreateObject(StoneDoor, LandscapeWidth() - 692, 544, NO_OWNER);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 552, NO_OWNER);

@@ -150,7 +150,7 @@ bool C4LandscapeRenderGL::InitLandscapeTexture()
 	// Create our surfaces
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
 	{
-		Surfaces[i] = new CSurface();
+		Surfaces[i] = new C4Surface();
 		if(!Surfaces[i]->Create(iSfcWdt, iSfcHgt))
 			return false;
 	}
@@ -171,7 +171,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		iMaterialTextureDepth <<= 1;
 
 	// Find first (actual) texture
-	int iRefTexIx = 0; C4Texture *pRefTex; CSurface *pRefSfc = NULL;
+	int iRefTexIx = 0; C4Texture *pRefTex; C4Surface *pRefSfc = NULL;
 	for(; pRefTex = pTexs->GetTexture(pTexs->GetTexture(iRefTexIx)); iRefTexIx++)
 		if(pRefSfc = pRefTex->Surface32)
 			break;
@@ -209,7 +209,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		else
 			szTexture = "";
 		// Try to find the texture
-		C4Texture *pTex; CSurface *pSurface;
+		C4Texture *pTex; C4Surface *pSurface;
 		if((pTex = pTexs->GetTexture(szTexture)) && (pSurface = pTex->Surface32))
 		{
 #ifdef DEBUG_SOLID_COLOR_TEXTURES
@@ -381,7 +381,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 	}
 
 	// Get tex refs (shortcut, we will use them quite heavily)
-	CTexRef *TexRefs[C4LR_SurfaceCount];
+	C4TexRef *TexRefs[C4LR_SurfaceCount];
 	x = y = 0;
 	for(int i = 0; i < C4LR_SurfaceCount; i++)
 		Surfaces[i]->GetTexAt(&TexRefs[i], x, y);
@@ -928,7 +928,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	if(!pGL && !hProg) return;
 	
 	// prepare rendering to surface
-	CSurface *sfcTarget = cgo.Surface;
+	C4Surface *sfcTarget = cgo.Surface;
 	if (!pGL->PrepareRendering(sfcTarget)) return;
 
 #ifdef AUTO_RELOAD_SHADERS
@@ -1033,7 +1033,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	tTexBlt.bottom= ty + float(cgo.Hgt) * pGL->Zoom;
 
 	// blit positions
-	CBltVertex Vtx[4];
+	C4BltVertex Vtx[4];
 	Vtx[0].ftx = tTexBlt.left;  Vtx[0].fty = tTexBlt.top;
 	Vtx[1].ftx = tTexBlt.right; Vtx[1].fty = tTexBlt.top;
 	Vtx[2].ftx = tTexBlt.right; Vtx[2].fty = tTexBlt.bottom;
@@ -1063,7 +1063,7 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Blit
-	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 	glDrawArrays(GL_QUADS, 0, 4);
 
 	// Remove shader
