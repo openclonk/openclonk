@@ -11,12 +11,15 @@
 */
 global func RootSurface()
 {
-	while(GetContact(-1) & CNAT_Center) SetPosition(GetX(),GetY()-1); //Move up if too far underground
-	var moved_down = false;
-	if (!(GetContact(-1) & CNAT_Bottom)) moved_down = true;
-	while(!(GetContact(-1) & CNAT_Bottom)) SetPosition(GetX(),GetY()+1); //Move down if in midair
+	if (HasCNAT(CNAT_Center)) while(GetContact(-1) & CNAT_Center) SetPosition(GetX(),GetY()-1); //Move up if too far underground
+	if (HasCNAT(CNAT_Bottom))
+	{
+		var moved_down = false;
+		if (!(GetContact(-1) & CNAT_Bottom)) moved_down = true;
+		while(!(GetContact(-1) & CNAT_Bottom)) SetPosition(GetX(),GetY()+1); //Move down if in midair
 
-	if (moved_down) SetPosition(GetX(),GetY()+1); // make the plant stuck, not just contact with surface (in case it was moved down)
+		if (moved_down) SetPosition(GetX(),GetY()+1); // make the plant stuck, not just contact with surface (in case it was moved down)
+	}
 }
 
 /* Local */

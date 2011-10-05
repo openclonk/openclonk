@@ -112,6 +112,15 @@ global func VerticesStuck()
 	return vertices;
 }
 
+// Returns whether the object has a vertex with the given CNAT value
+global func HasCNAT(int cnat)
+{
+	for(var i = -1; i < GetVertexNum(); i++)
+		if (GetVertex(i, VTX_CNAT) == cnat)
+			return true;
+	return false;
+}
+
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.
 global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
