@@ -39,7 +39,7 @@ public:
 	int32_t InActionTime;
 	bool HasDied;
 	int32_t ControlCount;
-	class C4Def *pDef; // definition to ID - only eresolved if defs were loaded at object info loading time
+	class C4Def *pDef; // definition to ID - only resolved if defs were loaded at object info loading time
 	char Filename[_MAX_PATH+1];
 	C4ObjectInfo *Next;
 public:

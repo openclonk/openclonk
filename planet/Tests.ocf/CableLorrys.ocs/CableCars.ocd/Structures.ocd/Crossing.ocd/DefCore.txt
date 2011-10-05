@@ -1,6 +1,6 @@
 [DefCore]
 id=CableCrossing
-Version=5,0,0,0
+Version=5,2,0,1
 Category=C4D_Structure
 Width=20
 Height=20

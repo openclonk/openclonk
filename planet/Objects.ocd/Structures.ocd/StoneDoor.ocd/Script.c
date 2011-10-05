@@ -1,67 +1,139 @@
-/*-- Stone Door --*/
+/**
+	Stone Door
+	A door which can be used in scenarios with lots of bricks.
+	
+	@authors Ringwaul, Maikel	
+*/
 
 protected func Initialize()
 {
 	SetAction("Door");
-	SetComDir(COMD_None);
+	SetComDir(COMD_Stop);
 	return;
 }
 
-public func OpenGateDoor()
+/*-- Movement --*/
+
+public func OpenDoor()
 {
-	AddEffect("IntMoveGateUp", this, 100, 1, this);
+	SetComDir(COMD_Up);
 	Sound("GateMove");
 	return;
 }
 
-public func CloseGateDoor()
+public func CloseDoor()
 {
-	AddEffect("IntMoveGateDown", this, 100, 1, this);
+	SetComDir(COMD_Down);
 	Sound("GateMove");
 	return;
 }
 
-protected func FxIntMoveGateUpTimer(object target)
+private func IsOpen()
 {
-	if (GBackSolid(0, -20))
+	if (GetContact(-1) & CNAT_Top)
+	 	return true;
+	return false;
+}
+
+private func IsClosed()
+{
+	if (GetContact(-1) & CNAT_Bottom)
+	 	return true;
+	return false;
+}
+
+protected func Hit()
+{
+	Sound("GateHit.ogg");
+	return;
+}
+
+/*-- Automatic movement --*/
+
+public func SetAutoControl(int team)
+{
+	var effect = AddEffect("AutoControl", this, 100, 3, this);
+	effect.Team = team;
+	return;
+}
+
+protected func FxAutoControlTimer(object target, effect, int time)
+{
+	var d = 0;
+	if (IsOpen())
+		d = 30;
+	var owner = GetOwner();
+	var team = effect.Team;
+	var open_door = false;
+	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
 	{
-		Sound("GateHit.ogg");
-		SetYDir(0);
-		return -1;
+		var plr = clonk->GetOwner();
+		var plr_team = GetPlayerTeam(plr);
+		if (!Hostile(owner, plr) && plr != NO_OWNER)
+			open_door = true;
+		else if (plr_team == team)
+			open_door = true;
+		else
+		{
+			open_door = false;
+			break;
+		}
 	}
 	
-	SetYDir(-5);
+	if (open_door && IsClosed())
+		OpenDoor();
+	if (!open_door && IsOpen())
+		CloseDoor();
+	
 	return 1;
 }
 
-protected func FxIntMoveGateDownTimer(object target)
-{
-	if (GBackSolid(0, 19))
-	{
-		Sound("GateHit.ogg");
-		SetYDir(0);
-		return -1;
-	}
-	
-	SetYDir(5);
-	return 1;
-}	
+/*-- Destruction --*/
 
-func Definition(def) 
+private func GetStrength() { return 180; }
+
+protected func Damage()
 {
-	SetProperty("ActMap", {
-		Door = {
-			Prototype = Action,
-			Name = "Door",
-			Procedure = DFA_FLOAT,
-			Length = 1,
-			Delay = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 8,
-			Hgt = 40,
-			NextAction = "Door",
-		},
-	}, def);
-	SetProperty("Name", "$Name$", def);
+	// Destroy if damage above strength.
+	if (GetDamage() > GetStrength())
+	{
+		CastObjects(Rock, 5, 20);
+		return RemoveObject();
+	}
+	// Change appearance.
+	DoGraphics();
+	return;
 }
+
+private func DoGraphics()
+{
+	// Change appearance according to damage and strength.
+	if (GetDamage() > 3 * GetStrength() / 4)
+		SetGraphics("Cracked3");
+	else if (GetDamage() > GetStrength() / 2)
+		SetGraphics("Cracked2");
+	else if (GetDamage() > GetStrength() / 4)
+		SetGraphics("Cracked1");
+	else
+		SetGraphics("");
+	return;
+}
+
+local ActMap = {
+	Door = {
+		Prototype = Action,
+		Name = "Door",
+		Procedure = DFA_FLOAT,
+		Speed = 150,
+		Accel = 12,
+		Decel = 12,
+		Length = 1,
+		Delay = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 8,
+		Hgt = 40,
+		NextAction = "Door",
+	},
+};
+local Name = "$Name$";

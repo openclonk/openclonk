@@ -23,7 +23,8 @@
         </param>
       </params>
     </syntax>
-    <desc>Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore.</desc>
+    <desc>Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore.
+    This does not add the object to the permanent crew of the player, use <funclink>MakeCrewMember</funclink> for that.</desc>
     <examples>
       <example>
         <code>var nClonk = <funclink>CreateObject</funclink>(Clonk);

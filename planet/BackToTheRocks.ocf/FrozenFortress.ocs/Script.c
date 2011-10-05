@@ -24,12 +24,12 @@ protected func Initialize()
 	goal->SetFlagBase(2, LandscapeWidth() - 135, 264);
 	CreateObject(Rule_KillLogs);	
 	
-	var gate = CreateObject(StoneDoor, 345, 273, NO_OWNER);
-	gate->SetClrModulation(RGB(180,205,255));
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 1);
-	var gate = CreateObject(StoneDoor, LandscapeWidth()-344, 273, NO_OWNER);
-	gate->SetClrModulation(RGB(180,205,255));
-	AddEffect("AutoControl", gate, 100, 3, gate, nil, 2);
+	var gate = CreateObject(StoneDoor, 345, 272, NO_OWNER);
+	gate->SetClrModulation(RGB(140,185,255));
+	gate->SetAutoControl(1);
+	var gate = CreateObject(StoneDoor, LandscapeWidth()-344, 272, NO_OWNER);
+	gate->SetClrModulation(RGB(140,185,255));
+	gate->SetAutoControl(2);
 
 	// Chests with weapons.
 	var chest;

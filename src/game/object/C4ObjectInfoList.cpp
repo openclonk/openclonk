@@ -134,13 +134,11 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
 			// Use standard crew or matching id
 			if ( (!c_id && !pDef->NativeCrew) || (pInfo->id==c_id) )
 				// Participating and not in action
-				if (pInfo->Participation) if (!pInfo->InAction)
-						// Not dead
-						if (!pInfo->HasDied)
-							// Highest experience
-							if (!pHiExp || (pInfo->Experience>pHiExp->Experience))
-								// Set this
-								pHiExp=pInfo;
+				if (pInfo->Participation && !pInfo->InAction && !pInfo->HasDied)
+					// Highest experience
+					if (!pHiExp || (pInfo->Experience>pHiExp->Experience))
+						// Set this
+						pHiExp=pInfo;
 
 	// Found
 	if (pHiExp)
@@ -211,12 +209,11 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(const char *szByName)
 	// Find matching name, participating, alive and not in action
 	for (pInfo=First; pInfo; pInfo=pInfo->Next)
 		if (SEqualNoCase(pInfo->Name,szByName))
-			if (pInfo->Participation) if (!pInfo->InAction)
-					if (!pInfo->HasDied)
-					{
-						pInfo->Recruit();
-						return pInfo;
-					}
+			if (pInfo->Participation && !pInfo->InAction && !pInfo->HasDied)
+			{
+				pInfo->Recruit();
+				return pInfo;
+			}
 	return NULL;
 }
 

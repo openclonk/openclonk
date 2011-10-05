@@ -2480,7 +2480,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, PSF_OnOwnerRemoved, FnOnOwnerRemoved, false);
 	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
-	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "PlayAnimation", FnPlayAnimation);
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);

@@ -594,7 +594,6 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 		// reading from file
 		StdStrBuf sCode;
 		DWORD dwSetShift = 0;
-		int shift_idx = 0;
 		for (;;)
 		{
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));

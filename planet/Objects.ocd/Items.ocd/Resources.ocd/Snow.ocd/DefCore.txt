@@ -1,6 +1,6 @@
 [DefCore]
 id=Snow
-Version=4,10,0,0
+Version=5,2,0,1
 Category=C4D_Object
 Timer=30
 TimerCall=Check

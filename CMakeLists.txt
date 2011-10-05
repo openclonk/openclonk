@@ -25,6 +25,7 @@
 
 cmake_minimum_required (VERSION 2.6.0)
 project (clonk CXX C)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
 
@@ -45,7 +46,7 @@ option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32)
+if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
 	option(USE_DIRECTX "Enable DirectX support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
 		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
@@ -57,12 +58,9 @@ if(WIN32)
 	else()
 		
 	endif()
-
-	option(GENERATE_MINI_DUMP "Generate a minidump on crash" ON)
 else()
 	SET(USE_DIRECTX OFF)
 	SET(HAVE_FMOD OFF)
-	SET(GENERATE_MINI_DUMP OFF)
 endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
@@ -143,6 +141,9 @@ if(MSVC_VERSION)
 	list(APPEND OC_CXX_FLAGS "/wd4267")
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
@@ -793,7 +794,7 @@ FIND_PATH(OPENSSL_INCLUDE_DIR NAMES openssl/sha.h)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
 if(USE_CONSOLE)
-	include(./FindReadline.cmake)
+	find_package(Readline)
 	include_directories(${READLINE_INCLUDE_DIRS})
 	SET(HAVE_LIBREADLINE ${READLINE_FOUND} CACHE INTERNAL "libreadline available")
 endif()
@@ -1073,7 +1074,7 @@ endforeach()
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################
 
-include(GccPchSupport.cmake)
+include(GccPchSupport)
 if(CMAKE_COMPILER_IS_GNUCXX)
 	if(NOT DEFINED USE_GCC_PCH)
 		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
@@ -1107,11 +1108,13 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 add_subdirectory(thirdparty/tinyxml)
 target_link_libraries(clonk tinyxml)
 
-if(GENERATE_MINI_DUMP)
-	FIND_PATH(DBGHELP_INCLUDE_DIR NAMES dbghelp.h)
-	FINDLIB(DBGHELP_LIBRARIES NAMES dbghelp)
-	target_link_libraries(clonk ${DBGHELP_LIBRARIES})
-	include_directories(${DBGHELP_INCLUDE_DIR})
+if(WIN32)
+	find_package(DbgHelp)
+	if(DBGHELP_FOUND)
+		target_link_libraries(clonk ${DBGHELP_LIBRARIES})
+		include_directories(${DBGHELP_INCLUDE_DIR})
+	endif()
+	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
 if(USE_GL)

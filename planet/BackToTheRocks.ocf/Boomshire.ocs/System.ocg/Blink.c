@@ -8,7 +8,7 @@ public func ControlUp(object clonk)
 	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 	if (GetAction() == "Still" && targetdoor)
 	{
-		targetdoor->OpenGateDoor();
+		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
 		Sound("Chain.ogg");
 	}

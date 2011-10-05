@@ -50,7 +50,6 @@ public:
 	int32_t  Age;
 	char DeathMessage[C4MaxDeathMsg+1];
 	C4ValueMapData ExtraData;
-	bool NoSave; // set for _XYZ-CrewMembers
 public:
 	bool Save(C4Group &hGroup, class C4DefList *pDefs);
 	bool Load(C4Group &hGroup);

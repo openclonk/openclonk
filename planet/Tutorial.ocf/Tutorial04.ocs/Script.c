@@ -81,8 +81,8 @@ protected func InitializePlayer(int plr)
 	effect.var1 = 30;
 	effect.var2 = 620;
 	// Clonk starts with sword and shield.
-	clonk->CreateContents(Sword);
 	clonk->CreateContents(Shield);
+	clonk->CreateContents(Sword);
 
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);
@@ -147,7 +147,7 @@ global func FxIntOpenGateTimer(object target)
 	if (ObjectCount(Find_ID(SwordTarget)) == 0)
 	{
 		// Open gate.
-		target->OpenGateDoor();
+		target->OpenDoor();
 		return -1;
 	}
 	return 1;
