@@ -8,7 +8,7 @@ Offset=-10,-30
 Vertices=2
 VertexX=0,0
 VertexY=-25,25
-VertexCNAT=3,4
+VertexCNAT=4,8
 Mass=40
 StretchGrowth=1
 Oversize=1
@@ -16,5 +16,3 @@ ContactIncinerate=3
 BlastIncinerate=1
 Float=1
 Rotate=1
-
-
