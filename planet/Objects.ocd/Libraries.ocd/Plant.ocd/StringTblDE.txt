@@ -1,1 +1,2 @@
-Name=Pilz
+Name=Pflanze
+Harvest=%s ernten
