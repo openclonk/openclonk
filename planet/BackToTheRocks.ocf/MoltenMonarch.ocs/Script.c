@@ -127,7 +127,7 @@ global func FxIntFillChestsTimer()
 {
 	SetTemperature(100); 
 	var chests = FindObjects(Find_ID(Chest));
-	var w_list = [Dynamite, Rock, Dynamite, Firestone, Firestone, Bow, Musket, Sword, Javelin];
+	var w_list = [IronBomb, Rock, IronBomb, Firestone, Firestone, Bow, Musket, Sword, Javelin];
 	for(var chest in chests)
 		if (chest->ContentsCount() < 5 )
 			chest->CreateChestContents(w_list[Random(GetLength(w_list))]);
