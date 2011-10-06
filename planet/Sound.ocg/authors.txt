@@ -8,7 +8,7 @@ Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
 Clonkonaut      - Confirm*
 Checkmaty       - ProjectileHitLiving*
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
-Benboncan       - Blast* (http://www.freesound.org/people/Benboncan/sounds/73005/)
+Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
@@ -40,3 +40,5 @@ Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106694/)
 					(http://www.freesound.org/people/Nikolino/sounds/106650/)
 					(http://www.freesound.org/people/Nikolino/sounds/106640/)
+jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
+Stickinthemud	- BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
