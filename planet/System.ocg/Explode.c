@@ -9,7 +9,7 @@
 
 /*-- Explosion --*/
 
-global func Explode(int level)
+global func Explode(int level, bool silent)
 {
 	if(!this) FatalError("Function Explode must be called from object context");
 
@@ -17,11 +17,14 @@ global func Explode(int level)
 	ShakeViewPort(level, GetX(), GetY());
 
 	// Sound must be created before object removal, for it to be played at the right position.
-	var grade = BoundBy(level / 10 - 1, 1, 3);
-	if(GBackLiquid())
-		Sound(Format("BlastLiquid%d.ogg",grade));
-	else
-		Sound(Format("Blast%d", grade));
+	if(!silent) //Does object use it's own explosion sound effect?
+	{
+		var grade = BoundBy(level / 10 - 1, 1, 3);
+		if(GBackLiquid())
+			Sound(Format("BlastLiquid%d.ogg",grade));
+		else
+			Sound(Format("Blast%d", grade));
+	}
 
 	// Explosion parameters.
 	var x = GetX(), y = GetY();
@@ -67,7 +70,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	if (inobj != container)
 		BlastObjects(x + GetX(), y + GetY(), level, container, cause_plr, layer);
 	
-	// Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
+	// Landscape destruction. Happens after BlastObjects, so that recently blown-free materials are not affected
 	if (!container)
 		BlastFree(x, y, level, cause_plr);
 
@@ -419,7 +422,7 @@ global func FxFireworkTimer(object target, effect, int time)
 	if (GBackSemiSolid(x / 100, y / 100))
 		return -1;
 	
-	// loose speed
+	// lose speed
 	speed = 25 * speed / 26;
 	
 	var x_dir = Sin(angle, speed);

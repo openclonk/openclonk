@@ -1,0 +1,2 @@
+Name=Eisenbombe
+Description=Nach dem Anzünden, drücke [Benutzen], um zu werfen.

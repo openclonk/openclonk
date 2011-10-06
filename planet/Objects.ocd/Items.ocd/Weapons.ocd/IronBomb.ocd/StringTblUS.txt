@@ -1,0 +1,2 @@
+Name=Iron Bomb
+Description=Press [Use] to ignite. After it has been ignited, throw it with [Use].
