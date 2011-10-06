@@ -225,7 +225,7 @@ global func FxIntFillChestsTimer()
 {
 	SetTemperature(100);
 	var chest = FindObjects(Find_ID(Chest), Sort_Random())[0];
-	var w_list = [Javelin, Bow, Musket, Boompack, Dynamite, Shield, WindScroll, FireballScroll, ThunderScroll, Club, Sword];
+	var w_list = [Javelin, Bow, Musket, Boompack, IronBomb, Shield, WindScroll, FireballScroll, ThunderScroll, Club, Sword];
 	var maxcount = [1,1,1,1,2,1,1,2,2,1,1];
 	
 	var contents;

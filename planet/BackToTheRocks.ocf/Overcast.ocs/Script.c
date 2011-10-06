@@ -249,7 +249,7 @@ global func FxFillChestTimer(object target, proplist effect)
 {
 	if (Random(5))
 		return 1;
-	var w_list = [Balloon, Boompack, Dynamite, Shield, Javelin, Bow, Musket, Boompack, Dynamite, Shield, Javelin, Bow, Musket, TeleportScroll, WindScroll, FireballScroll];
+	var w_list = [Balloon, Boompack, IronBomb, Shield, Javelin, Bow, Musket, Boompack, IronBomb, Shield, Javelin, Bow, Musket, TeleportScroll, WindScroll, FireballScroll];
 
 	if (target->ContentsCount() < 6)
 		target->CreateChestContents(w_list[Random(GetLength(w_list))]);
