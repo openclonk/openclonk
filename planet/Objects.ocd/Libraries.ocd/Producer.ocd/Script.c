@@ -33,14 +33,58 @@ protected func Initialize()
 	return _inherited(...);
 }
 
+/*-- Interaction --*/
+
+public func IsInteractable() { return GetCon() >= 100; }
+
+public func GetInteractionMetaInfo(object clonk)
+{
+	return { Description = "Produce items", IconName = nil, IconID = nil };
+}
+
+public func Interact(object clonk)
+{
+	// Open production menu for the caller.
+	OpenProductionMenu(clonk);
+	return true;
+}
+
+private func OpenProductionMenu(object clonk)
+{
+	// Create menu for the clonk.
+	clonk->CreateMenu(GetID(), this, C4MN_Extra_Components, "Production menu");
+	// Cycle through all definitions to find the ones this producer can produce.
+	var index = 0, product;
+	while (product = GetDefinition(index))
+	{
+		if (IsProduct(product))
+			clonk->AddMenuItem(Format("Produce %s", product->GetName()), "OnProductSelection", product);
+		index++;	
+	}
+	return;
+}
+
+protected func OnProductSelection(id product, int par, bool alt)
+{
+	if (!product)
+		return;
+	
+	var amount = nil;
+	if (!alt)
+		amount = 1;
+		
+	AddToQueue(product, amount);
+	return;
+}
+
 
 /* Production */
 
-/** Determines whether the item specified can be produced. Should be overloaded by the producer.
-	@param item_id item's id of which to determine if it is producible.
+/** Determines whether the product specified can be produced. Should be overloaded by the producer.
+	@param product_id item's id of which to determine if it is producible.
 	@return \c true if the item can be produced, \c false otherwise.
 */
-public func CanProduceItem(id item_id)
+public func IsProduct(id product_id)
 {
 	return false;
 }
@@ -63,6 +107,11 @@ private func Produce(id item_id)
 public func IsProducing()
 {
 	return false;
+}
+
+public func GetProducts()
+{
+	return [];
 }
 
 /**
@@ -94,7 +143,7 @@ private func ProductionCosts(id item_id)
 public func AddToQueue(id item_id, int amount)
 {
 	// Check if this producer can produce the requested item.
-	if (!CanProduceItem(item_id))
+	if (!IsProduct(item_id))
 		return nil;
 	var pos = GetLength(queue);
 	queue[pos] = [item_id, amount];
@@ -222,7 +271,7 @@ protected func RejectCollect(id item, object obj)
 protected func RejectEntrance(object obj)
 {
 	// Check if item is either a raw material needed or an item that can be produced.
-	if (CanProduceItem(obj->GetID()))
+	if (IsProduct(obj->GetID()))
 		return false;
 	if (NeedsRawMaterial(obj->GetID()))
 		return false;

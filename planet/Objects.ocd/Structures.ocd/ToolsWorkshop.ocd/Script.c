@@ -16,9 +16,9 @@ public func Initialize()
 
 /*-- Production --*/
 
-public func CanProduceItem(id item_id)
+public func IsProduct(id product_id)
 {
-	return item_id->~IsToolProduct();
+	return product_id->~IsToolProduct();
 }
 
 public func NeedsRawMaterial(id rawmat_id)

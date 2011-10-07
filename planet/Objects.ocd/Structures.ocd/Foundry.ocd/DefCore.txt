@@ -13,7 +13,7 @@ Value=200
 Mass=4500
 GrabPutGet=3
 Components=Rock=6;Wood=2;
-Collection=21,-5,22,22
+Collection=18,5,10,10
 Exclusive=1
 BlastIncinerate=100
 Construction=1

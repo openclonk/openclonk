@@ -10,18 +10,21 @@
 
 public func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
-	//queue = [[Metal, nil]];
-	return _inherited(...);;
+	
+	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
+	return _inherited(...);
 }
 
 /*-- Production --*/
 
-public func CanProduceItem(id item_id)
+public func IsProduct(id product_id)
 {
-	if (item_id == Metal)
-		return true;	
-	return false;
+	return product_id->~IsFoundryProduct();
+}
+
+public func GetProducts()
+{
+	return [Metal];	
 }
 
 public func NeedsRawMaterial(id rawmat_id)
@@ -99,7 +102,7 @@ public func FxSmeltingTimer(object target, num, int timer)
 	Message(Format("Smelting %d",timer));
 	//Visuals
 	//Fire
-	CreateParticle("Fire",10,14,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
+	CreateParticle("Fire",10,20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 
 	//Smoke
 	CreateParticle("ExploSmoke",9,-35,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,125),RGBa(255,255,255,50));
@@ -138,7 +141,7 @@ public func FxEjectMetalTimer(object target, num, int timer)
 		var metal = CreateObject(Metal, -20, 16);
 		metal->SetSpeed(0,-17);
 		metal->SetR(30 - Random(59));
-		metal->Enter(this);
+		//metal->Enter(this);
 		Sound("Pop.ogg");
 		cast = 0;
 		return -1;

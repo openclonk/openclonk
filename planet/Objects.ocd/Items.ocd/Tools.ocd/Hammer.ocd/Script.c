@@ -37,7 +37,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	}
 	
 	// Otherwise create a menu with possible structures to build.
-	clonk->CreateMenu(Hammer, this, 1, "$TxtNoconstructionplansa$");
+	clonk->CreateMenu(Hammer, this, C4MN_Extra_Components, "$TxtNoconstructionplansa$");
 	var structure_id, index = 0;
 	while (structure_id = GetPlrKnowledge(clonk->GetOwner(), 0, index++, C4D_Structure))
 		clonk->AddMenuItem("$TxtConstructions$", "CreateConstructionSite", structure_id);
