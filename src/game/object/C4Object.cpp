@@ -326,7 +326,9 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (!Status) return;
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
+	memset(&rc, '\0', sizeof(rc));
 	rc.oei=Number;
+	if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
 	rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
 	AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
 #endif
