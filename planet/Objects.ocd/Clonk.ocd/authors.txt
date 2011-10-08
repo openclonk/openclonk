@@ -1,1 +1,2 @@
-All sounds by Pat (http://www.freesound.org/people/pwausc1/sounds/118259/), License: CC Attribution 3.0
+Roll.ogg, Rustle1.ogg, Rustle2.ogg, Rustle3.ogg, Rustle4.ogg, RustleLand.ogg by Pat (http://www.freesound.org/people/pwausc1/sounds/118259/), License: CC Attribution 3.0
+StepSoft1.ogg, StepSoft2.ogg, StepSoft3.ogg, StepSoft4.ogg, StepSoft5.ogg, StepSoft6.ogg, StepHard1.ogg, StepHard2.ogg, StepHard3.ogg, StepHard4.ogg, StepHard5.ogg by bevangoldswain (http://www.freesound.org/people/bevangoldswain/sounds/54778/ and http://www.freesound.org/people/bevangoldswain/sounds/54779/), License: CC Sampling Plus 1.0
