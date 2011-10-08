@@ -1749,6 +1749,11 @@ func SetSkin(int skin)
 	{	SetGraphics(nil, Skin_Alchemist);
 		gender = 0;	}
 
+	//Farmer
+	if(skin == 3)
+	{	SetGraphics(nil, Skin_Farmer);
+		gender = 1;	}
+
 	RemoveBackpack(); //add a backpack
 	AttachBackpack();
 	SetAction("Jump"); //refreshes animation
