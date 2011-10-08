@@ -16,8 +16,8 @@
 28=Lava-lava_red
 29=Earth-earth_dry
 30=Earth-earth_rough
-31=Earth-earth
-32=Earth-earth_rough
+31=Earth-earth_topsoil
+32=Earth-earth_midsoil
 #33=Ashes-Smooth3
 #34=Ashes-Rough
 #35=Ashes-Ridge
