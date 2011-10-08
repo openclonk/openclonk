@@ -7,9 +7,10 @@ protected func Construction()
 		SetGraphics(Format("%d",graphic));
 }
 
-protected func Hit()
+protected func Hit(x, y)
 {
-	Sound("RockHit*");
+	StonyObjectHit(x,y);
+	return true;
 }
 
 local Collectible = 1;

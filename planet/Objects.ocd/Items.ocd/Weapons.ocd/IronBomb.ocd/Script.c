@@ -60,7 +60,11 @@ func DoExplode()
 	Explode(14);
 }
 
-protected func Hit() { Sound("RockHit*"); }
+protected func Hit(x, y)
+{
+	StonyObjectHit(x,y);
+	return true;
+}
 
 protected func Incineration() { Extinguish(); Fuse(); }
 

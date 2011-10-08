@@ -187,3 +187,31 @@ global func FxIntGrowthTimer(object obj, effect)
 	return -done;
 }
 
+global func StonyObjectHit(int x, int y)
+{
+	// Failsafe
+	if (!this) return false;
+	var xdir = GetXDir(), ydir = GetYDir();
+	if(x) x = x / Abs(x);
+	if(y) y = y / Abs(y);
+	// Check for solid in hit direction
+	var i = 0;
+	var average_obj_size = Distance(0,0, GetObjWidth(), GetObjHeight()) / 2 + 2;
+	while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	// To catch some high speed cases: if no solid found, check directly beneath
+	if (!GBackSolid(x*i, y*i))
+	{
+		x = 0;
+		y = 1;
+		i = 0;
+		while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
+	}
+	// Check if digfree
+	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
+		return Sound("RockHit*");
+	// Else play standard sound
+	if (Distance(0,0,xdir,ydir) > 10)
+			return Sound("SoftTouch*.ogg");
+		else
+			return Sound("SoftHit*.ogg");
+}
