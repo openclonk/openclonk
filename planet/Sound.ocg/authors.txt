@@ -42,3 +42,4 @@ Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106640/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 Stickinthemud	- BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
+Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
