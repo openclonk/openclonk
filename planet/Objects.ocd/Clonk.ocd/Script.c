@@ -793,6 +793,19 @@ func GetCurrentWalkAnimation()
 	return Clonk_WalkRun;
 }
 
+func Footstep()
+{
+	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
+		Sound("StepHard*.ogg");
+	else
+	{
+		var dir = GetXDir() / Abs(GetXDir());
+		var clr = GetAverageTextureColor(GetTexture(0,10));
+		CreateParticle("Dust", dir*-4, 9, dir*-2, -1, 15+Random(5), DoRGBaValue(clr,-200,0));
+		Sound("StepSoft*.ogg");
+	}
+}
+
 func GetWalkAnimationPosition(string anim, int pos)
 {
 	var dir = -1;
@@ -873,6 +886,7 @@ func FxIntWalkTimer(pTarget, effect)
 	// The clonk has to stand, not making a pause animation yet and not doing other actions with the hands (e.g. loading the bow)
 	else if(anim == Clonk_WalkStand && !GetHandAction())
 	{
+		if (effect.footstop_time) effect.footstep_time = 0;
 		if(!effect.idle_animation_time)
 		{
 			effect.idle_time++;
@@ -894,6 +908,16 @@ func FxIntWalkTimer(pTarget, effect)
 			effect.animation_name = nil;
 			effect.idle_animation_time = 0;
 		}
+		if (anim == Clonk_WalkRun)
+		{
+			effect.footstep_time++;
+			if (effect.footstep_time == 12)
+			{
+				Footstep();
+				effect.footstep_time = 0;
+			}
+		}
+		else if(effect.footstep_time) effect.footstep_time = 0;
 	}
 }
 
