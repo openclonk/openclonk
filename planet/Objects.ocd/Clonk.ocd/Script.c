@@ -179,6 +179,13 @@ protected func CheckStuck()
 			SetPosition(GetX(), GetY() + 1);
 }
 
+public func Eat(object food)
+{
+	DoEnergy(food->NutritionalValue());
+	food->RemoveObject();
+	Sound("Munch*.ogg");
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other

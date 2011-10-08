@@ -44,9 +44,10 @@ public func GetInteractionMetaInfo(object clonk)
 
 protected func ControlUse(object clonk, int iX, int iY)
 {
-	clonk->DoEnergy(10);
-	RemoveObject();
+	clonk->Eat(this);
 }
+
+public func NutritionalValue() { return 5; }
 
 local Name = "$Name$";
 local Collectible = 0;
