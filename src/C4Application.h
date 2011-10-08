@@ -110,7 +110,6 @@ public:
 	C4ApplicationGameTimer();
 private:
 	unsigned int iLastGameTick, iGameTickDelay;
-	bool fRecursing;
 public:
 	void SetGameTickDelay(uint32_t iDelay);
 

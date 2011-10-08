@@ -252,7 +252,7 @@ public:
 class C4PacketControlPkt : public C4PacketBase
 {
 public:
-	C4PacketControlPkt() { }
+	C4PacketControlPkt() : eDelivery(CDT_Queue) { }
 	C4PacketControlPkt(enum C4ControlDeliveryType eDelivery, const C4IDPacket &Ctrl)
 			: eDelivery(eDelivery), Ctrl(Ctrl)
 	{ }

@@ -979,9 +979,9 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		ALLOC_UNIT(hUniforms[C4LRU_MaterialTex], GL_TEXTURE_3D);
 
 		// Decide which mip-map level to use
-		double z = 1.5; int iMM = 0;
+		double z = 2.0; int iMM = 0;
 		while(pGL->Zoom < z && iMM + 1 <C4LR_MipMapCount)
-			{ z /= 2; iMM++; } 
+			{ z /= 2; iMM++; }
 		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

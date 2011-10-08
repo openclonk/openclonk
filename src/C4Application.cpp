@@ -62,7 +62,8 @@ C4Application::C4Application():
 		NoSplash(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
-		AppState(C4AS_None)
+		AppState(C4AS_None),
+		pGameTimer(NULL)
 {
 }
 
