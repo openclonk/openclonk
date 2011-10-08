@@ -368,7 +368,8 @@ func Footstep()
 	{
 		var dir = GetXDir() / Abs(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
-		CreateParticle("Dust", dir*-4, 9, dir*-2, -1, 15+Random(5), DoRGBaValue(clr,-200,0));
+		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
+		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
 		Sound("StepSoft*.ogg");
 	}
 }
@@ -995,11 +996,25 @@ func Hit(int iXSpeed, int iYSpeed)
 		if(Abs(iXSpeed) > 130 && iYSpeed <= 80 * 10)
 			SetAction("Roll");
 		else
+		{
 			DoKneel();
+			if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
+			{
+				var clr = GetAverageTextureColor(GetTexture(0,10));
+				for(var i = -3; i < 4; i++)
+					CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+			}
+		}
 	}
 	else
 	{
 		DoKneel();
+		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
+		{
+			var clr = GetAverageTextureColor(GetTexture(0,10));
+			for(var i = -3; i < 4; i++)
+				CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+		}
 	}
 }
 
@@ -1051,6 +1066,14 @@ func FxRollingTimer(object target, int num, int timer)
 		SetAction("Walk");
 		rolldir = nil;
 		return -1;
+	}
+
+	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
+	{
+		var clr = GetAverageTextureColor(GetTexture(0,10));
+		var dir = GetDir()*2-1;
+		CreateParticle("Dust2", dir*-3, 8, dir*-3, -3, 60+Random(10), DoRGBaValue(clr,-150,0));
+		CreateParticle("Dust2", dir*-2, 8, dir*-2, -4, 60+Random(10), DoRGBaValue(clr,-150,0));
 	}
 }
 
