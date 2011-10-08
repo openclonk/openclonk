@@ -1,0 +1,3 @@
+Name=Samen
+Description=Zum Anpflanzen von Weizen.
+NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!
