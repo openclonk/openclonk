@@ -1335,3 +1335,17 @@ protected func AbortHangOnto()
 		GetActionTarget(0)->~HangOntoLost(this);
 	return;
 }
+
+/*--
+	Eat
+
+	Plays the animation
+--*/
+
+func StartEat()
+{
+	// Nom nom
+	PlayAnimation("Eat", 10, Anim_Linear(0,0, GetAnimationLength("Eat"), 45, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+}

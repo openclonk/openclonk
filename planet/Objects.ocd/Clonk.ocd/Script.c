@@ -184,6 +184,7 @@ public func Eat(object food)
 	DoEnergy(food->NutritionalValue());
 	food->RemoveObject();
 	Sound("Munch*.ogg");
+	SetAction("Eat");
 }
 
 /* Status */
@@ -854,6 +855,22 @@ HangOnto = {
 	StartCall = "StartHangOnto",
 	AbortCall = "AbortHangOnto",
 	InLiquidAction = "Swim",
+},
+Eat = {
+	Prototype = Action,
+	Name = "Eat",
+	Procedure = DFA_NONE,
+	Directions = 2,
+	Length = 1,
+	Delay = 45,
+	X = 0,
+	Y = 0,
+	Wdt = 8,
+	Hgt = 20,
+	StartCall = "StartEat",
+	NextAction = "Walk",
+	InLiquidAction = "Swim",
+	Attach=CNAT_Bottom,
 },
 };
 local Name = "Clonk";
