@@ -37,6 +37,13 @@ local turn_forced;
 
 static const CLONK_TurnTime = 10;
 
+func SetMeshTransformation() { return _inherited(...); }
+func UpdateAttach() { return _inherited(...); }
+func GetHandAction() { return _inherited(...); }
+func DoThrow() { return _inherited(...); }
+
+local ActMap;
+
 func SetTurnForced(int dir)
 {
 	turn_forced = dir+1;
@@ -885,7 +892,6 @@ func FxIntSwimStart(pTarget, effect, fTmp)
 	SetTurnType(0);
 	// Update carried items
 	UpdateAttach();
-	SetAnimationWeight(iTurnKnot2, Anim_Const(1000));
 }
 
 func FxIntSwimTimer(pTarget, effect, iTime)
