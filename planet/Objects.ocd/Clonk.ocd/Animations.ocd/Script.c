@@ -30,7 +30,7 @@
 	The clonk turns around, when he changes dir.
 --*/
 
-local iLastTurn;
+local turn_type;
 local iTurnSpecial;
 
 local turn_forced;
@@ -57,9 +57,8 @@ func FxIntTurnStart(pTarget, effect, fTmp)
 	if(effect.dir == COMD_Right) iTurnPos = 1;
 
 	effect.curr_rot = 24;
-	effect.var1 = 0;
 	effect.rot = 25;
-	effect.var5 = -1;
+	effect.turn_type = -1;
 	SetTurnType(0);
 }
 
@@ -67,26 +66,26 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	var iRot = effect.rot;
-	if( (effect.dir != GetDirection() || effect.var5 != iLastTurn) && GetAction() != "Jump")
+	if( (effect.dir != GetDirection() && GetAction() != "Jump") || effect.turn_type != turn_type) 
 	{
 		effect.dir = GetDirection();
 		if(effect.dir == COMD_Right)
 		{
-			if(iLastTurn == 0)
+			if(turn_type == 0)
 				iRot = 180-25;
-			if(iLastTurn == 1)
+			if(turn_type == 1)
 				iRot = 180;
 		}
 		else
 		{
-			if(iLastTurn == 0)
+			if(turn_type == 0)
 				iRot = 25;
-			if(iLastTurn == 1)
+			if(turn_type == 1)
 				iRot = 0;
 		}
 		// Save new ComDir
 		effect.dir = GetDirection();
-		effect.var5 = iLastTurn;
+		effect.turn_type = turn_type;
 		// Notify effects
 //		ResetAnimationEffects();
 	}
@@ -103,9 +102,9 @@ public func GetTurnPhase()
 {
 	var iEff = GetEffect("IntTurn", this);
 	var iRot = iEff.curr_rot;
-	if(iLastTurn == 0)
+	if(turn_type == 0)
 		return (iRot-25)*100/130;
-	if(iLastTurn == 1)
+	if(turn_type == 1)
 		return iRot*100/180;
 }
 
@@ -118,14 +117,14 @@ func SetTurnType(iIndex, iSpecial)
 		if(iSpecial == -1) // Reset special turn (here the iIndex is ignored)
 		{
 			iTurnSpecial = 0;
-			SetTurnType(iLastTurn);
+			SetTurnType(turn_type);
 			return;
 		}
 	}
 	else
 	{
 		// Standart turn? Save and do nothing if we are blocked
-		iLastTurn = iIndex;
+		turn_type = iIndex;
 		if(iTurnSpecial) return;
 	}
 	return;
