@@ -98,6 +98,12 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 	return;
 }
 
+public func UpdateTurnRotation()
+{
+	var iEff = GetEffect("IntTurn", this);
+	iEff.turn_type = -1;
+}
+
 public func GetTurnPhase()
 {
 	var iEff = GetEffect("IntTurn", this);

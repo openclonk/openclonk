@@ -175,10 +175,30 @@ public func FxIntGrappleControlControl(object target, fxnum, ctrl, x,y,strength,
 	if(ctrl == CON_Right)
 	{
 		fxnum.mv_right = !release;
+		if(release)
+		{
+		  if(fxnum.lastkey == CON_Right)
+		  {
+		    target->SetDir(0);
+		    target->UpdateTurnRotation();
+		  }
+		  fxnum.lastkey = CON_Right;
+		  fxnum.keyTimer = 10;
+		}
 	}
 	if(ctrl == CON_Left)
 	{
 		fxnum.mv_left = !release;
+		if(release)
+		{
+		  if(fxnum.lastkey == CON_Left)
+		  {
+		    target->SetDir(1);
+		    target->UpdateTurnRotation();
+		  }
+		  fxnum.lastkey = CON_Left;
+		  fxnum.keyTimer = 10;
+		}
 	}
 	if(ctrl == CON_Up)
 	{
@@ -209,6 +229,12 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	if (target->Contained())
 		return -1;
 		
+	if(fxnum.keyTimer)
+	{
+	  fxnum.keyTimer--;
+	  if(fxnum.keyTimer == 0)
+	    fxnum.lastkey = 0;
+	}
 	// Movement.
 	if (fxnum.mv_up)
 		if (rope)
