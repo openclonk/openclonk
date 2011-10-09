@@ -444,7 +444,7 @@ func FxIntWalkTimer(pTarget, effect)
 			effect.animation_name = nil;
 	}
 	var anim = GetCurrentWalkAnimation();
-	if(anim != effect.animation_name && !effect.var4)
+	if(anim != effect.animation_name)
 	{
 		effect.animation_name = anim;
 		effect.idle_time = 0;
@@ -562,7 +562,6 @@ func FxIntScaleTimer(target, number, time)
 		{
 			number.animation_id = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.animation_mode = 1;
-			number.var2 = COMD_Up;
 		}
 		this.dist = dist;
 		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000));
@@ -591,10 +590,10 @@ func FxIntScaleTimer(target, number, time)
 	// If not play the normal scale animation
 	else if(number.animation_mode != 0)
 	{
-		if(number.var3)
+		if(number.ScheduleStop)
 		{
 			SetComDir(COMD_Stop);
-			number.var3 = 0;
+			number.ScheduleStop = 0;
 		}
 		var pos = 0;
 		if(number.animation_mode == 2) pos = GetAnimationPosition(number.animation_id);
@@ -657,7 +656,7 @@ func FxIntScaleStop(target, number, reason, tmp)
 	// Set the animation to stand without blending! That's cause the animation of Scale moves the clonkmesh wich would result in a stange blend moving the clonk around while blending
 /*	if(number.animation_mode == 1) PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Const(1000));
 	// Finally stop if the user has scheduled a stop
-	if(number.var3) SetComDir(COMD_Stop);*/
+	if(number.ScheduleStop) SetComDir(COMD_Stop);*/
 	// and reset the transform
 	SetScaleRotation(0);
 //	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0);
@@ -1096,7 +1095,7 @@ func StopDigging()
 func FxIntDigStart(pTarget, effect, fTmp)
 {
 	if(fTmp) return;
-	effect.var1 = PlayAnimation("Dig", 5, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation("Dig", 5, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	// Update carried items
 	UpdateAttach();
