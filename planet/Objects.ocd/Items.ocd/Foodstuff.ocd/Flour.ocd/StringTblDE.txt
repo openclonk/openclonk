@@ -1,0 +1,2 @@
+Name=Mehl
+Description=Aus Getreide gewonnen, liefert Mehl den Grundstoff für Backwaren.

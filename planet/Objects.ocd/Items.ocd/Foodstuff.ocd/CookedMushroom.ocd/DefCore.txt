@@ -1,0 +1,14 @@
+[DefCore]
+id=CookedMushroom
+Version=5,2,0,1
+Category=C4D_Object
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexX=0,0
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Components=Mushroom=1
+Mass=6

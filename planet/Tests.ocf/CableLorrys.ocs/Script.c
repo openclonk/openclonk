@@ -16,6 +16,7 @@ protected func Initialize()
 	var c3 = CreateObject(CableCrossing, 585, 415);
 	var c4 = CreateObject(CableCrossing, 555, 385);
 	var cabin = CreateObject(WoodenCabin, 490, 390);
+	CreateObject(LiftTower, 935, 360);
 
 	CreateObject(CableLine)->SetConnectedObjects(workshop, c1);
 	CreateObject(CableLine)->SetConnectedObjects(c1, c2);

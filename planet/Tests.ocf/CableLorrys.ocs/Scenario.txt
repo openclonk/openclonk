@@ -33,7 +33,7 @@ Crew=Clonk=1
 Knowledge=WoodenCabin=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;CableCrossing=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;DynamiteBox=1;
 
 [Landscape]
-Vegetation=TRE1=1;TRE2=2;TRE3=1;TRE4=1
+Vegetation=Mushroom=1
 VegetationLevel=100,0,0,100
 InEarth=Rock=1;Gold=1;Firestone=1;Loam=1
 InEarthLevel=65,0,0,100
