@@ -161,6 +161,11 @@ void CStdApp::RestoreVideoMode()
 {
 }
 
+StdStrBuf CStdApp::GetGameDataPath()
+{
+	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
+}
+
 #endif
 
 bool IsGermanSystem()

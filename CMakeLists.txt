@@ -1297,12 +1297,21 @@ set(OC_C4GROUPS
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
 get_target_property(CLONK_LOCATION clonk LOCATION)
 foreach(group ${OC_C4GROUPS})
-	add_custom_command(
-		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-		COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
-		DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-		VERBATIM
-	)
+	if (APPLE)
+		add_custom_command(TARGET clonk
+			POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
+			"${C4GROUP_LOCATION}"
+			"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
+			DEPENDS c4group
+			)
+	else()
+		add_custom_command(
+			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+			COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
+			DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+			VERBATIM
+			)
+	endif()
 endforeach()
 
 find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
