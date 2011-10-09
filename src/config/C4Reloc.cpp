@@ -37,10 +37,14 @@ void C4Reloc::Init()
 	AddPath(::Application.GetGameDataPath().getData());
 #else
 	AddPath(Config.General.ExePath.getData());
+#endif
+
+	AddPath(Config.General.UserDataPath);
+
+#ifndef USE_COCOA
 	AddPath(Config.General.SystemDataPath);
 #endif
 	
-	AddPath(Config.General.UserDataPath);
 }
 
 bool C4Reloc::AddPath(const char* path)
