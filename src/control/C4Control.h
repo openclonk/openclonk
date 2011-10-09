@@ -351,7 +351,7 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(0), ty(0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
+	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
 	~C4ControlEMMoveObject();

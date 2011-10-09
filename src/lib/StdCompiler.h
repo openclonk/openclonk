@@ -50,7 +50,7 @@ class StdCompiler
 
 public:
 
-	StdCompiler() : pWarnCB(NULL), pWarnData(NULL),
+	StdCompiler() : pWarnCB(NULL), pWarnData(NULL)
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 			, fFailSafe(false), fFail(false)
 #endif
@@ -691,7 +691,7 @@ protected:
 		// Constructor
 		NameNode(NameNode *pParent = NULL)
 				: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
-				Indent(-1), Pos(NULL), Secton(false)
+				Indent(-1), Pos(NULL), Section(false)
 		{ }
 	};
 	NameNode *pNameRoot, *pName;
