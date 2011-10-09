@@ -17,15 +17,12 @@ public func Construction()
 
 /*-- Production --*/
 
-public func IsProduct(id product_id)
+private func IsProduct(id product_id)
 {
 	return product_id->~IsFoundryProduct();
 }
-
-public func GetProducts()
-{
-	return [Metal];	
-}
+private func ProductionTime() { return 290; }
+private func FuelNeed(id product) { return 100; }
 
 public func NeedsRawMaterial(id rawmat_id)
 {
@@ -34,41 +31,24 @@ public func NeedsRawMaterial(id rawmat_id)
 	return false;
 }
 
-public func IsProducing()
-{
-	if (GetEffect("Smelting", this))
-		return true;
-	return false;
-}
 
-private func Produce(id item_id)
+public func OnProductionStart(id product)
 {
-	// Check if material is available.
-	if (item_id == Metal)
-		if (!FindContents(Ore))
-			return false;
-	// Check if fuel is available, TODO: oil
-	if (ContentsCount(Wood) < 2 &&  !FindContents(Coal))
-		return false;
-	// If already busy, wait a little.
-	if (IsProducing())
-		return false;
-	// Start production.	
-	AddEffect("Smelting",this,1,1,this);
+	AddEffect("Smelting", this, 100, 1, this);
 	Sound("FurnaceStart.ogg");
-	AddEffect("IntSoundDelay",this,1,1,this);
-	return true;
+	return;
 }
 
-private func ProductionCosts(id item_id)
+public func OnProductionHold(id product)
 {
-	if (item_id == Metal)
-		return [[Ore, 1],[Coal, 1]];
-
-	return _inherited(item_id, ...);
+	return;
 }
 
-local cast = 0;
+public func OnProductionFinish(id product)
+{
+	RemoveEffect("Smelting", this);
+	return;
+}	
 
 protected func Collection()
 {
@@ -76,90 +56,53 @@ protected func Collection()
 	return;
 }
 
-public func FxSmeltingStart(object target, num, int temporary)
+public func FxSmeltingTimer(object target, proplist effect, int time)
 {
-	FindContents(Ore)->RemoveObject();
-
-	//Use coal as firing material
-	var coal = FindContents(Coal);
-	if(coal)
-	{
-		coal->RemoveObject();
-		return;
-	}
-
-	//Use wood as firing material
-	if(ContentsCount(Wood) >= 2)
-	{
-		FindContents(Wood)->RemoveObject();
-		FindContents(Wood)->RemoveObject();
-		return;
-	}
-}
-
-public func FxSmeltingTimer(object target, num, int timer)
-{
-	Message(Format("Smelting %d",timer));
-	//Visuals
-	//Fire
+	//Message(Format("Smelting %d",timer));
+	// Fire in the furnace.
 	CreateParticle("Fire",10,20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 
-	//Smoke
+	// Smoke from the pipes.
 	CreateParticle("ExploSmoke",9,-35,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,125),RGBa(255,255,255,50));
 	CreateParticle("ExploSmoke",16,-33,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,90),RGBa(255,255,255,50));
-
 	
-	if(timer == 244)
-	{
-		//Pour
-		SetMeshMaterial("MetalFlow",1);
-	}
+	// Furnace sound after some time.
+	if (time == 100)
+		Sound("FurnaceLoop.ogg", false, 100, nil, +1);
+
+	// Pour after some time.
+	if(time == 244)
+		SetMeshMaterial("MetalFlow", 1);
 
 	//Molten metal hits cast... Sizzling sound
-	if(timer == 256) Sound("Sizzle.ogg");
+	if (time == 256)
+		Sound("Sizzle.ogg");
 
-	if(timer > 244 && timer < 290)
-	{
+	// Fire from the pouring exit.
+	if (Inside(time, 244, 290))
 		CreateParticle("Fire",-17,14,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
-	}
 
-	if(timer == 290)
+	if (time == 290)
 	{
-		SetMeshMaterial("Metal",1);
-		cast = 1;
-		AddEffect("EjectMetal",this, 1, 1, this);
-		Sound("FurnaceLoop.ogg",false,100,nil,-1);
+		SetMeshMaterial("Metal", 1);
+		Sound("FurnaceLoop.ogg", false ,100, nil, -1);
 		Sound("FurnaceStop.ogg");
 		return -1;
 	}
+	return 1;
 }
 
-public func FxEjectMetalTimer(object target, num, int timer)
+public func OnProductEjection(object product)
 {
-	if(timer > 24)
-	{
-		var metal = CreateObject(Metal, -20, 16);
-		metal->SetSpeed(0,-17);
-		metal->SetR(30 - Random(59));
-		//metal->Enter(this);
-		Sound("Pop.ogg");
-		cast = 0;
-		return -1;
-	}
-}
-
-public func FxIntSoundDelayTimer(object target, num, int timer)
-{
-	if(timer >= 100)
-	{
-		Sound("FurnaceLoop.ogg",false,100,nil,+1);
-		return -1;
-	}
+	product->SetPosition(GetX() - 20, GetY() + 16);
+	product->SetSpeed(0, -17);
+	product->SetR(30 - Random(59));
+	Sound("Pop.ogg");
+	return;
 }
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
-
 local Touchable = 2;
 local Name = "$Name$";

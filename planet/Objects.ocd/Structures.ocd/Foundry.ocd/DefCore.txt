@@ -11,7 +11,6 @@ VertexY=-20,-20,25,25,25
 VertexFriction=50,50,100,100,100
 Value=200
 Mass=4500
-GrabPutGet=3
 Components=Rock=6;Wood=2;
 Collection=18,5,10,10
 Exclusive=1

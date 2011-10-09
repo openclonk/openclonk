@@ -12,7 +12,7 @@ VertexFriction=50,50,100,100
 Value=200
 Mass=4500
 Components=Wood=6;Metal=3
-Entrance=-8,0,25,20
+Collection=18,5,10,10
 Exclusive=1
 BlastIncinerate=100
 Construction=1

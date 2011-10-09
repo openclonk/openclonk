@@ -1,7 +1,9 @@
 /**
 	Producer
-	Library for types of structures that produce objects.
-	Should ideally be included by all producers.
+	Library for production facilities. This library handles the automatic production of 
+	items in structures. The library provides the interface for the player, checks for 
+	components, need for liquids or fuel and power. Then handles the production process and may in the future
+	provide an interface with other systems (e.g. railway).
 	
 	@author Maikel
 */
@@ -33,7 +35,7 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-/*-- Interaction --*/
+/*-- Player interface --*/
 
 public func IsInteractable() { return GetCon() >= 100; }
 
@@ -78,13 +80,13 @@ protected func OnProductSelection(id product, int par, bool alt)
 }
 
 
-/* Production */
+/*-- Production  properties --*/
 
 /** Determines whether the product specified can be produced. Should be overloaded by the producer.
 	@param product_id item's id of which to determine if it is producible.
 	@return \c true if the item can be produced, \c false otherwise.
 */
-public func IsProduct(id product_id)
+private func IsProduct(id product_id)
 {
 	return false;
 }
@@ -96,22 +98,6 @@ public func IsProduct(id product_id)
 public func NeedsRawMaterial(id rawmat_id)
 {
 	return false; // Obsolete for now.
-}
-
-private func Produce(id item_id)
-{
-
-	return false;
-}
-
-public func IsProducing()
-{
-	return false;
-}
-
-public func GetProducts()
-{
-	return [];
 }
 
 /**
@@ -133,7 +119,7 @@ private func ProductionCosts(id item_id)
 	return comp_list;
 }
 
-/* Production queue */
+/*-- Production queue --*/
 
 /** Adds an item to the production queue.
 	@param item_id id of the item.
@@ -221,6 +207,157 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 	return 1;
 }
 
+/*-- Production --*/
+
+private func ProductionTime() { return 0; }
+private func FuelNeed(id product) { return 0; }
+private func LiquidNeed(id product) { return 0; }
+private func PowerNeed(id product) { return 0; }
+
+private func Produce(id product)
+{
+	// Already producing? Wait a little.
+	if (IsProducing())
+		return false;	
+		
+	// Check if components are available.
+	if (!CheckComponents(product))
+		return false;	
+	// Check need for fuel.
+	if (!CheckFuel(product))
+		return false;	
+	// Check need for liquids.
+	if (!CheckLiquids(product))
+		return false;	
+	// Check need for power.
+	if (!CheckForPower(product))
+		return false;	
+
+	// Everything available? Start production.
+	// Remove needed components, fuel and liquid.
+	CheckComponents(product, true);
+	CheckFuel(product, true);
+	
+	// Add production effect.
+	var effect = AddEffect("ProcessProduction", this, 100, 2, this);
+	effect.Product = product;
+
+	return true;
+}
+
+private func CheckComponents(id product, bool remove)
+{
+	for (var item in ProductionCosts(product))
+	{
+		var mat_id = item[0];
+		var mat_cost = item[1];
+		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
+		if (mat_av < mat_cost)
+			return false; // Components missing.
+		else if (remove)
+		{
+			for (var i = 0; i < mat_cost; i++)
+				 FindObject(Find_Container(this), Find_ID(mat_id))->RemoveObject();
+		}
+	}
+	return true;
+}
+
+private func CheckFuel(id product, bool remove)
+{
+	if (FuelNeed(product) > 0)
+	{
+		var fuel_amount = 0;
+		// Find fuel in producers.
+		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
+			fuel_amount += fuel->~GetFuelAmount();
+		if (fuel_amount < FuelNeed(product))
+			return false;
+		else if (remove)
+		{
+			// Remove the fuel needed.
+			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
+			{
+				fuel_amount += fuel->~GetFuelAmount();
+				fuel->RemoveObject();
+				if (fuel_amount >= FuelNeed(product))
+					break;
+			}			
+		}
+	}
+	return true;
+}
+
+private func CheckLiquids(id product, bool remove)
+{
+	// TODO
+	return true;
+}
+
+private func CheckForPower(id product)
+{
+	// TODO
+	return true;
+}
+
+private func IsProducing()
+{
+	if (GetEffect("ProcessProduction", this))
+		return true;
+	return false;
+}
+
+protected func FxProcessProductionStart(object target, proplist effect, int temporary)
+{
+	if (temporary != 0)
+		return 1;
+		
+	// Set production duration to zero.
+	effect.Duration = 0;
+	
+	// Callback to the producer.
+	this->~OnProductionStart(effect.Product);
+	
+	return 1;
+}
+
+protected func FxProcessProductionTimer(object target, proplist effect, int time)
+{
+
+
+
+
+	// Hold production if energy is not available, callback to the producer.
+	// this->~OnProductionHold(effect.Product);
+	
+	
+	
+	// Add effect interval to production duration.
+	effect.Duration += effect.Interval;
+	
+	// Check if production time has been reached.
+	if (effect.Duration >= ProductionTime())
+		return -1;
+	
+	return 1;
+}
+
+protected func FxProcessProductionStop(object target, proplist effect, int reason)
+{
+	if (reason != 0)
+		return 1;
+	// Callback to the producer.
+	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
+	this->~OnProductionFinish(effect.Product);
+	// Create product. 	
+	var product = CreateObject(effect.Product);
+	this->~OnProductEjection(product);
+
+	return 1;
+}
+
+/*-- --*/
+
 /**
 	Determines whether there is sufficient material to produce an item.
 */
@@ -260,7 +397,7 @@ public func RequestObject(id obj_id, int amount)
 	return _inherited(obj_id, amount, ...);
 }
 
-/* Storage */
+/*-- Storage --*/
 
 protected func RejectCollect(id item, object obj)
 {
