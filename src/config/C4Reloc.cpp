@@ -19,6 +19,7 @@
 #include <C4Reloc.h>
 
 #include <C4Config.h>
+#include <C4Application.h>
 
 C4Reloc Reloc; // singleton
 
@@ -31,9 +32,15 @@ void C4Reloc::Init()
 	// but for distribution it might make sense to disable it.
 	// TODO: We might also want to add ExePath/planet if it exists, so that we don't
 	// need to run the engine in planet/.
+
+#ifdef USE_COCOA
+	AddPath(::Application.GetGameDataPath().getData());
+#else
 	AddPath(Config.General.ExePath.getData());
-	AddPath(Config.General.UserDataPath);
 	AddPath(Config.General.SystemDataPath);
+#endif
+	
+	AddPath(Config.General.UserDataPath);
 }
 
 bool C4Reloc::AddPath(const char* path)

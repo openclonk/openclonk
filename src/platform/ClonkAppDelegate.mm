@@ -99,7 +99,6 @@
 {
 	if (!([self argsLookLikeItShouldBeInstallation] && [self installAddOn]))
 	{
-		[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
 		[NSApp activateIgnoringOtherApps:YES];
 
 		[self makeFakeArgs];

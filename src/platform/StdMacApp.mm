@@ -86,7 +86,7 @@ bool CStdApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-
+	
 	// Custom initialization
 	return DoInit (argc, argv);
 }
@@ -159,6 +159,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 
 void CStdApp::RestoreVideoMode()
 {
+}
+
+StdStrBuf CStdApp::GetGameDataPath()
+{
+	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
 }
 
 #endif

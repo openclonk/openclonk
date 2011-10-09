@@ -177,6 +177,7 @@ protected:
 #  endif
 #ifdef USE_COCOA
 	void HandleNSEvent(/*NSEvent*/void* event);
+	StdStrBuf GetGameDataPath();
 #endif
 	const char * Location;
 	pthread_t MainThread;
