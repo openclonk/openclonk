@@ -128,7 +128,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 #ifdef HAVE_ICONV
 		StdStrBuf Line = Languages.IconvSystem(TimeMessage.getData());
 #else
-		StdStrBuf &Line = TimeMessage;
+		const StdStrBuf &Line = TimeMessage;
 #endif
 
 		// Save into log file
@@ -141,7 +141,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		// Save into record log file, if available
 		if(Control.GetRecord())
 		{
-			Control.GetRecord()->GetLogFile()->Write(Line.getData(), Line.getLength());
+			Control.GetRecord()->GetLogFile()->Write(Line.getData(), strlen(Line.getData()));
 			#ifdef IMMEDIATEREC
 				Control.GetRecord()->GetLogFile()->Flush();
 			#endif

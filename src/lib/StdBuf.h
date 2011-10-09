@@ -454,7 +454,7 @@ public:
 		~wchar_t_holder() { delete[] p; }
 		operator wchar_t * () { return p; }
 	};
-	wchar_t_holder GetWideChar();
+	wchar_t_holder GetWideChar() const;
 	StdBuf GetWideCharBuf();
 #endif
 
