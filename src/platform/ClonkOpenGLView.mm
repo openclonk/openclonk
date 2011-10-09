@@ -127,7 +127,7 @@
 	if ([self.window isMiniaturized] || ![self.window isVisible])
 		return;
 	//[self.context update];
-	CStdWindow* stdWindow = self.controller.stdWindow;
+	C4Window* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
 		stdWindow->PerformUpdate();
@@ -514,12 +514,12 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-void CStdWindow::EnumerateMultiSamples(std::vector<int>& samples) const
+void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
 	[ClonkOpenGLView enumerateMultiSamples:samples];
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
 	NSWindow* window = controller.window;
@@ -534,7 +534,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return true;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -637,7 +637,7 @@ bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	return true;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
 {
 	return false;//return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }

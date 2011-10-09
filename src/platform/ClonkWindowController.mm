@@ -124,7 +124,7 @@
 	}
 }
 
-- (void) setStdWindow:(CStdWindow*)window
+- (void) setStdWindow:(C4Window*)window
 {
 	stdWindow = window;
 }

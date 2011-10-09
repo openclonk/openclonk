@@ -29,7 +29,7 @@
 
 #include "C4App.h"
 
-bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
 	[pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
@@ -42,7 +42,7 @@ bool CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
 	return true;
 }
 
-StdStrBuf CStdApp::Paste(bool fClipboard)
+StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
 	if (fClipboard)
 	{
@@ -53,36 +53,36 @@ StdStrBuf CStdApp::Paste(bool fClipboard)
 	return StdStrBuf(0);
 }
 
-bool CStdApp::IsClipboardFull(bool fClipboard)
+bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return [[NSPasteboard generalPasteboard] availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
 }
 
-void CStdApp::ClearClipboard(bool fClipboard)
+void C4AbstractApp::ClearClipboard(bool fClipboard)
 {
 	[[NSPasteboard generalPasteboard] declareTypes:[NSArray array] owner:nil];
 }
 
-void CStdApp::MessageDialog(const char * message)
+void C4AbstractApp::MessageDialog(const char * message)
 {
 	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithUTF8String:message]];
 	[alert runModal];
 }
 
-void CStdWindow::FlashWindow()
+void C4Window::FlashWindow()
 {
 	[NSApp requestUserAttention:NSCriticalRequest];
 }
 
 #ifdef USE_COCOA
 
-CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
  
-CStdApp::~CStdApp() {}
+C4AbstractApp::~C4AbstractApp() {}
 
-bool CStdApp::Init(int argc, char * argv[])
+bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
@@ -92,14 +92,14 @@ bool CStdApp::Init(int argc, char * argv[])
 }
 
 
-void CStdApp::Clear() {}
+void C4AbstractApp::Clear() {}
 
-void CStdApp::Quit()
+void C4AbstractApp::Quit()
 {
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::FlushMessages()
+bool C4AbstractApp::FlushMessages()
 {
 	// Always fail after quit message
 	if(fQuitMsgReceived)
@@ -114,7 +114,7 @@ bool CStdApp::FlushMessages()
 	return true;
 }
 
-void CStdApp::HandleNSEvent(void* event)
+void C4AbstractApp::HandleNSEvent(void* event)
 {
 	NSEvent* the_event = (NSEvent*)event;
 	KeyMask = [the_event modifierFlags] & (MK_SHIFT|MK_CONTROL); // MK_* and NS*KeyMask values correspond
@@ -139,7 +139,7 @@ static int32_t bitDepthFromPixelEncoding(CFStringRef encoding)
 		return -1; // fail
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
+bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
 	// No support for multiple monitors.
 	CFArrayRef array = CGDisplayCopyAllDisplayModes(iMonitor, NULL);
@@ -157,11 +157,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return good_index;
 }
 
-void CStdApp::RestoreVideoMode()
+void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-StdStrBuf CStdApp::GetGameDataPath()
+StdStrBuf C4AbstractApp::GetGameDataPath()
 {
 	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
 }

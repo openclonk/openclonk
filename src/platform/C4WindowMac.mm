@@ -29,30 +29,30 @@
 
 #define ctrler ((ClonkWindowController*)this->controller)
 
-CStdWindow::CStdWindow ():
+C4Window::C4Window ():
 	Active(false),
 	pSurface(0),
 	controller(nil) 
 {}
 
-CStdWindow::~CStdWindow () {}
+C4Window::~C4Window () {}
 
-static NSString* windowNibNameForWindowKind(CStdWindow::WindowKind kind)
+static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
 {
 	switch (kind)
 	{
-	case CStdWindow::W_GuiWindow:
+	case C4Window::W_GuiWindow:
 		return @"ConsoleGUIWindow";
-	case CStdWindow::W_Fullscreen:
+	case C4Window::W_Fullscreen:
 		return @"FullscreenWindow";
-	case CStdWindow::W_Viewport:
+	case C4Window::W_Viewport:
 		return @"ClonkWindow";
 	default:
 		return nil;
 	}
 }
 
-CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 
@@ -65,7 +65,7 @@ CStdWindow * CStdWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp,
 	return this;
 }
 
-void CStdWindow::Clear()
+void C4Window::Clear()
 {
 	// Destroy window
 	ClonkWindowController* controller;
@@ -80,13 +80,13 @@ void CStdWindow::Clear()
 	}
 }
 
-bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
+bool C4Window::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
 {
 	[ctrler setWindowFrameAutosaveName:[NSString stringWithFormat:@"%s_%s", szWindowName, szSubKey]];
 	return true;
 }
 
-bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
+bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
 {
 	StorePosition(szWindowName, szSubKey, true);
 	if (fHidden)
@@ -96,14 +96,14 @@ bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey,
 	return true;
 }
 
-void CStdWindow::SetTitle(const char *szToTitle)
+void C4Window::SetTitle(const char *szToTitle)
 {
 	ClonkWindowController* controller;
 	if ((controller = ctrler) && controller.window)
 		[controller.window setTitle:[NSString stringWithUTF8String:szToTitle ? szToTitle : ""]];
 }
 
-bool CStdWindow::GetSize(C4Rect * pRect)
+bool C4Window::GetSize(C4Rect * pRect)
 {
 	ClonkWindowController* controller = ctrler;
 	NSView* view = controller.openGLView ? controller.openGLView : controller.window.contentView;
@@ -115,7 +115,7 @@ bool CStdWindow::GetSize(C4Rect * pRect)
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
+void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	ClonkWindowController* controller = ctrler;
 	if (controller.window)
@@ -125,16 +125,16 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
 	}
 }
 
-void CStdWindow::HandleMessage(void*)
+void C4Window::HandleMessage(void*)
 {
 }
 
-void CStdWindow::RequestUpdate()
+void C4Window::RequestUpdate()
 {
 	[ctrler.openGLView display];
 }
 
-bool CStdWindow::ReInit(CStdApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	return true;
 }

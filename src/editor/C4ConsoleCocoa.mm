@@ -62,7 +62,7 @@ public:
 	void Clear() {}
 };
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	ClonkWindowController* controller = [ConsoleWindowController new];
 	this->controller = controller;
@@ -296,11 +296,11 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 	iPrvWdt = [ctrler(&Console).previewView frame].size.width;
 	iPrvHgt = [ctrler(&Console).previewView frame].size.height;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return NULL;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return NULL;
 
 	// fill bg
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(GetOwner()->Material,C4TLS_MatSky))
 	{
@@ -325,7 +325,7 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 		}
 	}
 	
-	lpDDraw->DrawPatternedCircle(
+	pDraw->DrawPatternedCircle(
 		sfcPreview,
 		iPrvWdt/2,iPrvHgt/2,
 		GetOwner()->Grade,
