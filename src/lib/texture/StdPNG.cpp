@@ -59,7 +59,7 @@ bool CPNGFile::DoLoad()
 	end_info = png_create_info_struct(png_ptr);
 	if (!end_info) return false;
 	// error handling
-	if (setjmp(png_ptr->jmpbuf)) return false;
+	if (setjmp(png_jmpbuf(png_ptr))) return false;
 	// set file-reading proc
 	png_set_read_fn(png_ptr, png_get_io_ptr(png_ptr), &CPNGReadFn);
 	// read info
@@ -254,7 +254,7 @@ bool CPNGFile::Save(const char *szFilename)
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) { Clear(); return false; }
 	// error handling
-	if (setjmp(png_ptr->jmpbuf)) { Clear(); return false; }
+	if (setjmp(png_jmpbuf(png_ptr))) { Clear(); return false; }
 	// io initialization
 	png_init_io(png_ptr, fp);
 	// compression stuff
