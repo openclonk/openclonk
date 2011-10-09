@@ -40,6 +40,7 @@
 
 CStdFile::CStdFile()
 {
+	thread_check.Set();
 	Status=false;
 	hFile=NULL;
 	hgzFile=NULL;
@@ -57,6 +58,7 @@ CStdFile::~CStdFile()
 bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable, bool fMemory)
 {
 	SCopy(szFilename,Name,_MAX_PATH);
+	thread_check.Set();
 	// Set modes
 	ModeWrite=true;
 	// Open in memory?
@@ -105,6 +107,7 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 bool CStdFile::Open(const char *szFilename, bool fCompressed)
 {
 	SCopy(szFilename,Name,_MAX_PATH);
+	thread_check.Set();
 	// Set modes
 	ModeWrite=false;
 	// Open standard file
@@ -139,6 +142,7 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 bool CStdFile::Append(const char *szFilename)
 {
 	SCopy(szFilename,Name,_MAX_PATH);
+	thread_check.Set();
 	// Set modes
 	ModeWrite=true;
 	// Open standard file
@@ -156,6 +160,7 @@ bool CStdFile::Append(const char *szFilename)
 
 bool CStdFile::Close(StdBuf **ppMemory)
 {
+	thread_check.Check();
 	bool rval=true;
 	Status=false;
 	Name[0]=0;
@@ -185,11 +190,13 @@ bool CStdFile::Default()
 	pMemory=NULL;
 	MemoryPtr=0;
 	BufferLoad=BufferPtr=0;
+	thread_check.Set();
 	return true;
 }
 
 bool CStdFile::Read(void *pBuffer, size_t iSize, size_t *ipFSize)
 {
+	thread_check.Check();
 	int transfer;
 	if (!pBuffer) return false;
 	if (ModeWrite) return false;
@@ -215,6 +222,7 @@ bool CStdFile::Read(void *pBuffer, size_t iSize, size_t *ipFSize)
 
 int CStdFile::LoadBuffer()
 {
+	thread_check.Check();
 	if (hFile) BufferLoad = fread(Buffer,1,CStdFileBufSize,hFile);
 	if (hgzFile) BufferLoad = gzread(hgzFile, Buffer,CStdFileBufSize);
 	BufferPtr=0;
@@ -223,6 +231,7 @@ int CStdFile::LoadBuffer()
 
 bool CStdFile::SaveBuffer()
 {
+	thread_check.Check();
 	int saved = 0;
 	if (hFile) saved=fwrite(Buffer,1,BufferLoad,hFile);
 	if (hgzFile) saved=gzwrite(hgzFile,Buffer,BufferLoad);
@@ -234,11 +243,13 @@ bool CStdFile::SaveBuffer()
 
 void CStdFile::ClearBuffer()
 {
+	thread_check.Check();
 	BufferLoad=BufferPtr=0;
 }
 
 bool CStdFile::Write(const void *pBuffer, int iSize)
 {
+	thread_check.Check();
 	int transfer;
 	if (!pBuffer) return false;
 	if (!ModeWrite) return false;
@@ -262,6 +273,7 @@ bool CStdFile::Write(const void *pBuffer, int iSize)
 
 bool CStdFile::WriteString(const char *szStr)
 {
+	thread_check.Check();
 	BYTE nl[2]={0x0D,0x0A};
 	if (!szStr) return false;
 	int size=SLen(szStr);
@@ -272,6 +284,7 @@ bool CStdFile::WriteString(const char *szStr)
 
 bool CStdFile::Rewind()
 {
+	thread_check.Check();
 	if (ModeWrite) return false;
 	ClearBuffer();
 	if (hFile) rewind(hFile);
@@ -281,6 +294,7 @@ bool CStdFile::Rewind()
 
 bool CStdFile::Advance(int iOffset)
 {
+	thread_check.Check();
 	if (ModeWrite) return false;
 	while (iOffset > 0)
 	{

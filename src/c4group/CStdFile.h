@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <StdFile.h>
+#include <StdSync.h> // for StdThreadCheck
 #include <StdBuf.h>
 
 const int CStdFileBufSize = 4096;
@@ -56,6 +57,7 @@ protected:
 	BYTE Buffer[CStdFileBufSize];
 	int BufferLoad,BufferPtr;
 	bool ModeWrite;
+	StdThreadCheck thread_check; // thread check helper to make sure only the thread that opened the file is using it
 public:
 	bool Create(const char *szFileName, bool fCompressed=false, bool fExecutable=false, bool fMemory=false);
 	bool Open(const char *szFileName, bool fCompressed=false);

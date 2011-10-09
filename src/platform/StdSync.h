@@ -293,4 +293,21 @@ public:
 	{ if (sec) sec->LeaveShared(); sec = NULL; }
 };
 
+/* Debug helper class: Set current thread in Set(); assert that it's still the same thread in Check(); */
+class StdThreadCheck
+{
+#if defined(_DEBUG) && defined(_WIN32)
+	HANDLE hThread;
+public:
+	StdThreadCheck() : hThread(0) {}
+
+	inline void Set() { hThread = ::GetCurrentThread(); }
+	inline void Check() { assert(hThread == ::GetCurrentThread()); }
+#else
+public:
+	inline void Set() {}
+	inline void Check() { }
+#endif
+};
+
 #endif // INC_StdSync
