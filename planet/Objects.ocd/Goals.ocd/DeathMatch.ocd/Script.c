@@ -90,22 +90,22 @@ private func FindRelaunchPos(int plr)
 
 public func IsFulfilled()
 {
-	//Check whether someone has reached the limit
-	var fulfilled = CreateArray();
-	for(var i = GetPlayerCount() - 1; i > -1; --i) 
+	// Check whether someone has reached the limit.
+	var winner = nil;
+	for (var i = 0; i < GetPlayerCount(); i++) 
 		if(GetKillCount(GetPlayerByIndex(i)) >= maxkills)
-			fulfilled[GetLength(fulfilled)] = i;
-	if(!GetLength(fulfilled)) return false;
-	//Eliminate all players, that are not in a team with one of the winners
-	for(var i = GetPlayerCount() - 1; i > -1; --i) 
+			winner = GetPlayerByIndex(i);
+	if (winner == nil)
+		return false;
+	// Eliminate all players, that are not in a team with one of the winners
+	for (var i = 0; i < GetPlayerCount(); i++)  
 	{
-		var eliminate = true;
-		for(var j = GetLength(fulfilled); j; --j) 
-		{
-			if(fulfilled[j] == i) {eliminate = false; break;}
-			if(!CheckTeamHostile(GetPlayerByIndex(fulfilled[j]), GetPlayerByIndex(i))) {eliminate = false; break;}
-		}
-		if(eliminate) EliminatePlayer(GetPlayerByIndex(i));
+		var plr = GetPlayerByIndex(i);
+		if (winner == plr)
+			continue;
+		if (!CheckTeamHostile(winner, plr))
+			continue;
+		EliminatePlayer(plr);
 	}
 	return true;
 }
