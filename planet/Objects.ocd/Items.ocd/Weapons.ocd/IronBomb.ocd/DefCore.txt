@@ -11,7 +11,7 @@ VertexX=0,3,-3
 VertexY=-2,2,2
 VertexFriction=20,20,20
 Value=3
-Mass=20
+Mass=10
 Components=IronBomb=1;
 Rotate=1
 ContactIncinerate=1
