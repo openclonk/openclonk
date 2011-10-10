@@ -1,5 +1,5 @@
 #!/bin/sh
-LIBS_TO_BUNDLE=".*?lib(crypto|z\.|iconv|jpeg|png|GLEW|llvm|SDL|SDL_mixer|freetype)[^ ]+"
+LIBS_TO_BUNDLE=".*?lib(crypto|z\.|iconv|jpeg|png|GLEW|llvm|SDL|SDL_mixer|freetype|vorbis)[^ ]+"
 
 cd $TARGET_BUILD_DIR
 echo "Bundling libraries..."
