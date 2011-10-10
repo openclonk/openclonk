@@ -806,6 +806,11 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 {
 	// security: add connection reference
 	if (!pConn) return false; pConn->AddRef();
+	
+	// accept only PID_Conn and PID_Ping on non-accepted connections
+	if(!pConn->isHalfAccepted())
+		if(rPacket.getStatus() != PID_Conn && rPacket.getStatus() != PID_Conn)
+			return false;
 
 	// unpack packet (yet another no-idea-why-it's-needed-cast)
 	C4IDPacket Pkt; C4PacketBase &PktB = Pkt;
