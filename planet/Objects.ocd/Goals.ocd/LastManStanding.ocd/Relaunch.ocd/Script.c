@@ -45,6 +45,8 @@ public func StartRelaunch(object clonk)
 
 private func OpenWeaponMenu(object clonk)
 {
+	if (!clonk)
+		return;	
 	if (!menu)
 	{
 		var weapons = WeaponList();
