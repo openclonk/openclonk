@@ -113,8 +113,11 @@ public func Select(int dx, int dy, bool alt)
 {
 	var item_count=GetLength(menu_icons);
 	if(!item_count)
+	{
 		if(command_object->Selected(this,nil,alt))
 			Close();
+		return;		
+	}
 	
 	var distance = Sqrt(dx*dx+dy*dy);
 	
