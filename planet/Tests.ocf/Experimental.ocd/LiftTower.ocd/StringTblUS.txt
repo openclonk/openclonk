@@ -1,0 +1,3 @@
+Name=Lift Tower
+Description=For pulling heavy loads.
+TakeHook=Take the hook.
