@@ -1,5 +1,7 @@
 #!/bin/sh
-LIBS_TO_BUNDLE=".*?lib(crypto|z\.|iconv|jpeg|png|GLEW|llvm|SDL|SDL_mixer|freetype|vorbis)[^ ]+"
+
+# Removed, I think those should exist on every Mac Os system: z|png[0-9]*|crypto|iconv
+LIBS_TO_BUNDLE=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile)\.[^ ]+\.dylib"
 
 cd $TARGET_BUILD_DIR
 echo "Bundling libraries..."
