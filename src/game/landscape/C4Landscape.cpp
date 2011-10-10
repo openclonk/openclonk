@@ -505,7 +505,7 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 								if(::MaterialMap.Map[mat].Dig2ObjectCollect == 2)
 								{
 									pObj->AssignRemoval();
-									return;
+									break;
 								}
 						mat_list->Amount[mat] -= ::MaterialMap.Map[mat].Dig2ObjectRatio;
 					}
