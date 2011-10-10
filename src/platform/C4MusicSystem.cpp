@@ -42,15 +42,6 @@
 #include <SDL.h>
 #endif
 
-// helper
-const char *SGetRelativePath(const char *strPath)
-{
-	const char *strEXEPath = Config.AtExePath("");
-	while (*strEXEPath == *strPath) { strEXEPath++; strPath++; }
-	return strPath;
-}
-
-
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),
 		SongCount(0),
@@ -197,7 +188,7 @@ bool C4MusicSystem::InitForScenario(C4Group & hGroup)
 		MusicDir.Take(Game.ScenarioFile.GetFullName());
 		LoadDir(MusicDir.getData());
 		// log
-		LogF(LoadResStr("IDS_PRC_LOCALMUSIC"), SGetRelativePath(MusicDir.getData()));
+		LogF(LoadResStr("IDS_PRC_LOCALMUSIC"), MusicDir.getData());
 	}
 	// check for music folders in group set
 	C4Group *pMusicFolder = NULL;
@@ -215,7 +206,7 @@ bool C4MusicSystem::InitForScenario(C4Group & hGroup)
 		MusicDir.Append(C4CFN_Music);
 		LoadDir(MusicDir.getData());
 		// log
-		LogF(LoadResStr("IDS_PRC_LOCALMUSIC"), SGetRelativePath(MusicDir.getData()));
+		LogF(LoadResStr("IDS_PRC_LOCALMUSIC"), MusicDir.getData());
 	}
 	// no music?
 	if (!SongCount) return false;

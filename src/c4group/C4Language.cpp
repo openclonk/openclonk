@@ -31,6 +31,7 @@
 #include <C4Include.h>
 #include <C4Language.h>
 
+#include <C4Application.h>
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Config.h>
@@ -458,12 +459,8 @@ bool C4Language::InitStringTable(const char *strCode)
 {
 	C4Group hGroup;
 	// First, look in System.ocg
-	if (Reloc.Open(hGroup, C4CFN_System))
-	{
-		if (LoadStringTable(hGroup, strCode))
-			{ hGroup.Close(); return true; }
-		hGroup.Close();
-	}
+	if (LoadStringTable(Application.SystemGroup, strCode))
+		return true;
 	// Now look through the registered packs
 	C4Group *pPack;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
@@ -486,11 +483,9 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	// Load string table
 	char *strTable;
 	if (!hGroup.LoadEntry(strEntry, &strTable, 0, true))
-		{ hGroup.Close(); return false; }
+		return false;
 	// Set string table
 	SetResStrTable(strTable);
-	// Close group
-	hGroup.Close();
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
 	const char * const to_set = nl_langinfo(CODESET);

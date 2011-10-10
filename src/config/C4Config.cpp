@@ -343,7 +343,6 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 
 	// Config postinit
 	General.DeterminePaths(forceWorkingDirectory);
-	General.AdoptOldSettings();
 #ifdef HAVE_WINSOCK
 	// Setup WS manually, so c4group doesn't depend on C4NetIO
 	WSADATA wsadata;
@@ -501,38 +500,6 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	CreatePath(UserDataPath);
 }
 
-static bool GrabOldPlayerFile(const char *fn)
-{
-	if (FileExists(Config.AtUserDataPath(GetFilename(fn))))
-	{
-		// player already exists in user dir, skip
-		return true;
-	}
-	if (!MoveItem(fn, Config.AtUserDataPath(GetFilename(fn))))
-	{
-		// possibly unpacked
-		if (DirectoryExists(fn))
-		{
-			if (!C4Group_PackDirectoryTo(fn, Config.AtUserDataPath(GetFilename(fn))))
-				return true; // ignore errors
-		}
-	}
-	return true;
-}
-void C4ConfigGeneral::AdoptOldSettings()
-{
-	// Copy over old player data
-	if (*Adopt.PlayerPath)
-	{
-		ForEachFile(FormatString("%s/%s", Config.AtExePath(Adopt.PlayerPath), C4CFN_PlayerFiles).getData(), &GrabOldPlayerFile);
-		*Adopt.PlayerPath = '\0';
-	}
-	else if (!ItemIdentical(Config.General.ExePath.getData(), Config.General.UserDataPath))
-	{
-		ForEachFile(Config.AtExePath(C4CFN_PlayerFiles), &GrabOldPlayerFile);
-	}
-}
-
 static char AtPathFilename[_MAX_PATH+1];
 
 const char* C4Config::AtExePath(const char *szFilename)
@@ -580,11 +547,9 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 			AtPathFilename[len-1] = '\0';
 	if (!CreatePath(AtPathFilename))
 	{
-		SCopy(General.ExePath.getData(), General.ScreenshotPath, CFG_MaxString-1);
-		SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
+		SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	}
-	else
-		AppendBackslash(AtPathFilename);
+	AppendBackslash(AtPathFilename);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }

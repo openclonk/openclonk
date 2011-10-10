@@ -65,7 +65,6 @@ public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
 	void DefaultLanguage();
 	bool CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
-	void AdoptOldSettings();
 	void DeterminePaths(bool forceWorkingDirectory);
 	void CompileFunc(StdCompiler *pComp);
 
