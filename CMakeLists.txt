@@ -1259,14 +1259,24 @@ FOREACH(CURRENT_FILE ${OC_INSTALLED_DATA_FILES})
 ENDFOREACH()
 ")
 
+set(OC_C4GROUPS
+	Graphics.ocg
+	Material.ocg
+	Music.ocg
+	Sound.ocg
+	System.ocg
+	Objects.ocd
+	BackToTheRocks.ocf
+	Tutorial.ocf
+)
+
 # Install new files
-FILE(GLOB OC_DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/planet/*.oc[dfgs]")
-install(DIRECTORY ${OC_DATA_FILES} DESTINATION share/openclonk)
+install(DIRECTORY ${OC_C4GROUPS} DESTINATION share/openclonk)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
 
 # Pack them
 install(CODE "
-FOREACH(CURRENT_FILE ${OC_DATA_FILES})
+FOREACH(CURRENT_FILE ${OC_C4GROUPS})
 	GET_FILENAME_COMPONENT(CURRENT_FILENAME \"\${CURRENT_FILE}\" NAME)
 	MESSAGE(\"Packing \${CURRENT_FILENAME}...\")
 	EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_INSTALL_PREFIX}/share/openclonk/\${CURRENT_FILENAME}\" \"-p\" RESULT_VARIABLE C4GROUP_RESULT)
@@ -1282,17 +1292,6 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c
 ############################################################################
 # setup_openclonk.exe
 ############################################################################
-
-set(OC_C4GROUPS
-	Graphics.ocg
-	Material.ocg
-	Music.ocg
-	Sound.ocg
-	System.ocg
-	Objects.ocd
-	BackToTheRocks.ocf
-	Tutorial.ocf
-)
 
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
 get_target_property(CLONK_LOCATION clonk LOCATION)
