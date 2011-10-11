@@ -460,20 +460,21 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 #endif
 
 	// Find system-wide data path
-#if defined(_WIN32) || defined(__APPLE__)
+#if defined(_WIN32)
 	// Use workdir; in release builds, this is the exe dir
 	SCopy(GetWorkingDirectory(),SystemDataPath);
-	AppendBackslash(SystemDataPath);
+#elif defined(__APPLE__)
+	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
 #elif defined(__linux__)
 
 #ifdef OC_SYSTEM_DATA_DIR
 	SCopy(OC_SYSTEM_DATA_DIR, SystemDataPath);
-	AppendBackslash(SystemDataPath);
 #else
 #error Please define OC_SYSTEM_DATA_DIR!
 	//SCopy(ExePath,SystemDataPath);
 #endif
 #endif
+	AppendBackslash(SystemDataPath);
 
 	// Find user-specific data path
 	if (ConfigUserPath[0])

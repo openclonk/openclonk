@@ -33,18 +33,12 @@ void C4Reloc::Init()
 	// TODO: We might also want to add ExePath/planet if it exists, so that we don't
 	// need to run the engine in planet/.
 
-#ifdef USE_COCOA
-	AddPath(::Application.GetGameDataPath().getData());
-#else
+#ifndef __APPLE__
 	AddPath(Config.General.ExePath.getData());
 #endif
 
 	AddPath(Config.General.UserDataPath);
-
-#ifndef USE_COCOA
 	AddPath(Config.General.SystemDataPath);
-#endif
-	
 }
 
 bool C4Reloc::AddPath(const char* path)
