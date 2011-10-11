@@ -280,10 +280,10 @@ void C4ConfigShareware::Default()
 	C4Config::Default();
 }
 
-bool C4ConfigShareware::Load(bool forceWorkingDirectory, const char *szCustomFile)
+bool C4ConfigShareware::Load(const char *szCustomFile)
 {
 	// Load standard config
-	if (!C4Config::Load(forceWorkingDirectory, szCustomFile)) return false;
+	if (!C4Config::Load(szCustomFile)) return false;
 	// Load registration
 	LoadRegistration();
 	// Done

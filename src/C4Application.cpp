@@ -85,7 +85,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 			sConfigFilename.Copy(argv[iPar] + 9);
 	// Config check
 	Config.Init();
-	Config.Load(true, sConfigFilename.getData());
+	Config.Load(sConfigFilename.getData());
 	Config.Save();
 	// sometimes, the configuration can become corrupted due to loading errors or w/e
 	// check this and reset defaults if necessary

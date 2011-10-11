@@ -41,7 +41,7 @@ protected:
 public:
 	void Default();
 	bool Save();
-	bool Load(bool forceWorkingDirectory=true, const char *szCustomFile=NULL);
+	bool Load(const char *szCustomFile=NULL);
 public:
 	void ClearRegistrationError();
 	bool Registered();

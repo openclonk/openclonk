@@ -1820,9 +1820,6 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	// Check
 	if (!fForceSave) if (!CanQuickSave()) return false;
 
-	// Set working directory (should already be in exe path anyway - just to make sure...?)
-	SetWorkingDirectory(Config.General.ExePath.getData());
-
 	// Create savegame folder
 	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(C4CFN_Savegames), LoadResStr("IDS_GAME_SAVEGAMESTITLE")))
 		{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }

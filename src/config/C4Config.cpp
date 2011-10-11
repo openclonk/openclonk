@@ -266,14 +266,12 @@ void C4Config::Default()
 	fConfigLoaded=false;
 }
 
-void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile)
+void C4Config::GetConfigFileName(StdStrBuf &filename, const char *szConfigFile)
 {
 	if (szConfigFile)
 	{
 		// Config filename is specified
 		filename.Ref(szConfigFile);
-		// make sure we're at the correct path to load it
-		if (forceWorkingDirectory) General.DeterminePaths(true);
 	}
 	else
 	{
@@ -289,7 +287,7 @@ void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory
 	}
 }
 
-bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
+bool C4Config::Load(const char *szConfigFile)
 {
 	try
 	{
@@ -305,7 +303,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 		{
 			// Nonwindows or explicit config file: Determine filename to load config from
 			StdStrBuf filename;
-			GetConfigFileName(filename, forceWorkingDirectory, szConfigFile);
+			GetConfigFileName(filename, szConfigFile);
 
 			// Load config file into buf
 			StdStrBuf buf;
@@ -342,7 +340,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	}
 
 	// Config postinit
-	General.DeterminePaths(forceWorkingDirectory);
+	General.DeterminePaths();
 #ifdef HAVE_WINSOCK
 	// Setup WS manually, so c4group doesn't depend on C4NetIO
 	WSADATA wsadata;
@@ -404,7 +402,7 @@ bool C4Config::Save()
 #endif
 		{
 			StdStrBuf filename;
-			GetConfigFileName(filename, false, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
+			GetConfigFileName(filename, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
 			StdCompilerINIWrite IniWrite;
 			IniWrite.Decompile(*this);
 			IniWrite.getOutput().SaveToFile(filename.getData());
@@ -419,7 +417,7 @@ bool C4Config::Save()
 	return true;
 }
 
-void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
+void C4ConfigGeneral::DeterminePaths()
 {
 #ifdef _WIN32
 	// Exe path
@@ -451,12 +449,6 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	ExePath = GetWorkingDirectory();
 	ExePath.AppendBackslash();
 	TempPath = "/tmp/";
-#endif
-	// Force working directory to exe path if desired
-
-#ifndef _DEBUG
-	if (forceWorkingDirectory)
-		SetWorkingDirectory(ExePath.getData());
 #endif
 
 	// Find system-wide data path

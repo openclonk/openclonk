@@ -65,7 +65,7 @@ public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
 	void DefaultLanguage();
 	bool CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
-	void DeterminePaths(bool forceWorkingDirectory);
+	void DeterminePaths();
 	void CompileFunc(StdCompiler *pComp);
 
 private:
@@ -263,7 +263,7 @@ public:
 	const char* GetSubkeyPath(const char *strSubkey);
 	void Default();
 	bool Save();
-	bool Load(bool forceWorkingDirectory = true, const char *szConfigFile = NULL);
+	bool Load(const char *szConfigFile = NULL);
 	bool Init();
 	bool Registered();
 	const char *AtExePath(const char *szFilename);
@@ -282,7 +282,7 @@ public:
 	bool RemoveModule(const char *szPath, char *szModules);
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
-	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
+	void GetConfigFileName(StdStrBuf &filename, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 };
