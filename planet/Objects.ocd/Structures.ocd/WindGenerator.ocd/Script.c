@@ -11,7 +11,7 @@ local wind_anim;
 
 protected func Construction()
 {
-	SetProperty("MeshTransformation",Trans_Rotate(RandomX(5,25)*(Random(2)*2-1),0,1,0));
+	SetProperty("MeshTransformation",Trans_Mul(Trans_Rotate(RandomX(-15,15),0,1,0), Trans_Translate(1200,0,0)));
 	return _inherited(...);
 }
 

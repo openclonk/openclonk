@@ -63,8 +63,8 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 	CreateParticle("Fire",10,20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 
 	// Smoke from the pipes.
-	CreateParticle("ExploSmoke",9,-35,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,125),RGBa(255,255,255,50));
-	CreateParticle("ExploSmoke",16,-33,RandomX(-1,1),-7 + RandomX(-2,2),RandomX(30,90),RGBa(255,255,255,50));
+	CreateParticle("ExploSmoke", 9, -31, RandomX(-2,1), -7 + RandomX(-2,2), RandomX(60,125), RGBa(255,255,255,50));
+	CreateParticle("ExploSmoke", 16, -27, RandomX(-1,2), -7 + RandomX(-2,2), RandomX(30,90), RGBa(255,255,255,50));
 	
 	// Furnace sound after some time.
 	if (time == 100)
@@ -94,7 +94,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() - 20, GetY() + 16);
+	product->SetPosition(GetX() - 18, GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
 	Sound("Pop.ogg");
@@ -104,5 +104,4 @@ public func OnProductEjection(object product)
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
-local Touchable = 2;
 local Name = "$Name$";

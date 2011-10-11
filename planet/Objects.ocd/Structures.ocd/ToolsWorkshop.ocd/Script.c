@@ -40,6 +40,12 @@ public func OnProductionHold(id product)
 	return;
 }
 
+public func OnProductionContinued(id product)
+{
+
+	return;
+}
+
 public func OnProductionFinish(id product)
 {
 	RemoveEffect("Working", this);
