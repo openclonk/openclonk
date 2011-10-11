@@ -213,7 +213,6 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 	ClearCommandLine();
 	Game.NetworkActive = false;
-	Reloc.Init(); // re-init from config
 	isEditor = 2;
 	int c;
 	while (1)

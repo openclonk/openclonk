@@ -82,7 +82,6 @@ else()
 	option(USE_COCOA OFF)
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
-option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
 option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" ON)
@@ -999,25 +998,6 @@ endif()
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
 set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
-
-############################################################################
-# build to planet
-############################################################################
-if(BUILD_TO_PLANET) 
-	if(CMAKE_VERSION VERSION_LESS "2.8")
-		message(SEND_ERROR "You need CMake 2.8 or higher for BUILD_TO_PLANET to get the builds out of the sub folders. You have ${CMAKE_VERSION}")
-	else()
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/planet)
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/planet)
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_CURRENT_SOURCE_DIR}/planet)
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_CURRENT_SOURCE_DIR}/planet)
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELEASE "Clonk")
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_DEBUG "ClonkD")
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_MINSIZEREL "ClonkMSR")
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELWITHDEBINFO "ClonkRD")
-		set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet)
-	endif()
-endif()
 
 ############################################################################
 # Precompiled header support, part 2 (post-target)

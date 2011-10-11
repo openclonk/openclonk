@@ -461,8 +461,8 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 
 	// Find system-wide data path
 #if defined(_WIN32)
-	// Use workdir; in release builds, this is the exe dir
-	SCopy(GetWorkingDirectory(),SystemDataPath);
+	// Use ExePath: on windows, everything is installed to one directory
+	SCopy(ExePath.getMData(),SystemDataPath);
 #elif defined(__APPLE__)
 	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
 #elif defined(__linux__)

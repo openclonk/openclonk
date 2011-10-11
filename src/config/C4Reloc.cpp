@@ -27,14 +27,18 @@ void C4Reloc::Init()
 {
 	Paths.clear();
 
-	// TODO: On Linux, we might not always want to have ExePath (= working directory)
-	// here. It's handy for development so that we can easily run the engine in planet/
-	// but for distribution it might make sense to disable it.
-	// TODO: We might also want to add ExePath/planet if it exists, so that we don't
-	// need to run the engine in planet/.
-
 #ifndef __APPLE__
-	AddPath(Config.General.ExePath.getData());
+	StdCopyStrBuf planet(Config.General.ExePath);
+	planet.AppendBackslash();
+#ifdef CMAKE_INTDIR
+	if (!SEqual(CMAKE_INTDIR, "."))
+	{
+		planet.Append("..");
+		planet.AppendBackslash();
+	}
+#endif
+	planet.Append("planet");
+	AddPath(planet.getData());
 #endif
 
 	AddPath(Config.General.UserDataPath);
