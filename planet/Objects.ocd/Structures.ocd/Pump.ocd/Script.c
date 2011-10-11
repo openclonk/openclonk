@@ -1,6 +1,6 @@
 /*--
 	Pump
-	Author: Maikel
+	Author: Maikel, ST-DDT
 	
 	Pumps liquids using drain and source pipes.
 --*/
@@ -42,6 +42,8 @@ protected func OnWaitStart()
 	return;
 }
 
+local aMaterials=["", 0]; //contained liquids
+
 protected func Pumping()
 {
 	// Only proceed if there is enough power available.
@@ -50,22 +52,26 @@ protected func Pumping()
 	// Pump liquids.
 	if (!source_pipe)
 		return SetAction("Wait");
-	var source = source_pipe->GetConnectedObject(this);
-	// Extract liquid at source location.
-	// TODO: Maybe bubble a little.
-	var mat = source->ExtractLiquid();
-	if (mat == -1)
-		return;
-	// Insert liquid at drain location.
-	// If there is no drain pipe insert at pump.
-	if (!drain_pipe)
-		return InsertMaterial(mat);
-	var drain = drain_pipe->GetConnectedObject(this);
-	if (!drain)
-		return InsertMaterial(mat);
-	// TODO: Account for pumping into buildings.
-	drain->InsertMaterial(mat);		
-	return;
+	//IsEmpty?
+	if ((aMaterials[1] == 0) || (aMaterials[0] == ""))
+	{
+		//Get new Materials
+		aMaterials = source_pipe->GetLiquid("*", 5, this, true);
+		//No Material to pump?
+		if ((aMaterials[0] == "") || (aMaterials[1] == 0))
+			return;
+	}
+	if (drain_pipe)
+		aMaterials[1] -= BoundBy(drain_pipe->PutLiquid(aMaterials[0], aMaterials[1], this), 0, aMaterials[1]);
+	else
+	{
+		var i = Max(0, aMaterials[1]), itMaterial = Material(aMaterials[0]);
+		while (i--)
+			InsertMaterial(itMaterial);
+		aMaterials = ["", 0];
+	}
+	//maybe add the possebility to empty pump (invaild mats?)
+	return;	
 }
 
 // Returns whether the pump can pump some liquid.
@@ -99,7 +105,7 @@ local ActMap = {
 		Hgt = 32,
 		NextAction = "Pump",
 		StartCall = "OnPumpStart",
-		PhaseCall = "Pumping",
+		PhaseCall = "Pumping"
 	},
 	Wait = {
 		Prototype = Action,
@@ -112,6 +118,6 @@ local ActMap = {
 		Wdt = 28,
 		Hgt = 32,
 		NextAction = "Wait",
-		StartCall = "OnWaitStart",
-	},
+		StartCall = "OnWaitStart"
+	}
 };
