@@ -956,35 +956,36 @@ void StdMesh::MirrorAnimation(const StdStrBuf& name, const StdMeshAnimation& ani
 	// Go through all bones
 	for(unsigned int i = 0; i < GetNumBones(); ++i)
 	{
-		// Only proceed if the bone is used in this animation
-		if(animation.Tracks[i] != NULL)
+		const StdMeshBone& bone = GetBone(i);
+		StdCopyStrBuf other_bone_name(bone.Name);
+		if(MirrorName(other_bone_name))
 		{
-			const StdMeshBone& bone = GetBone(i);
-			StdCopyStrBuf other_bone_name(bone.Name);
-			if(MirrorName(other_bone_name))
+			const StdMeshBone* other_bone = GetBoneByName(other_bone_name);
+			if(!other_bone)
+				throw std::runtime_error(std::string("No counterpart for bone ") + bone.Name.getData() + " found");
+
+			// Make sure to not swap tracks twice
+			if( (animation.Tracks[i] != NULL || animation.Tracks[other_bone->Index] != NULL) &&
+			   other_bone->Index > bone.Index)
 			{
-				const StdMeshBone* other_bone = GetBoneByName(other_bone_name);
-				if(!other_bone)
-					throw std::runtime_error(std::string("No counterpart for bone ") + bone.Name.getData() + " found");
+				std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
 
-				// Make sure to not swap tracks twice
-				if(other_bone->Index > bone.Index)
-				{
-					std::swap(new_anim.Tracks[i], new_anim.Tracks[other_bone->Index]);
-#if 1
-					StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
-					StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
+				StdMeshTransformation own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
+				StdMeshTransformation other_own_trans = other_bone->GetParent()->InverseTransformation * other_bone->Transformation;
 
-					// Mirror all the keyframes of both tracks
+				// Mirror all the keyframes of both tracks
+				if(new_anim.Tracks[i] != NULL)
 					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[i]->Frames.begin(); iter != new_anim.Tracks[i]->Frames.end(); ++iter)
 						MirrorKeyFrame(iter->second, own_trans, StdMeshTransformation::Inverse(other_own_trans));
 
+				if(new_anim.Tracks[other_bone->Index] != NULL)
 					for(std::map<float, StdMeshKeyFrame>::iterator iter = new_anim.Tracks[other_bone->Index]->Frames.begin(); iter != new_anim.Tracks[other_bone->Index]->Frames.end(); ++iter)
 						MirrorKeyFrame(iter->second, other_own_trans, StdMeshTransformation::Inverse(own_trans));
-#endif
-				}
 			}
-			else if(bone.Name.Compare_(".N", bone.Name.getLength()-2) != 0)
+		}
+		else if(bone.Name.Compare_(".N", bone.Name.getLength()-2) != 0)
+		{
+			if(new_anim.Tracks[i] != NULL)
 			{
 				StdMeshTransformation own_trans = bone.Transformation;
 				if(bone.GetParent()) own_trans = bone.GetParent()->InverseTransformation * bone.Transformation;
