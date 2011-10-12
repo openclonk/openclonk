@@ -1252,14 +1252,6 @@ IF(NOT \${CONVERT_RESULT} EQUAL 0)
 ENDIF()
 ")
 
-# Remove previously installed data files
-FILE(GLOB OC_INSTALLED_DATA_FILES "${CMAKE_INSTALL_PREFIX}/share/openclonk/*.oc[dfgs]")
-install(CODE "
-FOREACH(CURRENT_FILE ${OC_INSTALLED_DATA_FILES})
-	FILE(REMOVE \${CURRENT_FILE})
-ENDFOREACH()
-")
-
 set(OC_C4GROUPS
 	Graphics.ocg
 	Material.ocg
@@ -1270,29 +1262,6 @@ set(OC_C4GROUPS
 	BackToTheRocks.ocf
 	Tutorial.ocf
 )
-
-# Install new files
-install(DIRECTORY ${OC_C4GROUPS} DESTINATION share/openclonk)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
-
-# Pack them
-install(CODE "
-FOREACH(CURRENT_FILE ${OC_C4GROUPS})
-	GET_FILENAME_COMPONENT(CURRENT_FILENAME \"\${CURRENT_FILE}\" NAME)
-	MESSAGE(\"Packing \${CURRENT_FILENAME}...\")
-	EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_INSTALL_PREFIX}/share/openclonk/\${CURRENT_FILENAME}\" \"-p\" RESULT_VARIABLE C4GROUP_RESULT)
-	IF(NOT \${C4GROUP_RESULT} EQUAL 0)
-		MESSAGE(SEND_ERROR \"Packing ${CURRENT_FILENAME} failed\")
-	ENDIF()
-ENDFOREACH()
-")
-
-# Install binaries
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
-
-############################################################################
-# setup_openclonk.exe
-############################################################################
 
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
 get_target_property(CLONK_LOCATION clonk LOCATION)
@@ -1313,6 +1282,17 @@ foreach(group ${OC_C4GROUPS})
 			)
 	endif()
 endforeach()
+
+# Install new files
+install(FILES ${OC_C4GROUPS} DESTINATION share/openclonk)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
+
+# Install binaries
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+
+############################################################################
+# setup_openclonk.exe
+############################################################################
 
 find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
