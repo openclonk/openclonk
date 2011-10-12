@@ -56,7 +56,7 @@ protected func Initialize()
 	// Snow
 	AddEffect("Snowfall", 0, 1, 2);
 	//Wind
-	Sound("WindLoop.ogg",true,40,nil,+1);
+	Sound("WindLoop",true,40,nil,+1);
 
 	MapBottomFix();
 

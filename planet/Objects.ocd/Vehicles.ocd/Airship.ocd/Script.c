@@ -75,14 +75,14 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 		if(!enginesound)
 		{
 			enginesound = true;
-			Sound("FanLoop.ogg",nil,nil,nil,1);
+			Sound("FanLoop",nil,nil,nil,1);
 		}
 	}
 	else
 	{
 		if(enginesound == true)
 		{
-			Sound("FanLoop.ogg",nil,nil,nil,-1);
+			Sound("FanLoop",nil,nil,nil,-1);
 			enginesound = nil;
 		}
 	}
@@ -213,7 +213,7 @@ func AirshipDeath()
 	hitbox->RemoveObject();
 
 	//Make sure engine sound is gone
-	Sound("FanLoop.ogg",nil,nil,nil,-1);
+	Sound("FanLoop",nil,nil,nil,-1);
 
 	//This object has served its purpose.
 	Explode(27);

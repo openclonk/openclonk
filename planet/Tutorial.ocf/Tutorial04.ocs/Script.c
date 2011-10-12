@@ -17,7 +17,7 @@ protected func Initialize()
 	var time = CreateObject(Environment_Time);
 	time->SetTime(1125);
 	time->SetCycleSpeed(0);
-	Sound("WindLoop.ogg", true, 40, nil, 1);
+	Sound("WindLoop", true, 40, nil, 1);
 	
 	// Goal: Melee, all opponents must be killed.
 	CreateObject(Goal_Melee, 0, 0, NO_OWNER);

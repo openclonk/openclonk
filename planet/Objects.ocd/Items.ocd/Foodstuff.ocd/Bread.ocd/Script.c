@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("SoftHit1.ogg");
+	Sound("SoftHit1");
 }
 
 public func IsOvenProduct() { return true; }

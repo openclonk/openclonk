@@ -368,14 +368,14 @@ func GetCurrentWalkAnimation()
 func Footstep()
 {
 	if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)) == 0)
-		Sound("StepHard*.ogg");
+		Sound("StepHard?");
 	else
 	{
 		var dir = GetXDir() / Abs(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
 		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
-		Sound("StepSoft*.ogg");
+		Sound("StepSoft?");
 	}
 }
 
@@ -729,7 +729,7 @@ func FxFallTimer(object target, effect, int timer)
 	}
 	if(timer == 2 && GetYDir() < 1)
 	{
-		Sound("Rustle*.ogg");
+		Sound("Rustle?");
 	}
 
 	if(GetYDir() > 55 && GetAction() == "Jump")
@@ -935,7 +935,7 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 				var color = GetAverageTextureColor(GetTexture(0, 0));
 				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, color, this, 1);
 			}
-			Sound("Splash*");
+			Sound("Splash?");
 		}
 		// Animation speed by X
 		if(effect.animation_name != "Swim")
@@ -1028,7 +1028,7 @@ func DoKneel()
 
 	SetXDir(0);
 	SetAction("Kneel");
-	Sound("RustleLand.ogg");
+	Sound("RustleLand");
 	PlayAnimation("KneelDown", 5, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
 	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
@@ -1043,7 +1043,7 @@ func EndKneel()
 //rollp
 func StartRoll()
 {	
-	Sound("Roll.ogg");
+	Sound("Roll");
 	if(GetDir() == 1) rolldir = 1;
 	else
 		rolldir = -1;
@@ -1107,7 +1107,7 @@ func FxIntDigStart(pTarget, effect, fTmp)
 	UpdateAttach();
 
 	// Sound
-	Sound("Dig*");
+	Sound("Dig?");
 
 	// Set proper turn type
 	SetTurnType(0);
@@ -1117,7 +1117,7 @@ func FxIntDigTimer(pTarget, effect, iTime)
 {
 	if(iTime % 36 == 0)
 	{
-		Sound("Dig*");
+		Sound("Dig?");
 	}
 	if( (iTime-18) % 36 == 0 ||  iTime > 35)
 	{

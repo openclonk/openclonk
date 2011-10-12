@@ -84,7 +84,7 @@ private func CheckForKeg(object clonk)
 		{
 			keg->Exit();
 			keg->Enter(this);
-			Sound("WoodHit*");
+			Sound("WoodHit?");
 		}
 		else // No keg, stop using cannon.
 		{

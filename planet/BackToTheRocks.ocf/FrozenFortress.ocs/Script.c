@@ -47,7 +47,7 @@ protected func Initialize()
 	AddEffect("FillOtherChest", chest, 100, 5 * 36);
 	
 	AddEffect("SnowyWinter", nil, 100, 1);
-	Sound("WindLoop.ogg",true,20,nil,+1);
+	Sound("WindLoop",true,20,nil,+1);
 	AddEffect("GeysirExplosion", nil, 100, 1);
 	// Brick edges, notice the symmetric landscape.
 	PlaceEdges();

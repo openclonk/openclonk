@@ -19,7 +19,7 @@ protected func Initialize()
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
-	Sound("BirdsLoop.ogg",true,100,nil,+1);
+	Sound("BirdsLoop",true,100,nil,+1);
 		
 	CreateObject(Column,650,379);
 	CreateObject(Column,350,409);

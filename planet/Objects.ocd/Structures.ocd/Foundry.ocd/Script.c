@@ -35,7 +35,7 @@ public func NeedsRawMaterial(id rawmat_id)
 public func OnProductionStart(id product)
 {
 	AddEffect("Smelting", this, 100, 1, this);
-	Sound("FurnaceStart.ogg");
+	Sound("FurnaceStart");
 	return;
 }
 
@@ -52,7 +52,7 @@ public func OnProductionFinish(id product)
 
 protected func Collection()
 {
-	Sound("Clonk.ogg");
+	Sound("Clonk");
 	return;
 }
 
@@ -68,7 +68,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 	
 	// Furnace sound after some time.
 	if (time == 100)
-		Sound("FurnaceLoop.ogg", false, 100, nil, +1);
+		Sound("FurnaceLoop", false, 100, nil, +1);
 
 	// Pour after some time.
 	if(time == 244)
@@ -76,7 +76,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 	//Molten metal hits cast... Sizzling sound
 	if (time == 256)
-		Sound("Sizzle.ogg");
+		Sound("Sizzle");
 
 	// Fire from the pouring exit.
 	if (Inside(time, 244, 290))
@@ -85,8 +85,8 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 	if (time == 290)
 	{
 		SetMeshMaterial("Metal", 1);
-		Sound("FurnaceLoop.ogg", false ,100, nil, -1);
-		Sound("FurnaceStop.ogg");
+		Sound("FurnaceLoop", false ,100, nil, -1);
+		Sound("FurnaceStop");
 		return -1;
 	}
 	return 1;
@@ -97,7 +97,7 @@ public func OnProductEjection(object product)
 	product->SetPosition(GetX() - 18, GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
-	Sound("Pop.ogg");
+	Sound("Pop");
 	return;
 }
 

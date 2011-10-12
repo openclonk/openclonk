@@ -5,7 +5,7 @@
 
 func Fall(int from) 
 { 
-	Sound("BowShoot*.ogg");
+	Sound("BowShoot?");
 	for(var i=0; i < 10; i++ ) 
 	{
 			var arrow = TakeObject();

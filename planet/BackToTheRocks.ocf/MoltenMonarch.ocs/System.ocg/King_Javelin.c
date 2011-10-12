@@ -40,7 +40,7 @@ public func DoThrow(object clonk, int angle)
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
 	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);
 	
-	Sound("ThrowJavelin*.ogg");
+	Sound("ThrowJavelin?");
 	
 	fAiming = -1;
 	clonk->UpdateAttach();

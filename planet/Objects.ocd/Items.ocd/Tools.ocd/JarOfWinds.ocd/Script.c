@@ -43,7 +43,7 @@ protected func ControlUse(object pClonk, iX, iY)
 			FireWeapon(pClonk, iX, iY);
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);
-			Sound("WindCharge.ogg",false,nil,nil,1);
+			Sound("WindCharge",false,nil,nil,1);
 			sound=true;
 		}
 		
@@ -72,7 +72,7 @@ protected func Load()
 		{
 			if(!sound)
 			{
-				Sound("WindCharge.ogg",false,nil,nil,1);
+				Sound("WindCharge",false,nil,nil,1);
 				sound=true;
 			}
 			Amount += 2; //Air is sucked in.
@@ -101,8 +101,8 @@ protected func Load()
 
 protected func ChargeSoundStop()
 {
-	Sound("WindCharge.ogg",false,nil,nil,-1);
-	Sound("WindChargeStop.ogg");
+	Sound("WindCharge",false,nil,nil,-1);
+	Sound("WindChargeStop");
 	sound=false;
 }
 
@@ -111,7 +111,7 @@ private func FireWeapon(object pClonk,iX,iY)
 	var iAngle=Angle(0,0,iX,iY);
 	
 	ChargeSoundStop();
-	Sound("WindGust.ogg");
+	Sound("WindGust");
 
 	//Find Victims to push
 	for(var i=10; i<32; i++)

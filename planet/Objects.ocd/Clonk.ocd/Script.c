@@ -110,9 +110,9 @@ protected func CatchBlow()
 protected func Hurt()
 {
 	if(gender == 0)
-		Sound("Hurt*");
+		Sound("Hurt?");
 	else
-		Sound("FHurt*"); //female 'ouch' sounds TODO :/
+		Sound("FHurt?"); //female 'ouch' sounds TODO :/
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -183,7 +183,7 @@ public func Eat(object food)
 {
 	DoEnergy(food->NutritionalValue());
 	food->RemoveObject();
-	Sound("Munch*.ogg");
+	Sound("Munch?");
 	SetAction("Eat");
 }
 

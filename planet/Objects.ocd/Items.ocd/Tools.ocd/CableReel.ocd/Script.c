@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("RockHit*");
+	Sound("RockHit?");
 }
 
 public func IsToolProduct() { return 1; }

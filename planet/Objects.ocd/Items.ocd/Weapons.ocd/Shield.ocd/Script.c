@@ -186,7 +186,7 @@ func HitByWeapon(by, iDamage)
 	var angle_diff = Abs(Normalize(shield_angle-object_angle,-180));
 	if (angle_diff > 45) return 0;
 
-	Sound(Format("ShieldMetalHit%d.ogg", Random(4)+1));
+	Sound("ShieldMetalHit?");
 	
 	// bash him hard!
 	ApplyWeaponBash(by, 100, iAngle);
@@ -253,7 +253,7 @@ func FxShieldStopControlQueryCatchBlow(object target, effect, object obj)
 	// dont collect blocked objects
 	AddEffect("NoCollection", obj, 1, 30);
 	
-	Sound(Format("ShieldMetalHit%d.ogg", Random(4)+1));
+	Sound("ShieldMetalHit?");
 	
 	return true;
 }

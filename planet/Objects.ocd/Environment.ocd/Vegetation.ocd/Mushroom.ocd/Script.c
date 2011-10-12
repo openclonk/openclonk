@@ -21,7 +21,7 @@ private func Initialize()
 
 func Hit()
 {
-	Sound("WoodHit*.ogg");
+	Sound("WoodHit?");
 }
 
 /* Harvesting */

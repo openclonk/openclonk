@@ -15,7 +15,7 @@ protected func Hit()
 	{
 		RemoveEffect("HitCheck",this);
 	
-		Sound("BulletHitGround*.ogg");
+		Sound("BulletHitGround?");
 		
 		CastParticles("Spark",1,20,0,0,15,25,RGB(255,200,0),RGB(255,255,150));
 		
@@ -41,7 +41,7 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	CreateObject(BulletTrail,0,0)->Set(2, 200, this);
 	
 	// sound
-	Sound("BulletShot*.ogg");
+	Sound("BulletShot?");
 }
 
 public func HitObject(object obj)
@@ -54,9 +54,9 @@ public func HitObject(object obj)
 public func OnStrike(object obj)
 {
 	if(obj->GetAlive())
-		Sound("ProjectileHitLiving*.ogg");
+		Sound("ProjectileHitLiving?");
 	else
-		Sound("BulletHitGround*.ogg");
+		Sound("BulletHitGround?");
 }
 
 func UpdatePicture()

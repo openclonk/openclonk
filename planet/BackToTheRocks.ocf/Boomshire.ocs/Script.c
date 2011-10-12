@@ -7,7 +7,7 @@ func Initialize()
 	for(var i = 1380; i<=1800; i+=28)
 		CreateObject(Dynamite,i,1328);
 
-	Sound("BirdsLoop.ogg",true,100,nil,+1);
+	Sound("BirdsLoop",true,100,nil,+1);
 	CreateObject(Environment_Clouds);
 	
 	// Create the parkour goal.

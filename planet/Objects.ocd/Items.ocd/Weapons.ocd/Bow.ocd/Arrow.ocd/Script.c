@@ -33,7 +33,7 @@ public func Launch(int angle, int str, object shooter)
 	SetXDir(xdir);
 	SetYDir(ydir);
 	SetR(angle);
-	Sound("ArrowShoot*.ogg");
+	Sound("ArrowShoot?");
 	// Shooter controls the arrow.
 	SetController(shooter->GetController());
 	
@@ -82,15 +82,15 @@ public func HitObject(object obj)
 public func OnStrike(object obj)
 {
 	if(obj->GetAlive())
-		Sound("ProjectileHitLiving*.ogg");
+		Sound("ProjectileHitLiving?");
 	else
-		Sound("ArrowHitGround.ogg");
+		Sound("ArrowHitGround");
 }
 
 public func Hit()
 {
 	if(GetEffect("InFlight",this))
-		Sound("ArrowHitGround.ogg");
+		Sound("ArrowHitGround");
 	Stick();
 }
 

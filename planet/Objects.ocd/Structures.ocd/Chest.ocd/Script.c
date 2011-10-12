@@ -43,13 +43,13 @@ private func OnContentMenuOpen() { Open(); }
 private func Open()
 {
 	chestanim = PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
-	Sound("ChestOpen.ogg");
+	Sound("ChestOpen");
 }
 
 private func Close()
 {
 	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
-	Sound("ChestClose.ogg");
+	Sound("ChestClose");
 }
 
 protected func Definition(def)

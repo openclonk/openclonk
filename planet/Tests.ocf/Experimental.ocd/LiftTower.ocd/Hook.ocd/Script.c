@@ -99,7 +99,7 @@ public func Interact(object clonk)
 
 protected func Hit()
 {
-	Sound("MetalHit*");
+	Sound("MetalHit?");
 }
 
 func Construction(object constructor)

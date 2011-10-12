@@ -208,10 +208,10 @@ global func StonyObjectHit(int x, int y)
 	}
 	// Check if digfree
 	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
-		return Sound("RockHit*");
+		return Sound("RockHit?");
 	// Else play standard sound
 	if (Distance(0,0,xdir,ydir) > 10)
-			return Sound("SoftTouch*.ogg");
+			return Sound("SoftTouch?");
 		else
-			return Sound("SoftHit*.ogg");
+			return Sound("SoftHit?");
 }

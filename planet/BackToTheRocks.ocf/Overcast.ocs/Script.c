@@ -17,7 +17,7 @@ protected func Initialize()
 	CreateObject(Environment_Clouds);
 	CreateObject(Environment_Clouds); //Double the clouds.
 	SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
-	Sound("BirdsLoop.ogg", true, 100, nil, 1);
+	Sound("BirdsLoop", true, 100, nil, 1);
 	
 	// Brick edges at horizontal moving bricks.
 	var x=[525, 436, 436, 525, 812, 812, 716, 716, 573, 573, 213, 213];

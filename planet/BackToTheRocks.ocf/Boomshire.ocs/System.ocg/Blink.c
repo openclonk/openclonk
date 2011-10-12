@@ -10,7 +10,7 @@ public func ControlUp(object clonk)
 	{
 		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
-		Sound("Chain.ogg");
+		Sound("Chain");
 	}
 }
 

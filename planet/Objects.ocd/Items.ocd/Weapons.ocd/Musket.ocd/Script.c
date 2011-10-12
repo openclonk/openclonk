@@ -154,7 +154,7 @@ private func FireWeapon(object clonk, int angle)
 	loaded = false;
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));
 
-	Sound("GunShoot*.ogg");
+	Sound("GunShoot?");
 
 	// Muzzle Flash & gun smoke
 	var IX=Sin(180-angle,MuskFront);

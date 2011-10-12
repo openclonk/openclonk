@@ -21,7 +21,7 @@ global func Explode(int level, bool silent)
 	{
 		var grade = BoundBy(level / 10 - 1, 1, 3);
 		if(GBackLiquid())
-			Sound(Format("BlastLiquid%d.ogg",grade));
+			Sound(Format("BlastLiquid%d",grade));
 		else
 			Sound(Format("Blast%d", grade));
 	}

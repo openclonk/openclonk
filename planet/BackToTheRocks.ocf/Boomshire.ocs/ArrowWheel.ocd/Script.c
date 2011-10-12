@@ -16,7 +16,7 @@ public func ControlUp(object clonk)
 	if (GetAction() == "Still")
 	{	
 		SetAction("SpinLeft");
-		Sound("Chain.ogg");
+		Sound("Chain");
 		var arrw= CreateObject(Arrow,x,y,-1);
 		arrw->Launch(30,80, clonk);
 		arrw->SetGraphics("1");

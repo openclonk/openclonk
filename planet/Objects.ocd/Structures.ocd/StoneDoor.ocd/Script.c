@@ -44,7 +44,7 @@ private func IsClosed()
 
 protected func Hit()
 {
-	Sound("GateHit.ogg");
+	Sound("GateHit");
 	return;
 }
 

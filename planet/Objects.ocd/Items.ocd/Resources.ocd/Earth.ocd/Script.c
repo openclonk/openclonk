@@ -11,7 +11,7 @@ protected func Hit()
 {
 	
 	CastPXS("Earth", 200, 18);
-	Sound("EarthHit*");
+	Sound("EarthHit?");
 	RemoveObject();
 	return 1;
 }

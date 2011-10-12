@@ -111,7 +111,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 		else
 		{
 			CastParticles("Spark",RandomX(3,9),35,x2*9/10,y2*9/10,10,30,RGB(255,255,150),RGB(255,255,200));
-			Sound("Clang*");
+			Sound("Clang?");
 		}
 
 		// dig out resources too! Don't just remove landscape pixels

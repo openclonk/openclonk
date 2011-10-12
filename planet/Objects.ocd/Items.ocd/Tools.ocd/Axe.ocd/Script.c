@@ -24,7 +24,7 @@ public func ControlUse(object pByClonk, int iX, int iY)
 	if( tree )
 	{
 		pByClonk->SetAction("Chop"); //FIXME: actually implement this
-		Sound("KnightConfirm*");
+		Sound("KnightConfirm?");
 	} else {
 		if(pByClonk->GetAction() == "Chop")
 			pByClonk->SetAction("Idle");

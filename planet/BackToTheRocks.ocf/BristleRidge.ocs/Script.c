@@ -44,7 +44,7 @@ protected func Initialize()
 	}
 	
 	// Create a little mood.
-	Sound("BirdsLoop.ogg", true, 100, nil, 1);
+	Sound("BirdsLoop", true, 100, nil, 1);
 	CreateObject(Environment_Clouds);
 	PlaceGrass(200);
 	return;

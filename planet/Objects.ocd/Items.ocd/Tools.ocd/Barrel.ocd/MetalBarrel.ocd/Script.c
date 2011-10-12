@@ -21,7 +21,7 @@ protected func Initialize()
 
 private func Hit()
 {
-	Sound("Clonk.ogg");
+	Sound("Clonk");
 	if(iVolume >= 1) {
 		if(GBackLiquid(0,7) && GetMaterial(0,7) != szLiquid) return 0;
 		EmptyBarrel(GetR());

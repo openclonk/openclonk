@@ -46,7 +46,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	ControlUseHolding(clonk, x, y);
 	
-	Sound("DrawJavelin.ogg");
+	Sound("DrawJavelin");
 	return 1;
 }
 
@@ -112,7 +112,7 @@ public func DoThrow(object clonk, int angle)
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
 	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,clonk);
 	
-	Sound("ThrowJavelin*.ogg");
+	Sound("ThrowJavelin?");
 	
 	fAiming = -1;
 	clonk->UpdateAttach();
@@ -137,9 +137,9 @@ public func HitObject(object obj)
 public func OnStrike(object obj)
 {
 	if(obj->GetAlive())
-		Sound("ProjectileHitLiving*.ogg");
+		Sound("ProjectileHitLiving?");
 	else
-		Sound("JavelinHitGround.ogg");
+		Sound("JavelinHitGround");
 }
 
 protected func Hit()
@@ -147,7 +147,7 @@ protected func Hit()
 	if(GetEffect("Flight",this))
 	{
 		Stick();
-		Sound("JavelinHitGround.ogg");
+		Sound("JavelinHitGround");
 	}
 	else
 		Sound("WoodHit");

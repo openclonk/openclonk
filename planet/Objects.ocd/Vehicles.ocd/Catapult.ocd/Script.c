@@ -145,7 +145,7 @@ protected func DoFire(object clonk, int power, int hand)
 	aim_anim = PlayAnimation("ArmPosition", 1, Anim_Linear(GetAnimationPosition(aim_anim),0, GetAnimationLength("ArmPosition"), 3, ANIM_Hold), Anim_Const(1000));
 
 	//Sound
-	Sound("Catapult_Launch.ogg");
+	Sound("Catapult_Launch");
 
 	var projectile = nil;
 	if(Contents(0))	projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!

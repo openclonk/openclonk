@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
  * Copyright (c) 2001, 2005-2006, 2008  Sven Eberhardt
  * Copyright (c) 2003-2005  Peter Wortmann
- * Copyright (c) 2005-2006, 2009, 2011  GÃ¼nther Brammer
+ * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht
@@ -509,7 +509,7 @@ int32_t C4SoundSystem::EffectInBank(const char *szSound)
 	char szName[C4MaxSoundName+4+1];
 	// Compose name (with extension)
 	SCopy(szSound,szName,C4MaxSoundName);
-	DefaultExtension(szName,"wav");
+	DefaultExtension(szName,"*");
 	// Count all matching sounds in bank
 	for (pSfx=FirstSound; pSfx; pSfx=pSfx->Next)
 		if (WildcardMatch(szName,pSfx->Name))
@@ -541,11 +541,8 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 	int32_t iNumber;
 	// Evaluate sound name
 	SCopy(szSndName,szName,C4MaxSoundName);
-	// Default extension
-	DefaultExtension(szName,"wav");
-	// Convert old style '*' wildcard to correct '?' wildcard
-	// For sound effects, '*' is supposed to match single digits only
-	SReplaceChar(szName, '*', '?');
+	// Any extension accepted
+	DefaultExtension(szName,"*");
 	// Sound with a wildcard: determine number of available matches
 	if (SCharCount('?',szName))
 	{
@@ -588,8 +585,7 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 	char szName[C4MaxSoundName+4+1];
 	// Evaluate sound name (see GetEffect)
 	SCopy(szSndName,szName,C4MaxSoundName);
-	DefaultExtension(szName,"wav");
-	SReplaceChar(szName, '*', '?');
+    DefaultExtension(szName,"*");
 	// Find an effect with a matching instance
 	for (C4SoundEffect *csfx = FirstSound; csfx; csfx = csfx->Next)
 		if (WildcardMatch(szName, csfx->Name))
@@ -601,8 +597,6 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 }
 
 // LoadEffects will load all sound effects of all known sound types (i.e. *.wav and *.ogg)
-// To play an ogg effect, however, you will have to specify the extension in the sound
-// command (e.g. Sound("Hello.ogg")), because all playback functions will default to wav only.
 // LoadEffects is currently used for static loading from object definitions only.
 
 int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, bool fStatic)

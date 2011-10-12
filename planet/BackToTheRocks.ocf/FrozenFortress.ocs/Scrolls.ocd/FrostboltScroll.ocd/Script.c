@@ -9,8 +9,8 @@
 public func ControlUse(object pClonk, int ix, int iy)
 {
 	AddEffect("Frostbolt", 0, 100, 1, 0, GetID(), pClonk->GetOwner(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
-	Sound("Fireball.ogg");
-	Sound("Fireball.ogg");
+	Sound("Fireball");
+	Sound("Fireball");
 	RemoveObject();
 	return 1;
 }
@@ -45,7 +45,7 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	 	)
 	{
 		CreateObject(Dynamite,x,y,effect.owner)->BlueExplode();
-		CreateObject(Star,x,y,-1)->Sound("GlassShatter.ogg");
+		CreateObject(Star,x,y,-1)->Sound("GlassShatter");
 		for(var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);

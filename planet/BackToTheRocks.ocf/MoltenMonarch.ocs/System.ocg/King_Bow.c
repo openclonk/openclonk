@@ -24,7 +24,7 @@ public func FinishedAiming(object clonk, int angle)
 				AddEffect("ExplosiveArrow",arrow,100,1,this);
 				arrow->SetClrModulation(RGB(255,128,0));
 			}
-			Sound("BowShoot*.ogg");
+			Sound("BowShoot?");
 		}
 	}
 

@@ -19,7 +19,7 @@ public func ControlUp(object clonk)
 	{
 		targetdoor->OpenDoor();
 		SetAction("SpinLeft");
-		Sound("Chain.ogg");
+		Sound("Chain");
 	}
 }
 
@@ -29,7 +29,7 @@ public func ControlDown(object clonk)
 	{
 		targetdoor->CloseDoor();
 		SetAction("SpinRight");
-		Sound("Chain.ogg");
+		Sound("Chain");
 	}
 }
 

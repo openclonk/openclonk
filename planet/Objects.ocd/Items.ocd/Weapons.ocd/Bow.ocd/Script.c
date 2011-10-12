@@ -93,7 +93,7 @@ public func DuringLoad(object clonk) { return AddArrow(clonk); }
 // Called during loading then the arrow is added to the animation
 public func AddArrow(object clonk)
 {
-	Sound("BowLoad*.ogg");
+	Sound("BowLoad?");
 	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
 }
 
@@ -139,7 +139,7 @@ public func FinishedAiming(object clonk, int angle)
 		{
 			var arrow = Contents(0)->TakeObject();
 			arrow->Launch(angle,100,clonk);
-			Sound("BowShoot*.ogg");
+			Sound("BowShoot?");
 		}
 	}
 
@@ -215,12 +215,12 @@ func RejectCollect(id arrowid, object arrows)
 /*
 func Selection()
 {
-	Sound("DrawBow.ogg");
+	Sound("DrawBow");
 }
 
 func Deselection()
 {
-	Sound("PutAwayBow.ogg");
+	Sound("PutAwayBow");
 }
 */
 func Definition(def) {

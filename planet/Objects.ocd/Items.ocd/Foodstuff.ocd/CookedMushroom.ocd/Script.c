@@ -2,7 +2,7 @@
 
 func Hit()
 {
-	Sound("WoodHit*.ogg");
+	Sound("WoodHit?");
 }
 
 /* Eating */

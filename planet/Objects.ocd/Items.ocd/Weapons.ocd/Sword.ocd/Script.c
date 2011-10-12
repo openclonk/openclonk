@@ -107,7 +107,7 @@ public func ControlUse(object clonk, int x, int y)
 	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
-	this->Sound(Format("WeaponSwing%d.ogg", 1+Random(3)), false, nil, nil, nil);
+	this->Sound("WeaponSwing?", false, nil, nil, nil);
 	return true;
 }
 
@@ -219,7 +219,7 @@ func CheckStrike(iTime)
 				}
 				
 				// sound and done. We can only hit one target
-				Sound(Format("WeaponHit%d.ogg", 1+Random(3)), false);
+				Sound("WeaponHit?", false);
 				break;
 			}
 		}

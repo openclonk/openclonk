@@ -25,7 +25,7 @@ protected func FxIntMoveGateUpTimer(object target)
 {
 	if (GBackSolid(0, -20))
 	{
-		Sound("GateHit.ogg");
+		Sound("GateHit");
 		SetYDir(0);
 		return -1;
 	}
@@ -38,7 +38,7 @@ protected func FxIntMoveGateDownTimer(object target)
 {
 	if (GBackSolid(0, 19))
 	{
-		Sound("GateHit.ogg");
+		Sound("GateHit");
 		SetYDir(0);
 		return -1;
 	}

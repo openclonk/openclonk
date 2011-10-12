@@ -146,7 +146,7 @@ public func FinishedAiming(object clonk, int angle)
 	hook->Exit();
 	hook->Launch(angle, 100, clonk, this);
 	DetachMesh(hook_attach);
-	Sound("BowShoot*.ogg");
+	Sound("BowShoot?");
 
 	// Open the hand to let the string go and play the fire animation
 	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));

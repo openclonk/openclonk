@@ -9,7 +9,7 @@ protected func Construction()
 
 protected func Hit()
 {
-	Sound("CrystalHit*");
+	Sound("CrystalHit?");
 }
 
 local Collectible = 1;

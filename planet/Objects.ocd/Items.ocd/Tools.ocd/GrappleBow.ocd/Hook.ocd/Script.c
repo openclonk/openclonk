@@ -44,7 +44,7 @@ public func Launch(int angle, int str, object shooter, object bow)
 	SetXDir(xdir);
 	SetYDir(ydir);
 	SetR(angle);
-	Sound("ArrowShoot*.ogg");
+	Sound("ArrowShoot?");
 	
 	AddEffect("InFlight", this, 1, 1, this);
 }
@@ -59,7 +59,7 @@ private func Stick()
 {
 	if (GetEffect("InFlight",this))
 	{
-		Sound("ArrowHitGround.ogg");
+		Sound("ArrowHitGround");
 	
 		RemoveEffect("InFlight",this);
 	

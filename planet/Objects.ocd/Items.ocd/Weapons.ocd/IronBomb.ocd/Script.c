@@ -53,9 +53,9 @@ func DoExplode()
 		i--;
 	}
 	if(GBackLiquid())
-		Sound("BlastLiquid2.ogg");
+		Sound("BlastLiquid2");
 	else
-		Sound("BlastMetal.ogg");
+		Sound("BlastMetal");
 	CreateParticle("ExploSmoke", 0,0,0,0,390,RGBa(255,255,255,165));
 	Explode(14);
 }
