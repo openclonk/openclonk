@@ -194,6 +194,14 @@ bool C4Console::SaveScenario(const char * path)
 	// Open new scenario file
 	if (path)
 	{
+		// Close current scenario file
+		Game.ScenarioFile.Close();
+		// Copy current scenario file to target
+		if (!C4Group_CopyItem(Game.ScenarioFilename,path))
+		{
+			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),path).getData());
+			return false;
+		}
 		SCopy(path, Game.ScenarioFilename);
 		SetCaption(GetFilename(Game.ScenarioFilename));
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
@@ -263,8 +271,6 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
 	                true)) return false;
 	DefaultExtension(&filename,"ocs");
-	// Close current scenario file
-	Game.ScenarioFile.Close();
 	if (fSaveGame)
 		// Save game
 		return SaveGame(filename.getData());
