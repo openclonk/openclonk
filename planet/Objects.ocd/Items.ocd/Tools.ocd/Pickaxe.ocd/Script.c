@@ -1,6 +1,6 @@
 /*
 	Pickaxe
-	Author: Ringwaul
+	Author: Randrian/Ringwaul
 
 	A useful but tedious tool for breaking through rock without
 	explosives.
