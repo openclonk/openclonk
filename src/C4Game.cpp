@@ -2440,6 +2440,9 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
 			// Above IFT
 			while ((iTy>0) && GBackIFT(iTx,iTy)) iTy--;
+			// Still inside bounds
+			if (iTy < iY)
+				continue;
 			// Above semi solid
 			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
 				continue;
