@@ -153,14 +153,11 @@ C4AulScript::C4AulScript()
 {
 	// not compiled
 	State = ASS_NONE;
-	Script = NULL;
-	Code.clear();
-	LastCode = NULL;
 	IncludesResolved = false;
 
 	// defaults
 	Strict = MAXSTRICT;
-	Preparsing=Resolving=false;
+	Resolving=false;
 	Temporary = false;
 	LocalNamed.Reset();
 
@@ -171,8 +168,6 @@ C4AulScript::C4AulScript()
 	// prepare include list
 	Includes.clear();
 	Appends.clear();
-
-	stringTable = 0;
 }
 
 C4AulScript::~C4AulScript()
@@ -202,9 +197,6 @@ void C4AulScript::Clear()
 	while (Child0) // Child0->Unreg();
 			if (Child0->Delete()) delete Child0; else Child0->Unreg();
 	while (Func0) delete Func0;
-	// delete script+code
-	Script.Clear();
-	ClearCode();
 	// reset flags
 	State = ASS_NONE;
 }

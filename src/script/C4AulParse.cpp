@@ -126,7 +126,7 @@ class C4AulParseState
 {
 public:
 	enum Type { PARSER, PREPARSER };
-	C4AulParseState(C4AulScriptFunc *Fn, C4AulScript * a, enum Type Type):
+	C4AulParseState(C4AulScriptFunc *Fn, C4ScriptHost * a, enum Type Type):
 			Fn(Fn), a(a), SPos(Fn ? Fn->Script : a->Script.getData()),
 			TokenType(ATT_INVALID),
 			Done(false),
@@ -138,7 +138,7 @@ public:
 	{ }
 	~C4AulParseState()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
-	C4AulScriptFunc *Fn; C4AulScript * a;
+	C4AulScriptFunc *Fn; C4ScriptHost * a;
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
@@ -271,8 +271,8 @@ C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, cons
 		if (state->Fn->pOrgScript && state->SPos)
 			sMessage.AppendFormat(", %s:%d:%d)",
 			                      state->Fn->pOrgScript->ScriptName.getData(),
-			                      SGetLine(state->Fn->pOrgScript->Script.getData(), state->SPos),
-			                      SLineGetCharacters(state->Fn->pOrgScript->Script.getData(), state->SPos));
+			                      SGetLine(state->Fn->pOrgScript->GetScript(), state->SPos),
+			                      SLineGetCharacters(state->Fn->pOrgScript->GetScript(), state->SPos));
 		else
 			sMessage.AppendChar(')');
 	}
@@ -281,8 +281,8 @@ C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, cons
 		// Script name
 		sMessage.AppendFormat(" (%s:%d:%d)",
 		                      state->a->ScriptName.getData(),
-		                      SGetLine(state->a->Script.getData(), state->SPos),
-		                      SLineGetCharacters(state->a->Script.getData(), state->SPos));
+		                      SGetLine(state->a->GetScript(), state->SPos),
+		                      SLineGetCharacters(state->a->GetScript(), state->SPos));
 	}
 
 }
@@ -749,7 +749,7 @@ static const char * GetTTName(C4AulBCCType e)
 	}
 }
 
-void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
+void C4ScriptHost::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 {
 	// store chunk
 	C4AulBCC bcc;
@@ -769,7 +769,7 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	}
 }
 
-void C4AulScript::RemoveLastBCC()
+void C4ScriptHost::RemoveLastBCC()
 {
 	C4AulBCC *pBCC = &Code.back();
 	switch (pBCC->bccType)
@@ -787,7 +787,7 @@ void C4AulScript::RemoveLastBCC()
 		LastCode = NULL;
 }
 
-void C4AulScript::ClearCode()
+void C4ScriptHost::ClearCode()
 {
 	while(Code.size() > 0)
 		RemoveLastBCC();
@@ -805,12 +805,19 @@ C4AulBCC * C4AulScriptFunc::GetCode()
 	return &GetCodeOwner()->Code[CodePos];
 }
 
-C4AulScript * C4AulScriptFunc::GetCodeOwner()
+C4ScriptHost * C4AulScriptFunc::GetCodeOwner()
 {
-	return Owner == Owner->Engine ? LinkedTo->Owner : Owner;
+	if (Owner == Owner->Engine)
+	{
+		return LinkedTo->Owner->GetScriptHost();
+	}
+	else
+	{
+		return Owner->GetScriptHost();
+	}
 }
 
-bool C4AulScript::Preparse()
+bool C4ScriptHost::Preparse()
 {
 	// handle easiest case first
 	if (State < ASS_NONE) return false;
@@ -825,7 +832,7 @@ bool C4AulScript::Preparse()
 		// belongs to this script?
 		if (Func0->SFunc())
 			if (Func0->SFunc()->pOrgScript == this)
-				// then desroy linked funcs, too
+				// then destroy linked funcs, too
 				Func0->DestroyLinked();
 		// destroy func
 		delete Func0;
@@ -839,9 +846,6 @@ bool C4AulScript::Preparse()
 	{
 		Engine->nonStrictCnt++;
 	}
-
-	// done, reset state var
-	Preparsing=false;
 
 	// #include will have to be resolved now...
 	IncludesResolved = false;
@@ -1259,20 +1263,19 @@ void C4AulParseState::UnexpectedToken(const char * Expected)
 	throw new C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContext* context)
+void C4AulScriptFunc::ParseFn(bool fExprOnly, C4AulScriptContext* context)
 {
 	// check if fn overloads other fn (all func tables are built now)
 	// *MUST* check Fn->Owner-list, because it may be the engine (due to linked globals)
-	if ((Fn->OwnerOverloaded = Fn->Owner->GetOverloadedFunc(Fn)))
-		if (Fn->Owner == Fn->OwnerOverloaded->Owner)
-			Fn->OwnerOverloaded->OverloadedBy=Fn;
+	if ((OwnerOverloaded = Owner->GetOverloadedFunc(this)))
+		if (Owner == OwnerOverloaded->Owner)
+			OwnerOverloaded->OverloadedBy=this;
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
-	assert(Fn->GetCodeOwner() == this);
-	Fn->CodePos = Code.size();
+	CodePos = GetCodeOwner()->Code.size();
 	// parse
-	C4AulParseState state(Fn, this, C4AulParseState::PARSER);
+	C4AulParseState state(this, GetCodeOwner(), C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
 	// get first token
 	state.Shift();
@@ -1281,7 +1284,7 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly, C4AulScriptContex
 	else
 	{
 		state.Parse_Expression();
-		AddBCC(AB_RETURN, 0, state.SPos);
+		GetCodeOwner()->AddBCC(AB_RETURN, 0, state.SPos);
 	}
 	// done
 	return;
@@ -2927,17 +2930,22 @@ void C4AulParseState::Parse_Const()
 
 bool C4AulScript::Parse()
 {
+	// parse children
+	C4AulScript *s = Child0;
+	while (s) { s->Parse(); s = s->Next; }
+	return true;
+}
+
+bool C4ScriptHost::Parse()
+{
+	C4AulScript::Parse();
 	if (DEBUG_BYTECODE_DUMP)
 	{
 		fprintf(stderr, "parsing %s...\n", ScriptName.getData());
 	}
-	// parse children
-	C4AulScript *s = Child0;
-	while (s) { s->Parse(); s = s->Next; }
 	// check state
 	if (State != ASS_LINKED) return false;
-	// don't parse global funcs again, as they're parsed already through links
-	if (this == Engine) return false;
+
 	// delete existing code
 	ClearCode();
 
@@ -2958,7 +2966,8 @@ bool C4AulScript::Parse()
 			// parse function
 			try
 			{
-				ParseFn(Fn);
+				assert(Fn->GetCodeOwner() == this);
+				Fn->ParseFn();
 			}
 			catch (C4AulError *err)
 			{
@@ -3074,7 +3083,7 @@ bool C4AulScript::Parse()
 C4AulScript *C4AulScript::FindFirstNonStrictScript()
 {
 	// self is not #strict?
-	if (Script && Strict < MAXSTRICT) return this;
+	if (Strict < MAXSTRICT) return this;
 	// search children
 	C4AulScript *pNonStrScr;
 	for (C4AulScript *pScr=Child0; pScr; pScr=pScr->Next)

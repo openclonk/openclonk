@@ -38,11 +38,31 @@ public:
 	void Clear();
 	bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
+	const char *GetScript() const { return Script.getData(); }
+	virtual C4ScriptHost * GetScriptHost() { return this; }
 protected:
 	void SetError(const char *szMessage);
 	void MakeScript();
 	bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
+
+
+	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
+	void ClearCode();
+	bool Preparse(); // preparse script; return if successfull
+	bool Parse(); // parse preparsed script; return if successfull
+	int GetCodePos() const { return Code.size(); }
+	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
+	C4AulBCC *GetLastCode() { return LastCode; }
+
+	StdStrBuf Script; // script
+	std::vector<C4AulBCC> Code;
+	std::vector<const char *> PosForCode;
+	C4AulBCC * LastCode;
+	friend class C4AulParseState;
+	friend class C4AulScriptFunc;
+	friend class C4AulDebug;
 };
 
 

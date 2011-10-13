@@ -110,6 +110,7 @@ class C4RegionList;
 class C4RoundResult;
 class C4RoundResults;
 class C4Scenario;
+class C4ScriptHost;
 class C4SoundSystem;
 class C4Stream;
 class C4String;

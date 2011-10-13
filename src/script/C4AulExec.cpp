@@ -1084,10 +1084,10 @@ C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPass
 }
 
 
-class C4DirectExecScript: public C4AulScript
+class C4DirectExecScript: public C4ScriptHost
 {
 public:
-	C4DirectExecScript(C4AulScript * a, C4Object * pObj, const char *szContext): p(NULL)
+	C4DirectExecScript(C4AulScript * a, C4Object * pObj, const char *szContext, C4LangStringTable * stringTable): p(NULL)
 	{
 		ScriptName = FormatString("%s in %s", szContext, a->ScriptName.getData());
 		Strict = a->Strict;
@@ -1100,6 +1100,7 @@ public:
 		}
 		// FIXME: calls from definitions
 		ClearCode();
+		this->stringTable = stringTable;
 	}
 	virtual C4PropList * GetPropList() { return p; }
 	C4PropList * p;
@@ -1115,8 +1116,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// profiler
 	AulExec.StartDirectExec();
 	// Create a new temporary script as child of this script
-	C4AulScript* pScript = new C4DirectExecScript(this, pObj, szContext);
-	pScript->stringTable = stringTable;
+	C4ScriptHost* pScript = new C4DirectExecScript(this, pObj, szContext, stringTable);
 	pScript->Reg2List(Engine, this);
 	// Add a new function
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, 0);
@@ -1125,7 +1125,8 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// Parse function
 	try
 	{
-		pScript->ParseFn(pFunc, true, context);
+		assert(pFunc->GetCodeOwner() == pScript);
+		pFunc->ParseFn(true, context);
 	}
 	catch (C4AulError *ex)
 	{
@@ -1135,7 +1136,6 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		delete pScript;
 		return C4VNull;
 	}
-	pFunc->CodePos = 1;
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));

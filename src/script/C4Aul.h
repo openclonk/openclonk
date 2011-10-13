@@ -211,6 +211,7 @@ class C4AulFunc
 	friend class C4AulScriptEngine;
 	friend class C4AulFuncMap;
 	friend class C4AulParseState;
+	friend class C4ScriptHost;
 
 public:
 	C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true); // constructor
@@ -260,7 +261,7 @@ public:
 	C4ValueMapNames ParNamed; // list of named pars in this function
 	int ParCount;
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
+	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
 			OwnerOverloaded(NULL), ParCount(0),
@@ -270,6 +271,7 @@ public:
 		ParNamed.Reset(); // safety :)
 	} // constructor
 
+	void ParseFn(bool fExprOnly = false, C4AulScriptContext* context = NULL);
 	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
@@ -286,11 +288,11 @@ public:
 	StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
-	C4AulScript * GetCodeOwner();
+	C4ScriptHost * GetCodeOwner();
 
 	time_t tProfileTime; // internally set by profiler
 
-	friend class C4AulScript;
+	friend class C4ScriptHost;
 };
 
 // defined function class
@@ -370,11 +372,6 @@ public:
 // script class
 class C4AulScript
 {
-// MSVC maybe needs this.
-#ifdef _MSC_VER
-	friend class C4AulScript;
-#endif
-	friend class C4AulDebug;
 public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
@@ -389,8 +386,8 @@ public:
 	enum Strict Strict; // new or even newer syntax?
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
-	const char *GetScript() const { return Script.getData(); }
 	virtual C4PropList * GetPropList() { return 0; }
+	virtual C4ScriptHost * GetScriptHost() { return 0; }
 	C4AulFunc *GetFuncRecursive(const char *pIdtf); // search function by identifier, including global funcs
 	C4AulScriptFunc *GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailSafe = false); // get local sfunc, check access, check '~'-safety
 	C4AulScriptFunc *GetSFunc(const char *pIdtf); // get local script function by name
@@ -412,6 +409,8 @@ public:
 	friend class C4AulScriptFunc;
 	friend class C4AulScriptEngine;
 	friend class C4AulParseState;
+	friend class C4AulDebug;
+	friend class C4ScriptHost;
 
 	// Translate a string using the script's lang table
 	std::string Translate(const std::string &text) const;
@@ -423,12 +422,7 @@ protected:
 	C4AulScriptEngine *Engine; //owning engine
 	C4AulScript *Owner, *Prev, *Next, *Child0, *ChildL; // tree structure
 
-	StdStrBuf Script; // script
-	std::vector<C4AulBCC> Code;
-	std::vector<const char *> PosForCode;
-	C4AulBCC * LastCode;
 	C4AulScriptState State; // script state
-	bool Preparsing; // set while preparse
 	bool Resolving; // set while include-resolving, to catch circular includes
 
 	std::list<C4ID> Includes; // include list
@@ -438,27 +432,16 @@ protected:
 	C4AulFunc *GetOverloadedFunc(C4AulFunc *ByFunc);
 	C4AulFunc *GetFunc(const char *pIdtf); // get local function by name
 
-	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
-	void RemoveLastBCC();
-	void ClearCode();
-	bool Preparse(); // preparse script; return if successfull
-	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false, C4AulScriptContext* context = NULL); // parse single script function
-
-	bool Parse(); // parse preparsed script; return if successfull
-
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
 	bool IncludesResolved;
 	void AppendTo(C4AulScript &Scr, bool bHighPrio); // append to given script
-	void UnLink(); // reset to unlinked state
+	virtual void UnLink(); // reset to unlinked state
 	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
+	virtual bool Parse();
 
 	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
-
-	int GetCodePos() const { return Code.size(); }
-	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
-	C4AulBCC *GetLastCode() { return LastCode; }
 };
 
 // holds all C4AulScripts

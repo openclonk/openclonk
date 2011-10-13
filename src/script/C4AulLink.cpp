@@ -161,9 +161,6 @@ void C4AulScript::UnLink()
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;
 
-	// check if byte code needs to be freed
-	ClearCode();
-
 	if (GetPropList()) GetPropList()->C4PropList::Clear();
 
 	// delete included/appended functions
@@ -181,9 +178,9 @@ void C4AulScript::UnLink()
 
 		pFunc = pNextFunc;
 	}
+
 	// includes will have to be re-resolved now
 	IncludesResolved = false;
-
 
 	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
 }

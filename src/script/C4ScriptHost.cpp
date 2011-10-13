@@ -35,13 +35,21 @@
 
 /*--- C4ScriptHost ---*/
 
-C4ScriptHost::C4ScriptHost() { }
+C4ScriptHost::C4ScriptHost()
+{
+	Script = NULL;
+	Code.clear();
+	LastCode = NULL;
+	stringTable = 0;
+}
 C4ScriptHost::~C4ScriptHost() { Clear(); }
 
 void C4ScriptHost::Clear()
 {
 	C4AulScript::Clear();
 	ComponentHost.Clear();
+	Script.Clear();
+	ClearCode();
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
