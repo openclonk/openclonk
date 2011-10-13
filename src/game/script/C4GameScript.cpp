@@ -1382,7 +1382,7 @@ C4Value GetValByStdCompiler(const char *strEntry, const char *strSection, int iE
 
 static C4Value FnGetDefCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
 {
-	if (!cthr->Def)
+	if (!cthr->Def || !cthr->Def->GetDef())
 		throw new NeedNonGlobalContext("GetDefCoreVal");
 
 	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
@@ -1390,7 +1390,7 @@ static C4Value FnGetDefCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Valu
 	if (strSection && !*strSection) strSection = NULL;
 	long iEntryNr = iEntryNr_C4V->getInt();
 
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Def, "DefCore"));
+	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Def->GetDef(), "DefCore"));
 }
 
 static C4Value FnGetObjectVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)

@@ -612,10 +612,10 @@ static long FnGetBreath(C4AulObjectContext *cthr)
 static long FnGetMass(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetMass");
 		else
-			return cthr->Def->Mass;
+			return cthr->Def->GetDef()->Mass;
 	else
 		return cthr->Obj->Mass;
 }
@@ -781,10 +781,10 @@ static bool FnSetKiller(C4AulObjectContext *cthr, long iNewKiller)
 static long FnGetCategory(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetCategory");
 		else
-			return cthr->Def->Category;
+			return cthr->Def->GetDef()->Category;
 	else
 		return cthr->Obj->Category;
 }
@@ -802,10 +802,10 @@ static long FnGetDamage(C4AulObjectContext *cthr)
 static long FnGetValue(C4AulContext *cthr, C4Object *pInBase, long iForPlayer)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetValue");
 		else
-			return cthr->Def->GetValue(pInBase, iForPlayer);
+			return cthr->Def->GetDef()->GetValue(pInBase, iForPlayer);
 	else
 		return cthr->Obj->GetValue(pInBase, iForPlayer);
 }
@@ -1525,12 +1525,11 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4Def *p
 
 static long FnGetDefBottom(C4AulContext* cthr)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def)
-			throw new NeedNonGlobalContext("GetDefBottom");
+	if (!cthr->Def || !cthr->Def->GetDef())
+		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def);
-	return cthr->Def->Shape.y+cthr->Def->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
+	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def->GetDef());
+	return cthr->Def->GetDef()->Shape.y+cthr->Def->GetDef()->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
 }
 
 static bool FnSetMenuSize(C4AulObjectContext* cthr, long iCols, long iRows)

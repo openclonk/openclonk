@@ -131,7 +131,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 	C4AulScriptContext ctx;
 	ctx.tTime = 0;
 	ctx.Obj = pObj;
-	ctx.Def = pDef;
+	ctx.Def = pObj ? static_cast<C4PropList *>(pObj) : static_cast<C4PropList *>(pDef);
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
@@ -738,7 +738,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PushNullVals(pFunc->GetParCount() - (pCurVal + 1 - pPars));
 
 				// Call function
-				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
+				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pTargetVal->_getPropList());
 				if (pNewCPos)
 				{
 					// Jump
@@ -791,14 +791,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	return C4VNull;
 }
 
-C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj, C4Def *pDef)
+C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList *pContext)
 {
 	// No object given? Use current context
-	if (!pObj && !pDef)
+	if (!pContext)
 	{
 		assert(pCurCtx >= Contexts);
-		pObj = pCurCtx->Obj;
-		pDef = pCurCtx->Def;
+		pContext = pCurCtx->Def;
 	}
 
 	// Convert parameters (typecheck)
@@ -815,12 +814,12 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	if (pSFunc)
 	{
 		// Check context
-		assert(!pSFunc->Owner->Def || pDef == pSFunc->Owner->Def);
+		assert(!pSFunc->Owner->Def || pContext->GetDef() == pSFunc->Owner->Def);
 
 		// Push a new context
 		C4AulScriptContext ctx;
-		ctx.Obj = pObj;
-		ctx.Def = pDef;
+		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		ctx.Def = pContext;
 		ctx.Caller = pCurCtx;
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
@@ -843,15 +842,15 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	{
 
 		// Create new context
-		C4AulContext CallCtx;
-		CallCtx.Obj = pObj;
-		CallCtx.Def = pDef;
-		CallCtx.Caller = pCurCtx;
+		C4AulContext ctx;
+		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		ctx.Def = pContext;
+		ctx.Caller = pCurCtx;
 
 #ifdef DEBUGREC_SCRIPT
 		StdStrBuf sCallText;
-		if (pObj)
-			sCallText.AppendFormat("Object(%d): ", pObj->Number);
+		if (pContext && pContext->GetObject())
+			sCallText.AppendFormat("Object(%d): ", pContext->GetObject()->Number);
 		sCallText.Append(pFunc->Name);
 		sCallText.AppendChar('(');
 		for (int i=0; i<C4AUL_MAX_Par; ++i)
@@ -883,9 +882,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		C4AulScriptContext *pCtx = pCurCtx;
 #endif
 		if (pReturn > pCurVal)
-			PushValue(pFunc->Exec(&CallCtx, pPars, true));
+			PushValue(pFunc->Exec(&ctx, pPars, true));
 		else
-			pReturn->Set(pFunc->Exec(&CallCtx, pPars, true));
+			pReturn->Set(pFunc->Exec(&ctx, pPars, true));
 #ifdef _DEBUG
 		assert(pCtx == pCurCtx);
 #endif
@@ -896,8 +895,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		{
 			// Make dummy context
 			C4AulScriptContext ctx;
-			ctx.Obj = pObj;
-			ctx.Def = pDef;
+			ctx.Obj = pContext ? pContext->GetObject() : 0;
+			ctx.Def = pContext;
 			ctx.Caller = pCurCtx;
 			ctx.Return = pReturn;
 			ctx.Pars = pPars;
@@ -1045,7 +1044,7 @@ C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
 	// construct a dummy caller context
 	C4AulContext ctx;
 	ctx.Obj = pObj;
-	ctx.Def = pObj ? pObj->Def : NULL;
+	ctx.Def = pObj ? pObj : NULL;
 	ctx.Caller = NULL;
 	// execute
 	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);

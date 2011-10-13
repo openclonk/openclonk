@@ -431,8 +431,8 @@ static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
 	if (cthr->Obj)
 		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
-	else if (cthr->Def)
-		return cthr->Def->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+	else if (cthr->Def && cthr->Def->GetDef())
+		return cthr->Def->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 	else
 		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 }
@@ -559,12 +559,12 @@ static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
 {
 	assert(!ctx->Obj || ctx->Def == ctx->Obj->Def);
 	if (!text || text->GetData().isNull()) return NULL;
-	// Find correct script: containing script unless -> operator used
+	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
-	if (ctx->Obj == ctx->Caller->Obj && ctx->Def == ctx->Caller->Def)
-		script = ctx->Caller->Func->pOrgScript;
+	if (ctx->Def && ctx->Def->GetDef())
+		script = &(ctx->Def->GetDef()->Script);
 	else
-		script = &ctx->Def->Script;
+		script = ctx->Caller->Func->pOrgScript;
 	assert(script);
 	try
 	{

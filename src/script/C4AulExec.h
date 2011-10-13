@@ -202,7 +202,7 @@ private:
 		else
 			throw new C4AulExecError(pCurCtx->Obj, FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
-	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj = NULL, C4Def *pDef = NULL);
+	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = NULL);
 };
 
 extern C4AulExec AulExec;
