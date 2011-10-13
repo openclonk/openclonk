@@ -60,16 +60,15 @@ public:
 	~C4SoundEffect();
 public:
 	char Name[C4MaxSoundName+1];
-	int32_t UsageTime, Instances;
+	int32_t Instances;
 	int32_t SampleRate, Length;
-	bool Static;
 	C4SoundHandle pSample;
 	C4SoundInstance *FirstInst;
 	C4SoundEffect *Next;
 public:
 	void Clear();
-	bool Load(const char *szFileName, C4Group &hGroup, bool fStatic);
-	bool Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw=false); // load directly from memory
+	bool Load(const char *szFileName, C4Group &hGroup);
+	bool Load(BYTE *pData, size_t iDataLen, bool fRaw=false); // load directly from memory
 	void Execute();
 	C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
 	C4SoundInstance *GetInstance(C4Object *pObj);
@@ -124,7 +123,7 @@ public:
 	~C4SoundSystem();
 	void Clear();
 	void Execute();
-	int32_t LoadEffects(C4Group &hGroup, bool fStatic = true);
+	int32_t LoadEffects(C4Group &hGroup);
 	C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
 	C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
 	bool Init();
@@ -134,9 +133,7 @@ protected:
 	C4SoundEffect *FirstSound;
 	void ClearEffects();
 	C4SoundEffect* GetEffect(const char *szSound);
-	C4SoundEffect* AddEffect(const char *szSound);
 	int32_t RemoveEffect(const char *szFilename);
-	int32_t EffectInBank(const char *szSound);
 };
 
 class C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj=NULL, int32_t iCustomFalloffDistance=0);

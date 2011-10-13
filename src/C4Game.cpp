@@ -297,7 +297,7 @@ bool C4Game::PreInit()
 	// this loads font definitions in this group as well
 	// the function may return false, if no extra group is present - that is OK
 	Extra.InitGroup();
-	
+
 	Log(LoadResStr("IDS_PRC_GFXRES"));
 	if (!GraphicsResource.Init()) return false;
 	Game.SetInitProgress(30.0f);
@@ -564,7 +564,7 @@ void C4Game::Clear()
 
 	// exit gui
 	pGUI->Clear();
-	
+
 	// next mission (shoud have been transferred to C4Application now if next mission was desired)
 	NextMission.Clear(); NextMissionText.Clear(); NextMissionDesc.Clear();
 
@@ -618,6 +618,7 @@ void C4Game::Clear()
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
+	Application.SoundSystem.Init(); // clear it up and re-init it for normal use
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -2008,6 +2009,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(25);
 
+		// Sound (first part, some are loaded with the definitions, the (section) local file goes later)
+		Application.SoundSystem.Init();
+
 		// Definitions
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
@@ -2040,6 +2044,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		if (!VideoPlayer.PreloadVideos(hGroup)) return false;
 		SetInitProgress(60);
 	}
+
+	// Load setion sounds
+	Application.SoundSystem.LoadEffects(hGroup);
 
 	// determine startup player count
 	if (!FrameCounter) StartupPlayerCount = PlayerInfos.GetStartupCount();
