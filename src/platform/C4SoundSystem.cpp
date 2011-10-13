@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
  * Copyright (c) 2001, 2005-2006, 2008  Sven Eberhardt
  * Copyright (c) 2003-2005  Peter Wortmann
- * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
+ * Copyright (c) 2005-2006, 2009, 2011  GÃ¼nther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht
