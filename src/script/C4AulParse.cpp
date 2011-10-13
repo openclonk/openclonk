@@ -187,7 +187,7 @@ private:
 	int iStack;
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
-	void AddBCC(C4AulBCCType eType, intptr_t X = 0);
+	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
 
@@ -943,9 +943,9 @@ int C4AulParseState::GetStackValue(C4AulBCCType eType, intptr_t X)
 	return 0;
 }
 
-void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
+int C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 {
-	if (Type != PARSER) return;
+	if (Type != PARSER) return -1;
 
 	// Track stack size
 	iStack += GetStackValue(eType, X);
@@ -969,7 +969,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			// Empty? Remove it.
 			if (!pCPos1->Par.i)
 				a->RemoveLastBCC();
-			return;
+			return a->GetCodePos() - 1;
 		}
 
 		// Prune unneeded Incs / Decs
@@ -979,7 +979,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			{
 				pCPos1->bccType = eType;
 				pCPos1->Par.i = X;
-				return;
+				return a->GetCodePos() - 1;
 			}
 			else
 			{
@@ -994,7 +994,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		if(eType == AB_STACK && X == -1 && pCPos1->bccType == AB_STACK_SET)
 		{
 			pCPos1->bccType = AB_POP_TO;
-			return;
+			return a->GetCodePos() - 1;
 		}
 
 		// Reduce some constructs like SUM + INT 1 to INC or DEC
@@ -1007,7 +1007,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			else
 				pCPos1->bccType = AB_Dec;
 			pCPos1->Par.i = X;
-			return;
+			return a->GetCodePos() - 1;
 		}
 
 	}
@@ -1017,6 +1017,8 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 
 	// Reset jump flag
 	fJump = false;
+
+	return a->GetCodePos() - 1;
 }
 
 void C4AulParseState::RemoveLastBCC()
@@ -1963,8 +1965,7 @@ void C4AulParseState::Parse_While()
 	Parse_Expression();
 	Match(ATT_BCLOSE);
 	// Check condition
-	int iCond = a->GetCodePos();
-	AddBCC(AB_CONDN);
+	int iCond = AddBCC(AB_CONDN);
 	// We got a loop
 	PushLoop();
 	// Execute body
@@ -1989,15 +1990,13 @@ void C4AulParseState::Parse_If()
 	Parse_Expression();
 	Match(ATT_BCLOSE);
 	// create bytecode, remember position
-	int iCond = a->GetCodePos();
-	AddBCC(AB_CONDN);
+	int iCond = AddBCC(AB_CONDN);
 	// parse controlled statement
 	Parse_Statement();
 	if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Else))
 	{
 		// add jump
-		int iJump = a->GetCodePos();
-		AddBCC(AB_JUMP);
+		int iJump = AddBCC(AB_JUMP);
 		// set condition jump target
 		SetJumpHere(iCond);
 		Shift();
@@ -2034,8 +2033,7 @@ void C4AulParseState::Parse_For()
 		iCondition = JumpHere();
 		Parse_Expression();
 		// Jump out
-		iJumpOut = a->GetCodePos();
-		AddBCC(AB_CONDN);
+		iJumpOut = AddBCC(AB_CONDN);
 	}
 	// Consume second semicolon
 	Match(ATT_SCOLON);
@@ -2044,8 +2042,7 @@ void C4AulParseState::Parse_For()
 	if (TokenType != ATT_BCLOSE)
 	{
 		// Must jump over incrementor
-		iJumpBody = a->GetCodePos();
-		AddBCC(AB_JUMP);
+		iJumpBody = AddBCC(AB_JUMP);
 		// Add incrementor code
 		iIncrementor = JumpHere();
 		Parse_Expression();
@@ -2113,12 +2110,10 @@ void C4AulParseState::Parse_ForEach()
 	// push initial position (0)
 	AddBCC(AB_INT);
 	// get array element
-	int iStart = a->GetCodePos();
-	AddBCC(AB_FOREACH_NEXT, iVarID);
+	int iStart = AddBCC(AB_FOREACH_NEXT, iVarID);
 	// jump out (FOREACH_NEXT will jump over this if
 	// we're not at the end of the array yet)
-	int iCond = a->GetCodePos();
-	AddBCC(AB_JUMP);
+	int iCond = AddBCC(AB_JUMP);
 	// got a loop...
 	PushLoop();
 	// loop body
@@ -2459,9 +2454,8 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			if (C4ScriptOpMap[OpID].Code == AB_JUMPAND || C4ScriptOpMap[OpID].Code == AB_JUMPOR)
 			{
 				// create bytecode, remember position
-				int iCond = a->GetCodePos();
 				// Jump or discard first parameter
-				AddBCC(C4ScriptOpMap[OpID].Code);
+				int iCond = AddBCC(C4ScriptOpMap[OpID].Code);
 				// parse second expression
 				Parse_Expression(C4ScriptOpMap[OpID].Priority);
 				// set condition jump target
