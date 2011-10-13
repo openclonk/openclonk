@@ -219,9 +219,8 @@ func DoStrike(clonk, angle)
 		RemoveEffect("DuringClubShoot", clonk);
 }
 
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(-30,0,0,1),def);

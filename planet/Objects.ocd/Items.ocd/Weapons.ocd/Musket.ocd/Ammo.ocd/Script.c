@@ -4,7 +4,7 @@
 
 public func MaxStackCount() { return 8; }
 
-public func IsMusketAmmo() { return 1; }
+public func IsMusketAmmo() { return true; }
 
 public func ProjectileDamage() { return 15; }
 public func FlightTime() { return 30; }
@@ -108,6 +108,8 @@ public func TrailColor(int time)
 {
 	return RGBa(255,255,255,240*Max(0,FlightTime()-time)/FlightTime());
 }
+
+public func IsArmoryProduct() { return true; }
 
 local ActMap = {
 

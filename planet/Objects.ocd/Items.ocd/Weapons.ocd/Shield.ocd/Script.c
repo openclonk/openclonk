@@ -294,6 +294,9 @@ public func GetCarryTransform(clonk, sec, back)
 	return Trans_Rotate(180,1,0,0);
 }
 
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
+
 /* Definition */
 
 func Definition(def) {

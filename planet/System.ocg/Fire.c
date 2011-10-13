@@ -66,7 +66,7 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	// safety
 	if (!target) return -1;
 	// temp readd
-	if (temp) { return 1; }
+	if (temp) return 1;
 	// fail if already on fire
 	//if (target->OnFire()) return -1;
 	

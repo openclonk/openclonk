@@ -25,11 +25,6 @@ public func GetCarryTransform()
 	return Trans_Rotate(90, 0, 1, 0);
 }
 
-
-public func IsTool() { return 1; }
-
-public func IsToolProduct() { return 1; }
-
 local magic_number;
 local carry_bone;
 public func ControlUse(object clonk, int x, int y)
@@ -282,6 +277,9 @@ func FxSwordStrikeSlowStop(pTarget, effect, iCause, iTemp)
 {
 	pTarget->PopActionSpeed("Walk");
 }
+
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("Collectible", 1, def);

@@ -178,6 +178,9 @@ func RejectCollect(id shotid, object shot)
 	if(!(shot->~IsMusketAmmo())) return true;
 }
 
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)),def);
 }

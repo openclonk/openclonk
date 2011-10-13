@@ -5,7 +5,7 @@ protected func Hit()
 	Sound("RockHit?");
 }
 
-public func IsToolProduct() { return 1; }
+public func IsToolProduct() { return true; }
 
 /*-- Line connection --*/
 

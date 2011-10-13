@@ -11,9 +11,9 @@ protected func Construction()
 	SetProperty("MeshTransformation",Trans_Rotate(13,0,1,0));
 }
 
-public func IsLorry() { return 1; }
+public func IsLorry() { return true; }
 
-public func IsToolProduct() { return 1; }
+public func IsToolProduct() { return true; }
 
 local drive_anim;
 local tremble_anim;

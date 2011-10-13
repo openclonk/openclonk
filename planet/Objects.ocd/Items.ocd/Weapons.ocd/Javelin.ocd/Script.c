@@ -211,6 +211,9 @@ protected func FxFlightStop(object pTarget, effect)
 	pTarget->SetProperty("Collectible", 1);
 }
 
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40,0,0,1),Trans_Rotate(-10,1,0,0)),def);
 }

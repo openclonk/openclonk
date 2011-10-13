@@ -223,6 +223,10 @@ func Deselection()
 	Sound("PutAwayBow");
 }
 */
+
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-2000,-3000,-2000),Trans_Rotate(180,0,1,0),Trans_Rotate(-25,1,0,1)),def);
 }

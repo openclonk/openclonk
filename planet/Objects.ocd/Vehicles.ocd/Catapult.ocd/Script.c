@@ -11,7 +11,7 @@ local olddir;
 local dir;
 local clonkmesh;
 
-public func IsToolProduct() { return 1; }
+public func IsToolProduct() { return true; }
 
 protected func Initialize()
 {

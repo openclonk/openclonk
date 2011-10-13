@@ -14,7 +14,7 @@ local olddir;
 
 static const Fire_Velocity = 175;
 
-public func IsToolProduct() { return 1; }
+public func IsToolProduct() { return true; }
 
 protected func Initialize()
 {

@@ -103,7 +103,7 @@ public func OnProjectileHit()
 	Incinerate();
 }
 
-func IsAlchemyProduct() { return 1; }
+func IsAlchemyProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 
 local Collectible = 1;

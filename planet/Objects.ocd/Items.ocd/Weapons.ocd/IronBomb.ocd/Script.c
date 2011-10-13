@@ -73,6 +73,9 @@ protected func RejectEntrance()
 	return GetAction() == "Fuse" || GetAction() == "Ready";
 }
 
+public func IsWeapon() { return true; }
+public func IsArmoryProduct() { return true; }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
