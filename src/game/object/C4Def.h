@@ -191,8 +191,6 @@ public:
 	int32_t Count; // number of instanciations
 	C4AulScriptFunc *TimerCall;
 
-	// Currently cannot have script host in frontend because that
-	// would need C4Script, C4AulScript, and all that as well...
 	C4DefScriptHost Script;
 	C4LangStringTable StringTable;
 

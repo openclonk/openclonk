@@ -433,7 +433,7 @@ void C4Console::UpdateInputCtrl()
 {
 	ClearInput();
 	// add global and standard functions
-	std::list <char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
+	std::list <const char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
 	SetInputFunctions(functions);
 }
 

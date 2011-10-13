@@ -260,10 +260,10 @@ C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, cons
 	                Warn ? "WARNING" : "ERROR",
 	                pMsg,
 	                pIdtf ? pIdtf : "");
-	if (state->Fn && *(state->Fn->Name))
+	if (state->Fn && state->Fn->GetName())
 	{
 		// Show function name
-		sMessage.AppendFormat(" (in %s", state->Fn->Name);
+		sMessage.AppendFormat(" (in %s", state->Fn->GetName());
 
 		// Exact position
 		if (state->Fn->pOrgScript && state->SPos)
@@ -2273,8 +2273,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 					Warn("using deprecated function ", Idtf);
 				Shift();
 				// Function parameters for all functions except "this", which can be used without
-				if (!SEqual(FoundFn->Name, C4AUL_this) || TokenType == ATT_BOPEN)
-					Parse_Params(FoundFn->GetParCount(), FoundFn->Name, FoundFn);
+				if (!SEqual(FoundFn->GetName(), C4AUL_this) || TokenType == ATT_BOPEN)
+					Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
 				else
 					AddBCC(AB_STACK, FoundFn->GetParCount());
 				AddBCC(AB_FUNC, (intptr_t) FoundFn);
@@ -3004,7 +3004,7 @@ bool C4AulScript::Parse()
 			}
 			if (!Fn)
 				continue;
-			fprintf(stderr, "%s:\n", Fn->Name);
+			fprintf(stderr, "%s:\n", Fn->GetName());
 			for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
 			{
 				C4AulBCCType eType = pBCC->bccType;
@@ -3012,7 +3012,7 @@ bool C4AulScript::Parse()
 				switch (eType)
 				{
 				case AB_FUNC:
-					fprintf(stderr, "\t%s\n", pBCC->Par.f->Name); break;
+					fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
 				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_PROP:
 					fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
 				case AB_STRING:

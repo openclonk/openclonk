@@ -475,16 +475,16 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 			C4AulScriptFunc *pSFunc = pFunc->SFunc();
 			if (!pSFunc)
 			{
-				LogF("%s%s (engine)", szPrefix, pFunc->Name);
+				LogF("%s%s (engine)", szPrefix, pFunc->GetName());
 			}
 			else if (!pSFunc->pOrgScript)
 			{
-				LogF("%s%s (no owner)", szPrefix, pSFunc->Name);
+				LogF("%s%s (no owner)", szPrefix, pSFunc->GetName());
 			}
 			else
 			{
 				int32_t iLine = SGetLine(pSFunc->pOrgScript->GetScript(), pSFunc->Script);
-				LogF("%s%s (%s:%d)", szPrefix, pFunc->Name, pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
+				LogF("%s%s (%s:%d)", szPrefix, pFunc->GetName(), pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
 			}
 			// next func in overload chain
 			pFunc = pSFunc ? pSFunc->OwnerOverloaded : NULL;

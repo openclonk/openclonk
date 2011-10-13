@@ -127,7 +127,7 @@ void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
 			{
 				// append: create copy
 				// (if high priority, insert at end, otherwise at the beginning)
-				C4AulScriptFunc *sfc = new C4AulScriptFunc(&Scr, sf->Name, bHighPrio);
+				C4AulScriptFunc *sfc = new C4AulScriptFunc(&Scr, sf->GetName(), bHighPrio);
 				sfc->CopyBody(*sf);
 				// link the copy to a local function
 				if (sf->LinkedTo)

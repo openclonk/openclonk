@@ -46,11 +46,11 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 {
 	if (!Func)
 		return StdStrBuf("");
-	bool fDirectExec = !*Func->Name;
+	bool fDirectExec = !Func->GetName();
 	if (!fDirectExec)
 	{
 		// Function name
-		Dump.Append(Func->Name);
+		Dump.Append(Func->GetName());
 		// Parameters
 		Dump.AppendChar('(');
 		int iNullPars = 0;
@@ -589,7 +589,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				{
 					StdStrBuf Buf("T");
 					Buf.AppendChars('>', ContextStackSize() - iTraceStart);
-					LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
+					LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->GetName(), pCurVal->GetDataString().getData());
 				}
 
 #ifndef NOAULDEBUG
@@ -817,7 +817,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		if (!pPars[i].CheckParConversion(pTypes[i]))
 			throw new C4AulExecError(pCurCtx->Obj,
 			                         FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
-			                                      pFunc->Name, i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
+			                                      pFunc->GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
 			                                     ).getData());
 
 	// Script function?

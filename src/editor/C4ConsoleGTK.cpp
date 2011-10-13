@@ -850,7 +850,7 @@ void C4ConsoleGUI::ClearInput()
 	gtk_list_store_clear(store);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
 {
 	if(state->txtScript == NULL) return;
 
@@ -858,9 +858,9 @@ void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
 	g_assert(store);
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); ++it)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); ++it)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (!fn) continue;
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, fn, -1);
@@ -1018,7 +1018,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
 	GtkListStore* store;
 
@@ -1044,9 +1044,9 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	GtkTreeIter iter;
 	gtk_list_store_clear(store);
 
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); it++)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (fn)
 		{
 			gtk_list_store_append(store, &iter);

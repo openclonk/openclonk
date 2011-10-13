@@ -892,12 +892,11 @@ void C4ConsoleGUI::PropertyDlgClose()
 	::ClearDlg(state->hPropertyDlg);
 }
 
-static void SetComboItems(HWND hCombo, std::list<char*> &items)
+static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 {
-	for (std::list<char*>::iterator it = items.begin(); it != items.end(); it++)
+	for (std::list<const char*>::iterator it = items.begin(); it != items.end(); it++)
 	{
-		char *item = *it;
-		if (!item)
+		if (!*it)
 			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)L"----------");
 		else
 			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(*it));
@@ -916,7 +915,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
 	HWND hCombo = GetDlgItem(state->hPropertyDlg, IDC_COMBOINPUT);
 	wchar_t szLastText[500+1];
 	// Remember old window text
@@ -930,7 +929,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	SetWindowTextW(hCombo, szLastText);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
 	SetComboItems(GetDlgItem(hWindow,IDC_COMBOINPUT), functions);
 }

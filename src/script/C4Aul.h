@@ -218,6 +218,7 @@ public:
 
 	C4AulScript *Owner; // owner
 	char Name[C4AUL_MAX_Identifier]; // function name
+	const char * GetName() const { return *Name ? Name : 0; }
 
 protected:
 	C4AulFunc *Prev, *Next; // linked list members
@@ -497,7 +498,7 @@ public:
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	std::list<char*> GetFunctionNames(C4AulScript *);
+	std::list<const char*> GetFunctionNames(C4AulScript *);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL

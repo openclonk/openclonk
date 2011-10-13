@@ -84,7 +84,8 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
 	// store name
 	SCopy(pName, (char *) &Name, C4AUL_MAX_Identifier);
 	// add to global lookuptable with this name
-	Owner->Engine->FuncLookUp.Add(this, bAtEnd);
+	if (GetName())
+		Owner->Engine->FuncLookUp.Add(this, bAtEnd);
 }
 
 
@@ -113,7 +114,8 @@ C4AulFunc::~C4AulFunc()
 	{
 		if (Owner->Func0 == this) Owner->Func0 = Next;
 		if (Owner->FuncL == this) Owner->FuncL = Prev;
-		Owner->Engine->FuncLookUp.Remove(this);
+		if (GetName())
+			Owner->Engine->FuncLookUp.Remove(this);
 	}
 }
 
@@ -145,7 +147,7 @@ StdStrBuf C4AulScriptFunc::GetFullName()
 		sOwner.Ref("game ");
 	}
 	StdStrBuf sResult;
-	sResult.Format("%s%s", sOwner.getData(), Name);
+	sResult.Format("%s%s", sOwner.getData(), GetName());
 	return sResult;
 }
 
@@ -238,17 +240,17 @@ C4AulFunc *C4AulScript::GetOverloadedFunc(C4AulFunc *ByFunc)
 	if (f) f = f->Prev; else f = FuncL;
 	while (f)
 	{
-		if (SEqual(ByFunc->Name, f->Name)) break;
+		if (SEqual(ByFunc->GetName(), f->GetName())) break;
 		f = f->Prev;
 	}
 #ifdef _DEBUG
-	C4AulFunc * f2 = Engine ? Engine->GetFunc(ByFunc->Name, this, ByFunc) : NULL;
+	C4AulFunc * f2 = Engine ? Engine->GetFunc(ByFunc->GetName(), this, ByFunc) : NULL;
 	assert (f == f2);
 #endif
 	// nothing found? then search owner, if existant
 	if (!f && Owner)
 	{
-		if ((f = Owner->GetFuncRecursive(ByFunc->Name)))
+		if ((f = Owner->GetFuncRecursive(ByFunc->GetName())))
 			// just found  the global link?
 			if (ByFunc && f->LinkedTo == ByFunc)
 				f = Owner->GetOverloadedFunc(f);
@@ -473,14 +475,14 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
 }
 
-std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
+std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 {
-	std::list<char*> functions;
+	std::list<const char*> functions;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
 	{
 		if (pFn->GetPublic())
 		{
-			functions.push_back(pFn->Name);
+			functions.push_back(pFn->GetName());
 		}
 	}
 	// Add object or scenario script functions
@@ -499,10 +501,10 @@ std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 				{
 					// Insert divider if necessary
 					if (!divider)
-						functions.push_back(static_cast<char*>(0));
+						functions.push_back(0);
 					divider = true;
 					// Add function
-					functions.push_back(pRef->Name);
+					functions.push_back(pRef->GetName());
 				}
 			}
 			f = f->Prev;
@@ -537,7 +539,7 @@ C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 {
 	if (!Name) return NULL;
 	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	while (Func && !SEqual(Name, Func->Name))
+	while (Func && !SEqual(Name, Func->GetName()))
 		Func = Func->MapNext;
 	return Func;
 }
@@ -545,7 +547,7 @@ C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 C4AulFunc * C4AulFuncMap::GetNextSNFunc(const C4AulFunc * After)
 {
 	C4AulFunc * Func = After->MapNext;
-	while (Func && !SEqual(After->Name, Func->Name))
+	while (Func && !SEqual(After->GetName(), Func->GetName()))
 		Func = Func->MapNext;
 	return Func;
 }
@@ -561,7 +563,7 @@ C4AulFunc * C4AulFuncMap::GetFunc(const char * Name, const C4AulScript * Owner, 
 		if (Func)
 			Func = Func->MapNext;
 	}
-	while (Func && (Func->Owner != Owner || !SEqual(Name, Func->Name)))
+	while (Func && (Func->Owner != Owner || !SEqual(Name, Func->GetName())))
 		Func = Func->MapNext;
 	return Func;
 }
@@ -578,7 +580,7 @@ void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
 			while (Funcs[i])
 			{
 				// Get a pointer to the bucket
-				C4AulFunc ** pNFunc = &(NFuncs[Hash(Funcs[i]->Name) % NCapacity]);
+				C4AulFunc ** pNFunc = &(NFuncs[Hash(Funcs[i]->GetName()) % NCapacity]);
 				// get a pointer to the end of the linked list
 				while (*pNFunc) pNFunc = &((*pNFunc)->MapNext);
 				// Move the func over
@@ -594,7 +596,7 @@ void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
 		Funcs = NFuncs;
 	}
 	// Get a pointer to the bucket
-	C4AulFunc ** pFunc = &(Funcs[Hash(func->Name) % Capacity]);
+	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % Capacity]);
 	if (bAtStart)
 	{
 		// move the current first to the second position
@@ -614,7 +616,7 @@ void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
 
 void C4AulFuncMap::Remove(C4AulFunc * func)
 {
-	C4AulFunc ** pFunc = &Funcs[Hash(func->Name) % Capacity];
+	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % Capacity];
 	while (*pFunc != func)
 	{
 		pFunc = &((*pFunc)->MapNext);
