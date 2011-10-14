@@ -181,10 +181,13 @@ protected func CheckStuck()
 
 public func Eat(object food)
 {
-	DoEnergy(food->NutritionalValue());
-	food->RemoveObject();
-	Sound("Munch?");
-	SetAction("Eat");
+	if(GetProcedure() == "WALK")
+	{
+		DoEnergy(food->NutritionalValue());
+		food->RemoveObject();
+		Sound("Munch?");
+		SetAction("Eat");
+	}
 }
 
 /* Status */
