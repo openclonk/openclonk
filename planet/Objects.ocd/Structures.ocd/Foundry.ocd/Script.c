@@ -80,7 +80,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 	// Fire from the pouring exit.
 	if (Inside(time, 244, 290))
-		CreateParticle("Fire",-17,14,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
+		CreateParticle("Fire",-17,19,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
 
 	if (time == 290)
 	{
