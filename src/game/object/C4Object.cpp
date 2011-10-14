@@ -1808,28 +1808,26 @@ void C4Object::SetName(const char * NewName)
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 {
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer)));
 	int32_t iValue;
-
-	// value by script?
-	if (C4AulScriptFunc *f = Def->Script.SFn_CalcValue)
-		iValue = f->Exec(this, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer))).getInt();
+	if (r != C4VNull)
+		iValue = r.getInt();
 	else
 	{
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue=Def->GetValue(NULL, iForPlayer);
+		iValue = Def->GetValue(NULL, iForPlayer);
 	}
 	// Con percentage
-	iValue=iValue*Con/FullCon;
-	// value adjustments buy base function
+	iValue = iValue * Con / FullCon;
+	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcSellValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VObj(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcSellValue, &C4AulParSet(C4VObj(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
-	// Return value
 	return iValue;
 }
 

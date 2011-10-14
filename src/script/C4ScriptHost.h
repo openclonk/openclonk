@@ -70,9 +70,9 @@ protected:
 class C4DefScriptHost : public C4ScriptHost
 {
 public:
-	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
+	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
 	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
-	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
+	void Clear();
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
@@ -80,10 +80,6 @@ public:
 protected:
 	C4Def *Def; // owning def file
 	void AfterLink(); // get common funcs
-public:
-	C4AulScriptFunc *SFn_CalcValue; // get object value
-	C4AulScriptFunc *SFn_SellTo; // player par(0) sold the object
-	C4AulScriptFunc *SFn_ControlTransfer; // object par(0) tries to get to par(1)/par(2)
 };
 
 

@@ -562,21 +562,16 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 {
-	// CalcDefValue defined?
-	C4AulFunc *pCalcValueFn = Script.GetSFunc(PSF_CalcDefValue, AA_PROTECTED);
-	int32_t iValue;
-	if (pCalcValueFn)
-		// then call it!
-		iValue = pCalcValueFn->Exec(NULL, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer))).getInt();
-	else
-		// otherwise, use default value
-		iValue = Value;
+	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer)));
+	int32_t iValue = Value;
+	if (r != C4VNull)
+		iValue = r.getInt();
 	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VPropList(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcBuyValue, &C4AulParSet(C4VPropList(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
 	return iValue;
 }
