@@ -243,7 +243,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, C4Value *Data)
 {
 	if (!cthr->Obj)
-		throw NeedObjectContext("SetCrewExtraData");
+		throw new NeedObjectContext("SetCrewExtraData");
 
 	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
 	// valid crew with info? (for great nullpointer prevention)
@@ -278,7 +278,7 @@ static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, 
 static C4Value FnGetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V)
 {
 	if (!cthr->Obj)
-		throw NeedObjectContext("GetCrewExtraData");
+		throw new NeedObjectContext("GetCrewExtraData");
 
 	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
 	// valid crew with info?
@@ -458,7 +458,7 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(any, Data); PAR(int, iRetries);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("SetCommand");
+		throw new NeedObjectContext("SetCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -481,7 +481,7 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("AddCommand");
+		throw new NeedObjectContext("AddCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -502,7 +502,7 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("AppendCommand");
+		throw new NeedObjectContext("AppendCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -523,7 +523,7 @@ static C4Value FnGetCommand(C4AulContext *cthr, C4Value *pPars)
 
 	// safety
 	if (!cthr->Obj)
-		throw NeedObjectContext("GetCommand");
+		throw new NeedObjectContext("GetCommand");
 
 	C4Command * Command = cthr->Obj->Command;
 	// Move through list to Command iCommandNum
