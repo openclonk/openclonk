@@ -26,7 +26,7 @@ private func FuelNeed(id product) { return 100; }
 
 public func NeedsRawMaterial(id rawmat_id)
 {
-	if (rawmat_id == Coal || rawmat_id == Wood || rawmat_id == Ore)
+	if (rawmat_id == Coal || rawmat_id == Wood || rawmat_id == Ore || rawmat_id == Nugget)
 		return true;
 	return false;
 }

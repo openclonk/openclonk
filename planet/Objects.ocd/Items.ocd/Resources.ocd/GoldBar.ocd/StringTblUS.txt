@@ -1,0 +1,2 @@
+Name=Gold Bar
+Description=Precious gold! Useful for trading for expensive goods.

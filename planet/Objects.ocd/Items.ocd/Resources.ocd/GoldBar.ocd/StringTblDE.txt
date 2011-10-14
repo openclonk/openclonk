@@ -1,0 +1,2 @@
+Name=Goldbarren
+Description=Kostbares Gold! Nützlich für den Handel für teure Waren.
