@@ -161,6 +161,8 @@ void C4AulScript::UnLink()
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;
 
+	C4PropList * p = GetPropList();
+	if (p) p->C4PropList::Thaw();
 
 	// delete included/appended functions
 	C4AulFunc* pFunc = Func0;
@@ -171,9 +173,14 @@ void C4AulScript::UnLink()
 		// clear stuff that's set in AfterLink
 		pFunc->UnLink();
 
-		if (pFunc->SFunc()) if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
-				if (!pFunc->LinkedTo || pFunc->LinkedTo->SFunc()) // do not kill global links; those will be deleted if corresponding sfunc in script is deleted
+		if (pFunc->SFunc())
+			if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
+				// do not kill global links; those will be deleted if corresponding sfunc in script is deleted
+				if (!pFunc->LinkedTo || pFunc->LinkedTo->SFunc())
+				{
+					if (p) p->ResetProperty(pFunc->Name);
 					delete pFunc;
+				}
 
 		pFunc = pNextFunc;
 	}

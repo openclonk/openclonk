@@ -306,6 +306,7 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
 {
+	C4PropList::Clear();
 
 	Graphics.Clear();
 
@@ -315,8 +316,6 @@ void C4Def::Clear()
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
-
-	C4PropList::Clear();
 }
 
 bool C4Def::Load(C4Group &hGroup,

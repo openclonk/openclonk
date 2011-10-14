@@ -255,6 +255,12 @@ public:
 		ParType[7] = pt7;
 		ParType[8] = pt8;
 		ParType[9] = pt9;
+		Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+	}
+	~C4AulDefFuncHelper()
+	{
+		if (!OverloadedBy)
+			Owner->GetPropList()->ResetProperty(Name);
 	}
 	virtual C4V_Type* GetParType() { return ParType; }
 	virtual bool GetPublic() { return Public; }

@@ -92,7 +92,11 @@ C4AulFunc::~C4AulFunc()
 	// if it's a global: remove the global link!
 	if (LinkedTo && Owner)
 		if (LinkedTo->Owner == Owner->Engine)
+		{
+			if (!LinkedTo->OverloadedBy)
+				LinkedTo->Owner->GetPropList()->ResetProperty(LinkedTo->Name);
 			delete LinkedTo;
+		}
 	// unlink func
 	if (LinkedTo)
 	{
@@ -114,6 +118,12 @@ C4AulFunc::~C4AulFunc()
 		if (Owner->FuncL == this) Owner->FuncL = Prev;
 		if (GetName())
 			Owner->Engine->FuncLookUp.Remove(this);
+		if (Owner->GetPropList() && Name)
+		{
+			C4Value v;
+			Owner->GetPropList()->GetPropertyByS(Name, &v);
+			assert(v.getFunction() != this);
+		}
 	}
 }
 
@@ -147,6 +157,19 @@ StdStrBuf C4AulFunc::GetFullName()
 	StdStrBuf sResult;
 	sResult.Format("%s%s", sOwner.getData(), GetName());
 	return sResult;
+}
+
+C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef):
+		C4AulFunc(pOwner, pName) // constructor
+{
+	Def = pDef;
+	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+}
+
+C4AulDefFunc::~C4AulDefFunc()
+{
+	if (!OverloadedBy)
+		Owner->GetPropList()->ResetProperty(Name);
 }
 
 C4AulScript::C4AulScript()
@@ -351,6 +374,18 @@ std::string C4AulScript::Translate(const std::string &text) const
 		cursor = cursor->Owner;
 	}
 	throw C4LangStringTable::NoSuchTranslation(text);
+}
+
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
+		C4AulFunc(pOwner, pName, bAtEnd), OwnerOverloaded(NULL), ParCount(0), tProfileTime(0)
+{
+	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+	if (Owner->GetPropList())
+	{
+		// Don't overwrite a function that's overloading this one
+		if (bAtEnd || !Owner->GetPropList()->HasProperty(Name))
+			Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+	}
 }
 
 void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)

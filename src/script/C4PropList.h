@@ -93,6 +93,7 @@ public:
 
 	// only freeze proplists which are not going to be modified
 	void Freeze() { constant = true; }
+	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
 
 	virtual void Denumerate(C4ValueNumbers *);

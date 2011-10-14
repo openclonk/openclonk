@@ -194,9 +194,9 @@ bool C4GameScriptHost::LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *p
 
 void C4GameScriptHost::Clear()
 {
-	C4ScriptHost::Clear();
 	delete ScenPropList; ScenPropList = 0;
 	delete ScenPrototype; ScenPrototype = 0;
+	C4ScriptHost::Clear();
 }
 
 void C4GameScriptHost::AfterLink()

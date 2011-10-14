@@ -265,13 +265,7 @@ public:
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
-	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), ParCount(0),
-			tProfileTime(0)
-	{
-		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
-		ParNamed.Reset(); // safety :)
-	} // constructor
+	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true);
 
 	void ParseFn(bool fExprOnly = false, C4AulScriptContext* context = NULL);
 	virtual void UnLink();
@@ -302,8 +296,8 @@ class C4AulDefFunc : C4AulFunc
 public:
 	C4ScriptFnDef* Def;
 
-	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef) : C4AulFunc(pOwner, pName) // constructor
-	{ Def = pDef; }
+	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef);
+	~C4AulDefFunc();
 
 	virtual bool GetPublic() { return !!Def->Public; }
 	virtual C4V_Type* GetParType() { return Def->ParType; }
