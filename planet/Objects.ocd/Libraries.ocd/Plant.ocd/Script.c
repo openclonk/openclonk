@@ -75,6 +75,60 @@ private func Seed()
 	}
 }
 
+/* Chopping */
+
+/** Determines whether this plant gives wood (we assume that are 'trees').
+	@return \c true if the plant is choppable by the axe, \c false otherwise (default).
+*/
+public func IsTree()
+{
+	return false;
+}
+
+/** Determines whether the tree can still be chopped down (i.e. has not been chopped down).
+	@return \c true if the tree is still a valid axe target.
+*/
+public func IsStanding()
+{
+	return GetCategory() & C4D_StaticBack;
+}
+
+/** Maximum damage the tree can take before it falls. Each blow from the axe deals 10 damage.
+	@return \c the maximum amount of damage.
+*/
+private func MaxDamage()
+{
+	return 50;
+}
+
+protected func Damage()
+{
+	// Max damage reached -> fall down
+	if (GetDamage() > MaxDamage() && IsStanding()) ChopDown();
+	_inherited(...);
+}
+
+/** Called when the trees shall fall down (has taken max damage). Default behaviour is unstucking (5 pixel movement max) and removing C4D_StaticBack.
+*/
+public func ChopDown()
+{
+	this.Touchable = 1;
+	SetCategory(GetCategory()&~C4D_StaticBack);
+	if (Stuck())
+	{
+		var i = 5;
+		while(Stuck() && i)
+		{
+			SetPosition(GetX(), GetY()-1);
+			i--;
+		}
+	}
+	SetRDir(10);
+	if (Random(2)) SetRDir(-10);
+	// Crack!
+	if (GetCon() > 50) Sound("TreeDown?");
+}
+
 /* Harvesting */
 
 /** Determines whether a plant may be harvested by the player.

@@ -16,6 +16,15 @@ private func Initialize()
 }
 
 public func IsTree() { return true; }
-public func IsStanding() { return true; }
+
+public func ChopDown()
+{
+	// Remove the bottom vertex
+	SetVertex(0, VTX_Y, 0, 1);
+	RemoveVertex(0);
+
+	_inherited(...);
+}
 
 local Name = "$Name$";
+local Touchable = 0;

@@ -1,2 +1,2 @@
 Name=Axt
-Description=Drücke [Benutzen], um damit einen Baum zu fällen.
+Description=Drücke [Benutzen], um damit einen Baum zu fällen. Drücke [Benutzen] noch mal, um einen bereits gefällten Baum zu Holz zu zerkleinern (verlustreich).

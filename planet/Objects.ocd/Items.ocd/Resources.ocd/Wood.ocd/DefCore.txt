@@ -9,7 +9,7 @@ Vertices=3
 VertexX=4,-5
 VertexY=-1,2
 VertexCNAT=1,2
-VertexFriction=30,30
+VertexFriction=50,50
 Value=2
 Mass=6
 Components=Wood=1
@@ -18,4 +18,3 @@ BlastIncinerate=5
 Rotate=1
 Float=1
 StretchGrowth=1
-
