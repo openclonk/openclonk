@@ -1,2 +1,2 @@
-Name=Holzfass
-Description=In einem Holzfass können Flüssigkeiten transportiert werden.
+Name=Metallfass
+Description=In einem Metallfass können gefährliche Flüssigkeiten transportiert werden.
