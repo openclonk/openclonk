@@ -13,6 +13,7 @@ protected func Construction()
 {
 	chestanim = PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
 	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
+	return _inherited(...);
 }
 
 /*-- Contents --*/
