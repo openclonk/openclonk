@@ -40,31 +40,29 @@
 
 void C4Effect::AssignCallbackFunctions()
 {
-	C4AulScript *pSrcScript = GetCallbackScript();
+	C4PropList *p = GetCallbackScript();
 	// compose function names and search them
 	char fn[C4AUL_MAX_Identifier+1];
-	sprintf(fn, PSF_FxStart,  GetName()); pFnStart  = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxStop,   GetName()); pFnStop   = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxTimer,  GetName()); pFnTimer  = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxEffect, GetName()); pFnEffect = pSrcScript->GetFuncRecursive(fn);
-	sprintf(fn, PSF_FxDamage, GetName()); pFnDamage = pSrcScript->GetFuncRecursive(fn);
+	sprintf(fn, PSF_FxStart,  GetName()); pFnStart  = p->GetFunc(fn);
+	sprintf(fn, PSF_FxStop,   GetName()); pFnStop   = p->GetFunc(fn);
+	sprintf(fn, PSF_FxTimer,  GetName()); pFnTimer  = p->GetFunc(fn);
+	sprintf(fn, PSF_FxEffect, GetName()); pFnEffect = p->GetFunc(fn);
+	sprintf(fn, PSF_FxDamage, GetName()); pFnDamage = p->GetFunc(fn);
 }
 
-C4AulScript *C4Effect::GetCallbackScript()
+C4PropList * C4Effect::GetCallbackScript()
 {
-	// def script or global only?
-	C4AulScript *pSrcScript; C4Def *pDef;
+	C4Def *pDef;
 	if (CommandTarget)
 	{
-		pSrcScript = &CommandTarget->Def->Script;
 		// overwrite ID for sync safety in runtime join
 		idCommandTarget = CommandTarget->id;
+		return CommandTarget;
 	}
 	else if (idCommandTarget && (pDef=::Definitions.ID2Def(idCommandTarget)))
-		pSrcScript = &pDef->Script;
+		return pDef;
 	else
-		pSrcScript = &::ScriptEngine;
-	return pSrcScript;
+		return ::ScriptEngine.GetPropList();
 }
 
 C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
@@ -394,24 +392,11 @@ void C4Effect::DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, 
 C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7)
 {
 	// def script or global only?
-	C4AulScript *pSrcScript; C4Def *pDef;
-	if (CommandTarget)
-	{
-		pSrcScript = &CommandTarget->Def->Script;
-		// overwrite ID for sync safety in runtime join
-		idCommandTarget = CommandTarget->id;
-	}
-	else if (idCommandTarget && (pDef=::Definitions.ID2Def(idCommandTarget)))
-		pSrcScript = &pDef->Script;
-	else
-		pSrcScript = &::ScriptEngine;
+	C4PropList *p = GetCallbackScript();
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxCustom, GetName(), szFn);
-	// call it
-	C4AulFunc *pFn = pSrcScript->GetFuncRecursive(fn);
-	if (!pFn) return C4Value();
-	return pFn->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
+	return p->Call(fn, &C4AulParSet(C4VObj(pObj), C4VPropList(this), rVal1, rVal2, rVal3, rVal4, rVal5, rVal6, rVal7));
 }
 
 void C4Effect::OnObjectChangedDef(C4Object *pObj)

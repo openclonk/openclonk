@@ -2292,12 +2292,15 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		else
 		{
 			// none of these? then it's a function
-			C4AulFunc *FoundFn;
+			C4AulFunc *FoundFn = 0;
 			// get regular function
-			if (Fn->Owner == &::ScriptEngine)
-				FoundFn = Fn->Owner->GetFuncRecursive(Idtf);
+			if (Fn->Owner == a->Engine || !a->GetPropList())
+				FoundFn = a->Engine->GetPropList()->GetFunc(Idtf);
 			else
-				FoundFn = a->GetFuncRecursive(Idtf);
+			{
+				assert(a == Fn->Owner);
+				FoundFn = a->GetPropList()->GetFunc(Idtf);
+			}
 			if (Type == PREPARSER)
 			{
 				Shift();
@@ -2719,7 +2722,7 @@ void C4AulParseState::Parse_Static()
 				UnexpectedToken("variable name");
 			// global variable definition
 			// check: symbol already in use?
-			if (a->Engine->GetFuncRecursive(Idtf)) Error("function and variable with name ", Idtf);
+			if (a->Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name ", Idtf);
 			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name ", Idtf);
 			// insert variable if not defined already
 			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
@@ -2906,7 +2909,7 @@ void C4AulParseState::Parse_Const()
 			UnexpectedToken("constant name");
 		SCopy(Idtf, Name);
 		// check func lists - functions of same name are not allowed
-		if (a->Engine->GetFuncRecursive(Idtf))
+		if (a->Engine->GetPropList()->GetFunc(Idtf))
 			Error("definition of constant hidden by function ", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			Error("constant and variable with name ", Idtf);

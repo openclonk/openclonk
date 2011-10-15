@@ -436,7 +436,7 @@ static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 }
 
-static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj, C4ID idDef)
+static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4PropList * p)
 {
 	// safety
 	if (!funcname || !funcname->GetCStr())
@@ -444,29 +444,9 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 		Log("No func name");
 		return false;
 	}
-	// determine script context
-	C4AulScript *pCheckScript;
-	if (pObj)
-	{
-		pCheckScript = &pObj->Def->Script;
-	}
-	else if (idDef)
-	{
-		C4Def *pDef = C4Id2Def(idDef);
-		if (!pDef) { Log("Invalid or unloaded def"); return false; }
-		pCheckScript = &pDef->Script;
-	}
-	else
-	{
-		if (!cthr || !cthr->Caller || !cthr->Caller->Func || !cthr->Caller->Func->Owner)
-		{
-			Log("No valid script context");
-			return false;
-		}
-		pCheckScript = cthr->Caller->Func->Owner;
-	}
+	if (!p) p = cthr->Def;
 	// get function by name
-	C4AulFunc *pFunc = pCheckScript->GetFuncRecursive(funcname->GetCStr());
+	C4AulFunc *pFunc = p->GetFunc(funcname);
 	if (!pFunc)
 	{
 		LogF("Func %s not found", funcname->GetCStr());

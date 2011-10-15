@@ -1388,7 +1388,7 @@ void C4Player::NotifyOwnedObjects()
 			if (cobj->Status)
 				if (cobj->Owner == Number)
 				{
-					C4AulFunc *pFn = cobj->Def->Script.GetFuncRecursive(PSF_OnOwnerRemoved);
+					C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 					// PSF_OnOwnerRemoved has an internal fallback function
 					assert(pFn);
 					if (pFn) pFn->Exec(cobj);

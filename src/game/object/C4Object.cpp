@@ -969,7 +969,7 @@ bool C4Object::ExecLife()
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 				{
-					C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnInIncendiaryMaterial);
+					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
 					if (pCallFunc)
 					{
 						pCallFunc->Exec(this, &C4AulParSet());
@@ -1257,7 +1257,7 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 	if (Def->BlastIncinerate)
 		if (Damage>=Def->BlastIncinerate)
 		{
-			C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnBlastIncinerationDamage);
+			C4AulFunc *pCallFunc = GetFunc(PSF_OnBlastIncinerationDamage);
 			if (pCallFunc)
 			{
 				C4AulParSet Pars(C4VInt(iLevel), C4VInt(iCausedBy));
