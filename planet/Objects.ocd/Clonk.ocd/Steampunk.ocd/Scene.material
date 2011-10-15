@@ -1,4 +1,4 @@
-material Steampunk
+material clonkSteampunk
 {
 	receive_shadows on
 	technique
@@ -6,13 +6,13 @@ material Steampunk
 		pass
 		{
 			ambient 1.000000 1.000000 1.000000 1.000000
-			diffuse 0.810000 0.810000 0.810000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
 			specular 0.000000 0.000000 0.000000 1.000000 3.000000
 			emissive 0.000000 0.000000 0.000000 1.000000
 
 			texture_unit Overlay
 			{
-				texture SteampunkOverlay.png
+				texture clonkSteampunkOverlay.png
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex modulate src_texture src_player_colour
@@ -21,7 +21,7 @@ material Steampunk
 			}
 			texture_unit Clonk
 			{
-				texture Steampunk.png
+				texture clonkSteampunk.png
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture
