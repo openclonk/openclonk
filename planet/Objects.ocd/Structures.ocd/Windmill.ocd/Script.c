@@ -9,11 +9,16 @@
 
 local wind_anim;
 
+protected func Construction()
+{
+	SetProperty("MeshTransformation", Trans_Rotate(-30,0,1,0));
+	return _inherited(...);
+}
+
 protected func Initialize()
 {
-	SetProperty("MeshTransformation", Trans_Rotate(RandomX(-15,15),0,1,0));
-	wind_anim = PlayAnimation("Spin", 5, Anim_Const(0), Anim_Const(1000));
 	// Set initial position
+	wind_anim = PlayAnimation("Spin", 5, Anim_Const(0), Anim_Const(1000));
 	Wind2Turn();
 	return _inherited(...);
 }
@@ -101,17 +106,24 @@ protected func Collection()
 
 public func FxCrushingTimer(object target, proplist effect, int time)
 {
-	CreateParticle("Axe_WoodChip", -5, 40, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
+	CreateParticle("Axe_WoodChip", -12, 40, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
 	return 1;
 }
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() + 30, GetY() + 40);
+	product->SetPosition(GetX() + 25, GetY() + 40);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
 	return;
+}
+
+protected func RejectCollect(id item, object collect)
+{
+	if(collect->~IsMillIngredient()) return false;
+	else
+		return true;
 }
 
 func Definition(def) {

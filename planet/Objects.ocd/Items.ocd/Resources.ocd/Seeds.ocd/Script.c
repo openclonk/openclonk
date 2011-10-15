@@ -32,6 +32,8 @@ protected func Hit()
 	return 1;
 }
 
+public func IsMillIngredient() { return true; }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";

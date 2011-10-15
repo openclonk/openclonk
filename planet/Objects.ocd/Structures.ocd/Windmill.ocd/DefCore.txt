@@ -9,12 +9,12 @@ Height=96
 Offset=-25,-48
 Vertices=5
 VertexX=0,25,15,-15,-25
-VertexY=-47,-20,48,48,-20
+VertexY=-47,-20,47,47,-20
 VertexFriction=50,50,100,100,50
 Value=150
 Mass=2500
 Components=Rock=6;Wood=2;
-Collection=-10,35,15,15
+Collection=-18,35,15,15
 Exclusive=1
 BlastIncinerate=100
 Construction=1
