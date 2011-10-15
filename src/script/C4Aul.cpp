@@ -298,42 +298,6 @@ C4AulFunc *C4AulScript::GetFunc(const char *pIdtf)
 	return f;
 }
 
-
-C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailsafe)
-{
-	// failsafe call
-	if (*pIdtf=='~') { fFailsafe=true; pIdtf++; }
-
-	// get function reference from table
-	C4AulScriptFunc *pFn = GetSFunc(pIdtf);
-
-	// undefined function
-	if (!pFn)
-	{
-		// not failsafe?
-		if (!fFailsafe)
-		{
-			// show error
-			C4AulParseError err(this, "Undefined function: ", pIdtf);
-			err.show();
-		}
-		return NULL;
-	}
-
-	// check access
-	if (pFn->Access < AccNeeded)
-	{
-		// no access? show error
-		C4AulParseError err(this, "insufficient access level");
-		err.show();
-		// don't even break in strict execution, because the caller might be non-strict
-		//if (Strict) return NULL;
-	}
-
-	// return found function
-	return pFn;
-}
-
 C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf)
 {
 	// get func by name; return script func

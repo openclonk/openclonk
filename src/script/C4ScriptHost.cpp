@@ -201,11 +201,8 @@ void C4GameScriptHost::AfterLink()
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
 {
-	// get function
-	C4AulScriptFunc *pFn;
-	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
-	// Call code
-	return pFn->Exec(ScenPropList, Pars, fPassError);
+	// FIXME: Does fPassError make sense?
+	return ScenPropList->Call(szFunction, Pars);
 }
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
