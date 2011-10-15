@@ -2658,7 +2658,7 @@ void C4AulParseState::Parse_Local()
 			if (TokenType != ATT_IDTF)
 				UnexpectedToken("variable name");
 			// check: symbol already in use?
-			if (a->GetFunc(Idtf))
+			if (a->GetPropList() && a->GetPropList()->GetFunc(Idtf))
 				throw new C4AulParseError(this, "variable definition: name already in use");
 			// insert variable
 			a->LocalNamed.AddName(Idtf);
