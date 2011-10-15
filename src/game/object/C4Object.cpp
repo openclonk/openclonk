@@ -4524,8 +4524,8 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 {
 	// get unused object
 	C4Object *pUnusedObject;
-	C4AulFunc *pFnObj2Drop;
-	if ((pFnObj2Drop = Def->Script.GetSFunc(PSF_GetObject2Drop)))
+	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
+	if (pFnObj2Drop)
 		pUnusedObject = pFnObj2Drop->Exec(this, pToMakeRoomForObject ? &C4AulParSet(C4VObj(pToMakeRoomForObject)) : NULL).getObj();
 	else
 	{

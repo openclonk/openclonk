@@ -1608,23 +1608,8 @@ bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
-	// get script function
-	C4AulFunc *pFunc = ::GameScript.GetSFunc(FormatString("ScriptAlgo%s", pOvrl->Name).getData());
-	// failsafe
-	if (!pFunc) return false;
-	// ok, call func
 	C4AulParSet Pars( C4VInt(iX), C4VInt(iY), C4VInt(pOvrl->Alpha.Evaluate(C4MC_SizeRes)), C4VInt(pOvrl->Beta.Evaluate(C4MC_SizeRes)));
-	// catch error (damn insecure C4Aul)
-	try
-	{
-		return !! pFunc->Exec(0, &Pars);
-	}
-	catch (C4AulError *err)
-	{
-		// do nothing
-		delete err;
-	}
-	return false;
+	return ::GameScript.Call(FormatString("ScriptAlgo%s", pOvrl->Name).getData(), &Pars).getBool();
 }
 
 bool AlgoRndAll(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)

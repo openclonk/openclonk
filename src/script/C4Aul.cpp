@@ -298,17 +298,6 @@ C4AulFunc *C4AulScript::GetFunc(const char *pIdtf)
 	return f;
 }
 
-C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf)
-{
-	// get func by name; return script func
-	if (!pIdtf) return NULL;
-	if (!pIdtf[0]) return NULL;
-	if (pIdtf[0] == '~') pIdtf++;
-	C4AulFunc *f = GetFunc(pIdtf);
-	if (!f) return NULL;
-	return f->SFunc();
-}
-
 std::string C4AulScript::Translate(const std::string &text) const
 {
 	const C4AulScript *cursor = this;

@@ -384,7 +384,6 @@ public:
 	virtual C4PropList * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 	C4AulFunc *GetFuncRecursive(const char *pIdtf); // search function by identifier, including global funcs
-	C4AulScriptFunc *GetSFunc(const char *pIdtf); // get local script function by name
 
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
