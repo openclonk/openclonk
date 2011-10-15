@@ -16,10 +16,10 @@ func Initialize()
 {
 	var offs = 45;
 	CreateObject(WindGenerator, 1147, 938+offs)->SetR(7);
-	CreateObject(WindGenerator, 985, 1125+offs)->SetR(-170);
-	CreateObject(WindGenerator, 1055, 1109+offs)->SetR(140);
+	CreateObject(WindGenerator, 985, 1105+offs)->SetR(-170);
+	CreateObject(WindGenerator, 1055, 1085+offs)->SetR(140);
 	CreateObject(WindGenerator, 971, 857+offs)->SetR(-20);
-	CreateObject(WindGenerator, 1147, 1054+offs)->SetR(160);
+	CreateObject(WindGenerator, 1147, 1035+offs)->SetR(160);
 	CreateObject(WindGenerator, 1036, 870+offs)->SetR(-10);
 	CreateObject(WindGenerator, 1081, 873+offs)->SetR(18);
 	CreateObject(WindGenerator, 858, 930+offs)->SetR(-10);
