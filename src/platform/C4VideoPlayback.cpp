@@ -142,7 +142,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 		{
 			if (pAudioTrack) delete pAudioTrack;
 			pAudioTrack = new C4SoundEffect();
-			if (pAudioTrack->Load(pAudioData, iAudioDataSize, false, false))
+			if (pAudioTrack->Load(pAudioData, iAudioDataSize, false))
 			{
 				C4SoundInstance *pSoundInst = pAudioTrack->New();
 				if (pSoundInst) pSoundInst->Start();
