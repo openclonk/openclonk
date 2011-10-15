@@ -222,9 +222,6 @@ public:
 	C4Object *ComposeContents(C4ID id);
 	bool MenuCommand(const char *szCommand);
 
-	C4Value Call(const char *szFunctionCall, C4AulParSet *pPars = 0, bool fPassError = false);
-
-
 	bool ContainedControl(BYTE byCom);
 
 	void Clear();

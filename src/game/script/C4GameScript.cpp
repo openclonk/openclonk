@@ -1057,7 +1057,7 @@ static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
 	if (!szFunction || !cthr->Obj) return C4Value();
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
-	return cthr->Obj->Call(FnStringPar(szFunction),&Pars, true);
+	return cthr->Obj->Call(FnStringPar(szFunction),&Pars/*, true*/);
 }
 
 static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,

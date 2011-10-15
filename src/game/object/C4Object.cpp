@@ -1884,13 +1884,6 @@ void C4Object::ClearPointers(C4Object *pObj)
 	}
 }
 
-C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPassError)
-{
-	if (!Status) return C4VNull;
-	assert(Def && szFunctionCall[0]);
-	return Def->Script.Call(szFunctionCall, this, pPars, false, fPassError);
-}
-
 bool C4Object::SetPhase(int32_t iPhase)
 {
 	C4PropList* pActionDef = GetAction();
