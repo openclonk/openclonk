@@ -167,10 +167,11 @@ void C4DefScriptHost::AfterLink()
 	SFn_CalcValue       = GetSFunc(PSF_CalcValue      , AA_PROTECTED);
 	SFn_SellTo          = GetSFunc(PSF_SellTo         , AA_PROTECTED);
 	SFn_ControlTransfer = GetSFunc(PSF_ControlTransfer, AA_PROTECTED);
-	if (Def)
+	if (Def && Def->STimerCall[0])
 	{
-		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;
-		Def->TimerCall=GetSFuncWarn((const char *) Def->STimerCall, CallAccess, "TimerCall");
+		Def->TimerCall = Def->GetFunc(Def->STimerCall);
+		if (!Def->TimerCall)
+			DebugLogF("Error getting function \"%s\" for TimerCall of %s", Def->STimerCall, Def->id.ToString());
 	}
 }
 

@@ -299,17 +299,6 @@ C4AulFunc *C4AulScript::GetFunc(const char *pIdtf)
 }
 
 
-C4AulScriptFunc *C4AulScript::GetSFuncWarn(const char *pIdtf, C4AulAccess AccNeeded, const char *WarnStr)
-{
-	// no identifier
-	if (!pIdtf || !pIdtf[0]) return NULL;
-	// get func?
-	C4AulScriptFunc *pFn = GetSFunc(pIdtf, AccNeeded, true);
-	if (!pFn)
-		Warn(FormatString("Error getting %s function '%s'", WarnStr, pIdtf).getData(), NULL);
-	return pFn;
-}
-
 C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailsafe)
 {
 	// failsafe call

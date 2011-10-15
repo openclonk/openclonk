@@ -86,7 +86,11 @@ void C4MaterialReaction::ResolveScriptFuncs(const char *szMatName)
 {
 	// get script func for script-defined behaviour
 	if (pFunc == &C4MaterialMap::mrfScript)
-		pScriptFunc = ::ScriptEngine.GetSFuncWarn(this->ScriptFunc.getData(), AA_PROTECTED, FormatString("Material reaction of \"%s\"", szMatName).getData());
+	{
+		pScriptFunc = ::ScriptEngine.GetPropList()->GetFunc(this->ScriptFunc.getData());
+		if (!pScriptFunc)
+			DebugLogF("Error getting function \"%s\" for Material reaction of \"%s\"", this->ScriptFunc.getData(), szMatName);
+	}
 	else
 		pScriptFunc = NULL;
 }

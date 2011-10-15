@@ -188,7 +188,7 @@ public:
 	char Filename[_MAX_FNAME+1];
 	int32_t Creation;
 	int32_t Count; // number of instanciations
-	C4AulScriptFunc *TimerCall;
+	C4AulFunc *TimerCall;
 
 	C4DefScriptHost Script;
 	C4LangStringTable StringTable;
