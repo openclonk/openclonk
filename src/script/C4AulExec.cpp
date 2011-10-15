@@ -687,25 +687,17 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPars = pCurVal - C4AUL_MAX_Par + 1;
 				C4Value *pTargetVal = pCurVal - C4AUL_MAX_Par;
 
-				// Get call target - "object" or "id" are allowed
-				C4Object *pDestObj; C4Def *pDestDef;
+				C4PropList *pDest;
 				if (pTargetVal->CheckConversion(C4V_PropList))
 				{
-					// definition call
-					pDestObj = pTargetVal->_getPropList()->GetObject();
-					pDestDef = pTargetVal->_getPropList()->GetDef();
-					// definition must be known
-					if (!pDestDef)
-						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("'->': target not an object or definition").getData());
+					pDest = pTargetVal->_getPropList();
 				}
 				else
 					throw new C4AulExecError(pCurCtx->Obj,
-					                         FormatString("'->': invalid target type %s, expected object or definition", pTargetVal->GetTypeName()).getData());
+			                         FormatString("'->': invalid target type %s, expected proplist", pTargetVal->GetTypeName()).getData());
 
 				// Search function for given context
-				const char * szFuncName = pCPos->Par.s->GetCStr();
-				C4AulFunc * pFunc = pDestDef->Script.GetFuncRecursive(szFuncName);
+				C4AulFunc * pFunc = pDest->GetFunc(pCPos->Par.s);
 				if (!pFunc && pCPos->bccType == AB_CALLFS)
 				{
 					PopValuesUntil(pTargetVal);
@@ -715,18 +707,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Function not found?
 				if (!pFunc)
-				{
-					if (pDestObj)
-						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("'->': no function \"%s\" in object \"%s\"", szFuncName, pTargetVal->GetDataString().getData()).getData());
-					else
-						throw new C4AulExecError(pCurCtx->Obj,
-						                         FormatString("'->': no function \"%s\" in definition \"%s\"", szFuncName, pDestDef->GetName()).getData());
-				}
+					throw new C4AulExecError(pCurCtx->Obj,
+			                         FormatString("'->': no function \"%s\" in object \"%s\"", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
 
-				// Resolve overloads
-				while (pFunc->OverloadedBy)
-					pFunc = pFunc->OverloadedBy;
+				assert(!pFunc->OverloadedBy);
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
@@ -739,7 +723,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PushNullVals(pFunc->GetParCount() - (pCurVal + 1 - pPars));
 
 				// Call function
-				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pTargetVal->_getPropList());
+				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDest);
 				if (pNewCPos)
 				{
 					// Jump

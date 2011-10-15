@@ -2596,24 +2596,9 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			Shift();
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF) throw new C4AulParseError(this, "expecting func name after '->'");
-			// search a function with the given name
 			pFunc = a->Engine->GetFirstFunc(Idtf);
-			if (!pFunc)
-			{
-				// not failsafe?
-				if (eCallType != AB_CALLFS && Type == PARSER)
-					Warn(FormatString("direct object call: function %s not found", Idtf).getData());
-				// otherwise: nothing to call - just execute parameters and discard them
-				Shift();
-				Parse_Params(0, NULL);
-				// remove target from stack, push a zero value as result
-				AddBCC(AB_STACK, -1); AddBCC(AB_STACK, +1);
-				// done
-				break;
-			}
 			if (Type == PARSER)
 				pName = ::Strings.RegString(Idtf);
-			// add call chunk
 			Shift();
 			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
 			AddBCC(eCallType, reinterpret_cast<intptr_t>(pName));
