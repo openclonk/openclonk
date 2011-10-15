@@ -488,29 +488,30 @@ void C4SoundSystem::Execute()
 
 C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 {
-	C4SoundEffect *pSfx = NULL;
-	char szName[C4MaxSoundName+2];
-	int32_t iNumber = 1;
-	// Remember wildcards before adding .* extension - if there are 2 versions with different file extensions, play the first
-	bool bRandomSound = SCharCount('?',szName) || SCharCount('*',szName);
+	// Remember wildcards before adding .* extension - if there are 2 versions with different file extensions, play the last added
+	bool bRandomSound = SCharCount('?',szSndName) || SCharCount('*',szSndName);
 	// Evaluate sound name
+	char szName[C4MaxSoundName+2+1];
 	SCopy(szSndName,szName,C4MaxSoundName);
 	// Any extension accepted
 	DefaultExtension(szName,"*");
+	// Play nth Sound. Standard: 1
+	int32_t iNumber = 1;
 	// Sound with a wildcard: determine number of available matches
 	if (bRandomSound)
 	{
-	    iNumber = 0;
+		iNumber = 0;
 		// Count matching sounds
-		for (pSfx=FirstSound; pSfx; pSfx=pSfx->Next)
+		for (C4SoundEffect *pSfx=FirstSound; pSfx; pSfx=pSfx->Next)
 			if (WildcardMatch(szName,pSfx->Name))
 				++iNumber;
-        // Nothing found? Abort
-        if(iNumber == 0)
-            return NULL;
+		// Nothing found? Abort
+		if(iNumber == 0)
+			return NULL;
 		iNumber=SafeRandom(iNumber)+1;
 	}
 	// Find requested sound effect in bank
+	C4SoundEffect *pSfx;
 	for (pSfx=FirstSound; pSfx; pSfx=pSfx->Next)
 		if (WildcardMatch(szName,pSfx->Name))
 			if(!--iNumber)
@@ -531,7 +532,7 @@ C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int
 
 C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pObj)
 {
-	char szName[C4MaxSoundName+2];
+	char szName[C4MaxSoundName+2+1];
 	// Evaluate sound name (see GetEffect)
 	SCopy(szSndName,szName,C4MaxSoundName);
 	DefaultExtension(szName,"*");
