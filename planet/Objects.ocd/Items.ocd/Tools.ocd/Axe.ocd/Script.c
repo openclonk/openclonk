@@ -3,7 +3,7 @@
 	Author: Ringwaul, Clonkonaut
 
 	Used for chopping down trees. Can also harvest
-	wood from fallent trees, but will not yield as
+	wood from fallen trees, but will not yield as
 	many logs as a sawmill.
 */
 
@@ -66,7 +66,11 @@ public func ControlUseStart(object clonk, int iX, int iY)
 				clonk->SetDir(1);
 			else if(clonk->GetX() > tree->GetX() && clonk->GetDir() == 1)
 				clonk->SetDir(0);
-			// Create an offset, so that the hit matches with the animation
+
+			//The clonk cannot hold other items in hand while swinging an axe
+			clonk->SetHandAction(1);
+
+			//Update the axe position in the clonk' hands and disable turning while he chops the tree
 			clonk->UpdateAttach();
 			clonk->SetTurnForced(clonk->GetDir());
 
@@ -81,14 +85,22 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		}
 		if(! tree->IsStanding())
 		{
-			// Tree has already been chopped
+			// Tree has already been felled
 			using = 1;
+
+			//The clonk cannot hold other items in hand while swinging an axe
+			clonk->SetHandAction(1);
+
+			//Refresh hands
 			clonk->UpdateAttach();
 
 			//Make sure the clonk is holding the axe in the correct position
 			var hand = "Chop.R";
 			if(clonk->GetDir() == 0) hand = "Chop.L";
 			swing_anim = clonk->PlayAnimation(hand, 10, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), axe_swing_time, ANIM_Loop), Anim_Const(1000));
+
+			//clonk cannot turn around to face the screen while chopping
+			clonk->SetTurnForced(clonk->GetDir());
 
 			//The timed effect for when the axe actually hits the tree
 			AddEffect("IntSplit", clonk, 1, 1, this, 0, tree);
@@ -265,6 +277,7 @@ public func Reset(clonk)
 {
 	//Reset the clonk to normal control
 	using = 0;
+	clonk->SetHandAction(0);
 	clonk->UpdateAttach();
 	clonk->SetTurnForced(-1);
 	clonk->StopAnimation(swing_anim);
