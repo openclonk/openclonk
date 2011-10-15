@@ -418,19 +418,16 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
-			
-			StdMeshInstance::FaceOrdering old_fo = StdMeshInstance::FO_Fixed;
+
+			StdMeshInstance::FaceOrdering old_fo = StdSubMeshInstance::FO_Fixed;
 			if(cobj->pMeshInstance)
-			{
-				old_fo = cobj->pMeshInstance->GetFaceOrdering();
-				cobj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-			}
-			
+				cobj->pMeshInstance->SetFaceOrdering(StdSubMeshInstance::FO_NearestToFarthest);
+
 			cobj->Draw(cgo,-1);
 			cobj->DrawTopFace(cgo, -1);
 
 			if(cobj->pMeshInstance)
-				cobj->pMeshInstance->SetFaceOrdering(old_fo);
+				cobj->pMeshInstance->SetFaceOrderingForClrModulation(cobj->ColorMod);
 			
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;

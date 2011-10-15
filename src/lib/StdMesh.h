@@ -306,6 +306,14 @@ class StdSubMeshInstance
 	friend class StdMeshInstance;
 	friend class StdMeshMaterialUpdate;
 public:
+
+	enum FaceOrdering
+	{
+		FO_Fixed, // don't reorder, keep faces as in mesh
+		FO_FarthestToNearest,
+		FO_NearestToFarthest
+	};
+
 	StdSubMeshInstance(const StdSubMesh& submesh);
 
 	// Get vertex of instance, with current animation applied. This needs to
@@ -324,7 +332,12 @@ public:
 
 	void SetMaterial(const StdMeshMaterial& material);
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
+
+	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 protected:
+	void SetFaceOrdering(const StdSubMesh& submesh, FaceOrdering ordering);
+	void SetFaceOrderingForClrModulation(const StdSubMesh& submesh, uint32_t clrmod);
+
 	// Vertices transformed according to current animation
 	// Faces sorted according to current face ordering
 	// TODO: We can skip these if we decide to either
@@ -352,6 +365,8 @@ protected:
 	};
 
 	std::vector<Pass> PassData;
+	FaceOrdering CurrentFaceOrdering; // NoSave
+
 private:
 	StdSubMeshInstance(const StdSubMeshInstance& other); // noncopyable
 	StdSubMeshInstance& operator=(const StdSubMeshInstance& other); // noncopyable
@@ -365,14 +380,9 @@ public:
 	StdMeshInstance(const StdMesh& mesh);
 	~StdMeshInstance();
 
-	enum FaceOrdering
-	{
-		FO_Fixed, // don't reorder, keep faces as in mesh
-		FO_FarthestToNearest,
-		FO_NearestToFarthest
-	};
+	typedef StdSubMeshInstance::FaceOrdering FaceOrdering;
 
-	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
+	//FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 	void SetFaceOrdering(FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(uint32_t clrmod);
 
@@ -641,8 +651,6 @@ protected:
 	bool ExecuteAnimationNode(AnimationNode* node);
 
 	const StdMesh* Mesh;
-
-	FaceOrdering CurrentFaceOrdering; // NoSave
 
 	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number
