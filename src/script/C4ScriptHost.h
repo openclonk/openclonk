@@ -71,7 +71,6 @@ class C4DefScriptHost : public C4ScriptHost
 {
 public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
-	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 	void Clear();
 
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!

@@ -103,11 +103,11 @@ namespace C4GUI
 		Clear();
 		this->idSourceDef = idSourceDef;
 		// query values
-		dwBackClr     = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BackClr"     ).getData()).getInt();
-		iBorderTop    = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderTop"   ).getData()).getInt();
-		iBorderLeft   = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderLeft"  ).getData()).getInt();
-		iBorderRight  = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderRight" ).getData()).getInt();
-		iBorderBottom = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderBottom").getData()).getInt();
+		dwBackClr     = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BackClr"     ).getData()).getInt();
+		iBorderTop    = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderTop"   ).getData()).getInt();
+		iBorderLeft   = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderLeft"  ).getData()).getInt();
+		iBorderRight  = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderRight" ).getData()).getInt();
+		iBorderBottom = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderBottom").getData()).getInt();
 		// get gfx
 		SetFacetByAction(pSrcDef, fctTop        , "Top"        );
 		SetFacetByAction(pSrcDef, fctTopRight   , "TopRight"   );

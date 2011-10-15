@@ -1075,7 +1075,7 @@ static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
 	C4AulParSet Pars;
 	Copy2ParSet8(Pars, *par);
 	// Call
-	return pDef->Script.Call(FnStringPar(szFunction), 0, &Pars);
+	return pDef->Call(szFunction, &Pars);
 }
 
 static C4Value FnGameCall_C4V(C4AulContext *cthr,

@@ -87,15 +87,6 @@ void C4ScriptHost::MakeScript()
 	Preparse();
 }
 
-C4Value C4DefScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
-{
-	// get function
-	C4AulScriptFunc *pFn;
-	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
-	// Call code
-	return pFn->Exec(pObj,Pars, fPassError);
-}
-
 bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?

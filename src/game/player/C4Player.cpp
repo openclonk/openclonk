@@ -315,8 +315,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Script.Call(PSF_InitializeScriptPlayer, 0,
-				                          &C4AulParSet(C4VInt(Number), C4VInt(Team)));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(C4VInt(Number), C4VInt(Team)));
 			}
 		}
 		else
