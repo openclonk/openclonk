@@ -5,7 +5,7 @@ protected func Hit()
 	Sound("SoftHit1");
 }
 
-public func IsMillProduct() { return true; }
+public func IsWindmillProduct() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
