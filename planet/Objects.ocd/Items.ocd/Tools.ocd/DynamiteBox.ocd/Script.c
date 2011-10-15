@@ -155,7 +155,7 @@ func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 }
 
 public func IsTool() { return true; }
-public func IsToolProduct() { return true; }
+public func IsAlchemyProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set

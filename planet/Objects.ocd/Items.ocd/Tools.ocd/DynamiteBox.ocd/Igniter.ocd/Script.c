@@ -73,6 +73,9 @@ public func ResetClonk(clonk)
 	RemoveObject();
 }
 
+public func IsTool() { return true; }
+public func IsAlchemyProduct() { return false; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 }

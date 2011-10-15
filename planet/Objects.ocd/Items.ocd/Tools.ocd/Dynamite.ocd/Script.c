@@ -151,6 +151,8 @@ public func DoExplode()
 	Explode(18);
 }
 
+public func IsAlchemyProduct() { return true; }
+
 local ActMap = {
 	Fuse = {
 		Prototype = Action,
