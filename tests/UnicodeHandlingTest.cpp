@@ -81,19 +81,19 @@ TEST(UnicodeHandlingTest, RejectsInvalidSingleByteUtf8)
 	// Part 1: Range 0x80..0xBF (orphaned continuation bytes)
 	for (int i = 0x80; i <= 0xBF; ++i)
 	{
-		char buffer[] = { i, 0 };
+		char buffer[] = { static_cast<char>(i), 0 };
 		EXPECT_FALSE(::IsValidUtf8(buffer));
 	}
 	// Part 2: Range 0xC0..0xF4 (orphaned start bytes)
 	for (int i = 0xC0; i <= 0xFF; ++i)
 	{
-		char buffer[] = { i, 0 };
+		char buffer[] = { static_cast<char>(i), 0 };
 		EXPECT_FALSE(::IsValidUtf8(buffer));
 	}
 	// Part 3: Range 0xF5..0xFF (invalid bytes)
 	for (int i = 0xF5; i <= 0xFF; ++i)
 	{
-		char buffer[] = { i, 0 };
+		char buffer[] = { static_cast<char>(i), 0 };
 		EXPECT_FALSE(::IsValidUtf8(buffer));
 	}
 }
@@ -104,7 +104,12 @@ TEST(UnicodeHandlingTest, AcceptsValidMultiByteUtf8)
 	// Part 1: Generate all valid two-byte sequences
 	for (int i = 0x80; i < 0x800; ++i)
 	{
-		char buffer[] = { 0xC0 | (i >> 6), 0x80 | (i & 0x3F), 0 };
+		char buffer[] =
+		{
+			static_cast<char>(0xC0 | (i >> 6)),
+			static_cast<char>(0x80 | (i & 0x3F)),
+			0
+		};
 		EXPECT_TRUE(::IsValidUtf8(buffer)) << "Valid UTF-8 character not recognized:" << std::hex
 			<< " 0x" << (uint32_t)(uint8_t)buffer[0] << " 0x" << (uint32_t)(uint8_t)buffer[1]
 			<< " (0x" << i << ")";
@@ -113,7 +118,13 @@ TEST(UnicodeHandlingTest, AcceptsValidMultiByteUtf8)
 	for (int i = 0x800; i < 0x10000; ++i)
 	{
 		if (i == 0xD800) i = 0xE000; // Skip invalid surrogate halves
-		char buffer[] = { 0xE0 | (i >> 12), 0x80 | ((i >> 6) & 0x3F), 0x80 | (i & 0x3F), 0 };
+		char buffer[] =
+		{
+			static_cast<char>(0xE0 | (i >> 12)),
+			static_cast<char>(0x80 | ((i >> 6) & 0x3F)),
+			static_cast<char>(0x80 | (i & 0x3F)),
+			0
+		};
 		EXPECT_TRUE(::IsValidUtf8(buffer)) << "Valid UTF-8 character not recognized:" << std::hex
 			<< " 0x" << (uint32_t)(uint8_t)buffer[0] << " 0x" << (uint32_t)(uint8_t)buffer[1]
 			<< " 0x" << (uint32_t)(uint8_t)buffer[2]
@@ -122,7 +133,14 @@ TEST(UnicodeHandlingTest, AcceptsValidMultiByteUtf8)
 	// Part 3: Generate all valid four-byte sequences
 	for (int i = 0x10000; i < 0x10FFFF; ++i)
 	{
-		char buffer[] = { 0xF0 | (i >> 18), 0x80 | ((i >> 12) & 0x3F), 0x80 | ((i >> 6) & 0x3F), 0x80 | (i & 0x3F), 0 };
+		char buffer[] =
+		{
+			static_cast<char>(0xF0 | (i >> 18)),
+			static_cast<char>(0x80 | ((i >> 12) & 0x3F)),
+			static_cast<char>(0x80 | ((i >> 6) & 0x3F)),
+			static_cast<char>(0x80 | (i & 0x3F)),
+			0
+		};
 		EXPECT_TRUE(::IsValidUtf8(buffer)) << "Valid UTF-8 character not recognized:" << std::hex
 			<< " 0x" << (uint32_t)(uint8_t)buffer[0] << " 0x" << (uint32_t)(uint8_t)buffer[1]
 			<< " 0x" << (uint32_t)(uint8_t)buffer[2] << " 0x" << (uint32_t)(uint8_t)buffer[3]
@@ -148,7 +166,13 @@ TEST(UnicodeHandlingTest, RejectsInvalidMultiByteUtf8)
 	// Part 2: Incorrectly encoded surrogate halves
 	for (int i = 0xD800; i <= 0xDFFF; ++i)
 	{
-		char buffer[] = { 0xE0 | (i >> 12), 0x80 | ((i >> 6) & 0x3F), 0x80 | (i & 0x3F), 0 };
+		char buffer[] =
+		{
+			static_cast<char>(0xE0 | (i >> 12)),
+			static_cast<char>(0x80 | ((i >> 6) & 0x3F)),
+			static_cast<char>(0x80 | (i & 0x3F)),
+			0
+		};
 		EXPECT_FALSE(::IsValidUtf8(buffer)) << "Invalid surrogate half not recognized: " << std::hex
 			<< " 0x" << (uint32_t)(uint8_t)buffer[0] << " 0x" << (uint32_t)(uint8_t)buffer[1]
 			<< " 0x" << (uint32_t)(uint8_t)buffer[2]
@@ -165,8 +189,9 @@ TEST(UnicodeHandlingTest, RejectsInvalidMultiByteUtf8)
 
 #include "lib/StdBuf.h"
 #include "lib/StdBuf.cpp"
-#ifdef _WIN32
 size_t FileSize(int) { return 0; }
+
+#ifdef _WIN32
 TEST(UnicodeHandlingTest, WideStringConversion)
 {
 	wchar_t *wide_strings[] = {

@@ -1212,6 +1212,9 @@ if(GTEST_FOUND)
 		tests/main.cpp
 	)
 	target_link_libraries(tests ${GTEST_LIBRARIES})
+	if(HAVE_PTHREAD)
+		target_link_libraries(tests pthread)
+	endif()
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
