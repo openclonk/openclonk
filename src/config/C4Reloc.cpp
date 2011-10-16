@@ -34,7 +34,7 @@ void C4Reloc::Init()
 	AddPath(planet.getData());
 #endif
 
-	AddPath(Config.General.UserDataPath);
+	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
 	AddPath(Config.General.SystemDataPath);
 }
 
@@ -46,7 +46,7 @@ bool C4Reloc::AddPath(const char* path)
 	if(std::find(Paths.begin(), Paths.end(), path) != Paths.end())
 		return false;
 
-	Paths.push_back(StdCopyStrBuf(path));
+	Paths.push_back(PathInfo(StdCopyStrBuf(path), pathType));
 	return true;
 }
 
@@ -65,7 +65,7 @@ bool C4Reloc::Open(C4Group& hGroup, const char* filename) const
 	if(IsGlobalPath(filename)) return hGroup.Open(filename);
 
 	for(iterator iter = begin(); iter != end(); ++iter)
-		if(hGroup.Open((*iter + DirSep + filename).getData()))
+		if(hGroup.Open(((*iter).strBuf + DirSep + filename).getData()))
 			return true;
 
 	return false;
@@ -81,7 +81,7 @@ bool C4Reloc::LocateItem(const char* filename, StdStrBuf& str) const
 
 	for(iterator iter = begin(); iter != end(); ++iter)
 	{
-		str.Copy(*iter + DirSep + filename);
+		str.Copy((*iter).strBuf + DirSep + filename);
 		if(ItemExists(str.getData()))
 			return true;
 	}

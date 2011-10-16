@@ -23,14 +23,27 @@
 class C4Reloc
 {
 public:
-	typedef std::vector<StdCopyStrBuf> PathList;
+	enum PathType
+	{
+		PATH_Regular,
+		PATH_PreferredInstallationLocation
+	};
+	struct PathInfo
+	{
+		StdCopyStrBuf strBuf;
+		PathType pathType;
+		PathInfo(const StdCopyStrBuf buf, PathType pathType): strBuf(buf), pathType(pathType) {}
+		bool operator==(const PathInfo&other) {return pathType==other.pathType && strBuf==other.strBuf;}
+		operator const char*() {return strBuf.getData();}
+	};
+	typedef std::vector<PathInfo> PathList;
 	typedef PathList::const_iterator iterator;
 
 	// Can also be used for re-init, drops custom paths added with AddPath.
 	// Make sure to call after Config.Load.
 	void Init();
 
-	bool AddPath(const char* path);
+	bool AddPath(const char* path, PathType pathType = PATH_Regular);
 
 	iterator begin() const;
 	iterator end() const;
@@ -38,7 +51,7 @@ public:
 	bool Open(C4Group& hGroup, const char* filename) const;
 	bool LocateItem(const char* filename, StdStrBuf& str) const;
 private:
-	C4Reloc::PathList Paths;
+	PathList Paths;
 };
 
 extern C4Reloc Reloc;

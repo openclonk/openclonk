@@ -1169,7 +1169,7 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	// Load regular game data if no explicit path specified
 	if(!sRootFolder.getData())
 		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
-			pRootFolder->Merge(iter->getData());
+			pRootFolder->Merge(iter->strBuf.getData());
 	bool fSuccess = pRootFolder->LoadContents(this, NULL, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
