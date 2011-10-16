@@ -13,6 +13,8 @@ protected func Hit(x, y)
 	return true;
 }
 
+public func IsFoundryIngredient() { return true; }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
