@@ -182,6 +182,17 @@
 	return self.window.inLiveResize;
 }
 
+- (NSRect) windowWillUseStandardFrame:(NSWindow*) windowdefaultFrame:(NSRect) newFrame
+{
+	return NSMakeRect(newFrame.origin.x, newFrame.origin.y, preferredContentSize.width, preferredContentSize.height);
+}
+
+- (void) setContentSize:(NSSize)size
+{
+	[self.window setContentSize:size];
+	preferredContentSize = size;
+}
+
 @end
 
 @interface NSScroller (ClonkZoom)

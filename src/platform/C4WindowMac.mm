@@ -118,11 +118,7 @@ bool C4Window::GetSize(C4Rect * pRect)
 void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	ClonkWindowController* controller = ctrler;
-	if (controller.window)
-	{
-		[controller.window setContentSize:NSMakeSize(cx, cy)];
-		//[controller.window center];
-	}
+	[controller setContentSize:NSMakeSize(cx, cy)];
 }
 
 void C4Window::HandleMessage(void*)

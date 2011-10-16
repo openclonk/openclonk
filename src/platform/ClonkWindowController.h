@@ -29,10 +29,12 @@ class C4Viewport;
 	IBOutlet NSScrollView* scrollView;
 	C4Window* stdWindow;
 	NSWindow* fullscreenWindow;
+	NSSize preferredContentSize;
 }
 - (C4Viewport*) viewport;
 - (void) setFullscreen:(BOOL)fullscreen;
 - (BOOL) isFullscreen;
+- (void) setContentSize:(NSSize)size;
 
 - (IBAction) scroll:(id)sender;
 
