@@ -20,11 +20,12 @@
 #include <C4Game.h>
 
 #import "ClonkAppDelegate.h"
+#import "ClonkMainMenuActions.h"
 #ifdef USE_SDL_MAINLOOP
 #import "SDL/SDL.h"
 #endif
 
-/* The main class of the application, the appl¤ication's delegate */
+/* The main class of the application, the application's delegate */
 @implementation ClonkAppDelegate
 
 + (ClonkAppDelegate*) instance;
@@ -55,9 +56,20 @@
 
 - (void)awakeFromNib
 {
-	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:self
-												       andSelector:@selector(getUrl:withReplyEvent:)
-													 forEventClass:kInternetEventClass andEventID:kAEGetURL];
+	NSAppleEventManager* appleEvents = [NSAppleEventManager sharedAppleEventManager];
+	[appleEvents setEventHandler:self
+					 andSelector:@selector(getUrl:withReplyEvent:)
+				   forEventClass:kInternetEventClass andEventID:kAEGetURL];
+	[appleEvents setEventHandler:self
+					 andSelector:@selector(handleQuitEvent:withReplyEvent:)
+				   forEventClass:kCoreEventClass andEventID:kAEQuitApplication];
+}
+
+//handler for the quit apple event
+- (void)handleQuitEvent:(NSAppleEventDescriptor*)event withReplyEvent:(NSAppleEventDescriptor*)replyEvent
+{
+	NSLog(@"Quit message via Dock or Tab-Switcher");
+	[self suggestQuitting:self];
 }
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
@@ -87,7 +99,7 @@
 - (void) quitAndMaybeRestart
 {
 	// free app stuff
-	Application.Clear();
+	Application.Quit();
 	if (Application.restartAtEnd)
 	{
 		NSString* filename = [[NSBundle mainBundle] bundlePath];
@@ -135,20 +147,33 @@
 	running = YES;
 	while (!Application.fQuitMsgReceived)
 		Application.ScheduleProcs();
+	[NSApp replyToApplicationShouldTerminate:YES];
 	running = NO;
 	[self quitAndMaybeRestart];
 	[NSApp terminate:self];
 }
 #endif
 
+- (void) simulateKeyPressed:(C4KeyCode)key
+{
+	Game.DoKeyboardInput(
+						 key,
+						 KEYEV_Down,
+						 false, false, false,
+						 false, NULL
+						 );
+	Game.DoKeyboardInput(
+						 key,
+						 KEYEV_Up,
+						 false, false, false,
+						 false, NULL
+						 );
+}
+
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
 {
-	if (running)
-	{
-		[self terminate:application];
-		return NSTerminateCancel;
-	}
-	return NSTerminateNow;
+	[self suggestQuitting:self];
+	return running ? NSTerminateCancel : NSTerminateNow;
 }
 
 - (void)terminate:(NSApplication*)sender
@@ -160,7 +185,7 @@
 	SDL_PushEvent(&event);
 #endif
 #ifdef USE_COCOA
-	Application.Quit();
+	Application.fQuitMsgReceived = true;
 #endif
 }
 
@@ -271,8 +296,15 @@
 #  undef main
 #endif
 
+static void _ExceptionHandler(NSException* exception)
+{
+	NSAlert* alert = [NSAlert alertWithMessageText:[exception description] defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:@""];
+	[alert runModal];
+}
+
 /* Main entry point to executable - should *not* be SDL_main! */
 int main (int argc, const char **argv)
 {
+	NSSetUncaughtExceptionHandler(&_ExceptionHandler);
 	return NSApplicationMain(argc, argv);
 }
