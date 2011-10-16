@@ -229,7 +229,7 @@
 - (void) minimalConfigurationInitialization
 {
 	Config.Init();
-	Config.Load(true);
+	Config.Load();
 	Reloc.Init();
 	Languages.Init();
 	Languages.LoadLanguage(Config.General.LanguageEx);
