@@ -10,12 +10,15 @@ Checkmaty       - ProjectileHitLiving*
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
 Stickinthemud   - Clonk (http://www.freesound.org/people/Stickinthemud/sounds/27526/)
+                  BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
 Toby Knowles    - Fanfare (http://www.freesound.org/people/tobyk/sounds/26198/)
 ERH             - WindLoop (http://www.freesound.org/people/ERH/sounds/34338/)
 TicTacShutUp    - Click (http://www.freesound.org/people/TicTacShutUp/sounds/406/)
 CGEffex         - Splash* (http://www.freesound.org/people/CGEffex/sounds/98335/)
 Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
+jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
+gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -34,7 +37,6 @@ The following sound effects are licensed under the CC Sampling plus license:
 
 kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
 thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
-gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 110110010		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/)
 schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
@@ -44,8 +46,6 @@ Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106694/)
 					(http://www.freesound.org/people/Nikolino/sounds/106650/)
 					(http://www.freesound.org/people/Nikolino/sounds/106640/)
-jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
-Stickinthemud	- BlastMetal (http://www.freesound.org/people/Stickinthemud/sounds/27531/)
 Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
 fresco			- Munch* (http://www.freesound.org/people/fresco/sounds/48933/)
 tofumike		- Munch* (http://www.freesound.org/people/tofumike/sounds/41371/)
