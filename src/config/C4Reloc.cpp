@@ -38,7 +38,7 @@ void C4Reloc::Init()
 	AddPath(Config.General.SystemDataPath);
 }
 
-bool C4Reloc::AddPath(const char* path)
+bool C4Reloc::AddPath(const char* path, PathType pathType)
 {
 	if(!IsGlobalPath(path))
 		return false;
