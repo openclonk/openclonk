@@ -221,18 +221,21 @@
 	
 	// Build destination path.
 	NSString* justFileName = [addonSupplied lastPathComponent];
-	NSString* destPath = [[self clonkDirectory] stringByAppendingPathComponent:justFileName];
+	NSString* destPath = [self clonkDirectory];
 	NSString* formatString;
 	
 	// Already installed?
 	for (C4Reloc::iterator it = Reloc.begin(); it != Reloc.end(); it++)
 	{
-		if ([addonSupplied hasPrefix:[NSString stringWithCString:(*it).getData() encoding:NSUTF8StringEncoding]])
+		if ([addonSupplied hasPrefix:[NSString stringWithCString:(*it).strBuf.getData() encoding:NSUTF8StringEncoding]])
 		{
 			[gatheredArguments addObject:addonSupplied];
 			return NO; // run scenarios when they are already containd in one of the Reloc directories
 		}
+		else if (it->pathType == C4Reloc::PATH_PreferredInstallationLocation)
+			destPath = [NSString stringWithCString:it->strBuf.getData() encoding:NSUTF8StringEncoding];
 	}
+	destPath = [destPath stringByAppendingPathComponent:justFileName];
 	
 	NSFileManager* fileManager = [NSFileManager defaultManager];
 	if ([fileManager fileExistsAtPath:destPath])
