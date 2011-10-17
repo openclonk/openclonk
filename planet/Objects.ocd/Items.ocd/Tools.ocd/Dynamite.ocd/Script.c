@@ -152,6 +152,7 @@ public func DoExplode()
 }
 
 public func IsAlchemyProduct() { return true; }
+public func HasFuse() { return true; }
 
 local ActMap = {
 	Fuse = {

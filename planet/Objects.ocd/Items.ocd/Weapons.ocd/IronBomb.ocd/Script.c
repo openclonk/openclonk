@@ -75,6 +75,7 @@ protected func RejectEntrance()
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
+public func HasFuse() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

@@ -250,7 +250,7 @@ func ControlRight(object clonk)
 
 protected func DoFire(object iammo, object clonk, int angle)
 {
-	if(iammo->GetID() == Dynamite)
+	if(iammo->~HasFuse())
 	{
 		iammo->Fuse();
 	}
