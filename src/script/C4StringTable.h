@@ -127,6 +127,19 @@ public:
 	{
 		delete[] Table;
 	}
+	C4Set(const C4Set & b): Capacity(0), Size(0), Table(0)
+	{
+		*this = b;
+	}
+	C4Set & operator = (const C4Set & b)
+	{
+		Capacity = b.Capacity;
+		Size = b.Size;
+		delete[] Table;
+		Table = new T[Capacity];
+		for (unsigned int i = 0; i < Capacity; ++i)
+			Table[i] = b.Table[i];
+	}
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
 	{
