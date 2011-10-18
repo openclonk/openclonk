@@ -10,7 +10,10 @@ following packages:
   libgl1-mesa-dev libpng12-dev libssl-dev libsdl1.2-dev libsdl-mixer1.2-dev
   libgtk2.0-dev libjpeg62-dev zlib1g-dev libboost-dev
 
-To build on RPM-based Linux distributions (Red Hat, Fedora, Mandariva,
+(Most of those packages can be substituted with a newer version if required,
+for example libglew1.6-dev instead of libglew1.5-dev.)
+
+To build on RPM-based Linux distributions (Red Hat, Fedora, Mandriva,
 SuSE etc.) you need the following packages:
 
   make gcc gcc-c++
@@ -21,7 +24,7 @@ SuSE etc.) you need the following packages:
 
 
 Build using cmake
-=====================
+=================
 
 To build OpenClonk, execute the following command inside of the source tree:
 
@@ -50,8 +53,8 @@ To build from tarball, run this:
 
   ./configure && make
 
-If you want a debug build, pass --enable-debug to configure, for the developer
-mode --with-gtk. Other options are listed by ./configure --help.
+If you want a debug build, pass --enable-debug to configure. Other options are
+listed by ./configure --help.
 
 On subsequent build runs, you only have to execute make.
 
@@ -59,9 +62,13 @@ On subsequent build runs, you only have to execute make.
 Running
 =======
 
-You need to move the compiled binary to the data folder before running. I
-recommend using a symbolic link like this:
+You can run the game from the build directory:
 
-  cd planet/
-  ln -s ../clonk
   ./clonk
+
+See docs/sdk/cmdline.xml for the supported command line options.
+
+Or install it with this:
+
+  make install
+
