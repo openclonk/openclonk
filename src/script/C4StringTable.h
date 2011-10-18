@@ -108,7 +108,7 @@ template<typename T> class C4Set
 	{
 		unsigned int h = Hash(e);
 		T * p = &Table[h % Capacity];
-		while (*p && *p != e)
+		while (*p && !Equals(*p, e))
 		{
 			p = &Table[++h % Capacity];
 		}
