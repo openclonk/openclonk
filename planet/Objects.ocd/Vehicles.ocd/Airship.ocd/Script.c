@@ -47,7 +47,7 @@ protected func Initialize()
 	//The airship starts facing left; so default to that value
 	animdir = -1;
 
-	turnanim = graphic->PlayAnimation("TurnLeft", graphic->GetAnimationLength("TurnLeft"), Anim_Const(20), Anim_Const(1000));
+	turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Const(graphic->GetAnimationLength("TurnLeft")), Anim_Const(1000));
 
 	//Start the Airship behaviour
 	AddEffect("FlyEffect",this,1,1,this);
