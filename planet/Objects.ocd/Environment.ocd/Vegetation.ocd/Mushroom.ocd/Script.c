@@ -19,11 +19,6 @@ private func Initialize()
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
 }
 
-func Hit()
-{
-	Sound("WoodHit?");
-}
-
 /* Harvesting */
 
 private func CanBeHarvested() { return true; }
