@@ -15,15 +15,15 @@
         </rowh>
         <row>
           <col>C4D_StaticBack</col>
-          <col>Immovable background object.</col>
+          <col>Immovable object.</col>
         </row>
         <row>
           <col>C4D_Structure</col>
-          <col>Building.</col>
+          <col>Unused.</col>
         </row>
         <row>
           <col>C4D_Vehicle</col>
-          <col>Vehicle.</col>
+          <col>Unused.</col>
         </row>
         <row>
           <col>C4D_Living</col>
@@ -31,7 +31,7 @@
         </row>
         <row>
           <col>C4D_Object</col>
-          <col>A smaller item.</col>
+          <col>An item that can hit alive objects.</col>
         </row>
         <row>
           <col>C4D_Goal</col>
@@ -82,5 +82,6 @@
     </text>
   </part>
   <author>Sven2</author><date>2006-05</date>
-  <author>Newton &amp; Günther</author><date>2005-01</date>
+  <author>Newton</author><date>2005-01</date>
+  <author>Günther</author><date>2005, 2011</date>
 </doc>

@@ -9,17 +9,12 @@
     <subcat>Category</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int </rtype></syntax>
-    <desc>Object category: immovable background object.</desc>
-    <examples>
-      <example>
-        <code><funclink>SetCategory</funclink>(C4D_StaticBack);</code>
-        <text>Makes the object into a background object. This is used with castle parts so after completion other objects can be built in front.</text>
-      </example>
-    </examples>
+    <desc>Objects with this category do not move. This is useful for all kinds of stuff, like making sure rule objects don't fall out of the landscape.</desc>
     <related>
       <funclink>GetCategory</funclink>
       <funclink>SetCategory</funclink>
+      <emlink href="definition/procedures.html#FLOAT">Procedure FLOAT</emlink>
     </related>
   </const>
-  <author>jwk</author><date>2002-04</date>
+  <author>Günther</author><date>2011</date>
 </funcs>

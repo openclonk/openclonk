@@ -123,7 +123,7 @@ Stand = {
         <row id="Plane">
           <col><code>Plane</code></col>
           <col>int</col>
-          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it.</col>
+          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it. Use 1-399 for stuff behind Clonks, 401-999 for stuff before Clonks, and 1000+ for GUI objects.</col>
         </row>
       </table>
     </text>
