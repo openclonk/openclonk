@@ -13,7 +13,7 @@
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided.</desc>
+          <desc>Name of the sound effect (without .wav/.ogg extension). Wildcards as used by <funclink>WildcardMatch</funclink> are used.</desc>
         </param>
         <param>
           <type>bool</type>
