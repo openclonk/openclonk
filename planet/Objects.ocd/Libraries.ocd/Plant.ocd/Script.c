@@ -14,11 +14,9 @@ global func RootSurface()
 	if (HasCNAT(CNAT_Center)) while(GetContact(-1) & CNAT_Center) SetPosition(GetX(),GetY()-1); //Move up if too far underground
 	if (HasCNAT(CNAT_Bottom))
 	{
-		var moved_down = false;
-		if (!(GetContact(-1) & CNAT_Bottom)) moved_down = true;
 		while(!(GetContact(-1) & CNAT_Bottom)) SetPosition(GetX(),GetY()+1); //Move down if in midair
 
-		if (moved_down) SetPosition(GetX(),GetY()+1); // make the plant stuck, not just contact with surface (in case it was moved down)
+		if (!Stuck()) SetPosition(GetX(),GetY()+1); // try make the plant stuck
 	}
 }
 
@@ -134,7 +132,7 @@ public func ChopDown()
 /** Determines whether a plant may be harvested by the player.
 	@return \c true if the plant can be harvested, \c false otherwise (default).
 */
-private func CanBeHarvested()
+private func IsCrop()
 {
 	return false;
 }
@@ -149,12 +147,12 @@ public func IsHarvestable()
 
 public func IsInteractable(object clonk)
 {
-	return clonk->GetProcedure() == "WALK" && CanBeHarvested() && IsHarvestable() || _inherited(clonk);
+	return clonk->GetProcedure() == "WALK" && IsCrop() && IsHarvestable() || _inherited(clonk);
 }
 
 public func GetInteractionMetaInfo(object clonk)
 {
-	if (CanBeHarvested())
+	if (IsCrop())
 	{
 		if (IsHarvestable())
 			return { Description = Format("$Harvest$", GetName()) };
@@ -166,7 +164,7 @@ public func GetInteractionMetaInfo(object clonk)
 
 public func Interact(object clonk)
 {
-	if (CanBeHarvested())
+	if (IsCrop())
 	{
 		if (IsHarvestable())
 			return Harvest(clonk);

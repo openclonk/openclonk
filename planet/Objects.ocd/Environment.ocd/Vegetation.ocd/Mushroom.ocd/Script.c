@@ -21,7 +21,7 @@ private func Initialize()
 
 /* Harvesting */
 
-private func CanBeHarvested() { return true; }
+private func IsCrop() { return true; }
 
 public func Harvest(object clonk)
 {

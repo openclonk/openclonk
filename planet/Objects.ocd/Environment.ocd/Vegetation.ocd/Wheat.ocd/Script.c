@@ -78,7 +78,7 @@ protected func FxWaterCheckTimer(object obj, effect)
 	}
 }
 
-public func CanBeHarvested() { return true; }
+public func IsCrop() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
