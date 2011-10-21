@@ -177,6 +177,8 @@ func FxIntAxeTimer(object clonk, effect, int time)
 	if (!effect.tree) return -1;
 	// Tree fell
 	if (!effect.tree->IsStanding()) return -1;
+	// Clonk did something
+	if (!clonk->IsWalking()) return -1;
 
 	//This block is executed when the axe hits the tree
 	if((time + 25) % axe_swing_time == 1)
@@ -225,6 +227,8 @@ func FxIntSplitTimer(object clonk, effect, int time)
 	if (!effect.tree) return -1;
 	// Tree moved away
 	if (ObjectDistance(effect.tree, clonk) > Distance(0,0, effect.tree->GetObjWidth()/2, effect.tree->GetObjHeight()/2)) return -1;
+	// Clonk did something
+	if (!clonk->IsWalking()) return -1;
 
 	//This block is executed when the axe hits the tree
 	if ((time + 25) % axe_swing_time == 1)
