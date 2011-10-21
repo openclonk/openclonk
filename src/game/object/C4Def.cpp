@@ -161,16 +161,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 			Mass = 0;
 		}
 
-		// Register ID with script engine
-		::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
-		/*
-		int32_t index = ::ScriptEngine.GlobalNamedNames.GetItemNr(id.ToString());
-		if (index == -1)
-		{
-		  index = ::ScriptEngine.GlobalNamedNames.AddName(id.ToString());
-		  ::ScriptEngine.GlobalNamed.GetItem(index)->Set(C4VPropList(this));
-		}*/
-
 		return true;
 	}
 	return false;
@@ -425,6 +415,9 @@ bool C4Def::Load(C4Group &hGroup,
 
 	// Read string table
 	StringTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
+
+	// Register ID with script engine
+	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
 
 	// Read script
 	if (dwLoadWhat & C4D_Load_Script)

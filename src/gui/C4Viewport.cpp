@@ -56,28 +56,6 @@ void C4Viewport::DropFile(const char* fileName, float x, float y)
 	Game.DropFile(fileName, ViewX+x/Zoom, ViewY+y/Zoom);
 }
 
-#ifdef _WIN32
-#include <shellapi.h>
-
-bool C4Viewport::DropFiles(HANDLE hDrop)
-{
-	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
-
-	int32_t iFileNum = DragQueryFile((HDROP)hDrop,0xFFFFFFFF,NULL,0);
-	POINT pntPoint;
-	wchar_t szFilename[500+1];
-	for (int32_t cnt=0; cnt<iFileNum; cnt++)
-	{
-		DragQueryFileW((HDROP)hDrop,cnt,szFilename,500);
-		DragQueryPoint((HDROP)hDrop,&pntPoint);
-		DropFile(StdStrBuf(szFilename).getData(), (float)pntPoint.x, (float)pntPoint.y);
-	}
-	DragFinish((HDROP)hDrop);
-	return true;
-}
-
-#endif // WITH_DEVELOPER_MODE/_WIN32
-
 bool C4Viewport::UpdateOutputSize()
 {
 	if (!pWindow) return false;

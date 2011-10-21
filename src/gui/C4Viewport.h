@@ -67,9 +67,6 @@ public:
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
 	bool Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer);
 	void DropFile(const char* fileName, float x, float y);
-#ifdef _WIN32
-	bool DropFiles(HANDLE hDrop);
-#endif
 	bool TogglePlayerLock();
 	void NextPlayer();
 	C4Rect GetOutputRect() { return C4Rect(OutX, OutY, ViewWdt, ViewHgt); }

@@ -106,8 +106,22 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DROPFILES:
-		cvp->DropFiles((HANDLE) wParam);
+	{
+		HDROP hDrop = (HDROP)(HANDLE) wParam;
+		if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
+
+		int32_t iFileNum = DragQueryFile(hDrop,0xFFFFFFFF,NULL,0);
+		POINT pntPoint;
+		wchar_t szFilename[500+1];
+		for (int32_t cnt=0; cnt<iFileNum; cnt++)
+		{
+			DragQueryFileW(hDrop,cnt,szFilename,500);
+			DragQueryPoint(hDrop,&pntPoint);
+			cvp->DropFile(StdStrBuf(szFilename).getData(), (float)pntPoint.x, (float)pntPoint.y);
+		}
+		DragFinish(hDrop);
 		break;
+	}
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_USER_DROPDEF:
 		Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
@@ -476,6 +490,7 @@ bool C4Viewport::ViewPositionByScrollBars()
 
 void C4ViewportWindow::OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data)
 {
+	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return; }
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
 	gchar** uris = gtk_selection_data_get_uris(data);
@@ -486,7 +501,7 @@ void C4ViewportWindow::OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContex
 		gchar* file = g_filename_from_uri(*uri, NULL, NULL);
 		if (!file) continue;
 
-		Game.DropFile(file, window->cvp->ViewX+x, window->cvp->ViewY+y);
+		window->cvp->DropFile(file, x, y);
 		g_free(file);
 	}
 
