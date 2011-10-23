@@ -1296,12 +1296,10 @@ void C4AulScriptFunc::ParseFn(bool fExprOnly, C4AulScriptContext* context)
 
 void C4AulParseState::Parse_Script()
 {
-	int IncludeCount = 0;
-	bool fDone = false;
 	const char * SPos0 = SPos;
 	bool all_ok = true;
 	bool found_code = false;
-	while (!fDone) try
+	while (true) try
 	{
 		// Go to the next token if the current token could not be processed or no token has yet been parsed
 		if (SPos == SPos0)
@@ -1322,34 +1320,37 @@ void C4AulParseState::Parse_Script()
 					// get id of script to include
 					if (TokenType != ATT_IDTF)
 						UnexpectedToken("identifier");
-					C4ID Id = C4ID(StdStrBuf(Idtf));
+					if (Type == PREPARSER)
+					{
+						// add to include list
+						a->Includes.push_front(C4ID(StdStrBuf(Idtf)));
+					}
 					Shift();
-					// add to include list
-					a->Includes.push_front(Id);
-					IncludeCount++;
 				}
 				else if (SEqual(Idtf, C4AUL_Append))
 				{
 					// for #appendto * '*' needs to be ATT_STAR, not an operator.
 					Shift(StarsPlease);
-					// get id of script to include/append
-					C4ID Id;
-					switch (TokenType)
+					if (Type == PREPARSER)
 					{
-					case ATT_IDTF:
-						Id = C4ID(StdStrBuf(Idtf));
-						Shift();
-						break;
-					case ATT_STAR: // "*"
-						Id = C4ID::None;
-						Shift();
-						break;
-					default:
-						// -> ID expected
-						UnexpectedToken("identifier or '*'");
+						// get id of script to include/append
+						C4ID Id;
+						switch (TokenType)
+						{
+						case ATT_IDTF:
+							Id = C4ID(StdStrBuf(Idtf));
+							break;
+						case ATT_STAR: // "*"
+							Id = C4ID::None;
+							break;
+						default:
+							// -> ID expected
+							UnexpectedToken("identifier or '*'");
+						}
+						// add to append list
+						a->Appends.push_back(Id);
 					}
-					// add to append list
-					a->Appends.push_back(Id);
+					Shift();
 				}
 				else
 					// -> unknown directive
@@ -1359,19 +1360,9 @@ void C4AulParseState::Parse_Script()
 			case ATT_IDTF:
 			{
 				found_code = true;
-				if (SEqual(Idtf, C4AUL_For))
-				{
-					throw new C4AulParseError(this, "unexpected for outside function");
-				}
-				// check for variable definition (var)
-				else if (SEqual(Idtf, C4AUL_VarNamed))
-				{
-					throw new C4AulParseError(this, "unexpected variable definition outside function");
-				}
 				// check for object-local variable definition (local)
-				else if (SEqual(Idtf, C4AUL_LocalNamed))
+				if (SEqual(Idtf, C4AUL_LocalNamed))
 				{
-					Shift();
 					Parse_Local();
 					Match(ATT_SCOLON);
 					break;
@@ -1379,15 +1370,7 @@ void C4AulParseState::Parse_Script()
 				// check for variable definition (static)
 				else if (SEqual(Idtf, C4AUL_GlobalNamed))
 				{
-					Shift();
-					// constant?
-					if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Const))
-					{
-						Shift();
-						Parse_Const();
-					}
-					else
-						Parse_Static();
+					Parse_Static();
 					Match(ATT_SCOLON);
 					break;
 				}
@@ -1396,8 +1379,7 @@ void C4AulParseState::Parse_Script()
 				break;
 			}
 			case ATT_EOF:
-				fDone = true;
-				break;
+				return;
 			default:
 				UnexpectedToken("declaration");
 		}
@@ -1626,22 +1608,13 @@ void C4AulParseState::Parse_Statement()
 	{
 		// check for variable definition (var)
 		if (SEqual(Idtf, C4AUL_VarNamed))
-		{
-			Shift();
 			Parse_Var();
-		}
 		// check for variable definition (local)
 		else if (SEqual(Idtf, C4AUL_LocalNamed))
-		{
-			Shift();
 			Parse_Local();
-		}
 		// check for variable definition (static)
 		else if (SEqual(Idtf, C4AUL_GlobalNamed))
-		{
-			Shift();
 			Parse_Static();
-		}
 		// check new-form func begin
 		else if (SEqual(Idtf, C4AUL_Func) ||
 		         SEqual(Idtf, C4AUL_Private) ||
@@ -1654,7 +1627,6 @@ void C4AulParseState::Parse_Statement()
 		// get function by identifier: first check special functions
 		else if (SEqual(Idtf, C4AUL_If)) // if
 		{
-			Shift();
 			Parse_If();
 			break;
 		}
@@ -1664,13 +1636,11 @@ void C4AulParseState::Parse_Statement()
 		}
 		else if (SEqual(Idtf, C4AUL_Do)) // while
 		{
-			Shift();
 			Parse_DoWhile();
 			break;
 		}
 		else if (SEqual(Idtf, C4AUL_While)) // while
 		{
-			Shift();
 			Parse_While();
 			break;
 		}
@@ -1953,6 +1923,7 @@ void C4AulParseState::Parse_PropList()
 
 void C4AulParseState::Parse_DoWhile()
 {
+	Shift();
 	// Save position for later jump back
 	int iStart = JumpHere();
 	// We got a loop
@@ -1980,6 +1951,7 @@ void C4AulParseState::Parse_DoWhile()
 
 void C4AulParseState::Parse_While()
 {
+	Shift();
 	// Save position for later jump back
 	int iStart = JumpHere();
 	// Execute condition
@@ -2008,6 +1980,7 @@ void C4AulParseState::Parse_While()
 
 void C4AulParseState::Parse_If()
 {
+	Shift();
 	Match(ATT_BOPEN);
 	Parse_Expression();
 	Match(ATT_BCLOSE);
@@ -2037,7 +2010,6 @@ void C4AulParseState::Parse_For()
 	// Initialization
 	if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_VarNamed))
 	{
-		Shift();
 		Parse_Var();
 	}
 	else if (TokenType != ATT_SCOLON)
@@ -2158,11 +2130,11 @@ void C4AulParseState::Parse_ForEach()
 
 void C4AulParseState::Parse_Expression(int iParentPrio)
 {
-	int ndx;
 	switch (TokenType)
 	{
 	case ATT_IDTF:
 	{
+		int ndx;
 		// check for parameter (par)
 		if (Fn->ParNamed.GetItemNr(Idtf) != -1)
 		{
@@ -2393,7 +2365,6 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 	}
 	case ATT_BOPEN:
 	{
-		// parse it like a function...
 		Shift();
 		Parse_Expression();
 		Match(ATT_BCLOSE);
@@ -2592,6 +2563,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 
 void C4AulParseState::Parse_Var()
 {
+	Shift();
 	while (1)
 	{
 		// get desired variable name
@@ -2629,6 +2601,7 @@ void C4AulParseState::Parse_Var()
 
 void C4AulParseState::Parse_Local()
 {
+	Shift();
 	while (1)
 	{
 		if (Type == PREPARSER)
@@ -2677,6 +2650,13 @@ void C4AulParseState::Parse_Local()
 
 void C4AulParseState::Parse_Static()
 {
+	Shift();
+	// constant?
+	if (TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Const))
+	{
+		Parse_Const();
+		return;
+	}
 	while (1)
 	{
 		if (Type == PREPARSER)
@@ -2864,6 +2844,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 
 void C4AulParseState::Parse_Const()
 {
+	Shift();
 	// get global constant definition(s)
 	while (1)
 	{
