@@ -1089,6 +1089,7 @@ public:
 		ClearCode();
 		this->stringTable = stringTable;
 	}
+	bool Delete() { return true; }
 	virtual C4PropList * GetPropList() { return p; }
 	C4PropList * p;
 };

@@ -108,6 +108,23 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
+/*--- C4ExtraScriptHost ---*/
+
+C4ExtraScriptHost::C4ExtraScriptHost():
+		ParserPropList(C4PropList::NewAnon())
+{
+}
+
+void C4ExtraScriptHost::Clear()
+{
+	ParserPropList.getPropList()->Clear();
+}
+
+C4PropList * C4ExtraScriptHost::GetPropList()
+{
+	return ParserPropList.getPropList();
+}
+
 /*--- C4DefScriptHost ---*/
 
 bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)

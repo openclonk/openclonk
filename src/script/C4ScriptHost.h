@@ -31,9 +31,8 @@
 class C4ScriptHost : public C4AulScript
 {
 public:
-	C4ScriptHost();
 	~C4ScriptHost();
-	bool Delete() { return true; }
+	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 public:
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
@@ -41,6 +40,7 @@ public:
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 protected:
+	C4ScriptHost();
 	void SetError(const char *szMessage);
 	void MakeScript();
 	bool ReloadScript(const char *szPath, const char *szLanguage);
@@ -65,15 +65,25 @@ protected:
 	friend class C4AulDebug;
 };
 
+// script host for System.ocg scripts
+class C4ExtraScriptHost: public C4ScriptHost
+{
+	C4Value ParserPropList;
+public:
+	C4ExtraScriptHost();
+	void Clear();
+
+	bool Delete() { return true; }
+	virtual C4PropList * GetPropList();
+};
 
 // script host for defs
-class C4DefScriptHost : public C4ScriptHost
+class C4DefScriptHost: public C4ScriptHost
 {
 public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
 	void Clear();
 
-	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	virtual C4PropList * GetPropList();
 protected:
@@ -91,7 +101,6 @@ public:
 	bool LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable);
 	void Clear();
 	void AfterLink();
-	virtual bool Delete() { return false; } // do NOT delete this - it's a global!
 	virtual C4PropList * GetPropList() { return ScenPrototype; }
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects

@@ -2216,7 +2216,7 @@ bool C4Game::InitScriptEngine()
 	while (File.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 	{
 		// host will be destroyed by script engine, so drop the references
-		C4ScriptHost *scr = new C4ScriptHost();
+		C4ScriptHost *scr = new C4ExtraScriptHost();
 		scr->Reg2List(&ScriptEngine, &ScriptEngine);
 		scr->Load(File, fn, Config.General.LanguageEx, &MainSysLangStringTable);
 	}
@@ -2682,7 +2682,7 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 		{
 			// host will be destroyed by script engine, so drop the references
-			C4ScriptHost *scr = new C4ScriptHost();
+			C4ScriptHost *scr = new C4ExtraScriptHost();
 			scr->Reg2List(&ScriptEngine, &ScriptEngine);
 			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
 		}
