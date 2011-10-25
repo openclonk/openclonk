@@ -1043,6 +1043,7 @@ func EndKneel()
 //rollp
 func StartRoll()
 {	
+	SetTurnForced(GetDir());
 	Sound("Roll");
 	if(GetDir() == 1) rolldir = 1;
 	else
@@ -1068,6 +1069,7 @@ func FxRollingTimer(object target, int num, int timer)
 	if(timer > rolllength)
 	{
 		SetAction("Walk");
+		SetTurnForced(-1);
 		rolldir = nil;
 		return -1;
 	}
