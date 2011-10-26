@@ -5,6 +5,8 @@
 	The barrel is used to transport liquids
 --*/
 
+#include Library_CarryHeavy
+
 local szLiquid;
 local iVolume;
 
@@ -211,7 +213,8 @@ public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
 	return inMaxAmount;
 }
 
-local Collectible = 1;
+local Collectible = false;
+local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;

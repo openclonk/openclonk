@@ -1,0 +1,3 @@
+Name=Kiste
+OpenCrate=Kiste öffnen
+CloseCrate=Kiste schließen

@@ -5,6 +5,8 @@
 	A barrel filled with black powder.
 --*/
 
+#include Library_CarryHeavy
+
 local count;
 local oldcount;
 
@@ -106,7 +108,8 @@ public func OnProjectileHit()
 func IsAlchemyProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 
-local Collectible = 1;
+local Collectible = false;
+local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;

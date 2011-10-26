@@ -297,6 +297,9 @@ protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
+
+	//No collection if the clonk is carrying a 'carry-heavy' object
+	if(GetEffect("IntCarryHeavy", this) || GetEffect("IntLiftHeavy", this)) return true;
 	
 	// try to stuff obj into an object with an extra slot
 	for(var i=0; Contents(i); ++i)
@@ -1124,8 +1127,8 @@ private func ObjectControlEntrance(int plr, int ctrl)
 
 private func ObjectControlInteract(int plr, int ctrl)
 {
-	var interactables = FindObjects(Find_AtPoint(0,0), Find_Func("IsInteractable",this),
-	                    Find_NoContainer(), Find_Layer(GetObjectLayer()));
+	var interactables = FindObjects(Find_Or(Find_Container(this), Find_AtPoint(0,0)),
+						Find_Func("IsInteractable",this), Find_Layer(GetObjectLayer()));
 	// if there are several interactable objects, just call the first that returns true
 	for (var interactable in interactables)
 		if (interactable->~Interact(this))

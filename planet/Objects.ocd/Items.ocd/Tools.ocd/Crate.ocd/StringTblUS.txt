@@ -1,0 +1,3 @@
+Name=Crate
+OpenCrate=Open crate
+CloseCrate=Close crate
