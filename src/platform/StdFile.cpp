@@ -990,7 +990,8 @@ void DirectoryIterator::Read(const char *dirname)
 			return;
 		default:
 			// Something else broke
-			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
+			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			return;
 		}
 	}
 	// Insert files into list
@@ -1015,7 +1016,8 @@ void DirectoryIterator::Read(const char *dirname)
 			return;
 		default:
 			// Something else broke
-			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
+			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			return;
 		}
 	}
 	dirent *file;
