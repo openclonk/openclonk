@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GameDefinitionFile xmlns:baseTypes="urn:schemas-microsoft-com:GamesExplorerBaseTypes.v1" xmlns="urn:schemas-microsoft-com:GameDescription.v1">
+    <GameDefinition gameID="{C90AA63B-E8DB-4EAF-88EC-B5257A86FF5A}">
+        <Name>OpenClonk</Name>
+        <Genres>
+            <Genre>Action</Genre>
+            <Genre>Strategy</Genre>
+        </Genres>
+        <Version>
+            <VersionFile path="Clonk.exe" />
+        </Version>
+        <SavedGames baseKnownFolderID="{f1b32785-6fba-4fcf-9d55-7b8e7f157091}" path="OpenClonk" />
+        <Developers>
+            <Developer URI="http://openclonk.org">OpenClonk Project</Developer>
+        </Developers>
+    </GameDefinition>
+</GameDefinitionFile>
