@@ -711,11 +711,17 @@ AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
 %.ocf: $(srcdir)/planet/%.ocf c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
 
+## windows setup.exe
+if WIN32
+tools/install/firewall.dll: $(srcdir)/tools/install/firewall.cpp
+	mkdir -p tools/install
+	$(CXX) -shared -o tools/install/firewall.dll $(srcdir)/tools/install/firewall.cpp -lole32 -loleaut32
 setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
 	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
 	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  -DPRODUCT_COMPANY="$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  $< "-XOutFile $@"
+endif
 
 ## other stuff
 
