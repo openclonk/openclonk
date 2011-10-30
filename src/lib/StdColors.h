@@ -26,7 +26,10 @@
 #include <math.h>
 
 // helper function
-#define RGBA(r, g, b, a) (((DWORD)(a)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
+inline uint32_t RGBA(uint32_t r, uint32_t g, uint32_t b, uint32_t a)
+{
+	return ((a & 255) << 24) | ((r & 255) << 16) | ((g & 255) << 8) | (b & 255);
+}
 #define C4RGB(r, g, b) (((DWORD)(0xff)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 #define GetBlueValue(rgb) ((unsigned char)(rgb))
 #define GetGreenValue(rgb) ((unsigned char)(((unsigned short)(rgb)) >> 8))

@@ -240,8 +240,7 @@ protected:
 	C4StartupPlrSelDlg::PlayerListItem * pForPlayer;
 	C4GUI::Edit *pNameEdit; // player name edit box
 	C4GUI::CheckBox *pAutoStopControl; // wether the player uses AutoStopControl
-	C4GUI::Picture *pClrPreview;
-	C4GUI::ScrollBar *pClrSliderR, *pClrSliderG, *pClrSliderB;
+	C4GUI::IconButton *pClrPreview;
 	C4GUI::Picture *pCtrlImg;
 	C4GUI::IconButton *pMouseBtn, *pJumpNRunBtn, *pClassicBtn, *pPictureBtn;
 	C4GUI::Label *ctrl_name_lbl;
@@ -262,9 +261,7 @@ protected:
 
 	void OnClrChangeLeft(C4GUI::Control *pBtn);
 	void OnClrChangeRight(C4GUI::Control *pBtn);
-	void OnClrSliderRChange(int32_t iNewVal);
-	void OnClrSliderGChange(int32_t iNewVal);
-	void OnClrSliderBChange(int32_t iNewVal);
+	void OnClrChangeCustom(C4GUI::Control *pBtn);
 	void OnCtrlChangeLeft(C4GUI::Control *pBtn);
 	void OnCtrlChangeRight(C4GUI::Control *pBtn);
 	void OnCtrlChangeMouse(C4GUI::Control *pBtn);
@@ -284,8 +281,5 @@ public:
 
 	virtual void OnClosed(bool fOK); // close CB
 };
-
-
-
 
 #endif // INC_C4StartupPlrSelDlg
