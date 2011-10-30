@@ -74,6 +74,9 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ; Game Explorer
 !include "${SRCDIR}/tools/install\GameExplorer.nsh"
 
+; Firewall helper
+!addplugindir "tools/install"
+
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -203,6 +206,9 @@ Section
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update" "" "Update"
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
 
+  ; Add a Firewall exception
+  firewall::AddAuthorizedApplication "$INSTDIR\Clonk.exe" "$(^Name)"
+
 SectionEnd
 
 
@@ -272,5 +278,8 @@ Section Uninstall
   DeleteRegKey HKCR "OpenClonk.Weblink"
   DeleteRegKey HKCR ".ocu"
   DeleteRegKey HKCR "OpenClonk.Update"
+
+  ; Remove the Firewall exception
+  firewall::RemoveAuthorizedApplication "$INSTDIR\Clonk.exe"
 
 SectionEnd
