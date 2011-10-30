@@ -17,6 +17,7 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
 !define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
+!define PRODUCT_GAME_EXPLORER_INSTANCE {366C86B6-FD74-BD8E-0F02-F0AE847304A9}
 
 Name "${PRODUCT_NAME}"
 SetCompressor lzma
@@ -71,6 +72,9 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ;ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
+; Game Explorer
+!include "${SRCDIR}/tools/install\GameExplorer.nsh"
+
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -78,40 +82,50 @@ Section
   SetOutPath "$INSTDIR"
   SetOverwrite on
 
-; Main program files  
+  ; Main program files
   File "${CLONK}"
   File "${C4GROUP}"
 
   File "*.dll"
 
   File "*.oc?"
-  
+
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
   File "${SRCDIR}\licenses\LGPL.txt"
   File "${SRCDIR}\licenses\OpenSSL.txt"
   File "${SRCDIR}\Credits.txt"
-  
-; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
+
+  ; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
   CreateDirectory "$APPDATA\OpenClonk"
 
-; Create desktop shortcut
-  CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-
-; Create website url in program directory
+  ; Create website url in program directory
   WriteIniStr "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
 
-; Create user path shortcut in program directory
-  CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+  ; Game Explorer integration
+  ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\Clonk.exe $INSTDIR $INSTDIR\Clonk.exe ${PRODUCT_GAME_EXPLORER_INSTANCE}
 
-  ; Start menu shortcuts
-  CreateDirectory "$SMPROGRAMS\OpenClonk"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+  IfErrors StartMenu 0
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0\Editor.lnk $INSTDIR\Clonk.exe --editor
+    goto EndStartMenu
 
-; Uninstaller info
+  StartMenu:
+    ; Create desktop shortcut
+    CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
+
+    ; Create user path shortcut in program directory
+    CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+
+    ; Start menu shortcuts
+    CreateDirectory "$SMPROGRAMS\OpenClonk"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+  EndStartMenu:
+
+  ; Uninstaller info
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "UninstallString" \
@@ -124,7 +138,7 @@ Section
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
-; Register file types  
+  ; Register file types
   WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
   WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".ocg" "" "OpenClonk.Group"
@@ -147,7 +161,8 @@ Section
   WriteRegStr HKCR ".ocl\Content Type" "" "vnd.clonk.c4group"
   WriteRegStr HKCR ".ocu" "" "OpenClonk.Update"
   WriteRegStr HKCR ".ocu\Content Type" "" "vnd.clonk.c4group"
-; Register file classes  
+
+  ; Register file classes
   WriteRegStr HKCR "OpenClonk.Scenario" "" "OpenClonk Scenario"
   WriteRegStr HKCR "OpenClonk.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
   WriteRegStr HKCR "OpenClonk.Group" "" "OpenClonk Group"
@@ -170,7 +185,8 @@ Section
   WriteRegStr HKCR "OpenClonk.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
   WriteRegStr HKCR "OpenClonk.Update" "" "OpenClonk Update"
   WriteRegStr HKCR "OpenClonk.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
-; Register additional file handling
+
+  ; Register additional file handling
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update" "" "Update"
   WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
 
@@ -192,22 +208,29 @@ Section Uninstall
   Delete "$INSTDIR\LGPL.txt"
   Delete "$INSTDIR\OpenSSL.txt"
   Delete "$INSTDIR\Credits.txt"
-  
+
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   Delete "$INSTDIR\$(MUI_TEXT_USERPATH).lnk"
 
   RMDir "$INSTDIR"
 
+  ; Game Explorer
+  ${GameExplorer_RemoveGame} ${PRODUCT_GAME_EXPLORER_INSTANCE}
+
   ; Desktop shortcut
   Delete "$DESKTOP\OpenClonk.lnk"
+
+  ; Start menu shortcuts
+  Delete "$SMPROGRAMS\OpenClonk\*.lnk"
+  RMDir "$SMPROGRAMS\OpenClonk"
 	
   ; Registry: config
   DeleteRegKey HKCU "${PRODUCT_USER_KEY}"
   DeleteRegKey /ifempty HKCU "${PRODUCT_COMPANY_KEY}"
   ; Registry: Uninstaller info
   DeleteRegKey SHELL_CONTEXT "${PRODUCT_UNINST_KEY}"
-  
+
   ; Registry: classes
   DeleteRegKey HKCR ".ocs"
   DeleteRegKey HKCR "OpenClonk.Scenario"
@@ -231,9 +254,5 @@ Section Uninstall
   DeleteRegKey HKCR "OpenClonk.Weblink"
   DeleteRegKey HKCR ".ocu"
   DeleteRegKey HKCR "OpenClonk.Update"
-  
-  ; Start menu shortcuts
-  Delete "$SMPROGRAMS\OpenClonk\*.lnk"
-  RMDir "$SMPROGRAMS\OpenClonk"
-  
+
 SectionEnd

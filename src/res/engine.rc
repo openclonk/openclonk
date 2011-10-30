@@ -4,29 +4,16 @@
 
 #include "C4Version.h"
 
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
 #include <winresrc.h>
+
 #define IDC_STATIC (-1)
 
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
+// Icons
 //
 
 // Icon with lowest ID value placed first to ensure application icon
@@ -44,33 +31,13 @@ IDI_10_OCV              ICON    DISCARDABLE     "ocv.ico"
 IDI_11_OCL              ICON    DISCARDABLE     "ocl.ico"
 IDI_13_OCU              ICON    DISCARDABLE     "ocu.ico"
 
-#ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
-// TEXTINCLUDE
+// Game Explorer Integration
 //
 
-1 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "resource.h\0"
-END
+__GDF_XML DATA	"WindowsGamesExplorer.xml"
 
-2 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -113,12 +80,9 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
-// Dialog
+// Dialogs
 //
 
 IDD_CONSOLE DIALOGEX 0, 0, 232, 127
@@ -203,50 +167,6 @@ BEGIN
                     ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE
-BEGIN
-    IDD_CONSOLE, DIALOG
-    BEGIN
-        LEFTMARGIN, 1
-        RIGHTMARGIN, 230
-        TOPMARGIN, 1
-        BOTTOMMARGIN, 126
-    END
-
-    IDD_PROPERTIES, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 166
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 60
-    END
-
-    IDD_TOOLS, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 192
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 53
-    END
-
-    IDD_COMPONENT, DIALOG
-    BEGIN
-        LEFTMARGIN, 1
-        RIGHTMARGIN, 276
-        TOPMARGIN, 1
-        BOTTOMMARGIN, 148
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
@@ -321,17 +241,4 @@ BEGIN
         MENUITEM "ABOUT",                       IDM_HELP_ABOUT
     END
 END
-
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
 
