@@ -6,7 +6,7 @@
 SET(C4PROJECT           "OpenClonk Project")
 SET(C4PROJECT_DOMAIN    "openclonk")
 SET(C4PROJECT_TLD       "org")
-SET(C4PROJECT_URL       "http://www.{C4PROJECT_DOMAIN}.{C4PROJECT_TLD}")
+SET(C4PROJECT_URL       "http://${C4PROJECT_DOMAIN}.${C4PROJECT_TLD}")
 
 IF(CMAKE_HOST_UNIX)
 	EXECUTE_PROCESS(COMMAND "date" "+%Y" OUTPUT_VARIABLE DATE)
@@ -73,5 +73,7 @@ else()
 	set(C4VERSION "${C4VERSION} strange")
 endif()
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/C4Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/C4Version.h ESCAPE_QUOTES)
-
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/C4Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/C4Version.h ESCAPE_QUOTES)
+if(WIN32)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/res/WindowsGamesExplorer.xml.in ${CMAKE_CURRENT_BINARY_DIR}/WindowsGamesExplorer.xml ESCAPE_QUOTES)
+endif()
