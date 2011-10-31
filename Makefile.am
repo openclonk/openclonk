@@ -87,6 +87,9 @@ do_subst = sed -e 's,[@]C4PROJECT[@],'"$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/
 
 C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
+WindowsGamesExplorer.xml: $(srcdir)/src/res/WindowsGamesExplorer.xml.in $(srcdir)/Version.txt
+	$(do_subst) < $< > $@
+src/res/engine.o: WindowsGamesExplorer.xml
 
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC

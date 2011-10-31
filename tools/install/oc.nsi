@@ -106,8 +106,10 @@ Section
   ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\Clonk.exe $INSTDIR $INSTDIR\Clonk.exe ${PRODUCT_GAME_EXPLORER_INSTANCE}
 
   IfErrors StartMenu 0
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\PlayTasks\1
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\PlayTasks\1\Editor.lnk $INSTDIR\Clonk.exe --editor
     CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0
-    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0\Editor.lnk $INSTDIR\Clonk.exe --editor
+    CreateShortcut "$APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
     goto EndStartMenu
 
   StartMenu:
