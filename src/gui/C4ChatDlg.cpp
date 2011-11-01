@@ -24,26 +24,12 @@
 // IRC client dialog
 
 #include "C4Include.h"
-#include <utility>
-
 #include "C4ChatDlg.h"
 
 #include "C4InputValidation.h"
 #include "C4Network2IRC.h"
 #include "C4MessageInput.h"
 #include "C4GraphicsResource.h"
-
-void ConvWindowsToUTF8(StdStrBuf &sText)
-{
-	// work around (German) legacy clients using windows-1252
-	sText.Replace("Ä", "\xc3\x84");
-	sText.Replace("Ö", "\xc3\x96");
-	sText.Replace("Ü", "\xc3\x9c");
-	sText.Replace("ä", "\xc3\xa4");
-	sText.Replace("ö", "\xc3\xb6");
-	sText.Replace("ü", "\xc3\xbc");
-	sText.Replace("ß", "\xc3\x9f");
-}
 
 /* C4ChatControl::ChatSheet::NickItem */
 
@@ -114,7 +100,7 @@ C4ChatControl::ChatSheet::ChatSheet(C4ChatControl *pChatControl, const char *szT
 	// create elements - positioned later
 	C4Rect rcDefault(0,0,10,10);
 	pChatBox = new C4GUI::TextWindow(rcDefault,0,0,0,100,4096,"  ",false,0,0,true);
-	//pChatBox->SetToolTip(LoadResStr("IDS_DLGTIP_CHATWIN")); tooltip doesn't really help, only makes things unübersichtlich
+	//pChatBox->SetToolTip(LoadResStr("IDS_DLGTIP_CHATWIN")); tooltip doesn't really help, only makes things cluttered
 	pChatBox->SetDecoration(false, false, NULL, false);
 	AddElement(pChatBox);
 	if (eType == CS_Channel)
@@ -226,7 +212,7 @@ void C4ChatControl::ChatSheet::AddTextLine(const char *szText, uint32_t dwClr)
 	for (char c='\x01'; c<' '; ++c)
 		sText.ReplaceChar(c, ' ');
 	// convert incoming Windows-1252
-	ConvWindowsToUTF8(sText);
+	sText.EnsureUnicode();
 	// add text line to chat box
 	CStdFont *pUseFont = &::GraphicsResource.TextFont;
 	pChatBox->AddTextLine(sText.getData(), pUseFont, dwClr, true, false);
@@ -278,7 +264,7 @@ void C4ChatControl::ChatSheet::Update(bool fLock)
 			// update topic
 			const char *szTopic = pIRCChan->getTopic();
 			sChatTitle.Format("%s%s%s", sIdent.getData(), szTopic ? ": " : "", szTopic ? szTopic : "");
-			ConvWindowsToUTF8(sChatTitle);
+			sChatTitle.EnsureUnicode();
 		}
 	}
 }
