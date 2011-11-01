@@ -49,9 +49,7 @@ IMPLEMENT_LOGF(DebugLogF)
 IMPLEMENT_LOGF(LogF)
 IMPLEMENT_LOGF(LogSilentF)
 
-C4ConfigShareware Config;
-C4ConfigShareware::C4ConfigShareware() {}
-C4ConfigShareware::~C4ConfigShareware() {}
+C4Config Config;
 C4Config::C4Config() {}
 C4Config::~C4Config() {}
 const char * C4Config::AtRelativePath(char const*s) {return s;}

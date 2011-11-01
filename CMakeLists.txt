@@ -182,8 +182,6 @@ set(OC_CLONK_SOURCES
 	src/C4Version.h
 	src/config/C4Config.cpp
 	src/config/C4Config.h
-	src/config/C4ConfigShareware.cpp
-	src/config/C4ConfigShareware.h
 	src/config/C4Constants.h
 	src/config/C4Reloc.cpp
 	src/config/C4Reloc.h

@@ -133,12 +133,6 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	char *szInputText = const_cast<char *>(pEdt->GetText());
 	// Store to back buffer
 	::MessageInput.StoreBackBuffer(szInputText);
-	// check confidential data - even for object input (script triggered), webcode should not be pasted here
-	if (Config.IsConfidentialData(szInputText))
-	{
-		::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
-		szInputText = const_cast<char *>("");
-	}
 	// script queried input?
 	if (fObjInput)
 	{
