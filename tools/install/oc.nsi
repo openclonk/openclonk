@@ -17,7 +17,6 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
 !define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
-!define PRODUCT_GAME_EXPLORER_INSTANCE {366C86B6-FD74-BD8E-0F02-F0AE847304A9}
 
 Name "${PRODUCT_NAME}"
 SetCompressor lzma
@@ -103,14 +102,26 @@ Section
   WriteIniStr "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
 
   ; Game Explorer integration
-  ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\Clonk.exe $INSTDIR $INSTDIR\Clonk.exe ${PRODUCT_GAME_EXPLORER_INSTANCE}
-
-  IfErrors StartMenu 0
-    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\PlayTasks\1
-    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\PlayTasks\1\Editor.lnk $INSTDIR\Clonk.exe --editor
-    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0
-    CreateShortcut "$APPDATA\Microsoft\Windows\GameExplorer\${PRODUCT_GAME_EXPLORER_INSTANCE}\SupportTasks\0\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-    goto EndStartMenu
+  ReadINIStr $0 $INSTDIR\GameExplorer.txt GameExplorer InstanceID
+  IfErrors 0 UpdateInstallation
+    ${GameExplorer_GenerateGUID}
+    Pop $0
+    WriteIniStr $INSTDIR\GameExplorer.txt GameExplorer InstanceID $0
+    ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\Clonk.exe $INSTDIR $INSTDIR\Clonk.exe $0
+    IfErrors StartMenu 0
+    ; Create tasks.
+    ; FIXME: Theoretically this should also be done on older windows versions without gameexplorer,
+    ; but that requires some some obscure registry entries and would require upgrading windows to test
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0\Play.lnk $INSTDIR\Clonk.exe
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1\Editor.lnk $INSTDIR\Clonk.exe --editor
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0
+    CreateShortcut "$APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
+    IfErrors StartMenu EndStartMenu
+  UpdateInstallation:
+    ${GameExplorer_UpdateGame} $0
+    IfErrors StartMenu EndStartMenu
 
   StartMenu:
     ; Create desktop shortcut
@@ -128,6 +139,7 @@ Section
   EndStartMenu:
 
   ; Uninstaller info
+  ; FIXME: Use GameExplorer instanceid instead of ${PRODUCT_INSTDIR}
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "UninstallString" \
@@ -196,6 +208,11 @@ SectionEnd
 
 
 Section Uninstall
+  ; Game Explorer
+  ReadINIStr $0 $INSTDIR\GameExplorer.txt GameExplorer InstanceID
+  IfErrors NoGameExplorer 0
+    ${GameExplorer_RemoveGame} $0
+  NoGameExplorer:
 
   ; Installation directory
   Delete "$INSTDIR\Clonk.exe"
@@ -212,13 +229,11 @@ Section Uninstall
   Delete "$INSTDIR\Credits.txt"
 
   Delete "$INSTDIR\uninst.exe"
+  Delete "$INSTDIR\GameExplorer.txt"
   Delete "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
   Delete "$INSTDIR\$(MUI_TEXT_USERPATH).lnk"
 
   RMDir "$INSTDIR"
-
-  ; Game Explorer
-  ${GameExplorer_RemoveGame} ${PRODUCT_GAME_EXPLORER_INSTANCE}
 
   ; Desktop shortcut
   Delete "$DESKTOP\OpenClonk.lnk"

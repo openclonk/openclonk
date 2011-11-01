@@ -84,13 +84,6 @@
 
     SetErrors
 
-  ${Else}
-
-    # Create play task
-
-    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$R2\PlayTasks\0
-    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$R2\PlayTasks\0\Play.lnk $R3
-
   ${EndIf}
 
   System::Call "$1->${IGameExplorer_Release}()"
