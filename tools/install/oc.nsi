@@ -14,7 +14,7 @@
 !define PRODUCT_WEB_SITE "http://www.openclonk.org"
 !define PRODUCT_WEB_SITE_NAME "OpenClonk Website"
 !define PRODUCT_INSTDIR "OpenClonk"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_INSTDIR}"
+!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\"
 !define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
 !define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
 
@@ -26,9 +26,9 @@ SetCompressor lzma
 ;!define MULTIUSER_MUI
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 !define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT_INSTDIR}"
-!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_USER_KEY}"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallLocation"
-!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_USER_KEY}"
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallLocation"
 !include MultiUser_x64.nsh
 
@@ -139,19 +139,19 @@ Section
   EndStartMenu:
 
   ; Uninstaller info
-  ; FIXME: Use GameExplorer instanceid instead of ${PRODUCT_INSTDIR}
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "UninstallString" \
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "DisplayName" "$(^Name)"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "UninstallString" \
     "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "QuietUninstallString" \
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "QuietUninstallString" \
     "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode /S"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$\"$INSTDIR\Clonk.exe$\""
-  WriteRegDWORD SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "NoModify" 1
-  WriteRegDWORD SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "NoRepair" 1
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-  WriteRegStr SHELL_CONTEXT "${PRODUCT_UNINST_KEY}" "InstallLocation" "$INSTDIR"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "DisplayIcon" "$\"$INSTDIR\Clonk.exe$\""
+  WriteRegDWORD SHELL_CONTEXT "${UNINST_KEY}$0" "NoModify" 1
+  WriteRegDWORD SHELL_CONTEXT "${UNINST_KEY}$0" "NoRepair" 1
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "InstallLocation" "$INSTDIR"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_USER_KEY}" "InstallLocation" "$INSTDIR"
   ; Register file types
   WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
   WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
@@ -246,7 +246,9 @@ Section Uninstall
   DeleteRegKey HKCU "${PRODUCT_USER_KEY}"
   DeleteRegKey /ifempty HKCU "${PRODUCT_COMPANY_KEY}"
   ; Registry: Uninstaller info
-  DeleteRegKey SHELL_CONTEXT "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey SHELL_CONTEXT "${UNINST_KEY}$0"
+  DeleteRegKey SHELL_CONTEXT "${PRODUCT_USER_KEY}"
+  DeleteRegKey /ifempty SHELL_CONTEXT "${PRODUCT_COMPANY_KEY}"
 
   ; Registry: classes
   DeleteRegKey HKCR ".ocs"
