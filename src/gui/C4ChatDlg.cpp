@@ -833,12 +833,6 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 	}
 	// safety
 	if (!szInput || !*szInput || !pChatSheet) return fResult;
-	// check confidential data
-	if (Config.IsConfidentialData(szInput))
-	{
-		pChatSheet->DoError(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
-		return fResult;
-	}
 	// command?
 	if (*szInput == '/' && !SEqual2NoCase(szInput + 1, "me "))
 	{

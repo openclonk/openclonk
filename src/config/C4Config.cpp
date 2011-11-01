@@ -800,3 +800,5 @@ void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 	}
 #endif
 }
+
+C4Config Config;

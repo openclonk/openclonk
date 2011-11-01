@@ -610,7 +610,6 @@ IDS_ERR_TITLE=Error
 IDS_ERR_UNKNOWNCMD=Unknown command: "%s" - type /help to get a list of valid commands
 IDS_ERR_HELPCMD=Basic commands in the IRC-chat:|/join [channel] - Enter a new chat room|/part - Leave this chat room|/notice [user] [message] - Send a message to the user|/query [user] - Open a new chat window to chat for chatting with the user|/msg [user] [message] - The same as /query, only that the first message is already sent|/nick [new nick name] - Choose a new nick name|/quit - Exit the chat|/raw - Send a raw command
 IDS_ERR_USERCANCEL=User abort
-IDS_ERR_WARNINGYOUWERETRYINGTOSEN=WARNING: you were trying to send your secret WebCode to a stranger on the internet. You should NEVER give your WebCode to anyone, because they could use it to steal your online accounts!||Clonk administrators will never ask you for any passwords or your WebCode.
 IDS_ERR_WRITENEWTITLE=Error writing new title for file "%s": %s
 IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN=You have been removed by vote. (%s)
 IDS_ERR_YOUSURRENDEREDTHELEAGUEGA=You have surrendered the league game.

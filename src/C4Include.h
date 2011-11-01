@@ -39,6 +39,7 @@
 #include "StdResStr2.h"
 #include "C4Log.h"
 #include "C4Reloc.h"
+#include "C4Config.h"
 
 #include "C4Game.h"
 

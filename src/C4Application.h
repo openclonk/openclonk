@@ -22,7 +22,6 @@
 #ifndef INC_C4Application
 #define INC_C4Application
 
-#include <C4ConfigShareware.h>
 #include <C4Group.h>
 #include <C4MusicSystem.h>
 #include <C4SoundSystem.h>

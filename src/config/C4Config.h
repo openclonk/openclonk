@@ -27,6 +27,7 @@
 
 #include "C4Constants.h"
 #include "C4InputValidation.h"
+#include "C4PlayerControl.h"
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
@@ -288,6 +289,6 @@ public:
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 };
 
-#include <C4ConfigShareware.h>
+extern C4Config Config;
 
 #endif // INC_C4Config

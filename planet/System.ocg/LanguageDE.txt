@@ -611,7 +611,6 @@ IDS_ERR_TITLE=Fehler
 IDS_ERR_UNKNOWNCMD=Unbekannter Befehl: "%s" - Befehl /help für eine Liste gültiger Befehle
 IDS_ERR_HELPCMD=Grundlegende Befehle im IRC-Chat:|/join [Chatraum] - Neuen Chatraum betreten|/part - Diesen Chatraum verlassen|/notice [Benutzer] [Nachricht] - Sende eine Nachricht an den Benutzer|/query [Benutzer] - Öffne ein neues Chatfenster für einen privaten Dialog mit dem Benutzer|/msg [Benutzer] [Nachricht] - Dasselbe wie /query, nur dass bereits die erste Nachrich geschickt wird|/nick [Neuer Spitzname] - Wähle einen neuen Spitznamen|/quit - Chat ganz verlassen|/raw - Raw-Kommando senden
 IDS_ERR_USERCANCEL=Benutzerabbruch
-IDS_ERR_WARNINGYOUWERETRYINGTOSEN=ACHTUNG: Du hast versucht, Deinen persönlichen WebCode an eine unbekannte Person zu versenden. Dieser Code darf unter keinen Umständen an andere Personen weiter gegeben werden, da diese damit Deine persönliche Online-Konten stehlen könnten.||Clonk-Administratoren würden Dich nie nach Deinem WebCode oder anderen Passwörtern fragen.
 IDS_ERR_WRITENEWTITLE=Fehler beim Speichern des neuen Titels in Datei "%s": %s
 IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN=Du wurdest per Abstimmung aus dem Spiel entfernt. (%s)
 IDS_ERR_YOUSURRENDEREDTHELEAGUEGA=Du hast das Ligaspiel aufgegeben.
