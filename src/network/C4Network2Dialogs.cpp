@@ -27,7 +27,6 @@
 
 #include "C4Network2.h"
 #include "C4Network2Stats.h"
-
 #include "C4Viewport.h"
 #include "C4GameOptions.h"
 #include <C4Game.h>

@@ -22,10 +22,10 @@
 
 #include "C4Include.h"
 #include "C4Network2IRC.h"
+
 #include "C4Config.h"
 #include "C4Version.h"
 #include "C4InteractiveThread.h"
-
 #include "C4Gui.h" // for clearly visi
 
 #include <cctype> // for isdigit

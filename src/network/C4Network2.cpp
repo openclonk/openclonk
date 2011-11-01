@@ -23,11 +23,9 @@
  */
 
 #include <C4Include.h>
-#include <utility>
-
 #include <C4Network2.h>
-#include <C4Version.h>
 
+#include <C4Version.h>
 #include <C4Log.h>
 #include <C4Application.h>
 #include <C4Console.h>

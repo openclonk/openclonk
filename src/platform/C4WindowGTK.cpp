@@ -26,7 +26,6 @@
 #include <C4App.h>
 #include "C4Version.h"
 #include "C4Config.h"
-
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>

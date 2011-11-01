@@ -20,9 +20,9 @@
 /* control managament: network part */
 
 #include "C4Include.h"
+#include <C4GameControlNetwork.h>
 
 #include <C4Application.h>
-#include <C4GameControlNetwork.h>
 #include <C4GameControl.h>
 #include <C4Game.h>
 #include <C4Log.h>

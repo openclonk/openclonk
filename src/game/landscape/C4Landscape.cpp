@@ -39,9 +39,7 @@
 #include <C4Random.h>
 #include <C4Surface.h>
 #include <C4ToolsDlg.h>
-#ifdef DEBUGREC
 #include <C4Record.h>
-#endif
 #include <C4Material.h>
 #include <C4GameMessage.h>
 #include <C4Application.h>

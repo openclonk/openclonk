@@ -19,14 +19,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
 #include <C4Include.h>
+#include "C4AulDebug.h"
+
 #include <C4Version.h>
 #include <C4GameControl.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4Log.h>
 #include <C4Object.h>
-
-#include "C4AulDebug.h"
 #include "C4AulExec.h"
 
 #ifndef NOAULDEBUG

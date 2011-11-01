@@ -42,6 +42,7 @@
 //         4.95.4 September 2005 Unix-flavour
 
 #include <C4Include.h>
+
 #include <C4Group.h>
 #include <C4Version.h>
 #include <C4Update.h>

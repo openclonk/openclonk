@@ -20,13 +20,13 @@
 // resource display list box
 
 #include "C4Include.h"
+#include "C4Network2Dialogs.h"
+
 #include "C4GameLobby.h"
 #include "C4FullScreen.h"
-
 #include "C4Network2.h"
 #include "C4PlayerInfo.h"
 #include "C4Network2Players.h"
-#include "C4Network2Dialogs.h"
 #include <C4GraphicsResource.h>
 
 // ----------- C4Network2ResDlg::ListItem ----------------------------------------------------------------

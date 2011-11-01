@@ -28,8 +28,8 @@
 
 #include <C4Include.h>
 #include <C4Viewport.h>
-#include <C4ViewportWindow.h>
 
+#include <C4ViewportWindow.h>
 #include <C4Console.h>
 #include <C4Object.h>
 #include <C4FullScreen.h>

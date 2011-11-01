@@ -25,6 +25,7 @@
 
 #include "C4Include.h"
 #include <StdD3D.h>
+
 #include <StdD3DShader.h>
 
 #include <C4App.h>

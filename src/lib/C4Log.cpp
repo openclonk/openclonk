@@ -25,8 +25,8 @@
 
 #include <C4Include.h>
 #include <C4Log.h>
-#include <C4AulDebug.h>
 
+#include <C4AulDebug.h>
 #include <C4Console.h>
 #include <C4GameLobby.h>
 #include <C4Game.h>

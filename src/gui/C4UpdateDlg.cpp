@@ -25,10 +25,9 @@
 
 // Don't compile this class if automatic update is disabled
 #ifdef WITH_AUTOMATIC_UPDATE
-
 #include "C4UpdateDlg.h"
-#include "C4DownloadDlg.h"
 
+#include "C4DownloadDlg.h"
 #include <C4Log.h>
 
 #ifdef _WIN32

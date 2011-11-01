@@ -22,9 +22,9 @@
 
 #include <C4Include.h>
 #include <C4StartupMainDlg.h>
+
 #include <C4UpdateDlg.h>
 #include <C4Version.h>
-
 #include <C4StartupNetDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupOptionsDlg.h>

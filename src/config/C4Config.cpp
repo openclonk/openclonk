@@ -27,8 +27,8 @@
 
 #include <C4Include.h>
 #include <C4Config.h>
-#include <C4Version.h>
 
+#include <C4Version.h>
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Network2.h>
