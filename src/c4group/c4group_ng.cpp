@@ -187,6 +187,11 @@ bool ProcessGroup(const char *FilenamePar)
 						{
 							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
 						}
+						else if (!EraseItem(argv[iArg]))
+						{
+							fprintf(stderr, "Destination Clear failed\n");
+							break;
+						}
 						// Pack
 						else if (!C4Group_PackDirectoryTo(szFilename, argv[iArg]))
 						{
