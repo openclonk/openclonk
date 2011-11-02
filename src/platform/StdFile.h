@@ -98,7 +98,6 @@ size_t FileSize(const char *fname);
 size_t FileSize(int fdes);
 int FileTime(const char *fname);
 bool EraseFile(const char *szFileName);
-bool EraseFiles(const char *szFilePath);
 bool RenameFile(const char *szFileName, const char *szNewFileName);
 bool MakeOriginalFilename(char *szFilename);
 void MakeFilenameFromTitle(char *szTitle);
@@ -111,7 +110,6 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2);
 inline bool ItemExists(const char *szItemName) { return FileExists(szItemName); }
 bool RenameItem(const char *szItemName, const char *szNewItemName);
 bool EraseItem(const char *szItemName);
-bool EraseItems(const char *szItemPath);
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes=false);
 bool CreateItem(const char *szItemname);
 bool MoveItem(const char *szSource, const char *szTarget);

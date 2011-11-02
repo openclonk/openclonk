@@ -544,11 +544,6 @@ bool EraseFile(const char *szFilename)
 #endif
 }
 
-bool EraseFiles(const char *szFilePath)
-{
-	return ForEachFile(szFilePath,&EraseFile) > 0;
-}
-
 #ifndef _WIN32
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 {
@@ -868,12 +863,7 @@ bool CreateItem(const char *szItemname)
 	// Success
 	return true;
 }
-#ifdef _WIN32
-bool EraseItems(const char *szItemPath)
-{
-	return ForEachFile(szItemPath,&EraseItem) > 0;
-}
-#endif
+
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
 {
 	// Check for identical source and target
