@@ -32,8 +32,6 @@
 
 using namespace std;
 
-bool Log(char const * text) { std::cout << text << std::endl; return true; }
-
 bool fHost;
 int iCnt = 0, iSize = 0;
 char DummyData[1024 * 1024];

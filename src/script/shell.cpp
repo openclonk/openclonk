@@ -29,26 +29,6 @@
 #include <C4Reloc.h>
 #include <C4Record.h>
 
-bool Log(const char *msg)
-{
-	printf("%s\n", msg);
-	return 1;
-}
-bool DebugLog(const char *strMessage) { return Log(strMessage); }
-bool LogFatal(const char *strMessage) { return Log(strMessage); }
-
-#define IMPLEMENT_LOGF(func) \
-  bool func(const char *msg, ...) { \
-    va_list args; va_start(args, msg); \
-    StdStrBuf Buf; \
-    Buf.FormatV(msg, args); \
-    return Log(Buf.getData()); \
-  }
-
-IMPLEMENT_LOGF(DebugLogF)
-IMPLEMENT_LOGF(LogF)
-IMPLEMENT_LOGF(LogSilentF)
-
 C4Config Config;
 C4Config::C4Config() {}
 C4Config::~C4Config() {}

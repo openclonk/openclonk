@@ -885,12 +885,14 @@ add_executable(c4group
 	src/platform/StdFile.cpp
 	src/platform/StdRegistry.cpp
 	src/lib/StdResStr2.cpp
+	src/lib/C4SimpleLog.cpp
 	src/zlib/gzio.c
 	src/C4Include.cpp
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
 	src/C4Include.cpp
+	src/lib/C4SimpleLog.cpp
 	src/lib/StdBuf.cpp
 	src/lib/Standard.cpp
 	src/platform/GetTime.cpp
@@ -907,6 +909,7 @@ add_executable(c4script
 	src/c4group/CStdFile.h
 	src/lib/C4InputValidation.cpp
 	src/lib/C4InputValidation.h
+	src/lib/C4SimpleLog.cpp
 	src/lib/Standard.cpp
 	src/lib/Standard.h
 	src/lib/StdBuf.cpp

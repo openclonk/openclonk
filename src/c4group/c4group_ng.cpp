@@ -55,7 +55,7 @@ int globalArgC;
 char **globalArgV;
 int iFirstCommand = 0;
 
-bool fQuiet = true;
+extern bool fQuiet;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
@@ -67,24 +67,6 @@ bool EraseItemSafe(const char *szFilename)
 {
 	return false;
 }
-
-bool Log(const char *msg)
-{
-	if (!fQuiet)
-		printf("%s\n", msg);
-	return 1;
-}
-#define IMPLEMENT_LOGF(func) \
-  bool func(const char *msg, ...) { \
-    va_list args; va_start(args, msg); \
-    StdStrBuf Buf; \
-    Buf.FormatV(msg, args); \
-    return Log(Buf.getData()); \
-  }
-
-IMPLEMENT_LOGF(DebugLogF)
-IMPLEMENT_LOGF(LogF)
-IMPLEMENT_LOGF(LogSilentF)
 
 bool ProcessGroup(const char *FilenamePar)
 {

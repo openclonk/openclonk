@@ -604,6 +604,7 @@ c4group_CPPFLAGS = \
   -I$(srcdir)/src/script
 
 c4group_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/c4group/c4group_ng.cpp
 
 if WIN32
@@ -619,6 +620,7 @@ c4group_LDADD = \
 ## gunzip4c4group
 
 gunzip4c4group_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
@@ -629,6 +631,7 @@ gunzip4c4group_LDADD = \
 ## puncher
 
 puncher_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/netpuncher/main.cpp
 
 puncher_LDADD = \
@@ -642,9 +645,11 @@ endif
 ## tstc4netio
 
 tstc4netio_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
+  lib.a \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
@@ -654,6 +659,7 @@ endif
 
 ## c4script shell
 c4script_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
 src/script/shell.cpp \
@@ -677,8 +683,14 @@ c4script_LDADD = \
   lib.a \
   $(Z_LIBS)
 
+if WIN32
+c4script_LDADD += -lwinmm
+endif
+
+## documentation
 dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt licenses/OpenSSL.txt Credits.txt
 
+## game data
 c4groups = \
   Graphics.ocg \
   Material.ocg \
@@ -700,6 +712,7 @@ AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
 %.ocf: planet/%.ocf c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
 
+## windows setup.exe
 setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
 	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
 	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
