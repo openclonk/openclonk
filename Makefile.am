@@ -705,11 +705,11 @@ CLEANFILES += $(c4groups)
 pkgdata_DATA = $(c4groups)
 AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
 
-%.ocg: planet/%.ocg c4group$(EXEEXT)
+%.ocg: $(srcdir)/planet/%.ocg c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
-%.ocd: planet/%.ocd c4group$(EXEEXT)
+%.ocd: $(srcdir)/planet/%.ocd c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
-%.ocf: planet/%.ocf c4group$(EXEEXT)
+%.ocf: $(srcdir)/planet/%.ocf c4group$(EXEEXT)
 	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
 
 ## windows setup.exe
