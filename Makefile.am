@@ -688,7 +688,7 @@ c4script_LDADD += -lwinmm
 endif
 
 ## documentation
-dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt licenses/OpenSSL.txt Credits.txt
+dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt
 
 ## game data
 c4groups = \
