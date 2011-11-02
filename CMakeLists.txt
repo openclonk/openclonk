@@ -1263,6 +1263,7 @@ set(OC_C4GROUPS
 	Tutorial.ocf
 )
 
+add_custom_target(groups ALL)
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
 get_target_property(CLONK_LOCATION clonk LOCATION)
 foreach(group ${OC_C4GROUPS})
@@ -1280,11 +1281,13 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
 			VERBATIM
 			)
+		add_custom_target(t${group} DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${group})
+		add_dependencies(groups t${group})
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
 	endif()
 endforeach()
 
 # Install new files
-install(FILES ${OC_C4GROUPS} DESTINATION share/openclonk)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
 
 # Install binaries
