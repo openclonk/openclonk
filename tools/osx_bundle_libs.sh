@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Removed, I think those should exist on every Mac Os system: z|png[0-9]*|crypto|iconv
+# Removed, I think those should exist on every Mac Os system: z|png[0-9]*|iconv
 LIBS_TO_BUNDLE=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile)\.[^ ]+\.dylib"
 
 cd $TARGET_BUILD_DIR

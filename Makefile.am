@@ -684,7 +684,7 @@ c4script_LDADD = \
   lib.a \
   $(Z_LIBS)
 
-dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt licenses/OpenSSL.txt Credits.txt
+dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt
 
 c4groups = \
   Graphics.ocg \

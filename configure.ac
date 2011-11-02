@@ -345,7 +345,6 @@ fi
 
 AC_SUBST(CLONK_LIBS)
 AC_SUBST(Z_LIBS)
-AC_SUBST(OPENSSL_LIBS)
 
 # precompiled headers and -Wextra
 AC_MSG_CHECKING([whether we are using a GNU C++ compiler version 4.1 or newer])

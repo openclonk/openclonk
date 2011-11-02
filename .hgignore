@@ -59,7 +59,6 @@ planet/MinSizeRel
 planet/clonk.dir
 planet/c4group.dir
 planet/ZERO_CHECK.dir
-planet/libeay32.dll
 planet/fmod.dll
 planet/cmake_install.cmake
 planet/clonk.sln
@@ -74,7 +73,6 @@ Debug
 clonk.dir
 c4group.dir
 ZERO_CHECK.dir
-libeay32.dll
 fmod.dll
 cmake_install.cmake
 clonk.sln

@@ -97,7 +97,6 @@ Section
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
   File "${SRCDIR}\licenses\LGPL.txt"
-  File "${SRCDIR}\licenses\OpenSSL.txt"
   File "${SRCDIR}\Credits.txt"
 
   ; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
@@ -233,7 +232,7 @@ Section Uninstall
   Delete "$INSTDIR\AUTHORS"
   Delete "$INSTDIR\COPYING"
   Delete "$INSTDIR\LGPL.txt"
-  Delete "$INSTDIR\OpenSSL.txt"
+  Delete "$INSTDIR\OpenSSL.txt"  ; For installations up to 5.2.x
   Delete "$INSTDIR\Credits.txt"
 
   Delete "$INSTDIR\uninst.exe"
