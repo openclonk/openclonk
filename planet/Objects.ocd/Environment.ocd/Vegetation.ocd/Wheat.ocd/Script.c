@@ -53,10 +53,7 @@ protected func FxWaterCheckTimer(object obj, effect)
 		if (!y) continue;
 		if (MaterialName(GetMaterial(x,y)) == "Water")
 			if (ExtractLiquid(x,y))
-			{
 				water++;
-				Log("water extracted at: %d,%d (%d,%d)", x,y,GetX()+x,GetY()+y);
-			}
 		if (water == 5) // maximum amount of water extracted in one check
 			break;
 	}
