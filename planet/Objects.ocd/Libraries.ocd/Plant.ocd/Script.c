@@ -40,7 +40,7 @@ private func SeedChance()
 {
 	return 500;
 }
-/** Distance the seeds may travel. Default is 500.
+/** Distance the seeds may travel. Default is 300.
 	@return the maximum distance.
 */
 private func SeedAreaSize()
