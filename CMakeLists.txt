@@ -1263,7 +1263,6 @@ set(OC_C4GROUPS
 	Tutorial.ocf
 )
 
-add_custom_target(groups ALL)
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
 get_target_property(CLONK_LOCATION clonk LOCATION)
 foreach(group ${OC_C4GROUPS})
@@ -1278,14 +1277,16 @@ foreach(group ${OC_C4GROUPS})
 		add_custom_command(
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
 			COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			DEPENDS c4group ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+			DEPENDS c4group
 			VERBATIM
 			)
-		add_custom_target(t${group} DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${group})
-		add_dependencies(groups t${group})
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
 	endif()
 endforeach()
+if (NOT APPLE)
+	add_custom_target(groups ALL DEPENDS ${OC_C4GROUPS})
+endif()
 
 # Install new files
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
@@ -1305,13 +1306,18 @@ string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
 add_custom_command(
 	OUTPUT setup_openclonk.exe
 	COMMAND ${MAKENSIS} -NOCD -DSRCDIR=${CMAKE_CURRENT_SOURCE_DIR} -DPROGRAMFILES=$PROGRAMFILES "-DPRODUCT_NAME=${C4ENGINENAME}${C4VERSIONBUILDNAME}" "-DPRODUCT_COMPANY=${C4PROJECT}" "-DCLONK=${CLONK_LOCATION}" "-DC4GROUP=${C4GROUP_LOCATION}" ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi "-XOutFile setup_openclonk.exe"
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi ${OC_C4GROUPS} clonk c4group
+	MAIN_DEPENDENCY
+		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/oc.nsi
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
+		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
+		${OC_C4GROUPS} clonk c4group
 	VERBATIM
 )
 
 add_custom_target(setup
 	DEPENDS setup_openclonk.exe
-	SOURCES tools/install/oc.nsi tools/install/header.bmp tools/install/inst.ico tools/install/uninst.ico
 )
 
 ############################################################################
