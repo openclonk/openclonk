@@ -1,0 +1,3 @@
+Name=Moos
+Description=Moos wächst unterirdisch nahe des Wassers. [Benutzen] zum Einpflanzen. Zum Trocknen Kontakt mit Wasser vermeiden.
+NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!
