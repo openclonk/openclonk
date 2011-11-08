@@ -863,8 +863,9 @@ static long FnEliminatePlayer(C4AulContext *cthr, long iPlr, bool fRemoveDirect)
 	if (fRemoveDirect)
 	{
 		// do direct removal (no fate)
-		return ::Players.CtrlRemove(iPlr, false);
-	}
+		if (::Control.isCtrlHost()) ::Players.CtrlRemove(iPlr, false);
+		return true;
+		}
 	else
 	{
 		// do regular elimination
