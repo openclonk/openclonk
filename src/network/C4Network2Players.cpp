@@ -231,6 +231,7 @@ void C4Network2Players::HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoP
 	pClientInfo = rInfoList.AddInfo(pClientInfo);
 	// make sure team list reflects teams set in player infos
 	Game.Teams.RecheckPlayers();
+	Game.Teams.RecheckTeams(); // recheck random teams - if a player left, teams may need to be rebalanced
 	// make sure resources are loaded for those players
 	rInfoList.LoadResources();
 	// get associated client - note that pClientInfo might be NULL for empty packets that got discarded
@@ -244,6 +245,8 @@ void C4Network2Players::HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoP
 			JoinUnjoinedPlayersInControlQueue(pClientInfo);
 		}
 	}
+	// adding the player may have invalidated other players (through team settings). Send them.
+	SendUpdatedPlayers();
 	// lobby: update players
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnPlayersChange();
@@ -258,11 +261,11 @@ void C4Network2Players::SendUpdatedPlayers()
 	while ((pUpdInfo = rInfoList.GetIndexedInfo(i++)))
 		if (pUpdInfo->IsUpdated())
 		{
+			pUpdInfo->ResetUpdated();
 			C4ControlPlayerInfo *pkSend = new C4ControlPlayerInfo(*pUpdInfo);
 			// send info to all
 			::Control.DoInput(CID_PlrInfo, pkSend, CDT_Direct);
 		}
-	ResetUpdatedPlayers();
 }
 
 void C4Network2Players::UpdateSavegameAssignments(C4ClientPlayerInfos *pNewInfo)

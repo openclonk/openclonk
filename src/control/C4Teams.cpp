@@ -262,12 +262,10 @@ bool C4Team::HasWon() const
 void C4TeamList::Clear()
 {
 	// del all teams
-	C4Team **ppTeam=ppList;
-	if (iTeamCount) { while (iTeamCount--) delete *(ppTeam++); iTeamCount = 0; }
+	ClearTeams();
 	// del player team vector
 	delete [] ppList; ppList = NULL;
 	iTeamCapacity = 0;
-	iLastTeamID = 0;
 	fAllowHostilityChange = true;
 	fAllowTeamSwitch = false;
 	fCustom = false;
@@ -307,6 +305,7 @@ bool C4TeamList::CanLocalChooseTeam() const
 	{
 	case TEAMDIST_Free: return true;
 	case TEAMDIST_Host: return ::Control.isCtrlHost();
+	case TEAMDIST_None:
 	case TEAMDIST_Random:
 	case TEAMDIST_RandomInv:
 		return false;
@@ -353,6 +352,14 @@ void C4TeamList::AddTeam(C4Team *pNewTeam)
 	ppList[iTeamCount++] = pNewTeam;
 	// adjust ID
 	iLastTeamID = Max(pNewTeam->iID, iLastTeamID);
+}
+
+void C4TeamList::ClearTeams()
+{
+	// delete all teams
+	C4Team **ppTeam=ppList;
+	if (iTeamCount) { while (iTeamCount--) delete *(ppTeam++); iTeamCount = 0; }
+	iLastTeamID = 0;
 }
 
 C4Team *C4TeamList::CreateTeam(const char *szName)
@@ -498,7 +505,7 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	C4Team *pAssignTeam=NULL;
 	C4Team *pLowestTeam = GetRandomSmallestTeam();
 	// melee mode
-	if (IsAutoGenerateTeams())
+	if (IsAutoGenerateTeams() && !IsRandomTeam())
 	{
 		// reuse old team only if it's empty
 		if (pLowestTeam && !pLowestTeam->GetPlayerCount())
@@ -514,9 +521,9 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	{
 		if (!pLowestTeam)
 		{
-			// no teams defined in teamwork mode?
+			// not enough teams defined in teamwork mode?
 			// then create two teams as default
-			if (!GetTeamByIndex(0))
+			if (!GetTeamByIndex(1))
 				GenerateDefaultTeams(2);
 			else
 				// otherwise, all defined teams are full. This is a scenario error, because MaxPlayer should have been adjusted
@@ -556,6 +563,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 	{
 		{ "Free", TEAMDIST_Free },
 		{ "Host", TEAMDIST_Host },
+		{ "None", TEAMDIST_None },
 		{ "Random", TEAMDIST_Random },
 		{ "RandomInv", TEAMDIST_RandomInv },
 	};
@@ -668,9 +676,15 @@ void C4TeamList::RecheckPlayers()
 void C4TeamList::RecheckTeams()
 {
 	// automatic team distributions only
-	if (eTeamDist != TEAMDIST_Random && eTeamDist != TEAMDIST_RandomInv) return;
+	if (!IsRandomTeam()) return;
 	// host decides random teams
 	if (!::Control.isCtrlHost()) return;
+	// random teams in auto generate mode? Make sure there are exactly two teams
+	if (IsAutoGenerateTeams() && GetTeamCount() != 2)
+		{
+		ReassignAllTeams();
+		return;
+		}
 	// redistribute players of largest team that has relocatable players left towards smaller teams
 	for (;;)
 	{
@@ -724,6 +738,13 @@ void C4TeamList::ReassignAllTeams()
 	}
 	// clear players from team lists
 	RecheckPlayers();
+	// in random autogenerate mode, there must be exactly two teams
+	if (IsRandomTeam())
+		if (IsAutoGenerateTeams() && GetTeamCount() != 2)
+			{
+			ClearTeams();
+			GenerateDefaultTeams(2);
+			}
 	// reassign them
 	idStart = -1;
 	while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart)))
@@ -741,7 +762,8 @@ StdStrBuf C4TeamList::GetTeamDistName(TeamDist eTeamDist) const
 	{
 	case TEAMDIST_Free:      return(StdStrBuf(LoadResStr("IDS_MSG_TEAMDIST_FREE"), true));
 	case TEAMDIST_Host:      return(StdStrBuf(LoadResStr("IDS_MSG_TEAMDIST_HOST"), true));
-	case TEAMDIST_Random:    return(StdStrBuf(LoadResStr(IsAutoGenerateTeams() ? "IDS_MSG_TEAMDIST_NONE" : "IDS_MSG_TEAMDIST_RND"), true));
+	case TEAMDIST_None:      return(StdStrBuf(LoadResStr("IDS_MSG_TEAMDIST_NONE"), true));
+	case TEAMDIST_Random:    return(StdStrBuf(LoadResStr("IDS_MSG_TEAMDIST_RND"), true));
 	case TEAMDIST_RandomInv: return(StdStrBuf(LoadResStr("IDS_MSG_TEAMDIST_RNDINV"), true));
 	default: return(FormatString("TEAMDIST_undefined(%d)", (int) eTeamDist));
 	}
@@ -751,13 +773,13 @@ void C4TeamList::FillTeamDistOptions(C4GUI::ComboBox_FillCB *pFiller) const
 {
 	// no teams if disabled
 	if (!fActive) return;
-	// some options that are always valid
+	// team distribution options
 	pFiller->AddEntry(GetTeamDistName(TEAMDIST_Free).getData(), TEAMDIST_Free);
 	pFiller->AddEntry(GetTeamDistName(TEAMDIST_Host).getData(), TEAMDIST_Host);
+	if (IsAutoGenerateTeams()) pFiller->AddEntry(GetTeamDistName(TEAMDIST_None).getData(), TEAMDIST_None); // no teams: only for regular melees
 	pFiller->AddEntry(GetTeamDistName(TEAMDIST_Random).getData(), TEAMDIST_Random);
-	// random invisible teams not allowed for automatically created teams
-	if (!IsAutoGenerateTeams()) pFiller->AddEntry(GetTeamDistName(TEAMDIST_RandomInv).getData(), TEAMDIST_RandomInv);
-}
+	pFiller->AddEntry(GetTeamDistName(TEAMDIST_RandomInv).getData(), TEAMDIST_RandomInv);
+	}
 
 void C4TeamList::SendSetTeamDist(TeamDist eNewTeamDist)
 {
@@ -785,8 +807,9 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 	// team distribution mode changed: Host may beed to redistribute
 	if (::Control.isCtrlHost())
 	{
-		// if a random team mode was set, reassign all teams so it's really random
-		if (eTeamDist == TEAMDIST_Random || eTeamDist == TEAMDIST_RandomInv)
+		// if a random team mode was set, reassign all teams so it's really random.
+		// Also reassign in no-team-mode so enough teams for all players exist
+		if (IsRandomTeam() || eTeamDist==TEAMDIST_None)
 			ReassignAllTeams();
 		else
 		{

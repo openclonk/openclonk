@@ -116,9 +116,10 @@ public:
 		TEAMDIST_First     = 0,
 		TEAMDIST_Free      = 0, // anyone can choose teams
 		TEAMDIST_Host      = 1, // host decides teams
-		TEAMDIST_Random    = 2, // fixed random teams
-		TEAMDIST_RandomInv = 3, // fixed random teams invisible in lobby
-		TEAMDIST_Last      = 3
+		TEAMDIST_None      = 2, // no teams
+		TEAMDIST_Random    = 3, // fixed random teams
+		TEAMDIST_RandomInv = 4, // fixed random teams invisible in lobby
+		TEAMDIST_Last      = 4,
 	};
 
 private:
@@ -152,6 +153,7 @@ private:
 
 private:
 	void AddTeam(C4Team *pNewTeam); // add a team; grow list if necessary
+	void ClearTeams(); // delete all teams
 	int32_t GetFreeTeamID();
 	bool GenerateDefaultTeams(int32_t iUpToID); // generate Team 1, Team 2, etc.
 
@@ -175,7 +177,7 @@ public:
 	bool CanLocalChooseTeam(int32_t idPlayer) const; // whether the local host can determine teams (e.g., not if teams are random, or if all except the player's current team are full)
 	bool CanLocalSeeTeam() const;
 	bool IsTeamColors() const { return fTeamColors; } // whether team colors are enabled
-	bool IsRandomTeam() const { return eTeamDist==TEAMDIST_Random ||eTeamDist==TEAMDIST_RandomInv; } // whether team colors are enabled
+	bool IsRandomTeam() const { return eTeamDist==TEAMDIST_Random ||eTeamDist==TEAMDIST_RandomInv; } // whether a random team mode is selected
 	bool IsJoin2TeamAllowed(int32_t idTeam); // checks whether a team ID is valid and still available for new joins
 	bool IsAutoGenerateTeams() const { return fAutoGenerateTeams; }
 	bool IsRuntimeJoinTeamChoice() const { return IsCustom() && IsMultiTeams(); } // whether players joining at runtime must select a team first
