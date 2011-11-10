@@ -41,7 +41,7 @@ separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 ############################################################################
 # User selectable options
 ############################################################################
-option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON) 
 option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
@@ -864,7 +864,6 @@ endif()
 ############################################################################
 # Generate output files
 ############################################################################
-
 add_definitions(-DHAVE_CONFIG_H)
 add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
@@ -992,6 +991,24 @@ endif()
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
 set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
+
+if(MSVC)
+	# set target output filenames to a per-configuration value
+	function(oc_set_target_names target_name)
+		foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
+			string(TOUPPER "${CONFIG}" CONFIG_UPPER)
+			string(TOLOWER "${CONFIG}" CONFIG_LOWER)
+			set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER} "${CMAKE_CURRENT_BINARY_DIR}")
+			if(NOT "${CONFIG}" STREQUAL "RelWithDebInfo")
+				set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_NAME_${CONFIG_UPPER} "${target_name}-${CONFIG_LOWER}")
+			endif()
+		endforeach()
+	endfunction()
+	oc_set_target_names(clonk)
+	oc_set_target_names(c4group)
+	oc_set_target_names(c4script)
+	oc_set_target_names(netpuncher)
+endif()
 
 ############################################################################
 # Precompiled header support, part 2 (post-target)
@@ -1244,8 +1261,8 @@ foreach(group ${OC_C4GROUPS})
 			)
 	else()
 		add_custom_command(
-			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
+			OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+			COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
 			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
 			DEPENDS c4group
 			VERBATIM
