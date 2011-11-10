@@ -27,13 +27,19 @@ void C4Reloc::Init()
 {
 	Paths.clear();
 
-	// Check for system group at EXE path - only add if found
-	if (FileExists(Config.AtExePath(C4CFN_System)))
-		AddPath(Config.General.ExePath.getData());
-
-	// Or a dedicated data folder directly below
-	else if (FileExists(Config.AtExePath(C4CFN_DataFolder DirSep C4CFN_System)))
-		AddPath(Config.AtExePath(C4CFN_DataFolder));
+#ifndef __APPLE__
+	StdCopyStrBuf planet(Config.General.ExePath);
+	planet.AppendBackslash();
+#ifdef CMAKE_INTDIR
+	if (!SEqual(CMAKE_INTDIR, "."))
+	{
+		planet.Append("..");
+		planet.AppendBackslash();
+	}
+#endif
+	planet.Append("planet");
+	AddPath(planet.getData());
+#endif
 
 	AddPath(Config.General.UserDataPath);
 	AddPath(Config.General.SystemDataPath);

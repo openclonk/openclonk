@@ -1257,18 +1257,6 @@ if (NOT APPLE)
 	add_custom_target(groups ALL DEPENDS ${OC_C4GROUPS})
 endif()
 
-if (NOT APPLE)
-	# Convert forward spaces to backspaces. "mklink" is very picky with its input
-	file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/planet" CLONK_DATA_DIR)
-	file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/data" CLONK_DATA_LINK_DIR)
-	if (WIN32)
-		add_custom_command(TARGET clonk POST_BUILD COMMAND "rmdir" "${CLONK_DATA_LINK_DIR}")
-		add_custom_command(TARGET clonk POST_BUILD COMMAND "mklink" "/J" "${CLONK_DATA_LINK_DIR}" "${CLONK_DATA_DIR}")
-	else()
-		add_custom_command(TARGET clonk POST_BUILD COMMAND "ln" "-sf" "${CLONK_DATA_DIR}" "${CLONK_DATA_LINK_DIR}")
-	endif()
-endif()
-
 # Install new files
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
 

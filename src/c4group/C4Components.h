@@ -26,8 +26,6 @@
 
 //========================= Component File Names ============================================
 
-#define C4CFN_DataFolder      "data"
-
 #define C4CFN_Engine          "Clonk.exe"
 
 #define C4CFN_Material        "Material.ocg"
