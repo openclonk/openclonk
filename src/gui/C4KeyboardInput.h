@@ -92,8 +92,7 @@ const C4KeyCode
 	KEY_MOUSE_ButtonMiddleDouble = KEY_MOUSE_Button1Double + 2,
 	KEY_MOUSE_ButtonMaxDouble    = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
 	KEY_MOUSE_Wheel1Up           = 0x40,    // mouse control: wheel up
-	KEY_MOUSE_Wheel1Down         = 0x41,    // mouse control: wheel down
-	KEY_MOUSE_GameMask           = 0x80;    // if set, contorl is sent in game coordinates
+	KEY_MOUSE_Wheel1Down         = 0x41;    // mouse control: wheel down
 
 inline uint8_t KEY_JOY_Button(uint8_t idx) { return KEY_JOY_Button1+idx; }
 inline uint8_t KEY_JOY_Axis(uint8_t idx, bool fMax) { return KEY_JOY_Axis1Min+2*idx+fMax; }
@@ -148,10 +147,10 @@ inline bool Key_IsGamepadAxisHigh(C4KeyCode key)
 	return !!(key & 1);
 }
 
-inline C4KeyCode KEY_Mouse(uint8_t mouse_id, uint8_t mouseevent, bool is_game_coordinates)
+inline C4KeyCode KEY_Mouse(uint8_t mouse_id, uint8_t mouseevent)
 {
 	// mask key as 0x0043ggbb, where mm is mouse ID and bb is mouse event ID.
-	return KEY_MOUSE_Mask + (mouse_id<<8) + mouseevent + is_game_coordinates*KEY_MOUSE_GameMask;
+	return KEY_MOUSE_Mask + (mouse_id<<8) + mouseevent;
 }
 
 inline bool Key_IsMouse(C4KeyCode key)
@@ -166,12 +165,7 @@ inline uint8_t Key_GetMouse(C4KeyCode key)
 
 inline uint8_t Key_GetMouseEvent(C4KeyCode key)
 {
-	return ((uint32_t)key) & uint8_t(0xff & ~KEY_MOUSE_GameMask);
-}
-
-inline bool Key_GetMouseIsGameCoordinate(C4KeyCode key)
-{
-	return !!(key & KEY_MOUSE_GameMask);
+	return ((uint32_t)key) & uint8_t(0xff);
 }
 
 
@@ -232,9 +226,9 @@ struct C4KeyCodeEx
 struct C4KeyEventData
 {
 	int32_t iStrength; // pressure between 0 and 100 (100 for nomal keypress)
-	int32_t x,y;       // position for mouse event
-	C4KeyEventData() : iStrength(0), x(0), y(0) {}
-	C4KeyEventData(int32_t iStrength, int32_t x, int32_t y) : iStrength(iStrength), x(x), y(y) {}
+	int32_t game_x,game_y, vp_x,vp_y;       // position for mouse event, landscape+viewport coordinates
+	C4KeyEventData() : iStrength(0), game_x(0), game_y(0), vp_x(0), vp_y(0) {}
+	C4KeyEventData(int32_t iStrength, int32_t game_x, int32_t game_y, int32_t vp_x, int32_t vp_y) : iStrength(iStrength), game_x(game_x), game_y(game_y),vp_x(vp_x),vp_y(vp_y) {}
 	void CompileFunc(StdCompiler *pComp);
 	bool operator ==(const struct C4KeyEventData &cmp) const;
 };

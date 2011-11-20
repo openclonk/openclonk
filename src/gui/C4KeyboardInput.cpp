@@ -382,28 +382,25 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				}
 			}
 		}
-		bool is_mouse_key, is_gamemouse_key;
+		bool is_mouse_key;
 #ifdef _WIN32
 		is_mouse_key = !strnicmp(sName.getData(), "Mouse", 5);
-		is_gamemouse_key = !strnicmp(sName.getData(), "GameMouse", 9);
 #else
 		is_mouse_key = !strncasecmp(sName.getData(), "Mouse", 5);
-		is_gamemouse_key = !strncasecmp(sName.getData(), "GameMouse", 9);
 #endif
-		if (is_mouse_key || is_gamemouse_key)
+		if (is_mouse_key)
 		{
 			// skip Mouse/GameMouse
 			const char *key_str = sName.getData()+5;
-			if (is_gamemouse_key) key_str += 4;
 			int mouse_id;
 			if (sscanf(key_str, "%d",  &mouse_id) == 1)
 			{
 				// skip number
 				while (isdigit(*key_str)) ++key_str;
 				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
-				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move, is_gamemouse_key);
-				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up, is_gamemouse_key);
-				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down, is_gamemouse_key);
+				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move);
+				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up);
+				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down);
 				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
 				{
 					// check for known mouse button events
@@ -425,8 +422,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 					if (mouseevent_id)
 					{
 						// valid event if finished or followed by "Double"
-						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id, is_gamemouse_key);
-						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1), is_gamemouse_key);
+						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id);
+						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
 						// invalid mouse key...
 					}
 				}
@@ -507,27 +504,26 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	{
 		int mouse_id = Key_GetMouse(wCode);
 		int mouse_event = Key_GetMouseEvent(wCode);
-		bool mouse_is_game = Key_GetMouseIsGameCoordinate(wCode);
-		const char *mouse_is_game_str = mouse_is_game ? "GameMouse" : "Mouse";
+		const char *mouse_str = "Mouse";
 		switch (mouse_event)
 		{
-		case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_str, mouse_id);
+		case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_str, mouse_id);
+		case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_str, mouse_id);
 		default:
 			// extended mouse button
 		{
 			uint8_t btn = Key_GetMouseEvent(wCode);
 			if (btn >= KEY_MOUSE_Button1Double)
-				return FormatString("%s%dButton%dDouble", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
+				return FormatString("%s%dButton%dDouble", mouse_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
 			else
-				return FormatString("%s%dButton%d", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1));
+				return FormatString("%s%dButton%d", mouse_str, mouse_id, int(btn-KEY_MOUSE_Button1));
 		}
 		}
 	}
@@ -643,15 +639,21 @@ void C4KeyEventData::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(iStrength);
 	pComp->Separator();
-	pComp->Value(x);
+	pComp->Value(game_x);
 	pComp->Separator();
-	pComp->Value(y);
+	pComp->Value(game_y);
+	pComp->Separator();
+	pComp->Value(vp_x);
+	pComp->Separator();
+	pComp->Value(vp_y);
 }
 
 bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
 {
 	return iStrength == cmp.iStrength
-	       && x == cmp.x && y == cmp.y;
+	       && game_x == cmp.game_x && game_y == cmp.game_y
+	       && vp_x == cmp.vp_x && vp_y == cmp.vp_y;
+
 }
 
 /* ----------------- C4CustomKey------------------ */
@@ -913,7 +915,7 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 {
 	// store last-key-info
 	LastKeyExtraData.iStrength = (iStrength >= 0) ? iStrength : ((InEvent != KEYEV_Up) * 100);
-	LastKeyExtraData.x = LastKeyExtraData.y = 0;
+	LastKeyExtraData.game_x = LastKeyExtraData.game_y = LastKeyExtraData.vp_x = LastKeyExtraData.vp_y = 0;
 	// check all key events generated by this key: First the keycode itself, then any more generic key events like KEY_Any
 	const int32_t iKeyRangeMax = 5;
 	int32_t iKeyRangeCnt=0, j;

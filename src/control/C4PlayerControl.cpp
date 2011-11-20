@@ -52,6 +52,13 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iInitialRepeatDelay, "InitialRepeatDelay", 0));
 	pComp->Value(mkNamingAdapt(fDefaultDisabled, "DefaultDisabled", false));
 	pComp->Value(mkNamingAdapt(idControlExtraData, "ExtraData", C4ID::None));
+	const StdEnumEntry<CoordinateSpace> CoordSpaceNames[] =
+	{
+		{ "Game",        COS_Game        },
+		{ "Viewport",    COS_Viewport    },
+		{ NULL, COS_Game }
+	};
+	pComp->Value(mkNamingAdapt(mkEnumAdapt<CoordinateSpace, int32_t>(eCoordSpace, CoordSpaceNames), "CoordinateSpace", COS_Game));
 	pComp->Value(mkNamingAdapt(fSendCursorPos, "SendCursorPos", false));
 	const StdEnumEntry<Actions> ActionNames[] =
 	{
@@ -949,7 +956,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	// add key to local "down" list if it's not already in there
 	// except for some mouse events for which a down state does not make sense
 	C4PlayerControlRecentKey RKey(pressed_key,matched_key,GetTime());
-	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key) & ~KEY_MOUSE_GameMask, KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
+	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
 	{
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	}
@@ -960,7 +967,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	return fResult;
 }
 
-bool C4PlayerControl::ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool reset_down_states_only)
+bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
 {
 	// remove key from "down" list
 	// except for some mouse events for which a down state does not make sense
@@ -970,7 +977,7 @@ bool C4PlayerControl::ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4Key
 		if (i != DownKeys.end()) DownKeys.erase(i);
 	}
 	// process!
-	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData(), reset_down_states_only);
+	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
 }
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
@@ -1143,10 +1150,21 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		// player lost?
 		return false;
 	}
-	// control down
+	// get coordinates
+	int32_t x,y;
+	const C4PlayerControlDef *def = ControlDefs.GetControlByIndex(iControl);
+	if (def && def->GetCoordinateSpace() == C4PlayerControlDef::COS_Viewport)
+	{
+		x = rKeyExtraData.vp_x; y = rKeyExtraData.vp_y;
+	}
+	else
+	{
+		x = rKeyExtraData.game_x; y = rKeyExtraData.game_y;
+	}
+	// exec control function
 	C4AulFunc *pFunc = ::ScriptEngine.GetFunc(PSF_PlayerControl, &ScriptEngine, NULL);
 	if (!pFunc) return false;
-	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
+	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(x), C4VInt(y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
 	return !!pFunc->Exec(NULL, &Pars);
 }
 
@@ -1254,40 +1272,26 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	if (is_ctrl_down) mouseevent_keycode.dwShift |= KEYS_Control;
 	if (is_shift_down) mouseevent_keycode.dwShift |= KEYS_Shift;
 	if (is_alt_down) mouseevent_keycode.dwShift |= KEYS_Alt;
-	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code, false);
+	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code);
 	// first, try processing it as GUI mouse event. if not assigned, process as Game mous event
 	// TODO: May route this through Game.DoKeyboardInput instead - would allow assignment of mouse events in CustomConfig
 	//  and would get rid of the Game.KeyboardInput.SetLastKeyExtraData-hack
 	C4KeyEventData mouseevent_data;
 	mouseevent_data.iStrength = 100*is_down; // TODO: May get pressure from tablet here
-	mouseevent_data.x = uint32_t(gui_x);
-	mouseevent_data.y = uint32_t(gui_y);
+	mouseevent_data.vp_x = uint32_t(gui_x);
+	mouseevent_data.vp_y = uint32_t(gui_y);
+	mouseevent_data.game_x = uint32_t(game_x);
+	mouseevent_data.game_y = uint32_t(game_y);
 	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
 	bool result;
 	if (is_down)
 		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
 	else
 		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
-	if (result)
-	{
-		// mouse event processed in GUI coordinates
-		// ignore in game coordinates, except if it's an up-event, which still needs to reset down-states silently in game coordinates
-		// (-> for handling down controls in game, but up control in GUI when menus open on down controls)
-		if (is_down) return true;
-	}
-	// try processing in Game coordinates instead
-	mouseevent_data.x = uint32_t(game_x);
-	mouseevent_data.y = uint32_t(game_y);
-	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
-	mouseevent_keycode.Key |= KEY_MOUSE_GameMask;
-	if (is_down)
-		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
-	else
-		result = ProcessKeyUpEx(mouseevent_keycode, mouseevent_keycode, result);
 	return result;
 }
 
-bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
+bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out, int32_t *game_x_out, int32_t *game_y_out)
 {
 	// prefer mouse position if this is a mouse control
 	if (pControlSet && pControlSet->HasMouse())
@@ -1304,6 +1308,7 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	C4Viewport *vp = ::Viewports.GetViewport(iPlr);
 	if (!vp) return false;
 	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
+	*game_x_out = game_x; *game_y_out = game_y;
 	// game coordinate to screen coordinates...
 	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->GetZoom();
 	float screen_y = (float(game_y) - vp->last_game_draw_cgo.TargetY - vp->last_game_draw_cgo.Y) * vp->GetZoom();
@@ -1318,17 +1323,17 @@ void C4PlayerControl::PrepareInput()
 {
 	if (IsCursorPosRequested)
 	{
-		int32_t x, y;
+		int32_t x, y, game_x, game_y;
 		// add current cursor pos in GUI coordinates to input
-		if (GetCurrentPlayerCursorPos(&x, &y))
+		if (GetCurrentPlayerCursorPos(&x, &y, &game_x, &game_y))
 		{
 			// CON_CursorPos might not have been defined in definition file
 			if (ControlDefs.InternalCons.CON_CursorPos != CON_None)
 			{
 				C4KeyEventData ev;
 				ev.iStrength = 0;
-				ev.x = x;
-				ev.y = y;
+				ev.vp_x = x; ev.vp_y = y;
+				ev.game_x = game_x; ev.game_y = game_y;
 				C4ControlPlayerControl *pControlPacket = new C4ControlPlayerControl(iPlr, false, ev);
 				pControlPacket->AddControl(ControlDefs.InternalCons.CON_CursorPos, C4PlayerControlAssignment::CTM_Default);
 				// make sure it's added at head, because controls that have SendCursorPos=1 set will follow, which will rely

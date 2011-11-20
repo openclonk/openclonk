@@ -58,6 +58,7 @@
 	[ControlDef]
 	Identifier=GUICursor
 	DefaultDisabled=1
+	CoordinateSpace=Viewport
 	
 	[ControlDef]
 	Identifier=AimUp
@@ -352,6 +353,7 @@
 	GUIDesc=Click selected or controlled GUI item
 	DefaultDisabled=1
 	Hold=1
+	CoordinateSpace=Viewport
 
 	[ControlDef]
 	Identifier=GUIClick2
@@ -359,6 +361,7 @@
 	GUIDesc=Right click selected or controlled GUI item
 	DefaultDisabled=1
 	Hold=1
+	CoordinateSpace=Viewport
 	
 	[ControlDef]
 	Identifier=MenuOK
@@ -429,6 +432,7 @@
 	# control sent by engine along controls with SendCursorPos=1
 	[ControlDef]
 	Identifier=CursorPos
+	CoordinateSpace=Viewport
 	
 	# Extra buttons...
 	
@@ -604,13 +608,13 @@
 		# Use
 		
 		[Assignment]
-		Key=GameMouse1ButtonLeft
+		Key=Mouse1ButtonLeft
 		Priority=100
 		Control=Use
 		Group=1
 		
 		[Assignment]
-		Key=GameMouse1ButtonRight
+		Key=Mouse1ButtonRight
 		Priority=100
 		Control=UseAlt
 		
@@ -726,12 +730,12 @@
 		# Use
 		
 		[Assignment]
-		Key=GameMouse1ButtonLeft
+		Key=Mouse1ButtonLeft
 		Priority=100
 		Control=Use
 		
 		[Assignment]
-		Key=GameMouse1ButtonRight
+		Key=Mouse1ButtonRight
 		Priority=100
 		Control=UseAlt
 		
@@ -1001,7 +1005,7 @@
 		# Aiming
 	
 		[Assignment]
-		Key=GameMouse1Move
+		Key=Mouse1Move
 		Control=Aim
 		Priority=50
 		
