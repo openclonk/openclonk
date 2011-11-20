@@ -4102,25 +4102,6 @@ void C4Object::ExecAction()
 				}
 			}
 		}
-
-#if 0
-		// Update animation on mesh instance. If a new action was set,
-		// then this will already have happened for the new action.
-		if (pMeshInstance && !set_new_action)
-		{
-			C4String* AnimationName = pActionDef->GetPropertyStr(P_Animation);
-			if (AnimationName)
-			{
-				StdMeshInstance::AnimationRef ref(pMeshInstance, AnimationName->GetData());
-				if (ref)
-				{
-					float delay = pActionDef->GetPropertyInt(P_Delay);
-					float length = pActionDef->GetPropertyInt(P_Length);
-					ref.SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ref.GetAnimation().Length);
-				}
-			}
-		}
-#endif
 	}
 
 	return;
