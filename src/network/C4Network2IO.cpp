@@ -961,6 +961,8 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 
 	case PID_Conn: // connection request
 	{
+		Application.InteractiveThread.ThreadLogS("Network Got PID_Conn");
+
 		if (!pConn->isOpen()) break;
 		// get packet
 		GETPKT(C4PacketConn, rPkt)
@@ -984,6 +986,8 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 
 	case PID_ConnRe: // connection request reply
 	{
+		Application.InteractiveThread.ThreadLogS("Network Got PID_ReConn");
+
 		if (!pConn->isOpen()) break;
 		// conn not sent? That's fishy.
 		// FIXME: Note this happens if the peer has exclusive connection mode on.
