@@ -233,4 +233,6 @@ func Close()
 	RemoveObject();
 }
 
+func CursorUpdatesEnabled() { return true; }
+
 local Name = "$Name$";

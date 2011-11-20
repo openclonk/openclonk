@@ -134,12 +134,6 @@ private func EnableKeyAimControls(bool enable)
 	SetPlayerControlEnabled(GetOwner(), CON_AimDown, enable);
 	SetPlayerControlEnabled(GetOwner(), CON_AimLeft, enable);
 	SetPlayerControlEnabled(GetOwner(), CON_AimRight, enable);
-	
-	// never disabled
-	/*SetPlayerControlEnabled(GetOwner(), CON_AimAxisUp, enable);
-	SetPlayerControlEnabled(GetOwner(), CON_AimAxisDown, enable);
-	SetPlayerControlEnabled(GetOwner(), CON_AimAxisLeft, enable);
-	SetPlayerControlEnabled(GetOwner(), CON_AimAxisRight, enable);*/
 }
 
 public func IsAiming()

@@ -1316,7 +1316,9 @@ func SetMenu(object m)
 			VirtualCursor()->StartAim(this,false,menu);
 		else
 		{
-			SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+			if (menu->~CursorUpdatesEnabled()) {
+				SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
+			}
 			SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
 			SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
 		}
