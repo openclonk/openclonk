@@ -29,7 +29,7 @@
 	#
 	# CursorPos
 	#
-	# Backpack
+	# Backpack, Contents
 	#
 	# with Mouse
 	# ---------------
@@ -213,6 +213,12 @@
 	Identifier=Backpack
 	GUIName=Backpack
 	GUIDesc=Open/close backpack
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Contents
+	GUIName=Contents
+	GUIDesc=Open/close contents menus
 	SendCursorPos=1
 	
 	[ControlDef]
@@ -516,6 +522,7 @@
 	# Interact							Space
 	#
 	# Backpack							Q
+	# Contents							E
 	# Collect							A,D,W,S
 	#
 	# NextCrew							T
@@ -539,6 +546,11 @@
 		[Assignment]
 		Key=Q
 		Control=Backpack
+		Group=1
+		
+		[Assignment]
+		Key=E
+		Control=Contents
 		Group=1
 	
 		# Menu
@@ -666,6 +678,10 @@
 		[Assignment]
 		Key=Apostrophe
 		Control=Backpack
+
+		[Assignment]
+		Key=Period
+		Control=Contents
 		
 		# Menu
 
@@ -793,6 +809,7 @@
 	# Jump								Joy1C
 	#
 	# Backpack							Joy1E
+	# Contents							Joy1F
 	#
 	# Use, Throw						Joy1A
 	# Drop								Joy1Down+Joy1A
@@ -823,6 +840,10 @@
 		[Assignment]
 		Key=Joy1E
 		Control=Backpack
+		
+		[Assignment]
+		Key=Joy1F
+		Control=Contents
 	
 		# Menu
 
