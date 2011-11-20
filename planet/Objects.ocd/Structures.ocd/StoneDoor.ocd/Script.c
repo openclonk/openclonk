@@ -50,6 +50,7 @@ protected func Hit()
 
 /*-- Automatic movement --*/
 
+// Overrules owner control and only let's the team through.
 public func SetAutoControl(int team)
 {
 	var effect = AddEffect("AutoControl", this, 100, 3, this);
@@ -65,20 +66,22 @@ protected func FxAutoControlTimer(object target, effect, int time)
 	var owner = GetOwner();
 	var team = effect.Team;
 	var open_door = false;
-	for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
-	{
-		var plr = clonk->GetOwner();
-		var plr_team = GetPlayerTeam(plr);
-		if (!Hostile(owner, plr) && plr != NO_OWNER)
-			open_door = true;
-		else if (plr_team == team)
-			open_door = true;
-		else
+	// Team control
+	if (team != nil)
+		for (var clonk in FindObjects(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60)))
 		{
-			open_door = false;
-			break;
+			var plr = clonk->GetOwner();
+			var plr_team = GetPlayerTeam(plr);
+			if (plr_team == team)
+				open_door = true;			
 		}
-	}
+	// Player control
+	else
+		if (FindObject(Find_OCF(OCF_CrewMember), Find_InRect(-50, d - 30, 100, 60), Find_Allied(owner)))
+			open_door = true;
+	
+	// Keep door closed if hostile?
+	// TODO?
 	
 	if (open_door && IsClosed())
 		OpenDoor();
