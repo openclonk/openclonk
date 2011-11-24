@@ -42,6 +42,8 @@ global func CreateMenu2(object commander, int x, int y) // TODO: This needs to b
 	return menu;
 }
 
+public func IsDragDropMenu() { return true; }
+
 // Sets the commander of this menu.
 public func SetCommander(object commander)
 {
@@ -74,16 +76,65 @@ func SetMenuIcon(id symbol)
 	}
 }*/
 
-//adds an item, icon, amount, extra (the item can be an object too)
-public func AddItem(new_item, int amount, extra)
+/** Adds an item to this menu.
+	@param symbol used to specify the symbol of the menu item, either an id or object.
+	@param pos position in the menu where the item should be placed, \c nil for first open slot.
+	@param amount the amount displayed next to the symbol.
+	@return a pointer to the menu item created, or \c nil if failed.
+*/
+public func AddItem(symbol, int pos, int amount)
 {
+	var item_cnt = GetLength(menu_items);
+	// Find position if not specified.
+	if (pos == nil)
+	{
+		pos = item_cnt;
+		for (var i = 0; i < item_cnt; i++)
+			if (!menu_items[i])
+			{
+				pos = i;
+				break;
+			}		
+	}
+	// Check if pos is already taken.
+	else if (menu_items[pos])
+		return;
+	
+	// Create new menu item.
 	var item = CreateObject(GUI_MenuItem);
 	var index = GetLength(menu_items);
-	item->SetSymbol(new_item);
+	item->SetSymbol(symbol);
 	item->SetAmount(amount);
 	menu_items[index] = item;
 	item.Visibility = VIS_None;
-	return index;
+	if (menu_shown)
+		item.Visibility = VIS_Owner;
+	UpdateMenu();
+	return item;
+}
+
+/** Gives the menu item at the specified position.
+	@param the position in the menu.
+	@return the menu item at the specified position.
+*/
+public func GetItem(int index)
+{
+	return menu_items[index];
+}
+
+/** Removes a menu item the menu.
+	@item the position in the menu.
+	@return the menu item at the specified position.
+*/
+public func RemoveItem(object item)
+{
+	for (var mitem in menu_items)
+	{
+		if (mitem = item)
+			mitem->RemoveObject();	
+	}
+	UpdateMenu();
+	return;
 }
 
 // Determines the item position for the nth circle for a certain number of circles.
@@ -122,7 +173,7 @@ private func GetItemPosition(int n, int total)
 			return [x, y];
 		}
 		else
-		{
+		{	// TODO: Fix current bad approximation.
 			var x = Cos(30 * (n-7) + 15, 4 * MENU_Radius / 5);
 			var y = -Sin(30 * (n-7) + 15, 4 * MENU_Radius / 5);
 			return [x, y];
@@ -148,7 +199,19 @@ private func GetItemRadius(int total)
 // Shows the menu.
 public func ShowMenu()
 {
-	// Safety
+	UpdateMenu();
+	// Change visibility.
+	for (var item in menu_items)
+		if (item)
+			item.Visibility = VIS_Owner;
+	this.Visibility = VIS_Owner;
+	menu_shown = true;
+	return;
+}
+
+public func UpdateMenu()
+{
+	// Safety: check for items.
 	var item_count = GetLength(menu_items);
 	if (!item_count)
 		return;
@@ -164,21 +227,17 @@ public func ShowMenu()
 		{
 			item->SetPosition(x + pos[0], y + pos[1]);
 			item->SetSize(2000*GetItemRadius(item_count));
-			item.Visibility = VIS_Owner;
 		}
 	}
-	this.Visibility = VIS_Owner;
-	menu_shown = true;
 	return;
 }
 
-
 public func HideMenu()
 {
-	for (var i = 0; i < GetLength(menu_items); i++)
-		if (menu_items[i])
-			menu_items[i].Visibility = VIS_None;
-	
+	// Change visibility.
+	for (var item in menu_items)
+		if (item)
+			item.Visibility = VIS_None;
 	this.Visibility = VIS_None;
 	CustomMessage("", this, menu_object->GetOwner());
 	menu_shown = false;
@@ -188,14 +247,20 @@ public func HideMenu()
 // removes the menu
 public func Close()
 {
-	for (var i = 0; i<GetLength(menu_items); i++)
+	return RemoveObject();
+}
+
+// Engine callback: if the menu is destroyed, the items must follow.
+protected func Destruction()
+{
+	for (var i = 0; i < GetLength(menu_items); i++)
 		if (menu_items[i])
 			menu_items[i]->RemoveObject();
 
 	if (menu_commander)
 		menu_commander->~MenuClosed(this);
 
-	RemoveObject();
+	return;
 }
 
 /* Callbacks from the menu items */
