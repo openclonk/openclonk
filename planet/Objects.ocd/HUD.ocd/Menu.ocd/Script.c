@@ -30,25 +30,6 @@ protected func Construction()
 	return;
 }
 
-// Creates a menu, the menu object is returned and can be used to add menu items.
-global func CreateMenu2(object commander, int x, int y) // TODO: This needs to be renamed.
-{
-	// Safety: menus do not function without commander.
-	if (!this || !(this->~HasMenuControl()))
-		return;
-	
-	// Create menu at the specified position.
-	var menu = CreateObject(GUI_Menu, 0, 0, GetOwner());
-	menu->SetPosition(x, y);
-	
-	// Set necessary properties.
-	menu->SetCommander(commander);
-	menu->SetMenuObject(this);
-	menu->Hide();
-	
-	return menu;
-}
-
 public func IsDragDropMenu() { return dragdrop; }
 
 public func SetDragDropMenu(bool dragdrop)
@@ -294,24 +275,36 @@ public func OnItemSelectionAlt(object item)
 	return menu_commander->~OnItemSelectionAlt(this, item);
 }
 
+// Called when an object is dragged onto the menu
+public func MouseDrop(int plr, obj)
+{
+	// Check if the owners match.
+	if (plr != GetOwner()) return false;
+		
+	// Check if item belongs to a menu.
+	if (!obj->~GetMenu()) return false;	
+	
+	// Check if we allow drag&drop
+	if (!IsDragDropMenu()) return false;
+	
+	// Forward command to commander.
+	return menu_commander->OnItemDropped(this, obj, nil);
+}
+
 // Called when another item has been dropped on an item in this menu.
 public func OnItemDropped(object drop_item, object on_item)
 {
-	if (!menu_commander)
-		return;
+	if (!menu_commander) return;
+	
 	// Forward to commander.
-	menu_commander->~OnItemDropped(this, drop_item, on_item);
-
-	return;
+	return menu_commander->~OnItemDropped(this, drop_item, on_item);
 }
 
-// Called when an item from this menu has been dragged onto an item in another menu.
-public func OnItemDragged(object drag_item, object on_item)
+// Called after an item from this menu has been dragged onto an item
+public func OnItemDragDone(object drag_item, object on_item)
 {
-	if (!menu_commander)
-		return;
+	if (!menu_commander) return;
+	
 	// Forward to commander.
-	menu_commander->~OnItemDragged(this, drag_item, on_item);
-
-	return;
+	return menu_commander->~OnItemDragDone(this, drag_item, on_item);
 }

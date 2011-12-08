@@ -58,7 +58,7 @@ public func MouseDrag(int plr)
 }
 
 // Called when an object is dragged onto this one.
-public func MouseDrop(int plr, obj)
+public func MouseDrop(int plr, other)
 {
 	// Check if the owners match.
 	if (plr != GetOwner()) return false;
@@ -67,25 +67,20 @@ public func MouseDrop(int plr, obj)
 	if (!item_menu) return false;	
 	
 	// Check if containing menu allows drag&drop
-	if (!item_menu->IsDragDropMenu()) return;
+	if (!item_menu->IsDragDropMenu()) return false;
 	
 	// Forward command to menu.
-	item_menu->OnItemDropped(obj, this);
-
-	return true;
+	return item_menu->OnItemDropped(other, this);
 }
 
-// Called when this object is dragged onto another one.
-public func MouseDragDone(obj, object target)
+// Called after this object has been dragged onto another one.
+public func MouseDragDone(self, object target)
 {
 	// Check if this belongs to a menu.
-	if (!item_menu)
-		return;
+	if (!item_menu) return;
 		
 	// Forward command to menu.
-	item_menu->OnItemDragged(this, target);
-
-	return;
+	return item_menu->OnItemDragDone(self, target);
 }
 
 
@@ -93,6 +88,11 @@ public func MouseDragDone(obj, object target)
 
 
 /* Menu item properties */
+
+public func getMenu()
+{
+	return item_menu;
+}
 
 public func SetSymbol(obj)
 {
