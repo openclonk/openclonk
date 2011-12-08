@@ -83,10 +83,6 @@ public func MouseDragDone(self, object target)
 	return item_menu->OnItemDragDone(self, target);
 }
 
-
-
-
-
 /* Menu item properties */
 
 public func getMenu()

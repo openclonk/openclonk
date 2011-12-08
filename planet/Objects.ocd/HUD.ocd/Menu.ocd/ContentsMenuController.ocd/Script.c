@@ -96,10 +96,12 @@ private func PutContentsIntoMenu(object menu, object obj)
 	{
 		// into the menu item, all the objects of the stack are saved
 		// as an array into it's extradata
-		var amount = GetLength(stack);
-		var first = stack[0];
-		var extra = stack;
-		menu->AddItem(first, amount, extra);
+		var item = CreateObject(GUI_MenuItem);
+		item->SetSymbol(stack[0]);
+		item->SetCount(GetLength(stack));
+		item->SetExtraData(stack[1]);
+		if (!menu->AddItem(item))
+			item->RemoveObject();
 	}
 }
 
@@ -114,13 +116,17 @@ global func GetStackedContents()
 	for(var content in contents)
 	{
 		// check if item of same ID already inside
+		var has_stacked = false;
 		for(var stackcontent in stacked)
 		{
-			if(!(content->DoesStackWith(stackcontent[0]))) continue;
+			if (!(content->DoesStackWith(stackcontent[0]))) continue;
 			stackcontent[GetLength(stackcontent)] = content;
+			has_stacked = true;
+			break;
 		}
 		// otherwise, put new inside
-		stacked[GetLength(stacked)] = [content];
+		if (!has_stacked)
+			stacked[GetLength(stacked)] = [content];
 	}
 	
 	return stacked;

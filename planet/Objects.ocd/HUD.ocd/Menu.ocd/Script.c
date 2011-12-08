@@ -52,22 +52,22 @@ public func SetMenuObject(object menuobject)
 	return;
 }
 
-/* Not used currently
-func SetMenuIcon(id symbol)
+// Not used currently
+public func SetSymbol(symbol)
 {
 	this.Visibility = VIS_Owner;
 	if(!symbol)
 	{
-		SetGraphics(nil,nil,0);
-		SetGraphics(nil,nil,1);
+		SetGraphics(nil, nil, 0);
+		SetGraphics(nil, nil, 1);
 	}
 	else
 	{
-		SetGraphics(nil,symbol,1,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(2000,0,0,0,2000,0,1);
-		SetObjDrawTransform(2000,0,0,0,2000,0,0);
+		SetGraphics(nil, symbol, 1, GFXOV_MODE_IngamePicture);
+		SetObjDrawTransform(2000, 0, 0, 0, 2000, 0, 1);
+		SetObjDrawTransform(2000, 0, 0, 0, 2000, 0, 0);
 	}
-}*/
+}
 
 /** Adds an item to this menu.
 	@param symbol used to specify the symbol of the menu item, either an id or object.
@@ -75,7 +75,7 @@ func SetMenuIcon(id symbol)
 	@param amount the amount displayed next to the symbol.
 	@return a pointer to the menu item created, or \c nil if failed.
 */
-public func AddItem(symbol, int pos, int amount)
+public func AddItem(object item, int pos)
 {
 	var item_cnt = GetLength(menu_items);
 	// Find position if not specified.
@@ -91,19 +91,16 @@ public func AddItem(symbol, int pos, int amount)
 	}
 	// Check if pos is already taken.
 	else if (menu_items[pos])
-		return;
+		return false;
 	
 	// Create new menu item.
-	var item = CreateObject(GUI_MenuItem);
-	var index = GetLength(menu_items);
-	item->SetSymbol(symbol);
-	item->SetAmount(amount);
-	menu_items[index] = item;
+	menu_items[pos] = item;
+	// Set item visibility.
 	item.Visibility = VIS_None;
 	if (menu_shown)
 		item.Visibility = VIS_Owner;
 	UpdateMenu();
-	return item;
+	return true;
 }
 
 /** Gives the menu item at the specified position.
