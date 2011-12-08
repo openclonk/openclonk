@@ -16,7 +16,10 @@ global func CreateContentsMenus()
 	var controller = CreateObject(GUI_Contents_Controller);
 	controller->SetMenuObject(this);
 	
-	var objs = FindObjects(Find_AtPoint(0,0), Find_NoContainer(), Find_OCF(OCF_Container), Sort_Func("SortInventoryObjs"));
+	var objs = FindObjects(	Find_Or(
+								Find_Not(Find_Exclude(this)),
+								Find_And(Find_AtPoint(0,0), Find_NoContainer(), Find_OCF(OCF_Container))),
+							Sort_Func("SortInventoryObjs"));
 
 	var i = 0;
 	// for all objects with accessible inventory...
@@ -33,9 +36,9 @@ global func SortInventoryObjs()
 	// left: crew members
 	if (GetOCF() & OCF_CrewMember) return 0;
 	// center: vehicles
-	if (GetOCF() & OCF_Vehicle) return 10;
+	if (GetCategory() & C4D_Vehicle) return 10;
 	// right: buildings
-	if (GetOCF() & OCF_Entrance) return 20;
+	if (GetCategory() & C4D_Structure) return 20;
 }
 
 func SetMenuObject(object menu_object)
@@ -80,7 +83,7 @@ func AddMenuFor(object obj, int pos, int length)
 	menu->SetSymbol(obj);
 	menu->SetMenuObject(menu_object);
 	menu->SetCommander(this);
-	menu->SetDragDrop(true);
+	menu->SetDragDropMenu(true);
 
 	PutContentsIntoMenu(menu, obj);
 	circ_menus[GetLength(circ_menus)] = {Object = obj, Menu = menu};

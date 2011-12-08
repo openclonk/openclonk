@@ -51,7 +51,7 @@ global func CreateMenu2(object commander, int x, int y) // TODO: This needs to b
 
 public func IsDragDropMenu() { return dragdrop; }
 
-public func SetDragDropMenu(boolean dragdrop)
+public func SetDragDropMenu(bool dragdrop)
 {
 	this.dragdrop = dragdrop;
 }
