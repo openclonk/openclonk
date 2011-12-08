@@ -215,27 +215,3 @@ global func StonyObjectHit(int x, int y)
 		else
 			return Sound("SoftHit?");
 }
-
-global func GetStackedContents()
-{
-	if(!this) return nil;
-	
-	var contents = FindObjects(Find_Container(this));
-	var stacked = [];
-	
-	// put all contents into stackcontents
-	for(var content in contents)
-	{
-		// check if item of same ID already inside
-		for(var stackcontent in stacked)
-		{
-			if(stackcontent[0]->GetID() != content->GetID()) continue;
-			if(content->~RejectStack(stackcontent[0])) continue;
-			stackcontent[GetLength(stackcontent)] = content;
-		}
-		// otherwise, put new inside
-		stacked[GetLength(stacked)] = [content];
-	}
-	
-	return stacked;
-}

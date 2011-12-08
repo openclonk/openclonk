@@ -15,14 +15,16 @@ local menu_commander; // Object controlling the menu, commands are passed to thi
 local menu_object; // Object for which the menu is shown.
 local menu_items; // List of the items in the menu.
 local menu_shown;
+local dragdrop;
 
 static const MENU_Radius = 160;
 
 
-protected func Initialize()
+protected func Construction()
 {
 	menu_items = [];
 	menu_shown = false;
+	dragdrop = true;
 	// Parallaxity
 	this.Parallaxity = [0, 0];
 	return;
@@ -42,12 +44,17 @@ global func CreateMenu2(object commander, int x, int y) // TODO: This needs to b
 	// Set necessary properties.
 	menu->SetCommander(commander);
 	menu->SetMenuObject(this);
-	menu->HideMenu();
+	menu->Hide();
 	
 	return menu;
 }
 
-public func IsDragDropMenu() { return true; }
+public func IsDragDropMenu() { return dragdrop; }
+
+public func SetDragDropMenu(boolean dragdrop)
+{
+	this.dragdrop = dragdrop;
+}
 
 // Sets the commander of this menu.
 public func SetCommander(object commander)
@@ -127,6 +134,14 @@ public func GetItem(int index)
 	return menu_items[index];
 }
 
+/** Returns all menu items as an array
+	@return array of all menu items
+*/
+public func GetItems()
+{
+	return menu_items;
+}
+
 /** Removes a menu item the menu.
 	@item the position in the menu.
 	@return the menu item at the specified position.
@@ -202,7 +217,7 @@ private func GetItemRadius(int total)
 }
 
 // Shows the menu.
-public func ShowMenu()
+public func Show()
 {
 	UpdateMenu();
 	// Change visibility.
@@ -237,7 +252,7 @@ public func UpdateMenu()
 	return;
 }
 
-public func HideMenu()
+public func Hide()
 {
 	// Change visibility.
 	for (var item in menu_items)
@@ -249,21 +264,12 @@ public func HideMenu()
 	return;
 }
 
-// removes the menu
-public func Close()
-{
-	return RemoveObject();
-}
-
 // Engine callback: if the menu is destroyed, the items must follow.
 protected func Destruction()
 {
 	for (var i = 0; i < GetLength(menu_items); i++)
 		if (menu_items[i])
 			menu_items[i]->RemoveObject();
-
-	if (menu_commander)
-		menu_commander->~MenuClosed(this);
 
 	return;
 }

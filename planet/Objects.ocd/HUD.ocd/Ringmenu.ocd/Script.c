@@ -65,17 +65,15 @@ public func GetMenuObject()
 public func SetMenu(object menuobject, object commandobject)
 {
 	if(menuobject->GetOCF() & OCF_CrewMember)
-		menu_object=menuobject;
-	command_object=commandobject;
+		menu_object = menuobject;
+	command_object = commandobject;
 	menuobject->~SetMenu(this);
-
-	
 }
 
 //re-set icon
 func SetMenuIcon(id symbol)
 {
-	this["Visibility"] = VIS_Owner;
+	this.Visibility = VIS_Owner;
 	if(!symbol)
 	{
 		SetGraphics(nil,nil,0);
@@ -104,20 +102,16 @@ public func AddItem(new_item, int amount, extra)
 	{
 		menu_icons[index]->SetAmount(amount);
 	}
-	menu_icons[index]["Visibility"] = VIS_None;
+	menu_icons[index].Visibility = VIS_None;
 	return index;
 }
 
-//selects by dx,dy and alt=alternative selection
-public func Select(int dx, int dy, bool alt)
+// selects by dx,dy and alt=alternative selection
+func Select(int dx, int dy, bool alt)
 {
 	var item_count=GetLength(menu_icons);
 	if(!item_count)
-	{
-		if(command_object->Selected(this,nil,alt))
-			Close();
-		return;		
-	}
+		command_object->Selected(this,nil,alt);
 	
 	var distance = Sqrt(dx*dx+dy*dy);
 	
@@ -127,16 +121,17 @@ public func Select(int dx, int dy, bool alt)
 	var item = BoundBy(angle/segment,0,item_count-1);
 	
 	// center selected: close
-	if(Abs(distance - GUI_Ringmenu_Radius) >= GUI_Ringmenu_Ring) Close();
-	// otherwise, select something
-	else if(command_object->Selected(this,menu_icons[item],alt))
+	if(Abs(distance - GUI_Ringmenu_Radius) >= GUI_Ringmenu_Ring)
 		Close();
+	// otherwise, select something
+	else 
+		command_object->Selected(this,menu_icons[item],alt);
 }
 
 //am i visible?
 func IsVisible() { return shown; }
 
-//makes me visible/updates me
+// makes me visible/updates me
 func Show()
 {
 	var item_count = GetLength(menu_icons);
@@ -155,7 +150,7 @@ func Show()
 				menu_icons[i]->SetPosition(x,y+GUI_Ringmenu_Radius);
 			else
 				menu_icons[i]->SetPosition(x+Sin(angle,GUI_Ringmenu_Radius),y-Cos(angle,GUI_Ringmenu_Radius));
-			menu_icons[i]["Visibility"] = VIS_Owner;
+			menu_icons[i].Visibility = VIS_Owner;
 			//420000~=u*1000*2/3;  u=r*pi*2; r=100px;
 			// Size will never get bigger as if there were 5 items shown
 			menu_icons[i]->SetSize(420000/Max(item_count,5));
@@ -209,28 +204,28 @@ public func UpdateCursor(int dx, int dy)
 }
 
 public func Hide() {
-	for(var i=0; i<GetLength(menu_icons); i++)
-		if(menu_icons[i])
-			menu_icons[i]["Visibility"] = VIS_None;
-	this["Visibility"] = VIS_None;
+	for(var menu_icon in menu_icons)
+		menu_icon.Visibility = VIS_None;
+		
+	this.Visibility = VIS_None;
 	CustomMessage("",this,menu_object->GetOwner());
-	shown=false;
+	shown = false;
 }
 
 //closes (removes) the menu
 func Close()
 {
-	for(var i=0; i<GetLength(menu_icons); i++)
-		if(menu_icons[i])
-			menu_icons[i]->RemoveObject();
-	
-	if(menu_object)
-		menu_object->SetMenu(nil);
-	
 	if(command_object)
 		command_object->~MenuClosed(this);
-
+	if(menu_object && command_object != menu_object)
+		menu_object->~MenuClosed(this);
 	RemoveObject();
+}
+
+func Destruction()
+{
+	for(var menu_icon in menu_icons)
+		menu_icon->RemoveObject();
 }
 
 func CursorUpdatesEnabled() { return true; }

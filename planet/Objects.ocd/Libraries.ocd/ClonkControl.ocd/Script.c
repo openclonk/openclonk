@@ -193,6 +193,7 @@ protected func Construction()
 	using_type = nil;
 
 	backpack_open = false;
+	contents_open = false;
 	
 	return _inherited(...);
 }
@@ -399,7 +400,7 @@ local alt;
 local mlastx, mlasty;
 local virtual_cursor;
 local noholdingcallbacks;
-local backpack_open;
+local backpack_open, contents_open;
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
@@ -412,33 +413,57 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Backpack)
 	{
 		var closed = false;
-		var backpack_was_open = backpack_open;
 		// close if menu was open
 		if(GetMenu())
 		{
-			GetMenu()->Close();
-			closed = true;
-		}
-		// open if no menu was open or it was not the backpack menu which was open
-		if(MaxContentsCount() > 2 && (!closed || !backpack_was_open))
-		{
-			// Cancel usage
-			CancelUse();
-			CreateRingMenu(Icon_Backpack,this);
-			// CreateRingMenu calls SetMenu(this) in the clonk,
-			// so after this call menu = the created menu
-			
-			// for all contents in the clonks except the first two (hand slots)
-			for(var i = 2; i < MaxContentsCount(); ++i)
-			{
-				// put them in the menu
-				var item = GetItem(i);
-				GetMenu()->AddItem(item,nil,i);
+			GetMenu()->RemoveObject();
+			SetMenu(nil);
+			// if backpack open: done
+			if (backpack_open) {
+				backpack_open = false;
+				return true;
 			}
-			// finally, show the menu.
-			backpack_open = true;
-			GetMenu()->Show();
 		}
+		// Cancel usage
+		CancelUse();
+		CreateRingMenu(Icon_Backpack,this);
+		// CreateRingMenu calls SetMenu(this) in the clonk,
+		// so after this call menu = the created menu
+			
+		// for all contents in the clonks except the first two (hand slots)
+		for(var i = 2; i < MaxContentsCount(); ++i)
+		{
+			// put them in the menu
+			var item = GetItem(i);
+			GetMenu()->AddItem(item,nil,i);
+		}
+		// finally, show the menu.
+		backpack_open = true;
+		GetMenu()->Show();
+
+		return true;
+	}
+	else if (ctrl == CON_Contents)
+	{
+		// close if menu was open
+		if (GetMenu())
+		{
+			GetMenu()->RemoveObject();
+			SetMenu(nil);
+			// done if contents are open
+			if(contents_open) {
+				contents_open = false;
+				return true;
+			}
+		}
+		// open contents...
+		CancelUse();
+		CreateContentsMenus();
+		// CreateContentsMenus calls SetMenu(this) in the clonk
+		// so after this call menu = the created menu
+		contents_open = true;
+		GetMenu()->Show();
+		
 		return true;
 	}
 	
@@ -1299,10 +1324,12 @@ func SetMenu(object m)
 	{
 		return;
 	}
-	// multiple menus are not supported
+	// no multiple menus: close old one
 	if (menu && m)
 	{
-		menu->Close();
+		menu->RemoveObject();
+		backpack_open = false;
+		contents_open = false;
 	}
 	// new one
 	menu = m;
@@ -1338,6 +1365,7 @@ func SetMenu(object m)
 func MenuClosed()
 {
 	backpack_open = false;
+	contents_open = false;
 	SetMenu(nil);
 }
 
@@ -1380,7 +1408,6 @@ func Selected(object mnu, object mnu_item, bool alt)
 	mnu_item->SetSymbol(show_new_item);
 	// swap index with backpack index
 	Switch2Items(hands_index, backpack_index);
-	return false;
 }
 
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
