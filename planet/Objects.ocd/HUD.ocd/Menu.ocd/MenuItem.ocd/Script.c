@@ -22,8 +22,9 @@ protected func Initialize()
 	this.Parallaxity = [0, 0];
 }
 
-/* Callbacks from the engine on mouse selection */
+/* Callbacks from the engine on mouse selection and drag & drop */
 
+// Called when this object is selected with the left mouse button.
 public func MouseSelection(int plr)
 {
 	// Check if this belongs to a menu.
@@ -34,6 +35,7 @@ public func MouseSelection(int plr)
 	return item_menu->OnItemSelection(this, plr);	
 }
 
+// Called when this object is selected with the right mouse button.
 public func MouseSelectionAlt(int plr)
 {
 	// Check if this belongs to a menu.
@@ -43,6 +45,49 @@ public func MouseSelectionAlt(int plr)
 	// Transfer result to menu.
 	return item_menu->OnItemSelectionAlt(this, plr);	
 }
+
+// Called to determine which object is dragged.
+public func MouseDrag(int plr)
+{
+	if (plr == GetOwner())
+		return this;
+	// The object may not be dragged.
+	return;
+}
+
+// Called when an object is dragged onto this one.
+public func MouseDrop(int plr, obj)
+{
+	// Check if the owners match.
+	if (plr != GetOwner())
+		return false;
+		
+	// Check if this belongs to a menu.
+	if (!item_menu)
+		return false;	
+
+	// Forward command to menu.
+	item_menu->OnItemDropped(obj, this);
+
+	return true;
+}
+
+// Called when this object is dragged onto another one.
+public func MouseDragDone(obj, object target)
+{
+	// Check if this belongs to a menu.
+	if (!item_menu)
+		return;
+		
+	// Forward command to menu.
+	item_menu->OnItemDragged(this, target);
+
+	return;
+}
+
+
+
+
 
 /* Menu item properties */
 

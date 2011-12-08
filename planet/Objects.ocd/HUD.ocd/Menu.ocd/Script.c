@@ -1,6 +1,11 @@
 /**
 	Menu object
 	Controls a menu consistent of a big circle with small circular menu items.
+	Callbacks to the commander:
+	* OnItemSelection(object menu, object item);
+	* OnItemSelectionAlt(object menu, object item);
+	* OnItemDropped(object menu, object drop_item, object on_item);
+	* OnItemDragged(object menu, object drag_item, object on_item);
 	
 	@author Maikel, Newton, Mimmo
 */
@@ -263,18 +268,44 @@ protected func Destruction()
 	return;
 }
 
-/* Callbacks from the menu items */
+/* Callbacks from the menu items, to be forwarded to the commander. */
 
+// Called when an item has been selected (left mouse button).
 public func OnItemSelection(object item)
 {
 	if (!menu_commander)
 		return;
+	// Forward to commander.
 	return menu_commander->~OnItemSelection(this, item);
 }
 
+// Called when an item has been selected (right mouse button).
 public func OnItemSelectionAlt(object item)
 {
 	if (!menu_commander)
 		return;
+	// Forward to commander.
 	return menu_commander->~OnItemSelectionAlt(this, item);
+}
+
+// Called when another item has been dropped on an item in this menu.
+public func OnItemDropped(object drop_item, object on_item)
+{
+	if (!menu_commander)
+		return;
+	// Forward to commander.
+	menu_commander->~OnItemDropped(this, drop_item, on_item);
+
+	return;
+}
+
+// Called when an item from this menu has been dragged onto an item in another menu.
+public func OnItemDragged(object drag_item, object on_item)
+{
+	if (!menu_commander)
+		return;
+	// Forward to commander.
+	menu_commander->~OnItemDragged(this, drag_item, on_item);
+
+	return;
 }
