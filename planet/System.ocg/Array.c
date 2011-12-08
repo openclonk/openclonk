@@ -30,3 +30,14 @@ global func Subtract(array subject, array subtract)
 	}
 	return diff;
 }
+
+global func RemoveHoles(array leerdamer)
+{
+	// gouda is a cheese with no holes ;-)
+	var gouda = [];
+	var hole = nil;
+	for (var piece in leerdamer)
+		if (piece != hole)
+			gouda[GetLength(gouda)] = piece;
+	return gouda;
+}

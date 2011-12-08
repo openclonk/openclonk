@@ -148,9 +148,8 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 	}
 }
 
-private func MoveObjects(object p_source, object p_target, object menuItem, int amount)
+private func PutObjects(object p_target, object menuItem, int amount)
 {
-
 	var objects = menuItem->GetExtraData();
 	amount = BoundBy(amount, 0, GetLength(objects));
 	
@@ -158,38 +157,30 @@ private func MoveObjects(object p_source, object p_target, object menuItem, int 
 	// memorize which objects have been put where in order to know which menu items to
 	// update how (Because the collection can be rejected by RejectCollect/RejectEntrance)
 	var moved_to_target = [];
-	var removed_from_source = [];
-	for(var obj in objects) 
+	for (var i=0; i<amount; ++i) 
 	{
+		var obj = objects[i];
 		obj->Exit();
-		if(!(obj->Collect(p_target.Object)))
+		if (!(obj->Collect(p_target.Object)))
 		{
 			// putting into other container failed. Put back.
-			if(!(obj->Collect(p_source.Object)))
+			if (!(obj->Collect(p_source.Object)))
 			{
-				removed_from_source[GetLength(removed_from_source)] = obj;
 				// (if it fails too, it just stays outside)
 			}
 		} else {
 			moved_to_target[GetLength(moved_to_target)] = obj;
-			removed_from_source[GetLength(removed_from_source)] = obj;
 		}
 	}
 	
-	// decimate which objects are displayed in source container
-	var newobjects = [];
-	if (GetLength(removed_from_source) < GetLength(objects))
-		newobjects = Subtract(objects, removed_from_source);
-	
 	var items_moved_to_target = GetLength(moved_to_target);
-	var items_removed_from_source = GetLength(removed_from_source);
 	
 	// update target menu
 	if (items_moved_to_target > 0)
 	{
 		// if menu item with same objects already exists: update menu item
 		var targetItem = CanStackObjIntoMenuItem(p_target.Menu, moved_to_target[0]);
-		if(targetItem)
+		if (targetItem)
 		{
 			var new_extra_data = Concatenate(targetItem->GetExtraData(), moved_to_target);
 			targetItem->SetExtraData(new_extra_data);
@@ -199,20 +190,39 @@ private func MoveObjects(object p_source, object p_target, object menuItem, int 
 			p_target.Menu->AddItem(moved_to_target[0],GetLength(moved_to_target),moved_to_target);
 		}
 	}
-	// update source menu
-	if (items_removed_from_source > 0)
+}
+
+private func UpdateAfterTakenObjects(object p_source, object menuItem)
+{
+	var objects = menuItem->GetExtraData();
+	// update menu item in source menu: remove all objects in extradata which are not in
+	// container anymore
+	var i;
+	for (i=0; i<GetLength(objects); ++i)
 	{
-		// not all items in the menu item were transferred: only update menu item
-		if(items_removed_from_source < GetLength(objects))
-		{
-			menuItem->SetSymbol(newobjects[0]);
-			menuItem->SetCount(GetLength(newobjects));
-			menuItem->SetExtraData(newobjects);
-		// otherwise, delete menu item from containing menu
-		} else {
-			p_source.Menu->RemoveItem(menuItem);
+		if(obj->Contained() != p_source.Object) {
+			objects[i] = nil;
 		}
 	}
+	// removed all? -> remove menu item
+	if (i == GetLength(objects)) {
+		p_source.Menu->RemoveItem(menuItem);
+	} else {
+		// otherwise, update
+		
+		// repair "holes"
+		var remaining_objects = RemoveHoles(object);
+		
+		menuItem->SetExtraData(remaining_objects);
+		menuItem->SetCount(GetLength(remaining_objects));
+		menuItem->SetSymbol(remaining_objects[0]);
+	}
+}
+
+private func MoveObjects(object p_source, object p_target, object menuItem, int amount)
+{
+	PutObjects(p_target, menuItem, amount);
+	UpdateAfterTakenObjects(p_source, menuItem);
 }
 
 /* Interface to menu item as commander_object */
@@ -227,6 +237,7 @@ func OnItemSelection(object menu, object item)
 
 	var amount = 1;
 	MoveObjects(p_source_menu, p_target_menu, item, amount);
+	return true;
 }
 
 func OnItemSelectionAlt(object menu, object item)
@@ -254,4 +265,27 @@ private func FindMenuPos(object menu)
 		if (circ_menus[i].Menu == menu)
 			return i;
 	return -1;
+}
+
+func OnItemDropped(object menu, object dropped, object on_item)
+{
+	var index = FindMenuPos(menu);
+	if(index < 0) return false;
+	
+	var p_target_menu = circ_menus[index];
+
+	var amount = 1;
+	PutObjects(p_target_menu, dropped, amount);
+	return true;
+}
+
+func OnItemDragDone(object menu, object dragged, object on_item)
+{
+	var index = FindMenuPos(menu);
+	if(index < 0) return false;
+	
+	var p_source_menu = circ_menus[index];
+
+	UpdateAfterTakenObjects(p_source_menu, dragged);
+	return true;
 }
