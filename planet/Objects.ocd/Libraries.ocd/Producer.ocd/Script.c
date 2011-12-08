@@ -38,6 +38,9 @@ protected func Initialize()
 
 /*-- Player interface --*/
 
+// All producers are accessible. 
+public func IsContainer() { return true; }
+
 public func IsInteractable() { return GetCon() >= 100; }
 
 public func GetInteractionMetaInfo(object clonk)
@@ -155,9 +158,20 @@ public func RemoveFromQueue(int pos)
 	return;
 }
 
-public func ClearQueue()
+/** Clears the complete production queue.
+	@param abort determines whether to abort the current production process.
+	@return \c nil.
+*/
+public func ClearQueue(bool abort)
 {
-	// TODO: Implement
+	if (abort)
+	{
+		queue = [];
+		return;
+	}
+	//
+	
+	
 	return;
 }
 
@@ -236,8 +250,10 @@ private func Produce(id product)
 
 	// Everything available? Start production.
 	// Remove needed components, fuel and liquid.
+	// Power will be substracted during the production process.
 	CheckComponents(product, true);
 	CheckFuel(product, true);
+	CheckLiquids(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -442,10 +458,36 @@ protected func RejectCollect(id item, object obj)
 
 protected func RejectEntrance(object obj)
 {
-	// Check if item is either a raw material needed or an item that can be produced.
-	if (IsProduct(obj->GetID()))
+	var obj_id = obj->GetID();
+	// Products itself may be collected.
+	if (IsProduct(obj_id))
 		return false;
-	if (NeedsRawMaterial(obj->GetID()))
-		return false;
+		
+	// Components of products may be collected.
+	var index = 0, product;
+	while (product = GetDefinition(index))
+	{
+		var i = 0, comp_id;
+		while (comp_id = GetComponent(nil, i, nil, product))
+		{
+			if (comp_id == obj_id)
+				return false;
+			i++;
+		}
+		index++;
+	}
+	
+	// Fuel for products may be collected.
+	if (obj->~IsFuel())
+	{
+		index = 0;
+		while (product = GetDefinition(index))
+		{
+			if (product->~FuelNeed() > 0)
+				return false;
+			index++;
+		}
+	}
+	
 	return true;
 }

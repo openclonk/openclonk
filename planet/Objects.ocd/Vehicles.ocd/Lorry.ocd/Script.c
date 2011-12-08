@@ -14,6 +14,8 @@ public func IsLorry() { return true; }
 
 public func IsToolProduct() { return true; }
 
+public func IsContainer() { return true; }
+
 local drive_anim;
 local tremble_anim;
 

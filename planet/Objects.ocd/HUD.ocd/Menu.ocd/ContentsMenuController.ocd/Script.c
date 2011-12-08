@@ -15,10 +15,11 @@ global func CreateContentsMenus()
 
 	var controller = CreateObject(GUI_Contents_Controller);
 	controller->SetMenuObject(this);
+	this->SetMenu(controller);
 	
 	var objs = FindObjects(	Find_Or(
 								Find_Not(Find_Exclude(this)),
-								Find_And(Find_AtPoint(0,0), Find_NoContainer(), Find_OCF(OCF_Container))),
+								Find_And(Find_AtPoint(0,0), Find_NoContainer(), Find_Func("IsContainer"))),
 							Sort_Func("SortInventoryObjs"));
 
 	var i = 0;
@@ -57,18 +58,21 @@ func Close() {
 	RemoveObject();
 }
 
-func Destruction() {
+func Destruction() 
+{
 	// remove all menu objects
 	for(var prop in circ_menus)
 		prop.Menu->RemoveObject();
 }
 
-func Show() {
+func Show() 
+{
 	for(var prop in circ_menus)
 		prop.Menu->Show();
 }
 
-func Hide() {
+func Hide() 
+{
 	for(var prop in circ_menus)
 		prop.Menu->Hide();
 }

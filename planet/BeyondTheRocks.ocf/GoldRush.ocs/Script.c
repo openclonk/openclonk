@@ -44,6 +44,9 @@ protected func Initialize()
 	var wind = CreateConstruction(WindGenerator, 480, FindHeight(480), NO_OWNER, 100, true);
 	var line = CreateObject(PowerLine);
 	line->SetActionTargets(wind, workshop);
+	var sawmill = CreateConstruction(Sawmill, 520, FindHeight(520), NO_OWNER, 100, true);
+	var line = CreateObject(PowerLine);
+	line->SetActionTargets(wind, sawmill);
 	
 	return;
 }

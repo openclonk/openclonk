@@ -48,7 +48,6 @@ public func SetCommander(object commander)
 public func SetMenuObject(object menuobject)
 {
 	menu_object = menuobject;
-	menuobject->SetMenu(this);
 	return;
 }
 

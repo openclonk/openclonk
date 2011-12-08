@@ -224,6 +224,7 @@ func Close()
 
 func Destruction()
 {
+	
 	for(var menu_icon in menu_icons)
 		menu_icon->RemoveObject();
 }
