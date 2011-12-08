@@ -49,23 +49,26 @@ public func MouseSelectionAlt(int plr)
 // Called to determine which object is dragged.
 public func MouseDrag(int plr)
 {
-	if (plr == GetOwner())
-		return this;
 	// The object may not be dragged.
-	return;
+	if (plr != GetOwner()) return;
+	if (!item_menu) return;
+	if (!item_menu->IsDragDropMenu()) return;
+	
+	return this;
 }
 
 // Called when an object is dragged onto this one.
 public func MouseDrop(int plr, obj)
 {
 	// Check if the owners match.
-	if (plr != GetOwner())
-		return false;
+	if (plr != GetOwner()) return false;
 		
 	// Check if this belongs to a menu.
-	if (!item_menu)
-		return false;	
-
+	if (!item_menu) return false;	
+	
+	// Check if containing menu allows drag&drop
+	if (!item_menu->IsDragDropMenu()) return;
+	
 	// Forward command to menu.
 	item_menu->OnItemDropped(obj, this);
 
