@@ -152,7 +152,7 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 	}
 }
 
-private func PutObjects(object p_target, object menuItem, int amount)
+private func PutObjects(object p_source, object p_target, object menuItem, int amount)
 {
 	var objects = menuItem->GetExtraData();
 	amount = BoundBy(amount, 0, GetLength(objects));
@@ -204,6 +204,7 @@ private func UpdateAfterTakenObjects(object p_source, object menuItem)
 	var i;
 	for (i=0; i<GetLength(objects); ++i)
 	{
+		var obj = objects[i];
 		if(obj->Contained() != p_source.Object) {
 			objects[i] = nil;
 		}
@@ -215,7 +216,7 @@ private func UpdateAfterTakenObjects(object p_source, object menuItem)
 		// otherwise, update
 		
 		// repair "holes"
-		var remaining_objects = RemoveHoles(object);
+		var remaining_objects = RemoveHoles(objects);
 		
 		menuItem->SetExtraData(remaining_objects);
 		menuItem->SetCount(GetLength(remaining_objects));
@@ -225,7 +226,7 @@ private func UpdateAfterTakenObjects(object p_source, object menuItem)
 
 private func MoveObjects(object p_source, object p_target, object menuItem, int amount)
 {
-	PutObjects(p_target, menuItem, amount);
+	PutObjects(p_source, p_target, menuItem, amount);
 	UpdateAfterTakenObjects(p_source, menuItem);
 }
 
@@ -276,10 +277,14 @@ func OnItemDropped(object menu, object dropped, object on_item)
 	var index = FindMenuPos(menu);
 	if(index < 0) return false;
 	
+	var index2 = FindMenuPos(dropped->GetMenu());
+	if(index2 < 0) return false;
+	
+	var p_source_menu = circ_menus[index2];
 	var p_target_menu = circ_menus[index];
 
 	var amount = 1;
-	PutObjects(p_target_menu, dropped, amount);
+	PutObjects(p_source_menu, p_target_menu, dropped, amount);
 	return true;
 }
 
