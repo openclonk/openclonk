@@ -99,7 +99,7 @@ private func PutContentsIntoMenu(object menu, object obj)
 		var amount = GetLength(stack);
 		var first = stack[0];
 		var extra = stack;
-		menu->AddItem(first, amount, extra)
+		menu->AddItem(first, amount, extra);
 	}
 }
 
@@ -248,37 +248,4 @@ private func FindMenuPos(object menu)
 		if (circ_menus[i].Menu == menu)
 			return i;
 	return -1;
-}
-
-/* Global Array helper functions */
-
-global func Concatenate(array first, array second)
-{
-	var result = CreateArray(GetLength(first)+GetLength(second));
-	var i = 0;
-	for (var something in first)
-		result[i++] = something;
-	for (var something in second)
-		result[i++] = something;
-	return result;
-}
-
-global func Subtract(array subject, array subtract)
-{
-	var diff = [];
-	for (var obj in subject)
-	{
-		var removed = false;
-		for (var rem_obj in subtract)
-		{
-			if (rem_obj == obj)
-			{
-				removed = true;
-				break;
-			}
-		}
-		if(!removed)
-			diff[GetLength(diff)] = obj;
-	}
-	return diff;
 }
