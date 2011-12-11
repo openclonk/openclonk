@@ -123,7 +123,7 @@ global func GetStackedContents()
 		var has_stacked = false;
 		for(var stackcontent in stacked)
 		{
-			if (!(content->DoesStackWith(stackcontent[0]))) continue;
+			if (!CanStackObjects(content,stackcontent[0])) continue;
 			stackcontent[GetLength(stackcontent)] = content;
 			has_stacked = true;
 			break;
@@ -136,23 +136,25 @@ global func GetStackedContents()
 	return stacked;
 }
 
-global func DoesStackWith(object other)
+global func CanStackObjects(object first, object second)
 {
-	if(this->GetID() != other->GetID()) return false;
-	if(this->~RejectStack(other)) return false;
+	if(first->GetID() != second->GetID()) return false;
+	if(first->~RejectStack(second)) return false;
 	return true;
 }
 
 private func CanStackObjIntoMenuItem(object menu, object obj) {
 	for(var item in menu->GetItems()) {
+		if(!item) continue;
+		
 		var stack = item->GetExtraData();
-		if(obj->DoesStackWith(stack[0])) {
+		if(CanStackObjects(obj,stack[0])) {
 			return item;
 		}
 	}
 }
 
-private func PutObjects(object p_source, object p_target, object menuItem, int amount)
+private func PutObjects(proplist p_source, proplist p_target, object menuItem, int amount)
 {
 	var objects = menuItem->GetExtraData();
 	amount = BoundBy(amount, 0, GetLength(objects));
@@ -165,15 +167,18 @@ private func PutObjects(object p_source, object p_target, object menuItem, int a
 	{
 		var obj = objects[i];
 		obj->Exit();
-		if (!(obj->Collect(p_target.Object)))
+		if (p_target)
 		{
-			// putting into other container failed. Put back.
-			if (!(obj->Collect(p_source.Object)))
+			if (!(p_target.Object->Collect(obj)))
 			{
-				// (if it fails too, it just stays outside)
+				// putting into other container failed. Put back.
+				if (!(p_source.Object->Collect(obj)))
+				{
+					// (if it fails too, it just stays outside)
+				}
+			} else {
+				moved_to_target[GetLength(moved_to_target)] = obj;
 			}
-		} else {
-			moved_to_target[GetLength(moved_to_target)] = obj;
 		}
 	}
 	
@@ -191,7 +196,12 @@ private func PutObjects(object p_source, object p_target, object menuItem, int a
 			targetItem->SetCount(GetLength(new_extra_data));
 		// otherwise, add a new menu item to containing menu
 		} else {
-			p_target.Menu->AddItem(moved_to_target[0],GetLength(moved_to_target),moved_to_target);
+			var item = CreateObject(GUI_MenuItem);
+			item->SetSymbol(moved_to_target[0]);
+			item->SetCount(GetLength(moved_to_target));
+			item->SetExtraData(moved_to_target);
+			if (!p_target.Menu->AddItem(item))
+				item->RemoveObject();
 		}
 	}
 }
@@ -201,25 +211,29 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 	var objects = menuItem->GetExtraData();
 	// update menu item in source menu: remove all objects in extradata which are not in
 	// container anymore
+	var c = 0;
 	var i;
 	for (i=0; i<GetLength(objects); ++i)
 	{
 		var obj = objects[i];
 		if(obj->Contained() != p_source.Object) {
 			objects[i] = nil;
+			c++;
 		}
 	}
+	
 	// removed all? -> remove menu item
-	if (i == GetLength(objects)) 
+	if (c == GetLength(objects)) 
 	{
 		p_source.Menu->RemoveItem(menuItem);
-	} 
-	else
+	}
+	else if(c > 0)
 	{
 		// otherwise, update
 		
 		// repair "holes"
 		var remaining_objects = RemoveHoles(objects);
+		Log("%v",remaining_objects);
 		
 		menuItem->SetExtraData(remaining_objects);
 		menuItem->SetCount(GetLength(remaining_objects));
@@ -227,7 +241,7 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 	}
 }
 
-private func MoveObjects(object p_source, object p_target, object menuItem, int amount)
+private func MoveObjects(proplist p_source, proplist p_target, object menuItem, int amount)
 {
 	PutObjects(p_source, p_target, menuItem, amount);
 	UpdateAfterTakenObjects(p_source, menuItem);
