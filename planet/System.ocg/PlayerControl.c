@@ -66,7 +66,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 				}
 				else if (release == true)
 				{
-					cursor->GetMenu()->Select(dx,dy,ctrl == CON_GUIClick2);
+					cursor->GetMenu()->~Select(dx,dy,ctrl == CON_GUIClick2);
 					return false;
 				}
 			}		
@@ -468,9 +468,10 @@ global func ObjectComLetGo(int vx, int vy)
 
 /* Drag & Drop */
 
+// Engine callback on drag&drop: 
 global func MouseDragDrop(int plr, object source, object target)
 {
-	//Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
+	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
 	var src_drag = source->~MouseDrag(plr);
 	if (!src_drag) return false;
 	if (target)

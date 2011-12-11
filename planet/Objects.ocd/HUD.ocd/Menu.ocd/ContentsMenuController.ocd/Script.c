@@ -103,7 +103,7 @@ private func PutContentsIntoMenu(object menu, object obj)
 		var item = CreateObject(GUI_MenuItem);
 		item->SetSymbol(stack[0]);
 		item->SetCount(GetLength(stack));
-		item->SetExtraData(stack[1]);
+		item->SetExtraData(stack);
 		if (!menu->AddItem(item))
 			item->RemoveObject();
 	}
@@ -196,7 +196,7 @@ private func PutObjects(object p_source, object p_target, object menuItem, int a
 	}
 }
 
-private func UpdateAfterTakenObjects(object p_source, object menuItem)
+private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 {
 	var objects = menuItem->GetExtraData();
 	// update menu item in source menu: remove all objects in extradata which are not in
@@ -210,9 +210,12 @@ private func UpdateAfterTakenObjects(object p_source, object menuItem)
 		}
 	}
 	// removed all? -> remove menu item
-	if (i == GetLength(objects)) {
+	if (i == GetLength(objects)) 
+	{
 		p_source.Menu->RemoveItem(menuItem);
-	} else {
+	} 
+	else
+	{
 		// otherwise, update
 		
 		// repair "holes"

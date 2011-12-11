@@ -16,10 +16,13 @@ local item_data; // Extra data, unused currently.
 
 protected func Initialize()
 {
-	// visibility
+	// Visibility
 	this.Visibility = VIS_Owner;
-	// parallaxity
+	// Parallaxity
 	this.Parallaxity = [0, 0];
+	// Mouse drag image
+	this.MouseDragImage = nil;
+	return;
 }
 
 /* Callbacks from the engine on mouse selection and drag & drop */
@@ -49,11 +52,16 @@ public func MouseSelectionAlt(int plr)
 // Called to determine which object is dragged.
 public func MouseDrag(int plr)
 {
-	// The object may not be dragged.
+	//Log("%s->MouseDrag(%d) for owner: %d, menu: %s, dd: %v", GetName(), plr, GetOwner(), item_menu->GetName(), item_menu->IsDragDropMenu());
+	// Check if the owners match.
 	if (plr != GetOwner()) return;
-	if (!item_menu) return;
-	if (!item_menu->IsDragDropMenu()) return;
+		
+	// Check if this belongs to a menu.
+	if (!item_menu) return;	
 	
+	// Check if containing menu allows drag&drop
+	if (!item_menu->IsDragDropMenu()) return;
+
 	return this;
 }
 
@@ -84,6 +92,12 @@ public func MouseDragDone(self, object target)
 }
 
 /* Menu item properties */
+
+public func setMenu(object menu)
+{
+	item_menu = menu;
+	return;
+}
 
 public func getMenu()
 {
@@ -132,6 +146,9 @@ public func GetExtraData() { return item_data; }
 // Updates the graphics according to size, object and count.
 public func Update()
 {
+	// Set mouse drag image.
+	this.MouseDragImage = item_object;
+	
 	// Set item size.
 	SetObjDrawTransform(item_size, 0, 0, 0, item_size, 0, 0);	
 	

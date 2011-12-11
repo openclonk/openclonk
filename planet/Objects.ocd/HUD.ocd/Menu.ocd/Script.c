@@ -25,6 +25,8 @@ protected func Construction()
 	menu_items = [];
 	menu_shown = false;
 	dragdrop = true;
+	// Visibility
+	this.Visibility = VIS_None;
 	// Parallaxity
 	this.Parallaxity = [0, 0];
 	return;
@@ -32,9 +34,9 @@ protected func Construction()
 
 public func IsDragDropMenu() { return dragdrop; }
 
-public func SetDragDropMenu(bool dragdrop)
+public func SetDragDropMenu(bool is_dragdrop)
 {
-	this.dragdrop = dragdrop;
+	dragdrop = is_dragdrop;
 }
 
 // Sets the commander of this menu.
@@ -54,18 +56,17 @@ public func SetMenuObject(object menuobject)
 // Not used currently
 public func SetSymbol(symbol)
 {
-	this.Visibility = VIS_Owner;
 	if(!symbol)
 	{
-		SetGraphics(nil, nil, 0);
 		SetGraphics(nil, nil, 1);
 	}
 	else
 	{
 		SetGraphics(nil, symbol, 1, GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(2000, 0, 0, 0, 2000, 0, 1);
-		SetObjDrawTransform(2000, 0, 0, 0, 2000, 0, 0);
+		SetObjDrawTransform(800, 0, 0, 0, 800, 0, 1);
+		SetClrModulation(RGBa(96, 96, 96, 192), 1);
 	}
+	return;
 }
 
 /** Adds an item to this menu.
@@ -94,6 +95,8 @@ public func AddItem(object item, int pos)
 	
 	// Create new menu item.
 	menu_items[pos] = item;
+	item->setMenu(this);
+	item->SetOwner(GetOwner());
 	// Set item visibility.
 	item.Visibility = VIS_None;
 	if (menu_shown)
@@ -293,6 +296,7 @@ public func OnItemDropped(object drop_item, object on_item)
 	if (!menu_commander) return;
 	
 	// Forward to commander.
+	// Log("Item dropped %s", drop_item->GetName());
 	return menu_commander->~OnItemDropped(this, drop_item, on_item);
 }
 
@@ -301,6 +305,7 @@ public func OnItemDragDone(object drag_item, object on_item)
 {
 	if (!menu_commander) return;
 	
+	// Log("Item dragged %s", drag_item->GetName());
 	// Forward to commander.
 	return menu_commander->~OnItemDragDone(this, drag_item, on_item);
 }
