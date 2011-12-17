@@ -1,35 +1,36 @@
 /**
-	Circular menu controller for contents
+	Control object for content menus.
 	
-	Authors: Newton
+	@author Newton, Maikel
 */
 
 local circ_menus;
 local menu_object;
 
+/** Creates a content menu for the calling object. This is supposed to be a crew member, 
+	controlled by a player.
+	@return a pointer to the created menu, or \c nil if failed.
+*/
 global func CreateContentsMenus()
 {
+	// Safety checks.
 	if (!this) return;
-	if (!(this->GetOCF() & OCF_CrewMember))	return;
+	if (!(GetOCF() & OCF_CrewMember)) return;
 	if (!(this->~HasMenuControl())) return;
 
+	// Create the menu controller.
 	var controller = CreateObject(GUI_Contents_Controller);
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	
-	var objs = FindObjects(	Find_Or(
-								Find_Not(Find_Exclude(this)),
-								Find_And(Find_AtPoint(0,0), Find_NoContainer(), Find_Func("IsContainer"))),
-							Sort_Func("SortInventoryObjs"));
-
-	var i = 0;
-	// for all objects with accessible inventory...
-	for(var obj in objs)
-	{
-		// add menu
-		controller->AddMenuFor(obj,i++,GetLength(objs));
-	}
+	// Add content menus for all containers at the position of the caller.
+	var containers = FindObjects(Find_Or(Find_Not(Find_Exclude(this)), Find_And(Find_AtPoint(), Find_NoContainer(), Find_Func("IsContainer"))), Sort_Func("SortInventoryObjs"));
+	for(var index = 0; index  < GetLength(containers); index++)
+		controller->AddContentMenu(containers[index], index, GetLength(containers));
+	
+	// Show and return content menu.
 	controller->Show();
+	return controller;
 }
 
 global func SortInventoryObjs()
@@ -44,7 +45,7 @@ global func SortInventoryObjs()
 
 func SetMenuObject(object menu_object)
 {
-	this.menu_object = menu_object;
+	menu_object = menu_object;
 }
 
 func Construction()
@@ -77,20 +78,41 @@ func Hide()
 		prop.Menu->Hide();
 }
 
-func AddMenuFor(object obj, int pos, int length)
+func AddContentMenu(object container, int pos, int length)
 {
 	var menu = CreateObject(GUI_Menu, 0, 0, GetOwner());
 
-	var r = 350;
-	
-	menu->SetPosition(r+(1280-2*r)*pos/length , r+100);
-	menu->SetSymbol(obj);
+	menu->SetSymbol(container);
 	menu->SetMenuObject(menu_object);
 	menu->SetCommander(this);
 	menu->SetDragDropMenu(true);
 
-	PutContentsIntoMenu(menu, obj);
-	circ_menus[GetLength(circ_menus)] = {Object = obj, Menu = menu};
+	PutContentsIntoMenu(menu, container);
+	circ_menus[GetLength(circ_menus)] = {Object = container, Menu = menu};
+	
+	UpdateContentMenus();	
+	return;
+}
+
+// Draws the contents menus to the right positions.
+private func UpdateContentMenus()
+{
+	var menu_count = GetLength(circ_menus);
+	for (var index = 0; index < menu_count; index++)
+	{
+		var menu = circ_menus[index].Menu;
+		var r = 160;
+		var d = 2*r/3;
+		var dx = Sqrt(r**2 - d**2);
+		
+		// Determine x-position.
+		var x = 800 + dx * (2*index - menu_count + 1);
+		// Alternate y-position.
+		var y = 320 + (-1)**index * d;
+		// TODO: reduce size of menus to fit more into screen.
+		menu->SetPosition(x, y);
+	}
+	return;
 }
 
 private func PutContentsIntoMenu(object menu, object obj)
@@ -103,7 +125,7 @@ private func PutContentsIntoMenu(object menu, object obj)
 		var item = CreateObject(GUI_MenuItem);
 		item->SetSymbol(stack[0]);
 		item->SetCount(GetLength(stack));
-		item->SetExtraData(stack);
+		item->SetData(stack);
 		if (!menu->AddItem(item))
 			item->RemoveObject();
 	}
@@ -192,14 +214,14 @@ private func PutObjects(proplist p_source, proplist p_target, object menuItem, i
 		if (targetItem)
 		{
 			var new_extra_data = Concatenate(targetItem->GetExtraData(), moved_to_target);
-			targetItem->SetExtraData(new_extra_data);
+			targetItem->SetData(new_extra_data);
 			targetItem->SetCount(GetLength(new_extra_data));
 		// otherwise, add a new menu item to containing menu
 		} else {
 			var item = CreateObject(GUI_MenuItem);
 			item->SetSymbol(moved_to_target[0]);
 			item->SetCount(GetLength(moved_to_target));
-			item->SetExtraData(moved_to_target);
+			item->SetData(moved_to_target);
 			if (!p_target.Menu->AddItem(item))
 				item->RemoveObject();
 		}
@@ -235,7 +257,7 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 		var remaining_objects = RemoveHoles(objects);
 		Log("%v",remaining_objects);
 		
-		menuItem->SetExtraData(remaining_objects);
+		menuItem->SetData(remaining_objects);
 		menuItem->SetCount(GetLength(remaining_objects));
 		menuItem->SetSymbol(remaining_objects[0]);
 	}
@@ -249,36 +271,50 @@ private func MoveObjects(proplist p_source, proplist p_target, object menuItem, 
 
 /* Interface to menu item as commander_object */
 
-func OnItemSelection(object menu, object item)
+public func OnItemSelection(object menu, object item)
 {
+	// Transfer item to previous menu.
 	var index = FindMenuPos(menu);
 	if(index < 0) return;
 	
+	// Find this and previous menu.
 	var p_source_menu = circ_menus[index];
-	var p_target_menu = DetermineClickTarget(index);
+	var p_target_menu = GetNextMenu(index, false);
 
 	var amount = 1;
 	MoveObjects(p_source_menu, p_target_menu, item, amount);
 	return true;
 }
 
-func OnItemSelectionAlt(object menu, object item)
+public func OnItemSelectionAlt(object menu, object item)
 {
-	// nothing
+	// Transfer item to next menu.
+	var index = FindMenuPos(menu);
+	if(index < 0) return;
+	
+	// Find this and next menu.
+	var p_source_menu = circ_menus[index];
+	var p_target_menu = GetNextMenu(index, true);
+
+	var amount = 1;
+	MoveObjects(p_source_menu, p_target_menu, item, amount);
+	return true;
 }
 
-private func DetermineClickTarget(int index)
+private func GetNextMenu(int index, bool alt)
 {
-	var last = GetLength(circ_menus)-1;
-	// only one menu: to nothing
-	if (last == 0)
+	var last = GetLength(circ_menus) - 1;
+	// Only one menu: to nothing
+	if (last <= 0)
 		return nil;
-	// last: click to second-last
-	else if (index == last)
-		return circ_menus[last-1];
-	// not last: click to last
+	// Determine next menu.
+	if (alt)
+		index++;
 	else
-		return circ_menus[last];
+		index--;
+	if (index > last)
+		index = 0;
+	return circ_menus[index];	
 }
 
 private func FindMenuPos(object menu)

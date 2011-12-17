@@ -12,13 +12,6 @@ protected func Initialize()
 	var goal = CreateObject(Goal_ResourceExtraction);
 	goal->SetResource("Gold");
 	
-	// Create a lorry with necessary equipment to start a settlement.
-	var lorry = CreateObject(Lorry, 100, 100);
-	lorry->CreateContents(Wood, 6);
-	lorry->CreateContents(Metal, 4);
-	lorry->CreateContents(Dynamite, 3);
-	lorry->CreateContents(Loam, 3);
-	
 	// Place some trees.
 	for (var i = 0; i < 12 + Random(4); i++)
 		PlaceVegetation(Tree_Coniferous, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
@@ -48,6 +41,13 @@ protected func Initialize()
 	var line = CreateObject(PowerLine);
 	line->SetActionTargets(wind, sawmill);
 	
+	// Create a lorry with necessary equipment to start a settlement.
+	var lorry = CreateObject(Lorry, 300, FindHeight(300));
+	lorry->CreateContents(Wood, 6);
+	lorry->CreateContents(Metal, 4);
+	lorry->CreateContents(Dynamite, 3);
+	lorry->CreateContents(Loam, 3);
+	
 	return;
 }
 
@@ -67,7 +67,7 @@ protected func InitializePlayer(int plr)
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))
 	{
-		var x = Random(LandscapeWidth());
+		var x = 275 + Random(50);
 		crew->SetPosition(x , FindHeight(x) - 20);
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can mine.

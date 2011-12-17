@@ -95,7 +95,7 @@ public func AddItem(object item, int pos)
 	
 	// Create new menu item.
 	menu_items[pos] = item;
-	item->setMenu(this);
+	item->SetMenu(this);
 	item->SetOwner(GetOwner());
 	// Set item visibility.
 	item.Visibility = VIS_None;
@@ -144,10 +144,6 @@ private func GetItemPosition(int n, int total)
 	if (n > total)
 		return;
 	
-	// Trivial case.
-	if (n == 1 && total == 1)
-		return [0, 0];
-
 	// Packing 7 or less circles.
 	if (total <= 7)
 	{
@@ -187,8 +183,6 @@ private func GetItemPosition(int n, int total)
 // Gives the radius for an item.
 private func GetItemRadius(int total)
 {
-	if (total == 1)
-		return MENU_Radius;
 	if (total <= 7)
 		return MENU_Radius / 3;
 	if (total <= 19)
@@ -225,8 +219,8 @@ public func UpdateMenu()
 		var item = menu_items[i];
 		if (item)
 		{
+			item->SetSize(200 * GetItemRadius(item_count) / 96);
 			item->SetPosition(x + pos[0], y + pos[1]);
-			item->SetSize(2000*GetItemRadius(item_count));
 		}
 	}
 	return;

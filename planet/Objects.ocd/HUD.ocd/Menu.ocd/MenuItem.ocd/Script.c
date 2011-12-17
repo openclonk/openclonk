@@ -11,7 +11,6 @@
 local item_menu; // The menu object controlling this menu item.
 local item_object; // The object/symbol of this menu item.
 local item_count; // The count of this menu item.
-local item_size; // The item_size of the menu item.
 local item_data; // Extra data, unused currently.
 
 protected func Initialize()
@@ -93,13 +92,13 @@ public func MouseDragDone(self, object target)
 
 /* Menu item properties */
 
-public func setMenu(object menu)
+public func SetMenu(object menu)
 {
 	item_menu = menu;
 	return;
 }
 
-public func getMenu()
+public func GetMenu()
 {
 	return item_menu;
 }
@@ -116,16 +115,17 @@ public func GetSymbol()
 	return item_object;
 }
 
-// Sets the menu item size in px * 1000.
+// Sets the menu item size.
 public func SetSize(int size) 
 {
-	item_size = size / 96;
+	// The menu item size is handled over con since drag&drop needs to scale the same.
+	SetCon(size);
 	Update();
 	return;
 }
 
-public func GetSize() { return item_size; }
-public func ResetSize() { SetSize(64000); }
+public func GetSize() { return GetCon(); }
+public func ResetSize() { SetSize(100); }
 
 public func SetCount(int count)
 {
@@ -136,9 +136,9 @@ public func SetCount(int count)
 
 public func GetCount() { return item_count; }
 
-public func SetExtraData(extradata)
+public func SetData(data)
 {
-	item_data = extradata;
+	item_data = data;
 }
 
 public func GetExtraData() { return item_data; }
@@ -150,7 +150,7 @@ public func Update()
 	this.MouseDragImage = item_object;
 	
 	// Set item size.
-	SetObjDrawTransform(item_size, 0, 0, 0, item_size, 0, 0);	
+	//SetObjDrawTransform(item_size, 0, 0, 0, item_size, 0, 0);	
 	
 	// Set item graphics.
 	if (!item_object)
@@ -164,16 +164,16 @@ public func Update()
 		if (GetType(item_object) == C4V_C4Object)
 		{
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, 0, 0, item_object);
-			SetObjDrawTransform(item_size, 0, 0, 0, item_size, 0, 1);
+			//SetObjDrawTransform(1000, 0, 0, 0, 1000, 0, 1);
 			if (item_object->~HasExtraSlot())
 			{
 				SetGraphics(nil, GUI_ExtraSlot, 2, GFXOV_MODE_Base);
-				SetObjDrawTransform(item_size, 0, 16*item_size, 0, item_size, 16*item_size, 2);
+				SetObjDrawTransform(1000, 0, 16000, 0, 1000, 16000, 2);
 				var content = item_object->Contents(0);
 				if (content)
 				{
 					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, 0, 0, content);
-					SetObjDrawTransform(item_size/3, 0, 16*item_size, 0, item_size/3, 16*item_size, 3);
+					SetObjDrawTransform(1000/3, 0, 16000, 0, 1000/3, 16000, 3);
 				}
 				else
 					SetGraphics(nil, nil, 3);
@@ -191,16 +191,13 @@ public func Update()
 	}
 	
 	// Set item count.
-	if (item_count == 1) 
-		return;
-		
 	var one = item_count % 10;
 	var ten = (item_count / 10) % 10;
 	var hun = (item_count / 100) % 10;
-	var s = (200 * item_size) / 1000;
-	var yoffs = (10000 * item_size) / 1000;
-	var xoffs = (13000 * item_size) / 1000;
-	var spacing = (5000 * item_size) / 1000;
+	var s = 200;
+	var yoffs = 10000;
+	var xoffs = 13000;
+	var spacing = 5000;
 	SetGraphics(Format("10"), Icon_SlimNumber, 9, GFXOV_MODE_IngamePicture); //10 == "x"
 
 	SetGraphics(Format("%d", one), Icon_SlimNumber, 12, GFXOV_MODE_IngamePicture);

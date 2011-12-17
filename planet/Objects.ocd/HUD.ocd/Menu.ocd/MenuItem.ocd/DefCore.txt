@@ -6,3 +6,4 @@ Width=96
 Height=96
 Offset=-48,-48
 StretchGrowth=1
+Oversize=1
