@@ -1359,6 +1359,8 @@ void C4AulParseState::Parse_Script()
 			}
 			case ATT_IDTF:
 			{
+				// need a keyword here to avoid parsing random function contents
+				// after a syntax error in a function
 				found_code = true;
 				// check for object-local variable definition (local)
 				if (SEqual(Idtf, C4AUL_LocalNamed))
@@ -1471,20 +1473,21 @@ void C4AulParseState::Parse_FuncHead()
 			UnexpectedToken("parameter or closing bracket");
 		}
 		// type identifier?
-		if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_Def; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeDef)) { Fn->ParType[cpar] = C4V_Def; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeEffect)) { Fn->ParType[cpar] = C4V_Effect; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_Object; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(); }
-		else if (SEqual(Idtf, C4AUL_TypeFunction)) { Fn->ParType[cpar] = C4V_Function; Shift(); }
+		C4V_Type t = C4V_Any;
+		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeBool)) { t = C4V_Bool; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { t = C4V_Def; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeDef)) { t = C4V_Def; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeEffect)) { t = C4V_Effect; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeC4Object)) { t = C4V_Object; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypePropList)) { t = C4V_PropList; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeString)) { t = C4V_String; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeArray)) { t = C4V_Array; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFunction)) { t = C4V_Function; Shift(); }
+		Fn->ParType[cpar] = t;
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
 		{
-			Fn->ParNamed.AddName(Idtf);
-			++Fn->ParCount;
+			Fn->AddPar(Idtf);
 			if (Config.Developer.ExtraWarnings)
 				Warn(FormatString("'%s' used as parameter name", Idtf).getData());
 		}
@@ -1494,8 +1497,7 @@ void C4AulParseState::Parse_FuncHead()
 		}
 		else
 		{
-			Fn->ParNamed.AddName(Idtf);
-			++Fn->ParCount;
+			Fn->AddPar(Idtf);
 			Shift();
 		}
 		// end of params?
@@ -1523,55 +1525,32 @@ void C4AulParseState::Parse_Function()
 	if (Fn->VarNamed.iSize)
 		AddBCC(AB_STACK, Fn->VarNamed.iSize);
 	iStack = 0;
-	Done = false;
-	while (!Done) switch (TokenType)
+	while (TokenType != ATT_BLCLOSE)
 	{
-			// a block end?
-		case ATT_BLCLOSE:
-		{
-			// all ok, insert a return
-			C4AulBCC * CPos = a->GetLastCode();
-			if (!CPos || CPos->bccType != AB_RETURN || fJump)
-			{
-				if (C4AulDebug::GetDebugger())
-					AddBCC(AB_DEBUG);
-				AddBCC(AB_NIL);
-				AddBCC(AB_RETURN);
-			}
-			// and break
-			Done = true;
-			// Do not blame this function for script errors between functions
-			Fn = 0;
-			return;
-		}
-		case ATT_EOF:
-		{
-			Done = true;
-			return;
-		}
-		default:
-		{
-			Parse_Statement();
-			assert(!iStack);
-		}
+		Parse_Statement();
+		assert(!iStack);
 	}
+	// return nil if the function doesn't return anything
+	C4AulBCC * CPos = a->GetLastCode();
+	if (!CPos || CPos->bccType != AB_RETURN || fJump)
+	{
+		if (C4AulDebug::GetDebugger())
+			AddBCC(AB_DEBUG);
+		AddBCC(AB_NIL);
+		AddBCC(AB_RETURN);
+	}
+	// Do not blame this function for script errors between functions
+	Fn = 0;
 }
 
 void C4AulParseState::Parse_Block()
 {
 	Match(ATT_BLOPEN);
-	// insert block in byte code
-	while (1) switch (TokenType)
-		{
-		case ATT_BLCLOSE:
-			Shift();
-			return;
-		default:
-		{
-			Parse_Statement();
-			break;
-		}
-		}
+	while (TokenType != ATT_BLCLOSE)
+	{
+		Parse_Statement();
+	}
+	Shift();
 }
 
 void C4AulParseState::Parse_Statement()

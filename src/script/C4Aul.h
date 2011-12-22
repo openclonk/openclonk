@@ -263,6 +263,7 @@ public:
 	C4ValueMapNames ParNamed; // list of named pars in this function
 	int ParCount;
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
+	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true);
