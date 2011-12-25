@@ -72,7 +72,6 @@ protected:
 	int32_t KeepCaption;
 	int32_t ScrollSpeed;
 	int32_t Drag,DragSelecting;
-	int32_t DragImagePhase;
 	bool LeftButtonDown,RightButtonDown,LeftDoubleIgnoreUp;
 	bool ButtonDownOnSelection;
 	bool ControlDown;
@@ -85,7 +84,8 @@ protected:
 	C4Object *DragObject;
 	C4ID DragID;
 	C4ObjectList Selection;
-	C4Facet DragImage;
+	C4Def* DragImageDef;
+	C4Object* DragImageObject;
 	// Target object
 	C4Object *TargetObject; // valid during Move()
 	C4Object *DownTarget;
@@ -133,7 +133,6 @@ protected:
 	void LeftDown();
 	void UpdateTargetRegion();
 	void UpdateScrolling();
-	void CreateDragImage(C4ID id, C4Object *obj, bool fPicture);
 	void UpdateCursorTarget();
 	void SendCommand(int32_t iCommand, int32_t iX=0, int32_t iY=0, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
 	int32_t UpdateObjectSelection();

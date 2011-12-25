@@ -138,8 +138,8 @@ void C4MouseControl::Default()
 	ScrollSpeed=10;
 	TargetRegion=NULL;
 	DownRegion.Default();
-	DragImage.Default();
-	DragImagePhase=0;
+	DragImageDef=NULL;
+	DragImageObject=NULL;
 	fMouseOwned = true; // default mouse owned
 	fctViewport.Default();
 }
@@ -185,7 +185,8 @@ void C4MouseControl::ClearPointers(C4Object *pObj)
 	{
 		DragObject=NULL;
 		Drag=C4MC_Drag_None;
-		DragImage.Default();
+		DragImageDef=NULL;
+		DragImageObject=NULL;
 	}
 	Selection.ClearPointers(pObj);
 }
@@ -432,8 +433,29 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				if (!IsPassive())
 					fAddMark=true;
 		// Drag image
-		if (DragImage.Surface)
+		if (DragImageObject || DragImageDef)
 		{
+			C4DefGraphics* pGfx;
+			if(DragImageObject)
+				pGfx = DragImageObject->GetGraphics();
+			else
+				pGfx = &DragImageDef->Graphics;
+
+			// Determine image boundaries
+			float ImageWdt;
+			float ImageHgt;
+			if (pGfx->Type == C4DefGraphics::TYPE_Bitmap)
+			{
+				ImageWdt = DragImageObject->Def->PictureRect.Wdt;
+				ImageHgt = DragImageObject->Def->PictureRect.Hgt;
+			}
+			else
+			{
+				// Note bounding box is in OGRE coordinate system
+				ImageWdt = pGfx->Mesh->GetBoundingBox().y2 - pGfx->Mesh->GetBoundingBox().y1;
+				ImageHgt = pGfx->Mesh->GetBoundingBox().z2 - pGfx->Mesh->GetBoundingBox().z1;
+			}
+
 			// zoom mode: Drag in GUI or Game depending on source object
 			bool fIsGameZoom = true;
 			if (Drag == C4MC_Drag_Script && DragObject && (DragObject->Category & C4D_Foreground))
@@ -450,32 +472,53 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			}
 			else
 			{
-				ZoomDraw = 64.0f / DragImage.Wdt;
+				ZoomDraw = std::min(64.0f / ImageWdt, 64.0f / ImageHgt);
 				XDraw = GuiX; YDraw = GuiY;
 			}
-			// draw in special modulation mode
-			pDraw->SetBlitMode(C4GFXBLIT_MOD2);
-			// draw DragImage in red or green, according to the phase to be used
-			iOffsetX=int(ZoomDraw*DragImage.Wdt/2);
+
+			iOffsetX=int(ZoomDraw*ImageWdt/2);
 			if (Drag == C4MC_Drag_Construct)
-				iOffsetY=int(ZoomDraw*DragImage.Hgt);
+				iOffsetY=int(ZoomDraw*ImageHgt);
 			else
-				iOffsetY=int(ZoomDraw*DragImage.Hgt/2);
-			pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
-			pDraw->Blit(DragImage.Surface,
-			              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
-			              cgo.Surface,
-			              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt)*ZoomDraw, float(DragImage.Hgt)*ZoomDraw,true);
-			// reset color
-			pDraw->DeactivateBlitModulation();
-			pDraw->SetBlitMode(0);
+				iOffsetY=int(ZoomDraw*ImageHgt/2);
+
+			C4TargetFacet ccgo;
+			ccgo.Set(cgo.Surface, XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(ImageWdt)*ZoomDraw, float(ImageHgt)*ZoomDraw);
+
+			// TODO: Take pDef->DragImagePicture into account
+			if (DragImageObject)
+			{
+				uint32_t ColorMod = DragImageObject->ColorMod;
+				uint32_t BlitMode = DragImageObject->BlitMode;
+				DragImageObject->ColorMod = (Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00);
+				DragImageObject->BlitMode = C4GFXBLIT_MOD2;
+	
+				DragImageObject->DrawPicture(ccgo, false, NULL, NULL);
+
+				DragImageObject->ColorMod = ColorMod;
+				DragImageObject->BlitMode = BlitMode;
+			}
+			else
+			{
+				// draw in special modulation mode
+				pDraw->SetBlitMode(C4GFXBLIT_MOD2);
+				// draw DragImage in red or green, according to the phase to be used
+				pDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00));
+
+				DragImageDef->Draw(ccgo, false, pPlayer ? pPlayer->ColorDw : 0xff0000ff, NULL, 0, 0, NULL);
+
+				// reset color
+				pDraw->DeactivateBlitModulation();
+				pDraw->SetBlitMode(0);
+			}
+
 			if (fIsGameZoom) pDraw->SetZoom(GuiZoom);
 			// reset cursor hotspot offset for script drawing
 			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
 			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
 		}
 		// Cursor
-		if (!DragImage.Surface || (Drag == C4MC_Drag_Script))
+		if ( (!DragImageDef && !DragImageObject) || (Drag == C4MC_Drag_Script))
 			GfxR->fctMouseCursor.Draw(cgo.Surface,cgo.X+GuiX-iOffsetX,cgo.Y+GuiY-iOffsetY,Cursor);
 		// Point
 		if ((ShowPointX!=-1) && (ShowPointY!=-1))
@@ -795,9 +838,11 @@ void C4MouseControl::DragNone()
 			if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
 			{
 				Drag=C4MC_Drag_Script;
-				CreateDragImage(drag_image_id, drag_image_obj, true);
+
+				if(drag_image_obj) DragImageObject = drag_image_obj;
+				else DragImageDef = C4Id2Def(drag_image_id);
+
 				DragObject = TargetObject;
-				DragImagePhase=0;
 			}
 		}
 
@@ -931,25 +976,16 @@ bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
 	return true;
 }
 
-void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj, bool fPicture)
-{
-	// todo: real object drawing
-	if (obj) id = obj->id;
-	// Get definition
-	C4Def *pDef=C4Id2Def(id); if (!pDef) return;
-	// in newgfx, it's just the base image, drawn differently...
-	if (pDef->DragImagePicture || fPicture)
-		DragImage.Set(pDef->Graphics.GetBitmap(),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
-	else
-		DragImage=pDef->GetMainFace(&pDef->Graphics);
-}
-
 void C4MouseControl::DragConstruct()
 {
 	Cursor=C4MC_Cursor_Construct;
+
+	// TODO: Re-enable something like this:
+#if 0
 	// Check site
 	DragImagePhase=1;
 	if (!FogOfWar && ConstructionCheck(C4Id2Def(DragID),int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
+#endif
 }
 
 void C4MouseControl::DragScript()
@@ -960,8 +996,6 @@ void C4MouseControl::DragScript()
 	// Update selection
 	UpdateSingleSelection();
 	Cursor=C4MC_Cursor_DragDrop;
-	// todo: Phase to 1 if drag is not possible. Interface to determine valid drag/drop does not exist yet
-	DragImagePhase=0;
 }
 
 void C4MouseControl::LeftUpDragNone()
@@ -1025,7 +1059,8 @@ void C4MouseControl::ButtonUpDragConstruct()
 {
 	// Finish drag
 	Drag=C4MC_Drag_None;
-	DragImage.Default();
+	DragImageObject = NULL;
+	DragImageDef = NULL;
 	// Command
 	// FIXME: Lots and lots of dead code in this file.
 	//if (DragImagePhase==0) // if ConstructionCheck was okay (check again?)
@@ -1038,8 +1073,9 @@ void C4MouseControl::ButtonUpDragScript()
 {
 	// Finish drag
 	Drag=C4MC_Drag_None;
-	DragImage.Default();
 	DragID=C4ID::None;
+	DragImageObject = NULL;
+	DragImageDef = NULL;
 	// Determine drag+drop targets
 	UpdateCursorTarget();
 	C4Object *DragObject = this->DragObject;
@@ -1167,7 +1203,7 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 {
 	Drag=C4MC_Drag_Construct;
 	DragID=id;
-	CreateDragImage(DragID,NULL,false);
+	DragImageDef = C4Id2Def(id);
 	Selection.Clear();
 }
 
