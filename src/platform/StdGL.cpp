@@ -730,6 +730,13 @@ namespace
 			// clrmodmap texture needs to be the last texture in that case... we should
 			// change the index to maxtextures-1 instead of 3.
 
+			const float dwMod[4] = {
+				((dwModClr >> 16) & 0xff) / 255.0f,
+				((dwModClr >>  8) & 0xff) / 255.0f,
+				((dwModClr      ) & 0xff) / 255.0f,
+				((dwModClr >> 24) & 0xff) / 255.0f
+			};
+
 			if(!(dwBlitMode & C4GFXBLIT_MOD2) && dwModClr == 0xffffffff)
 			{
 				// Fastpath for the easy case
@@ -742,12 +749,6 @@ namespace
 			else
 			{
 				float Ambient[4], Diffuse[4], Specular[4], Emissive[4];
-				const float dwMod[4] = {
-					((dwModClr >> 16) & 0xff) / 255.0f,
-					((dwModClr >>  8) & 0xff) / 255.0f,
-					((dwModClr      ) & 0xff) / 255.0f,
-					((dwModClr >> 24) & 0xff) / 255.0f
-				};
 
 				// TODO: We could also consider applying dwmod using an additional
 				// texture unit, maybe we can even re-use the one which is reserved for
@@ -776,25 +777,29 @@ namespace
 				}
 				else
 				{
-					Ambient[0] = BoundBy<float>(pass.Ambient[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
-					Ambient[1] = BoundBy<float>(pass.Ambient[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
-					Ambient[2] = BoundBy<float>(pass.Ambient[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
-					Ambient[3] = BoundBy<float>(pass.Ambient[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+					// The RGB part for fMod2 drawing is set in the texture unit,
+					// since its effect cannot be achieved properly by playing with
+					// the material color.
+					// TODO: This should go into an additional texture unit.
+					Ambient[0] = pass.Ambient[0];
+					Ambient[1] = pass.Ambient[1];
+					Ambient[2] = pass.Ambient[2];
+					Ambient[3] = pass.Ambient[3];
 
-					Diffuse[0] = BoundBy<float>(pass.Diffuse[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
-					Diffuse[1] = BoundBy<float>(pass.Diffuse[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
-					Diffuse[2] = BoundBy<float>(pass.Diffuse[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
-					Diffuse[3] = BoundBy<float>(pass.Diffuse[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+					Diffuse[0] = pass.Diffuse[0];
+					Diffuse[1] = pass.Diffuse[1];
+					Diffuse[2] = pass.Diffuse[2];
+					Diffuse[3] = pass.Diffuse[3];
 
-					Specular[0] = BoundBy<float>(pass.Specular[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
-					Specular[1] = BoundBy<float>(pass.Specular[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
-					Specular[2] = BoundBy<float>(pass.Specular[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
-					Specular[3] = BoundBy<float>(pass.Specular[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+					Specular[0] = pass.Specular[0];
+					Specular[1] = pass.Specular[1];
+					Specular[2] = pass.Specular[2];
+					Specular[3] = pass.Specular[3];
 
-					Emissive[0] = BoundBy<float>(pass.Emissive[0] + dwMod[0] - 0.5f, 0.0f, 1.0f);
-					Emissive[1] = BoundBy<float>(pass.Emissive[1] + dwMod[1] - 0.5f, 0.0f, 1.0f);
-					Emissive[2] = BoundBy<float>(pass.Emissive[2] + dwMod[2] - 0.5f, 0.0f, 1.0f);
-					Emissive[3] = BoundBy<float>(pass.Emissive[3] + dwMod[3] - 0.5f, 0.0f, 1.0f);
+					Emissive[0] = pass.Emissive[0];
+					Emissive[1] = pass.Emissive[1];
+					Emissive[2] = pass.Emissive[2];
+					Emissive[3] = pass.Emissive[3];
 				}
 
 				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
@@ -829,7 +834,7 @@ namespace
 			// face ordering) but when they are made translucent via clrmod
 			if(!(dwBlitMode & C4GFXBLIT_ADDITIVE))
 			{
-				if( ((dwModClr >> 24) & 0xff) < 0xff)
+				if( ((dwModClr >> 24) & 0xff) < 0xff) // && (!(dwBlitMode & C4GFXBLIT_MOD2)) )
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				else
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]),
@@ -837,7 +842,7 @@ namespace
 			}
 			else
 			{
-				if( ((dwModClr >> 24) & 0xff) < 0xff)
+				if( ((dwModClr >> 24) & 0xff) < 0xff) // && (!(dwBlitMode & C4GFXBLIT_MOD2)) )
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 				else
 					glBlendFunc(OgreBlendTypeToGL(pass.SceneBlendFactors[0]), GL_ONE);
@@ -933,83 +938,109 @@ namespace
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
-				// Combine
-				SetTexCombine(GL_COMBINE_RGB, texunit.ColorOpEx);
-				SetTexCombine(GL_COMBINE_ALPHA, texunit.AlphaOpEx);
+				bool fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
 
-				// Scale
-				SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
-				SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
+				// Overwrite texcombine and texscale for fMod2 drawing.
+				// TODO: Use an additional texture unit or a shader to do this,
+				// so that the settings of this texture unit are not lost.
 
-				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+				if(fMod2)
 				{
-					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
+					// Special case RGBA setup for fMod2
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
+					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD_SIGNED);
+					glTexEnvf(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1.0f);
+					glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
+					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]); // TODO: Fails for StdMeshMaterialTextureUnit::BOX_Source2
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_CONSTANT);
 					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-				}
-				else
-				{
-					if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-					{
-						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-						SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
-						SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[0]);
-						SetTexSource(GL_SOURCE2_RGB, texunit.ColorOpSources[1]);
-
-						SetTexOperand2(GL_OPERAND0_RGB, texunit.ColorOpEx);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
-					}
-					else
-					{
-						SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-
-						if (texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
-						{
-							SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-						}
-
-						SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
-						SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);
-					}
-				}
-
-				if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
-				{
-					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
+					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
+					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_CONSTANT);
 					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+					glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, dwMod);
 				}
 				else
 				{
-					if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-					{
-						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-						SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
-						SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[0]);
-						SetTexSource(GL_SOURCE2_ALPHA, texunit.AlphaOpSources[1]);
+					// Combine
+					SetTexCombine(GL_COMBINE_RGB, texunit.ColorOpEx);
+					SetTexCombine(GL_COMBINE_ALPHA, texunit.AlphaOpEx);
 
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+					// Scale
+					SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
+					SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
+
+					if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+					{
+						SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 					}
 					else
 					{
-						SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-
-						if (texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
 						{
-							SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+							// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
+							SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
+							SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[0]);
+							SetTexSource(GL_SOURCE2_RGB, texunit.ColorOpSources[1]);
+
+							SetTexOperand2(GL_OPERAND0_RGB, texunit.ColorOpEx);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
 						}
+						else
+						{
+							SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 
-						SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+							if (texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+							{
+								SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
+								glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+							}
+
+							SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
+							SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);
+						}
 					}
-				}
 
-				SetTexColor(texunit, dwPlayerColor);
+					if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+					{
+						SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+					}
+					else
+					{
+						if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+						{
+							// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
+							SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
+							SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[0]);
+							SetTexSource(GL_SOURCE2_ALPHA, texunit.AlphaOpSources[1]);
+
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+						}
+						else
+						{
+							SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+
+							if (texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+							{
+								SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
+								glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+							}
+
+							SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+						}
+					}
+
+					SetTexColor(texunit, dwPlayerColor);
+				}
 			}
 
 			glMatrixMode(GL_MODELVIEW);
