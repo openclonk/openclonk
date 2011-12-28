@@ -5,7 +5,6 @@
 	Storage for items.
 */
 
-#include Library_ItemContainer
 
 local chestanim;
 
@@ -20,28 +19,17 @@ protected func Construction()
 
 public func IsContainer() { return true; }
 
-private func MenuOnInteraction() { return true; }
-
 private func MaxContentsCount()
 {
 	return 5;
 }
 
-func GetInteractionMetaInfo(object clonk)
+protected func RejectCollect()
 {
-	if(content_menu)
-		return { Description = "$CloseChest$", IconName = nil, IconID = nil, Selected = true };
-	else
-		return { Description = "$OpenChest$", IconName = nil, IconID = nil, Selected = false };
+	if (ContentsCount() >= MaxContentsCount())
+		return true;
+	return false;
 }
-
-// callback: menu was closed
-func MenuClosed()
-{
-	Close();
-}
-
-private func OnContentMenuOpen() { Open(); }
 
 private func Open()
 {

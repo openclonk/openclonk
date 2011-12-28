@@ -174,13 +174,37 @@ private func GetItemPosition(int n, int total)
 			return [x, y];
 		}
 		else
-		{	// TODO: Fix current bad approximation.
-			var x = Cos(30 * (n-7) + 15, 4 * MENU_Radius / 5);
-			var y = -Sin(30 * (n-7) + 15, 4 * MENU_Radius / 5);
+		{
+			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 40);
+			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 40);
 			return [x, y];
 		}		
 	}
 	
+	// Packing 19 or less circles.
+	if (total <= 37)
+	{
+		if (n == 1)
+			return [0, 0];
+		else if (n <= 7)
+		{	
+			var x = Cos(60 * (n-1), 2 * MENU_Radius / 7);
+			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 7);
+			return [x, y];
+		}
+		else if (n <= 19)
+		{
+			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 56);
+			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 56);
+			return [x, y];
+		}	
+		else
+		{
+			var x = Cos(30 * (n-19), 61 * MENU_Radius / 72);
+			var y = -Sin(30 * (n-19), 61 * MENU_Radius / 72);
+			return [x, y];
+		}		
+	}
 	// More cases are not covered yet.
 	return;
 }
@@ -191,7 +215,9 @@ private func GetItemRadius(int total)
 	if (total <= 7)
 		return MENU_Radius / 3;
 	if (total <= 19)
-		return MENU_Radius / 5;	
+		return MENU_Radius / 5;
+	if (total <= 37)
+		return MENU_Radius / 7;
 	return 1;
 }
 

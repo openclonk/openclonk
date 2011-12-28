@@ -1,6 +1,6 @@
 /*-- Lorry --*/
 
-#include Library_ItemContainer
+
 #include Library_CableCar
 
 local content_menu;
@@ -54,10 +54,6 @@ private func MaxContentsCount()
 {
 	return 50;
 }
-
-private func MenuOnInteraction() { return false; }
-private func MenuOnControlUse() { return true; }
-private func MenuOnControlUseAlt() { return false; }
 
 protected func RejectCollect(id object_id, object obj)
 {

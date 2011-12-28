@@ -5,7 +5,6 @@
 	Used for deliveries.
 */
 
-#include Library_ItemContainer
 #include Library_CarryHeavy
 
 local crateanim;
@@ -22,28 +21,19 @@ protected func Construction()
 
 /*-- Contents --*/
 
-private func MenuOnInteraction() { return true; }
+public func IsContainer() { return true; }
 
 private func MaxContentsCount()
 {
 	return 4;
 }
 
-func GetInteractionMetaInfo(object clonk)
+protected func RejectCollect()
 {
-	if(content_menu)
-		return { Description = "$CloseCrate$", IconName = nil, IconID = nil, Selected = true };
-	else
-		return { Description = "$OpenCrate$", IconName = nil, IconID = nil, Selected = false };
+	if (ContentsCount() >= MaxContentsCount())
+		return true;
+	return false;
 }
-
-// callback: menu was closed
-func MenuClosed()
-{
-	Close();
-}
-
-private func OnContentMenuOpen() { Open(); }
 
 private func Open()
 {

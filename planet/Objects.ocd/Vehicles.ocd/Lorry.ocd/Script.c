@@ -1,7 +1,5 @@
 /*-- Lorry --*/
 
-#include Library_ItemContainer
-
 local content_menu;
 
 protected func Construction()
@@ -13,8 +11,6 @@ protected func Construction()
 public func IsLorry() { return true; }
 
 public func IsToolProduct() { return true; }
-
-public func IsContainer() { return true; }
 
 local drive_anim;
 local tremble_anim;
@@ -48,10 +44,6 @@ private func MaxContentsCount()
 {
 	return 50;
 }
-
-private func MenuOnInteraction() { return false; }
-private func MenuOnControlUse() { return true; }
-private func MenuOnControlUseAlt() { return false; }
 
 protected func RejectCollect(id object_id, object obj)
 {

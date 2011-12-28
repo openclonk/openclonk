@@ -123,11 +123,14 @@ private func PutContentsIntoMenu(object menu, object obj)
 		// into the menu item, all the objects of the stack are saved
 		// as an array into it's extradata
 		var item = CreateObject(GUI_MenuItem);
+		if (!menu->AddItem(item))
+			return item->RemoveObject();
 		item->SetSymbol(stack[0]);
 		item->SetCount(GetLength(stack));
 		item->SetData(stack);
-		if (!menu->AddItem(item))
-			item->RemoveObject();
+		// Track removal of contents.
+		for (var stack_obj in stack)
+			AddEffect("ContentTracker", stack_obj, 100, nil, this, nil, menu, item, stack);
 	}
 }
 
@@ -176,6 +179,45 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 	}
 }
 
+/*-- Content tracking --*/
+// TODO: Implement this more carefully and cover all corner cases.
+
+public func FxContentTrackerStart(object target, proplist effect, int temporary, object menu, object item, object stack)
+{
+	if (temporary == 0)
+	{
+		effect.Menu = menu;
+		effect.Item = item;
+		effect.Stack = stack;
+	}
+	return 1;
+}
+
+public func FxContentTrackerTimer()
+{
+
+}
+
+public func FxContentTrackerStop(object target, proplist effect, int reason)
+{
+	// Notify content menu if object has been removed.
+	if (reason == 3)
+	{
+		//Log("Object removed");
+		effect.CommandTarget->~OnExternalContentRemoval(effect.Menu, effect.Item, effect.Stack, target);
+	}
+	return 1;
+}
+
+public func OnExternalContentRemoval(object menu, object item, array stack, object content)
+{
+	//Log("%v", stack);
+	
+	// If stack will be empty, remove menu item.
+	if (GetLength(stack) <= 1)
+		return item->RemoveObject();
+}
+
 /** Transfers the objects contained in menu_item from the source to the target container.
 	@param p_source proplist containing the source menu.
 	@param p_target proplist containing the target menu.
@@ -206,8 +248,9 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 			continue;
 		if (obj->Enter(p_target.Object))
 		{				
-				moved_to_target[GetLength(moved_to_target)] = obj;
-				moved_length++;
+			moved_to_target[GetLength(moved_to_target)] = obj;
+			moved_length++;
+			RemoveEffect("ContentTracker", obj);
 		}
 	}
 	
@@ -223,14 +266,19 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 			target_item->SetCount(GetLength(new_extra_data));
 		}
 		// Otherwise add a new menu item to containing menu.
-		else 
+		else
 		{
 			var item = CreateObject(GUI_MenuItem);
-			item->SetSymbol(moved_to_target[0]);
-			item->SetCount(GetLength(moved_to_target));
-			item->SetData(moved_to_target);
 			if (!p_target.Menu->AddItem(item))
 				item->RemoveObject();
+			else
+			{
+				item->SetSymbol(moved_to_target[0]);
+				item->SetCount(GetLength(moved_to_target));
+				item->SetData(moved_to_target);
+				for (var stack_obj in moved_to_target)
+					AddEffect("ContentTracker", stack_obj, 100, nil, this, nil, p_target.Menu, item, moved_to_target);
+			}
 		}
 	}
 	// Return the number of items that have been transfered.
@@ -349,10 +397,13 @@ private func FindMenuPos(object menu)
 func OnItemDropped(object menu, object dropped, object on_item)
 {
 	var index = FindMenuPos(menu);
-	if(index < 0) return false;
+	if (index < 0) return false;
 	
 	var index2 = FindMenuPos(dropped->GetMenu());
-	if(index2 < 0) return false;
+	if (index2 < 0) return false;
+	
+	if (index == index2)
+		return false;
 	
 	var p_source_menu = circ_menus[index2];
 	var p_target_menu = circ_menus[index];
