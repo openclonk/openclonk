@@ -29,6 +29,8 @@ protected func Construction()
 	this.Visibility = VIS_None;
 	// Parallaxity
 	this.Parallaxity = [0, 0];
+	// Mouse drag image
+	this.MouseDragImage = nil;	
 	return;
 }
 
@@ -37,6 +39,9 @@ public func IsDragDropMenu() { return dragdrop; }
 public func SetDragDropMenu(bool is_dragdrop)
 {
 	dragdrop = is_dragdrop;
+	// Mouse drag image
+	this.MouseDragImage = this;
+	return;	
 }
 
 // Sets the commander of this menu.
@@ -277,7 +282,7 @@ public func MouseDrop(int plr, obj)
 	// Check if item belongs to a menu.
 	if (!obj->~GetMenu()) return false;	
 	
-	// Check if we allow drag&drop
+	// Check if we allow drag&drop.
 	if (!IsDragDropMenu()) return false;
 	
 	// Forward command to commander.

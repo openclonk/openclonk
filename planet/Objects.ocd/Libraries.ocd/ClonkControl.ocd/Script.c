@@ -329,6 +329,16 @@ protected func RejectCollect(id objid, object obj)
 	return _inherited(objid,obj,...);
 }
 
+// To allow transfer of contents which are not allowed through collection.
+public func AllowTransfer(object obj)
+{
+	// Only check max contents.
+	if (ContentsCount() >= MaxContentsCount()) 
+		return false;
+
+	return true;
+}
+
 public func GetUsedObject() { return using; }
 
 /* ################################################# */

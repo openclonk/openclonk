@@ -176,48 +176,55 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 	}
 }
 
-private func PutObjects(proplist p_source, proplist p_target, object menuItem, int amount)
+/** Transfers the objects contained in menu_item from the source to the target container.
+	@param p_source proplist containing the source menu.
+	@param p_target proplist containing the target menu.
+	@param menu_item the menu item selected by the player.
+	@param amount the amount of objects to be transfered.
+	@return the actual count of objects that have successfully been transfered.
+*/
+private func TransferObjects(proplist p_source, proplist p_target, object menu_item, int amount)
 {
-	var objects = menuItem->GetExtraData();
-	amount = BoundBy(amount, 0, GetLength(objects));
+	// Safety: target and source must be available.
+	if (!p_source || !p_target)
+		return 0;	
 	
-	// move to target container.
-	// memorize which objects have been put where in order to know which menu items to
-	// update how (Because the collection can be rejected by RejectCollect/RejectEntrance)
+	// Determine actual amount that may be transfered.
+	var objects = menu_item->GetExtraData();
+	amount = BoundBy(amount, 0, GetLength(objects));
+		
+	// Move to object from source container to target container.
+	// Memorize which objects have been put where in order to know which menu items to update
+	// how (Because the collection can be rejected by RejectCollect/RejectEntrance).
 	var moved_to_target = [];
-	for (var i=0; i<amount; ++i) 
+	var moved_length = 0;
+	for (var i = 0; i < amount; i++) 
 	{
 		var obj = objects[i];
-		obj->Exit();
-		if (p_target)
-		{
-			if (!(p_target.Object->Collect(obj)))
-			{
-				// putting into other container failed. Put back.
-				if (!(p_source.Object->Collect(obj)))
-				{
-					// (if it fails too, it just stays outside)
-				}
-			} else {
+		// Try to enter the object, but check for some collect callbacks.
+		if (p_target.Object->~RejectCollect(obj->GetID(), obj) && !p_target.Object->~AllowTransfer(obj))
+			continue;
+		if (obj->Enter(p_target.Object))
+		{				
 				moved_to_target[GetLength(moved_to_target)] = obj;
-			}
+				moved_length++;
 		}
 	}
 	
-	var items_moved_to_target = GetLength(moved_to_target);
-	
-	// update target menu
-	if (items_moved_to_target > 0)
+	// Update target menu, source menu is updated elsewhere.
+	if (moved_length > 0)
 	{
-		// if menu item with same objects already exists: update menu item
-		var targetItem = CanStackObjIntoMenuItem(p_target.Menu, moved_to_target[0]);
-		if (targetItem)
+		// If menu item with same objects already exists: update menu item.
+		var target_item = CanStackObjIntoMenuItem(p_target.Menu, moved_to_target[0]);
+		if (target_item)
 		{
-			var new_extra_data = Concatenate(targetItem->GetExtraData(), moved_to_target);
-			targetItem->SetData(new_extra_data);
-			targetItem->SetCount(GetLength(new_extra_data));
-		// otherwise, add a new menu item to containing menu
-		} else {
+			var new_extra_data = Concatenate(target_item->GetExtraData(), moved_to_target);
+			target_item->SetData(new_extra_data);
+			target_item->SetCount(GetLength(new_extra_data));
+		}
+		// Otherwise add a new menu item to containing menu.
+		else 
+		{
 			var item = CreateObject(GUI_MenuItem);
 			item->SetSymbol(moved_to_target[0]);
 			item->SetCount(GetLength(moved_to_target));
@@ -226,6 +233,20 @@ private func PutObjects(proplist p_source, proplist p_target, object menuItem, i
 				item->RemoveObject();
 		}
 	}
+	// Return the number of items that have been transfered.
+	return moved_length;
+}
+
+/** Exchanges to menu items and their contents between the source and a target menu.
+
+*/
+private func ExchangeObjects() 
+{
+	// TODO: Implement.
+
+
+
+	
 }
 
 private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
@@ -255,7 +276,7 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 		
 		// repair "holes"
 		var remaining_objects = RemoveHoles(objects);
-		Log("%v",remaining_objects);
+		//Log("%v",remaining_objects);
 		
 		menuItem->SetData(remaining_objects);
 		menuItem->SetCount(GetLength(remaining_objects));
@@ -265,7 +286,7 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 
 private func MoveObjects(proplist p_source, proplist p_target, object menuItem, int amount)
 {
-	PutObjects(p_source, p_target, menuItem, amount);
+	TransferObjects(p_source, p_target, menuItem, amount);
 	UpdateAfterTakenObjects(p_source, menuItem);
 }
 
@@ -337,7 +358,7 @@ func OnItemDropped(object menu, object dropped, object on_item)
 	var p_target_menu = circ_menus[index];
 
 	var amount = 1;
-	PutObjects(p_source_menu, p_target_menu, dropped, amount);
+	TransferObjects(p_source_menu, p_target_menu, dropped, amount);
 	return true;
 }
 

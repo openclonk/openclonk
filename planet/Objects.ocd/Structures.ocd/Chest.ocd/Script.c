@@ -18,6 +18,8 @@ protected func Construction()
 
 /*-- Contents --*/
 
+public func IsContainer() { return true; }
+
 private func MenuOnInteraction() { return true; }
 
 private func MaxContentsCount()

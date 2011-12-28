@@ -468,21 +468,24 @@ global func ObjectComLetGo(int vx, int vy)
 
 /* Drag & Drop */
 
-// Engine callback on drag&drop: 
+// Engine callback on drag&drop: gives the player, the dragged obect and the object which is being dropped(can be nil).
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
 	var src_drag = source->~MouseDrag(plr);
-	if (!src_drag) return false;
+	if (!src_drag) 
+		return false;
+	
+	// If there is drop target, check whether it accepts the drop.
 	if (target)
-	{
-		if (!target->~MouseDrop(plr, src_drag)) return false;
-	}
-	if (source) source->~MouseDragDone(src_drag, target);
+		if (!target->~MouseDrop(plr, src_drag))
+			return false;
+
+	// Notify the drop object it succeeded.
+	if (source)
+		source->~MouseDragDone(src_drag, target);
 	return true;
 }
-
-
 
 /* Debug */
 

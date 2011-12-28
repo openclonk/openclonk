@@ -149,9 +149,6 @@ public func Update()
 	// Set mouse drag image.
 	this.MouseDragImage = item_object;
 	
-	// Set item size.
-	//SetObjDrawTransform(item_size, 0, 0, 0, item_size, 0, 0);	
-	
 	// Set item graphics.
 	if (!item_object)
 	{
@@ -164,7 +161,6 @@ public func Update()
 		if (GetType(item_object) == C4V_C4Object)
 		{
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, 0, 0, item_object);
-			//SetObjDrawTransform(1000, 0, 0, 0, 1000, 0, 1);
 			if (item_object->~HasExtraSlot())
 			{
 				SetGraphics(nil, GUI_ExtraSlot, 2, GFXOV_MODE_Base);
