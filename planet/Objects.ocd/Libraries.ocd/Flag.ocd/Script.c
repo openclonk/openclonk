@@ -1,3 +1,7 @@
+/*
+	The flagpoles mark the area a player owns.
+	It also serves as an energy transmitter.
+*/
 local Name = "$Name$";
 local Description = "$Description$";
 
@@ -6,7 +10,9 @@ static LibraryFlag_flag_list;
 
 local lflag;
 
-global func GetOwnerOfPosition(int x, int y)
+public func IsFlagpole(){return true;}
+
+global func GetFlagpoleForPosition(int x, int y)
 {
 	if(GetType(LibraryFlag_flag_list) != C4V_Array) return NO_OWNER;
 	
@@ -23,9 +29,22 @@ global func GetOwnerOfPosition(int x, int y)
 			oldest_time = flag->GetFlagConstructionTime();
 		}
 	}
-	
-	if(oldest == nil) return NO_OWNER;
-	return oldest->GetOwner();
+	return oldest;
+}
+
+global func GetOwnerOfPosition(int x, int y)
+{
+	var flag = GetFlagpoleForPosition(x, y);
+	if(!flag) return NO_OWNER;
+	return flag->GetOwner();
+}
+
+func RefreshAllFlagLinks()
+{
+	for(var f in LibraryFlag_flag_list)
+	{
+		f->ScheduleRefreshLinkedFlags();
+	}
 }
 
 func RedrawFlagRadius()
@@ -65,7 +84,7 @@ func RedrawFlagRadius()
 					draw=false;
 				}
 				//else inEnemy=true;
-				if(!Hostile(GetOwner(), f->GetOwner()))
+				if(IsAllied(GetOwner(), f->GetOwner()))
 					draw = false;
 			}
 		}
@@ -226,7 +245,10 @@ public func Construction()
 	{
 		construction_time = FrameCounter(),
 		radius = LibraryFlag_standard_radius,
-		range_markers = []
+		range_markers = [],
+		linked_flags = [],
+		energy_producers = [],
+		energy_consumers = []
 	};
 	
 	// redraw
@@ -234,6 +256,9 @@ public func Construction()
 	
 	// ownership
 	RefreshOwnershipOfSurrounding();
+	
+	// linked flags - optimization for power system
+	RefreshLinkedFlags();
 	
 	return _inherited(...);
 }
@@ -257,8 +282,75 @@ public func Destruction()
 	// ownership
 	RefreshOwnershipOfSurrounding();
 	
+	// refresh all flag links
+	RefreshAllFlagLinks();
+	
 	return _inherited(...);
 }
+
+func ScheduleRefreshLinkedFlags()
+{
+	if(GetEffect("RefreshLinkedFlags", this)) return;
+	AddEffect("RefreshLinkedFlags", this, 1, 1, this);
+}
+
+func StopRefreshLinkedFlags()
+{
+	if(!GetEffect("RefreshLinkedFlags", this)) return;
+	RemoveEffect("RefreshLinkedFlags", this);
+}
+
+func FxRefreshLinkedFlagsTimer()
+{
+	this->RefreshLinkedFlags();
+	return -1;
+}
+
+func RefreshLinkedFlags()
+{
+	// failsafe - the array should exist
+	if(GetType(LibraryFlag_flag_list) != C4V_Array) return;
+	
+	var current = [];
+	var new = [this];
+	
+	var owner = GetOwner();
+	
+	while(GetLength(new))
+	{
+		for(var f in new) if(f != this) current[GetLength(current)] = f;
+		var old = new;
+		new = [];
+		
+		for(var oldflag in old)
+		for(var flag in LibraryFlag_flag_list)
+		{
+			if(!IsAllied(flag->GetOwner(), owner)) continue;
+			if(GetIndexOf(flag, current) != -1) continue;
+			if(flag == this) continue;
+			
+			if(ObjectDistance(oldflag, flag) > oldflag->GetFlagRadius() + flag->GetFlagRadius()) continue;
+			
+			new[GetLength(new)] = flag;
+		}
+	}
+	
+	lflag.linked_flags = current;
+	for(var other in lflag.linked_flags)
+	{
+		other->CopyLinkedFlags(this, lflag.linked_flags);
+	}
+}
+
+public func CopyLinkedFlags(object from, array flaglist)
+{
+	lflag.linked_flags = flaglist[:];
+	for(var i = GetLength(lflag.linked_flags)-1; i >= 0; --i)
+		if(lflag.linked_flags[i] == this)
+			lflag.linked_flags[i] = from;
+	StopRefreshLinkedFlags();
+}
+
 
 private func ClearFlagMarkers()
 {
