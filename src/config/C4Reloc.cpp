@@ -27,9 +27,6 @@ void C4Reloc::Init()
 {
 	Paths.clear();
 
-	// Check for system group at EXE path - only add if found
-	if (FileExists(Config.AtExePath(C4CFN_System)))
-		AddPath(Config.General.ExePath.getData());
 #ifndef __APPLE__
 	StdCopyStrBuf planet(Config.General.ExePath);
 	planet.AppendBackslash();
