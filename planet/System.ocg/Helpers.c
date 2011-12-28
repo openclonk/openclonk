@@ -200,10 +200,6 @@ global func StonyObjectHit(int x, int y)
 	while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
 	// To catch some high speed cases: if no solid found, check directly beneath
 	if (!GBackSolid(x*i, y*i))
-	{
-		x = 0;
-		y = 1;
-		i = 0;
 		while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
 	}
 	// Check if digfree
@@ -214,4 +210,11 @@ global func StonyObjectHit(int x, int y)
 			return Sound("SoftTouch?");
 		else
 			return Sound("SoftHit?");
+}
+
+global func IsAllied(int plr1, int plr2, bool check_one_way_only)
+{
+	if(plr1 == NO_OWNER) return false;
+	if(plr2 == NO_OWNER) return false;
+	return !Hostile(plr1, plr2, check_one_way_only);
 }
