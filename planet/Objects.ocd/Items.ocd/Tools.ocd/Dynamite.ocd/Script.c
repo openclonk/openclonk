@@ -151,6 +151,7 @@ public func DoExplode()
 	Explode(18);
 }
 
+public func IsToolProduct() { return true; }
 public func IsAlchemyProduct() { return true; }
 public func HasFuse() { return true; }
 
