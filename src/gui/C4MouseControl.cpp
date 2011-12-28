@@ -597,8 +597,16 @@ void C4MouseControl::UpdateCursorTarget()
 	{
 		// default cursor for object; also set if not in FoW
 		Cursor=C4MC_Cursor_Crosshair;
-		// select custom region
-		if (TargetObject->Category & C4D_MouseSelect)
+
+		// select custom region. Can select an object if it does not have the MD_NoClick
+		// flag set. If we are currently dragging then selection depends on it being a drop target.
+		bool CanSelect;
+		if(Drag == C4MC_Drag_Script)
+			CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DropTarget) != 0;
+		else
+			CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_NoClick) == 0;
+
+		if ( (TargetObject->Category & C4D_MouseSelect) && CanSelect)
 			Cursor=C4MC_Cursor_Select;
 	}
 
@@ -642,7 +650,6 @@ void C4MouseControl::UpdateCursorTarget()
 
 int32_t C4MouseControl::UpdateSingleSelection()
 {
-
 	// Set single selection if cursor on selection object (clear prior object selection)
 	if (TargetObject && (Cursor==C4MC_Cursor_Select))
 		{ Selection.Clear(); Selection.Add(TargetObject, C4ObjectList::stNone); }
@@ -835,7 +842,11 @@ void C4MouseControl::DragNone()
 		if (fAllowDrag && TargetObject)
 		{
 			C4Object *drag_image_obj; C4ID drag_image_id;
-			if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
+
+			// Drag only if MD_SOURCE is set and drag image is present
+			if ( (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
+			      TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
+			//if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
 			{
 				Drag=C4MC_Drag_Script;
 
@@ -1083,6 +1094,8 @@ void C4MouseControl::ButtonUpDragScript()
 	C4Object *DropObject = TargetObject;
 	// drag object must exist; drop object is optional
 	if (!DragObject) return;
+	if (DropObject && (~DropObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DropTarget))
+		DropObject = NULL;
 	// no commands if player is eliminated or doesn't exist any more
 	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr || pPlr->Eliminated) return;

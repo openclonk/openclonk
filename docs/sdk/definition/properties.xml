@@ -81,6 +81,11 @@ Stand = {
           <col></col>
         </row>
         <row>
+          <col><code>MouseDrag</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
           <col><code>Animation</code></col>
           <col></col>
           <col></col>

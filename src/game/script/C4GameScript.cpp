@@ -42,6 +42,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Log.h>
 #include <C4MessageInput.h>
+#include <C4MouseControl.h>
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
@@ -2639,13 +2640,17 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "C4FO_Category"             ,C4V_Int,     C4FO_Category       },
 	{ "C4FO_Action"               ,C4V_Int,     C4FO_Action         },
 	{ "C4FO_ActionTarget"         ,C4V_Int,     C4FO_ActionTarget   },
-	{ "C4FO_Procedure"            ,C4V_Int,     C4FO_Procedure          },
+	{ "C4FO_Procedure"            ,C4V_Int,     C4FO_Procedure      },
 	{ "C4FO_Container"            ,C4V_Int,     C4FO_Container      },
 	{ "C4FO_AnyContainer"         ,C4V_Int,     C4FO_AnyContainer   },
 	{ "C4FO_Owner"                ,C4V_Int,     C4FO_Owner          },
-	{ "C4FO_Controller"           ,C4V_Int,     C4FO_Controller         },
+	{ "C4FO_Controller"           ,C4V_Int,     C4FO_Controller     },
 	{ "C4FO_Func"                 ,C4V_Int,     C4FO_Func           },
 	{ "C4FO_Layer"                ,C4V_Int,     C4FO_Layer          },
+	
+	{ "MD_DragSource"             ,C4V_Int,     C4MC_MD_DragSource  },
+	{ "MD_DropTarget"             ,C4V_Int,     C4MC_MD_DropTarget  },
+	{ "MD_NoClick"                ,C4V_Int,     C4MC_MD_NoClick     },
 
 	{ "C4SO_Reverse"              ,C4V_Int,     C4SO_Reverse        },
 	{ "C4SO_Multiple"             ,C4V_Int,     C4SO_Multiple       },

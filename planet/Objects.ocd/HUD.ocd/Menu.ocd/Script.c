@@ -30,7 +30,8 @@ protected func Construction()
 	// Parallaxity
 	this.Parallaxity = [0, 0];
 	// Mouse drag image
-	this.MouseDragImage = nil;	
+	this.MouseDragImage = nil;
+	this.MouseDrag = MD_NoClick | MD_DropTarget;
 	return;
 }
 

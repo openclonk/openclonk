@@ -21,6 +21,7 @@ protected func Initialize()
 	this.Parallaxity = [0, 0];
 	// Mouse drag image
 	this.MouseDragImage = nil;
+	this.MouseDrag = MD_DragSource | MD_DropTarget;
 	return;
 }
 

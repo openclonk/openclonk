@@ -216,6 +216,7 @@ enum C4PropertyName
 	P_TurnAction,
 	P_Reverse,
 	P_Step,
+	P_MouseDrag,
 	P_MouseDragImage,
 	P_Animation,
 	P_Action,

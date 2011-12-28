@@ -40,6 +40,10 @@ const int32_t C4MC_Button_None        = 0,
 
 const int32_t C4MC_DragSensitivity = 5;
 
+const int32_t C4MC_MD_DragSource = 1,
+              C4MC_MD_DropTarget = 2,
+              C4MC_MD_NoClick = 4;
+
 class C4Viewport;
 class C4Menu;
 class C4Player;

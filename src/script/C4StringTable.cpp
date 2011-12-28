@@ -129,6 +129,7 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
+	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
 	P[P_MeshTransformation] = "MeshTransformation";
