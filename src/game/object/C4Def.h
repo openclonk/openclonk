@@ -50,8 +50,6 @@ C4D_Vehicle        =    1<<2,
 C4D_Living         =    1<<3,
 C4D_Object         =    1<<4,
 
-C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
-
 C4D_Goal             =  1<<5,
 C4D_Rule             =  1<<6,
 C4D_Environment      =  1<<7,
@@ -63,7 +61,8 @@ C4D_Foreground       =  1<<15,
 C4D_MouseIgnore      =  1<<16,
 C4D_IgnoreFoW        =  1<<17,
 
-C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
+C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object
+              | C4D_Background | C4D_Foreground;
 
 const int32_t C4Plane_Structure = 200;
 

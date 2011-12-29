@@ -1241,8 +1241,8 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)
-				// exclude fore/back-objects from main list
-				if ((pLst != &Objects) || (!(cObj->Category & C4D_BackgroundOrForeground)))
+				// exclude fore-objects from main list
+				if ((pLst != &Objects) || (~cObj->Category & C4D_Foreground))
 					// exclude MouseIgnore-objects
 					if (~cObj->Category & C4D_MouseIgnore)
 						// Category (match any specified)

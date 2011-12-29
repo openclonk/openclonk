@@ -125,10 +125,10 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	assert(Def);
 
 	// Check category
-	if (!Def->GetPlane() && Def->Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
+	if (!Def->GetPlane() && Def->Category & C4D_SortLimit)
 	{
 		int Plane; bool gotplane = true;
-		switch (Def->Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
+		switch (Def->Category & C4D_SortLimit)
 		{
 			case C4D_StaticBack: Plane = 100; break;
 			case C4D_Structure: Plane = C4Plane_Structure; break;
