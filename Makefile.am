@@ -392,6 +392,8 @@ src/lib/StdMeshLoader.h \
 src/lib/StdMeshLoaderXml.cpp \
 src/lib/StdMeshMaterial.cpp \
 src/lib/StdMeshMaterial.h \
+src/lib/StdMeshMath.cpp \
+src/lib/StdMeshMath.h \
 src/lib/StdMeshUpdate.cpp \
 src/lib/StdMeshUpdate.h \
 src/lib/StdResStr.h \
