@@ -407,6 +407,11 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	return 1;
 }
 
+public func OnProductEjection(object product)
+{
+	product->Enter(this);
+}
+
 /*-- --*/
 
 /**
