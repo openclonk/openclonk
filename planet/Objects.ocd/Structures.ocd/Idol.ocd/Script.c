@@ -1,4 +1,4 @@
-protected func Construction()
+protected func Initialize()
 {
 	SetCategory(C4D_Vehicle);
 	return _inherited(...);
