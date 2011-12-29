@@ -7,6 +7,7 @@ protected func Hit()
 }
 
 public func IsFoundryProduct() { return true; }
+public func IsValuable(){ return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
