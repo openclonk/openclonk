@@ -33,6 +33,10 @@
 #include <C4GameVersion.h>
 #include <C4Language.h>
 
+#ifdef DEBUGREC
+#include <C4Record.h>
+#endif
+
 C4DefList::C4DefList()
 {
 	Default();
@@ -442,6 +446,13 @@ void C4DefList::CallEveryDefinition()
 {
 	for (Table::iterator it = table.begin(); it != table.end(); ++it)
 	{
+#ifdef DEBUGREC
+		// TODO: Might not be synchronous on runtime join since is run by joining
+		// client but not by host. Might need to go to Synchronize().
+		char sz[32+1];
+		strncpy(sz, it->second->GetName(), 32+1);
+		AddDbgRec(RCT_Definition, sz, 32);
+#endif
 		C4AulParSet Pars(C4VPropList(it->second));
 		it->second->Script.Call(PSF_Definition, 0, &Pars, true);
 		it->second->Freeze();

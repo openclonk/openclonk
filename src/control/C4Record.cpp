@@ -989,6 +989,7 @@ const char * GetRecordChunkTypeName(C4RecordChunkType eType)
 	case RCT_MenuAddC: return "MenuAddC";  // add menu item: Following commands
 	case RCT_OCF: return "OCF";  // OCF setting of updating
 	case RCT_DirectExec: return "DirectExec";  // a DirectExec-script
+	case RCT_Definition: return "Definition";  // Definition callback
 
 	case RCT_Custom: return "Custom"; // varies
 

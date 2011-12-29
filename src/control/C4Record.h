@@ -92,6 +92,7 @@ enum C4RecordChunkType // record file chunk type
 	RCT_MenuAddC = 0xA2,  // add menu item: Following commands
 	RCT_OCF      = 0xA3,  // OCF setting of updating
 	RCT_DirectExec = 0xA4,  // a DirectExec-script
+	RCT_Definition = 0xA5,  // Definition callback
 
 	RCT_Custom  = 0xc0, // varies
 
