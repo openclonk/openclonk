@@ -37,7 +37,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	for(var obj in FindObjects(Find_Distance(AutoSellValuablesRadius()), Find_Func("IsValuable")))
 	{
 		if(obj->Stuck()) continue;
-		if(!IsAllied(owner, obj->GetOwner())) continue;
+		if(!IsAllied(owner, obj->GetController())) continue;
 		objs[GetLength(objs)] = obj;
 	} 
 	
