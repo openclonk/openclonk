@@ -809,7 +809,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	
 	// accept only PID_Conn and PID_Ping on non-accepted connections
 	if(!pConn->isHalfAccepted())
-		if(rPacket.getStatus() != PID_Conn && rPacket.getStatus() != PID_Conn)
+		if(rPacket.getStatus() != PID_Conn && rPacket.getStatus() != PID_Ping && rPacket.getStatus() != PID_ConnRe)
 			return false;
 
 	// unpack packet (yet another no-idea-why-it's-needed-cast)
@@ -961,8 +961,6 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 
 	case PID_Conn: // connection request
 	{
-		Application.InteractiveThread.ThreadLogS("Network Got PID_Conn");
-
 		if (!pConn->isOpen()) break;
 		// get packet
 		GETPKT(C4PacketConn, rPkt)
@@ -986,8 +984,6 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 
 	case PID_ConnRe: // connection request reply
 	{
-		Application.InteractiveThread.ThreadLogS("Network Got PID_ReConn");
-
 		if (!pConn->isOpen()) break;
 		// conn not sent? That's fishy.
 		// FIXME: Note this happens if the peer has exclusive connection mode on.
