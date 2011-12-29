@@ -1,6 +1,7 @@
 /*-- Flagpole --*/
 
 #include Library_Flag
+#include Library_GoldSeller
 
 local Name = "$Name$";
 local Description = "$Description$";

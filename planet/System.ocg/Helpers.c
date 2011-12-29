@@ -201,7 +201,6 @@ global func StonyObjectHit(int x, int y)
 	// To catch some high speed cases: if no solid found, check directly beneath
 	if (!GBackSolid(x*i, y*i))
 		while(!GBackSolid(x*i, y*i) && i < average_obj_size) i++;
-	}
 	// Check if digfree
 	if (!GetMaterialVal("DigFree", "Material", GetMaterial(x*i, y*i)) && GBackSolid(x*i, y*i))
 		return Sound("RockHit?");

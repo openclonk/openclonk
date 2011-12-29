@@ -61,6 +61,11 @@ private func FindHeight(int x)
 
 protected func InitializePlayer(int plr)
 { 
+	// first player gets the base
+	var flagpole = FindObject(Find_ID(Flagpole));
+	if(!GetPlayerName(flagpole->GetOwner()))
+		flagpole->SetOwner(plr);
+	
 	// Disable FoW for development reasons.
 	SetFoW(false, plr); 
 	// Move clonks to location and give them a shovel.
