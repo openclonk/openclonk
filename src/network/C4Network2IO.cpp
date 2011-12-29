@@ -418,7 +418,8 @@ bool C4Network2IO::Broadcast(const C4NetIOPacket &rPkt)
 	for (C4Network2IOConnection *pConn = pConnList; pConn; pConn = pConn->pNext)
 		if (pConn->isOpen() && pConn->isBroadcastTarget())
 			fSuccess &= pConn->Send(rPkt);
-	assert(fSuccess);
+	if(!fSuccess)
+		Log("Network: Warning! Broadcast failed.");
 	return fSuccess;
 #if 0
 	// broadcast using all available i/o classes
