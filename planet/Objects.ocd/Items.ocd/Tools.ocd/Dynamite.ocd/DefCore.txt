@@ -15,3 +15,4 @@ Mass=8
 Rotate=1
 ContactIncinerate=1
 BlastIncinerate=1
+Components=Sulphur=1;Coal=1
