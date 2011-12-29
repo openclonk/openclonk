@@ -55,6 +55,11 @@ public func Connect(object obj1, object obj2)
 	return;
 }
 
+public func Reconnect(object reconnect)
+{
+	objects[1][0] = reconnect;
+}
+
 public func GetConnectStatus() { return !length_auto; }
 
 public func HookRemoved()
@@ -130,31 +135,6 @@ func GetHookAngle()
 	if(ParticleCount > 3)
 	return Angle(particles[-2][0][0], particles[-2][0][1], particles[-3][0][0], particles[-3][0][1])+180;
 }
-/*
-local HookOldSpeed;
-
-func GetHookPos()
-{
-	return particles[-1][0];
-}
-
-func GetHookOff()
-{
-	return Vec_Sub(particles[-1][0],last_point);
-	var hook = objects[0][0];
-	if (hook->Contained()) hook = hook->Contained();
-	var speed = [hook->GetXDir(Rope_Precision), hook->GetYDir(Rope_Precision)];
-	var offset = speed;
-	offset[0] = offset[0]*1000/Rope_Precision;
-	offset[1] = offset[1]*1000/Rope_Precision;
-	if(!HookOldSpeed)
-	{
-		HookOldSpeed = offset;
-	}
-	var ret = HookOldSpeed;
-	HookOldSpeed = offset;
-	return ret;
-}*/
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
@@ -164,6 +144,87 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 		+fcos*MirrorSegments, +fsin*length/1000, xoff,
 		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
 	);
+}
+
+/* Overload */
+
+local pull_position, pull_faults, pull_frame;
+
+func LengthAutoTryCount()
+{
+	if (length_auto)
+		return 5;
+	return 1;
+}
+
+func ForcesOnObjects()
+{
+	if(!length) return;
+
+	var redo = LengthAutoTryCount();
+	while(redo)
+	{
+		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
+		if(length == GetMaxLength())
+		{
+			if(ObjContact(objects[1][0]))
+				speed = 40;
+			else speed = 100;
+		}
+		if(speed > 150) DoLength(1);
+		else if(speed < 50) DoLength(-1); // TODO not just obj 1
+		else redo = 0;
+		if(redo) redo --;
+	}
+	var j = 0;
+	if(PullObjects() )
+	for(var i = 0; i < 2; i++)
+	{
+		if(i == 1) j = ParticleCount-1;
+		var obj = objects[i][0];
+
+		if(obj == nil || objects[i][1] == 0) continue;
+
+		if(obj->Contained()) obj = obj->Contained();
+
+		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
+			obj->SetAction("Jump");
+		if( obj->GetAction() == "Climb")
+			obj->SetAction("Jump");
+
+		var xdist = particles[j][0][0]-obj->GetX(Rope_Precision);
+		var ydist = particles[j][0][1]-obj->GetY(Rope_Precision);
+
+		var xdir = BoundBy(particles[j][0][0]-particles[j][1][0], -100, 100);
+		var ydir = particles[j][0][1]-particles[j][1][1];
+
+		if (!obj->GetContact(-1))
+			ydir = BoundBy(ydir, -100, 100);
+
+		if (pull_position && pull_frame != FrameCounter() && !Distance(pull_position[0], pull_position[1], obj->GetX(), obj->GetY()))
+		{
+			if (!pull_faults)
+			{
+				ydir *= -1;
+				pull_faults++;
+			}
+			else
+			{
+				xdir *= -1;
+				pull_faults = 0;
+			}
+		}
+		else
+		{
+			pull_position = [obj->GetX(), obj->GetY()];
+			pull_faults = 0;
+		}
+		pull_frame = FrameCounter();
+
+		obj->SetXDir( xdir, Rope_Precision);
+		obj->SetYDir( ydir, Rope_Precision);
+		Log("%v, %v", xdir, ydir);
+	}
 }
 
 func Definition(def)

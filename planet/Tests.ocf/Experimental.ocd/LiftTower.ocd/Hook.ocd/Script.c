@@ -25,9 +25,10 @@ public func Selected(object menu, object selected)
 public func ConnectTo(object connect)
 {
 	Hook();
-	rope->BreakRope(true);
+/*	rope->BreakRope(true);
 	SetRope(true);
-	rope->Connect(tower, connect);
+	rope->Connect(tower, connect);*/
+	rope->Reconnect(connect);
 	AddEffect("Connecting", this, 1, 1, this, nil, connect);
 	return true;
 }

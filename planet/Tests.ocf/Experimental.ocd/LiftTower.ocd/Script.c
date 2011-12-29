@@ -81,12 +81,13 @@ public func DrawIn()
 	if (!rope) return false;
 	if (!hook) OnRopeBreak();
 	if (hook->Contained() == this) return false;
-	if (ObjectDistance(hook) < LIFTTOWER_HOOK_LOOSEDIST) return -1;
+	if (ObjectDistance(hook) < LIFTTOWER_HOOK_LOOSEDIST) return false;
+	if (GetEffect("DrawIn", this)) return false;
 	rope->ConnectPull();
-	return AddEffect("DrawIn", this, 1, 35, this);
+	return AddEffect("DrawIn", this, 1, 10, this);
 }
 
-private func FxDrawInTimer()
+private func FxDrawInTimer(effect)
 {
 	if (!rope) return -1;
 	if (!hook)
