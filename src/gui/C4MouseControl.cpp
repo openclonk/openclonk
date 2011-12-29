@@ -446,8 +446,9 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			float ImageHgt;
 			if (pGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			{
-				ImageWdt = DragImageObject->Def->PictureRect.Wdt;
-				ImageHgt = DragImageObject->Def->PictureRect.Hgt;
+				C4Def* Def = (DragImageObject ? DragImageObject->Def : DragImageDef);
+				ImageWdt = Def->PictureRect.Wdt;
+				ImageHgt = Def->PictureRect.Hgt;
 			}
 			else
 			{
