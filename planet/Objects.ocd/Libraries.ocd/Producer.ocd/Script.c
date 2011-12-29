@@ -51,7 +51,8 @@ public func GetInteractionMetaInfo(object clonk)
 public func Interact(object clonk)
 {
 	// Open production menu for the caller.
-	OpenProductionMenu(clonk);
+	clonk->CreateProductionMenu(this);	
+	//OpenProductionMenu(clonk);
 	return true;
 }
 
@@ -95,6 +96,23 @@ private func IsProduct(id product_id)
 	return false;
 }
 
+/** Returns an array with the ids of products which can be produced at this producer.
+	@return array with products.
+*/
+public func GetProducts()
+{
+	var products = [];
+	// Cycle through all definitions to find the ones this producer can produce.
+	var index = 0, product;
+	while (product = GetDefinition(index))
+	{
+		if (IsProduct(product))
+			products[GetLength(products)] = product;
+		index++;	
+	}
+	return products;
+}
+
 /** Determines whether the raw material specified is needed for production. Should be overloaded by the producer.
 	@param rawmat_id id of raw material for which to determine if it is needed for production.
 	@return \c true if the raw material is needed, \c false otherwise.
@@ -126,30 +144,42 @@ private func ProductionCosts(id item_id)
 /*-- Production queue --*/
 
 /** Adds an item to the production queue.
-	@param item_id id of the item.
+	@param product_id id of the item.
 	@param amount the amount of items of \c item_id which should be produced.
 	@return \c current position of the item in the production queue.
 */
-public func AddToQueue(id item_id, int amount)
+public func AddToQueue(id product_id, int amount)
 {
 	// Check if this producer can produce the requested item.
-	if (!IsProduct(item_id))
+	if (!IsProduct(product_id))
 		return nil;
 	var pos = GetLength(queue);
-	queue[pos] = [item_id, amount];
+	
+	// Check if the same product is in the position before, cause of possible redundancy.
+	if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
+		queue[pos-1].Amount += amount;
+	// Otherwise create a new entry in the queue.
+	else	
+		queue[pos] = { Product = product_id, Amount = amount };
 	return pos;
 }
 
-/** Removes an item from the production queue.
+/** Removes a item or some of it from from the production queue.
 	@param pos position of the item in the queue.
+	@param amount the amount of this item which should be removed.
 	@return \c nil.
 */
-public func RemoveFromQueue(int pos)
+public func RemoveFromQueue(int pos, int amount)
 {
 	var length = GetLength(queue);
 	// Safety, pos out of reach.
 	if (pos > length - 1)
 		return;
+	// Reduce and check amount.
+	queue[pos].Amount -= amount;
+	if (queue[pos].Amount > 0)
+		return;		
+	// If amount < 0, remove item from queue.
 	// From pos onwards queue items should be shift downwards.
 	for (var i = pos; i < GetLength(queue); i++)
 		queue[i] = queue[i+1];
@@ -175,6 +205,14 @@ public func ClearQueue(bool abort)
 	return;
 }
 
+/** Returns the current queue.
+	@return an array containing the queue elements (.Product for id, .Amount for amount).
+*/
+public func GetQueue()
+{
+	return queue;
+}
+
 protected func FxProcessQueueStart()
 {
 
@@ -188,36 +226,30 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 		return 1;
 
 	// Wait if there are no items in the queue.
-	var to_produce = queue[0];
-	if (!to_produce)
+	if (!queue[0])
 		return 1;
 	
 	// Produce first item in the queue.
-	var item_id = to_produce[0];
-	var amount = to_produce[1];
+	var product_id = queue[0].Product;
+	var amount = queue[0].Amount;
 	// Check raw material need.
-	if (!CheckMaterial(item_id))
+	if (!CheckMaterial(product_id))
 	{
 		// No material available? request from cable network.
-		RequestMaterial(item_id);
+		RequestMaterial(product_id);
 		return 1;
 	}
 	// Start the item production.
-	if (!Produce(item_id))
+	if (!Produce(product_id))
 		return 1;
 
 	// Update amount and or queue.
 	if (amount == nil)
 		return 1;
-	amount--;
-	// If amount is zero, remove item from queue.
-	if (amount <= 0)
-	{
-		RemoveFromQueue(0);
-		return 1;
-	}
-	// Update queue, insert new amount.
-	queue[0] = [item_id, amount];
+		
+	// Update queue, reduce amount.
+	RemoveFromQueue(0, 1);
+	
 	// Done with production checks.
 	return 1;
 }
@@ -316,7 +348,7 @@ private func CheckForPower(id product)
 	{
 		// At least ten percent of the power need must be in the network.
 		if (!CheckPower(PowerNeed() / 10, true))
-			return false;		
+			return false;
 	}
 	return true;
 }
@@ -345,7 +377,7 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Production is active.
 	effect.Active = true;
 	
-	Log("Production started on %i", effect.Product);
+	//Log("Production started on %i", effect.Product);
 	
 	// Callback to the producer.
 	this->~OnProductionStart(effect.Product);
@@ -384,7 +416,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
 	
-	Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
+	//Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
 	
 	// Check if production time has been reached.
 	if (effect.Duration >= ProductionTime())
@@ -398,7 +430,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if (reason != 0)
 		return 1;
 	// Callback to the producer.
-	Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
+	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
 	var product = CreateObject(effect.Product);

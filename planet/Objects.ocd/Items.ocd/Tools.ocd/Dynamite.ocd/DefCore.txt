@@ -13,6 +13,6 @@ VertexFriction=90,90,90
 Value=3
 Mass=8
 Rotate=1
+Components=Coal=1;Sulphur=1
 ContactIncinerate=1
 BlastIncinerate=1
-Components=Sulphur=1;Coal=1

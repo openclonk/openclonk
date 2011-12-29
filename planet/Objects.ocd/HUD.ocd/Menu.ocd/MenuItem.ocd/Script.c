@@ -130,7 +130,9 @@ public func ResetSize() { SetSize(100); }
 
 public func SetCount(int count)
 {
-	item_count = BoundBy(count, 0, 999); // No more supported currently.
+	item_count = count;
+	if (item_count != nil)
+		item_count = BoundBy(item_count, 0, 999); // No more supported currently.
 	Update();
 	return;
 }
@@ -150,7 +152,16 @@ public func Update()
 	// Set mouse drag image.
 	this.MouseDragImage = item_object;
 	
-	// Set item graphics.
+	// Update item symbol.
+	UpdateSymbol();	
+	
+	// Update item amount.
+	UpdateCount();
+	return;
+}	
+
+private func UpdateSymbol()
+{
 	if (!item_object)
 	{
 		SetGraphics(nil, nil, 1);
@@ -186,38 +197,51 @@ public func Update()
 		
 		SetName(item_object->GetName());
 	}
-	
-	// Set item count.
-	var one = item_count % 10;
-	var ten = (item_count / 10) % 10;
-	var hun = (item_count / 100) % 10;
-	var s = 200;
-	var yoffs = 10000;
-	var xoffs = 13000;
-	var spacing = 5000;
-	SetGraphics(Format("10"), Icon_SlimNumber, 9, GFXOV_MODE_IngamePicture); //10 == "x"
+	return;
+}
 
-	SetGraphics(Format("%d", one), Icon_SlimNumber, 12, GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(s, 0, xoffs-spacing-500, 0, s, yoffs+300, 9);
-	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
-
-	if (ten > 0 || hun > 0)
+private func UpdateCount()
+{	
+	if (item_count == nil)
 	{
-		SetGraphics(Format("%d", ten), Icon_SlimNumber, 11, GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(s, 0, xoffs-spacing*2-500, 0, s, yoffs+300, 9);
-		SetObjDrawTransform(s, 0, xoffs-spacing, 0, s, yoffs, 11);
-	}
-	else
-		SetGraphics(nil, nil, 11);
-		
-	if (hun > 0)
-	{
-		SetGraphics(Format("%d", hun), Icon_SlimNumber, 10, GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(s, 0, xoffs-spacing*3-500, 0, s, yoffs+300, 9);
-		SetObjDrawTransform(s, 0, xoffs-spacing*2, 0, s, yoffs, 10);
-	}
-	else
+		SetGraphics(nil, nil, 9);
 		SetGraphics(nil, nil, 10);
-
+		SetGraphics(nil, nil, 11);
+		SetGraphics(nil, nil, 12);	
+	}
+	else
+	{	
+		// Set item count.
+		var one = item_count % 10;
+		var ten = (item_count / 10) % 10;
+		var hun = (item_count / 100) % 10;
+		var s = 200;
+		var yoffs = 10000;
+		var xoffs = 13000;
+		var spacing = 5000;
+		SetGraphics(Format("10"), Icon_SlimNumber, 9, GFXOV_MODE_IngamePicture); //10 == "x"
+	
+		SetGraphics(Format("%d", one), Icon_SlimNumber, 12, GFXOV_MODE_IngamePicture);
+		SetObjDrawTransform(s, 0, xoffs-spacing-500, 0, s, yoffs+300, 9);
+		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+	
+		if (ten > 0 || hun > 0)
+		{
+			SetGraphics(Format("%d", ten), Icon_SlimNumber, 11, GFXOV_MODE_IngamePicture);
+			SetObjDrawTransform(s, 0, xoffs-spacing*2-500, 0, s, yoffs+300, 9);
+			SetObjDrawTransform(s, 0, xoffs-spacing, 0, s, yoffs, 11);
+		}
+		else
+			SetGraphics(nil, nil, 11);
+			
+		if (hun > 0)
+		{
+			SetGraphics(Format("%d", hun), Icon_SlimNumber, 10, GFXOV_MODE_IngamePicture);
+			SetObjDrawTransform(s, 0, xoffs-spacing*3-500, 0, s, yoffs+300, 9);
+			SetObjDrawTransform(s, 0, xoffs-spacing*2, 0, s, yoffs, 10);
+		}
+		else
+			SetGraphics(nil, nil, 10);
+	}
 	return;
 }

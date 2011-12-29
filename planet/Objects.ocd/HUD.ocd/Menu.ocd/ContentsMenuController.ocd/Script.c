@@ -53,7 +53,8 @@ func Construction()
 	circ_menus = [];
 }
 
-func Close() {
+func Close() 
+{
 	if(menu_object)
 		menu_object->~MenuClosed(this);
 	RemoveObject();

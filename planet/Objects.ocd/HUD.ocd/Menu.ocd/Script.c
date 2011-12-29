@@ -222,19 +222,6 @@ private func GetItemRadius(int total)
 	return 1;
 }
 
-// Shows the menu.
-public func Show()
-{
-	UpdateMenu();
-	// Change visibility.
-	for (var item in menu_items)
-		if (item)
-			item.Visibility = VIS_Owner;
-	this.Visibility = VIS_Owner;
-	menu_shown = true;
-	return;
-}
-
 public func UpdateMenu()
 {
 	// Safety: check for items.
@@ -258,6 +245,19 @@ public func UpdateMenu()
 	return;
 }
 
+// Shows the menu.
+public func Show()
+{
+	UpdateMenu();
+	// Change visibility.
+	for (var item in menu_items)
+		if (item)
+			item.Visibility = VIS_Owner;
+	this.Visibility = VIS_Owner;
+	menu_shown = true;
+	return;
+}
+
 public func Hide()
 {
 	// Change visibility.
@@ -276,7 +276,6 @@ protected func Destruction()
 	for (var i = 0; i < GetLength(menu_items); i++)
 		if (menu_items[i])
 			menu_items[i]->RemoveObject();
-
 	return;
 }
 
