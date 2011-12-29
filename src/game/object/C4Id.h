@@ -88,12 +88,13 @@ public:
 
 	void CompileFunc(StdCompiler *pComp);
 
-	inline bool operator ==(const C4ID &other) const { return v == other.v; }
-	inline bool operator !=(const C4ID &other) const { return v != other.v; }
-	inline bool operator <(const C4ID &other) const { return v < other.v; }
-	inline bool operator >(const C4ID &other) const { return v > other.v; }
-	inline bool operator <=(const C4ID &other) const { return v <= other.v; }
-	inline bool operator >=(const C4ID &other) const { return v >= other.v; }
+	// Compare names instead of v directly so that a sequence of IDs is synchronous
+	inline bool operator ==(const C4ID &other) const { return names[v] == names[other.v]; }
+	inline bool operator !=(const C4ID &other) const { return names[v] != names[other.v]; }
+	inline bool operator <(const C4ID &other) const { return names[v] < names[other.v]; }
+	inline bool operator >(const C4ID &other) const { return names[v] > names[other.v]; }
+	inline bool operator <=(const C4ID &other) const { return names[v] <= names[other.v]; }
+	inline bool operator >=(const C4ID &other) const { return names[v] >= names[other.v]; }
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;
