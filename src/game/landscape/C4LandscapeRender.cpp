@@ -516,7 +516,7 @@ void C4LandscapeRenderGL::DumpInfoLog(const char *szWhat, GLhandleARB hShader, i
 	if(iActualLength > iLength || iActualLength <= 0) return;
 	
 	// Terminate, log
-	pBuf[iActualLength + 1] = '\0';
+	pBuf[iActualLength] = '\0';
 	LogSilentF("  gl: Compiling %s %d:", szWhat, iWorkaround);
 	LogSilent(pBuf);
 	delete[] pBuf;
