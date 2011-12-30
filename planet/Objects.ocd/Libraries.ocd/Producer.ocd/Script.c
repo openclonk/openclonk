@@ -434,14 +434,25 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	this->~OnProductionFinish(effect.Product);
 	// Create product. 	
 	var product = CreateObject(effect.Product);
-	this->~OnProductEjection(product);
-
+	OnProductEjection(product);
+	
 	return 1;
 }
 
+// Standard behaviour for product ejection.
 public func OnProductEjection(object product)
 {
-	product->Enter(this);
+	// Vehicles in front fo buildings.
+	if (product->GetCategory() & C4D_Vehicle)
+	{
+		var x = GetX();
+		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;
+		product->SetPosition(x, y);	
+	}
+	// Items should stay inside.
+	else
+		product->Enter(this);
+	return;
 }
 
 /*-- --*/
