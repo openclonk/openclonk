@@ -1330,7 +1330,7 @@ func HasMenuControl()
 func SetMenu(object m)
 {
 	// already the same
-	if (menu == m)
+	if (menu == m && m)
 	{
 		return;
 	}
@@ -1353,9 +1353,9 @@ func SetMenu(object m)
 			VirtualCursor()->StartAim(this,false,menu);
 		else
 		{
-			if (menu->~CursorUpdatesEnabled()) {
+			if (menu->~CursorUpdatesEnabled()) 
 				SetPlayerControlEnabled(GetOwner(), CON_GUICursor, true);
-			}
+
 			SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, true);
 			SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, true);
 		}
@@ -1365,7 +1365,6 @@ func SetMenu(object m)
 	{
 		if (virtual_cursor)
 			virtual_cursor->StopAim();
-		
 		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
