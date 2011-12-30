@@ -175,6 +175,13 @@ private func GetQueueIndex(object item)
 	return index;
 }
 
+public func HasCommander(object producer)
+{
+	if (menu_commander == producer)
+		return true;
+	return false;
+}
+
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when an item has been selected (left mouse button).
@@ -184,13 +191,13 @@ public func OnItemSelection(object item)
 	if (IsProductItem(item))
 	{
 		menu_commander->AddToQueue(item->GetSymbol(), 1);
-		UpdateMenuQueue(menu_commander);
+		//UpdateMenuQueue(menu_commander);
 	}
 	// If item is from queue, remove one from queue.
 	if (IsQueueItem(item))
 	{
 		menu_commander->RemoveFromQueue(GetQueueIndex(item), 1);
-		UpdateMenuQueue(menu_commander);
+		//UpdateMenuQueue(menu_commander);
 	}	
 	return _inherited(item, ...);
 }

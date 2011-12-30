@@ -161,6 +161,9 @@ public func AddToQueue(id product_id, int amount)
 	// Otherwise create a new entry in the queue.
 	else	
 		queue[pos] = { Product = product_id, Amount = amount };
+	// Notify all production menus open for this producer.
+	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
+		menu->UpdateMenuQueue(this);		
 	return pos;
 }
 
@@ -177,14 +180,18 @@ public func RemoveFromQueue(int pos, int amount)
 		return;
 	// Reduce and check amount.
 	queue[pos].Amount -= amount;
-	if (queue[pos].Amount > 0)
-		return;		
-	// If amount < 0, remove item from queue.
+	// If amount <= 0, remove item from queue.
 	// From pos onwards queue items should be shift downwards.
-	for (var i = pos; i < GetLength(queue); i++)
-		queue[i] = queue[i+1];
-	// Reduce queue size by one.
-	SetLength(queue, length - 1);
+	if (queue[pos].Amount <= 0)
+	{
+		for (var i = pos; i < GetLength(queue); i++)
+			queue[i] = queue[i+1];
+		// Reduce queue size by one.
+		SetLength(queue, length - 1);
+	}
+	// Notify all production menus open for this producer.
+	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
+		menu->UpdateMenuQueue(this);
 	return;
 }
 
@@ -536,6 +543,6 @@ protected func RejectEntrance(object obj)
 			index++;
 		}
 	}
-	
+
 	return true;
 }
