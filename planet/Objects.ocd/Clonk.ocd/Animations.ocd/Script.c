@@ -514,6 +514,21 @@ func StartStand()
 	During scaling the clonk adjusts his rotation to the ground.. When he is a the top, he uses a extra animation. When the wall doesn't have a platform for the feet he just scales using his arms.
 --*/
 
+/* Renders the clonk unable to scale */
+func DisableScale()
+{
+	if (!this.ActMap.Scale) return;
+	this.Scale = this.ActMap.Scale;
+	this.ActMap.Scale = nil;
+}
+/* Reenabled hangling */
+func EnableScale()
+{
+	if (!this.Scale) return;
+	this.ActMap.Scale = this.Scale;
+	this.Scale = nil;
+}
+
 func StartScale()
 {
 	if(!GetEffect("IntScale", this))
@@ -747,11 +762,24 @@ func FxFallTimer(object target, effect, int timer)
 	Adjust the speed sinoidal. Plays two different stand animations according to the position the clonk stops.
 --*/
 
+/* Renders the clonk unable to hangle */
+func DisableHangle()
+{
+	if (!this.ActMap.Hangle) return;
+	this.Hangle = this.ActMap.Hangle;
+	this.ActMap.Hangle = nil;
+}
+/* Reenabled hangling */
+func EnableHangle()
+{
+	if (!this.Hangle) return;
+	this.ActMap.Hangle = this.Hangle;
+	this.Hangle = nil;
+}
+
 /* Replaces the named action by an instance with a different speed */
 func PushActionSpeed(string action, int n)
 {
-	if (ActMap == this.Prototype.ActMap)
-		ActMap = { Prototype = this.Prototype.ActMap };
 	ActMap[action] = { Prototype = ActMap[action], Speed = n };
 	if (this.Action == ActMap[action].Prototype)
 		this.Action = ActMap[action];

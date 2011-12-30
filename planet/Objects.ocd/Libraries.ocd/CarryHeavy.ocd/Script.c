@@ -42,7 +42,7 @@ public func Grabbed(object clonk, bool grab)
 
 		liftheavy_carrier = clonk;
 
-		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this);
+		//AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this);
 	}
 }
 
@@ -169,6 +169,18 @@ func IsCarryingHeavy(object clonk)
 	return false;
 }
 
+func FxIntCarryHeavyStart(object clonk, proplist effect, int temp)
+{
+	if (temp) return;
+	clonk->DisableScale();
+	clonk->DisableHangle();
+	var throw = clonk.ThrowSpeed;
+	if (throw < 150) return; // I know this may be bad in some situations and result in normal throwing speed
+	// If so, see it as an easter egg exploit!
+	clonk.ThrowSpeed -= 150;
+	effect.throw = throw - clonk.ThrowSpeed;
+}
+
 func FxIntCarryHeavyTimer(object clonk, proplist effect, int timer)
 {
 	//Is there more than one carry-heavy object in the clonk? Then exit one
@@ -203,11 +215,19 @@ func FxIntCarryHeavyTimer(object clonk, proplist effect, int timer)
 	if(Contained() != clonk) return -1;
 }
 
+func FxIntCarryHeavyStop(object clonk, proplist effect, int reason, bool temp)
+{
+	if (temp) return;
+	clonk->EnableScale();
+	clonk->EnableHangle();
+	clonk.ThrowSpeed += effect.throw;
+}
+
 //In case the object is added via script, add the carry heavy effect
 func Entrance(object container)
 {
 	if(container->~IsClonk() && !IsCarryingHeavy())
-		AddEffect("IntCarryHeavy", container, 1, 1, this);
+		AddEffect("IntLiftHeavy", container, 1, 1, this);
 }
 
 func RejectCollect(id collectid, object collect)
