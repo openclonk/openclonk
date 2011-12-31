@@ -188,6 +188,18 @@ public func RemoveFromQueue(int pos, int amount)
 			queue[i] = queue[i+1];
 		// Reduce queue size by one.
 		SetLength(queue, length - 1);
+		// Check if the removed product was in between equal products, cause of a new possible redundancy.
+		if (pos > 0 && pos <= length - 2)
+		{
+			if (queue[pos-1].Product == queue[pos].Product)
+			{
+				queue[pos-1].Amount += queue[pos].Amount;
+				for (var i = pos; i < GetLength(queue); i++)
+					queue[i] = queue[i+1];
+				// Reduce queue size by one.
+				SetLength(queue, length - 2);				
+			}
+		}		
 	}
 	// Notify all production menus open for this producer.
 	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
