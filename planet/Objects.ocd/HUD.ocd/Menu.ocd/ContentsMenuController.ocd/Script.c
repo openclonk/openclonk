@@ -89,7 +89,10 @@ func AddContentMenu(object container, int pos, int length)
 	menu->SetDragDropMenu(true);
 
 	PutContentsIntoMenu(menu, container);
-	circ_menus[GetLength(circ_menus)] = {Object = container, Menu = menu};
+	circ_menus[pos] = {Object = container, Menu = menu};
+	
+	// Track external changes in containers.
+	AddEffect("ContainerTracker", container, 100, 1, this, nil, menu);
 	
 	UpdateContentMenus();	
 	return;
@@ -129,9 +132,6 @@ private func PutContentsIntoMenu(object menu, object obj)
 		item->SetSymbol(stack[0]);
 		item->SetCount(GetLength(stack));
 		item->SetData(stack);
-		// Track removal of contents.
-		for (var stack_obj in stack)
-			AddEffect("ContentTracker", stack_obj, 100, nil, this, nil, menu, item, stack);
 	}
 }
 
@@ -183,40 +183,78 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 /*-- Content tracking --*/
 // TODO: Implement this more carefully and cover all corner cases.
 
-public func FxContentTrackerStart(object target, proplist effect, int temporary, object menu, object item, object stack)
+public func FxContainerTrackerStart(object target, proplist effect, int temporary, object menu)
 {
 	if (temporary == 0)
 	{
 		effect.Menu = menu;
-		effect.Item = item;
-		effect.Stack = stack;
+		// Initialize content list.
+		effect.ContentList = [];
+		var index = 0;
+		while (target->Contents(index))
+		{
+			effect.ContentList[index] = target->Contents(index);
+			index++;
+		}
 	}
 	return 1;
 }
 
-public func FxContentTrackerTimer()
+public func FxContainerTrackerTimer(object target, proplist effect)
 {
-
-}
-
-public func FxContentTrackerStop(object target, proplist effect, int reason)
-{
-	// Notify content menu if object has been removed.
-	if (reason == 3)
-	{
-		//Log("Object removed");
-		effect.CommandTarget->~OnExternalContentRemoval(effect.Menu, effect.Item, effect.Stack, target);
-	}
-	return 1;
-}
-
-public func OnExternalContentRemoval(object menu, object item, array stack, object content)
-{
-	//Log("%v", stack);
+	// Match current contents to actual list, first trivial test.
+	if (GetLength(effect.ContentList) != target->ContentsCount())
+		// Stop the effect, the contoller is notified in the stop call.
+		return -1;
 	
-	// If stack will be empty, remove menu item.
-	if (GetLength(stack) <= 1)
-		return item->RemoveObject();
+	// Test both ways around, cause either container can be empty.
+	var index = 0;
+	while (target->Contents(index))
+	{
+		if (effect.ContentList[index] != target->Contents(index))
+		{
+			// Stop the effect, the contoller is notified in the stop call.
+			return -1;
+		}
+		index++;
+	}
+	for (index = 0; index < GetLength(effect.ContentList); index++)
+	{
+		if (effect.ContentList[index] != target->Contents(index))
+		{
+			// Stop the effect, the contoller is notified in the stop call.
+			return -1;
+		}
+	}
+	return 1;
+}
+
+public func FxContainerTrackerStop(object target, proplist effect, int reason)
+{
+	// Notify content menu if the effect has ended regularly, the menu will be deleted
+	// and a new effect for that menu will be added.
+	if (reason == 0)
+		effect.CommandTarget->~OnExternalContentChange(effect.Menu, target);
+
+	return 1;
+}
+
+public func OnExternalContentChange(object menu, object container)
+{
+	// Find changed menu and remove it.
+	var length = GetLength(circ_menus);
+	var index = 0;
+	for (index = 0; index < length; index++)
+		if (circ_menus[index].Menu == menu)
+		{
+			circ_menus[index].Menu->RemoveObject();
+			break;
+		}
+	
+	// Reopen the changed menu.
+	AddContentMenu(container, index, length);
+	Show();
+	return;
 }
 
 /** Transfers the objects contained in menu_item from the source to the target container.
@@ -251,7 +289,6 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 		{				
 			moved_to_target[GetLength(moved_to_target)] = obj;
 			moved_length++;
-			RemoveEffect("ContentTracker", obj);
 		}
 	}
 	
@@ -277,8 +314,6 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 				item->SetSymbol(moved_to_target[0]);
 				item->SetCount(GetLength(moved_to_target));
 				item->SetData(moved_to_target);
-				for (var stack_obj in moved_to_target)
-					AddEffect("ContentTracker", stack_obj, 100, nil, this, nil, p_target.Menu, item, moved_to_target);
 			}
 		}
 	}
