@@ -74,10 +74,11 @@ public func ResetClonk(clonk)
 }
 
 public func IsTool() { return true; }
+public func IsToolProduct() { return false; }
 public func IsAlchemyProduct() { return false; }
 
 func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-25, 1, 0, 0), Trans_Rotate(40, 0, 1, 0)), def);
 }
 local Collectible = 1;
 local Name = "$Name$";

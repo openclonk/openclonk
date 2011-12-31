@@ -13,6 +13,8 @@ public func Initialize()
 		aDynamites[i] = 0;
 		aWires[i] = 0;
 	}
+
+	this.PictureTransformation = Trans_Scale(); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
 	UpdatePicture();
 }
 
@@ -159,7 +161,7 @@ public func IsToolProduct() { return true; }
 public func IsAlchemyProduct() { return true; }
 
 func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Scale(), def); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);
 }
 local Collectible = 1;
 local Name = "$Name$";
