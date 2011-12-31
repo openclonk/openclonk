@@ -51,24 +51,8 @@ public func GetInteractionMetaInfo(object clonk)
 public func Interact(object clonk)
 {
 	// Open production menu for the caller.
-	clonk->CreateProductionMenu(this);	
-	//OpenProductionMenu(clonk);
+	clonk->CreateProductionMenu(this);
 	return true;
-}
-
-private func OpenProductionMenu(object clonk)
-{
-	// Create menu for the clonk.
-	clonk->CreateMenu(GetID(), this, C4MN_Extra_Components, "Production menu");
-	// Cycle through all definitions to find the ones this producer can produce.
-	var index = 0, product;
-	while (product = GetDefinition(index))
-	{
-		if (IsProduct(product))
-			clonk->AddMenuItem(Format("Produce %s", product->GetName()), "OnProductSelection", product);
-		index++;	
-	}
-	return;
 }
 
 protected func OnProductSelection(id product, int par, bool alt)

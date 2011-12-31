@@ -41,8 +41,8 @@ overlay MountainMaterials {
 	RandomMat & overlay { mat=Ice; tex=ice3; };
 	RandomMat & overlay { mat=Rock; tex=rock; };
 	RandomMat & overlay { mat=Tunnel; tex=tunnel; };
-	RandomMat & overlay { mat=Sulphur; tex=sulphur; };
 	RandomMat & overlay { mat=Ore; tex=ore; };
+	RandomMat & overlay { mat=Sulphur; tex=sulphur; };
 	RandomMat & overlay { mat=Coal; tex=coal; };
 	// A little more diagonal tunnels.
 	overlay { 
