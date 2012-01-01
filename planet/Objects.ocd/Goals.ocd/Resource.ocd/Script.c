@@ -84,7 +84,7 @@ public func Activate(int plr)
 			var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 			var res_cnt = ObjectCount(Find_ID(res_id));
 			var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-			var add_msg = Format("$MsgGoalResource$", res_id, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio, res_cnt);
+			var add_msg = Format("$MsgGoalResource$", res_id, Max(0, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio), res_cnt);
 			message = Format("%s%s", message, add_msg);
 		}
 	}
@@ -106,7 +106,7 @@ public func GetShortDescription(int plr)
 		var res_id = GetMaterialVal("Blast2Object", "Material", Material(mat));
 		var res_cnt = ObjectCount(Find_ID(res_id));
 		var blast_ratio = GetMaterialVal("Blast2ObjectRatio", "Material", Material(mat));
-		msg = Format("%s{{%i}}: %d ", msg, res_id, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio + res_cnt);
+		msg = Format("%s{{%i}}: %d ", msg, res_id, Max(0, (mat_cnt - (2*tol+1) * blast_ratio / 2) / blast_ratio) + res_cnt);
 	}	
 	return msg;
 }
