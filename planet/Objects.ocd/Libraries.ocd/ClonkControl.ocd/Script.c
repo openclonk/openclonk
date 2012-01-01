@@ -191,9 +191,6 @@ protected func Construction()
 	alt = false;
 	using = nil;
 	using_type = nil;
-
-	backpack_open = false;
-	contents_open = false;
 	
 	return _inherited(...);
 }
@@ -410,29 +407,27 @@ local alt;
 local mlastx, mlasty;
 local virtual_cursor;
 local noholdingcallbacks;
-local backpack_open, contents_open;
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	if (!this) return false;
+	if (!this) 
+		return false;
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
-	// open / close backpack
+	// Backpack menu
 	if (ctrl == CON_Backpack)
 	{
-		var closed = false;
 		// close if menu was open
 		if(GetMenu())
 		{
+			var is_backpack = GetMenu()->~GetSymbol() == Icon_Backpack;
 			GetMenu()->RemoveObject();
 			SetMenu(nil);
-			// if backpack open: done
-			if (backpack_open) {
-				backpack_open = false;
+			// If backpack menu, don't open new one and return.
+			if (is_backpack)
 				return true;
-			}
 		}
 		// Cancel usage
 		CancelUse();
@@ -448,32 +443,29 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			GetMenu()->AddItem(item,nil,i);
 		}
 		// finally, show the menu.
-		backpack_open = true;
 		GetMenu()->Show();
 
 		return true;
 	}
-	else if (ctrl == CON_Contents)
+	// Contents menu
+	if (ctrl == CON_Contents)
 	{
-		// close if menu was open
+		// Close any menu if open.
 		if (GetMenu())
 		{
+			var is_content = GetMenu()->~IsContentMenu();
 			GetMenu()->RemoveObject();
 			SetMenu(nil);
-			// done if contents are open
-			if(contents_open) {
-				contents_open = false;
+			// If contents menu, don't open new one and return.
+			if (is_content)
 				return true;
-			}
 		}
-		// open contents...
+		// Open contents menu.
 		CancelUse();
 		CreateContentsMenus();
 		// CreateContentsMenus calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
-		contents_open = true;
-		GetMenu()->Show();
-		
+		GetMenu()->Show();		
 		return true;
 	}
 	
@@ -1338,8 +1330,6 @@ func SetMenu(object m)
 	if (menu && m)
 	{
 		menu->RemoveObject();
-		backpack_open = false;
-		contents_open = false;
 	}
 	// new one
 	menu = m;
@@ -1373,8 +1363,6 @@ func SetMenu(object m)
 
 func MenuClosed()
 {
-	backpack_open = false;
-	contents_open = false;
 	SetMenu(nil);
 }
 

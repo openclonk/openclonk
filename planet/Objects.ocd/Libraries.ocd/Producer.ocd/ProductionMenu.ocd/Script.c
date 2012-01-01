@@ -83,6 +83,8 @@ public func UpdateMenuQueue(object producer)
 
 /* Menu properties */
 
+public func IsProductionMenu() { return true;}
+
 public func AddQueueItem(object item)
 {
 	var queue_cnt = GetLength(menu_queue);

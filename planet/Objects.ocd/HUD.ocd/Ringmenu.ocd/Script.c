@@ -8,6 +8,7 @@
 local command_object; //at which selectes will be sent
 local menu_icons;     //array for the icons
 local menu_object;    //the clonk which the menu is for
+local menu_symbol;    //the symbol of the menu
 local shown;          //am i visible?
 
 static const GUI_Ringmenu_Radius = 100;
@@ -74,6 +75,7 @@ public func SetMenu(object menuobject, object commandobject)
 func SetMenuIcon(id symbol)
 {
 	this.Visibility = VIS_Owner;
+	menu_symbol = symbol;
 	if(!symbol)
 	{
 		SetGraphics(nil,nil,0);
@@ -85,6 +87,11 @@ func SetMenuIcon(id symbol)
 		SetObjDrawTransform(2000,0,0,0,2000,0,1);
 		SetObjDrawTransform(2000,0,0,0,2000,0,0);
 	}
+}
+
+func GetSymbol()
+{
+	return menu_symbol;
 }
 
 //adds an item, icon, amount, extra (the item can be an object too)

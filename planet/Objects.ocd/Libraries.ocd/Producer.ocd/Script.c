@@ -48,8 +48,21 @@ public func GetInteractionMetaInfo(object clonk)
 	return { Description = "Produce items", IconName = nil, IconID = nil };
 }
 
+// On interaction the production menu should be opened.
 public func Interact(object clonk)
 {
+	var open_menu = clonk->GetMenu();
+	// First try to close any other menu, which is open in the clonk.
+	if (open_menu)
+	{
+		var is_prod_menu = open_menu->~IsProductionMenu();
+		// Remove the open menu.
+		open_menu->RemoveObject();
+		clonk->SetMenu(nil);
+		// If open_menu is production menu, return and don't open a new one.
+		if (is_prod_menu)
+			return true;	
+	}
 	// Open production menu for the caller.
 	clonk->CreateProductionMenu(this);
 	return true;

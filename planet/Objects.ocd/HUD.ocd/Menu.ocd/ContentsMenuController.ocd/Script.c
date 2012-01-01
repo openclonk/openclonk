@@ -43,6 +43,8 @@ global func SortInventoryObjs()
 	if (GetCategory() & C4D_Structure) return 20;
 }
 
+public func IsContentMenu() { return true; }
+
 func SetMenuObject(object menu_object)
 {
 	menu_object = menu_object;
