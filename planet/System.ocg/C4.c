@@ -39,12 +39,6 @@ global func GetActMapVal(string entry, string action, id def, int num)
 	return GetProperty(entry, GetProperty(action, def));
 }
 
-global func ShowNeededMaterial()
-{
-	MessageWindow(GetNeededMatStr(), GetOwner(), nil, GetName());
-	return true;
-}
-
 // Removes a material pixel from the specified location, if the material is flammable.
 // \par x X coordinate. Offset if called in object context.
 // \par y Y coordinate. Offset if called in object context.
