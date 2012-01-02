@@ -83,7 +83,7 @@ public func UpdateMenuQueue(object producer)
 
 /* Menu properties */
 
-public func IsProductionMenu() { return true;}
+public func IsConstructionMenu() { return true; }
 
 public func AddQueueItem(object item)
 {
