@@ -153,6 +153,10 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
                                       C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner,
                                       long iCompletion, bool fTerrain, bool fCheckSite)
 {
+	// Make sure parameters are valid
+	if (!PropList || !PropList->GetDef())
+		return NULL;
+
 	// Local object calls override position offset, owner
 	if (cthr->Obj)
 	{
