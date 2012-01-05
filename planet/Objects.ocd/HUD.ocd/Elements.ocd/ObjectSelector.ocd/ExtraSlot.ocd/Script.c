@@ -15,10 +15,11 @@ protected func Construction()
 	crew = nil;
 	
 	// parallaxity
-	this["Parallaxity"] = [0,0];
-	
+	this.Parallaxity = [0,0];	
 	// visibility
-	this["Visibility"] = VIS_None;
+	this.Visibility = VIS_None;	
+	// mouse drag
+	this.MouseDrag = MD_DragSource | MD_DropTarget;
 }
 
 public func MouseSelectionAlt(int plr)
@@ -95,7 +96,7 @@ public func MouseDrop(int plr, obj)
 public func SetObject(object obj)
 {
 
-	this["Visibility"] = VIS_Owner;
+	this.Visibility = VIS_Owner;
 
 	myobject = obj;
 	
@@ -105,12 +106,12 @@ public func SetObject(object obj)
 	{
 		SetGraphics(nil,nil,1);
 		SetName("$TxtEmpty$");
-		this["MouseDragImage"] = nil;
+		this.MouseDragImage = nil;
 	}
 	else
 	{
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture,0,0,myobject);
-		this["MouseDragImage"] = myobject;
+		this.MouseDragImage = myobject;
 		
 		SetName(myobject->GetName());
 		

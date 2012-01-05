@@ -47,10 +47,11 @@ protected func Construction()
 	subselector = nil;
 	
 	// parallaxity
-	this["Parallaxity"] = [0,0];
-	
+	this.Parallaxity = [0,0];	
 	// visibility
-	this["Visibility"] = VIS_None;
+	this.Visibility = VIS_None;	
+	// mouse drag
+	this.MouseDrag = MD_DragSource | MD_DropTarget;
 }
 
 protected func Destruction()
@@ -273,7 +274,7 @@ public func ClearMessage()
 
 public func SetObject(object obj, int type, int pos, int hot)
 {
-	this["Visibility"] = VIS_Owner;
+	this.Visibility = VIS_Owner;
 
 	// remove effect that checks whether the object to which this selector
 	// refers to is still existant because now this selector gets a new
@@ -290,7 +291,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 		SetGraphics("None");
 		SetGraphics(nil,nil,1);
 		SetName(Format("$TxtSlot$",pos+1));
-		this["MouseDragImage"] = nil;
+		this.MouseDragImage = nil;
 		if(subselector)
 			subselector->RemoveObject();
 	}
@@ -299,7 +300,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 		SetGraphics();
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, myobject);
 		SetName(Format("$TxtSelect$",myobject->GetName()));
-		this["MouseDragImage"] = myobject;
+		this.MouseDragImage = myobject;
 
 		// if object has extra slot, show it
 		if(myobject->~HasExtraSlot())

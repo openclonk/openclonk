@@ -40,9 +40,12 @@ global func CreateProductionMenu(object producer)
 
 protected func Construction()
 {
+	_inherited(...);
 	menu_queue = [];
 	SetPosition(600, 400);
-	return _inherited(...);
+	// Production menus are no drag targets.
+	this.MouseDrag = MD_NoClick;
+	return;
 }
 
 public func AddMenuProducts(object producer)
@@ -53,6 +56,7 @@ public func AddMenuProducts(object producer)
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(product);
+		item.MouseDrag = MD_DragSource;
 	}
 	return;
 }
@@ -79,6 +83,18 @@ public func UpdateMenuQueue(object producer)
 	
 	AddMenuQueue(producer);	
 	return;	
+}
+
+public func ShowProductInfo(object item)
+{
+	var product_id = item->GetSymbol();
+	var costs = menu_commander->ProductionCosts(product_id);
+	var cost_msg = "@";
+	for (var comp in costs)
+		cost_msg = Format("%s %dx {{%i}}", cost_msg, comp[1], comp[0]);
+	
+	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
+	return;
 }
 
 /* Menu properties */
@@ -193,13 +209,11 @@ public func OnItemSelection(object item)
 	if (IsProductItem(item))
 	{
 		menu_commander->AddToQueue(item->GetSymbol(), 1);
-		//UpdateMenuQueue(menu_commander);
 	}
 	// If item is from queue, remove one from queue.
 	if (IsQueueItem(item))
 	{
 		menu_commander->RemoveFromQueue(GetQueueIndex(item), 1);
-		//UpdateMenuQueue(menu_commander);
 	}	
 	return _inherited(item, ...);
 }
@@ -207,6 +221,16 @@ public func OnItemSelection(object item)
 // Called when an item has been selected (right mouse button).
 public func OnItemSelectionAlt(object item)
 {
+	// Show the production cost of the selected production item.
+	if (IsProductItem(item))
+	{
+		ShowProductInfo(item);	
+	}
+	// Show production status of the selected queue item.
+	if (IsQueueItem(item))
+	{
+		// TODO: Implement if considered necessary.	
+	}
 	return _inherited(item, ...);
 }
 
@@ -219,6 +243,22 @@ public func MouseDrop(int plr, obj)
 // Called when another item has been dropped on an item in this menu.
 public func OnItemDropped(object drop_item, object on_item)
 {
+	// This will only be called from queue items, since product items are only drag sources.
+	// If the dropped item is a product: insert product into queue.
+	if (IsProductItem(drop_item))
+	{
+		menu_commander->InsertIntoQueue(drop_item->GetSymbol(), 1, GetQueueIndex(on_item));
+	}
+	// If the dropped item is in the queue: shift item around in the queue.
+	if (IsQueueItem(drop_item))
+	{
+		// TODO: Fix me, then uncomment.
+		//var index = GetQueueIndex(on_item);
+		//var amount = drop_item->GetCount();
+		//menu_commander->InsertIntoQueue(drop_item->GetSymbol(), amount, index);
+		//menu_commander->RemoveFromQueue(index - 1, amount);
+	}
+	
 	return _inherited(drop_item, on_item, ...);
 }
 

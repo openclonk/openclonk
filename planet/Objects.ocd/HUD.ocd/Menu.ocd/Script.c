@@ -312,7 +312,7 @@ public func MouseDrop(int plr, obj)
 	if (!IsDragDropMenu()) return false;
 	
 	// Forward command to commander.
-	return menu_commander->OnItemDropped(this, obj, nil);
+	return menu_commander->~OnItemDropped(this, obj, nil);
 }
 
 // Called when another item has been dropped on an item in this menu.

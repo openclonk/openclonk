@@ -124,7 +124,7 @@ public func NeedsRawMaterial(id rawmat_id)
 	@param item_id id of the item under consideration.
 	@return a list of objects and their respective amounts.
 */
-private func ProductionCosts(id item_id)
+public func ProductionCosts(id item_id)
 {
 	/* NOTE: This may be overloaded by the producer */
 	var comp_list = [];
@@ -143,7 +143,7 @@ private func ProductionCosts(id item_id)
 /** Adds an item to the production queue.
 	@param product_id id of the item.
 	@param amount the amount of items of \c item_id which should be produced.
-	@return \c current position of the item in the production queue.
+	@return current position of the item in the production queue.
 */
 public func AddToQueue(id product_id, int amount)
 {
@@ -158,6 +158,43 @@ public func AddToQueue(id product_id, int amount)
 	// Otherwise create a new entry in the queue.
 	else	
 		queue[pos] = { Product = product_id, Amount = amount };
+	// Notify all production menus open for this producer.
+	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
+		menu->UpdateMenuQueue(this);		
+	return pos;
+}
+
+/** Inserts an item into the production queue at the specified position.
+	@param product_id id of the item.
+	@param amount the amount of items of \c item_id which should be inserted.
+	@param pos the position at which the object should be inserted, the rest of the queue is shifted downwards.
+	@return current position of the item in the production queue.
+*/
+public func InsertIntoQueue(id product_id, int amount, int pos)
+{
+	// Check if this producer can produce the requested item.
+	if (!IsProduct(product_id))
+		return nil;
+	
+	// Make sure the position is valid.
+	BoundBy(pos, 0, GetLength(queue) - 1);
+
+	// Check if there is the same product at that position, for a possible merge.
+	if (amount != nil && queue[pos].Product == product_id)
+		queue[pos].Amount += amount;
+	// Check if there is the same product at the position before, for a possible merge.
+	else if (amount != nil && pos > 0 && queue[pos-1].Product == product_id)
+		queue[pos-1].Amount += amount;
+	// Otherwise insert a new item into the queue.
+	else
+	{
+		// First shift all queue items from that position up by one.
+		var length = GetLength(queue);
+		for (var i = length; i > pos; i--)
+			queue[i] = queue[i-1];
+		// Then create new item.
+		queue[pos] = { Product = product_id, Amount = amount };
+	}
 	// Notify all production menus open for this producer.
 	for (var menu in FindObjects(Find_ID(Library_ProductionMenu), Find_Func("HasCommander", this)))
 		menu->UpdateMenuQueue(this);		
