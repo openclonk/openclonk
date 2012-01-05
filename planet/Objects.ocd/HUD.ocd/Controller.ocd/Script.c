@@ -418,59 +418,45 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	var startAt = effect.startAt;
 	var i = startAt;
 	
-	var vehicles = CreateArray();
-	var pushed = nil;
-	
-	var exclusive = false;
 	var hotkey = i+1-target->HandObjects();
 	
-	if((!target->Contained()))
+	// Add buttons:
+	
+	// all except structures only if outside
+	if(!target->Contained())
 	{
-		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
-		
-		// don't forget the vehicle that the clonk is pushing (might not be found
-		// by the findobjects because it is not at that point)
-		if(target->GetProcedure() == "PUSH" && (pushed = target->GetActionTarget()))
+		var pushed = nil;
+		if(target->GetProcedure() == "PUSH")
+			pushed = target->GetActionTarget();
+	
+		// add interactables (script interface)
+		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
+		for(var interactable in interactables)
 		{
-			// if the pushed vehicle has been found, we can just continue
-			var inside = false;
-			for(var vehicle in vehicles)
-				if(vehicle == pushed)
-					inside = true;
-			
-			// otherwise we must add it before the rest
-			if(!inside)
-			{
-				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE,hotkey++);
-				if(actionbar[i]->Selected()) exclusive = true;
-				++i;
-			}
+			ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++);
+		}
+		
+		// add vehicles
+		// 1. add vehicle the clonk is pushing
+		if(pushed)
+		{
+			ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE,hotkey++);
+		}
+		// 2. the rest
+		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
+		for(var vehicle in vehicles)
+		{
+			// skip pushed vehicle
+			if (vehicle == pushed) continue;
+			ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
 		}
 	}
-	
-	// search vehicles
-	for(var vehicle in vehicles)
-	{
-		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
-		if(actionbar[i]->Selected()) exclusive = true;
-		++i;
-	}
 
-	// search structures
+	// add structures
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 	for(var structure in structures)
 	{
-		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE,hotkey++);
-		if(actionbar[i]->Selected()) exclusive = true;
-		++i;
-	}
-
-	// search interactables (script interface)
-	var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
-	for(var interactable in interactables)
-	{
-		ActionButton(target,i,interactable,ACTIONTYPE_SCRIPT,hotkey++);
-		++i;
+		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 	}
 	
 	ClearButtons(i);
