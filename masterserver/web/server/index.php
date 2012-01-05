@@ -14,6 +14,8 @@ require_once('include/C4Masterserver.php');
 require_once('include/C4Network.php');
 require_once('include/FloodProtection.php');
 require_once('include/ParseINI.php');
+$C4HostTestIncludeMode = true;
+require_once('include/C4HostTest.php');
 
 $config = file_get_contents('include/config.ini');
 $link = mysql_connect(
@@ -85,7 +87,11 @@ if ($link && $db) {
 				} else {
 					$csid = $server->addReference($reference);
 					if ($csid) {
-						C4Network::sendAnswer(C4Network::createAnswer(array('Status' => 'Success', 'CSID' => $csid)));
+						$answer = array('Status' => 'Success', 'CSID' => $csid);
+						if(!testHostConn($input))
+							$answer['Message'] = 'Your network failed to pass certain tests. It is unlikely that are you able to host for the public.|To fix that, you need port forwarding in your router.';
+						C4Network::sendAnswer(C4Network::createAnswer($answer));
+						unset($answer);
 					} else {
 						C4Network::sendAnswer(C4Network::createError('Round signup failed. (To many tries?)'));
 					}
