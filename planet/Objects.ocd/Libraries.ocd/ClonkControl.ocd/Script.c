@@ -48,6 +48,7 @@ local inventory;
 
 private func HandObjects() { return 2; }
 public func MaxContentsCount() { return 7; }
+public func DontStackObjectsInMenu() { return true; }
 
 /* Get the ith item in the inventory */
 // the first two are in the hands

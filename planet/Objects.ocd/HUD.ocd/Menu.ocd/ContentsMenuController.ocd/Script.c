@@ -123,18 +123,43 @@ private func UpdateContentMenus()
 
 private func PutContentsIntoMenu(object menu, object obj)
 {
-	var stacked_contents = obj->GetStackedContents();
-	for(var stack in stacked_contents)
+	if(obj->~DontStackObjectsInMenu())
 	{
-		// into the menu item, all the objects of the stack are saved
-		// as an array into it's extradata
-		var item = CreateObject(GUI_MenuItem);
-		if (!menu->AddItem(item))
-			return item->RemoveObject();
-		item->SetSymbol(stack[0]);
+		var contents = FindObjects(Find_Container(obj));
+		for(var content in contents)
+		{
+			if(!AddContentsItemToMenu(content, menu)) return;
+		}
+	} else
+	{
+		var stacked_contents = obj->GetStackedContents();
+		for(var stack in stacked_contents)
+		{
+			if(!AddContentsItemToMenu(stack[0], menu, stack)) return;
+		}
+	}
+}
+
+private func AddContentsItemToMenu(object symbol, object menu, array stack)
+{
+	// into the menu item, all the objects of the stack are saved
+	// as an array into it's extradata
+	var item = CreateObject(GUI_MenuItem);
+	if (!menu->AddItem(item))
+	{
+		item->RemoveObject();
+		return false;
+	}
+	item->SetSymbol(symbol);
+	if(stack == nil)
+	{
+		item->SetData([symbol]);
+	} else
+	{
 		item->SetCount(GetLength(stack));
 		item->SetData(stack);
 	}
+	return true;
 }
 
 global func GetStackedContents()
@@ -278,7 +303,7 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 		
 	// Move to object from source container to target container.
 	// Memorize which objects have been put where in order to know which menu items to update
-	// how (Because the collection can be rejected by RejectCollect/RejectEntrance).
+	// how (Because the collection can be rejected by RejectCollect/AllowTransfer).
 	var moved_to_target = [];
 	var moved_length = 0;
 	for (var i = 0; i < amount; i++) 
@@ -297,25 +322,31 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 	// Update target menu, source menu is updated elsewhere.
 	if (moved_length > 0)
 	{
-		// If menu item with same objects already exists: update menu item.
-		var target_item = CanStackObjIntoMenuItem(p_target.Menu, moved_to_target[0]);
-		if (target_item)
+	
+		// in case objects may not be stacked in the contents menu of the target object, add
+		// each object as a new menu item
+		if(p_target.Object->~DontStackObjectsInMenu())
 		{
-			var new_extra_data = Concatenate(target_item->GetExtraData(), moved_to_target);
-			target_item->SetData(new_extra_data);
-			target_item->SetCount(GetLength(new_extra_data));
+			for(var mov_obj in moved_to_target)
+			{
+				AddContentsItemToMenu(mov_obj, p_target.Menu);
+			}
 		}
-		// Otherwise add a new menu item to containing menu.
+		// otherwise, add stacked
 		else
 		{
-			var item = CreateObject(GUI_MenuItem);
-			if (!p_target.Menu->AddItem(item))
-				item->RemoveObject();
+			// If menu item with same objects already exists: update menu item.
+			var target_item = CanStackObjIntoMenuItem(p_target.Menu, moved_to_target[0]);
+			if (target_item)
+			{
+				var new_extra_data = Concatenate(target_item->GetExtraData(), moved_to_target);
+				target_item->SetData(new_extra_data);
+				target_item->SetCount(GetLength(new_extra_data));
+			}
+			// Otherwise add a new menu item to containing menu.
 			else
 			{
-				item->SetSymbol(moved_to_target[0]);
-				item->SetCount(GetLength(moved_to_target));
-				item->SetData(moved_to_target);
+				AddContentsItemToMenu(moved_to_target[0], p_target.Menu, moved_to_target);
 			}
 		}
 	}
