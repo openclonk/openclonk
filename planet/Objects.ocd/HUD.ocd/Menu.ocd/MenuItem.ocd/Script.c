@@ -215,10 +215,10 @@ private func UpdateCount()
 		var one = item_count % 10;
 		var ten = (item_count / 10) % 10;
 		var hun = (item_count / 100) % 10;
-		var s = 200;
-		var yoffs = 10000;
-		var xoffs = 13000;
-		var spacing = 5000;
+		var s = 300;
+		var yoffs = 15000;
+		var xoffs = 17000;
+		var spacing = 7500;
 		SetGraphics(Format("10"), Icon_SlimNumber, 9, GFXOV_MODE_IngamePicture); //10 == "x"
 	
 		SetGraphics(Format("%d", one), Icon_SlimNumber, 12, GFXOV_MODE_IngamePicture);

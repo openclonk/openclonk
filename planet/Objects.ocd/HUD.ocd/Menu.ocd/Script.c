@@ -17,7 +17,7 @@ local menu_items; // List of the items in the menu.
 local menu_shown;
 local dragdrop;
 
-static const MENU_Radius = 160;
+static const MENU_Radius = 140;
 
 
 protected func Construction()
@@ -32,6 +32,7 @@ protected func Construction()
 	// Mouse drag image
 	this.MouseDragImage = nil;
 	this.MouseDrag = MD_NoClick | MD_DropTarget;
+	SetSymbol(nil);
 	return;
 }
 
@@ -59,18 +60,23 @@ public func SetMenuObject(object menuobject)
 	return;
 }
 
-// Not used currently
 public func SetSymbol(symbol)
 {
+	SetGraphics("BG", this, 2, GFXOV_MODE_Base);
+
 	if(!symbol)
 	{
 		SetGraphics(nil, nil, 1);
+
 	}
 	else
 	{
-		SetGraphics(nil, symbol, 1, GFXOV_MODE_IngamePicture);
+		if (GetType(symbol) == C4V_C4Object)
+			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, symbol);
+		else
+			SetGraphics(nil,symbol,1,GFXOV_MODE_IngamePicture);
+			
 		SetObjDrawTransform(800, 0, 0, 0, 800, 0, 1);
-		SetClrModulation(RGBa(96, 96, 96, 192), 1);
 	}
 	return;
 }
