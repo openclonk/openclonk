@@ -1158,8 +1158,13 @@ private func ObjectControlInteract(int plr, int ctrl)
 						Find_Func("IsInteractable",this), Find_Layer(GetObjectLayer()));
 	// if there are several interactable objects, just call the first that returns true
 	for (var interactable in interactables)
+	{
 		if (interactable->~Interact(this))
-			break;
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 // Handles push controls
