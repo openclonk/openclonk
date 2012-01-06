@@ -121,29 +121,27 @@ private func UpdateContentMenus()
 	return;
 }
 
-private func PutContentsIntoMenu(object menu, object obj)
+private func PutContentsIntoMenu(object menu, object container)
 {
-	if(obj->~DontStackObjectsInMenu())
+	if (container->~ NoStackedContentMenu())
 	{
-		var contents = FindObjects(Find_Container(obj));
-		for(var content in contents)
-		{
-			if(!AddContentsItemToMenu(content, menu)) return;
-		}
-	} else
+		var contents = FindObjects(Find_Container(container));
+		for (var content in contents)
+			if (!AddContentsMenuItem(content, menu))
+				return;
+	} 
+	else
 	{
-		var stacked_contents = obj->GetStackedContents();
-		for(var stack in stacked_contents)
-		{
-			if(!AddContentsItemToMenu(stack[0], menu, stack)) return;
-		}
+		var stacked_contents = container->GetStackedContents();
+		for (var stack in stacked_contents)
+			if (!AddContentsMenuItem(stack[0], menu, stack)) 
+				return;
 	}
 }
 
-private func AddContentsItemToMenu(object symbol, object menu, array stack)
+private func AddContentsMenuItem(object symbol, object menu, array stack)
 {
-	// into the menu item, all the objects of the stack are saved
-	// as an array into it's extradata
+	// Into the menu item, all the objects of the stack are saved as an array into it's extradata.
 	var item = CreateObject(GUI_MenuItem);
 	if (!menu->AddItem(item))
 	{
@@ -151,10 +149,11 @@ private func AddContentsItemToMenu(object symbol, object menu, array stack)
 		return false;
 	}
 	item->SetSymbol(symbol);
-	if(stack == nil)
+	if (stack == nil)
 	{
 		item->SetData([symbol]);
-	} else
+	}
+	else
 	{
 		item->SetCount(GetLength(stack));
 		item->SetData(stack);
@@ -325,12 +324,10 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 	
 		// in case objects may not be stacked in the contents menu of the target object, add
 		// each object as a new menu item
-		if(p_target.Object->~DontStackObjectsInMenu())
+		if (p_target.Object->~NoStackedContentMenu())
 		{
-			for(var mov_obj in moved_to_target)
-			{
-				AddContentsItemToMenu(mov_obj, p_target.Menu);
-			}
+			for (var mov_obj in moved_to_target)
+				AddContentsMenuItem(mov_obj, p_target.Menu);
 		}
 		// otherwise, add stacked
 		else
@@ -346,7 +343,7 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 			// Otherwise add a new menu item to containing menu.
 			else
 			{
-				AddContentsItemToMenu(moved_to_target[0], p_target.Menu, moved_to_target);
+				AddContentsMenuItem(moved_to_target[0], p_target.Menu, moved_to_target);
 			}
 		}
 	}
@@ -361,9 +358,6 @@ private func ExchangeObjects()
 {
 	// TODO: Implement.
 
-
-
-	
 }
 
 private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
@@ -373,10 +367,11 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 	// container anymore
 	var c = 0;
 	var i;
-	for (i=0; i<GetLength(objects); ++i)
+	for (i = 0; i < GetLength(objects); ++i)
 	{
 		var obj = objects[i];
-		if(obj->Contained() != p_source.Object) {
+		if (obj->Contained() != p_source.Object) 
+		{
 			objects[i] = nil;
 			c++;
 		}

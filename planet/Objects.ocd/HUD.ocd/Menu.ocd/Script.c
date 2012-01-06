@@ -74,7 +74,7 @@ public func SetSymbol(symbol)
 		if (GetType(symbol) == C4V_C4Object)
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, symbol);
 		else
-			SetGraphics(nil,symbol,1,GFXOV_MODE_IngamePicture);
+			SetGraphics(nil, symbol, 1, GFXOV_MODE_IngamePicture);
 			
 		SetObjDrawTransform(800, 0, 0, 0, 800, 0, 1);
 	}
