@@ -30,25 +30,25 @@ function testHostConn(&$req) {
 	} else { // Call hostchecker on remote service
 		$url = ParseINI::parseValue('hosttest_url', $config);
 		$remotetimeout = ParseINI::parseValue('hosttest_remote_timeout', $config);
-		if(!preg_match('#^([a-z.]+\.[a-z]+):([0-9]+)(/.*)$#', $url, $url_split)) {
+		if(!preg_match('#^(([a-z0-9.]+\.[a-z0-9]+)|\[([0-9a-f:]+)\]):([0-9]+)(/.*)$#', $url, $url_split)) {
 			trigger_error('Unable to parse hosttest_url from config.', E_USER_WARNING);
 			return true; // As earlier
 		}
 		$remote_start = microtime(true);
-		$fp = fsockopen($url_split[1], $url_split[2], $errno, $errstr, $remotetimeout);
+		$fp = fsockopen($url_split[1], $url_split[4], $errno, $errstr, $remotetimeout); //fsockopen want's ipv6 with [], http's Host-field however does not!
 		if(!$fp) {
-			trigger_error('Unable to connect to remote C4HostTest '.$url_split[1].':'.$url_split[2]." in $removetimeout secons.", E_USER_WARNING);
+			trigger_error('Unable to connect to remote C4HostTest '.$url_split[1].':'.$url_split[4]." in $remotetimeout secons.", E_USER_WARNING);
 			return true;
 		}
-		$req_str = $url_split[3] . '?remotecall&tcp='.$tcpport.'&udp='.$udpport.'&ip='.$_SERVER['REMOTE_ADDR'].'&time='.$timeout;
+		$req_str = $url_split[5] . '?remotecall&tcp='.$tcpport.'&udp='.$udpport.'&ip='.$_SERVER['REMOTE_ADDR'].'&time='.$timeout;
 		$remotetimeout += $timeout;	
-		fwrite($fp, "GET ".$req_str." HTTP/1.0\r\nHost: ".$url_split[1]."\r\nUser-Agent: C4Masterserver\r\n\r\n"); // Injection warning!
+		fwrite($fp, "GET ".$req_str." HTTP/1.0\r\nHost: ".($url_split[2]?$url_split[2]:$urlsplit[3])."\r\nUser-Agent: C4Masterserver\r\n\r\n"); // Injection warning!
 		$reply = '';
 		do {
 			stream_set_timeout($fp, $remotetimeout-microtime(true)+$remote_start);
 			$reply .= fread($fp, 8192);
 		} while (!feof($fp) && $remotetimeout > (microtime(true)-$remote_start));
-		if(!preg_match('#^HTTP/1.[01] 200#', $reply)) {
+		if(!preg_match('#^HTTP/1.[01] 200#', $reply)) {			
 			trigger_error('Unable to process response from C4HostTest. Wrong address in hosttest_url? No redirects allowed!', E_USER_WARNING);
 			return true;
 		}
