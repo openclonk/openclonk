@@ -1476,15 +1476,15 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
 	// 2do: enumerate possible font sizes by the font here
 	// 2do: Hide font sizes that would be too large for the selected resolution
-	pFiller->AddEntry("8", 8);
+	//pFiller->AddEntry("8", 8);
 	pFiller->AddEntry("10", 10);
 	pFiller->AddEntry("12", 12);
 	pFiller->AddEntry("14", 14);
 	pFiller->AddEntry("16", 16);
 	pFiller->AddEntry("18", 18);
 	pFiller->AddEntry("20", 20);
-	pFiller->AddEntry("24", 24);
-	pFiller->AddEntry("28", 28);
+	//pFiller->AddEntry("24", 24);
+	//pFiller->AddEntry("28", 28);
 	//pFiller->AddEntry("32", 32);
 	//pFiller->AddEntry("48", 48);
 }
