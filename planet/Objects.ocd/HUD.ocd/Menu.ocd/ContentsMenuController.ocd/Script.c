@@ -320,8 +320,7 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 	
 	// Update target menu, source menu is updated elsewhere.
 	if (moved_length > 0)
-	{
-	
+	{	
 		// in case objects may not be stacked in the contents menu of the target object, add
 		// each object as a new menu item
 		if (p_target.Object->~NoStackedContentMenu())

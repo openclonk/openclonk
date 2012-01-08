@@ -25,7 +25,6 @@ protected func Initialize()
 	time->SetCycleSpeed(12);
 
 	// Create a small settlement to test stuff.
-	/*
 	var foundry = CreateConstruction(Foundry, 300, FindHeight(300), NO_OWNER, 100, true);
 	foundry->CreateContents(Coal,3);
 	foundry->CreateContents(Ore,3);	
@@ -48,7 +47,6 @@ protected func Initialize()
 	lorry->CreateContents(Metal, 4);
 	lorry->CreateContents(Dynamite, 3);
 	lorry->CreateContents(Loam, 3);
-	*/
 	return;
 }
 
@@ -75,15 +73,16 @@ protected func InitializePlayer(int plr)
 	{
 		var x = 275 + Random(50);
 		crew->SetPosition(x , FindHeight(x) - 20);
+		crew->CreateContents(Shovel);
 		// First clonk can construct, others can mine.
 		if (index == 0)
 		{
-			crew->CreateContents(Shovel);
-			crew->CreateContents(Axe);
+			crew->CreateContents(Hammer);
+			crew->CreateContents(CableReel);
 		}
 		else
 		{
-			crew->CreateContents(Hammer);
+			crew->CreateContents(Axe);
 			crew->CreateContents(CableReel);
 		}
 		index++;

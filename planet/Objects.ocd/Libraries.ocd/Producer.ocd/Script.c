@@ -565,8 +565,7 @@ protected func RejectEntrance(object obj)
 		return false;
 		
 	// Components of products may be collected.
-	var index = 0, product;
-	while (product = GetDefinition(index))
+	for (var product in GetProducts())
 	{
 		var i = 0, comp_id;
 		while (comp_id = GetComponent(nil, i, nil, product))
@@ -575,13 +574,11 @@ protected func RejectEntrance(object obj)
 				return false;
 			i++;
 		}
-		index++;
 	}
-	
 	// Fuel for products may be collected.
 	if (obj->~IsFuel())
 	{
-		index = 0;
+		var index = 0;
 		while (product = GetDefinition(index))
 		{
 			if (product->~FuelNeed() > 0)
@@ -589,6 +586,5 @@ protected func RejectEntrance(object obj)
 			index++;
 		}
 	}
-
 	return true;
 }
