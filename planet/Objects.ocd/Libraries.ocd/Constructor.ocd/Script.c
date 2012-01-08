@@ -74,28 +74,54 @@ private func Construct(object clonk, object structure)
 	var structure_id = structure->GetID();
 	var con = structure->GetCon();
 	var comp, index = 0;
+	var can_construct =  true;
+	while (comp = structure->GetComponent(nil, index))
+	{
+		var max_amount = GetComponent(comp, nil, nil, structure_id);
+		// Try to transfer components from constructing clonk to the structure.
+		for (var i = 0; i < max_amount - structure->GetComponent(comp); i++)
+		{
+			var content = FindObject(Find_Container(clonk), Find_ID(comp));
+			if (content)
+			{
+				clonk->Message("Used {{%i}}", comp);
+				content->RemoveObject();
+				structure->SetComponent(comp, structure->GetComponent(comp) + 1);
+			}
+		}		
+		// Check if there now is enough material for current con, if so the construction can continue.
+		if (100 * structure->GetComponent(comp) / max_amount < con)
+			can_construct = false;
+		index++;
+	}
+	// Continue construction if possible.
+	if (can_construct)
+	{
+		structure->DoCon(1);
+		clonk->Message("Constructing %d%", structure->GetCon());
+	}
+	// Otherwise show missing construction materials.
+	else
+	{
+		ShowConstructionMaterial(clonk, structure);
+		clonk->CancelUse();
+	}
+	return;
+}
+
+private func ShowConstructionMaterial(object clonk, object structure)
+{
+	var mat_msg = "Construction needs ";
+	var structure_id = structure->GetID();
+	var comp, index = 0;
 	while (comp = structure->GetComponent(nil, index))
 	{
 		var current_amount = structure->GetComponent(comp);
 		var max_amount = GetComponent(comp, nil, nil, structure_id);
-		// Check if there is enough material for current con.
-		if (100 * current_amount / max_amount < con)
-		{
-			var content = FindObject(Find_Container(clonk), Find_ID(comp));
-			if (!content)
-			{
-				clonk->Message("Construction needs {{%i}}", comp);
-				clonk->CancelUse();
-				return;
-			}
-			clonk->Message("Used {{%i}}", comp);
-			content->RemoveObject();
-			structure->SetComponent(comp, current_amount+1);			
-		}
+		mat_msg = Format("%s %dx{{%i}}", mat_msg, Max(0, max_amount - current_amount), comp);
 		index++;
 	}
-	structure->DoCon(1);
-	clonk->Message("Constructing %d%", structure->GetCon());
+	clonk->Message(mat_msg);
 	return;
 }
 

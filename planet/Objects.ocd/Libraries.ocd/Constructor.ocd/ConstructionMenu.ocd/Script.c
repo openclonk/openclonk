@@ -37,7 +37,7 @@ protected func Construction()
 {
 	SetPosition(600, 400);
 	// Set original menu graphics.
-	SetGraphics(nil, GUI_Menu);
+	SetGraphics("BG", GUI_Menu);
 	return _inherited(...);
 }
 
@@ -50,6 +50,19 @@ public func AddMenuStructures(object constructor, object clonk)
 			return item->RemoveObject();
 		item->SetSymbol(structure);
 	}
+	return;
+}
+
+private func ShowConstructionInfo(object item)
+{
+	// TODO: Implement this completely (maybe based on a structure library) and new graphics.
+	// For now just show the construction costs somewhere.
+	var structure_id = item->GetSymbol();
+	var cost_msg = "@";
+	var comp, index = 0;
+	while (comp = GetComponent(nil, index++, nil, structure_id))
+		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
+	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
 	return;
 }
 
@@ -88,6 +101,11 @@ public func OnItemSelection(object item)
 // Called when an item has been selected (right mouse button).
 public func OnItemSelectionAlt(object item)
 {
+	if (menu_commander)
+	{
+		// Show construction properties of this structure.
+		ShowConstructionInfo(item);	
+	}
 	return _inherited(item, ...);
 }
 
