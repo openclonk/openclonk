@@ -23,8 +23,9 @@ protected func Initialize()
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);
 	time->SetCycleSpeed(12);
-	
+
 	// Create a small settlement to test stuff.
+	/*
 	var foundry = CreateConstruction(Foundry, 300, FindHeight(300), NO_OWNER, 100, true);
 	foundry->CreateContents(Coal,3);
 	foundry->CreateContents(Ore,3);	
@@ -47,7 +48,7 @@ protected func Initialize()
 	lorry->CreateContents(Metal, 4);
 	lorry->CreateContents(Dynamite, 3);
 	lorry->CreateContents(Loam, 3);
-	
+	*/
 	return;
 }
 
@@ -63,7 +64,7 @@ protected func InitializePlayer(int plr)
 { 
 	// first player gets the base
 	var flagpole = FindObject(Find_ID(Flagpole));
-	if(!GetPlayerName(flagpole->GetOwner()))
+	if (flagpole && !GetPlayerName(flagpole->GetOwner()))
 		flagpole->SetOwner(plr);
 	
 	// Disable FoW for development reasons.
@@ -74,17 +75,16 @@ protected func InitializePlayer(int plr)
 	{
 		var x = 275 + Random(50);
 		crew->SetPosition(x , FindHeight(x) - 20);
-		crew->CreateContents(Shovel);
 		// First clonk can construct, others can mine.
 		if (index == 0)
 		{
-			crew->CreateContents(Hammer);
+			crew->CreateContents(Shovel);
 			crew->CreateContents(Axe);
 		}
 		else
 		{
-			crew->CreateContents(Shovel);
-			crew->CreateContents(Pickaxe);
+			crew->CreateContents(Hammer);
+			crew->CreateContents(CableReel);
 		}
 		index++;
 	}
