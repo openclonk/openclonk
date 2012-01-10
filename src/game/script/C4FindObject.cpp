@@ -620,12 +620,16 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	return SEqual(pObj->GetAction()->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
 {
 	assert(index >= 0 && index <= 1);
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	if (index == 0)
 		return pObj->Action.Target == pActionTarget;
 	else if (index == 1)
@@ -636,6 +640,8 @@ bool C4FindObjectActionTarget::Check(C4Object *pObj)
 
 bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	C4Value v;
 	pObj->GetAction()->GetProperty(P_Procedure, &v);
 	return v != C4VNull && v.getStr() == procedure;
