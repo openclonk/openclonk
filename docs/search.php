@@ -48,6 +48,7 @@ function SearchDir($path) {
 		return;
 	
 	$result = array();
+	$search = strtolower($_GET['search']);
 	
 	while (false !== ($file = readdir($dir))) {
 		if ($file != "." && $file != "..") {
@@ -60,7 +61,7 @@ function SearchDir($path) {
 				$divs = $doc->getElementsByTagName('div');
 				foreach($divs as $div) {
 					if(strpos($div->getAttribute('class'), 'text') !== false) {
-						if(strpos(strip_tags($div->nodeValue),htmlspecialchars($_GET['search'])) !== false) {
+						if(strpos(strtolower(strip_tags($div->nodeValue)),htmlspecialchars($search)) !== false) {
 							$dirname = basename(rtrim($path, '/'));
 							if(!isset($result[$dirname]))
 								$result[$dirname] = array();

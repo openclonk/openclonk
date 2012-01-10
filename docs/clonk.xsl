@@ -355,7 +355,8 @@
   <xsl:template match="search">
     <form action="../search.php" method="get">
       <input name="search" type="text"></input> 
-      <input type="submit" name="fulltext" value="Go"></input>
+      <input type="submit" name="func" value="Search"></input>
+      <input type="submit" name="fulltext" value="Fulltext"></input>
     </form>
   </xsl:template>
   
