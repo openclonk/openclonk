@@ -1093,12 +1093,10 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 
 	case C4MN_Add_ImgTextSpec:
 	{
-		C4FacetSurface fctSymSpec;
-		uint32_t dwClr = XPar.getInt();
-		if (!szCaption || !Game.DrawTextSpecImage(fctSymSpec, caption, dwClr ? dwClr : 0xff))
-			return false;
 		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		fctSymSpec.Draw(fctSymbol, true);
+		uint32_t dwClr = XPar.getInt();
+		if (!szCaption || !Game.DrawTextSpecImage(fctSymbol, caption, NULL, dwClr ? dwClr : 0xff))
+			return false;
 		*caption = '\0';
 	}
 	break;

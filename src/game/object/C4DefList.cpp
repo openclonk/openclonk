@@ -419,15 +419,14 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	return true;
 }
 
-bool C4DefList::GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet)
+bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& cgo, C4DrawTransform* pTransform)
 {
-	// extended: images by game
-	C4FacetSurface fctOut;
-	if (!Game.DrawTextSpecImage(fctOut, szImageTag)) return false;
-	if (fctOut.Surface == &fctOut.GetFace()) return false; // cannot use facets that are drawn on the fly right now...
-	rOutImgFacet.Set(fctOut.Surface, fctOut.X, fctOut.Y, fctOut.Wdt, fctOut.Hgt);
-	// done, found
-	return true;
+	return Game.DrawTextSpecImage(cgo, szImageTag, pTransform);
+}
+
+float C4DefList::GetFontImageAspect(const char* szImageTag)
+{
+	return Game.GetTextSpecImageAspect(szImageTag);
 }
 
 void C4DefList::Synchronize()

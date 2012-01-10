@@ -124,7 +124,7 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 			if (pTeam && pTeam->GetIconSpec() && *pTeam->GetIconSpec())
 			{
 				pTeamPic = new C4GUI::Picture(C4Rect(iHeight + IconLabelSpacing, 0, iHeight, iHeight), true);
-				Game.DrawTextSpecImage(pTeamPic->GetMFacet(), pTeam->GetIconSpec(), pTeam->GetColor());
+				Game.DrawTextSpecImage(pTeamPic->GetMFacet(), pTeam->GetIconSpec(), NULL, pTeam->GetColor());
 				pTeamPic->SetDrawColor(pTeam->GetColor());
 			}
 		}
@@ -1001,7 +1001,10 @@ C4PlayerInfoListBox::TeamListItem::TeamListItem(C4PlayerInfoListBox *pForListBox
 	pNameLabel = new C4GUI::Label(szTeamName, iIconSize + IconLabelSpacing, (iIconSize - pFont->GetLineHeight())/2, ALeft, pList->GetTextColor(), pFont, false);
 	if (fEvaluation && pTeam && pTeam->GetIconSpec() && *pTeam->GetIconSpec())
 	{
-		Game.DrawTextSpecImage(pIcon->GetMFacet(), pTeam->GetIconSpec(), pTeam->GetColor());
+		C4FacetSurface fctSymbol;
+		fctSymbol.Create(C4SymbolSize,C4SymbolSize);
+		Game.DrawTextSpecImage(fctSymbol, pTeam->GetIconSpec(), NULL, pTeam->GetColor());
+		pIcon->GetMFacet().GrabFrom(fctSymbol);
 	}
 	// calc own bounds
 	C4Rect rcOwnBounds = pNameLabel->GetBounds();

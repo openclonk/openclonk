@@ -3366,7 +3366,7 @@ void C4Game::Abort(bool fApproved)
 	Application.QuitGame();
 }
 
-bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, uint32_t dwClr)
+bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 {
 	// safety
 	assert(szSpec && *szSpec);
@@ -3376,58 +3376,77 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 	{
 		szSpec += 5;
 		if (SEqual2(szSpec, "Locked"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
 		else if (SEqual2(szSpec, "League"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
 		else if (SEqual2(szSpec, "GameRunning"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
 		else if (SEqual2(szSpec, "Lobby"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
 		else if (SEqual2(szSpec, "RuntimeJoin"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
+		else
+			return false;
+		return true;
+	}
+
+	return false;
+}
+
+bool C4Game::DrawTextSpecImage(C4Facet &fctTarget, const char *szSpec, C4DrawTransform* pTransform, uint32_t dwClr)
+{
+	// safety
+	assert(szSpec && *szSpec);
+	if (!szSpec) return false;
+
+	C4Facet fctSource;
+	if(GetTextSpecFacet(szSpec, fctSource))
+	{
+		fctSource.DrawXT(fctTarget.Surface, fctTarget.X, fctTarget.Y, fctTarget.Wdt, fctTarget.Hgt, 0, 0, pTransform);
+		return true;
 	}
 	else
 	{
-		// regular ID? -> Draw def
-		const char *separator = std::strchr(szSpec, ':');
-		if (!separator)
+		C4Def *pDef = C4Id2Def(C4ID(szSpec));
+		if (!pDef) return false;
+
+		pDef->Draw(fctTarget, false, dwClr, NULL, 0, 0, pTransform);
+		return true;
+	}
+}
+
+float C4Game::GetTextSpecImageAspect(const char* szSpec)
+{
+	// safety
+	assert(szSpec && *szSpec);
+	if (!szSpec) return -1.0f;
+
+	C4Facet fctSource;
+	if(GetTextSpecFacet(szSpec, fctSource))
+	{
+		return static_cast<float>(fctSource.Wdt) / static_cast<float>(fctSource.Hgt);
+	}
+	else
+	{
+		C4Def *pDef = C4Id2Def(C4ID(szSpec));
+		if (!pDef) return -1.0f;
+
+		C4DefGraphics* pGfx = &pDef->Graphics;
+		if(pGfx->Type == C4DefGraphics::TYPE_Bitmap)
 		{
-			C4Def *pDef = C4Id2Def(C4ID(szSpec));
-			if (!pDef) return false;
-			fctTarget.Set(pDef->Graphics.GetBitmap(dwClr), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
-			return true;
+			return static_cast<float>(pDef->PictureRect.Wdt) / static_cast<float>(pDef->PictureRect.Hgt);
 		}
 		else
 		{
-			std::string id(szSpec, separator);
-			C4Def *def = C4Id2Def(C4ID(id));
-			if (!def) return false;
-			int index = -1;
-			if (sscanf(separator + 1, "%d", &index) == 1 && index >= 0)
-			{
-				fctTarget.Set(def->Graphics.GetBitmap(dwClr), def->PictureRect.x + def->PictureRect.Wdt * index, def->PictureRect.y, def->PictureRect.Wdt, def->PictureRect.Hgt);
-				return true;
-			}
-		}
-	}
+			const StdMesh& mesh = *pGfx->Mesh;
+			const StdMeshBox& box = mesh.GetBoundingBox();
 
-	// unknown spec
-	return false;
+			// Note the bounding box is in OGRE frame of reference
+			return (box.y2 - box.y1) / (box.z2 - box.z1);
+		}
+
+		return -1.0f;
+	}
 }
 
 bool C4Game::SpeedUp()

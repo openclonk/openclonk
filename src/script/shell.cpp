@@ -42,7 +42,8 @@ C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
-bool C4DefList::GetFontImage(char const*, C4Facet&) {return false;}
+bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
+float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
 
 C4MaterialMap MaterialMap;
 C4MaterialMap::C4MaterialMap() {}

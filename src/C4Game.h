@@ -222,7 +222,8 @@ public:
 	bool LoadScenarioSection(const char *szSection, DWORD dwFlags);
 	bool SaveDesc(C4Group &hGroup, bool fSaveGame=false, bool fReference=false, bool fLobby=false, bool fUnregistered=false, bool fRecord=false);
 
-	bool DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, uint32_t dwClr=0xff);
+	bool DrawTextSpecImage(C4Facet& fctTarget, const char *szSpec, class C4DrawTransform* pTransform, uint32_t dwClr=0xff);
+	float GetTextSpecImageAspect(const char* szSpec);
 	bool SpeedUp();
 	bool SlowDown();
 	bool InitKeyboard(); // register main keyboard input functions

@@ -71,7 +71,8 @@ public:
 	void Synchronize();
 
 	// callback from font renderer: get ID image
-	virtual bool GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet);
+	virtual bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform);
+	virtual float GetFontImageAspect(const char* szImageTag);
 };
 
 extern C4DefList Definitions;

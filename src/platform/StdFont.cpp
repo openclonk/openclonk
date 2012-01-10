@@ -430,21 +430,12 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 		{
 			char imgbuf[101];
 			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
-			C4Facet fct;
-			// image renderer initialized?
-			if (pCustomImages)
-				// try to get an image then
-				pCustomImages->GetFontImage(imgbuf, fct);
-			if (fct.Hgt)
-			{
-				// image found: adjust aspect by font height and calc appropriate width
-				iRowWdt += (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-			}
-			else
-			{
-				// image renderer not hooked or ID not found, or surface not present: just ignore it
-				// printing it out wouldn't look better...
-			}
+
+			int w2, h2;
+			if(!GetFontImageSize(imgbuf, w2, h2))
+				{ w2 = 0; h2 = 0; }
+
+			iRowWdt += w2;
 			// skip image tag
 			szText+=iImgLgt+3;
 		}
@@ -510,22 +501,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				C4Facet fct;
-				// image renderer initialized?
-				if (pCustomImages)
-					// try to get an image then
-					pCustomImages->GetFontImage(imgbuf, fct);
-				if (fct.Hgt)
-				{
-					// image found: adjust aspect by font height and calc appropriate width
-					iCharWdt = (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-				}
-				else
-				{
-					// image renderer not hooked or ID not found, or surface not present: just ignore it
-					// printing it out wouldn't look better...
+
+				int iCharHgt;
+				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
 					iCharWdt = 0;
-				}
+
 				// skip image tag
 				szPos+=iImgLgt+3;
 			}
@@ -666,22 +646,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				C4Facet fct;
-				// image renderer initialized?
-				if (pCustomImages)
-					// try to get an image then
-					pCustomImages->GetFontImage(imgbuf, fct);
-				if (fct.Hgt)
-				{
-					// image found: adjust aspect by font height and calc appropriate width
-					iCharWdt = (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-				}
-				else
-				{
-					// image renderer not hooked or ID not found, or surface not present: just ignore it
-					// printing it out wouldn't look better...
+
+				int iCharHgt;
+				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
 					iCharWdt = 0;
-				}
+
 				// skip image tag
 				szPos+=iImgLgt+3;
 			}
@@ -822,7 +791,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
 {
 	assert(IsValidUtf8(szText));
-	C4BltTransform bt, *pbt=NULL;
+	C4DrawTransform bt, *pbt=NULL;
 	// set blit color
 	DWORD dwOldModClr;
 	bool fWasModulated = pDraw->GetBlitModulation(dwOldModClr);
@@ -878,28 +847,13 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 		int w2, h2; // dst width/height
 		// custom image?
 		int iImgLgt;
+		char imgbuf[101] = "";
 		if (c=='{' && szText[0]=='{' && szText[1]!='{' && (iImgLgt=SCharPos('}', szText+1))>0 && szText[iImgLgt+2]=='}' && !(dwFlags & STDFONT_NOMARKUP))
 		{
-			fctFromBlt.Default();
-			char imgbuf[101];
 			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
 			szText+=iImgLgt+3;
-			// image renderer initialized?
-			if (pCustomImages)
-				// try to get an image then
-				pCustomImages->GetFontImage(imgbuf, fctFromBlt);
-			if (fctFromBlt.Surface && fctFromBlt.Hgt)
-			{
-				// image found: adjust aspect by font height and calc appropriate width
-				w2 = (fctFromBlt.Wdt * iGfxLineHgt) / fctFromBlt.Hgt;
-				h2 = iGfxLineHgt;
-			}
-			else
-			{
-				// image renderer not hooked or ID not found, or surface not present: just ignore it
-				// printing it out wouldn't look better...
+			if(!GetFontImageSize(imgbuf, w2, h2))
 				continue;
-			}
 			//normal: not modulated, unless done by transform or alpha fadeout
 			if ((dwColor>>0x18) >= 0xaf)
 				pDraw->DeactivateBlitModulation();
@@ -930,10 +884,19 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			bt.mat[2] += fOffX - fOffX*bt.mat[0] - fOffY*bt.mat[1];
 			bt.mat[5] += fOffY - fOffX*bt.mat[3] - fOffY*bt.mat[4];
 		}
-		// blit character or image
-		pDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
-		              sfcDest, iX, iY, float(w2), float(h2),
-		              true, pbt);
+		if(imgbuf[0])
+		{
+			C4Facet fct;
+			fct.Set(sfcDest, iX, iY + (iGfxLineHgt - h2)/2.0f, w2, h2);
+			pCustomImages->DrawFontImage(imgbuf, fct, pbt);
+		}
+		else
+		{
+			// blit character
+			pDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
+				           sfcDest, iX, iY, float(w2), float(h2),
+				           true, pbt);
+		}
 		// advance pos and skip character indent
 		iX+=w2+iHSpace;
 	}
@@ -942,4 +905,27 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 		pDraw->ActivateBlitModulation(dwOldModClr);
 	else
 		pDraw->DeactivateBlitModulation();
+}
+
+bool CStdFont::GetFontImageSize(const char* szTag, int& width, int& height) const
+{
+	const float aspect = pCustomImages ? pCustomImages->GetFontImageAspect(szTag) : -1.0f;
+
+	// aspect < 0 means there is no such image
+	if (aspect < 0.0f) return false;
+
+	// image found: adjust aspect by font height and calc appropriate width
+	height = iGfxLineHgt;
+	width = static_cast<int>(height * aspect + 0.5f);
+
+	// make images not ridiciously wide
+	if(width > height)
+	{
+		float scale = static_cast<float>(height)/static_cast<float>(width);
+
+		width = height;//static_cast<int32_t>(width*scale + 0.5f);
+		height = static_cast<int32_t>(height*scale + 0.5f);
+	}
+
+	return true;
 }

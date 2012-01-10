@@ -52,12 +52,14 @@ public:
 	class CustomImages
 	{
 	protected:
-		virtual bool GetFontImage(const char *szImageTag, C4Facet &rOutImgFacet) = 0;
+		virtual bool DrawFontImage(const char* szImageTag, C4Facet& cgo, C4DrawTransform* transform) = 0;
+		virtual float GetFontImageAspect(const char* szImageTag) = 0;
 
 		friend class CStdFont;
 	public:
 		virtual ~CustomImages() { }
 	};
+
 	static CStdVectorFont * CreateFont(StdBuf & Data);
 	static CStdVectorFont * CreateFont(const char *szFaceName);
 	static void DestroyFont(CStdVectorFont * pFont);
@@ -144,6 +146,8 @@ public:
 	// set custom image request handler
 	void SetCustomImages(CustomImages *pHandler)
 	{ pCustomImages = pHandler; }
+
+	bool GetFontImageSize(const char* szTag, int& width, int& height) const;
 };
 
 #endif // INC_STDFONT

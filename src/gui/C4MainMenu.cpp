@@ -197,9 +197,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			bool fHasIcon = false;
 			if (szIconSpec && *szIconSpec)
 			{
-				C4FacetSurface fctSrc;
-				fHasIcon = Game.DrawTextSpecImage(fctSrc, szIconSpec, pTeam->GetColor());
-				fctSrc.Draw(fctSymbol);
+				fHasIcon = Game.DrawTextSpecImage(fctSymbol, szIconSpec, NULL, pTeam->GetColor());
 			}
 			if (!fHasIcon)
 			{
