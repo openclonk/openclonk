@@ -48,7 +48,7 @@ public func CheckPower(int power_check, bool no_substract)
 			return true;
 		}
 	}
-	AddEffect("EnergyNeed", this, 100, 12, this);
+	if (!GetEffect("EnergyNeed", this)) AddEffect("EnergyNeed", this, 100, 12, this);
 	return false;
 }
 
