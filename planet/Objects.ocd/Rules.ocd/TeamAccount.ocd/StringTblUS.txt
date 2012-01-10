@@ -1,0 +1,4 @@
+Name=Team account
+Description=Allied players share a common account.
+
+
