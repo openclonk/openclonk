@@ -1,0 +1,6 @@
+CC-BY-3.0
+
+ElevatorDrilling			-	jenc (http://www.freesound.org/people/jenc/sounds/519/)
+ElevatorMoving
+ElevatorStart
+ElevatorStop				-	pempi (http://www.freesound.org/people/pempi/sounds/33873/)
