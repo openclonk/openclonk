@@ -153,8 +153,6 @@ global func FxSnowStormTimer(object target, proplist effect)
 
 protected func InitializePlayer(int plr)
 { 
-	// Disable FoW for development reasons.
-	SetFoW(false, plr); 
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))

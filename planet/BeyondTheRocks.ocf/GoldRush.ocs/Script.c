@@ -9,8 +9,8 @@
 protected func Initialize()
 {
 	// Goal: Resource extraction, set to gold mining.
-	var goal = CreateObject(Goal_ResourceExtraction);
-	goal->SetResource("Gold");
+	var goal = CreateObject(Goal_Wealth);
+	goal->SetWealthGoal(400);
 	
 	// Place some trees.
 	for (var i = 0; i < 12 + Random(4); i++)
@@ -25,6 +25,7 @@ protected func Initialize()
 	time->SetCycleSpeed(12);
 
 	// Create a small settlement to test stuff.
+	/*
 	var foundry = CreateConstruction(Foundry, 300, FindHeight(300), NO_OWNER, 100, true);
 	foundry->CreateContents(Coal,3);
 	foundry->CreateContents(Ore,3);	
@@ -47,6 +48,7 @@ protected func Initialize()
 	lorry->CreateContents(Metal, 4);
 	lorry->CreateContents(Dynamite, 3);
 	lorry->CreateContents(Loam, 3);
+	*/
 	return;
 }
 
@@ -60,13 +62,18 @@ private func FindHeight(int x)
 
 protected func InitializePlayer(int plr)
 { 
-	// first player gets the base
+	// first player gets the base to test.
+	/*
 	var flagpole = FindObject(Find_ID(Flagpole));
 	if (flagpole && !GetPlayerName(flagpole->GetOwner()))
 		flagpole->SetOwner(plr);
+	*/
 	
-	// Disable FoW for development reasons.
-	SetFoW(false, plr); 
+	// Increase wealth goal per player.
+	var goal = FindObject(Find_ID(Goal_Wealth));
+	if (goal)
+		goal->SetWealthGoal(300 + 100 * Min(GetPlayerCount(), 3));
+
 	// Move clonks to location and give them a shovel.
 	var index = 0, crew;
 	while (crew = GetCrew(plr, index))

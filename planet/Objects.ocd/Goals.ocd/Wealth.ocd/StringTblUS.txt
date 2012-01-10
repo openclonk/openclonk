@@ -1,0 +1,5 @@
+Name=Money points
+
+#Goal window
+MsgGoalFulfilled=%d wealth points reached!
+MsgGoalUnfulfilled=Only %d wealth points of %d reached.
