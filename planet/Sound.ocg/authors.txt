@@ -25,6 +25,7 @@ The following sound effects are licensed under the CC 0 license (public domain):
 mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
 adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/13878/ and http://www.freesound.org/people/adcbicycle/sounds/13914/)
 				- SoftHit2 (http://www.freesound.org/people/adcbicycle/sounds/13866/)
+thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
 
 
 Unfree sound effects
@@ -32,15 +33,14 @@ Unfree sound effects
 The following sound effects are licensed under the CC Attribution-NonCommercial license:
 
 Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
+kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
+acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
 
 The following sound effects are licensed under the CC Sampling plus license:
 
-kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
-thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
-110110010		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/)
-schluppipuppie	- CatapultLaunch (http://www.freesound.org/people/schluppipuppie/sounds/12833/)
-acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
+110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
+  schluppipuppie
 suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106694/)
