@@ -241,7 +241,7 @@ void C4Object::DoMovement()
 		}
 
 	// store previous position
-	int32_t ix0=GetX(); int32_t iy0=GetY();
+	C4Real ix0=GetFixedX(); C4Real iy0=GetFixedY();
 
 	// store previous movement and ocf
 	C4Real oldxdir(xdir), oldydir(ydir);
@@ -349,6 +349,10 @@ void C4Object::DoMovement()
 		}
 		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5) || Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5));
 	}
+
+	if(fix_x != new_x || fix_y != new_y)
+		if (pSolidMaskData)
+			pSolidMaskData->Remove(true);
 	fix_x = new_x;
 	fix_y = new_y;
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -455,7 +459,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetX())|(iy0-GetY())) UpdatePos();
+		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
 }
 
 void C4Object::Stabilize()
@@ -506,6 +510,11 @@ void C4Object::ForcePosition(C4Real tx, C4Real ty)
 }
 
 void C4Object::MovePosition(int32_t dx, int32_t dy)
+{
+	MovePosition(itofix(dx), itofix(dy));
+}
+
+void C4Object::MovePosition(C4Real dx, C4Real dy)
 {
 	// move object position; repositions SolidMask
 	if (pSolidMaskData) pSolidMaskData->Remove(true);

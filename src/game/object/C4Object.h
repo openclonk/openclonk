@@ -294,6 +294,7 @@ public:
 	void CopyMotion(C4Object *from);
 	void ForcePosition(C4Real tx, C4Real ty);
 	void MovePosition(int32_t dx, int32_t dy);
+	void MovePosition(C4Real dx, C4Real dy);
 	void DoMotion(int32_t mx, int32_t my);
 	bool ActivateEntrance(int32_t by_plr, C4Object *by_obj);
 	bool Incinerate(int32_t iCausedBy, bool fBlasted=false, C4Object *pIncineratingObject=NULL);

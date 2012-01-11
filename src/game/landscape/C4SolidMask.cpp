@@ -185,14 +185,14 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	// restore attached object positions if moved
 	if (fRestoreAttachment && iAttachingObjectsCount)
 	{
-		int32_t dx = pForObject->GetX() - MaskRemovalX;
-		int32_t dy = pForObject->GetY() - MaskRemovalY;
-		if (dx|dy)
+		C4Real dx = pForObject->GetFixedX() - MaskRemovalX;
+		C4Real dy = pForObject->GetFixedY() - MaskRemovalY;
+		if (dx != Fix0 || dy != Fix0)
 			for (int i = 0; i < iAttachingObjectsCount; ++i)
 			{
 				C4Object *pObj = ppAttachingObjects[i];
 				if (pObj->IsMoveableBySolidMask(pForObject->GetPlane()))
-					if (!pObj->Shape.ContactCheck(pObj->GetX()+dx, pObj->GetY()+dy))
+					if (!pObj->Shape.ContactCheck(pObj->GetFixedX()+dx, pObj->GetFixedY()+dy))
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
 							pObj->iLastAttachMovementFrame = Game.FrameCounter;
@@ -282,8 +282,8 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 	// backup attachment if desired: Backup old pos and all objects that attach to or lie on the SolidMask
 	if (fBackupAttachment)
 	{
-		MaskRemovalX = pForObject->GetX();
-		MaskRemovalY = pForObject->GetY();
+		MaskRemovalX = pForObject->GetFixedX();
+		MaskRemovalY = pForObject->GetFixedY();
 		iAttachingObjectsCount = 0;
 		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
 		C4LSector *pSct; C4Object *pObj;
@@ -397,7 +397,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// zero fields
 	MaskPut=false;
 	MaskPutRotation=0;
-	MaskRemovalX=MaskRemovalY=0;
+	MaskRemovalX=MaskRemovalY=Fix0;
 	ppAttachingObjects=NULL;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	// Update linked list
