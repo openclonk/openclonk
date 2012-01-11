@@ -143,7 +143,6 @@ public func ContainedStop(object clonk)
 
 public func StartFlight(int new_throttle)
 {
-	Sound("EngineStart");
 	AddEffect("IntSoundDelay",this,1,1,this);
 	SetAction("Fly");
 	throttle = new_throttle;
@@ -152,7 +151,6 @@ public func StartFlight(int new_throttle)
 public func StartInstantFlight(int angle, int new_throttle)
 {
 	angle -= 10;
-	Sound("EngineStart");
 	AddEffect("IntSoundDelay",this,1,1,this);
 	SetAction("Fly");
 	throttle = new_throttle;
@@ -166,8 +164,7 @@ public func StartInstantFlight(int angle, int new_throttle)
 public func CancelFlight()
 {
 	RemoveEffect("IntSoundDelay",this);
-	Sound("EngineLoop",0,100,nil,-1);
-	Sound("EngineStop");
+	Sound("PropellerLoop",0,100,nil,-1);
 	SetAction("Land");
 	rdir = 0;
 	throttle = 0;
@@ -177,7 +174,7 @@ private func FxIntSoundDelayTimer(object target, effect, int timer)
 {
 	if(timer >= 78)
 	{
-		Sound("EngineLoop",0,100,nil,1);
+		Sound("PropellerLoop",0,100,nil,1);
 		return -1;
 	}
 }
