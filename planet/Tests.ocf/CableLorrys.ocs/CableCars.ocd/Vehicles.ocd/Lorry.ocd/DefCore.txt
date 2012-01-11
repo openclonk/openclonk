@@ -1,5 +1,5 @@
 [DefCore]
-id=Lorry
+id=CableLorry
 Version=5,2,0,1
 Category=C4D_Vehicle
 ContactCalls=1

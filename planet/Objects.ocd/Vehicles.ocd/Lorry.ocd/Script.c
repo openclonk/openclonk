@@ -1,5 +1,7 @@
 /*-- Lorry --*/
 
+#include Library_ElevatorControl
+
 local content_menu;
 
 protected func Construction()

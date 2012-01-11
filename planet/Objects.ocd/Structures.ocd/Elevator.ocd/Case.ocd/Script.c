@@ -21,7 +21,7 @@ func Movement() // TimerCall
 	if (!elevator->CheckPower(1, true))
 	{
 		// Stop movement if moving
-		if (GetYDir()) Halt();
+		Halt();
 		movement = 0;
 		ClearMoveTo();
 		if (drill)
@@ -32,6 +32,18 @@ func Movement() // TimerCall
 		}
 		return;
 	}
+
+	// Fetch vehicles
+	for (var vehicle in FindObjects(Find_InRect(-5, -5, 10, 10), Find_Category(C4D_Vehicle), Find_NoContainer(), Find_Func("FitsInElevator")))
+	{
+		if (GetEffect("ElevatorControl", vehicle)) continue;
+
+		vehicle->SetPosition(GetX(), GetY() + 12 - vehicle->GetObjHeight()/2 );
+		vehicle->SetSpeed();
+		vehicle->SetR();
+		AddEffect("ElevatorControl", vehicle, 30, 5, nil, nil, this);
+	}
+
 	// Start or stop drilling
 	if (drill && GetAction() == "Drive")
 	{
@@ -78,7 +90,7 @@ func Movement() // TimerCall
 	}
 
 	// Idle?
-	if (FindObject(Find_ActionTarget(this), Find_Action("Push"))) return;
+	if (!CheckIdle()) return;
 
 	// Move-to job?
 	if (move_to)
@@ -95,7 +107,7 @@ func Movement() // TimerCall
 		if (Inside(move_to, GetY()-2, GetY()+2))
 		{
 			ClearMoveTo();
-			if (GetYDir()) Halt();
+			Halt();
 			return;
 		}
 		if (move_to < GetY() && GetYDir() > -this.RushSpeed)
@@ -131,12 +143,15 @@ func Movement() // TimerCall
 			best = clonk;
 	}
 	if (best) return MoveTo(best->GetY(), 35, best);
+
+	// Stop, why do you move?
+	Halt();
 }
 
 func Halt()
 {
+	if (GetYDir()) elevator->StopEngine();
 	SetYDir();
-	elevator->StopEngine();
 }
 
 func ContactTop()
@@ -151,13 +166,26 @@ func ContactBottom()
 	ClearMoveTo();
 }
 
+// Checks whether the elevator should not move because someone's holding it
+// Returns true if idle
+func CheckIdle()
+{
+	for (var pusher in FindObjects(Find_InRect(-13, -13, 26, 26), Find_Action("Push")))
+	{
+		if (pusher->GetActionTarget() == this) return false;
+		if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == this) return false;
+	}
+	return true;
+}
+
 // Moves the case to the specific y-coordinate
 // delay in frames, so the elevator does not freak out
 // target will be checked again for COMD_Stop and distance after delay run out
 func MoveTo(int y, int delay, object target)
 {
 	// Not idle?
-	if (FindObject(Find_ActionTarget(this))) return false;
+	if (!CheckIdle()) return false;
+	Halt();
 	move_to = BoundBy(y, elevator->GetY() + 12, LandscapeHeight());
 	move_to_delay = delay;
 	move_to_target = target;
@@ -205,8 +233,11 @@ func ControlUp(object clonk)
 func ControlStop(object clonk, int control)
 {
 	if (control == CON_Up || control == CON_Down)
+	{
 		if (!drill)
 			movement = 0;
+		return true;
+	}
 }
 
 local ActMap = {
