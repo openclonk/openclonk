@@ -192,7 +192,7 @@ global func FxFireTimer(object target, effect, int time)
 		}
 	}
 	
-	if(time % 20 == 0)target->Message(Format("<c ee0000>%d</c>", effect.strength));
+//	if(time % 20 == 0)target->Message(Format("<c ee0000>%d</c>", effect.strength));
 	// causes on object
 	//target->ExecFire(effect_number, caused_by);
 	if(target->GetAlive())
