@@ -120,49 +120,81 @@
 </part>
 <script>
 <![CDATA[
-	(function() {
-		if (parent == window) return;
-		var l = parent.location.href;
-		// recognize index file as such
-		if(l.charAt(l.length-1) == "/") l += "index";
-		
-		var as = document.getElementsByTagName("a");
-		var i = 0, a;
-		var firsta;
-		while (a = as[i++]) {
-			if (a.href.indexOf(l) != -1) {
-				if (!firsta) {
-					firsta = a;
-				}
-				if (a.parentNode.tagName == "LI") {
-					if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
-				}
-				var p = a.parentNode.parentNode;
-				while (p.tagName == "UL") {
-					if (p.parentNode.className == 'invisi') tb(p.parentNode.firstElementChild.id.slice(3));
-					p = p.parentNode.parentNode;
-				}
+(function() {
+	function navigate(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', url.split("#")[0]);
+		xhr.onreadystatechange = function (e) {
+			if (xhr.readyState === 4) {
+				var d = parent.document;
+				var r = xhr.responseText;
+				d.getElementById("content").innerHTML = r.split('<div id="content">')[1];
+				d.title = r.slice(r.indexOf("<title>")+7, r.indexOf("</title>"));
+			}
+		};
+		xhr.send();
+	}
+	function onclick(e) {
+		if (e.target.tagName != "A") return;
+		if (e.target.host != parent.location.host) return;
+		if (e.target.port != parent.location.port) return;
+		if (e.target.protocol != parent.location.protocol) return;
+		var url = e.target.href;
+		if (parent.history.pushState && window.XMLHttpRequest) {
+			navigate(url);
+			parent.history.pushState(url, "", url);
+			e.preventDefault();
+		}
+	}
+	if (parent == window) return;
+	parent.onpopstate = function(e) {
+		navigate(e.state);
+	}
+	parent.document.getElementById("content").onclick = onclick;
+	window.onclick = onclick;
+	if (parent.history.replaceState)
+		parent.history.replaceState(parent.location.href, "", parent.location.href);
+	var l = parent.location.href;
+	// recognize index file as such
+	if(l.charAt(l.length-1) == "/") l += "index";
+
+	var as = document.getElementsByTagName("a");
+	var i = 0, a;
+	var firsta;
+	while (a = as[i++]) {
+		if (a.href.indexOf(l) != -1) {
+			if (!firsta) {
+				firsta = a;
+			}
+			if (a.parentNode.tagName == "LI") {
+				if (a.parentNode.className == 'invisi') tb(a.parentNode.firstElementChild.id.slice(3));
+			}
+			var p = a.parentNode.parentNode;
+			while (p.tagName == "UL") {
+				if (p.parentNode.className == 'invisi') tb(p.parentNode.firstElementChild.id.slice(3));
+				p = p.parentNode.parentNode;
 			}
 		}
-		if (!firsta) return;
-		var el = firsta.parentNode.parentNode.parentNode;
-		var y0 = 0;
-		while (el) {
-			y0 += el.offsetTop;
-			el = el.offsetParent;
-		}
-		var y1 = 0;
-		el = firsta;
-		while (el) {
-			y1 += el.offsetTop;
-			el = el.offsetParent;
-		}
-		if (y0 < y1 - innerHeight + firsta.offsetHeight * 2) {
-			window.scrollTo(0, y1 - innerHeight / 2);
-		} else {
-			window.scrollTo(0, y0);
-		}
-	})();
+	}
+	if (!firsta) return;
+	var el = firsta.parentNode.parentNode.parentNode;
+	var y0 = 0;
+	while (el) {
+		y0 += el.offsetTop;
+		el = el.offsetParent;
+	}
+	var y1 = 0;
+	el = firsta;
+	while (el) {
+		y1 += el.offsetTop;
+		el = el.offsetParent;
+	}
+	if (y0 < y1 - innerHeight + firsta.offsetHeight * 2) {
+		window.scrollTo(0, y1 - innerHeight / 2);
+	} else {
+		window.scrollTo(0, y0);
+	}
+})();
 ]]>
 </script>
 </toc>
