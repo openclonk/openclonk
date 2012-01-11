@@ -19,6 +19,7 @@ Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
+suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -41,7 +42,6 @@ The following sound effects are licensed under the CC Sampling plus license:
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
-suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106694/)
 					(http://www.freesound.org/people/Nikolino/sounds/106650/)
