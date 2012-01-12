@@ -27,6 +27,7 @@ protected func Initialize()
 	// Create a small settlement to test stuff.
 	/*
 	var foundry = CreateConstruction(Foundry, 300, FindHeight(300), NO_OWNER, 100, true);
+	CreateObject(Barrel, 300, FindHeight(300), NO_OWNER)->PutLiquid("Water", 300);
 	foundry->CreateContents(Coal,3);
 	foundry->CreateContents(Ore,3);	
 	var flag = CreateConstruction(Flagpole, 360, FindHeight(360), NO_OWNER, 100, true);
@@ -41,6 +42,7 @@ protected func Initialize()
 	var sawmill = CreateConstruction(Sawmill, 520, FindHeight(520), NO_OWNER, 100, true);
 	var line = CreateObject(PowerLine);
 	line->SetActionTargets(wind, sawmill);
+	CreateConstruction(Elevator, 220, FindHeight(220), NO_OWNER, 100, true)->CreateShaft(100);
 	
 	// Create a lorry with necessary equipment to start a settlement.
 	var lorry = CreateObject(Lorry, 300, FindHeight(300));

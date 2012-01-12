@@ -140,6 +140,9 @@ private func LoamDone(object clonk)
 	RemoveEffect("IntBridge", clonk);
 }
 
+public func IsFoundryProduct() { return true; }
+public func GetLiquidNeed() { return ["Water", 150]; }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";

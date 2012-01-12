@@ -174,6 +174,8 @@ public func IsBarrelForMaterial(string sznMaterial)
 	return WildcardMatch("Water",sznMaterial);
 }
 
+public func IsLiquidContainer() { return true; }
+
 /**
 Extract liquid from barrel
 @param sznMaterial: Material to extract; Wildcardsupport

@@ -309,10 +309,11 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 
 /*-- Production --*/
 
-private func ProductionTime() { return 0; }
-private func FuelNeed(id product) { return 0; }
-private func LiquidNeed(id product) { return 0; }
-private func PowerNeed(id product) { return 0; }
+// These functions may be overloaded by the actual producer.
+private func ProductionTime(id product) { return product->~GetProductionTime(); }
+private func FuelNeed(id product) { return product->~GetFuelNeed(); }
+private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
+private func PowerNeed(id product) { return product->~GetPowerNeed(); }
 
 private func Produce(id product)
 {
@@ -369,7 +370,7 @@ private func CheckFuel(id product, bool remove)
 	if (FuelNeed(product) > 0)
 	{
 		var fuel_amount = 0;
-		// Find fuel in producers.
+		// Find fuel in this producer.
 		for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			fuel_amount += fuel->~GetFuelAmount();
 		if (fuel_amount < FuelNeed(product))
@@ -391,7 +392,31 @@ private func CheckFuel(id product, bool remove)
 
 private func CheckLiquids(id product, bool remove)
 {
-	// TODO
+	var liq_need = LiquidNeed(product);
+	if (liq_need)
+	{
+		var liquid_amount = 0;
+		var liquid = liq_need[0];
+		var need = liq_need[1];
+		// Find liquid containers in this producer.
+		for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
+			if (liq_container->~GetBarrelMaterial() == liquid)
+				liquid_amount += liq_container->~GetFillLevel();
+		if (liquid_amount < need)
+			return false;
+		else if (remove)
+		{
+			// Remove the liquid needed.
+			var extracted = 0;
+			for (var liq_container in FindObjects(Find_Container(this), Find_Func("IsLiquidContainer")))
+			{
+				var val = liq_container->~GetLiquid(liquid, need - extracted);
+				extracted += val[1];
+				if (extracted >= need)
+					break;			
+			}			
+		}		
+	}
 	return true;
 }
 
@@ -578,13 +603,16 @@ protected func RejectEntrance(object obj)
 	// Fuel for products may be collected.
 	if (obj->~IsFuel())
 	{
-		var index = 0;
-		while (product = GetDefinition(index))
-		{
-			if (product->~FuelNeed() > 0)
+		for (var product in GetProducts())
+			if (FuelNeed(product) > 0)
 				return false;
-			index++;
-		}
+	}
+	// Liquid containers may be collected if a product needs them.
+	if (obj->~IsLiquidContainer())
+	{
+		for (var product in GetProducts())
+			if (LiquidNeed(product))
+				return false;
 	}
 	return true;
 }
