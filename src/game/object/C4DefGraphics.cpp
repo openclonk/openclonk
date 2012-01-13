@@ -172,7 +172,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 	}
 	catch (const std::runtime_error& ex)
 	{
-		DebugLogF("Failed to load mesh: %s", ex.what());
+		DebugLogF("Failed to load mesh in definition %s: %s", hGroup.GetName(), ex.what());
 		delete[] buf;
 		return false;
 	}
