@@ -24,7 +24,6 @@
 
 #include <boost/foreach.hpp>
 #include <natupnp.h>
-#include <upnp.h>
 
 namespace
 {
