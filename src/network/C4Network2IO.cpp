@@ -30,7 +30,7 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 
-#include "network/C4Network2Upnp.h"
+#include "network/C4Network2UPnP.h"
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
