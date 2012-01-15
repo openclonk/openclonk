@@ -24,6 +24,12 @@
 #include <boost/foreach.hpp>
 #include <natupnp.h>
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+// MinGW doesn't usually have these
+extern "C" const CLSID CLSID_UPnPNAT = { 0xAE1E00AA, 0x3FD5, 0x403C, { 0x8A, 0x27, 0x2B, 0xBD, 0xC3, 0x0C, 0xD0, 0xE1 } };
+extern "C" const IID IID_IUPnPNAT = { 0xB171C812, 0xCC76, 0x485A, { 0x94, 0xD8, 0xB6, 0xB3, 0xA2, 0x79, 0x4E, 0x99 } };
+#endif
+
 namespace
 {
 	static BSTR PROTO_UDP = ::SysAllocString(L"UDP");
