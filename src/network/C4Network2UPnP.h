@@ -19,6 +19,7 @@
 #ifndef INC_C4Network2Upnp
 #define INC_C4Network2Upnp
 
+#include "network/C4Network2IO.h"
 #include <boost/noncopyable.hpp>
 
 class C4Network2UPnP : boost::noncopyable

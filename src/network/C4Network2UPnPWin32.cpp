@@ -18,7 +18,6 @@
 
 #include "C4Include.h"
 #include "platform/C4windowswrapper.h"
-#include "network/C4Network2IO.h"
 #include "network/C4Network2UPnP.h"
 #include "C4Version.h"
 
