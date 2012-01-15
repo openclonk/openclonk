@@ -30,6 +30,8 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 
+#include "network/C4Network2Upnp.h"
+
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -51,6 +53,7 @@ struct C4Network2IO::NetEvPacketData
 C4Network2IO::C4Network2IO()
 		: pNetIO_TCP(NULL), pNetIO_UDP(NULL),
 		pNetIODiscover(NULL), pRefServer(NULL),
+		UPnPMgr(NULL),
 		pConnList(NULL),
 		iNextConnID(0),
 		fAllowConnect(false),
@@ -84,6 +87,13 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 	Thread.SetCallback(Ev_Net_Disconn, this);
 	Thread.SetCallback(Ev_Net_Packet, this);
 
+	// initialize UPnP manager
+	if (iPortTCP > 0 || iPortUDP > 0)
+	{
+		assert(!UPnPMgr);
+		UPnPMgr = new C4Network2UPnP;
+	}
+
 	// initialize net i/o classes: TCP first
 	if (iPortTCP > 0)
 	{
@@ -103,6 +113,7 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		{
 			Thread.AddProc(pNetIO_TCP);
 			pNetIO_TCP->SetCallback(this);
+			UPnPMgr->AddMapping(P_TCP, iPortTCP, iPortTCP);
 		}
 
 	}
@@ -138,8 +149,8 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 		{
 			Thread.AddProc(pNetIO_UDP);
 			pNetIO_UDP->SetCallback(this);
+			UPnPMgr->AddMapping(P_UDP, iPortUDP, iPortUDP);
 		}
-
 	}
 
 	// no protocols?
@@ -224,6 +235,7 @@ void C4Network2IO::Clear() // by main thread
 	if (pNetIO_TCP) { Thread.RemoveProc(pNetIO_TCP); delete pNetIO_TCP; pNetIO_TCP = NULL; }
 	if (pNetIO_UDP) { Thread.RemoveProc(pNetIO_UDP); delete pNetIO_UDP; pNetIO_UDP = NULL; }
 	if (pRefServer) { Thread.RemoveProc(pRefServer); delete pRefServer; pRefServer = NULL; }
+	delete UPnPMgr; UPnPMgr = NULL;
 	// remove auto-accepts
 	ClearAutoAccept();
 	// reset flags

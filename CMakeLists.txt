@@ -1,7 +1,7 @@
 # OpenClonk, http://www.openclonk.org
 #
 # Copyright (c) 2009-2011  Günther Brammer
-# Copyright (c) 2009-2011  Nicolas Hake
+# Copyright (c) 2009-2012  Nicolas Hake
 # Copyright (c) 2009  David Dormagen
 # Copyright (c) 2009-2011  Armin Burgmeier
 # Copyright (c) 2009-2010  Sven Eberhardt
@@ -465,6 +465,7 @@ set(OC_CLONK_SOURCES
 	src/network/C4Network2Res.h
 	src/network/C4Network2Stats.cpp
 	src/network/C4Network2Stats.h
+	src/network/C4Network2UPnP.h
 	src/network/C4Packet2.cpp
 	src/network/C4PacketBase.h
 	src/platform/Bitmap256.cpp
@@ -712,7 +713,7 @@ if(USE_CONSOLE)
 	CHECK_INCLUDE_FILE_CXX(readline.h HAVE_READLINE_H)
 	CHECK_INCLUDE_FILE_CXX(readline/readline.h HAVE_READLINE_READLINE_H)
 endif()
-
+CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 
 # ck 09-09-20: The following headers require Xlib.h for things such as
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
@@ -739,6 +740,16 @@ if(HAVE_ICONV)
 		FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
 		MARK_AS_ADVANCED( ICONV_LIBRARY )
 	endif()
+endif()
+
+if(HAVE_NATUPNP_H)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPWin32.cpp
+	)
+else()
+	list(APPEND OC_SYSTEM_SOURCES
+		src/network/C4Network2UPnPDummy.cpp
+	)
 endif()
 
 ############################################################################

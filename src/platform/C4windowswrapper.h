@@ -19,6 +19,8 @@
 #ifndef INC_C4windowswrapper
 #define INC_C4windowswrapper
 
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 #undef RGB
 #undef GetRValue

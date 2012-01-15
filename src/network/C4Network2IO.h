@@ -59,6 +59,9 @@ protected:
 	// reference server
 	class C4Network2RefServer *pRefServer;
 
+	// UPnP port mapping manager
+	class C4Network2UPnP *UPnPMgr;
+
 	// local client core
 	C4ClientCore LCCore;
 	CStdCSec LCCoreCSec;
