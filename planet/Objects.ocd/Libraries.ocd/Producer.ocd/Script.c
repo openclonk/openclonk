@@ -84,6 +84,10 @@ protected func OnProductSelection(id product, int par, bool alt)
 
 /*-- Production  properties --*/
 
+// This function may be overloaded by the actual producer.
+// If set to true, the producer will show every product which is assigned to it instead of checking the knowledge base of its owner.
+private func DisregardsKnowledge() { return false; }
+
 /** Determines whether the product specified can be produced. Should be overloaded by the producer.
 	@param product_id item's id of which to determine if it is producible.
 	@return \c true if the item can be produced, \c false otherwise.
@@ -101,11 +105,30 @@ public func GetProducts()
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	while (product = GetDefinition(index))
+	if (!DisregardsKnowledge() && GetOwner() != NO_OWNER)
 	{
-		if (IsProduct(product))
-			products[GetLength(products)] = product;
-		index++;	
+		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
+		{
+			if (IsProduct(product))
+				products[GetLength(products)] = product;
+			index++;
+		}
+		index = 0;
+		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Vehicle))
+		{
+			if (IsProduct(product))
+				products[GetLength(products)] = product;
+			index++;
+		}
+	} 
+	else
+	{
+		while (product = GetDefinition(index))
+		{
+			if (IsProduct(product))
+				products[GetLength(products)] = product;
+			index++;	
+		}
 	}
 	return products;
 }
