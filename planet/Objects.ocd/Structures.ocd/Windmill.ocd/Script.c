@@ -60,6 +60,8 @@ public func CheckPower()
 
 /*-- Production --*/
 
+private func DisregardsKnowledge() { return true; }
+
 private func IsProduct(id product_id)
 {
 	return product_id->~IsWindmillProduct();

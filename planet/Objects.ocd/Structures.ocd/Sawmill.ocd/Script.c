@@ -41,6 +41,8 @@ private func CheckWoodObject(object target)
 
 /*-- Production --*/
 
+private func DisregardsKnowledge() { return true; }
+
 public func Saw(object target)
 {
 	target->Enter(this);
