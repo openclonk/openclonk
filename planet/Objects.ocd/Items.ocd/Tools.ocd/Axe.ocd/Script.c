@@ -115,6 +115,12 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if (!clonk->HasHandAction())
 		return true;
 
+	var rand = Random(2)+1;
+	var animation = Format("SwordSlash%d.%s", rand, arm);
+	var arm = "R";
+	var length = 15;
+	carry_bone = "pos_hand2";
+
 	if(clonk->IsWalking())
 	{
 		if(!GetEffect("AxeStrikeStop", clonk, 0))
@@ -126,16 +132,12 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		if(clonk->GetYDir() < -5) rand = 2;
 		animation = Format("SwordJump%d.%s",rand,arm);
 	}
-	var arm = "R";
-	var length = 15;
-	carry_bone = "pos_hand2";
+
 	if(clonk->GetItemPos(this) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";
 	}
-	var rand = Random(2)+1;
-	var animation = Format("SwordSlash%d.%s", rand, arm);
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	clonk->UpdateAttach();
