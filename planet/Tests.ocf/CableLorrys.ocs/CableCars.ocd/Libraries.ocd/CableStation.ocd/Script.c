@@ -388,7 +388,7 @@ public func CheckAcquire(id object_id, int amount)
 public func CheckAcquiringCar(object target)
 {
 	var car = false;
-	if (!target) target == this;
+	if (!target) target = this;
 	for (var car_to_check in FindObjects(Find_Func("IsCableCar")))
 	{
 		if (car_to_check->GetRailTarget() == target)
