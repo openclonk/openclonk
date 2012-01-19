@@ -20,6 +20,7 @@ juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
+FreqMan			- Cash (http://www.freesound.org/people/FreqMan/sounds/31377/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -49,4 +50,3 @@ Nikolino		- BlastLiquid*
 Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
 fresco			- Munch* (http://www.freesound.org/people/fresco/sounds/48933/)
 tofumike		- Munch* (http://www.freesound.org/people/tofumike/sounds/41371/)
-kjackson		- Cash (http://www.freesound.org/people/kjackson/sounds/32608/)
