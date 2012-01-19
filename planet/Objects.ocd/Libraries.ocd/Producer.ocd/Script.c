@@ -86,7 +86,7 @@ protected func OnProductSelection(id product, int par, bool alt)
 
 // This function may be overloaded by the actual producer.
 // If set to true, the producer will show every product which is assigned to it instead of checking the knowledge base of its owner.
-private func DisregardsKnowledge() { return false; }
+private func IgnoreKnowledge() { return false; }
 
 /** Determines whether the product specified can be produced. Should be overloaded by the producer.
 	@param product_id item's id of which to determine if it is producible.
@@ -105,7 +105,7 @@ public func GetProducts()
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	if (!DisregardsKnowledge() && GetOwner() != NO_OWNER)
+	if (!IgnoreKnowledge() && GetOwner() != NO_OWNER)
 	{
 		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
 		{
@@ -137,7 +137,7 @@ public func GetProducts()
 	@param rawmat_id id of raw material for which to determine if it is needed for production.
 	@return \c true if the raw material is needed, \c false otherwise.
 */
-public func NeedsRawMaterial(id rawmat_id)
+public func NeedRawMaterial(id rawmat_id)
 {
 	return false; // Obsolete for now.
 }

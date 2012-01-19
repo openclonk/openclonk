@@ -41,7 +41,7 @@ private func CheckWoodObject(object target)
 
 /*-- Production --*/
 
-private func DisregardsKnowledge() { return true; }
+private func IgnoreKnowledge() { return true; }
 
 public func Saw(object target)
 {
@@ -59,7 +59,7 @@ private func IsProduct(id product_id)
 private func ProductionTime() { return 100; }
 private func PowerNeed(id product) { return 100; }
 
-public func NeedsRawMaterial(id rawmat_id)
+public func NeedRawMaterial(id rawmat_id)
 {
 	if (rawmat_id->~IsSawmillProduct())
 		return true;

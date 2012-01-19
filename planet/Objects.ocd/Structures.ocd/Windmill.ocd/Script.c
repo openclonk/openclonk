@@ -60,7 +60,7 @@ public func CheckPower()
 
 /*-- Production --*/
 
-private func DisregardsKnowledge() { return true; }
+private func IgnoreKnowledge() { return true; }
 
 private func IsProduct(id product_id)
 {
@@ -69,7 +69,7 @@ private func IsProduct(id product_id)
 private func ProductionTime() { return 290; }
 private func PowerNeed(id product) { return 100; }
 
-public func NeedsRawMaterial(id rawmat_id)
+public func NeedRawMaterial(id rawmat_id)
 {
 	if (rawmat_id == Seeds)
 		return true;

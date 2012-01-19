@@ -17,7 +17,7 @@ public func Construction()
 
 /*-- Production --*/
 
-private func DisregardsKnowledge() { return true; }
+private func IgnoreKnowledge() { return true; }
 
 private func IsProduct(id product_id)
 {
@@ -25,7 +25,7 @@ private func IsProduct(id product_id)
 }
 private func ProductionTime() { return 290; }
 
-public func NeedsRawMaterial(id rawmat_id)
+public func NeedRawMaterial(id rawmat_id)
 {
 	if (rawmat_id->~IsFuel() || rawmat_id == Ore || rawmat_id == Nugget)
 		return true;
