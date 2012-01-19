@@ -188,7 +188,7 @@ private func GetItemPosition(int n, int total)
 		}		
 	}
 	
-	// Packing 19 or less circles.
+	// Packing 37 or less circles.
 	if (total <= 37)
 	{
 		if (n == 1)

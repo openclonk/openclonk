@@ -7,6 +7,8 @@
 
 #include GUI_Menu
 
+local constructinfo_shown;
+
 /** Creates a consruction menu for the calling object. This is supposed to be a crew member, 
 	controlled by a player.
 	@param producer the producer for which to create the production menu.
@@ -63,12 +65,21 @@ private func ShowConstructionInfo(object item)
 	while (comp = GetComponent(nil, index++, nil, structure_id))
 		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
 	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
+	constructinfo_shown = item;
 	return;
+}
+
+public func HideConstructionInfo()
+{
+	CustomMessage("", this, GetOwner());
+	constructinfo_shown = false;
 }
 
 /* Menu properties */
 
 public func IsProductionMenu() { return true; }
+// UpdateCursor is called
+public func CursorUpdatesEnabled() { return true; }
 
 public func Close() 
 {
@@ -84,6 +95,21 @@ public func HasCommander(object producer)
 	return false;
 }
 
+// Callback if the mouse is moved
+public func UpdateCursor(int dx, int dy)
+{
+	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
+	if (!item || item->GetMenu() != this)
+	{
+		if (constructinfo_shown)
+			HideConstructionInfo();
+		return;
+	}
+	if (item == constructinfo_shown)
+		return;
+	ShowConstructionInfo(item);
+}
+
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when an item has been selected (left mouse button).
@@ -94,17 +120,6 @@ public func OnItemSelection(object item)
 		// Close menu if a construction site has been created.
 		if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
 			Close();	
-	}
-	return _inherited(item, ...);
-}
-
-// Called when an item has been selected (right mouse button).
-public func OnItemSelectionAlt(object item)
-{
-	if (menu_commander)
-	{
-		// Show construction properties of this structure.
-		ShowConstructionInfo(item);	
 	}
 	return _inherited(item, ...);
 }

@@ -8,6 +8,7 @@
 #include GUI_Menu
 
 local menu_queue;
+local productinfo_shown;
 
 /** Creates a production menu for the calling object. This is supposed to be a crew member, 
 	controlled by a player.
@@ -94,12 +95,21 @@ public func ShowProductInfo(object item)
 		cost_msg = Format("%s %dx {{%i}}", cost_msg, comp[1], comp[0]);
 	
 	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
+	productinfo_shown = item;
 	return;
+}
+
+public func HideProductInfo()
+{
+	CustomMessage("", this, GetOwner());
+	productinfo_shown = false;
 }
 
 /* Menu properties */
 
 public func IsProductionMenu() { return true; }
+// UpdateCursor is called
+public func CursorUpdatesEnabled() { return true; }
 
 public func AddQueueItem(object item)
 {
@@ -200,6 +210,21 @@ public func HasCommander(object producer)
 	return false;
 }
 
+// Callback if the mouse is moved
+public func UpdateCursor(int dx, int dy)
+{
+	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
+	if (!item || item->GetMenu() != this)
+	{
+		if (productinfo_shown)
+			HideProductInfo();
+		return;
+	}
+	if (item == productinfo_shown)
+		return;
+	ShowProductInfo(item);
+}
+
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when an item has been selected (left mouse button).
@@ -224,7 +249,7 @@ public func OnItemSelectionAlt(object item)
 	// Show the production cost of the selected production item.
 	if (IsProductItem(item))
 	{
-		ShowProductInfo(item);	
+		// Nothing to do here?
 	}
 	// Show production status of the selected queue item.
 	if (IsQueueItem(item))
