@@ -993,10 +993,8 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 
 	/* all this stuff is already done on a higher layer - in playercontrol.c
 	   now this is just the same for gamepad control */
-	
 	if (!PlayerHasVirtualCursor(GetOwner()))
-		return false;
-
+		return true;
 
 	// fix pos of x and y
 	var mex = mlastx+GetX()-GetMenu()->GetX();
