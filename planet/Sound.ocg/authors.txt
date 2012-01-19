@@ -21,6 +21,8 @@ jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 FreqMan			- Cash (http://www.freesound.org/people/FreqMan/sounds/31377/)
+fresco			- Munch2 (http://www.freesound.org/people/fresco/sounds/48933/)
+cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -40,7 +42,6 @@ acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
 
 The following sound effects are licensed under the CC Sampling plus license:
 
-cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
 Nikolino		- BlastLiquid*
@@ -48,5 +49,4 @@ Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106650/)
 					(http://www.freesound.org/people/Nikolino/sounds/106640/)
 Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
-fresco			- Munch* (http://www.freesound.org/people/fresco/sounds/48933/)
-tofumike		- Munch* (http://www.freesound.org/people/tofumike/sounds/41371/)
+tofumike		- Munch1 (http://www.freesound.org/people/tofumike/sounds/41371/)
