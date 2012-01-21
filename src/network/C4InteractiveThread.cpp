@@ -134,7 +134,7 @@ void C4InteractiveThread::ProcessEvents() // by main thread
 		switch (eEventType)
 		{
 			// Logging
-		case Ev_Log: case Ev_LogSilent: case Ev_LogFatal:
+		case Ev_Log: case Ev_LogSilent: case Ev_LogFatal: case Ev_LogDebug:
 		{
 			// Reconstruct the StdStrBuf which allocated the data.
 			StdStrBuf pLog;
@@ -147,7 +147,9 @@ void C4InteractiveThread::ProcessEvents() // by main thread
 				LogSilent(pLog.getData()); break;
 			case Ev_LogFatal:
 				LogFatal(pLog.getData()); break;
-			default: assert(eEventType == Ev_Log || eEventType == Ev_LogSilent || eEventType == Ev_LogFatal); // obviously will not happen, but someone tell gcc
+			case Ev_LogDebug:
+				DebugLog(pLog.getData()); break;
+			default: assert(eEventType == Ev_Log || eEventType == Ev_LogSilent || eEventType == Ev_LogFatal || eEventType == Ev_LogDebug); // obviously will not happen, but someone tell gcc
 			}
 
 		}
@@ -194,6 +196,15 @@ bool C4InteractiveThread::ThreadLogS(const char *szMessage, ...)
 	StdStrBuf Msg = FormatStringV(szMessage, lst);
 	// send to main thread
 	return PushEvent(Ev_LogSilent, Msg.GrabPointer());
+}
+
+bool C4InteractiveThread::ThreadLogDebug(const char *szMessage, ...)
+{
+	// format message
+	va_list lst; va_start(lst, szMessage);
+	StdStrBuf Msg = FormatStringV(szMessage, lst);
+	// send to main thread
+	return PushEvent(Ev_LogDebug, Msg.GrabPointer());
 }
 
 bool C4InteractiveThreadNotifyProc::Execute(int, pollfd*)

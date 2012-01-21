@@ -3,7 +3,7 @@
 # Copyright (c) 2009-2011  Günther Brammer
 # Copyright (c) 2009-2012  Nicolas Hake
 # Copyright (c) 2009  David Dormagen
-# Copyright (c) 2009-2011  Armin Burgmeier
+# Copyright (c) 2009-2012  Armin Burgmeier
 # Copyright (c) 2009-2010  Sven Eberhardt
 # Copyright (c) 2009  Tobias Zwick
 # Copyright (c) 2009  Richard Gerum
@@ -747,9 +747,17 @@ if(HAVE_NATUPNP_H)
 		src/network/C4Network2UPnPWin32.cpp
 	)
 else()
-	list(APPEND OC_SYSTEM_SOURCES
-		src/network/C4Network2UPnPDummy.cpp
-	)
+	FIND_PACKAGE(Upnp)
+	SET(HAVE_UPNP ${UPNP_FOUND})
+	if(UPNP_FOUND)
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPLinux.cpp
+		)
+	else()
+		list(APPEND OC_SYSTEM_SOURCES
+			src/network/C4Network2UPnPDummy.cpp
+		)
+	endif()
 endif()
 
 ############################################################################
@@ -1218,6 +1226,11 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 			${SDLMIXER_LIBRARIES}
 		)
 	endif()
+endif()
+
+if(HAVE_UPNP)
+	include_directories(${UPNP_INCLUDE_DIR})
+	target_link_libraries(clonk ${UPNP_LIBRARIES})
 endif()
 
 # GTest

@@ -33,10 +33,12 @@ enum C4InteractiveEventType
 	Ev_Log,
 	Ev_LogSilent,
 	Ev_LogFatal,
+	Ev_LogDebug,
 
 	Ev_FileChange,
 
 	Ev_HTTP_Response,
+	Ev_UPNP_Response,
 
 	Ev_IRC_Message,
 
@@ -110,6 +112,7 @@ public:
 	bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	bool ThreadLogDebug(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 	template<typename Functor>
 	bool ThreadPostAsync(Functor function)
