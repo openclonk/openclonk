@@ -15,6 +15,12 @@ protected func Initialize()
 	// Place some trees.
 	for (var i = 0; i < 12 + Random(4); i++)
 		PlaceVegetation(Tree_Coniferous, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
+	
+	// place some sprout berries
+	var bush = PlaceVegetation(SproutBerryBush, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 100000);
+	if(bush)
+		for (var i = 0; i < 2; i++)
+			PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
 	PlaceGrass(100);
 		
 	// Set time of day to evening and create some clouds and celestials.

@@ -1,0 +1,2 @@
+Name=Sprossenbeerenbusch
+Description=Ein schnellwachsender, Wasser liebender Busch, der leckere Beeren produziert, die jedoch schnell gegessen werden müssen!

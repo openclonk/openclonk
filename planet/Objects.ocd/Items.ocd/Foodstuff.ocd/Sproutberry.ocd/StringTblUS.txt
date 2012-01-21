@@ -1,0 +1,2 @@
+Name=Sprout Berry
+Description=Sweet. Sprouts very fast and is difficult to store.
