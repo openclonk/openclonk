@@ -53,7 +53,6 @@ global func GetDefVehicleControl()  { return GetDefCoreVal("VehicleControl", "De
 global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
 global func GetDefClosedContainer() { return GetDefCoreVal("ClosedContainer", "DefCore"); }
 global func GetDefSilentCommands() { return GetDefCoreVal("SilentCommands", "DefCore"); }
-global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
 global func GetDefNoBurnDamage(){ return GetDefCoreVal("NoBurnDamage", "DefCore"); }
 global func GetDefTemporaryCrew() { return GetDefCoreVal("TemporaryCrew", "DefCore"); }
 global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); }
@@ -129,7 +128,6 @@ global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "Objec
 global func GetObjCoreDeathCount() { return GetObjectInfoCoreVal("DeathCount", "ObjectInfo"); }
 global func GetObjCoreBirthday()  { return GetObjectInfoCoreVal("Birthday", "ObjectInfo"); }
 global func GetObjCoreTotalPlayingTime() { return GetObjectInfoCoreVal("TotalPlayingTime", "ObjectInfo"); }
-global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "ObjectInfo"); }
 global func GetAge()              { return GetObjectInfoCoreVal("Age", "ObjectInfo"); }
 
 // GetPlayerInfoCoreVal
