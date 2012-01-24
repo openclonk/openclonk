@@ -534,17 +534,31 @@ GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *sz
 	// Create shader
 	GLhandleARB hShader = glCreateShaderObjectARB(iShaderType);
 
+	// Find #version
+	StdStrBuf Version("");
+	const char *szCodeRest = szCode;
+	if (const char *szVersion = SSearch(szCode, "#version"))
+	{
+		while (*szVersion && *szVersion != '\n')
+			szVersion++;
+		if (*szVersion == '\n')
+			szVersion++;
+		Version.Copy(szCode, szVersion - szCode);
+		szCodeRest = szVersion;
+	}
+
 	// Build code
-	const char *szCodes[C4LR_ShaderWorkaroundCount + 1];
+	const char *szCodes[C4LR_ShaderWorkaroundCount + 2];
+	szCodes[0] = Version.getData();
 	for(int i = 0; i < C4LR_ShaderWorkaroundCount; i++)
 		if(iWorkaround & (1 << i))
-			szCodes[i] = C4LR_ShaderWorkarounds[i];
+			szCodes[i+1] = C4LR_ShaderWorkarounds[i];
 		else
-			szCodes[i] = "";
-	szCodes[C4LR_ShaderWorkaroundCount] = szCode;
+			szCodes[i+1] = "";
+	szCodes[C4LR_ShaderWorkaroundCount+1] = szCodeRest;
 
 	// Compile
-	glShaderSourceARB(hShader, C4LR_ShaderWorkaroundCount + 1, szCodes, 0);
+	glShaderSourceARB(hShader, C4LR_ShaderWorkaroundCount + 2, szCodes, 0);
 	glCompileShaderARB(hShader);
 
 	// Dump any information to log
