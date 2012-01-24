@@ -166,8 +166,8 @@ public:
 	void Parse_Local();
 	void Parse_Static();
 	void Parse_Const();
-	C4Value Parse_ConstExpression();
-	C4Value Parse_ConstPropList();
+	C4Value Parse_ConstExpression(bool really);
+	C4Value Parse_ConstPropList(bool really);
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
@@ -1865,18 +1865,18 @@ void C4AulParseState::Parse_PropList()
 	Shift();
 }
 
-C4Value C4AulParseState::Parse_ConstPropList()
+C4Value C4AulParseState::Parse_ConstPropList(bool really)
 {
 	C4Value r;
 	Shift();
-	if (Type == PREPARSER)
+	if (really)
 		r.SetPropList(C4PropList::NewAnon());
 	while (TokenType != ATT_BLCLOSE)
 	{
 		C4String * pKey;
 		if (TokenType == ATT_IDTF)
 		{
-			if (Type == PREPARSER)
+			if (really)
 				pKey = Strings.RegString(Idtf);
 			Shift();
 		}
@@ -1889,16 +1889,16 @@ C4Value C4AulParseState::Parse_ConstPropList()
 		if (TokenType != ATT_COLON && TokenType != ATT_SET)
 			UnexpectedToken("':' or '='");
 		Shift();
-		if (Type == PREPARSER)
-			r._getPropList()->SetPropertyByS(pKey, Parse_ConstExpression());
+		if (really)
+			r._getPropList()->SetPropertyByS(pKey, Parse_ConstExpression(really));
 		else
-			Parse_ConstExpression();
+			Parse_ConstExpression(really);
 		if (TokenType == ATT_COMMA)
 			Shift();
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 	}
-	if (Type == PREPARSER)
+	if (really)
 		r._getPropList()->Freeze();
 	return r;
 }
@@ -2609,11 +2609,11 @@ void C4AulParseState::Parse_Local()
 			if (!a->GetPropList())
 				throw new C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
-			// register as constant (FIXME: do this in the parser, not the preparser)
-			if (Type == PREPARSER)
-				a->GetPropList()->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression());
+			// register as constant
+			if (Type == PARSER)
+				a->GetPropList()->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression(true));
 			else
-				Parse_ConstExpression();
+				Parse_ConstExpression(false);
 		}
 		switch (TokenType)
 		{
@@ -2680,7 +2680,7 @@ void C4AulParseState::Parse_Static()
 	}
 }
 
-C4Value C4AulParseState::Parse_ConstExpression()
+C4Value C4AulParseState::Parse_ConstExpression(bool really)
 {
 	C4Value r;
 	switch (TokenType)
@@ -2696,7 +2696,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		else if (SEqual(Idtf, C4AUL_Nil))
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
-			r = Parse_ConstPropList();
+			r = Parse_ConstPropList(really);
 		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
 			UnexpectedToken("constant value");
 		break;
@@ -2704,7 +2704,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		{
 			Shift();
 			// Create an array
-			if (Type == PREPARSER)
+			if (really)
 				r.SetArray(new C4ValueArray());
 			int size = 0;
 			bool fDone = false;
@@ -2716,7 +2716,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 					// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 					if (size > 0)
 					{
-						if (Type == PREPARSER)
+						if (really)
 							r._getArray()->SetItem(size, C4VNull);
 						++size;
 					}
@@ -2726,7 +2726,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				case ATT_COMMA:
 				{
 					// got no parameter before a ","? then push nil
-					if (Type == PREPARSER)
+					if (really)
 						r._getArray()->SetItem(size, C4VNull);
 					Shift();
 					++size;
@@ -2734,10 +2734,10 @@ C4Value C4AulParseState::Parse_ConstExpression()
 				}
 				default:
 				{
-					if (Type == PREPARSER)
-						r._getArray()->SetItem(size, Parse_ConstExpression());
+					if (really)
+						r._getArray()->SetItem(size, Parse_ConstExpression(really));
 					else
-						Parse_ConstExpression();
+						Parse_ConstExpression(really);
 					++size;
 					if (TokenType == ATT_COMMA)
 						Shift();
@@ -2755,7 +2755,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		}
 	case ATT_BLOPEN:
 		{
-			r = Parse_ConstPropList();
+			r = Parse_ConstPropList(really);
 			break;
 		}
 	case ATT_OPERATOR:
@@ -2792,7 +2792,7 @@ C4Value C4AulParseState::Parse_ConstExpression()
 		if (C4ScriptOpMap[OpID].Code == AB_BitOr)
 		{
 			Shift();
-			C4Value r2 = Parse_ConstExpression();
+			C4Value r2 = Parse_ConstExpression(really);
 			r.SetInt(r.getInt() | r2.getInt());
 		}
 	}
@@ -2827,8 +2827,11 @@ void C4AulParseState::Parse_Const()
 		Shift();
 
 		// register as constant
-		a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression());
-		
+		if (Type == PREPARSER)
+			a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression(true));
+		else
+			Parse_ConstExpression(false);
+
 		switch (TokenType)
 		{
 			case ATT_COMMA:
