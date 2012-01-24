@@ -304,42 +304,37 @@ C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const c
 
 bool C4AulParseState::AdvanceSpaces()
 {
-	char C, C2 = (char) 0;
-	// defaultly, not in comment
-	int InComment = 0; // 0/1/2 = no comment/line comment/multi line comment
-	// don't go past end
-	while ((C = *SPos))
+	while(*SPos)
 	{
-		// loop until out of comment and non-whitespace is found
-		switch (InComment)
+		if (*SPos == '/')
 		{
-		case 0:
-			if (C == '/')
+			// // comment
+			if (SPos[1] == '/')
 			{
-				SPos++;
-				switch (*SPos)
-				{
-				case '/': InComment = 1; break;
-				case '*': InComment = 2; break;
-				default: SPos--; return true;
-				}
-			}
-			// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
-			else if (C == '\xEF' && *(SPos + 1) == '\xBB' && *(SPos + 2) == '\xBF')
 				SPos += 2;
-			else if ((BYTE) C > 32) return true;
-			break;
-		case 1:
-			if (((BYTE) C == 13) || ((BYTE) C == 10)) InComment = 0;
-			break;
-		case 2:
-			if ((C == '/') && (C2 == '*')) InComment = 0;
-			break;
+				while (*SPos && *SPos != 13 && *SPos != 10)
+					++SPos;
+			}
+			// /* comment */
+			else if (SPos[1] == '*')
+			{
+				SPos += 2;
+				while (*SPos && (*SPos != '*' || SPos[1] != '/'))
+					++SPos;
+				SPos += 2;
+			}
+			else
+				return true;
 		}
-		// next char; store prev
-		SPos++; C2 = C;
+		// Skip any "zero width no-break spaces" (also known as Byte Order Marks)
+		else if (*SPos == '\xEF' && SPos[1] == '\xBB' && SPos[2] == '\xBF')
+			SPos += 3;
+		else if ((unsigned)*SPos > 32)
+			return true;
+		else
+			++SPos;
 	}
-	// end of script reached; return false
+	// end of script reached
 	return false;
 }
 
@@ -459,217 +454,152 @@ C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 	if (!AdvanceSpaces()) return ATT_EOF;
 	// store offset
 	const char *SPos0 = SPos;
-	int Len = 0;
-	// token get state
-	enum TokenGetState
+
+	// get char
+	char C = *(SPos++);
+	// Mostly sorted by frequency, except that tokens that have
+	// other tokens as prefixes need to be checked for first.
+	if (Inside(C, 'a', 'z') || Inside(C, 'A', 'Z') || C == '_' || C == '#')
 	{
-		TGS_None,       // just started
-		TGS_Ident,      // getting identifier
-		TGS_Int,        // getting integer
-		TGS_IntHex,     // getting hexadecimal integer
-		TGS_String,     // getting string
-		TGS_Dir         // getting directive
-	};
-	TokenGetState State = TGS_None;
-
-	std::string strbuf;
-
-	// loop until finished
-	while (true)
-	{
-		// get char
-		char C = *SPos;
-
-		switch (State)
+		// identifier or directive
+		bool dir = C == '#';
+		int Len = 1;
+		C = *SPos;
+		while (Inside(C, '0', '9') || Inside(C, 'a', 'z') || Inside(C, 'A', 'Z') || C == '_')
 		{
-		case TGS_None:
-		{
-			int iOpID;
-			// Mostly sorted by frequency, except that tokens that have
-			// other tokens as prefixes need to be checked for first.
-			if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
-			{
-				// SPos will be increased at the end of the loop
-				State = TGS_Ident;
-			}
-			else if (C == '(') {SPos++; return ATT_BOPEN; } // "("
-			else if (C == ')') {SPos++; return ATT_BCLOSE;} // ")"
-			else if (C == ',') {SPos++; return ATT_COMMA; } // ","
-			else if (C == ';') {SPos++; return ATT_SCOLON;} // ";"
-			else if (((C >= '0') && (C <= '9')))
-				State = TGS_Int;            // integer by 0-9
-			else if (C == '-' && *(SPos + 1) == '>' && *(SPos + 2) == '~')
-					  { SPos+=3;return ATT_CALLFS;} // "->~"
-			else if (C == '-' && *(SPos + 1) == '>')
-					  { SPos+=2;return ATT_CALL;  } // "->"
-			else if (C == '*' && Operator == StarsPlease)
-					  { SPos++; return ATT_STAR;  } // "*"
-			else if ((iOpID = GetOperator(SPos)) != -1)
-			{
-				SPos += SLen(C4ScriptOpMap[iOpID].Identifier);
-				cInt = iOpID;
-				return ATT_OPERATOR;
-			}
-			else if (C == '=') {SPos++; return ATT_SET;    } // "="
-			else if (C == '{') {SPos++; return ATT_BLOPEN;} // "{"
-			else if (C == '}') {SPos++; return ATT_BLCLOSE;}// "}"
-			else if (C == '"')
-			{
-				State = TGS_String;  // string by "
-				strbuf.reserve(512); // assume most strings to be smaller than this
-			}
-			else if (C == '[') {SPos++; return ATT_BOPEN2;} // "["
-			else if (C == ']') {SPos++; return ATT_BCLOSE2;}// "]"
-			else if (C == '.' && *(SPos + 1) == '.' && *(SPos + 2) == '.')
-					  { SPos+=3;return ATT_LDOTS; } // "..."
-			else if (C == '.') {SPos++; return ATT_DOT;   } // "."
-			else if (C == '#')  State = TGS_Dir;            // directive by "#"
-			else if (C == ':') {SPos++; return ATT_COLON; } // ":"
-			else
-			{
-				// unrecognized char
-				// make sure to skip the invalid char so the error won't be output forever
-				++SPos;
-				// show appropriate error message
-				if (C >= '!' && C <= '~')
-					throw new C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
-				else
-					throw new C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
-			}
-			break;
+			++Len;
+			C = *(++SPos);
 		}
-		case TGS_Ident: // ident and directive: parse until non ident-char is found
-		case TGS_Dir:
-			if (    !Inside(C, '0', '9')
-			        && !Inside(C, 'a', 'z')
-			        && !Inside(C, 'A', 'Z')
-			        && C != '_')
-			{
-				// return ident/directive
-				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, Idtf, Len);
-				// directive?
-				if (State == TGS_Dir) return ATT_DIR;
-				// everything else is an identifier
-				return ATT_IDTF;
-			}
-			break;
 
-		case TGS_Int: // integer: parse until non-number is found
-		case TGS_IntHex:
-			if ((C < '0') || (C > '9'))
-			{
-				int base;
-				if (State == TGS_Int)
+		Len = Min(Len, C4AUL_MAX_Identifier);
+		SCopy(SPos0, Idtf, Len);
+		return dir ? ATT_DIR : ATT_IDTF;
+	}
+	else if (C == '(') return ATT_BOPEN;  // "("
+	else if (C == ')') return ATT_BCLOSE; // ")"
+	else if (C == ',') return ATT_COMMA;  // ","
+	else if (C == ';') return ATT_SCOLON; // ";"
+	else if (Inside(C, '0', '9'))
+	{
+		// integer
+		if (C == '0' && *SPos == 'x')
+		{
+			// hexadecimal
+			cInt = StrToI32(SPos + 1, 16, &SPos);
+			return ATT_INT;
+		}
+		else
+		{
+			// decimal
+			cInt = StrToI32(SPos0, 10, &SPos);
+			return ATT_INT;
+		}
+	}
+	else if (C == '-' && *SPos == '>' && *(SPos + 1) == '~')
+		{ SPos+=2; return ATT_CALLFS;}// "->~"
+	else if (C == '-' && *SPos == '>')
+		{ ++SPos;  return ATT_CALL; } // "->"
+	else if (C == '*' && Operator == StarsPlease)
+	                   return ATT_STAR;   // "*"
+	else if ((cInt = GetOperator(SPos - 1)) != -1)
+	{
+		SPos += SLen(C4ScriptOpMap[cInt].Identifier) - 1;
+		return ATT_OPERATOR;
+	}
+	else if (C == '=') return ATT_SET;    // "="
+	else if (C == '{') return ATT_BLOPEN; // "{"
+	else if (C == '}') return ATT_BLCLOSE;// "}"
+	else if (C == '"')
+	{
+		// string
+		std::string strbuf;
+		strbuf.reserve(512); // assume most strings to be smaller than this
+		// string end
+		while (*SPos != '"')
+		{
+			C = *SPos;
+			++SPos;
+			if (C == '\\') // escape
+				switch (*SPos)
 				{
-					// turn to hex mode?
-					if (*SPos0 == '0' && C == 'x' && Len == 1)
-					{
-						State = TGS_IntHex;
-						break;
-					}
-					// parse as decimal int
-					base = 10;
-				}
-				else
+				case '"':  ++SPos; strbuf.push_back('"');  break;
+				case '\\': ++SPos; strbuf.push_back('\\'); break;
+				case 'n':  ++SPos; strbuf.push_back('\n'); break;
+				case 't':  ++SPos; strbuf.push_back('\t'); break;
+				case 'x':
 				{
-					// parse as hexadecimal int: Also allow 'a' to 'f' and 'A' to 'F'
-					if ((C>='A' && C<='F') || (C>='a' && C<='f')) break;
-					base = 16;
-				}
-				// return integer
-				Len = Min(Len, C4AUL_MAX_Identifier);
-				SCopy(SPos0, Idtf, Len);
-				// do not parse 0x prefix for hex
-				const char * pToken = Idtf;
-				if (State == TGS_IntHex) pToken += 2;
-				// it's not, so return the int
-				cInt = StrToI32(pToken, base, 0);
-				return ATT_INT;
-			}
-			break;
-
-		case TGS_String: // string: parse until '"'; check for eof!
-
-			// string end
-			if (C == '"')
-			{
-				SPos++;
-				cStr = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
-				// hold onto string, ClearToken will deref it
-				cStr->IncRef();
-				return ATT_STRING;
-			}
-			else
-			{
-				if (C == '\\') // escape
-					switch (*(SPos + 1))
+					++SPos;
+					// hexadecimal escape: \xAD.
+					// First char must be a hexdigit
+					if (!std::isxdigit(*SPos))
 					{
-					case '"':  SPos ++; strbuf.push_back('"');  break;
-					case '\\': SPos ++; strbuf.push_back('\\'); break;
-					case 'n': SPos ++; strbuf.push_back('\n'); break;
-					case 't': SPos ++; strbuf.push_back('\t'); break;
-					case 'x':
-					{
-						++SPos;
-						// hexadecimal escape: \xAD.
-						// First char must be a hexdigit
-						if (!std::isxdigit(SPos[1]))
-						{
-							Warn("\\x used with no following hex digits");
-							strbuf.push_back('\\'); strbuf.push_back('x');
-						}
-						else
-						{
-							char ch = 0;
-							while (std::isxdigit(SPos[1]))
-							{
-								++SPos;
-								ch *= 16;
-								if (*SPos >= '0' && *SPos <= '9')
-									ch += *SPos - '0';
-								else if (*SPos >= 'a' && *SPos <= 'f')
-									ch += *SPos - 'a' + 10;
-								else if (*SPos >= 'A' && *SPos <= 'F')
-									ch += *SPos - 'A' + 10;
-							};
-							strbuf.push_back(ch);
-						}
-						break;
+						Warn("\\x used with no following hex digits");
+						strbuf.push_back('\\'); strbuf.push_back('x');
 					}
-					case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+					else
 					{
-						// Octal escape: \142
 						char ch = 0;
-						while (SPos[1] >= '0' && SPos[1] <= '7')
+						while (std::isxdigit(*SPos))
 						{
-							ch *= 8;
-							ch += *++SPos -'0';
-						}
+							ch *= 16;
+							if (*SPos >= '0' && *SPos <= '9')
+								ch += *SPos - '0';
+							else if (*SPos >= 'a' && *SPos <= 'f')
+								ch += *SPos - 'a' + 10;
+							else if (*SPos >= 'A' && *SPos <= 'F')
+								ch += *SPos - 'A' + 10;
+							++SPos;
+						};
 						strbuf.push_back(ch);
 					}
 					break;
-					default:
+				}
+				case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+				{
+					// Octal escape: \142
+					char ch = 0;
+					while (SPos[1] >= '0' && SPos[1] <= '7')
 					{
-						// just insert "\"
-						strbuf.push_back('\\');
-						// show warning
-						char strEscape[2] = { *(SPos + 1), 0 };
-						Warn("unknown escape: ", strEscape);
+						ch *= 8;
+						ch += *++SPos -'0';
 					}
-					}
-				else if (C == 0 || C == 10 || C == 13) // line break / feed
-					throw new C4AulParseError(this, "string not closed");
-
-				else
-					// copy character
-					strbuf.push_back(C);
-			}
-			break;
-
+					strbuf.push_back(ch);
+					break;
+				}
+				default:
+				{
+					// just insert "\"
+					strbuf.push_back('\\');
+					// show warning
+					char strEscape[2] = { *(SPos + 1), 0 };
+					Warn("unknown escape: ", strEscape);
+				}
+				}
+			else if (C == 0 || C == 10 || C == 13) // line break / feed
+				throw new C4AulParseError(this, "string not closed");
+			else
+				// copy character
+				strbuf.push_back(C);
 		}
-		// next char
-		SPos++; Len++;
+		++SPos;
+		cStr = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
+		// hold onto string, ClearToken will deref it
+		cStr->IncRef();
+		return ATT_STRING;
+	}
+	else if (C == '[') return ATT_BOPEN2; // "["
+	else if (C == ']') return ATT_BCLOSE2;// "]"
+	else if (C == '.' && *SPos == '.' && *(SPos + 1) == '.')
+		{ SPos+=2; return ATT_LDOTS; } // "..."
+	else if (C == '.') return ATT_DOT;    // "."
+	else if (C == ':') return ATT_COLON;  // ":"
+	else
+	{
+		// show appropriate error message
+		if (C >= '!' && C <= '~')
+			throw new C4AulParseError(this, FormatString("unexpected character '%c' found", C).getData());
+		else
+			throw new C4AulParseError(this, FormatString("unexpected character 0x%x found", (int)(unsigned char) C).getData());
 	}
 }
 
