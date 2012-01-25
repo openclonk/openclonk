@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-07 15:53+0200\n"
+"POT-Creation-Date: 2012-01-25 23:18+0100\n"
 "PO-Revision-Date: 2011-09-07 15:52+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -361,6 +361,7 @@ msgstr "Operator"
 #: sdk/script/fn/CustomMessage.xml:69(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:38(col)
 #: sdk/script/fn/AttachMesh.xml:43(col)
+#: sdk/script/fn/Anim_Linear.xml:39(col)
 #: sdk/script/fn/AddCommand.xml:71(col)
 #: sdk/scenario/script.xml:17(col)
 #: sdk/scenario/scenario.xml:16(col)
@@ -1042,6 +1043,7 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/script/fn/CreateScriptPlayer.xml:41(col)
 #: sdk/script/fn/CreateMenu.xml:37(col)
 #: sdk/script/fn/CreateMenu.xml:93(col)
+#: sdk/script/fn/Anim_Linear.xml:40(col)
 #: sdk/script/fn/AddCommand.xml:76(col)
 #: sdk/script/Effects.xml:479(col)
 #: sdk/script/Effects.xml:531(col)
@@ -1079,6 +1081,7 @@ msgstr "0"
 #: sdk/script/fn/CreateScriptPlayer.xml:46(col)
 #: sdk/script/fn/CreateMenu.xml:42(col)
 #: sdk/script/fn/CreateMenu.xml:98(col)
+#: sdk/script/fn/Anim_Linear.xml:41(col)
 #: sdk/script/fn/AddCommand.xml:97(col)
 #: sdk/script/Effects.xml:199(col)
 #: sdk/script/Effects.xml:483(col)
@@ -1992,6 +1995,7 @@ msgstr "Lässt eine Nachricht über dem ausgewählten Clonk des ersten Spielers 
 #: sdk/script/fn/StartScriptProfiler.xml:8(category)
 #: sdk/script/fn/ReloadParticle.xml:8(category)
 #: sdk/script/fn/ReloadDef.xml:8(category)
+#: sdk/script/fn/FatalError.xml:8(category)
 #: sdk/script/fn/EditCursor.xml:8(category)
 msgid "Developer"
 msgstr "Entwickler"
@@ -2066,7 +2070,7 @@ msgstr "Stoppt die Animation mit der angegeben Nummer (wie sie von <placeholder-
 #: sdk/script/fn/Anim_Y.xml:36(remark)
 #: sdk/script/fn/Anim_XDir.xml:31(remark)
 #: sdk/script/fn/Anim_X.xml:36(remark)
-#: sdk/script/fn/Anim_Linear.xml:43(remark)
+#: sdk/script/fn/Anim_Linear.xml:49(remark)
 #: sdk/script/fn/Anim_Const.xml:21(remark)
 #: sdk/script/fn/Anim_Action.xml:15(remark)
 #: sdk/script/fn/Anim_AbsY.xml:36(remark)
@@ -2137,8 +2141,8 @@ msgid "Script for a tool: It splits the first object it finds at it's position o
 msgstr "Script für ein Werkzeug: Beim Benutzen zerlegt es das erste Objekt dass es an seiner Funktion findet"
 
 #: sdk/script/fn/Sound.xml:16(desc)
-msgid "Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided."
-msgstr "Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden."
+msgid "Name of the sound effect (without .wav/.ogg extension). Wildcards as used by <placeholder-1/> are used."
+msgstr "Name des Soundeffekts (ohne .wav/.ogg-Erweiterung). Wildcards dürfen wie in <placeholder-1/> verwendet werden"
 
 #: sdk/script/fn/Sound.xml:21(desc)
 msgid "Specifies wether the sound is played globally, i.e. independently of the object position always with the same loudness."
@@ -2746,6 +2750,7 @@ msgstr "Index des Vertex."
 #: sdk/script/fn/CreateMenu.xml:32(col)
 #: sdk/script/fn/CreateMenu.xml:48(col)
 #: sdk/script/fn/CreateMenu.xml:88(col)
+#: sdk/script/fn/Anim_Linear.xml:39(col)
 #: sdk/scenario/scenario.xml:14(col)
 #: sdk/scenario/scenario.xml:94(col)
 #: sdk/scenario/scenario.xml:124(col)
@@ -3445,6 +3450,7 @@ msgstr "0-100000: Neuer Wert für diese Eigenschaft"
 #: sdk/script/fn/CreateScriptPlayer.xml:37(col)
 #: sdk/script/fn/CreateMenu.xml:31(col)
 #: sdk/script/fn/CreateMenu.xml:87(col)
+#: sdk/script/fn/Anim_Linear.xml:39(col)
 msgid "Constant"
 msgstr "Konstante"
 
@@ -3482,6 +3488,7 @@ msgstr "PHYS_Temporary"
 #: sdk/script/fn/CreateScriptPlayer.xml:51(col)
 #: sdk/script/fn/CreateMenu.xml:47(col)
 #: sdk/script/fn/CreateMenu.xml:103(col)
+#: sdk/script/fn/Anim_Linear.xml:42(col)
 #: sdk/script/fn/AddCommand.xml:90(col)
 #: sdk/script/Effects.xml:487(col)
 #: sdk/script/Effects.xml:541(col)
@@ -4214,10 +4221,11 @@ msgid "<code>true</code> if you want to add a clonk to the crew and <code>false<
 msgstr "<code>true</code> wenn der Clonk der Crew hinzugefügt und <code>false</code> wenn er aus dieser entfernt werden soll."
 
 #: sdk/script/fn/SetCrewStatus.xml:26(desc)
-msgid "Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore."
+#, fuzzy
+msgid "Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore. This does not add the object to the permanent crew of the player, use <placeholder-1/> for that."
 msgstr "Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben."
 
-#: sdk/script/fn/SetCrewStatus.xml:31(text)
+#: sdk/script/fn/SetCrewStatus.xml:32(text)
 #: sdk/script/fn/MakeCrewMember.xml:27(text)
 msgid "This script creates a new clonk and adds it to the crew list of the owner."
 msgstr "Dieser kurze Objektscript erstellt einen neuen Clonk und fügt ihn der Crew seines Besitzers hinzu."
@@ -8014,6 +8022,26 @@ msgstr "Sucht eine Heimatbasis eines Spielers. Die Heimatbasis ist zumeist das G
 msgid "Gives the selected clonk the order to enter his home base."
 msgstr "Gibt dem ausgewählten Clonk des ersten Spielers das Kommando, seine Basis zu betreten."
 
+#: sdk/script/fn/FatalError.xml:17(desc)
+msgid "Error message to be displayed"
+msgstr "Fehlermeldung, die ausgegeben wird"
+
+#: sdk/script/fn/FatalError.xml:21(desc)
+msgid "Prints out the specified error message and the call stack, then cancels the execution of the function it was called in. This function can e.g. be used to effectively debug scripts or to throw an error if required parameters of a function are not given by the user of the function."
+msgstr "Gibt die angegebene Fehlermeldung und den Aufrufstack aus und bricht dann die ausführung der aktuellen Funktion ab. FatalError kann benutzt werden, um effektiv zu debuggen oder einen Fehler bei falschen Parametern auszugeben."
+
+#: sdk/script/fn/FatalError.xml:29(text)
+msgid "A snippet from the actual implementation of the Explode function. If Explode is called without object context, the error message and call stack are printed into the log file and the execution of the function is canceled.<br/>This is better than the following behaviour of Explode..."
+msgstr "Ein Teil der Implementierung der Explode-Funktion: Wenn Explode ohne Objektkontext aufgerufen wird, wird die Fehlermeldung und der Callstack in die Logs ausgegeben und die Ausführung wird abgebrochen. Das ist besser als folgendes Verhalten..."
+
+#: sdk/script/fn/FatalError.xml:34(text)
+msgid "...because it just silently stops the execution of Explode without notifying the developer about this error. This would make it harder for the developer to trace down the actual bug that led to the illegal call."
+msgstr "...weil Explode einfach ohne Meldung nichts tut. Bei einem solchen verhalten ist ein Fehler im aufrufenden Code schwieriger zu finden."
+
+#: sdk/script/fn/FatalError.xml:37(text)
+msgid "Let's say we want to trace down a bug where clonks are unexplicably removed from the landscape seemingly at random and we have no clues which object, effect or scenario script could be responsible for it. We can trace down this bug easily by temporarily overloading <placeholder-1/> and triggering a fatal error each time a clonk is removed. As soon as a Clonk is about to be deleted, the execution of RemoveObject is stopped and the call stack is printed out. (Don't forget to remove that function again when you are done.)"
+msgstr "Zum Beispiel kann man, wenn man einen Fehler finden möchte, der Clonks unerklärlicherweise von der Landschaft verschwinden lässt, temporär <placeholder-1/> überladen und darin einen fatalen Fehler auslösen. Sobald ein Clonk gelöscht werden sollte wird die Ausführung von RemoveObject abgebrochen und die Aufrufreihenfolge ausgegeben. (Und nicht vergessen die Funktion wieder zu löschen, wenn man fertig ist!)"
+
 #: sdk/script/fn/ExtractMaterialAmount.xml:17(desc)
 #: sdk/script/fn/ExtractLiquid.xml:17(desc)
 msgid "X position at which material is extracted. Offset in local calls."
@@ -9438,28 +9466,17 @@ msgid "Returns the id 'Rock'."
 msgstr "Gibt die ID 'Rock' zurück."
 
 #: sdk/script/fn/C4D_Vehicle.xml:12(desc)
-msgid "Object category: vehicle."
-msgstr "Objektkategorie: Fahrzeug."
-
-#: sdk/script/fn/C4D_Vehicle.xml:16(text)
-msgid "Returns the first vehicle type that the first player can build."
-msgstr "Liefert das erste Fahrzeug zurück, das der 1. Spieler bauen kann, z.B. BALN."
-
 #: sdk/script/fn/C4D_Structure.xml:12(desc)
-msgid "Object category: building."
-msgstr "Objektkategorie: Gebäude."
-
-#: sdk/script/fn/C4D_Structure.xml:16(text)
-msgid "Returns the first building type that the first player can build."
-msgstr "Liefert das erste Gebäude zurück, das der 1. Spieler bauen kann."
+msgid "Unused Object category."
+msgstr "Unbenutzte Objektkategorie"
 
 #: sdk/script/fn/C4D_StaticBack.xml:12(desc)
-msgid "Object category: immovable background object."
-msgstr "Objektkategorie: Unbewegliche Hintergrundobjekte."
+msgid "Objects with this category do not move. This is useful for all kinds of stuff, like making sure rule objects don't fall out of the landscape."
+msgstr "Objekte dieser Kategorie bewegen sich nicht. Das kann zum Beispiel dazu benutzt werden, damit Regelobjekte nicht aus der Landschaft fallen und gelöscht werden."
 
-#: sdk/script/fn/C4D_StaticBack.xml:16(text)
-msgid "Makes the object into a background object. This is used with castle parts so after completion other objects can be built in front."
-msgstr "Macht das Objekt zu einem Hintergrundsobjekt. Wird bei Burgteilen verwendet, damit davor gebaut werden kann."
+#: sdk/script/fn/C4D_StaticBack.xml:16(emlink)
+msgid "Procedure FLOAT"
+msgstr "Prozedur FLOAT"
 
 #: sdk/script/fn/C4D_Rule.xml:12(desc)
 msgid "Object category: rule object."
@@ -9482,16 +9499,19 @@ msgid "Moves the calling object into the background and adds horizontal parallax
 msgstr "Versetzt das aufrufende Objekt in den Hintergrund, und gibt ihm horizontale Parallaxität."
 
 #: sdk/script/fn/C4D_Object.xml:12(desc)
-msgid "Object category: small item."
-msgstr "Objektkategorie: kleines Objekt."
+#, fuzzy
+msgid "Object category: Item that can hit alive objects."
+msgstr "Objektkategorie: Spielregeln"
 
 #: sdk/script/fn/C4D_Object.xml:16(text)
-msgid "Returns the id of the first loaded definition. Similar scripting is used in the research lab to list researchable object."
+#, fuzzy
+msgid "Returns the id of the first loaded definition with C4D_Object. Similar scripting is used in the research lab to list researchable objects."
 msgstr "Liefert die id des ersten geladenen Objekts zurück. Ein ähnlicher Code wird vom Forschungslabor benutzt, um die erforschbaren Objekte aufzulisten."
 
 #: sdk/script/fn/C4D_Living.xml:12(desc)
-msgid "Object category: living being."
-msgstr "Objektkategorie: Lebewesen."
+#, fuzzy
+msgid "Objects with this category are alive when created."
+msgstr "Objektkategorie: Spielregeln"
 
 #: sdk/script/fn/C4D_Living.xml:16(text)
 msgid "Returns the first type of living beings which can be built by player 1 - usually none."
@@ -9630,7 +9650,8 @@ msgid "Attaches a mesh to another mesh. If <code>mesh</code> is an ID then the m
 msgstr "Befestigt ein Mesh an einem anderen. Wenn für <code>mesh</code> eine ID angegeben wird, so wird das Mesh der entsprechenden Definition verwendet. Wenn für <code>mesh</code> ein Objekt angegeben wird, so wird dessen aktuelles Mesh verwendet, inklusive aller Animationen oder weiterer angehängter Meshes. Dabei wird jedoch nur die Grafik angehangen, das Objekt selbst bleibt weiter an seiner gegenwärtigen Position. Der Rückgabewert ist eine Nummer mit Hilfe derer das Mesh mit <placeholder-1/> wieder gelöst werden kann."
 
 #: sdk/script/fn/AttachMesh.xml:56(remark)
-msgid "If an object is used for a mesh then the \"MeshTransformation\" property of teh attached mesh will not be applied. Instead the parameter <code>transformation</code> can be used to transform the attached mesh."
+#, fuzzy
+msgid "If an object is used for a mesh then the \"MeshTransformation\" property of the attached mesh will not be applied. Instead the parameter <code>transformation</code> can be used to transform the attached mesh."
 msgstr "Wird für mesh ein Objekt angegeben, so wird die \"MeshTransformation\"-Eigenschaft nicht auf das angehängte Mesh angewandt. Stattdessen kann der Parameter <code>transformation</code> angegeben werden um das angehängte Mesh zu transformieren."
 
 #: sdk/script/fn/AttachMesh.xml:60(text)
@@ -9763,15 +9784,43 @@ msgstr "Schluss des Intervalls. Wenn end größer als begin ist, so steigt der W
 msgid "Number of frames for the animation to be played from begin to end."
 msgstr "Anzahl Frames die ein Durchspielen von begin bis end dauert."
 
+#: sdk/script/fn/Anim_Linear.xml:40(col)
+msgid "ANIM_Loop"
+msgstr "ANIM_Loop"
+
+#: sdk/script/fn/Anim_Linear.xml:40(col)
+#, fuzzy
+msgid "Once end is reached the value is reset to begin so the cycle restarts."
+msgstr "Der Wert wird nach dem Erreichen von end wieder auf begin gesetzt und der Durchgang beginnt von neuem."
+
+#: sdk/script/fn/Anim_Linear.xml:41(col)
+msgid "ANIM_Hold"
+msgstr "ANIM_Hold"
+
+#: sdk/script/fn/Anim_Linear.xml:41(col)
+#, fuzzy
+msgid "Once end is reached the value remains constant."
+msgstr "Nach Erreichen von end bleibt der Wert konstant auf end."
+
+#: sdk/script/fn/Anim_Linear.xml:42(col)
+msgid "ANIM_Remove"
+msgstr "ANIM_Remove"
+
+#: sdk/script/fn/Anim_Linear.xml:42(col)
+#, fuzzy
+msgid "Once end is reached the corresponding animation is removed the same way as if <placeholder-1/> were called to the exact point in time. For combination nodes the child node with the smaller weight is removed."
+msgstr "Nach Erreichen von end wird die zugehörige Animation entfernt wie wenn zum entsprechenden Zeitpunkt <placeholder-1/> aufgerufen würde. Bei Kombinationsknoten wird der Kindknoten mit der kleineren Gewichtung entfernt."
+
 #: sdk/script/fn/Anim_Linear.xml:36(desc)
-msgid "Specifies what happens once end is reached. There are the following possibilities:"
+#, fuzzy
+msgid "Specifies what happens once end is reached. There are the following possibilities: <placeholder-1/>"
 msgstr "Bestimmt, was nach dem Erreichen von end geschieht. Folgende Möglichkeiten existieren: <placeholder-1/>"
 
-#: sdk/script/fn/Anim_Linear.xml:42(desc)
+#: sdk/script/fn/Anim_Linear.xml:48(desc)
 msgid "The value increases or decreases (depending on whether end is smaller or larger than begin) linearily in time (in frames). Initially the value is set to position and it is moving towards end. One cycle from begin to end lasts for length frames. If position and begin are not the same then end will be reached earlier already. on_ending specifies what happens once the end is reached."
 msgstr "Der Wert nimmt linear mit der Zeit (in Frames) zu oder ab (je nachdem ob end größer oder kleiner als begin ist). Anfangs beträgt der Wert position und läuft dann Richtung end. Ein Durchgang von begin bis nach end dauert length Frames. Wenn position von begin abweicht dann wird end bereits früher erreicht sein. on_ending bestimmt, was passiert, wenn das Ende erreicht ist."
 
-#: sdk/script/fn/Anim_Linear.xml:58(text)
+#: sdk/script/fn/Anim_Linear.xml:64(text)
 msgid "Sets the speed with which the animation in slot 5 is played depending on the wind speed. If the wind blows to the left then the animation is played backwards. Another possibility would be to set the position each frame using <placeholder-1/>, however with the solution using <placeholder-2/> it is enough to call the function every couple of frames since the windmill continues to turn with contstant speed between calls (in other words, it is assumed that the wind speed will not change much for small time intervals)."
 msgstr "Setzt die Geschwindigkeit mit der die Animation im Slot 5 abgespielt wird abhängig von der Windgeschwindigkeit. Weht der Wind nach links so wird die Animation rückwärts abgespielt. Es wäre auch möglich die Position jeden Frame mit <placeholder-1/> zu setzen, bei der Lösung mit <placeholder-2/> reicht es aber aus wenn die Funktion nur alle paar Frames aufgerufen wird, da sich das Windrad in der Zwischenzeit mit konstanter Geschwindigkeit weiter dreht (es wird also die Näherung gemacht, dass die Windgeschwindigkeit für kleine Zeitintervalle konstant ist)."
 
@@ -10387,8 +10436,8 @@ msgid "Arrays"
 msgstr "Arrays"
 
 #: sdk/script/Typechecks.xml:76(text)
-msgid "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used."
-msgstr "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <placeholder-1/>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden."
+msgid "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. Arrays behave like objects, you can only store references of them. Example: <code>var a = CreateArray(), b = a; b[0] = 42; // a is now [42]</code> A copy of <code>a</code> can be obtained with <code>a[:]</code>, as explained below."
+msgstr "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <placeholder-1/>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Arrays verhalten sich wie Objekte, man kann nur Referenzen von ihnen speichern. Beispiel:  <code>var a = CreateArray(), b = a; b[0] = 42; // a ist nnun [42]</code> Eine Kopie von <code>a</code> erhält man mit <code>a[:]</code>, Erklärung sihe unten."
 
 #: sdk/script/Typechecks.xml:77(text)
 msgid "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array."
@@ -10422,35 +10471,39 @@ msgstr "Beispiel 3"
 msgid "This function calls <code>DoExplode()</code> on the six nearest Dynamite objects."
 msgstr "Diese Funktion ruft <code>DoExplode()</code> auf die sechs naheliegendsten Dynamit-Objekte auf."
 
-#: sdk/script/Typechecks.xml:109(h)
+#: sdk/script/Typechecks.xml:108(text)
+msgid "An array may not exceed 1000000 elements. \"ye shalt not create arrays larger than that!\""
+msgstr "Ein array darf nicht mehr als 1000000 Elemente haben"
+
+#: sdk/script/Typechecks.xml:110(h)
 msgid "Proplists"
 msgstr "Proplisten"
 
-#: sdk/script/Typechecks.xml:111(text)
+#: sdk/script/Typechecks.xml:112(text)
 msgid "Proplists are a datatype that maps values to strings and supports prototype inheritance."
 msgstr "Proplists sind ein Datentyp der Strings Werte zuordnet und Prototyp-Vererbung unterstützt."
 
-#: sdk/script/Typechecks.xml:112(text)
+#: sdk/script/Typechecks.xml:113(text)
 msgid "Proplists can be created with <code>{<i>key 1</i>=<i>expression 1</i>, <i>key 2</i>=<i>expression 2</i>, ...}</code> or with <placeholder-1/>."
 msgstr "Proplisten können mit <code>{<i>Schlüssel 1</i>=<i>Ausdruck 1</i>, <i>Schlüssel 1</i>=<i>Ausdruck 1</i>, ...}</code> oder mit <placeholder-1/> erzeugt werden."
 
-#: sdk/script/Typechecks.xml:114(h)
+#: sdk/script/Typechecks.xml:115(h)
 msgid "Conversion"
 msgstr "Konvertierung"
 
-#: sdk/script/Typechecks.xml:117(li)
+#: sdk/script/Typechecks.xml:118(li)
 msgid "All values except for <code>false</code>, <code>nil</code> and <code>0</code> are treated as <code>true</code> when a bool is required."
 msgstr "Alle Werte bis auf <code>false</code>, <code>nil</code> und <code>0</code> werden als <code>true</code> behandelt wenn ein boolescher Werte verlangt ist."
 
-#: sdk/script/Typechecks.xml:118(li)
+#: sdk/script/Typechecks.xml:119(li)
 msgid "<code>nil</code> and <code>false</code> can be converted to <code>0</code>. <code>true</code> can be converted to <code>1</code>."
 msgstr "<code>nil</code> und <code>false</code> können zu <code>0</code> konvertiert werden. <code>true</code> kann zu <code>1</code> konvertiert werden."
 
-#: sdk/script/Typechecks.xml:119(li)
+#: sdk/script/Typechecks.xml:120(li)
 msgid "<code>nil</code> can always be used as a function parameter, if the function doesn't implement a separate check."
 msgstr "<code>nil</code> kann immer als Funktionsparameter verwendet werden wenn die Funktion keine separate Überprüfung vornimmt."
 
-#: sdk/script/Typechecks.xml:120(li)
+#: sdk/script/Typechecks.xml:121(li)
 msgid "If an object has been converted into a proplist then it can be converted back to an object. Otherwise proplists cannot be converted into objects."
 msgstr "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
 
@@ -15308,7 +15361,7 @@ msgstr "Objekteigenschaften"
 
 #: sdk/definition/properties.xml:30(col)
 #: sdk/definition/properties.xml:50(col)
-#: sdk/definition/properties.xml:90(col)
+#: sdk/definition/properties.xml:95(col)
 msgid "proplist"
 msgstr "proplist"
 
@@ -15324,27 +15377,29 @@ msgstr "int/array"
 msgid "Controls the visibility of the object. See the <emlink href=\"definition/visibility.html\">detailed documentation of possible values</emlink>."
 msgstr "Steuert die Sichtbarkeit des Objekts. <emlink href=\"./visibility.xml\">Detailierte Dokumentation möglicher Werte</emlink>"
 
-#: sdk/definition/properties.xml:105(col)
 #: sdk/definition/properties.xml:110(col)
 #: sdk/definition/properties.xml:115(col)
-#: sdk/definition/properties.xml:125(col)
+#: sdk/definition/properties.xml:120(col)
+#: sdk/definition/properties.xml:130(col)
 msgid "int"
 msgstr "int"
 
-#: sdk/definition/properties.xml:120(col)
+#: sdk/definition/properties.xml:125(col)
 msgid "[int, int]"
 msgstr "[int, int]"
 
-#: sdk/definition/properties.xml:121(col)
+#: sdk/definition/properties.xml:126(col)
 msgid "The Objects's major Z-Position. See <placeholder-1/>."
 msgstr "Die hauptsächliche Z-Position des Objekts. Siehe auch <placeholder-1/>."
 
-#: sdk/definition/properties.xml:126(col)
-msgid "The Object's minor Z-Position. Negative values are behind the landscape, positive values before it."
+#: sdk/definition/properties.xml:131(col)
+#, fuzzy
+msgid "The Object's minor Z-Position. Negative values are behind the landscape, positive values before it. Use 1-399 for stuff behind Clonks, 401-999 for stuff before Clonks, and 1000+ for GUI objects."
 msgstr "Die sekundäre Z-Position des Objekts. Negative Werte sind hinter der Landschaft, positive vor ihr."
 
 #: sdk/definition/procedures.xml:8(text)
-msgid "For object activity the engine offers various standard procedures which perform typical physcial behaviour. In procedure WALK, for instance, the activity automatically changes to \"Jump\" if the ground under the feet is lost."
+#, fuzzy
+msgid "For object activity the engine offers various standard procedures which perform typical physical behaviour. In procedure WALK, for instance, the activity automatically changes to \"Jump\" if the ground under the feet is lost."
 msgstr "Für Objekt-Aktivitäten bietet die Engine diverse Standardprozeduren an, die verschiedene typische Verhaltensweisen steuern. Durch die Standardprozedur WALK wechselt z.B. die Aktivität Walk automatisch nach Jump, sobald der Boden unter den Füßen verloren wurde."
 
 #: sdk/definition/procedures.xml:15(col)
@@ -15366,8 +15421,8 @@ msgid "Only gravitational effects or attachment as specified in the <emlink href
 msgstr "Nur Schwerkraft oder in der <emlink href=\"definition/actmap.html\">Aktivität</emlink> festgelegtes Attach."
 
 #: sdk/definition/procedures.xml:21(col)
-msgid "[Action] Attach"
-msgstr "[Action] Attach"
+msgid "Action.Attach"
+msgstr "Action.Attach"
 
 #: sdk/definition/procedures.xml:24(col)
 msgid "WALK"
@@ -15378,8 +15433,13 @@ msgid "Walking"
 msgstr "Laufen"
 
 #: sdk/definition/procedures.xml:26(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Walk and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Walk und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#: sdk/definition/procedures.xml:44(col)
+#: sdk/definition/procedures.xml:50(col)
+#: sdk/definition/procedures.xml:62(col)
+#: sdk/definition/procedures.xml:92(col)
+#, fuzzy
+msgid "According to current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+msgstr "Baut das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink>."
 
 #: sdk/definition/procedures.xml:27(col)
 #: sdk/definition/procedures.xml:39(col)
@@ -15434,10 +15494,6 @@ msgstr "SCALE"
 msgid "Scaling a wall"
 msgstr "Klettern"
 
-#: sdk/definition/procedures.xml:44(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Scale and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Scale und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-
 #: sdk/definition/procedures.xml:45(col)
 msgid "CNAT_Left/Right"
 msgstr "CNAT_Left/Right"
@@ -15449,10 +15505,6 @@ msgstr "HANGLE"
 #: sdk/definition/procedures.xml:49(col)
 msgid "Climbing on the ceiling"
 msgstr "Hangeln"
-
-#: sdk/definition/procedures.xml:50(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Hangle and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Hangle und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:51(col)
 #: sdk/definition/cnat.xml:32(col)
@@ -15468,7 +15520,8 @@ msgid "Dig"
 msgstr "Graben"
 
 #: sdk/definition/procedures.xml:56(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Dig and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>. With <emlink href=\"script/fn/SetActionData.html\">Data</emlink>=1 material chunks are dug free."
+#, fuzzy
+msgid "According to current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>. With <emlink href=\"script/fn/SetActionData.html\">Data</emlink>=1 material chunks are dug free."
 msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Dig und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>. Bei <emlink href=\"script/fn/SetActionData.html\">Data</emlink>=1 wird Material freigegraben."
 
 #: sdk/definition/procedures.xml:60(col)
@@ -15478,10 +15531,6 @@ msgstr "SWIM"
 #: sdk/definition/procedures.xml:61(col)
 msgid "Swimming"
 msgstr "Schwimmen"
-
-#: sdk/definition/procedures.xml:62(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Swim and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Swim und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:66(col)
 msgid "THROW"
@@ -15512,8 +15561,9 @@ msgid "Pushing"
 msgstr "Schieben"
 
 #: sdk/definition/procedures.xml:80(col)
-msgid "Pushes the <emlink href=\"script/fn/SetAction.html\">target object </emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Push and <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Schiebt das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Push und <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#, fuzzy
+msgid "Pushes the <emlink href=\"script/fn/SetAction.html\">target object </emlink> according to <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+msgstr "Hebt das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:84(col)
 msgid "LIFT"
@@ -15534,10 +15584,6 @@ msgstr "FLOAT"
 #: sdk/definition/procedures.xml:91(col)
 msgid "Floating in mid-air"
 msgstr "Schweben"
-
-#: sdk/definition/procedures.xml:92(col)
-msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Float and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Float und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:96(col)
 msgid "ATTACH"
@@ -15572,8 +15618,9 @@ msgid "Pulling"
 msgstr "Ziehen"
 
 #: sdk/definition/procedures.xml:110(col)
-msgid "Pulls the <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Push and <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Zieht das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Push und <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#, fuzzy
+msgid "Pulls the <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+msgstr "Hebt das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:115(text)
 msgid "Procedures are hardcoded in the engine and are from older times in which is was not yet possible to implement the same functionality in script. Most procedures represent highly complex behaviour which is useful only for clonks."
@@ -15936,8 +15983,8 @@ msgid "Flame distance to the object's bottom line."
 msgstr "Flammenabstand zur Objektunterkante."
 
 #: sdk/definition/defcore.xml:146(col)
-msgid "Placement: 0 land surface, 1 in liquid, 2 in mid-air."
-msgstr "Platzierung: 0 Oberfläche, 1 in Flüssigkeit, 2 in der Luft."
+msgid "Placement: 0 land surface, 1 in liquid, 2 in mid-air, 3 underground, 4 land surface and underground."
+msgstr "Platzierung: 0 Oberfläche, 1 in Flüssigkeit, 2 in der Luft, 3 im Untergrund, 4 An der Oberfläche und im Untergrund."
 
 #: sdk/definition/defcore.xml:151(col)
 msgid "0 or 1. Determines whether the object blocks objects behind it."
@@ -16297,7 +16344,7 @@ msgid "C4D_StaticBack"
 msgstr "C4D_StaticBack"
 
 #: sdk/definition/category.xml:18(col)
-msgid "Immovable background object."
+msgid "Immovable object."
 msgstr "Unbewegliches Hintergrundobjekt."
 
 #: sdk/definition/category.xml:21(col)
@@ -16305,16 +16352,13 @@ msgid "C4D_Structure"
 msgstr "C4D_Structure"
 
 #: sdk/definition/category.xml:22(col)
-msgid "Building."
-msgstr "Gebäude."
+#: sdk/definition/category.xml:26(col)
+msgid "Unused."
+msgstr "Unbenutzt."
 
 #: sdk/definition/category.xml:25(col)
 msgid "C4D_Vehicle"
 msgstr "C4D_Vehicle"
-
-#: sdk/definition/category.xml:26(col)
-msgid "Vehicle."
-msgstr "Fahrzeug."
 
 #: sdk/definition/category.xml:29(col)
 msgid "C4D_Living"
@@ -16329,8 +16373,8 @@ msgid "C4D_Object"
 msgstr "C4D_Object"
 
 #: sdk/definition/category.xml:34(col)
-msgid "A smaller item."
-msgstr "Gegenstand."
+msgid "An item that can hit alive objects."
+msgstr "Ein Objekt das Lebewesen treffen kann."
 
 #: sdk/definition/category.xml:37(col)
 msgid "C4D_Goal"
@@ -16927,6 +16971,60 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided."
+#~ msgstr "Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden."
+
+#~ msgid "Returns the first vehicle type that the first player can build."
+#~ msgstr "Liefert das erste Fahrzeug zurück, das der 1. Spieler bauen kann, z.B. BALN."
+
+#~ msgid "Object category: building."
+#~ msgstr "Objektkategorie: Gebäude."
+
+#~ msgid "Returns the first building type that the first player can build."
+#~ msgstr "Liefert das erste Gebäude zurück, das der 1. Spieler bauen kann."
+
+#~ msgid "Object category: immovable background object."
+#~ msgstr "Objektkategorie: Unbewegliche Hintergrundobjekte."
+
+#~ msgid "Makes the object into a background object. This is used with castle parts so after completion other objects can be built in front."
+#~ msgstr "Macht das Objekt zu einem Hintergrundsobjekt. Wird bei Burgteilen verwendet, damit davor gebaut werden kann."
+
+#~ msgid "Object category: small item."
+#~ msgstr "Objektkategorie: kleines Objekt."
+
+#~ msgid "Object category: living being."
+#~ msgstr "Objektkategorie: Lebewesen."
+
+#~ msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Walk and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Walk und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Scale and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Scale und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Hangle and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Hangle und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Swim and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Swim und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "Pushes the <emlink href=\"script/fn/SetAction.html\">target object </emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Push and <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Schiebt das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Push und <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "According to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Float and current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Float und aktueller <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "Pulls the <emlink href=\"script/fn/SetAction.html\">target object</emlink> according to <emlink href=\"definition/defcore.html#SektionPhysical\">physical</emlink> Push and <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+#~ msgstr "Zieht das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink> nach <emlink href=\"definition/defcore.html#SektionPhysical\">Physical</emlink> Push und <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+
+#~ msgid "Building."
+#~ msgstr "Gebäude."
+
+#~ msgid "Vehicle."
+#~ msgstr "Fahrzeug."
+
+#~ msgid "A smaller item."
+#~ msgstr "Gegenstand."
 
 #~ msgid "Value of which to determine the type."
 #~ msgstr "Wert, dessen Typ geprüft werden soll"
@@ -17606,9 +17704,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "Building"
 #~ msgstr "Bauen"
 
-#~ msgid "Builds the <emlink href=\"script/fn/SetAction.html\">target object</emlink>."
-#~ msgstr "Baut das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink>."
-
 #~ msgid "Connection behaviour for lines. See <emlink href=\"definition/lineconnect.html\">LineConnect</emlink>."
 #~ msgstr "Anschlussfähigkeit für Leitungen. Siehe <emlink href=\"definition/lineconnect.html\">LineConnect</emlink>."
 
@@ -17918,9 +18013,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "NoBurnDecay"
 #~ msgstr "NoBurnDecay"
 
-#~ msgid "The value is reset to begin if it reaches end and the cycle is restarted."
-#~ msgstr "Der Wert wird nach dem Erreichen von end wieder auf begin gesetzt und der Durchgang beginnt von neuem."
-
 #~ msgid "MenuOK"
 #~ msgstr "MenuOK"
 
@@ -17980,9 +18072,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Follow"
 #~ msgstr "Follow"
-
-#~ msgid "Once end has been reached the coresponding animation will be removed as if <placeholder-1/> was called at the time end was reached. For combination nodes the child node with smaller weight will be removed."
-#~ msgstr "Nach Erreichen von end wird die zugehörige Animation entfernt wie wenn zum entsprechenden Zeitpunkt <placeholder-1/> aufgerufen würde. Bei Kombinationsknoten wird der Kindknoten mit der kleineren Gewichtung entfernt."
 
 #~ msgid "MaxUserSelect"
 #~ msgstr "MaxUserSelect"
@@ -18302,9 +18391,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 #~ msgid "CalcBuyValue"
 #~ msgstr "CalcBuyValue"
 
-#~ msgid "ANIM_Hold"
-#~ msgstr "ANIM_Hold"
-
 #~ msgid "MenuCancel"
 #~ msgstr "MenuCancel"
 
@@ -18316,9 +18402,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Ejection"
 #~ msgstr "Ejection"
-
-#~ msgid "ANIM_Loop"
-#~ msgstr "ANIM_Loop"
 
 #~ msgid "NoPushEnter"
 #~ msgstr "NoPushEnter"
@@ -18361,9 +18444,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "UnGrab"
 #~ msgstr "UnGrab"
-
-#~ msgid "ANIM_Remove"
-#~ msgstr "ANIM_Remove"
 
 #~ msgid "Attack"
 #~ msgstr "Attack"
@@ -18430,9 +18510,6 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "NoStabilize"
 #~ msgstr "NoStabilize"
-
-#~ msgid "As soon as end has been reached the value remains constantly at end."
-#~ msgstr "Nach Erreichen von end bleibt der Wert konstant auf end."
 
 #~ msgid "RotatedEntrance"
 #~ msgstr "RotatedEntrance"

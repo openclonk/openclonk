@@ -73,7 +73,7 @@
     </text>
     <h>Arrays</h>
     <part>
-      <text>Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <funclink>CreateArray</funclink>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used.</text>
+		<text>Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <funclink>CreateArray</funclink>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. Arrays behave like objects, you can only store references of them. Example: <code>var a = CreateArray(), b = a; b[0] = 42; // a is now [42]</code> A copy of <code>a</code> can be obtained with <code>a[:]</code>, as explained below.</text>
       <text>Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array.</text>
       <text>A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code><funclink>GetLength</funclink>(a)</code> respectively if not given.</text>
       <h>Example 1</h>
@@ -104,7 +104,8 @@
     dyna-&gt;DoExplode();
   }
 }</code>
-      <text>This function calls <code>DoExplode()</code> on the six nearest Dynamite objects.</text>
+	  <text>This function calls <code>DoExplode()</code> on the six nearest Dynamite objects.</text>
+	  <text>An array may not exceed 1000000 elements. "ye shalt not create arrays larger than that!"</text>
     </part>
     <h>Proplists</h>
     <part>
