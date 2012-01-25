@@ -1078,7 +1078,6 @@ public:
 	C4DirectExecScript(C4AulScript * a, C4Object * pObj, const char *szContext, C4LangStringTable * stringTable): p(NULL)
 	{
 		ScriptName = FormatString("%s in %s", szContext, a->ScriptName.getData());
-		Strict = a->Strict;
 		Temporary = true;
 		State = ASS_LINKED;
 		if (pObj)

@@ -377,8 +377,6 @@ public:
 
 	StdCopyStrBuf ScriptName; // script name
 	C4ValueMapNames LocalNamed;
-	enum Strict { NONSTRICT = 0, STRICT1 = 1, STRICT2 = 2, MAXSTRICT=STRICT2 };
-	enum Strict Strict; // new or even newer syntax?
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	virtual C4PropList * GetPropList() { return 0; }
@@ -433,7 +431,6 @@ protected:
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();
 
-	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
 };
 
 // holds all C4AulScripts
@@ -445,7 +442,6 @@ protected:
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
-	int nonStrictCnt; // number of non-strict scripts
 	int lineCnt; // line count parsed
 
 	C4ValueMapNames GlobalNamedNames;

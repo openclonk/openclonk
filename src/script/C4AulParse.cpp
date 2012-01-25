@@ -38,7 +38,6 @@
 #define DEBUG_BYTECODE_DUMP 0
 
 #define C4AUL_Include       "#include"
-#define C4AUL_Strict        "#strict"
 #define C4AUL_Append        "#appendto"
 
 #define C4AUL_Func          "func"
@@ -850,12 +849,6 @@ bool C4ScriptHost::Preparse()
 	C4AulParseState state(0, this, C4AulParseState::PREPARSER);
 	state.Parse_Script();
 
-	// no #strict? we don't like that :(
-	if (Strict < MAXSTRICT)
-	{
-		Engine->nonStrictCnt++;
-	}
-
 	// #include will have to be resolved now...
 	IncludesResolved = false;
 
@@ -1357,20 +1350,6 @@ void C4AulParseState::Parse_Script()
 					}
 					// add to append list
 					a->Appends.push_back(Id);
-				}
-				else if (SEqual(Idtf, C4AUL_Strict))
-				{
-					// declare it as strict
-					a->Strict = C4AulScript::STRICT1;
-					Shift();
-					if (TokenType == ATT_INT)
-					{
-						if (cInt == 2)
-							a->Strict = C4AulScript::STRICT2;
-						else
-							throw new C4AulParseError(this, "unknown strict level");
-						Shift();
-					}
 				}
 				else
 					// -> unknown directive
@@ -3081,19 +3060,6 @@ bool C4ScriptHost::Parse()
 	State = ASS_PARSED;
 
 	return true;
-}
-
-C4AulScript *C4AulScript::FindFirstNonStrictScript()
-{
-	// self is not #strict?
-	if (Strict < MAXSTRICT) return this;
-	// search children
-	C4AulScript *pNonStrScr;
-	for (C4AulScript *pScr=Child0; pScr; pScr=pScr->Next)
-		if ((pNonStrScr=pScr->FindFirstNonStrictScript()))
-			return pNonStrScr;
-	// nothing found
-	return NULL;
 }
 
 #undef DEBUG_BYTECODE_DUMP

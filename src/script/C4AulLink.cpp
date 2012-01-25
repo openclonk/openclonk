@@ -234,22 +234,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		AfterLink();
 		GlobalPropList->Freeze();
 
-		// non-strict scripts?
-		if (nonStrictCnt)
-		{
-			// warn!
-			// find first non-#strict script
-			C4AulScript *pNonStrictScr=FindFirstNonStrictScript();
-			if (pNonStrictScr)
-				pNonStrictScr->Warn("using non-#strict syntax!", NULL);
-			else
-			{
-				Warn("non-#strict script detected, but def is lost", NULL);
-				Warn("please contact piracy@treffpunktclonk.net for further instructions", NULL);
-			}
-			Warn(FormatString("%d script%s use non-#strict syntax!", nonStrictCnt, (nonStrictCnt != 1 ? "s" : "")).getData(), NULL);
-		}
-
 		// update material pointers
 		::MaterialMap.UpdateScriptPointers();
 
@@ -259,7 +243,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		     lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
 
 		// reset counters
-		warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
+		warnCnt = errCnt = lineCnt = 0;
 	}
 	catch (C4AulError *err)
 	{

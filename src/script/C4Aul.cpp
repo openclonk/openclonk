@@ -179,7 +179,6 @@ C4AulScript::C4AulScript()
 	IncludesResolved = false;
 
 	// defaults
-	Strict = MAXSTRICT;
 	Resolving=false;
 	Temporary = false;
 	LocalNamed.Reset();
@@ -354,12 +353,11 @@ void C4AulScript::AddFunc(const char *pIdtf, C4ScriptFnDef* Def)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(0), warnCnt(0), errCnt(0), nonStrictCnt(0), lineCnt(0)
+		GlobalPropList(0), warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine
 	Engine = this;
 	ScriptName.Ref(C4CFN_System);
-	Strict = MAXSTRICT;
 
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
@@ -392,7 +390,7 @@ void C4AulScriptEngine::Clear()
 	// clear own stuff
 	GetPropList()->Clear();
 	// reset values
-	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
+	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
 	// except not...
 	GlobalNamedNames.Reset();
