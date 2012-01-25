@@ -32,8 +32,6 @@
 // for each script. ResolveAppends has to be called first!
 bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 {
-	// resolve children appends
-	for (C4AulScript *s = Child0; s; s = s->Next) s->ResolveAppends(rDefs);
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
 	for (std::list<C4ID>::iterator a = Appends.begin(); a != Appends.end(); ++a)
@@ -69,10 +67,8 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 
 bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 {
-	// resolve children includes
-	for (C4AulScript *s = Child0; s; s = s->Next) s->ResolveIncludes(rDefs);
 	// Had been preparsed?
-	if (State  != ASS_PREPARSED) return false;
+	if (State != ASS_PREPARSED) return false;
 	// has already been resolved?
 	if (IncludesResolved) return true;
 	// catch circular includes
@@ -155,9 +151,6 @@ void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
 
 void C4AulScript::UnLink()
 {
-	// unlink children
-	for (C4AulScript *s = Child0; s; s = s->Next) s->UnLink();
-
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;
 
@@ -198,19 +191,16 @@ void C4AulScriptFunc::UnLink()
 	C4AulFunc::UnLink();
 }
 
-void C4AulScript::AfterLink()
-{
-	// call for childs
-	for (C4AulScript *s = Child0; s; s = s->Next) s->AfterLink();
-}
+void C4AulScript::AfterLink() { }
 
 bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
 {
-	// call for childs
-	for (C4AulScript *s = Child0; s; s = s->Next)
-		if (s->ReloadScript(szPath, szLanguage))
-			return true;
 	return false;
+}
+
+void C4AulScriptEngine::AfterLink()
+{
+	GlobalPropList->Freeze();
 }
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
@@ -219,20 +209,24 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
 
 		// resolve appends
-		ResolveAppends(rDefs);
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->ResolveAppends(rDefs);
 
 		// resolve includes
-		ResolveIncludes(rDefs);
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->ResolveIncludes(rDefs);
 
 		// parse the scripts to byte code
-		Parse();
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->Parse();
 
 		// engine is always parsed (for global funcs)
 		State = ASS_PARSED;
 
 		// get common funcs
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->AfterLink();
 		AfterLink();
-		GlobalPropList->Freeze();
 
 		// update material pointers
 		::MaterialMap.UpdateScriptPointers();
@@ -276,8 +270,11 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage)
 {
-	// reload
-	if (!C4AulScript::ReloadScript(szScript, szLanguage))
+	C4AulScript * s;
+	for (s = Child0; s; s = s->Next)
+		if (s->ReloadScript(szScript, szLanguage))
+			break;
+	if (!s)
 		return false;
 	// relink
 	ReLink(pDefs);

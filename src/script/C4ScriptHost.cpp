@@ -99,8 +99,7 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 				if (Load(ParentGrp, NULL, szLanguage, stringTable))
 					return true;
 	}
-	// call for childs
-	return C4AulScript::ReloadScript(szPath, szLanguage);
+	return false;
 }
 
 void C4ScriptHost::SetError(const char *szMessage)

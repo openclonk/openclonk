@@ -1139,18 +1139,30 @@ void C4AulScript::ResetProfilerTimes()
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
 		if ((pSFunc = pFn->SFunc()))
 			pSFunc->tProfileTime = 0;
-	// reset sub-scripts
-	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
-		pScript->ResetProfilerTimes();
 }
 
-void C4AulScript::CollectProfilerTimes(class C4AulProfiler &rProfiler)
+void C4AulScript::CollectProfilerTimes(C4AulProfiler &rProfiler)
 {
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
 		if ((pSFunc = pFn->SFunc()))
 			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
+}
+
+void C4AulScriptEngine::ResetProfilerTimes()
+{
+	// zero all profiler times of owned functions
+	C4AulScript::ResetProfilerTimes();
+	// reset sub-scripts
+	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
+		pScript->ResetProfilerTimes();
+}
+
+void C4AulScriptEngine::CollectProfilerTimes(C4AulProfiler &rProfiler)
+{
+	// collect all profiler times of owned functions
+	C4AulScript::CollectProfilerTimes(rProfiler);
 	// collect sub-scripts
 	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
 		pScript->CollectProfilerTimes(rProfiler);

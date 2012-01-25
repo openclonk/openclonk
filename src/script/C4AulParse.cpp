@@ -2823,15 +2823,11 @@ void C4AulParseState::Parse_Const()
 
 bool C4AulScript::Parse()
 {
-	// parse children
-	C4AulScript *s = Child0;
-	while (s) { s->Parse(); s = s->Next; }
 	return true;
 }
 
 bool C4ScriptHost::Parse()
 {
-	C4AulScript::Parse();
 	if (DEBUG_BYTECODE_DUMP)
 	{
 		fprintf(stderr, "parsing %s...\n", ScriptName.getData());

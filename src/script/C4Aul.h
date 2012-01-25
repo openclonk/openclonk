@@ -411,7 +411,7 @@ protected:
 
 	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
-	C4AulScript *Owner, *Prev, *Next, *Child0, *ChildL; // tree structure
+	C4AulScript *Owner, *Prev, *Next; // tree structure
 
 	C4AulScriptState State; // script state
 	bool Resolving; // set while include-resolving, to catch circular includes
@@ -440,6 +440,7 @@ class C4AulScriptEngine : public C4AulScript
 protected:
 	C4AulFuncMap FuncLookUp;
 	C4PropList * GlobalPropList;
+	C4AulScript *Child0, *ChildL; // tree structure
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
@@ -463,6 +464,7 @@ public:
 	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
+	virtual void AfterLink();
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
@@ -472,6 +474,8 @@ public:
 
 	// For the list of functions in the PropertyDlg
 	std::list<const char*> GetFunctionNames(C4AulScript *);
+	void ResetProfilerTimes(); // zero all profiler times of owned functions
+	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
@@ -485,6 +489,7 @@ public:
 	friend class C4AulFunc;
 	friend class C4AulParseState;
 	friend class C4AulDebug;
+	friend class C4AulScript;
 };
 
 extern C4AulScriptEngine ScriptEngine;

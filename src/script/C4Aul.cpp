@@ -184,7 +184,7 @@ C4AulScript::C4AulScript()
 	LocalNamed.Reset();
 
 	// prepare lists
-	Child0 = ChildL = Prev = Next = NULL;
+	Prev = Next = NULL;
 	Owner = Engine = NULL;
 	Func0 = FuncL = NULL;
 	// prepare include list
@@ -204,8 +204,8 @@ C4AulScript::~C4AulScript()
 void C4AulScript::Unreg()
 {
 	// remove from list
-	if (Prev) Prev->Next = Next; else if (Owner) Owner->Child0 = Next;
-	if (Next) Next->Prev = Prev; else if (Owner) Owner->ChildL = Prev;
+	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
+	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
 	Prev = Next = Owner = NULL;
 }
 
@@ -215,9 +215,6 @@ void C4AulScript::Clear()
 	// remove includes
 	Includes.clear();
 	Appends.clear();
-	// delete child scripts + funcs
-	while (Child0) // Child0->Unreg();
-			if (Child0->Delete()) delete Child0; else Child0->Unreg();
 	while (Func0) delete Func0;
 	// reset flags
 	State = ASS_NONE;
@@ -229,14 +226,14 @@ void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
 	// already regged? (def reloaded)
 	if (Owner) return;
 	// reg to list
-	Engine = pEngine;
-	if ((Owner = pOwner))
+	Owner = pOwner;
+	if ((Engine = pEngine))
 	{
-		if ((Prev = Owner->ChildL))
+		if ((Prev = Engine->ChildL))
 			Prev->Next = this;
 		else
-			Owner->Child0 = this;
-		Owner->ChildL = this;
+			Engine->Child0 = this;
+		Engine->ChildL = this;
 	}
 	else
 		Prev = NULL;
@@ -321,7 +318,7 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bA
 		C4AulFunc(pOwner, pName, bAtEnd), OwnerOverloaded(NULL), ParCount(0), tProfileTime(0)
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
-	if (Owner->GetPropList())
+	if (Owner->GetPropList() && Name)
 	{
 		// Don't overwrite a function that's overloading this one
 		if (bAtEnd || !Owner->GetPropList()->HasProperty(Name))
@@ -365,6 +362,7 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
+	Child0 = ChildL = NULL;
 }
 
 C4PropList * C4AulScriptEngine::GetPropList()
@@ -385,6 +383,9 @@ void C4AulScriptEngine::Clear()
 	// stop debugger
 	delete C4AulDebug::GetDebugger();
 #endif
+	while (Child0)
+		if (Child0->Delete()) delete Child0;
+		else Child0->Unreg();
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
@@ -405,6 +406,8 @@ void C4AulScriptEngine::Clear()
 void C4AulScriptEngine::UnLink()
 {
 	// unlink scripts
+	for (C4AulScript *s = Child0; s; s = s->Next)
+		s->UnLink();
 	C4AulScript::UnLink();
 	// Do not clear global variables and constants, because they are registered by the
 	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
