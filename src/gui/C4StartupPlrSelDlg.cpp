@@ -1376,15 +1376,16 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeLeft));
 	pBtn->SetToolTip(szTip);
 	int32_t ctrl_name_hgt = pSmallFont->GetLineHeight();
-	C4Rect ctrl_name_rect = caControl.GetFromBottom(ctrl_name_hgt); caControl.ExpandBottom(ctrl_name_hgt);
+	caControl.ExpandBottom(ctrl_name_hgt); C4Rect ctrl_name_rect = caControl.GetFromBottom(ctrl_name_hgt);
 	C4Facet &rfctCtrlPic = ::GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
 	AddElement(pCtrlImg = new C4GUI::Picture(caControl.GetFromLeft(rfctCtrlPic.GetWidthByHeight(caControl.GetHeight())), true));
 	pCtrlImg->SetToolTip(szTip);
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeRight));
 	pBtn->SetToolTip(szTip);
 	caControl.ExpandLeft(-10);
-	AddElement(pMouseBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_MouseOff, caControl.GetFromLeft(caControl.GetHeight()), 'M' /* 2do */, &C4StartupPlrPropertiesDlg::OnCtrlChangeMouse));
-	pMouseBtn->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERCONTROLMOUSE"));
+	// Mouse control, currently mandatory with keyboard and this will probably never change again!
+//	AddElement(pMouseBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_MouseOff, caControl.GetFromLeft(caControl.GetHeight()), 'M' /* 2do */, &C4StartupPlrPropertiesDlg::OnCtrlChangeMouse));
+//	pMouseBtn->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERCONTROLMOUSE"));
 	C4P.OldPrefControl = BoundBy<int32_t>(C4P.OldPrefControl, 0, C4MaxControlSet-1);
 	ctrl_name_lbl = new C4GUI::Label("CtrlName", ctrl_name_rect, ALeft, C4StartupFontClr, pSmallFont, false, false, true);
 	AddElement(ctrl_name_lbl);
@@ -1471,13 +1472,13 @@ void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 	if (control_set) fctCtrlPic = control_set->GetPicture();
 	pCtrlImg->SetFacet(fctCtrlPic);
 	if (control_set)
-		ctrl_name_lbl->SetText(control_set->GetName());
+		ctrl_name_lbl->SetText(control_set->GetGUIName());
 	else
 		ctrl_name_lbl->SetText("???");
 	// update mouse image
 	// button only available if selected control set offers mouse control
-	pMouseBtn->SetVisibility(control_set && control_set->HasMouse());
-	pMouseBtn->SetIcon((C4P.PrefMouse) ? C4GUI::Ico_MouseOn : C4GUI::Ico_MouseOff);
+//	pMouseBtn->SetVisibility(control_set && control_set->HasMouse());
+//	pMouseBtn->SetIcon((C4P.PrefMouse) ? C4GUI::Ico_MouseOn : C4GUI::Ico_MouseOff);
 }
 
 void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
