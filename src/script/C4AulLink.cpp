@@ -40,7 +40,10 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 		{
 			C4Def *Def = rDefs->ID2Def(*a);
 			if (Def)
-				Def->Script.SourceScripts.push_back(GetScriptHost());
+			{
+				if (std::find(Def->Script.SourceScripts.begin(), Def->Script.SourceScripts.end(), GetScriptHost()) == Def->Script.SourceScripts.end())
+					Def->Script.SourceScripts.push_back(GetScriptHost());
+			}
 			else
 			{
 				// save id in buffer because AulWarn will use the buffer of C4IdText
@@ -58,7 +61,8 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 				if (!pDef) break;
 				if (pDef == GetPropList()) continue;
 				// append
-				pDef->Script.SourceScripts.push_back(GetScriptHost());
+				if (std::find(pDef->Script.SourceScripts.begin(), pDef->Script.SourceScripts.end(), GetScriptHost()) == pDef->Script.SourceScripts.end())
+					pDef->Script.SourceScripts.push_back(GetScriptHost());
 			}
 		}
 	}
@@ -92,7 +96,10 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 					continue; // skip this #include
 
 			for (std::list<C4ScriptHost *>::reverse_iterator s = Def->Script.SourceScripts.rbegin(); s != Def->Script.SourceScripts.rend(); ++s)
-				GetScriptHost()->SourceScripts.push_front(*s);
+			{
+				if (std::find(GetScriptHost()->SourceScripts.begin(), GetScriptHost()->SourceScripts.end(), *s) == GetScriptHost()->SourceScripts.end())
+					GetScriptHost()->SourceScripts.push_front(*s);
+			}
 		}
 		else
 		{
