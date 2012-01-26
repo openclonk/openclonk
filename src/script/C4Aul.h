@@ -269,7 +269,7 @@ public:
 
 	C4AulScriptFunc(C4AulScript *pOwner, const char *pName);
 
-	void ParseFn(bool fExprOnly = false, C4AulScriptContext* context = NULL);
+	void ParseFn(C4AulScriptContext* context = NULL);
 	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
@@ -289,7 +289,7 @@ public:
 
 	time_t tProfileTime; // internally set by profiler
 
-	friend class C4ScriptHost;
+	friend class C4AulParseState;
 };
 
 // defined function class

@@ -1114,7 +1114,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	try
 	{
 		assert(pFunc->GetCodeOwner() == pScript);
-		pFunc->ParseFn(true, context);
+		pFunc->ParseFn(context);
 	}
 	catch (C4AulError *ex)
 	{

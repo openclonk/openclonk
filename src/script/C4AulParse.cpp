@@ -127,8 +127,8 @@ class C4AulParseState
 {
 public:
 	enum Type { PARSER, PREPARSER };
-	C4AulParseState(C4AulScriptFunc *Fn, C4ScriptHost * a, enum Type Type):
-			Fn(Fn), a(a), SPos(Fn ? Fn->Script : a->Script.getData()),
+	C4AulParseState(C4ScriptHost * a, enum Type Type):
+			Fn(0), a(a), pOrgScript(a), SPos(a->Script.getData()),
 			TokenType(ATT_INVALID),
 			Done(false),
 			Type(Type),
@@ -139,7 +139,7 @@ public:
 	{ }
 	~C4AulParseState()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
-	C4AulScriptFunc *Fn; C4ScriptHost * a;
+	C4AulScriptFunc *Fn; C4ScriptHost * a; C4ScriptHost * pOrgScript;
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
@@ -149,7 +149,6 @@ public:
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
 	void Parse_Script();
-	void Parse_FuncHead();
 	void Parse_Function();
 	void Parse_Statement();
 	void Parse_Block();
@@ -245,8 +244,8 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	C4AulParseError warning(this, pMsg, pIdtf, true);
 	// display it
 	warning.show();
-	if (Fn && Fn->pOrgScript != a)
-		DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
+	if (pOrgScript != a)
+		DebugLogF("  (as #appendto/#include to %s)", a->ScriptName.getData());
 	// count warnings
 	++::ScriptEngine.warnCnt;
 }
@@ -278,13 +277,13 @@ C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, cons
 		else
 			sMessage.AppendChar(')');
 	}
-	else if (state->a)
+	else if (state->pOrgScript)
 	{
 		// Script name
 		sMessage.AppendFormat(" (%s:%d:%d)",
-		                      state->a->ScriptName.getData(),
-		                      SGetLine(state->a->GetScript(), state->SPos),
-		                      SLineGetCharacters(state->a->GetScript(), state->SPos));
+		                      state->pOrgScript->ScriptName.getData(),
+		                      SGetLine(state->pOrgScript->GetScript(), state->SPos),
+		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->SPos));
 	}
 
 }
@@ -306,6 +305,8 @@ C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const c
 
 bool C4AulParseState::AdvanceSpaces()
 {
+	if (!SPos)
+		return false;
 	while(*SPos)
 	{
 		if (*SPos == '/')
@@ -754,7 +755,6 @@ bool C4ScriptHost::Preparse()
 {
 	// handle easiest case first
 	if (State < ASS_NONE) return false;
-	if (!Script) { State = ASS_PREPARSED; return true; }
 
 	// clear stuff
 	Includes.clear(); Appends.clear();
@@ -778,7 +778,7 @@ bool C4ScriptHost::Preparse()
 		delete Func0;
 	}
 
-	C4AulParseState state(0, this, C4AulParseState::PREPARSER);
+	C4AulParseState state(this, C4AulParseState::PREPARSER);
 	state.Parse_Script();
 
 	// #include will have to be resolved now...
@@ -1199,26 +1199,21 @@ void C4AulParseState::UnexpectedToken(const char * Expected)
 	throw new C4AulParseError(this, FormatString("%s expected, but found %s", Expected, GetTokenName(TokenType)).getData());
 }
 
-void C4AulScriptFunc::ParseFn(bool fExprOnly, C4AulScriptContext* context)
+void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 {
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
 	CodePos = GetCodeOwner()->Code.size();
 	// parse
-	C4AulParseState state(this, GetCodeOwner(), C4AulParseState::PARSER);
+	C4AulParseState state(GetCodeOwner(), C4AulParseState::PARSER);
 	state.ContextToExecIn = context;
 	// get first token
+	state.SPos = Script;
 	state.Shift();
-	if (!fExprOnly)
-		state.Parse_Function();
-	else
-	{
-		state.Parse_Expression();
-		GetCodeOwner()->AddBCC(AB_RETURN, 0, state.SPos);
-	}
-	// done
-	return;
+	state.Fn = this;
+	state.Parse_Expression();
+	GetCodeOwner()->AddBCC(AB_RETURN, 0, state.SPos);
 }
 
 void C4AulParseState::Parse_Script()
@@ -1304,7 +1299,7 @@ void C4AulParseState::Parse_Script()
 					break;
 				}
 				else
-					Parse_FuncHead();
+					Parse_Function();
 				break;
 			}
 			case ATT_EOF:
@@ -1319,13 +1314,36 @@ void C4AulParseState::Parse_Script()
 		// damn! something went wrong, print it out
 		// but only one error per function
 		if (all_ok)
+		{
 			err->show();
+			// show a warning if the error is in a remote script
+			if (pOrgScript != a)
+				DebugLogF("  (as #appendto/#include to %s)", a->ScriptName.getData());
+			// and count (visible only ;) )
+			++::ScriptEngine.errCnt;
+		}
 		all_ok = false;
 		delete err;
+
+		// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
+		//if (Fn->Owner->GetPropList() || Fn->Owner->Appends.empty()) show
+		if (Fn)
+		{
+			// make all jumps that don't have their destination yet jump here
+			for (unsigned int i = Fn->CodePos; i < a->Code.size(); i++)
+			{
+				C4AulBCC *pBCC = &a->Code[i];
+				if (IsJump(pBCC->bccType))
+					if (!pBCC->Par.i)
+						pBCC->Par.i = a->Code.size() - i;
+			}
+			// add an error chunk
+			AddBCC(AB_ERR);
+		}
 	}
 }
 
-void C4AulParseState::Parse_FuncHead()
+void C4AulParseState::Parse_Function()
 {
 	C4AulAccess Acc = AA_PUBLIC;
 	// Access?
@@ -1352,28 +1370,54 @@ void C4AulParseState::Parse_FuncHead()
 			break;
 		// func in global context: fallthru
 	case AA_GLOBAL:
+		if (a != pOrgScript)
+			Warn("global func in appendto/included script: ", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
 		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
 			Error("function definition: name already in use (global constant)", 0);
 	}
 	// create script fn
-	if (Acc == AA_GLOBAL)
+	if (Type == PREPARSER)
 	{
-		// global func
-		Fn = new C4AulScriptFunc(a->Engine, Idtf);
-		C4AulFunc *FnLink = new C4AulFunc(a, NULL);
-		FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
-		Acc = AA_PUBLIC;
+		if (Acc == AA_GLOBAL)
+		{
+			// global func
+			Fn = new C4AulScriptFunc(a->Engine, Idtf);
+			C4AulFunc *FnLink = new C4AulFunc(a, NULL);
+			FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
+			Acc = AA_PUBLIC;
+		}
+		else
+		{
+			// normal, local func
+			Fn = new C4AulScriptFunc(a, Idtf);
+		}
 	}
 	else
 	{
-		// normal, local func
-		Fn = new C4AulScriptFunc(a, Idtf);
+		Fn = 0;
+		// FIXME: how to skip duplicate globals?
+		C4AulFunc * f = Acc == AA_GLOBAL ? a->Engine->Func0 : a->Func0;
+		while (f)
+		{
+			if (SEqual(f->GetName(), Idtf) && f->SFunc() && f->SFunc()->pOrgScript == pOrgScript)
+			{
+				if (Fn)
+					//throw new C4AulParseError(this, "Duplicate function ", Idtf);
+					Warn("Duplicate function ", Idtf);
+				Fn = f->SFunc();
+			}
+			f = f->Next;
+		}
+		assert(Fn);
+		assert(Fn->GetCodeOwner() == a || Acc == AA_GLOBAL); // FIXME: handle globals better
+		if (Fn->GetCodeOwner() == a)
+			Fn->CodePos = a->Code.size();
 	}
 	// set up func (in the case we got an error)
-	Fn->Script = SPos; // temporary
-	Fn->Access = Acc; Fn->pOrgScript = a;
+	Fn->Script = SPos;
+	Fn->Access = Acc; Fn->pOrgScript = pOrgScript;
 	Shift();
 	// expect an opening bracket now
 	if (TokenType != ATT_BOPEN)
@@ -1381,16 +1425,8 @@ void C4AulParseState::Parse_FuncHead()
 	Shift();
 	// get pars
 	int cpar = 0;
-	while (1)
+	while (TokenType != ATT_BCLOSE)
 	{
-		// closing bracket?
-		if (TokenType == ATT_BCLOSE)
-		{
-			Fn->Script = SPos;
-			Shift();
-			// end of params
-			break;
-		}
 		// too many parameters?
 		if (cpar >= C4AUL_MAX_Par)
 			throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
@@ -1414,7 +1450,7 @@ void C4AulParseState::Parse_FuncHead()
 		Fn->ParType[cpar] = t;
 		if (TokenType == ATT_BCLOSE || TokenType == ATT_COMMA)
 		{
-			Fn->AddPar(Idtf);
+			if (Type == PREPARSER) Fn->AddPar(Idtf);
 			if (Config.Developer.ExtraWarnings)
 				Warn(FormatString("'%s' used as parameter name", Idtf).getData());
 		}
@@ -1424,14 +1460,12 @@ void C4AulParseState::Parse_FuncHead()
 		}
 		else
 		{
-			Fn->AddPar(Idtf);
+			if (Type == PREPARSER) Fn->AddPar(Idtf);
 			Shift();
 		}
 		// end of params?
 		if (TokenType == ATT_BCLOSE)
 		{
-			Fn->Script = SPos;
-			Shift();
 			break;
 		}
 		// must be a comma now
@@ -1440,14 +1474,8 @@ void C4AulParseState::Parse_FuncHead()
 		Shift();
 		cpar++;
 	}
-	Fn->Script = SPos;
+	Match(ATT_BCLOSE);
 	Match(ATT_BLOPEN);
-	Parse_Function();
-	Match(ATT_BLCLOSE);
-}
-
-void C4AulParseState::Parse_Function()
-{
 	// Push variables
 	if (Fn->VarNamed.iSize)
 		AddBCC(AB_STACK, Fn->VarNamed.iSize);
@@ -1466,8 +1494,11 @@ void C4AulParseState::Parse_Function()
 		AddBCC(AB_NIL);
 		AddBCC(AB_RETURN);
 	}
+	// add separator
+	AddBCC(AB_EOFN);
 	// Do not blame this function for script errors between functions
 	Fn = 0;
+	Shift();
 }
 
 void C4AulParseState::Parse_Block()
@@ -1682,6 +1713,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 		case ATT_LDOTS:
 		{
 			// functions using ... always take as many parameters as possible
+			assert(Type == PREPARSER || Fn->ParCount == C4AUL_MAX_Par);
 			Fn->ParCount = C4AUL_MAX_Par;
 			Shift();
 			// Push all unnamed parameters of the current function as parameters
@@ -2898,63 +2930,20 @@ bool C4ScriptHost::Parse()
 
 	LinkFunctions();
 
-	// parse script funcs
-	C4AulFunc *f;
-	for (f = Func0; f; f = f->Next)
+	// parse
+	C4AulParseState state(this, C4AulParseState::PARSER);
+	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{
-		// check whether it's a script func, or linked to one
-		C4AulScriptFunc *Fn;
-		if (!(Fn = f->SFunc()))
-		{
-			if (f->LinkedTo) Fn = f->LinkedTo->SFunc();
-			// do only parse global funcs, because otherwise, the #append-links get parsed (->code overflow)
-			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
-		}
-		if (Fn)
-		{
-			// parse function
-			try
-			{
-				assert(Fn->GetCodeOwner() == this);
-				Fn->ParseFn();
-			}
-			catch (C4AulError *err)
-			{
-				// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-				if (Fn->Owner->GetPropList() || Fn->Owner->Appends.empty())
-				{
-					// show
-					err->show();
-					// show a warning if the error is in a remote script
-					if (Fn->pOrgScript != this)
-						DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
-					// and count (visible only ;) )
-					++::ScriptEngine.errCnt;
-				}
-				delete err;
-				// make all jumps that don't have their destination yet jump here
-				for (unsigned int i = Fn->CodePos; i < Code.size(); i++)
-				{
-					C4AulBCC *pBCC = &Code[i];
-					if (IsJump(pBCC->bccType))
-						if (!pBCC->Par.i)
-							pBCC->Par.i = Code.size() - i;
-				}
-				// add an error chunk
-				AddBCC(AB_ERR);
-			}
-
-			// add separator
-			AddBCC(AB_EOFN);
-
-		}
+		state.SPos = (*s)->Script.getData();
+		state.pOrgScript = *s;
+		state.Parse_Script();
 	}
 
 	// add eof chunk
 	AddBCC(AB_EOF);
 
 	// calc absolute code addresses for script funcs
-	for (f = Func0; f; f = f->Next)
+	for (C4AulFunc * f = Func0; f; f = f->Next)
 	{
 		C4AulScriptFunc *Fn;
 		if (!(Fn = f->SFunc()))
@@ -2971,7 +2960,7 @@ bool C4ScriptHost::Parse()
 
 	// dump bytecode
 	if (DEBUG_BYTECODE_DUMP)
-		for (f = Func0; f; f = f->Next)
+		for (C4AulFunc * f = Func0; f; f = f->Next)
 		{
 			C4AulScriptFunc *Fn;
 			if (!(Fn = f->SFunc()))
