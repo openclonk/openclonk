@@ -41,6 +41,7 @@ C4ScriptHost::C4ScriptHost()
 	Code.clear();
 	LastCode = NULL;
 	stringTable = 0;
+	SourceScripts.push_back(this);
 }
 C4ScriptHost::~C4ScriptHost() { Clear(); }
 
@@ -50,6 +51,8 @@ void C4ScriptHost::Clear()
 	ComponentHost.Clear();
 	Script.Clear();
 	ClearCode();
+	SourceScripts.clear();
+	SourceScripts.push_back(this);
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,

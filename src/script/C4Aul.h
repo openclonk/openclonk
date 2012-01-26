@@ -215,7 +215,7 @@ class C4AulFunc
 	friend class C4ScriptHost;
 
 public:
-	C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true); // constructor
+	C4AulFunc(C4AulScript *pOwner, const char *pName);
 	virtual ~C4AulFunc(); // destructor
 
 	C4AulScript *Owner; // owner
@@ -227,6 +227,7 @@ protected:
 	C4AulFunc *Prev, *Next; // linked list members
 	C4AulFunc *MapNext; // map member
 	C4AulFunc *LinkedTo; // points to next linked function; destructor will destroy linked func, too
+	void AppendToScript(C4AulScript *);
 
 public:
 	C4AulFunc *OverloadedBy; // function by which this one is overloaded
@@ -266,7 +267,7 @@ public:
 	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
-	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true);
+	C4AulScriptFunc(C4AulScript *pOwner, const char *pName);
 
 	void ParseFn(bool fExprOnly = false, C4AulScriptContext* context = NULL);
 	virtual void UnLink();
@@ -313,7 +314,6 @@ class C4AulFuncMap
 public:
 	C4AulFuncMap();
 	~C4AulFuncMap();
-	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After);
 	C4AulFunc * GetFirstFunc(const char * Name);
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After);
 private:
@@ -325,6 +325,7 @@ protected:
 	void Add(C4AulFunc * func, bool bAtEnd = true);
 	void Remove(C4AulFunc * func);
 	friend class C4AulFunc;
+	friend class C4ScriptHost;
 };
 
 
@@ -382,7 +383,6 @@ public:
 
 	virtual C4PropList * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
-	C4AulFunc *GetFuncRecursive(const char *pIdtf); // search function by identifier, including global funcs
 
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
@@ -419,14 +419,10 @@ protected:
 	std::list<C4ID> Includes; // include list
 	std::list<C4ID> Appends; // append list
 
-	// internal function used to find overloaded functions
-	C4AulFunc *GetOverloadedFunc(C4AulFunc *ByFunc);
-	C4AulFunc *GetFunc(const char *pIdtf); // get local function by name
-
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	void LinkFunctions();
 	bool IncludesResolved;
-	void AppendTo(C4AulScript &Scr, bool bHighPrio); // append to given script
 	virtual void UnLink(); // reset to unlinked state
 	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
@@ -467,8 +463,6 @@ public:
 	virtual void AfterLink();
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
-	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
-	{ return FuncLookUp.GetFunc(Name, Owner, After); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
@@ -487,6 +481,7 @@ public:
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 
 	friend class C4AulFunc;
+	friend class C4ScriptHost;
 	friend class C4AulParseState;
 	friend class C4AulDebug;
 	friend class C4AulScript;

@@ -39,6 +39,7 @@ public:
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
+	std::list<C4ScriptHost *> SourceScripts;
 protected:
 	C4ScriptHost();
 	void SetError(const char *szMessage);

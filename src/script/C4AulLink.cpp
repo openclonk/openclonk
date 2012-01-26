@@ -40,7 +40,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 		{
 			C4Def *Def = rDefs->ID2Def(*a);
 			if (Def)
-				AppendTo(Def->Script, true);
+				Def->Script.SourceScripts.push_back(GetScriptHost());
 			else
 			{
 				// save id in buffer because AulWarn will use the buffer of C4IdText
@@ -58,7 +58,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 				if (!pDef) break;
 				if (pDef == GetPropList()) continue;
 				// append
-				AppendTo(pDef->Script, true);
+				pDef->Script.SourceScripts.push_back(GetScriptHost());
 			}
 		}
 	}
@@ -81,7 +81,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 	}
 	Resolving=true;
 	// append all includes to local script
-	for (std::list<C4ID>::iterator i = Includes.begin(); i != Includes.end(); ++i)
+	for (std::list<C4ID>::reverse_iterator i = Includes.rbegin(); i != Includes.rend(); ++i)
 	{
 		C4Def *Def = rDefs->ID2Def(*i);
 		if (Def)
@@ -91,7 +91,8 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 				if (!Def->Script.ResolveIncludes(rDefs))
 					continue; // skip this #include
 
-			Def->Script.AppendTo(*this, false);
+			for (std::list<C4ScriptHost *>::reverse_iterator s = Def->Script.SourceScripts.rbegin(); s != Def->Script.SourceScripts.rend(); ++s)
+				GetScriptHost()->SourceScripts.push_front(*s);
 		}
 		else
 		{
@@ -106,47 +107,6 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 	Resolving=false;
 	State = ASS_LINKED;
 	return true;
-}
-
-void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
-{
-	// definition appends
-	if (GetPropList() && GetPropList()->GetDef() && Scr.GetPropList() && Scr.GetPropList()->GetDef())
-		Scr.GetPropList()->GetDef()->IncludeDefinition(GetPropList()->GetDef());
-	// append all funcs
-	// (in reverse order if inserted at begin of list)
-	C4AulScriptFunc *sf;
-	for (C4AulFunc *f = bHighPrio ? Func0 : FuncL; f; f = bHighPrio ? f->Next : f->Prev)
-		// script funcs only
-		if ((sf = f->SFunc()))
-			// no need to append global funcs
-			if (sf->Access != AA_GLOBAL)
-			{
-				// append: create copy
-				// (if high priority, insert at end, otherwise at the beginning)
-				C4AulScriptFunc *sfc = new C4AulScriptFunc(&Scr, sf->GetName(), bHighPrio);
-				sfc->CopyBody(*sf);
-				// link the copy to a local function
-				if (sf->LinkedTo)
-				{
-					sfc->LinkedTo = sf->LinkedTo;
-					sf->LinkedTo = sfc;
-				}
-				else
-				{
-					sfc->LinkedTo = sf;
-					sf->LinkedTo = sfc;
-				}
-			}
-	// mark as linked
-	// increase code size needed
-	// append all local vars (if any existing)
-	if (LocalNamed.iSize == 0)
-		return;
-	// copy local var definitions
-	for (int ivar = 0; ivar < LocalNamed.iSize; ivar ++)
-		Scr.LocalNamed.AddName(LocalNamed.pNames[ivar]);
-
 }
 
 void C4AulScript::UnLink()
@@ -215,6 +175,9 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// resolve includes
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
+
+		// put script functions into the proplist
+		LinkFunctions();
 
 		// parse the scripts to byte code
 		for (C4AulScript *s = Child0; s; s = s->Next)

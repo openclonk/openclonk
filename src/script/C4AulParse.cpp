@@ -1201,11 +1201,6 @@ void C4AulParseState::UnexpectedToken(const char * Expected)
 
 void C4AulScriptFunc::ParseFn(bool fExprOnly, C4AulScriptContext* context)
 {
-	// check if fn overloads other fn (all func tables are built now)
-	// *MUST* check Fn->Owner-list, because it may be the engine (due to linked globals)
-	if ((OwnerOverloaded = Owner->GetOverloadedFunc(this)))
-		if (Owner == OwnerOverloaded->Owner)
-			OwnerOverloaded->OverloadedBy=this;
 	// store byte code pos
 	// (relative position to code start; code pointer may change while
 	//  parsing)
@@ -1255,7 +1250,7 @@ void C4AulParseState::Parse_Script()
 					if (Type == PREPARSER)
 					{
 						// add to include list
-						a->Includes.push_front(C4ID(StdStrBuf(Idtf)));
+						a->Includes.push_back(C4ID(StdStrBuf(Idtf)));
 					}
 					Shift();
 				}
@@ -2826,6 +2821,19 @@ bool C4AulScript::Parse()
 	return true;
 }
 
+void C4AulScript::LinkFunctions()
+{
+	for (C4AulFunc *f = Func0; f; f = f->Next)
+	{
+		C4AulScriptFunc *sf = f->SFunc();
+		if (!sf) continue;
+		sf->OwnerOverloaded = GetPropList()->GetFunc(sf->Name);
+		if (sf->OwnerOverloaded && sf->OwnerOverloaded->Owner == this)
+			sf->OwnerOverloaded->OverloadedBy = sf;
+		GetPropList()->SetPropertyByS(sf->Name, C4VFunction(sf));
+	}
+}
+
 bool C4ScriptHost::Parse()
 {
 	if (DEBUG_BYTECODE_DUMP)
@@ -2837,6 +2845,58 @@ bool C4ScriptHost::Parse()
 
 	// delete existing code
 	ClearCode();
+
+	C4AulFunc * thisfuncs = Func0;
+	for (C4AulFunc *f = thisfuncs; f; f = f->Next)
+		if (f->GetName() && f->SFunc())
+		{
+			Engine->FuncLookUp.Remove(f);
+		}
+	Func0 = FuncL = 0;
+
+	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
+	{
+		if (*s == this)
+		{
+			C4AulFunc *f = thisfuncs, *n;
+			while (f)
+			{
+				n = f->Next;
+				f->AppendToScript(this);
+				f = n;
+			}
+			continue;
+		}
+		// definition appends
+		if (GetPropList() && GetPropList()->GetDef() && (*s)->GetPropList() && (*s)->GetPropList()->GetDef())
+			GetPropList()->GetDef()->IncludeDefinition((*s)->GetPropList()->GetDef());
+		// append all funcs
+		C4AulScriptFunc *sf;
+		for (C4AulFunc *f = (*s)->Func0; f; f = f->Next)
+			// script funcs only, no need to append global funcs
+			if ((sf = f->SFunc()) && sf->Access != AA_GLOBAL && sf->pOrgScript == *s)
+			{
+				// append: create copy
+				C4AulScriptFunc *sfc = new C4AulScriptFunc(this, sf->GetName());
+				sfc->CopyBody(*sf);
+				// link the copy to a local function
+				if (sf->LinkedTo)
+				{
+					sfc->LinkedTo = sf->LinkedTo;
+					sf->LinkedTo = sfc;
+				}
+				else
+				{
+					sfc->LinkedTo = sf;
+					sf->LinkedTo = sfc;
+				}
+			}
+		// copy local var definitions
+		for (int ivar = 0; ivar < (*s)->LocalNamed.iSize; ivar ++)
+			LocalNamed.AddName((*s)->LocalNamed.pNames[ivar]);
+	}
+
+	LinkFunctions();
 
 	// parse script funcs
 	C4AulFunc *f;

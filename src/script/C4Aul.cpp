@@ -45,47 +45,33 @@ void C4AulError::show()
 		DebugLog(sMessage.getData());
 }
 
-C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
+C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL),
 		LinkedTo (NULL),
 		OverloadedBy (NULL)
 {
-	// reg2list (at end or at the beginning)
+	AppendToScript(pOwner);
+}
+
+void C4AulFunc::AppendToScript(C4AulScript * pOwner)
+{
 	Owner = pOwner;
-	if (bAtEnd)
+	if ((Prev = Owner->FuncL))
 	{
-		if ((Prev = Owner->FuncL))
-		{
-			Prev->Next = this;
-			Owner->FuncL = this;
-		}
-		else
-		{
-			Owner->Func0 = this;
-			Owner->FuncL = this;
-		}
-		Next = NULL;
+		Prev->Next = this;
+		Owner->FuncL = this;
 	}
 	else
 	{
-		if ((Next = Owner->Func0))
-		{
-			Next->Prev = this;
-			Owner->Func0 = this;
-		}
-		else
-		{
-			Owner->Func0 = this;
-			Owner->FuncL = this;
-		}
-		Prev = NULL;
+		Owner->Func0 = this;
+		Owner->FuncL = this;
 	}
+	Next = NULL;
 	// add to global lookuptable with this name
 	if (GetName())
-		Owner->Engine->FuncLookUp.Add(this, bAtEnd);
+		Owner->Engine->FuncLookUp.Add(this, true);
 }
-
 
 C4AulFunc::~C4AulFunc()
 {
@@ -240,60 +226,6 @@ void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
 	Next = NULL;
 }
 
-
-C4AulFunc *C4AulScript::GetOverloadedFunc(C4AulFunc *ByFunc)
-{
-	assert(ByFunc);
-	// search local list
-	C4AulFunc *f = ByFunc;
-	if (f) f = f->Prev; else f = FuncL;
-	while (f)
-	{
-		if (SEqual(ByFunc->GetName(), f->GetName())) break;
-		f = f->Prev;
-	}
-#ifdef _DEBUG
-	C4AulFunc * f2 = Engine ? Engine->GetFunc(ByFunc->GetName(), this, ByFunc) : NULL;
-	assert (f == f2);
-#endif
-	// nothing found? then search owner, if existant
-	if (!f && Owner)
-	{
-		if ((f = Owner->GetFuncRecursive(ByFunc->GetName())))
-			// just found  the global link?
-			if (ByFunc && f->LinkedTo == ByFunc)
-				f = Owner->GetOverloadedFunc(f);
-	}
-	// return found fn
-	return f;
-}
-
-C4AulFunc *C4AulScript::GetFuncRecursive(const char *pIdtf)
-{
-	// search local list
-	C4AulFunc *f = GetFunc(pIdtf);
-	if (f) return f;
-	// nothing found? then search owner, if existant
-	else if (Owner) return Owner->GetFuncRecursive(pIdtf);
-	return NULL;
-}
-
-C4AulFunc *C4AulScript::GetFunc(const char *pIdtf)
-{
-	C4AulFunc * f = Engine ? Engine->GetFunc(pIdtf, this, NULL) : NULL;
-#if 0
-	// search func list
-	C4AulFunc *f2 = FuncL;
-	while (f2)
-	{
-		if (SEqual(pIdtf, f2->Name)) break;
-		f2 = f2->Prev;
-	}
-	assert (f == f2);
-#endif
-	return f;
-}
-
 std::string C4AulScript::Translate(const std::string &text) const
 {
 	const C4AulScript *cursor = this;
@@ -314,16 +246,10 @@ std::string C4AulScript::Translate(const std::string &text) const
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
-		C4AulFunc(pOwner, pName, bAtEnd), OwnerOverloaded(NULL), ParCount(0), tProfileTime(0)
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const char *pName):
+		C4AulFunc(pOwner, pName), OwnerOverloaded(NULL), ParCount(0), tProfileTime(0)
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
-	if (Owner->GetPropList() && Name)
-	{
-		// Don't overwrite a function that's overloading this one
-		if (bAtEnd || !Owner->GetPropList()->HasProperty(Name))
-			Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
-	}
 }
 
 void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
@@ -528,22 +454,6 @@ C4AulFunc * C4AulFuncMap::GetNextSNFunc(const C4AulFunc * After)
 {
 	C4AulFunc * Func = After->MapNext;
 	while (Func && !SEqual(After->GetName(), Func->GetName()))
-		Func = Func->MapNext;
-	return Func;
-}
-
-C4AulFunc * C4AulFuncMap::GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
-{
-	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	if (After)
-	{
-		while (Func && Func != After)
-			Func = Func->MapNext;
-		if (Func)
-			Func = Func->MapNext;
-	}
-	while (Func && (Func->Owner != Owner || !SEqual(Name, Func->GetName())))
 		Func = Func->MapNext;
 	return Func;
 }
