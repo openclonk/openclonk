@@ -82,7 +82,7 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 16
+#serial 17
 
 AU_ALIAS([ACX_PTHREAD], [AX_PTHREAD])
 AC_DEFUN([AX_PTHREAD], [
@@ -256,7 +256,14 @@ if test "x$ax_pthread_ok" = xyes; then
         flag=no
         case "${host_cpu}-${host_os}" in
             *-aix* | *-freebsd* | *-darwin*) flag="-D_THREAD_SAFE";;
-            *solaris* | *-osf* | *-hpux*) flag="-D_REENTRANT";;
+            *-osf* | *-hpux*) flag="-D_REENTRANT";;
+            *solaris*)
+            if test "$GCC" = "yes"; then
+                flag="-D_REENTRANT"
+            else
+                flag="-mt -D_REENTRANT"
+            fi
+            ;;
         esac
         AC_MSG_RESULT(${flag})
         if test "x$flag" != xno; then

@@ -39,26 +39,32 @@ AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS)
 AM_CFLAGS = -Wall
 
 AM_CPPFLAGS = \
-  -I$(builddir) \
-  -I$(srcdir)/src \
-  -I$(srcdir)/src/c4group \
-  -I$(srcdir)/src/network \
-  -I$(srcdir)/src/lib \
-  -I$(srcdir)/src/platform \
-  -I$(srcdir)/src/config \
-  -I$(srcdir)/src/res \
-  -I$(srcdir)/src/control \
-  -I$(srcdir)/src/gui \
-  -I$(srcdir)/src/editor \
-  -I$(srcdir)/src/game/landscape \
-  -I$(srcdir)/src/game/player \
-  -I$(srcdir)/src/game/script \
-  -I$(srcdir)/src/game \
-  -I$(srcdir)/src/game/object \
-  -I$(srcdir)/src/lib/texture \
-  -I$(srcdir)/src/script \
-  -I$(srcdir)/thirdparty \
-  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(OPENAL_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
+-I$(builddir) \
+-I$(srcdir)/src \
+-I$(srcdir)/src/c4group \
+-I$(srcdir)/src/network \
+-I$(srcdir)/src/lib \
+-I$(srcdir)/src/platform \
+-I$(srcdir)/src/config \
+-I$(srcdir)/src/res \
+-I$(srcdir)/src/control \
+-I$(srcdir)/src/gui \
+-I$(srcdir)/src/editor \
+-I$(srcdir)/src/game/landscape \
+-I$(srcdir)/src/game/player \
+-I$(srcdir)/src/game/script \
+-I$(srcdir)/src/game \
+-I$(srcdir)/src/game/object \
+-I$(srcdir)/src/lib/texture \
+-I$(srcdir)/src/script \
+-I$(srcdir)/thirdparty \
+$(GLEW_CFLAGS) \
+$(GTK_CFLAGS) \
+$(OPENAL_CFLAGS) \
+$(FREETYPE_CFLAGS) \
+$(SDL_CFLAGS) \
+$(BOOST_CPPFLAGS) \
+$(LIBUPNP_CFLAGS)
 
 ##BUILT_SOURCES = hgrevision.h
 ##hgrevision.h: $(srcdir)/.hg/dirstate
@@ -436,6 +442,7 @@ src/network/C4Network2ResDlg.cpp \
 src/network/C4Network2Res.h \
 src/network/C4Network2Stats.cpp \
 src/network/C4Network2Stats.h \
+src/network/C4Network2UPnP.h \
 src/network/C4Packet2.cpp \
 src/network/C4PacketBase.h \
 src/platform/Bitmap256.cpp \
@@ -569,6 +576,15 @@ endif
 if DEVELOPER_MODE
 clonk_SOURCES += src/platform/C4WindowGTK.cpp src/platform/C4WindowGTK.h src/editor/C4ConsoleGTK.cpp
 endif
+if LIBUPNP
+clonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
+else
+if NATUPNP
+clonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
+else
+clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
+endif
+endif
 
 clonk_LDADD = \
   lib.a \
@@ -579,7 +595,8 @@ clonk_LDADD = \
   $(SDL_LIBS) \
   $(PTHREAD_LIBS) \
   $(Z_LIBS) \
-  $(CLONK_LIBS)
+  $(CLONK_LIBS) \
+  $(LIBUPNP_LIBS)
 
 # build the resources
 .rc.o:

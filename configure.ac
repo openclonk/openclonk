@@ -64,7 +64,7 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
 AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h], , , [[ ]])
 # Mingw does not ship with multimon.h
-AC_CHECK_HEADERS([multimon.h io.h direct.h share.h], [], [], [[#include <windows.h>]])
+AC_CHECK_HEADERS([multimon.h io.h direct.h share.h natupnp.h], [], [], [[#include <windows.h>]])
 # iconv
 AX_ICONV
 # vasprintf is a GNU extension
@@ -303,6 +303,20 @@ if test "$with_directx" = yes; then
   AC_DEFINE([USE_DIRECTX], 1, [DirectX graphics])
 fi
 
+# UPnP
+AC_ARG_WITH([upnp],
+  [AS_HELP_STRING([--with-upnp],[compile with upnp support [default=no]])],
+  , [with_upnp=no])
+AS_IF([test $with_upnp = yes], [
+  AM_CONDITIONAL(NATUPNP, [test "$ac_cv_header_natupnp_h" = yes])
+  PKG_CHECK_MODULES(LIBUPNP, [libupnp], [have_libupnp=yes], [have_libupnp=no])
+], [
+  AM_CONDITIONAL(NATUPNP, [false])
+  have_libupnp=no
+])
+AM_CONDITIONAL(LIBUPNP, [test "$have_libupnp" = yes])
+
+# Automatic Update
 AC_ARG_WITH([automatic-update],
   [AS_HELP_STRING([--with-automatic-update],[enable support for automatic engine updates [default=yes]])],
   , [with_automatic_update="yes"])
@@ -369,7 +383,8 @@ echo "Configuration:
   SDL_Mixer:	$with_sdl_mixer
   OpenAL:	$with_openal
   GTK+: 	$with_gtk
-  X11:  	$have_x"
+  X11:  	$have_x
+  Nat/LibUPnP:	$ac_cv_header_natupnp_h/$have_libupnp"
 
 if test "$enable_sdlmainloop" = yes; then echo "  SDL:  	mainloop";
 else echo "  SDL:  	$with_sdl"; fi
