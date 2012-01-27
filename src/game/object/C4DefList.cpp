@@ -102,77 +102,27 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	return iResult;
 }
 
-int32_t C4DefList::Load(const char *szSearch,
+int32_t C4DefList::Load(const char *szFilename,
                         DWORD dwLoadWhat, const char *szLanguage,
                         C4SoundSystem *pSoundSystem,
                         bool fOverload, int32_t iMinProgress, int32_t iMaxProgress)
 {
-	int32_t iResult=0;
-
-	// Empty
-	if (!szSearch[0]) return iResult;
-
-	// Segments
-	char szSegment[_MAX_PATH+1]; int32_t iGroupCount;
-	if ((iGroupCount=SCharCount(';',szSearch)))
-	{
-		++iGroupCount; int32_t iPrg=iMaxProgress-iMinProgress;
-		for (int32_t cseg=0; SCopySegment(szSearch,cseg,szSegment,';',_MAX_PATH); cseg++)
-			iResult += Load(szSegment,dwLoadWhat,szLanguage,pSoundSystem,fOverload,
-			                iMinProgress+iPrg*cseg/iGroupCount, iMinProgress+iPrg*(cseg+1)/iGroupCount);
-		return iResult;
-	}
-
-	// Wildcard items
-	if (SCharCount('*',szSearch))
-	{
-#ifdef _WIN32
-		struct _finddata_t fdt; int32_t fdthnd;
-		if ((fdthnd=_findfirst(szSearch,&fdt))<0) return false;
-		do
-		{
-			iResult += Load(fdt.name,dwLoadWhat,szLanguage,pSoundSystem,fOverload);
-		}
-		while (_findnext(fdthnd,&fdt)==0);
-		_findclose(fdthnd);
-		// progress
-		if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#else
-		fputs("FIXME: C4DefList::Load\n", stderr);
-#endif
-		return iResult;
-	}
-
-	// File specified with creation (currently not used)
-	char szCreation[25+1];
-	int32_t iCreation=0;
-	if (SCopyEnclosed(szSearch,'(',')',szCreation,25))
-	{
-		// Scan creation
-		SClearFrontBack(szCreation);
-		sscanf(szCreation,"%i",&iCreation);
-		// Extract filename
-		SCopyUntil(szSearch,szSegment,'(',_MAX_PATH);
-		SClearFrontBack(szSegment);
-		szSearch = szSegment;
-	}
-
 	// Load from specified file
 	C4Group hGroup;
-	if (!Reloc.Open(hGroup, szSearch))
+	if (!Reloc.Open(hGroup, szFilename))
 	{
 		// Specified file not found (failure)
-		LogFatal(FormatString(LoadResStr("IDS_PRC_DEFNOTFOUND"),szSearch).getData());
+		LogFatal(FormatString(LoadResStr("IDS_PRC_DEFNOTFOUND"), szFilename).getData());
 		LoadFailure=true;
-		return iResult;
+		return 0; // 0 definitions loaded
 	}
-	iResult += Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem,fOverload,true,iMinProgress,iMaxProgress);
+	int32_t nDefs = Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem,fOverload,true,iMinProgress,iMaxProgress);
 	hGroup.Close();
 
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
 
-	return iResult;
+	return nDefs;
 }
 
 bool C4DefList::Add(C4Def *pDef, bool fOverload)

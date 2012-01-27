@@ -49,7 +49,7 @@ public:
 	             C4SoundSystem *pSoundSystem = NULL,
 	             bool fOverload = false,
 	             bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
-	int32_t Load(const char *szSearch,
+	int32_t Load(const char *szFilename,
 	             DWORD dwLoadWhat, const char *szLanguage,
 	             C4SoundSystem *pSoundSystem = NULL,
 	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
