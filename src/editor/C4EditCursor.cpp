@@ -428,7 +428,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 
 			if(cobj->pMeshInstance)
 				cobj->pMeshInstance->SetFaceOrderingForClrModulation(cobj->ColorMod);
-			
+
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;
 		}
@@ -516,6 +516,9 @@ void C4EditCursor::Clear()
 {
 #ifdef _WIN32
 	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
+#endif
+#ifdef WITH_DEBUG_MODE
+	ObjselectDelItems();
 #endif
 	Selection.Clear();
 }
@@ -642,6 +645,32 @@ bool C4EditCursor::DoContextMenu()
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
+
+	ObjselectDelItems();
+	C4FindObjectAtPoint pFO(X,Y);
+	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing
+	int itemcount = atcursor->GetSize();
+	if(itemcount > 0)
+	{
+		itemsObjselect.resize(itemcount+1); // +1 for a separator, and +1 for a stop codon
+		itemsObjselect[0].MenuItem = gtk_separator_menu_item_new();
+		itemsObjselect[0].EditCursor = this;
+		gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemsObjselect[0].MenuItem);
+		int i = 0;
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i) {
+			it->EditCursor = this;
+			C4Object * obj = (*atcursor)[i].getObj();
+			if(!obj) continue;
+			it->Object = obj;
+			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
+			it->MenuItem = wdg;
+			gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
+			static_assert(sizeof(std::vector<ObjselItemDt>::iterator) == sizeof(gpointer), "My vector hack is hack.");
+			g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &*it);
+		}
+	}
+	delete atcursor;
+	gtk_widget_show_all(menuContext);
 
 	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, 0);
 #endif
@@ -790,6 +819,22 @@ void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 	static_cast<C4EditCursor*>(data)->GrabContents();
 }
 
+void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
+{
+	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object);
+	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
+}
+
+void C4EditCursor::ObjselectDelItems() {
+	if(!itemsObjselect.size()) return;
+	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
+	while(it != itemsObjselect.end()) {
+		gtk_widget_destroy(it->MenuItem);
+		++it;
+	}
+	itemsObjselect.resize(0);
+}
+
 #endif
 
 bool C4EditCursor::AltDown()
@@ -811,4 +856,12 @@ bool C4EditCursor::AltUp()
 	}
 	// key not processed - allow further usages of Alt
 	return false;
+}
+
+void C4EditCursor::DoContextObjsel(C4Object * obj)
+{
+	if(!Application.IsControlDown())
+		Selection.Clear();
+	Selection.Add(obj, C4ObjectList::stNone);
+	OnSelectionChanged();
 }

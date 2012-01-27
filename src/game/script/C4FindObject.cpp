@@ -207,6 +207,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs)
 	return pBestResult;
 }
 
+// return is to be freed by the caller
 C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs)
 {
 	// Trivial case
@@ -323,6 +324,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs, const C4LSectors &Sct)
 	return pBestResult;
 }
 
+// return is to be freed by the caller
 C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors &Sct)
 {
 	// Trivial case

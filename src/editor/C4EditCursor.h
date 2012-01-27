@@ -27,6 +27,7 @@
 #include "C4ObjectList.h"
 #include "C4Control.h"
 #include "C4Rect.h"
+#include <vector>
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
@@ -53,6 +54,12 @@ protected:
 	GtkWidget* itemDuplicate;
 	GtkWidget* itemGrabContents;
 	GtkWidget* itemProperties;
+	struct ObjselItemDt {
+		C4EditCursor* EditCursor;
+		C4Object* Object;
+		GtkWidget* MenuItem;
+	};
+	std::vector<ObjselItemDt> itemsObjselect;
 #endif
 #endif // _WIN32
 	C4ObjectList Selection;
@@ -99,11 +106,14 @@ protected:
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
+	void DoContextObjsel(C4Object *);
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);
 	static void OnGrabContents(GtkWidget* widget, gpointer data);
+	static void OnObjselect(GtkWidget* widget, gpointer data);
+	void ObjselectDelItems();
 #endif
 };
 
