@@ -545,6 +545,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4Value.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
+	src/zlib/gzio.h
 	src/zlib/gzio.c
 	src/zlib/zutil.h
 
@@ -961,6 +962,7 @@ add_executable(c4script
 	src/c4group/C4GroupSet.cpp
 	src/c4group/C4ComponentHost.cpp
 	src/c4group/C4LangStringTable.cpp
+	src/zlib/gzio.c
 	src/C4Include.cpp
 )
 

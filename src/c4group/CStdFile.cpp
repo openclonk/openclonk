@@ -31,6 +31,7 @@
 #include <SHA1.h>
 
 #include <zlib.h>
+#include <zlib/gzio.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -79,7 +80,7 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 		int flags = O_CREAT|O_WRONLY|O_TRUNC;
 		int fd = open(Name, flags, mode);
 #endif
-		if (!(hgzFile = gzdopen(fd,"wb1"))) return false;
+		if (!(hgzFile = c4_gzdopen(fd,"wb1"))) return false;
 	}
 	else
 	{
@@ -122,7 +123,7 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 		int flags = O_RDONLY;
 		int fd = open(Name, flags, mode);
 #endif
-		if (!(hgzFile = gzdopen(fd,"rb"))) return false;
+		if (!(hgzFile = c4_gzdopen(fd,"rb"))) return false;
 	}
 	else
 	{ 
@@ -167,7 +168,7 @@ bool CStdFile::Close(StdBuf **ppMemory)
 	// Save buffer if in write mode
 	if (ModeWrite && BufferLoad) if (!SaveBuffer()) rval=false;
 	// Close file(s)
-	if (hgzFile) if (gzclose(hgzFile)!=Z_OK) rval=false;
+	if (hgzFile) if (c4_gzclose(hgzFile)!=Z_OK) rval=false;
 	if (hFile) if (fclose(hFile)!=0) rval=false;
 	if (pMemory)
 	{
@@ -224,7 +225,7 @@ int CStdFile::LoadBuffer()
 {
 	thread_check.Check();
 	if (hFile) BufferLoad = fread(Buffer,1,CStdFileBufSize,hFile);
-	if (hgzFile) BufferLoad = gzread(hgzFile, Buffer,CStdFileBufSize);
+	if (hgzFile) BufferLoad = c4_gzread(hgzFile, Buffer,CStdFileBufSize);
 	BufferPtr=0;
 	return BufferLoad;
 }
@@ -234,7 +235,7 @@ bool CStdFile::SaveBuffer()
 	thread_check.Check();
 	int saved = 0;
 	if (hFile) saved=fwrite(Buffer,1,BufferLoad,hFile);
-	if (hgzFile) saved=gzwrite(hgzFile,Buffer,BufferLoad);
+	if (hgzFile) saved=c4_gzwrite(hgzFile,Buffer,BufferLoad);
 	if (pMemory) { pMemory->Append(Buffer, BufferLoad); saved = BufferLoad; }
 	if (saved!=BufferLoad) return false;
 	BufferLoad=0;
@@ -288,7 +289,7 @@ bool CStdFile::Rewind()
 	if (ModeWrite) return false;
 	ClearBuffer();
 	if (hFile) rewind(hFile);
-	if (hgzFile) gzrewind(hgzFile);
+	if (hgzFile) c4_gzrewind(hgzFile);
 	return true;
 }
 
@@ -329,15 +330,15 @@ int UncompressedFileSize(const char *szFilename)
 	int fd = open(szFilename, flags, mode);
 #endif
 	gzFile hFile;
-	if (!(hFile = gzdopen(fd,"rb"))) return 0;
+	if (!(hFile = c4_gzdopen(fd,"rb"))) return 0;
 	do
 	{
-		rd = gzread(hFile,&buf,sizeof(buf));
+		rd = c4_gzread(hFile,&buf,sizeof(buf));
 		if (rd < 0) break;
 		rval += rd;
 	}
 	while (rd == sizeof buf);
-	gzclose(hFile);
+	c4_gzclose(hFile);
 	return rval;
 }
 
