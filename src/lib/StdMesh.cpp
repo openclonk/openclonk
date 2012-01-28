@@ -35,19 +35,6 @@ namespace
 		}
 	};
 
-	template<typename Iter, typename Pred>
-	void BubbleSort(Iter begin, Iter end, Pred pred)
-	{
-		for(Iter iter = begin; iter != end; ++iter)
-		{
-			for(Iter iter2 = begin+1; iter2 != end; ++iter2)
-			{
-				if(pred(*iter2, *iter)) // iter2 < iter
-					std::swap(*iter, *iter2);
-			}
-		}
-	}
-
 	// Helper to sort faces for FaceOrdering
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
@@ -1152,9 +1139,7 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 		{
 			StdMeshInstanceFaceOrderingCmpPred pred(inst, global_trans ? *global_trans : StdMeshMatrix::Identity());
 
-			//std::sort(inst.Faces.begin(), inst.Faces.end(), pred);
-
-			BubbleSort(inst.Faces.begin(), inst.Faces.end(), pred);
+			std::sort(inst.Faces.begin(), inst.Faces.end(), pred);
 		}
 	}
 
