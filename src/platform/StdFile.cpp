@@ -985,6 +985,7 @@ void DirectoryIterator::Read(const char *dirname)
 	{
 		switch (GetLastError())
 		{
+		case ERROR_PATH_NOT_FOUND:
 		case ERROR_FILE_NOT_FOUND:
 			// This is okay, either the directory doesn't exist or there are no files
 			return;
