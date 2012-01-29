@@ -16,9 +16,13 @@ func CreateShaft(int length)
 
 /* Initialization */
 
-func Initialize()
+func Construction()
 {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(70), Trans_Translate(-20000,0,0)));
+}
+
+func Initialize()
+{
 	CreateCase();
 	CreateRope();
 }
@@ -61,5 +65,8 @@ func StopEngine()
 	Sound("ElevatorStop");
 }
 
+func Definition(def) {
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(70), Trans_Translate(-20000,0,0), Trans_Rotate(-15,1,-1,1)), def);
+}
 local Name = "$Name$";
 local Description = "$Description$";
