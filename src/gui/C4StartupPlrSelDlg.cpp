@@ -1406,7 +1406,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCREWSKIN");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caSkin.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnSkinChangeLeft));
 	pBtn->SetToolTip(szTip);
-	C4Facet &rfctSkinPic = ::GraphicsResource.fctClonkSkin.GetPhase(0);
+	C4Facet rfctSkinPic = ::GraphicsResource.fctClonkSkin.GetPhase(0);
 	AddElement(pSkinImg = new C4GUI::Picture(caSkin.GetFromLeft(rfctSkinPic.GetWidthByHeight(caSkin.GetHeight())), true));
 	pSkinImg->SetToolTip(szTip);
 	pSkinImg->SetFacet(::GraphicsResource.fctClonkSkin.GetPhase(0));
