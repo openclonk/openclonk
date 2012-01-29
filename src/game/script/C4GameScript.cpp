@@ -110,6 +110,12 @@ static long FnGetPlayerColor(C4AulContext *cthr, long iPlayer)
 	return plr ? plr->ColorDw : 0;
 }
 
+static long FnGetPlrClonkSkin(C4AulContext *cthr, long iPlayer)
+{
+	C4Player *plr = ::Players.Get(iPlayer);
+	return plr ? plr->PrefClonkSkin : 0;
+}
+
 static Nillable<long> FnGetX(C4AulContext *cthr, long iPrec)
 {
 	if (!cthr->Obj) return C4Void();
@@ -2434,6 +2440,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerName", FnGetPlayerName);
 	AddFunc(pEngine, "GetPlayerType", FnGetPlayerType);
 	AddFunc(pEngine, "GetPlayerColor", FnGetPlayerColor);
+	AddFunc(pEngine, "GetPlrClonkSkin", FnGetPlrClonkSkin);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
 	AddFunc(pEngine, "CreateConstruction", FnCreateConstruction);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
