@@ -51,6 +51,7 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	SCopy("Neuling",PrefName);
 	if (pRanks) SCopy(pRanks->GetRankName(Rank,false).getData(),RankName);
 	else SCopy("Rang",RankName);
+	PrefClonkSkin=0;
 	PrefColor=0;
 	PrefColorDw=0xff;
 	PrefColor2Dw=0;
@@ -164,6 +165,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
 	pComp->Value(mkNamingAdapt(OldPrefAutoContextMenu,   "AutoContextMenu",  -1)); // compiling default is -1  (if this is detected, AutoContextMenus will be defaulted by control style)
 	pComp->Value(mkNamingAdapt(PrefControl,              "ControlSet",       StdStrBuf()));
+	pComp->Value(mkNamingAdapt(PrefClonkSkin,            "ClonkSkin",        0));
 	pComp->NameEnd();
 
 	pComp->Value(mkNamingAdapt(LastRound,                "LastRound"));

@@ -52,9 +52,12 @@ void C4GraphicsResource::Default()
 
 	sfcControl.Default();
 	idSfcControl = 0;
+	sfcClonkSkins.Default();
+	idSfcClonkSkins = 0;
 
 	fctPlayer.Default();
 	fctFlag.Default();
+	fctClonkSkin.Default();
 	fctCrew.Default();
 	fctWealth.Default();
 	fctRank.Default();
@@ -97,6 +100,8 @@ void C4GraphicsResource::Clear()
 
 	sfcControl.Clear();
 	idSfcControl = 0;
+	sfcClonkSkins.Clear();
+	idSfcClonkSkins = 0;
 
 	fctCrewClr.Clear();
 	fctFlagClr.Clear();
@@ -223,6 +228,10 @@ bool C4GraphicsResource::Init()
 	fctKey.Set(&sfcControl,0,100,64,64);
 	fctOKCancel.Set(&sfcControl,128,100,32,32);
 	fctMouse.Set(&sfcControl,198,100,32,32);
+
+	// Clonk style selection
+	if (!LoadFile(sfcClonkSkins, "ClonkSkins",  Files, idSfcClonkSkins)) return false;
+	fctClonkSkin.Set(&sfcClonkSkins,0,0,64,64);
 
 	// Facet bitmap resources
 	if (!LoadFile(fctFire,        "Fire",         Files, C4FCT_Height)) return false;

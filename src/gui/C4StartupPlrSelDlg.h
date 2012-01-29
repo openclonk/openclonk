@@ -242,6 +242,7 @@ protected:
 	C4GUI::CheckBox *pAutoStopControl; // wether the player uses AutoStopControl
 	C4GUI::IconButton *pClrPreview;
 	C4GUI::Picture *pCtrlImg;
+	C4GUI::Picture *pSkinImg;
 	C4GUI::IconButton *pMouseBtn, *pJumpNRunBtn, *pClassicBtn, *pPictureBtn;
 	C4GUI::Label *ctrl_name_lbl;
 	C4PlayerInfoCore C4P; // player info core copy currently being edited
@@ -264,12 +265,14 @@ protected:
 	void OnClrChangeCustom(C4GUI::Control *pBtn);
 	void OnCtrlChangeLeft(C4GUI::Control *pBtn);
 	void OnCtrlChangeRight(C4GUI::Control *pBtn);
-	void OnCtrlChangeMouse(C4GUI::Control *pBtn);
+	void OnSkinChangeLeft(C4GUI::Control *pBtn);
+	void OnSkinChangeRight(C4GUI::Control *pBtn);
 	void OnPictureBtn(C4GUI::Control *pBtn);
 
 private:
 	void UpdatePlayerColor(bool fUpdateSliders);
 	void UpdatePlayerControl();
+	void UpdatePlayerSkin();
 	void UpdateBigIcon();
 
 	bool SetNewPicture(C4Surface &srcSfc, C4FacetSurface *trgFct, int32_t iMaxSize, bool fColorize);

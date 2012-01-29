@@ -37,10 +37,10 @@ public:
 	C4GraphicsResource();
 	~C4GraphicsResource();
 protected:
-	C4Surface sfcControl;
+	C4Surface sfcControl, sfcClonkSkins;
 	C4Surface sfcCaption, sfcButton, sfcButtonD;
 	C4Surface sfcScroll, sfcContext;
-	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext;
+	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext, idSfcClonkSkins;
 	int32_t idSfcControl; // id of source group of control surface
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups
@@ -70,6 +70,7 @@ public:
 	C4FacetID fctHand;
 	C4FacetID fctGamepad;
 	C4FacetID fctBuild;
+	C4Facet fctClonkSkin;
 	C4Facet fctCursor;
 	C4Facet fctDropTarget;
 	C4Facet fctKeyboard;

@@ -1346,11 +1346,20 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	AddElement(pNameEdit);
 	SetFocus(pNameEdit, false);
 	caMain.ExpandTop(-BetweenElementDist);
+
+	int32_t iControlPicSize = C4GUI::ArrowButton::GetDefaultHeight(); // GetGridCell(0,3,0,1,-1,-1,false,2)
+	int32_t label_hgt = pSmallFont->GetLineHeight();
+
 	// place color label
-	AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_CTL_COLOR")).getData(), caMain.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
-	// place color controls
-	C4GUI::ComponentAligner caColorArea(caMain.GetFromTop(C4GUI::ArrowButton::GetDefaultHeight()), 2, 0);
+	C4GUI::ComponentAligner caColorArea(caMain.GetFromTop(iControlPicSize + BetweenElementDist + label_hgt), 2, 0);
+	C4GUI::ComponentAligner caPictureArea(caColorArea.GetFromRight(iControlPicSize, iControlPicSize + BetweenElementDist + label_hgt), 2,0);
 	caColorArea.ExpandLeft(2);
+	AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_CTL_COLOR")).getData(), caColorArea.GetFromTop(label_hgt), ALeft, C4StartupFontClr, pSmallFont, false));
+	caColorArea.ExpandTop(-BetweenElementDist);
+	// place picture label
+	AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_PICTURE"), caPictureArea.GetFromTop(label_hgt), ALeft, C4StartupFontClr, pSmallFont, false));
+	caPictureArea.ExpandTop(-BetweenElementDist);
+	// place color controls
 	C4GUI::Button *pBtn; const char *szTip;
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCOLORS");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caColorArea.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnClrChangeLeft));
@@ -1362,39 +1371,50 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caColorArea.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnClrChangeRight));
 	pBtn->SetToolTip(szTip);
 	if (!C4P.PrefColorDw) C4P.PrefColorDw=0xff;
+	// Place picture controls
+	AddElement(pPictureBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_Player, caPictureArea.GetAll(), 'P' /* 2do */, &C4StartupPlrPropertiesDlg::OnPictureBtn));
+	pPictureBtn->SetToolTip(LoadResStr("IDS_DESC_SELECTAPICTUREANDORLOBBYI"));
+	UpdateBigIcon();
+	UpdatePlayerColor(true);
 	caMain.ExpandTop(-BetweenElementDist);
-	// place control and picture label
-	int32_t iControlPicSize = C4GUI::ArrowButton::GetDefaultHeight(); // GetGridCell(0,3,0,1,-1,-1,false,2)
-	C4GUI::ComponentAligner caControlArea(caMain.GetFromTop(iControlPicSize + pSmallFont->GetLineHeight() + BetweenElementDist), 0,0, false);
-	C4GUI::ComponentAligner caPictureArea(caControlArea.GetFromRight(iControlPicSize), 0,0, false);
-	AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_CTL_CONTROL")).getData(), caControlArea.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
-	AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_PICTURE"), caPictureArea.GetFromTop(pSmallFont->GetLineHeight()), ACenter, C4StartupFontClr, pSmallFont, false));
-	caControlArea.ExpandTop(-BetweenElementDist); caPictureArea.ExpandTop(-BetweenElementDist);
+	// place control label
+	C4GUI::ComponentAligner caControlArea(caMain.GetFromTop(iControlPicSize + label_hgt + BetweenElementDist), 0,0, false);
+	C4GUI::ComponentAligner caSkinArea(caControlArea.GetFromRight(iControlPicSize + label_hgt + BetweenElementDist), 0,0, false);
+	AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_CTL_CONTROL")).getData(), caControlArea.GetFromTop(label_hgt), ALeft, C4StartupFontClr, pSmallFont, false));
+	caControlArea.ExpandTop(-BetweenElementDist);
+	// place clonk style label
+	AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_CLONKSKIN"), caSkinArea.GetFromTop(label_hgt), ALeft, C4StartupFontClr, pSmallFont, false));
+	caSkinArea.ExpandTop(-BetweenElementDist);
 	// place control controls
 	C4GUI::ComponentAligner caControl(caControlArea.GetFromTop(iControlPicSize), 2,0);
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCONTROL");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeLeft));
 	pBtn->SetToolTip(szTip);
-	int32_t ctrl_name_hgt = pSmallFont->GetLineHeight();
-	caControl.ExpandBottom(ctrl_name_hgt); C4Rect ctrl_name_rect = caControl.GetFromBottom(ctrl_name_hgt);
+	caControl.ExpandBottom(label_hgt); C4Rect ctrl_name_rect = caControl.GetFromBottom(label_hgt);
 	C4Facet &rfctCtrlPic = ::GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
 	AddElement(pCtrlImg = new C4GUI::Picture(caControl.GetFromLeft(rfctCtrlPic.GetWidthByHeight(caControl.GetHeight())), true));
 	pCtrlImg->SetToolTip(szTip);
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeRight));
 	pBtn->SetToolTip(szTip);
 	caControl.ExpandLeft(-10);
-	// Mouse control, currently mandatory with keyboard and this will probably never change again!
-//	AddElement(pMouseBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_MouseOff, caControl.GetFromLeft(caControl.GetHeight()), 'M' /* 2do */, &C4StartupPlrPropertiesDlg::OnCtrlChangeMouse));
-//	pMouseBtn->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERCONTROLMOUSE"));
 	C4P.OldPrefControl = BoundBy<int32_t>(C4P.OldPrefControl, 0, C4MaxControlSet-1);
 	ctrl_name_lbl = new C4GUI::Label("CtrlName", ctrl_name_rect, ALeft, C4StartupFontClr, pSmallFont, false, false, true);
 	AddElement(ctrl_name_lbl);
 	UpdatePlayerControl();
-	// place picture button
-	AddElement(pPictureBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_Player, caPictureArea.GetAll(), 'P' /* 2do */, &C4StartupPlrPropertiesDlg::OnPictureBtn));
-	pPictureBtn->SetToolTip(LoadResStr("IDS_DESC_SELECTAPICTUREANDORLOBBYI"));
-	UpdateBigIcon();
-	UpdatePlayerColor(true);
+
+	C4GUI::ComponentAligner caSkin(caSkinArea.GetFromTop(iControlPicSize), 2,0);
+	szTip = LoadResStr("IDS_DLGTIP_PLAYERCREWSKIN");
+	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caSkin.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnSkinChangeLeft));
+	pBtn->SetToolTip(szTip);
+	C4Facet &rfctSkinPic = ::GraphicsResource.fctClonkSkin.GetPhase(0);
+	AddElement(pSkinImg = new C4GUI::Picture(caSkin.GetFromLeft(rfctSkinPic.GetWidthByHeight(caSkin.GetHeight())), true));
+	pSkinImg->SetToolTip(szTip);
+	pSkinImg->SetFacet(::GraphicsResource.fctClonkSkin.GetPhase(0));
+	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caSkin.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnSkinChangeRight));
+	pBtn->SetToolTip(szTip);
+	caSkin.ExpandLeft(-10);
+	UpdatePlayerSkin();
+
 	caMain.ExpandTop(-BetweenElementDist);
 	// AutoStopControl: currently unused
 	// once we have an idea how many control schemes we have, we might revive this for selecting e.g. between "Mouse+Keyboard" and "Gamepad".
@@ -1475,10 +1495,6 @@ void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 		ctrl_name_lbl->SetText(control_set->GetGUIName());
 	else
 		ctrl_name_lbl->SetText("???");
-	// update mouse image
-	// button only available if selected control set offers mouse control
-//	pMouseBtn->SetVisibility(control_set && control_set->HasMouse());
-//	pMouseBtn->SetIcon((C4P.PrefMouse) ? C4GUI::Ico_MouseOn : C4GUI::Ico_MouseOff);
 }
 
 void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
@@ -1505,11 +1521,22 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeRight(C4GUI::Control *pBtn)
 	UpdatePlayerControl();
 }
 
-void C4StartupPlrPropertiesDlg::OnCtrlChangeMouse(C4GUI::Control *pBtn)
+void C4StartupPlrPropertiesDlg::UpdatePlayerSkin()
 {
-	// toggle mouse usage
-	C4P.PrefMouse = !C4P.PrefMouse;
-	UpdatePlayerControl();
+	pSkinImg->SetFacet(::GraphicsResource.fctClonkSkin.GetPhase(C4P.PrefClonkSkin));
+}
+
+void C4StartupPlrPropertiesDlg::OnSkinChangeLeft(C4GUI::Control *pBtn)
+{
+	// previous skin in list
+	C4P.PrefClonkSkin = C4P.PrefClonkSkin ? C4P.PrefClonkSkin - 1 : 3;
+	UpdatePlayerSkin();
+}
+void C4StartupPlrPropertiesDlg::OnSkinChangeRight(C4GUI::Control *pBtn)
+{
+	// next skin in list
+	C4P.PrefClonkSkin = (C4P.PrefClonkSkin + 1) % 4;
+	UpdatePlayerSkin();
 }
 
 void C4StartupPlrPropertiesDlg::UserClose(bool fOK)
