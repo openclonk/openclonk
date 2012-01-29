@@ -990,7 +990,7 @@ bool C4Player::Load(const char *szFilename, bool fSavegame)
 
 bool C4Player::Strip(const char *szFilename, bool fAggressive)
 {
-	// Opem group
+	// Open group
 	C4Group Grp;
 	if (!Grp.Open(szFilename))
 		return false;
