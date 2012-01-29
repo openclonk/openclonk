@@ -17,6 +17,13 @@ local move_to, // Y-coordinate to move to on its own
 
 func Movement() // TimerCall
 {
+	// No elevator?!
+	if (!elevator)
+	{
+		// Elevator crash, oh the horror!
+		if (!ActIdle()) SetAction("Idle");
+		return;
+	}
 	// Check for power
 	if (!elevator->CheckPower(1, true))
 	{
@@ -150,6 +157,7 @@ func Movement() // TimerCall
 
 func Halt()
 {
+	if (!elevator) return;
 	if (GetYDir()) elevator->StopEngine();
 	SetYDir();
 }
@@ -248,8 +256,8 @@ local ActMap = {
 			Directions = 1,
 			X = 0,
 			Y = 0,
-			Wdt = 22,
-			Hgt = 22,
+			Wdt = 24,
+			Hgt = 26,
 			NextAction = "Drive"
 		},
 		Drill = {
@@ -259,8 +267,8 @@ local ActMap = {
 			Directions = 1,
 			X = 0,
 			Y = 0,
-			Wdt = 22,
-			Hgt = 22,
+			Wdt = 24,
+			Hgt = 26,
 			NextAction = "Drill",
 			DigFree = 1
 		}

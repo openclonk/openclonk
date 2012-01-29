@@ -2,14 +2,14 @@
 
 #include Library_PowerConsumer
 
-local case;
+local case, rope;
 
 // Frees a rectangle for the case
 func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
-	ClearFreeRect(GetX() + 6, GetY() + 22, 23, length + 4);
+	ClearFreeRect(GetX() + 3, GetY() + 20, 23, length + 6);
 	// Move the case back
 	case->SetPosition(case->GetX(), GetY()+12);
 }
@@ -18,13 +18,28 @@ func CreateShaft(int length)
 
 func Initialize()
 {
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(70), Trans_Translate(-20000,0,0)));
 	CreateCase();
+	CreateRope();
 }
 
 func CreateCase()
 {
-	case = CreateObject(ElevatorCase, 18, 26, GetOwner());
+	case = CreateObject(ElevatorCase, 15, 26, GetOwner());
 	case->Connect(this);
+}
+
+func CreateRope()
+{
+	rope = CreateObject(ElevatorRope, 15, -10, GetOwner());
+	rope->SetAction("Be", case);
+}
+
+/* Destruction */
+
+func Destruction()
+{
+	rope->RemoveObject();
 }
 
 /* Effects */
