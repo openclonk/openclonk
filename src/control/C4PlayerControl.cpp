@@ -619,7 +619,7 @@ C4Facet C4PlayerControlAssignmentSet::GetPicture() const
 	// get image to be drawn to represent this control set
 	// picture per set not implemented yet. So just default to out standard images
 	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(GetGamepadIndex());
-//	if (HasMouse()) return ::GraphicsResource.fctMouse; // todo: probably mouse PLUS keyboard? // todo cancelled
+//	if (HasMouse()) return ::GraphicsResource.fctMouse; // might be useful again with changing control sets
 	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(Game.PlayerControlUserAssignmentSets.GetSetIndex(this));
 	return C4Facet();
 }

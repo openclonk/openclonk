@@ -661,11 +661,12 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	int32_t iNameHgtOff=0;
 
 	// Control
-	if (pPlr->MouseControl)
+	// unnecessary with the current control sets
+/*	if (pPlr->MouseControl)
 		GfxR->fctMouse.Draw(cgo.Surface,
 		                    cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
 		                    cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
-		                    0,0);
+		                    0,0);*/
 	if (pPlr && pPlr->ControlSet)
 	{
 		C4Facet controlset_facet = pPlr->ControlSet->GetPicture();
