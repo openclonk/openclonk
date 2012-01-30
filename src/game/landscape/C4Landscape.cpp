@@ -957,11 +957,11 @@ void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallba
 			if (x1>x2) Swap(x1,x2);
 			// Set line
 			if (conversion_table)
-				for (int xcnt=x2-x1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
 			else if(col)
-				for (int xcnt=x2-x1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
 			else
-				for (int xcnt=x2-x1; xcnt>=0; xcnt--)
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
 				{
 					int32_t mat = GetMat(x1+xcnt,y);
 					if((this->*fnCallback)(x1+xcnt,y))
