@@ -9,7 +9,7 @@ func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
-	ClearFreeRect(GetX() + 3, GetY() + 20, 23, length + 6);
+	ClearFreeRect(GetX() + 3, GetY() + 20, 24, length + 6);
 	// Move the case back
 	case->SetPosition(case->GetX(), GetY()+12);
 }
