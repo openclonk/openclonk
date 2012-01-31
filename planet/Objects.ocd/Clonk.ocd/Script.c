@@ -50,7 +50,9 @@ protected func Construction()
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	var skin = GetPlrClonkSkin(iPlr);
+	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	var skin = GetCrewExtraData("Skin");
+	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
 	if(skin) SetSkin(skin);
 
 	// Broadcast for crew
@@ -522,9 +524,6 @@ local gender;
 
 func SetSkin(int skin)
 {
-	//Save to player's crew-member file which skin they are using
-//	SetCrewExtraData("Skin", skin);
-
 	//Adventurer
 	if(skin == 0)
 	{	SetGraphics();
