@@ -50,8 +50,6 @@ protected func Construction()
 	this.Parallaxity = [0,0];	
 	// visibility
 	this.Visibility = VIS_None;	
-	// mouse drag
-	this.MouseDrag = MD_DragSource | MD_DropTarget;
 }
 
 protected func Destruction()
@@ -286,6 +284,10 @@ public func SetObject(object obj, int type, int pos, int hot)
 	myobject = obj;
 	hotkey = hot;
 	
+	// Set mousedrag for inventory objects
+	if (actiontype == ACTIONTYPE_INVENTORY)
+		this.MouseDrag = MD_DragSource | MD_DropTarget;
+		
 	if(!myobject)
 	{
 		SetGraphics("None");
