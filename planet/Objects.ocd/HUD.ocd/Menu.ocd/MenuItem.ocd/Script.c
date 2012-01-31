@@ -38,6 +38,17 @@ public func MouseSelection(int plr)
 	return item_menu->OnItemSelection(this, plr);	
 }
 
+// Called when this object is selected with the right mouse button.
+public func MouseSelectionAlt(int plr)
+{
+	// Check if this belongs to a menu.
+	if (!item_menu)
+		return;
+	
+	// Transfer result to menu.
+	return item_menu->OnItemSelectionAlt(this, plr);	
+}
+
 // Called to determine which object is dragged.
 public func MouseDrag(int plr)
 {
