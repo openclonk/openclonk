@@ -609,6 +609,8 @@ void C4MouseControl::UpdateCursorTarget()
 
 		if ( (TargetObject->Category & C4D_MouseSelect) && CanSelect)
 			Cursor=C4MC_Cursor_Select;
+		else
+			TargetObject = NULL;
 	}
 
 	// Help
