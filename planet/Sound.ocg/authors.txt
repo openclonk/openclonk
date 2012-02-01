@@ -21,8 +21,10 @@ jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
 suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 FreqMan			- Cash (http://www.freesound.org/people/FreqMan/sounds/31377/)
-fresco			- Munch2 (http://www.freesound.org/people/fresco/sounds/48933/)
+fresco			- Munch1 (http://www.freesound.org/people/fresco/sounds/48933/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
+Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
+digifishmusic	- LiquidBlast2 (http://www.freesound.org/people/digifishmusic/sounds/45439/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -32,6 +34,7 @@ adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/1387
 thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
+Oddworld		- LiquidBlast1 (http://www.freesound.org/people/Oddworld/sounds/75328/)
 
 Unfree sound effects
 ===============================================================================
@@ -40,12 +43,3 @@ The following sound effects are licensed under the CC Attribution-NonCommercial 
 Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
 kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
 acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
-
-The following sound effects are licensed under the CC Sampling plus license:
-
-Nikolino		- BlastLiquid*
-					(http://www.freesound.org/people/Nikolino/sounds/106694/)
-					(http://www.freesound.org/people/Nikolino/sounds/106650/)
-					(http://www.freesound.org/people/Nikolino/sounds/106640/)
-Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
-tofumike		- Munch1 (http://www.freesound.org/people/tofumike/sounds/41371/)
