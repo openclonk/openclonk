@@ -1011,7 +1011,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 	{
 		// select
 		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->Select(mex,mey, ctrl == CON_UseAltDelayed);
+			this->GetMenu()->~OnMouseClick(mex,mey, ctrl == CON_UseAltDelayed);
 	}
 	
 	return true;

@@ -53,6 +53,12 @@ public func SetCommander(object commander)
 	return;
 }
 
+// Returns the commander of this menu.
+public func GetCommander()
+{
+	return menu_commander;
+}
+
 // Sets the menu object for this menu.
 public func SetMenuObject(object menuobject)
 {

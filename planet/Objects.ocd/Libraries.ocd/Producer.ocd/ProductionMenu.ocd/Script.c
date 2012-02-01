@@ -234,6 +234,15 @@ public func UpdateCursor(int dx, int dy)
 
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
+// Called when a click outside the menu has been made.
+public func OnMouseClick(int x, int y, bool alt)
+{
+	// Close menu if not clicked on one of the menus.
+	if (!(Distance(x, y, 0, 0) < 160 || (x > 160 && x < 480 && Abs(y) < 160)))
+		Close();
+	return;
+}
+
 // Called when an item has been selected (left mouse button).
 public func OnItemSelection(object item)
 {

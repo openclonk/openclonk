@@ -114,7 +114,7 @@ public func AddItem(new_item, int amount, extra)
 }
 
 // selects by dx,dy and alt=alternative selection
-func Select(int dx, int dy, bool alt)
+func OnMouseClick(int dx, int dy, bool alt)
 {
 	var item_count=GetLength(menu_icons);
 	if(!item_count)

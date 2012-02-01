@@ -66,7 +66,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 				}
 				else if (release == true)
 				{
-					cursor->GetMenu()->~Select(dx,dy,ctrl == CON_GUIClick2);
+					cursor->GetMenu()->~OnMouseClick(dx,dy,ctrl == CON_GUIClick2);
 					return false;
 				}
 			}		
