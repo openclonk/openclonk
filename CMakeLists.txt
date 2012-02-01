@@ -548,6 +548,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4ValueMap.h
 	src/zlib/gzio.c
 	src/zlib/zutil.h
+	thirdparty/timsort/sort.h
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)

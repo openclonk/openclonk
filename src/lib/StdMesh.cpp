@@ -28,6 +28,13 @@
 
 #include <algorithm>
 
+static int StdMeshFaceCmp(const StdMeshFace& face1, const StdMeshFace& face2);
+
+#define SORT_NAME StdMesh
+#define SORT_TYPE StdMeshFace
+#define SORT_CMP StdMeshFaceCmp
+#include "timsort/sort.h"
+
 std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstance::SerializableValueProvider::IDs = NULL;
 
 namespace
@@ -64,12 +71,17 @@ namespace
 
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
+			return compare(face1, face2) < 0;
+		}
+
+		int compare(const StdMeshFace& face1, const StdMeshFace& face2) const
+		{
 			// TODO: Need to apply attach matrix in case of attached meshes
 			switch (m_inst.GetFaceOrdering())
 			{
 			case StdSubMeshInstance::FO_Fixed:
 				assert(false);
-				return false;
+				return 0;
 			case StdSubMeshInstance::FO_FarthestToNearest:
 			case StdSubMeshInstance::FO_NearestToFarthest:
 			{
@@ -84,13 +96,13 @@ namespace
 				float z2 = std::max(std::max(z21, z22), z23);
 
 				if (m_inst.GetFaceOrdering() == StdSubMeshInstance::FO_FarthestToNearest)
-					return z1 < z2;
+					return (z1 < z2 ? -1 : (z1 > z2 ? +1 : 0));
 				else
-					return z2 < z1;
+					return (z2 < z1 ? -1 : (z2 > z1 ? +1 : 0));
 			}
 			default:
 				assert(false);
-				return false;
+				return 0;
 			}
 		}
 	};
@@ -137,7 +149,7 @@ namespace
 
 		ALLOW_TEMP_TO_REF(ValueProviderAdapt)
 	};
-	
+
 	ValueProviderAdapt mkValueProviderAdapt(StdMeshInstance::ValueProvider** ValueProvider) { return ValueProviderAdapt(ValueProvider); }
 
 	// Serialize a bone index by name with StdCompiler
@@ -218,6 +230,13 @@ namespace
 
 		return true;
 	}
+
+	StdMeshInstanceFaceOrderingCmpPred* g_pred = NULL;
+}
+
+static int StdMeshFaceCmp(const StdMeshFace& face1, const StdMeshFace& face2)
+{
+	return g_pred->compare(face1, face2);
 }
 
 /* Boring Math stuff begins here */
@@ -1752,6 +1771,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 	return was_dirty;
 }
 
+//#include <sys/time.h>
 void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 {
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
@@ -1760,7 +1780,23 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 		if(inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
 			StdMeshInstanceFaceOrderingCmpPred pred(inst, global_trans ? *global_trans : StdMeshMatrix::Identity());
-			std::sort(inst.Faces.begin(), inst.Faces.end(), pred);
+
+			// The usage of timsort instead of std::sort at this point is twofold.
+			// First, it's faster in our case where the array is already sorted in
+			// many cases (remember this is called at least once a frame).
+			// And it's not just a bit faster either but a lot. I have measured
+			// a factor of 7 on my system.
+			// Second, in our Windows autobuilds there is a crash within std::sort
+			// which is very hard to debug because it's hardly reproducible with
+			// anything other than the autobuilds (I tried hard). If the crash goes
+			// away with timsort then great, if not then maybe it's easier to debug
+			// since the code is in our tree.
+
+			//std::sort(inst.Faces.begin(), inst.Faces.end(), pred);
+
+			g_pred = &pred;
+			StdMesh_tim_sort(&inst.Faces[0], inst.Faces.size());
+			g_pred = NULL;
 		}
 	}
 
