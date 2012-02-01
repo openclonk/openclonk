@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>
+#ifndef _MSC_VER
+# include <stdint.h>
+#endif
 
 #ifndef SORT_NAME
 #error "Must declare SORT_NAME"
@@ -41,7 +43,7 @@ int clzll(uint64_t x) {
 #endif
 
 
-#define SORT_SWAP(x,y) ({SORT_TYPE __SORT_SWAP_t = (x); (x) = (y); (y) = __SORT_SWAP_t;})
+#define SORT_SWAP(x,y) {SORT_TYPE __SORT_SWAP_t = (x); (x) = (y); (y) = __SORT_SWAP_t;}
 
 #define SORT_CONCAT(x, y) x ## _ ## y
 #define SORT_MAKE_STR1(x, y) SORT_CONCAT(x,y)
@@ -220,8 +222,12 @@ void MERGE_SORT(SORT_TYPE *dst, const size_t size)
   
   MERGE_SORT(dst, middle);
   MERGE_SORT(&dst[middle], size - middle);
-  
+
+#ifdef _MSC_VER
+  SORT_TYPE* newdst = (SORT_TYPE*)malloc(size * sizeof(SORT_TYPE));
+#else
   SORT_TYPE newdst[size];
+#endif
   int64_t out = 0;
   int64_t i = 0;
   int64_t j = middle;
@@ -244,6 +250,10 @@ void MERGE_SORT(SORT_TYPE *dst, const size_t size)
     out++;
   }
   memcpy(dst, newdst, size * sizeof(SORT_TYPE));
+
+#ifdef _MSC_VER
+  free(newdst);
+#endif
 }
 
 
@@ -358,7 +368,8 @@ if (run > len)\
   binary_insertion_sort_start(&dst[curr], len, run);\
   len = run;\
 }\
-run_stack[stack_curr++] = (TIM_SORT_RUN_T) {curr, len};\
+run_stack[stack_curr].start = curr;\
+run_stack[stack_curr++].length = len;\
 curr += len;\
 if (curr == size)\
 {\
