@@ -14,9 +14,6 @@
       <link rel="stylesheet">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
-      <xsl:if test="not($chm)">
-      <link rel="stylesheet" href="http://www.openclonk.org/header/header.css" />
-      </xsl:if>
       <xsl:if test="descendant::table[bitmask]">
         <script>
           <xsl:attribute name="src"><xsl:value-of select="$relpath" />bitmasks.js</xsl:attribute>
