@@ -220,21 +220,29 @@ std::string C4AulScript::Translate(const std::string &text) const
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 
-C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const char *pName):
-		C4AulFunc(pOwner, pName), OwnerOverloaded(NULL), ParCount(0), tProfileTime(0)
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
+		C4AulFunc(pOwner, pName),
+		CodePos(0),
+		Script(Script),
+		OwnerOverloaded(NULL),
+		ParCount(0),
+		pOrgScript(pOrgScript),
+		tProfileTime(0)
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
 }
 
-void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
+		C4AulFunc(pOwner, FromFunc.GetName()),
+		CodePos(0),
+		Script(FromFunc.Script),
+		VarNamed(FromFunc.VarNamed),
+		ParNamed(FromFunc.ParNamed),
+		OwnerOverloaded(NULL),
+		ParCount(FromFunc.ParCount),
+		pOrgScript(FromFunc.pOrgScript),
+		tProfileTime(0)
 {
-	// copy some members, that are set before linking
-	Access = FromFunc.Access;
-	Script = FromFunc.Script;
-	VarNamed = FromFunc.VarNamed;
-	ParNamed = FromFunc.ParNamed;
-	ParCount = FromFunc.ParCount;
-	pOrgScript = FromFunc.pOrgScript;
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];
 }
@@ -376,16 +384,12 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
 		{
 			if ((pRef = f->SFunc()))
 			{
-				// Public functions only
-				if (pRef->Access == AA_PUBLIC)
-				{
-					// Insert divider if necessary
-					if (!divider)
-						functions.push_back(0);
-					divider = true;
-					// Add function
-					functions.push_back(pRef->GetName());
-				}
+				// Insert divider if necessary
+				if (!divider)
+					functions.push_back(0);
+				divider = true;
+				// Add function
+				functions.push_back(pRef->GetName());
 			}
 			f = f->Prev;
 		}

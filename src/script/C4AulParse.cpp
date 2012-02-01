@@ -1378,13 +1378,13 @@ void C4AulParseState::Parse_Function()
 		if (Acc == AA_GLOBAL)
 		{
 			// global func
-			Fn = new C4AulScriptFunc(a->Engine, Idtf);
+			Fn = new C4AulScriptFunc(a->Engine, pOrgScript, Idtf, SPos);
 			Acc = AA_PUBLIC;
 		}
 		else
 		{
 			// normal, local func
-			Fn = new C4AulScriptFunc(a, Idtf);
+			Fn = new C4AulScriptFunc(a, pOrgScript, Idtf, SPos);
 		}
 	}
 	else
@@ -1408,9 +1408,6 @@ void C4AulParseState::Parse_Function()
 		if (Fn->GetCodeOwner() == a)
 			Fn->CodePos = a->Code.size();
 	}
-	// set up func (in the case we got an error)
-	Fn->Script = SPos;
-	Fn->Access = Acc; Fn->pOrgScript = pOrgScript;
 	Shift();
 	// expect an opening bracket now
 	if (TokenType != ATT_BOPEN)
@@ -2901,12 +2898,11 @@ bool C4ScriptHost::Parse()
 		// append all funcs
 		C4AulScriptFunc *sf;
 		for (C4AulFunc *f = (*s)->Func0; f; f = f->Next)
-			// script funcs only, no need to append global funcs
-			if ((sf = f->SFunc()) && sf->Access != AA_GLOBAL && sf->pOrgScript == *s)
+			// funcs from other scripts get appended directly from their script
+			if ((sf = f->SFunc()) && sf->pOrgScript == *s)
 			{
 				// append: create copy
-				C4AulScriptFunc *sfc = new C4AulScriptFunc(this, sf->GetName());
-				sfc->CopyBody(*sf);
+				C4AulScriptFunc *sfc = new C4AulScriptFunc(this, *sf);
 			}
 		// copy local var definitions
 		for (int ivar = 0; ivar < (*s)->LocalNamed.iSize; ivar ++)

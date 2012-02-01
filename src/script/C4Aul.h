@@ -253,7 +253,6 @@ protected:
 	int CodePos; // code pos
 
 public:
-	C4AulAccess Access;
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
@@ -262,7 +261,8 @@ public:
 	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
-	C4AulScriptFunc(C4AulScript *pOwner, const char *pName);
+	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
+	C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 
 	void ParseFn(C4AulScriptContext* context = NULL);
 	virtual void UnLink();
@@ -275,8 +275,6 @@ public:
 	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 
 	void SetError(C4AulContext *ctx, const char *szMessage); // set error message
-
-	void CopyBody(C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();

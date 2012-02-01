@@ -1107,9 +1107,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	C4ScriptHost* pScript = new C4DirectExecScript(this, pObj, szContext, stringTable);
 	pScript->Reg2List(Engine, this);
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, 0);
-	pFunc->Script = szScript;
-	pFunc->pOrgScript = pScript;
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, pScript, 0, szScript);
 	// Parse function
 	try
 	{
@@ -1125,7 +1123,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 		return C4VNull;
 	}
 	pScript->State = ASS_PARSED;
-	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
+	// Execute. The TemporaryScript-parameter makes sure the script will be deleted.
 	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));
 	// profiler
 	AulExec.StopDirectExec();
