@@ -30,7 +30,8 @@ mrmayo			- BalloonPop (http://www.freesound.org/people/mrmayo/sounds/77039/)
 adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/13878/ and http://www.freesound.org/people/adcbicycle/sounds/13914/)
 				- SoftHit2 (http://www.freesound.org/people/adcbicycle/sounds/13866/)
 thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
-
+110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
+  schluppipuppie
 
 Unfree sound effects
 ===============================================================================
@@ -42,8 +43,6 @@ acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
 
 The following sound effects are licensed under the CC Sampling plus license:
 
-110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
-  schluppipuppie
 Nikolino		- BlastLiquid*
 					(http://www.freesound.org/people/Nikolino/sounds/106694/)
 					(http://www.freesound.org/people/Nikolino/sounds/106650/)
