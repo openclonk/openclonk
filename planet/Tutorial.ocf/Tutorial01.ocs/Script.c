@@ -155,6 +155,7 @@ global func FxShovelGetTimer(object target, effect, int timer)
 			RemoveEffect("TutorialDig");
 		guide->AddGuideMessage("$MsgTutTools$");
 		AddEffect("TutorialChest", 0, 100, 18);
+		AddEffect("TutorialFlint", 0, 100, 18);
 		return -1;
 	}
 }
