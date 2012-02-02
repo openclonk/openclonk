@@ -170,9 +170,9 @@ C4StringTable::~C4StringTable()
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
 			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
-				fprintf(stderr, " \"%s\"\n", (*s)->GetCStr());
+				fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
 			else
-				fprintf(stderr, "\"%s\"\n", (*s)->GetCStr());
+				fprintf(stderr, "\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
 		}
 	}
 #endif

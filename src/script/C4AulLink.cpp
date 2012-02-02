@@ -136,8 +136,8 @@ void C4AulScript::UnLink()
 		if (pFunc->SFunc())
 			if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
 			{
-				if (p) p->ResetProperty(pFunc->Name);
-				delete pFunc;
+				pFunc->RemoveFromScript();
+				pFunc->DecRef();
 			}
 
 		pFunc = pNextFunc;

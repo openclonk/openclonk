@@ -245,6 +245,7 @@ public:
 	time_t tProfileTime; // internally set by profiler
 
 	friend class C4AulParseState;
+	friend class C4ScriptHost;
 };
 
 // defined function class

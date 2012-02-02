@@ -34,9 +34,15 @@ class C4AulFunc
 	friend class C4AulParseState;
 	friend class C4ScriptHost;
 
+	// Reference counter
+	unsigned int iRefCnt;
+
 public:
 	C4AulFunc(C4AulScript *pOwner, const char *pName);
-	virtual ~C4AulFunc(); // destructor
+
+	// Add/Remove Reference
+	void IncRef() { iRefCnt++; }
+	void DecRef() { if (!--iRefCnt) delete this;  }
 
 	C4AulScript *Owner; // owner
 	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
@@ -47,6 +53,8 @@ protected:
 	C4AulFunc *Prev, *Next; // linked list members
 	C4AulFunc *MapNext; // map member
 	void AppendToScript(C4AulScript *);
+	void RemoveFromScript();
+	virtual ~C4AulFunc();
 
 public:
 	C4AulFunc *OverloadedBy; // function by which this one is overloaded
@@ -62,7 +70,6 @@ public:
 	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 	virtual void UnLink() { OverloadedBy = NULL; }
 };
-
 
 #endif
 

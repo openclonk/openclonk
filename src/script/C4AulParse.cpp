@@ -725,8 +725,15 @@ void C4ScriptHost::ClearCode()
 {
 	while(Code.size() > 0)
 		RemoveLastBCC();
-	// add one empty chunk to init CPos
+	// add one empty chunk to init CPos and for functions without code.
+	// For example, leftovers from a previous version of a reloaded script
 	AddBCC(AB_ERR);
+	C4AulFunc * f = Func0;
+	while (f)
+	{
+		f->SFunc()->CodePos = 0;
+		f = f->Next;
+	}
 }
 
 int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
@@ -767,11 +774,6 @@ bool C4ScriptHost::Preparse()
 
 	// reset code
 	ClearCode();
-	while (Func0)
-	{
-		// destroy func
-		delete Func0;
-	}
 
 	C4AulParseState state(this, C4AulParseState::PREPARSER);
 	state.Parse_Script();
@@ -1372,42 +1374,39 @@ void C4AulParseState::Parse_Function()
 		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
 			Error("function definition: name already in use (global constant)", 0);
 	}
-	// create script fn
-	if (Type == PREPARSER)
-	{
-		if (Acc == AA_GLOBAL)
-		{
-			// global func
-			Fn = new C4AulScriptFunc(a->Engine, pOrgScript, Idtf, SPos);
-			Acc = AA_PUBLIC;
-		}
-		else
-		{
-			// normal, local func
-			Fn = new C4AulScriptFunc(a, pOrgScript, Idtf, SPos);
-		}
-	}
+	// get script fn
+	C4AulScript * owner;
+	if (Acc == AA_GLOBAL)
+		owner = a->Engine;
 	else
+		owner = a;
+	Fn = 0;
+	C4AulFunc * f = owner->Func0;
+	while (f)
 	{
-		Fn = 0;
-		// FIXME: how to skip duplicate globals?
-		C4AulFunc * f = Acc == AA_GLOBAL ? a->Engine->Func0 : a->Func0;
-		while (f)
+		if (SEqual(f->GetName(), Idtf) && f->SFunc() && f->SFunc()->pOrgScript == pOrgScript)
 		{
-			if (SEqual(f->GetName(), Idtf) && f->SFunc() && f->SFunc()->pOrgScript == pOrgScript)
-			{
-				if (Fn)
-					//throw new C4AulParseError(this, "Duplicate function ", Idtf);
-					Warn("Duplicate function ", Idtf);
-				Fn = f->SFunc();
-			}
-			f = f->Next;
+			if (Fn)
+				//throw new C4AulParseError(this, "Duplicate function ", Idtf);
+				Warn("Duplicate function ", Idtf);
+			Fn = f->SFunc();
 		}
-		assert(Fn);
+		f = f->Next;
+	}
+	// first preparser run or a new func in a reloaded script
+	if (!Fn && Type == PREPARSER)
+	{
+		Fn = new C4AulScriptFunc(owner, pOrgScript, Idtf, SPos);
+	}
+	assert(Fn);
+	if (Type == PARSER)
+	{
 		assert(Fn->GetCodeOwner() == a || (Acc == AA_GLOBAL && Fn->GetCodeOwner() == pOrgScript)); // FIXME: handle globals better
 		if (Fn->GetCodeOwner() == a)
 			Fn->CodePos = a->Code.size();
 	}
+
+	// Parse function body
 	Shift();
 	// expect an opening bracket now
 	if (TokenType != ATT_BOPEN)

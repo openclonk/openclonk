@@ -265,6 +265,7 @@ private:
 
 #include "C4ValueArray.h"
 #include "C4PropList.h"
+#include "C4AulFunc.h"
 
 ALWAYS_INLINE void C4Value::AddDataRef()
 {
@@ -272,8 +273,6 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 	assert(Type != C4V_Nil || !Data);
 	switch (Type)
 	{
-	case C4V_Array: Data.Array->IncRef(); break;
-	case C4V_String: Data.Str->IncRef(); break;
 	case C4V_PropList:
 #ifdef _DEBUG
 		assert(C4PropList::PropLists.Has(Data.PropList));
@@ -284,6 +283,9 @@ ALWAYS_INLINE void C4Value::AddDataRef()
 #endif
 		Data.PropList->AddRef(this);
 		break;
+	case C4V_String: Data.Str->IncRef(); break;
+	case C4V_Array: Data.Array->IncRef(); break;
+	case C4V_Function: Data.Fn->IncRef(); break;
 	default: break;
 	}
 }
@@ -296,8 +298,9 @@ ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pN
 	switch (Type)
 	{
 	case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
-	case C4V_Array: Data.Array->DecRef(); break;
 	case C4V_String: Data.Str->DecRef(); break;
+	case C4V_Array: Data.Array->DecRef(); break;
+	case C4V_Function: Data.Fn->DecRef(); break;
 	default: break;
 	}
 }
