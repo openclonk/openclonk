@@ -30,7 +30,7 @@ SetCompressor lzma
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallLocation"
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallLocation"
-!include MultiUser.nsh
+!include MultiUser_x64.nsh
 
 Function .onInit
   !insertmacro MULTIUSER_INIT
