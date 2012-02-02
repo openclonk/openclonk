@@ -9,16 +9,16 @@ func CreateShaft(int length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);
-	ClearFreeRect(GetX() + 3, GetY() + 20, 24, length + 6);
+	ClearFreeRect(GetX() + 7, GetY() + 20, 24, length + 13);
 	// Move the case back
-	case->SetPosition(case->GetX(), GetY()+12);
+	case->SetPosition(case->GetX(), GetY()+20);
 }
 
 /* Initialization */
 
 func Construction()
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(70), Trans_Translate(-20000,0,0)));
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(90), Trans_Translate(-30000,0,0)));
 }
 
 func Initialize()
@@ -29,13 +29,13 @@ func Initialize()
 
 func CreateCase()
 {
-	case = CreateObject(ElevatorCase, 15, 26, GetOwner());
+	case = CreateObject(ElevatorCase, 19, 33, GetOwner());
 	case->Connect(this);
 }
 
 func CreateRope()
 {
-	rope = CreateObject(ElevatorRope, 15, -10, GetOwner());
+	rope = CreateObject(ElevatorRope, 19, -11, GetOwner());
 	rope->SetAction("Be", case);
 }
 
@@ -66,7 +66,7 @@ func StopEngine()
 }
 
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(70), Trans_Translate(-20000,0,0), Trans_Rotate(-15,1,-1,1)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(90), Trans_Translate(-30000,0,0), Trans_Rotate(-15,1,-1,1)), def);
 }
 local Name = "$Name$";
 local Description = "$Description$";

@@ -64,11 +64,11 @@ func Movement() // TimerCall
 	}
 
 	// Stop if at upmost position
-	if (GetY() - 12 <= elevator->GetY() && movement < 0)
+	if (GetY() - 20 <= elevator->GetY() && movement < 0)
 	{
 		if (GetYDir() < 0) Halt();
 		movement = 0;
-		SetPosition(GetX(), elevator->GetY() + 12);
+		SetPosition(GetX(), elevator->GetY() + 20);
 		ClearMoveTo();
 		return;
 	}
@@ -194,7 +194,7 @@ func MoveTo(int y, int delay, object target)
 	// Not idle?
 	if (!CheckIdle()) return false;
 	Halt();
-	move_to = BoundBy(y, elevator->GetY() + 12, LandscapeHeight());
+	move_to = BoundBy(y, elevator->GetY() + 20, LandscapeHeight());
 	move_to_delay = delay;
 	move_to_target = target;
 	return true;
