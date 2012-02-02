@@ -25,6 +25,7 @@ fresco			- Munch1 (http://www.freesound.org/people/fresco/sounds/48933/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
 Halleck			- Electrical (http://www.freesound.org/people/Halleck/sounds/19483/)
 digifishmusic	- LiquidBlast2 (http://www.freesound.org/people/digifishmusic/sounds/45439/)
+HerbertBoland	- WoodHit* (http://www.freesound.org/people/HerbertBoland/sounds/33206/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -35,11 +36,5 @@ thecheeseman    - Hurt*, Die (http://www.freesound.org/people/thecheeseman/)
 110110010,		- CatapultLaunch (http://www.freesound.org/people/110110010/sounds/66396/, http://www.freesound.org/people/schluppipuppie/sounds/12833/)
   schluppipuppie
 Oddworld		- LiquidBlast1 (http://www.freesound.org/people/Oddworld/sounds/75328/)
-
-Unfree sound effects
-===============================================================================
-The following sound effects are licensed under the CC Attribution-NonCommercial license:
-
-Michael Manzke  - Fuse/FuseLoop (http://www.freesound.org/people/m_O_m/sounds/106548/)
-kwandalist      - RockHit* (http://www.freesound.org/people/kwandalist/sounds/47495/)
-acclivity		- WoodHit* (http://www.freesound.org/people/acclivity/sounds/31975/)
+mbezzola		- RockHit* (http://www.freesound.org/people/mbezzola/sounds/105282/)
+RytmenPinnen	- Fuse/FuseLoop (http://www.freesound.org/people/RytmenPinnen/sounds/102264/)
