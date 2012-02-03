@@ -1251,6 +1251,7 @@ EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 IF(NOT \${CONVERT_RESULT} EQUAL 0)
 	MESSAGE(SEND_ERROR \"Creating icon failed\")
 ENDIF()
+FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/openclonk)
 ")
 
 set(OC_C4GROUPS
@@ -1275,19 +1276,15 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group
 			)
 	else()
-		add_custom_command(
-			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			COMMAND ${C4GROUP_LOCATION} ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group} -t ${CMAKE_CURRENT_BINARY_DIR}/${group}
-			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-			DEPENDS c4group
-			VERBATIM
-			)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
+		INSTALL(CODE "
+		MESSAGE(\"Packing and installing ${group}...\")
+		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
+		IF(NOT \${PACK_RESULT} EQUAL 0)
+			MESSAGE(SEND_ERROR \"Packing ${group} failed\")
+		ENDIF()
+		")
 	endif()
 endforeach()
-if (NOT APPLE)
-	add_custom_target(groups ALL DEPENDS ${OC_C4GROUPS})
-endif()
 
 # Install new files
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
@@ -1303,6 +1300,16 @@ find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
 string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
 string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
+
+foreach(group ${OC_C4GROUPS})
+	add_custom_command(
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+		COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+		DEPENDS c4group
+		VERBATIM
+		)
+endforeach()
 
 add_custom_command(
 	OUTPUT setup_openclonk.exe
