@@ -84,7 +84,7 @@ endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
-option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" ON)
+option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" OFF)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -1257,6 +1257,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY
 # Install the icon into share/icons/hicolor/48x48/apps/clonk.png. Do this by
 # extracting the correct size from oc.ico. Currently this is layer 2 - let's
 # hope that it stays this way.
+
+# Only allow installation for WITH_AUTOMATIC_UPDATE because otherwise
+# the installed binary wouldn't find its game data in the system data path.
+IF(WITH_AUTOMATIC_UPDATE)
+	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
+ENDIF()
+
 # TODO: Check for convert at configure step?
 install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
 install(CODE "
