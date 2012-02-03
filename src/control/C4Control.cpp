@@ -680,7 +680,7 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 			MakeTempFilename(&filename_buf);
 			if (C4Group_PackDirectoryTo(filename.getData(), filename_buf.getData()))
 			{
-				filename = filename_buf;
+				filename.Take(filename_buf);
 				file_is_temp = true;
 			}
 			else
