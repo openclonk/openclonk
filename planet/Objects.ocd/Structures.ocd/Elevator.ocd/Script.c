@@ -66,7 +66,7 @@ func StopEngine()
 }
 
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Scale(90), Trans_Translate(-30000,0,0), Trans_Rotate(-15,1,-1,1)), def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(-45000,45000,650000), Trans_Scale(90), Trans_Rotate(270,0,0,1), Trans_Rotate(225,1,0), Trans_Rotate(-15,1,-1,1)), this);
 }
 local Name = "$Name$";
 local Description = "$Description$";
