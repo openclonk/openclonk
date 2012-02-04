@@ -123,7 +123,9 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 		int flags = O_RDONLY;
 		int fd = open(Name, flags, mode);
 #endif
-		if (!(hgzFile = c4_gzdopen(fd,"rb"))) return false;
+
+		if(fd == -1) return false;
+		if (!(hgzFile = c4_gzdopen(fd,"rb"))) { close(fd); return false; }
 	}
 	else
 	{ 
