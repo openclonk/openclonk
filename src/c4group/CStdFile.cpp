@@ -126,6 +126,14 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 
 		if(fd == -1) return false;
 		if (!(hgzFile = c4_gzdopen(fd,"rb"))) { close(fd); return false; }
+
+		/* Reject uncompressed files */
+		if(c4_gzdirect(hgzFile))
+		{
+			c4_gzclose(hgzFile);
+			hgzFile = NULL;
+			return false;
+		}
 	}
 	else
 	{ 

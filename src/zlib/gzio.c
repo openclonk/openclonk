@@ -208,13 +208,6 @@ local gzFile gz_open (path, mode, fd)
         s->start = ftell(s->file) - s->stream.avail_in;
     }
 
-    /* Reject uncompressed files */
-    if (s->transparent)
-		{
-        gzclose( (gzFile)s );
-        return (gzFile)Z_NULL;
-    }
-
     return (gzFile)s;
 }
 
