@@ -21,6 +21,11 @@
 Name "${PRODUCT_NAME}"
 SetCompressor lzma
 
+; search paths
+!addplugindir "${SRCDIR}/tools/install"
+!addplugindir "tools/install"
+!addincludedir "${SRCDIR}/tools/install"
+
 ; MultiUser Settings
 !define MULTIUSER_EXECUTIONLEVEL Highest
 ;!define MULTIUSER_MUI
@@ -72,10 +77,7 @@ LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
 ; MUI end ------
 
 ; Game Explorer
-!include "${SRCDIR}/tools/install\GameExplorer.nsh"
-
-; Firewall helper
-!addplugindir "tools/install"
+!include GameExplorer.nsh
 
 ShowInstDetails show
 ShowUnInstDetails show
