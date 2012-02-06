@@ -23,7 +23,7 @@ SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 
 SET(C4XVER1             5)
 SET(C4XVER2             2)
-SET(C4XVER3             1)
+SET(C4XVER3             2)
 SET(C4XVER4             0)
 
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
