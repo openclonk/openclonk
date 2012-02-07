@@ -727,7 +727,7 @@ bool C4Group::OpenRealGrpFile()
 		EntryOffset+=sizeof(C4GroupEntryCore);
 		if (!AddEntry(C4GRES_InGroup,!!corebuf.ChildGroup,
 		              corebuf.FileName,corebuf.Size,
-		              corebuf.HasCRC,corebuf.CRC,entryname.getData(),
+		              entryname.getData(),
 		              NULL, false, false,
 		              !!corebuf.Executable))
 			return Error("OpenRealGrpFile: Cannot add entry");
@@ -740,8 +740,6 @@ bool C4Group::AddEntry(int status,
                        bool childgroup,
                        const char *fname,
                        long size,
-                       char cCRC,
-                       unsigned int iCRC,
                        const char *entryname,
                        BYTE *membuf,
                        bool fDeleteOnDisk,
@@ -808,8 +806,6 @@ bool C4Group::AddEntry(int status,
 	nentry->Size=size;
 	nentry->ChildGroup=childgroup;
 	nentry->Offset=0;
-	nentry->HasCRC=cCRC;
-	nentry->CRC=iCRC;
 	nentry->Executable=fExecutable;
 	nentry->DeleteOnDisk=fDeleteOnDisk;
 	nentry->HoldBuffer=fHoldBuffer;
@@ -874,9 +870,6 @@ bool C4Group::Close()
 
 	// Automatic sort
 	SortByList(C4Group_SortList);
-
-	// Calculate all missing checksums
-	EntryCRC32(NULL);
 
 	// Save group contents to disk
 	bool fSuccess = Save(false);
@@ -1350,8 +1343,6 @@ bool C4Group::View(const char *szFiles)
 		       centry->FileName,
 		       centry->Size);
 
-		if (centry->HasCRC)
-			printf(" %s%08X", (centry->HasCRC == C4GECS_New) ? "!" : "~", centry->CRC);
 		if (centry->ChildGroup)
 			printf(" (Group)");
 		if (centry->Executable)
@@ -1442,7 +1433,6 @@ bool C4Group::AddEntryOnDisk(const char *szFilename,
 	                fIsGroup,
 	                szFilename,
 	                iSize,
-	                false, 0,
 	                szAddAs,
 	                NULL,
 	                fMove,
@@ -1807,7 +1797,6 @@ bool C4Group::OpenAsChild(C4Group *pMother,
 		EntryOffset+=sizeof(C4GroupEntryCore);
 		if (!AddEntry(C4GRES_InGroup,!!corebuf.ChildGroup,
 		              corebuf.FileName,corebuf.Size,
-		              corebuf.HasCRC, corebuf.CRC,
 		              NULL, NULL, false, false,
 		              !!corebuf.Executable))
 			{ CloseExclusiveMother(); Clear(); return Error("OpenAsChild: Insufficient memory"); }
@@ -1917,8 +1906,6 @@ bool C4Group::Add(const char *szName, void *pBuffer, int iSize, bool fChild, boo
 	                fChild,
 	                szName,
 	                iSize,
-	                false,
-	                0,
 	                szName,
 	                (BYTE*) pBuffer,
 	                false,
@@ -1932,8 +1919,6 @@ bool C4Group::Add(const char *szName, StdBuf &pBuffer, bool fChild, bool fHoldBu
 	              fChild,
 	              szName,
 	              pBuffer.getSize(),
-	              false,
-	              0,
 	              szName,
 	              (BYTE*) pBuffer.getData(),
 	              false,
@@ -1951,8 +1936,6 @@ bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool fHol
 	              fChild,
 	              szName,
 	              pBuffer.getLength(),
-	              false,
-	              0,
 	              szName,
 	              (BYTE*) pBuffer.getData(),
 	              false,
@@ -2003,8 +1986,7 @@ unsigned int C4Group::EntryCRC32(const char *szWildCard)
 	ResetSearch();
 	while ((pEntry = SearchNextEntry(szWildCard)))
 	{
-		if (!CalcCRC32(pEntry)) return false;
-		iCRC ^= pEntry->CRC;
+		iCRC ^= CalcCRC32(pEntry);
 	}
 	// return
 	return iCRC;
@@ -2217,11 +2199,9 @@ StdStrBuf C4Group::GetFullName() const
 	return sResult;
 }
 
-bool C4Group::CalcCRC32(C4GroupEntry *pEntry)
+uint32_t C4Group::CalcCRC32(C4GroupEntry *pEntry)
 {
-	// checksum already calculated?
-	if (pEntry->HasCRC == C4GECS_New)
-		return true;
+	uint32_t CRC;
 	// child group?
 	if (pEntry->ChildGroup || (pEntry->Status == C4GRES_OnDisk && (DirectoryExists(pEntry->DiskPath) || C4Group_IsGroup(pEntry->DiskPath))))
 	{
@@ -2241,55 +2221,49 @@ bool C4Group::CalcCRC32(C4GroupEntry *pEntry)
 			return 0;
 		}
 		// get checksum
-		pEntry->CRC = Child.EntryCRC32();
+		CRC = Child.EntryCRC32();
 	}
 	else if (!pEntry->Size)
-		pEntry->CRC = 0;
+		CRC = 0;
 	else
 	{
-		// file checksum already calculated?
-		if (pEntry->HasCRC != C4GECS_Old)
+		BYTE *pData = NULL; bool fOwnData; CStdFile f;
+		// get data
+		switch (pEntry->Status)
 		{
-			BYTE *pData = NULL; bool fOwnData; CStdFile f;
-			// get data
-			switch (pEntry->Status)
-			{
-			case C4GRES_InGroup:
-				// create buffer
-				pData = new BYTE [pEntry->Size]; fOwnData = true;
-				// go to entry
-				if (!SetFilePtr2Entry(pEntry->FileName)) { delete [] pData; return false; }
-				// read
-				if (!Read(pData, pEntry->Size)) { delete [] pData; return false; }
-				break;
-			case C4GRES_OnDisk:
-				// create buffer
-				pData = new BYTE [pEntry->Size]; fOwnData = true;
-				// open
-				if (!f.Open(pEntry->DiskPath)) { delete [] pData; return false; }
-				// read
-				if (!f.Read(pData, pEntry->Size)) { delete [] pData; return false; }
-				break;
-			case C4GRES_InMemory:
-				// set
-				pData = pEntry->bpMemBuf; fOwnData = false;
-				break;
-			default:
-				return false;
-			}
-			if (!pData) return false;
-			// calc crc
-			pEntry->CRC = crc32(0, pData, pEntry->Size);
-			// discard buffer
-			if (fOwnData) delete [] pData;
+		case C4GRES_InGroup:
+			// create buffer
+			pData = new BYTE [pEntry->Size]; fOwnData = true;
+			// go to entry
+			if (!SetFilePtr2Entry(pEntry->FileName)) { delete [] pData; return false; }
+			// read
+			if (!Read(pData, pEntry->Size)) { delete [] pData; return false; }
+			break;
+		case C4GRES_OnDisk:
+			// create buffer
+			pData = new BYTE [pEntry->Size]; fOwnData = true;
+			// open
+			if (!f.Open(pEntry->DiskPath)) { delete [] pData; return false; }
+			// read
+			if (!f.Read(pData, pEntry->Size)) { delete [] pData; return false; }
+			break;
+		case C4GRES_InMemory:
+			// set
+			pData = pEntry->bpMemBuf; fOwnData = false;
+			break;
+		default:
+			return false;
 		}
+		if (!pData) return false;
+		// calc crc
+		CRC = crc32(0, pData, pEntry->Size);
+		// discard buffer
+		if (fOwnData) delete [] pData;
 		// add file name
-		pEntry->CRC = crc32(pEntry->CRC, reinterpret_cast<BYTE *>(pEntry->FileName), SLen(pEntry->FileName));
+		CRC = crc32(CRC, reinterpret_cast<BYTE *>(pEntry->FileName), SLen(pEntry->FileName));
 	}
-	// set flag
-	pEntry->HasCRC = C4GECS_New;
 	// ok
-	return true;
+	return CRC;
 }
 
 bool C4Group::OpenChild(const char* strEntry)
@@ -2367,8 +2341,7 @@ void C4Group::PrintInternals(const char *szIndent)
 		printf("%s  ChildGroup: %d\n", szIndent, p->ChildGroup);
 		printf("%s  Size: %d\n", szIndent, p->Size);
 		printf("%s  Offset: %d\n", szIndent, p->Offset);
-		printf("%s  HasCRC: %d\n", szIndent, p->HasCRC);
-		printf("%s  CRC: %08X\n", szIndent, p->CRC);
+		printf("%s  Executable: %d\n", szIndent, p->Executable);
 		if (p->ChildGroup)
 		{
 			C4Group hChildGroup;
