@@ -102,10 +102,6 @@ public:
 	void Init();
 };
 
-const char C4GECS_None = 0,
-           C4GECS_Old = 1,
-           C4GECS_New = 2;
-
 class C4GroupEntryCore
 {
 public:
@@ -115,7 +111,7 @@ public:
 	int32_t Packed,ChildGroup;
 	int32_t Size, reserved1, Offset;
 	int32_t reserved2;
-	char HasCRC; unsigned int CRC;
+	char reserved3; unsigned int reserved4;
 	char Executable;
 	BYTE fbuf[26];
 };
@@ -279,8 +275,6 @@ protected:
 	              bool childgroup,
 	              const char *fname,
 	              long size,
-	              char cCRC,
-	              unsigned int iCRC,
 	              const char *entryname = NULL,
 	              BYTE *membuf = NULL,
 	              bool fDeleteOnDisk = false,
@@ -293,7 +287,7 @@ protected:
 	C4GroupEntry *GetEntry(const char *szName);
 	C4GroupEntry *SearchNextEntry(const char *szName);
 	C4GroupEntry *GetNextFolderEntry();
-	bool CalcCRC32(C4GroupEntry *pEntry);
+	uint32_t CalcCRC32(C4GroupEntry *pEntry);
 };
 
 #endif

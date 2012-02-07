@@ -211,16 +211,12 @@ public:
 	{
 		C4GroupEntryCore *pCore = ((C4GroupEx &)rByGrp).GetEntry(szEntry);
 		// copy core
-		SavedCore.HasCRC = pCore->HasCRC;
-		SavedCore.CRC = pCore->CRC;
 		SavedCore.Executable = pCore->Executable;
 	}
 	void SetSavedEntryCore(const char *szEntry)
 	{
 		C4GroupEntryCore *pCore = GetEntry(szEntry);
 		// copy core
-		pCore->HasCRC = SavedCore.HasCRC;
-		pCore->CRC = SavedCore.CRC;
 		pCore->Executable = SavedCore.Executable;
 	}
 
@@ -576,9 +572,6 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 			// strip checksum/time (if given)
 			char *pTime = strchr(strItemName, '=');
 			if (pTime) *pTime = '\0';
-			// update EntryCRC32. This will make updates to old groups invalid
-			// however, it's needed so updates will update the EntryCRC of *unchanged* files correctly
-			pGrpTo->EntryCRC32(strItemName);
 			// copy to sort list
 			SAppend(strItemName, strSortList);
 			SAppendChar('|', strSortList);
