@@ -84,7 +84,7 @@ public func DrawIn()
 	if (ObjectDistance(hook) < LIFTTOWER_HOOK_LOOSEDIST) return false;
 	if (GetEffect("DrawIn", this)) return false;
 	rope->ConnectPull();
-	return AddEffect("DrawIn", this, 1, 10, this);
+	return AddEffect("DrawIn", this, 1, 1, this);
 }
 
 private func FxDrawInTimer(effect)

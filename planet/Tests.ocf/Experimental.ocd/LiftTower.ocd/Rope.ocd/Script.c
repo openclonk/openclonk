@@ -150,19 +150,15 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 
 local pull_position, pull_faults, pull_frame;
 
-func LengthAutoTryCount()
-{
-	if (length_auto)
-		return 5;
-	return 1;
-}
-
+// Altered to not just pull the objects into the rope's direction but
+// if the object doesn't not move it is tried to shake it free by applying
+// impulses to every direction
 func ForcesOnObjects()
 {
 	if(!length) return;
 
 	var redo = LengthAutoTryCount();
-	while(redo)
+	while(length_auto && redo)
 	{
 		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
 		if(length == GetMaxLength())
@@ -172,7 +168,7 @@ func ForcesOnObjects()
 			else speed = 100;
 		}
 		if(speed > 150) DoLength(1);
-		else if(speed < 50) DoLength(-1); // TODO not just obj 1
+		else if(speed < 50) DoLength(-1);
 		else redo = 0;
 		if(redo) redo --;
 	}
@@ -223,8 +219,36 @@ func ForcesOnObjects()
 
 		obj->SetXDir( xdir, Rope_Precision);
 		obj->SetYDir( ydir, Rope_Precision);
-		Log("%v, %v", xdir, ydir);
+		//Log("%v, %v", xdir, ydir);
 	}
+}
+
+// Altered to function in 'ConnectPull' mode
+public func ConstraintObjects()
+{
+		if(length < GetMaxLength()) // in the rope library this is
+		{                           // if(length_auto && length < GetMaxLength())
+			for(var i = 0, i2 = 0; i < 2; i++ || i2--)
+				SetParticleToObject(i2, i);
+		}
+}
+
+// This is called constantly by the lift tower as long as something is reeled in
+// Altered so the rope will not get shorter than the distance between the tower
+// and the hooked up object
+public func DoLength(int dolength)
+{
+	var obj = objects[0][0]; // First connected object
+	var obj2 = objects[1][0]; // Second connected object
+	// I guess this is not possible but just to be sure
+	if (!obj || !obj2) return _inherited(dolength);
+	if (obj->Contained()) obj = obj->Contained();
+	if (obj2->Contained()) obj2 = obj2->Contained();
+
+	// Line would be shorter than the distance? Do nothing
+	if (dolength < 0 && ObjectDistance(obj, obj2) > GetLineLength()/100) return Log("NO!");
+	Log("%v, Line length: %v, Segment length: %v", ObjectDistance(obj, obj2), GetLineLength()/100 - Rope_SegmentLength, Rope_SegmentLength);
+	return _inherited(dolength);
 }
 
 func Definition(def)
