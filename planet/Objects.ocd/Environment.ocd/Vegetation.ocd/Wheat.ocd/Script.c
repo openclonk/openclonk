@@ -2,21 +2,53 @@
 	Wheat
 	Author: Clonkonaut
 
-	Plant to get more seeds
+	Easy crop for farming.
 */
 
 #include Library_Plant
 
-func Construction()
+local stalks;
+
+protected func Construction()
 {
 	StartGrowth(this.growth);
-	inherited(...);
+	return _inherited(...);
 }
 
 protected func Initialize()
 {
+	if (GetLength(stalks)) return;
+	// Create 3-5 stalks
+	var num = Random(3);
+	stalks = CreateArray();
+	for (var i = 0; i < 3+num; i++)
+	{
+		var x = 12/(3+num) * i - 6;
+		var y = GetObjHeight()/2;
+		// Search for ground level
+		while (GBackSolid(x,y) && y > -13) y--;
+		// Skip the stalk
+		if (GBackSolid(x,y)) continue;
+		while (!GBackSolid(x,y+1) && y < 13) y++;
+		// Skip the stalk maybe again!
+		if (!GBackSolid(x,y+1)) continue;
+
+		var stalk = CreateObject(WheatStalk, x,y+1, GetOwner());
+		stalk->SetCon(GetCon());
+		stalk->StartGrowth(this.growth);
+		stalk->SetAction("Swing");
+		stalk->SetDir(Random(2)*2-1);
+		stalk->SetPhase(Random(25));
+		stalk->SetMother(this);
+		// Be sure that the stalk will adjust its growth in 1 frame
+		ScheduleCall(stalk, "AdjustGrowth", 1);
+		stalks[GetLength(stalks)] = stalk;
+	}
 	AddEffect("WaterCheck", this, 2, 70, this);
+	AddEffect("WindCheck", this, 3, 350, this);
 }
+
+/* Absorb water to grow faster */
 
 protected func FxWaterCheckTimer(object obj, effect)
 {
@@ -73,6 +105,57 @@ protected func FxWaterCheckTimer(object obj, effect)
 		if (grow_effect.growth == this.growth) return;
 		grow_effect.growth = this.growth;
 	}
+}
+
+/* Check the wind to adjust the swinging speed of the stalks */
+
+protected func FxWindCheckStart(object obj, effect)
+{
+	if (Abs(GetWind()) < 25) effect.speed = 0;
+	else if (Abs(GetWind()) == 100) effect.speed = 1;
+	else effect.speed = 4 - Abs(GetWind())/25;
+	for (var stalk in stalks)
+		stalk->SetSwingSpeed(effect.speed);
+}
+
+protected func FxWindCheckTimer(object obj, effect)
+{
+	var change = false;
+	if (Abs(GetWind()) < 25 && effect.speed != 0)
+	{
+		effect.speed = 0;
+		change = true;
+	}
+	if (Abs(GetWind()) == 100 && effect.speed != 1)
+	{
+		effect.speed = 1;
+		change = true;
+	}
+	if (Inside(Abs(GetWind()), 25, 99) && 4 - Abs(GetWind())/25 != effect.speed)
+	{
+		effect.speed = 4 - Abs(GetWind())/25;
+		change = true;
+	}
+	if (change)
+	{
+		for (var stalk in stalks)
+		{
+			if (stalk)
+				stalk->SetSwingSpeed(effect.speed);
+		}
+	}
+}
+
+/* Callbacks, engine calls */
+
+// Destroy all stalks!
+protected func Destruction()
+{
+	for (var stalk in stalks)
+		{
+			if (stalk)
+				stalk->RemoveObject();
+		}
 }
 
 public func IsCrop() { return true; }
