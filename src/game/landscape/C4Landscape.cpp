@@ -1837,11 +1837,12 @@ bool C4Landscape::TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int
 	return true;
 }
 
-bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
+bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY, bool noClear)
 {
 
 	// Clear surface
-	Surface8->ClearBox8Only(iToX, iToY, iToWdt, iToHgt);
+	if(!noClear)
+		Surface8->ClearBox8Only(iToX, iToY, iToWdt, iToHgt);
 
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
@@ -1866,7 +1867,7 @@ bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	return true;
 }
 
-bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY)
+bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX, int32_t iOffsY, bool noClear)
 {
 	assert(Surface8);
 	// Clip to map/landscape segment
@@ -1888,7 +1889,7 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	To.Hgt = iMapHgt*MapZoom;
 
 	PrepareChange(To);
-	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
+	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY, noClear);
 	FinishChange(To);
 	return true;
 }
@@ -1992,7 +1993,7 @@ int32_t C4Landscape::GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t i
 	return iMax;
 }
 // Nearest free above semi solid
-bool AboveSemiSolid(int32_t &rx, int32_t &ry) 
+bool AboveSemiSolid(int32_t &rx, int32_t &ry)
 {
 	int32_t cy1=ry,cy2=ry;
 	bool UseUpwardsNextFree=false,UseDownwardsNextSolid=false;
@@ -2019,7 +2020,7 @@ bool AboveSemiSolid(int32_t &rx, int32_t &ry)
 }
 
 // Nearest free directly above solid
-bool AboveSolid(int32_t &rx, int32_t &ry) 
+bool AboveSolid(int32_t &rx, int32_t &ry)
 {
 	int32_t cy1=ry,cy2=ry;
 
@@ -2043,7 +2044,7 @@ bool AboveSolid(int32_t &rx, int32_t &ry)
 }
 
 // Nearest free/semi above solid
-bool SemiAboveSolid(int32_t &rx, int32_t &ry) 
+bool SemiAboveSolid(int32_t &rx, int32_t &ry)
 {
 	int32_t cy1=ry,cy2=ry;
 
@@ -3052,7 +3053,7 @@ void C4Landscape::FinishChange(C4Rect BoundingBox)
 /* ++++++++++++++++++ Functions for Script interface +++++++++++++++++++++++ */
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
-bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)
+bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky)
 {
 	// safety
 	if (!szMapDef) return false;
@@ -3072,14 +3073,14 @@ bool C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, co
 	CSurface8 * sfcMap=MapCreator.Render(NULL);
 	if (!sfcMap) return false;
 	// map it to the landscape
-	bool fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY);
+	bool fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
 	// cleanup
 	delete sfcMap;
 	// return whether successful
 	return fSuccess;
 }
 
-bool C4Landscape::DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)
+bool C4Landscape::DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky)
 {
 	// safety
 	if (!szMapDef || !pMapCreator) return false;
@@ -3097,7 +3098,7 @@ bool C4Landscape::DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt,
 	if (sfcMap)
 	{
 		// map to landscape
-		fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY);
+		fSuccess=MapToLandscape(sfcMap, 0, 0, iMapWdt, iMapHgt, iX, iY, ignoreSky);
 		// cleanup
 		delete sfcMap;
 	}

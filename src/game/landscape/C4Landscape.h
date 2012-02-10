@@ -66,7 +66,7 @@ public:
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
 	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
-	
+
 	bool NoScan; // ExecuteScan() disabled
 	int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
 	int32_t LeftOpen,RightOpen,TopOpen,BottomOpen;
@@ -192,9 +192,9 @@ public:
 
 	int32_t AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t hgt);
 	int32_t ExtractMaterial(int32_t fx, int32_t fy);
-	bool DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2
+	bool DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky = false); // creates and draws a map section using MapCreatorS2
 	bool ClipRect(int32_t &rX, int32_t &rY, int32_t &rWdt, int32_t &rHgt); // clip given rect by landscape size; return whether anything is left unclipped
-	bool DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2 and a map from the loaded Landscape.txt
+	bool DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef, bool ignoreSky = false); // creates and draws a map section using MapCreatorS2 and a map from the loaded Landscape.txt
 	bool SetModulation(DWORD dwWithClr) // adjust the way the landscape is blitted
 	{ Modulation=dwWithClr; return true; }
 	DWORD GetModulation() { return Modulation; }
@@ -217,8 +217,8 @@ protected:
 	void ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture,int32_t iOffX=0,int32_t iOffY=0);
 	bool GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage);
 	bool TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
-	bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
-	bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0); // zoom map segment to surface (or sector surfaces)
+	bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY, bool noClear = false);
+	bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0, bool noClear = false); // zoom map segment to surface (or sector surfaces)
 	bool GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE &rbyCol);
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes
