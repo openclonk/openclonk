@@ -35,6 +35,11 @@
           <name>map</name>
           <desc>Definition of the dynamic map. The enclosing map { ... } tag must be present.</desc>
         </param>
+        <param>
+          <type>bool</type>
+          <name>ignore_sky</name>
+          <desc>If true, the old material is retained whenever Sky would be drawn.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Draws a dynamic map within the specified rectangle. This is done using the same evaluation as with Landscape.txt components.</desc>

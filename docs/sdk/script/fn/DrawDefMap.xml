@@ -35,6 +35,11 @@
           <name>map_name</name>
           <desc>Name of the map to be used from Landscape.txt.</desc>
         </param>
+         <param>
+          <type>bool</type>
+          <name>ignore_sky</name>
+          <desc>If true, the old material is retained whenever Sky would be drawn.</desc>
+        </param>
       </params>
     </syntax>
     <desc>Draws a dynamic map within the specified rectangle using a given map specification from Landscape.txt.</desc>
