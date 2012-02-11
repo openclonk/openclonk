@@ -1837,12 +1837,8 @@ bool C4Landscape::TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int
 	return true;
 }
 
-bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY, bool noClear)
+bool C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY)
 {
-
-	// Clear surface
-	if(!noClear)
-		Surface8->ClearBox8Only(iToX, iToY, iToWdt, iToHgt);
 
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
@@ -1889,7 +1885,12 @@ bool C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	To.Hgt = iMapHgt*MapZoom;
 
 	PrepareChange(To);
-	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY, noClear);
+
+	// clear the old landscape if not surpressed
+	if(!noClear)
+		Surface8->ClearBox8Only(To.x, To.y, To.Wdt, To.Hgt);
+
+	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
 	return true;
 }
