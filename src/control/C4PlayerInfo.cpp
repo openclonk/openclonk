@@ -258,6 +258,11 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(sClanTag, StdCompiler::RCT_All), "ClanTag", ""));
 
 	// file resource
+	if (pComp->isCompiler() && Game.C4S.Head.Replay)
+	{
+		// Replays don't have player resources, drop the flag
+		dwFlags &= ~PIF_HasRes;
+	}
 	if (dwFlags & PIF_HasRes)
 	{
 		// ResCore
