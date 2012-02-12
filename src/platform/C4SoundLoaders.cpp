@@ -226,7 +226,11 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.IsMODInitialized())
 		{ return false; }
-	if (!(result->final_handle = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, data_length), 1)))
+	SDL_RWops * rwops = SDL_RWFromConstMem(data, data_length);
+	// work around double free in SDL_Mixer by passing 0 here
+	result->final_handle = Mix_LoadWAV_RW(rwops, 0);
+	SDL_RWclose(rwops);
+	if (!result->final_handle)
 		{ return false; }
 	//FIXME: Is this actually correct?
 	result->sample_length = result->final_handle->alen / (44100 * 2);
