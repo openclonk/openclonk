@@ -795,13 +795,10 @@ void C4ApplicationGameTimer::SetGameTickDelay(uint32_t iDelay)
 	}
 	else
 	{
-		// Do some magic to get as near as possible to the requested delay
-		int iGraphDelay = Max<uint32_t>(1, iDelay);
-		iGraphDelay /= (iGraphDelay + Config.Graphics.MaxRefreshDelay - 1) / Config.Graphics.MaxRefreshDelay;
 		// Set critical timer
-		SetDelay(iGraphDelay);
+		SetDelay(Config.Graphics.MaxRefreshDelay);
 		// Slow down game tick
-		iGameTickDelay = iDelay - iGraphDelay / 2;
+		iGameTickDelay = iDelay;
 	}
 }
 
@@ -813,10 +810,15 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 	// Execute
 	if (Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
 	{
-		iLastGameTick += iGameTickDelay;
+		if(iGameTickDelay)
+			iLastGameTick += iGameTickDelay;
+		else
+			iLastGameTick = Now;
+
 		// Compensate if things get too slow
-		if (Now >= iLastGameTick + iGameTickDelay)
+		if (Now > iLastGameTick + iGameTickDelay)
 			iLastGameTick += (Now - iLastGameTick) / 2;
+
 		Application.GameTick();
 	}
 	// Draw always
