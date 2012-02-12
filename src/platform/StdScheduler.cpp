@@ -664,11 +664,16 @@ void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
 	if (idCriticalTimer)
 		timeKillEvent(idCriticalTimer);
 
+	// Set new delay
+	uCriticalTimerDelay = iDelay;
+
 	// Set critical timer
 	idCriticalTimer=timeSetEvent(
 	                  uCriticalTimerDelay,uCriticalTimerResolution,
 	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
 
+	if(idCriticalTimer == 0)
+		DebugLogF("Creating Critical Timer failed: %d", GetLastError());
 }
 
 bool CStdMultimediaTimerProc::CheckAndReset()
