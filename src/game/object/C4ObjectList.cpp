@@ -153,80 +153,76 @@ bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 	}
 	else if (eSort)
 	{
-		cLnk = NULL; cPrev = Last;
-
 		// Sort override? Leave default as is.
 		bool fUnsorted = nObj->Unsorted;
 		if (!fUnsorted)
 		{
+			// Sort by master list?
+			if (pLstSorted)
+			{
+				cPrev = NULL; cLnk = First;
+				while(cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted)) cLnk = cLnk->Next;
 
-			// Find successor by matching Plane / id
-			// Sort by matching Plane/id is necessary for inventory shifting.
-			// It is not done for static back to allow multiobject outside structure.
-			// Unsorted objects are ignored in comparison.
-			if (!(nObj->Category & C4D_StaticBack))
-				for (cPrev=NULL,cLnk=First; cLnk; cLnk=cLnk->Next)
-					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
+#ifndef _DEBUG
+				if(cLnk)
+#endif
+				{
+					C4ObjectLink* cLnk2;
+					for(cLnk2 = pLstSorted->First; cLnk2; cLnk2 = cLnk2->Next)
 					{
-						if (cLnk->Obj->GetPlane() == nObj->GetPlane())
-							if (cLnk->Obj->id == nObj->id)
+						if(cLnk2->Obj->Status && !cLnk2->Obj->Unsorted)
+						{
+							if(cLnk2->Obj == nObj)
+							{
+								assert(!cLnk || cLnk->Obj != nObj);
 								break;
-						cPrev=cLnk;
+							}
+
+							if(cLnk && cLnk2->Obj == cLnk->Obj)
+							{
+								cPrev = cLnk;
+								cLnk = cLnk->Next;
+								while(cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted)) cLnk = cLnk->Next;
+								
+#ifndef _DEBUG
+								if(!cLnk) break;
+#endif
+							}
+						}
 					}
 
-			// Find successor by relative category
-			if (!cLnk)
-				for (cPrev=NULL, cLnk=First; cLnk; cLnk=cLnk->Next)
-					if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
-					{
-						if (cLnk->Obj->GetPlane() <= nObj->GetPlane())
-							break;
-						cPrev=cLnk;
-					}
+					assert(cLnk2 != NULL);
+				}
+			}
+			else
+			{
+				// No master list: Find successor by matching Plane / id
+				// Sort by matching Plane/id is necessary for inventory shifting.
+				// It is not done for static back to allow multiobject outside structure.
+				// Unsorted objects are ignored in comparison.
+				if (!(nObj->Category & C4D_StaticBack))
+					for (cPrev=NULL,cLnk=First; cLnk; cLnk=cLnk->Next)
+						if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
+						{
+							if (cLnk->Obj->GetPlane() == nObj->GetPlane())
+								if (cLnk->Obj->id == nObj->id)
+									break;
+							cPrev=cLnk;
+						}
+
+				// Find successor by relative category
+				if(!cLnk)
+					for (cPrev=NULL, cLnk=First; cLnk; cLnk=cLnk->Next)
+						if (cLnk->Obj->Status && !cLnk->Obj->Unsorted)
+						{
+							if (cLnk->Obj->GetPlane() <= nObj->GetPlane())
+								break;
+							cPrev=cLnk;
+						}
+			}
 
 			cLnk = cPrev ? cPrev->Next : First;
 		}
-
-		// Sort by master list?
-		if (pLstSorted)
-		{
-
-			assert(CheckSort(pLstSorted));
-
-			// Unsorted: Always search full list (start with first object in list)
-			if (fUnsorted) { cLnk = First; cPrev = NULL; }
-
-			// As cPrev is the last link in front of the first position where the object could be inserted,
-			// the object should be after this point in the master list (given it's consistent).
-			// If we're about to insert the object at the end of the list, there is obviously nothing to do.
-#ifndef _DEBUG
-			if (cLnk)
-			{
-#endif
-				C4ObjectLink *cLnk2 = cPrev ? pLstSorted->GetLink(cPrev->Obj)->Next : pLstSorted->First;
-				for (; cLnk2; cLnk2 = cLnk2->Next)
-					if (cLnk2->Obj == nObj)
-						// Position found!
-						break;
-					else if (cLnk && cLnk2->Obj == cLnk->Obj)
-					{
-						// So cLnk->Obj is actually in front of nObj. Update insert position
-						cPrev = cLnk;
-						cLnk = cLnk->Next;
-#ifndef _DEBUG
-						// At end of list?
-						if (!cLnk) break;
-#endif
-					}
-
-				// No position found? This shouldn't happen with a consistent main list.
-				assert(cLnk2);
-#ifndef _DEBUG
-			}
-#endif
-
-		}
-
 	}
 
 	assert(!cPrev || cPrev->Next == cLnk);

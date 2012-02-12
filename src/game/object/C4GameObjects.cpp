@@ -482,13 +482,14 @@ void C4GameObjects::ResortUnsorted()
 		{
 			// readd to main object list
 			Remove(cObj);
+			// reset flag so that Add correctly sorts this object
+			cObj->Unsorted=false;
 			if (!Add(cObj))
 			{
 				// readd failed: Better kill object to prevent leaking...
 				Game.ClearPointers(cObj);
 				delete cObj;
 			}
-			cObj->Unsorted=false;
 		}
 	}
 }
