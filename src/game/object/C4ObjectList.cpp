@@ -861,7 +861,8 @@ struct C4ObjectListDumpHelper
 bool C4ObjectList::CheckSort(C4ObjectList *pList)
 {
 	C4ObjectLink *cLnk = First, *cLnk2 = pList->First;
-	while (cLnk && cLnk->Obj->Unsorted) cLnk = cLnk->Next;
+	while (cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted)) cLnk = cLnk->Next;
+
 	while (cLnk)
 		if (!cLnk2)
 		{
@@ -876,7 +877,7 @@ bool C4ObjectList::CheckSort(C4ObjectList *pList)
 			if (cLnk->Obj == cLnk2->Obj)
 			{
 				cLnk = cLnk->Next;
-				while (cLnk && cLnk->Obj->Unsorted) cLnk = cLnk->Next;
+				while (cLnk && (!cLnk->Obj->Status || cLnk->Obj->Unsorted)) cLnk = cLnk->Next;
 			}
 			cLnk2 = cLnk2->Next;
 		}
