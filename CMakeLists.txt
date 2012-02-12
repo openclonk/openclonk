@@ -996,6 +996,12 @@ if(USE_CONSOLE)
 		${READLINE_LIBRARIES}
 	)
 endif()
+if(UNIX)
+	target_link_libraries(c4group rt)
+	target_link_libraries(c4script rt)
+	target_link_libraries(netpuncher rt)
+	target_link_libraries(clonk rt)
+endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
