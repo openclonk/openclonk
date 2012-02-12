@@ -1,0 +1,7 @@
+[Material]
+Name=BrickSoft
+Shape=Smoother
+Density=50
+Friction=15
+Placement=60
+TextureOverlay=brick1

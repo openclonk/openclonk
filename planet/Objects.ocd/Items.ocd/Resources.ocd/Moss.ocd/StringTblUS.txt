@@ -1,0 +1,3 @@
+Name=Moss
+Description=Moss grows close to subterraen ponds. Press [Use] to plant. Keep away from water to dry.
+NoSuitableGround=Ground not suitable|for planting!

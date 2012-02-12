@@ -1,0 +1,1 @@
+MsgGoalFulfilled=Spielziel erfüllt

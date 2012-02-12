@@ -1,0 +1,2 @@
+TxtLinebroke=Line broke
+Name=Cable line

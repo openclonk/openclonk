@@ -1,0 +1,13 @@
+If not stated otherwise, the textures are licensed under the
+CC Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/)
+
+Author				  Work(s)
+===============================================================================
+Clouds1.jpg				- Patrick Hoesly
+
+Parchment Texture		- ~Teeth-Man (http://teeth-man.deviantart.com/art/old-crackly-parchment-texture-62016461)
+(Used in:                 License: CC Attribution-Share Alike 3.0
+StartupDlgPaper.png
+StartupPlrPropBG.png
+StartupPlrSelBG.jpg
+StartupScenSelBG.jpg)

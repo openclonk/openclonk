@@ -23,16 +23,16 @@
 #ifndef INC_C4Physics
 #define INC_C4Physics
 
+#include "C4Real.h"
+
 const int StableRange=10;
 const int AttachRange=5;
 const int CornerRange=AttachRange+2;
 
 #define GravAccel (::Landscape.Gravity)
 
-extern const FIXED FloatAccel;
-extern const FIXED HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;
-extern const FIXED WalkAccel,SwimAccel;
-extern const FIXED FloatFriction;
-extern const FIXED RotateAccel;
+extern const C4Real HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;
+extern const C4Real FloatFriction;
+extern const C4Real RotateAccel;
 
 #endif

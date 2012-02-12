@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2011  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -16,27 +17,31 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-#include <Standard.h>
+#include "C4Include.h"
 #include <StdNoGfx.h>
+#include <StdMeshMaterial.h>
 
 CStdNoGfx::CStdNoGfx()
-	{
+{
 	Default();
-	}
+}
 
 CStdNoGfx::~CStdNoGfx()
-	{
-	delete lpPrimary; lpPrimary = NULL;
+{
 	Clear();
-	}
+}
 
 bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
-	{
+{
 	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
-	// Create dummy surface
-	lpPrimary = lpBack = new CSurface();
-	MaxTexSize = 64;
+	MaxTexSize = 2147483647;
 	return true;
-	}
+}
+
+bool CStdNoGfx::PrepareMaterial(StdMeshMaterial& mesh)
+{
+   	mesh.BestTechniqueIndex=0; return true;
+}
+

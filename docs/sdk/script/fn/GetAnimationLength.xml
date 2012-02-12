@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAnimationLength</title>
+    <category>Animations</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>animation</name>
+          <desc>Name of the animation whose length to retrieve.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the length of the animation with the given name, or <code>nil</code> if there is no such animation. Valid positions (for <funclink>PlayAnimation</funclink> and <funclink>SetAnimationPosition</funclink>) include values between 0 and the animation length. The returned number corresponds to the animation length (as specified in the modelling tool) in milliseconds.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>(&quot;Turn&quot;, 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>(&quot;Turn&quot;), 50, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays a new animation named "Turn" in slot 5 which superimposes other animations in slot 5. One animation cycle lasts 50 frames. After that time the animation restarts from the beginning.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2010-01</date>
+</funcs>

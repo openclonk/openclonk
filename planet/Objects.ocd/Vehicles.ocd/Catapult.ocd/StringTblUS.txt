@@ -1,0 +1,2 @@
+Name=Catapult
+Description=Hold [Use] and pull the mouse to determine the strength of the throw. Clonks can also be launched; either by themselves, or with the help of another clonk.

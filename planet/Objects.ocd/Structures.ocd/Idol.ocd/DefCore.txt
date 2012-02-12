@@ -1,0 +1,17 @@
+[DefCore]
+id=Idol
+Version=5,2,0,1
+Category=C4D_Structure
+Width=15
+Height=30
+Offset=-7,-15
+Vertices=4
+VertexX=-7,-7,7,7
+VertexY=-10,15,-10,15
+VertexFriction=50,100,50,100
+Components=GoldBar=3;
+Construction=1
+Value=100
+Mass=200
+GrabPutGet=0
+Rotate=1

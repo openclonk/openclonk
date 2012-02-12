@@ -1,37 +1,34 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
     <title>GetActTime</title>
-    <category>Objekte</category><subcat>Aktivität</subcat>
-    <version>4.6.5.0 CP</version>
-    <syntax>
-      <rtype>int</rtype>
-    </syntax>
-    <desc>Liefert den Zeitraum in Frames, die das aufrufende Objekt bereits die aktuelle Aktivität ausgeführt hat.</desc>
+    <category>Objects</category>
+    <subcat>Activity</subcat>
+    <version>5.1 OC</version>
+    <syntax><rtype>int</rtype></syntax>
+    <desc>Returns the time (in frames) that the object is already executing this same action.</desc>
     <examples>
       <example>
-        <code>private func Burning()
+        <code>private func Fusing()
 {
-  // Rauch
-  <funclink>Smoke</funclink>(+23, <funclink>Random</funclink>(3) - 24, <funclink>Random</funclink>(5) + 8);
-  // Noch nicht fertig
-  if (GetActTime() &lt; 150) <funclink>return</funclink>(1);
-  // Fertig
-  <funclink>SetAction</funclink>("Idle");
-  // Erz suchen
-  var pOre;
-  <funclink>if</funclink> (!(pOre = <funclink>FindContents</funclink>(ORE1))) <funclink>return</funclink>(1);
-  // Erz verbrauchen
-  pOre-><funclink>RemoveObject</funclink>();
-  // Metall auswerfen
-  <funclink>CreateContents</funclink>(METL)-><funclink>Exit</funclink>(-27, +13, 0, -1);
-  // Sound
-  <funclink>Sound</funclink>("Pshshsh");
+	// Countdown (~10 seconds)
+	<funclink>Message</funclink>("@%d",(370-GetActTime())/37);
+	// if GetActTime is a multiple of 37 (=every 37 frames do...)
+	if(!GetActTime()%37)
+	{
+		// Sound "tick" if the count is even, "tack" if it is odd 
+		if(!(GetActTime()/37%2)) <funclink>Sound</funclink>("Tick");
+		else <funclink>Sound</funclink>("Tack");
+	}
+	// Explosion
+	if(GetActTime() > 370)
+		<funclink>Explode</funclink>(80);
 }
 </code>
-        <text>Auszug aus dem Hochofen-Script. Nach 150 Frames ist das Metall fertiggebacken.</text>
+        <text>This could be the callback for the StartCall of a bomb's "Fuse" action. If the action goes on for less than 370 frames, only a countdown message is displayed and a sound played. If 370 or more frames have passed, the bomb explodes.</text>
       </example>
     </examples>
     <related>
@@ -42,5 +39,5 @@
       <funclink>SetPhase</funclink>
     </related>
   </func>
-  <author>Günther</author><date>April 2002</date>
+  <author>GÃ¼nther</author><date>2002-04</date>
 </funcs>

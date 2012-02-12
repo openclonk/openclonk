@@ -1,0 +1,12 @@
+[Particle]
+Name=FireballSmoke
+MaxCount=800
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,64,64,-32,-32
+Delay=0
+WindDrift=1
+Repeats=1
+AlphaFade=2
+FadeDelay=2

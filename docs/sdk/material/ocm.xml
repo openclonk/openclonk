@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Material Definitions (ocm)</title>
+  <h>Material Definitions (ocm)</h>
+  <part>
+    <text>Material definitions determine looks and behaviour of landscape materials.</text>
+    <text>
+      <table>
+        <caption id="SektionMaterial">Section [Material]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>Name</col>
+          <col>String (max. 15)</col>
+          <col>Name of material.</col>
+        </row>
+        <row>
+          <col>ColorAnimation</col>
+          <col>Integer</col>
+          <col>0 oder 1. Color animation.</col>
+        </row>
+        <row>
+          <col>Shape</col>
+          <col>Integer</col>
+          <col>Shape of surface: Flat (0), Octagon, FlatTop (1), Smoother, Smooth (2) or Rough (3).</col>
+        </row>
+        <row>
+          <col>Density</col>
+          <col>Integer</col>
+          <col>Density: 50 solid, 25 liquid (other values not allowed).</col>
+        </row>
+        <row>
+          <col>Friction</col>
+          <col>Integer</col>
+          <col>0-100. Friction.</col>
+        </row>
+        <row>
+          <col>DigFree</col>
+          <col>Integer</col>
+          <col>0 oder 1. Determines wether the material can be dug into.</col>
+        </row>
+        <row>
+          <col>BlastFree</col>
+          <col>Integer</col>
+          <col>0 oder 1. Determines whether the material can be blasted away.</col>
+        </row>
+        <row>
+          <col>Blast2Object</col>
+          <col>definition id</col>
+          <col>Type of objects created by blasting this material.</col>
+        </row>
+        <row>
+          <col>Dig2Object</col>
+          <col>definition id</col>
+          <col>Type of objects dug out from this material.</col>
+        </row>
+        <row>
+          <col>Dig2ObjectRatio</col>
+          <col>Integer</col>
+          <col>ca. 100-500. Mass ratio when digging out objects.</col>
+        </row>
+        <row>
+          <col>Dig2ObjectRequest</col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, objects are only dug out on request.</col>
+        </row>
+        <row>
+          <col>Blast2ObjectRatio</col>
+          <col>Integer</col>
+          <col>ca. 100-500. Mass ratio when blasting free objects.</col>
+        </row>
+        <row>
+          <col>Blast2PXSRatio</col>
+          <col>Integer</col>
+          <col>Mass ratio when material pixels are blasted free.</col>
+        </row>
+        <row>
+          <col>Instable</col>
+          <col>Integer</col>
+          <col>0 oder 1. Stability.</col>
+        </row>
+        <row>
+          <col>MaxAirSpeed</col>
+          <col>Integer</col>
+          <col>ca. 10-100. Maximum falling speed.</col>
+        </row>
+        <row>
+          <col>MaxSlide</col>
+          <col>Integer</col>
+          <col>Maximum side offset when sliding.</col>
+        </row>
+        <row>
+          <col>WindDrift</col>
+          <col>Integer</col>
+          <col>Horizontal drift by wind.</col>
+        </row>
+        <row>
+          <col>Inflammable</col>
+          <col>Integer</col>
+          <col>Inflammability.</col>
+        </row>
+        <row>
+          <col>Incindiary</col>
+          <col>Integer</col>
+          <col>This material incinerates objects.</col>
+        </row>
+        <row>
+          <col>Corrode</col>
+          <col>Integer</col>
+          <col>This material corrodes other materials.</col>
+        </row>
+        <row>
+          <col>Corrosive</col>
+          <col>Integer</col>
+          <col>This material can be corroded.</col>
+        </row>
+        <row>
+          <col>Extinguisher</col>
+          <col>Integer</col>
+          <col>This material will extinguish burning objects.</col>
+        </row>
+        <row>
+          <col>Soil</col>
+          <col>Integer</col>
+          <col>Plants grow on this material.</col>
+        </row>
+        <row>
+          <col>TempConvStrength</col>
+          <col>Integer</col>
+          <col>Strength of temperature conversion.</col>
+        </row>
+        <row>
+          <col>BlastShiftTo</col>
+          <col>String (max. 15)</col>
+          <col>Material changes into another material when blasted.</col>
+        </row>
+        <row>
+          <col>InMatConvert</col>
+          <col>String (max. 15)</col>
+          <col>Entering this material the material will change into...</col>
+        </row>
+        <row>
+          <col>InMatConvertTo</col>
+          <col>String (max. 15)</col>
+          <col>...this material...</col>
+        </row>
+        <row>
+          <col>InMatConvertDepth</col>
+          <col>Integer</col>
+          <col>...when at the given depth.</col>
+        </row>
+        <row>
+          <col>AboveTempConvert</col>
+          <col>Integer</col>
+          <col>Above this temperature the material will change into...</col>
+        </row>
+        <row>
+          <col>AboveTempConvertTo</col>
+          <col>String (max. 15)</col>
+          <col>...this material.</col>
+        </row>
+        <row>
+          <col>AboveTempConvertDir</col>
+          <col>Integer</col>
+          <col>Direction of temperature conversion: 0 bottom up, 1 top down</col>
+        </row>
+        <row>
+          <col>BelowTempConvert</col>
+          <col>Integer</col>
+          <col>Below this temperature the material will change into...</col>
+        </row>
+        <row>
+          <col>BelowTempConvertTo</col>
+          <col>String (max. 15)</col>
+          <col>...this material.</col>
+        </row>
+        <row>
+          <col>BelowTempConvertDir</col>
+          <col>Integer</col>
+          <col>Direction of temperature conversion: 0 bottom up, 1 top down</col>
+        </row>
+        <row>
+          <col>Alpha</col>
+          <col>6 integers</col>
+          <col>Transparency of the three material colors.</col>
+        </row>
+        <row>
+          <col>Placement</col>
+          <col>Integer</col>
+          <col>0-100. This Value is used for lighting of the landscape and is usually determined automatically from the other material values.</col>
+        </row>
+        <row>
+          <col>TextureOverlay</col>
+          <col>String (max. 15)</col>
+          <col>Standard texture for this material used by the landscape generator.</col>
+        </row>
+        <row>
+          <col>OverlayType</col>
+          <col>Integer</col>
+          <col>Bit mask for texture calculation on this material. Bit 0 (1): exact (no zoom), bit 1 (2): no texture, bit 2 (4): extra large zoom, bit 3 (8): calculate texture based on gray scale.</col>
+        </row>
+        <row>
+          <col>PXSGfx</col>
+          <col>String (max. 30 chars)</col>
+          <col>Graphics used for loose material pixels. This graphic should be available as material texture.</col>
+        </row>
+        <row>
+          <col>PXSGfxRt</col>
+          <col>4 integers</col>
+          <col>Target rectangle for the graphics of loose material pixels. Additional phases on the right and below the specified rectangle will be used. The rectangle should always start in the top left corner and use the complete texture size.</col>
+        </row>
+      </table>
+    </text>
+  </part>
+  <part>
+    <h>User defined reaction</h>
+    <text>In addition to default reactions, every material can define custom reactions which are executed when the material passes another material as a free pixel (e.g. precipitation or particles after explosios) or by material movement (e.g. when a lake floods a tunnel).</text>
+    <text>
+      <table>
+        <caption id="SektionReaction">In the .ocm-file: Any number of sections [Reaction]</caption>
+        <rowh>
+          <col>Value</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <literal_col>Type</literal_col>
+          <col>String</col>
+          <col>Type of reaction that should happen. See <emlink href="material/ocm.html#ReactTypes">Table</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>TargetSpec</literal_col>
+          <col>String</col>
+          <col>Target material, with which the loose material reacts. See <emlink href="material/ocm.html#TargetSpecs">material specifications</emlink>.</col>
+        </row>
+        <row>
+          <literal_col>ScriptFunc</literal_col>
+          <col>String</col>
+          <col>Reaction type script only: Name of the script function, which determines the behaviour.</col>
+        </row>
+        <row>
+          <literal_col>ExecMask</literal_col>
+          <col>Integer</col>
+          <col>Bitmask, determining in which situation the reaction is to be executed. Bit indices are the <emlink href="material/ocm.html#ReactEvents">reaction events</emlink>. Default value -1 for all events.</col>
+        </row>
+        <row>
+          <literal_col>Reverse</literal_col>
+          <col>Boolean</col>
+          <col>Usually, the reaction defines what happens when loose material of the definition, in which the reaction is defined, hits solid material of the type specified in TargetSpec. If Reverse is set, this definition is swapped.</col>
+        </row>
+        <row>
+          <literal_col>InverseSpec</literal_col>
+          <col>Boolean</col>
+          <col>If true, the reaction will be defined for all other materials (including "Sky"), which do not fulfill the condition in TargetSpec.</col>
+        </row>
+        <row>
+          <literal_col>CheckSlide</literal_col>
+          <col>Boolean</col>
+          <col>If true, the standard behaviour (Bouncing off the ground and sliding according to MaxSlide) will be executed before the call is done.</col>
+        </row>
+        <row>
+          <literal_col>Depth</literal_col>
+          <col>Integer</col>
+          <col>Reaction type Convert only: Depth in target material required for conversion.</col>
+        </row>
+        <row>
+          <literal_col>ConvertMat</literal_col>
+          <col>String</col>
+          <col>Reaction type Convert only: Material, into which the loose material is converted. If sky is specified, the material will vanish.</col>
+        </row>
+        <row>
+          <literal_col>CorrosionRate</literal_col>
+          <col>Integer</col>
+          <col>Reaction type Corrode only: Chance of corrosion.</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="ReactEvents">Reaction events</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Value</col>
+          <col>Event</col>
+        </rowh>
+        <row>
+          <col>MEE_PXSPos</col>
+          <col>0</col>
+          <col>Check before each movement frame of a loose material pixel against its background material</col>
+        </row>
+        <row>
+          <col>MEE_PXSMove</col>
+          <col>1</col>
+          <col>Check against each pixel that a loose material pixel passes during its movemvent</col>
+        </row>
+        <row>
+          <col>MEE_MassMove</col>
+          <col>2</col>
+          <col>During larger material movements (e.g. when a lake is flooded into a tunnel): Check of the moving material against the material over which it's moving</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="ReactTypes">Reaction types</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Behaviour</col>
+        </rowh>
+        <row>
+          <col>Script</col>
+          <col>For each collision, the script function specified in ScriptFunc is called.</col>
+        </row>
+        <row>
+          <col>Convert</col>
+          <col>The material is converted into another. Comparable to the behaviour of snow in water.</col>
+        </row>
+        <row>
+          <col>Poof</col>
+          <col>Both the loose and the solid material are removed. Additionally, there's a 1:3 chance of creating a small smoke cloud, and a 1:3 chance that the sound "Pshshsh" is played. Comparable to the behaviour of water in lava.</col>
+        </row>
+        <row>
+          <col>Corrode</col>
+          <col>The loose material corrodes the target material at the chance CorrosionRate, and vanishes itself if it does so. If corrosion is performed, a small smoke cloud is created at a chance of 1:5, and the sound "Corrode" is played at a chance of 1:20. Comparable with the behaviour of acid on earth.</col>
+        </row>
+        <row>
+          <col>Insert</col>
+          <col>The loose material is inserted as solid material. Comparable to the behaviour of any material that hits a material of equal or higher density.</col>
+        </row>
+      </table>
+    </text>
+    <text>
+      <table>
+        <caption id="TargetSpecs">Material specifications</caption>
+        <rowh>
+          <col>Name</col>
+          <col>Materials</col>
+        </rowh>
+        <row>
+          <col>Material name</col>
+          <col>If the specification equals the name of an existing material, this material will be used.</col>
+        </row>
+        <row>
+          <col>All</col>
+          <col>All materials, including "Sky"</col>
+        </row>
+        <row>
+          <col>Solid</col>
+          <col>All solid materials</col>
+        </row>
+        <row>
+          <col>SemiSolid</col>
+          <col>All solid and liquid materials</col>
+        </row>
+        <row>
+          <col>Background</col>
+          <col>All background materials, including "Sky"</col>
+        </row>
+        <row>
+          <col>Sky</col>
+          <col>The background material.</col>
+        </row>
+        <row>
+          <col>Incindiary</col>
+          <col>All materials to be incinerated.</col>
+        </row>
+        <row>
+          <col>Extinguisher</col>
+          <col>All extinguishing materials.</col>
+        </row>
+        <row>
+          <col>Inflammable</col>
+          <col>All flammable materials.</col>
+        </row>
+        <row>
+          <col>Corrosive</col>
+          <col>All materials which can be corroded.</col>
+        </row>
+        <row>
+          <col>Corrode</col>
+          <col>All corrosive materials.</col>
+        </row>
+      </table>
+    </text>
+    <h>Reaction type 'Script'</h>
+    <text>
+      This resource-intensive method can be used to define the material behaviour freely. The script function should be defined globally and have the following parameters: 
+      <table>
+        <rowh>
+          <col>Parameter number(s)</col>
+          <col>Name(s)</col>
+          <col>Data type</col>
+          <col>Description</col>
+        </rowh>
+        <row>
+          <col>1,2</col>
+          <col>x, y</col>
+          <col>Integer</col>
+          <col>Position of the loose material. The parameters may be modified in order to move the material pixel.</col>
+        </row>
+        <row>
+          <col>3,4</col>
+          <col>landscape_x, landscape_y</col>
+          <col>Integer</col>
+          <col>Position in the landscape, on which the material hits.</col>
+        </row>
+        <row>
+          <col>5,6</col>
+          <col>xdir, ydir</col>
+          <col>Integer</col>
+          <col>Speed (in 1/100px) of the movement of the material. May be modified in order to change the material speed. Not for MassMover.</col>
+        </row>
+        <row>
+          <col>7</col>
+          <col>pxs_material</col>
+          <col>Integer</col>
+          <col>Material number of the loose material. Useful if the same reaction function is used for multiple materials</col>
+        </row>
+        <row>
+          <col>8</col>
+          <col>landscape_material</col>
+          <col>Integer</col>
+          <col>Material number of the solid material.</col>
+        </row>
+        <row>
+          <col>9</col>
+          <col>event</col>
+          <col>Integer</col>
+          <col>See <emlink href="material/ocm.html#ReactEvents">Reaction events</emlink>.</col>
+        </row>
+      </table>
+ The return value of the function should be either 1 for removal or 0 for keeping the loose material.
+    </text>
+  </part>
+  <author>Sven2</author><date>2006-12</date>
+</doc>

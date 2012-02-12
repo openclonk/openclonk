@@ -1,0 +1,5 @@
+[Material]
+Name=Tunnel
+Shape=Smooth
+Placement=5
+TextureOverlay=tunnel

@@ -1,0 +1,2 @@
+Name=Fahrstuhlkorb
+Description=[Oben] / [Unten] zum Fahren, [Benutzen] halten für Schachtbohrung.

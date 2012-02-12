@@ -1,0 +1,4 @@
+[DefCore]
+id=Library_MeleeWeapon
+Version=5,2,0,1
+Category=1

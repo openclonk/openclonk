@@ -1,0 +1,5 @@
+Name=Geldpunkte
+
+#Goal window
+MsgGoalFulfilled=%d Geldpunkte errreicht!
+MsgGoalUnfulfilled=Erst %d Geldpunkte von %d erreicht.

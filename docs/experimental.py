@@ -10,9 +10,10 @@ import xml.sax
 
 codeparents = {}
 allcode = {}
-c4scripter = file("Functions.txt", 'w')
+c4scripter = None
 class ExperimentParser(xml.sax.handler.ContentHandler):
     def __init__(self):
+        global c4scripter
         self.statestack = []
         self.parameter = ""
         self.type = ""
@@ -21,6 +22,7 @@ class ExperimentParser(xml.sax.handler.ContentHandler):
         self.title = ""
         self.cur = ""
         self.desc = ""
+        c4scripter = file("Functions.txt", 'w')
     def startElement(self, name, attr):
         self.statestack.append(name)
         if name == 'params':

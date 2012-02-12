@@ -17,24 +17,10 @@
 
 #define MAPE_COMPILING_CPP
 
-// TODO: Move this to an extra file:
-
-#include <C4Application.h>
-#include <C4Console.h>
-#include <C4FullScreen.h>
-#include <C4Game.h>
-#include <C4Network2.h>
-
-C4Application Application;
-C4Console     Console;
-C4FullScreen  FullScreen;
-C4Game        Game;
-C4Network2    Network;
-
-
 #include <stdlib.h>
 #include <C4Include.h>
 #include <C4Random.h>
+
 #include "mape/random.h"
 
 extern "C" {

@@ -1,0 +1,3 @@
+Name=Truhe
+OpenChest=Truhe öffnen
+CloseChest=Truhe schließen

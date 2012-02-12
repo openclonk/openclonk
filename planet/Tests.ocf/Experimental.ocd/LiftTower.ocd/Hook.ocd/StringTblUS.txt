@@ -1,0 +1,3 @@
+Name=Hook
+Description=Press [Use] in front of a vehicle or another big object to attach the hook.
+Unhook=Unhook object.

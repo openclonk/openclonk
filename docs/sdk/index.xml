@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
-<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-<title>Entwicklermodus</title>
-<h>Clonk Entwicklermodus</h>
-<!--<img src="../images/cpem.gif" align="left" width="52" height="52" hspace="5" vspace="2" />-->
-<img src="../images/cpem.gif" id="cpem" width="52" height="52" />
-<text>Der Clonk Entwicklermodus gibt vollen Zugriff auf alle Spieldaten von Clonk: Szenarien, Objektdefinitionen, Spielerdateien und zusätzliche Gruppendateien. Bestehende Daten können modifiziert werden, um so neue Spielelemente zu schaffen.</text>
-<text>Der Entwicklermodus ist über den Editor erreichbar.</text>
-<text>Im Editor können per Drag &amp; Drop alle Einzelkomponenten der Spieldaten bearbeitet werden. In der Engine können Objekte per Mausklick in der Landschaft platziert und Landkarten pixelgenau bearbeitet und abgespeichert werden.</text>
-<text>Selbsterstellte Spielelemente können veröffentlicht und somit anderen Clonk-Spielern zugänglich gemacht werden. Sie sollten jedoch vorher unbedingt ausgiebig getestet werden und keine Fehler enthalten.</text>
-
-<h id="Nutzungsbedingungen">Nutzungsbedingungen</h>
-
-<text>Die Benutzung der erweiterten Funktionen von Clonk geschieht grundsätzlich auf eigene Gefahr und Verantwortung. Es gibt keinerlei Support. Der Entwicklermodus ist nur registrierten Spielern zugänglich.</text>
-<text>Durch unsachgemäße Anwendung kann nicht nur der Spielspaß zunichte, sondern das komplette Spiel unspielbar gemacht werden. Für den erfolgreichen Einsatz des Entwicklermodus sind grundlegende Programmierkenntnisse, Fähigkeiten bei der Bearbeitung von Grafiken und allgemeiner Sachverstand absolute Voraussetzung. Wer sich dessen nicht sicher ist, sollte die Finger davon lassen.</text>
-<text>Jeder, der die in dieser Dokumentation enthaltenen Informationen nutzt, sollte verantwortungsvoll mit den gegebenen Möglichkeiten umgehen und eigenverantwortlich das Ziel anstreben, sinnvoll spielbare Erweiterungen zum Gesamtspiel zu erstellen, die der Gemeinschaft nützen.</text>
-<text>Von Spielern erstelltes Material für Clonk darf in keinem Fall kommerziell genutzt werden. Für Szenarien, Objekte oder andere Spieldaten darf kein Entgelt verlangt werden.</text>
-<text>Im Rahmen des Entwicklermodus zur Bearbeitung freigegebene Daten dürfen bei der Entwicklung neuer Spielerweiterungen für Clonk (und ausschließlich zu diesem Zweck) verwendet werden. Alle Rechte an den verwendeten Daten verbleiben jedoch beim Hersteller.</text>
-<text>Das Passwort für die Aktivierung des Entwicklermodus lautet: Siedlerclonk</text>
-<author>matthes</author><date>2000 - 2007</date>
+  <title>OpenClonk Documentation</title>
+  <h>OpenClonk Documentation</h>
+  <part>
+	<img src="../images/cpem.gif" width="52" height="52" alt="" class="cpem" />
+	<text>Welcome to the developer documentation for the creation of custom game content. This documentation includes a thorough reference of the game data and its file hierarchy. <br/>	
+	Also included is a script reference which explains the syntax and semantics of Clonk's own scripting language - C4Script. In the script reference, all functions, constants and callbacks that are available for the scripter are documented with example usages. 
+	</text>
+	<h>Get started</h>
+	<text><emlink href="files.html">Game data</emlink> - Get an overview over the game data needed for the creation of custom game content.</text>
+	<text><emlink href="script/index.html">C4Script</emlink> - View the introduction to the script language C4Script.</text>
+	<h>Search the documentation</h>
+	<search/>
+  </part>
+  <author>Newton</author><date>2011-08</date>
 </doc>

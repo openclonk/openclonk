@@ -1,0 +1,17 @@
+[Material]
+Name=Lava
+ColorAnimation=1
+Density=25
+Instable=1
+MaxAirSpeed=50
+MaxSlide=10000
+WindDrift=40
+Incindiary=1
+TempConvStrength=12
+BelowTempConvert=100
+BelowTempConvertTo=Rock
+Placement=10
+TextureOverlay=lava_red
+PXSGfxSize=6
+PXSGfx=Lava
+PXSGfxRt=0,0,32,32,-16,-16

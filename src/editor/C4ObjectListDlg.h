@@ -22,16 +22,14 @@
 #define INC_C4ObjectListDlg
 
 #ifdef WITH_DEVELOPER_MODE
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkwindow.h>
-#include <gtk/gtktreeselection.h>
+#include <gtk/gtk.h>
 #endif // WITH_DEVELOPER_MODE
 
 #include "C4ObjectList.h"
 
 class C4ObjectListDlg: public C4ObjectListChangeListener
 {
-	public:
+public:
 	C4ObjectListDlg();
 	virtual ~C4ObjectListDlg();
 	void Execute();
@@ -43,13 +41,14 @@ class C4ObjectListDlg: public C4ObjectListChangeListener
 	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk);
 
 #ifdef WITH_DEVELOPER_MODE
-	private:
+private:
 	GtkWidget * window;
 	GtkWidget * treeview;
 	GObject * model;
 	bool updating_selection;
 
 	static void OnDestroy(GtkWidget * widget, C4ObjectListDlg * dlg);
+	static void OnRowActivated(GtkTreeView * tree_view, GtkTreePath * path, GtkTreeViewColumn * column, C4ObjectListDlg * dlg);
 	static void OnSelectionChanged(GtkTreeSelection * selection, C4ObjectListDlg * dlg);
 #endif // WITH_DEVELOPER_MODE
 };

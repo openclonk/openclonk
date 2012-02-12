@@ -1,0 +1,17 @@
+[Particle]
+Name=Spark1
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+CollisionFn=Die
+DrawFn=Std
+Face=0,0,64,64,-32,-32
+Delay=2
+Repeats=1
+GravityAcc=0
+VertexCount=1
+VertexY=64
+AlphaFade=0
+Additive=1
+RByV=1
+Attach=0

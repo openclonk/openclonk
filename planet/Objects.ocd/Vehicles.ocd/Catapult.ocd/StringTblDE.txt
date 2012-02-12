@@ -1,0 +1,2 @@
+Name=Katapult
+Description=Halte [Verwenden] und zieh die Maus um die Stärke des Wurfes zu bestimmen. Clonks können auch geschleudert werden; entweder selbst oder mit der Hilfe eines anderen Clonks.

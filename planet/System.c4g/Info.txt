@@ -1,1 +1,0 @@
-Dieser Ordner enthält Hilfsfunktionen aller Art.

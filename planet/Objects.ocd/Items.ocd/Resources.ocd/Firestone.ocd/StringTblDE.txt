@@ -1,0 +1,2 @@
+Name=Feuerstein
+Description=Vulkanischem Ursprungs, explodiert bei Aufprall.

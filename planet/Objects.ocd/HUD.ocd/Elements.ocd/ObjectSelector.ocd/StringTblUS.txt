@@ -1,0 +1,7 @@
+TxtSlot=Select slot %d
+TxtSelect=Select %s
+TxtGrab=Grab %s
+TxtUnGrab=Let go %s
+TxtEnter=Enter %s
+TxtExit=Exit %s
+TxtPushOut=Push %s out

@@ -1,0 +1,2 @@
+Name=Airship
+Description=Lighter-than-air travel and transport vehicle. Caution: the balloon contains volatile gas. Do not puncture.

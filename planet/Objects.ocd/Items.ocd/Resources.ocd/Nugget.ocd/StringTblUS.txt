@@ -1,0 +1,2 @@
+Name=Nugget
+Description=A very prized find, indeed!

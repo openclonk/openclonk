@@ -1,0 +1,2 @@
+Name=Scheiterhaufen-Kristall
+Description=Erzeugt beim Aufprall eine sich langsam ausdehnende Explosion.

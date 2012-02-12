@@ -1,0 +1,3 @@
+MsgOneTargetLeft=Noch ein Ziel zum vernichten übrig.
+MsgTargetsLeft=Noch %d Ziele zum vernichten übrig.
+NewGoalDescription=Das Szenario ist abgeschlossen, wenn alle Ziele zerstört sind und dein Crewmitglied die Flagge ganz rechts erreicht hat.

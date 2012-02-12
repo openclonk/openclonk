@@ -1,8 +1,0 @@
-Name=Basissteuerung
-Buy=Kaufen
-Sell=Verkaufen
-TxtNothingToBuy=Nichts zu kaufen
-TxtBuy=Kaufen: %s
-TxtNotEnoughtMoney=Du hast nicht|genug Geld!
-TxtNothingToSell=Nichts zu verkaufen
-TxtSell=Verkaufen: %s

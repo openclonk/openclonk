@@ -28,7 +28,8 @@
 #define INC_C4Effects
 
 #include <C4Constants.h>
-#include <C4ValueList.h>
+#include <C4ObjectPtr.h>
+#include <C4PropList.h>
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks
@@ -53,7 +54,6 @@
 #define C4FxCall_DmgScript         0 // damage through script call
 #define C4FxCall_DmgBlast          1 // damage through blast
 #define C4FxCall_DmgFire           2 // damage through fire
-#define C4FxCall_DmgChop           3 // damage through chopping
 
 // energy loss callbacks
 #define C4FxCall_EngScript        32 // energy loss through script call
@@ -64,87 +64,80 @@
 #define C4FxCall_EngAsphyxiation  37 // energy loss through asphyxiaction
 #define C4FxCall_EngCorrosion     38 // energy loss through corrosion (acid)
 #define C4FxCall_EngStruct        39 // regular structure energy loss (normally not called)
-#define C4FxCall_EngGetPunched    40 // energy loss during fighting
-
-// fire drawing modes
-#define C4Fx_FireMode_Default      0 // determine mode by category
-#define C4Fx_FireMode_LivingVeg    2 // C4D_Living and C4D_StaticBack
-#define C4Fx_FireMode_StructVeh    1 // C4D_Structure and C4D_Vehicle
-#define C4Fx_FireMode_Object       3 // other (C4D_Object and no bit set (magic))
-#define C4Fx_FireMode_Last         3 // largest valid fire mode
+#define C4FxCall_EngGetPunched    40 // energy loss from Punch
 
 #define C4Fx_FireParticle1   "Fire"
 #define C4Fx_FireParticle2   "Fire2"
 
 // generic object effect
-class C4Effect
+class C4Effect: public C4PropListNumbered
+{
+public:
+	C4ObjectPtr CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
+	C4ID idCommandTarget;     // ID of command target definition
+
+	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
+	int32_t iTime, iInterval;  // effect time; effect callback intervall
+
+	C4Effect *pNext;        // next effect in linked list
+
+protected:
+	// presearched callback functions for faster calling
+	C4AulFunc *pFnTimer;           // timer function Fx%sTimer
+	C4AulFunc *pFnStart, *pFnStop; // init/deinit-functions Fx%sStart, Fx%sStop
+	C4AulFunc *pFnEffect;          // callback if other effect tries to register
+	C4AulFunc *pFnDamage;          // callback when owned object gets damage
+
+	void AssignCallbackFunctions(); // resolve callback function names
+
+	C4Effect(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	C4Effect(const C4Effect &); // unimplemented, do not use
+	C4Effect(); // for the StdCompiler
+	friend void CompileNewFunc<C4Effect, C4ValueNumbers *>(C4Effect *&, StdCompiler *, C4ValueNumbers * const &);
+public:
+	static C4Effect * New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4);
+	~C4Effect();                      // dtor - deletes all following effects
+
+	void Denumerate(C4ValueNumbers *); // numbers to object pointers
+	void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
+
+	void SetDead() { iPriority=0; }      // mark effect to be removed in next execution cycle
+	bool IsDead() { return !iPriority; } // return whether effect is to be removed
+	void FlipActive() { iPriority*=-1; } // alters activation status
+	bool IsActive() { return iPriority>0; } // returns whether effect is active
+	bool IsInactiveAndNotDead() { return iPriority<0; } // as the name says
+
+	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
+	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
+	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
+	C4AulScript *GetCallbackScript(); // get script context for effect callbacks
+
+	void Execute(C4Object *pObj); // execute all effects
+	void Kill(C4Object *pObj);    // mark this effect deleted and do approprioate calls
+	void ClearAll(C4Object *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
+	void DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
+
+	C4Value DoCall(C4Object *pObj, const char *szFn, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4, const C4Value &rVal5, const C4Value &rVal6, const C4Value &rVal7); // custom call
+
+	void ReAssignCallbackFunctions()
+	{ AssignCallbackFunctions(); }
+	void ReAssignAllCallbackFunctions()
 	{
-	public:
-		char Name[C4MaxDefString+1]; // name of effect
-		C4Object *pCommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
-		C4ID idCommandTarget;     // ID of command target definition
-		int32_t nCommandTarget;       // enumerated ptr for target object (argh, when will this system be changed?)
+		ReAssignCallbackFunctions();
+		if (pNext) pNext->ReAssignAllCallbackFunctions();
+	}
+	void OnObjectChangedDef(C4Object *pObj);
 
-		int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
-		C4ValueList EffectVars; // custom effect variables
-		int32_t iTime, iIntervall;  // effect time; effect callback intervall
-		int32_t iNumber;            // effect number for addressing
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	virtual C4Effect * GetEffect() { return this; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to);
+	virtual void ResetProperty(C4String * k);
+	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
 
-		C4Effect *pNext;        // next effect in linked list
-
-	protected:
-		// presearched callback functions for faster calling
-		C4AulFunc *pFnTimer;           // timer function Fx%sTimer
-		C4AulFunc *pFnStart, *pFnStop; // init/deinit-functions Fx%sStart, Fx%sStop
-		C4AulFunc *pFnEffect;          // callback if other effect tries to register
-		C4AulFunc *pFnDamage;          // callback when owned object gets damage
-
-		void AssignCallbackFunctions(); // resolve callback function names
-
-	public:
-		C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t iTimerIntervall, C4Object *pCmdTarget, C4ID idCmdTarget, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, bool fDoCalls, int32_t &riStoredAsNumber); // ctor
-		C4Effect(StdCompiler *pComp); // ctor: compile
-		~C4Effect();                      // dtor - deletes all following effects
-
-		void EnumeratePointers();  // object pointers to numbers
-		void DenumeratePointers(); // numbers to object pointers
-		void ClearPointers(C4Object *pObj); // clear all pointers to object - may kill some effects w/o callback, because the callback target is lost
-
-		void SetDead() { iPriority=0; }      // mark effect to be removed in next execution cycle
-		bool IsDead() { return !iPriority; } // return whether effect is to be removed
-		void FlipActive() { iPriority*=-1; } // alters activation status
-		bool IsActive() { return iPriority>0; } // returns whether effect is active
-		bool IsInactiveAndNotDead() { return iPriority<0; } // as the name says
-
-		C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
-		C4Effect *Get(int32_t iNumber, bool fIncludeDead, int32_t iMaxPriority=0);    // get effect by number
-		int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
-		int32_t Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4); // do some effect callbacks
-		C4AulScript *GetCallbackScript(); // get script context for effect callbacks
-
-		void Execute(C4Object *pObj); // execute all effects
-		void Kill(C4Object *pObj);    // mark this effect deleted and do approprioate calls
-		void ClearAll(C4Object *pObj, int32_t iClearFlag);// kill all effects doing removal calls w/o reagard of inactive effects
-		void DoDamage(C4Object *pObj, int32_t &riDamage, int32_t iDamageType, int32_t iCausePlr); // ask all effects for damage
-
-		C4Value DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Value &rVal2, C4Value &rVal3, C4Value &rVal4, C4Value &rVal5, C4Value &rVal6, C4Value &rVal7); // custom call
-
-		void ReAssignCallbackFunctions()
-			{ AssignCallbackFunctions(); }
-		void ReAssignAllCallbackFunctions()
-			{ ReAssignCallbackFunctions();
-			  if (pNext) pNext->ReAssignAllCallbackFunctions(); }
-		void OnObjectChangedDef(C4Object *pObj);
-
-		void CompileFunc(StdCompiler *pComp);
-
-	protected:
-		void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
-		void TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
-	};
-
-// ctor for StdPtrAdapt
-inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4Effect(pComp); }
+protected:
+	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
+	void TempReaddUpperEffects(C4Object *pObj, C4Effect *pLastReaddEffect); // temp remove all effects with higher priority
+};
 
 // fire effect constants
 #define MaxFirePhase        15
@@ -154,17 +147,8 @@ inline void CompileNewFunc(C4Effect *&pRes, StdCompiler *pComp) { pRes = new C4E
 #define C4Fx_FirePriority   100
 #define C4Fx_FireTimer      1
 
-// fire effect
-int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTemp, int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject);
-int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTime);
-int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iReason, bool fTemp);
-C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber);
-class C4Value &FxFireVarCausedBy(C4Effect *pEffect);
-
 // some other hardcoded engine effects
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj);
-void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj, C4ID idEffect, const char *szEffect);
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr=0);
-void BubbleOut(int32_t tx, int32_t ty);
 
 #endif

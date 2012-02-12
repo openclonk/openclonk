@@ -1,0 +1,7 @@
+[Teams]
+Active=true
+
+	[Team]
+	id=1
+	Name=Boomshire
+	MaxPlayer=2

@@ -1,0 +1,2 @@
+Name=Pflanze
+Harvest=%s ernten

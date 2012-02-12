@@ -1,0 +1,7 @@
+[DefCore]
+id=Fuse
+Version=5,2,0,1
+Category=C4D_StaticBack
+Vertices=2
+Picture=0,0,64,64
+Line=1

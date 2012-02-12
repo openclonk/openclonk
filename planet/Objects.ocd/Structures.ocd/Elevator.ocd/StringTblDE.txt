@@ -1,0 +1,2 @@
+Name=Fahrstuhl
+Description=Erlaubt einfachen vertikalen Transport.

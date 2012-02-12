@@ -1,0 +1,2 @@
+Name=Dynamite stick
+Description=Press [Use] to ignite. After it has been ignited, aim into the direction you want to place it and press [Use] again.

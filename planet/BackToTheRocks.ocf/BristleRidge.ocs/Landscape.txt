@@ -1,0 +1,65 @@
+/*-- BristleRidge --*/
+
+// Fills an area with some materials.
+overlay Mats {
+	mask=1;
+	overlay { algo=rndchecker; turbulence=100; mat=Granite; a=3; };
+	overlay { algo=rndchecker; turbulence=100; mat=Rock; a=4; };
+	overlay { algo=rndchecker; turbulence=100; mat=Ore; a=6; };
+	overlay { algo=rndchecker; turbulence=100; mat=Earth; tex=earth_dry; a=6; };
+	overlay { algo=rndchecker; turbulence=100; mat=Earth; tex=earth; a=6; };
+	overlay { algo=rndchecker; turbulence=100; mat=Rock; tex=rock_cracked; a=5; };
+	overlay { algo=rndchecker; turbulence=100; mat=Gold; a=4; };
+	overlay { algo=rndchecker; turbulence=100; mat=Earth; a=3; };
+};
+
+// Sky high pillars separated by abyss.
+map BristleRidge {
+	// Sky high pillars.
+	overlay {
+		x=-10; wdt=120;
+		y=5; hgt=100;
+		algo=lines; a=26; b=46;
+		zoomY=60;
+		mat=Tunnel; 
+		turbulence=200; loosebounds=1;
+		overlay {
+			algo=rndchecker; a=2;
+			zoomX=40; 
+			mat=Earth;
+			turbulence=100;   
+			Mats{};
+		};
+		overlay { mat=Earth; hgt=3; turbulence=100; };
+		overlay {
+			algo=lines; a=5; b=30; 
+			rotate=75; turbulence=50; 
+			mat=Earth; 
+			Mats{};
+			overlay { algo=rndchecker; a=2; mat=Tunnel; turbulence=100; };
+		};
+	};
+	// Bottom of the map, slight sinusoidal with abyss.
+	overlay {
+		algo=sin; mask=1; oy=80; 
+		zoomY=-100; zoomX=50;
+		overlay {
+			algo=border; invert=1; a=2; b=2;
+			mat=Earth; turbulence=100;
+			Mats{};
+			overlay { algo=lines; a=13; b=55; mat=Tunnel; turbulence=20; };
+		};
+	};
+	// Start location, checkpoint clear of materials.
+	overlay { y=80; hgt=5; wdt=3; mat=Tunnel; };
+	overlay { y=75; hgt=15; wdt=6; mat=Tunnel; turbulence=250; loosebounds=1; };
+	overlay {
+		x=0; wdt=6;
+		y=85; hgt=15;
+		turbulence=10;
+		mat=Earth;
+		Mats{};
+		overlay { algo=rndchecker; a=2; mat=Tunnel; turbulence=100; };
+		overlay { algo=border; b=2; mat=Rock; turbulence=100; };
+	};
+};

@@ -1,0 +1,6 @@
+Name=Last Man Standing
+
+MsgRelaunchGained=%s has made four kills and gained a relaunch.
+
+MsgGoalFulfilled=All opponents eliminated.
+MsgGoalUnfulfilled=Still %d opponents in the game.

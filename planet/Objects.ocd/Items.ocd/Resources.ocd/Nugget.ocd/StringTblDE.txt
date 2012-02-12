@@ -1,0 +1,2 @@
+Name=Golderzklumpen
+Description=Ewiges Objekt der Begierde eines jeden Bergarbeiters.

@@ -1,0 +1,4 @@
+[DefCore]
+id=BackpackGraphic
+Version=5,2,0,1
+Category=C4D_StaticBack

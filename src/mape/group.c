@@ -446,7 +446,7 @@ mape_group_has_entry(MapeGroup* group,
 
   c4_group_handle_reset_search(priv->handle);
   return c4_group_handle_find_next_entry(priv->handle, entry,
-                                         NULL, NULL, NULL, FALSE);
+                                         NULL, NULL, FALSE);
 }
 
 /**
@@ -529,7 +529,7 @@ mape_group_get_next_entry(MapeGroup* group)
 #endif
 
   buf = g_malloc(512 * sizeof(gchar));
-  if(!c4_group_handle_access_next_entry(priv->handle, "*", NULL, buf, NULL))
+  if(!c4_group_handle_access_next_entry(priv->handle, "*", NULL, buf, FALSE))
   {
     g_free(buf);
     buf = NULL;

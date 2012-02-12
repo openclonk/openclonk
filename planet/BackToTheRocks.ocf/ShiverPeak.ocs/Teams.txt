@@ -1,0 +1,6 @@
+[Teams]
+Active=true
+
+	[Team]
+	id=1
+	Name=Shiver Peak Expedition

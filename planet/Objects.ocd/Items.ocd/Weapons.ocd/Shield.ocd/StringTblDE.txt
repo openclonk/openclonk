@@ -1,0 +1,2 @@
+Name=Schild
+Description=Benutze das Schild, um dich vor heranfliegenden Dingen zu schützen.

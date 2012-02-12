@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GameDefinitionFile xmlns:baseTypes="urn:schemas-microsoft-com:GamesExplorerBaseTypes.v1" xmlns="urn:schemas-microsoft-com:GameDescription.v1">
+    <GameDefinition gameID="{C90AA63B-E8DB-4EAF-88EC-B5257A86FF5A}">
+        <Name>@C4ENGINENAME@</Name>
+        <Genres>
+            <Genre>Action</Genre>
+            <Genre>Strategy</Genre>
+        </Genres>
+        <Version>
+            <VersionFile path="Clonk.exe" />
+        </Version>
+        <SavedGames baseKnownFolderID="{f1b32785-6fba-4fcf-9d55-7b8e7f157091}" path="@C4ENGINENAME@" />
+        <Developers>
+            <Developer URI="@C4PROJECT_URL@">@C4PROJECT@</Developer>
+        </Developers>
+    </GameDefinition>
+</GameDefinitionFile>
+

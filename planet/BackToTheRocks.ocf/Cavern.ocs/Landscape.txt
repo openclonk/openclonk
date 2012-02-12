@@ -1,0 +1,79 @@
+/*-- 
+	Cool Cavern
+	Author: Maikel
+		
+	Cavern with lots of snow, ice, rock and dirt.		
+--*/
+
+
+// Randomly placed material specks according to rndchecker.
+overlay MatRC {				
+	algo=rndchecker; a=8;
+	zoomX=-50; zoomY=-50;
+	turbulence=100; loosebounds=1;
+};
+
+// Fills an overlay with earth and materials.
+overlay MatFill {
+	overlay { mat=Earth; tex=earth_dry; loosebounds=1; };
+	MatRC { mat=Ore; tex=ore; a=20; };
+	MatRC { mat=Snow; tex=snow1; a=20; };
+	MatRC { mat=Granite; tex=granite; a=20; };
+	MatRC { mat=Rock; tex=rock; a=20; };
+	MatRC { mat=Ore; tex=ore; a=20; };
+	MatRC { mat=Ice; tex=ice3; a=20; };
+	MatRC { mat=Snow; tex=snow1; a=20; };
+	MatRC { mat=Ice; tex=ice3; };
+	MatRC { mat=Rock; tex=rock; };
+	MatRC { mat=Tunnel; tex=tunnel; };
+	MatRC { mat=Earth; tex=earth_dry; };
+	MatRC { mat=Earth; tex=earth_rough; };
+	overlay { 
+		algo=lines;	a=3; b=16;
+		rotate=45;
+		turbulence=100;
+		mat=Tunnel; tex=tunnel;
+	};
+	overlay { 
+		algo=lines;	a=3; b=16;
+		rotate=-45;
+		turbulence=100;
+		mat=Tunnel; tex=tunnel;
+	};
+};
+
+// Randomly placed material specks according to bozo.
+overlay MatBozo {				
+	algo=bozo; a=5;
+	turbulence=1000; loosebounds=1;
+};
+
+// Fills an overlay with ice, tunnel, rock and granite.
+overlay BorderFill {
+	overlay { mat=Rock; tex=rock; loosebounds=1;
+		MatBozo { mat=Tunnel; tex=tunnel; };
+		MatBozo { mat=Rock; tex=rock_cracked; a=6; };
+		MatBozo { mat=Granite; tex=granite; a=14; };
+		MatBozo { mat=Ice; tex=ice3; a=8; };
+		MatBozo { mat=Tunnel; tex=tunnel; };
+	};
+};
+
+// A lengthy vertical cavern surrounded by ice, dirt and rock.
+map Cavern {
+	overlay {
+		// Cut cavern out of the landscape.
+		x=40; wdt=20; y=-6; hgt=100;
+		turbulence=100; lambda=4;
+		loosebounds=1;
+	} ^ overlay {
+		// Fill remaining area with MatFill.
+		MatFill;
+		// And create a border around this area.
+		overlay { 
+			algo=border; a=4; b=4;
+			// Fill border with BorderFill.
+			BorderFill;
+		};
+	};
+};

@@ -17,6 +17,7 @@
 
 #define MAPE_COMPILING_CPP
 
+#include <C4Include.h>
 #include <Standard.h>
 #include <C4Scenario.h>
 #include <C4Texture.h>

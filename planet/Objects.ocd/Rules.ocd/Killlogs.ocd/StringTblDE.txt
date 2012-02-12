@@ -1,0 +1,21 @@
+Name=Killlogs
+Description=Wenn diese Spielregel aktiviert ist, werden Tode der Spieler im Log kommentiert.
+
+Selfkill1=%s hat einen eigenen %s umgebracht.
+Selfkill2=%s mochte seinen einen %s nicht mehr.
+Selfkill3=%s hat Selbstmord begangen! Der arme %s.
+KilledByPlayer1=%s hat einen %s an %s verloren.
+KilledByPlayer2=%ss %s konnte nichts gegen %s machen.
+KilledByPlayer3=%s konnte mit seinem %s nicht gut genug kämpfen für %s.
+KilledByGaya1=%s hat einen %s weggezaubert bekommen.
+KilledByGaya2=%ss %s stirbt von alleine.
+KilledByGaya3=%s hat einen %s an Gaya verloren.
+Teamkill1=%s hat einen %s an %s verloren. Teamkiller!
+Teamkill2=%ss %s ist bei %s in Ungnade gefallen.
+Teamkill3=%ss %s wurde von %s sauber hintergangen.
+Relaunches=%s hat %d Relaunches übrig!
+
+MsgRelaunch0=%s hat keine Relaunches mehr übrig.
+MsgRelaunch1=%s hat noch einen Relauch übrig.
+MsgRelaunchX=%s hat noch %d Relaunches übrig.
+MsgFail=%s hat verloren.

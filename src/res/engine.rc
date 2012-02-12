@@ -4,75 +4,40 @@
 
 #include "C4Version.h"
 
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
 #include <winresrc.h>
+
 #define IDC_STATIC (-1)
 
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Germany) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
-#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
+// Icons
 //
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_00_C4X              ICON    DISCARDABLE     "cz.ico"
-IDI_01_C4S              ICON    DISCARDABLE     "c4s.ico"
-IDI_02_C4G              ICON    DISCARDABLE     "c4g.ico"
-IDI_03_C4F              ICON    DISCARDABLE     "c4f.ico"
-IDI_04_C4P              ICON    DISCARDABLE     "c4p.ico"
-IDI_05_C4X              ICON    DISCARDABLE     "c4x.ico"
-IDI_06_C4D              ICON    DISCARDABLE     "c4d.ico"
-IDI_07_C4I              ICON    DISCARDABLE     "c4i.ico"
-IDI_08_C4M              ICON    DISCARDABLE     "c4m.ico"
-IDI_09_C4B              ICON    DISCARDABLE     "c4b.ico"
-IDI_10_C4V              ICON    DISCARDABLE     "c4v.ico"
-IDI_11_C4L              ICON    DISCARDABLE     "c4l.ico"
-IDI_12_C4K              ICON    DISCARDABLE     "c4k.ico"
-IDI_13_C4U              ICON    DISCARDABLE     "c4u.ico"
+IDI_00_C4X              ICON    DISCARDABLE     "oc.ico" 
+IDI_01_OCS              ICON    DISCARDABLE     "ocs.ico"
+IDI_02_OCG              ICON    DISCARDABLE     "ocg.ico"
+IDI_03_OCF              ICON    DISCARDABLE     "ocf.ico"
+IDI_04_OCP              ICON    DISCARDABLE     "ocp.ico"
+IDI_06_OCD              ICON    DISCARDABLE     "ocd.ico"
+IDI_07_OCI              ICON    DISCARDABLE     "oci.ico"
+IDI_08_OCM              ICON    DISCARDABLE     "ocm.ico"
+IDI_09_OCB              ICON    DISCARDABLE     "ocb.ico"
+IDI_10_OCV              ICON    DISCARDABLE     "ocv.ico"
+IDI_11_OCL              ICON    DISCARDABLE     "ocl.ico"
+IDI_13_OCU              ICON    DISCARDABLE     "ocu.ico"
 
-#ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
-// TEXTINCLUDE
+// Game Explorer Integration
 //
 
-1 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "resource.h\0"
-END
+__GDF_XML DATA	"WindowsGamesExplorer.xml"
 
-2 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -115,12 +80,9 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
-// Dialog
+// Dialogs
 //
 
 IDD_CONSOLE DIALOGEX 0, 0, 232, 127
@@ -152,7 +114,7 @@ BEGIN
 END
 
 IDD_PROPERTIES DIALOGEX 0, 0, 168, 62
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "PROPERTIES"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -168,7 +130,7 @@ BEGIN
 END
 
 IDD_TOOLS DIALOGEX 0, 0, 194, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "TOOLS"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -204,50 +166,6 @@ BEGIN
     EDITTEXT        IDC_EDITDATA,1,1,275,131,ES_MULTILINE | ES_AUTOVSCROLL |
                     ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE
-BEGIN
-    IDD_CONSOLE, DIALOG
-    BEGIN
-        LEFTMARGIN, 1
-        RIGHTMARGIN, 230
-        TOPMARGIN, 1
-        BOTTOMMARGIN, 126
-    END
-
-    IDD_PROPERTIES, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 166
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 60
-    END
-
-    IDD_TOOLS, DIALOG
-    BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 192
-        TOPMARGIN, 2
-        BOTTOMMARGIN, 53
-    END
-
-    IDD_COMPONENT, DIALOG
-    BEGIN
-        LEFTMARGIN, 1
-        RIGHTMARGIN, 276
-        TOPMARGIN, 1
-        BOTTOMMARGIN, 148
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -291,8 +209,6 @@ BEGIN
         MENUITEM "DUPLICATE",                   IDM_VIEWPORT_DUPLICATE
         MENUITEM "GRAB CONTENTS",               IDM_VIEWPORT_CONTENTS
         , GRAYED
-        MENUITEM SEPARATOR
-        MENUITEM "PROPERTIES",                  IDM_VIEWPORT_PROPERTIES
     END
 END
 
@@ -305,19 +221,12 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "SAVESCENARIO",                IDM_FILE_SAVE
         MENUITEM "SAVESCENARIOAS",              IDM_FILE_SAVEAS
-        MENUITEM "SAVEGAME",                    IDM_FILE_SAVEGAME
         MENUITEM "SAVEGAME AS",                 IDM_FILE_SAVEGAMEAS
         MENUITEM "RECORD",                      IDM_FILE_RECORD
         MENUITEM SEPARATOR
         MENUITEM "CLOSE",                       IDM_FILE_CLOSE
         MENUITEM SEPARATOR
         MENUITEM "QUIT",                        IDM_FILE_QUIT
-    END
-    POPUP "COMPONENTS"
-    BEGIN
-        MENUITEM "SCRIPT",                      IDM_COMPONENTS_SCRIPT
-        MENUITEM "TITLE",                       IDM_COMPONENTS_TITLE
-        MENUITEM "INFO",                        IDM_COMPONENTS_INFO
     END
     POPUP "PLAYER"
     BEGIN
@@ -332,19 +241,4 @@ BEGIN
         MENUITEM "ABOUT",                       IDM_HELP_ABOUT
     END
 END
-
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
 

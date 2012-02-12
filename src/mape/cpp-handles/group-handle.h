@@ -43,8 +43,8 @@ gchar* c4_group_handle_get_full_name(C4GroupHandle* handle);
 
 void c4_group_handle_reset_search(C4GroupHandle* handle);
 
-gboolean c4_group_handle_find_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean* child, gboolean start_at_filename);
-gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean* child);
+gboolean c4_group_handle_find_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean start_at_filename);
+gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean start_at_filename);
 gsize c4_group_handle_accessed_entry_size(C4GroupHandle* handle);
 gboolean c4_group_handle_read(C4GroupHandle* handle, gpointer buffer, gsize size);
 

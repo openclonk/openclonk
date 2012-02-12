@@ -1,0 +1,17 @@
+[DefCore]
+id=Rock
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Value=1
+Mass=10
+Components=Rock=1
+Projectile=1
+Rotate=1
+

@@ -1,0 +1,15 @@
+[Particle]
+Name=Lichen
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,64,64,-32,-32
+Delay=0
+Repeats=1
+GravityAcc=33
+VertexCount=1
+VertexY=0
+AlphaFade=15
+RByV=3
+Attach=0

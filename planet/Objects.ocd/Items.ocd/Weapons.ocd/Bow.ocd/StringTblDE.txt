@@ -1,0 +1,2 @@
+Name=Bogen
+Description=Ziele und schieße mit [Benutzen]. Der Bogen benötigt Pfeile als Munition.

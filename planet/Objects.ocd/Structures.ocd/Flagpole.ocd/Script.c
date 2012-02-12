@@ -1,0 +1,19 @@
+/*-- Flagpole --*/
+
+#include Library_Flag
+#include Library_GoldSeller
+
+local Name = "$Name$";
+local Description = "$Description$";
+ 
+protected func Initialize()
+{
+	// SetCategory(C4D_StaticBack);
+	return _inherited(...);
+}
+
+protected func Construction()
+{
+	SetProperty("MeshTransformation", Trans_Translate(0,4000,0));
+	return _inherited(...);
+}

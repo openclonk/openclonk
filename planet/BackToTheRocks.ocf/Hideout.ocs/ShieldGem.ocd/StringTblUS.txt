@@ -1,0 +1,2 @@
+Name=Shield Gem
+Description=Creates a short-living shield on impact.

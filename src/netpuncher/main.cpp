@@ -3,6 +3,8 @@
  *
  * Copyright (c) 2006-2007  Peter Wortmann
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2010  Günther Brammer
+ * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -16,11 +18,15 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+
+#include <C4Include.h>
 #include "C4NetIO.h"
 
 #include <stdio.h>
 
 const uint16_t C4PuncherPort = 11115;
+
+extern bool fQuiet;
 
 class C4PuncherServer : public C4NetIOUDP, private C4NetIO::CBClass
 {
@@ -46,14 +52,14 @@ int main(int argc, char * argv[])
 
 	// Get port
 	uint16_t iPort = C4PuncherPort;
-	if(argc)
+	if (argc)
 	{
 		iPort = atoi(*argv);
-		if(!iPort) iPort = C4PuncherPort;
+		if (!iPort) iPort = C4PuncherPort;
 	}
 
 	// Initialize
-	if(!Puncher.Init(iPort))
+	if (!Puncher.Init(iPort))
 	{
 		fprintf(stderr, "Could not initialize puncher: %s", Puncher.GetError());
 		return 1;

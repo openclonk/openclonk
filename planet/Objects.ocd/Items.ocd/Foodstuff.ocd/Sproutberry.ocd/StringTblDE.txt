@@ -1,0 +1,2 @@
+Name=Sprossenbeere
+Description=Süßlich. Keimt sehr schnell und ist schlecht zu lagern.

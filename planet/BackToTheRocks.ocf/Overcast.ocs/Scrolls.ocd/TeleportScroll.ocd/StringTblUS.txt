@@ -1,0 +1,2 @@
+Name=Teleport Scroll
+Description=Teleport to a safe place, if you fall down.

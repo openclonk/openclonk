@@ -1,0 +1,4 @@
+NoPlrKnowledge=No construction plans
+Construction=Construction
+Production=Production
+Name=Tools workshop

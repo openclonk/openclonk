@@ -1,0 +1,2 @@
+Name=Telekinetischer Gyrohandschuh
+Description=Du kannst ein frei herumliegendes Objekt durch die Landschaft ziehen, indem Du darauf zeigst und dabei die Maustaste gedrückt hälst.

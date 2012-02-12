@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,13 +23,32 @@
 
 #include "C4ComponentHost.h"
 
+#include <map>
+#include <string>
+#include <stdexcept>
+
 class C4LangStringTable : public C4ComponentHost
+{
+	// Contains the localization string->string mapping. Populated lazily from PopulateStringTable, thus mutable.
+	typedef std::map<std::string, std::string> Table;
+	mutable Table strings;
+	void PopulateStringTable() const;
+public:
+	C4LangStringTable();
+	std::string Translate(const std::string &text) const;
+	bool HasTranslation(const std::string &text) const;
+	// do replacement in buffer
+	// if any replacement is done, the buffer will be realloced
+	void ReplaceStrings(StdStrBuf &rBuf);
+	void ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget);
+
+	class NoSuchTranslation : public std::runtime_error
 	{
 	public:
-		// do replacement in buffer
-		// if any replacement is done, the buffer will be realloced
-		void ReplaceStrings(StdStrBuf &rBuf);
-		void ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget, const char *szParentFilePath = NULL);
+		NoSuchTranslation(const std::string &text) : std::runtime_error("No such translation: \"" + text + "\"") {}
 	};
+protected:
+	virtual void OnLoad() { strings.clear(); } // Make sure we re-populate when the string table is reloaded
+};
 
 #endif // INC_C4LangStringTable

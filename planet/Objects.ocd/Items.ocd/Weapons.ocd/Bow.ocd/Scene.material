@@ -1,0 +1,30 @@
+material Leather
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.203922 0.175686 0.012549 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+		}
+	}
+}
+material wood
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.483591 0.434132 0.277515 1.000000
+			specular 0.210835 0.210835 0.210835 1.000000 4.000000
+			emissive 0.000000 0.000000 0.000000 1.000000
+		}
+	}
+}

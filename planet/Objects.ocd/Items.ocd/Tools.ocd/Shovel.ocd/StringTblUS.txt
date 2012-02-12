@@ -1,0 +1,2 @@
+Name=Shovel
+Description=Hold down the [Use] key to dig through the earth.

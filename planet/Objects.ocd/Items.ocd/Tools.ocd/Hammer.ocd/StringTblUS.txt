@@ -1,0 +1,5 @@
+TxtNoconstructionplansa=No construction plans available
+TxtConstructions=Construction: %s
+TxtCantConstruct=%s can't build.
+Name=Hammer
+Description=Press [Use] to construct a building.

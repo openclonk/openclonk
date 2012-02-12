@@ -1,0 +1,2 @@
+NameLeft=Team Rubin
+NameRight=Team Amethyst

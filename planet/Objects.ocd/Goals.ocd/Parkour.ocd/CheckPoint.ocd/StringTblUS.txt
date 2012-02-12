@@ -1,0 +1,7 @@
+Name=Checkpoint
+
+#Log messages
+MsgClearedOrdered=%s has passed checkpoint %d, unfortunately %d players were there before.
+MsgClearedCheck=%s has passed a checkpoint, %d players have beaten him to there.
+MsgClearedOrderedFirst=%s is the first to pass checkpoint %d.
+MsgClearedCheckFirst=%s was the first one to pass this checkpoint.

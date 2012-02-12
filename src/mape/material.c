@@ -28,6 +28,7 @@
  * of name clashes to support material overloading.
  **/
 
+#include "mape/cpp-handles/group-handle.h"
 #include "mape/cpp-handles/material-handle.h"
 #include "mape/material.h"
 

@@ -1,0 +1,11 @@
+[Material]
+Name=Acid
+ColorAnimation=1
+Density=25
+Instable=1
+MaxAirSpeed=25
+MaxSlide=10000
+WindDrift=30
+Corrosive=75
+Placement=10
+TextureOverlay=acid

@@ -3,10 +3,13 @@
 /* Activate DebugRecs */
 #undef DEBUGREC
 
+/* define if the Boost library is available */
+#undef HAVE_BOOST
+
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
-/* Define to 1 if you have the <execinfo.h> header file. */
+/* The backtrace function is declared in execinfo.h and works */
 #undef HAVE_EXECINFO_H
 
 /* Define to 1 if you have FreeType2. */
@@ -42,11 +45,17 @@
 /* Define to 1 if you have the <multimon.h> header file. */
 #undef HAVE_MULTIMON_H
 
+/* Define to 1 if you have the <natupnp.h> header file. */
+#undef HAVE_NATUPNP_H
+
 /* Define to 1 if you have the <poll.h> header file. */
 #undef HAVE_POLL_H
 
 /* Define if you have POSIX threads libraries and header files. */
 #undef HAVE_PTHREAD
+
+/* Have PTHREAD_PRIO_INHERIT. */
+#undef HAVE_PTHREAD_PRIO_INHERIT
 
 /* Define to 1 if you have the <readline.h> header file. */
 #undef HAVE_READLINE_H
@@ -84,8 +93,11 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* inotify reachable using syscall */
-#undef HAVE_SYSCALL_INOTIFY
+/* Define to 1 if you have the <sys/eventfd.h> header file. */
+#undef HAVE_SYS_EVENTFD_H
+
+/* Define to 1 if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
 
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 #undef HAVE_SYS_INOTIFY_H
@@ -96,8 +108,8 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
-/* Define to 1 if you have the <sys/syscall.h> header file. */
-#undef HAVE_SYS_SYSCALL_H
+/* Define to 1 if you have the <sys/timerfd.h> header file. */
+#undef HAVE_SYS_TIMERFD_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
@@ -107,6 +119,9 @@
 
 /* Define to 1 if you have the `vasprintf' function. */
 #undef HAVE_VASPRINTF
+
+/* */
+#undef HAVE_VFW32
 
 /* Define to 1 if you have the <X11/extensions/xf86vmode.h> header file. */
 #undef HAVE_X11_EXTENSIONS_XF86VMODE_H
@@ -141,6 +156,9 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -157,7 +175,7 @@
 /* DirectX graphics */
 #undef USE_DIRECTX
 
-/* Wether FMOD shall be used */
+/* Whether FMOD shall be used */
 #undef USE_FMOD
 
 /* OpenGL graphics */
@@ -166,11 +184,17 @@
 /* MP3 music */
 #undef USE_MP3
 
+/* OpenAL sound */
+#undef USE_OPEN_AL
+
 /* Define to 1 if SDL is used for the main loop */
 #undef USE_SDL_MAINLOOP
 
 /* Define to 1 if the X Window System is used */
 #undef USE_X11
+
+/* Enable automatic update system */
+#undef WITH_AUTOMATIC_UPDATE
 
 /* Developer mode */
 #undef WITH_DEVELOPER_MODE

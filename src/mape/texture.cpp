@@ -17,8 +17,10 @@
 
 #define MAPE_COMPILING_CPP
 
-#include <exception>
+#include <C4Include.h>
 #include <C4Texture.h>
+
+#include <exception>
 
 #include "mape/cpp-handles/group-handle.h"
 #include "mape/group.h"
@@ -44,7 +46,6 @@ static gboolean mape_texture_map_load_group(MapeTextureMap* map,
 {
 	gchar* name;
 	const char* const* ext;
-	gchar* extfile;
 	gsize len;
 	gchar* casefold_name;
 

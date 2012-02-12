@@ -1,0 +1,2 @@
+Name=Lehm
+Description=Drücke [Benutzen] um eine Lehmbrücke zu bauen.

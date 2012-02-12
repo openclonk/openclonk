@@ -1,0 +1,2 @@
+Name=Balloon
+Description=Use the balloon to slow down your fall.

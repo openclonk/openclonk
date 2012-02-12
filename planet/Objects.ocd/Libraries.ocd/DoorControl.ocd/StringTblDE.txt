@@ -1,0 +1,2 @@
+Name=Eingangssteuerung
+TxtNoEntryEnemy=%s verfeindet.|Eingang versperrt!

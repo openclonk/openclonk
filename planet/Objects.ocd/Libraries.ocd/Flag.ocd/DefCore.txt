@@ -1,0 +1,8 @@
+[DefCore]
+id=Library_Flag
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+

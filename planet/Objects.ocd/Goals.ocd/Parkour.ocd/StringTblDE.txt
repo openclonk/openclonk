@@ -1,0 +1,31 @@
+Name=Parkour
+
+#Goal window
+MsgParkour=This parkour is over %d checkpoints, check the scoreboard for the number of completed checkpoints per player.
+MsgParkourWon=Congratulations, you have won this parkour!
+MsgParkourWonTeam=Congratulations, your team has won this parkour!
+MsgParkourLost=You have lost this parkour.
+MsgParkourLostTeam=Your team has lost this parkour.
+
+#Respawn
+MsgRespawn0=%s tries again.
+MsgRespawn1=%s has died.
+MsgRespawn2=Haha, %s!
+MsgRespawn3=We're mourning %s.
+MsgNewRespawn=You'll now respawn here.
+
+#Short Description
+MsgShortDesc=Fertig: %d%
+
+#Scoreboard
+MsgCaptionX=Parkour over %d checkpoints.
+MsgCaptionNone=Parkour without checkpoints.
+
+#Best time
+MsgBestTime=%s has set a new personal best time of %s.
+
+#Evaluation data
+MsgEvalPlrWon=%s has won the parkour in %s.
+MsgEvalTeamWon=The team %s has won the parkour in %s.
+MsgEvalPlayerX=You have cleared %d out of %d checkpoints.
+MsgEvalPlayerAll=You have cleared all checkpoints.

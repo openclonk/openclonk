@@ -1,0 +1,1 @@
+TxtSelect=%s auswählen

@@ -1,0 +1,2 @@
+Name=Flamme
+Description=Brennt.

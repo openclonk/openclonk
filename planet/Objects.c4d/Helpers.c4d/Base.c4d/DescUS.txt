@@ -1,1 +1,0 @@
-Handels the base funcionality.

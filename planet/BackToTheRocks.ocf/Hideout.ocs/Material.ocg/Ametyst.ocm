@@ -1,0 +1,12 @@
+[Material]
+Name=Ametyst
+Shape=Rough
+Density=50
+Friction=15
+BlastFree=1
+Blast2Object=Ice
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=60
+Placement=21
+TextureOverlay=Ametyst

@@ -4,6 +4,8 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2008  Günther Brammer
+ * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,78 +20,56 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* 32-bit value to identify object definitions */
+/* Value to identify object definitions */
 
-#include <C4Include.h>
-#include <C4Id.h>
+#include "C4Include.h"
+#include "C4Id.h"
+#include "StdCompiler.h"
 
-C4ID C4Id(const char *szId)
-  {
-  if (!szId) return C4ID_None;
-	// Numerical id
-	if (Inside(szId[0],'0','9') && Inside(szId[1],'0','9') && Inside(szId[2],'0','9') && Inside(szId[3],'0','9'))
-		{
-		int iResult;
-		sscanf(szId,"%d",&iResult);
-		return iResult;
-		}
-	// NONE?
-	if (SEqual(szId, "NONE"))
-		return 0;
-	// Literal id
-	return (((DWORD)szId[3])<<24) + (((DWORD)szId[2])<<16) + (((DWORD)szId[1])<<8) + ((DWORD)szId[0]);
-  }
+#include <utility>
 
-static char C4IdTextBuffer[5];
+C4ID::NamesList C4ID::names;
+C4ID::LookupTable C4ID::lookup;
 
-const char *C4IdText(C4ID id)
-	{
-	GetC4IdText(id,C4IdTextBuffer);
-	return C4IdTextBuffer;
-	}
+const C4ID C4ID::None(std::string("None"));
+const C4ID C4ID::Contents(std::string("Contents"));
 
-void GetC4IdText(C4ID id, char *sBuf)
-  {
-	// Invalid parameters
-  if (!sBuf) return;
-	// No id
-	if (id==C4ID_None) { SCopy("NONE",sBuf); return; }
-	// Numerical id
-	if (Inside((int) id,0,9999))
-		{
-		osprintf(sBuf,"%04i",static_cast<unsigned int>(id));
-		}
-	// Literal id
+// TODO: Remove these eventually, since they are deprecated.
+const C4ID C4ID::CnMaterial(std::string("CNMT"));
+const C4ID C4ID::Flag(std::string("FLAG"));
+const C4ID C4ID::Conkit(std::string("CNKT"));
+const C4ID C4ID::Clonk(std::string("Clonk"));
+const C4ID C4ID::Flame(std::string("FLAM"));
+const C4ID C4ID::Melee(std::string("MELE"));
+const C4ID C4ID::Bubble(std::string("Fx_Bubble"));
+
+C4ID::C4ID(const std::string &s) { assign(s); }
+
+void C4ID::assign(const std::string &s)
+{
+	LookupTable::const_iterator it = lookup.find(s);
+	if (it != lookup.end())
+		v = it->second;
 	else
-		{
-		sBuf[0]= (char) ((id & 0x000000FF) >>  0);
-		sBuf[1]= (char) ((id & 0x0000FF00) >>  8);
-		sBuf[2]= (char) ((id & 0x00FF0000) >> 16);
-		sBuf[3]= (char) ((id & 0xFF000000) >> 24);
-		sBuf[4]= 0;
-		}
-  }
-
-bool LooksLikeID(const char *szText)
-  {
-  int cnt;
-  if (SLen(szText)!=4) return false;
-  for (cnt=0; cnt<4; cnt++)
-    if (!(Inside(szText[cnt],'A','Z') || Inside(szText[cnt],'0','9') || (szText[cnt] =='_')))
-      return false;
-  return true;
-  }
-
-bool LooksLikeID(C4ID id)
 	{
-	int intid = id;
-	// don't allow 0000, since this may indicate error
-	if (Inside(intid, 1, 9999)) return true;
-  for (int cnt=0; cnt<4; cnt++)
-		{
-		char b = intid&0xFF;
-		if (!(Inside(b,'A','Z') || Inside(b,'0','9') || (b =='_'))) return false;
-		intid>>=8;
-		}
-	return true;
+		v = names.size();
+		names.push_back(s);
+		lookup.insert(std::make_pair(s, v));
 	}
+}
+
+void C4ID::CompileFunc(StdCompiler *pComp)
+{
+	if (pComp->isDecompiler())
+	{
+		assert(v < names.size());
+		pComp->String(&names[v][0], names[v].size(), StdCompiler::RCT_ID);
+	}
+	else
+	{
+		char *data;
+		pComp->String(&data, StdCompiler::RCT_ID);
+		v = C4ID(data).v;
+		StdBuf::DeletePointer(data);
+	}
+}

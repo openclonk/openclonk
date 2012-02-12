@@ -15,6 +15,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include "C4Include.h"
 #include "C4Group.h"
 #include "mape/cpp-handles/group-handle.h"
 
@@ -67,20 +68,14 @@ void c4_group_handle_reset_search(C4GroupHandle* handle)
   HANDLE_TO_GROUP(handle)->ResetSearch();
 }
 
-gboolean c4_group_handle_find_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean* child, gboolean start_at_filename)
+gboolean c4_group_handle_find_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean start_at_filename)
 {
-  bool cpp_child;
-  bool res = HANDLE_TO_GROUP(handle)->FindNextEntry(wildcard, filename, size, &cpp_child, start_at_filename);
-  if(child) *child = cpp_child;
-  return res;
+  return HANDLE_TO_GROUP(handle)->FindNextEntry(wildcard, filename, size, start_at_filename);
 }
 
-gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean* child)
+gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean start_at_filename)
 {
-  bool cpp_child;
-  bool res = HANDLE_TO_GROUP(handle)->AccessNextEntry(wildcard, size, filename, &cpp_child);
-  if(child) *child = cpp_child;
-  return res;
+  return HANDLE_TO_GROUP(handle)->AccessNextEntry(wildcard, size, filename, start_at_filename);
 }
 
 gsize c4_group_handle_accessed_entry_size(C4GroupHandle* handle)

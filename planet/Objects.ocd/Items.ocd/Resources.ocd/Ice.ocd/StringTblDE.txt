@@ -1,0 +1,2 @@
+Name=Eis
+Description=Gefrorenes Wasser.

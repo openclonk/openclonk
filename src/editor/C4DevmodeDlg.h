@@ -22,8 +22,7 @@
 #define INC_C4DevmodeDlg
 
 #ifdef WITH_DEVELOPER_MODE
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkwindow.h>
+#include <gtk/gtk.h>
 #endif // WITH_DEVELOPER_MODE
 
 // TODO: Threadsafety?

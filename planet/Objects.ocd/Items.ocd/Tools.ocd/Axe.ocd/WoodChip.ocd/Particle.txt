@@ -1,0 +1,16 @@
+[Particle]
+Name=Axe_WoodChip
+MaxCount=1500
+InitFn=StdInit
+ExecFn=StdExec
+CollisionFn=Stop
+DrawFn=Std
+Face=0,0,16,16,-8,-8
+FadeOutDelay=40
+Repeats=1
+GravityAcc=100
+VertexCount=1
+VertexY=4
+AlphaFade=12
+Additive=0
+RByV=3
