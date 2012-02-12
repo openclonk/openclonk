@@ -887,7 +887,7 @@ void C4ObjectList::CheckCategorySort()
 {
 	// debug: Check whether object list is sorted correctly
 	C4ObjectLink *cLnk, *cPrev=NULL;
-	for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (!cLnk->Obj->Unsorted && cLnk->Obj->Status)
 		{
 			if (cPrev) assert(cPrev->Obj->GetPlane() >= cLnk->Obj->GetPlane());
