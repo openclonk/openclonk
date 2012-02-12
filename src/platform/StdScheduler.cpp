@@ -224,20 +224,18 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 		}
 
 	}
-	else
+
+	// Execute all processes with timeout
+	Now = GetTime();
+	for (i = 0; i < iProcCnt; i++)
 	{
-		// Execute all processes with timeout
-		Now = GetTime();
-		for (i = 0; i < iProcCnt; i++)
-		{
-			iProcTick = ppProcs[i]->GetNextTick(Now);
-			if (iProcTick >= 0 && iProcTick <= Now)
-				if (!ppProcs[i]->Execute(0))
-				{
-					OnError(ppProcs[i]);
-					fSuccess = false;
-				}
-		}
+		iProcTick = ppProcs[i]->GetNextTick(Now);
+		if (iProcTick >= 0 && iProcTick <= Now)
+			if (!ppProcs[i]->Execute(0))
+			{
+				OnError(ppProcs[i]);
+				fSuccess = false;
+			}
 	}
 
 #else
