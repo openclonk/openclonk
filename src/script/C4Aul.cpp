@@ -48,7 +48,6 @@ void C4AulError::show()
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL),
-		LinkedTo (NULL),
 		OverloadedBy (NULL)
 {
 	AppendToScript(pOwner);
@@ -75,26 +74,6 @@ void C4AulFunc::AppendToScript(C4AulScript * pOwner)
 
 C4AulFunc::~C4AulFunc()
 {
-	// if it's a global: remove the global link!
-	if (LinkedTo && Owner)
-		if (LinkedTo->Owner == Owner->Engine)
-		{
-			if (!LinkedTo->OverloadedBy)
-				LinkedTo->Owner->GetPropList()->ResetProperty(LinkedTo->Name);
-			delete LinkedTo;
-		}
-	// unlink func
-	if (LinkedTo)
-	{
-		// find prev
-		C4AulFunc* pAkt = this;
-		while (pAkt->LinkedTo != this) pAkt = pAkt->LinkedTo;
-		if (pAkt == LinkedTo)
-			pAkt->LinkedTo = NULL;
-		else
-			pAkt->LinkedTo = LinkedTo;
-		LinkedTo = NULL;
-	}
 	// remove from list
 	if (Prev) Prev->Next = Next;
 	if (Next) Next->Prev = Prev;
@@ -111,13 +90,6 @@ C4AulFunc::~C4AulFunc()
 			assert(v.getFunction() != this);
 		}
 	}
-}
-
-void C4AulFunc::DestroyLinked()
-{
-	// delete all functions linked to this one.
-	while (LinkedTo)
-		delete LinkedTo;
 }
 
 StdStrBuf C4AulFunc::GetFullName()
@@ -154,8 +126,10 @@ C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef
 
 C4AulDefFunc::~C4AulDefFunc()
 {
-	if (!OverloadedBy)
-		Owner->GetPropList()->ResetProperty(Name);
+	assert(Owner);
+	assert(Owner->GetPropList());
+	assert(Name);
+	assert(Owner->GetPropList()->GetFunc(Name) != this);
 }
 
 C4AulScript::C4AulScript()
@@ -312,10 +286,10 @@ void C4AulScriptEngine::Clear()
 	while (Child0)
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
-	// clear inherited
-	C4AulScript::Clear();
 	// clear own stuff
 	GetPropList()->Clear();
+	// clear inherited
+	C4AulScript::Clear();
 	// reset values
 	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too

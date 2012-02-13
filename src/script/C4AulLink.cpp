@@ -135,12 +135,10 @@ void C4AulScript::UnLink()
 
 		if (pFunc->SFunc())
 			if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
-				// do not kill global links; those will be deleted if corresponding sfunc in script is deleted
-				if (!pFunc->LinkedTo || pFunc->LinkedTo->SFunc())
-				{
-					if (p) p->ResetProperty(pFunc->Name);
-					delete pFunc;
-				}
+			{
+				if (p) p->ResetProperty(pFunc->Name);
+				delete pFunc;
+			}
 
 		pFunc = pNextFunc;
 	}

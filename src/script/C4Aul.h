@@ -226,7 +226,6 @@ protected:
 	C4RefCntPointer<C4String> Name; // function name
 	C4AulFunc *Prev, *Next; // linked list members
 	C4AulFunc *MapNext; // map member
-	C4AulFunc *LinkedTo; // points to next linked function; destructor will destroy linked func, too
 	void AppendToScript(C4AulScript *);
 
 public:
@@ -242,10 +241,6 @@ public:
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false) { return C4Value(); } // execute func (script call)
 	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 	virtual void UnLink() { OverloadedBy = NULL; }
-
-protected:
-	void DestroyLinked(); // destroys linked functions
-
 };
 
 // script function class

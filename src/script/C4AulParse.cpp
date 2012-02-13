@@ -743,7 +743,7 @@ C4ScriptHost * C4AulScriptFunc::GetCodeOwner()
 {
 	if (Owner == Owner->Engine)
 	{
-		return LinkedTo->Owner->GetScriptHost();
+		return pOrgScript->GetScriptHost();
 	}
 	else
 	{
@@ -769,11 +769,6 @@ bool C4ScriptHost::Preparse()
 	ClearCode();
 	while (Func0)
 	{
-		// belongs to this script?
-		if (Func0->SFunc())
-			if (Func0->SFunc()->pOrgScript == this)
-				// then destroy linked funcs, too
-				Func0->DestroyLinked();
 		// destroy func
 		delete Func0;
 	}
@@ -1384,8 +1379,6 @@ void C4AulParseState::Parse_Function()
 		{
 			// global func
 			Fn = new C4AulScriptFunc(a->Engine, Idtf);
-			C4AulFunc *FnLink = new C4AulFunc(a, NULL);
-			FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
 			Acc = AA_PUBLIC;
 		}
 		else
@@ -1411,7 +1404,7 @@ void C4AulParseState::Parse_Function()
 			f = f->Next;
 		}
 		assert(Fn);
-		assert(Fn->GetCodeOwner() == a || Acc == AA_GLOBAL); // FIXME: handle globals better
+		assert(Fn->GetCodeOwner() == a || (Acc == AA_GLOBAL && Fn->GetCodeOwner() == pOrgScript)); // FIXME: handle globals better
 		if (Fn->GetCodeOwner() == a)
 			Fn->CodePos = a->Code.size();
 	}
@@ -2914,17 +2907,6 @@ bool C4ScriptHost::Parse()
 				// append: create copy
 				C4AulScriptFunc *sfc = new C4AulScriptFunc(this, sf->GetName());
 				sfc->CopyBody(*sf);
-				// link the copy to a local function
-				if (sf->LinkedTo)
-				{
-					sfc->LinkedTo = sf->LinkedTo;
-					sf->LinkedTo = sfc;
-				}
-				else
-				{
-					sfc->LinkedTo = sf;
-					sf->LinkedTo = sfc;
-				}
 			}
 		// copy local var definitions
 		for (int ivar = 0; ivar < (*s)->LocalNamed.iSize; ivar ++)
@@ -2948,12 +2930,8 @@ bool C4ScriptHost::Parse()
 	// calc absolute code addresses for script funcs
 	for (C4AulFunc * f = Func0; f; f = f->Next)
 	{
-		C4AulScriptFunc *Fn;
-		if (!(Fn = f->SFunc()))
-		{
-			if (f->LinkedTo) Fn = f->LinkedTo->SFunc();
-			if (Fn) if (Fn->Owner != Engine) Fn=NULL;
-		}
+		C4AulScriptFunc * Fn = f->SFunc();
+		assert(Fn);
 		if (Fn)
 			assert(Fn->GetCodeOwner() == this);
 	}
@@ -2965,12 +2943,8 @@ bool C4ScriptHost::Parse()
 	if (DEBUG_BYTECODE_DUMP)
 		for (C4AulFunc * f = Func0; f; f = f->Next)
 		{
-			C4AulScriptFunc *Fn;
-			if (!(Fn = f->SFunc()))
-			{
-				if (f->LinkedTo) Fn = f->LinkedTo->SFunc();
-				if (Fn) if (Fn->Owner != Engine) Fn=NULL;
-			}
+			C4AulScriptFunc *Fn = f->SFunc();
+			assert(Fn);
 			if (!Fn)
 				continue;
 			fprintf(stderr, "%s:\n", Fn->GetName());

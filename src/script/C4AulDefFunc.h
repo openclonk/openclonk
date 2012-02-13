@@ -259,8 +259,10 @@ public:
 	}
 	~C4AulDefFuncHelper()
 	{
-		if (!OverloadedBy)
-			Owner->GetPropList()->ResetProperty(Name);
+		assert(Owner);
+		assert(Owner->GetPropList());
+		assert(Name);
+		assert(Owner->GetPropList()->GetFunc(Name) != this);
 	}
 	virtual C4V_Type* GetParType() { return ParType; }
 	virtual bool GetPublic() { return Public; }
