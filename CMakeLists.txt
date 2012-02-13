@@ -529,6 +529,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4AulDefFunc.h
 	src/script/C4AulExec.cpp
 	src/script/C4AulExec.h
+	src/script/C4AulFunc.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp

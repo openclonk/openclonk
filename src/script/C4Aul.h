@@ -29,12 +29,12 @@
 #include <C4Id.h>
 #include <C4Script.h>
 #include <C4StringTable.h>
+#include "C4AulFunc.h"
 #include <string>
 #include <vector>
 
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
-#define C4AUL_MAX_Par         10  // max number of parameters
 
 // generic C4Aul error class
 class C4AulError
@@ -203,44 +203,6 @@ struct C4AulScriptContext : public C4AulContext
 
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
-};
-
-// base function class
-class C4AulFunc
-{
-	friend class C4AulScript;
-	friend class C4AulScriptEngine;
-	friend class C4AulFuncMap;
-	friend class C4AulParseState;
-	friend class C4ScriptHost;
-
-public:
-	C4AulFunc(C4AulScript *pOwner, const char *pName);
-	virtual ~C4AulFunc(); // destructor
-
-	C4AulScript *Owner; // owner
-	const char * GetName() const { return Name ? Name->GetCStr() : 0; }
-	virtual StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
-
-protected:
-	C4RefCntPointer<C4String> Name; // function name
-	C4AulFunc *Prev, *Next; // linked list members
-	C4AulFunc *MapNext; // map member
-	void AppendToScript(C4AulScript *);
-
-public:
-	C4AulFunc *OverloadedBy; // function by which this one is overloaded
-
-	virtual C4AulScriptFunc *SFunc() { return NULL; } // type check func...
-
-	// Wether this function should be visible to players
-	virtual bool GetPublic() { return false; }
-	virtual int GetParCount() { return C4AUL_MAX_Par; }
-	virtual C4V_Type* GetParType() { return 0; }
-	virtual C4V_Type GetRetType() { return C4V_Any; }
-	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false) { return C4Value(); } // execute func (script call)
-	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
-	virtual void UnLink() { OverloadedBy = NULL; }
 };
 
 // script function class
