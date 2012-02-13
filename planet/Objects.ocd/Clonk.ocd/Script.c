@@ -404,7 +404,8 @@ func HasHandAction(sec, just_wear)
 
 func HasActionProcedure()
 {
-	if(GetAction() == "Walk" || GetAction() == "Jump" || GetAction() == "Kneel" || GetAction() == "Ride")
+	var action = GetAction();
+	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride")
 		return true;
 	return false;
 }
