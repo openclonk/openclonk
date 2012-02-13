@@ -280,7 +280,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		case C4V_Array:
 			cC4VID = 'E'; break;
 		case C4V_Function:
-			cC4VID = 'F'; break;
+			cC4VID = 'f'; break;
 		case C4V_String:
 			cC4VID = 's'; break;
 		default:
@@ -381,8 +381,34 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// doesn't have a value, so nothing to store
 		break;
 
-	case 'F':
-		// FIXME
+	case 'f':
+	{
+		C4Value Owner;
+		if (!fCompiler)
+		{
+			Owner.SetPropList(Data.Fn->Owner->GetPropList());
+			assert(Owner._getPropList() && Owner._getPropList()->GetFunc(Data.Fn->GetName()) == Data.Fn);
+		}
+		pComp->Value(mkParAdapt(Owner, numbers));
+		pComp->Separator(StdCompiler::SEP_PART);
+		StdStrBuf s;
+		if (!fCompiler)
+			s = Data.Fn->GetName();
+		pComp->Value(s);
+		if (fCompiler)
+		{
+			// Owner was a definition or singleton, so shouldn't have to be denumerated
+			if (!Owner.getPropList())
+			{
+				Set0();
+				pComp->Warn("ERROR: Owner of function %s is missing.", s.getData());
+			}
+			else
+				SetFunction(Owner._getPropList()->GetFunc(s.getData()));
+		}
+		break;
+	}
+
 	default:
 		// shouldn't happen
 		pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
