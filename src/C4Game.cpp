@@ -1685,7 +1685,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4Val
 {
 	StdStrBuf Buf;
 	// Decompile (without players for scenario sections)
-	Buf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers)));
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers), &Buf, "Game");
 
 	// Empty? All default; just remove from group then
 	if (!Buf.getLength())
