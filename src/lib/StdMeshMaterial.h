@@ -272,6 +272,7 @@ public:
 	bool DepthWrite;
 	CullHardwareType CullHardware;
 	SceneBlendType SceneBlendFactors[2];
+	bool AlphaToCoverage;
 };
 
 class StdMeshMaterialTechnique

@@ -723,6 +723,11 @@ namespace
 
 			glDepthMask(pass.DepthWrite ? GL_TRUE : GL_FALSE);
 
+			if(pass.AlphaToCoverage)
+				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+			else
+				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
 			// Apply ClrMod to material
 			// TODO: ClrModMap is not taken into account by this; we should just check
 			// mesh center.

@@ -1149,7 +1149,6 @@ bool StdMeshInstance::UpdateBoneTransforms()
 	return was_dirty;
 }
 
-//#include <sys/time.h>
 void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 {
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)

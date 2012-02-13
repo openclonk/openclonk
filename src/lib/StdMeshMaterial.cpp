@@ -213,6 +213,7 @@ public:
 	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, const EnumeratorShortcut<Num, EnumType>* shortcuts, EnumType enums[Num]);
 	void Error(const StdStrBuf& message);
 	void ErrorUnexpectedIdentifier(const StdStrBuf& identifier);
+	void WarningNotSupported(const char* identifier);
 
 	// Current parsing data
 	unsigned int Line;
@@ -503,6 +504,10 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
+void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
+{
+	DebugLogF("%s:%d: Warning: \"%s\" is not supported!", FileName.getData(), Line, identifier);
+}
 
 StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
 		: CurIndex(0)
@@ -890,6 +895,73 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		else if (token_name == "scene_blend")
 		{
 			ctx.AdvanceEnums<2, StdMeshMaterialPass::SceneBlendType>(SceneBlendEnumerators, SceneBlendShortcuts, SceneBlendFactors);
+		}
+		else if (token_name == "scene_blend_op")
+		{
+			StdStrBuf op;
+			ctx.AdvanceRequired(op, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "alpha_to_coverage")
+		{
+			AlphaToCoverage = ctx.AdvanceBoolean();
+		}
+		else if (token_name == "colour_write")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported("colour_write");
+		}
+		else if (token_name == "depth_check")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "depth_func")
+		{
+			StdStrBuf func;
+			ctx.AdvanceRequired(func, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "illumination_stage")
+		{
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_clip_planes")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_scissor")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "lighting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "normalise_normals" || token_name == "normalize_normals")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "polygon_mode")
+		{
+			StdStrBuf mode;
+			ctx.AdvanceRequired(mode, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "shading")
+		{
+			StdStrBuf shading;
+			ctx.AdvanceRequired(shading, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "transparent_sorting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
