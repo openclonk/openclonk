@@ -33,6 +33,7 @@ autotools/missing
 configure
 intermediate
 build*
+CMakeScripts
 CMakeFiles
 CMakeCache.txt
 planet/CMakeFiles
