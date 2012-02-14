@@ -1039,7 +1039,7 @@ if (APPLE)
 	endif()
 endif()
 
-# This expands some variables in Info.plist as a side-effect. XCode might then
+# This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
 set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
@@ -1125,6 +1125,39 @@ endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(clonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
+endif()
+
+############################################################################
+# Some Xcode/OSX specific settings involving building with clang, precompiled headers...
+############################################################################
+
+if (APPLE)
+	add_custom_command(TARGET clonk
+		POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs.sh"
+	)
+	
+	set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	
+	if (USE_APPLE_CLANG)
+		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++0x")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++ -g -Wall")
+		SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+		SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+				
+		set(HAVE_RVALUE_REF ON)
+	else()
+		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
+	endif()
 endif()
 
 ############################################################################
