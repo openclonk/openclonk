@@ -30,14 +30,26 @@ unsigned int GetTime()
 
 #else
 
+#ifdef __APPLE__
+#include <sys/time.h>
+#else
 #include <time.h>
+#endif
 
 unsigned int GetTime()
 {
+#ifdef __APPLE__
+	static time_t sec_offset;
+	timeval tv;
+	gettimeofday(&tv, 0);
+	if (!sec_offset) sec_offset = tv.tv_sec;
+	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
+#else
 	timespec tv;
 	clock_gettime(CLOCK_MONOTONIC, &tv);
 	static time_t sec_offset = tv.tv_sec;
 	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_nsec / 1000000;
+#endif
 }
 
 #endif

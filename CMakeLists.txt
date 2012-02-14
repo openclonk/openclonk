@@ -1007,7 +1007,7 @@ if(USE_CONSOLE)
 		${READLINE_LIBRARIES}
 	)
 endif()
-if(UNIX)
+if(UNIX AND NOT APPLE)
 	target_link_libraries(c4group rt)
 	target_link_libraries(c4script rt)
 	target_link_libraries(netpuncher rt)
