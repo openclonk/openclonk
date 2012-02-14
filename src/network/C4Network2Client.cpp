@@ -268,6 +268,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 	for(struct ifaddrs* addr = addrs; addr != NULL; addr = addr->ifa_next)
 	{
 		struct sockaddr* ad = addr->ifa_addr;
+		if(ad == NULL) continue;
+
 		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
 			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
 	}
