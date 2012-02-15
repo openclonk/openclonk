@@ -417,12 +417,11 @@ namespace Ogre
 		{
 			name = stream->Read<std::string>();
 			duration = stream->Read<float>();
-			while (Chunk::Peek(stream) == CID_Animation_Track)
+			while (!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_Track)
 			{
 				Chunk *chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_Track);
 				tracks.push_back(static_cast<ChunkAnimationTrack*>(chunk));
-				if (stream->AtEof()) break;
 			}
 		}
 
