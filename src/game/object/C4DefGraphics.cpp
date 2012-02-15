@@ -160,9 +160,9 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 	try
 	{
 		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else
 			return false;
 		delete[] buf;
