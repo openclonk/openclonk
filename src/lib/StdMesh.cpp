@@ -49,8 +49,14 @@ namespace
 		const StdMeshVertex* m_vertices;
 		const StdMeshMatrix& m_global_trans;
 
-		StdMeshInstanceFaceOrderingCmpPred(const StdSubMeshInstance& inst, const StdMeshMatrix& global_trans):
-				m_inst(inst), m_vertices(m_inst.GetVertices()), m_global_trans(global_trans) {}
+		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& mesh_inst, const StdSubMeshInstance& sub_inst, const StdMeshMatrix& global_trans):
+				m_inst(sub_inst), m_global_trans(global_trans)
+		{
+			if(sub_inst.GetNumVertices() > 0)
+				m_vertices = &sub_inst.GetVertices()[0];
+			else
+				m_vertices = &mesh_inst.GetSharedVertices()[0];
+		}
 
 		inline float get_z(const StdMeshVertex& vtx) const
 		{
@@ -697,11 +703,16 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
-		Mesh(&mesh),
+		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()),
 		BoneTransforms(Mesh->GetNumBones(), StdMeshMatrix::Identity()),
 		SubMeshInstances(Mesh->GetNumSubMeshes()), AttachParent(NULL),
 		BoneTransformsDirty(false)
 {
+	// Copy initial shared vertices
+	for (unsigned int i = 0; i < SharedVertices.size(); ++i)
+		SharedVertices[i] = mesh.GetSharedVertices()[i];
+
+	// Create submesh instances
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 	{
 		const StdSubMesh& submesh = Mesh->GetSubMesh(i);
@@ -1082,34 +1093,14 @@ bool StdMeshInstance::UpdateBoneTransforms()
 		// Compute transformation for each vertex. We could later think about
 		// doing this on the GPU using a vertex shader. This would then probably
 		// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
-		// (can only work for fixed face ordering though)
+		// But first, we need to move vertex data to the GPU.
+		if(!Mesh->GetSharedVertices().empty())
+			ApplyBoneTransformToVertices(Mesh->GetSharedVertices(), SharedVertices);
 		for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 		{
 			const StdSubMesh& submesh = Mesh->GetSubMesh(i);
-			std::vector<StdMeshVertex>& instance_vertices = SubMeshInstances[i]->Vertices;
-			assert(submesh.GetNumVertices() == instance_vertices.size());
-			for (unsigned int j = 0; j < instance_vertices.size(); ++j)
-			{
-				const StdSubMesh::Vertex& vertex = submesh.GetVertex(j);
-				StdMeshVertex& instance_vertex = instance_vertices[j];
-				if (!vertex.BoneAssignments.empty())
-				{
-					instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
-					instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
-					instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
-
-					for (unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
-					{
-						const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
-
-						instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
-					}
-				}
-				else
-				{
-					instance_vertex = vertex;
-				}
-			}
+			if(!submesh.GetVertices().empty())
+				ApplyBoneTransformToVertices(submesh.GetVertices(), SubMeshInstances[i]->Vertices);
 		}
 	}
 
@@ -1156,7 +1147,7 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 		StdSubMeshInstance& inst = *SubMeshInstances[i];
 		if(inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
-			StdMeshInstanceFaceOrderingCmpPred pred(inst, global_trans ? *global_trans : StdMeshMatrix::Identity());
+			StdMeshInstanceFaceOrderingCmpPred pred(*this, inst, global_trans ? *global_trans : StdMeshMatrix::Identity());
 
 			// The usage of timsort instead of std::sort at this point is twofold.
 			// First, it's faster in our case where the array is already sorted in
@@ -1312,6 +1303,9 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 		min = Fix0;
 		max = itofix(1);
 		break;
+	default:
+		assert(false);
+		break;
 	}
 	const C4Real old_value = provider->Value;
 
@@ -1334,8 +1328,6 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 			// Remove right child as it has less weight
 			StopAnimation(node->LinearInterpolation.ChildRight);
 		}
-
-
 	}
 	else
 	{
@@ -1365,3 +1357,28 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 	return true;
 }
 
+void StdMeshInstance::ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices)
+{
+	assert(mesh_vertices.size() == instance_vertices.size());
+	for (unsigned int j = 0; j < instance_vertices.size(); ++j)
+	{
+		const StdSubMesh::Vertex& vertex = mesh_vertices[j];
+		StdMeshVertex& instance_vertex = instance_vertices[j];
+		if (!vertex.BoneAssignments.empty())
+		{
+			instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
+			instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
+			instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
+
+			for (unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
+			{
+				const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
+				instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+			}
+		}
+		else
+		{
+			instance_vertex = vertex;
+		}
+	}
+}

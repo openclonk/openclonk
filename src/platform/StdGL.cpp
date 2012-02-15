@@ -710,11 +710,12 @@ namespace
 		}
 	}
 
-	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
+		const StdMeshVertex* vertices = instance.GetVertices().empty() ? &mesh_instance.GetSharedVertices()[0] : &instance.GetVertices()[0];
 
 		// Render each pass
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -861,7 +862,7 @@ namespace
 			// states that "The texture coordinate state for other client texture units
 			// is not updated, regardless of whether the client texture unit is enabled
 			// or not."
-			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
+			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &vertices->nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
@@ -890,7 +891,7 @@ namespace
 					glBindTexture(GL_TEXTURE_2D, have_texture);
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
 
 				// Setup texture coordinate transform
 				glLoadIdentity();
@@ -1114,7 +1115,7 @@ namespace
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance, instance.GetSubMesh(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone

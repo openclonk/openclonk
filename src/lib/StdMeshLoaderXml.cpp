@@ -25,7 +25,7 @@
 #include <tinyxml/tinyxml.h>
 
 // Helper class to load things from an XML file with error checking
-class StdMeshXML
+class StdMeshLoader::StdMeshXML
 {
 public:
 	StdMeshXML(const char* filename, const char* xml_data);
@@ -36,6 +36,9 @@ public:
 
 	TiXmlElement* RequireFirstChild(TiXmlElement* element, const char* child);
 
+	void LoadGeometry(StdMesh& mesh, std::vector<StdSubMesh::Vertex>& vertices, TiXmlElement* boneassignments_elem);
+	void LoadBoneAssignments(StdMesh& mesh, std::vector<StdSubMesh::Vertex>& vertices, TiXmlElement* boneassignments_elem);
+
 	void Error(const StdStrBuf& message, TiXmlElement* element) const;
 	void Error(const StdStrBuf& message, int row) const;
 
@@ -44,7 +47,7 @@ private:
 	StdStrBuf FileName;
 };
 
-StdMeshXML::StdMeshXML(const char* filename, const char* xml_data):
+StdMeshLoader::StdMeshXML::StdMeshXML(const char* filename, const char* xml_data):
 		FileName(filename)
 {
 	Document.Parse(xml_data);
@@ -52,14 +55,14 @@ StdMeshXML::StdMeshXML(const char* filename, const char* xml_data):
 		Error(StdStrBuf(Document.ErrorDesc()), Document.ErrorRow());
 }
 
-const char* StdMeshXML::RequireStrAttribute(TiXmlElement* element, const char* attribute) const
+const char* StdMeshLoader::StdMeshXML::RequireStrAttribute(TiXmlElement* element, const char* attribute) const
 {
 	const char* value = element->Attribute(attribute);
 	if (!value) Error(FormatString("Element '%s' does not have attribute '%s'", element->Value(), attribute), element);
 	return value;
 }
 
-int StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute) const
+int StdMeshLoader::StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute) const
 {
 	int retval;
 	if (element->QueryIntAttribute(attribute, &retval) != TIXML_SUCCESS)
@@ -67,7 +70,7 @@ int StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute
 	return retval;
 }
 
-float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attribute) const
+float StdMeshLoader::StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attribute) const
 {
 	float retval = 0;
 	if (element->QueryFloatAttribute(attribute, &retval) != TIXML_SUCCESS)
@@ -75,7 +78,7 @@ float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attri
 	return retval;
 }
 
-TiXmlElement* StdMeshXML::RequireFirstChild(TiXmlElement* element, const char* child)
+TiXmlElement* StdMeshLoader::StdMeshXML::RequireFirstChild(TiXmlElement* element, const char* child)
 {
 	TiXmlElement* retval;
 
@@ -95,14 +98,146 @@ TiXmlElement* StdMeshXML::RequireFirstChild(TiXmlElement* element, const char* c
 	return retval;
 }
 
-void StdMeshXML::Error(const StdStrBuf& message, TiXmlElement* element) const
+void StdMeshLoader::StdMeshXML::Error(const StdStrBuf& message, TiXmlElement* element) const
 {
 	Error(message, element->Row());
 }
 
-void StdMeshXML::Error(const StdStrBuf& message, int row) const
+void StdMeshLoader::StdMeshXML::Error(const StdStrBuf& message, int row) const
 {
 	throw StdMeshLoader::LoaderException(FormatString("%s:%u: %s", FileName.getData(), row, message.getData()).getData());
+}
+
+void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMesh::Vertex>& vertices, TiXmlElement* geometry_elem)
+{
+	// Check whether mesh has any vertices so far -- we need this later for
+	// initialization of bounding box and bounding sphere.
+	bool hasVertices = false;
+	if(!mesh.SharedVertices.empty()) hasVertices = true;
+	for(unsigned int i = 0; i < mesh.SubMeshes.size(); ++i)
+		if(!mesh.SubMeshes[i].Vertices.empty())
+			hasVertices = true;
+
+	int VertexCount = RequireIntAttribute(geometry_elem, "vertexcount");
+	vertices.resize(VertexCount);
+
+	static const unsigned int POSITIONS = 1;
+	static const unsigned int NORMALS = 2;
+	static const unsigned int TEXCOORDS = 4;
+
+	// Individual vertex attributes can be split up in multiple vertex buffers
+	unsigned int loaded_attributes = 0;
+	for(TiXmlElement* buffer_elem = geometry_elem->FirstChildElement("vertexbuffer"); buffer_elem != NULL; buffer_elem = buffer_elem->NextSiblingElement("vertexbuffer"))
+	{
+		unsigned int attributes = 0;
+		if(buffer_elem->Attribute("positions")) attributes |= POSITIONS;
+		if(buffer_elem->Attribute("normals")) attributes |= NORMALS;
+		if(buffer_elem->Attribute("texture_coords")) attributes |= TEXCOORDS;
+
+		unsigned int i;
+		TiXmlElement* vertex_elem;
+		for (vertex_elem = buffer_elem->FirstChildElement("vertex"), i = 0; vertex_elem != NULL && i < vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
+		{
+			if(attributes & POSITIONS)
+			{
+				TiXmlElement* position_elem = RequireFirstChild(vertex_elem, "position");
+
+				vertices[i].x = RequireFloatAttribute(position_elem, "x");
+				vertices[i].y = RequireFloatAttribute(position_elem, "y");
+				vertices[i].z = RequireFloatAttribute(position_elem, "z");
+
+				const float d = std::sqrt(vertices[i].x*vertices[i].x
+						                      + vertices[i].y*vertices[i].y
+						                      + vertices[i].z*vertices[i].z);
+
+				// Construct BoundingBox
+				StdMeshBox& BoundingBox = mesh.BoundingBox;
+				if (i == 0 && !hasVertices)
+				{
+					// First vertex
+					BoundingBox.x1 = BoundingBox.x2 = vertices[i].x;
+					BoundingBox.y1 = BoundingBox.y2 = vertices[i].y;
+					BoundingBox.z1 = BoundingBox.z2 = vertices[i].z;
+					mesh.BoundingRadius = d;
+				}
+				else
+				{
+					BoundingBox.x1 = Min(vertices[i].x, BoundingBox.x1);
+					BoundingBox.x2 = Max(vertices[i].x, BoundingBox.x2);
+					BoundingBox.y1 = Min(vertices[i].y, BoundingBox.y1);
+					BoundingBox.y2 = Max(vertices[i].y, BoundingBox.y2);
+					BoundingBox.z1 = Min(vertices[i].z, BoundingBox.z1);
+					BoundingBox.z2 = Max(vertices[i].z, BoundingBox.z2);
+					mesh.BoundingRadius = Max(mesh.BoundingRadius, d);
+				}
+			}
+
+			if(attributes & NORMALS)
+			{
+				TiXmlElement* normal_elem = RequireFirstChild(vertex_elem, "normal");
+
+				vertices[i].nx = RequireFloatAttribute(normal_elem, "x");
+				vertices[i].ny = RequireFloatAttribute(normal_elem, "y");
+				vertices[i].nz = RequireFloatAttribute(normal_elem, "z");
+			}
+
+			if(attributes & TEXCOORDS)
+			{
+				TiXmlElement* texcoord_elem = RequireFirstChild(vertex_elem, "texcoord");
+				vertices[i].u = RequireFloatAttribute(texcoord_elem, "u");
+				vertices[i].v = RequireFloatAttribute(texcoord_elem, "v");
+			}
+		}
+
+		if(vertex_elem != NULL)
+			Error(FormatString("Too many vertices in vertexbuffer"), buffer_elem);
+		if(i < vertices.size())
+			Error(FormatString("Not enough vertices in vertexbuffer"), buffer_elem);
+
+		loaded_attributes |= attributes;
+	}
+
+	static const unsigned int REQUIRED_ATTRIBUTES = POSITIONS | NORMALS | TEXCOORDS;
+	if((loaded_attributes & REQUIRED_ATTRIBUTES) != REQUIRED_ATTRIBUTES)
+		Error(FormatString("Not all required vertex attributes (positions, normals, texcoords) present in mesh geometry"), geometry_elem);
+}
+
+void StdMeshLoader::StdMeshXML::LoadBoneAssignments(StdMesh& mesh, std::vector<StdSubMesh::Vertex>& vertices, TiXmlElement* boneassignments_elem)
+{
+	for (TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+	{
+		int BoneID = RequireIntAttribute(vertexboneassignment_elem, "boneindex");
+		int VertexIndex = RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
+		float weight = RequireFloatAttribute(vertexboneassignment_elem, "weight");
+
+		if (VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= vertices.size())
+			Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
+
+		StdMeshBone* bone = NULL;
+		for (unsigned int i = 0; !bone && i < mesh.Bones.size(); ++i)
+			if (mesh.Bones[i]->ID == BoneID)
+				bone = mesh.Bones[i];
+
+		if (!bone) Error(FormatString("There is no such bone with ID %d", BoneID), vertexboneassignment_elem);
+
+		StdSubMesh::Vertex& vertex = vertices[VertexIndex];
+		vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
+		StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
+		assignment.BoneIndex = bone->Index;
+		assignment.Weight = weight;
+	}
+
+	// Normalize vertex bone assignment weights (this is not guaranteed in the
+	// Ogre file format).
+	for (unsigned int i = 0; i < vertices.size(); ++i)
+	{
+		StdSubMesh::Vertex& vertex = vertices[i];
+		float sum = 0.0f;
+		for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+			sum += vertex.BoneAssignments[j].Weight;
+		for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+			vertex.BoneAssignments[j].Weight /= sum;
+	}
 }
 
 StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const StdMeshMatManager& manager, StdMeshSkeletonLoader& skel_loader, const char* filename)
@@ -112,13 +247,17 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	std::auto_ptr<StdMesh> mesh(new StdMesh);
 
 	TiXmlElement* mesh_elem = xml.RequireFirstChild(NULL, "mesh");
+
+	// Load shared geometry, if any
+	TiXmlElement* sharedgeometry_elem = mesh_elem->FirstChildElement("sharedgeometry");
+	if(sharedgeometry_elem != NULL)
+		xml.LoadGeometry(*mesh, mesh->SharedVertices, sharedgeometry_elem);
+
 	TiXmlElement* submeshes_elem = xml.RequireFirstChild(mesh_elem, "submeshes");
 
 	TiXmlElement* submesh_elem_base = xml.RequireFirstChild(submeshes_elem, "submesh");
 	for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 	{
-		TiXmlElement* geometry_elem = xml.RequireFirstChild(submesh_elem, "geometry");
-
 		mesh->SubMeshes.push_back(StdSubMesh());
 		StdSubMesh& submesh = mesh->SubMeshes.back();
 
@@ -127,88 +266,20 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		if (!submesh.Material)
 			xml.Error(FormatString("There is no such material named '%s'", material), submesh_elem);
 
-		int VertexCount = xml.RequireIntAttribute(geometry_elem, "vertexcount");
-		submesh.Vertices.resize(VertexCount);
-
-		static const unsigned int POSITIONS = 1;
-		static const unsigned int NORMALS = 2;
-		static const unsigned int TEXCOORDS = 4;
-
-		// Individual vertex attributes can be split up in multiple vertex buffers
-		unsigned int loaded_attributes = 0;
-		for(TiXmlElement* buffer_elem = geometry_elem->FirstChildElement("vertexbuffer"); buffer_elem != NULL; buffer_elem = buffer_elem->NextSiblingElement("vertexbuffer"))
+		const char* usesharedvertices = submesh_elem->Attribute("usesharedvertices");
+		const std::vector<StdMesh::Vertex>* vertices;
+		if(!usesharedvertices || strcmp(usesharedvertices, "true") != 0)
 		{
-			unsigned int attributes = 0;
-			if(buffer_elem->Attribute("positions")) attributes |= POSITIONS;
-			if(buffer_elem->Attribute("normals")) attributes |= NORMALS;
-			if(buffer_elem->Attribute("texture_coords")) attributes |= TEXCOORDS;
-
-			unsigned int i;
-			TiXmlElement* vertex_elem;
-			for (vertex_elem = buffer_elem->FirstChildElement("vertex"), i = 0; vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
-			{
-				if(attributes & POSITIONS)
-				{
-					TiXmlElement* position_elem = xml.RequireFirstChild(vertex_elem, "position");
-
-					submesh.Vertices[i].x = xml.RequireFloatAttribute(position_elem, "x");
-					submesh.Vertices[i].y = xml.RequireFloatAttribute(position_elem, "y");
-					submesh.Vertices[i].z = xml.RequireFloatAttribute(position_elem, "z");
-
-					const float d = std::sqrt(submesh.Vertices[i].x*submesh.Vertices[i].x
-							                      + submesh.Vertices[i].y*submesh.Vertices[i].y
-							                      + submesh.Vertices[i].z*submesh.Vertices[i].z);
-
-					// Construct BoundingBox
-					StdMeshBox &BoundingBox = mesh->BoundingBox;
-					if (i == 0 && mesh->SubMeshes.size() == 1)
-					{
-						// First vertex
-						BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
-						BoundingBox.y1 = BoundingBox.y2 = submesh.Vertices[i].y;
-						BoundingBox.z1 = BoundingBox.z2 = submesh.Vertices[i].z;
-						mesh->BoundingRadius = d;
-					}
-					else
-					{
-						BoundingBox.x1 = Min(submesh.Vertices[i].x, BoundingBox.x1);
-						BoundingBox.x2 = Max(submesh.Vertices[i].x, BoundingBox.x2);
-						BoundingBox.y1 = Min(submesh.Vertices[i].y, BoundingBox.y1);
-						BoundingBox.y2 = Max(submesh.Vertices[i].y, BoundingBox.y2);
-						BoundingBox.z1 = Min(submesh.Vertices[i].z, BoundingBox.z1);
-						BoundingBox.z2 = Max(submesh.Vertices[i].z, BoundingBox.z2);
-						mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
-					}
-				}
-
-				if(attributes & NORMALS)
-				{
-					TiXmlElement* normal_elem = xml.RequireFirstChild(vertex_elem, "normal");
-
-					submesh.Vertices[i].nx = xml.RequireFloatAttribute(normal_elem, "x");
-					submesh.Vertices[i].ny = xml.RequireFloatAttribute(normal_elem, "y");
-					submesh.Vertices[i].nz = xml.RequireFloatAttribute(normal_elem, "z");
-				}
-
-				if(attributes & TEXCOORDS)
-				{
-					TiXmlElement* texcoord_elem = xml.RequireFirstChild(vertex_elem, "texcoord");
-					submesh.Vertices[i].u = xml.RequireFloatAttribute(texcoord_elem, "u");
-					submesh.Vertices[i].v = xml.RequireFloatAttribute(texcoord_elem, "v");
-				}
-			}
-
-			if(vertex_elem != NULL)
-				xml.Error(FormatString("Too many vertices in vertexbuffer"), buffer_elem);
-			if(i < submesh.Vertices.size())
-				xml.Error(FormatString("Not enough vertices in vertexbuffer"), buffer_elem);
-
-			loaded_attributes |= attributes;
+			TiXmlElement* geometry_elem = xml.RequireFirstChild(submesh_elem, "geometry");
+			xml.LoadGeometry(*mesh, submesh.Vertices, geometry_elem);
+			vertices = &submesh.Vertices;
 		}
-
-		static const unsigned int REQUIRED_ATTRIBUTES = POSITIONS | NORMALS | TEXCOORDS;
-		if((loaded_attributes & REQUIRED_ATTRIBUTES) != REQUIRED_ATTRIBUTES)
-			xml.Error(FormatString("Not all required vertex attributes (positions, normals, texcoords) present in mesh geometry"), geometry_elem);
+		else
+		{
+			if(mesh->SharedVertices.empty())
+				xml.Error(StdCopyStrBuf("Submesh specifies to use shared vertices but there is no shared geometry"), submesh_elem);
+			vertices = &mesh->SharedVertices;
+		}
 
 		TiXmlElement* faces_elem = xml.RequireFirstChild(submesh_elem, "faces");
 		int FaceCount = xml.RequireIntAttribute(faces_elem, "count");
@@ -225,7 +296,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 
 			for (unsigned int j = 0; j < 3; ++j)
 			{
-				if (v[j] < 0 || static_cast<unsigned int>(v[j]) >= submesh.Vertices.size())
+				if (v[j] < 0 || static_cast<unsigned int>(v[j]) >= vertices->size())
 					xml.Error(FormatString("Vertex index v%u (%d) is out of range", j+1, v[j]), face_elem);
 				submesh.Faces[i].Vertices[j] = v[j];
 			}
@@ -318,46 +389,22 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			if (bones[i]->Parent == NULL)
 				mesh->AddMasterBone(bones[i]);
 
+		// Vertex<->Bone assignments for shared geometry
+		if(sharedgeometry_elem)
+		{
+			TiXmlElement* boneassignments_elem = xml.RequireFirstChild(mesh_elem, "boneassignments");
+			xml.LoadBoneAssignments(*mesh, mesh->SharedVertices, boneassignments_elem);
+		}
+
 		// Vertex<->Bone assignments for all vertices (need to go through SubMeshes again...)
 		unsigned int submesh_index = 0;
 		for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"), ++submesh_index)
 		{
 			StdSubMesh& submesh = mesh->SubMeshes[submesh_index];
-
-			TiXmlElement* boneassignments_elem = xml.RequireFirstChild(submesh_elem, "boneassignments");
-			for (TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+			if(!submesh.Vertices.empty())
 			{
-				int BoneID = xml.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
-				int VertexIndex = xml.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
-				float weight = xml.RequireFloatAttribute(vertexboneassignment_elem, "weight");
-
-				if (VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= submesh.Vertices.size())
-					xml.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
-
-				StdMeshBone* bone = NULL;
-				for (unsigned int i = 0; !bone && i < bones.size(); ++i)
-					if (bones[i]->ID == BoneID)
-						bone = bones[i];
-
-				if (!bone) xml.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
-
-				StdSubMesh::Vertex& vertex = submesh.Vertices[VertexIndex];
-				vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
-				StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
-				assignment.BoneIndex = bone->Index;
-				assignment.Weight = weight;
-			}
-
-			// Normalize vertex bone assignment weights (this is not guaranteed in the
-			// Ogre file format).
-			for (unsigned int i = 0; i < submesh.Vertices.size(); ++i)
-			{
-				StdSubMesh::Vertex& vertex = submesh.Vertices[i];
-				float sum = 0.0f;
-				for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-					sum += vertex.BoneAssignments[j].Weight;
-				for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-					vertex.BoneAssignments[j].Weight /= sum;
+				TiXmlElement* boneassignments_elem = xml.RequireFirstChild(submesh_elem, "boneassignments");
+				xml.LoadBoneAssignments(*mesh, submesh.Vertices, boneassignments_elem);
 			}
 		}
 
@@ -441,16 +488,18 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	else
 	{
 		// Mesh has no skeleton
+		// Bone assignements do not make sense then, as the
+		// actual bones are defined in the skeleton file.
 		for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 		{
 			TiXmlElement* boneassignments_elem = submesh_elem->FirstChildElement("boneassignments");
 			if (boneassignments_elem)
-			{
-				// Bone assignements do not make sense then, as the
-				// actual bones are defined in the skeleton file.
 				xml.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
-			}
 		}
+
+		TiXmlElement* boneassignments_elem = mesh_elem->FirstChildElement("boneassignments");
+		if (boneassignments_elem)
+			xml.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
 	}
 
 	// Apply parent transformation to each bone transformation. We need to
