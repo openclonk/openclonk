@@ -26,12 +26,8 @@
 #include <C4Include.h>
 #include <C4ScriptHost.h>
 
-#include <C4ObjectCom.h>
-#include <C4Object.h>
-#include <C4Game.h>
+#include <C4Def.h>
 #include <C4GameObjects.h>
-#include <C4Components.h>
-#include <C4Config.h>
 
 /*--- C4ScriptHost ---*/
 
@@ -194,15 +190,14 @@ C4PropList * C4DefScriptHost::GetPropList() { return Def; }
 C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
 C4GameScriptHost::~C4GameScriptHost() { }
 
-bool C4GameScriptHost::LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable)
+bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
-	// Script
 	assert(ScriptEngine.GetPropList());
 	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
 	ScenPropList = C4PropList::NewScen(ScenPrototype);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
 	Reg2List(&ScriptEngine, &ScriptEngine);
-	return Load(hGroup,C4CFN_Script,Config.General.LanguageEx,pLocalTable);
+	return C4ScriptHost::Load(g, f, l, t);
 }
 
 void C4GameScriptHost::Clear()

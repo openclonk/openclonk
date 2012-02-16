@@ -99,7 +99,7 @@ class C4GameScriptHost : public C4ScriptHost
 public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
-	bool LoadScenarioScripts(C4Group &hGroup, C4LangStringTable *pLocalTable);
+	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
 	void AfterLink();
 	virtual C4PropList * GetPropList() { return ScenPrototype; }

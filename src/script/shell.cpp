@@ -110,8 +110,6 @@ int main(int argc, const char * argv[])
 		fprintf(stderr, "FindNextEntry failed: %s\n", File.GetError());
 		return 1;
 	}
-	// host will be destroyed by script engine, so drop the references
-	GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
 	GameScript.Load(File, fn.getData(), NULL, NULL);
 	
 	// Link script engine (resolve includes/appends, generate code)
@@ -121,5 +119,6 @@ int main(int argc, const char * argv[])
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 	GameScript.Call("Main");
 	GameScript.Clear();
+	ScriptEngine.Clear();
 	return 0;
 }

@@ -2014,7 +2014,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetInitProgress(55);
 
 		// Scenario scripts (and local system.ocg)
-		GameScript.LoadScenarioScripts(ScenarioFile, &ScenarioLangStringTable);
+		GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// After defs to get overloading priority
 		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
