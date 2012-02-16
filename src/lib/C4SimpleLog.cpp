@@ -25,7 +25,7 @@
 #include <C4Include.h>
 #include <C4Log.h>
 
-bool fQuiet = true;
+bool fQuiet = false;
 
 bool Log(const char *msg)
 {
