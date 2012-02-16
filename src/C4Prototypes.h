@@ -143,6 +143,7 @@ class C4AbstractApp;
 class C4Window;
 class C4Surface;
 class CStdStream;
+class CStdGLCtx;
 
 namespace C4GUI
 {
