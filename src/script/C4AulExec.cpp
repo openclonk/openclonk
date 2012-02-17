@@ -1105,7 +1105,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	AulExec.StartDirectExec();
 	// Create a new temporary script as child of this script
 	C4ScriptHost* pScript = new C4DirectExecScript(this, pObj, szContext, stringTable);
-	pScript->Reg2List(Engine, this);
+	pScript->Reg2List(Engine);
 	// Add a new function
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, pScript, 0, szScript);
 	// Parse function

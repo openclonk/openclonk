@@ -329,7 +329,7 @@ public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
 	virtual void Clear(); // remove script, byte code and children
-	void Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner); // reg to linked list
+	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
 	void Unreg(); // remove from list
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
@@ -367,7 +367,7 @@ protected:
 
 	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
-	C4AulScript *Owner, *Prev, *Next; // tree structure
+	C4AulScript *Prev, *Next; // tree structure
 
 	C4AulScriptState State; // script state
 	bool Resolving; // set while include-resolving, to catch circular includes

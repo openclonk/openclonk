@@ -196,7 +196,7 @@ bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangS
 	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
 	ScenPropList = C4PropList::NewScen(ScenPrototype);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
-	Reg2List(&ScriptEngine, &ScriptEngine);
+	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);
 }
 

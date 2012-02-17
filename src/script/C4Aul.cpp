@@ -161,7 +161,7 @@ C4AulScript::C4AulScript()
 
 	// prepare lists
 	Prev = Next = NULL;
-	Owner = Engine = NULL;
+	Engine = NULL;
 	Func0 = FuncL = NULL;
 	// prepare include list
 	Includes.clear();
@@ -182,7 +182,8 @@ void C4AulScript::Unreg()
 	// remove from list
 	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
 	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
-	Prev = Next = Owner = NULL;
+	Prev = Next = NULL;
+	Engine = NULL;
 }
 
 
@@ -202,12 +203,11 @@ void C4AulScript::Clear()
 }
 
 
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
+void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
 {
 	// already regged? (def reloaded)
-	if (Owner) return;
+	if (Engine) return;
 	// reg to list
-	Owner = pOwner;
 	if ((Engine = pEngine))
 	{
 		if ((Prev = Engine->ChildL))
@@ -223,21 +223,17 @@ void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
 
 std::string C4AulScript::Translate(const std::string &text) const
 {
-	const C4AulScript *cursor = this;
-	while (cursor)
+	try
 	{
-		try
-		{
-			if (cursor->stringTable)
-				return cursor->stringTable->Translate(text);
-		}
-		catch (C4LangStringTable::NoSuchTranslation &)
-		{
-			// Ignore, soldier on
-		}
-		// Walk tree structure upwards
-		cursor = cursor->Owner;
+		if (stringTable)
+			return stringTable->Translate(text);
 	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		// Ignore, soldier on
+	}
+	if (Engine && Engine != this)
+		return Engine->Translate(text);
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 

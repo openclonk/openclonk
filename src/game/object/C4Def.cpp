@@ -390,7 +390,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (dwLoadWhat & C4D_Load_Script)
 	{
 		// reg script to engine
-		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
+		Script.Reg2List(&::ScriptEngine);
 		// Load script
 		Script.Load(hGroup, C4CFN_Script, szLanguage, &StringTable);
 	}
