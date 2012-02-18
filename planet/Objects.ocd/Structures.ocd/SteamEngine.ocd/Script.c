@@ -1,17 +1,15 @@
 /*-- Steam engine --*/
 
-#include Library_PowerGenerator
-
-/*-- Power system --*/
-
-public func GetCapacity() { return 500; }
-public func GetGeneratorPriority() { return 128; }
+#include Library_Ownable
+#include Library_PowerProducer
 
 local iFuelAmount;
+local power_seconds;
 
 func Construction()
 {
 	iFuelAmount = 0;
+	power_seconds = 0;
 	return _inherited(...);
 }
 
@@ -19,10 +17,6 @@ func ContentsCheck()
 {
 	// Still active?
 	if(!ActIdle())
-		return true;
-
-	// No need for power?
-	if(GetPower() >= GetCapacity())
 		return true;
 
 	// Still has some fuel?
@@ -48,22 +42,41 @@ func ContentsCheck()
 }
 
 func ConsumeFuel()
-{
-	// Are we full? Stop
-	if(GetPower() >= GetCapacity())
-		return SetAction("Idle");
+{	
+	if(iFuelAmount > 0)
+	{
+		// every fuel unit gives power for ten seconds
+		power_seconds += 10;
+		if(!GetEffect("CreatesPower", this))
+			AddEffect("CreatesPower", this, 1, 36, this);
+	}
 	
-	// Use up fuel and create power
-	DoPower(50);
-	if(iFuelAmount)
-		iFuelAmount--;
-
 	// All used up?
 	if(!iFuelAmount)
 	{
 		SetAction("Idle");
 		ContentsCheck();
 	}
+}
+
+func FxCreatesPowerStart(target, effect, temp)
+{
+	if(temp) return;
+	// fixed amount
+	MakePowerProducer(100);
+}
+
+func FxCreatesPowerTimer(target, effect)
+{
+	if(power_seconds == 0) return -1;
+	--power_seconds;
+}
+
+func FxCreatesPowerStop(target, effect, reason, temp)
+{
+	if(temp) return;
+	// fixed amount
+	MakePowerProducer(0);
 }
 
 local ActMap = {

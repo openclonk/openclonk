@@ -69,5 +69,8 @@ public func Initialize()
 	SetComDir(COMD_None);
 	SetSpeed(0, -20);
 	alpha=255;
+	r = 255;
+	g = 255;
+	b = 255;
 	return true;
 }

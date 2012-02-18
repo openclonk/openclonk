@@ -1,6 +1,6 @@
 /*-- Elevator --*/
 
-#include Library_PowerConsumer
+#include Library_Ownable
 
 local case, rope;
 

@@ -5,7 +5,7 @@
 	Melts iron ore to metal, using some sort of fuel.
 --*/
 
-
+#include Library_Ownable
 #include Library_Producer
 
 public func Construction()

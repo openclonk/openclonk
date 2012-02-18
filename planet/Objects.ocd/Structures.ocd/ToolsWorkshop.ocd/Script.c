@@ -1,13 +1,15 @@
 /*-- Tools workshop --*/
 
-#include Library_PowerConsumer
+#include Library_Ownable
 #include Library_Producer
 
 
+local hold_production;
 
 public func Initialize()
 {
 	// SetProperty("MeshTransformation", Trans_Rotate(RandomX(-30,30),0,1,0));
+	hold_production = false;
 	return _inherited(...);
 }
 
@@ -21,7 +23,7 @@ public func IsProduct(id product_id)
 }
 
 private func ProductionTime() { return 150; }
-private func PowerNeed(id product) { return 150; }
+private func PowerNeed() { return 150; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
@@ -32,17 +34,19 @@ public func OnProductionStart(id product)
 {
 	SetSign(product);
 	AddEffect("Working", this, 100, 1, this);
+	hold_production = false;
 	return;
 }
 
 public func OnProductionHold(id product)
 {
+	hold_production = true;
 	return;
 }
 
 public func OnProductionContinued(id product)
 {
-
+	hold_production = false;
 	return;
 }
 
@@ -55,7 +59,8 @@ public func OnProductionFinish(id product)
 
 protected func FxWorkingTimer()
 {
-	Smoking();
+	if(!hold_production)
+		Smoking();
 	return 1;
 }
 

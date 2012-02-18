@@ -5,6 +5,7 @@
 	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
 --*/
 
+#include Library_Ownable
 #include Library_Producer
 
 public func Construction()
@@ -57,7 +58,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime() { return 100; }
-private func PowerNeed(id product) { return 100; }
+private func PowerNeed() { return 100; }
 
 public func NeedRawMaterial(id rawmat_id)
 {

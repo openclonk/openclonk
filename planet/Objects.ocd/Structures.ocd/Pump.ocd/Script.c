@@ -5,6 +5,7 @@
 	Pumps liquids using drain and source pipes.
 --*/
 
+#include Library_Ownable
 #include Library_PowerConsumer
 
 
@@ -14,6 +15,7 @@ public func IsLiquidPump() { return true; }
 protected func Initialize()
 {
 	SetAction("Wait");
+	MakePowerConsumer(100);
 	return;
 }
 
@@ -27,6 +29,27 @@ public func SetSource(object pipe) { source_pipe = pipe; }
 public func GetSource() { return source_pipe; }
 public func SetDrain(object pipe) { drain_pipe = pipe; }
 public func GetDrain() { return drain_pipe; }
+
+func QueryWaivePowerRequest()
+{
+	// don't need power if not pumping anyway
+	if(GetAction() == "Wait")
+		return 50;
+	return 0;
+}
+
+func OnNotEnoughPower()
+{
+	if(GetAction() == "Pump")
+		SetAction("Wait");
+	return _inherited(...);
+}
+
+func OnEnoughPower()
+{
+	OnWaitStart();
+	return _inherited(...);
+}
 
 protected func OnPumpStart()
 {
@@ -46,9 +69,6 @@ local aMaterials=["", 0]; //contained liquids
 
 protected func Pumping()
 {
-	// Only proceed if there is enough power available.
-	if (!CheckPower(2))
-		return SetAction("Wait");
 	// Pump liquids.
 	if (!source_pipe)
 		return SetAction("Wait");
@@ -77,6 +97,9 @@ protected func Pumping()
 // Returns whether the pump can pump some liquid.
 private func ReadyToPump()
 {
+	// no power?
+	if(!CurrentlyHasPower())
+		return false;
 	// If there is no source pipe, return false.
 	if (!source_pipe)
 		return false;
