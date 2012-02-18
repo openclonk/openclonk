@@ -43,20 +43,16 @@ protected func Initialize()
 	workshop->CreateContents(Coal, 10);
 	workshop->CreateContents(Sulphur, 10);
 	var wind = CreateConstruction(WindGenerator, 480, FindHeight(480), NO_OWNER, 100, true);
-	var line = CreateObject(PowerLine);
-	line->SetActionTargets(wind, workshop);
 	var sawmill = CreateConstruction(Sawmill, 520, FindHeight(520), NO_OWNER, 100, true);
-	var line = CreateObject(PowerLine);
-	line->SetActionTargets(wind, sawmill);
 	CreateConstruction(Elevator, 220, FindHeight(220), NO_OWNER, 100, true)->CreateShaft(100);
-	
+	*/
 	// Create a lorry with necessary equipment to start a settlement.
 	var lorry = CreateObject(Lorry, 300, FindHeight(300));
 	lorry->CreateContents(Wood, 6);
 	lorry->CreateContents(Metal, 4);
 	lorry->CreateContents(Dynamite, 3);
 	lorry->CreateContents(Loam, 3);
-	*/
+	
 	return;
 }
 
@@ -76,6 +72,8 @@ protected func InitializePlayer(int plr)
 	if (flagpole && !GetPlayerName(flagpole->GetOwner()))
 		flagpole->SetOwner(plr);
 	*/
+	for (var struct in FindObjects(Find_Category(C4D_Structure)))
+		struct->SetOwner(plr);
 	
 	// Increase wealth goal per player.
 	var goal = FindObject(Find_ID(Goal_Wealth));
@@ -91,15 +89,9 @@ protected func InitializePlayer(int plr)
 		crew->CreateContents(Shovel);
 		// First clonk can construct, others can mine.
 		if (index == 0)
-		{
 			crew->CreateContents(Hammer);
-			crew->CreateContents(CableReel);
-		}
 		else
-		{
 			crew->CreateContents(Axe);
-			crew->CreateContents(CableReel);
-		}
 		index++;
 	}
 	return;
