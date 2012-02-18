@@ -59,6 +59,9 @@ func FxScheduleRefreshAllPowerHelpersTimer()
 
 func RefreshAllPowerHelpers()
 {
+	// no power helpers created yet
+	if(GetType(Library_Power_power_compounds) != C4V_Array)
+		return;
 	
 	// special handling for neutral
 	var neutral = nil;
@@ -275,6 +278,7 @@ func RefreshLinkedFlags()
 	// update flag links for all linked flags - no need for every flag to do that
 	// meanwhile, adjust power helper. Merge if necessary
 	// since we don't know whether flag links have been lost we will create a new power helper and possibly remove old ones
+	Library_Power->Init(); // make sure the power system is set up
 	var old = lflag.power_helper;
 	lflag.power_helper = CreateObject(Library_Power, 0, 0, NO_OWNER);
 	Library_Power_power_compounds[GetLength(Library_Power_power_compounds)] = lflag.power_helper;
