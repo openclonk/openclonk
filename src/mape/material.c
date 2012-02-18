@@ -39,11 +39,6 @@ _mape_group_get_handle(MapeGroup* group);
 C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map);
 
-/*struct _MapeMaterial {
-  MapeMaterialMap* map;
-  unsigned int mat_index;
-};*/
-
 typedef struct _MapeMaterialMapPrivate MapeMaterialMapPrivate;
 struct _MapeMaterialMapPrivate {
   C4MaterialMapHandle* handle;
@@ -218,7 +213,7 @@ mape_material_get_type(void)
  * mape_material_map_new:
  *
  * Creates a new #MapeMaterialMap. The map is initially empty. Use
- * mape_material_map_load() to load materials from one or more Material.c4g
+ * mape_material_map_load() to load materials from one or more Material.ocg
  * group files.
  *
  * Return Value: A new #MapeMaterialMap. Free with g_object_unref().
@@ -237,9 +232,8 @@ mape_material_map_new(void)
  *
  * Loads all the material files (*.c4m) from the group @from. If this includes
  * materials with the same name as materials already contained in @map, then
- * the materials in @map will be replaced by the new ones. If an error occurs
- * while loading the material map the function returns %FALSE and @error is
- * set.
+ * the new materials will not be loaded. If an error occurs while loading the
+ * material map the function returns %FALSE and @error is set.
  *
  * Returns: %TRUE on success, %FALSE on failure.
  */

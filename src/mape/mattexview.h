@@ -23,6 +23,7 @@
 #include "mape/forward.h"
 #include "mape/group.h"
 #include "mape/material.h"
+#include "mape/texture.h"
 
 struct MapeMatTexView_ {
 	GtkWidget* notebook;
@@ -41,7 +42,10 @@ MapeMatTexView* mape_mat_tex_view_new(MapeFileIconSet* icon_set,
 void mape_mat_tex_view_destroy(MapeMatTexView* view);
 
 gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
+                                  MapeTextureMap* new_tex_map,
                                   MapeGroup* base_group,
+                                  gboolean overload_materials,
+                                  gboolean overload_textures,
                                   MapeGroup* overload_from,
                                   GError** error);
 

@@ -15,43 +15,101 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#ifndef INC_MAPE_TEXTURE_H
-#define INC_MAPE_TEXTURE_H
+#ifndef INC_MAPE_TEXTURE_MAP_H
+#define INC_MAPE_TEXTURE_MAP_H
 
-#include <glib.h>
+#include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include "mape/forward.h"
 #include "mape/group.h"
 
-/* Simple C-based interface to C4TextureMap */
+G_BEGIN_DECLS
 
-#ifdef MAPE_COMPILING_CPP
-extern "C" {
-#endif
+#define MAPE_TYPE_TEXTURE_MAP                 (mape_texture_map_get_type())
+#define MAPE_TEXTURE_MAP(obj)                 (G_TYPE_CHECK_INSTANCE_CAST((obj), MAPE_TYPE_TEXTURE_MAP, MapeTextureMap))
+#define MAPE_TEXTURE_MAP_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST((klass), MAPE_TYPE_TEXTURE_MAP, MapeTextureMapClass))
+#define MAPE_IS_TEXTURE_MAP(obj)              (G_TYPE_CHECK_INSTANCE_TYPE((obj), MAPE_TYPE_TEXTURE_MAP))
+#define MAPE_IS_TEXTURE_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE((klass), MAPE_TYPE_TEXTURE_MAP))
+#define MAPE_TEXTURE_MAP_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS((obj), MAPE_TYPE_TEXTURE_MAP, MapeTextureMapClass))
 
-typedef enum MapeTextureError_ {
-	MAPE_TEXTURE_ERROR_FAILED
-} MapeTextureError;
+typedef struct _MapeTextureMap MapeTextureMap;
+typedef struct _MapeTextureMapClass MapeTextureMapClass;
 
-struct MapeTextureMap_ {
-	void* handle;
-	GHashTable* textures;
+/**
+ * MapeTextureMapError:
+ * @MAPE_TEXTURE_MAP_ERROR_LOAD: An error occured when loading the texture map.
+ *
+ * These errors are from the MAPE_TEXTURE_MAP_ERROR error domain. They can
+ * occur when operating on texture maps.
+ */
+typedef enum _MapeTextureMapError {
+  MAPE_TEXTURE_MAP_ERROR_LOAD
+} MapeTextureMapError;
+
+/**
+ * MapeTextureMapClass:
+ *
+ * This structure does not contain any public fields.
+ */
+struct _MapeTextureMapClass {
+  /*< private >*/
+  GObjectClass parent_class;
 };
 
-MapeTextureMap* mape_texture_map_new(MapeGroup* base,
-                                     MapeGroup* overload_from,
-                                     GError** error);
-void mape_texture_map_destroy(MapeTextureMap* map);
+/**
+ * MapeTextureMap:
+ *
+ * #MapeTextureMap is an opaque data type. You should only access it via the
+ * public API functions.
+ */
+struct _MapeTextureMap {
+  /*< private >*/
+  GObject parent;
+};
 
-guint mape_texture_map_get_texture_count(MapeTextureMap* map);
-const gchar* mape_texture_map_get_texture_name(MapeTextureMap* map,
+GType
+mape_texture_map_get_type(void) G_GNUC_CONST;
+
+MapeTextureMap*
+mape_texture_map_new(void);
+
+gboolean
+mape_texture_map_load_map(MapeTextureMap* texture_map,
+                          MapeGroup* group,
+                          GError** error);
+
+gboolean
+mape_texture_map_load_textures(MapeTextureMap* texture_map,
+                               MapeGroup* group,
+                               GError** error);
+
+gboolean
+mape_texture_map_get_overload_materials(MapeTextureMap* texture_map);
+
+gboolean
+mape_texture_map_get_overload_textures(MapeTextureMap* texture_map);
+
+guint
+mape_texture_map_get_texture_count(MapeTextureMap* texture_map);
+
+const gchar*
+mape_texture_map_get_texture_name(MapeTextureMap* texture_map,
+                                  guint index);
+
+GdkPixbuf*
+mape_texture_map_lookup_texture(MapeTextureMap* texture_map,
+                                const gchar* name);
+
+const gchar*
+mape_texture_map_get_material_name_from_mapping(MapeTextureMap* texture_map,
+                                                guint index);
+
+const gchar*
+mape_texture_map_get_texture_name_from_mapping(MapeTextureMap* texture_map,
                                                guint index);
-GdkPixbuf* mape_texture_map_lookup_texture(MapeTextureMap* map,
-                                           const gchar* name);
 
-#ifdef MAPE_COMPILING_CPP
-} /* extern "C" */
-#endif
+G_END_DECLS
 
-#endif /* INC_MAPE_TEXTURE_H */
+#endif /* INC_MAPE_TEXTURE_MAP_H */
+
+/* vim:set et sw=2 ts=2: */

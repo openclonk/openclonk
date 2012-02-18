@@ -27,11 +27,13 @@
 #include <gdk/gdk.h>
 
 #include "mape/cpp-handles/material-handle.h"
+#include "mape/cpp-handles/texture-handle.h"
 #include "mape/mapgen.h"
 
-extern "C" C4MaterialHandle* _mape_material_map_get_handle(MapeMaterialMap*);
+extern "C" C4MaterialMapHandle* _mape_material_map_get_handle(MapeMaterialMap*);
+extern "C" C4TextureMapHandle* _mape_texture_map_get_handle(MapeTextureMap*);
 
-#define CPPTEXMAP(map) ((C4TextureMap*)map->handle)
+#define CPPTEXMAP(map) (reinterpret_cast<C4TextureMap*>(_mape_texture_map_get_handle(map)))
 #define CPPMATMAP(map) (reinterpret_cast<C4MaterialMap*>(_mape_material_map_get_handle(map)))
 
 extern "C"

@@ -20,7 +20,7 @@
 
 /*typedef struct MapeGroup_ MapeGroup;*/
 /*typedef struct MapeMaterialMap_ MapeMaterialMap;*/
-typedef struct MapeTextureMap_ MapeTextureMap;
+/*typedef struct MapeTextureMap_ MapeTextureMap;*/
 typedef struct MapeFileIcon_ MapeFileIcon;
 typedef struct MapeFileIconSet_ MapeFileIconSet;
 typedef struct MapeConfigFileEntry_ MapeConfigFileEntry;

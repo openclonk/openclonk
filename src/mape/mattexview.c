@@ -84,7 +84,7 @@ void mape_mat_tex_view_destroy(MapeMatTexView* view)
 	if(view->mat_map != NULL)
 		g_object_unref(view->mat_map);
 	if(view->tex_map != NULL)
-		mape_texture_map_destroy(view->tex_map);
+		g_object_unref(view->tex_map);
 
 	mape_icon_view_destroy(view->view_mat);
 	mape_icon_view_destroy(view->view_tex);
@@ -93,12 +93,14 @@ void mape_mat_tex_view_destroy(MapeMatTexView* view)
 }
 
 gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
+                                  MapeTextureMap* new_tex_map,
                                   MapeGroup* base_group,
+                                  gboolean overload_materials,
+                                  gboolean overload_textures,
                                   MapeGroup* overload_from,
                                   GError** error)
 {
 	MapeMaterialMap* new_mat_map;
-	MapeTextureMap* new_tex_map;
 	MapeFileIcon* icon;
 	const MapeMaterial* mat;
 	unsigned int i;
@@ -110,7 +112,7 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 		return FALSE;
 	}
 
-	if(overload_from)
+	if(overload_materials && overload_from != NULL)
 	{
 		if(!mape_material_map_load(new_mat_map, overload_from, error))
 		{
@@ -119,16 +121,25 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 		}
 	}
 
-	new_tex_map = mape_texture_map_new(base_group, overload_from, error);
-	if(new_tex_map == NULL)
+	if(!mape_texture_map_load_textures(new_tex_map, base_group, error))
 	{
 		g_object_unref(new_mat_map);
 		return FALSE;
 	}
 
+	if(overload_textures && overload_from != NULL)
+	{
+		if(!mape_texture_map_load_textures(new_tex_map, overload_from, error))
+		{
+			g_object_unref(new_mat_map);
+			return FALSE;
+		}
+	}
+
 	if(view->mat_map != NULL) g_object_unref(view->mat_map);
-	if(view->tex_map != NULL) mape_texture_map_destroy(view->tex_map);
+	if(view->tex_map != NULL) g_object_unref(view->tex_map);
 	view->mat_map = new_mat_map; view->tex_map = new_tex_map;
+	g_object_ref(new_tex_map);
 
 	mape_icon_view_clear(view->view_mat);
 	for(i = 0; i < mape_material_map_get_material_count(new_mat_map); ++ i)

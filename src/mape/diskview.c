@@ -132,6 +132,10 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 	MapeGroup* parent_group;
 	MapeGroup* overloaded_group;
 
+	MapeTextureMap* texture_map;
+	gboolean overload_materials;
+	gboolean overload_textures;
+
 	/* Open Material.c4g group */
 	gtk_tree_model_get(
 		disk_view->tree_store,
@@ -140,8 +144,6 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		&group,
 		-1
 	);
-
-	/* TODO: Examine TexMap, check for infinite overloaded Mats/Texs */
 
 	if(group == NULL)
 	{
@@ -185,51 +187,67 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		);
 	}
 
-	/* Look for overloaded Material.c4g */
-	has_parent = gtk_tree_model_iter_parent(
-		disk_view->tree_store,
-		&parent_iter,
-		material_iter
-	);
-
-	for(;;)
+	texture_map = mape_texture_map_new();
+	if(mape_texture_map_load_map(texture_map, group, error) == FALSE)
 	{
-		overloaded_group = NULL;
+		g_object_unref(texture_map);
+		return FALSE;
+	}
 
+	overload_materials = mape_texture_map_get_overload_materials(texture_map);
+	overload_textures = mape_texture_map_get_overload_textures(texture_map);
+
+	if(overload_materials || overload_textures)
+	{
+		/* Look for overloaded Material.c4g */
 		has_parent = gtk_tree_model_iter_parent(
 			disk_view->tree_store,
-			&new_parent,
-			&parent_iter
-		);
-		
-		if(has_parent == FALSE)
-			break;
-
-		parent_iter = new_parent;
-		
-		gtk_tree_model_get(
-			disk_view->tree_store,
 			&parent_iter,
-			MAPE_DISK_VIEW_COLUMN_GROUP,
-			&overloaded_group,
-			-1
+			material_iter
 		);
-		
-		if(mape_group_has_entry(overloaded_group, "Material.c4g") ==
-		   TRUE)
+
+		for(;;)
 		{
-			/* TODO: Check if the group is already open!
-			   (mape_disk_view_find_iter). */
-			overloaded_group = mape_group_open_child(
-				overloaded_group,
-				"Material.c4g",
-				error
+			overloaded_group = NULL;
+
+			has_parent = gtk_tree_model_iter_parent(
+				disk_view->tree_store,
+				&new_parent,
+				&parent_iter
 			);
+		
+			if(has_parent == FALSE)
+				break;
 
-			if(overloaded_group == NULL)
-				return FALSE;
+			parent_iter = new_parent;
+		
+			gtk_tree_model_get(
+				disk_view->tree_store,
+				&parent_iter,
+				MAPE_DISK_VIEW_COLUMN_GROUP,
+				&overloaded_group,
+				-1
+			);
+		
+			if(mape_group_has_entry(overloaded_group, "Material.c4g") ==
+				 TRUE)
+			{
+				/* TODO: Check if the group is already open!
+					 (mape_disk_view_find_iter). */
+				overloaded_group = mape_group_open_child(
+					overloaded_group,
+					"Material.c4g",
+					error
+				);
 
-			break;
+				if(overloaded_group == NULL)
+				{
+					g_object_unref(texture_map);
+					return FALSE;
+				}
+
+				break;
+			}
 		}
 	}
 
@@ -243,10 +261,15 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 
 	result = mape_mat_tex_view_reload(
 		disk_view->mat_tex,
+		texture_map,
 		group,
+		overload_materials,
+		overload_textures,
 		overloaded_group,
 		error
 	);
+
+	g_object_unref(texture_map);
 
 #if 0
 	if(overloaded_group != NULL)

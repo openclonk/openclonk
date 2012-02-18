@@ -557,6 +557,8 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/group-handle.cpp
 	src/mape/cpp-handles/material-handle.h
 	src/mape/cpp-handles/material-handle.cpp
+	src/mape/cpp-handles/texture-handle.h
+	src/mape/cpp-handles/texture-handle.cpp
 	src/mape/configfile.c
 	src/mape/configfile.h
 	src/mape/diskview.c
@@ -589,7 +591,7 @@ set(MAPE_SOURCES
 	src/mape/random.h
 	src/mape/statusbar.c
 	src/mape/statusbar.h
-	src/mape/texture.cpp
+	src/mape/texture.c
 	src/mape/texture.h
 	src/mape/window.c
 	src/mape/window.h
