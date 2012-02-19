@@ -1416,6 +1416,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
 
