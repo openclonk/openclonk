@@ -29,30 +29,6 @@ protected func Initialize()
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);
 	time->SetCycleSpeed(12);
-
-	// Create a small settlement to test stuff.
-	/*
-	var foundry = CreateConstruction(Foundry, 300, FindHeight(300), NO_OWNER, 100, true);
-	CreateObject(Barrel, 300, FindHeight(300), NO_OWNER)->PutLiquid("Water", 300);
-	foundry->CreateContents(Coal,3);
-	foundry->CreateContents(Ore,3);	
-	var flag = CreateConstruction(Flagpole, 360, FindHeight(360), NO_OWNER, 100, true);
-	var workshop = CreateConstruction(ToolsWorkshop, 420, FindHeight(420), NO_OWNER, 100, true);
-	workshop->CreateContents(Wood, 10);
-	workshop->CreateContents(Metal, 10);
-	workshop->CreateContents(Coal, 10);
-	workshop->CreateContents(Sulphur, 10);
-	var wind = CreateConstruction(WindGenerator, 480, FindHeight(480), NO_OWNER, 100, true);
-	var sawmill = CreateConstruction(Sawmill, 520, FindHeight(520), NO_OWNER, 100, true);
-	CreateConstruction(Elevator, 220, FindHeight(220), NO_OWNER, 100, true)->CreateShaft(100);
-	*/
-	// Create a lorry with necessary equipment to start a settlement.
-	var lorry = CreateObject(Lorry, 300, FindHeight(300));
-	lorry->CreateContents(Wood, 6);
-	lorry->CreateContents(Metal, 4);
-	lorry->CreateContents(Dynamite, 3);
-	lorry->CreateContents(Loam, 3);
-	
 	return;
 }
 
@@ -66,15 +42,6 @@ private func FindHeight(int x)
 
 protected func InitializePlayer(int plr)
 { 
-	// first player gets the base to test.
-	/*
-	var flagpole = FindObject(Find_ID(Flagpole));
-	if (flagpole && !GetPlayerName(flagpole->GetOwner()))
-		flagpole->SetOwner(plr);
-	*/
-	for (var struct in FindObjects(Find_Category(C4D_Structure)))
-		struct->SetOwner(plr);
-	
 	// Increase wealth goal per player.
 	var goal = FindObject(Find_ID(Goal_Wealth));
 	if (goal)
