@@ -1,0 +1,2 @@
+Name=StatusSymbol.ocd
+Description=Shows a certain state of an object.
