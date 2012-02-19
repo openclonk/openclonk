@@ -839,6 +839,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
 	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
+	AlphaToCoverage = false;
 }
 
 void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
