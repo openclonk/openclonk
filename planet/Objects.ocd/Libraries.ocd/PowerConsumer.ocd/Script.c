@@ -35,9 +35,7 @@ public func OnNotEnoughPower()
 	PowerConsumer_has_power = false;
 	
 	// show symbol
-	if(GetEffect("ShowPowerMessage", this))
-		FatalError("OnNotEnoughPower() called two times in a row!");
-	AddEffect("ShowPowerMessage", this, 1, 10, this);
+	this->AddStatusSymbol(Library_PowerConsumer);
 }
 
 // called when consumer was sleeping but power is available again
@@ -46,17 +44,7 @@ public func OnEnoughPower()
 	PowerConsumer_has_power = true;
 	
 	// remove symbol
-	if(GetEffect("ShowPowerMessage", this))
-		RemoveEffect("ShowPowerMessage", this);
-}
-
-public func FxShowPowerMessageTimer(target, effect, time)
-{
-	if(effect.Interval < 35*3)
-		effect.Interval = 35*3;
-	var t = CreateObject(FloatingMessage, 0, 0, NO_OWNER);
-	t->SetMessage("{{Library_PowerConsumer}}<c ff0000>?</c>");
-	t->SetYDir(-10);
+	this->RemoveStatusSymbol(Library_PowerConsumer);
 }
 
 func Destruction()

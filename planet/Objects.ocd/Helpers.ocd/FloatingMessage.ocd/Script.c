@@ -42,8 +42,8 @@ func FadeOut(int speed, step)
 
 func FxFadeOutTimer(target, effect)
 {
-	if(alpha < 5) return RemoveObject();
 	alpha -= effect.step;
+	if(alpha < 5) return RemoveObject();
 	Update();
 	return 1;
 }
@@ -60,7 +60,8 @@ func SetColor(int r2, g2, b2, a)
 
 func Update()
 {
-	this->Message(Format("@<c %x>%s</c>", RGBa(r, g, b, alpha), msg));
+	// the lacking </c> is on purpose
+	this->Message(Format("@<c %x><c %x>%s</c>", RGBa(255, 255, 255, alpha), RGBa(r, g, b, alpha), msg));
 }
 
 public func Initialize()

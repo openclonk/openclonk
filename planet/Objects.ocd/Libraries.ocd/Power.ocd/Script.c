@@ -74,6 +74,7 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 {
 	var n = {obj = p, amount = a};
 	
+	var before = 0;
 	var found = false;
 	var first_empty = -1;
 	var diff = 0;
@@ -98,7 +99,11 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 		diff = a - o.amount;
 		power_balance += diff;
 		
-		if(a == 0) power_links[i] = nil;
+		if(a == 0)
+		{
+			before = power_links[i].amount;
+			power_links[i] = nil;
+		}
 		else power_links[i] = n;
 		break;
 	}
@@ -118,17 +123,21 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 	}
 	
 	diff = n.amount;
-	if(diff > 0)
+	if((diff > 0) || ((a == 0) && (before > 0)))
 	{
 		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("<c 00ff00>+%d</c>{{Library_PowerConsumer}}", diff));
+		t->SetMessage(Format("+%d</c>{{Library_PowerConsumer}}", diff));
+		t->SetColor(0, 255, 0);
 		t->SetYDir(-10);
+		t->FadeOut(4, 8);
 	}
-	else if(diff < 0)
+	else if((diff < 0) || ((a == 0) && (before < 0)))
 	{
 		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("<c ff0000>%d</c>{{Library_PowerConsumer}}", diff));
+		t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
+		t->SetColor(255, 0, 0);
 		t->SetYDir(-10);
+		t->FadeOut(4, 8);
 	}
 	if(n.amount < 0)
 		n.obj->~OnEnoughPower(); // might be reverted soon, though
