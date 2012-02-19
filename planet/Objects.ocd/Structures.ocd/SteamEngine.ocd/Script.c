@@ -63,7 +63,7 @@ func FxCreatesPowerStart(target, effect, temp)
 {
 	if(temp) return;
 	// fixed amount
-	MakePowerProducer(100);
+	MakePowerProducer(300);
 }
 
 func FxCreatesPowerTimer(target, effect)

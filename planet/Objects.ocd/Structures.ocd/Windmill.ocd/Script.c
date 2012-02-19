@@ -40,10 +40,14 @@ func Wind2Turn()
 		end = 0;
 	}
 	
-	if(last_wind != Abs(GetWind()))
+	var power = Abs(GetWind());
+	if(power < 5) power = 0;
+	else power = Max(((power + 5) / 25), 1) * 50;
+	
+	if(last_wind != power)
 	{
-		last_wind = Abs(GetWind());
-		MakePowerProducer(2 * last_wind);
+		last_wind = power;
+		MakePowerProducer(last_wind);
 	}
 	
 	// Number of frames for one revolution: the more wind the more revolutions per frame.

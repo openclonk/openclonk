@@ -28,10 +28,14 @@ func Wind2Turn()
 {
 	if(GetCon()  < 100) return;
 	
-	if(last_wind != Abs(GetWind()))
+	var power = Abs(GetWind());
+	if(power < 5) power = 0;
+	else power = Max(((power + 5) / 25), 1) * 50;
+	
+	if(last_wind != power)
 	{
-		last_wind = Abs(GetWind());
-		MakePowerProducer(2 * last_wind);
+		last_wind = power;
+		MakePowerProducer(last_wind);
 	}
 	// Fade linearly in time until next timer call
 	var start = 0;
