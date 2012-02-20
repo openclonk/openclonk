@@ -142,7 +142,7 @@ func CreateStarCircle()
 	
 	if(GetType(stars) != C4V_Array)
 		stars=[];
-	for(star in stars) star->RemoveObject();
+	for(var star in stars) star->RemoveObject();
 	stars=[];
 	var amount=radius / 15;
 	

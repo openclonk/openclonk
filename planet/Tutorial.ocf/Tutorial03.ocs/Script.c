@@ -144,7 +144,7 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	// Show first three targets with the arrow.
 	if (index == 0)
-		for (target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
+		for (var target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
 			TutArrowShowTarget(target, RandomX(-45, 45), 24);
 	// Show javelin chest with an arrow.
 	if (index == 1)
@@ -173,7 +173,7 @@ protected func OnGuideMessageRemoved(int plr, int index)
 private func MakeTarget(int x, int y, bool flying)
 {
 	if (flying == nil)
-		balloon = false;
+		var balloon = false;
 
 	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);
 	if (flying == true)

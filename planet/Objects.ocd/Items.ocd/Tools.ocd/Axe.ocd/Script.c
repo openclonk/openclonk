@@ -116,8 +116,8 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		return true;
 
 	var rand = Random(2)+1;
-	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var arm = "R";
+	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var length = 15;
 	carry_bone = "pos_hand2";
 

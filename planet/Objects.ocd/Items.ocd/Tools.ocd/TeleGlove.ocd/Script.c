@@ -144,6 +144,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		CreateParticle("Spark1", Sin(xp, Random(distp)), -Cos(yp, Random(distp)), Sin(xp, 10), -Cos(yp, 10), RandomX(30,90), RGB(185,250,250));
 	}
 
+	var target;
 	if(target_object)
 	{
 		radiusparticle = 30;
@@ -160,7 +161,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 	{
 		radiusparticle = 60;
 
-		var target = FindObject(Find_Exclude(this),
+		target = FindObject(Find_Exclude(this),
 					Find_NoContainer(),
 					Find_Category(C4D_Object),
 					Find_And(Find_Distance(radius, ix, iy),

@@ -60,15 +60,14 @@ func FxIntBridgeTimer(clonk, effect)
 
 	// clonk faces bridge direction
 	var tdir = 0;
+	// get global drawing coordinates
+	var x = target_x + GetX(), y = target_y + GetY();
 	if (x > 0) ++tdir;
 	clonk->SetDir(tdir);
 
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
 	var min_dt = 3;
 	if (target_y < -20 && !Abs(target_x*5/target_y)) min_dt=2;
-
-	// get global drawing coordinates
-	var x = target_x + GetX(), y = target_y + GetY();
 
 	// bridge speed by dig physical
 	var speed = clonk.ActMap.Dig.Speed/6;
