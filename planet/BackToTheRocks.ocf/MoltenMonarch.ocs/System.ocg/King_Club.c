@@ -27,7 +27,6 @@ func DoStrike(clonk, angle)
 			var damage=5*1000;
 			if (king_size) 
 				damage+=3000;
-			var f=ApplyShieldFactor(clonk, obj, damage);
 			ApplyWeaponBash(obj, 400, angle);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}

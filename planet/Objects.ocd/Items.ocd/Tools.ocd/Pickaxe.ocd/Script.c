@@ -89,8 +89,6 @@ protected func DoSwing(object clonk, int ix, int iy)
 		++iDist;
 	}
 
-	var x = Sin(180-angle,iDist-8);
-	var y = Cos(180-angle,iDist-8);
 	var x2 = Sin(180-angle,iDist);
 	var y2 = Cos(180-angle,iDist);
 

@@ -15,7 +15,6 @@ protected func Initialize()
 	iSearchY = 0;
 	iAcidity=0;
 	iWaitTime = RandomX(130,190);
-	var iGraphics = RandomX(1,3);
 
 	DoCon(Random(75));
 
@@ -36,8 +35,6 @@ protected func Initialize()
 
 public func Precipitation()
 {
-	var iLaunch;
-
 	if (GetTemperature() < 0 && iAcidity == 0) szMat = "Snow";
 	if (GetTemperature() >= 1 && iAcidity == 0) szMat = "Water";
 	if (iAcidity >= 1) szMat="Acid";
@@ -82,7 +79,6 @@ public func TimedEvents()
 
 protected func Evaporation() //Creates a search line every x-amount(currently five) of pixels to check for water beneath the cloud
 {
-	var iSearchX = GetX();
 	var iPrecision = 5;
 	
 	if(iSize >= 700 || iAcidity >= 100)

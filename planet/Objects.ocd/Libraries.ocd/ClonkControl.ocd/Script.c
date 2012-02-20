@@ -1121,8 +1121,6 @@ public func CanEnter()
 // Handles enter and exit
 private func ObjectControlEntrance(int plr, int ctrl)
 {
-	var proc = GetProcedure();
-
 	// enter
 	if (ctrl == CON_Enter)
 	{

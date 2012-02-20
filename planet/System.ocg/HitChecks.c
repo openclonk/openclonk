@@ -55,7 +55,7 @@ global func FxHitCheckDoCheck(object target, proplist effect)
 	if (live)
 		shooter = target;
 	
-	if (Distance(oldx, oldy, newx, newy) <= Max(1, Max(Abs(target->GetXDir()), Abs(target->GetYDir()))) * 2)
+	if (dist <= Max(1, Max(Abs(target->GetXDir()), Abs(target->GetYDir()))) * 2)
 	{
 		// We search for objects along the line on which we moved since the last check
 		// and sort by distance (closer first).

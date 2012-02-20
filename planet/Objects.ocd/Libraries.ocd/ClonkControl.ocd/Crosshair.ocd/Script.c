@@ -44,7 +44,6 @@ public func FxMoveTimer()
 
 		var angle_diff = Normalize(target_angle - angle, -1800, 10);
 		if (angle_diff == 0) angle_diff = 1;
-		var dir = angle_diff / Abs(angle_diff);
 		
 		angle = angle + angle_diff * analog_strength / 100 / 8;
 	}

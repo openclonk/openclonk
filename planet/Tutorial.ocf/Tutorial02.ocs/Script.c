@@ -15,7 +15,7 @@ protected func Initialize()
 	goal->CreateGoalFlag(2950, 280);
 		
 	// Create all objects, vehicles, chests used by the player.
-	var effect, firestone, chest, powderkeg, ropeladder, grapple, cata, dynamite;
+	var effect, firestone, chest, powderkeg, grapple, dynamite;
 	
 	// Dynamite box to blast through mine.
 	var dyn1 = CreateObject(Dynamite, 242, 665, NO_OWNER);

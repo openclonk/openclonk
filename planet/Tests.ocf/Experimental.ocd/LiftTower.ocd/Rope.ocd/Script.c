@@ -73,7 +73,6 @@ local last_point;
 
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
 	{
@@ -188,14 +187,11 @@ func ForcesOnObjects()
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
 
-		var xdist = particles[j][0][0]-obj->GetX(Rope_Precision);
-		var ydist = particles[j][0][1]-obj->GetY(Rope_Precision);
-
 		var xdir = BoundBy(particles[j][0][0]-particles[j][1][0], -100, 100);
 		var ydir = particles[j][0][1]-particles[j][1][1];
 
 		if (!obj->GetContact(-1))
-			ydir = BoundBy(ydir, -100, 100);
+			ydir = BoundBy(ydir, -50, 50);
 
 		if (pull_position && pull_frame != FrameCounter() && !Distance(pull_position[0], pull_position[1], obj->GetX(), obj->GetY()))
 		{
@@ -218,7 +214,7 @@ func ForcesOnObjects()
 		pull_frame = FrameCounter();
 
 		obj->SetXDir( xdir, Rope_Precision);
-		obj->SetYDir( ydir, Rope_Precision);
+		obj->SetYDir( obj->GetYDir() + ydir, Rope_Precision);
 		//Log("%v, %v", xdir, ydir);
 	}
 }
@@ -246,8 +242,7 @@ public func DoLength(int dolength)
 	if (obj2->Contained()) obj2 = obj2->Contained();
 
 	// Line would be shorter than the distance? Do nothing
-	if (dolength < 0 && ObjectDistance(obj, obj2) > GetLineLength()/100) return Log("NO!");
-	Log("%v, Line length: %v, Segment length: %v", ObjectDistance(obj, obj2), GetLineLength()/100 - Rope_SegmentLength, Rope_SegmentLength);
+	if (dolength < 0 && ObjectDistance(obj, obj2) > GetLineLength()/100) return;
 	return _inherited(dolength);
 }
 

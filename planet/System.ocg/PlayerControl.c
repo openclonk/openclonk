@@ -204,7 +204,6 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	
 	// Count down from EffectCount, in case effects get deleted
 	var i = GetEffectCount("*Control*", this), iEffect;
-	var res;
 	while (i--)
 		{
 		iEffect = GetEffect("*Control*", this, i);

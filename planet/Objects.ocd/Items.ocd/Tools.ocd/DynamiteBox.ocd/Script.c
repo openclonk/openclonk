@@ -76,7 +76,6 @@ private func UpdatePicture()
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
-	var spacing = 14000;
 
 	SetGraphics(Format("%d", iCount), Icon_Number, 12, GFXOV_MODE_Picture);
 	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);

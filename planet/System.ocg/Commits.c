@@ -127,8 +127,8 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 {
 	var i, j;
 	var rndx, rndy, obj;
-	var mtype, mat;
-	var func, objhgt = id->GetDefCoreVal("Height", "DefCore");
+	var mat;
+	var objhgt = id->GetDefCoreVal("Height", "DefCore");
 	
 	mat = Material(mat_str);
 	// Some failsavety.

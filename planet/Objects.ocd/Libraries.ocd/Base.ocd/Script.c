@@ -317,9 +317,7 @@ func UpdateClonkSellMenus()
 func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
 {
 	// Filled with [idDef, iCount, pObj] arrays
-	var aList = [];
 	var aArray;
-	var pObj;
 	var iIndex;
 	if(!fNoListUpdate)
 		UpdateSellList();

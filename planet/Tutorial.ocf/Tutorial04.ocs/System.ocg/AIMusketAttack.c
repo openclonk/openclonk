@@ -28,7 +28,6 @@ protected func AI_MusketAttack(object clonk, int x, int y, object target)
 	// Shoot a lead shot.
 	var dx = target->GetX() - clonk->GetX();
 	var dy = target->GetY() - clonk->GetY();
-	var dist = Distance(0, 0, dx, dy);
 	ControlUseStart(clonk, dx, dy);
 	ControlUseStop(clonk, dx, dy);
 
