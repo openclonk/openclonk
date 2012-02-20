@@ -57,7 +57,7 @@ protected func Initialize()
 	SetGamma(RGB(0,0,blue), RGB(128-blue,128-blue,128+blue), RGB(255-blue,255-blue,255));
 	
 	// Some natural disasters. 
-	var earthquakes = CreateObject(Earthquake);
+	//var earthquakes = CreateObject(Earthquake);
 	// earthquakes->SetChance(30);
 	// TODO: Rockfall.
 	
