@@ -84,8 +84,11 @@ public func OnProductionHold(id product)
 
 public func OnProductionContinued(id product)
 {
-	SpinOn();
-	AddEffect("Sawing", this, 100, 1, this);
+	if (!GetEffect("Sawing", this))
+	{
+		SpinOn();
+		AddEffect("Sawing", this, 100, 1, this);
+	}
 }
 
 public func OnProductionFinish(id product)
@@ -122,10 +125,11 @@ public func OnProductEjection(object product)
 protected func RejectCollect(id id_def, object collect)
 {
 	// Don't collect wood
-	if(id_def == Wood) return true;
-	if(collect->~IsSawmillIngredient() || CheckWoodObject(collect)) return false;
-	else
+	if (id_def == Wood) 
 		return true;
+	if (collect->~IsSawmillIngredient() || CheckWoodObject(collect)) 
+		return false;
+	return true;
 }
 
 /*-- Animation --*/
