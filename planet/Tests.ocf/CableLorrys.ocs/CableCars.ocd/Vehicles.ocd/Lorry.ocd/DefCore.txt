@@ -21,6 +21,3 @@ UprightAttach=0
 TimerCall=TurnWheels
 Timer=1
 BorderBound=1
-
-[Physicals]
-Float=200
