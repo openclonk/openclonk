@@ -278,7 +278,6 @@ private func RopeRemoved()
 /* --------------------- Graphics of segments ---------------------- */
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
 	{
