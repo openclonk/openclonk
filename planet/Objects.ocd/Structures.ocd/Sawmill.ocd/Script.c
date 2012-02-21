@@ -28,7 +28,7 @@ public func Initialize()
 protected func FindTrees()
 {
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")));
-	if (!tree) return;
+	if (!tree || GetCon() < 100) return;
 
 	Saw(tree);
 }
