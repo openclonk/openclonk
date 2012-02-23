@@ -1,0 +1,2 @@
+Name=ChargeShower
+Description=Shows stuff.
