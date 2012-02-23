@@ -3,6 +3,8 @@
 #include Library_Ownable
 #include Library_PowerProducer
 
+static const SteamEngine_produced_power = 300;
+
 local iFuelAmount;
 local power_seconds;
 
@@ -15,44 +17,52 @@ func Construction()
 
 func ContentsCheck()
 {
+	//Ejects non fuel items immediately
+	var fuel;
+	if(fuel = FindObject(Find_Container(this), Find_Not(Find_Func("IsFuel")))) 
+	{
+		fuel->Exit(-53,21, -20, -1, -1, -30);
+		Sound("Chuff"); //I think a 'chuff' or 'metal clonk' sound could be good here -Ringwaul
+	}
+	
 	// Still active?
-	if(!ActIdle())
+	if(!ActIdle()) return true;
+	// or still warm water in the tank?!
+	if(GetEffect("CreatesPower", this))
 		return true;
-
+	
+	// not needed?
+	if(GetPendingPowerAmount() == 0)
+		return false;
+	
 	// Still has some fuel?
 	if(iFuelAmount) return SetAction("Work");
 	
-	var pFuel;
 	// Search for new fuel
-	if(pFuel = FindObject(Find_Container(this), Find_Func("IsFuel")))
+	if(fuel = FindObject(Find_Container(this), Find_Func("IsFuel")))
 	{
-		iFuelAmount += pFuel->~GetFuelAmount();
-		pFuel->RemoveObject();
+		iFuelAmount += fuel->~GetFuelAmount();
+		fuel->RemoveObject();
 		SetAction("Work");
-		return 1;
+		return true;
 	}
 
-	//Ejects non fuel items immediately
-	if(pFuel = FindObject(Find_Container(this), !Find_Func("IsFuel"))) {
-	pFuel->Exit(-53,21, -20, -1, -1, -30);
-	Sound("Chuff"); //I think a 'chuff' or 'metal clonk' sound could be good here -Ringwaul
-	}
-
-	return 0;
+	return false;
 }
 
 func ConsumeFuel()
 {	
 	if(iFuelAmount > 0)
 	{
-		// every fuel unit gives power for ten seconds
-		power_seconds += 10;
+		// every fuel unit gives power for one second
+		--iFuelAmount;
+		power_seconds += 1;
 		if(!GetEffect("CreatesPower", this))
 			AddEffect("CreatesPower", this, 1, 36, this);
 	}
 	
 	// All used up?
-	if(!iFuelAmount)
+	if(!iFuelAmount || ((GetPendingPowerAmount() == 0) && (GetCurrentPowerBalance() >= SteamEngine_produced_power)))
 	{
 		SetAction("Idle");
 		ContentsCheck();
@@ -63,7 +73,9 @@ func FxCreatesPowerStart(target, effect, temp)
 {
 	if(temp) return;
 	// fixed amount
-	MakePowerProducer(300);
+	MakePowerProducer(SteamEngine_produced_power);
+	
+	AddEffect("Smoking", this, 1, 5, this);
 }
 
 func FxCreatesPowerTimer(target, effect)
@@ -75,8 +87,17 @@ func FxCreatesPowerTimer(target, effect)
 func FxCreatesPowerStop(target, effect, reason, temp)
 {
 	if(temp) return;
-	// fixed amount
+	// disable producer
 	MakePowerProducer(0);
+	
+	if(GetEffect("Smoking", this))
+		RemoveEffect("Smoking", this);
+}
+
+func FxSmokingTimer()
+{
+	Smoke(20, -15, 10);
+	return 1;
 }
 
 local ActMap = {
@@ -88,10 +109,6 @@ Work = {
 	FlipDir = 1,
 	Length = 20,
 	Delay = 2,
-	X = 0,
-	Y = 0,
-	Wdt = 110,
-	Hgt = 80,
 	NextAction = "Work",
 	Animation = "Work",
 	EndCall = "ConsumeFuel",

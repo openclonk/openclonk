@@ -6,6 +6,7 @@
 	QueryWaivePowerRequest()
 	OnNotEnoughPower()
 	OnEnoughPower()
+	OnRemovedFromPowerSleepingQueue(): called when the object was removed from the sleeping queue
 	
 	globals:
 	MakePowerConsumer(int amount)
@@ -52,8 +53,20 @@ func AddPowerConsumer(object p, int a)
 			// did not affect power balance, we can just remove/change the link
 			if(a == 0) // remove
 			{
-				sleeping_links[i] = sleeping_links[GetLength(sleeping_links)];
+				sleeping_links[i] = sleeping_links[GetLength(sleeping_links) - 1];
 				SetLength(sleeping_links, GetLength(sleeping_links) - 1);
+				
+				// message
+				var diff = 0;
+				{
+					var t = CreateObject(FloatingMessage, o.obj->GetX() - GetX(), o.obj->GetY() - GetY(), NO_OWNER);
+					t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
+					t->SetColor(255, 0, 0);
+					t->SetYDir(-10);
+					t->FadeOut(4, 8);
+				}
+				
+				o.obj->~OnRemovedFromPowerSleepingQueue();
 				return true;
 			}
 			sleeping_links[i].amount = a;
@@ -177,7 +190,7 @@ func CheckPowerBalance()
 				var o = sleeping_links[i];
 				if(o.obj == nil)
 				{
-					sleeping_links[i] = sleeping_links[GetLength(sleeping_links)];
+					sleeping_links[i] = sleeping_links[GetLength(sleeping_links) - 1];
 					SetLength(sleeping_links, GetLength(sleeping_links) - 1);
 					continue;
 				}
@@ -283,6 +296,23 @@ func UnsleepLink(int index)
 	return AddPowerLink(o.obj, o.amount); // revives the link
 }
 
+// get requested power of nodes that are currently sleeping
+public func GetPendingPowerAmount()
+{
+	var sum = 0;
+	for(var i = GetLength(sleeping_links); --i >= 0;)
+	{
+		sum += -sleeping_links[i].amount;
+	}
+	return sum;
+}
+
+// should always be above zero - otherwise an object would have been deactivated
+public func GetPowerBalance()
+{
+	return power_balance;
+}
+
 public func IsPowerAvailable(object obj, int amount)
 {
 	// ignore object for now
@@ -345,6 +375,20 @@ func GetPowerHelperForObject(object who)
 	}
 	
 	return helper;
+}
+
+global func GetPendingPowerAmount()
+{
+	if(!this) return 0;
+	Library_Power->Init();
+	return (Library_Power->GetPowerHelperForObject(this))->GetPendingPowerAmount();
+}
+
+global func GetCurrentPowerBalance()
+{
+	if(!this) return 0;
+	Library_Power->Init();
+	return (Library_Power->GetPowerHelperForObject(this))->GetPowerBalance();
 }
 
 global func MakePowerProducer(int amount)

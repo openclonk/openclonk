@@ -19,6 +19,7 @@ local ActMap=
 		NextAction="Be",
 		Length=1,
 		FacetBase=1,
+		AbortCall = "AttachTargetLost"
 	}
 };
 
