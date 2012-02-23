@@ -15375,7 +15375,7 @@ msgstr "int/array"
 
 #: sdk/definition/properties.xml:56(col)
 msgid "Controls the visibility of the object. See the <emlink href=\"definition/visibility.html\">detailed documentation of possible values</emlink>."
-msgstr "Steuert die Sichtbarkeit des Objekts. <emlink href=\"./visibility.xml\">Detailierte Dokumentation möglicher Werte</emlink>"
+msgstr "Steuert die Sichtbarkeit des Objekts. <emlink href=\"definition/visibility.html\">Detailierte Dokumentation möglicher Werte</emlink>"
 
 #: sdk/definition/properties.xml:110(col)
 #: sdk/definition/properties.xml:115(col)
