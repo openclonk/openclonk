@@ -15,6 +15,21 @@ func Construction()
 	return _inherited(...);
 }
 
+public func IsContainer() { return true; }
+
+protected func RejectEntrance(object obj)
+{
+	if (obj->~IsFuel()) 
+		return false;
+	return true;
+}
+
+protected func RejectCollect(id item, object obj)
+{
+	// Just return RejectEntrance for this object.
+	return RejectEntrance(obj);
+}
+
 func ContentsCheck()
 {
 	//Ejects non fuel items immediately
