@@ -13,7 +13,7 @@ protected func Initialize()
 	goal->SetWealthGoal(400);
 	
 	// Place some trees.
-	for (var i = 0; i < 12 + Random(4); i++)
+	for (var i = 0; i < 16 + Random(4); i++)
 		PlaceVegetation(Tree_Coniferous, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
 	
 	// place some sprout berries

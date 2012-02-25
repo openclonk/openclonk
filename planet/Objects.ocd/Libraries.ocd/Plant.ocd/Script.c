@@ -36,24 +36,17 @@ public func IsPlant()
 /** Chance to reproduce plant. Chances are one out of return value. Default is 500.
 	@return the chance, higher = less chance.
 */
-private func SeedChance()
-{
-	return 500;
-}
+private func SeedChance() {	return 500; }
+
 /** Distance the seeds may travel. Default is 300.
 	@return the maximum distance.
 */
-private func SeedAreaSize()
-{
-	return 300;
-}
+private func SeedAreaSize() { return 300; }
+
 /** The amount of plants allowed within SeedAreaSize. Default is 8.
 	@return the maximum amount of plants.
 */
-private func SeedAmount()
-{
-	return 8;
-}
+private func SeedAmount() { return 8; }
 
 /** Automated positioning via RootSurface, make sure to call this if needed (in case Construction is overloaded)
 */

@@ -96,6 +96,7 @@ map Goldmine {
  			RandomSpots & overlay { mat=Gold; tex=gold; };
  			RandomSpots & overlay { mat=Gold; tex=gold; };
  			RandomMat & overlay { mat=Gold; tex=gold; };
+ 			RandomMat & overlay { mat=Gold; tex=gold; };
  		}; 	
  		// Border of earth and sand.
  		overlay {
