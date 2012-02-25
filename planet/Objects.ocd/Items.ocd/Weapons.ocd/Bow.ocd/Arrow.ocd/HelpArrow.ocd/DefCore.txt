@@ -11,6 +11,5 @@ VertexFriction=120,120,120
 Value=15
 Mass=15
 Components=Wood=5
-Picture=4,0,21,21
 Rotate=1
 Float=1

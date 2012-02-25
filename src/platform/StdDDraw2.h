@@ -243,6 +243,9 @@ public:
 	bool Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
 	          C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
 	          bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
+	bool BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
+	                  C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
+	                  bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
 	bool RenderMesh(StdMeshInstance &instance, C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
 	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform) = 0;

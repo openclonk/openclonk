@@ -504,6 +504,14 @@ bool C4Draw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float f
                      C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
                      bool fSrcColKey, const C4BltTransform *pTransform)
 {
+	return BlitUnscaled(sfcSource, fx * sfcSource->Scale, fy * sfcSource->Scale, fwdt * sfcSource->Scale, fhgt * sfcSource->Scale,
+	                    sfcTarget, tx, ty, twdt, thgt, fSrcColKey, pTransform);
+}
+
+bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt, float fhgt,
+                     C4Surface * sfcTarget, float tx, float ty, float twdt, float thgt,
+                     bool fSrcColKey, const C4BltTransform *pTransform)
+{
 	// safety
 	if (!sfcSource || !sfcTarget || !twdt || !thgt || !fwdt || !fhgt) return false;
 	// Apply Zoom
@@ -524,10 +532,6 @@ bool C4Draw::Blit(C4Surface * sfcSource, float fx, float fy, float fwdt, float f
 		twdt *= Zoom;
 		thgt *= Zoom;
 	}
-	fx *= sfcSource->Scale;
-	fy *= sfcSource->Scale;
-	fwdt *= sfcSource->Scale;
-	fhgt *= sfcSource->Scale;
 	// emulated blit?
 	if (!sfcTarget->IsRenderTarget())
 		return Blit8(sfcSource, int(fx), int(fy), int(fwdt), int(fhgt), sfcTarget, int(tx), int(ty), int(twdt), int(thgt), fSrcColKey, pTransform);

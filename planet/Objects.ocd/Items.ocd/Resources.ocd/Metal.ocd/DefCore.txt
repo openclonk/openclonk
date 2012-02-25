@@ -14,4 +14,4 @@ Value=8
 Mass=12
 Components=Ore=1
 Rotate=1
-Picture=0,4,13,13
+Picture=0,20,64,64

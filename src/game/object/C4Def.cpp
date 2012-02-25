@@ -117,10 +117,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Adjust picture rect
-		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
-			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
-
 		// Check category
 		if (!GetPlane() && Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
 		{
@@ -510,6 +506,10 @@ bool C4Def::Load(C4Group &hGroup,
 			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
 
+		// Adjust picture rect
+		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
+			PictureRect.Set(0,0,Shape.Wdt*Graphics.Bmp.Bitmap->Scale, Shape.Hgt*Graphics.Bmp.Bitmap->Scale);
+
 		// validate TopFace
 		if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
 		{
@@ -521,6 +521,7 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
+		PictureRect.Default();
 		SolidMask.Default();
 	}
 
@@ -552,7 +553,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	{
 	case C4DefGraphics::TYPE_Bitmap:
 		fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-		fctPicture.DrawT(cgo,true,iPhaseX,iPhaseY,trans);
+		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);
 		break;
 	case C4DefGraphics::TYPE_Mesh:
 		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
