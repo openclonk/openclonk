@@ -785,6 +785,7 @@ void C4MouseControl::LeftUp()
 {
 	// Update status flag
 	LeftButtonDown=false;
+	if(!RightButtonDown) DownTarget = NULL;
 	// Ignore left up after double click
 	if (LeftDoubleIgnoreUp) { LeftDoubleIgnoreUp=false; return; }
 	// Evaluate by drag status
@@ -857,21 +858,20 @@ void C4MouseControl::DragNone()
 			break;
 		}
 		// check if target object allows scripted dragging
-		if (fAllowDrag && TargetObject)
+		if (fAllowDrag && DownTarget)
 		{
 			C4Object *drag_image_obj; C4ID drag_image_id;
 
 			// Drag only if MD_SOURCE is set and drag image is present
-			if ( (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
-			      TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
-			//if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
+			if ( (DownTarget->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
+			      DownTarget->GetDragImage(&drag_image_obj, &drag_image_id))
 			{
 				Drag=C4MC_Drag_Script;
 
 				if(drag_image_obj) DragImageObject = drag_image_obj;
 				else DragImageDef = C4Id2Def(drag_image_id);
 
-				DragObject = TargetObject;
+				DragObject = DownTarget;
 			}
 		}
 
@@ -921,6 +921,8 @@ void C4MouseControl::RightUp()
 {
 	// Update status flag
 	RightButtonDown=false;
+	if(!LeftButtonDown) DownTarget = NULL;
+
 	// Evaluate by drag status
 	switch (Drag)
 	{
