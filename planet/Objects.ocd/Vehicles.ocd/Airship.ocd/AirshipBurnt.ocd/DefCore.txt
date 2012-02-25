@@ -14,4 +14,3 @@ Value=34
 Mass=60
 Components=Metal=4;Wood=1;
 SolidMask=64,0,64,54,0,0
-Picture=128,0,128,128,0,0
