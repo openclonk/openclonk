@@ -1822,6 +1822,15 @@ void C4AulParseState::Parse_PropList()
 		Shift();
 		AddBCC(AB_STRING, (intptr_t) &Strings.P[P_Prototype]);
 		Parse_Expression();
+		C4V_Type from = GetLastRetType(C4V_PropList);
+		if (C4Value::WarnAboutConversion(from, C4V_PropList))
+		{
+			Warn(FormatString("Prototype is %s instead of %s", GetC4VName(from), GetC4VName(C4V_PropList)).getData(), NULL);
+		}
+		if (a->GetLastCode()->bccType == AB_CPROPLIST && a->GetLastCode()->Par.p->GetDef())
+		{
+			throw new C4AulParseError(this, "Can't use new on definitions yet.");
+		}
 		++size;
 	}
 	Match(ATT_BLOPEN);
