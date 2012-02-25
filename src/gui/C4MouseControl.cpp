@@ -840,8 +840,6 @@ void C4MouseControl::DragNone()
 	if ( (LeftButtonDown || RightButtonDown)
 	     && ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
 	{
-		// don't begin dragging from FoW; unless it's a menu
-		if (FogOfWar && DownCursor != C4MC_Cursor_Region) return;
 		bool fAllowDrag = true;
 		switch (DownCursor)
 		{
@@ -858,7 +856,7 @@ void C4MouseControl::DragNone()
 			break;
 		}
 		// check if target object allows scripted dragging
-		if (fAllowDrag && DownTarget)
+		if (fAllowDrag && DownTarget && (!FogOfWar || (DownTarget->Category & C4D_IgnoreFoW)))
 		{
 			C4Object *drag_image_obj; C4ID drag_image_id;
 
