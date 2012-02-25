@@ -646,10 +646,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	case MODE_IngamePicture:
 	case MODE_Picture: // def picture
 		fZoomToShape = true;
-		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
-			fctBlit.Set(pSourceGfx->GetBitmap(), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
-		else
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+		// drawn at runtime
 		break;
 
 	case MODE_ExtraGraphics: // like ColorByOwner-sfc
@@ -695,7 +692,9 @@ bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 	}
 	else if (pSourceGfx)
 	{
-		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+		if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
+			return true;
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			return !!fctBlit.Surface;
 		else
 			return !!pMeshInstance;
@@ -919,6 +918,26 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			pForObj->pDrawTransform = pPrevTrf;
 		}
 	}
+	else if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
+	{
+		C4Def *pDef = pSourceGfx->pDef;
+		float twdt, thgt;
+		if (fZoomToShape)
+		{
+			twdt = pForObj->Shape.Wdt;
+			thgt = pForObj->Shape.Hgt;
+		}
+		else
+		{
+			twdt = pDef->Shape.Wdt;
+			thgt = pDef->Shape.Hgt;
+		}
+
+		C4TargetFacet ccgo;
+		ccgo.Set(cgo.Surface, offX-twdt/2, offY-thgt/2, twdt, thgt, cgo.TargetX, cgo.TargetY);
+		C4DrawTransform trf(Transform, offX, offY);
+		pDef->Draw(ccgo, false, pForObj->Color, NULL, iPhase, 0, &trf);
+	}
 	else
 	{
 		// no object specified: Draw from fctBlit
@@ -937,7 +956,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 
 			fctBlit.DrawT(cgo.Surface, offX - fctBlit.Wdt/2 + fctBlit.TargetX, offY - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
-		else if(eMode == MODE_Base || eMode == MODE_Action)
+		else
 		{
 			C4Def *pDef = pSourceGfx->pDef;
 
@@ -956,34 +975,6 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				pDraw->SetMeshTransform(&matrix);
 
 			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
-			pDraw->SetMeshTransform(NULL);
-		}
-		else
-		{
-			C4Def *pDef = pSourceGfx->pDef;
-
-			float twdt, thgt;
-			if (fZoomToShape)
-			{
-				twdt = pForObj->Shape.Wdt;
-				thgt = pForObj->Shape.Hgt;
-			}
-			else
-			{
-				twdt = pDef->Shape.Wdt;
-				thgt = pDef->Shape.Hgt;
-			}
-
-			C4Value value;
-			pDef->GetProperty(P_PictureTransformation, &value);
-			StdMeshMatrix matrix;
-			if (C4ValueToMatrix(value, &matrix))
-				pDraw->SetMeshTransform(&matrix);
-
-			C4DrawTransform trf(Transform, offX, offY);
-			pDraw->SetPerspective(true);
-			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - twdt/2, offY - thgt/2, twdt, thgt, pForObj->Color, &trf);
-			pDraw->SetPerspective(false);
 			pDraw->SetMeshTransform(NULL);
 		}
 	}

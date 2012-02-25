@@ -75,9 +75,8 @@ public func SetSign(id def)
 {
 	if (!def)
 		return SetGraphics("", nil, 1, 4);
-	var iSize = Max(def->GetDefCoreVal("Picture", "DefCore", 2), def->GetDefCoreVal("Picture", "DefCore", 3));
 	SetGraphics("", def, 1, 4);
-	SetObjDrawTransform(200, 0, 460*iSize, 0, 200, 90*iSize, 1);
+	SetObjDrawTransform(200, 0, 19500, 0, 200, 2500, 1);
 }
 
 local ActMap = {
