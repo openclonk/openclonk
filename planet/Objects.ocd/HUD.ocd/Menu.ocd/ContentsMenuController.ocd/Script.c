@@ -386,7 +386,8 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 		// otherwise, update
 		
 		// repair "holes"
-		var remaining_objects = RemoveHoles(objects);
+		var remaining_objects = objects[:];
+		RemoveHoles(remaining_objects);
 		//Log("%v",remaining_objects);
 		
 		menuItem->SetData(remaining_objects);
