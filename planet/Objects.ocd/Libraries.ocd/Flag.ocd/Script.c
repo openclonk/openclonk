@@ -171,7 +171,7 @@ func RefreshOwnershipOfSurrounding()
 }
 public func Initialize()
 {
-	if(GetIndexOf(this, LibraryFlag_flag_list) == -1)
+	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
 		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
 
 	// redraw
@@ -264,7 +264,7 @@ func RefreshLinkedFlags()
 		for(var flag in LibraryFlag_flag_list)
 		{
 			if(!IsAllied(flag->GetOwner(), owner)) continue;
-			if(GetIndexOf(flag, current) != -1) continue;
+			if(GetIndexOf(current, flag) != -1) continue;
 			if(flag == this) continue;
 			
 			if(ObjectDistance(oldflag, flag) > oldflag->GetFlagRadius() + flag->GetFlagRadius()) continue;
@@ -293,7 +293,7 @@ func RefreshLinkedFlags()
 	{
 		other->CopyLinkedFlags(this, lflag.linked_flags);
 		
-		if(GetIndexOf(other.lflag.power_helper, to_merge) == -1)
+		if(GetIndexOf(to_merge, other.lflag.power_helper) == -1)
 			to_merge[GetLength(to_merge)] = other.lflag.power_helper;
 		other.lflag.power_helper = lflag.power_helper;
 	}
