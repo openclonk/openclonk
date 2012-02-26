@@ -173,43 +173,103 @@
 	
 	[ControlDef]
 	Identifier=Hotkey1
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey2
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey3
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey4
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey5
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey6
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey7
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey8
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey9
-	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey0
-	SendCursorPos=1
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey1Select
+	
+	[ControlDef]
+	Identifier=Hotkey1SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey2Select
+	
+	[ControlDef]
+	Identifier=Hotkey2SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey3Select
+	
+	[ControlDef]
+	Identifier=Hotkey3SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey4Select
+	
+	[ControlDef]
+	Identifier=Hotkey4SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey5Select
+	
+	[ControlDef]
+	Identifier=Hotkey5SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey6Select
+	
+	[ControlDef]
+	Identifier=Hotkey6SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey7Select
+	
+	[ControlDef]
+	Identifier=Hotkey7SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey8Select
+	
+	[ControlDef]
+	Identifier=Hotkey8SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey9Select
+	
+	[ControlDef]
+	Identifier=Hotkey9SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey0Select
+	
+	[ControlDef]
+	Identifier=Hotkey0SelectAlt
 	
 	# Controlling (contents, vehicles, structures)
 	
@@ -296,6 +356,10 @@
 	SendCursorPos=1
 	
 	[ControlDef]
+	Identifier=InteractionBar
+	Hold=1
+	
+	[ControlDef]
 	Identifier=Enter
 	GUIName=Enter
 	GUIDesc=Go into the building
@@ -305,7 +369,6 @@
 	Identifier=Exit
 	GUIName=Exit
 	GUIDesc=Exit the building
-	
 	
 	
 	# Interaction Hotkeys (lower bar)
@@ -1201,6 +1264,106 @@
 		Control=Hotkey0
 		
 		[Assignment]
+		Key=Hotkey1,Mouse1ButtonLeft
+		Control=Hotkey1Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey1,Mouse1ButtonRight
+		Control=Hotkey1SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey2,Mouse1ButtonLeft
+		Control=Hotkey2Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey2,Mouse1ButtonRight
+		Control=Hotkey2SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey3,Mouse1ButtonLeft
+		Control=Hotkey3Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey3,Mouse1ButtonRight
+		Control=Hotkey3SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey4,Mouse1ButtonLeft
+		Control=Hotkey4Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey4,Mouse1ButtonRight
+		Control=Hotkey4SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey5,Mouse1ButtonLeft
+		Control=Hotkey5Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey5,Mouse1ButtonRight
+		Control=Hotkey5SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey6,Mouse1ButtonLeft
+		Control=Hotkey6Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey6,Mouse1ButtonRight
+		Control=Hotkey6SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey7,Mouse1ButtonLeft
+		Control=Hotkey7Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey7,Mouse1ButtonRight
+		Control=Hotkey7SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey8,Mouse1ButtonLeft
+		Control=Hotkey8Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey8,Mouse1ButtonRight
+		Control=Hotkey8SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey9,Mouse1ButtonLeft
+		Control=Hotkey9Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey9,Mouse1ButtonRight
+		Control=Hotkey9SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey0,Mouse1ButtonLeft
+		Control=Hotkey0Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey0,Mouse1ButtonRight
+		Control=Hotkey0SelectAlt
+		Priority=200
+		
+		[Assignment]
 		Key=Shift+Hotkey1
 		Control=InteractionHotkey1
 		
@@ -1286,6 +1449,11 @@
 	
 	[ControlSet]
 	Name=*
+	
+		# Interaction-Bar
+		[Assignment]
+		Key=L
+		Control=InteractionBar
 	
 		# Collect
 	

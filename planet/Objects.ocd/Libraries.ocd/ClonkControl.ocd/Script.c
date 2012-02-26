@@ -45,6 +45,8 @@ local force_collection;
 local inventory;
 local use_objects;
 
+local handslot_choice_pending;
+
 /* Item limit */
 
 private func HandObjects() { return 2; }
@@ -86,6 +88,8 @@ public func SetHandItemPos(int hand, int inv)
 		this->~OnSlotFull(hand);
 	else
 		this->~OnSlotEmpty(hand);
+	
+	handslot_choice_pending = false;
 }
 
 /* Returns the position in the inventory of the ith use item */
@@ -487,6 +491,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!this) 
 		return false;
 	
+	if(ctrl == CON_InteractionBar)
+	{
+		if(!release);
+			// todo: show action bar
+		else;
+			// todo: hide action bar
+	}
+	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// Backpack menu
@@ -610,6 +622,37 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
+	// this wall of text is called when 1-0 is beeing held, and left or right mouse button is pressed.
+	var hand = 0;
+	hot = 0;
+	if (ctrl == CON_Hotkey0Select) hot = 10;
+	if (ctrl == CON_Hotkey1Select) hot = 1;
+	if (ctrl == CON_Hotkey2Select) hot = 2;
+	if (ctrl == CON_Hotkey3Select) hot = 3;
+	if (ctrl == CON_Hotkey4Select) hot = 4;
+	if (ctrl == CON_Hotkey5Select) hot = 5;
+	if (ctrl == CON_Hotkey6Select) hot = 6;
+	if (ctrl == CON_Hotkey7Select) hot = 7;
+	if (ctrl == CON_Hotkey8Select) hot = 8;
+	if (ctrl == CON_Hotkey9Select) hot = 9;
+	if (ctrl == CON_Hotkey0SelectAlt) {hot = 10; hand=1; }
+	if (ctrl == CON_Hotkey1SelectAlt) {hot = 1; hand=1; }
+	if (ctrl == CON_Hotkey2SelectAlt) {hot = 2; hand=1; }
+	if (ctrl == CON_Hotkey3SelectAlt) {hot = 3; hand=1; }
+	if (ctrl == CON_Hotkey4SelectAlt) {hot = 4; hand=1; }
+	if (ctrl == CON_Hotkey5SelectAlt) {hot = 5; hand=1; }
+	if (ctrl == CON_Hotkey6SelectAlt) {hot = 6; hand=1; }
+	if (ctrl == CON_Hotkey7SelectAlt) {hot = 7; hand=1; }
+	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
+	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
+	
+	if(hot > 0  && hot <= MaxContentsCount())
+	{
+		SetHandItemPos(hand, hot-1);
+		this->~OnInventoryHotkeyRelease(hot-1);
+		return true;
+	}
+	
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -623,12 +666,32 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
+	// only the last-pressed key is taken into consideration.
+	// if 2 hotkeys are held, the earlier one is beeing treated as released
 	if (hot > 0 && hot <= MaxContentsCount())
 	{
-		SetHandItemPos(0, hot-1);
+		// if released, we chose, if not chosen already
+		if(release)
+		{
+			if(handslot_choice_pending == hot)
+			{
+				SetHandItemPos(0, hot-1);
+				this->~OnInventoryHotkeyRelease(hot-1);
+			}
+		}
+		// else we just highlight
+		else
+		{
+			if(handslot_choice_pending)
+			{
+				this->~OnInventoryHotkeyRelease(handslot_choice_pending-1);
+			}
+			handslot_choice_pending = hot;
+			this->~OnInventoryHotkeyPress(hot-1);
+		}
+		
 		return true;
 	}
-	
 	
 	var proc = GetProcedure();
 
