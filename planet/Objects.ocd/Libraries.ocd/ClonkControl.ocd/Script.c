@@ -770,10 +770,10 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") this->~ControlThrow(target,tx,ty);
-	else if (command == "Jump") this->~ControlJump();
+	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
+	else if (command == "Jump") return this->~ControlJump();
 	// else standard command
-	else SetCommand(command,target,tx,ty,target2);
+	else return SetCommand(command,target,tx,ty,target2);
 	
 	// this function might be obsolete: a normal SetCommand does make a callback to
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
