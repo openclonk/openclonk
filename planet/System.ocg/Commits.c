@@ -337,3 +337,8 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	}
 	return 0; // No location found.
 }
+
+global func MovePosition(int x, int y, int prec)
+{
+	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
+}
