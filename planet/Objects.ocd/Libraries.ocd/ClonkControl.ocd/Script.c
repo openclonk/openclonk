@@ -267,9 +267,10 @@ protected func Collection2(object obj)
 	var success = false;
 	
 	// into selected area if empty
-	if (!inventory[0])
+	if (!GetHandItem(0))
 	{
-		inventory[0] = obj;
+		sel = GetHandItemPos(0);
+		inventory[sel] = obj;
 		success = true;
 	}
 	// otherwise, next if empty
@@ -392,7 +393,7 @@ protected func RejectCollect(id objid, object obj)
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
 	if (!force_collection)
-		if (GetItem(0) && GetItem(1))
+		if (GetHandItem(0) && GetHandItem(1))
 			return true;
 	
 	return _inherited(objid,obj,...);
