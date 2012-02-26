@@ -936,6 +936,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	// drawing specific object?
 	else if (OverlayObj)
 	{
+		// TODO: Shouldn't have called PrepareDrawing/set ClrModulation here, since 
+		// OverlayObj drawing will do it on its own.
 		if (eMode == MODE_ObjectPicture)
 		{
 			C4Facet fctTarget;
@@ -1071,8 +1073,7 @@ void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTransform* trans)
 {
 	assert(IsPicture());
-	// update object color
-	if (pForObj && fctBlit.Surface) fctBlit.Surface->SetClr(pForObj->Color);
+
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 	{
@@ -1086,38 +1087,16 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
 	}
-	// draw at given rect
-	if (!pMeshInstance)
-	{
-		// the picture we are rendering is the one with trans applied, and the overlay transformation
-		// is applied to the picture we are rendering, so apply it afterwards. Note that
-		// C4BltTransform::operator*= does this = other * this.
-		C4DrawTransform trf(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2);
-		if(trans) trf *= *trans;
 
-		fctBlit.DrawT(cgo, true, iPhase, 0, &trf);
-	}
-	else
-	{
-		C4Def *pDef = pSourceGfx->pDef;
+	// the picture we are rendering is the one with trans applied, and the overlay transformation
+	// is applied to the picture we are rendering, so apply it afterwards. Note that
+	// C4BltTransform::operator*= does this = other * this.
+	C4DrawTransform trf(Transform, cgo.X + cgo.Wdt/2.0f, cgo.Y + cgo.Hgt/2.0f);
+	if(trans) trf *= *trans;
 
-		C4Value value;
-		pDef->GetProperty(P_PictureTransformation, &value);
-		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			pDraw->SetMeshTransform(&matrix);
+	// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
+	pSourceGfx->Draw(cgo, pForObj->Color, NULL, iPhase, 0, &trf);
 
-		// the picture we are rendering is the one with trans applied, and the overlay transformation
-		// is applied to the picture we are rendering, so apply it afterwards. Note that
-		// C4BltTransform::operator*= does this = other * this.
-		C4DrawTransform trf(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2);
-		if(trans) trf *= *trans;
-
-		pDraw->SetPerspective(true);
-		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
-		pDraw->SetPerspective(false);
-		pDraw->SetMeshTransform(NULL);
-	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 	{
@@ -1129,7 +1108,6 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		pDraw->DeactivateBlitModulation();
 	}
 }
-
 
 bool C4GraphicsOverlay::operator == (const C4GraphicsOverlay &rCmp) const
 {
