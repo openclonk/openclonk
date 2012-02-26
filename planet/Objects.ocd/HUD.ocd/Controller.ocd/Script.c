@@ -23,6 +23,10 @@ local deco;
 local markers;
 local backpack;
 
+// Button that locks/unlocks the inventory
+local lockbutton;
+local hoverhelper; // the hover-thingie for showing the inventory. a helper.
+
 // Tubes.
 local healthtube;
 local breathtube;
@@ -67,25 +71,172 @@ protected func Construction()
 	// MakeManaTube();
 	
 	// backpack display
-	for(var i=0; i<5; i++)
+	
+	MakeBackpack();
+	
+	// TODO: cleanup
+	// ring inventory
+	/*
+	for(var i=0; i<BackpackSize(); i++)
 	{
-		var bt = CreateObject(GUI_RingMenu_Icon,0,0,GetOwner());
-		bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43));	
-		bt->SetExtraData(i+2);
-		bt->SetSize(48000);
+		var step = 360/BackpackSize();
+		//var r = 43;
+		var r = 52;
+		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+		//bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43)); // 5 slots
+		bt->SetPosition(74+Sin((i*step),r),-74-Cos((i*step),r));
+		bt->SetSlotId(i);
+		//bt->SetSize(48000);
+		//bt->SetShape(bt->GetDefCoreVal());
 		//bt->SetObject(this->GetItem(2+i),0,2+i,0);
-		bt->SetObjDrawTransform(1,0,0,0,1,0,0);
+		//bt->SetObjDrawTransform(1,0,0,0,1,0,0);
 		backpack[GetLength(backpack)] = bt;
+		CustomMessage(Format("@%d.", i+1), bt, nil, -10, 44);
 	}
 	//AddEffect("UpdateBackpack",this,1,1,nil,nil);		
 	
-
+	// column inventory
+	for(var i=0; i<BackpackSize(); i++)
+	{
+		var d = 60;
+		var y = -225 - d*BackpackSize();
+		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+		bt->SetPosition(40, y + d*i);
+		bt->SetSlotId(i);
+		
+		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 44);
+		backpack[GetLength(backpack)] = bt;
+	}
+	*/
 	
 }
+
+// How many slots the inventory has, for overloading
+private func BackpackSize() { return 7; }
 
 private func ScheduleUpdateBackpack()
 {
 	ScheduleCall(this, "UpdateBackpack", 1, 0);
+}
+
+/* Inventory-Bar stuff */
+private func MakeBackpack()
+{
+	// distance between slots
+	var d = 55;
+	// upper barrier
+	var y = -225-35 - d*BackpackSize();
+
+	// create background
+	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
+	hoverhelper->SetHUDController(this);
+	hoverhelper->SetPosition(0,y-10);
+	hoverhelper->SetShape(0,0,40+48/2+5, d*BackpackSize() - 48 - 20);
+	hoverhelper.Visibility = VIS_None;
+
+	// create backpack slots
+	for(var i=0; i<BackpackSize(); i++)
+	{
+		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+		bt->SetHUDController(this);
+		bt->SetPosition(40, y + d*i);
+		bt->SetSlotId(i);
+		
+		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 44);
+		backpack[GetLength(backpack)] = bt;
+	}
+	
+	// and the lock-button
+	var bt = CreateObject(GUI_Lock_Button,0,0,GetOwner());
+	bt->SetHUDController(this);
+	bt->SetPosition(60,y-55);
+	
+	lockbutton = bt;
+}
+
+public func ShowInventory()
+{
+	var effect;
+	if(effect = GetEffect("InventoryTransition", this))
+		effect.position = 40;
+	else
+		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 40, backpack[0]);
+	
+	hoverhelper.Visibility = VIS_None;
+	
+	ClearScheduleCall(this, "HideInventory");
+}
+
+public func HideInventory()
+{
+	// don't hide if the inventory is locked
+	if(lockbutton->IsLocked())
+		return;
+		
+	var effect;
+	if(effect = GetEffect("InventoryTransition", this))
+		effect.position = 0;
+	else
+		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 0, backpack[0]);
+	
+	hoverhelper.Visibility = VIS_Owner;
+}
+
+public func ScheduleHideInventory()
+{
+	ScheduleCall(this, "HideInventory", 120);
+}
+
+
+private func FxInventoryTransitionStart(object target, proplist effect, int tmp, int pos, object ref)
+{
+	if(tmp != 0)
+		return;
+		
+	// make stuff visible. It wants to be seen transitioning!
+	var bt;
+	for(bt in backpack)
+		bt.Visibility = VIS_Owner;
+	
+	effect.position = pos;
+	effect.reference = ref;
+}
+
+private func FxInventoryTransitionTimer(object target, proplist effect, int time)
+{
+	// don't move in the initial frame - used if the moving is aborted by hovering
+	if(time < 1)
+		return;
+		
+	var dist = effect.position - effect.reference->GetX();
+	var dir = BoundBy(dist, -2,2);
+	
+	// if we haven't reached our destination yet, we move everything
+	if(dir != 0)
+	{
+		var bt;
+		for(bt in backpack)
+			bt->MovePosition(dir, 0);
+		
+		bt = lockbutton;
+		bt->MovePosition(dir, 0);
+	}
+	// else the effect is allowed to cease existing
+	else
+		return -1;
+}
+
+private func FxInventoryTransitionStop(object target, proplist effect, int reason, int tmp)
+{
+	if(tmp != 0)
+		return;
+		
+	if(effect.position == 0)
+	{
+		var bt;
+		for(bt in backpack)
+			bt.Visibility = VIS_None;
+	}
 }
 
 /*-- Wealth --*/
@@ -204,15 +355,21 @@ func UpdateBackpack()
 {
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
+
+	ShowInventory();
 	
 	for(var i=0; i<GetLength(backpack); i++)
 	{
-		backpack[i]->SetAmount(0);  
-		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetExtraData())); 
-		backpack[i]->SetGraphics(nil,nil,9);
-		backpack[i]->SetGraphics(nil,nil,10);
-		backpack[i]->SetGraphics(nil,nil,11);
-		backpack[i]->SetGraphics(nil,nil,12);
+		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetSlotId()));
+		backpack[i]->SetUnselected();
+	}
+	
+	for(var i=0; i < c->HandObjects(); ++i)
+		backpack[c->GetHandItemPos(i)]->SetSelected(i);
+	
+	if(!lockbutton->IsLocked())
+	{
+		ScheduleHideInventory();
 	}
 }	
 
@@ -473,13 +630,22 @@ public func OnSelectionChanged(int old, int new)
 	actionbar[new]->UpdateSelectionStatus();
 }
 
+// call from HUDAdapter or inventory-buttons
+public func OnHandSelectionChange(int old, int new, int handslot)
+{
+	backpack[old]->SetUnselected();
+	backpack[new]->SetSelected(handslot);
+	
+	OnSlotObjectChanged(handslot);
+}
+
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
 {
 	//Log("slot %d changed", slot);
 	var cursor = GetCursor(GetOwner());
 	if(!cursor) return;
-	var obj = cursor->GetItem(slot);
+	var obj = cursor->GetHandItem(slot);
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 	
 	// refresh backpack

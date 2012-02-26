@@ -148,6 +148,22 @@ protected func OnSlotEmpty(int slot)
 	return _inherited(slot, ...);
 }
 
+
+protected func OnHandSelectionChange(int old, int new, int handslot)
+{
+	if (HUDcontroller)
+		HUDcontroller->OnHandSelectionChange(old, new, handslot);
+	return _inherited(old, new, handslot, ...);
+}
+
+// when two items switch place
+protected func OnInventoryChange(int old, int new)
+{
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateBackpack();
+	return _inherited(old, new, ...);
+}
+
 func Collection2()
 {
 	if (HUDcontroller)

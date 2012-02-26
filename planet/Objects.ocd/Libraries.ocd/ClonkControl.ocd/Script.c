@@ -43,6 +43,7 @@ local indexed_inventory;
 local disableautosort;
 local force_collection;
 local inventory;
+local use_objects;
 
 /* Item limit */
 
@@ -51,7 +52,6 @@ public func MaxContentsCount() { return 7; }
 public func NoStackedContentMenu() { return true; }
 
 /* Get the ith item in the inventory */
-// the first two are in the hands
 public func GetItem(int i)
 {
 	if (i >= GetLength(inventory))
@@ -61,6 +61,53 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+/* Get the ith item in hands.
+   These are the items that will be used with use-commands. (Left mouse click, etc...) */
+public func GetHandItem(int i)
+{
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+		
+	return GetItem(use_objects[i]);
+}
+
+/* Set the "hand"th use-item to the "inv"th slot */
+public func SetHandItemPos(int hand, int inv)
+{
+	if(hand >= HandObjects() || inv >= MaxContentsCount())
+		return nil;
+	if(hand < 0 || inv < 0) return nil;
+
+	use_objects[hand] = inv;
+	
+	// call callbacks
+	if(GetItem(inv))
+		this->~OnSlotFull(hand);
+	else
+		this->~OnSlotEmpty(hand);
+}
+
+/* Returns the position in the inventory of the ith use item */
+public func GetHandItemPos(int i)
+{
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+	
+	return use_objects[i];
+}
+
+/* Returns in which hand-slot the oth inventory-slot is */
+private func GetHandPosByItemPos(int o)
+{
+	for(var i=0; i < GetLength(use_objects); i++)
+		if(use_objects[i] == o)
+			return i;
+	
+	return nil;
+}
+ 
 // For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
 public func HUDShowItems() { return true; }
 
@@ -98,32 +145,38 @@ public func Switch2Items(int one, int two)
 	if (using == inventory[one] || using == inventory[two])
 		CancelUse();
 	
+	var handone, handtwo;
+	handone = GetHandPosByItemPos(one);
+	handtwo = GetHandPosByItemPos(two);
+	
 	// callbacks: (de)selection
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[two]) inventory[two]->~Deselection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[one]) inventory[one]->~Deselection(this,two);
 		
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[one]) inventory[one]->~Selection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[two]) inventory[two]->~Selection(this,two);
 	
 	// callbacks: to self, for HUD
-	if (one < HandObjects())
+	if (handone != nil)
 	{
 		if (inventory[one])
-			this->~OnSlotFull(one);
+			this->~OnSlotFull(handone);
 		else
-			this->~OnSlotEmpty(one);
+			this->~OnSlotEmpty(handone);
 	}
-	if (two < HandObjects())
+	if (handtwo != nil)
 	{
 		if (inventory[two])
-			this->~OnSlotFull(two);
+			this->~OnSlotFull(handtwo);
 		else
-			this->~OnSlotEmpty(two);
+			this->~OnSlotEmpty(handtwo);
 	}
+	
+	this->~OnInventoryChange(one, two);
 }
 
 /* Overload of Collect function */
@@ -156,8 +209,12 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 			if (success)
 			{
 				inventory[pos] = item;
-				if (pos < HandObjects())
-					this->~OnSlotFull(pos);
+				var handpos = GetHandPosByItemPos(pos); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+				{
+					this->~OnSlotFull(handpos);
+				}
 			}
 		}
 	}
@@ -185,6 +242,10 @@ protected func Construction()
 	// inventory variables
 	indexed_inventory = 0;
 	inventory = CreateArray();
+	use_objects = CreateArray();
+
+	for(var i=0; i < HandObjects(); i++)
+		use_objects[i] = i;
 
 	force_collection = false;
 	
@@ -228,8 +289,12 @@ protected func Collection2(object obj)
 	}
 	// callbacks
 	if (success)
-		if (sel < HandObjects())
-			this->~OnSlotFull(sel);
+	{
+		var handpos = GetHandPosByItemPos(sel); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+			this->~OnSlotFull(handpos);
+	}
 	
 	if (sel == 0 || sel == 1)
 		obj->~Selection(this,sel == 1);
@@ -259,8 +324,12 @@ protected func Ejection(object obj)
 
 	// callbacks
 	if (success)
-		if (i < HandObjects())
-			this->~OnSlotEmpty(i);
+	{
+		var handpos = GetHandPosByItemPos(i); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+			this->~OnSlotEmpty(handpos);
+	}
 	
 	if (i == 0 || i == 1)
 		obj->~Deselection(this,i == 1);
@@ -278,8 +347,10 @@ protected func Ejection(object obj)
 				inventory[i] = Contents(c);
 				indexed_inventory++;
 				
-				if (i < HandObjects())
-					this->~OnSlotFull(i);
+				var handpos = GetHandPosByItemPos(i); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+					this->~OnSlotFull(handpos);
 				
 				if (i == 0 || i == 1)
 					Contents(c)->~Selection(this,i == 1);
@@ -521,6 +592,25 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
+	if (ctrl == CON_InteractionHotkey0) hot = 10;
+	if (ctrl == CON_InteractionHotkey1) hot = 1;
+	if (ctrl == CON_InteractionHotkey2) hot = 2;
+	if (ctrl == CON_InteractionHotkey3) hot = 3;
+	if (ctrl == CON_InteractionHotkey4) hot = 4;
+	if (ctrl == CON_InteractionHotkey5) hot = 5;
+	if (ctrl == CON_InteractionHotkey6) hot = 6;
+	if (ctrl == CON_InteractionHotkey7) hot = 7;
+	if (ctrl == CON_InteractionHotkey8) hot = 8;
+	if (ctrl == CON_InteractionHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		this->~ControlInteractionHotkey(hot-1);
+		return true;
+	}
+	
+	// inventory
+	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
 	if (ctrl == CON_Hotkey1) hot = 1;
 	if (ctrl == CON_Hotkey2) hot = 2;
@@ -532,11 +622,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	if (hot > 0)
+	if (hot > 0 && hot <= MaxContentsCount())
 	{
-		this->~ControlHotkey(hot-1);
+		SetHandItemPos(0, hot-1);
 		return true;
 	}
+	
 	
 	var proc = GetProcedure();
 
@@ -574,8 +665,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
 	
-	var contents = GetItem(0);
-	var contents2 = GetItem(1);	
+	var contents = GetHandItem(0);
+	var contents2 = GetHandItem(1);	
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);

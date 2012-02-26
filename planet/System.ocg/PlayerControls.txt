@@ -169,6 +169,48 @@
 	GUIDesc=Drop secondary selected inventory item
 	Hold=1
 	
+	# Hotkeys (Inventory)
+	
+	[ControlDef]
+	Identifier=Hotkey1
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey2
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey3
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey4
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey5
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey6
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey7
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey8
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey9
+	SendCursorPos=1
+	
+	[ControlDef]
+	Identifier=Hotkey0
+	SendCursorPos=1
+	
 	# Controlling (contents, vehicles, structures)
 	
 	[ControlDef]
@@ -266,46 +308,46 @@
 	
 	
 	
-	# Hotkeys (lower bar)
+	# Interaction Hotkeys (lower bar)
 	
 	[ControlDef]
-	Identifier=Hotkey1
+	Identifier=InteractionHotkey1
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey2
+	Identifier=InteractionHotkey2
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey3
+	Identifier=InteractionHotkey3
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey4
+	Identifier=InteractionHotkey4
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey5
+	Identifier=InteractionHotkey5
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey6
+	Identifier=InteractionHotkey6
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey7
+	Identifier=InteractionHotkey7
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey8
+	Identifier=InteractionHotkey8
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey9
+	Identifier=InteractionHotkey9
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey0
+	Identifier=InteractionHotkey0
 	SendCursorPos=1
 	
 	# Crew 
@@ -1159,42 +1201,82 @@
 		
 		[Assignment]
 		Key=Shift+Hotkey1
-		Control=PlayerHotkey1
+		Control=InteractionHotkey1
 		
 		[Assignment]
 		Key=Shift+Hotkey2
-		Control=PlayerHotkey2
+		Control=InteractionHotkey2
 		
 		[Assignment]
 		Key=Shift+Hotkey3
-		Control=PlayerHotkey3
+		Control=InteractionHotkey3
 		
 		[Assignment]
 		Key=Shift+Hotkey4
-		Control=PlayerHotkey4
+		Control=InteractionHotkey4
 		
 		[Assignment]
 		Key=Shift+Hotkey5
-		Control=PlayerHotkey5
+		Control=InteractionHotkey5
 		
 		[Assignment]
 		Key=Shift+Hotkey6
-		Control=PlayerHotkey6
+		Control=InteractionHotkey6
 		
 		[Assignment]
 		Key=Shift+Hotkey7
-		Control=PlayerHotkey7
+		Control=InteractionHotkey7
 		
 		[Assignment]
 		Key=Shift+Hotkey8
-		Control=PlayerHotkey8
+		Control=InteractionHotkey8
 		
 		[Assignment]
 		Key=Shift+Hotkey9
-		Control=PlayerHotkey9
+		Control=InteractionHotkey9
 		
 		[Assignment]
 		Key=Shift+Hotkey0
+		Control=InteractionHotkey0
+		
+		[Assignment]
+		Key=Ctrl+Hotkey1
+		Control=PlayerHotkey1
+		
+		[Assignment]
+		Key=Ctrl+Hotkey2
+		Control=PlayerHotkey2
+		
+		[Assignment]
+		Key=Ctrl+Hotkey3
+		Control=PlayerHotkey3
+		
+		[Assignment]
+		Key=Ctrl+Hotkey4
+		Control=PlayerHotkey4
+		
+		[Assignment]
+		Key=Ctrl+Hotkey5
+		Control=PlayerHotkey5
+		
+		[Assignment]
+		Key=Ctrl+Hotkey6
+		Control=PlayerHotkey6
+		
+		[Assignment]
+		Key=Ctrl+Hotkey7
+		Control=PlayerHotkey7
+		
+		[Assignment]
+		Key=Ctrl+Hotkey8
+		Control=PlayerHotkey8
+		
+		[Assignment]
+		Key=Ctrl+Hotkey9
+		Control=PlayerHotkey9
+		
+		[Assignment]
+		Key=Ctrl+Hotkey0
 		Control=PlayerHotkey0				
 	
 	# ======================================================================= #

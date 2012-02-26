@@ -225,9 +225,9 @@ func OnSlotFull(int slot)
 
 public func DetachObject(object obj)
 {
-	if(GetItem(0) == obj)
+	if(GetHandItem(0) == obj)
 		DetachHandItem(0);
-	if(GetItem(1) == obj)
+	if(GetHandItem(1) == obj)
 		DetachHandItem(1);
 }
 
@@ -254,8 +254,8 @@ func UpdateAttach()
 
 func DoUpdateAttach(bool sec)
 {
-	var obj = GetItem(sec);
-	var other_obj = GetItem(!sec);
+	var obj = GetHandItem(sec);
+	var other_obj = GetHandItem(!sec);
 	if(!obj) return;
 	var iAttachMode = obj->~GetCarryMode(this);
 	if(iAttachMode == CARRY_None) return;
@@ -369,9 +369,9 @@ func DoUpdateAttach(bool sec)
 
 public func GetHandMesh(object obj)
 {
-	if(GetItem(0) == obj)
+	if(GetHandItem(0) == obj)
 		return iHandMesh[0];
-	if(GetItem(1) == obj)
+	if(GetHandItem(1) == obj)
 		return iHandMesh[1];
 }
 
