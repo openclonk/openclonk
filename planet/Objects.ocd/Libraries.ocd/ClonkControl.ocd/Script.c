@@ -606,7 +606,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (hot > 0)
 	{
-		this->~ControlInteractionHotkey(hot-1);
+		this->~ControlHotkey(hot-1);
 		return true;
 	}
 	
