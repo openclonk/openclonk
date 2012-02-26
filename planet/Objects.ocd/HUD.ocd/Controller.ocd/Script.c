@@ -535,7 +535,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 		
 		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
-			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
+			ActionButton(clonk,i,clonk->GetHandItem(i),ACTIONTYPE_INVENTORY);
 		}
 		ClearButtons(i);
 		
