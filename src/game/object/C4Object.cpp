@@ -2247,37 +2247,40 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			              offX + Shape.GetX(), offY + Shape.GetY() + Shape.Hgt - fctConSign.Hgt,
 			              fctConSign.Wdt, fctConSign.Hgt, true);
 		}
-	// FacetTopFace: Override TopFace.GetX()/GetY()
-	C4PropList* pActionDef = GetAction();
-	if (pActionDef && pActionDef->GetPropertyInt(P_FacetTopFace))
+	if(TopFace.Surface)
 	{
-		int32_t iPhase = Action.Phase;
-		if (pActionDef->GetPropertyInt(P_Reverse)) iPhase = pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
-		TopFace.X = pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + pActionDef->GetPropertyInt(P_Wdt) * iPhase;
-		TopFace.Y = pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
+		// FacetTopFace: Override TopFace.GetX()/GetY()
+		C4PropList* pActionDef = GetAction();
+		if (pActionDef && pActionDef->GetPropertyInt(P_FacetTopFace))
+		{
+			int32_t iPhase = Action.Phase;
+			if (pActionDef->GetPropertyInt(P_Reverse)) iPhase = pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
+			TopFace.X = pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + pActionDef->GetPropertyInt(P_Wdt) * iPhase;
+			TopFace.Y = pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
+		}
+		// ensure correct color is set
+		if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
+		// color modulation
+		if (!eDrawMode) PrepareDrawing();
+		// Draw top face bitmap
+		if (Con!=FullCon && Def->GrowthType)
+			// stretched
+			pDraw->Blit(TopFace.Surface,
+				            TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
+				            cgo.Surface,
+				            offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
+				            float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+		else
+			// normal
+			pDraw->Blit(TopFace.Surface,
+				            TopFace.X,TopFace.Y,
+				            TopFace.Wdt,TopFace.Hgt,
+				            cgo.Surface,
+				            offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
+				            TopFace.Wdt, TopFace.Hgt,
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	}
-	// ensure correct color is set
-	if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
-	// color modulation
-	if (!eDrawMode) PrepareDrawing();
-	// Draw top face bitmap
-	if (Con!=FullCon && Def->GrowthType)
-		// stretched
-		pDraw->Blit(TopFace.Surface,
-		              TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
-		              cgo.Surface,
-		              offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
-		              float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
-		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
-	else
-		// normal
-		pDraw->Blit(TopFace.Surface,
-		              TopFace.X,TopFace.Y,
-		              TopFace.Wdt,TopFace.Hgt,
-		              cgo.Surface,
-		              offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
-		              TopFace.Wdt, TopFace.Hgt,
-		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	// end of color modulation
 	if (!eDrawMode) FinishedDrawing();
 }

@@ -865,6 +865,7 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 			// regular char
 			// get texture coordinates
 			fctFromBlt = GetCharacterFacet(c);
+			if(!fctFromBlt.Surface) continue;
 			w2=int(fctFromBlt.Wdt*fZoom); h2=int(fctFromBlt.Hgt*fZoom);
 			pDraw->ActivateBlitModulation(dwColor);
 		}
