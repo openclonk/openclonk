@@ -249,7 +249,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	pGraphics = &Def->Graphics;
 	if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 	{
-		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 		pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 	}
 	else
@@ -487,7 +487,7 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 			delete pMeshInstance;
 			if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 			{
-				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 				pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 			}
 			else
@@ -1333,7 +1333,9 @@ void C4Object::DoCon(int32_t iChange)
 	// Con Zero Removal
 	if (Con<=0)
 		AssignRemoval();
-
+	// Mesh Graphics Update
+	else if(pMeshInstance)
+		pMeshInstance->SetCompletion(Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 }
 
 void C4Object::DoExperience(int32_t change)
@@ -2384,7 +2386,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		if(pComp->isCompiler())
 		{
 			assert(!pMeshInstance);
-			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 		}
 
 		pComp->Value(mkNamingAdapt(mkParAdapt(*pMeshInstance, C4MeshDenumeratorFactory), "Mesh"));

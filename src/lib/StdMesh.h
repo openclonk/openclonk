@@ -205,7 +205,8 @@ public:
 		FO_NearestToFarthest
 	};
 
-	StdSubMeshInstance(const StdSubMesh& submesh);
+	StdSubMeshInstance(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
+	void LoadFacesForCompletion(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
@@ -271,7 +272,7 @@ class StdMeshInstance
 	friend class StdMeshMaterialUpdate;
 	friend class StdMeshUpdate;
 public:
-	StdMeshInstance(const StdMesh& mesh);
+	StdMeshInstance(const StdMesh& mesh, float completion = 1.0f);
 	~StdMeshInstance();
 
 	typedef StdSubMeshInstance::FaceOrdering FaceOrdering;
@@ -478,12 +479,16 @@ public:
 	void SetFaceOrdering(FaceOrdering ordering);
 	void SetFaceOrderingForClrModulation(uint32_t clrmod);
 
+	const std::vector<StdMeshVertex>& GetSharedVertices() const { return SharedVertices; }
+	size_t GetNumSharedVertices() const { return SharedVertices.size(); }
+
+	// Set completion of the mesh. For incompleted meshes not all faces will be available.
+	void SetCompletion(float completion);
+	float GetCompletion() const { return Completion; }
+
 	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
 	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
 	void StopAnimation(AnimationNode* node);
-
-	const std::vector<StdMeshVertex>& GetSharedVertices() const { return SharedVertices; }
-	size_t GetNumSharedVertices() const { return SharedVertices.size(); }
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
 	AnimationNode* GetRootAnimationForSlot(int slot);
@@ -549,6 +554,8 @@ protected:
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 
 	const StdMesh* Mesh;
+
+	float Completion; // NoSave
 
 	std::vector<StdMeshVertex> SharedVertices;
 

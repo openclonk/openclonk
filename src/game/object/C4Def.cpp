@@ -568,7 +568,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 		}
 		else
 		{
-			dummy.reset(new StdMeshInstance(*graphics->Mesh));
+			dummy.reset(new StdMeshInstance(*graphics->Mesh, 1.0f));
 			instance = dummy.get();
 			GetProperty(P_PictureTransformation, &value);
 		}

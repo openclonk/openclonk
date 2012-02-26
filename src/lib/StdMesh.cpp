@@ -45,12 +45,13 @@ namespace
 	// Helper to sort faces for FaceOrdering
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
-		const StdSubMeshInstance& m_inst;
 		const StdMeshVertex* m_vertices;
+		StdSubMeshInstance::FaceOrdering m_face_ordering;
 		const StdMeshMatrix& m_global_trans;
 
-		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& mesh_inst, const StdSubMeshInstance& sub_inst, const StdMeshMatrix& global_trans):
-				m_inst(sub_inst), m_global_trans(global_trans)
+		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& mesh_inst, const StdSubMeshInstance& sub_inst,
+		                                   StdSubMeshInstance::FaceOrdering face_ordering, const StdMeshMatrix& global_trans):
+				m_face_ordering(face_ordering), m_global_trans(global_trans)
 		{
 			if(sub_inst.GetNumVertices() > 0)
 				m_vertices = &sub_inst.GetVertices()[0];
@@ -77,7 +78,7 @@ namespace
 		int compare(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
 			// TODO: Need to apply attach matrix in case of attached meshes
-			switch (m_inst.GetFaceOrdering())
+			switch (m_face_ordering)
 			{
 			case StdSubMeshInstance::FO_Fixed:
 				assert(false);
@@ -95,7 +96,7 @@ namespace
 				float z1 = std::max(std::max(z11, z12), z13);
 				float z2 = std::max(std::max(z21, z22), z23);
 
-				if (m_inst.GetFaceOrdering() == StdSubMeshInstance::FO_FarthestToNearest)
+				if (m_face_ordering == StdSubMeshInstance::FO_FarthestToNearest)
 					return (z1 < z2 ? -1 : (z1 > z2 ? +1 : 0));
 				else
 					return (z2 < z1 ? -1 : (z2 > z1 ? +1 : 0));
@@ -421,17 +422,39 @@ void StdMesh::PostInit()
 	std::sort(SubMeshes.begin(), SubMeshes.end(), StdMeshSubMeshVisibilityCmpPred());
 }
 
-StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
-		Vertices(submesh.GetNumVertices()), Faces(submesh.GetNumFaces()),
+StdSubMeshInstance::StdSubMeshInstance(StdMeshInstance& instance, const StdSubMesh& submesh, float completion):
+		Vertices(submesh.GetNumVertices()),
 		Material(NULL), CurrentFaceOrdering(FO_Fixed)
 {
 	// Copy initial Vertices/Faces
 	for (unsigned int i = 0; i < submesh.GetNumVertices(); ++i)
 		Vertices[i] = submesh.GetVertex(i);
+	LoadFacesForCompletion(instance, submesh, completion);
+
+	SetMaterial(submesh.GetMaterial());
+}
+
+void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const StdSubMesh& submesh, float completion)
+{
+	// First: Copy all faces
+	Faces.resize(submesh.GetNumFaces());
 	for (unsigned int i = 0; i < submesh.GetNumFaces(); ++i)
 		Faces[i] = submesh.GetFace(i);
 
-	SetMaterial(submesh.GetMaterial());
+	if(completion < 1.0f)
+	{
+		// Second: Order by Y position. StdMeshInstanceFaceOrderingCmpPred orders by Z position,
+		// however we can simply give an appropriate transformation matrix to the face ordering.
+		// At this point, all vertices are in the OGRE coordinate frame, and Z in OGRE equals
+		// Y in Clonk, so we are fine without additional transformation.
+		StdMeshInstanceFaceOrderingCmpPred pred(instance, *this, FO_FarthestToNearest, StdMeshMatrix::Identity());
+		g_pred = &pred;
+		StdMesh_tim_sort(&Faces[0], Faces.size());
+		g_pred = NULL;
+
+		// Third: Only use the first few ones
+		Faces.resize(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5));
+	}
 }
 
 void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
@@ -702,8 +725,8 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 	ChildDenumerator->DenumeratePointers(this);
 }
 
-StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
-		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()),
+StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
+		Mesh(&mesh), SharedVertices(mesh.GetSharedVertices().size()), Completion(completion),
 		BoneTransforms(Mesh->GetNumBones(), StdMeshMatrix::Identity()),
 		SubMeshInstances(Mesh->GetNumSubMeshes()), AttachParent(NULL),
 		BoneTransformsDirty(false)
@@ -716,7 +739,7 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	for (unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
 	{
 		const StdSubMesh& submesh = Mesh->GetSubMesh(i);
-		SubMeshInstances[i] = new StdSubMeshInstance(submesh);
+		SubMeshInstances[i] = new StdSubMeshInstance(*this, submesh, completion);
 	}
 }
 
@@ -761,6 +784,16 @@ void StdMeshInstance::SetFaceOrderingForClrModulation(uint32_t clrmod)
 	for (AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 		if ((*iter)->OwnChild)
 			(*iter)->Child->SetFaceOrderingForClrModulation(clrmod);
+}
+
+void StdMeshInstance::SetCompletion(float completion)
+{
+	Completion = completion;
+
+	// TODO: Load all submesh faces and then determine the ones to use from the
+	// full pool.
+	for(unsigned int i = 0; i < Mesh->GetNumSubMeshes(); ++i)
+		SubMeshInstances[i]->LoadFacesForCompletion(*this, Mesh->GetSubMesh(i), completion);
 }
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
@@ -976,7 +1009,7 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 
 StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, uint32_t flags)
 {
-	StdMeshInstance* instance = new StdMeshInstance(mesh);
+	StdMeshInstance* instance = new StdMeshInstance(mesh, 1.0f);
 	AttachedMesh* attach = AttachMesh(*instance, denumerator, parent_bone, child_bone, transformation, flags, true);
 	if (!attach) { delete instance; delete denumerator; return NULL; }
 	return attach;
@@ -1147,7 +1180,7 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 		StdSubMeshInstance& inst = *SubMeshInstances[i];
 		if(inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
-			StdMeshInstanceFaceOrderingCmpPred pred(*this, inst, global_trans ? *global_trans : StdMeshMatrix::Identity());
+			StdMeshInstanceFaceOrderingCmpPred pred(*this, inst, inst.CurrentFaceOrdering, global_trans ? *global_trans : StdMeshMatrix::Identity());
 
 			// The usage of timsort instead of std::sort at this point is twofold.
 			// First, it's faster in our case where the array is already sorted in

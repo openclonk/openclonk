@@ -819,19 +819,28 @@ namespace
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
 			glFrontFace(parity ? GL_CW : GL_CCW);
 
-			switch (pass.CullHardware)
+			if(mesh_instance.GetCompletion() < 1.0f)
 			{
-			case StdMeshMaterialPass::CH_Clockwise:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_BACK);
-				break;
-			case StdMeshMaterialPass::CH_CounterClockwise:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_FRONT);
-				break;
-			case StdMeshMaterialPass::CH_None:
+				// Backfaces might be visible when completion is < 1.0f since front
+				// faces might be omitted.
 				glDisable(GL_CULL_FACE);
-				break;
+			}
+			else
+			{
+				switch (pass.CullHardware)
+				{
+				case StdMeshMaterialPass::CH_Clockwise:
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_BACK);
+					break;
+				case StdMeshMaterialPass::CH_CounterClockwise:
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_FRONT);
+					break;
+				case StdMeshMaterialPass::CH_None:
+					glDisable(GL_CULL_FACE);
+					break;
+				}
 			}
 
 			// Overwrite blend mode with default alpha blending when alpha in clrmod

@@ -595,7 +595,7 @@ void C4GraphicsOverlay::UpdateFacet()
 		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
 		else
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 		break;
 
 	case MODE_Action: // graphics of specified action
@@ -630,7 +630,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			C4String* AnimationName = action->GetPropertyStr(P_Animation);
 			if (!AnimationName) return;
 
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
