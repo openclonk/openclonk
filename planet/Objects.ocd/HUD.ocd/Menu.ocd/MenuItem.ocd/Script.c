@@ -52,7 +52,6 @@ public func MouseSelectionAlt(int plr)
 // Called to determine which object is dragged.
 public func MouseDrag(int plr)
 {
-	//Log("%s->MouseDrag(%d) for owner: %d, menu: %s, dd: %v", GetName(), plr, GetOwner(), item_menu->GetName(), item_menu->IsDragDropMenu());
 	// Check if the owners match.
 	if (plr != GetOwner()) return;
 		
@@ -89,6 +88,24 @@ public func MouseDragDone(self, object target)
 		
 	// Forward command to menu.
 	return item_menu->OnItemDragDone(self, target);
+}
+
+// Called if the mouse cursor starts hovering over this item.
+public func OnMouseOver(int plr, object dragged)
+{
+	if (plr != GetOwner()) return;
+	
+	// Forward command to menu.
+	return item_menu->OnMouseOverItem(this, dragged);
+}
+
+// Called if the mouse cursor stops hovering over this item.
+public func OnMouseOut(int plr, object dragged)
+{
+	if (plr != GetOwner()) return;
+	
+	// Forward command to menu.
+	return item_menu->OnMouseOutItem(this, dragged);
 }
 
 /* Menu item properties */

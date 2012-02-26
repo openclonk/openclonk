@@ -333,7 +333,6 @@ public func OnItemDropped(object drop_item, object on_item)
 	if (!menu_commander) return;
 	
 	// Forward to commander.
-	// Log("Item dropped %s", drop_item->GetName());
 	return menu_commander->~OnItemDropped(this, drop_item, on_item);
 }
 
@@ -342,7 +341,24 @@ public func OnItemDragDone(object drag_item, object on_item)
 {
 	if (!menu_commander) return;
 	
-	// Log("Item dragged %s", drag_item->GetName());
 	// Forward to commander.
 	return menu_commander->~OnItemDragDone(this, drag_item, on_item);
+}
+
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	if (!menu_commander) return;
+		
+	// Forward to commander.
+	return menu_commander->~OnMouseOverItem(this, over_item, dragged_item);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	if (!menu_commander) return;
+		
+	// Forward to commander.
+	return menu_commander->~OnMouseOutItem(this, out_item, dragged_item);
 }

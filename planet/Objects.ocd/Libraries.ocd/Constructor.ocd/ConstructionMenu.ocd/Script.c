@@ -77,9 +77,7 @@ public func HideConstructionInfo()
 
 /* Menu properties */
 
-public func IsProductionMenu() { return true; }
-// UpdateCursor is called
-public func CursorUpdatesEnabled() { return true; }
+public func IsConstructionMenu() { return true; }
 
 public func Close() 
 {
@@ -93,21 +91,6 @@ public func HasCommander(object producer)
 	if (menu_commander == producer)
 		return true;
 	return false;
-}
-
-// Callback if the mouse is moved
-public func UpdateCursor(int dx, int dy)
-{
-	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
-	if (!item || item->GetMenu() != this)
-	{
-		if (constructinfo_shown)
-			HideConstructionInfo();
-		return;
-	}
-	if (item == constructinfo_shown)
-		return;
-	ShowConstructionInfo(item);
 }
 
 /* Callbacks from the menu items, to be translated into commands for the producer. */
@@ -151,3 +134,18 @@ public func OnItemDragDone(object drag_item, object on_item)
 	return _inherited(drag_item, on_item, ...);
 }
 
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	ShowConstructionInfo(over_item);
+	
+	return _inherited(over_item, dragged_item, ...);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	HideConstructionInfo();
+	
+	return _inherited(out_item, dragged_item, ...);
+}
