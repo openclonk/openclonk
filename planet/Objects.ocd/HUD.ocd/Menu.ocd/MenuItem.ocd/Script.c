@@ -95,6 +95,10 @@ public func OnMouseOver(int plr, object dragged)
 {
 	if (plr != GetOwner()) return;
 	
+	// make it appear bigger
+	SetObjDrawTransform(1100, 0, 0, 0, 1100, 0, 1);
+	
+	
 	// Forward command to menu.
 	return item_menu->OnMouseOverItem(this, dragged);
 }
@@ -103,6 +107,9 @@ public func OnMouseOver(int plr, object dragged)
 public func OnMouseOut(int plr, object dragged)
 {
 	if (plr != GetOwner()) return;
+	
+	// standard size again
+	SetObjDrawTransform(1000, 0, 0, 0, 1000, 0, 1);
 	
 	// Forward command to menu.
 	return item_menu->OnMouseOutItem(this, dragged);
