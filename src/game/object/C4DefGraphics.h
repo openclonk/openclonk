@@ -81,6 +81,8 @@ public:
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
 	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
+	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
+
 	virtual const char *GetName() { return NULL; } // return name to be stored in safe game files
 
 	C4AdditionalDefGraphics *GetNext() { return pNext; }

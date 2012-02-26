@@ -294,6 +294,63 @@ bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 	return true;
 }
 
+void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
+{
+	// default: def picture rect
+	C4Rect fctPicRect = pDef->PictureRect;
+	C4Facet fctPicture;
+
+	// if assigned: use object specific rect and graphics
+	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
+
+	// specific object color?
+	if (pObj) pObj->PrepareDrawing();
+
+	switch(Type)
+	{
+	case C4DefGraphics::TYPE_Bitmap:
+		fctPicture.Set(GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
+		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);
+		break;
+	case C4DefGraphics::TYPE_Mesh:
+		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
+		std::auto_ptr<StdMeshInstance> dummy;
+		StdMeshInstance* instance;
+
+		C4Value value;
+		if (pObj)
+		{
+			instance = pObj->pMeshInstance;
+			pObj->GetProperty(P_PictureTransformation, &value);
+		}
+		else
+		{
+			dummy.reset(new StdMeshInstance(*Mesh, 1.0f));
+			instance = dummy.get();
+			pDef->GetProperty(P_PictureTransformation, &value);
+		}
+
+		StdMeshMatrix matrix;
+		if (C4ValueToMatrix(value, &matrix))
+			pDraw->SetMeshTransform(&matrix);
+
+		pDraw->SetPerspective(true);
+		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
+		pDraw->SetPerspective(false);
+		pDraw->SetMeshTransform(NULL);
+
+		break;
+	}
+
+	if (pObj) pObj->FinishedDrawing();
+
+	// draw overlays
+	if (pObj && pObj->pGfxOverlay)
+		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
+			if (pGfxOvrl->IsPicture())
+				pGfxOvrl->DrawPicture(cgo, pObj, trans);
+}
+
 void C4DefGraphics::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
 {
 	if (Type != TYPE_Bitmap) return; // TODO
@@ -920,7 +977,6 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	}
 	else if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
 	{
-		C4Def *pDef = pSourceGfx->pDef;
 		float twdt, thgt;
 		if (fZoomToShape)
 		{
@@ -929,14 +985,16 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		}
 		else
 		{
-			twdt = pDef->Shape.Wdt;
-			thgt = pDef->Shape.Hgt;
+			twdt = pSourceGfx->pDef->Shape.Wdt;
+			thgt = pSourceGfx->pDef->Shape.Hgt;
 		}
 
 		C4TargetFacet ccgo;
 		ccgo.Set(cgo.Surface, offX-twdt/2, offY-thgt/2, twdt, thgt, cgo.TargetX, cgo.TargetY);
 		C4DrawTransform trf(Transform, offX, offY);
-		pDef->Draw(ccgo, false, pForObj->Color, NULL, iPhase, 0, &trf);
+
+		// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
+		pSourceGfx->Draw(ccgo, pForObj->Color, NULL, iPhase, 0, &trf);
 	}
 	else
 	{

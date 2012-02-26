@@ -533,65 +533,11 @@ bool C4Def::Load(C4Group &hGroup,
 
 void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
 {
-
-	// default: def picture rect
-	C4Rect fctPicRect = PictureRect;
-	C4Facet fctPicture;
-
-	// if assigned: use object specific rect and graphics
-	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
-
-	if (fSelected)
+	if(fSelected)
 		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
 
 	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
-
-	// specific object color?
-	if (pObj) pObj->PrepareDrawing();
-
-	switch (graphics->Type)
-	{
-	case C4DefGraphics::TYPE_Bitmap:
-		fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);
-		break;
-	case C4DefGraphics::TYPE_Mesh:
-		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-		std::auto_ptr<StdMeshInstance> dummy;
-		StdMeshInstance* instance;
-
-		C4Value value;
-		if (pObj)
-		{
-			instance = pObj->pMeshInstance;
-			pObj->GetProperty(P_PictureTransformation, &value);
-		}
-		else
-		{
-			dummy.reset(new StdMeshInstance(*graphics->Mesh, 1.0f));
-			instance = dummy.get();
-			GetProperty(P_PictureTransformation, &value);
-		}
-
-		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			pDraw->SetMeshTransform(&matrix);
-
-		pDraw->SetPerspective(true);
-		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
-		pDraw->SetPerspective(false);
-		pDraw->SetMeshTransform(NULL);
-
-		break;
-	}
-
-	if (pObj) pObj->FinishedDrawing();
-
-	// draw overlays
-	if (pObj && pObj->pGfxOverlay)
-		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, pObj, trans);
+	graphics->Draw(cgo, iColor, pObj, iPhaseX, iPhaseY, trans);
 }
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)

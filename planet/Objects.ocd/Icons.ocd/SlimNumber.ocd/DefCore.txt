@@ -2,7 +2,7 @@
 id=Icon_SlimNumber
 Version=5,2,0,1
 Category=C4D_StaticBack
-Picture=0,0,64,64
+Picture=0,0,32,64
 Width=32
 Height=64
 Offset=-16,-32
