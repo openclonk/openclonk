@@ -61,6 +61,14 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+/* returns all items in the inventory */
+public func GetItems()
+{
+	var inv = inventory[:];
+	RemoveHoles(inv);
+	return inv;
+}
+
 // For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
 public func HUDShowItems() { return true; }
 

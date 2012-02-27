@@ -170,7 +170,12 @@ private func PutContentsIntoMenu(object menu, object container)
 {
 	if (container->~ NoStackedContentMenu())
 	{
-		var contents = FindObjects(Find_Container(container));
+		var contents;
+		// get contents in special order if possible
+		if(!(contents = (container->~GetItems())))
+			// else just take everything we find.
+			contents = FindObjects(Find_Container(container));
+
 		for (var content in contents)
 			if (!AddContentsMenuItem(content, menu))
 				return;
