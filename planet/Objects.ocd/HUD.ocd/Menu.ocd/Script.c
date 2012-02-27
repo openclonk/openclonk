@@ -165,12 +165,12 @@ private func GetItemPosition(int n, int total)
 	// Packing 7 or less circles.
 	if (total <= 7)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
 		else
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 3);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 3);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 3);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 3);
 			return [x, y];
 		}
 	}
@@ -178,18 +178,18 @@ private func GetItemPosition(int n, int total)
 	// Packing 19 or less circles.
 	if (total <= 19)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
-		else if (n <= 7)
+		else if (n < 7)
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 5);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 5);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 5);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 5);
 			return [x, y];
 		}
 		else
 		{
-			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 40);
-			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 40);
+			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 40);
+			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 40);
 			return [x, y];
 		}		
 	}
@@ -197,24 +197,24 @@ private func GetItemPosition(int n, int total)
 	// Packing 37 or less circles.
 	if (total <= 37)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
-		else if (n <= 7)
+		else if (n < 7)
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 7);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 7);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 7);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 7);
 			return [x, y];
 		}
 		else if (n <= 19)
 		{
-			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 56);
-			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 56);
+			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 56);
+			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 56);
 			return [x, y];
 		}	
 		else
 		{
-			var x = Cos(30 * (n-19), 61 * MENU_Radius / 72);
-			var y = -Sin(30 * (n-19), 61 * MENU_Radius / 72);
+			var x = -Cos(30 * (n-17), 61 * MENU_Radius / 72);
+			var y = -Sin(30 * (n-17), 61 * MENU_Radius / 72);
 			return [x, y];
 		}		
 	}
