@@ -136,6 +136,12 @@
 	Hold=1
 	
 	[ControlDef]
+	Identifier=ForcedThrow
+	GUIName=Throw
+	GUIDesc=Force to throw selected inventory item
+	Hold=1
+	
+	[ControlDef]
 	Identifier=ThrowDelayed
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
@@ -158,6 +164,12 @@
 	Hold=1
 	
 	[ControlDef]
+	Identifier=ForcedThrowAlt
+	GUIName=Throw 2
+	GUIDesc=Force to throw selected inventory item
+	Hold=1
+	
+	[ControlDef]
 	Identifier=ThrowAltDelayed
 	GUIName=Throw 2
 	GUIDesc=Throw secondary selected inventory item
@@ -168,6 +180,139 @@
 	GUIName=Drop 2
 	GUIDesc=Drop secondary selected inventory item
 	Hold=1
+	
+	# Hotkeys (Inventory)
+	
+	[ControlDef]
+	Identifier=Hotkey1
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey2
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey3
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey4
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey5
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey6
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey7
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey8
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey9
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Hotkey0
+	Hold=1
+	
+	
+	[ControlDef]
+	Identifier=DropHotkey1
+	
+	[ControlDef]
+	Identifier=DropHotkey2
+	
+	[ControlDef]
+	Identifier=DropHotkey3
+	
+	[ControlDef]
+	Identifier=DropHotkey4
+	
+	[ControlDef]
+	Identifier=DropHotkey5
+	
+	[ControlDef]
+	Identifier=DropHotkey6
+	
+	[ControlDef]
+	Identifier=DropHotkey7
+	
+	[ControlDef]
+	Identifier=DropHotkey8
+	
+	[ControlDef]
+	Identifier=DropHotkey9
+	
+	[ControlDef]
+	Identifier=DropHotkey0
+	
+	[ControlDef]
+	Identifier=Hotkey1Select
+	
+	[ControlDef]
+	Identifier=Hotkey1SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey2Select
+	
+	[ControlDef]
+	Identifier=Hotkey2SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey3Select
+	
+	[ControlDef]
+	Identifier=Hotkey3SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey4Select
+	
+	[ControlDef]
+	Identifier=Hotkey4SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey5Select
+	
+	[ControlDef]
+	Identifier=Hotkey5SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey6Select
+	
+	[ControlDef]
+	Identifier=Hotkey6SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey7Select
+	
+	[ControlDef]
+	Identifier=Hotkey7SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey8Select
+	
+	[ControlDef]
+	Identifier=Hotkey8SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey9Select
+	
+	[ControlDef]
+	Identifier=Hotkey9SelectAlt
+	
+	[ControlDef]
+	Identifier=Hotkey0Select
+	
+	[ControlDef]
+	Identifier=Hotkey0SelectAlt
 	
 	# Controlling (contents, vehicles, structures)
 	
@@ -252,6 +397,7 @@
 	GUIName=Interact
 	GUIDesc=Interact with object in landscape
 	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Enter
@@ -265,47 +411,46 @@
 	GUIDesc=Exit the building
 	
 	
-	
-	# Hotkeys (lower bar)
+	# Interaction Hotkeys (lower bar)
 	
 	[ControlDef]
-	Identifier=Hotkey1
+	Identifier=InteractionHotkey1
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey2
+	Identifier=InteractionHotkey2
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey3
+	Identifier=InteractionHotkey3
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey4
+	Identifier=InteractionHotkey4
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey5
+	Identifier=InteractionHotkey5
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey6
+	Identifier=InteractionHotkey6
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey7
+	Identifier=InteractionHotkey7
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey8
+	Identifier=InteractionHotkey8
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey9
+	Identifier=InteractionHotkey9
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Hotkey0
+	Identifier=InteractionHotkey0
 	SendCursorPos=1
 	
 	# Crew 
@@ -510,6 +655,7 @@
 	# Down								S
 	#
 	# Hotkey0-9							(0-9)
+	# InteractionHotkey0-0				Shift+(0-9)
 	#
 	# Use, Throw						Left mouse button
 	# Drop								S+Left mouse button
@@ -527,7 +673,7 @@
 	#
 	# NextCrew							T
 	# PreviousCrew						R
-	# PlayerHotkey0-9					Shift+(0-9)
+	# PlayerHotkey0-9					Ctrl+(0-9)
 	# 
 	# MenuOK							Return
 	# MenuCancel						Backspace
@@ -1043,9 +1189,19 @@
 		Control=Throw
 		
 		[Assignment]
+		Key=Shift+CON_Use
+		Priority=151
+		Control=ForcedThrow
+		
+		[Assignment]
 		Key=Shift+CON_UseAlt
 		Priority=150
 		Control=ThrowAlt
+		
+		[Assignment]
+		Key=Shift+CON_UseAlt
+		Priority=151
+		Control=ForcedThrowAlt
 		
 		# Standard throw
 
@@ -1115,7 +1271,7 @@
 	[ControlSet]
 	Name=*_Hotkeys_*
 
-		# Hotkeys
+		# Hotkeys for inventory management
 		
 		[Assignment]
 		Key=1
@@ -1158,43 +1314,226 @@
 		Control=Hotkey0
 		
 		[Assignment]
+		Key=Hotkey1,Mouse1ButtonLeft
+		Control=Hotkey1Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey1,Mouse1ButtonRight
+		Control=Hotkey1SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey2,Mouse1ButtonLeft
+		Control=Hotkey2Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey2,Mouse1ButtonRight
+		Control=Hotkey2SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey3,Mouse1ButtonLeft
+		Control=Hotkey3Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey3,Mouse1ButtonRight
+		Control=Hotkey3SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey4,Mouse1ButtonLeft
+		Control=Hotkey4Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey4,Mouse1ButtonRight
+		Control=Hotkey4SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey5,Mouse1ButtonLeft
+		Control=Hotkey5Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey5,Mouse1ButtonRight
+		Control=Hotkey5SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey6,Mouse1ButtonLeft
+		Control=Hotkey6Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey6,Mouse1ButtonRight
+		Control=Hotkey6SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey7,Mouse1ButtonLeft
+		Control=Hotkey7Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey7,Mouse1ButtonRight
+		Control=Hotkey7SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey8,Mouse1ButtonLeft
+		Control=Hotkey8Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey8,Mouse1ButtonRight
+		Control=Hotkey8SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey9,Mouse1ButtonLeft
+		Control=Hotkey9Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey9,Mouse1ButtonRight
+		Control=Hotkey9SelectAlt
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey0,Mouse1ButtonLeft
+		Control=Hotkey0Select
+		Priority=200
+		
+		[Assignment]
+		Key=Hotkey0,Mouse1ButtonRight
+		Control=Hotkey0SelectAlt
+		Priority=200
+		
+		
+		[Assignment]
 		Key=Shift+Hotkey1
-		Control=PlayerHotkey1
+		Control=DropHotkey1
 		
 		[Assignment]
 		Key=Shift+Hotkey2
-		Control=PlayerHotkey2
+		Control=DropHotkey2
 		
 		[Assignment]
 		Key=Shift+Hotkey3
-		Control=PlayerHotkey3
+		Control=DropHotkey3
 		
 		[Assignment]
 		Key=Shift+Hotkey4
-		Control=PlayerHotkey4
+		Control=DropHotkey4
 		
 		[Assignment]
 		Key=Shift+Hotkey5
-		Control=PlayerHotkey5
+		Control=DropHotkey5
 		
 		[Assignment]
 		Key=Shift+Hotkey6
-		Control=PlayerHotkey6
+		Control=DropHotkey6
 		
 		[Assignment]
 		Key=Shift+Hotkey7
-		Control=PlayerHotkey7
+		Control=DropHotkey7
 		
 		[Assignment]
 		Key=Shift+Hotkey8
-		Control=PlayerHotkey8
+		Control=DropHotkey8
 		
 		[Assignment]
 		Key=Shift+Hotkey9
-		Control=PlayerHotkey9
+		Control=DropHotkey9
 		
 		[Assignment]
 		Key=Shift+Hotkey0
+		Control=DropHotkey0
+		
+		# Hotkeys for interacting (actionbar)
+		
+		[Assignment]
+		Key=Interact,Hotkey1
+		Control=InteractionHotkey1
+		
+		[Assignment]
+		Key=Interact,Hotkey2
+		Control=InteractionHotkey2
+		
+		[Assignment]
+		Key=Interact,Hotkey3
+		Control=InteractionHotkey3
+		
+		[Assignment]
+		Key=Interact,Hotkey4
+		Control=InteractionHotkey4
+		
+		[Assignment]
+		Key=Interact,Hotkey5
+		Control=InteractionHotkey5
+		
+		[Assignment]
+		Key=Interact,Hotkey6
+		Control=InteractionHotkey6
+		
+		[Assignment]
+		Key=Interact,Hotkey7
+		Control=InteractionHotkey7
+		
+		[Assignment]
+		Key=Interact,Hotkey8
+		Control=InteractionHotkey8
+		
+		[Assignment]
+		Key=Interact,Hotkey9
+		Control=InteractionHotkey9
+		
+		[Assignment]
+		Key=Interact,Hotkey0
+		Control=InteractionHotkey0
+		
+		[Assignment]
+		Key=Ctrl+Hotkey1
+		Control=PlayerHotkey1
+		
+		[Assignment]
+		Key=Ctrl+Hotkey2
+		Control=PlayerHotkey2
+		
+		[Assignment]
+		Key=Ctrl+Hotkey3
+		Control=PlayerHotkey3
+		
+		[Assignment]
+		Key=Ctrl+Hotkey4
+		Control=PlayerHotkey4
+		
+		[Assignment]
+		Key=Ctrl+Hotkey5
+		Control=PlayerHotkey5
+		
+		[Assignment]
+		Key=Ctrl+Hotkey6
+		Control=PlayerHotkey6
+		
+		[Assignment]
+		Key=Ctrl+Hotkey7
+		Control=PlayerHotkey7
+		
+		[Assignment]
+		Key=Ctrl+Hotkey8
+		Control=PlayerHotkey8
+		
+		[Assignment]
+		Key=Ctrl+Hotkey9
+		Control=PlayerHotkey9
+		
+		[Assignment]
+		Key=Ctrl+Hotkey0
 		Control=PlayerHotkey0				
 	
 	# ======================================================================= #
@@ -1203,6 +1542,11 @@
 	
 	[ControlSet]
 	Name=*
+	
+		# Interaction-Bar
+		[Assignment]
+		Key=L
+		Control=InteractionBar
 	
 		# Collect
 	
