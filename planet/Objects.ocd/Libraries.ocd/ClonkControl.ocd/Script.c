@@ -81,6 +81,13 @@ public func SetHandItemPos(int hand, int inv)
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
 
+	// If the item is already selected, we can't hold it in another one too.
+	if(GetHandPosByItemPos(inv) != nil)
+	{
+		// todo: error sound would be nice.
+		return nil;
+	}
+
 	use_objects[hand] = inv;
 	
 	// call callbacks
@@ -103,7 +110,7 @@ public func GetHandItemPos(int i)
 }
 
 /* Returns in which hand-slot the oth inventory-slot is */
-private func GetHandPosByItemPos(int o)
+private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
 {
 	for(var i=0; i < GetLength(use_objects); i++)
 		if(use_objects[i] == o)
