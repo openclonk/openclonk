@@ -4,8 +4,14 @@
 	@author Newton, Maikel
 */
 
+// this array contains all the menus
+// index 0 = calling object
+// index >0 = first crew, then containers
 local circ_menus;
 local menu_object;
+
+local crew_count;
+local container_count;
 
 /** Creates a content menu for the calling object. This is supposed to be a crew member, 
 	controlled by a player.
@@ -23,10 +29,21 @@ global func CreateContentsMenus()
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	
+	var index = 0;
+	
+	// add the clonk itself
+	controller->AddContentMenu(this, index, true);
+	
+	// add all nearby crewmembers
+	var teammates = FindObjects(Find_Distance(20), Find_OCF(OCF_CrewMember), Find_Owner(GetOwner()), Find_Exclude(this));
+	index = 1;
+	for(var t in teammates)
+		controller->AddContentMenu(t, index++, true);
+		
 	// Add content menus for all containers at the position of the caller.
-	var containers = FindObjects(Find_Or(Find_Not(Find_Exclude(this)), Find_And(Find_AtPoint(), Find_NoContainer(), Find_Func("IsContainer"))), Sort_Func("SortInventoryObjs"));
-	for(var index = 0; index  < GetLength(containers); index++)
-		controller->AddContentMenu(containers[index], index, GetLength(containers));
+	var containers = FindObjects(Find_AtPoint(), Find_NoContainer(), Find_Func("IsContainer"), Sort_Func("SortInventoryObjs"));
+	for(var c in containers)
+		controller->AddContentMenu(c, index++, false);
 	
 	// Show and return content menu.
 	controller->Show();
@@ -81,7 +98,7 @@ func Hide()
 		prop.Menu->Hide();
 }
 
-func AddContentMenu(object container, int pos, int length)
+func AddContentMenu(object container, int pos, bool isCrew)
 {
 	var menu = CreateObject(GUI_Menu, 0, 0, GetOwner());
 
@@ -91,7 +108,12 @@ func AddContentMenu(object container, int pos, int length)
 	menu->SetDragDropMenu(true);
 
 	PutContentsIntoMenu(menu, container);
-	circ_menus[pos] = {Object = container, Menu = menu};
+	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = isCrew};
+	
+	if(isCrew)
+		crew_count++;
+	else
+		container_count++;
 	
 	// Track external changes in containers.
 	AddEffect("ContainerTracker", container, 100, 1, this, nil, menu);
@@ -103,18 +125,41 @@ func AddContentMenu(object container, int pos, int length)
 // Draws the contents menus to the right positions.
 private func UpdateContentMenus()
 {
-	var menu_count = GetLength(circ_menus);
-	for (var index = 0; index < menu_count; index++)
+	// for positioning to the left
+	var index_crew = 0;
+	// for positioning to the right
+	var index_containers = 1; // containers start with an offset of 1
+
+	// calculate left edge
+	var r = 160;
+	var d = 2*r/3;
+	var dx = Sqrt(r**2 - d**2);
+	var x_base = 800 - dx*(container_count-1);
+	var y_base = 320;
+	
+	for(var prop in circ_menus)
 	{
-		var menu = circ_menus[index].Menu;
-		var r = 160;
-		var d = 2*r/3;
-		var dx = Sqrt(r**2 - d**2);
+		var menu = prop.Menu;
 		
-		// Determine x-position.
-		var x = 800 + dx * (2*index - menu_count + 1);
-		// Alternate y-position.
-		var y = 320 + (-1)**index * d;
+		var x,y;
+		
+		if(prop.IsCrew)
+		{
+			x = x_base - dx * (2*index_crew);
+			y = y_base + 2*d - (-1)**index_crew * d;
+			
+			index_crew++;
+		}
+		else
+		{
+			// Determine x-position.
+			//x = 800 + dx * (2*index_containers - container_count + 1);
+			x = x_base + dx*(2*index_containers);
+			// Alternate y-position.
+			y = y_base + (-1)**(index_containers) * d;
+			
+			index_containers++;
+		}
 		// TODO: reduce size of menus to fit more into screen.
 		menu->SetPosition(x, y);
 	}
