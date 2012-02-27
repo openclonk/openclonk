@@ -46,6 +46,8 @@ local inventory;
 local use_objects;
 
 local handslot_choice_pending;
+local interaction_pending;
+local forced_ejection;
 
 /* Item limit */
 
@@ -117,6 +119,15 @@ private func GetHandPosByItemPos(int o) // sorry for the horribly long name --bo
 			return i;
 	
 	return nil;
+}
+ 
+public func DropInventoryItem(int slot)
+{
+	var obj = GetItem(slot);
+	if(!obj)
+		return nil;
+	
+	this->SetCommand("Drop",obj);
 }
  
 // For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
@@ -317,7 +328,6 @@ protected func Collection2(object obj)
 protected func Ejection(object obj)
 {
 	// if an object leaves this object
-	
 	// find obj in array and delete (cancel using too)
 	var i = 0;
 	var success = false;
@@ -340,7 +350,29 @@ protected func Ejection(object obj)
 		var handpos = GetHandPosByItemPos(i); 
 		// if the slot was a selected hand slot -> update it
 		if(handpos != nil)
-			this->~OnSlotEmpty(handpos);
+		{
+			// if it was a forced ejection, the hand will remain empty
+			if(forced_ejection == obj)
+				this->~OnSlotEmpty(handpos);
+			// else we'll select the next full slot
+			else
+			{
+				// look for following non-selected non-free slots
+				var found_slot = false;
+				for(var j=i; j < MaxContentsCount(); j++)
+					if(GetItem(j) && !GetHandPosByItemPos(j))
+					{
+						found_slot = true;
+						break;
+					}
+				
+				if(found_slot)
+					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
+				// no full next slot could be found. we'll stay at the same, and empty.
+				else
+					this->~OnSlotEmpty(handpos);
+			}
+		}
 	}
 	
 	if (i == 0 || i == 1)
@@ -498,14 +530,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!this) 
 		return false;
 	
-	if(ctrl == CON_InteractionBar)
-	{
-		if(!release);
-			// todo: show action bar
-		else;
-			// todo: hide action bar
-	}
-	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// Backpack menu
@@ -625,7 +649,27 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (hot > 0)
 	{
+		interaction_pending = false;
 		this->~ControlHotkey(hot-1);
+		return true;
+	}
+	
+	// dropping items via hotkey
+	hot = 0;
+	if (ctrl == CON_DropHotkey0) hot = 10;
+	if (ctrl == CON_DropHotkey1) hot = 1;
+	if (ctrl == CON_DropHotkey2) hot = 2;
+	if (ctrl == CON_DropHotkey3) hot = 3;
+	if (ctrl == CON_DropHotkey4) hot = 4;
+	if (ctrl == CON_DropHotkey5) hot = 5;
+	if (ctrl == CON_DropHotkey6) hot = 6;
+	if (ctrl == CON_DropHotkey7) hot = 7;
+	if (ctrl == CON_DropHotkey8) hot = 8;
+	if (ctrl == CON_DropHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		this->~DropInventoryItem(hot-1);
 		return true;
 	}
 	
@@ -718,8 +762,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return ObjectControlEntrance(plr,ctrl);
 		
 	// Interact controls
-	if (ctrl == CON_Interact)
-		return ObjectControlInteract(plr,ctrl);
+	if(ctrl == CON_Interact)
+	{
+		if(!release)
+		{
+			interaction_pending = true;
+			// todo: show action bar
+			return true;
+		}
+		else
+		{
+			// todo: hide action bar and do stuff if necessary
+			if(interaction_pending)
+				return ObjectControlInteract(plr,ctrl);
+			
+			return true;
+		}
+	}
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -808,14 +867,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && (!vehicle || proc == "ATTACH"))
+	// only act on press, not release
+	if (!house && (!vehicle || proc == "ATTACH") && !release)
 	{
 		if (contents)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrow)
+			{
+				ctrl = CON_Throw;
+				forced_ejection = contents;
+			}
+			
 			// throw
 			if (ctrl == CON_Throw)
 			{
 				CancelUse();
+				
 				if (proc == "SCALE" || proc == "HANGLE")
 					return ObjectCommand("Drop", contents);
 				else
@@ -850,6 +918,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// same for contents2 (copypasta)
 		if (contents2)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrowAlt)
+			{
+				ctrl = CON_ThrowAlt;
+				forced_ejection = contents2;
+			}
+		
 			// throw
 			if (ctrl == CON_ThrowAlt)
 			{

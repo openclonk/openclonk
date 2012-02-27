@@ -127,17 +127,18 @@ public func MouseDragDone(self, object target)
 	
 	if(target == nil)
 	{
-		var obj = c->GetItem(position);
-		if(obj != nil) 
-			obj->Exit();
-		return;
+		c->DropInventoryItem(position);
+		return true;
 	}
 	
 	if(target->GetOwner() != GetOwner())
-		return;
+		return false;
 		
 	if(target->GetID() == this->GetID())
+	{
 		c->Switch2Items(position, target->GetSlotId());
+		return true;
+	}
 }
 
 // highlight and block hiding

@@ -136,6 +136,12 @@
 	Hold=1
 	
 	[ControlDef]
+	Identifier=ForcedThrow
+	GUIName=Throw
+	GUIDesc=Force to throw selected inventory item
+	Hold=1
+	
+	[ControlDef]
 	Identifier=ThrowDelayed
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
@@ -155,6 +161,12 @@
 	Identifier=ThrowAlt
 	GUIName=Throw 2
 	GUIDesc=Throw secondary selected inventory item
+	Hold=1
+	
+	[ControlDef]
+	Identifier=ForcedThrowAlt
+	GUIName=Throw 2
+	GUIDesc=Force to throw selected inventory item
 	Hold=1
 	
 	[ControlDef]
@@ -210,6 +222,37 @@
 	[ControlDef]
 	Identifier=Hotkey0
 	Hold=1
+	
+	
+	[ControlDef]
+	Identifier=DropHotkey1
+	
+	[ControlDef]
+	Identifier=DropHotkey2
+	
+	[ControlDef]
+	Identifier=DropHotkey3
+	
+	[ControlDef]
+	Identifier=DropHotkey4
+	
+	[ControlDef]
+	Identifier=DropHotkey5
+	
+	[ControlDef]
+	Identifier=DropHotkey6
+	
+	[ControlDef]
+	Identifier=DropHotkey7
+	
+	[ControlDef]
+	Identifier=DropHotkey8
+	
+	[ControlDef]
+	Identifier=DropHotkey9
+	
+	[ControlDef]
+	Identifier=DropHotkey0
 	
 	[ControlDef]
 	Identifier=Hotkey1Select
@@ -354,9 +397,6 @@
 	GUIName=Interact
 	GUIDesc=Interact with object in landscape
 	SendCursorPos=1
-	
-	[ControlDef]
-	Identifier=InteractionBar
 	Hold=1
 	
 	[ControlDef]
@@ -1149,9 +1189,19 @@
 		Control=Throw
 		
 		[Assignment]
+		Key=Shift+CON_Use
+		Priority=151
+		Control=ForcedThrow
+		
+		[Assignment]
 		Key=Shift+CON_UseAlt
 		Priority=150
 		Control=ThrowAlt
+		
+		[Assignment]
+		Key=Shift+CON_UseAlt
+		Priority=151
+		Control=ForcedThrowAlt
 		
 		# Standard throw
 
@@ -1221,7 +1271,7 @@
 	[ControlSet]
 	Name=*_Hotkeys_*
 
-		# Hotkeys
+		# Hotkeys for inventory management
 		
 		[Assignment]
 		Key=1
@@ -1363,44 +1413,87 @@
 		Control=Hotkey0SelectAlt
 		Priority=200
 		
+		
 		[Assignment]
 		Key=Shift+Hotkey1
-		Control=InteractionHotkey1
+		Control=DropHotkey1
 		
 		[Assignment]
 		Key=Shift+Hotkey2
-		Control=InteractionHotkey2
+		Control=DropHotkey2
 		
 		[Assignment]
 		Key=Shift+Hotkey3
-		Control=InteractionHotkey3
+		Control=DropHotkey3
 		
 		[Assignment]
 		Key=Shift+Hotkey4
-		Control=InteractionHotkey4
+		Control=DropHotkey4
 		
 		[Assignment]
 		Key=Shift+Hotkey5
-		Control=InteractionHotkey5
+		Control=DropHotkey5
 		
 		[Assignment]
 		Key=Shift+Hotkey6
-		Control=InteractionHotkey6
+		Control=DropHotkey6
 		
 		[Assignment]
 		Key=Shift+Hotkey7
-		Control=InteractionHotkey7
+		Control=DropHotkey7
 		
 		[Assignment]
 		Key=Shift+Hotkey8
-		Control=InteractionHotkey8
+		Control=DropHotkey8
 		
 		[Assignment]
 		Key=Shift+Hotkey9
-		Control=InteractionHotkey9
+		Control=DropHotkey9
 		
 		[Assignment]
 		Key=Shift+Hotkey0
+		Control=DropHotkey0
+		
+		# Hotkeys for interacting (actionbar)
+		
+		[Assignment]
+		Key=Interact,Hotkey1
+		Control=InteractionHotkey1
+		
+		[Assignment]
+		Key=Interact,Hotkey2
+		Control=InteractionHotkey2
+		
+		[Assignment]
+		Key=Interact,Hotkey3
+		Control=InteractionHotkey3
+		
+		[Assignment]
+		Key=Interact,Hotkey4
+		Control=InteractionHotkey4
+		
+		[Assignment]
+		Key=Interact,Hotkey5
+		Control=InteractionHotkey5
+		
+		[Assignment]
+		Key=Interact,Hotkey6
+		Control=InteractionHotkey6
+		
+		[Assignment]
+		Key=Interact,Hotkey7
+		Control=InteractionHotkey7
+		
+		[Assignment]
+		Key=Interact,Hotkey8
+		Control=InteractionHotkey8
+		
+		[Assignment]
+		Key=Interact,Hotkey9
+		Control=InteractionHotkey9
+		
+		[Assignment]
+		Key=Interact,Hotkey0
 		Control=InteractionHotkey0
 		
 		[Assignment]
