@@ -323,7 +323,12 @@ public func OnExternalContentChange(object menu, object container)
 		}
 	
 	// Reopen the changed menu.
-	AddContentMenu(container, index, length);
+	var isCrew = container->GetOCF() & OCF_CrewMember;
+	if(isCrew)
+		crew_count--;
+	else
+		container_count--;
+	AddContentMenu(container, index, isCrew);
 	Show();
 	return;
 }
