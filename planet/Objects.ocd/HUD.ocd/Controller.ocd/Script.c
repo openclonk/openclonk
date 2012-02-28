@@ -563,10 +563,6 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	// all except structures only if outside
 	if(!target->Contained())
 	{
-		var pushed = nil;
-		if(target->GetProcedure() == "PUSH")
-			pushed = target->GetActionTarget();
-	
 		// add interactables (script interface)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var interactable in interactables)
@@ -575,17 +571,9 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		}
 		
 		// add vehicles
-		// 1. add vehicle the clonk is pushing
-		if(pushed)
-		{
-			ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE,hotkey++);
-		}
-		// 2. the rest
 		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var vehicle in vehicles)
 		{
-			// skip pushed vehicle
-			if (vehicle == pushed) continue;
 			ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
 		}
 	}
