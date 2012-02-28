@@ -1558,6 +1558,12 @@
 		Key=L
 		Control=InteractionBar
 	
+		# Interactions
+		[Assignment]
+		Key=CON_Down,CON_Interact
+		Priority=46
+		Control=Ungrab
+	
 		# Collect
 	
 		[Assignment]
