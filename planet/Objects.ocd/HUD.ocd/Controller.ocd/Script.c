@@ -96,7 +96,7 @@ private func MakeBackpack()
 	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
 	hoverhelper->SetHUDController(this);
 	hoverhelper->SetPosition(0,y-10);
-	hoverhelper->SetShape(0,0,40+48/2+5, d*BackpackSize() - 48 - 20);
+	hoverhelper->SetShape(0,0,40+48/2+25, d*BackpackSize() - 48 - 20);
 	hoverhelper.Visibility = VIS_None;
 
 	// create backpack slots
@@ -174,7 +174,7 @@ private func FxInventoryTransitionTimer(object target, proplist effect, int time
 		return;
 		
 	var dist = effect.position - effect.reference->GetX();
-	var dir = BoundBy(dist, -2,2);
+	var dir = BoundBy(dist, -8,8);
 	
 	// if we haven't reached our destination yet, we move everything
 	if(dir != 0)
