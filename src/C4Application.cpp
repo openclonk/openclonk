@@ -52,6 +52,8 @@
 
 #include <getopt.h>
 
+#include <C4GfxErrorDlg.h>
+
 static C4Network2IRCClient ApplicationIRCClient;
 
 C4Application::C4Application():
@@ -161,7 +163,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	if (!isEditor)
 	{
 		if (!(pWindow = FullScreen.Init(this)))
-			{ Clear(); return false; }
+			{ Clear(); ShowGfxErrorDialog(); return false; }
 	}
 	else
 	{
