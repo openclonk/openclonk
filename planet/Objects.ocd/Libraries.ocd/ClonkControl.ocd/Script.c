@@ -39,7 +39,6 @@
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local indexed_inventory;
 local disableautosort;
 local force_collection;
 local inventory;
@@ -102,9 +101,14 @@ public func SetHandItemPos(int hand, int inv)
 	
 	// call callbacks
 	if(GetItem(inv))
+	{
 		this->~OnSlotFull(hand);
+		GetItem(inv)->~Selection(this, hand);
+	}
 	else
+	{
 		this->~OnSlotEmpty(hand);
+	}
 	
 	handslot_choice_pending = false;
 }
@@ -222,12 +226,10 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil)
+	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
 	{
 		if (item)
 		{
-			pos = BoundBy(pos,0,MaxContentsCount()-1);
-			
 			disableautosort = true;
 			// collect but do not sort in_
 			// Collection2 will be called which attempts to automatically sort in
@@ -270,7 +272,6 @@ protected func Construction()
 	menu = nil;
 
 	// inventory variables
-	indexed_inventory = 0;
 	inventory = CreateArray();
 	use_objects = CreateArray();
 
@@ -295,40 +296,44 @@ protected func Collection2(object obj)
 	if (disableautosort) return _inherited(obj,...);
 	
 	var success = false;
+	var i;
 	
-	// into selected area if empty
-	if (!GetHandItem(0))
-	{
-		sel = GetHandItemPos(0);
-		inventory[sel] = obj;
-		success = true;
-	}
-	// otherwise, next if empty
-	else
-	{
-		for(var i = 1; i < MaxContentsCount(); ++i)
+	// sort into selected hands if empty
+	for(i = 0; i < HandObjects(); i++)
+		if(!GetHandItem(0))
 		{
-			sel = i % MaxContentsCount();
-			if (!inventory[sel])
+			sel = GetHandItemPos(0);
+			inventory[sel] = obj;
+			success = true;
+		}
+		
+	// otherwise, first empty slot
+	if(!success)
+	{
+		for(var i = 0; i < MaxContentsCount(); ++i)
+		{
+			if (!GetItem(i))
 			{
-				indexed_inventory++;
+				sel = i;
 				inventory[sel] = obj;
 				success = true;
 				break;
 			}
 		}
 	}
+	
 	// callbacks
 	if (success)
 	{
 		var handpos = GetHandPosByItemPos(sel); 
 		// if the slot was a selected hand slot -> update it
 		if(handpos != nil)
+		{
 			this->~OnSlotFull(handpos);
+			obj->~Selection(this, handpos);
+		}
 	}
-	
-	if (sel == 0 || sel == 1)
-		obj->~Selection(this,sel == 1);
+		
 
 	return _inherited(obj,...);
 }
@@ -339,17 +344,17 @@ protected func Ejection(object obj)
 	// find obj in array and delete (cancel using too)
 	var i = 0;
 	var success = false;
+	
 	for(var item in inventory)
-	{
-		if (obj == item)
-		{
+    {
+	   if (obj == item)
+	   {
 			inventory[i] = nil;
-			indexed_inventory--;
 			success = true;
 			break;
-		}
-		++i;
-	}
+	   }
+	   ++i;
+    }
 	if (using == obj) CancelUse();
 
 	// callbacks
@@ -361,7 +366,10 @@ protected func Ejection(object obj)
 		{
 			// if it was a forced ejection, the hand will remain empty
 			if(forced_ejection == obj)
+			{
 				this->~OnSlotEmpty(handpos);
+				obj->~Deselection(this, handpos);
+			}
 			// else we'll select the next full slot
 			else
 			{
@@ -378,34 +386,39 @@ protected func Ejection(object obj)
 					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
 				// no full next slot could be found. we'll stay at the same, and empty.
 				else
+				{
 					this->~OnSlotEmpty(handpos);
+					obj->~Deselection(this, handpos);
+				}
 			}
 		}
 	}
 	
-	if (i == 0 || i == 1)
-		obj->~Deselection(this,i == 1);
-	
 	// we have over-weight? Put the next unindexed object inside that slot
 	// this happens if the clonk is stuffed full with items he can not
 	// carry via Enter, CreateContents etc.
-	if (ContentsCount() > indexed_inventory && !inventory[i])
+	var inventory_count = 0;
+	for(var io in inventory)
+		if(io != nil)
+			inventory_count++;
+			
+	if (ContentsCount() > inventory_count && !GetItem(i))
 	{
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
-			if (GetItemPos(Contents(c)) == nil)
+			var o = Contents(c);
+			if (GetItemPos(o) == nil)
 			{
 				// found it! Collect it properly
-				inventory[i] = Contents(c);
-				indexed_inventory++;
+				inventory[i] = o;
 				
 				var handpos = GetHandPosByItemPos(i); 
 				// if the slot was a selected hand slot -> update it
 				if(handpos != nil)
+				{
 					this->~OnSlotFull(handpos);
-				
-				if (i == 0 || i == 1)
-					Contents(c)->~Selection(this,i == 1);
+					o->~Selection(this, handpos);
+				}
 					
 				break;
 			}

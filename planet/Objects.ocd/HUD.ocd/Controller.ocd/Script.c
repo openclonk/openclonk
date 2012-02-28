@@ -74,41 +74,6 @@ protected func Construction()
 	
 	MakeBackpack();
 	
-	// TODO: cleanup
-	// ring inventory
-	/*
-	for(var i=0; i<BackpackSize(); i++)
-	{
-		var step = 360/BackpackSize();
-		//var r = 43;
-		var r = 52;
-		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-		//bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43)); // 5 slots
-		bt->SetPosition(74+Sin((i*step),r),-74-Cos((i*step),r));
-		bt->SetSlotId(i);
-		//bt->SetSize(48000);
-		//bt->SetShape(bt->GetDefCoreVal());
-		//bt->SetObject(this->GetItem(2+i),0,2+i,0);
-		//bt->SetObjDrawTransform(1,0,0,0,1,0,0);
-		backpack[GetLength(backpack)] = bt;
-		CustomMessage(Format("@%d.", i+1), bt, nil, -10, 44);
-	}
-	//AddEffect("UpdateBackpack",this,1,1,nil,nil);		
-	
-	// column inventory
-	for(var i=0; i<BackpackSize(); i++)
-	{
-		var d = 60;
-		var y = -225 - d*BackpackSize();
-		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-		bt->SetPosition(40, y + d*i);
-		bt->SetSlotId(i);
-		
-		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 44);
-		backpack[GetLength(backpack)] = bt;
-	}
-	*/
-	
 }
 
 // How many slots the inventory has, for overloading
