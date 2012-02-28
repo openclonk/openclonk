@@ -442,6 +442,18 @@ public func Destruction()
 		}
 	}
 	
+	if(hoverhelper)
+		hoverhelper->RemoveObject();
+	if(lockbutton)
+		lockbutton->RemoveObject();
+	
+	if(backpack)
+		for(var i=0; i<GetLength(backpack); ++i)
+		{
+			if(backpack[i])
+				backpack[i]->RemoveObject();
+		}
+	
 	if(healthtube)
 		healthtube->RemoveObject();
 		
@@ -462,6 +474,10 @@ public func Destruction()
 		HUDgoal->RemoveObject();
 	if(deco)
 		deco->RemoveObject();
+		
+	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
+	for(var o in crew)
+		o->RemoveObject();
 }
 
 public func OnCrewDisabled(object clonk)
