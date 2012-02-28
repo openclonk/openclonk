@@ -775,9 +775,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		{
 			// todo: hide action bar and do stuff if necessary
 			if(interaction_pending)
-				return ObjectControlInteract(plr,ctrl);
-			
-			return true;
+			{
+				if(ObjectControlInteract(plr,ctrl))
+					return true;
+				else
+				{
+					// try grabbing.
+					// this is a hack and should be removed as soon as the controls work properly
+					ObjectControlPush(plr, CON_Grab);
+				}
+			}
 		}
 	}
 	
