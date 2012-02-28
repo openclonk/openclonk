@@ -91,13 +91,24 @@ public func SetHandItemPos(int hand, int inv)
 	if(hand < 0 || inv < 0) return nil;
 
 	// If the item is already selected, we can't hold it in another one too.
-	if(GetHandPosByItemPos(inv) != nil)
+	var hand2 = GetHandPosByItemPos(inv);
+	if(hand2 != nil)
 	{
-		// todo: error sound would be nice.
-		return nil;
+		// switch places
+		use_objects[hand2] = use_objects[hand];
+		use_objects[hand] = inv;
+		
+		// additional callbacks
+		if(GetHandItem(hand2))
+		{
+			this->~OnSlotFull(hand2);
+			GetItem(inv)->~Selection(this, hand2);
+		}
+		else
+			this->~OnSlotEmpty(hand2);
 	}
-
-	use_objects[hand] = inv;
+	else
+		use_objects[hand] = inv;
 	
 	// call callbacks
 	if(GetItem(inv))
