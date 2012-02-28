@@ -119,10 +119,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return false;
 }
-// Give up Selection ownership
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-}
 
 CStdInProc::CStdInProc()
 {

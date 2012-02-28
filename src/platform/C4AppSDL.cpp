@@ -191,10 +191,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return false;
 }
 
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-}
-
 void C4AbstractApp::MessageDialog(const char * message)
 {
 }

@@ -635,16 +635,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 }
 
-// Give up Selection ownership
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-	C4X11AppImpl::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
-	if (!d.Text.getData()) return;
-	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY,
-	                   None, d.AcquirationTime);
-	d.Text.Clear();
-}
-
 C4Window * C4X11AppImpl::GetWindow(unsigned long wnd)
 {
 	WindowListT::iterator i = WindowList.find(wnd);

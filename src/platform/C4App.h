@@ -124,8 +124,6 @@ public:
 	StdStrBuf Paste(bool fClipboard = true);
 	// Is there something in the clipboard?
 	bool IsClipboardFull(bool fClipboard = true);
-	// Give up Selection ownership
-	void ClearClipboard(bool fClipboard = true);
 	// a command from stdin
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode

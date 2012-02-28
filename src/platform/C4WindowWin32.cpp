@@ -455,10 +455,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return !!IsClipboardFormatAvailable(CF_UNICODETEXT);
 }
 
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-}
-
 void C4Window::RequestUpdate()
 {
 	// just invoke directly

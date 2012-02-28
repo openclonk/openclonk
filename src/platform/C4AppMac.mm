@@ -58,11 +58,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return [[NSPasteboard generalPasteboard] availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
 }
 
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-	[[NSPasteboard generalPasteboard] declareTypes:[NSArray array] owner:nil];
-}
-
 void C4AbstractApp::MessageDialog(const char * message)
 {
 	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithUTF8String:message]];
