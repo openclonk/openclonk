@@ -113,6 +113,9 @@ public:
 	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor);
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
+	// Gamma
+	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	C4Window * pWindow;

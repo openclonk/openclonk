@@ -165,6 +165,16 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
+	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
+}
+
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+{
+	return SDL_GetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
+}
+
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 

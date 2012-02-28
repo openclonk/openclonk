@@ -186,14 +186,9 @@ static void readline_callback (char * line)
 }
 #endif
 
-bool C4Draw::SaveDefaultGammaRamp(C4Window * pWindow)
-{
-	return true;
-}
-
-void C4AbstractApp::MessageDialog(const char * message)
-{
-}
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP&, bool) { return true; }
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP&) { return true; }
+void C4AbstractApp::MessageDialog(const char * message) {}
 
 bool C4AbstractApp::FlushMessages()
 {

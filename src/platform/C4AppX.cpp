@@ -567,6 +567,37 @@ void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
 	SetEWMHFullscreen(pApp, false, wnd);
 }
 
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
+	if (!Active && !fForce) return false;
+	if (xf86vmode_major_version < 2) return false;
+	if (Priv->gammasize != 256) return false;
+	return XF86VidModeSetGammaRamp(dpy, DefaultScreen(dpy), 256,
+	                               ramp.red, ramp.green, ramp.blue);
+}
+
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+{
+	if (xf86vmode_major_version < 2) return false;
+	// Get the Display
+	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &Priv->gammasize);
+	if (Priv->gammasize != 256)
+	{
+		LogF("  Size of GammaRamp is %d, not 256", Priv->gammasize);
+	}
+	else
+	{
+		// store default gamma
+		if (!XF86VidModeGetGammaRamp(dpy, DefaultScreen(dpy), 256,
+		                             ramp.red, ramp.green, ramp.blue))
+		{
+			Log("  Error getting default gamma ramp; using standard");
+			return false;
+		}
+	}
+	return true;
+}
+
 // Copy the text to the clipboard or the primary selection
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {

@@ -404,6 +404,47 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 #endif
 }
 
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
+{
+#ifdef USE_DIRECTX
+	if (pD3D)
+	{
+		return pD3D->SaveDefaultGammaRamp(ramp);
+	}
+#endif
+	HDC hDC = GetDC(pWindow->hWindow);
+	if (hDC)
+	{
+		bool r = GetDeviceGammaRamp(hDC, &ramp);
+		if (!r)
+		{
+			Log("  Error getting default gamma ramp; using standard");
+		}
+		ReleaseDC(pWindow->hWindow, hDC);
+		return r;
+	}
+	return false;
+}
+
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP &ramp, bool fForce)
+{
+#ifdef USE_DIRECTX
+	if (pD3D)
+	{
+		return pD3D->ApplyGammaRamp(ramp, fForce);
+	}
+#endif
+	if (!Active && !fForce) return false;
+	HDC hDC = GetDC(pWindow->hWindow);
+	if (hDC)
+	{
+		bool r = SetDeviceGammaRamp(hDC, &ramp);
+		ReleaseDC(pWindow->hWindow, hDC);
+		return r;
+	}
+	return false;
+}
+
 void C4AbstractApp::MessageDialog(const char * message)
 {
 	MessageBoxW(0, GetWideChar(message), ADDL(C4ENGINECAPTION), MB_ICONERROR);

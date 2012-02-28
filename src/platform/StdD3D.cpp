@@ -1141,10 +1141,10 @@ bool CStdD3D::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 	return true;
 }
 
-bool CStdD3D::SaveDefaultGammaRamp(C4Window * pWindow)
+bool CStdD3D::SaveDefaultGammaRamp(D3DGAMMARAMP &ramp)
 {
 	if (!lpDevice) return false;
-	lpDevice->GetGammaRamp(0, &DefRamp.ramp);
+	lpDevice->GetGammaRamp(0, &ramp);
 	return true;
 }
 
