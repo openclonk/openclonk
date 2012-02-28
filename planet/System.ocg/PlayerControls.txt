@@ -1181,7 +1181,7 @@
 		Control=GUICursor
 		Priority=100
 		
-		# Forced Throw
+		# Forced Throw (also calls standard throw, if forced throw is not treated)
 		
 		[Assignment]
 		Key=Shift+CON_Use
@@ -1459,42 +1459,52 @@
 		[Assignment]
 		Key=Interact,Hotkey1
 		Control=InteractionHotkey1
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey2
 		Control=InteractionHotkey2
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey3
 		Control=InteractionHotkey3
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey4
 		Control=InteractionHotkey4
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey5
 		Control=InteractionHotkey5
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey6
 		Control=InteractionHotkey6
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey7
 		Control=InteractionHotkey7
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey8
 		Control=InteractionHotkey8
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey9
 		Control=InteractionHotkey9
+		Priority=101
 		
 		[Assignment]
 		Key=Interact,Hotkey0
 		Control=InteractionHotkey0
+		Priority=101
 		
 		[Assignment]
 		Key=Ctrl+Hotkey1
