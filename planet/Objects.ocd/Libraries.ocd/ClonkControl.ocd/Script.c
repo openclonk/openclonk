@@ -553,37 +553,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
-	// Backpack menu
-	if (ctrl == CON_Backpack)
-	{
-		// close if menu was open
-		if(GetMenu())
-		{
-			var is_backpack = GetMenu()->~GetSymbol() == Icon_Backpack;
-			GetMenu()->RemoveObject();
-			SetMenu(nil);
-			// If backpack menu, don't open new one and return.
-			if (is_backpack)
-				return true;
-		}
-		// Cancel usage
-		CancelUse();
-		CreateRingMenu(Icon_Backpack,this);
-		// CreateRingMenu calls SetMenu(this) in the clonk,
-		// so after this call menu = the created menu
-			
-		// for all contents in the clonks except the first two (hand slots)
-		for(var i = 2; i < MaxContentsCount(); ++i)
-		{
-			// put them in the menu
-			var item = GetItem(i);
-			GetMenu()->AddItem(item,nil,i);
-		}
-		// finally, show the menu.
-		GetMenu()->Show();
-
-		return true;
-	}
 	// Contents menu
 	if (ctrl == CON_Contents)
 	{
