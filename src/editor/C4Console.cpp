@@ -194,7 +194,7 @@ bool C4Console::SaveScenario(const char * path)
 			return false;
 		}
 		SCopy(path, Game.ScenarioFilename);
-		SetCaption(GetFilename(Game.ScenarioFilename));
+		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
 		{
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData());
@@ -514,7 +514,7 @@ void C4Console::ClearNetMenu()
 
 void C4Console::SetCaptionToFilename(const char* szFilename)
 {
-	SetCaption(GetFilename(szFilename));
+	SetTitle(GetFilename(szFilename));
 	C4ConsoleGUI::SetCaptionToFileName(szFilename);
 }
 
@@ -548,7 +548,7 @@ void C4Console::CloseGame()
 	if (!Active || !fGameOpen) return;
 	fGameOpen=false;
 	EnableControls(fGameOpen);
-	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
+	SetTitle(LoadResStr("IDS_CNS_CONSOLE"));
 }
 
 bool C4Console::TogglePause()

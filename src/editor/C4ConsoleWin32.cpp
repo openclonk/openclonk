@@ -631,7 +631,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	SendMessage(hWindow,WM_SETICON,ICON_BIG,(LPARAM)LoadIcon(application->GetInstance(),MAKEINTRESOURCE(IDI_00_C4X)));
 	SendMessage(hWindow,WM_SETICON,ICON_SMALL,(LPARAM)LoadIcon(application->GetInstance(),MAKEINTRESOURCE(IDI_00_C4X)));
 	// Set text
-	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
+	SetTitle(LoadResStr("IDS_CNS_CONSOLE"));
 	// Load bitmaps
 	state->CreateBitmaps(application);
 	// Enable controls
