@@ -55,6 +55,13 @@ public func AddMenuStructures(object constructor, object clonk)
 	return;
 }
 
+public func Show()
+{
+	// Change look
+	SetGraphics(nil, Library_ProductionMenu);
+	return _inherited(...);
+}
+
 private func ShowConstructionInfo(object item)
 {
 	// TODO: Implement this completely (maybe based on a structure library) and new graphics.
@@ -62,16 +69,33 @@ private func ShowConstructionInfo(object item)
 	var structure_id = item->GetSymbol();
 	var cost_msg = "@";
 	var comp, index = 0;
+	
+	// show energy production/consumption (if any)
+	if(structure_id->~IsPowerConsumer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerConsumer);
+	if(structure_id->~IsPowerProducer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerProducer);
+	
+	cost_msg = Format("%s         |",cost_msg);
+	
 	while (comp = GetComponent(nil, index++, nil, structure_id))
 		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
-	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
+	CustomMessage(cost_msg, this, GetOwner(), 250, 250, nil, nil, nil, 1|2);
 	constructinfo_shown = item;
+	
+	
+	
+	// show big picture
+	SetGraphics(nil, structure_id, 1, GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(400, 0, 270000, 0, 400, -50000, 1);
+	
 	return;
 }
 
 public func HideConstructionInfo()
 {
 	CustomMessage("", this, GetOwner());
+	SetGraphics(nil, nil, 1);
 	constructinfo_shown = false;
 }
 
