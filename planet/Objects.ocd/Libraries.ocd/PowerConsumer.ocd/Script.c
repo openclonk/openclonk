@@ -8,6 +8,8 @@
 local PowerConsumer_has_power = 0;
 
 
+public func IsPowerConsumer() { return true; }
+
 public func CurrentlyHasPower()
 {
 	return PowerConsumer_has_power;
