@@ -26,7 +26,9 @@ public func Initialize()
 	// Parallaxity
 	this.Parallaxity = [0, 0];
 	
-	locked = !!GetPlrExtraData(owner, "Inventory_Lock");
+	locked = GetPlrExtraData(owner, "Inventory_Lock");
+	if(locked == nil)
+		locked = true;
 	if(!locked)
 		SetGraphics("Released", GetID());
 }
