@@ -17,10 +17,10 @@
 
 /* Functions for displaying a settings dialogue to users when the graphics system failed */
 
+#include <C4Include.h>
 
 #ifdef _WIN32
 
-#include <C4Include.h>
 #include <resource.h>
 #include <C4Version.h>
 #include <C4Application.h>
