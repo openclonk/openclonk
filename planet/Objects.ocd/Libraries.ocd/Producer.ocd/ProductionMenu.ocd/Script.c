@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_Menu
+#include GUI_CircleMenu
 
 local menu_queue;
 local productinfo_shown;

@@ -39,7 +39,7 @@ protected func Construction()
 {
 	SetPosition(600, 400);
 	// Set original menu graphics.
-	SetGraphics("BG", GUI_Menu);
+	SetGraphics("BG", GUI_CircleMenu);
 	return _inherited(...);
 }
 

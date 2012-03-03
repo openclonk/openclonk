@@ -145,6 +145,14 @@ public func UpdateMenu()
 	return;
 }
 
+public func OnMouseOverItem(object item, object dragged)
+{
+	// make it appear bigger
+	item->SetObjDrawTransform(1100, 0, 0, 0, 1100, 0, 1);
+}
 
-
-
+public func OnMouseOutItem(object item, object dragged)
+{
+	// return to normal size
+	item->SetObjDrawTransform(1000, 0, 0, 0, 1000, 0, 1);
+}
