@@ -1884,8 +1884,11 @@ bool CStdGL::RestoreDeviceObjects()
 	RenderTarget = pApp->pWindow->pSurface;
 
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	if (!GLEW_VERSION_1_3)
-	{
+	// Check for GL 1.2 and two functions from 1.3 we need.
+	if( !GLEW_VERSION_1_2 ||
+		glActiveTexture == NULL ||
+		glClientActiveTexture == NULL
+	) {
 		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
 	}
 
