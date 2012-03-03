@@ -1238,6 +1238,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 
+	// Mesh extents
+	const float b = fabs(v2.x - v1.x)/2.0f;
+	const float h = fabs(v2.y - v1.y)/2.0f;
+	const float l = fabs(v2.z - v1.z)/2.0f;
+
 	if (!fUsePerspective)
 	{
 		// Orthographic projection. The orthographic projection matrix
@@ -1313,6 +1318,14 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
 		glTranslatef(1.0f, -1.0f, 0.0f);
 
+		// Fix for the case when we have a non-square target
+		const float ta = twdt / thgt;
+		const float ma = b / h;
+		if(ta <= 1 && ta/ma <= 1)
+			glScalef(std::max(ta, ta/ma), std::max(ta, ta/ma), 1.0f);
+		else if(ta >= 1 && ta/ma >= 1)
+			glScalef(std::max(1.0f/ta, ma/ta), std::max(1.0f/ta, ma/ta), 1.0f);
+
 		// Apply perspective projection. After this, x and y range from
 		// -1 to 1, and this is mapped into tx/ty/twdt/thgt by the above code.
 		// Aspect is 1.0f which is accounted for above.
@@ -1333,19 +1346,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	}
 	else
 	{
-		// Mesh extents
-		const float b = fabs(v2.x - v1.x)/2.0f;
-		const float h = fabs(v2.y - v1.y)/2.0f;
-		const float l = fabs(v2.z - v1.z)/2.0f;
-
 		// Setup camera position so that the mesh with uniform transformation
-		// fits well into the rectangle twdt/thgt (without distortion).
-		float EyeR;
-		if (thgt < twdt)
-			EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV * twdt/thgt);
-		else
-			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
-
+		// fits well into a square target (without distortion).
+		const float EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV);
 		const float EyeX = MeshCenter.x;
 		const float EyeY = MeshCenter.y;
 		const float EyeZ = MeshCenter.z + EyeR;
