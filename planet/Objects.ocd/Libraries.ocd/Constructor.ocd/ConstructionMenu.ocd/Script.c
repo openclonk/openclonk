@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_Menu
+#include GUI_CircleMenu
 
 local constructinfo_shown;
 
