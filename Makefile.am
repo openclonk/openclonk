@@ -690,6 +690,7 @@ endif
 
 ## c4script shell
 c4script_SOURCES = \
+include/c4script/c4script.h \
 src/lib/C4SimpleLog.cpp \
 src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
@@ -701,6 +702,7 @@ src/script/C4AulParse.cpp \
 src/script/C4StringTable.cpp \
 src/script/C4PropList.cpp \
 src/script/C4ScriptHost.cpp \
+src/script/C4ScriptStandalone.cpp \
 src/script/C4ValueArray.cpp \
 src/script/C4Value.cpp \
 src/script/C4ValueMap.cpp \

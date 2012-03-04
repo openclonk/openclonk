@@ -926,6 +926,7 @@ add_executable(netpuncher EXCLUDE_FROM_ALL
 )
 
 add_executable(c4script
+	include/c4script/c4script.h
 	src/c4group/C4Group.cpp
 	src/c4group/C4Group.h
 	src/c4group/CStdFile.cpp
@@ -956,6 +957,7 @@ add_executable(c4script
 	src/script/C4StringTable.cpp
 	src/script/C4PropList.cpp
 	src/script/C4ScriptHost.cpp
+	src/script/C4ScriptStandalone.cpp
 	src/script/C4ValueArray.cpp
 	src/script/C4Value.cpp
 	src/script/C4ValueMap.cpp

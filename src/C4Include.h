@@ -20,7 +20,12 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Main header to include all others */
+/* This header is included first from every source file. It serves three purposes:
+   - PlatformAbstraction.h
+   - Common utility functionality that's used everywhere
+   - Speeding up the compilation by precompiling this header
+All of our headers are designed to be used with C4Include.h included before and
+don't need to include this file or any of the files it includes. */
 
 #ifndef INC_C4Include
 #define INC_C4Include

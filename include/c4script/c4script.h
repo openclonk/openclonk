@@ -16,11 +16,17 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// Do not include C4Include.h - this file tests whether
-// c4script.h is useable without that.
-#include "../../include/c4script/c4script.h"
+#ifndef C4SCRIPTSTANDALONE_H
+#define C4SCRIPTSTANDALONE_H
 
-int main(int argc, const char * argv[])
-{
-	return c4s_runscript(argv[1]);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int c4s_runscript(const char * filename);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif // C4SCRIPTSTANDALONE_H
