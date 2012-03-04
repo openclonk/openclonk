@@ -37,7 +37,7 @@ HomeBaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;M
 
 [Landscape]
 InEarth=Rock=1;Firestone=3;Loam=2
-InEarthLevel=30,0,0,100
+InEarthLevel=40
 Sky=Clouds2
 MapWidth=100
 MapHeight=75
@@ -45,5 +45,5 @@ MapHeight=75
 [Weather]
 Climate=0
 YearSpeed=0
-Wind=1,100,-100,100
+Wind=0,100,-100,100
  
