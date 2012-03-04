@@ -25,6 +25,7 @@
 #define INC_C4ViewportWindow
 
 #include <C4Window.h>
+#include <C4Viewport.h>
 
 #ifdef WITH_DEVELOPER_MODE
 #include <C4WindowGTK.h>
@@ -32,15 +33,15 @@ typedef C4GtkWindow C4ViewportBase;
 #else
 typedef C4Window C4ViewportBase;
 #endif
+#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+enum { ViewportScrollSpeed=10 };
 
 class C4ViewportWindow: public C4ViewportBase
 {
 public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
-#ifdef _WIN32
-	static bool RegisterViewportClass(HINSTANCE hInst);
-#elif defined(WITH_DEVELOPER_MODE)
+#if defined(WITH_DEVELOPER_MODE)
 	virtual GtkWidget* InitGUI();
 
 	static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);

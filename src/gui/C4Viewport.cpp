@@ -46,11 +46,6 @@
 #include <C4GameObjects.h>
 #include <C4Network2.h>
 
-namespace
-{
-	const int32_t ViewportScrollSpeed=10;
-}
-
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
 	Game.DropFile(fileName, ViewX+x/Zoom, ViewY+y/Zoom);

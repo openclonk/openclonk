@@ -56,11 +56,6 @@ C4GraphicsSystem::~C4GraphicsSystem()
 
 bool C4GraphicsSystem::Init()
 {
-#ifdef _WIN32
-	// Register viewport class
-	if (!C4ViewportWindow::RegisterViewportClass(Application.GetInstance()))
-		return false;
-#endif
 	// Init video module
 	if (Config.Graphics.VideoModule)
 		Video.Init(FullScreen.pSurface);
