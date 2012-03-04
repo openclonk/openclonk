@@ -135,7 +135,10 @@ public func OnItemSelection(object item)
 	{
 		// Close menu if a construction site has been created.
 		if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
-			Close();	
+		{
+			Close();
+			return true;
+		}	
 	}
 	return _inherited(item, ...);
 }
