@@ -485,15 +485,14 @@ void C4ViewportWindow::PerformUpdate()
 	}
 }
 
-
-C4Window * C4ViewportWindow::Init(C4Window * pParent, C4AbstractApp * pApp, int32_t Player)
+C4Window * C4ViewportWindow::Init(int32_t Player)
 {
 	C4Window* result;
 	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();
-	result = C4ViewportBase::Init(C4Window::W_Viewport, pApp, Title, pParent, false);
+	result = C4ViewportBase::Init(C4Window::W_Viewport, &Application, Title, &Console, false);
 	if (!result) return result;
 
-	pSurface = new C4Surface(pApp, this);
+	pSurface = new C4Surface(&Application, this);
 	// Position and size
 	RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	return result;

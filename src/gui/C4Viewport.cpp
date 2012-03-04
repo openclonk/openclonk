@@ -616,33 +616,27 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
 	Player=iPlayer;
 	if (!fSetTempOnly) fIsNoOwnerViewport = (iPlayer == NO_OWNER);
-	// Owned viewport: clear any flash message explaining observer menu
-	if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
-	return true;
-}
-
-bool C4Viewport::Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer)
-{
-	// Console viewport initialization
-	// Set Player
-	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
-	Player=iPlayer;
-	fIsNoOwnerViewport = (Player == NO_OWNER);
-	// Create window
-	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(pParent, pApp, Player))
-		return false;
-	//UpdateWindow(hWnd);
-	// Updates
-	UpdateOutputSize();
-	// Disable player lock on unowned viewports
-	if (!ValidPlr(Player)) TogglePlayerLock();
-	// Draw
-	// Don't call Execute right away since it is not yet guaranteed that
-	// the Player has set this as its Viewport, and the drawing routines rely
-	// on that.
-	//Execute();
-	// Success
+	if (Application.isEditor)
+	{
+		// Console viewport initialization
+		// Create window
+		pWindow = new C4ViewportWindow(this);
+		if (!pWindow->Init(Player))
+			return false;
+		UpdateOutputSize();
+		// Disable player lock on unowned viewports
+		if (!ValidPlr(Player)) TogglePlayerLock();
+		// Draw
+		// Don't call Execute right away since it is not yet guaranteed that
+		// the Player has set this as its Viewport, and the drawing routines rely
+		// on that.
+		//Execute();
+	}
+	else
+	{
+		// Owned viewport: clear any flash message explaining observer menu
+		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
+	}
 	return true;
 }
 
@@ -838,11 +832,7 @@ bool C4ViewportList::CreateViewport(int32_t iPlayer, bool fSilent)
 	// Create and init new viewport, add to viewport list
 	int32_t iLastCount = GetViewportCount();
 	C4Viewport *nvp = new C4Viewport;
-	bool fOkay = false;
-	if (!Application.isEditor)
-		fOkay = nvp->Init(iPlayer, false);
-	else
-		fOkay = nvp->Init(&Console,&Application,iPlayer);
+	bool fOkay = nvp->Init(iPlayer, false);
 	if (!fOkay) { delete nvp; return false; }
 	C4Viewport *pLast;
 	for (pLast=FirstViewport; pLast && pLast->Next; pLast=pLast->Next) {}

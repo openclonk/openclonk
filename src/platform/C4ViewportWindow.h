@@ -67,7 +67,8 @@ public:
 	virtual void HandleMessage (XEvent &);
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
-	C4Window * Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer);
+	using C4Window::Init;
+	C4Window * Init(int32_t iPlayer);
 	virtual void Close();
 	virtual void PerformUpdate();
 };
