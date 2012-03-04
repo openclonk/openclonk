@@ -480,31 +480,36 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	return 1;
 }
 
-func OnNotEnoughPower()
+public func OnNotEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
 	if(effect)
 	{
 		effect.Active = false;
 		this->~OnProductionHold(effect.Product, effect.Duration);
-	} else FatalError("Producer effect removed when power still active!");
+	} 
+	else
+		FatalError("Producer effect removed when power still active!");
 	return _inherited(...);
 }
 
-func OnEnoughPower()
+public func OnEnoughPower()
 {
 	var effect = GetEffect("ProcessProduction", this);
 	if(effect)
 	{
 		effect.Active = true;
 		this->~OnProductionContinued(effect.Product, effect.Duration);
-	} else FatalError("Producer effect removed when power still active!");
+	} 
+	else 
+		FatalError("Producer effect removed when power still active!");
 	return _inherited(...);
 }
 
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
-	if(!effect.Active) return 1;
+	if (!effect.Active)
+		return 1;
 	
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
@@ -525,12 +530,9 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	// no need to consume power anymore
 	MakePowerConsumer(0);
 		
-	
 	if (reason != 0)
 		return 1;
-	
-	
-	
+		
 	// Callback to the producer.
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
