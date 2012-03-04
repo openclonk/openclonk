@@ -29,7 +29,6 @@
 
 #include <C4Game.h>
 #include <C4Application.h>
-#include <C4UserMessages.h>
 #include <C4Viewport.h>
 #include <C4League.h>
 #include <C4Language.h>
