@@ -94,8 +94,10 @@ public func AddItem(object item, int pos)
 	// Set item visibility.
 	item.Visibility = VIS_None;
 	if (menu_shown)
+	{
 		item.Visibility = VIS_Owner;
-	UpdateMenu();
+		UpdateMenu();
+	}
 	return true;
 }
 
