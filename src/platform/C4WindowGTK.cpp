@@ -51,7 +51,7 @@
 #include <GL/glx.h>
 #endif
 
-#include "C4AppXImpl.h"
+#include "C4AppGTKImpl.h"
 
 // Some helper functions for choosing a proper visual
 

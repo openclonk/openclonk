@@ -617,12 +617,12 @@ if(USE_GTK)
 		src/res/resource.h
 		src/res/Static.h
 	)
+
 	list(APPEND OC_SYSTEM_SOURCES
 		src/editor/C4ConsoleGTK.cpp
-		src/platform/C4AppX.cpp
-		src/platform/C4AppXImpl.h
+		src/platform/C4AppGTK.cpp
+		src/platform/C4AppGTKImpl.h
 		src/platform/C4WindowGTK.cpp
-		src/platform/C4WindowX.cpp
 	)
 elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES

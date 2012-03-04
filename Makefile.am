@@ -561,10 +561,9 @@ else
 if GTK
 clonk_SOURCES += \
 src/editor/C4ConsoleGTK.cpp \
-src/platform/C4AppX.cpp \
-src/platform/C4AppXImpl.h \
-src/platform/C4WindowGTK.cpp \
-src/platform/C4WindowX.cpp
+src/platform/C4AppGTK.cpp \
+src/platform/C4AppGTKImpl.h \
+src/platform/C4WindowGTK.cpp
 else
 if WIN32
 clonk_SOURCES += \

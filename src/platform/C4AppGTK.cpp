@@ -43,7 +43,7 @@
 
 #include "c4x.xpm"
 
-#include "C4AppXImpl.h"
+#include "C4AppGTKImpl.h"
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
 		// main thread
