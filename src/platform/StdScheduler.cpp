@@ -555,12 +555,9 @@ bool CStdNotifyProc::CheckAndReset()
 
 CStdNotifyProc::CStdNotifyProc()
 {
-	// FIXME: Once linux version 2.6.27 is required, use EFD_NONBLOCK and EFD_CLOEXEC
-	fds[0] = eventfd(0, 0);
+	fds[0] = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
 	if (fds[0] == -1)
 		Fail("eventfd failed");
-	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
-	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
 }
 CStdNotifyProc::~CStdNotifyProc()
 {
@@ -689,12 +686,9 @@ bool CStdMultimediaTimerProc::CheckAndReset()
 #include <fcntl.h>
 CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay)
 {
-	// FIXME: Once linux version 2.6.27 is required, use TFD_NONBLOCK and TFD_CLOEXEC
-	fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 	if (fd == -1)
 		Log("timerfd_create failed");
-	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
-	fcntl(fd, F_SETFD, FD_CLOEXEC);
 	SetDelay(iDelay);
 }
 

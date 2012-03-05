@@ -850,7 +850,11 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	if (nsock == INVALID_SOCKET)
 	{
 		// accept from listener
+#ifdef __linux__
+		if ((nsock = ::accept4(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
+#else
 		if ((nsock = ::accept(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize)) == INVALID_SOCKET)
+#endif
 		{
 			// set error
 			SetError("socket accept failed", true);
