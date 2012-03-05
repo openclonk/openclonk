@@ -248,4 +248,32 @@ inline int swprintf(wchar_t* buffer, size_t n, const wchar_t* format, ...)
 }
 #endif
 
+#ifdef _WIN32
+#include <io.h>
+#define F_OK 0
+#else
+#include <dirent.h>
+#include <limits.h>
+#define _O_BINARY 0
+#define _MAX_PATH PATH_MAX
+#define _MAX_FNAME NAME_MAX
+
+bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
+#endif
+
+#include <fcntl.h>
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
+
+#ifdef _WIN32
+#define DirSep "\\"
+#define DirectorySeparator '\\'
+#define AltDirectorySeparator '/'
+#else
+#define DirSep "/"
+#define DirectorySeparator '/'
+#define AltDirectorySeparator '\\'
+#endif
+
 #endif // INC_PLATFORMABSTRACTION

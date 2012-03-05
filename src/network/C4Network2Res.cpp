@@ -1008,7 +1008,7 @@ int32_t C4Network2Res::OpenFileRead()
 #ifdef _WIN32
 	return _wopen(GetWideChar(szStandalone), _O_BINARY | O_RDONLY);
 #else
-	return open(szStandalone, _O_BINARY | O_RDONLY);
+	return open(szStandalone, _O_BINARY | O_CLOEXEC | O_RDONLY);
 #endif
 }
 
@@ -1019,7 +1019,7 @@ int32_t C4Network2Res::OpenFileWrite()
 #ifdef _WIN32
 	return _wopen(GetWideChar(szStandalone), _O_BINARY | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
 #else
-	return open(szStandalone, _O_BINARY | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
+	return open(szStandalone, _O_BINARY | O_CLOEXEC | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
 #endif
 }
 

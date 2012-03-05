@@ -69,34 +69,27 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 		MemoryPtr = 0;
 	}
 	// Open standard file
-	else if (fCompressed)
-	{
-#ifdef _WIN32
-		int mode = _S_IREAD|_S_IWRITE;
-		int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
-		int fd = _wopen(GetWideChar(Name), flags, mode);
-#else
-		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
-		int flags = O_CREAT|O_WRONLY|O_TRUNC;
-		int fd = open(Name, flags, mode);
-#endif
-		if (!(hgzFile = c4_gzdopen(fd,"wb1"))) return false;
-	}
 	else
 	{
+		int flags = _O_BINARY|O_CLOEXEC|O_CREAT|O_WRONLY|O_TRUNC;
 #ifdef _WIN32
 		int mode = _S_IREAD|_S_IWRITE;
-		int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
 		int fd = _wopen(GetWideChar(Name), flags, mode);
 #else
 		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
 		if (fExecutable)
 			mode |= S_IXUSR|S_IXGRP|S_IXOTH;
-		int flags = O_CREAT|O_WRONLY|O_TRUNC;
 		int fd = open(Name, flags, mode);
 #endif
 		if (fd == -1) return false;
-		if (!(hFile = fdopen(fd,"wb"))) return false;
+		if (fCompressed)
+		{
+			if (!(hgzFile = c4_gzdopen(fd,"wb1"))) return false;
+		}
+		else
+		{
+			if (!(hFile = fdopen(fd,"wb"))) return false;
+		}
 	}
 	// Reset buffer
 	ClearBuffer();
@@ -111,22 +104,18 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 	thread_check.Set();
 	// Set modes
 	ModeWrite=false;
-	// Open standard file
+	int flags = _O_BINARY|O_CLOEXEC|O_RDONLY;
+#ifdef _WIN32
+	int mode = _S_IREAD|_S_IWRITE;
+	int fd = _wopen(GetWideChar(Name), flags, mode);
+#else
+	mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
+	int fd = open(Name, flags, mode);
+#endif
+	if(fd == -1) return false;
 	if (fCompressed)
 	{
-#ifdef _WIN32
-		int mode = _S_IREAD|_S_IWRITE;
-		int flags = _O_BINARY|_O_RDONLY;
-		int fd = _wopen(GetWideChar(Name), flags, mode);
-#else
-		mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
-		int flags = O_RDONLY;
-		int fd = open(Name, flags, mode);
-#endif
-
-		if(fd == -1) return false;
 		if (!(hgzFile = c4_gzdopen(fd,"rb"))) { close(fd); return false; }
-
 		/* Reject uncompressed files */
 		if(c4_gzdirect(hgzFile))
 		{
@@ -137,11 +126,7 @@ bool CStdFile::Open(const char *szFilename, bool fCompressed)
 	}
 	else
 	{ 
-#ifdef _WIN32
-		if (!(hFile=_wfopen(GetWideChar(Name),L"rb"))) return false;
-#else
-		if (!(hFile=fopen(Name,"rb"))) return false;
-#endif
+		if (!(hFile = fdopen(fd,"rb"))) return false;
 	}
 	// Reset buffer
 	ClearBuffer();
@@ -330,13 +315,12 @@ int UncompressedFileSize(const char *szFilename)
 {
 	int rd,rval=0;
 	BYTE buf[1024];
+	int flags = _O_BINARY|O_CLOEXEC|O_RDONLY;
 #ifdef _WIN32
 	int mode = _S_IREAD|_S_IWRITE;
-	int flags = _O_BINARY|_O_RDONLY;
 	int fd = _wopen(GetWideChar(szFilename), flags, mode);
 #else
 	mode_t mode = S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH;
-	int flags = O_RDONLY;
 	int fd = open(szFilename, flags, mode);
 #endif
 	gzFile hFile;
