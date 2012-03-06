@@ -1277,11 +1277,11 @@ ENDIF()
 # TODO: Check for convert at configure step?
 install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
 install(CODE "
-EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
+EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
 IF(NOT \${CONVERT_RESULT} EQUAL 0)
 	MESSAGE(SEND_ERROR \"Creating icon failed\")
 ENDIF()
-FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/openclonk)
+FILE(MAKE_DIRECTORY $ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk)
 ")
 
 set(OC_C4GROUPS
@@ -1308,7 +1308,7 @@ foreach(group ${OC_C4GROUPS})
 	else()
 		INSTALL(CODE "
 		MESSAGE(\"Packing and installing ${group}...\")
-		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
+		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
 		IF(NOT \${PACK_RESULT} EQUAL 0)
 			MESSAGE(SEND_ERROR \"Packing ${group} failed\")
 		ENDIF()
