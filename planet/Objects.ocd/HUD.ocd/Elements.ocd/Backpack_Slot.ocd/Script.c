@@ -9,7 +9,7 @@ local controller;
 
 public func SetHUDController(object c) { controller = c; }
 
-protected func Initialize()
+protected func Construction()
 {
 	// Visibility
 	this.Visibility = VIS_Owner;
@@ -18,6 +18,7 @@ protected func Initialize()
 	// Mouse drag image
 	this.MouseDragImage = nil;
 	this.MouseDrag = MD_DragSource | MD_DropTarget;
+
 	return;
 }
 

@@ -7,3 +7,4 @@ Height=48
 Offset=-24,-24
 StretchGrowth=1
 Rotate=1
+Oversize=1

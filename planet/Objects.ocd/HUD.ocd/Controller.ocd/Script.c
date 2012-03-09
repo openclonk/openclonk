@@ -88,7 +88,7 @@ private func ScheduleUpdateBackpack()
 private func MakeBackpack()
 {
 	// distance between slots
-	var d = 55;
+	var d = 60;
 	// upper barrier
 	var y = -225-35 - d*BackpackSize();
 
@@ -106,8 +106,9 @@ private func MakeBackpack()
 		bt->SetHUDController(this);
 		bt->SetPosition(40, y + d*i);
 		bt->SetSlotId(i);
+		bt->SetCon(115);
 		
-		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 44);
+		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
 		backpack[GetLength(backpack)] = bt;
 	}
 	
