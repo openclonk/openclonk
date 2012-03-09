@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_CircleMenu
+#include GUI_FancyGridMenu
 
 local constructinfo_shown;
 
@@ -38,9 +38,10 @@ global func CreateConstructionMenu(object constructor)
 protected func Construction()
 {
 	SetPosition(600, 400);
-	// Set original menu graphics.
-	SetGraphics("BG", GUI_CircleMenu);
-	return _inherited(...);
+
+	_inherited(...);
+	
+	SetMenuBorder(menu_itemwidth/2);
 }
 
 public func AddMenuStructures(object constructor, object clonk)
@@ -79,23 +80,18 @@ private func ShowConstructionInfo(object item)
 	cost_msg = Format("%s         |",cost_msg);
 	
 	while (comp = GetComponent(nil, index++, nil, structure_id))
-		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
-	CustomMessage(cost_msg, this, GetOwner(), 250, 250, nil, nil, nil, 1|2);
-	constructinfo_shown = item;
+		cost_msg = Format("%s %dx{{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
+		
+	CustomMessage(cost_msg, item, GetOwner(), 0,  160, nil, nil, nil, 1|2);
 	
-	
-	
-	// show big picture
-	SetGraphics(nil, structure_id, 1, GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(400, 0, 270000, 0, 400, -50000, 1);
+	constructinfo_shown = item;;
 	
 	return;
 }
 
 public func HideConstructionInfo()
 {
-	CustomMessage("", this, GetOwner());
-	SetGraphics(nil, nil, 1);
+	CustomMessage("", constructinfo_shown, GetOwner());
 	constructinfo_shown = false;
 }
 
