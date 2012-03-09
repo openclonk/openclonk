@@ -22,27 +22,10 @@
     <h>#include</h>
     <text>An object script can also include the functionality of another script.</text>
     <code>#include Clonk</code>
-    <text>At this position the complete script of the specified object definition (that of the clonk, in this case) is inserted. Obviously, the included definition must be valid and loaded. Declared functions can be overloaded by functions of the same name that occur later in the script. Also see <funclink>inherited</funclink>().</text>
-    <h id="Zugangsberechtigung">Access Control</h>
-    <text>
-      You can specify an access declaration for functions in object scripts: 
-      <table>
-        <row>
-          <col>public</col>
-          <col>may be called by the object itself, by the engine, or by other objects</col>
-        </row>
-        <row>
-          <col>protected</col>
-          <col>may only be called by the object itself or by the engine</col>
-        </row>
-        <row>
-          <col>private</col>
-          <col>may only be called by the object itself</col>
-        </row>
-      </table>
- A special case: the callbacks TimerCall, StartCall, PhaseCall, and EndCall will work even if the function called was declared private (for downwards compatibility reasons) but the functions for all other engine calls (see below) must be declared protected or public.
-    </text>
-    <text>Functions with no special declaration are public. If you are unsure or don't care, leave your functions public.</text>
+    <text>At this position the complete script of the specified object definition (that of the clonk, in this case) is inserted, including all scripts that that script includes or got via <emlink href="script/AppendTo.html">#appendto</emlink>. The only exception is that every script is included only once, so including both the Clonk script and a script that is included by the Clonk script doesn't include that script twice. Other Obviously, the included definition must be valid and loaded. Declared functions can be overloaded by functions of the same name that occur later in the script. Also see <funclink>inherited</funclink>().</text>
+    <h>Interaction from other scripts</h>
+    <text>Other scripts can call functions of an object <code>obj</code> with the <code>-></code> and <code>->~</code> operators.</text>
+    <code>var obj = CreateObject(Flint); obj->Hit();</code>
     <h id="ObjektCallsderEngine">Object calls made by the engine</h>
     <text>
       The engine calls the following functions is objects at the given time. 

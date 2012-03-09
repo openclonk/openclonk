@@ -8,7 +8,7 @@
   <part>
      <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
     <h id="Callbacks">Callbacks overview</h>
-	<text>The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. With the functions <funclink>GameCall</funclink> and <funclink>GameCallEx</funclink>, callbacks to the scenario script can be made from scripts.</text>
+	<text>The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. Other scripts can access local variables of the scenario and call scenario functions with the global proplist <code>Scenario</code>. With the functions <funclink>GameCall</funclink> and <funclink>GameCallEx</funclink>, callbacks to the scenario script can be made from scripts.</text>
 	<text>
       <table>
         <rowh>

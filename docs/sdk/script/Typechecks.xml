@@ -46,6 +46,12 @@
           <col><code>{ foo = 0, &quot;bar baz&quot; = 13, Prototype = Clonk }</code></col>
         </row>
         <row>
+          <col><code>func</code></col>
+          <col>Function</col>
+          <col>A function. At the moment, this is only used to store them in proplists.</col>
+          <col><code>Flint.Hit</code></col>
+        </row>
+        <row>
           <col><code>nil</code></col>
           <col></col>
           <col>The type of <code>nil</code>.</col>
