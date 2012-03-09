@@ -1,7 +1,8 @@
 /**
-	FancyGridMenu
-	Beschreibung hier einfügen
-
+	GridMenu
+	A simple grid-menu based on the Library_Menu implementation.
+	It tries to creaty square-ish menus.
+	
 	@author boni
 */
 
@@ -55,9 +56,14 @@ public func UpdateMenu()
 		rc = ric;
 		if(itemcount > rc*rc)
 			ric += 1;
-		if(itemcount > rc*ric)
-			rc += 1;
 	}
+	else
+	{
+		rc = itemcount/rowitemcount;
+	}
+	// adjust row-count if needed
+	if(itemcount > rc*ric)
+		rc += 1;
 	
 	// set the background
 	var size = GetMenuSize(itemcount, rc, ric); // == [width,height]
