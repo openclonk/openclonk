@@ -2,12 +2,16 @@
 	Windmill
 	Authors: Ringwaul, Clonkonaut
 
-	Crushes seeds into flour if there is wind or another power source.
+	Crushes seeds into flour using power - is an own power producer too
 --*/
 
+#include Library_Ownable
 #include Library_Producer
+#include Library_PowerConsumer
+#include Library_PowerProducer
 
 local wind_anim;
+local last_wind;
 
 protected func Construction()
 {
@@ -25,6 +29,8 @@ protected func Initialize()
 
 func Wind2Turn()
 {
+	if(GetCon()  < 100) return;
+	
 	// Fade linearly in time until next timer call
 	var start = 0;
 	var end = GetAnimationLength("Spin");
@@ -33,11 +39,20 @@ func Wind2Turn()
 		start = end;
 		end = 0;
 	}
-
+	
+	var power = Abs(GetWind());
+	if(power < 5) power = 0;
+	else power = Max(((power + 5) / 25), 1) * 50;
+	
+	if(last_wind != power)
+	{
+		last_wind = power;
+		MakePowerProducer(last_wind);
+	}
+	
 	// Number of frames for one revolution: the more wind the more revolutions per frame.
-	var wind = Abs(GetWind());
-	if(wind == 0) wind = 1;
-	var l = 18000/wind;
+	if(last_wind == 0) last_wind = 1;
+	var l = 18000/last_wind;
 
 	// Note ending is irrelevant since this is called again after 35 frames
 	if(l > 0)
@@ -50,13 +65,6 @@ func Wind2Turn()
 	}
 }
 
-// Overloaded from PowerConsumer
-// As long as their is wind, the windmill has power
-public func CheckPower()
-{
-	if (Abs(GetWind())) return true;
-	return inherited(...);
-}
 
 /*-- Production --*/
 
@@ -67,7 +75,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsWindmillProduct();
 }
 private func ProductionTime() { return 290; }
-private func PowerNeed(id product) { return 100; }
+private func PowerNeed() { return 75; }
 
 public func NeedRawMaterial(id rawmat_id)
 {

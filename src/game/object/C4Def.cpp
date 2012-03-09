@@ -117,10 +117,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Adjust picture rect
-		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
-			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
-
 		// Check mass
 		if (Mass < 0)
 		{
@@ -477,6 +473,10 @@ bool C4Def::Load(C4Group &hGroup,
 			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
 
+		// Adjust picture rect
+		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
+			PictureRect.Set(0,0,Shape.Wdt*Graphics.Bmp.Bitmap->Scale, Shape.Hgt*Graphics.Bmp.Bitmap->Scale);
+
 		// validate TopFace
 		if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
 		{
@@ -488,6 +488,7 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
+		PictureRect.Default();
 		SolidMask.Default();
 	}
 
@@ -499,65 +500,11 @@ bool C4Def::Load(C4Group &hGroup,
 
 void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
 {
-
-	// default: def picture rect
-	C4Rect fctPicRect = PictureRect;
-	C4Facet fctPicture;
-
-	// if assigned: use object specific rect and graphics
-	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
-
-	if (fSelected)
+	if(fSelected)
 		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
 
 	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
-
-	// specific object color?
-	if (pObj) pObj->PrepareDrawing();
-
-	switch (graphics->Type)
-	{
-	case C4DefGraphics::TYPE_Bitmap:
-		fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-		fctPicture.DrawT(cgo,true,iPhaseX,iPhaseY,trans);
-		break;
-	case C4DefGraphics::TYPE_Mesh:
-		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-		std::auto_ptr<StdMeshInstance> dummy;
-		StdMeshInstance* instance;
-
-		C4Value value;
-		if (pObj)
-		{
-			instance = pObj->pMeshInstance;
-			pObj->GetProperty(P_PictureTransformation, &value);
-		}
-		else
-		{
-			dummy.reset(new StdMeshInstance(*graphics->Mesh));
-			instance = dummy.get();
-			GetProperty(P_PictureTransformation, &value);
-		}
-
-		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			pDraw->SetMeshTransform(&matrix);
-
-		pDraw->SetPerspective(true);
-		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
-		pDraw->SetPerspective(false);
-		pDraw->SetMeshTransform(NULL);
-
-		break;
-	}
-
-	if (pObj) pObj->FinishedDrawing();
-
-	// draw overlays
-	if (pObj && pObj->pGfxOverlay)
-		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, pObj, trans);
+	graphics->Draw(cgo, iColor, pObj, iPhaseX, iPhaseY, trans);
 }
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)

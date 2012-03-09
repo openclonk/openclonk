@@ -194,7 +194,6 @@ func DoStrike(clonk, angle)
 		if(obj->GetOCF() & OCF_Alive)
 		{
 			var damage=5*1000;
-			var f=ApplyShieldFactor(clonk, obj, damage);
 			ApplyWeaponBash(obj, 400, angle);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}

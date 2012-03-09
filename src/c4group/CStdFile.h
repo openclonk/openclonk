@@ -27,10 +27,9 @@
 #include <StdFile.h>
 #include <StdSync.h> // for StdThreadCheck
 #include <StdBuf.h>
+#include <zlib.h> // for gzFile
 
 const int CStdFileBufSize = 4096;
-
-typedef void* gzFile;
 
 class CStdStream
 {

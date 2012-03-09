@@ -116,8 +116,8 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		return true;
 
 	var rand = Random(2)+1;
-	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var arm = "R";
+	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var length = 15;
 	carry_bone = "pos_hand2";
 
@@ -306,7 +306,6 @@ func CheckStrike(iTime)
 
 	var width=10;
 	var height=20;
-	var angle=0;
 
 	for(var obj in FindObjects(Find_AtRect(offset_x - width/2, offset_y - height/2, width, height),
 							   Find_NoContainer(),

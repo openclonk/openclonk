@@ -148,6 +148,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_MouseSelection           "~MouseSelection" // int iByPlr
 #define PSF_MouseSelectionAlt        "~MouseSelectionAlt" // int iByPlr
 #define PSF_MouseDragDrop            "~MouseDragDrop" // int iPlr, C4Object *source, C4Object *target
+#define PSF_MouseHover               "~MouseHover" // int iPlr, C4Object* old, C4Object* new, C4Object* drag
 
 // Proplist
 

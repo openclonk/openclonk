@@ -5,6 +5,7 @@
 	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
 --*/
 
+#include Library_Ownable
 #include Library_Producer
 
 public func Construction()
@@ -22,12 +23,15 @@ public func Initialize()
 
 /*-- Interaction --*/
 
+// Sawmill can't be accessed as a container.
+public func IsContainer() { return false; }
+
 // Automatically search for trees in front of sawmill
 // Temporary solution?
 protected func FindTrees()
 {
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")));
-	if (!tree) return;
+	if (!tree || GetCon() < 100) return;
 
 	Saw(tree);
 }
@@ -57,7 +61,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime() { return 100; }
-private func PowerNeed(id product) { return 100; }
+private func PowerNeed() { return 100; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
@@ -83,8 +87,11 @@ public func OnProductionHold(id product)
 
 public func OnProductionContinued(id product)
 {
-	SpinOn();
-	AddEffect("Sawing", this, 100, 1, this);
+	if (!GetEffect("Sawing", this))
+	{
+		SpinOn();
+		AddEffect("Sawing", this, 100, 1, this);
+	}
 }
 
 public func OnProductionFinish(id product)
@@ -121,10 +128,11 @@ public func OnProductEjection(object product)
 protected func RejectCollect(id id_def, object collect)
 {
 	// Don't collect wood
-	if(id_def == Wood) return true;
-	if(collect->~IsSawmillIngredient() || CheckWoodObject(collect)) return false;
-	else
+	if (id_def == Wood) 
 		return true;
+	if (collect->~IsSawmillIngredient() || CheckWoodObject(collect)) 
+		return false;
+	return true;
 }
 
 /*-- Animation --*/

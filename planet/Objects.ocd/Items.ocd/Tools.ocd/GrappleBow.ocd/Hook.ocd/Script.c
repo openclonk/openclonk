@@ -319,7 +319,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 		var angle = rope->GetClonkAngle();
 		var off = rope->GetClonkOff();
 //    off = [0,0];
-    var pos = rope->GetClonkPos();
+    //var pos = rope->GetClonkPos();
     //target->SetPosition(pos[0], pos[1], nil, Rope_Precision);
     target.MyAngle = angle;
     //angle = 0;

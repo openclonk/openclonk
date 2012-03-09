@@ -13,7 +13,7 @@ VertexFriction=50,50,100,100
 Value=180
 Mass=4000
 Components=Rock=6;Metal=3
-Collection=-69,20,20,22
+Collection=-31,9,10,10
 Exclusive=1
 BlastIncinerate=130
 Construction=1

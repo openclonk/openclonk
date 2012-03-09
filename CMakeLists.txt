@@ -41,7 +41,7 @@ separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 ############################################################################
 # User selectable options
 ############################################################################
-option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON) 
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
@@ -56,7 +56,7 @@ if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
 			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
 		endif()
 	else()
-		
+
 	endif()
 else()
 	SET(USE_DIRECTX OFF)
@@ -324,6 +324,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4GameOptions.h
 	src/gui/C4GameOverDlg.cpp
 	src/gui/C4GameOverDlg.h
+	src/gui/C4GfxErrorDlg.cpp
+	src/gui/C4GfxErrorDlg.h
 	src/gui/C4GuiButton.cpp
 	src/gui/C4GuiCheckBox.cpp
 	src/gui/C4GuiComboBox.cpp
@@ -874,14 +876,14 @@ if(APPLE)
 		src/res/Ift_Trans.png
 		src/res/NoIft_Trans.png
 	)
-	
+
 	# Add icon resources
 	set_source_files_properties(
 		${OC_BUNDLE_RESOURCES}
 		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
 	)
 	list(APPEND OC_SYSTEM_SOURCES ${OC_BUNDLE_RESOURCES})
-	
+
 endif()
 
 ############################################################################
@@ -925,6 +927,7 @@ add_executable(netpuncher EXCLUDE_FROM_ALL
 )
 
 add_executable(c4script
+	include/c4script/c4script.h
 	src/c4group/C4Group.cpp
 	src/c4group/C4Group.h
 	src/c4group/CStdFile.cpp
@@ -955,6 +958,7 @@ add_executable(c4script
 	src/script/C4StringTable.cpp
 	src/script/C4PropList.cpp
 	src/script/C4ScriptHost.cpp
+	src/script/C4ScriptStandalone.cpp
 	src/script/C4ValueArray.cpp
 	src/script/C4Value.cpp
 	src/script/C4ValueMap.cpp
@@ -988,7 +992,7 @@ if(HAVE_PTHREAD)
 		pthread
 	)
 	target_link_libraries(c4script
-		pthread	
+		pthread
 	)
 endif()
 if(USE_CONSOLE)
@@ -1018,7 +1022,7 @@ if (APPLE)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 endif()
 
-# This expands some variables in Info.plist as a side-effect. XCode might then 
+# This expands some variables in Info.plist as a side-effect. XCode might then
 # expand a second time, using the same syntax. Try not to get confused by this!
 set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
@@ -1274,11 +1278,11 @@ ENDIF()
 # TODO: Check for convert at configure step?
 install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
 install(CODE "
-EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
+EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
 IF(NOT \${CONVERT_RESULT} EQUAL 0)
 	MESSAGE(SEND_ERROR \"Creating icon failed\")
 ENDIF()
-FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/openclonk)
+FILE(MAKE_DIRECTORY $ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk)
 ")
 
 set(OC_C4GROUPS
@@ -1305,7 +1309,7 @@ foreach(group ${OC_C4GROUPS})
 	else()
 		INSTALL(CODE "
 		MESSAGE(\"Packing and installing ${group}...\")
-		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
+		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
 		IF(NOT \${PACK_RESULT} EQUAL 0)
 			MESSAGE(SEND_ERROR \"Packing ${group} failed\")
 		ENDIF()

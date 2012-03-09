@@ -676,10 +676,15 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
 #endif
 	// Get hardcoded system material indices
+	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(Game.C4S.Landscape.Material));
+	if(!earth_entry)
+		{ LogFatal(FormatString("Earth material \"%s\" not found!", Game.C4S.Landscape.Material).getData()); return false; }
+
 	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
 	MTunnel  = Get("Tunnel");
 	MWater   = Get("Water");
-	MEarth   = Get(Game.C4S.Landscape.Material);
+	MEarth   = Get(earth_entry->GetMaterialName());
+
 	if ((MVehic==MNone) || (MTunnel==MNone))
 		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }
 	return true;

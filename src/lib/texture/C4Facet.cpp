@@ -117,6 +117,45 @@ void C4Facet::DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY
 	              true,pTransform);
 }
 
+void C4Facet::DrawTUnscaled(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
+{
+	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
+
+	pDraw->BlitUnscaled(Surface,
+	                    float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
+	                    sfcTarget,
+	                    iX,iY,Wdt,Hgt,true,pTransform);
+}
+
+void C4Facet::DrawTUnscaled(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
+{
+	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
+
+	// Drawing area
+	C4Facet ccgo = cgo;
+	// Adjust for fixed aspect ratio
+	if (fAspect)
+	{
+		// By height
+		if (100*cgo.Wdt/Wdt<100*cgo.Hgt/Hgt)
+		{
+			ccgo.Hgt=Hgt*cgo.Wdt/Wdt;
+			ccgo.Y+=(cgo.Hgt-ccgo.Hgt)/2;
+		}
+		// By width
+		else if (100*cgo.Hgt/Hgt<100*cgo.Wdt/Wdt)
+		{
+			ccgo.Wdt=Wdt*cgo.Hgt/Hgt;
+			ccgo.X+=(cgo.Wdt-ccgo.Wdt)/2;
+		}
+	}
+
+	pDraw->BlitUnscaled(Surface,
+	                    float(X+Wdt*iPhaseX),float(Y+Hgt*iPhaseY),float(Wdt),float(Hgt),
+	                    ccgo.Surface,ccgo.X,ccgo.Y,ccgo.Wdt,ccgo.Hgt,
+	                    true,pTransform);
+}
+
 void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, bool fTransparent)
 {
 	// Valid parameter check

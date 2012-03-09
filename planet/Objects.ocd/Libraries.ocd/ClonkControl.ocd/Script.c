@@ -61,6 +61,14 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+/* returns all items in the inventory */
+public func GetItems()
+{
+	var inv = inventory[:];
+	RemoveHoles(inv);
+	return inv;
+}
+
 // For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
 public func HUDShowItems() { return true; }
 
@@ -770,10 +778,10 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") this->~ControlThrow(target,tx,ty);
-	else if (command == "Jump") this->~ControlJump();
+	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
+	else if (command == "Jump") return this->~ControlJump();
 	// else standard command
-	else SetCommand(command,target,tx,ty,target2);
+	else return SetCommand(command,target,tx,ty,target2);
 	
 	// this function might be obsolete: a normal SetCommand does make a callback to
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
@@ -1121,8 +1129,6 @@ public func CanEnter()
 // Handles enter and exit
 private func ObjectControlEntrance(int plr, int ctrl)
 {
-	var proc = GetProcedure();
-
 	// enter
 	if (ctrl == CON_Enter)
 	{

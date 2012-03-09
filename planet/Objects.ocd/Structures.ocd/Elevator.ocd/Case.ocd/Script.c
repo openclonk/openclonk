@@ -1,5 +1,7 @@
 /*-- Elevator case --*/
 
+#include Library_PowerConsumer
+
 local elevator;
 
 func Connect(object connect_to)
@@ -7,6 +9,9 @@ func Connect(object connect_to)
 	elevator = connect_to;
 	SetComDir(COMD_None);
 	SetAction("Drive");
+	
+	// request power
+	MakePowerConsumer(50);
 }
 
 /* Movement behaviour */
@@ -14,6 +19,40 @@ func Connect(object connect_to)
 local move_to, // Y-coordinate to move to on its own
       move_to_delay, // Delay before moving
       move_to_target; // Target to move to
+
+// for the position
+func GetActualPowerConsumer()
+{
+	return elevator;
+}
+
+// the lift may not need power when not used
+func QueryWaivePowerRequest()
+{
+	if(!movement && !drill)
+		return 10;
+	else return 0;
+}
+
+func OnNotEnoughPower()
+{
+	// Stop movement if moving
+	Halt();
+	movement = 0;
+	ClearMoveTo();
+	if (drill)
+	{
+		SetAction("Drive");
+		Sound("ElevatorDrilling", nil, nil, nil, -1);
+		drill = false;
+	}
+	return _inherited(...);
+}
+
+func OnEnoughPower()
+{
+	return _inherited(...);
+}
 
 func Movement() // TimerCall
 {
@@ -24,22 +63,9 @@ func Movement() // TimerCall
 		if (!ActIdle()) SetAction("Idle");
 		return;
 	}
-	// Check for power
-	if (!elevator->CheckPower(1, true))
-	{
-		// Stop movement if moving
-		Halt();
-		movement = 0;
-		ClearMoveTo();
-		if (drill)
-		{
-			SetAction("Drive");
-			Sound("ElevatorDrilling", nil, nil, nil, -1);
-			drill = false;
-		}
-		return;
-	}
-
+	
+	
+	
 	// Fetch vehicles
 	for (var vehicle in FindObjects(Find_InRect(-5, -5, 10, 10), Find_Category(C4D_Vehicle), Find_NoContainer(), Find_Func("FitsInElevator")))
 	{
@@ -50,7 +76,11 @@ func Movement() // TimerCall
 		vehicle->SetR();
 		AddEffect("ElevatorControl", vehicle, 30, 5, nil, nil, this);
 	}
-
+	
+	// no power?
+	if(!CurrentlyHasPower())
+		return;
+	
 	// Start or stop drilling
 	if (drill && GetAction() == "Drive")
 	{
@@ -86,8 +116,6 @@ func Movement() // TimerCall
 		{
 			if (Abs(GetYDir()) == 1) elevator->StartEngine();
 			SetYDir(GetYDir() + movement);
-			// Elevator consumes 1 power per frame
-			elevator->CheckPower(1);
 			return;
 		}
 	}
@@ -122,7 +150,6 @@ func Movement() // TimerCall
 		if (move_to > GetY() && GetYDir() < this.RushSpeed)
 			SetYDir(GetYDir() + 1);
 		if (Abs(GetYDir()) == 1) elevator->StartEngine();
-		elevator->CheckPower(1);
 		return;
 	}
 

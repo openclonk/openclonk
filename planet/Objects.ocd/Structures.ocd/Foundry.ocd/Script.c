@@ -5,8 +5,11 @@
 	Melts iron ore to metal, using some sort of fuel.
 --*/
 
-
+#include Library_Ownable
 #include Library_Producer
+
+// does not need power
+func PowerNeed() { return 0; }
 
 public func Construction()
 {

@@ -1,6 +1,7 @@
 /*-- Wind generator --*/
 
-#include Library_PowerGenerator
+#include Library_Ownable
+#include Library_PowerProducer
 
 public func GetCapacity() { return 500; }
 public func GetGeneratorPriority() { return 256; }
@@ -8,7 +9,7 @@ public func GetGeneratorPriority() { return 256; }
 /* Initialisierung */
 
 local wind_anim;
-
+local last_wind;
 protected func Construction()
 {
 	SetProperty("MeshTransformation",Trans_Mul(Trans_Rotate(RandomX(-15,15),0,1,0), Trans_Translate(1200,0,0)));
@@ -25,8 +26,17 @@ protected func Initialize()
 
 func Wind2Turn()
 {
-	DoPower(Abs(GetWind()/3));
-
+	if(GetCon()  < 100) return;
+	
+	var power = Abs(GetWind());
+	if(power < 5) power = 0;
+	else power = Max(((power + 5) / 25), 1) * 50;
+	
+	if(last_wind != power)
+	{
+		last_wind = power;
+		MakePowerProducer(last_wind);
+	}
 	// Fade linearly in time until next timer call
 	var start = 0;
 	var end = GetAnimationLength("Turn");

@@ -33,7 +33,7 @@
 
 namespace
 {
-	bool VertexDeclarationIsSane(const boost::ptr_vector<Ogre::Mesh::ChunkGeometryVertexDeclElement> &decl)
+	bool VertexDeclarationIsSane(const boost::ptr_vector<Ogre::Mesh::ChunkGeometryVertexDeclElement> &decl, const char *filename)
 	{
 		bool semanticSeen[Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_MAX + 1] = { false };
 		BOOST_FOREACH(Ogre::Mesh::ChunkGeometryVertexDeclElement element, decl)
@@ -43,6 +43,11 @@ namespace
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Texcoords:
 				// Normally, you can use multiple texture coordinates, but we currently support only one.
 				// So complain if we get multiple sets.
+				if (semanticSeen[element.semantic])
+				{
+					DebugLogF("[FIXME] %s: Vertex declaration with multiple sets of texture coordinates found; game will only use the first.", filename && *filename ? filename : "<unknown>");
+				}
+				break;
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Position:
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Normals:
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Diffuse:
@@ -93,9 +98,9 @@ namespace
 		}
 	}
 
-	std::vector<StdSubMesh::Vertex> ReadSubmeshGeometry(const Ogre::Mesh::ChunkGeometry &geo)
+	std::vector<StdSubMesh::Vertex> ReadSubmeshGeometry(const Ogre::Mesh::ChunkGeometry &geo, const char *filename)
 	{
-		if (!VertexDeclarationIsSane(geo.vertexDeclaration))
+		if (!VertexDeclarationIsSane(geo.vertexDeclaration, filename))
 			throw Ogre::Mesh::InvalidVertexDeclaration();
 
 		// Get maximum size of a vertex according to the declaration
@@ -144,6 +149,7 @@ namespace
 			vertex.nx = vertex.ny = vertex.nz = 0;
 			vertex.x = vertex.y = vertex.z = 0;
 			vertex.u = vertex.v = 0;
+			bool read_tex = false;
 			// Read vertex declaration
 			BOOST_FOREACH(Ogre::Mesh::ChunkGeometryVertexDeclElement element, geo.vertexDeclaration)
 			{
@@ -162,8 +168,11 @@ namespace
 					vertex.nz = values[2];
 					break;
 				case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Texcoords:
-					vertex.u = values[0];
-					vertex.v = values[1];
+					if (!read_tex) {
+						vertex.u = values[0];
+						vertex.v = values[1];
+						read_tex = true;
+					}
 					break;
 				default:
 					// We ignore unhandled element semantics.
@@ -242,7 +251,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 			sm.Faces[face].Vertices[2] = csm.faceVertices[face * 3 + 2];
 		}
 		Ogre::Mesh::ChunkGeometry &geo = *(csm.hasSharedVertices ? cmesh.geometry : csm.geometry);
-		sm.Vertices = ReadSubmeshGeometry(geo);
+		sm.Vertices = ReadSubmeshGeometry(geo, filename);
 
 		// Read bone assignments
 		std::vector<Ogre::Mesh::BoneAssignment> &boneAssignments = (csm.hasSharedVertices ? cmesh.boneAssignments : csm.boneAssignments);

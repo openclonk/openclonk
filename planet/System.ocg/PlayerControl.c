@@ -204,7 +204,6 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	
 	// Count down from EffectCount, in case effects get deleted
 	var i = GetEffectCount("*Control*", this), iEffect;
-	var res;
 	while (i--)
 		{
 		iEffect = GetEffect("*Control*", this, i);
@@ -465,6 +464,21 @@ global func ObjectComLetGo(int vx, int vy)
 	return true;
 }
 
+/* Mouse Hovering */
+
+// Engine callback when the mouse hovers over an object (entering) or stops hovering over an object (leaving).
+// Either leaving, entering or both are set. They can be nil, but never both at the same time.
+// dragged is an object being drag(&not dropped yet)
+global func MouseHover(int player, object leaving, object entering, object dragged)
+{
+	// Leaving the hovering zone should be processed first.
+	if(leaving)
+		leaving->~OnMouseOut(player, dragged);
+	// Then process entering a new hovering zone. 
+	if(entering)
+		entering->~OnMouseOver(player, dragged);
+	return true;
+}
 
 /* Drag & Drop */
 

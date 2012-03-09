@@ -58,7 +58,7 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 		if (!Hostile(player, GetPlayerByIndex(i)))
 			count++;		
 	}
-	var share = GetWealth(player) / count;
+	//var share = GetWealth(player) / count;
 
 	// Add player to new team, i.e. add his wealth.
 	// TODO Implement

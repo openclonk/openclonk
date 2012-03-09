@@ -165,12 +165,12 @@ private func GetItemPosition(int n, int total)
 	// Packing 7 or less circles.
 	if (total <= 7)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
 		else
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 3);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 3);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 3);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 3);
 			return [x, y];
 		}
 	}
@@ -178,18 +178,18 @@ private func GetItemPosition(int n, int total)
 	// Packing 19 or less circles.
 	if (total <= 19)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
-		else if (n <= 7)
+		else if (n < 7)
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 5);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 5);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 5);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 5);
 			return [x, y];
 		}
 		else
 		{
-			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 40);
-			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 40);
+			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 40);
+			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 40);
 			return [x, y];
 		}		
 	}
@@ -197,24 +197,24 @@ private func GetItemPosition(int n, int total)
 	// Packing 37 or less circles.
 	if (total <= 37)
 	{
-		if (n == 1)
+		if (n == 7)
 			return [0, 0];
-		else if (n <= 7)
+		else if (n < 7)
 		{	
-			var x = Cos(60 * (n-1), 2 * MENU_Radius / 7);
-			var y = -Sin(60 * (n-1), 2 * MENU_Radius / 7);
+			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 7);
+			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 7);
 			return [x, y];
 		}
 		else if (n <= 19)
 		{
-			var x = Cos(30 * (n-7) + 15, 31 * MENU_Radius / 56);
-			var y = -Sin(30 * (n-7) + 15, 31 * MENU_Radius / 56);
+			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 56);
+			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 56);
 			return [x, y];
 		}	
 		else
 		{
-			var x = Cos(30 * (n-19), 61 * MENU_Radius / 72);
-			var y = -Sin(30 * (n-19), 61 * MENU_Radius / 72);
+			var x = -Cos(30 * (n-17), 61 * MENU_Radius / 72);
+			var y = -Sin(30 * (n-17), 61 * MENU_Radius / 72);
 			return [x, y];
 		}		
 	}
@@ -333,7 +333,6 @@ public func OnItemDropped(object drop_item, object on_item)
 	if (!menu_commander) return;
 	
 	// Forward to commander.
-	// Log("Item dropped %s", drop_item->GetName());
 	return menu_commander->~OnItemDropped(this, drop_item, on_item);
 }
 
@@ -342,7 +341,24 @@ public func OnItemDragDone(object drag_item, object on_item)
 {
 	if (!menu_commander) return;
 	
-	// Log("Item dragged %s", drag_item->GetName());
 	// Forward to commander.
 	return menu_commander->~OnItemDragDone(this, drag_item, on_item);
+}
+
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	if (!menu_commander) return;
+		
+	// Forward to commander.
+	return menu_commander->~OnMouseOverItem(this, over_item, dragged_item);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	if (!menu_commander) return;
+		
+	// Forward to commander.
+	return menu_commander->~OnMouseOutItem(this, out_item, dragged_item);
 }

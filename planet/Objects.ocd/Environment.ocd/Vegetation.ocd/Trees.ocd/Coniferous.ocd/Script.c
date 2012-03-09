@@ -3,10 +3,12 @@
 #include Library_Plant
 
 private func SeedAreaSize() { return 400; }
+private func SeedChance() {	return 50; }
+private func SeedAmount() { return 12; }
 
 func Construction()
 {
-	StartGrowth(1);
+	StartGrowth(5);
 	inherited(...);
 }
 

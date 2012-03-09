@@ -1,0 +1,2 @@
+Name=BurningBattery
+Description=A part of a compensator!

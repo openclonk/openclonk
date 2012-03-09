@@ -575,80 +575,95 @@ void C4MouseControl::UpdateCursorTarget()
 {
 	int32_t iLastCursor = Cursor;
 
-	// Scrolling: no other target
-	if (Scrolling) { TargetObject=NULL; return; }
+	C4Object* OldTargetObject = TargetObject;
 
-	// On target region
-	if (TargetRegion)
+	if (Scrolling)
 	{
+		// Scrolling: no other target
+		TargetObject=NULL;
+	}
+	else if(TargetRegion)
+	{
+		// On target region
 		TargetObject=NULL;
 		if (Help) Cursor=C4MC_Cursor_Help;
-		return;
-	}
-
-	// Target object
-	TargetObject=GetTargetObject();
-	if (TargetObject && FogOfWar && !(TargetObject->Category & C4D_IgnoreFoW)) TargetObject = NULL;
-
-	// Movement
-	if (!FogOfWar && !IsPassive()) Cursor=C4MC_Cursor_Crosshair;
-
-	// Target action
-	if (TargetObject && !IsPassive())
-	{
-		// default cursor for object; also set if not in FoW
-		Cursor=C4MC_Cursor_Crosshair;
-
-		// select custom region. Can select an object if it does not have the MD_NoClick
-		// flag set. If we are currently dragging then selection depends on it being a drop target.
-		bool CanSelect;
-		if(Drag == C4MC_Drag_Script)
-			CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DropTarget) != 0;
-		else
-			CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_NoClick) == 0;
-
-		if ( (TargetObject->Category & C4D_MouseSelect) && CanSelect)
-			Cursor=C4MC_Cursor_Select;
-		else
-			TargetObject = NULL;
-	}
-
-	// Help
-	if (Help)
-		Cursor=C4MC_Cursor_Help;
-	// passive cursor
-	else if (IsPassive())
-		Cursor=C4MC_Cursor_Region;
-
-	// Time on target: caption
-	if (Cursor==iLastCursor)
-	{
-		TimeOnTargetObject++;
-		if (TimeOnTargetObject>=C4MC_Time_on_Target)
-		{
-			const char* idCaption = 0;
-			const char *szName = "";
-			bool fDouble = false;
-			if (TargetObject) szName=TargetObject->GetName();
-			// Target caption by cursor
-			switch (Cursor)
-			{
-			case C4MC_Cursor_Select: idCaption="IDS_CON_SELECT"; break;
-			case C4MC_Cursor_Help: idCaption="IDS_CON_NAME"; break;
-			}
-			// Set caption
-			if (idCaption) if (!KeepCaption)
-				{
-					// Caption by cursor
-					Caption.Format(LoadResStr(idCaption), szName);
-					if (fDouble) { Caption.AppendChar('|'); Caption.Append(LoadResStr("IDS_CON_DOUBLECLICK")); }
-					IsHelpCaption = false;
-				}
-		}
 	}
 	else
-		TimeOnTargetObject=0;
+	{
+		// Target object
+		TargetObject=GetTargetObject();
+		if (TargetObject && FogOfWar && !(TargetObject->Category & C4D_IgnoreFoW)) TargetObject = NULL;
 
+		// Movement
+		if (!FogOfWar && !IsPassive()) Cursor=C4MC_Cursor_Crosshair;
+
+		// Target action
+		if (TargetObject && !IsPassive())
+		{
+			// default cursor for object; also set if not in FoW
+			Cursor=C4MC_Cursor_Crosshair;
+
+			// select custom region. Can select an object if it does not have the MD_NoClick
+			// flag set. If we are currently dragging then selection depends on it being a drop target.
+			bool CanSelect;
+			if(Drag == C4MC_Drag_Script)
+				CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DropTarget) != 0;
+			else
+				CanSelect = (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_NoClick) == 0;
+
+			if ( (TargetObject->Category & C4D_MouseSelect) && CanSelect)
+				Cursor=C4MC_Cursor_Select;
+			else
+				TargetObject = NULL;
+		}
+
+		// Help
+		if (Help)
+			Cursor=C4MC_Cursor_Help;
+		// passive cursor
+		else if (IsPassive())
+			Cursor=C4MC_Cursor_Region;
+
+		// Time on target: caption
+		if (Cursor==iLastCursor)
+		{
+			TimeOnTargetObject++;
+			if (TimeOnTargetObject>=C4MC_Time_on_Target)
+			{
+				const char* idCaption = 0;
+				const char *szName = "";
+				bool fDouble = false;
+				if (TargetObject) szName=TargetObject->GetName();
+				// Target caption by cursor
+				switch (Cursor)
+				{
+				case C4MC_Cursor_Select: idCaption="IDS_CON_SELECT"; break;
+				case C4MC_Cursor_Help: idCaption="IDS_CON_NAME"; break;
+				}
+				// Set caption
+				if (idCaption) if (!KeepCaption)
+					{
+						// Caption by cursor
+						Caption.Format(LoadResStr(idCaption), szName);
+						if (fDouble) { Caption.AppendChar('|'); Caption.Append(LoadResStr("IDS_CON_DOUBLECLICK")); }
+						IsHelpCaption = false;
+					}
+			}
+		}
+		else
+			TimeOnTargetObject=0;
+	}
+
+	// Make a script callback if the object being hovered changes
+	if(OldTargetObject != TargetObject)
+	{
+		// TODO: This might put a heavy load on the network, depending on the number of
+		// selectable objects around. If it turns out to be a problem we might want to
+		// deduce these hover callbacks client-side instead.
+		// Or, make sure to send this at most once per control frame.
+		Game.Input.Add(CID_Script, new C4ControlScript(
+		                 FormatString("%s(%d,Object(%d),Object(%d),Object(%d))", PSF_MouseHover, (int)Player, OldTargetObject ? (int)(OldTargetObject->Number) : 0, TargetObject ? (int)(TargetObject->Number) : 0, DragObject ? (int)(DragObject->Number) : 0).getData()));
+	}
 }
 
 int32_t C4MouseControl::UpdateSingleSelection()
@@ -770,6 +785,7 @@ void C4MouseControl::LeftUp()
 {
 	// Update status flag
 	LeftButtonDown=false;
+	if(!RightButtonDown) DownTarget = NULL;
 	// Ignore left up after double click
 	if (LeftDoubleIgnoreUp) { LeftDoubleIgnoreUp=false; return; }
 	// Evaluate by drag status
@@ -824,8 +840,6 @@ void C4MouseControl::DragNone()
 	if ( (LeftButtonDown || RightButtonDown)
 	     && ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
 	{
-		// don't begin dragging from FoW; unless it's a menu
-		if (FogOfWar && DownCursor != C4MC_Cursor_Region) return;
 		bool fAllowDrag = true;
 		switch (DownCursor)
 		{
@@ -842,21 +856,20 @@ void C4MouseControl::DragNone()
 			break;
 		}
 		// check if target object allows scripted dragging
-		if (fAllowDrag && TargetObject)
+		if (fAllowDrag && DownTarget && (!FogOfWar || (DownTarget->Category & C4D_IgnoreFoW)))
 		{
 			C4Object *drag_image_obj; C4ID drag_image_id;
 
 			// Drag only if MD_SOURCE is set and drag image is present
-			if ( (TargetObject->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
-			      TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
-			//if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
+			if ( (DownTarget->GetPropertyInt(P_MouseDrag) & C4MC_MD_DragSource) &&
+			      DownTarget->GetDragImage(&drag_image_obj, &drag_image_id))
 			{
 				Drag=C4MC_Drag_Script;
 
 				if(drag_image_obj) DragImageObject = drag_image_obj;
 				else DragImageDef = C4Id2Def(drag_image_id);
 
-				DragObject = TargetObject;
+				DragObject = DownTarget;
 			}
 		}
 
@@ -906,6 +919,8 @@ void C4MouseControl::RightUp()
 {
 	// Update status flag
 	RightButtonDown=false;
+	if(!LeftButtonDown) DownTarget = NULL;
+
 	// Evaluate by drag status
 	switch (Drag)
 	{

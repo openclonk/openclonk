@@ -62,6 +62,8 @@ map Goldmine {
  		};
  		RandomMat & overlay { mat=Earth; tex=earth_rough; };
 		RandomMat & overlay { mat=Earth; tex=earth_dry; };
+		RandomSpots & overlay { mat=Earth; tex=earth_topsoil; };
+ 		RandomSpots & overlay { mat=Earth; tex=earth_midsoil; };
 		RandomSpots & overlay { mat=Coal; tex=coal; };
  		RandomSpots & overlay { mat=Sulphur; tex=sulphur; };
 		RandomSpots & overlay { mat=Ore; tex=Ore; };
@@ -71,6 +73,7 @@ map Goldmine {
  			x=0; y=58; wdt=100; hgt=12;
  			turbulence=10; lambda=3;
  			loosebounds=1; mask=1;
+ 			RandomMat & overlay { mat=Earth; tex=earth_topsoil; }; 
  			RandomMat & overlay { mat=Coal; tex=coal; };
  			RandomMat & overlay { mat=Sulphur; tex=sulphur; };
  		}; 		
@@ -79,8 +82,10 @@ map Goldmine {
  			x=0; y=72; wdt=100; hgt=12;
  			turbulence=10; lambda=3;
  			loosebounds=1; mask=1;
+ 			RandomMat & overlay { mat=Earth; tex=earth_midsoil; };
  			RandomMat & overlay { mat=Rock; tex=rock; };
  			RandomMat & overlay { mat=Ore; tex=ore; };
+ 			RandomSpots & overlay { mat=Rock; tex=rock_cracked; };
  			RandomSpots & overlay { mat=Rock; tex=rock_cracked; };
  			RandomSpots & overlay { mat=Rock; tex=rock_cracked; };
  			RandomSpots & overlay { mat=Rock; tex=rock_cracked; };
@@ -95,6 +100,7 @@ map Goldmine {
  			RandomSpots & overlay { mat=Gold; tex=gold; };
  			RandomSpots & overlay { mat=Gold; tex=gold; };
  			RandomSpots & overlay { mat=Gold; tex=gold; };
+ 			RandomMat & overlay { mat=Gold; tex=gold; };
  			RandomMat & overlay { mat=Gold; tex=gold; };
  		}; 	
  		// Border of earth and sand.

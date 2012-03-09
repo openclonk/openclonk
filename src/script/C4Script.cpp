@@ -385,15 +385,15 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 {
 	// find first occurance of first parameter in array
-	// support GetIndexOf(x, 0)
-	if (!pPars[1]) return C4VInt(-1);
-	// if the second param is nonzero, it must be an array
-	const C4ValueArray * pArray = pPars[1].getArray();
+	// support GetIndexOf(0, x)
+	if (!pPars[0]) return C4VInt(-1);
+	// if the first param is nonzero, it must be an array
+	const C4ValueArray * pArray = pPars[0].getArray();
 	if (!pArray)
-		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 1 cannot be converted to array");
+		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 0 cannot be converted to array");
 	int32_t iSize = pArray->GetSize();
 	for (int32_t i = 0; i<iSize; ++i)
-		if (pPars[0] == pArray->GetItem(i))
+		if (pPars[1] == pArray->GetItem(i))
 			// element found
 			return C4VInt(i);
 	// element not found
@@ -614,7 +614,7 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
 
 	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
-	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
+	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
 
 	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
 

@@ -159,7 +159,6 @@ local last_point;
 
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
 	{
@@ -240,18 +239,6 @@ func GetClonkPos()
 func GetClonkOff()
 {
 	return Vec_Sub(particles[-1][0],last_point);
-	var clonk = objects[1][0];
-	var speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
-	var offset = speed;
-	offset[0] = offset[0]*1000/Rope_Precision;
-	offset[1] = offset[1]*1000/Rope_Precision;
-	if(!ClonkOldSpeed)
-	{
-		ClonkOldSpeed = offset;
-	}
-	var ret = ClonkOldSpeed;
-	ClonkOldSpeed = offset;
-	return ret;
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {

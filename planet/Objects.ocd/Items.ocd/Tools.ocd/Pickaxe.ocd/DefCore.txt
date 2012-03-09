@@ -9,7 +9,6 @@ Vertices=4
 VertexX=0,-4,4,0
 VertexY=-4,-3,-3,4
 VertexFriction=50,100,100,40
-Picture=10,0,64,64
 Value=10
 Mass=20
 Components=Wood=1;Metal=1;

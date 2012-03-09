@@ -149,6 +149,7 @@ src/platform/StdRegistry.h \
 src/platform/StdScheduler.cpp \
 src/platform/StdScheduler.h \
 src/zlib/gzio.c \
+src/zlib/gzio.h \
 src/zlib/zutil.h
 
 clonk_SOURCES = \
@@ -318,6 +319,8 @@ src/gui/C4GameOptions.cpp \
 src/gui/C4GameOptions.h \
 src/gui/C4GameOverDlg.cpp \
 src/gui/C4GameOverDlg.h \
+src/gui/C4GfxErrorDlg.cpp \
+src/gui/C4GfxErrorDlg.h \
 src/gui/C4GuiButton.cpp \
 src/gui/C4GuiCheckBox.cpp \
 src/gui/C4GuiComboBox.cpp \
@@ -534,6 +537,7 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
+thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
 thirdparty/tinyxml/tinyxml.cpp \
@@ -687,6 +691,7 @@ endif
 
 ## c4script shell
 c4script_SOURCES = \
+include/c4script/c4script.h \
 src/lib/C4SimpleLog.cpp \
 src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
@@ -698,6 +703,7 @@ src/script/C4AulParse.cpp \
 src/script/C4StringTable.cpp \
 src/script/C4PropList.cpp \
 src/script/C4ScriptHost.cpp \
+src/script/C4ScriptStandalone.cpp \
 src/script/C4ValueArray.cpp \
 src/script/C4Value.cpp \
 src/script/C4ValueMap.cpp \

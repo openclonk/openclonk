@@ -59,8 +59,8 @@ global func GetTaggedTeamName(int team)
 // Brightens dark colors, to be readable on dark backgrounds.
 global func MakeColorReadable(int color)
 {
-	// Determine alpha.
-	var a = ((color >> 24 & 255) << 24);
+	// Determine alpha. Not needed at the moment
+	//var a = ((color >> 24 & 255) << 24);
 	// Strip alpha.
 	color = color & 16777215;
 	// Calculate brightness: 50% red, 87% green, 27% blue (Max 164 * 255).

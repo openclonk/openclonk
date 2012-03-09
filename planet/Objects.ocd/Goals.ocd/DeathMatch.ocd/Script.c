@@ -59,7 +59,6 @@ protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	var x, y;
 	var pos = FindRelaunchPos(plr);
 	clonk->SetPosition(pos[0], pos[1]);
 	return;

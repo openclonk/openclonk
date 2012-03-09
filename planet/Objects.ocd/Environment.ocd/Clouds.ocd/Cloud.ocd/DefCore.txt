@@ -1,9 +1,7 @@
 [DefCore]
 id=Cloud
 Version=5,2,0,1
-Category=C4D_Vehicle|C4D_Background
-Timer=25
-TimerCall=TimedEvents
+Category=C4D_Vehicle | C4D_Background
 Width=512
 Height=350
 Offset=-256,-175

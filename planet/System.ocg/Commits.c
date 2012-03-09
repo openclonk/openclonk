@@ -127,8 +127,8 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 {
 	var i, j;
 	var rndx, rndy, obj;
-	var mtype, mat;
-	var func, objhgt = id->GetDefCoreVal("Height", "DefCore");
+	var mat;
+	var objhgt = id->GetDefCoreVal("Height", "DefCore");
 	
 	mat = Material(mat_str);
 	// Some failsavety.
@@ -336,4 +336,9 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 		}
 	}
 	return 0; // No location found.
+}
+
+global func MovePosition(int x, int y, int prec)
+{
+	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }

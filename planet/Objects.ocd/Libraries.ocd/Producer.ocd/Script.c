@@ -336,7 +336,8 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
-private func PowerNeed(id product) { return product->~GetPowerNeed(); }
+
+private func PowerNeed() { return 200; }
 
 private func Produce(id product)
 {
@@ -354,7 +355,7 @@ private func Produce(id product)
 	if (!CheckLiquids(product))
 		return false;	
 	// Check need for power.
-	if (!CheckForPower(product))
+	if (!CheckForPower())
 		return false;	
 
 	// Everything available? Start production.
@@ -443,15 +444,9 @@ private func CheckLiquids(id product, bool remove)
 	return true;
 }
 
-private func CheckForPower(id product)
+private func CheckForPower()
 {
-	if (PowerNeed() > 0)
-	{
-		// At least ten percent of the power need must be in the network.
-		if (!CheckPower(PowerNeed() / 10, true))
-			return false;
-	}
-	return true;
+	return true; // always assume that power is available
 }
 
 private func IsProducing()
@@ -463,7 +458,7 @@ private func IsProducing()
 
 protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
 {
-	if (temporary != 0)
+	if (temporary)
 		return 1;
 		
 	// Set product.
@@ -472,47 +467,49 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Set production duration to zero.
 	effect.Duration = 0;
 	
-	// Set energy usage to zero.
-	effect.Energy = 0;
-	
 	// Production is active.
 	effect.Active = true;
-	
-	//Log("Production started on %i", effect.Product);
-	
+
 	// Callback to the producer.
 	this->~OnProductionStart(effect.Product);
+	
+	// consume power
+	if(PowerNeed() > 0)
+		MakePowerConsumer(PowerNeed());
 	
 	return 1;
 }
 
+public func OnNotEnoughPower()
+{
+	var effect = GetEffect("ProcessProduction", this);
+	if(effect)
+	{
+		effect.Active = false;
+		this->~OnProductionHold(effect.Product, effect.Duration);
+	} 
+	else
+		FatalError("Producer effect removed when power still active!");
+	return _inherited(...);
+}
+
+public func OnEnoughPower()
+{
+	var effect = GetEffect("ProcessProduction", this);
+	if(effect)
+	{
+		effect.Active = true;
+		this->~OnProductionContinued(effect.Product, effect.Duration);
+	} 
+	else 
+		FatalError("Producer effect removed when power still active!");
+	return _inherited(...);
+}
+
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
-	// Check if energy is available.
-	if (PowerNeed() > 0)
-	{
-		var eng = PowerNeed() * (effect.Duration + effect.Interval) / ProductionTime();
-		if (CheckPower(eng - effect.Energy))
-		{
-			// Energy available, add to Energy value and continue production.
-			effect.Energy = eng;
-			if (!effect.Active)
-			{
-				this->~OnProductionContinued(effect.Product, effect.Duration);
-				effect.Active = true;
-			}
-		}
-		else
-		{
-			// Hold production if energy is not available, callback to the producer.
-			if (effect.Active)
-			{
-				this->~OnProductionHold(effect.Product, effect.Duration);
-				effect.Active = false;
-			}
-			return 1;
-		}
-	}
+	if (!effect.Active)
+		return 1;
 	
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
@@ -526,10 +523,16 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	return 1;
 }
 
-protected func FxProcessProductionStop(object target, proplist effect, int reason)
+protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
+	if(temp) return;
+	
+	// no need to consume power anymore
+	MakePowerConsumer(0);
+		
 	if (reason != 0)
 		return 1;
+		
 	// Callback to the producer.
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);

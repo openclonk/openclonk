@@ -11,5 +11,5 @@ protected func RejectCollect(id objid, object obj)
 
 public func MaxContentsCount()
 {
-	return 1;
+	return 2;
 }

@@ -228,7 +228,7 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	// Show first four targets with the arrow.
 	if (index == 0)
-		for (target in FindObjects(Find_ID(SwordTarget)))
+		for (var target in FindObjects(Find_ID(SwordTarget)))
 		{
 			var angle = RandomX(-45, 45);
 			if (target->GetY() > 620)

@@ -127,6 +127,7 @@ public:
 		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
 	};
 
+	const std::vector<Vertex>& GetVertices() const { return Vertices; }
 	const Vertex& GetVertex(size_t i) const { return Vertices[i]; }
 	size_t GetNumVertices() const { return Vertices.size(); }
 
@@ -138,7 +139,7 @@ public:
 private:
 	StdSubMesh();
 
-	std::vector<Vertex> Vertices;
+	std::vector<Vertex> Vertices; // Empty if we use shared vertices
 	std::vector<StdMeshFace> Faces;
 
 	const StdMeshMaterial* Material;
@@ -154,8 +155,12 @@ class StdMesh
 public:
 	~StdMesh();
 
+	typedef StdSubMesh::Vertex Vertex;
+
 	const StdSubMesh& GetSubMesh(size_t i) const { return SubMeshes[i]; }
 	size_t GetNumSubMeshes() const { return SubMeshes.size(); }
+
+	const std::vector<Vertex>& GetSharedVertices() const { return SharedVertices; }
 
 	const StdMeshBone& GetBone(size_t i) const { return *Bones[i]; }
 	size_t GetNumBones() const { return Bones.size(); }
@@ -175,6 +180,8 @@ private:
 
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable
+
+	std::vector<Vertex> SharedVertices;
 
 	std::vector<StdSubMesh> SubMeshes;
 	std::vector<StdMeshBone*> Bones; // Master Bone Table
@@ -198,11 +205,12 @@ public:
 		FO_NearestToFarthest
 	};
 
-	StdSubMeshInstance(const StdSubMesh& submesh);
+	StdSubMeshInstance(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
+	void LoadFacesForCompletion(class StdMeshInstance& instance, const StdSubMesh& submesh, float completion);
 
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
-	const StdMeshVertex* GetVertices() const { return &Vertices[0]; }
+	const std::vector<StdMeshVertex>& GetVertices() const { return Vertices; }
 	size_t GetNumVertices() const { return Vertices.size(); }
 
 	// Get face of instance. The instance faces are the same as the mesh faces,
@@ -264,14 +272,15 @@ class StdMeshInstance
 	friend class StdMeshMaterialUpdate;
 	friend class StdMeshUpdate;
 public:
-	StdMeshInstance(const StdMesh& mesh);
+	StdMeshInstance(const StdMesh& mesh, float completion = 1.0f);
 	~StdMeshInstance();
 
 	typedef StdSubMeshInstance::FaceOrdering FaceOrdering;
 
-	//FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
-	void SetFaceOrdering(FaceOrdering ordering);
-	void SetFaceOrderingForClrModulation(uint32_t clrmod);
+	enum AttachMeshFlags {
+		AM_None        = 0,
+		AM_DrawBefore  = 1 << 0
+	};
 
 	// Provider for animation position or weight.
 	class ValueProvider
@@ -412,27 +421,6 @@ public:
 		};
 	};
 
-	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
-	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
-	void StopAnimation(AnimationNode* node);
-
-	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
-	AnimationNode* GetRootAnimationForSlot(int slot);
-	// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
-	// Set new value providers for a node's position or weight - cannot be in
-	// class AnimationNode since we need to mark BoneTransforms dirty.
-	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
-	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
-
-	// Update animations; call once a frame
-	// dt is used for texture animation, skeleton animation is updated via value providers
-	void ExecuteAnimation(float dt);
-
-	enum AttachMeshFlags {
-		AM_None        = 0,
-		AM_DrawBefore  = 1 << 0
-	};
-
 	class AttachedMesh
 	{
 		friend class StdMeshInstance;
@@ -487,6 +475,33 @@ public:
 	typedef std::vector<AttachedMesh*> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
+	//FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
+	void SetFaceOrdering(FaceOrdering ordering);
+	void SetFaceOrderingForClrModulation(uint32_t clrmod);
+
+	const std::vector<StdMeshVertex>& GetSharedVertices() const { return SharedVertices; }
+	size_t GetNumSharedVertices() const { return SharedVertices.size(); }
+
+	// Set completion of the mesh. For incompleted meshes not all faces will be available.
+	void SetCompletion(float completion);
+	float GetCompletion() const { return Completion; }
+
+	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	void StopAnimation(AnimationNode* node);
+
+	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
+	AnimationNode* GetRootAnimationForSlot(int slot);
+	// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
+	// Set new value providers for a node's position or weight - cannot be in
+	// class AnimationNode since we need to mark BoneTransforms dirty.
+	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
+	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
+
+	// Update animations; call once a frame
+	// dt is used for texture animation, skeleton animation is updated via value providers
+	void ExecuteAnimation(float dt);
+
 	// Create a new instance and attach it to this mesh. Takes ownership of denumerator
 	AttachedMesh* AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), uint32_t flags = AM_None);
 	// Attach an instance to this instance. Takes ownership of denumerator. If own_child is true deletes instance on detach.
@@ -536,8 +551,13 @@ protected:
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
 	bool ExecuteAnimationNode(AnimationNode* node);
+	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 
 	const StdMesh* Mesh;
+
+	float Completion; // NoSave
+
+	std::vector<StdMeshVertex> SharedVertices;
 
 	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number

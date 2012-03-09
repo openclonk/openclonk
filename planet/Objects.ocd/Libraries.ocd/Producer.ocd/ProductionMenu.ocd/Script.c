@@ -115,8 +115,6 @@ public func HideProductInfo()
 /* Menu properties */
 
 public func IsProductionMenu() { return true; }
-// UpdateCursor is called
-public func CursorUpdatesEnabled() { return true; }
 
 public func AddQueueItem(object item)
 {
@@ -217,21 +215,6 @@ public func HasCommander(object producer)
 	return false;
 }
 
-// Callback if the mouse is moved
-public func UpdateCursor(int dx, int dy)
-{
-	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
-	if (!item || item->GetMenu() != this)
-	{
-		if (productinfo_shown)
-			HideProductInfo();
-		return;
-	}
-	if (item == productinfo_shown)
-		return;
-	ShowProductInfo(item);
-}
-
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when a click outside the menu has been made.
@@ -307,5 +290,21 @@ public func OnItemDropped(object drop_item, object on_item)
 public func OnItemDragDone(object drag_item, object on_item)
 {
 	return _inherited(drag_item, on_item, ...);
+}
+
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	ShowProductInfo(over_item);
+	
+	return _inherited(over_item, dragged_item, ...);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	HideProductInfo();
+	
+	return _inherited(out_item, dragged_item, ...);
 }
 

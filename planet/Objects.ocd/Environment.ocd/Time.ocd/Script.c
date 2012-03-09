@@ -69,7 +69,7 @@ protected func Initialize()
 	// Create moon and stars.
 	if (FindObject(Find_ID(Environment_Celestial)))
 	{
-		var moon=CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
+		CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 		PlaceStars();
 	}
 	return;

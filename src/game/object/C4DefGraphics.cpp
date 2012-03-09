@@ -160,9 +160,9 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 	try
 	{
 		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader);
+			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else
 			return false;
 		delete[] buf;
@@ -292,6 +292,63 @@ bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 	}
 	// done, success
 	return true;
+}
+
+void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
+{
+	// default: def picture rect
+	C4Rect fctPicRect = pDef->PictureRect;
+	C4Facet fctPicture;
+
+	// if assigned: use object specific rect and graphics
+	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
+
+	// specific object color?
+	if (pObj) pObj->PrepareDrawing();
+
+	switch(Type)
+	{
+	case C4DefGraphics::TYPE_Bitmap:
+		fctPicture.Set(GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
+		fctPicture.DrawTUnscaled(cgo,true,iPhaseX,iPhaseY,trans);
+		break;
+	case C4DefGraphics::TYPE_Mesh:
+		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
+		std::auto_ptr<StdMeshInstance> dummy;
+		StdMeshInstance* instance;
+
+		C4Value value;
+		if (pObj)
+		{
+			instance = pObj->pMeshInstance;
+			pObj->GetProperty(P_PictureTransformation, &value);
+		}
+		else
+		{
+			dummy.reset(new StdMeshInstance(*Mesh, 1.0f));
+			instance = dummy.get();
+			pDef->GetProperty(P_PictureTransformation, &value);
+		}
+
+		StdMeshMatrix matrix;
+		if (C4ValueToMatrix(value, &matrix))
+			pDraw->SetMeshTransform(&matrix);
+
+		pDraw->SetPerspective(true);
+		pDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
+		pDraw->SetPerspective(false);
+		pDraw->SetMeshTransform(NULL);
+
+		break;
+	}
+
+	if (pObj) pObj->FinishedDrawing();
+
+	// draw overlays
+	if (pObj && pObj->pGfxOverlay)
+		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
+			if (pGfxOvrl->IsPicture())
+				pGfxOvrl->DrawPicture(cgo, pObj, trans);
 }
 
 void C4DefGraphics::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
@@ -595,7 +652,7 @@ void C4GraphicsOverlay::UpdateFacet()
 		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
 		else
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 		break;
 
 	case MODE_Action: // graphics of specified action
@@ -630,7 +687,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			C4String* AnimationName = action->GetPropertyStr(P_Animation);
 			if (!AnimationName) return;
 
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh, 1.0f);
 			const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetAnimationByName(AnimationName->GetData());
 			if (!Animation) return;
 
@@ -646,10 +703,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	case MODE_IngamePicture:
 	case MODE_Picture: // def picture
 		fZoomToShape = true;
-		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
-			fctBlit.Set(pSourceGfx->GetBitmap(), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
-		else
-			pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+		// drawn at runtime
 		break;
 
 	case MODE_ExtraGraphics: // like ColorByOwner-sfc
@@ -695,7 +749,9 @@ bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 	}
 	else if (pSourceGfx)
 	{
-		if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+		if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
+			return true;
+		else if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
 			return !!fctBlit.Surface;
 		else
 			return !!pMeshInstance;
@@ -880,6 +936,8 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	// drawing specific object?
 	else if (OverlayObj)
 	{
+		// TODO: Shouldn't have called PrepareDrawing/set ClrModulation here, since 
+		// OverlayObj drawing will do it on its own.
 		if (eMode == MODE_ObjectPicture)
 		{
 			C4Facet fctTarget;
@@ -919,6 +977,27 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			pForObj->pDrawTransform = pPrevTrf;
 		}
 	}
+	else if(eMode == MODE_Picture || eMode == MODE_IngamePicture)
+	{
+		float twdt, thgt;
+		if (fZoomToShape)
+		{
+			twdt = pForObj->Shape.Wdt;
+			thgt = pForObj->Shape.Hgt;
+		}
+		else
+		{
+			twdt = pSourceGfx->pDef->Shape.Wdt;
+			thgt = pSourceGfx->pDef->Shape.Hgt;
+		}
+
+		C4TargetFacet ccgo;
+		ccgo.Set(cgo.Surface, offX-twdt/2, offY-thgt/2, twdt, thgt, cgo.TargetX, cgo.TargetY);
+		C4DrawTransform trf(Transform, offX, offY);
+
+		// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
+		pSourceGfx->Draw(ccgo, pForObj->Color, NULL, iPhase, 0, &trf);
+	}
 	else
 	{
 		// no object specified: Draw from fctBlit
@@ -937,7 +1016,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 
 			fctBlit.DrawT(cgo.Surface, offX - fctBlit.Wdt/2 + fctBlit.TargetX, offY - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
-		else if(eMode == MODE_Base || eMode == MODE_Action)
+		else
 		{
 			C4Def *pDef = pSourceGfx->pDef;
 
@@ -956,34 +1035,6 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				pDraw->SetMeshTransform(&matrix);
 
 			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - pDef->Shape.Wdt/2.0, offY - pDef->Shape.Hgt/2.0, pDef->Shape.Wdt, pDef->Shape.Hgt, pForObj->Color, &trf);
-			pDraw->SetMeshTransform(NULL);
-		}
-		else
-		{
-			C4Def *pDef = pSourceGfx->pDef;
-
-			float twdt, thgt;
-			if (fZoomToShape)
-			{
-				twdt = pForObj->Shape.Wdt;
-				thgt = pForObj->Shape.Hgt;
-			}
-			else
-			{
-				twdt = pDef->Shape.Wdt;
-				thgt = pDef->Shape.Hgt;
-			}
-
-			C4Value value;
-			pDef->GetProperty(P_PictureTransformation, &value);
-			StdMeshMatrix matrix;
-			if (C4ValueToMatrix(value, &matrix))
-				pDraw->SetMeshTransform(&matrix);
-
-			C4DrawTransform trf(Transform, offX, offY);
-			pDraw->SetPerspective(true);
-			pDraw->RenderMesh(*pMeshInstance, cgo.Surface, offX - twdt/2, offY - thgt/2, twdt, thgt, pForObj->Color, &trf);
-			pDraw->SetPerspective(false);
 			pDraw->SetMeshTransform(NULL);
 		}
 	}
@@ -1022,8 +1073,7 @@ void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTransform* trans)
 {
 	assert(IsPicture());
-	// update object color
-	if (pForObj && fctBlit.Surface) fctBlit.Surface->SetClr(pForObj->Color);
+
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 	{
@@ -1037,38 +1087,16 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		if (pMeshInstance)
 			pMeshInstance->SetFaceOrderingForClrModulation(dwClrModulation);
 	}
-	// draw at given rect
-	if (!pMeshInstance)
-	{
-		// the picture we are rendering is the one with trans applied, and the overlay transformation
-		// is applied to the picture we are rendering, so apply it afterwards. Note that
-		// C4BltTransform::operator*= does this = other * this.
-		C4DrawTransform trf(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2);
-		if(trans) trf *= *trans;
 
-		fctBlit.DrawT(cgo, true, iPhase, 0, &trf);
-	}
-	else
-	{
-		C4Def *pDef = pSourceGfx->pDef;
+	// the picture we are rendering is the one with trans applied, and the overlay transformation
+	// is applied to the picture we are rendering, so apply it afterwards. Note that
+	// C4BltTransform::operator*= does this = other * this.
+	C4DrawTransform trf(Transform, cgo.X + cgo.Wdt/2.0f, cgo.Y + cgo.Hgt/2.0f);
+	if(trans) trf *= *trans;
 
-		C4Value value;
-		pDef->GetProperty(P_PictureTransformation, &value);
-		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			pDraw->SetMeshTransform(&matrix);
+	// Don't set pForObj because we don't draw the picture of pForObj, but the picture of another definition on top of pForObj:
+	pSourceGfx->Draw(cgo, pForObj->Color, NULL, iPhase, 0, &trf);
 
-		// the picture we are rendering is the one with trans applied, and the overlay transformation
-		// is applied to the picture we are rendering, so apply it afterwards. Note that
-		// C4BltTransform::operator*= does this = other * this.
-		C4DrawTransform trf(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2);
-		if(trans) trf *= *trans;
-
-		pDraw->SetPerspective(true);
-		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &trf);
-		pDraw->SetPerspective(false);
-		pDraw->SetMeshTransform(NULL);
-	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 	{
@@ -1080,7 +1108,6 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj, C4DrawTrans
 		pDraw->DeactivateBlitModulation();
 	}
 }
-
 
 bool C4GraphicsOverlay::operator == (const C4GraphicsOverlay &rCmp) const
 {

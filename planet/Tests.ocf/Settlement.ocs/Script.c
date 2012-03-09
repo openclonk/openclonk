@@ -22,7 +22,6 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr);
 	clonk->CreateContents(Shovel);
 	var lorry = CreateObject(Lorry, clonk->GetX(), clonk->GetY(), plr);
-	lorry->CreateContents(CableReel, 4);
 	lorry->CreateContents(Pipe, 2);
 	return;
 }

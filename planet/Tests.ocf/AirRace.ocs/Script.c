@@ -126,7 +126,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 	var clonk = GetCrew(plr);
 	var plane = CreateObject(Plane, cp->GetX(), cp->GetY(), plr);
 	clonk->Enter(plane);
-	plane->CreateContents(Bullet);
+	//plane->CreateContents(Bullet); // there is no bullet def
 	var mode = cp->GetCPMode();
 	if (mode & PARKOUR_CP_Start)
 		plane->SetR(90);
@@ -163,9 +163,9 @@ private func FindPlaneAngle(object cp)
 
 protected func GivePlrBonus(int plr, object cp)
 {
-	var plane = GetCursor(plr)->Contained();
-	if (plane && plane->GetID() == Plane)
-		plane->CreateContents(Bullet);
+	//var plane = GetCursor(plr)->Contained();
+	//if (plane && plane->GetID() == Plane)
+		//plane->CreateContents(Bullet); // there is no bullet def
 	return;
 }
 

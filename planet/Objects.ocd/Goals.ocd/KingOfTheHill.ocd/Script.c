@@ -274,9 +274,6 @@ func RefreshScoreboard()
 	SetScoreboardData(SBRD_Caption,SBRD_Points,Format("{{Sword}} / %d", GetPointLimit()),SBRD_Caption);
 	SetScoreboardData(SBRD_Caption,SBRD_Deaths,"{{Clonk}}",SBRD_Caption);
 	
-	
-	var points=GetTeamPoints();
-	
 	for(var cnt=0;cnt<GetPlayerCount();cnt++)
 	{
 		var plr=GetPlayerByIndex(cnt);

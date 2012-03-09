@@ -56,7 +56,6 @@ protected func ControlUse(object clonk, int x, int y)
 		clonk->Message("$TxtConnect$", obj->GetName());
 		return true;
 	}
-	return true;
 }
 
 // Finds all power lines connected to obj (can be nil in local calls).

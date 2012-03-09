@@ -31,7 +31,7 @@ func ControlStop(object clonk, int control)
 		{
 			var effect = GetEffect("ElevatorControl", this);
 			effect.controlled = nil;
-			return effect.case->ControlStop(clonk, control);;
+			return effect.case->ControlStop(clonk, control);
 		}
 	return _inherited(clonk, control);
 }

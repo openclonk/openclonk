@@ -710,11 +710,12 @@ namespace
 		}
 	}
 
-	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
+	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
+		const StdMeshVertex* vertices = instance.GetVertices().empty() ? &mesh_instance.GetSharedVertices()[0] : &instance.GetVertices()[0];
 
 		// Render each pass
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -818,19 +819,28 @@ namespace
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
 			glFrontFace(parity ? GL_CW : GL_CCW);
 
-			switch (pass.CullHardware)
+			if(mesh_instance.GetCompletion() < 1.0f)
 			{
-			case StdMeshMaterialPass::CH_Clockwise:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_BACK);
-				break;
-			case StdMeshMaterialPass::CH_CounterClockwise:
-				glEnable(GL_CULL_FACE);
-				glCullFace(GL_FRONT);
-				break;
-			case StdMeshMaterialPass::CH_None:
+				// Backfaces might be visible when completion is < 1.0f since front
+				// faces might be omitted.
 				glDisable(GL_CULL_FACE);
-				break;
+			}
+			else
+			{
+				switch (pass.CullHardware)
+				{
+				case StdMeshMaterialPass::CH_Clockwise:
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_BACK);
+					break;
+				case StdMeshMaterialPass::CH_CounterClockwise:
+					glEnable(GL_CULL_FACE);
+					glCullFace(GL_FRONT);
+					break;
+				case StdMeshMaterialPass::CH_None:
+					glDisable(GL_CULL_FACE);
+					break;
+				}
 			}
 
 			// Overwrite blend mode with default alpha blending when alpha in clrmod
@@ -861,7 +871,7 @@ namespace
 			// states that "The texture coordinate state for other client texture units
 			// is not updated, regardless of whether the client texture unit is enabled
 			// or not."
-			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
+			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &vertices->nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
@@ -890,7 +900,7 @@ namespace
 					glBindTexture(GL_TEXTURE_2D, have_texture);
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
 
 				// Setup texture coordinate transform
 				glLoadIdentity();
@@ -1114,7 +1124,7 @@ namespace
 
 		// Render each submesh
 		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance, instance.GetSubMesh(i), dwModClr, dwBlitMode, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone
@@ -1228,6 +1238,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 
+	// Mesh extents
+	const float b = fabs(v2.x - v1.x)/2.0f;
+	const float h = fabs(v2.y - v1.y)/2.0f;
+	const float l = fabs(v2.z - v1.z)/2.0f;
+
 	if (!fUsePerspective)
 	{
 		// Orthographic projection. The orthographic projection matrix
@@ -1303,6 +1318,14 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
 		glTranslatef(1.0f, -1.0f, 0.0f);
 
+		// Fix for the case when we have a non-square target
+		const float ta = twdt / thgt;
+		const float ma = b / h;
+		if(ta <= 1 && ta/ma <= 1)
+			glScalef(std::max(ta, ta/ma), std::max(ta, ta/ma), 1.0f);
+		else if(ta >= 1 && ta/ma >= 1)
+			glScalef(std::max(1.0f/ta, ma/ta), std::max(1.0f/ta, ma/ta), 1.0f);
+
 		// Apply perspective projection. After this, x and y range from
 		// -1 to 1, and this is mapped into tx/ty/twdt/thgt by the above code.
 		// Aspect is 1.0f which is accounted for above.
@@ -1323,19 +1346,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	}
 	else
 	{
-		// Mesh extents
-		const float b = fabs(v2.x - v1.x)/2.0f;
-		const float h = fabs(v2.y - v1.y)/2.0f;
-		const float l = fabs(v2.z - v1.z)/2.0f;
-
 		// Setup camera position so that the mesh with uniform transformation
-		// fits well into the rectangle twdt/thgt (without distortion).
-		float EyeR;
-		if (thgt < twdt)
-			EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV * twdt/thgt);
-		else
-			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
-
+		// fits well into a square target (without distortion).
+		const float EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV);
 		const float EyeX = MeshCenter.x;
 		const float EyeY = MeshCenter.y;
 		const float EyeZ = MeshCenter.z + EyeR;
@@ -1415,6 +1428,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+	glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
 
@@ -1870,8 +1884,11 @@ bool CStdGL::RestoreDeviceObjects()
 	RenderTarget = pApp->pWindow->pSurface;
 
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	if (!GLEW_VERSION_1_3)
-	{
+	// Check for GL 1.2 and two functions from 1.3 we need.
+	if( !GLEW_VERSION_1_2 ||
+		glActiveTexture == NULL ||
+		glClientActiveTexture == NULL
+	) {
 		return Error("  gl: OpenGL Version 1.3 or higher required. A better graphics driver will probably help.");
 	}
 

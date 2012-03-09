@@ -35,7 +35,6 @@ protected func Initialize()
 	//lorry->CreateContents(Wood, 16);
 	//lorry->CreateContents(Metal, 4);
 	//lorry->CreateContents(Dynamite, 3);
-	//lorry->CreateContents(CableReel, 3);
 	// TODO: Make sure lorry stays on mountains.
 	
 	// Place some coniferous trees, but only up to 2/3 of the mountain.
@@ -58,7 +57,7 @@ protected func Initialize()
 	SetGamma(RGB(0,0,blue), RGB(128-blue,128-blue,128+blue), RGB(255-blue,255-blue,255));
 	
 	// Some natural disasters. 
-	var earthquakes = CreateObject(Earthquake);
+	//var earthquakes = CreateObject(Earthquake);
 	// earthquakes->SetChance(30);
 	// TODO: Rockfall.
 	
@@ -163,8 +162,7 @@ protected func InitializePlayer(int plr)
 		{
 			crew->CreateContents(Hammer);
 			crew->CreateContents(Axe);
-			crew->CreateContents(CableReel);
-			crew->CreateContents(Dynamite);
+			crew->CreateContents(Dynamite, 2);
 		}
 		else
 		{

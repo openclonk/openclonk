@@ -1,5 +1,6 @@
 /*-- Wooden Cabin --*/
 
+#include Library_Ownable
 #include Library_DoorControl
 
 public func Initialize()

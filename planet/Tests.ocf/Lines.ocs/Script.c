@@ -6,8 +6,8 @@ func Initialize()
 	CreateObject(Ropeladder, 328, 564);
 	CreateObject(Ropeladder, 226, 330);
 
-	var Rock1 = CreateObject(Rock, 159, 363);
-	var Rock2 = CreateObject(Rock, 232, 388);
+	CreateObject(Rock, 159, 363);
+	CreateObject(Rock, 232, 388);
   
   var Anchor1 = CreateObject(Ropebridge_Post, 515, 547);
   var Anchor2 = CreateObject(Ropebridge_Post, 602, 538);
