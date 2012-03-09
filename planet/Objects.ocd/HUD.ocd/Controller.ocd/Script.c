@@ -19,7 +19,7 @@
 
 local actionbar;
 local wealth;
-local deco;
+//local deco;
 local markers;
 local backpack;
 
@@ -52,9 +52,9 @@ protected func Construction()
 	ReorderCrewSelectors();
 	
 	// background decoration
-	deco = CreateObject(GUI_Background,0,0,GetOwner());
-	deco->SetPosition(1,-1);
-	deco->SetControllerObject(this);
+	//deco = CreateObject(GUI_Background,0,0,GetOwner());
+	//deco->SetPosition(1,-1);
+	//deco->SetControllerObject(this);
 	
 	// wealth display
 	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
@@ -472,8 +472,8 @@ public func Destruction()
 	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
 	if(HUDgoal)
 		HUDgoal->RemoveObject();
-	if(deco)
-		deco->RemoveObject();
+	//if(deco)
+		//deco->RemoveObject();
 		
 	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
 	for(var o in crew)
@@ -514,11 +514,12 @@ public func OnCrewSelection(object clonk, bool deselect)
 	//	var deco = CreateObject(GUI_ObjectSelector_Background,0,0,clonk->GetOwner());
 	//	deco->SetPosition(337,-38);
 		
-		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
+		/*for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
 			ActionButton(clonk,i,clonk->GetHandItem(i),ACTIONTYPE_INVENTORY);
 		}
-		ClearButtons(i);
+		ClearButtons(i);*/
+		ClearButtons(0);
 		
 		// and start effect to monitor vehicles and structures...
 		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i);
@@ -556,7 +557,8 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	var startAt = effect.startAt;
 	var i = startAt;
 	
-	var hotkey = i+1-target->HandObjects();
+	//var hotkey = i+1-target->HandObjects();
+	var hotkey = i+1;
 	
 	// Add buttons:
 	
@@ -621,6 +623,7 @@ protected func OnInventoryHotkeyRelease(int slot)
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
 {
+	/*
 	//Log("slot %d changed", slot);
 	var cursor = GetCursor(GetOwner());
 	if(!cursor) return;
@@ -628,25 +631,24 @@ public func OnSlotObjectChanged(int slot)
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 	
 	// refresh backpack
+	*/
 	ScheduleUpdateBackpack();
 }
 
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
 {
 	//var size = GUI_ObjectSelector->GetDefWidth();
-	var spacing = deco.padding;
-
-	// don't forget the spacings between inventory - vehicle,structure
-	var extra = 0;
-	if(forClonk->HandObjects() <= pos) extra = 80;
+	//var spacing = deco.padding;
+	var spacing = 90;
 	
 	var bt = actionbar[pos];
 	// no object yet... create it
 	if(!bt)
 	{
 		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
+		//bt->SetGraphics("Slot", GUI_Background);
 	}
-
+/*
 		if(pos==0)
 		{ 
 			bt->SetGraphics("None");
@@ -662,7 +664,10 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 			bt->SetCon(90);
 			bt->SetPosition(491 + (pos-2) * spacing, -45);
 		}
-
+	*/
+	
+	//bt->SetCon(90);
+	bt->SetPosition(401 + pos * spacing, -45);
 	
 	bt->SetCrew(forClonk);
 	bt->SetObject(interaction,actiontype,pos,hotkey);
@@ -683,13 +688,13 @@ private func ClearButtons(int start)
 	}
 	//if(deco->GetSlotNumber() != -1)
 	//if(deco->GetSlotNumber() != GetRealActionbarLength())
-		deco->SlideTo(GetRealActionbarLength());
+		//deco->SlideTo(GetRealActionbarLength());
 }
 
 private func GetRealActionbarLength()
 {
 	var i=0;
-	for(var j = 2; j < GetLength(actionbar); ++j)
+	for(var j = 0; j < GetLength(actionbar); ++j)
 		if(actionbar[j]->ShowsItem())	i++;
 	return i;
 }
@@ -709,7 +714,7 @@ public func ControlHotkey(int hotindex)
 	if(!actionbar[hotindex]) return false;
     var clonk = actionbar[hotindex]->GetCrew();
    	if(!clonk) return false;
-    hotindex += clonk->HandObjects();
+    //hotindex += clonk->HandObjects();
    	if(!actionbar[hotindex]) return false;
    	// only if it is not already used
   	actionbar[hotindex]->~MouseSelection(GetOwner());
@@ -718,10 +723,10 @@ public func ControlHotkey(int hotindex)
 
 private func CreateSelectorFor(object clonk)
 {
-		var selector = CreateObject(GUI_CrewSelector,10,10,-1);
-		selector->SetCrew(clonk);
-		clonk->SetSelector(selector);
-		return selector;
+	var selector = CreateObject(GUI_CrewSelector,10,10,-1);
+	selector->SetCrew(clonk);
+	clonk->SetSelector(selector);
+	return selector;
 }
 
 

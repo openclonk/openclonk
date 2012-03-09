@@ -138,6 +138,7 @@ protected func OnSlotFull(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->OnSlotObjectChanged(slot);
+		
 	return _inherited(slot, ...);
 }
 
@@ -145,6 +146,7 @@ protected func OnSlotEmpty(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->OnSlotObjectChanged(slot);
+	
 	return _inherited(slot, ...);
 }
 
