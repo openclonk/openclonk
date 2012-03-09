@@ -1239,10 +1239,10 @@
 		Priority=50
 		Control=PushEnter
 		
-		[Assignment]
-		Key=CON_Interact
-		Priority=45
-		Control=GrabNext
+		#[Assignment]
+		#Key=CON_Interact
+		#Priority=45
+		#Control=GrabNext
 		
 		[Assignment]
 		Key=CON_Interact
