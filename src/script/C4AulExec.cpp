@@ -1142,10 +1142,12 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	}
 	catch (C4AulError *ex)
 	{
-		ex->show();
-		delete ex;
 		delete pFunc;
 		delete pScript;
+		ex->show();
+		if(fPassErrors)
+			throw;
+		delete ex;
 		return C4VNull;
 	}
 	pFunc->CodePos = 1;
