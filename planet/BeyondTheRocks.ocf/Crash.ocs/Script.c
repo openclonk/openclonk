@@ -21,6 +21,9 @@ func DoInit(int first_player)
 	var windmill = FindObject(Find_ID(Windmill));
 	if (windmill) windmill->SetOwner(first_player);
 	
+	// Goal
+	CreateObject(Goal_Plane);
+	
 	// NPC: Pilot.
 	var man = CreateObject(Clonk, 100, 870);
 	man->SetSkin(2);
