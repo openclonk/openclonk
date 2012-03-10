@@ -48,6 +48,10 @@
 #include <sys/socket.h>
 #endif
 
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
+#endif
+
 #ifndef HAVE_CONFIG_H
 // #define C4NETIO_DEBUG
 #endif
