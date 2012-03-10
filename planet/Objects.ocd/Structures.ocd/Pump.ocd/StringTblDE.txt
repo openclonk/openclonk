@@ -1,1 +1,3 @@
 Name=Pumpe
+MsgTurnOff=Pumpe abschalten
+MsgTurnOn=Pumpe anschalten

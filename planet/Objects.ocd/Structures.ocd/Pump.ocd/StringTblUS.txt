@@ -1,1 +1,3 @@
 Name=Pump
+MsgTurnOff=Turn off pump
+MsgTurnOn=Turn on pump

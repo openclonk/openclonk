@@ -16,7 +16,34 @@ protected func Initialize()
 {
 	SetAction("Wait");
 	MakePowerConsumer(100);
+	turned_on = true;
 	return;
+}
+
+/*-- Interaction --*/
+
+local turned_on;
+
+public func IsInteractable() { return GetCon() >= 100; }
+
+public func GetInteractionMetaInfo(object clonk)
+{
+	if (turned_on)
+		return { Description = "$MsgTurnOff$", IconName = nil, IconID = nil };
+	return { Description = "$MsgTurnOn$", IconName = nil, IconID = nil };
+}
+
+// On interaction the pump can be turned on or off.
+public func Interact(object clonk)
+{
+	if (turned_on)
+	{
+		turned_on = false;
+		SetAction("Wait");
+	}
+	else
+		turned_on = true;
+	return true;
 }
 
 /*-- Pipe connection --*/
@@ -70,6 +97,9 @@ local pumpable_materials; // materials that can be pumped
 
 protected func Pumping()
 {
+	// Only if turned on.
+	if (!turned_on)
+		return SetAction("Wait");	
 	// Pump liquids.
 	if (!source_pipe)
 		return SetAction("Wait");
