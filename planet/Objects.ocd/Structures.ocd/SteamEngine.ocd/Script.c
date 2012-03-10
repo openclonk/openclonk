@@ -56,7 +56,7 @@ func ContentsCheck()
 	// Search for new fuel
 	if(fuel = FindObject(Find_Container(this), Find_Func("IsFuel")))
 	{
-		iFuelAmount += fuel->~GetFuelAmount();
+		iFuelAmount += fuel->~GetFuelAmount() / 2;
 		fuel->RemoveObject();
 		SetAction("Work");
 		return true;

@@ -14,7 +14,7 @@ protected func Hit(x, y)
 }
 
 public func IsFuel() { return true; }
-public func GetFuelAmount() { return 30; }
+public func GetFuelAmount() { return 100; }
 
 local Collectible = 1;
 local Name = "$Name$";

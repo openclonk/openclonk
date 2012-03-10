@@ -402,6 +402,7 @@ private func CheckFuel(id product, bool remove)
 		else if (remove)
 		{
 			// Remove the fuel needed.
+			fuel_amount = 0;
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
 				fuel_amount += fuel->~GetFuelAmount();
