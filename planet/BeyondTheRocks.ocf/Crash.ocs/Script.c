@@ -34,7 +34,7 @@ func DoInit(int first_player)
 	man->SetDialogue("Pilot");
 	
 	// NPC: Merchant.
-	var merchant = CreateObject(Clonk, 200, 870);
+	var merchant = CreateObject(Clonk, 170, 870);
 	merchant->SetSkin(1);
 	merchant->SetName("$NameMerchant$");
 	merchant->SetColor(RGB(55, 65, 75));
@@ -62,11 +62,12 @@ func InitializePlayer(int plr)
 		var y = 850;
 		crew->SetPosition(x , y);
 		crew->CreateContents(Shovel);
-		// First clonk can construct, others can mine.
-		if (index == 0)
+		// First Clonk can construct and mine.
+		if (!index)
+		{
 			crew->CreateContents(Hammer);
-		else
 			crew->CreateContents(Axe);
+		}
 		index++;
 	}
 	return;
