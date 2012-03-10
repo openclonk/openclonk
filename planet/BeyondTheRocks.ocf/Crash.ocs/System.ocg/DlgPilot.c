@@ -12,6 +12,7 @@ private func Dlg_Pilot_1(object clonk)
 private func Dlg_Pilot_2(object clonk)
 {
 	MessageBox("$AnsCrashedPlane$", clonk, clonk);
+	SetDialogueProgress(1);
 	SetDialogueStatus(DLG_Status_Stop);
 	return;
 }

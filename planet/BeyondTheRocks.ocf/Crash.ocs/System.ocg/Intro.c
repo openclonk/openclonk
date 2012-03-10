@@ -94,12 +94,13 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 		var x = effect.Plane->GetX();
 		var y = effect.Plane->GetY();
 
-		IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 150)->Launch(280 + Random(51), effect.Pilot);
+		effect.Pilot->Exit();
+		IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(275 + Random(31), effect.Pilot);
 		while(effect.Pilot->Contents())
-			IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 150)->Launch(280 + Random(51), effect.Pilot->Contents());
+			IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(275 + Random(31), effect.Pilot->Contents());
 	}
 
-	if(effect.Time == 430)
+	if(effect.Time == 440)
 		for(var i = 0; i < GetPlayerCount(); ++i)
 			GetCursor(GetPlayerByIndex(i))->CloseMenu();
 
