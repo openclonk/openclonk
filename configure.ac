@@ -392,7 +392,9 @@ echo "Configuration:
   OpenAL:	$with_openal
   GTK+: 	$with_gtk
   X11:  	$have_x
-  Nat/LibUPnP:	$ac_cv_header_natupnp_h/$have_libupnp"
+  Nat/LibUPnP:	$ac_cv_header_natupnp_h/$have_libupnp
+  CFLAGS:	$CFLAGS
+  CXXFLAGS:	$CXXFLAGS"
 
 if test "$enable_sdlmainloop" = yes; then echo "  SDL:  	mainloop";
 else echo "  SDL:  	$with_sdl"; fi

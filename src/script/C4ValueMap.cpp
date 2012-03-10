@@ -228,6 +228,9 @@ void C4ValueMapData::OnNameListChanged(const char **pOldNames, int32_t iOldSize)
 
 C4Value *C4ValueMapData::GetItem(int32_t iNr)
 {
+	assert(pNames);
+	assert(iNr < pNames->iSize);
+	assert(iNr >= 0);
 	// the list is nothing without name list...
 	if (!pNames) return 0;
 
@@ -238,9 +241,11 @@ C4Value *C4ValueMapData::GetItem(int32_t iNr)
 
 C4Value *C4ValueMapData::GetItem(const char *strName)
 {
+	assert(pNames);
 	if (!pNames) return 0;
 
 	int32_t iNr = pNames->GetItemNr(strName);
+	assert(iNr != -1);
 
 	if (iNr == -1) return 0;
 
@@ -263,6 +268,7 @@ void C4ValueMapData::Denumerate(C4ValueNumbers * numbers)
 void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fCompiler = pComp->isCompiler();
+	C4ValueMapNames *pOldNames = pNames;
 	if (fCompiler) Reset();
 	// Compile item count
 	int32_t iValueCnt;
@@ -308,7 +314,6 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Set
 	if (fCompiler)
 	{
-		C4ValueMapNames *pOldNames = pNames;
 		// Set
 		CreateTempNameList();
 		pNames->SetNameArray(const_cast<const char **>(ppNames), iValueCnt);
