@@ -1,4 +1,12 @@
+# Intro
+MsgIntro1=Wow, ganz schön turbulent hier...
+MsgIntro2=Schau, der schöne Lavasee!
+MsgIntro3=Komm schon, Baby...
+MsgIntro4=Oh oh...
+MsgIntro5=Schnell! Der Schleudersitz!
+
 # NPC Pilot
+NamePilot=Pilot
 MsgCrashedPlane=Und, habt ihr das Flugzeug schon gefunden?
 AnsCrashedPlane=Nein, wir suchen noch.
 

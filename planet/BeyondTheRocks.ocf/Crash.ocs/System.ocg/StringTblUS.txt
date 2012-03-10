@@ -1,4 +1,12 @@
+# Intro
+MsgIntro1=Wow, quite a turbulence here...
+MsgIntro2=See the nice lava lake!
+MsgIntro3=Come on, baby...
+MsgIntro4=Oh oh...
+MsgIntro5=Quick! The ejection seat!
+
 # NPC Pilot
+NamePilot=Pilot
 MsgCrashedPlane=So, have you found the plane yet?
 AnsCrashedPlane=No, we're still searching.
 

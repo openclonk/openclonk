@@ -159,6 +159,12 @@ private func InDialogue(object clonk)
 	return clonk->GetMenu() == Dialogue;	
 }
 
+public func MessageBoxAll(string message, object talker)
+{
+	for(var i = 0; i < GetPlayerCount(); ++i)
+		MessageBox(message, GetCursor(GetPlayerByIndex(i)), talker);
+}
+
 private func MessageBox(string message, object clonk, object talker)
 {
 	// Use current NPC as talker if unspecified.

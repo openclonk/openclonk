@@ -17,6 +17,7 @@ local fuel;
 local rider;
 local ridervis;
 local riderattach;
+local dirdev;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 700; }
@@ -25,6 +26,7 @@ protected func Construction()
 {
 	//flight length
 	fuel=100;
+	dirdev=12;
 }
 
 protected func Destruction()
@@ -94,7 +96,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	
 	if(!ignition)
 	{
-		var angle = GetR()+RandomX(-12,12);
+		var angle = GetR()+RandomX(-dirdev,dirdev);
 		SetXDir(3*GetXDir()/4+Sin(angle,24));
 		SetYDir(3*GetYDir()/4-Cos(angle,24));
 		SetR(angle);
@@ -200,6 +202,11 @@ func DoFireworks()
 func SetFuel(int new)
 {
 	fuel = new;
+}
+
+func SetDirectionDeviation(int new)
+{
+	dirdev = new;
 }
 
 func GetFuel()

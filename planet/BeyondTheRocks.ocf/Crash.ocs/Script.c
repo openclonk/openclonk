@@ -6,6 +6,7 @@
 */
 
 static g_is_initialized;
+static g_intro_initialized;
 
 func DoInit(int first_player)
 {
@@ -24,22 +25,13 @@ func DoInit(int first_player)
 	// Goal
 	CreateObject(Goal_Plane);
 	
-	// NPC: Pilot.
-	var man = CreateObject(Clonk, 100, 870);
-	man->SetSkin(2);
-	man->SetName("$NamePilot$");
-	man->SetColor(RGB(55, 65, 75));
-	man->SetDir(DIR_Left);
-	man->SetObjectLayer(man);
-	man->SetDialogue("Pilot");
-	
 	// NPC: Merchant.
 	var merchant = CreateObject(Clonk, 170, 870);
 	merchant->SetSkin(1);
 	merchant->SetName("$NameMerchant$");
 	merchant->SetColor(RGB(55, 65, 75));
 	merchant->SetDir(DIR_Left);
-	merchant->SetObjectLayer(man);
+	merchant->SetObjectLayer(merchant);
 	merchant->SetDialogue("Merchant");
 	return true;
 }
@@ -51,16 +43,28 @@ global func FxIntWaterfallTimer(object obj, int eff)
 }
 
 func InitializePlayer(int plr)
-{ 
+{
+	var crew;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
-	// Move clonks to location and give them a shovel.
-	var index = 0, crew;
-	while (crew = GetCrew(plr, index))
+	// Start intro if not yet started
+	IntroStart();
+	// Add player to intro if recently started
+	if(!IntroAddPlayer(plr))
 	{
-		var x = 50 + Random(50);
-		var y = 850;
-		crew->SetPosition(x , y);
+		// Too late for entry? Just start in the village
+		var index = 0;
+		for(var index = 0; crew = GetCrew(plr, index); ++index)
+		{
+			var x = 50 + Random(50);
+			var y = 850;
+			crew->SetPosition(x , y);
+		}
+	}
+
+	// Give clonks initial tools
+	for(var index = 0; crew = GetCrew(plr, index); ++index)
+	{
 		crew->CreateContents(Shovel);
 		// First Clonk can construct and mine.
 		if (!index)
@@ -68,7 +72,6 @@ func InitializePlayer(int plr)
 			crew->CreateContents(Hammer);
 			crew->CreateContents(Axe);
 		}
-		index++;
 	}
 	return;
 }
