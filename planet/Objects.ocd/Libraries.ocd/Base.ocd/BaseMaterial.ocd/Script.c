@@ -103,6 +103,7 @@ public func DoGetHomebaseMaterial (id idDef, int iIndex, int dwCategory)
 		return nil;
 	}
 	// A index given? Look for the id
+	if (!dwCategory) dwCategory = 0xffffff;
 	for(aArray in aHomebaseMaterial)
 	{
 		if(aArray[0]->GetCategory() & dwCategory)

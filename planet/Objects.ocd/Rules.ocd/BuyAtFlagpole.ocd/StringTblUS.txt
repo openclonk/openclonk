@@ -1,0 +1,2 @@
+Name=Buy at flagpole
+Description=You can buy some things at the flagpole.
