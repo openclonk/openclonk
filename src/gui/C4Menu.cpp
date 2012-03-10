@@ -54,7 +54,7 @@ const int32_t C4MN_InfoCaption_Delay = 90;
 C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
                        const char *szCommand, int32_t iCount, C4Object *pObject, const char *szInfoCaption,
                        C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable)
-		: C4GUI::Element(), Count(iCount), id(idID), Object(pObject), dwSymbolClr(0u),
+		: C4GUI::Element(), Count(iCount), id(idID), Object(pObject), pSymbolObj(NULL), pSymbolGraphics(NULL), dwSymbolClr(0u),
 		fOwnValue(fOwnValue), iValue(iValue), fSelected(false), iStyle(iStyle), pMenu(pMenu),
 		iIndex(iIndex), IsSelectable(fIsSelectable), TextDisplayProgress(-1)
 {
@@ -139,9 +139,24 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 		// get symbol area
 		cgoItemSymbol=cgoItemText.Truncate(C4FCT_Left, iSymWidth);
 	}
+	// cgoItemSymbol.Hgt is 0. This means rcBounds.Hgt is 0. That
+	// makes no sense at this point, so let's just draw in a
+	// square area at item y.
+	C4Facet cgoSymbolOut(cgoItemSymbol.Surface, cgoItemSymbol.X, cgoItemSymbol.Y, cgoItemSymbol.Wdt, cgoItemSymbol.Wdt);
+
 	// Draw item symbol:
 	// Draw if there is no text progression at all (TextDisplayProgress==-1, or if it's progressed far enough already (TextDisplayProgress>0)
-	if (Symbol.Surface && TextDisplayProgress) Symbol.DrawClr(cgoItemSymbol, true, dwSymbolClr);
+	if(pSymbolObj && TextDisplayProgress)
+	{
+		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL, NULL);
+	}
+	else if (pSymbolGraphics && TextDisplayProgress)
+	{
+		pSymbolGraphics->Draw(cgoSymbolOut, dwSymbolClr ? dwSymbolClr : 0xffffffff, NULL, 0, 0, NULL);
+	}
+	else if (Symbol.Surface && TextDisplayProgress)
+		Symbol.DrawClr(cgoItemSymbol, true, dwSymbolClr);
+
 	// Draw item text
 	pDraw->StorePrimaryClipper(); pDraw->SubPrimaryClipper(cgoItemText.X, cgoItemText.Y, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1);
 	switch (iStyle)
@@ -372,6 +387,31 @@ bool C4Menu::Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *s
 	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
 }
 
+bool C4Menu::Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
+                 int32_t iCount, C4Object *pObject, const char *szInfoCaption,
+                 C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+{
+	if (!IsActive()) return false;
+	// Create new menu item
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	// Set Symbol
+	pNew->SetGraphics(pGfxObj);
+	// Add
+	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+}
+
+bool C4Menu::Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
+                 int32_t iCount, C4Object *pObject, const char *szInfoCaption,
+                 C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+{
+	if (!IsActive()) return false;
+	// Create new menu item
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	// Set Symbol
+	pNew->SetGraphics(pGfx);
+	// Add
+	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+}
 
 bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand,
                      int32_t iCount, C4Object *pObject, const char *szInfoCaption,
@@ -1198,8 +1238,7 @@ void C4Menu::ClearPointers(C4Object *pObj)
 {
 	C4MenuItem *pItem;
 	for (int32_t i=0; (pItem = GetItem(i)); ++i)
-		if (pItem->GetObject()==pObj)
-			pItem->ClearObject();
+		pItem->ClearPointers(pObj);
 }
 
 #ifdef _DEBUG

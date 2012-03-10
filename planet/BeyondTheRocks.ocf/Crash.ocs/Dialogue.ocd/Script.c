@@ -175,9 +175,9 @@ private func MessageBox(string message, object clonk, object talker)
 	clonk->CreateMenu(Dialogue, this, C4MN_Extra_None, nil, nil, C4MN_Style_Dialog, false, Dialogue);
 	
 	// Add NPC portrait.
-	var portrait = Format("Portrait:%i::%x::%s", Dialogue, talker->GetColor(), "1");
-	clonk->AddMenuItem(portrait, "", Dialogue, nil, nil, nil, C4MN_Add_ImgTextSpec);
-	
+	//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
+	clonk->AddMenuItem("", "", Dialogue, nil, nil, nil, C4MN_Add_ImgObject, talker); //TextSpec);
+
 	// Add NPC message.
 	var msg = Format("<c %x>%s:</c> %s", talker->GetColor(), talker->GetName(), message);
 	clonk->AddMenuItem(msg, "", nil, nil, nil, nil, C4MN_Add_ForceNoDesc);

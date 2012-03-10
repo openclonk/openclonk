@@ -1001,6 +1001,8 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 
 	// Create symbol
 	C4FacetSurface fctSymbol;
+	C4DefGraphics* pGfx = NULL;
+	C4Object* pGfxObj = NULL;
 	switch (iExtra & C4MN_Add_MaxImage)
 	{
 	case C4MN_Add_ImgRank:
@@ -1084,18 +1086,26 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
 			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
-		C4Object *pGfxObj = XPar.getObj();
-		fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
-		pGfxObj->Picture2Facet(fctSymbol);
+		pGfxObj = XPar.getObj();
+		//fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
+		//pGfxObj->Picture2Facet(fctSymbol);
 	}
 	break;
 
 	case C4MN_Add_ImgTextSpec:
 	{
-		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		uint32_t dwClr = XPar.getInt();
-		if (!szCaption || !Game.DrawTextSpecImage(fctSymbol, caption, NULL, dwClr ? dwClr : 0xff))
-			return false;
+		C4Def* pDef = C4Id2Def(C4ID(std::string(caption)));
+		if(pDef)
+		{
+			pGfx = &pDef->Graphics;
+		}
+		else
+		{
+			fctSymbol.Create(iSymbolSize,iSymbolSize);
+			uint32_t dwClr = XPar.getInt();
+			if (!szCaption || !Game.DrawTextSpecImage(fctSymbol, caption, NULL, dwClr ? dwClr : 0xff))
+				return false;
+		}
 		*caption = '\0';
 	}
 	break;
@@ -1128,7 +1138,12 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	bool fIsSelectable = !!*command;
 
 	// Add menu item
-	cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	if(pGfxObj)
+		cthr->Obj->Menu->Add(caption,pGfxObj,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	else if(pGfx)
+		cthr->Obj->Menu->Add(caption,pGfx,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	else
+		cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
 
 	return true;
 }
