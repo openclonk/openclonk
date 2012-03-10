@@ -1,0 +1,2 @@
+NamePilot=Pilot
+NameMerchant=Merchant

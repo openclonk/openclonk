@@ -7,28 +7,27 @@ MaxPlayer=3
 NoInitialize=true
 
 [Game]
-; Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1
-Rules=Rule_TeamAccount=1
+Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1
 
 [Player1]
-Wealth=10,0,0,250
+Wealth=0
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Pump=1;Pipe=1;Cannon=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;
 
 [Player2]
-Wealth=10,0,0,250
+Wealth=0
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Pump=1;Pipe=1;Cannon=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;
 
 [Player3]
-Wealth=10,0,0,250
+Wealth=0
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Pump=1;Pipe=1;Cannon=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;
 
 [Player4]
-Wealth=10,0,0,250
+Wealth=0
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;Pump=1;Pipe=1;Cannon=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Loam=1;
 
 [Landscape]
 Sky=Clouds2

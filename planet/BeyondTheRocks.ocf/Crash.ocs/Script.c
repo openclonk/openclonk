@@ -20,6 +20,24 @@ func DoInit(int first_player)
 	// Windmill owner
 	var windmill = FindObject(Find_ID(Windmill));
 	if (windmill) windmill->SetOwner(first_player);
+	
+	// NPC: Pilot.
+	var man = CreateObject(Clonk, 100, 870);
+	man->SetSkin(2);
+	man->SetName("$NamePilot$");
+	man->SetColor(RGB(55, 65, 75));
+	man->SetDir(DIR_Left);
+	man->SetObjectLayer(man);
+	man->SetDialogue("Pilot");
+	
+	// NPC: Merchant.
+	var merchant = CreateObject(Clonk, 200, 870);
+	merchant->SetSkin(1);
+	merchant->SetName("$NameMerchant$");
+	merchant->SetColor(RGB(55, 65, 75));
+	merchant->SetDir(DIR_Left);
+	merchant->SetObjectLayer(man);
+	merchant->SetDialogue("Merchant");
 	return true;
 }
 
