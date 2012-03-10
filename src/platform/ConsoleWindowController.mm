@@ -29,7 +29,7 @@
 @implementation ConsoleWindowController
 
 @synthesize
-	frameLabel, scriptLabel, timeLabel, outputTextView, objectPropertiesText,
+	frameLabel, timeLabel, outputTextView, objectPropertiesText,
 	materialsPopup, texturesPopup, outputScrollView, previewView,
 	objectsPanel, toolsPanel, toolSelector, modeSelector, objectCombo, consoleCombo;
 

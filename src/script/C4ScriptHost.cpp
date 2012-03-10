@@ -26,27 +26,34 @@
 #include <C4Include.h>
 #include <C4ScriptHost.h>
 
-#include <C4ObjectCom.h>
-#include <C4Object.h>
-#include <C4Game.h>
+#include <C4Def.h>
 #include <C4GameObjects.h>
 
 /*--- C4ScriptHost ---*/
 
-C4ScriptHost::C4ScriptHost() { }
+C4ScriptHost::C4ScriptHost()
+{
+	Script = NULL;
+	Code.clear();
+	LastCode = NULL;
+	stringTable = 0;
+	SourceScripts.push_back(this);
+}
 C4ScriptHost::~C4ScriptHost() { Clear(); }
 
 void C4ScriptHost::Clear()
 {
 	C4AulScript::Clear();
 	ComponentHost.Clear();
+	Script.Clear();
+	ClearCode();
+	SourceScripts.clear();
+	SourceScripts.push_back(this);
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
-                        const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable)
+                        const char *szLanguage, class C4LangStringTable *pLocalTable)
 {
-	// Set definition and id
-	Def = pDef;
 	// Base load
 	bool fSuccess = ComponentHost.Load(hGroup,szFilename,szLanguage);
 	// String Table
@@ -79,15 +86,6 @@ void C4ScriptHost::MakeScript()
 	Preparse();
 }
 
-C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
-{
-	// get function
-	C4AulScriptFunc *pFn;
-	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
-	// Call code
-	return pFn->Exec(pObj,Pars, fPassError);
-}
-
 bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	// this?
@@ -97,11 +95,10 @@ bool C4ScriptHost::ReloadScript(const char *szPath, const char *szLanguage)
 		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
 		if (GetParentPath(szPath, szParentPath))
 			if (ParentGrp.Open(szParentPath))
-				if (Load(ParentGrp, NULL, szLanguage, NULL, stringTable))
+				if (Load(ParentGrp, NULL, szLanguage, stringTable))
 					return true;
 	}
-	// call for childs
-	return C4AulScript::ReloadScript(szPath, szLanguage);
+	return false;
 }
 
 void C4ScriptHost::SetError(const char *szMessage)
@@ -109,37 +106,117 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
+/*--- C4ExtraScriptHost ---*/
+
+C4ExtraScriptHost::C4ExtraScriptHost():
+		ParserPropList(C4PropList::NewAnon())
+{
+}
+
+void C4ExtraScriptHost::Clear()
+{
+	ParserPropList.getPropList()->Clear();
+}
+
+C4PropList * C4ExtraScriptHost::GetPropList()
+{
+	return ParserPropList.getPropList();
+}
+
 /*--- C4DefScriptHost ---*/
+
+bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
+{
+	bool r = C4ScriptHost::Load(g, f, l, t);
+	assert(Def);
+
+	// Check category
+	if (!Def->GetPlane() && Def->Category & C4D_SortLimit)
+	{
+		int Plane; bool gotplane = true;
+		switch (Def->Category & C4D_SortLimit)
+		{
+			case C4D_StaticBack: Plane = 100; break;
+			case C4D_Structure: Plane = C4Plane_Structure; break;
+			case C4D_Vehicle: Plane = 300; break;
+			case C4D_Living: Plane = 400; break;
+			case C4D_Object: Plane = 500; break;
+			case C4D_StaticBack | C4D_Background: Plane = -500; break;
+			case C4D_Structure | C4D_Background: Plane = -400; break;
+			case C4D_Vehicle | C4D_Background: Plane = -300; break;
+			case C4D_Living | C4D_Background: Plane = -200; break;
+			case C4D_Object | C4D_Background: Plane = -100; break;
+			case C4D_StaticBack | C4D_Foreground: Plane = 1100; break;
+			case C4D_Structure | C4D_Foreground: Plane = 1200; break;
+			case C4D_Vehicle | C4D_Foreground: Plane = 1300; break;
+			case C4D_Living | C4D_Foreground: Plane = 1400; break;
+			case C4D_Object | C4D_Foreground: Plane = 1500; break;
+			default:
+				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+				gotplane = false;
+				break;
+		}
+		if (gotplane) Def->SetProperty(P_Plane, C4VInt(Plane));
+	}
+	if (!Def->GetPlane())
+	{
+		DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+		Def->SetProperty(P_Plane, C4VInt(1));
+	}
+	return r;
+}
+
+void C4DefScriptHost::Clear()
+{
+	if (Def) Def->TimerCall = 0;
+	C4ScriptHost::Clear();
+}
 
 void C4DefScriptHost::AfterLink()
 {
-	C4AulScript::AfterLink();
-	// Search cached functions
-	SFn_CalcValue       = GetSFunc(PSF_CalcValue      , AA_PROTECTED);
-	SFn_SellTo          = GetSFunc(PSF_SellTo         , AA_PROTECTED);
-	SFn_ControlTransfer = GetSFunc(PSF_ControlTransfer, AA_PROTECTED);
-	if (Def)
+	C4ScriptHost::AfterLink();
+	if (Def && Def->STimerCall[0])
 	{
-		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;
-		Def->TimerCall=GetSFuncWarn((const char *) Def->STimerCall, CallAccess, "TimerCall");
+		Def->TimerCall = Def->GetFunc(Def->STimerCall);
+		if (!Def->TimerCall)
+			DebugLogF("Error getting function \"%s\" for TimerCall of %s", Def->STimerCall, Def->id.ToString());
 	}
 }
 
-
+C4PropList * C4DefScriptHost::GetPropList() { return Def; }
 
 /*--- C4GameScriptHost ---*/
 
-C4GameScriptHost::C4GameScriptHost(): Counter(0), Go(false) { }
+C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
 C4GameScriptHost::~C4GameScriptHost() { }
 
-bool C4GameScriptHost::Execute(int iTick10)
+bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
-	if (!Script) return false;
-	if (Go && !iTick10)
-	{
-		return !! Call(FormatString(PSF_Script,Counter++).getData());
-	}
-	return false;
+	assert(ScriptEngine.GetPropList());
+	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
+	ScenPropList = C4PropList::NewScen(ScenPrototype);
+	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
+	Reg2List(&ScriptEngine);
+	return C4ScriptHost::Load(g, f, l, t);
+}
+
+void C4GameScriptHost::Clear()
+{
+	delete ScenPropList; ScenPropList = 0;
+	delete ScenPrototype; ScenPrototype = 0;
+	C4ScriptHost::Clear();
+}
+
+void C4GameScriptHost::AfterLink()
+{
+	C4ScriptHost::AfterLink();
+	ScenPrototype->Freeze();
+}
+
+C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
+{
+	// FIXME: Does fPassError make sense?
+	return ScenPropList->Call(szFunction, Pars);
 }
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
@@ -149,13 +226,7 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	// rejection tests abort on first nonzero result
 	if (fRejectTest) if (!!vResult) return vResult;
 	// scenario script call
-	return Call(szFunction, 0, pPars, fPassError);
-}
-
-void C4GameScriptHost::CompileFunc(StdCompiler *pComp)
-{
-	pComp->Value(mkNamingAdapt(Go,             "Go",                    false));
-	pComp->Value(mkNamingAdapt(Counter,        "Counter",               0));
+	return Call(szFunction, pPars, fPassError);
 }
 
 C4GameScriptHost GameScript;

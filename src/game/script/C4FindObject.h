@@ -350,10 +350,10 @@ protected:
 class C4FindObjectFunc : public C4FindObject
 {
 public:
-	C4FindObjectFunc(const char *Name): Name(Name) { }
+	C4FindObjectFunc(C4String * Name): Name(Name) { }
 	void SetPar(int i, const C4Value &val);
 private:
-	const char * Name;
+	C4String * Name;
 	C4AulParSet Pars;
 protected:
 	virtual bool Check(C4Object *pObj);
@@ -497,10 +497,10 @@ protected:
 class C4SortObjectFunc : public C4SortObjectByValue // sort by script function
 {
 public:
-	C4SortObjectFunc(const char * Name): Name(Name) { }
+	C4SortObjectFunc(C4String * Name): Name(Name) { }
 	void SetPar(int i, const C4Value &val);
 private:
-	const char * Name;
+	C4String * Name;
 	C4AulParSet Pars;
 protected:
 	int32_t CompareGetValue(C4Object *pFor);

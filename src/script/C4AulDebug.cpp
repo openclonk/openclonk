@@ -267,17 +267,18 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 				break;
 		}
 
-		if (script)
+		if (script && script->GetScriptHost())
 		{
 			C4AulBCC* foundDebugChunk = NULL;
-			const char* scriptText = script->GetScript();
-			for (C4AulBCC* chunk = &script->Code[0]; chunk; chunk++)
+			C4ScriptHost * sh = script->GetScriptHost();
+			const char* scriptText = sh->GetScript();
+			for (C4AulBCC* chunk = &sh->Code[0]; chunk; chunk++)
 			{
 				switch (chunk->bccType)
 				{
 				case AB_DEBUG:
 					{
-					int lineOfThisOne = SGetLine(scriptText, script->PosForCode[chunk - &script->Code[0]]);
+					int lineOfThisOne = SGetLine(scriptText, sh->PosForCode[chunk - &sh->Code[0]]);
 					if (lineOfThisOne == line)
 					{
 						foundDebugChunk = chunk;

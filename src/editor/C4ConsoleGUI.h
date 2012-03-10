@@ -61,7 +61,6 @@ public:
 	{
 		CONSOLE_Cursor,
 		CONSOLE_FrameCounter,
-		CONSOLE_ScriptCounter,
 		CONSOLE_TimeFPS
 	};
 
@@ -98,7 +97,7 @@ public:
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
-	void SetInputFunctions(std::list<char*> &functions);
+	void SetInputFunctions(std::list<const char*> &functions);
 	
 	C4Window* CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);

@@ -110,7 +110,7 @@ public:
 	C4Effect *Get(const char *szName, int32_t iIndex=0, int32_t iMaxPriority=0);  // get effect by name
 	int32_t GetCount(const char *szMask, int32_t iMaxPriority=0); // count effects that match the mask
 	C4Effect *Check(C4Object *pForObj, const char *szCheckEffect, int32_t iPrio, int32_t iTimer, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4); // do some effect callbacks
-	C4AulScript *GetCallbackScript(); // get script context for effect callbacks
+	C4PropList * GetCallbackScript(); // get script context for effect callbacks
 
 	void Execute(C4Object *pObj); // execute all effects
 	void Kill(C4Object *pObj);    // mark this effect deleted and do approprioate calls

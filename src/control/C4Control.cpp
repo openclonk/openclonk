@@ -248,7 +248,7 @@ void C4ControlScript::Execute() const
 	else
 		// default: Fallback to global context
 		pScript = &::ScriptEngine;
-	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, C4AulScript::MAXSTRICT, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
+	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if ( (pDebug = C4AulDebug::GetDebugger()) )

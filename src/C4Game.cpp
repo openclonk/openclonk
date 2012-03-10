@@ -684,7 +684,6 @@ C4ST_NEW(PlayersStat,       "C4Game::Execute Players.Execute")
 C4ST_NEW(LandscapeStat,     "C4Game::Execute Landscape.Execute")
 C4ST_NEW(MusicSystemStat,   "C4Game::Execute MusicSystem.Execute")
 C4ST_NEW(MessagesStat,      "C4Game::Execute Messages.Execute")
-C4ST_NEW(ScriptStat,        "C4Game::Execute ::GameScript.Execute")
 
 #define EXEC_S(Expressions, Stat) \
   { C4ST_START(Stat) Expressions C4ST_STOP(Stat) }
@@ -744,7 +743,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	//FIXME: C4Application::Execute should do this, but what about the stats?
 	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
-	EXEC_S_DR(  ::GameScript.Execute(iTick10);    , ScriptStat          , "Scrpt")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
@@ -1243,8 +1241,8 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)
-				// exclude fore/back-objects from main list
-				if ((pLst != &Objects) || (!(cObj->Category & C4D_BackgroundOrForeground)))
+				// exclude fore-objects from main list
+				if ((pLst != &Objects) || (~cObj->Category & C4D_Foreground))
 					// exclude MouseIgnore-objects
 					if (~cObj->Category & C4D_MouseIgnore)
 						// Category (match any specified)
@@ -1652,7 +1650,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	pComp->Name("Script");
 	if (!comp.fScenarioSection)
 	{
-		pComp->Value(::GameScript);
 		pComp->Value(mkParAdapt(ScriptEngine, numbers));
 	}
 	pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
@@ -1688,7 +1685,7 @@ bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4Val
 {
 	StdStrBuf Buf;
 	// Decompile (without players for scenario sections)
-	Buf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers)));
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers), &Buf, "Game");
 
 	// Empty? All default; just remove from group then
 	if (!Buf.getLength())
@@ -2017,8 +2014,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetInitProgress(55);
 
 		// Scenario scripts (and local system.ocg)
+		GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// After defs to get overloading priority
-		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
+		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(57);
 
@@ -2218,9 +2216,9 @@ bool C4Game::InitScriptEngine()
 	while (File.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 	{
 		// host will be destroyed by script engine, so drop the references
-		C4ScriptHost *scr = new C4ScriptHost();
-		scr->Reg2List(&ScriptEngine, &ScriptEngine);
-		scr->Load(File, fn, Config.General.LanguageEx, NULL, &MainSysLangStringTable);
+		C4ScriptHost *scr = new C4ExtraScriptHost();
+		scr->Reg2List(&ScriptEngine);
+		scr->Load(File, fn, Config.General.LanguageEx, &MainSysLangStringTable);
 	}
 
 	// if it's a physical group: watch out for changes
@@ -2652,14 +2650,6 @@ bool C4Game::LoadScenarioComponents()
 	return true;
 }
 
-bool C4Game::LoadScenarioScripts()
-{
-	// Script
-	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
-	::GameScript.Load(ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
-	return true;
-}
-
 bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 {
 	// called for scenario local and definition local System.ocg groups
@@ -2692,9 +2682,9 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 		{
 			// host will be destroyed by script engine, so drop the references
-			C4ScriptHost *scr = new C4ScriptHost();
-			scr->Reg2List(&ScriptEngine, &ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
+			C4ScriptHost *scr = new C4ExtraScriptHost();
+			scr->Reg2List(&ScriptEngine);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)

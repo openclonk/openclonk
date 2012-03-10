@@ -80,6 +80,14 @@ public:
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
+	C4AulFunc * GetFunc(C4PropertyName k) const
+	{ return GetFunc(&Strings.P[k]); }
+	C4AulFunc * GetFunc(C4String * k) const;
+	C4AulFunc * GetFunc(const char * k) const;
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
+	{ return Call(&Strings.P[k], pPars); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0);
+	C4Value Call(const char * k, C4AulParSet *pPars=0);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }
@@ -89,9 +97,11 @@ public:
 
 	static C4PropList * New(C4PropList * prototype = 0);
 	static C4PropList * NewAnon(C4PropList * prototype = 0);
+	static C4PropList * NewScen(C4PropList * prototype = 0);
 
 	// only freeze proplists which are not going to be modified
 	void Freeze() { constant = true; }
+	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
 
 	virtual void Denumerate(C4ValueNumbers *);

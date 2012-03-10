@@ -52,6 +52,8 @@
 
 #include <getopt.h>
 
+#include <C4GfxErrorDlg.h>
+
 static C4Network2IRCClient ApplicationIRCClient;
 
 C4Application::C4Application():
@@ -161,7 +163,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	if (!isEditor)
 	{
 		if (!(pWindow = FullScreen.Init(this)))
-			{ Clear(); return false; }
+			{ Clear(); ShowGfxErrorDialog(); return false; }
 	}
 	else
 	{
@@ -178,7 +180,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 
 	// Initialize D3D/OpenGL
 	bool success = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
-	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
+	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
 	{

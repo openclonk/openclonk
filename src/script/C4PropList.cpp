@@ -77,6 +77,11 @@ C4PropList * C4PropList::NewAnon(C4PropList * prototype)
 	return r;
 }
 
+C4PropList * C4PropList::NewScen(C4PropList * prototype)
+{
+	return new C4PropList(prototype);
+}
+
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 
@@ -368,7 +373,19 @@ template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 {
 	assert(e);
-	return e->Hash;
+	unsigned int hash = 4, tmp;
+	hash += ((uintptr_t)e) >> 16;
+	tmp   = ((((uintptr_t)e) & 0xffff) << 11) ^ hash;
+	hash  = (hash << 16) ^ tmp;
+	hash += hash >> 11;
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+	return hash;
+	//return e->Hash;
 }
 
 template<> template<>
@@ -380,7 +397,7 @@ bool C4Set<C4Property>::Equals<C4String *>(C4Property a, C4String * b)
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
 {
-	return p.Key->Hash;
+	return C4Set<C4Property>::Hash(p.Key);
 }
 
 bool C4PropList::GetPropertyByS(C4String * k, C4Value *pResult) const
@@ -408,6 +425,48 @@ C4String * C4PropList::GetPropertyStr(C4PropertyName n) const
 		return prototype->GetPropertyStr(n);
 	}
 	return 0;
+}
+
+C4AulFunc * C4PropList::GetFunc(C4String * k) const
+{
+	assert(k);
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getFunction();
+	}
+	if (prototype)
+	{
+		return prototype->GetFunc(k);
+	}
+	return 0;
+}
+
+C4AulFunc * C4PropList::GetFunc(const char * s) const
+{
+	assert(s);
+	if (s[0] == '~') ++s;
+	C4String * k = Strings.FindString(s);
+	// this string is entirely unused
+	if (!k)
+		return 0;
+	return GetFunc(k);
+}
+
+C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars)
+{
+	if (!Status) return C4Value();
+	C4AulFunc *pFn = GetFunc(k);
+	if (!pFn) return C4Value();
+	return pFn->Exec(this, Pars);
+}
+
+C4Value C4PropList::Call(const char * s, C4AulParSet *Pars)
+{
+	if (!Status) return C4Value();
+	assert(s && s[0]);
+	C4AulFunc *pFn = GetFunc(s);
+	if (!pFn) return C4Value();
+	return pFn->Exec(this, Pars);
 }
 
 C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const

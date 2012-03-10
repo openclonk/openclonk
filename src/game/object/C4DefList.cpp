@@ -403,7 +403,7 @@ void C4DefList::CallEveryDefinition()
 		AddDbgRec(RCT_Definition, sz, 32);
 #endif
 		C4AulParSet Pars(C4VPropList(it->second));
-		it->second->Script.Call(PSF_Definition, 0, &Pars, true);
+		it->second->Call(PSF_Definition, &Pars);
 		it->second->Freeze();
 	}
 }

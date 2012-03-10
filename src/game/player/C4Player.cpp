@@ -315,8 +315,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Script.Call(PSF_InitializeScriptPlayer, 0,
-				                          &C4AulParSet(C4VInt(Number), C4VInt(Team)));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(C4VInt(Number), C4VInt(Team)));
 			}
 		}
 		else
@@ -1389,7 +1388,7 @@ void C4Player::NotifyOwnedObjects()
 			if (cobj->Status)
 				if (cobj->Owner == Number)
 				{
-					C4AulFunc *pFn = cobj->Def->Script.GetFuncRecursive(PSF_OnOwnerRemoved);
+					C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 					// PSF_OnOwnerRemoved has an internal fallback function
 					assert(pFn);
 					if (pFn) pFn->Exec(cobj);

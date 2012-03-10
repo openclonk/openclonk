@@ -156,9 +156,9 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 
 //=============================== C4Script Functions ====================================
 
-static C4Object *Fn_this(C4AulContext *cthr)
+static C4PropList *Fn_this(C4AulContext *cthr)
 {
-	return cthr->Obj;
+	return cthr->Obj ? cthr->Obj : cthr->Def;
 }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
@@ -354,9 +354,14 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
 	return SafeRandom(iRange);
 }
 
-static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)
+static int FnGetType(C4AulContext *cthr, const C4Value & Value)
 {
-	return C4VInt(Value->GetType());
+	// dynamic types
+	if (Value.CheckConversion(C4V_Def)) return C4V_Def;
+	if (Value.CheckConversion(C4V_Effect)) return C4V_Effect;
+	if (Value.CheckConversion(C4V_Object)) return C4V_Object;
+	// static types
+	return Value.GetType();
 }
 
 static C4ValueArray * FnCreateArray(C4AulContext *cthr, int iSize)
@@ -423,16 +428,15 @@ static Nillable<long> FnGetChar(C4AulContext* cthr, C4String *pString, long iInd
 static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 {
 	// execute script in the same object
-	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
 	if (cthr->Obj)
-		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
-	else if (cthr->Def)
-		return cthr->Def->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true);
+	else if (cthr->Def && cthr->Def->GetDef())
+		return cthr->Def->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 	else
-		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 }
 
-static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj, C4ID idDef)
+static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4PropList * p)
 {
 	// safety
 	if (!funcname || !funcname->GetCStr())
@@ -440,29 +444,9 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 		Log("No func name");
 		return false;
 	}
-	// determine script context
-	C4AulScript *pCheckScript;
-	if (pObj)
-	{
-		pCheckScript = &pObj->Def->Script;
-	}
-	else if (idDef)
-	{
-		C4Def *pDef = C4Id2Def(idDef);
-		if (!pDef) { Log("Invalid or unloaded def"); return false; }
-		pCheckScript = &pDef->Script;
-	}
-	else
-	{
-		if (!cthr || !cthr->Caller || !cthr->Caller->Func || !cthr->Caller->Func->Owner)
-		{
-			Log("No valid script context");
-			return false;
-		}
-		pCheckScript = cthr->Caller->Func->Owner;
-	}
+	if (!p) p = cthr->Def;
 	// get function by name
-	C4AulFunc *pFunc = pCheckScript->GetFuncRecursive(funcname->GetCStr());
+	C4AulFunc *pFunc = p->GetFunc(funcname);
 	if (!pFunc)
 	{
 		LogF("Func %s not found", funcname->GetCStr());
@@ -475,16 +459,16 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 			C4AulScriptFunc *pSFunc = pFunc->SFunc();
 			if (!pSFunc)
 			{
-				LogF("%s%s (engine)", szPrefix, pFunc->Name);
+				LogF("%s%s (engine)", szPrefix, pFunc->GetName());
 			}
 			else if (!pSFunc->pOrgScript)
 			{
-				LogF("%s%s (no owner)", szPrefix, pSFunc->Name);
+				LogF("%s%s (no owner)", szPrefix, pSFunc->GetName());
 			}
 			else
 			{
 				int32_t iLine = SGetLine(pSFunc->pOrgScript->GetScript(), pSFunc->Script);
-				LogF("%s%s (%s:%d)", szPrefix, pFunc->Name, pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
+				LogF("%s%s (%s:%d)", szPrefix, pFunc->GetName(), pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
 			}
 			// next func in overload chain
 			pFunc = pSFunc ? pSFunc->OwnerOverloaded : NULL;
@@ -554,12 +538,12 @@ static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
 {
 	assert(!ctx->Obj || ctx->Def == ctx->Obj->Def);
 	if (!text || text->GetData().isNull()) return NULL;
-	// Find correct script: containing script unless -> operator used
+	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
-	if (ctx->Obj == ctx->Caller->Obj && ctx->Def == ctx->Caller->Def)
-		script = ctx->Caller->Func->pOrgScript;
+	if (ctx->Def && ctx->Def->GetDef())
+		script = &(ctx->Def->GetDef()->Script);
 	else
-		script = &ctx->Def->Script;
+		script = ctx->Caller->Func->pOrgScript;
 	assert(script);
 	try
 	{
@@ -597,18 +581,21 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
-	{ "C4V_Nil"                ,C4V_Int,          C4V_Nil},
-	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
-	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
-	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
-	{ "C4V_String"             ,C4V_Int,          C4V_String},
-	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
-	{ "C4V_PropList"           ,C4V_Int,          C4V_PropList},
+	{ "C4V_Nil",         C4V_Int, C4V_Nil},
+	{ "C4V_Int",         C4V_Int, C4V_Int},
+	{ "C4V_Bool",        C4V_Int, C4V_Bool},
+	{ "C4V_C4Object",    C4V_Int, C4V_Object},
+	{ "C4V_Effect",      C4V_Int, C4V_Effect},
+	{ "C4V_Def",         C4V_Int, C4V_Def},
+	{ "C4V_String",      C4V_Int, C4V_String},
+	{ "C4V_Array",       C4V_Int, C4V_Array},
+	{ "C4V_Function",    C4V_Int, C4V_Function},
+	{ "C4V_PropList",    C4V_Int, C4V_PropList},
 
-	{ "C4X_Ver1"               ,C4V_Int,          C4XVER1},
-	{ "C4X_Ver2"               ,C4V_Int,          C4XVER2},
-	{ "C4X_Ver3"               ,C4V_Int,          C4XVER3},
-	{ "C4X_Ver4"               ,C4V_Int,          C4XVER4},
+	{ "C4X_Ver1",        C4V_Int, C4XVER1},
+	{ "C4X_Ver2",        C4V_Int, C4XVER2},
+	{ "C4X_Ver3",        C4V_Int, C4XVER3},
+	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
 	{ NULL, C4V_Nil, 0}
 };
@@ -625,8 +612,6 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "Log",                  1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnLog_C4V,                   0 },
 	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
-
-	{ "GetType",              1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetType,                   0 },
 
 	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
 	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
@@ -668,6 +653,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Distance", FnDistance);
 	AddFunc(pEngine, "Angle", FnAngle);
 	AddFunc(pEngine, "GetChar", FnGetChar);
+	AddFunc(pEngine, "GetType", FnGetType);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
 	AddFunc(pEngine, "FatalError", FnFatalError);

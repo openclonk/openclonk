@@ -73,7 +73,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 
 /* Engine-Calls */
 
-#define PSF_Script              "~Script%i"
 #define PSF_Initialize          "~Initialize"
 #define PSF_Construction        "~Construction"
 #define PSF_Destruction         "~Destruction"
@@ -118,7 +117,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_UpdateTransferZone  "~UpdateTransferZone"
 #define PSF_CalcValue           "~CalcValue" // C4Object *pInBase, int iForPlayer
 #define PSF_CalcDefValue        "~CalcDefValue" // C4Object *pInBase, int iForPlayer
-#define PSF_SellTo              "~SellTo" // int iByPlr
 #define PSF_InputCallback       "InputCallback" // const char *szText
 #define PSF_MenuQueryCancel     "~MenuQueryCancel" // int iSelection
 #define PSF_IsFulfilled         "~IsFulfilled" // int for_plr

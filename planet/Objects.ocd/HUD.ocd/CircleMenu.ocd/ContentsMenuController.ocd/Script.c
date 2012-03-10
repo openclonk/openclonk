@@ -41,7 +41,7 @@ global func CreateContentsMenus()
 		controller->AddContentMenu(t, index++, true);
 		
 	// Add content menus for all containers at the position of the caller.
-	var containers = FindObjects(Find_AtPoint(), Find_NoContainer(), Find_Func("IsContainer"), Sort_Func("SortInventoryObjs"));
+	var containers = FindObjects(Find_AtPoint(), Find_NoContainer(), Find_OCF(OCF_Fullcon), Find_Func("IsContainer"), Sort_Func("SortInventoryObjs"));
 	for(var c in containers)
 		controller->AddContentMenu(c, index++, false);
 	

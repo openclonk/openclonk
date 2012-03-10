@@ -2,7 +2,7 @@
 
 #appendto Cloud
 
-public func RainDrop()
+public func RainDrop(string material)
 {
 	return;
 }

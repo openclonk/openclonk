@@ -102,8 +102,8 @@ public:
 
 	// construction/destruction
 	C4ValueMapNames();
-	C4ValueMapNames(C4ValueMapNames& NamesToCopy);
-	C4ValueMapNames& operator = (C4ValueMapNames &NamesToCopy);
+	C4ValueMapNames(const C4ValueMapNames& NamesToCopy);
+	C4ValueMapNames& operator = (const C4ValueMapNames &NamesToCopy);
 	virtual ~C4ValueMapNames();
 
 

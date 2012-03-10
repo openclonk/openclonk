@@ -130,7 +130,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		C4String *pStr = Data[1].getStr();
 		if (!pStr) return NULL;
 		// Construct
-		C4FindObjectFunc *pFO = new C4FindObjectFunc(pStr->GetCStr());
+		C4FindObjectFunc *pFO = new C4FindObjectFunc(pStr);
 		// Add parameters
 		for (int i = 2; i < Data.GetSize(); i++)
 			pFO->SetPar(i - 2, Data[i]);
@@ -699,11 +699,7 @@ bool C4FindObjectFunc::Check(C4Object *pObj)
 {
 	// Function not found?
 	if (!Name) return false;
-	// Search same-name-list for appropriate function
-	C4AulFunc *pCallFunc = pObj->Def->Script.GetFuncRecursive(Name);
-	if (!pCallFunc) return false;
-	// Call
-	return !! pCallFunc->Exec(pObj, &Pars);
+	return pObj->Call(Name, &Pars).getBool();
 }
 
 bool C4FindObjectFunc::IsImpossible()
@@ -793,7 +789,7 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 		C4String *pStr = Data[1].getStr();
 		if (!pStr) return NULL;
 		// Construct
-		C4SortObjectFunc *pSO = new C4SortObjectFunc(pStr->GetCStr());
+		C4SortObjectFunc *pSO = new C4SortObjectFunc(pStr);
 		// Add parameters
 		for (int i = 2; i < Data.GetSize(); i++)
 			pSO->SetPar(i - 2, Data[i]);
@@ -944,11 +940,6 @@ void C4SortObjectFunc::SetPar(int i, const C4Value &Par)
 
 int32_t C4SortObjectFunc::CompareGetValue(C4Object *pObj)
 {
-	// Function not found?
 	if (!Name) return false;
-	// Search same-name-list for appropriate function
-	C4AulFunc *pCallFunc = pObj->Def->Script.GetFuncRecursive(Name);
-	if (!pCallFunc) return false;
-	// Call
-	return pCallFunc->Exec(pObj, &Pars).getInt();
+	return pObj->Call(Name, &Pars).getInt();
 }

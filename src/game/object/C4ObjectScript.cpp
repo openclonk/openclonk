@@ -468,7 +468,7 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Set
 	cthr->Obj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,false,Data,iRetries,szText);
 	// Success
@@ -491,7 +491,7 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,false,iRetries,szText,iBaseMode));
 }
@@ -512,7 +512,7 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,true,iRetries,szText,iBaseMode));
 }
@@ -612,10 +612,10 @@ static long FnGetBreath(C4AulObjectContext *cthr)
 static long FnGetMass(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetMass");
 		else
-			return cthr->Def->Mass;
+			return cthr->Def->GetDef()->Mass;
 	else
 		return cthr->Obj->Mass;
 }
@@ -781,10 +781,10 @@ static bool FnSetKiller(C4AulObjectContext *cthr, long iNewKiller)
 static long FnGetCategory(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetCategory");
 		else
-			return cthr->Def->Category;
+			return cthr->Def->GetDef()->Category;
 	else
 		return cthr->Obj->Category;
 }
@@ -802,10 +802,10 @@ static long FnGetDamage(C4AulObjectContext *cthr)
 static long FnGetValue(C4AulContext *cthr, C4Object *pInBase, long iForPlayer)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetValue");
 		else
-			return cthr->Def->GetValue(pInBase, iForPlayer);
+			return cthr->Def->GetDef()->GetValue(pInBase, iForPlayer);
 	else
 		return cthr->Obj->GetValue(pInBase, iForPlayer);
 }
@@ -918,7 +918,6 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4V_Bool:
 		SCopy(Parameter.getBool() ? "true" : "false", parameter);
 		break;
-	case C4V_C4Object:
 	case C4V_PropList:
 		if (Parameter.getPropList()->GetObject())
 			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
@@ -1027,7 +1026,7 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObjRank:
 	{
 		// draw current gfx of XPar_C4V including rank
-		if (XPar.GetType() != C4V_C4Object) return false;
+		if (!XPar.CheckConversion(C4V_Object)) return false;
 		C4Object *pGfxObj = XPar.getObj();
 		if (pGfxObj && pGfxObj->Status)
 		{
@@ -1080,10 +1079,10 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObject:
 	{
 		// draw object picture
-		if (XPar.GetType() != C4V_C4Object)
+		if (!XPar.CheckConversion(C4V_Object))
 			throw new C4AulExecError(cthr->Obj,
 			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
-			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_C4Object)
+			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		C4Object *pGfxObj = XPar.getObj();
 		fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
@@ -1526,12 +1525,11 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4Def *p
 
 static long FnGetDefBottom(C4AulContext* cthr)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def)
-			throw new NeedNonGlobalContext("GetDefBottom");
+	if (!cthr->Def || !cthr->Def->GetDef())
+		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def);
-	return cthr->Def->Shape.y+cthr->Def->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
+	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def->GetDef());
+	return cthr->Def->GetDef()->Shape.y+cthr->Def->GetDef()->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
 }
 
 static bool FnSetMenuSize(C4AulObjectContext* cthr, long iCols, long iRows)
@@ -2336,9 +2334,9 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 
 C4ScriptFnDef C4ScriptObjectFnMap[]=
 {
-	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
-	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
-	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
+	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
+	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
+	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },

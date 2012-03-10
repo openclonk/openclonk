@@ -25,47 +25,71 @@
 #define INC_C4ScriptHost
 
 #include <C4ComponentHost.h>
-
 #include <C4Aul.h>
-
-const int32_t C4SCR_MaxIDLen = 100,
-                               C4SCR_MaxDesc  = 256;
-
 
 // generic script host for objects
 class C4ScriptHost : public C4AulScript
 {
 public:
-	C4ScriptHost();
 	~C4ScriptHost();
-	bool Delete() { return true; }
+	bool Delete() { return false; } // do NOT delete this - it's just a class member!
 public:
 	void Clear();
-	bool Load(C4Group &hGroup, const char *szFilename,
-	          const char *szLanguage/*=NULL*/, C4Def *pDef/*=NULL*/, class C4LangStringTable *pLocalTable);
-	C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
+	virtual bool Load(C4Group &hGroup, const char *szFilename,
+	          const char *szLanguage, C4LangStringTable *pLocalTable);
+	const char *GetScript() const { return Script.getData(); }
+	virtual C4ScriptHost * GetScriptHost() { return this; }
+	std::list<C4ScriptHost *> SourceScripts;
 protected:
+	C4ScriptHost();
 	void SetError(const char *szMessage);
 	void MakeScript();
 	bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
+
+
+	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
+	void ClearCode();
+	bool Preparse(); // preparse script; return if successfull
+	bool Parse(); // parse preparsed script; return if successfull
+	int GetCodePos() const { return Code.size(); }
+	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
+	C4AulBCC *GetLastCode() { return LastCode; }
+
+	StdStrBuf Script; // script
+	std::vector<C4AulBCC> Code;
+	std::vector<const char *> PosForCode;
+	C4AulBCC * LastCode;
+	friend class C4AulParseState;
+	friend class C4AulScriptFunc;
+	friend class C4AulDebug;
 };
 
+// script host for System.ocg scripts
+class C4ExtraScriptHost: public C4ScriptHost
+{
+	C4Value ParserPropList;
+public:
+	C4ExtraScriptHost();
+	void Clear();
+
+	bool Delete() { return true; }
+	virtual C4PropList * GetPropList();
+};
 
 // script host for defs
-class C4DefScriptHost : public C4ScriptHost
+class C4DefScriptHost: public C4ScriptHost
 {
 public:
-	C4DefScriptHost() : C4ScriptHost() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; }
-	void Clear() { SFn_CalcValue = SFn_SellTo = SFn_ControlTransfer = NULL; C4ScriptHost::Clear(); }
+	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
+	void Clear();
 
-	bool Delete() { return false; } // do NOT delete this - it's just a class member!
+	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual C4PropList * GetPropList();
 protected:
+	C4Def *Def; // owning def file
 	void AfterLink(); // get common funcs
-public:
-	C4AulScriptFunc *SFn_CalcValue; // get object value
-	C4AulScriptFunc *SFn_SellTo; // player par(0) sold the object
-	C4AulScriptFunc *SFn_ControlTransfer; // object par(0) tries to get to par(1)/par(2)
 };
 
 
@@ -75,18 +99,14 @@ class C4GameScriptHost : public C4ScriptHost
 public:
 	C4GameScriptHost();
 	~C4GameScriptHost();
-	bool Delete() { return false; } // do NOT delete this - it's a global!
+	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	void Clear();
+	void AfterLink();
+	virtual C4PropList * GetPropList() { return ScenPrototype; }
+	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
-
-	// Global script data
-	int32_t Counter;
-	bool Go;
-	bool Execute(int);
-	void Clear() { Counter = 0; Go = false; C4ScriptHost::Clear(); }
-
-	// Compile scenario script data
-	void CompileFunc(StdCompiler *pComp);
-
+	C4PropList * ScenPropList;
+	C4PropList * ScenPrototype;
 };
 
 extern C4GameScriptHost GameScript;

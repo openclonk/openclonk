@@ -339,22 +339,6 @@
 								</object>
 							</object>
 						</object>
-						<object class="NSTextField" id="586873942">
-							<reference key="NSNextResponder" ref="768161391"/>
-							<int key="NSvFlags">292</int>
-							<string key="NSFrame">{{137, 0}, {141, 17}}</string>
-							<reference key="NSSuperview" ref="768161391"/>
-							<bool key="NSEnabled">YES</bool>
-							<object class="NSTextFieldCell" key="NSCell" id="564808166">
-								<int key="NSCellFlags">68288064</int>
-								<int key="NSCellFlags2">272630784</int>
-								<string key="NSContents">Script</string>
-								<reference key="NSSupport" ref="805367209"/>
-								<reference key="NSControlView" ref="586873942"/>
-								<reference key="NSBackgroundColor" ref="43692000"/>
-								<reference key="NSTextColor" ref="169813348"/>
-							</object>
-						</object>
 						<object class="NSTextField" id="977182517">
 							<reference key="NSNextResponder" ref="768161391"/>
 							<int key="NSvFlags">290</int>
@@ -1258,14 +1242,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">scriptLabel</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="586873942"/>
-					</object>
-					<int key="connectionID">108</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">timeLabel</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="977182517"/>
@@ -1514,7 +1490,6 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="738226569"/>
-							<reference ref="586873942"/>
 							<reference ref="977182517"/>
 							<reference ref="587786245"/>
 						</object>
@@ -1548,20 +1523,6 @@
 						<int key="objectID">100</int>
 						<reference key="object" ref="926896742"/>
 						<reference key="parent" ref="738226569"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">101</int>
-						<reference key="object" ref="586873942"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="564808166"/>
-						</object>
-						<reference key="parent" ref="768161391"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">102</int>
-						<reference key="object" ref="564808166"/>
-						<reference key="parent" ref="586873942"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">103</int>
@@ -2312,7 +2273,6 @@
 							<string>outputScrollView</string>
 							<string>outputTextView</string>
 							<string>previewView</string>
-							<string>scriptLabel</string>
 							<string>texturesPopup</string>
 							<string>timeLabel</string>
 							<string>toolSelector</string>
@@ -2351,7 +2311,6 @@
 							<string>outputScrollView</string>
 							<string>outputTextView</string>
 							<string>previewView</string>
-							<string>scriptLabel</string>
 							<string>texturesPopup</string>
 							<string>timeLabel</string>
 							<string>toolSelector</string>
@@ -2398,10 +2357,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">previewView</string>
 								<string key="candidateClassName">IKImageView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">scriptLabel</string>
-								<string key="candidateClassName">NSTextField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">texturesPopup</string>

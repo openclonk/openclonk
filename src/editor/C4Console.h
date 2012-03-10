@@ -99,7 +99,6 @@ public:
 	C4ObjectListDlg ObjectListDlg;
 	C4EditCursor    EditCursor;
 
-	int ScriptCounter;
 	int FrameCounter;
 	int Time,FPS;
 #if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)

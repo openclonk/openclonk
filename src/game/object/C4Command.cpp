@@ -1561,12 +1561,7 @@ void C4Command::Transfer()
 	// Call target transfer script
 	if (!::Game.iTick5)
 	{
-
-		C4AulScriptFunc *f;
-		bool fHandled = (f = Target->Def->Script.SFn_ControlTransfer) != NULL;
-		if (fHandled) fHandled = f->Exec(Target,&C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty))).getBool();
-
-		if (!fHandled)
+		if (!Target->Call(PSF_ControlTransfer, &C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty))).getBool())
 			// Transfer not handled by target: done
 			{ Finish(true); return; }
 	}

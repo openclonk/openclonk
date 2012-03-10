@@ -247,7 +247,6 @@ protected:
 	void Ticks();
 	bool CheckObjectEnumeration();
 	bool LoadScenarioComponents();
-	bool LoadScenarioScripts();
 public:
 	bool LoadAdditionalSystemGroup(class C4Group &parent_group);
 	bool SaveGameTitle(C4Group &hGroup);

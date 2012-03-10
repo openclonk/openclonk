@@ -44,8 +44,6 @@ const char* GetC4VName(const C4V_Type Type)
 		return "int";
 	case C4V_Bool:
 		return "bool";
-	case C4V_C4Object:
-		return "object";
 	case C4V_String:
 		return "string";
 	case C4V_Array:
@@ -54,15 +52,33 @@ const char* GetC4VName(const C4V_Type Type)
 		return "proplist";
 	case C4V_Any:
 		return "any";
+	case C4V_Object:
+		return "object";
+	case C4V_Def:
+		return "def";
+	case C4V_Effect:
+		return "effect";
 	default:
 		return "!Fehler!";
 	}
 }
 
-const char* C4Value::GetTypeInfo()
+C4Value::C4Value(C4Object *pObj): NextRef(NULL), Type(pObj ? C4V_PropList : C4V_Nil)
 {
-	return GetC4VName(GetType());
+	Data.PropList = pObj; AddDataRef();
 }
+
+C4Object * C4Value::getObj() const
+{
+	return CheckConversion(C4V_Object) ? Data.PropList->GetObject() : NULL;
+}
+
+C4Object * C4Value::_getObj() const
+{
+	return Data.PropList ? Data.PropList->GetObject() : NULL;
+}
+
+C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
 
 bool C4Value::FnCnvObject() const
 {
@@ -71,6 +87,19 @@ bool C4Value::FnCnvObject() const
 	return false;
 }
 
+bool C4Value::FnCnvDef() const
+{
+	// try casting
+	if (Data.PropList->GetDef()) return true;
+	return false;
+}
+
+bool C4Value::FnCnvEffect() const
+{
+	// try casting
+	if (Data.PropList->GetEffect()) return true;
+	return false;
+}
 
 bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 {
@@ -79,11 +108,14 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	case C4V_Nil:      return Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Int:      return Type != C4V_Int && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
 	case C4V_Bool:     return false;
-	case C4V_PropList: return Type != C4V_PropList && Type != C4V_C4Object && Type != C4V_Nil && Type != C4V_Any;
-	case C4V_C4Object: return Type != C4V_C4Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Effect && Type != C4V_Def && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Array:    return Type != C4V_Array && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Function: return Type != C4V_Function && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Any:      return false;
+	case C4V_Def:      return Type != C4V_Def && Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Object:   return Type != C4V_Object && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
+	case C4V_Effect:   return Type != C4V_Effect && Type != C4V_PropList && Type != C4V_Nil && Type != C4V_Any;
 	default: assert(!"C4Value::ConvertTo: impossible conversion target"); return false;
 	}
 }
@@ -98,17 +130,18 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		return FormatString("%ld", static_cast<long>(Data.Int));
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
-	case C4V_C4Object:
 	case C4V_PropList:
 	{
+		if (Data.PropList == ScriptEngine.GetPropList())
+			return StdStrBuf("Global");
 		StdStrBuf DataString;
 		DataString = "{";
 		if (Data.PropList->GetObject())
 		{
-			if (Data.Obj->Status == C4OS_NORMAL)
-				DataString.AppendFormat("#%d, ", Data.Obj->Number);
+			if (Data.PropList->GetObject()->Status == C4OS_NORMAL)
+				DataString.AppendFormat("#%d, ", Data.PropList->GetObject()->Number);
 			else
-				DataString.AppendFormat("(#%d), ", Data.Obj->Number);
+				DataString.AppendFormat("(#%d), ", Data.PropList->GetObject()->Number);
 		}
 		else if (Data.PropList->GetDef())
 			DataString.AppendFormat("%s, ", Data.PropList->GetDef()->id.ToString());
@@ -134,6 +167,8 @@ StdStrBuf C4Value::GetDataString(int depth) const
 		DataString.AppendChar(']');
 		return DataString;
 	}
+	case C4V_Function:
+		return Data.Fn->GetFullName();
 	case C4V_Nil:
 		return StdStrBuf("nil");
 	default:
@@ -203,197 +238,180 @@ uint32_t C4ValueNumbers::GetNumberForValue(C4Value * v)
 {
 	// This is only used for C4Values containing pointers
 	// Assume that all pointers have the same size
-	if (ValueNumbers.find(v->_getObj()) == ValueNumbers.end())
+	if (ValueNumbers.find(v->GetData()) == ValueNumbers.end())
 	{
 		ValuesToSave.push_back(v);
-		ValueNumbers[v->_getObj()] = ValuesToSave.size();
+		ValueNumbers[v->GetData()] = ValuesToSave.size();
 		return ValuesToSave.size();
 	}
-	return ValueNumbers[v->_getObj()];
-}
-
-static char GetC4VID(const C4V_Type Type)
-{
-	switch (Type)
-	{
-	case C4V_Nil:
-		return 'n';
-	case C4V_Int:
-		return 'i';
-	case C4V_Bool:
-		return 'b';
-	case C4V_PropList:
-	case C4V_Array:
-	case C4V_Enum:
-		return 'E';
-	case C4V_C4Object:
-	case C4V_C4ObjectEnum:
-		return 'O';
-	case C4V_String:
-		return 's';
-	case C4V_C4DefEnum:
-		return 'D';
-	default:
-		assert(false);
-	}
-	return ' ';
-}
-
-static C4V_Type GetC4VFromID(const char C4VID)
-{
-	switch (C4VID)
-	{
-	case 'n':
-	case 'A': // compat with OC 5.1
-		return C4V_Nil;
-	case 'i':
-		return C4V_Int;
-	case 'b':
-		return C4V_Bool;
-	case 's':
-		return C4V_String;
-	case 'O':
-		return C4V_C4ObjectEnum;
-	case 'D':
-		return C4V_C4DefEnum;
-	case 'E':
-		return C4V_Enum;
-	}
-	return C4V_Any;
+	return ValueNumbers[v->GetData()];
 }
 
 void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Type
 	bool fCompiler = pComp->isCompiler();
+	char cC4VID;
 	if (!fCompiler)
 	{
-		// Get type
 		assert(Type != C4V_Nil || !Data);
-		char cC4VID = GetC4VID(Type);
-		// special cases:
-		if (Type == C4V_PropList && getPropList()->IsDef())
-			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if (Type == C4V_PropList && getPropList()->IsNumbered())
-			cC4VID = GetC4VID(C4V_C4ObjectEnum);
-		// Write
-		pComp->Character(cC4VID);
+		switch (Type)
+		{
+		case C4V_Nil:
+			cC4VID = 'n'; break;
+		case C4V_Int:
+			cC4VID = 'i'; break;
+		case C4V_Bool:
+			cC4VID = 'b'; break;
+		case C4V_PropList:
+			if (getPropList()->IsDef())
+				cC4VID = 'D';
+			else if (getPropList()->IsNumbered())
+				cC4VID = 'O';
+			else if (getPropList() == GameScript.ScenPropList)
+				cC4VID = 'c';
+			else if (getPropList() == GameScript.ScenPrototype)
+				cC4VID = 't';
+			else if (getPropList() == ScriptEngine.GetPropList())
+				cC4VID = 'g';
+			else
+				cC4VID = 'E';
+			break;
+		case C4V_Array:
+			cC4VID = 'E'; break;
+		case C4V_Function:
+			cC4VID = 'f'; break;
+		case C4V_String:
+			cC4VID = 's'; break;
+		default:
+			assert(false);
+		}
 	}
-	else
-	{
-		// Clear
-		Set0();
-		// Read type
-		char cC4VID;
-		try
-		{
-			pComp->Character(cC4VID);
-		}
-		catch (StdCompiler::NotFoundException *pExc)
-		{
-			delete pExc;
-			cC4VID = 'n';
-		}
-		Type = GetC4VFromID(cC4VID);
-		if (Type == C4V_Any)
-		{
-			Type = C4V_Nil;
-			pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
-		}
-	}
+	pComp->Character(cC4VID);
 	// Data
 	int32_t iTmp;
-	switch (Type)
+	switch (cC4VID)
 	{
-
-		// simple data types: just save
-	case C4V_Int:
-	case C4V_Bool:
-
-		// these are 32-bit integers
+	case 'i':
 		iTmp = Data.Int;
 		pComp->Value(iTmp);
-		Data.Int = iTmp;
-
+		SetInt(iTmp);
 		break;
 
-		// object: save object number instead
-	case C4V_C4Object: case C4V_PropList:
-	{
-		assert(!fCompiler);
-		C4PropList * p = getPropList();
-		if (p->IsDef())
-			pComp->Value(p->GetDef()->id);
-		else if (p->IsNumbered())
-		{
-			iTmp = getPropList()->GetPropListNumbered()->Number;
-			pComp->Value(iTmp);
-		}
-		else
-		{
+	case 'b':
+		iTmp = Data.Int;
+		pComp->Value(iTmp);
+		SetBool(iTmp);
+		break;
+
+	case 'E':
+		if (!fCompiler)
 			iTmp = numbers->GetNumberForValue(this);
-			pComp->Value(iTmp);
-		}
-		break;
-	}
-
-	case C4V_C4ObjectEnum: case C4V_Enum:
-		assert(fCompiler);
-		pComp->Value(iTmp); // must be denumerated later
-		Data.Int = iTmp;
-		break;
-
-	case C4V_C4DefEnum:
-	{
-		assert(fCompiler);
-		C4ID id;
-		pComp->Value(id);
-		C4PropList * p = Definitions.ID2Def(id);
-		if (!p)
-		{
-			Set0();
-			pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
-		}
-		else
-		{
-			SetPropList(p);
-		}
-		break;
-	}
-
-	case C4V_String:
-	{
-		// search
-		StdStrBuf s;
-		if (!fCompiler) s = Data.Str->GetData();
-		pComp->Value(s);
+		pComp->Value(iTmp);
 		if (fCompiler)
 		{
-			C4String *pString = ::Strings.RegString(s);
-			Data.Str = pString;
-			if (pString)
+			Data.Int = iTmp; // must be denumerated later
+			Type = C4V_Enum;
+		}
+		break;
+
+	case 'O':
+		if (!fCompiler)
+			iTmp = getPropList()->GetPropListNumbered()->Number;
+		pComp->Value(iTmp);
+		if (fCompiler)
+		{
+			Data.Int = iTmp; // must be denumerated later
+			Type = C4V_C4ObjectEnum;
+		}
+		break;
+
+	case 'D':
+	{
+		C4ID id;
+		if (!fCompiler)
+			id = getPropList()->GetDef()->id;
+		pComp->Value(id);
+		if (fCompiler)
+		{
+			C4PropList * p = Definitions.ID2Def(id);
+			if (!p)
 			{
-				pString->IncRef();
+				Set0();
+				pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
 			}
 			else
-				Type = C4V_Nil;
+			{
+				SetPropList(p);
+			}
 		}
 		break;
 	}
 
-	case C4V_Array:
-		iTmp = numbers->GetNumberForValue(this);
-		pComp->Value(iTmp);
+	case 's':
+	{
+		StdStrBuf s;
+		if (!fCompiler)
+			s = Data.Str->GetData();
+		pComp->Value(s);
+		if (fCompiler)
+			SetString(::Strings.RegString(s));
+		break;
+	}
+
+	case 'c':
+		if (fCompiler)
+			SetPropList(GameScript.ScenPropList);
 		break;
 
-	case C4V_Nil:
-		assert(!Data);
+	case 't':
+		if (fCompiler)
+			SetPropList(GameScript.ScenPrototype);
+		break;
+
+	case 'g':
+		if (fCompiler)
+			SetPropList(ScriptEngine.GetPropList());
+		break;
+
+	case 'n':
+	case 'A': // compat with OC 5.1
+		if (fCompiler)
+			Set0();
 		// doesn't have a value, so nothing to store
 		break;
 
+	case 'f':
+	{
+		C4Value Owner;
+		if (!fCompiler)
+		{
+			Owner.SetPropList(Data.Fn->Owner->GetPropList());
+			assert(Owner._getPropList() && Owner._getPropList()->GetFunc(Data.Fn->GetName()) == Data.Fn);
+		}
+		pComp->Value(mkParAdapt(Owner, numbers));
+		pComp->Separator(StdCompiler::SEP_PART);
+		StdStrBuf s;
+		if (!fCompiler)
+			s = Data.Fn->GetName();
+		pComp->Value(s);
+		if (fCompiler)
+		{
+			// Owner was a definition or singleton, so shouldn't have to be denumerated
+			if (!Owner.getPropList())
+			{
+				Set0();
+				pComp->Warn("ERROR: Owner of function %s is missing.", s.getData());
+			}
+			else
+				SetFunction(Owner._getPropList()->GetFunc(s.getData()));
+		}
+		break;
+	}
+
 	default:
 		// shouldn't happen
-		assert(false);
+		pComp->excCorrupt("unknown C4Value type tag '%c'", cC4VID);
 		break;
 	}
 }
@@ -499,8 +517,8 @@ bool C4Value::operator == (const C4Value& Value2) const
 		default:
 			return false;
 		}
-	case C4V_C4Object: case C4V_PropList:
-		if (Value2.Type == C4V_C4Object || Value2.Type == C4V_PropList)
+	case C4V_PropList:
+		if (Value2.Type == C4V_PropList)
 		{
 			// Compare as equal if and only if the proplists are indistinguishable
 			// If one or both are mutable, they have to be the same

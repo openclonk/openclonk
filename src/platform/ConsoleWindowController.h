@@ -30,7 +30,6 @@
 	IBOutlet NSPopUpButton* materialsPopup;
 	IBOutlet NSPopUpButton* texturesPopup;
 	IBOutlet NSTextField* frameLabel;
-	IBOutlet NSTextField* scriptLabel;
 	IBOutlet NSTextField* timeLabel;
 	IBOutlet NSTextView* objectPropertiesText;
 	IBOutlet NSScrollView* outputScrollView;
@@ -41,7 +40,6 @@
 	IBOutlet NSSegmentedControl* modeSelector;
 }
 @property(readonly) NSTextField* frameLabel;
-@property(readonly) NSTextField* scriptLabel;
 @property(readonly) NSTextField* timeLabel;
 @property(readonly) NSTextView* outputTextView;
 @property(readonly) NSTextView* objectPropertiesText;

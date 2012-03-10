@@ -328,13 +328,13 @@ C4ValueMapNames::C4ValueMapNames()
 
 }
 
-C4ValueMapNames::C4ValueMapNames(C4ValueMapNames& NamesToCopy)
+C4ValueMapNames::C4ValueMapNames(const C4ValueMapNames& NamesToCopy)
 		: pNames(0), iSize(0), pFirst(0)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 }
 
-C4ValueMapNames& C4ValueMapNames::operator = (C4ValueMapNames &NamesToCopy)
+C4ValueMapNames& C4ValueMapNames::operator = (const C4ValueMapNames &NamesToCopy)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 	return *this;

@@ -969,7 +969,7 @@ bool C4Object::ExecLife()
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 				{
-					C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnInIncendiaryMaterial);
+					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
 					if (pCallFunc)
 					{
 						pCallFunc->Exec(this, &C4AulParSet());
@@ -1257,7 +1257,7 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 	if (Def->BlastIncinerate)
 		if (Damage>=Def->BlastIncinerate)
 		{
-			C4AulFunc *pCallFunc = this->Def->Script.GetFuncRecursive(PSF_OnBlastIncinerationDamage);
+			C4AulFunc *pCallFunc = GetFunc(PSF_OnBlastIncinerationDamage);
 			if (pCallFunc)
 			{
 				C4AulParSet Pars(C4VInt(iLevel), C4VInt(iCausedBy));
@@ -1810,28 +1810,26 @@ void C4Object::SetName(const char * NewName)
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 {
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer)));
 	int32_t iValue;
-
-	// value by script?
-	if (C4AulScriptFunc *f = Def->Script.SFn_CalcValue)
-		iValue = f->Exec(this, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer))).getInt();
+	if (r != C4VNull)
+		iValue = r.getInt();
 	else
 	{
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue=Def->GetValue(NULL, iForPlayer);
+		iValue = Def->GetValue(NULL, iForPlayer);
 	}
 	// Con percentage
-	iValue=iValue*Con/FullCon;
-	// value adjustments buy base function
+	iValue = iValue * Con / FullCon;
+	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcSellValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VObj(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcSellValue, &C4AulParSet(C4VObj(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
-	// Return value
 	return iValue;
 }
 
@@ -1886,13 +1884,6 @@ void C4Object::ClearPointers(C4Object *pObj)
 				RemoveGraphicsOverlay(pGfxOvrl->GetID());
 		}
 	}
-}
-
-C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPassError)
-{
-	if (!Status) return C4VNull;
-	assert(Def && szFunctionCall[0]);
-	return Def->Script.Call(szFunctionCall, this, pPars, false, fPassError);
 }
 
 bool C4Object::SetPhase(int32_t iPhase)
@@ -4435,8 +4426,8 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 	if (!parV) return false;
 	// determine drag object/id
 	C4Object *obj=NULL; C4ID id;
-	if (parV.GetType() == C4V_C4Object) obj = parV.getObj();
-	else if (parV.GetType() == C4V_PropList) id = parV.getC4ID();
+	if (parV.CheckConversion(C4V_Object)) obj = parV.getObj();
+	else if (parV.CheckConversion(C4V_Def)) id = parV.getC4ID();
 	if (drag_object) *drag_object = obj;
 	if (drag_id) *drag_id = id;
 	// drag possible, even w./o image
@@ -4538,8 +4529,8 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 {
 	// get unused object
 	C4Object *pUnusedObject;
-	C4AulFunc *pFnObj2Drop;
-	if ((pFnObj2Drop = Def->Script.GetSFunc(PSF_GetObject2Drop)))
+	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
+	if (pFnObj2Drop)
 		pUnusedObject = pFnObj2Drop->Exec(this, pToMakeRoomForObject ? &C4AulParSet(C4VObj(pToMakeRoomForObject)) : NULL).getObj();
 	else
 	{

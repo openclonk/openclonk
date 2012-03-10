@@ -47,4 +47,5 @@ BottomOpen=1
 Climate=100
 YearSpeed=0
 Wind=1,100,-100,100
+Rain=40
  

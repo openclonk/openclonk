@@ -35,7 +35,7 @@
     <text>Variables are declared using the following syntax:</text>
     <code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
     <text>The variable's scope, followed by the variable's name.</text>
-    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is not possible for global variables. Without initialization variables always start with <code>nil</code>.</text>
+    <text>Optionally, you can assign a value to the variable directly at declaration time. However, this is not possible for <code>static</code> variables. Without initialization variables always start with <code>nil</code>.</text>
     <text>Additional variable declarations may follow, separated by comma. The declaration must always be ended with a semicolon.</text>
     <h>Example:</h>
     <code>static object_count;
@@ -70,6 +70,7 @@ protected func Timer()
     <text>
       <ul>
         <li>Object local variable declarations are also valid in #appendto or #include script extensions.</li>
+        <li>When <code>this</code> is a definition, local variables are constant. That protects against accidental modifications that would appear to work fine while there is only one object of a kind, but break in subtle ways as soon as there are multiple instances.</li>
         <li>Using the <code>obj.foo</code> or <code>obj["foo"]</code> notation one can access local variables in other objects.</li>
         <li>If two variables of the same name but differing scope are valid at the same time, then the variable of the smaller scope will be used, meaning for example an object local variable will "cover up" a global variable within its own scope.</li>
         <li>If the same variable is declared multiple times, the variable will still exist only once and no error is thrown. Multiple initializations are considered regular assignments and executed in order, respectively.</li>

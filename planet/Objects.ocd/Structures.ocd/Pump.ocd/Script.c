@@ -66,6 +66,7 @@ protected func OnWaitStart()
 }
 
 local aMaterials=["", 0]; //contained liquids
+local pumpable_materials; // materials that can be pumped
 
 protected func Pumping()
 {
@@ -76,7 +77,7 @@ protected func Pumping()
 	if ((aMaterials[1] == 0) || (aMaterials[0] == ""))
 	{
 		//Get new Materials
-		aMaterials = source_pipe->GetLiquid("*", 5, this, true);
+		aMaterials = source_pipe->GetLiquid(pumpable_materials, 5, this, true);
 		//No Material to pump?
 		if ((aMaterials[0] == "") || (aMaterials[1] == 0))
 			return;
@@ -111,6 +112,16 @@ private func ReadyToPump()
 		return false;
 	// TODO: Account for pumping into buildings.
 	// Pumping is okay.
+	return true;
+}
+
+/**
+Set name or wildcard string of materials this pump can pump
+@param to_val: Material that can be pumped. 0 or "*" for any material.
+*/
+public func SetPumpableMaterials(string to_val)
+{
+	pumpable_materials = to_val;
 	return true;
 }
 

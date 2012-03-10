@@ -117,39 +117,6 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Check category
-		if (!GetPlane() && Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
-		{
-			int Plane; bool gotplane = true;
-			switch (Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
-			{
-				case C4D_StaticBack: Plane = 100; break;
-				case C4D_Structure: Plane = C4Plane_Structure; break;
-				case C4D_Vehicle: Plane = 300; break;
-				case C4D_Living: Plane = 400; break;
-				case C4D_Object: Plane = 500; break;
-				case C4D_StaticBack | C4D_Background: Plane = -500; break;
-				case C4D_Structure | C4D_Background: Plane = -400; break;
-				case C4D_Vehicle | C4D_Background: Plane = -300; break;
-				case C4D_Living | C4D_Background: Plane = -200; break;
-				case C4D_Object | C4D_Background: Plane = -100; break;
-				case C4D_StaticBack | C4D_Foreground: Plane = 1100; break;
-				case C4D_Structure | C4D_Foreground: Plane = 1200; break;
-				case C4D_Vehicle | C4D_Foreground: Plane = 1300; break;
-				case C4D_Living | C4D_Foreground: Plane = 1400; break;
-				case C4D_Object | C4D_Foreground: Plane = 1500; break;
-				default:
-					DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
-					gotplane = false;
-					break;
-			}
-			if (gotplane) SetProperty(P_Plane, C4VInt(Plane));
-		}
-		if (!GetPlane())
-		{
-			DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", GetName(), id.ToString(), hGroup.GetFullName().getData());
-			SetProperty(P_Plane, C4VInt(60));
-		}
 		// Check mass
 		if (Mass < 0)
 		{
@@ -302,8 +269,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def()
+C4Def::C4Def(): Script(this), C4PropList(ScriptEngine.GetPropList())
 {
+	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 	Default();
 }
@@ -334,6 +302,7 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
 {
+	C4PropList::Clear();
 
 	Graphics.Clear();
 
@@ -343,8 +312,6 @@ void C4Def::Clear()
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
-
-	C4PropList::Clear();
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -419,9 +386,9 @@ bool C4Def::Load(C4Group &hGroup,
 	if (dwLoadWhat & C4D_Load_Script)
 	{
 		// reg script to engine
-		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
+		Script.Reg2List(&::ScriptEngine);
 		// Load script
-		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable);
+		Script.Load(hGroup, C4CFN_Script, szLanguage, &StringTable);
 	}
 
 	// read clonknames
@@ -542,21 +509,16 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 {
-	// CalcDefValue defined?
-	C4AulFunc *pCalcValueFn = Script.GetSFunc(PSF_CalcDefValue, AA_PROTECTED);
-	int32_t iValue;
-	if (pCalcValueFn)
-		// then call it!
-		iValue = pCalcValueFn->Exec(NULL, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer))).getInt();
-	else
-		// otherwise, use default value
-		iValue = Value;
+	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer)));
+	int32_t iValue = Value;
+	if (r != C4VNull)
+		iValue = r.getInt();
 	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VPropList(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcBuyValue, &C4AulParSet(C4VPropList(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
 	return iValue;
 }

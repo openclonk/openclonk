@@ -57,7 +57,6 @@ C4Console::C4Console(): C4ConsoleGUI()
 {
 	Active = false;
 	Editing = true;
-	ScriptCounter=0;
 	FrameCounter=0;
 	fGameOpen=false;
 
@@ -141,14 +140,6 @@ void C4Console::UpdateStatusBars()
 		StdStrBuf str;
 		str.Format("Frame: %i",FrameCounter);
 		C4ConsoleGUI::DisplayInfoText(CONSOLE_FrameCounter, str);
-	}
-	// Script counter
-	if (::GameScript.Counter!=ScriptCounter)
-	{
-		ScriptCounter=::GameScript.Counter;
-		StdStrBuf str;
-		str.Format("Script: %i",ScriptCounter);
-		C4ConsoleGUI::DisplayInfoText(CONSOLE_ScriptCounter, str);
 	}
 	// Time & FPS
 	if ((Game.Time!=Time) || (Game.FPS!=FPS))
@@ -433,7 +424,7 @@ void C4Console::UpdateInputCtrl()
 {
 	ClearInput();
 	// add global and standard functions
-	std::list <char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
+	std::list <const char*> functions = ::ScriptEngine.GetFunctionNames(&::GameScript);
 	SetInputFunctions(functions);
 }
 
@@ -599,7 +590,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection) {}
 void C4ConsoleGUI::RecordingEnabled() {}
 void C4ConsoleGUI::SetCaptionToFileName(char const*) {}
 void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor) {}
-void C4ConsoleGUI::SetInputFunctions(std::list<char*, std::allocator<char*> >&) {}
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*>&) {}
 void C4ConsoleGUI::ShowAboutWithCopyright(StdStrBuf&) {}
 void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(C4ToolsDlg*) {}
 bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg*) {return 0;}

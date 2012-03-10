@@ -397,6 +397,7 @@ int main(int argc, char *argv[])
 	setvbuf(stdout, NULL, _IOLBF, 0);
 #endif
 	// Scan options
+	fQuiet = true;
 	int iFirstGroup = 0;
 	for (int i = 1; i < argc; ++i)
 	{
