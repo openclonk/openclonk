@@ -1,8 +1,8 @@
 /**
-	WorkingTitle
+	Crash
 	First attempt at a nontrivial settlement scenario
 	
-	@authors Sven2
+	@authors Sven2 Maikel ck
 */
 
 static g_is_initialized;
@@ -16,7 +16,7 @@ func DoInit(int first_player)
 	time->SetTime(600);
 	time->SetCycleSpeed(12);
 	// Waterfall
-	AddEffect("IntWaterfall", 0, 1, 2);
+	AddEffect("IntWaterfall", 0, 1, 1);
 	// Windmill owner
 	var windmill = FindObject(Find_ID(Windmill));
 	if (windmill) windmill->SetOwner(first_player);

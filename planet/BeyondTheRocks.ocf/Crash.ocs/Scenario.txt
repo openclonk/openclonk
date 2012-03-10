@@ -1,5 +1,5 @@
 [Head]
-Icon=15
+Icon=37
 Title=Crash
 Version=5,2,90,20
 Difficulty=10
