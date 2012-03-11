@@ -151,7 +151,8 @@ public func StartFlight(int new_throttle)
 public func StartInstantFlight(int angle, int new_throttle)
 {
 	angle -= 10;
-	Sound("PropellerLoop",0,100,nil,1);
+	var effect = AddEffect("IntSoundDelay",this,1,1,this);
+	effect.Immediate = true;
 	SetAction("Fly");
 	throttle = new_throttle;
 	thrust = new_throttle;
@@ -172,7 +173,7 @@ public func CancelFlight()
 
 private func FxIntSoundDelayTimer(object target, effect, int timer)
 {
-	if(timer >= 78)
+	if(timer >= 78 || (effect.Immediate && timer >= 5))
 	{
 		Sound("PropellerLoop",0,100,nil,1);
 		return -1;
