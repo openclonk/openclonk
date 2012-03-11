@@ -18,6 +18,7 @@ local rider;
 local ridervis;
 local riderattach;
 local dirdev;
+local controllable;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 700; }
@@ -27,6 +28,7 @@ protected func Construction()
 	//flight length
 	fuel=100;
 	dirdev=12;
+	controllable = true;
 }
 
 protected func Destruction()
@@ -36,25 +38,29 @@ protected func Destruction()
 
 func ControlRight()
 {
-	SetRDir(+3);
+	if(controllable)
+		SetRDir(+3);
 	return true;
 }
 
 func ControlLeft()
 {
-	SetRDir(-3);
+	if(controllable)
+		SetRDir(-3);
 	return true;
 }
 
 func ControlStop()
 {
-	SetRDir(0);
+	if(controllable)
+		SetRDir(0);
 	return true;
 }
 
 func ControlJump(object clonk)
 {
-	JumpOff(clonk,60);
+	if(controllable)
+		JumpOff(clonk,60);
 	return true;
 }
 
@@ -207,6 +213,11 @@ func SetFuel(int new)
 func SetDirectionDeviation(int new)
 {
 	dirdev = new;
+}
+
+func SetControllable(bool new)
+{
+	controllable = new;
 }
 
 func GetFuel()

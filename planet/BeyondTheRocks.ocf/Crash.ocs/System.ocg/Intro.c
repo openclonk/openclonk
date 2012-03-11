@@ -28,6 +28,7 @@ global func IntroCreateBoompack(int x, int y, int fuel)
 	var boompack = CreateObject(Boompack, x, y, NO_OWNER);
 	boompack->SetFuel(fuel);
 	boompack->SetDirectionDeviation(8); // make sure direction of boompack is roughly kept
+	boompack->SetControllable(false);
 	return boompack;
 }
 
