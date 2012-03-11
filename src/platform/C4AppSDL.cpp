@@ -41,7 +41,7 @@
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+		MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 

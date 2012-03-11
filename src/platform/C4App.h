@@ -178,7 +178,6 @@ protected:
 	StdStrBuf GetGameDataPath();
 #endif
 	pthread_t MainThread;
-	bool DoNotDelay;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & (1<<3); }

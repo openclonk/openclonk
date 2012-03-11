@@ -48,7 +48,6 @@ static void readline_callback (char *);
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		DoNotDelay(false),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),

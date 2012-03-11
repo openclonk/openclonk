@@ -81,7 +81,7 @@ C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0),
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
 #endif
-		DoNotDelay(false), Priv(new C4X11AppImpl(this)), fDspModeSet(false)
+		Priv(new C4X11AppImpl(this)), fDspModeSet(false)
 {
 	Add(&Priv->X11Proc);
 #ifdef WITH_GLIB
