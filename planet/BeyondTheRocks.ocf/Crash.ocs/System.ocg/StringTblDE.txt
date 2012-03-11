@@ -11,7 +11,7 @@ MsgCrashedPlane=Und, habt ihr das Flugzeug schon gefunden?
 AnsCrashedPlane=Nein, wir suchen noch.
 
 # NPC Merchant
-MsgSellPlans=Ich habe hier ein paar interessante Bauplaene! Fuer 150 Clunker wuerde ich sie dir ueberlasdsen.
+MsgSellPlans=Ich habe hier ein paar interessante Bauplaene! Fuer 150 Clunker wuerde ich sie dir ueberlasden.
 AnsNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme spaeter wieder.
 AnsBuyPlans=Das ist ein guter Deal; hier sind deine Clunker.
 MsgGivePlans=Danke! Hier hast du Plaene fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}. Aber Vorsicht: Die Pumpe ist aus Holz und sollte nicht zum Pumpen von Lava verwendet werden!

@@ -1,0 +1,16 @@
+[DefCore]
+id=Plane_Skids
+Version=5,2,0,1
+Category=C4D_Vehicle
+Width=38
+Height=8
+Offset=-19,-4
+Vertices=5
+VertexX=-18,-12,8,18,0
+VertexY=3,-3,-3,3,3
+VertexFriction=30,60,60,30,30
+Value=20
+Mass=20
+Components=Metal=2;
+Rotate=1
+Float=0

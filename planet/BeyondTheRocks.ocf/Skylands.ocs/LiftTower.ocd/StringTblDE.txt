@@ -1,0 +1,3 @@
+Name=Hebeturm
+Description=Um schwere Lasten zu heben.
+TakeHook=Haken nehmen.
