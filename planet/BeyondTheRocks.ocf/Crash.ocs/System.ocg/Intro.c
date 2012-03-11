@@ -3,7 +3,7 @@ global func IntroStart()
 {
 	if(/*!g_intro_initialized && */!GetEffect("IntIntro"))
 	{
-		AddEffect("IntIntro", nil, 1, 10, nil, nil);
+		AddEffect("IntIntro", nil, 1, 2, nil, nil);
 		//g_intro_initialized = true;
 	}
 }
@@ -57,54 +57,50 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 
 	if(effect.Time == 90)
 		effect.Plane->ContainedRight();
-	if(effect.Time == 100)
+	if(effect.Time == 136)
 		effect.Plane->ContainedStop();
-
-	if(effect.Time == 140)
-		effect.Dialog->MessageBoxAll("$MsgIntro2$");
-	if(effect.Time == 150)
-		effect.Plane->ContainedRight();
-	if(effect.Time == 160)
-		effect.Plane->ContainedLeft();
-	if(effect.Time == 170)
-		effect.Plane->ContainedRight();
 	if(effect.Time == 180)
-		effect.Plane->ContainedStop();
-
-	if(effect.Time == 220)
-		effect.Dialog->MessageBoxAll("$MsgIntro3$");
-	if(effect.Time == 230)
 		effect.Plane->ContainedLeft();
-	if(effect.Time == 250)
-		effect.Plane->ContainedRight();
-	if(effect.Time == 260)
+	if(effect.Time == 200)
+		effect.Dialog->MessageBoxAll("$MsgIntro2$");
+	if(effect.Time == 236)
 		effect.Plane->ContainedStop();
-
-	if(effect.Time == 340)
+	if(effect.Time == 300)
+		effect.Dialog->MessageBoxAll("$MsgIntro3$");
+	if(effect.Time == 320)
+		effect.Plane->ContainedRight();	
+	if(effect.Time == 326)
+		effect.Plane->ContainedStop();
+	if(effect.Time == 356)
+		effect.Plane->ContainedRight();	
+	if(effect.Time == 362)
+		effect.Plane->ContainedStop();
+		
+	if(effect.Time == 400)
 		effect.Plane->CancelFlight();
 
-	if(effect.Time == 350)
+	if(effect.Time == 404)
 		effect.Dialog->MessageBoxAll("$MsgIntro4$");
 
-	if(effect.Time == 370)
+	if(effect.Time == 424)
 		effect.Dialog->MessageBoxAll("$MsgIntro5$");
 
-	if(effect.Time == 390)
+	if(effect.Time == 460)
 	{
 		var x = effect.Plane->GetX();
 		var y = effect.Plane->GetY();
 
 		effect.Pilot->Exit();
-		IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(275 + Random(31), effect.Pilot);
+		IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), effect.Pilot);
 		while(effect.Pilot->Contents())
-			IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(275 + Random(31), effect.Pilot->Contents());
+			IntroCreateBoompack(RandomX(x-5,x+5), RandomX(y-5,y+5), 160)->Launch(290 + Random(26), effect.Pilot->Contents());
 	}
 
-	if(effect.Time == 440)
+	if(effect.Time == 500)
 		for(var i = 0; i < GetPlayerCount(); ++i)
 			GetCursor(GetPlayerByIndex(i))->CloseMenu();
 
-	if(effect.Time >= 750)
+	if(effect.Time >= 830)
 	{
 		effect.Pilot->SetCommand("MoveTo", effect.Pilot, 120 - effect.Pilot->GetX(), 860 - effect.Pilot->GetY());
 		return -1;

@@ -151,7 +151,7 @@ public func StartFlight(int new_throttle)
 public func StartInstantFlight(int angle, int new_throttle)
 {
 	angle -= 10;
-	AddEffect("IntSoundDelay",this,1,1,this);
+	Sound("PropellerLoop",0,100,nil,1);
 	SetAction("Fly");
 	throttle = new_throttle;
 	thrust = new_throttle;
