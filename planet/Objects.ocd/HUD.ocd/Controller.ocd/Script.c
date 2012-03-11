@@ -19,9 +19,13 @@
 
 local actionbar;
 local wealth;
-local deco;
+//local deco;
 local markers;
 local backpack;
+
+// Button that locks/unlocks the inventory
+local lockbutton;
+local hoverhelper; // the hover-thingie for showing the inventory. a helper.
 
 // Tubes.
 local healthtube;
@@ -48,9 +52,9 @@ protected func Construction()
 	ReorderCrewSelectors();
 	
 	// background decoration
-	deco = CreateObject(GUI_Background,0,0,GetOwner());
-	deco->SetPosition(1,-1);
-	deco->SetControllerObject(this);
+	//deco = CreateObject(GUI_Background,0,0,GetOwner());
+	//deco->SetPosition(1,-1);
+	//deco->SetControllerObject(this);
 	
 	// wealth display
 	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
@@ -67,25 +71,138 @@ protected func Construction()
 	// MakeManaTube();
 	
 	// backpack display
-	for(var i=0; i<5; i++)
-	{
-		var bt = CreateObject(GUI_RingMenu_Icon,0,0,GetOwner());
-		bt->SetPosition(74+Sin((i*72)+36,43),-74-Cos((i*72)+36,43));	
-		bt->SetExtraData(i+2);
-		bt->SetSize(48000);
-		//bt->SetObject(this->GetItem(2+i),0,2+i,0);
-		bt->SetObjDrawTransform(1,0,0,0,1,0,0);
-		backpack[GetLength(backpack)] = bt;
-	}
-	//AddEffect("UpdateBackpack",this,1,1,nil,nil);		
 	
-
+	MakeBackpack();
 	
 }
+
+// How many slots the inventory has, for overloading
+private func BackpackSize() { return 7; }
 
 private func ScheduleUpdateBackpack()
 {
 	ScheduleCall(this, "UpdateBackpack", 1, 0);
+}
+
+/* Inventory-Bar stuff */
+private func MakeBackpack()
+{
+	// distance between slots
+	var d = 60;
+	// upper barrier
+	var y = -225-35 - d*BackpackSize();
+
+	// create background
+	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
+	hoverhelper->SetHUDController(this);
+	hoverhelper->SetPosition(0,y-10);
+	hoverhelper->SetShape(0,0,40+48/2+25, d*BackpackSize() - 48 - 20);
+	hoverhelper.Visibility = VIS_None;
+
+	// create backpack slots
+	for(var i=0; i<BackpackSize(); i++)
+	{
+		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+		bt->SetHUDController(this);
+		bt->SetPosition(40, y + d*i);
+		bt->SetSlotId(i);
+		bt->SetCon(115);
+		
+		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
+		backpack[GetLength(backpack)] = bt;
+	}
+	
+	// and the lock-button
+	var bt = CreateObject(GUI_Lock_Button,0,0,GetOwner());
+	bt->SetHUDController(this);
+	bt->SetPosition(60,y-55);
+	
+	lockbutton = bt;
+}
+
+public func ShowInventory()
+{
+	var effect;
+	if(effect = GetEffect("InventoryTransition", this))
+		effect.position = 40;
+	else
+		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 40, backpack[0]);
+	
+	hoverhelper.Visibility = VIS_None;
+	
+	ClearScheduleCall(this, "HideInventory");
+}
+
+public func HideInventory()
+{
+	// don't hide if the inventory is locked
+	if(lockbutton->IsLocked())
+		return;
+		
+	var effect;
+	if(effect = GetEffect("InventoryTransition", this))
+		effect.position = 0;
+	else
+		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 0, backpack[0]);
+	
+	hoverhelper.Visibility = VIS_Owner;
+}
+
+public func ScheduleHideInventory()
+{
+	ScheduleCall(this, "HideInventory", 120);
+}
+
+
+private func FxInventoryTransitionStart(object target, proplist effect, int tmp, int pos, object ref)
+{
+	if(tmp != 0)
+		return;
+		
+	// make stuff visible. It wants to be seen transitioning!
+	var bt;
+	for(bt in backpack)
+		bt.Visibility = VIS_Owner;
+	
+	effect.position = pos;
+	effect.reference = ref;
+}
+
+private func FxInventoryTransitionTimer(object target, proplist effect, int time)
+{
+	// don't move in the initial frame - used if the moving is aborted by hovering
+	if(time < 1)
+		return;
+		
+	var dist = effect.position - effect.reference->GetX();
+	var dir = BoundBy(dist, -8,8);
+	
+	// if we haven't reached our destination yet, we move everything
+	if(dir != 0)
+	{
+		var bt;
+		for(bt in backpack)
+			bt->MovePosition(dir, 0);
+		
+		bt = lockbutton;
+		bt->MovePosition(dir, 0);
+	}
+	// else the effect is allowed to cease existing
+	else
+		return -1;
+}
+
+private func FxInventoryTransitionStop(object target, proplist effect, int reason, int tmp)
+{
+	if(tmp != 0)
+		return;
+		
+	if(effect.position == 0)
+	{
+		var bt;
+		for(bt in backpack)
+			bt.Visibility = VIS_None;
+	}
 }
 
 /*-- Wealth --*/
@@ -204,15 +321,21 @@ func UpdateBackpack()
 {
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
+
+	ShowInventory();
 	
 	for(var i=0; i<GetLength(backpack); i++)
 	{
-		backpack[i]->SetAmount(0);  
-		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetExtraData())); 
-		backpack[i]->SetGraphics(nil,nil,9);
-		backpack[i]->SetGraphics(nil,nil,10);
-		backpack[i]->SetGraphics(nil,nil,11);
-		backpack[i]->SetGraphics(nil,nil,12);
+		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetSlotId()));
+		backpack[i]->SetUnselected();
+	}
+	
+	for(var i=0; i < c->HandObjects(); ++i)
+		backpack[c->GetHandItemPos(i)]->SetSelected(i);
+	
+	if(!lockbutton->IsLocked())
+	{
+		ScheduleHideInventory();
 	}
 }	
 
@@ -320,6 +443,18 @@ public func Destruction()
 		}
 	}
 	
+	if(hoverhelper)
+		hoverhelper->RemoveObject();
+	if(lockbutton)
+		lockbutton->RemoveObject();
+	
+	if(backpack)
+		for(var i=0; i<GetLength(backpack); ++i)
+		{
+			if(backpack[i])
+				backpack[i]->RemoveObject();
+		}
+	
 	if(healthtube)
 		healthtube->RemoveObject();
 		
@@ -338,8 +473,12 @@ public func Destruction()
 	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
 	if(HUDgoal)
 		HUDgoal->RemoveObject();
-	if(deco)
-		deco->RemoveObject();
+	//if(deco)
+		//deco->RemoveObject();
+		
+	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
+	for(var o in crew)
+		o->RemoveObject();
 }
 
 public func OnCrewDisabled(object clonk)
@@ -376,11 +515,12 @@ public func OnCrewSelection(object clonk, bool deselect)
 	//	var deco = CreateObject(GUI_ObjectSelector_Background,0,0,clonk->GetOwner());
 	//	deco->SetPosition(337,-38);
 		
-		for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
+		/*for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
 		{
-			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
+			ActionButton(clonk,i,clonk->GetHandItem(i),ACTIONTYPE_INVENTORY);
 		}
-		ClearButtons(i);
+		ClearButtons(i);*/
+		ClearButtons(0);
 		
 		// and start effect to monitor vehicles and structures...
 		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i);
@@ -418,17 +558,14 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	var startAt = effect.startAt;
 	var i = startAt;
 	
-	var hotkey = i+1-target->HandObjects();
+	//var hotkey = i+1-target->HandObjects();
+	var hotkey = i+1;
 	
 	// Add buttons:
 	
 	// all except structures only if outside
 	if(!target->Contained())
 	{
-		var pushed = nil;
-		if(target->GetProcedure() == "PUSH")
-			pushed = target->GetActionTarget();
-	
 		// add interactables (script interface)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var interactable in interactables)
@@ -437,17 +574,9 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		}
 		
 		// add vehicles
-		// 1. add vehicle the clonk is pushing
-		if(pushed)
-		{
-			ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE,hotkey++);
-		}
-		// 2. the rest
 		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var vehicle in vehicles)
 		{
-			// skip pushed vehicle
-			if (vehicle == pushed) continue;
 			ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
 		}
 	}
@@ -473,35 +602,54 @@ public func OnSelectionChanged(int old, int new)
 	actionbar[new]->UpdateSelectionStatus();
 }
 
+// call from HUDAdapter or inventory-buttons
+public func OnHandSelectionChange(int old, int new, int handslot)
+{
+	backpack[old]->SetUnselected();
+	backpack[new]->SetSelected(handslot);
+	
+	OnSlotObjectChanged(handslot);
+}
+
+protected func OnInventoryHotkeyPress(int slot)
+{
+	backpack[slot]->OnMouseOver(GetOwner());
+}
+
+protected func OnInventoryHotkeyRelease(int slot)
+{
+	backpack[slot]->OnMouseOut(GetOwner());
+}
+
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
 {
+	/*
 	//Log("slot %d changed", slot);
 	var cursor = GetCursor(GetOwner());
 	if(!cursor) return;
-	var obj = cursor->GetItem(slot);
+	var obj = cursor->GetHandItem(slot);
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 	
 	// refresh backpack
+	*/
 	ScheduleUpdateBackpack();
 }
 
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
 {
 	//var size = GUI_ObjectSelector->GetDefWidth();
-	var spacing = deco.padding;
-
-	// don't forget the spacings between inventory - vehicle,structure
-	var extra = 0;
-	if(forClonk->HandObjects() <= pos) extra = 80;
+	//var spacing = deco.padding;
+	var spacing = 90;
 	
 	var bt = actionbar[pos];
 	// no object yet... create it
 	if(!bt)
 	{
 		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
+		//bt->SetGraphics("Slot", GUI_Background);
 	}
-
+/*
 		if(pos==0)
 		{ 
 			bt->SetGraphics("None");
@@ -517,7 +665,10 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 			bt->SetCon(90);
 			bt->SetPosition(491 + (pos-2) * spacing, -45);
 		}
-
+	*/
+	
+	//bt->SetCon(90);
+	bt->SetPosition(401 + pos * spacing, -45);
 	
 	bt->SetCrew(forClonk);
 	bt->SetObject(interaction,actiontype,pos,hotkey);
@@ -538,13 +689,13 @@ private func ClearButtons(int start)
 	}
 	//if(deco->GetSlotNumber() != -1)
 	//if(deco->GetSlotNumber() != GetRealActionbarLength())
-		deco->SlideTo(GetRealActionbarLength());
+		//deco->SlideTo(GetRealActionbarLength());
 }
 
 private func GetRealActionbarLength()
 {
 	var i=0;
-	for(var j = 2; j < GetLength(actionbar); ++j)
+	for(var j = 0; j < GetLength(actionbar); ++j)
 		if(actionbar[j]->ShowsItem())	i++;
 	return i;
 }
@@ -564,7 +715,7 @@ public func ControlHotkey(int hotindex)
 	if(!actionbar[hotindex]) return false;
     var clonk = actionbar[hotindex]->GetCrew();
    	if(!clonk) return false;
-    hotindex += clonk->HandObjects();
+    //hotindex += clonk->HandObjects();
    	if(!actionbar[hotindex]) return false;
    	// only if it is not already used
   	actionbar[hotindex]->~MouseSelection(GetOwner());
@@ -573,10 +724,10 @@ public func ControlHotkey(int hotindex)
 
 private func CreateSelectorFor(object clonk)
 {
-		var selector = CreateObject(GUI_CrewSelector,10,10,-1);
-		selector->SetCrew(clonk);
-		clonk->SetSelector(selector);
-		return selector;
+	var selector = CreateObject(GUI_CrewSelector,10,10,-1);
+	selector->SetCrew(clonk);
+	clonk->SetSelector(selector);
+	return selector;
 }
 
 

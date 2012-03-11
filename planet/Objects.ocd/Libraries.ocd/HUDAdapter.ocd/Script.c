@@ -138,6 +138,7 @@ protected func OnSlotFull(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->OnSlotObjectChanged(slot);
+		
 	return _inherited(slot, ...);
 }
 
@@ -145,7 +146,38 @@ protected func OnSlotEmpty(int slot)
 {
 	if (HUDcontroller)
 		HUDcontroller->OnSlotObjectChanged(slot);
+	
 	return _inherited(slot, ...);
+}
+
+
+protected func OnHandSelectionChange(int old, int new, int handslot)
+{
+	if (HUDcontroller)
+		HUDcontroller->OnHandSelectionChange(old, new, handslot);
+	return _inherited(old, new, handslot, ...);
+}
+
+protected func OnInventoryHotkeyPress(int slot)
+{
+	if (HUDcontroller)
+		HUDcontroller->OnInventoryHotkeyPress(slot);
+	return _inherited(slot, ...);
+}
+
+protected func OnInventoryHotkeyRelease(int slot)
+{
+	if (HUDcontroller)
+		HUDcontroller->OnInventoryHotkeyRelease(slot);
+	return _inherited(slot, ...);
+}
+
+// when two items switch place
+protected func OnInventoryChange(int old, int new)
+{
+	if (HUDcontroller)
+		HUDcontroller->ScheduleUpdateBackpack();
+	return _inherited(old, new, ...);
 }
 
 func Collection2()

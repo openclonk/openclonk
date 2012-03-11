@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_Menu
+#include GUI_FancyGridMenu
 
 local constructinfo_shown;
 
@@ -38,9 +38,10 @@ global func CreateConstructionMenu(object constructor)
 protected func Construction()
 {
 	SetPosition(600, 400);
-	// Set original menu graphics.
-	SetGraphics("BG", GUI_Menu);
-	return _inherited(...);
+
+	_inherited(...);
+	
+	SetMenuBorder(menu_itemwidth/2);
 }
 
 public func AddMenuStructures(object constructor, object clonk)
@@ -55,6 +56,13 @@ public func AddMenuStructures(object constructor, object clonk)
 	return;
 }
 
+public func Show()
+{
+	// Change look
+	SetGraphics(nil, Library_ProductionMenu);
+	return _inherited(...);
+}
+
 private func ShowConstructionInfo(object item)
 {
 	// TODO: Implement this completely (maybe based on a structure library) and new graphics.
@@ -62,16 +70,28 @@ private func ShowConstructionInfo(object item)
 	var structure_id = item->GetSymbol();
 	var cost_msg = "@";
 	var comp, index = 0;
+	
+	// show energy production/consumption (if any)
+	if(structure_id->~IsPowerConsumer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerConsumer);
+	if(structure_id->~IsPowerProducer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerProducer);
+	
+	cost_msg = Format("%s         |",cost_msg);
+	
 	while (comp = GetComponent(nil, index++, nil, structure_id))
-		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
-	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
-	constructinfo_shown = item;
+		cost_msg = Format("%s %dx{{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
+		
+	CustomMessage(cost_msg, item, GetOwner(), 0,  160, nil, nil, nil, 1|2);
+	
+	constructinfo_shown = item;;
+	
 	return;
 }
 
 public func HideConstructionInfo()
 {
-	CustomMessage("", this, GetOwner());
+	CustomMessage("", constructinfo_shown, GetOwner());
 	constructinfo_shown = false;
 }
 
@@ -111,7 +131,10 @@ public func OnItemSelection(object item)
 	{
 		// Close menu if a construction site has been created.
 		if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
-			Close();	
+		{
+			Close();
+			return true;
+		}	
 	}
 	return _inherited(item, ...);
 }

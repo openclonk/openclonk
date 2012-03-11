@@ -100,7 +100,7 @@ func Hide()
 
 func AddContentMenu(object container, int pos, bool isCrew)
 {
-	var menu = CreateObject(GUI_Menu, 0, 0, GetOwner());
+	var menu = CreateObject(GUI_CircleMenu, 0, 0, GetOwner());
 
 	menu->SetSymbol(container);
 	menu->SetMenuObject(menu_object);
@@ -462,7 +462,7 @@ private func MoveObjects(proplist p_source, proplist p_target, object menuItem, 
 public func OnMouseClick(int x, int y, bool alt)
 {
 	// Close menu if not clicked on one of the menus.
-	var menu = FindObject(Find_Distance(160, x, y), Find_ID(GUI_Menu));
+	var menu = FindObject(Find_Distance(160, x, y), Find_ID(GUI_CircleMenu));
 	if (!menu || menu->GetCommander() != this)
 		Close();
 	return;

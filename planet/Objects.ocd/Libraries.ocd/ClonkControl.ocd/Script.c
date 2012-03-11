@@ -39,10 +39,14 @@
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local indexed_inventory;
 local disableautosort;
 local force_collection;
 local inventory;
+local use_objects;
+
+local handslot_choice_pending;
+local interaction_pending;
+local forced_ejection;
 
 /* Item limit */
 
@@ -51,7 +55,6 @@ public func MaxContentsCount() { return 7; }
 public func NoStackedContentMenu() { return true; }
 
 /* Get the ith item in the inventory */
-// the first two are in the hands
 public func GetItem(int i)
 {
 	if (i >= GetLength(inventory))
@@ -69,6 +72,87 @@ public func GetItems()
 	return inv;
 }
 
+/* Get the ith item in hands.
+   These are the items that will be used with use-commands. (Left mouse click, etc...) */
+public func GetHandItem(int i)
+{
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+		
+	return GetItem(use_objects[i]);
+}
+
+/* Set the "hand"th use-item to the "inv"th slot */
+public func SetHandItemPos(int hand, int inv)
+{
+	if(hand >= HandObjects() || inv >= MaxContentsCount())
+		return nil;
+	if(hand < 0 || inv < 0) return nil;
+
+	// If the item is already selected, we can't hold it in another one too.
+	var hand2 = GetHandPosByItemPos(inv);
+	if(hand2 != nil)
+	{
+		// switch places
+		use_objects[hand2] = use_objects[hand];
+		use_objects[hand] = inv;
+		
+		// additional callbacks
+		if(GetHandItem(hand2))
+		{
+			this->~OnSlotFull(hand2);
+			GetItem(inv)->~Selection(this, hand2);
+		}
+		else
+			this->~OnSlotEmpty(hand2);
+	}
+	else
+		use_objects[hand] = inv;
+	
+	// call callbacks
+	if(GetItem(inv))
+	{
+		this->~OnSlotFull(hand);
+		GetItem(inv)->~Selection(this, hand);
+	}
+	else
+	{
+		this->~OnSlotEmpty(hand);
+	}
+	
+	handslot_choice_pending = false;
+}
+
+/* Returns the position in the inventory of the ith use item */
+public func GetHandItemPos(int i)
+{
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+	
+	return use_objects[i];
+}
+
+/* Returns in which hand-slot the oth inventory-slot is */
+private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
+{
+	for(var i=0; i < GetLength(use_objects); i++)
+		if(use_objects[i] == o)
+			return i;
+	
+	return nil;
+}
+ 
+public func DropInventoryItem(int slot)
+{
+	var obj = GetItem(slot);
+	if(!obj)
+		return nil;
+	
+	this->SetCommand("Drop",obj);
+}
+ 
 // For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
 public func HUDShowItems() { return true; }
 
@@ -106,32 +190,38 @@ public func Switch2Items(int one, int two)
 	if (using == inventory[one] || using == inventory[two])
 		CancelUse();
 	
+	var handone, handtwo;
+	handone = GetHandPosByItemPos(one);
+	handtwo = GetHandPosByItemPos(two);
+	
 	// callbacks: (de)selection
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[two]) inventory[two]->~Deselection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[one]) inventory[one]->~Deselection(this,two);
 		
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[one]) inventory[one]->~Selection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[two]) inventory[two]->~Selection(this,two);
 	
 	// callbacks: to self, for HUD
-	if (one < HandObjects())
+	if (handone != nil)
 	{
 		if (inventory[one])
-			this->~OnSlotFull(one);
+			this->~OnSlotFull(handone);
 		else
-			this->~OnSlotEmpty(one);
+			this->~OnSlotEmpty(handone);
 	}
-	if (two < HandObjects())
+	if (handtwo != nil)
 	{
 		if (inventory[two])
-			this->~OnSlotFull(two);
+			this->~OnSlotFull(handtwo);
 		else
-			this->~OnSlotEmpty(two);
+			this->~OnSlotEmpty(handtwo);
 	}
+	
+	this->~OnInventoryChange(one, two);
 }
 
 /* Overload of Collect function */
@@ -147,12 +237,10 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil)
+	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
 	{
 		if (item)
 		{
-			pos = BoundBy(pos,0,MaxContentsCount()-1);
-			
 			disableautosort = true;
 			// collect but do not sort in_
 			// Collection2 will be called which attempts to automatically sort in
@@ -164,8 +252,12 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 			if (success)
 			{
 				inventory[pos] = item;
-				if (pos < HandObjects())
-					this->~OnSlotFull(pos);
+				var handpos = GetHandPosByItemPos(pos); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+				{
+					this->~OnSlotFull(handpos);
+				}
 			}
 		}
 	}
@@ -191,8 +283,11 @@ protected func Construction()
 	menu = nil;
 
 	// inventory variables
-	indexed_inventory = 0;
 	inventory = CreateArray();
+	use_objects = CreateArray();
+
+	for(var i=0; i < HandObjects(); i++)
+		use_objects[i] = i;
 
 	force_collection = false;
 	
@@ -212,35 +307,44 @@ protected func Collection2(object obj)
 	if (disableautosort) return _inherited(obj,...);
 	
 	var success = false;
+	var i;
 	
-	// into selected area if empty
-	if (!inventory[0])
-	{
-		inventory[0] = obj;
-		success = true;
-	}
-	// otherwise, next if empty
-	else
-	{
-		for(var i = 1; i < MaxContentsCount(); ++i)
+	// sort into selected hands if empty
+	for(i = 0; i < HandObjects(); i++)
+		if(!GetHandItem(0))
 		{
-			sel = i % MaxContentsCount();
-			if (!inventory[sel])
+			sel = GetHandItemPos(0);
+			inventory[sel] = obj;
+			success = true;
+		}
+		
+	// otherwise, first empty slot
+	if(!success)
+	{
+		for(var i = 0; i < MaxContentsCount(); ++i)
+		{
+			if (!GetItem(i))
 			{
-				indexed_inventory++;
+				sel = i;
 				inventory[sel] = obj;
 				success = true;
 				break;
 			}
 		}
 	}
+	
 	// callbacks
 	if (success)
-		if (sel < HandObjects())
-			this->~OnSlotFull(sel);
-	
-	if (sel == 0 || sel == 1)
-		obj->~Selection(this,sel == 1);
+	{
+		var handpos = GetHandPosByItemPos(sel); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+		{
+			this->~OnSlotFull(handpos);
+			obj->~Selection(this, handpos);
+		}
+	}
+		
 
 	return _inherited(obj,...);
 }
@@ -248,49 +352,84 @@ protected func Collection2(object obj)
 protected func Ejection(object obj)
 {
 	// if an object leaves this object
-	
 	// find obj in array and delete (cancel using too)
 	var i = 0;
 	var success = false;
+	
 	for(var item in inventory)
-	{
-		if (obj == item)
-		{
+    {
+	   if (obj == item)
+	   {
 			inventory[i] = nil;
-			indexed_inventory--;
 			success = true;
 			break;
-		}
-		++i;
-	}
+	   }
+	   ++i;
+    }
 	if (using == obj) CancelUse();
 
 	// callbacks
 	if (success)
-		if (i < HandObjects())
-			this->~OnSlotEmpty(i);
-	
-	if (i == 0 || i == 1)
-		obj->~Deselection(this,i == 1);
+	{
+		var handpos = GetHandPosByItemPos(i); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+		{
+			// if it was a forced ejection, the hand will remain empty
+			if(forced_ejection == obj)
+			{
+				this->~OnSlotEmpty(handpos);
+				obj->~Deselection(this, handpos);
+			}
+			// else we'll select the next full slot
+			else
+			{
+				// look for following non-selected non-free slots
+				var found_slot = false;
+				for(var j=i; j < MaxContentsCount(); j++)
+					if(GetItem(j) && !GetHandPosByItemPos(j))
+					{
+						found_slot = true;
+						break;
+					}
+				
+				if(found_slot)
+					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
+				// no full next slot could be found. we'll stay at the same, and empty.
+				else
+				{
+					this->~OnSlotEmpty(handpos);
+					obj->~Deselection(this, handpos);
+				}
+			}
+		}
+	}
 	
 	// we have over-weight? Put the next unindexed object inside that slot
 	// this happens if the clonk is stuffed full with items he can not
 	// carry via Enter, CreateContents etc.
-	if (ContentsCount() > indexed_inventory && !inventory[i])
+	var inventory_count = 0;
+	for(var io in inventory)
+		if(io != nil)
+			inventory_count++;
+			
+	if (ContentsCount() > inventory_count && !GetItem(i))
 	{
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
-			if (GetItemPos(Contents(c)) == nil)
+			var o = Contents(c);
+			if (GetItemPos(o) == nil)
 			{
 				// found it! Collect it properly
-				inventory[i] = Contents(c);
-				indexed_inventory++;
+				inventory[i] = o;
 				
-				if (i < HandObjects())
-					this->~OnSlotFull(i);
-				
-				if (i == 0 || i == 1)
-					Contents(c)->~Selection(this,i == 1);
+				var handpos = GetHandPosByItemPos(i); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+				{
+					this->~OnSlotFull(handpos);
+					o->~Selection(this, handpos);
+				}
 					
 				break;
 			}
@@ -329,7 +468,7 @@ protected func RejectCollect(id objid, object obj)
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
 	if (!force_collection)
-		if (GetItem(0) && GetItem(1))
+		if (GetHandItem(0) && GetHandItem(1))
 			return true;
 	
 	return _inherited(objid,obj,...);
@@ -425,37 +564,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
-	// Backpack menu
-	if (ctrl == CON_Backpack)
-	{
-		// close if menu was open
-		if(GetMenu())
-		{
-			var is_backpack = GetMenu()->~GetSymbol() == Icon_Backpack;
-			GetMenu()->RemoveObject();
-			SetMenu(nil);
-			// If backpack menu, don't open new one and return.
-			if (is_backpack)
-				return true;
-		}
-		// Cancel usage
-		CancelUse();
-		CreateRingMenu(Icon_Backpack,this);
-		// CreateRingMenu calls SetMenu(this) in the clonk,
-		// so after this call menu = the created menu
-			
-		// for all contents in the clonks except the first two (hand slots)
-		for(var i = 2; i < MaxContentsCount(); ++i)
-		{
-			// put them in the menu
-			var item = GetItem(i);
-			GetMenu()->AddItem(item,nil,i);
-		}
-		// finally, show the menu.
-		GetMenu()->Show();
-
-		return true;
-	}
 	// Contents menu
 	if (ctrl == CON_Contents)
 	{
@@ -529,6 +637,76 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
+	if (ctrl == CON_InteractionHotkey0) hot = 10;
+	if (ctrl == CON_InteractionHotkey1) hot = 1;
+	if (ctrl == CON_InteractionHotkey2) hot = 2;
+	if (ctrl == CON_InteractionHotkey3) hot = 3;
+	if (ctrl == CON_InteractionHotkey4) hot = 4;
+	if (ctrl == CON_InteractionHotkey5) hot = 5;
+	if (ctrl == CON_InteractionHotkey6) hot = 6;
+	if (ctrl == CON_InteractionHotkey7) hot = 7;
+	if (ctrl == CON_InteractionHotkey8) hot = 8;
+	if (ctrl == CON_InteractionHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		interaction_pending = false;
+		this->~ControlHotkey(hot-1);
+		return true;
+	}
+	
+	// dropping items via hotkey
+	hot = 0;
+	if (ctrl == CON_DropHotkey0) hot = 10;
+	if (ctrl == CON_DropHotkey1) hot = 1;
+	if (ctrl == CON_DropHotkey2) hot = 2;
+	if (ctrl == CON_DropHotkey3) hot = 3;
+	if (ctrl == CON_DropHotkey4) hot = 4;
+	if (ctrl == CON_DropHotkey5) hot = 5;
+	if (ctrl == CON_DropHotkey6) hot = 6;
+	if (ctrl == CON_DropHotkey7) hot = 7;
+	if (ctrl == CON_DropHotkey8) hot = 8;
+	if (ctrl == CON_DropHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		this->~DropInventoryItem(hot-1);
+		return true;
+	}
+	
+	// this wall of text is called when 1-0 is beeing held, and left or right mouse button is pressed.
+	var hand = 0;
+	hot = 0;
+	if (ctrl == CON_Hotkey0Select) hot = 10;
+	if (ctrl == CON_Hotkey1Select) hot = 1;
+	if (ctrl == CON_Hotkey2Select) hot = 2;
+	if (ctrl == CON_Hotkey3Select) hot = 3;
+	if (ctrl == CON_Hotkey4Select) hot = 4;
+	if (ctrl == CON_Hotkey5Select) hot = 5;
+	if (ctrl == CON_Hotkey6Select) hot = 6;
+	if (ctrl == CON_Hotkey7Select) hot = 7;
+	if (ctrl == CON_Hotkey8Select) hot = 8;
+	if (ctrl == CON_Hotkey9Select) hot = 9;
+	if (ctrl == CON_Hotkey0SelectAlt) {hot = 10; hand=1; }
+	if (ctrl == CON_Hotkey1SelectAlt) {hot = 1; hand=1; }
+	if (ctrl == CON_Hotkey2SelectAlt) {hot = 2; hand=1; }
+	if (ctrl == CON_Hotkey3SelectAlt) {hot = 3; hand=1; }
+	if (ctrl == CON_Hotkey4SelectAlt) {hot = 4; hand=1; }
+	if (ctrl == CON_Hotkey5SelectAlt) {hot = 5; hand=1; }
+	if (ctrl == CON_Hotkey6SelectAlt) {hot = 6; hand=1; }
+	if (ctrl == CON_Hotkey7SelectAlt) {hot = 7; hand=1; }
+	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
+	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
+	
+	if(hot > 0  && hot <= MaxContentsCount())
+	{
+		SetHandItemPos(hand, hot-1);
+		this->~OnInventoryHotkeyRelease(hot-1);
+		return true;
+	}
+	
+	// inventory
+	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
 	if (ctrl == CON_Hotkey1) hot = 1;
 	if (ctrl == CON_Hotkey2) hot = 2;
@@ -540,9 +718,30 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	if (hot > 0)
+	// only the last-pressed key is taken into consideration.
+	// if 2 hotkeys are held, the earlier one is beeing treated as released
+	if (hot > 0 && hot <= MaxContentsCount())
 	{
-		this->~ControlHotkey(hot-1);
+		// if released, we chose, if not chosen already
+		if(release)
+		{
+			if(handslot_choice_pending == hot)
+			{
+				SetHandItemPos(0, hot-1);
+				this->~OnInventoryHotkeyRelease(hot-1);
+			}
+		}
+		// else we just highlight
+		else
+		{
+			if(handslot_choice_pending)
+			{
+				this->~OnInventoryHotkeyRelease(handslot_choice_pending-1);
+			}
+			handslot_choice_pending = hot;
+			this->~OnInventoryHotkeyPress(hot-1);
+		}
+		
 		return true;
 	}
 	
@@ -564,8 +763,30 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return ObjectControlEntrance(plr,ctrl);
 		
 	// Interact controls
-	if (ctrl == CON_Interact)
-		return ObjectControlInteract(plr,ctrl);
+	if(ctrl == CON_Interact)
+	{
+		if(!release)
+		{
+			interaction_pending = true;
+			// todo: show action bar
+			return true;
+		}
+		else
+		{
+			// todo: hide action bar and do stuff if necessary
+			if(interaction_pending)
+			{
+				if(ObjectControlInteract(plr,ctrl))
+					return true;
+				else
+				{
+					// try grabbing.
+					// this is a hack and should be removed as soon as the controls work properly
+					ObjectControlPush(plr, CON_Grab);
+				}
+			}
+		}
+	}
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -582,8 +803,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
 	
-	var contents = GetItem(0);
-	var contents2 = GetItem(1);	
+	var contents = GetHandItem(0);
+	var contents2 = GetHandItem(1);	
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
@@ -654,14 +875,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && (!vehicle || proc == "ATTACH"))
+	// only act on press, not release
+	if (!house && (!vehicle || proc == "ATTACH") && !release)
 	{
 		if (contents)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrow)
+			{
+				ctrl = CON_Throw;
+				forced_ejection = contents;
+			}
+			
 			// throw
 			if (ctrl == CON_Throw)
 			{
 				CancelUse();
+				
 				if (proc == "SCALE" || proc == "HANGLE")
 					return ObjectCommand("Drop", contents);
 				else
@@ -696,6 +926,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// same for contents2 (copypasta)
 		if (contents2)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrowAlt)
+			{
+				ctrl = CON_ThrowAlt;
+				forced_ejection = contents2;
+			}
+		
 			// throw
 			if (ctrl == CON_ThrowAlt)
 			{
