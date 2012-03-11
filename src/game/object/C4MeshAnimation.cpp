@@ -174,6 +174,18 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	pComp->Value(mkEnumAdaptT<uint8_t>(Ending, Endings));
 	pComp->Separator();
 	pComp->Value(LastTick);
+
+	// When a scenario is saved as scenario the FrameCounter will be reset
+	// upon scenario start. The LastTick variable is fixed here.
+	// TODO: A nicer solution would be to always set LastTick to
+	// Game.FrameCounter and to make sure that the Value is always up to
+	// date (current frame) when saving by running Execute(). This could
+	// even be done in the base class.
+	if(pComp->isCompiler())
+		if(LastTick > Game.FrameCounter)
+			LastTick = 0;
+
+	std::cout << Value.val << ", " << Begin.val << ", " << End.val << std::endl;
 }
 
 C4ValueProviderX::C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
