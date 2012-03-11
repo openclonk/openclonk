@@ -6,7 +6,6 @@
 */
 
 static g_is_initialized;
-static g_intro_initialized;
 
 func DoInit(int first_player)
 {

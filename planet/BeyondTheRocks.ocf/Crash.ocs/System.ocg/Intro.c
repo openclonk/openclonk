@@ -1,10 +1,12 @@
 
+static g_intro_initialized;
+
 global func IntroStart()
 {
-	if(/*!g_intro_initialized && */!GetEffect("IntIntro"))
+	if(!g_intro_initialized && !GetEffect("IntIntro"))
 	{
 		AddEffect("IntIntro", nil, 1, 2, nil, nil);
-		//g_intro_initialized = true;
+		g_intro_initialized = true;
 	}
 }
 
@@ -16,7 +18,7 @@ global func IntroAddPlayer(int plr)
 
 	var crew;
 	for(var index = 0; crew = GetCrew(plr, index); ++index)
-		crew->Enter(effect.Pilot); //Airplane);
+		crew->Enter(effect.Pilot);
 
 	return true;
 }
