@@ -75,7 +75,9 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 		effect.Plane->ContainedRight();	
 	if(effect.Time == 362)
 		effect.Plane->ContainedStop();
-		
+
+	if(effect.Time == 390)
+		effect.Plane->Sound("EngineDie");
 	if(effect.Time == 400)
 		effect.Plane->CancelFlight();
 
