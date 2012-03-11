@@ -177,7 +177,6 @@ protected:
 	void HandleNSEvent(/*NSEvent*/void* event);
 	StdStrBuf GetGameDataPath();
 #endif
-	const char * Location;
 	pthread_t MainThread;
 	bool DoNotDelay;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }

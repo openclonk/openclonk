@@ -48,7 +48,7 @@ static void readline_callback (char *);
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		Location(""), DoNotDelay(false),
+		DoNotDelay(false),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
@@ -67,19 +67,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-	// Try to figure out the location of the executable
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	if (dir[0] != '/')
-	{
-		SInsert(dir, "/");
-		SInsert(dir, GetWorkingDirectory());
-		Location = dir;
-	}
-	else
-	{
-		Location = dir;
-	}
 
 	// Custom initialization
 	return DoInit (argc, argv);

@@ -71,7 +71,7 @@ void C4Window::FlashWindow()
 
 #ifdef USE_COCOA
 
-C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
  

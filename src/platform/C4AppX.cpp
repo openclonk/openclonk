@@ -76,7 +76,7 @@ namespace
 
 C4X11AppImpl::WindowListT C4X11AppImpl::WindowList;
 
-C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
@@ -112,18 +112,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 #endif
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	if (dir[0] != '/')
-	{
-		SInsert(dir, "/");
-		SInsert(dir, GetWorkingDirectory());
-		Location = dir;
-	}
-	else
-	{
-		Location = dir;
-	}
 
 	if (!(dpy = XOpenDisplay (0)))
 	{

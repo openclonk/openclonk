@@ -41,7 +41,7 @@
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+		DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 
@@ -53,13 +53,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-
-	// SDLmain.m copied the executable path into argv[0];
-	// just copy it (not sure if original buffer is guaranteed
-	// to be permanent).
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	Location = dir;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
 	{
