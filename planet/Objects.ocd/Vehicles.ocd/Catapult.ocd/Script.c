@@ -150,7 +150,7 @@ protected func DoFire(object clonk, int power, int hand)
 	var projectile = nil;
 	if(Contents(0))	projectile = Contents(0); //Is clonk sitting in the catapult? Then (s)he shall be the projectile!
 	else
-		if(clonk->GetItem(hand)) projectile = clonk->GetItem(hand); //otherwise, fire what is in the clonk's hand
+		if(clonk->GetHandItem(hand)) projectile = clonk->GetHandItem(hand); //otherwise, fire what is in the clonk's hand
 	if(projectile)
 	{
 		//finding the spot of the catapult's arm depending on rotation
