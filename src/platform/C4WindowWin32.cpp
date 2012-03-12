@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2005-2007  Sven Eberhardt
  * Copyright (c) 2005-2006, 2008-2011  Günther Brammer
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2002, 2005-2007  Sven Eberhardt
  * Copyright (c) 2006, 2010  Armin Burgmeier
  * Copyright (c) 2009-2011  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -830,29 +830,3 @@ void C4Window::RequestUpdate()
 	PerformUpdate();
 }
 
-bool OpenURL(const char *szURL)
-{
-	return (intptr_t)ShellExecuteW(NULL, L"open", GetWideChar(szURL), NULL, NULL, SW_SHOW) > 32;
-}
-
-bool EraseItemSafe(const char *szFilename)
-{
-	char Filename[_MAX_PATH+1];
-	SCopy(szFilename, Filename, _MAX_PATH);
-	Filename[SLen(Filename)+1]=0;
-	SHFILEOPSTRUCTW shs;
-	shs.hwnd=0;
-	shs.wFunc=FO_DELETE;
-	shs.pFrom=GetWideChar(Filename);
-	shs.pTo=NULL;
-	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
-	shs.fAnyOperationsAborted=false;
-	shs.hNameMappings=0;
-	shs.lpszProgressTitle=NULL;
-	return !SHFileOperationW(&shs);
-}
-
-bool IsGermanSystem()
-{
-	return PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN;
-}

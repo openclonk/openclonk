@@ -609,6 +609,5 @@ void C4ToolsDlg::UpdateToolCtrls() {}
 bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
 bool C4Viewport::TogglePlayerLock() {return 0;}
 void C4Window::RequestUpdate() {}
-bool OpenURL(char const*) {return 0;}
 #include "C4ConsoleGUICommon.h"
 #endif

@@ -500,6 +500,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
+	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
 	src/platform/StdD3D.cpp
 	src/platform/StdD3D.h
