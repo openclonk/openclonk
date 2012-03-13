@@ -27,9 +27,6 @@
 #include "C4Real.h"
 #include <C4Id.h>
 
-class C4Facet;
-class C4Object;
-
 bool ComDirLike(int32_t iComDir, int32_t iSample);
 
 bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget=NULL, int32_t tx=0, int32_t ty=0);

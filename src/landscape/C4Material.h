@@ -32,8 +32,6 @@
 #include <C4Facet.h>
 #include <vector>
 
-class C4AulFunc;
-
 #define C4MatOv_Default     0
 #define C4MatOv_Exact       1
 #define C4MatOv_None        2

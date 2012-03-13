@@ -23,8 +23,6 @@
 #ifndef INC_C4TransferZone
 #define INC_C4TransferZone
 
-class C4Object;
-class C4TargetFacet;
 class C4TransferZones;
 
 class C4TransferZone

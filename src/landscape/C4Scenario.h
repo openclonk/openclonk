@@ -28,8 +28,6 @@
 #include <C4NameList.h>
 #include <C4IDList.h>
 
-class C4Group;
-
 class C4SVal
 {
 public:
@@ -251,9 +249,6 @@ public:
 	void CompileFunc(StdCompiler *pComp, bool fSection);
 	int32_t GetMinPlayer(); // will try to determine the minimum player count for this scenario
 };
-
-class C4ScenarioSection;
-
 
 extern const char *C4ScenSect_Main;
 

@@ -36,8 +36,6 @@
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
 
-class C4ScriptHost;
-
 // generic C4Aul error class
 class C4AulError
 {

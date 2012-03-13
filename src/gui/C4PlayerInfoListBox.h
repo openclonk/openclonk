@@ -31,8 +31,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "C4Network2Res.h"
 #include "C4GameLobby.h"
 
-class C4Team;
-
 class C4PlayerInfoListBox : public C4GUI::ListBox
 {
 public:

@@ -34,7 +34,6 @@
 
 //#include <boost/operators.hpp>
 
-class StdCompiler;
 class C4ID //: boost::totally_ordered<C4ID, boost::equivalent<C4ID> >
 {
 public:

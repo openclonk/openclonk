@@ -25,8 +25,6 @@
 #include <StdMeshMath.h>
 #include <StdMeshMaterial.h>
 
-class StdCompiler;
-
 class StdMeshBone
 {
 	friend class StdMesh;

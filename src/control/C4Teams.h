@@ -23,12 +23,6 @@
 
 #include "C4InputValidation.h"
 
-class C4Group;
-
-// class predec
-class C4TeamList;
-namespace C4GUI { class ComboBox_FillCB; }
-
 // constant used by lobby to indicate invisible, random team
 const int32_t TEAMID_Unknown = -1;
 

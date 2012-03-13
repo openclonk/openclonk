@@ -76,11 +76,6 @@
 #define VIS_LayerToggle 64
 #define VIS_OverlayOnly 128
 
-class C4SolidMask;
-class C4Command;
-class C4MaterialList;
-class C4Player;
-
 // Helper struct to serialize an object's mesh instance with other object's mesh instances attached
 class C4MeshDenumerator: public StdMeshInstance::AttachedMesh::Denumerator
 {

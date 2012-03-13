@@ -22,9 +22,6 @@
 #define INC_StdMeshLoader
 #include <stdexcept>
 
-class StdMesh;
-class StdMeshMatManager;
-
 // Interface to load skeleton files. Given a filename occuring in the
 // mesh file, this should load the skeleton file from wherever the mesh file
 // was loaded from, for example from a C4Group. Return default-construted

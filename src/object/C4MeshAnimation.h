@@ -25,10 +25,6 @@
 #include "StdMesh.h"
 #include "C4ObjectPtr.h"
 
-class C4Action;
-class C4Object;
-class C4ValueArray;
-
 enum C4AnimationValueProviderID
 {
 	C4AVP_Const,

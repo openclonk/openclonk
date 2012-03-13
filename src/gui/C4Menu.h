@@ -30,8 +30,6 @@
 #include "C4Gui.h"
 #include "C4IDList.h"
 
-class C4Viewport;
-
 enum
 {
 	C4MN_SymbolSize   = 16,

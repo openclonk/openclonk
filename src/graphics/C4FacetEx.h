@@ -30,10 +30,6 @@ const int C4FCT_Full   = -1,
           C4FCT_Height = -2,
           C4FCT_Width  = -3;
 
-class C4TargetRect;
-class C4Surface;
-class C4Rect;
-
 class C4TargetFacet: public C4Facet
 {
 public:

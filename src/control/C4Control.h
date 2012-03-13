@@ -31,8 +31,6 @@
 #include "C4KeyboardInput.h"
 #include "C4ObjectList.h"
 
-class C4Record;
-
 // *** control base classes
 
 class C4ControlPacket : public C4PacketBase
