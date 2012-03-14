@@ -144,7 +144,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 		if (!IsResStrTableLoaded())
 			Log("WARNING: No language string table loaded!");
 
-#if defined(WIN32) && defined(WITH_AUTOMATIC_UDPATE)
+#if defined(WIN32) && defined(WITH_AUTOMATIC_UPDATE)
 	// Windows: handle incoming updates directly, even before starting up the gui
 	//          because updates will be applied in the console anyway.
 	if (Application.IncomingUpdate)

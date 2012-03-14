@@ -370,8 +370,6 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupPlrSelDlg.h
 	src/gui/C4StartupScenSelDlg.cpp
 	src/gui/C4StartupScenSelDlg.h
-	src/gui/C4UpdateDlg.cpp
-	src/gui/C4UpdateDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
 	src/gui/C4UserMessages.h
@@ -651,6 +649,12 @@ if(USE_GTK)
 		src/platform/C4WindowGTK.cpp
 		src/platform/C4WindowGTK.h
 		src/editor/C4ConsoleGTK.cpp
+	)
+endif()
+if(WITH_AUTOMATIC_UPDATE)
+	list(APPEND OC_CLONK_SOURCES
+		src/gui/C4UpdateDlg.cpp
+		src/gui/C4UpdateDlg.h
 	)
 endif()
 
