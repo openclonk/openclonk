@@ -36,18 +36,6 @@ don't need to include this file or any of the files it includes. */
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#include "Standard.h"
-#include "C4Prototypes.h"
-#include "C4Real.h"
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "StdResStr2.h"
-#include "C4Log.h"
-#include "C4Reloc.h"
-#include "C4Config.h"
-
-#include "C4Game.h"
-
 #ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
@@ -110,5 +98,17 @@ inline void operator delete(void *p, const char *, long)
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "Standard.h"
+#include "C4Prototypes.h"
+#include "C4Real.h"
+#include "StdBuf.h"
+#include "StdFile.h"
+#include "StdResStr2.h"
+#include "C4Log.h"
+#include "C4Reloc.h"
+#include "C4Config.h"
+
+#include "C4Game.h"
 
 #endif // INC_C4Include
