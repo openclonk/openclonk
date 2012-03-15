@@ -405,8 +405,6 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		// We don't re-init viewport windows currently, so we don't need a child window
 		// for now: Render into main window.
 		hRenderWindow = hWindow;
-
-		return C4Window::Init(windowKind, pApp, Title);
 	}
 	else if (windowKind == W_Fullscreen)
 	{
