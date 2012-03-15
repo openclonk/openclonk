@@ -34,8 +34,10 @@ protected func Construction()
 	return;
 }
 
+/** Returns whether drag and drop is enabled for this menu */
 public func IsDragDropMenu() { return menu_isdragdrop; }
 
+/** Sets whether drag and drop is enabled for this menu */
 public func SetDragDropMenu(bool is_dragdrop)
 {
 	menu_isdragdrop = is_dragdrop;
@@ -44,27 +46,27 @@ public func SetDragDropMenu(bool is_dragdrop)
 	return;	
 }
 
-// Sets the commander of this menu.
+/** Sets the commander object of this menu. */
 public func SetCommander(object commander)
 {
 	menu_commander = commander;
 	return;
 }
 
-// Returns the commander of this menu.
+/** Returns the commander object of this menu. */
 public func GetCommander()
 {
 	return menu_commander;
 }
 
-// Sets the menu object for this menu.
+/** Sets the object for which the menu is shown. */
 public func SetMenuObject(object menuobject)
 {
 	menu_object = menuobject;
 	return;
 }
 
-// Returns the menu object for this menu.
+/** Returns the menu object for this menu. **/
 public func GetMenuObject()
 {
 	return menu_object;
@@ -149,7 +151,7 @@ public func RemoveItem(object item)
 
 /* Callbacks from the menu items, to be forwarded to the commander. */
 
-// Called when an item has been selected (left mouse button).
+/** Called when an item has been selected (left mouse button). **/
 public func OnItemSelection(object item)
 {
 	if (!menu_commander)
@@ -158,7 +160,7 @@ public func OnItemSelection(object item)
 	return menu_commander->~OnItemSelection(this, item);
 }
 
-// Called when an item has been selected (right mouse button).
+/** Called when an item has been selected (right mouse button). **/
 public func OnItemSelectionAlt(object item)
 {
 	if (!menu_commander)
@@ -167,7 +169,7 @@ public func OnItemSelectionAlt(object item)
 	return menu_commander->~OnItemSelectionAlt(this, item);
 }
 
-// Called when an object is dragged onto the menu
+/** Called when an object is dragged onto the menu **/
 public func OnMouseDrop(int plr, obj)
 {
 	// Check if the owners match.
@@ -183,7 +185,7 @@ public func OnMouseDrop(int plr, obj)
 	return menu_commander->~OnItemDropped(this, obj, nil);
 }
 
-// Shows the menu.
+/** Shows the menu. */
 public func Show()
 {
 	UpdateMenu();
@@ -196,6 +198,7 @@ public func Show()
 	return;
 }
 
+/** Hides the menu. */
 public func Hide()
 {
 	// Change visibility.
