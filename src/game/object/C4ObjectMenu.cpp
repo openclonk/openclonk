@@ -68,7 +68,7 @@ bool C4ObjectMenu::IsCloseDenied()
 			if (Object) fResult = !!Object->Call(PSF_MenuQueryCancel, &pars);
 		}
 		else if (eCallbackType == CB_Scenario)
-			fResult = !!::GameScript.Call(PSF_MenuQueryCancel, 0, &pars);
+			fResult = !!::GameScript.Call(PSF_MenuQueryCancel, &pars);
 		CloseQuerying = false;
 		if (fResult) return true;
 	}
@@ -107,7 +107,7 @@ void C4ObjectMenu::OnSelectionChanged(int32_t iNewSelection)
 		if (eCallbackType == CB_Object && Object)
 			Object->Call(PSF_MenuSelection, &pars);
 		else if (eCallbackType == CB_Scenario)
-			::GameScript.Call(PSF_MenuSelection, 0, &pars);
+			::GameScript.Call(PSF_MenuSelection, &pars);
 	}
 }
 
