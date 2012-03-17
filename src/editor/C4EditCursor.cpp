@@ -227,8 +227,16 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 		else
 		{
 			// Click on unselected: select single
-			if (Target && !Selection.GetLink(Target))
-				{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			if (Target)
+			{
+				C4ObjectLink * it;
+				for(it = Selection.First; it; it = it->Next){
+					if(it->Obj->At(X, Y))
+						break;
+				}
+				if(!it) // means loop didn't break
+					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			}
 			// Click on nothing: drag frame
 			if (!Target)
 				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
@@ -635,7 +643,7 @@ bool C4EditCursor::DoContextMenu()
 	int itemcount = atcursor->GetSize();
 	if(itemcount > 0)
 	{
-		const unsigned int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
+		const int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
 		if(itemcount > maxitems) itemcount = maxitems+1;
 		itemsObjselect.resize(itemcount+1); // +1 for a separator
 		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
@@ -645,7 +653,7 @@ bool C4EditCursor::DoContextMenu()
 		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
 		{
 			C4Object * obj = (*atcursor)[i-1].getObj();
-			if(!obj) { it->ItemId=0; continue; }
+			assert(obj);
 			it->ItemId = IDM_VPORTDYN_FIRST+i;
 			it->Object = obj;
 			AppendMenu(hContext, MF_STRING, it->ItemId, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
@@ -702,7 +710,7 @@ bool C4EditCursor::DoContextMenu()
 		{
 			it->EditCursor = this;
 			C4Object * obj = (*atcursor)[i].getObj();
-			if(!obj) continue;
+			assert(obj);
 			it->Object = obj;
 			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
 			it->MenuItem = wdg;
