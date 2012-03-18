@@ -640,7 +640,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 {
 	//var size = GUI_ObjectSelector->GetDefWidth();
 	//var spacing = deco.padding;
-	var spacing = 90;
+	var spacing = 100;
 	
 	var bt = actionbar[pos];
 	// no object yet... create it
