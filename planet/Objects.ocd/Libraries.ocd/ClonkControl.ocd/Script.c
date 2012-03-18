@@ -311,9 +311,9 @@ protected func Collection2(object obj)
 	
 	// sort into selected hands if empty
 	for(i = 0; i < HandObjects(); i++)
-		if(!GetHandItem(0))
+		if(!GetHandItem(i))
 		{
-			sel = GetHandItemPos(0);
+			sel = GetHandItemPos(i);
 			inventory[sel] = obj;
 			success = true;
 		}
