@@ -504,13 +504,31 @@ private func GetNextMenu(int index, bool alt)
 	// Only one menu: to nothing
 	if (last <= 0)
 		return nil;
-	// Determine next menu.
-	if (alt)
-		index++;
+	
+	if(alt)
+	{
+		if(index < crew_count-1)
+			index++;
+		else if(index == crew_count-1)
+			index = last;
+		else if(index == crew_count)
+			index = 0;
+		else
+			index--;
+	}
 	else
-		index--;
+	{
+		if(index == 0)
+			index = crew_count;
+		else if(index < crew_count)
+			index--;
+		else
+			index++;
+	}
+	
 	if (index > last)
-		index = 0;
+		index = crew_count-1;
+	
 	return circ_menus[index];	
 }
 
