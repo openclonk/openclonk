@@ -316,6 +316,7 @@ protected func Collection2(object obj)
 			sel = GetHandItemPos(i);
 			inventory[sel] = obj;
 			success = true;
+			break;
 		}
 		
 	// otherwise, first empty slot
