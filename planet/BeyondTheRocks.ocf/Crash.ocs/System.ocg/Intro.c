@@ -36,6 +36,8 @@ global func FxIntIntroStart(object target, proplist effect)
 {
 	effect.Plane = CreateObject(Plane, 0, 400);
 	effect.Pilot = CreateObject(Clonk, 100, 100, NO_OWNER);
+	effect.Pilot->MakeInvincible();
+	effect.Pilot->MakeNonFlammable();
 	effect.Pilot->SetSkin(2);
 	effect.Pilot->Enter(effect.Plane);
 	effect.Pilot->SetAction("Walk");

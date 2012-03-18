@@ -2,7 +2,7 @@
 	Crash
 	First attempt at a nontrivial settlement scenario
 	
-	@authors Sven2 Maikel ck
+	@authors Sven2, Maikel, ck
 */
 
 static g_is_initialized;
@@ -26,6 +26,8 @@ func DoInit(int first_player)
 	
 	// NPC: Merchant.
 	var merchant = CreateObject(Clonk, 170, 870);
+	merchant->MakeInvincible();
+	merchant->MakeNonFlammable();
 	merchant->SetSkin(1);
 	merchant->SetName("$NameMerchant$");
 	merchant->SetColor(RGB(55, 65, 75));
