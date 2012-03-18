@@ -227,8 +227,16 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 		else
 		{
 			// Click on unselected: select single
-			if (Target && !Selection.GetLink(Target))
-				{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			if (Target)
+			{
+				C4ObjectLink * it;
+				for(it = Selection.First; it; it = it->Next){
+					if(it->Obj->At(X, Y))
+						break;
+				}
+				if(!it) // means loop didn't break
+					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			}
 			// Click on nothing: drag frame
 			if (!Target)
 				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
@@ -628,6 +636,37 @@ bool C4EditCursor::DoContextMenu()
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
+
+	ObjselectDelItems();
+	C4FindObjectAtPoint pFO(X,Y);
+	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing (single object ptr)
+	int itemcount = atcursor->GetSize();
+	if(itemcount > 0)
+	{
+		const int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
+		if(itemcount > maxitems) itemcount = maxitems+1;
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
+		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
+		itemsObjselect[0].Object = NULL;
+		AppendMenu(hContext, MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+		int i = 1;
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
+			C4Object * obj = (*atcursor)[i-1].getObj();
+			assert(obj);
+			it->ItemId = IDM_VPORTDYN_FIRST+i;
+			it->Object = obj;
+			AppendMenu(hContext, MF_STRING, it->ItemId, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+		}
+		if(atcursor->GetSize() > maxitems)
+		{
+			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST+maxitems+1, L"...");
+			itemsObjselect[maxitems+1].ItemId = IDM_VPORTDYN_FIRST+maxitems+1;
+			itemsObjselect[maxitems+1].Object = NULL;
+		}
+	}
+	delete atcursor;
+
 	int32_t iItem = TrackPopupMenu(
 	                  hContext,
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
@@ -639,7 +678,17 @@ bool C4EditCursor::DoContextMenu()
 	case IDM_VIEWPORT_DELETE: Delete(); break;
 	case IDM_VIEWPORT_DUPLICATE: Duplicate(); break;
 	case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
+	case 0: break;
+	default:
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it)
+			if(it->ItemId == iItem)
+			{
+				DoContextObjsel(it->Object);
+				break;
+			}
+		break;
 	}
+	ObjselectDelItems();
 #else
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
@@ -652,20 +701,20 @@ bool C4EditCursor::DoContextMenu()
 	int itemcount = atcursor->GetSize();
 	if(itemcount > 0)
 	{
-		itemsObjselect.resize(itemcount+1); // +1 for a separator, and +1 for a stop codon
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
 		itemsObjselect[0].MenuItem = gtk_separator_menu_item_new();
 		itemsObjselect[0].EditCursor = this;
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemsObjselect[0].MenuItem);
 		int i = 0;
-		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i) {
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
 			it->EditCursor = this;
 			C4Object * obj = (*atcursor)[i].getObj();
-			if(!obj) continue;
+			assert(obj);
 			it->Object = obj;
 			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
 			it->MenuItem = wdg;
 			gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
-			static_assert(sizeof(std::vector<ObjselItemDt>::iterator) == sizeof(gpointer), "My vector hack is hack.");
 			g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &*it);
 		}
 	}
@@ -825,17 +874,23 @@ void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
 	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
 }
 
+#endif
+
 void C4EditCursor::ObjselectDelItems() {
 	if(!itemsObjselect.size()) return;
 	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
 	while(it != itemsObjselect.end()) {
+		#if defined(WITH_DEVELOPER_MODE)
 		gtk_widget_destroy(it->MenuItem);
+		#else if defined(_WIN32)
+		if(!it->ItemId) { ++it; continue; }
+		HMENU hContext = GetSubMenu(hMenu,0);
+		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);
+		#endif
 		++it;
 	}
 	itemsObjselect.resize(0);
 }
-
-#endif
 
 bool C4EditCursor::AltDown()
 {

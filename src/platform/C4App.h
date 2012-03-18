@@ -113,6 +113,9 @@ public:
 	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor);
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
+	// Gamma
+	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	C4Window * pWindow;
@@ -124,8 +127,6 @@ public:
 	StdStrBuf Paste(bool fClipboard = true);
 	// Is there something in the clipboard?
 	bool IsClipboardFull(bool fClipboard = true);
-	// Give up Selection ownership
-	void ClearClipboard(bool fClipboard = true);
 	// a command from stdin
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode
@@ -179,9 +180,7 @@ protected:
 	void HandleNSEvent(/*NSEvent*/void* event);
 	StdStrBuf GetGameDataPath();
 #endif
-	const char * Location;
 	pthread_t MainThread;
-	bool DoNotDelay;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & (1<<3); }

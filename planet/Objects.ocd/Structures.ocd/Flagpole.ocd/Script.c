@@ -51,12 +51,12 @@ public func Interact(object clonk)
 	return true;
 }
 
-public func Selected(object menu, proplist def, bool alt)
+public func Selected(object menu, proplist menu_item, bool alt)
 {
 	// Safety
 	var clonk = menu->GetMenuObject();
 	if (!clonk || !IsInteractable(clonk)) return;
-	def = def->GetSymbol();
+	var def = menu_item->GetSymbol();
 	if (!def) return;
 	// Buy
 	var item = DoBuy(def, clonk->GetController(), GetOwner(), clonk, alt);
@@ -64,5 +64,7 @@ public func Selected(object menu, proplist def, bool alt)
 	var i = ContentsCount();
 	var obj;
 	while (i--) if (obj = Contents(i)) Contents(i)->Exit();
+	// Update available count
+	menu_item->SetAmount(GetHomebaseMaterial(clonk->GetOwner(), def));
 	return true;
 }

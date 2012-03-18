@@ -25,7 +25,6 @@
 
 #include <C4Network2Discover.h>
 #include <C4Application.h>
-#include <C4UserMessages.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameControl.h>

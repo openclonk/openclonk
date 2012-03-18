@@ -625,7 +625,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 {
 	// create new socket
-	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (nsock == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
@@ -850,7 +850,11 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	if (nsock == INVALID_SOCKET)
 	{
 		// accept from listener
+#ifdef __linux__
+		if ((nsock = ::accept4(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
+#else
 		if ((nsock = ::accept(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize)) == INVALID_SOCKET)
+#endif
 		{
 			// set error
 			SetError("socket accept failed", true);
@@ -954,7 +958,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 	iListenPort = P_NONE;
 
 	// create socket
-	if ((lsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+	if ((lsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP)) == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
 		return false;
@@ -1326,7 +1330,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 #endif
 
 	// create socket
-	if ((sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	if ((sock = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) == INVALID_SOCKET)
 	{
 		SetError("could not create socket", true);
 		return false;

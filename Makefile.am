@@ -474,6 +474,7 @@ src/platform/C4VideoPlayback.h \
 src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
 src/platform/C4windowswrapper.h \
+src/platform/PlatformAbstraction.cpp \
 src/platform/PlatformAbstraction.h \
 src/platform/C4App.h \
 src/platform/C4App.cpp \

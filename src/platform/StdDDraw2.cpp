@@ -1212,20 +1212,20 @@ void C4Draw::ApplyGamma()
 	// calc ramp
 	Gamma.Set(tGamma[0], tGamma[1], tGamma[2]);
 	// set gamma
-	ApplyGammaRamp(Gamma.ramp, false);
+	pApp->ApplyGammaRamp(Gamma.ramp, false);
 	fSetGamma=false;
 }
 
 void C4Draw::DisableGamma()
 {
 	// set it
-	ApplyGammaRamp(DefRamp.ramp, true);
+	pApp->ApplyGammaRamp(DefRamp.ramp, true);
 }
 
 void C4Draw::EnableGamma()
 {
 	// set it
-	ApplyGammaRamp(Gamma.ramp, false);
+	pApp->ApplyGammaRamp(Gamma.ramp, false);
 }
 
 DWORD C4Draw::ApplyGammaTo(DWORD dwClr)
@@ -1281,7 +1281,8 @@ bool C4Draw::Init(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned
 	this->pApp = pApp;
 
 	// store default gamma
-	SaveDefaultGammaRamp(pApp->pWindow);
+	if (!pApp->SaveDefaultGammaRamp(DefRamp.ramp))
+		DefRamp.Default();
 
 	pApp->pWindow->pSurface = new C4Surface(pApp, pApp->pWindow);
 

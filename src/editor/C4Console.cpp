@@ -33,7 +33,6 @@
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
-#include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Player.h>
@@ -194,7 +193,7 @@ bool C4Console::SaveScenario(const char * path)
 			return false;
 		}
 		SCopy(path, Game.ScenarioFilename);
-		SetCaption(GetFilename(Game.ScenarioFilename));
+		SetCaptionToFilename(Game.ScenarioFilename);
 		if (!Game.ScenarioFile.Open(Game.ScenarioFilename))
 		{
 			Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData());
@@ -514,7 +513,7 @@ void C4Console::ClearNetMenu()
 
 void C4Console::SetCaptionToFilename(const char* szFilename)
 {
-	SetCaption(GetFilename(szFilename));
+	SetTitle(GetFilename(szFilename));
 	C4ConsoleGUI::SetCaptionToFileName(szFilename);
 }
 
@@ -548,7 +547,7 @@ void C4Console::CloseGame()
 	if (!Active || !fGameOpen) return;
 	fGameOpen=false;
 	EnableControls(fGameOpen);
-	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
+	SetTitle(LoadResStr("IDS_CNS_CONSOLE"));
 }
 
 bool C4Console::TogglePause()
@@ -610,6 +609,5 @@ void C4ToolsDlg::UpdateToolCtrls() {}
 bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
 bool C4Viewport::TogglePlayerLock() {return 0;}
 void C4Window::RequestUpdate() {}
-bool OpenURL(char const*) {return 0;}
 #include "C4ConsoleGUICommon.h"
 #endif

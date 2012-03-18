@@ -65,7 +65,6 @@ public:
 	float GetZoomLimitMax() const { return ZoomLimitMax; }
 	float GetZoomTarget() const { return ZoomTarget; }
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
-	bool Init(C4Window * pParent, C4AbstractApp * pApp, int32_t iPlayer);
 	void DropFile(const char* fileName, float x, float y);
 	bool TogglePlayerLock();
 	void NextPlayer();

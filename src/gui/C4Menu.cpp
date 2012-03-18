@@ -95,7 +95,16 @@ void C4MenuItem::DoTextProgress(int32_t &riByVal)
 		MarkupChecker.SkipTags(&szPos);
 		if (!*szPos) break;
 		--riByVal;
-		++szPos;
+
+		// Advance one UTF-8 character
+		uint32_t c = GetNextCharacter(&szPos);
+		// Treat embedded images {{XXX}} as one entity
+		if(c == '{' && *szPos == '{')
+		{
+			int32_t end = SCharPos('}', szPos);
+			if(end > 0 && szPos[end+1] == '}')
+				szPos += end + 2;
+		}
 	}
 	if (!*szPos)
 		TextDisplayProgress=-1;

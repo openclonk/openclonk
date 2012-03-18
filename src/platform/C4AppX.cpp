@@ -76,12 +76,12 @@ namespace
 
 C4X11AppImpl::WindowListT C4X11AppImpl::WindowList;
 
-C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
+C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false), dpy(0),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
 #endif
-		DoNotDelay(false), Priv(new C4X11AppImpl(this)), fDspModeSet(false)
+		Priv(new C4X11AppImpl(this)), fDspModeSet(false)
 {
 	Add(&Priv->X11Proc);
 #ifdef WITH_GLIB
@@ -112,18 +112,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 #endif
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	if (dir[0] != '/')
-	{
-		SInsert(dir, "/");
-		SInsert(dir, GetWorkingDirectory());
-		Location = dir;
-	}
-	else
-	{
-		Location = dir;
-	}
 
 	if (!(dpy = XOpenDisplay (0)))
 	{
@@ -579,6 +567,37 @@ void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
 	SetEWMHFullscreen(pApp, false, wnd);
 }
 
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
+	if (!Active && !fForce) return false;
+	if (xf86vmode_major_version < 2) return false;
+	if (Priv->gammasize != 256) return false;
+	return XF86VidModeSetGammaRamp(dpy, DefaultScreen(dpy), 256,
+	                               ramp.red, ramp.green, ramp.blue);
+}
+
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+{
+	if (xf86vmode_major_version < 2) return false;
+	// Get the Display
+	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &Priv->gammasize);
+	if (Priv->gammasize != 256)
+	{
+		LogF("  Size of GammaRamp is %d, not 256", Priv->gammasize);
+	}
+	else
+	{
+		// store default gamma
+		if (!XF86VidModeGetGammaRamp(dpy, DefaultScreen(dpy), 256,
+		                             ramp.red, ramp.green, ramp.blue))
+		{
+			Log("  Error getting default gamma ramp; using standard");
+			return false;
+		}
+	}
+	return true;
+}
+
 // Copy the text to the clipboard or the primary selection
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
@@ -633,16 +652,6 @@ StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
-}
-
-// Give up Selection ownership
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
-	C4X11AppImpl::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
-	if (!d.Text.getData()) return;
-	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY,
-	                   None, d.AcquirationTime);
-	d.Text.Clear();
 }
 
 C4Window * C4X11AppImpl::GetWindow(unsigned long wnd)

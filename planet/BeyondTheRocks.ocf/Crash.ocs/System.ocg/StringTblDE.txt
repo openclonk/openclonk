@@ -1,6 +1,6 @@
 # Intro
-MsgIntro1=Wow, ganz schÃ¶n turbulent hier...
-MsgIntro2=Schau, der schÃ¶ne Lavasee!
+MsgIntro1=Wow, ganz schön turbulent hier...
+MsgIntro2=Schau, der schöne Lavasee!
 MsgIntro3=Komm schon, Baby...
 MsgIntro4=Oh oh...
 MsgIntro5=Schnell! Der Schleudersitz!
@@ -11,8 +11,8 @@ MsgCrashedPlane=Und, habt ihr das Flugzeug schon gefunden?
 AnsCrashedPlane=Nein, wir suchen noch.
 
 # NPC Merchant
-MsgSellPlans=Ich habe hier ein paar interessante Bauplaene! Fuer 150 Clunker wuerde ich sie dir ueberlasdsen.
-AnsNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme spaeter wieder.
+MsgSellPlans=Ich habe hier ein paar interessante Baupläne! Für 150 Clunker würde ich sie dir überlassen.
+AnsNoMoney=Da muss ich noch etwas Gold abbauen. Ich komme später wieder.
 AnsBuyPlans=Das ist ein guter Deal; hier sind deine Clunker.
-MsgGivePlans=Danke! Hier hast du Plaene fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}. Aber Vorsicht: Die Pumpe ist aus Holz und sollte nicht zum Pumpen von Lava verwendet werden!
+MsgGivePlans=Danke! Hier hast du Pläne fuer {{Pump}}, {{Pipe}}, {{Catapult}} und {{Cannon}}. Aber Vorsicht: Die Pumpe ist aus Holz und sollte nicht zum Pumpen von Lava verwendet werden!
 MsgLeaveVillage=Bitte verlasse unser verschlafenes Dorf!

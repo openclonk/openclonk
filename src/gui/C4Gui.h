@@ -2538,7 +2538,6 @@ namespace C4GUI
 
 		void Render(bool fDoBG);                 // render to pDraw
 		void RenderMouse(C4TargetFacet &cgo);        // draw mouse only
-		bool Execute();                // handle messages; execute all dialogs
 
 		virtual Screen *GetScreen() { return this; }; // return contained screen
 		static Screen *GetScreenS() { return pScreen; } // get global screen

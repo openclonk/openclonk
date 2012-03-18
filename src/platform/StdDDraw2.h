@@ -277,8 +277,6 @@ public:
 	void DisableGamma();                                      // reset gamma ramp to default
 	void EnableGamma();                                       // set current gamma ramp
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
-	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)=0;       // really apply gamma ramp
-	virtual bool SaveDefaultGammaRamp(C4Window * pWindow)=0;
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
 	void DeactivateBlitModulation() { BlitModulated=false; }  // stop color modulation of blits

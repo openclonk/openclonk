@@ -434,8 +434,18 @@ void C4ConfigGeneral::DeterminePaths()
 	TempPath = StdStrBuf(apath);
 	if (TempPath[0]) TempPath.AppendBackslash();
 #elif defined(__linux__)
-	GetParentPath(Application.Location, &ExePath);
-	ExePath.AppendBackslash();
+	ExePath.SetLength(1024);
+	ssize_t l = readlink("/proc/self/exe", ExePath.getMData(), 1024);
+	if (l < -1)
+	{
+		ExePath.Ref(".");
+	}
+	else
+	{
+		ExePath.SetLength(l);
+		GetParentPath(ExePath.getData(), &ExePath);
+		ExePath.AppendBackslash();
+	}
 	const char * t = getenv("TMPDIR");
 	if (t)
 	{

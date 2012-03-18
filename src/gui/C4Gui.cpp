@@ -737,14 +737,6 @@ namespace C4GUI
 		if (!Application.isEditor) RenderMouse(cgo);
 	}
 
-	bool Screen::Execute()
-	{
-		// process messages
-		if (!Application.FlushMessages())
-			return false;
-		return true;
-	}
-
 	bool Screen::KeyAny()
 	{
 		// mark keystroke in mouse

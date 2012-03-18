@@ -411,41 +411,8 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
-{
-	HDC hDC = GetDC(pWindow->hWindow);
-	if (hDC)
-	{
-		if (!GetDeviceGammaRamp(hDC, &DefRamp))
-		{
-			DefRamp.Default();
-			Log("  Error getting default gamma ramp; using standard");
-		}
-		ReleaseDC(pWindow->hWindow, hDC);
-		return true;
-	}
-	return false;
-}
-
-bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
-{
-	if (!pMainCtx || (!Active && !fForce)) return false;
-	if (!SetDeviceGammaRamp(pMainCtx->hDC, &ramp))
-	{
-		int i=::GetLastError();
-		//Beep(i,i);
-	}
-	return true;
-}
-
 #elif defined(USE_X11)
-
-//  Xmd.h typedefs bool to CARD8, whereas microsoft windows and Clonk use int
-#define bool _BOOL
-#include <X11/Xmd.h>
 #include <GL/glx.h>
-#include <X11/extensions/xf86vmode.h>
-#undef bool
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
@@ -530,38 +497,6 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
-{
-	if (!DeviceReady() || (!Active && !fForce)) return false;
-	if (pApp->xf86vmode_major_version < 2) return false;
-	if (gammasize != 256) return false;
-	return XF86VidModeSetGammaRamp(pApp->dpy, DefaultScreen(pApp->dpy), 256,
-	                               ramp.red, ramp.green, ramp.blue);
-}
-
-bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
-{
-	if (pApp->xf86vmode_major_version < 2) return false;
-	// Get the Display
-	Display * const dpy = pWindow->dpy;
-	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &gammasize);
-	if (gammasize != 256)
-	{
-		LogF("  Size of GammaRamp is %d, not 256", gammasize);
-	}
-	else
-	{
-		// store default gamma
-		if (!XF86VidModeGetGammaRamp(pWindow->dpy, DefaultScreen(pWindow->dpy), 256,
-		                             DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue))
-		{
-			DefRamp.Default();
-			Log("  Error getting default gamma ramp; using standard");
-		}
-	}
-	return true;
-}
-
 #elif defined(USE_SDL_MAINLOOP)
 
 CStdGLCtx::CStdGLCtx(): pWindow(0) { }
@@ -619,16 +554,6 @@ bool CStdGLCtx::PageFlip()
 	if (!pWindow) return false;
 	SDL_GL_SwapBuffers();
 	return true;
-}
-
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
-{
-	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
-}
-
-bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
-{
-	return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }
 
 #endif //USE_X11/USE_SDL_MAINLOOP

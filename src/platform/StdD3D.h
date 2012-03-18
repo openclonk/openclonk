@@ -143,8 +143,8 @@ public:
 	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
 	void DrawPixPrimary(C4Surface * sfcDest, int tx, int ty, DWORD dwCol);
 	// Gamma
-	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);
+	bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
+	bool SaveDefaultGammaRamp(D3DGAMMARAMP &ramp);
 	// device objects
 	bool InitDeviceObjects();       // init device dependent objects
 	bool InitShaders();             // parse and set shaders

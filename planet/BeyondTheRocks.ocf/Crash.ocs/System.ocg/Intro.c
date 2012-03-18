@@ -28,6 +28,7 @@ global func IntroCreateBoompack(int x, int y, int fuel)
 	var boompack = CreateObject(Boompack, x, y, NO_OWNER);
 	boompack->SetFuel(fuel);
 	boompack->SetDirectionDeviation(8); // make sure direction of boompack is roughly kept
+	boompack->SetControllable(false);
 	return boompack;
 }
 
@@ -35,6 +36,8 @@ global func FxIntIntroStart(object target, proplist effect)
 {
 	effect.Plane = CreateObject(Plane, 0, 400);
 	effect.Pilot = CreateObject(Clonk, 100, 100, NO_OWNER);
+	effect.Pilot->MakeInvincible();
+	effect.Pilot->MakeNonFlammable();
 	effect.Pilot->SetSkin(2);
 	effect.Pilot->Enter(effect.Plane);
 	effect.Pilot->SetAction("Walk");

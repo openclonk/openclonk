@@ -181,6 +181,7 @@ public:
 	typedef std::map<unsigned long, C4Window *> WindowListT;
 	static WindowListT WindowList;
 	XF86VidModeModeInfo xf86vmode_oldmode, xf86vmode_targetmode;
+	int gammasize;
 	int xrandr_oldmode;
 	unsigned short xrandr_rot;
 	int xrandr_event;
