@@ -741,7 +741,7 @@ bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)
 	{
-		bool r = GetDeviceGammaRamp(hDC, &ramp);
+		bool r = !!GetDeviceGammaRamp(hDC, &ramp);
 		if (!r)
 		{
 			Log("  Error getting default gamma ramp; using standard");
@@ -764,7 +764,7 @@ bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP &ramp, bool fForce)
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)
 	{
-		bool r = SetDeviceGammaRamp(hDC, &ramp);
+		bool r = !!SetDeviceGammaRamp(hDC, &ramp);
 		ReleaseDC(pWindow->hWindow, hDC);
 		return r;
 	}
