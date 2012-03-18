@@ -21,6 +21,8 @@ func DoInit(int first_player)
 	time->SetCycleSpeed(12);
 	// Goal
 	//CreateObject(Goal_Plane);
+	// Plane part restore
+	for (var part in FindObjects(Find_Func("IsPlanePart"))) part->AddRestoreMode();
 	return true;
 }
 

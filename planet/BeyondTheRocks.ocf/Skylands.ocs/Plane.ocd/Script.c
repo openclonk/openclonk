@@ -48,6 +48,7 @@ func Timer()
 
 func AddPart(object part)
 {
+	part->RemoveRestoreMode();
 	part->RemoveObject();
 	Sound("Applause", true);
 	SetProgress(progress+1);

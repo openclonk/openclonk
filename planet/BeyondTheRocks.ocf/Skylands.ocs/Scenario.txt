@@ -14,28 +14,28 @@ ValueOverloads=Nugget=10;GoldBar=50;
 Wealth=50,0,0,250
 Crew=Clonk=2
 Knowledge=Plane_Engine=1;Foundry=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;LiftTower=1;Pump=1
-HomeBaseMaterial=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
+HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 
 [Player2]
 Wealth=50,0,0,250
 Crew=Clonk=2
 Knowledge=Plane_Engine=1;Foundry=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;LiftTower=1;Pump=1
-HomeBaseMaterial=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
+HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 
 [Player3]
 Wealth=50,0,0,250
 Crew=Clonk=2
 Knowledge=Plane_Engine=1;Foundry=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;LiftTower=1;Pump=1
-HomeBaseMaterial=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
+HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 
 [Player4]
 Wealth=50,0,0,250
 Crew=Clonk=2
 Knowledge=Plane_Engine=1;Foundry=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;LiftTower=1;Pump=1
-HomeBaseMaterial=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
+HomeBaseMaterial=Loam=99;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 HomeBaseProduction=Loam=10;Wood=5;Metal=3;Shovel=2;Axe=2;Hammer=2;Clonk=5;Bread=5
 
 [Landscape]

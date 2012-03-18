@@ -14,6 +14,8 @@ public func Definition(proplist def)
 {
 }
 
+public func IsPlanePart() { return true; }
+
 local Collectible = false;
 local Name = "$Name$";
 local Description = "$Description$";

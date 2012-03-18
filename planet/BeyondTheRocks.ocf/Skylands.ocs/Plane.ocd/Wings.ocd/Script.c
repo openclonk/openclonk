@@ -5,6 +5,8 @@
 	Used to construct the plane
 --*/
 
+#include Library_ElevatorControl
+
 private func Hit()
 {
 	Sound("WoodHit");
@@ -13,6 +15,8 @@ private func Hit()
 public func Definition(proplist def)
 {
 }
+
+public func IsPlanePart() { return true; }
 
 local Collectible = false;
 local Name = "$Name$";
