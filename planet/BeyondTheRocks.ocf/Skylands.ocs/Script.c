@@ -20,7 +20,7 @@ func DoInit(int first_player)
 	time->SetTime(600);
 	time->SetCycleSpeed(12);
 	// Goal
-	//CreateObject(Goal_Plane);
+	CreateObject(Goal_Plane);
 	// Plane part restore
 	for (var part in FindObjects(Find_Func("IsPlanePart"))) part->AddRestoreMode();
 	return true;
@@ -61,3 +61,9 @@ func InitializePlayer(int plr)
 	return;
 }
 
+func OnPlaneFinished(object plane)
+{
+  // todo: outro
+  plane->CreateObject(Plane, 0,12, NO_OWNER);
+  plane->RemoveObject();
+}

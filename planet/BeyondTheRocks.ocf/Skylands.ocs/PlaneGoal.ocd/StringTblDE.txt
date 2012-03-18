@@ -1,0 +1,3 @@
+Name=Baue das Flugzeug zusammen
+MsgGoalFulfilled=Das Flugzeug ist fertig!
+MsgGoalUnFulfilled=Baue das Flugzeug zusammen
