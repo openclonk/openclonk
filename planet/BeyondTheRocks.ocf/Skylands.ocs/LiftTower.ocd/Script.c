@@ -44,6 +44,8 @@ func GetInteractionMetaInfo()
 
 	if (hook->Contained() == this)
 		return { IconID = LiftTower_Hook, Description = "$TakeHook$" };
+	else
+		return { IconID = LiftTower_Hook, Description = "$Grab$" };
 }
 
 func Interact(object clonk)
@@ -53,8 +55,14 @@ func Interact(object clonk)
 	if (clonk->GetAction() == "Walk")
 	{
 		if (hook->Contained() == this)
+		{
 			if (clonk->Collect(hook,true))
 				hook->SetRope();
+		}
+		else
+		{
+			clonk->ObjectCommand("Grab", this);
+		}
 		return true;
 	}
 	return false;

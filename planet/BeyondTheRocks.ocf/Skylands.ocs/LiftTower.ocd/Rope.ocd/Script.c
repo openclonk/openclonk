@@ -191,7 +191,7 @@ func ForcesOnObjects()
 		var ydir = particles[j][0][1]-particles[j][1][1];
 
 		if (!obj->GetContact(-1))
-			ydir = BoundBy(ydir, -50, 50);
+			ydir = BoundBy(ydir, -120, 120);
 
 		if (pull_position && pull_frame != FrameCounter() && !Distance(pull_position[0], pull_position[1], obj->GetX(), obj->GetY()))
 		{
@@ -214,8 +214,7 @@ func ForcesOnObjects()
 		pull_frame = FrameCounter();
 
 		obj->SetXDir( xdir, Rope_Precision);
-		obj->SetYDir( obj->GetYDir() + ydir, Rope_Precision);
-		//Log("%v, %v", xdir, ydir);
+		obj->SetYDir( obj->GetYDir(Rope_Precision) + ydir, Rope_Precision);
 	}
 }
 
