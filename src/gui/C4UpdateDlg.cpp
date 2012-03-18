@@ -20,11 +20,10 @@
  * See clonk_trademark_license.txt for full license.
  */
 // dialogs for update, and the actual update application code
+// is only compiled WITH_AUTOMATIC_UPDATE
 
 #include "C4Include.h"
 
-// Don't compile this class if automatic update is disabled
-#ifdef WITH_AUTOMATIC_UPDATE
 #include "C4UpdateDlg.h"
 
 #include "C4DownloadDlg.h"
@@ -381,6 +380,3 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	// Done (and no update has been done)
 	return false;
 }
-
-
-#endif // WITH_AUTOMATIC_UPDATE

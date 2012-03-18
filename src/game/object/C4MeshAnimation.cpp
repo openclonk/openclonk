@@ -184,8 +184,6 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	if(pComp->isCompiler())
 		if(LastTick > Game.FrameCounter)
 			LastTick = 0;
-
-	std::cout << Value.val << ", " << Begin.val << ", " << End.val << std::endl;
 }
 
 C4ValueProviderX::C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):

@@ -91,6 +91,8 @@
 #define IDM_VIEWPORT_DELETE             5014
 #define IDM_VIEWPORT_DUPLICATE          5015
 #define IDM_VIEWPORT_NEW                5016
+#define IDM_VPORTDYN_FIRST              5050
+	//allocates the next 27
 #define IDR_CONSOLEMENU                 6000
 #define IDR_CONTEXTMENUS                6001
 #define IDM_FILE_RECORD                 40041

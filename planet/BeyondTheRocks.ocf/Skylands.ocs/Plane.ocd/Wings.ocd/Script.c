@@ -18,3 +18,4 @@ local Collectible = false;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
+local Touchable = 1;

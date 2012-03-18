@@ -833,7 +833,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		StdStrBuf sCallText;
 		if (pContext && pContext->GetObject())
 			sCallText.AppendFormat("Object(%d): ", pContext->GetObject()->Number);
-		sCallText.Append(pFunc->Name);
+		sCallText.Append(pFunc->GetName());
 		sCallText.AppendChar('(');
 		for (int i=0; i<C4AUL_MAX_Par; ++i)
 		{

@@ -132,9 +132,6 @@ public:
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
 	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
 	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
-	// Gamma
-	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(C4Window * pWindow);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
@@ -147,10 +144,6 @@ protected:
 
 	bool CheckGLError(const char *szAtOp);
 	virtual bool Error(const char *szMsg);
-#ifdef USE_X11
-	// Size of gamma ramps
-	int gammasize;
-#endif
 
 	friend class C4Surface;
 	friend class C4TexRef;

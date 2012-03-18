@@ -342,3 +342,36 @@ global func MovePosition(int x, int y, int prec)
 {
 	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }
+
+// Makes the calling object invincible.
+global func MakeInvincible()
+{
+	if (!this)
+		return;
+	return AddEffect("IntInvincible", this, 300);
+}
+
+global func FxIntInvincibleDamage()
+{
+	// Object receives zero damage.
+	return 0;
+}
+
+// Makes the calling object non flammable.
+global func MakeNonFlammable()
+{
+	if (!this) 
+		return;
+	return AddEffect("IntNonFlammable", this, 300);
+}	
+
+global func FxIntNonFlammableEffect(string new_name)
+{
+	// Block fire effects.
+	if (WildcardMatch(new_name, "*Fire*")) 
+		return -1;
+	// All other effects are okay.
+	return 0;
+}
+
+	

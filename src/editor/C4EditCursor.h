@@ -46,6 +46,11 @@ protected:
 	C4Object *Target,*DropTarget;
 #ifdef _WIN32
 	HMENU hMenu;
+	struct ObjselItemDt {
+		C4Object* Object;
+		UINT_PTR ItemId;
+	};
+	std::vector<ObjselItemDt> itemsObjselect;
 #else
 #ifdef WITH_DEVELOPER_MODE
 	GtkWidget* menuContext;
@@ -107,13 +112,13 @@ protected:
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 	void DoContextObjsel(C4Object *);
+	void ObjselectDelItems();
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);
 	static void OnGrabContents(GtkWidget* widget, gpointer data);
 	static void OnObjselect(GtkWidget* widget, gpointer data);
-	void ObjselectDelItems();
 #endif
 };
 

@@ -297,8 +297,6 @@ public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-protected:
-	bool RegisterWindowClass(HINSTANCE hInst);
 #elif defined(USE_X11)
 protected:
 	bool FindInfo(int samples, void** info);

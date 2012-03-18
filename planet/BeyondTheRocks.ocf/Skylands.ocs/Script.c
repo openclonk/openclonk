@@ -5,6 +5,7 @@
 	@authors Sven2
 */
 
+static const LOAM_Bridge_Amount = 65; // longer bridges!
 
 static g_is_initialized;
 static g_intro_initialized;

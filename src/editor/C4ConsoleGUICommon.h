@@ -24,18 +24,6 @@ C4ConsoleGUI::C4ConsoleGUI()
 
 C4ConsoleGUI::~C4ConsoleGUI() {delete state;}
 
-void C4ConsoleGUI::SetCaption(const char *caption)
-{
-	if (!Active) return;
-#ifdef _WIN32
-	// Sorry, the window caption needs to be constant so
-	// the window can be found using FindWindow
-	SetTitle(C4ENGINECAPTION);
-#else
-	SetTitle(caption);
-#endif
-}
-
 #define DEFINE_STANDARD_DLG_METHODS(cls)\
 cls::cls()\
 {\

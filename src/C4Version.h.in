@@ -31,7 +31,6 @@
 #define C4ENGINENAME          "@C4ENGINENAME@"
 #define C4ENGINENICK          "@C4ENGINENICK@"
 
-#define C4EDITORCAPTION       "Clonk Editor"
 #define C4ENGINEID            "@C4ENGINEID@"
 
 #define C4XVER1               @C4XVER1@

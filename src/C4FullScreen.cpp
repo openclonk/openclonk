@@ -29,7 +29,6 @@
 
 #include <C4Game.h>
 #include <C4Application.h>
-#include <C4UserMessages.h>
 #include <C4Viewport.h>
 #include <C4League.h>
 #include <C4Language.h>
@@ -44,120 +43,6 @@
 #include <C4PlayerList.h>
 
 #ifdef _WIN32
-
-LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	static bool NativeCursorShown = true;
-	// Process message
-	switch (uMsg)
-	{
-	case WM_ACTIVATE:
-		wParam = (LOWORD(wParam)==WA_ACTIVE || LOWORD(wParam)==WA_CLICKACTIVE);
-		// fall through to next case
-	case WM_ACTIVATEAPP:
-		Application.Active = wParam != 0;
-		if (pDraw)
-		{
-			if (Application.Active)
-				pDraw->TaskIn();
-			else
-				pDraw->TaskOut();
-		}
-		// redraw background
-		::GraphicsSystem.InvalidateBg();
-		// Redraw after task switch
-		if (Application.Active)
-			::GraphicsSystem.Execute();
-		// update cursor clip
-		::MouseControl.UpdateClip();
-		return false;
-	case WM_PAINT:
-		// Redraw after task switch
-		if (Application.Active)
-			::GraphicsSystem.Execute();
-		break;
-	case WM_DESTROY:
-		Application.Quit();
-		return 0;
-	case WM_CLOSE:
-		FullScreen.Close();
-		return 0;
-	case MM_MCINOTIFY:
-		if (wParam == MCI_NOTIFY_SUCCESSFUL)
-			Application.MusicSystem.NotifySuccess();
-		return true;
-	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL))
-			return 0;
-		break;
-	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
-			return 0;
-		break;
-	case WM_SYSKEYDOWN:
-		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
-			return 0;
-		break;
-	case WM_CHAR:
-	{
-		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
-		char c[5] = {0};
-		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
-			return 0;
-		// GUI: forward
-		if (::pGUI->CharIn(c))
-			return 0;
-		return false;
-	}
-	case WM_USER_LOG:
-		if (SEqual2((const char *)lParam, "IDS_"))
-			Log(LoadResStr((const char *)lParam));
-		else
-			Log((const char *)lParam);
-		return false;
-	case WM_LBUTTONDOWN:
-		C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
-		break;
-	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEWHEEL: C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEMOVE:
-		C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
-		// Hide cursor in client area
-		if (NativeCursorShown)
-		{
-			NativeCursorShown = false;
-			ShowCursor(FALSE);
-		}
-		break;
-	case WM_NCMOUSEMOVE:
-		// Show cursor on window frame
-		if (!NativeCursorShown)
-		{
-			NativeCursorShown = true;
-			ShowCursor(TRUE);
-		}
-		break;
-	case WM_SIZE:
-		// Notify app about render window size change
-		switch (wParam)
-		{
-		case SIZE_RESTORED:
-		case SIZE_MAXIMIZED:
-			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
-			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
-			break;
-		}
-		break;
-	}
-	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
-}
-
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -417,7 +302,7 @@ C4FullScreen::~C4FullScreen()
 
 C4Window * C4FullScreen::Init(C4AbstractApp * pApp)
 {
-	return Init(C4Window::W_Fullscreen, pApp, C4ENGINENAME);
+	return Init(C4Window::W_Fullscreen, pApp, C4ENGINECAPTION);
 }
 
 void C4FullScreen::Close()

@@ -48,7 +48,6 @@ static void readline_callback (char *);
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		Location(""), DoNotDelay(false),
 		// main thread
 #ifdef HAVE_PTHREAD
 		MainThread (pthread_self()),
@@ -67,19 +66,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-	// Try to figure out the location of the executable
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	if (dir[0] != '/')
-	{
-		SInsert(dir, "/");
-		SInsert(dir, GetWorkingDirectory());
-		Location = dir;
-	}
-	else
-	{
-		Location = dir;
-	}
 
 	// Custom initialization
 	return DoInit (argc, argv);
@@ -118,10 +104,6 @@ StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return false;
-}
-// Give up Selection ownership
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
 }
 
 CStdInProc::CStdInProc()
@@ -204,14 +186,9 @@ static void readline_callback (char * line)
 }
 #endif
 
-bool C4Draw::SaveDefaultGammaRamp(C4Window * pWindow)
-{
-	return true;
-}
-
-void C4AbstractApp::MessageDialog(const char * message)
-{
-}
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP&, bool) { return true; }
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP&) { return true; }
+void C4AbstractApp::MessageDialog(const char * message) {}
 
 bool C4AbstractApp::FlushMessages()
 {

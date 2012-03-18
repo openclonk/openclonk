@@ -41,7 +41,7 @@
 /* C4AbstractApp */
 
 C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+		MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 
@@ -53,13 +53,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-
-	// SDLmain.m copied the executable path into argv[0];
-	// just copy it (not sure if original buffer is guaranteed
-	// to be permanent).
-	static char dir[PATH_MAX];
-	SCopy(argv[0], dir);
-	Location = dir;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
 	{
@@ -172,6 +165,16 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
+bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
+	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
+}
+
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+{
+	return SDL_GetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
+}
+
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 
@@ -189,10 +192,6 @@ StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
 	return false;
-}
-
-void C4AbstractApp::ClearClipboard(bool fClipboard)
-{
 }
 
 void C4AbstractApp::MessageDialog(const char * message)
