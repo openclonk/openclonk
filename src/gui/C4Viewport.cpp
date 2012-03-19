@@ -379,7 +379,7 @@ void C4Viewport::InitZoom()
 		// general viewport? Default zoom parameters
 		ZoomTarget = Max<float>(float(ViewWdt)/GBackWdt, 1.0f);
 		Zoom = ZoomTarget;
-		SetZoomLimits(ZoomTarget, 0 /* no default max limit */);
+		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 12);
 	}
 }
 
@@ -406,9 +406,8 @@ void C4Viewport::SetZoomLimits(float to_min_zoom, float to_max_zoom)
 {
 	ZoomLimitMin = to_min_zoom;
 	ZoomLimitMax = to_max_zoom;
-	if (ZoomLimitMax < ZoomLimitMin) ZoomLimitMax = ZoomLimitMin;
-	if (ZoomTarget < ZoomLimitMin) ZoomTarget = ZoomLimitMin;
-	if (ZoomTarget > ZoomLimitMax) ZoomTarget = ZoomLimitMax;
+	if (ZoomLimitMax && ZoomLimitMax < ZoomLimitMin) ZoomLimitMax = ZoomLimitMin;
+	ChangeZoom(1); // Constrains zoom to limit.
 }
 
 float C4Viewport::GetZoomByViewRange(int32_t size_x, int32_t size_y) const
