@@ -1215,17 +1215,6 @@
 		Priority=50
 		Control=ThrowAlt
 		
-		# Drop
-		
-		[Assignment]
-		Key=CON_Down,CON_UseAlt
-		Priority=150
-		Control=DropAlt
-		
-		[Assignment]
-		Key=CON_Down,CON_Use
-		Priority=150
-		Control=Drop
 		
 	# ======================================================================= #
 	#                              Interaction queue                          #
