@@ -94,12 +94,13 @@ private func MakeBackpack()
 	var y = 200;
 
 	// create background
-	
+	/*
 	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
 	hoverhelper->SetHUDController(this);
 	hoverhelper->SetPosition(0,y-10);
 	hoverhelper->SetShape(0,0,40+48/2+25, d*BackpackSize() - 48 - 20);
 	hoverhelper.Visibility = VIS_None;
+*/
 
 	// create backpack slots
 	for(var i=0; i<BackpackSize(); i++)
@@ -115,16 +116,19 @@ private func MakeBackpack()
 	}
 	
 	// and the lock-button
+	/*
 	var bt = CreateObject(GUI_Lock_Button,0,0,GetOwner());
 	bt->SetHUDController(this);
 	bt->SetPosition(60,y-55);
 	
 	lockbutton = bt;
-	
+	*/
 }
 
 public func ShowInventory()
 {
+	return;
+	/*
 	var effect;
 	if(effect = GetEffect("InventoryTransition", this))
 		effect.position = 40;
@@ -134,10 +138,13 @@ public func ShowInventory()
 	hoverhelper.Visibility = VIS_None;
 	
 	ClearScheduleCall(this, "HideInventory");
+	*/
 }
 
 public func HideInventory()
 {
+	return;
+	/*
 	// don't hide if the inventory is locked
 	if(lockbutton->IsLocked())
 		return;
@@ -149,11 +156,13 @@ public func HideInventory()
 		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 0, backpack[0]);
 	
 	hoverhelper.Visibility = VIS_Owner;
+	*/
 }
 
 public func ScheduleHideInventory()
 {
-	ScheduleCall(this, "HideInventory", 120);
+	return;
+	//ScheduleCall(this, "HideInventory", 120);
 }
 
 
@@ -336,10 +345,12 @@ func UpdateBackpack()
 	for(var i=0; i < c->HandObjects(); ++i)
 		backpack[c->GetHandItemPos(i)]->SetSelected(i);
 	
+	/*
 	if(!lockbutton->IsLocked())
 	{
 		ScheduleHideInventory();
 	}
+	*/
 }	
 
 /*
