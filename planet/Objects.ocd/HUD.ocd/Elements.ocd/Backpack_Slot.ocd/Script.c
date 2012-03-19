@@ -63,7 +63,7 @@ public func SetSymbol(obj)
 			SetGraphics(nil,obj, 2, GFXOV_MODE_IngamePicture);
 		
 		// if object has extra slot, show it
-		if(obj->~HasExtraSlot())
+		if(obj->~HasExtraSlot() && obj->Contents())
 		{
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, obj->Contents());
 			SetClrModulation(RGBa(255,255,255,200),1);
