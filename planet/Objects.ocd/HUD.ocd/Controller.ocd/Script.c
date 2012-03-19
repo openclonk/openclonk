@@ -90,9 +90,11 @@ private func MakeBackpack()
 	// distance between slots
 	var d = 60;
 	// upper barrier
-	var y = -225-35 - d*BackpackSize();
+	//var y = -225-35 - d*BackpackSize();
+	var y = 200;
 
 	// create background
+	
 	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
 	hoverhelper->SetHUDController(this);
 	hoverhelper->SetPosition(0,y-10);
@@ -118,6 +120,7 @@ private func MakeBackpack()
 	bt->SetPosition(60,y-55);
 	
 	lockbutton = bt;
+	
 }
 
 public func ShowInventory()
@@ -745,7 +748,7 @@ public func ReorderCrewSelectors(object leaveout)
 		var sel = crew->GetSelector();
 		if(sel)
 		{
-			sel->SetPosition(32 + j * (GUI_CrewSelector->GetDefWidth() + spacing) + GUI_CrewSelector->GetDefWidth()/2, 16+GUI_CrewSelector->GetDefHeight()/2);
+			sel->SetPosition(60 + 32 + j * (GUI_CrewSelector->GetDefWidth() + spacing) + GUI_CrewSelector->GetDefWidth()/2, 16+GUI_CrewSelector->GetDefHeight()/2);
 			if(j+1 == 10) sel->SetHotkey(0);
 			else if(j+1 < 10) sel->SetHotkey(j+1);
 		}
