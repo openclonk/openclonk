@@ -49,16 +49,32 @@ public func SetSymbol(obj)
 		
 	if(!obj)
 	{
-		SetGraphics(nil, nil, MI_ICON_LAYER);
+		SetGraphics(nil, nil, 1);
+		SetGraphics(nil, nil, 2);
+		//SetGraphics(nil, nil, 3);
 		SetName("");
 		this.MouseDragImage = nil;
 	}
 	else
 	{
 		if (GetType(obj) == C4V_C4Object)
-			SetGraphics(nil, nil, MI_ICON_LAYER, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetGraphics(nil, nil, 2, GFXOV_MODE_ObjectPicture, 0, 0, obj);
 		else
-			SetGraphics(nil,obj,MI_ICON_LAYER,GFXOV_MODE_IngamePicture);
+			SetGraphics(nil,obj, 2, GFXOV_MODE_IngamePicture);
+		
+		// if object has extra slot, show it
+		if(obj->~HasExtraSlot())
+		{
+			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, obj->Contents());
+			SetClrModulation(RGBa(255,255,255,200),1);
+			SetObjDrawTransform(900,0,0,0,900,0,1);
+			//SetObjDrawTransform(1000,0,32000,0,1000,-28000,2);
+		}
+		// or otherwise, remove it
+		else
+		{
+			SetGraphics(nil,nil, 1);
+		}
 		
 		SetName(obj->GetName());
 		this.MouseDragImage = obj->GetID();
