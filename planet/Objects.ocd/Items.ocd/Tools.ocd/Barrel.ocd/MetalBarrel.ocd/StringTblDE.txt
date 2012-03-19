@@ -1,2 +1,2 @@
 Name=Metallfass
-Description=In einem Metallfass können gefährliche Flüssigkeiten transportiert werden.
+Description=Stabiler Behälter zum Transport gefährlicher Flüssigkeiten wie Säure.

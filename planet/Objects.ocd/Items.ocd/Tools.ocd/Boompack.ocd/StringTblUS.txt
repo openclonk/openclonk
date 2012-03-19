@@ -1,2 +1,3 @@
 Name=Boompack
-Description=Aim and press [Use] to ignite the rocket and catapult yourself in any direction.
+UsageHelp=Aim and ignite the rocket to fly with it into that direction. Jump off before the rocket explodes!
+Description=Single-use means of transport for the daring kind.

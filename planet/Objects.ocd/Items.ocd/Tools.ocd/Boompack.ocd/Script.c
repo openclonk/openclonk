@@ -233,4 +233,5 @@ local Collectible = false;
 local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

@@ -387,5 +387,6 @@ public func IsToolProduct() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
 local ChopStrength = 10;

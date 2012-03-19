@@ -172,5 +172,6 @@ private func FireWeapon(object pClonk,iX,iY)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;

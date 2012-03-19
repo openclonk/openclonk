@@ -69,7 +69,8 @@ public func MouseSelectionAlt(int plr)
 {
 	if(!myobject) return;
 	
-	var desc = myobject->GetProperty("Description");
+	var desc = myobject.UsageHelp;
+	if(!desc) desc = myobject.Description; // fall back to general description
 	
 	// close other messages...
 	crew->OnDisplayInfoMessage();

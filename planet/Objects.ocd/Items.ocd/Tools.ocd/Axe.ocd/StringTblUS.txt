@@ -1,2 +1,3 @@
 Name=Axe
-Description=Press [Use] to chop down a tree. Press [Use] again to split a chopped tree into wood (but gain less wood than from a sawmill).
+Description=Tool of a woodcutter.
+UsageHelp=Use to chop down a tree.
