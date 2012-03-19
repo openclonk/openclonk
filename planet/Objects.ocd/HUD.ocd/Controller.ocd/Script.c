@@ -62,10 +62,10 @@ protected func Construction()
 	wealth->Update();
 	
 	// breathtube
-	MakeBreathTube();
+	//MakeBreathTube();
 	
 	// healthtube
-	MakeHealthTube();
+	//MakeHealthTube();
 	
 	// manatube
 	// MakeManaTube();
