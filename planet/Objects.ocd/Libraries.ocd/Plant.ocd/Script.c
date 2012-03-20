@@ -145,7 +145,7 @@ public func IsHarvestable()
 
 public func IsInteractable(object clonk)
 {
-	return clonk->GetProcedure() == "WALK" && IsCrop() && IsHarvestable() || _inherited(clonk);
+	return clonk->IsWalking() && IsCrop() && IsHarvestable() || _inherited(clonk);
 }
 
 public func GetInteractionMetaInfo(object clonk)
