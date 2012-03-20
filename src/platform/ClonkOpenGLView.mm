@@ -622,7 +622,7 @@ namespace
 	GammaRampConversionTable GammaRampConversionTable::singleton;
 }
 
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 {
 	CGGammaValue r[256];
 	CGGammaValue g[256];
@@ -637,7 +637,7 @@ bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	return true;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(C4Window * pWindow)
+bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
 {
 	return false;//return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }

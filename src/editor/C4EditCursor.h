@@ -44,27 +44,21 @@ protected:
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
 	C4Object *Target,*DropTarget;
-#ifdef _WIN32
-	HMENU hMenu;
 	struct ObjselItemDt {
+		C4EditCursor* EditCursor;
 		C4Object* Object;
-		UINT_PTR ItemId;
+		void* MenuItem;
 	};
 	std::vector<ObjselItemDt> itemsObjselect;
+#ifdef _WIN32
+	HMENU hMenu;
 #else
 #ifdef WITH_DEVELOPER_MODE
 	GtkWidget* menuContext;
-
 	GtkWidget* itemDelete;
 	GtkWidget* itemDuplicate;
 	GtkWidget* itemGrabContents;
 	GtkWidget* itemProperties;
-	struct ObjselItemDt {
-		C4EditCursor* EditCursor;
-		C4Object* Object;
-		GtkWidget* MenuItem;
-	};
-	std::vector<ObjselItemDt> itemsObjselect;
 #endif
 #endif // _WIN32
 	C4ObjectList Selection;

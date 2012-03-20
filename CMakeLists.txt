@@ -1115,8 +1115,8 @@ endforeach()
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################
 
-include(GccPchSupport)
 if(CMAKE_COMPILER_IS_GNUCXX)
+	include(GccPchSupport)
 	if(NOT DEFINED USE_GCC_PCH)
 		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
 	endif()
