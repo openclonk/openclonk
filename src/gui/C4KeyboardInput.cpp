@@ -196,7 +196,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ 'Z'               , "Z"         , NULL },
 	{ VK_OEM_COMMA      , "Comma"     , NULL },
 	{ VK_OEM_PERIOD     , "Period"    , NULL },
-	{ VK_OEM_5          , "Apostrophe", NULL },
+	{ VK_OEM_7          , "Apostrophe", NULL },
 
 	{ VK_LWIN           , "WinLeft"      , NULL },
 	{ VK_RWIN           , "WinRight"     , NULL },
