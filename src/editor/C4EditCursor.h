@@ -49,7 +49,7 @@ protected:
 		C4Object* Object;
 #if defined(_WIN32)
 		UINT_PTR ItemId;
-#elseif defined(WITH_DEVELOPER_MODE)
+#elif defined(WITH_DEVELOPER_MODE)
 		GtkWidget* MenuItem;
 #endif
 	};

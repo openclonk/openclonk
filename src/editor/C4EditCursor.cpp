@@ -882,7 +882,7 @@ void C4EditCursor::ObjselectDelItems() {
 	while(it != itemsObjselect.end()) {
 		#if defined(WITH_DEVELOPER_MODE)
 		gtk_widget_destroy(it->MenuItem);
-		#elseif defined(_WIN32)
+		#elif defined(_WIN32)
 		if(!it->ItemId) { ++it; continue; }
 		HMENU hContext = GetSubMenu(hMenu,0);
 		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);
