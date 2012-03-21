@@ -278,22 +278,23 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ VK_LAUNCH_APP1         , "LAUNCH_APP1"          , NULL },
 	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
 
-	{ VK_OEM_1          , "OEM Ü"    , "Ü" }, // German hax
+	{ VK_OEM_1          , "Comma_US"    , "Ü" }, // German hax
 	{ VK_OEM_PLUS       , "OEM +"   , "+" },
 	{ VK_OEM_COMMA      , "OEM ,"   , "," },
 	{ VK_OEM_MINUS      , "OEM -"   , "-" },
 	{ VK_OEM_PERIOD     , "OEM ."   , "." },
-	{ VK_OEM_2          , "OEM 2"    , "2" },
-	{ VK_OEM_3          , "OEM Ö"    , "Ö" }, // German hax
-	{ VK_OEM_4          , "OEM 4"    , "4" },
-	{ VK_OEM_5          , "OEM 5"    , "5" },
-	{ VK_OEM_6          , "OEM 6"    , "6" },
-	{ VK_OEM_7          , "OEM Ä"    , "Ä" }, // German hax
+	{ VK_OEM_2          , "OEM 2"   , "2" },
+	{ VK_OEM_3          , "OEM Ö"   , "Ö" }, // German hax
+	{ VK_OEM_4          , "OEM 4"   , "4" },
+	{ VK_OEM_5          , "OEM 5"   , "5" },
+	{ VK_OEM_6          , "OEM 6"   , "6" },
+	{ VK_OEM_7          , "OEM Ä"   , "Ä" }, // German hax
 	{ VK_OEM_8          , "OEM 8"   , "8" },
 	{ VK_OEM_AX         , "AX"      , "AX" },
-	{ VK_OEM_102        , "< > |"    , "<" }, // German hax
+	{ VK_OEM_102        , "Less" , "<" }, // German hax
+	{ VK_OEM_102        , "Backslash", NULL }, // German hax
 	{ VK_ICO_HELP       , "Help"    , "Help" },
-	{ VK_ICO_00         , "ICO_00"   , "00" },
+	{ VK_ICO_00         , "ICO_00"  , "00" },
 
 	{ VK_ICO_CLEAR      , "ICO_CLEAR"     , NULL },
 

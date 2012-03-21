@@ -801,6 +801,47 @@
 		Priority=100
 		Control=WheelZoomOut
 
+		# Secondary Hotkeys for interacting (actionbar)
+		
+		[Assignment]
+		Key=Less
+		Control=InteractionHotkey1
+		
+		[Assignment]
+		Key=Y
+		Control=InteractionHotkey2
+		
+		[Assignment]
+		Key=X
+		Control=InteractionHotkey3
+		
+		[Assignment]
+		Key=C
+		Control=InteractionHotkey4
+		
+		[Assignment]
+		Key=V
+		Control=InteractionHotkey5
+		
+		[Assignment]
+		Key=B
+		Control=InteractionHotkey6
+		
+		[Assignment]
+		Key=N
+		Control=InteractionHotkey7
+		
+		[Assignment]
+		Key=M
+		Control=InteractionHotkey8
+		
+		[Assignment]
+		Key=Comma
+		Control=InteractionHotkey9
+		
+		[Assignment]
+		Key=Period
+		Control=InteractionHotkey0
 		
 	# ======================================================================= #
 	#                   Mouse control with keyboard (DVORAK)                  #
@@ -926,6 +967,47 @@
 		Priority=100
 		Control=WheelZoomOut
 		
+		# Secondary Hotkeys for interacting (actionbar)
+		
+		[Assignment]
+		Key=Backslash
+		Control=InteractionHotkey1
+		
+		[Assignment]
+		Key=Comma_US
+		Control=InteractionHotkey2
+		
+		[Assignment]
+		Key=Q
+		Control=InteractionHotkey3
+		
+		[Assignment]
+		Key=J
+		Control=InteractionHotkey4
+		
+		[Assignment]
+		Key=K
+		Control=InteractionHotkey5
+		
+		[Assignment]
+		Key=X
+		Control=InteractionHotkey6
+		
+		[Assignment]
+		Key=B
+		Control=InteractionHotkey7
+		
+		[Assignment]
+		Key=M
+		Control=InteractionHotkey8
+		
+		[Assignment]
+		Key=W
+		Control=InteractionHotkey9
+		
+		[Assignment]
+		Key=V
+		Control=InteractionHotkey0
 		
 	# ======================================================================= #
 	#     Dualshock-like gamepad (10-12 buttons, 1 D-Pad, 2 analog stick)     #
@@ -1537,6 +1619,8 @@
 		Key=Interact,Hotkey0
 		Control=InteractionHotkey0
 		Priority=101
+		
+		# Hotkeys for choosing clonk
 		
 		[Assignment]
 		Key=Ctrl+Hotkey1
