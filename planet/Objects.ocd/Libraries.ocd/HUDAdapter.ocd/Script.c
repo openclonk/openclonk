@@ -172,12 +172,12 @@ protected func OnInventoryHotkeyRelease(int slot)
 	return _inherited(slot, ...);
 }
 
-// when two items switch place
-protected func OnInventoryChange(int old, int new)
+// when something in the inventory changed
+protected func OnInventoryChange()
 {
 	if (HUDcontroller)
 		HUDcontroller->ScheduleUpdateBackpack();
-	return _inherited(old, new, ...);
+	return _inherited(...);
 }
 
 func Collection2()

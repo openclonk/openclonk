@@ -440,6 +440,14 @@ protected func Ejection(object obj)
 	_inherited(obj,...);
 }
 
+protected func ContentsDestruction()
+{
+	// tell the Hud that something changed
+	this->~OnInventoryChange();
+	
+	_inherited(...);
+}
+
 protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
