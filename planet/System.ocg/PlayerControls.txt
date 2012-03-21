@@ -1302,6 +1302,49 @@
 		Key=0
 		Control=Hotkey0
 		
+		# 2nd hand Hotkeys
+		
+		[Assignment]
+		Key=Alt+Hotkey1
+		Control=Hotkey1SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey2
+		Control=Hotkey2SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey3
+		Control=Hotkey3SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey4
+		Control=Hotkey4SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey5
+		Control=Hotkey5SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey6
+		Control=Hotkey6SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey7
+		Control=Hotkey7SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey8
+		Control=Hotkey8SelectAlt
+
+		[Assignment]
+		Key=Alt+Hotkey9
+		Control=Hotkey9SelectAlt
+		
+		[Assignment]
+		Key=Alt+Hotkey0
+		Control=Hotkey0SelectAlt
+		
+		# Hotkey + Mousebutton Select
 		[Assignment]
 		Key=Hotkey1,Mouse1ButtonLeft
 		Control=Hotkey1Select
