@@ -751,8 +751,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::Tabular::Sheet *pSheetGeneral  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_PROGRAM") , 0);
 	C4GUI::Tabular::Sheet *pSheetGraphics = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_GRAPHICS"), 1);
 	C4GUI::Tabular::Sheet *pSheetSound    = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_SOUND")   , 2);
-	// Isilkor 11-08-19: Disabled control config tab according to bug #624
-	//C4GUI::Tabular::Sheet *pSheetControls= pOptionsTabular->AddSheet("[!]Controls", 3);
+	C4GUI::Tabular::Sheet *pSheetControls= pOptionsTabular->AddSheet("[!]Controls", 3);
 	//C4GUI::Tabular::Sheet *pSheetGamepad  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_GAMEPAD") , 4);
 	C4GUI::Tabular::Sheet *pSheetNetwork  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_NETWORK") , 5);
 
@@ -1049,8 +1048,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	}
 
 	// --- page controls
-	// Isilkor 11-08-19: Disabled control config tab according to bug #624
-	//pSheetControls->AddElement(new ControlConfigArea(pSheetControls->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
+	pSheetControls->AddElement(new ControlConfigArea(pSheetControls->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
 
 	// --- page network
 	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
