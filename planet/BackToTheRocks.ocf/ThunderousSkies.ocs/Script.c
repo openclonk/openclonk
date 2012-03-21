@@ -13,7 +13,7 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(8 * 36);
 	var goal = CreateObject(Goal_KingOfTheHill, 450, 380, NO_OWNER);
 	goal->SetRadius(90);
-	goal->SetPointLimit(10);
+	goal->SetPointLimit(5);
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	CreateObject(Rule_KillLogs);
 	
