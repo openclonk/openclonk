@@ -39,7 +39,6 @@
 @synthesize context;
 
 - (BOOL) isOpaque {return YES;}
-- (NSOpenGLContext*) context {return context;}
 
 - (void) dealloc
 {

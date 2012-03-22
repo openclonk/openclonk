@@ -34,7 +34,7 @@
 	ConsoleWindowController *consoleController;
 	ClonkWindowController *gameWindowController;
 	// declared here since ConsoleWindow.xib can't refer to objects in MainMenu.xib -.-
-	IBOutlet NSMenuItem *newViewportForPlayerMenuItem;
+	IBOutlet NSMenuItem *addViewportForPlayerMenuItem;
 	IBOutlet NSMenuItem *kickPlayerMenuItem;
 	IBOutlet NSMenuItem *recordMenuItem;
 	IBOutlet NSMenuItem *netMenu;
@@ -53,7 +53,7 @@
 + (BOOL) isEditorAndGameRunning;
 
 #ifdef USE_COCOA
-@property(readonly) NSMenuItem* newViewportForPlayerMenuItem;
+@property(readonly) NSMenuItem* addViewportForPlayerMenuItem;
 @property(readonly) NSMenuItem* kickPlayerMenuItem;
 @property(readwrite, retain) ConsoleWindowController* consoleController;
 @property(readwrite, retain) ClonkWindowController* gameWindowController;

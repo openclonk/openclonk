@@ -124,11 +124,6 @@
 	}
 }
 
-- (void) setStdWindow:(C4Window*)window
-{
-	stdWindow = window;
-}
-
 - (BOOL) windowShouldClose:(id)sender
 {
 	if (sender == self.window && self.stdWindow)
@@ -142,7 +137,7 @@
 - (C4Viewport*) viewport
 {
 	for (C4Viewport* v = ::Viewports.GetFirstViewport(); v; v = v->GetNext())
-		if (v->GetWindow() == stdWindow || v->GetWindow() == NULL && stdWindow == &FullScreen)
+		if (v->GetWindow() == stdWindow || (!v->GetWindow() && stdWindow == &FullScreen))
 			return v;
 	return NULL;
 }

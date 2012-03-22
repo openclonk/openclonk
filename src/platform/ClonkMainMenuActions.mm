@@ -164,7 +164,7 @@
 	};
 	int i = 0;
 	SEL s;
-	while (s = gameRunningInConsoleModeSelectors[i++])
+	while ((s = gameRunningInConsoleModeSelectors[i++]) != nil)
 	{
 		if (s == [item action])
 			return Application.isEditor && Game.IsRunning;
@@ -177,6 +177,12 @@
 - (IBAction) visitWebsite:(id)sender;
 {
 	OpenURL("http://wiki.openclonk.org");
+}
+
+- (void) simulateKeyPressed:(C4KeyCode)key
+{
+	Game.DoKeyboardInput(key, KEYEV_Down, false, false, false, false, NULL);
+	Game.DoKeyboardInput(key, KEYEV_Up,   false, false, false, false, NULL);
 }
 
 @end

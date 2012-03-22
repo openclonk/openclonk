@@ -73,8 +73,8 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 
 void C4ConsoleGUI::Out(const char* message)
 {
-	ConsoleWindowController* controller;
-	if (controller = ctrler(this))
+	ConsoleWindowController* controller = ctrler(this);
+	if (controller)
 	{
 		NSTextStorage* textStorage = controller.outputTextView.textStorage;
 		[textStorage appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]] autorelease]];
@@ -134,7 +134,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text)
 {
 	NSMenuItem* item = [
-		[ClonkAppDelegate instance].newViewportForPlayerMenuItem.submenu
+		[ClonkAppDelegate instance].addViewportForPlayerMenuItem.submenu
 		addItemWithTitle:[NSString stringWithUTF8String:player_text.getData()] action:@selector(newViewportForPlayer:) keyEquivalent:@""
 	];
 	[item setTag:player->Number];
@@ -143,7 +143,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text
 
 void C4ConsoleGUI::ClearViewportMenu()
 {
-	[[ClonkAppDelegate instance].newViewportForPlayerMenuItem.submenu removeAllItems];
+	[[ClonkAppDelegate instance].addViewportForPlayerMenuItem.submenu removeAllItems];
 }
 
 bool C4ConsoleGUI::Message(const char *message, bool query)
@@ -382,7 +382,7 @@ void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor cursor)
 
 void C4ConsoleGUI::RecordingEnabled()
 {
-	[[[ClonkAppDelegate instance] recordMenuItem] setEnabled:NO];
+	[ClonkAppDelegate.instance.recordMenuItem setEnabled:NO];
 }
 
 void C4ConsoleGUI::AddNetMenu()

@@ -154,7 +154,7 @@ int indexFromSender(id sender)
 	};
 	int i = 0;
 	SEL s;
-	while (s = gameRunningInConsoleModeSelectors[i++])
+	while ((s = gameRunningInConsoleModeSelectors[i++]) != nil)
 	{
 		if (s == [item action])
 			return [ClonkAppDelegate isEditorAndGameRunning];

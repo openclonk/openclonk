@@ -39,7 +39,7 @@
 }
 
 #ifdef USE_COCOA
-@synthesize newViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController;
+@synthesize addViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController;
 #endif
 
 - (id) init
@@ -153,22 +153,6 @@
 	[NSApp terminate:self];
 }
 #endif
-
-- (void) simulateKeyPressed:(C4KeyCode)key
-{
-	Game.DoKeyboardInput(
-						 key,
-						 KEYEV_Down,
-						 false, false, false,
-						 false, NULL
-						 );
-	Game.DoKeyboardInput(
-						 key,
-						 KEYEV_Up,
-						 false, false, false,
-						 false, NULL
-						 );
-}
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
 {

@@ -68,8 +68,8 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 void C4Window::Clear()
 {
 	// Destroy window
-	ClonkWindowController* controller;
-	if (controller = ctrler)
+	ClonkWindowController* controller = ctrler;
+	if (controller)
 	{
 		[controller.openGLView setNeedsDisplay:NO];
 		[controller.openGLView removeFromSuperview];
