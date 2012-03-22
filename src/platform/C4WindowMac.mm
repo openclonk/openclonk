@@ -61,6 +61,11 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	this->controller = controller;
 	[NSBundle loadNibNamed:windowNibNameForWindowKind(windowKind) owner:controller];
 	[controller setStdWindow:this];
+	if (windowKind != W_GuiWindow)
+	{
+		if (lionAndBeyond())
+			[controller.window setCollectionBehavior:[controller.window collectionBehavior] | NSWindowCollectionBehaviorFullScreenPrimary];
+	}
 	SetTitle(Title);
 	return this;
 }

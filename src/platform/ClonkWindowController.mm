@@ -30,6 +30,15 @@
 #import "ClonkAppDelegate.h"
 #import "AppKit/NSOpenGL.h"
 
+static SInt32 osVersion()
+{
+	SInt32 ver;
+	Gestalt(gestaltSystemVersion, &ver);
+	return ver;
+}
+
+bool lionAndBeyond() {return osVersion() >= 0x1070;}
+
 #ifdef USE_COCOA
 
 // Turns out, it is necessary to derive a NSWindow class after all - or else the screen-filling window won't be able to become the key window
@@ -45,7 +54,6 @@
 	return YES; // a resounding one
 }
 @end
-
 
 @implementation ClonkWindowController
 

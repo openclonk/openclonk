@@ -14,7 +14,7 @@
 - (IBAction) newViewportForPlayer:(id)sender;
 - (IBAction) joinPlayer:(id)sender;
 - (IBAction) showAbout:(id)sender;
-- (IBAction) toggleFullscreen:(id)sender;
+- (IBAction) toggleFullScreen:(id)sender;
 - (IBAction) togglePause:(id)sender;
 - (IBAction) setConsoleMode:(id)sender;
 - (IBAction) setDrawingTool:(id)sender;

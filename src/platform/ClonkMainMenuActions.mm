@@ -139,7 +139,7 @@
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
 {
 	// enabled when running in fullscreen
-	if ([item action] == @selector(toggleFullscreen:))
+	if ([item action] == @selector(toggleFullScreen:))
 		return !Application.isEditor;
 	
 	// game running no matter whether console or fullscreen

@@ -523,6 +523,7 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 
 bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
+	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
 	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
 	NSWindow* window = controller.window;
 

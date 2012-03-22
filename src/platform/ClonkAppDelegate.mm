@@ -133,6 +133,8 @@
 			[NSApp terminate:self];
 		}
 		[[NSRunLoop currentRunLoop] performSelector:@selector(delayedRun:) target:self argument:self order:0 modes:[NSArray arrayWithObject:NSDefaultRunLoopMode]];
+		if (!lionAndBeyond())
+			[toggleFullScreen setTarget:self]; // revert to old pre-Lion fullscreen
 #endif
 	}
 	else

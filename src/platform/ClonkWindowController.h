@@ -24,6 +24,8 @@ class C4Viewport;
 @class NSTextView;
 @class ConsoleWindowController;
 
+bool lionAndBeyond();
+
 @interface ClonkWindowController : NSWindowController<NSWindowDelegate> {
 	IBOutlet ClonkOpenGLView* openGLView;
 	IBOutlet NSScrollView* scrollView;

@@ -38,7 +38,8 @@
 	IBOutlet NSMenuItem *kickPlayerMenuItem;
 	IBOutlet NSMenuItem *recordMenuItem;
 	IBOutlet NSMenuItem *netMenu;
-	
+	IBOutlet NSMenuItem *toggleFullScreen;
+
 	BOOL running;
 	char** argv;
 	int argc;

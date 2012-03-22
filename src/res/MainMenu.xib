@@ -933,9 +933,9 @@
 									<reference key="NSOnImage" ref="236001633"/>
 									<reference key="NSMixedImage" ref="855621955"/>
 								</object>
-								<object class="NSMenuItem" id="123734778">
+								<object class="NSMenuItem" id="595292667">
 									<reference key="NSMenu" ref="594976293"/>
-									<string key="NSTitle">Toggle Fullscreen</string>
+									<string key="NSTitle">Enter Full Screen</string>
 									<string key="NSKeyEquiv">f</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1333,6 +1333,14 @@
 					<int key="connectionID">706</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleFullScreen:</string>
+						<reference key="source" ref="22732454"/>
+						<reference key="destination" ref="595292667"/>
+					</object>
+					<int key="connectionID">717</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">newViewportForPlayerMenuItem</string>
 						<reference key="source" ref="898186092"/>
@@ -1446,14 +1454,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">toggleFullscreen:</string>
-						<reference key="source" ref="898186092"/>
-						<reference key="destination" ref="123734778"/>
-					</object>
-					<int key="connectionID">539</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">openPropTools:</string>
 						<reference key="source" ref="898186092"/>
 						<reference key="destination" ref="949994966"/>
@@ -1555,6 +1555,14 @@
 						<reference key="destination" ref="131903444"/>
 					</object>
 					<int key="connectionID">707</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">toggleFullScreen</string>
+						<reference key="source" ref="898186092"/>
+						<reference key="destination" ref="595292667"/>
+					</object>
+					<int key="connectionID">718</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1660,13 +1668,13 @@
 						<reference key="object" ref="594976293"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="123734778"/>
 							<reference ref="39021228"/>
 							<reference ref="949994966"/>
 							<reference ref="687345396"/>
 							<reference ref="922362397"/>
 							<reference ref="788509410"/>
 							<reference ref="7465935"/>
+							<reference ref="595292667"/>
 						</object>
 						<reference key="parent" ref="143812656"/>
 					</object>
@@ -1784,11 +1792,6 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">466</int>
 						<reference key="object" ref="7465935"/>
-						<reference key="parent" ref="594976293"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">470</int>
-						<reference key="object" ref="123734778"/>
 						<reference key="parent" ref="594976293"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -2370,6 +2373,11 @@
 						<reference key="object" ref="748532086"/>
 						<reference key="parent" ref="520246036"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">716</int>
+						<reference key="object" ref="595292667"/>
+						<reference key="parent" ref="594976293"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -2405,7 +2413,6 @@
 					<string>449.IBPluginDependency</string>
 					<string>459.IBPluginDependency</string>
 					<string>466.IBPluginDependency</string>
-					<string>470.IBPluginDependency</string>
 					<string>472.IBPluginDependency</string>
 					<string>474.IBPluginDependency</string>
 					<string>476.IBPluginDependency</string>
@@ -2493,6 +2500,7 @@
 					<string>701.IBPluginDependency</string>
 					<string>703.IBPluginDependency</string>
 					<string>704.IBPluginDependency</string>
+					<string>716.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2627,7 +2635,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">707</int>
+			<int key="maxID">718</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2635,6 +2643,150 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">ClonkAppDelegate</string>
 					<string key="superclassName">NSObject</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>closeScenario:</string>
+							<string>joinPlayer:</string>
+							<string>newViewport:</string>
+							<string>newViewportForPlayer:</string>
+							<string>openPropTools:</string>
+							<string>openScenario:</string>
+							<string>openScenarioWithPlayers:</string>
+							<string>record:</string>
+							<string>saveGameAs:</string>
+							<string>saveScenario:</string>
+							<string>saveScenarioAs:</string>
+							<string>setConsoleMode:</string>
+							<string>setDrawingTool:</string>
+							<string>showAbout:</string>
+							<string>suggestQuitting:</string>
+							<string>toggleFullscreen:</string>
+							<string>togglePause:</string>
+							<string>visitWebsite:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>closeScenario:</string>
+							<string>joinPlayer:</string>
+							<string>newViewport:</string>
+							<string>newViewportForPlayer:</string>
+							<string>openPropTools:</string>
+							<string>openScenario:</string>
+							<string>openScenarioWithPlayers:</string>
+							<string>record:</string>
+							<string>saveGameAs:</string>
+							<string>saveScenario:</string>
+							<string>saveScenarioAs:</string>
+							<string>setConsoleMode:</string>
+							<string>setDrawingTool:</string>
+							<string>showAbout:</string>
+							<string>suggestQuitting:</string>
+							<string>toggleFullscreen:</string>
+							<string>togglePause:</string>
+							<string>visitWebsite:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">closeScenario:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">joinPlayer:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">newViewport:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">newViewportForPlayer:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">openPropTools:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">openScenario:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">openScenarioWithPlayers:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">record:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">saveGameAs:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">saveScenario:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">saveScenarioAs:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">setConsoleMode:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">setDrawingTool:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">showAbout:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">suggestQuitting:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleFullscreen:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">togglePause:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">visitWebsite:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -2643,9 +2795,11 @@
 							<string>kickPlayerMenuItem</string>
 							<string>netMenu</string>
 							<string>recordMenuItem</string>
+							<string>toggleFullScreen</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NSMenuItem</string>
 							<string>NSMenuItem</string>
 							<string>NSMenuItem</string>
 							<string>NSMenuItem</string>
@@ -2660,6 +2814,7 @@
 							<string>kickPlayerMenuItem</string>
 							<string>netMenu</string>
 							<string>recordMenuItem</string>
+							<string>toggleFullScreen</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2677,6 +2832,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">recordMenuItem</string>
+								<string key="candidateClassName">NSMenuItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toggleFullScreen</string>
 								<string key="candidateClassName">NSMenuItem</string>
 							</object>
 						</object>
