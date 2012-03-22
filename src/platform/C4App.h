@@ -39,20 +39,21 @@ typedef struct _XDisplay Display;
 //#define ControlMask   (1<<2)
 #define MK_CONTROL (1<<2)
 #define MK_SHIFT (1<<0)
-
+#define MK_ALT (1<<3)
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
 #define MK_SHIFT (KMOD_LSHIFT | KMOD_RSHIFT)
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
-
+#define MK_ALT (KMOD_LALT | KMOD_RALT)
 #elif defined(USE_CONSOLE)
 #define MK_SHIFT 0
 #define MK_CONTROL 0
-
+#define MK_ALT 0
 #elif defined(USE_COCOA)
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 extern int MK_SHIFT;
 extern int MK_CONTROL;
+extern int MK_ALT;
 #endif
 
 #ifdef _WIN32
@@ -183,7 +184,7 @@ protected:
 	pthread_t MainThread;
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
-	bool IsAltDown() { return KeyMask & (1<<3); }
+	bool IsAltDown() { return KeyMask & MK_ALT; }
 	bool AssertMainThread()
 	{
 		assert(MainThread == pthread_self());

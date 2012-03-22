@@ -136,13 +136,13 @@
 
 - (ClonkWindowController*) controller {return (ClonkWindowController*)[self.window delegate];}
 
-int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
+int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
-	modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
+	*modifierFlags = [event modifierFlags]; // should be compatible since MK_* constants mirror the NS* constants
 	if ([event modifierFlags] & NSCommandKeyMask)
 	{
 		// treat cmd and ctrl the same
-		modifierFlags |= NSControlKeyMask;
+		*modifierFlags |= NSControlKeyMask;
 	}
 	switch (event.type)
 	{
@@ -186,7 +186,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 - (void) mouseEvent:(NSEvent*)event
 {
 	DWORD flags = 0;
-	int32_t button = mouseButtonFromEvent(event, flags);
+	int32_t button = mouseButtonFromEvent(event, &flags);
 	NSPoint point = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
 	int actualSizeX = Config.Graphics.ResX;
 	int actualSizeY = Config.Graphics.ResY;
@@ -206,8 +206,11 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD& modifierFlags)
 	{
 		C4Viewport* viewport = self.controller.viewport;
 		if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
-		{
-			::C4GUI::MouseMove(button, x, y, [event type] == NSScrollWheel ? ((int)[event deltaY] << 16) : 0, viewport);
+		{	
+			DWORD keyMask = flags;
+			if ([event type] == NSScrollWheel)
+				keyMask |= (int)[event deltaY] << 16;
+			::C4GUI::MouseMove(button, x, y, keyMask, viewport);
 		}
 		else if (viewport)
 		{

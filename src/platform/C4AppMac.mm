@@ -112,7 +112,7 @@ bool C4AbstractApp::FlushMessages()
 void C4AbstractApp::HandleNSEvent(void* event)
 {
 	NSEvent* the_event = (NSEvent*)event;
-	KeyMask = [the_event modifierFlags] & (MK_SHIFT|MK_CONTROL); // MK_* and NS*KeyMask values correspond
+	KeyMask = [the_event modifierFlags] & (MK_SHIFT|MK_CONTROL|MK_ALT); // MK_* and NS*KeyMask values correspond
 	[NSApp sendEvent:the_event];
 	[NSApp updateWindows];
 	/*

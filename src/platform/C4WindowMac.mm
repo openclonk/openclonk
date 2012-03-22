@@ -178,5 +178,6 @@ int KEY_X = 7 + CocoaKeycodeOffset;
 int KEY_A = 0 + CocoaKeycodeOffset;
 int MK_SHIFT = NSShiftKeyMask;
 int MK_CONTROL = NSControlKeyMask;
+int MK_ALT = NSAlternateKeyMask;
 
 #endif

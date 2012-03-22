@@ -79,7 +79,7 @@
 {
 	if (fullscreen != [self isFullscreen])
 	{
-		// fade out
+		// fade out
 #ifndef _DEBUG
 		CGDisplayFadeReservationToken token;
 		[self fadeOut:&token];
