@@ -250,7 +250,10 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	}
 	else
 	{
-		[self.controller setFullscreen:[event magnification] > 0];
+		if (lionAndBeyond())
+			[self.window toggleFullScreen:self];
+		else
+			[self.controller setFullscreen:[event magnification] > 0];
 	}
 
 }
