@@ -45,7 +45,7 @@ local inventory;
 local use_objects;
 
 local handslot_choice_pending;
-local interaction_pending;
+local hotkeypressed;
 local forced_ejection;
 
 /* Item limit */
@@ -573,6 +573,20 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
+	// some controls should only do something on release (everything that has to do with interaction)
+	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+	{
+		if(!release)
+		{
+			// this is needed to reset the hotkey-memory
+			hotkeypressed = false;
+			return false;
+		}
+		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
+		else if(hotkeypressed)
+			return false;
+	}
+	
 	// Contents menu
 	if (ctrl == CON_Contents)
 	{
@@ -659,7 +673,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (hot > 0)
 	{
-		interaction_pending = false;
+		hotkeypressed = true;
 		this->~ControlHotkey(hot-1);
 		return true;
 	}
@@ -774,27 +788,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Interact controls
 	if(ctrl == CON_Interact)
 	{
-		if(!release)
-		{
-			interaction_pending = true;
-			// todo: show action bar
-			return true;
-		}
-		else
-		{
-			// todo: hide action bar and do stuff if necessary
-			if(interaction_pending)
-			{
-				if(ObjectControlInteract(plr,ctrl))
-					return true;
-				else
-				{
-					// try grabbing.
-					// this is a hack and should be removed as soon as the controls work properly
-					ObjectControlPush(plr, CON_Grab);
-				}
-			}
-		}
+		return ObjectControlInteract(plr,ctrl);
 	}
 	
 	// building, vehicle, mount, contents, menu control

@@ -371,11 +371,13 @@
 	GUIName=Grab
 	GUIDesc=Grab vehicle
 	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Ungrab
 	GUIName=Let go
 	GUIDesc=Let go vehicle
+	Hold=1
 	
 	[ControlDef]
 	Identifier=GrabPrevious
@@ -391,6 +393,7 @@
 	Identifier=PushEnter
 	GUIName=Push into building
 	GUIDesc=Push the vehicle into the building
+	Hold=1
 
 	[ControlDef]
 	Identifier=Interact
@@ -404,11 +407,13 @@
 	GUIName=Enter
 	GUIDesc=Go into the building
 	SendCursorPos=1
+	Hold=1
 	
 	[ControlDef]
 	Identifier=Exit
 	GUIName=Exit
 	GUIDesc=Exit the building
+	Hold=1
 	
 	
 	# Interaction Hotkeys (lower bar)
