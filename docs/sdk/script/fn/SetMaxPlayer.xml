@@ -6,7 +6,7 @@
   <func>
     <title>SetMaxPlayer</title>
     <category>Player</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -20,7 +20,7 @@
     <desc>Adjusts the maximum number of players that can take part in the current round. Lowering this value will not eliminate active players. This value only affects the limit for joining players.</desc>
     <examples>
       <example>
-        <code>protected func Script100() { <funclink>return</funclink>(SetMaxPlayer()); }</code>
+        <code>func Script100() { <funclink>return</funclink>(SetMaxPlayer()); }</code>
         <text>Part of a scenario script: after a little while, no more players can join.</text>
       </example>
     </examples>

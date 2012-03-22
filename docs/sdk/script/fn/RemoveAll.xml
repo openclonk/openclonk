@@ -7,7 +7,7 @@
     <title>RemoveAll</title>
     <category>Objects</category>
     <subcat>Existence</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -27,7 +27,7 @@
     <desc>Removes all objects which are found using the search criteria.</desc>
     <examples>
       <example>
-        <code>RemoveAll(<funclink>Find_ID</funclink>(WIPF));</code>
+        <code>RemoveAll(<funclink>Find_ID</funclink>(Wipf));</code>
         <text>All wipfs will be removed.</text>
       </example>
     </examples>

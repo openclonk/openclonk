@@ -6,7 +6,7 @@
   <func>
     <title>return</title>
     <category>Script</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -20,7 +20,7 @@
     <desc>Ends the current function and returns a value to the caller.</desc>
     <examples>
       <example>
-        <code>private func Division( dividend, divisor )
+        <code>private func Division( int dividend, int divisor )
 {
 	return dividend / divisor;
 }

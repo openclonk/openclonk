@@ -185,14 +185,14 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	// restore attached object positions if moved
 	if (fRestoreAttachment && iAttachingObjectsCount)
 	{
-		int32_t dx = pForObject->GetX() - MaskRemovalX;
-		int32_t dy = pForObject->GetY() - MaskRemovalY;
-		if (dx|dy)
+		C4Real dx = pForObject->GetFixedX() - MaskRemovalX;
+		C4Real dy = pForObject->GetFixedY() - MaskRemovalY;
+		if (dx != Fix0 || dy != Fix0)
 			for (int i = 0; i < iAttachingObjectsCount; ++i)
 			{
 				C4Object *pObj = ppAttachingObjects[i];
 				if (pObj->IsMoveableBySolidMask(pForObject->GetPlane()))
-					if (!pObj->Shape.ContactCheck(pObj->GetX()+dx, pObj->GetY()+dy))
+					if (!pObj->Shape.ContactCheck(pObj->GetFixedX()+dx, pObj->GetFixedY()+dy))
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
 							pObj->iLastAttachMovementFrame = Game.FrameCounter;
@@ -282,8 +282,8 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 	// backup attachment if desired: Backup old pos and all objects that attach to or lie on the SolidMask
 	if (fBackupAttachment)
 	{
-		MaskRemovalX = pForObject->GetX();
-		MaskRemovalY = pForObject->GetY();
+		MaskRemovalX = pForObject->GetFixedX();
+		MaskRemovalY = pForObject->GetFixedY();
 		iAttachingObjectsCount = 0;
 		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
 		C4LSector *pSct; C4Object *pObj;
@@ -397,7 +397,7 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// zero fields
 	MaskPut=false;
 	MaskPutRotation=0;
-	MaskRemovalX=MaskRemovalY=0;
+	MaskRemovalX=MaskRemovalY=Fix0;
 	ppAttachingObjects=NULL;
 	iAttachingObjectsCount=iAttachingObjectsCapacity=0;
 	// Update linked list
@@ -409,20 +409,21 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	// copy solid mask from bitmap
 	int iNeededBufSize = pForObject->SolidMask.Wdt * pForObject->SolidMask.Hgt;
 	if (!(pSolidMask = new BYTE [iNeededBufSize])) return;
-	SURFACE sfcBitmap = pForObject->GetGraphics()->GetBitmap();
+	C4Surface * sfcBitmap = pForObject->GetGraphics()->GetBitmap();
 	if (!sfcBitmap->Lock()) return;
-	int xcnt, ycnt;
-	for (ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
-		for (xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
+	for (int ycnt=0; ycnt<pForObject->SolidMask.Hgt; ycnt++)
+		for (int xcnt=0; xcnt<pForObject->SolidMask.Wdt; xcnt++)
 		{
-			// Solid mask target x/y is relative to def bitmap top-left, not object center.
-			pSolidMask[xcnt+ycnt*pForObject->SolidMask.Wdt] = sfcBitmap->IsPixTransparent(pForObject->SolidMask.x+xcnt,pForObject->SolidMask.y+ycnt) ? 0x00 : 0xff;
+			// Solid mask target x/y is relative to def bitmap top-left, not object center
+			int dx = sfcBitmap->Scale*(pForObject->SolidMask.x+xcnt);
+			int dy = sfcBitmap->Scale*(pForObject->SolidMask.y+ycnt);
+			pSolidMask[xcnt+ycnt*pForObject->SolidMask.Wdt] = sfcBitmap->IsPixTransparent(dx,dy) ? 0x00 : 0xff;
 		}
 	// create mat buff to store the material replaced by the solid mask
 	// the upper left corner is here the [objpos]+rot([shapexy]+[targetxy]+[realWH]/2)-maxWH/2
 	MatBuffPitch = (int) sqrt(double(pForObject->SolidMask.Wdt * pForObject->SolidMask.Wdt + pForObject->SolidMask.Hgt * pForObject->SolidMask.Hgt))+1;
 	if (!(pSolidMaskMatBuff= new BYTE [MatBuffPitch * MatBuffPitch] )) return;
-	ZeroMemory(pSolidMaskMatBuff, MatBuffPitch * MatBuffPitch);
+	memset(pSolidMaskMatBuff, 0, MatBuffPitch * MatBuffPitch);
 	sfcBitmap->Unlock();
 }
 

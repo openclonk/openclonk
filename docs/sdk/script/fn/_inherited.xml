@@ -6,7 +6,7 @@
   <func>
     <title>_inherited</title>
     <category>Script</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -20,9 +20,7 @@
     <desc>Calls the overloaded function. A function will overload another function if it is declared in the same scope with the same name. As opposed to <funclink>inherited</funclink>, this method is also failsafe, meaning it will not cause an error if the original function doesn't really exist.</desc>
     <examples>
       <example>
-        <code>
-
-#appendto Clonk
+        <code>#appendto Clonk
 
 func Initialize()
 {

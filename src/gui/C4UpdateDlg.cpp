@@ -1,10 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2010  Tobias Zwick
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,15 +20,13 @@
  * See clonk_trademark_license.txt for full license.
  */
 // dialogs for update, and the actual update application code
+// is only compiled WITH_AUTOMATIC_UPDATE
 
 #include "C4Include.h"
 
-// Don't compile this class if automatic update is disabled
-#ifdef WITH_AUTOMATIC_UPDATE
-
 #include "C4UpdateDlg.h"
-#include "C4DownloadDlg.h"
 
+#include "C4DownloadDlg.h"
 #include <C4Log.h>
 
 #ifdef _WIN32
@@ -158,9 +157,8 @@ static bool IsWindowsWithUAC()
 	// Determine windows version
 	OSVERSIONINFO ver;
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	bool fWindowsXP = false;
 	if (GetVersionEx((LPOSVERSIONINFO) &ver))
-		return (ver.dwMajorVersion == 6);
+		return (ver.dwMajorVersion >= 6);
 #endif
 	return false;
 }
@@ -220,7 +218,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		// ASK: What is this? Why should an update program not be found at the top
 		// level? This seems obsolete. - Newton
 		// Not found: look for an engine update pack one level down
-		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.c4u", C4_OS).getData(), strSubGroup))
+		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.ocu", C4_OS).getData(), strSubGroup))
 			// Extract update program from sub group
 			if (SubGroup.OpenAsChild(&UpdateGroup, strSubGroup))
 			{
@@ -238,17 +236,17 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	StdStrBuf strUpdateArgs, strTitle;
 	strUpdateArgs.Format("\"%s\" \"%s\" %s %lu", strUpdateProgEx.getData(), strUpdateFile, fDeleteUpdate ? "-yd" : "-y", (unsigned long)ProcessID);
 
-	STARTUPINFO startupInfo;
+	STARTUPINFOW startupInfo;
 	startupInfo.cb = sizeof(startupInfo);
 	startupInfo.lpReserved = NULL;
 	startupInfo.lpDesktop = NULL;
-	startupInfo.lpTitle = "Updating OpenClonk...";
+	startupInfo.lpTitle = L"Updating OpenClonk...";
 	startupInfo.dwFlags = STARTF_USESHOWWINDOW;
 	startupInfo.wShowWindow = SW_SHOW;
 	startupInfo.cbReserved2 = 0;
 	startupInfo.lpReserved2 = NULL;
 	PROCESS_INFORMATION procInfo;
-	BOOL success = CreateProcess(strUpdateProgEx.getData(), strUpdateArgs.getMData(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath, &startupInfo, &procInfo);
+	BOOL success = CreateProcessW(strUpdateProgEx.GetWideChar(), strUpdateArgs.GetWideChar(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, Config.General.ExePath.GetWideChar(), &startupInfo, &procInfo);
 	if(!success) return false;
 
 	//int iError = (intptr_t)ShellExecute(NULL, "open", strUpdateProgEx.getData(), strUpdateArgs.getData(), Config.General.ExePath, SW_SHOW);
@@ -296,7 +294,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 
 bool C4UpdateDlg::IsValidUpdate(const char *szVersion)
 {
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
 	if (szVersion == NULL || strlen(szVersion) == 0) return false;
 	return strcmp(szVersion,strVersion.getData()) != 0;
 }
@@ -382,6 +380,3 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	// Done (and no update has been done)
 	return false;
 }
-
-
-#endif // WITH_AUTOMATIC_UPDATE

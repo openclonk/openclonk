@@ -102,7 +102,7 @@ private:
 
 public:
 	C4PlayerInfo()                           // construct empty
-			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(0), dwColor(0xffffffff),
+			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(), dwColor(0xffffffff),
 			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0), iInGameNumber(-1),
 			iInGameJoinFrame(-1), iInGamePartFrame(-1), idExtraData(C4ID::None), sLeagueAccount(""),
 			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1) { }
@@ -382,20 +382,9 @@ public:
 	void RemoveInfo(C4ClientPlayerInfos **ppRemoveInfo) // remove client info given by direct ptr into list
 	{ *ppRemoveInfo = ppClients[--iClientCount]; /* maybe redundant self-assignment; no vector shrink */ }
 
-private:
-#pragma pack(1)
-	enum { C4PlrInfoFileVer = 2 };
-	struct FileHeader
-	{
-		uint32_t iVersion; // ==C4PlrInfoFileVer
-		int32_t iCount;            // number of player info packets
-		int32_t iIDCounter;        // counter for unique IDs
-	};
-#pragma pack()
 public:
 	bool Load(C4Group &hGroup, const char *szFromFile, class C4LangStringTable *pLang=NULL); // clear self and load from group file
 	bool Save(C4Group &hGroup, const char *szToFile); // save to group file
-	bool LoadFromGameText(const char *pSource); // load from Game.txt (old-style savegames)
 
 	// external ID counter manipulation used by C4Game
 	void SetIDCounter(int32_t idNewCounter) { iLastPlayerID = idNewCounter; }
@@ -407,11 +396,11 @@ public:
 	bool LocalJoinUnjoinedPlayersInQueue(); // join all unjoined players to local input queue
 	int32_t GetStartupCount();              // get number of players already joined and to be joined
 	void CreateRestoreInfosForJoinedScriptPlayers(C4PlayerInfoList &rSavegamePlayers); // create matching script player joins for all script playeers in restore info
-	bool RecreatePlayers();                 // directly join all players whose join-flag is set
+	bool RecreatePlayers(C4ValueNumbers *); // directly join all players whose join-flag is set
 	bool RecreatePlayerFiles();             // update player source files
 	bool RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers); // recreate this list from rSavegamePlayers for host/single games; just merge associated infos
 	bool SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fSaveUserPlrs, bool fSaveScriptPlrs, bool fSetUserPlrRefToLocalGroup, bool fSetScriptPlrRefToLocalGroup); // copy all joined players from player list
-	bool RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers); // remove all savegame players that are not associated to this list from the game
+	void RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers); // remove all savegame players that are not associated to this list from the game
 	int32_t GetFreePlayerSlotCount();       // get number of players that may still join
 	void ResetLeagueProjectedGain(bool fSetUpdated); // reset known projected gains for all players (to be updated by league again)
 

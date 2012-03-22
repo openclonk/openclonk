@@ -29,13 +29,13 @@
 #include <C4Group.h>
 
 
-void C4TargetFacet::Set(SURFACE nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty, float Zoom)
+void C4TargetFacet::Set(C4Surface * nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty, float Zoom)
 {
 	C4Facet::Set(nsfc, nx, ny, nwdt, nhgt);
 	TargetX = ntx; TargetY = nty; this->Zoom = Zoom;
 }
 
-void C4TargetFacet::Set(SURFACE nsfc, const C4Rect & r, float ntx, float nty, float Zoom)
+void C4TargetFacet::Set(C4Surface * nsfc, const C4Rect & r, float ntx, float nty, float Zoom)
 {
 	Set(nsfc, r.x, r.y, r.Wdt, r.Hgt, ntx, nty, Zoom);
 }
@@ -46,13 +46,16 @@ void C4TargetFacet::SetRect(C4TargetRect &rSrc)
 
 void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2)
 {
-	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
+	if (!pDraw || !Surface || !Wdt || !Hgt) return;
 	// Scroll position
-	iX1-=TargetX; iY1-=TargetY; iX2-=TargetX; iY2-=TargetY;
+	float gX1 = float(iX1)-TargetX;
+	float gY1 = float(iY1)-TargetY;
+	float gX2 = float(iX2)-TargetX;
+	float gY2 = float(iY2)-TargetY;
 	// No clipping is done here, because clipping will be done by gfx wrapper anyway
 	// Draw line
-	lpDDraw->DrawLineDw(Surface,X+iX1,Y+iY1,X+iX2,Y+iY2,col1);
-	lpDDraw->DrawPix(Surface,(float)(X+iX1),(float)(Y+iY1),col2);
+	pDraw->DrawLineDw(Surface,gX1+X,gY1+Y,gX2+X,gY2+Y,col1);
+	pDraw->DrawPix(Surface,gX1+X,gY1+Y,col2);
 }
 
 // ------------------------
@@ -67,17 +70,17 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	// Set facet
 	if (iWdt2==C4FCT_Full) iWdt2=Face.Wdt; if (iWdt2==C4FCT_Height) iWdt2=Face.Hgt; if (iWdt2==C4FCT_Width) iWdt2=Face.Wdt;
 	if (iHgt2==C4FCT_Full) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Height) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Width) iHgt2=Face.Wdt;
-	Set(&Face,0,0,iWdt2,iHgt2,0,0);
+	Set(&Face,0,0,iWdt2,iHgt2);
 	return true;
 }
 
-bool C4FacetSurface::CreateClrByOwner(CSurface *pBySurface)
+bool C4FacetSurface::CreateClrByOwner(C4Surface *pBySurface)
 {
 	Clear();
 	// create surface
 	if (!Face.CreateColorByOwner(pBySurface)) return false;
 	// set facet
-	Set(&Face,0,0,Face.Wdt,Face.Hgt,0,0);
+	Set(&Face,0,0,Face.Wdt,Face.Hgt);
 	// success
 	return true;
 }
@@ -90,9 +93,9 @@ bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
 	int iWdt=Face.Wdt,iHgt=Face.Hgt;
 	if (iWdt>=iMinWdt && iHgt>=iMinHgt) return true;
 	// create temp surface
-	CSurface *sfcDup=new CSurface(iWdt,iHgt);
+	C4Surface *sfcDup=new C4Surface(iWdt,iHgt);
 	if (!sfcDup) return false;
-	if (!lpDDraw->BlitSurface(&Face,sfcDup,0,0,false))
+	if (!pDraw->BlitSurface(&Face,sfcDup,0,0,false))
 		{ delete sfcDup; return false; }
 	// calc needed size
 	int iDstWdt=Surface->Wdt,iDstHgt=iHgt;
@@ -101,7 +104,7 @@ bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
 	// recreate this one
 	if (!Face.Create(iDstWdt, iDstHgt)) { delete sfcDup; Clear(); return false; }
 	// blit tiled into it
-	bool fSuccess=lpDDraw->BlitSurfaceTile(sfcDup, &Face, 0, 0, iDstWdt, iDstHgt, 0, 0, false);
+	bool fSuccess=pDraw->BlitSurfaceTile(sfcDup, &Face, 0, 0, iDstWdt, iDstHgt, 0, 0, false);
 	// del temp surface
 	delete sfcDup;
 	// done
@@ -152,7 +155,7 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	// Set facet
 	if (iWdt==C4FCT_Full) iWdt=Face.Wdt; if (iWdt==C4FCT_Height) iWdt=Face.Hgt; if (iWdt==C4FCT_Width) iWdt=Face.Wdt;
 	if (iHgt==C4FCT_Full) iHgt=Face.Hgt; if (iHgt==C4FCT_Height) iHgt=Face.Hgt; if (iHgt==C4FCT_Width) iHgt=Face.Wdt;
-	Set(&Face,0,0,iWdt,iHgt,0,0);
+	Set(&Face,0,0,iWdt,iHgt);
 	return true;
 }
 
@@ -194,7 +197,7 @@ bool C4FacetSurface::CopyFromSfcMaxSize(C4Surface &srcSfc, int32_t iMaxSize, uin
 		}
 		if (dwColor) srcSfc.SetClr(dwColor);
 		Create(iTargetWdt, iTargetHgt);
-		lpDDraw->Blit(&srcSfc, 0.0f,0.0f,float(fctSource.Wdt),float(fctSource.Hgt),
+		pDraw->Blit(&srcSfc, 0.0f,0.0f,float(fctSource.Wdt),float(fctSource.Hgt),
 		              &Face, 0,0,iTargetWdt,iTargetHgt);
 	}
 	Set(&Face, 0,0, Face.Wdt, Face.Hgt);
@@ -203,8 +206,8 @@ bool C4FacetSurface::CopyFromSfcMaxSize(C4Surface &srcSfc, int32_t iMaxSize, uin
 
 void C4FacetSurface::Grayscale(int32_t iOffset)
 {
-	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
-	lpDDraw->Grayscale(Surface, iOffset);
+	if (!pDraw || !Surface || !Wdt || !Hgt) return;
+	pDraw->Grayscale(Surface, iOffset);
 }
 
 bool C4FacetSurface::EnsureOwnSurface()

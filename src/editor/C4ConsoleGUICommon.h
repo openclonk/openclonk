@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005  Günther Brammer
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -23,18 +23,6 @@ C4ConsoleGUI::C4ConsoleGUI()
 }
 
 C4ConsoleGUI::~C4ConsoleGUI() {delete state;}
-
-void C4ConsoleGUI::SetCaption(const char *caption)
-{
-	if (!Active) return;
-#ifdef _WIN32
-	// Sorry, the window caption needs to be constant so
-	// the window can be found using FindWindow
-	SetTitle(C4ENGINECAPTION);
-#else
-	SetTitle(caption);
-#endif
-}
 
 #define DEFINE_STANDARD_DLG_METHODS(cls)\
 cls::cls()\

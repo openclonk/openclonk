@@ -4,8 +4,7 @@
  * Copyright (c) 2003-2004  Peter Wortmann
  * Copyright (c) 2005-2006, 2008  Sven Eberhardt
  * Copyright (c) 2005-2006  Günther Brammer
- * Copyright (c) 2010  Mortimer
- * Copyright (c) 2010  Mortimer 
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -227,7 +226,11 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.IsMODInitialized())
 		{ return false; }
-	if (!(result->final_handle = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, data_length), 1)))
+	SDL_RWops * rwops = SDL_RWFromConstMem(data, data_length);
+	// work around double free in SDL_Mixer by passing 0 here
+	result->final_handle = Mix_LoadWAV_RW(rwops, 0);
+	SDL_RWclose(rwops);
+	if (!result->final_handle)
 		{ return false; }
 	//FIXME: Is this actually correct?
 	result->sample_length = result->final_handle->alen / (44100 * 2);

@@ -1,9 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -89,7 +90,7 @@ void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
 {
 	// draw background - do not use bg drawing proc, because it stretches
 	// pre-clear background instead to prevent blinking borders
-	if (!IsFading()) lpDDraw->FillBG();
+	if (!IsFading()) pDraw->FillBG();
 	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false);
 }
 

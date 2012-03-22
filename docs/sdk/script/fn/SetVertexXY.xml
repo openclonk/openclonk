@@ -7,7 +7,7 @@
     <title>SetVertexXY</title>
     <category>Objects</category>
     <subcat>Vertices</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -26,19 +26,13 @@
           <name>ypos</name>
           <desc>Desired Y offset of the vertex.</desc>
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Target object</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
     <desc>Sets both X and Y position of a vertex.</desc>
     <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected.</remark>
     <examples>
       <example>
-        <code>SetVertexXY(3, -5, -10, GetCrew(0,0));</code>
+        <code>GetCrew(0,0)-&gt;SetVertexXY(2, -5, -10);</code>
         <text>Sets the third vertex of the first clonk of the first player to -5/-10.</text>
       </example>
     </examples>

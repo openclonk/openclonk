@@ -4,127 +4,112 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Command Line Parameters</title>
-  <h id="cmdline">Command Line Parameters</h>
+  <h>Command Line Parameters</h>
   <text>The installation directory of Clonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified.</text>
   <part>
     <h id="Clonk">Clonk.exe (Windows) clonk (Linux) Clonk (Mac)</h>
     <text>The engine. The main program of the game. Without startup parameters, the game starts in fullscreen (player mode) and shows the startup menu. The following command line parameters are recognized:</text>
     <dl>
-      <dt id="console">/console</dt>
+      <dt id="editor">--editor</dt>
       <dd>
-        <text>Starts in console mode (also called developer mode or windowed mode). In console mode, scenarios can be edited and saved. The game will also start in console mode if a scenario (*.c4s) and no /fullscreen is specified.</text>
+        <text>Starts in editor mode (also called developer mode or windowed mode). In editor mode, scenarios can be edited and saved. The game will also start in editor mode if a scenario (*.ocs) and no --fullscreen is specified.</text>
       </dd>
-      <dt id="fullscreen">/fullscreen</dt>
+      <dt id="fullscreen">--fullscreen</dt>
       <dd>
         <text>Starts in fullscreen mode (also called player mode). If no scenario and no direct join adress is given, the startup menu is shown.</text>
       </dd>
-      <dt id="config">/config:Filename</dt>
+      <dt id="config">--config=Filename</dt>
       <dd>
         <text>Loads and saves the configuration from the specified file instead of the default configuration file or the Windows registry.</text>
       </dd>
-      <dt id="record">/record</dt>
+      <dt id="record">--record</dt>
       <dd>
         <text>The round is recorded.</text>
       </dd>
-      <dt id="network">/network, /nonetwork</dt>
+      <dt id="network">--network, --nonetwork</dt>
       <dd>
         <text>Activates or deactivates network mode.</text>
       </dd>
-      <dt id="signup">/signup, /nosignup</dt>
+      <dt id="signup">--signup, --nosignup</dt>
       <dd>
         <text>Activates or deactivates online signup of the game as public internet game. This value is stored in the configuration.</text>
+        <text>--signup implies --network. --nosignup implies --noleague.</text>
       </dd>
-      <dd>
-        <text>/signup implies /network. /nosignup implies /noleague.</text>
-      </dd>
-      <dt id="league">/league, /noleague</dt>
+      <dt id="league">--league, --noleague</dt>
       <dd>
         <text>Activates or deactivates online signup of the game as league game. This value is stored in the configuration.</text>
+        <text>--league implies --network and --signup.</text>
       </dd>
-      <dd>
-        <text>/league implies /network and /signup.</text>
-      </dd>
-      <dt id="runtimejoin">/runtimejoin, /noruntimejoin</dt>
+      <dt id="runtimejoin">--runtimejoin, --noruntimejoin</dt>
       <dd>
         <text>Activates or deactivates runtime join. This setting will be stored in the configuration.</text>
       </dd>
-      <dt id="regjoinonly">/regjoinonly</dt>
+      <dt id="lobby">--lobby[=<em>time</em>]</dt>
       <dd>
-        <text>Prevents any unregistered client from joining games hosted on this computer (<em>always</em> active in dedicated server engines).</text>
+        <text>Activates the lobby before a network game is started. The lobby is the waiting- and chat screen. The lobby is on by default for all network games. Implies --network. If you specify a time (e.g. --lobby=120) the lobby will start with a countdown, automatically launching the game after (in this case) 120 seconds.</text>
       </dd>
-      <dt id="ncrw">/faircrew, /trainedcrew</dt>
+      <dt id="observe">--observe</dt>
       <dd>
-        <text>Activates or deactivates fair crew. With fair crew, all clonks start with the same physical properties. With trained crew, clonks start with their individually stored, trained physical value. This value is stored in the configuration.</text>
+        <text>For network games: The client joins as observer (without players). Implies --network.</text>
       </dd>
-      <dt id="lobby">/lobby[:time]</dt>
+      <dt id="Join">--join=&lt;<em>Address</em>&gt;</dt>
       <dd>
-        <text>Activates the lobby before a network game is started. The lobby is the waiting- and chat screen. The lobby is on by default for all network games. Implies /network. If you specify a time (e.g. /lobby:120) the lobby will start with a countdown, automatically launching the game after (in this case) 120 seconds.</text>
-      </dd>
-      <dt id="observe">/observe</dt>
-      <dd>
-        <text>For network games: The client joins as observer (without players). Implies /network.</text>
-      </dd>
-      <dt id="Join">/join:&lt;<em>Address</em>&gt;</dt>
-      <dd>
-        <text>Searches for a network game on the specified address and joins it. No local scenario (*.c4s) should be specified. Implies /network.</text>
+        <text>Searches for a network game on the specified address and joins it. No local scenario (*.ocs) should be specified. Implies --network.</text>
       </dd>
       <dt id="clonkp">clonk://&lt;<em>Address</em>&gt;/</dt>
       <dd>
-        <text>Same as /join if an address is specified. If "update" is specified as an address, this will cause the engine to perform an update check instead.</text>
+        <text>Same as --join if an address is specified. If "update" is specified as an address, this will cause the engine to perform an update check instead.</text>
       </dd>
-      <dt id="tcpport">/tcpport:&lt;<em>Port Number</em>&gt;</dt>
+      <dt id="tcpport">--tcpport=&lt;<em>Port Number</em>&gt;</dt>
       <dd>
         <text>Sets the TCP port number for client connections in network games. This setting will be stored in the configuration. If -1 is specified, TCP is disabled and all connections are created using UDP.</text>
       </dd>
-      <dt id="udpport">/udpport:&lt;<em>Port Number</em>&gt;</dt>
+      <dt id="udpport">--udpport=&lt;<em>Port Number</em>&gt;</dt>
       <dd>
         <text>Sets the UDP port number for client connections in network games. This setting will be stored in the configuration. If -1 is specified, UDP is disabled and all connections are created using TCP.</text>
       </dd>
-      <dt id="pass">/pass:&lt;<em>Password</em>&gt;</dt>
+      <dt id="pass">--pass=&lt;<em>Password</em>&gt;</dt>
       <dd>
         <text>For network hosts: sets the join password to the specified value. If &lt;<em>Password</em>&gt; is left empty, no password is set.</text>
       </dd>
-      <dt id="comment">/comment:&lt;<em>Comment</em>&gt;</dt>
+      <dt id="comment">--comment=&lt;<em>Comment</em>&gt;</dt>
       <dd>
         <text>For network hosts: sets the network game comment. This setting will be stored in the configuration.</text>
       </dd>
-      <dt id="update">/update</dt>
+      <dt id="update">--update</dt>
       <dd>
         <text>Performs an update check at program start.</text>
       </dd>
-      <dt id="recdump">/recdump:&lt;<em>Filename</em>&gt;</dt>
+      <dt id="recdump">--recdump=&lt;<em>Filename</em>&gt;</dt>
       <dd>
-        <text>Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.c4f\Record001.c4s /recdump:CtrlRec.txt).</text>
+        <text>Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt).</text>
       </dd>
-      <dt id="startup">/startup:&lt;<em>Name</em>&gt;</dt>
+      <dt id="startup">--startup=&lt;<em>Name</em>&gt;</dt>
       <dd>
         <text>Only for fullscreen startup menu: Instead of the main menu, one of the submenus is shown directly. Possible values for &lt;<em>Name</em>&gt; are <em>main</em> (Main menu), <em>scen</em> (Scenario selection), <em>netscen</em> (Scenario selection for a new network game), <em>net</em> (Network/Internet game list), <em>options</em> (Options menu) und <em>plrsel</em> (Player selection).</text>
       </dd>
-      <dt id="c4s">*.c4s</dt>
+      <dt id="ocs">*.ocs</dt>
       <dd>
-        <text>If a scenario is specified (File extension .c4s), it will be started directly.</text>
+        <text>If a scenario is specified (File extension .ocs), it will be started directly.</text>
       </dd>
-      <dt id="c4d">*.c4d</dt>
+      <dt id="ocd">*.ocd</dt>
       <dd>
-        <text>If the started scenario does not specify any required definitions (File extension .c4d), and no definitions are supplied in the registry, definitions can be specified via command line.</text>
+        <text>If the started scenario does not specify any required definitions (File extension .ocd), and no definitions are supplied in the registry, definitions can be specified via command line.</text>
       </dd>
-      <dt id="c4p">*.c4p</dt>
+      <dt id="ocp">*.ocp</dt>
       <dd>
-        <text>Player files (File extension .c4p) can be specified in the command line. If no player files are given, the registry values are used. By specifying a non-existant player (like doesnotexist.c4p), the game can be started without players (e.g. in order to just edit landscapes in developer mode).</text>
+        <text>Player files (File extension .ocp) can be specified in the command line. If no player files are given, the config values are used. By specifying a non-existant player (like doesnotexist.ocp), the game can be started without players (e.g. in order to just edit landscapes in developer mode).</text>
       </dd>
-      <dt id="c4u">*.c4u</dt>
+      <dt id="ocu">*.ocu</dt>
       <dd>
-        <text>If the filename of an update package (extension .c4u) is passed to the engine, then the program will attempt to apply that update package to the local installation.</text>
+        <text>If the filename of an update package (extension .ocu) is passed to the engine, then the program will attempt to apply that update package to the local installation.</text>
       </dd>
     </dl>
-  </part>
-  <part>
-    <h id="Editor">Editor.exe (Windows only)</h>
-    <text>The editor for accessing group files and developing of game extensions. The editor does not have any command line parameters.</text>
   </part>
   <part>
     <h id="C4Group">c4group.exe (Windows) c4group (Linux) c4group (Mac)</h>
     <text>This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking).</text>
   </part>
   <author>Sven2</author><date>2007-02</date>
+  <author>Günther</author><date>2011</date>
 </doc>

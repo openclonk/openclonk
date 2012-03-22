@@ -7,7 +7,7 @@
     <title>GBackSky</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -26,9 +26,8 @@
     <desc>Checks whether there is sky at the specified position in the landscape.</desc>
     <examples>
       <example>
-        <code>var obj=<funclink>FindObject</funclink>(Rock);
-<funclink>while</funclink>(<emlink href="script/operatoren.html">!</emlink>GBackSky(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>())) <funclink>SetPosition</funclink>(GetX(obj),GetY(obj)<emlink href="script/operatoren.html">-</emlink>5,obj);</code>
-        <text>Moves a rock into fresh air.</text>
+        <code><funclink>while</funclink>(!obj-&gt;GBackSky()) obj-&gt;<funclink>SetPosition</funclink>(obj-&gt;GetX(),obj-&gt;GetY()-5);</code>
+        <text>Moves an object into fresh air.</text>
       </example>
     </examples>
     <related>

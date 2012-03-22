@@ -7,9 +7,9 @@
     <title>Contained</title>
     <category>Objects</category>
     <subcat>Contents</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>object</rtype></syntax>
-    <desc>Returns the container object in which this object is contained. Returns nil if this object is not contained.</desc>
+    <desc>Returns the container object in which this object is contained. Returns <code>nil</code> if this object is not contained.</desc>
     <related><funclink>Contents</funclink></related>
   </func>
   <author>springer</author><date>2002-04</date>

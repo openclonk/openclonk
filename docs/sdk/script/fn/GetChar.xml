@@ -7,7 +7,7 @@
     <title>GetChar</title>
     <category>Script</category>
     <subcat>Strings</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -19,7 +19,7 @@
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Position of the character. The first character is at position 0. If the specified position is outside the string, 0 is returned.</desc>
+          <desc>Position of the character. The first character is at position 0. If the specified position is outside the string, <code>nil</code> is returned.</desc>
         </param>
       </params>
     </syntax>
@@ -27,9 +27,9 @@
     <remark><code><funclink>Format</funclink>("%c")</code> can be used to convert the character to a string.</remark>
     <examples>
       <example>
-        <code>var c=GetChar(<funclink>GetPlayerName</funclink>(0), 0);
+        <code>var c = GetChar(<funclink>GetPlayerName</funclink>(0), 0);
 <funclink>if</funclink> (<funclink>Inside</funclink>(c, 97, 122)) c-=32;
-<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Log</funclink>(&quot;Dein Name beginnt mit dem %d. Buchstaben des Alphabets.&quot;, c-64)</code>
+<funclink>if</funclink> (<funclink>Inside</funclink>(c, 65, 90)) <funclink>Log</funclink>(&quot;Your name begins with the %dth letter of the alphabet.&quot;, c-64)</code>
         <text>Gets the first character of the name of the first player.</text>
       </example>
     </examples>

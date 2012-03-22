@@ -259,22 +259,22 @@
         <text>This property of an operator determines whether it is used <em>before</em> (pre) or <em>after</em> (post) its parameter.</text>
         <text>Prefix operators only have one parameter while postfix operators usually have two parameters (one preceeding and one following). See also <a href="#opppmm">operators ++/--</a>.</text>
         <h>Example 1:</h>
-        <code>Log(&quot; Ergebnis: %d&quot;, 5 + 5);
-Log(&quot; Ergebnis: %d&quot;, 12 - 5);
-Log(&quot; Ergebnis: %d&quot;, 5 * 5);</code>
+        <code>Log(&quot; Result: %d&quot;, 5 + 5);
+Log(&quot; Result: %d&quot;, 12 - 5);
+Log(&quot; Result: %d&quot;, 5 * 5);</code>
         <h>Output:</h>
-        <code> Ergebnis: 10
- Ergebnis: 7
- Ergebnis: 25</code>
+        <code> Result: 10
+ Result: 7
+ Result: 25</code>
         <text>Addition, subtraction, multiplication, division, and similar form the group of postfix operators. They combine the two values preceeding and following the operator.</text>
         <h>Example 2:</h>
-        <code>Log(&quot; Ergebnis: %d&quot;, -(5 + 5));
-Log(&quot; Ergebnis: %d&quot;, ~7);
-Log(&quot; Ergebnis: %d&quot;, !0);</code>
+        <code>Log(&quot; Result: %d&quot;, -(5 + 5));
+Log(&quot; Result: %d&quot;, ~7);
+Log(&quot; Result: %d&quot;, !0);</code>
         <h>Output:</h>
-        <code> Ergebnis: -10
- Ergebnis: -8
- Ergebnis: 1</code>
+        <code> Result: -10
+ Result: -8
+ Result: 1</code>
         <text>Prefix operators are located before the value to which they are applied.</text>
       </part>
       <h id="opppmm">Operators ++ and --</h>
@@ -294,10 +294,10 @@ while(<strong>++somevar</strong> &lt; 10)
       </part>
       <h id="andor">The Operators &amp;&amp; and ||</h>
       <part>
-        <text>These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be false, regardless of the result of Explode:</text>
+        <text>These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be <code>false</code>, regardless of the result of Explode:</text>
         <code>0 &amp;&amp; Explode(20);</code>
         <text>Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:</text>
-        <code>CreateObject(KNIG,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>
+        <code>CreateObject(Knight,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>
       </part>
       <h id="prio">Priority and Associating</h>
       <part>

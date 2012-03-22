@@ -2,15 +2,15 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
  * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2006, 2009-2010  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006, 2011  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -39,6 +39,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Player.h>
 #include <C4RankSystem.h>
+#include <C4RoundResults.h>
 #include <C4PXS.h>
 #include <C4MassMover.h>
 #include <C4GameMessage.h>
@@ -247,7 +248,7 @@ void C4ControlScript::Execute() const
 	else
 		// default: Fallback to global context
 		pScript = &::ScriptEngine;
-	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, C4AulScript::MAXSTRICT, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
+	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script", false, fUseVarsFromCallerContext ? AulExec.GetContext(AulExec.GetContextDepth()-1) : NULL));
 #ifndef NOAULDEBUG
 	C4AulDebug* pDebug;
 	if ( (pDebug = C4AulDebug::GetDebugger()) )
@@ -480,7 +481,7 @@ void C4ControlSyncCheck::Execute() const
 #ifdef _DEBUG
 		// Debug safe
 		C4GameSaveNetwork SaveGame(false);
-		SaveGame.Save(Config.AtExePath("Desync.c4s"));
+		SaveGame.Save(Config.AtExePath("Desync.ocs"));
 #endif
 		// league: Notify regular client disconnect within the game
 		::Network.LeagueNotifyDisconnect(C4ClientIDHost, C4LDR_Desync);
@@ -679,7 +680,7 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 			MakeTempFilename(&filename_buf);
 			if (C4Group_PackDirectoryTo(filename.getData(), filename_buf.getData()))
 			{
-				filename = filename_buf;
+				filename.Take(filename_buf);
 				file_is_temp = true;
 			}
 			else
@@ -785,8 +786,6 @@ void C4ControlJoinPlayer::Strip()
 		C4Group Grp;
 		if (!Grp.Open(PlayerFilename.getData()))
 			{ EraseFile(PlayerFilename.getData()); return; }
-		// remove portrais
-		Grp.Delete(C4CFN_Portraits, true);
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
 		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))

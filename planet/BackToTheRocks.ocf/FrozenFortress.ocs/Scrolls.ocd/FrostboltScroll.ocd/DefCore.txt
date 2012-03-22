@@ -1,0 +1,15 @@
+[DefCore]
+id=FrostboltScroll
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,-3,3
+VertexY=-3,2,2
+VertexFriction=40,40,40
+Picture=0,0,64,64
+Value=25
+Mass=2
+Rotate=1

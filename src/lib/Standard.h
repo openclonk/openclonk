@@ -3,8 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
- * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2005-2009, 2011  Günther Brammer
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -27,8 +27,6 @@
 
 #include "PlatformAbstraction.h"
 
-// Color triplets
-#define C4RGB(r, g, b) (((DWORD)(0xff)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 
 // Small helpers
 template <class T> inline T Max(T val1, T val2) { return val1 > val2 ? val1 : val2; }
@@ -49,6 +47,7 @@ inline int DWordAligned(int val)
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2);
 int Angle(int iX1, int iY1, int iX2, int iY2);
 int Pow(int base, int exponent);
+int32_t StrToI32(const char *s, int base, const char **scan_end);
 
 #include <cstring>
 inline void ZeroMem(void *lpMem, size_t dwSize)
@@ -77,6 +76,17 @@ inline size_t SLenUntil(const char *szStr, char cUntil)
 	const char *end = std::strchr(szStr, cUntil);
 	return end ? end-szStr : std::strlen(szStr);
 }
+
+// get a character at the current string pos and advance pos by that character
+uint32_t GetNextUTF8Character(const char **pszString); // GetNextCharacter helper
+inline uint32_t GetNextCharacter(const char **pszString)
+{
+	unsigned char c=**pszString;
+	if (c<128) { ++*pszString; return c; }
+	else return GetNextUTF8Character(pszString);
+}
+// Get string length in characters (not bytes)
+int GetCharacterCount(const char * s);
 
 inline bool SEqual(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?!std::strcmp(szStr1,szStr2):false; }
 bool SEqual2(const char *szStr1, const char *szStr2);
@@ -126,8 +136,6 @@ bool SRemoveModule(char *szList, const char *szModule, bool fCaseSensitive=false
 bool SRemoveModules(char *szList, const char *szModules, bool fCaseSensitive=false);
 int SModuleCount(const char *szList);
 
-const char* SGetParameter(const char *strCommandLine, int iParameter, char *strTarget = NULL, int iSize = -1, bool *pWasQuoted = NULL);
-
 void SRemoveComments(char *szScript);
 void SNewSegment(char *szStr, const char *szSepa=";");
 void SCapitalize(char *szString);
@@ -174,5 +182,8 @@ inline int ssprintf(T &str, const char *fmt, ...)
 	if (m >= n) { m = n-1; str[m] = 0; }
 	return m;
 }
+
+// Checks a string for conformance with UTF-8
+bool IsValidUtf8(const char *string, int length = -1);
 
 #endif // INC_STANDARD

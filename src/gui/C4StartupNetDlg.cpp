@@ -1,14 +1,15 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006-2007  Sven Eberhardt
  * Copyright (c) 2006, 2008-2010  Günther Brammer
  * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006-2007  Sven Eberhardt
+ * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Julius Michaelis
  * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2010  Caesar
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -28,8 +29,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <C4Include.h>
 #include <C4StartupNetDlg.h>
-#include <C4UpdateDlg.h>
 
+#include <C4UpdateDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupMainDlg.h>
 #include <C4Game.h>
@@ -100,7 +101,7 @@ void C4StartupNetListEntry::DrawElement(C4TargetFacet &cgo)
 	{
 		int32_t x1 = cgo.X+cgo.TargetX+rcBounds.x;
 		int32_t y1 = cgo.Y+cgo.TargetY+rcBounds.y;
-		lpDDraw->DrawBoxDw(cgo.Surface, x1,y1, x1+rcBounds.Wdt, y1+rcBounds.Hgt, C4GUI_ImportantBGColor);
+		pDraw->DrawBoxDw(cgo.Surface, x1,y1, x1+rcBounds.Wdt, y1+rcBounds.Hgt, C4GUI_ImportantBGColor);
 	}
 	// inherited
 	ParentClass::DrawElement(cgo);
@@ -841,7 +842,7 @@ void C4StartupNetDlg::OnBtnInternet(C4GUI::Control *btn)
 void C4StartupNetDlg::OnBtnRecord(C4GUI::Control *btn)
 {
 	// toggle league signup flag
-	bool fCheck = Game.Record = !Game.Record;
+	bool fCheck = Config.General.DefRec = Game.Record = !Game.Record;
 	btnRecord->SetIcon(fCheck ? C4GUI::Ico_Ex_RecordOn : C4GUI::Ico_Ex_RecordOff);
 }
 
@@ -1100,7 +1101,7 @@ bool C4StartupNetDlg::DoOK()
 	// Set join parameters
 	*Game.ScenarioFilename = '\0';
 	if (szDirectJoinAddress) SCopy(szDirectJoinAddress, Game.DirectJoinAddress, _MAX_PATH); else *Game.DirectJoinAddress = '\0';
-	SCopy("Objects.c4d", Game.DefinitionFilenames);
+	SCopy("Objects.ocd", Game.DefinitionFilenames);
 	Game.NetworkActive = true;
 	Game.fObserve = false;
 	Game.pJoinReference = pRef;

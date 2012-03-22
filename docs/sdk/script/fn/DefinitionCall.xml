@@ -7,7 +7,7 @@
     <title>DefinitionCall</title>
     <category>Script</category>
     <subcat>Function call</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -29,13 +29,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Calls a function in a script without object context. <funclink>this</funclink> returns 0 in this case (comparable to scenario scripts).</desc>
-    <examples>
-      <example>
-        <code>DefinitionCall(CPPL, &quot;SetKnowledge&quot;, 0);</code>
-        <text>Gives castle construction plans to player 0.</text>
-      </example>
-    </examples>
+    <desc>Calls a function in a script without object context. <funclink>this</funclink> returns <funclink>nil</funclink> in this case (comparable to scenario scripts).</desc>
     <related>
       <funclink>GameCall</funclink>
     </related>

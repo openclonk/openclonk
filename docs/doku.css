@@ -4,25 +4,50 @@ body {
 	font-family: Verdana, Arial, 'Trebuchet MS';
 	background-color: white;
 	color: black;
-}
-
-body {
 	font-size: small;
 	line-height: 1.6em;
 }
 
-.text, pre.code, ul, ol, dl {
-	margin: 8px 0 12px 0;
+#iframe {
+	position: absolute; top: 145px; width: 300px; border: 0; bottom: 0; overflow: auto;
+	height: auto;
+	display: block;
 }
-/* indent the parameters of the function if it's broken into multiple lines*/
-div.fnsyntax {
-	text-indent: -1em;
-	margin-left: 1em;
+
+#iframe > iframe {
+	border: 0; overflow: auto;
+	height: 100%;
+	width: 100%;
+	display: block;
+}
+
+#toc {
+	padding-left: 1em;
+}
+
+#toc h2 {
+	margin-bottom: 10px;
+}
+
+#chm {
+	margin: 1em;
 }
 
 #content {
 	padding: 0 1em;
 	margin: 0 auto;
+	position: absolute; top: 145px; left: 300px; right: 0; bottom: 0; overflow: auto;
+}
+
+.text, pre.code, ul, ol, dl {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 0;
+}
+/* indent the parameters of the function if it's broken into multiple lines*/
+div.fnsyntax {
+	text-indent: -1em;
+	margin-left: 1em;
 }
 
 div.example {
@@ -34,14 +59,14 @@ dd {
 	margin: 0;
 }
 
-.text img {
+.text img, dt img {
 	vertical-align: middle;
 	margin-right: 6px;
 }
 
-img#cpem {
+img.cpem {
 	float: left;
-	margin: 0 6px 6px 18px;
+	margin: 12px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -59,23 +84,22 @@ h1 {
 
 h2 {
 	font-weight: normal;
-	font-size: 150%;
+	font-size: 140%;
 	margin: 0;
 	padding: 0;
-	margin-top: 0.8em;
+	margin-top: 0.6em;
+	margin-bottom: 0.2em;
 	padding: .35em .1em 0 0;
-	border-bottom: 3px solid #eee;
+	border-bottom: 1px solid #eee;
 }
 
 h3, table caption, dt {
 	text-align: left;
 	font-weight: bold;
-	font-size:132%;
+	font-size:100%;
 	margin: 0;
-	border-bottom:1px solid #eee;
-	margin-bottom:0.3em;
-	margin-top:1em;
-	padding:0.2em 0.1em 0.3em 0;
+	margin-top:0.6em;
+	padding:0;
 }
 
 table {
@@ -157,6 +181,7 @@ ul.contents li a {
 }
 ul.contents img {
 	vertical-align: middle;
+	margin-right: 4px;
 }
 ul.contents a {
 	color: navy; 
@@ -186,7 +211,7 @@ ul.contents ul li:not(:last-child)::after {
 .collapseimg {
 	cursor: pointer;
 }
-.toggleinvisi .invisi {
+.toggleinvisi li.invisi > ul {
 	display: none;
 }
 

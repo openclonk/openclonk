@@ -7,7 +7,7 @@
     <title>CastObjects</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.6.5.0 CP<extversion>4.10.0.0 OC</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -55,8 +55,8 @@
     <desc>Casts number objects at the specified position with speed level. For local calls the created objects will have the same owner as the calling object.</desc>
     <examples>
       <example>
-        <code>var num=<funclink>GetVertexNum</funclink>()<emlink href="script/operatoren.html">-</emlink>1;
-CastObjects(SPRK,1,20,<funclink>GetVertex</funclink>(num, 0)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(), <funclink>GetVertex</funclink>(num, 1)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>());
+        <code>var num=<funclink>GetVertexNum</funclink>()-1;
+CastObjects(MagicSpark,1,20,<funclink>GetVertex</funclink>(num, 0)-<funclink>GetX</funclink>(), <funclink>GetVertex</funclink>(num, 1)-<funclink>GetY</funclink>());
 				</code>
         <text>Creates a spark at the last vertex of a line. With multiple calls this will create the same effect as a lightning strike.</text>
       </example>

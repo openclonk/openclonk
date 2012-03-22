@@ -6,7 +6,7 @@
 
   <xsl:variable name="procinst" select="processing-instruction('xml-stylesheet')" />
   <xsl:param name="relpath" select="substring-after(substring-before($procinst, 'clonk.xsl'),'href=&quot;')" />
-  <xsl:param name="webnotes" />
+  <xsl:param name="chm" />
   <xsl:param name="fileext" select="'.xml'" />
   <xsl:template name="head">
     <head>
@@ -14,32 +14,14 @@
       <link rel="stylesheet">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
-      <xsl:if test="$webnotes">
-      <link rel="stylesheet" href="http://www.openclonk.org/header/header.css" />
-      </xsl:if>
       <xsl:if test="descendant::table[bitmask]">
         <script>
           <xsl:attribute name="src"><xsl:value-of select="$relpath" />bitmasks.js</xsl:attribute>
         </script>
-<script type="text/javascript">
-  var BIT_COUNT = <xsl:value-of select="count(descendant::table[bitmask]/row)" />;		// Anzahl der Bits
-  var PREFIX = "bit";		// Prefix für die numerierten IDs
-</script>
-      </xsl:if>
-      <xsl:if test="$webnotes">
-<!-- <xsl:processing-instruction name="php">
-  $g_page_language = '<xsl:choose><xsl:when test='lang("en")'>english</xsl:when><xsl:otherwise>german</xsl:otherwise></xsl:choose>';
-  require_once('<xsl:value-of select="$relpath" />../webnotes/core/api.html');
-  pwn_head();
-?</xsl:processing-instruction> -->
-<script type="text/javascript">
-  function switchLanguage() {
-    var loc = window.location.href;
-    if (loc.match(/\/en\//)) loc = loc.replace(/\/en\//, "/de/");
-    else loc = loc.replace(/\/de\//, "/en/");
-    window.location = loc;
-  }
-</script>
+        <script type="text/javascript">
+          var BIT_COUNT = <xsl:value-of select="count(descendant::table[bitmask]/row)" />;		// Anzahl der Bits
+          var PREFIX = "bit";		// Prefix für die numerierten IDs
+        </script>
       </xsl:if>
     </head>
   </xsl:template>
@@ -47,87 +29,66 @@
   <xsl:template match="title" mode="head">
     <title><xsl:value-of select="." /><xsl:apply-templates select="../deprecated" /> -
       OpenClonk <xsl:choose>
-        <xsl:when test='lang("en")'>Reference</xsl:when>
-        <xsl:otherwise>Referenz</xsl:otherwise>
+        <xsl:when test='lang("de")'>Referenz</xsl:when>
+        <xsl:otherwise>Reference</xsl:otherwise>
       </xsl:choose>
     </title>
   </xsl:template>
   <xsl:template match="script">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
-  <xsl:template match="func" mode="head">
+  <xsl:template match="func|const" mode="head">
     <xsl:apply-templates mode="head" />
   </xsl:template>
   <xsl:template match="*" mode="head" />
   <xsl:template match="title" />
 
   <xsl:template name="header">
-    <xsl:if test="$webnotes">
-<!--<xsl:processing-instruction name="php">
-  <xsl:choose><xsl:when test='lang("en")'>
-  readfile("http://www.openclonk.org/header/header.html?p=docs");
-  </xsl:when><xsl:otherwise>
-  readfile("http://www.openclonk.org/header/header.html?p=docsde");
-  </xsl:otherwise></xsl:choose>
-?</xsl:processing-instruction> -->
-      <!-- <xsl:copy-of select='document("header.xml")/*/*' /> -->
-      <xsl:apply-templates select="document('header.xml')" />
-    </xsl:if>
+    <xsl:apply-templates select="document('header.xml')" />
   </xsl:template>
-<!--  <xsl:template match="header//@action">
-    <xsl:attribute name="action"><xsl:value-of select="concat($relpath, current())" /></xsl:attribute>
-  </xsl:template>-->
   <xsl:template match="header|header//*|header//@*">
       <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
   </xsl:template>
 
 
+	
   <xsl:template match="deprecated">
-    (<xsl:choose><xsl:when test='lang("en")'>deprecated</xsl:when><xsl:otherwise>veraltet</xsl:otherwise></xsl:choose>)
+    (<xsl:choose><xsl:when test='lang("de")'>veraltet</xsl:when><xsl:otherwise>deprecated</xsl:otherwise></xsl:choose>)
   </xsl:template>
 
-  <xsl:template match="funcs">
+  <xsl:template match="doc|funcs">
     <html>
       <xsl:call-template name="head" />
       <body>
-      <xsl:call-template name="header" />
-      <div id="content">
-        <xsl:call-template name="nav" />
-        <xsl:for-each select="func">
-          <xsl:apply-templates select="." />
-        </xsl:for-each>
-        <xsl:apply-templates select="author" />
-        <xsl:if test="$webnotes">
-<!-- <xsl:processing-instruction name="php">
-  pwn_body(basename (dirname(__FILE__)) . basename(__FILE__,".html"), $_SERVER['SCRIPT_NAME']);
-?</xsl:processing-instruction> -->
-        </xsl:if>
-        <xsl:call-template name="nav" />
-      </div>
+      <xsl:if test="$chm">
+        <xsl:attribute name="id">chm</xsl:attribute>
+        <xsl:apply-templates />
+      </xsl:if>
+      <xsl:if test="not($chm)">
+        <xsl:call-template name="header" />
+        <div id="iframe"><iframe>
+          <xsl:attribute name="src"><xsl:value-of select="$relpath" />sdk/content<xsl:value-of select="$fileext" /></xsl:attribute>
+        </iframe></div>
+        <div id="content">
+          <xsl:apply-templates />
+        </div>
+      </xsl:if>
       </body>
     </html>
   </xsl:template>
   
-  <xsl:template match="doc">
+  <xsl:template match="toc">
     <html>
       <xsl:call-template name="head" />
       <body>
-      <xsl:call-template name="header" />
-      <div id="content">
-        <xsl:call-template name="nav" />
+      <div id="toc">
         <xsl:apply-templates />
-       <xsl:if test="$webnotes">
-<!-- <xsl:processing-instruction name="php">
-  pwn_body(basename (dirname(__FILE__)) . basename(__FILE__,".html"), $_SERVER['SCRIPT_NAME']);
-?</xsl:processing-instruction> -->
-        </xsl:if>
-        <xsl:call-template name="nav" />
       </div>
       </body>
     </html>
   </xsl:template>
-
-  <xsl:template match="func">
+	
+  <xsl:template match="func|const">
     <h1>
       <xsl:attribute name="id"><xsl:value-of select="title" /></xsl:attribute>
       <xsl:value-of select="title" /><xsl:apply-templates select="deprecated" />
@@ -138,13 +99,16 @@
     <xsl:apply-templates select="version" />
     </div>
     <h2><xsl:choose>
-      <xsl:when test='lang("en")'>Description</xsl:when>
-      <xsl:otherwise>Beschreibung</xsl:otherwise>
+      <xsl:when test='lang("de")'>Beschreibung</xsl:when>
+      <xsl:otherwise>Description</xsl:otherwise>
     </xsl:choose></h2>
     <div class="text"><xsl:apply-templates select="desc" /></div>
     <xsl:apply-templates select="syntax" />
     <xsl:for-each select="syntax"><xsl:for-each select="params">
-      <h2>Parameter<xsl:if test="count(param)!=1 and lang('en')">s</xsl:if></h2>
+      <h2><xsl:choose>
+          <xsl:when test='lang("de")'>Parameter</xsl:when>
+          <xsl:otherwise>Parameter<xsl:if test="count(param)!=1">s</xsl:if></xsl:otherwise>
+        </xsl:choose></h2>
       <dl><xsl:for-each select="param">
         <dt><xsl:value-of select="name" />: </dt>
         <dd><div class="text">
@@ -156,16 +120,16 @@
     <xsl:for-each select="remark">
       <xsl:if test="generate-id(.)=generate-id(../remark[1])">
         <h2><xsl:choose>
-          <xsl:when test='lang("en")'>Remark<xsl:if test="count(../remark)!=1">s</xsl:if></xsl:when>
-          <xsl:otherwise>Anmerkung<xsl:if test="count(../remark)!=1">en</xsl:if></xsl:otherwise>
+          <xsl:when test='lang("de")'>Anmerkung<xsl:if test="count(../remark)!=1">en</xsl:if></xsl:when>
+          <xsl:otherwise>Remark<xsl:if test="count(../remark)!=1">s</xsl:if></xsl:otherwise>
         </xsl:choose></h2>
       </xsl:if>
       <div class="text"><xsl:apply-templates /></div>
     </xsl:for-each>
     <xsl:for-each select="examples">
       <h2><xsl:choose>
-        <xsl:when test='lang("en")'>Example<xsl:if test="count(example)!=1">s</xsl:if></xsl:when>
-        <xsl:otherwise>Beispiel<xsl:if test="count(example)!=1">e</xsl:if></xsl:otherwise>
+        <xsl:when test='lang("de")'>Beispiel<xsl:if test="count(example)!=1">e</xsl:if></xsl:when>
+        <xsl:otherwise>Example<xsl:if test="count(example)!=1">s</xsl:if></xsl:otherwise>
       </xsl:choose></h2>
       <xsl:apply-templates />
     </xsl:for-each>
@@ -178,7 +142,7 @@
       <span class="type"><xsl:apply-templates select="rtype" /></span>
       <xsl:if test="not(contains(rtype[1],'&amp;'))"><xsl:text>&#160;</xsl:text></xsl:if>
       <xsl:value-of select="../title" />
-      (<xsl:apply-templates select="params" />);
+			<xsl:if test="parent::func">(<xsl:apply-templates select="params" />);</xsl:if>
     </div>
   </xsl:template>
 
@@ -200,8 +164,8 @@
   
   <xsl:template match="category">
     <b><xsl:choose>
-      <xsl:when test='lang("en")'>Category: </xsl:when>
-      <xsl:otherwise>Kategorie: </xsl:otherwise>
+      <xsl:when test='lang("de")'>Kategorie: </xsl:when>
+      <xsl:otherwise>Category: </xsl:otherwise>
     </xsl:choose></b>
     <xsl:value-of select="." /><xsl:apply-templates select="../subcat" />
   </xsl:template>
@@ -212,19 +176,19 @@
 
   <xsl:template match="version">
       <b><xsl:choose>
-        <xsl:when test='lang("en")'>Since engine version: </xsl:when>
-        <xsl:otherwise>Ab Engineversion: </xsl:otherwise>
+        <xsl:when test='lang("de")'>Ab Engineversion: </xsl:when>
+        <xsl:otherwise>Since engine version: </xsl:otherwise>
       </xsl:choose></b>
       <xsl:apply-templates />
   </xsl:template>
 
   <xsl:template match="extversion">
     <xsl:choose>
-      <xsl:when test='lang("en")'>
-        (extended in <xsl:value-of select="." />)
+      <xsl:when test='lang("de")'>
+        (erweitert ab <xsl:value-of select="." />)
       </xsl:when>
       <xsl:otherwise>
-        (erweitert ab <xsl:value-of select="." />)
+        (extended in <xsl:value-of select="." />)
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -247,7 +211,7 @@
   <xsl:template match="doc/h">
     <h1><xsl:apply-templates select="@id|node()" /></h1>
   </xsl:template>
-  <xsl:template match="doc/part/h">
+  <xsl:template match="doc/part/h|toc/h">
     <h2><xsl:apply-templates select="@id|node()" /></h2>
   </xsl:template>
   <xsl:template match="doc/part/part/h">
@@ -255,6 +219,36 @@
   </xsl:template>
   <xsl:template match="doc/part/part/part/h">
     <h4><xsl:apply-templates select="@id|node()" /></h4>
+  </xsl:template>
+
+  <!-- content.xml -->
+  <xsl:template match="toc//li">
+    <xsl:copy>
+      <xsl:for-each select="@*">
+        <xsl:copy />
+      </xsl:for-each>
+      <xsl:choose><xsl:when test="ul">
+        <xsl:if test="ancestor::ul/ancestor::ul/ancestor::ul">
+          <xsl:attribute name="class">invisi</xsl:attribute>
+        </xsl:if>
+        <img class='collapseimg'>
+          <xsl:attribute name="src">../images/<xsl:choose>
+            <xsl:when test="ancestor::ul/ancestor::ul/ancestor::ul">bullet_folder.png</xsl:when>
+            <xsl:otherwise>bullet_folder_open.png</xsl:otherwise>
+          </xsl:choose></xsl:attribute>
+          <xsl:attribute name="alt"><xsl:choose>
+            <xsl:when test="ancestor::ul/ancestor::ul/ancestor::ul">+</xsl:when>
+            <xsl:otherwise>-</xsl:otherwise>
+          </xsl:choose></xsl:attribute>
+          <xsl:attribute name="id">tgl<xsl:number level="any" count="ul"/></xsl:attribute>
+          <xsl:attribute name="onclick">tb(<xsl:number level="any" count="ul"/>)</xsl:attribute>
+          <xsl:attribute name="ondblclick">ta(<xsl:number level="any" count="ul"/>)</xsl:attribute>
+        </img>
+      </xsl:when><xsl:otherwise>
+        <img src='../images/bullet_sheet.png' alt='' />
+      </xsl:otherwise></xsl:choose>
+      <xsl:apply-templates />
+    </xsl:copy>
   </xsl:template>
 
   <!-- copy some HTML elements literally -->
@@ -284,8 +278,8 @@
   <xsl:template match="related">
     <div class="text">
       <b><xsl:choose>
-        <xsl:when test='lang("en")'>See also: </xsl:when>
-        <xsl:otherwise>Siehe auch: </xsl:otherwise>
+        <xsl:when test='lang("de")'>Siehe auch: </xsl:when>
+        <xsl:otherwise>See also: </xsl:otherwise>
       </xsl:choose></b>
       <xsl:for-each select="*">
         <xsl:sort />
@@ -314,6 +308,9 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
+      <xsl:if test="/toc">
+        <xsl:attribute name="target">_top</xsl:attribute>
+      </xsl:if>
       <xsl:value-of select="$text" />
     </a>
   </xsl:template>
@@ -352,6 +349,14 @@
     <caption><xsl:apply-templates select="@id|node()" /></caption>
   </xsl:template>
 
+  <xsl:template match="search">
+    <form action="../search.php" method="get">
+      <input name="search" type="text"></input> 
+      <input type="submit" name="func" value="Search"></input>
+      <input type="submit" name="fulltext" value="Fulltext"></input>
+    </form>
+  </xsl:template>
+  
   <xsl:template match="table/bitmask">
     <xsl:value-of select="." />:
     <input id="input" onKeyUp="Calc();" name="input" type="text">
@@ -383,62 +388,6 @@
   <xsl:template match="@colspan">
     <xsl:attribute name="colspan"><xsl:value-of select="." /></xsl:attribute>
   </xsl:template>
-
-  <xsl:template name="nav"><xsl:if test="$webnotes">
-    <ul class="nav">
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'index.html'" />
-        <xsl:with-param name="text"><xsl:choose>
-          <xsl:when test='lang("en")'>Introduction</xsl:when>
-          <xsl:otherwise>Einleitung</xsl:otherwise>
-        </xsl:choose></xsl:with-param>
-      </xsl:call-template></li>
-      <li><a>
-        <xsl:attribute name="href"><xsl:value-of select="$relpath" />sdk/content.html</xsl:attribute>
-        <xsl:choose>
-          <xsl:when test='lang("en")'>Contents</xsl:when>
-          <xsl:otherwise>Inhalt</xsl:otherwise>
-        </xsl:choose>
-      </a></li>
-      <li><a>
-        <xsl:attribute name="href"><xsl:value-of select="$relpath" />search.php</xsl:attribute>
-        <xsl:choose>
-          <xsl:when test='lang("en")'>Search</xsl:when>
-          <xsl:otherwise>Suche</xsl:otherwise>
-        </xsl:choose>
-      </a></li>
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'console.html'" />
-        <xsl:with-param name="text" select="'Engine'" />
-      </xsl:call-template></li>
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'cmdline.html'" />
-        <xsl:with-param name="text"><xsl:choose>
-          <xsl:when test='lang("en")'>Command Line</xsl:when>
-          <xsl:otherwise>Kommandozeile</xsl:otherwise>
-        </xsl:choose></xsl:with-param>
-      </xsl:call-template></li>
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'files.html'" />
-        <xsl:with-param name="text"><xsl:choose>
-          <xsl:when test='lang("en")'>Game Data</xsl:when>
-          <xsl:otherwise>Spieldaten</xsl:otherwise>
-        </xsl:choose></xsl:with-param>
-      </xsl:call-template></li>
-      <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'script/index.html'" />
-        <xsl:with-param name="text" select="'Script'" />
-      </xsl:call-template></li>
-      <li class="switchlang"><xsl:choose>
-        <xsl:when test='lang("en")'><a href='javascript:switchLanguage()'><img src='/deco/dco_de_sml.gif' alt='German' border='0'/></a></xsl:when>
-        <xsl:otherwise><a href='javascript:switchLanguage()'><img src='/deco/dco_en_sml.gif' alt='English' border='0'/></a></xsl:otherwise>
-      </xsl:choose></li>
-      <!--<li><a><xsl:attribute name="href">index.xml</xsl:attribute>.</a></li>
-      <xsl:if test="starts-with($relpath, '../..')">
-        <li><a><xsl:attribute name="href">../index.xml</xsl:attribute>..</a></li>
-      </xsl:if>-->
-    </ul>
-  </xsl:if></xsl:template>
   
   <!-- some code blocks are made into paragraphs -->
   <xsl:template match="example/code|part/code|doc/code|dd/code">
@@ -565,7 +514,7 @@
   <xsl:template name="color2">
     <xsl:param name="s" select="." />
     <!-- the list of keywords -->
-    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|int|proplist|object|array|string|bool|return|if|else|break|continue|while|for|func|true|false|nil|'" />
+    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|int|proplist|object|array|string|bool|any|return|if|else|break|continue|while|for|func|true|false|nil|'" />
     <xsl:param name="w" select="substring-before($t, '|')" />
     <!-- text before the keyword -->
     <xsl:variable name="l" select="substring-before($s, $w)" />

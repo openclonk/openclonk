@@ -1,0 +1,8 @@
+[DefCore]
+id=Icon_Producer_Fuel
+Version=5,2,0,1
+Category=C4D_StaticBack
+Picture=0,0,128,128
+Width=64
+Height=64
+Offset=-32,-32

@@ -2,12 +2,12 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2003-2008, 2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
+ * Copyright (c) 2003-2008, 2010-2011  Sven Eberhardt
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -103,11 +103,11 @@ namespace C4GUI
 		Clear();
 		this->idSourceDef = idSourceDef;
 		// query values
-		dwBackClr     = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BackClr"     ).getData()).getInt();
-		iBorderTop    = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderTop"   ).getData()).getInt();
-		iBorderLeft   = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderLeft"  ).getData()).getInt();
-		iBorderRight  = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderRight" ).getData()).getInt();
-		iBorderBottom = pSrcDef->Script.Call(FormatString(PSF_FrameDecoration, "BorderBottom").getData()).getInt();
+		dwBackClr     = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BackClr"     ).getData()).getInt();
+		iBorderTop    = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderTop"   ).getData()).getInt();
+		iBorderLeft   = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderLeft"  ).getData()).getInt();
+		iBorderRight  = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderRight" ).getData()).getInt();
+		iBorderBottom = pSrcDef->Call(FormatString(PSF_FrameDecoration, "BorderBottom").getData()).getInt();
 		// get gfx
 		SetFacetByAction(pSrcDef, fctTop        , "Top"        );
 		SetFacetByAction(pSrcDef, fctTopRight   , "TopRight"   );
@@ -136,7 +136,7 @@ namespace C4GUI
 	{
 		// draw BG
 		int ox = cgo.TargetX+rcBounds.x, oy = cgo.TargetY+rcBounds.y;
-		lpDDraw->DrawBoxDw(cgo.Surface, ox,oy,ox+rcBounds.Wdt-1,oy+rcBounds.Hgt-1,dwBackClr);
+		pDraw->DrawBoxDw(cgo.Surface, ox,oy,ox+rcBounds.Wdt-1,oy+rcBounds.Hgt-1,dwBackClr);
 		// draw borders
 		int x,y,Q;
 		// top
@@ -194,7 +194,7 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef _WIN32
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;
 		// calculate required size
@@ -206,9 +206,9 @@ namespace C4GUI
 		if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0)) return false;
 		// create it!
 		if (!Title || !*Title) Title = "???";
-		hWindow = ::CreateWindowEx  (
+		hWindow = ::CreateWindowExW  (
 		            0,
-		            ConsoleDlgClassName, Title,
+		            ConsoleDlgClassName, GetWideChar(Title),
 		            ConsoleDlgWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
 		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
@@ -300,7 +300,7 @@ namespace C4GUI
 	bool Dialog::RegisterWindowClass(HINSTANCE hInst)
 	{
 		// register landscape viewport class
-		WNDCLASSEX WndClass;
+		WNDCLASSEXW WndClass;
 		WndClass.cbSize=sizeof(WNDCLASSEX);
 		WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
 		WndClass.lpfnWndProc   = DialogWinProc;
@@ -313,13 +313,13 @@ namespace C4GUI
 		WndClass.lpszClassName = ConsoleDlgClassName;
 		WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 		WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-		return !!RegisterClassEx(&WndClass);
+		return !!RegisterClassExW(&WndClass);
 	}
 #else
-	CStdWindow * DialogWindow::Init(CStdWindow::WindowKind windowKind, CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
-		CStdWindow *result;
-		if (CStdWindow::Init(windowKind, pApp, Title, pParent, false))
+		C4Window *result;
+		if (C4Window::Init(windowKind, pApp, Title, pParent, false))
 		{
 			// update pos
 			if (szID && *szID)
@@ -336,7 +336,7 @@ namespace C4GUI
 	void DialogWindow::HandleMessage (XEvent &e)
 	{
 		// Parent handling
-		CStdWindow::HandleMessage(e);
+		C4Window::HandleMessage(e);
 
 		// Determine dialog
 		Dialog *pDlg = ::pGUI->GetDialog(this);
@@ -364,7 +364,7 @@ namespace C4GUI
 			switch (e.xbutton.button)
 			{
 			case Button1:
-				if (timeGetTime() - last_left_click < 400)
+				if (GetTime() - last_left_click < 400)
 				{
 					::pGUI->MouseInput(C4MC_Button_LeftDouble,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
@@ -374,7 +374,7 @@ namespace C4GUI
 				{
 					::pGUI->MouseInput(C4MC_Button_LeftDown,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = timeGetTime();
+					last_left_click = GetTime();
 				}
 				break;
 			case Button2:
@@ -382,7 +382,7 @@ namespace C4GUI
 				                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
 				break;
 			case Button3:
-				if (timeGetTime() - last_right_click < 400)
+				if (GetTime() - last_right_click < 400)
 				{
 					::pGUI->MouseInput(C4MC_Button_RightDouble,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
@@ -392,7 +392,7 @@ namespace C4GUI
 				{
 					::pGUI->MouseInput(C4MC_Button_RightDown,
 					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = timeGetTime();
+					last_right_click = GetTime();
 				}
 				break;
 			case Button4:
@@ -439,19 +439,19 @@ namespace C4GUI
 	{
 		if (!pDialog)
 			return; // safety
-		RECT r;
+		C4Rect r;
 		GetSize(&r);
 		if (pSurface)
 		{
-			pSurface->Wdt = r.right;
-			pSurface->Hgt = r.bottom;
+			pSurface->Wdt = r.Wdt;
+			pSurface->Hgt = r.Hgt;
 #ifdef USE_GL
 			pGL->PrepareRendering(pSurface);
 			glClear(GL_COLOR_BUFFER_BIT);
 #endif
 		}
 		C4TargetFacet cgo;
-		cgo.Set(NULL, 0, 0, r.right, r.bottom, 0, 0);
+		cgo.Set(NULL, 0, 0, r.Wdt, r.Hgt, 0, 0);
 		pDialog->Draw(cgo);
 	}
 
@@ -468,14 +468,14 @@ namespace C4GUI
 		if (pWindow) return true;
 		// create it!
 		pWindow = new DialogWindow();
-		if (!pWindow->Init(CStdWindow::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
+		if (!pWindow->Init(C4Window::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
 		{
 			delete pWindow;
 			pWindow = NULL;
 			return false;
 		}
 		// create rendering context
-		pWindow->pSurface = new CSurface(&Application, pWindow);
+		pWindow->pSurface = new C4Surface(&Application, pWindow);
 		pWindow->pDialog = this;
 		return true;
 	}
@@ -630,15 +630,17 @@ namespace C4GUI
 		// update assigned window
 		if (pWindow)
 		{
+#ifdef _WIN32
 			RECT rtSize;
 			rtSize.left = 0;
 			rtSize.top = 0;
 			rtSize.right = rcBounds.Wdt;
 			rtSize.bottom = rcBounds.Hgt;
-#ifdef _WIN32
 			if (::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
-#endif // _WIN32
 				pWindow->SetSize(rtSize.right-rtSize.left,rtSize.bottom-rtSize.top);
+#else
+			pWindow->SetSize(rcBounds.Wdt,rcBounds.Hgt);
+#endif // _WIN32
 		}
 	}
 
@@ -701,21 +703,21 @@ namespace C4GUI
 		if (iFade < 100)
 		{
 			if (iFade <= 0) return;
-			lpDDraw->ActivateBlitModulation((iFade*255/100)<<24 | 0xffffff);
+			pDraw->ActivateBlitModulation((iFade*255/100)<<24 | 0xffffff);
 		}
 		// separate window: Clear background
 		if (pWindow)
-			lpDDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, (0xff << 24) | (C4GUI_StandardBGColor & 0xffffff) );
+			pDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, (0xff << 24) | (C4GUI_StandardBGColor & 0xffffff) );
 		// draw window + contents (evaluates IsVisible)
 		Window::Draw(cgo);
 		// reset blit modulation
-		if (iFade<100) lpDDraw->DeactivateBlitModulation();
+		if (iFade<100) pDraw->DeactivateBlitModulation();
 		// blit output to own window
 		if (pWindow)
 		{
-			RECT rtSrc,rtDst;
-			rtSrc.left=rcBounds.x; rtSrc.top=rcBounds.y;  rtSrc.right=rcBounds.x+rcBounds.Wdt; rtSrc.bottom=rcBounds.y+rcBounds.Hgt;
-			rtDst.left=0; rtDst.top=0;    rtDst.right=rcBounds.Wdt; rtDst.bottom=rcBounds.Hgt;
+			C4Rect rtSrc,rtDst;
+			rtSrc.x=rcBounds.x; rtSrc.y=rcBounds.y;  rtSrc.Wdt=rcBounds.Wdt; rtSrc.Hgt=rcBounds.Hgt;
+			rtDst.x=0; rtDst.y=0;    rtDst.Wdt=rcBounds.Wdt; rtDst.Hgt=rcBounds.Hgt;
 			pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
 		}
 	}
@@ -729,7 +731,7 @@ namespace C4GUI
 		{
 			// standard border/bg then
 			// draw background
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,C4GUI_StandardBGColor);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt-1+cgo.TargetX,rcBounds.y+rcBounds.Hgt-1+cgo.TargetY,C4GUI_StandardBGColor);
 			// draw frame
 			Draw3DFrame(cgo);
 		}
@@ -1049,7 +1051,7 @@ namespace C4GUI
 	{
 		// draw upper board
 		if (HasUpperBoard())
-			lpDDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
+			pDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
 	}
 
 	void FullscreenDialog::UpdateOwnPos()
@@ -1176,6 +1178,15 @@ namespace C4GUI
 				//rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
 				if (!btnFocus) btnFocus = pBtnNo;
 			}
+			// Reset
+			if (dwButtons & btnReset)
+			{
+				Button *pBtnReset = new ResetButton(rcBtn);
+				AddElement(pBtnReset); //pBtnAbort->SetToolTip("[!]Reset to default");
+				rcBtn.x += C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace;
+				if (!btnFocus) btnFocus = pBtnReset;
+
+			}
 		}
 		if (btnFocus) SetFocus(btnFocus, false);
 		// resize to actually needed size
@@ -1277,7 +1288,7 @@ namespace C4GUI
 		// create progress dlg
 		ProgressDialog *pDlg = new ProgressDialog(szMessage, szCaption, iMaxProgress, iInitialProgress, icoIcon);
 		// show it
-		if (!pDlg->Show(this, true)) { delete pDlg; return false; }
+		if (!pDlg->Show(this, true)) { delete pDlg; return NULL; }
 		// return dlg pointer
 		return pDlg;
 	}

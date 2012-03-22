@@ -27,9 +27,9 @@
 
 // constants
 const int32_t C4ControlBacklog = 100, // (ctrl ticks)
-                                 C4ClientIDAll = C4ClientIDUnknown,
-                                                 C4ControlOverflowLimit = 3, // (ctrl ticks)
-                                                                          C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
+              C4ClientIDAll = C4ClientIDUnknown,
+              C4ControlOverflowLimit = 3, // (ctrl ticks)
+              C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
 
 const uint32_t C4ControlRequestInterval = 2000; // (ms)
 
@@ -252,7 +252,7 @@ public:
 class C4PacketControlPkt : public C4PacketBase
 {
 public:
-	C4PacketControlPkt() { }
+	C4PacketControlPkt() : eDelivery(CDT_Queue) { }
 	C4PacketControlPkt(enum C4ControlDeliveryType eDelivery, const C4IDPacket &Ctrl)
 			: eDelivery(eDelivery), Ctrl(Ctrl)
 	{ }

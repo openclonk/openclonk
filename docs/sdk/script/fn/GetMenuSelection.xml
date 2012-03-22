@@ -7,12 +7,12 @@
     <title>GetMenuSelection</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int?</rtype></syntax>
-    <desc>Determines the currently selected menu entry of the currently open menu of an object, or nil if no menu is open.</desc>
+    <desc>Determines the currently selected menu entry of the currently open menu of an object, or <code>nil</code> if no menu is open.</desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Aktuelle Auswahl: Punkt %d...&quot;, <funclink>GetCursor</funclink>(0)-&gt;GetMenuSelection();</code>
+        <code><funclink>Log</funclink>(&quot;Current selection: entry %d...&quot;, <funclink>GetCursor</funclink>(0)-&gt;GetMenuSelection();</code>
         <text>Writes to the log which menu entry the player has currently selected.</text>
       </example>
     </examples>

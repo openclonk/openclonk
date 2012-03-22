@@ -6,7 +6,7 @@
   <func>
     <title>GetScenarioVal</title>
     <category>Get*Val</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -18,7 +18,7 @@
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
           <optional />
         </param>
         <param>
@@ -31,7 +31,7 @@
     </syntax>
     <desc>Returns the property value of the scenario by its name and section in the <emlink href="scenario/scenario.html">Scenario.txt</emlink>.</desc>
     <remark>Warning: the retrieved values may differ from computer to computer and thus cause synchronization problems in network games.</remark>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <code><funclink>Log</funclink>(&quot;You are playing \&quot;%s\&quot;!&quot;, GetScenTitle());</code>

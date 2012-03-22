@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005, 2009  Günther Brammer
+ * Copyright (c) 2011  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,46 +25,20 @@
 #define INC_STDREGISTRY
 
 #ifdef _WIN32
-#include <windows.h>
 #include "StdCompiler.h"
-bool DeleteRegistryValue(HKEY hKey, const char *szSubKey,
-                         const char *szValueName);
-bool DeleteRegistryValue(const char *szSubKey, const char *szValueName);
+#include <C4windowswrapper.h>
 
-bool GetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD *lpdwValue);
-bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue);
-
-
-bool SetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD dwValue);
-bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue);
-
-
-bool GetRegistryString(const char *szSubKey, const char *szValueName, char *sValue, DWORD dwValSize);
+StdCopyStrBuf GetRegistryString(const char *szSubKey, const char *szValueName);
 bool SetRegistryString(const char *szSubKey, const char *szValueName, const char *szValue);
 
-bool DeleteRegistryKey(HKEY hKey, const char *szSubKey);
-bool DeleteRegistryKey(const char *szSubKey);
-
-bool SetRegClassesRoot(const char *szSubKey,
-                       const char *szValueName,
-                       const char *szStringValue);
-
-bool SetRegShell(const char *szClassName,
-                 const char *szShellName,
-                 const char *szShellCaption,
-                 const char *szCommand,
+bool SetRegShell(const wchar_t *szClassName,
+                 const wchar_t *szShellName,
+                 const wchar_t *szShellCaption,
+                 const wchar_t *szCommand,
                  bool fMakeDefault = false);
 
 bool RemoveRegShell(const char *szClassName,
                     const char *szShellName);
-
-bool SetRegFileClass(const char *szClassRoot,
-                     const char *szExtension,
-                     const char *szClassName,
-                     const char *szIconPath, int iIconNum,
-                     const char *szContentType);
 
 bool StoreWindowPosition(HWND hwnd,
                          const char *szWindowName,
@@ -87,6 +62,7 @@ public:
 	// Properties
 	virtual bool hasNaming() { return true; }
 	virtual bool forceWrite() { return true; }
+	virtual bool isRegistry() { return true; }
 
 	// Naming
 	virtual bool Name(const char *szName);
@@ -122,9 +98,12 @@ private:
 	struct Key
 	{
 		StdStrBuf Name;
+		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle;
 		Key *Parent;
 	} *pKey;
+	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last written string. Used for separators within strings.
 
 	// Writing
 	void CreateKey(HKEY hParent = 0);
@@ -145,6 +124,7 @@ public:
 	// Properties
 	virtual bool isCompiler() { return true; }
 	virtual bool hasNaming() { return true; }
+	virtual bool isRegistry() { return true; }
 
 	// Naming
 	virtual bool Name(const char *szName);
@@ -179,11 +159,14 @@ private:
 	struct Key
 	{
 		StdStrBuf Name;
+		StdStrBuf LastChildName;  // last occuring child name to increase subindex if needed
+		int32_t subindex; // incremented when multiple keys of the same name are encountered
 		HKEY Handle; // for keys only
 		Key *Parent;
 		bool Virtual;
 		DWORD Type; // for values only
 	} *pKey;
+	StdStrBuf LastString; // assigned by String, reset by Name/NameEnd - contains last read string. Used for separators within strings.
 
 	// Reading
 	uint32_t ReadDWord();

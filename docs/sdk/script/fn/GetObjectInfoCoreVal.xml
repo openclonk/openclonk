@@ -6,7 +6,7 @@
   <func>
     <title>GetObjectInfoCoreVal</title>
     <category>Get*Val</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -18,7 +18,7 @@
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
           <optional />
         </param>
         <param>
@@ -29,12 +29,12 @@
         </param>
       </params>
     </syntax>
-    <desc>The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension c4i. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore.</desc>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <desc>The InfoCore contains personal information of one crew member. It is stored in the player in a file with the extension oci. Accordingly, GetObjectInfoCoreVal returns a property of a crew member by its name in the InfoCore.</desc>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
         <code>var exp = obj-&gt;GetObjCoreExperience();</code>
-        <text>Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.c4g (see remark).<br/> The above code responds to:</text>
+        <text>Determines the experience of a crewmember. GetObjCoreExperience is a global function from GetXVal.c in the System.ocg (see remark).<br/> The above code responds to:</text>
         <code>var exp = obj-&gt;GetObjectInfoCoreVal(&quot;Experience&quot;, &quot;ObjectInfo&quot;);</code>
       </example>
     </examples>

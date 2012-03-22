@@ -7,7 +7,7 @@
     <title>SetPlrView</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -26,37 +26,35 @@
     <desc>Centers a player's view to the specified object. The view will follow this object until the next player command.</desc>
     <examples>
       <example>
-        <code>local oFeind;
-// TimerCall eines automatischen Aussichtsturms
+        <code>local enemy;
+// called every x frames
 protected func Timer()
 {
-  // Bereits einen Feind gefunden?
-  <funclink>if</funclink>(!oFeind)
-  {
-    // Alarm schlagen?
-    <funclink>while</funclink>(oAlarm = <funclink>FindObject</funclink>(0, -100, -100, 200, 200, <funclink>OCF_CrewMember</funclink>(), 0, 0, 0, oAlarm))
-      <funclink>if</funclink>(<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(oAlarm), <funclink>GetOwner</funclink>()))
-      {
-        // Ein feindlicher Clonk!
-        SetPlrView(<funclink>GetOwner</funclink>(), oAlarm);
-        <funclink>Sound</funclink>(&quot;Bing&quot;);
-        break;
-      }
-  }
-  else
-  {
-    <funclink>if</funclink>(<funclink>ObjectDistance</funclink>(oFeind) &lt; 120)
-    {
-      // Noch einige ständige Effekte bei Alarm
-      <funclink>Sound</funclink>(&quot;Bing&quot;);
-      <funclink>Message</funclink>(&quot;!!! FEIND !!!&quot;);
-    }
-    else
-    {
-      // wenn er sich entfernt: Alarm beenden
-      oFeind = 0;
-    }
-  }
+	// already found enemy is too far away
+	if(enemy)
+		if(<funclink>ObjectDistance</funclink>(enemy) &gt; 350)
+		{
+			enemy = nil;
+			<funclink>SetPlrViewRange</funclink>(0);
+		}
+
+
+	// find (new) enemy
+	if(!enemy)
+	{
+		// search for an enemy crew member in a distance of max. 300 pixels, return the closest one
+		enemy = <funclink>FindObject</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>),<funclink>Find_Distance</funclink>(300),<funclink>Find_Hostile</funclink>(GetOwner()),<funclink>Sort_Distance</funclink>());
+		SetPlrView(<funclink>GetOwner</funclink>();
+		<funclink>SetPlrViewRange</funclink>(100);
+	}
+	
+	// so, if there is an enemy close to the tower, sound the alarm
+	if (enemy)
+	{
+		<funclink>Message</funclink>(&quot;!!! ENEMY !!!&quot;);
+		<funclink>Sound</funclink>(&quot;Alarm&quot;);
+	}
+
 }
 				</code>
         <text>Automatic watch tower: if an enemy clonk gets near the tower the player's view will be set to the attacker. Also, a sound is played and a message is popped up while the enemy is in range.</text>

@@ -30,10 +30,7 @@
 class C4Facet;
 class C4Object;
 
-int32_t Coms2ComDir(int32_t iComs);
 bool ComDirLike(int32_t iComDir, int32_t iSample);
-
-const int32_t ComOrderNum = 24;
 
 bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget=NULL, int32_t tx=0, int32_t ty=0);
 
@@ -71,7 +68,6 @@ bool ObjectComTake(C4Object *cObj); // carlo
 bool ObjectComTake2(C4Object *cObj); // carlo
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t iPunch=0);
 bool ObjectComCancelAttach(C4Object *cObj);
-void ObjectComDigDouble(C4Object *cObj);
 void ObjectComStopDig(C4Object *cObj);
 
 #endif

@@ -6,7 +6,7 @@
   <func>
     <title>Angle</title>
     <category>Arithmetics</category>
-    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -41,8 +41,8 @@
     <desc>Returns the view angle from the first point to the second in degrees. 0° ist straight up. All coordinates global.</desc>
     <examples>
       <example>
-        <code><funclink>SetR</funclink>(Angle(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)),
-           <funclink>GetX</funclink>(<funclink>GetCursor</funclink>(1)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(1)) ));</code>
+        <code><funclink>SetR</funclink>(Angle(<funclink>GetCursor</funclink>(0)-><funclink>GetX</funclink>(), <funclink>GetCursor</funclink>(0)-><funclink>GetY</funclink>(),
+           <funclink>GetCursor</funclink>(1)-><funclink>GetX</funclink>(), <funclink>GetCursor</funclink>(1)-><funclink>GetY</funclink>() ));</code>
         <text>The object rotates so it points from the clonk of player 1 to the clonk of player 2.</text>
       </example>
     </examples>

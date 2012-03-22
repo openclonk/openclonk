@@ -3,6 +3,8 @@
  *
  * Copyright (c) 2002, 2006  Sven Eberhardt
  * Copyright (c) 2004-2007  Günther Brammer
+ * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,6 +24,9 @@
 #if !defined(INC_StdGL) && defined(USE_GL)
 #define INC_StdGL
 
+#ifdef _WIN32
+#include <C4windowswrapper.h>
+#endif
 #include <GL/glew.h>
 
 #if defined(__APPLE__)
@@ -31,7 +36,7 @@
 #endif
 #include <StdDDraw2.h>
 
-class CStdWindow;
+class C4Window;
 
 // one OpenGL context
 class CStdGLCtx
@@ -43,10 +48,10 @@ public:
 	void Clear();               // clear objects
 
 #ifdef _WIN32
-	bool Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow = NULL);
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
 	std::vector<int> EnumerateMultiSamples() const;
 #else
-	bool Init(CStdWindow * pWindow, CStdApp *pApp);
+	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
 #endif
 
 #ifdef USE_COCOA
@@ -61,7 +66,7 @@ public:
 protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
-	CStdWindow * pWindow; // window to draw in
+	C4Window * pWindow; // window to draw in
 #ifdef _WIN32
 	HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
@@ -74,11 +79,11 @@ protected:
 #endif
 
 	friend class CStdGL;
-	friend class CSurface;
+	friend class C4Surface;
 };
 
 // OpenGL encapsulation
-class CStdGL : public CStdDDraw
+class CStdGL : public C4Draw
 {
 public:
 	CStdGL();
@@ -111,25 +116,22 @@ public:
 	bool UpdateClipper(); // set current clipper to render target
 	bool PrepareMaterial(StdMeshMaterial& mat);
 	// Surface
-	bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
-	virtual CStdGLCtx *CreateContext(CStdWindow * pWindow, CStdApp *pApp);
+	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
+	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef _WIN32
-	virtual CStdGLCtx *CreateContext(HWND hWindow, CStdApp *pApp);
+	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);
-	virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
-	virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
-	                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
+	virtual void PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform* pTransform);
+	virtual void BlitLandscape(C4Surface * sfcSource, float fx, float fy,
+	                           C4Surface * sfcTarget, float tx, float ty, float wdt, float hgt, const C4Surface * textures[]);
 	void FillBG(DWORD dwClr=0);
 	// Drawing
-	void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
-	void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
-	// Gamma
-	virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
+	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
 	bool InvalidateDeviceObjects(); // free device dependent objects
@@ -142,18 +144,14 @@ protected:
 
 	bool CheckGLError(const char *szAtOp);
 	virtual bool Error(const char *szMsg);
-#ifdef USE_X11
-	// Size of gamma ramps
-	int gammasize;
-#endif
 
-	friend class CSurface;
-	friend class CTexRef;
-	friend class CPattern;
+	friend class C4Surface;
+	friend class C4TexRef;
+	friend class C4Pattern;
 	friend class CStdGLCtx;
 	friend class C4StartupOptionsDlg;
 	friend class C4FullScreen;
-	friend class CStdWindow;
+	friend class C4Window;
 };
 
 // Global access pointer

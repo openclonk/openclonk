@@ -6,14 +6,14 @@
   <func>
     <title>Sound</title>
     <category>Effects</category>
-    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>Name of the sound effect (without .wav extension). If the referenced file is a .ogg file then the extension needs to be provided.</desc>
+          <desc>Name of the sound effect (without .wav/.ogg extension). Wildcards as used by <funclink>WildcardMatch</funclink> are used.</desc>
         </param>
         <param>
           <type>bool</type>
@@ -24,13 +24,13 @@
         <param>
           <type>int</type>
           <name>volume</name>
-          <desc>0-100: volume for playback of the sound. A volume value of nil means playback at 100.</desc>
+          <desc>0-100: volume for playback of the sound. A volume value of <code>nil</code> means playback at 100.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>player</name>
-          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If nil (or not specified), the sound will be played for all players.</desc>
+          <desc>Player number of the player for which the sound is to be played. In network games, the sound will thus not be audible for the other players. If <code>nil</code> (or not specified), the sound will be played for all players.</desc>
           <optional />
         </param>
         <param>
@@ -41,11 +41,11 @@
         </param>
       </params>
     </syntax>
-    <desc>Plays a sound. The specified sound file has to be available in the group Sound.c4g, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
+    <desc>Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(HUT2)-&gt;Sound(&quot;Applause&quot;, false, 50);</code>
-        <text>Plays an 'applause' sound next to the first found wooden hut at half volume.</text>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(WindGenerator))-&gt;Sound(&quot;Fanfare&quot;, false, 50);</code>
+        <text>Plays a 'Fanfare' sound next to the first found wind generator at half volume.</text>
       </example>
     </examples>
     <related><funclink>Music</funclink></related>

@@ -3,13 +3,18 @@
   SYSTEM '../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
-  <title>Developer Mode</title>
-  <h>Clonk Developer Mode</h>
-  <img src="../images/cpem.gif" height="52" id="cpem" width="52" />
-  <text>The Clonk developer mode grants full access to all game content in Clonk: scenarios, object definitions, player files, and additional group files. Existing data can be modified and new elements can be created.</text>
-  <text>Self created game content can be publicly released and made available to other players. However, all content should be thoroughly tested and free of bugs before publishing.</text>
-  <h id="Nutzungsbedingungen">Terms of use</h>
-  <text>Use the developer mode at your own risk. No support can be given by RedWolf Design. The developer mode is available to registered players only.</text>
-  <text>Through improper use you can not only destroy all the fun in the game, but also make the whole game unplayable. In order to successfully use the developer mode, basic programming and graphics skills as well as general computer expertise are required. Those who are unsure should leave their hands off it!</text>
-  <text>Anybody using the advanced editing features should do so with great care and responsibility and try to produce useful extensions to the game, thus serving the whole community.</text>
+  <title>OpenClonk Documentation</title>
+  <h>OpenClonk Documentation</h>
+  <part>
+	<img src="../images/cpem.gif" width="52" height="52" alt="" class="cpem" />
+	<text>Welcome to the developer documentation for the creation of custom game content. This documentation includes a thorough reference of the game data and its file hierarchy. <br/>	
+	Also included is a script reference which explains the syntax and semantics of Clonk's own scripting language - C4Script. In the script reference, all functions, constants and callbacks that are available for the scripter are documented with example usages. 
+	</text>
+	<h>Get started</h>
+	<text><emlink href="files.html">Game data</emlink> - Get an overview over the game data needed for the creation of custom game content.</text>
+	<text><emlink href="script/index.html">C4Script</emlink> - View the introduction to the script language C4Script.</text>
+	<h>Search the documentation</h>
+	<search/>
+  </part>
+  <author>Newton</author><date>2011-08</date>
 </doc>

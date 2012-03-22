@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Visibility</title>
+  <h>Visibility</h>
+  <part>
+    <text>Every object has a <emlink href="definition/properties.html">property</emlink>, which controls its visibility for players. It may be either <funclink>VIS_All</funclink> or <funclink>VIS_None</funclink> or a bit mask of <funclink>VIS_Owner</funclink>, <funclink>VIS_Allies</funclink>, <funclink>VIS_Enemies</funclink> and <funclink>VIS_God</funclink>, or an array starting with <funclink>VIS_Select</funclink> followed by bools setting the visibility for each player. If the object has a layer, it will only be visible if the layer is visible, unless <funclink>VIS_LayerToggle</funclink> is set for the layer.</text>
+    <code>this.Visibility = <funclink>VIS_God</funclink> | <funclink>VIS_Owner</funclink> // The object will only be visible for it's owner and the spectators.
+this.Visibility = [<funclink>VIS_Select</funclink>, 1, 0, 0, 1]; // Visible for player 0 and 3
+this.Visibility = [<funclink>VIS_Enemies</funclink>]; // This is also possible (as long as it is not done for a layer)
+</code>
+    <text>
+    <table>
+      <caption id="VISTable">VIS_-Constants</caption>
+      <rowh>
+        <col>Name</col>
+        <col>Description</col>
+      </rowh>
+      <row id="VIS_All">
+        <col><code>VIS_All</code></col>
+        <col>Visible for anyone</col>
+      </row>
+      <row id="VIS_None">
+        <col><code>VIS_None</code></col>
+        <col>Visible for noone</col>
+      </row>
+      <row id="VIS_Owner">
+        <col><code>VIS_Owner</code></col>
+        <col>Visible for the owner</col>
+      </row>
+      <row id="VIS_Allies">
+        <col><code>VIS_Allies</code></col>
+        <col>Visible for the owners allies (not for the owner)</col>
+      </row>
+      <row id="VIS_Enemies">
+        <col><code>VIS_Enemies</code></col>
+        <col>Visible for any player hostile to the owner</col>
+      </row>
+      <row id="VIS_Select">
+        <col><code>VIS_Select</code></col>
+        <col>Is ignored when the property is not an array. If set, the object is visible if the element at position (playernumber+1) is true. Try and avoid using it, you will have to update it on hostility changes and player joins.</col>
+      </row>
+      <row id="VIS_God">
+        <col><code>VIS_God</code></col>
+        <col>Visible for spectators and in playerless editor windows</col>
+      </row>
+      <row id="VIS_LayerToggle">
+        <col><code>VIS_LayerToggle</code></col>
+        <col>For layers. Make the layer's objects visible when their layer is invisible and vice versa.</col>
+      </row>
+      <row id="VIS_OverlayOnly">
+        <col><code>VIS_OverlayOnly</code></col>
+        <col>Only overlays will be visible, other visibility-rules still apply.</col>
+      </row>
+    </table>
+    </text>
+    <related>
+      <funclink>CheckVisibility</funclink>
+    </related>
+  </part>
+  <author>Caesar</author><date>2011</date>
+</doc>

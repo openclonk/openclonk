@@ -1,0 +1,2 @@
+Name=Gemeinschaftskonto
+Description=Befreundete Spieler teilen sich ein gemeinsames Konto.

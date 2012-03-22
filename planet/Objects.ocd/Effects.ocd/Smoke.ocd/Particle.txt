@@ -1,0 +1,9 @@
+[Particle]
+Name=Smoke
+MaxCount=150
+MinLifetime=120
+MaxLifetime=180
+InitFn=SmokeInit
+ExecFn=SmokeExec
+DrawFn=Smoke
+Face=0,0,64,64,-32,-32

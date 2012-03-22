@@ -33,12 +33,14 @@ class StdMeshSkeletonLoader
 {
 public:
 	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
+	virtual ~StdMeshSkeletonLoader() {}
 };
 
 class StdMeshLoader
 {
 public:
-class LoaderException : public std::runtime_error { public: LoaderException(const char *msg) : std::runtime_error(msg) {} };
+	class StdMeshXML;
+	class LoaderException : public std::runtime_error { public: LoaderException(const char *msg) : std::runtime_error(msg) {} };
 
 	// filename is only used to show it in error messages. The model is
 	// loaded from src. Throws LoaderException.

@@ -1,0 +1,2 @@
+Name=Energy
+Description=Kümmert sich um das Energiemanagement.

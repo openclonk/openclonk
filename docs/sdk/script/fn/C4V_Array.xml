@@ -3,13 +3,12 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>C4V_Array</title>
     <category>Variables</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Data type: array.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
         <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) != C4V_Array) x = <funclink>CreateArray</funclink>();</code>
@@ -17,6 +16,6 @@
       </example>
     </examples>
     <related><funclink>GetType</funclink></related>
-  </func>
+  </const>
   <author>Clonk-Karl</author><date>2008-12</date>
 </funcs>

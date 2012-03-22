@@ -1,179 +1,225 @@
-; TODO: PRODUCT_VERSION
+!ifndef PRODUCT_NAME
 !define PRODUCT_NAME "OpenClonk"
+!endif
+!ifndef PRODUCT_COMPANY
+!define PRODUCT_COMPANY "OpenClonk"
+!endif
+!ifndef CLONK
+!define CLONK "clonk.exe"
+!endif
+!ifndef C4GROUP
+!define C4GROUP "c4group.exe"
+!endif
 !define PRODUCT_PUBLISHER "OpenClonk Development Team"
 !define PRODUCT_WEB_SITE "http://www.openclonk.org"
 !define PRODUCT_WEB_SITE_NAME "OpenClonk Website"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_USER_KEY "Software\OpenClonk\OpenClonk"
-!define PRODUCT_COMPANY_KEY "Software\OpenClonk"
-!define PRODUCT_USER_ROOT_KEY "HKCU"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
-
-; zlib compression creates a corrupted installer!?
-SetCompressor lzma
-
-; MUI 1.67 compatible ------
-!include "MUI.nsh"
-
-; MUI Settings
-!define MUI_ICON "inst.ico"
-!define MUI_UNICON "uninst.ico"
-
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "header.bmp"
-
-; Directory page
-!insertmacro MUI_PAGE_DIRECTORY
-; Instfiles page
-!insertmacro MUI_PAGE_INSTFILES
-
-; Uninstaller pages
-!insertmacro MUI_UNPAGE_INSTFILES
-
-; Language files
-!insertmacro MUI_LANGUAGE "German"
-!insertmacro MUI_LANGUAGE "English"
-
-; Overwrite language strings
-LangString MUI_TEXT_WELCOME_INFO_TITLE ${LANG_German} "Willkommen zu ${PRODUCT_NAME}!"
-LangString MUI_TEXT_WELCOME_INFO_TITLE ${LANG_English} "Welcome to ${PRODUCT_NAME}!"
-LangString MUI_TEXT_FINISH_INFO_TITLE ${LANG_German} "Die Installation wird abgeschlossen."
-
-; Additional language strings
-LangString MUI_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
-LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
-
-; Reserve files
-!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-
-; MUI end ------
+!define PRODUCT_INSTDIR "OpenClonk"
+!define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\"
+!define PRODUCT_USER_KEY "Software\${PRODUCT_COMPANY}\OpenClonk"
+!define PRODUCT_COMPANY_KEY "Software\${PRODUCT_COMPANY}"
 
 Name "${PRODUCT_NAME}"
-OutFile "..\oc.exe"
-InstallDir "@PROGRAMFILES@\OpenClonk"
-ShowInstDetails show
-ShowUnInstDetails show
+SetCompressor lzma
 
-Section "MainSection" SEC01
-  SetOutPath "$INSTDIR"
-  SetOverwrite on
+; search paths
+!addplugindir "${SRCDIR}/tools/install"
+!addplugindir "tools/install"
+!addincludedir "${SRCDIR}/tools/install"
 
-; Main program files  
-  File "Clonk.exe"
-  File "c4group.exe"
+; MultiUser Settings
+!define MULTIUSER_EXECUTIONLEVEL Highest
+;!define MULTIUSER_MUI
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+!define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT_INSTDIR}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_USER_KEY}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallLocation"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_USER_KEY}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "InstallLocation"
+!include MultiUser_x64.nsh
 
-  File "*.dll"
-
-  File "*.c4?"
-  
-  File "AUTHORS"
-  File "COPYING"
-  File "LGPL.txt"
-  File "OpenSSL.txt"
-  
-; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
-  CreateDirectory "$APPDATA\OpenClonk"
-
-; Create desktop shortcut
-  CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-
-; Create website url in program directory
-  WriteIniStr "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-
-; Create user path shortcut in program directory
-  CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
-
-  ; Start menu shortcuts (All Users)
-  SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\OpenClonk"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
-
-SectionEnd
-
-Section -Post
-; Uninstaller info
-  WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Clonk.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-; Register file types  
-  WriteRegStr HKCR ".c4s" "" "Clonk4.Scenario"
-  WriteRegStr HKCR ".c4s\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4g" "" "Clonk4.Group"
-  WriteRegStr HKCR ".c4g\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4f" "" "Clonk4.Folder"
-  WriteRegStr HKCR ".c4f\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4p" "" "Clonk4.Player"
-  WriteRegStr HKCR ".c4p\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4d" "" "Clonk4.Definition"
-  WriteRegStr HKCR ".c4d\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4i" "" "Clonk4.Object"
-  WriteRegStr HKCR ".c4i\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4m" "" "Clonk4.Material"
-  WriteRegStr HKCR ".c4m\Content Type" "" "text/plain"
-  WriteRegStr HKCR ".c4b" "" "Clonk4.Binary"
-  WriteRegStr HKCR ".c4b\Content Type" "" "application/octet-stream"
-  WriteRegStr HKCR ".c4v" "" "Clonk4.Video"
-  WriteRegStr HKCR ".c4v\Content Type" "" "video/avi"
-  WriteRegStr HKCR ".c4l" "" "Clonk4.Weblink"
-  WriteRegStr HKCR ".c4l\Content Type" "" "vnd.clonk.c4group"
-  WriteRegStr HKCR ".c4k" "" "Clonk4.Key"
-  WriteRegStr HKCR ".c4k\Content Type" "" "application/octet-stream"
-  WriteRegStr HKCR ".c4u" "" "Clonk4.Update"
-  WriteRegStr HKCR ".c4u\Content Type" "" "vnd.clonk.c4group"
-; Register file classes  
-  WriteRegStr HKCR "Clonk4.Scenario" "" "Clonk 4 Scenario"
-  WriteRegStr HKCR "Clonk4.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
-  WriteRegStr HKCR "Clonk4.Group" "" "Clonk 4 Group"
-  WriteRegStr HKCR "Clonk4.Group\DefaultIcon" "" "$INSTDIR\Clonk.exe,2"
-  WriteRegStr HKCR "Clonk4.Folder" "" "Clonk 4 Folder"
-  WriteRegStr HKCR "Clonk4.Folder\DefaultIcon" "" "$INSTDIR\Clonk.exe,3"
-  WriteRegStr HKCR "Clonk4.Player" "" "Clonk 4 Player"
-  WriteRegStr HKCR "Clonk4.Player\DefaultIcon" "" "$INSTDIR\Clonk.exe,4"
-  WriteRegStr HKCR "Clonk4.Executable" "" "Clonk 4 Executable"
-  WriteRegStr HKCR "Clonk4.Executable\DefaultIcon" "" "$INSTDIR\Clonk.exe,5"
-  WriteRegStr HKCR "Clonk4.Definition" "" "Clonk 4 Object Definition"
-  WriteRegStr HKCR "Clonk4.Definition\DefaultIcon" "" "$INSTDIR\Clonk.exe,6"
-  WriteRegStr HKCR "Clonk4.Object" "" "Clonk 4 Object Info"
-  WriteRegStr HKCR "Clonk4.Object\DefaultIcon" "" "$INSTDIR\Clonk.exe,7"
-  WriteRegStr HKCR "Clonk4.Material" "" "Clonk 4 Material"
-  WriteRegStr HKCR "Clonk4.Material\DefaultIcon" "" "$INSTDIR\Clonk.exe,8"
-  WriteRegStr HKCR "Clonk4.Binary" "" "Clonk 4 Binary"
-  WriteRegStr HKCR "Clonk4.Binary\DefaultIcon" "" "$INSTDIR\Clonk.exe,9"
-  WriteRegStr HKCR "Clonk4.Video" "" "Clonk 4 Video"
-  WriteRegStr HKCR "Clonk4.Video\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
-  WriteRegStr HKCR "Clonk4.Weblink" "" "Clonk 4 Weblink"
-  WriteRegStr HKCR "Clonk4.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
-  WriteRegStr HKCR "Clonk4.Key" "" "Clonk 4 Key"
-  WriteRegStr HKCR "Clonk4.Key\DefaultIcon" "" "$INSTDIR\Clonk.exe,12"
-  WriteRegStr HKCR "Clonk4.Update" "" "Clonk 4 Update"
-  WriteRegStr HKCR "Clonk4.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,13"
-; Register additional file handling
-  WriteRegStr HKCR "Clonk4.Key\Shell\Register" "" "Register"
-  WriteRegStr HKCR "Clonk4.Key\Shell\Register\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
-  WriteRegStr HKCR "Clonk4.Update\Shell\Update" "" "Update"
-  WriteRegStr HKCR "Clonk4.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
-; Remove old use of App Paths   
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\Clonk.exe"    
-SectionEnd
-
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) wurde erfolgreich deinstalliert."
+Function .onInit
+  !insertmacro MULTIUSER_INIT
 FunctionEnd
 
 Function un.onInit
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Sind Sie sicher, dass Sie $(^Name) deinstallieren wollen?" IDYES +2
-  Abort
+  !insertmacro MULTIUSER_UNINIT
 FunctionEnd
 
+; MUI Settings
+!include MUI2.nsh
+
+!define MUI_ICON "${SRCDIR}/tools/install/inst.ico"
+!define MUI_UNICON "${SRCDIR}/tools/install/uninst.ico"
+
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADERIMAGE_BITMAP "${SRCDIR}/tools/install\header.bmp"
+
+; Installer pages
+;!insertmacro MULTIUSER_PAGE_INSTALLMODE
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+
+; Uninstaller pages
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Language files
+!insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "German"
+
+; Additional language strings
+LangString OC_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
+LangString OC_TEXT_USERPATH ${LANG_English} "User Path"
+
+;!insertmacro MUI_RESERVEFILE_LANGDLL
+;ReserveFile "${NSISDIR}\Plugins\*.dll"
+; MUI end ------
+
+; Game Explorer
+!include GameExplorer.nsh
+
+ShowInstDetails show
+ShowUnInstDetails show
+
+Section
+  SetOutPath "$INSTDIR"
+  SetOverwrite on
+
+  ; Main program files
+  File "${CLONK}"
+  File "${C4GROUP}"
+
+  File "*.dll"
+
+  File "*.oc?"
+
+  File "${SRCDIR}\planet\AUTHORS"
+  File "${SRCDIR}\planet\COPYING"
+  File "${SRCDIR}\licenses\LGPL.txt"
+  File "${SRCDIR}\Credits.txt"
+
+  ; Create user path (works for the installing user only... might also want to put an info.txt dummy in there...)
+  CreateDirectory "$APPDATA\OpenClonk"
+
+  ; Create website url in program directory
+  WriteIniStr "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
+
+  ; Game Explorer integration
+  ReadINIStr $0 $INSTDIR\GameExplorer.txt GameExplorer InstanceID
+  IfErrors 0 UpdateInstallation
+    ${GameExplorer_GenerateGUID}
+    Pop $0
+    WriteIniStr $INSTDIR\GameExplorer.txt GameExplorer InstanceID $0
+    ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\Clonk.exe $INSTDIR $INSTDIR\Clonk.exe $0
+    IfErrors StartMenu 0
+    ; Create tasks.
+    ; FIXME: Theoretically this should also be done on older windows versions without gameexplorer,
+    ; but that requires some some obscure registry entries and would require upgrading windows to test
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0\Play.lnk $INSTDIR\Clonk.exe
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1
+    CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1\Editor.lnk $INSTDIR\Clonk.exe --editor
+    CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0
+    CreateShortcut "$APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
+    IfErrors StartMenu EndStartMenu
+  UpdateInstallation:
+    ${GameExplorer_UpdateGame} $0
+    IfErrors StartMenu EndStartMenu
+
+  StartMenu:
+    ; Create desktop shortcut
+    CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
+
+    ; Create user path shortcut in program directory
+    CreateShortCut "$INSTDIR\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+
+    ; Start menu shortcuts
+    CreateDirectory "$SMPROGRAMS\OpenClonk"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+  EndStartMenu:
+
+  ; Uninstaller info
+  WriteUninstaller "$INSTDIR\uninst.exe"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "DisplayName" "$(^Name)"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "UninstallString" \
+    "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "QuietUninstallString" \
+    "$\"$INSTDIR\uninst.exe$\" /$MultiUser.InstallMode /S"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "DisplayIcon" "$\"$INSTDIR\Clonk.exe$\""
+  WriteRegDWORD SHELL_CONTEXT "${UNINST_KEY}$0" "NoModify" 1
+  WriteRegDWORD SHELL_CONTEXT "${UNINST_KEY}$0" "NoRepair" 1
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "Publisher" "${PRODUCT_PUBLISHER}"
+  WriteRegStr SHELL_CONTEXT "${UNINST_KEY}$0" "InstallLocation" "$INSTDIR"
+  WriteRegStr SHELL_CONTEXT "${PRODUCT_USER_KEY}" "InstallLocation" "$INSTDIR"
+  ; Register file types
+  WriteRegStr HKCR ".ocs" "" "OpenClonk.Scenario"
+  WriteRegStr HKCR ".ocs\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocg" "" "OpenClonk.Group"
+  WriteRegStr HKCR ".ocg\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocf" "" "OpenClonk.Folder"
+  WriteRegStr HKCR ".ocf\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocp" "" "OpenClonk.Player"
+  WriteRegStr HKCR ".ocp\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocd" "" "OpenClonk.Definition"
+  WriteRegStr HKCR ".ocd\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".oci" "" "OpenClonk.Object"
+  WriteRegStr HKCR ".oci\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocm" "" "OpenClonk.Material"
+  WriteRegStr HKCR ".ocm\Content Type" "" "text/plain"
+  WriteRegStr HKCR ".ocb" "" "OpenClonk.Binary"
+  WriteRegStr HKCR ".ocb\Content Type" "" "application/octet-stream"
+  WriteRegStr HKCR ".ocv" "" "OpenClonk.Video"
+  WriteRegStr HKCR ".ocv\Content Type" "" "video/avi"
+  WriteRegStr HKCR ".ocl" "" "OpenClonk.Weblink"
+  WriteRegStr HKCR ".ocl\Content Type" "" "vnd.clonk.c4group"
+  WriteRegStr HKCR ".ocu" "" "OpenClonk.Update"
+  WriteRegStr HKCR ".ocu\Content Type" "" "vnd.clonk.c4group"
+
+  ; Register file classes
+  WriteRegStr HKCR "OpenClonk.Scenario" "" "OpenClonk Scenario"
+  WriteRegStr HKCR "OpenClonk.Scenario\DefaultIcon" "" "$INSTDIR\Clonk.exe,1"
+  WriteRegStr HKCR "OpenClonk.Group" "" "OpenClonk Group"
+  WriteRegStr HKCR "OpenClonk.Group\DefaultIcon" "" "$INSTDIR\Clonk.exe,2"
+  WriteRegStr HKCR "OpenClonk.Folder" "" "OpenClonk Folder"
+  WriteRegStr HKCR "OpenClonk.Folder\DefaultIcon" "" "$INSTDIR\Clonk.exe,3"
+  WriteRegStr HKCR "OpenClonk.Player" "" "OpenClonk Player"
+  WriteRegStr HKCR "OpenClonk.Player\DefaultIcon" "" "$INSTDIR\Clonk.exe,4"
+  WriteRegStr HKCR "OpenClonk.Definition" "" "OpenClonk Object Definition"
+  WriteRegStr HKCR "OpenClonk.Definition\DefaultIcon" "" "$INSTDIR\Clonk.exe,5"
+  WriteRegStr HKCR "OpenClonk.Object" "" "OpenClonk Object Info"
+  WriteRegStr HKCR "OpenClonk.Object\DefaultIcon" "" "$INSTDIR\Clonk.exe,6"
+  WriteRegStr HKCR "OpenClonk.Material" "" "OpenClonk Material"
+  WriteRegStr HKCR "OpenClonk.Material\DefaultIcon" "" "$INSTDIR\Clonk.exe,7"
+  WriteRegStr HKCR "OpenClonk.Binary" "" "OpenClonk Binary"
+  WriteRegStr HKCR "OpenClonk.Binary\DefaultIcon" "" "$INSTDIR\Clonk.exe,8"
+  WriteRegStr HKCR "OpenClonk.Video" "" "OpenClonk Video"
+  WriteRegStr HKCR "OpenClonk.Video\DefaultIcon" "" "$INSTDIR\Clonk.exe,9"
+  WriteRegStr HKCR "OpenClonk.Weblink" "" "OpenClonk Weblink"
+  WriteRegStr HKCR "OpenClonk.Weblink\DefaultIcon" "" "$INSTDIR\Clonk.exe,10"
+  WriteRegStr HKCR "OpenClonk.Update" "" "OpenClonk Update"
+  WriteRegStr HKCR "OpenClonk.Update\DefaultIcon" "" "$INSTDIR\Clonk.exe,11"
+
+  ; Register additional file handling
+  WriteRegStr HKCR "OpenClonk.Update\Shell\Update" "" "Update"
+  WriteRegStr HKCR "OpenClonk.Update\Shell\Update\Command" "" "$\"$INSTDIR\Clonk.exe$\" $\"%1$\""
+
+  ; Add a Firewall exception
+  firewall::AddAuthorizedApplication "$INSTDIR\Clonk.exe" "$(^Name)"
+
+SectionEnd
+
+
 Section Uninstall
+  ; Game Explorer
+  ReadINIStr $0 $INSTDIR\GameExplorer.txt GameExplorer InstanceID
+  IfErrors NoGameExplorer 0
+    ${GameExplorer_RemoveGame} $0
+  NoGameExplorer:
 
   ; Installation directory
   Delete "$INSTDIR\Clonk.exe"
@@ -181,59 +227,61 @@ Section Uninstall
 
   Delete "$INSTDIR\*.dll"
 
-  Delete "$INSTDIR\*.c4?"
+  Delete "$INSTDIR\*.oc?"
 
   Delete "$INSTDIR\AUTHORS"
   Delete "$INSTDIR\COPYING"
   Delete "$INSTDIR\LGPL.txt"
-  Delete "$INSTDIR\OpenSSL.txt"
-  
+  Delete "$INSTDIR\OpenSSL.txt"  ; For installations up to 5.2.x
+  Delete "$INSTDIR\Credits.txt"
+
   Delete "$INSTDIR\uninst.exe"
+  Delete "$INSTDIR\GameExplorer.txt"
   Delete "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-  Delete "$INSTDIR\$(MUI_TEXT_USERPATH).lnk"
+  Delete "$INSTDIR\$(OC_TEXT_USERPATH).lnk"
 
   RMDir "$INSTDIR"
 
   ; Desktop shortcut
   Delete "$DESKTOP\OpenClonk.lnk"
-	
-  ; Registry: config
-  DeleteRegKey ${PRODUCT_USER_ROOT_KEY} "${PRODUCT_USER_KEY}"
-  DeleteRegKey /ifempty ${PRODUCT_USER_ROOT_KEY} "${PRODUCT_COMPANY_KEY}"
-  DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
-  
-  ; Registry: classes
-  DeleteRegKey HKCR ".c4s"
-  DeleteRegKey HKCR "Clonk4.Scenario"
-  DeleteRegKey HKCR ".c4g"
-  DeleteRegKey HKCR "Clonk4.Group"
-  DeleteRegKey HKCR ".c4f"
-  DeleteRegKey HKCR "Clonk4.Folder"
-  DeleteRegKey HKCR ".c4p"
-  DeleteRegKey HKCR "Clonk4.Player"
-  DeleteRegKey HKCR ".c4x"
-  DeleteRegKey HKCR "Clonk4.Executable"
-  DeleteRegKey HKCR ".c4d"
-  DeleteRegKey HKCR "Clonk4.Definition"
-  DeleteRegKey HKCR ".c4i"
-  DeleteRegKey HKCR "Clonk4.Object"
-  DeleteRegKey HKCR ".c4m"
-  DeleteRegKey HKCR "Clonk4.Material"
-  DeleteRegKey HKCR ".c4b"
-  DeleteRegKey HKCR "Clonk4.Binary"
-  DeleteRegKey HKCR ".c4v"
-  DeleteRegKey HKCR "Clonk4.Video"
-  DeleteRegKey HKCR ".c4l"
-  DeleteRegKey HKCR "Clonk4.Weblink"
-  DeleteRegKey HKCR ".c4k"
-  DeleteRegKey HKCR "Clonk4.Key"
-  DeleteRegKey HKCR ".c4u"
-  DeleteRegKey HKCR "Clonk4.Update"
-  
-  ; Start menu shortcuts (All Users)
-  SetShellVarContext all
+
+  ; Start menu shortcuts
   Delete "$SMPROGRAMS\OpenClonk\*.lnk"
   RMDir "$SMPROGRAMS\OpenClonk"
-  
-  SetAutoClose true
+	
+  ; Registry: config
+  DeleteRegKey HKCU "${PRODUCT_USER_KEY}"
+  DeleteRegKey /ifempty HKCU "${PRODUCT_COMPANY_KEY}"
+  ; Registry: Uninstaller info
+  DeleteRegKey SHELL_CONTEXT "${UNINST_KEY}$0"
+  DeleteRegKey SHELL_CONTEXT "${PRODUCT_USER_KEY}"
+  DeleteRegKey /ifempty SHELL_CONTEXT "${PRODUCT_COMPANY_KEY}"
+
+  ; Registry: classes
+  DeleteRegKey HKCR ".ocs"
+  DeleteRegKey HKCR "OpenClonk.Scenario"
+  DeleteRegKey HKCR ".ocg"
+  DeleteRegKey HKCR "OpenClonk.Group"
+  DeleteRegKey HKCR ".ocf"
+  DeleteRegKey HKCR "OpenClonk.Folder"
+  DeleteRegKey HKCR ".ocp"
+  DeleteRegKey HKCR "OpenClonk.Player"
+  DeleteRegKey HKCR ".ocd"
+  DeleteRegKey HKCR "OpenClonk.Definition"
+  DeleteRegKey HKCR ".oci"
+  DeleteRegKey HKCR "OpenClonk.Object"
+  DeleteRegKey HKCR ".ocm"
+  DeleteRegKey HKCR "OpenClonk.Material"
+  DeleteRegKey HKCR ".ocb"
+  DeleteRegKey HKCR "OpenClonk.Binary"
+  DeleteRegKey HKCR ".ocv"
+  DeleteRegKey HKCR "OpenClonk.Video"
+  DeleteRegKey HKCR ".ocl"
+  DeleteRegKey HKCR "OpenClonk.Weblink"
+  DeleteRegKey HKCR ".ocu"
+  DeleteRegKey HKCR "OpenClonk.Update"
+
+  ; Remove the Firewall exception
+  firewall::RemoveAuthorizedApplication "$INSTDIR\Clonk.exe"
+
 SectionEnd

@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010  Günther Brammer
+ * Copyright (c) 2009-2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  *
@@ -28,7 +28,6 @@
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H
 
-class C4Def;
 
 class C4Property
 {
@@ -40,7 +39,7 @@ public:
 	C4Property & operator = (const C4Property &o)
 	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
 	~C4Property() { if (Key) Key->DecRef(); }
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;
 	C4Value Value;
 	operator const void * () const { return Key; }
@@ -64,8 +63,9 @@ public:
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
 
-	// Whether this proplist should be saved as a reference to a C4Def
+	// Whether this proplist should be saved as a reference to a C4Def/C4Object
 	virtual bool IsDef() const { return false; }
+	virtual bool IsNumbered() const { return false; }
 	// Whether this proplist is a pure script proplist, not a host object
 	virtual bool IsScriptPropList() { return false; }
 
@@ -80,6 +80,14 @@ public:
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
+	C4AulFunc * GetFunc(C4PropertyName k) const
+	{ return GetFunc(&Strings.P[k]); }
+	C4AulFunc * GetFunc(C4String * k) const;
+	C4AulFunc * GetFunc(const char * k) const;
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
+	{ return Call(&Strings.P[k], pPars); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0);
+	C4Value Call(const char * k, C4AulParSet *pPars=0);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }
@@ -89,17 +97,19 @@ public:
 
 	static C4PropList * New(C4PropList * prototype = 0);
 	static C4PropList * NewAnon(C4PropList * prototype = 0);
+	static C4PropList * NewScen(C4PropList * prototype = 0);
 
 	// only freeze proplists which are not going to be modified
 	void Freeze() { constant = true; }
+	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
 
-	virtual void DenumeratePointers();
+	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();
 
 	// Every proplist has to be initialized by either Init or CompileFunc.
-	void CompileFunc(StdCompiler *pComp);
-	void AppendDataString(StdStrBuf * out, const char * delim);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
+	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3);
 
 	bool operator==(const C4PropList &b) const;
 #ifdef _DEBUG
@@ -108,17 +118,17 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
-	C4Value *FirstRef; // No-Save	
+	C4Value *FirstRef; // No-Save
 
 private:
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
-
-	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
 public:
 	int32_t Status;
 };
+
+void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
 
 // Proplists that are created during a game and get saved in a savegame
 // Examples: Objects, Effects, scriptcreated proplists
@@ -127,14 +137,14 @@ class C4PropListNumbered: public C4PropList
 public:
 	int32_t Number;
 	~C4PropListNumbered();
-	void CompileFunc(StdCompiler *pComp);
-	void CompileFuncNonames(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 	virtual C4PropListNumbered * GetPropListNumbered();
 	void AcquireNumber();
+	virtual bool IsNumbered() const { return true; }
 
 	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
 	static bool CheckPropList(C4PropList *); // sanity check: true when the proplist is in the list and not a stale pointer
-	static void DenumerateAll(int32_t iMaxObjectNumber);
+	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
 protected:
@@ -147,19 +157,12 @@ protected:
 };
 
 // Proplists created by script at runtime
-class C4PropListScript: public C4PropListNumbered
+class C4PropListScript: public C4PropList
 {
 public:
-	C4PropListScript(C4PropList * prototype = 0): C4PropListNumbered(prototype) { }
+	C4PropListScript(C4PropList * prototype = 0): C4PropList(prototype) { }
 	bool IsScriptPropList() { return true; }
 };
 
-// Proplist constants
-class C4PropListAnonScript: public C4PropList
-{
-public:
-	C4PropListAnonScript(C4PropList * prototype = 0): C4PropList(prototype) { }
-	bool IsScriptPropList() { return true; }
-};
 
 #endif // C4PROPLIST_H

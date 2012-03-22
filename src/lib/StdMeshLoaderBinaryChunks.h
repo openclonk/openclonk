@@ -114,7 +114,7 @@
 //        Indices (1, k+1, k+2) define a triangle.
 // ----------
 // Type 0x4100: Submesh Bone Assignments
-// (Type 0x7000: Mesh Bone Assignments)
+// Type 0x7000: Mesh Bone Assignments
 //  uint32_t vertex_index
 //  uint32_t bone_index
 //  float weight
@@ -387,6 +387,7 @@ namespace Ogre
 			std::string skeletonFile;
 			boost::scoped_ptr<ChunkGeometry> geometry;
 			boost::ptr_vector<ChunkSubmesh> submeshes;
+			std::vector<BoneAssignment> boneAssignments;
 			StdMeshBox bounds;
 			float radius;
 

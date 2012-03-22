@@ -7,7 +7,7 @@
     <title>GBackSolid</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -26,9 +26,9 @@
     <desc>Checks whether there is solid matter at the specified position in the landscape.</desc>
     <examples>
       <example>
-        <code>var obj=<funclink>FindObject</funclink>(Rock);
-while(GBackSolid(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>())) <funclink>SetPosition</funclink>(<funclink>GetX</funclink>(obj),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink>1,obj);</code>
-        <text>This snippet of script moves a rock upwards so it rests on top of solid matter.</text>
+        <code>
+while(obj-&gt;GBackSolid()) obj-&gt;<funclink>SetPosition</funclink>(obj-&gt;<funclink>GetX</funclink>(),obj-&gt;<funclink>GetY</funclink>()-1);</code>
+        <text>Moves an object to the surface or to the ground of a lake.</text>
       </example>
     </examples>
     <related>

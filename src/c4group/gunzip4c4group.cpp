@@ -1,6 +1,3 @@
-#include <CStdFile.h>
-#include <stdio.h>
-
 /*
  * Copyright (c) 2007, 2010  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
@@ -18,6 +15,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <C4Include.h>
+#include <CStdFile.h>
+#include <stdio.h>
+
 bool EraseItemSafe(const char *szFilename)
 {
 	return false;
@@ -25,22 +26,35 @@ bool EraseItemSafe(const char *szFilename)
 
 int main(int argc, char *argv[])
 {
-	char *pData; int iSize;
-	CStdFile MyFile;
 	if (argc < 2)
 	{
 		fprintf(stderr, "%s infile [outfile]", argv[0]);
 		return 1;
 	}
-	MyFile.Load(argv[1], (BYTE **)&pData, &iSize, 0, true);
+	CStdFile MyFile;
+	MyFile.Open(argv[1], true);
+	char Data [4096];
+	size_t iSize;
 	if (argc < 3)
 	{
-		fwrite(pData, 1, iSize, stdout);
+		do
+			{
+			MyFile.Read(Data,sizeof(Data),&iSize);
+			fwrite(Data, 1, iSize, stdout);
+			}
+		while(iSize);
 	}
 	else
 	{
-		MyFile.Create(argv[2], false);
-		MyFile.Write(pData, iSize);
+		CStdFile OutFile;
+		OutFile.Create(argv[2], false);
+		do
+			{
+			MyFile.Read(Data,sizeof(Data),&iSize);
+			OutFile.Write(Data, iSize);
+			}
+		while(iSize);
+		OutFile.Close();
 	}
 	MyFile.Close();
 }

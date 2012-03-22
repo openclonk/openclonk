@@ -7,7 +7,7 @@
     <title>GetComponent</title>
     <category>Objects</category>
     <subcat>Components</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int / id</rtype>
       <params>
@@ -26,13 +26,13 @@
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object of which to determine components. Can be 0 in local calls. If definition is specified, this parameter is ignored.</desc>
+          <desc>Object of which to determine components. Can be <code>nil</code> in local calls. If definition is specified, this parameter is ignored.</desc>
           <optional />
         </param>
         <param>
           <type>id</type>
           <name>definition</name>
-          <desc>Definition of which to determine components. If 0, the specified object is checked instead.</desc>
+          <desc>Definition of which to determine components. If <code>nil</code>, the specified object is checked instead.</desc>
           <optional />
         </param>
       </params>
@@ -41,9 +41,9 @@
     <examples>
       <example>
         <code>var i,cid,num;
-<funclink>while</funclink> (id = GetComponent(0, i++, 0, <funclink>GetID</funclink>()))
-	if ((num = GetComponent(id) - GetComponent(id, 0, 0, <funclink>GetID</funclink>())) &gt; 0)
-		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id, 0, 0, <funclink>GetOwner</funclink>());</code>
+<funclink>while</funclink> (id = GetComponent(nil, i++, nil, <funclink>GetID</funclink>()))
+	if ((num = GetComponent(id) - GetComponent(id, 0, nil, <funclink>GetID</funclink>())) &gt; 0)
+		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id);</code>
         <text>Creates all components which are still missing in the calling object (e.g. in a construction site) in front of the object.</text>
       </example>
     </examples>

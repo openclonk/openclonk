@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2010  Sven Eberhardt
+ * Copyright (c) 2009-2011  Sven Eberhardt
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -38,13 +38,17 @@
 
 #include <algorithm>
 
+#ifdef DEBUGREC
+#include "C4Record.h"
+#endif
+
 /* C4PlayerControlDef */
 
 void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 {
 	if (!pComp->Name("ControlDef")) { pComp->NameEnd(); pComp->excNotFound("ControlDef"); }
 	pComp->Value(mkNamingAdapt(mkParAdapt(sIdentifier, StdCompiler::RCT_Idtf), "Identifier", "None"));
-	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", "undefined"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIDesc, StdCompiler::RCT_All), "GUIDesc", ""));
 	pComp->Value(mkNamingAdapt(fGlobal, "Global", false));
 	pComp->Value(mkNamingAdapt(fIsHoldKey, "Hold", false));
@@ -52,6 +56,13 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iInitialRepeatDelay, "InitialRepeatDelay", 0));
 	pComp->Value(mkNamingAdapt(fDefaultDisabled, "DefaultDisabled", false));
 	pComp->Value(mkNamingAdapt(idControlExtraData, "ExtraData", C4ID::None));
+	const StdEnumEntry<CoordinateSpace> CoordSpaceNames[] =
+	{
+		{ "Game",        COS_Game        },
+		{ "Viewport",    COS_Viewport    },
+		{ NULL, COS_Game }
+	};
+	pComp->Value(mkNamingAdapt(mkEnumAdapt<CoordinateSpace, int32_t>(eCoordSpace, CoordSpaceNames), "CoordinateSpace", COS_Game));
 	pComp->Value(mkNamingAdapt(fSendCursorPos, "SendCursorPos", false));
 	const StdEnumEntry<Actions> ActionNames[] =
 	{
@@ -109,18 +120,22 @@ void C4PlayerControlDefs::UpdateInternalCons()
 
 void C4PlayerControlDefs::Clear()
 {
+	clear_previous = false;
 	Defs.clear();
 	UpdateInternalCons();
 }
 
 void C4PlayerControlDefs::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Defs, StdCompiler::SEP_NONE), "ControlDefs", DefVecImpl()));
+	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
+	pComp->Value(mkSTLContainerAdapt(Defs, StdCompiler::SEP_NONE));
 	if (pComp->isCompiler()) UpdateInternalCons();
 }
 
 void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
 {
+	// Clear previous defs if specified in merge set
+	if (Src.clear_previous) Defs.clear();
 	// copy all defs from source file; overwrite defs of same name if found
 	for (DefVecImpl::const_iterator i = Src.Defs.begin(); i != Src.Defs.end(); ++i)
 	{
@@ -184,7 +199,7 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 		{
 			// key was not assigned during compilation - this means it's a regular key (or undefined)
 			// store this as the name
-			sKeyName.Copy(Key.ToString(false, false));
+			UpdateKeyName();
 		}
 		else if (Key.dwShift)
 		{
@@ -194,9 +209,17 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 	}
 	else
 	{
-		// decompiler: Just write the stored key name; regardless of whether it's a key, undefined or a reference
+		// decompiler: If there's a stored key name, just write it. Regardless of whether it's a key, undefined or a reference
+		// IF no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
+		if (!sKeyName) UpdateKeyName();
 		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
 	}
+}
+
+void C4PlayerControlAssignment::KeyComboItem::UpdateKeyName()
+{
+	// update key name from key
+	sKeyName.Copy(Key.ToString(false, false));
 }
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
@@ -206,6 +229,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(fComboIsSequence, "ComboIsSequence", false));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
+	pComp->Value(mkNamingAdapt(is_group_start, "Group", false));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] =
 	{
 		{ "Default",      CTM_Default  },
@@ -219,6 +243,39 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->NameEnd();
 	// newly loaded structures are not resolved
 	if (pComp->isCompiler()) fRefsResolved = false;
+}
+
+void C4PlayerControlAssignment::ResetKeyToInherited()
+{
+	if (inherited_assignment) CopyKeyFrom(*inherited_assignment);
+}
+
+bool C4PlayerControlAssignment::IsKeyChanged() const
+{
+	// no inherited assignment? Then the key is always custom
+	if (!inherited_assignment) return true;
+	// otherwise, compare
+	return KeyCombo != inherited_assignment->KeyCombo || fComboIsSequence != inherited_assignment->fComboIsSequence;
+}
+
+void C4PlayerControlAssignment::SetKey(const C4KeyCodeEx &key)
+{
+	// set as one-key-combo
+	KeyCombo.resize(1);
+	KeyCombo[0].Key = key;
+	KeyCombo[0].Key.fRepeated = false;
+	KeyCombo[0].sKeyName.Clear();
+	fComboIsSequence = false;
+	TriggerKey = key;
+}
+
+void C4PlayerControlAssignment::CopyKeyFrom(const C4PlayerControlAssignment &src_assignment)
+{
+	// just copy key settings; keep control and priorities
+	KeyCombo = src_assignment.KeyCombo;
+	TriggerKey = src_assignment.TriggerKey;
+	fComboIsSequence = src_assignment.fComboIsSequence;
+	if (!src_assignment.fRefsResolved) fRefsResolved = false;
 }
 
 bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs)
@@ -296,7 +353,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 	// check if combo is currently fulfilled (assuming TriggerKey is already matched)
 	if (fComboIsSequence)
 	{
-		DWORD tKeyLast = timeGetTime();
+		DWORD tKeyLast = GetTime();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
 		C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin();
@@ -345,10 +402,23 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 
 /* C4PlayerControlAssignmentSet */
 
+void C4PlayerControlAssignmentSet::InitEmptyFromTemplate(const C4PlayerControlAssignmentSet &template_set)
+{
+	// copy all fields except assignments
+	sName.Copy(template_set.sName);
+	sGUIName.Copy(template_set.sGUIName);
+	sParentSetName.Copy(template_set.sParentSetName);
+	has_keyboard = template_set.has_keyboard;
+	has_mouse = template_set.has_mouse;
+	has_gamepad = template_set.has_gamepad;
+}
+
 void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 {
 	if (!pComp->Name("ControlSet")) { pComp->NameEnd(); pComp->excNotFound("ControlSet"); }
 	pComp->Value(mkNamingAdapt(mkParAdapt(sName, StdCompiler::RCT_All), "Name", "None")); // can't do RCT_Idtf because of wildcards
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", "undefined"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sParentSetName, StdCompiler::RCT_Idtf), "Parent", ""));
 	pComp->Value(mkNamingAdapt(has_keyboard, "Keyboard", true));
 	pComp->Value(mkNamingAdapt(has_mouse, "Mouse", true));
 	pComp->Value(mkNamingAdapt(has_gamepad, "Gamepad", false));
@@ -356,7 +426,7 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	pComp->NameEnd();
 }
 
-void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, bool fLowPrio)
+void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, MergeMode merge_mode)
 {
 	// take over all assignments defined in Src
 	for (C4PlayerControlAssignmentVec::const_iterator i = Src.Assignments.begin(); i != Src.Assignments.end(); ++i)
@@ -364,7 +434,7 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 		const C4PlayerControlAssignment &SrcAssignment = *i;
 		bool fIsReleaseKey = !!(SrcAssignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
 		// overwrite same def and release key state
-		if (!fLowPrio && SrcAssignment.IsOverrideAssignments())
+		if (merge_mode != MM_LowPrio && SrcAssignment.IsOverrideAssignments())
 		{
 			// high priority override control clears all previous (very inefficient method...might as well recreate the whole list)
 			bool any_remaining = true;
@@ -384,7 +454,7 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 					}
 			}
 		}
-		else if (fLowPrio)
+		else if (merge_mode == MM_LowPrio || merge_mode == MM_ConfigOverload)
 		{
 			// if this is low priority, another override control kills this
 			bool any_override = false;
@@ -395,6 +465,12 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 					if (fSelfIsReleaseKey == fIsReleaseKey)
 					{
 						any_override = true;
+						// config overloads just change the key of the inherited assignment
+						if (merge_mode == MM_ConfigOverload)
+						{
+							(*j).CopyKeyFrom(SrcAssignment);
+							(*j).SetInherited(false);
+						}
 						break;
 					}
 				}
@@ -402,7 +478,30 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 		}
 		// new def: Append a copy
 		Assignments.push_back(SrcAssignment);
+		// inherited marker
+		if (merge_mode == MM_Inherit)
+		{
+			Assignments.back().SetInherited(true);
+			Assignments.back().SetInheritedAssignment(&SrcAssignment);
+		}
 	}
+}
+
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::CreateAssignmentForControl(const char *control_name)
+{
+	Assignments.push_back(C4PlayerControlAssignment());
+	Assignments.back().SetControlName(control_name);
+	return &Assignments.back();
+}
+
+void C4PlayerControlAssignmentSet::RemoveAssignmentByControlName(const char *control_name)
+{
+	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+		if (SEqual((*i).GetControlName(), control_name))
+		{
+			Assignments.erase(i);
+			return;
+		}
 }
 
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
@@ -412,9 +511,20 @@ bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 		if (!(*i).IsRefsResolved())
 			if (!(*i).ResolveRefs(this, pDefs))
 				return false;
-	// now sort assignments by priority
-	std::sort(Assignments.begin(), Assignments.end());
 	return true;
+}
+
+void C4PlayerControlAssignmentSet::SortAssignments()
+{
+	// final init: sort assignments by priority
+	// note this screws up sorting for config dialog
+	std::sort(Assignments.begin(), Assignments.end());
+}
+
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByIndex(int32_t index)
+{
+	if (index<0 || index>=int32_t(Assignments.size())) return NULL;
+	return &Assignments[index];
 }
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlName(const char *szControlName)
@@ -427,7 +537,7 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlN
 	return NULL;
 }
 
-C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int control)
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int32_t control)
 {
 	// TODO: Might want to stuff this into a vector indexed by control for faster lookup
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
@@ -509,8 +619,8 @@ C4Facet C4PlayerControlAssignmentSet::GetPicture() const
 	// get image to be drawn to represent this control set
 	// picture per set not implemented yet. So just default to out standard images
 	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(GetGamepadIndex());
-	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(0 /* todo*/);
-	if (HasMouse()) return ::GraphicsResource.fctMouse; // mouse only???
+//	if (HasMouse()) return ::GraphicsResource.fctMouse; // might be useful again with changing control sets
+	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(Game.PlayerControlUserAssignmentSets.GetSetIndex(this));
 	return C4Facet();
 }
 
@@ -530,11 +640,23 @@ void C4PlayerControlAssignmentSets::Clear()
 
 void C4PlayerControlAssignmentSets::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE), "ControlSets", AssignmentSetList()));
+	if (pComp->isDecompiler() && pComp->isRegistry())
+	{
+		pComp->Default("ControlSets"); // special registry compiler: Clean out everything before
+	}
+	pComp->Value(mkNamingAdapt(clear_previous, "ClearPrevious", false));
+	pComp->Value(mkSTLContainerAdapt(Sets, StdCompiler::SEP_NONE));
 }
 
-void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSets &Src, bool fLowPrio)
+bool C4PlayerControlAssignmentSets::operator ==(const C4PlayerControlAssignmentSets &cmp) const
 {
+	return Sets == cmp.Sets && clear_previous == cmp.clear_previous;
+}
+
+void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSets &Src, C4PlayerControlAssignmentSet::MergeMode merge_mode)
+{
+	// if source set is flagged to clear previous, do this!
+	if (Src.clear_previous) Sets.clear();
 	// take over all assignments in known sets and new sets defined in Src
 	for (AssignmentSetList::const_iterator i = Src.Sets.begin(); i != Src.Sets.end(); ++i)
 	{
@@ -544,9 +666,14 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 		if (!fIsWildcardSet)
 		{
 			C4PlayerControlAssignmentSet *pPrevSet = GetSetByName(SrcSet.GetName());
+			if (!pPrevSet && merge_mode == C4PlayerControlAssignmentSet::MM_Inherit)
+			{
+				// inherited sets must go through merge procedure to set inherited links
+				pPrevSet = CreateEmptySetByTemplate(SrcSet);
+			}
 			if (pPrevSet)
 			{
-				pPrevSet->MergeFrom(SrcSet, fLowPrio);
+				pPrevSet->MergeFrom(SrcSet, merge_mode);
 			}
 			else
 			{
@@ -562,7 +689,7 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 				C4PlayerControlAssignmentSet &DstSet = *j;
 				if (WildcardMatch(SrcSet.GetName(), DstSet.GetName()))
 				{
-					DstSet.MergeFrom(SrcSet, fLowPrio);
+					DstSet.MergeFrom(SrcSet, merge_mode);
 				}
 			}
 		}
@@ -574,6 +701,12 @@ bool C4PlayerControlAssignmentSets::ResolveRefs(C4PlayerControlDefs *pDefs)
 	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
 		if (!(*i).ResolveRefs(pDefs)) return false;
 	return true;
+}
+
+void C4PlayerControlAssignmentSets::SortAssignments()
+{
+	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
+		(*i).SortAssignments();
 }
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const char *szName)
@@ -611,13 +744,30 @@ C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByIndex(int32
 	return &*i;
 }
 
+C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::CreateEmptySetByTemplate(const C4PlayerControlAssignmentSet &template_set)
+{
+	Sets.push_back(C4PlayerControlAssignmentSet());
+	Sets.back().InitEmptyFromTemplate(template_set);
+	return &Sets.back();
+}
+
+void C4PlayerControlAssignmentSets::RemoveSetByName(const char *set_name)
+{
+	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
+		if (SEqual(set_name, (*i).GetName()))
+		{
+			Sets.erase(i);
+			return;
+		}
+}
+
 
 /* C4PlayerControlFile */
 
 void C4PlayerControlFile::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(ControlDefs);
-	pComp->Value(AssignmentSets);
+	pComp->Value(mkNamingAdapt(ControlDefs, "ControlDefs", C4PlayerControlDefs()));
+	pComp->Value(mkNamingAdapt(AssignmentSets, "ControlSets", C4PlayerControlAssignmentSets()));
 }
 
 bool C4PlayerControlFile::Load(C4Group &hGroup, const char *szFilename, C4LangStringTable *pLang)
@@ -809,8 +959,8 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 {
 	// add key to local "down" list if it's not already in there
 	// except for some mouse events for which a down state does not make sense
-	C4PlayerControlRecentKey RKey(pressed_key,matched_key,timeGetTime());
-	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key) & ~KEY_MOUSE_GameMask, KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
+	C4PlayerControlRecentKey RKey(pressed_key,matched_key,GetTime());
+	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
 	{
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	}
@@ -821,7 +971,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	return fResult;
 }
 
-bool C4PlayerControl::ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool reset_down_states_only)
+bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
 {
 	// remove key from "down" list
 	// except for some mouse events for which a down state does not make sense
@@ -831,7 +981,7 @@ bool C4PlayerControl::ProcessKeyUpEx(const C4KeyCodeEx &pressed_key, const C4Key
 		if (i != DownKeys.end()) DownKeys.erase(i);
 	}
 	// process!
-	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData(), reset_down_states_only);
+	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
 }
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
@@ -845,6 +995,12 @@ void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *p
 		const C4PlayerControlDef *pCtrlDef = ControlDefs.GetControlByIndex(rItem.iControl);
 		if (pCtrlDef)
 		{
+#ifdef DEBUGREC
+			if (pCtrlDef->IsSync())
+			{
+				AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
+			}
+#endif
 			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
 				if (pCtrlDef->IsSync())
 				{
@@ -1004,11 +1160,20 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		// player lost?
 		return false;
 	}
-	// control down
-	C4AulFunc *pFunc = ::ScriptEngine.GetFunc(PSF_PlayerControl, &ScriptEngine, NULL);
-	if (!pFunc) return false;
-	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
-	return !!pFunc->Exec(NULL, &Pars);
+	// get coordinates
+	int32_t x,y;
+	const C4PlayerControlDef *def = ControlDefs.GetControlByIndex(iControl);
+	if (def && def->GetCoordinateSpace() == C4PlayerControlDef::COS_Viewport)
+	{
+		x = rKeyExtraData.vp_x; y = rKeyExtraData.vp_y;
+	}
+	else
+	{
+		x = rKeyExtraData.game_x; y = rKeyExtraData.game_y;
+	}
+	// exec control function
+	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VPropList(C4Id2Def(idControlExtraData)), C4VInt(x), C4VInt(y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
+	return ::ScriptEngine.GetPropList()->Call(PSF_PlayerControl, &Pars).getBool();
 }
 
 
@@ -1040,7 +1205,7 @@ void C4PlayerControl::Execute()
 	}
 	// cleanup old recent keys
 	C4PlayerControlRecentKeyList::iterator irk;
-	DWORD tNow = timeGetTime();
+	DWORD tNow = GetTime();
 	for (irk = RecentKeys.begin(); irk != RecentKeys.end(); ++irk)
 	{
 		C4PlayerControlRecentKey &rk = *irk;
@@ -1067,8 +1232,6 @@ void C4PlayerControl::Clear()
 
 void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset)
 {
-	// clear any previous settings
-	Clear();
 	// setup
 	pControlSet = pKeyset;
 	this->iPlr = iPlr;
@@ -1117,40 +1280,26 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	if (is_ctrl_down) mouseevent_keycode.dwShift |= KEYS_Control;
 	if (is_shift_down) mouseevent_keycode.dwShift |= KEYS_Shift;
 	if (is_alt_down) mouseevent_keycode.dwShift |= KEYS_Alt;
-	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code, false);
+	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code);
 	// first, try processing it as GUI mouse event. if not assigned, process as Game mous event
 	// TODO: May route this through Game.DoKeyboardInput instead - would allow assignment of mouse events in CustomConfig
 	//  and would get rid of the Game.KeyboardInput.SetLastKeyExtraData-hack
 	C4KeyEventData mouseevent_data;
 	mouseevent_data.iStrength = 100*is_down; // TODO: May get pressure from tablet here
-	mouseevent_data.x = uint32_t(gui_x);
-	mouseevent_data.y = uint32_t(gui_y);
+	mouseevent_data.vp_x = uint32_t(gui_x);
+	mouseevent_data.vp_y = uint32_t(gui_y);
+	mouseevent_data.game_x = uint32_t(game_x);
+	mouseevent_data.game_y = uint32_t(game_y);
 	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
 	bool result;
 	if (is_down)
 		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
 	else
 		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
-	if (result)
-	{
-		// mouse event processed in GUI coordinates
-		// ignore in game coordinates, except if it's an up-event, which still needs to reset down-states silently in game coordinates
-		// (-> for handling down controls in game, but up control in GUI when menus open on down controls)
-		if (is_down) return true;
-	}
-	// try processing in Game coordinates instead
-	mouseevent_data.x = uint32_t(game_x);
-	mouseevent_data.y = uint32_t(game_y);
-	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
-	mouseevent_keycode.Key |= KEY_MOUSE_GameMask;
-	if (is_down)
-		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
-	else
-		result = ProcessKeyUpEx(mouseevent_keycode, mouseevent_keycode, result);
 	return result;
 }
 
-bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
+bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out, int32_t *game_x_out, int32_t *game_y_out)
 {
 	// prefer mouse position if this is a mouse control
 	if (pControlSet && pControlSet->HasMouse())
@@ -1167,6 +1316,7 @@ bool C4PlayerControl::GetCurrentPlayerCursorPos(int32_t *x_out, int32_t *y_out)
 	C4Viewport *vp = ::Viewports.GetViewport(iPlr);
 	if (!vp) return false;
 	int32_t game_x = cursor_obj->GetX(), game_y=cursor_obj->GetY();
+	*game_x_out = game_x; *game_y_out = game_y;
 	// game coordinate to screen coordinates...
 	float screen_x = (float(game_x) - vp->last_game_draw_cgo.TargetX - vp->last_game_draw_cgo.X) * vp->GetZoom();
 	float screen_y = (float(game_y) - vp->last_game_draw_cgo.TargetY - vp->last_game_draw_cgo.Y) * vp->GetZoom();
@@ -1181,17 +1331,17 @@ void C4PlayerControl::PrepareInput()
 {
 	if (IsCursorPosRequested)
 	{
-		int32_t x, y;
+		int32_t x, y, game_x, game_y;
 		// add current cursor pos in GUI coordinates to input
-		if (GetCurrentPlayerCursorPos(&x, &y))
+		if (GetCurrentPlayerCursorPos(&x, &y, &game_x, &game_y))
 		{
 			// CON_CursorPos might not have been defined in definition file
 			if (ControlDefs.InternalCons.CON_CursorPos != CON_None)
 			{
 				C4KeyEventData ev;
 				ev.iStrength = 0;
-				ev.x = x;
-				ev.y = y;
+				ev.vp_x = x; ev.vp_y = y;
+				ev.game_x = game_x; ev.game_y = game_y;
 				C4ControlPlayerControl *pControlPacket = new C4ControlPlayerControl(iPlr, false, ev);
 				pControlPacket->AddControl(ControlDefs.InternalCons.CON_CursorPos, C4PlayerControlAssignment::CTM_Default);
 				// make sure it's added at head, because controls that have SendCursorPos=1 set will follow, which will rely

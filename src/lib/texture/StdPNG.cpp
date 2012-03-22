@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002  Sven Eberhardt
- * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2005, 2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +20,8 @@
 
 #include "C4Include.h"
 #include <StdPNG.h>
+
+#include <StdColors.h>
 
 CPNGFile *pCurrPng=NULL; // global crap for file-reading callback
 
@@ -57,7 +59,7 @@ bool CPNGFile::DoLoad()
 	end_info = png_create_info_struct(png_ptr);
 	if (!end_info) return false;
 	// error handling
-	if (setjmp(png_ptr->jmpbuf)) return false;
+	if (setjmp(png_jmpbuf(png_ptr))) return false;
 	// set file-reading proc
 	png_set_read_fn(png_ptr, png_get_io_ptr(png_ptr), &CPNGReadFn);
 	// read info
@@ -185,9 +187,9 @@ DWORD CPNGFile::GetPix(int iX, int iY)
 	switch (iClrType)
 	{
 	case PNG_COLOR_TYPE_RGB:
-		return 0xff << 24 | RGB(pPix[0], pPix[1], pPix[2]);
+		return C4RGB(pPix[2], pPix[1], pPix[0]);
 	case PNG_COLOR_TYPE_RGB_ALPHA:
-		return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
+		return RGBA(pPix[2], pPix[1], pPix[0], pPix[3]);
 	}
 	return 0;
 }
@@ -226,9 +228,9 @@ bool CPNGFile::SetPix(int iX, int iY, DWORD dwValue)
 	switch (iClrType)
 	{
 	case PNG_COLOR_TYPE_RGB: // RGB: set r, g and b values
-		pPix[0] = GetRValue(dwValue);
-		pPix[1] = GetGValue(dwValue);
-		pPix[2] = GetBValue(dwValue);
+		pPix[0] = GetBlueValue(dwValue);
+		pPix[1] = GetGreenValue(dwValue);
+		pPix[2] = GetRedValue(dwValue);
 		return true;
 	case PNG_COLOR_TYPE_RGB_ALPHA: // RGBA: simply set in mem
 		*(unsigned long *) pPix = dwValue;
@@ -252,7 +254,7 @@ bool CPNGFile::Save(const char *szFilename)
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr) { Clear(); return false; }
 	// error handling
-	if (setjmp(png_ptr->jmpbuf)) { Clear(); return false; }
+	if (setjmp(png_jmpbuf(png_ptr))) { Clear(); return false; }
 	// io initialization
 	png_init_io(png_ptr, fp);
 	// compression stuff

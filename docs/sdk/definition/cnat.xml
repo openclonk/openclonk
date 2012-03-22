@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>CNAT - Contact Attachment</title>
-  <h id="CNAT">CNAT - Contact Attachment</h>
+  <h>CNAT - Contact Attachment</h>
   <text>In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the CNAT bit <em>left</em>. If that object has <emlink href="definition/defcore.html">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:</text>
   <text>
     <table>
@@ -48,13 +48,13 @@
         <col>5</col>
         <col>32</col>
         <col>CNAT_MultiAttach</col>
-        <col>Special flag: new attachment behaviour for objects with the same direction value at several vertices (from version 4.95.4).</col>
+        <col>Special flag: new attachment behaviour for objects with the same direction value at several vertices.</col>
       </row>
       <row>
         <col>6</col>
         <col>64</col>
         <col>CNAT_NoCollision</col>
-        <col>Extra flag: non-colliding vertex (from version 4.95.4)</col>
+        <col>Extra flag: non-colliding vertex</col>
       </row>
       <bitmask>CNAT</bitmask>
     </table>

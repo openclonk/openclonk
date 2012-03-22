@@ -6,7 +6,7 @@
   <func>
     <title>CreateParticle</title>
     <category>Particle</category>
-    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -54,16 +54,16 @@
         <param>
           <type>bool</type>
           <name>behind_target</name>
-          <desc>If not 0, the particle is drawn directly behind the target object.</desc>
+          <desc>If specified and not <code>false</code>, the particle is drawn directly behind the target object.</desc>
           <optional />
         </param>
       </params>
     </syntax>
     <desc>Creates a particle. The named particle definition must be loaded. For more information see the particle documentation.</desc>
-    <remark>This function returns 0 if the particle function was not found. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
+    <remark>This function returns <code>false</code> if the particle definition was not found, otherwise <code>true</code>. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
     <examples>
       <example>
-        <code>CreateParticle(&quot;Blast&quot;, 0,0, 0,0, 100, <funclink>RGBa</funclink>(128,128,255,0));</code>
+        <code>CreateParticle(&quot;Blast&quot;, 0,0, 0,0, 100, <funclink>RGB</funclink>(128,128,255));</code>
         <text>Creates a blue explosion at the position of the calling object.</text>
       </example>
     </examples>

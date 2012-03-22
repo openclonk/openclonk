@@ -14,14 +14,13 @@ header('Content-Type: text/html; charset=utf-8'); //utf-8
 require_once('frontend.php');
 
 ?>
-<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<!doctype html>
 <html>
     <head>
         <title>OpenClonk Masterserver</title>
-        <meta http-equiv='content-type' content='text/html; charset=utf-8'>
-        <meta http-equiv='content-style-type' content='text/css'>
-        <link rel='stylesheet' href='masterserver.css' type='text/css'>
-        <link rel='stylesheet' href='http://www.openclonk.org/header/header.css' type='text/css'>
+        <meta charset='utf-8'>
+        <link rel='stylesheet' href='masterserver.css'>
+        <link rel='stylesheet' href='http://www.openclonk.org/header/header.css'>
     </head>
     <body>
 		<?php include("http://www.openclonk.org/header/header.php?p=masterserver"); ?>

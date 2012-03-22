@@ -238,9 +238,6 @@ private:
 	};
 
 private:
-	C4GUI::CheckBox *pCheckSetPicture, *pCheckSetBigIcon;
-	bool fDefSetPicture, fDefSetBigIcon;
-
 	LoaderThread ImageLoader;
 
 protected:
@@ -248,8 +245,6 @@ protected:
 	virtual const char *GetFileMask() const { return C4CFN_ImageFiles; }
 	virtual bool HasNoneItem() const { return true; } // if true, a special <none> item can be selected
 	virtual bool HasPreviewArea() const { return false; } // no preview area. Preview images directly
-	virtual bool HasExtraOptions() const { return true; }
-	virtual void AddExtraOptions(const C4Rect &rcOptionsRect);
 	virtual int32_t GetFileSelColWidth() const { return ImagePreviewSize; } // width of each file selection element
 
 	virtual C4FileSelDlg::ListItem *CreateListItem(const char *szFilename);
@@ -259,12 +254,9 @@ protected:
 	virtual void OnIdle();
 
 public:
-	C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPicture, bool fSetBigIcon);
+	C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback);
 
-	bool IsSetPicture() const { return pCheckSetPicture ? pCheckSetPicture->GetChecked() : fDefSetPicture; }
-	bool IsSetBigIcon() const { return pCheckSetBigIcon ? pCheckSetBigIcon->GetChecked() : fDefSetBigIcon; }
-
-	static bool SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection, bool *pfSetPicture, bool *pfSetBigIcon);
+	static bool SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection);
 };
 
 #endif // INC_C4FileSelDlg

@@ -6,7 +6,7 @@
   <func>
     <title>FreeRect</title>
     <category>Landscape</category>
-    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>

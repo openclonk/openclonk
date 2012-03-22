@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2004-2008  Peter Wortmann
  * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009  Günther Brammer
+ * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,9 +20,9 @@
 /* control managament: network part */
 
 #include "C4Include.h"
+#include <C4GameControlNetwork.h>
 
 #include <C4Application.h>
-#include <C4GameControlNetwork.h>
 #include <C4GameControl.h>
 #include <C4Game.h>
 #include <C4Log.h>
@@ -62,7 +62,7 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	pNetwork->Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_ControlReq, C4PacketControlReq(iControlReady + 1)));
 	// ok
 	fEnabled = true; fRunning = false;
-	iTargetFPS = 38; iNextControlReqeust = timeGetTime() + C4ControlRequestInterval;
+	iTargetFPS = 38; iNextControlReqeust = GetTime() + C4ControlRequestInterval;
 	return true;
 }
 
@@ -89,7 +89,7 @@ void C4GameControlNetwork::Execute() // by main thread
 
 	// Save time the control tick was reached
 	if (iWaitStart == -1)
-		iWaitStart = timeGetTime();
+		iWaitStart = GetTime();
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -735,7 +735,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 	// target ctrl tick to reach?
 	if (iControlReady < iTargetTick &&
 	    (!fActivated || iControlSent > iControlReady) &&
-	    timeGetTime() >= iNextControlReqeust)
+	    GetTime() >= iNextControlReqeust)
 	{
 		Application.InteractiveThread.ThreadLogS("Network: Recovering: Requesting control for tick %d...", iControlReady + 1);
 		// make request
@@ -746,7 +746,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		else
 			::Network.Clients.BroadcastMsgToConnClients(Pkt);
 		// set time for next request
-		iNextControlReqeust = timeGetTime() + C4ControlRequestInterval;
+		iNextControlReqeust = GetTime() + C4ControlRequestInterval;
 	}
 }
 
@@ -764,8 +764,8 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	{
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
-		if (eMode != CNM_Async || iWaitStart == -1 || timeGetTime() <= uint32_t(iWaitStart + iMaxWait))
-			return false;
+		if (eMode != CNM_Async || iWaitStart == -1 || GetTime() <= uint32_t(iWaitStart + iMaxWait))
+			return NULL;
 	}
 
 	// create packet
@@ -795,7 +795,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
 	// advance control request time
-	iNextControlReqeust = Max<uint32_t>(iNextControlReqeust, timeGetTime() + C4ControlRequestInterval);
+	iNextControlReqeust = Max<uint32_t>(iNextControlReqeust, GetTime() + C4ControlRequestInterval);
 
 	// return
 	return pComplete;
@@ -851,7 +851,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
-		iTime(timeGetTime()),
+		iTime(GetTime()),
 		pNext(NULL)
 {
 
@@ -860,7 +860,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-		iTime(timeGetTime()),
+		iTime(GetTime()),
 		pNext(NULL)
 {
 	Ctrl.Copy(Pkt2.getControl());

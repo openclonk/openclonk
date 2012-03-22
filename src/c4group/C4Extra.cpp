@@ -4,6 +4,7 @@
  * Copyright (c) 2002, 2004  Sven Eberhardt
  * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -17,7 +18,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// user-customizable multimedia package Extra.c4g
+// user-customizable multimedia package Extra.ocg
 
 #include <C4Include.h>
 #include <C4Extra.h>
@@ -46,7 +47,7 @@ bool C4Extra::InitGroup()
 	for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
 	{
 		std::auto_ptr<C4Group> pGroup(new C4Group);
-		if(pGroup->Open( (*iter + DirSep + C4CFN_Extra).getData()))
+		if(pGroup->Open( ((*iter).strBuf + DirSep + C4CFN_Extra).getData()))
 			ExtraGroups.push_back(pGroup.release());
 	}
 
@@ -62,14 +63,12 @@ bool C4Extra::Init()
 	// add first definition first, so the priority will be lowest
 	// (according to definition load/overload order)
 	char szSegment[_MAX_PATH+1];
-	bool fAnythingLoaded=false;
 	for (int cseg=0; SCopySegment(Game.DefinitionFilenames,cseg,szSegment,';',_MAX_PATH); cseg++)
 	{
 		for(unsigned int i = 0; i < ExtraGroups.size(); ++i)
 		{
 			if(LoadDef(*ExtraGroups[i], GetFilename(szSegment)))
 			{
-				fAnythingLoaded=true;
 				break;
 			}
 		}

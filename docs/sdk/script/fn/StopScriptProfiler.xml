@@ -6,7 +6,7 @@
   <func>
     <title>StopScriptProfiler</title>
     <category>Developer</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Stops the script profiler and writes the result to the log.</desc>
     <remark>The script profiler can be used to measure how much processing time the scripting engine is using for executing certain script functions. This can be useful to find out which parts of a script are mainly slowing down execution in larger scenarios. The profiler measures the execution time between the commands StartScriptProfiler and StopScriptProfiler.</remark>
@@ -16,23 +16,15 @@
         <code>Profiler statistics:
 ==============================
 00037ms	global Explode
-00035ms	SFLN::Hit
-00020ms	TRB1::Damage
-00020ms	TRB1::ChopDown
-00020ms	TRB2::Damage
-00020ms	TRB2::ChopDown
+00035ms	Firestone::Hit
+00020ms	Tree_Coniferous::Damage
+00020ms	Tree_Coniferous::ChopDown
 00018ms	game DeployPlayer
 00018ms	Loam::Hit
-00018ms	BIRD::ControlDigDouble
-00012ms	_QSF::Active
+00018ms	Bire::ControlDigDouble
 00012ms	Direct exec
-00011ms	_SPK::CastObject
-00002ms	FXL1::Advance
-00002ms	TFLN::Hit
-00002ms	_QSF::Hit
-00002ms	_QSF::Detonate
 ==============================</code>
-        <text>This output shows that explosions are the parts which are taking longest to execute. "global Explode" ist the globally defined script function Explode(). In second place is the impact function of the Superflint, SFLN::Hit. Notice that all execution times of a script function always include the execution time of all subroutines or functions called therein. The time taken in Explode is thus also included in SFLN::Hit. Functions calling themselves recursively will add to the execution time in the same way.</text>
+        <text>This output shows that explosions are the parts which are taking longest to execute. "global Explode" ist the globally defined script function Explode(). In second place is the impact function of the Superflint, Firestone::Hit. Notice that all execution times of a script function always include the execution time of all subroutines or functions called therein. The time taken in Explode is thus also included in Firestone::Hit. Functions calling themselves recursively will add to the execution time in the same way.</text>
         <text>"game DeployPlayer" is a call in the scenario script. "Direct exec" is the sum of all scripts compiled and executed at run time. This may include <funclink>eval</funclink> or menu callbacks.</text>
         <text>Notice that scripting functions may not be the only parts causing program execution to slow down. If an object creates large numbers of particles, this can also slow down the game without causing extra scripting execution time. Large numbers of objects would cause similar delays.</text>
       </example>

@@ -90,7 +90,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -107,7 +106,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -124,7 +122,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -141,7 +138,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -158,7 +154,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -175,7 +170,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -192,7 +186,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -209,7 +202,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -226,7 +218,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -243,7 +234,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -260,7 +250,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 	C4Real Begin;
@@ -277,7 +266,6 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp);
 	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
-	virtual void EnumeratePointers() { Object.EnumeratePointers(); }
 private:
 	C4ObjectPtr Object;
 };

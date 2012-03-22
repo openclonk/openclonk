@@ -1,2 +1,0 @@
-Name=Ballon
-Description=Drücke während Du fällst [Benutzen], um deinen Fall abzubremsen.

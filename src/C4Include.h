@@ -20,7 +20,12 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Main header to include all others */
+/* This header is included first from every source file. It serves three purposes:
+   - PlatformAbstraction.h
+   - Common utility functionality that's used everywhere
+   - Speeding up the compilation by precompiling this header
+All of our headers are designed to be used with C4Include.h included before and
+don't need to include this file or any of the files it includes. */
 
 #ifndef INC_C4Include
 #define INC_C4Include
@@ -30,17 +35,6 @@
 // boost headers - after PlatformAbstraction to prevent redefines of stdint
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-
-#include "Standard.h"
-#include "C4Prototypes.h"
-#include "C4Real.h"
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "StdResStr2.h"
-#include "C4Log.h"
-#include "C4Reloc.h"
-
-#include "C4Game.h"
 
 #ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
@@ -104,5 +98,17 @@ inline void operator delete(void *p, const char *, long)
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "Standard.h"
+#include "C4Prototypes.h"
+#include "C4Real.h"
+#include "StdBuf.h"
+#include "StdFile.h"
+#include "StdResStr2.h"
+#include "C4Log.h"
+#include "C4Reloc.h"
+#include "C4Config.h"
+
+#include "C4Game.h"
 
 #endif // INC_C4Include

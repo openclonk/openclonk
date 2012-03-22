@@ -1,14 +1,15 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006, 2008-2010  Sven Eberhardt
  * Copyright (c) 2005-2006  GÃ¼nther Brammer
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005-2006, 2008-2010  Asmageddon
- * Copyright (c) 2005-2006, 2008  Sven Eberhardt
- * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2008  Julian Raschke
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009-2010  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,7 +28,9 @@
 #include <C4Include.h>
 #include <C4KeyboardInput.h>
 
+#include <C4Components.h>
 #include <C4Game.h>
+#include <C4Window.h>
 
 #ifdef USE_X11
 #include <X11/Xlib.h>
@@ -52,11 +55,11 @@ namespace
 		if (result == "unknown key")
 			result = FormatString("\\x%x", (DWORD) k).getData();
 		// some special cases
-		if (result == "world 0") result = "´";
-		if (result == "world 1") result = "ß";
-		if (result == "world 2") result = "Ü";
-		if (result == "world 3") result = "Ä";
-		if (result == "world 4") result = "Ö";
+		if (result == "world 0") result = "Â´";
+		if (result == "world 1") result = "ÃŸ";
+		if (result == "world 2") result = "Ãœ";
+		if (result == "world 3") result = "Ã„";
+		if (result == "world 4") result = "Ã–";
 		// capitalize first letter
 		result[0] = toupper(result[0]);
 		// return key name
@@ -193,7 +196,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ 'Z'               , "Z"         , NULL },
 	{ VK_OEM_COMMA      , "Comma"     , NULL },
 	{ VK_OEM_PERIOD     , "Period"    , NULL },
-	{ VK_OEM_5          , "Apostrophe", NULL },
+	{ VK_OEM_7          , "Apostrophe", NULL },
 
 	{ VK_LWIN           , "WinLeft"      , NULL },
 	{ VK_RWIN           , "WinRight"     , NULL },
@@ -275,22 +278,23 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ VK_LAUNCH_APP1         , "LAUNCH_APP1"          , NULL },
 	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
 
-	{ VK_OEM_1          , "OEM Ü"    , "Ü" }, // German hax
+	{ VK_OEM_1          , "Comma_US"    , "Ãœ" }, // German hax
 	{ VK_OEM_PLUS       , "OEM +"   , "+" },
 	{ VK_OEM_COMMA      , "OEM ,"   , "," },
 	{ VK_OEM_MINUS      , "OEM -"   , "-" },
 	{ VK_OEM_PERIOD     , "OEM ."   , "." },
-	{ VK_OEM_2          , "OEM 2"    , "2" },
-	{ VK_OEM_3          , "OEM Ö"    , "Ö" }, // German hax
-	{ VK_OEM_4          , "OEM 4"    , "4" },
-	{ VK_OEM_5          , "OEM 5"    , "5" },
-	{ VK_OEM_6          , "OEM 6"    , "6" },
-	{ VK_OEM_7          , "OEM Ä"    , "Ä" }, // German hax
+	{ VK_OEM_2          , "OEM 2"   , "2" },
+	{ VK_OEM_3          , "OEM Ã–"   , "Ã–" }, // German hax
+	{ VK_OEM_4          , "OEM 4"   , "4" },
+	{ VK_OEM_5          , "OEM 5"   , "5" },
+	{ VK_OEM_6          , "OEM 6"   , "6" },
+	{ VK_OEM_7          , "OEM Ã„"   , "Ã„" }, // German hax
 	{ VK_OEM_8          , "OEM 8"   , "8" },
 	{ VK_OEM_AX         , "AX"      , "AX" },
-	{ VK_OEM_102        , "< > |"    , "<" }, // German hax
+	{ VK_OEM_102        , "Less" , "<" }, // German hax
+	{ VK_OEM_102        , "Backslash", NULL }, // German hax
 	{ VK_ICO_HELP       , "Help"    , "Help" },
-	{ VK_ICO_00         , "ICO_00"   , "00" },
+	{ VK_ICO_00         , "ICO_00"  , "00" },
 
 	{ VK_ICO_CLEAR      , "ICO_CLEAR"     , NULL },
 
@@ -326,7 +330,6 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Undefined, NULL, NULL }
 };
 #elif defined(USE_COCOA)
-#include "StdWindow.h"
 #include "CocoaKeycodeMap.h"
 #endif
 
@@ -380,28 +383,25 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				}
 			}
 		}
-		bool is_mouse_key, is_gamemouse_key;
+		bool is_mouse_key;
 #ifdef _WIN32
 		is_mouse_key = !strnicmp(sName.getData(), "Mouse", 5);
-		is_gamemouse_key = !strnicmp(sName.getData(), "GameMouse", 9);
 #else
 		is_mouse_key = !strncasecmp(sName.getData(), "Mouse", 5);
-		is_gamemouse_key = !strncasecmp(sName.getData(), "GameMouse", 9);
 #endif
-		if (is_mouse_key || is_gamemouse_key)
+		if (is_mouse_key)
 		{
 			// skip Mouse/GameMouse
 			const char *key_str = sName.getData()+5;
-			if (is_gamemouse_key) key_str += 4;
 			int mouse_id;
 			if (sscanf(key_str, "%d",  &mouse_id) == 1)
 			{
 				// skip number
 				while (isdigit(*key_str)) ++key_str;
 				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
-				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move, is_gamemouse_key);
-				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up, is_gamemouse_key);
-				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down, is_gamemouse_key);
+				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move);
+				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up);
+				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down);
 				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
 				{
 					// check for known mouse button events
@@ -423,8 +423,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 					if (mouseevent_id)
 					{
 						// valid event if finished or followed by "Double"
-						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id, is_gamemouse_key);
-						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1), is_gamemouse_key);
+						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id);
+						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1));
 						// invalid mouse key...
 					}
 				}
@@ -505,27 +505,26 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	{
 		int mouse_id = Key_GetMouse(wCode);
 		int mouse_event = Key_GetMouseEvent(wCode);
-		bool mouse_is_game = Key_GetMouseIsGameCoordinate(wCode);
-		const char *mouse_is_game_str = mouse_is_game ? "GameMouse" : "Mouse";
+		const char *mouse_str = "Mouse";
 		switch (mouse_event)
 		{
-		case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_is_game_str, mouse_id);
-		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_str, mouse_id);
+		case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_str, mouse_id);
+		case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_str, mouse_id);
 		default:
 			// extended mouse button
 		{
 			uint8_t btn = Key_GetMouseEvent(wCode);
 			if (btn >= KEY_MOUSE_Button1Double)
-				return FormatString("%s%dButton%dDouble", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
+				return FormatString("%s%dButton%dDouble", mouse_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
 			else
-				return FormatString("%s%dButton%d", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1));
+				return FormatString("%s%dButton%d", mouse_str, mouse_id, int(btn-KEY_MOUSE_Button1));
 		}
 		}
 	}
@@ -641,15 +640,21 @@ void C4KeyEventData::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(iStrength);
 	pComp->Separator();
-	pComp->Value(x);
+	pComp->Value(game_x);
 	pComp->Separator();
-	pComp->Value(y);
+	pComp->Value(game_y);
+	pComp->Separator();
+	pComp->Value(vp_x);
+	pComp->Separator();
+	pComp->Value(vp_y);
 }
 
 bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
 {
 	return iStrength == cmp.iStrength
-	       && x == cmp.x && y == cmp.y;
+	       && game_x == cmp.game_x && game_y == cmp.game_y
+	       && vp_x == cmp.vp_x && vp_y == cmp.vp_y;
+
 }
 
 /* ----------------- C4CustomKey------------------ */
@@ -911,7 +916,7 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 {
 	// store last-key-info
 	LastKeyExtraData.iStrength = (iStrength >= 0) ? iStrength : ((InEvent != KEYEV_Up) * 100);
-	LastKeyExtraData.x = LastKeyExtraData.y = 0;
+	LastKeyExtraData.game_x = LastKeyExtraData.game_y = LastKeyExtraData.vp_x = LastKeyExtraData.vp_y = 0;
 	// check all key events generated by this key: First the keycode itself, then any more generic key events like KEY_Any
 	const int32_t iKeyRangeMax = 5;
 	int32_t iKeyRangeCnt=0, j;

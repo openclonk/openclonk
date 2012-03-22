@@ -2,15 +2,17 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2001, 2003-2004, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2007  Peter Wortmann
  * Copyright (c) 2001-2010  Sven Eberhardt
+ * Copyright (c) 2001-2007  Peter Wortmann
  * Copyright (c) 2001  Carlo Teubner
  * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2004-2010  Günther Brammer
- * Copyright (c) 2005, 2009-2010  Tobias Zwick
- * Copyright (c) 2006, 2009-2010  Armin Burgmeier
+ * Copyright (c) 2004-2011  Günther Brammer
+ * Copyright (c) 2005, 2009-2011  Tobias Zwick
+ * Copyright (c) 2006, 2009-2011  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010-2011  Maikel de Vries
+ * Copyright (c) 2011  David Dormagen
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -72,11 +74,16 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 		{
 			C4DefGraphics* pGfx = NULL;
 			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
+			Def = pGfx->pDef;
+
 			if(pGfx->Type != C4DefGraphics::TYPE_Mesh)
 				pComp->excCorrupt("ChildMesh points to non-mesh graphics");
 			assert(!attach->Child);
 			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
+			assert(attach->Child != NULL);
 			attach->OwnChild = true; // Delete the newly allocated child instance when the parent instance is gone
+
+			// TODO: Do we leak pGfx?
 		}
 		else
 		{
@@ -94,7 +101,7 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 		{
 			assert(attach->OwnChild);
 			C4DefGraphics* pGfx = &Def->Graphics;
-			assert(pGfx->Type != C4DefGraphics::TYPE_Mesh);
+			assert(pGfx->Type == C4DefGraphics::TYPE_Mesh);
 			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
 			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
 		}
@@ -104,11 +111,6 @@ void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::Attache
 			pComp->Value(mkNamingAdapt(Object, "ChildObject"));
 		}
 	}
-}
-
-void C4MeshDenumerator::EnumeratePointers(StdMeshInstance::AttachedMesh* attach)
-{
-	Object.EnumeratePointers();
 }
 
 void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach)
@@ -129,9 +131,9 @@ static void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
 	{
-		lpDDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
-		lpDDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
-		if (contact) lpDDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
+		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
+		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
+		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 
@@ -177,7 +179,6 @@ void C4Object::Default()
 	Energy=0;
 	Alive=0;
 	Breath=0;
-	FirePhase=0;
 	InMat=MNone;
 	Color=0;
 	PlrViewRange=0;
@@ -248,7 +249,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	pGraphics = &Def->Graphics;
 	if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 	{
-		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 		pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 	}
 	else
@@ -283,10 +284,12 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// Color
 	if (Def->ColorByOwner)
+	{
 		if (ValidPlr(Owner))
 			Color=::Players.Get(Owner)->ColorDw;
 		else
 			Color=0xff; // no-owner color: blue
+	}
 
 	// Shape & face
 	Shape=Def->Shape;
@@ -323,7 +326,9 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (!Status) return;
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
+	memset(&rc, '\0', sizeof(rc));
 	rc.oei=Number;
+	if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
 	rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
 	AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
 #endif
@@ -344,12 +349,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 		pEffects->ClearAll(this, C4FxCall_RemoveClear);
 		// Effect-callback might actually have deleted the object already
 		if (!Status) return;
-		// ...or just deleted the effects
-		if (pEffects)
-		{
-			delete pEffects;
-			pEffects = NULL;
-		}
 	}
 	// remove particles
 	if (FrontParticles) FrontParticles.Clear();
@@ -481,15 +480,20 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 			CheckSolidMaskRect();
 		}
 
-		delete pMeshInstance;
-		if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+		// Keep mesh instance if it uses the same underlying mesh
+		if(!pMeshInstance || !pGraphics->Type == C4DefGraphics::TYPE_Mesh ||
+		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
 		{
-			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
-		}
-		else
-		{
-			pMeshInstance = NULL;
+			delete pMeshInstance;
+			if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+			{
+				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
+				pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
+			}
+			else
+			{
+				pMeshInstance = NULL;
+			}
 		}
 
 		// update face - this also puts any SolidMask
@@ -536,13 +540,13 @@ void C4Object::UpdateFlipDir()
 
 void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform)
 {
-	CSurface* sfc;
+	C4Surface* sfc;
 	switch (GetGraphics()->Type)
 	{
 	case C4DefGraphics::TYPE_Bitmap:
 		sfc = action ? Action.Facet.Surface : GetGraphics()->GetBitmap(Color);
 
-		lpDDraw->Blit(sfc,
+		pDraw->Blit(sfc,
 		              fx, fy, fwdt, fhgt,
 		              cgo.Surface, tx, ty, twdt, thgt,
 		              true, transform);
@@ -562,10 +566,10 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 			matrix = StdMeshMatrix::Scale(twdt/fwdt,thgt/fhgt,std::sqrt(twdt*thgt/(fwdt*fhgt))) * matrix;
 		}
 
-		lpDDraw->SetMeshTransform(&matrix);
+		pDraw->SetMeshTransform(&matrix);
 
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
-		lpDDraw->SetMeshTransform(NULL);
+		pDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, Color, transform);
+		pDraw->SetMeshTransform(NULL);
 		break;
 	}
 }
@@ -600,7 +604,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*    lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, NULL);*/
@@ -619,7 +623,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 			rot.SetRotate(r * 100, offX, offY);
 		}
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, &rot);*/
@@ -673,7 +677,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
-		/*lpDDraw->Blit(Action.Facet.Surface,
+		/*pDraw->Blit(Action.Facet.Surface,
 		  fx, fy, fwdt, fhgt,
 		  cgo.Surface, tx, ty, twdt, thgt,
 		  true, NULL);*/
@@ -694,7 +698,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 			rot.SetRotate(r * 100, offX, offY);
 		}
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
-		/*    lpDDraw->Blit(Action.Facet.Surface,
+		/*    pDraw->Blit(Action.Facet.Surface,
 		      fx, fy, fwdt, fhgt,
 		      cgo.Surface, tx, ty, twdt, thgt,
 		      true, &rot);*/
@@ -759,7 +763,7 @@ void C4Object::SetOCF()
 	if (Contained && !C4PropListNumbered::CheckPropList(Contained))
 		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if (Contained && !Contained->Status)
-		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
+		{ LogF("Warning: contained in deleted object (#%d) (%s)!", Contained->Number, Contained->GetName()); }
 #endif
 	// OCF_Normal: The OCF is never zero
 	OCF=OCF_Normal;
@@ -807,10 +811,6 @@ void C4Object::SetOCF()
 					OCF|=OCF_Collection;
 	// OCF_Alive
 	if (Alive) OCF|=OCF_Alive;
-	// OCF_Prey
-	if (Def->Prey)
-		if (Alive)
-			OCF|=OCF_Prey;
 	// OCF_CrewMember
 	if (Def->CrewMember)
 		if (Alive)
@@ -822,9 +822,6 @@ void C4Object::SetOCF()
 	// OCF_NotContained
 	if (!Contained)
 		OCF|=OCF_NotContained;
-	// OCF_Edible
-	if (Def->Edible)
-		OCF|=OCF_Edible;
 	// OCF_InLiquid
 	if (InLiquid)
 		if (!Contained)
@@ -845,7 +842,6 @@ void C4Object::SetOCF()
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
 #ifdef DEBUGREC_OCF
-	assert(!dwOCFOld || ((dwOCFOld & OCF_Carryable) == (OCF & OCF_Carryable)));
 	C4RCOCF rc = { dwOCFOld, OCF, false };
 	AddDbgRec(RCT_OCF, &rc, sizeof(rc));
 #endif
@@ -867,9 +863,8 @@ void C4Object::UpdateOCF()
 		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
-	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
-	           | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Alive
-	           | OCF_Prey | OCF_CrewMember | OCF_AttractLightning);
+	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Grab | OCF_FullCon | OCF_Rotate | OCF_OnFire
+		| OCF_Inflammable | OCF_Alive | OCF_CrewMember | OCF_AttractLightning);
 	// OCF_Carryable: Can be picked up
 	if (GetPropertyInt(P_Collectible))
 		OCF|=OCF_Carryable;
@@ -927,43 +922,6 @@ void C4Object::UpdateOCF()
 #endif
 }
 
-bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
-{
-	// Fire Phase
-	FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
-	// Decay
-	if (!Def->NoBurnDecay)
-		DoCon(-100);
-	// Damage
-	if (!::Game.iTick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
-	// Energy
-	if (!::Game.iTick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
-	// Effects
-	int32_t smoke_level=2*Shape.Wdt/3;
-	int32_t smoke_rate=Def->SmokeRate;
-	if (smoke_rate)
-	{
-		smoke_rate=50*smoke_level/smoke_rate;
-		if (!((Game.FrameCounter+(Number*7))%Max<int32_t>(smoke_rate,3)) || (Abs(xdir)>2))
-			Smoke(GetX(), GetY(),smoke_level);
-	}
-	// Background Effects
-	if (!::Game.iTick5)
-	{
-		int32_t mat;
-		if (MatValid(mat=GBackMat(GetX(), GetY())))
-		{
-			// Extinguish
-			if (::MaterialMap.Map[mat].Extinguisher)
-				{ Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
-			// Inflame
-			if (!Random(3))
-				::Landscape.Incinerate(GetX(), GetY());
-		}
-	}
-
-	return true;
-}
 
 bool C4Object::ExecLife()
 {
@@ -1010,7 +968,13 @@ bool C4Object::ExecLife()
 		if (InMat!=MNone)
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
-					Incinerate(NO_OWNER);
+				{
+					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
+					if (pCallFunc)
+					{
+						pCallFunc->Exec(this, &C4AulParSet());
+					}
+				}
 
 	// birthday
 	if (!::Game.iTick255)
@@ -1147,6 +1111,7 @@ void C4Object::AssignDeath(bool fForced)
 	// Values
 	Alive=0;
 	ClearCommands();
+	C4ObjectInfo * pInfo = Info;
 	if (Info)
 	{
 		Info->HasDied=true;
@@ -1168,6 +1133,15 @@ void C4Object::AssignDeath(bool fForced)
 	// Whats worse: Having the OCF change because of some unrelated script-call like
 	// SetCategory, or slightly breaking compatibility?
 	SetOCF();
+
+	// Engine broadcast: relaunch player (in CR, this was called from clonk script.
+	// Now, it is done for every crew member)
+	if(pPlr)
+		if(!pPlr->Crew.ObjectCount())
+			::GameScript.GRBroadcast(PSF_RelaunchPlayer,
+			                         &C4AulParSet(C4VInt(Owner),C4VInt(iDeathCausingPlayer)));
+	if (pInfo)
+		pInfo->HasDied = false;
 }
 
 bool C4Object::ChangeDef(C4ID idNew)
@@ -1216,51 +1190,6 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,false);
 	// Done
-	return true;
-}
-
-bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
-{
-	// Already on fire
-	if (OnFire) return false;
-	// add effect
-	int32_t iEffNumber;
-	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
-	new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, true, iEffNumber);
-	return !!iEffNumber;
-}
-
-bool C4Object::Extinguish(int32_t iFireNumber)
-{
-	// any effects?
-	if (!pEffects) return false;
-	// fire number known: extinguish that fire
-	C4Effect *pEffFire;
-	if (iFireNumber)
-	{
-		pEffFire = pEffects->Get(iFireNumber, false);
-		if (!pEffFire) return false;
-		pEffFire->Kill(this);
-	}
-	else
-	{
-		// otherwise, kill all fires
-		// (keep checking from beginning of pEffects, as Kill might delete or change effects)
-		int32_t iFiresKilled = 0;
-		while (pEffects && (pEffFire = pEffects->Get(C4Fx_AnyFire)))
-		{
-			while (pEffFire && WildcardMatch(C4Fx_Internal, pEffFire->Name))
-			{
-				pEffFire = pEffFire->pNext;
-				if (pEffFire) pEffFire = pEffFire->Get(C4Fx_AnyFire);
-			}
-			if (!pEffFire) break;
-			pEffFire->Kill(this);
-			++iFiresKilled;
-		}
-		if (!iFiresKilled) return false;
-	}
-	// done, success
 	return true;
 }
 
@@ -1327,7 +1256,14 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 	// Incinerate
 	if (Def->BlastIncinerate)
 		if (Damage>=Def->BlastIncinerate)
-			Incinerate(iCausedBy,true);
+		{
+			C4AulFunc *pCallFunc = GetFunc(PSF_OnBlastIncinerationDamage);
+			if (pCallFunc)
+			{
+				C4AulParSet Pars(C4VInt(iLevel), C4VInt(iCausedBy));
+				pCallFunc->Exec(this, &Pars);
+			}
+		}
 }
 
 void C4Object::DoCon(int32_t iChange)
@@ -1392,15 +1328,14 @@ void C4Object::DoCon(int32_t iChange)
 
 	// Completion (after bottom GetY()-adjust for correct position)
 	if (!fWasFull && (Con>=FullCon))
-	{
-		Call(PSF_Completion);
 		Call(PSF_Initialize);
-	}
 
 	// Con Zero Removal
 	if (Con<=0)
 		AssignRemoval();
-
+	// Mesh Graphics Update
+	else if(pMeshInstance)
+		pMeshInstance->SetCompletion(Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 }
 
 void C4Object::DoExperience(int32_t change)
@@ -1666,7 +1601,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 {
 	// Variables
 	C4FacetSurface fctSymbol;
-	C4Player *pPlayer;
 	C4IDList ListItems;
 	// Close any other menu
 	//CloseMenu(true);
@@ -1737,7 +1671,6 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	case C4MN_Info:
 		// Target by parameter
 		if (!pTarget) break;
-		pPlayer=::Players.Get(pTarget->Owner);
 		// Create symbol & init menu
 		fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,0,1);
 		Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
@@ -1854,13 +1787,14 @@ StdStrBuf C4Object::GetDataString()
 	{
 		Output.Append(LineFeed);
 		// Effect name
-		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->Name, pEffect->iPriority, pEffect->iInterval);
+		Output.AppendFormat("  %s: Priority %d, Interval %d", pEffect->GetName(), pEffect->iPriority, pEffect->iInterval);
 	}
 
 	StdStrBuf Output2;
-	EnumeratePointers();
-	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "Object"), &Output2, "C4Object::GetDataString");
-	DenumeratePointers();
+	C4ValueNumbers numbers;
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(mkInsertAdapt(mkParAdapt(*this, &numbers),
+	                                                                    mkNamingAdapt(numbers, "Values"), false),
+	                                                      "Object"), &Output2, "C4Object::GetDataString");
 	Output.Append(LineFeed);
 	Output.Append(Output2);
 	return Output;
@@ -1876,28 +1810,26 @@ void C4Object::SetName(const char * NewName)
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 {
+	C4Value r = Call(PSF_CalcValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer)));
 	int32_t iValue;
-
-	// value by script?
-	if (C4AulScriptFunc *f = Def->Script.SFn_CalcValue)
-		iValue = f->Exec(this, &C4AulParSet(C4VObj(pInBase), C4VInt(iForPlayer))).getInt();
+	if (r != C4VNull)
+		iValue = r.getInt();
 	else
 	{
 		// get value of def
 		// Caution: Do not pass pInBase here, because the def base value is to be queried
 		//  - and not the value if you had to buy the object in this particular base
-		iValue=Def->GetValue(NULL, iForPlayer);
+		iValue = Def->GetValue(NULL, iForPlayer);
 	}
 	// Con percentage
-	iValue=iValue*Con/FullCon;
-	// value adjustments buy base function
+	iValue = iValue * Con / FullCon;
+	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcSellValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VObj(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcSellValue, &C4AulParSet(C4VObj(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
-	// Return value
 	return iValue;
 }
 
@@ -1952,13 +1884,6 @@ void C4Object::ClearPointers(C4Object *pObj)
 				RemoveGraphicsOverlay(pGfxOvrl->GetID());
 		}
 	}
-}
-
-C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPassError)
-{
-	if (!Status) return C4VNull;
-	assert(Def && szFunctionCall[0]);
-	return Def->Script.Call(szFunctionCall, this, pPars, false, fPassError);
 }
 
 bool C4Object::SetPhase(int32_t iPhase)
@@ -2046,8 +1971,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
 					ZoomDataStackItem zdsi(newzoom);
-					lpDDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
-					lpDDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
+					pDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0xca,0,0));
+					pDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0xca,0,0));
 				}
 
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
@@ -2076,8 +2001,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				   GetDrawPosition(cgo, pCom->Tx._getInt(), pCom->Ty, cgo.Zoom, offX2, offY2, newzoom))
 				{
 					ZoomDataStackItem zdsi(newzoom);
-					lpDDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
-					lpDDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
+					pDraw->DrawLineDw(cgo.Surface,offX1,offY1,offX2,offY2,C4RGB(0,0xca,0));
+					pDraw->DrawFrameDw(cgo.Surface,offX2-1,offY2-1,offX2+1,offY2+1,C4RGB(0,0xca,0));
 				}
 
 				ccx=pCom->Tx._getInt(); ccy=pCom->Ty;
@@ -2104,7 +2029,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
 		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		lpDDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		pDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,offX,offY+Shape.GetY()-10-cmhgt,C4Draw::DEFAULT_MESSAGE_COLOR,ACenter);
 	}
 	// Debug Display ///////////////////////////////////////////////////////////////////////////////
 
@@ -2123,8 +2048,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	bool fOldClrModEnabled = !!(Category & C4D_IgnoreFoW);
 	if (fOldClrModEnabled)
 	{
-		fOldClrModEnabled = lpDDraw->GetClrModMapEnabled();
-		lpDDraw->SetClrModMapEnabled(false);
+		fOldClrModEnabled = pDraw->GetClrModMapEnabled();
+		pDraw->SetClrModMapEnabled(false);
 	}
 
 	// Fire facet - always draw, even if particles are drawn as well
@@ -2147,7 +2072,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				        offY + fr.y,
 				        fr.Wdt, fr.Hgt);
 			}
-			::GraphicsResource.fctFire.Draw(fgo,false,FirePhase);
+			::GraphicsResource.fctFire.Draw(fgo,false,(Number + Game.FrameCounter) % MaxFirePhase);
 		}
 
 	// color modulation (including construction sign...)
@@ -2170,7 +2095,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		if (Action.Facet.Surface && pActionDef->GetPropertyInt(P_FacetTargetStretch))
 		{
 			if (Action.Target)
-				lpDDraw->Blit(Action.Facet.Surface,
+				pDraw->Blit(Action.Facet.Surface,
 				              float(Action.Facet.X),float(Action.Facet.Y),float(Action.Facet.Wdt),float(Action.Facet.Hgt),
 				              cgo.Surface,
 				              offX + Shape.GetX() + Action.FacetX, offY + Shape.GetY() + Action.FacetY,Action.Facet.Wdt,
@@ -2211,13 +2136,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 			if (OCF & OCF_Entrance)
-				lpDDraw->DrawFrameDw(cgo.Surface,offX+Def->Entrance.x,
+				pDraw->DrawFrameDw(cgo.Surface,offX+Def->Entrance.x,
 				                             offY+Def->Entrance.y,
 				                             offX+Def->Entrance.x+Def->Entrance.Wdt-1,
 				                             offY+Def->Entrance.y+Def->Entrance.Hgt-1,
 				                             C4RGB(0, 0, 0xff));
 			if (OCF & OCF_Collection)
-				lpDDraw->DrawFrameDw(cgo.Surface,offX+Def->Collection.x,
+				pDraw->DrawFrameDw(cgo.Surface,offX+Def->Collection.x,
 				                             offY+Def->Collection.y,
 				                             offX+Def->Collection.x+Def->Collection.Wdt-1,
 				                             offY+Def->Collection.y+Def->Collection.Hgt-1,
@@ -2231,15 +2156,15 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 				StdStrBuf str;
 				str.Format("%s (%d)",pActionDef->GetName(),Action.Phase);
 				int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-				lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
+				pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular,
 				                           1.0, cgo.Surface, offX, offY + Shape.GetY() - cmhgt,
-				                           InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
+				                           InLiquid ? 0xfa0000FF : C4Draw::DEFAULT_MESSAGE_COLOR, ACenter);
 			}
 		}
 	// Debug Display ///////////////////////////////////////////////////////////////////////
 
 	// Restore visibility inside FoW
-	if (fOldClrModEnabled) lpDDraw->SetClrModMapEnabled(fOldClrModEnabled);
+	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
 
 }
 
@@ -2289,7 +2214,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 								iTX = BoundBy<int>(offX, cgo.X + iTWdt / 2, cgo.X + cgo.Wdt - iTWdt / 2);
 								iTY = BoundBy<int>(offY - Def->Shape.Hgt / 2 - 20 - iTHgt, cgo.Y, cgo.Y + cgo.Hgt - iTHgt);
 								// Draw
-								lpDDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
+								pDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iTX, iTY,
 								                           pOwner->ColorDw|0x7f000000,ACenter);
 							}
 				}
@@ -2308,44 +2233,47 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		if (eDrawMode!=ODM_BaseOnly)
 		{
 			C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
-			lpDDraw->Blit(fctConSign.Surface,
+			pDraw->Blit(fctConSign.Surface,
 			              fctConSign.X, fctConSign.Y,
 			              fctConSign.Wdt, fctConSign.Hgt,
 			              cgo.Surface,
 			              offX + Shape.GetX(), offY + Shape.GetY() + Shape.Hgt - fctConSign.Hgt,
 			              fctConSign.Wdt, fctConSign.Hgt, true);
 		}
-	// FacetTopFace: Override TopFace.GetX()/GetY()
-	C4PropList* pActionDef = GetAction();
-	if (pActionDef && pActionDef->GetPropertyInt(P_FacetTopFace))
+	if(TopFace.Surface)
 	{
-		int32_t iPhase = Action.Phase;
-		if (pActionDef->GetPropertyInt(P_Reverse)) iPhase = pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
-		TopFace.X = pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + pActionDef->GetPropertyInt(P_Wdt) * iPhase;
-		TopFace.Y = pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
+		// FacetTopFace: Override TopFace.GetX()/GetY()
+		C4PropList* pActionDef = GetAction();
+		if (pActionDef && pActionDef->GetPropertyInt(P_FacetTopFace))
+		{
+			int32_t iPhase = Action.Phase;
+			if (pActionDef->GetPropertyInt(P_Reverse)) iPhase = pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
+			TopFace.X = pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + pActionDef->GetPropertyInt(P_Wdt) * iPhase;
+			TopFace.Y = pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
+		}
+		// ensure correct color is set
+		if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
+		// color modulation
+		if (!eDrawMode) PrepareDrawing();
+		// Draw top face bitmap
+		if (Con!=FullCon && Def->GrowthType)
+			// stretched
+			pDraw->Blit(TopFace.Surface,
+				            TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
+				            cgo.Surface,
+				            offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
+				            float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+		else
+			// normal
+			pDraw->Blit(TopFace.Surface,
+				            TopFace.X,TopFace.Y,
+				            TopFace.Wdt,TopFace.Hgt,
+				            cgo.Surface,
+				            offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
+				            TopFace.Wdt, TopFace.Hgt,
+				            true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	}
-	// ensure correct color is set
-	if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
-	// color modulation
-	if (!eDrawMode) PrepareDrawing();
-	// Draw top face bitmap
-	if (Con!=FullCon && Def->GrowthType)
-		// stretched
-		lpDDraw->Blit(TopFace.Surface,
-		              TopFace.X, TopFace.Y, TopFace.Wdt, TopFace.Hgt,
-		              cgo.Surface,
-		              offX + Shape.GetX() + float(Def->TopFace.tx * Con) / FullCon, offY + Shape.GetY() + float(Def->TopFace.ty * Con) / FullCon,
-		              float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
-		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
-	else
-		// normal
-		lpDDraw->Blit(TopFace.Surface,
-		              TopFace.X,TopFace.Y,
-		              TopFace.Wdt,TopFace.Hgt,
-		              cgo.Surface,
-		              offX + Shape.GetX() + Def->TopFace.tx, offY + Shape.GetY() + Def->TopFace.ty,
-		              TopFace.Wdt, TopFace.Hgt,
-		              true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	// end of color modulation
 	if (!eDrawMode) FinishedDrawing();
 }
@@ -2374,7 +2302,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	FinishedDrawing();
 }
 
-void C4Object::CompileFunc(StdCompiler *pComp)
+void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fCompiler = pComp->isCompiler();
 	if (fCompiler)
@@ -2389,23 +2317,16 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),id.ToString()); return; }
 	}
 
-	// Write the name only if the object has an individual name, use def name as default for reading.
-	// (Info may overwrite later, see C4Player::MakeCrewMember)
-	/*if (pComp->isCompiler())
-	  pComp->Value(mkNamingAdapt(Name, "Name", Def->Name));
-	else if (!Name.isRef())
-	  // Write the name only if the object has an individual name
-	  // 2do: And what about binary compilers?
-	  pComp->Value(mkNamingAdapt(Name, "Name"));*/
-	C4PropListNumbered::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt( mkParAdapt(static_cast<C4PropListNumbered&>(*this), numbers), "Properties"));
 	pComp->Value(mkNamingAdapt( Status,                           "Status",             1                 ));
+	if (Info) nInfo = Info->Name; else nInfo.Clear();
 	pComp->Value(mkNamingAdapt( toC4CStrBuf(nInfo),               "Info",               ""                ));
 	pComp->Value(mkNamingAdapt( Owner,                            "Owner",              NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Timer,                            "Timer",              0                 ));
 	pComp->Value(mkNamingAdapt( Controller,                       "Controller",         NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));
-	pComp->Value(mkNamingAdapt( Plane,                              "Plane",                0                 ));
+	pComp->Value(mkNamingAdapt( Plane,                            "Plane",              0                 ));
 
 	pComp->Value(mkNamingAdapt( r,                                "Rotation",           0                 ));
 
@@ -2418,12 +2339,10 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Energy,                           "Energy",             0                 ));
 	pComp->Value(mkNamingAdapt( Alive,                            "Alive",              false             ));
 	pComp->Value(mkNamingAdapt( Breath,                           "Breath",             0                 ));
-	pComp->Value(mkNamingAdapt( FirePhase,                        "FirePhase",          0                 ));
-	pComp->Value(mkNamingAdapt( Color,                            "Color",              0u                )); // TODO: Convert
-	pComp->Value(mkNamingAdapt( Color,                            "ColorDw",            0u                ));
-	pComp->Value(mkNamingAdapt( fix_x,                            "X",                Fix0                  ));
-	pComp->Value(mkNamingAdapt( fix_y,                            "Y",                Fix0                  ));
-	pComp->Value(mkNamingAdapt( fix_r,                            "FixR",               0                 ));
+	pComp->Value(mkNamingAdapt( Color,                            "Color",              0u                ));
+	pComp->Value(mkNamingAdapt( fix_x,                            "X",                  Fix0              ));
+	pComp->Value(mkNamingAdapt( fix_y,                            "Y",                  Fix0              ));
+	pComp->Value(mkNamingAdapt( fix_r,                            "R",                  Fix0              ));
 	pComp->Value(mkNamingAdapt( xdir,                             "XDir",               0                 ));
 	pComp->Value(mkNamingAdapt( ydir,                             "YDir",               0                 ));
 	pComp->Value(mkNamingAdapt( rdir,                             "RDir",               0                 ));
@@ -2435,21 +2354,21 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( OnFire,                           "OnFire",             false             ));
 	pComp->Value(mkNamingAdapt( InLiquid,                         "InLiquid",           false             ));
 	pComp->Value(mkNamingAdapt( EntranceStatus,                   "EntranceStatus",     false             ));
-	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                  ));
+	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                ));
 	pComp->Value(Action);
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component"                             ));
-	pComp->Value(mkNamingAdapt( Contents,                         "Contents"                              ));
+	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
-	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu               ));
+	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
 	pComp->Value(mkNamingAdapt( Layer,                            "Layer",              C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
-	pComp->Value(mkNamingPtrAdapt( pEffects,                      "Effects"                               ));
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt( pEffects,           "Effects"                               ), numbers));
 	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
 
 	// Serialize mesh instance if we have a mesh graphics
@@ -2458,7 +2377,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		if(pComp->isCompiler())
 		{
 			assert(!pMeshInstance);
-			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
 		}
 
 		pComp->Value(mkNamingAdapt(mkParAdapt(*pMeshInstance, C4MeshDenumeratorFactory), "Mesh"));
@@ -2482,7 +2401,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			{
 				// Every command has its own naming environment
 				StdStrBuf Naming = FormatString("Command%d", i);
-				pComp->Value(mkNamingPtrAdapt(pCmd ? pCmd->Next : Command, Naming.getData()));
+				pComp->Value(mkParAdapt(mkNamingPtrAdapt(pCmd ? pCmd->Next : Command, Naming.getData()), numbers));
 				// Last command?
 				pCmd = (pCmd ? pCmd->Next : Command);
 				if (!pCmd)
@@ -2496,7 +2415,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 			for (int i = 1; pCmd; i++, pCmd = pCmd->Next)
 			{
 				StdStrBuf Naming = FormatString("Command%d", i);
-				pComp->Value(mkNamingAdapt(*pCmd, Naming.getData()));
+				pComp->Value(mkNamingAdapt(mkParAdapt(*pCmd, numbers), Naming.getData()));
 			}
 		}
 	}
@@ -2522,15 +2441,10 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 		if (pMeshInstance)
 		{
-			// Set Action animation by slot 0		
+			// Set Action animation by slot 0
 			Action.Animation = pMeshInstance->GetRootAnimationForSlot(0);
 			pMeshInstance->SetFaceOrderingForClrModulation(ColorMod);
 		}
-
-		// if on fire but no effect is present (old-style savegames), re-incinerate
-		int32_t iFireNumber;
-		C4Value Par1, Par2, Par3, Par4;
-		if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, false, iFireNumber);
 
 		// blit mode not assigned? use definition default then
 		if (!BlitMode) BlitMode = Def->BlitMode;
@@ -2542,37 +2456,9 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 }
 
-void C4Object::EnumeratePointers()
+void C4Object::Denumerate(C4ValueNumbers * numbers)
 {
-	// Standard enumerated pointers
-	Contained.EnumeratePointers();
-	Action.Target.EnumeratePointers();
-	Action.Target2.EnumeratePointers();
-	Layer.EnumeratePointers();
-
-	// Info by name
-	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
-	if (Info) nInfo = Info->Name; else nInfo.Clear();
-
-	// Commands
-	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)
-		pCom->EnumeratePointers();
-
-	// effects
-	if (pEffects) pEffects->EnumeratePointers();
-
-	// gfx overlays
-	if (pGfxOverlay)
-		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			pGfxOvrl->EnumeratePointers();
-
-	// mesh instance
-	if (pMeshInstance) pMeshInstance->EnumeratePointers();
-}
-
-void C4Object::DenumeratePointers()
-{
-	C4PropList::DenumeratePointers();
+	C4PropList::Denumerate(numbers);
 	// Standard enumerated pointers
 	Contained.DenumeratePointers();
 	Action.Target.DenumeratePointers();
@@ -2580,14 +2466,14 @@ void C4Object::DenumeratePointers()
 	Layer.DenumeratePointers();
 
 	// Post-compile object list
-	Contents.DenumerateRead();
+	Contents.DenumeratePointers();
 
 	// Commands
 	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)
-		pCom->DenumeratePointers();
+		pCom->Denumerate(numbers);
 
 	// effects
-	if (pEffects) pEffects->DenumeratePointers();
+	if (pEffects) pEffects->Denumerate(numbers);
 
 	// gfx overlays
 	if (pGfxOverlay)
@@ -2673,7 +2559,6 @@ bool C4Object::AssignInfo()
 		// Dead and gone (info flags, remove from crew/cursor)
 		if (!Alive)
 		{
-			Info->HasDied=true;
 			if (ValidPlr(Owner)) ::Players.Get(Owner)->ClearPointers(this, true);
 		}
 		return true;
@@ -2739,7 +2624,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	C4Def *pDef = C4Id2Def(id); if (!pDef) return NULL;
 	// get needed contents
 	C4IDList NeededComponents;
-	pDef->GetComponents(&NeededComponents, NULL, this);
+	pDef->GetComponents(&NeededComponents, NULL);
 	// Check for sufficient components
 	StdStrBuf Needs; Needs.Format(LoadResStr("IDS_CON_BUILDMATNEED"),pDef->GetName());
 	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
@@ -2788,8 +2673,8 @@ bool C4Object::CheckSolidMaskRect()
 	if (GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap) return false;
 
 	// check NewGfx only, because invalid SolidMask-rects are OK in OldGfx
-	// the bounds-check is done in CStdDDraw::GetPixel()
-	CSurface *sfcGraphics = GetGraphics()->GetBitmap();
+	// the bounds-check is done in C4Draw::GetPixel()
+	C4Surface *sfcGraphics = GetGraphics()->GetBitmap();
 	SolidMask.Set(Max<int32_t>(SolidMask.x,0), Max<int32_t>(SolidMask.y,0),
 	              Min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), Min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
 	              SolidMask.tx, SolidMask.ty);
@@ -2831,12 +2716,12 @@ void C4Object::DrawSelectMark(C4TargetFacet &cgo)
 	if (!Inside<float>(offX, cgo.X, cgo.X + cgo.Wdt)
 	    || !Inside<float>(offY, cgo.Y, cgo.Y + cgo.Hgt)) return;
 	// Draw select marks
-	float cox = (offX + Shape.GetX() - cgo.X) * newzoom + cgo.X - 2;
-	float coy = (offY + Shape.GetY() - cgo.Y) * newzoom + cgo.Y - 2;
+	float cox = offX + Shape.GetX() - cgo.X + cgo.X - 2;
+	float coy = offY + Shape.GetY() - cgo.Y + cgo.Y - 2;
 	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy,0);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy,1);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt*newzoom,2);
-	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt*newzoom,coy+Shape.Hgt*newzoom,3);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt,coy,1);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox,coy+Shape.Hgt,2);
+	GfxR->fctSelectMark.Draw(cgo.Surface,cox+Shape.Wdt,coy+Shape.Hgt,3);
 }
 
 void C4Object::ClearCommands()
@@ -2975,30 +2860,6 @@ bool C4Object::ExecuteCommand()
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done
 	return true;
-}
-
-void C4Object::AddMaterialContents(int32_t iMaterial, int32_t iAmount)
-{
-	// Create contents list if necessary
-	if (!MaterialContents) MaterialContents = new C4MaterialList;
-	// Add amount
-	MaterialContents->Add(iMaterial,iAmount);
-}
-
-void C4Object::DigOutMaterialCast(bool fRequest)
-{
-	// Check material contents for sufficient object cast amounts
-	if (!MaterialContents) return;
-	for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
-		if (MaterialContents->Amount[iMaterial])
-			if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID::None)
-				if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
-					if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
-						if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
-						{
-							Game.CreateObject(::MaterialMap.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
-							MaterialContents->Amount[iMaterial]=0;
-						}
 }
 
 void C4Object::Resort()
@@ -3296,14 +3157,8 @@ void C4Object::ContactAction()
 			ObjectActionStand(this);
 			return;
 		case DFA_DIG:
-			// Redirect downleft/downright
-			if (Action.ComDir==COMD_DownLeft)
-				{ Action.ComDir=COMD_Left; break; }
-			if (Action.ComDir==COMD_DownRight)
-				{ Action.ComDir=COMD_Right; break; }
-			// Else stop
-			ObjectComStopDig(this);
-			return;
+			// no special action
+			break;
 		case DFA_SWIM:
 			// Try corner scale out
 			if (!GBackLiquid(GetX(), GetY() - 1))
@@ -3336,8 +3191,8 @@ void C4Object::ContactAction()
 			if (ObjectActionHangle(this,Action.Dir)) return;
 			break;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Top)) ObjectComStopDig(this); return;
+			// No action
+			break;
 		case DFA_HANGLE:
 			Action.ComDir=COMD_Stop;
 			break;
@@ -3384,9 +3239,8 @@ void C4Object::ContactAction()
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Left)) ObjectComStopDig(this);
-			return;
+			// Dig: no action
+			break;
 		}
 	}
 
@@ -3431,9 +3285,8 @@ void C4Object::ContactAction()
 			Action.ComDir=COMD_Stop;
 			return;
 		case DFA_DIG:
-			// Dig: Stop
-			if (!(pActionDef->GetPropertyInt(P_Attach) & CNAT_Right)) ObjectComStopDig(this);
-			return;
+			// Dig: no action
+			break;
 		}
 	}
 
@@ -3650,14 +3503,10 @@ void C4Object::ExecAction()
 	int32_t dir = Action.Dir;
 	C4Real accel = C4REAL100(pActionDef->GetPropertyInt(P_Accel));
 	C4Real decel = C4REAL100(pActionDef->GetPropertyInt(P_Decel));
-	C4Real lLimit = C4REAL100(pActionDef->GetPropertyInt(P_Speed));
+	C4Real limit = C4REAL100(pActionDef->GetPropertyInt(P_Speed));
 
-	C4Real xlFloatAccel;
-	C4Real xrFloatAccel;
-	C4Real yuFloatAccel;
-	C4Real ydFloatAccel;
-	C4Real lFloatAccel;
-	C4Real rFloatAccel;
+	C4Real lFlightAccel;
+	C4Real rFlightAccel;
 
 	switch (pActionDef->GetPropertyP(P_Procedure))
 	{
@@ -3671,14 +3520,14 @@ void C4Object::ExecAction()
 				xdir-=decel;
 			else
 				xdir-=accel;
-			if (xdir<-lLimit) xdir=-lLimit;
+			if (xdir<-limit) xdir=-limit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
 			if (dir == DIR_Left)
 				xdir+=decel;
 			else
 				xdir+=accel;
-			if (xdir>+lLimit) xdir=+lLimit;
+			if (xdir>+limit) xdir=+limit;
 			break;
 		case COMD_Stop: case COMD_Up: case COMD_Down:
 			if (xdir<0) xdir+=decel;
@@ -3723,9 +3572,9 @@ void C4Object::ExecAction()
 		switch (ComDir)
 		{
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
-			ydir-=accel; if (ydir<-lLimit) ydir=-lLimit; break;
+			ydir-=accel; if (ydir<-limit) ydir=-limit; break;
 		case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
-			ydir+=accel; if (ydir>+lLimit) ydir=+lLimit; break;
+			ydir+=accel; if (ydir>+limit) ydir=+limit; break;
 		case COMD_Left: case COMD_Right: case COMD_Stop:
 			if (ydir<0) ydir+=accel;
 			if (ydir>0) ydir-=accel;
@@ -3746,15 +3595,15 @@ void C4Object::ExecAction()
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=accel; if (xdir<-lLimit) xdir=-lLimit;
+			xdir-=accel; if (xdir<-limit) xdir=-limit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=accel; if (xdir>+lLimit) xdir=+lLimit;
+			xdir+=accel; if (xdir>+limit) xdir=+limit;
 			break;
 		case COMD_Up:
 			xdir += (Action.Dir == DIR_Left) ? -accel : accel;
-			if (xdir<-lLimit) xdir=-lLimit;
-			if (xdir>+lLimit) xdir=+lLimit;
+			if (xdir<-limit) xdir=-limit;
+			if (xdir>+limit) xdir=+limit;
 			break;
 		case COMD_Stop: case COMD_Down:
 			if (xdir<0) xdir+=accel;
@@ -3779,16 +3628,16 @@ void C4Object::ExecAction()
 				SetCommand(C4CMD_Exit);
 			}
 
-		lFloatAccel = Max(Min(lLimit+xdir,accel),itofix(0));
-		rFloatAccel = Max(Min(lLimit-xdir,accel),itofix(0));
+		lFlightAccel = Max(Min(limit+xdir,accel),itofix(0));
+		rFlightAccel = Max(Min(limit-xdir,accel),itofix(0));
 
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=lFloatAccel;
+			xdir-=lFlightAccel;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=rFloatAccel;
+			xdir+=rFlightAccel;
 			break;
 		}
 
@@ -3815,7 +3664,7 @@ void C4Object::ExecAction()
 		else if (Action.t_attach & CNAT_Top && Shape.Attach(smpx,smpy,CNAT_Top)) fAttachOK = true;
 		if (!fAttachOK)
 			{ ObjectComStopDig(this); return; }
-		iPhaseAdvance=40*lLimit;
+		iPhaseAdvance=40*limit;
 
 		if (xdir < 0) SetDir(DIR_Left); else if (xdir > 0) SetDir(DIR_Right);
 		Action.t_attach=CNAT_None;
@@ -3836,12 +3685,12 @@ void C4Object::ExecAction()
 		case COMD_Left:                   xdir-=accel; break;
 		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
 		case COMD_Stop:
-			if (xdir<0) xdir+=accel;
-			if (xdir>0) xdir-=accel;
-			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
-			if (ydir<0) ydir+=accel;
-			if (ydir>0) ydir-=accel;
-			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
 			break;
 		}
 
@@ -3854,15 +3703,18 @@ void C4Object::ExecAction()
 			else { ObjectActionWalk(this); return; }
 		}
 
-		// xdir/ydir bounds
-		if (ydir<-lLimit) ydir=-lLimit; if (ydir>+lLimit) ydir=+lLimit;
-		if (xdir>+lLimit) xdir=+lLimit; if (xdir<-lLimit) xdir=-lLimit;
+		// xdir/ydir bounds, don't apply if COMD_None
+		if (Action.ComDir != COMD_None)
+		{
+			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
+			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		}
 		// Surface dir bound
 		if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1)) if (ydir<0) ydir=0;
 		// Dir, Phase, Attach
 		if (xdir<0) SetDir(DIR_Left);
 		if (xdir>0) SetDir(DIR_Right);
-		iPhaseAdvance=fixtoi(lLimit*10);
+		iPhaseAdvance=fixtoi(limit*10);
 		Action.t_attach=CNAT_None;
 		Mobile=1;
 
@@ -3898,10 +3750,10 @@ void C4Object::ExecAction()
 		iTXDir=0; fStraighten=false;
 		switch (Action.ComDir)
 		{
-		case COMD_Left: case COMD_DownLeft:   iTXDir=-lLimit; break;
-		case COMD_UpLeft:  fStraighten=1;     iTXDir=-lLimit; break;
-		case COMD_Right: case COMD_DownRight: iTXDir=+lLimit; break;
-		case COMD_UpRight: fStraighten=1;     iTXDir=+lLimit; break;
+		case COMD_Left: case COMD_DownLeft:   iTXDir=-limit; break;
+		case COMD_UpLeft:  fStraighten=1;     iTXDir=-limit; break;
+		case COMD_Right: case COMD_DownRight: iTXDir=+limit; break;
+		case COMD_UpRight: fStraighten=1;     iTXDir=+limit; break;
 		case COMD_Up:      fStraighten=1; break;
 		case COMD_Stop: case COMD_Down:       iTXDir=0;       break;
 		}
@@ -3932,7 +3784,7 @@ void C4Object::ExecAction()
 		// Horizontal follow
 		iTargetX=BoundBy(GetX(),sax-iPushDistance,sax+sawdt-1+iPushDistance);
 		if (GetX()==iTargetX) xdir=0;
-		else { if (GetX()<iTargetX) xdir=+lLimit; if (GetX()>iTargetX) xdir=-lLimit; }
+		else { if (GetX()<iTargetX) xdir=+limit; if (GetX()>iTargetX) xdir=-limit; }
 		// Phase by XDir
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left);  }
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
@@ -3965,7 +3817,7 @@ void C4Object::ExecAction()
 		if (Action.ComDir==COMD_Right) iPullX = GetX()-iPullDistance;
 		if (Action.ComDir==COMD_Left) iPullX = GetX()+iPullDistance;
 
-		fWalk = lLimit;
+		fWalk = limit;
 
 		fMove = 0;
 		if (Action.ComDir==COMD_Right) fMove = +fWalk;
@@ -4046,24 +3898,33 @@ void C4Object::ExecAction()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_FLOAT:
-		// Float speed
-		xlFloatAccel = Max(Min(lLimit+xdir,accel),itofix(0));
-		xrFloatAccel = Max(Min(lLimit-xdir,accel),itofix(0));
-		yuFloatAccel = Max(Min(lLimit+ydir,accel),itofix(0));
-		ydFloatAccel = Max(Min(lLimit-ydir,accel),itofix(0));
-
 		// ComDir changes xdir/ydir
 		switch (Action.ComDir)
 		{
-		case COMD_Up:    ydir-=yuFloatAccel; break;
-		case COMD_Down:  ydir+=ydFloatAccel; break;
-		case COMD_Right: xdir+=xrFloatAccel; break;
-		case COMD_Left:  xdir-=xlFloatAccel; break;
-		case COMD_UpRight: ydir-=yuFloatAccel; xdir+=xrFloatAccel; break;
-		case COMD_DownRight: ydir+=ydFloatAccel; xdir+=xrFloatAccel; break;
-		case COMD_DownLeft: ydir+=ydFloatAccel; xdir-=xlFloatAccel; break;
-		case COMD_UpLeft: ydir-=yuFloatAccel; xdir-=xlFloatAccel; break;
+		case COMD_Up:       ydir-=accel; break;
+		case COMD_UpRight:  ydir-=accel;  xdir+=accel; break;
+		case COMD_Right:                  xdir+=accel; break;
+		case COMD_DownRight:ydir+=accel;  xdir+=accel; break;
+		case COMD_Down:     ydir+=accel; break;
+		case COMD_DownLeft: ydir+=accel;  xdir-=accel; break;
+		case COMD_Left:                   xdir-=accel; break;
+		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
+		case COMD_Stop:
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
+			break;
 		}
+		// xdir/ydir bounds, don't apply if COMD_None
+		if (Action.ComDir != COMD_None)
+		{
+			if (ydir<-limit) ydir=-limit; if (ydir>+limit) ydir=+limit;
+			if (xdir>+limit) xdir=+limit; if (xdir<-limit) xdir=-limit;
+		}
+
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -4112,8 +3973,6 @@ void C4Object::ExecAction()
 		bool fBroke;
 		fBroke=false;
 		int32_t iConnectX, iConnectY;
-		int32_t iAttachX, iAttachY;
-		iAttachX = iAttachY = 0;
 
 		// Line destruction check: Target missing or incomplete
 		if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
@@ -4239,25 +4098,6 @@ void C4Object::ExecAction()
 				}
 			}
 		}
-
-#if 0
-		// Update animation on mesh instance. If a new action was set,
-		// then this will already have happened for the new action.
-		if (pMeshInstance && !set_new_action)
-		{
-			C4String* AnimationName = pActionDef->GetPropertyStr(P_Animation);
-			if (AnimationName)
-			{
-				StdMeshInstance::AnimationRef ref(pMeshInstance, AnimationName->GetData());
-				if (ref)
-				{
-					float delay = pActionDef->GetPropertyInt(P_Delay);
-					float length = pActionDef->GetPropertyInt(P_Length);
-					ref.SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ref.GetAnimation().Length);
-				}
-			}
-		}
-#endif
 	}
 
 	return;
@@ -4362,12 +4202,6 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	{
 		Visibility = vis.getInt();
 	}
-	// check overlay
-	if (Visibility & VIS_OverlayOnly)
-	{
-		if (!fAsOverlay) return false;
-		if (Visibility == VIS_OverlayOnly) return true;
-	}
 	// check layer
 	if (Layer && Layer != this && !fAsOverlay)
 	{
@@ -4377,6 +4211,12 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	}
 	// no flags set?
 	if (!Visibility) return true;
+	// check overlay
+	if (Visibility & VIS_OverlayOnly)
+	{
+		if (!fAsOverlay) return false;
+		if (Visibility == VIS_OverlayOnly) return true;
+	}
 	// check visibility
 	fDraw=false;
 	if (Visibility & VIS_Owner) fDraw = fDraw || (iForPlr==Owner);
@@ -4414,17 +4254,17 @@ void C4Object::SetRotation(int32_t nr)
 void C4Object::PrepareDrawing()
 {
 	// color modulation
-	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) lpDDraw->ActivateBlitModulation(ColorMod);
+	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) pDraw->ActivateBlitModulation(ColorMod);
 	// other blit modes
-	lpDDraw->SetBlitMode(BlitMode);
+	pDraw->SetBlitMode(BlitMode);
 }
 
 void C4Object::FinishedDrawing()
 {
 	// color modulation
-	lpDDraw->DeactivateBlitModulation();
+	pDraw->DeactivateBlitModulation();
 	// extra blitting flags
-	lpDDraw->ResetBlitMode();
+	pDraw->ResetBlitMode();
 }
 
 void C4Object::DrawSolidMask(C4TargetFacet &cgo)
@@ -4504,8 +4344,6 @@ bool C4Object::GrabInfo(C4Object *pFrom)
 	SetName(Info->Name);
 	// retire from old crew
 	Info->Retire();
-	// set death status
-	Info->HasDied = !Alive;
 	// if alive, recruit to new crew
 	if (Alive) Info->Recruit();
 	// make new crew member
@@ -4588,8 +4426,8 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 	if (!parV) return false;
 	// determine drag object/id
 	C4Object *obj=NULL; C4ID id;
-	if (parV.GetType() == C4V_C4Object) obj = parV.getObj();
-	else if (parV.GetType() == C4V_PropList) id = parV.getC4ID();
+	if (parV.CheckConversion(C4V_Object)) obj = parV.getObj();
+	else if (parV.CheckConversion(C4V_Def)) id = parV.getC4ID();
 	if (drag_object) *drag_object = obj;
 	if (drag_id) *drag_id = id;
 	// drag possible, even w./o image
@@ -4620,28 +4458,30 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
 
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom)
 {
+	// for HUD
+	if(Category & C4D_Foreground)
+	{
+		resultzoom = zoom;
+
+		if(fix_x < 0)
+			resultx = cgo.X + objx + cgo.Wdt;
+		else
+			resultx = cgo.X + objx;
+
+		if(fix_y < 0)
+			resulty = cgo.Y + objy + cgo.Hgt;
+		else
+			resulty = cgo.Y + objy;
+
+		return true;
+	}
+
+	// zoom with parallaxity
 	int iParX, iParY;
 	GetParallaxity(&iParX, &iParY);
 	float targetx = cgo.TargetX; float targety = cgo.TargetY;
-
 	float parx = iParX / 100.0f; float pary = iParY / 100.0f;
-	float par = parx; //todo: pary?
-	// Old
-	/*resultzoom = zoom;
-
-	if(parx == 0 && fix_x < 0)
-		resultx = cgo.X + objx + cgo.Wdt;
-	else
-		resultx = cgo.X + objx - targetx*parx;
-
-	if(pary == 0 && fix_y < 0)
-		resulty = cgo.Y + objy + cgo.Hgt;
-	else
-		resulty = cgo.Y + objy - targety*pary;
-
-	return true;*/
-
-	// New
+	float par = parx; // and pary?
 
 	// Step 1: project to landscape coordinates
 	resultzoom = 1.0 / (1.0 - (par - par/zoom));
@@ -4662,6 +4502,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 		resulty = cgo.Y + (objy + cgo.Hgt) * zoom / resultzoom;
 	else
 		resulty = cgo.Y + (ry - targety) * zoom / resultzoom;
+
 	return true;
 }
 
@@ -4688,8 +4529,8 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 {
 	// get unused object
 	C4Object *pUnusedObject;
-	C4AulFunc *pFnObj2Drop;
-	if ((pFnObj2Drop = Def->Script.GetSFunc(PSF_GetObject2Drop)))
+	C4AulFunc *pFnObj2Drop = GetFunc(PSF_GetObject2Drop);
+	if (pFnObj2Drop)
 		pUnusedObject = pFnObj2Drop->Exec(this, pToMakeRoomForObject ? &C4AulParSet(C4VObj(pToMakeRoomForObject)) : NULL).getObj();
 	else
 	{
@@ -4735,7 +4576,7 @@ bool C4Object::SetGraphics(const char *szGraphicsName, C4Def *pSourceDef)
 	C4DefGraphics *pGrp = pSourceDef->Graphics.Get(szGraphicsName);
 	if (!pGrp) return false;
 	// no change? (no updates need to be done, then)
-	if (pGraphics == pGrp) return true;
+	//if (pGraphics == pGrp) return true; // that's not exactly true because the graphics itself might have changed, for example on def reload
 	// set new graphics
 	pGraphics = pGrp;
 	// update Color, SolidMask, etc.
@@ -4951,7 +4792,7 @@ StdStrBuf C4Object::GetInfoString()
 		if (!vInfo) continue;
 		// debug: warn for wrong return types
 		if (vInfo.GetType() != C4V_String)
-			DebugLogF("Effect %s(%d) on object %s (#%d) returned wrong info type %d.", pEff->Name, pEff->iNumber, Def->GetName(), Number, vInfo.GetType());
+			DebugLogF("Effect %s(#%d) on object %s (#%d) returned wrong info type %d.", pEff->GetName(), pEff->Number, GetName(), Number, vInfo.GetType());
 		// get string val
 		C4String *psInfo = vInfo.getStr(); const char *szEffInfo;
 		if (psInfo && (szEffInfo = psInfo->GetCStr()))
@@ -5020,32 +4861,20 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
 	return true;
 }
 
-int32_t C4Object::GetFireCausePlr()
-{
-	// get fire effect
-	if (!pEffects) return NO_OWNER;
-	C4Effect *pFire = pEffects->Get(C4Fx_Fire);
-	if (!pFire) return NO_OWNER;
-	// get causing player
-	int32_t iFireCausePlr = pFire->GetPropertyInt(P_CausedBy);
-	// return if valid
-	if (ValidPlr(iFireCausePlr)) return iFireCausePlr; else return NO_OWNER;
-}
-
 void C4Object::UpdateScriptPointers()
 {
 	if (pEffects)
 		pEffects->ReAssignAllCallbackFunctions();
 }
 
-StdStrBuf C4Object::GetNeededMatStr(C4Object *pBuilder)
+StdStrBuf C4Object::GetNeededMatStr()
 {
 	C4Def* pComponent;
 	int32_t cnt, ncnt;
 	StdStrBuf NeededMats;
 
 	C4IDList NeededComponents;
-	Def->GetComponents(&NeededComponents, NULL, pBuilder);
+	Def->GetComponents(&NeededComponents, NULL);
 
 	C4ID idComponent;
 

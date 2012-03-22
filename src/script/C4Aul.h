@@ -7,7 +7,7 @@
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,29 +29,14 @@
 #include <C4Id.h>
 #include <C4Script.h>
 #include <C4StringTable.h>
+#include "C4AulFunc.h"
 #include <string>
 #include <vector>
 
-class C4Def;
-class C4DefList;
-
-// class predefs
-class C4AulError;
-class C4AulFunc;
-class C4AulScriptFunc;
-class C4AulDefFunc;
-class C4AulScript;
-class C4AulScriptEngine;
-class C4AulDebug;
-class C4LangStringTable;
-
-struct C4AulContext;
-struct C4AulBCC;
-
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
-#define C4AUL_MAX_Par         10  // max number of parameters
-#define C4AUL_MAX_Var         10  // max number of func local vars
+
+class C4ScriptHost;
 
 // generic C4Aul error class
 class C4AulError
@@ -120,16 +105,14 @@ enum C4AulBCCType
 	AB_PROP_SET,
 	AB_ARRAY_SLICE, // array slicing
 	AB_ARRAY_SLICE_SET,
-	AB_VARN,    // a named var
-	AB_VARN_SET,
-	AB_PARN,    // a named parameter
-	AB_PARN_SET,
+	AB_DUP,     // duplicate value from stack
+	AB_STACK_SET, // copy top of stack to stack
+	AB_POP_TO,   // pop top of stack to stack
 	AB_LOCALN,  // a property of this
 	AB_LOCALN_SET,
 	AB_GLOBALN, // a named global
 	AB_GLOBALN_SET,
 	AB_PAR,     // Par statement
-	AB_PAR_SET,
 	AB_FUNC,    // function
 
 	AB_PARN_CONTEXT,
@@ -170,12 +153,10 @@ enum C4AulBCCType
 	AB_STRING,  // constant: string
 	AB_CPROPLIST, // constant: proplist
 	AB_CARRAY,  // constant: array
+	AB_CFUNCTION, // constant: function
 	AB_NIL,     // constant: nil
-	AB_ARRAY,   // semi-constant: array
-	AB_DUP,     // duplicate value from stack
-	AB_PROPLIST, // create a new proplist
-	AB_IPROPLIST, // set a property of a proplist
-	AB_IVARN,   // initialization of named var
+	AB_NEW_ARRAY,   // semi-constant: array
+	AB_NEW_PROPLIST, // create a new proplist
 	AB_JUMP,    // jump
 	AB_JUMPAND, // jump if zero, else pop the stack
 	AB_JUMPOR,  // jump if not zero, else pop the stack
@@ -188,25 +169,6 @@ enum C4AulBCCType
 	AB_EOFN,    // end of function
 	AB_EOF      // end of file
 };
-
-
-// ** a definition of an operator
-// there are two classes of operators, the postfix-operators (+,-,&,...) and the
-// prefix-operators (mainly !,~,...).
-struct C4ScriptOpDef
-{
-	unsigned short Priority;
-	const char* Identifier;
-	C4AulBCCType Code;
-	C4AulBCCType ResultModifier; // code to apply to result after it was calculated
-	bool Postfix;
-	bool Changer; // changes first operand to result, rewrite to "a = a (op) b"
-	bool NoSecondStatement; // no second statement expected (++/-- postfix)
-	C4V_Type RetType; // type returned. ignored by C4V
-	C4V_Type Type1;
-	C4V_Type Type2;
-};
-extern C4ScriptOpDef C4ScriptOpMap[];
 
 // byte code chunk
 struct C4AulBCC
@@ -228,7 +190,7 @@ struct C4AulBCC
 struct C4AulContext
 {
 	C4Object *Obj;
-	C4Def *Def;
+	C4PropList *Def;
 	struct C4AulScriptContext *Caller;
 };
 
@@ -243,49 +205,8 @@ struct C4AulScriptContext : public C4AulContext
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
-	int ParCnt() const { return Vars - Pars; }
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
-};
-
-// base function class
-class C4AulFunc
-{
-	friend class C4AulScript;
-	friend class C4AulScriptEngine;
-	friend class C4AulFuncMap;
-	friend class C4AulParseState;
-
-public:
-	C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true); // constructor
-	virtual ~C4AulFunc(); // destructor
-
-	C4AulScript *Owner; // owner
-	char Name[C4AUL_MAX_Identifier]; // function name
-
-protected:
-	C4AulFunc *Prev, *Next; // linked list members
-	C4AulFunc *MapNext; // map member
-	C4AulFunc *LinkedTo; // points to next linked function; destructor will destroy linked func, too
-
-public:
-	C4AulFunc *OverloadedBy; // function by which this one is overloaded
-
-	virtual C4AulScriptFunc *SFunc() { return NULL; } // type check func...
-
-	// Wether this function should be visible to players
-	virtual bool GetPublic() { return false; }
-	virtual int GetParCount() { return C4AUL_MAX_Par; }
-	virtual C4V_Type* GetParType() { return 0; }
-	virtual C4V_Type GetRetType() { return C4V_Any; }
-	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false) { return C4Value(); } // execute func (script call)
-	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
-	virtual void UnLink() { OverloadedBy = NULL; }
-
-	C4AulFunc *GetLocalSFunc(const char *szIdtf); // find script function in own scope
-protected:
-	void DestroyLinked(); // destroys linked functions
-
 };
 
 // script function class
@@ -295,50 +216,40 @@ public:
 	C4AulFunc *OwnerOverloaded; // overloaded owner function; if present
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
-	void ParseDesc(); // evaluate desc (i.e. get idImage and Condition
 	int CodePos; // code pos
 
 public:
-	C4AulAccess Access;
-	StdCopyStrBuf Desc; // full function description block, including image and condition
-	StdCopyStrBuf DescText; // short function description text (name of menu entry)
-	StdCopyStrBuf DescLong; // secondary function description
-	C4ID idImage; // associated image
-	int32_t iImagePhase; // Image phase
-	C4AulFunc *Condition; // func condition
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
+	int ParCount;
 	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
+	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
+	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
-	C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL),
-			tProfileTime(0)
-	{
-		for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
-	} // constructor
+	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
+	C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
 
+	void ParseFn(C4AulScriptContext* context = NULL);
 	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
+	virtual int GetParCount() { return ParCount; }
 	virtual C4V_Type *GetParType() { return ParType; }
 	virtual C4V_Type GetRetType() { return C4V_Any; }
 	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
-	virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
+	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 
 	void SetError(C4AulContext *ctx, const char *szMessage); // set error message
 
-	void CopyBody(C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
-
-	StdStrBuf GetFullName(); // get a fully classified name (C4ID::Name) for debug output
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
-	C4AulScript * GetCodeOwner();
+	C4ScriptHost * GetCodeOwner();
 
 	time_t tProfileTime; // internally set by profiler
 
-	friend class C4AulScript;
+	friend class C4AulParseState;
+	friend class C4ScriptHost;
 };
 
 // defined function class
@@ -347,8 +258,8 @@ class C4AulDefFunc : C4AulFunc
 public:
 	C4ScriptFnDef* Def;
 
-	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef) : C4AulFunc(pOwner, pName) // constructor
-	{ Def = pDef; }
+	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef);
+	~C4AulDefFunc();
 
 	virtual bool GetPublic() { return !!Def->Public; }
 	virtual C4V_Type* GetParType() { return Def->ParType; }
@@ -363,7 +274,6 @@ class C4AulFuncMap
 public:
 	C4AulFuncMap();
 	~C4AulFuncMap();
-	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After);
 	C4AulFunc * GetFirstFunc(const char * Name);
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After);
 private:
@@ -375,6 +285,7 @@ protected:
 	void Add(C4AulFunc * func, bool bAtEnd = true);
 	void Remove(C4AulFunc * func);
 	friend class C4AulFunc;
+	friend class C4ScriptHost;
 };
 
 
@@ -418,37 +329,24 @@ public:
 // script class
 class C4AulScript
 {
-// MSVC maybe needs this.
-#ifdef _MSC_VER
-	friend class C4AulScript;
-#endif
-	friend class C4AulDebug;
 public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
-	void Clear(); // remove script, byte code and children
-	void Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner); // reg to linked list
+	virtual void Clear(); // remove script, byte code and children
+	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
 	void Unreg(); // remove from list
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	C4Def *Def; // owning def file
 	C4ValueMapNames LocalNamed;
-	enum Strict { NONSTRICT = 0, STRICT1 = 1, STRICT2 = 2, MAXSTRICT=STRICT2 };
-	enum Strict Strict; // new or even newer syntax?
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
-	const char *GetScript() const { return Script.getData(); }
-
-	C4AulFunc *GetFuncRecursive(const char *pIdtf); // search function by identifier, including global funcs
-	C4AulScriptFunc *GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailSafe = false); // get local sfunc, check access, check '~'-safety
-	C4AulScriptFunc *GetSFunc(const char *pIdtf); // get local script function by name
-	C4AulScriptFunc *GetSFunc(int iIndex, const char *szPattern = NULL); // get local script function by index
-	C4AulScriptFunc *GetSFuncWarn(const char *pIdtf, C4AulAccess AccNeeded, const char *WarnStr); // get function; return NULL and warn if not existant
+	virtual C4PropList * GetPropList() { return 0; }
+	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
-	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, enum Strict Strict = MAXSTRICT, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
+	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
 	void ResetProfilerTimes(); // zero all profiler times of owned functions
 	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
@@ -462,6 +360,8 @@ public:
 	friend class C4AulScriptFunc;
 	friend class C4AulScriptEngine;
 	friend class C4AulParseState;
+	friend class C4AulDebug;
+	friend class C4ScriptHost;
 
 	// Translate a string using the script's lang table
 	std::string Translate(const std::string &text) const;
@@ -471,44 +371,23 @@ protected:
 
 	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
-	C4AulScript *Owner, *Prev, *Next, *Child0, *ChildL; // tree structure
+	C4AulScript *Prev, *Next; // tree structure
 
-	StdStrBuf Script; // script
-	std::vector<C4AulBCC> Code;
-	std::vector<const char *> PosForCode;
-	C4AulBCC *CPos;  // compiled script (/pos)
 	C4AulScriptState State; // script state
-	bool Preparsing; // set while preparse
 	bool Resolving; // set while include-resolving, to catch circular includes
 
 	std::list<C4ID> Includes; // include list
 	std::list<C4ID> Appends; // append list
 
-	// internal function used to find overloaded functions
-	C4AulFunc *GetOverloadedFunc(C4AulFunc *ByFunc);
-	C4AulFunc *GetFunc(const char *pIdtf); // get local function by name
-
-	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
-	void RemoveLastBCC();
-	void ClearCode();
-	bool Preparse(); // preparse script; return if successfull
-	void ParseFn(C4AulScriptFunc *Fn, bool fExprOnly = false, C4AulScriptContext* context = NULL); // parse single script function
-
-	bool Parse(); // parse preparsed script; return if successfull
-	void ParseDescs(); // parse function descs
-
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	void LinkFunctions();
 	bool IncludesResolved;
-	void AppendTo(C4AulScript &Scr, bool bHighPrio); // append to given script
-	void UnLink(); // reset to unlinked state
+	virtual void UnLink(); // reset to unlinked state
 	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
+	virtual bool Parse();
 
-	C4AulScript *FindFirstNonStrictScript();    // find first script that is not #strict
-
-	int GetCodePos() const { return CPos - &Code[0]; }
-	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
 };
 
 // holds all C4AulScripts
@@ -516,10 +395,11 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
+	C4PropList * GlobalPropList;
+	C4AulScript *Child0, *ChildL; // tree structure
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors
-	int nonStrictCnt; // number of non-strict scripts
 	int lineCnt; // line count parsed
 
 	C4ValueMapNames GlobalNamedNames;
@@ -537,30 +417,34 @@ public:
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
+	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
+	virtual void AfterLink();
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
-	C4AulFunc * GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
-	{ return FuncLookUp.GetFunc(Name, Owner, After); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	std::list<char*> GetFunctionNames(C4AulScript *);
+	std::list<const char*> GetFunctionNames(C4AulScript *);
+	void ResetProfilerTimes(); // zero all profiler times of owned functions
+	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
 	void RegisterGlobalConstant(const char *szName, const C4Value &rValue); // creates a new constants or overwrites an old one
 	bool GetGlobalConstant(const char *szName, C4Value *pTargetValue); // check if a constant exists; assign value to pTargetValue if not NULL
 
-	bool DenumerateVariablePointers();
+	bool Denumerate(C4ValueNumbers *);
 	void UnLink(); // called when a script is being reloaded (clears string table)
 
 	// Compile scenario script data (without strings and constants)
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 
 	friend class C4AulFunc;
+	friend class C4ScriptHost;
 	friend class C4AulParseState;
 	friend class C4AulDebug;
+	friend class C4AulScript;
 };
 
 extern C4AulScriptEngine ScriptEngine;

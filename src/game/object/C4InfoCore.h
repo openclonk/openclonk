@@ -49,9 +49,7 @@ public:
 	int32_t  Birthday,TotalPlayingTime;
 	int32_t  Age;
 	char DeathMessage[C4MaxDeathMsg+1];
-	char PortraitFile[C4MaxName+2+4+1]; // used portrait
 	C4ValueMapData ExtraData;
-	bool NoSave; // set for _XYZ-CrewMembers
 public:
 	bool Save(C4Group &hGroup, class C4DefList *pDefs);
 	bool Load(C4Group &hGroup);
@@ -107,6 +105,7 @@ public:
 	int32_t PrefColor;
 	uint32_t PrefColorDw, PrefColor2Dw;
 	int32_t PrefPosition;
+	int32_t PrefClonkSkin;
 	// Old control method - loaded for backwards compatilibity if PrefControl is unassigned
 	// and stored back so you can use the same player file for CR and OC
 	int32_t OldPrefControl;

@@ -6,9 +6,9 @@
   <func>
     <title>FindConstructionSite</title>
     <category>Landscape</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>array</rtype>
       <params>
         <param>
           <type>id</type>
@@ -17,22 +17,22 @@
         </param>
         <param>
           <type>int</type>
-          <name>var_num_x</name>
-          <desc>Number of the variable in which the global x position of the site is to be stored. This variable should first be initialized with the x position for the start of the search.</desc>
+          <name>x</name>
+          <desc>Designated x-position of the construction site. Always global coordinates.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>var_num_y</name>
-          <desc>Number of the variable in which the global y position of the site is to be stored. This variable should first be initialized with the y position for the start of the search.</desc>
+          <name>y</name>
+          <desc>Designated y-position of the construction site. Always global coordinates.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Searches for a suitable construction site for a building of the specified type, starting at position <funclink>Var</funclink>(var_num_x)/<funclink>Var</funclink>(var_num_y). If a site is found, the coordinates are stored in the two specified variables and the function returns true. Otherwise, the function returns false.</desc>
+    <desc>Searches for a suitable construction site for a building of the specified type, starting at the specified position. If a site is found, the coordinates are returned in the array [x,y]. Otherwise, the function returns <code>nil</code>.</desc>
     <examples>
       <example>
-        <code><funclink>Var</funclink>(0)=<funclink>GetX</funclink>(); <funclink>Var</funclink>(1)=<funclink>GetY</funclink>();
-<funclink>if</funclink>(FindConstructionSite(HUT3, 0, 1))
-	<funclink>CreateConstruction</funclink>(HUT3, <funclink>Var</funclink>(0), <funclink>Var</funclink>(1), <funclink>GetOwner</funclink>(), 1, 1);</code>
+        <code>var xy;
+<funclink>if</funclink>(xy = FindConstructionSite(ToolsWorkshop, GetX(), GetY()))
+	<funclink>CreateConstruction</funclink>(ToolsWorkshop, xy[0], xy[1], <funclink>GetOwner</funclink>(), 1, true);</code>
         <text>Searches a construction site for a hut, starting at the local position. If a site is found, construction is started.</text>
       </example>
     </examples>

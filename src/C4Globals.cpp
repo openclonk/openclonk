@@ -18,7 +18,7 @@
 
 /* Global interdependent objects */
 
-#include "C4Include.h"
+#include <C4Include.h>
 #include "C4Application.h"
 #include "C4Console.h"
 #include "C4FullScreen.h"

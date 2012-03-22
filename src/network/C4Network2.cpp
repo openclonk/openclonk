@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2004-2009  Peter Wortmann
  * Copyright (c) 2004-2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
+ * Copyright (c) 2005-2006, 2009-2011  Günther Brammer
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
@@ -21,12 +21,11 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-#include <utility>
 
 #include <C4Include.h>
 #include <C4Network2.h>
-#include <C4Version.h>
 
+#include <C4Version.h>
 #include <C4Log.h>
 #include <C4Application.h>
 #include <C4Console.h>
@@ -368,7 +367,7 @@ bool C4Network2::DoLobby()
 		ChangeGameStatus(GS_Lobby, 0);
 
 	// determine lobby type
-	bool fFullscreenLobby = !Console.Active && (lpDDraw->GetEngine() != GFXENGN_NOGFX);
+	bool fFullscreenLobby = !Console.Active && (pDraw->GetEngine() != GFXENGN_NOGFX);
 
 	if (!fFullscreenLobby)
 	{
@@ -525,7 +524,7 @@ bool C4Network2::RetrieveScenario(char *szScenario)
 		return false;
 
 	// create unpacked copy of scenario
-	if (!ResList.FindTempResFileName(FormatString("Combined%d.c4s", Game.Clients.getLocalID()).getData(), szScenario) ||
+	if (!ResList.FindTempResFileName(FormatString("Combined%d.ocs", Game.Clients.getLocalID()).getData(), szScenario) ||
 	    !C4Group_CopyItem(pScenario->getFile(), szScenario) ||
 	    !C4Group_UnpackDirectory(szScenario))
 		return false;
@@ -537,7 +536,7 @@ bool C4Network2::RetrieveScenario(char *szScenario)
 	    !C4Group_UnpackDirectory(szTempDynamic))
 		return false;
 
-	// unpack Material.c4g if materials need to be merged
+	// unpack Material.ocg if materials need to be merged
 	StdStrBuf MaterialScenario, MaterialDynamic;
 	MaterialScenario.Format("%s" DirSep  C4CFN_Material, szScenario);
 	MaterialDynamic.Format("%s" DirSep  C4CFN_Material, szTempDynamic);
@@ -671,6 +670,7 @@ void C4Network2::Clear()
 	delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
 	iLastOwnVoting = 0;
+	Votes.Clear();
 	// don't clear fPasswordNeeded here, it's needed by InitClient
 }
 
@@ -1021,7 +1021,7 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 		Stat.Append("| - none -");
 
 	// draw
-	lpDDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
+	pDraw->TextOut(Stat.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X + 20,cgo.Y + 50);
 }
 
 bool C4Network2::InitNetIO(bool fNoClientID, bool fHost)
@@ -1081,7 +1081,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	else
 	{
 		if (pClient)
-			if (CheckConn(NewCCore, pConn, pClient, reply.getData()))
+			if (CheckConn(NewCCore, pConn, pClient, &reply))
 			{
 				// accept
 				if (!reply) reply = "connection accepted";
@@ -1089,7 +1089,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 			}
 		// client: host connection?
 		if (!fOK && !isHost() && Status.getState() == GS_Init && !Clients.GetHost())
-			if (HostConnect(NewCCore, pConn, reply.getData()))
+			if (HostConnect(NewCCore, pConn, &reply))
 			{
 				// accept
 				if (!reply) reply = "host connection accepted";
@@ -1105,7 +1105,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 				fWrongPassword = true;
 			}
 			// accept join
-			else if (Join(NewCCore, pConn, reply.getData()))
+			else if (Join(NewCCore, pConn, &reply))
 			{
 				// save core
 				pConn->SetCCore(NewCCore);
@@ -1144,26 +1144,26 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	}
 }
 
-bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply)
+bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, StdStrBuf * szReply)
 {
 	if (!pConn || !pClient) return false;
 	// already connected? (shouldn't happen really)
 	if (pClient->hasConn(pConn))
-		{ szReply = "already connected"; return true; }
+		{ *szReply = "already connected"; return true; }
 	// check core
 	if (CCore.getDiffLevel(pClient->getCore()) > C4ClientCoreDL_IDMatch)
-		{ szReply = "wrong client core"; return false; }
+		{ *szReply = "wrong client core"; return false; }
 	// check address
 	if (pClient->isConnected() && pClient->getMsgConn()->getPeerAddr().sin_addr.s_addr != pConn->getPeerAddr().sin_addr.s_addr)
-		{ szReply = "wrong address"; return false; }
+		{ *szReply = "wrong address"; return false; }
 	// accept
 	return true;
 }
 
-bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
+bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply)
 {
 	if (!pConn) return false;
-	if (!CCore.isHost()) { szReply = "not host"; return false; }
+	if (!CCore.isHost()) { *szReply = "not host"; return false; }
 	// create client class for host
 	// (core is unofficial, see InitClient() -  will be overwritten later in HandleJoinData)
 	C4Client *pClient = Game.Clients.Add(CCore);
@@ -1172,13 +1172,13 @@ bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *
 	return true;
 }
 
-bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
+bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply)
 {
 	if (!pConn) return false;
 	// security
-	if (!isHost()) { szReply = "not host"; return false; }
-	if (!fAllowJoin && !fAllowObserve) { szReply = "join denied"; return false; }
-	if (CCore.getID() != C4ClientIDUnknown) { szReply = "join with set id not allowed"; return false; }
+	if (!isHost()) { *szReply = "not host"; return false; }
+	if (!fAllowJoin && !fAllowObserve) { *szReply = "join denied"; return false; }
+	if (CCore.getID() != C4ClientIDUnknown) { *szReply = "join with set id not allowed"; return false; }
 	// find free client id
 	CCore.SetID(iNextClientID++);
 	// observer?
@@ -1503,7 +1503,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 {
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
-	int32_t iProcess = -1; uint32_t iTimeout = timeGetTime() + iTimeoutLen;
+	int32_t iProcess = -1; uint32_t iTimeout = GetTime() + iTimeoutLen;
 	// wait for ressource
 	while (isEnabled())
 	{
@@ -1535,12 +1535,12 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		if (pRes && pRes->getPresentPercent() != iProcess)
 		{
 			iProcess = pRes->getPresentPercent();
-			iTimeout = timeGetTime() + iTimeoutLen;
+			iTimeout = GetTime() + iTimeoutLen;
 		}
 		else
 		{
 			// if not: check timeout
-			if (timeGetTime() > iTimeout)
+			if (GetTime() > iTimeout)
 			{
 				LogFatal(FormatString(LoadResStr("IDS_NET_ERR_RESTIMEOUT"), szResName).getData());
 				if (pDlg) delete pDlg;
@@ -1577,7 +1577,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		}
 		else
 		{
-			if (!Application.ScheduleProcs(iTimeout - timeGetTime()))
+			if (!Application.ScheduleProcs(iTimeout - GetTime()))
 				{ return NULL; }
 		}
 
@@ -1775,7 +1775,7 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (iLastActivateRequest && timeGetTime() < iLastActivateRequest + C4NetActivationReqInterval)
+	if (iLastActivateRequest && GetTime() < iLastActivateRequest + C4NetActivationReqInterval)
 		return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
@@ -1786,7 +1786,7 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	iLastActivateRequest = timeGetTime();
+	iLastActivateRequest = GetTime();
 }
 
 void C4Network2::DeactivateInactiveClients()
@@ -2527,7 +2527,7 @@ void C4Network2::Vote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 		if (time(NULL) < (time_t) (iLastOwnVoting + C4NetMinVotingInterval))
 		{
 			Log(LoadResStr("IDS_TEXT_YOUCANONLYSTARTONEVOTINGE"));
-			if (eType == VT_Kick || eType == VT_Cancel)
+			if ((eType == VT_Kick && iData == Game.Clients.getLocalID()) || eType == VT_Cancel)
 				OpenSurrenderDialog(eType, iData);
 			return;
 		}
@@ -2600,7 +2600,8 @@ void C4Network2::EndVote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 			pVoteDialog = NULL;
 		}
 	// Did we try to kick ourself? Ask if we'd like to surrender
-	if (!fApprove && (eType == VT_Kick || eType == VT_Cancel) && iOrigin == Game.Clients.getLocalID())
+	bool fCancelVote = (eType == VT_Kick && iData == Game.Clients.getLocalID()) || eType == VT_Cancel;
+	if (!fApprove && fCancelVote && iOrigin == Game.Clients.getLocalID())
 		OpenSurrenderDialog(eType, iData);
 	// Check if the dialog should be opened
 	OpenVoteDialog();

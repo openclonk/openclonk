@@ -6,7 +6,7 @@
   <func>
     <title>SetGravity</title>
     <category>Global</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick² (increasing YDir by 2 per Tick with precision=10).</desc>
+    <desc>Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10).</desc>
     <related><funclink>GetGravity</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

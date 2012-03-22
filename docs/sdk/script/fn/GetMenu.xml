@@ -7,25 +7,10 @@
     <title>GetMenu</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>id?</rtype></syntax>
-    <desc>Returns the id of the menu if the object has an open menu. This is usually the id of the menu symbol (symbol) unless <funclink>CreateMenu</funclink> was used to explicitly use a differing menu id in idMenuID. Returns 0 if there is no menu or no menu symbol.</desc>
-    <remark>A return value of nil means that no valid symbol could be determined. This may happen e.g. if no object pointer was passed during a global call to the function. Engine defined menus such as Buy, Sell, etc. never return valid ids.</remark>
-    <examples>
-      <example>
-        <code>/* Wird bei klick auf Spezial aufgerufen */
-protected func ControlSpecial()
-{
-  /* überhaupt ein Menü offen und ein Symbol angegeben? */
-  if(GetMenu())
-    /* Mutieren */
-    <funclink>ChangeDef</funclink>(GetMenu());
-  return(1);
-}
-        </code>
-        <text>Mutate into the object represented by the symbol.</text>
-      </example>
-    </examples>
+    <desc>Returns the id of the menu if the object has an open menu. This is usually the id of the menu symbol (symbol) unless <funclink>CreateMenu</funclink> was used to explicitly use a differing menu id in idMenuID.</desc>
+    <remark>A return value of <code>nil</code> means that no valid symbol could be determined. This may happen e.g. if no object pointer was passed during a global call to the function. Engine defined menus such as Buy, Sell, etc. never return valid ids.</remark>
     <related>
       <funclink>CreateMenu</funclink>
       <funclink>CloseMenu</funclink>

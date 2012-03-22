@@ -193,6 +193,15 @@
           }
           return false;
       }
+	  
+	  public function getCurrentVersion($platform) {
+          $result = mysql_query('SELECT `new_version` FROM `' . ParseINI::parseValue('mysql_prefix', $this->config) . 'update` WHERE `old_version` = \'\' AND `platform` = \'' . $platform . '\'');
+          if ($result) {
+              $row = mysql_fetch_assoc($result);
+			  return $row['new_version'];
+          }
+          return false;
+	  }
 
   }
 

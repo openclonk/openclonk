@@ -7,7 +7,7 @@
     <title>AbsX</title>
     <category>Objects</category>
     <subcat>Position</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -21,7 +21,7 @@
     <desc>If called from an object, this function returns the given X coordinate relative to the object's center. Otherwise, the original coordinate is returned.</desc>
     <examples>
       <example>
-        <code><funclink>CreateObject</funclink>(WIPF, AbsX(100), AbsY(500), -1);</code>
+        <code><funclink>CreateObject</funclink>(WIPF, AbsX(100), AbsY(500));</code>
         <text>Creates a wipf at position 100/500, even if called from an object script.</text>
       </example>
     </examples>

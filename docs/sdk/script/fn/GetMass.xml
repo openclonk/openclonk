@@ -7,22 +7,17 @@
     <title>GetMass</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the mass of the calling objects (including the mass of all its contents) or the calling definition.</desc>
     <examples>
       <example>
-        <code>/* Wird bei klick auf Spezial aufgerufen */
-protected func ControlSpecial()
-{
-	// Magersüchtig?
-	if(<funclink>GetMass</funclink>() &lt; 50) // Normalmasse des Clonk: 50
-		// Magensäure frisst sich nach aussen
+        <code>// anorexic?
+	if(<funclink>GetMass</funclink>() &lt; GetDefMass())
+		// Stomach acid etches to the outside
 		<funclink>CastPXS</funclink>(&quot;Acid&quot;, 150, 30);
-<funclink>return</funclink> 1;
-}		
 				</code>
-        <text>Twiggy</text>
+        <text>Anorexic</text>
       </example>
     </examples>
   </func>

@@ -6,7 +6,7 @@
   <func>
     <title>MusicLevel</title>
     <category>Music</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -20,24 +20,20 @@
     <desc>Sets the volume for playback of background music (see <funclink>Music</funclink>).</desc>
     <examples>
       <example>
-        <code>local volume;
+        <code>
+global func FadeOutMusic() { AddEffect("FadeOutMusic", nil, 1, 1, nil, nil); }
 
-func Initialize()
+global func FxFadeOutMusicTimer(object target, effect, int time)
 {
-  volume = 100;
-}
-
-func Timer()
-{
-  volume--;
-  MusicLevel(volume);
-  if(volume &lt;= 0)
-  {
-    <funclink>Music</funclink>();
-    <funclink>RemoveObject</funclink>();
-  }
+	var volume = 100 - time;
+	MusicLevel(volume);
+	if(volume &lt;= 0)
+	{
+		<funclink>Music</funclink>();
+		return -1;
+	}
 }</code>
-        <text>Script for an object which will fade out background music: the "Timer" function will decrease the volume step by step until it is 0. Then the music will be turned off and the helper object deleted.</text>
+        <text>Script for a function which will fade out the background music. FadeOutMusic creates the effect whose timer function will be called each frame. The function decreases the volume step by step until it is 0. Then the music will be turned off and the effect removed.</text>
       </example>
     </examples>
     <related><funclink>Music</funclink></related>

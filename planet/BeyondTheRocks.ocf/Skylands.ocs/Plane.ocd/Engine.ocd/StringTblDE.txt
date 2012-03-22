@@ -1,0 +1,2 @@
+Name=Motor
+Description=Ein wichtiges Teil des Flugzeuges.

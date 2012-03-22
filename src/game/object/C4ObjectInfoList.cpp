@@ -59,18 +59,18 @@ void C4ObjectInfoList::Clear()
 	}
 }
 
-int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
+int32_t C4ObjectInfoList::Load(C4Group &hGroup)
 {
 	C4ObjectInfo *ninf;
 	int32_t infn=0;
 	char entryname[256+1];
 
-	// Search all c4i files
+	// Search all oci files
 	hGroup.ResetSearch();
 	while (hGroup.FindNextEntry(C4CFN_ObjectInfoFiles,entryname))
 		if ((ninf=new C4ObjectInfo))
 		{
-			if (ninf->Load(hGroup,entryname,fLoadPortraits))  { Add(ninf); infn++; }
+			if (ninf->Load(hGroup,entryname))  { Add(ninf); infn++; }
 			else delete ninf;
 		}
 
@@ -87,7 +87,7 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
 	{
 		C4Group ItemGroup;
 		if (ItemGroup.OpenAsChild(&hGroup, entryname))
-			Load(ItemGroup, fLoadPortraits);
+			Load(ItemGroup);
 	}
 
 	return infn;
@@ -134,13 +134,11 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
 			// Use standard crew or matching id
 			if ( (!c_id && !pDef->NativeCrew) || (pInfo->id==c_id) )
 				// Participating and not in action
-				if (pInfo->Participation) if (!pInfo->InAction)
-						// Not dead
-						if (!pInfo->HasDied)
-							// Highest experience
-							if (!pHiExp || (pInfo->Experience>pHiExp->Experience))
-								// Set this
-								pHiExp=pInfo;
+				if (pInfo->Participation && !pInfo->InAction && !pInfo->HasDied)
+					// Highest experience
+					if (!pHiExp || (pInfo->Experience>pHiExp->Experience))
+						// Set this
+						pHiExp=pInfo;
 
 	// Found
 	if (pHiExp)
@@ -163,7 +161,7 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	C4Def *pDef = NULL;
 	if (pDefs)
 		if (!(pDef = pDefs->ID2Def(n_id)))
-			{ delete pInfo; return false; }
+			{ delete pInfo; return NULL; }
 	// Set name source
 	const char *cpNames = Game.Names.GetData();
 	if (pDef->pClonkNames) cpNames = pDef->pClonkNames->GetData();
@@ -173,9 +171,6 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	pInfo->Birthday=time(NULL);
 	// Make valid names
 	MakeValidName(pInfo->Name);
-	// Add new portrait (permanently w/o copying file)
-	if (Config.Graphics.AddNewCrewPortraits)
-		pInfo->SetRandomPortrait(C4ID::None, true, false);
 	// Add
 	Add(pInfo);
 	++iNumCreated;
@@ -214,12 +209,11 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(const char *szByName)
 	// Find matching name, participating, alive and not in action
 	for (pInfo=First; pInfo; pInfo=pInfo->Next)
 		if (SEqualNoCase(pInfo->Name,szByName))
-			if (pInfo->Participation) if (!pInfo->InAction)
-					if (!pInfo->HasDied)
-					{
-						pInfo->Recruit();
-						return pInfo;
-					}
+			if (pInfo->Participation && !pInfo->InAction && !pInfo->HasDied)
+			{
+				pInfo->Recruit();
+				return pInfo;
+			}
 	return NULL;
 }
 

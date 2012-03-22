@@ -7,7 +7,7 @@
     <title>GetWind</title>
     <category>Environment</category>
     <subcat>Weather</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -24,12 +24,12 @@
         <param>
           <type>bool</type>
           <name>global</name>
-          <desc>Whether to retrieve the global wind value. From CE.</desc>
+          <desc>Whether to retrieve the global wind value.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is true, the global wind value is returned.</desc>
+    <desc>Returns the wind's strength and direction at the specified position. In local calls, the position is an offset to the object position. If global is <code>true</code>, the global wind value is returned.</desc>
     <related><funclink>SetWind</funclink></related>
   </func>
   <author>Cucaracha</author><date>2002-05</date>

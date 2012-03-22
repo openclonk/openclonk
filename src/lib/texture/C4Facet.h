@@ -28,17 +28,17 @@
 
 const int32_t C4FCT_None   = 0,
 
-                             C4FCT_Left   = 1,
-                                            C4FCT_Right  = 2,
-                                                           C4FCT_Top    = 4,
-                                                                          C4FCT_Bottom = 8,
-                                                                                         C4FCT_Center = 16,
+              C4FCT_Left   = 1,
+              C4FCT_Right  = 2,
+              C4FCT_Top    = 4,
+              C4FCT_Bottom = 8,
+              C4FCT_Center = 16,
 
-                                                                                                        C4FCT_Alignment = C4FCT_Left | C4FCT_Right | C4FCT_Top | C4FCT_Bottom | C4FCT_Center,
+              C4FCT_Alignment = C4FCT_Left | C4FCT_Right | C4FCT_Top | C4FCT_Bottom | C4FCT_Center,
 
-                                                                                                                          C4FCT_Half   = 32,
-                                                                                                                                         C4FCT_Double = 64,
-                                                                                                                                                        C4FCT_Triple = 128;
+              C4FCT_Half   = 32,
+              C4FCT_Double = 64,
+              C4FCT_Triple = 128;
 
 // tuple of two integers
 struct C4Vec2D
@@ -48,7 +48,7 @@ struct C4Vec2D
 	C4Vec2D(int32_t x=0, int32_t y=0) : x(x), y(y) {}
 };
 
-class C4DrawTransform : public CBltTransform
+class C4DrawTransform : public C4BltTransform
 {
 public:
 	int32_t FlipDir; // +1 or -1; multiplied as x-flip
@@ -82,7 +82,7 @@ public:
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{
 		// set values; apply flipdir
-		CBltTransform::Set(fA*FlipDir, fB, fC, fD, fE, fF, fG, fH, fI);
+		C4BltTransform::Set(fA*FlipDir, fB, fC, fD, fE, fF, fG, fH, fI);
 	}
 
 	void SetFlipDir(int32_t iNewFlipDir)
@@ -93,11 +93,11 @@ public:
 		FlipDir = iNewFlipDir; mat[0] = -mat[0];
 	}
 
-	bool IsIdentity()
+	bool IsIdentity() const
 	{
-		return (mat[0]==1.0f) && (mat[1]==0.0f) && (mat[2]=0.0f)
-		       && (mat[3]==0.0f) && (mat[4]==1.0f) && (mat[5]=0.0f)
-		       && (mat[6]==0.0f) && (mat[7]==0.0f) && (mat[8]=1.0f)
+		return (mat[0]==1.0f) && (mat[1]==0.0f) && (mat[2]==0.0f)
+		       && (mat[3]==0.0f) && (mat[4]==1.0f) && (mat[5]==0.0f)
+		       && (mat[6]==0.0f) && (mat[7]==0.0f) && (mat[8]==1.0f)
 		       && (FlipDir==1); // flipdir must be 1, because otherwise matrices flipped by action+script would be removed
 	}
 
@@ -120,34 +120,36 @@ public:
 class C4Facet
 {
 public:
-	SURFACE Surface;
+	C4Surface * Surface;
 	int32_t X,Y,Wdt,Hgt;
 public:
 	C4Facet();
-	C4Facet(SURFACE pSfc, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+	C4Facet(C4Surface * pSfc, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 			: Surface(pSfc), X(iX), Y(iY), Wdt(iWdt), Hgt(iHgt) {  }
 public:
 	void Default();
-	void Set(CSurface &rSfc);
-	void Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
+	void Set(C4Surface &rSfc);
+	void Set(C4Surface * nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
-	void DrawTile(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
+	void DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 	void DrawEnergyLevelEx(int32_t iLevel, int32_t iRange, const C4Facet &gfx, int32_t bar_idx); // draw energy level using graphics
-	void DrawX(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
-	void DrawXFloat(SURFACE sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
+	void DrawX(C4Surface * sfcTarget, float iX, float iY, float iWdt, float iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
+	void DrawXFloat(C4Surface * sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
 	void DrawValue(C4Facet &cgo, int32_t iValue, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center);
 	void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
 	void Draw(C4Facet &cgo, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0, bool fTransparent=true);
 	void DrawFullScreen(C4Facet &cgo);
-	void DrawT(SURFACE sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
+	void DrawT(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
 	void DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
-	void DrawXT(SURFACE sfcTarget, float iX, float iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
+	void DrawTUnscaled(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // interpret source coordinates as unscaled
+	void DrawTUnscaled(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
+	void DrawXT(C4Surface * sfcTarget, float iX, float iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
 	void DrawClr(C4Facet &cgo, bool fAspect=true, DWORD dwClr=0); // set surface color and draw
-	void DrawXClr(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, DWORD dwClr); // set surface color and draw
+	void DrawXClr(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, DWORD dwClr); // set surface color and draw
 	void DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWORD dwClr); // set surface color and draw
-	void DrawXR(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t r=0); // draw rotated
-	void Draw(SURFACE sfcTarget, float iX, float iY, int32_t iPhaseX=0, int32_t iPhaseY=0);
+	void DrawXR(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t r=0); // draw rotated
+	void Draw(C4Surface * sfcTarget, float iX, float iY, int32_t iPhaseX=0, int32_t iPhaseY=0);
 	bool GetPhaseNum(int32_t &rX, int32_t &rY);   // return number of phases in this graphic
 	C4Facet GetSection(int32_t iSection);
 	C4Facet GetPhase(int iPhaseX=0, int iPhaseY=0);
@@ -159,9 +161,6 @@ public:
 	{ return iHeight * Wdt / (Hgt ? Hgt : 1); }
 	int32_t GetHeightByWidth(int32_t iWidth) // calc height so it matches facet aspect to width
 	{ return iWidth * Hgt / (Wdt ? Wdt : 1); }
-#ifdef _WIN32
-	void Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0);
-#endif
 };
 
 #endif // INC_C4Facet

@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Mark Haßelbusch
- * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009-2011  Armin Burgmeier
  * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -21,6 +21,7 @@
 
 #include "C4Include.h"
 #include <StdMeshMaterial.h>
+#include <StdMeshUpdate.h>
 #include <StdDDraw2.h>
 
 #include <cctype>
@@ -212,6 +213,7 @@ public:
 	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, const EnumeratorShortcut<Num, EnumType>* shortcuts, EnumType enums[Num]);
 	void Error(const StdStrBuf& message);
 	void ErrorUnexpectedIdentifier(const StdStrBuf& identifier);
+	void WarningNotSupported(const char* identifier);
 
 	// Current parsing data
 	unsigned int Line;
@@ -502,6 +504,10 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
+void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
+{
+	DebugLogF("%s:%d: Warning: \"%s\" is not supported!", FileName.getData(), Line, identifier);
+}
 
 StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
 		: CurIndex(0)
@@ -833,6 +839,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
 	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
+	AlphaToCoverage = false;
 }
 
 void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
@@ -889,6 +896,73 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		else if (token_name == "scene_blend")
 		{
 			ctx.AdvanceEnums<2, StdMeshMaterialPass::SceneBlendType>(SceneBlendEnumerators, SceneBlendShortcuts, SceneBlendFactors);
+		}
+		else if (token_name == "scene_blend_op")
+		{
+			StdStrBuf op;
+			ctx.AdvanceRequired(op, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "alpha_to_coverage")
+		{
+			AlphaToCoverage = ctx.AdvanceBoolean();
+		}
+		else if (token_name == "colour_write")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported("colour_write");
+		}
+		else if (token_name == "depth_check")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "depth_func")
+		{
+			StdStrBuf func;
+			ctx.AdvanceRequired(func, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "illumination_stage")
+		{
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_clip_planes")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_scissor")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "lighting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "normalise_normals" || token_name == "normalize_normals")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "polygon_mode")
+		{
+			StdStrBuf mode;
+			ctx.AdvanceRequired(mode, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "shading")
+		{
+			StdStrBuf shading;
+			ctx.AdvanceRequired(shading, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "transparent_sorting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
@@ -995,7 +1069,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 				// Note that if there is a parent, then it needs to be loaded
 				// already. This currently makes only sense when its defined above
 				// in the same material script file or in a parent definition.
-				// We could later support material scripts in the System.c4g.
+				// We could later support material scripts in the System.ocg.
 				StdCopyStrBuf parent_name;
 				ctx.AdvanceRequired(parent_name, TOKEN_IDTF);
 				ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
@@ -1017,7 +1091,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			mat.Load(ctx);
 
 			// To Gfxspecific setup of the material; choose working techniques
-			if (lpDDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
+			if (pDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
 				Materials[material_name] = mat;
 			else
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
@@ -1035,6 +1109,15 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 	std::map<StdCopyStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdCopyStrBuf(material_name));
 	if (iter == Materials.end()) return NULL;
 	return &iter->second;
+}
+
+StdMeshMatManager::Iterator StdMeshMatManager::Remove(const Iterator& iter, StdMeshMaterialUpdate* update)
+{
+  if(update) update->Add(&*iter);
+  Iterator next_iter = iter;
+  ++next_iter;
+  Materials.erase(iter.iter_);
+  return next_iter;
 }
 
 StdMeshMatManager MeshMaterialManager;

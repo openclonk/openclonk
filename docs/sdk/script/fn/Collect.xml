@@ -7,7 +7,7 @@
     <title>Collect</title>
     <category>Objects</category>
     <subcat>Contents</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,17 +18,19 @@
         </param>
       </params>
     </syntax>
-    <desc>Collects an object. This function performs the same events as they occur if the object is collected in the game through the Collection area (there will be a RejectCollect call, flag collection checks, hit calls, etc.) The only difference is that there will be no comparison of collection position and the collected item is not checked for the OCF_Carryable flag.<br/>Using this function you can for example collect objects directly from a container. If the function fails (e.g. through a RejectCollect or a full target container) the function returns 0, otherwise 1.</desc>
+    <desc>Collects an object. This function performs the same events as they occur if the object is collected in the game through the Collection area (there will be a RejectCollect call, flag collection checks, hit calls, etc.) The only difference is that there will be no comparison of collection position and the collected item is not checked for the OCF_Carryable flag.<br/>Using this function you can for example collect objects directly from a container. If the function fails (e.g. through a RejectCollect or a full target container) the function returns <code>false</code>, otherwise <code>true</code>.</desc>
     <examples>
       <example>
-        <code>protected func ControlDig (clonk)
+        <code>protected func ContainedUse(object clonk)
 {
-	var obj; if (!(obj = <funclink>Contents</funclink>())) <funclink>return</funclink> 1;
-	if (!clonk-&gt;Collect(obj)) clonk-&gt;<funclink>Message</funclink>(&quot;Herausnehmen nicht möglich&quot;);
-	<funclink>return</funclink> 1;
+	var obj = <funclink>Contents</funclink>();
+	if (obj)
+		if (!clonk-&gt;Collect(obj))
+			clonk-&gt;<funclink>Message</funclink>(&quot;Collect not possible.&quot;,clonk);
+	<funclink>return</funclink> true;
 }
 </code>
-        <text>With keyboard command Dig the first inventory object is passed to the selected clonk.</text>
+        <text>With contained use the first inventory object is passed to the selected clonk.</text>
       </example>
     </examples>
     <related><funclink>Enter</funclink></related>

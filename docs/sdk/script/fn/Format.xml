@@ -7,7 +7,7 @@
     <title>Format</title>
     <category>Script</category>
     <subcat>Strings</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -59,8 +59,8 @@
     </desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(Format(&quot;Hallo, %s. Du hast %d Clonks!&quot;, <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
-        <text>Displays "Hallo Twonky, du hast 3 Clonks!" (names vary).</text>
+        <code><funclink>Log</funclink>(Format(&quot;Hello, %s.You have %d Clonks!&quot;, <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
+        <text>Displays "Hello Twonky, you have 3 Clonks!" (names vary).</text>
       </example>
       <example>
         <code><funclink>Log</funclink>(Format(&quot;'%3d'&quot;, 1));</code>

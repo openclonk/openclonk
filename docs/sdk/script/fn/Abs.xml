@@ -6,7 +6,7 @@
   <func>
     <title>Abs</title>
     <category>Arithmetics</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -20,8 +20,8 @@
     <desc>Returns the absolute value of the given parameter, ignoring the sign of the value.</desc>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Aktuelle Fluggeschwindigkeit: %d Clonks/min&quot;, Abs(<funclink>GetXDir</funclink>(<funclink>FindObject</funclink>(BLMP))));</code>
-        <text>Prints the absolute velocity of a blimp.</text>
+        <code>Abs(-12) == Abs(12) == 12</code>
+        <text>This expression is <code>true</code>.</text>
       </example>
     </examples>
   </func>

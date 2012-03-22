@@ -7,19 +7,19 @@
     <title>ClearMenuItems</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Removes all entries from a menu.</desc>
     <examples>
       <example>
         <code>var clonk=<funclink>GetCursor</funclink>();
 clonk-&gt;<funclink>CreateMenu</funclink>(Clonk, clonk, nil, &quot;&quot;, 0, 2);
-clonk-&gt;<funclink>AddMenuItem</funclink>(&quot;&quot;, &quot;&quot;, TIM1, nil,nil,&quot;Alter Text&quot;);
+clonk-&gt;<funclink>AddMenuItem</funclink>(&quot;&quot;, &quot;&quot;, Gold, nil,nil,&quot;Old Text&quot;);
 
 [...]
 
 clonk-&gt;ClearMenuItems();
-clonk-&gt;<funclink>AddMenuItem</funclink>(nil, &quot;&quot;, TIM1, nil,0,0,&quot;Neuer Text&quot;);</code>
+clonk-&gt;<funclink>AddMenuItem</funclink>(nil, &quot;&quot;, Gold, nil,0,0,&quot;New Text&quot;);</code>
         <text>Opens a text window containing the entry "Old Text" for the selected clonk. Then changes the entry to "New Text".</text>
       </example>
     </examples>

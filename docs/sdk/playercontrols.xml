@@ -4,11 +4,11 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Player controls</title>
-  <h id="Controls">Player controls</h>
+  <h>Player controls</h>
   <part>
-    <text>Since OC the engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
+    <text>The engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
     <h id="ControlFiles">PlayerControls.txt</h>
-    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.c4g folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.c4g folder**.</text>
+    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder**.</text>
     <text>Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**.</text>
     <part>
       <h id="ControlDefs">Section [ControlDefs]</h>
@@ -211,8 +211,8 @@
     <text>To initialize the player control the script function InitializePlayerControl is called for each player. This call might be delayed by a few frames with respect to InitializePlayer since the initialization of the control needs to be transmitted in the network. When continuing savegames InitalizePlayerControl will be called again. The chosen control might be different from the original one. The same can happen if a player chooses to change its controls during the game.</text>
     <code>global func InitializePlayerControl(int player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
 {
-  // Hier bietet sich die Möglichkeit, spezielle Kontrollelemente wie ein Gamepad-Zielkreuz zu erzeugen
-  // oder zu zerstören, falls die Kontrolle vom Gamepad weggeschaltet wurde
+  // Here one has the possibility to create special control elements like a gamepad crosshair
+  // or destroy it because the controls have changed from gamepad to another control
   return true;
 }</code>
     <text>most commands (except for asynchronous commands in the player menu) call a global script function:</text>
@@ -238,16 +238,16 @@
     <text>This defines a Jump key and the corresponding standard mapping on the keyboard for the first player. The following script is used to handle the control:</text>
     <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
-  // Welches Kommando wurde ausgeloest?
-  // Die Konstante CON_Jump wurde automatisch durch die Definition in PlayerControls.txt angelegt
+  // Which command has been issued?
+  // The constant CON_Jump has been declared automatically through the definition in PlayerControls.txt
   if (control == CON_Jump &amp;&amp; !release)
   {
-    // Sprungtaste gedrueckt. Der vom Spieler ausgewaehlte Clonk soll springen
+    // pressed the jump button. The clonk selected by the player shall jump
     var player_clonk = GetCursor(player);
     if (player_clonk &amp;&amp; player_clonk-&gt;Jump())
     {
-      // Das Kommando wurde erfolgreich abgearbeitet
-      return true;;
+      // The command has been processed successfully
+      return true;
     }
   }
   // Unbekanntes Kommando
@@ -264,28 +264,28 @@
     <text>Let shovel be the ID of a shovel object. In the global script there could be the following, generic handling for unknown commands, for example:</text>
     <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
-  // Behandlung bekannter Befehle
+  // Handling of known controls
   // [...]
-  // Befehl mit eigener Behandlung
+  // control with own handling
   if (control_extra) return control_extra-&gt;PlayerControl(player, control, x, y, strength, repeat, release);
-  // Unbekanntes Kommando
+  // unkown control
   return false;
 }</code>
     <text>And in the script of the shovel:</text>
     <code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, bool release)
 {
-  // Behandlung bekannter Befehle
-  // Grabkommando direkt an die Schaufel
+  // Handling of known controls
+  // Control dig directly in the shovel
   if (control == CON_Dig)
   {
-    // Nur, wenn ein Clonk ausgewaehlt ist, der graben kann
+    // Only if a clonk is selected that can dig
     var player_clonk = GetCursor(player);
     if (player_clonk &amp;&amp; player_clonk-&gt;HasShovel())
     {
       return player_clonk-&gt;StartDig();
     }
   }
-  // Unbekanntes Kommando
+  // Unkown control
   return false;
 }</code>
     <h id="Hold">Held keys</h>
@@ -313,18 +313,18 @@
 
 global func UpdateControlDir(int player)
 {
-  // Clonk ausgewaehlt?
+  // Clonk is selected?
   var player_clonk = GetCursor(player);
   if (player_clonk)
   {
-    // Clonkrichtung aktualisieren
+    // update control dir
     var new_comdir = COMD_Stop;
     if (GetPlayerControlState(player, CON_Left)) new_comdir = COMD_Left;
     player_clonk-&gt;SetComDir(new_comdir);
-    // Kommando behandelt
-    return true;;
+    // control handled
+    return true;
   }
-  // Kommando behandelt
+  // control handled
   return false;
 }</code>
     <text>To achieve the behaviour of classic controls a mapping can emulate the <em>Hold</em> state:</text>

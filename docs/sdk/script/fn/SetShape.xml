@@ -6,7 +6,7 @@
   <func>
     <title>SetShape</title>
     <category>Objects</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -36,8 +36,8 @@
     <remark>In various situations the engine will reset the object's shape to the definition value. This might overwrite changes made with SetShape. This will happen e.g. during object rotation but also when resuming a saved game. So this function should only be used for mainly static, unchanging objects and you should readjust the shape manually in synchronization calls like UpdateTransferZone.</remark>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(TRE1)-&gt;SetShape(-200,-300,400,600);</code>
-        <text>Enlarges the area or distance from which you can fell a tree.</text>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Tree_Coniferous))-&gt;SetShape(-200,-300,400,600);</code>
+        <text>Enlarges the area or distance from which you can chop down one coniferous tree.</text>
       </example>
     </examples>
     <related><funclink>SetVertex</funclink></related>

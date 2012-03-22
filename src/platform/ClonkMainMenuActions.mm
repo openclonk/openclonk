@@ -44,10 +44,6 @@
 	[consoleController.window setRepresentedFilename:@""];
 }
 
-- (IBAction) saveGame:(id)sender
-{
-	Console.FileSave(true);
-}
 
 - (IBAction) saveGameAs:(id)sender
 {
@@ -56,7 +52,7 @@
 
 - (IBAction) saveScenario:(id)sender
 {
-	Console.FileSave(false);
+	Console.FileSave();
 }
 
 - (IBAction) saveScenarioAs:(id)sender
@@ -106,22 +102,6 @@
 	
 }
 
-- (IBAction) simulateKeyPressed:(C4KeyCode)key
-{
-	Game.DoKeyboardInput(
-		key,
-		KEYEV_Down,
-		false, false, false,
-		false, NULL
-	);
-	Game.DoKeyboardInput(
-		key,
-		KEYEV_Up,
-		false, false, false,
-		false, NULL
-	);
-}
-
 - (IBAction) togglePause:(id)sender
 {
 	[self simulateKeyPressed:K_PAUSE];
@@ -141,13 +121,19 @@
 
 - (IBAction) suggestQuitting:(id)sender;
 {
-	// don't directly quit when running in fullscreen mode but rather just send escape
-	// which will quit the game when in the startup menu and ask whether to leave the round when playing a round
-	if (Application.isEditor)
-		[NSApp terminate:self];
+	if (!Application.isEditor && Game.IsRunning)
+	{
+		NSLog(@"Game running, only simulating Esc key");
+		[self simulateKeyPressed:K_ESCAPE];
+		return;
+	}
 	else
+	{
+		if (Application.isEditor)
+			Console.FileClose();
 		Application.fQuitMsgReceived = true;
-		
+		return;
+	}
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
@@ -165,7 +151,6 @@
 	{
 		@selector(saveScenario:),
 		@selector(saveScenarioAs:),
-		@selector(saveGame:),
 		@selector(saveGameAs:),
 		@selector(record:),
 		@selector(closeScenario:),

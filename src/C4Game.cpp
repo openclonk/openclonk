@@ -2,14 +2,14 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2005, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2009, 2011  Sven Eberhardt
  * Copyright (c) 2001-2009  Peter Wortmann
- * Copyright (c) 2001-2009  Sven Eberhardt
- * Copyright (c) 2004-2010  Günther Brammer
- * Copyright (c) 2004  Tobias Zwick
+ * Copyright (c) 2004, 2011  Tobias Zwick
+ * Copyright (c) 2004-2011  Günther Brammer
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2008, 2010  Armin Burgmeier
- * Copyright (c) 2009  David Dormagen
+ * Copyright (c) 2008, 2010-2011  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2009  David Dormagen
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -55,6 +55,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
+#include <C4GameParameters.h>
 #include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
@@ -64,6 +65,7 @@
 #include <C4MessageInput.h>
 #include <C4MassMover.h>
 #include <C4RankSystem.h>
+#include <C4RoundResults.h>
 #include <C4GameMessage.h>
 #include <C4Material.h>
 #include <C4Network2Reference.h>
@@ -88,11 +90,16 @@ public:
 	void OnSec1Timer();
 };
 
-C4Game::C4Game()
-		: Clients(Parameters.Clients),
+static C4GameParameters GameParameters;
+static C4RoundResults GameRoundResults;
+
+C4Game::C4Game():
+		Parameters(GameParameters),
+		Clients(Parameters.Clients),
 		Teams(Parameters.Teams),
 		PlayerInfos(Parameters.PlayerInfos),
 		RestorePlayerInfos(Parameters.RestorePlayerInfos),
+		RoundResults(GameRoundResults),
 		Input(Control.Input),
 		KeyboardInput(C4KeyboardInput_Init()),
 		pFileMonitor(NULL),
@@ -172,7 +179,7 @@ bool C4Game::OpenScenario()
 	if (!ScenarioFilename[0]) { LogFatal(LoadResStr("IDS_PRC_NOC4S")); return false; }
 	LogF(LoadResStr("IDS_PRC_LOADC4S"),ScenarioFilename);
 
-	// get parent folder, if it's c4f
+	// get parent folder, if it's ocf
 	pParentGroup = GroupSet.RegisterParentFolders(ScenarioFilename);
 
 	// open scenario
@@ -219,11 +226,11 @@ bool C4Game::OpenScenario()
 		else Log(LoadResStr("IDS_PRC_LOCALONLY"));
 	}
 
-	// add all .c4f-modules to the group set
+	// add all .ocf-modules to the group set
 	// (for savegames, network games, etc.)
 	/*  char szModule[_MAX_PATH+1]; C4Group *pGrp=NULL; int32_t iDefGrpPrio=C4GSPrio_Definition;
 	  for (int32_t cseg=0; SCopySegment(DefinitionFilenames,cseg,szModule,';',_MAX_PATH); cseg++)
-	    if (SEqualNoCase(GetExtension(szModule), "c4f"))
+	    if (SEqualNoCase(GetExtension(szModule), "ocf"))
 	      {
 	      if (!pGrp) pGrp = new C4Group();
 	      if (!pGrp->Open(szModule)) continue;
@@ -235,9 +242,6 @@ bool C4Game::OpenScenario()
 	      }
 	  if (pGrp) delete pGrp;*/
 
-	// Scan folder local definitions
-	SAddModules(DefinitionFilenames,FoldersWithLocalsDefs(ScenarioFilename));
-
 	// Check mission access
 	if (C4S.Head.MissionAccess[0])
 		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
@@ -248,13 +252,6 @@ bool C4Game::OpenScenario()
 	if (!Title.GetLanguageString(Config.General.LanguageEx, ScenarioTitle))
 		ScenarioTitle.Copy(C4S.Head.Title);
 
-	// Game (runtime data)
-	GameText.Load(ScenarioFile,C4CFN_Game);
-
-	// SaveGame definition preset override (not needed with new scenarios that
-	// have def specs in scenario core, keep for downward compatibility)
-	if (C4S.Head.SaveGame) DefinitionFilenamesFromSaveGame();
-
 	// String tables
 	ScenarioLangStringTable.LoadEx(ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
@@ -264,10 +261,6 @@ bool C4Game::OpenScenario()
 			return false;
 
 	SetInitProgress(4);
-
-	// Compile runtime data
-	if (!CompileRuntimeData(GameText))
-		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 
 	// If scenario is a directory: Watch for changes
 	if (!ScenarioFile.IsPacked() && pFileMonitor)
@@ -304,7 +297,7 @@ bool C4Game::PreInit()
 	// this loads font definitions in this group as well
 	// the function may return false, if no extra group is present - that is OK
 	Extra.InitGroup();
-	
+
 	Log(LoadResStr("IDS_PRC_GFXRES"));
 	if (!GraphicsResource.Init()) return false;
 	Game.SetInitProgress(30.0f);
@@ -315,7 +308,7 @@ bool C4Game::PreInit()
 	// Timer flags
 	GameGo=false;
 	// set gamma
-	lpDDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
+	pDraw->SetGamma(Config.Graphics.Gamma1, Config.Graphics.Gamma2, Config.Graphics.Gamma3, C4GRI_USER);
 	// init message input (default commands)
 	MessageInput.Init();
 	Game.SetInitProgress(31.0f);
@@ -345,6 +338,7 @@ bool C4Game::PreInit()
 
 bool C4Game::Init()
 {
+	C4ValueNumbers numbers;
 	IsRunning = false;
 
 	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
@@ -468,7 +462,7 @@ bool C4Game::Init()
 		DebugMode = false;
 
 	// Init game
-	if (!InitGame(ScenarioFile, false, true)) return false;
+	if (!InitGame(ScenarioFile, false, true, &numbers)) return false;
 
 	// Network final init
 	if (Network.isEnabled())
@@ -486,7 +480,7 @@ bool C4Game::Init()
 	}
 
 	// Init players
-	if (!InitPlayers()) return false;
+	if (!InitPlayers(&numbers)) return false;
 	SetInitProgress(98);
 
 	// Final init
@@ -494,7 +488,7 @@ bool C4Game::Init()
 	SetInitProgress(99);
 
 	// Gamma
-	lpDDraw->ApplyGamma();
+	pDraw->ApplyGamma();
 
 	// Message board and upper board
 	if (!Application.isEditor)
@@ -570,7 +564,7 @@ void C4Game::Clear()
 
 	// exit gui
 	pGUI->Clear();
-	
+
 	// next mission (shoud have been transferred to C4Application now if next mission was desired)
 	NextMission.Clear(); NextMissionText.Clear(); NextMissionDesc.Clear();
 
@@ -620,9 +614,11 @@ void C4Game::Clear()
 	KeyboardInput.Clear();
 	SetMusicLevel(100);
 	PlayList.Clear();
-	PlayerControlAssignmentSets.Clear();
+	PlayerControlUserAssignmentSets.Clear();
+	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
+	Application.SoundSystem.Init(); // clear it up and re-init it for normal use
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -688,7 +684,6 @@ C4ST_NEW(PlayersStat,       "C4Game::Execute Players.Execute")
 C4ST_NEW(LandscapeStat,     "C4Game::Execute Landscape.Execute")
 C4ST_NEW(MusicSystemStat,   "C4Game::Execute MusicSystem.Execute")
 C4ST_NEW(MessagesStat,      "C4Game::Execute Messages.Execute")
-C4ST_NEW(ScriptStat,        "C4Game::Execute ::GameScript.Execute")
 
 #define EXEC_S(Expressions, Stat) \
   { C4ST_START(Stat) Expressions C4ST_STOP(Stat) }
@@ -731,7 +726,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 #ifdef DEBUGREC
 	// debugrec
-	AddDbgRec(RCT_Frame, &FrameCounter, sizeof(int32_t));
+	AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
 #endif
 
 	// Game
@@ -748,7 +743,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	//FIXME: C4Application::Execute should do this, but what about the stats?
 	EXEC_S_DR(  Application.MusicSystem.Execute();, MusicSystemStat     , "Music")
 	EXEC_S_DR(  ::Messages.Execute();             , MessagesStat        , "MsgEx")
-	EXEC_S_DR(  ::GameScript.Execute(iTick10);    , ScriptStat          , "Scrpt")
 
 	EXEC_DR(    MouseControl.Execute();                                 , "Input")
 
@@ -998,7 +992,8 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 	if (!pDef) return NULL;
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
-	rc.id=pDef->Number;
+	memset(&rc, '\0', sizeof(rc));
+	strncpy(rc.id, pDef->GetName(), 32+1);
 	rc.oei=C4PropListNumbered::GetEnumerationIndex()+1;
 	rc.x=iX; rc.y=iY; rc.ownr=iOwner;
 	AddDbgRec(RCT_CrObj, &rc, sizeof(rc));
@@ -1246,8 +1241,8 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)
-				// exclude fore/back-objects from main list
-				if ((pLst != &Objects) || (!(cObj->Category & C4D_BackgroundOrForeground)))
+				// exclude fore-objects from main list
+				if ((pLst != &Objects) || (~cObj->Category & C4D_Foreground))
 					// exclude MouseIgnore-objects
 					if (~cObj->Category & C4D_MouseIgnore)
 						// Category (match any specified)
@@ -1387,7 +1382,7 @@ bool C4Game::DropFile(const char *szFilename, float iX, float iY)
 {
 	C4ID c_id; C4Def *cdef;
 	// Drop def to create object
-	if (SEqualNoCase(GetExtension(szFilename),"c4d"))
+	if (SEqualNoCase(GetExtension(szFilename),"ocd"))
 	{
 		// Get id from file
 		if ((c_id=DefFileGetID(szFilename)))
@@ -1432,18 +1427,6 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 		             tx,ty,Random(360),
 		             C4REAL10(Random(2*level+1)-level),
 		             C4REAL10(Random(2*level+1)-level),
-		             itofix(Random(3)+1), iController);
-	}
-}
-
-void C4Game::BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController)
-{
-	int32_t cnt;
-	for (cnt=0; cnt<num; cnt++)
-	{
-		CreateObject(id,pCreator,NO_OWNER,
-		             tx,ty,Random(360),
-		             C4REAL10(Random(61)-30), C4REAL10(Random(61)-40),
 		             itofix(Random(3)+1), iController);
 	}
 }
@@ -1575,7 +1558,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 							}
 							else str = cursor->GetName();
 
-							lpDDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							pDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                           cgo.X + cox + fctCursor.Wdt / 2,
 							                           cgo.Y + coy - 2 - texthgt,
 							                           0xffff0000, ACenter);
@@ -1609,29 +1592,13 @@ void C4Game::Ticks()
 	if (pNetworkStatistics) pNetworkStatistics->ExecuteFrame();
 }
 
-bool C4Game::Compile(const char *szSource)
-{
-	if (!szSource) return true;
-	// C4Game is not defaulted on compilation.
-	// Loading of runtime data overrides only certain values.
-	// Doesn't compile players; those will be done later
-	CompileSettings Settings(false, false, true);
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, Settings),
-	      StdStrBuf(szSource),
-	      C4CFN_Game))
-		return false;
-	return true;
-}
-
-void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
+void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumbers * numbers)
 {
 	if (!comp.fScenarioSection && comp.fExact)
 	{
 		pComp->Name("Game");
 		pComp->Value(mkNamingAdapt(Time,                  "Time",                  0));
 		pComp->Value(mkNamingAdapt(FrameCounter,          "Frame",                 0));
-//    pComp->Value(mkNamingAdapt(Control.ControlRate,   "ControlRate",           0));
 		pComp->Value(mkNamingAdapt(Control.ControlTick,   "ControlTick",           0));
 		pComp->Value(mkNamingAdapt(Control.SyncRate,      "SyncRate",              C4SyncCheckRate));
 		pComp->Value(mkNamingAdapt(iTick2,                "Tick2",                 0));
@@ -1652,26 +1619,19 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->Value(mkNamingAdapt(NextMissionText,       "NextMissionText",       StdCopyStrBuf()));
 		pComp->Value(mkNamingAdapt(NextMissionDesc,       "NextMissionDesc",       StdCopyStrBuf()));
 		pComp->NameEnd();
-	}
 
-	pComp->Value(mkNamingAdapt(mkInsertAdapt(::GameScript, ScriptEngine),                "Script"));
+		// scoreboard compiles into main level [Scoreboard]
+		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
+		// as keys might be released between a savegame save and its resume
+		//pComp->Value(GlobalPlayerControl);
+	}
 
 	if (comp.fExact)
 	{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
-	}
-
-	pComp->Value(mkNamingAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), "Effects"));
-
-	if (!comp.fScenarioSection && comp.fExact)
-	{
-		// scoreboard compiles into main level [Scoreboard]
-		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
-		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
-		// as keys might be released between a savegame save and its resume
-		//pComp->Value(GlobalPlayerControl);
 	}
 
 	if (comp.fPlayers)
@@ -1682,63 +1642,50 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		// Primary player ininitialization (also setting ID) is done by player info list
 		// Won't work this way for binary mode!
 		for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, comp.fExact), FormatString("Player%d", pPlr->ID).getData()));
+			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, numbers), FormatString("Player%d", pPlr->ID).getData()));
 	}
+
+	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
+
+	pComp->Name("Script");
+	if (!comp.fScenarioSection)
+	{
+		pComp->Value(mkParAdapt(ScriptEngine, numbers));
+	}
+	pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+	pComp->Value(mkNamingAdapt(*numbers, "Values"));
+	pComp->NameEnd();
 }
 
-void SetClientPrefix(char *szFilename, const char *szClient);
-
-bool C4Game::Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact)
+bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, C4ValueNumbers * numbers)
 {
-	// Decompile (without players for scenario sections)
-	rBuf.Take(DecompileToBuf<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact))));
-	return true;
-}
-
-bool C4Game::CompileRuntimeData(C4ComponentHost &rGameData)
-{
-	// Compile
-	if (!Compile(rGameData.GetData())) return false;
+	::Objects.Clear(!fLoadSection);
+	GameText.Load(hGroup,C4CFN_Game);
+	CompileSettings Settings(fLoadSection, false, exact);
+	// C4Game is not defaulted on compilation.
+	// Loading of runtime data overrides only certain values.
+	// Doesn't compile players; those will be done later
+	if (GameText.GetData())
+	{
+		if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
+		    mkParAdapt(*this, Settings, numbers),
+		    GameText.GetDataBuf(), C4CFN_Game))
+			return false;
+		// Objects
+		int32_t iObjects=Objects.PostLoad(fLoadSection, numbers);
+		if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
+	}
 	// Music System: Set play list
-	Application.MusicSystem.SetPlayList(PlayList.getData());
+	if (!fLoadSection) Application.MusicSystem.SetPlayList(PlayList.getData());
 	// Success
 	return true;
 }
 
-bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact)
+bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4ValueNumbers * numbers)
 {
-
-	// Enumerate pointers & strings
-	if (PointersDenumerated)
-	{
-		Players.EnumeratePointers();
-		if (pGlobalEffects) pGlobalEffects->EnumeratePointers();
-	}
-
-	// Decompile
 	StdStrBuf Buf;
-	if (!Decompile(Buf,fSaveSection,fSaveExact))
-		return false;
-
-	// Denumerate pointers, if game is in denumerated state
-	if (PointersDenumerated)
-	{
-		ScriptEngine.DenumerateVariablePointers();
-		Players.DenumeratePointers();
-		if (pGlobalEffects) pGlobalEffects->DenumeratePointers();
-	}
-
-	// Initial?
-	if (fInitial && GameText.GetData())
-	{
-		// HACK: Reinsert player sections, if any.
-		const char *pPlayerSections = strstr(GameText.GetData(), "[Player");
-		if (pPlayerSections)
-		{
-			Buf.Append("\r\n\r\n");
-			Buf.Append(pPlayerSections);
-		}
-	}
+	// Decompile (without players for scenario sections)
+	DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers), &Buf, "Game");
 
 	// Empty? All default; just remove from group then
 	if (!Buf.getLength())
@@ -1767,11 +1714,11 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	// Fullscreen screenshot
 	else if (!Application.isEditor && Application.Active)
 	{
-		SURFACE sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
-		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
+		C4Surface * sfcPic; int32_t iSfcWdt=200,iSfcHgt=150;
+		if (!(sfcPic = new C4Surface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
-		lpDDraw->Blit(FullScreen.pSurface,
+		pDraw->Blit(FullScreen.pSurface,
 		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 
@@ -1871,18 +1818,15 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 	// Check
 	if (!fForceSave) if (!CanQuickSave()) return false;
 
-	// Set working directory (should already be in exe path anyway - just to make sure...?)
-	SetWorkingDirectory(Config.General.ExePath);
-
 	// Create savegame folder
-	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), LoadResStr("IDS_GAME_SAVEGAMESTITLE")))
+	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(C4CFN_Savegames), LoadResStr("IDS_GAME_SAVEGAMESTITLE")))
 		{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }
 
 	// Create savegame subfolder(s)
 	char strSaveFolder[_MAX_PATH + 1];
 	for (uint32_t i = 0; i < SCharCount(DirectorySeparator, strFilename); i++)
 	{
-		SCopy(Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), strSaveFolder); AppendBackslash(strSaveFolder);
+		SCopy(Config.AtUserDataPath(C4CFN_Savegames), strSaveFolder); AppendBackslash(strSaveFolder);
 		SCopyUntil(strFilename, strSaveFolder + SLen(strSaveFolder), DirectorySeparator, _MAX_PATH, i);
 		if (!Config.General.CreateSaveFolder(strSaveFolder, strTitle))
 			{ Log(LoadResStr("IDS_GAME_FAILSAVEGAME")); return false; }
@@ -1890,7 +1834,7 @@ bool C4Game::QuickSave(const char *strFilename, const char *strTitle, bool fForc
 
 	// Compose savegame filename
 	StdStrBuf strSavePath;
-	strSavePath.Format("%s%c%s", Config.AtUserDataPath(Config.General.SaveGameFolder.getData()), DirectorySeparator, strFilename);
+	strSavePath.Format("%s%c%s", Config.AtUserDataPath(C4CFN_Savegames), DirectorySeparator, strFilename);
 
 	// Must not be the scenario file that is currently open
 	if (ItemIdentical(ScenarioFilename, strSavePath.getData()))
@@ -2019,7 +1963,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	return true;
 }
 
-bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
+bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers * numbers)
 {
 	if (!fLoadSection)
 	{
@@ -2062,18 +2006,28 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(25);
 
+		// Sound (first part, some are loaded with the definitions, the (section) local file goes later)
+		Application.SoundSystem.Init();
+
 		// Definitions
 		if (!InitDefs()) return false;
 		SetInitProgress(55);
 
-		// Scenario scripts (and local system.c4g)
+		// Scenario scripts (and local system.ocg)
+		GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// After defs to get overloading priority
-		if (!LoadScenarioScripts() || !LoadAdditionalSystemGroup(ScenarioFile))
+		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(57);
 
 		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
 		PlayerControlDefs.FinalInit();
+
+		// Now that all controls and assignments are known, resolve user overloads on control assignments
+		if (!InitPlayerControlUserSettings()) return false;
+		// Sort assignments by priority. Should be done last, because the user should not see this order in the control config dialog
+		PlayerControlUserAssignmentSets.SortAssignments();
+		// (Theoretically, PlayerControlDefaultAssignmentSets could be cleared now. However, the amount of memory used is negligible)
 
 		// Link scripts
 		if (!LinkScriptEngine()) return false;
@@ -2088,6 +2042,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		if (!VideoPlayer.PreloadVideos(hGroup)) return false;
 		SetInitProgress(60);
 	}
+
+	// Load setion sounds
+	Application.SoundSystem.LoadEffects(hGroup);
 
 	// determine startup player count
 	if (!FrameCounter) StartupPlayerCount = PlayerInfos.GetStartupCount();
@@ -2129,9 +2086,10 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	// definition value overloads
 	if (!fLoadSection) InitValueOverloads();
 
-	// Load objects
-	int32_t iObjects=Objects.Load(hGroup, fLoadSection);
-	if (iObjects) { LogF(LoadResStr("IDS_PRC_OBJECTSLOADED"),iObjects); }
+	// runtime data
+	if (!CompileRuntimeData(hGroup, fLoadSection, C4S.Head.SaveGame, numbers))
+		{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
+
 	SetInitProgress(93);
 
 	// Load round results
@@ -2149,8 +2107,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	}
 
 	// Denumerate game data pointers
-	if (!fLoadSection) ScriptEngine.DenumerateVariablePointers();
-	if (!fLoadSection && pGlobalEffects) pGlobalEffects->DenumeratePointers();
+	if (!fLoadSection) ScriptEngine.Denumerate(numbers);
+	if (!fLoadSection && pGlobalEffects) pGlobalEffects->Denumerate(numbers);
+	numbers->Denumerate();
 
 	// Check object enumeration
 	if (!CheckObjectEnumeration()) return false;
@@ -2257,9 +2216,9 @@ bool C4Game::InitScriptEngine()
 	while (File.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 	{
 		// host will be destroyed by script engine, so drop the references
-		C4ScriptHost *scr = new C4ScriptHost();
-		scr->Reg2List(&ScriptEngine, &ScriptEngine);
-		scr->Load(File, fn, Config.General.LanguageEx, NULL, &MainSysLangStringTable);
+		C4ScriptHost *scr = new C4ExtraScriptHost();
+		scr->Reg2List(&ScriptEngine);
+		scr->Load(File, fn, Config.General.LanguageEx, &MainSysLangStringTable);
 	}
 
 	// if it's a physical group: watch out for changes
@@ -2282,14 +2241,14 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
+		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
 			return false;
 
 	return true;
 }
 
 
-bool C4Game::InitPlayers()
+bool C4Game::InitPlayers(C4ValueNumbers * numbers)
 {
 	int32_t iPlrCnt = 0;
 
@@ -2304,7 +2263,7 @@ bool C4Game::InitPlayers()
 		if (!LocalRestorePlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate the files
-		if (!LocalRestorePlayerInfos.RecreatePlayers())
+		if (!LocalRestorePlayerInfos.RecreatePlayers(numbers))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRNETRECR")); return false; }
 	}
 	else if (RestorePlayerInfos.GetActivePlayerCount(true))
@@ -2323,7 +2282,7 @@ bool C4Game::InitPlayers()
 		if (!PlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate players by joining all players whose joined-flag is already set
-		if (!PlayerInfos.RecreatePlayers())
+		if (!PlayerInfos.RecreatePlayers(numbers))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRSAVERECR")); return false; }
 	}
 
@@ -2486,6 +2445,9 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
 			// Above IFT
 			while ((iTy>0) && GBackIFT(iTx,iTy)) iTy--;
+			// Still inside bounds
+			if (iTy < iY)
+				continue;
 			// Above semi solid
 			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
 				continue;
@@ -2519,6 +2481,54 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 		iTy+=3;
 		// Create object
 		return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+		break;
+
+		// Underground/Tunnel
+	case C4D_Place_Subsurface:
+		for (cnt=0; cnt<5; cnt++)
+		{
+			// Random range
+			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			// Find tunnel
+			if (!FindTunnel(iTx,iTy,pDef->Shape.Wdt,pDef->Shape.Hgt))
+				continue;
+			// Tunnel bottom
+			if (!AboveSemiSolid(iTx,iTy)) continue;
+			// Soil check
+			iTy+=3; // two pix into ground
+			iMaterial = GBackMat(iTx,iTy);
+			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
+				{
+					// Create object
+					iTy+=5;
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+				}
+		}
+
+		// Under- or aboveground
+	case C4D_Place_BothSurface:
+		for (cnt=0; cnt<20; cnt++)
+		{
+			// Random hit within target area
+			iTx=iX+Random(iWdt); iTy=iY+Random(iHgt);
+			// Above semi solid
+			if (!AboveSemiSolid(iTx,iTy) || !Inside<int32_t>(iTy,50,GBackHgt-50))
+				continue;
+			// Free above
+			if (GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt) || GBackSemiSolid(iTx,iTy-pDef->Shape.Hgt/2))
+				continue;
+			// Free upleft and upright
+			if (GBackSemiSolid(iTx-pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3) || GBackSemiSolid(iTx+pDef->Shape.Wdt/2,iTy-pDef->Shape.Hgt*2/3))
+				continue;
+			// Soil check
+			iTy+=3; // two pix into ground
+			iMaterial = GBackMat(iTx,iTy);
+			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
+				{
+					iTy+=5;
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+				}
+		}
 
 	}
 
@@ -2544,7 +2554,7 @@ C4Object* C4Game::PlaceAnimal(C4ID idAnimal)
 		iX=Random(GBackWdt); iY=Random(GBackHgt);
 		if (!FindSurfaceLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
 			if (!FindLiquid(iX,iY,pDef->Shape.Wdt,pDef->Shape.Hgt))
-				return false;
+				return NULL;
 		iY+=pDef->Shape.Hgt/2;
 		break;
 		// Floating in air
@@ -2640,17 +2650,9 @@ bool C4Game::LoadScenarioComponents()
 	return true;
 }
 
-bool C4Game::LoadScenarioScripts()
-{
-	// Script
-	::GameScript.Reg2List(&ScriptEngine, &ScriptEngine);
-	::GameScript.Load(ScenarioFile,C4CFN_Script,Config.General.LanguageEx,NULL,&ScenarioLangStringTable);
-	return true;
-}
-
 bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 {
-	// called for scenario local and definition local System.c4g groups
+	// called for scenario local and definition local System.ocg groups
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
@@ -2671,8 +2673,8 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 			{
 				// local definitions loaded successfully - merge into global definitions
 				PlayerControlDefs.MergeFrom(PlayerControlFile.GetControlDefs());
-				PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), true);
-				PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
+				PlayerControlDefaultAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), C4PlayerControlAssignmentSet::MM_LowPrio);
+				PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
 			}
 		}
 		// load all scripts in there
@@ -2680,9 +2682,9 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, fn, NULL, !!fn[0]))
 		{
 			// host will be destroyed by script engine, so drop the references
-			C4ScriptHost *scr = new C4ScriptHost();
-			scr->Reg2List(&ScriptEngine, &ScriptEngine);
-			scr->Load(SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
+			C4ScriptHost *scr = new C4ExtraScriptHost();
+			scr->Reg2List(&ScriptEngine);
+			scr->Load(SysGroup, fn, Config.General.LanguageEx, &SysGroupString);
 		}
 		// if it's a physical group: watch out for changes
 		if (!SysGroup.IsPacked() && Game.pFileMonitor)
@@ -2797,20 +2799,33 @@ bool C4Game::InitKeyboard()
 
 void C4Game::UpdateLanguage()
 {
-	// Reload System.c4g string table
+	// Reload System.ocg string table
 	MainSysLangStringTable.LoadEx(Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 }
 
 bool C4Game::InitPlayerControlSettings()
 {
+	// Load controls and default control sets
 	C4PlayerControlFile PlayerControlFile;
 	if (!PlayerControlFile.Load(Application.SystemGroup, C4CFN_PlayerControls, &MainSysLangStringTable)) { LogFatal("[!]Error loading player controls"); return false; }
 	PlayerControlDefs = PlayerControlFile.GetControlDefs();
-	PlayerControlAssignmentSets.Clear();
-	PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), false);
-	PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
-	// And overwrites from config
-	//PlayerControlAssignmentSets.MergeFrom(Config.Controls.Assignments);
+	PlayerControlDefaultAssignmentSets.Clear();
+	PlayerControlDefaultAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), C4PlayerControlAssignmentSet::MM_Normal);
+	PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	// Merge w/ config settings into user control sets
+	// User settings will be cleared and re-merged again later after scenario/definition control overloads, but initialization
+	//  is needed already for config dialogs
+	if (!InitPlayerControlUserSettings()) return false;
+	return true;
+}
+
+bool C4Game::InitPlayerControlUserSettings()
+{
+	// Merge config control settings with user settings
+	PlayerControlUserAssignmentSets.Clear();
+	PlayerControlUserAssignmentSets.MergeFrom(PlayerControlDefaultAssignmentSets, C4PlayerControlAssignmentSet::MM_Inherit);
+	PlayerControlUserAssignmentSets.MergeFrom(Config.Controls.UserSets, C4PlayerControlAssignmentSet::MM_ConfigOverload);
+	PlayerControlUserAssignmentSets.ResolveRefs(&PlayerControlDefs);
 	return true;
 }
 
@@ -2819,7 +2834,7 @@ C4Player *C4Game::JoinPlayer(const char *szFilename, int32_t iAtClient, const ch
 	assert(pInfo);
 	C4Player *pPlr;
 	// Join
-	if (!( pPlr = Players.Join(szFilename,true,iAtClient,szAtClientName, pInfo) )) return NULL;
+	if (!( pPlr = Players.Join(szFilename,true,iAtClient,szAtClientName, pInfo, NULL) )) return NULL;
 	// Player final init
 	pPlr->FinalInit(true);
 	// Create player viewport
@@ -2842,42 +2857,6 @@ void C4Game::FixRandom(int32_t iSeed)
 {
 	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
-}
-
-bool C4Game::DefinitionFilenamesFromSaveGame()
-{
-	const char *pSource;
-	char szDefinitionFilenames[20*_MAX_PATH+1];
-	szDefinitionFilenames[0]=0;
-
-	// Use loaded game text component
-	if ((pSource = GameText.GetData()))
-	{
-		const char *szPos;
-		char szLinebuf[30+_MAX_PATH+1];
-		// Search def file name section
-		if ((szPos = SSearch((const char*)pSource,"[DefinitionFiles]")))
-			// Scan lines
-			while (true)
-			{
-				szPos = SAdvanceSpace(szPos);
-				SCopyUntil(szPos,szLinebuf,0x0D,30+_MAX_PATH);
-				szPos += SLen(szLinebuf);
-				// Add definition file name
-				if (SEqual2(szLinebuf,"Definition") && (SCharPos('=',szLinebuf)>-1))
-				{
-					SNewSegment(szDefinitionFilenames);
-					SAppend(szLinebuf+SCharPos('=',szLinebuf)+1,szDefinitionFilenames);
-				}
-				else
-					break;
-			}
-		// Overwrite prior def file name specification
-		if (szDefinitionFilenames[0])
-			{ SCopy(szDefinitionFilenames,DefinitionFilenames); return true; }
-	}
-
-	return false;
 }
 
 bool C4Game::DoGameOver()
@@ -3097,43 +3076,9 @@ bool C4Game::CheckObjectEnumeration()
 			clnk=clnk->Next;
 	}
 	// Adjust enumeration index
-	if (iMax>C4PropListNumbered::EnumerationIndex) C4PropListNumbered::EnumerationIndex=iMax;
+	C4PropListNumbered::SetEnumerationIndex(iMax);
 	// Done
 	return true;
-}
-
-const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
-{
-	static char szDefs[10*_MAX_PATH+1];
-	szDefs[0]=0;
-
-	// Scan path for folder names
-	int32_t cnt,iBackslash;
-	char szFoldername[_MAX_PATH+1];
-	C4Group hGroup;
-	for (cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)
-	{
-		// Get folder name
-		SCopy(szPath,szFoldername,iBackslash);
-		// Open folder
-		if (SEqualNoCase(GetExtension(szFoldername),"c4f"))
-			if (hGroup.Open(szFoldername))
-			{
-				// Check for contained defs
-				// do not, however, add them to the group set:
-				//   parent folders are added by OpenScenario already!
-				int32_t iContents;
-				if ((iContents = GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions)))
-				{
-					// Add folder to list
-					SNewSegment(szDefs); SAppend(szFoldername,szDefs);
-				}
-				// Close folder
-				hGroup.Close();
-			}
-	}
-
-	return szDefs;
 }
 
 void C4Game::InitValueOverloads()
@@ -3192,7 +3137,7 @@ void C4Game::SetInitProgress(float fToProgress)
 	if (InitProgress > LastInitProgress)
 	{
 		LastInitProgress=InitProgress;
-		LastInitProgressShowTime=timeGetTime();
+		LastInitProgressShowTime=GetTime();
 		GraphicsSystem.MessageBoard.LogNotify();
 	}
 	// Cheap hack to get the Console window updated while loading
@@ -3294,8 +3239,9 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		// store objects
 		if (dwFlags & C4S_SAVE_OBJECTS)
 		{
+			C4ValueNumbers numbers;
 			// objects: do not save info objects or inactive objects
-			if (!Objects.Save(*pGrp,false,false))
+			if (!SaveData(*pGrp,true,false, &numbers))
 			{
 				DebugLog("LoadScenarioSection: Error saving objects");
 				return false;
@@ -3344,7 +3290,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	// determine whether a new sky has to be loaded
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
 	// re-init game in new section
-	if (!InitGame(*pGrp, true, fLoadNewSky))
+	C4ValueNumbers numbers;
+	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))
 	{
 		DebugLog("LoadScenarioSection: Error reiniting game");
 		return false;
@@ -3409,7 +3356,7 @@ void C4Game::Abort(bool fApproved)
 	Application.QuitGame();
 }
 
-bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, uint32_t dwClr)
+bool GetTextSpecFacet(const char* szSpec, C4Facet& fct)
 {
 	// safety
 	assert(szSpec && *szSpec);
@@ -3419,76 +3366,77 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 	{
 		szSpec += 5;
 		if (SEqual2(szSpec, "Locked"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
 		else if (SEqual2(szSpec, "League"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
 		else if (SEqual2(szSpec, "GameRunning"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
 		else if (SEqual2(szSpec, "Lobby"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
 		else if (SEqual2(szSpec, "RuntimeJoin"))
-		{
-			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-			return true;
-		}
+			fct = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
+		else
+			return false;
+		return true;
 	}
-	// portrait spec?
-	else if (SEqual2(szSpec, "Portrait:"))
+
+	return false;
+}
+
+bool C4Game::DrawTextSpecImage(C4Facet &fctTarget, const char *szSpec, C4DrawTransform* pTransform, uint32_t dwClr)
+{
+	// safety
+	assert(szSpec && *szSpec);
+	if (!szSpec) return false;
+
+	C4Facet fctSource;
+	if(GetTextSpecFacet(szSpec, fctSource))
 	{
-		szSpec += 9;
-		C4ID idPortrait;
-		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID::None, &dwClr);
-		if (idPortrait == C4ID::None) return false;
-		C4Def *pPortraitDef = ::Definitions.ID2Def(idPortrait);
-		if (!pPortraitDef || !pPortraitDef->Portraits) return false;
-		C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);
-		if (!pDefPortraitGfx) return false;
-		C4PortraitGraphics *pPortraitGfx = pDefPortraitGfx->IsPortrait();
-		if (!pPortraitGfx) return false;
-		C4Surface *sfcPortrait = pPortraitGfx->GetBitmap(dwClr);
-		if (!sfcPortrait) return false;
-		fctTarget.Set(sfcPortrait, 0, 0, sfcPortrait->Wdt, sfcPortrait->Hgt);
+		fctSource.DrawXT(fctTarget.Surface, fctTarget.X, fctTarget.Y, fctTarget.Wdt, fctTarget.Hgt, 0, 0, pTransform);
 		return true;
 	}
 	else
 	{
-		// regular ID? -> Draw def
-		const char *separator = std::strchr(szSpec, ':');
-		if (!separator)
+		C4Def *pDef = C4Id2Def(C4ID(szSpec));
+		if (!pDef) return false;
+
+		pDef->Draw(fctTarget, false, dwClr, NULL, 0, 0, pTransform);
+		return true;
+	}
+}
+
+float C4Game::GetTextSpecImageAspect(const char* szSpec)
+{
+	// safety
+	assert(szSpec && *szSpec);
+	if (!szSpec) return -1.0f;
+
+	C4Facet fctSource;
+	if(GetTextSpecFacet(szSpec, fctSource))
+	{
+		return static_cast<float>(fctSource.Wdt) / static_cast<float>(fctSource.Hgt);
+	}
+	else
+	{
+		C4Def *pDef = C4Id2Def(C4ID(szSpec));
+		if (!pDef) return -1.0f;
+
+		C4DefGraphics* pGfx = &pDef->Graphics;
+		if(pGfx->Type == C4DefGraphics::TYPE_Bitmap)
 		{
-			C4Def *pDef = C4Id2Def(C4ID(szSpec));
-			if (!pDef) return false;
-			fctTarget.Set(pDef->Graphics.GetBitmap(dwClr), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
-			return true;
+			return static_cast<float>(pDef->PictureRect.Wdt) / static_cast<float>(pDef->PictureRect.Hgt);
 		}
 		else
 		{
-			std::string id(szSpec, separator);
-			C4Def *def = C4Id2Def(C4ID(id));
-			if (!def) return false;
-			int index = -1;
-			if (sscanf(separator + 1, "%d", &index) == 1 && index >= 0)
-			{
-				fctTarget.Set(def->Graphics.GetBitmap(dwClr), def->PictureRect.x + def->PictureRect.Wdt * index, def->PictureRect.y, def->PictureRect.Wdt, def->PictureRect.Hgt);
-				return true;
-			}
-		}
-	}
+			const StdMesh& mesh = *pGfx->Mesh;
+			const StdMeshBox& box = mesh.GetBoundingBox();
 
-	// unknown spec
-	return false;
+			// Note the bounding box is in OGRE frame of reference
+			return (box.y2 - box.y1) / (box.z2 - box.z1);
+		}
+
+		return -1.0f;
+	}
 }
 
 bool C4Game::SpeedUp()

@@ -7,7 +7,7 @@
     <title>Enter</title>
     <category>Objects</category>
     <subcat>Position</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -21,8 +21,9 @@
     <desc>Moves an object into the contents of another object. This call invokes no RejectCollect, Collection, or ActivateEntracnce callbacks in the target object. It does, however, cause RejectEntrance and Entrance callbacks in the entering object.</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;Enter(<funclink>FindObject</funclink>(HUT1));</code>
-        <text>The selected clonk is moved into the first found hut.</text>
+        <code>for(var obj in <funclink>FindObjects</funclink>(<funclink>Find_ID</funclink>(Gold)))
+	obj->Enter(GetCrew(0,0));</code>
+        <text>All gold chunks in the landscape are moved into the first clonk of the first player.</text>
       </example>
     </examples>
     <related>

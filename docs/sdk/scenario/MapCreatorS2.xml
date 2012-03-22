@@ -4,22 +4,22 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Map Generator</title>
-  <h id="Kartengenerator">Map Generator</h>
+  <h>Map Generator</h>
   <part>
     <text>Besides simple dynamic maps defined in Scenario.txt there is also a powerful dynamic map generator for highly complex yet fully random maps.</text>
     <text>This generator works with nested layers that can be combined using various operators and to which a material value and various attributes can be assigned to describe their resulting shape. The map generator will generate a map using these layers. The map is then later zoomed to the landscape as a static map would be.</text>
     <text>The structure of maps, layers, and attributes is stored in the component Landscape.txt in the scenario.</text>
     <h id="Syntax">Syntax</h>
     <text>The language describing this structure works with objects, attributes, and operators and is case sensitive. Objects are defined as follows:</text>
-    <code>Objekttyp [Name] { Attribute };</code>
+    <code>Object_type [Name] { Attribute };</code>
     <text>The name is optional. Current objects types are map, overlay, and point (for the poly algorithm). If an object is known it can later be used for another instance which is defined with:</text>
     <code>Name { Attribute };</code>
     <text>Here, the previously defined object 'Name' is copied and optionally extended by the given attributes. If no additional attributes are defined, the brackets can be omitted.</text>
     <text>General attribute syntax is:</text>
-    <code>Attribut=Wert;</code>
+    <code>Attribut=Value;</code>
     <text>Attributes can be defined in any order within the object. They can optionally have % or px as unit and can be specified as single value or range of values (val1 - val2). In case of a duplicate assignment the last value is evaluated.</text>
     <text>In addition to attributes there can be nested sub-objects which can be combined using operators:</text>
-    <code>Objekt1 Operator Objekt2;</code>
+    <code>Object1 Operator Object2;</code>
     <text>Operator statements can have any length and control the combination of layers. Operators are: | (OR), &amp; (AND), ^ (XOR).</text>
     <text>You will find several examples in the Dynamic Worlds folder.</text>
     <h id="Attributes">Attributes</h>
@@ -36,7 +36,7 @@
           <row>
             <col>mat</col>
             <col>Material</col>
-            <col>Material. The material must be defined in the active Material.c4g. Default is Sky.</col>
+            <col>Material. The material must be defined in the active Material.ocg. Default is Sky.</col>
           </row>
           <row>
             <col>tex</col>
@@ -168,13 +168,13 @@
       <dt id="Algo_script">script</dt>
       <dd>
         <text>This algorithm is defined via a <emlink href="scenario/script.html">scenario script</emlink> function of the following form:</text>
-        <code>func ScriptAlgo[Overlay-Name](x, y, iAlpha, iBeta)</code>        <text>The script function's return value should be 0 (no material) or 1 (material). x and y are the pixel coordinates for which the function is called. iAlpha and iBeta correspond to parameters a and b.</text>
+        <code>func ScriptAlgo[Overlay-Name](x, y, alpha, beta)</code>        <text>The script function's return value should be 0 (no material) or 1 (material). x and y are the pixel coordinates for which the function is called. iAlpha and iBeta correspond to parameters a and b.</text>
         <text>If the layer has no name, the function "ScriptAlgo" is used.</text>
       </dd>
       <dt id="Algo_poly">poly</dt>
       <dd>
         <text>Returns true for pixels within the specified polygon. Points are specifed using</text>
-        <code>point { x=&lt;X-Koordinate des Eckpunkts&gt;&lt;Einheit&gt;; y=&lt;Y-Koordinate&gt;&gt;&lt;Einheit&gt;; };</code>        <text>Example:</text>
+        <code>point { x=&lt;X-Coordinate of the vertex&gt;&lt;Unit&gt;; y=&lt;Y-Coordinate&gt;&gt;&lt;Unit&gt;; };</code>        <text>Example:</text>
         <code>overlay { algo=poly; mat=Earth;
   point { x=10px; y=25%; };  
   point { x=20px; y=25%; };  

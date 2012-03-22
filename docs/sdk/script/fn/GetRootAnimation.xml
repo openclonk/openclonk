@@ -6,7 +6,7 @@
   <func>
     <title>GetRootAnimation</title>
     <category>Animations</category>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -17,12 +17,12 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the number of the animation at the top of the given slot. This animation is combined with the animation of the next smaller slot number and the result of this combination will be combined with the animation at the top of the slot with the next higher slot number, or, if there is no such slot, be the final output displayed on the screen. If the slot contains more than one animation then the animation at the top is always a combination node which combines multiple animations or other combinations of animations to the result of the slot. Returns nil if there are no animations in the given slot.</desc>
+    <desc>Returns the number of the animation at the top of the given slot. This animation is combined with the animation of the next smaller slot number and the result of this combination will be combined with the animation at the top of the slot with the next higher slot number, or, if there is no such slot, be the final output displayed on the screen. If the slot contains more than one animation then the animation at the top is always a combination node which combines multiple animations or other combinations of animations to the result of the slot. Returns <code>nil</code> if there are no animations in the given slot.</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
-        <text>Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards.</text>
+        <text>Removes all animations in slot 5 so that it does not contain any animations anymore afterwards.</text>
       </example>
     </examples>
     <related>

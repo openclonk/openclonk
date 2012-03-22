@@ -25,7 +25,7 @@
 #define BITMAP256_H_INC
 
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #else
 #pragma pack(push,2)
 typedef struct tagBITMAPFILEHEADER
@@ -62,10 +62,10 @@ typedef struct tagRGBQUAD
 
 #pragma pack( push, def_pack , 1)
 
-class CBitmapInfo
+class C4BMPInfo
 {
 public:
-	CBitmapInfo();
+	C4BMPInfo();
 	void Default();
 public:
 	BITMAPFILEHEADER Head;
@@ -75,10 +75,10 @@ public:
 	int FileBitsOffset();
 };
 
-class CBitmap256Info : public CBitmapInfo
+class C4BMP256Info : public C4BMPInfo
 {
 public:
-	CBitmap256Info();
+	C4BMP256Info();
 	RGBQUAD Colors[256];
 public:
 	void Default();

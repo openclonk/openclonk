@@ -7,7 +7,7 @@
     <title>SetPlrViewRange</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -22,16 +22,12 @@
     <remark>Due to the fuzzyness of the fog of war this will only be an approximation.</remark>
     <examples>
       <example>
-        <code>/* Wird bei Doppelklick auf Graben aufgerufen */
-protected func Activate(clonk)
+        <code>func ControlUse(object clonk)
 {
-	// Den Clonk blenden
 	clonk-&gt;SetPlrViewRange(0);
-	// Schmerzensschrei 
-	<funclink>Sound</funclink>(&quot;Scream&quot;, clonk);
+	<funclink>Sound</funclink>(&quot;Scream&quot;);
 	return true;
-}
-				</code>
+}</code>
         <text>Confused the acid phile with the eye drops, did ya?</text>
       </example>
     </examples>

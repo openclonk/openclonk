@@ -1,14 +1,15 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2007-2008  Matthes Bender
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
  * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
+ * Copyright (c) 2005, 2007-2008  Matthes Bender
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Carl-Philip Hänsch
+ * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -155,7 +156,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 			C4FacetSurface fctDump; bool fSuccess=false;
 			if (fctDump.Create(pScen->rcOverlayPos.Wdt, pScen->rcOverlayPos.Hgt, C4FCT_Full, C4FCT_Full))
 			{
-				lpDDraw->Blit(fctBackgroundPicture.Surface,
+				pDraw->Blit(fctBackgroundPicture.Surface,
 				              (float) pScen->rcOverlayPos.x, (float) pScen->rcOverlayPos.y,
 				              (float) pScen->rcOverlayPos.Wdt, (float) pScen->rcOverlayPos.Hgt,
 				              fctDump.Surface,
@@ -210,7 +211,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 		if (iScenCount)
 		{
 			ppScenList = new Scenario *[iScenCount];
-			ZeroMemory(ppScenList, sizeof(Scenario *)*iScenCount);
+			memset(ppScenList, 0, sizeof(Scenario *)*iScenCount);
 		}
 		else
 			ppScenList = NULL;
@@ -230,7 +231,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 		if (iAccessGfxCount)
 		{
 			ppAccessGfxList = new AccessGfx *[iAccessGfxCount];
-			ZeroMemory(ppAccessGfxList, sizeof(AccessGfx *)*iAccessGfxCount);
+			memset(ppAccessGfxList, 0, sizeof(AccessGfx *)*iAccessGfxCount);
 		}
 		else
 			ppAccessGfxList = NULL;
@@ -540,7 +541,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	return true;
 }
 
-// helper func: Recursive check whether a directory contains a .c4s or .c4f file
+// helper func: Recursive check whether a directory contains a .ocs or .ocf file
 bool DirContainsScenarios(const char *szDir)
 {
 	// create iterator on free store to avoid stack overflow with deeply recursed folders
@@ -1168,7 +1169,7 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	// Load regular game data if no explicit path specified
 	if(!sRootFolder.getData())
 		for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
-			pRootFolder->Merge(iter->getData());
+			pRootFolder->Merge(iter->strBuf.getData());
 	bool fSuccess = pRootFolder->LoadContents(this, NULL, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
@@ -1612,7 +1613,7 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	{
 		// get definitions as user selects them
 		StdStrBuf sDefinitions;
-		if (!pStartScen->GetC4S().Definitions.GetModules(&sDefinitions)) sDefinitions.Copy("Objects.c4d");
+		if (!pStartScen->GetC4S().Definitions.GetModules(&sDefinitions)) sDefinitions.Copy("Objects.ocd");
 		if (!C4DefinitionSelDlg::SelectDefinitions(GetScreen(), &sDefinitions))
 			// user aborted during definition selection
 			return false;
@@ -1620,7 +1621,7 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	}
 	else
 		// for no user change, just set default objects. Custom settings will override later anyway
-		SCopy("Objects.c4d", Game.DefinitionFilenames);
+		SCopy("Objects.ocd", Game.DefinitionFilenames);
 	// set other default startup parameters
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
 	Game.fObserve = false;

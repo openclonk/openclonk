@@ -21,6 +21,7 @@
 
 #include <C4Include.h>
 #include <C4Gui.h>
+
 #include <C4FullScreen.h>
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
@@ -105,7 +106,7 @@ namespace C4GUI
 	void ListBox::DrawElement(C4TargetFacet &cgo)
 	{
 		if (fDrawBackground)
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, 0x7f000000);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, cgo.TargetX+rcBounds.x+rcBounds.Wdt-1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-1, 0x7f000000);
 		if (fDrawBorder) Draw3DFrame(cgo);
 		// listbox bg: mark selected item
 		if (!pClientWindow) return;
@@ -123,7 +124,7 @@ namespace C4GUI
 			rcSelArea.Hgt = Min(rcSelArea.Hgt, GetClientRect().y + GetClientRect().Hgt - rcSelArea.y);
 			// draw
 			if (rcSelArea.Hgt>=0)
-				lpDDraw->DrawBoxDw(cgo.Surface, rcSelArea.x+cgo.TargetX, rcSelArea.y+cgo.TargetY,
+				pDraw->DrawBoxDw(cgo.Surface, rcSelArea.x+cgo.TargetX, rcSelArea.y+cgo.TargetY,
 				                   rcSelArea.x+rcSelArea.Wdt+cgo.TargetX-1, rcSelArea.y+rcSelArea.Hgt+cgo.TargetY-1,
 				                   HasDrawFocus() ? C4GUI_ListBoxSelColor : C4GUI_ListBoxInactSelColor);
 		}
@@ -140,7 +141,7 @@ namespace C4GUI
 				// clip
 				if (iY < GetClientRect().y || iY >= GetClientRect().y+GetClientRect().Hgt) continue;
 				// draw
-				lpDDraw->DrawLineDw(cgo.Surface, (float)(iX0+cgo.TargetX), (float)(iY+cgo.TargetY), (float)(iX1+cgo.TargetX), (float)(iY+cgo.TargetY), C4GUI_ListBoxBarColor);
+				pDraw->DrawLineDw(cgo.Surface, (float)(iX0+cgo.TargetX), (float)(iY+cgo.TargetY), (float)(iX1+cgo.TargetX), (float)(iY+cgo.TargetY), C4GUI_ListBoxBarColor);
 			}
 	}
 

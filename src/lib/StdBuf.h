@@ -1,12 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2008-2010  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005, 2008-2011  Günther Brammer
  * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2009  mizipzor
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009  mizipzor
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -389,6 +389,14 @@ public:
 	StdCopyBuf(const StdCopyBuf &Buf2, bool fCopy = true)
 			: StdBuf(Buf2.getRef(), fCopy)
 	{ }
+#ifdef HAVE_RVALUE_REF
+	StdCopyBuf(StdBuf RREF Buf2, bool fCopy = false)
+			: StdBuf(std::move(Buf2), fCopy)
+	{ }
+	StdCopyBuf(StdCopyBuf RREF Buf2, bool fCopy = false)
+			: StdBuf(std::move(Buf2), fCopy)
+	{ }
+#endif
 
 	// Set by constant data. Copies data by default.
 	StdCopyBuf(const void *pData, size_t iSize, bool fCopy = true)
@@ -425,10 +433,10 @@ public:
 	// This constructor is important, because the compiler will create one
 	// otherwise, despite having two other constructors to choose from
 	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
-			: StdBuf(std::move(Buf2), fCopy)
+			: StdBuf(Buf2, fCopy)
 	{ }
 	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
-			: StdBuf(Buf2, fCopy)
+			: StdBuf(std::move(Buf2), fCopy)
 	{ }
 #endif
 
@@ -438,12 +446,16 @@ public:
 	{ }
 
 #ifdef _WIN32
-	explicit StdStrBuf(const wchar_t * utf16)
-	{
-		int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
-		SetSize(len);
-		WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
-	}
+	explicit StdStrBuf(const wchar_t * utf16);
+	struct wchar_t_holder {
+		wchar_t * p;
+		wchar_t_holder(wchar_t * p): p(p) { }
+		wchar_t_holder(const wchar_t_holder &);
+		~wchar_t_holder() { delete[] p; }
+		operator wchar_t * () { return p; }
+	};
+	wchar_t_holder GetWideChar() const;
+	StdBuf GetWideCharBuf();
 #endif
 
 	// As previous constructor, but set length manually.
@@ -602,6 +614,7 @@ public:
 	{
 		AppendChars(cChar, 1);
 	}
+	void AppendCharacter(uint32_t unicodechar);
 	void AppendBackslash();
 	void InsertChar(char cChar, size_t insert_before)
 	{
@@ -655,7 +668,7 @@ public:
 
 	// replace all occurences of one string with another. Return number of replacements.
 	int Replace(const char *szOld, const char *szNew, size_t iStartSearch=0);
-	int ReplaceChar(char cOld, char cNew, size_t iStartSearch=0);
+	int ReplaceChar(char cOld, char cNew);
 
 	// replace the trailing part of a string with something else
 	void ReplaceEnd(size_t iPos, const char *szNewEnd);
@@ -707,11 +720,23 @@ public:
 	StdCopyStrBuf(const StdCopyStrBuf &Buf2, bool fCopy = true)
 			: StdStrBuf(Buf2.getRef(), fCopy)
 	{ }
+#ifdef HAVE_RVALUE_REF
+	StdCopyStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+			: StdStrBuf(std::move(Buf2), fCopy)
+	{ }
+	StdCopyStrBuf(StdCopyStrBuf RREF Buf2, bool fCopy = false)
+			: StdStrBuf(std::move(Buf2), fCopy)
+	{ }
+#endif
 
 	// Set by constant data. Copies data if desired.
 	explicit StdCopyStrBuf(const char *pData, bool fCopy = true)
 			: StdStrBuf(pData, fCopy)
 	{ }
+
+#ifdef _WIN32
+	explicit StdCopyStrBuf(const wchar_t * utf16): StdStrBuf(utf16) {}
+#endif
 
 	StdCopyStrBuf &operator = (const StdStrBuf &Buf2) { Copy(Buf2); return *this; }
 	StdCopyStrBuf &operator = (const StdCopyStrBuf &Buf2) { Copy(Buf2); return *this; }

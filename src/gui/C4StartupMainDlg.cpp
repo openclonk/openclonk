@@ -22,9 +22,9 @@
 
 #include <C4Include.h>
 #include <C4StartupMainDlg.h>
+
 #include <C4UpdateDlg.h>
 #include <C4Version.h>
-
 #include <C4StartupNetDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupOptionsDlg.h>
@@ -117,7 +117,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	// draw version info
 	StdStrBuf sVer;
 	sVer.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
-	lpDDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt*38/40, 0xffffffff, ALeft, true);
+	pDraw->TextOut(sVer.getData(), ::GraphicsResource.TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt*38/40, 0xffffffff, ALeft, true);
 }
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY)
@@ -184,7 +184,7 @@ void C4StartupMainDlg::UpdateParticipants()
 		strPlayerFile.append(szPlayer);
 		if (!szPlayer || !*szPlayer) continue;
 		if (!FileExists(strPlayerFile.c_str())) continue;
-		if (!SEqualNoCase(GetExtension(szPlayer), "c4p")) continue; // additional sanity check to clear strange exe-path-only entries in player list?
+		if (!SEqualNoCase(GetExtension(szPlayer), "ocp")) continue; // additional sanity check to clear strange exe-path-only entries in player list?
 		SAddModule(Config.General.Participants, szPlayer);
 	}
 	// Draw selected players - we are currently displaying the players stored in Config.General.Participants.
@@ -244,7 +244,7 @@ void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
 	if (!rsHostAddress || !*rsHostAddress.getData()) return;
 	// set default startup parameters
 	*Game.ScenarioFilename=0;
-	SCopy("Objects.c4d", Game.DefinitionFilenames);
+	SCopy("Objects.ocd", Game.DefinitionFilenames);
 	Game.NetworkActive = true;
 	Game.fLobby = true;
 	Game.fObserve = false;

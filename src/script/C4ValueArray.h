@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2001, 2004, 2006, 2010  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2006, 2010  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -57,13 +57,13 @@ public:
 	void SetItem(int32_t iElemNr, const C4Value &Value);
 	void SetSize(int32_t inSize); // (enlarge only!)
 
-	void DenumeratePointers();
+	void Denumerate(C4ValueNumbers *);
 
 	// comparison
 	bool operator==(const C4ValueArray&) const;
 
 	// Compilation
-	void CompileFunc(class StdCompiler *pComp);
+	void CompileFunc(class StdCompiler *pComp, C4ValueNumbers *);
 
 
 	// Add/Remove Reference

@@ -6,18 +6,18 @@
   <func>
     <title>SetEntrance</title>
     <category>Objects</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
         <param>
-          <type>int</type>
+          <type>bool</type>
           <name>status</name>
-          <desc>0 = closed; 1 = open</desc>
+          <desc><code>false</code> = closed; <code>true</code> = open</desc>
         </param>
       </params>
     </syntax>
-    <desc>Enables or disables entering or leaving a building. Local call only.</desc>
+    <desc>Enables or disables the possibility to enter or leave this building.</desc>
     <related><funclink>GetEntrance</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

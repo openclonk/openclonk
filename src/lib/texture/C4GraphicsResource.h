@@ -18,7 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Loads all standard graphics from Graphics.c4g */
+/* Loads all standard graphics from Graphics.ocg */
 
 #ifndef INC_C4GraphicsResource
 #define INC_C4GraphicsResource
@@ -37,10 +37,10 @@ public:
 	C4GraphicsResource();
 	~C4GraphicsResource();
 protected:
-	C4Surface sfcControl;
+	C4Surface sfcControl, sfcClonkSkins;
 	C4Surface sfcCaption, sfcButton, sfcButtonD;
 	C4Surface sfcScroll, sfcContext;
-	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext;
+	int32_t idSfcCaption, idSfcButton, idSfcButtonD, idSfcScroll, idSfcContext, idSfcClonkSkins;
 	int32_t idSfcControl; // id of source group of control surface
 	// ID of last group in main group set that was already registered into the Files-set
 	// used to avoid doubled entries by subsequent calls to RegisterMainGroups
@@ -70,6 +70,7 @@ public:
 	C4FacetID fctHand;
 	C4FacetID fctGamepad;
 	C4FacetID fctBuild;
+	C4Facet fctClonkSkin;
 	C4Facet fctCursor;
 	C4Facet fctDropTarget;
 	C4Facet fctKeyboard;
@@ -83,6 +84,7 @@ public:
 
 	C4GUI::DynBarFacet barCaption, barButton, barButtonD;
 	C4FacetID fctButtonHighlight;
+	C4FacetID fctButtonHighlightRound;
 	C4FacetID fctIcons, fctIconsEx;
 	C4FacetID fctSubmenu;
 	C4FacetID fctCheckbox;
@@ -113,7 +115,7 @@ public:
 
 	bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)
 
-	bool RegisterGlobalGraphics(); // register global Graphics.c4g into own group set
+	bool RegisterGlobalGraphics(); // register global Graphics.ocg into own group set
 	bool RegisterMainGroups();     // register new groups of Game.GroupSet into own group set
 	void CloseFiles();             // free group set
 

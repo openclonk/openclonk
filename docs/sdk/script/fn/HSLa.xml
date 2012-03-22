@@ -6,7 +6,7 @@
   <func>
     <title>HSLa</title>
     <category>Arithmetics</category>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -23,20 +23,20 @@
         <param>
           <type>int</type>
           <name>byL</name>
-          <desc>Brightniss of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
+          <desc>Brightness of the color. A brightness of 0 would correspond to <funclink>RGB</funclink>(0,0,0).</desc>
         </param>
         <param>
           <type>int</type>
           <name>byA</name>
-          <desc>Transparency of the color.</desc>
+          <desc>Opacity of the color.</desc>
         </param>
       </params>
     </syntax>
     <desc>Creates a 32 bit color value from four parameters. Range is 0-255 for all parameters.</desc>
     <examples>
       <example>
-        <code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,192),<funclink>FindObject</funclink>(TRE1));</code>
-        <text>Colors a randomly chosen tree white and somewhat transparent.</text>
+        <code><funclink>SetClrModulation</funclink>(HSLa(128,255,128,40));</code>
+        <text>Colors this object in a somewhat transparent and spooky green.</text>
       </example>
     </examples>
     <related>

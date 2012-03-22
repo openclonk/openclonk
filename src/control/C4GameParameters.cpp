@@ -4,7 +4,7 @@
  * Copyright (c) 2004, 2006-2007, 2009  Sven Eberhardt
  * Copyright (c) 2005-2007  Peter Wortmann
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -219,7 +219,46 @@ void C4GameResList::Clear()
 	iResCount = iResCapacity = 0;
 }
 
-bool C4GameResList::Load(const char *szDefinitionFilenames)
+void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
+{
+	// Scan path for folder names
+	int32_t iBackslash;
+	char szFoldername[_MAX_PATH+1];
+	C4Group hGroup;
+#ifdef _WIN32
+	// Allow both backward and forward slashes when searching because the path
+	// may be given with forward slashes. We would skip loading some definitions
+	// if we didn't handle this properly and the user would have no clue what was
+	// going on. See also http://forum.openclonk.org/topic_show.pl?tid=905.
+	char control[3] = { DirectorySeparator, AltDirectorySeparator, '\0' };
+	const size_t len = strlen(szPath);
+	for (int32_t iPrev=0; (iBackslash = strcspn(szPath+iPrev, control) + iPrev) < len; iPrev = iBackslash + 1)
+#else
+	for (int32_t cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)
+#endif
+	{
+		// Get folder name
+		SCopy(szPath,szFoldername,iBackslash);
+		// Open folder
+		if (SEqualNoCase(GetExtension(szFoldername),"ocf"))
+			if (hGroup.Open(szFoldername))
+			{
+				// Check for contained defs
+				// do not, however, add them to the group set:
+				//   parent folders are added by OpenScenario already!
+				int32_t iContents;
+				if ((iContents = Game.GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions)))
+				{
+					// Add folder to list
+					CreateByFile(NRT_Definitions, szFoldername);
+				}
+				// Close folder
+				hGroup.Close();
+			}
+	}
+}
+
+bool C4GameResList::Load(C4Group &hGroup, C4Scenario *pScenario, const char * szDefinitionFilenames)
 {
 	// clear any prev
 	Clear();
@@ -232,9 +271,12 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 			if (*szSegment)
 				CreateByFile(NRT_Definitions, szSegment);
 	}
-	// add System.c4g
+
+	LoadFoldersWithLocalDefs(pScenario->Head.Origin ? pScenario->Head.Origin.getData() : hGroup.GetFullName().getData());
+
+	// add System.ocg
 	CreateByFile(NRT_System, C4CFN_System);
-	// add all instances of Material.c4g, except those inside the scenario file
+	// add all instances of Material.ocg, except those inside the scenario file
 	C4Group *pMatParentGrp = NULL;
 	while ((pMatParentGrp = Game.GroupSet.FindGroup(C4GSCnt_Material, pMatParentGrp)))
 		if (pMatParentGrp != &Game.ScenarioFile)
@@ -242,7 +284,7 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 			StdStrBuf MaterialPath = pMatParentGrp->GetFullName() + DirSep C4CFN_Material;
 			CreateByFile(NRT_Material, (pMatParentGrp->GetFullName() + DirSep C4CFN_Material).getData());
 		}
-	// add global Material.c4g
+	// add global Material.ocg
 	CreateByFile(NRT_Material, C4CFN_Material);
 	// done; success
 	return true;
@@ -368,7 +410,7 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 	Scenario.SetFile(NRT_Scenario, hGroup.GetFullName().getData());
 
 	// Additional game resources
-	if (!GameRes.Load(DefinitionFilenames))
+	if (!GameRes.Load(hGroup, pScenario, DefinitionFilenames))
 		return false;
 
 	// Player infos (replays only)
@@ -386,17 +428,6 @@ bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 		// in network mode, savegame players may be reassigned in the lobby
 		// in any mode, the final player restoration will be done in InitPlayers()
 		// dropping any players that could not be restored
-	}
-	else if (pScenario->Head.SaveGame)
-	{
-		// maybe there should be a player info file? (old-style savegame)
-		if (szGameText)
-		{
-			// then recreate the player infos to be restored from game text
-			RestorePlayerInfos.LoadFromGameText(szGameText);
-			// transfer counter
-			PlayerInfos.SetIDCounter(RestorePlayerInfos.GetIDCounter());
-		}
 	}
 
 	// Load teams

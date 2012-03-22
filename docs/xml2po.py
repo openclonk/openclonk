@@ -582,7 +582,7 @@ def load_mode(modename):
 def xml_error_handler(arg, ctxt):
     pass
 
-libxml2.registerErrorHandler(xml_error_handler, None)
+#libxml2.registerErrorHandler(xml_error_handler, None)
 
 
 # Main program start

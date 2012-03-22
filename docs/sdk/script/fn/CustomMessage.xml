@@ -6,7 +6,7 @@
   <func>
     <title>CustomMessage</title>
     <category>Messages</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,13 +18,14 @@
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>If not 0, the message is displayed above the specified object.</desc>
+          <desc>If not <code>nil</code>, the message is displayed above the specified object.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>plr</name>
-          <desc>Player number for which the message should be displayed. NO_OWNER will display the message globally.</desc>
+          <desc>Player number for which the message should be displayed. Defaults to <code>NO_OWNER</code> which will display the message globally.</desc>
+          <optional />
         </param>
         <param>
           <type>int</type>
@@ -41,7 +42,7 @@
         <param>
           <type>int</type>
           <name>color</name>
-          <desc>Color of the message. 0 defaults to 0xffffff (white).</desc>
+          <desc>Color of the message. Default is 0xffffff (white).</desc>
           <optional />
         </param>
         <param>
@@ -51,9 +52,9 @@
           <optional />
         </param>
         <param>
-          <type>string</type>
+          <type>id/object</type>
           <name>portrait</name>
-          <desc>Picture specification for a picture to the left of the message within the decoration frame.</desc>
+          <desc>Definition or object to take the graphics from as a portrait.</desc>
           <optional />
         </param>
         <param>
@@ -95,12 +96,12 @@
     <remark>Messages are displayed until a certain time which depends on the length of the message has passed, or the message is replaced by another message of the same class. A global message (i.e. obj=0) replaces all other global messages, and an object message (obj!=0) replaces all other object messages. To display multiple messages of the same class the flag MSG_Multiple can be used.</remark>
     <examples>
       <example>
-        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;);</code>
+        <code>CustomMessage(&quot;This is &lt;i&gt;madness&lt;/i&gt;!&quot;,nil,0);</code>
         <text>Shows the message "This is madness!" for player 0 only with the word "madness" being written in italic.</text>
       </example>
       <example>
-        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, 0, NO_OWNER, 100,100, 0, MD69, &quot;Portrait:Clonk::00ff00::1);</code>
-        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a green clonk portrait will be shown. The decoration definition MD69 needs to be loaded.</text>
+        <code>CustomMessage(&quot;&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world&quot;, nil, NO_OWNER, 100,100, 0, GUI_MenuDeco, Clonk);</code>
+        <text>Displays a message with a decoration frame. The name Tonki is colored yellow. On the left hand side of the message a clonk picture will be shown. The decoration definition GUI_MenuDeco needs to be loaded.</text>
       </example>
     </examples>
     <related>

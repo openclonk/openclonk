@@ -11,7 +11,6 @@ Title=Clonk Developer Mode
 
 
 [FILES]
-images\cpem.gif
 images\icon_em_brush.gif
 images\icon_em_dynamic.gif
 images\icon_em_edit.gif
@@ -24,16 +23,16 @@ images\icon_em_rect.gif
 images\icon_em_sky.gif
 images\icon_em_static.gif
 images\icon_em_tunnel.gif
-images\icon_image.gif
-images\icon_material.gif
-images\icon_music.gif
-images\icon_object_definition.gif
-images\icon_player.gif
-images\icon_scenario.gif
-images\icon_scenario_folder.gif
-images\icon_sound.gif
-images\icon_system.gif
-images\icon_text.gif
+images\icon_image.png
+images\icon_material.png
+images\icon_music.png
+images\icon_object_definition.png
+images\icon_player.png
+images\icon_scenario.png
+images\icon_scenario_folder.png
+images\icon_sound.png
+images\icon_system.png
+images\icon_text.png
 images\icons_em_play.gif
 
 [INFOTYPES]

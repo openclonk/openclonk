@@ -4,26 +4,26 @@
 <?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
 <doc>
   <title>Game Data</title>
-  <h id="Spieldaten">Game Data</h>
+  <h>Game Data</h>
   <text>The game data of clonk is stored in compressed group files which each contain one component or further group files.</text>
   <dl>
-    <dt id="Spielerdateienc4p"><img height="16" src="../images/icon_player.gif" width="16"/>Player Files (c4p)</dt>
+    <dt id="Spielerdateienocp"><img height="16" src="../images/icon_player.png" width="16"/>Player Files (ocp)</dt>
     <dd>
       <text>Player files contain personal settings, gained score and information about the crew. It may also contain a portrait file.</text>
     </dd>
-    <dt id="Szenarienc4s"><img height="16" src="../images/icon_scenario.gif" width="16"/><emlink href="scenario/index.html">Scenarios (c4s)</emlink></dt>
+    <dt id="Szenarienocs"><img height="16" src="../images/icon_scenario.png" width="16"/><emlink href="scenario/index.html">Scenarios (ocs)</emlink></dt>
     <dd>
       <text>Scenario files consist of an information core and additional components, such as a landscape, title image, description texts, sky graphics, a script, local object definitions, etc.</text>
     </dd>
-    <dt id="Objektdefinitionenc4d"><img height="16" src="../images/icon_object_definition.gif" width="16"/><emlink href="definition/index.html">Object Definitions (c4d)</emlink></dt>
+    <dt id="Objektdefinitionenocd"><img height="16" src="../images/icon_object_definition.png" width="16"/><emlink href="definition/index.html">Object Definitions (ocd)</emlink></dt>
     <dd>
       <text>Object definitions contain an information core, graphic elements, action tables, script, and descriptive text. Also, <emlink href="particle/index.html">particles</emlink> are stored in object definition folders.</text>
     </dd>
-    <dt id="Rundenordnerc4f"><img height="16" src="../images/icon_scenario_folder.gif" width="16"/><emlink href="folder/index.html">Scenario Folders (c4f)</emlink></dt>
+    <dt id="Rundenordnerocf"><img height="16" src="../images/icon_scenario_folder.png" width="16"/><emlink href="folder/index.html">Scenario Folders (ocf)</emlink></dt>
     <dd>
       <text>Scenarios are grouped in scenario folders.</text>
     </dd>
-    <dt id="Systemdatenc4g"><img height="16" src="../images/icon_system.gif" width="16"/>System Data (c4g)</dt>
+    <dt id="Systemdatenocg"><img height="16" src="../images/icon_system.png" width="16"/>System Data (ocg)</dt>
     <dd>
       <text>Graphics, sound, and music of the original game are grouped in these folders and should not be modified.</text>
       <text>Using the menu system, group files can be edited and/or converted to normal directories. Group file components can then be edited using common applications for text or graphics editing. Menu system and game engine can both load packed group files or unpacked directories directly.</text>

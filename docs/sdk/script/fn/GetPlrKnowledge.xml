@@ -6,7 +6,7 @@
   <func>
     <title>GetPlrKnowledge</title>
     <category>Player</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -17,32 +17,32 @@
         </param>
         <param>
           <type>id</type>
-          <name>id</name>
-          <desc>If specified, the function returns true, if the player has the construction plan of the specified object.</desc>
+          <name>type</name>
+          <desc>If specified, the function returns <code>true</code>, if the player has the construction plan of the specified object.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>index</name>
-          <desc>Specify only if id is not 0.</desc>
+          <desc>If <code>type</code> is not specified, this is the index of the construction plan from the list of construction plans.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>category</name>
-          <desc>Specify only if id is not 0.</desc>
+          <desc>If <code>type</code> is not specified, this narrows down the category of the construction plans.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>With id specified the function returns true if the player has the construction plan of the specified object. In this case index and category are ignored. If id is 0, the function returns the indicated construction plan of the specified category.</desc>
+    <desc>With <code>type</code> specified the function returns <code>true</code> if the player has the construction plan of the specified object. In this case <code>index</code> and <code>category</code> are ignored. Otherwise, the function returns the indicated construction plan of the specified category.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))
-	<funclink>Log</funclink>(&quot;Spieler %s kann Bambushütten bauen&quot;,<funclink>GetPlayerName</funclink>(0));</code>
-        <text>Displays a message if the first player has the construction plan for bamboo huts.</text>
-        <code>var def = GetPlrKnowledge( 0,0,4,<funclink>C4D_Structure</funclink>()) );
-<funclink>Log</funclink>(&quot;Der fünfte Gebäude-Bauplan des Spielers ist %i&quot;,def);</code>
+        <code><funclink>if</funclink>(GetPlrKnowledge(0,WindGenerator))
+	<funclink>Log</funclink>(&quot;Player %s can construct a %s&quot;,<funclink>GetPlayerName</funclink>(0),WindGenerator-&gt;<funclink>GetName</funclink>());</code>
+        <text>Displays a message if the first player has the construction plan for wind generators.</text>
+        <code>var def = GetPlrKnowledge( 0,nil,4,<funclink>C4D_Structure</funclink>);
+<funclink>Log</funclink>(&quot;The fifth construction plan of the first player is for ID "%i"&quot;,def);</code>
         <text />
       </example>
     </examples>

@@ -1,0 +1,2 @@
+Name=FloatingMessage
+Description=Object that serves as a helper for creating floating messages.

@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2009-2011  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -14,7 +15,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef USE_COCOA
 

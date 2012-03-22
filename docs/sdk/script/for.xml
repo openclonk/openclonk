@@ -7,8 +7,8 @@
   <h>The 'for' Loop</h>
   <part>
     <text>The <code>for</code> loop is a convenient loop with starting initialization. It is most often used as <a href="#Zaehlschleife">counting loop</a>. It will take three statements as parameters, each separated by a ';' semicolon. Followed by the code block to be executed:</text>
-    <code>for([Initialisierung]; [Bedingung]; [Inkrementierung]))
-  [Auszuführende Anweisung];
+    <code>for([Initialization]; [Condition]; [Incrementation]))
+  [Statement to be executed];
 </code>
     <text>
       <ul>

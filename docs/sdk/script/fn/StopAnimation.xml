@@ -6,7 +6,7 @@
   <func>
     <title>StopAnimation</title>
     <category>Animations</category>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -17,12 +17,12 @@
         </param>
       </params>
     </syntax>
-    <desc>Stops the animation corresponding to the given number (such as returned by <funclink>PlayAnimation</funclink>) and removes it from the corresponding slot in the animation stack. If there is a combination node associated to that number then both of the anmiations being combined are removed as well; if either or both of those are combination nodes again then they are also removed and so on. If the node to be removed is combined with another node then the combining node is also removed because there is not anything to combine anymore. The function returns true if the animation was removed or 0 otherwise (for example if there is no animation for the given number or if belongs to slot 0).</desc>
+    <desc>Stops the animation corresponding to the given number (such as returned by <funclink>PlayAnimation</funclink>) and removes it from the corresponding slot in the animation stack. If there is a combination node associated to that number then both of the anmiations being combined are removed as well; if either or both of those are combination nodes again then they are also removed and so on. If the node to be removed is combined with another node then the combining node is also removed because there is not anything to combine anymore. The function returns <code>true</code> if the animation was removed or <code>false</code> otherwise (for example if there is no animation for the given number or if belongs to slot 0).</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
         <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
-        <text>Removes all animations in slot 5 so that it does not contain any animatiosn anymore afterwards.</text>
+        <text>Removes all animations in slot 5 so that it does not contain any animations anymore afterwards.</text>
       </example>
     </examples>
     <related><funclink>PlayAnimation</funclink></related>

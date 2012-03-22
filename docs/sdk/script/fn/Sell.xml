@@ -7,7 +7,7 @@
     <title>Sell</title>
     <category>Objects</category>
     <subcat>Existence</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -20,13 +20,6 @@
     </syntax>
     <desc>Sells an object including all its contents.</desc>
     <remark>CrewMember objects can not be sold.</remark>
-    <examples>
-      <example>
-        <code>var obj;
-<funclink>if</funclink> (obj=<funclink>FindObject</funclink>()) obj-&gt;Sell(0);</code>
-        <text>Sells some object to the first player.</text>
-      </example>
-    </examples>
     <related><funclink>Buy</funclink></related>
   </func>
   <author>Sven2</author><date>2001-11</date>

@@ -4,7 +4,7 @@
  * Copyright (c) 2004-2006  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005  Günther Brammer
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009, 2011  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -29,17 +29,13 @@
 #include "C4ObjectPtr.h"
 #include "C4InputValidation.h"
 #include "C4Id.h"
-
-#define C4Portrait_None   "none"
-#define C4Portrait_Random "random"
-#define C4Portrait_Custom "custom"
+#include "StdMeshUpdate.h"
 
 class C4Def;
 
 // defintion graphics
 class C4AdditionalDefGraphics;
 class C4DefGraphicsPtrBackup;
-class C4PortraitGraphics;
 
 class C4DefGraphics
 {
@@ -85,10 +81,11 @@ public:
 	{ return Type == TYPE_Mesh || !!Bmp.BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
 	bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
+	void Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans);
+
 	virtual const char *GetName() { return NULL; } // return name to be stored in safe game files
 
 	C4AdditionalDefGraphics *GetNext() { return pNext; }
-	virtual C4PortraitGraphics *IsPortrait() { return NULL; }
 
 	void DrawClr(C4Facet &cgo, bool fAspect=true, DWORD dwClr=0); // set surface color and draw
 
@@ -108,18 +105,6 @@ public:
 	virtual const char *GetName() { return Name; }
 };
 
-// portrait graphics within object definition
-class C4PortraitGraphics : public C4AdditionalDefGraphics
-{
-public:
-	C4PortraitGraphics(C4Def *pOwnDef, const char *szName)  // ctor
-			: C4AdditionalDefGraphics(pOwnDef, szName) { }
-
-	virtual C4PortraitGraphics *IsPortrait() { return this; }
-	C4PortraitGraphics *GetByIndex(int32_t iIndex);
-	C4PortraitGraphics *Get(const char *szGrpName); // get portrait graphics by name
-};
-
 // backup class holding dead graphics pointers and names
 class C4DefGraphicsPtrBackup
 {
@@ -128,6 +113,8 @@ protected:
 	C4Def *pDef;                 // definition of dead graphics
 	char Name[C4MaxName+1];        // name of graphics
 	C4DefGraphicsPtrBackup *pNext; // next member of linked list
+	StdMeshMaterialUpdate MeshMaterialUpdate; // Backup of dead mesh materials
+	StdMeshUpdate* pMeshUpdate;    // Dead mesh
 
 public:
 	C4DefGraphicsPtrBackup(C4DefGraphics *pSourceGraphics); // ctor
@@ -135,6 +122,10 @@ public:
 
 	void AssignUpdate(C4DefGraphics *pNewGraphics); // update all game objects with new graphics pointers
 	void AssignRemoval();                           // remove graphics of this def from all game objects
+
+private:
+	void UpdateMeshes();
+	void UpdateMesh(StdMeshInstance* instance);
 };
 
 // Helper to compile C4DefGraphics-Pointer
@@ -151,35 +142,10 @@ public:
 	ALLOW_TEMP_TO_REF(C4DefGraphicsAdapt)
 };
 
-// portrait link class
-class C4Portrait
-{
-protected:
-	C4DefGraphics *pGfxPortrait; // the portrait graphics
-	bool fGraphicsOwned;         // if true, the portrait graphics are owned (and deleted upon destruction)
-
-public:
-	C4Portrait() : pGfxPortrait(NULL), fGraphicsOwned(false) {} // ctor
-	~C4Portrait() { if (fGraphicsOwned) delete pGfxPortrait; }  // dtor
-	void Default() { pGfxPortrait=NULL; fGraphicsOwned=false; }
-	void Clear() { if (fGraphicsOwned) { delete pGfxPortrait; fGraphicsOwned=false; } pGfxPortrait=NULL; }
-
-	bool CopyFrom(C4DefGraphics &rCopyGfx); // copy portrait from graphics
-	bool CopyFrom(C4Portrait &rCopy); // copy portrait
-
-	bool Load(C4Group &rGrp, const char *szFilenamePNG, const char *szOverlayPNG); // load own portrait from group
-	bool Link(C4DefGraphics *pGfxPortrait);        // link with a present portrait surface
-	bool SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN); // store portrait gfx to file (including overlay)
-
-	C4DefGraphics *GetGfx() { return pGfxPortrait; }
-	bool IsOwnedGfx() { return fGraphicsOwned; }         // return if it's a custom portrait
-
-	static const char *EvaluatePortraitString(const char *szPortrait, C4ID &rIDOut, C4ID idDefaultID, uint32_t *pdwClrOut); // get portrait source and def from string
-};
-
 // graphics overlay used to attach additional graphics to objects
 class C4GraphicsOverlay
 {
+	friend class C4DefGraphicsPtrBackup;
 public:
 	enum Mode
 	{
@@ -225,7 +191,6 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 
 	// object pointer management
-	void EnumeratePointers();
 	void DenumeratePointers();
 
 	void SetAsBase(C4DefGraphics *pBaseGfx, DWORD dwBMode) // set in MODE_Base

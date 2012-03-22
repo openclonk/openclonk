@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003, 2006-2007  Matthes Bender
- * Copyright (c) 2004, 2006, 2009  Günther Brammer
+ * Copyright (c) 2004, 2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2005-2009  Sven Eberhardt
  * Copyright (c) 2006  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -51,6 +51,7 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	SCopy("Neuling",PrefName);
 	if (pRanks) SCopy(pRanks->GetRankName(Rank,false).getData(),RankName);
 	else SCopy("Rang",RankName);
+	PrefClonkSkin=0;
 	PrefColor=0;
 	PrefColorDw=0xff;
 	PrefColor2Dw=0;
@@ -95,7 +96,7 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 		PrefColorDw &= 0xffffff;
 		PrefColor2Dw &= 0xffffff;
 		// Validate name
-		CMarkup::StripMarkup(PrefName);
+		C4Markup::StripMarkup(PrefName);
 		// Success
 		return true;
 	}
@@ -111,7 +112,7 @@ bool C4PlayerInfoCore::Save(C4Group &hGroup)
 		return false;
 	if (!hGroup.Add(C4CFN_PlayerInfoCore,Source,false,true))
 		return false;
-	hGroup.Delete("C4Player.c4b");
+	hGroup.Delete("C4Player.ocb");
 	return true;
 }
 
@@ -133,7 +134,7 @@ bool C4PlayerInfoCore::CheckPromotion(C4RankSystem &rRanks)
 
 void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 {
-
+	C4ValueNumbers numbers;
 	pComp->Name("Player");
 	pComp->Value(mkNamingAdapt(toC4CStr(PrefName),"Name",                 "Neuling"));
 	pComp->Value(mkNamingAdapt(toC4CStr(Comment), "Comment",              ""));
@@ -144,7 +145,13 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RoundsWon,         "RoundsWon",            0));
 	pComp->Value(mkNamingAdapt(RoundsLost,        "RoundsLost",           0));
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,  "TotalPlayingTime",     0));
-	pComp->Value(mkNamingAdapt(ExtraData,         "ExtraData",            C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(numbers,           "ExtraDataValues"));
+	if (pComp->isCompiler())
+	{
+		numbers.Denumerate();
+		ExtraData.Denumerate(&numbers);
+	}
 	pComp->Value(mkNamingAdapt(toC4CStr(LeagueName),"LeagueName",         ""));
 	pComp->NameEnd();
 
@@ -158,6 +165,7 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
 	pComp->Value(mkNamingAdapt(OldPrefAutoContextMenu,   "AutoContextMenu",  -1)); // compiling default is -1  (if this is detected, AutoContextMenus will be defaulted by control style)
 	pComp->Value(mkNamingAdapt(PrefControl,              "ControlSet",       StdStrBuf()));
+	pComp->Value(mkNamingAdapt(PrefClonkSkin,            "ClonkSkin",        0));
 	pComp->NameEnd();
 
 	pComp->Value(mkNamingAdapt(LastRound,                "LastRound"));
@@ -195,7 +203,6 @@ void C4ObjectInfoCore::Default(C4ID n_id,
 	sNextRankName.Clear();
 	NextRankExp=0;
 	DeathMessage[0]='\0';
-	*PortraitFile=0;
 	Age=0;
 	ExtraData.Reset();
 
@@ -302,10 +309,10 @@ bool C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
 
 void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 {
+	C4ValueNumbers numbers;
 	pComp->Value(mkNamingAdapt(id,          "id",               C4ID::None));
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),          "Name",             "Clonk"));
 	pComp->Value(mkNamingAdapt(toC4CStr(DeathMessage),  "DeathMessage",     ""));
-	pComp->Value(mkNamingAdapt(toC4CStr(PortraitFile),  "PortraitFile",     ""));
 	pComp->Value(mkNamingAdapt(Rank,                    "Rank",             0));
 	pComp->Value(mkNamingAdapt(sRankName,               "RankName",         "Clonk"));
 	pComp->Value(mkNamingAdapt(sNextRankName,           "NextRankName",     ""));
@@ -318,7 +325,13 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Birthday,                "Birthday",         0));
 	pComp->Value(mkNamingAdapt(TotalPlayingTime,        "TotalPlayingTime", 0));
 	pComp->Value(mkNamingAdapt(Age,                     "Age",              0));
-	pComp->Value(mkNamingAdapt(ExtraData,               "ExtraData",        C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ExtraData, &numbers), "ExtraData", C4ValueMapData()));
+	pComp->Value(mkNamingAdapt(numbers,                 "ExtraDataValues"));
+	if (pComp->isCompiler())
+	{
+		numbers.Denumerate();
+		ExtraData.Denumerate(&numbers);
+	}
 }
 
 bool C4ObjectInfoCore::Compile(const char *szSource)

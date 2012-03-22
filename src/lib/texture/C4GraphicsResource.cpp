@@ -20,7 +20,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Loads all standard graphics from Graphics.c4g */
+/* Loads all standard graphics from Graphics.ocg */
 
 #include <C4Include.h>
 #include <C4GraphicsResource.h>
@@ -52,9 +52,12 @@ void C4GraphicsResource::Default()
 
 	sfcControl.Default();
 	idSfcControl = 0;
+	sfcClonkSkins.Default();
+	idSfcClonkSkins = 0;
 
 	fctPlayer.Default();
 	fctFlag.Default();
+	fctClonkSkin.Default();
 	fctCrew.Default();
 	fctWealth.Default();
 	fctRank.Default();
@@ -97,6 +100,8 @@ void C4GraphicsResource::Clear()
 
 	sfcControl.Clear();
 	idSfcControl = 0;
+	sfcClonkSkins.Clear();
+	idSfcClonkSkins = 0;
 
 	fctCrewClr.Clear();
 	fctFlagClr.Clear();
@@ -128,6 +133,7 @@ void C4GraphicsResource::Clear()
 	idSfcCaption = idSfcButton = idSfcButtonD = idSfcScroll = idSfcContext = 0;
 	barCaption.Clear(); barButton.Clear(); barButtonD.Clear();
 	fctButtonHighlight.Clear(); fctIcons.Clear(); fctIconsEx.Clear();
+	fctButtonHighlightRound.Clear();
 	fctSubmenu.Clear();
 	fctCheckbox.Clear();
 	fctBigArrows.Clear();
@@ -137,7 +143,7 @@ void C4GraphicsResource::Clear()
 	// unhook deflist from font
 	FontRegular.SetCustomImages(NULL);
 
-	// closing the group set will also close the graphics.c4g
+	// closing the group set will also close the graphics.ocg
 	// this is just for games that failed to init
 	// normally, this is done after successful init anyway
 	CloseFiles();
@@ -145,7 +151,7 @@ void C4GraphicsResource::Clear()
 
 bool C4GraphicsResource::InitFonts()
 {
-	// this regards scenario-specific fonts or overloads in Extra.c4g
+	// this regards scenario-specific fonts or overloads in Extra.ocg
 	const char *szFont;
 	if (*Game.C4S.Head.Font) szFont = Game.C4S.Head.Font; else szFont = Config.General.RXFontName;
 	if (!::FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files)) return false;
@@ -200,6 +206,7 @@ bool C4GraphicsResource::Init()
 	if (!LoadFile(sfcButtonD, "GUIButtonDown", Files, idSfcButtonD)) return false;
 	barButtonD.SetHorizontal(sfcButtonD);
 	if (!LoadFile(fctButtonHighlight, "GUIButtonHighlight", Files)) return false;
+	if (!LoadFile(fctButtonHighlightRound, "GUIButtonHighlightRound", Files)) return false;
 	if (!LoadFile(fctIcons, "GUIIcons", Files)) return false;
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
 	if (!LoadFile(fctIconsEx, "GUIIcons2", Files)) return false;
@@ -221,6 +228,10 @@ bool C4GraphicsResource::Init()
 	fctKey.Set(&sfcControl,0,100,64,64);
 	fctOKCancel.Set(&sfcControl,128,100,32,32);
 	fctMouse.Set(&sfcControl,198,100,32,32);
+
+	// Clonk style selection
+	if (!LoadFile(sfcClonkSkins, "ClonkSkins",  Files, idSfcClonkSkins)) return false;
+	fctClonkSkin.Set(&sfcClonkSkins,0,0,64,64);
 
 	// Facet bitmap resources
 	if (!LoadFile(fctFire,        "Fire",         Files, C4FCT_Height)) return false;
@@ -288,12 +299,7 @@ bool C4GraphicsResource::LoadCursorGfx()
 {
 	// Determine appropriate GFX file by screen resolution
 	const char *szCursorFilename;
-	if (C4GUI::GetScreenWdt() >= 1280)
-		szCursorFilename = "CursorLarge";
-	else if (C4GUI::GetScreenWdt() >= 800)
-		szCursorFilename = "CursorMedium";
-	else
-		szCursorFilename = "CursorSmall";
+	szCursorFilename = "Cursor";
 	if (!LoadFile(fctMouseCursor, szCursorFilename, Files, C4FCT_Height))
 		return false;
 	// adjust dependant faces

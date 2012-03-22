@@ -7,14 +7,14 @@
     <title>SetOwner</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>int</type>
           <name>new_owner</name>
-          <desc>Player number of the new owner. -1 for no owner.</desc>
+          <desc>Player number of the new owner. <code>NO_OWNER</code> for no owner.</desc>
         </param>
       </params>
     </syntax>
@@ -22,7 +22,7 @@
     <remark>This function also changes the controller to the new owner.</remark>
     <examples>
       <example>
-        <code>protected func Entrance(container) { SetOwner(container-&gt;<funclink>GetOwner</funclink>()); <funclink>return</funclink>(); }</code>
+        <code>protected func Entrance(object container) { SetOwner(container-&gt;<funclink>GetOwner</funclink>()); }</code>
         <text>This object changes its owner when it is collected.</text>
       </example>
     </examples>

@@ -5,6 +5,7 @@
  * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
  * Copyright (c) 2006  Julian Raschke
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,8 +24,10 @@
 
 #include "C4Include.h"
 #include <StdGL.h>
-#include <StdSurface2.h>
-#include <StdWindow.h>
+
+#include <C4App.h>
+#include <C4Surface.h>
+#include <C4Window.h>
 #include <C4Config.h>
 
 #ifdef USE_GL
@@ -125,7 +128,7 @@ static std::vector<int> EnumeratePixelFormats(HDC hdc)
 	return result;
 }
 
-static int GetPixelFormatForMS(HDC hDC, unsigned int samples)
+static int GetPixelFormatForMS(HDC hDC, int samples)
 {
 	std::vector<int> vec = EnumeratePixelFormats(hDC);
 	for(unsigned int i = 0; i < vec.size(); ++i)
@@ -264,7 +267,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0; hWindow = NULL;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow)
 {
 	// safety
 	if (!pGL) return false;
@@ -408,41 +411,8 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
-{
-	HDC hDC = GetDC(pWindow->hWindow);
-	if (hDC)
-	{
-		if (!GetDeviceGammaRamp(hDC, &DefRamp))
-		{
-			DefRamp.Default();
-			Log("  Error getting default gamma ramp; using standard");
-		}
-		ReleaseDC(pWindow->hWindow, hDC);
-		return true;
-	}
-	return false;
-}
-
-bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
-{
-	if (!pMainCtx || (!Active && !fForce)) return false;
-	if (!SetDeviceGammaRamp(pMainCtx->hDC, &ramp))
-	{
-		int i=::GetLastError();
-		//Beep(i,i);
-	}
-	return true;
-}
-
 #elif defined(USE_X11)
-
-//  Xmd.h typedefs bool to CARD8, whereas microsoft windows and Clonk use int
-#define bool _BOOL
-#include <X11/Xmd.h>
 #include <GL/glx.h>
-#include <X11/extensions/xf86vmode.h>
-#undef bool
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
@@ -457,7 +427,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -527,38 +497,6 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
-{
-	if (!DeviceReady() || (!Active && !fForce)) return false;
-	if (pApp->xf86vmode_major_version < 2) return false;
-	if (gammasize != 256) return false;
-	return XF86VidModeSetGammaRamp(pApp->dpy, DefaultScreen(pApp->dpy), 256,
-	                               ramp.red, ramp.green, ramp.blue);
-}
-
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
-{
-	if (pApp->xf86vmode_major_version < 2) return false;
-	// Get the Display
-	Display * const dpy = pWindow->dpy;
-	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &gammasize);
-	if (gammasize != 256)
-	{
-		LogF("  Size of GammaRamp is %d, not 256", gammasize);
-	}
-	else
-	{
-		// store default gamma
-		if (!XF86VidModeGetGammaRamp(pWindow->dpy, DefaultScreen(pWindow->dpy), 256,
-		                             DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue))
-		{
-			DefRamp.Default();
-			Log("  Error getting default gamma ramp; using standard");
-		}
-	}
-	return true;
-}
-
 #elif defined(USE_SDL_MAINLOOP)
 
 CStdGLCtx::CStdGLCtx(): pWindow(0) { }
@@ -568,7 +506,7 @@ void CStdGLCtx::Clear()
 	pWindow = 0;
 }
 
-bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
+bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
 	if (!pGL) return false;
@@ -616,16 +554,6 @@ bool CStdGLCtx::PageFlip()
 	if (!pWindow) return false;
 	SDL_GL_SwapBuffers();
 	return true;
-}
-
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
-{
-	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
-}
-
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
-{
-	return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }
 
 #endif //USE_X11/USE_SDL_MAINLOOP

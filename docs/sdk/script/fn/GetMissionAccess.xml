@@ -6,7 +6,7 @@
   <func>
     <title>GetMissionAccess</title>
     <category>System</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,13 +18,13 @@
       </params>
     </syntax>
     <desc>Determines whether the player already has the specified mission access password.</desc>
-    <remark>In a network game, this function always returns 0. Otherwise differing local values might cause synchronization problems.</remark>
+    <remark>In a network game, this function always returns <code>false</code>. Otherwise differing local values might cause synchronization problems.</remark>
     <examples>
       <example>
         <code><funclink>if</funclink> (!GetMissionAccess(&quot;DasWarHarteArbeit&quot;))
 {
   <funclink>GainMissionAccess</funclink>(&quot;DasWarHarteArbeit&quot;);
-  <funclink>Message</funclink>(&quot;Glückwunsch, du bist hier zum ersten Mal!&quot;);
+  <funclink>Message</funclink>(&quot;Congratulations, you are here for the first time!&quot;);
 }</code>
         <text>Displays a message if the mission access password "DasWarHarteArbeit" was not yet gained and then gives this mission access.</text>
       </example>

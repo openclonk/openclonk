@@ -36,19 +36,19 @@ class C4PacketJoinData;
 
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,
-                                C4NetStdPortUDP = 11113,
-                                                  C4NetStdPortDiscovery = 11114,
-                                                                          C4NetStdPortRefServer = 11111,
-                                                                                                  C4NetStdPortPuncher = 11115,
-                                                                                                                        C4NetStdPortHTTP = 80;
+              C4NetStdPortUDP = 11113,
+              C4NetStdPortDiscovery = 11114,
+              C4NetStdPortRefServer = 11111,
+              C4NetStdPortPuncher = 11115,
+              C4NetStdPortHTTP = 80;
 
 // ressource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
 const int C4NetActivationReqInterval = 5000, // (ms)
-                                       C4NetMaxBehind4Activation = 20, // (ticks)
-                                                                   C4NetDeactivationDelay = 500; // (ticks)
+          C4NetMaxBehind4Activation = 20, // (ticks)
+          C4NetDeactivationDelay = 500; // (ticks)
 
 // client chase
 const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
@@ -315,9 +315,9 @@ protected:
 
 	// handling of own packets
 	void HandleConn(const class C4PacketConn &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
-	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply);
-	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
-	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply);
+	bool CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, StdStrBuf * szReply);
+	bool HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
+	bool Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, StdStrBuf *szReply);
 	void HandleConnRe(const class C4PacketConnRe &Pkt, C4Network2IOConnection *pConn, C4Network2Client *pClient);
 	void HandleStatus(const C4Network2Status &nStatus);
 	void HandleStatusAck(const C4Network2Status &nStatus, C4Network2Client *pClient);

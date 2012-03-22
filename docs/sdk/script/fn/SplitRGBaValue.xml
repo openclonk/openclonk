@@ -6,45 +6,24 @@
   <func>
     <title>SplitRGBaValue</title>
     <category>Arithmetics</category>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>array</rtype>
       <params>
         <param>
           <type>int</type>
-          <name>Val</name>
+          <name>rgba</name>
           <desc>32 bit color value</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>red</name>
-          <desc>[opt] variable in which the red value is to be stored</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>green</name>
-          <desc>[opt] variable in which the green value is to be stored</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>blue</name>
-          <desc>[opt] variable in which the blue value is to be stored</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>alpha</name>
-          <desc>[opt] variable in which the alpha value is to be stored</desc>
         </param>
       </params>
     </syntax>
-    <desc>Writes the red, green, blue, and alpha values of a 32 bit color value to the specified variables.</desc>
+    <desc>Returns an array with the red, green, blue, and alpha values of the specified 32 bit color value: [red, green, blue, alpha]</desc>
     <examples>
       <example>
-        <code>var red, green, blue;
-SplitRGBaValue(<funclink>GetColorDw</funclink>(<funclink>GetCursor</funclink>()),red,green,blue);
-<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;Rot: %d|Grün %d|Blau %d&quot;,red, green, blue);
+        <code>var rgba = SplitRGBaValue(<funclink>GetCursor</funclink>()-&gt;<funclink>GetColor</funclink>());
+<funclink>GetCursor</funclink>()-&gt;<funclink>Message</funclink>(&quot;R: %d|G: %d|B: %d|A: %d&quot;,rgba[0], rgba[1], rgba[2], rgba[3]);
 				</code>
-        <text>Displays the three color values of the currently selected clonk above the clonk's head.</text>
+        <text>Displays the four color values of the currently selected clonk above the clonk's head.</text>
       </example>
     </examples>
     <related>

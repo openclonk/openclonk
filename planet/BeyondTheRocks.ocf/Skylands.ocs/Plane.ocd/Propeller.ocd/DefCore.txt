@@ -1,0 +1,16 @@
+[DefCore]
+id=Plane_Propeller
+Version=5,2,0,1
+Category=C4D_Object
+Width=9
+Height=10
+Offset=-5,-5
+Vertices=3
+VertexX=-4,3,3
+VertexY=0,-4,4
+VertexFriction=60,60,60
+Value=12
+Mass=20
+Components=Wood=1;Metal=1;
+Rotate=1
+Float=1

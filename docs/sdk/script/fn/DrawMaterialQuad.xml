@@ -6,7 +6,7 @@
   <func>
     <title>DrawMaterialQuad</title>
     <category>Landscape</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -58,15 +58,15 @@
         <param>
           <type>bool</type>
           <name>sub</name>
-          <desc>If true, the material will be drawn as 'underground'.</desc>
+          <desc>If <code>true</code>, the material will be drawn as 'underground'.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Draws a four-cornered polygon of the specified material and texture into the landscape. If no texture is specified, Smooth is assumed.</desc>
+    <desc>Draws a four-cornered polygon of the specified material and texture into the landscape.</desc>
     <remark>The corners of the polygon should be specified in clockwise order and polygon boundaries should not intersect. For more complex or concave shapes you make multiple calls to this function.</remark>
     <examples>
       <example>
-        <code>DrawMaterialQuad(&quot;Gold-Rough&quot;, 0,0, <funclink>LandscapeWidth</funclink>()-1,0, <funclink>LandscapeWidth</funclink>()-1,<funclink>LandscapeHeight</funclink>()-1, 0,<funclink>LandscapeHeight</funclink>()-1);</code>
+        <code>DrawMaterialQuad(&quot;Gold-gold&quot;, 0,0, <funclink>LandscapeWidth</funclink>()-1,0, <funclink>LandscapeWidth</funclink>()-1,<funclink>LandscapeHeight</funclink>()-1, 0,<funclink>LandscapeHeight</funclink>()-1);</code>
         <text>Fills the complete landscape with gold.</text>
       </example>
     </examples>

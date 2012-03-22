@@ -27,7 +27,6 @@ covered by their respective licenses. List of libraries:
 zlib: Jean-loup Gailly, Mark Adler
 libpng: Glenn Randers-Pehrson
 jpeglib: Independent JPEG Group
-OpenSSL: The OpenSSL Project
 FMOD: Firelight Multimedia
 Freetype: The FreeType Project
 Allegro: Shawn Hargreaves

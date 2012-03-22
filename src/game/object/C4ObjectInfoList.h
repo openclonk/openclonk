@@ -42,7 +42,7 @@ public:
 	void Clear();
 	void Evaluate();
 	void DetachFromObjects();
-	int32_t Load(C4Group &hGroup, bool fLoadPortraits);
+	int32_t Load(C4Group &hGroup);
 	bool Add(C4ObjectInfo *pInfo);
 	bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4DefList *pDefs);
 	C4ObjectInfo* New(C4ID n_id, C4DefList *pDefs);

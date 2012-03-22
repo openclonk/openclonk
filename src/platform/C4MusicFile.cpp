@@ -48,7 +48,7 @@ bool C4MusicFile::RemTempFile()
 {
 	if (!SongExtracted) return true;
 	// delete it
-	remove(Config.AtTempPath(C4CFN_TempMusic2));
+	EraseFile(Config.AtTempPath(C4CFN_TempMusic2));
 	SongExtracted = false;
 	return true;
 }

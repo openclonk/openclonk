@@ -25,34 +25,6 @@
 #ifndef STDFILE_INCLUDED
 #define STDFILE_INCLUDED
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-
-#ifdef _WIN32
-#include <io.h>
-#define F_OK 0
-#else
-#include <dirent.h>
-#include <limits.h>
-#define _O_BINARY 0
-#define _MAX_PATH PATH_MAX
-#define _MAX_FNAME NAME_MAX
-
-bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
-#endif
-
-#ifdef _WIN32
-#define DirSep "\\"
-#define DirectorySeparator '\\'
-#define AltDirectorySeparator '/'
-#else
-#define DirSep "/"
-#define DirectorySeparator '/'
-#define AltDirectorySeparator '\\'
-#endif
-
 /** Create a directory and all of its parents.
  * \p[in] path Directory to create
  * \returns true on success, false otherwise.
@@ -98,7 +70,6 @@ size_t FileSize(const char *fname);
 size_t FileSize(int fdes);
 int FileTime(const char *fname);
 bool EraseFile(const char *szFileName);
-bool EraseFiles(const char *szFilePath);
 bool RenameFile(const char *szFileName, const char *szNewFileName);
 bool MakeOriginalFilename(char *szFilename);
 void MakeFilenameFromTitle(char *szTitle);
@@ -111,7 +82,6 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2);
 inline bool ItemExists(const char *szItemName) { return FileExists(szItemName); }
 bool RenameItem(const char *szItemName, const char *szNewItemName);
 bool EraseItem(const char *szItemName);
-bool EraseItems(const char *szItemPath);
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes=false);
 bool CreateItem(const char *szItemname);
 bool MoveItem(const char *szSource, const char *szTarget);
@@ -126,6 +96,7 @@ class DirectoryIterator
 public:
 	DirectoryIterator(const char * dirname);
 	DirectoryIterator();
+	DirectoryIterator & operator = (const DirectoryIterator &);
 	DirectoryIterator(const DirectoryIterator &);
 	~DirectoryIterator();
 

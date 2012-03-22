@@ -5,6 +5,7 @@
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2008  Julian Raschke
  * Copyright (c) 2009  David Dormagen
+ * Copyright (c) 2011  Maikel de Vries
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

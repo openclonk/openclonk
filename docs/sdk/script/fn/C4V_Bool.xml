@@ -3,13 +3,12 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>C4V_Bool</title>
     <category>Variables</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Data type: boolean value (true or false).</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
+    <desc>Data type: boolean value (<code>true</code> or <code>false</code>).</desc>
     <examples>
       <example>
         <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) == C4V_Bool) <funclink>Log</funclink>(&quot;x=%d&quot;, x);</code>
@@ -17,6 +16,6 @@
       </example>
     </examples>
     <related><funclink>GetType</funclink></related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-04</date>
 </funcs>

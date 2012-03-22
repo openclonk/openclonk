@@ -7,20 +7,20 @@
     <title>SetObjectBlitMode</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
           <name>dwNewBlitMod</name>
-          <desc>New drawing mode (values see below). If 0 the object is reset to its definition blit mode. Otherwise bit 8 (user defined color value) is set implicitly.</desc>
+          <desc>New drawing mode (values see below). If 0 or unspecified, the object is reset to its definition blit mode. Otherwise bit 8 (user defined color value) is set implicitly.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
           <name>overlay_id</name>
-          <desc>If specified, this will change the blit mode of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first. From CR.</desc>
+          <desc>If specified, this will change the blit mode of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first.</desc>
           <optional />
         </param>
       </params>
@@ -47,7 +47,7 @@
         <row>
           <col>GFX_BLIT_ClrSfc_OwnClr</col>
           <col>4</col>
-          <col>The color modulation set via <funclink>SetClrModulation</funclink>() applies to the base surface only and the overlay is normally colored by the owner color (see <funclink>SetColorDw</funclink>()).</col>
+          <col>The color modulation set via <funclink>SetClrModulation</funclink>() applies to the base surface only and the overlay is normally colored by the owner color (see <funclink>SetColor</funclink>()).</col>
         </row>
         <row>
           <col>GFX_BLIT_ClrSfc_Mod2</col>
@@ -67,38 +67,35 @@
         <row>
           <col>GFX_BLIT_Parent</col>
           <col>256</col>
-          <col>Only for overlays: the blit mode of the base surface is used when drawing this overlay. From CR.</col>
+          <col>Only for overlays: the blit mode of the base surface is used when drawing this overlay.</col>
         </row>
       </table>
     </remark>
     <examples>
       <example>
-        <code>static g_pCursor, g_dwPrevBlitMode, g_dwPrevMod;
+        <code>static g_cursor, g_prev_blit_mode, g_prev_mod;
 
-protected func Script100()
-  {
-  // Ausgewählten Clonk des ersten Spielers ermitteln
-  g_pCursor = <funclink>GetCursor</funclink>();
-  // Vorherige Werte speichern
-  g_dwPrevBlitMode = g_pCursor-&gt;<funclink>GetObjectBlitMode</funclink>();
-  g_dwPrevMod = g_pCursor-&gt;<funclink>GetClrModulation</funclink>();
-  // Nicht-ColorByOwner-Teile des Clonks leuchtend grün färben
-  g_pCursor-&gt;SetObjectBlitMode(6);
-  g_pCursor-&gt;<funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
-  // Nachricht
-  g_pCursor-&gt;<funclink>Message</funclink>(&quot;Schau her, ich kann leuchten!&quot;);
-  return true;
-  }
+func Script100()
+{
+  g_cursor = <funclink>GetCursor</funclink>();
+  // save previous values
+  g_prev_blit_mode = g_cursor-&gt;<funclink>GetObjectBlitMode</funclink>();
+  g_prev_mod = g_cursor-&gt;<funclink>GetClrModulation</funclink>();
+  // color the no-ColorByOwner-parts of the clonk in a glowing green
+  g_cursor-&gt;SetObjectBlitMode(6);
+  g_cursor-&gt;<funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
+  // message
+  g_cursor-&gt;<funclink>Message</funclink>(&quot;Look, I can glow!&quot;);
+}
 
-protected func Script200()
-  {
-  // Farbe zurücksetzen
-  g_pCursor-&gt;SetObjectBlitMode(g_dwPrevBlitMode);
-  g_pCursor-&gt;<funclink>SetClrModulation</funclink>(g_dwPrevMod);
+func Script200()
+{
+  // reset color
+  g_cursor-&gt;SetObjectBlitMode(g_prev_blit_mode);
+  g_cursor-&gt;<funclink>SetClrModulation</funclink>(g_prev_mod);
   // Nachricht
-  g_pCursor-&gt;<funclink>Message</funclink>(&quot;Schon vorbei :/&quot;);
-  <funclink>return</funclink> 1;
-  }</code>
+  g_cursor-&gt;<funclink>Message</funclink>(&quot;Over already!&quot;);
+}</code>
         <text>Part of a scenario script: colors the selected clonk of the first player bright green for a while.<br/>To handle the timing properly, it would be better to use an <emlink href="script/Effects.html">effect</emlink> in order to avoid conflicts with other scripts that might change the color at the same time.</text>
       </example>
     </examples>

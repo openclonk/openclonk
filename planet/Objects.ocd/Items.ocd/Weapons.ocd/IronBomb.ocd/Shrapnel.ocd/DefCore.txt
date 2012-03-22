@@ -1,0 +1,13 @@
+[DefCore]
+id=Shrapnel
+Version=4,10,0,0
+Category=C4D_Object
+Width=2
+Height=2
+Offset=-1,-1
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=95
+Mass=5
+Rotate=1

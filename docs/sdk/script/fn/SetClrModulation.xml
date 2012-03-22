@@ -7,7 +7,7 @@
     <title>SetClrModulation</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.1.0 GWE<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -19,12 +19,12 @@
         <param>
           <type>int</type>
           <name>overlay_id</name>
-          <desc>If specified, sets the color modulation of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first. From CR.</desc>
+          <desc>If specified, sets the color modulation of the graphics overlay instead. The overlay must have been created using <funclink>SetGraphics</funclink> first.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>Changes the color modulation of an object. This is a color value which is multiplied with the object color. <funclink>RGB</funclink>(255,0,0) will only let the red part of the color show. <funclink>RGBa</funclink>(255,255,255,128) will make all color half transparent (unless alpha addition is disabled in the graphics options).</desc>
+    <desc>Changes the color modulation of an object. This is a color value which is multiplied with the object color. <funclink>RGB</funclink>(255,0,0) will only let the red part of the color show. <funclink>RGBa</funclink>(255,255,255,128) will make all color half transparent.</desc>
     <examples>
       <example>
         <code><funclink>GetCursor</funclink>()-&gt;SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128));</code>

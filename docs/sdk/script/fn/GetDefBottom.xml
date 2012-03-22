@@ -7,7 +7,7 @@
     <title>GetDefBottom</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.9.1.0 GWE<extversion>4.9.1.0 GWE</extversion></version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Determines the lower limit of an object. This corresponds to y position + DefCore OffsetY + DefCore Height. Object rotation is not taken into consideration.</desc>
     <examples>

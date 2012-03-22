@@ -6,7 +6,7 @@
  * Copyright (c) 2001  Carlo Teubner
  * Copyright (c) 2002  Peter Wortmann
  * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,7 +21,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Handles Music.c4g and randomly plays songs */
+/* Handles Music.ocg and randomly plays songs */
 
 #ifndef INC_C4MusicSystem
 #define INC_C4MusicSystem

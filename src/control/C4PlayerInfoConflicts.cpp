@@ -25,6 +25,7 @@
 #include <C4PlayerInfo.h>
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
+#include <C4Teams.h>
 
 #include <C4Random.h>
 
@@ -38,7 +39,7 @@ DWORD GenerateRandomPlayerColor(int32_t iTry) // generate a random player color 
 {
 	// generate a random one biased towards max channel luminance
 	// (for greater color difference and less gray-ish colors)
-	return RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256)) | 0xff000000;
+	return C4RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
 }
 
 bool IsColorConflict(DWORD dwClr1, DWORD dwClr2) // return whether dwClr1 and dwClr2 are closely together
@@ -427,7 +428,7 @@ void C4PlayerInfoListAttributeConflictResolver::Resolve()
 }
 
 
-/*C4Group g; g.Open("test.c4g");
+/*C4Group g; g.Open("test.ocg");
 C4PlayerInfoList l1, l2, l3;
 l1.Load(g, "in1.txt");
 l2.Load(g, "in2.txt");

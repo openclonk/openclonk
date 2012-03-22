@@ -2,10 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
- * Copyright (c) 2002-2005  Sven Eberhardt
  * Copyright (c) 2002-2004  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2002-2005  Sven Eberhardt
  * Copyright (c) 2009-2010  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -156,7 +156,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
-			lpDDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
+			pDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
 		return;
 	}
 
@@ -200,7 +200,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 		//	dwFade = 0xff000000;
 		dwColor |= dwFade;
 		// Draw
-		lpDDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
+		pDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
 	}
 }
 

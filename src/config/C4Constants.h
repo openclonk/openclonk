@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2005  Matthes Bender
  * Copyright (c) 2002, 2006-2007, 2009  Sven Eberhardt
  * Copyright (c) 2005, 2007  Günther Brammer
- * Copyright (c) 2010  Maikel de Vries
+ * Copyright (c) 2010-2011  Maikel de Vries
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -112,17 +112,15 @@ const uint32_t
 	OCF_Collection = 1<<14,
 
 	OCF_HitSpeed4 = 1<<16,
-	OCF_Prey = 1<<17,
-	OCF_AttractLightning = 1<<18,
-	OCF_NotContained = 1<<19,
-	OCF_CrewMember = 1<<20,
-	OCF_Edible = 1<<21,
-	OCF_InLiquid = 1<<22,
-	OCF_InSolid = 1<<23,
-	OCF_InFree = 1<<24,
-	OCF_Available = 1<<25,
-	OCF_Container = 1<<26,
-	OCF_Alive = 1<<27;
+	OCF_AttractLightning = 1<<17,
+	OCF_NotContained = 1<<18,
+	OCF_CrewMember = 1<<19,
+	OCF_InLiquid = 1<<20,
+	OCF_InSolid = 1<<21,
+	OCF_InFree = 1<<22,
+	OCF_Available = 1<<23,
+	OCF_Container = 1<<24,
+	OCF_Alive = 1<<25;
 
 //================================== Contact / Attachment ==============================================
 

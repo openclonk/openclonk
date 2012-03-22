@@ -6,7 +6,7 @@
   <func>
     <title>SetSkyParallax</title>
     <category>Sky</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,44 +18,54 @@
         <param>
           <type>int</type>
           <name>xpar</name>
-          <desc>Horizontal parallaxity. At value 10 the sky is linked to the landscape; at higher values the sky will be parallax to the landscape; at 0 the previous value is kept.</desc>
+          <optional />
+          <desc>Horizontal parallaxity. With a value of 10 the sky is fixed to the landscape and thus appears to be on the same level as the landscape itself. Higher values will let the sky appear further away from the viewer.</desc>
         </param>
         <param>
           <type>int</type>
           <name>ypar</name>
+          <optional />
           <desc>Vertical parallaxity.</desc>
         </param>
         <param>
           <type>int</type>
           <name>xdir</name>
+					<optional />
           <desc>Constant horizontal motion of the sky.</desc>
         </param>
         <param>
           <type>int</type>
           <name>ydir</name>
+					<optional />
           <desc>Constant vertical motion of the sky.</desc>
         </param>
         <param>
           <type>int</type>
           <name>x</name>
+					<optional />
           <desc>X scroll position of the sky.</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
+					<optional />
           <desc>Y scroll position of the sky.</desc>
         </param>
       </params>
     </syntax>
     <desc>Changes parallaxity and scroll speed of the sky.</desc>
-    <remark>If you specify <funclink>SkyPar_Keep</funclink>() for one of the parameters, the previously set value will be kept.</remark>
+    <remark>If you specify <code>nil</code> for one of the parameters or leave it out, the previous value will be kept.</remark>
     <examples>
       <example>
-        <code>SetSkyParallax(1, 20,20, 0,0, <funclink>SkyPar_Keep</funclink>(),<funclink>SkyPar_Keep</funclink>());</code>
+        <code>SetSkyParallax(1, 20,20, 0,0, nil, nil);</code>
         <text>Sets the sky to parallax and moving with the wind.</text>
       </example>
+      <example>
+        <code>SetSkyParallax(0, nil, nil, 1);</code>
+        <text>Scrolls the sky constantly to the right, keeping the previously set parallaxity.</text>
+      </example>
     </examples>
-    <related><funclink>SkyPar_Keep</funclink></related>
   </func>
+  <author>Newton</author><date>2011-07</date>
   <author>Sven2</author><date>2002-04</date>
 </funcs>

@@ -7,7 +7,7 @@
     <title>GetMaterialCount</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -22,18 +22,19 @@
     <remark>A returns value of -1 indicates that no valid result could yet be determined. Valid results are not available during the first 500 frames of the round or if NoScan is enabled in the scenario core. Results are updated only roughly every 500 frames - inbetween updates values will remain unchanged.</remark>
     <examples>
       <example>
-        <code>/* Spielziel erfüllt? */
+        <code>/* Is the game goal fulfilled? */
 public func IsFulfilled()
 {
-  // Gold noch nicht gezählt?
-  if ((var gold_count=GetMaterialCount(<funclink>Material</funclink>(&quot;Gold&quot;)))==-1) return();
-  // noch zu viel?
-  if (gold_count &gt;= 150) return();
-  // noch Goldstücke abzubauen?
-  return(!<funclink>ObjectCount</funclink>(Gold));
+  // Gold hasn't been counted yet
+  if ((var gold_count=GetMaterialCount(<funclink>Material</funclink>(&quot;Gold&quot;))) == -1) return false;
+  // still too much?
+  if (gold_count &gt;= 150) return false;
+  // or still gold chunks to mine?
+  if(<funclink>ObjectCount</funclink>(<funclink>Find_ID</funclink>(Gold))) return false;
+	return true;
 }
 				</code>
-        <text>Script taken from goldmine game goal (GLDM).</text>
+        <text>A script for a goldmine goame goal.</text>
       </example>
     </examples>
     <related><funclink>Material</funclink></related>

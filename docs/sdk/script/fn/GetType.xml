@@ -6,7 +6,7 @@
   <func>
     <title>GetType</title>
     <category>Variables</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -19,13 +19,13 @@
     </syntax>
     <desc>Returns the data type of a passed value.</desc>
     <related>
-      <funclink>C4V_Any</funclink>
-      <funclink>C4V_Array</funclink>
-      <funclink>C4V_Bool</funclink>
-      <funclink>C4V_C4ID</funclink>
-      <funclink>C4V_C4Object</funclink>
+      <funclink>C4V_Nil</funclink>
       <funclink>C4V_Int</funclink>
+      <funclink>C4V_Bool</funclink>
       <funclink>C4V_String</funclink>
+      <funclink>C4V_Array</funclink>
+      <funclink>C4V_PropList</funclink>
+      <funclink>C4V_C4Object</funclink>
     </related>
   </func>
   <author>PeterW</author><date>2003-06</date>

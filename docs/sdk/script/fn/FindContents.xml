@@ -7,7 +7,7 @@
     <title>FindContents</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -19,13 +19,6 @@
       </params>
     </syntax>
     <desc>Returns the first found contained object of the specified type.</desc>
-    <examples>
-      <example>
-        <code>var hut;
-<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut-&gt;FindContents(Clonk)-&gt;<funclink>Exit</funclink>(hut-&gt;<funclink>GetX</funclink>(), hut-&gt;<funclink>GetY</funclink>());</code>
-        <text>Expels a clonk from a hut.</text>
-      </example>
-    </examples>
     <related>
       <funclink>FindOtherContents</funclink>
       <funclink>Contents</funclink>

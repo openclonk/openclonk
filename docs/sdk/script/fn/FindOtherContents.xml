@@ -7,7 +7,7 @@
     <title>FindOtherContents</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -21,7 +21,7 @@
     <desc>Returns the first contained object which is not of the specified type.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink> (!FindOtherContents(GUNP)) <funclink>Message</funclink>(&quot;Kein Projektil&quot;);</code>
+        <code><funclink>if</funclink> (!FindOtherContents(PowderKeg)) <funclink>Message</funclink>(&quot;No projectile&quot;);</code>
         <text>Displays a message if the object contains nothing but gunpowder.</text>
       </example>
     </examples>

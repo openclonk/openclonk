@@ -6,7 +6,7 @@
   <func>
     <title>CreateScriptPlayer</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -45,7 +45,7 @@
               <row>
                 <col>1</col>
                 <col>CSPF_NoScenarioInit</col>
-                <col>If true, the scenario initialization (i.e. placement of home base material, clonks, setting of build knowledge, etc.) is not performed for this player. Also, the global callbacks PreInitializePlayer and InitializePlayer to the scenario script and to goal, rule, and environment objects are not performed. Instead, the callback InitializeScriptPlayer(Player number, Team) is made to the object definition specified in extra_data. The call is made as DefinitionCall (without <funclink>this</funclink>() object). Using this parameter you can create script-controlled AI players which do not receive the same standard treatment as user-controlled players.</col>
+                <col>If true, the scenario initialization (i.e. placement of home base material, clonks, setting of build knowledge, etc.) is not performed for this player. Also, the global callbacks PreInitializePlayer and InitializePlayer to the scenario script and to goal, rule, and environment objects are not performed. Instead, the callback InitializeScriptPlayer(Player number, Team) is made to the object definition specified in extra_data. The call is made as DefinitionCall (without <funclink>this</funclink> object). Using this parameter you can create script-controlled AI players which do not receive the same standard treatment as user-controlled players.</col>
               </row>
               <row>
                 <col>2</col>

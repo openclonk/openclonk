@@ -2,9 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2007  Sven Eberhardt
- * Copyright (c) 2005, 2007, 2009-2010  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009-2011  Günther Brammer
  * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,6 +24,7 @@
 
 #include <C4Include.h>
 #include <C4Gui.h>
+
 #include <C4FullScreen.h>
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
@@ -33,6 +35,18 @@ namespace C4GUI
 {
 
 	const char *Edit::CursorRepresentation = "\xC2\xA6"; // U+00A6 BROKEN BAR
+
+	namespace
+	{
+		inline bool IsUtf8ContinuationByte(char c)
+		{
+			return (c & 0xC0) == 0x80;
+		}
+		inline bool IsUtf8StartByte(char c)
+		{
+			return (c & 0xC0) == 0xC0;
+		}
+	}
 
 // ----------------------------------------------------
 // Edit
@@ -136,7 +150,7 @@ namespace C4GUI
 		// reset selection
 		iSelectionStart = iSelectionEnd = 0;
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=timeGetTime();
+		dwLastInputTime=GetTime();
 	}
 
 	void Edit::DeleteSelection()
@@ -148,7 +162,7 @@ namespace C4GUI
 		// adjust cursor pos
 		if (iCursorPos > iSelBegin) iCursorPos = Max(iSelBegin, iCursorPos - iSelEnd + iSelBegin);
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=timeGetTime();
+		dwLastInputTime=GetTime();
 		// nothing selected
 		iSelectionStart = iSelectionEnd = iSelBegin;
 	}
@@ -175,7 +189,7 @@ namespace C4GUI
 			// advance cursor
 			iCursorPos += iTextLen;
 			// cursor moved: ensure it is shown
-			dwLastInputTime=timeGetTime();
+			dwLastInputTime=GetTime();
 			ScrollCursorInView();
 		}
 		// done; return whether everything was inserted
@@ -198,8 +212,11 @@ namespace C4GUI
 		int32_t i = 0;
 		for (int32_t iLastW = 0, w,h; Text[i]; ++i)
 		{
+			int oldi = i;
+			if (IsUtf8StartByte(Text[oldi]))
+				while (IsUtf8ContinuationByte(Text[++i + 1])) /* EMPTY */;
 			char c=Text[i+1]; Text[i+1]=0; pFont->GetTextExtent(Text, w, h, false); Text[i+1]=c;
-			if (w - (w-iLastW)/2 >= iControlXPos) break;
+			if (w - (w-iLastW)/2 >= iControlXPos) return oldi;
 			iLastW = w;
 		}
 		return i;
@@ -404,7 +421,12 @@ namespace C4GUI
 							iMoveLength += iMoveDir;
 						}
 				}
-				else iMoveLength = iMoveDir;
+				else
+				{
+					// Handle UTF-8
+					iMoveLength = iMoveDir;
+					while (IsUtf8ContinuationByte(Text[iCursorPos + iMoveLength])) iMoveLength += Sign(iMoveLength);
+				}
 			}
 			// delete stuff
 			if (op == COP_BACK || op == COP_DELETE)
@@ -415,6 +437,7 @@ namespace C4GUI
 				char *c; for (c = Text+iCursorPos; *c; ++c) *(c+iMoveLength) = *c;
 				// terminate string
 				*(c+iMoveLength) = 0;
+				assert(IsValidUtf8(Text));
 			}
 			else if (fShift)
 			{
@@ -429,7 +452,7 @@ namespace C4GUI
 			iCursorPos += iMoveLength;
 		}
 		// show cursor
-		dwLastInputTime=timeGetTime();
+		dwLastInputTime=GetTime();
 		ScrollCursorInView();
 		// operation recognized
 		return true;
@@ -533,7 +556,7 @@ namespace C4GUI
 		// select all
 		iSelectionStart=0; iSelectionEnd=iCursorPos=SLen(Text);
 		// begin with a flashing cursor
-		dwLastInputTime=timeGetTime();
+		dwLastInputTime=GetTime();
 	}
 
 	void Edit::OnLooseFocus()
@@ -547,24 +570,24 @@ namespace C4GUI
 	void Edit::DrawElement(C4TargetFacet &cgo)
 	{
 		// draw background
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt+cgo.TargetX-1,rcClientRect.y+rcClientRect.Hgt+cgo.TargetY, dwBGClr);
+		pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcBounds.x,cgo.TargetY+rcBounds.y,rcBounds.x+rcBounds.Wdt+cgo.TargetX-1,rcClientRect.y+rcClientRect.Hgt+cgo.TargetY, dwBGClr);
 		// draw frame
 		if (dwBorderColor)
 		{
 			int32_t x1=cgo.TargetX+rcBounds.x,y1=cgo.TargetY+rcBounds.y,x2=x1+rcBounds.Wdt,y2=y1+rcBounds.Hgt;
-			lpDDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderColor);
-			lpDDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderColor);
+			pDraw->DrawFrameDw(cgo.Surface, x1, y1, x2, y2-1, dwBorderColor);
+			pDraw->DrawFrameDw(cgo.Surface, x1+1, y1+1, x2-1, y2-2, dwBorderColor);
 		}
 		else
 			// default frame color
 			Draw3DFrame(cgo);
 		// clipping
 		int cx0,cy0,cx1,cy1; bool fClip, fOwnClip;
-		fClip = lpDDraw->GetPrimaryClipper(cx0,cy0,cx1,cy1);
+		fClip = pDraw->GetPrimaryClipper(cx0,cy0,cx1,cy1);
 		float nclx1 = rcClientRect.x+cgo.TargetX-2, ncly1 = rcClientRect.y+cgo.TargetY, nclx2 = rcClientRect.x+rcClientRect.Wdt+cgo.TargetX+1, ncly2 = rcClientRect.y+rcClientRect.Hgt+cgo.TargetY;
-		lpDDraw->ApplyZoom(nclx1, ncly1);
-		lpDDraw->ApplyZoom(nclx2, ncly2);
-		fOwnClip = lpDDraw->SetPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
+		pDraw->ApplyZoom(nclx1, ncly1);
+		pDraw->ApplyZoom(nclx2, ncly2);
+		fOwnClip = pDraw->SetPrimaryClipper(nclx1, ncly1, nclx2, ncly2);
 		// get usable height of edit field
 		int32_t iHgt = pFont->GetLineHeight(), iY0;
 		if (rcClientRect.Hgt <= iHgt)
@@ -601,24 +624,24 @@ namespace C4GUI
 			c = pDrawText[iSelEnd]; pDrawText[iSelEnd]=0; pFont->GetTextExtent(pDrawText, iSelX2, h, false); pDrawText[iSelEnd]=c;
 			iSelX1 -= iXScroll; iSelX2 -= iXScroll;
 			// draw selection box around it
-			lpDDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcClientRect.x+iSelX1,cgo.TargetY+iY0,rcClientRect.x+iSelX2-1+cgo.TargetX,iY0+iHgt-1+cgo.TargetY,0x7f7f7f00);
+			pDraw->DrawBoxDw(cgo.Surface, cgo.TargetX+rcClientRect.x+iSelX1,cgo.TargetY+iY0,rcClientRect.x+iSelX2-1+cgo.TargetX,iY0+iHgt-1+cgo.TargetY,0x7f7f7f00);
 		}
 		// draw edit text
-		lpDDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
+		pDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
 		// draw cursor
-		if (HasDrawFocus() && !(((dwLastInputTime-timeGetTime())/500)%2))
+		if (HasDrawFocus() && !(((dwLastInputTime-GetTime())/500)%2))
 		{
 			char cAtCursor = pDrawText[iCursorPos]; pDrawText[iCursorPos]=0; int32_t w,h,wc;
 			pFont->GetTextExtent(pDrawText, w, h, false);
 			pDrawText[iCursorPos] = cAtCursor;
 			pFont->GetTextExtent(CursorRepresentation, wc, h, false); wc/=2;
-			lpDDraw->TextOut(CursorRepresentation, *pFont, 1.5f, cgo.Surface, rcClientRect.x + cgo.TargetX + w - wc - iXScroll, iY0 + cgo.TargetY - h/3, dwFontClr, ALeft, false);
+			pDraw->TextOut(CursorRepresentation, *pFont, 1.5f, cgo.Surface, rcClientRect.x + cgo.TargetX + w - wc - iXScroll, iY0 + cgo.TargetY - h/3, dwFontClr, ALeft, false);
 		}
 		// unclip
 		if (fOwnClip)
 		{
-			if (fClip) lpDDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
-			else lpDDraw->NoPrimaryClipper();
+			if (fClip) pDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
+			else pDraw->NoPrimaryClipper();
 		}
 	}
 

@@ -27,6 +27,7 @@
 #include "C4ObjectList.h"
 #include "C4Control.h"
 #include "C4Rect.h"
+#include <vector>
 
 #ifdef WITH_DEVELOPER_MODE
 #include <gtk/gtk.h>
@@ -43,12 +44,21 @@ protected:
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
 	C4Object *Target,*DropTarget;
+	struct ObjselItemDt {
+		C4EditCursor* EditCursor;
+		C4Object* Object;
+#if defined(_WIN32)
+		UINT_PTR ItemId;
+#elif defined(WITH_DEVELOPER_MODE)
+		GtkWidget* MenuItem;
+#endif
+	};
+	std::vector<ObjselItemDt> itemsObjselect;
 #ifdef _WIN32
 	HMENU hMenu;
 #else
 #ifdef WITH_DEVELOPER_MODE
 	GtkWidget* menuContext;
-
 	GtkWidget* itemDelete;
 	GtkWidget* itemDuplicate;
 	GtkWidget* itemGrabContents;
@@ -99,12 +109,14 @@ protected:
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
+	void DoContextObjsel(C4Object *);
+	void ObjselectDelItems();
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);
 	static void OnGrabContents(GtkWidget* widget, gpointer data);
-	static void OnProperties(GtkWidget* widget, gpointer data);
+	static void OnObjselect(GtkWidget* widget, gpointer data);
 #endif
 };
 

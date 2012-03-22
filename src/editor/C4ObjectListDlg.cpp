@@ -1,8 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2007, 2009, 2011  Günther Brammer
  * Copyright (c) 2007  Armin Burgmeier
- * Copyright (c) 2007, 2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -720,7 +720,7 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	if (pixbuf == NULL)
 	{
 		/* Not yet cached, create from Graphics */
-		CSurface* surface = object->Def->Graphics.Bmp.Bitmap;
+		C4Surface* surface = object->Def->Graphics.Bmp.Bitmap;
 		if (object->Def->Graphics.Bmp.BitmapClr) surface = object->Def->Graphics.Bmp.BitmapClr;
 
 		const C4Rect& picture = object->Def->PictureRect;

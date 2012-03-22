@@ -7,7 +7,7 @@
     <title>SelectMenuItem</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -19,21 +19,6 @@
       </params>
     </syntax>
     <desc>Sets menu selection in an object menu.</desc>
-    <examples>
-      <example>
-        <text>SelectMenuItem can be used in conjunction with <funclink>GetMenuSelection</funclink> to update menu entries without losing menu item selection.</text>
-        <code>var selection = -1;
-// Menu bereits geöffnet?
-if(<funclink>GetMenu</funclink>())
-  selection = <funclink>GetMenuSelection</funclink>();
-
-// [ Hier Menu (neu) erstellen... ]
-
-// Selektion wiederherstellen?
-if(selection &gt;= 0)
-  SelectMenuItem(selection);</code>
-      </example>
-    </examples>
     <related>
       <funclink>GetMenuSelection</funclink>
       <funclink>GetMenu</funclink>

@@ -35,7 +35,6 @@ public:
 	CStdPalette *pPal;            // pal for this surface (usually points to the main pal)
 	bool HasOwnPal();             // return whether the surface palette is owned
 	void HLine(int iX, int iX2, int iY, int iCol);
-	void Polygon(int iNum, int *ipVtx, int iCol, uint8_t *conversion_table=NULL);
 	void Box(int iX, int iY, int iX2, int iY2, int iCol);
 	void Circle(int x, int y, int r, BYTE col);
 	void ClearBox8Only(int iX, int iY, int iWdt, int iHgt); // clear box in 8bpp-surface only
@@ -56,7 +55,7 @@ public:
 		return Bits[y*Pitch+x];
 	}
 	bool Create(int iWdt, int iHgt);
-	void MoveFrom(CSurface *psfcFrom); // grab data from other surface - invalidates other surface
+	void MoveFrom(C4Surface *psfcFrom); // grab data from other surface - invalidates other surface
 	void Clear();
 	void Clip(int iX, int iY, int iX2, int iY2);
 	void NoClip();

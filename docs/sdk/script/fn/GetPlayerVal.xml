@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerVal</title>
     <category>Get*Val</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -18,7 +18,7 @@
         <param>
           <type>string</type>
           <name>section</name>
-          <desc>Section of the entry to be retrieved. If 0, all sections will be searched for an entry of the specified name.</desc>
+          <desc>Section of the entry to be retrieved. If not specified, all sections will be searched for an entry of the specified name.</desc>
           <optional />
         </param>
         <param>
@@ -37,10 +37,10 @@
     </syntax>
     <desc>Retrieves properties of a player by way of the name under which they are stored in the Game.txt component of a savegame.</desc>
     <remark>Warning: the retrieved values may not be synchronization safe, meaning they may differ from computer to computer in a network game. Using these values may cause sync loss in a network game.</remark>
-    <remark>Most useful applications for entry are already implemented in System.c4g/GetXVal.c.</remark>
+    <remark>Most useful applications for entry are already implemented in System.ocg/GetXVal.c.</remark>
     <examples>
       <example>
-        <code><funclink>Log</funclink>(&quot;Spieler %d hat %d Objekte!&quot;, player, GetPlrObjectsOwned(player));</code>
+        <code><funclink>Log</funclink>(&quot;Player %d has %d objects!&quot;, player, GetPlrObjectsOwned(player));</code>
         <text>Writes the number of objects owned by this player into the log file.</text>
       </example>
     </examples>

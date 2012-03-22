@@ -21,9 +21,6 @@
 #include <C4Include.h>
 #include <C4StringTable.h>
 
-#include <C4Group.h>
-#include <C4Components.h>
-//#include <C4Aul.h>
 
 // *** C4Set
 template<> template<>
@@ -132,6 +129,7 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
+	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
 	P[P_MeshTransformation] = "MeshTransformation";
@@ -172,9 +170,9 @@ C4StringTable::~C4StringTable()
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
 			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
-				fprintf(stderr, " \"%s\"\n", (*s)->GetCStr());
+				fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
 			else
-				fprintf(stderr, "\"%s\"\n", (*s)->GetCStr());
+				fprintf(stderr, "\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
 		}
 	}
 #endif

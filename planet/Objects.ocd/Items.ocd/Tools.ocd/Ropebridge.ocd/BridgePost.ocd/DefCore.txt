@@ -1,0 +1,12 @@
+[DefCore]
+id=Ropebridge_Post
+Version=5,2,0,1
+Category=C4D_Structure
+Picture=0,0,96,128
+Width=12
+Height=16
+Offset=-6,-10
+Vertices=2
+VertexY=5,5
+VertexX=-2,2
+Rotate=0

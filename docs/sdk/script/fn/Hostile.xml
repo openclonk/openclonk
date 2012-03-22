@@ -6,7 +6,7 @@
   <func>
     <title>Hostile</title>
     <category>Player</category>
-    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -23,7 +23,7 @@
         <param>
           <type>bool</type>
           <name>check_one_way</name>
-          <desc>If true, checks only if player1 is hostile towards player2 but not in reverse.</desc>
+          <desc>If <code>true</code>, checks only if player1 is hostile towards player2 but not in reverse.</desc>
           <optional />
         </param>
       </params>
@@ -31,7 +31,10 @@
     <desc>Determines whether two players are enemies. Two players will be opposed if at least one of them has declared hostility towards the other.</desc>
     <examples>
       <example>
-        <code>protected RejectEntrance: <funclink>return</funclink>(!<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(<funclink>Par</funclink>())));</code>
+        <code>protected func RejectEntrance(object other)
+{
+	<funclink>return</funclink> !<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(other));
+}</code>
         <text>The object can only be collected by friendly players.</text>
       </example>
     </examples>

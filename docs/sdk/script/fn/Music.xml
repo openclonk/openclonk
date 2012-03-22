@@ -6,16 +6,14 @@
   <func>
     <title>Music</title>
     <category>Music</category>
-    <version>4.6.5.0 CP
-    <extversion>4.9.1.0 GWE</extversion>
-  </version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
           <type>string</type>
           <name>song_name</name>
-          <desc>Filename of the music track. The file extension must be specified. If unspecified or 0, music playback will be interrupted.</desc>
+          <desc>Filename of the music track. The file extension must be specified. If unspecified, music playback will be interrupted.</desc>
           <optional />
         </param>
         <param>
@@ -26,7 +24,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.c4g will be used.</desc>
+    <desc>Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.ocg will be used.</desc>
     <related><funclink>SetPlayList</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

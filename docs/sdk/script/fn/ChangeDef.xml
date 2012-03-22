@@ -7,7 +7,7 @@
     <title>ChangeDef</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -23,8 +23,8 @@
     <remark>Warning: if an object applies ChangeDef to itself, the executed object script will no longer match the object definition after the call. Because of this, following a ChangeDef call you should neither call any local function (use <funclink>this</funclink>()-&gt;function(...) instead) nor access any local variables (even if a variable of the same name exists in the new definition).</remark>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;ChangeDef(MONS);</code>
-        <text>Changes the selected clonk of the first player into a monster.</text>
+        <code><funclink>GetCursor</funclink>(0)-&gt;ChangeDef(Wipf);</code>
+        <text>Changes the selected clonk of the first player into a wipf.</text>
       </example>
     </examples>
     <related><funclink>GetID</funclink></related>

@@ -6,14 +6,14 @@
   <func>
     <title>ScheduleCall</title>
     <category>Script</category>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object in which to call the function. Can be 0 in local calls.</desc>
+          <desc>Object in which to call the function. <code>nil</code> for no object context.</desc>
         </param>
         <param>
           <type>string</type>
@@ -37,11 +37,11 @@
       </params>
     </syntax>
     <desc>Calls a function after a specified delay.</desc>
-    <remark>This function is implemented in System.c4g using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
+    <remark>This function is implemented in System.ocg using the <emlink href="script/Effects.html">effect</emlink> "IntScheduleCall" in function <funclink>Call</funclink>.</remark>
     <examples>
       <example>
-        <code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;, 500, 0, MCLK);</code>
-        <text>Calls the function "Redefine" in a clonk with a delay of 500 ticks and passes "MCLK" as additional parameter. This will cause the clonk to change into a magician after 500 frames unless the call is cancelled earlier using <funclink>ClearScheduleCall</funclink>.</text>
+        <code>ScheduleCall(this, &quot;Explode&quot;, 500, 0, 50);</code>
+        <text>Calls the function "Explode" in this object with a delay of 500 ticks and passes 50 as additional parameter. This will cause the object to explode with a strength of 50 after 500 frames unless the call is cancelled earlier using <funclink>ClearScheduleCall</funclink>.</text>
       </example>
     </examples>
     <related>

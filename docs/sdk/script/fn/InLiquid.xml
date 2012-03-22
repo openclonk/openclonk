@@ -6,9 +6,9 @@
   <func>
     <title>InLiquid</title>
     <category>Landscape</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
-    <desc>Returns true, if the object is submerged in liquid.</desc>
+    <desc>Returns <code>true</code>, if the object is submerged in liquid.</desc>
     <related>
       <funclink>OCF_InLiquid</funclink>
       <funclink>GBackLiquid</funclink>

@@ -61,6 +61,7 @@ enum C4RecordChunkType // record file chunk type
 	// Streaming
 	RCT_File   = 0x30,  // file data
 	// DEBUGREC
+	RCT_DbgFrame= 0x81,  // frame start in Game::Execute
 	RCT_Block   = 0x82,  // point in Game::Execute
 	RCT_SetPix  = 0x83,  // set landscape pixel
 	RCT_ExecObj = 0x84,  // exec object
@@ -91,6 +92,7 @@ enum C4RecordChunkType // record file chunk type
 	RCT_MenuAddC = 0xA2,  // add menu item: Following commands
 	RCT_OCF      = 0xA3,  // OCF setting of updating
 	RCT_DirectExec = 0xA4,  // a DirectExec-script
+	RCT_Definition = 0xA5,  // Definition callback
 
 	RCT_Custom  = 0xc0, // varies
 
@@ -155,7 +157,7 @@ struct C4RCRandom
 struct C4RCCreateObj
 {
 	int oei;
-	int id;
+	char id[32+1];
 	int x,y,ownr;
 };
 

@@ -17,11 +17,12 @@ are licensed under the terms of the ISC license, unless stated otherwise.
 
 Graphics and Models
 ===================
-The newest list of authors for the graphics and models used, can be found in
+The newest list of authors for our graphics and models used, can be found in
 our resources repository here:
-
 http://hg.openclonk.org/openclonk-resources/raw-file/tip/authors.txt
 
+If a particular graphic is taken from another source, there should be a 
+authors.txt in the same directory
 
 Music
 =====
@@ -30,9 +31,9 @@ Music
 
 Sounds
 ======
-See authors.txt in Sound.c4g
+See authors.txt in Sound.ocg
 
 
 Material textures
 =================
-See authors.txt in Material.c4g
+See authors.txt in Material.ocg

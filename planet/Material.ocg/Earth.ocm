@@ -1,0 +1,17 @@
+[Material]
+Name=Earth
+Shape=Smooth
+Density=50
+Friction=80
+DigFree=1
+BlastFree=1
+Dig2Object=Earth
+Dig2ObjectRatio=300
+Dig2ObjectCollect=2
+Blast2PXSRatio=10
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=75
+Soil=1
+Placement=30
+TextureOverlay=earth_rough

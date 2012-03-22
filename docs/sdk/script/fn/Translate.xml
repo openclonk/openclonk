@@ -7,7 +7,7 @@
     <title>Translate</title>
     <category>Script</category>
     <subcat>Strings</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -21,10 +21,20 @@
     <desc>Looks up a text in <emlink href="lang.html">StringTbl??.txt</emlink> of the calling script and returns its translation.</desc>
     <examples>
       <example>
-        <code><funclink>Message</funclink>(Translate(&quot;I need a better example&quot;));</code>
-        <text>Displays "Ich benötige ein besseres Beispiel" for German users.</text>
+				<text>Assuming the StringTblUS.txt of a clonk looks like this:</text>
+				<code>MsgOnFire0=Aaaa, I am burning!
+MsgOnFire1=Waaah, whats this?!
+MsgOnFire2=Oh god, I am on fire!
+MsgOnFire3=Oops, I dropped my lighter!</code>
+				<text>With Translate(), the string id that should be displayed can be constructed during runtime:</text>
+        <code>func Incineration()
+{
+	<funclink>Message</funclink>(Translate(<funclink>Format</funclink>("MsgOnFire%d", <funclink>Random</funclink>(4)))));
+}</code>
+        <text>When the clonk catches fire, the engine calls Incineration() in the clonk and in this example, one of the four above messages is displayed at random.</text>
       </example>
     </examples>
   </func>
   <author>Isilkor</author><date>2009-11</date>
+  <author>Newton</author><date>2011-06</date>
 </funcs>

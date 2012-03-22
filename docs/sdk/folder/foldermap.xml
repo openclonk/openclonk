@@ -4,9 +4,9 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>FolderMap.txt</title>
-  <h id="FolderMaptxt">FolderMap.txt</h>
+  <h>FolderMap.txt</h>
   <part>
-    <text>From CR, scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
+    <text>Scenario folders can also contain graphical folder maps for the selection of scenarios. These will be displayed only in the fullscreen menu, not in the editor. See the Western pack for samples.</text>
     <text>
       <table>
         <caption id="SektionFolderMap">Section [FolderMap]</caption>
@@ -73,7 +73,7 @@
         <row>
           <literal_col>File</literal_col>
           <col>String</col>
-          <col>Scenario file (including .c4s extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <funclink>GainMissionAccess</funclink>) is displayed.</col>
+          <col>Scenario file (including .ocs extension) to be started by this section. You should create a [Scenario] section for each scenario in the scenario folder. Only those scenario sections are displayed for which MissionAccess (see <funclink>GainMissionAccess</funclink>) is displayed.</col>
         </row>
         <row>
           <literal_col>BaseImage</literal_col>
@@ -135,7 +135,7 @@
     <h id="order">Element Order</h>
     <text>AccessGfx images drawn under the scenario selection buttons. Selection buttons appear in the order in which they are specified in the file. Thus you should specifiy sections in a meaningful order, from left to right and top to bottom as this will affect the tab stepping sequence when controlling the dialog with the keyboard or gamepad. Also, you should take care not to overlap any buttons.</text>
     <h id="background">Background image</h>
-    <text>If the scenario folder contains a folder map, an image file of name FolderMap.png/.jpg/.jpeg/.bmp is expected. The recommended size of this image depends on the screen resolution of the end user:</text>
+    <text>If the scenario folder contains a folder map, an image file of name FolderMap.png/.jpg/.jpeg is expected. The recommended size of this image depends on the screen resolution of the end user:</text>
     <text>
       <table>
         <rowh>

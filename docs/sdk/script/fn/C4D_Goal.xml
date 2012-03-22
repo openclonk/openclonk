@@ -3,20 +3,17 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>C4D_Goal</title>
     <category>Objects</category>
     <subcat>Category</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object category: game goal.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code>var obj;
-while (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
-  if (<funclink>GetCategory</funclink>(obj) &amp; C4D_Goal)
-    <funclink>RemoveObject</funclink>(obj);</code>
+        <code>for(var obj in<funclink>FindObjects</funclink>(<funclink>Find_Category</funclink>(C4D_Goal)))
+	obj-&gt;<funclink>RemoveObject</funclink>();</code>
         <text>Removes all game goals.</text>
       </example>
     </examples>
@@ -24,6 +21,6 @@ while (obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
       <funclink>GetCategory</funclink>
       <funclink>SetCategory</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-01</date>
 </funcs>

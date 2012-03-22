@@ -5,7 +5,7 @@
  * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2005, 2009  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -30,11 +30,11 @@
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
 
-#include <StdWindow.h>
+#include <C4Window.h>
 
 const int C4CNS_ModePlay = 0,
-                           C4CNS_ModeEdit = 1,
-                                            C4CNS_ModeDraw = 2;
+          C4CNS_ModeEdit = 1,
+          C4CNS_ModeDraw = 2;
 
 #define IDM_NET_CLIENT1   10000
 #define IDM_NET_CLIENT2   10100
@@ -44,10 +44,10 @@ const int C4CNS_ModePlay = 0,
 #define IDM_VIEWPORT_NEW2 10500
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ConsoleBase;
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4ConsoleBase;
 #else
-typedef CStdWindow C4ConsoleBase;
+typedef C4Window C4ConsoleBase;
 #endif
 
 class C4Console: public C4ConsoleGUI
@@ -59,7 +59,7 @@ public:
 	virtual void Clear();
 	virtual void Close();
 	using C4ConsoleBase::Init;
-	virtual CStdWindow * Init(CStdApp * app);
+	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();
 	void ClearPointers(C4Object *pObj);
 	bool Message(const char *szMessage, bool fQuery=false);
@@ -82,10 +82,11 @@ public:
 	void PlayerJoin();
 	void ViewportNew();
 	void HelpAbout();
-	bool FileSelect(char *sFilename, int iSize, const char *szFilter, DWORD dwFlags, bool fSave=false);
-	bool SaveGame(bool fSaveGame);
+	bool FileSelect(StdStrBuf *sFilename, const char *szFilter, DWORD dwFlags, bool fSave=false);
+	bool SaveGame(const char * path);
+	bool SaveScenario(const char * path);
 	bool FileSaveAs(bool fSaveGame);
-	bool FileSave(bool fSaveGame);
+	bool FileSave();
 	bool FileOpen();
 	bool FileOpenWPlrs();
 	bool FileCommand();
@@ -98,7 +99,6 @@ public:
 	C4ObjectListDlg ObjectListDlg;
 	C4EditCursor    EditCursor;
 
-	int ScriptCounter;
 	int FrameCounter;
 	int Time,FPS;
 #if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)

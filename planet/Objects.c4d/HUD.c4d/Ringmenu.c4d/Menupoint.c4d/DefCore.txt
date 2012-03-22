@@ -1,9 +1,0 @@
-[DefCore]
-id=GUI_RingMenu_Icon
-Version=4,10,0,0
-Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax
-Width=96
-Height=96
-Offset=-48,-48
-StretchGrowth=1
-Rotate=1

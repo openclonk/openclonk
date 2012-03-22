@@ -6,7 +6,7 @@
   <func>
     <title>GetAnimationWeight</title>
     <category>Animations</category>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -17,7 +17,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the weight of a combination node. The weight specifies the relative portion the combined animations contribute to the resulting animation. The number is always between 0 (only the first animation contributes) and 1000 (only the second animation contributes). Returns nil if there is no such animation with the calling number or if the number refers to an animation node.</desc>
+    <desc>Returns the weight of a combination node. The weight specifies the relative portion the combined animations contribute to the resulting animation. The number is always between 0 (only the first animation contributes) and 1000 (only the second animation contributes). Returns <code>nil</code> if there is no such animation with the calling number or if the number refers to an animation node.</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>

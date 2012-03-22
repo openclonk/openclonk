@@ -5,7 +5,7 @@
  * Copyright (c) 2001-2010  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
  * Copyright (c) 2004, 2010  Armin Burgmeier
- * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2009  Tobias Zwick
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -226,7 +226,7 @@ void C4Player::Execute()
 }
 
 bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName,
-                    const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo)
+                    const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo, C4ValueNumbers * numbers)
 {
 	// safety
 	if (!pInfo)
@@ -248,11 +248,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	if (szFilename)
 	{
 		// Load core & crew info list
-		// do not load portraits for remote players
-		// this will prevent portraits from being shown for "remotely controlled"-Clonks of other players
-		bool fLoadPortraits = (AtClient==C4ClientIDUnknown) || SEqualNoCase(AtClientName, Game.Clients.getLocalName());
-		// fLoadPortraits = true
-		if (!Load(szFilename, !fScenarioInit, fLoadPortraits)) return false;
+		if (!Load(szFilename, !fScenarioInit)) return false;
 	}
 	else
 	{
@@ -302,6 +298,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		}
 
 		// Init control method before scenario init, because script callbacks may need to know it!
+		ClearControl();
 		InitControl();
 
 		// defaultdisabled controls
@@ -318,8 +315,7 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			C4Def *pDefCallback;
 			if (idCallback && (pDefCallback = C4Id2Def(idCallback)))
 			{
-				pDefCallback->Script.Call(PSF_InitializeScriptPlayer, 0,
-				                          &C4AulParSet(C4VInt(Number), C4VInt(Team)));
+				pDefCallback->Call(PSF_InitializeScriptPlayer, &C4AulParSet(C4VInt(Number), C4VInt(Team)));
 			}
 		}
 		else
@@ -336,8 +332,9 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	else
 	{
 		assert(pInfo->IsJoined());
+		assert(numbers);
 		// (compile using DefaultRuntimeData) - also check if compilation returned sane results, i.e. ID assigned
-		if (!LoadRuntimeData(Game.ScenarioFile) || !ID)
+		if (!LoadRuntimeData(Game.ScenarioFile, numbers) || !ID)
 		{
 			// for script players in non-savegames, this is OK - it means they get restored using default values
 			// this happens when the users saves a scenario using the "Save scenario"-option while a script player
@@ -396,8 +393,22 @@ bool C4Player::Save()
 	char szPath[_MAX_PATH + 1];
 	SCopy(Config.AtTempPath(C4CFN_TempPlayer), szPath, _MAX_PATH);
 	MakeTempFilename(szPath);
-	// so full hard (flgr stupid) disks won't corrupt any player files...
-	C4Group_CopyItem(Filename, szPath);
+	// For local players, we save over the old player file, as there might
+	// be all kinds of non-essential stuff in it. For non-local players, we
+	// just re-create it every time (it's temporary anyway).
+	if (LocalControl)
+	{
+		// But make sure to copy it first so full hard (flgr stupid) disks
+		// won't corrupt any player files...
+		C4Group_CopyItem(Filename, szPath);
+	}
+	else
+	{
+		// For non-local players, we can actually use the loaded definition
+		// list to strip out all non-existant definitions. This is only valid
+		// because we know the file to be temporary.
+		CrewInfoList.Strip(::Definitions);
+	}
 	// Open group
 	if (!hGroup.Open(szPath,true))
 		return false;
@@ -600,11 +611,6 @@ void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object
 				}
 		}
 	}
-}
-
-DWORD RandomPlayerColor() // generate a random player color
-{
-	return 0xff<<24 | RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
 }
 
 bool C4Player::ScenarioInit()
@@ -975,18 +981,20 @@ void C4Player::Default()
 	ViewLock = false;
 }
 
-bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
+bool C4Player::Load(const char *szFilename, bool fSavegame)
 {
 	C4Group hGroup;
 	// Open group
 	if (!Reloc.Open(hGroup, szFilename)) return false;
+	// Remember filename
+	SCopy(hGroup.GetFullName().getData(), Filename, _MAX_PATH);
 	// Load core
 	if (!C4PlayerInfoCore::Load(hGroup))
 		{ hGroup.Close(); return false; }
 	// Load BigIcon
 	if (hGroup.FindEntry(C4CFN_BigIcon)) BigIcon.Load(hGroup, C4CFN_BigIcon);
 	// Load crew info list
-	CrewInfoList.Load(hGroup, fLoadPortraits);
+	CrewInfoList.Load(hGroup);
 	// Close group
 	hGroup.Close();
 	// Success
@@ -995,15 +1003,13 @@ bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 
 bool C4Player::Strip(const char *szFilename, bool fAggressive)
 {
-	// Opem group
+	// Open group
 	C4Group Grp;
 	if (!Grp.Open(szFilename))
 		return false;
 	// Which type of stripping?
 	if (!fAggressive)
 	{
-		// remove portrais
-		Grp.Delete(C4CFN_Portraits, true);
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
 		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))
@@ -1016,7 +1022,7 @@ bool C4Player::Strip(const char *szFilename, bool fAggressive)
 		// Load info core and crew info list
 		C4PlayerInfoCore PlrInfoCore;
 		C4ObjectInfoList CrewInfoList;
-		if (!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp, false))
+		if (!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp))
 			return false;
 		// Strip crew info list (remove object infos that are invalid for this scenario)
 		CrewInfoList.Strip(::Definitions);
@@ -1163,7 +1169,7 @@ void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTa
 	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,true,iData);
 }
 
-void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
+void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	assert(ID);
 
@@ -1206,7 +1212,7 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
-	pComp->Value(mkNamingAdapt(Crew,                "Crew"                  ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Crew, numbers), "Crew"            ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
 
@@ -1214,18 +1220,18 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(Control);
 }
 
-bool C4Player::LoadRuntimeData(C4Group &hGroup)
+bool C4Player::LoadRuntimeData(C4Group &hGroup, C4ValueNumbers * numbers)
 {
 	const char *pSource;
 	// Use loaded game text component
 	if (!(pSource = Game.GameText.GetData())) return false;
-	// safety: Do nothing if playeer section is not even present (could kill initialized values)
+	// safety: Do nothing if player section is not even present (could kill initialized values)
 	if (!SSearch(pSource, FormatString("[Player%i]", ID).getData())) return false;
 	// Compile (Search player section - runtime data is stored by unique player ID)
 	// Always compile exact. Exact data will not be present for savegame load, so it does not matter
 	assert(ID);
 	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkNamingAdapt(mkParAdapt(*this, true), FormatString("Player%i", ID).getData()),
+	      mkNamingAdapt(mkParAdapt(*this, numbers), FormatString("Player%i", ID).getData()),
 	      StdStrBuf(pSource),
 	      Game.GameText.GetFilePath()))
 		return false;
@@ -1351,21 +1357,10 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("InitScenarioPlayer(%d,%d)", (int)Number, (int)idTeam).getData()), CDT_Queue);
 }
 
-void C4Player::EnumeratePointers()
-{
-	// Cursor
-	Cursor.EnumeratePointers();
-	// ViewCursor
-	ViewCursor.EnumeratePointers();
-	// messageboard-queries
-	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->CallbackObj.EnumeratePointers();
-}
-
 void C4Player::DenumeratePointers()
 {
 	// Crew
-	Crew.DenumerateRead();
+	Crew.DenumeratePointers();
 	// Cursor
 	Cursor.DenumeratePointers();
 	// ViewCursor
@@ -1393,7 +1388,7 @@ void C4Player::NotifyOwnedObjects()
 			if (cobj->Status)
 				if (cobj->Owner == Number)
 				{
-					C4AulFunc *pFn = cobj->Def->Script.GetFuncRecursive(PSF_OnOwnerRemoved);
+					C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 					// PSF_OnOwnerRemoved has an internal fallback function
 					assert(pFn);
 					if (pFn) pFn->Exec(cobj);
@@ -1449,8 +1444,6 @@ void C4Player::ClearControl()
 
 void C4Player::InitControl()
 {
-	// clear any previous
-	ClearControl();
 	// Check local control
 	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
@@ -1461,13 +1454,13 @@ void C4Player::InitControl()
 	{
 		// Preferred control
 		ControlSetName = PrefControl;
-		ControlSet = Game.PlayerControlAssignmentSets.GetSetByName(ControlSetName.getData());
+		ControlSet = Game.PlayerControlUserAssignmentSets.GetSetByName(ControlSetName.getData());
 		// control set unassigned/not known? fallback to some default then (=first defined control set)
-		if (!ControlSet) ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
+		if (!ControlSet) ControlSet = Game.PlayerControlUserAssignmentSets.GetDefaultSet();
 		// gamepad control safety (assuming the default control set is not using gamepad)
 		if (ControlSet && ControlSet->HasGamepad() && !Config.General.GamepadEnabled)
 		{
-			ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
+			ControlSet = Game.PlayerControlUserAssignmentSets.GetDefaultSet();
 		}
 		// Choose next while control taken
 		// TODO
@@ -1513,7 +1506,7 @@ int VisibilityCheck(int iVis, int sx, int sy, int cx, int cy)
 	return iVis;
 }
 
-void C4Player::FoW2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
+void C4Player::FoW2Map(C4FogOfWar &rMap, int iOffX, int iOffY)
 {
 	// No fog of war
 	if (!fFogOfWar) return;
@@ -1545,7 +1538,7 @@ void C4Player::FoW2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
 	if (fAnyGenerators) FoWGenerators2Map(rMap, iOffX, iOffY);
 }
 
-void C4Player::FoWGenerators2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
+void C4Player::FoWGenerators2Map(C4FogOfWar &rMap, int iOffX, int iOffY)
 {
 	// add fog to any generator pos (view range
 	C4Object *cobj; C4ObjectLink *clnk;

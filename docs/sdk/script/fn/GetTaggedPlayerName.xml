@@ -6,7 +6,7 @@
   <func>
     <title>GetTaggedPlayerName</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -17,16 +17,26 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the name of a player, including color markup using the player color. If the specified player number is invalid, 0 is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
+    <desc>Returns the name of a player, including color markup using the player color. If the specified player number is invalid, <code>nil</code> is returned. Thus this function can also be used to determine whether a player of a given number exists.</desc>
     <remark>The markup color is chosen so the player name will be readable on black background. Dark player names are brightened up.</remark>
     <examples>
       <example>
-        <code>protected func Activate(clonk)
-  {
-  <funclink>Log</funclink>(&quot;%s hat das Objekt aktiviert!&quot;, GetTaggedPlayerName(<funclink>GetController</funclink>(clonk)));
-  <funclink>return</funclink>(1);
-  }</code>
-        <text>Object script: When activated, a message will be shown which draws attention to the player.</text>
+        <code>protected func Entrance(object obj)
+{
+	// has entered a clonk
+	if(obj-><funclink>GetOCF</funclink>() &amp; <funclink>OCF_CrewMember</funclink>)
+		<funclink>Log</funclink>(&quot;%s of player %s got the golden crown!&quot;, obj-><funclink>GetName</funclink>(), GetTaggedPlayerName(obj-><funclink>GetOwner</funclink>()));
+	// or something else?
+	else
+		<funclink>Log</funclink>(&quot;The golden crown is now in a %s&quot;, obj-><funclink>GetName</funclink>());
+}
+
+protected func Departure(object obj)
+{
+	// has exited something
+	<funclink>Log</funclink>(&quot;The golden crown has been dropped!&quot;);
+}</code>
+        <text>Object script for a valuable "golden crown". If it is collected by a clonk, a message is displayed in the log that draws attention to the player that collected it.</text>
       </example>
     </examples>
     <related><funclink>GetPlayerName</funclink></related>

@@ -6,7 +6,7 @@
   <func>
     <title>PathFree</title>
     <category>Landscape</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -36,18 +36,14 @@
     <remark>All coordinates are global, even in local calls.</remark>
     <examples>
       <example>
-        <code>protected func ControlSpecial2()
-  {
-  var i, base;
-  while (base=FindBase(GetOwner(), i++))
-    if (PathFree(GetX(), GetY(), GetX(base), GetY(base)))
-      {
-      Message(&quot;Ich sehe meine Basis!&quot;);
-      break;
-      }
-  if (!base) Message(&quot;Ich sehe meine Basis nicht :/&quot;);
-  }</code>
-        <text>Script of a special clonk: with key Special 2 he will tell you whether he can see one of his home bases.</text>
+        <code>// for all living beings in a circle with a radius of 500 around it
+for(var living in <funclink>FindObjects</funclink>(<funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>),<funclink>Find_Distance</funclink>(500)))
+{
+	// incinerate if the path is free
+	if(PathFree(GetX(),GetY(),GetX(living),GetY(living)))
+		living-&gt;<funclink>Incinerate</funclink>();
+}</code>
+        <text>Eye of the beholder: Incinerates all living beings in a distance of maximum 500 pixels and if the beholder has a line-of-sight to it.</text>
       </example>
     </examples>
     <related>

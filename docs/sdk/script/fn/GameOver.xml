@@ -6,14 +6,14 @@
   <func>
     <title>GameOver</title>
     <category>Global</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Ends the round. The game will count as won for all surviving players.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(!<funclink>ObjectCount</funclink>(Rock))
+        <code><funclink>if</funclink>(!<funclink>ObjectCount</funclink>(<funclink>Find_ID</funclink>(Rock)))
 {
-  <funclink>Log</funclink>(&quot;Prima, keine Steine stören mehr.&quot;);
+  <funclink>Log</funclink>(&quot;Hooray, no rocks anymore!&quot;);
   GameOver();
 }</code>
         <text>Ends the round if no more rocks are present.</text>

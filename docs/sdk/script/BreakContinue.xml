@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>break and continue</title>
-  <h id="BreakContinue">break and continue</h>
+  <h>break and continue</h>
   <part>
     <text>The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:</text>
     <text>
@@ -16,25 +16,25 @@
     <h>Example:</h>
     <code>for(var i = 0; i &lt; 10; i++) 
 {
-  <funclink>Log</funclink>(&quot;Zahl: %d&quot;, i);
+  <funclink>Log</funclink>(&quot;Number: %d&quot;, i);
   if(i &gt; 6) break;
   if(i &gt; 2) continue;
-  Log(&quot;Zahl: %d (2. Ausgabe)&quot;, i);
+  Log(&quot;Number: %d (2. Ausgabe)&quot;, i);
 }
-Log(&quot;Endwert: %d&quot;,i);</code>
+Log(&quot;Final Number: %d&quot;,i);</code>
     <h>Output:</h>
-    <code>Zahl: 0 
-Zahl: 0 (2.Ausgabe)
-Zahl: 1 
-Zahl: 1 (2.Ausgabe)
-Zahl: 2 
-Zahl: 2 (2.Ausgabe)
-Zahl: 3 
-Zahl: 4 
-Zahl: 5 
-Zahl: 6 
-Zahl: 7 
-Endwert: 7</code>
+    <code>Number: 0 
+Number: 0 (2.Ausgabe)
+Number: 1 
+Number: 1 (2.Ausgabe)
+Number: 2 
+Number: 2 (2.Ausgabe)
+Number: 3 
+Number: 4 
+Number: 5 
+Number: 6 
+Number: 7 
+Final Number: 7</code>
     <text>This loops counts the variable <code>i</code> from 0 to 10.</text>
     <text>If the first three loop executions (i from 0 to 2) the value is displayed twice.</text>
     <text>From value 3 on <code>continue</code> is called after the first output. This will skip the current loop execution. The output is made only once.</text>

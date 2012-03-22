@@ -1,8 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005, 2009  Günther Brammer
  * Copyright (c) 2005-2006  Peter Wortmann
- * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2010  Benjamin Herr
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -23,15 +24,13 @@
 #include <sstream>
 #include <time.h>
 #ifdef _WIN32
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <mmsystem.h>
 #else
 #include <arpa/inet.h>
 #endif
 
 using namespace std;
-
-bool Log(char const * text) { std::cout << text << std::endl; return true; }
 
 bool fHost;
 int iCnt = 0, iSize = 0;
@@ -49,7 +48,7 @@ public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-		iTime = timeGetTime(); iPcks = 0;
+		iTime = GetTime(); iPcks = 0;
 
 #ifdef ASYNC_CONNECT
 		if (!fHost)
@@ -63,10 +62,10 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-		if (timeGetTime() > iTime + 1000)
+		if (GetTime() > iTime + 1000)
 		{
-			cout << iPcks << " packets in " << timeGetTime() - iTime << " ms (" << iPcks * 1000 / (timeGetTime() - iTime) << " per second, " << (iPcks ? (timeGetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-			iTime = timeGetTime(); iPcks = 0;
+			cout << iPcks << " packets in " << GetTime() - iTime << " ms (" << iPcks * 1000 / (GetTime() - iTime) << " per second, " << (iPcks ? (GetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			iTime = GetTime(); iPcks = 0;
 		}
 		if (!rPacket.getStatus())
 		{

@@ -1,0 +1,17 @@
+[DefCore]
+id=GoldBar
+Version=5,2,0,1
+Category=C4D_Object
+Width=10
+Height=4
+Offset=-5,-2
+Vertices=3
+VertexX=-4,4,0
+VertexY=0,0,-1
+VertexCNAT=1,2,16
+VertexFriction=30,30,30
+Value=25
+Mass=16
+Picture=0,20,64,64
+Components=Nugget=3
+Rotate=1

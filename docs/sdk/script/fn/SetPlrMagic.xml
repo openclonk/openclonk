@@ -6,7 +6,7 @@
   <func>
     <title>SetPlrMagic</title>
     <category>Player</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -28,18 +28,6 @@
       </params>
     </syntax>
     <desc>Adds or removes a magic spell to or from the list of available spells of a player.</desc>
-    <examples>
-      <example>
-        <code><emlink href="Script/NamedVar.html">var</emlink> i <emlink href="script/operatoren.html">=</emlink> 0;
-<funclink>for</funclink> (<emlink href="Script/NamedVar.html">var</emlink> plrnum <emlink href="script/operatoren.html">=</emlink> <funclink>GetPlayerCount</funclink> (); plrnum; i<emlink href="script/operatoren.html">++</emlink>)
-  if (<funclink>GetPlayerName</funclink> (i)) {
-    plrnum<emlink href="script/operatoren.html">--</emlink>;
-    SetPlrMagic (i, MGHL);
-  }
-</code>
-        <text>Makes the Healing spell available to all players.</text>
-      </example>
-    </examples>
     <related><funclink>GetPlrMagic</funclink></related>
   </func>
   <author>Günther</author><date>2005-02</date>

@@ -138,7 +138,7 @@ public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
 	C4ControlScript()
-			: iTargetObj(-1), fInternal(true)
+			: iTargetObj(-1), fInternal(true), fUseVarsFromCallerContext(false)
 	{ }
 	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true, bool fUseVarsFromCallerContext = false)
 			: iTargetObj(iTargetObj), fInternal(fInternal), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
@@ -176,7 +176,7 @@ public:
 	C4ControlPlayerControl(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
 			: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
 	C4ControlPlayerControl(int32_t iPlr, int32_t iControl, int32_t iExtraData) // old-style menu com emulation
-			: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0) { AddControl(iControl,0); }
+			: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0,0,0) { AddControl(iControl,0); }
 
 	struct ControlItem
 	{
@@ -272,7 +272,7 @@ enum C4ControlClientUpdType
 class C4ControlClientUpdate : public C4ControlPacket // sync, lobby
 {
 public:
-	C4ControlClientUpdate() { }
+	C4ControlClientUpdate() : iID(0), eType(CUT_None), iData(0) { }
 	C4ControlClientUpdate(int32_t iID, C4ControlClientUpdType eType, int32_t iData = 0)
 			: iID(iID), eType(eType), iData(iData)
 	{ }
@@ -321,7 +321,7 @@ public:
 struct C4ControlJoinPlayer : public C4ControlPacket // sync
 {
 public:
-	C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1) { }
+	C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1), fByRes(false) { }
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, const C4Network2ResCore &ResCore);
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo);
 protected:
@@ -351,7 +351,7 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMMoveObject() : pObjects(NULL) { }
+	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
 	~C4ControlEMMoveObject();
@@ -378,7 +378,7 @@ enum C4ControlEMDrawAction
 class C4ControlEMDrawTool : public C4ControlPacket // sync
 {
 public:
-	C4ControlEMDrawTool() { }
+	C4ControlEMDrawTool() : eAction(EMDT_SetMode), iX(0), iY(0), iX2(0), iY2(0), iGrade(0), fIFT(false) { }
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
 	                    int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
 	                    bool fIFT=true, const char *szMaterial=NULL, const char *szTexture=NULL);
@@ -427,7 +427,7 @@ class C4ControlRemovePlr : public C4ControlPacket // sync
 {
 public:
 	C4ControlRemovePlr()
-			: iPlr(-1) { }
+			: iPlr(-1), fDisconnected(false) { }
 	C4ControlRemovePlr(int32_t iPlr, bool fDisconnected)
 			: iPlr(iPlr), fDisconnected(fDisconnected) { }
 protected:

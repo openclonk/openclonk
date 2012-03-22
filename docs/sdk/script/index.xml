@@ -4,32 +4,33 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Script</title>
-  <h id="C4ScriptDokumentation">Script</h>
+  <h>Script</h>
   <part>
-    <h id="Scripte">Introduction</h>
+    <h>Introduction</h>
     <text>Clonk supports its own scripting language: C4Script.</text>
     <text>Object definitions and scenarios can contain a script. Function calls made from scenario scripts are considered "global" calls. Function calls made within an object script are considered "local" calls.</text>
     <text>For further information on the two types of script see <emlink href="definition/script.html">object scripts</emlink> and <emlink href="scenario/script.html">scenario scripts</emlink>.</text>
     <text>C4Script uses a C-style syntax. It includes <emlink href="script/operatoren.html">operators</emlink>, <emlink href="script/NamedVar.html">variable declarations</emlink>, compound statements, conditional statements (<funclink>if</funclink>) and loops (<funclink>for</funclink> and <funclink>while</funclink>).</text>
     <h id="Debugging">Debugging</h>
     <text>Activate the debug mode in the developer section of the game options to have additional error messages displayed. Anyone writing scripts should do this.</text>
-    <h id="Funktionen">Functions</h>
+    <h>Functions</h>
     <text>As in other programming languages you can define <emlink href="script/Funcs.html">functions</emlink> in C4Script:</text>
     <code>func CreateRock()
 {
-  [Erzeugt einen Stein|Image=Rock]
   <funclink>CreateObject</funclink>(Rock,50,50);
   <funclink>return</funclink> 1;
 }
 </code>
-    <text>Directly following the function name you can include a short descriptive text, an icon reference (object ID of the object whose image is to be used), and a conditional statement for when to display the function in the context menu, all within a set of [ ] brackets, separated by a | symbol.</text>
     <h id="VariablenParameter">Variables/Parameters</h>
     <text>Variables can hold values of type <code>int</code>, <code>bool</code>, <code>string</code>, <code>proplist</code>, <code>array</code> or <code>object</code>. Any parameter not directly specified in a function call will hold the default value <code>nil</code>. Functions can have a maximum of ten parameters.</text>
     <h id="Kommentare">Comments</h>
     <text>Scripts may contain code comments in C-style. Comment text will be completely ignored when the script is compiled for execution.</text>
-    <code>func MeineFunktion() // Ein Kommentar bis zum Ende der Zeile
+    <code>func MyFunction() // A comment until the end of the line
 {
-  <funclink>Message</funclink>(&quot;Dieser Code wird ausgeführt&quot;); /* Ein Kommentar in einem Block */ <funclink>Message</funclink>(&quot;Dieser auch&quot;);
+  <funclink>Message</funclink>(&quot;This code is executed&quot;);
+  /* A comment in
+     a block */ <funclink>Message</funclink>(&quot;This one is executed, too&quot;);
+  // <funclink>Message</funclink>(&quot;This code is not executed&quot;);
   <funclink>return</funclink> 1;
 }
 </code>

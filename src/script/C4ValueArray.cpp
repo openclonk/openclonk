@@ -25,14 +25,15 @@
 
 #include <C4Aul.h>
 #include <C4FindObject.h>
+#include <C4Object.h>
 
 C4ValueArray::C4ValueArray()
-		: iSize(0), pData(NULL), iRefCnt(0)
+		: iRefCnt(0), iSize(0), pData(NULL)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iSize(0), pData(NULL), iRefCnt(0)
+		: iRefCnt(0), iSize(0), pData(NULL)
 {
 	SetSize(inSize);
 }
@@ -94,7 +95,7 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 			pPos[i] = reinterpret_cast<intptr_t>(pData[pPos[i]]._getObj());
 		// Set the values
 		for (i = 0; i < iSize; i++)
-			pData[i].SetObject(reinterpret_cast<C4Object *>(pPos[i]));
+			pData[i].SetPropList(reinterpret_cast<C4Object *>(pPos[i]));
 		delete [] pPos;
 	}
 	else
@@ -173,13 +174,13 @@ void C4ValueArray::Reset()
 	iSize = 0;
 }
 
-void C4ValueArray::DenumeratePointers()
+void C4ValueArray::Denumerate(C4ValueNumbers * numbers)
 {
 	for (int32_t i = 0; i < iSize; i++)
-		pData[i].DenumeratePointer();
+		pData[i].Denumerate(numbers);
 }
 
-void C4ValueArray::CompileFunc(class StdCompiler *pComp)
+void C4ValueArray::CompileFunc(class StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	int32_t inSize = iSize;
 	// Size. Reset if not found.
@@ -192,7 +193,7 @@ void C4ValueArray::CompileFunc(class StdCompiler *pComp)
 	// Allocate
 	if (pComp->isCompiler()) this->SetSize(inSize);
 	// Values
-	pComp->Value(mkArrayAdapt(pData, iSize, C4Value()));
+	pComp->Value(mkArrayAdaptMap(pData, iSize, C4Value(), mkParAdaptMaker(numbers)));
 }
 
 enum { C4VALUEARRAY_DEBUG = 0 };

@@ -5,11 +5,13 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
+# serial 1
+
 dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl
 AC_DEFUN([AM_PATH_SDL],
-[dnl
+[dnl 
 dnl Get the cflags and libraries from the sdl-config script
 dnl
 AC_ARG_WITH(sdl-prefix,[  --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)],
@@ -20,34 +22,36 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
 		    , enable_sdltest=yes)
 
   if test x$sdl_exec_prefix != x ; then
-    sdl_args="$sdl_args --exec-prefix=$sdl_exec_prefix"
+    sdl_config_args="$sdl_config_args --exec-prefix=$sdl_exec_prefix"
     if test x${SDL_CONFIG+set} != xset ; then
       SDL_CONFIG=$sdl_exec_prefix/bin/sdl-config
     fi
   fi
   if test x$sdl_prefix != x ; then
-    sdl_args="$sdl_args --prefix=$sdl_prefix"
+    sdl_config_args="$sdl_config_args --prefix=$sdl_prefix"
     if test x${SDL_CONFIG+set} != xset ; then
       SDL_CONFIG=$sdl_prefix/bin/sdl-config
     fi
   fi
 
+  as_save_PATH="$PATH"
   if test "x$prefix" != xNONE; then
     PATH="$prefix/bin:$prefix/usr/bin:$PATH"
   fi
   AC_PATH_PROG(SDL_CONFIG, sdl-config, no, [$PATH])
+  PATH="$as_save_PATH"
   min_sdl_version=ifelse([$1], ,0.11.0,$1)
   AC_MSG_CHECKING(for SDL - version >= $min_sdl_version)
   no_sdl=""
   if test "$SDL_CONFIG" = "no" ; then
     no_sdl=yes
   else
-    SDL_CFLAGS=`$SDL_CONFIG $sdlconf_args --cflags`
-    SDL_LIBS=`$SDL_CONFIG $sdlconf_args --libs`
+    SDL_CFLAGS=`$SDL_CONFIG $sdl_config_args --cflags`
+    SDL_LIBS=`$SDL_CONFIG $sdl_config_args --libs`
 
-    sdl_major_version=`$SDL_CONFIG $sdl_args --version | \
+    sdl_major_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-    sdl_minor_version=`$SDL_CONFIG $sdl_args --version | \
+    sdl_minor_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
     sdl_micro_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
@@ -73,7 +77,7 @@ char*
 my_strdup (char *str)
 {
   char *new_str;
-
+  
   if (str)
     {
       new_str = (char *)malloc ((strlen (str) + 1) * sizeof(char));
@@ -81,7 +85,7 @@ my_strdup (char *str)
     }
   else
     new_str = NULL;
-
+  
   return new_str;
 }
 
@@ -128,7 +132,7 @@ int main (int argc, char *argv[])
   fi
   if test "x$no_sdl" = x ; then
      AC_MSG_RESULT(yes)
-     ifelse([$2], , :, [$2])
+     ifelse([$2], , :, [$2])     
   else
      AC_MSG_RESULT(no)
      if test "$SDL_CONFIG" = "no" ; then

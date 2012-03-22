@@ -85,6 +85,8 @@ protected:
 	C4ID id;
 	C4Object *Object;
 	C4FacetSurface Symbol;
+	C4Object* pSymbolObj; // drawn instead of symbol, if non-null
+	C4DefGraphics* pSymbolGraphics; // drawn instead of symbol, if non-null
 	uint32_t dwSymbolClr;
 	bool fOwnValue;   // if set, a specific value is to be shown
 	int32_t iValue;       // specific value to be shown
@@ -108,6 +110,8 @@ protected:
 	           int32_t iCount, C4Object *pObject, const char *szInfoCaption,
 	           C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable);
 	void GrabSymbol(C4FacetSurface &fctSymbol) { Symbol.GrabFrom(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
+	void SetGraphics(C4Object* pObj) { pSymbolObj = pObj; }
+	void SetGraphics(C4DefGraphics* pGfx) { pSymbolGraphics = pGfx; }
 	void RefSymbol(const C4Facet &fctSymbol) { Symbol.Set(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
 	void SetSelected(bool fToVal) { fSelected = fToVal; }
 	void DoTextProgress(int32_t &riByVal); // progress number of shown characters by given amount
@@ -124,7 +128,7 @@ public:
 	C4Object *GetObject() const { return Object; }
 	const char *GetCommand() const { return Command; }
 
-	void ClearObject() { Object = NULL; }
+	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = NULL; if(pObj == pSymbolObj) pSymbolObj = NULL; }
 };
 
 class C4Menu : public C4GUI::Dialog
@@ -192,6 +196,14 @@ public:
 	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 	         const char *szInfoCaption=NULL,
 	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	bool Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
+	         const char *szInfoCaption=NULL,
+	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	bool Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
+	         const char *szInfoCaption=NULL,
+	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport
@@ -219,7 +231,7 @@ protected:
 	bool RefillInternal();
 	void DrawButton(C4Facet &cgo);
 	void DrawScrollbar(C4Facet &cgo, int32_t iTotal, int32_t iVisible, int32_t iPosition);
-	void DrawFrame(SURFACE sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
+	void DrawFrame(C4Surface * sfcSurface, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 	void InitLocation(C4Facet &cgo);
 	void InitSize();
 	void UpdateScrollBar(); // call InitSize if a scroll bar is needed but not present or vice vera

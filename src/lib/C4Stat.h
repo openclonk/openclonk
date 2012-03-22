@@ -59,7 +59,7 @@ public:
 	inline void Start()
 	{
 		if (!iStartCalled)
-			iStartTick = timeGetTime();
+			iStartTick = GetTime();
 		iCount ++;
 		iCountPart ++;
 		iStartCalled ++;
@@ -71,7 +71,7 @@ public:
 		iStartCalled --;
 		if (!iStartCalled && iCount >= 100)
 		{
-			unsigned int iTime = timeGetTime() - iStartTick;
+			unsigned int iTime = GetTime() - iStartTick;
 
 			iTimeSum += iTime;
 			iTimeSumPart += iTime;

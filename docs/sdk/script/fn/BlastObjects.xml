@@ -6,7 +6,7 @@
   <func>
     <title>BlastObjects</title>
     <category>Objects</category>
-    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -28,19 +28,21 @@
         <param>
           <type>object</type>
           <name>container</name>
+					<optional />
           <desc>Container of the objects to be blasted.</desc>
         </param>
         <param>
           <type>int</type>
           <name>caused_by</name>
-          <desc>Number of the player who has caused the damage</desc>
+					<optional />
+          <desc>Number of the player who has caused the damage. If not specified, the the controller of the calling object is considered to have caused the damage in local calls.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects. In local calls, the controller of the calling object is considered to have caused the damage.</desc>
+    <desc>Applies explosion damage to all objects at the specified position. x and y are always global coordinates. If a container is specified, damage is only applied to objects contained in that container. Explosion damage can cause incineration or fling away living objects.</desc>
     <examples>
       <example>
-        <code>BlastObjects(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 60, <funclink>this</funclink>());</code>
+        <code>BlastObjects(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 60, <funclink>this</funclink>);</code>
         <text>The calling object causes explosion damage of level 60 to its contents.</text>
       </example>
     </examples>

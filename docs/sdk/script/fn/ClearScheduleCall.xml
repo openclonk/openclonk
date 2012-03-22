@@ -6,14 +6,14 @@
   <func>
     <title>ClearScheduleCall</title>
     <category>Script</category>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>object</type>
           <name>obj</name>
-          <desc>Object for which to cancel scheduled function calls. Can be 0 for the calling object.</desc>
+          <desc>Object for which to cancel scheduled function calls. <code>nil</code> for scheduled calls without object context.</desc>
         </param>
         <param>
           <type>string</type>
@@ -25,7 +25,7 @@
     <desc>Cancels function calls which has been scheduled by <funclink>ScheduleCall</funclink>. All scheduled calls to the specified function will be cancelled.</desc>
     <examples>
       <example>
-        <code>ClearScheduleCall(<funclink>FindObject</funclink>(Clonk), &quot;Redefine&quot;);</code>
+        <code>ClearScheduleCall(<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)), &quot;Redefine&quot;);</code>
         <text>Cancels all scheduled calls to the function "Redefine" for the first clonk.</text>
       </example>
     </examples>

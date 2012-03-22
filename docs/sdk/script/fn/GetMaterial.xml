@@ -7,7 +7,7 @@
     <title>GetMaterial</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -27,7 +27,7 @@
     <remark>This functions only processes static materials - moving material pixels such as rain or snow are not evaluated.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>(&quot;Oil&quot;)) <funclink>Message</funclink>(&quot;Ich bin reich!&quot;);</code>
+        <code><funclink>if</funclink>(GetMaterial(0, +200) == <funclink>Material</funclink>(&quot;Oil&quot;)) <funclink>Message</funclink>(&quot;I am rich!&quot;);</code>
         <text>Part of a clonk script: if 200 pixels below the calling object oil is found a message is displayed.</text>
       </example>
     </examples>

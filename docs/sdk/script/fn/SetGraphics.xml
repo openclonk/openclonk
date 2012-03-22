@@ -7,14 +7,14 @@
     <title>SetGraphics</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
           <name>gfx_name</name>
-          <desc>Name of the graphic to be set. If 0, the default graphic (Graphics.png or bmp) is set.</desc>
+          <desc>Name of the graphic to be set. If <code>nil</code>, the default graphic is set.</desc>
           <optional />
         </param>
         <param>
@@ -53,7 +53,7 @@
               <row>
                 <col>GFXOV_MODE_Action</col>
                 <col>2</col>
-                <col>The actiity of the specified object definition. From CR.</col>
+                <col>The actiity of the specified object definition.</col>
               </row>
               <row>
                 <col>GFXOV_MODE_Picture</col>
@@ -63,17 +63,17 @@
               <row>
                 <col>GFXOV_MODE_IngamePicture</col>
                 <col>4</col>
-                <col>Overlays the picture graphics of the source definition over the shape of the target object. From CR.</col>
+                <col>Overlays the picture graphics of the source definition over the shape of the target object.</col>
               </row>
               <row>
                 <col>GFXOV_MODE_Object</col>
                 <col>5</col>
-                <col>Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself! From CR.</col>
+                <col>Superimposes the current object graphics including all overlays of pOverlayObject onto the object. Warning: never superimpose an object recursively onto itself!</col>
               </row>
               <row>
                 <col>GFXOV_MODE_ExtraGraphics</col>
                 <col>6</col>
-                <col>Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj. Since CR.</col>
+                <col>Draws the target object a second time, using the supplied graphics. The source coordinates are the same as for drawing obj.</col>
               </row>
             </table>
 
@@ -83,7 +83,7 @@
         <param>
           <type>string</type>
           <name>action</name>
-          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap.txt</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible. Since CR.</desc>
+          <desc>Only for overlay_mode==GFXOV_MODE_Action: the activity in definition source_definition, the graphics of which shall be superimposed onto the object. This activity has to be defined as Action in <emlink href="definition/actmap.html">ActMap</emlink> of the source definition. Notice: the length of this animation should be 1; longer animations are not yet possible.</desc>
           <optional />
         </param>
         <param>
@@ -95,38 +95,30 @@
         <param>
           <type>object</type>
           <name>overlay_object</name>
-          <desc>Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object. Since CR.</desc>
+          <desc>Only for overlay_mode==GFXOV_MODE_Object: the object the graphics of which shall be superimposed onto the target object.</desc>
           <optional />
         </param>
       </params>
     </syntax>
     <desc>Changes the graphics of the object. This affects the display of the given object everywhere in the game: in the landscape, in menus, or on control buttons.</desc>
-    <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.bmp/-.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">the ActMap</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
+    <remark>With overlay=0 only the base graphics of an object are changed. The effect corresponds to replacing Graphics.png/Overlay.png in the object <emlink href="definition/index.html">definition</emlink>. Source information from <emlink href="definition/actmap.html">the ActMap</emlink> or <emlink href="definition/defcore.html">DefCore.txt</emlink> will not be modified by this command. So the given coordinates should always point to sensible areas in the bitmap (including SolidMask areas).</remark>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(Rock)-&gt;SetGraphics(nil, Gold);</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))-&gt;SetGraphics(nil, Gold);</code>
         <text>Gives a randomly chosen rock in the landscape the appearance of gold.</text>
       </example>
       <example>
-        <code><funclink>FindObject</funclink>(KNIG)-&gt;SetGraphics(&quot;Armored&quot;);</code>
-        <text>Gives the most recently created knight the appearance of a knight in armor, using the files GraphicsArmored.png and OverlayArmored.png found in the knight definition file.</text>
-      </example>
-      <example>
-        <code>var obj; <funclink>while</funclink> (obj = <funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj)) obj-&gt;SetGraphics();</code>
+        <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_And</funclink>())) obj-&gt;SetGraphics();</code>
         <text>Restores the original graphics for all objects in the game.</text>
       </example>
       <example>
         <code>SetGraphics(nil, Clonk, GFX_Overlay, GFXOV_MODE_Picture);
-<funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0, <funclink>this</funclink>(), GFX_Overlay);</code>
+<funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0,GFX_Overlay);</code>
         <text>An object script: the calling object will have a small clonk image superimposed on its picture.</text>
-      </example>
-      <example>
-        <code><funclink>FindObject</funclink>(KNIG)-&gt;SetGraphics(nil, SHIA, GFX_Overlay, GFXOV_MODE_Base, 0, GFX_BLIT_Additive);</code>
-        <text>Some knight will be displayed with a shield, additively drawn onto the clonk.</text>
       </example>
     </examples>
     <related>
-      <emlink href="definition/index.html#Graphicsex">Object definitions (c4d)</emlink>
+      <emlink href="definition/index.html#Graphicsex">Object definitions (ocd)</emlink>
       <funclink>SetPicture</funclink>
       <funclink>SetObjDrawTransform</funclink>
       <funclink>SetObjectBlitMode</funclink>

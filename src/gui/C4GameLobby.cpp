@@ -151,7 +151,7 @@ namespace C4GameLobby
 		// indents / sizes
 		int32_t iDefBtnHeight = 32;
 		int32_t iIndentX1, iIndentX2, iIndentX3/*, iIndentX4*/;
-		int32_t iIndentY1, iIndentY2, iIndentY3, iIndentY4, iButtonAreaHgt;
+		int32_t iIndentY1, iIndentY2, iIndentY3, iIndentY4;
 		int32_t iClientListWdt;
 		if (GetClientRect().Wdt > 500)
 		{
@@ -176,7 +176,6 @@ namespace C4GameLobby
 			iIndentY2 = 20;    // status bar offset
 			iIndentY3 = 8;     // center area (chat)
 			iIndentY4 = 8;     // client/player list
-			iButtonAreaHgt = C4GUI_IconExHgt;
 		}
 		else
 		{
@@ -185,7 +184,6 @@ namespace C4GameLobby
 			iIndentY2 = 2;     // status bar offset
 			iIndentY3 = 1;     // center area (chat)
 			iIndentY4 = 1;     // client/player list
-			iButtonAreaHgt = iDefBtnHeight;
 		}
 		// set subtitle ToolTip
 		if (pSubTitle)
@@ -449,12 +447,6 @@ namespace C4GameLobby
 			// because those might kill the edit field
 			::MessageInput.StoreBackBuffer(szInputText);
 			bool fProcessed = false;
-			// check confidential data
-			if (Config.IsConfidentialData(szInputText))
-			{
-				::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
-				fProcessed = true;
-			}
 			// CAUTION when implementing special commands (like /quit) here:
 			// those must not be executed when text is pasted, because that could crash the GUI system
 			// when there are additional lines to paste, but the edit field is destructed by the command

@@ -6,7 +6,7 @@
   <func>
     <title>ResetGamma</title>
     <category>Global</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -20,7 +20,7 @@
     <desc>Resets a gamma ramp to default value. This corresponds to <funclink>SetGamma</funclink>(<funclink>RGB</funclink>(0,0,0), <funclink>RGB</funclink>(128,128,128), <funclink>RGB</funclink>(255,255,255), ramp_index);. For more information see <funclink>SetGamma</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>for</funclink> (var i; i&lt;8; i++) ResetGamma(i);</code>
+        <code><funclink>for</funclink> (var i=0; i&lt;8; i++) ResetGamma(i);</code>
         <text>Deactivates all gamma ramps.</text>
       </example>
     </examples>

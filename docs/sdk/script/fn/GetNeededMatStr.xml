@@ -7,33 +7,11 @@
     <title>GetNeededMatStr</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>string</rtype>
-      <params>
-        <param>
-          <type>object</type>
-          <name>need_mat_object</name>
-          <desc>Object whose construction material need is queried. Can be 0 in local calls.</desc>
-        </param>
-      </params>
     </syntax>
     <desc>Returns the still needed construction materials of an object.</desc>
-    <examples>
-      <example>
-        <code>/* Wird von der Bau-Action des Clonks aufgerufen */
-private func Building()
-{
-  /* benötigtes Baumaterial abfragen */
-  var need_mat_text=GetNeededMatStr(<funclink>GetActionTarget</funclink>());
-  /* Ausgeben */
-  <funclink>Message</funclink>(&quot;%s&quot;,need_mat_text);
-  return(1);
-}
-				</code>
-        <text>Talking builder.</text>
-      </example>
-    </examples>
     <related>
       <funclink>GetComponent</funclink>
       <funclink>GetCon</funclink>

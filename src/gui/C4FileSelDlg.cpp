@@ -25,6 +25,7 @@
 
 #include <C4GraphicsResource.h> // only for single use of ::GraphicsResource.fctOKCancel below...
 #include <C4Version.h>
+#include <StdDDraw2.h>
 
 #ifdef _WIN32
 #ifndef _WIN32_IE
@@ -514,7 +515,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		if (!fctImage.Surface)
 		{
 			// not loaded yet
-			lpDDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), ::GraphicsResource.MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-::GraphicsResource.MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
+			pDraw->TextOut(LoadResStr("IDS_PRC_INITIALIZE"), ::GraphicsResource.MiniFont, 1.0f, cgo.Surface, cgoPicture.X+cgoPicture.Wdt/2, cgoPicture.Y+(cgoPicture.Hgt-::GraphicsResource.MiniFont.GetLineHeight())/2, C4GUI_StatusFontClr, ACenter, false);
 		}
 		else
 		{
@@ -522,7 +523,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 		}
 	}
 	// draw filename
-	lpDDraw->TextOut(sFilenameLabelText.getData(), *pUseFont, 1.0f, cgo.Surface, cgoPicture.X+rcBounds.Wdt/2, cgoPicture.Y+cgoPicture.Hgt, C4GUI_MessageFontClr, ACenter, false);
+	pDraw->TextOut(sFilenameLabelText.getData(), *pUseFont, 1.0f, cgo.Surface, cgoPicture.X+rcBounds.Wdt/2, cgoPicture.Y+cgoPicture.Hgt, C4GUI_MessageFontClr, ACenter, false);
 }
 
 
@@ -562,9 +563,8 @@ void C4PortraitSelDlg::LoaderThread::Execute()
 // ---------------------------------------------------
 // C4PortraitSelDlg
 
-C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPicture, bool fSetBigIcon)
-		: C4FileSelDlg(Config.General.ExePath, FormatString(LoadResStr("IDS_MSG_SELECT"), LoadResStr("IDS_TYPE_PORTRAIT")).getData(), pSelCallback, false)
-		, pCheckSetPicture(NULL), pCheckSetBigIcon(NULL), fDefSetPicture(fSetPicture), fDefSetBigIcon(fSetBigIcon)
+C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback)
+		: C4FileSelDlg(Config.General.SystemDataPath, FormatString(LoadResStr("IDS_MSG_SELECT"), LoadResStr("IDS_TYPE_PORTRAIT")).getData(), pSelCallback, false)
 {
 	char path[_MAX_PATH+1];
 	// add common picture locations
@@ -574,11 +574,12 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPict
 	AddLocation(strLocation.getData(), path);
 	SCopy(Config.General.SystemDataPath, path, _MAX_PATH); TruncateBackslash(path);
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_PROGRAMDIRECTORY"));
-	AddCheckedLocation(strLocation.getData(), Config.General.ExePath);
+	AddCheckedLocation(strLocation.getData(), path);
 #ifdef _WIN32
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), path);
+	wchar_t wpath[MAX_PATH+1];
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), StdStrBuf(wpath).getData());
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), StdStrBuf(wpath).getData());
+	if (SHGetSpecialFolderPathW(NULL, wpath, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), StdStrBuf(wpath).getData());
 #endif
 #ifdef __APPLE__
 	AddCheckedLocation(LoadResStr("IDS_TEXT_HOME"), getenv("HOME"));
@@ -593,17 +594,6 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPict
 	InitElements();
 	// select last location
 	SetCurrentLocation(Config.Startup.LastPortraitFolderIdx, false);
-}
-
-void C4PortraitSelDlg::AddExtraOptions(const C4Rect &rcOptionsRect)
-{
-	C4GUI::ComponentAligner caOptions(rcOptionsRect, C4GUI_DefDlgIndent,C4GUI_DefDlgSmallIndent,false);
-	CStdFont *pUseFont = &(::GraphicsResource.TextFont);
-	AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_IMPORTIMAGEAS"), caOptions.GetGridCell(0,3, 0,1, -1,pUseFont->GetLineHeight(), true), ALeft));
-	AddElement(pCheckSetPicture = new C4GUI::CheckBox(caOptions.GetGridCell(1,3, 0,1, -1,pUseFont->GetLineHeight(), true), LoadResStr("IDS_TEXT_PLAYERIMAGE"), fDefSetPicture));
-	pCheckSetPicture->SetToolTip(LoadResStr("IDS_DESC_CHANGESTHEIMAGEYOUSEEINTH"));
-	AddElement(pCheckSetBigIcon = new C4GUI::CheckBox(caOptions.GetGridCell(2,3, 0,1, -1,pUseFont->GetLineHeight(), true), LoadResStr("IDS_TEXT_LOBBYICON"), fDefSetPicture));
-	pCheckSetBigIcon->SetToolTip(LoadResStr("IDS_DESC_CHANGESTHEIMAGEYOUSEEINTH2"));
 }
 
 void C4PortraitSelDlg::OnClosed(bool fOK)
@@ -646,28 +636,14 @@ void C4PortraitSelDlg::OnIdle()
 #endif
 }
 
-bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection, bool *pfSetPicture, bool *pfSetBigIcon)
+bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSelection)
 {
-	// copy some default potraits to UserPath (but only try this once, no real error handling)
-	if (!Config.General.UserPortraitsWritten)
-	{
-		Log("Copying default portraits to user path...");
-		C4Group hGroup;
-		if (Reloc.Open(hGroup, C4CFN_Graphics))
-		{
-			hGroup.Extract("Portrait1.png", Config.AtUserDataPath("Clonk.png"));
-			hGroup.Close();
-		}
-		Config.General.UserPortraitsWritten = true;
-	}
 	// let the user select a portrait by showing a modal selection dialog
-	C4PortraitSelDlg *pDlg = new C4PortraitSelDlg(NULL, *pfSetPicture, *pfSetBigIcon);
+	C4PortraitSelDlg *pDlg = new C4PortraitSelDlg(NULL);
 	bool fResult;
 	if ((fResult = pOnScreen->ShowModalDlg(pDlg, false)))
 	{
 		pSelection->Take(pDlg->GetSelection(NULL, false));
-		*pfSetPicture = pDlg->IsSetPicture();
-		*pfSetBigIcon = pDlg->IsSetBigIcon();
 	}
 	delete pDlg;
 	return fResult;

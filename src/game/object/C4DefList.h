@@ -23,6 +23,8 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
+#include <StdFont.h>
+
 const int32_t C4D_None           =    0,
 C4D_All            =    ~C4D_None;
 
@@ -46,19 +48,10 @@ public:
 	             C4SoundSystem *pSoundSystem = NULL,
 	             bool fOverload = false,
 	             bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
-	int32_t Load(const char *szSearch,
+	int32_t Load(const char *szFilename,
 	             DWORD dwLoadWhat, const char *szLanguage,
 	             C4SoundSystem *pSoundSystem = NULL,
 	             bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadFolderLocal(const char *szPath,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-	int32_t LoadForScenario(const char *szScenario,
-	                        const char *szSpecified,
-	                        DWORD dwLoadWhat, const char *szLanguage,
-	                        C4SoundSystem *pSoundSystem = NULL,
-	                        bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	C4Def *ID2Def(C4ID id);
 	C4Def *GetDef(int32_t Index);
 	C4Def *GetByPath(const char *szPath);
@@ -78,7 +71,8 @@ public:
 	void Synchronize();
 
 	// callback from font renderer: get ID image
-	virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
+	virtual bool DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform);
+	virtual float GetFontImageAspect(const char* szImageTag);
 };
 
 extern C4DefList Definitions;

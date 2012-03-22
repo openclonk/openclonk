@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Scenario.txt</title>
-  <h id="Scenariotxt">Scenario.txt</h>
+  <h>Scenario.txt</h>
   <text>In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href="scenario/script.html">script</emlink>.</text>
   <text>Some of the values require four numbers which specify mean, deviation, minimum and maximum. The value which is actually used is computed by <code>BoundBy(mean+Random(2*deviation+1)-deviation,minimum,maximum);</code>.</text>
   <text>
@@ -208,7 +208,7 @@
       <row>
         <literal_col>Sky</literal_col>
         <col>String</col>
-        <col>Sky texture from Graphics.c4g (without filename extension)</col>
+        <col>Sky texture from Graphics.ocg (without filename extension)</col>
       </row>
       <row>
         <literal_col>SkyFade</literal_col>
@@ -428,7 +428,7 @@
       <row>
         <col>Definition1 to 9</col>
         <col>String(s)</col>
-        <col>With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled.</col>
+        <col>With Definition<em>x</em> entries you can specify which object definition packs (ocd) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled.</col>
       </row>
       <row>
         <col>SkipDefs</col>

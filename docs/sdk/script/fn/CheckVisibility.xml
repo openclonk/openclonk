@@ -7,7 +7,7 @@
     <title>CheckVisibility</title>
     <category>Objects</category>
     <subcat>Visibility</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -17,18 +17,11 @@
           <desc>Player whose visibility to determine.</desc>
           <optional />
         </param>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object of which to retrieve the visibility. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
       </params>
     </syntax>
-    <desc>Checks whether the given object is visible for the given player.</desc>
+    <desc>Checks whether this object is visible for the given player.</desc>
     <related>
-      <funclink>SetVisibility</funclink>
-      <funclink>GetVisibility</funclink>
+      <emlink href="definition/visibility.html">Visibility</emlink>-Property
     </related>
   </func>
   <author>Newton</author><date>2009-07</date>

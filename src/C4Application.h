@@ -22,29 +22,26 @@
 #ifndef INC_C4Application
 #define INC_C4Application
 
-#include <C4ConfigShareware.h>
 #include <C4Group.h>
 #include <C4MusicSystem.h>
 #include <C4SoundSystem.h>
 #include <C4Components.h>
 #include <C4InteractiveThread.h>
-#include <C4Network2IRC.h>
-#include <StdWindow.h>
+#include <C4App.h>
 
-class CStdDDraw;
 class C4ApplicationGameTimer;
 class C4GamePadControl;
 
 /* Main class to initialize configuration and execute the game */
 
-class C4Application: public CStdApp
+class C4Application: public C4AbstractApp
 {
 public:
 	C4Application();
 	~C4Application();
 	// Flag for restarting the engine at the end
 	bool restartAtEnd;
-	// main System.c4g in working folder
+	// main System.ocg in working folder
 	C4Group SystemGroup;
 	C4MusicSystem MusicSystem;
 	C4SoundSystem SoundSystem;
@@ -52,13 +49,13 @@ public:
 	// Thread for interactive processes (automatically starts as needed)
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
-	C4Network2IRCClient IRCClient;
+	C4Network2IRCClient &IRCClient;
 	void Clear();
 	void ClearCommandLine();
 	// Tick timing
 	void GameTick();
 	void Draw();
-	// System.c4g helper funcs
+	// System.ocg helper funcs
 	bool OpenSystemGroup() { return SystemGroup.IsOpen() || SystemGroup.Open(C4CFN_System); }
 	void CloseSystemGroup() { SystemGroup.Close(); }
 	void SetGameTickDelay(int iDelay);
@@ -93,8 +90,8 @@ protected:
 	static bool ProcessCallback(const char *szMessage, int iProcess);
 	void ApplyResolutionConstraints();
 
-	// set by ParseCommandLine, if neither scenario nor direct join adress has been specified
-	int UseStartupDialog;
+	// set by ParseCommandLine, if neither editor, scenario nor direct join adress has been specified
+	int QuitAfterGame;
 	// set by ParseCommandLine, for installing registration keys
 	StdStrBuf IncomingKeyfile;
 private:
@@ -112,11 +109,11 @@ public:
 	C4ApplicationGameTimer();
 private:
 	unsigned int iLastGameTick, iGameTickDelay;
-	bool fRecursing;
 public:
 	void SetGameTickDelay(uint32_t iDelay);
 
 	virtual bool Execute(int iTimeout, pollfd *);
+	virtual bool IsLowPriority();
 };
 
 class C4ApplicationSec1Timer : protected CStdTimerProc

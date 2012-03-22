@@ -1,5 +1,0 @@
-Name=Wolf
-TxtMovement=Move
-TxtDrop=Drop item
-TxtDig=Dig
-TxtLeave=Retransform

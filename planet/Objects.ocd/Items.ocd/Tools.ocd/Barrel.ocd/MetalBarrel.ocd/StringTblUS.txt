@@ -1,0 +1,2 @@
+Name=Metal Barrel
+Description=You can transport hazardous liquids in a metal barrel.

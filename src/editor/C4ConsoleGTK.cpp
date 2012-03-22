@@ -4,8 +4,8 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2002, 2005  Sven Eberhardt
  * Copyright (c) 2006-2007, 2010  Armin Burgmeier
- * Copyright (c) 2007, 2009-2010  Günther Brammer
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2007, 2009-2011  Günther Brammer
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -26,7 +26,6 @@
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
-#include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Object.h>
@@ -131,7 +130,6 @@ public:
 	GtkWidget* fileOpenWithPlayers;
 	GtkWidget* fileSave;
 	GtkWidget* fileSaveAs;
-	GtkWidget* fileSaveGame;
 	GtkWidget* fileSaveGameAs;
 	GtkWidget* fileRecord;
 	GtkWidget* fileClose;
@@ -147,7 +145,6 @@ public:
 
 	GtkWidget* lblCursor;
 	GtkWidget* lblFrame;
-	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
 	GtkWidget* propertydlg;
@@ -207,7 +204,6 @@ public:
 	static void OnFileOpenWPlrs(GtkWidget* item, gpointer data);
 	static void OnFileSave(GtkWidget* item, gpointer data);
 	static void OnFileSaveAs(GtkWidget* item, gpointer data);
-	static void OnFileSaveGame(GtkWidget* item, gpointer data);
 	static void OnFileSaveGameAs(GtkWidget* item, gpointer data);
 	static void OnFileRecord(GtkWidget* item, gpointer data);
 	static void OnFileClose(GtkWidget* item, gpointer data);
@@ -314,10 +310,10 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 		Console.EditCursor.In(text);
 }
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp* pApp)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
 	// Calls InitGUI
-	CStdWindow* retval = C4ConsoleBase::Init(CStdWindow::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();
@@ -376,20 +372,15 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_container_add(GTK_CONTAINER(status_frame), statusbar);
 
 	lblFrame = gtk_label_new("Frame: 0");
-	lblScript = gtk_label_new("Script: 0");
 	lblTime = gtk_label_new("00:00:00 (0 FPS)");
 
 	gtk_misc_set_alignment(GTK_MISC(lblFrame), 0.0, 0.5);
-	gtk_misc_set_alignment(GTK_MISC(lblScript), 0.0, 0.5);
 	gtk_misc_set_alignment(GTK_MISC(lblTime), 0.0, 0.5);
 
 	GtkWidget* sep1 = gtk_vseparator_new();
-	GtkWidget* sep2 = gtk_vseparator_new();
 
 	gtk_box_pack_start(GTK_BOX(statusbar), lblFrame, true, true, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), sep1, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), lblScript, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), sep2, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), lblTime, true, true, 0);
 
 	// ------------ Log view and script entry ---------------------
@@ -452,8 +443,6 @@ void C4ConsoleGUI::State::InitGUI()
 	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-	fileSaveGame = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAME"));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGame);
 
 	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
@@ -508,7 +497,6 @@ void C4ConsoleGUI::State::InitGUI()
 	g_signal_connect(G_OBJECT(fileOpenWithPlayers), "activate", G_CALLBACK(OnFileOpenWPlrs), this);
 	g_signal_connect(G_OBJECT(fileSave), "activate", G_CALLBACK(OnFileSave), this);
 	g_signal_connect(G_OBJECT(fileSaveAs), "activate", G_CALLBACK(OnFileSaveAs), this);
-	g_signal_connect(G_OBJECT(fileSaveGame), "activate", G_CALLBACK(OnFileSaveGame), this);
 	g_signal_connect(G_OBJECT(fileSaveGameAs), "activate", G_CALLBACK(OnFileSaveGameAs), this);
 	g_signal_connect(G_OBJECT(fileRecord), "activate", G_CALLBACK(OnFileRecord), this);
 	g_signal_connect(G_OBJECT(fileClose), "activate", G_CALLBACK(OnFileClose), this);
@@ -541,7 +529,6 @@ void C4ConsoleGUI::State::Clear()
 	fileOpenWithPlayers = NULL;
 	fileSave = NULL;
 	fileSaveAs = NULL;
-	fileSaveGame = NULL;
 	fileSaveGameAs = NULL;
 	fileRecord = NULL;
 	fileClose = NULL;
@@ -557,7 +544,6 @@ void C4ConsoleGUI::State::Clear()
 
 	lblCursor = NULL;
 	lblFrame = NULL;
-	lblScript = NULL;
 	lblTime = NULL;
 
 	handlerDestroy = 0;
@@ -566,6 +552,8 @@ void C4ConsoleGUI::State::Clear()
 	handlerModePlay = 0;
 	handlerModeEdit = 0;
 	handlerModeDraw = 0;
+
+	propertydlg = 0;
 }
 
 void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
@@ -580,9 +568,6 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 		break;
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
-		break;
-	case CONSOLE_ScriptCounter:
-		label = state->lblScript;
 		break;
 	case CONSOLE_TimeFPS:
 		label = state->lblTime;
@@ -665,16 +650,16 @@ bool C4ConsoleGUI::UpdateModeCtrls(int iMode)
 	return true;
 }
 
-bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(fSave ? "Save file..." : "Load file...", GTK_WINDOW(window), fSave ? GTK_FILE_CHOOSER_ACTION_SAVE : GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, fSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 
 	// TODO: Set dialog modal?
 
-	if (g_path_is_absolute(sFilename) )
-		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), sFilename);
+	if (g_path_is_absolute(sFilename->getData()) )
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), sFilename->getData());
 	else if (fSave)
-		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sFilename);
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sFilename->getData());
 
 	// Install file filter
 	while (*szFilter)
@@ -749,7 +734,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 	{
 		// Just the file name without multiselect
 		char* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		SCopy(filename, sFilename, iSize);
+		sFilename->Copy(filename);
 		g_free(filename);
 	}
 	else
@@ -757,10 +742,8 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 		// Otherwise its the folder followed by the file names,
 		// separated by '\0'-bytes
 		char* folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
-		int len = SLen(folder);
 
-		if (iSize > 0) SCopy(folder, sFilename, Min(len + 1, iSize));
-		iSize -= (len + 1); sFilename += (len + 1);
+		sFilename->Copy(folder);
 		g_free(folder);
 
 		GSList* files = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
@@ -769,16 +752,14 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 			const char* file = static_cast<const char*>(item->data);
 			char* basefile = g_path_get_basename(file);
 
-			int len = SLen(basefile);
-			if (iSize > 0) SCopy(basefile, sFilename, Min(len + 1, iSize));
-			iSize -= (len + 1); sFilename += (len + 1);
+			sFilename->AppendChar('\0');
+			sFilename->Append(basefile);
 
 			g_free(basefile);
 			g_free(item->data);
 		}
 
 		// End of list
-		*sFilename = '\0';
 		g_slist_free(files);
 	}
 
@@ -858,7 +839,7 @@ void C4ConsoleGUI::ClearInput()
 	gtk_list_store_clear(store);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
 {
 	if(state->txtScript == NULL) return;
 
@@ -866,9 +847,9 @@ void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
 	g_assert(store);
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); ++it)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); ++it)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (!fn) continue;
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, fn, -1);
@@ -962,7 +943,6 @@ void C4ConsoleGUI::State::DoEnableControls(bool fEnable)
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
 	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && ::Control.IsRuntimeRecordPossible());
-	gtk_widget_set_sensitive(fileSaveGame, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSave, fEnable);
 	gtk_widget_set_sensitive(fileSaveAs, fEnable);
@@ -1027,7 +1007,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
 	GtkListStore* store;
 
@@ -1053,9 +1033,9 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	GtkTreeIter iter;
 	gtk_list_store_clear(store);
 
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); it++)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (fn)
 		{
 			gtk_list_store_append(store, &iter);
@@ -1301,25 +1281,19 @@ void C4ToolsDlg::State::UpdatePreview()
 	if (!hbox) return;
 	C4ToolsDlg* dlg = GetOwner();
 
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 
 	int32_t iPrvWdt,iPrvHgt;
 
-	RECT rect;
 	/* TODO: Set size request for image to read size from image's size request? */
-	rect.left = 0;
-	rect.top = 0;
-	rect.bottom = 64;
-	rect.right = 64;
+	iPrvWdt=64;
+	iPrvHgt=64;
 
-	iPrvWdt=rect.right-rect.left;
-	iPrvHgt=rect.bottom-rect.top;
-
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return;
 
 	// fill bg
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(dlg->Material,C4TLS_MatSky))
 	{
@@ -1348,10 +1322,10 @@ void C4ToolsDlg::State::UpdatePreview()
 #else
 	if (GTK_WIDGET_SENSITIVE(preview))
 #endif
-		lpDDraw->DrawPatternedCircle( sfcPreview,
-		                                        iPrvWdt/2,iPrvHgt/2,
-		                                        dlg->Grade,
-		                                        bCol, Pattern, *::Landscape.GetPal());
+		pDraw->DrawPatternedCircle( sfcPreview,
+		                              iPrvWdt/2,iPrvHgt/2,
+		                              dlg->Grade,
+		                              bCol, Pattern, *::Landscape.GetPal());
 
 	// TODO: Can we optimize this?
 	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);
@@ -1539,17 +1513,12 @@ void C4ConsoleGUI::State::OnFileOpenWPlrs(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnFileSave(GtkWidget* item, gpointer data)
 {
-	Console.FileSave(false);
+	Console.FileSave();
 }
 
 void C4ConsoleGUI::State::OnFileSaveAs(GtkWidget* item, gpointer data)
 {
 	Console.FileSaveAs(false);
-}
-
-void C4ConsoleGUI::State::OnFileSaveGame(GtkWidget* item, gpointer data)
-{
-	Console.FileSave(true);
 }
 
 void C4ConsoleGUI::State::OnFileSaveGameAs(GtkWidget* item, gpointer data)

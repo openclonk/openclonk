@@ -4,8 +4,8 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Teams.txt</title>
-  <h id="Scenariotxt">Teams.txt</h>
-  <text>Via the Teams.txt component you can specify in which way groups of players play with or against together in multiplayer melees. From 4.9.6.0 CR.</text>
+  <h>Teams.txt</h>
+  <text>Via the Teams.txt component you can specify in which way groups of players play with or against together in multiplayer melees.</text>
   <text>
     <table>
       <caption id="SektionTeams">Section [Teams]</caption>

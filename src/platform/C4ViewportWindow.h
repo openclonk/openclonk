@@ -24,23 +24,24 @@
 #ifndef INC_C4ViewportWindow
 #define INC_C4ViewportWindow
 
-#include <StdWindow.h>
+#include <C4Window.h>
+#include <C4Viewport.h>
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ViewportBase;
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4ViewportBase;
 #else
-typedef CStdWindow C4ViewportBase;
+typedef C4Window C4ViewportBase;
 #endif
+#define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
+enum { ViewportScrollSpeed=10 };
 
 class C4ViewportWindow: public C4ViewportBase
 {
 public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
-#ifdef _WIN32
-	static bool RegisterViewportClass(HINSTANCE hInst);
-#elif defined(WITH_DEVELOPER_MODE)
+#if defined(WITH_DEVELOPER_MODE)
 	virtual GtkWidget* InitGUI();
 
 	static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
@@ -51,7 +52,7 @@ public:
 	static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data);
 	static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
 	static void OnRealizeStatic(GtkWidget* widget, gpointer user_data);
-	static gboolean OnExposeStatic(GtkWidget* widget, GdkEventExpose* event, gpointer user_data);
+	static gboolean OnExposeStatic(GtkWidget* widget, void *, gpointer user_data);
 	static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data);
 
 	static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
@@ -66,7 +67,8 @@ public:
 	virtual void HandleMessage (XEvent &);
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
-	CStdWindow * Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
+	using C4Window::Init;
+	C4Window * Init(int32_t iPlayer);
 	virtual void Close();
 	virtual void PerformUpdate();
 };

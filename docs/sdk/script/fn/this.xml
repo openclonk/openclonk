@@ -3,10 +3,10 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>this</title>
     <category>Objects</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>object</rtype></syntax>
     <desc>Returns a pointer to the object in the scope of which the script is currently being executed.</desc>
     <remark>The parameter brackets can be omitted.</remark>
@@ -17,6 +17,6 @@ myid = this-&gt;<funclink>GetID</funclink>();</code>
         <text>Stores the ID of the calling object in the thread local variable myid.</text>
       </example>
     </examples>
-  </func>
+  </const>
   <author>jwk</author><date>2002-04</date>
 </funcs>

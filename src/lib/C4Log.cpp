@@ -2,10 +2,11 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
- * Copyright (c) 2004-2006  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2004-2006  Sven Eberhardt
  * Copyright (c) 2005-2007, 2009  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010-2011  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,8 +25,8 @@
 
 #include <C4Include.h>
 #include <C4Log.h>
-#include <C4AulDebug.h>
 
+#include <C4AulDebug.h>
 #include <C4Console.h>
 #include <C4GameLobby.h>
 #include <C4Game.h>
@@ -35,7 +36,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Config.h>
 #include <C4Components.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 
 #ifdef HAVE_SYS_FILE_H
 #include <sys/file.h>
@@ -112,7 +113,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		char *pDest = TimeMessage.getMData() + 11;
 
 		// copy rest of message, skip tags
-		CMarkup Markup(false);
+		C4Markup Markup(false);
 		while (*pSrc)
 		{
 			Markup.SkipTags(&pSrc);
@@ -127,7 +128,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 #ifdef HAVE_ICONV
 		StdStrBuf Line = Languages.IconvSystem(TimeMessage.getData());
 #else
-		StdStrBuf &Line = TimeMessage;
+		const StdStrBuf &Line = TimeMessage;
 #endif
 
 		// Save into log file
@@ -140,7 +141,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		// Save into record log file, if available
 		if(Control.GetRecord())
 		{
-			Control.GetRecord()->GetLogFile()->Write(Line.getData(), Line.getLength());
+			Control.GetRecord()->GetLogFile()->Write(Line.getData(), strlen(Line.getData()));
 			#ifdef IMMEDIATEREC
 				Control.GetRecord()->GetLogFile()->Flush();
 			#endif
@@ -152,7 +153,7 @@ bool LogSilent(const char *szMessage, bool fConsole)
 		{
 #if defined(_DEBUG) && defined(_WIN32)
 			// debug: output to VC console
-			OutputDebugString(Line.getData());
+			OutputDebugString(Line.GetWideChar());
 #endif
 			fputs(Line.getData(),stdout);
 			fflush(stdout);
@@ -275,10 +276,10 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 {
 	if (!iLength) { rsOut.Clear(); return true; }
 	// read section from log file
-	CStdFile LogFileRead;
-	char *szBuf, *szBufOrig; size_t iSize; // size exclusing terminator
-	if (!LogFileRead.Load(sLogFileName.getData(), (BYTE **)&szBuf, (int *) &iSize, 1)) return false;
-	szBufOrig = szBuf;
+	StdStrBuf BufOrig;
+	if (!BufOrig.LoadFromFile(sLogFileName.getData())) return false;
+	char *szBuf = BufOrig.getMData();
+	size_t iSize = BufOrig.getSize(); // size excluding terminator
 	// reduce to desired buffer section
 	if (iStart > iSize) iStart = iSize;
 	if (iStart + iLength > iSize) iLength = iSize - iStart;
@@ -306,8 +307,6 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 	}
 	// done; create string buffer from data
 	rsOut.Copy(szBuf, szPosWrite - szBuf);
-	// old buf no longer used
-	delete [] szBufOrig;
 	// done, success
 	return true;
 }

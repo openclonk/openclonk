@@ -4,7 +4,7 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Properties</title>
-  <h id="Properties">Properties</h>
+  <h>Properties</h>
   <part>
     <text>Every object has a number of properties that are handled by the engine. Typically, these are inherited from the object's Prototype, an <emlink href="definition/index.html#Objektdefinitionen">Object Definition</emlink>. A Property of an Object Definition is defined with the <code>local</code> keyword in the <emlink href="definition/script.html#Objektscripte">Definition's script</emlink>:</text>
     <code>local Name = "$Name$";
@@ -19,7 +19,7 @@ Stand = {
 </code>
     <text>
       <table>
-        <caption id="PropertiesTable">Properties</caption>
+        <caption id="PropertiesTable">Object Properties</caption>
         <rowh>
           <col>Name</col>
           <col>Data type</col>
@@ -52,8 +52,8 @@ Stand = {
         </row>
         <row>
           <col><code>Visibility</code></col>
-          <col></col>
-          <col></col>
+          <col>int/array</col>
+          <col>Controls the visibility of the object. See the <emlink href="definition/visibility.html">detailed documentation of possible values</emlink>.</col>
         </row>
         <row>
           <col><code>LineColors</code></col>
@@ -77,6 +77,11 @@ Stand = {
         </row>
         <row>
           <col><code>MouseDragImage</code></col>
+          <col></col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>MouseDrag</code></col>
           <col></col>
           <col></col>
         </row>
@@ -123,7 +128,7 @@ Stand = {
         <row id="Plane">
           <col><code>Plane</code></col>
           <col>int</col>
-          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it.</col>
+          <col>The Object's minor Z-Position. Negative values are behind the landscape, positive values before it. Use 1-399 for stuff behind Clonks, 401-999 for stuff before Clonks, and 1000+ for GUI objects.</col>
         </row>
       </table>
     </text>

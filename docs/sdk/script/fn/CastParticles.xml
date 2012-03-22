@@ -6,7 +6,7 @@
   <func>
     <title>CastParticles</title>
     <category>Particle</category>
-    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -64,10 +64,10 @@
       </params>
     </syntax>
     <desc>Casts the specified amount of particles of the specified type. The extra parameters are set randomly in the range from a0/b0 to a1/b1.</desc>
-    <remark>This function returns 0 if the particle function was not found. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
+    <remark>This function returns <code>false</code> if the particle definition was not found, otherwise <code>true</code>. There is no return value indicating whether the particle has actually been created. This must be so to prevent synchronization problems in network games, as particles may be handled differently on each computer in the network.</remark>
     <examples>
       <example>
-        <code>CastParticles(&quot;FSpark&quot;, 10,100, 0,0, 100, 200, <funclink>RGBa</funclink>(128,128,255,0), <funclink>RGBa</funclink>(255,255,255,127));</code>
+        <code>CastParticles(&quot;MagicSpark&quot;, 10,100, 0,0, 100, 200, <funclink>RGBa</funclink>(128,128,255,0), <funclink>RGBa</funclink>(255,255,255,127));</code>
         <text>Creates some sparks.</text>
       </example>
     </examples>

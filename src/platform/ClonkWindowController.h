@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2010  Martin Plicht
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -15,7 +16,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-class CStdWindow;
+class C4Window;
 class C4ViewportWindow;
 class C4Viewport;
 
@@ -26,16 +27,18 @@ class C4Viewport;
 @interface ClonkWindowController : NSWindowController<NSWindowDelegate> {
 	IBOutlet ClonkOpenGLView* openGLView;
 	IBOutlet NSScrollView* scrollView;
-	CStdWindow* stdWindow;
+	C4Window* stdWindow;
 	NSWindow* fullscreenWindow;
+	NSSize preferredContentSize;
 }
 - (C4Viewport*) viewport;
 - (void) setFullscreen:(BOOL)fullscreen;
 - (BOOL) isFullscreen;
+- (void) setContentSize:(NSSize)size;
 
 - (IBAction) scroll:(id)sender;
 
-@property (readwrite) CStdWindow* stdWindow;
+@property (readwrite) C4Window* stdWindow;
 @property (readonly) ClonkOpenGLView* openGLView;
 @property (readonly) NSScrollView* scrollView;
 @property (readonly) BOOL isLiveResizing;

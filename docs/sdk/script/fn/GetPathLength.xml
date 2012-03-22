@@ -6,36 +6,36 @@
   <func>
     <title>GetPathLength</title>
     <category>Landscape</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
           <name>startx</name>
-          <desc>X coordinate of starting position</desc>
+          <desc>X coordinate of starting position. Always global coordinate.</desc>
         </param>
         <param>
           <type>int</type>
           <name>starty</name>
-          <desc>Y coordinate of starting position</desc>
+          <desc>Y coordinate of starting position. Always global coordinate.</desc>
         </param>
         <param>
           <type>int</type>
           <name>endx</name>
-          <desc>X coordinate of end position</desc>
+          <desc>X coordinate of end position. Always global coordinate.</desc>
         </param>
         <param>
           <type>int</type>
           <name>endy</name>
-          <desc>Y coordinate of end position</desc>
+          <desc>Y coordinate of end position. Always global coordinate.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Searches for a path from start point to end point using the pathfinding algorithm as used by clonks and returns the length of the found path. Returns 0 if no path was found.</desc>
+    <desc>Searches for a path from start point to end point using the pathfinding algorithm as used by clonks and returns the length of the found path. Returns <code>nil</code> if no path was found.</desc>
     <examples>
       <example>
-        <code>var iDist = GetPathLength(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), <funclink>GetX</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())), <funclink>GetY</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())));</code>
+        <code>var dist = GetPathLength(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), <funclink>GetX</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())), <funclink>GetY</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())));</code>
         <text>Determines the distance from an object to its closest friendly base.</text>
       </example>
     </examples>

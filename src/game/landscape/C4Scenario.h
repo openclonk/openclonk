@@ -99,14 +99,14 @@ class C4SDefinitions
 public:
 	bool LocalOnly;
 	bool AllowUserChange;
-	char Definition[C4S_MaxDefinitions][_MAX_PATH+1];
 	C4IDList SkipDefs;
-public:
 	void SetModules(const char *szList, const char *szRelativeToPath=NULL, const char *szRelativeToPath2=NULL);
 	bool GetModules(StdStrBuf *psOutModules) const;
-	bool AssertModules(const char *szPath=NULL, char *sMissing=NULL);
 	void Default();
 	void CompileFunc(StdCompiler *pComp);
+
+private:
+	char Definition[C4S_MaxDefinitions][_MAX_PATH+1];
 };
 
 
@@ -178,7 +178,6 @@ public:
 	bool AutoScanSideOpen;
 	char SkyDef[C4MaxDefString+1];
 	int32_t SkyDefFade[6];
-	bool NoSky;
 	bool NoScan;
 	C4SVal Gravity;
 	// Dynamic map
@@ -252,9 +251,6 @@ public:
 	bool Save(C4Group &hGroup, bool fSaveSection=false);
 	void CompileFunc(StdCompiler *pComp, bool fSection);
 	int32_t GetMinPlayer(); // will try to determine the minimum player count for this scenario
-protected:
-	bool Compile(const char *szSource, bool fLoadSection=false);
-	bool Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection=false);
 };
 
 class C4ScenarioSection;

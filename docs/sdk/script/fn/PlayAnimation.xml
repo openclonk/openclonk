@@ -6,7 +6,7 @@
   <func>
     <title>PlayAnimation</title>
     <category>Animations</category>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -33,7 +33,7 @@
         <param>
           <type>int</type>
           <name>sibling</name>
-          <desc>If the animation is combined with another animation then this refers to the node with which the new node is combined. If not given or nil then the animation is combined with the animation at the top of the slot as returned by <funclink>GetRootAnimation</funclink>.</desc>
+          <desc>If the animation is combined with another animation then this refers to the node with which the new node is combined. If not given or <code>nil</code> then the animation is combined with the animation at the top of the slot as returned by <funclink>GetRootAnimation</funclink>.</desc>
           <optional />
         </param>
       </params>

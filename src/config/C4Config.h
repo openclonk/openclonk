@@ -25,12 +25,13 @@
 #ifndef INC_C4Config
 #define INC_C4Config
 
-#include "StdConfig.h"
 #include "C4Constants.h"
 #include "C4InputValidation.h"
+#include "C4PlayerControl.h"
 #include <list>
 
 #define C4DEFAULT_FONT_NAME "Endeavour"
+enum { CFG_MaxString  = 1024 };
 
 class C4ConfigGeneral
 {
@@ -42,11 +43,10 @@ public:
 	char LanguageEx[CFG_MaxString+1]; // full fallback list composed by frontend options (condensed comma separated list)
 	char Participants[CFG_MaxString+1];
 	int32_t  AlwaysDebug; // if set: turns on debugmode whenever engine is started
+	int32_t  OpenScenarioInGameMode; // When the program arguments include a scenario path, open the game regularly
 	char RXFontName[CFG_MaxString+1];
 	int32_t  RXFontSize;
 	char ConfigUserPath[CFG_MaxString + 1];
-	StdStrBuf SaveGameFolder;
-	StdStrBuf SaveDemoFolder;
 	StdStrBuf ScreenshotFolder;
 	char MissionAccess[CFG_MaxString+1];
 	int32_t FPS;
@@ -55,21 +55,19 @@ public:
 	int32_t ScrollSmooth; // view movement smoothing
 	int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got corrupted and must be reset
 	// Determined at run-time
-	char ExePath[CFG_MaxString+1];
-	char TempPath[CFG_MaxString+1];
+	StdCopyStrBuf ExePath;
+	StdCopyStrBuf TempPath;
 	char UserDataPath[CFG_MaxString+1];
 	char SystemDataPath[CFG_MaxString+1];
 	char ScreenshotPath[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
-	bool UserPortraitsWritten; // set when default portraits have been copied to the UserPath (this is only done once)
 
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);
 	void DefaultLanguage();
 	bool CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
-	void AdoptOldSettings();
-	void DeterminePaths(bool forceWorkingDirectory);
+	void DeterminePaths();
 	void CompileFunc(StdCompiler *pComp);
 
 private:
@@ -91,8 +89,6 @@ class C4ConfigGraphics
 {
 public:
 	int32_t SplitscreenDividers;
-	int32_t AddNewCrewPortraits;
-	int32_t SaveDefaultPortraits;
 	int32_t ShowStartupMessages;
 	int32_t VerboseObjectLoading;
 	int32_t ColorAnimation;
@@ -158,7 +154,6 @@ public:
 	int32_t MasterReferencePeriod;
 	int32_t LeagueServerSignUp;
 	int32_t UseAlternateServer;
-	int32_t SendPortraits;
 	int32_t PortTCP,PortUDP,PortDiscovery,PortRefServer;
 	int32_t ControlMode;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Nick;
@@ -233,7 +228,9 @@ class C4ConfigControls
 public:
 	int32_t GamepadGuiControl;
 	int32_t MouseAScroll; // auto scroll strength
-	void CompileFunc(StdCompiler *pComp, bool fKeysOnly=false);
+	C4PlayerControlAssignmentSets UserSets;
+
+	void CompileFunc(StdCompiler *pComp);
 	void ResetKeys(); // reset all keys to default
 };
 
@@ -245,7 +242,7 @@ public:
 	void CompileFunc(StdCompiler *pComp);
 };
 
-class C4Config: protected CStdConfig
+class C4Config
 {
 public:
 	C4Config();
@@ -268,7 +265,7 @@ public:
 	const char* GetSubkeyPath(const char *strSubkey);
 	void Default();
 	bool Save();
-	bool Load(bool forceWorkingDirectory = true, const char *szConfigFile = NULL);
+	bool Load(const char *szConfigFile = NULL);
 	bool Init();
 	bool Registered();
 	const char *AtExePath(const char *szFilename);
@@ -287,11 +284,11 @@ public:
 	bool RemoveModule(const char *szPath, char *szModules);
 	bool IsModule(const char *szPath, char *szModules);
 	bool AddModule(const char *szPath, char *szModules);
-	void GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile);
+	void GetConfigFileName(StdStrBuf &filename, const char *szConfigFile);
 
 	static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 };
 
-#include <C4ConfigShareware.h>
+extern C4Config Config;
 
 #endif // INC_C4Config

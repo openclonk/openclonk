@@ -42,7 +42,6 @@ public:
 	void Clear();
 	void Execute();
 	void DenumeratePointers();
-	void EnumeratePointers();
 	void ClearPointers(C4Object *pObj);
 	int GetCount() const;
 	int GetCount(C4PlayerType eType) const;
@@ -58,8 +57,8 @@ public:
 	C4Player *GetAtClient(const char *szName, int iIndex=0) const;
 	C4Player *GetAtRemoteClient(int iIndex=0) const;
 	C4Player *GetByInfoID(int iInfoID) const;
-	C4Player *Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo);
-	bool CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName);
+	C4Player *Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo, C4ValueNumbers *);
+	void JoinNew(const char *szFilename);
 	bool CtrlJoin(const class C4Network2ResCore &ResCore, int iClientID, int idPlayerInfo);
 	bool FileInUse(const char *szFilename) const;
 	bool Retire(C4Player *pPlr);

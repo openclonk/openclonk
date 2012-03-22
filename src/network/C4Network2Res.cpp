@@ -2,11 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004-2007  Peter Wortmann
- * Copyright (c) 2005-2006, 2008  Günther Brammer
  * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011  Armin Burgmeier
+ * Copyright (c) 2011  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -394,7 +396,7 @@ bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2Res
 		{ if (!fSilent) LogF("SetByFile: file %s not found!", strFilePath); return false; }
 	// calc checksum
 	uint32_t iCRC32;
-	if (!C4Group_GetFileCRC(szFullFile.getData(), &iCRC32)) return false;
+	if (!GetFileCRC(szFullFile.getData(), &iCRC32)) return false;
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
 	LogSilentF("Network: Resource: complete %d:%s is file %s (%s)", iResID, szResName, szFile, fTemp ? "temp" : "static");
@@ -460,7 +462,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 			return true;
 		}
 	}
-	// get and search for filename without specified folder (e.g., Castle.c4s when the opened game is Easy.c4f\Castle.c4s)
+	// get and search for filename without specified folder (e.g., Castle.ocs when the opened game is Easy.ocf\Castle.ocs)
 	const char *szFilenameOnly = GetFilename(szFilename);
 	const char *szFilenameC4 = GetC4Filename(szFilename);
 	if (szFilenameOnly != szFilenameC4)
@@ -474,7 +476,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 	if (iRecursion >= Config.Network.MaxResSearchRecursion) return false;
 	StdStrBuf sSearchPath; const char *szSearchPath;
 	if (!iRecursion)
-		szSearchPath = Config.General.ExePath;
+		szSearchPath = Config.General.ExePath.getData();
 	else
 	{
 		sSearchPath.Copy(szFilename, SLen(szFilename) - SLen(szFilenameC4));
@@ -489,7 +491,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 			if (!*GetExtension(*i)) // directories without extension only
 				if (!szNetPath || !*szNetPath || !ItemIdentical(*i, szNetPath)) // ignore network path
 				{
-					// search for complete name at subpath (e.g. MyFolder\Easy.c4f\Castle.c4s)
+					// search for complete name at subpath (e.g. MyFolder\Easy.ocf\Castle.ocs)
 					sFilename.Format("%s%c%s", *i, DirectorySeparator, szFilenameC4);
 					if (SetByCore(nCore, fSilent, sFilename.getData(), iRecursion + 1))
 						return true;
@@ -637,7 +639,7 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 
 	// do optimizations (delete unneeded entries)
 	if (!OptimizeStandalone(fSilent))
-		{ if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0'; return false; }
+		{ if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0'; return false; }
 
 	// get file size
 	size_t iSize = FileSize(szStandalone);
@@ -649,20 +651,20 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if (!fSetOfficial && iSize != Core.getFileSize())
 	{
 		// remove file
-		if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
 		// sorry, this version isn't good enough :(
 		return false;
 	}
 
 	// calc checksum
 	uint32_t iCRC32;
-	if (!C4Group_GetFileCRC(szStandalone, &iCRC32))
+	if (!GetFileCRC(szStandalone, &iCRC32))
 		{ if (!fSilent) Log("GetStandalone: could not calculate checksum!"); return false; }
 	// set / check
 	if (!fSetOfficial && iCRC32 != Core.getFileCRC())
 	{
 		// remove file, return
-		if (!SEqual(szFile, szStandalone)) remove(szStandalone); szStandalone[0] = '\0';
+		if (!SEqual(szFile, szStandalone)) EraseItem(szStandalone); szStandalone[0] = '\0';
 		return false;
 	}
 
@@ -686,7 +688,7 @@ bool C4Network2Res::CalculateSHA()
 		SCopy(szFile, szStandalone, _MAX_PATH);
 	// get the hash
 	BYTE hash[SHA_DIGEST_LENGTH];
-	if (!C4Group_GetFileSHA1(szStandalone, hash))
+	if (!GetFileSHA1(szStandalone, hash))
 		return false;
 	// save it back
 	Core.SetFileSHA(hash);
@@ -981,12 +983,12 @@ void C4Network2Res::Clear()
 	// delete files
 	if (fTempFile)
 		if (FileExists(szFile))
-			if (remove(szFile))
+			if (!EraseFile(szFile))
 				//Log(_strerror("Network: Could not delete temporary ressource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	if (szStandalone[0] && !SEqual(szFile, szStandalone))
 		if (FileExists(szStandalone))
-			if (remove(szStandalone))
+			if (!EraseFile(szStandalone))
 				//Log(_strerror("Network: Could not delete temporary ressource file"));
 				LogSilentF("Network: Could not delete temporary resource file (%s)", strerror(errno));
 	szFile[0] = szStandalone[0] = '\0';
@@ -1002,13 +1004,23 @@ int32_t C4Network2Res::OpenFileRead()
 {
 	CStdLock FileLock(&FileCSec);
 	if (!GetStandalone(NULL, 0, false, false, true)) return -1;
-	return open(szStandalone, _O_BINARY | O_RDONLY);
+	// FIXME: Use standard OC file access api here
+#ifdef _WIN32
+	return _wopen(GetWideChar(szStandalone), _O_BINARY | O_RDONLY);
+#else
+	return open(szStandalone, _O_BINARY | O_CLOEXEC | O_RDONLY);
+#endif
 }
 
 int32_t C4Network2Res::OpenFileWrite()
 {
 	CStdLock FileLock(&FileCSec);
-	return open(szStandalone, _O_BINARY | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
+	// FIXME: Use standard OC file access api here
+#ifdef _WIN32
+	return _wopen(GetWideChar(szStandalone), _O_BINARY | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
+#else
+	return open(szStandalone, _O_BINARY | O_CLOEXEC | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
+#endif
 }
 
 void C4Network2Res::StartNewLoads()
@@ -1174,8 +1186,6 @@ bool C4Network2Res::OptimizeStandalone(bool fSilent)
 		C4Group Grp;
 		if (!Grp.Open(szStandalone))
 			{ if (!fSilent) Log("OptimizeStandalone: could not open player file!"); return false; }
-		// remove portrais
-		Grp.Delete(C4CFN_Portraits, true);
 		// remove bigicon, if the file size is too large
 		size_t iBigIconSize=0;
 		if (Grp.FindEntry(C4CFN_BigIcon, NULL, &iBigIconSize))
@@ -1702,20 +1712,12 @@ bool C4Network2ResList::CreateNetworkFolder()
 	// but make sure that the configured path has one
 	AppendBackslash(Config.Network.WorkPath);
 	// does not exist?
-	if (access(szNetworkPath, 00))
+	if (!DirectoryExists(szNetworkPath))
 	{
 		if (!CreatePath(szNetworkPath))
 			{ LogFatal("Network: could not create network path!"); return false; }
 		return true;
 	}
-	// stat
-	struct stat s;
-	if (stat(szNetworkPath, &s))
-		{ LogFatal("Network: could not stat network path!"); return false; }
-	// not a subdir?
-	if (!(s.st_mode & S_IFDIR))
-		{ LogFatal("Network: could not create network path: blocked by a file!"); return false; }
-	// ok
 	return true;
 }
 
@@ -1742,7 +1744,7 @@ bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarge
 	// create temporary file
 	SCopy(Config.AtNetworkPath(GetFilename(szFilename)), pTarget, _MAX_PATH);
 	// file name is free?
-	if (access(pTarget, F_OK)) return true;
+	if (!ItemExists(pTarget)) return true;
 	// find another file name
 	char szFileMask[_MAX_PATH+1];
 	SCopy(pTarget, szFileMask, GetExtension(pTarget)-1-pTarget);
@@ -1752,7 +1754,7 @@ bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarge
 	{
 		snprintf(pTarget, _MAX_PATH, szFileMask, i);
 		// doesn't exist?
-		if (access(pTarget, F_OK))
+		if (!ItemExists(pTarget))
 			return true;
 	}
 	// not found

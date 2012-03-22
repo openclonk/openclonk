@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4MassMover.h>
 
+#include <C4Components.h>
 #include <C4Random.h>
 #include <C4Material.h>
 #include <C4Game.h>
@@ -158,20 +159,12 @@ bool C4MassMover::Execute()
 	    return true;
 	    }*/
 
-	// Save back material that is about to be overwritten.
-	int omat = 0;
-	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
-		omat = GBackMat(tx, ty);
-
 	// Transfer mass
+	int32_t mat = ::Landscape.ExtractMaterial(x,y);
 	if (Random(10))
-		SBackPix(tx,ty,Mat2PixColDefault(::Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
+		::Landscape.InsertDeadMaterial(mat, tx, ty);
 	else
-		::Landscape.InsertMaterial(::Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
-
-	// Reinsert material (thrusted aside)
-	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && ::MaterialMap.Map[omat].Density > 0)
-		::Landscape.InsertMaterial(omat, tx, ty + 1);
+		::Landscape.InsertMaterial(mat, tx, ty, 0, 1);
 
 	// Create new mover at target
 	::MassMover.Create(tx,ty,!Random(3));
@@ -226,11 +219,11 @@ bool C4MassMoverSet::Save(C4Group &hGroup)
 
 bool C4MassMoverSet::Load(C4Group &hGroup)
 {
+	// clear previous
+	Clear(); Default();
 	size_t iBinSize,iMoverSize=sizeof(C4MassMover);
 	if (!hGroup.AccessEntry(C4CFN_MassMover,&iBinSize)) return false;
 	if ((iBinSize % iMoverSize)!=0) return false;
-	// clear previous
-	Clear(); Default();
 	// load new
 	Count = iBinSize / iMoverSize;
 	if (!hGroup.Read(Set,iBinSize)) return false;

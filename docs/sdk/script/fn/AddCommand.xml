@@ -7,7 +7,7 @@
     <title>AddCommand</title>
     <category>Objects</category>
     <subcat>Commands</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion><extversion>4.9.5.0 CE</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -110,12 +110,12 @@
     <remark>Commands added using AddCommand are not passed to controlled vehicles (see VehicleControl).</remark>
     <examples>
       <example>
-        <code>Timer:
-  var obj = <funclink>FindObject</funclink>(0, -20, -40, 40, 40, <funclink>OCF_CrewMember</funclink>();
+        <code>
+  var obj = <funclink>FindObject</funclink>(<funclink>Find_Rect</funclink>(-20, -40, 40, 40), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>));
   if(obj)
-    if(obj-&gt;<funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>())
+    if(obj-&gt;<funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>)
       obj-&gt;<funclink>AddCommand</funclink>(&quot;Jump&quot;);
-  return();</code>
+  return;</code>
         <text>If called from an object on the ground, this timer script makes any clonk passing the object from left to right jump. To do this, crew member objects are searched above the object. If one is found and he is moving from left to right (ComDir), he is given a 'Jump' command. Notice that this does not affect the previously set commands of the clonk - after completing the jump command, the clonk will continue with his previous commands. Using this script, you could e.g. ensure that clonks will always jump a given gap in the landscape.</text>
       </example>
     </examples>

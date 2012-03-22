@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2004-2010  Günther Brammer
+ * Copyright (c) 2004-2011  Günther Brammer
  * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
@@ -24,16 +24,18 @@
 /* Direct3D implementation of NewGfx */
 
 #include "C4Include.h"
-
 #include <StdD3D.h>
+
 #include <StdD3DShader.h>
-#include <StdMarkup.h>
-#include <StdWindow.h>
+
+#include <C4App.h>
+#include <C4Markup.h>
+#include <C4Window.h>
 #include <C4Config.h>
 
 #ifdef USE_DIRECTX
 
-#include <windows.h>
+#include <C4windowswrapper.h>
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
@@ -54,7 +56,7 @@ CStdD3D::~CStdD3D()
 
 void CStdD3D::Default()
 {
-	CStdDDraw::Default();
+	C4Draw::Default();
 	SceneOpen=false;
 	lpD3D=NULL;
 	lpDevice=NULL;
@@ -82,21 +84,36 @@ void CStdD3D::Clear()
 		lpD3D->Release(); lpD3D=NULL;
 	}
 	SceneOpen=false;
-	CStdDDraw::Clear();
+	C4Draw::Clear();
 }
 
 
 /* Direct3D initialization */
 
-bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
+bool CStdD3D::PageFlip(C4Rect *pSrcRt, C4Rect *pDstRt, C4Window * pWindow)
 {
+	RECT SrcRt, DstRt;
+	if (pSrcRt)
+	{
+		SrcRt.left = pSrcRt->x;
+		SrcRt.top = pSrcRt->y;
+		SrcRt.right = pSrcRt->x + pSrcRt->Wdt;
+		SrcRt.bottom = pSrcRt->y + pSrcRt->Hgt;
+	}
+	if (pDstRt)
+	{
+		DstRt.left = pDstRt->x;
+		DstRt.top = pDstRt->y;
+		DstRt.right = pDstRt->x + pDstRt->Wdt;
+		DstRt.bottom = pDstRt->y + pDstRt->Hgt;
+	}
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// safety
 	if (!lpDevice) return false;
 	// end the scene and present it
 	EndScene();
-	if (lpDevice->Present(pSrcRt, pDstRt, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
+	if (lpDevice->Present(pSrcRt ? &SrcRt : 0, pDstRt ? &DstRt : 0, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
 	{
 		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return false;
 		if (!RestoreDeviceObjects()) return false;
@@ -168,7 +185,7 @@ bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
 	return false;
 }
 
-bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
+bool CStdD3D::PrepareRendering(C4Surface * sfcToSurface)
 {
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
@@ -205,7 +222,7 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	return true;
 }
 
-void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
+void CStdD3D::PerformBlt(C4BltData &rBltData, C4TexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	if (!lpDevice || !pVB) return;
 
@@ -240,7 +257,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		pShader = pShaders[fMod2 * SHIDX_Mod2 + fColoredFoW * SHIDX_ColoredFoW];
 		lpDevice->SetPixelShader(pShader->GetInterface());
 		lpDevice->SetTexture(pShader->iInTexIndex, pTex->pTex);
-		CSurface * pModSurface = pClrModMap->GetSurface();
+		C4Surface * pModSurface = pClrModMap->GetSurface();
 		if (pModSurface->ppTex) lpDevice->SetTexture(pShader->iFoWTexIndex, (*(pModSurface->ppTex))->pTex);
 		const float mod_proj[4] = { 1.0f/(pClrModMap->GetResolutionX()* (*(pModSurface->ppTex))->iSizeX),
 		                            1.0f/(pClrModMap->GetResolutionY()* (*(pModSurface->ppTex))->iSizeY),
@@ -271,7 +288,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 	}
 }
 
-void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform *pTransform)
+void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, C4BltTransform *pTransform)
 {
 	// TODO: Implement this
 	for (int x = 0; x < twdt; x += 10)
@@ -299,7 +316,7 @@ unsigned int Format2BitDepth(D3DFORMAT format)
 	}
 }
 
-bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
+bool CStdD3D::BlitTex2Window(C4TexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
 {
 	// lock
 	if (!pTexRef->Lock()) return false;
@@ -323,7 +340,7 @@ bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT
 	return true;
 }
 
-bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
+bool CStdD3D::BlitSurface2Window(C4Surface * sfcSource,
                                  int fX, int fY, int fWdt, int fHgt,
                                  HWND hWnd,
                                  int tX, int tY, int tWdt, int tHgt)
@@ -347,9 +364,9 @@ bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 		int iTexY=fY/iTexSizeY;
 		int iTexX2=Min((fX+fWdt-1)/iTexSizeX +1, sfcSource->iTexX);
 		int iTexY2=Min((fY+fHgt-1)/iTexSizeY +1, sfcSource->iTexY);
-		CTexRef **ppTex=sfcSource->ppTex+iTexY*sfcSource->iTexX+iTexX;
+		C4TexRef **ppTex=sfcSource->ppTex+iTexY*sfcSource->iTexX+iTexX;
 		// blit from all these textures
-		CTexRef **ppTexRow, *pBaseTex=NULL;
+		C4TexRef **ppTexRow, *pBaseTex=NULL;
 		for (int iY=iTexY; iY<iTexY2; ++iY)
 		{
 			ppTexRow=ppTex;
@@ -639,7 +656,7 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return true;
 }
 
-void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
+void CStdD3D::PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 {
 	// is render target?
 	if (!sfcDest->IsRenderTarget())
@@ -668,7 +685,7 @@ void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	DrawQuadDw(sfcDest, vtx, dwClr, dwClr, dwClr, dwClr);
 }
 
-void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
+void CStdD3D::DrawPixPrimary(C4Surface * sfcDest, int iX, int iY, DWORD dwClr)
 {
 	// Must be render target and locked
 	if (!sfcDest->IsRenderTarget() || !sfcDest->IsLocked()) return;
@@ -703,7 +720,7 @@ void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
 	}
 }
 
-void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
+void CStdD3D::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
 {
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
@@ -749,7 +766,7 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 	lpDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 2 );
 }
 
-void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 {
 	// FIXME: zoom width
 	//dwClr |= 0xf0000000;
@@ -1124,10 +1141,10 @@ bool CStdD3D::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 	return true;
 }
 
-bool CStdD3D::SaveDefaultGammaRamp(CStdWindow * pWindow)
+bool CStdD3D::SaveDefaultGammaRamp(D3DGAMMARAMP &ramp)
 {
 	if (!lpDevice) return false;
-	lpDevice->GetGammaRamp(0, &DefRamp.ramp);
+	lpDevice->GetGammaRamp(0, &ramp);
 	return true;
 }
 

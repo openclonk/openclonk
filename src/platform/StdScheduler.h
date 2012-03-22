@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006, 2009  Peter Wortmann
- * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2008  Sven Eberhardt
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -32,6 +32,7 @@
 #define STDSCHEDULER_EVENT_MESSAGE INVALID_HANDLE_VALUE
 struct pollfd;
 #ifndef STDSCHEDULER_USE_EVENTS
+#include <C4windowswrapper.h>
 #include <winsock2.h>
 #endif // STDSCHEDULER_USE_EVENTS
 #else // _WIN32
@@ -71,7 +72,7 @@ public:
 #ifdef STDSCHEDULER_USE_EVENTS
 	virtual HANDLE GetEvent() { return 0; }
 #else
-	virtual void GetFDs(std::vector<struct pollfd> & FDs) { }
+	virtual void GetFDs(std::vector<struct pollfd> &) { }
 #endif
 
 	// Call Execute() after this time has elapsed
@@ -80,6 +81,9 @@ public:
 
 	// Is the process signal currently set?
 	bool IsSignaled();
+
+	// Is this the expensive game tick?
+	virtual bool IsLowPriority() { return false; }
 
 };
 
@@ -96,12 +100,11 @@ private:
 public:
 	void Set() { iLastTimer = 0; }
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
-	bool Check() { return timeGetTime() >= iLastTimer + iDelay; }
 	bool CheckAndReset()
 	{
-		if (!Check()) return false;
+		if (GetTime() < iLastTimer + iDelay) return false;
 		// Compensate light drifting
-		uint32_t iTime = timeGetTime();
+		uint32_t iTime = GetTime();
 		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
 		iLastTimer = iTime - Min(iDrift, iDelay / 2);
 		return true;
@@ -119,14 +122,12 @@ class CStdNotifyProc : public StdSchedulerProc
 {
 public:
 	CStdNotifyProc();
-	~CStdNotifyProc() { }
 
-public:
 	void Notify();
-	bool Check();
 	bool CheckAndReset();
 
 #ifdef STDSCHEDULER_USE_EVENTS
+	~CStdNotifyProc() { }
 
 	// StdSchedulerProc override
 	virtual HANDLE GetEvent() { return Event.GetEvent(); }
@@ -135,19 +136,65 @@ private:
 	CStdEvent Event;
 
 #else // STDSCHEDULER_USE_EVENTS
+	~CStdNotifyProc();
+
+	// StdSchedulerProc override
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
 
 private:
 	int fds[2];
-public:
-	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { fds[0], POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
 
 #endif
 };
+
+#ifdef STDSCHEDULER_USE_EVENTS
+class CStdMultimediaTimerProc : public CStdNotifyProc
+{
+public:
+	CStdMultimediaTimerProc(uint32_t iDelay);
+	~CStdMultimediaTimerProc();
+
+private:
+	static int iTimePeriod;
+	uint32_t uCriticalTimerDelay;
+
+	UINT idCriticalTimer,uCriticalTimerResolution;
+	CStdEvent Event;
+	bool Check() { return Event.WaitFor(0); }
+
+public:
+
+	void SetDelay(uint32_t iDelay);
+	void Set() { Event.Set(); }
+	bool CheckAndReset();
+
+	// StdSchedulerProc overrides
+	virtual HANDLE GetEvent() { return Event.GetEvent(); }
+
+};
+
+#elif defined(HAVE_SYS_TIMERFD_H)
+// timer proc using a timerfd
+class CStdMultimediaTimerProc : public StdSchedulerProc
+{
+public:
+	CStdMultimediaTimerProc(uint32_t iDelay);
+	~CStdMultimediaTimerProc();
+
+private:
+	int fd;
+
+public:
+	void Set();
+	void SetDelay(uint32_t inDelay);
+	bool CheckAndReset();
+	// StdSchedulerProc overrides
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds);
+};
+
+#else
+#define CStdMultimediaTimerProc CStdTimerProc
+#endif
 
 // A simple process scheduler
 class StdScheduler
@@ -164,7 +211,7 @@ private:
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
 	{
-	public: virtual bool Execute(int, pollfd * readyfds) { CheckAndReset(); return true; }
+	public: virtual bool Execute(int, pollfd *) { CheckAndReset(); return true; }
 	};
 	NoopNotifyProc Unblocker;
 
@@ -189,7 +236,7 @@ public:
 
 protected:
 	// overridable
-	virtual void OnError(StdSchedulerProc *pProc) { }
+	virtual void OnError(StdSchedulerProc *) { }
 
 private:
 	void Enlarge(int iBy);

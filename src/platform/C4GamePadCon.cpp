@@ -121,7 +121,6 @@ void C4GamePadControl::Execute(bool send_axis_strength_changes)
 		if (!rPad.iRefCount) continue;
 		--iNum;
 		if (!rPad.pGamepad->Update()) continue;
-		bool fAnyAxis = false;
 		for (int iAxis = 0; iAxis < CStdGamepad_MaxAxis; ++iAxis)
 		{
 			int32_t iStrength = 100;

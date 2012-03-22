@@ -26,6 +26,8 @@
 #include "C4Gui.h"
 #include <C4Log.h>
 
+#include <StdVideo.h>
+
 #ifdef HAVE_LIBSMPEG
 #include <smpeg/smpeg.h>
 #include <SDL.h>
@@ -127,7 +129,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 {
 #ifdef _WIN32
 	// load video file
-	if (!AVIFile.OpenFile(pVideoFile->GetFilename(), FullScreen.hWindow, lpDDraw->GetByteCnt()*8)) return false;
+	if (!AVIFile.OpenFile(pVideoFile->GetFilename(), FullScreen.hWindow, pDraw->GetByteCnt()*8)) return false;
 	// prepare surface for display
 	if (!fctBuffer.Create(AVIFile.GetWdt(), AVIFile.GetHgt(), C4FCT_Full, C4FCT_Full)) return false;
 	iStartFrameTime = 0; // no frame shown yet
@@ -140,7 +142,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 		{
 			if (pAudioTrack) delete pAudioTrack;
 			pAudioTrack = new C4SoundEffect();
-			if (pAudioTrack->Load(pAudioData, iAudioDataSize, false, false))
+			if (pAudioTrack->Load(pAudioData, iAudioDataSize, false))
 			{
 				C4SoundInstance *pSoundInst = pAudioTrack->New();
 				if (pSoundInst) pSoundInst->Start();
@@ -229,7 +231,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 	// draw current video frame
 #ifdef _WIN32
 	// get frame to be drawn
-	time_t iCurrFrameTime = timeGetTime();
+	time_t iCurrFrameTime = GetTime();
 	int32_t iGetFrame;
 	if (!iStartFrameTime) iStartFrameTime = iCurrFrameTime;
 	if (!AVIFile.GetFrameByTime(iCurrFrameTime - iStartFrameTime, &iGetFrame))
@@ -249,7 +251,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 #ifdef HAVE_LIBSMPEG
 	// FIXME
 	return;
-	CSurface * sfc = &fctBuffer.GetFace();
+	C4Surface * sfc = &fctBuffer.GetFace();
 	sfc->Lock();
 	sfc->CopyBytes((BYTE*)surface->pixels);
 	sfc->Unlock();

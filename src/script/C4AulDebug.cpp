@@ -2,8 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Peter Wortmann
+ * Copyright (c) 2009, 2011  Günther Brammer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Mortimer
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -18,14 +19,14 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
 #include <C4Include.h>
+#include "C4AulDebug.h"
+
 #include <C4Version.h>
 #include <C4GameControl.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
 #include <C4Log.h>
 #include <C4Object.h>
-
-#include "C4AulDebug.h"
 #include "C4AulExec.h"
 
 #ifndef NOAULDEBUG
@@ -266,17 +267,18 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 				break;
 		}
 
-		if (script)
+		if (script && script->GetScriptHost())
 		{
 			C4AulBCC* foundDebugChunk = NULL;
-			const char* scriptText = script->GetScript();
-			for (C4AulBCC* chunk = &script->Code[0]; chunk; chunk++)
+			C4ScriptHost * sh = script->GetScriptHost();
+			const char* scriptText = sh->GetScript();
+			for (C4AulBCC* chunk = &sh->Code[0]; chunk; chunk++)
 			{
 				switch (chunk->bccType)
 				{
 				case AB_DEBUG:
 					{
-					int lineOfThisOne = SGetLine(scriptText, script->PosForCode[chunk - &script->Code[0]]);
+					int lineOfThisOne = SGetLine(scriptText, sh->PosForCode[chunk - &sh->Code[0]]);
 					if (lineOfThisOne == line)
 					{
 						foundDebugChunk = chunk;

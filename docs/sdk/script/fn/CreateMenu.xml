@@ -7,7 +7,7 @@
     <title>CreateMenu</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -19,7 +19,7 @@
         <param>
           <type>object</type>
           <name>command_object</name>
-          <desc>Object to receive the menu command (see <funclink>AddMenuItem</funclink>). Can be 0 in local calls.</desc>
+          <desc>Object to receive the menu command (see <funclink>AddMenuItem</funclink>). Can be <code>nil</code> in local calls.</desc>
         </param>
         <param>
           <type>int</type>
@@ -81,7 +81,7 @@
           <type>int</type>
           <name>style</name>
           <desc>
-            Appearance of the menu. The following constants are defined (from CR): 
+            Appearance of the menu. The following constants are defined: 
             <table>
               <rowh>
                 <col>Constant</col>

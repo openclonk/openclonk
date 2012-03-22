@@ -1,0 +1,2 @@
+Name=Power
+Description=Cares about power management of a base.

@@ -7,7 +7,7 @@
     <title>Buy</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -29,13 +29,13 @@
         <param>
           <type>object</type>
           <name>to_base</name>
-          <desc>Target object in which the new object is placed.</desc>
+          <desc>Target object in which the new object is placed. This parameter can be left out if the calling object is the base.</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
           <name>show_errors</name>
-          <desc>If not 0, failure messages such as "Buying not possible" are displayed, e.g. if there is not enough money.</desc>
+          <desc>If specified and not <code>false</code>, failure messages such as "Buying not possible" are displayed, e.g. if there is not enough money.</desc>
           <optional />
         </param>
       </params>
@@ -43,7 +43,7 @@
     <desc>Buys an object for for_plr, deducting the wealth of pay_player. The function will fail if the paying player does not have enough money or the object is currently not available in the home base material.</desc>
     <examples>
       <example>
-        <code>Buy(Rock, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
+        <code>Buy(Rock, 0, 0, <funclink>FindBase</funclink>(0), true);</code>
         <text>Buys a rock at the base of the first player.</text>
       </example>
     </examples>

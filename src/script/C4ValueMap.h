@@ -72,9 +72,9 @@ public:
 	C4Value& operator [] (int32_t iNr) { return *GetItem(iNr); }
 	C4Value& operator [] (const char *strName) { return *GetItem(strName); }
 
-	void DenumeratePointers();
+	void Denumerate(C4ValueNumbers *);
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 
 private:
 
@@ -102,8 +102,8 @@ public:
 
 	// construction/destruction
 	C4ValueMapNames();
-	C4ValueMapNames(C4ValueMapNames& NamesToCopy);
-	C4ValueMapNames& operator = (C4ValueMapNames &NamesToCopy);
+	C4ValueMapNames(const C4ValueMapNames& NamesToCopy);
+	C4ValueMapNames& operator = (const C4ValueMapNames &NamesToCopy);
 	virtual ~C4ValueMapNames();
 
 

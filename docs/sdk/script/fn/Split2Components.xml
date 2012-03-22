@@ -7,30 +7,22 @@
     <title>Split2Components</title>
     <category>Objects</category>
     <subcat>Existence</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
-      <params>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object to be split. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
-      </params>
     </syntax>
     <desc>Splits an object into its components. The new component objects will be created with random rotation and a low speed in random direction at the position at which the object was located. The original object is removed. If the original object was contained, the new component objects will be created in the original container.</desc>
     <remark>See notice for <funclink>RemoveObject</funclink>.</remark>
     <examples>
       <example>
-        <code>protected func ControlDigDouble()
+        <code>protected func ControlUse()
   {
-  var target=<funclink>Contents</funclink>();
-  <funclink>if</funclink> (!target) <funclink>return</funclink>();
-  Split2Components(target);
+  var target=<funclink>FindObject</funclink>(<funclink>Find_AtPoint</funclink>(0,0),<funclink>Find_Exclude</funclink>(this));
+  <funclink>if</funclink> (!target) <funclink>return</funclink> false;
+  target-&gt;Split2Components();
   return true;
   }</code>
-        <text>Script for a clonk: He splits the first object he carries on double dig.</text>
+        <text>Script for a tool: It splits the first object it finds at it's position on usage.</text>
       </example>
     </examples>
     <related>

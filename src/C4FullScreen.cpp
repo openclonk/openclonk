@@ -3,10 +3,10 @@
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
  * Copyright (c) 2001-2003, 2005, 2008  Sven Eberhardt
- * Copyright (c) 2005-2007, 2010  Günther Brammer
+ * Copyright (c) 2005-2007, 2010-2011  Günther Brammer
  * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2009-2010  Mortimer
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009-2010  Martin Plicht
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -29,7 +29,6 @@
 
 #include <C4Game.h>
 #include <C4Application.h>
-#include <C4UserMessages.h>
 #include <C4Viewport.h>
 #include <C4League.h>
 #include <C4Language.h>
@@ -44,127 +43,13 @@
 #include <C4PlayerList.h>
 
 #ifdef _WIN32
-
-LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	static bool NativeCursorShown = true;
-	// Process message
-	switch (uMsg)
-	{
-	case WM_ACTIVATE:
-		wParam = (LOWORD(wParam)==WA_ACTIVE || LOWORD(wParam)==WA_CLICKACTIVE);
-		// fall through to next case
-	case WM_ACTIVATEAPP:
-		Application.Active = wParam != 0;
-		if (lpDDraw)
-		{
-			if (Application.Active)
-				lpDDraw->TaskIn();
-			else
-				lpDDraw->TaskOut();
-		}
-		// redraw background
-		::GraphicsSystem.InvalidateBg();
-		// Redraw after task switch
-		if (Application.Active)
-			::GraphicsSystem.Execute();
-		// update cursor clip
-		::MouseControl.UpdateClip();
-		return false;
-	case WM_PAINT:
-		// Redraw after task switch
-		if (Application.Active)
-			::GraphicsSystem.Execute();
-		break;
-	case WM_DESTROY:
-		Application.Quit();
-		return 0;
-	case WM_CLOSE:
-		FullScreen.Close();
-		return 0;
-	case MM_MCINOTIFY:
-		if (wParam == MCI_NOTIFY_SUCCESSFUL)
-			Application.MusicSystem.NotifySuccess();
-		return true;
-	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL))
-			return 0;
-		break;
-	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
-			return 0;
-		break;
-	case WM_SYSKEYDOWN:
-		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
-			return 0;
-		break;
-	case WM_CHAR:
-	{
-		// UTF-8 has 1 to 4 data bytes, and we need a terminating \0
-		char c[5] = {0};
-		if(!WideCharToMultiByte(CP_UTF8, 0L, reinterpret_cast<LPCWSTR>(&wParam), 1, c, 4, 0, 0))
-			return 0;
-		// GUI: forward
-		if (::pGUI->CharIn(c))
-			return 0;
-		return false;
-	}
-	case WM_USER_LOG:
-		if (SEqual2((const char *)lParam, "IDS_"))
-			Log(LoadResStr((const char *)lParam));
-		else
-			Log((const char *)lParam);
-		return false;
-	case WM_LBUTTONDOWN:
-		C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
-		break;
-	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEWHEEL: C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEMOVE:
-		C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
-		// Hide cursor in client area
-		if (NativeCursorShown)
-		{
-			NativeCursorShown = false;
-			ShowCursor(FALSE);
-		}
-		break;
-	case WM_NCMOUSEMOVE:
-		// Show cursor on window frame
-		if (!NativeCursorShown)
-		{
-			NativeCursorShown = true;
-			ShowCursor(TRUE);
-		}
-		break;
-	case WM_SIZE:
-		// Notify app about render window size change
-		switch (wParam)
-		{
-		case SIZE_RESTORED:
-		case SIZE_MAXIMIZED:
-			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
-			if(Application.pWindow) // this might be called from CStdWindow::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
-			break;
-		}
-		break;
-	}
-	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
-}
-
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 void C4FullScreen::HandleMessage (XEvent &e)
 {
 	// Parent handling
-	CStdWindow::HandleMessage(e);
+	C4Window::HandleMessage(e);
 
 	switch (e.type)
 	{
@@ -188,7 +73,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		switch (e.xbutton.button)
 		{
 		case Button1:
-			if (timeGetTime() - last_left_click < 400)
+			if (GetTime() - last_left_click < 400)
 			{
 				C4GUI::MouseMove(C4MC_Button_LeftDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
@@ -198,7 +83,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			{
 				C4GUI::MouseMove(C4MC_Button_LeftDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
-				last_left_click = timeGetTime();
+				last_left_click = GetTime();
 			}
 			break;
 		case Button2:
@@ -206,7 +91,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 		case Button3:
-			if (timeGetTime() - last_right_click < 400)
+			if (GetTime() - last_right_click < 400)
 			{
 				C4GUI::MouseMove(C4MC_Button_RightDouble,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
@@ -216,7 +101,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			{
 				C4GUI::MouseMove(C4MC_Button_RightDown,
 				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
-				last_right_click = timeGetTime();
+				last_right_click = GetTime();
 			}
 			break;
 		case Button4:
@@ -253,11 +138,11 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		break;
 	case FocusIn:
 		Application.Active = true;
-		if (lpDDraw) lpDDraw->TaskIn();
+		if (pDraw) pDraw->TaskIn();
 		break;
 	case FocusOut: case UnmapNotify:
 		Application.Active = false;
-		if (lpDDraw) lpDDraw->TaskOut();
+		if (pDraw) pDraw->TaskOut();
 		break;
 	}
 }
@@ -281,14 +166,14 @@ namespace
 		{
 		case SDL_BUTTON_LEFT:
 			if (e.state == SDL_PRESSED)
-				if (timeGetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+				if (GetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
 				{
 					lastLeftClick = 0;
 					button = C4MC_Button_LeftDouble;
 				}
 				else
 				{
-					lastLeftClick = timeGetTime();
+					lastLeftClick = GetTime();
 					button = C4MC_Button_LeftDown;
 				}
 			else
@@ -296,14 +181,14 @@ namespace
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (e.state == SDL_PRESSED)
-				if (timeGetTime() - lastRightClick < 400)
+				if (GetTime() - lastRightClick < 400)
 				{
 					lastRightClick = 0;
 					button = C4MC_Button_RightDouble;
 				}
 				else
 				{
-					lastRightClick = timeGetTime();
+					lastRightClick = GetTime();
 					button = C4MC_Button_RightDown;
 				}
 			else
@@ -351,8 +236,8 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;
 			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-			lpDDraw->InvalidateDeviceObjects();
-			lpDDraw->RestoreDeviceObjects();
+			pDraw->InvalidateDeviceObjects();
+			pDraw->RestoreDeviceObjects();
 
 			break;
 		}
@@ -415,9 +300,9 @@ C4FullScreen::~C4FullScreen()
 }
 
 
-CStdWindow * C4FullScreen::Init(CStdApp * pApp)
+C4Window * C4FullScreen::Init(C4AbstractApp * pApp)
 {
-	return Init(CStdWindow::W_Fullscreen, pApp, C4ENGINENAME);
+	return Init(C4Window::W_Fullscreen, pApp, C4ENGINECAPTION);
 }
 
 void C4FullScreen::Close()
@@ -432,7 +317,7 @@ void C4FullScreen::Clear()
 {
 	if (pSurface) delete pSurface;
 	pSurface = 0;
-	CStdWindow::Clear();
+	C4Window::Clear();
 }
 
 void C4FullScreen::Execute()

@@ -62,10 +62,18 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			switch (*cpType)
 			{
 				// number
-			case 'd': case 'x': case 'X': case 'c':
+			case 'd': case 'x': case 'X':
 			{
 				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
 				StringBuf.AppendFormat(szField, Par[cPar++]->getInt());
+				cpFormat+=SLen(szField);
+				break;
+			}
+			// character
+			case 'c':
+			{
+				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				StringBuf.AppendCharacter(Par[cPar++]->getInt());
 				cpFormat+=SLen(szField);
 				break;
 			}
@@ -82,7 +90,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			case 'v':
 			{
 				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
-				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString()));
+				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString(10)));
 				cpFormat+=SLen(szField);
 				break;
 			}
@@ -148,9 +156,9 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 
 //=============================== C4Script Functions ====================================
 
-static C4Object *Fn_this(C4AulContext *cthr)
+static C4PropList *Fn_this(C4AulContext *cthr)
 {
-	return cthr->Obj;
+	return cthr->Obj ? cthr->Obj : cthr->Def;
 }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
@@ -346,9 +354,14 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
 	return SafeRandom(iRange);
 }
 
-static C4Value FnGetType(C4AulContext *cthr, C4Value* Value)
+static int FnGetType(C4AulContext *cthr, const C4Value & Value)
 {
-	return C4VInt(Value->GetType());
+	// dynamic types
+	if (Value.CheckConversion(C4V_Def)) return C4V_Def;
+	if (Value.CheckConversion(C4V_Effect)) return C4V_Effect;
+	if (Value.CheckConversion(C4V_Object)) return C4V_Object;
+	// static types
+	return Value.GetType();
 }
 
 static C4ValueArray * FnCreateArray(C4AulContext *cthr, int iSize)
@@ -365,25 +378,22 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 		return C4VInt(pArray->GetSize());
 	C4String * pStr = pPars->getStr();
 	if (pStr)
-		return C4VInt(pStr->GetData().getLength());
+		return C4VInt(GetCharacterCount(pStr->GetData().getData()));
 	throw new C4AulExecError(cthr->Obj, "func \"GetLength\" par 0 cannot be converted to string or array");
 }
 
 static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 {
 	// find first occurance of first parameter in array
-	// support GetIndexOf(x, 0)
-	if (!pPars[1]) return C4VInt(-1);
-	// if the second param is nonzero, it must be an array
-	const C4ValueArray * pArray = pPars[1].getArray();
+	// support GetIndexOf(0, x)
+	if (!pPars[0]) return C4VInt(-1);
+	// if the first param is nonzero, it must be an array
+	const C4ValueArray * pArray = pPars[0].getArray();
 	if (!pArray)
-		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 1 cannot be converted to array");
-	// find the element by comparing data only - this may result in bogus results if an object ptr array is searched for an int
-	// however, that's rather unlikely and strange scripting style
+		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 0 cannot be converted to array");
 	int32_t iSize = pArray->GetSize();
-	long cmp = pPars[0].GetData().Int;
 	for (int32_t i = 0; i<iSize; ++i)
-		if (cmp == pArray->GetItem(i).GetData().Int)
+		if (pPars[1] == pArray->GetItem(i))
 			// element found
 			return C4VInt(i);
 	// element not found
@@ -401,30 +411,32 @@ static C4Void FnSetLength(C4AulContext *cthr, C4ValueArray *pArray, int iNewSize
 	return C4Void();
 }
 
-static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
+static Nillable<long> FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 {
 	const char *szText = FnStringPar(pString);
-	if (!szText) return 0;
-	// loop and check for end of string
-	for (int i=0; i<iIndex; i++, szText++)
-		if (!*szText) return 0;
-	// return indiced character value
-	return (unsigned char) *szText;
+	if (!szText) return C4Void();
+	// C4Strings are UTF-8 encoded, so decode to get the indicated character
+	uint32_t c = GetNextCharacter(&szText);
+	for (int i = 0; i < iIndex; ++i)
+	{
+		c = GetNextCharacter(&szText);
+		if (!c) return C4Void();
+	}
+	return c;
 }
 
 static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 {
 	// execute script in the same object
-	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
 	if (cthr->Obj)
-		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
-	else if (cthr->Def)
-		return cthr->Def->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true);
+	else if (cthr->Def && cthr->Def->GetDef())
+		return cthr->Def->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 	else
-		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
+		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
 }
 
-static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj, C4ID idDef)
+static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4PropList * p)
 {
 	// safety
 	if (!funcname || !funcname->GetCStr())
@@ -432,29 +444,9 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 		Log("No func name");
 		return false;
 	}
-	// determine script context
-	C4AulScript *pCheckScript;
-	if (pObj)
-	{
-		pCheckScript = &pObj->Def->Script;
-	}
-	else if (idDef)
-	{
-		C4Def *pDef = C4Id2Def(idDef);
-		if (!pDef) { Log("Invalid or unloaded def"); return false; }
-		pCheckScript = &pDef->Script;
-	}
-	else
-	{
-		if (!cthr || !cthr->Caller || !cthr->Caller->Func || !cthr->Caller->Func->Owner)
-		{
-			Log("No valid script context");
-			return false;
-		}
-		pCheckScript = cthr->Caller->Func->Owner;
-	}
+	if (!p) p = cthr->Def;
 	// get function by name
-	C4AulFunc *pFunc = pCheckScript->GetFuncRecursive(funcname->GetCStr());
+	C4AulFunc *pFunc = p->GetFunc(funcname);
 	if (!pFunc)
 	{
 		LogF("Func %s not found", funcname->GetCStr());
@@ -467,16 +459,16 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 			C4AulScriptFunc *pSFunc = pFunc->SFunc();
 			if (!pSFunc)
 			{
-				LogF("%s%s (engine)", szPrefix, pFunc->Name);
+				LogF("%s%s (engine)", szPrefix, pFunc->GetName());
 			}
 			else if (!pSFunc->pOrgScript)
 			{
-				LogF("%s%s (no owner)", szPrefix, pSFunc->Name);
+				LogF("%s%s (no owner)", szPrefix, pSFunc->GetName());
 			}
 			else
 			{
 				int32_t iLine = SGetLine(pSFunc->pOrgScript->GetScript(), pSFunc->Script);
-				LogF("%s%s (%s:%d)", szPrefix, pFunc->Name, pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
+				LogF("%s%s (%s:%d)", szPrefix, pFunc->GetName(), pSFunc->pOrgScript->ScriptName.getData(), (int)iLine);
 			}
 			// next func in overload chain
 			pFunc = pSFunc ? pSFunc->OwnerOverloaded : NULL;
@@ -484,25 +476,6 @@ static bool FnLocateFunc(C4AulContext *cthr, C4String *funcname, C4Object *pObj,
 		}
 	}
 	return true;
-}
-
-struct C4ModLandscapeMatRec
-{
-	long iMode, iClr1, iClr2;
-};
-
-static DWORD FadeClr(DWORD dwClr1, DWORD dwClr2, BYTE byA1)
-{
-	// darken colors and add them
-	DarkenClrBy(dwClr1, 255-byA1); DarkenClrBy(dwClr2, byA1);
-	return dwClr1+dwClr2;
-}
-
-static void SmoothChars(signed char &r1, signed char &r2)
-{
-	// lower the difference between two numbers
-	signed char d=(r2-r1)/4;
-	r1+=d; r2-=d;
 }
 
 static long FnModulateColor(C4AulContext *cthr, long iClr1, long iClr2)
@@ -565,12 +538,12 @@ static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
 {
 	assert(!ctx->Obj || ctx->Def == ctx->Obj->Def);
 	if (!text || text->GetData().isNull()) return NULL;
-	// Find correct script: containing script unless -> operator used
+	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
-	if (ctx->Obj == ctx->Caller->Obj && ctx->Def == ctx->Caller->Def)
-		script = ctx->Caller->Func->pOrgScript;
+	if (ctx->Def && ctx->Def->GetDef())
+		script = &(ctx->Def->GetDef()->Script);
 	else
-		script = &ctx->Def->Script;
+		script = ctx->Caller->Func->pOrgScript;
 	assert(script);
 	try
 	{
@@ -608,20 +581,23 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int valu
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
-	{ "C4V_Any"                ,C4V_Int,          C4V_Any},
-	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
-	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
-	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
-	{ "C4V_String"             ,C4V_Int,          C4V_String},
-	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
-	{ "C4V_PropList"           ,C4V_Int,          C4V_PropList},
+	{ "C4V_Nil",         C4V_Int, C4V_Nil},
+	{ "C4V_Int",         C4V_Int, C4V_Int},
+	{ "C4V_Bool",        C4V_Int, C4V_Bool},
+	{ "C4V_C4Object",    C4V_Int, C4V_Object},
+	{ "C4V_Effect",      C4V_Int, C4V_Effect},
+	{ "C4V_Def",         C4V_Int, C4V_Def},
+	{ "C4V_String",      C4V_Int, C4V_String},
+	{ "C4V_Array",       C4V_Int, C4V_Array},
+	{ "C4V_Function",    C4V_Int, C4V_Function},
+	{ "C4V_PropList",    C4V_Int, C4V_PropList},
 
-	{ "C4X_Ver1"               ,C4V_Int,          C4XVER1},
-	{ "C4X_Ver2"               ,C4V_Int,          C4XVER2},
-	{ "C4X_Ver3"               ,C4V_Int,          C4XVER3},
-	{ "C4X_Ver4"               ,C4V_Int,          C4XVER4},
+	{ "C4X_Ver1",        C4V_Int, C4XVER1},
+	{ "C4X_Ver2",        C4V_Int, C4XVER2},
+	{ "C4X_Ver3",        C4V_Int, C4XVER3},
+	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
-	{ NULL, C4V_Any, 0}
+	{ NULL, C4V_Nil, 0}
 };
 
 #define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
@@ -637,14 +613,12 @@ C4ScriptFnDef C4ScriptFnMap[]=
 	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
 
-	{ "GetType",              1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetType,                   0 },
-
 	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
-	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
+	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
 
 	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
 
-	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
+	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 
 };
 
@@ -679,6 +653,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Distance", FnDistance);
 	AddFunc(pEngine, "Angle", FnAngle);
 	AddFunc(pEngine, "GetChar", FnGetChar);
+	AddFunc(pEngine, "GetType", FnGetType);
 	AddFunc(pEngine, "ModulateColor", FnModulateColor);
 	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
 	AddFunc(pEngine, "FatalError", FnFatalError);

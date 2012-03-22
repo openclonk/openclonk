@@ -7,7 +7,7 @@
     <title>FindObjects</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -51,10 +51,13 @@
     <related>
       <funclink>Find_Action</funclink>
       <funclink>Find_ActionTarget</funclink>
+      <funclink>Find_ActionTarget2</funclink>
+      <funclink>Find_ActionTargets</funclink>
       <funclink>Find_Allied</funclink>
       <funclink>Find_And</funclink>
       <funclink>Find_AnyContainer</funclink>
       <funclink>Find_AtPoint</funclink>
+      <funclink>Find_OnLine</funclink>
       <funclink>Find_Category</funclink>
       <funclink>Find_Container</funclink>
       <funclink>Find_Distance</funclink>

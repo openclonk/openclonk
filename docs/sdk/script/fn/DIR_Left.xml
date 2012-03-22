@@ -3,18 +3,17 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>DIR_Left</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Constant for <funclink>SetDir</funclink>/<funclink>GetDir</funclink>: direction left</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <examples>
       <example>
-        <code><funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>, <funclink>GetCursor</funclink>());
-<funclink>SetDir</funclink>(DIR_Left, <funclink>GetCursor</funclink>());</code>
+        <code><funclink>GetCursor</funclink>(0)-&gt;<funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>);
+<funclink><funclink>GetCursor</funclink>()-&gt;SetDir</funclink>(DIR_Left);</code>
         <text>The selected clonk stops and looks to the left.</text>
       </example>
     </examples>
@@ -23,6 +22,6 @@
       <funclink>GetDir</funclink>
       <funclink>SetDir</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2001-11</date>
 </funcs>

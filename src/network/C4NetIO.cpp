@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2003-2008  Peter Wortmann
  * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2005-2006, 2008-2009, 2011  Günther Brammer
  * Copyright (c) 2007, 2010  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -625,7 +625,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 {
 	// create new socket
-	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (nsock == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
@@ -850,7 +850,11 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	if (nsock == INVALID_SOCKET)
 	{
 		// accept from listener
+#ifdef __linux__
+		if ((nsock = ::accept4(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
+#else
 		if ((nsock = ::accept(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize)) == INVALID_SOCKET)
+#endif
 		{
 			// set error
 			SetError("socket accept failed", true);
@@ -954,7 +958,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 	iListenPort = P_NONE;
 
 	// create socket
-	if ((lsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+	if ((lsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP)) == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
 		return false;
@@ -1326,7 +1330,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 #endif
 
 	// create socket
-	if ((sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	if ((sock = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) == INVALID_SOCKET)
 	{
 		SetError("could not create socket", true);
 		return false;
@@ -1345,7 +1349,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 	naddr.sin_family = AF_INET;
 	naddr.sin_port = (iPort == P_NONE ? 0 : htons(iPort));
 	naddr.sin_addr.s_addr = INADDR_ANY;
-	ZeroMemory(naddr.sin_zero, sizeof naddr.sin_zero);
+	memset(naddr.sin_zero, 0, sizeof naddr.sin_zero);
 	if (::bind(sock, reinterpret_cast<sockaddr *>(&naddr), sizeof naddr) == SOCKET_ERROR)
 	{
 		SetError("could not bind socket", true);
@@ -1827,7 +1831,7 @@ bool C4NetIOUDP::Init(uint16_t inPort)
 	// set flags
 	fInit = true;
 	fMultiCast = false;
-	iNextCheck = timeGetTime() + iCheckInterval;
+	iNextCheck = GetTime() + iCheckInterval;
 
 	// ok, that's all for now.
 	// call InitBroadcast for more initialization fun
@@ -1863,7 +1867,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 		// set up adress
 		MCAddr.sin_family = AF_INET;
 		MCAddr.sin_port = htons(iPort);
-		ZeroMemory(&MCAddr.sin_zero, sizeof MCAddr.sin_zero);
+		memset(&MCAddr.sin_zero, 0, sizeof MCAddr.sin_zero);
 		// search for a free one
 		for (int iRetries = 1000; iRetries; iRetries--)
 		{
@@ -1999,7 +2003,7 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 	ResetError();
 
 	// adjust maximum block time
-	int Now = timeGetTime();
+	int Now = GetTime();
 	int iMaxBlock = GetNextTick(Now) - Now;
 	if (iMaxTime == TO_INF || iMaxTime > iMaxBlock) iMaxTime = iMaxBlock;
 
@@ -2008,7 +2012,7 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 		return false;
 
 	// connection check needed?
-	if (iNextCheck <= timeGetTime())
+	if (iNextCheck <= GetTime())
 		DoCheck();
 	// client timeout?
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
@@ -2527,7 +2531,7 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	if (eStatus != CS_Works) return true;
 	// prevent re-check (check floods)
 	// instead, ask for other packets that are missing until recheck is allowed
-	bool fNoReCheck = !!iNextReCheck && iNextReCheck > timeGetTime();
+	bool fNoReCheck = !!iNextReCheck && iNextReCheck > GetTime();
 	if (!fNoReCheck) iLastPacketAsked = iLastMCPacketAsked = 0;
 	unsigned int iStartAt = fNoReCheck ? Max(iLastPacketAsked + 1, iIPacketCounter) : iIPacketCounter;
 	unsigned int iStartAtMC = fNoReCheck ? Max(iLastMCPacketAsked + 1, iIMCPacketCounter) : iIMCPacketCounter;
@@ -2545,7 +2549,7 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	int iEAskCnt = iAskCnt + iMCAskCnt;
 	// no re-check limit? set it
 	if (!fNoReCheck)
-		iNextReCheck = iEAskCnt ? timeGetTime() + iReCheckInterval : 0;
+		iNextReCheck = iEAskCnt ? GetTime() + iReCheckInterval : 0;
 	// something to ask for? (or check forced?)
 	if (iEAskCnt || fForceCheck)
 		return DoCheck(iAskCnt, iMCAskCnt, iAskList);
@@ -2771,7 +2775,7 @@ void C4NetIOUDP::Peer::CheckTimeout()
 	// timeout set?
 	if (!iTimeout) return;
 	// check
-	if (timeGetTime() > iTimeout)
+	if (GetTime() > iTimeout)
 		OnTimeout();
 }
 
@@ -2920,7 +2924,7 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 void C4NetIOUDP::Peer::SetTimeout(int iLength, int iRetryCnt) // (mt-safe)
 {
 	if (iLength != TO_INF)
-		iTimeout = timeGetTime() + iLength;
+		iTimeout = GetTime() + iLength;
 	else
 		iTimeout = 0;
 	iRetries = iRetryCnt;
@@ -2997,7 +3001,7 @@ bool C4NetIOUDP::DoLoopbackTest()
 	if (!C4NetIOSimpleUDP::getMCLoopback()) return false;
 
 	// send test packet
-	const PacketHdr TestPacket = { IPID_Test | char(0x80), rand() };
+	const PacketHdr TestPacket = { IPID_Test | char(0x80), static_cast<uint32_t>(rand()) };
 	if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&TestPacket, sizeof(TestPacket))))
 		return false;
 
@@ -3139,7 +3143,7 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 		if (pPeer->Open())
 			pPeer->Check();
 	// set time for next check
-	iNextCheck = timeGetTime() + iCheckInterval;
+	iNextCheck = GetTime() + iCheckInterval;
 }
 
 // debug
@@ -3187,7 +3191,7 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	unsigned int iTime = timeGetTime();
+	unsigned int iTime = GetTime();
 	O.Format("%s %d:%02d:%02d:%03d %s:%d:", fOut ? "out" : "in ",
 	         (iTime / 1000 / 60 / 60), (iTime / 1000 / 60) % 60, (iTime / 1000) % 60, iTime % 1000,
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));

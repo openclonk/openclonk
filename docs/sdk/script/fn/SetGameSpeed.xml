@@ -6,14 +6,15 @@
   <func>
     <title>SetGameSpeed</title>
     <category>Global</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>int</type>
           <name>game_speed</name>
-          <desc>Game speed in FPS (frames per second). If this parameter is omitted or 0, the default game speed of 38 FPS is used.</desc>
+          <desc>Game speed in FPS (frames per second). If this parameter is omitted or <code>false</code>, the default game speed of 38 FPS is used.</desc>
+		  <optional/>
         </param>
       </params>
     </syntax>

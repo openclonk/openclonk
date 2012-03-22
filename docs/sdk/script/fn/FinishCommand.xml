@@ -7,7 +7,7 @@
     <title>FinishCommand</title>
     <category>Objects</category>
     <subcat>Commands</subcat>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -25,25 +25,6 @@
       </params>
     </syntax>
     <desc>Ends a command in the command stack of an object.</desc>
-    <examples>
-      <example>
-        <code>public func Production(object clonk)
-{
-  // Baum suchen
-  <emlink href="script/NamedVar.html">var</emlink> tree;
-  if (!(tree = FindWorkTree(clonk)))
-  // Kein geeigneter Baum (fertig)
-  {
-	<funclink>Message</funclink>(&quot;$TxtNomoresuitabletrees$&quot;);
-	clonk-&gt;FinishCommand(false, 1);
-	return(0);
-  }
-[...]
-}
-        </code>
-        <text>From the sawmill script: FinishCommand is used to inform the following (super-level) commands that automatic wood production has failed. Produktion() is called through a Call command which counts as successful if the function call could be made. That's why FinishCommand must be used.</text>
-      </example>
-    </examples>
     <related>
       <funclink>SetCommand</funclink>
       <funclink>GetCommand</funclink>

@@ -1,10 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2002, 2011  Sven Eberhardt
+ * Copyright (c) 2004, 2007  Matthes Bender
+ * Copyright (c) 2005-2007, 2009-2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -40,17 +42,20 @@
 //         4.95.4 September 2005 Unix-flavour
 
 #include <C4Include.h>
+
 #include <C4Group.h>
 #include <C4Version.h>
 #include <C4Update.h>
-#include <C4ConfigShareware.h>
 #include <StdRegistry.h>
+#ifdef _WIN32
+#include <C4windowswrapper.h>
+#endif
 
 int globalArgC;
 char **globalArgV;
 int iFirstCommand = 0;
 
-bool fQuiet = true;
+extern bool fQuiet;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
@@ -62,24 +67,6 @@ bool EraseItemSafe(const char *szFilename)
 {
 	return false;
 }
-
-bool Log(const char *msg)
-{
-	if (!fQuiet)
-		printf("%s\n", msg);
-	return 1;
-}
-#define IMPLEMENT_LOGF(func) \
-  bool func(const char *msg, ...) { \
-    va_list args; va_start(args, msg); \
-    StdStrBuf Buf; \
-    Buf.FormatV(msg, args); \
-    return Log(Buf.getData()); \
-  }
-
-IMPLEMENT_LOGF(DebugLogF)
-IMPLEMENT_LOGF(LogF)
-IMPLEMENT_LOGF(LogSilentF)
 
 bool ProcessGroup(const char *FilenamePar)
 {
@@ -181,6 +168,11 @@ bool ProcessGroup(const char *FilenamePar)
 						if (!hGroup.Close())
 						{
 							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
+						}
+						else if (!EraseItem(argv[iArg]))
+						{
+							fprintf(stderr, "Destination Clear failed\n");
+							break;
 						}
 						// Pack
 						else if (!C4Group_PackDirectoryTo(szFilename, argv[iArg]))
@@ -289,11 +281,9 @@ bool ProcessGroup(const char *FilenamePar)
 							if(have_pid) ++iArg;
 						}
 						break;
-#ifdef _DEBUG
 					case 'z':
 						hGroup.PrintInternals();
 						break;
-#endif
 						// Undefined
 					default:
 						fprintf(stderr, "Unknown command: %s\n", argv[iArg]);
@@ -337,23 +327,23 @@ bool ProcessGroup(const char *FilenamePar)
 int RegisterShellExtensions()
 {
 #ifdef _WIN32
-	char strModule[2048];
-	char strCommand[2048];
+	wchar_t strModule[2048+1];
+	wchar_t strCommand[2048+1];
 	char strClass[128];
 	int i;
-	GetModuleFileName(NULL, strModule, 2048);
+	GetModuleFileNameW(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
 	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
 	{
 		// Unpack
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-u\"", strModule);
-		if (!SetRegShell(strClass, "MakeFolder", "C4Group Unpack", strCommand))
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-u\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"MakeFolder", L"C4Group Unpack", strCommand))
 			return 0;
 		// Explode
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-x\"", strModule);
-		if (!SetRegShell(strClass, "ExplodeFolder", "C4Group Explode", strCommand))
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-x\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"ExplodeFolder", L"C4Group Explode", strCommand))
 			return 0;
 	}
 	// Directories
@@ -361,8 +351,8 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
-		sprintf(strCommand, "\"%s\" \"%%1\" \"-p\"", strModule);
-		if (!SetRegShell(strClass, "MakeGroupFile", "C4Group Pack", strCommand))
+		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
+		if (!SetRegShell(GetWideChar(strClass), L"MakeGroupFile", L"C4Group Pack", strCommand))
 			return 0;
 	}
 	// Done
@@ -373,10 +363,8 @@ int RegisterShellExtensions()
 int UnregisterShellExtensions()
 {
 #ifdef _WIN32
-	char strModule[2048];
 	char strClass[128];
 	int i;
-	GetModuleFileName(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
 	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
@@ -409,6 +397,7 @@ int main(int argc, char *argv[])
 	setvbuf(stdout, NULL, _IOLBF, 0);
 #endif
 	// Scan options
+	fQuiet = true;
 	int iFirstGroup = 0;
 	for (int i = 1; i < argc; ++i)
 	{
@@ -455,11 +444,7 @@ int main(int argc, char *argv[])
 		++iFirstCommand;
 
 	// Program info
-	LogF("RedWolf Design C4Group %s", C4VERSION);
-
-	// Registration check
-	/*  Config.Init();
-	  Config.Load(false);*/
+	LogF("OpenClonk C4Group %s", C4VERSION);
 
 	// Init C4Group
 	C4Group_SetSortList(C4CFN_FLS);
@@ -517,8 +502,8 @@ int main(int argc, char *argv[])
 		printf("          -i Register shell -u Unregister shell\n");
 		printf("          -x:<command> Execute shell command when done\n");
 		printf("\n");
-		printf("Examples: c4group pack.c4g -x\n");
-		printf("          c4group update.c4u -g ver1.c4f ver2.c4f New_Version\n");
+		printf("Examples: c4group pack.ocg -x\n");
+		printf("          c4group update.ocu -g ver1.ocf ver2.ocf New_Version\n");
 		printf("          c4group -i\n");
 	}
 
@@ -528,13 +513,13 @@ int main(int argc, char *argv[])
 		printf("Executing: %s\n", strExecuteAtEnd);
 #ifdef _WIN32
 
-		STARTUPINFO startInfo;
+		STARTUPINFOW startInfo;
 		ZeroMem(&startInfo, sizeof(startInfo));
 		startInfo.cb = sizeof(startInfo);
 
 		PROCESS_INFORMATION procInfo;
 
-		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
+		CreateProcessW(GetWideChar(strExecuteAtEnd), NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
 #else
 		switch (fork())
 		{

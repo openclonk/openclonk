@@ -2,8 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2004  Matthes Bender
- * Copyright (c) 2005-2007, 2009  Günther Brammer
+ * Copyright (c) 2005-2007, 2009, 2011  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
+ * Copyright (c) 2011  Armin Burgmeier
+ * Copyright (c) 2011  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,6 +31,7 @@
 #include <C4Include.h>
 #include <C4Language.h>
 
+#include <C4Application.h>
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Config.h>
@@ -45,7 +48,7 @@ iconv_t C4Language::local_to_host = iconv_t(-1);
 
 C4Language Languages;
 
-char strLog[2048 + 1];
+//char strLog[2048 + 1];
 
 C4Language::C4Language()
 {
@@ -63,12 +66,12 @@ bool C4Language::Init()
 	// Clear (to allow clean re-init)
 	Clear();
 
-	// Look for available language packs in Language.c4g          Opening Language.c4g as a group and
+	// Look for available language packs in Language.ocg          Opening Language.ocg as a group and
 	/*C4Group *pPack;                                             the packs as children is no good -
 	char strPackFilename[_MAX_FNAME + 1];                         C4Group simply cannot handle it. So
 	Log("Registering languages...");                              we need to open the pack group files
 	if (PackDirectory.Open(C4CFN_Languages))                      directly...
-	  while (PackDirectory.FindNextEntry("*.c4g", strPackFilename))
+	  while (PackDirectory.FindNextEntry("*.ocg", strPackFilename))
 	  {
 	    pPack = new C4Group();
 	    if (pPack->OpenAsChild(&PackDirectory, strPackFilename))
@@ -83,15 +86,15 @@ bool C4Language::Init()
 	    }
 	  }*/
 
-	// Make sure Language.c4g is unpacked (TODO: This won't work properly if Language.c4g is in system data path)
-	// Assume for now that Language.c4g is either at a writable location or unpacked already.
+	// Make sure Language.ocg is unpacked (TODO: This won't work properly if Language.ocg is in system data path)
+	// Assume for now that Language.ocg is either at a writable location or unpacked already.
 	// TODO: Use all Language.c4gs that we find, and merge them.
 	// TODO: Use gettext instead?
 	StdStrBuf langPath;
 	C4Reloc::iterator iter;
 	for(iter = Reloc.begin(); iter != Reloc.end(); ++iter)
 	{
-		langPath.Copy(*iter + DirSep + C4CFN_Languages);
+		langPath.Copy((*iter).strBuf + DirSep + C4CFN_Languages);
 		if(ItemExists(langPath.getData()))
 		{
 			if(DirectoryExists(langPath.getData()))
@@ -101,16 +104,16 @@ bool C4Language::Init()
 		}
 	}
 
-	// Break if no language.c4g found
+	// Break if no language.ocg found
 	if(iter != Reloc.end())
 	{
-		// Look for available language packs in Language.c4g
+		// Look for available language packs in Language.ocg
 		C4Group *pPack;
 		char strPackFilename[_MAX_FNAME + 1], strEntry[_MAX_FNAME + 1];
 		//Log("Registering languages...");
 		if (PackDirectory.Open(langPath.getData()))
 		{
-			while (PackDirectory.FindNextEntry("*.c4g", strEntry))
+			while (PackDirectory.FindNextEntry("*.ocg", strEntry))
 			{
 				sprintf(strPackFilename, "%s" DirSep "%s", C4CFN_Languages, strEntry);
 				pPack = new C4Group();
@@ -261,19 +264,21 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 {
 	// Build a group set containing the provided group and
 	// alternative groups for cross-loading from a language pack
+	char strRelativePath[_MAX_PATH + 1];
 	char strTargetLocation[_MAX_PATH + 1];
 	char strPackPath[_MAX_PATH + 1];
 	char strPackGroupLocation[_MAX_PATH + 1];
 	char strAdvance[_MAX_PATH + 1];
 
 	// Store wanted target location
-	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strTargetLocation, _MAX_PATH);
+	SCopy(Config.AtRelativePath(hGroup.GetFullName().getData()), strRelativePath, _MAX_PATH);
+	SCopy(strRelativePath, strTargetLocation, _MAX_PATH);
 
 	// Adjust location by scenario origin
-	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "c4s"))
+	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "ocs"))
 	{
-		const char *szScenarioRelativePath = GetRelativePathS(strTargetLocation, Config.AtRelativePath(Game.ScenarioFilename));
-		if (szScenarioRelativePath != strTargetLocation)
+		const char *szScenarioRelativePath = GetRelativePathS(strRelativePath, Config.AtRelativePath(Game.ScenarioFilename));
+		if (szScenarioRelativePath != strRelativePath)
 		{
 			// this is a path within the scenario! Change to origin.
 			size_t iRestPathLen = SLen(szScenarioRelativePath);
@@ -361,7 +366,7 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 void C4Language::InitInfos()
 {
 	C4Group hGroup;
-	// First, look in System.c4g
+	// First, look in System.ocg
 	if (Reloc.Open(hGroup, C4CFN_System))
 	{
 		LoadInfos(hGroup);
@@ -370,7 +375,7 @@ void C4Language::InitInfos()
 	// Now look through the registered packs
 	C4Group *pPack;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
-		// Does it contain a System.c4g child group?
+		// Does it contain a System.ocg child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
 			LoadInfos(hGroup);
@@ -392,11 +397,6 @@ void C4Language::LoadInfos(C4Group &hGroup)
 			// Load language string table
 			if (hGroup.LoadEntry(strEntry, &strTable, 0, 1))
 			{
-				if (!SEqual(GetResStr("IDS_LANG_CHARSET", strTable), "UTF-8"))
-				{
-					LogF("Translation %s is not in UTF-8, skipped", GetResStr("IDS_LANG_NAME", strTable));
-					continue;
-				}
 				// New language info
 				C4LanguageInfo *pInfo = new C4LanguageInfo;
 				// Get language code by entry name
@@ -458,17 +458,13 @@ bool C4Language::LoadLanguage(const char *strLanguages)
 bool C4Language::InitStringTable(const char *strCode)
 {
 	C4Group hGroup;
-	// First, look in System.c4g
-	if (Reloc.Open(hGroup, C4CFN_System))
-	{
-		if (LoadStringTable(hGroup, strCode))
-			{ hGroup.Close(); return true; }
-		hGroup.Close();
-	}
+	// First, look in System.ocg
+	if (LoadStringTable(Application.SystemGroup, strCode))
+		return true;
 	// Now look through the registered packs
 	C4Group *pPack;
 	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
-		// Does it contain a System.c4g child group?
+		// Does it contain a System.ocg child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
 			if (LoadStringTable(hGroup, strCode))
@@ -487,11 +483,9 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	// Load string table
 	char *strTable;
 	if (!hGroup.LoadEntry(strEntry, &strTable, 0, true))
-		{ hGroup.Close(); return false; }
+		return false;
 	// Set string table
 	SetResStrTable(strTable);
-	// Close group
-	hGroup.Close();
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
 	const char * const to_set = nl_langinfo(CODESET);

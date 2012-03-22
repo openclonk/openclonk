@@ -7,7 +7,7 @@
     <title>SetPhysical</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -25,7 +25,7 @@
           <type>int</type>
           <name>mode</name>
           <desc>
-            Physical attribute change mode (symbolical constants since CR):<br/>
+            Physical attribute change mode:<br/>
             <table>
               <rowh>
                 <col>Constant</col>
@@ -50,7 +50,7 @@
               <row>
                 <col>PHYS_StackTemporary</col>
                 <col>3</col>
-                <col>Like PHYS_Temporary, but the previous physical-value will be backed up and can be restored by calling <funclink>ResetPhysical</funclink>. Since CR.</col>
+                <col>Like PHYS_Temporary, but the previous physical-value will be backed up and can be restored by calling <funclink>ResetPhysical</funclink>.</col>
               </row>
             </table>
 <br/>
@@ -62,27 +62,26 @@
     <desc>Changes the physical properties of the object. With this, the values from the Physical section of the <emlink href="definition/DefCore.html">DefCore.txt</emlink> can be permanently or temporarily adapted.</desc>
     <examples>
       <example>
-        <code>protected func Activate(eater)
-  {
-  [$DescEatPill$]
-  eater-&gt;SetPhysical(&quot;Magic&quot;, 1000000, PHYS_Temporary);
-  <funclink>while</funclink>(eater-&gt;<funclink>DoMagicEnergy</funclink>(1)) ;
+        <code>func ControlUse(object eater)
+{
+  eater-&gt;SetPhysical(&quot;Energy&quot;, 10000000, PHYS_Temporary);
+  eater-&gt;<funclink>DoEnergy</funclink>(1000);
   <funclink>RemoveObject</funclink>();
-  }</code>
-        <text>Script for a magic pill: the eating clonk will temporarily gain magic energy.</text>
+}</code>
+        <text>Steroids - The clonk gains a ridiculous amount of energy for this round on eating.</text>
       </example>
       <example>
-        <code>protected func FxJumpBoostStart(object trg, int num, int temporary)
-  {
+        <code>protected func FxJumpBoostStart(object trg, effect, int temporary)
+{
   trg-&gt;SetPhysical(&quot;Jump&quot;, trg-&gt;<funclink>GetPhysical</funclink>(&quot;Jump&quot;, PHYS_Current) + 10000, PHYS_StackTemporary);
-  <funclink>return</funclink>(FX_OK);
-  }
+  <funclink>return</funclink> FX_OK;
+}
 		
-protected func FxJumpBoostStop(object trg, int num, int reason, bool tmp)
-  {
+protected func FxJumpBoostStop(object trg, effect, int reason, bool tmp)
+{
   trg-&gt;<funclink>ResetPhysical</funclink>(&quot;Jump&quot;);
-  <funclink>return</funclink>(FX_OK);
-  }</code>
+  <funclink>return</funclink> FX_OK;
+}</code>
         <text>Script of an effect named JumpBoost: If created on a Clonk, it can jump higher until the effect is deleted again. Using PHYS_StackTemporary and <funclink>ResetPhysical</funclink> in this manner ensures that multiple effects written in this style can be combined without causing unwanted behaviour when one effect wears off while another remains.</text>
       </example>
     </examples>

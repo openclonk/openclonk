@@ -69,8 +69,8 @@ protected:
 	virtual bool GetClearOrigin() { return !GetSaveOrigin(); }    // return whether C4S.Head.Origin shall be cleared if it's set
 	virtual bool GetSaveUserPlayers() { return IsExact(); }       // return whether joined user players shall be saved into SavePlayerInfos
 	virtual bool GetSaveScriptPlayers() { return IsExact(); }       // return whether joined script players shall be saved into SavePlayerInfos
-	virtual bool GetSaveUserPlayerFiles() { return IsExact(); }       // return whether .c4p files of joined user players shall be put into the scenario
-	virtual bool GetSaveScriptPlayerFiles() { return IsExact(); }       // return whether .c4p files of joined script players shall be put into the scenario
+	virtual bool GetSaveUserPlayerFiles() { return IsExact(); }       // return whether .ocp files of joined user players shall be put into the scenario
+	virtual bool GetSaveScriptPlayerFiles() { return IsExact(); }       // return whether .ocp files of joined script players shall be put into the scenario
 
 	// savegame specializations
 	virtual void AdjustCore(C4Scenario &rC4S) {}         // set specific C4S values
@@ -101,7 +101,7 @@ private:
 	bool SaveCore();             // save C4S core
 	bool SaveScenarioSections(); // save scenario sections
 	bool SaveLandscape();        // save current landscape
-	bool SaveRuntimeData();      // save any runtime data
+	bool SaveRuntimeData(); // save any runtime data
 public:
 	virtual ~C4GameSave() { Close(); } // dtor: close group
 

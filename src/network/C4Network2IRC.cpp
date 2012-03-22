@@ -1,10 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007-2008  Sven Eberhardt
- * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2007  Peter Wortmann
+ * Copyright (c) 2007-2008  Sven Eberhardt
  * Copyright (c) 2007  Günther Brammer
+ * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2011  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,10 +22,10 @@
 
 #include "C4Include.h"
 #include "C4Network2IRC.h"
+
 #include "C4Config.h"
 #include "C4Version.h"
 #include "C4InteractiveThread.h"
-
 #include "C4Gui.h" // for clearly visi
 
 #include <cctype> // for isdigit
@@ -182,6 +183,7 @@ void C4Network2IRCChannel::ClearUsers()
 
 
 // *** C4Network2IRCClient
+// Created statically in C4Application.cpp, refer by &Application.IRCClient
 
 C4Network2IRCClient::C4Network2IRCClient()
 		: fConnecting(false), fConnected(false),
@@ -343,7 +345,26 @@ bool C4Network2IRCClient::Close()
 {
 	// Close network
 	C4NetIOTCP::Close();
-	// Clear channels
+	// Save & Clear channels
+	if(pChannels) // Don't override empty
+	{
+		// It's somewhat weird to loop backward through a singly linked list, but it's necessary to keep the order
+		StdStrBuf chanstr;
+		C4Network2IRCChannel * pChan = pChannels;
+		while(pChan->Next)
+			pChan = pChan->Next;
+		chanstr.Append(pChan->getName());
+		while (pChan != pChannels)
+		{
+			C4Network2IRCChannel * pChanPrev = pChannels;
+			while(pChanPrev->Next != pChan)
+				pChanPrev = pChanPrev->Next;
+			pChan = pChanPrev;
+			chanstr.Append(",");
+			chanstr.Append(pChan->getName());
+		}
+		strncpy(Config.IRC.Channel, chanstr.getData(), sizeof(Config.IRC.Channel)-1);
+	}
 	while (pChannels)
 		DeleteChannel(pChannels);
 	// Clear log
@@ -700,12 +721,6 @@ void C4Network2IRCClient::OnConnected()
 
 void C4Network2IRCClient::OnMessage(bool fNotice, const char *szSender, const char *szTarget, const char *szText)
 {
-
-	// Find channel, if not private.
-	C4Network2IRCChannel *pChan = NULL;
-	if (!SEqualNoCase(szTarget, Nick.getData()))
-		pChan = getChannel(szTarget);
-
 	// CTCP tagged data?
 	const char X_DELIM = '\001';
 	if (szText[0] == X_DELIM)
@@ -819,4 +834,3 @@ void C4Network2IRCClient::DeleteChannel(C4Network2IRCChannel *pChannel)
 	// Delete
 	delete pChannel;
 }
-

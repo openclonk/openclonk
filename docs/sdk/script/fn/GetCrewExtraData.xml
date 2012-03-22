@@ -6,15 +6,10 @@
   <func>
     <title>GetCrewExtraData</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param>
-          <type>object</type>
-          <name>crew</name>
-          <desc>Object to get the extra data from. Can be 0 at local call.</desc>
-        </param>
         <param>
           <type>string</type>
           <name>data_name</name>

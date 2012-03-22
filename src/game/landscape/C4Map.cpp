@@ -192,7 +192,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
   {
   bool fOwnBuf=false;
 
-  CBitmap256Info Bmp;
+  C4BMP256Info Bmp;
 
   // Access entry in group, read bitmap info
   if (!hGroup.AccessEntry(szEntryName)) return false;

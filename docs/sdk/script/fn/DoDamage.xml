@@ -7,7 +7,7 @@
     <title>DoDamage</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -33,7 +33,7 @@
     <desc>Adjusts the damage value of an object. If a change is made, the callback 'Damage' is made in the target object.</desc>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(TREE)-&gt;DoDamage(500);</code>
+        <code><funclink>FindObject</funclink>(<funclink>Find_Func</funclink>(&quot;IsTree&quot;))-&gt;DoDamage(500);</code>
         <text>Fells a tree if it's not yet down.</text>
       </example>
     </examples>

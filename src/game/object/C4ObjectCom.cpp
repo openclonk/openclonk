@@ -367,18 +367,6 @@ bool ObjectComDig(C4Object *cObj) // by DFA_WALK
 	return true;
 }
 
-void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DFA_SWIM
-{
-	// Contents activation (first contents object only)
-	if (cObj->Contents.GetObject())
-		if (!! cObj->Contents.GetObject()->Call(PSF_Activate,&C4AulParSet(C4VObj(cObj))))
-			return;
-
-	// Own activation call
-	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
-
-}
-
 bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
 {
 	// No object specified, first from contents
@@ -547,25 +535,6 @@ void ObjectComStopDig(C4Object *cObj)
 	if (cObj->Command)
 		if (cObj->Command->Command == C4CMD_Dig)
 			cObj->ClearCommand(cObj->Command);
-}
-
-int32_t Coms2ComDir(int32_t iComs)
-{
-	// This is possible because COM_Left - COM_Down are < 32
-	static int32_t DirComs = (1 << COM_Left) | (1 << COM_Right) | (1 << COM_Up) | (1 << COM_Down);
-	switch (iComs & DirComs)
-	{
-	case (1 << COM_Up):                      return COMD_Up;
-	case (1 << COM_Up) | (1 << COM_Right):   return COMD_UpRight;
-	case (1 << COM_Right):                   return COMD_Right;
-	case (1 << COM_Down) | (1 << COM_Right): return COMD_DownRight;
-	case (1 << COM_Down):                    return COMD_Down;
-	case (1 << COM_Down) | (1 << COM_Left):  return COMD_DownLeft;
-	case (1 << COM_Left):                    return COMD_Left;
-	case (1 << COM_Up) | (1 << COM_Left):    return COMD_UpLeft;
-		// up, right and left could be interpreted as COMD_Up etc., but that's too complicated for now
-	default:                                 return COMD_Stop;
-	}
 }
 
 bool ComDirLike(int32_t iComDir, int32_t iSample)

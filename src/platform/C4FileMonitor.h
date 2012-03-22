@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2008  Günther Brammer
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -64,7 +64,7 @@ private:
 	bool fStarted;
 	ChangeNotify pCallback;
 
-#if defined(HAVE_SYS_INOTIFY_H) || defined(HAVE_SYS_SYSCALL_H)
+#ifdef HAVE_SYS_INOTIFY_H
 	int fd;
 	std::map<int, const char *> watch_descriptors;
 #elif defined(_WIN32)

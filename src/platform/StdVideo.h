@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2006  Sven Eberhardt
- * Copyright (c) 2006  boni
+ * Copyright (c) 2006  Bernhard Bonigl
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +26,7 @@
 #ifdef _WIN32
 #pragma once
 
+#include <C4windowswrapper.h> // some vfw.h versions do not compile without this
 #include <mmsystem.h>
 #include <vfw.h>
 #include <io.h>
@@ -101,7 +102,7 @@ public:
 	bool GetFrameByTime(time_t iTime, int32_t *piFrame);
 
 	// dump RGBa-data for specified frame
-	bool GrabFrame(int32_t iFrame, class CSurface *sfc) const;
+	bool GrabFrame(int32_t iFrame, class C4Surface *sfc) const;
 
 	// getting audio data
 	bool OpenAudioStream();

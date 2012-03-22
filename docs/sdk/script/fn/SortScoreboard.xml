@@ -6,7 +6,7 @@
   <func>
     <title>SortScoreboard</title>
     <category>Interface</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -18,7 +18,7 @@
         <param>
           <type>bool</type>
           <name>reverse</name>
-          <desc>If true, sorting will be done in descendnig order. Otherwise ascending order.</desc>
+          <desc>If <code>true</code>, sorting will be done in descendnig order. Otherwise ascending order.</desc>
           <optional />
         </param>
       </params>

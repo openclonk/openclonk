@@ -1,0 +1,2 @@
+Name=Flechte
+Description=Bewuchert dunkle, feuchte Tunnel. Liefert Moos bei der Ernte.

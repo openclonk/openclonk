@@ -2,11 +2,11 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
+ * Copyright (c) 2002-2003, 2006-2009, 2011  Sven Eberhardt
  * Copyright (c) 2002, 2004-2005, 2008  Peter Wortmann
- * Copyright (c) 2002-2003, 2006-2009  Sven Eberhardt
- * Copyright (c) 2004-2006, 2008  GÃ¼nther Brammer
+ * Copyright (c) 2004-2006, 2008, 2011  GÃ¼nther Brammer
+ * Copyright (c) 2009-2011  Nicolas Hake
  * Copyright (c) 2009  Armin Burgmeier
- * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -21,7 +21,6 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-/* Linux conversion by Günther Brammer, 2005 */
 
 /* Lots of file helpers */
 
@@ -38,6 +37,9 @@
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef _WIN32
+#include <C4windowswrapper.h>
 #endif
 #include <errno.h>
 #include <stdlib.h>
@@ -92,7 +94,7 @@ const char *GetC4Filename(const char *szPath)
 	{
 		if (*pPos==DirectorySeparator || *pPos=='/')
 		{
-			if (pPos >= szPath+4 && SEqual2NoCase(pPos-4, ".c4")) return pFilename;
+			if (pPos >= szPath+4 && SEqual2NoCase(pPos-4, ".oc")) return pFilename;
 			pFilename = pPos+1;
 		}
 	}
@@ -156,7 +158,12 @@ const char *GetExtension(const char *szFilename)
 void RealPath(const char *szFilename, char *pFullFilename)
 {
 #ifdef _WIN32
-	_fullpath(pFullFilename, szFilename, _MAX_PATH);
+	wchar_t *wpath = _wfullpath(0, GetWideChar(szFilename), 0);
+	StdStrBuf path(wpath);
+	// I'm pretty sure pFullFilename will always have at least a size of _MAX_PATH, but ughh
+	// This should return a StdStrBuf
+	SCopy(path.getData(), pFullFilename, _MAX_PATH);
+	free(wpath);
 #else
 	char *pSuffix = NULL;
 	char szCopy[_MAX_PATH + 1];
@@ -277,7 +284,7 @@ bool TruncatePath(char *szPath)
 void AppendBackslash(char *szFilename)
 {
 	int i=SLen(szFilename);
-	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) return;
+	if (i>0) if (szFilename[i-1]==DirectorySeparator) return;
 	SAppendChar(DirectorySeparator,szFilename);
 }
 
@@ -286,7 +293,7 @@ void AppendBackslash(char *szFilename)
 void TruncateBackslash(char *szFilename)
 {
 	int i=SLen(szFilename);
-	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) szFilename[i-1]=0;
+	if (i>0) if (szFilename[i-1]==DirectorySeparator) szFilename[i-1]=0;
 }
 
 // Append extension if no extension.
@@ -418,7 +425,6 @@ bool WildcardMatch(const char *szWildcard, const char *szString)
 	return !*pWild && !*pPos;
 }
 
-#define SStripChars "!\"§%&/=?+*#:;<>\\."
 // create a valid file name from some title
 void MakeFilenameFromTitle(char *szTitle)
 {
@@ -429,8 +435,10 @@ void MakeFilenameFromTitle(char *szTitle)
 		bool fStrip;
 		if (IsWhiteSpace(*szTitle2))
 			fStrip = (szFilename==szTitle);
+		else if (static_cast<unsigned int>(*szTitle2) > 127)
+			fStrip = true;
 		else
-			fStrip = (SCharPos(*szTitle2, SStripChars)>=0);
+			fStrip = (SCharPos(*szTitle2, "!\"'%&/=?+*#:;<>\\.") >= 0);
 		if (!fStrip) *szFilename++ = *szTitle2;
 		++szTitle2;
 	}
@@ -447,21 +455,36 @@ void MakeFilenameFromTitle(char *szTitle)
 
 bool FileExists(const char *szFilename)
 {
+#ifdef _WIN32
+	return GetFileAttributes(GetWideChar(szFilename)) != INVALID_FILE_ATTRIBUTES;
+#else
 	return (!access(szFilename,F_OK));
+#endif
 }
 
 size_t FileSize(const char *szFilename)
 {
+#if defined(_WIN32) || defined(_WIN64)
+	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
+		return 0;
+#ifdef _WIN64
+	return (static_cast<size_t>(attributes.nFileSizeHigh) << (sizeof(attributes.nFileSizeLow) * 8)) | attributes.nFileSizeLow;
+#else
+	return attributes.nFileSizeLow;
+#endif
+#else
 	struct stat stStats;
 	if (stat(szFilename,&stStats)) return 0;
 	return stStats.st_size;
+#endif
 }
 
 // operates on a filedescriptor from open or fileno
 size_t FileSize(int fdes)
 {
 #ifdef _WIN32
-	return filelength(fdes);
+	return _filelength(fdes);
 #else
 	struct stat stStats;
 	if (fstat(fdes,&stStats)) return 0;
@@ -471,17 +494,41 @@ size_t FileSize(int fdes)
 
 int FileTime(const char *szFilename)
 {
+#ifdef _WIN32
+	WIN32_FILE_ATTRIBUTE_DATA attributes = {0};
+	if (GetFileAttributesEx(GetWideChar(szFilename), GetFileExInfoStandard, &attributes) == 0)
+		return 0;
+	int64_t ft = (static_cast<int64_t>(attributes.ftLastWriteTime.dwHighDateTime) << (sizeof(attributes.ftLastWriteTime.dwLowDateTime) * 8)) | attributes.ftLastWriteTime.dwLowDateTime;
+	ft -= 116444736000000000;
+	ft /= 10000000;
+	return ft;
+#else
 	struct stat stStats;
 	if (stat(szFilename,&stStats)!=0) return 0;
 	return stStats.st_mtime;
+#endif
 }
 
 bool EraseFile(const char *szFilename)
 {
-	//chmod(szFilename,200);
 #ifdef _WIN32
-	SetFileAttributes(szFilename, FILE_ATTRIBUTE_NORMAL);
-#endif
+	SetFileAttributesW(GetWideChar(szFilename), FILE_ATTRIBUTE_NORMAL);
+	if (DeleteFileW(GetWideChar(szFilename)) == 0)
+	{
+		switch (GetLastError())
+		{
+		case ERROR_PATH_NOT_FOUND:
+		case ERROR_FILE_NOT_FOUND:
+			// While deleting it didn't work, the file doesn't exist (anymore).
+			// Pretend everything is fine.
+			return true;
+		default:
+			// Some other error left us unable to delete the file.
+			return false;
+		}
+	}
+	return true;
+#else
 	// either unlink or remove could be used. Well, stick to ANSI C where possible.
 	if (remove(szFilename))
 	{
@@ -494,20 +541,16 @@ bool EraseFile(const char *szFilename)
 		return false;
 	}
 	return true;
-}
-
-bool EraseFiles(const char *szFilePath)
-{
-	return ForEachFile(szFilePath,&EraseFile) > 0;
+#endif
 }
 
 #ifndef _WIN32
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 {
-	int fds = open (szSource, O_RDONLY);
+	int fds = open (szSource, O_RDONLY | O_CLOEXEC);
 	if (!fds) return false;
 	struct stat info; fstat(fds, &info);
-	int fdt = open (szTarget, O_WRONLY | O_CREAT | (FailIfExists? O_EXCL : O_TRUNC), info.st_mode);
+	int fdt = open (szTarget, O_CLOEXEC | O_WRONLY | O_CREAT | (FailIfExists? O_EXCL : O_TRUNC), info.st_mode);
 	if (!fdt)
 	{
 		close (fds);
@@ -525,12 +568,12 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 	// On error, return false
 	return l != -1;
 }
-#endif
 
 bool RenameFile(const char *szFilename, const char *szNewFilename)
 {
 	if (rename(szFilename,szNewFilename) < 0)
 	{
+		if (errno != EXDEV) return false;
 		if (CopyFile(szFilename, szNewFilename, false))
 		{
 			return EraseFile(szFilename);
@@ -539,6 +582,20 @@ bool RenameFile(const char *szFilename, const char *szNewFilename)
 	}
 	return true;
 }
+#else
+
+#undef CopyFile
+bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
+{
+	return !!CopyFileW(GetWideChar(szSource), GetWideChar(szTarget), FailIfExists);
+}
+
+bool RenameFile(const char *szFilename, const char *szNewFilename)
+{
+	return !!MoveFileExW(GetWideChar(szFilename), GetWideChar(szNewFilename), MOVEFILE_COPY_ALLOWED);
+}
+
+#endif
 
 bool MakeOriginalFilename(char *szFilename)
 {
@@ -549,13 +606,14 @@ bool MakeOriginalFilename(char *szFilename)
 	if (Inside(SLen(szFilename), 2u, 3u)) if (szFilename[1]==':')
 		{
 			szFilename[2]='\\'; szFilename[3]=0;
-			if (GetDriveType(szFilename) == DRIVE_NO_ROOT_DIR) return false;
+			if (GetDriveTypeW(GetWideChar(szFilename)) == DRIVE_NO_ROOT_DIR) return false;
 			return true;
 		}
-	struct _finddata_t fdt; long shnd;
-	if ((shnd=_findfirst((char*)szFilename,&fdt))<0) return false;
+	struct _wfinddata_t fdt; long shnd;
+	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
-	SCopy(GetFilename(fdt.name),GetFilename(szFilename),_MAX_FNAME);
+	StdStrBuf name(fdt.name);
+	SCopy(GetFilename(name.getData()),GetFilename(szFilename),_MAX_FNAME);
 #else
 	if (SCharPos('*', szFilename) != -1)
 	{
@@ -571,14 +629,29 @@ bool MakeOriginalFilename(char *szFilename)
 
 const char *GetWorkingDirectory()
 {
+#ifdef _WIN32
+	static char *buffer = 0;
+	if (buffer) StdBuf::DeletePointer(buffer);
+	wchar_t *widebuf = 0;
+	DWORD widebufsz = GetCurrentDirectoryW(0, 0);
+	widebuf = new wchar_t[widebufsz];
+	if (GetCurrentDirectoryW(widebufsz, widebuf) == 0) {
+		delete[] widebuf;
+		return 0;
+	}
+	StdStrBuf path(widebuf);
+	delete[] widebuf;
+	return buffer = path.GrabPointer();
+#else
 	static char buf[_MAX_PATH+1];
 	return getcwd(buf,_MAX_PATH);
+#endif
 }
 
 bool SetWorkingDirectory(const char *path)
 {
 #ifdef _WIN32
-	return SetCurrentDirectory(path) != 0;
+	return SetCurrentDirectoryW(GetWideChar(path)) != 0;
 #else
 	return (chdir(path)==0);
 #endif
@@ -588,7 +661,7 @@ bool CreatePath(const std::string &path)
 {
 	assert(!path.empty());
 #ifdef _WIN32
-	if (CreateDirectory(path.c_str(), NULL))
+	if (CreateDirectoryW(GetWideChar(path.c_str()), NULL))
 	{
 		return true;
 	}
@@ -604,11 +677,11 @@ bool CreatePath(const std::string &path)
 		default:
 			// Something major has happened: Log
 		{
-			LPSTR str;
-			if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-			                  NULL, err, 0, (LPSTR)&str, 0, NULL))
+			wchar_t * str;
+			if (FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+			                  NULL, err, 0, (LPWSTR)&str, 0, NULL))
 			{
-				LogF("CreateDirectory failed: %s", str);
+				LogF("CreateDirectory failed: %s", StdStrBuf(str).getData());
 				LocalFree(str);
 			}
 			return false;
@@ -653,8 +726,8 @@ bool DirectoryExists(const char *szFilename)
 	}
 	// Check file attributes
 #ifdef _WIN32
-	struct _finddata_t fdt; int shnd;
-	if ((shnd=_findfirst(szFilename,&fdt))<0) return false;
+	struct _wfinddata_t fdt; int shnd;
+	if ((shnd=_wfindfirst(GetWideChar(szFilename),&fdt))<0) return false;
 	_findclose(shnd);
 	if (fdt.attrib & _A_SUBDIR) return true;
 #else
@@ -680,22 +753,22 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 	// Create target directory
 	bool status=true;
 #ifdef _WIN32
-	if (_mkdir(szTarget)!=0) return false;
+	if (_wmkdir(GetWideChar(szTarget))!=0) return false;
 	// Copy contents to target directory
 	char contents[_MAX_PATH+1];
 	SCopy(szSource,contents); AppendBackslash(contents);
 	SAppend("*",contents);
-	_finddata_t fdt; int hfdt;
-	if ( (hfdt=_findfirst(contents,&fdt)) > -1 )
+	_wfinddata_t fdt; int hfdt;
+	if ( (hfdt=_wfindfirst(GetWideChar(contents),&fdt)) > -1 )
 	{
 		do
 		{
 			char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
-			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(fdt.name,itemsource);
-			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(fdt.name,itemtarget);
+			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(StdStrBuf(fdt.name).getData(),itemsource);
+			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(StdStrBuf(fdt.name).getData(),itemtarget);
 			if (!CopyItem(itemsource,itemtarget, fResetAttributes)) status=false;
 		}
-		while (_findnext(hfdt,&fdt)==0);
+		while (_wfindnext(hfdt,&fdt)==0);
 		_findclose(hfdt);
 	}
 #else
@@ -750,7 +823,7 @@ bool EraseDirectory(const char *szDirName)
 	// Remove directory
 	//chmod(szDirName,200);
 #ifdef _WIN32
-	return !!RemoveDirectory(szDirName);
+	return !!RemoveDirectoryW(GetWideChar(szDirName));
 #else
 	return (rmdir(szDirName)==0 || errno == ENOENT);
 #endif
@@ -781,17 +854,16 @@ bool CreateItem(const char *szItemname)
 	EraseItem(szItemname);
 	// Create dummy item
 	FILE *fhnd;
+#ifdef _WIN32
+	if (!(fhnd=_wfopen(GetWideChar(szItemname), L"wb"))) return false;
+#else
 	if (!(fhnd=fopen(szItemname,"wb"))) return false;
+#endif
 	fclose(fhnd);
 	// Success
 	return true;
 }
-#ifdef _WIN32
-bool EraseItems(const char *szItemPath)
-{
-	return ForEachFile(szItemPath,&EraseItem) > 0;
-}
-#endif
+
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
 {
 	// Check for identical source and target
@@ -803,7 +875,7 @@ bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
 	if (!CopyFile(szSource,szTarget,false)) return false;
 	// Reset any attributes if desired
 #ifdef _WIN32
-	if (fResetAttributes) if (!SetFileAttributes(szTarget, FILE_ATTRIBUTE_NORMAL)) return false;
+	if (fResetAttributes) if (!SetFileAttributesW(GetWideChar(szTarget), FILE_ATTRIBUTE_NORMAL)) return false;
 #else
 	if (fResetAttributes) if (chmod(szTarget, S_IRWXU)) return false;
 #endif
@@ -842,10 +914,18 @@ DirectoryIterator::DirectoryIterator()
 		: p(new DirectoryIteratorP), iter(p->files.end())
 {}
 DirectoryIterator::DirectoryIterator(const DirectoryIterator &other)
-		: p(other.p), iter(p->files.begin())
+		: p(other.p), iter(other.iter)
 {
 	++p->ref;
 }
+
+DirectoryIterator & DirectoryIterator::operator = (const DirectoryIterator & other)
+{
+	p = other.p; iter = other.iter;
+	++p->ref;
+	return *this;
+}
+
 DirectoryIterator::~DirectoryIterator()
 {
 	if (--p->ref == 0)
@@ -889,18 +969,20 @@ void DirectoryIterator::Read(const char *dirname)
 	std::string search_path(dirname);
 	search_path.push_back(DirectorySeparator);
 #ifdef WIN32
-	WIN32_FIND_DATA file = {0};
-	HANDLE fh = FindFirstFile((search_path + '*').c_str(), &file);
+	WIN32_FIND_DATAW file = {0};
+	HANDLE fh = FindFirstFileW(GetWideChar((search_path + '*').c_str()), &file);
 	if (fh == INVALID_HANDLE_VALUE)
 	{
 		switch (GetLastError())
 		{
+		case ERROR_PATH_NOT_FOUND:
 		case ERROR_FILE_NOT_FOUND:
 			// This is okay, either the directory doesn't exist or there are no files
 			return;
 		default:
 			// Something else broke
-			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
+			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			return;
 		}
 	}
 	// Insert files into list
@@ -909,9 +991,9 @@ void DirectoryIterator::Read(const char *dirname)
 		// ...unless they're . or ..
 		if (file.cFileName[0] == '.' && (file.cFileName[1] == '\0' || (file.cFileName[1] == '.' && file.cFileName[2] == '\0')))
 			continue;
-		p->files.push_back(file.cFileName);
+		p->files.push_back(StdStrBuf(file.cFileName).getData());
 	}
-	while (FindNextFile(fh, &file));
+	while (FindNextFileW(fh, &file));
 	FindClose(fh);
 #else
 	DIR *fh = opendir(dirname);
@@ -925,7 +1007,8 @@ void DirectoryIterator::Read(const char *dirname)
 			return;
 		default:
 			// Something else broke
-			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
+			Log("DirectoryIterator::Read(const char*): Unable to read file system");
+			return;
 		}
 	}
 	dirent *file;
@@ -978,19 +1061,20 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
 		AppendBackslash(szFilename);
 	int iFileCount = 0;
 #ifdef _WIN32
-	struct _finddata_t fdt; int fdthnd;
+	struct _wfinddata_t fdt; int fdthnd;
 	if (!fHasWildcard) // parameter without wildcard: Append "/*.*" or "\*.*"
 		SAppend("*",szFilename,_MAX_PATH);
-	if ((fdthnd = _findfirst ((char *)szFilename, &fdt)) < 0)
+	if ((fdthnd = _wfindfirst (GetWideChar(szFilename), &fdt)) < 0)
 		return 0;
 	do
 	{
-		if (SEqual(fdt.name, ".") || SEqual(fdt.name, "..")) continue;
-		SCopy(fdt.name,GetFilename(szFilename));
+		if (!wcscmp(fdt.name, L".") || !wcscmp(fdt.name, L"..")) continue;
+		StdStrBuf name(fdt.name);
+		SCopy(name.getData(),GetFilename(szFilename));
 		if ((*fnCallback)(szFilename))
 			iFileCount++;
 	}
-	while (_findnext(fdthnd,&fdt)==0);
+	while (_wfindnext(fdthnd,&fdt)==0);
 	_findclose(fdthnd);
 #else
 	if (fHasWildcard) fprintf(stderr, "Warning: ForEachFile with * (%s)\n", szDirName);

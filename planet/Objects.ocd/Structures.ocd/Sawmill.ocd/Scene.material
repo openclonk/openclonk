@@ -1,0 +1,90 @@
+material SawmillBlade
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 0.000000 0.250000
+			emissive 0.000000 0.000000 0.000000 0.000000
+			texture_unit
+			{
+				texture Blade.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+material SawmillBlade.Spin : SawmillBlade
+{
+	receive_shadows on
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				texture BladeSpin.png
+			}
+		}
+	}
+}
+material SawmillBelt
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.000000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Belt.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+material BeltSpin : SawmillBelt
+{
+	technique 0
+	{
+		pass 0
+		{
+			texture_unit 0
+			{
+				tex_address_mode wrap
+				scroll_anim -1 0
+			}
+		}
+	}
+}
+material Sawmill
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 3.250000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Sawmill.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

@@ -1,10 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2007  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2007-2008  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2005, 2007-2008, 2010-2011  Günther Brammer
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2009, 2011  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +28,7 @@
 #include <stdio.h>
 #ifdef _WIN32
 #include <io.h>
+#include <C4windowswrapper.h>
 #define vsnprintf _vsnprintf
 #else
 #define O_BINARY 0
@@ -45,7 +46,11 @@
 bool StdBuf::LoadFromFile(const char *szFile)
 {
 	// Open file
-	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#else
+	int fh = open(szFile, O_BINARY | O_CLOEXEC | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Create buf
 	New(FileSize(fh));
@@ -62,7 +67,11 @@ bool StdBuf::LoadFromFile(const char *szFile)
 bool StdBuf::SaveToFile(const char *szFile) const
 {
 	// Open file
-	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#else
+	int fh = open(szFile, O_BINARY | O_CLOEXEC | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Write data
 	if (write(fh, getData(), getSize()) != (signed int) getSize())
@@ -78,7 +87,11 @@ bool StdBuf::SaveToFile(const char *szFile) const
 bool StdStrBuf::LoadFromFile(const char *szFile)
 {
 	// Open file
-	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#else
+	int fh = open(szFile, O_BINARY | O_CLOEXEC | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Create buf
 	SetLength(FileSize(fh));
@@ -95,7 +108,11 @@ bool StdStrBuf::LoadFromFile(const char *szFile)
 bool StdStrBuf::SaveToFile(const char *szFile) const
 {
 	// Open file
-	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#ifdef _WIN32
+	int fh = _wopen(::GetWideChar(szFile), O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#else
+	int fh = open(szFile, O_BINARY | O_CLOEXEC | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+#endif
 	if (fh < 0) return false;
 	// Write data
 	if (write(fh, getData(), getLength()) != (ssize_t) getLength())
@@ -126,6 +143,45 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 }
 
 // *** StdStringBuf
+
+#ifdef _WIN32
+StdStrBuf::StdStrBuf(const wchar_t * utf16)
+{
+	int len = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, 0, 0);
+	SetSize(len);
+	WideCharToMultiByte(CP_UTF8, 0, utf16, -1, getMData(), getSize(), 0, 0);
+}
+StdStrBuf::wchar_t_holder StdStrBuf::GetWideChar() const
+{
+	if (!getSize()) return StdStrBuf::wchar_t_holder(NULL);
+
+	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), NULL, 0);
+	wchar_t * p = new wchar_t[len];
+	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), p, len);
+	return StdStrBuf::wchar_t_holder(p);
+}
+StdBuf StdStrBuf::GetWideCharBuf()
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), NULL, 0);
+	StdBuf r; r.SetSize(len * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, getData(), getSize(), getMBufPtr<wchar_t>(r), len);
+	return r;
+}
+StdStrBuf::wchar_t_holder GetWideChar(const char * utf8)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	wchar_t * p = new wchar_t[len];
+	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, p, len);
+	return StdStrBuf::wchar_t_holder(p);
+}
+StdBuf GetWideCharBuf(const char * utf8)
+{
+	int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+	StdBuf r; r.SetSize(len * sizeof(wchar_t));
+	MultiByteToWideChar(CP_UTF8, 0, utf8, -1, getMBufPtr<wchar_t>(r), len);
+	return r;
+}
+#endif
 
 void StdStrBuf::Format(const char *szFmt, ...)
 {
@@ -280,7 +336,7 @@ int StdStrBuf::Replace(const char *szOld, const char *szNew, size_t iStartSearch
 	return cnt;
 }
 
-int StdStrBuf::ReplaceChar(char cOld, char cNew, size_t iStartSearch)
+int StdStrBuf::ReplaceChar(char cOld, char cNew)
 {
 	if (isNull()) return 0;
 	char *szPos = getMPtr(0);
@@ -336,57 +392,38 @@ void StdStrBuf::ToLowerCase()
 			*szPos = tolower(*szPos);
 }
 
+void StdStrBuf::AppendCharacter(uint32_t unicodechar)
+{
+	if (unicodechar < 0x80)
+		AppendChar(unicodechar);
+	else if (unicodechar < 0x800)
+	{
+		Grow(2);
+		*getMPtr(getLength() - 2) = (0xC0 | (unicodechar >> 6));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else if (unicodechar < 0x10000)
+	{
+		Grow(3);
+		*getMPtr(getLength() - 3) = (0xE0 | (unicodechar >> 12));
+		*getMPtr(getLength() - 2) = (0x80 | ((unicodechar >> 6) & 0x3F));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else if (unicodechar < 0x110000)
+	{
+		Grow(4);
+		*getMPtr(getLength() - 4) = (0xF0 | (unicodechar >> 18));
+		*getMPtr(getLength() - 3) = (0x80 | ((unicodechar >> 12) & 0x3F));
+		*getMPtr(getLength() - 2) = (0x80 | ((unicodechar >> 6) & 0x3F));
+		*getMPtr(getLength() - 1) = (0x80 | (unicodechar & 0x3F));
+	}
+	else /* not an unicode code point, ignore */ {}
+}
+
 void StdStrBuf::EnsureUnicode()
 {
-	bool valid = true;
-	int need_continuation_bytes = 0;
-	// Check wether valid UTF-8
-	for (size_t i = 0; i < getSize(); ++i)
-	{
-		unsigned char c = *getPtr(i);
-		// remaining of a code point started before
-		if (need_continuation_bytes)
-		{
-			--need_continuation_bytes;
-			// (10000000-10111111)
-			if (0x80 <= c && c <= 0xBF)
-				continue;
-			else
-			{
-				valid = false;
-				break;
-			}
-		}
-		// ASCII
-		if (c < 0x80)
-			continue;
-		// Two byte sequence (11000010-11011111)
-		// Note: 1100000x is an invalid overlong sequence
-		if (0xC2 <= c && c <= 0xDF)
-		{
-			need_continuation_bytes = 1;
-			continue;
-		}
-		// Three byte sequence (11100000-11101111)
-		if (0xE0 <= c && c <= 0xEF)
-		{
-			need_continuation_bytes = 2;
-			continue;
-			// FIXME: could check for UTF-16 surrogates from a broken utf-16->utf-8 converter here
-		}
-		// Four byte sequence (11110000-11110100)
-		if (0xF0 <= c && c <= 0xF4)
-		{
-			need_continuation_bytes = 3;
-			continue;
-		}
-		valid = false;
-		break;
-	}
-	if (need_continuation_bytes)
-		valid = false;
 	// assume that it's windows-1252 and convert to utf-8
-	if (!valid)
+	if (!IsValidUtf8(getData(), getLength()))
 	{
 		size_t j = 0;
 		StdStrBuf buf;

@@ -7,13 +7,13 @@
     <title>GetColor</title>
     <category>Objects</category>
     <subcat>Display</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink>, <funclink>SetColor</funclink> or <placeholder-3/>.</desc>
     <examples>
       <example>
-        <code>caller-&gt;<funclink>SetColor</funclink>(GetColor());</code>
-        <text>Colors caller like the current object.</text>
+        <code>otherclonk-&gt;<funclink>SetColor</funclink>(GetColor());</code>
+        <text>Colors otherclonk like the current object.</text>
       </example>
     </examples>
     <related>

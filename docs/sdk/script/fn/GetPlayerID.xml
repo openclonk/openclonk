@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerID</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -21,28 +21,29 @@
     <remark>In network games, player IDs are being assigned in the lobby phase. Because lobby players might be removed before the game start (either manually or by disconnecting clients), you cannot assume that all player-IDs from 1 to <funclink>GetPlayerCount</funclink>() are set.</remark>
     <examples>
       <example>
-        <code>static num_scores;
-        
+        <code>static player_names, player_scores;
+
+protected func Initialize()
+{
+	if(!player_names) player_names = CreateArray();
+	if(!player_scores) player_scores = CreateArray();
+}
+				
 protected func RemovePlayer(int player)
-  {
+ {
   var player_id = GetPlayerID(player);
-  <funclink>Global</funclink>(player_id*2)   = <funclink>GetPlayerName</funclink>(player);
-  <funclink>Global</funclink>(player_id*2+1) = <funclink>GetScore</funclink>(player);
-  ++num_scores;
-  }
+	player_names[player_id] = <funclink>GetPlayerName</funclink>(player);
+	player_scores[player_id] = <funclink>GetScore</funclink>(player);
+ }
   
 protected func OnGameOver()
-  {
-  var msg = &quot;Scores:&quot;, i, plr_name;
-  <funclink>while</funclink> (num_scores)
-    if (plr_name = <funclink>Global</funclink>(i++*2))
-      {
-      msg = <funclink>Format</funclink>(&quot;%s|%s=%d&quot;, msg, plr_name, <funclink>Global</funclink>(i*2-1));
-      --num_scores;
-      }
-  <funclink>Message</funclink>(msg);
-  }</code>
-        <text>Saves the scores and names of all players in a list when they are eliminated. Once the round is over, this list is displayed as a message. Using player-IDs instead of player numbers as list indices guarantuees that rejoining players will not overwrite scores of previous players.</text>
+{
+  <funclink>Log</funclink>(&quot;Scores of eliminated players:&quot;);
+  for (var i = 0; i &lt; <funclink>GetLength</funclink>(player_names); ++i)
+    if (player_names[i])
+      <funclink>Log</funclink>(<funclink>Format</funclink>(&quot;%s - %d&quot;, player_names[i], player_scores[i]));
+}</code>
+        <text>Saves the scores and names of all players in a list when they are eliminated. Once the round is over, this list is displayed in the log. Using player-IDs instead of player numbers as list indices guarantuees that rejoining players will not overwrite scores of previous players.</text>
       </example>
     </examples>
     <related><funclink>GetPlayerTeam</funclink></related>

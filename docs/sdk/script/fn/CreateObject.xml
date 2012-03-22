@@ -7,7 +7,7 @@
     <title>CreateObject</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -29,14 +29,15 @@
         <param>
           <type>int</type>
           <name>owner</name>
-          <desc>Owner of the new object (valid player number or <funclink>NO_OWNER</funclink> for no-owner).</desc>
+          <desc>Owner of the new object. Either a valid player number or <code><funclink>NO_OWNER</funclink></code> for no owner. If not specified the owner is the controller (see <funclink>GetController</funclink>) of the calling object or <code>NO_OWNER</code> if the call is made without object context.</desc>
+		  <optional />
         </param>
       </params>
     </syntax>
     <desc>Creates an object of the specified type at the specified position. The position will be the bottom center of the new object. xoffset and yoffset are relative to the calling object in local calls, otherwiese global.</desc>
     <examples>
       <example>
-        <code>CreateObject(WIPF, 100,100, <funclink>NO_OWNER</funclink>);</code>
+        <code>CreateObject(Wipf, 100,100, <funclink>NO_OWNER</funclink>);</code>
         <text>Creates a wipf at coordinates 100/100 with no owner.</text>
       </example>
     </examples>

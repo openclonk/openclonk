@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2001-2008  Sven Eberhardt
  * Copyright (c) 2004, 2006-2008  Peter Wortmann
- * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2010  Maikel de Vries
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -59,80 +59,6 @@ void C4GameObjects::Init(int32_t iWidth, int32_t iHeight)
 	Sectors.Init(iWidth, iHeight);
 }
 
-
-void C4GameObjects::CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects)
-{
-	// "Object" section count
-	int32_t iObjCnt = ObjectCount();
-	pComp->Value(mkNamingCountAdapt(iObjCnt, "Object"));
-	// "Def" section count
-	//int32_t iDefCnt = ::Definitions.GetDefCount();
-	//pComp->Value(mkNamingCountAdapt(iDefCnt, "Def"));
-	// "PropList" section count
-	int32_t iPropListCnt = C4PropListNumbered::PropLists.GetSize() - iObjCnt /*- iDefCnt*/;
-	pComp->Value(mkNamingCountAdapt(iPropListCnt, "PropList"));
-	// skipping player objects would screw object counting in non-naming compilers
-	assert(!fSkipPlayerObjects || pComp->hasNaming());
-	if (pComp->isDecompiler())
-	{
-		// Decompile all objects in reverse order
-		for (C4ObjectLink *pPos = Last; pPos; pPos = pPos->Prev)
-			if (pPos->Obj->Status)
-				if (!fSkipPlayerObjects || !pPos->Obj->IsUserPlayerObject())
-					pComp->Value(mkNamingAdapt(*pPos->Obj, "Object"));
-		for (C4PropListNumbered * const * ppPropList = C4PropListNumbered::PropLists.First(); ppPropList; ppPropList = C4PropListNumbered::PropLists.Next(ppPropList))
-			if ((*ppPropList)->IsScriptPropList())
-			{
-				pComp->Value(mkNamingAdapt(**ppPropList, "PropList"));
-			}
-	}
-	else
-	{
-		// this mode not supported
-		assert(!fSkipPlayerObjects);
-		// Remove previous data
-		Clear();
-		//assert(C4PropListNumbered::PropLists.GetSize() == ::Definitions.GetDefCount());
-		// Load objects, add them to the list.
-		for (int i = 0; i < iObjCnt; i++)
-		{
-			C4Object *pObj = NULL;
-			try
-			{
-				pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pObj), "Object"));
-				C4ObjectList::Add(pObj, stReverse);
-			}
-			catch (StdCompiler::Exception *pExc)
-			{
-				// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-				if (!pExc->Pos.getLength())
-					LogF("ERROR: Object loading: %s", pExc->Msg.getData());
-				else
-					LogF("ERROR: Object loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-				delete pExc;
-			}
-		}
-		// Load proplists
-		for (int i = 0; i < iPropListCnt; i++)
-		{
-			C4PropListScript *pPropList = NULL;
-			try
-			{
-				pComp->Value(mkNamingAdapt(mkPtrAdaptNoNull(pPropList), "PropList"));
-			}
-			catch (StdCompiler::Exception *pExc)
-			{
-				// Failsafe object loading: If an error occurs during object loading, just skip that object and load the next one
-				if (!pExc->Pos.getLength())
-					LogF("ERROR: PropList loading: %s", pExc->Msg.getData());
-				else
-					LogF("ERROR: PropList loading(%s): %s", pExc->Pos.getData(), pExc->Msg.getData());
-				delete pExc;
-			}
-		}
-	}
-}
-
 bool C4GameObjects::Add(C4Object *nObj)
 {
 	// add inactive objects to the inactive list only
@@ -169,94 +95,71 @@ C4ObjectList &C4GameObjects::ObjectsAt(int ix, int iy)
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 {
-	C4Object *obj1 = NULL,*obj2 = NULL;
-	DWORD ocf1,ocf2,focf,tocf;
-
-	// AtObject-Check: Checks for first match of obj1 at obj2
-
-	// Checks for this frame
-	focf=tocf=OCF_None;
-	// Very low level: Incineration
-	if (!::Game.iTick35)
-		{ focf|=OCF_OnFire; tocf|=OCF_Inflammable; }
-
-	if (focf && tocf)
-		for (C4ObjectList::iterator iter=begin(); iter != end() && (obj1=*iter); ++iter)
-			if (obj1->Status && !obj1->Contained)
-				if (obj1->OCF & focf)
-				{
-					ocf1=obj1->OCF; ocf2=tocf;
-					if ((obj2=AtObject(obj1->GetX(),obj1->GetY(),ocf2,obj1)))
-						// Incineration
-						if ((ocf1 & OCF_OnFire) && (ocf2 & OCF_Inflammable))
-							if (!Random(obj2->Def->ContactIncinerate))
-								{ obj2->Incinerate(obj1->GetFireCausePlr(), false, obj1); continue; }
-				}
+	C4Object *obj1 = NULL, *obj2 = NULL;
+	DWORD focf,tocf;
 
 	// Reverse area check: Checks for all obj2 at obj1
 
-	focf=tocf=OCF_None;
+	focf = tocf = OCF_None;
 	// High level: Collection, Hit
 	if (!::Game.iTick3)
-		{ focf|=OCF_Collection; tocf|=OCF_Carryable; }
-	focf|=OCF_Alive;      tocf|=OCF_HitSpeed2;
+	{
+		focf |= OCF_Collection; tocf |= OCF_Carryable;
+	}
+	focf |= OCF_Alive; tocf |= OCF_HitSpeed2;
 
-	if (focf && tocf)
-		for (C4ObjectList::iterator iter=begin(); iter != end() && (obj1=*iter); ++iter)
-			if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
-			{
-				unsigned int Marker = ++LastUsedMarker;
-				C4LSector *pSct;
-				for (C4ObjectList *pLst=obj1->Area.FirstObjects(&pSct); pLst; pLst=obj1->Area.NextObjects(pLst, &pSct))
-					for (C4ObjectList::iterator iter2=pLst->begin(); iter2 != pLst->end() && (obj2=*iter2); ++iter2)
-						if (obj2->Status && !obj2->Contained && (obj2!=obj1) && (obj2->OCF & tocf))
-							if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Shape.x),0,obj1->Shape.Wdt-1))
-								if (Inside<int32_t>(obj2->GetY()-(obj1->GetY()+obj1->Shape.y),0,obj1->Shape.Hgt-1))
-									if (obj1->Layer == obj2->Layer)
-									{
-										// handle collision only once
-										if (obj2->Marker == Marker) continue;
-										obj2->Marker = Marker;
-										// Only hit if target is alive and projectile is an object
-										if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
-										{
-											C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
-											C4Real speed = dXDir * dXDir + dYDir * dYDir;
-											// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
-											if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2)
-												if (!obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
-												{
-													int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5 );
-													// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
-													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); 
-													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
-													int tmass=Max<int32_t>(obj1->Mass,50);
-													C4PropList* pActionDef = obj1->GetAction();
-													if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
-														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
-													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
-																						  C4VObj(obj2)));
-													// obj1 might have been tampered with
-													if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-														goto out1;
-													continue;
-												}
-										}
-										// Collection
-										if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable))
-											if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Def->Collection.x),0,obj1->Def->Collection.Wdt-1))
-												if (Inside<int32_t>(obj2->GetY()-(obj1->GetY()+obj1->Def->Collection.y),0,obj1->Def->Collection.Hgt-1))
-												{
-													//if(!pLst->First) BREAKPOINT_HERE;
-													obj1->Collect(obj2);
-													//if(!pLst->First)  BREAKPOINT_HERE;
-													// obj1 might have been tampered with
-													if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
-														goto out1;
-												}
-									}
-out1: ;
-			}
+	for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1 = *iter); ++iter)
+		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
+		{
+			unsigned int Marker = ++LastUsedMarker;
+			C4LSector *pSct;
+			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
+				for (C4ObjectList::iterator iter2 = pLst->begin(); iter2 != pLst->end() && (obj2 = *iter2); ++iter2)
+					if ((obj2 != obj1) && obj2->Status && !obj2->Contained && (obj2->OCF & tocf) &&
+					    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Shape.x), 0, obj1->Shape.Wdt - 1) &&
+					    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Shape.y), 0, obj1->Shape.Hgt - 1) &&
+					    obj1->Layer == obj2->Layer)
+					{
+						// handle collision only once
+						if (obj2->Marker == Marker) continue;
+						obj2->Marker = Marker;
+						// Only hit if target is alive and projectile is an object
+						if ((obj1->OCF & OCF_Alive) && (obj2->Category & C4D_Object))
+						{
+							C4Real dXDir = obj2->xdir - obj1->xdir, dYDir = obj2->ydir - obj1->ydir;
+							C4Real speed = dXDir * dXDir + dYDir * dYDir;
+							// Only hit if obj2's speed and relative speeds are larger than HitSpeed2
+							if ((obj2->OCF & OCF_HitSpeed2) && speed > HitSpeed2 &&
+							   !obj1->Call(PSF_QueryCatchBlow, &C4AulParSet(C4VObj(obj2))))
+							{
+								int32_t iHitEnergy = fixtoi(speed * obj2->Mass / 5);
+								// Hit energy reduced to 1/3rd, but do not drop to zero because of this division
+								iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy);
+								obj1->DoEnergy(-iHitEnergy / 5, false, C4FxCall_EngObjHit, obj2->Controller);
+								int tmass = Max<int32_t>(obj1->Mass, 50);
+								C4PropList* pActionDef = obj1->GetAction();
+								if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyP(P_Procedure) != DFA_FLIGHT))
+									obj1->Fling(obj2->xdir * 50 / tmass, -Abs(obj2->ydir / 2) * 50 / tmass, false);
+								obj1->Call(PSF_CatchBlow, &C4AulParSet(C4VInt(-iHitEnergy / 5), C4VObj(obj2)));
+								// obj1 might have been tampered with
+								if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+									goto out1;
+								continue;
+							}
+						}
+						// Collection
+						if ((obj1->OCF & OCF_Collection) && (obj2->OCF & OCF_Carryable) &&
+						    Inside<int32_t>(obj2->GetX() - (obj1->GetX() + obj1->Def->Collection.x), 0, obj1->Def->Collection.Wdt - 1) &&
+						    Inside<int32_t>(obj2->GetY() - (obj1->GetY() + obj1->Def->Collection.y), 0, obj1->Def->Collection.Hgt - 1))
+						{
+							obj1->Collect(obj2);
+							// obj1 might have been tampered with
+							if (!obj1->Status || obj1->Contained || !(obj1->OCF & focf))
+								goto out1;
+						}
+					}
+			out1: ;
+		}
 }
 
 C4Object* C4GameObjects::AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclude)
@@ -326,23 +229,8 @@ void C4GameObjects::Clear(bool fClearInactive)
 	LastUsedMarker = 0;
 }
 
-int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
+int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 {
-	Clear(!fKeepInactive);
-
-	// Load data component
-	StdStrBuf Source;
-	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, &Source))
-		return 0;
-
-	// Compile
-	StdStrBuf Name = hGroup.GetFullName() + DirSep C4CFN_ScenarioObjects;
-	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-	      mkParAdapt(*this, false),
-	      Source,
-	      Name.getData()))
-		return 0;
-
 	// Process objects
 	C4ObjectLink *cLnk;
 	C4Object *pObj;
@@ -371,9 +259,9 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	C4ObjectLink *pInFirst = NULL;
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
-	Denumerate();
+	Denumerate(numbers);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
-	C4PropListNumbered::DenumerateAll(iMaxObjectNumber);
+	C4PropListNumbered::SetEnumerationIndex(iMaxObjectNumber);
 	// end faking and adjust object numbers
 	if (fObjectNumberCollision)
 	{
@@ -473,35 +361,10 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	return ObjectCount();
 }
 
-bool C4GameObjects::Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive)
+void C4GameObjects::Denumerate(C4ValueNumbers * numbers)
 {
-	// Enumerate
-	Enumerate();
-	InactiveObjects.Enumerate();
-
-	// Decompile objects to buffer
-	StdStrBuf Buffer;
-	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, C4CFN_ScenarioObjects);
-
-	// Decompile inactives
-	if (fSaveInactive)
-	{
-		StdStrBuf InactiveBuffer;
-		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, C4CFN_ScenarioObjects);
-		Buffer.Append("\r\n");
-		Buffer.Append(InactiveBuffer);
-	}
-
-	// Denumerate
-	InactiveObjects.Denumerate();
-	Denumerate();
-
-	// Error?
-	if (!fSuccess)
-		return false;
-
-	// Write
-	return hGroup.Add(C4CFN_ScenarioObjects, Buffer, false, true);
+	C4ObjectList::Denumerate(numbers);
+	InactiveObjects.Denumerate(numbers);
 }
 
 void C4GameObjects::UpdateScriptPointers()
@@ -520,7 +383,7 @@ C4Value C4GameObjects::GRBroadcast(const char *szFunction, C4AulParSet *pPars, b
 	for (C4ObjectLink *clnk=::Objects.First; clnk; clnk=clnk->Next)
 		if ((pObj=clnk->Obj) && (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment)) && pObj->Status)
 		{
-			C4Value vResult = pObj->Call(szFunction, pPars, fPassError);
+			C4Value vResult = pObj->Call(szFunction, pPars/*, fPassError*/);
 			// rejection tests abort on first nonzero result
 			if (fRejectTest && !!vResult) return vResult;
 		}
@@ -619,6 +482,7 @@ void C4GameObjects::ResortUnsorted()
 		{
 			// readd to main object list
 			Remove(cObj);
+			// reset flag so that Add correctly sorts this object
 			cObj->Unsorted=false;
 			if (!Add(cObj))
 			{

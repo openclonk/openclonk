@@ -19,6 +19,7 @@
 #include <C4Reloc.h>
 
 #include <C4Config.h>
+#include <C4Application.h>
 
 C4Reloc Reloc; // singleton
 
@@ -26,17 +27,18 @@ void C4Reloc::Init()
 {
 	Paths.clear();
 
-	// TODO: On Linux, we might not always want to have ExePath (= working directory)
-	// here. It's handy for development so that we can easily run the engine in planet/
-	// but for distribution it might make sense to disable it.
-	// TODO: We might also want to add ExePath/planet if it exists, so that we don't
-	// need to run the engine in planet/.
-	AddPath(Config.General.ExePath);
-	AddPath(Config.General.UserDataPath);
+#ifndef __APPLE__
+	StdCopyStrBuf planet(Config.General.ExePath);
+	planet.AppendBackslash();
+	planet.Append("planet");
+	AddPath(planet.getData());
+#endif
+
+	AddPath(Config.General.UserDataPath, PATH_PreferredInstallationLocation);
 	AddPath(Config.General.SystemDataPath);
 }
 
-bool C4Reloc::AddPath(const char* path)
+bool C4Reloc::AddPath(const char* path, PathType pathType)
 {
 	if(!IsGlobalPath(path))
 		return false;
@@ -44,7 +46,7 @@ bool C4Reloc::AddPath(const char* path)
 	if(std::find(Paths.begin(), Paths.end(), path) != Paths.end())
 		return false;
 
-	Paths.push_back(StdCopyStrBuf(path));
+	Paths.push_back(PathInfo(StdCopyStrBuf(path), pathType));
 	return true;
 }
 
@@ -63,7 +65,7 @@ bool C4Reloc::Open(C4Group& hGroup, const char* filename) const
 	if(IsGlobalPath(filename)) return hGroup.Open(filename);
 
 	for(iterator iter = begin(); iter != end(); ++iter)
-		if(hGroup.Open((*iter + DirSep + filename).getData()))
+		if(hGroup.Open(((*iter).strBuf + DirSep + filename).getData()))
 			return true;
 
 	return false;
@@ -79,7 +81,7 @@ bool C4Reloc::LocateItem(const char* filename, StdStrBuf& str) const
 
 	for(iterator iter = begin(); iter != end(); ++iter)
 	{
-		str.Copy(*iter + DirSep + filename);
+		str.Copy((*iter).strBuf + DirSep + filename);
 		if(ItemExists(str.getData()))
 			return true;
 	}

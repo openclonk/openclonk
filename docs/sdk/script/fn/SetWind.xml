@@ -7,7 +7,7 @@
     <title>SetWind</title>
     <category>Environment</category>
     <subcat>Weather</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -21,21 +21,21 @@
     <desc>Temporarily sets the global wind velocity and direction.</desc>
     <examples>
       <example>
-        <code>/* Nach Links pusten */
-protected func ControlLeft()
+        <code>#appendto Cannon
+				
+func ControlLeft()
 { 
 	SetWind(-100);
-	return true;
+	return <funclink>_inherited</funclink>(...);
 }
 
-/* Nach Rechts pusten */
-protected func ControlRight()
+func ControlRight()
 {
 	SetWind(100);
-	return true;
+	return <funclink>_inherited</funclink>(...);
 }
 				</code>
-        <text>Blowing clonk</text>
+        <text>The wind always blows into the direction the cannon is pushed towards.</text>
       </example>
     </examples>
     <related><funclink>GetWind</funclink></related>

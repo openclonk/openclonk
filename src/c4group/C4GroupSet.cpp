@@ -303,7 +303,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 	// the scenario filename may be a scenario or directly a group folder
 	C4Group *pParentGroup=NULL; bool fParentC4F;
 	char szParentfolder[_MAX_PATH+1];
-	if (SEqualNoCase(GetExtension(szScenFilename), "c4f"))
+	if (SEqualNoCase(GetExtension(szScenFilename), "ocf"))
 	{
 		fParentC4F = true;
 		SCopy(szScenFilename, szParentfolder, _MAX_PATH);
@@ -311,14 +311,14 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 	else
 	{
 		GetParentPath(szScenFilename,szParentfolder);
-		fParentC4F = SEqualNoCase(GetExtension(szParentfolder), "c4f");
+		fParentC4F = SEqualNoCase(GetExtension(szParentfolder), "ocf");
 	}
 	if (fParentC4F)
 	{
 		// replace all (back)slashes with zero-fields
 		int32_t iOriginalLen=SLen(szParentfolder);
 		for (int32_t i=0; i<iOriginalLen; ++i) if (szParentfolder[i]==DirectorySeparator || szParentfolder[i]=='/') szParentfolder[i]=0;
-		// trace back until the file extension is no more .c4f
+		// trace back until the file extension is no more .ocf
 		int32_t iPos=iOriginalLen-1;
 		while (iPos)
 		{
@@ -329,7 +329,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 			// trace back until next zero field
 			while (iPos && szParentfolder[iPos]) --iPos;
 			// check extension of this folder
-			if (!SEqualNoCase(GetExtension(szParentfolder+iPos+1), "c4f", 3)) break;
+			if (!SEqualNoCase(GetExtension(szParentfolder+iPos+1), "ocf", 3)) break;
 			// continue
 		}
 		// trace backwards, putting the (back)slashes in place again
@@ -354,13 +354,13 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 				if (!pGroup->OpenAsChild(pParentGroup, szParentfolder+iPos))
 				{
 					LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
-					delete pGroup; return false;
+					delete pGroup; return NULL;
 				}
 			}
 			else if (!Reloc.Open(*pGroup, szParentfolder+iPos))
 			{
 				LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
-				delete pGroup; return false;
+				delete pGroup; return NULL;
 			}
 			// set this group as new parent
 			pParentGroup=pGroup;
@@ -371,7 +371,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 			else
 				iContentsMask = C4GSCnt_Directory;
 			if (!RegisterGroup(*pParentGroup, true, C4GSPrio_Folder+iGroupIndex++, iContentsMask))
-				{ delete pParentGroup; LogFatal ("RegGrp: internal error"); return false; }
+				{ delete pParentGroup; LogFatal ("RegGrp: internal error"); return NULL; }
 			// advance by file name length
 			iPos+=SLen(szParentfolder+iPos);
 		}

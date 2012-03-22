@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2005, 2009  Günther Brammer
+ * Copyright (c) 2005, 2009, 2011  Günther Brammer
  * Copyright (c) 2006  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -22,11 +22,10 @@
 
 #include "C4Include.h"
 #ifdef _WIN32
+#ifdef HAVE_VFW32
 
 #include <StdVideo.h>
-#include <StdSurface2.h>
-
-#include <windows.h>
+#include <C4Surface.h>
 
 bool AVIOpenOutput(const char *szFilename,
                    PAVIFILE *ppAviFile,
@@ -38,9 +37,9 @@ bool AVIOpenOutput(const char *szFilename,
 	AVIFileInit();
 
 	// Create avi file
-	if ( AVIFileOpen(
+	if ( AVIFileOpenW(
 	       ppAviFile,
-	       szFilename,
+	       GetWideChar(szFilename),
 	       OF_CREATE | OF_WRITE,
 	       NULL) != 0)
 	{
@@ -48,7 +47,7 @@ bool AVIOpenOutput(const char *szFilename,
 	}
 
 	// Create stream
-	AVISTREAMINFO avi_info;
+	AVISTREAMINFOW avi_info;
 	RECT frame; frame.left=0; frame.top=0; frame.right=iWidth; frame.bottom=iHeight;
 	avi_info.fccType= streamtypeVIDEO;
 	avi_info.fccHandler= mmioFOURCC('M','S','V','C');
@@ -67,9 +66,9 @@ bool AVIOpenOutput(const char *szFilename,
 	avi_info.rcFrame= frame;
 	avi_info.dwEditCount= 0;
 	avi_info.dwFormatChangeCount= 0;
-	SCopy("MyRecording",avi_info.szName);
+	wcscpy(avi_info.szName, L"MyRecording");
 
-	if ( AVIFileCreateStream(
+	if ( AVIFileCreateStreamW(
 	       *ppAviFile,
 	       ppAviStream,
 	       &avi_info) != 0)
@@ -128,9 +127,9 @@ bool AVIOpenGrab(const char *szFilename,
 {
 
 	// Open avi stream
-	if ( AVIStreamOpenFromFile(
+	if ( AVIStreamOpenFromFileW(
 	       ppAviStream,
-	       szFilename,
+	       GetWideChar(szFilename),
 	       streamtypeVIDEO,
 	       0,
 	       OF_READ,
@@ -203,7 +202,7 @@ bool CStdAVIFile::OpenFile(const char *szFilename, HWND hWnd, int32_t iOutBitDep
 	Clear();
 	sFilename.Copy(szFilename);
 	// open the AVI file
-	if (AVIFileOpen(&pAVIFile, szFilename, OF_READ, NULL))
+	if (AVIFileOpenW(&pAVIFile, GetWideChar(szFilename), OF_READ, NULL))
 		return false;
 	if (AVIFileGetStream(pAVIFile, &pStream, streamtypeVIDEO, 0))
 		return false;
@@ -256,7 +255,7 @@ bool CStdAVIFile::GetFrameByTime(time_t iTime, int32_t *piFrame)
 }
 
 
-bool CStdAVIFile::GrabFrame(int32_t iFrame, CSurface *sfc) const
+bool CStdAVIFile::GrabFrame(int32_t iFrame, C4Surface *sfc) const
 {
 	// safeties
 	if (!pGetFrame || !sfc) return false;
@@ -332,5 +331,24 @@ void CStdAVIFile::CloseAudioStream()
 	if (pAudioInfo) { delete [] pAudioInfo; pAudioInfo = NULL; }
 	iAudioBufferLength = 0;
 }
+
+#else //HAVE_VFW32
+#include <StdVideo.h>
+#include <C4Surface.h>
+bool AVIOpenOutput(const char *, PAVIFILE *, PAVISTREAM *, int, int) { return false; }
+bool AVICloseOutput(PAVIFILE *, PAVISTREAM *) { return true; }
+bool AVIPutFrame(PAVISTREAM, long, void *, long, void *, long) { return false; }
+bool AVIOpenGrab(const char *, PAVISTREAM *, PGETFRAME *, int &, int &, int &, int &, int &) { return false; }
+void AVICloseGrab(PAVISTREAM *, PGETFRAME *) { }
+CStdAVIFile::CStdAVIFile() { }
+CStdAVIFile::~CStdAVIFile() { }
+void CStdAVIFile::Clear() { }
+bool CStdAVIFile::OpenFile(const char *, HWND, int32_t) { return false; }
+bool CStdAVIFile::GetFrameByTime(time_t, int32_t *) { return false; }
+bool CStdAVIFile::GrabFrame(int32_t, C4Surface *) const { return false; }
+bool CStdAVIFile::OpenAudioStream() { return false; }
+BYTE *CStdAVIFile::GetAudioStreamData(size_t *) { return NULL; }
+void CStdAVIFile::CloseAudioStream() { }
+#endif // HAVE_VFW32
 
 #endif // _WIN32

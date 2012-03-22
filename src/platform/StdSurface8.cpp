@@ -94,7 +94,7 @@ bool CSurface8::Create(int iWdt, int iHgt)
 
 	Bits=new BYTE[Wdt*Hgt];
 	if (!Bits) return false;
-	ZeroMemory(Bits, Wdt*Hgt);
+	memset(Bits, 0, Wdt*Hgt);
 	Pitch=Wdt;
 	// update clipping
 	NoClip();
@@ -103,21 +103,21 @@ bool CSurface8::Create(int iWdt, int iHgt)
 
 bool CSurface8::Read(CStdStream &hGroup)
 {
-	int cnt,lcnt,iLineRest;
-	CBitmap256Info BitmapInfo;
+	int cnt,lcnt;
+	C4BMP256Info BitmapInfo;
 	// read bmpinfo-header
-	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
+	if (!hGroup.Read(&BitmapInfo,sizeof(C4BMPInfo))) return false;
 	// is it 8bpp?
 	if (BitmapInfo.Info.biBitCount == 8)
 	{
-		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo))) return false;
+		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(C4BMPInfo),sizeof(BitmapInfo)-sizeof(C4BMPInfo))) return false;
 		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return false;
 	}
 	else
 	{
 		// read 24bpp
 		if (BitmapInfo.Info.biBitCount != 24) return false;
-		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return false;
+		if (!hGroup.Advance(((C4BMPInfo) BitmapInfo).FileBitsOffset())) return false;
 	}
 	// no 8bpp-surface in newgfx!
 	// needs to be kept for some special surfaces
@@ -142,7 +142,6 @@ bool CSurface8::Read(CStdStream &hGroup)
 	int iBufSize=DWordAligned(BitmapInfo.Info.biWidth*BitmapInfo.Info.biBitCount/8);
 	BYTE *pBuf = new BYTE[iBufSize];
 	// Read lines
-	iLineRest = DWordAligned(BitmapInfo.Info.biWidth) - BitmapInfo.Info.biWidth;
 	for (lcnt=Hgt-1; lcnt>=0; lcnt--)
 	{
 		if (!hGroup.Read(pBuf, iBufSize))
@@ -167,7 +166,7 @@ bool CSurface8::Read(CStdStream &hGroup)
 
 bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
 {
-	CBitmap256Info BitmapInfo;
+	C4BMP256Info BitmapInfo;
 	BitmapInfo.Set(Wdt,Hgt,bpPalette ? bpPalette : pPal->Colors);
 
 	// Create file & write info
@@ -226,166 +225,6 @@ void CSurface8::Circle(int x, int y, int r, BYTE col)
 		for (int xcnt = 2 * lwdt - 1; xcnt >= 0; xcnt--)
 			SetPix(x - lwdt + xcnt, y + ycnt, col);
 	}
-}
-
-/* Polygon drawing code extracted from ALLEGRO by Shawn Hargreaves */
-
-struct CPolyEdge          // An edge for the polygon drawer
-{
-	int y;                  // Current (starting at the top) y position
-	int bottom;             // bottom y position of this edge
-	int x;                  // Fixed point x position
-	int dx;                 // Fixed point x gradient
-	int w;                  // Width of line segment
-	struct CPolyEdge *prev; // Doubly linked list
-	struct CPolyEdge *next;
-};
-
-#define POLYGON_FIX_SHIFT     16
-
-static void fill_edge_structure(CPolyEdge *edge, int *i1, int *i2)
-{
-	if (i2[1] < i1[1]) // Swap
-		{ int *t=i1; i1=i2; i2=t; }
-	edge->y = i1[1];
-	edge->bottom = i2[1] - 1;
-	edge->dx = ((i2[0] - i1[0]) << POLYGON_FIX_SHIFT) / (i2[1] - i1[1]);
-	edge->x = (i1[0] << POLYGON_FIX_SHIFT) + (1<<(POLYGON_FIX_SHIFT-1)) - 1;
-	edge->prev = NULL;
-	edge->next = NULL;
-	if (edge->dx < 0)
-		edge->x += Min<int>(edge->dx+(1<<POLYGON_FIX_SHIFT), 0);
-	edge->w = Max<int>(Abs(edge->dx)-(1<<POLYGON_FIX_SHIFT), 0);
-}
-
-static CPolyEdge *add_edge(CPolyEdge *list, CPolyEdge *edge, int sort_by_x)
-{
-	CPolyEdge *pos = list;
-	CPolyEdge *prev = NULL;
-	if (sort_by_x)
-	{
-		while ((pos) && (pos->x+pos->w/2 < edge->x+edge->w/2))
-			{ prev = pos; pos = pos->next; }
-	}
-	else
-	{
-		while ((pos) && (pos->y < edge->y))
-			{ prev = pos; pos = pos->next; }
-	}
-	edge->next = pos;
-	edge->prev = prev;
-	if (pos) pos->prev = edge;
-	if (prev) { prev->next = edge; return list; }
-	else return edge;
-}
-
-static CPolyEdge *remove_edge(CPolyEdge *list, CPolyEdge *edge)
-{
-	if (edge->next) edge->next->prev = edge->prev;
-	if (edge->prev) { edge->prev->next = edge->next; return list; }
-	else return edge->next;
-}
-
-// Global polygon quick buffer
-const int QuickPolyBufSize = 20;
-CPolyEdge QuickPolyBuf[QuickPolyBufSize];
-
-void CSurface8::Polygon(int iNum, int *ipVtx, int iCol, uint8_t *conversion_table)
-{
-	// Variables for polygon drawer
-	int c,x1,x2,y;
-	int top = INT_MAX;
-	int bottom = INT_MIN;
-	int *i1, *i2;
-	CPolyEdge *edge, *next_edge, *edgebuf;
-	CPolyEdge *active_edges = NULL;
-	CPolyEdge *inactive_edges = NULL;
-	bool use_qpb=false;
-
-	// Poly Buf
-	if (iNum<=QuickPolyBufSize)
-		{ edgebuf=QuickPolyBuf; use_qpb=true; }
-	else if (!(edgebuf = new CPolyEdge [iNum])) { return; }
-
-	// Fill the edge table
-	edge = edgebuf;
-	i1 = ipVtx;
-	i2 = ipVtx + (iNum-1) * 2;
-	for (c=0; c<iNum; c++)
-	{
-		if (i1[1] != i2[1])
-		{
-			fill_edge_structure(edge, i1, i2);
-			if (edge->bottom >= edge->y)
-			{
-				if (edge->y < top)  top = edge->y;
-				if (edge->bottom > bottom) bottom = edge->bottom;
-				inactive_edges = add_edge(inactive_edges, edge, false);
-				edge++;
-			}
-		}
-		i2 = i1; i1 += 2;
-	}
-
-	// For each scanline in the polygon...
-	for (c=top; c<=bottom; c++)
-	{
-		// Check for newly active edges
-		edge = inactive_edges;
-		while ((edge) && (edge->y == c))
-		{
-			next_edge = edge->next;
-			inactive_edges = remove_edge(inactive_edges, edge);
-			active_edges = add_edge(active_edges, edge, true);
-			edge = next_edge;
-		}
-
-		// Draw horizontal line segments
-		edge = active_edges;
-		while ((edge) && (edge->next))
-		{
-			x1=edge->x>>POLYGON_FIX_SHIFT;
-			x2=(edge->next->x+edge->next->w)>>POLYGON_FIX_SHIFT;
-			y=c;
-			// Fix coordinates
-			if (x1>x2) Swap(x1,x2);
-			// Set line
-			if (conversion_table)
-				for (int xcnt=x2-x1; xcnt>=0; xcnt--) SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
-			else
-				for (int xcnt=x2-x1; xcnt>=0; xcnt--) SetPix(x1+xcnt, y, iCol);
-			edge = edge->next->next;
-		}
-
-		// Update edges, sorting and removing dead ones
-		edge = active_edges;
-		while (edge)
-		{
-			next_edge = edge->next;
-			if (c >= edge->bottom)
-			{
-				active_edges = remove_edge(active_edges, edge);
-			}
-			else
-			{
-				edge->x += edge->dx;
-				while ((edge->prev) && (edge->x+edge->w/2 < edge->prev->x+edge->prev->w/2))
-				{
-					if (edge->next) edge->next->prev = edge->prev;
-					edge->prev->next = edge->next;
-					edge->next = edge->prev;
-					edge->prev = edge->prev->prev;
-					edge->next->prev = edge;
-					if (edge->prev) edge->prev->next = edge;
-					else active_edges = edge;
-				}
-			}
-			edge = next_edge;
-		}
-	}
-
-	// Clear scratch memory
-	if (!use_qpb) delete [] edgebuf;
 }
 
 void CSurface8::AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero)

@@ -21,15 +21,22 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-// text drawing facility for CStdDDraw
+// text drawing facility for C4Draw
 
 #include "C4Include.h"
+#include <StdFont.h>
+
+#include "Standard.h"
 #include <StdBuf.h>
 #include <StdDDraw2.h>
-#include <StdSurface2.h>
-#include <StdMarkup.h>
+#include <C4Surface.h>
+#include <C4Markup.h>
 #include <stdexcept>
 #include <string>
+
+#ifdef _WIN32
+#include <C4windowswrapper.h>
+#endif
 
 #ifdef HAVE_FREETYPE
 #include <ft2build.h>
@@ -53,7 +60,7 @@ public:
 	HDC hDC = ::CreateCompatibleDC(NULL);
 	if (hDC)
 	{
-		HFONT hFont = ::CreateFont(0, 0, 0, 0, FW_DONTCARE, false,
+		HFONT hFont = ::CreateFontA(0, 0, 0, 0, FW_DONTCARE, false,
 		                           false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
 		                           CLIP_DEFAULT_PRECIS, 5,
 		                           VARIABLE_PITCH, FontFaceName);
@@ -170,11 +177,11 @@ CStdFont::CStdFont()
 bool CStdFont::AddSurface()
 {
 	// add new surface as render target; copy old ones
-	CSurface **pNewSfcs = new CSurface *[iNumFontSfcs+1];
-	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (CSurface *));
+	C4Surface **pNewSfcs = new C4Surface *[iNumFontSfcs+1];
+	if (iNumFontSfcs) memcpy(pNewSfcs, psfcFontData, iNumFontSfcs * sizeof (C4Surface *));
 	delete [] psfcFontData;
 	psfcFontData = pNewSfcs;
-	CSurface *sfcNew = psfcFontData[iNumFontSfcs] = new CSurface();
+	C4Surface *sfcNew = psfcFontData[iNumFontSfcs] = new C4Surface();
 	++iNumFontSfcs;
 	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
 	// If old surface was locked, unlock it and lock the new one in its stead
@@ -205,7 +212,7 @@ bool CStdFont::CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt)
 	return true;
 }
 
-bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
+bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 {
 #if defined HAVE_FREETYPE
 	if (!pVectorFont) return false;
@@ -275,9 +282,8 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 				// because blitting on a black pixel reduces luminosity as compared to shadowless font,
 				// assume luminosity as if blitting shadowless font on a 50% gray background
 				unsigned char cBack = bAlpha;
-				dwPixVal = RGB(cBack/2, cBack/2, cBack/2);
+				dwPixVal = RGBA(cBack/2, cBack/2, cBack/2, bAlphaShadow);
 			}
-			dwPixVal += bAlphaShadow << 24;
 			BltAlpha(dwPixVal, bAlpha << 24 | 0xffffff);
 			sfcCurrent->SetPixDw(at_x + x, at_y + y, dwPixVal);
 		}
@@ -292,45 +298,10 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 	return true;
 }
 
-uint32_t CStdFont::GetNextUTF8Character(const char **pszString)
-{
-	// assume the current character is UTF8 already (i.e., highest bit set)
-	const char *szString = *pszString;
-	unsigned char c = *szString++;
-	uint32_t dwResult = '?';
-	assert(c>127);
-	if (c>191 && c<224)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&31)<<6) | (c2&63); // two char code
-	}
-	else if (c >= 224 && c <= 239)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
-	}
-	else if (c >= 240 && c <= 247)
-	{
-		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
-		unsigned char c4 = *szString++;
-		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
-		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
-	}
-	*pszString = szString;
-	return dwResult;
-}
-
-CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
+C4Facet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 {
 	// find/add facet in map
-	CFacet &rFacet = fctUnicodeMap[c];
+	C4Facet &rFacet = fctUnicodeMap[c];
 	// create character on the fly if necessary and possible
 	if (!rFacet.Surface) AddRenderedChar(c, &rFacet);
 	// rendering might have failed, in which case rFacet remains empty. Should be OK; char won't be printed then
@@ -416,7 +387,7 @@ void CStdFont::Clear()
 	}
 	sfcCurrent = NULL;
 	iNumFontSfcs = 0;
-	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Clear();
+	for (int c=' '; c<256; ++c) fctAsciiTexCoords[c-' '].Default();
 	fctUnicodeMap.clear();
 	// set default values
 	dwDefFontHeight=iLineHgt=10;
@@ -430,19 +401,16 @@ void CStdFont::Clear()
 	id=0;
 }
 
-
-
 /* Text size measurement */
-
-
 bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup)
 {
 	// safety
 	if (!szText) return false;
+	assert(IsValidUtf8(szText));
 	// keep track of each row's size
 	int iRowWdt=0,iWdt=0,iHgt=iLineHgt;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*szText)
 	{
@@ -462,21 +430,12 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 		{
 			char imgbuf[101];
 			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
-			CFacet fct;
-			// image renderer initialized?
-			if (pCustomImages)
-				// try to get an image then
-				pCustomImages->GetFontImage(imgbuf, fct);
-			if (fct.Hgt)
-			{
-				// image found: adjust aspect by font height and calc appropriate width
-				iRowWdt += (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-			}
-			else
-			{
-				// image renderer not hooked or ID not found, or surface not present: just ignore it
-				// printing it out wouldn't look better...
-			}
+
+			int w2, h2;
+			if(!GetFontImageSize(imgbuf, w2, h2))
+				{ w2 = 0; h2 = 0; }
+
+			iRowWdt += w2;
 			// skip image tag
 			szText+=iImgLgt+3;
 		}
@@ -522,7 +481,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 	                                  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*(szLastPos = szPos))
 	{
@@ -542,22 +501,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				CFacet fct;
-				// image renderer initialized?
-				if (pCustomImages)
-					// try to get an image then
-					pCustomImages->GetFontImage(imgbuf, fct);
-				if (fct.Hgt)
-				{
-					// image found: adjust aspect by font height and calc appropriate width
-					iCharWdt = (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-				}
-				else
-				{
-					// image renderer not hooked or ID not found, or surface not present: just ignore it
-					// printing it out wouldn't look better...
+
+				int iCharHgt;
+				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
 					iCharWdt = 0;
-				}
+
 				// skip image tag
 				szPos+=iImgLgt+3;
 			}
@@ -678,7 +626,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	                                  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
-	CMarkup MarkupChecker(false);
+	C4Markup MarkupChecker(false);
 	// go through all text
 	while (*(szLastPos = szPos))
 	{
@@ -698,22 +646,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			{
 				char imgbuf[101];
 				SCopy(szPos+1, imgbuf, Min(iImgLgt, 100));
-				CFacet fct;
-				// image renderer initialized?
-				if (pCustomImages)
-					// try to get an image then
-					pCustomImages->GetFontImage(imgbuf, fct);
-				if (fct.Hgt)
-				{
-					// image found: adjust aspect by font height and calc appropriate width
-					iCharWdt = (fct.Wdt * iGfxLineHgt) / fct.Hgt;
-				}
-				else
-				{
-					// image renderer not hooked or ID not found, or surface not present: just ignore it
-					// printing it out wouldn't look better...
+
+				int iCharHgt;
+				if(!GetFontImageSize(imgbuf, iCharWdt, iCharHgt))
 					iCharWdt = 0;
-				}
+
 				// skip image tag
 				szPos+=iImgLgt+3;
 			}
@@ -851,12 +788,13 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 /* Text drawing */
 
 
-void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom)
+void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
 {
-	CBltTransform bt, *pbt=NULL;
+	assert(IsValidUtf8(szText));
+	C4DrawTransform bt, *pbt=NULL;
 	// set blit color
 	DWORD dwOldModClr;
-	bool fWasModulated = lpDDraw->GetBlitModulation(dwOldModClr);
+	bool fWasModulated = pDraw->GetBlitModulation(dwOldModClr);
 	if (fWasModulated) ModulateClr(dwColor, dwOldModClr);
 	// get alpha fade percentage
 	DWORD dwAlphaMod = Min<uint32_t>(((dwColor>>0x18)*0xff)/0xaf, 255)<<0x18 | 0xffffff;
@@ -886,7 +824,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	if (!Markup.Clean()) pbt=&bt;
 	// output text
 	uint32_t c;
-	CFacet fctFromBlt; // source facet
+	C4Facet fctFromBlt; // source facet
 	while ((c = GetNextCharacter(&szText)))
 	{
 		// ignore system characters
@@ -909,41 +847,27 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 		int w2, h2; // dst width/height
 		// custom image?
 		int iImgLgt;
+		char imgbuf[101] = "";
 		if (c=='{' && szText[0]=='{' && szText[1]!='{' && (iImgLgt=SCharPos('}', szText+1))>0 && szText[iImgLgt+2]=='}' && !(dwFlags & STDFONT_NOMARKUP))
 		{
-			fctFromBlt.Default();
-			char imgbuf[101];
 			SCopy(szText+1, imgbuf, Min(iImgLgt, 100));
 			szText+=iImgLgt+3;
-			// image renderer initialized?
-			if (pCustomImages)
-				// try to get an image then
-				pCustomImages->GetFontImage(imgbuf, fctFromBlt);
-			if (fctFromBlt.Surface && fctFromBlt.Hgt)
-			{
-				// image found: adjust aspect by font height and calc appropriate width
-				w2 = (fctFromBlt.Wdt * iGfxLineHgt) / fctFromBlt.Hgt;
-				h2 = iGfxLineHgt;
-			}
-			else
-			{
-				// image renderer not hooked or ID not found, or surface not present: just ignore it
-				// printing it out wouldn't look better...
+			if(!GetFontImageSize(imgbuf, w2, h2))
 				continue;
-			}
 			//normal: not modulated, unless done by transform or alpha fadeout
 			if ((dwColor>>0x18) >= 0xaf)
-				lpDDraw->DeactivateBlitModulation();
+				pDraw->DeactivateBlitModulation();
 			else
-				lpDDraw->ActivateBlitModulation((dwColor&0xff000000) | 0xffffff);
+				pDraw->ActivateBlitModulation((dwColor&0xff000000) | 0xffffff);
 		}
 		else
 		{
 			// regular char
 			// get texture coordinates
 			fctFromBlt = GetCharacterFacet(c);
+			if(!fctFromBlt.Surface) continue;
 			w2=int(fctFromBlt.Wdt*fZoom); h2=int(fctFromBlt.Hgt*fZoom);
-			lpDDraw->ActivateBlitModulation(dwColor);
+			pDraw->ActivateBlitModulation(dwColor);
 		}
 		// do color/markup
 		if (pbt)
@@ -954,47 +878,55 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 			// apply markup
 			Markup.Apply(bt, dwBlitClr);
 			if (dwBlitClr != dwColor) ModulateClrA(dwBlitClr, dwAlphaMod);
-			lpDDraw->ActivateBlitModulation(dwBlitClr);
+			pDraw->ActivateBlitModulation(dwBlitClr);
 			// move transformation center to center of letter
 			float fOffX=(float) w2/2 + iX;
 			float fOffY=(float) h2/2 + iY;
 			bt.mat[2] += fOffX - fOffX*bt.mat[0] - fOffY*bt.mat[1];
 			bt.mat[5] += fOffY - fOffX*bt.mat[3] - fOffY*bt.mat[4];
 		}
-		// blit character or image
-		lpDDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
-		              sfcDest, iX, iY, float(w2), float(h2),
-		              true, pbt);
+		if(imgbuf[0])
+		{
+			C4Facet fct;
+			fct.Set(sfcDest, iX, iY + (iGfxLineHgt - h2)/2.0f, w2, h2);
+			pCustomImages->DrawFontImage(imgbuf, fct, pbt);
+		}
+		else
+		{
+			// blit character
+			pDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
+				           sfcDest, iX, iY, float(w2), float(h2),
+				           true, pbt);
+		}
 		// advance pos and skip character indent
 		iX+=w2+iHSpace;
 	}
 	// reset blit modulation
 	if (fWasModulated)
-		lpDDraw->ActivateBlitModulation(dwOldModClr);
+		pDraw->ActivateBlitModulation(dwOldModClr);
 	else
-		lpDDraw->DeactivateBlitModulation();
+		pDraw->DeactivateBlitModulation();
 }
 
-// The internal clonk charset is one of the windows charsets
-// But to save the used one to the configuration, a string is used
-// So we need to convert this string to the iconv name for iconv
-const char * GetCharsetCodeName(const char *strCharset)
+bool CStdFont::GetFontImageSize(const char* szTag, int& width, int& height) const
 {
-	// Match charset name to WinGDI codes
-	if (SEqualNoCase(strCharset, "SHIFTJIS"))    return "CP932";
-	if (SEqualNoCase(strCharset, "HANGUL"))      return "CP949";
-	if (SEqualNoCase(strCharset, "JOHAB"))       return "CP1361";
-	if (SEqualNoCase(strCharset, "CHINESEBIG5")) return "CP950";
-	if (SEqualNoCase(strCharset, "GREEK"))       return "CP1253";
-	if (SEqualNoCase(strCharset, "TURKISH"))     return "CP1254";
-	if (SEqualNoCase(strCharset, "VIETNAMESE"))  return "CP1258";
-	if (SEqualNoCase(strCharset, "HEBREW"))      return "CP1255";
-	if (SEqualNoCase(strCharset, "ARABIC"))      return "CP1256";
-	if (SEqualNoCase(strCharset, "BALTIC"))      return "CP1257";
-	if (SEqualNoCase(strCharset, "RUSSIAN"))     return "CP1251";
-	if (SEqualNoCase(strCharset, "THAI"))        return "CP874";
-	if (SEqualNoCase(strCharset, "EASTEUROPE"))  return "CP1250";
-	if (SEqualNoCase(strCharset, "UTF-8"))       return "UTF-8";
-	// Default
-	return "CP1252";
+	const float aspect = pCustomImages ? pCustomImages->GetFontImageAspect(szTag) : -1.0f;
+
+	// aspect < 0 means there is no such image
+	if (aspect < 0.0f) return false;
+
+	// image found: adjust aspect by font height and calc appropriate width
+	height = iGfxLineHgt;
+	width = static_cast<int>(height * aspect + 0.5f);
+
+	// make images not ridiciously wide
+	if(width > height)
+	{
+		float scale = static_cast<float>(height)/static_cast<float>(width);
+
+		width = height;//static_cast<int32_t>(width*scale + 0.5f);
+		height = static_cast<int32_t>(height*scale + 0.5f);
+	}
+
+	return true;
 }

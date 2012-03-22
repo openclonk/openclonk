@@ -73,7 +73,7 @@ abstract class C4Network {
     public static function decodeEntitiyString($string) {
         $num = ereg_replace("[^0-9]", "", $string);
         $num = octdec($num);
-        return iconv('Windows-1252', 'UTF-8', chr($num));
+        return chr($num);
     }
 }
 ?>

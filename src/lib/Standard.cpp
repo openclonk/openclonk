@@ -4,9 +4,9 @@
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
  * Copyright (c) 2002, 2004, 2007-2008  Sven Eberhardt
  * Copyright (c) 2004-2005  Peter Wortmann
- * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009, 2011  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010-2011  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -137,7 +137,54 @@ bool IsIdentifier(char cChar)
 	return false;
 }
 
+static bool IsNumber(char c, int base)
+{
+	return (c >= '0' && c <= '9' && c < ('0' + base)) ||
+	       (c >= 'a' && c <= 'z' && c < ('a' + base - 10)) ||
+	       (c >= 'A' && c <= 'Z' && c < ('A' + base - 10));
+}
+
+static int ToNumber(char c)
+{
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'z') return 10 + c - 'a';
+	if (c >= 'A' && c <= 'Z') return 10 + c - 'A';
+	assert(false);
+	return 0;
+}
+
 //------------------------------- Strings ------------------------------------------------
+
+int32_t StrToI32(const char *s, int base, const char **scan_end)
+{
+	int sign = 1;
+	int32_t result = 0;
+	if (*s == '-')
+	{
+		sign = -1;
+		s++;
+	}
+	else if (*s == '+')
+	{
+		s++;
+	}
+	while (IsNumber(*s,base))
+	{
+		int value = ToNumber(*s++);
+		assert (value < base && value >= 0);
+		result *= base;
+		result += value;
+	}
+	if (scan_end != 0L) *scan_end = s;
+	if (result < 0)
+	{
+		//overflow
+		// we need 2147483648 (2^31) to be -2147483648 in order for -2147483648 to work
+		//result = INT_MAX;
+	}
+	result *= sign;
+	return result;
+}
 
 void SCopy(const char *szSource, char *sTarget, size_t iMaxL)
 {
@@ -747,49 +794,6 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard)
 	return !*pWild && !*pPos;
 }
 
-const char* SGetParameter(const char *strCommandLine, int iParameter, char *strTarget, int iSize, bool *pWasQuoted)
-{
-	// Safeties
-	if (iParameter < 0) return NULL;
-	// Parse command line which may contain spaced or quoted parameters
-	static char strParameter[2048 + 1];
-	const char* c = strCommandLine;
-	bool fQuoted;
-	while (c && *c)
-	{
-		// Quoted parameter
-		if ((fQuoted = (*c == '"')))
-		{
-			SCopyUntil(++c, strParameter, '"', 2048);
-			c += SLen(strParameter);
-			if (*c == '"') c++;
-		}
-		// Spaced parameter
-		else
-		{
-			bool fWrongQuote = (SCharPos('"', c) > -1) && (SCharPos('"', c) < SCharPos(' ', c));
-			SCopyUntil(c, strParameter, fWrongQuote ? '"' : ' ', 2048);
-			c += Max<size_t>(SLen(strParameter), 1);
-		}
-		// Process (non-empty) parameter
-		if (strParameter[0])
-		{
-			// Success
-			if (iParameter == 0)
-			{
-				if (strTarget) SCopy(strParameter, strTarget, iSize);
-				if (pWasQuoted) *pWasQuoted = fQuoted;
-				return strParameter;
-			}
-			// Continue
-			else
-				iParameter--;
-		}
-	}
-	// Not found
-	return NULL;
-}
-
 /* Some part of the Winapi */
 
 #ifdef NEED_FALLBACK_ATOMIC_FUNCS
@@ -806,16 +810,161 @@ long InterlockedDecrement(long * var)
 }
 #endif
 
-#ifndef _WIN32
-
-#include <sys/time.h>
-
-unsigned long timeGetTime(void)
+// UTF-8 conformance checking
+namespace
 {
-	static time_t sec_offset;
-	timeval tv;
-	gettimeofday(&tv, 0);
-	if (!sec_offset) sec_offset = tv.tv_sec;
-	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
+	static const int utf8_continuation_byte_table[256] =
+	{
+		// How many continuation bytes must follow a byte with this value?
+		// Negative values mean that this byte can never start a valid
+		// UTF-8 sequence.
+		// Note that while the encoding scheme allows more than three
+		// trailing bytes in principle, it is not actually allowed for UTF-8.
+		// Values 0xC0 and 0xC1 can never occur in UTF-8 because they
+		// would mark the beginning of an overlong encoding of characters
+		// below 0x80.
+		// Values 0xF5 to 0xFD are invalid because they can only be used
+		// to encode characters beyond the Unicode range.
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00000000..0b00001111, 0x00..0x0F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00010000..0b00011111, 0x10..0x1F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00100000..0b00101111, 0x20..0x2F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b00110000..0b00111111, 0x30..0x3F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01000000..0b01001111, 0x40..0x4F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01010000..0b01011111, 0x50..0x5F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01100000..0b01101111, 0x60..0x6F
+		 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  // 0b01110000..0b01111111, 0x70..0x7F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10000000..0b10001111, 0x80..0x8F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10010000..0b10011111, 0x90..0x9F
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10100000..0b10101111, 0xA0..0xAF
+		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 0b10110000..0b10111111, 0xB0..0xBF
+		-1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11000000..0b11001111, 0xC0..0xCF
+		 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  // 0b11010000..0b11011111, 0xD0..0xDF
+		 2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  // 0b11100000..0b11101111, 0xE0..0xEF
+		 3,  3,  3,  3,  3, -3, -3, -3, -4, -4, -4, -4, -5, -5, -1, -1   // 0b11110000..0b11111111, 0xF0..0xFF
+	};
+	static const uint32_t utf8_min_char_value[4] =
+	{
+		// Which is the lowest character value that may be encoded
+		// using this many continuation bytes?
+		0, 0x80, 0x800, 0x10000
+	};
 }
-#endif
+
+bool IsValidUtf8(const char *text, int length)
+{
+	// Intentionally using a C-style cast to always get a uint8_t* from char*;
+	// reinterpret_cast would fail here on platforms that have unsigned char,
+	// while static_cast would fail on platforms with a signed char type
+	const uint8_t *input = (const uint8_t*)(text);
+
+	for (const uint8_t *cursor = input; length < 0 ? *cursor != 0 : cursor - input < length; ++cursor)
+	{
+		int continuation_bytes = utf8_continuation_byte_table[*cursor];
+		if (continuation_bytes < 0)
+			return false;
+		else if (continuation_bytes == 0)
+		{
+			// Standard 7-bit ASCII value (i.e., 1 byte codepoint)
+			continue;
+		}
+		else if (length >= 0 && cursor - input + continuation_bytes >= length)
+		{
+			// Too few remaining bytes
+			return false;
+		}
+		
+		// Compute character value, so we can detect overlong sequences
+		assert((*cursor & 0xC0) == 0xC0);
+		uint32_t value = *cursor;
+		// strip length bits off the start byte
+		value &= (0xFF >> (continuation_bytes + 1));
+		for (int byte = 0; byte < continuation_bytes; ++byte)
+		{
+			// check that this is actually a continuation byte
+			if ((cursor[byte + 1] & 0xC0) != 0x80)
+				return false;
+			// merge continuation byte into value
+			value <<= 6;
+			value |= cursor[byte + 1] & 0x3F;
+		}
+		// make sure this is not overlong
+		if (value < utf8_min_char_value[continuation_bytes])
+			return false;
+		// and also not beyond 0x10FFFF
+		if (value > 0x10FFFF)
+			return false;
+		// and also not a wrongly encoded UTF-16 surrogate half
+		if (value >= 0xD800 && value <= 0xDFFF)
+			return false;
+		cursor += continuation_bytes;
+	}
+	// Looks fine
+	return true;
+}
+
+// UTF-8 iteration
+uint32_t GetNextUTF8Character(const char **pszString)
+{
+	// assume the current character is UTF8 already (i.e., highest bit set)
+	const char *szString = *pszString;
+	unsigned char c = *szString++;
+	uint32_t dwResult = '?';
+	assert(c>127);
+	if (c>191 && c<224)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&31)<<6) | (c2&63); // two char code
+	}
+	else if (c >= 224 && c <= 239)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
+	}
+	else if (c >= 240 && c <= 247)
+	{
+		unsigned char c2 = *szString++;
+		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c3 = *szString++;
+		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		unsigned char c4 = *szString++;
+		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
+		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
+	}
+	*pszString = szString;
+	return dwResult;
+}
+
+int GetCharacterCount(const char * s)
+{
+	int l = 0;
+	while (*s)
+	{
+		unsigned char c = *s;
+		if (c < 128 || c > 247)
+		{
+			++l;
+			s += 1;
+		}
+		else if (c > 191 && c < 224)
+		{
+			++l;
+			s += 2;
+		}
+		else if (c >= 224 && c <= 239)
+		{
+			++l;
+			s += 3;
+		}
+		else if (c >= 240 && c <= 247)
+		{
+			++l;
+			s += 4;
+		}
+		else assert(false);
+	}
+	return l;
+}

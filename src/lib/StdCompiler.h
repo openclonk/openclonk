@@ -50,7 +50,7 @@ class StdCompiler
 
 public:
 
-	StdCompiler() : pWarnCB(NULL)
+	StdCompiler() : pWarnCB(NULL), pWarnData(NULL)
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 			, fFailSafe(false), fFail(false)
 #endif
@@ -75,6 +75,9 @@ public:
 	// Does the compiler encourage verbosity (like producing more text instead of
 	// just a numerical value)?
 	virtual bool isVerbose()                      { return hasNaming(); }
+
+	// Is it a registry compiler with special handling for arrays?
+	virtual bool isRegistry()                     { return false; }
 
 	// callback by runtime-write-allowed adaptor used by compilers that may set runtime values only
 	virtual void setRuntimeWritesAllowed(int32_t iChange) { }
@@ -695,7 +698,7 @@ protected:
 		// Constructor
 		NameNode(NameNode *pParent = NULL)
 				: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
-				Indent(-1)
+				Indent(-1), Pos(NULL), Section(false)
 		{ }
 	};
 	NameNode *pNameRoot, *pName;

@@ -7,7 +7,7 @@
     <title>ComposeContents</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -19,12 +19,6 @@
       </params>
     </syntax>
     <desc>Creates an object of the specified type in the contents of the calling object. The object is composed from components which must be available inside the object. Otherwise, a message is displayed listing missing components. This function causes the callback BuildNeedsMaterial which can be used to intercept the message and perform custom actions for acquiring the necessary material.</desc>
-    <examples>
-      <example>
-        <code><funclink>FindObject</funclink>(HUT1)-&gt;ComposeContents(STMG);</code>
-        <text>Composes a steam engine in the closest hut if the necessary material is available.</text>
-      </example>
-    </examples>
   </func>
   <author>springer</author><date>2002-04</date>
 </funcs>

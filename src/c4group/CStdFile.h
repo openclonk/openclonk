@@ -25,11 +25,11 @@
 
 #include <stdio.h>
 #include <StdFile.h>
+#include <StdSync.h> // for StdThreadCheck
 #include <StdBuf.h>
+#include <zlib.h> // for gzFile
 
 const int CStdFileBufSize = 4096;
-
-typedef void* gzFile;
 
 class CStdStream
 {
@@ -56,6 +56,7 @@ protected:
 	BYTE Buffer[CStdFileBufSize];
 	int BufferLoad,BufferPtr;
 	bool ModeWrite;
+	StdThreadCheck thread_check; // thread check helper to make sure only the thread that opened the file is using it
 public:
 	bool Create(const char *szFileName, bool fCompressed=false, bool fExecutable=false, bool fMemory=false);
 	bool Open(const char *szFileName, bool fCompressed=false);
@@ -68,13 +69,6 @@ public:
 	bool WriteString(const char *szStr);
 	bool Rewind();
 	bool Advance(int iOffset);
-	// Single line commands
-	bool Load(const char *szFileName, BYTE **lpbpBuf,
-	          int *ipSize=NULL, int iAppendZeros=0,
-	          bool fCompressed = false);
-	bool Save(const char *szFileName, const BYTE *bpBuf,
-	          int iSize,
-	          bool fCompressed = false);
 	// flush contents to disk
 	inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
 	size_t AccessedEntrySize();
@@ -85,5 +79,7 @@ protected:
 };
 
 int UncompressedFileSize(const char *szFileName);
+bool GetFileCRC(const char *szFilename, uint32_t *pCRC32);
+bool GetFileSHA1(const char *szFilename, BYTE *pSHA1);
 
 #endif // INC_CSTDFILE

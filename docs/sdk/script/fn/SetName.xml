@@ -7,47 +7,44 @@
     <title>SetName</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.9.1.0 GWE
-   <extversion>4.9.6.0 CR</extversion>
-  </version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
           <type>string</type>
           <name>name</name>
-          <desc>New name. If nil, the object's name is reset to the definition value or the original crew member's name.</desc>
+          <desc>New name. If <code>nil</code>, the object's name is reset to the definition value or the original crew member's name.</desc>
         </param>
         <param>
           <type>bool</type>
           <name>set_permanent</name>
-          <desc>For crew members only: if true, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file. From CR.</desc>
+          <desc>For crew members only: if <code>true</code>, the name is changed permanently in the crew info in the player file. There may be no duplicate names within a player file.</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
           <name>make_valid_if_exists</name>
-          <desc>Determines what should happen if a clonk of the same name already exists in the player's crew. If false, the function call will fail. If true, a unique name is created by appending a number. From CR.</desc>
+          <desc>Determines what should happen if a clonk of the same name already exists in the player's crew. If <code>false</code>, the function call will fail. If <code>true</code>, a unique name is created by appending a number.</desc>
           <optional />
         </param>
       </params>
     </syntax>
     <desc>Changes name of an object or a definition for the duration of the round.</desc>
-    <remark>Before CE, a call of this function for a crew member woud result in a permanent name change in the player file and a call for a normal object would rename all objects of the same type.</remark>
     <examples>
       <example>
         <code>protected func InitializePlayer(player)
-  {
-  <funclink>GetHiRank</funclink>(player)-&gt;SetName(&quot;Strunzmuffel&quot;);
-  <funclink>return</funclink> 1;
-  }</code>
+{
+	<funclink>GetHiRank</funclink>(player)-&gt;SetName(&quot;Strunzmuffel&quot;);
+	<funclink>return</funclink> 1;
+}</code>
         <text>Scenario script: the highest ranking clonks of joining players get different names in this round.</text>
       </example>
       <example>
         <code>protected func Initialize()
 {
-  Wood-&gt;SetName(&quot;Baumstamm&quot;);
-  }</code>
+	Wood-&gt;SetName(&quot;Baumstamm&quot;);
+}</code>
         <text>Scenario script: In this round, wood will be called "Baumstamm".</text>
       </example>
     </examples>

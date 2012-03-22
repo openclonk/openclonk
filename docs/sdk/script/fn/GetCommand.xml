@@ -7,10 +7,7 @@
     <title>GetCommand</title>
     <category>Objects</category>
     <subcat>Commands</subcat>
-    <version>4.6.5.0 CP
-      <extversion>4.9.1.0 GWE</extversion>
-      <extversion>4.9.5.0 CE</extversion>
-    </version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -28,7 +25,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns information on a current command of an object. If the object does not have any commands set, 0 is returned for all queries.</desc>
+    <desc>Returns information on a current command of an object. If the object does not have any commands set, <code>nil</code> is returned for all queries.</desc>
     <examples>
       <example>
         <code>func Timer()

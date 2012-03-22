@@ -1,0 +1,12 @@
+[Material]
+Name=Ore
+Shape=Rough
+Density=50
+Friction=100
+BlastFree=1
+Blast2Object=Ore
+Blast2ObjectRatio=100
+MaxAirSpeed=100
+MaxSlide=1
+Placement=50
+TextureOverlay=ore

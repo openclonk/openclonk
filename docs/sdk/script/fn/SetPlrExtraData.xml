@@ -6,7 +6,7 @@
   <func>
     <title>SetPlrExtraData</title>
     <category>Player</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC<extversion>5.2 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -28,21 +28,23 @@
       </params>
     </syntax>
     <desc>With this function additional data can be saved in player's file. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
-    <remark>No objects or strings may be saved.</remark>
+    <remark>No objects or arrays may be saved.</remark>
     <remark>Because all scenarios use the same storage, the name for the data should be prefixed with the scenario name or your developer id.</remark>
     <examples>
       <example>
-        <code>Timer:
+        <code>func SaveWealth()
+{
   for(var i=0; i&lt;<funclink>GetPlayerCount</funclink>(); i++)
     SetPlrExtraData(i, &quot;MySzen_Wealth&quot;, <funclink>GetWealth</funclink>(i));
-  return();
+}
 
-Initialize:
+func Initialize()
+{
   for(var i=0; i&lt;<funclink>GetPlayerCount</funclink>(); i++)
     <funclink>SetWealth</funclink>(i, <funclink>GetPlrExtraData</funclink>(i, &quot;MySzen_Wealth&quot;));
-  return();
+}
   </code>
-        <text>The first function periodically saves the wealth with the name "MySzen_Wealth" in the player's file. If the round is restarted, the wealth is restored in Initialize.</text>
+        <text>The first function saves the wealth with the name "MySzen_Wealth" into the player's file. It should be called on periodically or on the end of the round. If the round is restarted, the wealth is restored in Initialize.</text>
       </example>
     </examples>
     <related>

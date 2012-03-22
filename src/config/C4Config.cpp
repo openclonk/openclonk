@@ -1,13 +1,12 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: t; c-basic-offset: 2 -*- */
 /*
  * OpenClonk, http://www.openclonk.org
  * Copyright (c) 1998-2000, 2003-2004, 2007-2008  Matthes Bender
- * Copyright (c) 2002, 2006-2008  Sven Eberhardt
+ * Copyright (c) 2002, 2006-2008, 2011  Sven Eberhardt
  * Copyright (c) 2003, 2005-2007  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2006  Alex
+ * Copyright (c) 2005-2009, 2011  Günther Brammer
+ * Copyright (c) 2006  Alexander Post
  * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2008  Armin Burgmeier
+ * Copyright (c) 2008, 2011  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -28,8 +27,8 @@
 
 #include <C4Include.h>
 #include <C4Config.h>
-#include <C4Version.h>
 
+#include <C4Version.h>
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Network2.h>
@@ -37,9 +36,8 @@
 
 #include <utility>
 #include <StdFile.h>
-#include <StdWindow.h>
+#include <C4Window.h>
 #include <StdRegistry.h>
-#include <StdWindow.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -67,14 +65,13 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	// assimilate old data
 	pComp->Value(mkNamingAdapt(s(Adopt.PlayerPath), "PlayerPath",       ""));
 
-	pComp->Value(mkNamingAdapt(SaveGameFolder,      "SaveGameFolder",     "Savegames.c4f", false, true));
-	pComp->Value(mkNamingAdapt(SaveDemoFolder,      "SaveDemoFolder",     "Records.c4f",   false, true  ));
 	pComp->Value(mkNamingAdapt(s(MissionAccess),    "MissionAccess",      "", false, true));
 	pComp->Value(mkNamingAdapt(FPS,                 "FPS",                0              ));
 	pComp->Value(mkNamingAdapt(DefRec,              "DefRec",             0              ));
 	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
 	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
 	pComp->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
+	pComp->Value(mkNamingAdapt(OpenScenarioInGameMode, "OpenScenarioInGameMode", 0   )); 
 #ifdef _WIN32
 	pComp->Value(mkNamingAdapt(MMTimer,             "MMTimer",            1              ));
 #endif
@@ -82,7 +79,6 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RXFontSize,          "FontSize",           14,            false, true));
 	pComp->Value(mkNamingAdapt(GamepadEnabled,      "GamepadEnabled",     true           ));
 	pComp->Value(mkNamingAdapt(FirstStart,          "FirstStart",         true           ));
-	pComp->Value(mkNamingAdapt(UserPortraitsWritten,"UserPortraitsWritten",false         ));
 	pComp->Value(mkNamingAdapt(ConfigResetSafety,   "ConfigResetSafety",  static_cast<int32_t>(ConfigResetSafetyVal) ));
 }
 
@@ -101,8 +97,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
-	pComp->Value(mkNamingAdapt(AddNewCrewPortraits,   "AddNewCrewPortraits",  0             ,false, true));
-	pComp->Value(mkNamingAdapt(SaveDefaultPortraits,  "SaveDefaultPortraits", 0             ,false, true));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
 	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     0             ,false, true));
@@ -160,7 +154,6 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PortDiscovery,           "PortDiscovery",        C4NetStdPortDiscovery ,false, true));
 	pComp->Value(mkNamingAdapt(PortRefServer,           "PortRefServer",        C4NetStdPortRefServer ,false, true));
 	pComp->Value(mkNamingAdapt(ControlMode,             "ControlMode",          0             ));
-	pComp->Value(mkNamingAdapt(SendPortraits,           "SendPortraits",        0             ,false, true));
 	pComp->Value(mkNamingAdapt(Nick,                    "Nick",                 ""            ,false, true));
 	pComp->Value(mkNamingAdapt(MaxLoadFileSize,         "MaxLoadFileSize",      5*1024*1024   ,false, true));
 
@@ -248,11 +241,10 @@ void C4ConfigGamepad::Reset()
 	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, false));
 }
 
-void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
+void C4ConfigControls::CompileFunc(StdCompiler *pComp)
 {
 #ifndef USE_CONSOLE
-	if (fKeysOnly) return;
-
+	pComp->Value(mkNamingAdapt(UserSets, "UserSets",    C4PlayerControlAssignmentSets()));
 	pComp->Value(mkNamingAdapt(MouseAScroll,      "MouseAutoScroll",      0));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,     false, true));
 #endif
@@ -275,14 +267,12 @@ void C4Config::Default()
 	fConfigLoaded=false;
 }
 
-void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory, const char *szConfigFile)
+void C4Config::GetConfigFileName(StdStrBuf &filename, const char *szConfigFile)
 {
 	if (szConfigFile)
 	{
 		// Config filename is specified
 		filename.Ref(szConfigFile);
-		// make sure we're at the correct path to load it
-		if (forceWorkingDirectory) General.DeterminePaths(true);
 	}
 	else
 	{
@@ -298,7 +288,7 @@ void C4Config::GetConfigFileName(StdStrBuf &filename, bool forceWorkingDirectory
 	}
 }
 
-bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
+bool C4Config::Load(const char *szConfigFile)
 {
 	try
 	{
@@ -314,7 +304,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 		{
 			// Nonwindows or explicit config file: Determine filename to load config from
 			StdStrBuf filename;
-			GetConfigFileName(filename, forceWorkingDirectory, szConfigFile);
+			GetConfigFileName(filename, szConfigFile);
 
 			// Load config file into buf
 			StdStrBuf buf;
@@ -351,8 +341,7 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	}
 
 	// Config postinit
-	General.DeterminePaths(forceWorkingDirectory);
-	General.AdoptOldSettings();
+	General.DeterminePaths();
 #ifdef HAVE_WINSOCK
 	// Setup WS manually, so c4group doesn't depend on C4NetIO
 	WSADATA wsadata;
@@ -414,7 +403,7 @@ bool C4Config::Save()
 #endif
 		{
 			StdStrBuf filename;
-			GetConfigFileName(filename, false, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
+			GetConfigFileName(filename, ConfigFilename.getLength() ? ConfigFilename.getData() : NULL);
 			StdCompilerINIWrite IniWrite;
 			IniWrite.Decompile(*this);
 			IniWrite.getOutput().SaveToFile(filename.getData());
@@ -429,54 +418,72 @@ bool C4Config::Save()
 	return true;
 }
 
-void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
+void C4ConfigGeneral::DeterminePaths()
 {
 #ifdef _WIN32
 	// Exe path
-	if (GetModuleFileName(NULL,ExePath,CFG_MaxString))
-		{ TruncatePath(ExePath); AppendBackslash(ExePath); }
+	wchar_t apath[CFG_MaxString];
+	if (GetModuleFileNameW(NULL,apath,CFG_MaxString))
+	{
+		ExePath = StdStrBuf(apath);
+		TruncatePath(ExePath.getMData());
+		ExePath.SetLength(SLen(ExePath.getMData()));
+		ExePath.AppendBackslash();
+	}
 	// Temp path
-	GetTempPath(CFG_MaxString,TempPath);
-	if (TempPath[0]) AppendBackslash(TempPath);
+	GetTempPathW(CFG_MaxString,apath);
+	TempPath = StdStrBuf(apath);
+	if (TempPath[0]) TempPath.AppendBackslash();
 #elif defined(__linux__)
-	GetParentPath(Application.Location, ExePath);
-	AppendBackslash(ExePath);
+	ExePath.SetLength(1024);
+	ssize_t l = readlink("/proc/self/exe", ExePath.getMData(), 1024);
+	if (l < -1)
+	{
+		ExePath.Ref(".");
+	}
+	else
+	{
+		ExePath.SetLength(l);
+		GetParentPath(ExePath.getData(), &ExePath);
+		ExePath.AppendBackslash();
+	}
 	const char * t = getenv("TMPDIR");
 	if (t)
 	{
-		SCopy(t, TempPath, sizeof(TempPath)-2);
-		AppendBackslash(TempPath);
+		TempPath = t;
+		TempPath.AppendBackslash();
 	}
 	else
-		SCopy("/tmp/", TempPath);
+		TempPath = "/tmp/";
 #else
 	// Mac: Just use the working directory as ExePath.
-	SCopy(GetWorkingDirectory(), ExePath);
-	AppendBackslash(ExePath);
-	SCopy("/tmp/", TempPath);
-#endif
-	// Force working directory to exe path if desired
-
-#ifndef _DEBUG
-	if (forceWorkingDirectory)
-		SetWorkingDirectory(ExePath);
+	ExePath = GetWorkingDirectory();
+	ExePath.AppendBackslash();
+	TempPath = "/tmp/";
 #endif
 
 	// Find system-wide data path
-#if defined(_WIN32) || defined(__APPLE__)
-	// Use workdir; in release builds, this is the exe dir
-	SCopy(GetWorkingDirectory(),SystemDataPath);
-	AppendBackslash(SystemDataPath);
+#if defined(_WIN32)
+	// Use ExePath: on windows, everything is installed to one directory
+	SCopy(ExePath.getMData(),SystemDataPath);
+#elif defined(__APPLE__)
+	SCopy(::Application.GetGameDataPath().getData(),SystemDataPath);
 #elif defined(__linux__)
 
 #ifdef OC_SYSTEM_DATA_DIR
+#ifdef WITH_AUTOMATIC_UPDATE
+	// WITH_AUTOMATIC_UPDATE builds are our tarball releases and
+	// development snapshots, i.e. where the game data is at the
+	// same location as the executable.
+	SCopy(ExePath.getMData(),SystemDataPath);
+#else
 	SCopy(OC_SYSTEM_DATA_DIR, SystemDataPath);
-	AppendBackslash(SystemDataPath);
+#endif
 #else
 #error Please define OC_SYSTEM_DATA_DIR!
-	//SCopy(ExePath,SystemDataPath);
 #endif
 #endif
+	AppendBackslash(SystemDataPath);
 
 	// Find user-specific data path
 	if (ConfigUserPath[0])
@@ -503,43 +510,11 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	CreatePath(UserDataPath);
 }
 
-static bool GrabOldPlayerFile(const char *fn)
-{
-	if (FileExists(Config.AtUserDataPath(GetFilename(fn))))
-	{
-		// player already exists in user dir, skip
-		return true;
-	}
-	if (!MoveItem(fn, Config.AtUserDataPath(GetFilename(fn))))
-	{
-		// possibly unpacked
-		if (DirectoryExists(fn))
-		{
-			if (!C4Group_PackDirectoryTo(fn, Config.AtUserDataPath(GetFilename(fn))))
-				return true; // ignore errors
-		}
-	}
-	return true;
-}
-void C4ConfigGeneral::AdoptOldSettings()
-{
-	// Copy over old player data
-	if (*Adopt.PlayerPath)
-	{
-		ForEachFile(FormatString("%s/%s", Config.AtExePath(Adopt.PlayerPath), C4CFN_PlayerFiles).getData(), &GrabOldPlayerFile);
-		*Adopt.PlayerPath = '\0';
-	}
-	else if (!ItemIdentical(Config.General.ExePath, Config.General.UserDataPath))
-	{
-		ForEachFile(Config.AtExePath(C4CFN_PlayerFiles), &GrabOldPlayerFile);
-	}
-}
-
 static char AtPathFilename[_MAX_PATH+1];
 
 const char* C4Config::AtExePath(const char *szFilename)
 {
-	SCopy(General.ExePath,AtPathFilename,_MAX_PATH);
+	SCopy(General.ExePath.getData(),AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
@@ -560,7 +535,7 @@ const char* C4Config::AtSystemDataPath(const char *szFilename)
 
 const char* C4Config::AtTempPath(const char *szFilename)
 {
-	SCopy(General.TempPath,AtPathFilename,_MAX_PATH);
+	SCopy(General.TempPath.getData(),AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
@@ -582,11 +557,9 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 			AtPathFilename[len-1] = '\0';
 	if (!CreatePath(AtPathFilename))
 	{
-		SCopy(General.ExePath, General.ScreenshotPath, CFG_MaxString-1);
-		SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
+		SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	}
-	else
-		AppendBackslash(AtPathFilename);
+	AppendBackslash(AtPathFilename);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 }
@@ -638,7 +611,7 @@ void C4ConfigNetwork::CheckPortsForCollisions()
 }
 void C4ConfigControls::ResetKeys()
 {
-	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, true));
+	UserSets.Clear();
 }
 
 const char* C4Config::AtUserDataRelativePath(const char *szFilename)
@@ -677,7 +650,7 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 		// not in ExePath: Is it a global path?
 		if (IsGlobalPath(sFilename->getData()))
 		{
-			// then shorten it (e.g. C:\Temp\Missions.c4f\Goldmine.c4s to Missions.c4f\Goldmine.c4s)
+			// then shorten it (e.g. C:\Temp\Missions.ocf\Goldmine.ocs to Missions.ocf\Goldmine.ocs)
 			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(sFilename->getData()));
 			sFilename->Take(std::move(sTemp));
 		}
@@ -787,9 +760,9 @@ bool C4Config::RemoveModule(const char *szPath, char *szModules)
 void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 {
 #ifdef _WIN32
-	char buf[_MAX_PATH + 1];
-	ExpandEnvironmentStrings(strPath, buf, _MAX_PATH);
-	SCopy(buf, strPath, iMaxLen);
+	wchar_t buf[_MAX_PATH + 1];
+	ExpandEnvironmentStringsW(GetWideChar(strPath), buf, _MAX_PATH);
+	SCopy(StdStrBuf(buf).getData(), strPath, iMaxLen);
 #else // __linux__ or __APPLE___
 	StdStrBuf home(getenv("HOME"));
 	char* rest;
@@ -801,3 +774,5 @@ void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 	}
 #endif
 }
+
+C4Config Config;

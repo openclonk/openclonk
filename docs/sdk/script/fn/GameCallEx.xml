@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GameCallEx</title>
+    <category>Script</category>
+    <subcat>Function call</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>function</name>
+          <desc>Name of the script function.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Up to nine parameters which are passed to the scenario script function.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Makes a broadcast call to the scenario script, all goals, rules and environment objects. This is what the engine does when it makes a scenario callback, see <emlink href="scenario/script.html#Callbacks">scenario script callbacks</emlink>.</desc>
+    <examples>
+      <example>
+        <code>GameCallEx(&quot;InitializePlayer&quot;,0);</code>
+        <text>Causes the scenario script and all goals, rules and environment objects to re-execute intialization for the first player. This is what is done on the normal initialization of a player.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GameCall</funclink>
+      <funclink>Call</funclink>
+      <funclink>DefinitionCall</funclink>
+    </related>
+  </func>
+  <author>Newton</author><date>2011-07</date>
+</funcs>

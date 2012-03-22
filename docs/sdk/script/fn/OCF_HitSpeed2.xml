@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>OCF_HitSpeed2</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: object is moving at at least 2 pixels per frame.</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <remark>For more information and examples regarding these constants see <emlink href="definition/ocf.html">object character flags</emlink>.</remark>
     <related>
       <funclink>GetOCF</funclink>
@@ -20,6 +19,6 @@
       <funclink>OCF_HitSpeed3</funclink>
       <funclink>OCF_HitSpeed4</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-05</date>
 </funcs>

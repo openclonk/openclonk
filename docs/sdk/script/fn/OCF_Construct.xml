@@ -3,14 +3,13 @@
   SYSTEM '../../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-  <func>
+  <const>
     <title>OCF_Construct</title>
     <category>Objects</category>
     <subcat>OCF</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Object character flag: construction site</desc>
-    <remark>This value is also defined as a constant. Thus the parameter brackets can be omitted.</remark>
     <remark>For more information and examples regarding these constants see <emlink href="definition/ocf.html">object character flags</emlink>.</remark>
     <related>
       <funclink>GetOCF</funclink>
@@ -18,6 +17,6 @@
       <emlink href="definition/ocf.html">Object character flags</emlink>
       <funclink>OCF_Fullcon</funclink>
     </related>
-  </func>
+  </const>
   <author>Sven2</author><date>2002-05</date>
 </funcs>

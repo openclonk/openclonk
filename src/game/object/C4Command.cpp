@@ -2,10 +2,10 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2005, 2008  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
  * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2001-2008  Sven Eberhardt
  * Copyright (c) 2002, 2004, 2006  Peter Wortmann
- * Copyright (c) 2004-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2004-2006, 2008-2009, 2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Armin Burgmeier
@@ -243,7 +243,7 @@ static bool ObjectAddWaypoint(int32_t iX, int32_t iY, intptr_t iTransferTarget, 
 	// Add waypoint
 	//AddCommand(iCommand,pTarget,iTx,iTy,iUpdateInterval,pTarget2,fInitEvaluation,iData,fAppend,iRetries,szText,iBaseMode)
 	assert(cObj->Command);
-	if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,25,NULL,false,cObj->Command->Data)) return false;
+	if (!cObj->AddCommand(C4CMD_MoveTo,NULL,iX,iY,iUpdate,NULL,false,cObj->Command->Data)) return false;
 
 	return true;
 }
@@ -324,7 +324,7 @@ void C4Command::MoveTo()
 	if (cObj->OCF & OCF_CrewMember) // || cObj->Def->Pathfinder ? (Sven2)
 	{
 		// Range by size
-		iTargetRange=cObj->Shape.Wdt/5;
+		iTargetRange=cObj->Shape.Wdt/2;
 		// Easier range if waypoint
 		if (fWaypoint)
 			if (cObj->GetProcedure()!=DFA_SCALE)
@@ -1561,12 +1561,7 @@ void C4Command::Transfer()
 	// Call target transfer script
 	if (!::Game.iTick5)
 	{
-
-		C4AulScriptFunc *f;
-		bool fHandled = (f = Target->Def->Script.SFn_ControlTransfer) != NULL;
-		if (fHandled) fHandled = f->Exec(Target,&C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty))).getBool();
-
-		if (!fHandled)
+		if (!Target->Call(PSF_ControlTransfer, &C4AulParSet(C4VObj(cObj), Tx, C4VInt(Ty))).getBool())
 			// Transfer not handled by target: done
 			{ Finish(true); return; }
 	}
@@ -1823,7 +1818,7 @@ void C4Command::Call()
 	// the latest sync losses in 4.62.
 }
 
-void C4Command::CompileFunc(StdCompiler *pComp)
+void C4Command::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	// Version
 	int32_t iVersion = 0;
@@ -1839,13 +1834,13 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkEnumAdaptT<uint8_t>(Command, EnumAdaptCommandEntries));
 	pComp->Separator(StdCompiler::SEP_SEP);
 	// Target X/Y
-	pComp->Value(Tx); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkParAdapt(Tx, numbers)); pComp->Separator(StdCompiler::SEP_SEP);
 	pComp->Value(mkIntPackAdapt(Ty)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Target
 	pComp->Value(Target); pComp->Separator(StdCompiler::SEP_SEP);
 	pComp->Value(Target2); pComp->Separator(StdCompiler::SEP_SEP);
 	// Data
-	pComp->Value(Data); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkParAdapt(Data, numbers)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Update interval
 	pComp->Value(mkIntPackAdapt(UpdateInterval)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Flags
@@ -1882,17 +1877,11 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	}
 }
 
-void C4Command::DenumeratePointers()
+void C4Command::Denumerate(C4ValueNumbers * numbers)
 {
 	Target.DenumeratePointers();
 	Target2.DenumeratePointers();
-	Tx.DenumeratePointer();
-}
-
-void C4Command::EnumeratePointers()
-{
-	Target.EnumeratePointers();
-	Target2.EnumeratePointers();
+	Tx.Denumerate(numbers);
 }
 
 int32_t C4Command::CallFailed()

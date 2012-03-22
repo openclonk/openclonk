@@ -6,22 +6,14 @@
   <func>
     <title>GetEntrance</title>
     <category>Objects</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
-    <desc>Returns the current entrance status of an object. TRUE if entering the object is currently allowed or FALSE if it is disallowed.</desc>
+    <desc>Returns the current entrance status of an object. <code>true</code> if entering the object is currently allowed or <code>false</code> if it is disallowed.</desc>
     <examples>
       <example>
-        <code>/* Wird bei klick auf Spezial aufgerufen */
-protected func ControlSpecial()
-{
-	// ist man irgendwo drinnen?
-	if(<funclink>Contained</funclink>())
-		// Tür zu?
-		if(!<funclink>Contained</funclink>()-&gt;GetEntrance())
-			// Selbstmord begehen!
-			<funclink>Kill</funclink>();
-<funclink>return</funclink>(1);
-}		
+        <code>if(<funclink>Contained</funclink>())
+	if(!<funclink>Contained</funclink>()-&gt;GetEntrance())
+		<funclink>Kill</funclink>();
 				</code>
         <text>Extreme claustrophobia: if the entrance is blocked, commit suicide.</text>
       </example>

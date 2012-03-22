@@ -50,8 +50,6 @@ C4D_Vehicle        =    1<<2,
 C4D_Living         =    1<<3,
 C4D_Object         =    1<<4,
 
-C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object,
-
 C4D_Goal             =  1<<5,
 C4D_Rule             =  1<<6,
 C4D_Environment      =  1<<7,
@@ -63,7 +61,8 @@ C4D_Foreground       =  1<<15,
 C4D_MouseIgnore      =  1<<16,
 C4D_IgnoreFoW        =  1<<17,
 
-C4D_BackgroundOrForeground = (C4D_Background | C4D_Foreground);
+C4D_SortLimit = C4D_StaticBack | C4D_Structure | C4D_Vehicle | C4D_Living | C4D_Object
+              | C4D_Background | C4D_Foreground;
 
 const int32_t C4Plane_Structure = 200;
 
@@ -75,9 +74,11 @@ C4D_Border_Top    = 2,
 C4D_Border_Bottom = 4,
 C4D_Border_Layer  = 8,
 
-C4D_Place_Surface    = 0,
-C4D_Place_Liquid     = 1,
-C4D_Place_Air        = 2;
+C4D_Place_Surface     = 0,
+C4D_Place_Liquid      = 1,
+C4D_Place_Air         = 2,
+C4D_Place_Subsurface  = 3,
+C4D_Place_BothSurface = 4;
 
 const int32_t C4D_VehicleControl_None     = 0,
 C4D_VehicleControl_Outside  = 1,
@@ -141,8 +142,6 @@ public:
 	int32_t NoBurnDecay;
 	int32_t IncompleteActivity;
 	int32_t Placement;
-	int32_t Prey;
-	int32_t Edible;
 	int32_t AttractLightning;
 	int32_t Oversize;
 	int32_t Fragile;
@@ -189,10 +188,8 @@ public:
 	char Filename[_MAX_FNAME+1];
 	int32_t Creation;
 	int32_t Count; // number of instanciations
-	C4AulScriptFunc *TimerCall;
+	C4AulFunc *TimerCall;
 
-	// Currently cannot have script host in frontend because that
-	// would need C4Script, C4AulScript, and all that as well...
 	C4DefScriptHost Script;
 	C4LangStringTable StringTable;
 
@@ -204,8 +201,6 @@ public:
 	C4FacetSurface *pRankSymbols; bool fRankSymbolsOwned;
 	int32_t iNumRankSymbols;    // number of rank symbols available, if loaded
 	C4DefGraphics Graphics; // base graphics. points to additional graphics
-	int32_t PortraitCount;
-	C4PortraitGraphics *Portraits; // Portraits (linked list of C4AdditionalDefGraphics)
 
 protected:
 	C4Facet MainFace;
@@ -229,16 +224,13 @@ public:
 	virtual C4Def * GetDef() { return this; }
 	virtual bool IsDef() const { return true; }
 protected:
-	bool LoadPortraits(C4Group &hGroup);
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();
-private:
-	C4ValueArray *GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance=NULL);
 public:
 	// return def components - may be overloaded by script callback
-	int32_t GetComponentCount(C4ID idComponent, C4Object *pBuilder=NULL);
-	C4ID GetIndexedComponent(int32_t idx, C4Object *pBuilder=NULL);
-	void GetComponents(C4IDList *pOutList, C4Object *pObjInstance=NULL, C4Object *pBuilder=NULL);
+	int32_t GetComponentCount(C4ID idComponent);
+	C4ID GetIndexedComponent(int32_t idx);
+	void GetComponents(C4IDList *pOutList, C4Object *pObjInstance=NULL);
 
 	void IncludeDefinition(C4Def *pIncludeDef); // inherit components from other definition
 	void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains

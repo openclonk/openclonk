@@ -6,7 +6,7 @@
   <func>
     <title>SetCrewExtraData</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC<extversion>5.2 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -23,32 +23,8 @@
       </params>
     </syntax>
     <desc>With this function additional data can be saved in a crew member's file the in player. This can be used to preserve values across scenarios, for example for RPGs or highscores. If successful, the saved value is returned.</desc>
-    <remark>No objects or strings may be saved.</remark>
+    <remark>No objects or arrays may be saved.</remark>
     <remark>Because all scripts use the same storage in the crew member, the name for the data should be prefixed with the scenario or object name or your developer id.</remark>
-    <examples>
-      <example>
-        <code>#include Clonk
-
-local is_invisible;
-    
-protected func Recruitment(a,b,c,d,e,f,g,h,i,j)
-  {
-  var rVal = <funclink>_inherited</funclink>(a,b,c,d,e,f,g,h,i,j);
-  if (<funclink>GetCrewExtraData</funclink>(&quot;C4ID_Invisible&quot;)) <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
-  <funclink>return</funclink>(rVal);
-  }
-    
-protected func ControlSpecial()
-  {
-  if (is_invisible = !is_invisible)
-    <funclink>SetVisibility</funclink>();
-  else
-    <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
-  SetCrewExtraData(&quot;C4ID_Invisible&quot;, is_invisible);
-  }</code>
-        <text>A script for a special clonk: the clonk can make himself invisible through the Special 1 key. The set invisibility is maintained even beyond game end and is reapplied when this clonk is used in a new round.</text>
-      </example>
-    </examples>
     <related>
       <funclink>GetCrewExtraData</funclink>
       <funclink>SetPlrExtraData</funclink>

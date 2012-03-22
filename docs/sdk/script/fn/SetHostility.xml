@@ -6,7 +6,7 @@
   <func>
     <title>SetHostility</title>
     <category>Player</category>
-    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion><extversion>4.9.6.0 CR</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -23,24 +23,24 @@
         <param>
           <type>bool</type>
           <name>hostile</name>
-          <desc>If unequal to 0, the relationship is hostile. Else friendly.</desc>
+          <desc>If <code>true</code>, the relationship is hostile. Otherwise friendly.</desc>
         </param>
         <param>
           <type>bool</type>
           <name>silent</name>
-          <desc>If not 0, the hostility messages in the message board will be suppressed. Hostility messages are never displayed during the first frame of a round, regardless of the value of this parameter.</desc>
+          <desc>If not <code>false</code>, the hostility messages in the message board will be suppressed. Hostility messages are never displayed during the first frame of a round, regardless of the value of this parameter.</desc>
         </param>
         <param>
           <type>bool</type>
           <name>no_calls</name>
-          <desc>If not 0, the callbacks RejectHostilityChange and OnHostilityChange are not executed. From CR.</desc>
+          <desc>If not <code>false</code>, the callbacks RejectHostilityChange and OnHostilityChange are not executed.</desc>
         </param>
       </params>
     </syntax>
     <desc>Sets bilateral friendship of two players.</desc>
     <examples>
       <example>
-        <code>SetHostility(0,1,1); SetHostility(1,0,1);</code>
+        <code>SetHostility(0,1,true,true); SetHostility(1,0,true,true);</code>
         <text>Makes the first two players enemies without causing a message.</text>
       </example>
     </examples>

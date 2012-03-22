@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010-2011  Nicolas Hake
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -129,6 +129,13 @@ namespace Ogre
 					delete chunk;
 					break;
 				case CID_Mesh_Bone_Assignment:
+					// Collect bone assignments
+					{
+					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
+					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
+					delete chunk;
+					break;
+					}
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Mesh chunk", chunk->GetType());
 					// Fall through
@@ -410,12 +417,11 @@ namespace Ogre
 		{
 			name = stream->Read<std::string>();
 			duration = stream->Read<float>();
-			while (Chunk::Peek(stream) == CID_Animation_Track)
+			while (!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_Track)
 			{
 				Chunk *chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_Track);
 				tracks.push_back(static_cast<ChunkAnimationTrack*>(chunk));
-				if (stream->AtEof()) break;
 			}
 		}
 

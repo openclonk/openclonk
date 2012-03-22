@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2003  Matthes Bender
  * Copyright (c) 2001, 2005-2007  Sven Eberhardt
  * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005-2010  Günther Brammer
+ * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2006, 2010  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -107,18 +107,14 @@ bool C4EditCursor::Init()
 	itemDelete = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DELETE"));
 	itemDuplicate = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DUPLICATE"));
 	itemGrabContents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CONTENTS"));
-	itemProperties = gtk_menu_item_new_with_label(""); // Set dynamically in DoContextMenu
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDelete);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDuplicate);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemGrabContents);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), GTK_WIDGET(gtk_separator_menu_item_new()));
-	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemProperties);
 
 	g_signal_connect(G_OBJECT(itemDelete), "activate", G_CALLBACK(OnDelete), this);
 	g_signal_connect(G_OBJECT(itemDuplicate), "activate", G_CALLBACK(OnDuplicate), this);
 	g_signal_connect(G_OBJECT(itemGrabContents), "activate", G_CALLBACK(OnGrabContents), this);
-	g_signal_connect(G_OBJECT(itemProperties), "activate", G_CALLBACK(OnProperties), this);
 
 	gtk_widget_show_all(menuContext);
 #endif // WITH_DEVELOPER_MODe
@@ -231,8 +227,16 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 		else
 		{
 			// Click on unselected: select single
-			if (Target && !Selection.GetLink(Target))
-				{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			if (Target)
+			{
+				C4ObjectLink * it;
+				for(it = Selection.First; it; it = it->Next){
+					if(it->Obj->At(X, Y))
+						break;
+				}
+				if(!it) // means loop didn't break
+					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			}
 			// Click on nothing: drag frame
 			if (!Target)
 				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
@@ -340,15 +344,16 @@ bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 {
-	MENUITEMINFO minfo;
+	MENUITEMINFOW minfo;
 	ZeroMem(&minfo,sizeof(minfo));
 	minfo.cbSize = sizeof(minfo);
 	minfo.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 	minfo.fType = MFT_STRING;
 	minfo.wID = id;
-	minfo.dwTypeData = (char*) szText;
-	minfo.cch = SLen(szText);
-	return !!SetMenuItemInfo(hMenu,id,false,&minfo);
+	StdBuf td = GetWideCharBuf(szText);
+	minfo.dwTypeData = getMBufPtr<wchar_t>(td);
+	minfo.cch = wcslen(minfo.dwTypeData);
+	return !!SetMenuItemInfoW(hMenu,id,false,&minfo);
 }
 #endif
 
@@ -421,32 +426,29 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
-			
-			StdMeshInstance::FaceOrdering old_fo = StdMeshInstance::FO_Fixed;
+
+			StdMeshInstance::FaceOrdering old_fo = StdSubMeshInstance::FO_Fixed;
 			if(cobj->pMeshInstance)
-			{
-				old_fo = cobj->pMeshInstance->GetFaceOrdering();
-				cobj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-			}
-			
+				cobj->pMeshInstance->SetFaceOrdering(StdSubMeshInstance::FO_NearestToFarthest);
+
 			cobj->Draw(cgo,-1);
 			cobj->DrawTopFace(cgo, -1);
 
 			if(cobj->pMeshInstance)
-				cobj->pMeshInstance->SetFaceOrdering(old_fo);
-			
+				cobj->pMeshInstance->SetFaceOrderingForClrModulation(cobj->ColorMod);
+
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;
 		}
 	}
 	// Draw drag frame
 	if (DragFrame)
-		lpDDraw->DrawFrameDw(cgo.Surface,
+		pDraw->DrawFrameDw(cgo.Surface,
 		                               Min(X, X2) + cgo.X - cgo.TargetX, Min(Y, Y2) + cgo.Y - cgo.TargetY,
 		                               Max(X, X2) + cgo.X - cgo.TargetX, Max(Y, Y2) + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drag line
 	if (DragLine)
-		lpDDraw->DrawLineDw(cgo.Surface,
+		pDraw->DrawLineDw(cgo.Surface,
 		                              X + cgo.X - cgo.TargetX, Y + cgo.Y - cgo.TargetY,
 		                              X2 + cgo.X - cgo.TargetX, Y2 + cgo.Y - cgo.TargetY, 0xffffffff);
 	// Draw drop target
@@ -463,21 +465,21 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	if (!cgo.Surface) return;
 
-	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
 
-	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
 
-	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
 
-	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
-	lpDDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
+	pDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
 }
 
 
@@ -523,6 +525,9 @@ void C4EditCursor::Clear()
 #ifdef _WIN32
 	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
 #endif
+#ifdef WITH_DEBUG_MODE
+	ObjselectDelItems();
+#endif
 	Selection.Clear();
 }
 
@@ -541,24 +546,22 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Update prop tools by mode
 	switch (Mode)
 	{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit: case C4CNS_ModePlay:
-		if (Console.ToolsDlg.Active)
-		{
-			Console.ToolsDlg.Clear();
-			OpenPropTools();
-		}
+		Console.ToolsDlgClose();
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeDraw:
 		Console.PropertyDlgClose();
-		OpenPropTools();
 		break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
-	// Update cursor
-	if (Mode==C4CNS_ModePlay) ::MouseControl.ShowCursor();
-	else ::MouseControl.HideCursor();
+	if (Mode == C4CNS_ModePlay)
+	{
+		::MouseControl.ShowCursor();
+	}
+	else
+	{
+		OpenPropTools();
+		::MouseControl.HideCursor();
+	}
 	// Restore focus
 #ifdef _WIN32
 	SetFocus(hFocus);
@@ -630,11 +633,40 @@ bool C4EditCursor::DoContextMenu()
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DUPLICATE, fObjectSelected && Console.Editing);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_CONTENTS, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
-	SetMenuItemEnable( hContext, IDM_VIEWPORT_PROPERTIES, Mode!=C4CNS_ModePlay);
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
-	SetMenuItemText(hContext,IDM_VIEWPORT_PROPERTIES,LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
+
+	ObjselectDelItems();
+	C4FindObjectAtPoint pFO(X,Y);
+	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing (single object ptr)
+	int itemcount = atcursor->GetSize();
+	if(itemcount > 0)
+	{
+		const int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
+		if(itemcount > maxitems) itemcount = maxitems+1;
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
+		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
+		itemsObjselect[0].Object = NULL;
+		AppendMenu(hContext, MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+		int i = 1;
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
+			C4Object * obj = (*atcursor)[i-1].getObj();
+			assert(obj);
+			it->ItemId = IDM_VPORTDYN_FIRST+i;
+			it->Object = obj;
+			AppendMenu(hContext, MF_STRING, it->ItemId, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+		}
+		if(atcursor->GetSize() > maxitems)
+		{
+			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST+maxitems+1, L"...");
+			itemsObjselect[maxitems+1].ItemId = IDM_VPORTDYN_FIRST+maxitems+1;
+			itemsObjselect[maxitems+1].Object = NULL;
+		}
+	}
+	delete atcursor;
+
 	int32_t iItem = TrackPopupMenu(
 	                  hContext,
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
@@ -646,17 +678,48 @@ bool C4EditCursor::DoContextMenu()
 	case IDM_VIEWPORT_DELETE: Delete(); break;
 	case IDM_VIEWPORT_DUPLICATE: Duplicate(); break;
 	case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
-	case IDM_VIEWPORT_PROPERTIES: OpenPropTools();  break;
+	case 0: break;
+	default:
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it)
+			if(it->ItemId == iItem)
+			{
+				DoContextObjsel(it->Object);
+				break;
+			}
+		break;
 	}
+	ObjselectDelItems();
 #else
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemDuplicate, fObjectSelected && Console.Editing);
 	gtk_widget_set_sensitive(itemGrabContents, fObjectSelected && Selection.GetObject()->Contents.ObjectCount() && Console.Editing);
-	gtk_widget_set_sensitive(itemProperties, Mode!=C4CNS_ModePlay);
 
-	GtkLabel* label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(itemProperties)));
-	gtk_label_set_text(label, LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
+	ObjselectDelItems();
+	C4FindObjectAtPoint pFO(X,Y);
+	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing
+	int itemcount = atcursor->GetSize();
+	if(itemcount > 0)
+	{
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
+		itemsObjselect[0].MenuItem = gtk_separator_menu_item_new();
+		itemsObjselect[0].EditCursor = this;
+		gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemsObjselect[0].MenuItem);
+		int i = 0;
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
+			it->EditCursor = this;
+			C4Object * obj = (*atcursor)[i].getObj();
+			assert(obj);
+			it->Object = obj;
+			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
+			it->MenuItem = wdg;
+			gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
+			g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &*it);
+		}
+	}
+	delete atcursor;
+	gtk_widget_show_all(menuContext);
 
 	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, 0);
 #endif
@@ -805,11 +868,29 @@ void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 	static_cast<C4EditCursor*>(data)->GrabContents();
 }
 
-void C4EditCursor::OnProperties(GtkWidget* widget, gpointer data)
+void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4EditCursor*>(data)->OpenPropTools();
+	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object);
+	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
 }
+
 #endif
+
+void C4EditCursor::ObjselectDelItems() {
+	if(!itemsObjselect.size()) return;
+	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
+	while(it != itemsObjselect.end()) {
+		#if defined(WITH_DEVELOPER_MODE)
+		gtk_widget_destroy(it->MenuItem);
+		#elif defined(_WIN32)
+		if(!it->ItemId) { ++it; continue; }
+		HMENU hContext = GetSubMenu(hMenu,0);
+		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);
+		#endif
+		++it;
+	}
+	itemsObjselect.resize(0);
+}
 
 bool C4EditCursor::AltDown()
 {
@@ -830,4 +911,12 @@ bool C4EditCursor::AltUp()
 	}
 	// key not processed - allow further usages of Alt
 	return false;
+}
+
+void C4EditCursor::DoContextObjsel(C4Object * obj)
+{
+	if(!Application.IsControlDown())
+		Selection.Clear();
+	Selection.Add(obj, C4ObjectList::stNone);
+	OnSelectionChanged();
 }

@@ -7,7 +7,7 @@
     <title>PlaceObjects</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -78,13 +78,13 @@
         <param>
           <type>bool</type>
           <name>on_surface</name>
-          <desc>If true, all objects will be created above the upper surface of the specified material (this might be outside the target rectangle).</desc>
+          <desc>If <code>true</code>, all objects will be created above the upper surface of the specified material (this might be outside the target rectangle).</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
           <name>no_stuck</name>
-          <desc>If true, placement will not ensure that objects are in solid material. This is needed e.g. when placing objects in liquids.</desc>
+          <desc>If <code>true</code>, placement will not ensure that objects are in solid material. This is needed e.g. when placing objects in liquids.</desc>
           <optional />
         </param>
       </params>
@@ -97,7 +97,7 @@
         <text>Create 20 chunks of loam in earth within the coordinates 100,0 and 200,LandscapeHeight().</text>
       </example>
       <example>
-        <code>PlaceObjects(FISH,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
+        <code>PlaceObjects(Fish,10,&quot;GBackLiquid&quot;,0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
         <text>Creates a total of 10 fishes in all liquids found in the upper half of the landscape.</text>
       </example>
     </examples>

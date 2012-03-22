@@ -7,7 +7,7 @@
     <title>SetProperty</title>
     <category>Objects</category>
     <subcat>Properties</subcat>
-    <version>4.10.0.0</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -25,13 +25,13 @@
         </param>
         <param>
           <type>proplist</type>
-          <name>object</name>
-          <desc>Object to be changed. Can be 0 in local calls.</desc>
+          <name>obj</name>
+          <desc>Object to be changed. Can be <code>nil</code> in local calls.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>Sets the property <code>key</code> of <code>object</code> to <code>value</code>. The property does not have to exist beforehand.</desc>
+    <desc>Sets the property <code>key</code> of <code>obj</code> to <code>value</code>. The property does not have to exist beforehand.</desc>
     <related><funclink>GetProperty</funclink></related>
   </func>
   <author>Günther</author><date>2009-05</date>

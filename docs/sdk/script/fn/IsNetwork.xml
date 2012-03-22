@@ -6,13 +6,18 @@
   <func>
     <title>IsNetwork</title>
     <category>Global</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>bool</rtype></syntax>
     <desc>Returns whether the current game is a network game.</desc>
     <examples>
       <example>
-        <code>if(IsNetwork()) <funclink>Message</funclink>(&quot;Dieses Szenario benutzt netzwerkfeindliche Funktionen. Es kann zu Synchronisationsproblemen kommen; der Autor übernimmt keine Garantie für die Spielbarkeit.&quot;);</code>
-        <text>Displays a text if the current game is a network game.</text>
+        <code>Log("Welcome to the mean and dirty flint melee. Everything is allowed!");
+if(<funclink>GetPlayerCount</funclink>() == 2 &amp;&amp; !IsNetwork())
+{
+	Log("Especially looking on your friend's side of the screen and taking away his controls!");
+	Log("So, don't hold back only because you are %s's guest, %s! :-D", <funclink>GetPlayerName</funclink>(0),<funclink>GetPlayerName</funclink>(1));
+}</code>
+        <text>Displays a sly message based on telltale signs: If there two players in the game and it is not a network game, the round must be played locally on splitscreen only. Probably a friend came over? Also, the first player usually belongs to the person who installed the game.</text>
       </example>
     </examples>
   </func>

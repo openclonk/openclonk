@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2001-2003, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2002, 2004, 2007-2008  Peter Wortmann
+ * Copyright (c) 2002, 2004, 2007-2008, 2011  Peter Wortmann
  * Copyright (c) 2006-2007, 2009  Günther Brammer
  * Copyright (c) 2008, 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -80,10 +80,12 @@ bool C4TexMapEntry::Init()
 	}
 	pMaterial = &::MaterialMap.Map[iMaterialIndex];
 	// Find texture
-	C4Texture * sfcTexture = ::TextureMap.GetTexture(Texture.getData());
+	StdStrBuf FirstTexture;
+	FirstTexture.CopyUntil(Texture.getData(), '-');
+	C4Texture * sfcTexture = ::TextureMap.GetTexture(FirstTexture.getData());
 	if (!sfcTexture)
 	{
-		DebugLogF("Error initializing material %s-%s: Invalid texture!", Material.getData(), Texture.getData());
+		DebugLogF("Error initializing material %s-%s: Invalid texture!", Material.getData(), FirstTexture.getData());
 		Clear();
 		return false;
 	}
@@ -128,7 +130,7 @@ bool C4TextureMap::AddEntry(BYTE byIndex, const char *szMaterial, const char *sz
 	return true;
 }
 
-bool C4TextureMap::AddTexture(const char *szTexture, CSurface * sfcSurface)
+bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 {
 	C4Texture *pTexture;
 	if (!(pTexture=new C4Texture)) return false;
@@ -287,7 +289,7 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 	char texname[256+1];
 	C4Surface *ctex;
 	size_t binlen;
-	// newgfx: load PNG-textures first
+
 	hGroup.ResetSearch();
 	while (hGroup.AccessNextEntry("*",&binlen,texname))
 	{
@@ -306,6 +308,7 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 			delete ctex;
 		}
 	}
+
 	return texnum;
 }
 
@@ -379,6 +382,16 @@ C4Texture * C4TextureMap::GetTexture(const char *szTexture)
 		if (SEqualNoCase(pTexture->Name,szTexture))
 			return pTexture;
 	return NULL;
+}
+
+int32_t C4TextureMap::GetTextureIndex(const char *szName)
+{
+	C4Texture *pTexture;
+	int32_t i=0;
+	for (pTexture=FirstTexture; pTexture; pTexture=pTexture->Next, i++)
+		if (SEqualNoCase(pTexture->Name,szName))
+			return i;
+	return -1;
 }
 
 bool C4TextureMap::CheckTexture(const char *szTexture)

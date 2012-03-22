@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007  Sven Eberhardt
  * Copyright (c) 2005-2008  Peter Wortmann
- * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2005-2008, 2011  Günther Brammer
+ * Copyright (c) 2005-2007  Sven Eberhardt
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -424,6 +424,18 @@ struct StdParameterAdapt
 };
 template <class T, class P>
 inline StdParameterAdapt<T, P> mkParAdapt(T RREF rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+
+// for mkArrayAdaptMap
+template <class P>
+struct StdParameterAdaptMaker
+{
+	const P Par;
+	StdParameterAdaptMaker(const P &rPar) : Par(rPar) { }
+	template <class T>
+	StdParameterAdapt<T, P> operator ()(T &rObj) const { return StdParameterAdapt<T, P>(rObj, Par); }
+};
+template <class P>
+inline StdParameterAdaptMaker<P> mkParAdaptMaker(const P &rPar) { return StdParameterAdaptMaker<P>(rPar); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
@@ -891,8 +903,8 @@ struct StdBitfieldAdapt
 					// Remove bits
 					val &= ~pName->Val;
 				}
-			// Anything left is written as number
-			if (val)
+			// Anything left is written as number, or a simple 0 in case no default was used
+			if (val || fFirst)
 			{
 				// Put "|"
 				if (!fFirst) pComp->Separator(StdCompiler::SEP_VLINE);

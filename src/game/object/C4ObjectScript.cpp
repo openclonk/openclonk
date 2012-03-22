@@ -39,24 +39,11 @@
 #include <C4PlayerList.h>
 #include <C4Random.h>
 #include <C4RankSystem.h>
+#include <C4Teams.h>
 
 static bool FnChangeDef(C4AulObjectContext *cthr, C4ID to_id)
 {
 	return !!cthr->Obj->ChangeDef(to_id);
-}
-
-static bool FnIncinerate(C4AulObjectContext *cthr, Nillable<long> causedBy)
-{
-	long iCausedBy = causedBy;
-	if (causedBy.IsNil()) iCausedBy = cthr->Obj->Controller;
-
-	return !!cthr->Obj->Incinerate(iCausedBy);
-}
-
-static bool FnExtinguish(C4AulObjectContext *cthr)
-{
-	// extinguish all fires
-	return !!cthr->Obj->Extinguish(0);
 }
 
 static C4Void FnSetSolidMask(C4AulObjectContext *cthr, long iX, long iY, long iWdt, long iHgt, long iTX, long iTY)
@@ -256,15 +243,16 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, C4Value *Data)
 {
 	if (!cthr->Obj)
-		throw NeedObjectContext("SetCrewExtraData");
+		throw new NeedObjectContext("SetCrewExtraData");
 
 	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
 	// valid crew with info? (for great nullpointer prevention)
 	if (!cthr->Obj->Info) return C4Value();
-	// do not allow data type C4V_String or C4V_C4Object
-	if (Data->GetType() != C4V_Any &&
+	// do not allow data type C4V_Array or C4V_C4Object
+	if (Data->GetType() != C4V_Nil &&
 	    Data->GetType() != C4V_Int &&
-	    Data->GetType() != C4V_Bool) return C4VNull;
+	    Data->GetType() != C4V_Bool &&
+	    Data->GetType() != C4V_String) return C4VNull;
 	// get pointer on info...
 	C4ObjectInfo *pInfo = cthr->Obj->Info;
 	// no name list created yet?
@@ -290,7 +278,7 @@ static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, 
 static C4Value FnGetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V)
 {
 	if (!cthr->Obj)
-		throw NeedObjectContext("GetCrewExtraData");
+		throw new NeedObjectContext("GetCrewExtraData");
 
 	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
 	// valid crew with info?
@@ -470,7 +458,7 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(any, Data); PAR(int, iRetries);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("SetCommand");
+		throw new NeedObjectContext("SetCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -480,7 +468,7 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Set
 	cthr->Obj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,false,Data,iRetries,szText);
 	// Success
@@ -493,7 +481,7 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("AddCommand");
+		throw new NeedObjectContext("AddCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -503,7 +491,7 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,false,iRetries,szText,iBaseMode));
 }
@@ -514,7 +502,7 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
 	// Object
 	if (!cthr->Obj)
-		throw NeedObjectContext("AppendCommand");
+		throw new NeedObjectContext("AppendCommand");
 	// Command
 	if (!szCommand) return C4VFalse;
 	long iCommand = CommandByName(FnStringPar(szCommand));
@@ -524,7 +512,7 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
 	else
-		Tx.ConvertTo(C4V_Int);
+		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
 	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,true,iRetries,szText,iBaseMode));
 }
@@ -535,7 +523,7 @@ static C4Value FnGetCommand(C4AulContext *cthr, C4Value *pPars)
 
 	// safety
 	if (!cthr->Obj)
-		throw NeedObjectContext("GetCommand");
+		throw new NeedObjectContext("GetCommand");
 
 	C4Command * Command = cthr->Obj->Command;
 	// Move through list to Command iCommandNum
@@ -624,10 +612,10 @@ static long FnGetBreath(C4AulObjectContext *cthr)
 static long FnGetMass(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetMass");
 		else
-			return cthr->Def->Mass;
+			return cthr->Def->GetDef()->Mass;
 	else
 		return cthr->Obj->Mass;
 }
@@ -793,10 +781,10 @@ static bool FnSetKiller(C4AulObjectContext *cthr, long iNewKiller)
 static long FnGetCategory(C4AulContext *cthr)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetCategory");
 		else
-			return cthr->Def->Category;
+			return cthr->Def->GetDef()->Category;
 	else
 		return cthr->Obj->Category;
 }
@@ -814,10 +802,10 @@ static long FnGetDamage(C4AulObjectContext *cthr)
 static long FnGetValue(C4AulContext *cthr, C4Object *pInBase, long iForPlayer)
 {
 	if (!cthr->Obj)
-		if (!cthr->Def)
+		if (!cthr->Def || !cthr->Def->GetDef())
 			throw new NeedNonGlobalContext("GetValue");
 		else
-			return cthr->Def->GetValue(pInBase, iForPlayer);
+			return cthr->Def->GetDef()->GetValue(pInBase, iForPlayer);
 	else
 		return cthr->Obj->GetValue(pInBase, iForPlayer);
 }
@@ -872,15 +860,15 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4Def *pDef, C4Object *pComma
 }
 
 const int C4MN_Add_ImgRank     =   1,
-                                   C4MN_Add_ImgIndexed  =   2,
-                                                            C4MN_Add_ImgObjRank  =   3,
-                                                                                     C4MN_Add_ImgObject   =   4,
-                                                                                                              C4MN_Add_ImgTextSpec =   5,
-                                                                                                                                       C4MN_Add_ImgColor    =   6,
-                                                                                                                                                                C4MN_Add_MaxImage    = 127, // mask for param which decides what to draw as the menu symbol
-                                                                                                                                                                                       C4MN_Add_PassValue   = 128,
-                                                                                                                                                                                                              C4MN_Add_ForceCount  = 256,
-                                                                                                                                                                                                                                     C4MN_Add_ForceNoDesc = 512;
+          C4MN_Add_ImgIndexed  =   2,
+          C4MN_Add_ImgObjRank  =   3,
+          C4MN_Add_ImgObject   =   4,
+          C4MN_Add_ImgTextSpec =   5,
+          C4MN_Add_ImgColor    =   6,
+          C4MN_Add_MaxImage    = 127, // mask for param which decides what to draw as the menu symbol
+          C4MN_Add_PassValue   = 128,
+          C4MN_Add_ForceCount  = 256,
+          C4MN_Add_ForceNoDesc = 512;
 
 #ifndef _MSC_VER
 #define _snprintf snprintf
@@ -930,12 +918,13 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4V_Bool:
 		SCopy(Parameter.getBool() ? "true" : "false", parameter);
 		break;
-	case C4V_C4Object:
 	case C4V_PropList:
-		if (Parameter.getPropList()->GetPropListNumbered())
-			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetPropListNumbered()->Number);
-		else
+		if (Parameter.getPropList()->GetObject())
+			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetObject()->Number);
+		else if (Parameter.getPropList()->GetDef())
 			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
+		else
+			throw new C4AulExecError(cthr->Obj, "proplist as parameter to AddMenuItem");
 		break;
 	case C4V_String:
 		// note this breaks if there is '"' in the string.
@@ -943,14 +932,14 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 		SCopy(Parameter.getStr()->GetCStr(), parameter + 1, sizeof(command)-3);
 		SAppendChar('"', command);
 		break;
-	case C4V_Any:
+	case C4V_Nil:
 		SCopy("nil", parameter);
 		break;
 	case C4V_Array:
 		// Arrays were never allowed, so tell the scripter
 		throw new C4AulExecError(cthr->Obj, "array as parameter to AddMenuItem");
 	default:
-		return C4VBool(false);
+		return false;
 	}
 
 	// own value
@@ -1012,6 +1001,8 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 
 	// Create symbol
 	C4FacetSurface fctSymbol;
+	C4DefGraphics* pGfx = NULL;
+	C4Object* pGfxObj = NULL;
 	switch (iExtra & C4MN_Add_MaxImage)
 	{
 	case C4MN_Add_ImgRank:
@@ -1037,7 +1028,7 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObjRank:
 	{
 		// draw current gfx of XPar_C4V including rank
-		if (XPar.GetType() != C4V_C4Object) return false;
+		if (!XPar.CheckConversion(C4V_Object)) return false;
 		C4Object *pGfxObj = XPar.getObj();
 		if (pGfxObj && pGfxObj->Status)
 		{
@@ -1090,25 +1081,31 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	case C4MN_Add_ImgObject:
 	{
 		// draw object picture
-		if (XPar.GetType() != C4V_C4Object)
+		if (!XPar.CheckConversion(C4V_Object))
 			throw new C4AulExecError(cthr->Obj,
 			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
-			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_C4Object)
+			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
-		C4Object *pGfxObj = XPar.getObj();
-		fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
-		pGfxObj->Picture2Facet(fctSymbol);
+		pGfxObj = XPar.getObj();
+		//fctSymbol.Wdt = fctSymbol.Hgt = iSymbolSize;
+		//pGfxObj->Picture2Facet(fctSymbol);
 	}
 	break;
 
 	case C4MN_Add_ImgTextSpec:
 	{
-		C4FacetSurface fctSymSpec;
-		uint32_t dwClr = XPar.getInt();
-		if (!szCaption || !Game.DrawTextSpecImage(fctSymSpec, caption, dwClr ? dwClr : 0xff))
-			return false;
-		fctSymbol.Create(iSymbolSize,iSymbolSize);
-		fctSymSpec.Draw(fctSymbol, true);
+		C4Def* pDef = C4Id2Def(C4ID(std::string(caption)));
+		if(pDef)
+		{
+			pGfx = &pDef->Graphics;
+		}
+		else
+		{
+			fctSymbol.Create(iSymbolSize,iSymbolSize);
+			uint32_t dwClr = XPar.getInt();
+			if (!szCaption || !Game.DrawTextSpecImage(fctSymbol, caption, NULL, dwClr ? dwClr : 0xff))
+				return false;
+		}
 		*caption = '\0';
 	}
 	break;
@@ -1141,7 +1138,12 @@ static bool FnAddMenuItem(C4AulObjectContext *cthr, C4String * szCaption, C4Stri
 	bool fIsSelectable = !!*command;
 
 	// Add menu item
-	cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	if(pGfxObj)
+		cthr->Obj->Menu->Add(caption,pGfxObj,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	else if(pGfx)
+		cthr->Obj->Menu->Add(caption,pGfx,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
+	else
+		cthr->Obj->Menu->Add(caption,fctSymbol,command,iCount,NULL,infocaption,pDef ? pDef->id : C4ID::None,command2,fOwnValue,iValue,fIsSelectable);
 
 	return true;
 }
@@ -1257,7 +1259,7 @@ static bool FnComponentAll(C4AulObjectContext *cthr, C4ID c_id)
 {
 	long cnt;
 	C4IDList Components;
-	cthr->Obj->Def->GetComponents(&Components, cthr->Obj, cthr->Obj);
+	cthr->Obj->Def->GetComponents(&Components, cthr->Obj);
 	for (cnt=0; Components.GetID(cnt); cnt++)
 		if (Components.GetID(cnt)!=c_id)
 			if (Components.GetCount(cnt)>0)
@@ -1385,6 +1387,10 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	if (!pActionDef) return NULL;
 	// get proc
 	return pActionDef->GetPropertyStr(P_Procedure);
+}
+
+static bool FnCheckVisibility(C4AulObjectContext *cthr, int plr) {
+	return cthr->Obj->IsVisible(plr, false);
 }
 
 static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, long iOverlayID)
@@ -1534,12 +1540,11 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4Def *p
 
 static long FnGetDefBottom(C4AulContext* cthr)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def)
-			throw new NeedNonGlobalContext("GetDefBottom");
+	if (!cthr->Def || !cthr->Def->GetDef())
+		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def);
-	return cthr->Def->Shape.y+cthr->Def->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
+	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def->GetDef());
+	return cthr->Def->GetDef()->Shape.y+cthr->Def->GetDef()->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
 }
 
 static bool FnSetMenuSize(C4AulObjectContext* cthr, long iCols, long iRows)
@@ -1703,83 +1708,12 @@ static bool FnSetObjDrawTransform2(C4AulObjectContext *ctx, long iA, long iB, lo
 	}
 	// assign values
 #define L2F(l) ((float)l/1000)
-	CBltTransform matrix;
+	C4BltTransform matrix;
 	matrix.Set(L2F(iA), L2F(iB), L2F(iC), L2F(iD), L2F(iE), L2F(iF), L2F(iG), L2F(iH), L2F(iI));
 	*pTransform *= matrix;
 #undef L2F
 	// done, success
 	return true;
-}
-
-static bool FnSetPortrait(C4AulObjectContext *ctx, C4String *pstrPortrait, C4ID idSourceDef, bool fPermanent, bool fCopyGfx)
-{
-	// safety
-	const char *szPortrait;
-	if (!pstrPortrait || !*(szPortrait=FnStringPar(pstrPortrait))) return false;
-	C4Object *pTarget = ctx->Obj;
-	if (!pTarget->Status || !pTarget->Info) return false;
-	// special case: clear portrait
-	if (SEqual(szPortrait, C4Portrait_None)) return pTarget->Info->ClearPortrait(!!fPermanent);
-	// get source def for portrait
-	C4Def *pSourceDef;
-	if (idSourceDef) pSourceDef = ::Definitions.ID2Def(idSourceDef); else pSourceDef=pTarget->Def;
-	if (!pSourceDef) return false;
-	// special case: random portrait
-	if (SEqual(szPortrait, C4Portrait_Random)) return pTarget->Info->SetRandomPortrait(pSourceDef->id, !!fPermanent, !!fCopyGfx);
-	// try to set portrait
-	return pTarget->Info->SetPortrait(szPortrait, pSourceDef, !!fPermanent, !!fCopyGfx);
-}
-
-static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfGetPermanent)
-{
-	// get parameters
-	C4Object *pObj = ctx->Obj; bool fGetID = pvfGetID->getBool(); bool fGetPermanent = pvfGetPermanent->getBool();
-	// check valid object with info section
-	if (!pObj)
-		throw new NeedObjectContext("GetPortrait");
-	if (!pObj->Status || !pObj->Info) return C4Value();
-	// get portrait to examine
-	C4Portrait *pPortrait;
-	if (fGetPermanent)
-	{
-		// permanent: new portrait assigned?
-		if (!(pPortrait=pObj->Info->pNewPortrait))
-		{
-			// custom portrait?
-			if (pObj->Info->pCustomPortrait)
-			{
-				if (fGetID) return C4Value();
-				else return C4VString(C4Portrait_Custom);
-			}
-			// portrait string from info?
-			const char *szPortrait = pObj->Info->PortraitFile;
-			// no portrait string: portrait undefined ("none" would mean no portrait)
-			if (!*szPortrait) return C4Value();
-			// evaluate portrait string
-			C4ID idPortraitSource;
-			szPortrait = C4Portrait::EvaluatePortraitString(szPortrait, idPortraitSource, pObj->Info->id, NULL);
-			// return desired value
-			if (fGetID)
-				return idPortraitSource ? C4VPropList(C4Id2Def(idPortraitSource)) : C4Value();
-			else
-				return szPortrait ? C4VString(szPortrait) : C4Value();
-		}
-	}
-	else
-		// get current portrait
-		pPortrait = &(pObj->Info->Portrait);
-	// get portrait graphics
-	C4DefGraphics *pPortraitGfx = pPortrait->GetGfx();
-	// no portrait?
-	if (!pPortraitGfx) return C4Value();
-	// get def or name
-	if (fGetID)
-		return (pPortraitGfx->pDef ? C4VPropList(pPortraitGfx->pDef) : C4Value());
-	else
-	{
-		const char *szPortraitName = pPortraitGfx->GetName();
-		return C4VString(szPortraitName ? szPortraitName : C4Portrait_Custom);
-	}
 }
 
 static bool FnSetObjectStatus(C4AulObjectContext *ctx, long iNewStatus, bool fClearPointers)
@@ -2030,9 +1964,9 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 		Instance = Attached->Child;
 	}
 
-	const StdMeshAnimation* animation = Instance->Mesh.GetAnimationByName(szAnimation->GetData());
+	const StdMeshAnimation* animation = Instance->GetMesh().GetAnimationByName(szAnimation->GetData());
 	if (!animation) return C4Void();
-	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical
+	return fixtoi(ftofix(animation->Length), 1000); // sync critical!
 }
 
 static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
@@ -2166,6 +2100,7 @@ static Nillable<int> FnAttachMesh(C4AulObjectContext *ctx, C4PropList* Mesh, C4S
 		if (!pDef) return C4Void();
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4Void();
 		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
+		attach->Child->SetFaceOrderingForClrModulation(ctx->Obj->ColorMod);
 	}
 
 	if (!attach) return C4Void();
@@ -2221,7 +2156,7 @@ static Nillable<C4String*> FnGetMeshMaterial(C4AulObjectContext* ctx, int iSubMe
 
 	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);
 	return String(submesh.GetMaterial().Name.getData());
-} 
+}
 
 static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int iSubMesh)
 {
@@ -2288,11 +2223,9 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "OCF_HitSpeed3"          ,C4V_Int,          OCF_HitSpeed3},
 	{ "OCF_Collection"         ,C4V_Int,          OCF_Collection},
 	{ "OCF_HitSpeed4"          ,C4V_Int,          OCF_HitSpeed4},
-	{ "OCF_Prey"               ,C4V_Int,          OCF_Prey},
 	{ "OCF_AttractLightning"   ,C4V_Int,          OCF_AttractLightning},
 	{ "OCF_NotContained"       ,C4V_Int,          OCF_NotContained},
 	{ "OCF_CrewMember"         ,C4V_Int,          OCF_CrewMember},
-	{ "OCF_Edible"             ,C4V_Int,          OCF_Edible},
 	{ "OCF_InLiquid"           ,C4V_Int,          OCF_InLiquid},
 	{ "OCF_InSolid"            ,C4V_Int,          OCF_InSolid},
 	{ "OCF_InFree"             ,C4V_Int,          OCF_InFree},
@@ -2404,11 +2337,11 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ "ANIM_Loop"                 ,C4V_Int,      ANIM_Loop },
 	{ "ANIM_Hold"                 ,C4V_Int,      ANIM_Hold },
 	{ "ANIM_Remove"               ,C4V_Int,      ANIM_Remove },
-	
+
 	{ "AM_None"                   ,C4V_Int,      StdMeshInstance::AM_None },
 	{ "AM_DrawBefore"             ,C4V_Int,      StdMeshInstance::AM_DrawBefore },
 
-	{ NULL, C4V_Any, 0}
+	{ NULL, C4V_Nil, 0}
 };
 
 #define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
@@ -2416,15 +2349,14 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 
 C4ScriptFnDef C4ScriptObjectFnMap[]=
 {
-	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
-	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
-	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_C4Object,C4V_Any     ,C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
+	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
+	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
+	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
 	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
-	{ "GetPortrait",          1  ,C4V_Any      ,{ C4V_C4Object,C4V_Bool    ,C4V_Bool    ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPortrait,               0 },
 	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
 	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
 
-	{ NULL,                   0  ,C4V_Any      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   0 }
+	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 };
 
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
@@ -2535,6 +2467,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
 	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);
 	AddFunc(pEngine, "ShowInfo", FnShowInfo);
+	AddFunc(pEngine, "CheckVisibility", FnCheckVisibility);
 	AddFunc(pEngine, "SetClrModulation", FnSetClrModulation);
 	AddFunc(pEngine, "GetClrModulation", FnGetClrModulation);
 	AddFunc(pEngine, "CloseMenu", FnCloseMenu);
@@ -2550,21 +2483,15 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetShape", FnSetShape);
 	AddFunc(pEngine, "SetObjDrawTransform", FnSetObjDrawTransform);
 	AddFunc(pEngine, "SetObjDrawTransform2", FnSetObjDrawTransform2, false);
-	AddFunc(pEngine, "SetPortrait", FnSetPortrait);
 	AddFunc(pEngine, "SetObjectStatus", FnSetObjectStatus, false);
 	AddFunc(pEngine, "GetObjectStatus", FnGetObjectStatus, false);
 	AddFunc(pEngine, "AdjustWalkRotation", FnAdjustWalkRotation, false);
-	AddFunc(pEngine, "FxFireStart", FnFxFireStart, false);
-	AddFunc(pEngine, "FxFireTimer", FnFxFireTimer, false);
-	AddFunc(pEngine, "FxFireStop", FnFxFireStop, false);
-	AddFunc(pEngine, "FxFireInfo", FnFxFireInfo, false);
 	AddFunc(pEngine, "GetContact", FnGetContact);
 	AddFunc(pEngine, "SetObjectBlitMode", FnSetObjectBlitMode);
 	AddFunc(pEngine, "GetObjectBlitMode", FnGetObjectBlitMode);
 	AddFunc(pEngine, PSF_OnOwnerRemoved, FnOnOwnerRemoved, false);
 	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
-	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "PlayAnimation", FnPlayAnimation);
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
@@ -2582,8 +2509,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
-	AddFunc(pEngine, "Incinerate", FnIncinerate);
-	AddFunc(pEngine, "Extinguish", FnExtinguish);
 	AddFunc(pEngine, "GrabContents", FnGrabContents);
 	AddFunc(pEngine, "Punch", FnPunch);
 	AddFunc(pEngine, "Kill", FnKill);

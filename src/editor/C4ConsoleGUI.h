@@ -2,7 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2010  Mortimer
+ * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2011  Günther Brammer
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -24,10 +25,10 @@
 #include "StdBuf.h"
 
 #ifdef WITH_DEVELOPER_MODE
-#include <StdGtkWindow.h>
-typedef CStdGtkWindow C4ConsoleBase;
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4ConsoleBase;
 #else
-typedef CStdWindow C4ConsoleBase;
+typedef C4Window C4ConsoleBase;
 #endif
 
 namespace OpenFileFlags
@@ -60,7 +61,6 @@ public:
 	{
 		CONSOLE_Cursor,
 		CONSOLE_FrameCounter,
-		CONSOLE_ScriptCounter,
 		CONSOLE_TimeFPS
 	};
 
@@ -97,15 +97,14 @@ public:
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
-	void SetInputFunctions(std::list<char*> &functions);
+	void SetInputFunctions(std::list<const char*> &functions);
 	
-	CStdWindow* CreateConsoleWindow(CStdApp *application);
+	C4Window* CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
 	void SetCaptionToFileName(const char* file_name);
-	void SetCaption(const char *caption);
-	bool FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave);
+	bool FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave);
 	void AddMenuItemForPlayer(C4Player  *player, StdStrBuf& player_text);
 	void AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled);
 	void ClearViewportMenu();

@@ -6,7 +6,7 @@
   <func>
     <title>if</title>
     <category>Script</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -20,10 +20,10 @@
     <desc>If condition is non-zero the directly following command or script block will be executed.</desc>
     <examples>
       <example>
-        <code>if(!<funclink>FindObject</funclink>()) <funclink>CreateObject</funclink>(Rock);</code>
-        <text>Creates a rock if no other objects are present.</text>
-        <code>if(!<funclink>FindObject</funclink>()) { <funclink>CreateObject</funclink>(Rock); <funclink>CreateObject</funclink>(Gold); }</code>
-        <text>Creates a rock and a chunk of gold if no other objects are present.</text>
+        <code>if(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))) <funclink>CreateObject</funclink>(Rock);</code>
+        <text>Creates a rock if no other rocks are present.</text>
+        <code>if(!<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Rock))) { <funclink>CreateObject</funclink>(Rock); <funclink>CreateObject</funclink>(Gold); }</code>
+        <text>Creates a rock and a chunk of gold if no rocks are present.</text>
       </example>
     </examples>
     <related>

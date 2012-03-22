@@ -7,7 +7,7 @@
     <title>SetActionTargets</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -27,10 +27,10 @@
     <desc>Sets the activity targets of an object. The result depends on the <emlink href="definition/procedures.html">procedure</emlink> of the current action.</desc>
     <examples>
       <example>
-        <code>protected func Entrance(into_object)
-  {
-  SetActionTargets(into_object);
-  }</code>
+        <code>protected func Entrance(object into_object)
+{
+	SetActionTargets(into_object);
+}</code>
         <text>Script for a shield spell using an ATTACH action: when the carrying clonk enters a building, the spell will attach itself to the building. This script will not, however, reattach the spell to the clonk when he leaves the building.</text>
       </example>
     </examples>

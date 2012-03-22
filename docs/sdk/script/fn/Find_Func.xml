@@ -7,7 +7,7 @@
     <title>Find_Func</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -30,7 +30,7 @@
     <examples>
       <example>
         <code><funclink>FindObjects</funclink>(<funclink>Find_Func</funclink>(&quot;IsClonk&quot;))</code>
-        <text>Returns all clonks of any types (including Hydroclonks, Mages...)</text>
+        <text>Returns all clonks of any types (all clonks that return <code>true</code> on the call IsClonk).</text>
       </example>
     </examples>
     <related><funclink>FindObjects</funclink></related>

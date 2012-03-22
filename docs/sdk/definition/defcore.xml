@@ -6,7 +6,7 @@
   <title>DefCore.txt</title>
   <h id="DefCoretxt">DefCore</h>
   <part>
-    <text>The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id. Also see <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">object and developer identification</emlink>.</text>
+    <text>The component DefCore.txt defines the basic characteristics of an object. This includes the object category (whether it is a building or a living being), graphics, entrance and collection areas, value, mass, and so on. Here also the object id is defined which is used to identify the object type in script calls or other components. Every object definition must have a unique object id.</text>
     <text>
       <table>
         <caption id="SektionDefCore">Section [DefCore]</caption>
@@ -143,7 +143,7 @@
         <row>
           <literal_col>Placement</literal_col>
           <col>Integer</col>
-          <col>Placement: 0 land surface, 1 in liquid, 2 in mid-air.</col>
+          <col>Placement: 0 land surface, 1 in liquid, 2 in mid-air, 3 underground, 4 land surface and underground.</col>
         </row>
         <row>
           <literal_col>Exclusive</literal_col>
@@ -174,16 +174,6 @@
           <literal_col>Line</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1 the object is a line and exhibits special behaviour.</col>
-        </row>
-        <row>
-          <literal_col>Prey</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the object is prey for certain animals.</col>
-        </row>
-        <row>
-          <literal_col>Edible</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. Determines whether the object is edible.</col>
         </row>
         <row>
           <literal_col>CrewMember</literal_col>
@@ -388,22 +378,22 @@
         <row>
           <literal_col>RotatedEntrance</literal_col>
           <col>Integer</col>
-          <col>0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees. From 4.95.4.</col>
+          <col>0 entrance is open if the object is upright only; 1 entrance is always open; 2-360 entrance is open within the specified object rotation in degrees.</col>
         </row>
         <row>
           <literal_col>MoveToRange</literal_col>
           <col>Integer</col>
-          <col>Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5. From 4.95.4.</col>
+          <col>Maximum range at which the waypoint of a movement command can be touched for a successful hit. Default value 5.</col>
         </row>
         <row>
           <literal_col>NoTransferZones</literal_col>
           <col>Integer</col>
-          <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones. From 4.95.4.</col>
+          <col>0 or 1. If 1 the object's pathfinding will ignore any transfer zones.</col>
         </row>
         <row>
           <literal_col>AutoContextMenu</literal_col>
           <col>Integer</col>
-          <col>0 or 1. If 1, the building's context menu will open automatically upon entry. From 4.9.7.7.</col>
+          <col>0 or 1. If 1, the building's context menu will open automatically upon entry.</col>
         </row>
       </table>
     </text>
@@ -508,7 +498,7 @@
       </table>
     </text>
     <h>Note:</h>
-    <text>When a crew member is created, it gets an own physical section in it's Objectinfo (c4i). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects.</text>
+    <text>When a crew member is created, it gets an own physical section in it's Objectinfo (oci). In there, the individual changes to the physicals (for example because of training) are saved and restored when an object enters a player's crew. The physical section of the defcore is only used for new crew members and normal objects.</text>
   </part>
   <author>Sven2</author><date>2002-04</date>
 </doc>

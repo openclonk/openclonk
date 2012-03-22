@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlrClonkSkin</title>
+    <category>Player</category>
+    <version>5.2 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>player</name>
+          <desc>Player to be checked</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Determines the clonk skin ID chosen by the player. The skin is used to alter the look of the clonks in the player's crew.</desc>
+  </func>
+  <author>Clonkonaut</author><date>2012-1</date>
+</funcs>

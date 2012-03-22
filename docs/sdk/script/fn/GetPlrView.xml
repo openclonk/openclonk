@@ -7,7 +7,7 @@
     <title>GetPlrView</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -18,7 +18,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the object which is followed by a player's view. If the player view does not currently follow an object, the function returns 0 (also see <funclink>GetPlrViewMode</funclink>).</desc>
+    <desc>Returns the object which is followed by a player's view. If the player view does not currently follow an object, the function returns <code>nil</code> (also see <funclink>GetPlrViewMode</funclink>).</desc>
     <remark>If player view has been set using (<funclink>SetPlrView</funclink>), the view will follow the selected clonk (unless in view mode "Scroll", see <funclink>GetViewMode</funclink>). This can be determined using <funclink>GetCursor</funclink>.</remark>
     <related><funclink>SetPlrView</funclink></related>
   </func>

@@ -33,6 +33,8 @@
 #ifndef _WIN32
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <ifaddrs.h>
+#include <net/if.h>
 #endif
 
 // *** C4Network2Address
@@ -244,7 +246,6 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 #ifdef HAVE_WINSOCK
 	bool fGotWinSock = AcquireWinSock();
 	if (fGotWinSock)
-#endif
 	{
 		// get local host name
 		char szLocalHostName[128+1]; *szLocalHostName = '\0';
@@ -260,6 +261,22 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 				ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
 		}
 	}
+#else
+	std::vector<in_addr*> addr_vec;
+	struct ifaddrs* addrs;
+	getifaddrs(&addrs);
+	for(struct ifaddrs* addr = addrs; addr != NULL; addr = addr->ifa_next)
+	{
+		struct sockaddr* ad = addr->ifa_addr;
+		if(ad == NULL) continue;
+
+		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
+			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
+	}
+
+	addr_vec.push_back(NULL);
+	ppAddr = &addr_vec[0];
+#endif
 
 	// add address(es)
 	for (;;)
@@ -281,6 +298,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 
 #ifdef HAVE_WINSOCK
 	if (fGotWinSock) ReleaseWinSock();
+#else
+	if(addrs) freeifaddrs(addrs);
 #endif
 }
 

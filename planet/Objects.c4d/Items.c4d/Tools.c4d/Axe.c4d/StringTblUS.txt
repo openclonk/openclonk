@@ -1,2 +1,0 @@
-Name=Axe
-Description=Press [Use] to chop down a tree.

@@ -6,21 +6,21 @@
   <func>
     <title>GetSkyAdjust</title>
     <category>Sky</category>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
         <param>
           <type>bool</type>
           <name>back_color</name>
-          <desc>If not 0, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
+          <desc>If not <code>false</code>, the secondary sky color is returned as specified in SetSkyAdjust.</desc>
         </param>
       </params>
     </syntax>
     <desc>Returns the sky modulation as set by <funclink>SetSkyAdjust</funclink>. For more information see <funclink>SetSkyAdjust</funclink>.</desc>
     <examples>
       <example>
-        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; 16777215);</code>
+        <code><funclink>SetSkyAdjust</funclink>(GetSkyAdjust() &amp; <funclink>RGB(255,255,255)</funclink>);</code>
         <text>Ensures that the sky is drawn without any transparency (thoroughly covering any background color).</text>
       </example>
     </examples>

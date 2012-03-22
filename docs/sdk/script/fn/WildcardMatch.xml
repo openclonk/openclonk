@@ -7,7 +7,7 @@
     <title>WildcardMatch</title>
     <category>Script</category>
     <subcat>Strings</subcat>
-    <version>4.9.5.0 CE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>string</rtype>
       <params>
@@ -23,7 +23,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns whether to strings are equal. The comparison is case sensitive and wildcards are supported.</desc>
+    <desc>Returns whether two strings are equal. The comparison is case sensitive and wildcards are supported.</desc>
     <remark>A * can represent any number of unknown characters (including none). A ? represents exactly one unknown character.</remark>
     <examples>
       <example>

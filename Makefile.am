@@ -1,3 +1,6 @@
+# Copyright (c) 2005-2011  Günther Brammer
+# Copyright (c) 2009  Armin Burgmeier
+# Copyright (c) 2010-2011  Nicolas Hake
 # Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
 
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -22,45 +25,46 @@ noinst_LIBRARIES = lib.a
 
 # Some defines and warning options
 if RECENT_GCC
-GCC_FLAGS = -pipe
-WARNING_FLAGS = -Wall -Wextra -Wno-invalid-offsetof \
--Wredundant-decls -Wendif-labels -Wpointer-arith \
--Wcast-qual -Wcast-align -Wwrite-strings -Winit-self \
--Wsign-promo \
--Wno-parentheses -Wno-unused-parameter -Wno-inline \
--Wno-reorder -Wno-float-equal -Wno-switch
+WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
+-Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
+-Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
 ##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
 else
-GCC_FLAGS =
 WARNING_FLAGS = -Wall
 endif
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS) $(GCC_FLAGS) -DOC_SYSTEM_DATA_DIR=\"${datadir}/openclonk\"
+AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(WINDOWS_CFLAGS) $(WARNING_FLAGS)
 
-AM_CFLAGS = -Wall $(GCC_FLAGS)
+AM_CFLAGS = -Wall
 
 AM_CPPFLAGS = \
-  -I$(builddir) \
-  -I$(srcdir)/src \
-  -I$(srcdir)/src/c4group \
-  -I$(srcdir)/src/network \
-  -I$(srcdir)/src/lib \
-  -I$(srcdir)/src/platform \
-  -I$(srcdir)/src/config \
-  -I$(srcdir)/src/res \
-  -I$(srcdir)/src/control \
-  -I$(srcdir)/src/gui \
-  -I$(srcdir)/src/editor \
-  -I$(srcdir)/src/game/landscape \
-  -I$(srcdir)/src/game/player \
-  -I$(srcdir)/src/game/script \
-  -I$(srcdir)/src/game \
-  -I$(srcdir)/src/game/object \
-  -I$(srcdir)/src/lib/texture \
-  -I$(srcdir)/src/script \
-  -I$(srcdir)/thirdparty \
-  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(OPENAL_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS) $(BOOST_CPPFLAGS)
+-I$(builddir) \
+-I$(srcdir)/src \
+-I$(srcdir)/src/c4group \
+-I$(srcdir)/src/network \
+-I$(srcdir)/src/lib \
+-I$(srcdir)/src/platform \
+-I$(srcdir)/src/config \
+-I$(srcdir)/src/res \
+-I$(srcdir)/src/control \
+-I$(srcdir)/src/gui \
+-I$(srcdir)/src/editor \
+-I$(srcdir)/src/game/landscape \
+-I$(srcdir)/src/game/player \
+-I$(srcdir)/src/game/script \
+-I$(srcdir)/src/game \
+-I$(srcdir)/src/game/object \
+-I$(srcdir)/src/lib/texture \
+-I$(srcdir)/src/script \
+-I$(srcdir)/thirdparty \
+$(GLEW_CFLAGS) \
+$(GTK_CFLAGS) \
+$(OPENAL_CFLAGS) \
+$(FREETYPE_CFLAGS) \
+$(SDL_CFLAGS) \
+$(BOOST_CPPFLAGS) \
+$(LIBUPNP_CFLAGS)
 
 ##BUILT_SOURCES = hgrevision.h
 ##hgrevision.h: $(srcdir)/.hg/dirstate
@@ -70,25 +74,26 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = C4Version.h
 CLEANFILES =
 DISTCLEANFILES = C4Version.h
-do_subst = sed -e 's,[@]C4PROJECT[@],OpenClonk Project,g' \
-  -e 's,[@]C4PROJECT_DOMAIN[@],openclonk,g' \
-  -e 's,[@]C4PROJECT_TLD[@],org,g' \
-  -e 's,[@]C4PROJECT_URL[@],http://wiki.openclonk.org,g' \
-  -e 's,[@]C4COPYRIGHT_YEAR[@],'$$(sed -n 's/SET(C4COPYRIGHT_YEAR\s\+\(.\+\)).\+/\1/ p' $(srcdir)/Version.txt)',g' \
+do_subst = sed -e 's,[@]C4PROJECT[@],'"$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_DOMAIN[@],'"$$(sed -n 's/SET(C4PROJECT_DOMAIN\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_TLD[@],'"$$(sed -n 's/SET(C4PROJECT_TLD\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4PROJECT_URL[@],http://www.openclonk.org,g' \
+  -e 's,[@]C4COPYRIGHT_YEAR[@],'"$$(date '+%Y')"',g' \
   -e 's,[@]C4ENGINENAME[@],'"$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4ENGINENICK[@],'$$(sed -n 's/SET(C4ENGINENICK\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)',g' \
+  -e 's,[@]C4ENGINENICK[@],'"$$(sed -n 's/SET(C4ENGINENICK\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4ENGINEID[@],org.openclonk." C4ENGINENICK ",g' \
-  -e 's,[@]C4XVER1[@],'$$(sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER2[@],'$$(sed -n 's/SET(C4XVER2\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER3[@],'$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
-  -e 's,[@]C4XVER4[@],'$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)',g' \
+  -e 's,[@]C4XVER1[@],'"$$(sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER2[@],'"$$(sed -n 's/SET(C4XVER2\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER3[@],'"$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]C4XVER4[@],'"$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4VERSIONBUILDNAME[@],'"$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4VERSIONEXTRA[@],'$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)',g'
+  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g'
 
 C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
-
-
+WindowsGamesExplorer.xml: $(srcdir)/src/res/WindowsGamesExplorer.xml.in $(srcdir)/Version.txt
+	$(do_subst) < $< > $@
+src/res/engine.o: WindowsGamesExplorer.xml
 
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
@@ -129,19 +134,19 @@ src/lib/C4RealImpl_Fixed.h \
 src/lib/C4RealImpl_FPU.h \
 src/lib/C4RealImpl_SSE.cpp \
 src/lib/C4RealImpl_SSE.h \
+src/lib/SHA1.h \
 src/lib/Standard.cpp \
 src/lib/Standard.h \
 src/lib/StdBuf.cpp \
 src/lib/StdBuf.h \
 src/lib/StdCompiler.cpp \
 src/lib/StdCompiler.h \
-src/lib/StdMarkup.cpp \
-src/lib/StdMarkup.h \
+src/lib/C4Markup.cpp \
+src/lib/C4Markup.h \
 src/lib/StdResStr2.cpp \
 src/lib/StdResStr2.h \
 src/network/C4NetIO.cpp \
-src/platform/StdConfig.cpp \
-src/platform/StdConfig.h \
+src/platform/GetTime.cpp \
 src/platform/StdFile.cpp \
 src/platform/StdFile.h \
 src/platform/StdRegistry.cpp \
@@ -149,6 +154,7 @@ src/platform/StdRegistry.h \
 src/platform/StdScheduler.cpp \
 src/platform/StdScheduler.h \
 src/zlib/gzio.c \
+src/zlib/gzio.h \
 src/zlib/zutil.h
 
 clonk_SOURCES = \
@@ -178,8 +184,6 @@ src/C4Version.h.in \
 src/C4WinMain.cpp \
 src/config/C4Config.cpp \
 src/config/C4Config.h \
-src/config/C4ConfigShareware.cpp \
-src/config/C4ConfigShareware.h \
 src/config/C4Constants.h \
 src/config/C4Reloc.cpp \
 src/config/C4Reloc.h \
@@ -218,6 +222,9 @@ src/game/C4GameVersion.h \
 src/game/C4Physics.h \
 src/game/landscape/C4Landscape.cpp \
 src/game/landscape/C4Landscape.h \
+src/game/landscape/C4LandscapeRender.cpp \
+src/game/landscape/C4LandscapeRenderClassic.cpp \
+src/game/landscape/C4LandscapeRender.h \
 src/game/landscape/C4Map.cpp \
 src/game/landscape/C4MapCreatorS2.cpp \
 src/game/landscape/C4MapCreatorS2.h \
@@ -317,6 +324,8 @@ src/gui/C4GameOptions.cpp \
 src/gui/C4GameOptions.h \
 src/gui/C4GameOverDlg.cpp \
 src/gui/C4GameOverDlg.h \
+src/gui/C4GfxErrorDlg.cpp \
+src/gui/C4GfxErrorDlg.h \
 src/gui/C4GuiButton.cpp \
 src/gui/C4GuiCheckBox.cpp \
 src/gui/C4GuiComboBox.cpp \
@@ -400,6 +409,10 @@ src/lib/StdMeshLoader.h \
 src/lib/StdMeshLoaderXml.cpp \
 src/lib/StdMeshMaterial.cpp \
 src/lib/StdMeshMaterial.h \
+src/lib/StdMeshMath.cpp \
+src/lib/StdMeshMath.h \
+src/lib/StdMeshUpdate.cpp \
+src/lib/StdMeshUpdate.h \
 src/lib/StdResStr.h \
 src/lib/texture/C4Facet.cpp \
 src/lib/texture/C4FacetEx.cpp \
@@ -407,8 +420,7 @@ src/lib/texture/C4FacetEx.h \
 src/lib/texture/C4Facet.h \
 src/lib/texture/C4GraphicsResource.cpp \
 src/lib/texture/C4GraphicsResource.h \
-src/lib/texture/C4Surface.cpp \
-src/lib/texture/C4Surface.h \
+src/lib/texture/C4SurfaceLoaders.cpp \
 src/lib/texture/StdPNG.cpp \
 src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
@@ -441,11 +453,11 @@ src/network/C4Network2ResDlg.cpp \
 src/network/C4Network2Res.h \
 src/network/C4Network2Stats.cpp \
 src/network/C4Network2Stats.h \
+src/network/C4Network2UPnP.h \
 src/network/C4Packet2.cpp \
 src/network/C4PacketBase.h \
 src/platform/Bitmap256.cpp \
 src/platform/Bitmap256.h \
-src/platform/C4FileClasses.h \
 src/platform/C4FileMonitor.cpp \
 src/platform/C4FileMonitor.h \
 src/platform/C4Fonts.cpp \
@@ -466,16 +478,17 @@ src/platform/C4VideoPlayback.cpp \
 src/platform/C4VideoPlayback.h \
 src/platform/C4ViewportWindow.cpp \
 src/platform/C4ViewportWindow.h \
+src/platform/C4windowswrapper.h \
+src/platform/PlatformAbstraction.cpp \
 src/platform/PlatformAbstraction.h \
-src/platform/StdAppCommon.cpp \
-src/platform/StdAppCommon.h \
+src/platform/C4App.h \
+src/platform/C4App.cpp \
 src/platform/StdD3D.cpp \
 src/platform/StdD3D.h \
 src/platform/StdD3DShader.cpp \
 src/platform/StdD3DShader.h \
 src/platform/StdDDraw2.cpp \
 src/platform/StdDDraw2.h \
-src/platform/StdFacet.h \
 src/platform/StdFont.cpp \
 src/platform/StdFont.h \
 src/platform/StdGL.cpp \
@@ -483,15 +496,15 @@ src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
 src/platform/StdNoGfx.cpp \
 src/platform/StdNoGfx.h \
-src/platform/StdSurface2.cpp \
-src/platform/StdSurface2.h \
+src/platform/C4Surface.cpp \
+src/platform/C4Surface.h \
 src/platform/StdSurface8.cpp \
 src/platform/StdSurface8.h \
 src/platform/StdSync.h \
-src/platform/StdTApp.cpp \
+src/platform/C4AppT.cpp \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
-src/platform/StdWindow.h \
+src/platform/C4Window.h \
 src/res/Brush.h \
 src/res/Cursor.h \
 src/res/Dynamic.h \
@@ -513,6 +526,7 @@ src/script/C4AulDebug.h \
 src/script/C4AulDefFunc.h \
 src/script/C4AulExec.cpp \
 src/script/C4AulExec.h \
+src/script/C4AulFunc.h \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
@@ -529,6 +543,7 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
+thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
 thirdparty/tinyxml/tinyxml.cpp \
@@ -538,7 +553,6 @@ thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
 clonk_SOURCES += \
-src/platform/C4FileClasses.cpp \
 src/editor/C4ConsoleWin32.cpp \
 src/platform/C4CrashHandlerWin32.cpp \
 src/res/engine.rc \
@@ -548,9 +562,9 @@ src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \
-src/platform/StdMacApp.mm \
+src/platform/C4AppMac.mm \
 src/platform/C4FileMonitorMac.mm \
-src/platform/StdMacWindow.mm \
+src/platform/C4WindowMac.mm \
 src/platform/ClonkAppDelegate.h \
 src/platform/ClonkAppDelegate.mm \
 src/platform/ConsoleWindowController.h \
@@ -561,23 +575,34 @@ src/platform/ClonkOpenGLView.h \
 src/platform/ClonkOpenGLView.mm \
 src/platform/CocoaKeycodeMap.h \
 src/editor/C4ConsoleCocoa.mm \
+src/platform/ClonkMainMenuActions.h \
 src/platform/ClonkMainMenuActions.mm
 endif
 if SDL_MAIN_LOOP
-clonk_SOURCES += src/platform/StdSDLApp.cpp src/platform/StdSDLWindow.cpp
+clonk_SOURCES += src/platform/C4AppSDL.cpp src/platform/C4WindowSDL.cpp
 else
 if WIN32
-clonk_SOURCES += src/platform/StdWindow.cpp
+clonk_SOURCES += src/platform/C4WindowWin32.cpp
 else
-clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h
+clonk_SOURCES += src/platform/C4AppX.cpp src/platform/C4WindowX.cpp src/platform/C4AppXImpl.h
 endif
 endif
 if DEVELOPER_MODE
-clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h src/editor/C4ConsoleGTK.cpp
+clonk_SOURCES += src/platform/C4WindowGTK.cpp src/platform/C4WindowGTK.h src/editor/C4ConsoleGTK.cpp
+endif
+if LIBUPNP
+clonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
+else
+if NATUPNP
+clonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
+else
+clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
+endif
 endif
 
 clonk_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(GTK_LIBS) \
   $(OPENAL_LIBS) \
@@ -586,7 +611,7 @@ clonk_LDADD = \
   $(PTHREAD_LIBS) \
   $(Z_LIBS) \
   $(CLONK_LIBS) \
-  $(OPENSSL_LIBS)
+  $(LIBUPNP_LIBS)
 
 # build the resources
 .rc.o:
@@ -613,6 +638,7 @@ c4group_CPPFLAGS = \
   -I$(srcdir)/src/script
 
 c4group_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/c4group/c4group_ng.cpp
 
 if WIN32
@@ -621,49 +647,58 @@ endif
 
 c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(Z_LIBS) \
-  $(OPENSSL_LIBS) \
   $(PTHREAD_LIBS)
 
 ## gunzip4c4group
 
 gunzip4c4group_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 ## puncher
 
 puncher_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/netpuncher/main.cpp
 
 puncher_LDADD = \
   lib.a \
+  $(LDADD) \
   $(PTHREAD_LIBS)
 
 if WIN32
-puncher_LDADD += -lwinmm -lws2_32
+puncher_LDADD += -lws2_32
 endif
 
 ## tstc4netio
 
 tstc4netio_SOURCES = \
+src/lib/C4SimpleLog.cpp \
 src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
+  lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 if WIN32
-tstc4netio_LDADD += -lwinmm -lws2_32
+tstc4netio_LDADD += -lws2_32
 endif
 
 ## c4script shell
 c4script_SOURCES = \
+include/c4script/c4script.h \
+src/lib/C4SimpleLog.cpp \
 src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
 src/script/shell.cpp \
@@ -674,6 +709,7 @@ src/script/C4AulParse.cpp \
 src/script/C4StringTable.cpp \
 src/script/C4PropList.cpp \
 src/script/C4ScriptHost.cpp \
+src/script/C4ScriptStandalone.cpp \
 src/script/C4ValueArray.cpp \
 src/script/C4Value.cpp \
 src/script/C4ValueMap.cpp \
@@ -685,73 +721,146 @@ src/c4group/C4LangStringTable.cpp
 
 c4script_LDADD = \
   lib.a \
-  $(OPENSSL_LIBS) \
+  $(LDADD) \
   $(Z_LIBS)
+
+if WIN32
+c4script_LDADD += -lwinmm
+endif
+
+## documentation
+dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt
+
+## game data
+c4groups = \
+  Graphics.ocg \
+  Material.ocg \
+  Music.ocg \
+  Sound.ocg \
+  System.ocg \
+  Objects.ocd \
+  BackToTheRocks.ocf \
+  Tutorial.ocf
+
+CLEANFILES += $(c4groups)
+pkgdata_DATA = $(c4groups)
+AM_CXXFLAGS += -DOC_SYSTEM_DATA_DIR=\"${pkgdatadir}\"
+
+%.ocg: $(srcdir)/planet/%.ocg c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
+%.ocd: $(srcdir)/planet/%.ocd c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
+%.ocf: $(srcdir)/planet/%.ocf c4group$(EXEEXT)
+	./c4group$(EXEEXT) $< -t $@ || c4group $< -t $@
+
+## windows setup.exe
+if WIN32
+tools/install/firewall.dll: $(srcdir)/tools/install/firewall.cpp
+	mkdir -p tools/install
+	$(CXX) -shared -o tools/install/firewall.dll $(srcdir)/tools/install/firewall.cpp -lole32 -loleaut32
+setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
+	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
+	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
+	  -DPRODUCT_COMPANY="$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
+	  $< "-XOutFile $@"
+endif
 
 ## other stuff
 
 EXTRA_DIST = \
+  planet \
   Version.txt \
   CMakeLists.txt \
+  Makefile.am \
   config.h.cmake \
-  planet/System.c4g/LanguageUS.txt \
-  planet/System.c4g/LanguageDE.txt \
+  planet/System.ocg/LanguageUS.txt \
+  planet/System.ocg/LanguageDE.txt \
   clonk.anjuta \
   licenses \
   src/netio/NetIO.dsp \
   src/netpuncher/Puncher.dsp \
-  src/res/Brush_Trans.png \
-  src/res/Cursor_Trans.png \
-  src/res/Dynamic_Trans.png \
-  src/res/Exact_Trans.png \
-  src/res/Fill_Trans.png \
-  src/res/Halt_Trans.png \
-  src/res/Ift_Trans.png \
-  src/res/Line_Trans.png \
-  src/res/Mouse_Trans.png \
-  src/res/NoIft_Trans.png \
-  src/res/Picker_Trans.png \
-  src/res/Play_Trans.png \
-  src/res/Rect_Trans.png \
-  src/res/Static_Trans.png \
   src/c4group/Resource.rc \
   src/res/brush1.bmp \
-  src/res/c4g.ico \
-  src/res/c4s.ico \
-  src/res/Cursor2.bmp \
-  src/res/Game.pal \
-  src/res/line1.bmp \
-  src/res/Play2.bmp \
   src/res/Brush2.bmp \
-  src/res/c4i.ico \
-  src/res/c4u.ico \
-  src/res/Cursor.bmp \
-  src/res/Grab.bmp \
-  src/res/Line.bmp \
-  src/res/Play.bmp \
   src/res/Brush.bmp \
-  src/res/c4k.ico \
-  src/res/c4v.ico \
-  src/res/dynamic1.bmp \
-  src/res/Halt2.bmp \
-  src/res/mouse1.bmp \
-  src/res/rect1.bmp \
-  src/res/c4b.ico \
-  src/res/c4l.ico \
-  src/res/c4x.ico \
-  src/res/Halt.bmp \
-  src/res/mouse.bmp \
-  src/res/Rectangle.bmp \
-  src/res/c4d.ico \
-  src/res/c4m.ico \
+  src/res/Brush.h \
+  src/res/Brush_Trans.png \
+  src/res/C4K.icns \
+  src/res/C4P.icns \
   src/res/c4x.xpm \
+  src/res/Clonk.icns \
+  src/res/ClonkWindow.xib \
+  src/res/ConsoleGUIWindow.xib \
+  src/res/ConsoleWindow.xib \
+  src/res/Cursor2.bmp \
+  src/res/Cursor.bmp \
+  src/res/Cursor.h \
+  src/res/Cursor_Trans.png \
+  src/res/dynamic1.bmp \
+  src/res/Dynamic.h \
+  src/res/Dynamic_Trans.png \
+  src/res/Exact.h \
+  src/res/Exact_Trans.png \
   src/res/fill1.bmp \
-  src/res/ift1.bmp \
-  src/res/NoIFT.bmp \
-  src/res/c4f.ico \
-  src/res/c4p.ico \
   src/res/Fill.bmp \
+  src/res/Fill.h \
+  src/res/Fill_Trans.png \
+  src/res/FullscreenWindow.xib \
+  src/res/Game.pal \
+  src/res/Grab.bmp \
+  src/res/Halt2.bmp \
+  src/res/Halt.bmp \
+  src/res/Halt.h \
+  src/res/Halt_Trans.png \
+  src/res/ift1.bmp \
   src/res/IFT.bmp \
+  src/res/Ift.h \
+  src/res/Ift_Trans.png \
+  src/res/Info.plist \
+  src/res/line1.bmp \
+  src/res/Line.bmp \
+  src/res/Line.h \
+  src/res/Line_Trans.png \
+  src/res/MainMenu.xib \
+  src/res/mouse1.bmp \
+  src/res/mouse.bmp \
+  src/res/Mouse.h \
+  src/res/Mouse_Trans.png \
+  src/res/NoIFT.bmp \
+  src/res/NoIft.h \
+  src/res/NoIft_Trans.png \
+  src/res/ocb.ico \
+  src/res/ocd.icns \
+  src/res/ocd.ico \
+  src/res/ocf.icns \
+  src/res/ocf.ico \
+  src/res/ocg.icns \
+  src/res/ocg.ico \
+  src/res/oc.ico \
+  src/res/oci.ico \
+  src/res/ocl.ico \
+  src/res/ocm.ico \
+  src/res/ocp.ico \
+  src/res/ocs.icns \
+  src/res/ocs.ico \
+  src/res/ocu.icns \
+  src/res/ocu.ico \
+  src/res/ocv.ico \
   src/res/picker1.bmp \
-  src/res/static1.bmp
-
+  src/res/Picker.h \
+  src/res/Picker_Trans.png \
+  src/res/Play2.bmp \
+  src/res/Play.bmp \
+  src/res/Play.h \
+  src/res/Play_Trans.png \
+  src/res/rect1.bmp \
+  src/res/Rectangle.bmp \
+  src/res/Rect.h \
+  src/res/Rect_Trans.png \
+  src/res/static1.bmp \
+  src/res/Static.h \
+  src/res/Static_Trans.png \
+  src/res/English.lproj/InfoPlist.strings \
+  src/res/English.lproj/Localizable.strings \
+  src/res/German.lproj/Localizable.strings \
+  src/res/SDLMain.nib/objects.nib

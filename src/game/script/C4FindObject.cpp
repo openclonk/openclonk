@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2006-2008  Peter Wortmann
- * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2006-2009, 2011  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -130,7 +130,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		C4String *pStr = Data[1].getStr();
 		if (!pStr) return NULL;
 		// Construct
-		C4FindObjectFunc *pFO = new C4FindObjectFunc(pStr->GetCStr());
+		C4FindObjectFunc *pFO = new C4FindObjectFunc(pStr);
 		// Add parameters
 		for (int i = 2; i < Data.GetSize(); i++)
 			pFO->SetPar(i - 2, Data[i]);
@@ -207,6 +207,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs)
 	return pBestResult;
 }
 
+// return is to be freed by the caller
 C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs)
 {
 	// Trivial case
@@ -323,6 +324,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs, const C4LSectors &Sct)
 	return pBestResult;
 }
 
+// return is to be freed by the caller
 C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors &Sct)
 {
 	// Trivial case
@@ -448,22 +450,18 @@ C4FindObjectAnd::C4FindObjectAnd(int32_t inCnt, C4FindObject **ppConds, bool fFr
 		C4Rect *pChildBounds = ppConds[i]->GetBounds();
 		if (pChildBounds)
 		{
+			if (!fHasBounds)
+			{
+				fUseShapes = ppConds[i]->UseShapes();
+				Bounds = *pChildBounds;
+				fHasBounds = true;
+			}
 			// some objects might be in an rect and at a point not in that rect
-			// so do not intersect an atpoint bound with an rect bound
-			fUseShapes = ppConds[i]->UseShapes();
-			if (fUseShapes)
-			{
-				Bounds = *pChildBounds;
-				fHasBounds = true;
-				break;
-			}
-			if (fHasBounds)
+			// so do not intersect shapes bounds with rects bound
+			else if (fUseShapes == ppConds[i]->UseShapes())
 				Bounds.Intersect(*pChildBounds);
-			else
-			{
-				Bounds = *pChildBounds;
-				fHasBounds = true;
-			}
+			// simply use a larger rect than strictly necessary,
+			// the objects will be filtered out later
 		}
 	}
 }
@@ -514,15 +512,15 @@ C4FindObjectOr::C4FindObjectOr(int32_t inCnt, C4FindObject **ppConds)
 	{
 		C4Rect *pChildBounds = ppConds[i]->GetBounds();
 		if (!pChildBounds) { fHasBounds = false; break; }
-		// Do not optimize atpoint: It could lead to having to search multiple
-		// sectors. An object's shape can be in multiple sectors. We do not want
-		// to find the same object twice.
-		if (ppConds[i]->UseShapes())
+		// With objects that have a position outside their shape, mixing
+		// shape bounds with rect bounds results in no bounds
+		if (fHasBounds && fUseShapes != ppConds[i]->UseShapes())
 			{ fHasBounds = false; break; }
 		if (fHasBounds)
 			Bounds.Add(*pChildBounds);
 		else
 		{
+			fUseShapes = ppConds[i]->UseShapes();
 			Bounds = *pChildBounds;
 			fHasBounds = true;
 		}
@@ -624,12 +622,16 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	return SEqual(pObj->GetAction()->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
 {
 	assert(index >= 0 && index <= 1);
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	if (index == 0)
 		return pObj->Action.Target == pActionTarget;
 	else if (index == 1)
@@ -640,6 +642,8 @@ bool C4FindObjectActionTarget::Check(C4Object *pObj)
 
 bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
+	assert(pObj);
+	if (!pObj->GetAction()) return false;
 	C4Value v;
 	pObj->GetAction()->GetProperty(P_Procedure, &v);
 	return v != C4VNull && v.getStr() == procedure;
@@ -695,11 +699,7 @@ bool C4FindObjectFunc::Check(C4Object *pObj)
 {
 	// Function not found?
 	if (!Name) return false;
-	// Search same-name-list for appropriate function
-	C4AulFunc *pCallFunc = pObj->Def->Script.GetFuncRecursive(Name);
-	if (!pCallFunc) return false;
-	// Call
-	return !! pCallFunc->Exec(pObj, &Pars);
+	return pObj->Call(Name, &Pars).getBool();
 }
 
 bool C4FindObjectFunc::IsImpossible()
@@ -789,7 +789,7 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 		C4String *pStr = Data[1].getStr();
 		if (!pStr) return NULL;
 		// Construct
-		C4SortObjectFunc *pSO = new C4SortObjectFunc(pStr->GetCStr());
+		C4SortObjectFunc *pSO = new C4SortObjectFunc(pStr);
 		// Add parameters
 		for (int i = 2; i < Data.GetSize(); i++)
 			pSO->SetPar(i - 2, Data[i]);
@@ -940,11 +940,6 @@ void C4SortObjectFunc::SetPar(int i, const C4Value &Par)
 
 int32_t C4SortObjectFunc::CompareGetValue(C4Object *pObj)
 {
-	// Function not found?
 	if (!Name) return false;
-	// Search same-name-list for appropriate function
-	C4AulFunc *pCallFunc = pObj->Def->Script.GetFuncRecursive(Name);
-	if (!pCallFunc) return false;
-	// Call
-	return pCallFunc->Exec(pObj, &Pars).getInt();
+	return pObj->Call(Name, &Pars).getInt();
 }

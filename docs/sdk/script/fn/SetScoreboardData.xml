@@ -6,7 +6,7 @@
   <func>
     <title>SetScoreboardData</title>
     <category>Interface</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -47,7 +47,7 @@
   SetScoreboardData(player_id,    SBRD_Caption, <funclink>GetTaggedPlayerName</funclink>(player), player_id);
   <funclink>SortScoreboard</funclink>(coloumn_id, true);
   <funclink>Global</funclink>(player)=0;
-  return(1);
+  return true;
   }</code>
         <text>This might be a typical function for intializing the scoreboard in a scenario script: for each player a row is created. The row header is the player name and another column per row contains the starting score of 0.<br/> To index the rows we are using the player id (iPlrID). This player id is unique for each joined player so newly joining or rejoining players will get a unique id as well. 1 is used as column index for the score.<br/> The first call to SetScoreboardData sets the header of the score column to "{{RVLR}}"; which will display the picture of the rule object "Rivalry". The second call enters a "0" into the score column for the joining player. The third call sets the scoreboard title to "Score". The fourth call sets the row header (meaning the left column) to the player name and player color of the joining player.<br/> By using <funclink>SortScoreboard</funclink> the scoreboard is then sorted in descending order. The global variable of player index is then set to 0 so we can keep track of the player's score here.</text>
         <code>protected func RemovePlayer(int player)

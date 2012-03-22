@@ -7,7 +7,7 @@
     <title>AddVertex</title>
     <category>Objects</category>
     <subcat>Vertices</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -27,7 +27,7 @@
     <remark>Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected.</remark>
     <examples>
       <example>
-        <code><funclink>GetHiRank</funclink>(0)-&gt;AddVertex(50,0);</code>
+        <code><funclink>GetHiRank</funclink>(0)-&gt;AddVertex(0,50);</code>
         <text>Makes the captain of the first player stick to the ground.</text>
       </example>
     </examples>

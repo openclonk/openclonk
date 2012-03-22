@@ -1,0 +1,18 @@
+# Intro
+MsgIntro1=Wow, quite turbulent here...
+MsgIntro2=Have a look at that lava lake!
+MsgIntro3=Come on old girl, hang in there...
+MsgIntro4=Uh oh...
+MsgIntro5=Quick! The ejection seat!
+
+# NPC Pilot
+NamePilot=Pilot
+MsgCrashedPlane=So, have you found the plane yet?
+AnsCrashedPlane=No, we're still searching.
+
+# NPC Merchant
+MsgSellPlans=I have some interesting knowledge about constructions, which I can share with you for 150 clunkers.
+AnsNoMoney=Then I have to mine for gold, I'll be back later.
+AnsBuyPlans=That's a good deal, here you have the clunkers.
+MsgGivePlans=Thanks, here are your plans for {{Pump}}, {{Pipe}}, {{Catapult}} and {{Cannon}}. But be careful with the pump; it's made of wood and cannot be used to pump lava!
+MsgLeaveVillage=Please leave this quiet village.

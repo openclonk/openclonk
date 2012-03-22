@@ -4,11 +4,11 @@
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
  * Copyright (c) 2001-2007, 2009-2010  Sven Eberhardt
  * Copyright (c) 2003-2008  Peter Wortmann
- * Copyright (c) 2004-2006, 2008-2010  Günther Brammer
+ * Copyright (c) 2004-2006, 2008-2011  Günther Brammer
  * Copyright (c) 2005, 2009-2010  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2010  Richard Gerum
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Randrian
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +28,7 @@
 #include <C4Include.h>
 #include <C4Def.h>
 
+#include <C4Components.h>
 #include <C4Config.h>
 #include <C4FileMonitor.h>
 #include <C4Language.h>
@@ -76,8 +77,6 @@ void C4Def::DefaultDefCore()
 	NoBurnDecay=0;
 	IncompleteActivity=0;
 	Placement=0;
-	Prey=0;
-	Edible=0;
 	AttractLightning=0;
 	Oversize=0;
 	Fragile=0;
@@ -118,59 +117,12 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 		hGroup.Rename(C4CFN_DefCore, C4CFN_DefCore ".old");
 		Save(hGroup);*/
 
-		// Adjust picture rect
-		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
-			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
-
-		// Check category
-		if (!GetPlane() && Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
-		{
-			int Plane; bool gotplane = true;
-			switch (Category & (C4D_SortLimit | C4D_BackgroundOrForeground))
-			{
-				case C4D_StaticBack: Plane = 100; break;
-				case C4D_Structure: Plane = C4Plane_Structure; break;
-				case C4D_Vehicle: Plane = 300; break;
-				case C4D_Living: Plane = 400; break;
-				case C4D_Object: Plane = 500; break;
-				case C4D_StaticBack | C4D_Background: Plane = -500; break;
-				case C4D_Structure | C4D_Background: Plane = -400; break;
-				case C4D_Vehicle | C4D_Background: Plane = -300; break;
-				case C4D_Living | C4D_Background: Plane = -200; break;
-				case C4D_Object | C4D_Background: Plane = -100; break;
-				case C4D_StaticBack | C4D_Foreground: Plane = 1100; break;
-				case C4D_Structure | C4D_Foreground: Plane = 1200; break;
-				case C4D_Vehicle | C4D_Foreground: Plane = 1300; break;
-				case C4D_Living | C4D_Foreground: Plane = 1400; break;
-				case C4D_Object | C4D_Foreground: Plane = 1500; break;
-				default:
-					DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
-					gotplane = false;
-					break;
-			}
-			if (gotplane) SetProperty(P_Plane, C4VInt(Plane));
-		}
-		if (!GetPlane())
-		{
-			DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", GetName(), id.ToString(), hGroup.GetFullName().getData());
-			SetProperty(P_Plane, C4VInt(60));
-		}
 		// Check mass
 		if (Mass < 0)
 		{
 			DebugLogF("WARNING: Def %s (%s) at %s has invalid mass!", GetName(), id.ToString(), hGroup.GetFullName().getData());
 			Mass = 0;
 		}
-
-		// Register ID with script engine
-		::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
-		/*
-		int32_t index = ::ScriptEngine.GlobalNamedNames.GetItemNr(id.ToString());
-		if (index == -1)
-		{
-		  index = ::ScriptEngine.GlobalNamedNames.AddName(id.ToString());
-		  ::ScriptEngine.GlobalNamed.GetItem(index)->Set(C4VPropList(this));
-		}*/
 
 		return true;
 	}
@@ -200,7 +152,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(id,                "id",                 C4ID::None          ));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),             "Version"                               ));
-	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),             "Name",               "Undefined"       ));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false), "RequireDef",         C4IDList()        ));
 
 	const StdBitfieldEntry<int32_t> Categories[] =
@@ -249,8 +200,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BurnTurnTo,                    "BurnTo",             C4ID::None        ));
 	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
-	pComp->Value(mkNamingAdapt(Prey,                          "Prey",               0                 ));
-	pComp->Value(mkNamingAdapt(Edible,                        "Edible",             0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
 	pComp->Value(mkNamingAdapt(Constructable,                 "Construction",       0                 ));
@@ -320,8 +269,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def()
+C4Def::C4Def(): Script(this), C4PropList(ScriptEngine.GetPropList())
 {
+	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 	Default();
 }
@@ -343,8 +293,6 @@ void C4Def::Default()
 	pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	iNumRankSymbols=1;
-	PortraitCount = 0;
-	Portraits = NULL;
 }
 
 C4Def::~C4Def()
@@ -354,6 +302,7 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
 {
+	C4PropList::Clear();
 
 	Graphics.Clear();
 
@@ -363,10 +312,6 @@ void C4Def::Clear()
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
-
-	PortraitCount = 0;
-	Portraits = NULL;
-	C4PropList::Clear();
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -380,9 +325,8 @@ bool C4Def::Load(C4Group &hGroup,
 	if (Game.pFileMonitor && !SEqual(hGroup.GetFullName().getData(),Filename) && !hGroup.IsPacked())
 		AddFileMonitoring = true;
 
-	// Store filename, maker, creation
+	// Store filename
 	SCopy(hGroup.GetFullName().getData(),Filename);
-	Creation = hGroup.GetCreation();
 
 	// Verbose log filename
 	if (Config.Graphics.VerboseObjectLoading>=3)
@@ -416,7 +360,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (!fSuccess)
 	{
 
-		// Read sounds even if not a valid def (for pure c4d sound folders)
+		// Read sounds even if not a valid def (for pure ocd sound folders)
 		if (dwLoadWhat & C4D_Load_Sounds)
 			if (pSoundSystem)
 				pSoundSystem->LoadEffects(hGroup);
@@ -432,24 +376,19 @@ bool C4Def::Load(C4Group &hGroup,
 			return false;
 		}
 
-	// Read portraits
-	if (dwLoadWhat & C4D_Load_Bitmap)
-		if (!LoadPortraits(hGroup))
-		{
-			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
-			return false;
-		}
-
 	// Read string table
 	StringTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
+
+	// Register ID with script engine
+	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
 
 	// Read script
 	if (dwLoadWhat & C4D_Load_Script)
 	{
 		// reg script to engine
-		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
+		Script.Reg2List(&::ScriptEngine);
 		// Load script
-		Script.Load(hGroup, C4CFN_Script, szLanguage, this, &StringTable);
+		Script.Load(hGroup, C4CFN_Script, szLanguage, &StringTable);
 	}
 
 	// read clonknames
@@ -534,6 +473,10 @@ bool C4Def::Load(C4Group &hGroup,
 			MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
 
+		// Adjust picture rect
+		if ((PictureRect.Wdt==0) || (PictureRect.Hgt==0))
+			PictureRect.Set(0,0,Shape.Wdt*Graphics.Bmp.Bitmap->Scale, Shape.Hgt*Graphics.Bmp.Bitmap->Scale);
+
 		// validate TopFace
 		if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
 		{
@@ -545,6 +488,7 @@ bool C4Def::Load(C4Group &hGroup,
 	else
 	{
 		TopFace.Default();
+		PictureRect.Default();
 		SolidMask.Default();
 	}
 
@@ -556,84 +500,25 @@ bool C4Def::Load(C4Group &hGroup,
 
 void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform* trans)
 {
-
-	// default: def picture rect
-	C4Rect fctPicRect = PictureRect;
-	C4Facet fctPicture;
-
-	// if assigned: use object specific rect and graphics
-	if (pObj) if (pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
-
-	if (fSelected)
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
+	if(fSelected)
+		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, C4RGB(0xca, 0, 0));
 
 	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
-
-	// specific object color?
-	if (pObj) pObj->PrepareDrawing();
-
-	switch (graphics->Type)
-	{
-	case C4DefGraphics::TYPE_Bitmap:
-		fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-		fctPicture.DrawT(cgo,true,iPhaseX,iPhaseY,trans);
-		break;
-	case C4DefGraphics::TYPE_Mesh:
-		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-		std::auto_ptr<StdMeshInstance> dummy;
-		StdMeshInstance* instance;
-
-		C4Value value;
-		if (pObj)
-		{
-			instance = pObj->pMeshInstance;
-			pObj->GetProperty(P_PictureTransformation, &value);
-		}
-		else
-		{
-			dummy.reset(new StdMeshInstance(*graphics->Mesh));
-			instance = dummy.get();
-			GetProperty(P_PictureTransformation, &value);
-		}
-
-		StdMeshMatrix matrix;
-		if (C4ValueToMatrix(value, &matrix))
-			lpDDraw->SetMeshTransform(&matrix);
-
-		lpDDraw->SetPerspective(true);
-		lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, trans);
-		lpDDraw->SetPerspective(false);
-		lpDDraw->SetMeshTransform(NULL);
-
-		break;
-	}
-
-	if (pObj) pObj->FinishedDrawing();
-
-	// draw overlays
-	if (pObj && pObj->pGfxOverlay)
-		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			if (pGfxOvrl->IsPicture())
-				pGfxOvrl->DrawPicture(cgo, pObj, trans);
+	graphics->Draw(cgo, iColor, pObj, iPhaseX, iPhaseY, trans);
 }
 
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 {
-	// CalcDefValue defined?
-	C4AulFunc *pCalcValueFn = Script.GetSFunc(PSF_CalcDefValue, AA_PROTECTED);
-	int32_t iValue;
-	if (pCalcValueFn)
-		// then call it!
-		iValue = pCalcValueFn->Exec(NULL, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer))).getInt();
-	else
-		// otherwise, use default value
-		iValue = Value;
+	C4Value r = Call(PSF_CalcDefValue, &C4AulParSet(C4VObj(pInBase), C4VInt(iBuyPlayer)));
+	int32_t iValue = Value;
+	if (r != C4VNull)
+		iValue = r.getInt();
 	// do any adjustments based on where the item is bought
 	if (pInBase)
 	{
-		C4AulFunc *pFn;
-		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED)))
-			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VPropList(this), C4VInt(iValue))).getInt();
+		r = pInBase->Call(PSF_CalcBuyValue, &C4AulParSet(C4VPropList(this), C4VInt(iValue)));
+		if (r != C4VNull)
+			iValue = r.getInt();
 	}
 	return iValue;
 }
@@ -642,112 +527,25 @@ void C4Def::Synchronize()
 {
 }
 
-bool C4Def::LoadPortraits(C4Group &hGroup)
+int32_t C4Def::GetComponentCount(C4ID idComponent)
 {
-	// reset any previous portraits
-	Portraits = NULL; PortraitCount = 0;
-	// search for portraits within def graphics
-	for (C4DefGraphics *pGfx = &Graphics; pGfx; pGfx=pGfx->GetNext())
-		if (pGfx->IsPortrait())
-		{
-			// assign first portrait
-			if (!Portraits) Portraits = pGfx->IsPortrait();
-			// count
-			++PortraitCount;
-		}
-	return true;
-}
-
-C4ValueArray *C4Def::GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance)
-{
-	// return custom components array if script function is defined and returns an array
-	if (Script.SFn_CustomComponents)
-	{
-		C4AulParSet pars(C4VObj(pBuilder));
-		*pvArrayHolder = Script.SFn_CustomComponents->Exec(pObjInstance, &pars);
-		return pvArrayHolder->getArray();
-	}
-	return NULL;
-}
-
-int32_t C4Def::GetComponentCount(C4ID idComponent, C4Object *pBuilder)
-{
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder);
-	if (pArray)
-	{
-		int32_t iCount = 0;
-		for (int32_t i=0; i<pArray->GetSize(); ++i)
-			if (pArray->GetItem(i).getC4ID() == idComponent)
-				++iCount;
-		return iCount;
-	}
-	// no valid script overload: Assume definition components
 	return Component.GetIDCount(idComponent);
 }
 
-C4ID C4Def::GetIndexedComponent(int32_t idx, C4Object *pBuilder)
+C4ID C4Def::GetIndexedComponent(int32_t idx)
 {
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder);
-	if (pArray)
-	{
-		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		if (!pArray->GetSize()) return C4ID::None;
-		C4ID idLast = pArray->GetItem(0).getC4ID();
-		if (!idx) return idLast;
-		for (int32_t i=1; i<pArray->GetSize(); ++i)
-		{
-			C4ID idCurr = pArray->GetItem(i).getC4ID();
-			if (idCurr != idLast)
-			{
-				if (!--idx) return (idCurr);
-				idLast = idCurr;
-			}
-		}
-		// index out of bounds
-		return C4ID::None;
-	}
-	// no valid script overload: Assume definition components
 	return Component.GetID(idx);
 }
 
-void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance, C4Object *pBuilder)
+void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance)
 {
 	assert(pOutList);
 	assert(!pOutList->GetNumberOfIDs());
-	// script overload?
-	C4Value vArrayHolder;
-	C4ValueArray *pArray = GetCustomComponents(&vArrayHolder, pBuilder, pObjInstance);
-	if (pArray)
-	{
-		// transform array into IDList
-		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		C4ID idLast; int32_t iCount = 0;
-		for (int32_t i=0; i<pArray->GetSize(); ++i)
-		{
-			C4ID idCurr = pArray->GetItem(i).getC4ID();
-			if (!idCurr) continue;
-			if (i && idCurr != idLast)
-			{
-				pOutList->SetIDCount(idLast, iCount, true);
-				iCount = 0;
-			}
-			idLast = idCurr;
-			++iCount;
-		}
-		if (iCount) pOutList->SetIDCount(idLast, iCount, true);
-	}
+	// no valid script overload: Assume object or definition components
+	if (pObjInstance)
+		*pOutList = pObjInstance->Component;
 	else
-	{
-		// no valid script overload: Assume object or definition components
-		if (pObjInstance)
-			*pOutList = pObjInstance->Component;
-		else
-			*pOutList = Component;
-	}
+		*pOutList = Component;
 }
 
 void C4Def::IncludeDefinition(C4Def *pIncludeDef)
@@ -783,8 +581,8 @@ C4PropList *C4Def::GetActionByName(C4String *actname)
 	if (!actname || actname == &Strings.P[P_Idle]) return NULL;
 	// otherwise, query actmap
 	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
-	if (!ActMap.getPropList()) return false;
+	if (!ActMap.getPropList()) return NULL;
 	C4Value Action; ActMap.getPropList()->GetPropertyByS(actname, &Action);
-	if (!Action.getPropList()) return false;
+	if (!Action.getPropList()) return NULL;
 	return Action.getPropList();
 }

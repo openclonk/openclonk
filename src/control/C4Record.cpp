@@ -1,11 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2004-2007, 2011  Sven Eberhardt
  * Copyright (c) 2004-2008  Peter Wortmann
  * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -36,8 +37,8 @@
 
 #define IMMEDIATEREC
 
-#define DEBUGREC_EXTFILE "DbgRec.c4b" // if defined, an external file is used for debugrec writing (replays only)
-#define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
+//#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
+//#define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
 
 #ifdef DEBUGREC
 #ifdef DEBUGREC_EXTFILE
@@ -49,8 +50,6 @@ void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 {
 	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 }
-#else
-bool DoDebugRec=false;
 #endif
 
 C4DebugRecOff::C4DebugRecOff() : fDoOff(true)
@@ -131,11 +130,11 @@ bool C4Record::Start(bool fInitial)
 	if (fRecording) return false;
 
 	// create demos folder
-	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData()), LoadResStr("IDS_GAME_RECORDSTITLE")))
+	if (!Config.General.CreateSaveFolder(Config.AtUserDataPath(C4CFN_Records), LoadResStr("IDS_GAME_RECORDSTITLE")))
 		return false;
 
 	// various infos
-	StdStrBuf sDemoFolder; sDemoFolder.Ref(Config.General.SaveDemoFolder);
+	StdStrBuf sDemoFolder(C4CFN_Records);
 	char sScenName[_MAX_FNAME+ 1]; SCopy(GetFilenameOnly(Game.Parameters.Scenario.getFile()), sScenName, _MAX_FNAME);
 
 	// remove trailing numbers from scenario name (e.g. from savegames) - could we perhaps use C4S.Head.Origin instead...?
@@ -147,12 +146,12 @@ bool C4Record::Start(bool fInitial)
 
 	// determine index (by total number of records)
 	Index = 1;
-	for (DirectoryIterator i(Config.AtUserDataPath(Config.General.SaveDemoFolder.getData())); *i; ++i)
+	for (DirectoryIterator i(Config.AtUserDataPath(C4CFN_Records)); *i; ++i)
 		if (WildcardMatch(C4CFN_ScenarioFiles, *i))
 			Index++;
 
 	// compose record filename
-	sFilename.Format("%s" DirSep "%03i-%s.c4s", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
+	sFilename.Format("%s" DirSep "%03i-%s.ocs", Config.AtUserDataPath(sDemoFolder.getData()), Index, sScenName);
 
 	// log
 	StdStrBuf sLog; sLog.Format(LoadResStr("IDS_PRC_RECORDINGTO"),sFilename.getData());
@@ -209,7 +208,7 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 
 	// write last entry and close
 	C4RecordChunkHead Head;
-	Head.iFrm = Game.FrameCounter+37;
+	Head.iFrm = 37;
 	Head.Type = RCT_End;
 	CtrlRec.Write(&Head, sizeof(Head));
 	CtrlRec.Close();
@@ -225,7 +224,7 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 	if (pRecordName)
 		pRecordName->Copy(sFilename);
 	if (pRecordSHA1)
-		if (!C4Group_GetFileSHA1(sFilename.getData(), pRecordSHA1))
+		if (!GetFileSHA1(sFilename.getData(), pRecordSHA1))
 			return false;
 
 	// ok
@@ -298,7 +297,7 @@ bool C4Record::AddFile(const char *szLocalFilename, const char *szAddAs, bool fD
 
 		// Special stripping for streaming
 		StdCopyStrBuf szFile(szLocalFilename);
-		if (SEqualNoCase(GetExtension(szAddAs), "c4p"))
+		if (SEqualNoCase(GetExtension(szAddAs), "ocp"))
 		{
 			// Create a copy
 			MakeTempFilename(&szFile);
@@ -547,7 +546,7 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 		StdBuf Chunk = pUseBuf->getPart(iPos, pUseBuf->getSize() - iPos);
 		// Create entry
 		C4RecordChunk c;
-		c.Frame = (iFrame += pHead->iFrm);
+		c.Frame = (iFrame + pHead->iFrm);
 		c.Type = pHead->Type;
 		// Unpack data
 		try
@@ -604,6 +603,7 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 		}
 		// Add to list
 		chunks.push_back(c); c.pPkt = NULL;
+		iFrame = c.Frame;
 	}
 	while (!fFinished);
 	// erase everything but the trailing part from sequential buffer
@@ -616,6 +616,8 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 			sequentialBuffer.Move(iPos, sequentialBuffer.getSize() - iPos);
 			sequentialBuffer.Shrink(iPos);
 		}
+		// remember frame
+		iLastSequentialFrame = iFrame;
 	}
 	return true;
 }
@@ -987,6 +989,7 @@ const char * GetRecordChunkTypeName(C4RecordChunkType eType)
 	case RCT_MenuAddC: return "MenuAddC";  // add menu item: Following commands
 	case RCT_OCF: return "OCF";  // OCF setting of updating
 	case RCT_DirectExec: return "DirectExec";  // a DirectExec-script
+	case RCT_Definition: return "Definition";  // Definition callback
 
 	case RCT_Custom: return "Custom"; // varies
 
@@ -1072,7 +1075,9 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 			DebugRecError(FormatString("Playback type %x, this type %x", currChunk->Type, eType).getData());
 			return;
 		}
-		PktInReplay = *currChunk->pDbg;
+		if (currChunk->pDbg)
+			PktInReplay = *currChunk->pDbg;
+
 		fHasPacketFromHead = true;
 	}
 #endif // DEBUGREC_EXTFILE
@@ -1098,7 +1103,6 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 	{
 		StdStrBuf sErr;
 		sErr.Format("DbgRecPkt Type %s, size %d", GetRecordChunkTypeName(eType), iSize);
-		int i;
 		sErr.Append(" Replay: ");
 		StdBuf replay(PktInReplay.getData(), PktInReplay.getSize());
 		sErr.Append(GetDbgRecPktData(eType, replay));
@@ -1201,7 +1205,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	SCopy(szStream, szRecord, _MAX_PATH);
 	if (GetExtension(szRecord))
 		*(GetExtension(szRecord) - 1) = 0;
-	SAppend(".c4s", szRecord, _MAX_PATH);
+	SAppend(".ocs", szRecord, _MAX_PATH);
 	LogF("Original scenario is %s, creating %s.", szOrigin, szRecord);
 	if (!C4Group_CopyItem(szOrigin, szRecord, false, false))
 		return false;

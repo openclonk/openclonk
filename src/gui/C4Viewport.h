@@ -49,6 +49,7 @@ public:
 
 	float GetZoom() { return Zoom; }
 	void SetZoom(float zoomValue);
+	float GetGUIZoom() const { return BoundBy<float>(float(ViewWdt)/1280,0.5f,1.0f); }
 	void Default();
 	void Clear();
 	void Execute();
@@ -64,11 +65,7 @@ public:
 	float GetZoomLimitMax() const { return ZoomLimitMax; }
 	float GetZoomTarget() const { return ZoomTarget; }
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
-	bool Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
 	void DropFile(const char* fileName, float x, float y);
-#ifdef _WIN32
-	bool DropFiles(HANDLE hDrop);
-#endif
 	bool TogglePlayerLock();
 	void NextPlayer();
 	C4Rect GetOutputRect() { return C4Rect(OutX, OutY, ViewWdt, ViewHgt); }
@@ -87,8 +84,7 @@ protected:
 	C4RegionList *SetRegions;
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
-	CClrModAddMap ClrModMap; // color modulation map for viewport drawing
-	void DrawPlayerFogOfWar(C4TargetFacet &cgo);
+	C4FogOfWar ClrModMap; // color modulation map for viewport drawing
 	void DrawPlayerStartup(C4TargetFacet &cgo);
 	void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);

@@ -27,6 +27,7 @@
 #include "StdScheduler.h"
 
 #ifdef _WIN32
+#include <C4windowswrapper.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #ifndef WINSOCK_VERSION
@@ -45,6 +46,10 @@
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
 #endif
 
 #ifndef HAVE_CONFIG_H

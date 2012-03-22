@@ -7,7 +7,7 @@
     <title>Sort_Multiple</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -24,7 +24,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sort criterion: Ermöglicht das Sortieren nach mehreren Kriterien. Das erste Kriterium hat höchste Priorität.</desc>
+    <desc>Sort criterion: Makes it possible to sort with several criterions. The first criterion has the highest priority.</desc>
     <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
     <related><funclink>FindObjects</funclink></related>
   </func>

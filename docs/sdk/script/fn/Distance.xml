@@ -6,7 +6,7 @@
   <func>
     <title>Distance</title>
     <category>Arithmetics</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -35,7 +35,7 @@
     <desc>Calculates the distance between two points. Same as Sqrt((x2-x1)^2 + (y2-y1)^2;).</desc>
     <examples>
       <example>
-        <code><funclink>GetCursor</funclink>(0)-&gt;Message(&quot;Schnell, noch %d Clonks trennen dich vom Ziel!&quot;, Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
+        <code><funclink>GetCursor</funclink>(0)-&gt;Message(&quot;Quick, you are only %d Clonks away from the goal!&quot;, Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>
         <text>Displays the distance of the clonk from point 1000/200.</text>
       </example>
     </examples>

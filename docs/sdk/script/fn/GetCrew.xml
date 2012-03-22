@@ -7,7 +7,7 @@
     <title>GetCrew</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -23,7 +23,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the indicated crew member of a player. For an invalid index nil is returned.</desc>
+    <desc>Returns the indicated crew member of a player. For an invalid index <code>nil</code> is returned.</desc>
     <examples>
       <example>
         <code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>

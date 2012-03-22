@@ -4,18 +4,18 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Particle</title>
-  <h id="Partikel">Particle</h>
+  <h>Particle</h>
   <part>
     <text>Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead.</text>
-    <text>If a particle is defined in a c4d group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles.</text>
+    <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored. This used to be a way to allow loading of placeholder options in the old graphics system which didn't support particles.</text>
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
-    <h id="PartikelKomponentenC4D">Particle Components (c4d)</h>
+    <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
-      <dt><img height="16" src="../../images/icon_text.gif" width="16"/>Particle.txt</dt>
+      <dt><img height="16" src="../../images/icon_text.png" width="16"/>Particle.txt</dt>
       <dd>
         <text>Particle properties.</text>
       </dd>
-      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.gif" width="16"/>Graphics.png</dt>
+      <dt id="Graphicspng"><img height="16" src="../../images/icon_image.png" width="16"/>Graphics.png</dt>
       <dd>
         <text>Particle graphics.</text>
         <text>The particle definition can also contain the known components of <emlink href="definition/index.html">object definitions</emlink> for describing the particle (e.g. Title.png, DescDE/US.txt, etc.)</text>
@@ -109,7 +109,7 @@
         <row>
           <col>RByV</col>
           <col>Integer</col>
-          <col>0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied (from 4.9.8.0).</col>
+          <col>0 to 3. 0 for no particle rotation. If 1 the particle will be aligned to its direction of travel; the particle's up-side will be in front. If 2 the speed parameters only determine rotation; the particle will not move. If 3 a random rotation is applied.</col>
         </row>
         <row>
           <col>GravityAcc</col>
@@ -119,7 +119,7 @@
         <row>
           <col>WindDrift</col>
           <col>Integer</col>
-          <col>Horizontal drift by wind. Same as the material property of the same name. Since CR 4.9.8.4.</col>
+          <col>Horizontal drift by wind. Same as the material property of the same name.</col>
         </row>
         <row>
           <col>VertexCount</col>
@@ -154,14 +154,14 @@
         <row>
           <col>Attach</col>
           <col>Integer</col>
-          <col>0 or 1. If 1 the particle is moving relative to its target object's position. From CE 4.95.4.</col>
+          <col>0 or 1. If 1 the particle is moving relative to its target object's position.</col>
         </row>
       </table>
     </text>
     <h id="attributes">Properties</h>
     <text>Each particle has a position (x, y), horizontal and vertical impulse (xdir and ydir), life time (life), and two extra parameters (a and b). These are initialized by script and then processed by the <a href="#funcs">particle functions</a>. For more information see <a href="#funcs">particle functions</a> and <a href="#drawfuncs">drawing functions</a>.</text>
     <h id="face">Graphics</h>
-    <text>The coordinates for the source rectangle within Graphics.png of a particle are comparable to the Face entry in an object's <emlink href="definition/actmap.html">ActMap.txt</emlink>. The coordinates only specify the first animation phase. All following animation phases should be located on the right (with smoke also below) of the initial phase. The animation length is then automatically determined from the image size. For the drawing offset you should usually specify half the particle size. An offset 0/0 would cause the particle graphics to be drawn below actual particle position.</text>
+    <text>The coordinates for the source rectangle within Graphics.png of a particle are comparable to the Face entry in an object's <emlink href="definition/actmap.html">ActMap</emlink>. The coordinates only specify the first animation phase. All following animation phases should be located on the right (with smoke also below) of the initial phase. The animation length is then automatically determined from the image size. For the drawing offset you should usually specify half the particle size. An offset 0/0 would cause the particle graphics to be drawn below actual particle position.</text>
     <text>If Delay = 0, a random animation phase is chosen on startup and maintained. The particle will exist until is falls out of the landscape.</text>
     <h id="maxcount">Particle Amounts</h>
     <text>For each particle type a maximum count is defined which is then also adjusted by the configuration setting for effect levels in the graphics options. As soon as half of the maximum amount of particles is created, new particles are only created based on random selected and the closer you get to the maximum value, the smaller the chance of new particle generation. This ensures a smooth approach to the actual limit.</text>

@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2005-2008, 2011  Sven Eberhardt
  * Copyright (c) 2006, 2008, 2010  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2008, 2010  Armin Burgmeier
@@ -34,6 +34,7 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Network2.h>
+#include <C4MouseControl.h>
 
 #include <StdGL.h>
 
@@ -55,21 +56,21 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	float iDrawQuadLeft[8] = { x0,y0, x0+iIndent,y0, x0+iIndent,y1-iIndent, x0,y1 };
 	float iDrawQuadRight[8] = { x1,y0, x1,y1, x1-iIndent,y1, x1-iIndent,y0+iIndent };
 	float iDrawQuadBottom[8] = { x1,y1, x0,y1, x0+iIndent,y1-iIndent, x1,y1-iIndent };
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	lpDDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
-	//lpDDraw->DrawFrameDw(cgo.Surface, x0+1, y0+1, x1-1, y1-1, aC4StartupBtnBorderColor2);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadTop, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadLeft, dwClrHigh,dwClrHigh,dwClrHigh,dwClrHigh);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadRight, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
+	pDraw->DrawQuadDw(cgo.Surface, iDrawQuadBottom, dwClrLow,dwClrLow,dwClrLow,dwClrLow);
+	//pDraw->DrawFrameDw(cgo.Surface, x0+1, y0+1, x1-1, y1-1, aC4StartupBtnBorderColor2);
 	// draw selection highlight
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 		{
-			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 			::GraphicsResource.fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
-			lpDDraw->ResetBlitMode();
+			pDraw->ResetBlitMode();
 		}
 	// draw button text
-	lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4StartupBtnFontClr, ACenter, true);
+	pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4StartupBtnFontClr, ACenter, true);
 }
 
 int32_t C4StartupOptionsDlg::SmallButton::GetDefaultButtonHeight()
@@ -93,7 +94,6 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	iResChangeSwitchTime = 12;
 	// However, some people need more time
 	// Those can be identified by their configuration settings
-	if (Config.Graphics.SaveDefaultPortraits) iResChangeSwitchTime += 2;
 	if (SEqualNoCase(Config.GetRegistrationData("Nick"), "flgr")) iResChangeSwitchTime *= 10;
 	// get positions
 	C4GUI::ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
@@ -152,26 +152,44 @@ void C4StartupOptionsDlg::ResChangeConfirmDlg::OnSec1Timer()
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::KeySelDialog
 
-const char *KeyID2Desc(int32_t iKeyID)
-{
-	const char *KeyIDStringIDs[C4MaxKey] =
-	  { "IDS_CTL_SELECTLEFT", "IDS_CTL_SELECTTOGGLE", "IDS_CTL_SELECTRIGHT",
-	    "IDS_CTL_THROW"     , "IDS_CTL_UPJUMP"      , "IDS_CTL_DIG"        ,
-	    "IDS_CTL_LEFT"      , "IDS_CTL_DOWNSTOP"    , "IDS_CTL_RIGHT"      ,
-	    "IDS_CTL_PLAYERMENU", "IDS_CTL_SPECIAL1"    , "IDS_CTL_SPECIAL2"
-	  };
-	if (!Inside<int32_t>(iKeyID, 0, C4MaxKey)) return NULL;
-	return LoadResStr(KeyIDStringIDs[iKeyID]);
-}
-
-C4StartupOptionsDlg::KeySelDialog::KeySelDialog(int32_t iKeyID, int32_t iCtrlSet, bool fGamepad)
-		: C4GUI::MessageDialog(FormatString(LoadResStr(!fGamepad ? "IDS_MSG_PRESSKEY" : "IDS_MSG_PRESSBTN"),
-		                                    KeyID2Desc(iKeyID), iCtrlSet+1).getData(), LoadResStr("IDS_MSG_DEFINEKEY"),
-		                       C4GUI::MessageDialog::btnAbort, fGamepad ? C4GUI::Ico_Gamepad : C4GUI::Ico_Keyboard, C4GUI::MessageDialog::dsRegular),
-		key(KEY_Undefined), fGamepad(fGamepad), iCtrlSet(iCtrlSet)
+C4StartupOptionsDlg::KeySelDialog::KeySelDialog(const C4PlayerControlAssignment *assignment, const C4PlayerControlAssignmentSet *assignment_set)
+	: C4GUI::MessageDialog(GetDlgMessage(assignment, assignment_set).getData(), LoadResStr("IDS_MSG_DEFINEKEY"), C4GUI::MessageDialog::btnAbort | C4GUI::MessageDialog::btnReset, GetDlgIcon(assignment_set), C4GUI::MessageDialog::dsRegular),
+		key(KEY_Undefined), assignment(assignment), assignment_set(assignment_set)
 {
 	pKeyListener = new C4KeyBinding(C4KeyCodeEx(KEY_Any, KEYS_None), "DefineKey", KEYSCOPE_Gui, new C4GUI::DlgKeyCBPassKey<C4StartupOptionsDlg::KeySelDialog>(*this, &C4StartupOptionsDlg::KeySelDialog::KeyDown), C4CustomKey::PRIO_PlrControl);
 }
+
+StdStrBuf C4StartupOptionsDlg::KeySelDialog::GetDlgMessage(const C4PlayerControlAssignment *assignment, const C4PlayerControlAssignmentSet *assignment_set)
+{
+	// compose message asking for key, gamepad button and/or mouse button depending on used control set
+	if (!assignment || !assignment_set) return StdStrBuf("err");
+	int32_t ctrl = assignment->GetControl();
+	const C4PlayerControlDef *assignment_def = Game.PlayerControlDefs.GetControlByIndex(ctrl);
+	StdStrBuf result_string;
+	if (assignment_set->HasGamepad())
+		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSBTN"), assignment_def ? assignment_def->GetGUIName() : "undefined", 0));
+	else
+		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSKEY"), assignment_def ? assignment_def->GetGUIName() : "undefined", 0));
+	if (assignment_def)
+	{
+		const char *ctrl_desc = assignment_def->GetGUIDesc();
+		if (ctrl_desc && *ctrl_desc)
+		{
+			result_string.Append("||");
+			result_string.Append(ctrl_desc);
+		}
+	}
+	return result_string;
+}
+
+C4GUI::Icons C4StartupOptionsDlg::KeySelDialog::GetDlgIcon(const C4PlayerControlAssignmentSet *assignment_set)
+{
+	if (!assignment_set) return C4GUI::Ico_Error;
+	if (assignment_set->HasGamepad()) return C4GUI::Ico_Gamepad;
+	return C4GUI::Ico_Keyboard;
+}
+
+
 
 C4StartupOptionsDlg::KeySelDialog::~KeySelDialog()
 {
@@ -180,70 +198,162 @@ C4StartupOptionsDlg::KeySelDialog::~KeySelDialog()
 
 bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 {
+	// safety
+	if (!assignment || !assignment_set) return false;
 	// check if key is valid for this set
-	// do not mix gamepad and keyboard keys
-	if (Key_IsGamepad(key.Key) != fGamepad) return false;
-	// allow selected gamepad only
-	if (fGamepad && Key_GetGamepad(key.Key) != iCtrlSet) return false;
+	if (Key_IsGamepad(key.Key))
+	{
+		if (!assignment_set->HasGamepad()) return false;
+	}
+	else if (Key_IsMouse(key.Key))
+	{
+		if (!assignment_set->HasMouse()) return false;
+	}
+	else
+	{
+		if (!assignment_set->HasKeyboard()) return false;
+	}
 	// okay, use it
-	this->key=key.Key;
+	this->key=key;
 	Close(true);
 	return true;
 }
 
+
 // ------------------------------------------------
-// --- C4StartupOptionsDlg::KeySelButton
+// --- C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel
 
-// key display arrangement - -1 denotes no key
-// every key from 0 to C4MaxKey-1 MUST BE present here, or the engine will crash
-const int32_t iKeyPosMaxX = 3, iKeyPosMaxY = 4; // arrange keys in a 4-by-5-array
-const int32_t iKeyPosis[iKeyPosMaxY][iKeyPosMaxX] =
+C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::ControlAssignmentLabel(class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, const C4Rect &bounds)
+	: C4GUI::Label("", bounds, ALeft, 0xffffffff, NULL, false, false, false), assignment(assignment), assignment_set(assignment_set)
 {
-	{ 0, 1, 2 },
-	{ 3, 4, 5 },
-	{ 6, 7, 8 },
-	{ 9,10,11 }
-};
+	UpdateAssignmentString();
+}
 
+void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
+	{
+	// left-click to change key
+	if (iButton == C4MC_Button_LeftDown && assignment)
+	{
+		KeySelDialog *dlg = new KeySelDialog(assignment, assignment_set);
+		dlg->SetDelOnClose(false);
+		bool success = GetScreen()->ShowModalDlg(dlg, false);
+		C4KeyCodeEx key = dlg->GetKeyCode();
+		delete dlg;
+		if (success)
+		{
+			// dialog closed by pressing a key or by the Reset button (in which case, key==KEY_Undefined)
+			// assign new config
+			C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(assignment_set, assignment, key);
+			UpdateAssignmentString();
+		}
+	}
+	// inherited
+	Element::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
+	}
 
-void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
+void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAssignmentString()
 {
-	// draw key
-	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
-	::GraphicsResource.fctKey.Draw(cgoDraw, true, fDown);
-	int32_t iKeyIndent = cgoDraw.Wdt / 5;
-	cgoDraw.X += iKeyIndent; cgoDraw.Wdt -= 2*iKeyIndent;
-	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
-	if (fDown) cgoDraw.Y += iKeyIndent/2;
-	bool fDoHightlight = fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false));
-	bool fHadBlitMod=false; DWORD dwOldBlitModClr=0xffffffff;
-	if (!fDoHightlight)
-	{
-		DWORD dwModClr = 0xff7f7f7f;
-		if ((fHadBlitMod = lpDDraw->GetBlitModulation(dwOldBlitModClr)))
-			ModulateClr(dwModClr, dwOldBlitModClr);
-		lpDDraw->ActivateBlitModulation(dwModClr);
-	}
-	::GraphicsResource.fctCommand.Draw(cgoDraw, true, iKeyID, 0);
-	if (!fDoHightlight)
-	{
-		if (fHadBlitMod)
-			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);
-		else
-			lpDDraw->DeactivateBlitModulation();
-	}
-	// draw the labels - beside the key
-	float fZoom;
-	CStdFont &rUseFont = C4Startup::Get()->Graphics.GetBlackFontByHeight(cgoDraw.Hgt/2+5, &fZoom);
-	lpDDraw->TextOut(KeyID2Desc(iKeyID), rUseFont, fZoom, cgo.Surface, cgo.TargetX+rcBounds.x+rcBounds.Wdt+5, cgoDraw.Y-3, fDoHightlight ? 0xffff0000 : C4StartupFontClr, ALeft, false);
-	StdStrBuf strKey; strKey.Copy(C4KeyCodeEx::KeyCode2String(key, true, false));
-	lpDDraw->TextOut(strKey.getData(), rUseFont, fZoom, cgo.Surface, cgo.TargetX+rcBounds.x+rcBounds.Wdt+5, cgoDraw.Y+cgoDraw.Hgt/2, fDoHightlight ? 0xffff0000 : C4StartupFontClr, ALeft, false);
+	// assignment label text from assigned key
+	StdStrBuf strKey;
+	C4KeyCodeEx key(0);
+	if (assignment) key = assignment->GetTriggerKey();
+	SetText(key.ToString(true, true).getData());
+	SetColor((assignment && assignment->IsKeyChanged()) ? C4GUI_CaptionFontClr : C4GUI_InactCaptionFontClr);
+}
+
+// ------------------------------------------------
+// --- C4StartupOptionsDlg::ControlConfigListBox::ListItem
+
+C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set)
+ : C4GUI::Window(), parent_list(parent_list), assignment_label(NULL), has_extra_spacing(false)
+{
+	int32_t margin = 2;
+	// adding to listbox will size the element horizontally and move to proper position
+	int32_t height = ::GraphicsResource.TextFont.GetLineHeight() + 2 * margin;
+	SetBounds(C4Rect(0,0,42,height));
+	parent_list->InsertElement(this, NULL);
+	int32_t name_col_width = GetBounds().Wdt * 2/3;
+	if (assignment && assignment->IsGroupStart()) has_extra_spacing = true;
+	// child elements: two labels for two columns
+	int32_t con = assignment->GetControl();
+	const C4PlayerControlDef *con_def = Game.PlayerControlDefs.GetControlByIndex(con);
+	C4GUI::Label *name_label = new C4GUI::Label(con_def ? con_def->GetGUIName() : "?undefined?", margin, margin);
+	C4Rect assignment_label_bounds = C4Rect(name_col_width + margin, margin, GetBounds().Wdt - name_col_width - margin, GetBounds().Hgt - 2 * margin);
+	assignment_label = new ControlAssignmentLabel(assignment, assignment_set, assignment_label_bounds);
+	AddElement(name_label);
+	AddElement(assignment_label);
 }
 
 
-C4StartupOptionsDlg::KeySelButton::KeySelButton(int32_t iKeyID, const C4Rect &rcBounds, char cHotkey)
-		: C4GUI::IconButton(C4GUI::Ico_None, rcBounds, cHotkey), iKeyID(iKeyID), key(KEY_Undefined)
+// ------------------------------------------------
+// --- C4StartupOptionsDlg::ControlConfigListBox
+
+C4StartupOptionsDlg::ControlConfigListBox::ControlConfigListBox(const C4Rect &rcBounds, class C4PlayerControlAssignmentSet *set)
+	: C4GUI::ListBox(rcBounds), set(NULL)
 {
+	SetAssignmentSet(set);
+}
+
+void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerControlAssignmentSet *new_set)
+{
+	set = new_set;
+	// clear previous elements
+	if (pClientWindow) pClientWindow->ClearChildren();
+	// populate with new assignments
+	if (set)
+	{
+		C4PlayerControlAssignment *assignment;
+		int32_t i=0;
+		while (assignment = set->GetAssignmentByIndex(i++))
+		{
+			// only show assignments of GUI-named controls
+			int32_t ctrl = assignment->GetControl();
+			const C4PlayerControlDef *def = Game.PlayerControlDefs.GetControlByIndex(ctrl);
+			if (def && def->GetGUIName() && *def->GetGUIName())
+			{
+				ListItem *element = new ListItem(this, assignment, set);
+				AddElement(element);
+			}
+		}
+	}
+}
+
+void C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(class C4PlayerControlAssignmentSet *assignment_set, class C4PlayerControlAssignment *assignment, C4KeyCodeEx &key)
+{
+	// change key in the specified assignment set to the specified value
+	// also changes config values so change is kept after restart
+	// safety
+	if (!assignment || !assignment_set) return;
+	class C4PlayerControlAssignmentSet *config_set = Config.Controls.UserSets.GetSetByName(assignment_set->GetName());
+	// change key
+	if (key.Key == KEY_Undefined)
+	{
+		// reset to default
+		assignment->ResetKeyToInherited();
+		// also reset in config
+		if (config_set)
+		{
+			config_set->RemoveAssignmentByControlName(assignment->GetControlName());
+			if (!config_set->GetAssignmentByIndex(0))
+			{
+				// if config set is empty, no overrides exist and the set can be deleted (unless it's a custom config set)
+				if (Game.PlayerControlDefaultAssignmentSets.GetSetByName(config_set->GetName()))
+				{
+					Config.Controls.UserSets.RemoveSetByName(assignment_set->GetName());
+				}
+			}
+		}
+	}
+	else
+	{
+		// set to specified value
+		assignment->SetKey(key);
+		// also set in config
+		if (!config_set) config_set = Config.Controls.UserSets.CreateEmptySetByTemplate(*assignment_set);
+		C4PlayerControlAssignment *config_assignment = config_set->GetAssignmentByControlName(assignment->GetControlName());
+		if (!config_assignment) config_assignment = config_set->CreateAssignmentForControl(assignment->GetControlName());
+		config_assignment->SetKey(key);
+	}
 }
 
 // ------------------------------------------------
@@ -253,40 +363,43 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
 {
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
+	CStdFont *pUseFontSmall = &(C4Startup::Get()->Graphics.BookSmallFont);
 	SetBounds(rcArea);
 	C4GUI::ComponentAligner caArea(rcArea, iHMargin, iVMargin, true);
 	// get number of control sets to be configured
-	iMaxControlSets = 1; // do not devide by zero
-	if (fGamepad && Application.pGamePadControl)
-		iMaxControlSets = Max(1, Application.pGamePadControl->GetGamePadCount());
-	if (!fGamepad)
-		iMaxControlSets = C4MaxKeyboardSet;
+	C4PlayerControlAssignmentSets &assignment_sets = Game.PlayerControlUserAssignmentSets;
+	iMaxControlSets = Max<size_t>(assignment_sets.GetSetCount(),1u); // do not devide by zero
 	ppKeyControlSetBtns = new C4GUI::IconButton *[iMaxControlSets];
-	// top line buttons to select keyboard set or gamepad
-	C4Facet fctCtrlPic = fGamepad ? ::GraphicsResource.fctGamepad : ::GraphicsResource.fctKeyboard;
+	// top line buttons to select control configuration
+	C4Facet fctCtrlDefPic = ::GraphicsResource.fctKeyboard; // 
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
-	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlPic.Wdt);
-	int32_t iCtrlSetBtnHgt = fctCtrlPic.GetHeightByWidth(iCtrlSetBtnWdt);
+	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlDefPic.Wdt);
+	int32_t iCtrlSetBtnHgt = fctCtrlDefPic.GetHeightByWidth(iCtrlSetBtnWdt);
 	iCtrlSetHMargin = (iCtrlSetWdt - iCtrlSetBtnWdt*iMaxControlSets) / (iMaxControlSets*2);
 	C4GUI::ComponentAligner caKeyboardSetSel(caArea.GetFromTop(2*iCtrlSetVMargin+iCtrlSetBtnHgt), iCtrlSetHMargin, iCtrlSetVMargin);
 	const char *szCtrlSetHotkeys = "1234567890"; /* 2do */
 	uint32_t i;
-	for (i = 0; i < (uint32_t)iMaxControlSets; ++i)
+	for (i = 0; i < assignment_sets.GetSetCount(); ++i)
 	{
+		C4PlayerControlAssignmentSet *assignment_set = assignment_sets.GetSetByIndex(i);
 		char cCtrlSetHotkey = 0;
 		if (i <= strlen(szCtrlSetHotkeys)) cCtrlSetHotkey = szCtrlSetHotkeys[i];
 		C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, C4GUI::IconButton> *pBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, C4GUI::IconButton>(C4GUI::Ico_None, caKeyboardSetSel.GetFromLeft(iCtrlSetBtnWdt), cCtrlSetHotkey, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlSetBtn, this);
+		C4Facet fctCtrlPic = assignment_set->GetPicture();
 		pBtn->SetFacet(fctCtrlPic);
-		fctCtrlPic.X += fctCtrlPic.Wdt;
 		AddElement(ppKeyControlSetBtns[i] = pBtn);
-		pBtn->SetToolTip(LoadResStr("IDS_MSG_SELECTKEYSET"));
+		pBtn->SetText(assignment_set->GetGUIName());
+		pBtn->SetFont(pUseFontSmall, C4StartupFontClr);
+		pBtn->SetToolTip("[!]Select control set to modify");
 	}
-	iSelectedCtrlSet = fGamepad ? 0 : C4P_Control_Keyboard1;
+	iSelectedCtrlSet = 0;
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
 	caArea.ExpandTop(caArea.GetVMargin());
-	C4Facet &rfctKey = ::GraphicsResource.fctKey;
+	control_list = new ControlConfigListBox(caArea.GetFromLeft(caArea.GetInnerWidth()/2), NULL);
+	AddElement(control_list);
+	/*C4Facet &rfctKey = ::GraphicsResource.fctKey;
 	int32_t iKeyAreaMaxWdt = caArea.GetWidth()-2*caArea.GetHMargin(), iKeyAreaMaxHgt = caArea.GetHeight()-2*caArea.GetVMargin();
 	int32_t iKeyWdt = rfctKey.Wdt*3/2, iKeyHgt = rfctKey.Hgt*3/2;
 	int32_t iKeyUseWdt = iKeyWdt + iKeyHgt*3; // add space for label
@@ -315,7 +428,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 			C4Rect rcKey = caCtrlKeysLine.GetFromLeft(iKeyWdt);
 			caCtrlKeysLine.ExpandLeft(iKeyWdt - iKeyUseWdt);
 			if ((iKeyNum=iKeyPosis[iY][iX])<0) continue;
-			KeySelButton *pKeyBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, KeySelButton>(iKeyNum, rcKey, 0 /* no hotkey :( */, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn, this);
+			KeySelButton *pKeyBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, KeySelButton>(iKeyNum, rcKey, 0, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn, this);
 			AddElement(KeyControlBtns[iKeyNum] = pKeyBtn);
 			pKeyBtn->SetToolTip(KeyID2Desc(iKeyNum));
 		}
@@ -341,7 +454,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
 	C4Rect rcResetBtn = caKeyBottomBtns.GetFromRight(Min<int32_t>(iButtonWidth+iButtonHeight*4, caKeyBottomBtns.GetInnerWidth()));
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn, this));
-	btn->SetToolTip(LoadResStr("IDS_MSG_RESETKEYSETS"));
+	btn->SetToolTip(LoadResStr("IDS_MSG_RESETKEYSETS"));*/
 
 	UpdateCtrlSet();
 }
@@ -372,8 +485,10 @@ void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
 	int i;
 	for (i = 0; i < iMaxControlSets; ++i)
 		ppKeyControlSetBtns[i]->SetHighlight(i == iSelectedCtrlSet);
+	// update list
+	control_list->SetAssignmentSet(Game.PlayerControlUserAssignmentSets.GetSetByIndex(iSelectedCtrlSet));
 	// update keys by config
-	if (fGamepad)
+	/*if (fGamepad)
 	{
 		for (i = 0; i < C4MaxKey; ++i)
 			KeyControlBtns[i]->SetKey(Config.Gamepads[iSelectedCtrlSet].Button[i]);
@@ -386,39 +501,13 @@ void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
 	}
 	// show/hide gamepad-gui-control checkbox
 	if (fGamepad && pGUICtrl)
-		pGUICtrl->SetVisibility(iSelectedCtrlSet == 0);
-}
-
-void C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn(C4GUI::Control *btn)
-{
-	// determine which key has been pressed
-	int32_t idKey;
-	for (idKey = 0; idKey < C4MaxKey; ++idKey) if (KeyControlBtns[idKey] == btn) break;
-	if (idKey==C4MaxKey) return; // can't happen
-	// show key selection dialog for it
-	KeySelDialog *pDlg = new KeySelDialog(idKey, iSelectedCtrlSet, fGamepad);
-	pDlg->SetDelOnClose(false);
-	bool fSuccess = GetScreen()->ShowModalDlg(pDlg, false);
-	C4KeyCode key = pDlg->GetKeyCode();
-	delete pDlg;
-	if (!fSuccess) return;
-	// key defined: Set it
-	KeyControlBtns[idKey]->SetKey(key);
-	// and update config
-	if (fGamepad)
-		Config.Gamepads[iSelectedCtrlSet].Button[idKey] = key;
+		pGUICtrl->SetVisibility(iSelectedCtrlSet == 0);*/
 }
 
 void C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn(C4GUI::Control *btn)
 {
 	// default keys and axis reset
-	if (fGamepad)
-	{
-		for (int i = 0; i < C4ConfigMaxGamepads; ++i)
-			Config.Gamepads[i].Reset();
-	}
-	else
-		Config.Controls.ResetKeys();
+	Config.Controls.ResetKeys();
 	UpdateCtrlSet();
 }
 
@@ -627,15 +716,14 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	int32_t iButtonHeight = C4GUI_ButtonHgt;
 	::GraphicsResource.CaptionFont.GetTextExtent("<< BACK", iButtonWidth, iCaptionFontHgt, true);
 	iButtonWidth *= 3;
-	int iIndentX1, iIndentX2, iIndentY1, iIndentY2;
+	int iIndentX1, iIndentY1, iIndentY2;
 	if (fSmall)
 	{
-		iIndentX1=20; iIndentX2=1;
+		iIndentX1=20;
 	}
 	else
 	{
 		iIndentX1 = GetClientRect().Wdt/40;
-		iIndentX2 = iIndentX1/2;
 	}
 	if (fSmall)
 	{
@@ -663,7 +751,8 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::Tabular::Sheet *pSheetGeneral  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_PROGRAM") , 0);
 	C4GUI::Tabular::Sheet *pSheetGraphics = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_GRAPHICS"), 1);
 	C4GUI::Tabular::Sheet *pSheetSound    = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_SOUND")   , 2);
-	//C4GUI::Tabular::Sheet *pSheetKeyboard = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_KEYBOARD"), 3);
+	// Isilkor 11-08-19: Disabled control config tab according to bug #624
+	//C4GUI::Tabular::Sheet *pSheetControls= pOptionsTabular->AddSheet("[!]Controls", 3);
 	//C4GUI::Tabular::Sheet *pSheetGamepad  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_GAMEPAD") , 4);
 	C4GUI::Tabular::Sheet *pSheetNetwork  = pOptionsTabular->AddSheet(LoadResStr("IDS_DLG_NETWORK") , 5);
 
@@ -959,11 +1048,9 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 		pGroupVolume->AddElement(pSlider);
 	}
 
-	// --- page keyboard controls
-	//pSheetKeyboard->AddElement(new ControlConfigArea(pSheetKeyboard->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
-
-	// --- page gamepad
-	//pSheetGamepad->AddElement(new ControlConfigArea(pSheetGamepad->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, true, this));
+	// --- page controls
+	// Isilkor 11-08-19: Disabled control config tab according to bug #624
+	//pSheetControls->AddElement(new ControlConfigArea(pSheetControls->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
 
 	// --- page network
 	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
@@ -1083,7 +1170,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 {
 	if(pTexMgr) pTexMgr->IntLock();
 #ifdef USE_GL
-	lpDDraw->InvalidateDeviceObjects();
+	pDraw->InvalidateDeviceObjects();
 	// Note: This assumes there is only one GL context (the main context). This
 	// is true in fullscreen mode, and since the startup dlg is only shown in
 	// fullscreen mode we are safe this way.
@@ -1095,7 +1182,7 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 	// stops until the Window is being moved again (or tasked-out and back in
 	// in fullscreen mode). This does not happen when only reinitializing the
 	// GL context instead of whole DDraw so that's why we do this currently.
-	if(pD3D) lpDDraw->Clear();
+	if(pD3D) pDraw->Clear();
 #endif
 
 	int32_t PrevMultiSampling = Config.Graphics.MultiSampling;
@@ -1104,12 +1191,12 @@ bool C4StartupOptionsDlg::OnGfxMSComboSelChange(C4GUI::ComboBox *pForCombo, int3
 
 #ifdef USE_GL
 	if(pGL) pGL->pMainCtx->Init(Application.pWindow, &Application);
-	lpDDraw->RestoreDeviceObjects();
+	pDraw->RestoreDeviceObjects();
 #endif
 #ifdef USE_DIRECTX
 	// Note: Editor is hardcoded to false at this point... I guess that's OK
 	// because C4StartupOptionsDlg is never shown in editor mode anyway.
-	if(pD3D) lpDDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
+	if(pD3D) pDraw->Init(&Application, false, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor);
 #endif
 
 	if(pTexMgr) pTexMgr->IntUnlock();
@@ -1292,6 +1379,24 @@ void C4StartupOptionsDlg::DoBack()
 	C4Startup::Get()->SwitchDialog(fCanGoBack ? (C4Startup::SDID_Back) : (C4Startup::SDID_Main));
 }
 
+bool C4StartupOptionsDlg::SetSubscreen(const char *szToScreen)
+{
+	// go to specified property sheet
+	// option sheets do not have a good identifier associated to them - just lookup from a static array
+	const char *page_names[] = { "general", "graphics", "sound", "controls", "network", NULL };
+	int32_t i = 0;
+	while (page_names[i])
+	{
+		if (SEqualNoCase(szToScreen, page_names[i])) break;
+		++i;
+	}
+	// page name does not match?
+	if (!page_names[i]) return false;
+	// page name OK; switch it
+	pOptionsTabular->SelectSheet(i, false);
+	return true;
+}
+
 void C4StartupOptionsDlg::UpdateLanguage()
 {
 	// find currently specified language in language list and display its info
@@ -1371,15 +1476,15 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
 	// 2do: enumerate possible font sizes by the font here
 	// 2do: Hide font sizes that would be too large for the selected resolution
-	pFiller->AddEntry("8", 8);
+	//pFiller->AddEntry("8", 8);
 	pFiller->AddEntry("10", 10);
 	pFiller->AddEntry("12", 12);
 	pFiller->AddEntry("14", 14);
 	pFiller->AddEntry("16", 16);
 	pFiller->AddEntry("18", 18);
 	pFiller->AddEntry("20", 20);
-	pFiller->AddEntry("24", 24);
-	pFiller->AddEntry("28", 28);
+	//pFiller->AddEntry("24", 24);
+	//pFiller->AddEntry("28", 28);
 	//pFiller->AddEntry("32", 32);
 	//pFiller->AddEntry("48", 48);
 }
@@ -1432,9 +1537,9 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// and apply them directly, if the engine is current
-	if (fUseGL == lpDDraw->IsOpenGL())
+	if (fUseGL == pDraw->IsOpenGL())
 	{
-		lpDDraw->RestoreDeviceObjects();
+		pDraw->RestoreDeviceObjects();
 	}
 }
 

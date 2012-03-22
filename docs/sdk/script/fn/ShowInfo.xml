@@ -7,28 +7,20 @@
     <title>ShowInfo</title>
     <category>Objects</category>
     <subcat>Menu</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
-      <params>
-        <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Object for which to display information. If unspecified, the calling object will be used.</desc>
-          <optional />
-        </param>
-      </params>
     </syntax>
     <desc>Displays the description text of an object in a popup window (a menu window).</desc>
     <remark>The information window's background will be the definition image of the obect.</remark>
     <examples>
       <example>
-        <code>protected func ControlSpecial()
+        <code>func ControlSpecial()
   {
-  ShowInfo(<funclink>Contents</funclink>());
-  <funclink>return</funclink> 1;
+	if(!<funclink>Contents</funclink>()) return;
+  <funclink>Contents</funclink>()-&gt;ShowInfo();
   }</code>
-        <text>A feature for a special clonk: pressing the 'special' key will display the description of the first inventory item in a popup window. If the clonk does not carry any objects, the clonk's own description will be displayed.</text>
+        <text>A feature for a special clonk: pressing a (to be defined) 'special' key will display the description of the first inventory item in a popup window.</text>
       </example>
     </examples>
     <related>

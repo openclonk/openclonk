@@ -3,7 +3,6 @@
  *
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2010  carli
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,14 +25,14 @@
 
 // special ids
 const int32_t C4ClientIDUnknown = -1,
-                                  C4ClientIDHost = 0,
-                                                   C4ClientIDStart = 1;
+              C4ClientIDHost = 0,
+              C4ClientIDStart = 1;
 
 // client core difference levels
 const int32_t C4ClientCoreDL_None = 0,      // identical
-                                    C4ClientCoreDL_IDMatch = 1,   // status change
-                                                             C4ClientCoreDL_IDChange = 2,  // identification changed (host only!)
-                                                                                       C4ClientCoreDL_Different = 3; // really different
+              C4ClientCoreDL_IDMatch = 1,   // status change
+              C4ClientCoreDL_IDChange = 2,  // identification changed (host only!)
+              C4ClientCoreDL_Different = 3; // really different
 
 class C4ClientCore : public C4PacketBase
 {

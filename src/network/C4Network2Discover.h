@@ -27,7 +27,7 @@ const unsigned long C4NetDiscoveryAddress = 0xef; // 239.0.0.0
 class C4Network2IODiscover : public C4NetIOSimpleUDP, private C4NetIO::CBClass
 {
 public:
-	C4Network2IODiscover(int16_t iRefServerPort) : iRefServerPort(iRefServerPort), fEnabled(false)
+	C4Network2IODiscover(uint16_t iRefServerPort) : iRefServerPort(iRefServerPort), fEnabled(false)
 	{ C4NetIOSimpleUDP::SetCallback(this); }
 
 protected:
@@ -43,7 +43,7 @@ public:
 private:
 	sockaddr_in DiscoveryAddr;
 
-	int16_t iRefServerPort;
+	uint16_t iRefServerPort;
 	bool fEnabled;
 };
 

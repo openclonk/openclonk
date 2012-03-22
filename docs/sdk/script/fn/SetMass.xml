@@ -7,7 +7,7 @@
     <title>SetMass</title>
     <category>Objects</category>
     <subcat>Status</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -21,20 +21,20 @@
     <desc>Changes the mass of the object. The mass is initialized with <emlink href="definition/DefCore.html">DefCore.txt</emlink>/[DefCore]/Mass. The actual weight is the deadweight plus the weight of the contained objects.</desc>
     <examples>
       <example>
-        <code>private func GetOwnMass(clonk)
+        <code>private func GetOwnMass(object clonk)
   {
   var mass=clonk-&gt;<funclink>GetMass</funclink>(), i, obj;
   <funclink>while</funclink>(obj = clonk-&gt;<funclink>Contents</funclink>(i++)) mass -= obj-&gt;<funclink>GetMass</funclink>();
-  <funclink>return</funclink>(mass);
+  <funclink>return</funclink> mass;
   }
 
-protected func Activate(pByClonk)
-  {
-  [Essen]
-  pByClonk-&gt;SetMass(GetOwnMass(pByClonk) + 100);
-  pByClonk-&gt;<funclink>Sound</funclink>(&quot;ClonkMunch&quot;);
-  <funclink>return</funclink>(<funclink>RemoveObject</funclink>());
-  }</code>
+protected func ControlUse(object clonk)
+{
+  clonk-&gt;SetMass(GetOwnMass(clonk) + 100);
+  clonk-&gt;<funclink>Sound</funclink>(&quot;ClonkMunch&quot;);
+  <funclink>RemoveObject</funclink>();
+  <funclink>return</funclink> true;
+}</code>
         <text>Script for a cookie: when eating this cookie the mass of the clonk will increase.</text>
       </example>
     </examples>

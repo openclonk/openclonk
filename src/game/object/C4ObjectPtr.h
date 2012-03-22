@@ -25,8 +25,8 @@ class C4ObjectPtr
 {
 public:
 	// For use with mkNamingAdapt because simply 0 becomes 0 (the int)
-	// which makes correct template deduction fail. This constant is an
-	// enumerated(!) null pointer.
+	// which makes correct template deduction fail. This constant is a
+	// denumerated null pointer which can be repeatedly denumerated.
 	static const C4ObjectPtr Null;
 
 	C4ObjectPtr() {} // uninitialized
@@ -50,7 +50,6 @@ public:
 #endif
 
 	void CompileFunc(StdCompiler* pComp);
-	void EnumeratePointers();
 	void DenumeratePointers();
 
 	bool operator!() const { assert(fDenumerated); return !data.ptr; }

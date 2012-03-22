@@ -1,2 +1,0 @@
-Name=Axt
-Description=Drücke [Benutzen], um damit einen Baum zu fällen.

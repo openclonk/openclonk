@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2002, 2005-2008  Sven Eberhardt
  * Copyright (c) 2004, 2006, 2009-2010  Günther Brammer
+ * Copyright (c) 2011  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -42,7 +43,7 @@ C4GameMessage::~C4GameMessage()
 	delete pFrameDeco;
 }
 
-void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int width)
+void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int width)
 {
 	// safety!
 	if (pTarget && !pTarget->Status) pTarget = NULL;
@@ -56,7 +57,10 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * TextMsgDelayFactor);
 	DecoID=idDecoID;
 	this->dwFlags=dwFlags;
-	if (szPortraitDef && *szPortraitDef) PortraitDef.Copy(szPortraitDef); else PortraitDef.Clear();
+	PictureDef=NULL;
+	if (pSrc)
+		if (pSrc->GetDef() || pSrc->GetObject())
+			PictureDef = pSrc;
 	// Permanent message
 	if ('@' == Text[0])
 	{
@@ -103,8 +107,8 @@ bool C4GameMessage::Execute()
 }
 
 int32_t DrawMessageOffset = -35; // For finding the optimum place to draw startup info & player messages...
-int32_t PortraitWidth = 64;
-int32_t PortraitIndent = 10;
+int32_t PictureWidth = 64;
+int32_t PictureIndent = 10;
 
 void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 {
@@ -120,7 +124,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		if (~dwFlags & C4GM_NoBreak)
 		{
 			// Word wrap to cgo width
-			if (PortraitDef)
+			if (PictureDef)
 			{
 				if (!wdt) wdt = BoundBy<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
 				int32_t iUnbrokenTextWidth = ::GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
@@ -133,7 +137,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				else
 					wdt = BoundBy<int32_t>(wdt, 10, cgo.Wdt-10);
 			}
-			iTextWdt = wdt;
+			iTextWdt = wdt * cgo.Zoom;
 			iTextHgt = ::GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
 		}
 		else
@@ -144,7 +148,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		int32_t iDrawX = cgo.X+x;
 		int32_t iDrawY = cgo.Y+y;
 		// draw message
-		if (PortraitDef)
+		if (PictureDef)
 		{
 			// message with portrait
 			// bottom-placed portrait message: Y-Positioning 0 refers to bottom of viewport
@@ -155,7 +159,8 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			// draw decoration
 			if (pFrameDeco)
 			{
-				C4Rect rect(iDrawX-cgo.TargetX, iDrawY-cgo.TargetY, iTextWdt + PortraitWidth + PortraitIndent + pFrameDeco->iBorderLeft + pFrameDeco->iBorderRight, Max(iTextHgt, PortraitWidth) + pFrameDeco->iBorderTop + pFrameDeco->iBorderBottom);
+				iDrawX *= cgo.Zoom; iDrawY *= cgo.Zoom;
+				C4Rect rect(iDrawX-cgo.TargetX, iDrawY-cgo.TargetY, iTextWdt + PictureWidth + PictureIndent + pFrameDeco->iBorderLeft + pFrameDeco->iBorderRight, Max(iTextHgt, PictureWidth) + pFrameDeco->iBorderTop + pFrameDeco->iBorderBottom);
 				if (dwFlags & C4GM_Bottom) { rect.y -= rect.Hgt; iDrawY -= rect.Hgt; }
 				else if (dwFlags & C4GM_VCenter) { rect.y -= rect.Hgt/2; iDrawY -= rect.Hgt/2; }
 				if (dwFlags & C4GM_Right) { rect.x -= rect.Wdt; iDrawX -= rect.Wdt; }
@@ -166,21 +171,25 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 			}
 			else
 				iDrawY -= iTextHgt;
-			// draw portrait
-			C4FacetSurface fctPortrait;
-			Game.DrawTextSpecImage(fctPortrait, PortraitDef.getData());
-			C4Facet facet(cgo.Surface, iDrawX, iDrawY, PortraitWidth, PortraitWidth);
-			fctPortrait.Draw(facet);
+			// draw picture
+			// can only be def or object because has been checked on assignment
+			
+			C4Facet facet(cgo.Surface, iDrawX, iDrawY, PictureWidth, PictureWidth);
+			if(PictureDef->GetObject())
+				PictureDef->GetObject()->DrawPicture(facet);
+			else if (PictureDef->GetDef())
+				PictureDef->GetDef()->Draw(facet);
+
 			// draw message
-			lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PortraitWidth+PortraitIndent,iDrawY,ColorDw,ALeft);
+			pDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PictureWidth+PictureIndent,iDrawY,ColorDw,ALeft);
 		}
 		else
 		{
-			// message without portrait
-			iDrawX += cgo.Wdt/2;
-			iDrawY += 2 * cgo.Hgt / 3 + 50;
+			// message without picture
+			iDrawX += (cgo.Wdt/2) * cgo.Zoom;
+			iDrawY += (2 * cgo.Hgt / 3 + 50) * cgo.Zoom;
 			if (!(dwFlags & C4GM_Bottom)) iDrawY += DrawMessageOffset;
-			lpDDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
+			pDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
 		}
 	}
 	// Positioned
@@ -223,7 +232,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 				iTX = BoundBy<float>((iMsgX - cgo.X) * newzoom, iTWdt/2, cgo.Wdt * cgo.Zoom - iTWdt / 2) + 0.5f;
 				iTY = BoundBy<float>((iMsgY - cgo.Y) * newzoom - iTHgt, 0, cgo.Hgt * cgo.Zoom - iTHgt) + 0.5f;
 				// Draw
-				lpDDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
+				pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 				                           cgo.Surface,
 				                           cgo.X + iTX,
 				                           cgo.Y + iTY,
@@ -298,12 +307,12 @@ void C4GameMessageList::Execute()
 	}
 }
 
-bool C4GameMessageList::New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int32_t width)
+bool C4GameMessageList::New(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int32_t width)
 {
-	return New(iType, StdStrBuf(szText), pTarget, iPlayer, iX, iY, dwClr, idDecoID, szPortraitDef, dwFlags, width);
+	return New(iType, StdStrBuf(szText), pTarget, iPlayer, iX, iY, dwClr, idDecoID, pSrc, dwFlags, width);
 }
 
-bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int32_t width)
+bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwClr, C4ID idDecoID, C4PropList *pSrc, uint32_t dwFlags, int32_t width)
 {
 	if (!(dwFlags & C4GM_Multiple))
 	{
@@ -322,7 +331,7 @@ bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pT
 
 	// Add new message
 	C4GameMessage *msgNew = new C4GameMessage;
-	msgNew->Init(iType, sText,pTarget,iPlayer,iX,iY,dwClr, idDecoID, szPortraitDef, dwFlags, width);
+	msgNew->Init(iType, sText,pTarget,iPlayer,iX,iY,dwClr, idDecoID, pSrc, dwFlags, width);
 	msgNew->Next=First;
 	First=msgNew;
 

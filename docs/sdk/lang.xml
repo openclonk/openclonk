@@ -9,7 +9,7 @@
     <text>It is possible to support multiple languages in Clonk objects and scenarios. To do this, certain components can be loaded language dependantly.</text>
     <h>Adaptable Elements</h>
     <dl>
-      <dt id="Titletxt"><img height="16" src="../images/icon_text.gif" width="16"/>Title.txt</dt>
+      <dt id="Titletxt"><img height="16" src="../images/icon_text.png" width="16"/>Title.txt</dt>
       <dd>
         <text>The <emlink href="scenario/index.html#Titletxt">Title.txt</emlink> component can be used in scenarios and object folders to define the title for each language.</text>
         <text>Each line has a language abbreviation bevore the title. For example:</text>
@@ -19,34 +19,35 @@ US:Attack of the Killer Wipfs
         <code>FR:Les wipfes moerderesque attaquent</code>        <text>If an entry for the choosen language is present, the Title entry from the <emlink href="scenario/scenario.html#SektionHead">Scenario.txt</emlink> is replaced by the corresponding name.</text>
         <text>Important: No quotation marks and special characters should be used.</text>
       </dd>
-      <dt id="Namestxt"><img height="16" src="../images/icon_text.gif" width="16"/>Names.txt</dt>
+      <dt id="Desctxt"><img height="16" src="../images/icon_text.png" width="16"/>Desc*.rtf</dt>
       <dd>
-        <text>With the <emlink href="definition/index.html#Namestxt">Names.txt</emlink> component the name of an object can be translated. It works the same way as a Title.txt.</text>
-        <text>If there is an entry for the chosen language, the Name entry from the <emlink href="definition/defcore.html#SektionDefCore">DefCore.txt</emlink> is overwritten.</text>
+        <text>To customize the description of a <emlink href="scenario/index.html#Desc__rtf">scenario</emlink> language dependant, a Desc*.rtf in the scenario has to be present. (The * is a placeholder for the language abbreviation)</text>
       </dd>
-      <dt id="Desctxt"><img height="16" src="../images/icon_text.gif" width="16"/>Desc*.txt / Desc*.rtf</dt>
+      <dt id="Sciptc"><img height="16" src="../images/icon_text.png" width="16"/>Script.c, Teams.txt</dt>
       <dd>
-        <text>To customize the description of an <emlink href="definition/index.html#Desc__txt">object definition</emlink> or a <emlink href="scenario/index.html#Desc__rtf">scenario</emlink> language dependant, a Desc*.txt/.rtf in the definition and scenario respectively has to be present. (The * is a placeholder for the language abbreviation)</text>
-      </dd>
-      <dt id="Sciptc"><img height="16" src="../images/icon_text.gif" width="16"/>Script.c, Teams.txt</dt>
-      <dd>
-        <text>In order to insert language-dependant tests into scripts, so-called string tables are used. Instead of the text, only references to it should be inserted into the script. The references are searched in the string table, which should be placed in the same folder as the referencing script and named StringTbl*.txt (where * must be substituted by the language code).</text>
+        <text>In order to insert language-dependant texts into scripts, so-called string tables are used. Instead of the text, only references to it should be inserted into the script. The references are searched in the string table, which should be placed in the same folder as the referencing script and named StringTbl*.txt (where * must be substituted by the language code).</text>
         <text>The reference in the script is composed of a name for the string (string-ID), surrounded by dollar signs ("$"). <br/> For example:</text>
-        <code>protected func Activate(pCaller)
+		<code>local Name = "$NameGPS$";</code>
+		<text>Sets the name of the object definition. See <emlink href="definition/properties.html">properties</emlink>. In place of the placeholder NameGPS, the string from the string table is inserted. <br/> Another example:</text>
+        <code>protected func Activate(object caller)
 {
   [$DescActivate$]
-  pCaller-&gt;<emlink href="script/fn/Message.html">Message</emlink>(&quot;$MsgYourPosition$ %d / %d&quot;, <emlink href="script/fn/GetX.html">GetX</emlink>(pCaller), <emlink href="script/fn/GetX.html">GetY</emlink>(pCaller));
+  caller-&gt;<emlink href="script/fn/Message.html">Message</emlink>(&quot;$MsgYourPosition$ %d / %d&quot;, caller-&gt;<emlink href="script/fn/GetX.html">GetX</emlink>(), caller-&gt;<emlink href="script/fn/GetX.html">GetY</emlink>());
 }</code>        <text>In this case, two strings with the names "DescActivate" and "MsgYourPosition" are being inserted.</text>
         <text>An appropriate StringTblDE.txt (for German language) could look like the following:</text>
-        <code># Beschreibungstexte
+        <code># Beschreibungstexte und Name
+NameGPS=Positionierungssystem
 DescActivate=Position bestimmen
 # Nachrichten
-MsgYourPosition=Deine Position ist:</code>        <text>In this object the Activate function has the description "Position bestimmen". Executing it yields a message "Deine Position ist: 252 / 352". The string table also contains two comments starting with a '#'-sign. Those are ignored.</text>
+MsgYourPosition=Deine Position ist:</code>
+        <text>In this object the Activate function has the description "Position bestimmen". Executing it yields a message "Deine Position ist: 252 / 352". The string table also contains two comments starting with a '#'-sign. Those are ignored.</text>
         <text>For the sake of completeness, here is a suitable StringTblUS.txt:</text>
-        <code># Description texts
+        <code># Description texts and name
+NameGPS=Positioning system
 DescActivate=Tell position
 # Messages
-MsgYourPosition=Your position is:</code>        <text>This would yield the message "Your position is: 252 / 352", if English language were selected.</text>
+MsgYourPosition=Your position is:</code>
+        <text>This would yield the message "Your position is: 252 / 352", if English language were selected.</text>
       </dd>
     </dl>
   </part>

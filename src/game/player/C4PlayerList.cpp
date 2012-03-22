@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2003  Matthes Bender
  * Copyright (c) 2001-2002, 2004-2008  Sven Eberhardt
  * Copyright (c) 2002, 2004, 2006  Peter Wortmann
- * Copyright (c) 2005-2006, 2009  Günther Brammer
+ * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -35,6 +35,7 @@
 #include <C4Viewport.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4RoundResults.h>
 
 C4PlayerList::C4PlayerList()
 {
@@ -128,9 +129,9 @@ int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 			DWORD dwClr2=pPlr->ColorDw;
 			// assign difference, if less than smallest difference found
 			iDiff=Min(iDiff,
-			          Abs(GetRValue(dwColor) - GetRValue(dwClr2))
-			          + Abs(GetGValue(dwColor) - GetGValue(dwClr2))
-			          + Abs(GetBValue(dwColor) - GetBValue(dwClr2)));
+			          Abs(GetBlueValue(dwColor) - GetBlueValue(dwClr2))
+			          + Abs(GetGreenValue(dwColor) - GetGreenValue(dwClr2))
+			          + Abs(GetRedValue(dwColor) - GetRedValue(dwClr2)));
 		}
 	// return the difference
 	return iDiff;
@@ -279,9 +280,10 @@ bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	return true;
 }
 
-C4Player* C4PlayerList::Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo)
+C4Player* C4PlayerList::Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo, C4ValueNumbers * numbers)
 {
 	assert(pInfo);
+	assert(fScenarioInit || numbers);
 
 	// safeties
 	if (szFilename && !*szFilename) szFilename = NULL;
@@ -310,46 +312,25 @@ C4Player* C4PlayerList::Join(const char *szFilename, bool fScenarioInit, int iAt
 	if (pLast) pLast->Next=pPlr; else First = pPlr;
 
 	// Init
-	if (!pPlr->Init(GetFreeNumber(),iAtClient,szAtClientName,szFilename,fScenarioInit,pInfo))
+	if (!pPlr->Init(GetFreeNumber(),iAtClient,szAtClientName,szFilename,fScenarioInit,pInfo, numbers))
 		{ Remove(pPlr, false, false); Log(LoadResStr("IDS_PRC_JOINFAIL")); return NULL; }
 
 	// Done
 	return pPlr;
 }
 
-bool C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName)
+// Join players (via network/ctrl queue)
+void C4PlayerList::JoinNew(const char *szFilename)
 {
-	assert(!::Network.isEnabled());
-	// Create temp copy of player file without portraits
-	// Why? This is local join!
-	/*
-	char szTempFilename[_MAX_PATH + 1] = "";
-	const char *szOriginalFilename = szFilename;
-	if (!Config.Network.SendPortraits)
-	  {
-	  SCopy(Config.AtTempPath(GetFilename(szFilename)), szTempFilename, _MAX_PATH);
-	  if (!CopyItem(szFilename, szTempFilename)) return false;
-	  C4Group hGroup;
-	  if (hGroup.Open(szTempFilename))
-	    {
-	    hGroup.Delete(C4CFN_Portraits, true);
-	    hGroup.Close();
-	    }
-	  szFilename = szTempFilename;
-	  } */
-	// pack - not needed for new res system
-	/*if(DirectoryExists(szFilename))
-	  if(!C4Group_PackDirectory(szFilename))
-	    return false;*/
+	if (::Network.isEnabled())
+	{
+		::Network.Players.JoinLocalPlayer(szFilename, true);
+		return;
+	}
 	// security
-	if (!ItemExists(szFilename)) return false;
+	if (!ItemExists(szFilename)) return;
 	// join via player info
-	bool fSuccess = Game.PlayerInfos.DoLocalNonNetworkPlayerJoin(szFilename);
-	// Delete temp player file
-	/*if(*szTempFilename) EraseItem(szTempFilename);*/
-
-	// Done
-	return fSuccess;
+	Game.PlayerInfos.DoLocalNonNetworkPlayerJoin(szFilename);
 }
 
 void SetClientPrefix(char *szFilename, const char *szClient)
@@ -608,12 +589,6 @@ bool C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
 	while (pPlr);
 
 	return true;
-}
-
-void C4PlayerList::EnumeratePointers()
-{
-	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-		pPlr->EnumeratePointers();
 }
 
 void C4PlayerList::DenumeratePointers()

@@ -7,7 +7,7 @@
     <title>GetCrewCount</title>
     <category>Objects</category>
     <subcat>Crew</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -22,7 +22,7 @@
     <examples>
       <example>
         <code><funclink>while</funclink> (<funclink>GetCrewCount</funclink>(0) &gt; 3) <funclink>Kill</funclink>(<funclink>GetHiRank</funclink>(0));</code>
-        <text>Keeps killing Kills the highest ranking clonk of the first player until the player has only three clonks left.</text>
+        <text>Keeps killing the highest ranking clonk of the first player until the player has only three clonks left.</text>
       </example>
     </examples>
     <related>

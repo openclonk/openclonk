@@ -165,7 +165,7 @@ void C4Weather::SetSeasonGamma()
 	// get season num and offset
 	int32_t iSeason1=(Season/25)%4; int32_t iSeason2=(iSeason1+1)%4;
 	int32_t iSeasonOff1=BoundBy(Season%25, 5, 19)-5; int32_t iSeasonOff2=15-iSeasonOff1;
-	DWORD dwClr[3]; ZeroMemory(dwClr, sizeof(DWORD)*3);
+	DWORD dwClr[3]; memset(dwClr, 0, sizeof(DWORD)*3);
 	// interpolate between season colors
 	for (int32_t i=0; i<3; ++i)
 		for (int32_t iChan=0; iChan<24; iChan+=8)
@@ -186,7 +186,7 @@ void C4Weather::SetSeasonGamma()
 			dwClr[i] |= BoundBy<int32_t>(iChanVal,0,255)<<iChan;
 		}
 	// apply gamma ramp
-	lpDDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
+	pDraw->SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
 }
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
@@ -207,7 +207,7 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		dwGammaDefaults[i*3+1] = 0x808080;
 		dwGammaDefaults[i*3+2] = 0xffffff;
 	}
-	pComp->Value(mkNamingAdapt(mkArrayAdaptM(lpDDraw->dwGamma), "Gamma", dwGammaDefaults));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptM(pDraw->dwGamma), "Gamma", dwGammaDefaults));
 }
 
 C4Weather Weather;

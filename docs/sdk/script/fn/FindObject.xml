@@ -7,7 +7,7 @@
     <title>FindObject</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.10.0.0 OC</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>

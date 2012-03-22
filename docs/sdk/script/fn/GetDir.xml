@@ -7,31 +7,9 @@
     <title>GetDir</title>
     <category>Objects</category>
     <subcat>Activity</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
     <desc>Returns the current direction of an object as DIR_x value.</desc>
-    <examples>
-      <example>
-        <code>/* Wird bei Doppelklick auf Graben aufgerufen */
-protected func Activate()
-{
-	// Pfeil erstellen
-	var arrow = <funclink>CreateContents</funclink>(Arrow);
-	// X-Geschwindigkeit für den Pfeil ermitteln
-	var xspeed = -10 + 20 * <funclink>GetDir</funclink>();
-	// X-Ausgangsposition für den Pfeil ermitteln
-	var xexit = -5 + 10 * <funclink>GetDir</funclink>();
-	// Rotation des Pfeiles
-	var rotation = -90 + 180 * <funclink>GetDir</funclink>();
-	// Pfeil schleudern
-	arrow-&gt;<funclink>Exit</funclink>(xexit, 0, rotation, xspeed, 0);
-	<funclink>return</funclink> 1;
-} 
-				</code>
-        <text>Clonk swallowed a bow.</text>
-        <text>Notice: <funclink>DIR_Left</funclink> = 0 / <funclink>DIR_Right</funclink> = 1</text>
-      </example>
-    </examples>
     <related>
       <funclink>SetDir</funclink>
       <funclink>DIR_Left</funclink>

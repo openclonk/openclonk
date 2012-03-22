@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Find_ActionTargets</title>
+    <category>Objects</category>
+    <subcat>Search</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>action_target1</name>
+          <desc>First action target of the objects to be found.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>action_target2</name>
+          <desc>Second action target of the objects to be found.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Search criterion: finds all objects that have the specified action targets.</desc>
+    <remark>Equivalent to <code><funclink>Find_And</funclink>(<funclink>Find_ActionTarget</funclink>(action_target1), <funclink>Find_ActionTarget2</funclink>(action_target2))</code>, but faster.</remark>
+    <remark>For additional information on the use of this function see <funclink>FindObjects</funclink>.</remark>
+    <related><funclink>FindObjects</funclink><funclink>Find_ActionTarget</funclink><funclink>Find_ActionTarget2</funclink></related>
+  </func>
+  <author>PeterW</author><date>2011</date>
+</funcs>

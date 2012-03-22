@@ -7,7 +7,7 @@
     <title>SetSpeed</title>
     <category>Objects</category>
     <subcat>Movement</subcat>
-    <version>4.9.1.0 GWE<extversion>4.10.0.0 OC</extversion></version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -22,20 +22,14 @@
           <desc>Vertical speed divided by precision.</desc>
         </param>
         <param>
-          <type>object</type>
-          <name>obj</name>
-          <desc>Target object. Can be 0 in local calls.</desc>
-          <optional />
-        </param>
-        <param>
           <type>int</type>
           <name>precision</name>
-          <desc>Precision. Default 10 if not specified or 0.</desc>
+          <desc>Precision. Default 10 if not specified.</desc>
           <optional />
         </param>
       </params>
     </syntax>
-    <desc>Sets the vertical speed of the object.</desc>
+    <desc>Sets the speed of the object.</desc>
     <related>
       <funclink>GetXDir</funclink>
       <funclink>GetYDir</funclink>

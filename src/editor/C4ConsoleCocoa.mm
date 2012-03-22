@@ -20,7 +20,6 @@
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
-#include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Player.h>
@@ -62,7 +61,7 @@ public:
 	void Clear() {}
 };
 
-CStdWindow* C4ConsoleGUI::CreateConsoleWindow(CStdApp *application)
+C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	ClonkWindowController* controller = [ConsoleWindowController new];
 	this->controller = controller;
@@ -99,9 +98,6 @@ void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& t
 	case CONSOLE_FrameCounter:
 		label = ctrler(this).frameLabel;
 		break;
-	case CONSOLE_ScriptCounter:
-		label = ctrler(this).scriptLabel;
-		break;
 	case CONSOLE_TimeFPS:
 		label = ctrler(this).timeLabel;
 		break;
@@ -118,7 +114,7 @@ void C4ConsoleGUI::SetCaptionToFileName(const char* file_name)
 	[ctrler(this).window setRepresentedFilename:[NSString stringWithUTF8String:file_name]];
 }
 
-bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
+bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave)
 {
 	NSSavePanel* savePanel = fSave ? [NSSavePanel savePanel] : [NSOpenPanel openPanel];
 	if (!fSave)
@@ -128,7 +124,7 @@ bool C4ConsoleGUI::FileSelect(char *sFilename, int iSize, const char * szFilter,
 	}
 	if ([savePanel runModal] == NSFileHandlingPanelOKButton && [[savePanel URL] isFileURL])
 	{
-		strncpy(sFilename, [[savePanel URL].path cStringUsingEncoding:NSUTF8StringEncoding], iSize);
+		sFilename->Copy([[savePanel URL].path cStringUsingEncoding:NSUTF8StringEncoding]);
 		return true;
 	}
 	else
@@ -290,22 +286,17 @@ namespace
 
 CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 {
-	SURFACE sfcPreview;
+	C4Surface * sfcPreview;
 	int32_t iPrvWdt,iPrvHgt;
-	RECT rect;
-	
-	rect.left = rect.top = 0;
-	rect.bottom = [ctrler(&Console).previewView frame].size.height;
-	rect.right  = [ctrler(&Console).previewView frame].size.width;
 
-	iPrvWdt=rect.right-rect.left;
-	iPrvHgt=rect.bottom-rect.top;
+	iPrvWdt = [ctrler(&Console).previewView frame].size.width;
+	iPrvHgt = [ctrler(&Console).previewView frame].size.height;
 
-	if (!(sfcPreview=new CSurface(iPrvWdt,iPrvHgt))) return NULL;
+	if (!(sfcPreview=new C4Surface(iPrvWdt,iPrvHgt))) return NULL;
 
 	// fill bg
 	BYTE bCol = 0;
-	CPattern Pattern;
+	C4Pattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(GetOwner()->Material,C4TLS_MatSky))
 	{
@@ -330,7 +321,7 @@ CGImageRef C4ToolsDlg::State::CreatePreviewImage()
 		}
 	}
 	
-	lpDDraw->DrawPatternedCircle(
+	pDraw->DrawPatternedCircle(
 		sfcPreview,
 		iPrvWdt/2,iPrvHgt/2,
 		GetOwner()->Grade,
@@ -435,7 +426,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 	[ClonkAppDelegate.instance.netMenu.submenu addItem:item];
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
 }
 

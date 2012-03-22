@@ -7,14 +7,14 @@
     <title>Find_Exclude</title>
     <category>Objects</category>
     <subcat>Search</subcat>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
         <param>
           <type>object</type>
           <name>exclude</name>
-          <desc>Object to be excluded. This will be the calling object if unspecified or 0.</desc>
+          <desc>Object to be excluded. This will be the calling object if unspecified or <code>nil</code>.</desc>
         </param>
       </params>
     </syntax>

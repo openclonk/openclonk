@@ -50,13 +50,12 @@ private:
 	explicit C4ID(const char (&s)[N]) { assign(s); }
 public:
 	static const C4ID None; // Invalid ID
-	static const C4ID Contents; // Not-ID for funny stuff
 	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material
 	DEPRECATED static const C4ID Flag;
 	DEPRECATED static const C4ID Conkit; // Construction kit
-	DEPRECATED static const C4ID Clonk;
+	static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
-	DEPRECATED static const C4ID Melee;
+	static const C4ID Melee;
 	DEPRECATED static const C4ID Bubble;
 
 	C4ID(): v(None.v) {}
@@ -88,12 +87,13 @@ public:
 
 	void CompileFunc(StdCompiler *pComp);
 
-	inline bool operator ==(const C4ID &other) const { return v == other.v; }
-	inline bool operator !=(const C4ID &other) const { return v != other.v; }
-	inline bool operator <(const C4ID &other) const { return v < other.v; }
-	inline bool operator >(const C4ID &other) const { return v > other.v; }
-	inline bool operator <=(const C4ID &other) const { return v <= other.v; }
-	inline bool operator >=(const C4ID &other) const { return v >= other.v; }
+	// Compare names instead of v directly so that a sequence of IDs is synchronous
+	inline bool operator ==(const C4ID &other) const { return names[v] == names[other.v]; }
+	inline bool operator !=(const C4ID &other) const { return names[v] != names[other.v]; }
+	inline bool operator <(const C4ID &other) const { return names[v] < names[other.v]; }
+	inline bool operator >(const C4ID &other) const { return names[v] > names[other.v]; }
+	inline bool operator <=(const C4ID &other) const { return names[v] <= names[other.v]; }
+	inline bool operator >=(const C4ID &other) const { return names[v] >= names[other.v]; }
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;

@@ -7,7 +7,7 @@
     <title>GBackLiquid</title>
     <category>Landscape</category>
     <subcat>Material</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
@@ -26,9 +26,8 @@
     <desc>Checks whether there is liquid at the specified position in the landscape.</desc>
     <examples>
       <example>
-        <code>var obj=<funclink>FindObject</funclink>(Rock);
-if(GBackLiquid(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>()<emlink href="script/operatoren.html">-</emlink>10)) <funclink>Explode</funclink>(obj);</code>
-        <text>If this rock is underwater it explodes.</text>
+        <code>if(GBackLiquid()) <funclink>Explode</funclink>();</code>
+        <text>If the object is underwater it explodes.</text>
       </example>
     </examples>
     <related>

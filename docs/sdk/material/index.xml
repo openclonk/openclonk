@@ -4,34 +4,30 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
   <title>Material Definitions</title>
-  <h id="Materialdefinitionen">Material Definitions</h>
+  <h>Material Definitions</h>
   <part>
     <text>Using material definitions you can specify looks and behaviour of the landscape materials.</text>
-    <h id="MaterialdefinitionsKomponentenMaterialc4g">Material Definition Components (Material.c4g)</h>
+    <h id="MaterialdefinitionsKomponentenMaterialocg">Material Definition Components (Material.ocg)</h>
     <dl>
-      <dt id="TexMaptxt"><img height="16" src="../../images/icon_text.gif" width="16"/>TexMap.txt</dt>
+      <dt id="TexMaptxt"><img height="16" src="../../images/icon_text.png" width="16"/>TexMap.txt</dt>
       <dd>
         <text>Lookup table for color indices in static and dynamic landscapes. Colors 0-127 are matched to a material-texture-reference. Colors 128-255 are matched to the same list of references only these are marked 'underground'.</text>
         <text>The engine will draw materials with a higher index above those with a lower index so that, e.g. using the standard table, rough chunks of earth will overlap water which has a smooth border. Mineral resources have an even higher index so that their rough border overlaps the earth and not the other way around. This is also the reason why there might be differing numbers of total pixels of a given material drawn than you might expect just from calculating the square sizes of the unzoomed map materials.</text>
         <text>If a custom map fails with the message 'texture n undefined' you should define the specified texture in the TexMap. You should always use a paint program capable of editing indexed color palettes without modifying the palette (MS Paint is not suited for this).</text>
       </dd>
-      <dt id="c4m"><img height="16" src="../../images/icon_material.gif" width="16"/><emlink href="material/c4m.html">*.c4m</emlink></dt>
+      <dt id="ocm"><img height="16" src="../../images/icon_material.png" width="16"/><emlink href="material/ocm.html">*.ocm</emlink></dt>
       <dd>
-        <text>The engine will accept up to 125 material definitions at a time. C4M files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
+        <text>The engine will accept up to 125 material definitions at a time. OCM files a simple text files. The materials Vehicle, Tunnel, Water, Snow, Granite, Sand, and Earth must always be available.</text>
       </dd>
-      <dt id="bmp"><img height="16" src="../../images/icon_image.gif" width="16"/>*.png/*.bmp</dt>
+      <dt id="bmp"><img height="16" src="../../images/icon_image.png" width="16"/>*.png</dt>
       <dd>
-        <text>There can be any number of textures in PNG or uncompressed Windows BMP format (with 256 colors) in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.) With the old BMP format only the first three colors of the texture bitmap may be used as to these the three material colors are applied.</text>
+        <text>There can be any number of textures in any material group. Width and height of each bitmap must be powers of 2 (that is 16, 32, 64, 128, 256, etc.).</text>
       </dd>
     </dl>
     <h id="MaterialTexturReferenzen">Material-Texture-References</h>
     <text>At numerous places in scenario definitions materials are specified with additional information on texture and amounts.</text>
     <text>
       <table>
-        <row>
-          <col>Simple material specification (using the default texture):</col>
-          <col><code>Earth</code></col>
-        </row>
         <row>
           <col>Material using an specified texture:</col>
           <col><code>Earth-Rough</code></col>
@@ -42,7 +38,7 @@
         </row>
         <row>
           <col>Multiple material definitions:</col>
-          <col><code>Earth-Smooth=10; Rock-Rough=5; Gold=2</code></col>
+          <col><code>Earth-Smooth=10; Rock-Rough=5</code></col>
         </row>
       </table>
     </text>

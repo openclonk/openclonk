@@ -7,7 +7,7 @@
     <title>CreateConstruction</title>
     <category>Objects</category>
     <subcat>Creation</subcat>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>object</rtype>
       <params>
@@ -48,15 +48,15 @@
         </param>
       </params>
     </syntax>
-    <desc>Should be used instead of <funclink>CreateObject</funclink> to create a building or construction site. In local calls the specified position will be an offset to the position of the calling object. If check_site is 1, the site is checked for suitability before creating the object. If the site is not suitable (e.g. rough ground or not enough space), a message is displayed above the calling object and the function returns 0.</desc>
+    <desc>Should be used instead of <funclink>CreateObject</funclink> to create a building or construction site. In local calls the specified position will be an offset to the position of the calling object. If check_site is 1, the site is checked for suitability before creating the object. If the site is not suitable (e.g. rough ground or not enough space), a message is displayed above the calling object and the function returns <code>nil</code>.</desc>
     <examples>
       <example>
-        <code>CreateConstruction( HUT2, 150,100,  0,100,1 );</code>
-        <text>Creates a compete hut at position 150/100 for player 1 and adjusts the landscape to the building.</text>
+        <code>CreateConstruction(WindGenerator, 150,100,  0,100,1 );</code>
+        <text>Creates a complete wind generator at position 150/100 for player 1 and adjusts the landscape to the building.</text>
       </example>
       <example>
-        <code>CreateConstruction( HUT3, 200,100, <funclink>NO_OWNER</funclink>, 30,1 );</code>
-        <text>Creates a hut construction site at position 200/100 with no owner, also adjusting the landscape.</text>
+        <code>CreateConstruction(SteamEngine, 200,100, <funclink>NO_OWNER</funclink>, 30,1 );</code>
+        <text>Creates a steam engine construction finished by 30% site at position 200/100 with no owner, also adjusting the landscape.</text>
       </example>
     </examples>
     <related>

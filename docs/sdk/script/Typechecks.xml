@@ -28,16 +28,10 @@
           <col><code>true</code></col>
         </row>
         <row>
-          <col><code>id</code></col>
-          <col>definition id</col>
-          <col>ID of an object definition (see <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Object Definitions</emlink>).Will be changed into a proplist immediately.</col>
-          <col><code>Clonk</code></col>
-        </row>
-        <row>
           <col><code>string</code></col>
           <col>String</col>
           <col>Any text.</col>
-          <col><code>&quot;Dies ist ein Text!&quot;</code></col>
+          <col><code>&quot;This is a text!&quot;</code></col>
         </row>
         <row>
           <col><code>array</code></col>
@@ -52,29 +46,46 @@
           <col><code>{ foo = 0, &quot;bar baz&quot; = 13, Prototype = Clonk }</code></col>
         </row>
         <row>
-          <col><code>object</code></col>
-          <col>Ingame Object</col>
-          <col>Reference to an existing object at runtime. No direct representation. See <funclink>FindObject</funclink>()</col>
-          <col><code>CreateObject(Clonk)</code></col>
+          <col><code>func</code></col>
+          <col>Function</col>
+          <col>A function. At the moment, this is only used to store them in proplists.</col>
+          <col><code>Flint.Hit</code></col>
+        </row>
+        <row>
+          <col><code>nil</code></col>
+          <col></col>
+          <col>The type of <code>nil</code>.</col>
+          <col><code>nil</code></col>
         </row>
         <row>
           <col><code>any</code></col>
           <col></col>
-          <col>The type of <code>nil</code>. When used as a function parameter type, the type check is skipped.</col>
-          <col><code>nil</code></col>
+          <col>When used as a function parameter type, the type check is skipped.</col>
+          <col></col>
+        </row>
+        <row>
+          <col><code>def</code></col>
+          <col><emlink href="definition/index.html">Object Definition</emlink></col>
+          <col>Represents a DefCore.txt and the associated Script.c. A special kind of proplist.</col>
+          <col><code>Clonk</code></col>
+        </row>
+        <row>
+          <col><code>object</code></col>
+          <col>Ingame Object</col>
+          <col>An instance of an Object Definition. A special kind of proplist.</col>
+          <col><code><funclink>CreateObject</funclink>(Clonk)</code></col>
+        </row>
+        <row>
+          <col><code>effect</code></col>
+          <col><emlink href="script/Effects.html">Effect</emlink></col>
+          <col>A special kind of proplist with associated timers and stacking callbacks.</col>
+          <col><code><funclink>AddEffect</funclink>("Shiny", nil, 1)</code></col>
         </row>
       </table>
     </text>
-<!--    <text>Additionally, there are two special types:</text>
-    <text>
-      <ul>
-        <li><code>any</code>: The type is unknown or does not make a difference. <code>nil</code> always has this type.</li>
-        <li><code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator "<code>=</code>"). See also <emlink href="script/Funcs.html#referenzen">Reference parameters</emlink>.</li>
-      </ul>
-    </text>-->
     <h>Arrays</h>
     <part>
-      <text>Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <funclink>CreateArray</funclink>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used.</text>
+		<text>Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <funclink>CreateArray</funclink>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. Arrays behave like objects, you can only store references of them. Example: <code>var a = CreateArray(), b = a; b[0] = 42; // a is now [42]</code> A copy of <code>a</code> can be obtained with <code>a[:]</code>, as explained below.</text>
       <text>Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element. Negative indices are counted from the end of the array, so that <code>a[-1]</code> refers to the last element of the array.</text>
       <text>A range within an array can be copied with <code>a[i:j]</code>. The resulting array contains all elements with indices in the half-open interval <code>[i,j)</code>. Negative indices are treated as when accessing single elements. Both indices are optional and assumed as <code>0</code> and <code><funclink>GetLength</funclink>(a)</code> respectively if not given.</text>
       <h>Example 1</h>
@@ -92,8 +103,8 @@
       <h>Example 2</h>
       <code>func RandomID()
 {
-  var a = [Clonk, WIPF, BIRD, HUT1];
-  return (a[<funclink>Random</funclink>(4)]);
+  var a = [Clonk, Wipf, Bird];
+  return (a[<funclink>Random</funclink>(3)]);
 }</code>
       <text>This function randomly chooses one out of four ids and returns it.</text>
       <h>Example 3</h>
@@ -105,90 +116,24 @@
     dyna-&gt;DoExplode();
   }
 }</code>
-      <text>This function calls <code>DoExplode()</code> on the six nearest Dynamite objects.</text>
+	  <text>This function calls <code>DoExplode()</code> on the six nearest Dynamite objects.</text>
+	  <text>An array may not exceed 1000000 elements. "ye shalt not create arrays larger than that!"</text>
     </part>
     <h>Proplists</h>
     <part>
-      <text>Proplists can be created with <code>{<em>key 1</em>=<em>expression 1</em>, <em>key 1</em>=<em>expression 1</em>, ...}</code> or with <funclink>CreateProplist</funclink>.</text>
+      <text>Proplists are a datatype that maps values to strings and supports prototype inheritance.</text>
+      <text>Proplists can be created with <code>{<i>key 1</i>=<i>expression 1</i>, <i>key 2</i>=<i>expression 2</i>, ...}</code> or with <funclink>CreateProplist</funclink>.</text>
     </part>
     <h>Conversion</h>
-    <text>Consult the following table to determine which types can be converted and which conversions might cause errors:</text>
-    <text>
-      <table>
-        <rowh>
-          <col>to -&gt;</col>
-          <col><code>int</code></col>
-          <col><code>bool</code></col>
-          <col><code>object</code></col>
-          <col><code>string</code></col>
-          <col><code>array</code></col>
-          <col><code>proplist</code></col>
-        </rowh>
-        <row>
-          <col><code>int</code></col>
-          <col>OK</col>
-          <col>OK</col>
-          <col>if 0</col>
-          <col>if 0</col>
-          <col>if 0</col>
-          <col>if 0</col>
-        </row>
-        <row>
-          <col><code>bool</code></col>
-          <col>OK</col>
-          <col>OK</col>
-          <col>Error</col>
-          <col>Error</col>
-          <col>Error</col>
-          <col>Error</col>
-        </row>
-        <row>
-          <col><code>object</code></col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>OK</col>
-          <col>Error</col>
-          <col>Error</col>
-          <col>OK</col>
-        </row>
-        <row>
-          <col><code>string</code></col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>Error</col>
-          <col>Error</col>
-        </row>
-        <row>
-          <col><code>array</code></col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>Error</col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>Error</col>
-        </row>
-        <row>
-          <col><code>proplist</code></col>
-          <col>Error</col>
-          <col>OK</col>
-          <col>maybe</col>
-          <col>Error</col>
-          <col>Error</col>
-          <col>OK</col>
-        </row>
-      </table>
-    </text>
-    <h>Additional information:</h>
     <text>
       <ul>
-        <li>Conversion to bool is generally allowed. All values except 0 are <code>true</code>.</li>
-        <li>If an object has been converted into a proplist then it can be converted back to an object. Otherwise proplists cannot be converted into objects.</li>
-        <li><code>0</code> can be converted into anything. In that case it behaves the same way as <code>any</code></li>
+        <li>All values except for <code>false</code>, <code>nil</code> and <code>0</code> are treated as <code>true</code> when a bool is required.</li>
+        <li><code>nil</code> and <code>false</code> can be converted to <code>0</code>. <code>true</code> can be converted to <code>1</code>.</li>
+        <li><code>nil</code> can always be used as a function parameter, if the function doesn't implement a separate check.</li>
+        <li>Objects, Definitions and Effects can be converted to proplists, and then back. Normal proplists cannot be converted into them.</li>
       </ul>
     </text>
   </part>
-  <author>Günther</author><date>2010-03</date>
+  <author>Günther</author><date>2010-2011</date>
   <author>PeterW</author><date>2006-04</date>
 </doc>

@@ -7,7 +7,7 @@
     <title>SetFoW</title>
     <category>Player</category>
     <subcat>View</subcat>
-    <version>4.9.1.0 GWE</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>void</rtype>
       <params>
@@ -30,7 +30,7 @@
 <funclink>for</funclink> (var plrnum = <funclink>GetPlayerCount</funclink> (); plrnum; i++)
   if (<funclink>GetPlayerName</funclink> (i)) {
     plrnum--;
-    SetFoW (0, i);
+    SetFoW (false, i);
   }</code>
         <text>Deactivates fog of war for all players.</text>
       </example>

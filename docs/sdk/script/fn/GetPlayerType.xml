@@ -6,7 +6,7 @@
   <func>
     <title>GetPlayerType</title>
     <category>Player</category>
-    <version>4.9.6.0 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -43,15 +43,13 @@
       <example>
         <code>protected func InitializePlayer(int player)
   {
-  // Ist es ein Scriptspieler?
+  // Is it a script player?
   if (GetPlayerType(player) == C4PT_Script)
-    {
-    // Dann ein KI-Objekt erstellen
-    <funclink>CreateObject</funclink>(_EAI, 50,50, player);
-    }
-  <funclink>return</funclink> true;
+    // then create an AI controller object for that player
+    <funclink>CreateObject</funclink>(SomeAIController, 50,50, player);
+	return true;
   }</code>
-        <text>Scenario script: when a script player joins, an object of definition _EAI is created (owned by the joining script player). This object might now control all clonks owned by this player.</text>
+        <text>Scenario script: when a script player joins, an object of definition SomeAIController is created (owned by the joining script player). This object might now control all clonks owned by this player.</text>
       </example>
     </examples>
     <related>

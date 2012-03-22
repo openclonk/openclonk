@@ -6,7 +6,7 @@
   <func>
     <title>GetHomebaseProduction</title>
     <category>Player</category>
-    <version>4.9.8.5 CR</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>int</rtype>
       <params>
@@ -35,7 +35,7 @@
         </param>
       </params>
     </syntax>
-    <desc>With id specified, the function returns how quickly objects of that type are resupplied to the player's home base. In this case index and category are ignored. If id is 0, the function returns the id of the indicated type of objects of the specified category in the player's resupply list. This will return all object types from the resupply list, even if they are currently not being resupplied.</desc>
+    <desc>With id specified, the function returns how quickly objects of that type are resupplied to the player's home base. In this case index and category are ignored. If id is not specified, the function returns the id of the indicated type of objects of the specified category in the player's resupply list. This will return all object types from the resupply list, even if they are currently not being resupplied.</desc>
     <examples>
       <example>
         <code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-&gt;<funclink>CreateContents</funclink>(Firestone);</code>

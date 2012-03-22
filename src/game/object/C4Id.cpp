@@ -32,7 +32,6 @@ C4ID::NamesList C4ID::names;
 C4ID::LookupTable C4ID::lookup;
 
 const C4ID C4ID::None(std::string("None"));
-const C4ID C4ID::Contents(std::string("Contents"));
 
 // TODO: Remove these eventually, since they are deprecated.
 const C4ID C4ID::CnMaterial(std::string("CNMT"));

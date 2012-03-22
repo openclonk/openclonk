@@ -49,7 +49,7 @@ all: $(online-dirs) $(sdk-de-dirs) $(online-extra-files) $(online-sdk-files)
 
 online-en: $(addprefix online/en/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
 
-chm: $(chm-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
+chm: $(chm-dirs) $(sdk-de-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
@@ -62,13 +62,16 @@ clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot
 	rm -rf online sdk-de chm
 
-chm/en/Output.hhp chm/en/Output.hhk chm/de/Output.hhp chm/de/Output.hhk: sdk/content.xml
-#update timestamp
-	touch $@
-sdk/content.xml: $(xmlfiles) chm/en/. chm/de/. build_chm_files.py experimental.py \
-  sdk/content.xml.in Template.hhk Template.de.hhk Template.hhp Template.de.hhp de.mo
-	@echo generate chm files
-	@python build_chm_files.py $(xmlfiles)
+sdk/content.xml: sdk/content.xml.in $(xmlfiles) build_contents.py experimental.py
+	@echo generate $@
+	@python build_contents.py $(xmlfiles)
+
+chm/en/Output.hhp: $(xmlfiles) chm/en/. build_hhp.py Template.hhp
+	@echo generate $@
+	@python build_hhp.py $@ Template.hhp $(xmlfiles)
+chm/de/Output.hhp: $(xmlfiles) chm/de/. build_hhp.py Template.de.hhp
+	@echo generate $@
+	@python build_hhp.py $@ Template.de.hhp $(xmlfiles)
 
 $(sdk-de-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
@@ -79,7 +82,8 @@ doku.pot: $(xmlfiles) extra-strings.xml sdk/content.xml.in xml2po.py clonk.py
 
 %.po: doku.pot
 	@echo update $@
-	@msgmerge --no-wrap -w 1 -U $@ $<
+#	@msgmerge --no-wrap -w 1 -U $@ $<
+	@msgmerge --no-wrap -w 1 -o $@ $@ $<
 
 %.mo: %.po
 	@echo compile $@
@@ -91,10 +95,10 @@ sdk-de/%.xml: sdk/%.xml de.mo xml2po.py clonk.py
 
 define run-xslt
 @echo generate $@
-@xsltproc -o $@ --param webnotes $(webnotes) --param fileext "'.html'" $(XSLTFLAGS) $(stylesheet) $<
+@xsltproc -o $@ --param chm $(chm) --param fileext "'.html'" $(XSLTFLAGS) $(stylesheet) $<
 endef
-online/%: webnotes=1
-chm/%: webnotes=0
+online/%: chm=0
+chm/%: chm=1
 online/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 online/de/sdk/%.html: sdk-de/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
@@ -103,6 +107,10 @@ chm/en/Output.hhc: stylesheet=hhc.xsl
 chm/de/Output.hhc: stylesheet=hhc.xsl
 chm/en/Output.hhc: sdk/content.xml hhc.xsl ; $(run-xslt)
 chm/de/Output.hhc: sdk-de/content.xml hhc.xsl ; $(run-xslt)
+chm/en/Output.hhk: stylesheet=hhk.xsl
+chm/de/Output.hhk: stylesheet=hhk.xsl
+chm/en/Output.hhk: sdk/content.xml hhk.xsl ; $(run-xslt)
+chm/de/Output.hhk: sdk-de/content.xml hhk.xsl ; $(run-xslt)
 
 $(filter online/en/%, $(online-extra-files)): online/en/%: %
 	$(CP) $< $@
@@ -117,3 +125,4 @@ chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(ad
 	"$(HHC)" $<
 chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
 	"$(HHC)" $<
+

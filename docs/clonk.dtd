@@ -2,8 +2,9 @@
 
 <!ENTITY % text "a | img | emlink | funclink | em | code | strong">
 
-<!ELEMENT funcs (func+, (author, date)+)>
+<!ELEMENT funcs ((func | const)+, (author, date)+)>
   <!ELEMENT func           (title, deprecated?, category, subcat*, version, deprecated?, syntax, desc, remark*, examples?, related?)>
+  <!ELEMENT const          (title, deprecated?, category, subcat*, version, deprecated?, syntax, desc, remark*, examples?, related?)>
     <!ELEMENT title        (#PCDATA)>
     <!ELEMENT category     (#PCDATA)>
     <!ELEMENT subcat       (#PCDATA)>
@@ -30,8 +31,9 @@
         <!ATTLIST emlink href CDATA #REQUIRED>
   <!ELEMENT author         (#PCDATA)>
   <!ELEMENT date           (#PCDATA)>
-<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img)*)>
-  <!ELEMENT part (h | text | part | code | dl)*>
+  <!ELEMENT search         EMPTY>
+<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img | search)*)>
+  <!ELEMENT part (h | text | part | code | dl | search)*>
 
 <!ELEMENT br EMPTY>
 

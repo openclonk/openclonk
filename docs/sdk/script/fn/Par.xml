@@ -6,7 +6,7 @@
   <func>
     <title>Par</title>
     <category>Script</category>
-    <version>4.6.5.0 CP</version>
+    <version>5.1 OC</version>
     <syntax>
       <rtype>any</rtype>
       <params>
@@ -21,14 +21,9 @@
     <remark>In old times, this was the only method to access function parameters. The new script style allows naming of parameters which makes declaration and access much more convenient.</remark>
     <examples>
       <example>
-        <code>private Multiply3:
-  <funclink>return</funclink>(Par() * Par(1) * Par(2));</code>
-        <text>A function Multiply3, which multiplies its three parameters.</text>
-      </example>
-      <example>
         <code>private func Multiply3(v1, v2, v3)
 {
-  return(v1 * v2 * v3);
+  return v1 * v2 * v3;
 }</code>
         <text>The same function with new style syntax.</text>
         <code>private func MultiplyX(cnt)
@@ -36,7 +31,7 @@
   var x = 1;
   for(var i = 0; i &lt; cnt; i++)
     x *= Par(i + 1);
-  return(x);
+  return x;
 }</code>
         <text>An example for mixed use of named and indexed parameters: this function can multiply up to 0 numbers. The first parameter is the count of following parameters to be multiplied (e.g. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)</text>
       </example>
