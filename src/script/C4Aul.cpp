@@ -312,7 +312,8 @@ void C4AulScriptEngine::Clear()
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
 	// clear own stuff
-	GetPropList()->Clear();
+	if (GlobalPropList)
+		GlobalPropList->Clear();
 	// clear inherited
 	C4AulScript::Clear();
 	// reset values
