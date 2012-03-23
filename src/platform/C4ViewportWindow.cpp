@@ -45,7 +45,7 @@
 #endif
 #endif
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 
 void UpdateWindowLayout(HWND hwnd)
 {

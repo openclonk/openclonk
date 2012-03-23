@@ -1,8 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006  Julian Raschke
- * Copyright (c) 2008-2009  Günther Brammer
+ * Copyright (c) 2006-2007  Julian Raschke
+ * Copyright (c) 2008-2009, 2011-2012  Günther Brammer
  * Copyright (c) 2009  Martin Plicht
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Peter Wortmann
@@ -30,18 +30,84 @@
 #include <StdDDraw2.h>
 #include <StdFile.h>
 #include <StdBuf.h>
+#include <C4MouseControl.h>
+#include <C4Application.h>
+#include <C4Gui.h>
+#include <C4GamePadCon.h>
+// SDL version
 
-#include <string>
-#include <sstream>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <time.h>
-#include <errno.h>
+static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
+{
+	static int lastLeftClick = 0, lastRightClick = 0;
+	static int lastX = 0, lastY = 0;
+	static const int clickDist = 2;
+
+	button = C4MC_Button_None;
+	flags = 0;
+
+	switch (e.button)
+	{
+	case SDL_BUTTON_LEFT:
+		if (e.state == SDL_PRESSED)
+			if (GetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+			{
+				lastLeftClick = 0;
+				button = C4MC_Button_LeftDouble;
+			}
+			else
+			{
+				lastLeftClick = GetTime();
+				button = C4MC_Button_LeftDown;
+			}
+		else
+			button = C4MC_Button_LeftUp;
+		break;
+	case SDL_BUTTON_RIGHT:
+		if (e.state == SDL_PRESSED)
+			if (GetTime() - lastRightClick < 400)
+			{
+				lastRightClick = 0;
+				button = C4MC_Button_RightDouble;
+			}
+			else
+			{
+				lastRightClick = GetTime();
+				button = C4MC_Button_RightDown;
+			}
+		else
+			button = C4MC_Button_RightUp;
+		break;
+	case SDL_BUTTON_MIDDLE:
+		if (e.state == SDL_PRESSED)
+			button = C4MC_Button_MiddleDown;
+		else
+			button = C4MC_Button_MiddleUp;
+		break;
+	case SDL_BUTTON_WHEELUP:
+		button = C4MC_Button_Wheel;
+		flags = (+32) << 16;
+		break;
+	case SDL_BUTTON_WHEELDOWN:
+		button = C4MC_Button_Wheel;
+		flags = (-32) << 16;
+		break;
+	}
+	lastX = e.x;
+	lastY = e.y;
+}
 
 /* C4AbstractApp */
 
-C4AbstractApp::C4AbstractApp(): Active(false), fQuitMsgReceived(false),
-		MainThread(pthread_self()), fDspModeSet(false)
+C4AbstractApp::C4AbstractApp():
+	Active(false), pWindow(NULL), fQuitMsgReceived(false),
+	// main thread
+#ifdef HAVE_PTHREAD
+	MainThread (pthread_self()),
+#endif
+#ifdef _WIN32
+	hMainThread(NULL),
+#endif
+	fDspModeSet(false)
 {
 }
 
@@ -93,23 +159,66 @@ bool C4AbstractApp::FlushMessages()
 	return true;
 }
 
-void C4AbstractApp::HandleSDLEvent(SDL_Event& event)
+void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 {
 	// Directly handle QUIT messages.
-	switch (event.type)
+	switch (e.type)
 	{
 	case SDL_QUIT:
 		Quit();
+		break;
+	case SDL_KEYDOWN:
+	{
+#ifdef USE_GL
+		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
+		{
+			Config.Graphics.Windowed = !Config.Graphics.Windowed;
+			Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+			pDraw->InvalidateDeviceObjects();
+			pDraw->RestoreDeviceObjects();
+
+			break;
+		}
+#endif
+
+		StdStrBuf c;
+		c.AppendCharacter(e.key.keysym.unicode);
+		::pGUI->CharIn(c.getData());
+		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
+		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
+		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
+		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT),
+		                     false, NULL);
+		break;
+	}
+	case SDL_KEYUP:
+		Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Up,
+		                     e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
+		                     e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
+		                     e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, NULL);
+		break;
+	case SDL_MOUSEMOTION:
+		C4GUI::MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
+		break;
+	case SDL_MOUSEBUTTONUP:
+	case SDL_MOUSEBUTTONDOWN:
+		int32_t button;
+		DWORD flags;
+		sdlToC4MCBtn(e.button, button, flags);
+		C4GUI::MouseMove(button, e.button.x, e.button.y, flags, NULL);
+		break;
+	case SDL_JOYAXISMOTION:
+	case SDL_JOYHATMOTION:
+	case SDL_JOYBALLMOTION:
+	case SDL_JOYBUTTONDOWN:
+	case SDL_JOYBUTTONUP:
+		Application.pGamePadControl->FeedEvent(e);
 		break;
 	}
 
 #ifdef __APPLE__
 	MacUtility::ensureWindowInFront();
 #endif
-
-	// Everything else goes to the window.
-	if (pWindow)
-		pWindow->HandleMessage(event);
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
@@ -186,7 +295,7 @@ bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 
 StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
-	return StdStrBuf(0);
+	return StdStrBuf("");
 }
 
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)

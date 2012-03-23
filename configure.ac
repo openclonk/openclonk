@@ -139,7 +139,7 @@ AS_IF([test $with_gtk != no],[
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
 ])
-AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk != no])
+AM_CONDITIONAL(GTK, [test $with_gtk != no])
 
 # OpenAL
 AC_ARG_WITH([openal],
@@ -241,15 +241,17 @@ AC_CHECK_LIB(rt, clock_gettime, [
 
 # Check for libfreetype
 if test $enable_console = no; then
-  if test "$cross_compiling" = no; then
-    AC_CHECK_PROG(FREETYPE_CONFIG, freetype-config, freetype-config)
-  fi
-  if test $FREETYPE_CONFIG; then
-    AC_SUBST(FREETYPE_CFLAGS, [`$FREETYPE_CONFIG --cflags`])
-    AC_SUBST(FREETYPE_LIBS, [`$FREETYPE_CONFIG --libs`])
-  else
-    PKG_CHECK_MODULES(FREETYPE, freetype2)
-  fi
+  PKG_CHECK_MODULES(FREETYPE, freetype2, ,[
+    if test "$cross_compiling" = no; then
+      AC_CHECK_PROG(FREETYPE_CONFIG, freetype-config, freetype-config)
+    fi
+    if test $FREETYPE_CONFIG; then
+      AC_SUBST(FREETYPE_CFLAGS, [`$FREETYPE_CONFIG --cflags`])
+      AC_SUBST(FREETYPE_LIBS, [`$FREETYPE_CONFIG --libs`])
+    else
+      AC_MSG_ERROR([Freetype not found.])
+    fi
+  ])
   AC_DEFINE(HAVE_FREETYPE, 1, [Define to 1 if you have FreeType2.])
 fi
 

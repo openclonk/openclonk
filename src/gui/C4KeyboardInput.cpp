@@ -40,11 +40,11 @@
 #include <algorithm>
 
 #ifdef USE_SDL_MAINLOOP
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <vector>
 
-#include <SDL/SDL_keysym.h>
+#include <SDL_keysym.h>
 
 namespace
 {

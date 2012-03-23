@@ -675,7 +675,7 @@ namespace C4GUI
 	{
 		while (pActiveDlg) pActiveDlg->Close(fWithOK);
 	}
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	Dialog *Screen::GetDialog(HWND hWindow)
 	{
 		// get dialog with matching handle

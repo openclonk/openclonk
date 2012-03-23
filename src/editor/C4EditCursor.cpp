@@ -97,7 +97,7 @@ void C4EditCursor::Execute()
 bool C4EditCursor::Init()
 {
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (!(hMenu = LoadMenu(Application.GetInstance(),MAKEINTRESOURCE(IDR_CONTEXTMENUS))))
 		return false;
 #else // _WIN32
@@ -336,7 +336,7 @@ bool C4EditCursor::LeftButtonUp()
 	return true;
 }
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 {
 	return !!EnableMenuItem(hMenu,id,MF_BYCOMMAND | MF_ENABLED | ( fEnable ? 0 : MF_GRAYED));
@@ -513,7 +513,7 @@ void C4EditCursor::Default()
 	Mode=C4CNS_ModePlay;
 	X=Y=X2=Y2=0;
 	Target=DropTarget=NULL;
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	hMenu=NULL;
 #endif
 	Hold=DragFrame=DragLine=false;
@@ -522,7 +522,7 @@ void C4EditCursor::Default()
 
 void C4EditCursor::Clear()
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
 #endif
 #ifdef WITH_DEBUG_MODE
@@ -534,7 +534,7 @@ void C4EditCursor::Clear()
 bool C4EditCursor::SetMode(int32_t iMode)
 {
 	// Store focus
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	HWND hFocus=GetFocus();
 #endif
 	// Update console buttons (always)
@@ -563,7 +563,7 @@ bool C4EditCursor::SetMode(int32_t iMode)
 		::MouseControl.HideCursor();
 	}
 	// Restore focus
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	SetFocus(hFocus);
 #endif
 	// Done
@@ -627,7 +627,7 @@ void C4EditCursor::ApplyToolFill()
 bool C4EditCursor::DoContextMenu()
 {
 	bool fObjectSelected = !!Selection.ObjectCount();
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
@@ -882,7 +882,7 @@ void C4EditCursor::ObjselectDelItems() {
 	while(it != itemsObjselect.end()) {
 		#if defined(WITH_DEVELOPER_MODE)
 		gtk_widget_destroy(it->MenuItem);
-		#elif defined(_WIN32)
+		#elif defined(USE_WIN32_WINDOWS)
 		if(!it->ItemId) { ++it; continue; }
 		HMENU hContext = GetSubMenu(hMenu,0);
 		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);

@@ -59,7 +59,7 @@ C4Console::C4Console(): C4ConsoleGUI()
 	FrameCounter=0;
 	fGameOpen=false;
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	hWindow=NULL;
 #endif
 }
@@ -555,7 +555,7 @@ bool C4Console::TogglePause()
 	return Game.TogglePause();
 }
 
-#if !(defined(_WIN32) || defined(USE_COCOA) || defined(WITH_DEVELOPER_MODE))
+#if !(defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(WITH_DEVELOPER_MODE))
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
 	public: State(C4ConsoleGUI *console): Super(console) {}
@@ -580,7 +580,7 @@ C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}
-bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, unsigned int, bool) {return 0;}
+bool C4ConsoleGUI::FileSelect(StdStrBuf *, char const*, DWORD, bool) {return 0;}
 bool C4ConsoleGUI::Message(char const*, bool) {return 0;}
 void C4ConsoleGUI::Out(char const*) {}
 bool C4ConsoleGUI::PropertyDlgOpen() {return 0;}

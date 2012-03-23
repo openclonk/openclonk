@@ -817,7 +817,7 @@ bool C4ViewportList::CloseViewport(C4Viewport * cvp)
 	// Done
 	return true;
 }
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 C4Viewport* C4ViewportList::GetViewport(HWND hwnd)
 {
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)

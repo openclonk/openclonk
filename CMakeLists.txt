@@ -556,13 +556,21 @@ set(OC_CLONK_SOURCES
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
 
+# source files specific to an operating system
+if(APPLE)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4FileMonitorMac.mm
+		src/platform/ClonkAppDelegate.h
+		src/platform/ClonkAppDelegate.mm
+	)
+else()
+	list(APPEND OC_SYSTEM_SOURCES
+		src/C4WinMain.cpp
+	)
+endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4WindowWin32.cpp
-		src/platform/StdJoystick.cpp
-		src/platform/StdJoystick.h
 		src/platform/C4CrashHandlerWin32.cpp
-		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
 
@@ -588,45 +596,9 @@ if(WIN32)
 			src/res/engine.rc
 		)
 	endif(MINGW)
-elseif(USE_SDL_MAINLOOP)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppSDL.cpp
-		src/platform/C4WindowSDL.cpp
-	)
-elseif(USE_X11)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppX.cpp
-		src/platform/C4WindowX.cpp
-		src/platform/C4AppXImpl.h
-	)
 endif()
 
-if(NOT APPLE)
-	list(APPEND OC_SYSTEM_SOURCES src/C4WinMain.cpp)
-endif()
-
-if(APPLE)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppMac.mm
-		src/platform/C4FileMonitorMac.mm
-		src/platform/C4WindowMac.mm
-		src/platform/ClonkAppDelegate.h
-		src/platform/ClonkAppDelegate.mm
-	)
-	if(USE_COCOA)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/platform/ConsoleWindowController.h
-			src/platform/ConsoleWindowController.mm
-			src/platform/ClonkWindowController.h
-			src/platform/ClonkWindowController.mm
-			src/platform/ClonkOpenGLView.h
-			src/platform/ClonkOpenGLView.mm
-			src/platform/CocoaKeycodeMap.h
-			src/editor/C4ConsoleCocoa.mm
-			src/platform/ClonkMainMenuActions.mm
-		)
-	endif()
-endif()
+# source files specific to a GUI library
 if(USE_GTK)
 	list(APPEND OC_CLONK_SOURCES
 		src/res/Brush.h
@@ -645,11 +617,38 @@ if(USE_GTK)
 		src/res/resource.h
 		src/res/Static.h
 	)
-
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4WindowGTK.cpp
-		src/platform/C4WindowGTK.h
 		src/editor/C4ConsoleGTK.cpp
+		src/platform/C4AppX.cpp
+		src/platform/C4AppXImpl.h
+		src/platform/C4WindowGTK.cpp
+		src/platform/C4WindowX.cpp
+	)
+elseif(USE_SDL_MAINLOOP)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppSDL.cpp
+		src/platform/C4WindowSDL.cpp
+	)
+elseif(WIN32)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/editor/C4ConsoleWin32.cpp
+		src/platform/C4WindowWin32.cpp
+		src/platform/StdJoystick.cpp
+		src/platform/StdJoystick.h
+	)
+elseif(USE_COCOA)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/editor/C4ConsoleCocoa.mm
+		src/platform/C4AppMac.mm
+		src/platform/C4WindowMac.mm
+		src/platform/ClonkMainMenuActions.mm
+		src/platform/ClonkOpenGLView.h
+		src/platform/ClonkOpenGLView.mm
+		src/platform/ClonkWindowController.h
+		src/platform/ClonkWindowController.mm
+		src/platform/CocoaKeycodeMap.h
+		src/platform/ConsoleWindowController.h
+		src/platform/ConsoleWindowController.mm
 	)
 endif()
 if(WITH_AUTOMATIC_UPDATE)

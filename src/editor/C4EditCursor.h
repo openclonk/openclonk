@@ -47,24 +47,22 @@ protected:
 	struct ObjselItemDt {
 		C4EditCursor* EditCursor;
 		C4Object* Object;
-#if defined(_WIN32)
+#if defined(USE_WIN32_WINDOWS)
 		UINT_PTR ItemId;
 #elif defined(WITH_DEVELOPER_MODE)
 		GtkWidget* MenuItem;
 #endif
 	};
 	std::vector<ObjselItemDt> itemsObjselect;
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	HMENU hMenu;
-#else
-#ifdef WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* menuContext;
 	GtkWidget* itemDelete;
 	GtkWidget* itemDuplicate;
 	GtkWidget* itemGrabContents;
 	GtkWidget* itemProperties;
 #endif
-#endif // _WIN32
 	C4ObjectList Selection;
 public:
 	void Default();

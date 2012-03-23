@@ -32,7 +32,6 @@
 #include <C4Def.h>
 #include <C4Log.h>
 #include <C4Components.h>
-#include <C4Application.h>
 #include <C4LangStringTable.h>
 
 C4AulError::C4AulError(): shown(false) {}

@@ -28,10 +28,7 @@
 #include <pthread.h>
 #endif
 
-#ifdef _WIN32
-#include <C4windowswrapper.h>
-
-#elif defined(USE_X11)
+#if defined(USE_X11)
 // do not include xlib.h
 typedef struct _XDisplay Display;
 // from X.h:
@@ -54,9 +51,11 @@ typedef struct _XDisplay Display;
 extern int MK_SHIFT;
 extern int MK_CONTROL;
 extern int MK_ALT;
+#elif defined(USE_WIN32_WINDOWS)
+#include <C4windowswrapper.h>
 #endif
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 class CStdMessageProc : public StdSchedulerProc
 {
 public:
@@ -137,17 +136,13 @@ public:
 	void MessageDialog(const char * message);
 	const char *GetLastError() { return sLastError.getData(); }
 	void Error(const char * m) { sLastError.Copy(m); }
-#ifdef _WIN32
 
+#ifdef _WIN32
 private:
 	HINSTANCE hInstance;
 	HANDLE hMainThread; // handle to main thread that initialized the app
-	CStdMessageProc MessageProc;
 
 public:
-	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
-	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
-	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
 	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
 	HINSTANCE GetInstance() const { return hInstance; }
 	bool AssertMainThread()
@@ -161,6 +156,49 @@ public:
 #  endif
 		return true;
 	}
+#else
+	bool AssertMainThread()
+	{
+		assert(MainThread == pthread_self());
+		return MainThread == pthread_self();
+	}
+	pthread_t MainThread;
+#endif
+
+#if defined(USE_X11)
+public:
+	Display * dpy;
+	int xf86vmode_major_version, xf86vmode_minor_version;
+	int xrandr_major_version, xrandr_minor_version;
+	// These must be public to be callable from callback functions from
+	// the glib main loop that are in an anonymous namespace in
+	// StdXApp.cpp.
+	void OnXInput();
+protected:
+	class C4X11AppImpl * Priv;
+	void HandleXMessage();
+
+#elif defined(USE_SDL_MAINLOOP)
+public:
+	void HandleSDLEvent(SDL_Event& event);
+
+#elif defined(USE_COCOA)
+public:
+	void HandleNSEvent(/*NSEvent*/void* event);
+	StdStrBuf GetGameDataPath();
+
+#elif defined(USE_CONSOLE)
+protected:
+	CStdInProc InProc;
+#endif
+
+#ifdef USE_WIN32_WINDOWS
+private:
+	CStdMessageProc MessageProc;
+public:
+	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
+	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
+	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
@@ -168,43 +206,14 @@ protected:
 	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
 #else
-#  if defined(USE_X11)
-	Display * dpy;
-	int xf86vmode_major_version, xf86vmode_minor_version;
-	int xrandr_major_version, xrandr_minor_version;
-#  endif
-
-#  if defined(USE_SDL_MAINLOOP)
-	void HandleSDLEvent(SDL_Event& event);
-#  endif
-#ifdef USE_COCOA
-	void HandleNSEvent(/*NSEvent*/void* event);
-	StdStrBuf GetGameDataPath();
-#endif
-	pthread_t MainThread;
+public:
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & MK_ALT; }
-	bool AssertMainThread()
-	{
-		assert(MainThread == pthread_self());
-		return MainThread == pthread_self();
-	}
-	// These must be public to be callable from callback functions from
-	// the glib main loop that are in an anonymous namespace in
-	// StdXApp.cpp.
-	void OnXInput();
-protected:
-#  ifdef USE_X11
-	class C4X11AppImpl * Priv;
-	void HandleXMessage();
-#  endif
 	unsigned int KeyMask;
 #endif
+
 protected:
-#ifdef USE_CONSOLE
-	CStdInProc InProc;
-#endif
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
 	virtual bool DoInit(int argc, char * argv[]) = 0;;

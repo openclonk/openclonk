@@ -141,7 +141,7 @@ public:
 	void ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material);
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
 	void UpdateMenuText(HMENU hMenu);

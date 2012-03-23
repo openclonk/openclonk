@@ -23,7 +23,6 @@
 #include "C4Include.h"
 #include "StdScheduler.h"
 
-#include <C4Window.h>
 #include <stdio.h>
 
 #include <assert.h>

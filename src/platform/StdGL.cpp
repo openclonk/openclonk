@@ -1676,7 +1676,7 @@ CStdGLCtx *CStdGL::CreateContext(C4Window * pWindow, C4AbstractApp *pApp)
 	return pCtx;
 }
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 CStdGLCtx *CStdGL::CreateContext(HWND hWindow, C4AbstractApp *pApp)
 {
 	// safety
@@ -2079,7 +2079,7 @@ void CStdGL::TaskOut()
 {
 	// deactivate
 	// backup textures
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (pTexMgr && !Editor) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
 
@@ -2096,7 +2096,7 @@ void CStdGL::TaskIn()
 {
 	// restore gl
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	// restore textures
 	if (pTexMgr && !Editor) pTexMgr->IntUnlock();
 

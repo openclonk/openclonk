@@ -39,7 +39,7 @@
 class C4VideoShowDialog : public C4GUI::FullscreenDialog
 {
 private:
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	CStdAVIFile AVIFile;
 	C4SoundEffect *pAudioTrack;
 #endif
@@ -59,7 +59,7 @@ protected:
 
 public:
 	C4VideoShowDialog() : C4GUI::FullscreenDialog(NULL, NULL)
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 			, pAudioTrack(NULL)
 #endif
 #ifdef HAVE_LIBSDL_MIXER
@@ -127,7 +127,7 @@ bool C4VideoFile::Load(class C4Group &hGrp, const char *szFilename)
 
 bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	// load video file
 	if (!AVIFile.OpenFile(pVideoFile->GetFilename(), FullScreen.hWindow, pDraw->GetByteCnt()*8)) return false;
 	// prepare surface for display
@@ -204,7 +204,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 
 C4VideoShowDialog::~C4VideoShowDialog()
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (pAudioTrack) delete pAudioTrack;
 #else
 #ifdef HAVE_LIBSMPEG
@@ -229,7 +229,7 @@ void C4VideoShowDialog::VideoDone()
 void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 {
 	// draw current video frame
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	// get frame to be drawn
 	time_t iCurrFrameTime = GetTime();
 	int32_t iGetFrame;

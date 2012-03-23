@@ -193,7 +193,7 @@ namespace C4GUI
 // --------------------------------------------------
 // DialogWindow
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;

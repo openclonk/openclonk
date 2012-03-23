@@ -2563,7 +2563,7 @@ namespace C4GUI
 
 		void CloseAllDialogs(bool fWithOK); // close all dialogs on the screen; top dlgs first
 		void SetPreferredDlgRect(const C4Rect &rtNewPref) { PreferredDlgRect = rtNewPref; }
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 		Dialog *GetDialog(HWND hWindow); // get console dialog
 #endif
 		Dialog *GetDialog(C4Window * pWindow); // get console dialog

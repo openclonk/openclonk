@@ -121,7 +121,7 @@ public:
 	C4Viewport* GetViewport(int32_t iPlayer, C4Viewport* pPrev = NULL);
 	C4Viewport* GetFirstViewport() { return FirstViewport; }
 	bool CloseViewport(C4Viewport * cvp);
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	C4Viewport* GetViewport(HWND hwnd);
 #endif
 	int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);

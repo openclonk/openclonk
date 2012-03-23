@@ -47,7 +47,7 @@ public:
 
 	void Clear();               // clear objects
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	bool Init(C4Window * pWindow, C4AbstractApp *pApp, HWND hWindow = NULL);
 	std::vector<int> EnumerateMultiSamples() const;
 #else
@@ -67,7 +67,7 @@ protected:
 	void SelectCommon();
 	// this handles are declared as pointers to structs
 	C4Window * pWindow; // window to draw in
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	HGLRC hrc;                  // rendering context
 	HWND hWindow; // used if pWindow==NULL
 	HDC hDC;                    // device context handle
@@ -118,7 +118,7 @@ public:
 	// Surface
 	bool PrepareRendering(C4Surface * sfcToSurface); // check if/make rendering possible to given surface
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
 #endif
 	// Blit

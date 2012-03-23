@@ -736,7 +736,7 @@ void C4Application::OnCommand(const char *szCmd)
 
 void C4Application::Activate()
 {
-#ifdef WIN32
+#ifdef USE_WIN32_WINDOWS
 	// Activate the application to regain focus if it has been lost during loading.
 	// As this is officially not possible any more in new versions of Windows
 	// (BringWindowTopTop alone won't have any effect if the calling process is

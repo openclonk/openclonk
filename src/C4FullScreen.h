@@ -51,8 +51,6 @@ public:
 	virtual void CharIn(const char * c);
 #ifdef USE_X11
 	virtual void HandleMessage (XEvent &e);
-#elif defined(USE_SDL_MAINLOOP)
-	virtual void HandleMessage (SDL_Event &e);
 #elif defined(USE_COCOA)
 	virtual void HandleMessage (/*NSEvent*/void* event);
 #endif

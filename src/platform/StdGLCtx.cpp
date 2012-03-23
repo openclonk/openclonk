@@ -47,7 +47,7 @@ void CStdGLCtx::SelectCommon()
 	//glEnable(GL_POINT_SMOOTH);
 }
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 
 #include <GL/wglew.h>
 

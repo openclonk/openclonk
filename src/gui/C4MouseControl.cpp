@@ -202,7 +202,7 @@ void C4MouseControl::UpdateClip()
 	// never in debug
 	return;
 #endif
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	// fullscreen only
 	if (Application.isEditor) return;
 	// application or mouse control not active? remove any clips
@@ -250,7 +250,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	fctViewportGame = Viewport->last_game_draw_cgo;
 	fctViewportGUI = Viewport->last_gui_draw_cgo;
 	// First time viewport attachment: center mouse
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (!InitCentered || fCenter)
 	{
 		iX = Viewport->ViewWdt/2;

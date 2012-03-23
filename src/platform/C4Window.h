@@ -29,7 +29,7 @@
 
 #include <StdBuf.h>
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 #include <C4windowswrapper.h>
 #define K_ALT VK_MENU
 #define K_ESCAPE VK_ESCAPE
@@ -292,7 +292,7 @@ public:
 	void SetTitle(const char * Title);
 	void FlashWindow();
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 public:
 	HWND hWindow;
 	HWND hRenderWindow;
@@ -313,8 +313,6 @@ protected:
 #elif defined(USE_SDL_MAINLOOP)
 private:
 	int width, height;
-protected:
-	virtual void HandleMessage(SDL_Event&) {}
 #elif defined(USE_COCOA)
 protected:
 	/*ClonkWindowController*/void* controller;
