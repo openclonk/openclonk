@@ -99,9 +99,27 @@ private func MaxDamage()
 
 protected func Damage()
 {
+	// do not grow for a few seconds
+	var g = GetGrowthValue();
+	if(g)
+	{
+		StopGrowth();
+		ScheduleCall(this, "RestartGrowth", 36 * 10, 0, g);
+	}
+	
 	// Max damage reached -> fall down
 	if (GetDamage() > MaxDamage() && IsStanding()) ChopDown();
 	_inherited(...);
+}
+
+
+// restarts the growing of the tree (for example after taking damage)
+func RestartGrowth(int old_value)
+{
+	var g = GetGrowthValue(); // safety
+	if(g) StopGrowth();
+	g = Max(g, old_value);
+	StartGrowth(g);
 }
 
 /** Called when the trees shall fall down (has taken max damage). Default behaviour is unstucking (5 pixel movement max) and removing C4D_StaticBack.

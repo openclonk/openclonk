@@ -174,6 +174,13 @@ global func StopGrowth()
 	return RemoveEffect("IntGrowth", this);
 }
 
+global func GetGrowthValue()
+{
+	var e = GetEffect("IntGrowth", this);
+	if(!e) return 0;
+	return e.growth;
+}
+
 global func FxIntGrowthStart(object obj, effect, int temporary, int value)
 {
 	if (!temporary) effect.growth = value;
