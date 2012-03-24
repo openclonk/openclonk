@@ -30,9 +30,9 @@ public func IsContainer() { return false; }
 // Temporary solution?
 protected func FindTrees()
 {
-	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")));
+	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
 	if (!tree || GetCon() < 100) return;
-
+	
 	Saw(tree);
 }
 
