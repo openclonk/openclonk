@@ -49,14 +49,28 @@ private func MaxContentsCount()
 
 protected func RejectCollect(id object_id, object obj)
 {
+	// objects can still be collected
 	if (ContentsCount() < MaxContentsCount())
 	{
 		Sound("Clonk");
 		return false;
 	}
+	
+	// the object cannot be collected, notify carrier?
 	if (obj->Contained())
-		return Message("$TxtLorryisfull$");
-	return _inherited(...);
+		Message("$TxtLorryisfull$");
+	else
+	{
+		// if not carried, objects slide over the lorry
+		if(Abs(obj->GetXDir()) > 5)
+		{
+			obj->SetYDir(-2);
+			obj->SetRDir(0);
+			Sound("SoftHit*");
+		}
+	}
+	// reject collection
+	return true;
 }
 
 // Automatic unloading in buildings.
