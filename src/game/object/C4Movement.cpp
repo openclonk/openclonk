@@ -234,9 +234,10 @@ void C4Object::DoMovement()
 			else
 			{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
+				if(ydir <= 0) ctcoy -= 1;
 				int32_t rad = pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
-				::Landscape.DigFree(ctcox,ctcoy-1,rad,this);
+				::Landscape.DigFree(ctcox,ctcoy,rad,this);
 			}
 		}
 
@@ -256,7 +257,7 @@ void C4Object::DoMovement()
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) >= C4Real(1))
+		if(xdir!=0) do
 		{
 			// Next step
 			int step = Sign<C4Real>(new_x - fix_x);
@@ -272,7 +273,7 @@ void C4Object::DoMovement()
 			}
 			else // Free horizontal movement
 				DoMotion(step, 0);
-		}
+		} while (Abs<C4Real>(fix_x - ctcox) >= C4Real(1));
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
 		new_y = fix_y + ydir;
@@ -280,7 +281,7 @@ void C4Object::DoMovement()
 		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) >= C4Real(1))
+		if (ydir != 0) do
 		{
 			// Next step
 			int step = Sign<C4Real>(new_y - fix_y);
@@ -308,7 +309,7 @@ void C4Object::DoMovement()
 			}
 			else // Free vertical movement
 				DoMotion(0,step);
-		}
+		} while (Abs<C4Real>(fix_y - ctcoy) >= C4Real(1));
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
@@ -459,7 +460,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
+		if ((ix0-GetFixedX())||(iy0-GetFixedY())) UpdatePos();
 }
 
 void C4Object::Stabilize()
