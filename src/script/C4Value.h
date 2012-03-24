@@ -98,8 +98,22 @@ public:
 	~C4Value() { DelDataRef(Data, Type, NextRef); }
 
 	// Checked getters
-	int32_t getInt() const { return CheckConversion(C4V_Int) ? Data.Int : 0; }
-	C4Real getFloat() const { if(CheckConversion(C4V_Float)) return Data.Float; return C4Real(0); }
+	int32_t getInt() const
+	{
+		if (!CheckConversion(C4V_Int))
+			return 0;
+		if (Type == C4V_Float)
+			return C4Real(Data.Float);
+		return Data.Int;
+	}
+	C4Real getFloat() const
+	{
+		if (!CheckConversion(C4V_Float))
+			return C4Real(0);
+		if (Type != C4V_Float)
+			return C4Real(_getInt());
+		return C4Real(Data.Float);
+	}
 	bool getBool() const { return CheckConversion(C4V_Bool) ? !! Data : 0; }
 	C4ID getC4ID() const;
 	C4Object * getObj() const;
@@ -126,8 +140,7 @@ public:
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
-	void SetFloat(C4Real f) { C4V_Data d; d.Float = f; Set(d, C4V_Float); }
-
+	void SetFloat(C4Real f) { C4V_Data d; d.Float = f; if(d.Int == 0x80000000) d.Int = 0; Set(d, C4V_Float); }
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
@@ -166,7 +179,7 @@ public:
 	{
 		switch (Type)
 		{
-		case C4V_Any:
+		case C4V_Nil:
 		case C4V_Int:
 		case C4V_Bool:
 			++Data.Int; Type = C4V_Int; break;
@@ -187,7 +200,7 @@ public:
 	{
 		switch (Type)
 		{
-		case C4V_Any:
+		case C4V_Nil:
 		case C4V_Int:
 		case C4V_Bool:
 			--Data.Int; Type = C4V_Int; break;
@@ -209,7 +222,7 @@ public:
 		C4Value nrv;
 		switch (Type)
 		{
-		case C4V_Any:
+		case C4V_Nil:
 		case C4V_Int:
 		case C4V_Bool:
 			nrv.Data.Int = -Data.Int;
@@ -217,6 +230,7 @@ public:
 			break;
 		case C4V_Float:
 			nrv.Data.Int = Data.Int ^ 0x80000000;
+			if(nrv.Data.Int == 0x80000000) nrv.Data.Int = 0;
 			nrv.Type = C4V_Float;
 			break;
 		default:
@@ -236,6 +250,9 @@ public:
 			nrv.SetInt(::Pow(getInt(), rhs.getInt()));
 		return nrv;
 	}
+	inline bool isWeakNil() const {
+		return Type == C4V_Nil || ((Type == C4V_Int || Type == C4V_Float || Type == C4V_Bool) && !*this);
+	}
 
 	// getters
 	C4V_Data GetData()    const { return Data; }
@@ -251,18 +268,18 @@ public:
 	{
 		switch (vtToType)
 		{
-		case C4V_Nil:      return Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Nil:      return isWeakNil();
 		case C4V_Float: case C4V_Numeric:
 		case C4V_Int:      return Type == C4V_Int || Type == C4V_Float || Type == C4V_Nil || Type == C4V_Bool;
 		case C4V_Bool:     return true;
-		case C4V_PropList: return Type == C4V_PropList || Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_String:   return Type == C4V_String || Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_Array:    return Type == C4V_Array || Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_Function: return Type == C4V_Function || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_PropList: return Type == C4V_PropList || isWeakNil();
+		case C4V_String:   return Type == C4V_String || isWeakNil();
+		case C4V_Array:    return Type == C4V_Array || isWeakNil();
+		case C4V_Function: return Type == C4V_Function || isWeakNil();
 		case C4V_Any:      return true;
-		case C4V_Object:   return (Type == C4V_PropList && FnCnvObject()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_Def:      return (Type == C4V_PropList && FnCnvDef()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
-		case C4V_Effect:   return (Type == C4V_PropList && FnCnvEffect()) || Type == C4V_Nil || (Type == C4V_Int && !*this);
+		case C4V_Object:   return (Type == C4V_PropList && FnCnvObject()) || isWeakNil();
+		case C4V_Def:      return (Type == C4V_PropList && FnCnvDef()) || isWeakNil();
+		case C4V_Effect:   return (Type == C4V_PropList && FnCnvEffect()) || isWeakNil();
 		default: assert(!"C4Value::CheckParConversion: impossible conversion target"); return false;
 		}
 	}
@@ -272,7 +289,7 @@ public:
 		{
 		case C4V_Nil:      return Type == C4V_Nil;
 		case C4V_Float: case C4V_Numeric:
-		case C4V_Int:      return Type == C4V_Nil || Type == C4V_Int || Type == C4V_Bool;
+		case C4V_Int:      return Type == C4V_Nil || Type == C4V_Int || Type == C4V_Float || Type == C4V_Bool;
 		case C4V_Bool:     return true;
 		case C4V_PropList: return Type == C4V_PropList;
 		case C4V_String:   return Type == C4V_String;
@@ -404,7 +421,7 @@ ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pN
 ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
 	// Do not add this to the same linked list twice.
-	if (Data == nData && Type >= C4V_PropList) return; 
+	if (Data == nData && Type >= C4V_PropList) return;
 
 	C4V_Data oData = Data;
 	C4V_Type oType = Type;

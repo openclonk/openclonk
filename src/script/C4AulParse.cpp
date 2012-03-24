@@ -490,25 +490,22 @@ C4AulTokenType C4AulParseState::GetNextToken(OperatorPolicy Operator)
 	else if (C == ';') return ATT_SCOLON; // ";"
 	else if (Inside(C, '0', '9'))
 	{
-		// integer
 		if (C == '0' && *SPos == 'x')
-		{
-			// hexadecimal
-			cInt = StrToI32(SPos + 1, 16, &SPos);
-			return ATT_INT;
-		}
+			cInt = StrToI32(SPos+1, 16, &SPos); // hexadecimal
 		else
-		{
-			// decimal
 			cInt = StrToI32(SPos0, 10, &SPos);
-			if(*SPos == '.') // float
-			{
-				float value = StrToF32(SPos0, 0);
-				cInt = *reinterpret_cast<int*>(&value);
-				return ATT_FLOAT;
-			}
+		if (*SPos != '.' && *SPos != 'e' && *SPos != 'E') // float check: point or exponent
 			return ATT_INT;
-		}
+		*reinterpret_cast<float*>(&cInt) = StrToF32(SPos0, const_cast<char**>(&SPos));
+		/* bool dot = *SPos == '.';
+		while (Inside(*++SPos, '0', '9'));
+		if (dot && (*SPos == 'e' || *SPos == 'E'))
+		{
+			++SPos;
+			if(*SPos == '+' || *SPos == '-') ++SPos;
+			Inside(C, '0', '9');
+		} */ // Use this block if you don't trust the const_cast
+		return ATT_FLOAT;
 	}
 	else if (C == '-' && *SPos == '>' && *(SPos + 1) == '~')
 		{ SPos+=2; return ATT_CALLFS;}// "->~"
