@@ -78,21 +78,27 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	CGReleaseDisplayFadeReservation(token);
 }
 
-- (BOOL) isFullscreen
-{
+- (BOOL) isFullScreen {
 	return fullscreenWindow != nil;
+}
+
+- (BOOL) isFullScreenConsideringLionFullScreen
+{
+	return
+		[self isFullScreen] ||
+		(lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask);
 }
 
 - (void) setFullscreen:(BOOL)fullscreen
 {
-	if (fullscreen != [self isFullscreen])
+	if (fullscreen != [self isFullScreen])
 	{
 		// fade out
 #ifndef _DEBUG
 		CGDisplayFadeReservationToken token;
 		[self fadeOut:&token];
 #endif
-		if (![self isFullscreen])
+		if (![self isFullScreen])
 		{
 			NSRect fullscreenRect = NSScreen.mainScreen.frame;
 			fullscreenWindow = [[ClonkScreenfillingWindow alloc] initWithContentRect:fullscreenRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES];

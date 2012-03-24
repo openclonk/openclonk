@@ -121,7 +121,7 @@
 	if (Application.fQuitMsgReceived)
 		return;
 	// don't draw if tab-switched away from fullscreen
-	if ([self.controller isFullscreen] && ![NSApp isActive]) // ugh - no way to find out if window is hidden due hidesondeactivate?
+	if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
 		return;
 	if ([self.window isMiniaturized] || ![self.window isVisible])
 		return;

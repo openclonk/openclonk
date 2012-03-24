@@ -35,7 +35,8 @@ bool lionAndBeyond();
 }
 - (C4Viewport*) viewport;
 - (void) setFullscreen:(BOOL)fullscreen;
-- (BOOL) isFullscreen;
+- (BOOL) isFullScreen;
+- (BOOL) isFullScreenConsideringLionFullScreen;
 - (void) setContentSize:(NSSize)size;
 
 - (IBAction) scroll:(id)sender;
