@@ -90,7 +90,7 @@
 	Console.HelpAbout();
 }
 
-- (IBAction) toggleFullscreen:(id)sender
+- (IBAction) toggleFullScreen:(id)sender
 {
 	if (Application.isEditor)
 	{
