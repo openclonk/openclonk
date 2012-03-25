@@ -163,7 +163,6 @@ public:
 #ifdef WITH_GLIB
 			GLibProc(g_main_context_default()),
 #endif // WITH_GLIB
-			PrimarySelection(), ClipboardSelection(),
 			LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
 			xim(0), xic(0), X11Proc(pApp),
 			argc(0), argv(0) { }
@@ -172,11 +171,6 @@ public:
 	bool SwitchToFullscreen(C4AbstractApp * pApp, Window wnd);
 	void SwitchToDesktop(C4AbstractApp * pApp, Window wnd);
 	void SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd);
-	struct ClipboardData
-	{
-		StdStrBuf Text;
-		unsigned long AcquirationTime;
-	} PrimarySelection, ClipboardSelection;
 	unsigned long LastEventTime;
 	typedef std::map<unsigned long, C4Window *> WindowListT;
 	static WindowListT WindowList;

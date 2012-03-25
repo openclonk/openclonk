@@ -102,14 +102,11 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 {
 	// Set locale
 	setlocale(LC_ALL,"");
-	// FIXME: This should only be done in developer mode.
-#ifdef WITH_DEVELOPER_MODE
 	gtk_init(&argc, &argv);
 
 	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
 	gtk_window_set_default_icon(icon);
 	g_object_unref(icon);
-#endif
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 
@@ -147,13 +144,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	Priv->xim = XOpenIM(dpy, 0, 0, 0);
 	if (!Priv->xim) Log("Failed to open input method.");
 
-	// Get the Atoms for the Clipboard
-	Atom PrefetchAtoms[8];
-	const char * PrefetchAtomnames[] = { "CLIPBOARD", "WM_CHANGE_STATE", "WM_DELETE_WINDOW",
-	                                     "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN", "_NET_WM_PING", "_NET_WM_PID",
-	                                     "_NET_WM_STATE_DEMANDS_ATTENTION"
-	                                   };
-	XInternAtoms(dpy, const_cast<char **>(PrefetchAtomnames), 8, true, PrefetchAtoms);
 
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_install (">", readline_callback);
@@ -168,8 +158,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	// Custom initialization
 	return DoInit (argc, argv);
 }
-
-#ifdef WITH_GLIB
 
 static void
 gtk_clipboard_store_all (void)
@@ -194,13 +182,10 @@ gtk_clipboard_store_all (void)
   g_slist_free (displays);
   
 }
-#endif
 
 void C4AbstractApp::Clear()
 {
-#ifdef WITH_GLIB
 	gtk_clipboard_store_all();
-#endif
 	XCloseDisplay(dpy);
 	dpy = 0;
 #if USE_CONSOLE && HAVE_LIBREADLINE
@@ -275,41 +260,6 @@ void C4AbstractApp::HandleXMessage()
 		KeyMask = event.xbutton.state;
 		Priv->LastEventTime = event.xbutton.time;
 		break;
-	case SelectionRequest:
-	{
-		// We should compare the timestamp with the timespan when we owned the selection
-		// But slow network connections are not supported anyway, so do not bother
-		C4X11AppImpl::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
-		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
-		XEvent responseevent;
-		XSelectionEvent & re = responseevent.xselection;
-		re.type = SelectionNotify;
-		re.display = dpy;
-		re.selection = event.xselectionrequest.selection;
-		re.target = event.xselectionrequest.target;
-		re.time = event.xselectionrequest.time;
-		re.requestor = event.xselectionrequest.requestor;
-		// Note: we're implementing the spec only partially here
-		if (d.Text.getData())
-		{
-			re.property = event.xselectionrequest.property;
-			XChangeProperty(dpy, re.requestor, re.property, re.target, 8, PropModeReplace,
-			                (const unsigned char *) d.Text.getData(), d.Text.getLength());
-		}
-		else
-		{
-			re.property = None;
-		}
-		XSendEvent(dpy, re.requestor, false, NoEventMask, &responseevent);
-		break;
-	}
-	case SelectionClear:
-	{
-		C4X11AppImpl::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
-		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
-		d.Text.Clear();
-		break;
-	}
 	case ClientMessage:
 		if (!strcmp(XGetAtomName(dpy, event.xclient.message_type), "WM_PROTOCOLS"))
 		{
@@ -601,57 +551,27 @@ bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
 // Copy the text to the clipboard or the primary selection
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
 {
-	C4X11AppImpl::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
-	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
-	Window owner = XGetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
-	if (owner != pWindow->wnd) return false;
-	d.Text.Copy(text);
-	d.AcquirationTime = Priv->LastEventTime;
+	gtk_clipboard_set_text(gtk_clipboard_get(fClipboard ? GDK_SELECTION_CLIPBOARD : GDK_SELECTION_PRIMARY),
+	                       text.getData(), text.getLength());
 	return true;
 }
 
 // Paste the text from the clipboard or the primary selection
 StdStrBuf C4AbstractApp::Paste(bool fClipboard)
 {
-	Window owner = XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
-	if (owner == None) return StdStrBuf(0);
-	// Retrieve the selection into the XA_STRING property of our main window
-	XConvertSelection (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, XA_STRING, XA_STRING,
-	                   pWindow->wnd, Priv->LastEventTime);
-	// Give the owner some time to respond
-	Priv->X11Proc.ExecuteUntil(50);
-	// Get the length of the data, so we can request it all at once
-	Atom type;
-	int format;
-	unsigned long len, bytes_left;
-	unsigned char *data;
-	XGetWindowProperty (dpy, pWindow->wnd,
-	                    XA_STRING,  // property
-	                    0, 0,     // offset - len
-	                    0,        // do not delete it now
-	                    AnyPropertyType, // flag
-	                    &type,      // return type
-	                    &format,    // return format
-	                    &len, &bytes_left, //that
-	                    &data);
-	//printf ("type:%i len:%li format:%d byte_left:%ld\n", (int)type, len, format, bytes_left);
-	// nothing to read?
-	if (bytes_left == 0) return StdStrBuf(0);
-	int result = XGetWindowProperty (dpy, pWindow->wnd,
-	                                 XA_STRING, 0, bytes_left,
-	                                 1, // delete it now
-	                                 AnyPropertyType,
-	                                 &type, &format, &len, &bytes_left, &data);
-	if (result != Success) return StdStrBuf(0);
-	StdStrBuf res (reinterpret_cast<char *>(data), true);
-	XFree (data);
-	return res;
+	char * r = gtk_clipboard_wait_for_text(gtk_clipboard_get(fClipboard ? GDK_SELECTION_CLIPBOARD : GDK_SELECTION_PRIMARY));
+//	gtk_clipboard_request_text(gtk_clipboard_get(fClipboard ? GDK_SELECTION_CLIPBOARD : GDK_SELECTION_PRIMARY),
+//	                           GtkClipboardTextReceivedFunc callback, gpointer user_data);
+	StdStrBuf rbuf;
+	rbuf.Copy(r);
+	g_free(r);
+	return rbuf;
 }
 
 // Is there something in the clipboard?
 bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 {
-	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
+	return gtk_clipboard_wait_is_text_available(gtk_clipboard_get(fClipboard ? GDK_SELECTION_CLIPBOARD : GDK_SELECTION_PRIMARY));
 }
 
 C4Window * C4X11AppImpl::GetWindow(unsigned long wnd)
