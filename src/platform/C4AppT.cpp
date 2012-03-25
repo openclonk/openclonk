@@ -207,6 +207,7 @@ bool C4Window::GetSize(C4Rect*) {return 0;}
 C4Window* C4Window::Init(C4Window::WindowKind, C4AbstractApp*, char const*, C4Window*, bool) {return this;}
 bool C4Window::ReInit(C4AbstractApp*) {return 0;}
 bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
+void C4Window::RequestUpdate() {}
 void C4Window::SetSize(unsigned int, unsigned int) {}
 void C4Window::SetTitle(char const*) {}
 

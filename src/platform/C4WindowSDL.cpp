@@ -99,6 +99,12 @@ void C4Window::SetTitle(const char * Title)
 	SDL_WM_SetCaption(Title, 0);
 }
 
+void C4Window::RequestUpdate()
+{
+	// just invoke directly
+	PerformUpdate();
+}
+
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 

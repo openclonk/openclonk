@@ -608,6 +608,5 @@ void C4ToolsDlg::UpdateTextures() {}
 void C4ToolsDlg::UpdateToolCtrls() {}
 bool C4Viewport::ScrollBarsByViewPosition() {return 0;}
 bool C4Viewport::TogglePlayerLock() {return 0;}
-void C4Window::RequestUpdate() {}
 #include "C4ConsoleGUICommon.h"
 #endif
