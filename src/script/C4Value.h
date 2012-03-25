@@ -55,7 +55,7 @@ const char* GetC4VName(const C4V_Type Type);
 
 union C4V_Data
 {
-	C4Real::StorageType Float;
+	C4Real::StorageType Float; // beware! this is a 4 byte value where all other values are 8 byte on 64bit systems. Take care when setting so bool conversion stays valid
 	intptr_t Int;
 	void * Ptr;
 	C4PropList * PropList;
@@ -82,7 +82,7 @@ public:
 	explicit C4Value(int32_t data):  NextRef(NULL), Type(C4V_Int)
 	{ Data.Int = data; }
 	explicit C4Value(C4Real data): NextRef(NULL), Type(C4V_Float)
-	{ Data.Float = data; AddDataRef(); }
+	{ Data.Int = 0; Data.Float = data; AddDataRef(); }
 	explicit C4Value(C4Object *pObj);
 	explicit C4Value(C4String *pStr): NextRef(NULL), Type(pStr ? C4V_String : C4V_Nil)
 	{ Data.Str = pStr; AddDataRef(); }
@@ -140,7 +140,15 @@ public:
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
-	void SetFloat(C4Real f) { C4V_Data d; d.Float = f; if(d.Int == 0x80000000) d.Int = 0; Set(d, C4V_Float); }
+	void SetFloat(C4Real f)
+	{
+		C4V_Data d;
+		d.Float = f;
+		d.Int = 0; // make sure the upper bits are 0ed on 64 bit systems
+		d.Float = f;
+		if(d.Int == (int)0x80000000) d.Int = 0; // Don't store -0.0
+		Set(d, C4V_Float);
+	}
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
@@ -230,7 +238,7 @@ public:
 			break;
 		case C4V_Float:
 			nrv.Data.Int = Data.Int ^ 0x80000000;
-			if(nrv.Data.Int == 0x80000000) nrv.Data.Int = 0;
+			if(nrv.Data.Int == (int)0x80000000) nrv.Data.Int = 0;
 			nrv.Type = C4V_Float;
 			break;
 		default:
