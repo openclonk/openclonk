@@ -68,6 +68,19 @@ public:
 	inline C4Real &operator -= (const C4Real &rhs) { value = _mm_sub_ps(value, rhs.value); return *this; }
 	inline C4Real &operator *= (const C4Real &rhs) { value = _mm_mul_ps(value, rhs.value); return *this; }
 	inline C4Real &operator /= (const C4Real &rhs) { value = _mm_div_ss(value, rhs.value); return *this; }
+	private: inline __m128 float_hexconst(int32_t c) { union {float f;int i;} fi; fi.i=c; return _mm_set_ps1(fi.f); } public: // can't use a reinterpret_cast here because the parameter is type-punned
+	inline C4Real &operator %= (const C4Real &rhs) {
+		// unfortunately, there is no _mm_mod_ss. The trick is to abuse the 23 bit significancy by adding (or substracting) a value, which will leave the result truncated. We can work with that
+		__m128 div = _mm_div_ss(value, rhs.value);
+		// round
+		__m128 sig = _mm_or_ps(_mm_and_ps(div, float_hexconst(0x80000000)), float_hexconst(0x4b000000)); // generate (sign?+:-)2^23
+		__m128 trunc = _mm_sub_ps(_mm_add_ps(div, sig), sig);
+		// unfortunately, we have rounded towards 0: the hack add -1 when trunc is < 0 (fortunately, < returns 0xffffffff when true)
+		trunc = _mm_add_ps(trunc, _mm_and_ps(_mm_cmplt_ps(trunc, _mm_set_ps1(0.0)), float_hexconst(0xbf800000)));
+		// finish calc
+		value = _mm_sub_ps(value, _mm_mul_ps(trunc, rhs.value));
+		return *this;
+	}
 
 #define C4REAL_ARITHMETIC_OPERATOR(op) \
 	/* arithmetic operations on copies */ \

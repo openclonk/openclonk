@@ -310,10 +310,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Numeric, C4V_Numeric, "%");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				if (pPar2->_getInt())
-					pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
-				else
-					pPar1->Set0();
+				if(!pPar2->_getInt())
+					throw new C4AulExecError(pCurCtx->Obj, "modulo operation with zero");
+				*pPar1 %= *pPar2;
 				PopValue();
 				break;
 			}
