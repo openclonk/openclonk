@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+# Bundle all the libraries, no matter their potential existence on pristine OSX installations
+$libs_to_bundle=".*?/lib(jpeg|GLEW|llvm|SDL|SDL_mixer|freetype|ogg|vorbis|vorbisfile|z\.|png[0-9]*|iconv)\.[^ ]+\.dylib"
+$executable_path = ENV['EXECUTABLE_PATH']
+$frameworks_folder_path = ENV['FRAMEWORKS_FOLDER_PATH']
+
+Dir.chdir ENV['TARGET_BUILD_DIR']
+puts "Bundling libraries..."
+
+def bundle_dependencies(executable_path)
+	`otool -L #{executable_path} | grep -Eo "#{$libs_to_bundle}" | grep -v "@executable_path.*"`.each_line do |lib|
+		lib.strip!
+		break if not File.exists? lib
+		puts "Bundling #{lib}"
+		base = `basename #{lib}`.strip
+		bundle_path = "#{$frameworks_folder_path}/#{base}"
+		already_bundled = File.exists? bundle_path
+		id = "@executable_path/../Frameworks/#{base}"
+		if not already_bundled then
+			puts "Bundling #{base}..."
+			`cp #{lib} #{bundle_path}`
+			`chmod u+w #{bundle_path}`
+		end
+		`install_name_tool -id #{id} #{bundle_path}`
+		`install_name_tool -change #{lib} #{id} #{$executable_path}`
+		`install_name_tool -change #{lib} #{id} #{executable_path}` if $executable_path != executable_path
+		bundle_dependencies bundle_path if not already_bundled
+	end
+end
+
+`mkdir -p #{$frameworks_folder_path}`
+bundle_dependencies $executable_path
