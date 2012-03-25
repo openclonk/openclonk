@@ -879,14 +879,11 @@ namespace C4GUI
 		// main message loop
 		while (fShow)
 		{
-			while (fShow)
-			{
-				// dialog idle proc
-				OnIdle();
-				// handle messages - this may block until the next timer
-				if (!Application.ScheduleProcs())
-					return false; // game GUI and lobby will deleted in Game::Clear()
-			}
+			// dialog idle proc
+			OnIdle();
+			// handle messages - this may block until the next timer
+			if (!Application.ScheduleProcs())
+				return false; // game GUI and lobby will deleted in Game::Clear()
 		}
 		// return whether dlg was OK
 		return fOK;

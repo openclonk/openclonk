@@ -210,7 +210,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 			DWORD keyMask = flags;
 			if ([event type] == NSScrollWheel)
 				keyMask |= (int)[event deltaY] << 16;
-			::C4GUI::MouseMove(button, x, y, keyMask, viewport);
+			::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
 		}
 		else if (viewport)
 		{
