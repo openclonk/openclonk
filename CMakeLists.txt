@@ -1109,7 +1109,7 @@ endif()
 
 if (APPLE)
 	add_custom_command(TARGET clonk
-		POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs.sh"
+		POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
 	)
 	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
