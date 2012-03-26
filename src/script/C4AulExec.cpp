@@ -352,7 +352,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Numeric, C4V_Numeric, "<");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() < pPar2->_getInt());
+				pPar1->SetBool(*pPar1 < *pPar2);
 				PopValue();
 				break;
 			}
@@ -360,7 +360,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Numeric, C4V_Numeric, "<=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() <= pPar2->_getInt());
+				pPar1->SetBool(*pPar1 <= *pPar2);
 				PopValue();
 				break;
 			}
@@ -368,7 +368,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Numeric, C4V_Numeric, ">");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() > pPar2->_getInt());
+				pPar1->SetBool(*pPar1 > *pPar2);
 				PopValue();
 				break;
 			}
@@ -376,7 +376,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Numeric, C4V_Numeric, ">=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
+				pPar1->SetBool(*pPar1 >= *pPar2);
 				PopValue();
 				break;
 			}

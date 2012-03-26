@@ -183,6 +183,19 @@ public:
 	C4VALUE_ARITHMETIC_OPERATOR(/)
 	C4VALUE_ARITHMETIC_OPERATOR(%)
 #undef C4VALUE_ARITHMETIC_OPERATOR
+#define C4VALUE_COMPARISON_OPERATOR(op) \
+	bool operator op (const C4Value & rhs) const \
+	{ \
+		if(rhs.GetType() != C4V_Float && GetType() != C4V_Float) \
+			return _getInt() op rhs._getInt(); \
+		else \
+			return getFloat() op rhs.getFloat(); \
+	}
+	C4VALUE_COMPARISON_OPERATOR(<)
+	C4VALUE_COMPARISON_OPERATOR(<=)
+	C4VALUE_COMPARISON_OPERATOR(>)
+	C4VALUE_COMPARISON_OPERATOR(>=)
+#undef C4VALUE_COMPARISON_OPERATOR
 
 	C4Value &operator++()
 	{
