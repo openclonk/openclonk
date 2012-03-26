@@ -139,7 +139,7 @@ public:
 
 	void Set(const C4Value &nValue) { Set(nValue.Data, nValue.Type); }
 
-	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
+	void SetInt(int32_t i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
 	void SetFloat(C4Real f)
 	{
 		C4V_Data d;
@@ -172,7 +172,7 @@ public:
 		} \
 		else \
 		{ \
-			Data.Int op##= rhs.Data.Int; \
+			Data.Int = _getInt() op rhs._getInt(); \
 			Type=C4V_Int; \
 		} \
 		return *this; \
@@ -189,9 +189,10 @@ public:
 		switch (Type)
 		{
 		case C4V_Nil:
-		case C4V_Int:
 		case C4V_Bool:
-			++Data.Int; Type = C4V_Int; break;
+			Type = C4V_Int; //nobreak
+		case C4V_Int:
+			Data.Int = _getInt() + 1; break;
 		case C4V_Float:
 			SetFloat(getFloat() + 1.0f); break;
 		default:
@@ -210,9 +211,10 @@ public:
 		switch (Type)
 		{
 		case C4V_Nil:
-		case C4V_Int:
 		case C4V_Bool:
-			--Data.Int; Type = C4V_Int; break;
+			Type = C4V_Int; //nobreak
+		case C4V_Int:
+			Data.Int = _getInt() - 1; break;
 		case C4V_Float:
 			SetFloat(getFloat() - 1.0f); break;
 		default:
@@ -232,8 +234,8 @@ public:
 		switch (Type)
 		{
 		case C4V_Nil:
-		case C4V_Int:
 		case C4V_Bool:
+		case C4V_Int:
 			nrv.Data.Int = -Data.Int;
 			nrv.Type = C4V_Int;
 			break;

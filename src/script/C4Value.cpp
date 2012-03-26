@@ -132,7 +132,7 @@ StdStrBuf C4Value::GetDataString(int depth) const
 	switch (GetType())
 	{
 	case C4V_Int:
-		return FormatString("%ld", static_cast<long>(Data.Int));
+		return FormatString("%ld", static_cast<long>(_getInt()));
 	case C4V_Float:
 		return FormatString("%f", static_cast<float>(C4Real(Data.Float)));
 	case C4V_Bool:
