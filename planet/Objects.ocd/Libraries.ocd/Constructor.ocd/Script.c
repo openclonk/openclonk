@@ -142,7 +142,49 @@ public func GetConstructionPlans(int plr)
 	return construction_plans;
 }
 
-protected func CreateConstructionSite(object clonk, id structure_id)
+/* Construction preview */
+
+func ShowConstructionPreview(object clonk, id structure_id)
+{
+	AddEffect("ControlConstructionPreview", clonk, 1, 0, this, nil, structure_id, clonk);
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, true);
+	return true;
+}
+
+func FxControlConstructionPreviewStart(object clonk, effect, int temp, id structure_id, object clonk)
+{
+	if (temp) return;
+
+	effect.structure = structure_id;
+	effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
+	effect.preview->Set(structure_id, clonk);
+}
+
+// Called by Control2Effect
+func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+{
+	if (ctrl != CON_Aim)
+	{
+		// CON_Use is accept, everything else declines
+		if (ctrl == CON_Use)
+			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2));
+		RemoveEffect("ControlConstructionPreview", clonk, effect);
+		return true;
+	}
+	effect.preview->Reposition(x, y);
+	return true;
+}
+
+func FxControlConstructionPreviewStop(object target, effect, int reason, bool temp)
+{
+	if (temp) return;
+
+	effect.preview->RemoveObject();
+}
+
+/* Construction */
+
+func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
@@ -150,13 +192,13 @@ protected func CreateConstructionSite(object clonk, id structure_id)
 	if (clonk->Contained()) 
 		return false;
 	// Check if the building can be build here
-	if (structure_id->~RejectConstruction(0, 10, clonk)) 
+	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
 	// Create construction site
 	var site;
-	if (!(site = CreateConstruction(structure_id, 0, 10, Contained()->GetOwner(), 1, 1, 1)))
+	if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		return false;
 	// Message
 	clonk->Message("$TxtConstructions$", site->GetName());

@@ -134,7 +134,8 @@ public func OnItemSelection(object item)
 	if (menu_commander)
 	{
 		// Close menu if a construction site has been created.
-		if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
+		//if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
+		if (menu_commander->~ShowConstructionPreview(menu_object, item->GetSymbol()))
 		{
 			Close();
 			return true;
