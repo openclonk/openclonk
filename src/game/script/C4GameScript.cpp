@@ -207,6 +207,23 @@ static C4ValueArray *FnFindConstructionSite(C4AulContext *cthr, C4PropList * Pro
 	return pArray;
 }
 
+static bool FnCheckConstructionSite(C4AulContext *cthr, C4PropList * PropList, int32_t iXOffset, int32_t iYOffset)
+{
+	// Make sure parameters are valid
+	if (!PropList || !PropList->GetDef())
+		return NULL;
+
+	// Local object calls override position offset, owner
+	if (cthr->Obj)
+	{
+		iXOffset+=cthr->Obj->GetX();
+		iYOffset+=cthr->Obj->GetY();
+	}
+
+	// Check construction site
+	return ConstructionCheck(PropList, iXOffset, iYOffset);
+}
+
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs)
 {
 	int i, iCnt = 0, iSortCnt = 0;
@@ -2386,6 +2403,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
 	AddFunc(pEngine, "CreateConstruction", FnCreateConstruction);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
+	AddFunc(pEngine, "CheckConstructionSite", FnCheckConstructionSite);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
