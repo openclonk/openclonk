@@ -583,6 +583,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 {
 	{ "C4V_Nil",         C4V_Int, C4V_Nil},
 	{ "C4V_Int",         C4V_Int, C4V_Int},
+	{ "C4V_Float",       C4V_Int, C4V_Int},
 	{ "C4V_Bool",        C4V_Int, C4V_Bool},
 	{ "C4V_C4Object",    C4V_Int, C4V_Object},
 	{ "C4V_Effect",      C4V_Int, C4V_Effect},

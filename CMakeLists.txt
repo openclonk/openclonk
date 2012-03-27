@@ -537,6 +537,8 @@ set(OC_CLONK_SOURCES
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
+	src/script/C4Numeric.cpp
+	src/script/C4Numeric.h
 	src/script/C4PropList.cpp
 	src/script/C4PropList.h
 	src/script/C4Script.cpp
@@ -969,6 +971,8 @@ add_executable(c4script
 	src/script/C4AulExec.cpp
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
+	src/script/C4Numeric.cpp
+	src/script/C4Numeric.h
 	src/script/C4StringTable.cpp
 	src/script/C4PropList.cpp
 	src/script/C4ScriptHost.cpp
