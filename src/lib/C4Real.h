@@ -6,6 +6,7 @@
  * Copyright (c) 2002, 2004-2005, 2007, 2009  Peter Wortmann
  * Copyright (c) 2005, 2007  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -46,6 +47,9 @@ class C4Real
 	friend C4Real Sin(const C4Real &);
 	friend C4Real Cos(const C4Real &);
 	friend C4Real Pow(const C4Real &, const C4Real &);
+	friend C4Real Sqrt(const C4Real &);
+	friend C4Real Log(const C4Real &);
+	friend C4Real Atan2(const C4Real &, const C4Real &);
 
 public:
 	inline C4Real(float val = 0.0f) : value(_mm_set_ss(val)) { }
@@ -68,7 +72,7 @@ public:
 	inline C4Real &operator -= (const C4Real &rhs) { value = _mm_sub_ps(value, rhs.value); return *this; }
 	inline C4Real &operator *= (const C4Real &rhs) { value = _mm_mul_ps(value, rhs.value); return *this; }
 	inline C4Real &operator /= (const C4Real &rhs) { value = _mm_div_ss(value, rhs.value); return *this; }
-	private: inline __m128 float_hexconst(int32_t c) { union {float f;int i;} fi; fi.i=c; return _mm_set_ps1(fi.f); } public: // can't use a reinterpret_cast here because the parameter is type-punned
+	private: static inline __m128 float_hexconst(int32_t c) { union {float f;int i;} fi; fi.i=c; return _mm_set_ps1(fi.f); } public: // can't use a reinterpret_cast here because the parameter is type-punned
 	inline C4Real &operator %= (const C4Real &rhs) {
 		// unfortunately, there is no _mm_mod_ss. The trick is to abuse the 23 bit significancy by adding (or substracting) a value, which will leave the result truncated. We can work with that
 		__m128 div = _mm_div_ss(value, rhs.value);
@@ -143,8 +147,12 @@ public:
 
 	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
 
-	C4Real(StorageType rhs) : value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v))) {}
-	operator StorageType() const { StorageType nrv; _mm_store_ss(reinterpret_cast<float*>(&nrv.v), value); return nrv; }
+	inline C4Real(StorageType rhs) : value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v))) {}
+	inline operator StorageType() const { StorageType nrv; _mm_store_ss(reinterpret_cast<float*>(&nrv.v), value); return nrv; }
+	
+	public:
+	static const StorageType PI;
+	static const StorageType E;
 };
 
 // conversion
@@ -168,6 +176,9 @@ void CompileFunc(C4Real &rValue, StdCompiler *pComp);
 
 C4Real Sin(const C4Real &);
 C4Real Cos(const C4Real &);
-C4Real Pow(const C4Real &, const C4Real &);
+C4Real Pow(const C4Real &base, const C4Real &exponen);
+C4Real Sqrt(const C4Real &);
+C4Real Log(const C4Real &);
+C4Real Atan2(const C4Real &y, const C4Real &x);
 
 #endif //C4REAL_H_INC
