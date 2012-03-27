@@ -801,6 +801,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();
 	if (pSFunc)
 	{
+		// Convert numeric parameters
+		for (int i = 0; i < pFunc->GetParCount(); i++)
+			pPars[i].NumericConversion(pTypes[i]); // Enforce numerics to have the right type, does nothing for other variables
 		// Push a new context
 		C4AulScriptContext ctx;
 		ctx.Obj = pContext ? pContext->GetObject() : 0;

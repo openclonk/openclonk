@@ -79,6 +79,8 @@
 #define C4AUL_VarNamed      "var"
 
 #define C4AUL_TypeInt       "int"
+#define C4AUL_TypeFloat     "float"
+#define C4AUL_TypeNumeric   "num"
 #define C4AUL_TypeBool      "bool"
 #define C4AUL_TypeC4ID      "id"
 #define C4AUL_TypeDef       "def"
@@ -666,6 +668,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CALLFS: return "CALLFS";  // failsafe direct call
 	case AB_STACK: return "STACK";    // push nulls / pop
 	case AB_INT: return "INT";      // constant: int
+	case AB_FLOAT: return "FLOAT";  // constant: float
 	case AB_BOOL: return "BOOL";    // constant: bool
 	case AB_STRING: return "STRING";  // constant: string
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
@@ -1437,6 +1440,8 @@ void C4AulParseState::Parse_Function()
 		// type identifier?
 		C4V_Type t = C4V_Any;
 		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeNumeric)) { t = C4V_Numeric; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFloat)) { t = C4V_Float; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeBool)) { t = C4V_Bool; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { t = C4V_Def; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeDef)) { t = C4V_Def; Shift(); }

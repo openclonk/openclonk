@@ -327,6 +327,18 @@ public:
 		}
 	}
 	static bool WarnAboutConversion(C4V_Type Type, C4V_Type vtToType);
+	inline void NumericConversion(C4V_Type vToType)
+	{
+		if(Type == vToType) return;
+		if(Type != C4V_Nil && Type != C4V_Int && Type != C4V_Float && Type != C4V_Nil) return;
+		switch(vToType)
+		{
+		case C4V_Bool: SetBool(getBool()); return;
+		case C4V_Int: SetInt(getInt()); return;
+		case C4V_Float: SetFloat(getFloat()); return;
+		default: return;
+		}
+	}
 
 	// Compilation
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);

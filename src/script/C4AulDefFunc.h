@@ -149,8 +149,15 @@ template <> struct C4ValueConv<int32_t>
 {
 	inline static C4V_Type Type() { return C4V_Int; }
 	inline static int32_t FromC4V(C4Value &v) { return v.getInt(); }
-	inline static int32_t _FromC4V(C4Value &v) { return v._getInt(); }
+	inline static int32_t _FromC4V(C4Value &v) { return v.getInt(); }
 	inline static C4Value ToC4V(int32_t v) { return C4VInt(v); }
+};
+template <> struct C4ValueConv<C4Real>
+{
+	inline static C4V_Type Type() { return C4V_Float; }
+	inline static C4Real FromC4V(C4Value &v) { return v.getFloat(); }
+	inline static C4Real _FromC4V(C4Value &v) { return v.getFloat(); }
+	inline static C4Value ToC4V(C4Real v) { return C4Value(v); }
 };
 template <> struct C4ValueConv<C4Numeric>
 {
