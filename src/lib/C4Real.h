@@ -166,4 +166,8 @@ const C4Real Fix0 = C4Real(0);
 // CompileFunc for C4Real
 void CompileFunc(C4Real &rValue, StdCompiler *pComp);
 
+C4Real Sin(const C4Real &);
+C4Real Cos(const C4Real &);
+C4Real Pow(const C4Real &, const C4Real &);
+
 #endif //C4REAL_H_INC

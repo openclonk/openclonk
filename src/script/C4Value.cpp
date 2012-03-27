@@ -111,7 +111,7 @@ bool C4Value::WarnAboutConversion(C4V_Type Type, C4V_Type vtToType)
 	{
 	case C4V_Nil:      return Type != C4V_Nil && Type != C4V_Any;
 	case C4V_Float: case C4V_Numeric:
-	case C4V_Int:      return Type != C4V_Int && Type != C4V_Float && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
+	case C4V_Int:      return Type != C4V_Int && Type != C4V_Float && Type != C4V_Numeric && Type != C4V_Nil && Type != C4V_Bool && Type != C4V_Any;
 	case C4V_Bool:     return false;
 	case C4V_PropList: return Type != C4V_PropList && Type != C4V_Effect && Type != C4V_Def && Type != C4V_Object && Type != C4V_Nil && Type != C4V_Any;
 	case C4V_String:   return Type != C4V_String && Type != C4V_Nil && Type != C4V_Any;
