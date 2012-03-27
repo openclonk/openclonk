@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CheckConstructionSite</title>
+    <category>Objects</category>
+    <subcat>Creation</subcat>
+    <version>5.2 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>id</type>
+          <name>object_id</name>
+          <desc>Type of object to be checked.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>xoffset</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>yoffset</name>
+          <desc>Y coordinate</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Checks whether the given location is suitable for the construction of object_id. The same check is used before creation in <funclink>CreateConstruction</funclink> if check_side is true. In local calls the specified position will be an offset to the position of the calling object.</desc>
+    <examples>
+      <example>
+        <code>if(CheckConstructionSite(WindGenerator, 150,100))
+	Log("It is possible to construct a wind generator at position 150,100.");</code>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateConstruction</funclink>
+      <funclink>FindConstructionSite</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>2012-03</date>
+</funcs>
