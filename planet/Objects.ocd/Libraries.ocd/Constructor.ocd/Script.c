@@ -165,12 +165,18 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 {
 	if (ctrl != CON_Aim)
 	{
-		// CON_Use is accept, everything else declines
+		// CON_Use is accept
 		if (ctrl == CON_Use)
 			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2));
+		// movement is allowed
+		else if(ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+			return false;
+		
+		// everything else declines
 		RemoveEffect("ControlConstructionPreview", clonk, effect);
 		return true;
 	}
+		
 	effect.preview->Reposition(x, y);
 	return true;
 }
