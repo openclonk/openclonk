@@ -196,12 +196,21 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	return NSMakeRect(newFrame.origin.x, newFrame.origin.y, preferredContentSize.width, preferredContentSize.height);
 }
 
-- (void) windowWillEnterFullScreen:(NSNotification *)notification {
-	CGAssociateMouseAndMouseCursorPosition(FALSE);
+- (void) windowWillEnterFullScreen:(NSNotification *)notification
+{
+	if (!Application.isEditor)
+	{
+		CGAssociateMouseAndMouseCursorPosition(FALSE);
+		[self.openGLView centerMouse];
+	}
 }
 
-- (void) windowWillExitFullScreen:(NSNotification *)notification {
-	CGAssociateMouseAndMouseCursorPosition(TRUE);
+- (void) windowWillExitFullScreen:(NSNotification *)notification
+{
+	if (!Application.isEditor)
+	{
+		CGAssociateMouseAndMouseCursorPosition(TRUE);
+	}
 }
 
 - (void) setContentSize:(NSSize)size

@@ -183,31 +183,42 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		[NSCursor hide];
 }
 
+- (void) centerMouse
+{
+	savedMouse = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
+	// emulate MouseEvent assuming this method is called in game mode
+	::C4GUI::MouseMove(C4MC_Button_None,
+		savedMouse.x*Config.Graphics.ResX/self.frame.size.width,
+		savedMouse.y*Config.Graphics.ResY/self.frame.size.height,
+		0, NULL
+	);
+}
+
 - (void) mouseEvent:(NSEvent*)event
 {
 	DWORD flags = 0;
 	int32_t button = mouseButtonFromEvent(event, &flags);
-	CGPoint point;
-	int actualSizeX = Application.isEditor ? Config.Graphics.ResX : self.frame.size.width;
-	int actualSizeY = Application.isEditor ? Config.Graphics.ResY : self.frame.size.height;
-	if (lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
+	int actualSizeX = Application.isEditor ? self.frame.size.width  : Config.Graphics.ResX;
+	int actualSizeY = Application.isEditor ? self.frame.size.height : Config.Graphics.ResY;
+	if (!Application.isEditor && lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
 	{
 		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
-		point = CGPointMake(::pGUI->Mouse.x, (actualSizeY - ::pGUI->Mouse.y));
 		if (button != C4MC_Button_Wheel)
 		{
-			point.x += event.deltaX;
-			point.y -= event.deltaY;
+			savedMouse.x += event.deltaX;
+			savedMouse.y -= event.deltaY;
 		}
 	} else
-		point = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
+		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
 	if (!Application.isEditor)
 	{
-		point.x *= Config.Graphics.ResX/self.bounds.size.width;
-		point.y *= Config.Graphics.ResY/self.bounds.size.height;
+		savedMouse.x *= Config.Graphics.ResX/self.frame.size.width;
+		savedMouse.y *= Config.Graphics.ResY/self.frame.size.height;
 	}
-	int x = fmin(fmax(point.x, 0), actualSizeX);
-	int y = fmin(fmax(actualSizeY - point.y, 0), actualSizeY);
+	savedMouse.x = fmin(fmax(savedMouse.x, 0), actualSizeX);
+	savedMouse.y = fmin(fmax(savedMouse.y, 0), actualSizeY);
+	int x = savedMouse.x;
+	int y = actualSizeY - savedMouse.y;
 	
 	{
 		C4Viewport* viewport = self.controller.viewport;
@@ -246,7 +257,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 
 - (void) magnifyWithEvent:(NSEvent *)event
 {
-	if (Game.IsRunning)
+	if (Game.IsRunning && (event.modifierFlags & NSAlternateKeyMask) == 0)
 	{
 		C4Viewport* viewport = self.controller.viewport;
 		if (viewport)

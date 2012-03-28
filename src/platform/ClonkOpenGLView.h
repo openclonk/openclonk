@@ -25,6 +25,7 @@
 {
 @private
 	NSOpenGLContext* context;
+	CGPoint savedMouse;
 }
 - (ClonkWindowController*) controller;
 - (void)update;
@@ -33,6 +34,7 @@
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
 - (void) setContextSurfaceBackingSizeToOwnDimensions;
+- (void) centerMouse;
 
 + (CGDirectDisplayID) displayID;
 + (NSOpenGLContext*) mainContext;
