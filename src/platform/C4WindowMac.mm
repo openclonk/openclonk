@@ -42,6 +42,7 @@ static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
 	switch (kind)
 	{
 	case C4Window::W_GuiWindow:
+	case C4Window::W_Console:
 		return @"ConsoleGUIWindow";
 	case C4Window::W_Fullscreen:
 		return @"FullscreenWindow";
@@ -61,7 +62,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	this->controller = controller;
 	[NSBundle loadNibNamed:windowNibNameForWindowKind(windowKind) owner:controller];
 	[controller setStdWindow:this];
-	if (windowKind != W_GuiWindow)
+	if (windowKind != W_GuiWindow && windowKind != W_Console)
 	{
 		if (lionAndBeyond())
 			[controller.window setCollectionBehavior:[controller.window collectionBehavior] | NSWindowCollectionBehaviorFullScreenPrimary];

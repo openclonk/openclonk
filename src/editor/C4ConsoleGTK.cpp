@@ -313,7 +313,7 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
 	// Calls InitGUI
-	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Window* retval = C4ConsoleBase::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();

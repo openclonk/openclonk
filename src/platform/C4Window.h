@@ -259,6 +259,7 @@ public:
 	enum WindowKind
 	{
 		W_GuiWindow,
+		W_Console,
 		W_Viewport,
 		W_Fullscreen
 	};
