@@ -1,2 +1,3 @@
 Name=Eisenbombe
-Description=Nach dem Anzünden, drücke [Benutzen], um zu werfen.
+Description=Bumm!
+UsageHelp=Drücke [Benutzen] um sie anzuzünden, danach schnell wegwerfen!

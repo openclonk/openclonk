@@ -300,11 +300,11 @@ public func IsArmoryProduct() { return true; }
 /* Definition */
 
 func Definition(def) {
-	def.Name = "$Name$";
-	def.Description = "$Description$";
-	def.Collectible = 1;
-	
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1000,-500),Trans_Rotate(20,1,1,-1),Trans_Scale(1200)),def);
 }
+
+local Name = "$Name$";
+local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;

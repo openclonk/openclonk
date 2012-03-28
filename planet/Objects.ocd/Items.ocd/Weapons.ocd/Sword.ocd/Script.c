@@ -290,10 +290,11 @@ public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
 
 func Definition(def) {
-	SetProperty("Collectible", 1, def);
-	SetProperty("Name", "$Name$", def);
-	SetProperty("Description", "$Description$", def);
 	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
 }
+
+local Name = "$Name$";
+local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
