@@ -276,6 +276,12 @@
 	argc = argCount;
 }
 
+- (void) applicationDidBecomeActive:(NSNotification*)notification
+{
+	if (gameWindowController)
+		[gameWindowController.window makeKeyAndOrderFront:self];
+}
+
 @end
 
 #ifdef main
