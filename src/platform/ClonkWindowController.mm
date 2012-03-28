@@ -196,6 +196,14 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	return NSMakeRect(newFrame.origin.x, newFrame.origin.y, preferredContentSize.width, preferredContentSize.height);
 }
 
+- (void) windowWillEnterFullScreen:(NSNotification *)notification {
+	CGAssociateMouseAndMouseCursorPosition(FALSE);
+}
+
+- (void) windowWillExitFullScreen:(NSNotification *)notification {
+	CGAssociateMouseAndMouseCursorPosition(TRUE);
+}
+
 - (void) setContentSize:(NSSize)size
 {
 	[self.window setContentSize:size];

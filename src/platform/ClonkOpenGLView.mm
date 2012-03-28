@@ -187,18 +187,18 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
 	DWORD flags = 0;
 	int32_t button = mouseButtonFromEvent(event, &flags);
-	NSPoint point = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
-	int actualSizeX = Config.Graphics.ResX;
-	int actualSizeY = Config.Graphics.ResY;
+	CGPoint point;
+	int actualSizeX = Application.isEditor ? Config.Graphics.ResX : self.frame.size.width;
+	int actualSizeY = Application.isEditor ? Config.Graphics.ResY : self.frame.size.height;
+	if (lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask) {
+		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
+		point = CGPointMake(::pGUI->Mouse.x + event.deltaX, (actualSizeY - ::pGUI->Mouse.y) - event.deltaY);
+	} else
+		point = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
 	if (!Application.isEditor)
 	{
-		point.x *= Config.Graphics.ResX/[self bounds].size.width;
-		point.y *= Config.Graphics.ResY/[self bounds].size.height;
-	}
-	else
-	{
-		actualSizeX = self.frame.size.width;
-		actualSizeY = self.frame.size.height;
+		point.x *= Config.Graphics.ResX/self.bounds.size.width;
+		point.y *= Config.Graphics.ResY/self.bounds.size.height;
 	}
 	int x = fmin(fmax(point.x, 0), actualSizeX);
 	int y = fmin(fmax(actualSizeY - point.y, 0), actualSizeY);
