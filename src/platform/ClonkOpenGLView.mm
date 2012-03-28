@@ -190,9 +190,15 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	CGPoint point;
 	int actualSizeX = Application.isEditor ? Config.Graphics.ResX : self.frame.size.width;
 	int actualSizeY = Application.isEditor ? Config.Graphics.ResY : self.frame.size.height;
-	if (lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask) {
+	if (lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
+	{
 		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
-		point = CGPointMake(::pGUI->Mouse.x + event.deltaX, (actualSizeY - ::pGUI->Mouse.y) - event.deltaY);
+		point = CGPointMake(::pGUI->Mouse.x, (actualSizeY - ::pGUI->Mouse.y));
+		if (button != C4MC_Button_Wheel)
+		{
+			point.x += event.deltaX;
+			point.y -= event.deltaY;
+		}
 	} else
 		point = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
 	if (!Application.isEditor)
