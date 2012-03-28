@@ -1,2 +1,3 @@
 Name=Gekochter Pilz
-Description=Deliziöse Mahlzeit.
+Description=Diese fantastische Mahlzeit gibt dem Clonk einige Lebenspunkte zurück.
+UsageHelp=Drücke [Benutzen] um das Brot zu essen.

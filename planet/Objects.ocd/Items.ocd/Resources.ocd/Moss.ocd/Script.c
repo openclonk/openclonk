@@ -118,3 +118,4 @@ public func GetFuelAmount() { return 100; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";

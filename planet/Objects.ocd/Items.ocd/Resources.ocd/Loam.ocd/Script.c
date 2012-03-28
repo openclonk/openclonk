@@ -145,4 +145,5 @@ public func GetLiquidNeed() { return ["Water", 150]; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
