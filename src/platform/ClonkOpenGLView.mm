@@ -611,29 +611,6 @@ bool CStdGLCtx::PageFlip()
 
 #pragma mark CStdGLCtx: Gamma
 
-namespace
-{
-	class GammaRampConversionTable
-	{
-	public:
-		CGGammaValue red[65535];
-		CGGammaValue green[65535];
-		CGGammaValue blue[65535];
-		GammaRampConversionTable()
-		{
-			for (int i = 0; i < 65535; i++)
-			{
-				red[i] = static_cast<float>(i)/65535;
-				green[i] = static_cast<float>(i)/65535;
-				blue[i] = static_cast<float>(i)/65535;
-			}
-		}
-		static GammaRampConversionTable singleton;
-	};
-	
-	GammaRampConversionTable GammaRampConversionTable::singleton;
-}
-
 bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 {
 	CGGammaValue r[256];
@@ -641,9 +618,9 @@ bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 	CGGammaValue b[256];
 	for (int i = 0; i < 256; i++)
 	{
-		r[i] = GammaRampConversionTable::singleton.red[ramp.red[i]];
-		g[i] = GammaRampConversionTable::singleton.green[ramp.green[i]];
-		b[i] = GammaRampConversionTable::singleton.blue[ramp.blue[i]];
+		r[i] = static_cast<float>(ramp.red[i])/65535.0;
+		g[i] = static_cast<float>(ramp.green[i])/65535.0;
+		b[i] = static_cast<float>(ramp.blue[i])/65535.0;
 	}
 	CGSetDisplayTransferByTable(ClonkOpenGLView.displayID, 256, r, g, b);
 	return true;
@@ -651,7 +628,19 @@ bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 
 bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
 {
-	return false;//return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
+	CGGammaValue r[256];
+	CGGammaValue g[256];
+	CGGammaValue b[256];
+	uint32_t count;
+	CGGetDisplayTransferByTable(ClonkOpenGLView.displayID, 256, r, g, b, &count);
+	for (int i = 0; i < 256; i++)
+	{
+		ramp.red[i]   = r[i]*65535;
+		ramp.green[i] = g[i]*65535;
+		ramp.blue[i]  = b[i]*65535;
+	}
+	return true;
+
 }
 
 #endif
