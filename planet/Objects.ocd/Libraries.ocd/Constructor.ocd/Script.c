@@ -21,11 +21,11 @@ public func ControlUseStart(object clonk, int x, int y)
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{
-		if (structure->GetCon() < 100)
+	/*	if (structure->GetCon() < 100)
 		{
 			Construct(clonk, structure);
 			return true;
-		}
+		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -53,11 +53,12 @@ public func ControlUseHolding(object clonk, int x, int y)
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{	
+	/*
 		if (structure->GetCon() < 100)
 		{
 			Construct(clonk, structure);
 			return true;
-		}
+		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -200,12 +201,82 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
+		
+	// check for material
+	var comp, index = 0;
+	var found_material, mat, missing;
+	var r = Max(structure_id->GetDefWidth(), structure_id->GetDefHeight())/2 + 7;
+	var mat_msg = "Construction needs:"; //todo: stringtable
+	var missing = false;
+	found_material = CreateArray();
+	while (comp = GetComponent(nil, index, nil, structure_id))
+	{
+		// find material
+		found_material[index] = CreateArray();
+		var max_amount = GetComponent(comp, nil, nil, structure_id);
+		
+		// 1. look for stuff in the clonk
+		found_material[index] = FindObjects(Find_ID(comp), Find_Container(clonk));
+		
+		// 2. look for stuff lying around
+		if(GetLength(found_material[index]) < max_amount)
+		{
+			mat = clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_Distance(r, x, y));
+			for(var o in mat)
+				PushBack(found_material[index], o);
+		}
+		
+		// 3. look for stuff in nearby lorries/containers
+		for(var cont in clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_Distance(r, x,y)))
+			if(GetLength(found_material[index]) < max_amount)
+			{
+				mat = FindObjects(Find_ID(comp), Find_Container(cont));
+				for(var o in mat)
+					PushBack(found_material[index], o);
+			}
+			
+		// not enough?
+		var c = GetLength(found_material[index]);
+		if(c < max_amount)
+		{
+			mat_msg = Format("%s|%dx{{%i}}", mat_msg, max_amount-c, comp);
+			missing = true;
+		}
+		
+		index++;
+	}
+	
+	// not enough materials? :(
+	if(missing)
+	{
+		clonk->Message(mat_msg);
+		return false;
+	}
+	
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
 	// Create construction site
 	var site;
 	if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		return false;
+	
+	// pack material into the construction site
+	for(var mats in found_material)
+	{
+		var comp = mats[0]->GetID();
+		var max = GetComponent(comp,0,0,structure_id);
+		for(var j=0; j < max; ++j)
+		{
+			if(mats[j] == nil)
+				Log("PANICK"); // this should never happen
+			mats[j]->RemoveObject();
+		}
+		site->SetComponent(comp,max);
+	}
+	
+	// todo: hammer-action for the clonk
+	Schedule(site, "DoCon(2)",1,50);
+	
 	// Message
 	clonk->Message("$TxtConstructions$", site->GetName());
 	return true;
