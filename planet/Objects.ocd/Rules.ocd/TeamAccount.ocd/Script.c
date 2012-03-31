@@ -44,7 +44,6 @@ protected func InitializePlayer(int plr)
 		var to_plr = GetPlayerByIndex(i);
 		if (to_plr != plr && !Hostile(to_plr, plr))
 		{
-			Log("Added wealth");
 			DoWealth(to_plr, GetWealth(plr));
 			break;
 		}
