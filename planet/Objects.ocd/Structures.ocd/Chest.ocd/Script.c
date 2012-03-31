@@ -31,6 +31,17 @@ protected func RejectCollect()
 	return false;
 }
 
+public func OnContentMenuOpened()
+{
+	return Open();
+}
+
+
+public func OnContentMenuClosed()
+{
+	return Close();
+}
+
 private func Open()
 {
 	chestanim = PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
