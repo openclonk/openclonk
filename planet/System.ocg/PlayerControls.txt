@@ -712,7 +712,7 @@
 		Group=1
 		
 		[Assignment]
-		Key=Space
+		Key=Return
 		Priority=100
 		Control=MenuOK
 		
@@ -882,7 +882,7 @@
 		Control=PlayerMenu
 		
 		[Assignment]
-		Key=Space
+		Key=Return
 		Priority=100
 		Control=MenuOK
 		
