@@ -23,7 +23,7 @@ func PermaEdge()
 
 protected func AutoP()
 {
-	var dir=[];
+	dir=[];
 	dir[0]=GBackSolid(6 ,0);
 	dir[1]=GBackSolid(0,-6);
 	dir[2]=GBackSolid(-6,0);
