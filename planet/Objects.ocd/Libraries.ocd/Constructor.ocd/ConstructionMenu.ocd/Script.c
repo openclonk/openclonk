@@ -145,7 +145,7 @@ public func OnItemSelection(object item)
 }
 
 // Called when an object is dragged onto the menu
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	return _inherited(plr, obj, ...);
 }

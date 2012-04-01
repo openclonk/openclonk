@@ -50,7 +50,7 @@ public func MouseSelectionAlt(int plr)
 }
 
 // Called to determine which object is dragged.
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
 	// Check if the owners match.
 	if (plr != GetOwner()) return;
@@ -65,7 +65,7 @@ public func MouseDrag(int plr)
 }
 
 // Called when an object is dragged onto this one.
-public func MouseDrop(int plr, other)
+public func OnMouseDrop(int plr, other)
 {
 	// Check if the owners match.
 	if (plr != GetOwner()) return false;
@@ -81,7 +81,7 @@ public func MouseDrop(int plr, other)
 }
 
 // Called after this object has been dragged onto another one.
-public func MouseDragDone(self, object target)
+public func OnMouseDragDone(self, object target)
 {
 	// Check if this belongs to a menu.
 	if (!item_menu) return;

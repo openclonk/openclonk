@@ -116,7 +116,7 @@ public func MouseSelectionAlt(int plr)
 	return true;	
 }
 
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
 	if(plr != GetOwner())
 		return;
@@ -124,7 +124,7 @@ public func MouseDrag(int plr)
 	return this;
 }
 
-public func MouseDrop(int plr, object src)
+public func OnMouseDrop(int plr, object src)
 {
 	if(src->GetOwner() != GetOwner())
 		return false;
@@ -136,7 +136,7 @@ public func MouseDrop(int plr, object src)
 }
 
 // Called after this object has been dragged onto another one.
-public func MouseDragDone(self, object target)
+public func OnMouseDragDone(self, object target)
 {
 	var c = GetCursor(GetOwner());
 	if(!c) return;
