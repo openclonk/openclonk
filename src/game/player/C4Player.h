@@ -168,6 +168,7 @@ public:
 	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates
 	void SetCursor(C4Object *pObj, bool fSelectArrow);
 	void RemoveCrewObjects();
+	int32_t FindNewOwner() const;
 	void NotifyOwnedObjects();
 	void DefaultRuntimeData();
 	void DrawHostility(C4Facet &cgo, int32_t iIndex);

@@ -1378,21 +1378,69 @@ void C4Player::RemoveCrewObjects()
 	while ((pCrew = Crew.GetObject())) pCrew->AssignRemoval(true);
 }
 
+int32_t C4Player::FindNewOwner() const
+{
+	int32_t iNewOwner = NO_OWNER;
+	C4Team *pTeam;
+	if (Team) if ((pTeam = Game.Teams.GetTeamByID(Team)))
+	{
+		for (int32_t i=0; i<pTeam->GetPlayerCount(); ++i)
+		{
+			int32_t iPlrID = pTeam->GetIndexedPlayer(i);
+			if (iPlrID && iPlrID != ID)
+			{
+				C4PlayerInfo *pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(iPlrID);
+				if (pPlrInfo) if (pPlrInfo->IsJoined())
+				{
+					// this looks like a good new owner
+					iNewOwner = pPlrInfo->GetInGameNumber();
+					break;
+				}
+			}
+		}
+	}
+	// if noone from the same team was found, try to find another non-hostile player
+	// (necessary for cooperative rounds without teams)
+	if (iNewOwner == NO_OWNER)
+		for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
+			if (pOtherPlr != this) if (!pOtherPlr->Eliminated)
+					if (!::Players.Hostile(pOtherPlr->Number, Number))
+						iNewOwner = pOtherPlr->Number;
+
+	return iNewOwner;
+}
+
 void C4Player::NotifyOwnedObjects()
 {
 	C4Object *cobj; C4ObjectLink *clnk;
 
+	int32_t iNewOwner = FindNewOwner();
 	// notify objects in all object lists
 	for (C4ObjectList *pList = &::Objects; pList; pList = ((pList == &::Objects) ? &::Objects.InactiveObjects : NULL))
+	{
 		for (clnk = pList->First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-			if (cobj->Status)
-				if (cobj->Owner == Number)
+		{
+			if (cobj->Status && cobj->Owner == Number)
+			{
+				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
+				if (pFn)
 				{
-					C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
-					// PSF_OnOwnerRemoved has an internal fallback function
-					assert(pFn);
-					if (pFn) pFn->Exec(cobj);
+					pFn->Exec(cobj);
 				}
+				else
+				{
+					// crew members: Those are removed later (AFTER the player has been removed, for backwards compatiblity with relaunch scripting)
+					if (Crew.IsContained(cobj))
+						continue;
+					// Regular objects: Try to find a new, suitable owner from the same team
+					// Ignore StaticBack, because this would not be backwards compatible with many internal objects such as team account
+					// Do not ignore flags which might be StaticBack if being attached to castle parts
+					if ((~cobj->Category & C4D_StaticBack) || (cobj->id == C4ID::Flag))
+						cobj->SetOwner(iNewOwner);
+				}
+			}
+		}
+	}
 }
 
 bool C4Player::DoScore(int32_t iChange)
