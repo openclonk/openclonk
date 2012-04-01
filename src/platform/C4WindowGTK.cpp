@@ -709,7 +709,7 @@ void C4Window::FlashWindow()
 	//FIXME - how is this reset? gtk_window_set_urgency_hint(window, true);
 }
 
-C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
 
@@ -727,7 +727,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	if (windowKind == W_Viewport)
 	{
 		C4ViewportWindow * vw = static_cast<C4ViewportWindow *>(this);
-		gtk_window_set_default_size(GTK_WINDOW(window), 640, 480);
 
 		// Cannot just use ScrolledWindow because this would just move
 		// the GdkWindow of the DrawingArea.
@@ -831,6 +830,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	assert(render_widget);
 	// Override gtk's default to match name/class of the XLib windows
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
+	gtk_window_set_default_size(GTK_WINDOW(window), size->Wdt, size->Hgt);
 
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), this);
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);

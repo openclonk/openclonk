@@ -58,7 +58,8 @@ C4FullScreen::~C4FullScreen()
 
 C4Window * C4FullScreen::Init(C4AbstractApp * pApp)
 {
-	return Init(C4Window::W_Fullscreen, pApp, C4ENGINECAPTION);
+	C4Rect r(0, 0, Config.Graphics.ResX, Config.Graphics.ResY);
+	return Init(C4Window::W_Fullscreen, pApp, C4ENGINECAPTION, &r);
 }
 
 void C4FullScreen::Close()

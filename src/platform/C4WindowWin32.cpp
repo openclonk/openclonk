@@ -68,6 +68,8 @@
 
 #define C4ViewportClassName L"C4Viewport"
 #define C4FullScreenClassName L"C4FullScreen"
+#define ConsoleDlgClassName L"C4GUIdlg"
+#define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -387,6 +389,77 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }
 
+LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	// Determine dialog
+	Dialog *pDlg = ::pGUI->GetDialog(hwnd);
+	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+	// Process message
+	switch (uMsg)
+	{
+		//---------------------------------------------------------------------------------------------------------------------------
+	case WM_KEYDOWN:
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
+		break;
+		//---------------------------------------------------------------------------------------------------------------------------
+	case WM_KEYUP:
+		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg)) return 0;
+		break;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_SYSKEYDOWN:
+		if (wParam == 18) break;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_DESTROY:
+	{
+		const char *szID = pDlg->GetID();
+		if (szID && *szID)
+			StoreWindowPosition(hwnd, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
+	}
+	break;
+	//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_CLOSE:
+		pDlg->Close(false);
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_SIZE:
+		// UpdateOutputSize
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_PAINT:
+		// 2do: only draw specific dlg?
+		//::GraphicsSystem.Execute();
+		break;
+		return 0;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);  break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_MOUSEMOVE:
+		//SetCursor(NULL);
+		::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_MOUSEWHEEL:
+		::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	}
+
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
 C4Window::C4Window (): Active(false), pSurface(0), hWindow(0)
 {
 }
@@ -394,7 +467,7 @@ C4Window::~C4Window ()
 {
 }
 
-C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
 	if (windowKind == W_Viewport)
@@ -423,7 +496,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		hWindow = CreateWindowExW (
 		            WS_EX_ACCEPTFILES,
 		            C4ViewportClassName, GetWideChar(Title), C4ViewportWindowStyle,
-		            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
+		            CW_USEDEFAULT,CW_USEDEFAULT, size->Wdt, size->Hgt,
 		            Console.hWindow,NULL,pApp->GetInstance(),NULL);
 		if(!hWindow) return NULL;
 
@@ -451,7 +524,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            C4FullScreenClassName,
 		            GetWideChar(Title),
 		            WS_OVERLAPPEDWINDOW,
-		            CW_USEDEFAULT,CW_USEDEFAULT, Config.Graphics.ResX, Config.Graphics.ResY,
+		            CW_USEDEFAULT,CW_USEDEFAULT, size->Wdt, size->Hgt,
 		            NULL,NULL,pApp->GetInstance(),NULL);
 		if(!hWindow) return NULL;
 
@@ -468,6 +541,48 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		ShowWindow(hWindow,SW_SHOWNORMAL);
 		SetFocus(hWindow);
 	#endif
+	}
+	else if (windowKind == W_GuiWindow)
+	{
+		static bool fDialogClassRegistered = false;
+		if (!fDialogClassRegistered)
+		{
+			// register landscape viewport class
+			WNDCLASSEXW WndClass;
+			WndClass.cbSize=sizeof(WNDCLASSEX);
+			WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
+			WndClass.lpfnWndProc   = DialogWinProc;
+			WndClass.cbClsExtra    = 0;
+			WndClass.cbWndExtra    = 0;
+			WndClass.hInstance     = hInst;
+			WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
+			WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+			WndClass.lpszMenuName  = NULL;
+			WndClass.lpszClassName = ConsoleDlgClassName;
+			WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
+			WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
+			if (!RegisterClassExW(&WndClass))
+				return NULL;
+		}
+		Active = true;
+		// calculate required size
+		RECT rtSize;
+		rtSize.left = 0;
+		rtSize.top = 0;
+		rtSize.right = size->Wdt;
+		rtSize.bottom = size->Hgt;
+		if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
+			return NULL;
+		// create it!
+		if (!Title || !*Title) Title = "???";
+		hWindow = ::CreateWindowExW(
+		            0,
+		            ConsoleDlgClassName, GetWideChar(Title),
+		            ConsoleDlgWindowStyle,
+		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
+		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+		hRenderWindow = hWindow;
+		return hWindow ? this : 0;
 	}
 	return this;
 }

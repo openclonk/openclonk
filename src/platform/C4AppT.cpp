@@ -87,7 +87,10 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 
 void C4AbstractApp::RestoreVideoMode() {}
 
-bool C4AbstractApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool) {}
+bool C4AbstractApp::SetVideoMode(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool)
+{
+	return true;
+}
 
 // Copy the text to the clipboard or the primary selection
 bool C4AbstractApp::Copy(const StdStrBuf & text, bool fClipboard)
@@ -204,7 +207,7 @@ C4Window::~C4Window() {}
 void C4Window::EnumerateMultiSamples(std::vector<int, std::allocator<int> >&) const  {}
 void C4Window::FlashWindow() {}
 bool C4Window::GetSize(C4Rect*) {return 0;}
-C4Window* C4Window::Init(C4Window::WindowKind, C4AbstractApp*, char const*, C4Window*, bool) {return this;}
+C4Window* C4Window::Init(C4Window::WindowKind, C4AbstractApp*, char const*, const C4Rect *) {return this;}
 bool C4Window::ReInit(C4AbstractApp*) {return 0;}
 bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
 void C4Window::RequestUpdate() {}

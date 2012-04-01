@@ -32,9 +32,6 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
-#define ConsoleDlgClassName L"C4GUIdlg"
-#define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
-
 #include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"
@@ -1952,7 +1949,7 @@ namespace C4GUI
 		Dialog* pDialog;
 		DialogWindow(): C4Window(), pDialog(NULL) {}
 		using C4Window::Init;
-		C4Window * Init(C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID);
+		C4Window * Init(C4AbstractApp * pApp, const char * Title, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
 		virtual void PerformUpdate();
 	};

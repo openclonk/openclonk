@@ -312,7 +312,8 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"));
+	C4Rect r(0, 0, 320, 320);
+	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
 	state->InitGUI();
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
@@ -474,8 +475,6 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_box_pack_start(GTK_BOX(box), scroll, true, true, 0);
 	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 3);
 	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
-
-	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
 
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
 	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));

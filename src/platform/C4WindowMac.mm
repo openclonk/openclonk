@@ -53,7 +53,7 @@ static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
 	}
 }
 
-C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
 

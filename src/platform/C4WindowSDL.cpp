@@ -46,8 +46,10 @@ C4Window::~C4Window ()
 	Clear();
 }
 
-C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
+	if (windowKind != W_Fullscreen)
+		return NULL;
 	Active = true;
 	// SDL doesn't support multiple monitors.
 	if (!SDL_SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
@@ -55,7 +57,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 		Log(SDL_GetError());
 		return 0;
 	}
-	SDL_ShowCursor(HideCursor ? SDL_DISABLE : SDL_ENABLE);
+	SDL_ShowCursor(SDL_DISABLE);
 	SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	SetTitle(Title);
 	return this;

@@ -274,7 +274,6 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -329,6 +328,7 @@ public:
 	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
 protected:
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
