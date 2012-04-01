@@ -376,19 +376,9 @@
         <col>0-100 with tolerance. Speed of season change.</col>
       </row>
       <row>
-        <col>Rain</col>
-        <col>4 integers</col>
-        <col>0-100 with tolerance. Precipitation amount.</col>
-      </row>
-      <row>
         <col>Wind</col>
         <col>4 integers</col>
         <col>-100-100 with tolerance. Wind direction and strength.</col>
-      </row>
-      <row>
-        <col>Precipitation</col>
-        <col>String</col>
-        <col>Simple material definition precipitation.</col>
       </row>
       <row>
         <col>NoGamma</col>

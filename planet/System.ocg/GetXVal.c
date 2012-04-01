@@ -120,9 +120,7 @@ global func GetScenMapHeight() { return GetScenarioVal("MapHeight", "Landscape")
 global func GetScenMapZoom()   { return GetScenarioVal("MapZoom", "Landscape"); } //(!)
 global func GetScenClimate()   { return GetScenarioVal("Climate", "Weather"); }
 global func GetScenYearSpeed() { return GetScenarioVal("YearSpeed", "Weather"); }
-global func GetScenRain()      { return GetScenarioVal("Rain", "Weather"); }
 global func GetScenWind()      { return GetScenarioVal("Wind", "Weather"); }
-global func GetScenPrecipitation() { return GetScenarioVal("Precipitation", "Weather"); }
 
 // GetObjectInfoCoreVal
 global func GetObjCoreName()      { return GetObjectInfoCoreVal("Name", "ObjectInfo"); }

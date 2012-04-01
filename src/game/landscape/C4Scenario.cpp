@@ -342,8 +342,7 @@ void C4SWeather::Default()
 	Climate.Set(50,10);
 	StartSeason.Set(50,50);
 	YearSpeed.Set(50);
-	Rain.Default(); Wind.Set(0,70,-100,+100);
-	SCopy("Water",Precipitation,C4M_MaxName);
+	Wind.Set(0,70,-100,+100);
 	NoGamma=1;
 }
 
@@ -352,9 +351,7 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Climate,                 "Climate",               C4SVal(50,10), true));
 	pComp->Value(mkNamingAdapt(StartSeason,             "StartSeason",           C4SVal(50,50), true));
 	pComp->Value(mkNamingAdapt(YearSpeed,               "YearSpeed",               C4SVal(50)));
-	pComp->Value(mkNamingAdapt(Rain,                    "Rain",                  C4SVal()));
 	pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
-	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Precipitation),"Precipitation",   "Water"));
 	pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
 }
 

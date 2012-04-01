@@ -203,8 +203,7 @@ class C4SWeather
 public:
 	C4SVal Climate;
 	C4SVal StartSeason,YearSpeed;
-	C4SVal Rain,Wind;
-	char Precipitation[C4M_MaxName+1];
+	C4SVal Wind;
 	bool NoGamma;
 public:
 	void Default();
