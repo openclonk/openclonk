@@ -256,7 +256,8 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents.
-		for (var transfer in FindObjects(Find_Container(target)))
+		var transfer, index = target->ContentsCount();
+		while (transfer = target->Contents(--index))
 			transfer->Enter(clonk);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
 	}
