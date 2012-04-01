@@ -5,7 +5,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input)
 
 	# Prepare environment
 	GET_FILENAME_COMPONENT(_name ${_input} NAME)
-	SET(_pchdir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_targetName}_pch")
+	SET(_pchdir "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${_targetName}_pch.dir")
 	MAKE_DIRECTORY(${_pchdir})
 	SET(_source "${CMAKE_CURRENT_SOURCE_DIR}/${_input}")
 	SET(_includeput "${_pchdir}/${_name}")
