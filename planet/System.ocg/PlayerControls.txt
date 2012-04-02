@@ -137,7 +137,7 @@
 	
 	[ControlDef]
 	Identifier=ForcedThrow
-	GUIName=Throw
+	#GUIName=Throw
 	GUIDesc=Force to throw selected inventory item
 	Hold=1
 	
@@ -149,7 +149,7 @@
 
 	[ControlDef]
 	Identifier=Drop
-	GUIName=Drop
+	#GUIName=Drop
 	GUIDesc=Drop selected inventory item
 	Hold=1
 
@@ -165,7 +165,7 @@
 	
 	[ControlDef]
 	Identifier=ForcedThrowAlt
-	GUIName=Throw 2
+	#GUIName=Throw 2
 	GUIDesc=Force to throw selected inventory item
 	Hold=1
 	
@@ -177,7 +177,7 @@
 
 	[ControlDef]
 	Identifier=DropAlt
-	GUIName=Drop 2
+	#GUIName=Drop 2
 	GUIDesc=Drop secondary selected inventory item
 	Hold=1
 	
@@ -185,44 +185,63 @@
 	
 	[ControlDef]
 	Identifier=Hotkey1
+	GUIName=Hotkey 1
+	GUIDesc=Selects the 1st Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey2
+	GUIName=Hotkey 2
+	GUIDesc=Selects the 2nd Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey3
+	GUIName=Hotkey 3
+	GUIDesc=Selects the 3rd Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey4
+	GUIName=Hotkey 4 
+	GUIDesc=Selects the 4th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey5
+	GUIName=Hotkey 5
+	GUIDesc=Selects the 5th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey6
+	GUIName=Hotkey 6
+	GUIDesc=Selects the 6th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey7
+	GUIName=Hotkey 7
+	GUIDesc=Selects the 7th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey8
+	GUIName=Hotkey 8
+	GUIDesc=Selects the 8th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey9
+	GUIName=Hotkey 9
+	GUIDesc=Selects the 9th Slot
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey0
+	GUIName=Hotkey 10
+	GUIDesc=Selects the 10th Slot
 	Hold=1
-	
 	
 	[ControlDef]
 	Identifier=DropHotkey1
@@ -332,7 +351,7 @@
 	
 	[ControlDef]
 	Identifier=CancelUse
-	GUIName=Cancel Use
+	#GUIName=Cancel Use
 	GUIDesc=Cancel usage of selected or controlled item
 	
 	[ControlDef]
@@ -355,12 +374,6 @@
 	SendCursorPos=1
 	
 	[ControlDef]
-	Identifier=Backpack
-	GUIName=Backpack
-	GUIDesc=Open/close backpack
-	SendCursorPos=1
-	
-	[ControlDef]
 	Identifier=Contents
 	GUIName=Contents
 	GUIDesc=Open/close contents menus
@@ -368,14 +381,14 @@
 	
 	[ControlDef]
 	Identifier=Grab
-	GUIName=Grab
+	#GUIName=Grab
 	GUIDesc=Grab vehicle
 	SendCursorPos=1
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Ungrab
-	GUIName=Let go
+	#GUIName=Let go
 	GUIDesc=Let go vehicle
 	Hold=1
 	
@@ -391,7 +404,7 @@
 	
 	[ControlDef]
 	Identifier=PushEnter
-	GUIName=Push into building
+	#GUIName=Push into building
 	GUIDesc=Push the vehicle into the building
 	Hold=1
 
@@ -404,14 +417,14 @@
 	
 	[ControlDef]
 	Identifier=Enter
-	GUIName=Enter
+	#GUIName=Enter
 	GUIDesc=Go into the building
 	SendCursorPos=1
 	Hold=1
 	
 	[ControlDef]
 	Identifier=Exit
-	GUIName=Exit
+	#GUIName=Exit
 	GUIDesc=Exit the building
 	Hold=1
 	
@@ -420,42 +433,62 @@
 	
 	[ControlDef]
 	Identifier=InteractionHotkey1
+	GUIName=Interaction Hotkey 1
+	GUIDesc=Activates the 1st item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey2
+	GUIName=Interaction Hotkey 2
+	GUIDesc=Activates the 2nd item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey3
+	GUIName=Interaction Hotkey 3
+	GUIDesc=Activates the 3rd item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey4
+	GUIName=Interaction Hotkey 4
+	GUIDesc=Activates the 4th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey5
+	GUIName=Interaction Hotkey 5
+	GUIDesc=Activates the 5th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey6
+	GUIName=Interaction Hotkey 6
+	GUIDesc=Activates the 6th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey7
+	GUIName=Interaction Hotkey 7
+	GUIDesc=Activates the 7th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey8
+	GUIName=Interaction Hotkey 8
+	GUIDesc=Activates the 8th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey9
+	GUIName=Interaction Hotkey 9
+	GUIDesc=Activates the 9th item in the Actionbar
 	SendCursorPos=1
 	
 	[ControlDef]
 	Identifier=InteractionHotkey0
+	GUIName=Interaction Hotkey 10
+	GUIDesc=Activates the 10th item in the Actionbar
 	SendCursorPos=1
 	
 	# Crew 
@@ -505,7 +538,7 @@
 	
 	[ControlDef]
 	Identifier=GUIClick1
-	GUIName=Click
+	#GUIName=Click
 	GUIDesc=Click selected or controlled GUI item
 	DefaultDisabled=1
 	Hold=1
@@ -513,7 +546,7 @@
 
 	[ControlDef]
 	Identifier=GUIClick2
-	GUIName=Right click
+	#GUIName=Right click
 	GUIDesc=Right click selected or controlled GUI item
 	DefaultDisabled=1
 	Hold=1
@@ -521,12 +554,12 @@
 	
 	[ControlDef]
 	Identifier=MenuOK
-	GUIName=OK
+	GUIName=Menu OK
 	Action=MenuOK
 	
 	[ControlDef]
 	Identifier=MenuSelect
-	GUIName=Select
+	GUIName=Menu Select
 	GUIDesc=Select specific item
 	Action=MenuSelect
 	
@@ -692,12 +725,7 @@
 	Mouse=1
 	Gamepad=0
 	
-		# Backpack
-		
-		[Assignment]
-		Key=Q
-		Control=Backpack
-		Group=1
+		# Contents Menu
 		
 		[Assignment]
 		Key=E
@@ -712,7 +740,7 @@
 		Group=1
 		
 		[Assignment]
-		Key=Space
+		Key=Return
 		Priority=100
 		Control=MenuOK
 		
@@ -865,11 +893,7 @@
 	Mouse=1
 	Gamepad=0
 
-		# Backpack
-
-		[Assignment]
-		Key=Apostrophe
-		Control=Backpack
+		# Contents Menu
 
 		[Assignment]
 		Key=Period
@@ -882,7 +906,7 @@
 		Control=PlayerMenu
 		
 		[Assignment]
-		Key=Space
+		Key=Return
 		Priority=100
 		Control=MenuOK
 		
@@ -1068,11 +1092,7 @@
 	Mouse=0
 	Gamepad=1
 
-		# Backpack
-	
-		[Assignment]
-		Key=Joy1E
-		Control=Backpack
+		# Contents Menu
 		
 		[Assignment]
 		Key=Joy1F

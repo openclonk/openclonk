@@ -39,7 +39,7 @@ public func MouseSelectionAlt(int plr)
 	return true;
 }
 
-public func MouseDragDone(obj, object target)
+public func OnMouseDragDone(obj, object target)
 {
 	// not on landscape
 	if(target) return;
@@ -48,14 +48,14 @@ public func MouseDragDone(obj, object target)
 		obj->Exit();
 }
 
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
 	if(plr != GetOwner()) return nil;
 	
 	return myobject;
 }
 
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	if(plr != GetOwner()) return false;
 	if(GetType(obj) != C4V_C4Object) return false;

@@ -58,7 +58,7 @@ private func UseAnyStart(object clonk, int ix, int iy, int item)
 		return true;
 	}
 		
-	if (!clonk->GetItem(item))
+	if (!clonk->GetHandItem(item))
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
 		clonk->CancelUse();
@@ -146,13 +146,24 @@ private func ConvertAngle(int angle)
 
 public func ControlUseStop(object clonk, int ix, int iy)
 {
+	return UseAnyStop(clonk,ix,iy,0);
+}
+
+public func ControlUseAltStop(object clonk, int ix, int iy)
+{
+	return UseAnyStop(clonk,ix,iy,1);
+}
+
+private func UseAnyStop(object clonk, int ix, int iy, int item)
+{
+
 	RemoveTrajectory(this);
 	
 	var result = CheckForKeg(clonk);
 	if (!result)
 		return true;
 
-	var projectile = clonk->GetItem(0);
+	var projectile = clonk->GetHandItem(item);
 	if (!projectile) // Needs a projectile
 	{
 		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
@@ -176,44 +187,6 @@ public func ControlUseStop(object clonk, int ix, int iy)
 			if(powderkeg->PowderCount() == 0)
 			{
 				powderkeg->RemoveObject();
-				CreateObject(Barrel);
-			}
-		}
-	}
-	return true;
-}
-
-public func ControlUseAltStop(object clonk, int ix, int iy)
-{
-	RemoveTrajectory(this);
-	
-	var result = CheckForKeg(clonk);
-	if (!result)
-		return true;
-
-	var projectile = clonk->GetItem(1);
-	if (!projectile) // Needs a projectile
-	{
-		PlayerMessage(clonk->GetOwner(),"$TxtNeedsAmmo$");
-		return true;
-	}
-
-	//Can't fire if cannon is cooling down or turning
-	if(GetEffect("IntCooldown",this) || GetEffect("IntTurning",this))	return true;
-	
-	if (projectile)
-	{
-		DoFire(projectile, clonk, Angle(0,0,ix,iy));
-		var powder = Contents(0)->Contents(0);
-		if(powder)
-		{
-			//If there is a powder keg, take powder from it
-			powder->RemoveObject();
-			DoFire(projectile, clonk, Angle(0,0,ix,iy));
-			AddEffect("IntCooldown",this,1,1,this);
-			if(Contents(0)->ContentsCount() == 0)
-			{
-				Contents(0)->RemoveObject();
 				CreateObject(Barrel);
 			}
 		}

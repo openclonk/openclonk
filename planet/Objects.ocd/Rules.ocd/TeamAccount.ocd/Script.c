@@ -6,6 +6,14 @@
 */
 
 
+protected func Initialize()
+{
+	// Under no circumstance there may by multiple copies of this rule.
+	if (ObjectCount(Find_ID(Rule_TeamAccount)) > 1)
+		return RemoveObject();
+	return;
+}
+
 // Only SetWealth needs to be overloaded, DoWealth just uses that.
 global func SetWealth(int plr, int wealth)
 {

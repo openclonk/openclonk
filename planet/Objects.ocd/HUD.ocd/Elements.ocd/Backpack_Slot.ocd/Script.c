@@ -27,18 +27,17 @@ public func GetSlotId() { return position; }
 
 public func SetSelected(int nr)
 {
+	SetGraphics("Hand", GUI_Backpack_Slot_Icon, 4, GFXOV_MODE_Base);
+	
 	if(nr == 0)
-		SetGraphics("LeftHand", GUI_Backpack_Slot_Icon, 4, GFXOV_MODE_Base);
+		SetObjDrawTransform(700, 0, -17000, 0, 700, 17000, 4);
 	if(nr == 1)
-		SetGraphics("RightHand", GUI_Backpack_Slot_Icon, 5, GFXOV_MODE_Base);
-	//SetGraphics(nil, nil, MI_SELECTION_LAYER);
-	//SetClrModulation(HSL(255-nr*86, 200, 150));
+		SetObjDrawTransform(-700, 0, 17000, 0, 700, 17000, 4);
 }
 
 public func SetUnselected()
 {
 	SetGraphics(nil,nil,4);
-	SetGraphics(nil,nil,5);
 }
 
 
@@ -117,7 +116,7 @@ public func MouseSelectionAlt(int plr)
 	return true;	
 }
 
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
 	if(plr != GetOwner())
 		return;
@@ -125,7 +124,7 @@ public func MouseDrag(int plr)
 	return this;
 }
 
-public func MouseDrop(int plr, object src)
+public func OnMouseDrop(int plr, object src)
 {
 	if(src->GetOwner() != GetOwner())
 		return false;
@@ -137,7 +136,7 @@ public func MouseDrop(int plr, object src)
 }
 
 // Called after this object has been dragged onto another one.
-public func MouseDragDone(self, object target)
+public func OnMouseDragDone(self, object target)
 {
 	var c = GetCursor(GetOwner());
 	if(!c) return;

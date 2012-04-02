@@ -83,19 +83,29 @@ func Destruction()
 {
 	// remove all menu objects
 	for(var prop in circ_menus)
+	{
+		prop.Object->~OnContentMenuClosed();
 		prop.Menu->RemoveObject();
+	}
 }
 
-func Show() 
+func Show(bool no_update) 
 {
-	for(var prop in circ_menus)
-		prop.Menu->Show();
+	for (var prop in circ_menus)
+	{
+		if (!no_update)
+			prop.Object->~OnContentMenuOpened();
+		prop.Menu->Show();	
+	}
 }
 
 func Hide() 
 {
-	for(var prop in circ_menus)
+	for (var prop in circ_menus)
+	{
+		prop.Object->~OnContentMenuClosed();
 		prop.Menu->Hide();
+	}
 }
 
 func AddContentMenu(object container, int pos, bool isCrew)
@@ -334,7 +344,7 @@ public func OnExternalContentChange(object menu, object container)
 	else
 		container_count--;
 	AddContentMenu(container, index, isCrew);
-	Show();
+	Show(true);
 	return;
 }
 

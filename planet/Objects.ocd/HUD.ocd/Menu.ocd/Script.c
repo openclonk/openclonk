@@ -64,6 +64,12 @@ public func SetMenuObject(object menuobject)
 	return;
 }
 
+// Returns the menu object for this menu.
+public func GetMenuObject()
+{
+	return menu_object;
+}
+
 /** Adds an item to this menu.
 	@param item used to specify the symbol of the menu item, either an id or object.
 	@param pos position in the menu where the item should be placed, \c nil for first open slot.
@@ -162,7 +168,7 @@ public func OnItemSelectionAlt(object item)
 }
 
 // Called when an object is dragged onto the menu
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	// Check if the owners match.
 	if (plr != GetOwner()) return false;

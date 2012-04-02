@@ -486,18 +486,18 @@ global func MouseHover(int player, object leaving, object entering, object dragg
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
-	var src_drag = source->~MouseDrag(plr);
+	var src_drag = source->~OnMouseDrag(plr);
 	if (!src_drag) 
 		return false;
 	
 	// If there is drop target, check whether it accepts the drop.
 	if (target)
-		if (!target->~MouseDrop(plr, src_drag))
+		if (!target->~OnMouseDrop(plr, src_drag))
 			return false;
 
 	// Notify the drop object it succeeded.
 	if (source)
-		source->~MouseDragDone(src_drag, target);
+		source->~OnMouseDragDone(src_drag, target);
 	return true;
 }
 

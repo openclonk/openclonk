@@ -1807,53 +1807,6 @@ static Nillable<long> FnGetObjectBlitMode(C4AulObjectContext *ctx, long iOverlay
 	return ctx->Obj->BlitMode;
 }
 
-static bool FnOnOwnerRemoved(C4AulObjectContext *cthr)
-{
-	// safety
-	C4Object *pObj = cthr->Obj;
-	C4Player *pPlr = ::Players.Get(pObj->Owner); if (!pPlr) return false;
-	if (pPlr->Crew.IsContained(pObj))
-	{
-		// crew members: Those are removed later (AFTER the player has been removed, for backwards compatiblity with relaunch scripting)
-	}
-	else if ((~pObj->Category & C4D_StaticBack) || (pObj->id == C4ID::Flag))
-	{
-		// Regular objects: Try to find a new, suitable owner from the same team
-		// Ignore StaticBack, because this would not be backwards compatible with many internal objects such as team account
-		// Do not ignore flags which might be StaticBack if being attached to castle parts
-		int32_t iNewOwner = NO_OWNER;
-		C4Team *pTeam;
-		if (pPlr->Team) if ((pTeam = Game.Teams.GetTeamByID(pPlr->Team)))
-			{
-				for (int32_t i=0; i<pTeam->GetPlayerCount(); ++i)
-				{
-					int32_t iPlrID = pTeam->GetIndexedPlayer(i);
-					if (iPlrID && iPlrID != pPlr->ID)
-					{
-						C4PlayerInfo *pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(iPlrID);
-						if (pPlrInfo) if (pPlrInfo->IsJoined())
-							{
-								// this looks like a good new owner
-								iNewOwner = pPlrInfo->GetInGameNumber();
-								break;
-							}
-					}
-				}
-			}
-		// if noone from the same team was found, try to find another non-hostile player
-		// (necessary for cooperative rounds without teams)
-		if (iNewOwner == NO_OWNER)
-			for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
-				if (pOtherPlr != pPlr) if (!pOtherPlr->Eliminated)
-						if (!::Players.Hostile(pOtherPlr->Number, pPlr->Number))
-							iNewOwner = pOtherPlr->Number;
-
-		// set this owner
-		pObj->SetOwner(iNewOwner);
-	}
-	return true;
-}
-
 static long FnGetUnusedOverlayID(C4AulObjectContext *ctx, long iBaseIndex)
 {
 	// safety
@@ -2489,7 +2442,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetContact", FnGetContact);
 	AddFunc(pEngine, "SetObjectBlitMode", FnSetObjectBlitMode);
 	AddFunc(pEngine, "GetObjectBlitMode", FnGetObjectBlitMode);
-	AddFunc(pEngine, PSF_OnOwnerRemoved, FnOnOwnerRemoved, false);
 	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
 

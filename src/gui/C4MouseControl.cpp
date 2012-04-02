@@ -1100,13 +1100,13 @@ void C4MouseControl::ButtonUpDragConstruct()
 
 void C4MouseControl::ButtonUpDragScript()
 {
+	// Determine drag+drop targets
+	UpdateCursorTarget();
 	// Finish drag
 	Drag=C4MC_Drag_None;
 	DragID=C4ID::None;
 	DragImageObject = NULL;
 	DragImageDef = NULL;
-	// Determine drag+drop targets
-	UpdateCursorTarget();
 	C4Object *DragObject = this->DragObject;
 	this->DragObject = NULL;
 	C4Object *DropObject = TargetObject;
