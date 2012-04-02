@@ -84,7 +84,8 @@ func Destruction()
 	// remove all menu objects
 	for(var prop in circ_menus)
 	{
-		prop.Object->~OnContentMenuClosed();
+		if(prop.Object)
+			prop.Object->~OnContentMenuClosed();
 		prop.Menu->RemoveObject();
 	}
 }
