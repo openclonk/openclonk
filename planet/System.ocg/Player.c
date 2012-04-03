@@ -1,6 +1,6 @@
 /*--
 		Player.c
-		Authors: timi, Maikel
+		Authors: timi, Maikel, Joern, Zapper
 
 		Player and team related functions.
 --*/
@@ -77,4 +77,34 @@ global func MakeColorReadable(int color)
 	// Add alpha. not needed at the moment.
 	// color = color | a;
 	return color;
+}
+
+// Adds value to the account of iPlayer.
+global func DoWealth(int plr, int value)
+{
+	return SetWealth(plr, value + GetWealth(plr));
+}
+
+global func IsAllied(int plr1, int plr2, bool check_one_way_only)
+{
+	if(plr1 == NO_OWNER) return false;
+	if(plr2 == NO_OWNER) return false;
+	return !Hostile(plr1, plr2, check_one_way_only);
+}
+
+// Shows a message window to player for_plr.
+global func MessageWindow(string msg, int for_plr, id icon, string caption)
+{
+	// Get icon.
+	if (!icon)
+		icon = GetID();
+	// Get caption.
+	if (!caption)
+		caption = GetName();
+	// Create msg window (menu).
+	var cursor = GetCursor(for_plr);
+	if (!cursor->CreateMenu(icon, cursor, 0, caption, 0, 2))
+		return false;
+	cursor->AddMenuItem(caption, nil, nil, 0, 0, msg);
+	return true;
 }

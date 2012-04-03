@@ -1,6 +1,6 @@
 /*--
 		Fire.c
-		Authors: Zapper
+		Authors: Zapper, Maikel
 		
 		The fire effect ported from the engine.
 		
@@ -59,6 +59,23 @@ global func OnBlastIncinerationDamage(int level, int player)
 global func OnInIncendiaryMaterial()
 {
 	return this->Incinerate(5, NO_OWNER);
+}
+
+// Makes the calling object non flammable.
+global func MakeNonFlammable()
+{
+	if (!this) 
+		return;
+	return AddEffect("IntNonFlammable", this, 300);
+}	
+
+global func FxIntNonFlammableEffect(string new_name)
+{
+	// Block fire effects.
+	if (WildcardMatch(new_name, "*Fire*")) 
+		return -1;
+	// All other effects are okay.
+	return 0;
 }
 
 global func FxFireStart(object target, effect, bool temp, int caused_by, bool blasted, object incinerating_object, strength)

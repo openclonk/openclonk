@@ -9,6 +9,14 @@
 		with //(!).
 --*/
 
+global func GetActMapVal(string entry, string action, id def, int num)
+{
+	if (!def)
+		def = GetID();
+	if (entry == "Facet")
+		entry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][num];
+	return GetProperty(entry, GetProperty(action, def));
+}
 
 // GetDefCoreVal
 global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
