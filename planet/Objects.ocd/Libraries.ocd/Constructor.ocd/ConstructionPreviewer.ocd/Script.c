@@ -30,7 +30,7 @@ func AdjustPreview(bool look_up, bool no_call)
 	if (look_up) search_dir = -1;
 	var x = 0, y = 0, fail = false;
 	var half_y = dimension_y / 2;
-	while(!(GBackSky(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
+	while(!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
 	{
 		y += search_dir;
 		if (Abs(y) > dimension_y/2)
