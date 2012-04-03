@@ -10,6 +10,7 @@ local menu_icons;     //array for the icons
 local menu_object;    //the clonk which the menu is for
 local menu_symbol;    //the symbol of the menu
 local shown;          //am i visible?
+local close_denied;   //menu does not close on regular call to Close, only with force_closed set true
 
 static const GUI_Ringmenu_Radius = 100;
 
@@ -220,13 +221,25 @@ public func Hide() {
 }
 
 //closes (removes) the menu
-func Close()
+func Close(bool force_close)
 {
+	if (close_denied && !force_close) return;
+
 	if(command_object)
 		command_object->~MenuClosed(this);
 	if(menu_object && command_object != menu_object)
 		menu_object->~MenuClosed(this);
 	RemoveObject();
+}
+
+// Menu will not close on regular closing calls
+func SetUncloseable()
+{
+	close_denied = true;
+}
+func Uncloseable()
+{
+	return close_denied;
 }
 
 func Destruction()

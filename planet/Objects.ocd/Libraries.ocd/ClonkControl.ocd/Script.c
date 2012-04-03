@@ -583,6 +583,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// Close any menu if open.
 		if (GetMenu())
 		{
+			// Uncloseable menu?
+			if (GetMenu()->~Uncloseable()) return true;
+
 			var is_content = GetMenu()->~IsContentMenu();
 			GetMenu()->RemoveObject();
 			SetMenu(nil);

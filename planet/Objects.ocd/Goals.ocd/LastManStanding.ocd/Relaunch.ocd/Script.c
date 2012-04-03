@@ -56,6 +56,7 @@ private func OpenWeaponMenu(object clonk)
 			for (var weapon in weapons)
 				menu->AddItem(weapon);
 			menu->Show();
+			menu->SetUncloseable();
 		}
 	}
 }
@@ -103,7 +104,7 @@ private func RelaunchClonk()
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk);
 	if (menu)
-		menu->Close();
+		menu->Close(true);
 	PlayerMessage(clonk->GetOwner(), "");
 	RemoveObject();
 	return;
