@@ -1,7 +1,7 @@
 
 # Project data
 NAME = OpenClonk
-VERSION = 5.2.1.0
+VERSION = 5.2.2.0
 
 # Assume default XCode output directory
 SOURCE_DIR = ../../Release
