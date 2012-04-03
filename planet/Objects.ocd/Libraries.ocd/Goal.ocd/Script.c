@@ -40,9 +40,59 @@ func RecheckGoalTimer()
 		var timer_interval = 35;
 		if (GetLeague())
 			timer_interval = 2; // league has more frequent checks
-		var num = AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
+		var num = AddEffect("IntGoalCheck", nil, 1, timer_interval, nil, Library_Goal);
 		FxIntGoalCheckTimer(nil, num);
 	}
+}
+
+protected func FxIntGoalCheckTimer(object trg, effect, int time)
+{
+	if (!time)
+		return true;
+	var curr_goal = effect.curr_goal;
+	// Check current goal object
+	if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
+	{
+		curr_goal->NotifyHUD();
+		if (!curr_goal->~IsFulfilled())
+			return true;
+	}
+	// Current goal is fulfilled/destroyed - check all others
+	var goal_count = 0;
+	for (curr_goal in FindObjects(Find_Category(C4D_Goal)))
+	{
+		++goal_count;
+		if (!curr_goal->~IsFulfilled())
+		{
+			effect.curr_goal = curr_goal;
+			curr_goal->NotifyHUD();
+			return true;
+		}
+	}
+	// No goal object? Kill timer
+	if (!goal_count)
+		return FX_Execute_Kill;
+	// Game over :(
+	AllGoalsFulfilled();
+	return FX_Execute_Kill;
+}
+
+protected func AllGoalsFulfilled()
+{
+	// Goals fulfilled: Set mission password(s)
+	for (var goal in FindObjects(Find_Category(C4D_Goal)))
+		if (goal.mission_password)
+			GainMissionAccess(goal.mission_password);
+	// Custom scenario goal evaluation?
+	if (GameCall("OnGoalsFulfilled")) return true;
+	// We're done. Play some sound and schedule game over call
+	Sound("Fanfare", true);
+	AddEffect("IntGoalDone", nil, 1, 30, nil, Library_Goal);
+}
+
+protected func FxIntGoalDoneStop()
+{
+	GameOver();
 }
 
 public func NotifyHUD()

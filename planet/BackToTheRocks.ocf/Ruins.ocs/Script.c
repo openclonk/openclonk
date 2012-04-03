@@ -22,7 +22,7 @@ protected func Initialize()
 	CreateObject(Chest, 500, 64, NO_OWNER);
 	CreateObject(Chest, 124, 128, NO_OWNER);
 	CreateObject(Chest, 340, 440, NO_OWNER);
-	AddEffect("IntFillChests", nil, 100, 2 * 36, this);
+	AddEffect("IntFillChests", nil, 100, 2 * 36);
 	
 	// Ropeladders to get to the upper part.
 
