@@ -59,7 +59,7 @@ public func Selected(object menu, proplist menu_item, bool alt)
 	var def = menu_item->GetSymbol();
 	if (!def) return;
 	// Buy
-	var item = DoBuy(def, clonk->GetController(), GetOwner(), clonk, alt);
+	DoBuy(def, clonk->GetController(), GetOwner(), clonk, alt);
 	// Excess objects exit flag (can't get them out...)
 	var i = ContentsCount();
 	var obj;
