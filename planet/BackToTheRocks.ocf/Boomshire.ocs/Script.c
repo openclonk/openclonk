@@ -8,7 +8,7 @@ func Initialize()
 		CreateObject(Dynamite,i,1328);
 
 	Sound("BirdsLoop",true,100,nil,+1);
-	CreateObject(Environment_Clouds);
+	Cloud->Place(40);
 	
 	// Create the parkour goal.
 	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);

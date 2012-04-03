@@ -14,7 +14,7 @@ protected func Initialize()
 	CreateParkour();
 	
 	// Environment.
-	CreateObject(Environment_Clouds);
+	Cloud->Place(30);
 
 	return;
 }

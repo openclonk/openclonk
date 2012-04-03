@@ -14,8 +14,7 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);
 	
 	//Enviroment.
-	CreateObject(Environment_Clouds);
-	CreateObject(Environment_Clouds); //Double the clouds.
+	Cloud->Place(25);
 	SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));
 	Sound("BirdsLoop", true, 100, nil, 1);
 	

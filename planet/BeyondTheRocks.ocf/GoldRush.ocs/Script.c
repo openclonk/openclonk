@@ -24,7 +24,8 @@ protected func Initialize()
 	PlaceGrass(100);
 		
 	// Set time of day to evening and create some clouds and celestials.
-	CreateObject(Environment_Clouds);
+	Cloud->Place(10);
+	Cloud->SetPrecipitation("Water", 15);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);

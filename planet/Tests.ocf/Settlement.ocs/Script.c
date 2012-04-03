@@ -28,7 +28,7 @@ protected func InitializePlayer(int plr)
 
 private func DoEnvironment()
 {
-	CreateObject(Environment_Clouds);
+	Cloud->Place(30);
 	CreateObject(Environment_Celestial);
 	CreateObject(Environment_Time);
 	Sound("BirdsLoop",true,100,nil,+1);

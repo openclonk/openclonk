@@ -4,9 +4,6 @@
 	The clouds have periods of condensing, idle and raining.
 	Different types of rain (water, acid) are hardcoded.
 	
-	TODO: Make dependent on scenario setting.
-	TODO: Make for all material types.
-
 	@authors Ringwaul, Maikel
 */
 
@@ -19,10 +16,13 @@ local mode;
 // The time a cloud is in this mode.
 local mode_time;
 
-local water; // number of water pixels the cloud contains.
-local acid; // number of acid pixels the cloud contains.
 local lightning_chance; // chance of lightning strikes 0-100.
 local evap_x; // x coordinate for evaporation
+
+local rain; // Number of liquid pixels the cloud holds.
+local rain_mat; // Precipitation type from scenario or other. 
+local rain_amount; // Precipitation amount from scenario or other.
+local rain_max; // Max rain the cloud can hold.
 
 
 protected func Initialize()
@@ -32,8 +32,8 @@ protected func Initialize()
 	mode_time = 360 + RandomX(-60, 60);
 	
 	// Default values for rain.
-	water = RandomX(200, 300);
-	acid = 0;
+	rain = 0;
+	rain_max = 960;
 	
 	// Cloud defaults
 	lightning_chance = 0;
@@ -52,12 +52,76 @@ protected func Initialize()
 	}
 
 	//Failsafe for stupid grounded clouds
-	if(GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
+	if (GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
 	
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
 	return;
 }
+
+/*-- Definition call interface --*/
+
+// Id call: Creates the indicated number of clouds.
+public func Place(int count)
+{
+	if (this != Cloud)
+		return;
+	while (count > 0)
+	{
+		var pos;
+		if ((pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight())) && MaterialDepthCheck(pos[0], pos[1], "Sky", 200))
+		{
+			CreateObject(Cloud, pos[0], pos[1], NO_OWNER);
+			count--;
+		}
+	}
+	return;
+}	
+
+// Changes the precipitation type of this cloud.
+// Also an id call: Changes all clouds to this settings.
+public func SetPrecipitation(string mat, int amount)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetPrecipitation(mat, amount);
+	}
+	else // Otherwise change the clouds precipitation.
+	{
+		rain_mat = mat;
+		rain_amount = amount;
+		// Also change rain content.
+		rain = amount * rain_max / 100; 
+	}
+	return;
+}
+
+// Changes the lightning frequency type of this cloud.
+// Also an id call: Changes all clouds to this settings.
+public func SetLightning(int freq)
+{
+	// Called to proplist: change all clouds.
+	if (this == Cloud)
+	{
+		for (var cloud in FindObjects(Find_ID(Cloud)))
+			cloud->SetLightning(freq);
+	}
+	else // Otherwise change this clouds lightning.
+	{
+		lightning_chance = freq;	
+	}
+	return;
+}
+
+public func SetRain(int to_rain)
+{
+	rain = BoundBy(to_rain, 0, rain_max);
+	return;
+}
+
+/*-- Cloud processing --*/
 
 protected func FxProcessCloudStart(object target, proplist effect, int temporary)
 {
@@ -77,7 +141,7 @@ protected func FxProcessCloudTimer()
 	{
 		// Change mode, reset timer.
 		mode = (mode + 1) % 3;
-		mode_time = 360 + RandomX(-60, 60);
+		mode_time = 480 + RandomX(-90, 90);
 	}
 	// Process modes.
 	if (mode == CLOUD_ModeIdle)
@@ -126,32 +190,29 @@ private func MoveCloud()
 
 private func Precipitation()
 {
+	if (!rain_mat)
+		return;	
 	// Precipitaion: water or snow.
-	if (water > 0)
+	if (rain > 0)
 	{
-		if (GetTemperature() > 0)
-			RainDrop("Water");
-		else
-			RainDrop("Snow");
-		water--;	
-	}
-	
-	// Precipitation: acid.
-	if (acid > 0)
-	{
-		RainDrop("Acid");
-		acid--;	
-	}
+		RainDrop(rain_mat);
+		rain--;	
+	}	
 	// If out of liquids, skip mode.
-	if (water == 0 && acid == 0)
+	if (rain == 0)
 		mode_time = 0;
-		
 	return;
 }
 
 // Raindrop somewhere from the cloud.
 private func RainDrop(string mat)
 {
+	// Check if liquid is maybe in frozen form.
+	var temp = GetTemperature();
+	var melt_temp = GetMaterialVal("BelowTempConvert", "Material", Material(mat));
+	if (temp < melt_temp)
+		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));	
+	// Create rain drop.
 	var angle = RandomX(0, 359);
 	var dist = Random(51);
 	CastPXS(mat, 1, 1, Sin(angle,dist),Cos(angle,dist));
@@ -161,9 +222,9 @@ private func RainDrop(string mat)
 private func ThunderStrike()
 {
 	// Determine whether to launch a strike.
-	if (water < 100)
+	if (rain < 100)
 		return;
-	if (Random(100) >= lightning_chance || Random(5))
+	if (Random(100) >= lightning_chance || Random(15))
 		return;
 	
 	// Find random position in the cloud.
@@ -172,7 +233,7 @@ private func ThunderStrike()
 	var hgt = GetDefHeight() * con / 350;
 	var x = GetX() + RandomX(-wdt, wdt);
 	var y = GetY() + RandomX(-hgt, hgt);
-	var str = con + RandomX(-20, 20);
+	var str = 2 * con / 3 + RandomX(-15, 15);
 	// Launch lightning.
 	return LaunchLightning(x, y, str, 0, str / 5, str / 10, str / 10, true);
 }
@@ -183,7 +244,7 @@ protected func Evaporation()
 	var prec = 5;
 	
 	// Found enough water/acid, skip condensing phase.
-	if (water >= 700 || acid >= 100)
+	if (rain >= 960)
 	{
 		mode_time = 0;
 		return;
@@ -200,29 +261,16 @@ protected func Evaporation()
 	while (!GBackSemiSolid(evap_x, y) && y < LandscapeHeight())
 		y += prec;
 	
-	// Try to extract water.
-	if(GetMaterial(evap_x, y) == Material("Water"))
+	// Try to extract the specified material.
+	if(GetMaterial(evap_x, y) == Material(rain_mat))
 	{
 		ExtractMaterialAmount(evap_x, y, Material("Water"), 3);
-		water += 3;
-	}
-	
-	// Try to extract acid.
-	if(GetMaterial(evap_x, y) == Material("Acid"))
-	{
-		ExtractMaterialAmount(evap_x, y, Material("Acid"), 3);
-		acid += 3;
+		rain += 3;
 	}
 	
 	// Also add some rain by scenario value.
-	var mat = GetScenarioVal("Precipitation");
-	if (Random(100) < GetScenarioVal("Rain"))
-	{
-		if (mat == "Water")
-			water++;
-		if (mat == "Acid")
-			acid++;	
-	}
+	if (Random(100) < rain_amount)
+		rain += 1 + Random(3);
 		
 	return;
 }
@@ -230,31 +278,14 @@ protected func Evaporation()
 //Shades the clouds based on iSize: the water density value of the cloud.
 private func ShadeCloud()
 {
-	var shade = Min(water*425/1000, 255);
-	var shade2 = Min(water-600, 255);
-	var shade3 = (acid*255/100)/2;
+	var shade = Min((rain+50)*425/1000, 255);
+	var shade2 = Min(rain-600, 255);
 
-	if (water <= 600) 
+	if (rain <= 600) 
 		SetObjAlpha(shade);
-	if (water > 600) 
+	if (rain > 600) 
 		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, 255));
-	if (acid > 0)
-		SetClrModulation(RGBa(255-shade3, 255, 255-shade3, 255-shade));
 	return;
-}
-
-//For use as scenario setting. Can work after initialize, if you really want to.
-global func AdjustLightningFrequency(int freq)
-{
-	for (var cloud in FindObjects(Find_ID(Cloud)))
-		cloud->SetLightningFrequency(freq);
-	return;
-}
-
-//Routes the global adjust function's variable to the clouds.
-public func SetLightningFrequency(int freq)
-{
-	lightning_chance = freq;
 }
 
 local ActMap = {

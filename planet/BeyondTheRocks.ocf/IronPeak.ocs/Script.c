@@ -46,7 +46,7 @@ protected func Initialize()
 		PlaceVegetation(Mushroom, 0, 0, LandscapeWidth(), LandscapeHeight());
 		
 	// Set time of day to evening and create some clouds and celestials.
-	CreateObject(Environment_Clouds);
+	Cloud->Place(20);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(1125);

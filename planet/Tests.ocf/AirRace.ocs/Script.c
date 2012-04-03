@@ -21,7 +21,7 @@ protected func Initialize()
 	PlaceGrass(100);
 	
 	// Environment.
-	CreateObject(Environment_Clouds);
+	Cloud->Place(40);
 
 	return;
 }

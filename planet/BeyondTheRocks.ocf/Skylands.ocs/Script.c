@@ -13,7 +13,7 @@ static g_intro_initialized;
 func DoInit(int first_player)
 {
 	// Set time of day to evening and create some clouds and celestials.
-	EnsureObject(Environment_Clouds,0,0,-1);
+	Cloud->Place(15);
 	EnsureObject(Environment_Celestial,0,0,-1);
 	EnsureObject(Rule_BuyAtFlagpole,0,0,-1);
 	var time = EnsureObject(Environment_Time,0,0,-1);
