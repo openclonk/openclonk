@@ -18,7 +18,7 @@ protected func Construction()
 // Impact sound
 func Hit()
 {
-	Sound("WoodHit");
+	Sound("GeneralHit?");
 }
 
 // Item activation

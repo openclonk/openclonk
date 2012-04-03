@@ -246,6 +246,11 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 	);
 }
 
+func Hit()
+{
+	Sound("WoodHit?");
+}
+
 local ActMap = {
 Hanging = {
 	Prototype = Action,

@@ -33,7 +33,7 @@ protected func Initialize()
 
 private func Hit()
 {
-	Sound("WoodHit");
+	Sound("DullWoodHit?");
 	if (iVolume >= 1)
 	{
 		if (GBackLiquid(0, 3) && GetMaterial(0, 3) != szLiquid)

@@ -2,7 +2,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit");
+	Sound("WoodHit?");
 }
 
 public func GetCarryMode(clonk) { return CARRY_Back; }

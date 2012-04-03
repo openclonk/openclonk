@@ -57,6 +57,11 @@ protected func Definition(def)
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+func Hit()
+{
+	Sound("DullWoodHit?");
+}
+
 local Name = "$Name$";
 local Collectible = false;
 local Touchable = 2;

@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("SoftHit1");
+	Sound("GeneralHit?");
 }
 
 public func IsWindmillProduct() { return true; }

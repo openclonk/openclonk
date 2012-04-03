@@ -256,6 +256,11 @@ protected func CancelUse(object clonk)
 	return 1;
 }
 
+func Hit()
+{
+	Sound("GeneralHit?");
+}
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(-60,1,0,1),def);
 }

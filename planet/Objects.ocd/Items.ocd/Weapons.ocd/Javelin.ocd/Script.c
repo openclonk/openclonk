@@ -150,7 +150,7 @@ protected func Hit()
 		Sound("JavelinHitGround");
 	}
 	else
-		Sound("WoodHit");
+		Sound("WoodHit?");
 }
 
 protected func Stick()

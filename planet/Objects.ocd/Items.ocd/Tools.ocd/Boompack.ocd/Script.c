@@ -146,7 +146,7 @@ protected func Hit()
 	}
 	//Message("I have hit something",this);
 	if(GetEffect("Flight",this)) DoFireworks();
-	Sound("WoodHit");
+	Sound("GeneralHit?");
 }
 
 public func OnMount(clonk)

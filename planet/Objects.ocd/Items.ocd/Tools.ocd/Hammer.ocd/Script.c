@@ -2,9 +2,9 @@
 
 #include Library_Constructor
 
-private func Hit()
+private func Hit(x, y)
 {
-	Sound("RockHit");
+	StonyObjectHit(x, y);
 	return 1;
 }
 

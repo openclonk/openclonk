@@ -449,6 +449,11 @@ public func GetLadderData(index)
 	return [startx, starty, endx, endy, angle];
 }
 
+func Hit()
+{
+	Sound("WoodHit?");
+}
+
 local ActMap = {
 Hanging = {
 	Prototype = Action,

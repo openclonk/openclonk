@@ -29,7 +29,7 @@ public func ControlUse(object clonk, int x, int y, bool box)
 
 protected func Hit()
 {
-	return 1;
+	Sound("GeneralHit?");
 }
 
 public func IsMillIngredient() { return true; }

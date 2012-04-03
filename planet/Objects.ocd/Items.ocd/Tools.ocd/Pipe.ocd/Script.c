@@ -4,7 +4,7 @@
 
 protected func Hit()
 {
-	Sound("RockHit?");
+	Sound("GeneralHit?");
 }
 
 public func IsToolProduct() { return true; }

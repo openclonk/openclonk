@@ -20,7 +20,7 @@ public func Initialize()
 
 private func Hit()
 {
-	Sound("WoodHit"); //TODO Some metal sond
+	Sound("DullWoodHit?");
 }
 
 public func HoldingEnabled() { return true; }

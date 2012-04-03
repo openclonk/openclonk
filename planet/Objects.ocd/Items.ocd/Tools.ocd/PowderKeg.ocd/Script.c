@@ -105,6 +105,11 @@ public func OnProjectileHit()
 	Incinerate();
 }
 
+func Hit()
+{
+	Sound("DullWoodHit?");
+}
+
 func IsAlchemyProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 

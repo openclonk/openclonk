@@ -9,6 +9,11 @@
 // has extra slot
 #include Library_HasExtraSlot
 
+private func Hit()
+{
+	Sound("WoodHit?");
+}
+
 local fAiming;
 
 local iArrowMesh;

@@ -10,6 +10,11 @@ local Amount;
 local MaxCap;
 local sound;
 
+func Hit()
+{
+	Sound("GlassHit?");
+}
+
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 600; }
 

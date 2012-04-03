@@ -93,7 +93,7 @@ private func GetWall(angle)
 	return false;
 }
 
-protected func Hit() { Sound("WoodHit?"); }
+protected func Hit() { Sound("GeneralHit?"); }
 
 protected func Incineration() { Extinguish(); Fuse(); }
 

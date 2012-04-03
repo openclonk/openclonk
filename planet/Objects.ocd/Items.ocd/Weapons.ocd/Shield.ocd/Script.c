@@ -170,7 +170,7 @@ private func AdjustSolidMaskHelper()
 
 func Hit()
 {
-	Sound("WoodHit");
+	Sound("DullMetalHit?");
 }
 
 func OnWeaponHitCheckStop()

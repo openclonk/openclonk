@@ -4,7 +4,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit"); //TODO Some metal sond
+	Sound("DullMetalHit?");
 }
 
 public func HoldingEnabled() { return true; }

@@ -2,9 +2,9 @@
 
 #include Library_MeleeWeapon
 
-private func Hit()
+func Hit()
 {
-	Sound("WoodHit"); //TODO Some metal sond
+	Sound("LightMetalHit?");
 }
 
 public func Initialize()
