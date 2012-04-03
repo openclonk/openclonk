@@ -1,6 +1,6 @@
 /*--
 		Objects.c
-		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther
+		Authors: Maikel, boni, Ringwaul, Sven2, flgr, Clonkonaut, Günther, Randrian
 
 		Functions generally applicable to objects; not enough to be worth distinct scripts though.
 --*/
@@ -240,4 +240,53 @@ global func Split2Components()
 		}
 	RemoveObject();
 	return;
+}
+
+// Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
+// The object must have 'Bottom' and 'Center' CNAT to use this.
+// (bottom is the point which should be buried, center the lowest point that must not be buried)
+// Mainly used by plants.
+global func RootSurface()
+{
+	if (HasCNAT(CNAT_Center))
+	{
+		var i = 0;
+		while(GetContact(-1) & CNAT_Center && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()-1); i++; } //Move up if too far underground
+	}
+	if (HasCNAT(CNAT_Bottom))
+	{
+		i = 0;
+		while(!(GetContact(-1) & CNAT_Bottom) && i < GetObjHeight()/2) { SetPosition(GetX(),GetY()+1); i++; } //Move down if in midair
+
+		if (!Stuck()) SetPosition(GetX(),GetY()+1); // try make the plant stuck
+	}
+}
+
+// Buys an object.
+global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pToBase, bool fShowErrors)
+{
+	// if no base is given try this
+	if(!pToBase) pToBase = this;
+	// not a base?
+	if( !pToBase->~IsBase() )
+		return 0;
+	return pToBase->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
+}
+
+// Sells an object.
+global func Sell (int iPlr, object pObj, object pToBase)
+{
+	// if no base is given try this
+	if(!pToBase) pToBase = this;
+	// not a base?
+	if( !pToBase->~IsBase() )
+		return 0;
+	return pToBase->DoSell(pObj, iPlr);
+}
+
+// Returns the owner if this is a base.
+global func GetBase ()
+{
+	if(!(this->~IsBase())) return NO_OWNER;
+	return GetOwner();
 }

@@ -388,38 +388,4 @@ func DoSell(object pObj, int iPlr, bool bRight)
 	return true;
 }
 
-// ------------------------ global functions ---------------------------
-global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pToBase, bool fShowErrors)
-{
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
-}
-
-global func Sell (int iPlr, object pObj, object pToBase)
-{
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoSell(pObj, iPlr);
-}
-
-global func FindBase (int iPlr, int iIndex)
-{
-	return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
-}
-
-global func GetBase ()
-{
-	if(!(this->~IsBase())) return NO_OWNER;
-	return GetOwner();
-}
-
 local Name = "$Name$";
-
-

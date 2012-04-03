@@ -266,16 +266,6 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 	return success;
 }
 
-// disable ShiftContents for objects with ClonkControl.ocd
-
-global func ShiftContents()
-{
-	if (this)
-		if (this->~HandObjects() != nil)
-			return false;
-	return _inherited(...);
-}
-
 /* ################################################# */
 
 protected func Construction()

@@ -74,7 +74,7 @@ func Movement() // TimerCall
 		vehicle->SetPosition(GetX(), GetY() + 12 - vehicle->GetObjHeight()/2 );
 		vehicle->SetSpeed();
 		vehicle->SetR();
-		AddEffect("ElevatorControl", vehicle, 30, 5, nil, nil, this);
+		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
 	}
 	
 	// no power?

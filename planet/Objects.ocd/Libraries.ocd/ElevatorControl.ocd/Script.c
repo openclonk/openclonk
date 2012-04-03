@@ -48,13 +48,13 @@ func Control2Elevator(int control, object clonk)
 
 /* Effect */
 
-global func FxElevatorControlStart(object vehicle, proplist effect, int temp, object case)
+public func FxElevatorControlStart(object vehicle, proplist effect, int temp, object case)
 {
 	if (temp) return;
 	effect.case = case;
 }
 
-global func FxElevatorControlTimer(object vehicle, proplist effect)
+public func FxElevatorControlTimer(object vehicle, proplist effect)
 {
 	if (ObjectDistance(effect.case, vehicle) > 12)
 		return -1;
@@ -65,7 +65,7 @@ global func FxElevatorControlTimer(object vehicle, proplist effect)
 	}
 }
 
-global func FxElevatorControlStop(object vehicle, proplist effect, int reason, bool temp)
+public func FxElevatorControlStop(object vehicle, proplist effect, int reason, bool temp)
 {
 	if (temp) return;
 	if (effect.controlled)

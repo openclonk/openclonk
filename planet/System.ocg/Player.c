@@ -1,6 +1,6 @@
 /*--
 		Player.c
-		Authors: timi, Maikel, Joern, Zapper
+		Authors: timi, Maikel, Joern, Zapper, Randrian
 
 		Player and team related functions.
 --*/
@@ -107,4 +107,10 @@ global func MessageWindow(string msg, int for_plr, id icon, string caption)
 		return false;
 	cursor->AddMenuItem(caption, nil, nil, 0, 0, msg);
 	return true;
+}
+
+// Find a base of the given player. Use index to search through all bases.
+global func FindBase (int iPlr, int iIndex)
+{
+	return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
 }
