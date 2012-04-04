@@ -205,15 +205,17 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
 		if (button != C4MC_Button_Wheel)
 		{
-			savedMouse.x += event.deltaX;
-			savedMouse.y -= event.deltaY;
+			savedMouse.x += event.deltaX * (Config.Graphics.ResX/self.frame.size.width);
+			savedMouse.y -= event.deltaY * (Config.Graphics.ResY/self.frame.size.height);
 		}
 	} else
-		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
-	if (!Application.isEditor)
 	{
-		savedMouse.x *= Config.Graphics.ResX/self.frame.size.width;
-		savedMouse.y *= Config.Graphics.ResY/self.frame.size.height;
+		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
+		if (!Application.isEditor)
+		{
+			savedMouse.x *= Config.Graphics.ResX/self.frame.size.width;
+			savedMouse.y *= Config.Graphics.ResY/self.frame.size.height;
+		}
 	}
 	savedMouse.x = fmin(fmax(savedMouse.x, 0), actualSizeX);
 	savedMouse.y = fmin(fmax(savedMouse.y, 0), actualSizeY);
