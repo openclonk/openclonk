@@ -71,7 +71,15 @@ public:
 	void SetNextMission(const char *szMissionFilename);
 	virtual void OnCommand(const char *szCmd);
 
-	const char *GetRevision() const { return Revision.getData(); }
+	const char *GetRevision() const
+	{
+#ifdef __APPLE__
+		// some late mac-specific commits require this sad little piece of trickery
+		return "14ab9fe1345a";
+#else
+		return Revision.getData();
+#endif
+	}
 
 	// set by ParseCommandLine
 	int isEditor;
