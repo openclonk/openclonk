@@ -49,6 +49,12 @@
 #include <StdResStr2.h>
 #include <C4Window.h>
 
+#ifdef WITH_DEVELOPER_MODE
+#include <C4WindowGTK.h>
+typedef C4GtkWindow DialogWindowBase;
+#else
+typedef C4Window DialogWindowBase;
+#endif
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque
@@ -1947,17 +1953,14 @@ namespace C4GUI
 	class Dialog;
 
 	// EM window class
-	class DialogWindow : public C4Window
+	class DialogWindow : public DialogWindowBase
 	{
 	public:
 		Dialog* pDialog;
-		DialogWindow(): C4Window(), pDialog(NULL) {}
+		DialogWindow(): DialogWindowBase(), pDialog(NULL) {}
 		using C4Window::Init;
-		C4Window * Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID);
+		C4Window * Init(C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
-#ifdef USE_X11
-		virtual void HandleMessage (XEvent &);
-#endif
 		virtual void PerformUpdate();
 	};
 

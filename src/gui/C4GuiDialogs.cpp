@@ -194,7 +194,7 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef USE_WIN32_WINDOWS
-	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
 		Active = true;
 		// calculate required size
@@ -316,123 +316,19 @@ namespace C4GUI
 		return !!RegisterClassExW(&WndClass);
 	}
 #else
-	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
 	{
-		C4Window *result;
-		if (C4Window::Init(windowKind, pApp, Title, pParent, false))
+		C4Window *result = C4Window::Init(C4Window::W_GuiWindow, pApp, Title, pParent, false);
+		if (result)
 		{
 			// update pos
 			if (szID && *szID)
 				RestorePosition(FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			else
 				SetSize(rcBounds.Wdt, rcBounds.Hgt);
-			result = this;
 		}
-		else
-			result = NULL;
 		return result;
 	}
-#ifdef USE_X11
-	void DialogWindow::HandleMessage (XEvent &e)
-	{
-		// Parent handling
-		C4Window::HandleMessage(e);
-
-		// Determine dialog
-		Dialog *pDlg = ::pGUI->GetDialog(this);
-		if (!pDlg) return;
-
-		switch (e.type)
-		{
-		case KeyPress:
-		{
-			// Do not take into account the state of the various modifiers and locks
-			// we don't need that for keyboard control
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			Game.DoKeyboardInput(key, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg);
-			break;
-		}
-		case KeyRelease:
-		{
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			Game.DoKeyboardInput(key, KEYEV_Up, e.xkey.state & Mod1Mask, e.xkey.state & ControlMask, e.xkey.state & ShiftMask, false, pDlg);
-			break;
-		}
-		case ButtonPress:
-		{
-			static int last_left_click, last_right_click;
-			switch (e.xbutton.button)
-			{
-			case Button1:
-				if (GetTime() - last_left_click < 400)
-				{
-					::pGUI->MouseInput(C4MC_Button_LeftDouble,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = 0;
-				}
-				else
-				{
-					::pGUI->MouseInput(C4MC_Button_LeftDown,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = GetTime();
-				}
-				break;
-			case Button2:
-				::pGUI->MouseInput(C4MC_Button_MiddleDown,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button3:
-				if (GetTime() - last_right_click < 400)
-				{
-					::pGUI->MouseInput(C4MC_Button_RightDouble,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = 0;
-				}
-				else
-				{
-					::pGUI->MouseInput(C4MC_Button_RightDown,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = GetTime();
-				}
-				break;
-			case Button4:
-				::pGUI->MouseInput(C4MC_Button_Wheel,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(32) << 16), pDlg, NULL);
-				break;
-			case Button5:
-				::pGUI->MouseInput(C4MC_Button_Wheel,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-32) << 16), pDlg, NULL);
-				break;
-			default:
-				break;
-			}
-		}
-		break;
-		case ButtonRelease:
-			switch (e.xbutton.button)
-			{
-			case Button1:
-				::pGUI->MouseInput(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button2:
-				::pGUI->MouseInput(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button3:
-				::pGUI->MouseInput(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			default:
-				break;
-			}
-			break;
-		case MotionNotify:
-			::pGUI->MouseInput(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-			break;
-		case ConfigureNotify:
-			pSurface->UpdateSize(e.xconfigure.width, e.xconfigure.height);
-			break;
-		}
-	}
-#endif
 #endif // _WIN32
 
 	void DialogWindow::PerformUpdate()
@@ -468,7 +364,7 @@ namespace C4GUI
 		if (pWindow) return true;
 		// create it!
 		pWindow = new DialogWindow();
-		if (!pWindow->Init(C4Window::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
+		if (!pWindow->Init(&Application, TitleString.getData(), &Console, rcBounds, GetID()))
 		{
 			delete pWindow;
 			pWindow = NULL;

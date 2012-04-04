@@ -263,6 +263,98 @@ static GtkTargetEntry drag_drop_entries[] =
 	{ const_cast<gchar*>("text/uri-list"), 0, 0 }
 };
 
+static gboolean OnScrollGD(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
+{
+	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
+	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
+	if (!pDlg) return false;
+	switch (event->direction)
+	{
+	case GDK_SCROLL_UP:
+		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (short(32) << 16), pDlg, NULL);
+		return true;
+	case GDK_SCROLL_DOWN:
+		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (short(-32) << 16), pDlg, NULL);
+		return true;
+	default:
+		return false;
+	}
+}
+
+static gboolean OnButtonPressGD(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
+	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
+
+	switch (event->button)
+	{
+	case 1:
+		if (event->type == GDK_2BUTTON_PRESS)
+		{
+			::pGUI->MouseInput(C4MC_Button_LeftDouble, event->x, event->y, event->state, pDlg, NULL);
+		}
+		else if (event->type == GDK_BUTTON_PRESS)
+		{
+			::pGUI->MouseInput(C4MC_Button_LeftDown,event->x, event->y, event->state, pDlg, NULL);
+		}
+		break;
+	case 2:
+		if (event->type == GDK_BUTTON_PRESS)
+			::pGUI->MouseInput(C4MC_Button_MiddleDown, event->x, event->y, event->state, pDlg, NULL);
+		break;
+	case 3:
+		if (event->type == GDK_2BUTTON_PRESS)
+		{
+			::pGUI->MouseInput(C4MC_Button_RightDouble, event->x, event->y, event->state, pDlg, NULL);
+		}
+		else if (event->type == GDK_BUTTON_PRESS)
+		{
+			::pGUI->MouseInput(C4MC_Button_RightDown, event->x, event->y, event->state, pDlg, NULL);
+		}
+		break;
+	}
+
+	return true;
+}
+
+static gboolean OnButtonReleaseGD(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
+	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
+
+	switch (event->button)
+	{
+	case 1:
+		::pGUI->MouseInput(C4MC_Button_LeftUp, event->x, event->y, event->state, pDlg, NULL);
+		break;
+	case 2:
+		::pGUI->MouseInput(C4MC_Button_MiddleUp, event->x, event->y, event->state, pDlg, NULL);
+		break;
+	case 3:
+		::pGUI->MouseInput(C4MC_Button_RightUp, event->x, event->y, event->state, pDlg, NULL);
+		break;
+	}
+	return true;
+}
+
+static gboolean OnMotionNotifyGD(GtkWidget* widget, GdkEventMotion* event, gpointer user_data)
+{
+	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
+	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
+
+	::pGUI->MouseInput(C4MC_Button_None, event->x, event->y, event->state, pDlg, NULL);
+
+	return true;
+}
+
+static gboolean OnConfigureGD(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data)
+{
+	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
+
+	window->pSurface->UpdateSize(event->width, event->height);
+
+	return false;
+}
 C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
@@ -343,6 +435,18 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
 	}
+	else if (windowKind == W_GuiWindow)
+	{
+		render_widget = window;
+		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPressGD), this);
+		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonReleaseGD), this);
+		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotifyGD), this);
+		g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(OnConfigureGD), this);
+		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollGD), this);
+
+		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+	}
+	assert(window);
 	// Override gtk's default to match name/class of the XLib windows
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
