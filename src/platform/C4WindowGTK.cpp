@@ -683,6 +683,14 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 #endif
 }
 
+bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
+
+bool C4Window::RestorePosition(const char *, const char *, bool)
+{
+	// The Windowmanager is responsible for window placement.
+	return true;
+}
+
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
@@ -834,7 +842,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	// Default icon has been set right after gtk_init(),
 	// so we don't need to take care about setting the icon here.
 
-	gtk_window_set_title(GTK_WINDOW(window), Title);
+	SetTitle(Title);
 
 #if GTK_CHECK_VERSION(2,14,0)
 	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
@@ -936,6 +944,23 @@ void C4Window::Clear()
 		delete static_cast<XVisualInfo*>(Info);
 		Info = 0;
 	}
+}
+
+void C4Window::SetSize(unsigned int width, unsigned int height)
+{
+	 gtk_window_resize(GTK_WINDOW(window), width, height);
+}
+
+bool C4Window::GetSize(C4Rect * r)
+{
+	r->x = 0; r->y = 0;
+	gtk_window_get_size(GTK_WINDOW(window), &r->Wdt, &r->Hgt);
+	return true;
+}
+
+void C4Window::SetTitle(char const * Title)
+{
+	gtk_window_set_title(GTK_WINDOW(window), Title);
 }
 
 void C4Window::RequestUpdate()

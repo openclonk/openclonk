@@ -52,44 +52,6 @@
 
 #include "C4AppXImpl.h"
 /* C4Window */
-
-bool C4Window::StorePosition(const char *, const char *, bool) { return true; }
-
-bool C4Window::RestorePosition(const char *, const char *, bool)
-{
-	// The Windowmanager is responsible for window placement.
-	return true;
-}
-
-bool C4Window::GetSize(C4Rect * pRect)
-{
-	Window winDummy;
-	unsigned int borderDummy;
-	int x, y;
-	unsigned int width, height;
-	unsigned int depth;
-	XGetGeometry(dpy, wnd, &winDummy, &x, &y,
-	             &width, &height, &borderDummy, &depth);
-	pRect->Wdt = width;
-	pRect->Hgt = height;
-	pRect->y = y;
-	pRect->x = x;
-	return true;
-}
-
-void C4Window::SetSize(unsigned int X, unsigned int Y)
-{
-	XResizeWindow(dpy, wnd, X, Y);
-}
-void C4Window::SetTitle(const char * Title)
-{
-	XTextProperty title_property;
-	StdStrBuf tbuf(Title, true);
-	char * tbufstr = tbuf.getMData();
-	XStringListToTextProperty(&tbufstr, 1, &title_property);
-	XSetWMName(dpy, wnd, &title_property);
-}
-
 void C4Window::FlashWindow()
 {
 	// This tries to implement flashing via
