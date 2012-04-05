@@ -375,16 +375,16 @@ void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ClearPix);
 }
 
-void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object)
+int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object)
 {
 	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
-	DigFreeShape(&vertices[0],vertices.size(),by_object);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object);
 }
 
-void C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object)
+int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object)
 {
 	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,80));
-	DigFreeShape(&vertices[0],vertices.size(),by_object);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object);
 }
 
 void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object)
@@ -399,18 +399,19 @@ void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ShakeFreePix);
 }
 
-void C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
+int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
 {
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
+	int32_t amount;
 
 	if(by_object)
 	{
 		if(!by_object->MaterialContents)
 			by_object->MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,by_object->MaterialContents);
+		amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,by_object->MaterialContents);
 	}
 	else
-		ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,NULL);
+		amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,NULL);
 
 	// create objects from the material
 	if(!::Game.iTick5)
@@ -422,6 +423,7 @@ void C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
 				DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
 			}
 	}
+	return amount;
 }
 
 void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player)
@@ -895,7 +897,7 @@ static CPolyEdge *remove_edge(CPolyEdge *list, CPolyEdge *edge)
 const int QuickPolyBufSize = 20;
 CPolyEdge QuickPolyBuf[QuickPolyBufSize];
 
-void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
+int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
 														 C4MaterialList *mats_count, int col, uint8_t *conversion_table)
 {
 	// Variables for polygon drawer
@@ -908,10 +910,12 @@ void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallba
 	CPolyEdge *inactive_edges = NULL;
 	bool use_qpb=false;
 
+	// Return value
+	int32_t amount = 0;
 	// Poly Buf
 	if (length<=QuickPolyBufSize)
 		{ edgebuf=QuickPolyBuf; use_qpb=true; }
-	else if (!(edgebuf = new CPolyEdge [length])) { return; }
+	else if (!(edgebuf = new CPolyEdge [length])) { return 0; }
 
 	// Fill the edge table
 	edge = edgebuf;
@@ -966,7 +970,10 @@ void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallba
 					int32_t mat = GetMat(x1+xcnt,y);
 					if((this->*fnCallback)(x1+xcnt,y))
 						if(mats_count)
+						{
 							mats_count->Add(mat,1);
+							amount++;
+						}
 				}
 			edge = edge->next->next;
 		}
@@ -1000,6 +1007,8 @@ void C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallba
 
 	// Clear scratch memory
 	if (!use_qpb) delete [] edgebuf;
+
+	return amount;
 }
 
 /* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */

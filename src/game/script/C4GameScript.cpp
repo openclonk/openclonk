@@ -1022,16 +1022,14 @@ static C4Void FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 	return C4Void();
 }
 
-static C4Void FnDigFree(C4AulContext *cthr, long x, long y, long rad)
+static long FnDigFree(C4AulContext *cthr, long x, long y, long rad)
 {
-	::Landscape.DigFree(x,y,rad,cthr->Obj);
-	return C4Void();
+	return ::Landscape.DigFree(x,y,rad,cthr->Obj);
 }
 
-static C4Void FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt)
+static long FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt)
 {
-	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,cthr->Obj);
-	return C4Void();
+	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,cthr->Obj);
 }
 
 static C4Void FnClearFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt)

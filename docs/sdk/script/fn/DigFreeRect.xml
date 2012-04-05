@@ -8,7 +8,7 @@
     <category>Landscape</category>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>void</rtype>
+      <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
@@ -32,7 +32,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Makes a rectangular hole in semi-solid materials.</desc>
+    <desc>Makes a rectangular hole in semi-solid materials. The return value is the amount of pixels that were dug free.</desc>
     <remark>Drills an elevator shaft.</remark>
     <examples>
       <example>

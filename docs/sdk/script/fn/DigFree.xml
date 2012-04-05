@@ -8,7 +8,7 @@
     <category>Landscape</category>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>void</rtype>
+      <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
@@ -31,7 +31,7 @@
     <examples>
       <example>
         <code>DigFree(700, 1500, 5);</code>
-        <text>Makes a small hole in the middle of the landscape.</text>
+        <text>Makes a small hole in the middle of the landscape. The return value is the amount of pixels that were dug free.</text>
       </example>
     </examples>
     <related>

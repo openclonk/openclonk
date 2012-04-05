@@ -236,15 +236,15 @@ protected:
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
 
 public:
-	void ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
+	int32_t ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
 	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
 
-	void DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL);
+	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL);
 	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER);
 
 	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
-	void DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL);
-	void DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL);
+	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL);
+	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL);
 	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
 	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
 
