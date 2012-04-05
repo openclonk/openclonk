@@ -375,16 +375,16 @@ void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ClearPix);
 }
 
-int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object)
+int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects)
 {
 	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
-	return DigFreeShape(&vertices[0],vertices.size(),by_object);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects);
 }
 
-int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object)
+int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object, bool no_dig2objects)
 {
 	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,80));
-	return DigFreeShape(&vertices[0],vertices.size(),by_object);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects);
 }
 
 void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object)
@@ -399,7 +399,7 @@ void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ShakeFreePix);
 }
 
-int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
+int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bool no_dig2objects)
 {
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 	int32_t amount;
@@ -416,12 +416,13 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object)
 	// create objects from the material
 	if(!::Game.iTick5)
 	{
-		if(by_object)
-			if(by_object->MaterialContents)
-			{
-				int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetBottom();
-				DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
-			}
+		if(!no_dig2objects)
+			if(by_object)
+				if(by_object->MaterialContents)
+				{
+					int32_t tx = BoundingBox.GetMiddleX(), ty = BoundingBox.GetBottom();
+					DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
+				}
 	}
 	return amount;
 }

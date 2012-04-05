@@ -27,6 +27,27 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if (!clonk->IsWalking() && !clonk->IsJumping())
 		return true;
 
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if (!clonk->HasHandAction())
+		return true;
+
+	var arm = "R";
+	var carry_bone = "pos_hand2";
+	if(clonk->GetItemPos(this) == 1)
+	{
+		arm = "L";
+		carry_bone = "pos_hand1";
+	}
+	var animation = Format("SwordSlash2.%s", arm);
+	
+	// figure out the kind of animation to use
+	var length=15;
+	if(clonk->IsJumping())
+		animation = Format("SwordJump2.%s",arm);
+
+	clonk->PlayAnimation(animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
+	clonk->UpdateAttach();
+
 	//Creates an imaginary line which runs for 'maxreach' distance (units in pixels)
 	//or until it hits a solid wall.
 	var angle = Angle(0,0,iX,iY);
@@ -55,10 +76,11 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 		if(GetMaterialVal("DigFree","Material",mat))
 		{
-			var amount = DigFree(GetX()+x2,GetY()+y2,5);
+			var amount = DigFree(GetX()+x2,GetY()+y2,5, true);
 			in_bucket_amount = amount;
 			in_bucket_mat = mat;
 			this.spill = true;
+			Sound("SoftTouch2");
 		}
 	}
 	clonk->CancelUse();
