@@ -1,0 +1,2 @@
+Name=Eimer
+Description=Mit dem Eimer kann Erde aufgenommen und andernorts eingesetzt werden, um Brücken zu bauen und Wege zu ebnen. Drücke [Benutzen] um Erde einzufüllen oder auszuschütten.

@@ -1,0 +1,14 @@
+[DefCore]
+id=Bucket
+Version=4,10,0,0
+Category=C4D_Object
+Width=7
+Height=8
+Offset=-3,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=3,-3,-3
+VertexFriction=75,100,100
+Value=1
+Mass=5
+Components=Metal=1
