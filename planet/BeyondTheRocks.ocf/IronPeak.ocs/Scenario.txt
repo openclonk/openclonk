@@ -14,25 +14,25 @@ Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;
 [Player1]
 Wealth=40
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;
 HomeBaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player2]
 Wealth=40
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;
 HomeBaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player3]
 Wealth=40
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;
 HomeBaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Player4]
 Wealth=40
 Crew=Clonk=2
-Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;
+Knowledge=Idol=1;Foundry=1;SteamEngine=1;ToolsWorkshop=1;WindGenerator=1;Flagpole=1;Sawmill=1;Elevator=1;Lorry=1;Pickaxe=1;Axe=1;Hammer=1;Shovel=1;Firestone=1;Barrel=1;Dynamite=1;DynamiteBox=1;Bucket=1;
 HomeBaseMaterial=Shovel=2;Pickaxe=2;Axe=2;Hammer=2;Dynamite=10;Loam=10;Wood=20;Metal=10;Clonk=2;Lorry=1;
 
 [Landscape]
