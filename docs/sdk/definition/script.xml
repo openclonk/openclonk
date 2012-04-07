@@ -255,6 +255,11 @@
           <col>object obj</col>
           <col>When the object has collected another object (obj) (in all cases, even in script controlled collection or entering).</col>
         </row>
+        <row id="ContentsDestruction">
+          <literal_col>ContentsDestruction</literal_col>
+          <col>object destroyed</col>
+          <col>When an object contained in the object has been destroyed/removed. The object still exists when the callback is called, but will be destroyed afterwards.</col>
+        </row>
         <row id="Departure">
           <literal_col>Departure</literal_col>
           <col>object container</col>
