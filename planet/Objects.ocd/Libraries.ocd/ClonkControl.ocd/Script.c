@@ -41,8 +41,9 @@
 
 local disableautosort;
 local force_collection;
-local inventory;
-local use_objects;
+local inventory; // items in the inventory, array
+local carryheavy; // object beeing carried with carryheavy
+local use_objects; // hand-slots (mapping onto inventory)
 
 local handslot_choice_pending;
 local hotkeypressed;
@@ -76,6 +77,9 @@ public func GetItems()
    These are the items that will be used with use-commands. (Left mouse click, etc...) */
 public func GetHandItem(int i)
 {
+	// carrying a carry heavy item always returns said item
+	if (carryheavy)
+		return carryheavy;
 	if (i >= GetLength(use_objects))
 		return nil;
 	if (i < 0) return nil;
@@ -86,6 +90,8 @@ public func GetHandItem(int i)
 /* Set the "hand"th use-item to the "inv"th slot */
 public func SetHandItemPos(int hand, int inv)
 {
+	if(carryheavy)
+		return nil;
 	if(hand >= HandObjects() || inv >= MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
@@ -291,6 +297,15 @@ protected func Construction()
 
 protected func Collection2(object obj)
 {
+	// carryheavy object gets special treatment
+	if(obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
+	{
+		if(obj != carryheavy)
+			CarryHeavy(obj);
+		
+		return true;
+	}
+	
 	var sel = 0;
 
 	// See Collect()
@@ -342,6 +357,13 @@ protected func Collection2(object obj)
 
 protected func Ejection(object obj)
 {
+	// carry heavy special treatment
+	if(obj == carryheavy)
+	{
+		StopCarryHeavy();
+		return true;
+	}
+
 	// if an object leaves this object
 	// find obj in array and delete (cancel using too)
 	var i = 0;
@@ -430,11 +452,17 @@ protected func Ejection(object obj)
 	_inherited(obj,...);
 }
 
-protected func ContentsDestruction()
+protected func ContentsDestruction(object obj)
 {
 	// tell the Hud that something changed
 	this->~OnInventoryChange();
 	
+	// check if it was carryheavy
+	if(obj == carryheavy)
+	{
+		StopCarryHeavy();
+	}
+
 	_inherited(...);
 }
 
@@ -443,8 +471,20 @@ protected func RejectCollect(id objid, object obj)
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
 
+	// Carry heavy only gets picked up if non held already
+	if(obj->~IsCarryHeavy())
+	{
+		if(IsCarryingHeavy())
+			return true;
+		else
+		{
+			return false;
+		}
+	}
+
 	//No collection if the clonk is carrying a 'carry-heavy' object
-	if(GetEffect("IntCarryHeavy", this) || GetEffect("IntLiftHeavy", this)) return true;
+	// todo: does this still make sense with carry heavy not beeing in inventory and new inventory in general?
+	if(IsCarryingHeavy() && !force_collection) return true;
 	
 	// try to stuff obj into an object with an extra slot
 	for(var i=0; Contents(i); ++i)
@@ -484,6 +524,46 @@ public func AllowTransfer(object obj)
 }
 
 public func GetUsedObject() { return using; }
+
+
+
+/* Carry heavy stuff */
+
+// picks up the object
+public func CarryHeavy(object target)
+{
+	if(!target)
+		return;
+	if(IsCarryingHeavy())
+		return;	
+		
+	carryheavy = target;
+	
+	if(target->Contained() != this)
+		target->Enter(this);
+	
+	// notify UI about carryheavy pickup
+	this->~OnCarryHeavyChange(carryheavy);
+	
+	// Update attach stuff
+	//this->~UpdateAttach();
+	
+	return true;
+}
+
+private func StopCarryHeavy()
+{
+	if(!carryheavy)
+		return;
+	
+	carryheavy = nil;
+	this->~OnCarryHeavyChange(nil);
+	this->~UpdateAttach();
+}
+
+public func GetCarryHeavy() { return carryheavy; }
+
+public func IsCarryingHeavy() { return carryheavy != nil; }
 
 /* ################################################# */
 
@@ -764,12 +844,24 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var proc = GetProcedure();
 
 	// cancel usage
-	if (using && ctrl == CON_CancelUse)
+	if (using && ctrl == CON_Ungrab)
 	{
 		CancelUse();
 		return true;
 	}
 
+	// Interact controls
+	if(ctrl == CON_Interact)
+	{
+		if(ObjectControlInteract(plr,ctrl))
+			return true;
+		else if(IsCarryingHeavy())
+		{
+			GetCarryHeavy()->Drop();
+			return true;
+		}
+			
+	}
 	// Push controls
 	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
 		return ObjectControlPush(plr, ctrl);
@@ -777,12 +869,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Entrance controls
 	if (ctrl == CON_Enter || ctrl == CON_Exit)
 		return ObjectControlEntrance(plr,ctrl);
-		
-	// Interact controls
-	if(ctrl == CON_Interact)
-	{
-		return ObjectControlInteract(plr,ctrl);
-	}
+	
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -1009,6 +1096,11 @@ public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 
 public func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
+	// can't grab while carrying heavy
+	if(command == "Grab")
+		if(IsCarryingHeavy())
+			return;
+
 	// special control for throw and jump
 	// but only with controls, not with general commands
 	if (command == "Throw") return this->~ControlThrow(target,tx,ty);

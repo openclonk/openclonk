@@ -32,6 +32,7 @@ static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
+static const ACTIONTYPE_CARRYHEAVY = 3;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
@@ -142,6 +143,11 @@ public func MouseSelection(int plr)
 			myobject->Interact(crew);
 			return true;
 		}
+	}
+	if(actiontype == ACTIONTYPE_CARRYHEAVY)
+	{
+		if(myobject == crew->~GetCarryHeavy())
+			myobject->Drop();
 	}
 }
 
@@ -386,8 +392,14 @@ public func UpdateSelectionStatus()
 	// determine...
 	var sel = 0;
 
+	if(actiontype == ACTIONTYPE_CARRYHEAVY)
+	{
+		SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
+		SetName(Format("$TxtUnGrab$",myobject->GetName()));
+	}
+
 	// script...
-	if(actiontype == ACTIONTYPE_SCRIPT)
+	else if(actiontype == ACTIONTYPE_SCRIPT)
 	{
 		var metainfo = myobject->~GetInteractionMetaInfo(crew);
 		if(metainfo)

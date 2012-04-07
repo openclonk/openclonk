@@ -180,6 +180,15 @@ protected func OnInventoryChange()
 	return _inherited(...);
 }
 
+// when a carryheavy object is picked up/dropped
+func OnCarryHeavyChange(object carried)
+{
+	if(HUDcontroller)
+		HUDcontroller->OnCarryHeavyChange(carried);
+		
+	return _inherited(carried, ...);
+}
+
 func Collection2()
 {
 	if (HUDcontroller)

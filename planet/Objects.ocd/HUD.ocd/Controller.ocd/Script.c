@@ -22,6 +22,7 @@ local wealth;
 //local deco;
 local markers;
 local backpack;
+local carryheavy;
 
 // Button that locks/unlocks the inventory
 local lockbutton;
@@ -73,7 +74,6 @@ protected func Construction()
 	// backpack display
 	
 	MakeBackpack();
-	
 }
 
 // How many slots the inventory has, for overloading
@@ -123,6 +123,16 @@ private func MakeBackpack()
 	
 	lockbutton = bt;
 	*/
+	
+	// and the carry heavy slot
+	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+	bt->SetHUDController(this);
+	bt->SetPosition(40+d, y);
+	bt->SetSlotId(-1);
+	bt.Visibility = VIS_None;
+	
+	
+	carryheavy = bt;
 }
 
 public func ShowInventory()
@@ -336,14 +346,21 @@ func UpdateBackpack()
 
 	ShowInventory();
 	
+	// update backpack-slots
 	for(var i=0; i<GetLength(backpack); i++)
 	{
 		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetSlotId()));
 		backpack[i]->SetUnselected();
 	}
 	
-	for(var i=0; i < c->HandObjects(); ++i)
-		backpack[c->GetHandItemPos(i)]->SetSelected(i);
+	// update hand-indicator
+	if(c->IsCarryingHeavy())
+	{
+		carryheavy->SetSelected(-1);
+	}
+	else
+		for(var i=0; i < c->HandObjects(); ++i)
+			backpack[c->GetHandItemPos(i)]->SetSelected(i);
 	
 	/*
 	if(!lockbutton->IsLocked())
@@ -373,6 +390,23 @@ global func FxUpdateBackpackTimer(target) {
 		target.backpack[i]->SetGraphics(nil,nil,12);
 	}
 }*/
+
+// Shows the Carryheavy-Inventoryslot if obj is set
+// Removes it if it's nil
+func OnCarryHeavyChange(object obj)
+{
+	carryheavy->SetSymbol(obj);
+
+	if(obj == nil)
+	{
+		carryheavy->SetUnselected();
+		carryheavy.visibility = VIS_None;
+	}
+	else
+		this.Visibility = VIS_Owner;
+	
+	UpdateBackpack();
+}
 
 protected func OnClonkRecruitment(object clonk, int plr)
 {
@@ -580,12 +614,17 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	// all except structures only if outside
 	if(!target->Contained())
 	{
+	
 		// add interactables (script interface)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var interactable in interactables)
 		{
 			ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++);
 		}
+		
+		// if carrying heavy, add drop-carry-heavy-button
+		if(target->~IsCarryingHeavy())
+			ActionButton(target, i++, target->GetCarryHeavy(), ACTIONTYPE_CARRYHEAVY, hotkey++);
 		
 		// add vehicles
 		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));

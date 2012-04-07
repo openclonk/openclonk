@@ -27,6 +27,15 @@ public func GetSlotId() { return position; }
 
 public func SetSelected(int nr)
 {
+	// all hands!
+	if(nr == -1)
+	{
+		SetGraphics("Hand", GUI_Backpack_Slot_Icon, 4, GFXOV_MODE_Base);
+		SetGraphics("Hand", GUI_Backpack_Slot_Icon, 5, GFXOV_MODE_Base);
+		SetObjDrawTransform(700, 0, -17000, 0, 700, 17000, 4);
+		SetObjDrawTransform(-700, 0, 17000, 0, 700, 17000, 5);
+		return;
+	}
 	SetGraphics("Hand", GUI_Backpack_Slot_Icon, 4, GFXOV_MODE_Base);
 	
 	if(nr == 0)
@@ -38,6 +47,7 @@ public func SetSelected(int nr)
 public func SetUnselected()
 {
 	SetGraphics(nil,nil,4);
+	SetGraphics(nil,nil,5);
 }
 
 
