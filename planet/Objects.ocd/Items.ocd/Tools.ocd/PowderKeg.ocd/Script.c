@@ -10,8 +10,13 @@
 local count;
 local oldcount;
 
-public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return Trans_Mul(Trans_Translate(-1000,-800,0),Trans_Rotate(180,0,1,0));	}
+public func GetCarryTransform(clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 1000, -6500);
+		
+	return Trans_Mul(Trans_Translate(-1500,1500,0),Trans_Rotate(180,0,1,0));
+}
 public func GetCarryPhase() { return 900; }
 
 protected func Initialize()

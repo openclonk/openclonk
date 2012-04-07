@@ -400,7 +400,7 @@ func OnCarryHeavyChange(object obj)
 	if(obj == nil)
 	{
 		carryheavy->SetUnselected();
-		carryheavy.visibility = VIS_None;
+		carryheavy.Visibility = VIS_None;
 	}
 	else
 		this.Visibility = VIS_Owner;

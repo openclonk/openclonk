@@ -1096,11 +1096,6 @@ public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 
 public func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
-	// can't grab while carrying heavy
-	if(command == "Grab")
-		if(IsCarryingHeavy())
-			return;
-
 	// special control for throw and jump
 	// but only with controls, not with general commands
 	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
