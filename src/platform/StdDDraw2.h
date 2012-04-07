@@ -213,8 +213,6 @@ public:
 	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
 	virtual int GetEngine() = 0;    // get indexed engine
-	virtual void TaskOut() = 0; // user taskswitched the app away
-	virtual void TaskIn() = 0;  // user tasked back
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	virtual bool IsOpenGL() { return false; }
 	virtual bool IsShaderific() { return false; }

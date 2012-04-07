@@ -107,8 +107,6 @@ public:
 	void Clear();
 	void Default();
 	virtual int GetEngine() { return 1; }   // get indexed engine
-	void TaskOut(); // user taskswitched the app away
-	void TaskIn();  // user tasked back
 	virtual bool IsOpenGL() { return true; }
 	virtual bool IsShaderific() { return shaders[0] != 0; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
@@ -120,6 +118,7 @@ public:
 	virtual CStdGLCtx *CreateContext(C4Window * pWindow, C4AbstractApp *pApp);
 #ifdef USE_WIN32_WINDOWS
 	virtual CStdGLCtx *CreateContext(HWND hWindow, C4AbstractApp *pApp);
+	void TaskOut();
 #endif
 	// Blit
 	void SetupTextureEnv(bool fMod2, bool landscape);

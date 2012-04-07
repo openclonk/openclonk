@@ -138,11 +138,9 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		break;
 	case FocusIn:
 		Application.Active = true;
-		if (pDraw) pDraw->TaskIn();
 		break;
 	case FocusOut: case UnmapNotify:
 		Application.Active = false;
-		if (pDraw) pDraw->TaskOut();
 		break;
 	}
 }

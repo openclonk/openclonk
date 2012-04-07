@@ -2077,37 +2077,12 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 
 CStdGL *pGL=NULL;
 
+#ifdef USE_WIN32_WINDOWS
 void CStdGL::TaskOut()
 {
-	// deactivate
-	// backup textures
-#ifdef USE_WIN32_WINDOWS
-	if (pTexMgr && !Editor) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
-
-	if (!Editor && !Config.Graphics.Windowed)
-	{
-		::ChangeDisplaySettings(NULL, 0);
-		if(pMainCtx && pMainCtx->pWindow)
-			::ShowWindow(pMainCtx->pWindow->hWindow, SW_MINIMIZE);
-	}
-#endif
 }
-
-void CStdGL::TaskIn()
-{
-	// restore gl
-	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
-#ifdef USE_WIN32_WINDOWS
-	// restore textures
-	if (pTexMgr && !Editor) pTexMgr->IntUnlock();
-
-	if (!Editor && !Config.Graphics.Windowed)
-	{
-		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-	}
 #endif
-}
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {

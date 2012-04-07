@@ -80,13 +80,38 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		// fall through to next case
 	case WM_ACTIVATEAPP:
 		Application.Active = wParam != 0;
-		if (pDraw)
+#ifdef USE_GL
+		if (pGL)
 		{
 			if (Application.Active)
-				pDraw->TaskIn();
+			{
+				// restore textures
+				if (pTexMgr) pTexMgr->IntUnlock();
+				if (!Config.Graphics.Windowed)
+				{
+					Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+				}
+			}
 			else
-				pDraw->TaskOut();
+			{
+				if (pTexMgr)
+					pTexMgr->IntLock();
+				if (pGL)
+					pGL->TaskOut();
+				if (!Config.Graphics.Windowed)
+				{
+					::ChangeDisplaySettings(NULL, 0);
+					::ShowWindow(hwnd, SW_MINIMIZE);
+				}
+			}
 		}
+#endif
+#ifdef USE_DIRECTX
+		if (pD3D && Application.Active)
+			pD3D->TaskIn();
+		if (pD3D && !Application.Active)
+			pD3D->TaskOut();
+#endif
 		// redraw background
 		::GraphicsSystem.InvalidateBg();
 		// Redraw after task switch
