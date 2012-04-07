@@ -865,13 +865,8 @@ namespace
 
 			// TODO: Use vbo if available.
 
-			// Note that we need to do this before we do glTexCoordPointer for the
-			// texture units below, otherwise the texcoordpointer is reset by this
-			// call (or at least by my radeon driver), even though the documentation
-			// states that "The texture coordinate state for other client texture units
-			// is not updated, regardless of whether the client texture unit is enabled
-			// or not."
-			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &vertices->nx);
+			glVertexPointer(3, GL_FLOAT, sizeof(StdMeshVertex), &vertices->x);
+			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), &vertices->nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
@@ -1223,6 +1218,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
 
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+
 	// TODO: We ignore the additive drawing flag for meshes but instead
 	// set the blending mode of the corresponding material. I'm not sure
 	// how the two could be combined.
@@ -1422,6 +1420,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glActiveTexture(GL_TEXTURE0); // switch back to default
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
 	glDepthMask(GL_TRUE);
+
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 	glDisable(GL_NORMALIZE);
 	glDisable(GL_LIGHT0);
