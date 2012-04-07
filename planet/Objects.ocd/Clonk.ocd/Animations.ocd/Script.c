@@ -23,6 +23,25 @@
 --*/
 
 
+local lAnim; // proplist containing all the specific variables. "Pseudo-Namespace"
+
+func Construction()
+{
+	lAnim = 
+	{
+		turnType = nil,
+		turnSpecial = nil,
+		turnForced = nil,
+		backwards = nil,
+		backwardsSpeed = nil,
+		closedEyes = nil,
+		rollDir = nil,
+		rollLength = nil
+	};
+	
+	_inherited(...);
+}
+
 /*--
 	Turn
 
@@ -30,12 +49,9 @@
 	The clonk turns around, when he changes dir.
 --*/
 
-local turn_type;
-local iTurnSpecial;
 
-local turn_forced;
-
-static const CLONK_TurnTime = 10;
+// todo, implement, make carryheavy decreasing it
+static const Clonk_TurnTime = 18;
 
 func SetMeshTransformation() { return _inherited(...); }
 func UpdateAttach() { return _inherited(...); }
@@ -46,7 +62,7 @@ local ActMap;
 
 func SetTurnForced(int dir)
 {
-	turn_forced = dir+1;
+	lAnim.turnForced = dir+1;
 }
 
 func FxIntTurnStart(pTarget, effect, fTmp)
@@ -66,26 +82,26 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	var iRot = effect.rot;
-	if( (effect.dir != GetDirection() && GetAction() != "Jump") || effect.turn_type != turn_type) 
+	if( (effect.dir != GetDirection() && GetAction() != "Jump") || effect.turn_type != lAnim.turnType) 
 	{
 		effect.dir = GetDirection();
 		if(effect.dir == COMD_Right)
 		{
-			if(turn_type == 0)
+			if(lAnim.turnType == 0)
 				iRot = 180-25;
-			if(turn_type == 1)
+			if(lAnim.turnType == 1)
 				iRot = 180;
 		}
 		else
 		{
-			if(turn_type == 0)
+			if(lAnim.turnType == 0)
 				iRot = 25;
-			if(turn_type == 1)
+			if(lAnim.turnType == 1)
 				iRot = 0;
 		}
 		// Save new ComDir
 		effect.dir = GetDirection();
-		effect.turn_type = turn_type;
+		effect.turn_type = lAnim.turnType;
 		// Notify effects
 //		ResetAnimationEffects();
 	}
@@ -108,9 +124,9 @@ public func GetTurnPhase()
 {
 	var iEff = GetEffect("IntTurn", this);
 	var iRot = iEff.curr_rot;
-	if(turn_type == 0)
+	if(lAnim.turnType == 0)
 		return (iRot-25)*100/130;
-	if(turn_type == 1)
+	if(lAnim.turnType == 1)
 		return iRot*100/180;
 }
 
@@ -119,19 +135,19 @@ func SetTurnType(iIndex, iSpecial)
 	if(iSpecial != nil && iSpecial != 0)
 	{
 		if(iSpecial == 1) // Start a turn that is forced to the clonk and overwrites the normal action's turntype
-			iTurnSpecial = 1;
+			lAnim.turnSpecial = 1;
 		if(iSpecial == -1) // Reset special turn (here the iIndex is ignored)
 		{
-			iTurnSpecial = 0;
-			SetTurnType(turn_type);
+			lAnim.turnSpecial = 0;
+			SetTurnType(lAnim.turnType);
 			return;
 		}
 	}
 	else
 	{
 		// Standart turn? Save and do nothing if we are blocked
-		turn_type = iIndex;
-		if(iTurnSpecial) return;
+		lAnim.turnType = iIndex;
+		if(lAnim.turnSpecial) return;
 	}
 	return;
 }
@@ -139,10 +155,10 @@ func SetTurnType(iIndex, iSpecial)
 func GetDirection()
 {
 	// Are we forced to a special direction?
-	if(turn_forced)
+	if(lAnim.turnForced)
 	{
-		if(turn_forced == 1) return COMD_Left;
-		if(turn_forced == 2) return COMD_Right;
+		if(lAnim.turnForced == 1) return COMD_Left;
+		if(lAnim.turnForced == 2) return COMD_Right;
 	}
 	// Get direction from ComDir
 	if(GetAction() != "Scale")
@@ -274,12 +290,11 @@ func FxIntEyesClosedStop(target, effect, reason, tmp)
 	CloseEyes(-1);
 }
 
-local closed_eyes;
 func CloseEyes(iCounter)
 {
 	StopAnimation(GetRootAnimation(3));
-	closed_eyes += iCounter;
-	if(closed_eyes >= 1)
+	lAnim.closedEyes += iCounter;
+	if(lAnim.closedEyes >= 1)
 		PlayAnimation("CloseEyes" , 3, Anim_Linear(0, 0, GetAnimationLength("CloseEyes")/2, 3, ANIM_Hold), Anim_Const(1000));
 	else
 		PlayAnimation("CloseEyes" , 3, Anim_Linear(GetAnimationLength("CloseEyes")/2, GetAnimationLength("CloseEyes")/2, GetAnimationLength("CloseEyes"), 3, ANIM_Remove), Anim_Const(1000));
@@ -295,24 +310,21 @@ func CloseEyes(iCounter)
 /* Walking backwards */
 func SetBackwardsSpeed(int value)
 {
-	BackwardsSpeed = value;
+	lAnim.backwardsSpeed = value;
 	UpdateBackwardsSpeed();
 }
 
-local BackwardsSpeed;
-local Backwards;
-
 func UpdateBackwardsSpeed()
 {
-	if(GetComDir() != GetDirection() && Backwards != 1 && BackwardsSpeed != nil)
+	if(GetComDir() != GetDirection() && lAnim.backwards != 1 && lAnim.backwardsSpeed != nil)
 	{
-		AddEffect("IntWalkBack", this, 1, 0, this, 0, BackwardsSpeed);
-		Backwards = 1;
+		AddEffect("IntWalkBack", this, 1, 0, this, 0, lAnim.backwardsSpeed);
+		lAnim.backwards = 1;
 	}
-	if( (GetComDir() == GetDirection() && Backwards == 1) || BackwardsSpeed == nil)
+	if( (GetComDir() == GetDirection() && lAnim.backwards == 1) || lAnim.backwardsSpeed == nil)
 	{
 		RemoveEffect("IntWalkBack", this);
-		Backwards = nil;
+		lAnim.backwards = nil;
 	}
 }
 
@@ -441,7 +453,7 @@ func FxIntWalkTimer(pTarget, effect)
 			SetComDir(COMD_Up);
 		return;
 	}
-	if(BackwardsSpeed != nil)
+	if(lAnim.backwardsSpeed != nil)
 		UpdateBackwardsSpeed();
 	if(effect.idle_animation_time)
 	{
@@ -744,7 +756,7 @@ func FxFallTimer(object target, effect, int timer)
 /*--
 	Hangle
 
-	Adjust the speed sinoidal. Plays two different stand animations according to the position the clonk stops.
+	Adjust the speed sinusoidal. Plays two different stand animations according to the position the clonk stops.
 --*/
 
 /* Replaces the named action by an instance with a different speed */
@@ -986,9 +998,6 @@ func GetSwimRotation()
 	When the clonk hits the ground a kneel animation of are roll are performed.
 --*/
 
-local rolllength;
-local rolldir;
-
 func Hit(int iXSpeed, int iYSpeed)
 {
 	if(iYSpeed < 450) return;
@@ -1045,32 +1054,32 @@ func StartRoll()
 {	
 	SetTurnForced(GetDir());
 	Sound("Roll");
-	if(GetDir() == 1) rolldir = 1;
+	if(GetDir() == 1) lAnim.rollDir = 1;
 	else
-		rolldir = -1;
+		lAnim.rollDir = -1;
 
-	rolllength = 22;
-	PlayAnimation("KneelRoll", 5, Anim_Linear(0, 0, 1500, rolllength, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	lAnim.rollLength = 22;
+	PlayAnimation("KneelRoll", 5, Anim_Linear(0, 0, 1500, lAnim.rollLength, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	AddEffect("Rolling", this, 1, 1, this);
 }
 
 func FxRollingTimer(object target, int num, int timer)
 {
-	if(GetContact(-1)) SetXDir(23 * rolldir);
+	if(GetContact(-1)) SetXDir(23 * lAnim.rollDir);
 
 	//Hacky fun
 	var i = 3;
-	while(GBackSolid(rolldir, 9) && i != 0)
+	while(GBackSolid(lAnim.rollDir, 9) && i != 0)
 	{
 		SetPosition(GetX(),GetY() - 1);
 		i--;
 	}
 
-	if(timer > rolllength)
+	if(timer > lAnim.rollLength)
 	{
 		SetAction("Walk");
 		SetTurnForced(-1);
-		rolldir = nil;
+		lAnim.rollDir = nil;
 		return -1;
 	}
 

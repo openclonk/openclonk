@@ -16,7 +16,7 @@ local menu_isdragdrop;
 */
 public func UpdateMenu()
 {
-	Log("Warning: UpdateMenu has not been implemented!");
+	Log("Warning: UpdateMenu has not been implemented for %s!", GetName());
 }
 
 protected func Construction()
