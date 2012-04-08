@@ -67,6 +67,7 @@ public:
 	bool Init(int32_t iPlayer, bool fSetTempOnly);
 	void DropFile(const char* fileName, float x, float y);
 	bool TogglePlayerLock();
+	bool GetPlayerLock() { return PlayerLock; }
 	void NextPlayer();
 	C4Rect GetOutputRect() { return C4Rect(OutX, OutY, ViewWdt, ViewHgt); }
 	bool IsViewportMenu(class C4Menu *pMenu);

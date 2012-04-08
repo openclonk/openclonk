@@ -298,6 +298,9 @@ public:
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
 #elif defined(USE_X11)
+	// Set by Init to the widget which is used as a
+	// render target, which can be the whole window.
+	/*GtkWidget*/void * render_widget;
 protected:
 	bool FindInfo(int samples, void** info);
 

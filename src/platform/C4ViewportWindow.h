@@ -42,29 +42,8 @@ public:
 	C4Viewport * cvp;
 	C4ViewportWindow(C4Viewport * cvp): cvp(cvp) { }
 #if defined(WITH_DEVELOPER_MODE)
-	virtual GtkWidget* InitGUI();
-
-	static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data);
-	static gboolean OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data);
-	static gboolean OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data);
-	static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data);
-	static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-	static void OnRealizeStatic(GtkWidget* widget, gpointer user_data);
-	static gboolean OnExposeStatic(GtkWidget* widget, void *, gpointer user_data);
-	static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data);
-
-	static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data);
-
-	static void OnVScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-	static void OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_data);
-
 	GtkWidget* h_scrollbar;
 	GtkWidget* v_scrollbar;
-	GtkWidget* drawing_area;
-#elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-	virtual void HandleMessage (XEvent &);
 #endif
 	void EditCursorMove(int X, int Y, uint16_t);
 	using C4Window::Init;

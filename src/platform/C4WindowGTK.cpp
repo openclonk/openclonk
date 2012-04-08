@@ -26,6 +26,9 @@
 #include <C4App.h>
 #include "C4Version.h"
 #include "C4Config.h"
+#include <C4Console.h>
+#include <C4ViewportWindow.h>
+#include "C4MouseControl.h"
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
@@ -45,6 +48,221 @@ C4GtkWindow::~C4GtkWindow()
 	Clear();
 }
 
+static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
+{
+	C4Window* wnd = static_cast<C4Window*>(data);
+	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
+	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	return true;
+}
+
+static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+{
+	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
+	Game.DoKeyboardInput(key, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	return true;
+}
+
+static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data)
+{
+	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return; }
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+
+	gchar** uris = gtk_selection_data_get_uris(data);
+	if (!uris) return;
+
+	for (gchar** uri = uris; *uri != NULL; ++ uri)
+	{
+		gchar* file = g_filename_from_uri(*uri, NULL, NULL);
+		if (!file) continue;
+
+		window->cvp->DropFile(file, x, y);
+		g_free(file);
+	}
+
+	g_strfreev(uris);
+}
+
+static gboolean OnExposeStatic(GtkWidget* widget, void *, gpointer user_data)
+{
+	C4Viewport* cvp = static_cast<C4ViewportWindow*>(user_data)->cvp;
+	cvp->Execute();
+	return true;
+}
+
+static void OnRealizeStatic(GtkWidget* widget, gpointer user_data)
+{
+	// Initial PlayerLock
+	if (static_cast<C4ViewportWindow*>(user_data)->cvp->GetPlayerLock())
+	{
+		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->h_scrollbar);
+		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->v_scrollbar);
+	}
+}
+
+static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+{
+#if GTK_CHECK_VERSION(2,90,7)
+	if (event->keyval == GDK_KEY_Scroll_Lock)
+#else
+	if (event->keyval == GDK_Scroll_Lock)
+#endif
+	{
+		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
+		return true;
+	}
+	return false;
+}
+
+static gboolean OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	{
+		switch (event->direction)
+		{
+		case GDK_SCROLL_UP:
+			C4GUI::MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
+			break;
+		case GDK_SCROLL_DOWN:
+			C4GUI::MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
+			break;
+		default:
+			return false;
+		}
+	}
+	return true;
+}
+
+static gboolean OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	{
+		switch (event->button)
+		{
+		case 1:
+			if (event->type == GDK_BUTTON_PRESS)
+				C4GUI::MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			else if (event->type == GDK_2BUTTON_PRESS)
+				C4GUI::MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		case 2:
+			C4GUI::MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		case 3:
+			if (event->type == GDK_BUTTON_PRESS)
+				C4GUI::MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			else if (event->type == GDK_2BUTTON_PRESS)
+				C4GUI::MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		}
+	}
+	else
+	{
+		switch (event->button)
+		{
+		case 1:
+			Console.EditCursor.LeftButtonDown(event->state & MK_CONTROL);
+			break;
+		case 3:
+			Console.EditCursor.RightButtonDown(event->state & MK_CONTROL);
+			break;
+		}
+	}
+
+	return true;
+}
+
+static gboolean OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	{
+		switch (event->button)
+		{
+		case 1:
+			C4GUI::MouseMove(C4MC_Button_LeftUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		case 2:
+			C4GUI::MouseMove(C4MC_Button_MiddleUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		case 3:
+			C4GUI::MouseMove(C4MC_Button_RightUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			break;
+		}
+	}
+	else
+	{
+		switch (event->button)
+		{
+		case 1:
+			Console.EditCursor.LeftButtonUp();
+			break;
+		case 3:
+			Console.EditCursor.RightButtonUp();
+			break;
+		}
+	}
+
+	return true;
+}
+
+static gboolean OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	{
+		C4GUI::MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+	}
+	else
+	{
+		window->EditCursorMove(event->x, event->y, event->state);
+	}
+
+	return true;
+}
+
+static gboolean OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+	C4Viewport* cvp = window->cvp;
+
+	//cvp->UpdateOutputSize();
+	cvp->ScrollBarsByViewPosition();
+
+	return false;
+}
+
+static gboolean OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data)
+{
+	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
+	C4Viewport* cvp = window->cvp;
+
+	cvp->UpdateOutputSize();
+
+	return false;
+}
+
+static void OnVScrollStatic(GtkAdjustment* adjustment, gpointer user_data)
+{
+	static_cast<C4ViewportWindow*>(user_data)->cvp->ViewPositionByScrollBars();
+}
+
+static void OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_data)
+{
+	static_cast<C4ViewportWindow*>(user_data)->cvp->ViewPositionByScrollBars();
+}
+
+static GtkTargetEntry drag_drop_entries[] =
+{
+	{ const_cast<gchar*>("text/uri-list"), 0, 0 }
+};
+
 C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
@@ -61,7 +279,70 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	assert(!window);
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	if (windowKind == W_Viewport)
+	{
+		C4ViewportWindow * vw = static_cast<C4ViewportWindow *>(this);
+		gtk_window_set_default_size(GTK_WINDOW(window), 640, 480);
 
+		// Cannot just use ScrolledWindow because this would just move
+		// the GdkWindow of the DrawingArea.
+		GtkWidget* table;
+
+		render_widget = gtk_drawing_area_new();
+		vw->h_scrollbar = gtk_hscrollbar_new(NULL);
+		vw->v_scrollbar = gtk_vscrollbar_new(NULL);
+		table = gtk_table_new(2, 2, false);
+
+		GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(vw->h_scrollbar));
+
+		g_signal_connect(
+		  G_OBJECT(adjustment),
+		  "value-changed",
+		  G_CALLBACK(OnHScrollStatic),
+		  this
+		);
+
+		adjustment = gtk_range_get_adjustment(GTK_RANGE(vw->v_scrollbar));
+
+		g_signal_connect(
+		  G_OBJECT(adjustment),
+		  "value-changed",
+		  G_CALLBACK(OnVScrollStatic),
+		  this
+		);
+
+		gtk_table_attach(GTK_TABLE(table), GTK_WIDGET(render_widget), 0, 1, 0, 1, static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 0, 0);
+		gtk_table_attach(GTK_TABLE(table), vw->v_scrollbar, 1, 2, 0, 1, GTK_SHRINK, static_cast<GtkAttachOptions>(GTK_FILL | GTK_EXPAND), 0, 0);
+		gtk_table_attach(GTK_TABLE(table), vw->h_scrollbar, 0, 1, 1, 2, static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), GTK_SHRINK, 0, 0);
+
+		gtk_container_add(GTK_CONTAINER(window), table);
+
+		gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_POINTER_MOTION_MASK);
+
+		gtk_drag_dest_set(GTK_WIDGET(render_widget), GTK_DEST_DEFAULT_ALL, drag_drop_entries, 1, GDK_ACTION_COPY);
+		g_signal_connect(G_OBJECT(render_widget), "drag-data-received", G_CALLBACK(OnDragDataReceivedStatic), this);
+	#if GTK_CHECK_VERSION(3,0,0)
+		g_signal_connect(G_OBJECT(render_widget), "draw", G_CALLBACK(OnExposeStatic), this);
+	#else
+		g_signal_connect(G_OBJECT(render_widget), "expose-event", G_CALLBACK(OnExposeStatic), this);
+	#endif
+		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPressStatic), this);
+		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollStatic), this);
+		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPressStatic), this);
+		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonReleaseStatic), this);
+		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotifyStatic), this);
+		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPress), this);
+		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyRelease), this);
+		g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(OnConfigureStatic), this);
+		g_signal_connect(G_OBJECT(window), "realize", G_CALLBACK(OnRealizeStatic), this);
+
+		g_signal_connect_after(G_OBJECT(render_widget), "configure-event", G_CALLBACK(OnConfigureDareaStatic), this);
+
+		// do not draw the default background
+		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+
+		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+	}
 	// Override gtk's default to match name/class of the XLib windows
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
@@ -69,15 +350,16 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 
-	GtkWidget* render_widget = InitGUI();
+	if(!render_widget)
+		render_widget = InitGUI();
 
-	GdkScreen * scr = gtk_widget_get_screen(render_widget);
+	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
 #if GTK_CHECK_VERSION(2,91,0)
-	gtk_widget_set_visual(render_widget,vis);
+	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
 	GdkColormap * cmap = gdk_colormap_new(vis, true);
-	gtk_widget_set_colormap(render_widget, cmap);
+	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
 	g_object_unref(cmap);
 #endif
 	gtk_widget_show_all(window);
@@ -123,15 +405,14 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	else
 	{
 #if GTK_CHECK_VERSION(2,14,0)
-		GdkWindow* render_wnd = gtk_widget_get_window(render_widget);
+		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
 #else
-		GdkWindow* render_wnd = render_widget->window;
+		GdkWindow* render_wnd = GTK_WIDGET(render_widget)->window;
 #endif
 
 		renderwnd = GDK_WINDOW_XID(render_wnd);
 	}
 
-	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
 
 	if (HideCursor)
 	{
