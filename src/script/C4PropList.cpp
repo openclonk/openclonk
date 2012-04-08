@@ -506,7 +506,11 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	/*assert(Strings.Set.Has(k));*/
 	if (k == &Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
 	{
-		prototype = to.GetData().PropList;
+		C4PropList * newpt = to.GetData().PropList;
+		for(C4PropList * it = newpt; it; it = it->prototype)
+			if(it == this)
+				throw new C4AulExecError(NULL, "Trying to create cyclic prototype structure");
+		prototype = newpt;
 		//return;
 	}
 	if (Properties.Has(k))
