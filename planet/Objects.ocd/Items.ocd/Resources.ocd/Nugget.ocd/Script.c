@@ -1,11 +1,9 @@
 /*--- Nugget ---*/
 
-protected func Construction()
-{
-	var graphic = Random(5);
-	if(graphic)
-		SetGraphics(Format("%d",graphic));
-}
+#include Library_CarryHeavy
+
+public func GetCarryMode(clonk) { return CARRY_BothHands; }
+public func GetCarryPhase() { return 800; }
 
 protected func Hit(x, y)
 {
@@ -16,7 +14,9 @@ protected func Hit(x, y)
 public func IsFoundryIngredient() { return true; }
 public func IsValuable(){ return true; }
 
-
-local Collectible = 1;
+func Definition(def) {
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
+}
 local Name = "$Name$";
 local Description = "$Description$";
+local Touchable = 2;

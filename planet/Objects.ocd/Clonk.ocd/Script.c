@@ -32,6 +32,10 @@ protected func Construction()
 {
 	_inherited(...);
 
+	// Modifiable ActMap
+	if (ActMap == this.Prototype.ActMap)
+		ActMap = { Prototype = this.Prototype.ActMap };
+
 	SetAction("Walk");
 	SetDir(Random(2));
 	// Broadcast for rules

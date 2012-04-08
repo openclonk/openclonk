@@ -125,10 +125,30 @@ func FxIntLiftHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 // -------------------
 // Carrying the object
 // -------------------
+func FxIntCarryHeavyStart(object clonk, proplist effect, int temp)
+{
+	if (temp) return;
+	clonk->DisableScale();
+	clonk->DisableHangle();
+	var throw = clonk.ThrowSpeed;
+	if (throw < 150) return; // I know this may be bad in some situations and result in normal throwing speed
+	// If so, see it as an easter egg exploit!
+	clonk.ThrowSpeed -= 150;
+	effect.throw = throw - clonk.ThrowSpeed;
+}
+
 func FxIntCarryHeavyTimer(object clonk, proplist effect, int timer)
 {
 	//Delete this effect if not contained in the clonk anymore
 	if(Contained() != clonk) return -1;
+}
+
+func FxIntCarryHeavyStop(object clonk, proplist effect, int reason, bool temp)
+{
+	if (temp) return;
+	clonk->EnableScale();
+	clonk->EnableHangle();
+	clonk.ThrowSpeed += effect.throw;
 }
 
 // ------------------
