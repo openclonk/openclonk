@@ -1,0 +1,12 @@
+# Intro
+NameSister=Ruth
+
+# Intro
+MsgIntro1=Hey ihr Schlafmützen, schaut mal was ich gefunden habe!
+MsgIntro2=...was? Wo denn?
+MsgIntro3=Dort unten, am Hang!
+MsgIntro4=Und was soll hier sein..?
+MsgIntro5=Hihi...!
+MsgIntro6=Waaaaaah!
+MsgIntro7=Hm, war vielleicht doch ein bisschen tief?
+MsgIntro8=Egal, die werden schon rausfinden...

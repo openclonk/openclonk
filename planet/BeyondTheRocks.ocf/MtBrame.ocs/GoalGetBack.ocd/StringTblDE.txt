@@ -1,0 +1,3 @@
+Name=Finde den Weg zurück
+MsgGoalFulfilled=Ihr habt den Weg zurück gefunden.
+MsgGoalUnFulfilled=Ihr seid noch nicht zuhause.
