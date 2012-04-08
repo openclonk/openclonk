@@ -140,9 +140,6 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	// So a repeated keypress-event is not preceded with a keyrelease.
 	XkbSetDetectableAutoRepeat(dpy, True, &Priv->detectable_autorepeat_supported);
 
-	XSetLocaleModifiers("");
-	Priv->xim = XOpenIM(dpy, 0, 0, 0);
-	if (!Priv->xim) Log("Failed to open input method.");
 
 
 #if USE_CONSOLE && HAVE_LIBREADLINE
@@ -222,44 +219,6 @@ void C4AbstractApp::HandleXMessage()
 	case EnterNotify:
 		KeyMask = event.xcrossing.state;
 		break;
-	case KeyPress:
-		// Needed for input methods
-		if (!filtered)
-		{
-			char c[10] = "";
-			if (Priv->xic)
-			{
-				Status lsret;
-				Xutf8LookupString(Priv->xic, &event.xkey, c, 10, 0, &lsret);
-				if (lsret == XLookupKeySym) fprintf(stderr, "FIXME: XmbLookupString returned XLookupKeySym\n");
-				if (lsret == XBufferOverflow) fprintf(stderr, "FIXME: XmbLookupString returned XBufferOverflow\n");
-			}
-			else
-			{
-				static XComposeStatus state;
-				XLookupString(&event.xkey, c, 10, 0, &state);
-			}
-			if (c[0])
-			{
-				C4Window * pWindow = Priv->GetWindow(event.xany.window);
-				if (pWindow)
-				{
-					pWindow->CharIn(c);
-				}
-			}
-			// Fallthrough
-		}
-	case KeyRelease:
-		KeyMask = KeyMaskFromKeyEvent(dpy, &event.xkey);
-		Priv->LastEventTime = event.xkey.time;
-		break;
-	case ButtonPress:
-		// We can take this directly since there are no key presses
-		// involved. TODO: We probably need to correct button state
-		// here though.
-		KeyMask = event.xbutton.state;
-		Priv->LastEventTime = event.xbutton.time;
-		break;
 	case ClientMessage:
 		if (!strcmp(XGetAtomName(dpy, event.xclient.message_type), "WM_PROTOCOLS"))
 		{
@@ -291,12 +250,6 @@ void C4AbstractApp::HandleXMessage()
 		Priv->SetWindow(event.xany.window, 0);
 		break;
 	}
-	case FocusIn:
-		if (Priv->xic) XSetICFocus(Priv->xic);
-		break;
-	case FocusOut:
-		if (Priv->xic) XUnsetICFocus(Priv->xic);
-		break;
 	case ConfigureNotify:
 		if (pWindow && event.xany.window == pWindow->wnd)
 		{

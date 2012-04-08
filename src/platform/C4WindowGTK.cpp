@@ -54,6 +54,7 @@ static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
 	C4Window* wnd = static_cast<C4Window*>(data);
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
 	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	wnd->CharIn(event->string); // FIXME: Use GtkIMContext somehow
 	return true;
 }
 
@@ -64,6 +65,11 @@ static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer use
 	return true;
 }
 
+static gboolean OnButtonPress(GtkWidget *widget, GdkEventButton * event, C4AbstractApp * pApp)
+{
+	pApp->KeyMask = event->state;
+	return false;
+}
 static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data)
 {
 	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return; }
@@ -555,6 +561,7 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
+	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 

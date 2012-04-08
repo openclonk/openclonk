@@ -305,31 +305,6 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		return NULL;
 	}
 
-	if (pApp->Priv->xim && !pApp->Priv->xic)
-	{
-		pApp->Priv->xic = XCreateIC(pApp->Priv->xim,
-			                         XNClientWindow, wnd,
-			                         XNFocusWindow, wnd,
-			                         XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
-			                         XNResourceName, C4ENGINENAME,
-			                         XNResourceClass, C4ENGINENAME,
-			                         NULL);
-		if(pApp->Priv->xic)
-		{
-			long ic_event_mask;
-			if (XGetICValues(pApp->Priv->xic, XNFilterEvents, &ic_event_mask, NULL) == NULL)
-				attr.event_mask |= ic_event_mask;
-			XSelectInput(dpy, wnd, attr.event_mask);
-			XSetICFocus(pApp->Priv->xic);
-		}
-		else
-		{
-			Log("Failed to create input context.");
-			XCloseIM(pApp->Priv->xim);
-			pApp->Priv->xim=0;
-		}
-	}
-
 #if 0
 	// Set _NET_WM_STATE
 	if(n_net_wm_state_atoms)
