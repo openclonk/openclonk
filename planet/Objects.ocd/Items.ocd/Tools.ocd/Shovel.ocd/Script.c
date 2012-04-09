@@ -58,10 +58,12 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 {
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?
-	if(clonk->GetAction() != "Dig")
+	if(clonk->GetAction() != "Dig" || clonk->GBackLiquid(0,-4))
 	{
 		var is_scaling = (clonk->GetProcedure() == "SCALE");
 		var can_dig = (clonk->GetAction() == "Walk" || is_scaling || clonk->GetProcedure() == "HANGLE");
+		// Prevent clonk from starting to dig if in deep liquid
+		if (clonk->GBackLiquid(0,-4)) can_dig = false;
 		if (can_dig)
 		{
 			clonk->SetAction("Dig");
