@@ -53,7 +53,7 @@ private func GetItemPosition(int n, int total)
 	// Packing 7 or less circles.
 	if (total <= 7)
 	{
-		if (n == 7)
+		if (n == 1)
 			return [0, 0];
 		else
 		{	
@@ -66,9 +66,9 @@ private func GetItemPosition(int n, int total)
 	// Packing 19 or less circles.
 	if (total <= 19)
 	{
-		if (n == 7)
+		if (n == 1)
 			return [0, 0];
-		else if (n < 7)
+		else if (n <= 7)
 		{	
 			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 5);
 			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 5);
@@ -85,9 +85,9 @@ private func GetItemPosition(int n, int total)
 	// Packing 37 or less circles.
 	if (total <= 37)
 	{
-		if (n == 7)
+		if (n == 1)
 			return [0, 0];
-		else if (n < 7)
+		else if (n <= 7)
 		{	
 			var x = -Cos(60 * (n+1), 2 * MENU_Radius / 7);
 			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 7);
