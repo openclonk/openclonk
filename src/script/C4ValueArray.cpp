@@ -28,18 +28,18 @@
 #include <C4Object.h>
 
 C4ValueArray::C4ValueArray()
-		: iRefCnt(0), iSize(0), pData(NULL)
+		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
 {
 }
 
 C4ValueArray::C4ValueArray(int32_t inSize)
-		: iRefCnt(0), iSize(0), pData(NULL)
+		: iRefCnt(0), iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(inSize);
 }
 
 C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
-		: iSize(0), pData(NULL)
+		: iSize(0), iCapacity(0), pData(NULL)
 {
 	SetSize(ValueArray2.GetSize());
 	for (int32_t i = 0; i < iSize; i++)
@@ -49,7 +49,7 @@ C4ValueArray::C4ValueArray(const C4ValueArray &ValueArray2)
 C4ValueArray::~C4ValueArray()
 {
 	delete[] pData; pData = NULL;
-	iSize = 0;
+	iSize = iCapacity = 0;
 }
 
 C4ValueArray &C4ValueArray::operator =(const C4ValueArray& ValueArray2)
@@ -134,10 +134,10 @@ void C4ValueArray::SetSize(int32_t inSize)
 {
 	if(inSize == iSize) return;
 
-	// array made smaller? Well, just ignore the additional allocated mem then
-	if (inSize < iSize)
+	// array not larger than allocated memory? Well, just ignore the additional allocated mem then
+	if (inSize <= iCapacity)
 	{
-		// free values in undefined area
+		// free values in undefined area, do nothing if new is larger than old
 		for (int i=inSize; i<iSize; i++) pData[i].Set0();
 		iSize=inSize;
 		return;
@@ -158,7 +158,7 @@ void C4ValueArray::SetSize(int32_t inSize)
 	// replace
 	delete[] pData;
 	pData = pnData;
-	iSize = inSize;
+	iSize = iCapacity = inSize;
 }
 
 bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
@@ -173,7 +173,7 @@ bool C4ValueArray::operator==(const C4ValueArray& IntList2) const
 void C4ValueArray::Reset()
 {
 	delete[] pData; pData = NULL;
-	iSize = 0;
+	iSize = iCapacity = 0;
 }
 
 void C4ValueArray::Denumerate(C4ValueNumbers * numbers)
@@ -221,12 +221,7 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val)
 {
 	// maximum bounds
-	if(startIndex > MaxSize) throw new C4AulExecError(NULL, "array slice: start index exceeds maximum range");
-	if(endIndex > MaxSize)
-	{
-		if(endIndex == INT_MAX) endIndex = iSize;
-		else throw new C4AulExecError(NULL, "array slice: end index exceeds maximum range");
-	}
+	if(startIndex >= MaxSize) throw new C4AulExecError(NULL, "array slice: start index exceeds maximum capacity");
 
 	// index from back
 	if(startIndex < 0) startIndex += iSize;
@@ -244,40 +239,55 @@ void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value 
 		const C4ValueArray &Other = *Val._getArray(); // Remember that &Other could be equal to this, carefull with modifying pData
 
 		// Calculcate new size
-		int32_t iNewEnd = startIndex + Other.GetSize();
+		int32_t iNewEnd = Min(startIndex + Other.GetSize(), (int32_t)MaxSize);
 		int32_t iNewSize = iNewEnd;
 		if(endIndex < iSize)
 			iNewSize += iSize - endIndex;
+		iNewSize = Min(iNewSize, (int32_t)MaxSize);
 		int32_t iOtherSize = Other.GetSize();
 
 		if(iNewSize != iSize)
 		{
-			C4Value* pnData = new C4Value [iNewSize];
 			int32_t i,j;
+			C4Value* pnData = pData;
 
-			// Copy first part of old array
-			for(i = 0; i < startIndex && i < iSize; ++i)
-				pnData[i] = pData[i];
+			if(iNewSize > iCapacity)
+			{
+				 pnData = new C4Value [iNewSize];
 
-			// Copy the data
-			for(i = startIndex, j = 0; j < iOtherSize; i++, j++)
-				pnData[i] = Other.pData[j];
+				 // Copy first part of old array
+				for(i = 0; i < startIndex && i < iSize; ++i)
+					pnData[i] = pData[i];
+			}
 
 			// Copy the second slice of the new array
-			for(i = iNewEnd, j = endIndex; j < iSize; ++i, ++j)
+			for(i = iNewEnd, j = endIndex; i < iNewSize; ++i, ++j)
 			{
-				assert(i < iNewSize);
+				assert(j < iSize);
 				pnData[i] = pData[j];
 			}
 
-			// Other values should have been initialized to 0 by new
-			// Now replace pData
-			while(iSize--)
-				pData[iSize].Set0();
-			delete [] pData;
-			pData = pnData;
-			iSize = iNewSize;
+			// Copy the data
+			for(i = startIndex, j = 0; i < iNewEnd; ++i, ++j)
+			{
+				assert(j < iOtherSize);
+				pnData[i] = Other.pData[j];
+			}
 
+			// Other values should have been initialized to 0 by new
+			if(pData != pnData)
+			{
+				delete [] pData;
+				pData = pnData;
+				iCapacity = iSize = iNewSize;
+			}
+			else
+			{
+				// "ignore" the now unused part
+				for(i = iNewSize; i < iSize; ++i)
+					pData[i].Set0();
+				iSize = iNewSize;
+			}
 
 		} else // slice has the same size as inserted array
 			// Copy the data. changing pData does not break because if &Other == this and iNewSize == iSize, nothing happens at all
@@ -285,6 +295,7 @@ void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value 
 				pData[i] = Other.pData[j];
 
 	} else /* if(Val.GetType() != C4V_Array) */ {
+		if(endIndex > MaxSize) endIndex = iSize;
 
 		// Need resize?
 		if(endIndex > iSize) SetSize(endIndex);
