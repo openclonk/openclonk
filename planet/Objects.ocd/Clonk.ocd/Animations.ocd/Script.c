@@ -442,7 +442,7 @@ func FxIntWalkStart(pTarget, effect, fTmp)
 func FxIntWalkTimer(pTarget, effect)
 {
 	// Test Waterlevel
-	if(GBackLiquid(0, -5) && !Contained())
+	if(InLiquid() && GBackLiquid(0, -5) && !Contained())
 	{
 		SetAction("Swim");
 		if(GetComDir() == COMD_Left)
@@ -887,6 +887,7 @@ func StartSwim()
 {
 /*	if(Clonk_SwimStates == nil)
 		Clonk_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
+	if(!InLiquid()) return;
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
 	SetVertex(1,VTX_Y,-4,2);
