@@ -390,38 +390,6 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 
 bool C4Window::ReInit(C4AbstractApp* pApp)
 {
-	// Can only re-init if we have been initialized already
-	if(!wnd) return false;
-
-	// Check whether multisampling settings was changed. If not then we
-	// don't need to ReInit anything.
-#ifdef USE_GL
-	int value;
-	glXGetConfig(dpy, static_cast<XVisualInfo*>(Info), GLX_SAMPLES_ARB, &value);
-	if(value == Config.Graphics.MultiSampling) return true;
-#else
-	return true;
-#endif
-
-	// Check whether we have a visual with the requested number of samples
-	void* new_info;
-	if(!FindInfo(Config.Graphics.MultiSampling, &new_info)) return false;
-
-	Window new_window = CreateRenderWindow(dpy, wnd, static_cast<XVisualInfo*>(new_info));
-	if(!new_window)
-	{
-		delete static_cast<XVisualInfo*>(new_info);
-		return false;
-	}
-
-	delete static_cast<XVisualInfo*>(Info);
-	Info = new_info;
-
-	// Replace existing render window with new one
-	XUnmapWindow(dpy, renderwnd);
-	XMapWindow(dpy, new_window);
-	XDestroyWindow(dpy, renderwnd);
-	renderwnd = new_window;
 	return true;
 }
 

@@ -32,6 +32,7 @@
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
+#include <GL/glx.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
@@ -263,6 +264,84 @@ static GtkTargetEntry drag_drop_entries[] =
 	{ const_cast<gchar*>("text/uri-list"), 0, 0 }
 };
 
+static gboolean OnConfigureNotify(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
+{
+	Application.OnResolutionChanged(event->configure.width, event->configure.height);
+	return false;
+}
+
+static bool fullscreen_needs_restore = false;
+static gboolean fullscreen_restore(gpointer data)
+{
+	if (fullscreen_needs_restore)
+		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+	fullscreen_needs_restore = false;
+	return FALSE;
+}
+
+static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
+{
+	Application.Active = true;
+	fullscreen_needs_restore = true;
+	gdk_threads_add_idle(fullscreen_restore, NULL);
+	return false;
+}
+static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
+{
+	Application.Active = false;
+	if (!Config.Graphics.Windowed)
+	{
+		Application.RestoreVideoMode();
+		fullscreen_needs_restore = false;
+	}
+	return false;
+}
+
+static gboolean OnButtonPressFS(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	switch (event->button)
+	{
+	case 1:
+		if (event->type == GDK_BUTTON_PRESS)
+			C4GUI::MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+		else if (event->type == GDK_2BUTTON_PRESS)
+			C4GUI::MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+		break;
+	case 2:
+		C4GUI::MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+		break;
+	case 3:
+		if (event->type == GDK_BUTTON_PRESS)
+			C4GUI::MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+		else if (event->type == GDK_2BUTTON_PRESS)
+			C4GUI::MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+		break;
+	default:
+		return false;
+	}
+	return true;
+}
+
+gboolean OnButtonRelease(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
+{
+	int b;
+	switch (event->button)
+	{
+	case 1: b = C4MC_Button_LeftUp; break;
+	case 2: b = C4MC_Button_MiddleUp; break;
+	case 3: b = C4MC_Button_RightUp; break;
+	default: return false;
+	}
+	C4GUI::MouseMove(b, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+	return true;
+}
+
+static gboolean OnMotionNotify(GtkWidget* widget, GdkEventMotion* event, gpointer user_data)
+{
+	C4GUI::MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, NULL);
+	return true;
+}
+
 static gboolean OnScrollGD(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
 {
 	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
@@ -355,6 +434,7 @@ static gboolean OnConfigureGD(GtkWidget* widget, GdkEventConfigure* event, gpoin
 
 	return false;
 }
+
 C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
@@ -434,6 +514,30 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+	}
+	else if (windowKind == W_Fullscreen)
+	{
+		render_widget = gtk_drawing_area_new();
+		gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(render_widget));
+
+		g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(OnConfigureNotify), this);
+		g_signal_connect(G_OBJECT(window), "focus-in-event", G_CALLBACK(OnFocusInFS), this);
+		g_signal_connect(G_OBJECT(window), "focus-out-event", G_CALLBACK(OnFocusOutFS), this);
+		g_signal_connect(G_OBJECT(window), "unmap-event", G_CALLBACK(OnFocusOutFS), this);
+		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPressFS), this);
+		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonRelease), this);
+		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotify), this);
+		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPress), this);
+		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyRelease), this);
+		gtk_widget_add_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
+		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+
+		GValue val = G_VALUE_INIT;
+		g_value_init (&val, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&val, true);
+		g_object_set_property (G_OBJECT (render_widget), "can-focus", &val);
+		g_object_set_property (G_OBJECT (window), "can-focus", &val);
+		g_value_unset (&val);
 	}
 	else if (windowKind == W_GuiWindow)
 	{
@@ -517,27 +621,47 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 		renderwnd = GDK_WINDOW_XID(render_wnd);
 	}
 
-
-	if (HideCursor)
-	{
-		// TODO!
-//    GdkCursor* cursor = gdk_cursor_new_from_pixmap(NULL, NULL, NULL, NULL, 0, 0);
-		gdk_window_set_cursor(window_wnd, NULL);
-	}
-
 	// Make sure the window is shown and ready to be rendered into,
 	// this avoids an async X error.
 	gdk_flush();
 
+	if (windowKind == W_Fullscreen)
+		gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
 	return this;
 }
 
 bool C4GtkWindow::ReInit(C4AbstractApp* pApp)
 {
-	// TODO: Recreate the window with a newly chosen visual
-	// Probably we don't need this, since there is no way to change
-	// MultiSampling when no window is open.
-	return false;
+	// Check whether multisampling settings was changed. If not then we
+	// don't need to ReInit anything.
+#ifdef USE_GL
+	int value;
+	glXGetConfig(dpy, static_cast<XVisualInfo*>(Info), GLX_SAMPLES_ARB, &value);
+	if(value == Config.Graphics.MultiSampling) return true;
+#else
+	return true;
+#endif
+	// Check whether we have a visual with the requested number of samples
+	void* new_info;
+	if(!FindInfo(Config.Graphics.MultiSampling, &new_info)) return false;
+
+	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
+	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, static_cast<XVisualInfo*>(new_info)->visualid);
+#if GTK_CHECK_VERSION(2,91,0)
+	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
+#else
+	GdkColormap * cmap = gdk_colormap_new(vis, true);
+	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
+	g_object_unref(cmap);
+#endif
+	// create a new X11 window
+	gtk_widget_unrealize(GTK_WIDGET(render_widget));
+	gtk_widget_realize(GTK_WIDGET(render_widget));
+
+	delete static_cast<XVisualInfo*>(Info);
+	Info = new_info;
+
+	return true;
 }
 
 void C4GtkWindow::Clear()

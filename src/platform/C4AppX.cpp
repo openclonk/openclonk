@@ -293,22 +293,9 @@ void C4AbstractApp::HandleXMessage()
 	}
 	case FocusIn:
 		if (Priv->xic) XSetICFocus(Priv->xic);
-		if (Priv->pending_desktop)
-			Priv->pending_desktop = false;
-		if (pWindow && event.xany.window == pWindow->wnd && Priv->tasked_out)
-		{
-			fDspModeSet = Priv->SwitchToFullscreen(this, pWindow->wnd);
-			Priv->tasked_out = false;
-		}
 		break;
 	case FocusOut:
 		if (Priv->xic) XUnsetICFocus(Priv->xic);
-		// fallthrough
-	case UnmapNotify:
-		if (pWindow && event.xany.window == pWindow->wnd && fDspModeSet)
-		{
-			Priv->pending_desktop = true;
-		}
 		break;
 	case ConfigureNotify:
 		if (pWindow && event.xany.window == pWindow->wnd)
@@ -597,13 +584,6 @@ void C4AbstractApp::OnXInput()
 	while (XEventsQueued(dpy, QueuedAfterReading))
 	{
 		HandleXMessage();
-	}
-	if (Priv->pending_desktop)
-	{
-		RestoreVideoMode();
-		fDspModeSet = false;
-		Priv->tasked_out = true;
-		Priv->pending_desktop = false;
 	}
 	// At least the _NET_WM_PING reply needs to be flushed,
 	// and having received events is a good heuristic for

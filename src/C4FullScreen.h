@@ -26,9 +26,16 @@
 #include "C4MainMenu.h"
 #include <C4Window.h>
 
+#ifdef WITH_DEVELOPER_MODE
+#include <C4WindowGTK.h>
+typedef C4GtkWindow C4FullScreenBase;
+#else
+typedef C4Window C4FullScreenBase;
+#endif
+
 bool IsKeyDown(int iKey);
 
-class C4FullScreen: public C4Window
+class C4FullScreen: public C4FullScreenBase
 {
 public:
 	C4MainMenu *pMenu;
@@ -43,15 +50,13 @@ public:
 	bool MenuCommand(const char *szCommand);
 	void CloseMenu();
 	bool MenuKeyControl(BYTE byCom); // direct keyboard callback
-	using C4Window::Init;
-	virtual C4Window * Init(C4AbstractApp * pApp);
+	using C4FullScreenBase::Init;
+	C4Window * Init(C4AbstractApp * pApp);
 	// User requests close
 	virtual void Close();
 	virtual void Clear();
 	virtual void CharIn(const char * c);
-#ifdef USE_X11
-	virtual void HandleMessage (XEvent &e);
-#elif defined(USE_COCOA)
+#if defined(USE_COCOA)
 	virtual void HandleMessage (/*NSEvent*/void* event);
 #endif
 	virtual void PerformUpdate();
