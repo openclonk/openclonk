@@ -43,6 +43,7 @@ func InitializePlayer(int plr)
 			var x = 260*8/10 + Random(50);
 			var y = 1350*8/10;
 			crew->SetPosition(x , y);
+			crew->CreateContents(Shovel);
 		}
 	}
 }

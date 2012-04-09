@@ -36,6 +36,11 @@ global func IntroAddPlayer(int plr)
 		container->SetCommand("None", container);
 		crew->SetCommand("None", crew);
 
+		// Give everyone but the first player a shovel -- the first
+		// player's shovel can be found in the valley
+		if(GetLength(effect.Players) != 0)
+			crew->CreateContents(Shovel);
+
 		effect.Players[GetLength(effect.Players)] = crew;
 	}
 
