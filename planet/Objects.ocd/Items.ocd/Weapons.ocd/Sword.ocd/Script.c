@@ -46,6 +46,7 @@ public func ControlUse(object clonk, int x, int y)
 		carry_bone = "pos_hand1";
 	}
 	var rand = Random(2)+1;
+	rand = 1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var animation_sword = Format("Strike%d", rand);
 	var downwards_stab = false;
@@ -57,8 +58,8 @@ public func ControlUse(object clonk, int x, int y)
 		//length=20;
 		/*if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
 			AddEffect("SwordStrikeSpeedUp", clonk, 1, 5, this);*/
-		if(!GetEffect("SwordStrikeStop", clonk, 0))
-			AddEffect("SwordStrikeStop", clonk, 2, 50, this);
+		if(!GetEffect("SwordStrikeStop", clonk))
+			AddEffect("SwordStrikeStop", clonk, 2, length, this);
 	} else
 	if(clonk->IsJumping())
 	{
@@ -103,6 +104,10 @@ public func ControlUse(object clonk, int x, int y)
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
 	this->Sound("WeaponSwing?", false, nil, nil, nil);
+	// Cooldown
+	// Prevent clonk from striking too often if the animation is interrupted
+	AddEffect("SwordWeaponCooldown", clonk, 1, length, this);
+
 	return true;
 }
 
@@ -224,19 +229,19 @@ func CheckStrike(iTime)
 
 func FxSwordStrikeStopStart(pTarget, effect, iTemp)
 {
-	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
 	if(iTemp) return;
+	pTarget->PushActionSpeed("Walk", (pTarget.ActMap.Walk.Speed)/100);
 }
 
 func FxSwordStrikeStopStop(pTarget, effect, iCause, iTemp)
 {
-	pTarget->PopActionSpeed("Walk");
 	if(iTemp) return;
+	pTarget->PopActionSpeed("Walk");
 }
 
 func FxSwordStrikeStopTimer(pTarget, effect)
 {
-	return 1;
+	return -1;
 }
 
 func FxSwordStrikeSpeedUpStart(pTarget, effect, iTemp)
