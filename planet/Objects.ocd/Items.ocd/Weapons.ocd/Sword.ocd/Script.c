@@ -46,7 +46,6 @@ public func ControlUse(object clonk, int x, int y)
 		carry_bone = "pos_hand1";
 	}
 	var rand = Random(2)+1;
-	rand = 1;
 	var animation = Format("SwordSlash%d.%s", rand, arm);
 	var animation_sword = Format("Strike%d", rand);
 	var downwards_stab = false;
