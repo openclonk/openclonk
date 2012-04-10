@@ -75,16 +75,6 @@ func FxIntWeaponChargeStart(pTarget, effect, iTemp, length)
 
 func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 {
-	// check whether the Clonk is still striking
-	/*if(this->GetChargeType() == L_WN_straight)
-	{
-		if(!pTarget->IsWalking())
-			return -1;
-	}
-	else if(!pTarget->IsJumping())
-	{
-		return -1;
-	}*/
 	if(this->Contained() != pTarget) return -1;
 	if(!pTarget->~IsWalking() && !pTarget->~IsJumping()) return -1;
 	var strikeTime=effect.length;

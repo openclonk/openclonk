@@ -2,6 +2,8 @@
 
 #include Library_MeleeWeapon
 
+static const Sword_Standard_StrikingLength = 15; // in frames
+
 func Hit()
 {
 	Sound("LightMetalHit?");
@@ -51,12 +53,9 @@ public func ControlUse(object clonk, int x, int y)
 	var downwards_stab = false;
 	
 	// figure out the kind of attack to use
-	var length=15;
+	var length = Sword_Standard_StrikingLength;
 	if(clonk->IsWalking())
 	{
-		//length=20;
-		/*if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
-			AddEffect("SwordStrikeSpeedUp", clonk, 1, 5, this);*/
 		if(!GetEffect("SwordStrikeStop", clonk))
 			AddEffect("SwordStrikeStop", clonk, 2, length, this);
 	} else
@@ -68,7 +67,7 @@ public func ControlUse(object clonk, int x, int y)
 		
 		if(!slow && !GetEffect("DelayTranslateVelocity", clonk))
 		{
-			//TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300, 1);
+			// check whether the player aims below the Clonk
 			var a=Angle(0, 0, x,y);
 			if(Inside(a, 35+90, 35+180))
 			{
@@ -99,14 +98,13 @@ public func ControlUse(object clonk, int x, int y)
 	}
 	clonk->UpdateAttach();
 	
-	magic_number=((magic_number+1)%10) + (ObjectNumber()*10);
+	// this means that the sword can only hit an object every X frames
+	// change it to something that changes every strike if you want the sword to be able to hit the same enemy with different
+	// strikes regardless of the time in between
+	magic_number = ObjectNumber();
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
 	this->Sound("WeaponSwing?", false, nil, nil, nil);
-	// Cooldown
-	// Prevent clonk from striking too often if the animation is interrupted
-	AddEffect("SwordWeaponCooldown", clonk, 1, length, this);
-
 	return true;
 }
 
@@ -116,22 +114,28 @@ func OnWeaponHitCheckStop(clonk)
 	clonk->UpdateAttach();
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
-	//if(GetEffect("DelayTranslateVelocity", clonk))
-	//	RemoveEffect("DelayTranslateVelocity", clonk);
+
 	if(clonk->IsJumping())
 	{
 		if(!GetEffect("Fall", clonk))
 			AddEffect("Fall",clonk,1,1,clonk);
 	}
+	
+	if(GetEffect("SwordStrikeStop", clonk))
+		RemoveEffect("SwordStrikeStop", clonk);
+	
 	return;
 }
 
+// called when the strike expired before end of length (aborted)
 func WeaponStrikeExpired()
 {
-	//if(Contained())
-	//	this->ScheduleCall(this, "ControlUseStart", 1, 0, Contained(), 0, 0);
-	if(GetEffect("SwordStrikeStop", Contained()))
-		RemoveEffect("SwordStrikeStop", Contained());
+
+}
+
+func SwordDamage(int shield)
+{
+	return ((100-shield)*9*1000 / 100);
 }
 
 func CheckStrike(iTime)
@@ -171,7 +175,7 @@ func CheckStrike(iTime)
 			// don't hit objects twice
 			if(!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, 60 /* arbitrary */, 0, 0);
+				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength, 0, 0);
 				
 				if(GetEffect(sword_name, obj))
 				{
@@ -191,7 +195,7 @@ func CheckStrike(iTime)
 					continue;
 					
 				// fixed damage (9)
-				var damage=((100-shield)*9*1000 / 100);
+				var damage = SwordDamage(shield);
 				ProjectileHit(obj, damage, ProjectileHit_no_query_catch_blow_callback | ProjectileHit_exact_damage | ProjectileHit_no_on_projectile_hit_callback, FX_Call_EngGetPunched);
 				
 				// object has not been deleted?
@@ -214,7 +218,7 @@ func CheckStrike(iTime)
 						x=1;
 						p="Slice1";
 					} 
-//					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
+					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
 				}
 				
 				// sound and done. We can only hit one target
