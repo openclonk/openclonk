@@ -413,6 +413,8 @@ bool CStdGLCtx::PageFlip()
 
 #elif defined(USE_X11)
 #include <GL/glx.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0) { }
 
@@ -421,7 +423,8 @@ void CStdGLCtx::Clear()
 	Deselect();
 	if (ctx)
 	{
-		glXDestroyContext(pWindow->dpy, (GLXContext)ctx);
+		Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+		glXDestroyContext(dpy, (GLXContext)ctx);
 		ctx = 0;
 	}
 	pWindow = 0;
@@ -433,12 +436,13 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	if (!pGL) return false;
 	// store window
 	this->pWindow = pWindow;
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
-	ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (pGL->pMainCtx != this) ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
+	ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, (pGL->pMainCtx != this) ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
 	// without, rendering will be unacceptable slow, but that's better than nothing at all
 	if (!ctx)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, False);
+		ctx = glXCreateContext(dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, False);
 	// No luck at all?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -460,8 +464,9 @@ bool CStdGLCtx::Select(bool verbose)
 		if (verbose) pGL->Error("  gl: pGL is zero");
 		return false;
 	}
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	// make context current
-	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, (GLXContext)ctx))
+	if (!pWindow->renderwnd || !glXMakeCurrent(dpy, pWindow->renderwnd, (GLXContext)ctx))
 	{
 		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
 		return false;
@@ -482,7 +487,8 @@ void CStdGLCtx::Deselect()
 {
 	if (pGL && pGL->pCurrCtx == this)
 	{
-		glXMakeCurrent(pWindow->dpy, None, NULL);
+		Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+		glXMakeCurrent(dpy, None, NULL);
 		pGL->pCurrCtx = 0;
 		pGL->RenderTarget = 0;
 	}
@@ -493,7 +499,8 @@ bool CStdGLCtx::PageFlip()
 	// flush GL buffer
 	glFlush();
 	if (!pWindow || !pWindow->renderwnd) return false;
-	glXSwapBuffers(pWindow->dpy, pWindow->renderwnd);
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	glXSwapBuffers(dpy, pWindow->renderwnd);
 	return true;
 }
 
