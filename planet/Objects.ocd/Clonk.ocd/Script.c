@@ -198,7 +198,7 @@ public func Eat(object food)
 // adaptions
 public func IsClonk() { return true; }
 
-public func IsJumping(){return GetProcedure() == "FLIGHT";}
+public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
 
 /* Carry items on the clonk */
