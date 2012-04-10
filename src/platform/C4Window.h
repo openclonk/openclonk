@@ -292,6 +292,10 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
 
 #ifdef USE_WIN32_WINDOWS
 public:
@@ -304,16 +308,11 @@ public:
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
-	virtual void HandleMessage (XEvent &);
 protected:
 	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
-	Display * dpy;
-	// The currently set window hints
-	void * Hints;
-	bool HasFocus; // To clear urgency hint
 	// The XVisualInfo the window was created with
 	void * Info;
 	unsigned long handlerDestroy;
@@ -329,12 +328,7 @@ protected:
 public:	
 	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
-public:
-	// request that this window be redrawn in the near future (including immediately)
-	virtual void RequestUpdate();
-	// Invokes actual drawing code - should not be called directly
-	virtual void PerformUpdate();
-public:
+protected:
 	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;

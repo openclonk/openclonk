@@ -1,10 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2009, 2011  Günther Brammer
+ * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2006-2008, 2010  Armin Burgmeier
- * Copyright (c) 2007, 2011  Günther Brammer
  * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -21,11 +23,19 @@
 /* A wrapper class to OS dependent event and window interfaces, GTK+ version */
 
 #include <C4Include.h>
-#include <C4WindowGTK.h>
+#include <C4Window.h>
 
 #include <C4App.h>
 #include "C4Version.h"
-#include "C4Config.h"
+#include <C4Config.h>
+
+#include <StdGL.h>
+#include <StdDDraw2.h>
+#include <StdFile.h>
+#include <StdBuf.h>
+
+#include <C4Rect.h>
+
 #include <C4Console.h>
 #include <C4ViewportWindow.h>
 #include "C4MouseControl.h"
@@ -40,6 +50,8 @@
 #include <X11/extensions/xf86vmode.h>
 #include <GL/glx.h>
 #endif
+
+#include "C4AppXImpl.h"
 
 // Some helper functions for choosing a proper visual
 
@@ -202,14 +214,14 @@ static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 	wnd->Clear();
 }
 
-static GdkFilterReturn OnFilter(GdkXEvent* xevent, GdkEvent* event, gpointer user_data)
+static gboolean OnDelete(GtkWidget* widget, GdkEvent* event, gpointer data)
 {
-	// Handle raw X message, then let GTK+ process it
-	static_cast<C4Window*>(user_data)->HandleMessage(*reinterpret_cast<XEvent*>(xevent));
-	return GDK_FILTER_CONTINUE;
+	C4Window* wnd = static_cast<C4Window*>(data);
+	wnd->Close();
+	return true;
 }
 
-static gboolean OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+static gboolean OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, C4AbstractApp * pApp)
 {
 	// Update mask so that Application.IsShiftDown,
 	// Application.IsControlDown etc. work.
@@ -233,7 +245,7 @@ static gboolean OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer 
 	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
 	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
 
-	static_cast<C4AbstractApp*>(user_data)->KeyMask = mask;
+	pApp->KeyMask = mask;
 	return false;
 }
 
@@ -634,9 +646,10 @@ static gboolean OnConfigureGD(GtkWidget* widget, GdkEventConfigure* event, gpoin
 }
 
 C4Window::C4Window ():
-		Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0), window(NULL)
+		Active(false), pSurface(0), wnd(0), renderwnd(0), Info(0), window(NULL)
 {
 }
+
 C4Window::~C4Window ()
 {
 	Clear();
@@ -691,10 +704,14 @@ bool C4Window::RestorePosition(const char *, const char *, bool)
 	return true;
 }
 
+void C4Window::FlashWindow()
+{
+	//FIXME - how is this reset? gtk_window_set_urgency_hint(window, true);
+}
+
 C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
-	dpy = pApp->dpy;
 
 	if(!FindInfo(Config.Graphics.MultiSampling, &Info))
 	{
@@ -815,10 +832,12 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	// Override gtk's default to match name/class of the XLib windows
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
+	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), this);
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
 	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
+	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
@@ -853,11 +872,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(GTK_WIDGET(window));
 	wnd = GDK_WINDOW_XID(window_wnd);
-	gdk_window_add_filter(window_wnd, OnFilter, this);
-
-	XWMHints * wm_hint = XGetWMHints(dpy, wnd);
-	if (!wm_hint) wm_hint = XAllocWMHints();
-	Hints = wm_hint;
 
 	if (GTK_IS_LAYOUT(render_widget))
 	{
@@ -895,6 +909,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	// don't need to ReInit anything.
 #ifdef USE_GL
 	int value;
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	glXGetConfig(dpy, static_cast<XVisualInfo*>(Info), GLX_SAMPLES_ARB, &value);
 	if(value == Config.Graphics.MultiSampling) return true;
 #else

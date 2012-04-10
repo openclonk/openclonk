@@ -20,39 +20,6 @@
 #ifndef INC_STD_X_PRIVATE_H
 #define INC_STD_X_PRIVATE_H
 
-#ifdef WITH_GLIB
-# include <glib.h>
-#endif
-
-#include <C4App.h>
-
-class C4X11Proc: public StdSchedulerProc
-{
-
-public:
-	C4X11Proc(C4AbstractApp *pApp): pApp(pApp) { }
-	~C4X11Proc() { }
-
-	C4AbstractApp *pApp;
-
-	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & fds)
-	{
-		pollfd pfd = { XConnectionNumber(pApp->dpy), POLLIN, 0 };
-		fds.push_back(pfd);
-	}
-	virtual int GetNextTick(int Now)
-	{
-		return XEventsQueued(pApp->dpy, QueuedAlready) ? Now : -1;
-	}
-	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
-	{
-		pApp->OnXInput();
-		return true;
-	}
-};
-
-#ifdef WITH_GLIB
 class C4GLibProc: public StdSchedulerProc
 {
 public:
@@ -150,42 +117,29 @@ public:
 		return true;
 	}
 };
-#endif // WITH_GLIB
 
 class C4X11AppImpl
 {
 public:
-#ifdef WITH_GLIB
 	C4GLibProc GLibProc;
-#endif
-
 	C4X11AppImpl(C4AbstractApp *pApp):
-#ifdef WITH_GLIB
 			GLibProc(g_main_context_default()),
-#endif // WITH_GLIB
-			LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
-			xim(0), xic(0), X11Proc(pApp),
+			tasked_out(false), pending_desktop(false),
 			argc(0), argv(0) { }
 	bool SwitchToFullscreen(C4AbstractApp * pApp, C4Window * );
 	void SwitchToDesktop(C4AbstractApp * pApp, C4Window * );
-	static C4Window * GetWindow(unsigned long wnd);
-	static void SetWindow(unsigned long wnd, C4Window * pWindow);
-	unsigned long LastEventTime;
-	typedef std::map<unsigned long, C4Window *> WindowListT;
-	static WindowListT WindowList;
+
 	int xf86vmode_major_version, xf86vmode_minor_version;
 	XF86VidModeModeInfo xf86vmode_oldmode, xf86vmode_targetmode;
-	int gammasize;
+	int gammasize; // Size of gamma ramps
+
 	int xrandr_major_version, xrandr_minor_version;
 	int xrandr_oldmode;
 	unsigned short xrandr_rot;
 	int xrandr_event;
+
 	bool tasked_out; int wdt; int hgt;
 	bool pending_desktop;
-	XIM xim;
-	XIC xic;
-	Bool detectable_autorepeat_supported;
-	C4X11Proc X11Proc;
 	int argc; char ** argv;
 };
 

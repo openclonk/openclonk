@@ -29,8 +29,6 @@
 #endif
 
 #if defined(USE_X11)
-// do not include xlib.h
-typedef struct _XDisplay Display;
 // from X.h:
 //#define ShiftMask   (1<<0)
 //#define ControlMask   (1<<2)
@@ -166,15 +164,8 @@ public:
 #endif
 
 #if defined(USE_X11)
-public:
-	Display * dpy;
-	// These must be public to be callable from callback functions from
-	// the glib main loop that are in an anonymous namespace in
-	// StdXApp.cpp.
-	void OnXInput();
 protected:
 	class C4X11AppImpl * Priv;
-	void HandleXMessage();
 
 #elif defined(USE_SDL_MAINLOOP)
 public:
@@ -214,7 +205,7 @@ public:
 protected:
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit(int argc, char * argv[]) = 0;;
+	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	friend class CStdGL;
 	friend class CStdGLCtx;
