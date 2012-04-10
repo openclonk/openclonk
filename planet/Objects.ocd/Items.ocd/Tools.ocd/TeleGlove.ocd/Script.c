@@ -55,12 +55,12 @@ private func StartUsage(object clonk)
 {
 	var hand;
 	// which animation to use? (which hand)
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 	{
 		carry_bone = "pos_hand2";
 		hand = "AimArmsGeneric.R";
 	}
-	if(clonk->GetItemPos(this) == 1)
+	else
 	{
 		carry_bone = "pos_hand1";
 		hand = "AimArmsGeneric.L";

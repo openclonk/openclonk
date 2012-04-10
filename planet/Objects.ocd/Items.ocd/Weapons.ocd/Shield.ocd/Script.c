@@ -49,12 +49,12 @@ private func StartUsage(object clonk)
 {
 	var hand;
 	// which animation to use? (which hand)
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 	{
 		carry_bone = "pos_hand2";
 		hand = "ShieldArms.R";
 	}
-	if(clonk->GetItemPos(this) == 1)
+	else
 	{
 		carry_bone = "pos_hand1";
 		hand = "ShieldArms.L";
@@ -63,9 +63,9 @@ private func StartUsage(object clonk)
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 
 	var handLR;
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		handLR = "R";
-	if(clonk->GetItemPos(this) == 1)
+	else
 		handLR = "L";
 
 	clonk->UpdateAttach();
@@ -119,9 +119,9 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
 
 	var handLR;
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		handLR = "R";
-	if(clonk->GetItemPos(this) == 1)
+	else
 		handLR = "L";
 
 	clonk->ReplaceAction("Stand", [Format("ShieldStandUp.%s",handLR), Format("ShieldStandDown.%s",handLR), weight]);

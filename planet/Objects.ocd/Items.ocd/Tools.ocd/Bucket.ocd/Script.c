@@ -33,7 +33,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 	var arm = "R";
 	var carry_bone = "pos_hand2";
-	if(clonk->GetItemPos(this) == 1)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 	{
 		arm = "L";
 		carry_bone = "pos_hand1";

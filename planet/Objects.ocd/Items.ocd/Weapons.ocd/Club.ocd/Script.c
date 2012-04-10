@@ -13,7 +13,7 @@ public func GetCarrySpecial(clonk)
 {
 	if(fAiming)
 	{
-		if(clonk->GetItemPos(this) == 1)
+		if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
 			return "pos_hand1";
 		else
 			return "pos_hand2";
@@ -67,9 +67,9 @@ local fAiming;
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		ClubChangeHandAnims("R");
-	else if(clonk->GetItemPos(this) == 1)
+	else
 		ClubChangeHandAnims("L");
 
 	// cooldown?
