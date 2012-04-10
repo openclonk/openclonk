@@ -58,7 +58,7 @@ global func OnBlastIncinerationDamage(int level, int player)
 // called if the object is for example in lava
 global func OnInIncendiaryMaterial()
 {
-	return this->Incinerate(5, NO_OWNER);
+	return this->Incinerate(10, NO_OWNER);
 }
 
 // Makes the calling object non flammable.
@@ -214,7 +214,7 @@ global func FxFireTimer(object target, effect, int time)
 	//target->ExecFire(effect_number, caused_by);
 	if(target->GetAlive())
 	{
-		target->DoEnergy(-effect.strength*2, true, FX_Call_EngFire, effect.caused_by); 
+		target->DoEnergy(-effect.strength*4, true, FX_Call_EngFire, effect.caused_by); 
 	}
 	else 
 	{
