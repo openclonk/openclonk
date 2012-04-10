@@ -22,13 +22,19 @@
 /* A wrapper class to OS dependent event and window interfaces, X11 version */
 
 #include <C4Include.h>
-#ifdef USE_X11
+#include <C4App.h>
+
+#ifdef WITH_GLIB
 #include <C4Window.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
 #include <StdFile.h>
 #include <StdBuf.h>
 
+#include <glib.h>
+#include <gtk/gtk.h>
+
+#ifdef USE_X11
 #include <X11/Xmd.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -47,14 +53,10 @@
 
 /* C4AbstractApp */
 
-#ifdef WITH_GLIB
-# include <glib.h>
+#include <gdk/gdkx.h>
 #endif
 
-#ifdef WITH_DEVELOPER_MODE
-# include "c4x.xpm"
-# include <gtk/gtk.h>
-#endif
+#include "c4x.xpm"
 
 #include "C4AppXImpl.h"
 
@@ -118,25 +120,25 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 
 	int xf86vmode_event_base, xf86vmode_error_base;
 	if (!XF86VidModeQueryExtension(dpy, &xf86vmode_event_base, &xf86vmode_error_base)
-	    || !XF86VidModeQueryVersion(dpy, &xf86vmode_major_version, &xf86vmode_minor_version))
+	    || !XF86VidModeQueryVersion(dpy, &Priv->xf86vmode_major_version, &Priv->xf86vmode_minor_version))
 	{
-		xf86vmode_major_version = -1;
-		xf86vmode_minor_version = 0;
+		Priv->xf86vmode_major_version = -1;
+		Priv->xf86vmode_minor_version = 0;
 	}
 	int xrandr_error_base;
 	if (!XRRQueryExtension(dpy, &Priv->xrandr_event, &xrandr_error_base)
-	    || !XRRQueryVersion(dpy, &xrandr_major_version, &xrandr_minor_version))
+	    || !XRRQueryVersion(dpy, &Priv->xrandr_major_version, &Priv->xrandr_minor_version))
 	{
-		xrandr_major_version = -1;
-		xrandr_minor_version = 0;
+		Priv->xrandr_major_version = -1;
+		Priv->xrandr_minor_version = 0;
 	}
 	XRRSelectInput(dpy, DefaultRootWindow(dpy), RRScreenChangeNotifyMask);
-	if (xrandr_major_version < 0 && xf86vmode_major_version < 0)
+	if (Priv->xrandr_major_version < 0 && Priv->xf86vmode_major_version < 0)
 		Log("Xrandr and xf86vmode extensions are missing. Resolution switching will not work.");
-	else if (xrandr_major_version >= 0)
-		LogF("  Using XRandR version %d.%d", xrandr_major_version, xrandr_minor_version);
+	else if (Priv->xrandr_major_version >= 0)
+		LogF("  Using XRandR version %d.%d", Priv->xrandr_major_version, Priv->xrandr_minor_version);
 	else
-		LogF("  Using XF86VidMode version %d.%d", xf86vmode_major_version, xf86vmode_minor_version);
+		LogF("  Using XF86VidMode version %d.%d", Priv->xf86vmode_major_version, Priv->xf86vmode_minor_version);
 	// So a repeated keypress-event is not preceded with a keyrelease.
 	XkbSetDetectableAutoRepeat(dpy, True, &Priv->detectable_autorepeat_supported);
 
@@ -269,28 +271,29 @@ void C4AbstractApp::HandleXMessage()
 
 bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	if (Priv->tasked_out)
 		return false;
 	bool modefound = false;
 	if (fDspModeSet)
 	{
-		Priv->SwitchToDesktop(this, pWindow->wnd);
+		Priv->SwitchToDesktop(this, pWindow);
 		fDspModeSet = false;
 	}
 	if (!fFullScreen)
 	{
-		XResizeWindow(dpy, pWindow->wnd, iXRes, iYRes);
+		pWindow->SetSize(iXRes, iYRes);
 		return true;
 	}
 	if (Priv->xf86vmode_targetmode.hdisplay == iXRes && Priv->xf86vmode_targetmode.vdisplay == iYRes)
 		modefound = true;
 	// randr spec says to always get fresh info, so don't cache.
-	if (xrandr_major_version >= 0)
+	if (Priv->xrandr_major_version >= 0)
 	{
 		modefound = true;
 		Priv->wdt = iXRes; Priv->hgt = iYRes;
 	}
-	if (xf86vmode_major_version >= 0 && !modefound)
+	if (Priv->xf86vmode_major_version >= 0 && !modefound)
 	{
 		// save desktop-resolution before switching modes
 		// XF86VidMode has a really weird API.
@@ -313,7 +316,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		XFree(modes);
 	}
 	if (!modefound) return false;
-	fDspModeSet = Priv->SwitchToFullscreen(this, pWindow->wnd);
+	fDspModeSet = Priv->SwitchToFullscreen(this, pWindow);
 	return fDspModeSet;
 }
 
@@ -321,28 +324,18 @@ void C4AbstractApp::RestoreVideoMode()
 {
 	if (fDspModeSet)
 	{
-		Priv->SwitchToDesktop(this, pWindow->wnd);
+		Priv->SwitchToDesktop(this, pWindow);
 		fDspModeSet = false;
-		// Minimize
-		if (pWindow->wnd)
-		{
-			XEvent e;
-			e.xclient.type = ClientMessage;
-			e.xclient.window = pWindow->wnd;
-			e.xclient.message_type = XInternAtom(dpy, "WM_CHANGE_STATE", true);
-			e.xclient.format = 32;
-			e.xclient.data.l[0] = IconicState;
-			XSendEvent(dpy, DefaultRootWindow(dpy), false, SubstructureRedirectMask | SubstructureNotifyMask, &e);
-		}
 	}
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
-	if (xf86vmode_major_version < 0) return false;
+	if (Priv->xf86vmode_major_version < 0) return false;
 	bool r = false;
 	int mode_num;
 	XF86VidModeModeInfo **modes;
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	XF86VidModeGetAllModeLines(dpy, DefaultScreen(dpy), &mode_num, &modes);
 	if (iIndex < mode_num)
 	{
@@ -355,36 +348,33 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	return r;
 }
 
-void C4X11AppImpl::SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd)
+bool C4X11AppImpl::SwitchToFullscreen(C4AbstractApp * pApp, C4Window * pWindow)
 {
-	static Atom atoms[2];
-	static const char * names[] = { "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN" };
-	if (!atoms[0]) XInternAtoms(pApp->dpy, const_cast<char **>(names), 2, false, atoms);
-	XEvent e;
-	e.xclient.type = ClientMessage;
-	e.xclient.window = wnd;
-	e.xclient.message_type = atoms[0];
-	e.xclient.format = 32;
-	if (fFullScreen)
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	if (xf86vmode_major_version >= 0 && xrandr_major_version < 0 &&
+	    memcmp(&xf86vmode_targetmode, &xf86vmode_oldmode, sizeof(XF86VidModeModeInfo)))
 	{
-		e.xclient.data.l[0] = 1; //_NET_WM_STATE_ADD
+		XF86VidModeModeInfo & mode = xf86vmode_targetmode;
+		XResizeWindow(dpy, pWindow->wnd, mode.hdisplay, mode.vdisplay);
+		XSizeHints hints;
+		hints.flags = PMinSize | PMaxSize;
+		hints.min_width = mode.hdisplay;
+		hints.min_height = mode.vdisplay;
+		hints.max_width = mode.hdisplay;
+		hints.max_height = mode.vdisplay;
+		XSetWMNormalHints(dpy, pWindow->wnd, &hints);
+		XF86VidModeSwitchToMode(dpy, DefaultScreen(dpy), &mode);
+		// Move the viewport on the virtual screen
+		Window bla; int wnd_x = 0; int wnd_y = 0;
+		XTranslateCoordinates(dpy, pWindow->wnd, DefaultRootWindow(dpy), 0, 0, &wnd_x, &wnd_y, &bla);
+		XF86VidModeSetViewPort(dpy, DefaultScreen(dpy), wnd_x, wnd_y);
+		GdkWindow * wnd = gtk_widget_get_window(GTK_WIDGET(pWindow->window));
+		gdk_pointer_grab(wnd, true, GdkEventMask(0), wnd, NULL, gdk_x11_display_get_user_time(gdk_display_get_default()));
+		return true;
 	}
-	else
+	if (xrandr_major_version >= 0)
 	{
-		e.xclient.data.l[0] = 0; //_NET_WM_STATE_REMOVE
-	}
-	e.xclient.data.l[1] = atoms[1];
-	e.xclient.data.l[2] = 0; //second property to alter
-	e.xclient.data.l[3] = 1; //source indication
-	e.xclient.data.l[4] = 0;
-	XSendEvent(pApp->dpy, DefaultRootWindow(pApp->dpy), false, SubstructureNotifyMask | SubstructureRedirectMask, &e);
-}
-
-bool C4X11AppImpl::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
-{
-	if (pApp->xrandr_major_version >= 0)
-	{
-		XRRScreenConfiguration * conf = XRRGetScreenInfo (pApp->dpy, wnd);
+		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 		xrandr_oldmode = XRRConfigCurrentConfiguration (conf, &xrandr_rot);
 		int n;
 		XRRScreenSize * sizes = XRRConfigSizes(conf, &n);
@@ -395,72 +385,48 @@ bool C4X11AppImpl::SwitchToFullscreen(C4AbstractApp * pApp, Window wnd)
 #ifdef _DEBUG
 				LogF("XRRSetScreenConfig %d", i);
 #endif
-				XRRSetScreenConfig (pApp->dpy, conf, wnd, i, xrandr_rot, CurrentTime);
+				XRRSetScreenConfig (dpy, conf, pWindow->wnd, i, xrandr_rot, CurrentTime);
 				break;
 			}
 		}
 		XRRFreeScreenConfigInfo(conf);
-		SetEWMHFullscreen(pApp, true, wnd);
 	}
-	else if (pApp->xf86vmode_major_version >= 0)
-	{
-		XF86VidModeModeInfo & mode = xf86vmode_targetmode;
-		XResizeWindow(pApp->dpy, wnd, mode.hdisplay, mode.vdisplay);
-		XSizeHints hints;
-		hints.flags = PMinSize | PMaxSize;
-		hints.min_width = mode.hdisplay;
-		hints.min_height = mode.vdisplay;
-		hints.max_width = mode.hdisplay;
-		hints.max_height = mode.vdisplay;
-		XSetWMNormalHints(pApp->dpy, wnd, &hints);
-		// Changing not necessary
-		if (!memcmp(&xf86vmode_targetmode, &xf86vmode_oldmode, sizeof(XF86VidModeModeInfo)))
-		{
-			// Set the window to fullscreen mode to get rid of window manager decorations
-			SetEWMHFullscreen(pApp, true, wnd);
-		}
-		else
-		{
-			XF86VidModeSwitchToMode(pApp->dpy, DefaultScreen(pApp->dpy), &mode);
-			// Move the viewport on the virtual screen
-			Window bla; int wnd_x = 0; int wnd_y = 0;
-			XTranslateCoordinates(pApp->dpy, wnd, DefaultRootWindow(pApp->dpy), 0, 0, &wnd_x, &wnd_y, &bla);
-			XF86VidModeSetViewPort(pApp->dpy, DefaultScreen(pApp->dpy), wnd_x, wnd_y);
-		}
-	}
-	XGrabPointer(pApp->dpy, wnd, true, 0, GrabModeAsync, GrabModeAsync, wnd, None, LastEventTime);
+	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
 	return true;
 }
 
-void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, Window wnd)
+void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, C4Window * pWindow)
 {
-	XUngrabPointer(pApp->dpy, LastEventTime);
-	// Restore resolution
-	if (pApp->xrandr_major_version >= 0)
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	if (xf86vmode_major_version >= 0 && xrandr_major_version < 0 &&
+	    memcmp(&xf86vmode_targetmode, &xf86vmode_oldmode, sizeof(XF86VidModeModeInfo)))
 	{
-		XRRScreenConfiguration * conf = XRRGetScreenInfo (pApp->dpy, wnd);
+		XF86VidModeModeInfo & mode = xf86vmode_oldmode;
+		XF86VidModeSwitchToMode(dpy, DefaultScreen(dpy), &mode);
+		XF86VidModeSetViewPort(dpy, DefaultScreen(dpy), 0, 0);
+		XSizeHints hints;
+		hints.flags = 0;
+		XSetWMNormalHints(dpy, pWindow->wnd, &hints);
+		gdk_pointer_ungrab(gdk_x11_display_get_user_time(gdk_display_get_default()));
+		return;
+	}
+	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
+	// Restore resolution
+	if (xrandr_major_version >= 0)
+	{
+		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 #ifdef _DEBUG
 		LogF("XRRSetScreenConfig %d (back)", xrandr_oldmode);
 #endif
-		XRRSetScreenConfig (pApp->dpy, conf, wnd, xrandr_oldmode, xrandr_rot, CurrentTime);
+		XRRSetScreenConfig (dpy, conf, pWindow->wnd, xrandr_oldmode, xrandr_rot, CurrentTime);
 		XRRFreeScreenConfigInfo(conf);
 	}
-	else if (pApp->xf86vmode_major_version >= 0)
-	{
-		XF86VidModeModeInfo & mode = xf86vmode_oldmode;
-		XF86VidModeSwitchToMode(pApp->dpy, DefaultScreen(pApp->dpy), &mode);
-		XF86VidModeSetViewPort(pApp->dpy, DefaultScreen(pApp->dpy), 0, 0);
-	}
-	XSizeHints hints;
-	hints.flags = 0;
-	XSetWMNormalHints(pApp->dpy, wnd, &hints);
-	SetEWMHFullscreen(pApp, false, wnd);
 }
 
 bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 {
 	if (!Active && !fForce) return false;
-	if (xf86vmode_major_version < 2) return false;
+	if (Priv->xf86vmode_major_version < 2) return false;
 	if (Priv->gammasize != 256) return false;
 	return XF86VidModeSetGammaRamp(dpy, DefaultScreen(dpy), 256,
 	                               ramp.red, ramp.green, ramp.blue);
@@ -468,7 +434,7 @@ bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 
 bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
 {
-	if (xf86vmode_major_version < 2) return false;
+	if (Priv->xf86vmode_major_version < 2) return false;
 	// Get the Display
 	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &Priv->gammasize);
 	if (Priv->gammasize != 256)

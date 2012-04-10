@@ -317,6 +317,8 @@ protected:
 	// The XVisualInfo the window was created with
 	void * Info;
 	unsigned long handlerDestroy;
+
+	friend class C4X11AppImpl;
 #elif defined(USE_SDL_MAINLOOP)
 private:
 	int width, height;

@@ -166,16 +166,17 @@ public:
 			LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
 			xim(0), xic(0), X11Proc(pApp),
 			argc(0), argv(0) { }
+	bool SwitchToFullscreen(C4AbstractApp * pApp, C4Window * );
+	void SwitchToDesktop(C4AbstractApp * pApp, C4Window * );
 	static C4Window * GetWindow(unsigned long wnd);
 	static void SetWindow(unsigned long wnd, C4Window * pWindow);
-	bool SwitchToFullscreen(C4AbstractApp * pApp, Window wnd);
-	void SwitchToDesktop(C4AbstractApp * pApp, Window wnd);
-	void SetEWMHFullscreen (C4AbstractApp * pApp, bool fFullScreen, Window wnd);
 	unsigned long LastEventTime;
 	typedef std::map<unsigned long, C4Window *> WindowListT;
 	static WindowListT WindowList;
+	int xf86vmode_major_version, xf86vmode_minor_version;
 	XF86VidModeModeInfo xf86vmode_oldmode, xf86vmode_targetmode;
 	int gammasize;
+	int xrandr_major_version, xrandr_minor_version;
 	int xrandr_oldmode;
 	unsigned short xrandr_rot;
 	int xrandr_event;

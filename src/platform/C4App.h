@@ -168,8 +168,6 @@ public:
 #if defined(USE_X11)
 public:
 	Display * dpy;
-	int xf86vmode_major_version, xf86vmode_minor_version;
-	int xrandr_major_version, xrandr_minor_version;
 	// These must be public to be callable from callback functions from
 	// the glib main loop that are in an anonymous namespace in
 	// StdXApp.cpp.

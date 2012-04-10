@@ -316,8 +316,11 @@ static gboolean fullscreen_restore(gpointer data)
 static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = true;
-	fullscreen_needs_restore = true;
-	gdk_threads_add_idle(fullscreen_restore, NULL);
+	if (!Config.Graphics.Windowed)
+	{
+		fullscreen_needs_restore = true;
+		gdk_threads_add_idle(fullscreen_restore, NULL);
+	}
 	return false;
 }
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
@@ -326,6 +329,7 @@ static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_
 	if (!Config.Graphics.Windowed)
 	{
 		Application.RestoreVideoMode();
+		gtk_window_iconify(GTK_WINDOW(widget));
 		fullscreen_needs_restore = false;
 	}
 	return false;
