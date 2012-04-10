@@ -372,11 +372,12 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		szMsg = szText+4;
 	}
 	// Starts with "/sound ": Sound-Message
-	else if (SEqual2NoCase(szText, "/sound "))
+/*	else if (SEqual2NoCase(szText, "/sound "))
 	{
 		eMsgType = C4CMT_Sound;
 		szMsg = szText+7;
-	}
+	}*/
+	// Disabled due to spamming
 	// Starts with "/alert": Taskbar flash (message optional)
 	else if (SEqual2NoCase(szText, "/alert ") || SEqualNoCase(szText, "/alert"))
 	{
