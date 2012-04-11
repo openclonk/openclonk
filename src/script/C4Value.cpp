@@ -504,19 +504,13 @@ bool C4Value::operator == (const C4Value& Value2) const
 {
 	switch (Type)
 	{
-	case C4V_Any:
+	case C4V_Nil:
 		assert(!Data);
 		return Value2.Type == Type;
 	case C4V_Int:
 	case C4V_Bool:
-		switch (Value2.Type)
-		{
-		case C4V_Int:
-		case C4V_Bool:
-			return Data == Value2.Data;
-		default:
-			return false;
-		}
+		return (Value2.Type == C4V_Int || Value2.Type == C4V_Bool) &&
+		       Data == Value2.Data;
 	case C4V_PropList:
 		if (Value2.Type == C4V_PropList)
 		{
@@ -527,14 +521,16 @@ bool C4Value::operator == (const C4Value& Value2) const
 			if (!Data.PropList->IsFrozen() || !Value2.Data.PropList->IsFrozen()) return false;
 			return (*Data.PropList == *Value2.Data.PropList);
 		}
+		return false;
 	case C4V_String:
 		return Type == Value2.Type && Data.Str == Value2.Data.Str;
 	case C4V_Array:
-		return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
+		return Type == Value2.Type &&
+		       (Data.Array == Value2.Data.Array || *(Data.Array) == *(Value2.Data.Array));
 	default:
+		assert(!"Unexpected C4Value type (denumeration missing?)");
 		return Data == Value2.Data;
 	}
-	return GetData() == Value2.GetData();
 }
 
 bool C4Value::operator != (const C4Value& Value2) const
