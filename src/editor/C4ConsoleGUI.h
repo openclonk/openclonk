@@ -24,13 +24,6 @@
 #include "C4GameControl.h"
 #include "StdBuf.h"
 
-#ifdef WITH_DEVELOPER_MODE
-#include <C4WindowGTK.h>
-typedef C4GtkWindow C4ConsoleBase;
-#else
-typedef C4Window C4ConsoleBase;
-#endif
-
 namespace OpenFileFlags
 {
 	const DWORD OFN_HIDEREADONLY = 1 << 0;
@@ -42,7 +35,7 @@ namespace OpenFileFlags
 }
 
 // Separate class containing GUI code for C4Console while C4Console itself only contains functionality
-class C4ConsoleGUI: public C4ConsoleBase
+class C4ConsoleGUI: public C4Window
 {
 public:
 
@@ -145,9 +138,6 @@ public:
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
 	void UpdateMenuText(HMENU hMenu);
-#endif
-#ifdef WITH_DEVELOPER_MODE
-	virtual GtkWidget* InitGUI();
 #endif
 };
 

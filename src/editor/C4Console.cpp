@@ -68,24 +68,6 @@ C4Console::~C4Console()
 {
 }
 
-#if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-void C4Console::HandleMessage (XEvent & e)
-{
-	// Parent handling
-	C4ConsoleBase::HandleMessage(e);
-
-	switch (e.type)
-	{
-	case FocusIn:
-		Application.Active = true;
-		break;
-	case FocusOut:
-		Application.Active = false;
-		break;
-	}
-}
-#endif // USE_X11
-
 C4Window * C4Console::Init(C4AbstractApp * pApp)
 {
 	return C4ConsoleGUI::CreateConsoleWindow(pApp);
@@ -363,7 +345,7 @@ void C4Console::Default()
 
 void C4Console::Clear()
 {
-	C4ConsoleBase::Clear();
+	C4Window::Clear();
 	EditCursor.Clear();
 	ToolsDlg.Clear();
 	PropertyDlgClose();

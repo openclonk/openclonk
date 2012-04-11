@@ -312,18 +312,12 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	// Calls InitGUI
-	C4Window* retval = C4ConsoleBase::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"));
+	state->InitGUI();
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();
 	return retval;
-}
-
-GtkWidget* C4ConsoleGUI::InitGUI()
-{
-	state->InitGUI();
-	return C4ConsoleBase::InitGUI();
 }
 
 void C4ConsoleGUI::State::InitGUI()
@@ -484,6 +478,7 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
 
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
+	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));
 
 	// ------------ Signals ---------------------
 	handlerDestroy = g_signal_connect(G_OBJECT(GetOwner()->window), "destroy", G_CALLBACK(OnDestroy), this);
@@ -586,7 +581,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player *player, StdStrBuf &player_text
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
 	// Seems not to work. Don't know why...
-	GdkDisplay * display = gtk_widget_get_display(window);
+	GdkDisplay * display = gtk_widget_get_display(GTK_WIDGET(window));
 	GdkCursor * gdkcursor;
 
 	if (cursor == CURSOR_Wait)
@@ -595,9 +590,9 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 		gdkcursor = NULL;
 
 #if GTK_CHECK_VERSION(2,14,0)
-	GdkWindow* window_wnd = gtk_widget_get_window(window);
+	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
 #else
-	GdkWindow* window_wnd = window->window;
+	GdkWindow* window_wnd = GTK_WIDGET(window)->window;
 #endif
 
 	gdk_window_set_cursor(window_wnd, gdkcursor);

@@ -298,22 +298,25 @@ public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-#elif defined(USE_X11)
+#elif defined(WITH_GLIB)
+public:
+	/*GtkWidget*/void * window;
 	// Set by Init to the widget which is used as a
 	// render target, which can be the whole window.
 	/*GtkWidget*/void * render_widget;
+	virtual void HandleMessage (XEvent &);
 protected:
 	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
 	Display * dpy;
-	virtual void HandleMessage (XEvent &);
 	// The currently set window hints
 	void * Hints;
 	bool HasFocus; // To clear urgency hint
 	// The XVisualInfo the window was created with
 	void * Info;
+	unsigned long handlerDestroy;
 #elif defined(USE_SDL_MAINLOOP)
 private:
 	int width, height;
@@ -334,7 +337,6 @@ public:
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;
-	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

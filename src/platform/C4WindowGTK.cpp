@@ -36,17 +36,45 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-
-/* C4GtkWindow */
-
-C4GtkWindow::C4GtkWindow():
-		C4Window(), window(NULL)
+static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
+	C4Window* wnd = static_cast<C4Window*>(data);
+	wnd->Clear();
 }
 
-C4GtkWindow::~C4GtkWindow()
+static GdkFilterReturn OnFilter(GdkXEvent* xevent, GdkEvent* event, gpointer user_data)
 {
-	Clear();
+	// Handle raw X message, then let GTK+ process it
+	static_cast<C4Window*>(user_data)->HandleMessage(*reinterpret_cast<XEvent*>(xevent));
+	return GDK_FILTER_CONTINUE;
+}
+
+static gboolean OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+{
+	// Update mask so that Application.IsShiftDown,
+	// Application.IsControlDown etc. work.
+	unsigned int mask = 0;
+	if (event->state & GDK_SHIFT_MASK) mask |= MK_SHIFT;
+	if (event->state & GDK_CONTROL_MASK) mask |= MK_CONTROL;
+	if (event->state & GDK_MOD1_MASK) mask |= (1 << 3);
+
+	// For keypress/relases, event->state contains the state _before_
+	// the event, but we need to store the current state.
+#if !GTK_CHECK_VERSION(2,21,8)
+# define GDK_KEY_Shift_L GDK_Shift_L
+# define GDK_KEY_Shift_R GDK_Shift_R
+# define GDK_KEY_Control_L GDK_Control_L
+# define GDK_KEY_Control_R GDK_Control_R
+# define GDK_KEY_Alt_L GDK_Alt_L
+# define GDK_KEY_Alt_R GDK_Alt_R
+#endif
+
+	if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R) mask ^= MK_SHIFT;
+	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
+	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
+
+	static_cast<C4AbstractApp*>(user_data)->KeyMask = mask;
+	return false;
 }
 
 static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
@@ -441,7 +469,16 @@ static gboolean OnConfigureGD(GtkWidget* widget, GdkEventConfigure* event, gpoin
 	return false;
 }
 
-C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window::C4Window ():
+		Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0), window(NULL)
+{
+}
+C4Window::~C4Window ()
+{
+	Clear();
+}
+
+C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
 {
 	Active = true;
 	dpy = pApp->dpy;
@@ -556,7 +593,12 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
 	}
+	else if (windowKind == W_Console)
+	{
+		render_widget = window;
+	}
 	assert(window);
+	assert(render_widget);
 	// Override gtk's default to match name/class of the XLib windows
 	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
@@ -564,9 +606,6 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
-
-	if(!render_widget)
-		render_widget = InitGUI();
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
@@ -577,7 +616,7 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
 	g_object_unref(cmap);
 #endif
-	gtk_widget_show_all(window);
+	gtk_widget_show_all(GTK_WIDGET(window));
 
 //  XVisualInfo vitmpl; int blub;
 //  vitmpl.visual = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(window));
@@ -593,13 +632,13 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	gtk_window_set_title(GTK_WINDOW(window), Title);
 
 #if GTK_CHECK_VERSION(2,14,0)
-	GdkWindow* window_wnd = gtk_widget_get_window(window);
+	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
 #else
-	GdkWindow* window_wnd = window->window;
+	GdkWindow* window_wnd = GTK_WIDGET(window)->window;
 #endif
 
 	// Wait until window is mapped to get the window's XID
-	gtk_widget_show_now(window);
+	gtk_widget_show_now(GTK_WIDGET(window));
 	wnd = GDK_WINDOW_XID(window_wnd);
 	gdk_window_add_filter(window_wnd, OnFilter, this);
 
@@ -637,7 +676,7 @@ C4Window* C4GtkWindow::Init(WindowKind windowKind, C4AbstractApp * pApp, const c
 	return this;
 }
 
-bool C4GtkWindow::ReInit(C4AbstractApp* pApp)
+bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Check whether multisampling settings was changed. If not then we
 	// don't need to ReInit anything.
@@ -671,12 +710,12 @@ bool C4GtkWindow::ReInit(C4AbstractApp* pApp)
 	return true;
 }
 
-void C4GtkWindow::Clear()
+void C4Window::Clear()
 {
 	if (window != NULL)
 	{
 		g_signal_handler_disconnect(window, handlerDestroy);
-		gtk_widget_destroy(window);
+		gtk_widget_destroy(GTK_WIDGET(window));
 		handlerDestroy = 0;
 	}
 
@@ -692,60 +731,6 @@ void C4GtkWindow::Clear()
 		delete static_cast<XVisualInfo*>(Info);
 		Info = 0;
 	}
-}
-
-void C4GtkWindow::OnDestroyStatic(GtkWidget* widget, gpointer data)
-{
-	C4GtkWindow* wnd = static_cast<C4GtkWindow*>(data);
-
-	g_signal_handler_disconnect(wnd->window, wnd->handlerDestroy);
-	//gtk_widget_destroy(wnd->window);
-	wnd->handlerDestroy = 0;
-	wnd->window = NULL;
-	wnd->Active = false;
-	wnd->wnd = wnd->renderwnd = 0;
-
-	wnd->Close();
-}
-
-GdkFilterReturn C4GtkWindow::OnFilter(GdkXEvent* xevent, GdkEvent* event, gpointer user_data)
-{
-	// Handle raw X message, then let GTK+ process it
-	static_cast<C4GtkWindow*>(user_data)->HandleMessage(*reinterpret_cast<XEvent*>(xevent));
-	return GDK_FILTER_CONTINUE;
-}
-
-gboolean C4GtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
-{
-	// Update mask so that Application.IsShiftDown,
-	// Application.IsControlDown etc. work.
-	unsigned int mask = 0;
-	if (event->state & GDK_SHIFT_MASK) mask |= MK_SHIFT;
-	if (event->state & GDK_CONTROL_MASK) mask |= MK_CONTROL;
-	if (event->state & GDK_MOD1_MASK) mask |= (1 << 3);
-
-	// For keypress/relases, event->state contains the state _before_
-	// the event, but we need to store the current state.
-#if !GTK_CHECK_VERSION(2,21,8)
-# define GDK_KEY_Shift_L GDK_Shift_L
-# define GDK_KEY_Shift_R GDK_Shift_R
-# define GDK_KEY_Control_L GDK_Control_L
-# define GDK_KEY_Control_R GDK_Control_R
-# define GDK_KEY_Alt_L GDK_Alt_L
-# define GDK_KEY_Alt_R GDK_Alt_R
-#endif
-
-	if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R) mask ^= MK_SHIFT;
-	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
-	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
-
-	static_cast<C4AbstractApp*>(user_data)->KeyMask = mask;
-	return false;
-}
-
-GtkWidget* C4GtkWindow::InitGUI()
-{
-	return window;
 }
 
 void C4Window::RequestUpdate()

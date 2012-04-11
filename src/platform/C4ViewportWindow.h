@@ -28,15 +28,12 @@
 #include <C4Viewport.h>
 
 #ifdef WITH_DEVELOPER_MODE
-#include <C4WindowGTK.h>
-typedef C4GtkWindow C4ViewportBase;
-#else
-typedef C4Window C4ViewportBase;
+#include <gtk/gtk.h>
 #endif
 #define C4ViewportWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX)
 enum { ViewportScrollSpeed=10 };
 
-class C4ViewportWindow: public C4ViewportBase
+class C4ViewportWindow: public C4Window
 {
 public:
 	C4Viewport * cvp;

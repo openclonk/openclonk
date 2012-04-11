@@ -43,13 +43,6 @@ const int C4CNS_ModePlay = 0,
 #define IDM_VIEWPORT_NEW1 10400
 #define IDM_VIEWPORT_NEW2 10500
 
-#ifdef WITH_DEVELOPER_MODE
-#include <C4WindowGTK.h>
-typedef C4GtkWindow C4ConsoleBase;
-#else
-typedef C4Window C4ConsoleBase;
-#endif
-
 class C4Console: public C4ConsoleGUI
 {
 public:
@@ -58,7 +51,7 @@ public:
 	void Default();
 	virtual void Clear();
 	virtual void Close();
-	using C4ConsoleBase::Init;
+	using C4Window::Init;
 	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();
 	void ClearPointers(C4Object *pObj);
@@ -101,9 +94,6 @@ public:
 
 	int FrameCounter;
 	int Time,FPS;
-#if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-	virtual void HandleMessage (XEvent &);
-#endif
 };
 
 #define C4ConsoleWindowClassname "C4Console"

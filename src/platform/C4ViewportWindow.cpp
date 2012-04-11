@@ -217,7 +217,9 @@ C4Window * C4ViewportWindow::Init(int32_t Player)
 {
 	C4Window* result;
 	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();
-	result = C4ViewportBase::Init(C4Window::W_Viewport, &Application, Title, &Console, false);
+
+	result = C4Window::Init(C4Window::W_Viewport, &Application, Title);
+
 	if (!result) return result;
 
 	pSurface = new C4Surface(&Application, this);
