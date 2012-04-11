@@ -56,7 +56,7 @@ protected func Initialize()
 		for (var i = 0; i < 4; i++)
 			chest->CreateContents(content_list[Random(GetLength(content_list))]);
 	// Create Disasters.
-	//CreateObject(Core_Disaster_Earthquake, 0, 0, NO_OWNER)->SetChance(100);
+	Earthquake->SetChance(50);
 	// Snow
 	AddEffect("IntSnow", 0, 100, 1);
 	return;

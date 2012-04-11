@@ -1,59 +1,36 @@
-/*--
-		Earthquake
-		Author: Maikel
-		
-		This is the earthquake control object, earthquakes are realized through a global effect.
-		Earthquakes can be activated in Scenario.txt under [Environment], Earthquake=x will result
-		in a 10*x % earthquake level. You can also just create the control object and modify the
-		chance with Get/Set/DoChance. The third option is to directly launch an earthquake with
-		LaunchEarthquake(int x, int y, int strength) at the global coordinates (x,y).
---*/
+/**
+	Earthquake
+	Trembles the earth.
+	
+	@author Maikel	
+*/
 
 
 /*-- Disaster Control --*/
 
-protected func Initialize()
+public func SetChance(int chance)
 {
-	// Check for other control objects.
-	var ctrl = FindObject(Find_ID(GetID()), Find_Exclude(this));
-	if (ctrl)
-	{
-		ctrl->DoChance(10);
-		RemoveObject();
-	}
-	else
-	{
-		AddEffect("IntEarthquakeControl", this, 100, 35, this);
-		SetChance(10);
-	}
+	if (this != Earthquake)
+		return;
+	var effect = AddEffect("IntEarthquakeControl", nil, 100, 20, nil, Earthquake);
+	effect.chance = chance;
 	return;
 }
 
 public func GetChance()
 {
-	var effect = GetEffect("IntEarthquakeControl", this);
-	return effect.chance;
-}
-
-public func SetChance(int chance)
-{
-	var effect = GetEffect("IntEarthquakeControl", this);
-	effect.chance = BoundBy(chance, 0, 100);
+	if (this != Earthquake)
+		return;
+	var effect = GetEffect("IntEarthquakeControl");
+	if (effect)
+		return effect.chance;
 	return;
 }
 
-public func DoChance(int chance)
+protected func FxIntEarthquakeControlTimer(object target, proplist effect, int time)
 {
-	SetChance(GetChance() + chance);
-	return;
-}
-
-protected func FxIntEarthquakeControlTimer(object target, effect, int time)
-{
-	var chance = effect.chance;
-	if (!Random(8))
-		if (Random(100) < chance)
-			LaunchEarthquake(Random(LandscapeWidth()), Random(LandscapeHeight()), Random(40) + 35);
+	if (Random(100) < effect.chance && !Random(10))
+		LaunchEarthquake(Random(LandscapeWidth()), Random(LandscapeHeight()), Random(40) + 35);
 	return FX_OK;
 }
 
@@ -74,7 +51,7 @@ global func LaunchEarthquake(int x, int y, int strength)
 	return true;
 }
 
-/*-- Earthquake control --*/
+/*-- Earthquake --*/
 
 protected func FxIntEarthquakeStart(object target, effect)
 {
