@@ -12,7 +12,9 @@ public func SetChance(int chance)
 {
 	if (this != Meteor)
 		return;
-	var effect = AddEffect("IntMeteorControl", nil, 100, 20, nil, Meteor);
+	var effect = GetEffect("IntMeteorControl");
+	if (!effect)
+	 	effect = AddEffect("IntMeteorControl", nil, 100, 20, nil, Meteor);
 	effect.chance = chance;
 	return;
 }

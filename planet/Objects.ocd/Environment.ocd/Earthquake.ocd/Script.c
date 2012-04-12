@@ -12,7 +12,9 @@ public func SetChance(int chance)
 {
 	if (this != Earthquake)
 		return;
-	var effect = AddEffect("IntEarthquakeControl", nil, 100, 20, nil, Earthquake);
+	var effect = GetEffect("IntEarthquakeControl");
+	if (!effect)
+		effect = AddEffect("IntEarthquakeControl", nil, 100, 20, nil, Earthquake);
 	effect.chance = chance;
 	return;
 }
