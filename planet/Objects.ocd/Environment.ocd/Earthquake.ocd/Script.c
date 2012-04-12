@@ -58,14 +58,15 @@ global func LaunchEarthquake(int x, int y, int strength)
 protected func FxIntEarthquakeStart(object target, effect)
 {
 	// Start sound at quake local coordinates.
-	//Sound("Earthquake", true, 100, nil, 1);
+	// < Maikel> Global until someone implements non-object local sounds
+	Sound("Earthquake", true, 100, nil, 1);
 	return FX_OK;
 }
 
 protected func FxIntEarthquakeStop(object target, effect)
 {
 	// Stop sound.
-	//Sound("Earthquake", true, 100, nil, -1);
+	Sound("Earthquake", true, 100, nil, -1);
 	return FX_OK;
 }
 
