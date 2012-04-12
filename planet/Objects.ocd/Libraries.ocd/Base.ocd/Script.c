@@ -24,7 +24,7 @@ public func ExecAutoSell()
 {
 	// Search all objects for objects that want to be sold automatically
 	for(pObj in FindObjects(Find_Container(this), Find_Func("AutoSell")))
-		Sell(pObj);
+		Sell(pObj->GetOwner(), pObj, this);
 }
 
 // Does the base block enemies?
