@@ -42,7 +42,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 public func ControlUseStop(object clonk, int x, int y)
 {
 	fDigging = 0;
-	RemoveEffect("ShovelDig",clonk,0);
+	RemoveEffect("ShovelDig",clonk);
 	if(clonk->GetAction() != "Dig") return true;
 
 //	EffectCall(clonk, GetEffect("IntDig", clonk), "StopDig");
@@ -88,7 +88,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 			if (fDigging)
 			{
 				fDigging = false;
-				RemoveEffect("ShovelDust",clonk,0);
+				RemoveEffect("ShovelDust",clonk);
 			}
 			return true;
 		}

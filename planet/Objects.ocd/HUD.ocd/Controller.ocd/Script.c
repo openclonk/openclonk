@@ -576,7 +576,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	else
 	{
 		// remove effect
-		RemoveEffect("IntSearchInteractionObjects",clonk,0);
+		RemoveEffect("IntSearchInteractionObjects",clonk);
 		ClearButtons();
 	}
 	
