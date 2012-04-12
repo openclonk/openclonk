@@ -61,7 +61,7 @@ protected:
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	C4AulBCC * LastCode;
-	friend class C4AulParseState;
+	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
 };
