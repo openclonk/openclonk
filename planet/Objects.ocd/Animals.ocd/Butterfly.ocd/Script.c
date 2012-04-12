@@ -101,7 +101,7 @@ private func MoveToTarget()
 {
 	var x = Random(LandscapeWidth());
 	var y = Random(GetHorizonHeight(x)-60)+30;
-	SetCommand("MoveTo",0,x,y);
+	SetCommand("MoveTo",nil,x,y);
 	return 1;
 }
 

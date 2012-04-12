@@ -75,6 +75,6 @@ global func ClearScheduleCall(object obj, string function)
 			// Found right function.
 			if (effect.function == function)
 				// Remove effect.
-				RemoveEffect(0, obj, effect);
+				RemoveEffect(nil, obj, effect);
 	return;
 }

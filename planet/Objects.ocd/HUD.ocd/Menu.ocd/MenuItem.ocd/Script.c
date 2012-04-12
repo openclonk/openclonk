@@ -189,7 +189,7 @@ private func UpdateSymbol()
 	{
 		if (GetType(item_object) == C4V_C4Object)
 		{
-			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, 0, 0, item_object);
+			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, 0, item_object);
 			if (item_object->~HasExtraSlot())
 			{
 				SetGraphics(nil, GUI_ExtraSlot, 2, GFXOV_MODE_Base);
@@ -197,7 +197,7 @@ private func UpdateSymbol()
 				var content = item_object->Contents(0);
 				if (content)
 				{
-					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, nil, 0, content);
 					SetObjDrawTransform(1000/3, 0, 16000, 0, 1000/3, 16000, 3);
 				}
 				else

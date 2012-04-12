@@ -10,7 +10,7 @@ public func ControlUse(object pClonk)
 {
 	Sound("Blast3");
 	Exit(0,-GetY());
-	AddEffect("ThunderStrike",0,100,1,0,this->GetID(),pClonk->GetOwner(),this->GetX()-5);
+	AddEffect("ThunderStrike",nil,100,1,nil,this->GetID(),pClonk->GetOwner(),this->GetX()-5);
 	RemoveObject();
 	return 1;
 }

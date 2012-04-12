@@ -20,7 +20,7 @@ protected func Initialize()
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 
 	//Water needs to be OK
-	AddEffect("Refiller",0,100,6);
+	AddEffect("Refiller",nil,100,6);
 	return;
 }
 

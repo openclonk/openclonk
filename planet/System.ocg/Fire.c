@@ -117,7 +117,7 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 		for(obj in FindObjects(Find_ActionTarget(target)))
 		{
 			if(obj->GetProcedure() == "ATTACH")
-				obj->SetAction(0);
+				obj->SetAction(nil);
 		}
 	}
 	

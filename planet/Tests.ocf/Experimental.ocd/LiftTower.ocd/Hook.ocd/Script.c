@@ -13,7 +13,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	var menu = clonk->CreateRingMenu(GetID(), this);
 	for (var connect_object in connect)
-		menu->AddMenuItem(connect_object);
+		menu->AddMenuItem(nil);
 	menu->Show();
 }
 

@@ -445,7 +445,7 @@ func SetMeshTransformation(array transformation, int layer)
 	if(GetLength(mesh_transformation_list) < layer)
 		SetLength(mesh_transformation_list, layer+1);
 	mesh_transformation_list[layer] = transformation;
-	var all_transformations = 0;
+	var all_transformations = nil;
 	for(var trans in mesh_transformation_list)
 	{
 		if(!trans) continue;

@@ -16,7 +16,7 @@ func Init(o, n)
 
 func Initialize()
 {
-	SetGraphics(0, KingOfTheHill_Marker);
+	SetGraphics(nil, KingOfTheHill_Marker);
 	AddEffect("Timer", this, 10, 1, this);
 	SetGraphics(nil, KingOfTheHill_Marker);
 }

@@ -67,7 +67,7 @@ public func SetSymbol(obj)
 	else
 	{
 		if (GetType(obj) == C4V_C4Object)
-			SetGraphics(nil, nil, 2, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetGraphics(nil, nil, 2, GFXOV_MODE_ObjectPicture, nil, 0, obj);
 		else
 			SetGraphics(nil,obj, 2, GFXOV_MODE_IngamePicture);
 		

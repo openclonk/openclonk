@@ -80,7 +80,7 @@ public func SetSymbol(obj)
 	{
 		if (GetType(obj) == C4V_C4Object)
 		{
-			SetGraphics(nil, nil, MI_ICON_LAYER, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetGraphics(nil, nil, MI_ICON_LAYER, GFXOV_MODE_ObjectPicture, nil, 0, obj);
 			SetObjDrawTransform(size, 0, 0, 0, size, 0, MI_ICON_LAYER);
 			if (obj->~HasExtraSlot())
 			{
@@ -91,7 +91,7 @@ public func SetSymbol(obj)
 				var content = obj->Contents(0);
 				if (content)
 				{
-					SetGraphics(nil, nil, MI_EXTRASLOT_LAYER, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetGraphics(nil, nil, MI_EXTRASLOT_LAYER, GFXOV_MODE_ObjectPicture, nil, 0, content);
 					SetObjDrawTransform(size/3, 0, 16*size, 0, size/3, 16*size, MI_EXTRASLOT_LAYER);
 				}
 				else

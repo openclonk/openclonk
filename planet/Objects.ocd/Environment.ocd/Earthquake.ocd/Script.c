@@ -43,7 +43,7 @@ global func LaunchEarthquake(int x, int y, int strength)
 	// Minimum strength is 15, maximum strength is 100.
 	strength = BoundBy(strength, 15, 100);
 	// The earthquake is handled by a global effect.
-	var effect = AddEffect("IntEarthquake", 0, 100, 1, nil, Earthquake);
+	var effect = AddEffect("IntEarthquake", nil, 100, 1, nil, Earthquake);
 	effect.x = x; // Epicentre x coordinate.
 	effect.y = y; // Epicentre y coordinate.
 	effect.strength = strength / 3; // Earthquake strength.

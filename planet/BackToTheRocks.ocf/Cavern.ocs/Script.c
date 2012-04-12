@@ -58,7 +58,7 @@ protected func Initialize()
 	// Create Disasters.
 	Earthquake->SetChance(50);
 	// Snow
-	AddEffect("IntSnow", 0, 100, 1);
+	AddEffect("IntSnow", nil, 100, 1);
 	return;
 }
 

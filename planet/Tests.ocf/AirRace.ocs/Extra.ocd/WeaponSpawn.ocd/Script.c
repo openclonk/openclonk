@@ -81,7 +81,7 @@ protected func FindSpawnWeapon()
 protected func DoGraphics()
 {
 	// Clear all overlays first.
-	SetGraphics(0, 0, 1);
+	SetGraphics(nil, 0, 1);
 	if (spawn_weapon)
 	{
 		SetGraphics("", spawn_weapon, 1, GFXOV_MODE_Base);

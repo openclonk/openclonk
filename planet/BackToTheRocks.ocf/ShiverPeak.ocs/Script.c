@@ -54,7 +54,7 @@ protected func Initialize()
 	//	for (var i = 0; i < 30; i++)
 	//		CreateObject(CloudEffect, Random(LandscapeWidth()), Random(LandscapeHeight()))->Show(nil, nil, 5000, true);
 	// Snow
-	AddEffect("Snowfall", 0, 1, 2);
+	AddEffect("Snowfall", nil, 1, 2);
 	//Wind
 	Sound("WindLoop",true,40,nil,+1);
 

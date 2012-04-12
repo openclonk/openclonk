@@ -8,7 +8,7 @@
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("HardeningSpell", 0, 100, 1, 0, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
+	AddEffect("HardeningSpell", nil, 100, 1, nil, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
 	RemoveObject();
 	return 1;
 }

@@ -45,7 +45,7 @@ protected func Initialize()
 		edge->PermaEdge();
 	}
 	
-	AddEffect("DryTime",0,100,2);
+	AddEffect("DryTime",nil,100,2);
 	return;
 }
 
@@ -72,7 +72,7 @@ global func FxRainTimer(object pTarget, effect, int timer)
 	}
 	if(timer>(RUINS_RAIN_PERIOD_TIME+Random(800))) 
 	{
-	AddEffect("DryTime",0,100,2);
+	AddEffect("DryTime",nil,100,2);
 	return -1;	
 	}
 	
@@ -88,7 +88,7 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 		ExtractLiquid(310+Random(50),430+Random(10));
 	if(!GBackLiquid(335,430))
 	{
-		AddEffect("Rain",0,100,2);
+		AddEffect("Rain",nil,100,2);
 		return -1;
 	}	
 }
