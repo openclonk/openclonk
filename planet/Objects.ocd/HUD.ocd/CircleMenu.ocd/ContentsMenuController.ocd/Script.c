@@ -108,7 +108,7 @@ func Hide()
 	}
 }
 
-func AddContentMenu(object container, int pos, bool is_crew)
+func AddContentMenu(object container, int pos, bool isCrew)
 {
 	var menu = CreateObject(GUI_CircleMenu, 0, 0, GetOwner());
 
@@ -118,9 +118,9 @@ func AddContentMenu(object container, int pos, bool is_crew)
 	menu->SetDragDropMenu(true);
 
 	PutContentsIntoMenu(menu, container);
-	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = is_crew};
+	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = isCrew};
 	
-	if (is_crew)
+	if(isCrew)
 		crew_count++;
 	else
 		container_count++;
@@ -515,22 +515,22 @@ private func GetNextMenu(int index, bool alt)
 	if (last <= 0)
 		return nil;
 	
-	if (!alt)
+	if(alt)
 	{
-		if (index < crew_count-1)
+		if(index < crew_count-1)
 			index++;
-		else if (index == crew_count-1)
+		else if(index == crew_count-1)
 			index = last;
-		else if (index == crew_count)
+		else if(index == crew_count)
 			index = 0;
 		else
 			index--;
 	}
 	else
 	{
-		if (index == 0)
+		if(index == 0)
 			index = crew_count;
-		else if (index < crew_count)
+		else if(index < crew_count)
 			index--;
 		else
 			index++;
