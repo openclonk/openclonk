@@ -1248,6 +1248,8 @@ void C4AulParse::Parse_Script()
 				}
 				else if (SEqual(Idtf, C4AUL_Append))
 				{
+					if (pOrgScript->GetPropList()->GetDef())
+						throw new C4AulParseError(this, "#appendto in a Definition");
 					// for #appendto * '*' needs to be ATT_STAR, not an operator.
 					Shift(StarsPlease);
 					if (Type == PREPARSER)
@@ -1368,7 +1370,7 @@ void C4AulParse::Parse_Function()
 		// func in global context: fallthru
 	case AA_GLOBAL:
 		if (a != pOrgScript)
-			Warn("global func in appendto/included script: ", Idtf);
+			throw new C4AulParseError(this, "global func in appendto/included script: ", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
 		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
@@ -1401,9 +1403,8 @@ void C4AulParse::Parse_Function()
 	assert(Fn);
 	if (Type == PARSER)
 	{
-		assert(Fn->GetCodeOwner() == a || (Acc == AA_GLOBAL && Fn->GetCodeOwner() == pOrgScript)); // FIXME: handle globals better
-		if (Fn->GetCodeOwner() == a)
-			Fn->CodePos = a->Code.size();
+		assert(Fn->GetCodeOwner() == a);
+		Fn->CodePos = a->Code.size();
 	}
 
 	// Parse function body
@@ -2878,6 +2879,13 @@ bool C4ScriptHost::Parse()
 
 	// delete existing code
 	ClearCode();
+
+	if (!Appends.empty())
+	{
+		// #appendto scripts are not allowed to contain global functions or belong to definitions
+		// so their contents are not reachable
+		return true;
+	}
 
 	C4AulFunc * thisfuncs = Func0;
 	for (C4AulFunc *f = thisfuncs; f; f = f->Next)
