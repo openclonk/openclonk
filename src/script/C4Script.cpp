@@ -357,9 +357,9 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
 static int FnGetType(C4AulContext *cthr, const C4Value & Value)
 {
 	// dynamic types
+	if (Value.CheckConversion(C4V_Object)) return C4V_Object;
 	if (Value.CheckConversion(C4V_Def)) return C4V_Def;
 	if (Value.CheckConversion(C4V_Effect)) return C4V_Effect;
-	if (Value.CheckConversion(C4V_Object)) return C4V_Object;
 	// static types
 	return Value.GetType();
 }
