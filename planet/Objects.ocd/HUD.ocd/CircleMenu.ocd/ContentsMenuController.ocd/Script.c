@@ -511,27 +511,41 @@ public func OnItemSelectionAlt(object menu, object item)
 private func GetNextMenu(int index, bool alt)
 {
 	var last = GetLength(circ_menus) - 1;
+	
 	// Only one menu: to nothing
 	if (last <= 0)
 		return nil;
 	
 	if(alt)
 	{
+		// the clonk itself or one of the crewmembers (except leftmost)
 		if(index < crew_count-1)
 			index++;
+		// leftmost crewmember (could be the clonk itself too)
 		else if(index == crew_count-1)
-			index = last;
+		{
+			// go to rightmost container
+			if(container_count == 0)
+				index = 0;
+			else
+				index = last;
+		}
+		// leftmost container
 		else if(index == crew_count)
-			index = 0;
+			index = 0; // go to clonk itself
+		// a container
 		else
 			index--;
 	}
 	else
 	{
+		// the clonk itself
 		if(index == 0)
-			index = crew_count;
+			index = crew_count; // go to first container
+		// a crewmember
 		else if(index < crew_count)
 			index--;
+		// a container
 		else
 			index++;
 	}
