@@ -623,7 +623,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		}
 		
 		// if carrying heavy, add drop-carry-heavy-button
-		if(target->~IsCarryingHeavy())
+		if(target->~IsCarryingHeavy() && target->GetAction() == "Walk")
 			ActionButton(target, i++, target->GetCarryHeavy(), ACTIONTYPE_CARRYHEAVY, hotkey++);
 		
 		// add vehicles
@@ -806,4 +806,3 @@ public func ReorderCrewSelectors(object leaveout)
 		j++;
 	}
 }
-

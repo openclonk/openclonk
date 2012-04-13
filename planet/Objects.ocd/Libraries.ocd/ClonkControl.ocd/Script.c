@@ -855,7 +855,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if(ObjectControlInteract(plr,ctrl))
 			return true;
-		else if(IsCarryingHeavy())
+		else if(IsCarryingHeavy() && GetAction() == "Walk")
 		{
 			GetCarryHeavy()->Drop();
 			return true;
