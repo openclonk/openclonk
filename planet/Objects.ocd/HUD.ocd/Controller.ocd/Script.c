@@ -584,6 +584,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	ScheduleUpdateBackpack();
 	UpdateHealthTube();
 	UpdateBreathTube();
+	OnCarryHeavyChange(clonk->~GetCarryHeavy());
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)

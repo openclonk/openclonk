@@ -197,6 +197,10 @@ private func PutContentsIntoMenu(object menu, object container)
 			if (!AddContentsMenuItem(stack[0], menu, stack)) 
 				return;
 	}
+	
+	// TODO: find an extra-entry or something like that for this.
+	if(container->~IsCarryingHeavy())
+		AddContentsMenuItem(container->GetCarryHeavy(), menu);
 }
 
 private func AddContentsMenuItem(object symbol, object menu, array stack)

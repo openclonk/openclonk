@@ -431,6 +431,8 @@ protected func Ejection(object obj)
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
 			var o = Contents(c);
+			if(o->~IsCarryHeavy())
+				continue;
 			if (GetItemPos(o) == nil)
 			{
 				// found it! Collect it properly
@@ -520,6 +522,9 @@ public func AllowTransfer(object obj)
 	if (ContentsCount() >= MaxContentsCount()) 
 		return false;
 
+	if(carryheavy && obj->~IsCarryHeavy())
+		return false;
+
 	return true;
 }
 
@@ -546,6 +551,7 @@ public func CarryHeavy(object target)
 	this->~OnCarryHeavyChange(carryheavy);
 	
 	// Update attach stuff
+	this->~OnHandFull();
 	//this->~UpdateAttach();
 	
 	return true;
@@ -558,7 +564,7 @@ private func StopCarryHeavy()
 	
 	carryheavy = nil;
 	this->~OnCarryHeavyChange(nil);
-	this->~UpdateAttach();
+	this->~OnSlotEmpty();
 }
 
 public func GetCarryHeavy() { return carryheavy; }
