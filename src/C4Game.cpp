@@ -79,7 +79,7 @@
 #include <C4GameControl.h>
 #include <C4Fonts.h>
 #include <C4Version.h>
-
+#include <C4AulExec.h>
 #include <StdFile.h>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
@@ -895,19 +895,20 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 	// check in inactive objects as well
 	for (clnk=Objects.InactiveObjects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
 		cObj->ClearPointers(pObj);
-	Application.SoundSystem.ClearPointers(pObj);
 }
 
 void C4Game::ClearPointers(C4Object * pObj)
 {
+	::AulExec.ClearPointers(pObj);
 	::Objects.ForeObjects.ClearPointers(pObj);
 	::Messages.ClearPointers(pObj);
 	ClearObjectPtrs(pObj);
-	Players.ClearPointers(pObj);
+	Application.SoundSystem.ClearPointers(pObj);
+	::Players.ClearPointers(pObj);
 	::Viewports.ClearPointers(pObj);
-	MessageInput.ClearPointers(pObj);
-	Console.ClearPointers(pObj);
-	MouseControl.ClearPointers(pObj);
+	::MessageInput.ClearPointers(pObj);
+	::Console.ClearPointers(pObj);
+	::MouseControl.ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
