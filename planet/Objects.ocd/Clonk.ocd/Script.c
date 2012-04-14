@@ -2,7 +2,7 @@
 	Clonk
 	Author: Randrian
 
-	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+	The protoganist of the game. Witty and nimble if skillfully controlled ;-)
 */
 
 
@@ -41,6 +41,7 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
+	iHandMesh = [0,0];
 }
 
 
@@ -240,7 +241,6 @@ func DetachHandItem(bool secondary)
 
 func AttachHandItem(bool secondary)
 {
-	if(!iHandMesh) iHandMesh = [0,0];
 	DetachHandItem(secondary);
 	UpdateAttach();
 }
@@ -445,7 +445,7 @@ func SetMeshTransformation(array transformation, int layer)
 	if(GetLength(mesh_transformation_list) < layer)
 		SetLength(mesh_transformation_list, layer+1);
 	mesh_transformation_list[layer] = transformation;
-	var all_transformations = 0;
+	var all_transformations = nil;
 	for(var trans in mesh_transformation_list)
 	{
 		if(!trans) continue;

@@ -175,7 +175,7 @@ func CheckStrike(iTime)
 			// don't hit objects twice
 			if(!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength, 0, 0);
+				AddEffect(effect_name, obj, 1, Sword_Standard_StrikingLength, nil, 0);
 				
 				if(GetEffect(sword_name, obj))
 				{
@@ -185,7 +185,7 @@ func CheckStrike(iTime)
 				else
 				{
 					//Log("first hit overall");
-					AddEffect(sword_name, obj, 1, 40, 0, 0);
+					AddEffect(sword_name, obj, 1, 40, nil, 0);
 				}
 
 				
@@ -266,7 +266,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, effect, iCause, iTemp)
 	if(iTemp) return;
 	if(!pTarget->GetAlive()) return;
 	
-	AddEffect("SwordStrikeSlow", pTarget, 1, 5, 0, Sword, effect.Time);
+	AddEffect("SwordStrikeSlow", pTarget, 1, 5, nil, Sword, effect.Time);
 }
 
 func FxSwordStrikeSlowStart(pTarget, effect, iTemp, iTime)

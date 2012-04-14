@@ -68,38 +68,38 @@ global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
 global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
 
 // GetObjectVal
-global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }
-global func GetObjFixX()       { return GetObjectVal("FixX", 0); }
-global func GetObjFixY()       { return GetObjectVal("FixY", 0); }
-global func GetObjWidth()      { return GetObjectVal("Width", 0); }
-global func GetObjHeight()     { return GetObjectVal("Height", 0); }
-global func GetObjFireTop()    { return GetObjectVal("FireTop", 0); }
-global func GetObjMobile()     { return GetObjectVal("Mobile", 0); }
-global func GetObjOnFire()     { return GetObjectVal("OnFire", 0); }
-global func GetObjInLiquid()   { return GetObjectVal("InLiquid", 0); }
-global func GetObjEntranceStatus() { return GetObjectVal("EntranceStatus", 0); }
-global func GetObjPhysicalTemporary() { return GetObjectVal("PhysicalTemporary", 0); }
-global func GetObjNeedEnergy() { return GetObjectVal("NeedEnergy", 0); }
-global func GetObjActionTime() { return GetObjectVal("ActionTime", 0); }
-global func GetObjActionData() { return GetObjectVal("ActionData", 0); }
-global func GetObjPhaseDelay() { return GetObjectVal("PhaseDelay", 0); }
-global func GetObjActionTarget1() { return GetObjectVal("ActionTarget1", 0); }
-global func GetObjActionTarget2() { return GetObjectVal("ActionTarget2", 0); }
-global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", 0); }
+global func GetObjOwnMass()    { return GetObjectVal("OwnMass", nil); }
+global func GetObjFixX()       { return GetObjectVal("FixX", nil); }
+global func GetObjFixY()       { return GetObjectVal("FixY", nil); }
+global func GetObjWidth()      { return GetObjectVal("Width", nil); }
+global func GetObjHeight()     { return GetObjectVal("Height", nil); }
+global func GetObjFireTop()    { return GetObjectVal("FireTop", nil); }
+global func GetObjMobile()     { return GetObjectVal("Mobile", nil); }
+global func GetObjOnFire()     { return GetObjectVal("OnFire", nil); }
+global func GetObjInLiquid()   { return GetObjectVal("InLiquid", nil); }
+global func GetObjEntranceStatus() { return GetObjectVal("EntranceStatus", nil); }
+global func GetObjPhysicalTemporary() { return GetObjectVal("PhysicalTemporary", nil); }
+global func GetObjNeedEnergy() { return GetObjectVal("NeedEnergy", nil); }
+global func GetObjActionTime() { return GetObjectVal("ActionTime", nil); }
+global func GetObjActionData() { return GetObjectVal("ActionData", nil); }
+global func GetObjPhaseDelay() { return GetObjectVal("PhaseDelay", nil); }
+global func GetObjActionTarget1() { return GetObjectVal("ActionTarget1", nil); }
+global func GetObjActionTarget2() { return GetObjectVal("ActionTarget2", nil); }
+global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", nil); }
 
 // GetPlayerVal
-global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", 0, plr); }
-global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", 0, plr); }
+global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", nil, plr); }
+global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", nil, plr); }
 //global func GetPlrColor(int plr)      { return GetPlayerVal("ColorDw", 0, plr); } - use GetPlayerColor
-global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", 0, plr); } //(!)
-global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", 0, plr); } //(!)
-global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", 0, plr); } //(!)
-global func GetPlrWealth(int plr)     { return GetPlayerVal("Wealth", 0, plr); }
-global func GetPlrPoints(int plr)     { return GetPlayerVal("Points", 0, plr); }
-global func GetPlrValue(int plr)      { return GetPlayerVal("Value", 0, plr); }
-global func GetPlrInitialValue(int plr) { return GetPlayerVal("InitialValue", 0, plr); }
-global func GetPlrValueGain(int plr)  { return GetPlayerVal("ValueGain", 0, plr); }
-global func GetPlrObjectsOwned(int plr) { return GetPlayerVal("GetPlrObjectsOwned", 0, plr); }
+global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", nil, plr); } //(!)
+global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", nil, plr); } //(!)
+global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", nil, plr); } //(!)
+global func GetPlrWealth(int plr)     { return GetPlayerVal("Wealth", nil, plr); }
+global func GetPlrPoints(int plr)     { return GetPlayerVal("Points", nil, plr); }
+global func GetPlrValue(int plr)      { return GetPlayerVal("Value", nil, plr); }
+global func GetPlrInitialValue(int plr) { return GetPlayerVal("InitialValue", nil, plr); }
+global func GetPlrValueGain(int plr)  { return GetPlayerVal("ValueGain", nil, plr); }
+global func GetPlrObjectsOwned(int plr) { return GetPlayerVal("GetPlrObjectsOwned", nil, plr); }
 
 // GetScenarioVal
 global func GetScenTitle()     { return GetScenarioVal("Title", "Head"); } //(!)

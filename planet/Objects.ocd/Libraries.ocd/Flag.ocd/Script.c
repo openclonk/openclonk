@@ -21,7 +21,7 @@ func RefreshAllFlagLinks()
 	
 	// update power balance for power helpers after refreshing the linked flags
 	Schedule(nil, "Library_Flag->RefreshAllPowerHelpers()", 2, 0);
-	AddEffect("ScheduleRefreshAllPowerHelpers", 0, 1, 2, nil, Library_Flag);
+	AddEffect("ScheduleRefreshAllPowerHelpers", nil, 1, 2, nil, Library_Flag);
 }
 
 func FxScheduleRefreshAllPowerHelpersTimer()

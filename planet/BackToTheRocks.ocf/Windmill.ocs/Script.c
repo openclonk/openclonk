@@ -27,7 +27,7 @@ func Initialize()
 	CreateObject(Goal_SaveTheWindmills,10,10);
 	PlaceGrass(100, 800, 1400);
 	SetSkyParallax(0,25,25,0,0,0,50);
-	AddEffect("BoomAttack", 0, 100, 35);
+	AddEffect("BoomAttack", nil, 100, 35);
 	Sound("WindLoop",true,40,nil,+1);
 }
 

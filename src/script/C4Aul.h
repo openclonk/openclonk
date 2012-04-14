@@ -56,7 +56,7 @@ class C4AulParseError : public C4AulError
 {
 public:
 	C4AulParseError(C4AulScript *pScript, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
-	C4AulParseError(class C4AulParseState * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
+	C4AulParseError(class C4AulParse * state, const char *pMsg, const char *pIdtf = NULL, bool Warn = false); // constructor
 };
 
 // execution error
@@ -246,7 +246,7 @@ public:
 
 	time_t tProfileTime; // internally set by profiler
 
-	friend class C4AulParseState;
+	friend class C4AulParse;
 	friend class C4ScriptHost;
 };
 
@@ -357,7 +357,7 @@ public:
 	friend class C4AulFunc;
 	friend class C4AulScriptFunc;
 	friend class C4AulScriptEngine;
-	friend class C4AulParseState;
+	friend class C4AulParse;
 	friend class C4AulDebug;
 	friend class C4ScriptHost;
 
@@ -440,7 +440,7 @@ public:
 
 	friend class C4AulFunc;
 	friend class C4ScriptHost;
-	friend class C4AulParseState;
+	friend class C4AulParse;
 	friend class C4AulDebug;
 	friend class C4AulScript;
 };

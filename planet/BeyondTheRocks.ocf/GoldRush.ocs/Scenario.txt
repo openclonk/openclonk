@@ -2,7 +2,7 @@
 Icon=15
 Title=Goldmine
 Version=5,0,0,0
-MaxPlayer=3
+MaxPlayer=50
 Difficulty=10
 
 [Definitions]

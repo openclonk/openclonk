@@ -110,7 +110,7 @@ public func SetObject(object obj)
 	}
 	else
 	{
-		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture,0,0,myobject);
+		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture,nil,0,myobject);
 		this.MouseDragImage = myobject;
 		
 		SetName(myobject->GetName());

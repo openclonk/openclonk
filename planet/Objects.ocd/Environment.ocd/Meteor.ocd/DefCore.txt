@@ -1,0 +1,14 @@
+[DefCore]
+id=Meteor
+Version=5,2,0,1
+Category=C4D_Object|C4D_Environment
+Width=20
+Height=20
+Offset=-10,-10
+Vertices=4
+VertexX=-7,-7,7,7
+VertexY=-7,7,-7,7
+VertexFriction=50,50,50,50
+Rotate=1
+NoStabilize=1
+StretchGrowth=1

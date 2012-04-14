@@ -576,7 +576,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	else
 	{
 		// remove effect
-		RemoveEffect("IntSearchInteractionObjects",clonk,0);
+		RemoveEffect("IntSearchInteractionObjects",clonk);
 		ClearButtons();
 	}
 	
@@ -584,6 +584,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 	ScheduleUpdateBackpack();
 	UpdateHealthTube();
 	UpdateBreathTube();
+	OnCarryHeavyChange(clonk->~GetCarryHeavy());
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)
@@ -623,7 +624,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		}
 		
 		// if carrying heavy, add drop-carry-heavy-button
-		if(target->~IsCarryingHeavy())
+		if(target->~IsCarryingHeavy() && target->GetAction() == "Walk")
 			ActionButton(target, i++, target->GetCarryHeavy(), ACTIONTYPE_CARRYHEAVY, hotkey++);
 		
 		// add vehicles
@@ -806,4 +807,3 @@ public func ReorderCrewSelectors(object leaveout)
 		j++;
 	}
 }
-

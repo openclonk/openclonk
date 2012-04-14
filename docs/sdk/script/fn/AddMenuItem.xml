@@ -32,7 +32,7 @@
           <desc>Numeric value to be displayed next to the menu entry (such as counts and amounts).</desc>
         </param>
         <param>
-          <type>int</type>
+          <type>any</type>
           <name>parameter</name>
           <desc>Second parameter to the function specified in command (see remark).</desc>
         </param>

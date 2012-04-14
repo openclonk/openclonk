@@ -58,6 +58,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "def";
 	case C4V_Effect:
 		return "effect";
+	case C4V_Function:
+		return "function";
 	default:
 		return "!Fehler!";
 	}

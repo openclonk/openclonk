@@ -8,7 +8,7 @@
 
 public func ControlUse(object pClonk, int ix, int iy)
 {
-	AddEffect("WindScrollStorm", 0, 100, 1, 0, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY(), pClonk->GetOwner());
+	AddEffect("WindScrollStorm", nil, 100, 1, nil, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY(), pClonk->GetOwner());
 	RemoveObject();
 	return 1;
 }

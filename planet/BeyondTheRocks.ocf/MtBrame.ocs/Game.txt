@@ -1,7 +1,7 @@
 [Object]
 id=Grass
 Properties=199;false;"Prototype"=DGrass
-Timer=32
+Timer=26
 Category=4097
 Plane=-500
 Size=143000
@@ -19,7 +19,7 @@ OCF=2360001
 [Object]
 id=Grass
 Properties=200;false;"Prototype"=DGrass
-Timer=28
+Timer=22
 Category=4097
 Plane=-500
 Size=139000
@@ -37,7 +37,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=204;false;"Prototype"=DGrass
-Timer=28
+Timer=22
 Category=4097
 Plane=-500
 Size=141000
@@ -55,7 +55,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=250;false;"Prototype"=DGrass
-Timer=25
+Timer=19
 Category=4097
 Plane=-500
 Size=121000
@@ -74,7 +74,6 @@ Graphics=Grass::1
 [Object]
 id=Grass
 Properties=254;false;"Prototype"=DGrass
-Timer=6
 Category=4097
 Plane=-500
 Size=100000
@@ -87,12 +86,12 @@ Offset=-6,-3
 Vertices=1
 VertexY=1
 Picture=0,0,0,0
-OCF=2360001
+OCF=12845761
 
 [Object]
 id=Grass
 Properties=255;false;"Prototype"=DGrass
-Timer=14
+Timer=8
 Category=4097
 Plane=-500
 Size=148000
@@ -110,7 +109,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=256;false;"Prototype"=DGrass
-Timer=32
+Timer=26
 Category=4097
 Plane=-500
 Size=100000
@@ -129,7 +128,7 @@ Graphics=Grass::1
 [Object]
 id=Grass
 Properties=257;false;"Prototype"=DGrass
-Timer=15
+Timer=9
 Category=4097
 Plane=-500
 Size=147000
@@ -147,7 +146,7 @@ OCF=2360001
 [Object]
 id=Grass
 Properties=258;false;"Prototype"=DGrass
-Timer=3
+Timer=32
 Category=4097
 Plane=-500
 Size=112000
@@ -165,7 +164,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=259;false;"Prototype"=DGrass
-Timer=9
+Timer=3
 Category=4097
 Plane=-500
 Size=132000
@@ -184,7 +183,7 @@ Graphics=Grass::1
 [Object]
 id=Grass
 Properties=260;false;"Prototype"=DGrass
-Timer=1
+Timer=30
 Category=4097
 Plane=-500
 Size=104000
@@ -197,12 +196,13 @@ Offset=-6,-3
 Vertices=1
 VertexY=1
 Picture=0,0,0,0
-OCF=14942913
+OCF=12845761
 Graphics=Grass::1
 
 [Object]
 id=Grass
 Properties=261;false;"Prototype"=DGrass
+Timer=29
 Category=4097
 Plane=-500
 Size=149000
@@ -215,12 +215,12 @@ Offset=-8,-4
 Vertices=1
 VertexY=1
 Picture=0,0,0,0
-OCF=12845761
+OCF=14942913
 
 [Object]
 id=Grass
 Properties=262;false;"Prototype"=DGrass
-Timer=19
+Timer=13
 Category=4097
 Plane=-500
 Size=117000
@@ -238,7 +238,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=266;false;"Prototype"=DGrass
-Timer=22
+Timer=16
 Category=4097
 Plane=-500
 Size=136000
@@ -251,12 +251,12 @@ Offset=-8,-4
 Vertices=1
 VertexY=1
 Picture=0,0,0,0
-OCF=14942913
+OCF=12845761
 
 [Object]
 id=Grass
 Properties=270;false;"Prototype"=DGrass
-Timer=22
+Timer=16
 Category=4097
 Plane=-500
 Size=114000
@@ -274,7 +274,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=274;false;"Prototype"=DGrass
-Timer=13
+Timer=7
 Category=4097
 Plane=-500
 Size=121000
@@ -292,7 +292,7 @@ OCF=12845761
 [Object]
 id=Grass
 Properties=278;false;"Prototype"=DGrass
-Timer=4
+Timer=33
 Category=4097
 Plane=-500
 Size=141000
@@ -309,8 +309,8 @@ OCF=12845761
 
 [Object]
 id=Library_Power
-Properties=41;false;"neutral"=b1,"power_links"=E1,"power_balance"=i50,"Prototype"=DLibrary_Power,"sleeping_links"=E2
-Timer=8
+Properties=41;false;"neutral"=b1,"Prototype"=DLibrary_Power,"sleeping_links"=E1,"power_balance"=i50,"power_links"=E2
+Timer=2
 Category=1
 Plane=100
 Size=100000
@@ -323,8 +323,8 @@ OCF=12845121
 
 [Object]
 id=ElevatorRope
-Properties=47;false;"Prototype"=DElevatorRope,"Action"=E3
-Timer=8
+Properties=47;false;"Action"=E3,"Prototype"=DElevatorRope
+Timer=2
 Category=1
 Plane=100
 Size=100000
@@ -336,12 +336,12 @@ Height=4
 Offset=0,-2
 Picture=0,0,0,0
 OCF=2359361
-ActionTime=64968
+ActionTime=65487
 
 [Object]
 id=Trunk
 Properties=51;false;"Prototype"=DTrunk,"MeshTransformation"=E4
-Timer=3
+Timer=32
 Category=1
 Plane=100
 Size=100000
@@ -362,8 +362,8 @@ OCF=12845761
 
 [Object]
 id=Trunk
-Properties=52;false;"Prototype"=DTrunk,"MeshTransformation"=E5,"Action"=n
-Timer=21
+Properties=52;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E5
+Timer=15
 Category=1
 Plane=100
 Size=80000
@@ -384,8 +384,8 @@ OCF=12845697
 
 [Object]
 id=Trunk
-Properties=53;false;"Prototype"=DTrunk,"MeshTransformation"=E6,"Action"=n
-Timer=29
+Properties=53;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E6
+Timer=23
 Category=1
 Plane=100
 Size=65000
@@ -406,8 +406,8 @@ OCF=12845697
 
 [Object]
 id=Trunk
-Properties=54;false;"Prototype"=DTrunk,"MeshTransformation"=E7,"Action"=n
-Timer=24
+Properties=54;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E7
+Timer=18
 Category=1
 Plane=100
 Size=40000
@@ -429,7 +429,7 @@ OCF=12845697
 [Object]
 id=Trunk
 Properties=55;false;"Prototype"=DTrunk,"MeshTransformation"=E8
-Timer=28
+Timer=22
 Category=1
 Plane=100
 Size=100000
@@ -451,7 +451,7 @@ OCF=12845761
 [Object]
 id=Trunk
 Properties=56;false;"Prototype"=DTrunk,"MeshTransformation"=E9
-Timer=21
+Timer=15
 Category=1
 Plane=100
 Size=100000
@@ -473,7 +473,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=69;false;"Prototype"=DRank,"MeshTransformation"=E10
-Timer=5
+Timer=34
 Category=1
 Plane=100
 Rotation=220
@@ -498,7 +498,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=71;false;"Prototype"=DRank,"MeshTransformation"=E11
-Timer=29
+Timer=23
 Category=1
 Plane=100
 Rotation=176
@@ -522,7 +522,7 @@ OCF=2360001
 [Object]
 id=Rank
 Properties=72;false;"Prototype"=DRank,"MeshTransformation"=E12
-Timer=5
+Timer=34
 Category=1
 Plane=100
 Rotation=195
@@ -547,7 +547,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=73;false;"Prototype"=DRank,"MeshTransformation"=E13
-Timer=23
+Timer=17
 Category=1
 Plane=100
 Rotation=201
@@ -572,7 +572,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=74;false;"Prototype"=DRank,"MeshTransformation"=E14
-Timer=12
+Timer=6
 Category=1
 Plane=100
 Rotation=187
@@ -596,7 +596,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=75;false;"Prototype"=DRank,"MeshTransformation"=E15
-Timer=4
+Timer=33
 Category=1
 Plane=100
 Rotation=352
@@ -620,7 +620,7 @@ OCF=12845761
 [Object]
 id=Rank
 Properties=76;false;"Prototype"=DRank,"MeshTransformation"=E16
-Timer=33
+Timer=27
 Category=1
 Plane=100
 Rotation=334
@@ -637,15 +637,15 @@ VertexX=0,1
 VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
-OCF=14942913
+OCF=2360001
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Trunk
-Properties=81;false;"Prototype"=DTrunk,"MeshTransformation"=E17,"Action"=n
-Timer=10
+Properties=81;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E17
+Timer=4
 Category=1
 Plane=100
 Rotation=180
@@ -668,8 +668,8 @@ OCF=12845697
 
 [Object]
 id=Trunk
-Properties=82;false;"Prototype"=DTrunk,"MeshTransformation"=E18,"Action"=n
-Timer=11
+Properties=82;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E18
+Timer=5
 Category=1
 Plane=100
 Size=66000
@@ -691,7 +691,7 @@ OCF=12845697
 [Object]
 id=Tree_Coniferous
 Properties=127;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E19
-Timer=151
+Timer=320
 Category=1
 Plane=100
 Size=100500
@@ -715,7 +715,7 @@ Component=Wood=4
 [Object]
 id=Fern
 Properties=130;false;"Prototype"=DFern,"MeshTransformation"=E20
-Timer=21
+Timer=190
 Category=1
 Plane=100
 Size=100100
@@ -737,7 +737,7 @@ OCF=2359489
 [Object]
 id=Tree_Coniferous
 Properties=140;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E21
-Timer=273
+Timer=92
 Category=1
 Plane=100
 Size=100500
@@ -761,7 +761,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=143;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E22
-Timer=206
+Timer=25
 Category=1
 Plane=100
 Size=100500
@@ -785,7 +785,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=146;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E23
-Timer=150
+Timer=319
 Category=1
 Plane=100
 Size=100500
@@ -809,7 +809,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=149;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E24
-Timer=94
+Timer=263
 Category=1
 Plane=100
 Size=100500
@@ -833,7 +833,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=152;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E25
-Timer=37
+Timer=206
 Category=1
 Plane=100
 Size=100500
@@ -857,7 +857,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=155;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E26
-Timer=281
+Timer=100
 Category=1
 Plane=100
 Size=100500
@@ -881,7 +881,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=167;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E27
-Timer=310
+Timer=129
 Category=1
 Plane=100
 Size=100500
@@ -905,7 +905,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=170;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E28
-Timer=255
+Timer=74
 Category=1
 Plane=100
 Size=100500
@@ -929,7 +929,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=173;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E29
-Timer=259
+Timer=78
 Category=1
 Plane=100
 Size=100500
@@ -953,7 +953,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=176;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E30
-Timer=166
+Timer=335
 Category=1
 Plane=100
 Size=100500
@@ -977,7 +977,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=179;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E31
-Timer=115
+Timer=284
 Category=1
 Plane=100
 Size=100500
@@ -1001,7 +1001,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=182;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E32
-Timer=33
+Timer=202
 Category=1
 Plane=100
 Size=100500
@@ -1025,7 +1025,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=185;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E33
-Timer=327
+Timer=146
 Category=1
 Plane=100
 Size=100500
@@ -1049,7 +1049,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=188;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E34
-Timer=270
+Timer=89
 Category=1
 Plane=100
 Size=100500
@@ -1073,7 +1073,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=191;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E35
-Timer=221
+Timer=40
 Category=1
 Plane=100
 Size=100500
@@ -1097,7 +1097,7 @@ Component=Wood=4
 [Object]
 id=Fern
 Properties=201;false;"Prototype"=DFern,"MeshTransformation"=E36
-Timer=235
+Timer=54
 Category=1
 Plane=100
 Size=100100
@@ -1119,7 +1119,7 @@ OCF=12845249
 [Object]
 id=Fern
 Properties=214;false;"Prototype"=DFern,"MeshTransformation"=E37
-Timer=39
+Timer=208
 Category=1
 Plane=100
 Size=100100
@@ -1141,7 +1141,7 @@ OCF=12845249
 [Object]
 id=Fern
 Properties=217;false;"Prototype"=DFern,"MeshTransformation"=E38
-Timer=235
+Timer=54
 Category=1
 Plane=100
 Size=100100
@@ -1163,7 +1163,7 @@ OCF=12845249
 [Object]
 id=Fern
 Properties=229;false;"Prototype"=DFern,"MeshTransformation"=E39
-Timer=323
+Timer=142
 Category=1
 Plane=100
 Size=100100
@@ -1177,7 +1177,7 @@ Vertices=2
 VertexY=0,3
 VertexCNAT=16,8
 Picture=0,0,0,0
-OCF=2359489
+OCF=12845249
 
   [Mesh]
   Valid=true
@@ -1185,7 +1185,7 @@ OCF=2359489
 [Object]
 id=Fern
 Properties=244;false;"Prototype"=DFern,"MeshTransformation"=E40
-Timer=179
+Timer=348
 Category=1
 Plane=100
 Size=100100
@@ -1207,7 +1207,7 @@ OCF=12845249
 [Object]
 id=Fern
 Properties=247;false;"Prototype"=DFern,"MeshTransformation"=E41
-Timer=110
+Timer=279
 Category=1
 Plane=100
 Size=100100
@@ -1229,7 +1229,7 @@ OCF=12845249
 [Object]
 id=Tree_Coniferous
 Properties=279;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E42
-Timer=35
+Timer=204
 Category=1
 Plane=100
 Size=100003
@@ -1253,7 +1253,7 @@ Component=Wood=4
 [Object]
 id=Tree_Coniferous
 Properties=282;false;"Prototype"=DTree_Coniferous,"MeshTransformation"=E43
-Timer=151
+Timer=320
 Category=1
 Plane=100
 Size=100003
@@ -1277,7 +1277,7 @@ Component=Wood=4
 [Object]
 id=Fern
 Properties=305;false;"Prototype"=DFern,"MeshTransformation"=E44
-Timer=345
+Timer=164
 Category=1
 Plane=100
 Size=100100
@@ -1299,7 +1299,7 @@ OCF=12845249
 [Object]
 id=Fern
 Properties=308;false;"Prototype"=DFern,"MeshTransformation"=E45
-Timer=276
+Timer=95
 Category=1
 Plane=100
 Size=100100
@@ -1320,8 +1320,8 @@ OCF=12845249
 
 [Object]
 id=Trunk
-Properties=392;false;"Prototype"=DTrunk,"MeshTransformation"=E46,"Action"=n
-Timer=34
+Properties=392;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E46
+Timer=28
 Category=1
 Plane=100
 Size=80000
@@ -1342,8 +1342,8 @@ OCF=12845697
 
 [Object]
 id=Trunk
-Properties=393;false;"Prototype"=DTrunk,"MeshTransformation"=E47,"Action"=n
-Timer=34
+Properties=393;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E47
+Timer=28
 Category=1
 Plane=100
 Size=70000
@@ -1365,7 +1365,7 @@ OCF=12845697
 [Object]
 id=Trunk
 Properties=394;false;"Prototype"=DTrunk,"MeshTransformation"=E48
-Timer=34
+Timer=28
 Category=1
 Plane=100
 Rotation=195
@@ -1390,24 +1390,24 @@ OCF=12845761
 [Object]
 id=Tree_Coniferous
 Properties=430;false;"Prototype"=DTree_Coniferous
-Timer=151
+Timer=320
 Category=1
 Plane=100
-Size=17003
-Mass=25
+Size=24503
+Mass=36
 X=F40894464
-Y=F39714816
-Width=10
-Height=18
-Offset=-5,-9
+Y=F39452672
+Width=14
+Height=26
+Offset=-7,-13
 Vertices=9
-VertexY=7,5,3,1,0,-1,-3,-5,-7
+VertexY=10,7,4,2,0,-2,-4,-7,-10
 VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=2359937
 Component=Wood=0
-Effects=(1,1201,35,0,None,431;false;"Name"=s"IntGrowth","growth"=i5)
+Effects=(1,1720,35,0,None,431;false;"growth"=i5,"Name"=s"IntGrowth")
 
   [Mesh]
   Valid=true
@@ -1415,7 +1415,7 @@ Effects=(1,1201,35,0,None,431;false;"Name"=s"IntGrowth","growth"=i5)
 [Object]
 id=Rank
 Properties=436;false;"Prototype"=DRank,"MeshTransformation"=E49
-Timer=33
+Timer=27
 Category=1
 Plane=100
 Rotation=202
@@ -1439,8 +1439,8 @@ OCF=12845761
 
 [Object]
 id=Trunk
-Properties=437;false;"Prototype"=DTrunk,"MeshTransformation"=E50,"Action"=n
-Timer=33
+Properties=437;false;"Action"=n,"Prototype"=DTrunk,"MeshTransformation"=E50
+Timer=27
 Category=1
 Plane=100
 Size=30000
@@ -1462,7 +1462,7 @@ OCF=12845697
 [Object]
 id=Fern
 Properties=461;false;"Prototype"=DFern,"MeshTransformation"=E51
-Timer=208
+Timer=27
 Category=1
 Plane=100
 Size=100100
@@ -1476,15 +1476,15 @@ Vertices=2
 VertexY=0,3
 VertexCNAT=16,8
 Picture=0,0,0,0
-OCF=14942401
+OCF=12845249
 
   [Mesh]
   Valid=true
 
 [Object]
 id=WoodenCabin
-Properties=19;false;"Prototype"=DWoodenCabin,"Action"=n
-Timer=28
+Properties=19;false;"Action"=n,"Prototype"=DWoodenCabin
+Timer=22
 Category=4098
 Plane=200
 Size=100000
@@ -1507,8 +1507,8 @@ Component=Wood=5;Rock=4
 
 [Object]
 id=ToolsWorkshop
-Properties=20;false;"Prototype"=DToolsWorkshop,"queue"=E52,"hold_production"=b0
-Timer=28
+Properties=20;false;"hold_production"=b0,"Prototype"=DToolsWorkshop,"queue"=E52
+Timer=22
 Category=2
 Plane=200
 Size=100000
@@ -1526,15 +1526,14 @@ Picture=0,0,0,0
 OCF=12862529
 Component=Wood=6;Metal=3
 ColorMod=4290032820
-Effects=(100,78078,5,20,ToolsWorkshop,21;false;"Name"=s"ProcessQueue")
+Effects=(100,78597,5,20,ToolsWorkshop,21;false;"Name"=s"ProcessQueue")
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Chest
-Properties=22;false;"Prototype"=DChest,"MeshTransformation"=E53,"chestanim"=i0
-Timer=6
+Properties=22;false;"chestanim"=i0,"Prototype"=DChest,"MeshTransformation"=E53
 Category=2
 Plane=200
 Size=100000
@@ -1562,12 +1561,12 @@ Contents=484;467;465
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,267)
+    Position=linear(F65,F0,F65,20,Hold,519)
 
 [Object]
 id=Chest
-Properties=70;false;"Prototype"=DChest,"MeshTransformation"=E54,"chestanim"=i0
-Timer=3
+Properties=70;false;"chestanim"=i0,"Prototype"=DChest,"MeshTransformation"=E54
+Timer=32
 Category=2
 Plane=200
 Size=100000
@@ -1594,12 +1593,12 @@ Component=Wood=3
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,267)
+    Position=linear(F65,F0,F65,20,Hold,519)
 
 [Object]
 id=Chest
-Properties=83;false;"Prototype"=DChest,"MeshTransformation"=E55,"chestanim"=i0
-Timer=22
+Properties=83;false;"chestanim"=i0,"Prototype"=DChest,"MeshTransformation"=E55
+Timer=16
 Category=2
 Plane=200
 Size=100000
@@ -1627,12 +1626,12 @@ Contents=486;485;84;85;86
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,267)
+    Position=linear(F65,F0,F65,20,Hold,519)
 
 [Object]
 id=Chest
-Properties=445;false;"Prototype"=DChest,"MeshTransformation"=E56,"chestanim"=i0
-Timer=33
+Properties=445;false;"chestanim"=i0,"Prototype"=DChest,"MeshTransformation"=E56
+Timer=27
 Category=2
 Plane=200
 Size=100000
@@ -1660,12 +1659,12 @@ Contents=448;449;38;446;447
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,267)
+    Position=linear(F65,F0,F65,20,Hold,519)
 
 [Object]
 id=Chest
-Properties=472;false;"Prototype"=DChest,"MeshTransformation"=E57,"chestanim"=i0
-Timer=25
+Properties=472;false;"chestanim"=i0,"Prototype"=DChest,"MeshTransformation"=E57
+Timer=19
 Category=2
 Plane=200
 Size=100000
@@ -1693,12 +1692,44 @@ Contents=575;477;475;476;559
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,267)
+    Position=linear(F65,F0,F65,20,Hold,519)
+
+[Object]
+id=Chest
+Properties=579;false;"MeshTransformation"=E58,"Prototype"=DChest,"chestanim"=i0
+Timer=32
+Category=2
+Plane=200
+Size=100000
+Mass=10
+X=F107912992
+Y=F89740534
+Width=20
+Height=24
+Offset=-10,-12
+Vertices=4
+VertexX=-8,-8,8,8
+VertexY=-2,11,-2,11
+VertexCNAT=5,9,6,10
+VertexFriction=50,50,100,100
+Picture=0,0,0,0
+OCF=12845121
+Component=Wood=3
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Open
+    Position=linear(F65,F0,F65,20,Hold,519)
 
 [Object]
 id=Elevator
-Properties=39;false;"Action"=n,"case"=n,"Prototype"=DElevator,"MeshTransformation"=E58,"rope"=O47
-Timer=8
+Properties=39;false;"case"=n,"Action"=n,"rope"=O47,"Prototype"=DElevator,"MeshTransformation"=E59
+Timer=2
 Category=1
 Plane=200
 Size=40000
@@ -1722,8 +1753,8 @@ ColorMod=4283971116
 
 [Object]
 id=WindGenerator
-Properties=48;false;"Action"=n,"last_wind"=i50,"wind_anim"=i0,"Prototype"=DWindGenerator,"MeshTransformation"=E59
-Timer=21
+Properties=48;false;"wind_anim"=i0,"Action"=n,"last_wind"=i50,"Prototype"=DWindGenerator,"MeshTransformation"=E60
+Timer=15
 Category=2
 Plane=200
 Size=48000
@@ -1750,12 +1781,12 @@ ColorMod=4286213733
     Number=0
     Type=Leaf
     Animation=Turn
-    Position=linear(F85593,F104857,F0,187,Loop,267)
+    Position=linear(F4667,F104857,F0,187,Loop,519)
 
 [Object]
 id=Flagpole
-Properties=494;false;"Prototype"=DFlagpole,"MeshTransformation"=E60,"lflag"=E61
-Timer=26
+Properties=494;false;"lflag"=E61,"Prototype"=DFlagpole,"MeshTransformation"=E62
+Timer=20
 Category=2
 Plane=200
 Size=100000
@@ -1780,7 +1811,7 @@ Component=Wood=4;Metal=1
 [Object]
 id=GrappleHook
 Properties=474;false;"Prototype"=DGrappleHook
-Timer=25
+Timer=19
 Category=4
 Plane=300
 Size=100000
@@ -1802,8 +1833,8 @@ Contained=473
 
 [Object]
 id=Clonk
-Properties=27;false;"Action"=E62,"closed_eyes"=i0,"PictureTransformation"=E63,"using"=n,"iHandMesh"=E64,"backpack"=i1,"force_collection"=b0,"alt"=b0,"menu"=n,"turn_type"=i1,"MeshTransformation"=E65,"inventory"=E66,"mesh_transformation_list"=E67,"using_type"=n,"Name"=s"Hans-Georg","Prototype"=DClonk,"fBothHanded"=i0,"use_objects"=E68,"ActualReplace"=E69
-Timer=31
+Properties=27;false;"Action"=E63,"iHandMesh"=E64,"backpack"=i1,"turn_type"=i1,"fBothHanded"=i0,"ActualReplace"=E65,"menu"=n,"using"=n,"mesh_transformation_list"=E66,"alt"=b0,"PictureTransformation"=E67,"closed_eyes"=i0,"force_collection"=b0,"use_objects"=E68,"MeshTransformation"=E69,"inventory"=E70,"using_type"=n,"Name"=s"Hans-Georg","Prototype"=DClonk
+Timer=25
 Category=8
 Plane=400
 Size=100000
@@ -1813,7 +1844,7 @@ Breath=252
 Color=4292686880
 X=F10147519
 Y=F64780998
-YDir=F78642
+YDir=F104856
 Width=8
 Height=20
 Offset=-4,-10
@@ -1827,7 +1858,7 @@ AttachY=999
 AttachVtx=2
 Picture=0,0,0,0
 OCF=12845249
-ActionTime=71692
+ActionTime=72211
 
   [Mesh]
   Valid=true
@@ -1837,7 +1868,7 @@ ActionTime=71692
     Number=0
     Type=Leaf
     Animation=Dead
-    Position=linear(F111411,F0,F111411,20,Hold,267)
+    Position=linear(F111411,F0,F111411,20,Hold,519)
 
     [Attached]
     Number=1
@@ -1851,8 +1882,8 @@ ActionTime=71692
 
 [Object]
 id=Clonk
-Properties=401;false;"Action"=E70,"closed_eyes"=i0,"PictureTransformation"=E71,"gender"=i1,"using"=n,"backpack"=i1,"force_collection"=b0,"alt"=b0,"no_ladder_counter"=i0,"menu"=n,"turn_type"=i1,"MeshTransformation"=E72,"inventory"=E73,"mesh_transformation_list"=E74,"using_type"=n,"Name"=s"Sabine","Prototype"=DClonk,"use_objects"=E75,"ActualReplace"=E76
-Timer=34
+Properties=401;false;"Action"=E71,"backpack"=i1,"no_ladder_counter"=i0,"turn_type"=i1,"ActualReplace"=E72,"menu"=n,"using"=n,"alt"=b0,"mesh_transformation_list"=E73,"PictureTransformation"=E74,"closed_eyes"=i0,"gender"=i1,"force_collection"=b0,"use_objects"=E75,"MeshTransformation"=E76,"inventory"=E77,"using_type"=n,"Name"=s"Sabine","Prototype"=DClonk
+Timer=28
 Category=8
 Plane=400
 Size=100000
@@ -1862,7 +1893,7 @@ Breath=252
 Color=4281642204
 X=F102301696
 Y=F85157397
-YDir=F78642
+YDir=F104856
 Width=8
 Height=20
 Offset=-4,-10
@@ -1876,7 +1907,7 @@ AttachY=1317
 AttachVtx=2
 Picture=0,0,0,0
 OCF=12845249
-ActionTime=2585
+ActionTime=3104
 Graphics=Skin_Farmer::
 
   [Mesh]
@@ -1887,7 +1918,7 @@ Graphics=Skin_Farmer::
     Number=1
     Type=Leaf
     Animation=Dead
-    Position=linear(F111411,F0,F111411,20,Hold,267)
+    Position=linear(F111411,F0,F111411,20,Hold,519)
 
     [Attached]
     Number=1
@@ -1902,7 +1933,7 @@ Graphics=Skin_Farmer::
 [Object]
 id=Loam
 Properties=84;false;"Prototype"=DLoam
-Timer=29
+Timer=23
 Category=16
 Plane=500
 Size=100000
@@ -1924,7 +1955,7 @@ Graphics=Loam::1
 [Object]
 id=Loam
 Properties=345;false;"Prototype"=DLoam
-Timer=34
+Timer=28
 Category=16
 Plane=500
 Size=100000
@@ -1945,7 +1976,7 @@ Graphics=Loam::2
 [Object]
 id=Loam
 Properties=477;false;"Prototype"=DLoam
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -1967,7 +1998,7 @@ Graphics=Loam::1
 [Object]
 id=Loam
 Properties=491;false;"Prototype"=DLoam
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -1987,7 +2018,7 @@ Component=Earth=2
 [Object]
 id=Firestone
 Properties=25;false;"Prototype"=DFirestone
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -2009,7 +2040,7 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=343;false;"Prototype"=DFirestone
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -2031,7 +2062,7 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=356;false;"Prototype"=DFirestone
-Timer=31
+Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -2053,7 +2084,7 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=357;false;"Prototype"=DFirestone
-Timer=3
+Timer=32
 Category=16
 Plane=500
 Size=100000
@@ -2075,7 +2106,7 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=358;false;"Prototype"=DFirestone
-Timer=13
+Timer=7
 Category=16
 Plane=500
 Size=100000
@@ -2097,7 +2128,7 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=359;false;"Prototype"=DFirestone
-Timer=34
+Timer=28
 Category=16
 Plane=500
 Size=100000
@@ -2118,7 +2149,7 @@ Component=Sulphur=1
 [Object]
 id=Firestone
 Properties=360;false;"Prototype"=DFirestone
-Timer=15
+Timer=9
 Category=16
 Plane=500
 Size=100000
@@ -2139,7 +2170,7 @@ Component=Sulphur=1
 [Object]
 id=Firestone
 Properties=444;false;"Prototype"=DFirestone
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2161,7 +2192,7 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=446;false;"Prototype"=DFirestone
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2184,7 +2215,7 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=447;false;"Prototype"=DFirestone
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2207,7 +2238,7 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=464;false;"Prototype"=DFirestone
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2229,7 +2260,7 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=467;false;"Prototype"=DFirestone
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2252,7 +2283,6 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=468;false;"Prototype"=DFirestone
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -2274,7 +2304,6 @@ Graphics=Firestone::1
 [Object]
 id=Firestone
 Properties=469;false;"Prototype"=DFirestone
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -2296,7 +2325,6 @@ Graphics=Firestone::2
 [Object]
 id=Firestone
 Properties=471;false;"Prototype"=DFirestone
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -2316,23 +2344,44 @@ Component=Sulphur=1
 Graphics=Firestone::2
 
 [Object]
-id=Axe
-Properties=26;false;"Prototype"=DAxe,"hWeaponAnimStrike"=n
-Timer=34
+id=Firestone
+Properties=581;false;"Prototype"=DFirestone
 Category=16
 Plane=500
-Rotation=100
+Size=100000
+Mass=10
+X=F99614720
+Y=F62390272
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1
+Graphics=Firestone::2
+
+[Object]
+id=Axe
+Properties=26;false;"Prototype"=DAxe,"hWeaponAnimStrike"=n
+Timer=28
+Category=16
+Plane=500
+Rotation=99
 Size=100000
 Mass=12
 X=F100728832
-Y=F84764261
-R=F6553600
+Y=F84574206
+R=F6488064
 Width=14
 Height=14
 Offset=-7,-7
 Vertices=3
 VertexX=0,-3,3
-VertexY=0,1,1
+VertexY=0,2
 VertexFriction=50,50,50
 Picture=0,0,0,0
 OCF=12845641
@@ -2344,7 +2393,7 @@ Component=Wood=1;Metal=1
 [Object]
 id=Shovel
 Properties=37;false;"Prototype"=DShovel
-Timer=5
+Timer=34
 Category=16
 Plane=500
 Rotation=123
@@ -2361,7 +2410,7 @@ VertexX=6,-8
 VertexY=4,-5
 VertexFriction=50,50,50
 Picture=0,0,0,0
-OCF=2359881
+OCF=12845641
 Component=Wood=1;Metal=1
 
   [Mesh]
@@ -2370,7 +2419,7 @@ Component=Wood=1;Metal=1
 [Object]
 id=Ropeladder
 Properties=38;false;"Prototype"=DRopeladder
-Timer=3
+Timer=32
 Category=16
 Plane=500
 Size=100000
@@ -2391,8 +2440,8 @@ Component=Wood=2;Rope=2
 
 [Object]
 id=Mushroom
-Properties=57;false;"Prototype"=DMushroom,"MeshTransformation"=E77
-Timer=212
+Properties=57;false;"Prototype"=DMushroom,"MeshTransformation"=E78
+Timer=31
 Category=16
 Plane=500
 Size=100300
@@ -2414,8 +2463,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=60;false;"Prototype"=DMushroom,"MeshTransformation"=E78
-Timer=158
+Properties=60;false;"Prototype"=DMushroom,"MeshTransformation"=E79
+Timer=327
 Category=16
 Plane=500
 Size=100300
@@ -2437,8 +2486,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=63;false;"Prototype"=DMushroom,"MeshTransformation"=E79
-Timer=89
+Properties=63;false;"Prototype"=DMushroom,"MeshTransformation"=E80
+Timer=258
 Category=16
 Plane=500
 Size=100300
@@ -2453,15 +2502,15 @@ VertexY=1,4
 VertexCNAT=16,8
 VertexFriction=10,100
 Picture=0,0,0,0
-OCF=2359361
+OCF=12845121
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Mushroom
-Properties=66;false;"Prototype"=DMushroom,"MeshTransformation"=E80
-Timer=60
+Properties=66;false;"Prototype"=DMushroom,"MeshTransformation"=E81
+Timer=229
 Category=16
 Plane=500
 Size=100300
@@ -2476,15 +2525,15 @@ VertexY=1,4
 VertexCNAT=16,8
 VertexFriction=10,100
 Picture=0,0,0,0
-OCF=14942273
+OCF=12845121
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Mushroom
-Properties=78;false;"Prototype"=DMushroom,"MeshTransformation"=E81
-Timer=213
+Properties=78;false;"Prototype"=DMushroom,"MeshTransformation"=E82
+Timer=32
 Category=16
 Plane=500
 Size=100203
@@ -2506,8 +2555,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=133;false;"Prototype"=DMushroom,"MeshTransformation"=E82
-Timer=228
+Properties=133;false;"Prototype"=DMushroom,"MeshTransformation"=E83
+Timer=47
 Category=16
 Plane=500
 Size=100300
@@ -2529,8 +2578,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=205;false;"Prototype"=DMushroom,"MeshTransformation"=E83
-Timer=64
+Properties=205;false;"Prototype"=DMushroom,"MeshTransformation"=E84
+Timer=233
 Category=16
 Plane=500
 Size=100300
@@ -2552,8 +2601,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=208;false;"Prototype"=DMushroom,"MeshTransformation"=E84
-Timer=260
+Properties=208;false;"Prototype"=DMushroom,"MeshTransformation"=E85
+Timer=79
 Category=16
 Plane=500
 Size=100300
@@ -2575,8 +2624,8 @@ OCF=14942273
 
 [Object]
 id=Mushroom
-Properties=211;false;"Prototype"=DMushroom,"MeshTransformation"=E85
-Timer=165
+Properties=211;false;"Prototype"=DMushroom,"MeshTransformation"=E86
+Timer=334
 Category=16
 Plane=500
 Size=100300
@@ -2598,8 +2647,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=223;false;"Prototype"=DMushroom,"MeshTransformation"=E86
-Timer=106
+Properties=223;false;"Prototype"=DMushroom,"MeshTransformation"=E87
+Timer=275
 Category=16
 Plane=500
 Size=100300
@@ -2621,8 +2670,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=226;false;"Prototype"=DMushroom,"MeshTransformation"=E87
-Timer=42
+Properties=226;false;"Prototype"=DMushroom,"MeshTransformation"=E88
+Timer=211
 Category=16
 Plane=500
 Size=100300
@@ -2637,15 +2686,15 @@ VertexY=1,4
 VertexCNAT=16,8
 VertexFriction=10,100
 Picture=0,0,0,0
-OCF=14942273
+OCF=12845121
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Mushroom
-Properties=235;false;"Prototype"=DMushroom,"MeshTransformation"=E88
-Timer=150
+Properties=235;false;"Prototype"=DMushroom,"MeshTransformation"=E89
+Timer=319
 Category=16
 Plane=500
 Size=100300
@@ -2667,8 +2716,8 @@ OCF=14942273
 
 [Object]
 id=Mushroom
-Properties=238;false;"Prototype"=DMushroom,"MeshTransformation"=E89
-Timer=316
+Properties=238;false;"Prototype"=DMushroom,"MeshTransformation"=E90
+Timer=135
 Category=16
 Plane=500
 Size=100300
@@ -2690,8 +2739,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=241;false;"Prototype"=DMushroom,"MeshTransformation"=E90
-Timer=161
+Properties=241;false;"Prototype"=DMushroom,"MeshTransformation"=E91
+Timer=330
 Category=16
 Plane=500
 Size=100300
@@ -2713,8 +2762,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=251;false;"Prototype"=DMushroom,"MeshTransformation"=E91
-Timer=229
+Properties=251;false;"Prototype"=DMushroom,"MeshTransformation"=E92
+Timer=48
 Category=16
 Plane=500
 Size=100203
@@ -2736,8 +2785,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=395;false;"Prototype"=DMushroom,"MeshTransformation"=E92
-Timer=349
+Properties=395;false;"Prototype"=DMushroom,"MeshTransformation"=E93
+Timer=168
 Category=16
 Plane=500
 Size=100300
@@ -2759,8 +2808,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=398;false;"Prototype"=DMushroom,"MeshTransformation"=E93
-Timer=349
+Properties=398;false;"Prototype"=DMushroom,"MeshTransformation"=E94
+Timer=168
 Category=16
 Plane=500
 Size=100300
@@ -2782,8 +2831,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=438;false;"Prototype"=DMushroom,"MeshTransformation"=E94
-Timer=208
+Properties=438;false;"Prototype"=DMushroom,"MeshTransformation"=E95
+Timer=27
 Category=16
 Plane=500
 Size=100300
@@ -2805,8 +2854,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=441;false;"Prototype"=DMushroom,"MeshTransformation"=E95
-Timer=208
+Properties=441;false;"Prototype"=DMushroom,"MeshTransformation"=E96
+Timer=27
 Category=16
 Plane=500
 Size=100300
@@ -2828,8 +2877,8 @@ OCF=12845121
 
 [Object]
 id=Mushroom
-Properties=449;false;"Prototype"=DMushroom,"MeshTransformation"=E96
-Timer=208
+Properties=449;false;"Prototype"=DMushroom,"MeshTransformation"=E97
+Timer=27
 Category=16
 Plane=500
 Size=100300
@@ -2852,8 +2901,8 @@ Contained=445
 
 [Object]
 id=Mushroom
-Properties=452;false;"Prototype"=DMushroom,"MeshTransformation"=E97
-Timer=208
+Properties=452;false;"Prototype"=DMushroom,"MeshTransformation"=E98
+Timer=27
 Category=16
 Plane=500
 Size=100300
@@ -2874,9 +2923,32 @@ OCF=12845121
   Valid=true
 
 [Object]
+id=Mushroom
+Properties=576;false;"Prototype"=DMushroom,"MeshTransformation"=E99
+Timer=169
+Category=16
+Plane=500
+Size=100300
+Mass=6
+X=F105860832
+Y=F90793642
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=0,0,0,0
+OCF=12845121
+
+  [Mesh]
+  Valid=true
+
+[Object]
 id=Dynamite
 Properties=85;false;"Prototype"=DDynamite
-Timer=9
+Timer=3
 Category=16
 Plane=500
 Size=100000
@@ -2898,7 +2970,7 @@ Component=Coal=1;Sulphur=1
 [Object]
 id=Dynamite
 Properties=86;false;"Prototype"=DDynamite
-Timer=5
+Timer=34
 Category=16
 Plane=500
 Size=100000
@@ -2920,7 +2992,7 @@ Component=Coal=1;Sulphur=1
 [Object]
 id=Dynamite
 Properties=475;false;"Prototype"=DDynamite
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -2942,7 +3014,7 @@ Component=Coal=1;Sulphur=1
 [Object]
 id=Dynamite
 Properties=476;false;"Prototype"=DDynamite
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -2964,7 +3036,7 @@ Component=Coal=1;Sulphur=1
 [Object]
 id=Nugget
 Properties=136;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -2986,7 +3058,7 @@ Graphics=Nugget::1
 [Object]
 id=Nugget
 Properties=137;false;"Prototype"=DNugget
-Timer=17
+Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -3008,7 +3080,7 @@ Graphics=Nugget::2
 [Object]
 id=Nugget
 Properties=138;false;"Prototype"=DNugget
-Timer=5
+Timer=34
 Category=16
 Plane=500
 Size=100000
@@ -3029,7 +3101,7 @@ Component=Nugget=1
 [Object]
 id=Nugget
 Properties=139;false;"Prototype"=DNugget
-Timer=1
+Timer=30
 Category=16
 Plane=500
 Size=100000
@@ -3051,7 +3123,7 @@ Graphics=Nugget::1
 [Object]
 id=Nugget
 Properties=344;false;"Prototype"=DNugget
-Timer=11
+Timer=5
 Category=16
 Plane=500
 Size=100000
@@ -3073,7 +3145,7 @@ Graphics=Nugget::4
 [Object]
 id=Nugget
 Properties=353;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3095,7 +3167,7 @@ Graphics=Nugget::2
 [Object]
 id=Nugget
 Properties=354;false;"Prototype"=DNugget
-Timer=2
+Timer=31
 Category=16
 Plane=500
 Size=100000
@@ -3117,7 +3189,7 @@ Graphics=Nugget::2
 [Object]
 id=Nugget
 Properties=355;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3138,7 +3210,7 @@ Component=Nugget=1
 [Object]
 id=Nugget
 Properties=485;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3160,7 +3232,7 @@ Component=Nugget=1
 [Object]
 id=Nugget
 Properties=486;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3183,7 +3255,7 @@ Graphics=Nugget::1
 [Object]
 id=Nugget
 Properties=487;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3205,7 +3277,7 @@ Graphics=Nugget::2
 [Object]
 id=Nugget
 Properties=488;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3227,7 +3299,7 @@ Graphics=Nugget::2
 [Object]
 id=Nugget
 Properties=489;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3249,7 +3321,7 @@ Graphics=Nugget::4
 [Object]
 id=Nugget
 Properties=490;false;"Prototype"=DNugget
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3271,7 +3343,7 @@ Graphics=Nugget::3
 [Object]
 id=Metal
 Properties=465;false;"Prototype"=DMetal
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -3293,7 +3365,7 @@ Component=Ore=1
 [Object]
 id=Rock
 Properties=285;false;"Prototype"=DRock
-Timer=29
+Timer=23
 Category=16
 Plane=500
 Size=100000
@@ -3315,7 +3387,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=286;false;"Prototype"=DRock
-Timer=21
+Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3337,7 +3409,7 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=287;false;"Prototype"=DRock
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3359,7 +3431,7 @@ Graphics=Rock::6
 [Object]
 id=Rock
 Properties=288;false;"Prototype"=DRock
-Timer=13
+Timer=7
 Category=16
 Plane=500
 Size=100000
@@ -3381,7 +3453,7 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=289;false;"Prototype"=DRock
-Timer=14
+Timer=8
 Category=16
 Plane=500
 Size=100000
@@ -3403,7 +3475,7 @@ Graphics=Rock::6
 [Object]
 id=Rock
 Properties=290;false;"Prototype"=DRock
-Timer=32
+Timer=26
 Category=16
 Plane=500
 Size=100000
@@ -3425,7 +3497,7 @@ Graphics=Rock::8
 [Object]
 id=Rock
 Properties=291;false;"Prototype"=DRock
-Timer=11
+Timer=5
 Category=16
 Plane=500
 Size=100000
@@ -3447,7 +3519,7 @@ Graphics=Rock::6
 [Object]
 id=Rock
 Properties=292;false;"Prototype"=DRock
-Timer=15
+Timer=9
 Category=16
 Plane=500
 Size=100000
@@ -3468,7 +3540,7 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=293;false;"Prototype"=DRock
-Timer=17
+Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -3490,7 +3562,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=294;false;"Prototype"=DRock
-Timer=13
+Timer=7
 Category=16
 Plane=500
 Size=100000
@@ -3512,7 +3584,7 @@ Graphics=Rock::9
 [Object]
 id=Rock
 Properties=295;false;"Prototype"=DRock
-Timer=7
+Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -3534,7 +3606,7 @@ Graphics=Rock::7
 [Object]
 id=Rock
 Properties=296;false;"Prototype"=DRock
-Timer=24
+Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -3555,7 +3627,7 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=303;false;"Prototype"=DRock
-Timer=21
+Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3576,7 +3648,7 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=304;false;"Prototype"=DRock
-Timer=28
+Timer=22
 Category=16
 Plane=500
 Size=100000
@@ -3598,7 +3670,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=311;false;"Prototype"=DRock
-Timer=31
+Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -3619,7 +3691,7 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=312;false;"Prototype"=DRock
-Timer=15
+Timer=9
 Category=16
 Plane=500
 Size=100000
@@ -3641,7 +3713,7 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=313;false;"Prototype"=DRock
-Timer=8
+Timer=2
 Category=16
 Plane=500
 Size=100000
@@ -3663,7 +3735,7 @@ Graphics=Rock::8
 [Object]
 id=Rock
 Properties=314;false;"Prototype"=DRock
-Timer=24
+Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -3685,7 +3757,7 @@ Graphics=Rock::8
 [Object]
 id=Rock
 Properties=315;false;"Prototype"=DRock
-Timer=12
+Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -3707,7 +3779,7 @@ Graphics=Rock::1
 [Object]
 id=Rock
 Properties=316;false;"Prototype"=DRock
-Timer=21
+Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3729,7 +3801,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=320;false;"Prototype"=DRock
-Timer=3
+Timer=32
 Category=16
 Plane=500
 Size=100000
@@ -3751,7 +3823,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=321;false;"Prototype"=DRock
-Timer=1
+Timer=30
 Category=16
 Plane=500
 Size=100000
@@ -3773,7 +3845,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=325;false;"Prototype"=DRock
-Timer=7
+Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -3795,7 +3867,7 @@ Graphics=Rock::1
 [Object]
 id=Rock
 Properties=326;false;"Prototype"=DRock
-Timer=17
+Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -3817,7 +3889,7 @@ Graphics=Rock::1
 [Object]
 id=Rock
 Properties=327;false;"Prototype"=DRock
-Timer=20
+Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -3839,6 +3911,7 @@ Graphics=Rock::9
 [Object]
 id=Rock
 Properties=328;false;"Prototype"=DRock
+Timer=29
 Category=16
 Plane=500
 Size=100000
@@ -3860,7 +3933,7 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=329;false;"Prototype"=DRock
-Timer=5
+Timer=34
 Category=16
 Plane=500
 Size=100000
@@ -3882,7 +3955,7 @@ Graphics=Rock::6
 [Object]
 id=Rock
 Properties=434;false;"Prototype"=DRock
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -3904,7 +3977,7 @@ Graphics=Rock::7
 [Object]
 id=Rock
 Properties=435;false;"Prototype"=DRock
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -3926,7 +3999,7 @@ Graphics=Rock::9
 [Object]
 id=Rock
 Properties=448;false;"Prototype"=DRock
-Timer=33
+Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -3948,7 +4021,6 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=470;false;"Prototype"=DRock
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -3970,7 +4042,7 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=484;false;"Prototype"=DRock
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -3993,7 +4065,7 @@ Graphics=Rock::4
 [Object]
 id=Rock
 Properties=492;false;"Prototype"=DRock
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -4015,7 +4087,7 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=493;false;"Prototype"=DRock
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -4035,9 +4107,30 @@ Component=Rock=1
 Graphics=Rock::8
 
 [Object]
+id=Rock
+Properties=580;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F99561552
+Y=F66182116
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::2
+
+[Object]
 id=Coal
 Properties=331;false;"Prototype"=DCoal
-Timer=21
+Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -4059,7 +4152,7 @@ Graphics=Coal::4
 [Object]
 id=Coal
 Properties=332;false;"Prototype"=DCoal
-Timer=34
+Timer=28
 Category=16
 Plane=500
 Size=100000
@@ -4081,7 +4174,7 @@ Graphics=Coal::2
 [Object]
 id=Coal
 Properties=336;false;"Prototype"=DCoal
-Timer=13
+Timer=7
 Category=16
 Plane=500
 Size=100000
@@ -4103,7 +4196,7 @@ Graphics=Coal::4
 [Object]
 id=Coal
 Properties=337;false;"Prototype"=DCoal
-Timer=14
+Timer=8
 Category=16
 Plane=500
 Size=100000
@@ -4124,8 +4217,8 @@ Graphics=Coal::2
 
 [Object]
 id=Coal
-Properties=338;false;"Prototype"=DCoal,"Action"=n
-Timer=28
+Properties=338;false;"Action"=n,"Prototype"=DCoal
+Timer=22
 Category=16
 Plane=500
 Size=98000
@@ -4146,7 +4239,7 @@ Component=Wood=1
 [Object]
 id=Coal
 Properties=483;false;"Prototype"=DCoal
-Timer=26
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -4168,7 +4261,7 @@ Graphics=Coal::2
 [Object]
 id=Sulphur
 Properties=346;false;"Prototype"=DSulphur
-Timer=17
+Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -4189,7 +4282,7 @@ Component=Sulphur=1
 [Object]
 id=Sulphur
 Properties=347;false;"Prototype"=DSulphur
-Timer=7
+Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -4211,7 +4304,7 @@ Graphics=Sulphur::2
 [Object]
 id=Sulphur
 Properties=348;false;"Prototype"=DSulphur
-Timer=29
+Timer=23
 Category=16
 Plane=500
 Size=100000
@@ -4233,7 +4326,7 @@ Graphics=Sulphur::3
 [Object]
 id=Sulphur
 Properties=349;false;"Prototype"=DSulphur
-Timer=28
+Timer=22
 Category=16
 Plane=500
 Size=100000
@@ -4254,7 +4347,7 @@ Component=Sulphur=1
 [Object]
 id=Sulphur
 Properties=350;false;"Prototype"=DSulphur
-Timer=12
+Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -4275,7 +4368,6 @@ Component=Sulphur=1
 [Object]
 id=Sulphur
 Properties=351;false;"Prototype"=DSulphur
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -4296,7 +4388,7 @@ Component=Sulphur=1
 [Object]
 id=Sulphur
 Properties=352;false;"Prototype"=DSulphur
-Timer=2
+Timer=31
 Category=16
 Plane=500
 Size=100000
@@ -4317,15 +4409,15 @@ Graphics=Sulphur::1
 
 [Object]
 id=Seaweed
-Properties=455;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=455;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F12359017
 Y=F76052185
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4336,8 +4428,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4347,19 +4440,19 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,455)
+    Position=action(F15073,455)
 
 [Object]
 id=Seaweed
-Properties=456;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=456;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F9311106
 Y=F76174910
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4370,8 +4463,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4381,19 +4475,19 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,456)
+    Position=action(F15073,456)
 
 [Object]
 id=Seaweed
-Properties=457;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=457;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F34202120
 Y=F42696411
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4404,8 +4498,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4415,19 +4510,19 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,457)
+    Position=action(F15073,457)
 
 [Object]
 id=Seaweed
-Properties=458;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=458;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F39962220
 Y=F45770635
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4438,8 +4533,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4449,19 +4545,19 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,458)
+    Position=action(F15073,458)
 
 [Object]
 id=Seaweed
-Properties=459;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=459;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F45693212
 Y=F44259260
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4472,8 +4568,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4483,19 +4580,19 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,459)
+    Position=action(F15073,459)
 
 [Object]
 id=Seaweed
-Properties=460;false;"Prototype"=DSeaweed,"Action"=E98
-Timer=33
+Properties=460;false;"Action"=E100,"Prototype"=DSeaweed
+Timer=27
 Category=16
 Plane=500
 Size=100000
 Mass=1
 X=F50200944
 Y=F45245127
-YDir=F78642
+YDir=F104856
 Width=6
 Height=16
 Offset=-3,-8
@@ -4506,8 +4603,9 @@ VertexFriction=10,100
 Picture=0,0,0,0
 InLiquid=true
 OCF=1310785
-ActionTime=128
-Phase=64
+ActionTime=491
+Phase=11
+PhaseDelay=1
 
   [Mesh]
   Valid=true
@@ -4517,12 +4615,12 @@ Phase=64
     Number=0
     Type=Leaf
     Animation=Sway
-    Position=action(F83885,460)
+    Position=action(F15073,460)
 
 [Object]
 id=GrappleBow
-Properties=473;false;"animation_set"=E99,"Prototype"=DGrappleBow,"hook"=O474,"hook_attach"=i1
-Timer=25
+Properties=473;false;"animation_set"=E101,"hook_attach"=i1,"hook"=O474,"Prototype"=DGrappleBow
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -4560,7 +4658,7 @@ Contents=474
 [Object]
 id=Wood
 Properties=481;false;"Prototype"=DWood
-Timer=25
+Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -4582,30 +4680,34 @@ Component=Wood=1
 [Object]
 id=Wood
 Properties=482;false;"Prototype"=DWood
-Timer=25
+Timer=19
 Category=16
 Plane=500
-Rotation=21
+Rotation=22
 Size=100000
 Mass=6
 X=F44040192
-Y=F49702502
-R=F1376256
+Y=F49676288
+R=F1474051
+YDir=F13107
+RDir=F-19661
 Width=22
 Height=22
 Offset=-11,-11
 Vertices=3
 VertexX=4,-5
+VertexY=1
 VertexCNAT=1,2
 VertexFriction=50,50
 Picture=0,0,0,0
+Mobile=true
 OCF=12845769
 Component=Wood=1
 
 [Object]
 id=Bow
-Properties=559;false;"Prototype"=DBow,"animation_set"=E100
-Timer=26
+Properties=559;false;"Prototype"=DBow,"animation_set"=E102
+Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -4629,8 +4731,8 @@ Component=Wood=3
 
 [Object]
 id=Arrow
-Properties=575;false;"Prototype"=DArrow,"Name"=s"15x Arrows","count"=i15
-Timer=26
+Properties=575;false;"count"=i15,"Prototype"=DArrow,"Name"=s"15x Arrows"
+Timer=20
 Category=16
 Plane=500
 Rotation=90
@@ -4654,6 +4756,6 @@ Component=Wood=3
 GfxOverlay=11,Icon_Number::1,3,,0,0,(0.40000000596046448,0,8,0,0.40000000596046448,14,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.40000000596046448,0,22,0,0.40000000596046448,14,1),16777215,0
 
 [Script]
-StaticVariables=7;CON_VC_Players=E101,g_player_cursor_pos=n,Clonk_IdleActions=E102,LibraryFlag_flag_list=E103,Library_Power_power_compounds=E104,g_is_initialized=n,g_intro_initialized=n
+StaticVariables=7;CON_VC_Players=E103,g_player_cursor_pos=n,Clonk_IdleActions=E104,LibraryFlag_flag_list=E105,Library_Power_power_compounds=E106,g_is_initialized=n,g_intro_initialized=n
 Scenario=false;"Prototype"=t
-Values=a(1;E105),a(1;E106),p(true;"NextAction"=s"Be","Y"=i0,"Directions"=i1,"Wdt"=i1,"Hgt"=i4,"X"=i0,"Name"=s"Be","Prototype"=E107,"Procedure"=n,"FacetTargetStretch"=i1),a(12;i-995,i0,i105,i0,i0,i1000,i0,i0,i-105,i0,i-995,i0),a(12;i-682,i0,i731,i0,i0,i1000,i0,i0,i-731,i0,i-682,i0),a(12;i-999,i0,i-52,i0,i0,i1000,i0,i0,i52,i0,i-999,i0),a(12;i-799,i0,i-602,i0,i0,i1000,i0,i0,i602,i0,i-799,i0),a(12;i940,i0,i-342,i0,i0,i1000,i0,i0,i342,i0,i940,i0),a(12;i934,i0,i-358,i0,i0,i1000,i0,i0,i358,i0,i934,i0),a(12;i809,i0,i588,i0,i0,i1000,i0,i0,i-588,i0,i809,i0),a(12;i-731,i0,i-682,i0,i0,i1000,i0,i0,i682,i0,i-731,i0),a(12;i559,i0,i829,i0,i0,i1000,i0,i0,i-829,i0,i559,i0),a(12;i-629,i0,i-777,i0,i0,i1000,i0,i0,i777,i0,i-629,i0),a(12;i139,i0,i-990,i0,i0,i1000,i0,i0,i990,i0,i139,i0),a(12;i87,i0,i-996,i0,i0,i1000,i0,i0,i996,i0,i87,i0),a(12;i1000,i0,i-17,i0,i0,i1000,i0,i0,i17,i0,i1000,i0),a(12;i-656,i0,i755,i0,i0,i1000,i0,i0,i-755,i0,i-656,i0),a(12;i883,i0,i-469,i0,i0,i1000,i0,i0,i469,i0,i883,i0),a(12;i706,i0,i375,i0,i0,i800,i0,i0,i-375,i0,i706,i0),a(12;i-438,i0,i899,i0,i0,i1000,i0,i0,i-899,i0,i-438,i0),a(12;i-588,i0,i701,i0,i0,i916,i0,i0,i-701,i0,i-588,i0),a(12;i-970,i0,i242,i0,i0,i1000,i0,i0,i-242,i0,i-970,i0),a(12;i656,i0,i-755,i0,i0,i1000,i0,i0,i755,i0,i656,i0),a(12;i441,i0,i906,i0,i0,i1008,i0,i0,i-906,i0,i441,i0),a(12;i-165,i0,i-1046,i0,i0,i1059,i0,i0,i1046,i0,i-165,i0),a(12;i-254,i0,i599,i0,i0,i651,i0,i0,i-599,i0,i-254,i0),a(12;i891,i0,i-624,i0,i0,i1088,i0,i0,i624,i0,i891,i0),a(12;i-372,i0,i920,i0,i0,i993,i0,i0,i-920,i0,i-372,i0),a(12;i549,i0,i-280,i0,i0,i617,i0,i0,i280,i0,i549,i0),a(12;i-570,i0,i-242,i0,i0,i619,i0,i0,i242,i0,i-570,i0),a(12;i301,i0,i618,i0,i0,i688,i0,i0,i-618,i0,i301,i0),a(12;i-455,i0,i-728,i0,i0,i859,i0,i0,i728,i0,i-455,i0),a(12;i-682,i0,i572,i0,i0,i891,i0,i0,i-572,i0,i-682,i0),a(12;i0,i0,i685,i0,i0,i685,i0,i0,i-685,i0,i0,i0),a(12;i-426,i0,i-526,i0,i0,i678,i0,i0,i526,i0,i-426,i0),a(12;i-669,i0,i-743,i0,i0,i1000,i0,i0,i743,i0,i-669,i0),a(12;i-1000,i0,i-17,i0,i0,i1000,i0,i0,i17,i0,i-1000,i0),a(12;i990,i0,i-139,i0,i0,i1000,i0,i0,i139,i0,i990,i0),a(12;i982,i0,i-191,i0,i0,i1000,i0,i0,i191,i0,i982,i0),a(12;i-951,i0,i309,i0,i0,i1000,i0,i0,i-309,i0,i-951,i0),a(12;i-988,i0,i156,i0,i0,i1000,i0,i0,i-156,i0,i-988,i0),a(12;i-633,i0,i-218,i0,i0,i670,i0,i0,i218,i0,i-633,i0),a(12;i497,i0,i-552,i0,i0,i744,i0,i0,i552,i0,i497,i0),a(12;i906,i0,i-423,i0,i0,i1000,i0,i0,i423,i0,i906,i0),a(12;i-707,i0,i707,i0,i0,i1000,i0,i0,i-707,i0,i-707,i0),a(12;i-682,i0,i-731,i0,i0,i1000,i0,i0,i731,i0,i-682,i0),a(12;i-469,i0,i883,i0,i0,i1000,i0,i0,i-883,i0,i-469,i0),a(12;i342,i0,i-940,i0,i0,i1000,i0,i0,i940,i0,i342,i0),a(12;i191,i0,i-982,i0,i0,i1000,i0,i0,i982,i0,i191,i0),a(12;i-616,i0,i-788,i0,i0,i1000,i0,i0,i788,i0,i-616,i0),a(12;i788,i0,i-616,i0,i0,i1000,i0,i0,i616,i0,i788,i0),a(0;),a(12;i643,i0,i766,i0,i0,i1000,i0,i0,i-766,i0,i643,i0),a(12;i857,i0,i515,i0,i0,i1000,i0,i0,i-515,i0,i857,i0),a(12;i454,i0,i891,i0,i0,i1000,i0,i0,i-891,i0,i454,i0),a(12;i866,i0,i500,i0,i0,i1000,i0,i0,i-500,i0,i866,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),a(12;i1000,i0,i0,i0,i0,i1000,i0,i4000,i0,i0,i1000,i0),p(false;"power_helper"=n,"radius"=i200,"range_markers"=E108,"construction_time"=i0,"linked_flags"=E109),p(true;"Length"=i1,"Y"=i240,"Directions"=i2,"Wdt"=i8,"Delay"=i0,"Hgt"=i20,"NextAction"=s"Hold","X"=i0,"Name"=s"Dead","StartCall"=s"StartDead","NoOtherAction"=i1,"ObjectDisabled"=i1,"Prototype"=E107),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i0),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(1;),a(1;E65),a(2;i0,i1),a(6;),p(true;"Length"=i1,"Y"=i240,"Directions"=i2,"Wdt"=i8,"Delay"=i0,"Hgt"=i20,"NextAction"=s"Hold","X"=i0,"Name"=s"Dead","StartCall"=s"StartDead","NoOtherAction"=i1,"ObjectDisabled"=i1,"Prototype"=E110),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(0;),a(1;E72),a(2;i0,i1),a(6;),a(12;i985,i0,i174,i0,i0,i1000,i0,i0,i-174,i0,i985,i0),a(12;i530,i0,i848,i0,i0,i1000,i0,i0,i-848,i0,i530,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),a(12;i-875,i0,i-485,i0,i0,i1000,i0,i0,i485,i0,i-875,i0),a(12;i438,i0,i-899,i0,i0,i1000,i0,i0,i899,i0,i438,i0),a(12;i-391,i0,i-921,i0,i0,i1000,i0,i0,i921,i0,i-391,i0),a(12;i0,i0,i1000,i0,i0,i1000,i0,i0,i-1000,i0,i0,i0),a(12;i-777,i0,i629,i0,i0,i1000,i0,i0,i-629,i0,i-777,i0),a(12;i743,i0,i669,i0,i0,i1000,i0,i0,i-669,i0,i743,i0),a(12;i-999,i0,i-35,i0,i0,i1000,i0,i0,i35,i0,i-999,i0),a(12;i-946,i0,i326,i0,i0,i1000,i0,i0,i-326,i0,i-946,i0),a(12;i375,i0,i-927,i0,i0,i1000,i0,i0,i927,i0,i375,i0),a(12;i777,i0,i-629,i0,i0,i1000,i0,i0,i629,i0,i777,i0),a(12;i-998,i0,i-70,i0,i0,i1000,i0,i0,i70,i0,i-998,i0),a(12;i-87,i0,i996,i0,i0,i1000,i0,i0,i-996,i0,i-87,i0),a(12;i-629,i0,i-777,i0,i0,i1000,i0,i0,i777,i0,i-629,i0),a(12;i-819,i0,i574,i0,i0,i1000,i0,i0,i-574,i0,i-819,i0),a(12;i515,i0,i857,i0,i0,i1000,i0,i0,i-857,i0,i515,i0),a(12;i914,i0,i-407,i0,i0,i1000,i0,i0,i407,i0,i914,i0),a(12;i-423,i0,i-906,i0,i0,i1000,i0,i0,i906,i0,i-423,i0),a(12;i-545,i0,i839,i0,i0,i1000,i0,i0,i-839,i0,i-545,i0),p(false;"NextAction"=s"Sway","Y"=i0,"Length"=i78,"Wdt"=i8,"Delay"=i2,"Hgt"=i8,"Directions"=i2,"X"=i0,"Animation"=s"Sway","Name"=s"Sway","Prototype"=E111,"PhaseCall"=s"Check","Procedure"=n),p(false;"WalkBack"=i56,"AimMode"=i1,"TurnType"=i1,"WalkSpeed"=i84,"AnimationShoot"=n,"AnimationAim"=s"CrossbowAimArms","AimSpeed"=i20,"ShootTime"=i20),p(false;"LoadTime2"=i7,"WalkBack"=i56,"AimMode"=i1,"AnimationReplacements"=E112,"TurnType"=i1,"AnimationLoad"=s"BowLoadArms","WalkSpeed"=i84,"AnimationShoot"=n,"AnimationAim"=s"BowAimArms","LoadTime"=i30,"ShootTime"=i20),a(1;b0),a(7;E113,E114,E115,E116,E117,E118,E119),a(1;O494),a(1;O41),p(false;"obj"=O48,"amount"=i50),p(false;"obj"=n,"amount"=i-50),p(true;"Length"=i1,"Step"=i1,"Directions"=i1,"Procedure"=n),a(20;),a(0;),p(true;"Length"=i1,"Step"=i1,"Directions"=i1,"Procedure"=n),p(true;"Length"=i1,"Step"=i1,"Directions"=i1,"Procedure"=n),a(5;E120,E121,E122,E123,E124),a(2;s"IdleLookAround",i60),a(2;s"IdleHandwatch",i100),a(2;s"IdleScratch",i70),a(2;s"IdleStrech",i100),a(2;s"IdleShoe",i120),a(2;s"IdleShoeSole",i200),a(2;s"IdleHandstrech",i100),a(2;s"Walk",s"BowWalk"),a(2;s"Walk_Position",i20),a(2;s"Stand",s"BowStand"),a(2;s"Jump",s"BowJump"),a(2;s"KneelDown",s"BowKneel"),
+Values=a(1;E107),a(1;E108),p(true;"Hgt"=i4,"Y"=i0,"Directions"=i1,"NextAction"=s"Be","X"=i0,"Procedure"=n,"FacetTargetStretch"=i1,"Name"=s"Be","Wdt"=i1,"Prototype"=E109),a(12;i-995,i0,i105,i0,i0,i1000,i0,i0,i-105,i0,i-995,i0),a(12;i-682,i0,i731,i0,i0,i1000,i0,i0,i-731,i0,i-682,i0),a(12;i-999,i0,i-52,i0,i0,i1000,i0,i0,i52,i0,i-999,i0),a(12;i-799,i0,i-602,i0,i0,i1000,i0,i0,i602,i0,i-799,i0),a(12;i940,i0,i-342,i0,i0,i1000,i0,i0,i342,i0,i940,i0),a(12;i934,i0,i-358,i0,i0,i1000,i0,i0,i358,i0,i934,i0),a(12;i809,i0,i588,i0,i0,i1000,i0,i0,i-588,i0,i809,i0),a(12;i-731,i0,i-682,i0,i0,i1000,i0,i0,i682,i0,i-731,i0),a(12;i559,i0,i829,i0,i0,i1000,i0,i0,i-829,i0,i559,i0),a(12;i-629,i0,i-777,i0,i0,i1000,i0,i0,i777,i0,i-629,i0),a(12;i139,i0,i-990,i0,i0,i1000,i0,i0,i990,i0,i139,i0),a(12;i87,i0,i-996,i0,i0,i1000,i0,i0,i996,i0,i87,i0),a(12;i1000,i0,i-17,i0,i0,i1000,i0,i0,i17,i0,i1000,i0),a(12;i-656,i0,i755,i0,i0,i1000,i0,i0,i-755,i0,i-656,i0),a(12;i883,i0,i-469,i0,i0,i1000,i0,i0,i469,i0,i883,i0),a(12;i706,i0,i375,i0,i0,i800,i0,i0,i-375,i0,i706,i0),a(12;i-438,i0,i899,i0,i0,i1000,i0,i0,i-899,i0,i-438,i0),a(12;i-588,i0,i701,i0,i0,i916,i0,i0,i-701,i0,i-588,i0),a(12;i-970,i0,i242,i0,i0,i1000,i0,i0,i-242,i0,i-970,i0),a(12;i656,i0,i-755,i0,i0,i1000,i0,i0,i755,i0,i656,i0),a(12;i441,i0,i906,i0,i0,i1008,i0,i0,i-906,i0,i441,i0),a(12;i-165,i0,i-1046,i0,i0,i1059,i0,i0,i1046,i0,i-165,i0),a(12;i-254,i0,i599,i0,i0,i651,i0,i0,i-599,i0,i-254,i0),a(12;i891,i0,i-624,i0,i0,i1088,i0,i0,i624,i0,i891,i0),a(12;i-372,i0,i920,i0,i0,i993,i0,i0,i-920,i0,i-372,i0),a(12;i549,i0,i-280,i0,i0,i617,i0,i0,i280,i0,i549,i0),a(12;i-570,i0,i-242,i0,i0,i619,i0,i0,i242,i0,i-570,i0),a(12;i301,i0,i618,i0,i0,i688,i0,i0,i-618,i0,i301,i0),a(12;i-455,i0,i-728,i0,i0,i859,i0,i0,i728,i0,i-455,i0),a(12;i-682,i0,i572,i0,i0,i891,i0,i0,i-572,i0,i-682,i0),a(12;i0,i0,i685,i0,i0,i685,i0,i0,i-685,i0,i0,i0),a(12;i-426,i0,i-526,i0,i0,i678,i0,i0,i526,i0,i-426,i0),a(12;i-669,i0,i-743,i0,i0,i1000,i0,i0,i743,i0,i-669,i0),a(12;i-1000,i0,i-17,i0,i0,i1000,i0,i0,i17,i0,i-1000,i0),a(12;i990,i0,i-139,i0,i0,i1000,i0,i0,i139,i0,i990,i0),a(12;i982,i0,i-191,i0,i0,i1000,i0,i0,i191,i0,i982,i0),a(12;i-951,i0,i309,i0,i0,i1000,i0,i0,i-309,i0,i-951,i0),a(12;i-988,i0,i156,i0,i0,i1000,i0,i0,i-156,i0,i-988,i0),a(12;i-633,i0,i-218,i0,i0,i670,i0,i0,i218,i0,i-633,i0),a(12;i497,i0,i-552,i0,i0,i744,i0,i0,i552,i0,i497,i0),a(12;i906,i0,i-423,i0,i0,i1000,i0,i0,i423,i0,i906,i0),a(12;i-707,i0,i707,i0,i0,i1000,i0,i0,i-707,i0,i-707,i0),a(12;i-682,i0,i-731,i0,i0,i1000,i0,i0,i731,i0,i-682,i0),a(12;i-469,i0,i883,i0,i0,i1000,i0,i0,i-883,i0,i-469,i0),a(12;i342,i0,i-940,i0,i0,i1000,i0,i0,i940,i0,i342,i0),a(12;i191,i0,i-982,i0,i0,i1000,i0,i0,i982,i0,i191,i0),a(12;i-616,i0,i-788,i0,i0,i1000,i0,i0,i788,i0,i-616,i0),a(12;i788,i0,i-616,i0,i0,i1000,i0,i0,i616,i0,i788,i0),a(0;),a(12;i643,i0,i766,i0,i0,i1000,i0,i0,i-766,i0,i643,i0),a(12;i857,i0,i515,i0,i0,i1000,i0,i0,i-515,i0,i857,i0),a(12;i454,i0,i891,i0,i0,i1000,i0,i0,i-891,i0,i454,i0),a(12;i866,i0,i500,i0,i0,i1000,i0,i0,i-500,i0,i866,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),a(12;i174,i0,i985,i0,i0,i1000,i0,i0,i-985,i0,i174,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),p(false;"radius"=i200,"construction_time"=i0,"power_helper"=n,"range_markers"=E110,"linked_flags"=E111),a(12;i1000,i0,i0,i0,i0,i1000,i0,i4000,i0,i0,i1000,i0),p(true;"Hgt"=i20,"ObjectDisabled"=i1,"Y"=i240,"Directions"=i2,"NextAction"=s"Hold","Delay"=i0,"Length"=i1,"X"=i0,"Name"=s"Dead","Wdt"=i8,"StartCall"=s"StartDead","Prototype"=E109,"NoOtherAction"=i1),a(2;i0,i0),a(6;),a(1;E69),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(1;),p(true;"Hgt"=i20,"ObjectDisabled"=i1,"Y"=i240,"Directions"=i2,"NextAction"=s"Hold","Delay"=i0,"Length"=i1,"X"=i0,"Name"=s"Dead","Wdt"=i8,"StartCall"=s"StartDead","Prototype"=E112,"NoOtherAction"=i1),a(6;),a(1;E76),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(0;),a(12;i985,i0,i174,i0,i0,i1000,i0,i0,i-174,i0,i985,i0),a(12;i530,i0,i848,i0,i0,i1000,i0,i0,i-848,i0,i530,i0),a(12;i940,i0,i342,i0,i0,i1000,i0,i0,i-342,i0,i940,i0),a(12;i-875,i0,i-485,i0,i0,i1000,i0,i0,i485,i0,i-875,i0),a(12;i438,i0,i-899,i0,i0,i1000,i0,i0,i899,i0,i438,i0),a(12;i-391,i0,i-921,i0,i0,i1000,i0,i0,i921,i0,i-391,i0),a(12;i0,i0,i1000,i0,i0,i1000,i0,i0,i-1000,i0,i0,i0),a(12;i-777,i0,i629,i0,i0,i1000,i0,i0,i-629,i0,i-777,i0),a(12;i743,i0,i669,i0,i0,i1000,i0,i0,i-669,i0,i743,i0),a(12;i-999,i0,i-35,i0,i0,i1000,i0,i0,i35,i0,i-999,i0),a(12;i-946,i0,i326,i0,i0,i1000,i0,i0,i-326,i0,i-946,i0),a(12;i375,i0,i-927,i0,i0,i1000,i0,i0,i927,i0,i375,i0),a(12;i777,i0,i-629,i0,i0,i1000,i0,i0,i629,i0,i777,i0),a(12;i-998,i0,i-70,i0,i0,i1000,i0,i0,i70,i0,i-998,i0),a(12;i-87,i0,i996,i0,i0,i1000,i0,i0,i-996,i0,i-87,i0),a(12;i-629,i0,i-777,i0,i0,i1000,i0,i0,i777,i0,i-629,i0),a(12;i-819,i0,i574,i0,i0,i1000,i0,i0,i-574,i0,i-819,i0),a(12;i515,i0,i857,i0,i0,i1000,i0,i0,i-857,i0,i515,i0),a(12;i914,i0,i-407,i0,i0,i1000,i0,i0,i407,i0,i914,i0),a(12;i-423,i0,i-906,i0,i0,i1000,i0,i0,i906,i0,i-423,i0),a(12;i-545,i0,i839,i0,i0,i1000,i0,i0,i-839,i0,i-545,i0),a(12;i-342,i0,i940,i0,i0,i1000,i0,i0,i-940,i0,i-342,i0),p(false;"Hgt"=i8,"Y"=i0,"X"=i0,"Animation"=s"Sway","NextAction"=s"Sway","Delay"=i2,"Length"=i78,"Directions"=i2,"Procedure"=n,"Wdt"=i8,"Name"=s"Sway","PhaseCall"=s"Check","Prototype"=E113),p(false;"AimMode"=i1,"TurnType"=i1,"AimSpeed"=i20,"WalkSpeed"=i84,"AnimationAim"=s"CrossbowAimArms","WalkBack"=i56,"AnimationShoot"=n,"ShootTime"=i20),p(false;"AimMode"=i1,"AnimationLoad"=s"BowLoadArms","TurnType"=i1,"AnimationReplacements"=E114,"LoadTime2"=i7,"WalkSpeed"=i84,"AnimationAim"=s"BowAimArms","WalkBack"=i56,"AnimationShoot"=n,"LoadTime"=i30,"ShootTime"=i20),a(1;b0),a(7;E115,E116,E117,E118,E119,E120,E121),a(1;O494),a(1;O41),p(false;"amount"=i-50,"obj"=n),p(false;"amount"=i50,"obj"=O48),p(true;"Step"=i1,"Procedure"=n,"Directions"=i1,"Length"=i1),a(20;),a(0;),p(true;"Step"=i1,"Procedure"=n,"Directions"=i1,"Length"=i1),p(true;"Step"=i1,"Procedure"=n,"Directions"=i1,"Length"=i1),a(5;E122,E123,E124,E125,E126),a(2;s"IdleLookAround",i60),a(2;s"IdleHandwatch",i100),a(2;s"IdleScratch",i70),a(2;s"IdleStrech",i100),a(2;s"IdleShoe",i120),a(2;s"IdleShoeSole",i200),a(2;s"IdleHandstrech",i100),a(2;s"Walk",s"BowWalk"),a(2;s"Walk_Position",i20),a(2;s"Stand",s"BowStand"),a(2;s"Jump",s"BowJump"),a(2;s"KneelDown",s"BowKneel"),

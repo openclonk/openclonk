@@ -108,7 +108,7 @@ func Hide()
 	}
 }
 
-func AddContentMenu(object container, int pos, bool is_crew)
+func AddContentMenu(object container, int pos, bool isCrew)
 {
 	var menu = CreateObject(GUI_CircleMenu, 0, 0, GetOwner());
 
@@ -118,9 +118,9 @@ func AddContentMenu(object container, int pos, bool is_crew)
 	menu->SetDragDropMenu(true);
 
 	PutContentsIntoMenu(menu, container);
-	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = is_crew};
+	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = isCrew};
 	
-	if (is_crew)
+	if(isCrew)
 		crew_count++;
 	else
 		container_count++;
@@ -197,6 +197,10 @@ private func PutContentsIntoMenu(object menu, object container)
 			if (!AddContentsMenuItem(stack[0], menu, stack)) 
 				return;
 	}
+	
+	// TODO: find an extra-entry or something like that for this.
+	if(container->~IsCarryingHeavy())
+		AddContentsMenuItem(container->GetCarryHeavy(), menu);
 }
 
 private func AddContentsMenuItem(object symbol, object menu, array stack)
@@ -511,27 +515,41 @@ public func OnItemSelectionAlt(object menu, object item)
 private func GetNextMenu(int index, bool alt)
 {
 	var last = GetLength(circ_menus) - 1;
+	
 	// Only one menu: to nothing
 	if (last <= 0)
 		return nil;
 	
-	if (!alt)
+	if(alt)
 	{
-		if (index < crew_count-1)
+		// the clonk itself or one of the crewmembers (except leftmost)
+		if(index < crew_count-1)
 			index++;
-		else if (index == crew_count-1)
-			index = last;
-		else if (index == crew_count)
-			index = 0;
+		// leftmost crewmember (could be the clonk itself too)
+		else if(index == crew_count-1)
+		{
+			// go to rightmost container
+			if(container_count == 0)
+				index = 0;
+			else
+				index = last;
+		}
+		// leftmost container
+		else if(index == crew_count)
+			index = 0; // go to clonk itself
+		// a container
 		else
 			index--;
 	}
 	else
 	{
-		if (index == 0)
-			index = crew_count;
-		else if (index < crew_count)
+		// the clonk itself
+		if(index == 0)
+			index = crew_count; // go to first container
+		// a crewmember
+		else if(index < crew_count)
 			index--;
+		// a container
 		else
 			index++;
 	}

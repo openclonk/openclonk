@@ -431,6 +431,8 @@ protected func Ejection(object obj)
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
 			var o = Contents(c);
+			if(o->~IsCarryHeavy())
+				continue;
 			if (GetItemPos(o) == nil)
 			{
 				// found it! Collect it properly
@@ -520,6 +522,9 @@ public func AllowTransfer(object obj)
 	if (ContentsCount() >= MaxContentsCount()) 
 		return false;
 
+	if(carryheavy && obj->~IsCarryHeavy())
+		return false;
+
 	return true;
 }
 
@@ -546,7 +551,7 @@ public func CarryHeavy(object target)
 	this->~OnCarryHeavyChange(carryheavy);
 	
 	// Update attach stuff
-	//this->~UpdateAttach();
+	this->~OnSlotFull();
 	
 	return true;
 }
@@ -558,7 +563,7 @@ private func StopCarryHeavy()
 	
 	carryheavy = nil;
 	this->~OnCarryHeavyChange(nil);
-	this->~UpdateAttach();
+	this->~OnSlotEmpty();
 }
 
 public func GetCarryHeavy() { return carryheavy; }
@@ -655,6 +660,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
 		else if(hotkeypressed)
 			return false;
+		// check if we can handle it by simply accessing the first actionbar item (for consistency)
+		else
+		{
+			if(this->~ControlHotkey(0))
+				return true;
+		}
 	}
 	
 	// Contents menu
@@ -855,7 +866,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if(ObjectControlInteract(plr,ctrl))
 			return true;
-		else if(IsCarryingHeavy())
+		else if(IsCarryingHeavy() && GetAction() == "Walk")
 		{
 			GetCarryHeavy()->Drop();
 			return true;

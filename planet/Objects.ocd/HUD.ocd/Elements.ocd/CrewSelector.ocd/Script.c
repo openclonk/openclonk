@@ -164,7 +164,7 @@ public func UpdateRank()
 	var rankx = -1000 * GetDefWidth()/2 + 10000;
 	var ranky = -15000;
 	
-	SetGraphics(nil,0,10,GFXOV_MODE_Rank,0,0,crew);
+	SetGraphics(nil,0,10,GFXOV_MODE_Rank,nil,0,crew);
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
 }
 
@@ -174,7 +174,7 @@ public func UpdateTitleGraphic()
 	
 	//SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
 	
-	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_ObjectPicture, 0, 0, crew);
+	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_ObjectPicture, nil, 0, crew);
 	
 	// doesn't work:
 	//SetColorDw(crew->GetColorDw());

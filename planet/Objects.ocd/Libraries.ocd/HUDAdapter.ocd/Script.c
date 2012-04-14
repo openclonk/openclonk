@@ -181,10 +181,11 @@ protected func OnInventoryChange()
 }
 
 // when a carryheavy object is picked up/dropped
-func OnCarryHeavyChange(object carried)
+protected func OnCarryHeavyChange(object carried)
 {
 	if(HUDcontroller)
-		HUDcontroller->OnCarryHeavyChange(carried);
+		if(GetCursor(GetOwner()) == this)
+			HUDcontroller->OnCarryHeavyChange(carried);
 		
 	return _inherited(carried, ...);
 }

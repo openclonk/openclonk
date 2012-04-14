@@ -24,7 +24,7 @@ protected func Construction()
 	this.Visibility = VIS_Owner;
 	padding = 90;
 
-	SetGraphics(0,GetID(),50,GFXOV_MODE_Base);
+	SetGraphics(nil,GetID(),50,GFXOV_MODE_Base);
 	SetGraphics("",GUI_Controller,0);
 	SetGraphics("Line",GetID(),1,GFXOV_MODE_Base);
 

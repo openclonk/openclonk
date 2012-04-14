@@ -110,6 +110,10 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
 		return -1;
 	}
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
+		return -1;
 }
 
 func FxIntLiftHeavyStop(object clonk, proplist effect, int reason, bool tmp)
@@ -166,6 +170,10 @@ func FxIntDropHeavyTimer(object clonk, proplist effect, int timer)
 
 	// animation finished?
 	if(timer >= lift_heavy_time)
+		return -1;
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
 		return -1;
 }
 
@@ -224,7 +232,10 @@ protected func Entrance(object obj)
 		if(obj->~GetCarryHeavy() == this)
 		{
 			liftheavy_carrier = obj;
-			DoLift();
+			if(obj->GetAction() == "Walk")
+				DoLift();
+			else
+				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
 }
 

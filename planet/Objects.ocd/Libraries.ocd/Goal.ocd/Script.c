@@ -35,7 +35,7 @@ func UpdateTransferZone()
 func RecheckGoalTimer()
 {
 	// Create timer if it doesn't exist yet
-	if (!GetEffect("IntGoalCheck", 0))
+	if (!GetEffect("IntGoalCheck", nil))
 	{
 		var timer_interval = 35;
 		if (GetLeague())

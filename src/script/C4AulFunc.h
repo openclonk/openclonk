@@ -31,7 +31,7 @@ class C4AulFunc
 	friend class C4AulScript;
 	friend class C4AulScriptEngine;
 	friend class C4AulFuncMap;
-	friend class C4AulParseState;
+	friend class C4AulParse;
 	friend class C4ScriptHost;
 
 	// Reference counter

@@ -152,7 +152,7 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
-	RemoveEffect(0, clonk, fx_hook);
+	RemoveEffect(nil, clonk, fx_hook);
 	RemoveObject();
 	return;
 }

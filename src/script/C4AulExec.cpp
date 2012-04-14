@@ -108,6 +108,17 @@ void C4AulExec::LogCallStack()
 		pCtx->dump(StdStrBuf(" by: "));
 }
 
+void C4AulExec::ClearPointers(C4Object * obj)
+{
+	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
+	{
+		if (pCtx->Obj == obj)
+			pCtx->Obj = NULL;
+		if (pCtx->Def == obj)
+			pCtx->Def = NULL;
+	}
+}
+
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 {
 	// Push parameters

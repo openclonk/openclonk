@@ -41,7 +41,7 @@ protected func Construction()
 	// visibility
 	this["Visibility"] = VIS_Owner;
 	
-	SetGraphics(0,GetID(),2,GFXOV_MODE_Base);
+	SetGraphics(nil,GetID(),2,GFXOV_MODE_Base);
 	SetGraphics("",GUI_Controller,0);
 	SetGraphics("Line",GetID(),1,GFXOV_MODE_Base);
 	SetObjDrawTransform(1000,0,-225*100,0,1000,0,1);
@@ -59,7 +59,7 @@ public func SetVisual(picture, altpicture)
 	{
 		if (GetType(picture) == C4V_C4Object)
 		{
-			SetGraphics(nil, nil, 10, GFXOV_MODE_ObjectPicture, 0, 0, picture);
+			SetGraphics(nil, nil, 10, GFXOV_MODE_ObjectPicture, nil, 0, picture);
 			SetObjDrawTransform(780, 0, 0, 0, 780, 0, 10);
 			if (picture->~HasExtraSlot())
 			{
@@ -68,7 +68,7 @@ public func SetVisual(picture, altpicture)
 				var content = picture->Contents(0);
 				if (content)
 				{
-					SetGraphics(nil, nil, 12, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetGraphics(nil, nil, 12, GFXOV_MODE_ObjectPicture, nil, 0, content);
 					SetObjDrawTransform(1500/3, 0, 16*780, 0, 1500/3, 16*780, 12);
 				}
 				else
