@@ -9,7 +9,16 @@ local definition;
 local full_material; // true when all needed material is in the site
 
 public func IsContainer()		{ return true; }
-public func IsInteractable()	{ return definition != nil; }
+// we have 2 interaction modes
+public func IsInteractable(object obj, int num)	{ if(num < 2) return definition != nil; }
+
+public func GetInteractionMetaInfo(object obj, int num)
+{
+	if(num == 0)
+		return {IconName=nil, IconID=Hammer, Description="Transfer Material"};
+	if(num == 1)
+		return {IconName=nil, IconID=Icon_Cancel, Description="Abort Construction"};
+}
 
 public func Construction()
 {
@@ -65,13 +74,22 @@ public func Collection2(object obj)
 }
 
 // Interacting removes the Construction site
-public func Interact(object clonk)
+public func Interact(object clonk, int num)
 {
-	// test
-	for(var obj in FindObjects(Find_Container(this)))
-		obj->Exit();
+	// Open Contents-Menu
+	if(num == 0)
+	{
+		clonk->CreateContentsMenus();
+	}
+	// Remove Site
+	if(num == 1)
+	{
+		// test
+		for(var obj in FindObjects(Find_Container(this)))
+			obj->Exit();
 	
-	RemoveObject();
+		RemoveObject();
+	}
 }
 
 private func ShowMissingComponents()
