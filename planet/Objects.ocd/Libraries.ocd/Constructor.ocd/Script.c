@@ -182,11 +182,12 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	return true;
 }
 
-func FxControlConstructionPreviewStop(object target, effect, int reason, bool temp)
+func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool temp)
 {
 	if (temp) return;
 
 	effect.preview->RemoveObject();
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
 }
 
 /* Construction */
@@ -234,7 +235,9 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 		// 2. look for stuff lying around
 		mat[1] = clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
 		// 3. look for stuff in nearby lorries/containers
-		mat[2] = clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h));
+		var i = 2;
+		for(var cont in clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+			mat[i] = FindObjects(Find_ID(comp), Find_Container(cont));
 		// move it
 		for(var mat2 in mat)
 		{
