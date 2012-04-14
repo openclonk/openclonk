@@ -176,7 +176,7 @@ private func MessageBox(string message, object clonk, object talker)
 	
 	// Add NPC portrait.
 	//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
-	clonk->AddMenuItem("", "", Dialogue, nil, nil, nil, C4MN_Add_ImgObject, talker); //TextSpec);
+	clonk->AddMenuItem("", "MenuOk", Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker); //TextSpec);
 
 	// Add NPC message.
 	var msg = Format("<c %x>%s:</c> %s", talker->GetColor(), talker->GetName(), message);
@@ -201,6 +201,11 @@ private func MessageBox(string message, object clonk, object talker)
 	clonk->SetMenuTextProgress(n_length + 1);
 
 	return;
+}
+
+public func MenuOk(unused, object clonk)
+{
+	Interact(clonk);
 }
 
 local ActMap = {
