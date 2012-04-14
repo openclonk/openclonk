@@ -217,6 +217,20 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	
+	// intersection-check with all other construction sites... bah
+	for(var other_site in FindObjects(Find_ID(ConstructionSite), Find_Exclude(site)))
+	{
+		if(!(other_site->GetLeftEdge()   > site->GetRightEdge()  ||
+		     other_site->GetRightEdge()  < site->GetLeftEdge()   ||
+		     other_site->GetTopEdge()    > site->GetBottomEdge() ||
+		     other_site->GetBottomEdge() < site->GetTopEdge()    ))
+		{
+			CustomMessage(Format("Construction blocked by %s",other_site->GetName()), this, clonk->GetOwner()); // todo: stringtable
+			site->RemoveObject();
+			return false;
+		} 
+	}
+	
 	// check for material
 	var comp, index = 0;
 	var mat;
