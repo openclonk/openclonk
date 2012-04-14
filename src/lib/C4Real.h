@@ -40,9 +40,27 @@
 
 #include <xmmintrin.h>
 
+#if defined(__MINGW32__) || (defined(_MSC_VER) && !defined(_WIN64))
+class m128_alignment_workaround
+{
+	char buf[sizeof(__m128)*2-1];
+	inline __m128 * gptr() const { return (__m128*)((intptr_t)buf-1 & ~(sizeof(__m128)-1)) + 1; }
+	__m128 * ptr;
+public:
+	inline m128_alignment_workaround() : ptr(gptr()) {}
+	inline m128_alignment_workaround(const __m128 & r)  : ptr(gptr()) { *ptr = r; }
+	inline m128_alignment_workaround(const m128_alignment_workaround & o) : ptr(gptr()) { *ptr = *o.ptr; }
+	inline m128_alignment_workaround & operator = (const m128_alignment_workaround & o) { *ptr = *o.ptr; return *this; }
+	inline operator const __m128 &() const { return *ptr; }
+	// could implement operator new and new[] to be more memory-efficient.
+};
+#else
+typedef __m128 m128_alignment_workaround;
+#endif
+
 class C4Real
 {
-	__m128 value;
+	m128_alignment_workaround value;
 
 	friend C4Real Sin(const C4Real &);
 	friend C4Real Cos(const C4Real &);
