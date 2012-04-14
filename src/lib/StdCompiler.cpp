@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <C4Log.h>
+#include <limits>
 
 // *** StdCompiler
 
@@ -71,6 +72,7 @@ void StdCompilerBinWrite::Byte(int8_t &rByte)    { WriteValue(rByte); }
 void StdCompilerBinWrite::Byte(uint8_t &rByte)   { WriteValue(rByte); }
 void StdCompilerBinWrite::Boolean(bool &rBool)   { WriteValue(rBool); }
 void StdCompilerBinWrite::Character(char &rChar) { WriteValue(rChar); }
+void StdCompilerBinWrite::Float(float &val)      { WriteValue(val); }
 void StdCompilerBinWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
 	WriteData(szString, strlen(szString) + 1);
@@ -129,6 +131,7 @@ void StdCompilerBinRead::Byte(int8_t &rByte)    { ReadValue(rByte); }
 void StdCompilerBinRead::Byte(uint8_t &rByte)   { ReadValue(rByte); }
 void StdCompilerBinRead::Boolean(bool &rBool)   { ReadValue(rBool); }
 void StdCompilerBinRead::Character(char &rChar) { ReadValue(rChar); }
+void StdCompilerBinRead::Float(float &val)      { ReadValue(val); }
 void StdCompilerBinRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
 	// At least one byte data needed
@@ -282,6 +285,12 @@ void StdCompilerINIWrite::Character(char &rChar)
 	PrepareForValue();
 	Buf.AppendFormat("%c", rChar);
 }
+void StdCompilerINIWrite::Float(float &val)
+{
+	PrepareForValue();
+	Buf.AppendFormat("%f", val);
+}
+
 
 void StdCompilerINIWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
@@ -613,6 +622,31 @@ void StdCompilerINIRead::Character(char &rChar)
 	if (!pPos || !isalpha((unsigned char)*pPos))
 		{ notFound("Character"); return; }
 	rChar = *pPos++;
+}
+void StdCompilerINIRead::Float(float &val)
+{
+	if (!pPos)
+		{ notFound("Float"); return; }
+	// Skip whitespace
+	SkipWhitespace();
+	// Read number.
+	const char *pnPos = pPos;
+	double num = strtod(pPos, const_cast<char **>(&pnPos));
+	// Could not read?
+	if (!num && pnPos == pPos)
+		{ notFound("Float"); return; }
+	if (num < std::numeric_limits<float>::min() || num > std::numeric_limits<float>::max())
+		{
+		Warn("number out of range (%f to %f): %f ", 
+			static_cast<double>(std::numeric_limits<float>::min()),
+			static_cast<double>(std::numeric_limits<float>::max()),
+			num);
+		if (num < std::numeric_limits<float>::min()) num = std::numeric_limits<float>::min();
+		else if (num > std::numeric_limits<float>::max()) num = std::numeric_limits<float>::max();
+		}
+	// Get over it
+	pPos = pnPos;
+	val = num;
 }
 void StdCompilerINIRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {

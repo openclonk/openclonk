@@ -1388,7 +1388,7 @@ bool C4Command::InitEvaluation()
 	case C4CMD_MoveTo:
 	{
 		// Target coordinates by Target
-		if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
+		if (Target) { Tx+=C4VInt(Target->GetX()); Ty+=Target->GetY(); Target=NULL; }
 		// Adjust coordinates
 		int32_t iTx = Tx._getInt();
 		if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,true,cObj->Shape.Hgt);

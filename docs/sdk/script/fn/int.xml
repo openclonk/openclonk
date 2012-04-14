@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>int</title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>float</type><name>f</name><desc>Die Fließkommazahl, die in eine Ganzzahl konvertiert werden soll.</desc></param>
+			</params>
+		</syntax>
+		<desc>Wandelt eine Fließkommazahl in eine Ganzzahl um. Dabei werden Nachkommastellen abgeschnitten. Ist der Wert von <em>f</em> außerhalb des Wertebereichs einer vorzeichenbehafteten 32-bit-Ganzzahl, so ist der Rückgabewert <em>nil</em>.</desc>
+		<examples>
+			<example>
+				<code>int(2.5)</code>
+				<text>Gibt die Zahl 2 zurück.</text>
+			</example>
+		</examples>
+	</func>
+	<related>
+		<funclink>float</funclink>
+		<funclink>C4Id</funclink>
+	</related>
+	<author>isilkor</author><date>2010-07-10</date>
+</funcs>

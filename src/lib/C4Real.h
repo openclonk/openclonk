@@ -6,6 +6,7 @@
  * Copyright (c) 2002, 2004-2005, 2007, 2009  Peter Wortmann
  * Copyright (c) 2005, 2007  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake
+ * Copyright (c) 2010  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,7 +30,7 @@
    because floating point calculations are not guaranteed to be network
    safe...however, it can be solved as a data type with operator
    overloading, automatic type conversions, etc now   - Sven2 */
-/* After some time with synchronous float use, C4Fixed is used again to
+/* After some time with synchronous float use, C4Real is used again to
    work around the problem that different compilers produce different
    floating point code, leading to desyncs between linux and windows
    engines. */
@@ -37,320 +38,147 @@
 #ifndef INC_C4Real
 #define INC_C4Real
 
-#include <math.h>
+#include <xmmintrin.h>
 
-// activate to switch to classic fixed-point math
-#define C4REAL_USE_FIXNUM 1
-#define inline ALWAYS_INLINE
-#define FIXED_EMULATE_64BIT
-
-// note: C4Fixed has to be defined even though it isn't used
-//       any more. It is used to convert old-format fixed values
-//       to the new-format float ones.
-
-#ifdef C4REAL_USE_FIXNUM
-extern long SineTable[9001]; // external table of sine values
-#endif
-
-// fixpoint shift (check 64 bit emulation before changing!)
-#define FIXED_SHIFT 16
-// fixpoint factor
-#define FIXED_FPF int32_t(1 << FIXED_SHIFT)
-
-class C4Fixed
+class C4Real
 {
-#ifdef C4REAL_USE_FIXNUM
-	friend int fixtoi(const C4Fixed &x);
-	friend int fixtoi(const C4Fixed &x, int32_t prec);
-	friend C4Fixed itofix(int32_t x);
-	friend C4Fixed itofix(int32_t x, int32_t prec);
-	friend float fixtof(const C4Fixed &x);
-	friend C4Fixed ftofix(float x);
-#else
-	friend void FIXED_TO_FLOAT(float *pVal);
-#endif
-	friend void CompileFunc(C4Fixed &rValue, StdCompiler *pComp);
+	__m128 value;
+
+	friend C4Real Sin(const C4Real &);
+	friend C4Real Cos(const C4Real &);
+	friend C4Real Pow(const C4Real &, const C4Real &);
+	friend C4Real Sqrt(const C4Real &);
+	friend C4Real Log(const C4Real &);
+	friend C4Real Atan2(const C4Real &, const C4Real &);
 
 public:
-	int32_t val;  // internal value
-
-public:
-	// constructors
-	inline C4Fixed () { /*val=0;*/ } // why initialize?
-	inline C4Fixed (const C4Fixed &rCpy): val(rCpy.val) { }
-
-	// Conversion must be done by the conversion routines itofix, fixtoi, ftofix and fixtof
-	// in order to be backward compatible, so everything is private.
-private:
-	explicit inline C4Fixed(int32_t iVal)
-			: val (iVal * FIXED_FPF)
-	{ }
-	explicit inline C4Fixed(int32_t iVal, int32_t iPrec)
-			: val( iPrec < FIXED_FPF
-			       ? iVal * (FIXED_FPF / iPrec) + (iVal * (FIXED_FPF % iPrec)) / iPrec
-			       : int32_t( int64_t(iVal) * FIXED_FPF / iPrec )
-			     )
-	{ }
-	explicit inline C4Fixed(float fVal)
-			: val(static_cast<int32_t>(fVal * float(FIXED_FPF)))
-	{ }
-
-	// round to int
-	int32_t to_int() const
+	inline C4Real(float val = 0.0f) : value(_mm_set_ss(val)) { }
+	inline C4Real(int32_t val, int32_t prec)
 	{
-		int32_t r = val;
-		// be careful not to overflow
-		r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
-		// ensure that -x.50 is rounded to -(x+1)
-		r -= (val < 0);
-		r >>= FIXED_SHIFT;
-		// round 32767.5 to 32768 (not that anybody cares)
-		r += (val > 0x7fffffff - FIXED_FPF / 2);
-		return r;
-	}
-	int32_t to_int(int32_t prec) const
-	{
-		int64_t r = val;
-		r *= prec;
-		r += FIXED_FPF / 2;
-		r -= (val < 0);
-		r >>= FIXED_SHIFT;
-		return int32_t(r);
-	}
-	// convert to floating point value
-	float to_float() const
-	{
-		return float(val) / float(FIXED_FPF);
+		value = _mm_div_ss(_mm_cvtsi32_ss(value, val), _mm_cvtsi32_ss(value, prec));
 	}
 
-public:
+	// Copy ctor and assignment
+	inline C4Real(const C4Real &rhs) : value(rhs.value) {}
+	inline C4Real &operator = (const C4Real &rhs) { value = rhs.value; return *this; }
 
-	// set integer (allowed for historic reasons)
-	inline C4Fixed &operator = (int32_t x) { return *this = C4Fixed(x); }
-
-	// test value
-	inline operator bool () const { return !! val; }
-	inline bool operator ! () const { return ! val; }
-
-	// arithmetic operations
-	inline C4Fixed &operator += (const C4Fixed &fVal2)
-	{
-		val += fVal2.val;
-		return *this;
-	}
-	inline C4Fixed &operator -= (const C4Fixed &fVal2)
-	{
-		val -= fVal2.val;
-		return *this;
-	}
-	inline C4Fixed &operator *= (const C4Fixed &fVal2)
-	{
-#ifndef FIXED_EMULATE_64BIT
-		val = int32_t( (int64_t(val) * fVal2.val) / FIXED_FPF );
-#else
-		int32_t x0 = val & (FIXED_FPF - 1),
-		             x1 = val >> FIXED_SHIFT;
-		int32_t y0 = fVal2.val & (FIXED_FPF - 1),
-		             y1 = fVal2.val >> FIXED_SHIFT;
-		val = x0*y0/FIXED_FPF + x0*y1 + x1*y0 + x1*y1*FIXED_FPF;
-#endif
-		return *this;
-	}
-	inline C4Fixed &operator *= (int32_t iVal2)
-	{
-		val *= iVal2;
-		return *this;
-	}
-	inline C4Fixed &operator /= (const C4Fixed &fVal2)
-	{
-		val = int32_t( (int64_t(val) * FIXED_FPF) / fVal2.val );
-		return *this;
-	}
-	inline C4Fixed &operator /= (int32_t iVal2)
-	{
-		val /= iVal2;
-		return *this;
-	}
-	inline C4Fixed operator - () const
-	{
-		C4Fixed fr; fr.val=-val; return fr;
-	}
-	inline C4Fixed operator + () const
-	{
+	// Arithmetics
+	// We're using _ps intrinsics for everything except division because they
+	// have the same latency as their _ss counterparts, but their representa-
+	// tion is one byte shorter (0F xx instead of F3 0F xx).
+	// DIVPS is about half as fast as DIVSS, so we use the scalar instruction
+	// here.
+	inline C4Real &operator += (const C4Real &rhs) { value = _mm_add_ps(value, rhs.value); return *this; }
+	inline C4Real &operator -= (const C4Real &rhs) { value = _mm_sub_ps(value, rhs.value); return *this; }
+	inline C4Real &operator *= (const C4Real &rhs) { value = _mm_mul_ps(value, rhs.value); return *this; }
+	inline C4Real &operator /= (const C4Real &rhs) { value = _mm_div_ss(value, rhs.value); return *this; }
+	private: static inline __m128 float_hexconst(int32_t c) { union {float f;int i;} fi; fi.i=c; return _mm_set_ps1(fi.f); } public: // can't use a reinterpret_cast here because the parameter is type-punned
+	inline C4Real &operator %= (const C4Real &rhs) {
+		// unfortunately, there is no _mm_mod_ss. The trick is to abuse the 23 bit significancy by adding (or substracting) a value, which will leave the result truncated. We can work with that
+		__m128 div = _mm_div_ss(value, rhs.value);
+		// round
+		__m128 sig = _mm_or_ps(_mm_and_ps(div, float_hexconst(0x80000000)), float_hexconst(0x4b000000)); // generate (sign?+:-)2^23
+		__m128 trunc = _mm_sub_ps(_mm_add_ps(div, sig), sig);
+		// unfortunately, we have rounded towards 0: the hack add -1 when trunc is < 0 (fortunately, < returns 0xffffffff when true)
+		trunc = _mm_add_ps(trunc, _mm_and_ps(_mm_cmplt_ps(trunc, _mm_set_ps1(0.0)), float_hexconst(0xbf800000)));
+		// finish calc
+		value = _mm_sub_ps(value, _mm_mul_ps(trunc, rhs.value));
 		return *this;
 	}
 
-	inline bool operator == (const C4Fixed &fVal2) const { return val==fVal2.val; }
-	inline bool operator < (const C4Fixed &fVal2) const { return val<fVal2.val; }
-	inline bool operator > (const C4Fixed &fVal2) const { return val>fVal2.val; }
-	inline bool operator <= (const C4Fixed &fVal2) const { return val<=fVal2.val; }
-	inline bool operator >= (const C4Fixed &fVal2) const { return val>=fVal2.val; }
-	inline bool operator != (const C4Fixed &fVal2) const { return val!=fVal2.val; }
+#define C4REAL_ARITHMETIC_OPERATOR(op) \
+	/* arithmetic operations on copies */ \
+	inline C4Real operator op (const C4Real &rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (float rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (int rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	/* arithmetic operations on copies, right-hand C4Real */ \
+	/* friends defined in the class are implicitly inline */ \
+	friend C4Real operator op (float lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; } \
+	friend C4Real operator op (int lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; }
 
-	// and wrappers
-	inline C4Fixed &operator += (int32_t iVal2) { return operator += (C4Fixed(iVal2)); }
-	inline C4Fixed &operator -= (int32_t iVal2) { return operator -= (C4Fixed(iVal2)); }
+	C4REAL_ARITHMETIC_OPERATOR(+)
+	C4REAL_ARITHMETIC_OPERATOR(-)
+	C4REAL_ARITHMETIC_OPERATOR(*)
+	C4REAL_ARITHMETIC_OPERATOR(/)
+#undef C4REAL_ARITHMETIC_OPERATOR
+	
+	inline C4Real operator + () const { return *this; }
+	inline C4Real operator - () const
+{
+		C4Real nrv;
+		nrv -= *this;
+		return nrv;
+	}
 
-	inline C4Fixed operator + (const C4Fixed &fVal2) const { return C4Fixed(*this) += fVal2; }
-	inline C4Fixed operator - (const C4Fixed &fVal2) const { return C4Fixed(*this) -= fVal2; }
-	inline C4Fixed operator * (const C4Fixed &fVal2) const { return C4Fixed(*this) *= fVal2; }
-	inline C4Fixed operator / (const C4Fixed &fVal2) const { return C4Fixed(*this) /= fVal2; }
+#define C4REAL_COMPARISON_OPERATOR(op, intrinsic) \
+	friend bool operator op (const C4Real &lhs, const C4Real &rhs) { return _mm_##intrinsic##_ss(lhs.value, rhs.value) != 0; } \
+	friend bool operator op (const C4Real &lhs, float rhs) { return lhs op C4Real(rhs); } \
+	friend bool operator op (const C4Real &lhs, int rhs) { return lhs op C4Real(rhs); } \
+	friend bool operator op (float lhs, const C4Real &rhs) { return C4Real(lhs) op rhs; } \
+	friend bool operator op (int lhs, const C4Real &rhs) { return C4Real(lhs) op rhs; }
+	C4REAL_COMPARISON_OPERATOR(<, comilt)
+	C4REAL_COMPARISON_OPERATOR(<=, comile)
+	C4REAL_COMPARISON_OPERATOR(==, comieq)
+	C4REAL_COMPARISON_OPERATOR(>=, comige)
+	C4REAL_COMPARISON_OPERATOR(>, comigt)
+	C4REAL_COMPARISON_OPERATOR(!=, comineq)
+#undef C4REAL_COMPARISON_OPERATOR
 
-	inline C4Fixed operator + (int32_t iVal2) const { return C4Fixed(*this) += iVal2; }
-	inline C4Fixed operator - (int32_t iVal2) const { return C4Fixed(*this) -= iVal2; }
-	inline C4Fixed operator * (int32_t iVal2) const { return C4Fixed(*this) *= iVal2; }
-	inline C4Fixed operator / (int32_t iVal2) const { return C4Fixed(*this) /= iVal2; }
+	// Conversion
+	inline operator int() const { return _mm_cvtss_si32(value); }
+	inline operator float() const { float nrv; _mm_store_ss(&nrv, value); return nrv; }
 
-	inline C4Fixed operator + (float iVal2) const { return C4Fixed(*this) += iVal2; }
-	inline C4Fixed operator - (float iVal2) const { return C4Fixed(*this) -= iVal2; }
-	inline C4Fixed operator * (float iVal2) const { return C4Fixed(*this) *= iVal2; }
-	inline C4Fixed operator / (float iVal2) const { return C4Fixed(*this) /= iVal2; }
+	// Boolean operators
+	// Not using safe-bool-idiom here, because we already define conversions
+	// to integer, which is why we don't need to worry about unwanted con-
+	// versions via operator bool
+	inline operator bool() const { return _mm_comineq_ss(value, _mm_setzero_ps()) != 0; }
+	inline bool operator !() const { return !operator bool(); }
 
-#if defined(_MSC_VER) && _MSC_VER <= 1200
-	inline C4Fixed operator + (int iVal2) const { return operator + (int32_t(iVal2)); }
-	inline C4Fixed operator - (int iVal2) const { return operator - (int32_t(iVal2)); }
-	inline C4Fixed operator * (int iVal2) const { return operator * (int32_t(iVal2)); }
-	inline C4Fixed operator / (int iVal2) const { return operator / (int32_t(iVal2)); }
+	// C++03 doesn't support explicitly defaulted ctors, so C4Real can't
+	// be a POD, so we can't directly store it into unions.
+	struct StorageType
+	{
+		int32_t v;
+	};
+#ifdef HAVE_WORKING_IS_POD
+	static_assert(boost::is_pod<StorageType>::value, "C4Real: StorageType is not a POD type");
 #endif
 
-	inline bool operator == (int32_t iVal2) const { return operator == (C4Fixed(iVal2)); }
-	inline bool operator < (int32_t iVal2) const { return operator < (C4Fixed(iVal2)); }
-	inline bool operator > (int32_t iVal2) const { return operator > (C4Fixed(iVal2)); }
-	inline bool operator <= (int32_t iVal2) const { return operator <= (C4Fixed(iVal2)); }
-	inline bool operator >= (int32_t iVal2) const { return operator >= (C4Fixed(iVal2)); }
-	inline bool operator != (int32_t iVal2) const { return operator != (C4Fixed(iVal2)); }
+	friend bool operator==(StorageType lhs, StorageType rhs) { return lhs.v == rhs.v; }
 
-	inline bool operator == (float iVal2) const { return operator == (C4Fixed(iVal2)); }
-	inline bool operator < (float iVal2) const { return operator < (C4Fixed(iVal2)); }
-	inline bool operator > (float iVal2) const { return operator > (C4Fixed(iVal2)); }
-	inline bool operator <= (float iVal2) const { return operator <= (C4Fixed(iVal2)); }
-	inline bool operator >= (float iVal2) const { return operator >= (C4Fixed(iVal2)); }
-	inline bool operator != (float iVal2) const { return operator != (C4Fixed(iVal2)); }
-
-#if defined(_MSC_VER) && _MSC_VER <= 1200
-	inline bool operator == (int iVal2) const { return operator == (C4Fixed(int32_t(iVal2))); }
-	inline bool operator < (int iVal2) const { return operator < (C4Fixed(int32_t(iVal2))); }
-	inline bool operator > (int iVal2) const { return operator > (C4Fixed(int32_t(iVal2))); }
-	inline bool operator <= (int iVal2) const { return operator <= (C4Fixed(int32_t(iVal2))); }
-	inline bool operator >= (int iVal2) const { return operator >= (C4Fixed(int32_t(iVal2))); }
-	inline bool operator != (int iVal2) const { return operator != (C4Fixed(int32_t(iVal2))); }
-#endif
-
-#ifdef C4REAL_USE_FIXNUM
-	C4Fixed sin_deg() const
-	{
-		// adjust angle
-		int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=18000-v; v%=36000;
-		// get sine
-		C4Fixed fr;
-		switch (v/9000)
-		{
-		case 0: fr.val=+SineTable[v];       break;
-		case 1: fr.val=+SineTable[18000-v]; break;
-		case 2: fr.val=-SineTable[v-18000]; break;
-		case 3: fr.val=-SineTable[36000-v]; break;
-		}
-		return fr;
-	}
-	C4Fixed cos_deg() const
-	{
-		// adjust angle
-		int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=-v; v%=36000;
-		// get cosine
-		C4Fixed fr;
-		switch (v/9000)
-		{
-		case 0: fr.val=+SineTable[9000-v]; break;
-		case 1: fr.val=-SineTable[v-9000]; break;
-		case 2: fr.val=-SineTable[27000-v]; break;
-		case 3: fr.val=+SineTable[v-27000]; break;
-		}
-		return fr;
-	}
-#endif
-
+	inline C4Real(StorageType rhs) : value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v))) {}
+	inline operator StorageType() const { StorageType nrv; _mm_store_ss(reinterpret_cast<float*>(&nrv.v), value); return nrv; }
+	
+	public:
+	static const StorageType PI;
+	static const StorageType E;
 };
 
-#ifdef C4REAL_USE_FIXNUM
-
-typedef C4Fixed C4Real;
-
 // conversion
-inline float fixtof(const C4Fixed &x) { return x.to_float(); }
-inline C4Fixed ftofix(float x) { return C4Fixed(x); }
-inline int fixtoi(const C4Fixed &x) { return x.to_int(); }
-inline int fixtoi(const C4Fixed &x, int32_t prec) { return x.to_int(prec); }
-inline C4Fixed itofix(int32_t x) { return C4Fixed(x); }
-inline C4Fixed itofix(int32_t x, int32_t prec) { return C4Fixed(x, prec); }
+inline float fixtof(const C4Real &x) { return static_cast<float>(x); }
+inline C4Real ftofix(float x) { return C4Real(x); }
+inline int fixtoi(const C4Real &x) { return static_cast<int>(x); }
+inline int fixtoi(const C4Real &x, int32_t prec) { return static_cast<int>(x * prec); }
+inline C4Real itofix(int32_t x) { return C4Real(x); }
+inline C4Real itofix(int32_t x, int32_t prec) { return C4Real(x, prec); }
 
 // additional functions
-inline C4Real Sin(const C4Real &fAngle) { return fAngle.sin_deg(); }
-inline C4Real Cos(const C4Real &fAngle) { return fAngle.cos_deg(); }
-inline C4Real C4REAL100(int x) { return itofix(x, 100); }
-//inline C4Real C4REAL256(int x) { return itofix(x, 256); }
-inline C4Real C4REAL256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
-inline C4Real C4REAL10(int x) { return itofix(x, 10); }
+inline C4Real C4REAL100(int x) { C4Real nrv(x); nrv /= 100; return nrv; }
+inline C4Real C4REAL256(int x) { C4Real nrv(x); nrv /= 256; return nrv; }
+inline C4Real C4REAL10(int x) { C4Real nrv(x); nrv /= 10; return nrv; }
 
-#else
-
-// *** wrap C4Real to float
-
-typedef float C4Real;
-
-// fixtoi: use asm fistp, round up
-inline int fixtoi(C4Real x)
-{
-	int e;
-#ifdef _MSC_VER
-	float y = x;
-	_asm
-	{
-		or y,1;
-		fld y;
-		fistp e;
-	}
-#else
-asm ("or $1, %0" : "+rom" (x));
-asm ("fistp%z0 %0" : "=om" (e) : "t" (x) : "st");
-#endif
-	return e;
-}
-
-// conversion
-inline int fixtoi(const C4Real &x, int32_t prec) { return fixtoi(x*prec); }
-inline C4Real itofix(int x) { return static_cast<C4Real>(x); }
-inline C4Real itofix(int x, int prec) { return static_cast<C4Real>(x) / prec; }
-inline float fixtof(const C4Real &x) { return x; }
-inline C4Real ftofix(float x) { return x; }
-
-// additional functions
-inline C4Real Sin(C4Real x) { return float(sin(x * 3.141592f / 180)); }
-inline C4Real Cos(C4Real x) { return float(cos(x * 3.141592f / 180)); }
-inline C4Real C4REAL100(int x) { return float(x) / 100; }
-inline C4Real C4REAL256(int x) { return float(x) / 256; }
-inline C4Real C4REAL10(int x) { return float(x) / 10; }
-
-#endif
 // define 0
-const C4Real Fix0 = itofix(0);
-
-// conversion...
-// note: keep out! really dirty casts!
-#ifdef C4REAL_USE_FIXNUM
-inline void FLOAT_TO_FIXED(C4Real *pVal)
-{
-	*pVal = ftofix (*reinterpret_cast<float *>(pVal));
-}
-#else
-inline void FIXED_TO_FLOAT(C4Real *pVal)
-{
-	*pVal = reinterpret_cast<C4Fixed *>(pVal)->to_float();
-}
-#endif
-
-#undef inline
+const C4Real Fix0 = C4Real(0);
 
 // CompileFunc for C4Real
 void CompileFunc(C4Real &rValue, StdCompiler *pComp);
 
-#endif //FIXED_H_INC
+C4Real Sin(const C4Real &);
+C4Real Cos(const C4Real &);
+C4Real Pow(const C4Real &base, const C4Real &exponen);
+C4Real Sqrt(const C4Real &);
+C4Real Log(const C4Real &);
+C4Real Atan2(const C4Real &y, const C4Real &x);
+
+#endif //C4REAL_H_INC

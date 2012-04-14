@@ -129,6 +129,11 @@ src/config/C4SecurityCertificates.cpp \
 src/config/C4SecurityCertificates.h \
 src/lib/C4InputValidation.cpp \
 src/lib/C4InputValidation.h \
+src/lib/C4RealImpl_Fixed.cpp \
+src/lib/C4RealImpl_Fixed.h \
+src/lib/C4RealImpl_FPU.h \
+src/lib/C4RealImpl_SSE.cpp \
+src/lib/C4RealImpl_SSE.h \
 src/lib/SHA1.h \
 src/lib/Standard.cpp \
 src/lib/Standard.h \
