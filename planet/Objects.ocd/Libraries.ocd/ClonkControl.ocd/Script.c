@@ -660,6 +660,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
 		else if(hotkeypressed)
 			return false;
+		// check if we can handle it by simply accessing the first actionbar item (for consistency)
+		else
+		{
+			if(this->~ControlHotkey(0))
+				return true;
+		}
 	}
 	
 	// Contents menu
