@@ -204,9 +204,21 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 		return false;
 	if (!CheckConstructionSite(structure_id, x, y))
 	{
-		CustomMessage("Can't build here!", this, clonk->GetOwner()); // todo: stringtable
+		CustomMessage("Can't build here!", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
 		return false;
 	} 
+	// intersection-check with all other construction sites... bah
+	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	{
+		if(!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
+		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
+		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
+		{
+			CustomMessage(Format("Construction blocked by %s",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+			return false;
+		}
+	}
 	
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
@@ -216,20 +228,6 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	site->Set(structure_id);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
-	
-	// intersection-check with all other construction sites... bah
-	for(var other_site in FindObjects(Find_ID(ConstructionSite), Find_Exclude(site)))
-	{
-		if(!(other_site->GetLeftEdge()   > site->GetRightEdge()  ||
-		     other_site->GetRightEdge()  < site->GetLeftEdge()   ||
-		     other_site->GetTopEdge()    > site->GetBottomEdge() ||
-		     other_site->GetBottomEdge() < site->GetTopEdge()    ))
-		{
-			CustomMessage(Format("Construction blocked by %s",other_site->GetName()), this, clonk->GetOwner()); // todo: stringtable
-			site->RemoveObject();
-			return false;
-		} 
-	}
 	
 	// check for material
 	var comp, index = 0;
@@ -271,4 +269,3 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	clonk->Message("$TxtConstructions$", structure_id->GetName());
 	return true;
 }
-
