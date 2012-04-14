@@ -551,8 +551,7 @@ public func CarryHeavy(object target)
 	this->~OnCarryHeavyChange(carryheavy);
 	
 	// Update attach stuff
-	this->~OnHandFull();
-	//this->~UpdateAttach();
+	this->~OnSlotFull();
 	
 	return true;
 }

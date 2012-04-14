@@ -232,7 +232,10 @@ protected func Entrance(object obj)
 		if(obj->~GetCarryHeavy() == this)
 		{
 			liftheavy_carrier = obj;
-			DoLift();
+			if(obj->GetAction() == "Walk")
+				DoLift();
+			else
+				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
 }
 
