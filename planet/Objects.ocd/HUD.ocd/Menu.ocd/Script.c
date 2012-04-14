@@ -208,6 +208,13 @@ public func Hide()
 	return;
 }
 
+public func Close() 
+{
+	if(menu_object)
+		menu_object->~MenuClosed(this);
+	RemoveObject();
+}
+
 // Engine callback: if the menu is destroyed, the items must follow.
 protected func Destruction()
 {

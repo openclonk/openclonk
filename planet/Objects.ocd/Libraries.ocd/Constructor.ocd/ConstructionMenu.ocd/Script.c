@@ -103,13 +103,6 @@ public func HideConstructionInfo()
 
 public func IsConstructionMenu() { return true; }
 
-public func Close() 
-{
-	if(menu_object)
-		menu_object->~MenuClosed(this);
-	RemoveObject();
-}
-
 public func HasCommander(object producer)
 {
 	if (menu_commander == producer)
