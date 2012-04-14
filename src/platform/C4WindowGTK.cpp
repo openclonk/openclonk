@@ -786,6 +786,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
 	}
 	else if (windowKind == W_Fullscreen)
 	{
@@ -810,6 +811,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_object_set_property (G_OBJECT (render_widget), "can-focus", &val);
 		g_object_set_property (G_OBJECT (window), "can-focus", &val);
 		g_value_unset (&val);
+		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
 	}
 	else if (windowKind == W_GuiWindow)
 	{
@@ -821,6 +823,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollGD), this);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
+		gtk_window_set_has_resize_grip(GTK_WINDOW(window), false);
 	}
 	else if (windowKind == W_Console)
 	{
