@@ -96,6 +96,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if(fuel<=0)
 	{
 		DoFireworks();
+		return;
 	}
 
 	var ignition = iEffectTime % 9;
@@ -171,7 +172,7 @@ func Launch(int angle, object clonk)
 	SetCategory(C4D_Vehicle);
 
 	Exit();
-	AddEffect("Flight",this,150,1,this,this);
+	AddEffect("Flight",this,150,1,this);
 	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
