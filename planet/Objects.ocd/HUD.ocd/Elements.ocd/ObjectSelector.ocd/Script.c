@@ -32,7 +32,7 @@ static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
-static const ACTIONTYPE_CARRYHEAVY = 3;
+static const ACTIONTYPE_CARRYHEAVY = 4;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
