@@ -3,7 +3,7 @@ Icon=23
 Title=MtBrame
 Version=5,2,90,21
 Difficulty=50
-MaxPlayer=3
+MaxPlayer=50
 NoInitialize=true
 
 [Game]

@@ -3,7 +3,7 @@ Icon=37
 Title=Crash
 Version=5,2,90,20
 Difficulty=10
-MaxPlayer=3
+MaxPlayer=50
 NoInitialize=true
 
 [Game]
