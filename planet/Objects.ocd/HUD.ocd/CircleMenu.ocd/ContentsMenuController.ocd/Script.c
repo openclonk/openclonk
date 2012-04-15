@@ -213,6 +213,10 @@ private func AddContentsMenuItem(object symbol, object menu, array stack)
 		return false;
 	}
 	item->SetSymbol(symbol);
+	if(symbol.Description)
+	{
+		item->SetTooltip(symbol.Description);
+	}
 	if (stack == nil)
 	{
 		item->SetData([symbol]);

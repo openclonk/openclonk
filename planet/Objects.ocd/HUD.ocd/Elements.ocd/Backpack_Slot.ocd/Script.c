@@ -50,6 +50,13 @@ public func SetUnselected()
 	SetGraphics(nil,nil,5);
 }
 
+public func SetTooltip(string desc) {
+	this.Tooltip = desc;
+}
+
+public func GetTooltip() {
+	return this.Tooltip;
+}
 
 // SetSymbol from GUI_RingMenu_Icon
 public func SetSymbol(obj)
