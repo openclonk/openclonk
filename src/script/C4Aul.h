@@ -157,8 +157,9 @@ enum C4AulBCCType
 	AB_NEW_ARRAY,   // semi-constant: array
 	AB_NEW_PROPLIST, // create a new proplist
 	AB_JUMP,    // jump
-	AB_JUMPAND, // jump if zero, else pop the stack
-	AB_JUMPOR,  // jump if not zero, else pop the stack
+	AB_JUMPAND, // jump if convertible to false, else pop the stack
+	AB_JUMPOR,  // jump if convertible to true, else pop the stack
+	AB_JUMPNNIL, // jump if not nil, else pop the stack 
 	AB_CONDN,   // conditional jump (negated, pops stack)
 	AB_COND,    // conditional jump (pops stack)
 	AB_FOREACH_NEXT, // foreach: next element

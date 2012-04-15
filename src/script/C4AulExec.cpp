@@ -576,6 +576,20 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				}
 				break;
 
+			case AB_JUMPNNIL: // ??
+			{
+				if (pCurVal[0].GetType() != C4V_Nil)
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				else
+				{
+					PopValue();
+				}
+				break;
+			}
+
 			case AB_CONDN:
 				if (!pCurVal[0])
 				{
