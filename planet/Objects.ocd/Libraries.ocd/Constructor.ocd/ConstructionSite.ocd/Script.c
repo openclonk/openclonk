@@ -9,6 +9,9 @@ local definition;
 local full_material; // true when all needed material is in the site
 
 public func IsContainer()		{ return true; }
+// disallow taking stuff out
+public func RefuseTransfer(object toMove) { return true; }
+
 // we have 2 interaction modes
 public func IsInteractable(object obj)	{ return definition != nil; }
 public func GetInteractionCount() { return 2; }

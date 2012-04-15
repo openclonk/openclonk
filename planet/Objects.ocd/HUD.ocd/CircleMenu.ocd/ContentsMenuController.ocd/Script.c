@@ -464,6 +464,9 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 		// Try to enter the object, but check for some collect callbacks.
 		if (p_target.Object->~RejectCollect(obj->GetID(), obj) && !p_target.Object->~AllowTransfer(obj))
 			continue;
+		// see if the container actually allows taking it out
+		if(p_source.Object->~RefuseTransfer(obj))
+			continue;
 		if (obj->Enter(p_target.Object))
 		{				
 			moved_to_target[GetLength(moved_to_target)] = obj;
