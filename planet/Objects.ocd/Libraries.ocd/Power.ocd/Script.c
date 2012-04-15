@@ -15,9 +15,6 @@
 	
 */
 
-local Name = "$Name$";
-local Description = "$Description$";
-
 static Library_Power_power_compounds;
 
 // for the helper definitions

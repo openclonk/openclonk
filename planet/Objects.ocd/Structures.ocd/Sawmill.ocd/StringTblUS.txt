@@ -1,1 +1,2 @@
 Name=Sawmill
+Description=The sawmill can efficiently saw trees into wood, but needs power to function.

@@ -1,1 +1,2 @@
 Name=Windmühle
+Description=Die Windmühle verarbeitet Samen zu Mehl.

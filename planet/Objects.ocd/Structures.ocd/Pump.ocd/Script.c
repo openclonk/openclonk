@@ -156,6 +156,7 @@ public func SetPumpableMaterials(string to_val)
 }
 
 local Name = "$Name$";
+local Description = "$Description$";
 local ActMap = {
 	Pump = {
 		Prototype = Action,

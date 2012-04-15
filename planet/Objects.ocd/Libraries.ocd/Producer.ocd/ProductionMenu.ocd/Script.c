@@ -57,6 +57,7 @@ public func AddMenuProducts(object producer)
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(product);
+		item->SetTooltip(product.Description);
 		item.MouseDrag = MD_DragSource;
 	}
 	return;

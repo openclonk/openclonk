@@ -1,1 +1,2 @@
 Name=Windmill
+Description=The windmill crushes seeds into flour.

@@ -1,1 +1,2 @@
 Name=Windrad
+Description=Erzeugt Strom bei Wind.

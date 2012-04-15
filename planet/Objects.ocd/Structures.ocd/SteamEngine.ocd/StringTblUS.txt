@@ -1,1 +1,2 @@
 Name=Steam engine
+Description=The steam engine generates electricity from fuel like coal, wood or oil.

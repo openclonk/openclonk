@@ -1,1 +1,2 @@
 Name=Wind generator
+Description=Generates electricity from the wind.

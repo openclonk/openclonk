@@ -1,1 +1,2 @@
 Name=Foundry
+Description=In the foundry, ore can be smelted into ingots. Fuel like coal is necessary for this.

@@ -2,3 +2,4 @@ NoPlrKnowledge=No construction plans
 Construction=Construction
 Production=Production
 Name=Tools workshop
+Description=Many important tools for mining, chopping down trees and for exploration can be produced here.

@@ -1,2 +1,2 @@
 Name=Dampfmaschine
-
+Description=Die Dampfmaschine erzeugt Strom aus Brennstoffen wie Kohle, Holz oder Öl.
