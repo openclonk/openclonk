@@ -663,8 +663,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// check if we can handle it by simply accessing the first actionbar item (for consistency)
 		else
 		{
+			if(GetMenu())
+				if(!GetMenu()->~Uncloseable())
+					return CancelMenu();
+			
 			if(this->~ControlHotkey(0))
-				return true;
+					return true;
 		}
 	}
 	
@@ -678,8 +682,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (GetMenu()->~Uncloseable()) return true;
 
 			var is_content = GetMenu()->~IsContentMenu();
-			GetMenu()->RemoveObject();
-			SetMenu(nil);
+			CancelMenu();
 			// If contents menu, don't open new one and return.
 			if (is_content)
 				return true;
@@ -1714,7 +1717,14 @@ func GetMenu()
 
 func CancelMenu()
 {
-	if (menu) menu->Close();
+	if (menu)
+	{
+		menu->Close();
+		SetMenu(nil);
+		return true;
+	}
+	
+	return false;
 }
 
 func ReinitializeControls()

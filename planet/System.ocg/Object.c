@@ -290,3 +290,25 @@ global func GetBase ()
 	if(!(this->~IsBase())) return NO_OWNER;
 	return GetOwner();
 }
+
+
+/* GetXEdge returns the position of the objects top/bottom/left/right edge */
+global func GetLeftEdge()
+{
+	return GetX()-GetObjWidth()/2;
+}
+
+global func GetRightEdge()
+{
+	return GetX()+GetObjWidth()/2;
+}
+
+global func GetTopEdge()
+{
+	return GetY()-GetObjHeight()/2;
+}
+
+global func GetBottomEdge()
+{
+	return GetY()+GetObjHeight()/2;
+}

@@ -21,11 +21,11 @@ public func ControlUseStart(object clonk, int x, int y)
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{
-		if (structure->GetCon() < 100)
+	/*	if (structure->GetCon() < 100)
 		{
 			Construct(clonk, structure);
 			return true;
-		}
+		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -53,11 +53,12 @@ public func ControlUseHolding(object clonk, int x, int y)
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{	
+	/*
 		if (structure->GetCon() < 100)
 		{
 			Construct(clonk, structure);
 			return true;
-		}
+		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -181,11 +182,12 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	return true;
 }
 
-func FxControlConstructionPreviewStop(object target, effect, int reason, bool temp)
+func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool temp)
 {
 	if (temp) return;
 
 	effect.preview->RemoveObject();
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
 }
 
 /* Construction */
@@ -200,14 +202,70 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
 		return false;
+	if (!CheckConstructionSite(structure_id, x, y))
+	{
+		CustomMessage("Can't build here!", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+		return false;
+	} 
+	// intersection-check with all other construction sites... bah
+	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	{
+		if(!(other_site->GetLeftEdge()   > GetX()+x+structure_id->GetDefWidth()/2  ||
+		     other_site->GetRightEdge()  < GetX()+x-structure_id->GetDefWidth()/2  ||
+		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
+		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
+		{
+			CustomMessage(Format("Construction blocked by %s",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+			return false;
+		}
+	}
+	
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
 	// Create construction site
 	var site;
-	if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
-		return false;
+	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
+	site->Set(structure_id);
+	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
+		//return false;
+	
+	// check for material
+	var comp, index = 0;
+	var mat;
+	var w = structure_id->GetDefWidth()+10;
+	var h = structure_id->GetDefHeight()+10;
+
+	while (comp = GetComponent(nil, index, nil, structure_id))
+	{
+		// find material
+		var count_needed = GetComponent(comp, nil, nil, structure_id);
+		index++;
+		
+		mat = CreateArray();
+		// 1. look for stuff in the clonk
+		mat[0] = FindObjects(Find_ID(comp), Find_Container(clonk));
+		// 2. look for stuff lying around
+		mat[1] = clonk->FindObjects(Find_ID(comp), Find_NoContainer(), Find_InRect(-w/2, -h/2, w,h));
+		// 3. look for stuff in nearby lorries/containers
+		var i = 2;
+		for(var cont in clonk->FindObjects(Find_Or(Find_Func("IsLorry"), Find_Func("IsContainer")), Find_InRect(-w/2, -h/2, w,h)))
+			mat[i] = FindObjects(Find_ID(comp), Find_Container(cont));
+		// move it
+		for(var mat2 in mat)
+		{
+			for(var o in mat2)
+			{
+				if(count_needed <= 0)
+					break;
+				o->Exit();
+				o->Enter(site);
+				count_needed--;
+			}
+		}
+	}
+
+	
 	// Message
-	clonk->Message("$TxtConstructions$", site->GetName());
+	clonk->Message("$TxtConstructions$", structure_id->GetName());
 	return true;
 }
-

@@ -26,13 +26,13 @@
 
 */
 
-local selected, crew, hotkey, myobject, actiontype, subselector, position;
+local selected, crew, hotkey, myobject, actiontype, subselector, position, modus;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
-static const ACTIONTYPE_CARRYHEAVY = 3;
+static const ACTIONTYPE_CARRYHEAVY = 4;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
@@ -141,7 +141,7 @@ public func MouseSelection(int plr)
 	{
 		if(myobject->~IsInteractable(crew))
 		{
-			myobject->Interact(crew);
+			myobject->Interact(crew, modus);
 			return true;
 		}
 	}
@@ -277,7 +277,7 @@ public func ClearMessage()
 		CustomMessage("",subselector,GetOwner());
 }
 
-public func SetObject(object obj, int type, int pos, int hot)
+public func SetObject(object obj, int type, int pos, int hot, int number)
 {
 	this.Visibility = VIS_Owner;
 
@@ -290,6 +290,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	actiontype = type;
 	myobject = obj;
 	hotkey = hot;
+	modus = number;
 	
 	// Set mousedrag for inventory objects
 	if (actiontype == ACTIONTYPE_INVENTORY)
@@ -402,7 +403,7 @@ public func UpdateSelectionStatus()
 	// script...
 	else if(actiontype == ACTIONTYPE_SCRIPT)
 	{
-		var metainfo = myobject->~GetInteractionMetaInfo(crew);
+		var metainfo = myobject->~GetInteractionMetaInfo(crew, modus);
 		if(metainfo)
 		{
 			SetGraphics(metainfo["IconName"],metainfo["IconID"],2,GFXOV_MODE_IngamePicture);

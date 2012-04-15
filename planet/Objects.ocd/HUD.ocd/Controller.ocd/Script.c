@@ -623,7 +623,13 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
 		for(var interactable in interactables)
 		{
-			ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++);
+			var icnt = interactable->~GetInteractionCount();
+			if(icnt == 0)
+				icnt = 1;
+			for(var j=0; j < icnt; j++)
+			{
+				ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++, j);
+			}
 		}
 		
 		// if carrying heavy, add drop-carry-heavy-button
@@ -693,7 +699,7 @@ public func OnSlotObjectChanged(int slot)
 	ScheduleUpdateBackpack();
 }
 
-private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
+private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num)
 {
 	//var size = GUI_ObjectSelector->GetDefWidth();
 	//var spacing = deco.padding;
@@ -728,7 +734,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	bt->SetPosition(401 + pos * spacing, -45);
 	
 	bt->SetCrew(forClonk);
-	bt->SetObject(interaction,actiontype,pos,hotkey);
+	bt->SetObject(interaction,actiontype,pos,hotkey, num);
 	
 	actionbar[pos] = bt;
 	return bt;

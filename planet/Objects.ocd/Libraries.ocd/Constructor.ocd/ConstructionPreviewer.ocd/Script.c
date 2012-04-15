@@ -44,7 +44,24 @@ func AdjustPreview(bool look_up, bool no_call)
 	if (fail)
 		return SetClrModulation(RGBa(255,50,50, 100), GFX_Overlay);
 	SetPosition(GetX(), GetY() + y);
-	if (CheckConstructionSite(structure, 0, half_y))
+	
+	if (!CheckConstructionSite(structure, 0, half_y))
+		fail = true;
+	else
+	// intersection-check with all other construction sites... bah
+	for(var other_site in FindObjects(Find_ID(ConstructionSite)))
+	{
+		if(!(other_site->GetLeftEdge()   > GetX()+dimension_x/2  ||
+		     other_site->GetRightEdge()  < GetX()-dimension_x/2  ||
+		     other_site->GetTopEdge()    > GetY()+half_y  ||
+		     other_site->GetBottomEdge() < GetY()-half_y))
+			{
+				fail = true;
+			} 
+	}
+	
+	
+	if(!fail)
 		SetClrModulation(RGBa(50,255,50, 100), GFX_Overlay);
 	else
 		SetClrModulation(RGBa(255,50,50, 100), GFX_Overlay);
