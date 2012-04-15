@@ -621,12 +621,14 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	
 		// add interactables (script interface)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
+		var j, icnt;
 		for(var interactable in interactables)
 		{
-			var icnt = interactable->~GetInteractionCount();
-			if(icnt == 0)
+			icnt = interactable->~GetInteractionCount();
+			if(!icnt)
 				icnt = 1;
-			for(var j=0; j < icnt; j++)
+
+			for(j=0; j < icnt; j++)
 			{
 				ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++, j);
 			}
