@@ -149,9 +149,12 @@ public func RemoveItem(object item)
 			break;
 		}	
 	}
-	
 	// close gap
-	menu_items = Concatenate(menu_items[0:i],menu_items[i+1:length-1]);
+	for(i; i < length-1; i++)
+		menu_items[i] = menu_items[i+1];
+	
+	SetLength(menu_items, length-1);
+
 	UpdateMenu();
 	return;
 }

@@ -70,6 +70,8 @@ func SetMenuObject(object menu_object)
 func Construction()
 {
 	circ_menus = [];
+	container_count = 0;
+	crew_count = 0;
 }
 
 func Close() 
@@ -118,8 +120,10 @@ func AddContentMenu(object container, int pos, bool isCrew)
 	menu->SetCommander(this);
 	menu->SetDragDropMenu(true);
 
+	var dist = ObjectDistance(menu_object, container);
+
 	PutContentsIntoMenu(menu, container);
-	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = isCrew};
+	circ_menus[pos] = {Object = container, Menu = menu, IsCrew = isCrew, Distance = dist};
 	
 	if(isCrew)
 		crew_count++;
@@ -127,10 +131,36 @@ func AddContentMenu(object container, int pos, bool isCrew)
 		container_count++;
 	
 	// Track external changes in containers.
-	AddEffect("ContainerTracker", container, 100, 1, this, nil, menu);
+	AddEffect("ContainerTracker", container, 100, 1, this, nil, menu, container->GetPosition());
 	
-	UpdateContentMenus();	
+	UpdateContentMenus();
 	return;
+}
+
+func RemoveContentMenu(int index)
+{
+	var length = GetLength(circ_menus);
+	if(index >= length)
+		return;
+	
+	// remove menu
+	if(circ_menus[index].IsCrew)
+		crew_count--;
+	else
+		container_count--;
+	
+	circ_menus[index].Menu->RemoveObject();
+	
+	// close the gap
+	for(var i=index; i < length-1; i++)
+		circ_menus[i] = circ_menus[i+1];
+	
+	SetLength(circ_menus, length-1);
+	
+	// and update
+	UpdateContentMenus();
+	for(var prop in circ_menus)
+		prop.Menu->UpdateMenu();
 }
 
 // Draws the contents menus to the right positions.
@@ -204,7 +234,7 @@ private func PutContentsIntoMenu(object menu, object container)
 		AddContentsMenuItem(container->GetCarryHeavy(), menu);
 }
 
-private func AddContentsMenuItem(object symbol, object menu, array stack)
+private func AddContentsMenuItem(object obj, object menu, array stack)
 {
 	// Into the menu item, all the objects of the stack are saved as an array into it's extradata.
 	var item = CreateObject(GUI_MenuItem);
@@ -213,14 +243,14 @@ private func AddContentsMenuItem(object symbol, object menu, array stack)
 		item->RemoveObject();
 		return false;
 	}
-	item->SetSymbol(symbol);
-	if(symbol.Description)
+	item->SetSymbol(obj);
+	if(obj.Description)
 	{
-		item->SetTooltip(symbol.Description);
+		item->SetTooltip(obj.Description);
 	}
 	if (stack == nil)
 	{
-		item->SetData([symbol]);
+		item->SetData([obj]);
 	}
 	else
 	{
@@ -278,11 +308,12 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 /*-- Content tracking --*/
 // TODO: Implement this more carefully and cover all corner cases.
 
-public func FxContainerTrackerStart(object target, proplist effect, int temporary, object menu)
+public func FxContainerTrackerStart(object target, proplist effect, int temporary, object menu, array position)
 {
 	if (temporary == 0)
 	{
 		effect.Menu = menu;
+		effect.Position = position;
 		// Initialize content list.
 		effect.ContentList = [];
 		var index = 0;
@@ -297,6 +328,15 @@ public func FxContainerTrackerStart(object target, proplist effect, int temporar
 
 public func FxContainerTrackerTimer(object target, proplist effect)
 {
+	// check if the target moved
+	if(effect.Position[0] != target->GetX() || effect.Position[1] != target->GetY())
+	{
+		effect.CommandTarget->~OnContainerMovement(effect.Menu, target);
+		effect.Position = target->GetPosition();
+
+		return 1;
+	}
+	
 	// Match current contents to actual list, first trivial test.
 	if (GetLength(effect.ContentList) != target->ContentsCount())
 		// Stop the effect, the contoller is notified in the stop call.
@@ -324,36 +364,73 @@ public func FxContainerTrackerTimer(object target, proplist effect)
 	return 1;
 }
 
-public func FxContainerTrackerStop(object target, proplist effect, int reason)
+public func FxContainerTrackerStop(object target, proplist effect, int reason, bool tmp)
 {
-	// Notify content menu if the effect has ended regularly, the menu will be deleted
-	// and a new effect for that menu will be added.
-	if (reason == 0)
-		effect.CommandTarget->~OnExternalContentChange(effect.Menu, target);
+	if(tmp)
+		return;
+	// Notify content menu if the effect has ended regularly, the menu will be updated
+	// the effect will not be removed if the menu still exists
+	if (!reason)
+	{
+		effect.CommandTarget->~OnContentChange(effect.Menu, target);
+		if(effect.Menu)
+		{
+			// update list
+			var index = 0;
+			while (target->Contents(index))
+			{
+				effect.ContentList[index] = target->Contents(index);
+				index++;
+			}
+			return -1;
+		}
+	}
+	if(reason == 3 || reason == 4)
+		effect.CommandTarget->~OnContainerRemoved(effect.Menu, target);
 
 	return 1;
 }
 
-public func OnExternalContentChange(object menu, object container)
+/** Called when the position of a container with an open menu changed.
+    Checks if object still is in range, and removes menu if necessary.
+*/
+public func OnContainerMovement(object menu, object container)
+{
+	var index = FindMenuPos(menu);
+	if(index < 0)
+		return;
+	
+	// check distance
+	if(ObjectDistance(menu_object, container) > circ_menus[index].Distance)
+		RemoveContentMenu(index);
+}
+
+/** Called when a container with an open menu got removed.
+    Removes the Menu and fixes ordering.
+*/
+public func OnContainerRemoved(object menu, object container)
+{
+	var index = FindMenuPos(menu);
+	if(index < 0)
+		return;
+	
+	// remove menu and reorder other menus
+	RemoveContentMenu(index);
+}
+
+/** Called when the content of a container with an open menu changed.
+    Updates menu.
+*/
+public func OnContentChange(object menu, object container)
 {
 	// Find changed menu and remove it.
-	var length = GetLength(circ_menus);
-	var index = 0;
-	for (index = 0; index < length; index++)
-		if (circ_menus[index].Menu == menu)
-		{
-			circ_menus[index].Menu->RemoveObject();
-			break;
-		}
-	
-	// Reopen the changed menu.
-	var isCrew = container->GetOCF() & OCF_CrewMember;
-	if(isCrew)
-		crew_count--;
-	else
-		container_count--;
-	AddContentMenu(container, index, isCrew);
-	Show(true);
+	var index = FindMenuPos(menu);
+	if(index < 0)
+		return;
+		
+	menu->Clear();
+	PutContentsIntoMenu(menu, container);
+
 	return;
 }
 
@@ -371,7 +448,7 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 		return 0;	
 	
 	// Determine actual amount that may be transfered.
-	var objects = menu_item->GetExtraData();
+	var objects = menu_item->GetExtraData(); // will always be at least [object]
 	amount = BoundBy(amount, 0, GetLength(objects));
 		
 	// Move to object from source container to target container.
@@ -472,8 +549,11 @@ private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
 
 private func MoveObjects(proplist p_source, proplist p_target, object menuItem, int amount)
 {
+	// move object to new menu
 	TransferObjects(p_source, p_target, menuItem, amount);
-	UpdateAfterTakenObjects(p_source, menuItem);
+	// Update menus
+	OnContentChange(p_source.Menu, p_source.Object);
+	OnContentChange(p_target.Menu, p_target.Object);
 }
 
 /* Interface to menu item as commander_object */
