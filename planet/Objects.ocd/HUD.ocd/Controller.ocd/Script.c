@@ -349,8 +349,11 @@ func UpdateBackpack()
 	// update backpack-slots
 	for(var i=0; i<GetLength(backpack); i++)
 	{
-		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetSlotId()));
+		var item = c->GetItem(backpack[i]->GetSlotId());
+		backpack[i]->SetSymbol(item);
 		backpack[i]->SetUnselected();
+		if(item) backpack[i]->SetTooltip(item.UsageHelp);
+		else backpack[i]->SetTooltip(nil);
 	}
 	
 	// update hand-indicator
