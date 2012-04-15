@@ -512,42 +512,6 @@ private func ExchangeObjects()
 
 }
 
-private func UpdateAfterTakenObjects(proplist p_source, object menuItem)
-{
-	var objects = menuItem->GetExtraData();
-	// update menu item in source menu: remove all objects in extradata which are not in
-	// container anymore
-	var c = 0;
-	var i;
-	for (i = 0; i < GetLength(objects); ++i)
-	{
-		var obj = objects[i];
-		if (obj->Contained() != p_source.Object) 
-		{
-			objects[i] = nil;
-			c++;
-		}
-	}
-	
-	// removed all? -> remove menu item
-	if (c == GetLength(objects)) 
-	{
-		p_source.Menu->RemoveItem(menuItem);
-	}
-	else if(c > 0)
-	{
-		// otherwise, update
-		
-		// repair "holes"
-		var remaining_objects = objects[:];
-		RemoveHoles(remaining_objects);
-		//Log("%v",remaining_objects);
-		
-		menuItem->SetData(remaining_objects);
-		menuItem->SetCount(GetLength(remaining_objects));
-		menuItem->SetSymbol(remaining_objects[0]);
-	}
-}
 
 private func MoveObjects(proplist p_source, proplist p_target, object menuItem, int amount)
 {
@@ -684,6 +648,8 @@ func OnItemDragDone(object menu, object dragged, object on_item)
 	
 	var p_source_menu = circ_menus[index];
 
-	UpdateAfterTakenObjects(p_source_menu, dragged);
+	OnContentChange(menu, p_source_menu.Object);
+	EffectCall(p_source_menu.Object, GetEffect("ContainerTracker", p_source_menu.Object), "Update");
+	
 	return true;
 }
