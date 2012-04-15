@@ -518,7 +518,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	//Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
 	
 	// Check if production time has been reached.
-	if (effect.Duration >= ProductionTime())
+	if (effect.Duration >= ProductionTime(effect.Product))
 		return -1;
 	
 	return 1;
