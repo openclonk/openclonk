@@ -44,8 +44,6 @@ func OnNotEnoughPower()
 	return _inherited(...);
 }
 
-func UnmakePowerConsumer(){MakePowerConsumer(0);}
-
 // devour energy
 func OnEnoughPower()
 {
@@ -77,7 +75,7 @@ func FxConsumePowerTimer(target, effect, time)
 	// fully charged?
 	if(power_seconds >= Compensator_max_seconds)
 	{
-		MakePowerConsumer(0);
+		UnmakePowerConsumer();
 		return -1;
 	}	
 	return 1;

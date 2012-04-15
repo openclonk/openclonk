@@ -7,7 +7,7 @@ MaxPlayer=50
 NoInitialize=true
 
 [Game]
-Rules=Rule_TeamAccount=1
+Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1
 
 [Player1]
 Crew=Clonk=1

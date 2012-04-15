@@ -1,17 +1,4 @@
 [Object]
-id=Rule_EnergyNeed
-Properties=7;false;"Prototype"=DRule_EnergyNeed
-Timer=34
-Category=65
-Plane=100
-Size=100000
-Mass=1
-X=F3276800
-Y=F3276800
-Picture=0,0,0,0
-OCF=12845121
-
-[Object]
 id=Rule_TeamAccount
 Properties=8;false;"Prototype"=DRule_TeamAccount
 Timer=34

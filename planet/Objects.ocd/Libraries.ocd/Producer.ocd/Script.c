@@ -529,7 +529,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if(temp) return;
 	
 	// no need to consume power anymore
-	MakePowerConsumer(0);
+	UnmakePowerConsumer();
 		
 	if (reason != 0)
 		return 1;
