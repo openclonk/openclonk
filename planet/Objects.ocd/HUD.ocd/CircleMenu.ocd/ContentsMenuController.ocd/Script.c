@@ -307,22 +307,17 @@ private func CanStackObjIntoMenuItem(object menu, object obj) {
 
 /*-- Content tracking --*/
 // TODO: Implement this more carefully and cover all corner cases.
-
+// Todo: Replace this with Fx*Collection if it ever gets implemented.
 public func FxContainerTrackerStart(object target, proplist effect, int temporary, object menu, array position)
 {
-	if (temporary == 0)
-	{
-		effect.Menu = menu;
-		effect.Position = position;
-		// Initialize content list.
-		effect.ContentList = [];
-		var index = 0;
-		while (target->Contents(index))
-		{
-			effect.ContentList[index] = target->Contents(index);
-			index++;
-		}
-	}
+	if (temporary)
+		return 1;
+	
+	effect.Menu = menu;
+	effect.Position = position;
+	// Initialize content list.
+	EffectCall(target, effect, "Update");
+	
 	return 1;
 }
 
@@ -337,29 +332,41 @@ public func FxContainerTrackerTimer(object target, proplist effect)
 		return 1;
 	}
 	
+	var change = false;
+	var index = 0;
+	
 	// Match current contents to actual list, first trivial test.
 	if (GetLength(effect.ContentList) != target->ContentsCount())
-		// Stop the effect, the contoller is notified in the stop call.
-		return -1;
+		change = true;
 	
 	// Test both ways around, cause either container can be empty.
-	var index = 0;
-	while (target->Contents(index))
+	else
 	{
-		if (effect.ContentList[index] != target->Contents(index))
+		for(index=0; target->Contents(index); index++)
 		{
-			// Stop the effect, the contoller is notified in the stop call.
-			return -1;
+			if (effect.ContentList[index] != target->Contents(index))
+			{
+				change = true;
+				break;
+			}
 		}
-		index++;
 	}
-	for (index = 0; index < GetLength(effect.ContentList); index++)
+	if(!change)
 	{
-		if (effect.ContentList[index] != target->Contents(index))
+		for (index = 0; index < GetLength(effect.ContentList); index++)
 		{
-			// Stop the effect, the contoller is notified in the stop call.
-			return -1;
+			if (effect.ContentList[index] != target->Contents(index))
+			{
+				change = true;
+				break;
+			}
 		}
+	}
+	
+	if(change)
+	{
+		EffectCall(target, effect, "Update");
+		effect.CommandTarget->~OnContentChange(effect.Menu, target);
 	}
 	return 1;
 }
@@ -368,27 +375,22 @@ public func FxContainerTrackerStop(object target, proplist effect, int reason, b
 {
 	if(tmp)
 		return;
-	// Notify content menu if the effect has ended regularly, the menu will be updated
-	// the effect will not be removed if the menu still exists
-	if (!reason)
-	{
-		effect.CommandTarget->~OnContentChange(effect.Menu, target);
-		if(effect.Menu)
-		{
-			// update list
-			var index = 0;
-			while (target->Contents(index))
-			{
-				effect.ContentList[index] = target->Contents(index);
-				index++;
-			}
-			return -1;
-		}
-	}
+
 	if(reason == 3 || reason == 4)
 		effect.CommandTarget->~OnContainerRemoved(effect.Menu, target);
 
 	return 1;
+}
+
+public func FxContainerTrackerUpdate(object target, proplist effect)
+{
+	effect.ContentList = [];
+	var index = 0;
+	while (target->Contents(index))
+	{
+		effect.ContentList[index] = target->Contents(index);
+		index++;
+	}
 }
 
 /** Called when the position of a container with an open menu changed.
@@ -554,6 +556,9 @@ private func MoveObjects(proplist p_source, proplist p_target, object menuItem, 
 	// Update menus
 	OnContentChange(p_source.Menu, p_source.Object);
 	OnContentChange(p_target.Menu, p_target.Object);
+	
+	EffectCall(p_source.Object, GetEffect("ContainerTracker", p_source.Object), "Update");
+	EffectCall(p_target.Object, GetEffect("ContainerTracker", p_target.Object), "Update");
 }
 
 /* Interface to menu item as commander_object */
