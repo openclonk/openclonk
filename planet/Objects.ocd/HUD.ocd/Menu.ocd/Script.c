@@ -143,7 +143,7 @@ public func RemoveItem(object item)
 	var length = GetLength(menu_items);
 	for(var i = 0; i < length; i++)
 	{
-		if (menu_items[i])
+		if (menu_items[i] == item)
 		{
 			menu_items[i]->RemoveObject();
 			break;
