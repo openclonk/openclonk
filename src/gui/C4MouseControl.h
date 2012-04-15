@@ -60,8 +60,7 @@ protected:
 	int32_t Player;
 	C4Player *pPlayer; // valid during Move()
 	C4Viewport *Viewport; // valid during Move()
-	StdStrBuf Caption;
-	bool IsHelpCaption;
+	StdCopyStrBuf Caption;
 	int32_t Cursor;
 	int32_t DownCursor;
 	int32_t CaptionBottomY;
@@ -82,7 +81,6 @@ protected:
 	bool ShiftDown;
 	bool Scrolling;
 	bool InitCentered;
-	bool Help;
 	bool FogOfWar;
 	bool Visible;
 	C4Object *DragObject;
@@ -150,9 +148,6 @@ protected:
 	void ScrollView(float iX, float iY, float ViewWdt, float ViewHgt); // in landscape coordinates
 
 public:
-	bool IsHelp() { return Help; }
-	void SetHelp() { Help = true; }
-	void AbortHelp() { Help = false; }
 	bool IsDragging();
 	void StartConstructionDrag(C4ID id);
 	int32_t GetPlayer() { return Player; }

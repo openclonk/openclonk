@@ -84,7 +84,7 @@ const int32_t C4MC_Cursor_Region      = 0,
               C4MC_Cursor_DragDrop    = 26,
               C4MC_Cursor_Point       = 27,
               C4MC_Cursor_DigObject   = 28,
-              C4MC_Cursor_Help        = 29,
+   //           C4MC_Cursor_Help        = 29,    (obsolete)
               C4MC_Cursor_DigMaterial = 30,
               C4MC_Cursor_Add         = 31,
               C4MC_Cursor_Construct   = 32,
@@ -111,7 +111,6 @@ void C4MouseControl::Default()
 	Viewport=NULL;
 	Cursor=DownCursor=0;
 	Caption.Clear();
-	IsHelpCaption=false;
 	CaptionBottomY=0;
 	VpX=VpY=0;
 	DownX=DownY=DownOffsetX=DownOffsetY=0;
@@ -123,7 +122,6 @@ void C4MouseControl::Default()
 	ButtonDownOnSelection=false;
 	Visible=true;
 	InitCentered=false;
-	Help=false;
 	FogOfWar=false;
 	DragID=C4ID::None;
 	DragObject=NULL;
@@ -232,7 +230,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// Active
 	if (!Active || !fMouseOwned) return;
 	// Execute caption
-	if (KeepCaption) KeepCaption--; else { Caption.Clear(); IsHelpCaption=false; CaptionBottomY=0; }
+	if (KeepCaption) KeepCaption--; else { Caption.Clear(); CaptionBottomY=0; }
 	// Check player
 	if (Player>NO_OWNER)
 	{
@@ -548,25 +546,11 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	}
 
 	// Draw caption
-	if (Caption)
+	if (Caption && ::pGUI)
 	{
-		if (IsHelpCaption && ::pGUI)
-		{
-			// Help: Tooltip style
-			C4TargetFacet cgoTip; cgoTip = static_cast<const C4Facet &>(cgo);
-			C4GUI::Screen::DrawToolTip(Caption.getData(), cgoTip, cgo.X+GuiX, cgo.Y+GuiY);
-		}
-		else
-		{
-			// Otherwise red mouse control style
-			int32_t iWdt,iHgt;
-			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			pDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
-			                           cgo.Surface,
-			                           float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
-			                           float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),
-			                           0xfaFF0000,ACenter);
-		}
+		C4TargetFacet cgoTip;
+		cgoTip = static_cast<const C4Facet &>(cgo);
+		C4GUI::Screen::DrawToolTip(Caption.getData(), cgoTip, cgo.X+GuiX, cgo.Y+GuiY);
 	}
 
 }
@@ -586,7 +570,6 @@ void C4MouseControl::UpdateCursorTarget()
 	{
 		// On target region
 		TargetObject=NULL;
-		if (Help) Cursor=C4MC_Cursor_Help;
 	}
 	else
 	{
@@ -617,37 +600,27 @@ void C4MouseControl::UpdateCursorTarget()
 				TargetObject = NULL;
 		}
 
-		// Help
-		if (Help)
-			Cursor=C4MC_Cursor_Help;
 		// passive cursor
-		else if (IsPassive())
+		if (IsPassive())
 			Cursor=C4MC_Cursor_Region;
 
 		// Time on target: caption
-		if (Cursor==iLastCursor)
+		if (TargetObject && Cursor == C4MC_Cursor_Select)
 		{
 			TimeOnTargetObject++;
 			if (TimeOnTargetObject>=C4MC_Time_on_Target)
 			{
-				const char* idCaption = 0;
-				const char *szName = "";
-				bool fDouble = false;
-				if (TargetObject) szName=TargetObject->GetName();
-				// Target caption by cursor
-				switch (Cursor)
+				if (TargetObject->Category & C4D_MouseSelect)
 				{
-				case C4MC_Cursor_Select: idCaption="IDS_CON_SELECT"; break;
-				case C4MC_Cursor_Help: idCaption="IDS_CON_NAME"; break;
-				}
-				// Set caption
-				if (idCaption) if (!KeepCaption)
+					// set caption
+					if (!KeepCaption)
 					{
-						// Caption by cursor
-						Caption.Format(LoadResStr(idCaption), szName);
-						if (fDouble) { Caption.AppendChar('|'); Caption.Append(LoadResStr("IDS_CON_DOUBLECLICK")); }
-						IsHelpCaption = false;
+						C4String *tooltip = TargetObject->GetPropertyStr(P_Tooltip);
+						if(tooltip) {
+							Caption = TargetObject->GetPropertyStr(P_Tooltip)->GetData();
+						}
 					}
+				}
 			}
 		}
 		else
@@ -720,18 +693,7 @@ void C4MouseControl::UpdateTargetRegion()
 		{ Drag=C4MC_Drag_None; DownCursor=C4MC_Cursor_Nothing; }
 	// Caption
 	Caption.Copy(TargetRegion->Caption);
-	IsHelpCaption = false;
 	CaptionBottomY=TargetRegion->Y; KeepCaption=0;
-	// Help region caption by region target object; not in menu, because this would be the cursor object
-	if (Help)
-		if (TargetRegion->Target /*&& Cursor!=C4MC_Cursor_DragMenu*/)
-		{
-			//if (TargetRegion->Target->Def->GetDesc())
-			//	Caption.Format("%s: %s",TargetRegion->Target->GetName(), TargetRegion->Target->Def->GetDesc());
-			//else
-				Caption.Copy(TargetRegion->Target->GetName());
-			IsHelpCaption = true;
-		}
 	// MoveOverCom (on region change)
 	static int32_t iLastRegionX,iLastRegionY;
 	if (TargetRegion->MoveOverCom)
@@ -841,20 +803,6 @@ void C4MouseControl::DragNone()
 	     && ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
 	{
 		bool fAllowDrag = true;
-		switch (DownCursor)
-		{
-			/*
-			// Drag start selecting in landscape
-			case C4MC_Cursor_Crosshair:
-			Selection.Clear();
-			Drag=C4MC_Drag_Selecting; DragSelecting=C4MC_Selecting_Unknown;
-			break;
-			*/
-			// Help: no dragging
-		case C4MC_Cursor_Help:
-			fAllowDrag = false;
-			break;
-		}
 		// check if target object allows scripted dragging
 		if (fAllowDrag && DownTarget && (!FogOfWar || (DownTarget->Category & C4D_IgnoreFoW)))
 		{
@@ -976,12 +924,6 @@ bool C4MouseControl::IsValidMenu(C4Menu *pMenu)
 
 bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
 {
-	// Help
-	if (iCom==COM_Help)
-	{
-		Help=true;
-		return true;
-	}
 	// Activate player menu / fullscreen main menu (local control)
 	if (iCom==COM_PlayerMenu)
 	{
@@ -1036,8 +978,6 @@ void C4MouseControl::LeftUpDragNone()
 	{
 		// Region
 	case C4MC_Cursor_Region:
-		// Help click on region: ignore
-		if (Help) break;
 		// Region com & data
 		SendControl(DownRegion.Com,DownRegion.Data);
 		break;
@@ -1046,19 +986,6 @@ void C4MouseControl::LeftUpDragNone()
 		// Object selection to control queue
 		if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
 		break;
-		// Help
-	case C4MC_Cursor_Help:
-		if (DownTarget)
-		{
-			//if (DownTarget->Def->GetDesc())
-			//	Caption.Format("%s: %s",DownTarget->GetName(), DownTarget->Def->GetDesc());
-			//else
-				Caption.Copy(DownTarget->GetName());
-			KeepCaption=Caption.getLength()/2;
-			IsHelpCaption = true;
-		}
-		break;
-		// Nothing
 	case C4MC_Cursor_Nothing:
 		break;
 		// Movement?
@@ -1154,10 +1081,6 @@ void C4MouseControl::RightUpDragNone()
 	if (Cursor==C4MC_Cursor_Select && !IsPassive())
 		{ Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,true)); }
 
-	// Help: end
-	if (Help)
-		{ Help=false; KeepCaption=0; return; }
-
 	// TODO: Evaluate right click
 
 }
@@ -1199,7 +1122,7 @@ C4Object *C4MouseControl::GetTargetObject()
 {
 	// find object
 	// gui object position currently wrong...will fall apart once GUIZoom is activated
-	C4Object *pObj = Game.FindVisObject(ViewX, ViewY, Player, fctViewportGame, fctViewportGUI, GameX,GameY, Help ? C4D_All : C4D_MouseSelect, GuiX-fctViewportGUI.X, GuiY-fctViewportGUI.Y);
+	C4Object *pObj = Game.FindVisObject(ViewX, ViewY, Player, fctViewportGame, fctViewportGUI, GameX,GameY, C4D_MouseSelect, GuiX-fctViewportGUI.X, GuiY-fctViewportGUI.Y);
 	if (!pObj) return NULL;
 	return pObj;
 }

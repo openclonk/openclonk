@@ -1353,16 +1353,5 @@ void C4Draw::DrawBoxFade(C4Surface * sfcDest, float iX, float iY, float iWdt, fl
 
 void C4Draw::DrawBoxDw(C4Surface * sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr)
 {
-	// manual clipping?
-	if (Config.Graphics.ClipManuallyE)
-	{
-		int iOver;
-		iOver=iX1-iClipX1; if (iOver<0) { iX1=iClipX1; }
-		iOver=iY1-iClipY1; if (iOver<0) { iY1=iClipY1; }
-		iOver=iClipX2-iX2; if (iOver<0) { iX2+=iOver; }
-		iOver=iClipY2-iY2; if (iOver<0) { iY2+=iOver; }
-		// inside screen?
-		if (iX2<iX1 || iY2<iY1) return;
-	}
 	DrawBoxFade(sfcDest, float(iX1), float(iY1), float(iX2-iX1+1), float(iY2-iY1+1), dwClr, dwClr, dwClr, dwClr, 0,0);
 }

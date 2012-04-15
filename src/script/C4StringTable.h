@@ -292,6 +292,7 @@ enum C4PropertyName
 	P_Blasted,
 	P_IncineratingObj,
 	P_Plane,
+	P_Tooltip,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

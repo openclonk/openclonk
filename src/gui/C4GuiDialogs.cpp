@@ -785,7 +785,7 @@ namespace C4GUI
 // FullscreenDialog
 
 	FullscreenDialog::FullscreenDialog(const char *szTitle, const char *szSubtitle)
-			: Dialog(Screen::GetScreenS()->GetClientRect().Wdt, Screen::GetScreenS()->GetClientRect().Hgt, NULL /* create own title */, false), pFullscreenTitle(NULL), pBtnHelp(NULL)
+			: Dialog(Screen::GetScreenS()->GetClientRect().Wdt, Screen::GetScreenS()->GetClientRect().Hgt, NULL /* create own title */, false), pFullscreenTitle(NULL)
 	{
 		// set margins
 		int32_t iScreenX = Screen::GetScreenS()->GetClientRect().Wdt;
@@ -803,18 +803,6 @@ namespace C4GUI
 			pSubTitle->SetToolTip(szTitle);
 		}
 		else pSubTitle = NULL;
-		// titled dialogs always have a help button in the top right corner
-		if (szTitle && *szTitle)
-		{
-			// help button disabled; use meaningful captions instead
-			//pBtnHelp = new CallbackButton<FullscreenDialog, IconButton>(Ico_UnknownClient /* 2do: Help icon */, C4Rect(0,0,32,32), 'H' /* 2do */, &FullscreenDialog::OnHelpBtn, this);
-			//C4Facet fctHelp = ::GraphicsResource.fctOKCancel;
-			//fctHelp.Y += fctHelp.Hgt;
-			//pBtnHelp->SetFacet(fctHelp);
-			//pBtnHelp->SetToolTip("[.!]Help button: Press this button and hover the element you want help for!");
-			//UpdateHelpButtonPos();
-			//AddElement(pBtnHelp);
-		}
 	}
 
 	void FullscreenDialog::SetTitle(const char *szTitle)
@@ -845,14 +833,6 @@ namespace C4GUI
 	{
 		// inherited to update client rect
 		Dialog::UpdateOwnPos();
-		// reposition help button
-		UpdateHelpButtonPos();
-	}
-
-	void FullscreenDialog::UpdateHelpButtonPos()
-	{
-		// reposition help button
-		if (pBtnHelp) pBtnHelp->SetBounds(C4Rect(GetBounds().Wdt-4-32-GetMarginLeft(), 4-GetMarginTop(), 32,32));
 	}
 
 	void FullscreenDialog::DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct)
@@ -865,12 +845,6 @@ namespace C4GUI
 		cgoScreen.Wdt = rcScreenBounds.Wdt+2; cgoScreen.Hgt = rcScreenBounds.Hgt+2;
 		rFromFct.DrawFullScreen(cgoScreen);
 	}
-
-	void FullscreenDialog::OnHelpBtn(C4GUI::Control *pBtn)
-	{
-		::MouseControl.SetHelp();
-	}
-
 
 // --------------------------------------------------
 // MessageDialog

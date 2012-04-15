@@ -462,8 +462,6 @@ namespace C4GUI
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
-		if (::MouseControl.IsHelp())
-			GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);
 		// ToolTip
 		if (fDrawToolTip && pMouseOverElement)
 		{
@@ -709,7 +707,7 @@ namespace C4GUI
 	void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 		// draw mouse cursor
-		Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || ::MouseControl.IsHelp());
+		Mouse.Draw(cgo, Mouse.IsMouseStill() && Mouse.IsActiveInput());
 	}
 
 	void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
@@ -809,27 +807,6 @@ namespace C4GUI
 		float fZoom = pForDlg ? 1.0f : GetZoom(); // Developer mode dialogs are currently drawn unzoomed
 		float fX = float(iPxX) / fZoom;
 		float fY = float(iPxY) / fZoom;
-		// help mode and button pressed: Abort help and discard button
-		if (::MouseControl.IsHelp())
-		{
-			switch (iButton)
-			{
-			case C4MC_Button_None:
-				// just movement
-				break;
-			case C4MC_Button_LeftDown:
-			case C4MC_Button_RightDown:
-				// special for left/right down: Just ignore them, but don't stop help yet
-				// help should be stopped on button-up, so these won't be processed
-				iButton = C4MC_Button_None;
-				break;
-			default:
-				// buttons stop help
-				::MouseControl.AbortHelp();
-				iButton = C4MC_Button_None;
-				break;
-			}
-		}
 		// forward to mouse
 		Mouse.Input(iButton, fX, fY, dwKeyParam);
 		// dragging

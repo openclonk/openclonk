@@ -2136,7 +2136,6 @@ namespace C4GUI
 	protected:
 		Label *pFullscreenTitle, *pSubTitle; // subtitle to be put in upper-right corner
 		int32_t iDlgMarginX, iDlgMarginY; // dialog margin set by screen size
-		IconButton *pBtnHelp;
 
 		virtual const char *GetID() { return 0; } // no ID needed, because it's never created as a window
 
@@ -2144,9 +2143,6 @@ namespace C4GUI
 		FullscreenDialog(const char *szTitle, const char *szSubtitle); // ctor
 
 		void SetTitle(const char *szToTitle); // change title text; creates or removes title bar if necessary
-
-	private:
-		void UpdateHelpButtonPos();
 
 	protected:
 		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
@@ -2169,8 +2165,6 @@ namespace C4GUI
 
 		// helper func: draw facet to screen background
 		void DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct);
-
-		void OnHelpBtn(C4GUI::Control *pBtn);
 	};
 
 	// a button closing the Dlg
