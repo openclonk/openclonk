@@ -1648,7 +1648,7 @@ void C4Command::Acquire()
 	// Find available material
 	C4Object *pMaterial=NULL;
 	// Next closest
-	while ((pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,NULL,NULL,NULL,NULL,ANY_OWNER,pMaterial)))
+	while ((pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
 		// Object is not in container to be ignored
 		if (!Target2 || pMaterial->Contained!=Target2)
 			// Object is near enough

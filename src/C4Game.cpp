@@ -1132,10 +1132,6 @@ C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 C4Object* C4Game::FindObject(C4ID id,
                              int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt,
                              DWORD ocf,
-                             const char *szAction, C4Object *pActionTarget,
-                             C4Object *pExclude,
-                             C4Object *pContainer,
-                             int32_t iOwner,
                              C4Object *pFindNext)
 {
 
@@ -1160,8 +1156,6 @@ C4Object* C4Game::FindObject(C4ID id,
 		pFindNext = NULL;
 	}
 
-	bool bFindActIdle = SEqual(szAction, "Idle") || SEqual(szAction, "ActIdle");
-
 	// Scan all objects
 	for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 	{
@@ -1174,45 +1168,32 @@ C4Object* C4Game::FindObject(C4ID id,
 				if ((id==C4ID::None) || (cObj->Def->id==id))
 					// OCF (match any specified)
 					if (cObj->OCF & ocf)
-						// Exclude
-						if (cObj!=pExclude)
-							// Action
-							if (!szAction || !szAction[0]  || (bFindActIdle && !pActionDef) || (pActionDef && SEqual(szAction,pActionDef->GetName())) )
-								// ActionTarget
-								if (!pActionTarget || (pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
-									// Container
-									if ( !pContainer || (cObj->Contained == pContainer))
-										// Owner
-										if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
-											// Area
-										{
-											// Full range
-											if ((iX==0) && (iY==0) && (iWdt==0) && (iHgt==0))
-												return cObj;
-											// Point
-											if ((iWdt==0) && (iHgt==0))
-											{
-												if (Inside<int32_t>(iX-(cObj->GetX()+cObj->Shape.x),0,cObj->Shape.Wdt-1))
-													if (Inside<int32_t>(iY-(cObj->GetY()+cObj->Shape.y),0,cObj->Shape.Hgt-1))
-														return cObj;
-												continue;
-											}
-											// Closest
-											if ((iWdt==-1) && (iHgt==-1))
-											{
-												iDistance = (cObj->GetX()-iX)*(cObj->GetX()-iX)+(cObj->GetY()-iY)*(cObj->GetY()-iY);
-												// same distance?
-												if ((iDistance == iFartherThan) && !pFindNextCpy)
-													return cObj;
-												// nearer than/first closest?
-												if (!pClosest || (iDistance < iClosest))
-													if (iDistance > iFartherThan)
-														{ pClosest=cObj; iClosest=iDistance; }
-											}
-											// Range
-											else if (Inside<int32_t>(cObj->GetX()-iX,0,iWdt-1) && Inside<int32_t>(cObj->GetY()-iY,0,iHgt-1))
-												return cObj;
-										}
+						// Area
+						{
+							// Point
+							if ((iWdt==0) && (iHgt==0))
+							{
+								if (Inside<int32_t>(iX-(cObj->GetX()+cObj->Shape.x),0,cObj->Shape.Wdt-1))
+									if (Inside<int32_t>(iY-(cObj->GetY()+cObj->Shape.y),0,cObj->Shape.Hgt-1))
+										return cObj;
+								continue;
+							}
+							// Closest
+							if ((iWdt==-1) && (iHgt==-1))
+							{
+								iDistance = (cObj->GetX()-iX)*(cObj->GetX()-iX)+(cObj->GetY()-iY)*(cObj->GetY()-iY);
+								// same distance?
+								if ((iDistance == iFartherThan) && !pFindNextCpy)
+									return cObj;
+								// nearer than/first closest?
+								if (!pClosest || (iDistance < iClosest))
+									if (iDistance > iFartherThan)
+										{ pClosest=cObj; iClosest=iDistance; }
+							}
+							// Range
+							else if (Inside<int32_t>(cObj->GetX()-iX,0,iWdt-1) && Inside<int32_t>(cObj->GetY()-iY,0,iHgt-1))
+								return cObj;
+						}
 
 		// Find next mark reached
 		if (cObj == pFindNextCpy) pFindNext = pFindNextCpy = NULL;

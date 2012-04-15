@@ -197,10 +197,6 @@ public:
 	C4Object *FindObject(C4ID id,
 	                     int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
 	                     DWORD ocf=OCF_All,
-	                     const char *szAction=NULL, C4Object *pActionTarget=NULL,
-	                     C4Object *pExclude=NULL,
-	                     C4Object *pContainer=NULL,
-	                     int32_t iOwner=ANY_OWNER,
 	                     C4Object *pFindNext=NULL);
 	C4Object *FindVisObject( // find object in view at pos, regarding parallaxity and visibility (but not distance)
 	  float tx, float ty, int32_t iPlr, const C4Facet &fctViewportGame, const C4Facet &fctViewportGUI,
