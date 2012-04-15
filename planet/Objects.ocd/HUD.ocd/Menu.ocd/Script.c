@@ -140,14 +140,34 @@ public func GetItems()
 */
 public func RemoveItem(object item)
 {
-	for (var mitem in menu_items)
+	var length = GetLength(menu_items);
+	for(var i = 0; i < length; i++)
 	{
-		if (mitem = item)
-			mitem->RemoveObject();	
+		if (menu_items[i])
+		{
+			menu_items[i]->RemoveObject();
+			break;
+		}	
 	}
+	
+	// close gap
+	menu_items = Concatenate(menu_items[0:i],menu_items[i+1:length-1]);
 	UpdateMenu();
 	return;
 }
+
+/** Removes all items from the menu. */
+public func Clear()
+{
+	for (var mitem in menu_items)
+	{
+			mitem->RemoveObject();	
+	}
+	menu_items = [];
+	UpdateMenu();
+	return;
+}
+
 
 /* Callbacks from the menu items, to be forwarded to the commander. */
 
