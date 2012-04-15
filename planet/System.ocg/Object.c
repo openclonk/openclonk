@@ -68,6 +68,12 @@ global func MovePosition(int x, int y, int prec)
 	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }
 
+// Returns the position as an array
+global func GetPosition(int x, int y, int prec)
+{
+	return [GetX(prec), GetY(prec)];
+}
+
 // Speed the calling object into the given direction (angle)
 global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
 {
