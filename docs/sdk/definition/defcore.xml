@@ -141,11 +141,6 @@
           <col>Flame distance to the object's bottom line.</col>
         </row>
         <row>
-          <literal_col>Placement</literal_col>
-          <col>Integer</col>
-          <col>Placement: 0 land surface, 1 in liquid, 2 in mid-air, 3 underground, 4 land surface and underground.</col>
-        </row>
-        <row>
           <literal_col>Exclusive</literal_col>
           <col>Integer</col>
           <col>0 or 1. Determines whether the object blocks objects behind it.</col>

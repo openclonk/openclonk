@@ -2435,7 +2435,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 	}
 
 	// Place by placement type
-	switch (pDef->Placement)
+	switch (pDef->GetPropertyInt(P_Placement))
 	{
 
 		// Surface soil
@@ -2543,7 +2543,7 @@ C4Object* C4Game::PlaceAnimal(C4ID idAnimal)
 	if (!pDef) return NULL;
 	int32_t iX,iY;
 	// Placement
-	switch (pDef->Placement)
+	switch (pDef->GetPropertyInt(P_Placement))
 	{
 		// Running free
 	case C4D_Place_Surface:

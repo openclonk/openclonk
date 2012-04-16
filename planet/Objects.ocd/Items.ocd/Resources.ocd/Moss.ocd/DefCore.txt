@@ -16,4 +16,3 @@ ContactIncinerate=1
 BlastIncinerate=1
 Rotate=1
 Float=1
-Placement=3

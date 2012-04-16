@@ -76,7 +76,6 @@ void C4Def::DefaultDefCore()
 	LineIntersect=0;
 	NoBurnDecay=0;
 	IncompleteActivity=0;
-	Placement=0;
 	AttractLightning=0;
 	Oversize=0;
 	Fragile=0;
@@ -193,7 +192,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(StdNullAdapt(),                "PictureFE"                             ));
 	pComp->Value(mkNamingAdapt(Entrance,                      "Entrance",           Rect0             ));
 	pComp->Value(mkNamingAdapt(Collection,                    "Collection",         Rect0             ));
-	pComp->Value(mkNamingAdapt(Placement,                     "Placement",          0                 ));
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,             "ContactIncinerate",  0                 ));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,               "BlastIncinerate",    0                 ));

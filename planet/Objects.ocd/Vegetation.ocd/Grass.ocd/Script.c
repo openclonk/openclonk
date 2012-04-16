@@ -77,3 +77,4 @@ global func MakeGrasFunction()
 }
 
 local Name = "Grass";
+local Placement = 0;
