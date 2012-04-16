@@ -13,6 +13,8 @@ protected func IsBuilt()
 	return GetCon() >= 100;
 }
 
+public func NoConstructionFlip() { return true; }
+
 local ActMap = {/*
 Idle = {
 	Prototype = Action,

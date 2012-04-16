@@ -2,7 +2,8 @@
 id=SteamEngine
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=ContentsCheck
+Timer=1
+TimerCall=CollectionZone
 Width=66
 Height=48
 Offset=-33,-24
@@ -18,3 +19,4 @@ Exclusive=1
 BlastIncinerate=130
 Construction=1
 ContainBlast=1
+IncompleteActivity=1

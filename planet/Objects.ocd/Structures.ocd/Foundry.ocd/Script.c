@@ -11,11 +11,16 @@
 // does not need power
 func PowerNeed() { return 0; }
 
-public func Construction()
+public func Construction(object creator)
 {
 	
 	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
-	return _inherited(...);
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
 }
 
 /*-- Production --*/
@@ -54,7 +59,16 @@ public func OnProductionFinish(id product)
 	return;
 }	
 
-protected func Collection()
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	for (var object in FindObjects(Find_InRect(16 - 45 * GetDir(),3,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
+func Collection()
 {
 	Sound("Clonk");
 	return;
@@ -64,11 +78,11 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 {
 	//Message(Format("Smelting %d",timer));
 	// Fire in the furnace.
-	CreateParticle("Fire",10,20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
+	CreateParticle("Fire",-10*GetCalcDir(),20,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 
 	// Smoke from the pipes.
-	CreateParticle("ExploSmoke", 9, -31, RandomX(-2,1), -7 + RandomX(-2,2), RandomX(60,125), RGBa(255,255,255,50));
-	CreateParticle("ExploSmoke", 16, -27, RandomX(-1,2), -7 + RandomX(-2,2), RandomX(30,90), RGBa(255,255,255,50));
+	CreateParticle("ExploSmoke", -9*GetCalcDir(), -31, RandomX(-2,1), -7 + RandomX(-2,2), RandomX(60,125), RGBa(255,255,255,50));
+	CreateParticle("ExploSmoke", -16*GetCalcDir(), -27, RandomX(-1,2), -7 + RandomX(-2,2), RandomX(30,90), RGBa(255,255,255,50));
 	
 	// Furnace sound after some time.
 	if (time == 100)
@@ -84,7 +98,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 	// Fire from the pouring exit.
 	if (Inside(time, 244, 290))
-		CreateParticle("Fire",-17,19,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
+		CreateParticle("Fire",17*GetCalcDir(),19,-1 + RandomX(-1,1), 2+ RandomX(-1,1),RandomX(5,15),RGB(255,255,255));
 
 	if (time == 290)
 	{
@@ -98,12 +112,26 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() - 18, GetY() + 16);
+	product->SetPosition(GetX() + 18 * GetCalcDir(), GetY() + 16);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
 	return;
 }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);

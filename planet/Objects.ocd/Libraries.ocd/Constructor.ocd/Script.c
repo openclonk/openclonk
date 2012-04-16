@@ -167,11 +167,18 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	{
 		// CON_Use is accept
 		if (ctrl == CON_Use)
-			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2));
+			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction);
 		// movement is allowed
-		else if(ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+		else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
 			return false;
-		
+		// Flipping
+		else if (ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+		{
+			if (release)
+				effect.preview->Flip();
+			return true;
+		}
+
 		// everything else declines
 		RemoveEffect("ControlConstructionPreview", clonk, effect);
 		return true;
@@ -190,7 +197,7 @@ func FxControlConstructionPreviewStop(object target, effect, int reason, bool te
 
 /* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y)
+func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
@@ -202,6 +209,8 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 		return false;
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
+	// Save direction so the structure can ask for it
+	this.constructionDirection = dir;
 	// Create construction site
 	var site;
 	if (!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
@@ -211,3 +220,8 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y)
 	return true;
 }
 
+// Returns the desired direction for a construction
+func GetConstructionDirection()
+{
+	return this.constructionDirection;
+}

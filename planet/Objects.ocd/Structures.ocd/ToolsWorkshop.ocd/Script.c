@@ -6,14 +6,21 @@
 
 local hold_production;
 
+public func Construction(object creator)
+{
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
+}
+
 public func Initialize()
 {
-	// SetProperty("MeshTransformation", Trans_Rotate(RandomX(-30,30),0,1,0));
 	hold_production = false;
 	return _inherited(...);
 }
-
-
 
 /*-- Production --*/
 
@@ -66,30 +73,30 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if (Random(6)) Smoke(+16,-14,16);
-	if (Random(8)) Smoke(10,-14,15+Random(3));
+	if (Random(6)) Smoke(16 * GetCalcDir(),-14,16);
+	if (Random(8)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
 	return 1;
 }
 
 public func SetSign(id def)
 {
 	if (!def)
-		return SetGraphics("", nil, 1, 4);
-	SetGraphics("", def, 1, 4);
-	SetObjDrawTransform(200, 0, 19500, 0, 200, 2500, 1);
+		return SetGraphics("", nil, GFX_Overlay, 4);
+	SetGraphics("", def, GFX_Overlay, 4);
+	SetObjDrawTransform(200, 0, -19500 * GetCalcDir(), 0, 200, 2500, GFX_Overlay);
 }
 
 local ActMap = {
-	Build = {
+	Default = {
 		Prototype = Action,
-		Name = "Build",
+		Name = "Default",
 		Procedure = DFA_NONE,
-		Length = 40,
-		Delay = 1,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 0,
 		FacetBase=1,
-		NextAction = "Build",
-		//Animation = "Turn",
-		PhaseCall="Smoking",
+		NextAction = "Default",
 	},
 };
 func Definition(def) {

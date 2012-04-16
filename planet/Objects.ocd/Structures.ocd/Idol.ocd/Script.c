@@ -3,3 +3,5 @@
 
 local Name = "$Name$";
 local Touchable = 1;
+
+public func NoConstructionFlip() { return true; }

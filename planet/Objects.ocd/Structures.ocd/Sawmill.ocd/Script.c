@@ -8,11 +8,15 @@
 #include Library_Ownable
 #include Library_Producer
 
-public func Construction()
+public func Construction(object creator)
 {
-	
 	SetProperty("MeshTransformation",Trans_Rotate(-20,0,1,0));
-	return _inherited(...);
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
 }
 
 public func Initialize()
@@ -31,7 +35,7 @@ public func IsContainer() { return false; }
 protected func FindTrees()
 {
 	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
-	if (!tree || GetCon() < 100) return;
+	if (!tree) return;
 	
 	Saw(tree);
 }
@@ -103,6 +107,17 @@ public func OnProductionFinish(id product)
 	}
 }	
 
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	if (!(FrameCounter() % 35)) FindTrees();
+ 
+	for (var object in FindObjects(Find_InRect(- 13 * GetDir(),0,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
 protected func Collection()
 {
 	Sound("Clonk");
@@ -111,16 +126,16 @@ protected func Collection()
 public func FxSawingTimer(object target, proplist effect, int time)
 {
 	if (time >= this.SpinStep * 3 && time % 5)
-		CreateParticle("Axe_WoodChip", 6 - Random(3), RandomX(1,4), 5 + Random(11), -RandomX(2,4), 15+Random(10), RGB(255,255,255), this);
+		CreateParticle("Axe_WoodChip", - 6 * GetCalcDir() - Random(3), RandomX(1,4), -(5 + Random(11)) * GetCalcDir(), -RandomX(2,4), 15+Random(10), RGB(255,255,255), this);
 
 	if (!(time % 20))
-		Smoke(-10,10,10);
+		Smoke(10 * GetCalcDir(),10,10);
 }
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() + 25, GetY() - 8);
-	product->SetSpeed(7, 5);
+	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() - 8);
+	product->SetSpeed(-7 * GetCalcDir(), 5);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
 }
@@ -170,6 +185,20 @@ private func SpinOff(int call, int animation_no)
 
 	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
 }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
