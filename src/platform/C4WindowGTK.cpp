@@ -556,13 +556,15 @@ static gboolean OnScroll(GtkWidget* widget, GdkEventScroll* event, gpointer user
 {
 	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
+	int idy;
+#if GTK_CHECK_VERSION(3,4,0)
 	gdouble dx, dy;
-	short idy;
 	if (gdk_event_get_scroll_deltas((GdkEvent*)event, &dx, &dy))
 	{
-		idy = round(dy);
+		idy = short(round(dy));
 	}
 	else
+#endif
 	{
 		if (event->direction == GDK_SCROLL_UP)
 			idy = 32;
@@ -854,7 +856,10 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
-	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK | GDK_SMOOTH_SCROLL_MASK);
+	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
+#if GTK_CHECK_VERSION(3,4,0)
+	gtk_widget_add_events(GTK_WIDGET(window), GDK_SMOOTH_SCROLL_MASK);
+#endif
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
