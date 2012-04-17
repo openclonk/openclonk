@@ -1,0 +1,3 @@
+TxtTransfer=Baumaterial transferieren
+TxtAbort=Konstruktion abbrechen
+TxtConstruction=Baustelle: %s
