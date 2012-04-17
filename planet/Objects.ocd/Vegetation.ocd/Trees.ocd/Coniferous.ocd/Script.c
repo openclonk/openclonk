@@ -9,12 +9,9 @@ private func SeedAmount() { return 12; }
 func Construction()
 {
 	StartGrowth(5);
-	inherited(...);
-}
-
-private func Initialize()
-{
+	// set random rotation so trees don't look alike too much
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(0,359),0,1,0));
+	inherited(...);
 }
 
 public func IsTree() { return true; }
