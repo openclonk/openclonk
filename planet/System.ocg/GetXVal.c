@@ -28,7 +28,6 @@ global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
 global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
-global func GetDefPlacement()   { return GetDefCoreVal("Placement", "DefCore"); }
 global func GetDefContactIncinerate() { return GetDefCoreVal("ContactIncinerate", "DefCore"); }
 global func GetDefBlastIncinerate() { return GetDefCoreVal("BlastIncinerate", "DefCore"); }
 global func GetDefBurnTo()      { return GetDefCoreVal("BurnTo", "DefCore"); }

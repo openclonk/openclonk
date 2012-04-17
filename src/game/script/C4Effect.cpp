@@ -341,7 +341,7 @@ void C4Effect::Kill(C4Object *pObj)
 	// remove this effect
 	int32_t iPrevPrio = iPriority; SetDead();
 	if (pFnStop)
-		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this))).getInt() == C4Fx_Stop_Deny)
+		if (pFnStop->Exec(CommandTarget, &C4AulParSet(C4VObj(pObj), C4VPropList(this), C4VInt(C4FxCall_Normal))).getInt() == C4Fx_Stop_Deny)
 			// effect denied to be removed: recover
 			iPriority = iPrevPrio;
 	// reactivate other effects

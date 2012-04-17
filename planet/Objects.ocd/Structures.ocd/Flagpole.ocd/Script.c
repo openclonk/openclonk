@@ -19,6 +19,7 @@ protected func Construction()
 	return _inherited(...);
 }
 
+public func NoConstructionFlip() { return true; }
 
 /*-- Interaction --*/
 

@@ -15,21 +15,26 @@ local Description = "$Description$";
 local leftcharge, rightcharge, lastcharge;
 local anim;
 
-func Construction()
+func Construction(object creator)
 {
 	power_seconds = 0;
 	lastcharge = 0;
 	
 	anim = PlayAnimation("Charge", 1, Anim_Const(GetAnimationLength("Charge")), Anim_Const(1000));
-	
-	return _inherited(...);
+
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
 }
 
 func Initialize()
 {
-	leftcharge = CreateObject(Compensator_ChargeShower, -7, 10, NO_OWNER);
+	leftcharge = CreateObject(Compensator_ChargeShower, 7 * GetCalcDir(), 10, NO_OWNER);
 	leftcharge->Init(this);
-	rightcharge = CreateObject(Compensator_ChargeShower, 6, 10, NO_OWNER);
+	rightcharge = CreateObject(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
 	rightcharge->Init(this);
 	return _inherited(...);
 }
@@ -43,8 +48,6 @@ func OnNotEnoughPower()
 	ScheduleCall(this, "UnmakePowerConsumer", 1, 0);
 	return _inherited(...);
 }
-
-func UnmakePowerConsumer(){MakePowerConsumer(0);}
 
 // devour energy
 func OnEnoughPower()
@@ -77,7 +80,7 @@ func FxConsumePowerTimer(target, effect, time)
 	// fully charged?
 	if(power_seconds >= Compensator_max_seconds)
 	{
-		MakePowerConsumer(0);
+		UnmakePowerConsumer();
 		return -1;
 	}	
 	return 1;
@@ -180,9 +183,23 @@ func Incineration()
 		var x = -7 + 14 * i;
 		var b = CreateObject(Compensator_BurningBattery, x, 6, NO_OWNER);
 		b->SetController(GetController()); // killtracing
-		
+
 		b->SetSpeed(-30 + 60 * i + RandomX(-10, 10), RandomX(-50, -30));
 	}
 	
 	Explode(30);
 }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};

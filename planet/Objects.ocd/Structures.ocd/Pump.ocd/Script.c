@@ -12,9 +12,18 @@
 // This object is a liquid pump, thus pipes can be connected.
 public func IsLiquidPump() { return true; }
 
-protected func Initialize()
+public func Construction(object creator)
 {
 	SetAction("Wait");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
+}
+
+protected func Initialize()
+{
 	MakePowerConsumer(100);
 	turned_on = true;
 	return;
@@ -87,6 +96,8 @@ protected func OnPumpStart()
 
 protected func OnWaitStart()
 {
+	if (GetCon() < 100) return;
+
 	if (ReadyToPump())
 		SetAction("Pump");
 	return;
@@ -164,6 +175,8 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 20,
 		Delay = 3,
+		Directions = 2,
+		FlipDir = 1,
 		X = 0,
 		Y = 0,
 		Wdt = 28,
@@ -178,6 +191,8 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 1,
 		Delay = 50,
+		Directions = 2,
+		FlipDir = 1,
 		X = 0,
 		Y = 0,
 		Wdt = 28,

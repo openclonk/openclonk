@@ -529,6 +529,9 @@ bool C4Value::operator == (const C4Value& Value2) const
 	case C4V_Array:
 		return Type == Value2.Type &&
 		       (Data.Array == Value2.Data.Array || *(Data.Array) == *(Value2.Data.Array));
+	case C4V_Function:
+		return Type == Value2.Type &&
+			Data == Value2.Data;
 	default:
 		assert(!"Unexpected C4Value type (denumeration missing?)");
 		return Data == Value2.Data;

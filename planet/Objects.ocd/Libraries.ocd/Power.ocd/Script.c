@@ -10,6 +10,7 @@
 	
 	globals:
 	MakePowerConsumer(int amount)
+		Note: power consumers include the library Library_PowerConsumer and should use UnmakePowerConsumer to turn off as power consumers
 	MakePowerProducer(int amount)
 	IsPowerAvailable(int amount)
 	
@@ -374,6 +375,7 @@ func GetPowerHelperForObject(object who)
 	return helper;
 }
 
+// returns the amount of unavailable power that is currently being request 
 global func GetPendingPowerAmount()
 {
 	if(!this) return 0;
@@ -381,6 +383,8 @@ global func GetPendingPowerAmount()
 	return (Library_Power->GetPowerHelperForObject(this))->GetPendingPowerAmount();
 }
 
+// returns the current power balance of the area an object is in.
+// this is roughly equivalent to produced_power - consumed_power 
 global func GetCurrentPowerBalance()
 {
 	if(!this) return 0;
@@ -388,13 +392,15 @@ global func GetCurrentPowerBalance()
 	return (Library_Power->GetPowerHelperForObject(this))->GetPowerBalance();
 }
 
-global func MakePowerProducer(int amount)
+// turns the object into a power producer that produces /amount/ power until the function is called again with amount = 0
+global func MakePowerProducer(int amount /* the amount of power to produce constantly, 0 to turn off */)
 {
 	if(!this) return false;
 	Library_Power->Init();
 	return (Library_Power->GetPowerHelperForObject(this))->AddPowerProducer(this, amount);
 }
 
+// returns true if the current power balance is bigger or equal amount
 global func IsPowerAvailable(int amount)
 {
 	if(!this) return false;
@@ -402,7 +408,8 @@ global func IsPowerAvailable(int amount)
 	return (Library_Power->GetPowerHelperForObject(this))->IsPowerAvailable(this, amount);
 }
 
-global func MakePowerConsumer(int amount)
+// turns the object into a power consumer
+global func MakePowerConsumer(int amount /* the amount of power to request, 0 to turn off */)
 {
 	if(!this) return false;
 	Library_Power->Init();

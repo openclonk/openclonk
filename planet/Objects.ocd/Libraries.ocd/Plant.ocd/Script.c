@@ -104,6 +104,9 @@ func RestartGrowth(int old_value)
 */
 public func ChopDown()
 {
+	// stop growing!
+	ClearScheduleCall(this, "RestartGrowth");
+	StopGrowth();
 	this.Touchable = 1;
 	SetCategory(GetCategory()&~C4D_StaticBack);
 	if (Stuck())

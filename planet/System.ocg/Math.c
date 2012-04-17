@@ -100,3 +100,10 @@ global func ToggleBit(int old_val, int bit_nr)
 {
 	return old_val ^ (1 << bit_nr);
 }
+
+// Returns -1 for DIR_Left and +1 for DIR_Right or 0 if no object context is present
+global func GetCalcDir()
+{
+	if (!this) return 0;
+	return GetDir() * 2 - 1;
+}

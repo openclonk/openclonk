@@ -16,3 +16,4 @@ Exclusive=1
 BlastIncinerate=100
 Construction=1
 ContainBlast=1
+IncompleteActivity=1

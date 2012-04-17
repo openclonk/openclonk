@@ -74,7 +74,7 @@ public func GetShortDescription(int plr)
 	var wealth = GetWealth(plr);
 	var goal = GetWealthGoal();
 	var clr = RGB(255, 0, 0);
-	if (wealth > goal)
+	if (wealth >= goal)
 		clr = RGB(0, 255, 0);
 	var msg = Format("<c %x>%d</c>{{%i}}", clr, goal, GUI_Wealth);
 	return msg;

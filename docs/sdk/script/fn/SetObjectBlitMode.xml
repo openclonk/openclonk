@@ -54,9 +54,14 @@
           <col>8</col>
           <col>The overlay (owner color) is drawn using additive modulation. This flag might have to be set independently of bit 2.</col>
         </row>
+		<row>
+          <col>GFX_BLIT_Wireframe</col>
+          <col>16</col>
+          <col>Draws the mesh as a wireframe. Only works with meshes!</col>
+        </row>
         <row>
           <col>5-7</col>
-          <col>16, 32, 64</col>
+          <col>32, 64</col>
           <col>reserved</col>
         </row>
         <row>

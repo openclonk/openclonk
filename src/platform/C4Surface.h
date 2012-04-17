@@ -48,9 +48,10 @@ typedef void* IDirect3DSurface9;
 #define C4GFXBLIT_MOD2            2 // additive color modulation
 #define C4GFXBLIT_CLRSFC_OWNCLR   4 // do not apply global modulation to ColorByOwner-surface
 #define C4GFXBLIT_CLRSFC_MOD2     8 // additive color modulation for ClrByOwner-surface
+#define C4GFXBLIT_WIREFRAME      16 // draws a mesh as wireframe
 
-#define C4GFXBLIT_ALL            15 // bist mask covering all blit modes
-#define C4GFXBLIT_NOADD          14 // bit mask covering all blit modes except additive
+#define C4GFXBLIT_ALL            31 // bist mask covering all blit modes
+#define C4GFXBLIT_NOADD          30 // bit mask covering all blit modes except additive
 
 #define C4GFXBLIT_CUSTOM        128 // custom blitting mode - ignored by gfx system
 #define C4GFXBLIT_PARENT        256 // blitting mode inherited by parent - ignored by gfx system

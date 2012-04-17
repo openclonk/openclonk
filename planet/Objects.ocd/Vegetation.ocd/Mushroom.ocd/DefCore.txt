@@ -15,4 +15,3 @@ VertexFriction=10,100
 Mass=6
 StretchGrowth=4
 Oversize=1
-Placement=4

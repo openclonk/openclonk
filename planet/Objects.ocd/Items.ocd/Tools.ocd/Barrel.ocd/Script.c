@@ -10,8 +10,6 @@
 local szLiquid;
 local iVolume;
 
-local debug;
-
 public func GetCarryTransform(clonk)
 {
 	if(GetCarrySpecial(clonk))
@@ -27,7 +25,6 @@ public func GetCarryPhase()
 protected func Initialize()
 {
 	iVolume = 0;
-	debug = 0;
 }
 
 private func Hit()
@@ -63,20 +60,18 @@ private func Check()
 		SetProperty("Value", 10);
 	//if(szLiquid == Oil)	SetProperty("Value", 10 + (iVolume / 15)); //No oil in current build
 	
-	//Debug/Testing Purposes
-	if (debug == 1)
-		Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
+	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
 //over-ridden with metal barrel
 private func FillWithLiquid()
 {
 	var mat = GetMaterial();
-	
+	// Accepts only water.
 	if (mat == Material("Water"))
 	{
 		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("Barrel_Water");
+		UpdateBarrel();
 	}
 }
 
@@ -103,13 +98,16 @@ private func EmptyBarrel(int iAngle, int iStrength)
 		iStrength = 30;
 	CastPXS(szLiquid, iVolume, iStrength, 0, 0, iAngle, 30);
 	iVolume = 0;
-	OriginalTex();
+	UpdateBarrel();
 }
 
-//over-ridden with metal barrel
-private func OriginalTex()
+private func UpdateBarrel()
 {
-	SetMeshMaterial("Barrel");
+	if (iVolume == 0)
+		SetMeshMaterial("Barrel");
+	else
+		SetMeshMaterial("Barrel_Water");
+	return;
 }
 
 public func ControlUse(object clonk, int iX, int iY)
@@ -127,13 +125,6 @@ public func ControlUse(object clonk, int iX, int iY)
 }
 
 public func IsToolProduct() { return true; }
-
-public func Definition(proplist def)
-{
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
-}
-
-
 
 public func BarrelMaxFillLevel()
 {
@@ -191,6 +182,7 @@ public func GetLiquid(string sznMaterial, int inMaxAmount, object pnTarget)
 		inMaxAmount = 0;
 	inMaxAmount = Min(inMaxAmount, iVolume);
 	iVolume -= inMaxAmount;
+	UpdateBarrel();
 	return [szLiquid, inMaxAmount];
 }
 
@@ -205,13 +197,19 @@ public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
 {
 	//Wrong material?
 	if (sznMaterial != szLiquid)
-		if (iVolume>0)
+		if (iVolume > 0)
 			return 0;
 		else if (IsBarrelForMaterial(sznMaterial))
 			szLiquid=sznMaterial;
 	inMaxAmount = BoundBy(BarrelMaxFillLevel() - iVolume, 0, inMaxAmount);
 	iVolume += inMaxAmount;
+	UpdateBarrel();
 	return inMaxAmount;
+}
+
+public func Definition(proplist def)
+{
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
 }
 
 local Collectible = false;

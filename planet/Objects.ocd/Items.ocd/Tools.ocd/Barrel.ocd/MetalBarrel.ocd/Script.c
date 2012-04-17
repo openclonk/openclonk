@@ -7,18 +7,6 @@
 
 #include Barrel
 
-local szLiquid;
-local iVolume;
-
-local debug;
-
-
-protected func Initialize()
-{
-	iVolume = 0;
-	debug = 0;
-}
-
 private func Hit()
 {
 	Sound("DullMetalHit?");
@@ -34,39 +22,31 @@ private func Hit()
 private func FillWithLiquid()
 {
 	var mat = GetMaterial();
-	
-	if (mat == Material("Water"))
+	// Accept water, acid, lava and oil.
+	if (mat == Material("Water") || mat == Material("Acid") || mat == Material("Lava") || mat == Material("DuroLava") || mat == Material("Oil"))
 	{
 		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("MB_Water");
-		return 1;
+		UpdateBarrel();
 	}
-	
-	if (mat == Material("Acid"))
-	{
-		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("MB_Acid");
-		return 1;
-	}
-	
-	if (mat == Material("Lava") || mat == Material("DuroLava"))
-	{
-		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("MB_Lava");
-		return 1;
-	}
-	
-	if (mat == Material("Oil"))
-	{
-		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("MB_Oil");
-		return 1;
-	}
+	return;	
 }
 
-private func OriginalTex()
+private func UpdateBarrel()
 {
-	SetMeshMaterial("MetalBarrel");
+	if (iVolume == 0)
+		SetMeshMaterial("MetalBarrel");
+	else
+	{
+		if (szLiquid == "Water")
+			SetMeshMaterial("MB_Water");
+		if (szLiquid == "Acid")
+			SetMeshMaterial("MB_Acid");
+		if (szLiquid == "Lava" || szLiquid == "DuroLava")
+			SetMeshMaterial("MB_Lava");
+		if (szLiquid == "Water")
+			SetMeshMaterial("MB_Oil");	
+	}
+	return;
 }
 
 public func IsBarrelForMaterial(string sznMaterial)
