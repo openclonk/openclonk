@@ -11,6 +11,5 @@ VertexY=-7,7
 VertexCNAT=4,3
 VertexFriction=10,100
 Mass=1
-Placement=1
 StretchGrowth=4
 Oversize=1

@@ -7,7 +7,7 @@ MaxPlayer=50
 NoInitialize=true
 
 [Game]
-Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1
+Rules=Rule_TeamAccount=1
 
 [Player1]
 Wealth=0

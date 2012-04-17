@@ -8,18 +8,35 @@ static const SteamEngine_produced_power = 300;
 local iFuelAmount;
 local power_seconds;
 
-func Construction()
+func Construction(object creator)
 {
 	iFuelAmount = 0;
 	power_seconds = 0;
-	return _inherited(...);
+
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
 }
 
 public func IsContainer() { return true; }
 
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	if (!(FrameCounter() % 35)) ContentsCheck();
+ 
+	for (var object in FindObjects(Find_InRect(- 31 + 52 * GetDir(),9,10,10), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
 protected func RejectEntrance(object obj)
 {
-	if (obj->~IsFuel()) 
+	if (obj->~IsFuel())
 		return false;
 	return true;
 }
@@ -41,7 +58,7 @@ func ContentsCheck()
 	}
 	
 	// Still active?
-	if(!ActIdle()) return true;
+	if(GetAction() == "Work") return true;
 	// or still warm water in the tank?!
 	if(GetEffect("CreatesPower", this))
 		return true;
@@ -79,7 +96,7 @@ func ConsumeFuel()
 	// All used up?
 	if(!iFuelAmount || ((GetPendingPowerAmount() == 0) && (GetCurrentPowerBalance() >= SteamEngine_produced_power)))
 	{
-		SetAction("Idle");
+		SetAction("Default");
 		ContentsCheck();
 	}
 }
@@ -111,23 +128,35 @@ func FxCreatesPowerStop(target, effect, reason, temp)
 
 func FxSmokingTimer()
 {
-	Smoke(20, -15, 10);
+	Smoke(-20 * GetCalcDir(), -15, 10);
 	return 1;
 }
 
 local ActMap = {
-Work = {
-	Prototype = Action,
-	Name = "Work",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 20,
-	Delay = 2,
-	NextAction = "Work",
-	Animation = "Work",
-	EndCall = "ConsumeFuel",
-},
+	Default = {
+		Prototype = Action,
+		Name = "Default",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 0,
+		FacetBase=1,
+		NextAction = "Default",
+	},
+	Work = {
+		Prototype = Action,
+		Name = "Work",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 20,
+		Delay = 2,
+		FacetBase = 1,
+		NextAction = "Work",
+		Animation = "Work",
+		EndCall = "ConsumeFuel",
+	},
 };
 
 func Definition(def) {

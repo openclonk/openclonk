@@ -13,24 +13,26 @@
 local wind_anim;
 local last_wind;
 
-protected func Construction()
+protected func Construction(object creator)
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-30,0,1,0));
-	return _inherited(...);
+	SetAction("Default");
+	if (!creator) return;
+	var dir = creator->~GetConstructionDirection();
+	if (dir)
+		SetDir(dir);
+	return _inherited(creator, ...);
 }
 
 protected func Initialize()
 {
 	// Set initial position
 	wind_anim = PlayAnimation("Spin", 5, Anim_Const(0), Anim_Const(1000));
-	Wind2Turn();
 	return _inherited(...);
 }
 
 func Wind2Turn()
-{
-	if(GetCon()  < 100) return;
-	
+{	
 	// Fade linearly in time until next timer call
 	var start = 0;
 	var end = GetAnimationLength("Spin");
@@ -108,6 +110,17 @@ public func OnProductionFinish(id product)
 	return;
 }	
 
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	if (!(FrameCounter() % 35)) Wind2Turn();
+
+	for (var object in FindObjects(Find_InRect(-18 + 21 * GetDir(),35,15,15), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
 protected func Collection()
 {
 	Sound("Clonk");
@@ -116,13 +129,13 @@ protected func Collection()
 
 public func FxCrushingTimer(object target, proplist effect, int time)
 {
-	CreateParticle("Axe_WoodChip", -12, 40, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
+	CreateParticle("Axe_WoodChip", 12 * GetCalcDir(), 40, -(5 - Random(11)) * GetCalcDir(), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
 	return 1;
 }
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() + 25, GetY() + 40);
+	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() + 40);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
@@ -137,6 +150,20 @@ protected func RejectCollect(id item, object collect)
 }
 
 func IsInteractable() { return true; }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);

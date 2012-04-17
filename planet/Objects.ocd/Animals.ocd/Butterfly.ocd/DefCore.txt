@@ -14,7 +14,6 @@ VertexX=0,0,-3,3
 VertexY=-2,2,0,0
 VertexCNAT=4,8,1,2
 VertexFriction=100,100,100,100,100,100
-Placement=2
 ContactIncinerate=0
 Float=1
 BorderBound=7

@@ -7,7 +7,7 @@ MaxPlayer=30
 NoInitialize=true
 
 [Game]
-Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;Rule_BuyAtFlagpole=1
+Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1
 ValueOverloads=Nugget=10;GoldBar=50;
 
 [Player1]

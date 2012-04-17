@@ -51,7 +51,11 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if (!clonk->IsWalking() && !clonk->IsJumping())
 		return true;
 
-	tree = FindObject(Find_AtPoint(0,0), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
+	if(Distance(0,0,iX,iY) < 35)
+		tree = FindObject(Find_AtPoint(iX,iY), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
+	
+	if(!tree)
+		tree = FindObject(Find_AtPoint(0,0), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
 
 	// Chopping
 	if(tree && clonk->IsWalking())
@@ -126,17 +130,17 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		if(!GetEffect("AxeStrikeStop", clonk, 0))
 			AddEffect("AxeStrikeStop", clonk, 2, 50, this);
 	}
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	{
+		arm = "L";
+		carry_bone = "pos_hand1";
+		animation  = Format("SwordSlash%d.%s", rand, arm);
+	}
 	if(clonk->IsJumping())
 	{
 		rand = 1;
 		if(clonk->GetYDir() < -5) rand = 2;
 		animation = Format("SwordJump%d.%s",rand,arm);
-	}
-
-	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
-	{
-		arm = "L";
-		carry_bone = "pos_hand1";
 	}
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));

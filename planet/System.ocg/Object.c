@@ -150,7 +150,10 @@ global func GetMaxBreath()
 // Makes an object gain Con until it is FullCon
 global func StartGrowth(int value)
 {
-	return AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+	var effect;
+	effect = AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+	effect.Time = Random(35);
+	return effect;
 }
 
 global func StopGrowth()

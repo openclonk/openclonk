@@ -69,7 +69,6 @@
 #define C4ViewportClassName L"C4Viewport"
 #define C4FullScreenClassName L"C4FullScreen"
 #define ConsoleDlgClassName L"C4GUIdlg"
-#define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -392,7 +391,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	// Determine dialog
-	Dialog *pDlg = ::pGUI->GetDialog(hwnd);
+	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(hwnd);
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
@@ -554,13 +553,13 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 			WndClass.lpfnWndProc   = DialogWinProc;
 			WndClass.cbClsExtra    = 0;
 			WndClass.cbWndExtra    = 0;
-			WndClass.hInstance     = hInst;
+			WndClass.hInstance     = pApp->GetInstance();
 			WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
 			WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
 			WndClass.lpszMenuName  = NULL;
 			WndClass.lpszClassName = ConsoleDlgClassName;
-			WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-			WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
+			WndClass.hIcon         = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
+			WndClass.hIconSm       = LoadIcon (pApp->GetInstance(), MAKEINTRESOURCE (IDI_00_C4X) );
 			if (!RegisterClassExW(&WndClass))
 				return NULL;
 		}
@@ -580,7 +579,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 		            ConsoleDlgClassName, GetWideChar(Title),
 		            ConsoleDlgWindowStyle,
 		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
-		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+					::Console.hWindow,NULL,pApp->GetInstance(),NULL);
 		hRenderWindow = hWindow;
 		return hWindow ? this : 0;
 	}

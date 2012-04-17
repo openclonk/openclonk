@@ -51,3 +51,4 @@ public func NutritionalValue() { return 5; }
 
 local Name = "$Name$";
 local Collectible = 0;
+local Placement = 4;

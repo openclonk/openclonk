@@ -394,6 +394,7 @@ static C4ScriptOpDef C4ScriptOpMap[] =
 	{ 6, "|",   AB_BitOr,           AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 5, "&&",  AB_JUMPAND,         AB_ERR,  1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
 	{ 4, "||",  AB_JUMPOR,          AB_ERR,  1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
+	{ 3, "??",  AB_JUMPNNIL,        AB_ERR,  1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
 	
 	// changers
 	{ 2, "*=",  AB_Mul,             AB_ERR,  1, 1, 0, C4V_Int,  C4V_Int,    C4V_Int},
@@ -670,6 +671,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_JUMP: return "JUMP";    // jump
 	case AB_JUMPAND: return "JUMPAND";
 	case AB_JUMPOR: return "JUMPOR";
+	case AB_JUMPNNIL: return "JUMPNNIL"; // nil-coalescing operator ("??")
 	case AB_CONDN: return "CONDN";    // conditional jump (negated, pops stack)
 	case AB_COND: return "COND";    // conditional jump (pops stack)
 	case AB_FOREACH_NEXT: return "FOREACH_NEXT"; // foreach: next element
@@ -828,10 +830,11 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_COND:
 	case AB_POP_TO:
 	case AB_RETURN:
-		// JUMPAND/JUMPOR are special: They either jump over instructions adding one to the stack
+		// JUMPAND/JUMPOR/JUMPNNIL are special: They either jump over instructions adding one to the stack
 		// or decrement the stack. Thus, for stack counting purposes, they decrement.
 	case AB_JUMPAND:
 	case AB_JUMPOR:
+	case AB_JUMPNNIL:
 		return -1;
 
 	case AB_FUNC:
@@ -1083,7 +1086,7 @@ int C4AulParse::JumpHere()
 
 static bool IsJump(C4AulBCCType t)
 {
-	return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_CONDN || t == AB_COND;
+	return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_JUMPNNIL || t == AB_CONDN || t == AB_COND;
 }
 
 void C4AulParse::SetJumpHere(int iJumpOp)
@@ -2435,7 +2438,7 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 			}
 			Shift();
 
-			if (C4ScriptOpMap[OpID].Code == AB_JUMPAND || C4ScriptOpMap[OpID].Code == AB_JUMPOR)
+			if (C4ScriptOpMap[OpID].Code == AB_JUMPAND || C4ScriptOpMap[OpID].Code == AB_JUMPOR || C4ScriptOpMap[OpID].Code == AB_JUMPNNIL)
 			{
 				// create bytecode, remember position
 				// Jump or discard first parameter
@@ -2966,7 +2969,7 @@ bool C4ScriptHost::Parse()
 			{
 				switch (pBCC->bccType)
 				{
-				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_CONDN: case AB_COND:
+				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
 					labels[pBCC + pBCC->Par.i] = ++labeln; break;
 				default: break;
 				}
@@ -2992,7 +2995,7 @@ bool C4ScriptHost::Parse()
 					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
 				case AB_CARRAY: case AB_CPROPLIST:
 					fprintf(stderr, "\t%p\n", reinterpret_cast<void *>(pBCC->Par.X)); break;
-				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_CONDN: case AB_COND:
+				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
 					fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
 				default:
 					fprintf(stderr, "\t%d\n", pBCC->Par.i); break;

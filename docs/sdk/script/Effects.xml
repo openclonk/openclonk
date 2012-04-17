@@ -505,26 +505,32 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <text>
         <table>
           <rowh>
+            <col>Script constant</col>
             <col>reason</col>
             <col>Meaning</col>
           </rowh>
           <row>
+            <col>FX_Call_Normal</col>
             <col>0</col>
             <col>Normal removal</col>
           </row>
           <row>
+            <col>FX_Call_Temp</col>
             <col>1</col>
             <col>Temporary removal (temporary is 1).</col>
           </row>
           <row>
+            <col>FX_Call_TempAddForRemoval</col>
             <col>2</col>
             <col>Not used</col>
           </row>
           <row>
+            <col>FX_Call_RemoveClear</col>
             <col>3</col>
             <col>The target object has been deleted</col>
           </row>
           <row>
+            <col>FX_Call_RemoveDeath</col>
             <col>4</col>
             <col>The target object has died</col>
           </row>
