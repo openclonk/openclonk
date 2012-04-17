@@ -549,6 +549,10 @@ public func OnItemSelection(object menu, object item)
 	var p_source_menu = circ_menus[index];
 	var p_target_menu = GetNextMenu(index, false);
 
+	// safety
+	if(!p_target_menu)
+		return false;
+
 	var amount = 1;
 	MoveObjects(p_source_menu, p_target_menu, item, amount);
 	return true;
@@ -563,6 +567,10 @@ public func OnItemSelectionAlt(object menu, object item)
 	// Find this and next menu.
 	var p_source_menu = circ_menus[index];
 	var p_target_menu = GetNextMenu(index, true);
+
+	// safety.
+	if(!p_target_menu)
+		return false;
 
 	var amount = 1;
 	MoveObjects(p_source_menu, p_target_menu, item, amount);
