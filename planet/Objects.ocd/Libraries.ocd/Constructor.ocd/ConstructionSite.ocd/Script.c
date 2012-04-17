@@ -6,14 +6,15 @@
 */
 
 local definition;
+local direction;
 local full_material; // true when all needed material is in the site
 
-public func IsContainer()		{ return true; }
+public func IsContainer()		{ return !full_material; }
 // disallow taking stuff out
 public func RefuseTransfer(object toMove) { return true; }
 
 // we have 2 interaction modes
-public func IsInteractable(object obj)	{ return definition != nil; }
+public func IsInteractable(object obj)	{ return definition != nil && !full_material; }
 public func GetInteractionCount() { return 2; }
 public func GetInteractionMetaInfo(object obj, int num)
 {
@@ -32,16 +33,19 @@ public func Construction()
 	return true;
 }
 
-public func Set(id def)
+public func Set(id def, int dir)
 {
 	definition = def;
+	direction = dir;
+	
+	var xw = (1-dir*2)*1000;
 	
 	var w,h;
 	w = def->GetDefWidth();
 	h = def->GetDefHeight();
 	
-	SetGraphics(nil, def, 1, GFXOV_MODE_Base, nil, 1);
-	SetObjDrawTransform(1000,0,0,0,1000, -h*500,1);
+	SetGraphics(nil, def, 1, GFXOV_MODE_Base);
+	SetObjDrawTransform(xw,0,0,0,1000, -h*500,1);
 	SetShape(-w/2, -h, w, h);
 	
 	SetName(Format("Construction Site: %s",def->GetName()));
@@ -157,9 +161,12 @@ private func StartConstructing()
 	if(!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, 1, 1)))
 	{
 		Log("Can't build here anymore");
-		Interact();
+		Interact(nil, 1);
 		return;
 	}
+	
+	if(direction)
+		site->SetDir(direction);
 	
 	// Autoconstruct 2.0!
 	Schedule(site, "DoCon(2)",1,50);

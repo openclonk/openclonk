@@ -234,7 +234,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
-	site->Set(structure_id);
+	site->Set(structure_id, dir);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	
