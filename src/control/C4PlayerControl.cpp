@@ -399,6 +399,24 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 	       && iPriority == cmp.iPriority;
 }
 
+StdStrBuf C4PlayerControlAssignment::GetKeysAsString(bool human_readable, bool short_name) const
+{
+	// create a short, human-readable string of the assigned key
+	// to be displayed e.g. in tutorial messages explaining controls
+	StdStrBuf result;
+	if (!KeyCombo.size()) return result;
+	// trigger key
+	KeyComboVec::const_iterator i=KeyCombo.begin();
+	result.Take(i->Key.ToString(human_readable, short_name));
+	// extra keys of combo
+	while (++i != KeyCombo.end())
+	{
+		result.AppendChar(fComboIsSequence ? ',' : '+');
+		result.Append(i->Key.ToString(human_readable, short_name));
+	}
+	return result;
+}
+
 
 /* C4PlayerControlAssignmentSet */
 

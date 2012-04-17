@@ -217,6 +217,7 @@ public:
 	bool IsOverrideAssignments() const { return fOverrideAssignments; }
 	bool IsInherited() const { return is_inherited; }
 	const C4PlayerControlAssignment *GetInheritedAssignment() const { return inherited_assignment; }
+	StdStrBuf GetKeysAsString(bool human_readable, bool short_name) const;
 };
 
 typedef std::vector<C4PlayerControlAssignment> C4PlayerControlAssignmentVec;

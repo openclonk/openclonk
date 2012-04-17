@@ -2374,6 +2374,20 @@ static bool FnGetPlayerControlEnabled(C4AulContext *ctx, long iplr, long ctrl)
 	return !plrctrl->IsControlDisabled(ctrl);
 }
 
+static C4String *FnGetPlayerControlAssignment(C4AulContext *cthr, long player, long control, bool human_readable, bool short_name)
+{
+	// WARNING: As many functions returning strings, the result is not sync safe!
+	// "" is returned for invalid controls to make the obvious if(GetPlayerControlAssignmentName(...)) not cause a sync loss
+	// get desired assignment from parameters
+	C4Player *plr = ::Players.Get(player);
+	if (!plr) return NULL; // invalid player
+	if (!plr->ControlSet) return String(""); // player has no control (remote player)
+	C4PlayerControlAssignment *assignment = plr->ControlSet->GetAssignmentByControl(control);
+	if (!assignment) return String("");
+	// get assignment as readable string
+	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2537,6 +2551,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
+	AddFunc(pEngine, "GetPlayerControlAssignment", FnGetPlayerControlAssignment);
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);

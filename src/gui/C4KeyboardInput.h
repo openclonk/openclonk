@@ -200,7 +200,7 @@ struct C4KeyCodeEx
 	static C4KeyShiftState String2KeyShift(const StdStrBuf &sName);
 	static C4KeyCode String2KeyCode(const StdStrBuf &sName);
 	static StdStrBuf KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool fShort);
-	StdStrBuf ToString(bool fHumanReadable, bool fShort);
+	StdStrBuf ToString(bool fHumanReadable, bool fShort) const;
 	static StdStrBuf KeyShift2String(C4KeyShiftState eShift);
 
 	// comparison operator for map access
