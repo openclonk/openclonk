@@ -59,11 +59,7 @@ bool C4Viewport::UpdateOutputSize()
 
 #ifdef WITH_DEVELOPER_MODE
 	GtkAllocation allocation;
-#if GTK_CHECK_VERSION(2,18,0)
 	gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
-#else
-	allocation = GTK_WIDGET(pWindow->render_widget)->allocation;
-#endif
 
 	// Use only size of drawing area without scrollbars
 	rect.x = allocation.x;

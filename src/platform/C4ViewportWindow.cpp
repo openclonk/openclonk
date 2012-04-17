@@ -140,15 +140,10 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	if (PlayerLock) return false;
 	
 	GtkAllocation allocation;
-#if GTK_CHECK_VERSION(2,18,0)
 	gtk_widget_get_allocation(GTK_WIDGET(pWindow->render_widget), &allocation);
-#else
-	allocation = GTK_WIDGET(pWindow->render_widget)->allocation;
-#endif
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 
-#if GTK_CHECK_VERSION(2,14,0)
 	gtk_adjustment_configure(adjustment,
 	                         ViewX, // value
 	                         0, // lower
@@ -157,18 +152,8 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	                         allocation.width / Zoom, // page_increment
 	                         allocation.width / Zoom // page_size
 	                         );
-#else
-	adjustment->value = ViewX;
-	adjustment->lower = 0;
-	adjustment->upper = GBackWdt;
-	adjustment->step_increment = ViewportScrollSpeed;
-	adjustment->page_increment = allocation.width;
-	adjustment->page_size = allocation.width;
-	gtk_adjustment_changed(adjustment);
-#endif
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
-#if GTK_CHECK_VERSION(2,14,0)
 	gtk_adjustment_configure(adjustment,
 	                         ViewY, // value
 	                         0, // lower
@@ -177,15 +162,6 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	                         allocation.height / Zoom, // page_increment
 	                         allocation.height / Zoom // page_size
 	                         );
-#else	
-	adjustment->lower = 0;
-	adjustment->upper = GBackHgt;
-	adjustment->step_increment = ViewportScrollSpeed;
-	adjustment->page_increment = allocation.height;
-	adjustment->page_size = allocation.height;
-	adjustment->value = ViewY;
-	gtk_adjustment_changed(adjustment);
-#endif
 	return true;
 }
 

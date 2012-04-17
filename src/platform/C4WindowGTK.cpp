@@ -885,11 +885,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	SetTitle(Title);
 
-#if GTK_CHECK_VERSION(2,14,0)
 	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
-#else
-	GdkWindow* window_wnd = GTK_WIDGET(window)->window;
-#endif
 
 	// Wait until window is mapped to get the window's XID
 	gtk_widget_show_now(GTK_WIDGET(window));
@@ -897,21 +893,13 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	if (GTK_IS_LAYOUT(render_widget))
 	{
-#if GTK_CHECK_VERSION(2,14,0)
 		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
-#else
-		GdkWindow* bin_wnd = GTK_LAYOUT(render_widget)->bin_window;
-#endif
 
 		renderwnd = GDK_WINDOW_XID(bin_wnd);
 	}
 	else
 	{
-#if GTK_CHECK_VERSION(2,14,0)
 		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
-#else
-		GdkWindow* render_wnd = GTK_WIDGET(render_widget)->window;
-#endif
 
 		renderwnd = GDK_WINDOW_XID(render_wnd);
 	}
@@ -1009,7 +997,6 @@ void C4Window::RequestUpdate()
 bool OpenURL(const char *szURL)
 {
 	GError *error = 0;
-#if GTK_CHECK_VERSION(2,14,0)
 	if (gtk_show_uri(NULL, szURL, GDK_CURRENT_TIME, &error))
 		return true;
 	if (error != NULL)
@@ -1017,7 +1004,6 @@ bool OpenURL(const char *szURL)
 		fprintf (stderr, "Unable to open URL: %s\n", error->message);
 		g_error_free (error);
 	}
-#endif
 	const char * argv[][3] =
 	{
 		{ "xdg-open", szURL, 0 },

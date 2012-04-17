@@ -588,11 +588,7 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 	else
 		gdkcursor = NULL;
 
-#if GTK_CHECK_VERSION(2,14,0)
 	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
-#else
-	GdkWindow* window_wnd = GTK_WIDGET(window)->window;
-#endif
 
 	gdk_window_set_cursor(window_wnd, gdkcursor);
 	gdk_display_flush(display);
@@ -990,11 +986,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 {
 	if (!state->propertydlg) return;
 	if (!C4DevmodeDlg::GetWindow()) return;
-#if GTK_CHECK_VERSION(2,18,0)
 	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#else
-	if (!GTK_WIDGET_VISIBLE(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#endif
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
 	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
 
@@ -1311,11 +1303,7 @@ void C4ToolsDlg::State::UpdatePreview()
 			}
 		}
 	}
-#if GTK_CHECK_VERSION(2,18,0)
 	if (gtk_widget_is_sensitive(preview))
-#else
-	if (GTK_WIDGET_SENSITIVE(preview))
-#endif
 		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              dlg->Grade,
