@@ -321,7 +321,7 @@ static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer
 	return false;
 }
 
-static gboolean OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
+static gboolean OnScrollVW(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
@@ -552,22 +552,29 @@ static gboolean OnMotionNotify(GtkWidget* widget, GdkEventMotion* event, gpointe
 	return true;
 }
 
-static gboolean OnScrollGD(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
+static gboolean OnScroll(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
 {
 	C4GUI::DialogWindow * window = static_cast<C4GUI::DialogWindow*>(user_data);
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(window);
-	if (!pDlg) return false;
-	switch (event->direction)
+	gdouble dx, dy;
+	short idy;
+	if (gdk_event_get_scroll_deltas((GdkEvent*)event, &dx, &dy))
 	{
-	case GDK_SCROLL_UP:
-		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (short(32) << 16), pDlg, NULL);
-		return true;
-	case GDK_SCROLL_DOWN:
-		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (short(-32) << 16), pDlg, NULL);
-		return true;
-	default:
-		return false;
+		idy = round(dy);
 	}
+	else
+	{
+		if (event->direction == GDK_SCROLL_UP)
+			idy = 32;
+		if (event->direction == GDK_SCROLL_DOWN)
+			idy = -32;
+	}
+	// FIXME: make the GUI api less insane here
+	if (pDlg)
+		::pGUI->MouseInput(C4MC_Button_Wheel, event->x, event->y, event->state + (idy << 16), pDlg, NULL);
+	else
+		C4GUI::MouseMove(C4MC_Button_Wheel, event->x, event->y, event->state + (idy << 16), NULL);
+	return true;
 }
 
 static gboolean OnButtonPressGD(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
@@ -771,7 +778,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(render_widget), "expose-event", G_CALLBACK(OnExposeStatic), this);
 	#endif
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPressStatic), this);
-		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollStatic), this);
+		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollVW), this);
 		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPressStatic), this);
 		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonReleaseStatic), this);
 		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotifyStatic), this);
@@ -804,6 +811,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotify), this);
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPress), this);
 		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyRelease), this);
+		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScroll), this);
 		gtk_widget_add_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 
@@ -824,7 +832,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonReleaseGD), this);
 		g_signal_connect(G_OBJECT(window), "motion-notify-event", G_CALLBACK(OnMotionNotifyGD), this);
 		g_signal_connect(G_OBJECT(window), "configure-event", G_CALLBACK(OnConfigureGD), this);
-		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollGD), this);
+		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScroll), this);
 
 		gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(Console.window));
 #if GTK_CHECK_VERSION(3,0,0)
@@ -846,7 +854,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
-	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
+	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK | GDK_SMOOTH_SCROLL_MASK);
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, ((XVisualInfo*)Info)->visualid);
