@@ -45,7 +45,10 @@ public func Set(id def, int dir)
 	h = def->GetDefHeight();
 	
 	SetGraphics(nil, def, 1, GFXOV_MODE_Base);
+	SetClrModulation(RGBa(255,255,255,80), 1);
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,1);
+	SetGraphics(nil, def, 2, GFXOV_MODE_Base, nil, GFX_BLIT_Wireframe);
+	SetObjDrawTransform(xw,0,0,0,1000, -h*500,2);
 	SetShape(-w/2, -h, w, h);
 	
 	SetName(Format("Construction Site: %s",def->GetName()));
