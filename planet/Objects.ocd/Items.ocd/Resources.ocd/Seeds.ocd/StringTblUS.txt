@@ -1,4 +1,4 @@
 Name=Seeds
 Description=Seeds for planting wheat.
-UageHelp=Press [Use] to plant wheat here.
+UsageHelp=Press [Use] to plant wheat here.
 NoSuitableGround=Ground not suitable|for planting!
