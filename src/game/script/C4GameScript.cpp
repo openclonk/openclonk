@@ -555,17 +555,17 @@ static long FnMaterial(C4AulContext *cthr, C4String *mat_name)
 	return ::MaterialMap.Get(FnStringPar(mat_name));
 }
 
-C4Object* FnPlaceVegetation(C4AulContext *cthr, C4ID id, long iX, long iY, long iWdt, long iHgt, long iGrowth)
+C4Object* FnPlaceVegetation(C4AulContext *cthr, C4PropList * Def, long iX, long iY, long iWdt, long iHgt, long iGrowth)
 {
 	// Local call: relative coordinates
 	if (cthr->Obj) { iX+=cthr->Obj->GetX(); iY+=cthr->Obj->GetY(); }
 	// Place vegetation
-	return Game.PlaceVegetation(id,iX,iY,iWdt,iHgt,iGrowth);
+	return Game.PlaceVegetation(Def,iX,iY,iWdt,iHgt,iGrowth);
 }
 
-C4Object* FnPlaceAnimal(C4AulContext *cthr, C4ID id)
+C4Object* FnPlaceAnimal(C4AulContext *cthr, C4PropList * Def)
 {
-	return Game.PlaceAnimal(id);
+	return Game.PlaceAnimal(Def? Def : cthr->Def);
 }
 
 static bool FnHostile(C4AulContext *cthr, long iPlr1, long iPlr2, bool fCheckOneWayOnly)

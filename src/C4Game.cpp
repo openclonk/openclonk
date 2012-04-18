@@ -2401,13 +2401,13 @@ bool C4Game::PlaceInEarth(C4ID id)
 	return false;
 }
 
-C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth)
+C4Object* C4Game::PlaceVegetation(C4PropList * PropList, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth)
 {
 	int32_t cnt,iTx,iTy,iMaterial;
 
 	// Get definition
-	C4Def *pDef;
-	if (!(pDef=C4Id2Def(id))) return NULL;
+	C4Def* pDef;
+	if (!PropList || !(pDef = PropList->GetDef())) return NULL;
 
 	// No growth specified: full growth
 	if (iGrowth<=0)
@@ -2416,7 +2416,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 	}
 
 	// Place by placement type
-	switch (pDef->GetPropertyInt(P_Placement))
+	switch (PropList->GetPropertyInt(P_Placement))
 	{
 
 		// Surface soil
@@ -2445,7 +2445,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
 					iTy+=5;
-					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+					return CreateObjectConstruction(PropList,NULL,NO_OWNER,iTx,iTy,iGrowth);
 				}
 		}
 		break;
@@ -2462,7 +2462,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 		if (!SemiAboveSolid(iTx,iTy)) return NULL;
 		iTy+=3;
 		// Create object
-		return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+		return CreateObjectConstruction(PropList,NULL,NO_OWNER,iTx,iTy,iGrowth);
 		break;
 
 		// Underground/Tunnel
@@ -2483,7 +2483,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 				{
 					// Create object
 					iTy+=5;
-					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+					return CreateObjectConstruction(PropList,NULL,NO_OWNER,iTx,iTy,iGrowth);
 				}
 		}
 
@@ -2508,7 +2508,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 				{
 					iTy+=5;
-					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
+					return CreateObjectConstruction(PropList,NULL,NO_OWNER,iTx,iTy,iGrowth);
 				}
 		}
 
@@ -2518,13 +2518,13 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 	return NULL;
 }
 
-C4Object* C4Game::PlaceAnimal(C4ID idAnimal)
+C4Object* C4Game::PlaceAnimal(C4PropList* PropList)
 {
-	C4Def *pDef=C4Id2Def(idAnimal);
-	if (!pDef) return NULL;
+	C4Def * pDef;
+	if (!PropList || !(pDef = PropList->GetDef())) return NULL;
 	int32_t iX,iY;
 	// Placement
-	switch (pDef->GetPropertyInt(P_Placement))
+	switch (PropList->GetPropertyInt(P_Placement))
 	{
 		// Running free
 	case C4D_Place_Surface:
@@ -2550,7 +2550,7 @@ C4Object* C4Game::PlaceAnimal(C4ID idAnimal)
 		return NULL;
 	}
 	// Create object
-	return CreateObject(idAnimal,NULL,NO_OWNER,iX,iY);
+	return CreateObject(PropList,NULL,NO_OWNER,iX,iY);
 }
 
 void C4Game::InitInEarth()
@@ -2581,7 +2581,7 @@ void C4Game::InitVegetation()
 	// Place vegetation
 	if (vidnum>0)
 		for (cnt=0; cnt<amt; cnt++)
-			PlaceVegetation(vidlist[Random(vidnum)],0,0,GBackWdt,GBackHgt,-1);
+			PlaceVegetation(C4Id2Def(vidlist[Random(vidnum)]),0,0,GBackWdt,GBackHgt,-1);
 }
 
 void C4Game::InitAnimals()
@@ -2591,7 +2591,7 @@ void C4Game::InitAnimals()
 	// Place animals
 	for (cnt=0; (idAnimal=C4S.Animals.FreeLife.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
-			PlaceAnimal(idAnimal);
+			PlaceAnimal(C4Id2Def(idAnimal));
 	// Place nests
 	for (cnt=0; (idAnimal=C4S.Animals.EarthNest.GetID(cnt,&iCount)); cnt++)
 		for (cnt2=0; cnt2<iCount; cnt2++)
