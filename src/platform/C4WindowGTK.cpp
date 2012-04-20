@@ -817,7 +817,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		gtk_widget_add_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
 		gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
 
-		GValue val = G_VALUE_INIT;
+		GValue val = {0,{{0}}};
 		g_value_init (&val, G_TYPE_BOOLEAN);
 		g_value_set_boolean (&val, true);
 		g_object_set_property (G_OBJECT (render_widget), "can-focus", &val);
