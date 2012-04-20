@@ -124,7 +124,7 @@ static Nillable<long> FnGetY(C4AulContext *cthr, long iPrec)
 }
 
 static C4Object *FnCreateObject(C4AulContext *cthr,
-                                C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner)
+                                C4PropList * PropList, C4Real iXOffset, C4Real iYOffset, Nillable<long> owner)
 {
 	if (cthr->Obj) // Local object calls override
 	{

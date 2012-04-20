@@ -37,6 +37,7 @@ class C4Numeric {
 	C4Numeric(C4Real data) : val(data) {}
 	const C4Value& getVal() const { return val; }
 	C4Numeric& operator = (const C4Numeric& nValue) { val.Set(nValue.val); return *this; }
+	operator C4Real() const { return val.getFloat(); }
 #define C4NUMERIC_GETTER(name, type) \
 	type name() const { return val.name (); } \
 	type _##name() const { return val._##name(); }

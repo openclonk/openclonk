@@ -107,12 +107,17 @@ public:
 #define C4REAL_ARITHMETIC_OPERATOR(op) \
 	/* arithmetic operations on copies */ \
 	inline C4Real operator op (const C4Real &rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
-	inline C4Real operator op (float rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
-	inline C4Real operator op (int rhs) const { C4Real nrv(*this); nrv op##= rhs; return nrv; } \
+	inline C4Real operator op (float rhs) const { C4Real nrv(*this); nrv op##= C4Real(rhs); return nrv; } \
+	inline C4Real operator op (int rhs) const { C4Real nrv(*this); nrv op##= C4Real(rhs); return nrv; } \
+	inline C4Real operator op (long rhs) const { C4Real nrv(*this); nrv op##= C4Real(rhs); return nrv; } \
 	/* arithmetic operations on copies, right-hand C4Real */ \
 	/* friends defined in the class are implicitly inline */ \
 	friend C4Real operator op (float lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; } \
-	friend C4Real operator op (int lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; }
+	friend C4Real operator op (int lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; } \
+	friend C4Real operator op (long lhs, const C4Real &rhs) { C4Real nrv(lhs); nrv op##= rhs; return nrv; } \
+	inline C4Real & operator op##= (long rhs) { this->operator op##=(C4Real(rhs)); return *this; } \
+	inline C4Real & operator op##= (int rhs) { this->operator op##=(C4Real(rhs)); return *this; } \
+	inline C4Real & operator op##= (float rhs) { this->operator op##=(C4Real(rhs)); return *this; }
 
 	C4REAL_ARITHMETIC_OPERATOR(+)
 	C4REAL_ARITHMETIC_OPERATOR(-)

@@ -330,12 +330,12 @@ static C4Void FnSetEntrance(C4AulObjectContext *cthr, bool e_status)
 }
 
 
-static C4Void FnSetXDir(C4AulObjectContext *cthr, long nxdir, long iPrec)
+static C4Void FnSetXDir(C4AulObjectContext *cthr, C4Numeric nxdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update xdir
-	cthr->Obj->xdir=itofix(nxdir, iPrec);
+	cthr->Obj->xdir=nxdir / iPrec;
 	// special: negative dirs must be rounded
 	//if (nxdir<0) pObj->xdir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
@@ -343,12 +343,12 @@ static C4Void FnSetXDir(C4AulObjectContext *cthr, long nxdir, long iPrec)
 	return C4Void();
 }
 
-static C4Void FnSetRDir(C4AulObjectContext *cthr, long nrdir, long iPrec)
+static C4Void FnSetRDir(C4AulObjectContext *cthr, C4Numeric nrdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update rdir
-	cthr->Obj->rdir=itofix(nrdir, iPrec);
+	cthr->Obj->rdir=nrdir  / iPrec;
 	// special: negative dirs must be rounded
 	//if (nrdir<0) pObj->rdir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
@@ -356,19 +356,19 @@ static C4Void FnSetRDir(C4AulObjectContext *cthr, long nrdir, long iPrec)
 	return C4Void();
 }
 
-static C4Void FnSetYDir(C4AulObjectContext *cthr, long nydir, long iPrec)
+static C4Void FnSetYDir(C4AulObjectContext *cthr, C4Numeric nydir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update ydir
-	cthr->Obj->ydir=itofix(nydir, iPrec);
+	cthr->Obj->ydir=nydir / iPrec;
 	// special: negative dirs must be rounded
 	//if (nydir<0) pObj->ydir += C4REAL100(-50)/iPrec;
 	cthr->Obj->Mobile=1;
 	return C4Void();
 }
 
-static C4Void FnSetR(C4AulObjectContext *cthr, long nr)
+static C4Void FnSetR(C4AulObjectContext *cthr, C4Real nr)
 {
 	// set rotation
 	cthr->Obj->SetRotation(nr);
@@ -620,28 +620,28 @@ static long FnGetMass(C4AulContext *cthr)
 		return cthr->Obj->Mass;
 }
 
-static long FnGetRDir(C4AulObjectContext *cthr, long iPrec)
+static C4Real FnGetRDir(C4AulObjectContext *cthr, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(cthr->Obj->rdir, iPrec);
+	return cthr->Obj->rdir * iPrec;
 }
 
-static long FnGetXDir(C4AulObjectContext *cthr, long iPrec)
+static C4Real FnGetXDir(C4AulObjectContext *cthr, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(cthr->Obj->xdir, iPrec);
+	return cthr->Obj->xdir * iPrec;
 }
 
-static long FnGetYDir(C4AulObjectContext *cthr, long iPrec)
+static C4Real FnGetYDir(C4AulObjectContext *cthr, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(cthr->Obj->ydir, iPrec);
+	return cthr->Obj->ydir * iPrec;
 }
 
-static long FnGetR(C4AulObjectContext *cthr)
+static C4Real FnGetR(C4AulObjectContext *cthr)
 {
 	// Adjust range
-	long iR = cthr->Obj->r;
+	C4Real iR = cthr->Obj->fix_r;
 	while (iR>180) iR-=360;
 	while (iR<-180) iR+=360;
 	return iR;
