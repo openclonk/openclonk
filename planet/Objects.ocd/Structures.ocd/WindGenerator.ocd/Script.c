@@ -3,9 +3,6 @@
 #include Library_Ownable
 #include Library_PowerProducer
 
-public func GetCapacity() { return 500; }
-public func GetGeneratorPriority() { return 256; }
-
 /* Initialisierung */
 
 local wind_anim;
