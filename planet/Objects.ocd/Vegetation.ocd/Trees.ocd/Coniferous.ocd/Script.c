@@ -18,9 +18,9 @@ public func IsTree() { return true; }
 
 public func ChopDown()
 {
-	// Remove the bottom vertex (via removing collision)
-	// this is done because Removing the Vertex would re-add it at the first rotation/con-update
-	SetVertex(0, VTX_CNAT, CNAT_NoCollision, 2);
+	// Remove the bottom vertex
+	SetVertex(0, VTX_Y, 0, 1);
+	RemoveVertex(0);
 
 	_inherited(...);
 }

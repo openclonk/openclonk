@@ -6,10 +6,10 @@ Timer=350
 TimerCall=Seed
 Width=60
 Height=110
-Offset=-30,-110
+Offset=-30,-55
 Vertices=9
 VertexX=0,0,0,0,0,0,0,0,0
-VertexY=-10,-25,-35,-45,-55,-65,-75,-85,-100
+VertexY=45,30,20,10,0,-10,-20,-30,-45
 VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Components=Wood=4
