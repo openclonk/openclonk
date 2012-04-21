@@ -35,6 +35,7 @@ enum C4AnimationValueProviderID
 	C4AVP_Linear,
 	C4AVP_X,
 	C4AVP_Y,
+	C4AVP_R,
 	C4AVP_AbsX,
 	C4AVP_AbsY,
 	C4AVP_XDir,
@@ -111,6 +112,21 @@ private:
 	C4Real Begin;
 	C4Real End;
 	int32_t Length;
+};
+
+class C4ValueProviderR: public StdMeshInstance::SerializableValueProvider
+{
+public:
+	C4ValueProviderR(): Object(NULL), Begin(Fix0), End(Fix0) {}
+	C4ValueProviderR(C4Object* object, C4Real begin, C4Real end);
+	virtual bool Execute();
+
+	virtual void CompileFunc(StdCompiler* pComp);
+	virtual void DenumeratePointers() { Object.DenumeratePointers(); }
+private:
+	C4ObjectPtr Object;
+	C4Real Begin;
+	C4Real End;
 };
 
 class C4ValueProviderAbsX: public StdMeshInstance::SerializableValueProvider

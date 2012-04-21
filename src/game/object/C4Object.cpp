@@ -1858,6 +1858,10 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 
 void C4Object::ClearPointers(C4Object *pObj)
 {
+	// TODO: Clear pointers on mesh instance:
+	// Check for attach children using pObj's mesh instance
+	// Check for animation nodes refering to pObj (Anim_X, ...).
+
 	// effects
 	if (pEffects) pEffects->ClearPointers(pObj);
 	// contents/contained: not necessary, because it's done in AssignRemoval and StatusDeactivate

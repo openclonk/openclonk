@@ -4,9 +4,9 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>Anim_YDir</title>
+    <title>Anim_R</title>
     <category>Animations</category>
-    <version>5.1 OC</version>
+    <version>5.3 OC</version>
     <syntax>
       <rtype>array</rtype>
       <params>
@@ -18,21 +18,16 @@
         <param>
           <type>int</type>
           <name>end</name>
-          <desc>End of the interval. If end is greater than begin then the value increases with increases XDir, otherwise it decreases.</desc>
-        </param>
-        <param>
-          <type>int</type>
-          <name>max_dir</name>
-          <desc>Highest value of the YDir to be mapped. All larger velocities lead to the same animation value (end).</desc>
+          <desc>End of the interval. If end is chosen to be greater than begin then the value increases with clockwise rotation, otherwise it decreases.</desc>
         </param>
       </params>
     </syntax>
-    <desc>The value is proportional to the object's velocity in Y direction. The velocities 0 to max_dir are mapped linearly to the interval given by begin and end.</desc>
+    <desc>The value depends on the rotation of the object. Upward rotation (0 degrees) is mapped to the value given by begin, and moves toward end when the object rotates clockwise, up to end after one revolution (360 degrees).</desc>
     <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
     <examples>
       <example>
-        <code><funclink>PlayAnimation</funclink>(&quot;ShowSpeed&quot;, 10, <funclink>Anim_YDir</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;ShowSpeed&quot;), 100), <funclink>Anim_Const</funclink>(1000));</code>
-        <text>Plays the animation "ShowSpeed" in slot 10. This could be a velocity display in an elevator.</text>
+        <code><funclink>PlayAnimation</funclink>(&quot;Turn&quot;, 5, <funclink>Anim_R</funclink>(0, <funclink>GetAnimationLength</funclink>(&quot;Turn&quot;)), <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Plays the animation "Turn" in slot 5 and superimposes any other potential animations in slot 5. The animation is synchronized to the object's rotation so that the full animation is played once per revolution.</text>
       </example>
     </examples>
     <related>
@@ -43,12 +38,12 @@
       <funclink>Anim_Linear</funclink>
       <funclink>Anim_X</funclink>
       <funclink>Anim_Y</funclink>
-      <funclink>Anim_R</funclink>
       <funclink>Anim_AbsX</funclink>
       <funclink>Anim_AbsY</funclink>
       <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
       <funclink>Anim_Action</funclink>
     </related>
   </func>
-  <author>Clonk-Karl</author><date>2010-01</date>
+  <author>Clonk-Karl</author><date>2012-04</date>
 </funcs>

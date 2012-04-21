@@ -30,6 +30,7 @@ namespace
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderLinear> C4ValueProviderLinearID("linear");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderX> C4ValueProviderXID("x"); 
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderY> C4ValueProviderYID("y");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderR> C4ValueProviderRID("r");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsX> C4ValueProviderAbsXID("absx");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsY> C4ValueProviderAbsYID("absy");
 	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderXDir> C4ValueProviderXDirID("xdir"); 
@@ -65,6 +66,11 @@ StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, 
 			throw new C4AulExecError(pForObj, "Length cannot be zero");
 
 		return new C4ValueProviderY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
+	case C4AVP_R:
+		if(Data.GetSize() >= 4 && Data[3] != C4VNull)
+			pForObj = Data[3].getObj();
+		if (!pForObj) return NULL;
+		return new C4ValueProviderR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000));
 	case C4AVP_AbsX:
 		if (!pForObj) return NULL;
 		if (Data[4].getInt() == 0)
@@ -266,6 +272,32 @@ void C4ValueProviderY::CompileFunc(StdCompiler* pComp)
 	pComp->Value(End);
 	pComp->Separator();
 	pComp->Value(Length);
+}
+
+C4ValueProviderR::C4ValueProviderR(C4Object* object, C4Real begin, C4Real end):
+		Object(object), Begin(begin), End(end)
+{
+	Execute();
+}
+
+bool C4ValueProviderR::Execute()
+{
+	C4Real r = Object->fix_r;
+	if(r < 0) r += 360;
+
+	Value = Begin + (End - Begin) * r / 360;
+	return true;
+}
+
+void C4ValueProviderR::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Separator();
+	pComp->Value(Object);
+	pComp->Separator();
+	pComp->Value(Begin);
+	pComp->Separator();
+	pComp->Value(End);
 }
 
 C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real begin, C4Real end, int32_t length):
