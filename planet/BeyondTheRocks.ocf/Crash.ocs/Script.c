@@ -7,6 +7,11 @@
 
 static g_is_initialized;
 
+func Initialize()
+{
+	CreateObject(Windmill, 152, 825+48, 0);
+}
+
 func DoInit(int first_player)
 {
 	// Set time of day to evening and create some clouds and celestials.
