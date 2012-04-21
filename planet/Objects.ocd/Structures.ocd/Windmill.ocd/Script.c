@@ -13,6 +13,9 @@
 local wind_anim;
 local last_wind;
 
+func TurnAimation(){return "Spin";}
+func MinRevolutionTime(){return 18000;} // in frames
+
 protected func Construction(object creator)
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-30,0,1,0));
@@ -21,50 +24,28 @@ protected func Construction(object creator)
 	var dir = creator->~GetConstructionDirection();
 	if (dir)
 		SetDir(dir);
+	
+	// uses functions of the wind generator
+	this.Wind2TurnEx = WindGenerator.Wind2Turn;
+	this.GetWeightedWind = WindGenerator.GetWeightedWind;	
+	
 	return _inherited(creator, ...);
 }
 
 protected func Initialize()
 {
+	// create wheel
+	(this.wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER))->Set(this, 150);
+	
 	// Set initial position
-	wind_anim = PlayAnimation("Spin", 5, Anim_Const(0), Anim_Const(1000));
+	wind_anim = PlayAnimation(TurnAimation(), 5, Anim_Const(0), Anim_Const(1000));
 	return _inherited(...);
 }
 
 func Wind2Turn()
 {	
-	// Fade linearly in time until next timer call
-	var start = 0;
-	var end = GetAnimationLength("Spin");
-	if(GetWind() < 0)
-	{
-		start = end;
-		end = 0;
-	}
-	
-	var power = Abs(GetWind());
-	if(power < 5) power = 0;
-	else power = Max(((power + 5) / 25), 1) * 50;
-	
-	if(last_wind != power)
-	{
-		last_wind = power;
-		MakePowerProducer(last_wind);
-	}
-	
-	// Number of frames for one revolution: the more wind the more revolutions per frame.
-	if(last_wind == 0) last_wind = 1;
-	var l = 18000/last_wind;
-
-	// Note ending is irrelevant since this is called again after 35 frames
-	if(l > 0)
-	{
-		SetAnimationPosition(wind_anim, Anim_Linear(GetAnimationPosition(wind_anim), start, end, l, ANIM_Loop));
-	}
-	else
-	{
-		SetAnimationPosition(wind_anim, Anim_Const(GetAnimationPosition(wind_anim)));
-	}
+	// dummy, uses the function of the WindGenerator
+	this->Wind2TurnEx();
 }
 
 
