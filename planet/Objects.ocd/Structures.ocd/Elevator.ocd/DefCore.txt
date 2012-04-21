@@ -2,9 +2,9 @@
 id=Elevator
 Version=5,2,0,1
 Category=C4D_Structure
-Width=60
+Width=62
 Height=66
-Offset=-30,-33
+Offset=-31,-33
 Vertices=5
 VertexX=-25,25,-5,-25,28
 VertexY=-27,-27,32,32,32

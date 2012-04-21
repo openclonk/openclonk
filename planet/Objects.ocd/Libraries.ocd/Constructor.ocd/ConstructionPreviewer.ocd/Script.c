@@ -5,9 +5,9 @@
 	@author Clonkonaut
 */
 
-local dimension_x, dimension_y, clonk, structure, direction;
+local dimension_x, dimension_y, clonk, structure, direction, stick_to;
 local GFX_StructureOverlay = 1;
-local GFX_FlipIconOverlay = 2;
+local GFX_CombineIconOverlay = 2;
 
 func Initialize()
 {
@@ -27,29 +27,32 @@ func Set(id to_construct, object constructing_clonk)
 	AdjustPreview();
 }
 
-// Positions the preview according to the landscape, coloring it green or red
+// Positions the preview according to the landscape, coloring it green, yellow or red
 func AdjustPreview(bool look_up, bool no_call)
 {
-	// Place on material
-	var search_dir = 1;
-	if (look_up) search_dir = -1;
-	var x = 0, y = 0, fail = false;
 	var half_y = dimension_y / 2;
-	while(!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
+	// Do only if not sticking to another object
+	if (!stick_to)
 	{
-		y += search_dir;
-		if (Abs(y) > dimension_y/2)
+		// Place on material
+		var search_dir = 1;
+		if (look_up) search_dir = -1;
+		var x = 0, y = 0, fail = false;
+		while(!(!GBackSolid(x,y + half_y) && GBackSolid(x,y + half_y + 1)))
 		{
-			fail = true;
-			break;
+			y += search_dir;
+			if (Abs(y) > dimension_y/2)
+			{
+				fail = true;
+				break;
+			}
 		}
+		if (fail && !no_call)
+			return AdjustPreview(!look_up, true);
+		if (fail)
+			return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
+		SetPosition(GetX(), GetY() + y);
 	}
-	if (fail && !no_call)
-		return AdjustPreview(!look_up, true);
-	if (fail)
-		return SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
-	SetPosition(GetX(), GetY() + y);
-	
 	if (!CheckConstructionSite(structure, 0, half_y))
 		fail = true;
 	else
@@ -67,7 +70,12 @@ func AdjustPreview(bool look_up, bool no_call)
 	
 	
 	if(!fail)
-		SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);	
+	{
+		if (!stick_to)
+			SetClrModulation(RGBa(50,255,50, 100), GFX_StructureOverlay);
+		else
+			SetClrModulation(RGBa(255,255,50, 200), GFX_StructureOverlay);
+	}
 	else
 		SetClrModulation(RGBa(255,50,50, 100), GFX_StructureOverlay);
 }
@@ -78,7 +86,44 @@ func Reposition(int x, int y)
 {
 	x = BoundBy(x, -dimension_x/2, dimension_x/2);
 	y = BoundBy(y, -dimension_y/2, dimension_y/2);
-	SetPosition(clonk->GetX() + x, clonk->GetY() + y);
+	var found = false;
+	if (structure->~ConstructionCombineWith())
+	{
+		var other = FindObject(Find_Func(structure->ConstructionCombineWith(), this),
+		                              Find_InRect(AbsX(clonk->GetX() + x - dimension_x/2 - 10), AbsY(clonk->GetY() + y - dimension_y/2 - 10), dimension_x + 20, dimension_y + 20),
+		                              Find_OCF(OCF_Fullcon),
+		                              Find_Layer(clonk->GetObjectLayer()),
+		                              Find_Allied(clonk->GetOwner()),
+		                              Find_NoContainer());
+		if (other)
+		{
+			if (other->GetX() < GetX())
+				x = other->GetX() + other->GetObjWidth()/2 + dimension_x / 2;
+			else
+				x = other->GetX() - other->GetObjWidth()/2 - dimension_x / 2;
+			y = other->GetY();
+			stick_to = other;
+			found = true;
+		}
+	}
+	if (!found)
+	{
+		x = clonk->GetX() + x;
+		y = clonk->GetY() + y;
+	}
+
+	if (!found && stick_to)
+	{
+		stick_to = nil;
+		SetGraphics(nil, nil, GFX_CombineIconOverlay);
+	} else if (stick_to) {
+		SetGraphics(nil, ConstructionPreviewer_IconCombine, GFX_CombineIconOverlay, GFXOV_MODE_Base);
+		var dir = 1;
+		if (stick_to->GetX() < GetX()) dir = -1;
+		SetObjDrawTransform(1000, 0, dimension_x/2 * 1000 * dir, 0, 1000, 0, GFX_CombineIconOverlay);
+	}
+
+	SetPosition(x, y);
 	AdjustPreview();
 }
 

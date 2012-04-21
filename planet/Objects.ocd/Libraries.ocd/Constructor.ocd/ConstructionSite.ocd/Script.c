@@ -7,6 +7,7 @@
 
 local definition;
 local direction;
+local stick_to;
 local full_material; // true when all needed material is in the site
 
 public func IsContainer()		{ return !full_material; }
@@ -33,11 +34,12 @@ public func Construction()
 	return true;
 }
 
-public func Set(id def, int dir)
+public func Set(id def, int dir, object stick)
 {
 	definition = def;
 	direction = dir;
-	
+	stick_to = stick;
+
 	var xw = (1-dir*2)*1000;
 	
 	var w,h;
@@ -171,6 +173,9 @@ private func StartConstructing()
 	
 	if(direction)
 		site->SetDir(direction);
+	// Inform about sticky building
+	if (stick_to)
+		site->CombineWith(stick_to);
 	
 	// Autoconstruct 2.0!
 	Schedule(site, "DoCon(2)",1,50);

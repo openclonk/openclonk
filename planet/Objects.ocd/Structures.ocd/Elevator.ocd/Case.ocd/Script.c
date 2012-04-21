@@ -3,22 +3,40 @@
 #include Library_PowerConsumer
 
 local elevator;
+local slave, partner, no_connection;
 
+/* Callbacks */
+
+// Called by the elevator
 func Connect(object connect_to)
 {
 	elevator = connect_to;
 	SetComDir(COMD_None);
 	SetAction("Drive");
-	
+
 	// request power
 	MakePowerConsumer(50);
 }
 
-/* Movement behaviour */
+// Called by the elevator in case a partner elevator was constructed
+func StartConnection(object elevator)
+{
+	partner = elevator.case;
+	partner.partner = this;
+	// We are not yet connected
+	no_connection = true;
+	partner.no_connection = true;
+}
 
-local move_to, // Y-coordinate to move to on its own
-      move_to_delay, // Delay before moving
-      move_to_target; // Target to move to
+// Called when the other elevator is destroyed or moved
+func LoseConnection()
+{
+	partner = nil;
+	no_connection = false;
+	slave = false;
+}
+
+/* Energy */
 
 // for the position
 func GetActualPowerConsumer()
@@ -54,6 +72,12 @@ func OnEnoughPower()
 	return _inherited(...);
 }
 
+/* Movement behaviour */
+
+local move_to, // Y-coordinate to move to on its own
+      move_to_delay, // Delay before moving
+      move_to_target; // Target to move to
+
 func Movement() // TimerCall
 {
 	// No elevator?!
@@ -63,9 +87,7 @@ func Movement() // TimerCall
 		if (!ActIdle()) SetAction("Idle");
 		return;
 	}
-	
-	
-	
+
 	// Fetch vehicles
 	for (var vehicle in FindObjects(Find_InRect(-5, -5, 10, 10), Find_Category(C4D_Vehicle), Find_NoContainer(), Find_Func("FitsInElevator")))
 	{
@@ -76,21 +98,46 @@ func Movement() // TimerCall
 		vehicle->SetR();
 		AddEffect("ElevatorControl", vehicle, 30, 5, vehicle, nil, this);
 	}
-	
+
+	// I'm a slave
+	if (slave) return elevator->CheckSlavery();
+
+	// Check for partner connection
+	if (partner && no_connection)
+		if (Inside(partner->GetY(), GetY()-1, GetY()+1))
+		{
+			no_connection = false;
+			partner.no_connection = false;
+			partner->SetPosition(partner->GetX(), GetY());
+		}
+
+	// Slave moved away?
+	if (HasReadyPartner())
+		if (partner->GetY() != GetY() && !drill) // This does crazy stuff when drilling
+			partner->SetPosition(partner->GetX(), GetY());
+
 	// no power?
-	if(!CurrentlyHasPower())
+	if (!CurrentlyHasPower())
 		return;
-	
+	// Slave has no power?
+	if (HasReadyPartner())
+		if (!partner->CurrentlyHasPower())
+			return;
+
 	// Start or stop drilling
 	if (drill && GetAction() == "Drive")
 	{
 		SetAction("Drill");
 		Sound("ElevatorDrilling", nil, nil, nil, 1);
+		if (HasReadyPartner())
+			partner->SetAction("Drill");
 	}
 	if (!drill && GetAction() == "Drill")
 	{
 		SetAction("Drive");
 		Sound("ElevatorDrilling", nil, nil, nil, -1);
+		if (HasReadyPartner())
+			partner->SetAction("Drive");
 	}
 
 	// Stop if at upmost position
@@ -100,6 +147,7 @@ func Movement() // TimerCall
 		movement = 0;
 		SetPosition(GetX(), elevator->GetY() + 20);
 		ClearMoveTo();
+		if (HasReadyPartner()) partner->SetPosition(partner->GetX(), GetY());
 		return;
 	}
 
@@ -116,6 +164,7 @@ func Movement() // TimerCall
 		{
 			if (Abs(GetYDir()) == 1) elevator->StartEngine();
 			SetYDir(GetYDir() + movement);
+			if (HasReadyPartner()) partner->SetYDir(GetYDir());
 			return;
 		}
 	}
@@ -134,8 +183,21 @@ func Movement() // TimerCall
 		{
 			move_to_delay--;
 			if (move_to_target)
-				if (move_to_target->GetComDir() != COMD_Stop || AbsX(GetX() - move_to_target->GetX()) > 20)
-					return ClearMoveTo();
+			{
+				if (HasReadyPartner())
+				{
+					if (move_to_target->GetComDir() != COMD_Stop)
+						return ClearMoveTo();
+					if (AbsX(GetX() - move_to_target->GetX()) > 20)
+						if (AbsX(partner->GetX() - move_to_target->GetX()) > 20)
+							return ClearMoveTo();
+				}
+				else
+				{
+					if (move_to_target->GetComDir() != COMD_Stop || AbsX(GetX() - move_to_target->GetX()) > 20)
+						return ClearMoveTo();
+				}
+			}
 			if (!move_to_delay) move_to_target = nil;
 			return;
 		}
@@ -150,12 +212,21 @@ func Movement() // TimerCall
 		if (move_to > GetY() && GetYDir() < this.RushSpeed)
 			SetYDir(GetYDir() + 1);
 		if (Abs(GetYDir()) == 1) elevator->StartEngine();
+		if (HasReadyPartner()) partner->SetYDir(GetYDir());
 		return;
 	}
 
 	// Search for waiting clonks
 	var clonk, best;
-	for (clonk in FindObjects(Find_InRect(-20, AbsY(elevator->GetY()), 40, LandscapeHeight() - elevator->GetY()), Find_OCF(OCF_CrewMember), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Allied(GetOwner()), Sort_Distance(), Sort_Reverse()))
+	var in_rect = Find_InRect(-20, AbsY(elevator->GetY()), 40, LandscapeHeight() - elevator->GetY());
+	if (HasReadyPartner())
+	{
+		if (partner->GetX() < GetX())
+			in_rect = Find_InRect(-44, AbsY(elevator->GetY()), 56, LandscapeHeight() - elevator->GetY());
+		else
+			in_rect = Find_InRect(-20, AbsY(elevator->GetY()), 56, LandscapeHeight() - elevator->GetY());
+	}
+	for (clonk in FindObjects(in_rect, Find_OCF(OCF_CrewMember), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Allied(GetOwner()), Sort_Distance(), Sort_Reverse()))
 	{
 		var proc = clonk.Action.Procedure;
 		if (clonk->GetComDir() != COMD_Stop && !((proc == "SWIM") && Inside(clonk->GetXDir(), -5, 5)))
@@ -182,11 +253,13 @@ func Movement() // TimerCall
 	Halt();
 }
 
-func Halt()
+func Halt(bool no_partner_call)
 {
 	if (!elevator) return;
-	if (GetYDir()) elevator->StopEngine();
+	if (GetYDir() && !slave) elevator->StopEngine();
 	SetYDir();
+	if (no_partner_call && HasReadyPartner()) return SetPosition(GetX(), partner->GetY());
+	if (HasReadyPartner()) partner->Halt(true);
 }
 
 func ContactTop()
@@ -205,10 +278,26 @@ func ContactBottom()
 // Returns true if idle
 func CheckIdle()
 {
-	for (var pusher in FindObjects(Find_InRect(-13, -13, 26, 26), Find_Action("Push")))
+	// I have no mind of my own
+	if (slave) return true;
+
+	var in_rect = Find_InRect(-13, -13, 26, 26);
+	if (partner && !no_connection)
+	{
+		if (partner->GetX() < GetX())
+			in_rect = Find_InRect(-39, -13, 52, 26);
+		else
+			in_rect = Find_InRect(-13, -13, 52, 26);
+	}
+	for (var pusher in FindObjects(in_rect, Find_Action("Push")))
 	{
 		if (pusher->GetActionTarget() == this) return false;
 		if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == this) return false;
+		if (partner && !no_connection)
+		{
+			if (pusher->GetActionTarget() == partner) return false;
+			if (GetEffect("ElevatorControl", pusher->GetActionTarget()) && GetEffect("ElevatorControl", pusher->GetActionTarget()).case == partner) return false;
+		}
 	}
 	return true;
 }
@@ -234,12 +323,19 @@ func ClearMoveTo()
 	move_to_delay = nil;
 }
 
+func HasReadyPartner()
+{
+	return partner && !no_connection;
+}
+
 /* Controls */
 
 local movement, drill;
 
 func ControlUseStart(object clonk) // Drilling
 {
+	if (slave) return Control2Master("ControlUseStart", clonk);
+
 	ClearMoveTo();
 	drill = true;
 	movement = 1;
@@ -247,6 +343,8 @@ func ControlUseStart(object clonk) // Drilling
 }
 func ControlUseStop(object clonk)
 {
+	if (slave) return Control2Master("ControlUseStop", clonk);
+
 	drill = false;
 	movement = 0;
 	return true;
@@ -254,12 +352,16 @@ func ControlUseStop(object clonk)
 
 func ControlDown(object clonk)
 {
+	if (slave) return Control2Master("ControlDown", clonk);
+
 	ClearMoveTo();
 	if (!drill)
 		movement = 1;
 }
 func ControlUp(object clonk)
 {
+	if (slave) return Control2Master("ControlUp", clonk);
+
 	ClearMoveTo();
 	if (!drill)
 		movement = -1;
@@ -267,12 +369,21 @@ func ControlUp(object clonk)
 
 func ControlStop(object clonk, int control)
 {
+	if (slave) return Control2Master("ControlStop", clonk, control);
+
 	if (control == CON_Up || control == CON_Down)
 	{
 		if (!drill)
 			movement = 0;
 		return true;
 	}
+}
+
+func Control2Master(string call, object clonk, int control)
+{
+	if (no_connection) return false;
+
+	return partner->Call(call, clonk, control);
 }
 
 local ActMap = {

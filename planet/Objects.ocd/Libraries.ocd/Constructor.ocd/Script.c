@@ -168,7 +168,7 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 	{
 		// CON_Use is accept
 		if (ctrl == CON_Use)
-			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction);
+			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction, effect.preview.stick_to);
 		// movement is allowed
 		else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
 			return false;
@@ -199,12 +199,12 @@ func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool tem
 
 /* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir)
+func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir, object stick_to)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")
 		return false;
-	if (clonk->Contained()) 
+	if (clonk->Contained())
 		return false;
 	// Check if the building can be build here
 	if (structure_id->~RejectConstruction(x, y, clonk)) 
@@ -234,7 +234,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
-	site->Set(structure_id, dir);
+	site->Set(structure_id, dir, stick_to);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	

@@ -3,6 +3,7 @@
 #include Library_Ownable
 
 local case, rope;
+local partner, slave;
 
 // Frees a rectangle for the case
 func CreateShaft(int length)
@@ -30,6 +31,19 @@ func Initialize()
 {
 	CreateCase();
 	CreateRope();
+
+	if (partner)
+	{
+		if (Inside(partner->GetY(), GetY()-3, GetY()+3))
+		{
+			partner->LetsBecomeFriends(this);
+			slave = true; // Note: This is liberal slavery
+			case.slave = true; // I guess this is not so liberal
+			SetPosition(GetX(), partner->GetY());
+		}
+		else
+			partner = nil;
+	}
 	return _inherited();
 }
 
@@ -50,6 +64,7 @@ func CreateRope()
 func Destruction()
 {
 	rope->RemoveObject();
+	if (partner) partner->LoseCombination();
 }
 
 /* Effects */
@@ -69,6 +84,63 @@ func StopEngine()
 	Sound("ElevatorMoving", nil, nil, nil, -1);
 	ClearScheduleCall(this, "EngineLoop");
 	Sound("ElevatorStop");
+}
+
+/* Construction */
+
+// Sticking to other elevators
+func ConstructionCombineWith() { return "IsElevator"; }
+
+// Called to determine if sticking is possible
+func IsElevator(object previewer)
+{
+	if (!previewer) return true;
+
+	if (GetDir() == DIR_Left)
+	{
+		if (previewer.direction == DIR_Right && previewer->GetX() > GetX()) return true;
+	}
+	else
+	{
+		if (previewer.direction == DIR_Left && previewer->GetX() < GetX()) return true;
+	}
+	return false;
+}
+
+// Called when the elevator construction site is created
+func CombineWith(object other)
+{
+	// Save for use in Initialize
+	partner = other;
+}
+
+/* Combination */
+
+// Called by a new elevator next to this one
+// The other elevator will be the slave
+func LetsBecomeFriends(object other)
+{
+	partner = other;
+	if (case) case->StartConnection(other);
+}
+
+// Partner was destroyed or moved
+func LoseCombination()
+{
+	partner = nil;
+	slave = false;
+	if (case) case->LoseCombination();
+}
+
+// Called by our case because the case has a timer anyway
+func CheckSlavery()
+{
+	// Check if somehow we moved away from our fellow
+	if (ObjectDistance(partner) > 62 || !Inside(partner->GetY(), GetY()-1, GetY()+1))
+	{
+		LoseCombination();
+		partner->LoseCombination();
+	}
 }
 
 local ActMap = {
