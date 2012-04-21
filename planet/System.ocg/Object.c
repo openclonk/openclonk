@@ -68,6 +68,12 @@ global func MovePosition(int x, int y, int prec)
 	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }
 
+// Returns the position as an array
+global func GetPosition(int x, int y, int prec)
+{
+	return [GetX(prec), GetY(prec)];
+}
+
 // Speed the calling object into the given direction (angle)
 global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
 {
@@ -292,4 +298,26 @@ global func GetBase ()
 {
 	if(!(this->~IsBase())) return NO_OWNER;
 	return GetOwner();
+}
+
+
+/* GetXEdge returns the position of the objects top/bottom/left/right edge */
+global func GetLeftEdge()
+{
+	return GetX()-GetObjWidth()/2;
+}
+
+global func GetRightEdge()
+{
+	return GetX()+GetObjWidth()/2;
+}
+
+global func GetTopEdge()
+{
+	return GetY()-GetObjHeight()/2;
+}
+
+global func GetBottomEdge()
+{
+	return GetY()+GetObjHeight()/2;
 }

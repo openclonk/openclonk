@@ -556,7 +556,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 #endif
 }
 
-StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
+StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 {
 	static StdStrBuf sResult;
 	sResult.Clear();

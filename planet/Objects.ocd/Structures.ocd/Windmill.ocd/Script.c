@@ -76,7 +76,7 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsWindmillProduct();
 }
-private func ProductionTime() { return 290; }
+private func ProductionTime(id toProduce) { return 290; }
 private func PowerNeed() { return 75; }
 
 public func NeedRawMaterial(id rawmat_id)

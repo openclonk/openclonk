@@ -140,14 +140,37 @@ public func GetItems()
 */
 public func RemoveItem(object item)
 {
-	for (var mitem in menu_items)
+	var length = GetLength(menu_items);
+	for(var i = 0; i < length; i++)
 	{
-		if (mitem = item)
-			mitem->RemoveObject();	
+		if (menu_items[i] == item)
+		{
+			menu_items[i]->RemoveObject();
+			break;
+		}	
 	}
+	// close gap
+	for(i; i < length-1; i++)
+		menu_items[i] = menu_items[i+1];
+	
+	SetLength(menu_items, length-1);
+
 	UpdateMenu();
 	return;
 }
+
+/** Removes all items from the menu. */
+public func Clear()
+{
+	for (var mitem in menu_items)
+	{
+			mitem->RemoveObject();	
+	}
+	menu_items = [];
+	UpdateMenu();
+	return;
+}
+
 
 /* Callbacks from the menu items, to be forwarded to the commander. */
 
@@ -209,6 +232,13 @@ public func Hide()
 	CustomMessage("", this, menu_object->GetOwner());
 	menu_shown = false;
 	return;
+}
+
+public func Close() 
+{
+	if(menu_object)
+		menu_object->~MenuClosed(this);
+	RemoveObject();
 }
 
 // Engine callback: if the menu is destroyed, the items must follow.

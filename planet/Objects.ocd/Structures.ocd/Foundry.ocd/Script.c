@@ -31,7 +31,7 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsFoundryProduct();
 }
-private func ProductionTime() { return 290; }
+private func ProductionTime(id toProduce) { return 290; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
