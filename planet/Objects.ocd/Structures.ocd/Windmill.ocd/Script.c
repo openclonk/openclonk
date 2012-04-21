@@ -13,7 +13,7 @@
 local wind_anim;
 local last_wind;
 
-func TurnAimation(){return "Spin";}
+func TurnAnimation(){return "Spin";}
 func MinRevolutionTime(){return 18000;} // in frames
 
 protected func Construction(object creator)
@@ -41,7 +41,7 @@ protected func Initialize()
 	(this.wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER))->Set(this, 150);
 	
 	// Set initial position
-	wind_anim = PlayAnimation(TurnAimation(), 5, Anim_Const(0), Anim_Const(1000));
+	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(GetAnimationLength(TurnAnimation()), 0), Anim_Const(1000));
 	return _inherited(...);
 }
 
