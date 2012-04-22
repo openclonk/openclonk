@@ -148,7 +148,7 @@ public func MouseSelection(int plr)
 	if(actiontype == ACTIONTYPE_CARRYHEAVY)
 	{
 		if(myobject == crew->~GetCarryHeavy())
-			myobject->Drop();
+			crew->DropCarryHeavy();
 	}
 }
 

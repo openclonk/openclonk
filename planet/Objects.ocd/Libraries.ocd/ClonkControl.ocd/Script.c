@@ -35,27 +35,36 @@
 	array 'inventory'. They are accessed via GetItem(i) and GetItemPos(obj).
 	Other functions are MaxContentsCount() (defines the maximum number of
 	contents)
+	
+	Furthermore the clonk has a defined amount of "hands", defined by HandObjects().
+	The array 'use_objects' is a mapping of "hands" onto the inventory-slots.
+	The functions GetHandItem(i) returns the object in the "i"th hand.
+	
+	Carryheavy is also handled here. When a clonk picks up a carryheavy object
+	it's saved in 'carryheavy'
 */
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local disableautosort;
-local force_collection;
-local inventory; // items in the inventory, array
-local carryheavy; // object beeing carried with carryheavy
-local use_objects; // hand-slots (mapping onto inventory)
+local inventory;	// items in the inventory, array
+local carryheavy;	// object beeing carried with carryheavy
+local use_objects;	// hand-slots (mapping onto inventory)
 
-local handslot_choice_pending;
-local hotkeypressed;
-local forced_ejection;
+local handslot_choice_pending;	// used to determine if a slot-hotkey (1-9) has already been handled by a mouseclick
+local hotkeypressed;			// used to determine if an interaction has already been handled by a hotkey (space + 1-9)
+
+local disableautosort;		// used to get default-Collection-behaviour (see Collection2)
+local force_collection;		// used to pick stuff up, even though the hand-slots are all full (see RejectCollect + Collect with CON_Collect)
+local forced_ejection;		// used to recognize if an object was thrown out with or without the force-key (Shift). If not, next hand slot will be selected. 
 
 /* Item limit */
 
-private func HandObjects() { return 2; }
-public func MaxContentsCount() { return 7; }
-public func NoStackedContentMenu() { return true; }
+private func HandObjects() { return 2; }			// How many "Hands" the clonk has
+public func MaxContentsCount() { return 7; }		// Size of the clonks inventory
+public func NoStackedContentMenu() { return true; }	// Contents-Menu shall display each object in a seperate slot
 
-/* Get the ith item in the inventory */
+
+/** Get the 'i'th item in the inventory */
 public func GetItem(int i)
 {
 	if (i >= GetLength(inventory))
@@ -65,7 +74,7 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
-/* returns all items in the inventory */
+/** Returns all items in the inventory */
 public func GetItems()
 {
 	var inv = inventory[:];
@@ -73,28 +82,33 @@ public func GetItems()
 	return inv;
 }
 
-/* Get the ith item in hands.
-   These are the items that will be used with use-commands. (Left mouse click, etc...) */
+/** Get the 'i'th item in hands.
+    These are the items that will be used with use-commands. (Left mouse click, etc...) */
 public func GetHandItem(int i)
 {
-	// carrying a carry heavy item always returns said item
-	if (carryheavy)
-		return carryheavy;
+	// i is valid range
 	if (i >= GetLength(use_objects))
 		return nil;
 	if (i < 0) return nil;
+
+	// carrying a carry heavy item always returns said item. (he holds it in both hands, after all!)
+	if (IsCarryingHeavy())
+		return GetCarryHeavy();
 		
 	return GetItem(use_objects[i]);
 }
 
-/* Set the "hand"th use-item to the "inv"th slot */
+/** Set the 'hand'th use-item to the 'inv'th slot */
 public func SetHandItemPos(int hand, int inv)
 {
-	if(carryheavy)
-		return nil;
+	// indices are in range?
 	if(hand >= HandObjects() || inv >= MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
+
+	// can't use anything except carryheavy if carrying heavy object.
+	if(IsCarryingHeavy())
+		return nil;
 
 	// If the item is already selected, we can't hold it in another one too.
 	var hand2 = GetHandPosByItemPos(inv);
@@ -130,7 +144,7 @@ public func SetHandItemPos(int hand, int inv)
 	handslot_choice_pending = false;
 }
 
-/* Returns the position in the inventory of the ith use item */
+/** Returns the position in the inventory of the 'i'th use item */
 public func GetHandItemPos(int i)
 {
 	if (i >= GetLength(use_objects))
@@ -140,7 +154,7 @@ public func GetHandItemPos(int i)
 	return use_objects[i];
 }
 
-/* Returns in which hand-slot the oth inventory-slot is */
+/** Returns in which hand-slot the inventory-slot is */
 private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
 {
 	for(var i=0; i < GetLength(use_objects); i++)
@@ -150,6 +164,7 @@ private func GetHandPosByItemPos(int o) // sorry for the horribly long name --bo
 	return nil;
 }
  
+/** Drops the item in the inventory slot, if any */
 public func DropInventoryItem(int slot)
 {
 	var obj = GetItem(slot);
@@ -158,12 +173,8 @@ public func DropInventoryItem(int slot)
 	
 	this->SetCommand("Drop",obj);
 }
- 
-// For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
-public func HUDShowItems() { return true; }
 
-/* Search the index of an item */
-
+/** Search for the index of an item */
 public func GetItemPos(object item)
 {
 	if (item)
@@ -179,7 +190,7 @@ public func GetItemPos(object item)
 	return nil;
 }
 
-/* Switch two items in the clonk's inventory */
+/** Switch two items in the clonk's inventory */
 
 public func Switch2Items(int one, int two)
 {
@@ -230,8 +241,9 @@ public func Switch2Items(int one, int two)
 	this->~OnInventoryChange(one, two);
 }
 
-/* Overload of Collect function */
-
+/* Overload of Collect function
+   Allows inventory/hands-Handling with forced-collection
+*/
 public func Collect(object item, bool ignoreOCF, int pos, bool force)
 {
 	force_collection = force;
@@ -300,7 +312,7 @@ protected func Collection2(object obj)
 	// carryheavy object gets special treatment
 	if(obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
 	{
-		if(obj != carryheavy)
+		if(obj != GetCarryHeavy())
 			CarryHeavy(obj);
 		
 		return true;
@@ -358,7 +370,7 @@ protected func Collection2(object obj)
 protected func Ejection(object obj)
 {
 	// carry heavy special treatment
-	if(obj == carryheavy)
+	if(obj == GetCarryHeavy())
 	{
 		StopCarryHeavy();
 		return true;
@@ -460,7 +472,7 @@ protected func ContentsDestruction(object obj)
 	this->~OnInventoryChange();
 	
 	// check if it was carryheavy
-	if(obj == carryheavy)
+	if(obj == GetCarryHeavy())
 	{
 		StopCarryHeavy();
 	}
@@ -522,7 +534,8 @@ public func AllowTransfer(object obj)
 	if (ContentsCount() >= MaxContentsCount()) 
 		return false;
 
-	if(carryheavy && obj->~IsCarryHeavy())
+	// don't allow picking up multiple carryheavy-objects
+	if(IsCarryingHeavy() && obj->~IsCarryHeavy())
 		return false;
 
 	return true;
@@ -534,14 +547,18 @@ public func GetUsedObject() { return using; }
 
 /* Carry heavy stuff */
 
-// picks up the object
+/** Tells the clonk that he is carrying the given carry heavy object */
 public func CarryHeavy(object target)
 {
 	if(!target)
 		return;
+	// actually.. is it a carry heavy object?
+	if(!target->~IsCarryHeavy())
+		return;
+	// only if not carrying a heavy objcet already
 	if(IsCarryingHeavy())
 		return;	
-		
+	
 	carryheavy = target;
 	
 	if(target->Contained() != this)
@@ -556,9 +573,23 @@ public func CarryHeavy(object target)
 	return true;
 }
 
+/** Drops the carried heavy object, if any */
+public func DropCarryHeavy()
+{
+	// only if actually possible
+	if(!IsCarryingHeavy())
+		return;
+	
+	GetCarryHeavy()->Drop();
+	StopCarryHeavy();
+	
+	return true;
+}
+
+// Internal function to clear carryheavy-status
 private func StopCarryHeavy()
 {
-	if(!carryheavy)
+	if(!IsCarryingHeavy())
 		return;
 	
 	carryheavy = nil;
@@ -871,7 +902,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		else if(IsCarryingHeavy() && GetAction() == "Walk")
 		{
-			GetCarryHeavy()->Drop();
+			DropCarryHeavy();
 			return true;
 		}
 			
