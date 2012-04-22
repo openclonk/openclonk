@@ -259,7 +259,7 @@ public func OnMouseDrop(int plr, obj)
 
 
 
-public func Clear()
+public func Disable()
 {
 	myobject = nil;
 	actiontype = -1;
