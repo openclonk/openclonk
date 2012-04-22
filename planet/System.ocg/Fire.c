@@ -86,6 +86,9 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	if (temp) return 1;
 	// fail if already on fire
 	//if (target->OnFire()) return -1;
+	// Fail if target is dead and has NoBurnDecay, to prevent eternal fires.
+	if (target->GetCategory() & C4D_Living && !target->GetAlive() && target->GetDefCoreVal("NoBurnDecay", "DefCore"))
+		return -1;
 	
 	// structures must eject contents now, because DoCon is not guaranteed to be executed!
 	// In extinguishing material
