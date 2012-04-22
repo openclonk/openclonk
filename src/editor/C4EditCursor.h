@@ -40,6 +40,7 @@ public:
 	~C4EditCursor();
 protected:
 	bool fAltWasDown;
+	bool fShiftWasDown;
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
@@ -79,11 +80,13 @@ public:
 	bool OpenPropTools();
 	bool Delete();
 	void GrabContents();
-	bool LeftButtonUp();
-	bool LeftButtonDown(bool fControl);
-	bool RightButtonUp();
-	bool RightButtonDown(bool fControl);
-	bool Move(float iX, float iY, WORD wKeyFlags);
+	bool LeftButtonUp(DWORD dwKeyState);
+	bool LeftButtonDown(DWORD dwKeyState);
+	bool RightButtonUp(DWORD dwKeyState);
+	bool RightButtonDown(DWORD dwKeyState);
+	bool KeyDown(C4KeyCode KeyCode, DWORD dwKeyState);
+	bool KeyUp(C4KeyCode KeyCode, DWORD dwKeyState);
+	bool Move(float iX, float iY, DWORD dwKeyState);
 	bool Init();
 	bool EditingOK();
 	C4ObjectList &GetSelection() { return Selection; }
@@ -96,8 +99,8 @@ protected:
 	void ApplyToolPicker();
 	void ToolFailure();
 	void PutContents();
-	void UpdateDropTarget(WORD wKeyFlags);
-	bool DoContextMenu();
+	void UpdateDropTarget(DWORD dwKeyState);
+	bool DoContextMenu(DWORD dwKeyState);
 	void ApplyToolFill();
 	void ApplyToolRect();
 	void ApplyToolLine();
@@ -107,7 +110,7 @@ protected:
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
-	void DoContextObjsel(C4Object *);
+	void DoContextObjsel(C4Object *, bool clear);
 	void ObjselectDelItems();
 
 #ifdef WITH_DEVELOPER_MODE

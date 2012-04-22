@@ -132,6 +132,7 @@ void C4MouseControl::Default()
 	TimeOnTargetObject=0;
 	ControlDown=false;
 	ShiftDown=false;
+	AltDown=false;
 	Scrolling=false;
 	ScrollSpeed=10;
 	TargetRegion=NULL;
@@ -158,8 +159,8 @@ void C4MouseControl::Execute()
 	if (Scrolling || !::Game.iTick5)
 	{
 		WORD wKeyState=0;
-		if (Application.IsControlDown()) wKeyState|=MK_CONTROL;
-		if (Application.IsShiftDown()) wKeyState|=MK_SHIFT;
+		if (ControlDown) wKeyState|=MK_CONTROL;
+		if (ShiftDown) wKeyState|=MK_SHIFT;
 		Move(C4MC_Button_None,VpX,VpY,wKeyState);
 	}
 }
@@ -227,6 +228,10 @@ void C4MouseControl::UpdateClip()
 
 void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFlags, bool fCenter)
 {
+	// Control state
+	ControlDown=false; if (dwKeyFlags & MK_CONTROL) ControlDown=true;
+	ShiftDown=false; if (dwKeyFlags & MK_SHIFT) ShiftDown=true;
+	AltDown=false; if(dwKeyFlags & MK_ALT) AltDown=true;
 	// Active
 	if (!Active || !fMouseOwned) return;
 	// Execute caption
@@ -303,9 +308,6 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 		VpX=iX; VpY=iY;
 		GameX=ViewX+VpX/Viewport->Zoom; GameY=ViewY+VpY/Viewport->Zoom;
 		GuiX=float(VpX)/Viewport->GetGUIZoom(); GuiY=float(VpY)/Viewport->GetGUIZoom();
-		// Control state
-		ControlDown=false; if (dwKeyFlags & MK_CONTROL) ControlDown=true;
-		ShiftDown=false; if (dwKeyFlags & MK_SHIFT) ShiftDown=true;
 		// Target region
 		UpdateTargetRegion();
 		// Scrolling
@@ -371,7 +373,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 				{
 					int wheel_dir = 0;
 					if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyFlags >> 16);
-					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown(), wheel_dir);
+					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, (dwKeyFlags & MK_CONTROL) != 0, (dwKeyFlags & MK_SHIFT) != 0, (dwKeyFlags & MK_ALT) != 0, wheel_dir);
 				}
 			}
 }
@@ -384,7 +386,7 @@ void C4MouseControl::DoMoveInput()
 	if (!(pPlayer=::Players.Get(Player))) return;
 	if (!pPlayer->ControlSet) return;
 	if (!pPlayer->ControlSet->IsMouseControlAssigned(C4MC_Button_None)) return;
-	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown(), 0);
+	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, AltDown, 0);
 }
 
 void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)

@@ -221,34 +221,6 @@ static gboolean OnDelete(GtkWidget* widget, GdkEvent* event, gpointer data)
 	return true;
 }
 
-static gboolean OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, C4AbstractApp * pApp)
-{
-	// Update mask so that Application.IsShiftDown,
-	// Application.IsControlDown etc. work.
-	unsigned int mask = 0;
-	if (event->state & GDK_SHIFT_MASK) mask |= MK_SHIFT;
-	if (event->state & GDK_CONTROL_MASK) mask |= MK_CONTROL;
-	if (event->state & GDK_MOD1_MASK) mask |= (1 << 3);
-
-	// For keypress/relases, event->state contains the state _before_
-	// the event, but we need to store the current state.
-#if !GTK_CHECK_VERSION(2,21,8)
-# define GDK_KEY_Shift_L GDK_Shift_L
-# define GDK_KEY_Shift_R GDK_Shift_R
-# define GDK_KEY_Control_L GDK_Control_L
-# define GDK_KEY_Control_R GDK_Control_R
-# define GDK_KEY_Alt_L GDK_Alt_L
-# define GDK_KEY_Alt_R GDK_Alt_R
-#endif
-
-	if (event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R) mask ^= MK_SHIFT;
-	if (event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R) mask ^= MK_CONTROL;
-	if (event->keyval == GDK_KEY_Alt_L || event->keyval == GDK_KEY_Alt_R) mask ^= (1 << 3);
-
-	pApp->KeyMask = mask;
-	return false;
-}
-
 static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
@@ -265,11 +237,6 @@ static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer use
 	return true;
 }
 
-static gboolean OnButtonPress(GtkWidget *widget, GdkEventButton * event, C4AbstractApp * pApp)
-{
-	pApp->KeyMask = event->state;
-	return false;
-}
 static void OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data)
 {
 	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return; }
@@ -318,6 +285,16 @@ static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 		return true;
 	}
+
+	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
+	Console.EditCursor.KeyDown(key, event->state);
+	return false;
+}
+
+static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
+{
+	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
+	Console.EditCursor.KeyUp(key, event->state);
 	return false;
 }
 
@@ -372,10 +349,10 @@ static gboolean OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gp
 		switch (event->button)
 		{
 		case 1:
-			Console.EditCursor.LeftButtonDown(event->state & MK_CONTROL);
+			Console.EditCursor.LeftButtonDown(event->state);
 			break;
 		case 3:
-			Console.EditCursor.RightButtonDown(event->state & MK_CONTROL);
+			Console.EditCursor.RightButtonDown(event->state);
 			break;
 		}
 	}
@@ -407,10 +384,10 @@ static gboolean OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, 
 		switch (event->button)
 		{
 		case 1:
-			Console.EditCursor.LeftButtonUp();
+			Console.EditCursor.LeftButtonUp(event->state);
 			break;
 		case 3:
-			Console.EditCursor.RightButtonUp();
+			Console.EditCursor.RightButtonUp(event->state);
 			break;
 		}
 	}
@@ -780,6 +757,7 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 		g_signal_connect(G_OBJECT(render_widget), "expose-event", G_CALLBACK(OnExposeStatic), this);
 	#endif
 		g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnKeyPressStatic), this);
+		g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnKeyReleaseStatic), this);
 		g_signal_connect(G_OBJECT(window), "scroll-event", G_CALLBACK(OnScrollVW), this);
 		g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPressStatic), this);
 		g_signal_connect(G_OBJECT(window), "button-release-event", G_CALLBACK(OnButtonReleaseStatic), this);
@@ -853,9 +831,6 @@ C4Window* C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char
 
 	g_signal_connect(G_OBJECT(window), "delete-event", G_CALLBACK(OnDelete), this);
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
-	g_signal_connect(G_OBJECT(window), "button-press-event", G_CALLBACK(OnButtonPress), pApp);
-	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
-	g_signal_connect(G_OBJECT(window), "key-release-event", G_CALLBACK(OnUpdateKeyMask), pApp);
 	gtk_widget_add_events(GTK_WIDGET(window), GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_SCROLL_MASK);
 #if GTK_CHECK_VERSION(3,4,0)
 	gtk_widget_add_events(GTK_WIDGET(window), GDK_SMOOTH_SCROLL_MASK);

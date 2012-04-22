@@ -236,20 +236,20 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 			switch (button)
 			{
 			case C4MC_Button_LeftDown:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), 0);
-				Console.EditCursor.LeftButtonDown(!!(flags & MK_CONTROL));
+				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), flags);
+				Console.EditCursor.LeftButtonDown(flags);
 				break;
 			case C4MC_Button_LeftUp:
-				Console.EditCursor.LeftButtonUp();
+				Console.EditCursor.LeftButtonUp(flags);
 				break;
 			case C4MC_Button_RightDown:
-				Console.EditCursor.RightButtonDown(!!(flags & MK_CONTROL));
+				Console.EditCursor.RightButtonDown(flags);
 				break;
 			case C4MC_Button_RightUp:
-				Console.EditCursor.RightButtonUp();
+				Console.EditCursor.RightButtonUp(flags);
 				break;
 			case C4MC_Button_None:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), 0);
+				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), flags);
 				break;
 			}
 		}

@@ -79,6 +79,7 @@ protected:
 	bool ButtonDownOnSelection;
 	bool ControlDown;
 	bool ShiftDown;
+	bool AltDown;
 	bool Scrolling;
 	bool InitCentered;
 	bool FogOfWar;

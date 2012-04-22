@@ -372,13 +372,13 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
 			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam);
-			Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
+			Console.EditCursor.LeftButtonDown(wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(); break;
+		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(!!(wParam & MK_CONTROL)); break;
+		case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
+		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
