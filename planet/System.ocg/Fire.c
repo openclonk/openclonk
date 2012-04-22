@@ -196,16 +196,31 @@ global func FxFireTimer(object target, effect, int time)
 				
 		// check spreading of fire
 		if(effect.strength > 10)
-		for(var obj in FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(this)))
 		{
-			if(obj->GetCategory() & C4D_Living) if(!obj->GetAlive()) continue;
-			
-			var inf = obj->GetDefCoreVal("ContactIncinerate", "DefCore");
-			if(!inf) continue;
-			var amount = (effect.strength/3) / Max(1, inf);
-
-			if(!amount) continue;
-			obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+			// If contained only incinerate objects inside the same container and the container itself.
+			var container = target->Contained(), inc_objs;
+			if (container)
+			{
+				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Container(container));
+				inc_objs[GetLength(inc_objs)] = container;	
+			}
+			// Or if not contained incinerate all objects outside and inside the burning object.
+			else
+			{
+				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Or(Find_NoContainer(), Find_Container(target)));
+			}
+			// Loop through the selected set of objects and check contact incinerate.
+			for (var obj in inc_objs)
+			{
+				if(obj->GetCategory() & C4D_Living) if(!obj->GetAlive()) continue;
+				
+				var inf = obj->GetDefCoreVal("ContactIncinerate", "DefCore");
+				if(!inf) continue;
+				var amount = (effect.strength/3) / Max(1, inf);
+	
+				if(!amount) continue;
+				obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+			}
 		}
 	}
 	
