@@ -41,7 +41,6 @@ protected func Recruitment(int plr)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
 	
 	HUDcontroller->ScheduleUpdateBackpack();
-	HUDcontroller->UpdateHealthTube();
 	
 	return _inherited(plr, ...);
 }
@@ -62,24 +61,18 @@ protected func OnPromotion()
 
 protected func OnEnergyChange()	
 {
-	if (HUDcontroller) 
-		HUDcontroller->UpdateHealthTube();
 	if (HUDselector)
 		HUDselector->UpdateHealthBar();
 	return _inherited(...);
 
 }
 protected func OnBreathChange() {
-	if (HUDcontroller)
-		HUDcontroller->UpdateBreathTube();
 	if (HUDselector)
 		HUDselector->UpdateBreathBar();
 	return _inherited(...);
 }
 
 protected func OnMagicEnergyChange() {
-	if (HUDselector)
-		HUDselector->UpdateMagicBar();
 	return _inherited(...);
 }
 
