@@ -307,7 +307,7 @@ public func SetObject(object obj, int type, int pos, int hot, int number)
 	}
 	else
 	{
-		SetGraphics("Slot", GUI_Background);
+		SetGraphics("Slot", GUI_ObjectSelector);
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, nil, 0, myobject);
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		this.MouseDragImage = myobject;
