@@ -84,7 +84,6 @@ public func SetSymbol(obj)
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, obj->Contents());
 			SetClrModulation(RGBa(255,255,255,200),1);
 			SetObjDrawTransform(900,0,0,0,900,0,1);
-			//SetObjDrawTransform(1000,0,32000,0,1000,-28000,2);
 		}
 		// or otherwise, remove it
 		else

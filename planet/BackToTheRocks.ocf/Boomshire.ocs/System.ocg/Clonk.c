@@ -14,6 +14,11 @@ public func MaxContentsCount()
 	return 1;
 }
 
+public func HandObjects()
+{
+	return 1;
+}
+
 // Lose all items on death.
 func StartDead()
 {

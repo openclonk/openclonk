@@ -2,7 +2,7 @@
 	HUD Controller
 
 	Controls the player HUD and all its subsystems, which are:
-		* Inventory (=Backpack)
+		* Inventory (=)
 		* Actionbar
 		* Crew selectors
 		* Goal
@@ -17,19 +17,16 @@
 
 // Local variables containing the GUI-Elements
 local actionbar;	// Array, action-buttons at the bottom
-local backpack;		// Array, inventory-buttons at the left side
+local inventory;	// Array, inventory-buttons at the left side
 local markers;		// Array, the gui-markers.
 local carryheavy;	// Object, optional inventory-button only shown when clonk is carrying a carry-heavy object
 local wealth;		// Object, displays wealth of the player
-
-// How many slots the inventory has, for overloading
-private func BackpackSize() { return 7; } // should be equal to Clonk->MaxContentsCount()
 
 protected func Construction()
 {
 	actionbar = [];
 	markers = [];
-	backpack = [];
+	inventory = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
@@ -51,8 +48,8 @@ protected func Construction()
 	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
 	
-	// backpack display
-	MakeBackpack();
+	// inventory display
+	MakeInventory();
 }
 
 /* Destruction */
@@ -72,11 +69,11 @@ protected func Destruction()
 		}
 	}
 
-	if(backpack)
-		for(var i=0; i<GetLength(backpack); ++i)
+	if(inventory)
+		for(var i=0; i<GetLength(inventory); ++i)
 		{
-			if(backpack[i])
-				backpack[i]->RemoveObject();
+			if(inventory[i])
+				inventory[i]->RemoveObject();
 		}
 	
 	if(markers)
@@ -99,38 +96,25 @@ protected func Destruction()
 
 /* Inventory-Bar stuff */
 
-// Updates the Backpack in 1 frame
-private func ScheduleUpdateBackpack()
+// Updates the Inventory in 1 frame
+private func ScheduleUpdateInventory()
 {
-	ScheduleCall(this, "UpdateBackpack", 1, 0);
+	ScheduleCall(this, "UpdateInventory", 1, 0);
 }
 
-private func MakeBackpack()
+private func MakeInventory()
 {
 	// distance between slots
 	var d = 72;
 	// upper barrier
 	var y = 200;
 
-	// create backpack slots
-	for(var i=0; i<BackpackSize(); i++)
-	{
-		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-		bt->SetHUDController(this);
-		bt->SetPosition(40, y + d*i);
-		bt->SetSlotId(i);
-		
-		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
-		backpack[GetLength(backpack)] = bt;
-	}
-	
 	// and the carry heavy slot
 	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
 	bt->SetHUDController(this);
 	bt->SetPosition(40+d, y);
 	bt->SetSlotId(-1);
 	bt.Visibility = VIS_None;
-	
 	
 	carryheavy = bt;
 }
@@ -193,21 +177,21 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	return hud.markers[number];
 }
 
-/* Backpack stuff */
-func UpdateBackpack()
+/* Inventory stuff */
+func UpdateInventory()
 {
 	// only display if we have a clonk
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
 	
-	// update backpack-slots
-	for(var i=0; i<GetLength(backpack); i++)
+	// update inventory-slots
+	for(var i=0; i<GetLength(inventory); i++)
 	{
-		var item = c->GetItem(backpack[i]->GetSlotId());
-		backpack[i]->SetSymbol(item);
-		backpack[i]->SetUnselected();
-		if(item) backpack[i]->SetTooltip(item.UsageHelp);
-		else backpack[i]->SetTooltip(nil);
+		var item = c->GetItem(inventory[i]->GetSlotId());
+		inventory[i]->SetSymbol(item);
+		inventory[i]->SetUnselected();
+		if(item) inventory[i]->SetTooltip(item.UsageHelp);
+		else inventory[i]->SetTooltip(nil);
 	}
 	
 	// update hand-indicator
@@ -217,7 +201,11 @@ func UpdateBackpack()
 	}
 	else
 		for(var i=0; i < c->HandObjects(); ++i)
-			backpack[c->GetHandItemPos(i)]->SetSelected(i);
+		{
+			var handpos = c->GetHandItemPos(i);
+			if(inventory[handpos]) 
+				inventory[handpos]->SetSelected(i);
+		}
 }	
 
 // Shows the Carryheavy-Inventoryslot if obj is set
@@ -234,7 +222,7 @@ func OnCarryHeavyChange(object obj)
 	else
 		this.Visibility = VIS_Owner;
 	
-	UpdateBackpack();
+	UpdateInventory();
 }
 
 /* Hotkey Control */
@@ -290,7 +278,7 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	ReorderCrewSelectors();
 	
 	// update
-	ScheduleUpdateBackpack();
+	ScheduleUpdateInventory();
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
@@ -336,7 +324,7 @@ public func OnCrewDisabled(object clonk)
 	}
 	
 	// update
-	ScheduleUpdateBackpack();
+	ScheduleUpdateInventory();
 }
 
 public func OnCrewEnabled(object clonk)
@@ -352,21 +340,23 @@ public func OnCrewSelection(object clonk, bool deselect)
 	// selected
 	if(!deselect)
 	{
-		// clear actionbuttons
-		ClearButtons(0);
-		
 		// and start effect to monitor vehicles and structures...
 		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,0);
+		
+		// clear inventory buttons
+		UpdateInventoryButtons(clonk);
 	}
 	else
 	{
 		// remove effect
 		RemoveEffect("IntSearchInteractionObjects",clonk);
-		ClearButtons();
 	}
 	
+	// clear actionbuttons
+	ClearActionButtons();
+		
 	// update
-	ScheduleUpdateBackpack();
+	ScheduleUpdateInventory();
 	OnCarryHeavyChange(clonk->~GetCarryHeavy());
 }
 
@@ -433,7 +423,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 	}
 	
-	ClearButtons(i);
+	ClearActionButtons(i);
 	
 	return;
 }
@@ -450,30 +440,78 @@ public func OnSelectionChanged(int old, int new)
 // call from HUDAdapter or inventory-buttons
 public func OnHandSelectionChange(int old, int new, int handslot)
 {
-	backpack[old]->SetUnselected();
-	backpack[new]->SetSelected(handslot);
+	if(inventory[old])
+		inventory[old]->SetUnselected();
+	if(inventory[new])
+		inventory[new]->SetSelected(handslot);
 	
 	OnSlotObjectChanged(handslot);
 }
 
 protected func OnInventoryHotkeyPress(int slot)
 {
-	backpack[slot]->OnMouseOver(GetOwner());
+	if(inventory[slot])
+		inventory[slot]->OnMouseOver(GetOwner());
 }
 
 protected func OnInventoryHotkeyRelease(int slot)
 {
-	backpack[slot]->OnMouseOut(GetOwner());
+	if(inventory[slot])
+		inventory[slot]->OnMouseOut(GetOwner());
 }
 
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
 {	
-	// refresh backpack
-	ScheduleUpdateBackpack();
+	// refresh inventory
+	ScheduleUpdateInventory();
 }
 
 /** Helper Functions **/
+
+// Insert an inventory slot into the inventory-bar
+private func InventoryButton()
+{
+// distance between slots
+	var d = 72;
+	// upper barrier
+	var y = 200;
+
+	// index
+	var i = GetLength(inventory);
+	
+	// create inventory slots
+	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+	bt->SetHUDController(this);
+	bt->SetPosition(40, y + d*i);
+	bt->SetSlotId(i);
+		
+	CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
+	inventory[i] = bt;
+	
+	return bt;
+}
+
+// sets the inventory size to the currently selected clonk
+private func UpdateInventoryButtons(object clonk)
+{
+	if(!clonk) return;
+	
+	var size = clonk->~MaxContentsCount();
+	
+	// need to create more inventory buttons?
+	if(size > GetLength(inventory))
+		for(var i=0; i < size; ++i)
+			if(!inventory[i])
+				InventoryButton();
+	
+	// need to remove some inventory buttons?
+	if(size < GetLength(inventory))
+		for(i=GetLength(inventory)-1; i >= size; i--)
+			inventory[i]->RemoveObject();
+	
+	SetLength(inventory, size);
+}
 
 // Insert a button into the actionbar at pos
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num)
@@ -498,7 +536,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 }
 
 /** Removes all actionbar buttons after start */
-private func ClearButtons(int start)
+private func ClearActionButtons(int start)
 {
 
 	// make rest invisible
