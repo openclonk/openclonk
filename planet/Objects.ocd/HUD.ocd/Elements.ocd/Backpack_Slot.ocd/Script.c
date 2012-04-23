@@ -181,8 +181,6 @@ public func OnMouseOver(int plr)
 		return nil;
 	
 	SetGraphics("Focussed", GUI_Backpack_Slot_Icon);
-	
-	controller->ShowInventory();
 }
 
 public func OnMouseOut(int plr)
@@ -191,6 +189,4 @@ public func OnMouseOut(int plr)
 		return nil;
 	
 	SetGraphics(nil, nil);
-	
-	controller->ScheduleHideInventory();
 }
