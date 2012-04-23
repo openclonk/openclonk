@@ -173,7 +173,6 @@ public:
 
 #elif defined(USE_COCOA)
 public:
-	void HandleNSEvent(/*NSEvent*/void* event);
 	StdStrBuf GetGameDataPath();
 
 #elif defined(USE_CONSOLE)
