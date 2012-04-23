@@ -25,9 +25,10 @@ public func MagicBarHeight() { return 14; }
 	-----------------
 	layer 0 - unused
 	layer 1 - title
-	layer 2,3 - health bar
-	layer 4,5 - breath bar
-	layer 6,7 - magic bar
+	layer 2,3 - background-effects
+	layer 4,5 - health bar
+	layer 6,7 - breath bar
+	layer 8,9 - magic bar
 	
 	layer 10 - rank
 	layer 12 - hotkey
@@ -47,6 +48,19 @@ public func MagicBarHeight() { return 14; }
 	
 */
 
+static const GUI_CS_Base		= 0;
+static const GUI_CS_Title		= 1;
+static const GUI_CS_BreathBG	= 2;
+static const GUI_CS_HealthBG	= 3;
+static const GUI_CS_HealthBar	= 4;
+static const GUI_CS_HealthText	= 5;
+static const GUI_CS_BreathBar	= 6;
+static const GUI_CS_BreathText	= 7;
+static const GUI_CS_SpecialBar	= 8;
+static const GUI_CS_SpecialText	= 9;
+static const GUI_CS_Rank		= 10;
+static const GUI_CS_Hotkey		= 12;
+
 protected func Construction()
 {
 	_inherited();
@@ -64,10 +78,10 @@ protected func Construction()
 	this["Visibility"] = VIS_None;
 	
 	// health bar
-	SetBarLayers(2,0);
+	SetBarLayers(GUI_CS_HealthBar,0);
 	SetBarOffset(0,BarOffset(0),0);
 	SetBarDimensions(GetDefWidth(),HealthBarHeight(),0);
-	SetClrModulation(RGB(200,0,0),3);
+	SetClrModulation(RGB(200,0,0),GUI_CS_HealthText);
 }
 
 public func MouseSelection(int plr)
@@ -96,22 +110,27 @@ public func SetCrew(object c)
 	UpdateName();
 	
 	this["Visibility"] = VIS_Owner;
+	
+	AddEffect("GUIHealthMonitor", c, 50, 0, this);
 }
 
 public func SetHotkey(int num)
 {
 	if(num < 0 || num > 9)
 	{
-		SetGraphics(nil,nil,12);
+		SetGraphics(nil,nil,GUI_CS_Hotkey);
 		hotkey = false;
 		return;
 	}
 	
+	var kx = 1000 * GetDefWidth()/2 - 10000;
+	var ky = -1000 * GetDefWidth()/2 + 10000;
+	
 	hotkey = true;
 	var name = Format("%d",num);
-	SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(300,0,1000*GetDefWidth()/4,0,300,-1000*GetDefWidth()/4, 12);
-	SetClrModulation(HSL(0,0,180),12);
+	SetGraphics(name,Icon_Number,GUI_CS_Hotkey,GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(300,0,kx,0,300,ky, GUI_CS_Hotkey);
+	SetClrModulation(HSL(0,0,180),GUI_CS_Hotkey);
 }
 
 public func CrewGone()
@@ -149,11 +168,11 @@ public func UpdateSelectionStatus()
 
 	if(crew == GetCursor(crew->GetOwner()))
 	{
-		SetObjDrawTransform(1100,0,0,0,1100,0, 1);
+		SetObjDrawTransform(1100,0,0,0,1100,0, GUI_CS_Title);
 	}
 	else
 	{
-		SetObjDrawTransform(800,0,0,0,800,0, 1);
+		SetObjDrawTransform(800,0,0,0,800,0, GUI_CS_Title);
 	}
 }
 
@@ -164,8 +183,8 @@ public func UpdateRank()
 	var rankx = -1000 * GetDefWidth()/2 + 12000;
 	var ranky = -13000;
 	
-	SetGraphics(nil,0,10,GFXOV_MODE_Rank,nil,0,crew);
-	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
+	SetGraphics(nil,0,GUI_CS_Rank,GFXOV_MODE_Rank,nil,0,crew);
+	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, GUI_CS_Rank);
 }
 
 public func UpdateTitleGraphic()
@@ -174,7 +193,7 @@ public func UpdateTitleGraphic()
 	
 	//SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
 	
-	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_ObjectPicture, nil, 0, crew);
+	SetGraphics(nil,crew->GetID(),GUI_CS_Title,GFXOV_MODE_ObjectPicture, nil, 0, crew);
 	
 	// doesn't work:
 	//SetColorDw(crew->GetColorDw());
@@ -215,6 +234,7 @@ public func UpdateBreathBar()
 			AddBreathBar();
 		
 		SetBarProgress(promille,1);
+		SetClrModulation(RGB(0,0,100 + (1000-promille)*155/1000), GUI_CS_BreathBG);
 	}
 
 }
@@ -264,17 +284,21 @@ private func AddBreathBar()
 	if(magicbar) num = 2;
 
 	// breath bar
-	SetBarLayers(4,1);
+	SetBarLayers(GUI_CS_BreathBar,1);
 	SetBarOffset(0,BarOffset(num),1);
 	SetBarDimensions(GetDefWidth(),BreathBarHeight(),1);
-	SetClrModulation(RGB(0,200,200),5);
+	SetClrModulation(RGB(0,200,200),GUI_CS_BreathText);
 	
 	breathbar = true;
+	
+	// also enable background-coloring
+	SetGraphics("Background", GUI_CrewSelector, GUI_CS_BreathBG, GFXOV_MODE_Base);
 }
 
 private func RemoveBreathBar()
 {
-	RemoveBarLayers(4);
+	RemoveBarLayers(GUI_CS_BreathBar);
+	SetGraphics(nil, nil, GUI_CS_BreathBG);
 
 	breathbar = false;
 	
@@ -285,10 +309,10 @@ private func RemoveBreathBar()
 
 private func AddMagicBar()
 {
-	SetBarLayers(6,2);
+	SetBarLayers(GUI_CS_SpecialBar,2);
 	SetBarOffset(0,BarOffset(1),2);
 	SetBarDimensions(GetDefWidth(),MagicBarHeight(),2);
-	SetClrModulation(RGB(0,0,200),7);
+	SetClrModulation(RGB(0,0,200),GUI_CS_SpecialText);
 	
 	magicbar = true;
 	
@@ -299,7 +323,7 @@ private func AddMagicBar()
 
 private func RemoveMagicBar()
 {
-	RemoveBarLayers(6);
+	RemoveBarLayers(GUI_CS_SpecialBar);
 
 	magicbar = false;
 }
