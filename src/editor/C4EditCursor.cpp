@@ -362,6 +362,8 @@ bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
 	fShiftIsDown = fShiftIsDown || (kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
 	if(fShiftIsDown != fShiftWasDown)
 		fShiftWasDown = fShiftIsDown;
+
+	return true;
 }
 
 bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
@@ -384,6 +386,8 @@ bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
 	fShiftIsDown = fShiftIsDown && !(kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
 	if(fShiftIsDown != fShiftWasDown)
 		fShiftWasDown = fShiftIsDown;
+
+	return true;
 }
 
 #ifdef USE_WIN32_WINDOWS

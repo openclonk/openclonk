@@ -42,7 +42,7 @@ public:
 	GtkWidget* h_scrollbar;
 	GtkWidget* v_scrollbar;
 #endif
-	void EditCursorMove(int X, int Y, uint16_t);
+	void EditCursorMove(int X, int Y, uint32_t);
 	using C4Window::Init;
 	C4Window * Init(int32_t iPlayer);
 	virtual void Close();

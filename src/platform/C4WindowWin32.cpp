@@ -137,16 +137,16 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Application.MusicSystem.NotifySuccess();
 		return true;
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL))
+		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL))
 			return 0;
 		break;
 	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
 			return 0;
 		break;
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
 			return 0;
 		break;
 	case WM_CHAR:
@@ -230,19 +230,19 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		default:
-			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
+			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 		break;
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL)) return 0;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL)) return 0;
 		break;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
@@ -366,21 +366,41 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	// Console edit cursor control
 	else
 	{
+		// The state of the ALT key is not reported in wParam for mouse messages,
+		// and for keyboard messages the key states are hidden in lParam. It's a mess. Let's just
+		// query GetKeyState().
+		DWORD dwKeyState = 0;
+		if(GetKeyState(VK_CONTROL) < 0) dwKeyState |= MK_CONTROL;
+		if(GetKeyState(VK_SHIFT) < 0) dwKeyState |= MK_SHIFT;
+		if(GetKeyState(VK_MENU) < 0) dwKeyState |= MK_ALT;
+
 		switch (uMsg)
 		{
+		case WM_KEYDOWN:
+			Console.EditCursor.KeyDown(wParam, dwKeyState);
+			break;
+		case WM_KEYUP:
+			Console.EditCursor.KeyUp(wParam, dwKeyState);
+			break;
+		case WM_SYSKEYDOWN:
+			Console.EditCursor.KeyDown(wParam, dwKeyState);
+			break;
+		case WM_SYSKEYUP:
+			Console.EditCursor.KeyUp(wParam, dwKeyState);
+			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
-			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam);
-			Console.EditCursor.LeftButtonDown(wParam); break;
+			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState);
+			Console.EditCursor.LeftButtonDown(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(wParam); break;
+		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(wParam); break;
+		case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(wParam); break;
+		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), wParam); break;
+		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		}
 	}
@@ -399,16 +419,16 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
 		break;
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg)) return 0;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, pDlg)) return 0;
 		break;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:

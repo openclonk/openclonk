@@ -208,7 +208,7 @@ void C4ViewportWindow::Close()
 {
 	::Viewports.CloseViewport(cvp);
 }
-void C4ViewportWindow::EditCursorMove(int X, int Y, uint16_t state)
+void C4ViewportWindow::EditCursorMove(int X, int Y, uint32_t state)
 {
 	Console.EditCursor.Move(cvp->ViewX + X / cvp->Zoom, cvp->ViewY + Y / cvp->Zoom, state);
 }

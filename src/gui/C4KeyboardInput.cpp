@@ -121,7 +121,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 
 	{ VK_SHIFT          , "KeyShift"      , "Shift" },
 	{ VK_CONTROL        , "KeyControl"    , "Control" },
-	{ VK_MENU           , "Menu"          , NULL },
+	{ VK_MENU           , "Alt"           , NULL },
 	{ VK_PAUSE          , "Pause"         , NULL },
 
 	{ VK_CAPITAL        , "Capital"       , NULL },
