@@ -173,7 +173,7 @@ public func OnMouseDragDone(self, object target)
 	}
 }
 
-// highlight and block hiding
+// highlight
 public func OnMouseOver(int plr)
 {
 	if(!controller || GetOwner() == NO_OWNER)

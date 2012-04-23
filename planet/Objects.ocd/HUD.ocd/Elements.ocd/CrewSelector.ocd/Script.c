@@ -149,11 +149,11 @@ public func UpdateSelectionStatus()
 
 	if(crew == GetCursor(crew->GetOwner()))
 	{
-		SetObjDrawTransform(1200,0,0,0,1200,0, 1);
+		SetObjDrawTransform(1100,0,0,0,1100,0, 1);
 	}
 	else
 	{
-		SetObjDrawTransform(900,0,0,0,900,0, 1);
+		SetObjDrawTransform(800,0,0,0,800,0, 1);
 	}
 }
 
@@ -161,8 +161,8 @@ public func UpdateRank()
 {
 	if(!crew) return;
 	
-	var rankx = -1000 * GetDefWidth()/2 + 10000;
-	var ranky = -15000;
+	var rankx = -1000 * GetDefWidth()/2 + 12000;
+	var ranky = -13000;
 	
 	SetGraphics(nil,0,10,GFXOV_MODE_Rank,nil,0,crew);
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
@@ -302,4 +302,22 @@ private func RemoveMagicBar()
 	RemoveBarLayers(6);
 
 	magicbar = false;
+}
+
+
+// highlight
+public func OnMouseOver(int plr)
+{
+	if(GetOwner() != plr)
+		return nil;
+	
+	SetGraphics("Focussed", GUI_CrewSelector);
+}
+
+public func OnMouseOut(int plr)
+{
+	if(GetOwner() != plr)
+		return nil;
+	
+	SetGraphics(nil, nil);
 }
