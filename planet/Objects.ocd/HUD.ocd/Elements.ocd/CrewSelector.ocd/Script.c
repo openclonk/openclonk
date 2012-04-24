@@ -235,8 +235,7 @@ public func UpdateBreathBar()
 		
 		SetBarProgress(promille,1);
 		var clr = GetAverageTextureColor(crew->GetTexture(0,0));
-		var clr2 = SplitRGBaValue(clr);
-		Log("%d, %d, %d, %d", clr2[0], clr2[1], clr2[2], clr2[3]);
+		
 		SetClrModulation(clr, GUI_CS_BreathBG);
 		//SetClrModulation(255-(1000-promille)*76/1000), GUI_CS_BreathBG);
 	}
