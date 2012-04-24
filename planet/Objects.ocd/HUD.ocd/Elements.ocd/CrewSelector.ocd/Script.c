@@ -24,8 +24,8 @@ public func MagicBarHeight() { return 14; }
 	usage of layers:
 	-----------------
 	layer 0 - unused
-	layer 1 - title
-	layer 2,3 - background-effects
+	layer 2 - title
+	layer 1,3 - background-effects
 	layer 4,5 - health bar
 	layer 6,7 - breath bar
 	layer 8,9 - magic bar
@@ -49,8 +49,8 @@ public func MagicBarHeight() { return 14; }
 */
 
 static const GUI_CS_Base		= 0;
-static const GUI_CS_Title		= 1;
-static const GUI_CS_BreathBG	= 2;
+static const GUI_CS_Title		= 2;
+static const GUI_CS_BreathBG	= 1;
 static const GUI_CS_HealthBG	= 3;
 static const GUI_CS_HealthBar	= 4;
 static const GUI_CS_HealthText	= 5;
@@ -234,7 +234,11 @@ public func UpdateBreathBar()
 			AddBreathBar();
 		
 		SetBarProgress(promille,1);
-		SetClrModulation(RGB(0,0,100 + (1000-promille)*155/1000), GUI_CS_BreathBG);
+		var clr = GetAverageTextureColor(crew->GetTexture(0,0));
+		var clr2 = SplitRGBaValue(clr);
+		Log("%d, %d, %d, %d", clr2[0], clr2[1], clr2[2], clr2[3]);
+		SetClrModulation(clr, GUI_CS_BreathBG);
+		//SetClrModulation(255-(1000-promille)*76/1000), GUI_CS_BreathBG);
 	}
 
 }
@@ -344,4 +348,95 @@ public func OnMouseOut(int plr)
 		return nil;
 	
 	SetGraphics(nil, nil);
+}
+
+public func FxGUIHealthMonitorDamage(object target, proplist effect, int damage, int cause)
+{
+
+	var change = Abs(damage)/(target->GetMaxEnergy()*10);
+	// for really small changes, like fire or higher precision DoEnergy
+	if(change == 0)
+		change = 3;
+	
+	//if(!GetEffect("GUIHealthMonitorWorker", this))
+	if(!effect.worker)
+	{
+		effect.worker = AddEffect("GUIHealthMonitorWorker", target, 150, 4, this);
+		effect.worker.intensity = change+20;
+	}
+	else
+		effect.worker.intensity += change;
+	
+	effect.worker.intensity = BoundBy(effect.worker.intensity, 0, 80);
+	
+	// heal
+	if(damage > 0)
+		effect.worker.type = 1;
+	// damage
+	else
+		effect.worker.type = 0;
+
+	// fire
+	if(cause == FX_Call_DmgFire || cause == FX_Call_EngFire)
+		effect.worker.type = 2;
+	
+
+	return damage;
+}
+
+public func FxGUIHealthMonitorWorkerStart(object target, proplist effect, bool tmp)
+{
+	if(tmp) return;
+	
+	SetGraphics("Hurt", GUI_CrewSelector, GUI_CS_HealthBG, GFXOV_MODE_Base, nil, GFX_BLIT_Additive);
+	EffectCall(target, effect, "Timer");
+}
+
+public func FxGUIHealthMonitorWorkerTimer(object target, proplist effect, int time)
+{
+	// do graphical effect
+	var a = BoundBy(effect.intensity*7, 20, 255);
+	// damage
+	if(effect.type == 0)
+	{
+		var r = Min(200 + effect.intensity, 255);
+		SetClrModulation(RGBa(r,0,0,a), GUI_CS_HealthBG);
+	}
+	// heal
+	else if(effect.type == 1)
+	{
+		var g = Min(100 + effect.intensity, 255);
+		a = Min(a+100, 255);
+		SetClrModulation(RGBa(50,g,50,a), GUI_CS_HealthBG);
+	}
+	// fire!
+	else if(effect.type == 2)
+	{
+		var r = Min(150 + effect.intensity, 255);
+		var g = Min(effect.intensity, 100);
+		a = Min(a+100, 255);
+		SetClrModulation(RGBa(r,g,0,a), GUI_CS_HealthBG);
+	}
+	// not set yet? might happen at the start sometimes. we just hide in that case.
+	else
+		SetClrModulation(RGBa(0,0,0,0), GUI_CS_HealthBG);
+	
+	var dec = 3;
+	
+	// fade faster if huge numbers
+	if(effect.intensity > 60)
+		dec += 2;
+	
+	effect.intensity = effect.intensity-dec;
+	
+	// we're done, remove effect
+	if(effect.intensity <= 0)
+		return -1;
+}
+
+public func FxGUIHealthMonitorWorkerStop(object target, proplist effect, int reason, bool tmp)
+{
+	if(tmp) return;
+	
+	SetGraphics(nil, nil, GUI_CS_HealthBG);
 }
