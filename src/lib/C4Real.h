@@ -333,6 +333,7 @@ inline C4Real C4REAL10(int x) { return float(x) / 10; }
 #endif
 // define 0
 const C4Real Fix0 = itofix(0);
+const C4Real Fix1 = itofix(1);
 
 // conversion...
 // note: keep out! really dirty casts!
