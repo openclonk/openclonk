@@ -166,8 +166,8 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	fy += -(prev->GetVy() - next->GetVy()) * rho;
 
 	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
-	prev->AddForce(-fx, -fy + GetObject(prev) ? prev->GetMass() * ::Landscape.Gravity : Fix0);
-	next->AddForce(fx, fy + GetObject(next) ? next->GetMass() * ::Landscape.Gravity : Fix0);
+	prev->AddForce(-fx, -fy + (GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
+	next->AddForce(fx, fy + (GetObject(next) ? Fix0 : next->GetMass() * ::Landscape.Gravity/5));
 }
 
 void C4Rope::Execute()
