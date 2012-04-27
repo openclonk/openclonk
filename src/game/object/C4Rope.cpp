@@ -27,6 +27,9 @@ namespace
 		C4Real dy = second->fix_y - first->fix_y;
 		return ftofix(sqrt(fixtof(dx*dx + dy*dy))); // TODO: Replace by integer sqrt
 	}
+
+	C4Object* GetObject(C4RopeSegment* segment) { return NULL; }
+	C4Object* GetObject(C4RopeEnd* end) { return end->GetObject(); }
 }
 
 C4RopeSegment::C4RopeSegment(C4Real x, C4Real y, C4Real m):
@@ -162,12 +165,9 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	fx += -(prev->GetVx() - next->GetVx()) * rho;
 	fy += -(prev->GetVy() - next->GetVy()) * rho;
 
-	// TODO: Don't apply gravity to objects, it is applied automatically.
-	fy += ::Landscape.Gravity;
-
-	// Apply forces to masses
-	prev->AddForce(-fx, -fy);
-	next->AddForce(fx, fy);
+	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
+	prev->AddForce(-fx, -fy + GetObject(prev) ? prev->GetMass() * ::Landscape.Gravity : Fix0);
+	next->AddForce(fx, fy + GetObject(next) ? next->GetMass() * ::Landscape.Gravity : Fix0);
 }
 
 void C4Rope::Execute()

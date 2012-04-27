@@ -39,6 +39,7 @@ public:
 	C4Real GetY() const { return y; }
 	C4Real GetVx() const { return vx; }
 	C4Real GetVy() const { return vy; }
+	C4Real GetMass() const { return m; }
 
 	void AddForce(C4Real x, C4Real y);
 
@@ -63,9 +64,12 @@ public:
 	C4Real GetY() const { return has_object ? obj->fix_y : end.y; }
 	C4Real GetVx() const { return has_object ? obj->xdir : end.vx; }
 	C4Real GetVy() const { return has_object ? obj->ydir : end.vy; }
+	C4Real GetMass() const { return has_object ? itofix(obj->Mass) : end.m; }
+	C4Object* GetObject() const { return has_object ? obj : NULL; }
 
 	void AddForce(C4Real fx, C4Real fy);
 	void Execute(C4Real dt);
+
 private:
 	C4RopeSegment* segment;
 
