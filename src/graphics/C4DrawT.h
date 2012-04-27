@@ -21,7 +21,7 @@
 #ifndef INC_StdNoGfx
 #define INC_StdNoGfx
 
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 class CStdNoGfx : public C4Draw
 {

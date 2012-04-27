@@ -34,7 +34,7 @@
 #else
 #include <GL/glu.h>
 #endif
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 class C4Window;
 

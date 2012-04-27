@@ -18,7 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include "C4Include.h"
-#include <StdNoGfx.h>
+#include <C4DrawT.h>
 #include <StdMeshMaterial.h>
 
 CStdNoGfx::CStdNoGfx()

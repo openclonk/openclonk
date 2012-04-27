@@ -34,7 +34,7 @@
 #include <C4Aul.h>
 #include <C4Landscape.h>
 #include <C4SoundSystem.h>
-#include <C4Effects.h>
+#include <C4Effect.h>
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Physics.h> // For GravAccel

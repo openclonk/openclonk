@@ -24,7 +24,7 @@
 #define INC_STDDDRAW2
 
 #include <C4Surface.h>
-#include <StdSurface8.h>
+#include <CSurface8.h>
 #include <StdBuf.h>
 #ifdef _WIN32
 #include <C4windowswrapper.h>

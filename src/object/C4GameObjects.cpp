@@ -25,7 +25,7 @@
 #include <C4Include.h>
 #include <C4GameObjects.h>
 
-#include <C4Effects.h>
+#include <C4Effect.h>
 #include <C4Object.h>
 #include <C4ObjectCom.h>
 #include <C4Physics.h>

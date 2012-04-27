@@ -20,7 +20,7 @@
 #include <C4Console.h>
 #include <C4Game.h>
 
-#import <StdGL.h>
+#import <C4DrawGL.h>
 
 #import "ClonkMainMenuActions.h"
 #import "ClonkOpenGLView.h"

@@ -27,35 +27,25 @@
 #include "C4Include.h"
 #include <C4Window.h>
 
-#include <C4App.h>
-#include <StdRegistry.h>
-#include <C4Config.h>
-#include <C4Rect.h>
-#include <C4ViewportWindow.h>
 #include <C4Application.h>
+#include <C4AppWin32Impl.h>
+#include <C4Config.h>
 #include <C4Console.h>
+#include <C4DrawGL.h>
+#include <C4DrawD3D.h>
+#include <C4FullScreen.h>
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
-#include <C4FullScreen.h>
-#include "C4Version.h"
-
-#ifdef USE_GL
-#include <StdGL.h>
-#endif
-#ifdef USE_DIRECTX
-#include <StdD3D.h>
-#endif
-#include <C4windowswrapper.h>
-#include <shellapi.h>
-#include <fcntl.h>
-#include <mmsystem.h>
-#include <stdio.h>
-#include <io.h>
-#include <ctype.h>
-#include <conio.h>
+#include <C4Rect.h>
+#include <C4Version.h>
+#include <C4Viewport.h>
+#include <C4ViewportWindow.h>
+#include <StdRegistry.h>
 #include "resource.h"
-#include <C4UserMessages.h>
 
+#include <C4windowswrapper.h>
+#include <mmsystem.h>
+#include <shellapi.h>
 // multimon.h comes with DirectX, some people don't have DirectX.
 #ifdef HAVE_MULTIMON_H
 

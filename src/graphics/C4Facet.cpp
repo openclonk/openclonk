@@ -26,7 +26,7 @@
 #include <C4Facet.h>
 #include <C4GraphicsResource.h>
 
-#include <StdD3D.h>
+#include <C4DrawD3D.h>
 #include <StdAdaptors.h>
 
 #ifdef WITH_GLIB

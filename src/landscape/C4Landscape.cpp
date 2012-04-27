@@ -52,7 +52,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Record.h>
-#include <StdSurface8.h>
+#include <CSurface8.h>
 #include <StdPNG.h>
 #include <C4MaterialList.h>
 

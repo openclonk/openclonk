@@ -24,9 +24,9 @@
 /* Direct3D implementation of NewGfx */
 
 #include "C4Include.h"
-#include <StdD3D.h>
+#include <C4DrawD3D.h>
 
-#include <StdD3DShader.h>
+#include <C4DrawD3DShader.h>
 
 #include <C4App.h>
 #include <C4Markup.h>

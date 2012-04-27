@@ -19,9 +19,7 @@
 /* Common window for drawing and property tool dialogs in console mode */
 
 #include <C4Include.h>
-#include <C4DevmodeDlg.h>
-
-#ifdef WITH_DEVELOPER_MODE
+#include <C4ConsoleGTKDlg.h>
 
 #include <gtk/gtk.h>
 
@@ -129,5 +127,3 @@ void C4DevmodeDlg::SetTitle(GtkWidget* widget, const char* title)
 	if (gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num) == widget)
 		gtk_window_set_title(GTK_WINDOW(window), title);
 }
-
-#endif // WITH_DEVELOPER_MODE

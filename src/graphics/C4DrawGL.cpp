@@ -26,7 +26,7 @@
 /* OpenGL implementation of NewGfx */
 
 #include "C4Include.h"
-#include <StdGL.h>
+#include <C4DrawGL.h>
 
 #include <C4Surface.h>
 #include <C4Window.h>

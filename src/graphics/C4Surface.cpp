@@ -28,12 +28,12 @@
 #include <StdFile.h>
 #include <CStdFile.h>
 #include "C4App.h"
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #include <C4Window.h>
 #include <StdRegistry.h>
 #include <StdResStr.h>
-#include <StdDDraw2.h>
-#include <StdD3D.h>
+#include <C4Draw.h>
+#include <C4DrawD3D.h>
 #include <Bitmap256.h>
 #include <StdPNG.h>
 #include <C4Config.h>

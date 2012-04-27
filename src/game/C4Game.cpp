@@ -32,7 +32,7 @@
 
 #include <C4AulDebug.h>
 #include <C4DefList.h>
-#include <C4Effects.h>
+#include <C4Effect.h>
 #include <C4FileMonitor.h>
 #include <C4GameSave.h>
 #include <C4Record.h>

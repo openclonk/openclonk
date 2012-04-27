@@ -24,7 +24,7 @@
 #ifndef INC_C4Facet
 #define INC_C4Facet
 
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 const int32_t C4FCT_None   = 0,
 

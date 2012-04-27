@@ -22,7 +22,7 @@
 #include <C4Game.h>
 #include <C4Landscape.h>
 
-#import <StdGL.h>
+#import <C4DrawGL.h>
 
 #import "ClonkWindowController.h"
 #import "ClonkOpenGLView.h"

@@ -49,7 +49,7 @@
 # include <res/Cursor.h>
 # include <res/Brush.h>
 # include <C4Language.h>
-# include <C4DevmodeDlg.h>
+# include <C4ConsoleGTKDlg.h>
 
 # include <res/Line.h>
 # include <res/Rect.h>

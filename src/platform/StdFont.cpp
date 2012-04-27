@@ -28,7 +28,7 @@
 
 #include "Standard.h"
 #include <StdBuf.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 #include <C4Surface.h>
 #include <C4Markup.h>
 #include <stdexcept>

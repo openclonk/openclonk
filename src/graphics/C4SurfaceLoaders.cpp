@@ -31,7 +31,7 @@
 
 #include <Bitmap256.h>
 #include <StdPNG.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
 {

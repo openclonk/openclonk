@@ -8,7 +8,7 @@
 #include "C4GroupSet.h"
 #include "C4Components.h"
 
-#include "StdGL.h"
+#include "C4DrawGL.h"
 #include "StdColors.h"
 
 #ifdef USE_GL

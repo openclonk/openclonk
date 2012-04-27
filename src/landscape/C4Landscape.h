@@ -30,7 +30,7 @@
 #include "C4Shape.h"
 #include "C4LandscapeRender.h"
 
-#include <StdSurface8.h>
+#include <CSurface8.h>
 #include <C4Material.h>
 
 const uint8_t GBM = 128,

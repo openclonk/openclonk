@@ -25,7 +25,7 @@
 /* Also contains some helper functions for various landscape effects */
 
 #include <C4Include.h>
-#include <C4Effects.h>
+#include <C4Effect.h>
 
 #include <C4DefList.h>
 #include <C4Object.h>

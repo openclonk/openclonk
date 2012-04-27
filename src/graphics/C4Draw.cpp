@@ -23,14 +23,13 @@
 
 /* NewGfx interfaces */
 #include "C4Include.h"
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 #include "C4App.h"
 #include <C4Window.h>
-#include <StdDDraw2.h>
-#include <StdD3D.h>
-#include <StdGL.h>
-#include <StdNoGfx.h>
+#include <C4DrawD3D.h>
+#include <C4DrawGL.h>
+#include <C4DrawT.h>
 #include <C4Markup.h>
 #include <StdFont.h>
 #include "C4Rect.h"

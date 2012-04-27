@@ -32,7 +32,7 @@
 #include <C4Def.h>
 #include <C4Fonts.h>
 
-#include <StdGL.h>
+#include <C4DrawGL.h>
 
 C4GraphicsResource::C4GraphicsResource():
 	idSfcCaption(0), idSfcButton(0), idSfcButtonD(0), idSfcScroll(0), idSfcContext(0),

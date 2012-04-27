@@ -38,7 +38,7 @@
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #include <StdRegistry.h>
 
 #ifdef _WIN32

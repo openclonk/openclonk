@@ -20,10 +20,10 @@
 // a wrapper class to DirectDraw surfaces
 
 #include "C4Include.h"
-#include <StdSurface8.h>
+#include <CSurface8.h>
 #include <Bitmap256.h>
 #include <StdPNG.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 #include <CStdFile.h>
 #include <Bitmap256.h>
 
