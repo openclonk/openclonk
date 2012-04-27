@@ -214,10 +214,10 @@ void C4Rope::Draw(C4Facet& cgo)
 		float x3 = x - 2.5 * (prev_y - y) / l;
 		float x4 = x + 2.5 * (prev_y - y) / l;
 
-		float y1 = prev_y + 2.5 * (prev_x - x) / l;
-		float y2 = prev_y - 2.5 * (prev_x - x) / l;
-		float y3 = y - 2.5 * (prev_x - x) / l;
-		float y4 = y + 2.5 * (prev_x - x) / l;
+		float y1 = prev_y - 2.5 * (prev_x - x) / l;
+		float y2 = prev_y + 2.5 * (prev_x - x) / l;
+		float y3 = y + 2.5 * (prev_x - x) / l;
+		float y4 = y - 2.5 * (prev_x - x) / l;
 
 		Vertices[i].x = x1;
 		Vertices[i].y = y1;
