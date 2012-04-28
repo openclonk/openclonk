@@ -9,9 +9,6 @@ static guide; // guide object
 
 protected func Initialize()
 {
-	// Dummy goal
-	CreateObject(Goal_Script);
-	
 	// Environment.
 	PlaceGrass(85);
 	
@@ -23,6 +20,7 @@ protected func InitializePlayer(int plr)
 	var clonk = GetCrew(plr, 0);
 	clonk->SetPosition(300, -150);
 	clonk->Fling(0, 0);
+	clonk->SetDir(DIR_Right);
 	clonk->CreateContents(Shovel);
 	clonk->CreateContents(Hammer);
 	clonk->CreateContents(Axe);
@@ -210,10 +208,9 @@ global func FxTutorialEnergyStop(object tg, e, tm) {
 
 protected func OnGuideMessageShown(int plr, int index)
 {
-	Log("index: %v player: %v", index, plr);
 	// Show where the guide is located in the HUD.
 	if (index == 3)	
-		TutArrowShowGUIPos(- 64 - 16 - GUI_Goal->GetDefHeight() / 2, 8 + GUI_Goal->GetDefHeight() / 2, 0, 40);
+		TutArrowShowGUIPos(guide->GetX(), guide->GetY() / 2, 0, 10+guide->GetDefHeight());
 	// Show the tools
 	if (index == 2) //show shovel
 		TutArrowShowTarget(FindObject(Find_ID(Shovel)));

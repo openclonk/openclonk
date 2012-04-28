@@ -1,5 +1,5 @@
 MsgTutIntro0=Wilkommen zum Siedlungstutorial von OpenClonk.
-MsgTutIntro1=Ich habe dich in diese idyllische Landschaft katapultiert, um dir die ersten Schritte des Siedlungsbraus zu zeigen.
+MsgTutIntro1=Ich habe dich in diese idyllische Landschaft katapultiert, um dir die ersten Schritte des Siedlungsbaus zu zeigen.
 MsgTutIntro2=Alles was du brauchen wirst sind die Grundwerkzeuge, die du bereits bei dir hast.
 MsgTutIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen linken Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
 MsgTutFoundrySite=Das erste Gebäude, das wir brauchen, ist der Hochofen. Benutze deinen Hammer um eine Baustelle zu errichten!
