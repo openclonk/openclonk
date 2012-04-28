@@ -96,12 +96,6 @@ public:
 	int Time,FPS;
 };
 
-#define C4ConsoleWindowClassname "C4Console"
-
-#ifdef _WIN32
-#define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
-#endif
-
 extern C4Console      Console;
 
 #endif

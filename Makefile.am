@@ -210,7 +210,7 @@ src/game/C4Viewport.cpp \
 src/game/C4Viewport.h \
 src/game/ClonkMain.cpp \
 src/gamescript/C4Effect.cpp \
-src/gamescript/C4Effect.h \
+src/gamescript/C4Effects.h \
 src/gamescript/C4FindObject.cpp \
 src/gamescript/C4FindObject.h \
 src/gamescript/C4GameScript.cpp \
@@ -309,6 +309,8 @@ src/gui/C4StartupPlrSelDlg.cpp \
 src/gui/C4StartupPlrSelDlg.h \
 src/gui/C4StartupScenSelDlg.cpp \
 src/gui/C4StartupScenSelDlg.h \
+src/gui/C4UpdateDlg.cpp \
+src/gui/C4UpdateDlg.h \
 src/gui/C4UpperBoard.cpp \
 src/gui/C4UpperBoard.h \
 src/landscape/C4Landscape.cpp \
@@ -591,12 +593,6 @@ clonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
 else
 clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
 endif
-endif
-
-if AUTOUPDATE
-clonk_SOURCES += \
-src/gui/C4UpdateDlg.cpp \
-src/gui/C4UpdateDlg.h
 endif
 
 clonk_CPPFLAGS = \

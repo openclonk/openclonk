@@ -420,17 +420,7 @@ namespace C4GUI
 		// update assigned window
 		if (pWindow)
 		{
-#ifdef _WIN32
-			RECT rtSize;
-			rtSize.left = 0;
-			rtSize.top = 0;
-			rtSize.right = rcBounds.Wdt;
-			rtSize.bottom = rcBounds.Hgt;
-			if (::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
-				pWindow->SetSize(rtSize.right-rtSize.left,rtSize.bottom-rtSize.top);
-#else
 			pWindow->SetSize(rcBounds.Wdt,rcBounds.Hgt);
-#endif // _WIN32
 		}
 	}
 
