@@ -203,3 +203,5 @@ local ActMap = {
 			NextAction = "Default",
 		},
 };
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;

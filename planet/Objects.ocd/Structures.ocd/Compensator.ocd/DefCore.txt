@@ -15,7 +15,5 @@ Value=20
 Mass=100
 Components=Coal=1;Metal=1
 Exclusive=1
-BlastIncinerate=1
-ContactIncinerate=1
 Construction=1
 IncompleteActivity=1

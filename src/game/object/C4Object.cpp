@@ -781,7 +781,7 @@ void C4Object::SetOCF()
 	if (OnFire)
 		OCF|=OCF_OnFire;
 	// OCF_Inflammable: Is not burning and is inflammable
-	if (!OnFire && Def->ContactIncinerate>0)
+	if (!OnFire && Def->GetPropertyInt(P_ContactIncinerate) > 0)
 		OCF|=OCF_Inflammable;
 	// OCF_FullCon: Is fully completed/grown
 	if (Con>=FullCon)
@@ -967,7 +967,7 @@ bool C4Object::ExecLife()
 	if (!::Game.iTick10)
 		if (InMat!=MNone)
 			if (::MaterialMap.Map[InMat].Incindiary)
-				if (Def->ContactIncinerate)
+				if (Def->GetPropertyInt(P_ContactIncinerate) > 0)
 				{
 					C4AulFunc *pCallFunc = GetFunc(PSF_OnInIncendiaryMaterial);
 					if (pCallFunc)
@@ -1254,8 +1254,8 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
 	// Energy (alive objects)
 	if (Alive) DoEnergy(-iLevel/3,false,C4FxCall_EngBlast, iCausedBy);
 	// Incinerate
-	if (Def->BlastIncinerate)
-		if (Damage>=Def->BlastIncinerate)
+	if (Def->GetPropertyInt(P_BlastIncinerate))
+		if (Damage >= Def->GetPropertyInt(P_BlastIncinerate))
 		{
 			C4AulFunc *pCallFunc = GetFunc(PSF_OnBlastIncinerationDamage);
 			if (pCallFunc)

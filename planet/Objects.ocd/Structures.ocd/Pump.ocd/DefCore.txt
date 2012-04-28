@@ -14,6 +14,5 @@ Mass=400
 Components=Wood=3;Metal=1
 Picture=280,0,28,32
 Exclusive=1
-BlastIncinerate=50
 Construction=1
 IncompleteActivity=1

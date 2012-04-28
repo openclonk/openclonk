@@ -58,8 +58,6 @@ void C4Def::DefaultDefCore()
 	Value=0;
 	Exclusive=0;
 	Category=0;
-	ContactIncinerate=0;
-	BlastIncinerate=0;
 	Constructable=0;
 	Rotateable=0;
 	RotatedEntrance=0;
@@ -74,7 +72,6 @@ void C4Def::DefaultDefCore()
 	ContactFunctionCalls=0;
 	Line=0;
 	LineIntersect=0;
-	NoBurnDecay=0;
 	IncompleteActivity=0;
 	AttractLightning=0;
 	Oversize=0;
@@ -90,9 +87,7 @@ void C4Def::DefaultDefCore()
 	NoStabilize=0;
 	ClosedContainer=0;
 	SilentCommands=0;
-	NoBurnDamage=0;
 	TemporaryCrew=0;
-	SmokeRate=100;
 	BlitMode=C4D_Blit_Normal;
 	NoBreath=0;
 	ConSizeOff=0;
@@ -193,9 +188,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Entrance,                      "Entrance",           Rect0             ));
 	pComp->Value(mkNamingAdapt(Collection,                    "Collection",         Rect0             ));
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
-	pComp->Value(mkNamingAdapt(ContactIncinerate,             "ContactIncinerate",  0                 ));
-	pComp->Value(mkNamingAdapt(BlastIncinerate,               "BlastIncinerate",    0                 ));
-	pComp->Value(mkNamingAdapt(BurnTurnTo,                    "BurnTo",             C4ID::None        ));
 	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
@@ -225,7 +217,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(LiftTop,                       "LiftTop",            0                 ));
 	pComp->Value(mkNamingAdapt(UprightAttach,                 "UprightAttach",      0                 ));
 	pComp->Value(mkNamingAdapt(GrowthType,                    "StretchGrowth",      0                 ));
-	pComp->Value(mkNamingAdapt(NoBurnDecay,                   "NoBurnDecay",        0                 ));
 	pComp->Value(mkNamingAdapt(IncompleteActivity,            "IncompleteActivity", 0                 ));
 	pComp->Value(mkNamingAdapt(AttractLightning,              "AttractLightning",   0                 ));
 	pComp->Value(mkNamingAdapt(Oversize,                      "Oversize",           0                 ));
@@ -241,9 +232,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoStabilize,                   "NoStabilize",        0                 ));
 	pComp->Value(mkNamingAdapt(ClosedContainer,               "ClosedContainer",    0                 ));
 	pComp->Value(mkNamingAdapt(SilentCommands,                "SilentCommands",     0                 ));
-	pComp->Value(mkNamingAdapt(NoBurnDamage,                  "NoBurnDamage",       0                 ));
 	pComp->Value(mkNamingAdapt(TemporaryCrew,                 "TemporaryCrew",      0                 ));
-	pComp->Value(mkNamingAdapt(SmokeRate,                     "SmokeRate",          100               ));
 	pComp->Value(mkNamingAdapt(BlitMode,                      "BlitMode",           C4D_Blit_Normal   ));
 	pComp->Value(mkNamingAdapt(NoBreath,                      "NoBreath",           0                 ));
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));

@@ -123,3 +123,6 @@ local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
+local BlastIncinerate = 1;
+local NoBurnDecay = 1;
+local ContactIncinerate = 2;

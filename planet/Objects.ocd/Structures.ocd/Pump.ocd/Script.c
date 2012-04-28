@@ -168,6 +168,7 @@ public func SetPumpableMaterials(string to_val)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local BlastIncinerate = 50;
 local ActMap = {
 	Pump = {
 		Prototype = Action,

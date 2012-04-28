@@ -12,7 +12,5 @@ VertexFriction=75,75,75
 Value=1
 Mass=1
 Components=Moss=1
-ContactIncinerate=1
-BlastIncinerate=1
 Rotate=1
 Float=1

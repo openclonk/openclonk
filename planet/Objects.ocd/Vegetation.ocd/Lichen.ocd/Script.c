@@ -38,6 +38,8 @@ public func Harvest(object clonk)
 
 local Name = "$Name$";
 local Description = "$Description$";
+local BlastIncinerate = 1;
+local ContactIncinerate = 3;
 local ActMap = {
 	Grow = {
 		Prototype = Action,

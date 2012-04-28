@@ -127,6 +127,7 @@ func SearchWater()
 	}	
 }
 
+local BlastIncinerate = 1;
 
 
 

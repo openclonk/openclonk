@@ -14,7 +14,6 @@ Mass=4500
 Components=Wood=6;Metal=3
 Collection=2,5,20,10
 Exclusive=1
-BlastIncinerate=100
 Construction=1
 ContainBlast=1
 IncompleteActivity=1

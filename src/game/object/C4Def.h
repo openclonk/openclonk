@@ -124,8 +124,6 @@ public:
 	int32_t Value;
 	int32_t Exclusive;
 	int32_t Category;
-	int32_t ContactIncinerate; // 0 off 1 high - 5 low
-	int32_t BlastIncinerate; // 0 off 1 - x if > damage
 	int32_t Constructable;
 	int32_t Rotateable;
 	int32_t Float;
@@ -139,7 +137,6 @@ public:
 	int32_t ContactFunctionCalls;
 	int32_t Line;
 	int32_t LineIntersect;
-	int32_t NoBurnDecay;
 	int32_t IncompleteActivity;
 	int32_t AttractLightning;
 	int32_t Oversize;
@@ -157,9 +154,7 @@ public:
 	char STimerCall[C4AUL_MAX_Identifier];
 	int32_t ClosedContainer;  // if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 	int32_t SilentCommands;   // if set, no command failure messages are printed
-	int32_t NoBurnDamage;     // if set, the object won't take damage when burning
 	int32_t TemporaryCrew;    // if set, info objects are not written into regular player files
-	int32_t SmokeRate;        // amount of smoke produced when on fire. 100 is default
 	int32_t BlitMode;         // special blit mode for objects of this def. C4D_Blit_X
 	int32_t NoBreath;         // object does not need to breath, although it's living
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building

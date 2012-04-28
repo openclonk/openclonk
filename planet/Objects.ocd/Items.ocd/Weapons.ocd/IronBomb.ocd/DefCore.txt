@@ -14,5 +14,3 @@ Value=3
 Mass=10
 Components=IronBomb=1;
 Rotate=1
-ContactIncinerate=1
-BlastIncinerate=1

@@ -77,3 +77,5 @@ func Definition(def) {
 }
 local Name = "$Name$";
 local Description = "$Description$";
+local BlastIncinerate = 60;
+local ContactIncinerate = 5;

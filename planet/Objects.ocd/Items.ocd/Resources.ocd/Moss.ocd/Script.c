@@ -120,3 +120,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Placement = 3;
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;
