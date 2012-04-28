@@ -56,6 +56,35 @@ namespace
 		out4.x = v2.x - w/2.0f * (v1.y - v2.y) / l;
 		out4.y = v2.y + w/2.0f * (v1.x - v2.x) / l;
 	}
+
+	// Copied from StdGL.cpp... actually the rendering code should be moved
+	// there so we don't need to duplicate it here.
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, C4BltTransform* pTransform)
+	{
+		// Apply zoom
+		glTranslatef(ZoomX, ZoomY, 0.0f);
+		glScalef(Zoom, Zoom, 1.0f);
+		glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+		// Apply transformation
+		if (pTransform)
+		{
+			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+			glMultMatrixf(transform);
+
+			// Compute parity of the transformation matrix - if parity is swapped then
+			// we need to cull front faces instead of back faces.
+			const float det = transform[0]*transform[5]*transform[15]
+			                  + transform[4]*transform[13]*transform[3]
+			                  + transform[12]*transform[1]*transform[7]
+			                  - transform[0]*transform[13]*transform[7]
+			                  - transform[4]*transform[1]*transform[15]
+			                  - transform[12]*transform[5]*transform[3];
+			return det > 0;
+		}
+
+		return true;
+	}
 }
 
 C4RopeSegment::C4RopeSegment(C4Real x, C4Real y, C4Real m):
@@ -261,7 +290,8 @@ void C4Rope::Execute()
 	}
 }
 
-void C4Rope::Draw(C4Facet& cgo)
+// TODO: Move this to StdGL
+void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
 	Vertex Tmp[4];
 	Vertex Vertices[n_segments*2+4];
@@ -341,8 +371,17 @@ void C4RopeList::Execute()
 		Ropes[i]->Execute();
 }
 
-void C4RopeList::Draw(C4Facet& cgo)
+void C4RopeList::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
+	ZoomData z;
+	pDraw->GetZoom(&z);
+
+	glPushMatrix();
+	ApplyZoomAndTransform(z.X, z.Y, z.Zoom, pTransform);
+	glTranslatef(cgo.X-cgo.TargetX, cgo.Y-cgo.TargetY, 0.0f);
+
 	for(unsigned int i = 0; i < Ropes.size(); ++i)
-		Ropes[i]->Draw(cgo);
+		Ropes[i]->Draw(cgo, pTransform);
+
+	glPopMatrix();
 }

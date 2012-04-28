@@ -95,7 +95,7 @@ public:
 	C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments);
 	~C4Rope();
 
-	void Draw(C4Facet& cgo);
+	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
 	void Execute();
 private:
@@ -127,7 +127,7 @@ public:
 	C4RopeList();
 
 	void Execute();
-	void Draw(C4Facet& cgo);
+	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
 	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments);
 
