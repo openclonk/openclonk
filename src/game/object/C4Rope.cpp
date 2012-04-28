@@ -104,7 +104,7 @@ void C4RopeEnd::Execute(C4Real dt)
 
 C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments):
 	n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
-	k(Fix1), rho(Fix0), /* TODO: proper default values for k and rho */ n_iterations(5)
+	k(Fix1*3), rho(Fix1*3), /* TODO: proper default values for k and rho */ n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Failed to create rope: Path between objects is blocked");
