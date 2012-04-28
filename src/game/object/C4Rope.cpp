@@ -234,6 +234,8 @@ void C4Rope::Draw(C4Facet& cgo)
 	glVertexPointer(2, GL_FLOAT, 0, Vertices);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisable(GL_TEXTURE_2D);
 	glDrawArrays(GL_QUADS, 0, n_segments*4);
 }
 
