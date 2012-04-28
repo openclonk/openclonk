@@ -85,8 +85,13 @@ void C4RopeEnd::Execute(C4Real dt)
 	{
 		if(has_object)
 		{
-			obj->xdir += dt * fx / obj->Mass;
-			obj->ydir += dt * fy / obj->Mass;
+			// StaticBacks don't move, so don't apply xdir/ydir to them
+			// or the rope will behave weird
+			if( (obj->Category & C4D_StaticBack) == 0)
+			{
+				obj->xdir += dt * fx / obj->Mass;
+				obj->ydir += dt * fy / obj->Mass;
+			}
 		}
 		else
 		{
