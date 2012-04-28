@@ -190,7 +190,6 @@ struct C4AulContext
 {
 	C4Object *Obj;
 	C4PropList *Def;
-	struct C4AulScriptContext *Caller;
 };
 
 // execution context

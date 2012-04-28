@@ -534,29 +534,6 @@ static bool FnStopScriptProfiler(C4AulContext *ctx)
 	return true;
 }
 
-static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
-{
-	if (!text || text->GetData().isNull()) return NULL;
-	// Find correct script: translations of the context if possible, containing script as fallback
-	C4AulScript *script = NULL;
-	if (ctx->Def && ctx->Def->GetDef())
-		script = &(ctx->Def->GetDef()->Script);
-	else
-		script = ctx->Caller->Func->pOrgScript;
-	assert(script);
-	try
-	{
-		return ::Strings.RegString(script->Translate(text->GetCStr()).c_str());
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
-		// Trace
-		AulExec.LogCallStack();
-		return text;
-	}
-}
-
 static Nillable<C4String *> FnGetConstantNameByValue(C4AulContext *ctx, int value, Nillable<C4String *> name_prefix, int idx)
 {
 	C4String *name_prefix_s = name_prefix;
@@ -666,5 +643,5 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "this", Fn_this);
 	AddFunc(pEngine, "GetConstantNameByValue", FnGetConstantNameByValue, false);
 
-	AddFunc(pEngine, "Translate", FnTranslate);
+	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
 }
