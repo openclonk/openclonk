@@ -32,6 +32,16 @@ global func RandomX(int start, int end)
 	return Random(end - start + 1) + start;
 }
 
+// Returns the sign of x.
+global func Sign(int x)
+{
+	if (x > 0)
+		return 1;
+	else if (x < 0)
+		return -1;
+	return 0;
+}
+
 // Tangens.
 global func Tan(int angle, int radius, int prec)
 {
