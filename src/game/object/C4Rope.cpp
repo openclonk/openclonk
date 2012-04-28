@@ -162,8 +162,8 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	}
 
 	// Inner friction
-	fx += -(prev->GetVx() - next->GetVx()) * rho;
-	fy += -(prev->GetVy() - next->GetVy()) * rho;
+	fx += (prev->GetVx() - next->GetVx()) * rho;
+	fy += (prev->GetVy() - next->GetVy()) * rho;
 
 	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
 	prev->AddForce(-fx, -fy + (GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
