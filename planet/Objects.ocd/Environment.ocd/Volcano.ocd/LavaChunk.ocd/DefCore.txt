@@ -1,0 +1,16 @@
+[DefCore]
+id=LavaChunk
+Version=5,2,1,0
+Category=C4D_Object
+Width=12
+Height=12
+Offset=-6,-6
+Vertices=4
+VertexX=-3,-3,2,3
+VertexY=-3,2,-1,3
+VertexFriction=20,20,20,20
+Mass=15
+Picture=0,0,12,12
+Rotate=1
+StretchGrowth=1
+Oversize=1
