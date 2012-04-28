@@ -104,9 +104,14 @@ private:
 
 	int32_t n_segments;
 
+	// TODO: Add a "dynlength" feature which adapts the spring length to the
+	// distance of the two ends, up to a maximum... and/or callbacks to script
+	// when the length should be changed so that script can do it (and maybe
+	// play an animation, such as for the lift tower).
+
 	C4Real l; // spring length in equilibrium
 	C4Real k; // spring constant
-	C4Real rho; // friction constant
+	C4Real eta; // inner friction constant
 
 	C4RopeEnd* front;
 	C4RopeEnd* back;

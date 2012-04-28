@@ -21,6 +21,15 @@
 
 namespace
 {
+	struct Vertex {
+		Vertex() {}
+		Vertex(float x, float y): x(x), y(y) {}
+
+		float x;
+		float y;
+	};
+
+	// For use in initializer list
 	C4Real ObjectDistance(C4Object* first, C4Object* second)
 	{
 		C4Real dx = second->fix_x - first->fix_x;
@@ -28,8 +37,26 @@ namespace
 		return ftofix(sqrt(fixtof(dx*dx + dy*dy))); // TODO: Replace by integer sqrt
 	}
 
+	// To be used by the Solve() template function:
 	C4Object* GetObject(C4RopeSegment* segment) { return NULL; }
 	C4Object* GetObject(C4RopeEnd* end) { return end->GetObject(); }
+
+	// Helper function for Draw: determines vertex positions for one segment
+	void VertexPos(Vertex& out1, Vertex& out2, Vertex& out3, Vertex& out4,
+		             const Vertex& v1, const Vertex& v2)
+	{
+		static const float w = 5.0f; // segment width
+		const float l = sqrt( (v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
+
+		out1.x = v1.x + w/2.0f * (v1.y - v2.y) / l;
+		out1.y = v1.y - w/2.0f * (v1.x - v2.x) / l;
+		out2.x = v1.x - w/2.0f * (v1.y - v2.y) / l;
+		out2.y = v1.y + w/2.0f * (v1.x - v2.x) / l;
+		out3.x = v2.x + w/2.0f * (v1.y - v2.y) / l;
+		out3.y = v2.y - w/2.0f * (v1.x - v2.x) / l;
+		out4.x = v2.x - w/2.0f * (v1.y - v2.y) / l;
+		out4.y = v2.y + w/2.0f * (v1.x - v2.x) / l;
+	}
 }
 
 C4RopeSegment::C4RopeSegment(C4Real x, C4Real y, C4Real m):
@@ -125,6 +152,9 @@ void C4RopeEnd::Execute(C4Real dt)
 			{
 				obj->xdir += dt * fx / obj->Mass;
 				obj->ydir += dt * fy / obj->Mass;
+
+				// TODO: Remove contact attachment if there is much force in opposite direction
+				// TODO: V redirection
 			}
 		}
 		else
@@ -143,12 +173,12 @@ void C4RopeEnd::Execute(C4Real dt)
 
 C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments):
 	n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
-	k(Fix1*3), rho(Fix1*3), /* TODO: proper default values for k and rho */ n_iterations(20)
+	k(Fix1*3), eta(Fix1*3), /* TODO: proper default values for k and eta */ n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
-		throw C4RopeError("Failed to create rope: Path between objects is blocked");
+		throw C4RopeError("Path between objects is blocked");
 	if(n_segments < 1)
-		throw C4RopeError("Failed to create rope: Segments < 1 given");
+		throw C4RopeError("Segments < 1 given");
 
 	// TODO: Have this as an array, not as a linked list -- it's ~static after all!
 	const C4Real m(Fix1);
@@ -201,8 +231,10 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	}
 
 	// Inner friction
-	fx += (prev->GetVx() - next->GetVx()) * rho;
-	fy += (prev->GetVy() - next->GetVy()) * rho;
+	fx += (prev->GetVx() - next->GetVx()) * eta;
+	fy += (prev->GetVy() - next->GetVy()) * eta;
+
+	// Could add air/water friction here
 
 	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
 	prev->AddForce(-fx, -fy + (GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
@@ -232,41 +264,44 @@ void C4Rope::Execute()
 
 void C4Rope::Draw(C4Facet& cgo)
 {
-	struct Vertex
+	Vertex Tmp[4];
+	Vertex Vertices[n_segments*2+4];
+
+	VertexPos(Vertices[0], Vertices[1], Tmp[0], Tmp[1],
+	          Vertex(fixtof(front->GetX()), fixtof(front->GetY())),
+	          Vertex(fixtof(front->segment->GetX()), fixtof(front->segment->GetY())));
+
+	unsigned int i = 2;
+	for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next, i += 2)
 	{
-		float x, y;
-	};
+		Vertex v1(fixtof(cur->GetX()),
+		          fixtof(cur->GetY()));
+		Vertex v2(fixtof(cur->next ? cur->next->GetX() : back->GetX()), 
+		          fixtof(cur->next ? cur->next->GetY() : back->GetY()));
 
-	// TODO: Change this so that it draws a quad strip
-	Vertex Vertices[n_segments*4+4]; unsigned int i = 0;
-	for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next)
-	{
-		float prev_x = fixtof(cur->prev ? cur->prev->GetX() : front->GetX());
-		float prev_y = fixtof(cur->prev ? cur->prev->GetY() : front->GetY());
-		float x = fixtof(cur->GetX());
-		float y = fixtof(cur->GetY());
+		// Obtain vertex positions
+		// TODO: If angle > 90 degrees (dot product negative), then swap indices below
+		// Might need to adapt texture coordinates for this segment as well to avoid graphical glitch
+		// when going from 89 to 91 degrees.
+		VertexPos(Tmp[2], Tmp[3], Vertices[i+2], Vertices[i+3], v1, v2);
+		Tmp[2].x = (Tmp[0].x + Tmp[2].x)/2.0f;
+		Tmp[2].y = (Tmp[0].y + Tmp[2].y)/2.0f;
+		Tmp[3].x = (Tmp[1].x + Tmp[3].x)/2.0f;
+		Tmp[3].y = (Tmp[1].y + Tmp[3].y)/2.0f;
 
-		float l = sqrt( (prev_x - x) * (prev_x - x) + (prev_y - y) * (prev_y - y));
+		// renormalize
+		float dx = Tmp[3].x - Tmp[2].x;
+		float dy = Tmp[3].y - Tmp[2].y;
+		float dx2 = Vertices[i-1].x - Vertices[i-2].x;
+		float dy2 = Vertices[i-1].y - Vertices[i-2].y;
+		const float d = (dx2*dx2+dy2*dy2)/(dx*dx2+dy*dy2);
+		Vertices[i  ].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) - (Tmp[3].x - Tmp[2].x)*d/2.0f;
+		Vertices[i  ].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) - (Tmp[3].y - Tmp[2].y)*d/2.0f;
+		Vertices[i+1].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) + (Tmp[3].x - Tmp[2].x)*d/2.0f;
+		Vertices[i+1].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) + (Tmp[3].y - Tmp[2].y)*d/2.0f;
 
-		float x1 = prev_x + 2.5 * (prev_y - y) / l;
-		float x2 = prev_x - 2.5 * (prev_y - y) / l;
-		float x3 = x - 2.5 * (prev_y - y) / l;
-		float x4 = x + 2.5 * (prev_y - y) / l;
-
-		float y1 = prev_y - 2.5 * (prev_x - x) / l;
-		float y2 = prev_y + 2.5 * (prev_x - x) / l;
-		float y3 = y + 2.5 * (prev_x - x) / l;
-		float y4 = y - 2.5 * (prev_x - x) / l;
-
-		Vertices[i].x = x1;
-		Vertices[i].y = y1;
-		Vertices[i+1].x = x2;
-		Vertices[i+1].y = y2;
-		Vertices[i+2].x = x3;
-		Vertices[i+2].y = y3;
-		Vertices[i+3].x = x4;
-		Vertices[i+3].y = y4;
-		i += 4;
+		Tmp[0] = Vertices[i+2];
+		Tmp[1] = Vertices[i+3];
 	}
 
 	glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
@@ -275,7 +310,7 @@ void C4Rope::Draw(C4Facet& cgo)
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisable(GL_TEXTURE_2D);
-	glDrawArrays(GL_QUADS, 0, n_segments*4);
+	glDrawArrays(GL_QUAD_STRIP, 0, n_segments*2+4);
 }
 
 C4RopeList::C4RopeList()
