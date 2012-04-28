@@ -1255,6 +1255,11 @@ static C4Object *FnComposeContents(C4Object *Obj, C4ID c_id)
 	return Obj->ComposeContents(c_id);
 }
 
+static C4String *FnGetNeededMatStr(C4Object *Obj)
+{
+	return String(Obj->GetNeededMatStr().getData());
+}
+
 static bool FnMakeCrewMember(C4Object *Obj, long iPlayer)
 {
 	if (!ValidPlr(iPlayer)) return false;
@@ -2343,6 +2348,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CreateContents", FnCreateContents);
 	AddFunc(pEngine, "ShiftContents", FnShiftContents);
 	AddFunc(pEngine, "ComposeContents", FnComposeContents);
+	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
 	AddFunc(pEngine, "GetID", FnGetID);
 	AddFunc(pEngine, "Contents", FnContents);
 	AddFunc(pEngine, "ScrollContents", FnScrollContents);

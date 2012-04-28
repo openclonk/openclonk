@@ -1508,13 +1508,6 @@ static C4String *FnMaterialName(C4AulContext* cthr, long iMat)
 	return String(::MaterialMap.Map[iMat].Name);
 }
 
-static C4String *FnGetNeededMatStr(C4AulContext* cthr)
-{
-	// local/safety
-	if (!cthr->Obj) throw new NeedObjectContext("GetNeededMatStr");
-	return String(cthr->Obj->GetNeededMatStr().getData());
-}
-
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
 {
 	// set adjust
@@ -2491,7 +2484,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetTime", FnGetTime);
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);
 	AddFunc(pEngine, "MaterialName", FnMaterialName);
-	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
