@@ -204,9 +204,9 @@ void C4RopeEnd::Execute(C4Real dt)
 	fx = fy = Fix0;
 }
 
-C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
-	w(5.0f), Graphics(graphics), n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
-	k(Fix1*3), eta(Fix1*3), n_iterations(20)
+C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
+	C4PropListNumbered(Prototype), w(5.0f), Graphics(graphics), n_segments(n_segments),
+	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), eta(Fix1*3), n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Path between objects is blocked");
@@ -272,8 +272,8 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	// Could add air/water friction here
 
 	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
-	prev->AddForce(-fx, -fy + (GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
-	next->AddForce(fx, fy + (GetObject(next) ? Fix0 : next->GetMass() * ::Landscape.Gravity/5));
+	prev->AddForce(-fx, -fy + (::GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
+	next->AddForce(fx, fy + (::GetObject(next) ? Fix0 : next->GetMass() * ::Landscape.Gravity/5));
 }
 
 void C4Rope::Execute()
@@ -399,7 +399,7 @@ C4RopeList::C4RopeList()
 
 C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics)
 {
-	Ropes.push_back(new C4Rope(first_obj, second_obj, n_segments, graphics));
+	Ropes.push_back(new C4Rope(RopeAul.GetPropList(), first_obj, second_obj, n_segments, graphics));
 	return Ropes.back();
 }
 

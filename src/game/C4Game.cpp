@@ -2188,6 +2188,7 @@ bool C4Game::InitScriptEngine()
 	InitCoreFunctionMap(&ScriptEngine);
 	InitObjectFunctionMap(&ScriptEngine);
 	InitGameFunctionMap(&ScriptEngine);
+	Ropes.InitFunctionMap(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())

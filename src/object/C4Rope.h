@@ -89,15 +89,18 @@ private:
 	};
 };
 
-class C4Rope
+class C4Rope: public C4PropListNumbered
 {
 public:
-	C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
+	C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
 	~C4Rope();
 
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
 	void Execute();
+
+	C4Object* GetFront() const { return front->GetObject(); }
+	C4Object* GetBack() const { return back->GetObject(); }
 private:
 	template<typename TRopeType1, typename TRopeType2>
 	void Solve(TRopeType1* prev, TRopeType2* next);
@@ -122,10 +125,27 @@ private:
 	unsigned int n_iterations;
 };
 
+class C4RopeAul: public C4AulScript
+{
+public:
+	C4RopeAul();
+	virtual ~C4RopeAul();
+
+	virtual bool Delete() { return false; }
+	virtual C4PropList* GetPropList() { return RopeDef; }
+
+	void InitFunctionMap(C4AulScriptEngine* pEngine);
+
+protected:
+	C4PropList* RopeDef;
+};
+
 class C4RopeList
 {
 public:
 	C4RopeList();
+	
+	void InitFunctionMap(C4AulScriptEngine* pEngine) { RopeAul.InitFunctionMap(pEngine); }
 
 	void Execute();
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
@@ -133,6 +153,7 @@ public:
 	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
 
 private:
+	C4RopeAul RopeAul;
 	std::vector<C4Rope*> Ropes;
 };
 
