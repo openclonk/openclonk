@@ -43,9 +43,8 @@ namespace
 
 	// Helper function for Draw: determines vertex positions for one segment
 	void VertexPos(Vertex& out1, Vertex& out2, Vertex& out3, Vertex& out4,
-		             const Vertex& v1, const Vertex& v2)
+		             const Vertex& v1, const Vertex& v2, float w)
 	{
-		static const float w = 5.0f; // segment width
 		const float l = sqrt( (v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
 
 		out1.x = v1.x + w/2.0f * (v1.y - v2.y) / l;
@@ -172,7 +171,7 @@ void C4RopeEnd::Execute(C4Real dt)
 }
 
 C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments):
-	n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
+	w(5.0f), n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
 	k(Fix1*3), eta(Fix1*3), /* TODO: proper default values for k and eta */ n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
@@ -269,21 +268,32 @@ void C4Rope::Draw(C4Facet& cgo)
 
 	VertexPos(Vertices[0], Vertices[1], Tmp[0], Tmp[1],
 	          Vertex(fixtof(front->GetX()), fixtof(front->GetY())),
-	          Vertex(fixtof(front->segment->GetX()), fixtof(front->segment->GetY())));
+	          Vertex(fixtof(front->segment->GetX()), fixtof(front->segment->GetY())), w);
 
 	unsigned int i = 2;
+	bool parity = true;
 	for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next, i += 2)
 	{
 		Vertex v1(fixtof(cur->GetX()),
 		          fixtof(cur->GetY()));
 		Vertex v2(fixtof(cur->next ? cur->next->GetX() : back->GetX()), 
 		          fixtof(cur->next ? cur->next->GetY() : back->GetY()));
+		Vertex v3(fixtof(cur->prev ? cur->prev->GetX() : front->GetX()),
+		          fixtof(cur->prev ? cur->prev->GetY() : front->GetY()));
+
+		// Parity -- parity swaps for each pointed angle (<90 deg)
+		float cx = v1.x - v3.x;
+		float cy = v1.y - v3.y;
+		float ex = v1.x - v2.x;
+		float ey = v1.y - v2.y;
+		if(cx*ex+cy*ey > 0)
+			parity = !parity;
 
 		// Obtain vertex positions
-		// TODO: If angle > 90 degrees (dot product negative), then swap indices below
-		// Might need to adapt texture coordinates for this segment as well to avoid graphical glitch
-		// when going from 89 to 91 degrees.
-		VertexPos(Tmp[2], Tmp[3], Vertices[i+2], Vertices[i+3], v1, v2);
+		if(parity)
+			VertexPos(Tmp[2], Tmp[3], Vertices[i+2], Vertices[i+3], v1, v2, w);
+		else
+			VertexPos(Tmp[3], Tmp[2], Vertices[i+3], Vertices[i+2], v1, v2, w);
 		Tmp[2].x = (Tmp[0].x + Tmp[2].x)/2.0f;
 		Tmp[2].y = (Tmp[0].y + Tmp[2].y)/2.0f;
 		Tmp[3].x = (Tmp[1].x + Tmp[3].x)/2.0f;
@@ -295,10 +305,10 @@ void C4Rope::Draw(C4Facet& cgo)
 		float dx2 = Vertices[i-1].x - Vertices[i-2].x;
 		float dy2 = Vertices[i-1].y - Vertices[i-2].y;
 		const float d = (dx2*dx2+dy2*dy2)/(dx*dx2+dy*dy2);
-		Vertices[i  ].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) - (Tmp[3].x - Tmp[2].x)*d/2.0f;
-		Vertices[i  ].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) - (Tmp[3].y - Tmp[2].y)*d/2.0f;
-		Vertices[i+1].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) + (Tmp[3].x - Tmp[2].x)*d/2.0f;
-		Vertices[i+1].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) + (Tmp[3].y - Tmp[2].y)*d/2.0f;
+		Vertices[i  ].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) - BoundBy((Tmp[3].x - Tmp[2].x)*d, -w, w)/2.0f;
+		Vertices[i  ].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) - BoundBy((Tmp[3].y - Tmp[2].y)*d, -w, w)/2.0f;
+		Vertices[i+1].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) + BoundBy((Tmp[3].x - Tmp[2].x)*d, -w, w)/2.0f;
+		Vertices[i+1].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) + BoundBy((Tmp[3].y - Tmp[2].y)*d, -w, w)/2.0f;
 
 		Tmp[0] = Vertices[i+2];
 		Tmp[1] = Vertices[i+3];

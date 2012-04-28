@@ -102,6 +102,8 @@ private:
 	template<typename TRopeType1, typename TRopeType2>
 	void Solve(TRopeType1* prev, TRopeType2* next);
 
+	const float w; // Width of rope
+
 	int32_t n_segments;
 
 	// TODO: Add a "dynlength" feature which adapts the spring length to the
