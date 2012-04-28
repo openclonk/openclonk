@@ -48,11 +48,45 @@ void C4RopeSegment::Execute(C4Real dt)
 {
 	vx += dt * fx / m;
 	vy += dt * fy / m;
+	
+	//if(vx*vx + vy*vy > 0)//itofix(1,10000))
+	{
+		int old_x = fixtoi(x);
+		int old_y = fixtoi(y);
+		int new_x = fixtoi(x + dt * vx);
+		int new_y = fixtoi(y + dt * vy);
+		int max_p = Max(abs(new_x - old_x), abs(new_y - old_y));
 
-	// TODO: Collision detection
+		int prev_x = old_x;
+		int prev_y = old_y;
+		bool hit = false;
+		for(int i = 1; i <= max_p; ++i)
+		{
+			int inter_x = old_x + i * (new_x - old_x) / max_p;
+			int inter_y = old_y + i * (new_y - old_y) / max_p;
+			if(GBackSolid(inter_x, inter_y))
+			{
+				/*if(inter_x != old_x)*/ x = prev_x;
+				/*if(inter_y != old_y)*/ y = prev_y;
+				hit = true;
 
-	x += dt * vx;
-	y += dt * vy;
+				// TODO: friction, v redirection
+				vx = Fix0;
+				vy = Fix0;
+
+				break;
+			}
+
+			prev_x = inter_x;
+			prev_y = inter_y;
+		}
+
+		if(!hit)
+		{
+			x += dt * vx;
+			y += dt * vy;
+		}
+	}
 
 	fx = fy = Fix0;
 }
