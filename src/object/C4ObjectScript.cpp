@@ -2129,7 +2129,11 @@ static C4PropList* FnCreateRope(C4AulContext *cthr, C4Object* First, C4Object* S
 {
 	try
 	{
-		return Game.Ropes.CreateRope(First, Second, iSegments, &Graphics->GetDef()->Graphics);
+		if(!Graphics) return false;
+		C4Def* Def = Graphics->GetDef();
+		if(!Def) return false;
+
+		return Game.Ropes.CreateRope(First, Second, iSegments, &Def->Graphics);
 	}
 	catch(const C4RopeError& err)
 	{
