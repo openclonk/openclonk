@@ -237,21 +237,18 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 	return true;
 }
 
-static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, C4Value *Data)
+static C4Value FnSetCrewExtraData(C4Object *Obj, C4String * DataName, const C4Value & Data)
 {
-	if (!cthr->Obj)
-		throw new NeedObjectContext("SetCrewExtraData");
-
-	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
+	const char *strDataName = FnStringPar(DataName);
 	// valid crew with info? (for great nullpointer prevention)
-	if (!cthr->Obj->Info) return C4Value();
+	if (!Obj->Info) return C4Value();
 	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data->GetType() != C4V_Nil &&
-	    Data->GetType() != C4V_Int &&
-	    Data->GetType() != C4V_Bool &&
-	    Data->GetType() != C4V_String) return C4VNull;
+	if (Data.GetType() != C4V_Nil &&
+	    Data.GetType() != C4V_Int &&
+	    Data.GetType() != C4V_Bool &&
+	    Data.GetType() != C4V_String) return C4VNull;
 	// get pointer on info...
-	C4ObjectInfo *pInfo = cthr->Obj->Info;
+	C4ObjectInfo *pInfo = Obj->Info;
 	// no name list created yet?
 	if (!pInfo->ExtraData.pNames)
 		// create name list
@@ -259,29 +256,26 @@ static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V, 
 	// data name already exists?
 	long ival;
 	if ((ival = pInfo->ExtraData.pNames->GetItemNr(strDataName)) != -1)
-		pInfo->ExtraData[ival] = *Data;
+		pInfo->ExtraData[ival] = Data;
 	else
 	{
 		// add name
 		pInfo->ExtraData.pNames->AddName(strDataName);
 		// get val id & set
 		if ((ival = pInfo->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-		pInfo->ExtraData[ival] = *Data;
+		pInfo->ExtraData[ival] = Data;
 	}
 	// ok, return the value that has been set
-	return *Data;
+	return Data;
 }
 
-static C4Value FnGetCrewExtraData(C4AulContext *cthr, C4Value *strDataName_C4V)
+static C4Value FnGetCrewExtraData(C4Object *Obj, C4String * DataName)
 {
-	if (!cthr->Obj)
-		throw new NeedObjectContext("GetCrewExtraData");
-
-	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
+	const char *strDataName = FnStringPar(DataName);
 	// valid crew with info?
-	if (!cthr->Obj->Info) return C4Value();
+	if (!Obj->Info) return C4Value();
 	// get pointer on info...
-	C4ObjectInfo *pInfo = cthr->Obj->Info;
+	C4ObjectInfo *pInfo = Obj->Info;
 	// no name list?
 	if (!pInfo->ExtraData.pNames) return C4Value();
 	long ival;
@@ -449,80 +443,60 @@ static bool FnExecuteCommand(C4Object *Obj)
 	return !!Obj->ExecuteCommand();
 }
 
-static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
+static bool FnSetCommand(C4Object *Obj, C4String * szCommand, C4Object * pTarget,
+                         const C4Value & Tx, int iTy, C4Object * pTarget2,
+                         const C4Value & Data, int iRetries)
 {
-	PAR(string, szCommand); PAR(object, pTarget); PAR(any, Tx); PAR(int, iTy);
-	PAR(object, pTarget2); PAR(any, Data); PAR(int, iRetries);
-	// Object
-	if (!cthr->Obj)
-		throw new NeedObjectContext("SetCommand");
 	// Command
-	if (!szCommand) return C4VFalse;
+	if (!szCommand) return false;
 	long iCommand = CommandByName(FnStringPar(szCommand));
-	if (!iCommand) { cthr->Obj->ClearCommands(); return C4VFalse; }
+	if (!iCommand) { Obj->ClearCommands(); return false; }
 	// Special: convert iData to szText
 	C4String *szText=NULL;
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
-	else
-		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
+	// FIXME: throw if Tx isn't int
 	// Set
-	cthr->Obj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,false,Data,iRetries,szText);
+	Obj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,false,Data,iRetries,szText);
 	// Success
-	return C4VTrue;
+	return true;
 }
 
-static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
+static bool FnAddCommand(C4Object *Obj, C4String * szCommand, C4Object * pTarget,
+                            const C4Value & Tx, int iTy, C4Object * pTarget2,
+                            int iUpdateInterval, const C4Value & Data, int iRetries, int iBaseMode)
 {
-	PAR(string, szCommand); PAR(object, pTarget); PAR(any, Tx); PAR(int, iTy);
-	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
-	// Object
-	if (!cthr->Obj)
-		throw new NeedObjectContext("AddCommand");
 	// Command
-	if (!szCommand) return C4VFalse;
+	if (!szCommand) return false;
 	long iCommand = CommandByName(FnStringPar(szCommand));
-	if (!iCommand) return C4VFalse;
+	if (!iCommand) return false;
 	// Special: convert iData to szText
 	C4String *szText=NULL;
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
-	else
-		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
-	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,false,iRetries,szText,iBaseMode));
+	return Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,false,iRetries,szText,iBaseMode);
 }
 
-static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
+static bool FnAppendCommand(C4Object *Obj, C4String * szCommand, C4Object * pTarget,
+                               const C4Value & Tx, int iTy, C4Object * pTarget2,
+                               int iUpdateInterval, const C4Value & Data, int iRetries, int iBaseMode)
 {
-	PAR(string, szCommand); PAR(object, pTarget); PAR(any, Tx); PAR(int, iTy);
-	PAR(object, pTarget2); PAR(int, iUpdateInterval); PAR(any, Data); PAR(int, iRetries); PAR(int, iBaseMode);
-	// Object
-	if (!cthr->Obj)
-		throw new NeedObjectContext("AppendCommand");
 	// Command
-	if (!szCommand) return C4VFalse;
+	if (!szCommand) return false;
 	long iCommand = CommandByName(FnStringPar(szCommand));
-	if (!iCommand) return C4VFalse;
+	if (!iCommand) return false;
 	// Special: convert iData to szText
 	C4String *szText=NULL;
 	if (iCommand==C4CMD_Call)
 		szText=Data.getStr();
-	else
-		if (!Tx.CheckConversion(C4V_Int)) Tx = C4VInt(0);
 	// Add
-	return C4VBool(cthr->Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,true,iRetries,szText,iBaseMode));
+	return Obj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,true,Data,true,iRetries,szText,iBaseMode);
 }
 
-static C4Value FnGetCommand(C4AulContext *cthr, C4Value *pPars)
+static C4Value FnGetCommand(C4Object *Obj, int iElement, int iCommandNum)
 {
-	PAR(int, iElement); PAR(int, iCommandNum);
-
-	// safety
-	if (!cthr->Obj)
-		throw new NeedObjectContext("GetCommand");
-
-	C4Command * Command = cthr->Obj->Command;
+	C4Command * Command = Obj->Command;
 	// Move through list to Command iCommandNum
 	while (Command && iCommandNum--) Command = Command->Next;
 	// Object has no command or iCommandNum was to high or < 0
@@ -2296,20 +2270,6 @@ C4ScriptConstDef C4ScriptObjectConstMap[]=
 	{ NULL, C4V_Nil, 0}
 };
 
-#define MkFnC4V (C4Value (*)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
-                                                 C4Value*, C4Value*, C4Value*, C4Value*, C4Value*))
-
-C4ScriptFnDef C4ScriptObjectFnMap[]=
-{
-	{ "SetCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Any     ,C4V_Int    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnSetCommand },
-	{ "AddCommand",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAddCommand },
-	{ "AppendCommand",        1  ,C4V_Bool     ,{ C4V_String  ,C4V_Object  ,C4V_Any     ,C4V_Int     ,C4V_Object  ,C4V_Int     ,C4V_Any    ,C4V_Int    ,C4V_Int    ,C4V_Any}  ,0 ,                                   FnAppendCommand },
-	{ "GetCommand",           1  ,C4V_Any      ,{ C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnGetCommand },
-	{ "SetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetCrewExtraData,          0 },
-	{ "GetCrewExtraData",     1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetCrewExtraData,          0 },
-
-	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
-};
 
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 {
@@ -2320,9 +2280,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
 
-	// add all def script funcs
-	for (C4ScriptFnDef *pDef = &C4ScriptObjectFnMap[0]; pDef->Identifier; pDef++)
-		pEngine->AddFunc(pDef->Identifier, pDef);
 //  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 	AddFunc(pEngine, "DoCon", FnDoCon);
 	AddFunc(pEngine, "GetCon", FnGetCon);
@@ -2471,4 +2428,11 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
+
+	AddFunc(pEngine, "SetCommand", FnSetCommand);
+	AddFunc(pEngine, "AddCommand", FnAddCommand);
+	AddFunc(pEngine, "AppendCommand", FnAppendCommand);
+	AddFunc(pEngine, "GetCommand", FnGetCommand);
+	AddFunc(pEngine, "SetCrewExtraData", FnSetCrewExtraData);
+	AddFunc(pEngine, "GetCrewExtraData", FnGetCrewExtraData);
 }
