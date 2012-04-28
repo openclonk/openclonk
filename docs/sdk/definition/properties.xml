@@ -135,6 +135,26 @@ Stand = {
           <col>Integer</col>
           <col>Placement: 0 land surface, 1 in liquid, 2 in mid-air, 3 underground, 4 land surface and underground.</col>
         </row>
+		<row>
+          <literal_col>BlastIncinerate</literal_col>
+          <col>Integer</col>
+          <col>Incineration by explosion: 0 none, otherwise the damage level of incineration.</col>
+        </row>
+		<row>
+          <literal_col>BurnTo</literal_col>
+          <col>C4ID</col>
+          <col>Definition change upon incineration.</col>
+        </row>
+		<row>
+          <literal_col>NoBurnDecay</literal_col>
+          <col>Integer</col>
+          <col>0 or 1. If 1, the object does not decompose if burning.</col>
+        </row>
+		<row>
+          <literal_col>ContactIncinerate</literal_col>
+          <col>Integer</col>
+          <col>Probability of incineration by contact: 0 none, or 1 (high) to 5 (low).</col>
+        </row>
       </table>
     </text>
   </part>

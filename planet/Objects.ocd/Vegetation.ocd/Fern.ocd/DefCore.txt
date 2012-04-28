@@ -14,6 +14,4 @@ VertexCNAT=16,8
 Mass=1
 StretchGrowth=1
 Oversize=1
-ContactIncinerate=3
-BlastIncinerate=1
 Float=1

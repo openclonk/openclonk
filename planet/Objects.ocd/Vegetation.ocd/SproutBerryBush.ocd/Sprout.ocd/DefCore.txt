@@ -16,5 +16,3 @@ Rotate=1
 NoStabilize=1
 StretchGrowth=1
 IncompleteActivity=1
-ContactIncinerate=2
-BlastIncinerate=1

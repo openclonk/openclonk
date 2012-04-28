@@ -14,5 +14,3 @@ Value=4
 Mass=9
 Components=Wood=2;
 Rotate=1
-ContactIncinerate=1
-BlastIncinerate=5

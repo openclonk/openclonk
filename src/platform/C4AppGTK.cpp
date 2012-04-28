@@ -24,10 +24,9 @@
 #include <C4Include.h>
 #include <C4App.h>
 
-#ifdef WITH_GLIB
 #include <C4Window.h>
-#include <StdGL.h>
-#include <StdDDraw2.h>
+#include <C4DrawGL.h>
+#include <C4Draw.h>
 #include <StdFile.h>
 #include <StdBuf.h>
 
@@ -389,4 +388,3 @@ void C4AbstractApp::MessageDialog(const char * message)
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }
-#endif /* WITH_GLIB */

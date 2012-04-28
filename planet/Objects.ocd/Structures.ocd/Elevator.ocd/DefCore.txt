@@ -13,7 +13,6 @@ Value=50
 Mass=1500
 Components=Wood=3;Metal=1
 Exclusive=1
-BlastIncinerate=100
 Construction=1
 ContainBlast=1
 IncompleteActivity=1

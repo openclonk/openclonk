@@ -29,8 +29,8 @@
 #include "C4Version.h"
 #include <C4Config.h>
 
-#include <StdGL.h>
-#include <StdDDraw2.h>
+#include <C4DrawGL.h>
+#include <C4Draw.h>
 #include <StdFile.h>
 #include <StdBuf.h>
 

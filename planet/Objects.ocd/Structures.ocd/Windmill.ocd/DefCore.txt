@@ -16,7 +16,6 @@ Mass=2500
 Components=Rock=6;Wood=2;
 Collection=-18,35,15,15
 Exclusive=1
-BlastIncinerate=100
 Construction=1
 ContainBlast=1
 IncompleteActivity=1

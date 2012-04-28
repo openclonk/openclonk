@@ -22,7 +22,7 @@
 #include "C4Include.h"
 #include <StdMeshMaterial.h>
 #include <StdMeshUpdate.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 #include <cctype>
 #include <memory>

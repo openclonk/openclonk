@@ -26,7 +26,7 @@
 #include <C4Gui.h>
 #include <C4Landscape.h>
 
-#include <StdGL.h>
+#include <C4DrawGL.h>
 
 #import "ClonkOpenGLView.h"
 #import "ClonkWindowController.h"

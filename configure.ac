@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.67])
 AC_INIT([clonk], [5])
 AC_COPYRIGHT([©2005-2011 Günther Brammer])
-AC_CONFIG_SRCDIR([/src/C4Game.cpp])
+AC_CONFIG_SRCDIR([/src/C4Include.h])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
@@ -324,12 +324,13 @@ AS_IF([test $with_upnp = yes], [
 AM_CONDITIONAL(LIBUPNP, [test "$have_libupnp" = yes])
 
 # Automatic Update
-AC_ARG_WITH([automatic-update],
-  [AS_HELP_STRING([--with-automatic-update],[enable support for automatic engine updates [default=yes]])],
-  , [with_automatic_update="yes"])
-if test "$with_automatic_update" = "yes"; then
+AC_ARG_ENABLE([autoupdate],
+  [AS_HELP_STRING([--disable-autoupdate],[support for automatic engine updates [default=yes]])],
+  , [enable_autoupdate="yes"])
+AS_IF([test "$enable_autoupdate" = yes], [
   AC_DEFINE([WITH_AUTOMATIC_UPDATE], 1, [Enable automatic update system])
-fi
+])
+AM_CONDITIONAL(AUTOUPDATE, [test "$enable_autoupdate" = yes])
 
 if test $win32 = false; then
   # pthread
@@ -384,19 +385,20 @@ AM_CONDITIONAL(RECENT_GCC, [test $RECENT_GCC = yes])
 AC_OUTPUT
 
 echo "Configuration:
+  CFLAGS:	$CFLAGS
+  CXXFLAGS:	$CXXFLAGS
   Debug:	$enable_debug
   Debugrec:	$enable_debugrec
   Pure console:	$enable_console
+  Autoupdate:	$enable_autoupdate
   DirectX:	$with_directx
   OpenGL:	$with_gl
+  Nat/LibUPnP:	$ac_cv_header_natupnp_h/$have_libupnp
   Sound:	$enable_sound
   SDL_Mixer:	$with_sdl_mixer
   OpenAL:	$with_openal
   GTK+: 	$with_gtk
-  X11:  	$have_x
-  Nat/LibUPnP:	$ac_cv_header_natupnp_h/$have_libupnp
-  CFLAGS:	$CFLAGS
-  CXXFLAGS:	$CXXFLAGS"
+  X11:  	$have_x"
 
 if test "$enable_sdlmainloop" = yes; then echo "  SDL:  	mainloop";
 else echo "  SDL:  	$with_sdl"; fi

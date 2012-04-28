@@ -23,41 +23,22 @@
 #include <C4Include.h>
 #include <C4Console.h>
 
-#include <C4Aul.h>
-#include <C4Application.h>
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4UserMessages.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Object.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4Texture.h>
-
-#include <StdFile.h>
-#include <StdRegistry.h>
-
-#ifdef USE_GL
-#include <StdGL.h>
-#endif
-
-#ifdef USE_DIRECTX
-#include <StdD3D.h>
-#endif
-
+#include <C4AppWin32Impl.h>
 #include "C4ConsoleGUI.h"
+#include <C4DrawGL.h>
+#include <C4DrawD3D.h>
+#include <C4Landscape.h>
+#include <C4Object.h>
+#include <C4PlayerList.h>
+#include <C4Texture.h>
+#include <C4Version.h>
 #include "C4Viewport.h"
+#include <StdRegistry.h>
 
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 #include <commdlg.h>
 #include "resource.h"
-
 #define GetWideLPARAM(c) reinterpret_cast<LPARAM>(static_cast<wchar_t*>(GetWideChar(c)))
 
 inline StdStrBuf::wchar_t_holder LoadResStrW(const char *id) { return GetWideChar(LoadResStr(id)); }

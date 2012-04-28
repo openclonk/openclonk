@@ -7,15 +7,16 @@
 		Functions to be used as documented in the docs.
 --*/
 
+
 // fire drawing modes
-static const C4Fx_FireMode_Default=0; // determine mode by category
+static const C4Fx_FireMode_Default     = 0; // determine mode by category
 static const C4Fx_FireMode_LivingVeg   = 2 ;// C4D_Living and C4D_StaticBack
 static const C4Fx_FireMode_StructVeh   = 1; // C4D_Structure and C4D_Vehicle
 static const C4Fx_FireMode_Object      = 3; // other (C4D_Object and no bit set (magic))
 static const C4Fx_FireMode_Last        = 3; // largest valid fire mode
 
 
-
+// Returns whether the object is burning.
 global func OnFire()
 {
 	if(!this) return false;
@@ -24,6 +25,7 @@ global func OnFire()
 	return effect.strength;
 }
 
+// Extinguishes the calling object with specified strength.
 global func Extinguish(strength)
 {
 	if(!this) return false;
@@ -37,6 +39,7 @@ global func Extinguish(strength)
 	return true;
 }
 
+// Incinerates the calling object with specified strength.
 global func Incinerate(strength, int caused_by, blasted, incinerating_object)
 {
 	if(!this) return false;
@@ -49,13 +52,13 @@ global func Incinerate(strength, int caused_by, blasted, incinerating_object)
 	return true;
 }
 
-// called when an object is hit by an explosion (and can burn)
+// Called when an object is hit by an explosion (and can burn).
 global func OnBlastIncinerationDamage(int level, int player)
 {
 	return this->Incinerate(level, player);
 }
 
-// called if the object is for example in lava
+// Called if the object is submerged in incendiary material (for example in lava).
 global func OnInIncendiaryMaterial()
 {
 	return this->Incinerate(10, NO_OWNER);
@@ -67,7 +70,9 @@ global func MakeNonFlammable()
 	if (!this) 
 		return;
 	return AddEffect("IntNonFlammable", this, 300);
-}	
+}
+
+/*-- Fire Effects --*/
 
 global func FxIntNonFlammableEffect(string new_name)
 {
@@ -87,16 +92,16 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	// fail if already on fire
 	//if (target->OnFire()) return -1;
 	// Fail if target is dead and has NoBurnDecay, to prevent eternal fires.
-	if (target->GetCategory() & C4D_Living && !target->GetAlive() && target->GetDefCoreVal("NoBurnDecay", "DefCore"))
+	if (target->GetCategory() & C4D_Living && !target->GetAlive() && target.NoBurnDecay)
 		return -1;
 	
 	// structures must eject contents now, because DoCon is not guaranteed to be executed!
 	// In extinguishing material
-	var fire_caused=true;
-	var burn_to=target->GetDefCoreVal("BurnTo", "DefCore");
+	var fire_caused = true;
+	var burn_to = target.BurnTo;
 	var mat;
-	if (MaterialName(mat=GetMaterial(target->GetX(),target->GetY())))
-		if(GetMaterialVal("Extinguisher", "[Material]", mat, 0))
+	if (MaterialName(mat = GetMaterial(target->GetX(), target->GetY())))
+		if (GetMaterialVal("Extinguisher", "[Material]", mat, 0))
 		{
 			// blasts should changedef in water, too!
 			if (blasted) if(burn_to != nil) target->ChangeDef(burn_to);
@@ -108,7 +113,7 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	
 	// eject contents
 	var obj;
-	if (!target->GetDefCoreVal("IncompleteActivity", "DefCore") && !target->GetDefCoreVal("NoBurnDecay", "DefCore"))
+	if (!target->GetDefCoreVal("IncompleteActivity", "DefCore") && !target.NoBurnDecay)
 	{
 		for(var i=target->ContentsCount(); obj=target->Contents(--i);)
 		{
@@ -156,7 +161,7 @@ global func FxFireStart(object target, effect, bool temp, int caused_by, bool bl
 	effect.caused_by = caused_by; // used in C4Object::GetFireCause and timer! <- fixme?
 	effect.blasted = blasted;
 	effect.incinerating_obj = incinerating_object;
-	effect.no_burn_decay = target->GetDefCoreVal("NoBurnDecay", "DefCore");
+	effect.no_burn_decay = target.NoBurnDecay;
 
 	// Set values
 	//target->FirePhase=Random(MaxFirePhase);
@@ -217,7 +222,7 @@ global func FxFireTimer(object target, effect, int time)
 			{
 				if(obj->GetCategory() & C4D_Living) if(!obj->GetAlive()) continue;
 				
-				var inf = obj->GetDefCoreVal("ContactIncinerate", "DefCore");
+				var inf = obj.ContactIncinerate;
 				if(!inf) continue;
 				var amount = (effect.strength/3) / Max(1, inf);
 	
@@ -227,7 +232,7 @@ global func FxFireTimer(object target, effect, int time)
 		}
 	}
 	
-//	if(time % 20 == 0)target->Message(Format("<c ee0000>%d</c>", effect.strength));
+	//if(time % 20 == 0)target->Message(Format("<c ee0000>%d</c>", effect.strength));
 	// causes on object
 	//target->ExecFire(effect_number, caused_by);
 	if(target->GetAlive())

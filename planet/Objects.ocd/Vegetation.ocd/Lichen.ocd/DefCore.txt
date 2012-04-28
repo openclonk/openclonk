@@ -14,4 +14,3 @@ VertexFriction=50,100
 VertexCNAT=16,8
 Components=Moss=4
 Mass=10
-BlastIncinerate=1

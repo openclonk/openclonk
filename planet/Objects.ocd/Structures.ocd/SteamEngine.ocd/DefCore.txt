@@ -16,7 +16,6 @@ Mass=4000
 Components=Rock=6;Metal=3
 Collection=-31,9,10,10
 Exclusive=1
-BlastIncinerate=130
 Construction=1
 ContainBlast=1
 IncompleteActivity=1

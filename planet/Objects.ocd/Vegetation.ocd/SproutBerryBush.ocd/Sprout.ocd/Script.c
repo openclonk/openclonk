@@ -21,6 +21,8 @@ Attach = {
 	FacetBase=1,
 }
 };
+local BlastIncinerate = 1;
+local ContactIncinerate = 2;
 
 // can be harvested?
 func IsCrop(){ return true; }

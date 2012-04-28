@@ -25,7 +25,7 @@
 #include <C4Include.h>
 #ifdef USE_CONSOLE
 #include <C4Window.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 #include <C4Application.h>
 
 #ifdef HAVE_LIBREADLINE

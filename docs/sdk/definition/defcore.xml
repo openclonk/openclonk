@@ -146,21 +146,6 @@
           <col>0 or 1. Determines whether the object blocks objects behind it.</col>
         </row>
         <row>
-          <literal_col>ContactIncinerate</literal_col>
-          <col>Integer</col>
-          <col>Probability of incineration by contact: 0 none, or 1 (high) to 5 (low).</col>
-        </row>
-        <row>
-          <literal_col>BlastIncinerate</literal_col>
-          <col>Integer</col>
-          <col>Incineration by explosion: 0 none, otherwise the damage level of incineration.</col>
-        </row>
-        <row>
-          <literal_col>BurnTo</literal_col>
-          <col>C4ID</col>
-          <col>Definition change upon incineration.</col>
-        </row>
-        <row>
           <literal_col>Base</literal_col>
           <col>Integer</col>
           <col>0 or 1. Determines whether the building can be a home base.</col>
@@ -266,11 +251,6 @@
           <col>0 no basement, 1 normal basement, other values reserved.</col>
         </row>
         <row>
-          <literal_col>NoBurnDecay</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, the object does not decompose if burning.</col>
-        </row>
-        <row>
           <literal_col>IncompleteActivity</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the object can have activities set even if it's not complete.</col>
@@ -326,19 +306,9 @@
           <col>0 or 1. Can be used to prevent failure messages caused by failed commands.</col>
         </row>
         <row>
-          <literal_col>NoBurnDamage</literal_col>
-          <col>Integer</col>
-          <col>0 or 1. If 1, the object does not take damage when burning.</col>
-        </row>
-        <row>
           <literal_col>TemporaryCrew</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, the object is not stored in the permanent crew of a player.</col>
-        </row>
-        <row>
-          <literal_col>SmokeRate</literal_col>
-          <col>Integer</col>
-          <col>0 to 200: determines the amount of smoke caused by the burning object. 0 for no smoke, 100 is default. If other than 0, the object will always generate maximum smoke when traveling at high velocity (e.g. a fire arrow).</col>
         </row>
         <row>
           <literal_col>BlitMode</literal_col>

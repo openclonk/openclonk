@@ -6,3 +6,5 @@ private func Initialize()
 }
 
 local Name = "$Name$";
+local BlastIncinerate = 1;
+local ContactIncinerate = 3;

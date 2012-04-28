@@ -145,6 +145,8 @@ C4StringTable::C4StringTable()
 	P[P_Plane] = "Plane";
 	P[P_Tooltip] = "Tooltip";
 	P[P_Placement] = "Placement";
+	P[P_BlastIncinerate] = "BlastIncinerate";
+	P[P_ContactIncinerate] = "ContactIncinerate";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

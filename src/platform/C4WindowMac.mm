@@ -14,9 +14,7 @@
  */
  
 #include <C4Include.h>
-#include <Standard.h>
-#include <StdRegistry.h>
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #include <C4Window.h>
 #include <C4Version.h>
 #include <C4Application.h>

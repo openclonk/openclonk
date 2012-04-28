@@ -28,9 +28,6 @@ global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
 global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
 global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
 global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
-global func GetDefContactIncinerate() { return GetDefCoreVal("ContactIncinerate", "DefCore"); }
-global func GetDefBlastIncinerate() { return GetDefCoreVal("BlastIncinerate", "DefCore"); }
-global func GetDefBurnTo()      { return GetDefCoreVal("BurnTo", "DefCore"); }
 global func GetDefBase()        { return GetDefCoreVal("Base", "DefCore"); }
 global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
 global func GetDefCrewMember()  { return GetDefCoreVal("CrewMember", "DefCore"); }
@@ -48,7 +45,6 @@ global func GetDefLiftTop()     { return GetDefCoreVal("LiftTop", "DefCore"); }
 global func GetDefUprightAttach() { return GetDefCoreVal("UprightAttach", "DefCore"); }
 global func GetDefStretchGrowth() { return GetDefCoreVal("StretchGrowth", "DefCore"); }
 global func GetDefBasement()    { return GetDefCoreVal("Basement", "DefCore"); }
-global func GetDefNoBurnDecay() { return GetDefCoreVal("NoBurnDecay", "DefCore"); }
 global func GetDefIncompleteActivity()  { return GetDefCoreVal("IncompleteActivity", "DefCore"); }
 global func GetDefAttractLightning()  { return GetDefCoreVal("AttractLightning", "DefCore"); }
 global func GetDefOversize()    { return GetDefCoreVal("Oversize", "DefCore"); }
@@ -60,9 +56,7 @@ global func GetDefVehicleControl()  { return GetDefCoreVal("VehicleControl", "De
 global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
 global func GetDefClosedContainer() { return GetDefCoreVal("ClosedContainer", "DefCore"); }
 global func GetDefSilentCommands() { return GetDefCoreVal("SilentCommands", "DefCore"); }
-global func GetDefNoBurnDamage(){ return GetDefCoreVal("NoBurnDamage", "DefCore"); }
 global func GetDefTemporaryCrew() { return GetDefCoreVal("TemporaryCrew", "DefCore"); }
-global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); }
 global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
 global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
 

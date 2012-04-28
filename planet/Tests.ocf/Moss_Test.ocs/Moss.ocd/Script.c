@@ -91,4 +91,5 @@ protected func TryToLichen()
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
-
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;

@@ -536,7 +536,6 @@ static bool FnStopScriptProfiler(C4AulContext *ctx)
 
 static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
 {
-	assert(!ctx->Obj || ctx->Def == ctx->Obj->Def);
 	if (!text || text->GetData().isNull()) return NULL;
 	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
