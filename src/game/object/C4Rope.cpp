@@ -29,6 +29,11 @@ namespace
 		float y;
 	};
 
+	struct DrawVertex: Vertex {
+		float u;
+		float v;
+	};
+
 	// For use in initializer list
 	C4Real ObjectDistance(C4Object* first, C4Object* second)
 	{
@@ -199,14 +204,16 @@ void C4RopeEnd::Execute(C4Real dt)
 	fx = fy = Fix0;
 }
 
-C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments):
-	w(5.0f), n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
-	k(Fix1*3), eta(Fix1*3), /* TODO: proper default values for k and eta */ n_iterations(20)
+C4Rope::C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
+	w(5.0f), Graphics(graphics), n_segments(n_segments), l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)),
+	k(Fix1*3), eta(Fix1*3), n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Path between objects is blocked");
 	if(n_segments < 1)
 		throw C4RopeError("Segments < 1 given");
+	if(Graphics->Type != C4DefGraphics::TYPE_Bitmap)
+		throw C4RopeError("Can only use bitmap as rope graphics");
 
 	// TODO: Have this as an array, not as a linked list -- it's ~static after all!
 	const C4Real m(Fix1);
@@ -280,7 +287,7 @@ void C4Rope::Execute()
 			if(cur->next)
 				Solve(cur, cur->next);
 			else
-				 Solve(cur, back);
+				Solve(cur, back);
 		}
 
 		for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next)
@@ -294,11 +301,17 @@ void C4Rope::Execute()
 void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
 	Vertex Tmp[4];
-	Vertex Vertices[n_segments*2+4];
+	DrawVertex Vertices[n_segments*2+4];
+	const float rsl = fixtof(l)/5.0 * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
 
 	VertexPos(Vertices[0], Vertices[1], Tmp[0], Tmp[1],
 	          Vertex(fixtof(front->GetX()), fixtof(front->GetY())),
 	          Vertex(fixtof(front->segment->GetX()), fixtof(front->segment->GetY())), w);
+
+	Vertices[0].u = 0.0f;
+	Vertices[0].v = 0.0f;
+	Vertices[1].u = 1.0f;
+	Vertices[1].v = 0.0f;
 
 	unsigned int i = 2;
 	bool parity = true;
@@ -316,6 +329,8 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 		float cy = v1.y - v3.y;
 		float ex = v1.x - v2.x;
 		float ey = v1.y - v2.y;
+		
+		// TODO: Another way to draw this would be to insert a "pseudo" segment so that there are no pointed angles at all
 		if(cx*ex+cy*ey > 0)
 			parity = !parity;
 
@@ -324,6 +339,7 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 			VertexPos(Tmp[2], Tmp[3], Vertices[i+2], Vertices[i+3], v1, v2, w);
 		else
 			VertexPos(Tmp[3], Tmp[2], Vertices[i+3], Vertices[i+2], v1, v2, w);
+
 		Tmp[2].x = (Tmp[0].x + Tmp[2].x)/2.0f;
 		Tmp[2].y = (Tmp[0].y + Tmp[2].y)/2.0f;
 		Tmp[3].x = (Tmp[1].x + Tmp[3].x)/2.0f;
@@ -340,17 +356,39 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 		Vertices[i+1].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) + BoundBy((Tmp[3].x - Tmp[2].x)*d, -w, w)/2.0f;
 		Vertices[i+1].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) + BoundBy((Tmp[3].y - Tmp[2].y)*d, -w, w)/2.0f;
 
+		Vertices[i].u = 0.0f; //parity ? 0.0f : 1.0f;
+		Vertices[i].v = i/2 * rsl;
+		Vertices[i+1].u = 1.0f; //parity ? 1.0f : 0.0f;
+		Vertices[i+1].v = i/2 * rsl;
+
 		Tmp[0] = Vertices[i+2];
 		Tmp[1] = Vertices[i+3];
 	}
 
-	glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
-	glVertexPointer(2, GL_FLOAT, 0, Vertices);
+	Vertices[i].u = 0.0f; //parity ? 0.0f : 1.0f;
+	Vertices[i].v = i/2 * rsl;
+	Vertices[i+1].u = 1.0f; //parity ? 1.0f : 0.0f;
+	Vertices[i+1].v = i/2 * rsl;
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, (*Graphics->GetBitmap()->ppTex)->texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glVertexPointer(2, GL_FLOAT, sizeof(DrawVertex), &Vertices->x);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertex), &Vertices->u);
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisable(GL_TEXTURE_2D);
 	glDrawArrays(GL_QUAD_STRIP, 0, n_segments*2+4);
+
+	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_BLEND);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 C4RopeList::C4RopeList()
@@ -359,9 +397,9 @@ C4RopeList::C4RopeList()
 		delete Ropes[i];
 }
 
-C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments)
+C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics)
 {
-	Ropes.push_back(new C4Rope(first_obj, second_obj, n_segments));
+	Ropes.push_back(new C4Rope(first_obj, second_obj, n_segments, graphics));
 	return Ropes.back();
 }
 

@@ -92,7 +92,7 @@ private:
 class C4Rope
 {
 public:
-	C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments);
+	C4Rope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
 	~C4Rope();
 
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
@@ -103,6 +103,7 @@ private:
 	void Solve(TRopeType1* prev, TRopeType2* next);
 
 	const float w; // Width of rope
+	C4DefGraphics* Graphics;
 
 	int32_t n_segments;
 
@@ -129,7 +130,7 @@ public:
 	void Execute();
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
-	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments);
+	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
 
 private:
 	std::vector<C4Rope*> Ropes;

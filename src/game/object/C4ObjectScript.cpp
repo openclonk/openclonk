@@ -2125,11 +2125,11 @@ static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int i
 	return true;
 }
 
-static bool FnCreateRope(C4AulObjectContext *cthr, C4Object* First, C4Object* Second, int iSegments)
+static bool FnCreateRope(C4AulContext *cthr, C4Object* First, C4Object* Second, int iSegments, C4PropList* Graphics)
 {
 	try
 	{
-		Game.Ropes.CreateRope(First, Second, iSegments);
+		Game.Ropes.CreateRope(First, Second, iSegments, &Graphics->GetDef()->Graphics);
 		return true;
 	}
 	catch(const C4RopeError& err)
