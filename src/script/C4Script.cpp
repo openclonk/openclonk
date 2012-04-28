@@ -158,7 +158,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 
 static C4PropList *Fn_this(C4AulContext *cthr)
 {
-	return cthr->Obj ? cthr->Obj : cthr->Def;
+	return cthr->Def;
 }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
