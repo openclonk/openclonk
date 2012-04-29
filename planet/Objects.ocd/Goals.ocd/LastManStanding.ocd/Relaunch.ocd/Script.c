@@ -92,6 +92,9 @@ public func Selected(object menu, object selector, bool alt)
 		GiveWeapon(selector->GetSymbol(), alt);
 	
 	has_selected = true;
+	// Close menu manually, to prevent selecting more weapons.
+	if (menu)
+		menu->Close(true);
 
 	if (!hold)
 		RelaunchClonk();
