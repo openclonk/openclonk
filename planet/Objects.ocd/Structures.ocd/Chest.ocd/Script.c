@@ -18,12 +18,20 @@ protected func Construction()
 /*-- Contents --*/
 
 public func IsContainer() { return true; }
+public func IsInteractable() { return true; }
 
 private func MaxContentsCount()
 {
 	return 5;
 }
 
+
+// Open contentsmenu via interaction
+public func Interact(object clonk, int mode)
+{
+	clonk->CreateContentsMenus();
+}
+	
 protected func RejectCollect()
 {
 	if (ContentsCount() >= MaxContentsCount())
