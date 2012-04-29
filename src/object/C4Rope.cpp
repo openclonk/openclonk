@@ -106,11 +106,29 @@ void C4RopeSegment::AddForce(C4Real x, C4Real y)
 
 void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 {
-	vx += dt * fx / m;
-	vy += dt * fy / m;
-
 	int old_x = fixtoi(x);
 	int old_y = fixtoi(y);
+
+	// Sticking friction: If an object has contact with the landscape and it
+	// is at rest then one needs to exceed a certain threshold force until it
+	// starts moving.
+	if(GBackSolid(old_x+1, old_y) || GBackSolid(old_x-1, old_y) || GBackSolid(old_x, old_y-1) || GBackSolid(old_x, old_y+1))
+	{
+		if(vx*vx + vy*vy < Fix1)
+		{
+			if(fx*fx + fy*fy < Fix1*4)
+			{
+				fx = fy = Fix0;
+				vx = vy = Fix0;
+				return;
+			}
+		}
+	}
+
+	vx += dt * fx / m;
+	vy += dt * fy / m;
+	fx = fy = Fix0;
+
 	int new_x = fixtoi(x + dt * vx);
 	int new_y = fixtoi(y + dt * vy);
 	int max_p = Max(abs(new_x - old_x), abs(new_y - old_y));
@@ -142,10 +160,14 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 			C4Real vy2 =  Sin75 * vx + Cos75 * vy;
 			const C4Real d = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
 
+			// TODO: 5 should maybe not be hardcoded but depend on the magnitude of the force applied, and
+			// we should check more than a single pixel. There's some more potential for optimization here.
 			if(d != Fix0 && !GBackSolid(fixtoi(x + vx1*5/d), fixtoi(y + vy1*5/d)))
 				{ fx += mu * vx1; fy += mu * vy1; }
 			else if(d != Fix0 && !GBackSolid(fixtoi(x + vx2*5/d), fixtoi(y + vy2*5/d)))
 				{ fx += mu * vx2; fy += mu * vy2; }
+			else
+				vx = vy = Fix0; // 
 
 			break;
 		}
@@ -158,7 +180,6 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 	{
 		x += dt * vx;
 		y += dt * vy;
-		fx = fy = Fix0;
 	}
 }
 
