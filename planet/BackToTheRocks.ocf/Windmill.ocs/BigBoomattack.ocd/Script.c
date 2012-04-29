@@ -24,6 +24,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if(fuel<=0)
 	{
 		DoFireworks();
+		return;
 	}
 
 	var ignition = iEffectTime % 15;
