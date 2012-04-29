@@ -90,6 +90,43 @@ namespace
 
 		return true;
 	}
+	
+
+	// Computes force redirection for a segment at x/y with velocity vx/vy. This
+	// is used to get around obstacles on landscapes.
+	bool ForceRedirection(C4Real x, C4Real y, C4Real vx, C4Real vy, C4Real& rx, C4Real& ry)
+	{
+		// The procedure is the following:
+		// it seems like our way is blocked by something, so we try manuevering around
+		// it, either left or right. Which way we take is determined by checking whether
+		// or not there is solid material in a 75 degree angle relative to the direction
+		// of movement.
+		// TODO: A much better way might be to use the pathfinder to find the way to one of
+		// the adjacent segments (whichever is further away <-> stronger force in that direction)
+		// and set force redirection into the direction of the path toward it.
+		const C4Real Cos75 = Cos(itofix(75));
+		const C4Real Sin75 = Sin(itofix(75));
+
+		C4Real vx1 =  Cos75 * vx + Sin75 * vy;
+		C4Real vy1 = -Sin75 * vx + Cos75 * vy;
+		C4Real vx2 =  Cos75 * vx - Sin75 * vy;
+		C4Real vy2 =  Sin75 * vx + Cos75 * vy;
+		const C4Real v = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
+
+		// TODO: This should maybe not be hardcoded but depend on the magnitude of the force applied,
+		// the segment length, the actual distance to the adjacent segments, or a combination of them.
+		const C4Real l = itofix(5);
+
+		// TODO: We should check more than a single pixel. There's some more potential for optimization here.
+		if(v != Fix0 && !GBackSolid(fixtoi(x + vx1*l/v), fixtoi(y + vy1*l/v)))
+			{ rx = vx1/v; ry = vy1/v; }
+		else if(v != Fix0 && !GBackSolid(fixtoi(x + vx2/v), fixtoi(y + vy2/v)))
+			{ rx = vx2/v; ry = vy2/v; }
+		else
+			return false;
+
+		return true;
+	}
 }
 
 C4RopeSegment::C4RopeSegment(C4Real x, C4Real y, C4Real m):
@@ -129,7 +166,7 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 	{
 		if(vx*vx + vy*vy < Fix1/4)
 		{
-			if(fx*fx + fy*fy < Fix1)
+			if(fx*fx + fy*fy < Fix1/4)
 			{
 				fx = fy = Fix0;
 				vx = vy = Fix0;
@@ -163,50 +200,11 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 			fx -= mu * vx; fy -= mu * vy; 
 
 			// Force redirection so that not every single pixel on a
-			// chunky landscape is an obstacle for the rope
-			const C4Real Cos75 = Cos(itofix(75));
-			const C4Real Sin75 = Sin(itofix(75));
-
-			C4Real vx1 =  Cos75 * vx + Sin75 * vy;
-			C4Real vy1 = -Sin75 * vx + Cos75 * vy;
-			C4Real vx2 =  Cos75 * vx - Sin75 * vy;
-			C4Real vy2 =  Sin75 * vx + Cos75 * vy;
-			const C4Real v = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
-
-			// TODO: 5 should maybe not be hardcoded but depend on the magnitude of the force applied
-			const C4Real l = itofix(5);
-
-/*			const C4Real Cos120 = Cos(itofix(120));
-			const C4Real Sin120 = Sin(itofix(120));*/
-
-			/*const C4Real pdx = prev ? (prev->GetX() - x) : Fix0;
-			const C4Real pdy = prev ? (prev->GetY() - y) : Fix0;
-			const C4Real ndx = next ? (next->GetX() - x) : Fix0;
-			const C4Real ndy = next ? (next->GetY() - y) : Fix0;
-			const C4Real pdl = ftofix(sqrt(fixtof(pdx*pdx+pdy*pdy)));
-			const C4Real ndl = ftofix(sqrt(fixtof(ndx*ndx+ndy*ndy)));
-
-			C4Real kp = Fix1;
-			if(vx*pdx+vy*pdy < 0 && pdl > l)
-				kp = (Fix1*3)/2 * (pdl - l);
-			C4Real kn = Fix1;
-			if(vx*ndx+vy*ndy < 0 && ndl > l)
-				kn = (Fix1*3)/2 * (ndl - l);*/
-
-			// We should check more than a single pixel. There's some more potential for optimization here.
-			if(v != Fix0 && !GBackSolid(fixtoi(x + vx1*l/v), fixtoi(y + vy1*l/v)))
-				{ rdt = Fix1/4; rx = vx1/v; ry = vy1/v; }
-			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx2/v), fixtoi(y + vy2/v)))
-				{ rdt = Fix1/4; rx = vx2/v; ry = vy2/v; }
-#if 0
-			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx1*3*l/v), fixtoi(y + vy1*3*l/v)))
-				{ /* let's believe there is some way if we go back a bit */ rrx = x; rry = y; rx = (Cos120*vx + Sin120*vy)/v; ry = (-Sin120 * vx + Cos120*vy)/v; }
-			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx2*3*l/v), fixtoi(y + vy2*3*l/v)))
-				{ /* let's believe there is some way if we go back a bit */ rrx = x; rry = y; rx = (Cos120*vx - Sin120*vy)/v; ry = (+Sin120 * vx + Cos120*vy)/v; }
-#endif
-			else
-				{ vx = vy = Fix0; }
-//			vx = vy = Fix0; // 
+			// chunky landscape is an obstacle for the rope.
+			if(ForceRedirection(x, y, vx, vy, rx, ry))
+				rdt = Fix1/4; // Enable force redirection for 1/4th of a frame
+/*			else
+				{ vx = vy = Fix0; }*/
 
 			break;
 		}
@@ -271,15 +269,32 @@ void C4RopeEnd::Execute(C4Real dt)
 	{
 		if(has_object)
 		{
+			// If attached object is contained, apply force to container
+			C4Object* target = obj;
+			while(target->Contained) target = target->Contained;
+
 			// StaticBacks don't move, so don't apply xdir/ydir to them
 			// or the rope will behave weird
-			if( (obj->Category & C4D_StaticBack) == 0)
+			if( (target->Category & C4D_StaticBack) == 0)
 			{
-				obj->xdir += dt * fx / obj->Mass;
-				obj->ydir += dt * fy / obj->Mass;
+				target->xdir += dt * fx / obj->Mass;
+				target->ydir += dt * fy / obj->Mass;
 
 				// TODO: Remove contact attachment if there is much force in opposite direction
-				// TODO: V redirection
+
+				// Force redirection
+				if(target->xdir*target->xdir + target->ydir*target->ydir >= Fix1)
+				{
+					// Check if the object has contact to the landscape
+					// TODO: Check if contact is in direction of movement
+					long iResult = 0;
+					for (int i = 0; i < target->Shape.VtxNum; ++i)
+						iResult |= target->Shape.GetVertexContact(i, CNAT_Left | CNAT_Right | CNAT_Top | CNAT_Bottom, target->GetX(), target->GetY());
+
+					if(iResult)
+						if(ForceRedirection(target->fix_x, target->fix_y, target->xdir, target->ydir, rx, ry))
+							rdt = Fix1/4; // Enable force redirection for 1/4th of a frame
+				}
 			}
 		}
 		else
@@ -354,12 +369,15 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 		C4Real fx = (dx / d) * k * (d - l);
 		C4Real fy = (dy / d) * k * (d - l);
 
-		if(prev->rdt == Fix0) //x == Fix0 && prev->ry == Fix0)
+		// If force redirection is active, move into direction of redirected force
+		// instaed. This is used to pull around corners in the landscape.
+
+		if(prev->rdt == Fix0)
 			prev->AddForce(-fx, -fy);
 		else
 			prev->AddForce(prev->rx * k * (d - l), prev->ry * k * (d - l));
 
-		if(next->rdt == Fix0) //x == Fix0 && next->ry == Fix0)
+		if(next->rdt == Fix0)
 			next->AddForce(fx, fy);
 		else
 			next->AddForce(next->rx * k * (d - l), next->ry * k * (d - l));
