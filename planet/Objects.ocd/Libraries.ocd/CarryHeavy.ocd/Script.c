@@ -60,6 +60,13 @@ func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp)
 	if(tmp) return;
 	if(!clonk) return -1;
 	if(Contained() != clonk) return -1;
+	
+	// if the clonk is inside, we can skip the animation
+	if(clonk->Contained())
+	{
+		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		return -1;
+	}
 
 	//Stop the clonk from moving, and tell the clonk's control library
 	//it now has a hand action
@@ -147,6 +154,10 @@ func FxIntDropHeavyStart(object clonk, proplist effect, bool tmp)
 	if(clonk->GetEffect("IntCarryHeavy"))
 		clonk->RemoveEffect("IntCarryHeavy");
 
+	// if the clonk is inside, we don't play the animation
+	if(clonk->Contained())
+		return -1;
+
 	clonk->SetTurnForced(clonk->GetDir());
 	clonk->SetHandAction(1);
 	clonk->SetAction("Stand");
@@ -232,7 +243,7 @@ protected func Entrance(object obj)
 		if(obj->~GetCarryHeavy() == this)
 		{
 			liftheavy_carrier = obj;
-			if(obj->GetAction() == "Walk")
+			if(obj->GetAction() == "Walk" && !obj->Contained())
 				DoLift();
 			else
 				AddEffect("IntCarryHeavy",obj, 1, 1, this);
