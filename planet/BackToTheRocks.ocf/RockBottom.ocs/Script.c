@@ -14,7 +14,7 @@ protected func Initialize()
 	
 	// Chests with weapons.
 	CreateObject(Chest, 108, 248, NO_OWNER);
-	AddEffect("IntFillChests", nil, 100, 3 * 36, this);
+	AddEffect("IntFillChests", nil, 100, 3 * 36);
 
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
