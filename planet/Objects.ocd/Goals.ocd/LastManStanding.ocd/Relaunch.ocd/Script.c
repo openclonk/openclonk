@@ -13,6 +13,8 @@ local menu;
 local hold;
 local has_selected;
 
+local crew;
+
 protected func Initialize()
 {
 	time = 36 * 10;
@@ -37,9 +39,15 @@ public func StartRelaunch(object clonk)
 {
 	if (!clonk)
 		return;
+	// only 1 clonk can be inside
+	if(crew)
+		return;
+	// save clonk for later use
+	crew = clonk;
 	clonk->Enter(this);
 	ScheduleCall(this, "OpenWeaponMenu", 36, 0, clonk);
 	AddEffect("IntTimeLimit", this, 100, 36, this);
+	
 	return true;
 }
 
@@ -63,7 +71,7 @@ private func OpenWeaponMenu(object clonk)
 
 func FxIntTimeLimitTimer(object target, effect, int fxtime)
 {
-	var clonk = Contents();
+	var clonk = crew;
 	if (!clonk)
 	{
 		RemoveObject();
@@ -103,7 +111,7 @@ public func Selected(object menu, object selector, bool alt)
 
 private func RelaunchClonk()
 {
-	var clonk = Contents();
+	var clonk = crew;
 	clonk->Exit();
 	GameCall("OnClonkLeftRelaunch", clonk);
 	if (menu)
@@ -120,7 +128,7 @@ private func GiveWeapon(id weapon_id, bool alt)
 		newobj->CreateContents(Arrow);
 	if (weapon_id == Musket)
 		newobj->CreateContents(LeadShot);
-	Contents()->Collect(newobj, nil, alt);
+	crew->Collect(newobj, nil, alt);
 	return;
 }
 
