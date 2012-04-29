@@ -82,7 +82,7 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	var iRot = effect.rot;
-	if( (effect.dir != GetDirection() && GetAction() != "Jump") || effect.turn_type != lAnim.turnType) 
+	if( (effect.dir != GetDirection() && (GetAction() != "Jump") || this->~IsAiming()) || effect.turn_type != lAnim.turnType) 
 	{
 		effect.dir = GetDirection();
 		if(effect.dir == COMD_Right)
