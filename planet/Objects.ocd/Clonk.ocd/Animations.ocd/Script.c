@@ -713,17 +713,20 @@ func StartJump()
 	UpdateAttach();
 	// Set proper turn type
 	SetTurnType(0);
-	//Dive jump
-	var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
-			if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
-			{
-				PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-				return 1;
-			}
+	//Dive jump (only if not aiming)
+	if(!this->~IsAiming())
+	{
+		var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
+		if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
+		{
+			PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			return 1;
+		}
+	}
 
-		if(!GetEffect("Fall", this))
-			AddEffect("Fall",this,1,1,this);
-		RemoveEffect("WallKick",this);
+	if(!GetEffect("Fall", this))
+		AddEffect("Fall",this,1,1,this);
+	RemoveEffect("WallKick",this);
 }
 
 func FxFallEffect(string new_name, object target)
