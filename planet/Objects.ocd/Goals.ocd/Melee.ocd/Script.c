@@ -2,7 +2,7 @@
 
 #include Library_Goal
 
-protected func InitializePlayer(int newplr, int x, int y, object base, int team)
+func MakeHostileToAll(int newplr, int team)
 {
 	// If the player is in a team, don't change hostility.
 	if (team) return;
@@ -16,6 +16,11 @@ protected func InitializePlayer(int newplr, int x, int y, object base, int team)
 		SetHostility(newplr, plr, true, true);
 		SetHostility(plr, newplr, true, true);
 	}
+}
+
+protected func InitializePlayer(int newplr, int x, int y, object base, int team)
+{
+	MakeHostileToAll(newplr, team);
 	return inherited(newplr, x, y, base, team, ...);
 }
 
