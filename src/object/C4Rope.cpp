@@ -299,7 +299,7 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	// TODO: Could also use an approximation which works without Sqrt, especially
 	// if this becomes a performance bottleneck. http://www.azillionmonkeys.com/qed/sqroot.html
 	C4Real d = ftofix(sqrt(fixtof(dx*dx + dy*dy))); 
-	if(d != 0)
+	if(d != 0 && (ApplyRepulsive || d > l))
 	{
 		fx += (dx / d) * k * (d - l);
 		fy += (dy / d) * k * (d - l);

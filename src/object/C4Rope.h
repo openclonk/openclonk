@@ -107,6 +107,10 @@ private:
 	template<typename TRopeType1, typename TRopeType2>
 	void Solve(TRopeType1* prev, TRopeType2* next);
 
+	// Whether to apply repulsive forces between rope segments.
+	// TODO: Could be made a property...
+	static const bool ApplyRepulsive = false;
+
 	const float w; // Width of rope
 	C4DefGraphics* Graphics;
 
