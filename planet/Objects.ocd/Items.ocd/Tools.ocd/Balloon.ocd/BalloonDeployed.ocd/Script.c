@@ -39,10 +39,10 @@ private func DeflateEffect()
 private func Pack()
 {
 	RemoveEffect("NoDrop",parent);
-	RemoveObject();
 	rider->SetAction("Jump");
 	rider->SetSpeed(GetXDir(),GetYDir());
 	rider->SetComDir(COMD_Down);
+	RemoveObject();
 }
 
 func ControlLeft()
