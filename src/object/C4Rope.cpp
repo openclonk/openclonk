@@ -192,11 +192,19 @@ C4RopeEnd::C4RopeEnd(C4RopeSegment* segment, C4Object* obj, bool fixed):
 C4RopeEnd::C4RopeEnd(C4RopeSegment* segment, C4Real x, C4Real y, C4Real m, bool fixed):
 	segment(segment), has_object(false), fixed(fixed), fx(Fix0), fy(Fix0)
 {
-	this->end.x = x;
-	this->end.y = y;
-	this->end.vx = Fix0;
-	this->end.vy = Fix0;
-	this->end.m = m;
+	mass = new Mass;
+
+	mass->x = x;
+	mass->y = y;
+	mass->vx = Fix0;
+	mass->vy = Fix0;
+	mass->m = m;
+}
+
+C4RopeEnd::~C4RopeEnd()
+{
+	if(!has_object)
+		delete mass;
 }
 
 void C4RopeEnd::AddForce(C4Real x, C4Real y)
@@ -225,11 +233,11 @@ void C4RopeEnd::Execute(C4Real dt)
 		else
 		{
 			// TODO: Share code for landscape collision with C4RopeSegment
-			end.vx += dt * fx / end.m;
-			end.vy += dt * fy / end.m;
+			mass->vx += dt * fx / mass->m;
+			mass->vy += dt * fy / mass->m;
 
-			end.x += dt * end.vx;
-			end.y += dt * end.vy;
+			mass->x += dt * mass->vx;
+			mass->y += dt * mass->vy;
 		}
 	}
 
@@ -337,7 +345,7 @@ void C4Rope::Execute()
 void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
 	Vertex Tmp[4];
-	DrawVertex Vertices[n_segments*2+4];
+	DrawVertex* Vertices = new DrawVertex[n_segments*2+4]; // TODO: Use a vbo and map it into memory instead?
 	const float rsl = fixtof(l)/5.0 * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
 
 	VertexPos(Vertices[0], Vertices[1], Tmp[0], Tmp[1],
@@ -425,6 +433,8 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 	glDisable(GL_TEXTURE_2D);
 	//glDisable(GL_BLEND);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	delete[] Vertices;
 }
 
 C4RopeList::C4RopeList()

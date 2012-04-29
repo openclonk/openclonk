@@ -59,12 +59,13 @@ class C4RopeEnd
 public:
 	C4RopeEnd(C4RopeSegment* segment, C4Object* obj, bool fixed);
 	C4RopeEnd(C4RopeSegment* segment, C4Real x, C4Real y, C4Real m, bool fixed);
+	~C4RopeEnd();
 
-	C4Real GetX() const { return has_object ? obj->fix_x : end.x; }
-	C4Real GetY() const { return has_object ? obj->fix_y : end.y; }
-	C4Real GetVx() const { return has_object ? obj->xdir : end.vx; }
-	C4Real GetVy() const { return has_object ? obj->ydir : end.vy; }
-	C4Real GetMass() const { return has_object ? itofix(obj->Mass) : end.m; }
+	C4Real GetX() const { return has_object ? obj->fix_x : mass->x; }
+	C4Real GetY() const { return has_object ? obj->fix_y : mass->y; }
+	C4Real GetVx() const { return has_object ? obj->xdir : mass->vx; }
+	C4Real GetVy() const { return has_object ? obj->ydir : mass->vy; }
+	C4Real GetMass() const { return has_object ? itofix(obj->Mass) : mass->m; }
 	C4Object* GetObject() const { return has_object ? obj : NULL; }
 
 	void AddForce(C4Real fx, C4Real fy);
@@ -77,14 +78,15 @@ private:
 	bool fixed;
 
 	C4Real fx, fy;
+	
+	struct Mass {
+		C4Real x, y; // pos
+		C4Real vx, vy; // velocity
+		C4Real m; // mass
+	};
 
-	union
-	{
-		struct {
-			C4Real x, y; // pos
-			C4Real vx, vy; // velocity
-			C4Real m; // mass
-		} end;
+	union {
+		Mass* mass;
 		C4Object* obj;
 	};
 };
