@@ -48,6 +48,8 @@ private:
 	C4Real x, y; // pos
 	C4Real vx, vy; // velocity
 	C4Real fx, fy; // force
+	C4Real rx, ry; // force redirection
+	C4Real rdt; //rx, rry; // force redirection reference
 	C4Real m; // mass
 	C4RopeSegment* next;
 	C4RopeSegment* prev;
@@ -78,7 +80,9 @@ private:
 	bool fixed;
 
 	C4Real fx, fy;
-	
+	C4Real rx, ry;
+	C4Real rdt;//rrx, rry;
+
 	struct Mass {
 		C4Real x, y; // pos
 		C4Real vx, vy; // velocity

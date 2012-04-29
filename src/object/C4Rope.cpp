@@ -94,6 +94,7 @@ namespace
 
 C4RopeSegment::C4RopeSegment(C4Real x, C4Real y, C4Real m):
 	x(x), y(y), vx(Fix0), vy(Fix0), fx(Fix0), fy(Fix0),
+	rx(Fix0), ry(Fix0), rdt(Fix0), //rrx(Fix0), rry(Fix0),
 	m(m), next(NULL), prev(NULL)
 {
 }
@@ -106,6 +107,18 @@ void C4RopeSegment::AddForce(C4Real x, C4Real y)
 
 void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 {
+	// Reset force redirection
+	if(rdt != Fix0)
+	{
+		if(dt > rdt)
+		{
+			rx = ry = Fix0;
+			rdt = Fix0;
+		}
+		else
+			rdt -= dt;
+	}
+
 	int old_x = fixtoi(x);
 	int old_y = fixtoi(y);
 
@@ -114,9 +127,9 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 	// starts moving.
 	if(GBackSolid(old_x+1, old_y) || GBackSolid(old_x-1, old_y) || GBackSolid(old_x, old_y-1) || GBackSolid(old_x, old_y+1))
 	{
-		if(vx*vx + vy*vy < Fix1)
+		if(vx*vx + vy*vy < Fix1/4)
 		{
-			if(fx*fx + fy*fy < Fix1*4)
+			if(fx*fx + fy*fy < Fix1)
 			{
 				fx = fy = Fix0;
 				vx = vy = Fix0;
@@ -142,12 +155,12 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 		int inter_y = old_y + i * (new_y - old_y) / max_p;
 		if(GBackSolid(inter_x, inter_y))
 		{
-			x = prev_x;
-			y = prev_y;
+			x = itofix(prev_x);
+			y = itofix(prev_y);
 			hit = true;
 
 			// Apply friction force
-			fx -= mu * vx; fy -= mu * vy;
+			fx -= mu * vx; fy -= mu * vy; 
 
 			// Force redirection so that not every single pixel on a
 			// chunky landscape is an obstacle for the rope
@@ -158,16 +171,42 @@ void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 			C4Real vy1 = -Sin75 * vx + Cos75 * vy;
 			C4Real vx2 =  Cos75 * vx - Sin75 * vy;
 			C4Real vy2 =  Sin75 * vx + Cos75 * vy;
-			const C4Real d = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
+			const C4Real v = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
 
-			// TODO: 5 should maybe not be hardcoded but depend on the magnitude of the force applied, and
-			// we should check more than a single pixel. There's some more potential for optimization here.
-			if(d != Fix0 && !GBackSolid(fixtoi(x + vx1*5/d), fixtoi(y + vy1*5/d)))
-				{ fx += mu * vx1; fy += mu * vy1; }
-			else if(d != Fix0 && !GBackSolid(fixtoi(x + vx2*5/d), fixtoi(y + vy2*5/d)))
-				{ fx += mu * vx2; fy += mu * vy2; }
+			// TODO: 5 should maybe not be hardcoded but depend on the magnitude of the force applied
+			const C4Real l = itofix(5);
+
+/*			const C4Real Cos120 = Cos(itofix(120));
+			const C4Real Sin120 = Sin(itofix(120));*/
+
+			/*const C4Real pdx = prev ? (prev->GetX() - x) : Fix0;
+			const C4Real pdy = prev ? (prev->GetY() - y) : Fix0;
+			const C4Real ndx = next ? (next->GetX() - x) : Fix0;
+			const C4Real ndy = next ? (next->GetY() - y) : Fix0;
+			const C4Real pdl = ftofix(sqrt(fixtof(pdx*pdx+pdy*pdy)));
+			const C4Real ndl = ftofix(sqrt(fixtof(ndx*ndx+ndy*ndy)));
+
+			C4Real kp = Fix1;
+			if(vx*pdx+vy*pdy < 0 && pdl > l)
+				kp = (Fix1*3)/2 * (pdl - l);
+			C4Real kn = Fix1;
+			if(vx*ndx+vy*ndy < 0 && ndl > l)
+				kn = (Fix1*3)/2 * (ndl - l);*/
+
+			// We should check more than a single pixel. There's some more potential for optimization here.
+			if(v != Fix0 && !GBackSolid(fixtoi(x + vx1*l/v), fixtoi(y + vy1*l/v)))
+				{ rdt = Fix1/4; rx = vx1/v; ry = vy1/v; }
+			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx2/v), fixtoi(y + vy2/v)))
+				{ rdt = Fix1/4; rx = vx2/v; ry = vy2/v; }
+#if 0
+			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx1*3*l/v), fixtoi(y + vy1*3*l/v)))
+				{ /* let's believe there is some way if we go back a bit */ rrx = x; rry = y; rx = (Cos120*vx + Sin120*vy)/v; ry = (-Sin120 * vx + Cos120*vy)/v; }
+			else if(v != Fix0 && !GBackSolid(fixtoi(x + vx2*3*l/v), fixtoi(y + vy2*3*l/v)))
+				{ /* let's believe there is some way if we go back a bit */ rrx = x; rry = y; rx = (Cos120*vx - Sin120*vy)/v; ry = (+Sin120 * vx + Cos120*vy)/v; }
+#endif
 			else
-				vx = vy = Fix0; // 
+				{ vx = vy = Fix0; }
+//			vx = vy = Fix0; // 
 
 			break;
 		}
@@ -190,7 +229,8 @@ C4RopeEnd::C4RopeEnd(C4RopeSegment* segment, C4Object* obj, bool fixed):
 }
 
 C4RopeEnd::C4RopeEnd(C4RopeSegment* segment, C4Real x, C4Real y, C4Real m, bool fixed):
-	segment(segment), has_object(false), fixed(fixed), fx(Fix0), fy(Fix0)
+	segment(segment), has_object(false), fixed(fixed), fx(Fix0), fy(Fix0),
+	rx(Fix0), ry(Fix0), rdt(Fix0) //rrx(Fix0), rry(Fix0)
 {
 	mass = new Mass;
 
@@ -215,6 +255,18 @@ void C4RopeEnd::AddForce(C4Real x, C4Real y)
 
 void C4RopeEnd::Execute(C4Real dt)
 {
+	// Reset force redirection
+	if(rdt != Fix0)
+	{
+		if(dt > rdt)
+		{
+			rx = ry = Fix0;
+			rdt = Fix0;
+		}
+		else
+			rdt -= dt;
+	}
+
 	if(!fixed)
 	{
 		if(has_object)
@@ -290,8 +342,6 @@ C4Rope::~C4Rope()
 template<typename TRopeType1, typename TRopeType2>
 void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4RopeSegment* next)
 {
-	C4Real fx = Fix0, fy = Fix0;
-
 	// Rope forces
 	C4Real dx = prev->GetX() - next->GetX();
 	C4Real dy = prev->GetY() - next->GetY();
@@ -301,8 +351,18 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	C4Real d = ftofix(sqrt(fixtof(dx*dx + dy*dy))); 
 	if(d != 0 && (ApplyRepulsive || d > l))
 	{
-		fx += (dx / d) * k * (d - l);
-		fy += (dy / d) * k * (d - l);
+		C4Real fx = (dx / d) * k * (d - l);
+		C4Real fy = (dy / d) * k * (d - l);
+
+		if(prev->rdt == Fix0) //x == Fix0 && prev->ry == Fix0)
+			prev->AddForce(-fx, -fy);
+		else
+			prev->AddForce(prev->rx * k * (d - l), prev->ry * k * (d - l));
+
+		if(next->rdt == Fix0) //x == Fix0 && next->ry == Fix0)
+			next->AddForce(fx, fy);
+		else
+			next->AddForce(next->rx * k * (d - l), next->ry * k * (d - l));
 	}
 
 	// Inner friction
@@ -310,14 +370,18 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	// eta values. We might want to prevent a sign change of either F or V induced
 	// by this factor.
 	// TODO: Don't apply inner friction for segments connected to fixed rope ends?
-	fx += (prev->GetVx() - next->GetVx()) * eta;
-	fy += (prev->GetVy() - next->GetVy()) * eta;
+	C4Real fx = (prev->GetVx() - next->GetVx()) * eta;
+	C4Real fy = (prev->GetVy() - next->GetVy()) * eta;
+	prev->AddForce(-fx, -fy);
+	next->AddForce(fx, fy);
 
 	// Could add air/water friction here
 
-	// Apply forces to masses. Don't apply gravity to objects since it's applied already in C4Object execution.
-	prev->AddForce(-fx, -fy + (::GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
-	next->AddForce(fx, fy + (::GetObject(next) ? Fix0 : next->GetMass() * ::Landscape.Gravity/5));
+	// TODO: Apply gravity separately to every segment exactly once
+
+	// Don't apply gravity to objects since it's applied already in C4Object execution.
+	prev->AddForce(Fix0, (::GetObject(prev) ? Fix0 : prev->GetMass() * ::Landscape.Gravity/5));
+	next->AddForce(Fix0, (::GetObject(next) ? Fix0 : next->GetMass() * ::Landscape.Gravity/5));
 }
 
 void C4Rope::Execute()
@@ -344,6 +408,7 @@ void C4Rope::Execute()
 // TODO: Move this to StdGL
 void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
+#if 1
 	Vertex Tmp[4];
 	DrawVertex* Vertices = new DrawVertex[n_segments*2+4]; // TODO: Use a vbo and map it into memory instead?
 	const float rsl = fixtof(l)/5.0 * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
@@ -435,6 +500,46 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	delete[] Vertices;
+
+#else
+	// Debug:
+	for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next)
+	{
+		glBegin(GL_QUADS);
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glVertex2f(fixtof(cur->x)-1.5f, fixtof(cur->y)-1.5f);
+		glVertex2f(fixtof(cur->x)-1.5f, fixtof(cur->y)+1.5f);
+		glVertex2f(fixtof(cur->x)+1.5f, fixtof(cur->y)+1.5f);
+		glVertex2f(fixtof(cur->x)+1.5f, fixtof(cur->y)-1.5f);
+		glEnd();
+
+		const float vx = fixtof(cur->vx);
+		const float vy = fixtof(cur->vy);
+		const float v = sqrt(vx*vx + vy*vy);
+		if(v > 0.1)
+		{
+			glBegin(GL_TRIANGLES);
+			glColor3f(BoundBy(v/2.5f, 0.0f, 1.0f), 0.0f, 1.0f);
+			glVertex2f(fixtof(cur->x) + vx/v*4.0f, fixtof(cur->y) + vy/v*4.0f);
+			glVertex2f(fixtof(cur->x) - vy/v*1.5f, fixtof(cur->y) + vx/v*1.5f);
+			glVertex2f(fixtof(cur->x) + vy/v*1.5f, fixtof(cur->y) - vx/v*1.5f);
+			glEnd();
+		}
+
+		const float rx = fixtof(cur->rx);
+		const float ry = fixtof(cur->ry);
+		const float r = sqrt(rx*rx + ry*ry);
+		if(r > 0.1)
+		{
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.0f, BoundBy(r/2.5f, 0.0f, 1.0f), 1.0f);
+			glVertex2f(fixtof(cur->x) + rx/r*4.0f, fixtof(cur->y) + ry/r*4.0f);
+			glVertex2f(fixtof(cur->x) - ry/r*1.5f, fixtof(cur->y) + rx/r*1.5f);
+			glVertex2f(fixtof(cur->x) + ry/r*1.5f, fixtof(cur->y) - rx/r*1.5f);
+			glEnd();
+		}
+	}
+#endif
 }
 
 C4RopeList::C4RopeList()
