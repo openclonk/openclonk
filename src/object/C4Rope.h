@@ -43,7 +43,7 @@ public:
 
 	void AddForce(C4Real x, C4Real y);
 
-	void Execute(C4Real dt);
+	void Execute(C4Real dt, C4Real mu);
 private:
 	C4Real x, y; // pos
 	C4Real vx, vy; // velocity
@@ -117,6 +117,7 @@ private:
 
 	C4Real l; // spring length in equilibrium
 	C4Real k; // spring constant
+	C4Real mu; // outer friction constant
 	C4Real eta; // inner friction constant
 
 	C4RopeEnd* front;

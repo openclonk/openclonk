@@ -4,8 +4,8 @@ func Initialize()
 {
 	var  a = CreateObject(Rock, 100, 100, NO_OWNER);
 	var  b = CreateObject(Rock, 200, 100, NO_OWNER);
-	a->SetCategory(C4D_StaticBack);
-	b->SetCategory(C4D_StaticBack);
+	//a->SetCategory(C4D_StaticBack);
+	//b->SetCategory(C4D_StaticBack);
 	Scenario.rope = CreateRope2(a, b, 20, LiftTower_Rope);
 	//CreateRope2(a, b, 1, LiftTower_Rope);
 }

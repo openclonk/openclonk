@@ -104,51 +104,62 @@ void C4RopeSegment::AddForce(C4Real x, C4Real y)
 	fy += y;
 }
 
-void C4RopeSegment::Execute(C4Real dt)
+void C4RopeSegment::Execute(C4Real dt, C4Real mu)
 {
 	vx += dt * fx / m;
 	vy += dt * fy / m;
-	
-	//if(vx*vx + vy*vy > 0)//itofix(1,10000))
+
+	int old_x = fixtoi(x);
+	int old_y = fixtoi(y);
+	int new_x = fixtoi(x + dt * vx);
+	int new_y = fixtoi(y + dt * vy);
+	int max_p = Max(abs(new_x - old_x), abs(new_y - old_y));
+
+	int prev_x = old_x;
+	int prev_y = old_y;
+	bool hit = false;
+	for(int i = 1; i <= max_p; ++i)
 	{
-		int old_x = fixtoi(x);
-		int old_y = fixtoi(y);
-		int new_x = fixtoi(x + dt * vx);
-		int new_y = fixtoi(y + dt * vy);
-		int max_p = Max(abs(new_x - old_x), abs(new_y - old_y));
-
-		int prev_x = old_x;
-		int prev_y = old_y;
-		bool hit = false;
-		for(int i = 1; i <= max_p; ++i)
+		int inter_x = old_x + i * (new_x - old_x) / max_p;
+		int inter_y = old_y + i * (new_y - old_y) / max_p;
+		if(GBackSolid(inter_x, inter_y))
 		{
-			int inter_x = old_x + i * (new_x - old_x) / max_p;
-			int inter_y = old_y + i * (new_y - old_y) / max_p;
-			if(GBackSolid(inter_x, inter_y))
-			{
-				/*if(inter_x != old_x)*/ x = prev_x;
-				/*if(inter_y != old_y)*/ y = prev_y;
-				hit = true;
+			x = prev_x;
+			y = prev_y;
+			hit = true;
 
-				// TODO: friction, v redirection
-				vx = Fix0;
-				vy = Fix0;
+			// Apply friction force
+			fx -= mu * vx; fy -= mu * vy;
 
-				break;
-			}
+			// Force redirection so that not every single pixel on a
+			// chunky landscape is an obstacle for the rope
+			const C4Real Cos75 = Cos(itofix(75));
+			const C4Real Sin75 = Sin(itofix(75));
 
-			prev_x = inter_x;
-			prev_y = inter_y;
+			C4Real vx1 =  Cos75 * vx + Sin75 * vy;
+			C4Real vy1 = -Sin75 * vx + Cos75 * vy;
+			C4Real vx2 =  Cos75 * vx - Sin75 * vy;
+			C4Real vy2 =  Sin75 * vx + Cos75 * vy;
+			const C4Real d = ftofix(sqrt(fixtof(vx*vx + vy*vy)));
+
+			if(d != Fix0 && !GBackSolid(fixtoi(x + vx1*5/d), fixtoi(y + vy1*5/d)))
+				{ fx += mu * vx1; fy += mu * vy1; }
+			else if(d != Fix0 && !GBackSolid(fixtoi(x + vx2*5/d), fixtoi(y + vy2*5/d)))
+				{ fx += mu * vx2; fy += mu * vy2; }
+
+			break;
 		}
 
-		if(!hit)
-		{
-			x += dt * vx;
-			y += dt * vy;
-		}
+		prev_x = inter_x;
+		prev_y = inter_y;
 	}
 
-	fx = fy = Fix0;
+	if(!hit)
+	{
+		x += dt * vx;
+		y += dt * vy;
+		fx = fy = Fix0;
+	}
 }
 
 C4RopeEnd::C4RopeEnd(C4RopeSegment* segment, C4Object* obj, bool fixed):
@@ -206,7 +217,7 @@ void C4RopeEnd::Execute(C4Real dt)
 
 C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
 	C4PropListNumbered(Prototype), w(5.0f), Graphics(graphics), n_segments(n_segments),
-	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), eta(Fix1*3), n_iterations(20)
+	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), n_iterations(20)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Path between objects is blocked");
@@ -266,6 +277,10 @@ void C4Rope::Solve(TRopeType1* prev, TRopeType2* next) //C4RopeSegment* prev, C4
 	}
 
 	// Inner friction
+	// TODO: This is very sensitive to numerical instabilities for mid-to-high
+	// eta values. We might want to prevent a sign change of either F or V induced
+	// by this factor.
+	// TODO: Don't apply inner friction for segments connected to fixed rope ends?
 	fx += (prev->GetVx() - next->GetVx()) * eta;
 	fy += (prev->GetVy() - next->GetVy()) * eta;
 
@@ -291,7 +306,7 @@ void C4Rope::Execute()
 		}
 
 		for(C4RopeSegment* cur = front->segment; cur != NULL; cur = cur->next)
-			cur->Execute(dt);
+			cur->Execute(dt, mu);
 		front->Execute(dt);
 		back->Execute(dt);
 	}
