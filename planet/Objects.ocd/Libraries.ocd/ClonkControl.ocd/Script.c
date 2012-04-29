@@ -101,7 +101,7 @@ public func GetHandItem(int i)
 /** Set the 'hand'th use-item to the 'inv'th slot */
 public func SetHandItemPos(int hand, int inv)
 {
-	// indices are in range?
+	// indices are in range?	
 	if(hand >= HandObjects() || inv >= MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
@@ -109,6 +109,15 @@ public func SetHandItemPos(int hand, int inv)
 	// can't use anything except carryheavy if carrying heavy object.
 	if(IsCarryingHeavy())
 		return nil;
+
+	// changing slots cancels using, if the slot with the used object is contained
+	if(using)
+	{
+		var used_slot = GetItemPos(using);
+		if(used_slot != nil)
+			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
+				CancelUseControl(0,0);
+	}
 
 	// If the item is already selected, we can't hold it in another one too.
 	var hand2 = GetHandPosByItemPos(inv);
