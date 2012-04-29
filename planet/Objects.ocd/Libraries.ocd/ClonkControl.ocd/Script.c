@@ -248,7 +248,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 {
 	force_collection = force;
 	var success = false;
-	if (pos == nil)
+	if (pos == nil || item->~IsCarryHeavy())
 	{
 		success = _inherited(item,ignoreOCF);
 		force_collection = false;
