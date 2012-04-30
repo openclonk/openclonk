@@ -149,6 +149,7 @@ public:
 
 	// Conversion
 	inline operator int() const { return _mm_cvtss_si32(value); }
+	inline operator long() const { return this->operator int(); }
 	inline operator float() const { float nrv; _mm_store_ss(&nrv, value); return nrv; }
 
 	// Boolean operators
@@ -203,5 +204,17 @@ C4Real Pow(const C4Real &base, const C4Real &exponen);
 C4Real Sqrt(const C4Real &);
 C4Real Log(const C4Real &);
 C4Real Atan2(const C4Real &y, const C4Real &x);
+
+// Ambiguity resolving
+#define C4REAL_RHAND_OP(op) \
+	inline float   & operator op(float   & lhs, const C4Real & rhs) { return lhs+=fixtoi(rhs); } \
+	inline int32_t & operator op(int32_t & lhs, const C4Real & rhs) { return lhs+=fixtoi(rhs); } \
+	inline long    & operator op(long    & lhs, const C4Real & rhs) { return lhs+=fixtoi(rhs); }
+	C4REAL_RHAND_OP(+=)
+	C4REAL_RHAND_OP(-=)
+	C4REAL_RHAND_OP(*=)
+	C4REAL_RHAND_OP(/=)
+	C4REAL_RHAND_OP(%=)
+#undef C4REAL_RHAND_OP
 
 #endif //C4REAL_H_INC
