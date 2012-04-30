@@ -101,11 +101,13 @@ C4Real Pow(const C4Real &x, const C4Real &y)
 	val.value = exp_ps(val.value);
 	if(sign)
 	{
-		val.value = _mm_or_ps(x.value, C4Real::float_hexconst(0x80000000));
-		return val;
+		// smart little hack: concatenate like in operator%=, but one bit more
+		__m128 sig = _mm_or_ps(_mm_and_ps(y.value, C4Real::float_hexconst(0x80000000)), C4Real::float_hexconst(0x4b800000));
+		__m128 trunc = _mm_sub_ps(_mm_add_ps(y.value, sig), sig);
+		if(_mm_comineq_ss(y.value, trunc)) // negate result if power is not even
+			val.value = _mm_or_ps(x.value, C4Real::float_hexconst(0x80000000));
 	}
-	else
-		return val;
+	return val;
 }
 
 C4Real Sqrt(const C4Real &v)
