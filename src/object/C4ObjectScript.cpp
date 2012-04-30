@@ -1326,7 +1326,7 @@ static long FnSetTransferZone(C4AulObjectContext *cthr, long iX, long iY, long i
 	return Game.TransferZones.Set(iX,iY,iWdt,iHgt,cthr->Obj);
 }
 
-static long FnObjectDistance(C4AulContext *cthr, C4Object *pObj2, C4Object *pObj)
+static C4Real FnObjectDistance(C4AulContext *cthr, C4Object *pObj2, C4Object *pObj)
 {
 	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj2) return 0;
 	return Distance(pObj->GetX(),pObj->GetY(),pObj2->GetX(),pObj2->GetY());
