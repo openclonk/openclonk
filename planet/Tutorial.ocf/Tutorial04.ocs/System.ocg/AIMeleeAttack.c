@@ -2,7 +2,7 @@
 
 #appendto Clonk
 
-protected func AI_MeleeAttack(object clonk, int x, int y, object target)
+protected func AI_MeleeAttack(object clonk, num x, num y, object target)
 {
 	clonk->AI_LogCommandStack();
 	clonk->AI_Log("Melee attack on %s", target->GetName());

@@ -21,7 +21,7 @@ public func FixTo(object station)
 	SetCursor(GetOwner(), this, true);
 }
 
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	if (release) return false;
 

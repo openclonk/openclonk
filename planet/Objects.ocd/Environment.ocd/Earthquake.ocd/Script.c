@@ -8,7 +8,7 @@
 
 /*-- Disaster Control --*/
 
-public func SetChance(int chance)
+public func SetChance(num chance)
 {
 	if (this != Earthquake)
 		return;

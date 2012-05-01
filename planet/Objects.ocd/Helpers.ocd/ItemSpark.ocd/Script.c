@@ -26,7 +26,7 @@
 local toSpawn;
 
 
-global func StartItemSparks(int rate, bool mirror)
+global func StartItemSparks(num rate, bool mirror)
 {
 	AddEffect("GlobalItemSparks", nil, 1, 5, nil, nil, rate, mirror);
 }

@@ -11,7 +11,7 @@ local solid_mask_helper;
 
 /* Usage callbacks */
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	// may only be used while walking
 	if(!clonk->HasHandAction() || !clonk->IsWalking() || !CanStrikeWithWeapon(clonk))
@@ -26,7 +26,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object clonk, num x, num y)
 {
 	UpdateShieldAngle(clonk, x, y);
 }
@@ -99,7 +99,7 @@ private func EndUsage(object clonk)
 }
 
 // Update the shield angle
-private func UpdateShieldAngle(object clonk, int x, int y)
+private func UpdateShieldAngle(object clonk, num x, num y)
 {
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);

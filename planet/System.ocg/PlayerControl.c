@@ -14,7 +14,7 @@ static g_player_cursor_pos; // array of [x,y] pos arrays; indexed by player. las
 // Called by engine whenever a control is issued
 // Forwards control to special handler or cursor
 // Return whether handled
-global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
+global func PlayerControl(int plr, int ctrl, id spec_id, num x, num y, num strength, bool repeat, bool release)
 {
 	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
 	// Control handled by definition? Forward
@@ -125,7 +125,7 @@ global func PlayerHasVirtualCursor(int plr)
 
 // Control2Player
 // Player-wide controls
-global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func Control2Player(int plr, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	// select previous or next
 	if (ctrl == CON_PreviousCrew)
@@ -197,7 +197,7 @@ global func StopSelected(int plr)
 
 // Control2Effect
 // Call control function in all effects that have "Control" in their name
-global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func Control2Effect(int plr, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	// x and y are local coordinates
 	if (!this) return false;
@@ -219,7 +219,7 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 // Called from PlayerControl when a control is issued to the cursor
 // Return whether handled
 // To be overloaded by specific objects to enable additional controls
-global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func ObjectControl(int plr, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	if (!this) return false;
 	
@@ -271,7 +271,7 @@ global func NameComDir(comdir)
 }
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
-global func ObjectControlMovement(int plr, int ctrl, int strength, bool release, bool repeat)
+global func ObjectControlMovement(int plr, int ctrl, num strength, bool release, bool repeat)
 {
 	if (!this) return false;
 	
@@ -457,7 +457,7 @@ global func ObjectCommand(string command, object target, int tx, int ty, object 
 }
 
 // Let go from scaling or hangling
-global func ObjectComLetGo(int vx, int vy)
+global func ObjectComLetGo(num vx, num vy)
 {
 	if (!SetAction("Jump")) return false;
 	SetXDir(vx); SetYDir(vy);
@@ -504,7 +504,7 @@ global func MouseDragDrop(int plr, object source, object target)
 /* Debug */
 
 // uncomment this to get log messages for any player control issued
-/*global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
+/*global func PlayerControl(int plr, int ctrl, id spec_id, num x, num y, num strength, bool repeat, bool release)
 {
 	var r = inherited(plr, ctrl, spec_id, x, y, strength, repeat, release, ...), rs;
 	if (r) rs = ""; else rs = "!";

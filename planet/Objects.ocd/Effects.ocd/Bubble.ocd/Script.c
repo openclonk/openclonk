@@ -1,7 +1,7 @@
 /*-- Bubble --*/
 
 
-global func Bubble(int amount, int x, int y)
+global func Bubble(int amount, float x, float y)
 {
 	if (amount==nil || amount==0) 
 		amount=3;

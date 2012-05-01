@@ -26,7 +26,7 @@ private func GetScoreGoal()
 	return 1;
 }
 
-public func SetFlagBase(int team, int x, int y)
+public func SetFlagBase(int team, float x, float y)
 {
 	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);

@@ -73,7 +73,7 @@ public func GetCPNumber() { return cp_num; }
 /*-- Checkpoint size --*/
 local cp_size;
 
-public func SetCPSize(int size)
+public func SetCPSize(num size)
 {
 	cp_size = BoundBy(size, 10, 100);
 	return;
@@ -289,7 +289,7 @@ protected func UpdateGraphics(int time)
 	return;
 }
 
-protected func GetColorByAngle(int angle)
+protected func GetColorByAngle(float angle)
 {
 	// Get cleared count.
 	var cnt = 0;

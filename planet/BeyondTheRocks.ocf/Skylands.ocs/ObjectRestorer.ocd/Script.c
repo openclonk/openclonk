@@ -14,7 +14,7 @@ protected func Initialize()
 	return;
 }
 
-public func SetRestoreObject(object to_restore, object to_container, int to_x, int to_y, int to_r, string ctrl_string)
+public func SetRestoreObject(object to_restore, object to_container, float to_x, float to_y, float to_r, string ctrl_string)
 {
 	to_restore->Enter(this);
 	var effect = AddEffect("Restore", this, 100, 1, this);
@@ -143,7 +143,7 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 /*-- Global restoration on destruction --*/
 
 // Adds an effect to restore an item on destruction.
-global func AddRestoreMode(object to_container, int to_x, int to_y, int to_r)
+global func AddRestoreMode(object to_container, float to_x, float to_y, float to_r)
 {
 	if (!this)
 		return;

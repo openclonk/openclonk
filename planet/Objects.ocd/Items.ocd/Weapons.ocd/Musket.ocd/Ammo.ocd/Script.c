@@ -23,7 +23,7 @@ protected func Hit()
 	}
 }
 
-public func Launch(object shooter, int angle, int dist, int speed)
+public func Launch(object shooter, float angle, num dist, num speed)
 {
 	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);

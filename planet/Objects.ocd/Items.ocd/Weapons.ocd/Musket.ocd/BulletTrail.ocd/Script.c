@@ -6,7 +6,7 @@
 	that it looks like it because the trail itself is only drawn straight.
 	Any projectile can use the trail by calling (after creating it):
 	
-	Set(int width, int length, object projectile)
+	Set(num width, num length, object projectile)
 	
 	while width is the width of the trail, length the length of the trail and
 	projectile itself. The trail will be removed when the projectile is gone.
@@ -16,7 +16,7 @@
 
 local fRemove, iSpeed, pShot, w, l, r, x, y;
 
-public func Set(int iWidth, int iLength, object pSht)
+public func Set(num iWidth, num iLength, object pSht)
 {
 	pShot = pSht;
 

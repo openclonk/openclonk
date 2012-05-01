@@ -80,7 +80,7 @@ public func Place(int count)
 
 // Changes the precipitation type of this cloud.
 // Also an id call: Changes all clouds to this settings.
-public func SetPrecipitation(string mat, int amount)
+public func SetPrecipitation(string mat, num amount)
 {
 	// Called to proplist: change all clouds.
 	if (this == Cloud)
@@ -100,7 +100,7 @@ public func SetPrecipitation(string mat, int amount)
 
 // Changes the lightning frequency type of this cloud.
 // Also an id call: Changes all clouds to this settings.
-public func SetLightning(int freq)
+public func SetLightning(num freq)
 {
 	// Called to proplist: change all clouds.
 	if (this == Cloud)
@@ -115,7 +115,7 @@ public func SetLightning(int freq)
 	return;
 }
 
-public func SetRain(int to_rain)
+public func SetRain(num to_rain)
 {
 	rain = BoundBy(to_rain, 0, rain_max);
 	return;

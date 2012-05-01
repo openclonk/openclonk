@@ -33,7 +33,7 @@ func SetMessage(m)
 	Update();
 }
 
-func FadeOut(int speed, step)
+func FadeOut(num speed, step)
 {
 	if(step==nil)step=1;
 	var e=AddEffect("FadeOut", this, 1, speed, this);
@@ -49,7 +49,7 @@ func FxFadeOutTimer(target, effect)
 }
 
 
-func SetColor(int r2, g2, b2, a)
+func SetColor(int r2, int g2, int b2, int a)
 {
 	r=r2;
 	g=g2;

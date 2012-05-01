@@ -15,13 +15,13 @@ local strength;
 /// \par ydev Maximum deviation from the average vertical speed.
 /// \par do_gamma If \c true, the lightning bolt will flash the screen.
 /// \returns \c true if the lightning could be launched, \c false otherwise.
-global func LaunchLightning(int x, int y, int to_strength, int xdir, int ydir, int xdev, int ydev, bool do_gamma)
+global func LaunchLightning(float x, float y, num to_strength, float xdir, float ydir, float xdev, float ydev, bool do_gamma)
 {
 	var lightning = CreateObject(Lightning, x - GetX(), y - GetY());
 	return lightning && lightning->Launch(x, y, to_strength, xdir, ydir, xdev, ydev, do_gamma);
 }
 
-public func Launch(int x, int y, int to_strength, int xdir, int ydir, int xdev, int ydev, bool do_gamma)
+public func Launch(float x, float y, num to_strength, float xdir, float ydir, float xdev, float ydev, bool do_gamma)
 {
 	xDir = xdir; yDir = ydir;
 	xDev = xdev; yDev = ydev;
@@ -101,7 +101,7 @@ private func Redraw()
 	}
 }
 
-private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int sizeFifths, int color)
+private func DrawRotatedParticleLine(string particle, float x1, float y1, float x2, float y2, float distance, float sizeFifths, int color)
 {
 	distance = Max(distance, 1);
 	var angle = Angle(x1, y1, x2, y2);

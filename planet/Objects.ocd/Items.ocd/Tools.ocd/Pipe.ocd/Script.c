@@ -12,7 +12,7 @@ public func IsToolProduct() { return true; }
 /*-- Line connection --*/
 
 // Called with double dig: will connect power line to building at the clonk's position.
-protected func ControlUse(object clonk, int x, int y)
+protected func ControlUse(object clonk, num x, num y)
 {
 	// Is this already connected to a liquid pump?
 	if (FindObject(Find_PipeLine()))

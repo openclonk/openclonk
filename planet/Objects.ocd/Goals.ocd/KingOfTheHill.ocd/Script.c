@@ -103,7 +103,7 @@ public func GetRadius()
 	return radius;
 }
 
-public func SetRadius(int to)
+public func SetRadius(num to)
 {
 	radius=to;
 }
@@ -115,7 +115,7 @@ func DoPoint(int player, int count)
 	player_points[player] = Max(player_points[player] + count, 0);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(int plr, num x, num y, object base, int team)
 {
 	ScheduleCall(this, "RefreshScoreboard", 1);
 	player_suicides[plr]=0;

@@ -5,7 +5,7 @@
 	For planting wheat or to get flour
 */
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, num x, num y, bool box)
 {
 	if(clonk->GetAction() != "Walk") return true;
 	// Search for ground

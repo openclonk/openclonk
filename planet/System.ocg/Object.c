@@ -6,7 +6,7 @@
 --*/
 
 // Does not set the speed of an object. But you can set two components of the velocity vector with this function.
-global func SetSpeed(int x_dir, int y_dir, int prec)
+global func SetSpeed(float x_dir, float y_dir, int prec)
 {
 	SetXDir(x_dir, prec);
 	SetYDir(y_dir, prec);
@@ -15,7 +15,7 @@ global func SetSpeed(int x_dir, int y_dir, int prec)
 
 // Sets an objects's speed and its direction, doesn't it?
 // Can set either speed or angle of velocity, or both
-global func SetVelocity(int angle, int speed, int precAng, int precSpd)
+global func SetVelocity(float angle, float speed, int precAng, int precSpd)
 {
 	if(!speed)
 		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
@@ -31,7 +31,7 @@ global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 }
 
 // Sets the completion of this to new_con.
-global func SetCon(int new_con)
+global func SetCon(num new_con)
 {
 	return DoCon(new_con - GetCon());
 }
@@ -63,19 +63,24 @@ global func FxIntInvincibleDamage()
 }
 
 // Move an object by the given parameters relative to its position.
-global func MovePosition(int x, int y, int prec)
+global func MovePosition(x, float y, int prec)
 {
+	if (GetType(x) == C4V_Array)
+	{
+		y = x[1];
+		x = x[0];
+	}
 	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }
 
 // Returns the position as an array
-global func GetPosition(int x, int y, int prec)
+global func GetPosition(float x, float y, int prec)
 {
 	return [GetX(prec), GetY(prec)];
 }
 
 // Speed the calling object into the given direction (angle)
-global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
+global func LaunchProjectile(float angle, float dist, float speed, float x, float y, bool rel_x)
 {
 	// dist: Distance object travels on angle. Offset from calling object.
 	// x: X offset from container's center
@@ -107,7 +112,7 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 }
 
 // Sets the MaxEnergy value of an object and does the necessary callbacks.
-global func SetMaxEnergy(int value)
+global func SetMaxEnergy(num value)
 {
 	if (!this)
 		return;
@@ -128,7 +133,7 @@ global func GetMaxEnergy()
 }
 
 // Sets the MaxBreath value of an object and does the necessary callbacks.
-global func SetMaxBreath(int value)
+global func SetMaxBreath(num value)
 {
 	if (!this)
 		return;
@@ -183,7 +188,7 @@ global func FxIntGrowthTimer(object obj, effect)
 
 // Plays hit sounds for an average object made of stone or stone-like material.
 // x and y need to be the parameters passed to Hit() from the engine.
-global func StonyObjectHit(int x, int y)
+global func StonyObjectHit(num x, num y)
 {
 	// Failsafe
 	if (!this) return false;

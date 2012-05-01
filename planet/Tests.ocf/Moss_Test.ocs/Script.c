@@ -12,7 +12,7 @@ func Initialize()
 	
 }
 
- func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
+ func InitializePlayer(int iPlr, float iX, float iY, object pBase, int iTeam)
 {
 	SetFoW(0,iPlr);
 	JoinPlayer(iPlr);

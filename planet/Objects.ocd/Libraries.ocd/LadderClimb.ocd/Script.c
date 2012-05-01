@@ -349,7 +349,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 	return 1;
 }
 
-func SetLadderRotation (int r, int xoff, int yoff) {
+func SetLadderRotation (num r, num xoff, num yoff) {
 	SetMeshTransformation(Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)), 5);
 //	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(0, -10000), Trans_Rotate(-r,0,0,1), Trans_Translate(xoff, 10000+yoff)));
 	return;

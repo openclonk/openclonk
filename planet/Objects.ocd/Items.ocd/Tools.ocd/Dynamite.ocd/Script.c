@@ -7,7 +7,7 @@
 */
 	
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, num x, num y, bool box)
 {
 	// if already activated, nothing (so, throw)
 	if(GetAction() == "Fuse" || box)
@@ -50,7 +50,7 @@ public func ControlUse(object clonk, int x, int y, bool box)
 	return false;
 }
 
-private func Place(object clonk, int x, int y, bool box)
+private func Place(object clonk, num x, num y, bool box)
 {
 	var angle = Angle(0,0,x,y);
 	var pos = GetWall(angle);

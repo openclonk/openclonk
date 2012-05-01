@@ -51,7 +51,7 @@ protected func Initialize()
 	PlaceGras();
 	return;
 }
-global func FxLifestealDamage(object target, effect, int damage, int cause, int from)
+global func FxLifestealDamage(object target, effect, num damage, int cause, int from)
 {
 	var goal = FindObject(Find_ID(KingOfTheHill_Location));
 	if (!goal) return damage;
@@ -197,7 +197,7 @@ global func PlaceGras()
 	return 1;
 }
 
-private func MakeTarget(int x, int y)
+private func MakeTarget(float x, float y)
 {
 
 	var target = CreateObject(DynamiteBox, x, y, NO_OWNER);

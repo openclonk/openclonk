@@ -26,7 +26,7 @@ global func TutArrowClear()
 * @param dist distance of the arrow to the position, standard 16 pixels.
 * @return the arrow created.
 */
-global func TutArrowShowPos(int x, int y, int angle, int dist)
+global func TutArrowShowPos(float x, float y, float angle, float dist)
 {
 	if (angle == nil) 
 		angle = 135;
@@ -51,7 +51,7 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 * @param dist distance of the arrow to the target object, standard 16 pixels.
 * @return the arrow created.
 */
-global func TutArrowShowTarget(object target, int angle, int dist)
+global func TutArrowShowTarget(object target, float angle, float dist)
 {
 	var container = target->Contained(), index;
 	if (container &&
@@ -83,7 +83,7 @@ global func TutArrowShowTarget(object target, int angle, int dist)
 * @param dist distance of the arrow to the position, standard 16 pixels.
 * @return the arrow created.
 */
-global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
+global func TutArrowShowGUIPos(float x, float y, float angle, float dist)
 {
 	if (angle == nil) 
 		angle = 135;
@@ -110,7 +110,7 @@ global func TutArrowShowGUIPos(int x, int y, int angle, int dist)
 * @param dist distance of the arrow to the target object, automatically corrects for GUI object's size.
 * @return the arrow created.
 */
-global func TutArrowShowGUITarget(object target, int angle, int dist)
+global func TutArrowShowGUITarget(object target, float angle, float dist)
 {
 	if (angle == nil) 
 		angle = 135;

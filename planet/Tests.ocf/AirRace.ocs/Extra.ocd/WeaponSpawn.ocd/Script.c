@@ -8,7 +8,7 @@
 /*-- Checkpoint size --*/
 local ws_size;
 
-public func SetSpawnSize(int size)
+public func SetSpawnSize(num size)
 {
 	ws_size = BoundBy(size, 10, 100);
 	return;

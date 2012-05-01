@@ -142,7 +142,7 @@ public func GetSymbol()
 }
 
 // Sets the menu item size.
-public func SetSize(int size) 
+public func SetSize(num size) 
 {
 	// The menu item size is handled over con since drag&drop needs to scale the same.
 	SetCon(size);

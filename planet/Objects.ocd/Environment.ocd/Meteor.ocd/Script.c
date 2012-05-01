@@ -8,7 +8,7 @@
 
 /*-- Disaster Control --*/
 
-public func SetChance(int chance)
+public func SetChance(num chance)
 {
 	if (this != Meteor)
 		return;
@@ -45,7 +45,7 @@ protected func FxIntMeteorControlTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
-global func LaunchMeteor(int x, int y, int size, int xdir, int ydir)
+global func LaunchMeteor(float x, float y, num size, float xdir, float ydir)
 {
 	var meteor = CreateObject(Meteor);
 	return meteor->Launch(x, y, size, xdir, ydir);
@@ -53,7 +53,7 @@ global func LaunchMeteor(int x, int y, int size, int xdir, int ydir)
 
 /*-- Meteor --*/
 
-public func Launch(int x, int y, int size, int xdir, int ydir)
+public func Launch(float x, float y, num size, float xdir, float ydir)
 {
 	// Launch from indicated position.
 	SetPosition(x, y);
@@ -113,7 +113,7 @@ protected func FxIntMeteorTimer()
 	return 1;
 }
 
-protected func Hit(int xdir, int ydir)
+protected func Hit(float xdir, float ydir)
 {
 	var size = 10 + GetCon();
 	var speed2 = 20 + (xdir ** 2 + ydir ** 2) / 10000;

@@ -29,7 +29,7 @@ public func GetCarryTransform()
 
 local magic_number;
 local carry_bone;
-public func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, num x, num y)
 {
 	// cooldown?
 	if(!CanStrikeWithWeapon(clonk)) return true;
@@ -133,7 +133,7 @@ func WeaponStrikeExpired()
 
 }
 
-func SwordDamage(int shield)
+func SwordDamage(num shield)
 {
 	return ((100-shield)*9*1000 / 100);
 }

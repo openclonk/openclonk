@@ -104,7 +104,7 @@ public func Active()
   }
 }
 
-func SetLineTransform(int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+func SetLineTransform(num r, num xoff, num yoff, num length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values

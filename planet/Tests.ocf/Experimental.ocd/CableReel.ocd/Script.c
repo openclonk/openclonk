@@ -10,7 +10,7 @@ public func IsToolProduct() { return true; }
 /*-- Line connection --*/
 
 // Use will connect power line to building at the clonk's position.
-protected func ControlUse(object clonk, int x, int y)
+protected func ControlUse(object clonk, num x, num y)
 {
 	// Is there an object which accepts power lines?
 	var obj = FindObject(Find_AtPoint(), Find_Func("IsCableCrossing"));

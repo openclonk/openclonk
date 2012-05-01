@@ -53,7 +53,7 @@ global func Incinerate(strength, int caused_by, blasted, incinerating_object)
 }
 
 // Called when an object is hit by an explosion (and can burn).
-global func OnBlastIncinerationDamage(int level, int player)
+global func OnBlastIncinerationDamage(num level, int player)
 {
 	return this->Incinerate(level, player);
 }

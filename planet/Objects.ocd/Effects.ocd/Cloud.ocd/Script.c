@@ -6,7 +6,7 @@ func Initialize()
 	SetComDir(COMD_None);
 }
 
-func Show(int clr, int layer, int size,bool diffuse)
+func Show(int clr, int layer, float size,bool diffuse)
 {
 	// where on the z-axis?
 	// FIXME

@@ -54,7 +54,7 @@ func Initialize()
 
 public func GetAnimationSet() { return animation_set; }
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
@@ -110,7 +110,7 @@ public func FinishedLoading(object clonk)
 }
 
 // Update the angle on mouse movement
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object clonk, num x, num y)
 {
 	// Save new angle
 	var angle = Angle(0,0,x,y);
@@ -125,14 +125,14 @@ public func ControlUseHolding(object clonk, int x, int y)
 }
 
 // Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
-public func ControlUseStop(object clonk, int x, int y)
+public func ControlUseStop(object clonk, num x, num y)
 {
 	clonk->StopAim();
 	return true;
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
+public func FinishedAiming(object clonk, float angle)
 {
 	clonk->DetachMesh(iArrowMesh);
 	iArrowMesh = nil;
@@ -155,7 +155,7 @@ public func FinishedAiming(object clonk, int angle)
 	return true;
 }
 
-public func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, num x, num y)
 {
 	clonk->CancelAiming(this);
 	return true;
@@ -188,7 +188,7 @@ public func Reset(clonk)
 
 /* ++++++++ Helper functions ++++++++ */
 
-private func ClonkAimLimit(object clonk, int angle)
+private func ClonkAimLimit(object clonk, float angle)
 {
 	angle = Normalize(angle,-180);
 	if(Abs(angle) > 160) return false;

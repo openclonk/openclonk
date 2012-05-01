@@ -34,7 +34,7 @@ public func GetCarryBone() { return "Javelin"; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryTransform() { if(fAiming == 1) return Trans_Rotate(180, 1, 0, 0); }
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
@@ -70,13 +70,13 @@ protected func ControlUseStop(object clonk, ix, iy)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
+public func FinishedAiming(object clonk, float angle)
 {
 	clonk->StartShoot(this);
 	return true;
 }
 
-public func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, num x, num y)
 {
 	clonk->CancelAiming(this);
 	return true;
@@ -88,12 +88,12 @@ public func Reset(clonk)
 }
 
 // Called in the half of the shoot animation (when ShootTime2 is over)
-public func DuringShoot(object clonk, int angle)
+public func DuringShoot(object clonk, float angle)
 {
 	DoThrow(clonk, angle);
 }
 
-public func DoThrow(object clonk, int angle)
+public func DoThrow(object clonk, float angle)
 {
 	var javelin=TakeObject();
 	

@@ -23,7 +23,7 @@ global func IntroAddPlayer(int plr)
 	return true;
 }
 
-global func IntroCreateBoompack(int x, int y, int fuel)
+global func IntroCreateBoompack(float x, float y, int fuel)
 {
 	var boompack = CreateObject(Boompack, x, y, NO_OWNER);
 	boompack->SetFuel(fuel);

@@ -94,7 +94,7 @@ private func CreateWeaponSpawns()
 }
 
 // Finds a position a plane - of size - can actually fly through, returns [x, y] as a position.
-private func FindWeaponSpawnPosition(int rx, int ry, int wdt, int hgt, int size)
+private func FindWeaponSpawnPosition(float rx, int ry, int wdt, int hgt, int size)
 {
 	for (var i = 0; i < 500; i++)
 	{

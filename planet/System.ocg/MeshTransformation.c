@@ -13,14 +13,14 @@ global func Trans_Identity()
 	        0,    0,    1000, 0];
 }
 
-global func Trans_Translate(int dx, int dy, int dz)
+global func Trans_Translate(num dx, num dy, num dz)
 {
 	return [1000, 0,    0,    dx,
 	        0,    1000, 0,    dy,
 	        0,    0,    1000, dz];
 }
 
-global func Trans_Scale(int sx, int sy, int sz)
+global func Trans_Scale(num sx, num sy, num sz)
 {
 	if (sy == nil && sz == nil)
 		sz = sy = sx;
@@ -30,7 +30,7 @@ global func Trans_Scale(int sx, int sy, int sz)
 	        0,  0,  sz, 0];
 }
 
-global func Trans_Rotate(int angle, int rx, int ry, int rz)
+global func Trans_Rotate(num angle, num rx, num ry, num rz)
 {
 	var c = Cos(angle, 1000);
 	var s = Sin(angle, 1000);

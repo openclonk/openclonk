@@ -27,7 +27,7 @@ public func Initialize()
 	return true;
 }
 
-func MoveTo(int x, int y, int r)
+func MoveTo(num x, num y, num r)
 {
 	if(GetEffect("MoveTo", this)) RemoveEffect("MoveTo", this);
 	AddEffect("MoveTo", this, 1, 1, this, 0, x, y, r);

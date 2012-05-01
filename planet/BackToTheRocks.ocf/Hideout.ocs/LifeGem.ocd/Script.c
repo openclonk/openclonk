@@ -20,7 +20,7 @@ func FxSparkleTimer(target, effect, effect_time)
 	return true;
 }
 
-public func ControlUse(object clonk, int ix, int iy)
+public func ControlUse(object clonk, num ix, num iy)
 {
 	// applies the healing effect even when the Clonk is at full HP
 	// does this because you can block one source of damage

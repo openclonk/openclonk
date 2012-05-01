@@ -8,7 +8,7 @@ protected func Hit()
 
 /* Eating */
 
-protected func ControlUse(object clonk, int iX, int iY)
+protected func ControlUse(object clonk, num iX, num iY)
 {
 	clonk->Eat(this);
 }

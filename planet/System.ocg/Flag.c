@@ -4,7 +4,7 @@
 	Authors: Zapper
 --*/
 
-global func GetFlagpoleForPosition(int x, int y)
+global func GetFlagpoleForPosition(float x, float y)
 {
 	if(GetType(LibraryFlag_flag_list) != C4V_Array) return nil;
 	
@@ -24,7 +24,7 @@ global func GetFlagpoleForPosition(int x, int y)
 	return oldest;
 }
 
-global func GetOwnerOfPosition(int x, int y)
+global func GetOwnerOfPosition(float x, float y)
 {
 	var flag = GetFlagpoleForPosition(x, y);
 	if(!flag) return NO_OWNER;

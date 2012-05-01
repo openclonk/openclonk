@@ -27,7 +27,7 @@ private func Destroy()
 	RemoveObject();
 }
 
-global func PlaceGrass(int amount, int start, int end)
+global func PlaceGrass(int amount, num start, num end)
 {
 	if (!start)
 		start = 0;

@@ -135,7 +135,7 @@ func GetHookAngle()
 	return Angle(particles[-2][0][0], particles[-2][0][1], particles[-3][0][0], particles[-3][0][1])+180;
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+func SetLineTransform(obj, num r, num xoff, num yoff, num length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values

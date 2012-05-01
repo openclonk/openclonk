@@ -7,7 +7,7 @@ public func MakeNormalSize() { king_size = false; SetMeshMaterial("wood",0); ret
 public func Departure() { MakeNormalSize(); }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
+public func FinishedAiming(object clonk, float angle)
 {
 	clonk->DetachMesh(iArrowMesh);
 	iArrowMesh = nil;

@@ -24,7 +24,7 @@ public func New(object new_clonk, object new_rope)
 	rope = new_rope;
 }
 
-public func Launch(int angle, int str, object shooter, object bow)
+public func Launch(float angle, num str, object shooter, object bow)
 {
 	SetObjDrawTransform(0, 1, 0, 0, 0, 0, 0); // Hide
 	Exit();
@@ -342,7 +342,7 @@ public func FxIntGrappleControlTimer(object target, fxnum, int time)
 	return FX_OK;
 }
 
-global func Trans_RotX(int rotation, int ox, int oy)
+global func Trans_RotX(num rotation, num ox, num oy)
 {
   return Trans_Mul(Trans_Translate(-ox, -oy), Trans_Rotate(rotation,0,0,1), Trans_Translate(ox, oy));
 }

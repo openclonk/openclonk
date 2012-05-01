@@ -88,7 +88,7 @@ private func EndUsage(object clonk)
 }
 
 // Update the glove aim angle
-private func UpdateGloveAngle(object clonk, int x, int y)
+private func UpdateGloveAngle(object clonk, num x, num y)
 {
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);
@@ -238,7 +238,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 	return 1;
 }
 
-protected func ControlUseCancel(object clonk, int ix, int iy)
+protected func ControlUseCancel(object clonk, num ix, num iy)
 {
 	CancelUse(clonk);
 }

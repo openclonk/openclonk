@@ -96,7 +96,7 @@ public func MaxLengthReached()
 }
 
 /* for swinging */
-func DoSpeed(int value)
+func DoSpeed(num value)
 {
 	var speed = particles[-1][0][0]-particles[-1][1][0];
 	if(speed*value > 0) value += speed/10;
@@ -241,7 +241,7 @@ func GetClonkOff()
 	return Vec_Sub(particles[-1][0],last_point);
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+func SetLineTransform(obj, num r, num xoff, num yoff, num length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values

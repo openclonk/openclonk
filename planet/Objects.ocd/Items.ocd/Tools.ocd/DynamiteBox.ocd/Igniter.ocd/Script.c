@@ -18,7 +18,7 @@ local fIgnite;
 local aDynamites;
 local aWires;
 
-public func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, num x, num y)
 {
 	if(clonk->GetAction() != "Walk") return true;
 	

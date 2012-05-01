@@ -137,7 +137,7 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 /*-- Global restoration on destruction --*/
 
 // Adds an effect to restore an item on destruction.
-global func AddRestoreMode(object to_container, int to_x, int to_y)
+global func AddRestoreMode(object to_container, float to_x, float to_y)
 {
 	if (!this)
 		return;

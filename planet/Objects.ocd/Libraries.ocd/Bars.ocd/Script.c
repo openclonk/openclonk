@@ -20,7 +20,7 @@ protected func Construction()
 	layer = CreateArray();
 }
 
-public func SetBarOffset(int x, int y, int num)
+public func SetBarOffset(num x, num y, int num)
 {
 	offsx[num] = x;
 	offsy[num] = y;
@@ -43,13 +43,13 @@ public func SetBarLayers(int la, int num)
 	SetGraphics("Bar",Library_Bars,layer[num]+1,GFXOV_MODE_Base);
 }
 
-public func SetBarDimensions(int wdt, int hgt, int num)
+public func SetBarDimensions(num wdt, num hgt, int num)
 {
 	width[num] = 1000 * wdt / Library_Bars->GetDefWidth();
 	height[num] = 1000 * hgt / Library_Bars->GetDefHeight();
 }
 
-public func SetBarProgress(int promille, int num)
+public func SetBarProgress(num promille, int num)
 {
 	// not existing
 	if(GetLength(layer) <= num) return false;

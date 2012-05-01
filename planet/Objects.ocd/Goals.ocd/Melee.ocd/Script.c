@@ -18,7 +18,7 @@ func MakeHostileToAll(int newplr, int team)
 	}
 }
 
-protected func InitializePlayer(int newplr, int x, int y, object base, int team)
+protected func InitializePlayer(int newplr, num x, num y, object base, int team)
 {
 	MakeHostileToAll(newplr, team);
 	return inherited(newplr, x, y, base, team, ...);

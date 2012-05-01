@@ -2,7 +2,7 @@
 
 #appendto Boompack
 
-func Launch(int angle, object clonk)
+func Launch(float angle, object clonk)
 {
 	if (clonk) 
 		clonk->AddEffect("RespawnBoom", clonk, 100, 90, nil, nil);

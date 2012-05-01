@@ -2,7 +2,7 @@
 
 #appendto Clonk
 
-public func AI_GuardArea(int x, int y, int wdt, int hgt)
+public func AI_GuardArea(num x, num y, num wdt, num hgt)
 {
 	var effect = AddEffect("IntAIGuardArea", this, 100, 20, this);
 	effect.x = x;

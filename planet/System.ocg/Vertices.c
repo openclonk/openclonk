@@ -6,7 +6,7 @@
 --*/
 
 // Sets both the X and Y-coordinate of one vertex.
-global func SetVertexXY(int index, int x, int y)
+global func SetVertexXY(int index, num x, num y)
 {
 	// Set vertices.
 	SetVertex(index, VTX_X, x);

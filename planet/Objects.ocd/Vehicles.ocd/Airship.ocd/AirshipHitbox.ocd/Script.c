@@ -10,7 +10,7 @@ protected func Initialize()
 
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage(int change, int byplayer)
+public func Damage(num change, int byplayer)
 {
 	if(GetDamage() > health)
 	{
