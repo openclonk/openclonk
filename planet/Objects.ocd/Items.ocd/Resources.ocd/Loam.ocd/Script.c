@@ -76,7 +76,8 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
 	var min_dt = 3;
-	if (effect.TargetY < -20 && !Abs(effect.TargetX*5/effect.TargetX)) min_dt=2;
+	if (effect.TargetY < -20 && !Abs(effect.TargetX*5/effect.TargetY))
+		min_dt = 2;
 
 	// bridge speed by dig physical
 	var speed = clonk.ActMap.Dig.Speed/6;
@@ -151,13 +152,12 @@ private func LoamDone(object clonk)
 		clonk->SetAction("Walk");
 		clonk->SetComDir(COMD_Stop);
 	}
-	// Remove loam object if most of it has been consumed
-	if (loamused > LOAM_Bridge_Amount - 10)
-	{
-		RemoveObject();
-	}
 	// Remove Effect
 	RemoveEffect("IntBridge", clonk);
+	// Remove loam object if most of it has been consumed
+	if (loamused > LOAM_Bridge_Amount - 10)
+		RemoveObject();
+	return;
 }
 
 public func IsFoundryProduct() { return true; }
