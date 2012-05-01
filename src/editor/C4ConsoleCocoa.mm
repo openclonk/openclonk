@@ -31,7 +31,6 @@
 
 #include <StdFile.h>
 #include <StdRegistry.h>
-#include <StdGL.h>
 
 #import <Cocoa/Cocoa.h>
 #import "ClonkAppDelegate.h"
