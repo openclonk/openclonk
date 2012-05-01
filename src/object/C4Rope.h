@@ -29,70 +29,37 @@ public:
 	C4RopeError(const std::string& message): std::runtime_error(message) {}
 };
 
-class C4RopeSegment
+class C4Rope;
+class C4RopeElement
 {
 	friend class C4Rope;
 public:
-	C4RopeSegment(C4Real x, C4Real y, C4Real m);
+	C4RopeElement(C4Object* obj, bool fixed);
+	C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed);
 
-	C4Real GetX() const { return x; }
-	C4Real GetY() const { return y; }
-	C4Real GetVx() const { return vx; }
-	C4Real GetVy() const { return vy; }
-	C4Real GetMass() const { return m; }
+	C4Real GetX() const { return Object ? Object->fix_x : x; }
+	C4Real GetY() const { return Object ? Object->fix_y : y; }
+	C4Real GetVx() const { return Object ? Object->xdir : vx; }
+	C4Real GetVy() const { return Object ? Object->ydir : vy; }
+	C4Real GetMass() const { return Object ? itofix(Object->Mass) : m; }
+	C4Object* GetObject() const { return Object; }
 
 	void AddForce(C4Real x, C4Real y);
-
-	void Execute(C4Real dt, C4Real mu);
+	void Execute(const C4Rope* rope, C4Real dt);
 private:
+	void ResetForceRedirection(C4Real dt);
+	void SetForceRedirection(const C4Rope* rope);
+
+	bool Fixed; // Apply rope forces to this element?
 	C4Real x, y; // pos
 	C4Real vx, vy; // velocity
+	C4Real m; // mass
 	C4Real fx, fy; // force
 	C4Real rx, ry; // force redirection
-	C4Real rdt; //rx, rry; // force redirection reference
-	C4Real m; // mass
-	C4RopeSegment* next;
-	C4RopeSegment* prev;
-};
-
-class C4RopeEnd
-{
-	friend class C4Rope;
-public:
-	C4RopeEnd(C4RopeSegment* segment, C4Object* obj, bool fixed);
-	C4RopeEnd(C4RopeSegment* segment, C4Real x, C4Real y, C4Real m, bool fixed);
-	~C4RopeEnd();
-
-	C4Real GetX() const { return has_object ? obj->fix_x : mass->x; }
-	C4Real GetY() const { return has_object ? obj->fix_y : mass->y; }
-	C4Real GetVx() const { return has_object ? obj->xdir : mass->vx; }
-	C4Real GetVy() const { return has_object ? obj->ydir : mass->vy; }
-	C4Real GetMass() const { return has_object ? itofix(obj->Mass) : mass->m; }
-	C4Object* GetObject() const { return has_object ? obj : NULL; }
-
-	void AddForce(C4Real fx, C4Real fy);
-	void Execute(C4Real dt);
-
-private:
-	C4RopeSegment* segment;
-
-	bool has_object;
-	bool fixed;
-
-	C4Real fx, fy;
-	C4Real rx, ry;
-	C4Real rdt;//rrx, rry;
-
-	struct Mass {
-		C4Real x, y; // pos
-		C4Real vx, vy; // velocity
-		C4Real m; // mass
-	};
-
-	union {
-		Mass* mass;
-		C4Object* obj;
-	};
+	C4Real rdt; // force redirection timeout
+	C4RopeElement* Next; // next rope element, or NULL
+	C4RopeElement* Prev; // prev rope element, or NULL
+	C4Object* Object; // Connected object. If set, x/y/vx/vy/m are ignored.
 };
 
 class C4Rope: public C4PropListNumbered
@@ -102,23 +69,24 @@ public:
 	~C4Rope();
 
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
-
 	void Execute();
 
-	C4Object* GetFront() const { return front->GetObject(); }
-	C4Object* GetBack() const { return back->GetObject(); }
+	C4Real GetSegmentLength() const { return l; }
+	C4Real GetOuterFriction() const { return mu; }
+
+	C4RopeElement* GetFront() const { return Front; }
+	C4RopeElement* GetBack() const { return Back; }
 private:
-	template<typename TRopeType1, typename TRopeType2>
-	void Solve(TRopeType1* prev, TRopeType2* next);
+	void Solve(C4RopeElement* prev, C4RopeElement* next);
 
 	// Whether to apply repulsive forces between rope segments.
 	// TODO: Could be made a property...
 	static const bool ApplyRepulsive = false;
 
-	const float w; // Width of rope
+	unsigned int NumIterations; // Number of iterations per frame
+	const float Width; // Width of rope
 	C4DefGraphics* Graphics;
-
-	int32_t n_segments;
+	int32_t SegmentCount;
 
 	// TODO: Add a "dynlength" feature which adapts the spring length to the
 	// distance of the two ends, up to a maximum... and/or callbacks to script
@@ -130,10 +98,8 @@ private:
 	C4Real mu; // outer friction constant
 	C4Real eta; // inner friction constant
 
-	C4RopeEnd* front;
-	C4RopeEnd* back;
-
-	unsigned int n_iterations;
+	C4RopeElement* Front;
+	C4RopeElement* Back;
 };
 
 class C4RopeAul: public C4AulScript

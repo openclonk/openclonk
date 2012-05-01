@@ -21,12 +21,12 @@
 
 static C4Object* FnGetFront(C4AulContext* Context)
 {
-	return static_cast<C4Rope*>(Context->Def)->GetFront();
+	return static_cast<C4Rope*>(Context->Def)->GetFront()->GetObject();
 }
 
 static C4Object* FnGetBack(C4AulContext* Context)
 {
-	return static_cast<C4Rope*>(Context->Def)->GetBack();
+	return static_cast<C4Rope*>(Context->Def)->GetBack()->GetObject();
 }
 
 C4RopeAul::C4RopeAul():
