@@ -152,7 +152,7 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 			vx += dt * fx / m;
 			vy += dt * fy / m;
 		}
-		else
+		else if( (Target->Category & C4D_StaticBack) == 0)
 		{
 			Target->xdir += dt * fx / Target->Mass;
 			Target->ydir += dt * fy / Target->Mass;
@@ -187,7 +187,7 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 
 				// Force redirection so that not every single pixel on a
 				// chunky landscape is an obstacle for the rope.
-				SetForceRedirection(rope);
+				SetForceRedirection(rope, 0, 0);
 				break;
 			}
 
@@ -209,14 +209,16 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 			if(Target->xdir*Target->xdir + Target->ydir*Target->ydir >= Fix1)
 			{
 				// Check if the object has contact to the landscape
-				long iResult = 0;
+				//long iResult = 0;
 				const DWORD dwCNATCheck = CNAT_Left | CNAT_Right | CNAT_Top | CNAT_Bottom;
+				int iContactVertex = -1;
 				for (int i = 0; i < Target->Shape.VtxNum; ++i)
-					iResult |= Target->Shape.GetVertexContact(i, dwCNATCheck, Target->GetX(), Target->GetY());
+					if(Target->Shape.GetVertexContact(i, dwCNATCheck, Target->GetX(), Target->GetY()))
+						iContactVertex = i;
 
 				// TODO: Check force redirection at the vertex which has contact
-				if(iResult)
-					SetForceRedirection(rope);
+				if(iContactVertex != -1)
+					SetForceRedirection(rope, Target->Shape.VtxX[iContactVertex], Target->Shape.VtxY[iContactVertex]);
 			}
 		}
 	}
@@ -239,28 +241,34 @@ void C4RopeElement::ResetForceRedirection(C4Real dt)
 	}
 }
 
-void C4RopeElement::SetForceRedirection(const C4Rope* rope)
+void C4RopeElement::SetForceRedirection(const C4Rope* rope, int ox, int oy)
+{
+	SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(75));
+}
+
+bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, int oy, C4Real dx, C4Real dy, C4Real l, C4Real angle)
 {
 	// The procedure is the following: we try manuevering around
 	// the obstacle, either left or right.  Which way we take is determined by
 	// checking whether or not there is solid material in a 75 degree angle
 	// relative to the direction of movement.
-	const C4Real Cos75 = Cos(itofix(75));
-	const C4Real Sin75 = Sin(itofix(75));
+	const C4Real Cos75 = Cos(angle);
+	const C4Real Sin75 = Sin(angle);
 
-	C4Real vx1 =  Cos75 * GetVx() + Sin75 * GetVy();
-	C4Real vy1 = -Sin75 * GetVx() + Cos75 * GetVy();
-	C4Real vx2 =  Cos75 * GetVx() - Sin75 * GetVy();
-	C4Real vy2 =  Sin75 * GetVx() + Cos75 * GetVy();
-	const C4Real v = ftofix(sqrt(fixtof(GetVx()*GetVx() + GetVy()*GetVy())));
-
-	const C4Real l = rope->GetSegmentLength();
+	C4Real vx1 =  Cos75 * dx + Sin75 * dy;
+	C4Real vy1 = -Sin75 * dx + Cos75 * dy;
+	C4Real vx2 =  Cos75 * dx - Sin75 * dy;
+	C4Real vy2 =  Sin75 * dx + Cos75 * dy;
+	const C4Real v = ftofix(sqrt(fixtof(dx*dx + dy*dy)));
 
 	// TODO: We should check more than a single pixel. There's some more potential for optimization here.
-	if(v != Fix0 && !GBackSolid(fixtoi(GetX() + vx1*l/v), fixtoi(GetY() + vy1*l/v)))
+	if(v != Fix0 && !GBackSolid(ox + fixtoi(GetX() + vx1*l/v), oy + fixtoi(GetY() + vy1*l/v)))
 		{ rx = vx1/v; ry = vy1/v; rdt = Fix1/4; } // Enable force redirection for 1/4th of a frame
-	else if(v != Fix0 && !GBackSolid(fixtoi(GetX() + vx2/v), fixtoi(GetY() + vy2/v)))
+	else if(v != Fix0 && !GBackSolid(ox + fixtoi(GetX() + vx2/v), oy + fixtoi(GetY() + vy2/v)))
 		{ rx = vx2/v; ry = vy2/v; rdt = Fix1/4; } // Enable force redirection for 1/4th of a frame
+	else
+		return false;
+	return true;
 }
 
 C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):

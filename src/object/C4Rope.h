@@ -48,7 +48,8 @@ public:
 	void Execute(const C4Rope* rope, C4Real dt);
 private:
 	void ResetForceRedirection(C4Real dt);
-	void SetForceRedirection(const C4Rope* rope);
+	void SetForceRedirection(const C4Rope* rope, int ox, int oy);
+	bool SetForceRedirectionByLookAround(const C4Rope* rope, int ox, int oy, C4Real dx, C4Real dy, C4Real l, C4Real angle);
 
 	bool Fixed; // Apply rope forces to this element?
 	C4Real x, y; // pos
