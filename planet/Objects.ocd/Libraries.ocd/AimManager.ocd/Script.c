@@ -81,6 +81,8 @@ func SetTurnType  () { return _inherited(...); }
 func SetTurnForced() { return _inherited(...); }
 func SetBackwardsSpeed() { return _inherited(...); }
 
+func IsAiming() { return !!GetEffect("IntAim", this); }
+
 func FxIntAimCheckProcedureStart(target, effect, tmp)
 {
 	if(tmp) return;
@@ -255,7 +257,7 @@ public func StartAim(object weapon, int angle)
 func FxIntAimTimer(target, effect, time)
 {
 	var angle, delta_angle, length;
-	var speed = aim_set["AimSpeed"];;
+	var speed = aim_set["AimSpeed"];
 	if(speed == nil) speed = 50;
 	else speed *= 10;
 	if(aim_angle < 0) SetTurnForced(DIR_Left);

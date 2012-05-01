@@ -4,7 +4,7 @@
 	
 		Premade goal for simple melees with relaunches.
 		Callbacks made to scenario script:
-			* OnPlrRelaunch(int plr) made when the player is relaunched and at game start plr init.
+			* OnPlayerRelaunch(int plr) made when the player is relaunched and at game start plr init.
 			* RelaunchCount() should return the number of relaunches.
 			* KillsToRelaunch() should return how many kills will earn the player an extra relaunch.
 --*/

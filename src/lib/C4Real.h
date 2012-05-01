@@ -42,7 +42,12 @@
 // activate to switch to classic fixed-point math
 #define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE
-#define FIXED_EMULATE_64BIT
+
+// gcc 4.6 generates better code for FIXED_EMULATE_64BIT disablen for both
+// 32 and 64 bit. It properly recognizes that the 32,32->64 multiplication
+// instruction of the x86 is the right choice for the job whereas the more
+// complicated FIXED_EMULATE_64BIT version requires multiple multiplications
+//#define FIXED_EMULATE_64BIT
 
 // note: C4Fixed has to be defined even though it isn't used
 //       any more. It is used to convert old-format fixed values
@@ -148,11 +153,11 @@ public:
 #ifndef FIXED_EMULATE_64BIT
 		val = int32_t( (int64_t(val) * fVal2.val) / FIXED_FPF );
 #else
-		int32_t x0 = val & (FIXED_FPF - 1),
-		             x1 = val >> FIXED_SHIFT;
-		int32_t y0 = fVal2.val & (FIXED_FPF - 1),
-		             y1 = fVal2.val >> FIXED_SHIFT;
-		val = x0*y0/FIXED_FPF + x0*y1 + x1*y0 + x1*y1*FIXED_FPF;
+		uint32_t x0 = val & (FIXED_FPF - 1);
+		int32_t x1 = val >> FIXED_SHIFT;
+		uint32_t y0 = fVal2.val & (FIXED_FPF - 1);
+		int32_t y1 = fVal2.val >> FIXED_SHIFT;
+		val = int32_t(x0*y0/FIXED_FPF) + int32_t(x0)*y1 + x1*int32_t(y0) + x1*y1*FIXED_FPF;
 #endif
 		return *this;
 	}

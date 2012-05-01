@@ -115,16 +115,18 @@ func DoPoint(int player, int count)
 	player_points[player] = Max(player_points[player] + count, 0);
 }
 
-protected func InitializePlayer(plr)
+protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	ScheduleCall(this, "RefreshScoreboard", 1);
 	player_suicides[plr]=0;
-	return Goal_Melee->InitializePlayer(plr, ...); // TODO
+	
+	Goal_Melee->MakeHostileToAll(plr, team);
+	return inherited(plr, x, y, base, team, ...);
 }
 
 public func IsFulfilled()
 {
-	return Goal_Melee->IsFulfilled(); // TODO
+	return Goal_Melee->IsFulfilled(); // the same condition as a normal melee
 }
 
 func OnClonkDeath(object clonk, int killer)

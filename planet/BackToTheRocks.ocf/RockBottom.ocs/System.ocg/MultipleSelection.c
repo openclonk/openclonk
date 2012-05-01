@@ -17,6 +17,7 @@ private func OpenWeaponMenu(object clonk)
 				else menu->AddItem(weapon);
 			}
 			menu->Show();
+			menu->SetUncloseable();
 		}
 	}
 }

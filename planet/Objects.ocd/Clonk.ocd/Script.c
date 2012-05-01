@@ -145,10 +145,12 @@ protected func Death(int killed_by)
 	if (GetAlive())
 		return;
 	
+	// Some effects on dying.
 	if(gender == 0)
 		Sound("Die");
 	else
 		Sound("FDie");
+	CloseEyes(1);
 
 	DeathAnnounce();
 	return;

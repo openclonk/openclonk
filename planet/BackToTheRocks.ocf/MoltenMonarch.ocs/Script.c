@@ -27,7 +27,7 @@ protected func Initialize()
 	CreateObject(Chest, 668, 336, NO_OWNER);
 	CreateObject(Chest, 320, 440, NO_OWNER);
 	CreateObject(Chest, 48, 256, NO_OWNER);
-	AddEffect("IntFillChests", nil, 100, 5 * 36, this);
+	AddEffect("IntFillChests", nil, 100, 5 * 36);
 	
 	// Moving bricks.
 	var brick;
