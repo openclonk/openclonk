@@ -91,6 +91,50 @@ namespace
 
 		return true;
 	}
+
+	// PathFinder callback function. This saves the first and last waypoint which
+	// determine the direction toward which to pull.
+	struct PullPathInfo
+	{
+		bool FirstSeg;
+		const int32_t bx, by;
+		const int32_t ex, ey;
+		int32_t px, py;
+		int32_t nx, ny;
+		C4Real d;
+	};
+
+	bool PullPathAccumulator(int32_t iX, int32_t iY, intptr_t iTransferTarget, intptr_t PathInfoPtr)
+	{
+		PullPathInfo* Info = (PullPathInfo*)PathInfoPtr;
+
+		// Ignore points which are very close (~7 pixels) to start or end. Such
+		// points are often misleading because the PathFinder first pulls away a
+		// bit from the ground before actually moving toward the destination.
+		if(Info->px != iX || Info->py != iY)
+		{
+			if(Info->FirstSeg)
+			{
+				if( (Info->ex - iX) * (Info->ex - iX) + (Info->ey - iY) * (Info->ey - iY) > 50)
+				{
+					Info->nx = iX;
+					Info->ny = iY;
+					Info->FirstSeg = false;
+				}
+			}
+
+			if( (Info->bx - iX) * (Info->bx - iX) + (Info->by - iY) * (Info->by - iY) > 50)
+			{
+				C4Real dx = itofix(Info->px - iX);
+				C4Real dy = itofix(Info->py - iY);
+				Info->px = iX;
+				Info->py = iY;
+				Info->d += ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+			}
+		}
+
+		return true; // note return value is ignored
+	}
 }
 
 C4RopeElement::C4RopeElement(C4Object* obj, bool fixed):
@@ -318,27 +362,69 @@ C4Rope::~C4Rope()
 void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 {
 	// Rope forces
-	C4Real dx = prev->GetX() - next->GetX();
-	C4Real dy = prev->GetY() - next->GetY();
+	const C4Real dx = prev->GetX() - next->GetX();
+	const C4Real dy = prev->GetY() - next->GetY();
 
-	C4Real d = ftofix(sqrt(fixtof(dx*dx + dy*dy))); 
-	if(d != 0 && (ApplyRepulsive || d > l))
+	if(dx*dx + dy*dy > Fix0)
 	{
-		C4Real fx = (dx / d) * k * (d - l);
-		C4Real fy = (dy / d) * k * (d - l);
+		// Compute forces between these points. If there is no material between the
+		// rope segments, this is just a straight line. Otherwise, run the
+		// pathfinder to find out in which direction to pull.
+		// If the PathFinder doesn't find a path... then well.. no idea. Maybe
+		// the rope got buried by an earthquake, or someone built a loam bridge
+		// over a rope segment. In that case just apply the normal "straight"
+		// forces and hope the best...
 
-		// If force redirection is active, move into direction of redirected force
-		// instead. This is used to pull around corners in the landscape.
+		// TODO: Avoid any of these expensive computations if both prev and next
+		// have force redirection active
 
-		if(prev->rdt == Fix0)
-			prev->AddForce(-fx, -fy);
+		int pix = fixtoi(prev->GetX());
+		int piy = fixtoi(prev->GetY());
+		int nix = fixtoi(next->GetX());
+		int niy = fixtoi(next->GetY());
+
+		// TODO: For objects, run PathFree and PathFinder from vertex which has
+		// had contact to the landscape previously.
+
+		C4Real dx1, dy1, dx2, dy2, d;
+		PullPathInfo Info = { true, pix, piy, nix, niy, nix, niy, pix, piy, Fix0 };
+		if(dx*dx+dy*dy > 4*l && !PathFree(pix, piy, nix, niy) && Game.PathFinder.Find(pix, piy, nix, niy, PullPathAccumulator, (intptr_t)&Info))
+		{
+			C4Real dpx = itofix(Info.px - pix);
+			C4Real dpy = itofix(Info.py - piy);
+			C4Real dp = ftofix(sqrt(fixtof(dpx*dpx + dpy*dpy))); // TODO: Could be computed in accumulator
+
+			C4Real dnx = itofix(Info.nx - nix);
+			C4Real dny = itofix(Info.ny - niy);
+			C4Real dn = ftofix(sqrt(fixtof(dnx*dnx + dny*dny))); // TODO: Could be computed in accumulator
+
+			dx1 = dpx / dp;
+			dy1 = dpy / dp;
+			dx2 = dnx / dn;
+			dy2 = dny / dn;
+			d = itofix(Info.d) + dp;
+
+			/*printf("Solved %p via PathFinder, from %d/%d to %d/%d\n", this, pix, piy, nix, niy);
+			printf(" --> p to %d/%d, n to %d/%d\n", Info.px, Info.py, Info.nx, Info.ny);
+			printf(" --> vec_p=%f/%f, vec_n=%f/%f, d=%f\n", fixtof(dx1), fixtof(dy1), fixtof(dx2), fixtof(dy2), fixtof(d));*/
+		}
 		else
-			prev->AddForce(prev->rx * k * (d - l), prev->ry * k * (d - l));
+		{
+			d = ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+			dx1 = -(dx / d);
+			dy1 = -(dy / d);
+			dx2 = -dx1;
+			dy2 = -dy1;
+		}
 
-		if(next->rdt == Fix0)
-			next->AddForce(fx, fy);
-		else
-			next->AddForce(next->rx * k * (d - l), next->ry * k * (d - l));
+		if(ApplyRepulsive || d > l)
+		{
+			if(prev->rdt != Fix0) { dx1 = prev->rx; dy1 = prev->ry; }
+			if(next->rdt != Fix0) { dx2 = next->rx; dy2 = next->ry; }
+
+			prev->AddForce(dx1 * k * (d - l), dy1 * k * (d - l));
+			next->AddForce(dx2 * k * (d - l), dy2 * k * (d - l));
+		}
 	}
 
 	// Inner friction
