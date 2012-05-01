@@ -68,7 +68,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input)
 			${_compiler_FLAGS} -x c++-header -o ${_output} ${_source}
 		IMPLICIT_DEPENDS CXX ${_source}
 	)
-	FILE(WRITE "${_pchdir}/${_name}" "") # This file is added so the cc-units don't stumble over not being able to include the file
+	FILE(WRITE "${_pchdir}/${_name}" "#ifdef __cplusplus\n#warning Precompiled header not used. Turn off or fix!\n#endif") # This file is added so the cc-units don't stumble over not being able to include the file
 	ADD_CUSTOM_TARGET(${_targetName}_pch DEPENDS ${_output})
 	ADD_DEPENDENCIES(${_targetName} ${_targetName}_pch)
 	SET_TARGET_PROPERTIES(${_targetName} PROPERTIES	COMPILE_FLAGS "-include ${_includeput}")
