@@ -1286,6 +1286,14 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+# CMake support for MSVC 2010 is broken. Change the .sln file to avoid
+# millions of "reload X project?" dialog boxes.
+# For best results, also change CMake's ReloadProjects macro to only
+# call StopBuild().
+if(MSVC_VERSION EQUAL 1600)
+	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
+endif()
+
 ############################################################################
 # installation
 ############################################################################
