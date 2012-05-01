@@ -330,7 +330,7 @@ public:
 	inline void NumericConversion(C4V_Type vToType)
 	{
 		if(Type == vToType) return;
-		if(Type != C4V_Nil && Type != C4V_Int && Type != C4V_Float && Type != C4V_Nil) return;
+		if(Type != C4V_Int && Type != C4V_Float && Type != C4V_Bool) return;
 		switch(vToType)
 		{
 		case C4V_Bool: SetBool(getBool()); return;
