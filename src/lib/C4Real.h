@@ -42,7 +42,12 @@
 // activate to switch to classic fixed-point math
 #define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE
-#define FIXED_EMULATE_64BIT
+
+// gcc 4.6 generates better code for FIXED_EMULATE_64BIT disablen for both
+// 32 and 64 bit. It properly recognizes that the 32,32->64 multiplication
+// instruction of the x86 is the right choice for the job whereas the more
+// complicated FIXED_EMULATE_64BIT version requires multiple multiplications
+//#define FIXED_EMULATE_64BIT
 
 // note: C4Fixed has to be defined even though it isn't used
 //       any more. It is used to convert old-format fixed values
