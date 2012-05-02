@@ -35,6 +35,8 @@ ZLIB_INCLUDE_DIR to /usr/include
 
 Situation with Xcode 4.3+
 ========================
+
+[This applies only to CMake versions prior to 2.8-8, later versions should deal with Xcode 4.3+ just fine]
 Xcode is now a self-contained application bundle which confuses CMake.
 The CMake git repo contains necessary fixes but those haven't been incorporated into a new CMake release yet so to use those you have to build the cmake command line tool yourself by
 	* cloning git://cmake.org/cmake.git
