@@ -443,9 +443,37 @@ int C4AulParse::GetOperator(const char* pScript)
 	return -1;
 }
 
-static float StrToF32(const char *s, char **scan_end)
+static C4Value StrToV(const char *s, const char **scan_end)
 {
-	return strtod(s, scan_end);
+	C4Value ret(0);
+	const char * orig = s;
+	if (*s == '0' && s[1] == 'x')
+	{
+		ret.SetInt(StrToI32(s+2, 16, scan_end)); // hexadecimal
+		return ret;
+	}
+	if (Inside(*s, '0', '9'))
+	{
+		ret.SetInt(StrToI32(s, 10, &s));
+		*scan_end = s;
+	}
+	if (*s == '.' || *s == 'e' || *s == 'E')
+	{
+		std::istringstream parsf(orig);
+		parsf.imbue(std::locale::classic());
+		float result;
+		parsf >> result;
+		ret.SetFloat(result);
+		while (Inside(*++s, '0', '9'));
+		if (*s == 'e' || *s == 'E')
+		{
+			++s;
+			if(*s == '+' || *s == '-') ++s;
+			while(Inside(*++s, '0', '9'));
+		}
+		*scan_end = s;
+	}
+	return ret;
 }
 
 void C4AulParse::ClearToken()
@@ -491,24 +519,19 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 	else if (C == ')') return ATT_BCLOSE; // ")"
 	else if (C == ',') return ATT_COMMA;  // ","
 	else if (C == ';') return ATT_SCOLON; // ";"
-	else if (Inside(C, '0', '9'))
+	else if (Inside(C, '0', '9') || (C == '.' && Inside(*SPos, '0', '9')))
 	{
-		if (C == '0' && *SPos == 'x')
-			cInt = StrToI32(SPos+1, 16, &SPos); // hexadecimal
-		else
-			cInt = StrToI32(SPos0, 10, &SPos);
-		if (*SPos != '.' && *SPos != 'e' && *SPos != 'E') // float check: point or exponent
+		C4Value v = StrToV(SPos0,&SPos);
+		cInt = v.GetData().Int; // Store raw data
+		if(v.GetType() == C4V_Float)
+			return ATT_FLOAT;
+		else if(v.GetType() == C4V_Int)
 			return ATT_INT;
-		*reinterpret_cast<float*>(&cInt) = StrToF32(SPos0, const_cast<char**>(&SPos));
-		/* bool dot = *SPos == '.';
-		while (Inside(*++SPos, '0', '9'));
-		if (dot && (*SPos == 'e' || *SPos == 'E'))
+		else
 		{
-			++SPos;
-			if(*SPos == '+' || *SPos == '-') ++SPos;
-			Inside(C, '0', '9');
-		} */ // Use this block if you don't trust the const_cast
-		return ATT_FLOAT;
+			assert(!"StrToV must return float or int");
+			throw new C4AulParseError(this, "Internal Error, (unexpected return value from StrToV) consider posting this to http://bugs.openclonk.org");
+		}
 	}
 	else if (C == '-' && *SPos == '>' && *(SPos + 1) == '~')
 		{ SPos+=2; return ATT_CALLFS;}// "->~"
