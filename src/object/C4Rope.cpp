@@ -249,8 +249,10 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 	{
 		if(!Fixed)
 		{
-			// Object Force redirection
-			if(Target->xdir*Target->xdir + Target->ydir*Target->ydir >= Fix1)
+			// Object Force redirection if object has no contact attachment (if it
+			// has then the procedure takes care of moving the object around
+			// O(pixel) obstacles in the landscape).
+			if(!Target->Action.t_attach && Target->xdir*Target->xdir + Target->ydir*Target->ydir >= Fix1)
 			{
 				// Check if the object has contact to the landscape
 				//long iResult = 0;
