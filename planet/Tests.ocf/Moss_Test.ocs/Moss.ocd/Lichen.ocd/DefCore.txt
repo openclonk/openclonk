@@ -5,6 +5,3 @@ Category=C4D_StaticBack | C4D_Object
 Width=20
 Height=20
 Offset=-10,-10
-BlastIncinerate=1
-
-

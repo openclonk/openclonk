@@ -18,12 +18,20 @@ protected func Construction()
 /*-- Contents --*/
 
 public func IsContainer() { return true; }
+public func IsInteractable() { return true; }
 
 private func MaxContentsCount()
 {
 	return 5;
 }
 
+
+// Open contentsmenu via interaction
+public func Interact(object clonk, int mode)
+{
+	clonk->CreateContentsMenus();
+}
+	
 protected func RejectCollect()
 {
 	if (ContentsCount() >= MaxContentsCount())
@@ -53,6 +61,8 @@ private func Close()
 	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
 	Sound("ChestClose");
 }
+
+public func NoConstructionFlip() { return true; }
 
 protected func Definition(def)
 {

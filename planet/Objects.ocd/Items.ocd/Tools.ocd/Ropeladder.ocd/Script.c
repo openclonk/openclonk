@@ -461,6 +461,7 @@ Hanging = {
 },
 };
 local Name = "$Name$";
+local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;

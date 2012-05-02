@@ -1,1 +1,2 @@
 Name=Wooden Cabin
+Description=A basic shelter.

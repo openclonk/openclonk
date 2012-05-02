@@ -1,2 +1,3 @@
 Name=Dynamite stick
-Description=Press [Use] to ignite. After it has been ignited, aim into the direction you want to place it and press [Use] again.
+Description=Basic explosive for mining.
+UsageHelp=Press [Use] to ignite. After it has been ignited, aim and press into a direction to place it.

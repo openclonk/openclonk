@@ -162,7 +162,9 @@ public func IsAlchemyProduct() { return true; }
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);
 }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

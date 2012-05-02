@@ -1,2 +1,3 @@
 Name=Shield
-Description=Use the shield to block stuff that is flying at you.
+Description=Provides the clonk with some protection.
+UsageHelp=Press and hold [Use] to block stuff that is flying at you from one direction

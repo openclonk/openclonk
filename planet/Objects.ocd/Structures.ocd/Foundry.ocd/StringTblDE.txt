@@ -1,1 +1,2 @@
 Name=Hochofen
+Description=Im Hochofen können Erze zu Barren geschmolzen werden. Dafür wird ein Brennstoff benötigt.

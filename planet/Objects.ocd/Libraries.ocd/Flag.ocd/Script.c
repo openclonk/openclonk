@@ -2,8 +2,6 @@
 	The flagpoles mark the area a player owns.
 	It also serves as an energy transmitter.
 */
-local Name = "$Name$";
-local Description = "$Description$";
 
 static const LibraryFlag_standard_radius = 200;
 static LibraryFlag_flag_list;

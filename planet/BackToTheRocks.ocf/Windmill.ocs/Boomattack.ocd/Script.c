@@ -19,6 +19,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if(fuel<=0)
 	{
 		DoFireworks();
+		return;
 	}
 
 	var ignition = iEffectTime % 10;
@@ -96,7 +97,7 @@ func Launch(int angle)
 	SetComDir(COMD_None);
 	
 	Exit();
-	AddEffect("Flight",this,150,1,this,this);
+	AddEffect("Flight",this,150,1,this);
 	//AddEffect("HitCheck", this, 1,1, nil,nil, 0, 0);
 	
 	SetR(angle);

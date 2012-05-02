@@ -7,7 +7,6 @@ Version=5,2,0,1
 Definition1=Objects.ocd
 
 [Game]
-Rules=Rule_EnergyNeed=1
 
 [Player1]
 Wealth=250

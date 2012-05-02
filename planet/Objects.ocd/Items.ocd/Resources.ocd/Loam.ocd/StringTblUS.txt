@@ -1,2 +1,3 @@
 Name=Loam
-Description=Press [Use] to build a loam bridge into the specified direction.
+Description=With loam one can build small loam bridges.
+UsageHelp=Hold down the [Use] key to build a loam bridge into the aimed direction.

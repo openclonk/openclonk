@@ -1,2 +1,3 @@
 Name=Pickaxe
-Description=Hold the [Use]-key to slowly mine into rock formations.
+Description=Basic mining tool for mining through rock when no explosives are available.
+UsageHelp=Hold [Use] to slowly mine into rock formations.

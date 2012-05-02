@@ -26,13 +26,13 @@
 
 */
 
-local selected, crew, hotkey, myobject, actiontype, subselector, position;
+local selected, crew, hotkey, myobject, actiontype, subselector, position, modus;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
-static const ACTIONTYPE_CARRYHEAVY = 3;
+static const ACTIONTYPE_CARRYHEAVY = 4;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
@@ -69,7 +69,8 @@ public func MouseSelectionAlt(int plr)
 {
 	if(!myobject) return;
 	
-	var desc = myobject->GetProperty("Description");
+	var desc = myobject.UsageHelp;
+	if(!desc) desc = myobject.Description; // fall back to general description
 	
 	// close other messages...
 	crew->OnDisplayInfoMessage();
@@ -140,14 +141,14 @@ public func MouseSelection(int plr)
 	{
 		if(myobject->~IsInteractable(crew))
 		{
-			myobject->Interact(crew);
+			myobject->Interact(crew, modus);
 			return true;
 		}
 	}
 	if(actiontype == ACTIONTYPE_CARRYHEAVY)
 	{
 		if(myobject == crew->~GetCarryHeavy())
-			myobject->Drop();
+			crew->DropCarryHeavy();
 	}
 }
 
@@ -258,7 +259,7 @@ public func OnMouseDrop(int plr, obj)
 
 
 
-public func Clear()
+public func Disable()
 {
 	myobject = nil;
 	actiontype = -1;
@@ -276,7 +277,7 @@ public func ClearMessage()
 		CustomMessage("",subselector,GetOwner());
 }
 
-public func SetObject(object obj, int type, int pos, int hot)
+public func SetObject(object obj, int type, int pos, int hot, int number)
 {
 	this.Visibility = VIS_Owner;
 
@@ -289,6 +290,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	actiontype = type;
 	myobject = obj;
 	hotkey = hot;
+	modus = number;
 	
 	// Set mousedrag for inventory objects
 	if (actiontype == ACTIONTYPE_INVENTORY)
@@ -305,7 +307,7 @@ public func SetObject(object obj, int type, int pos, int hot)
 	}
 	else
 	{
-		SetGraphics("Slot", GUI_Background);
+		SetGraphics("Slot", GUI_ObjectSelector);
 		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, nil, 0, myobject);
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		this.MouseDragImage = myobject;
@@ -401,7 +403,7 @@ public func UpdateSelectionStatus()
 	// script...
 	else if(actiontype == ACTIONTYPE_SCRIPT)
 	{
-		var metainfo = myobject->~GetInteractionMetaInfo(crew);
+		var metainfo = myobject->~GetInteractionMetaInfo(crew, modus);
 		if(metainfo)
 		{
 			SetGraphics(metainfo["IconName"],metainfo["IconID"],2,GFXOV_MODE_IngamePicture);

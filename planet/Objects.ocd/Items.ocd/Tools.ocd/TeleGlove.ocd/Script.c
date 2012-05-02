@@ -264,7 +264,9 @@ func Hit()
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(-60,1,0,1),def);
 }
+
 local Name = "$Name$";
+local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;

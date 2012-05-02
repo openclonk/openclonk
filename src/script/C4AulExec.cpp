@@ -110,6 +110,8 @@ void C4AulExec::LogCallStack()
 
 void C4AulExec::ClearPointers(C4Object * obj)
 {
+#if 0
+	// FIXME: reactivate this code and remove the checks from Call once scripts are fixed
 	for (C4AulScriptContext *pCtx = pCurCtx; pCtx >= Contexts; pCtx--)
 	{
 		if (pCtx->Obj == obj)
@@ -117,6 +119,7 @@ void C4AulExec::ClearPointers(C4Object * obj)
 		if (pCtx->Def == obj)
 			pCtx->Def = NULL;
 	}
+#endif
 }
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
@@ -579,6 +582,20 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				}
 				break;
 
+			case AB_JUMPNNIL: // ??
+			{
+				if (pCurVal[0].GetType() != C4V_Nil)
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				else
+				{
+					PopValue();
+				}
+				break;
+			}
+
 			case AB_CONDN:
 				if (!pCurVal[0])
 				{
@@ -818,6 +835,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		// Push a new context
 		C4AulScriptContext ctx;
 		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		if (ctx.Obj && !ctx.Obj->Status)
+			throw new C4AulExecError(ctx.Obj, "using removed object");
 		ctx.Def = pContext;
 		ctx.Caller = pCurCtx;
 		ctx.Return = pReturn;
@@ -843,6 +862,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		// Create new context
 		C4AulContext ctx;
 		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		if (ctx.Obj && !ctx.Obj->Status)
+			throw new C4AulExecError(ctx.Obj, "using removed object");
 		ctx.Def = pContext;
 		ctx.Caller = pCurCtx;
 

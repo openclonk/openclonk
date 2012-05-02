@@ -20,6 +20,8 @@ protected func Construction() {
 	inherited(...);
 }
 
+
+/** Sets the symbol that is displayed in the menu background */
 public func SetSymbol(symbol)
 {
 	SetGraphics("BG", this, 2, GFXOV_MODE_Base);
@@ -43,7 +45,7 @@ public func SetSymbol(symbol)
 
 
 
-// Determines the item position for the nth circle for a certain number of circles.
+/** Determines the item position for the nth circle for a certain number of circles. */
 private func GetItemPosition(int n, int total)
 {
 	// Safety.
@@ -110,7 +112,7 @@ private func GetItemPosition(int n, int total)
 	return;
 }
 
-// Gives the radius for an item.
+/** Gives the radius for an item. */
 private func GetItemRadius(int total)
 {
 	if (total <= 7)
@@ -122,6 +124,7 @@ private func GetItemRadius(int total)
 	return 1;
 }
 
+/** Redraws the menu */
 public func UpdateMenu()
 {
 	// Safety: check for items.
@@ -146,6 +149,7 @@ public func UpdateMenu()
 }
 
 public func OnMouseOverItem(object item, object dragged)
+
 {
 	// make it appear bigger
 	item->SetObjDrawTransform(1100, 0, 0, 0, 1100, 0, 1);

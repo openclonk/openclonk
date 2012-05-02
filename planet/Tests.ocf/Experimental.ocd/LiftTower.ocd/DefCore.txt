@@ -15,6 +15,5 @@ Value=200
 Mass=4500
 Components=Metal=2;Wood=4;
 Exclusive=1
-BlastIncinerate=100
 Construction=1
 ContainBlast=1

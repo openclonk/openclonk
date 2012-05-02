@@ -29,8 +29,6 @@
 #endif
 
 #if defined(USE_X11)
-// do not include xlib.h
-typedef struct _XDisplay Display;
 // from X.h:
 //#define ShiftMask   (1<<0)
 //#define ControlMask   (1<<2)
@@ -52,6 +50,7 @@ extern int MK_SHIFT;
 extern int MK_CONTROL;
 extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
+#define MK_ALT 0x10000 // well beyond the pre-defined values
 #include <C4windowswrapper.h>
 #endif
 
@@ -166,17 +165,8 @@ public:
 #endif
 
 #if defined(USE_X11)
-public:
-	Display * dpy;
-	int xf86vmode_major_version, xf86vmode_minor_version;
-	int xrandr_major_version, xrandr_minor_version;
-	// These must be public to be callable from callback functions from
-	// the glib main loop that are in an anonymous namespace in
-	// StdXApp.cpp.
-	void OnXInput();
 protected:
 	class C4X11AppImpl * Priv;
-	void HandleXMessage();
 
 #elif defined(USE_SDL_MAINLOOP)
 public:
@@ -184,7 +174,6 @@ public:
 
 #elif defined(USE_COCOA)
 public:
-	void HandleNSEvent(/*NSEvent*/void* event);
 	StdStrBuf GetGameDataPath();
 
 #elif defined(USE_CONSOLE)
@@ -196,9 +185,9 @@ protected:
 private:
 	CStdMessageProc MessageProc;
 public:
-	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
+/*	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
 	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
-	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
+	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }*/
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
@@ -207,16 +196,16 @@ protected:
 	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
 #else
 public:
-	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
+/*	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & MK_ALT; }
-	unsigned int KeyMask;
+	unsigned int KeyMask;*/
 #endif
 
 protected:
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit(int argc, char * argv[]) = 0;;
+	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	friend class CStdGL;
 	friend class CStdGLCtx;

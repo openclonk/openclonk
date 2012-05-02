@@ -76,3 +76,4 @@ local ActMap = {
 };
 
 local Name = "$Name$";
+local BlastIncinerate = 50;

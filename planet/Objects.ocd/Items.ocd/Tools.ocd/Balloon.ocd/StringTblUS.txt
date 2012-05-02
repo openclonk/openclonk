@@ -1,2 +1,3 @@
 Name=Balloon
-Description=Use the balloon to slow down your fall.
+Description=Can slow down the fall of a clonk like a parachute.
+UsageHelp=Use the balloon to slow down your fall.

@@ -1,2 +1,2 @@
 Name=Log
-Description=Needed for construction or as firing material.
+Description=Needed for construction or as fuel.

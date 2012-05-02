@@ -48,6 +48,7 @@
       <funclink>Anim_Linear</funclink>
       <funclink>Anim_X</funclink>
       <funclink>Anim_Y</funclink>
+      <funclink>Anim_R</funclink>
       <funclink>Anim_AbsY</funclink>
       <funclink>Anim_XDir</funclink>
       <funclink>Anim_YDir</funclink>

@@ -1,2 +1,3 @@
 Name=Brot
-Description=Schmackhafte Mahlzeit.
+Description=Diese schmackhafte Mahlzeit gibt dem Clonk viele Lebenspunkte zurück.
+UsageHelp=Drücke [Benutzen] um das Brot zu essen.

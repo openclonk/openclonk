@@ -35,9 +35,9 @@ public func OnProjectileHit()
 public func Burst()
 {
 	DrawParticleLine("Straw",0,0,AbsX(gate->GetX()),AbsY(gate->GetY()),6,80,RGB(255,255,255),RGB(255,150,200));
-	RemoveObject();
 	gate->OpenDoor();
 	CastParticles("Straw",130,30,0,-3,30,40,RGB(255,255,255),RGB(255,120,200));
+	RemoveObject();
 }
 
 public func Hit()

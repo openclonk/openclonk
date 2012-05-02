@@ -2,9 +2,7 @@
 	HUD Controller
 
 	Controls the player HUD and all its subsystems, which are:
-		* Backpack
-		* Hand items
-		* Energy/Breath tubes
+		* Inventory (=)
 		* Actionbar
 		* Crew selectors
 		* Goal
@@ -12,31 +10,23 @@
 		
 	Creates and removes the crew selectors as well as reorders them and
 	manages when a crew changes it's controller. Responsible for taking
-	care of the action (inventory) bar.
+	care of the action bar.
 		
 	@authors Newton, Mimmo_O
 */
 
-local actionbar;
-local wealth;
-//local deco;
-local markers;
-local backpack;
-local carryheavy;
-
-// Button that locks/unlocks the inventory
-local lockbutton;
-local hoverhelper; // the hover-thingie for showing the inventory. a helper.
-
-// Tubes.
-local healthtube;
-local breathtube;
+// Local variables containing the GUI-Elements
+local actionbar;	// Array, action-buttons at the bottom
+local inventory;	// Array, inventory-buttons at the left side
+local markers;		// Array, the gui-markers.
+local carryheavy;	// Object, optional inventory-button only shown when clonk is carrying a carry-heavy object
+local wealth;		// Object, displays wealth of the player
 
 protected func Construction()
 {
 	actionbar = [];
 	markers = [];
-	backpack = [];
+	inventory = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
@@ -52,78 +42,73 @@ protected func Construction()
 	// reorder the crew selectors
 	ReorderCrewSelectors();
 	
-	// background decoration
-	//deco = CreateObject(GUI_Background,0,0,GetOwner());
-	//deco->SetPosition(1,-1);
-	//deco->SetControllerObject(this);
 	
 	// wealth display
 	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
 	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
 	
-	// breathtube
-	//MakeBreathTube();
-	
-	// healthtube
-	//MakeHealthTube();
-	
-	// manatube
-	// MakeManaTube();
-	
-	// backpack display
-	
-	MakeBackpack();
+	// inventory display
+	MakeInventory();
 }
 
-// How many slots the inventory has, for overloading
-private func BackpackSize() { return 7; }
+/* Destruction */
 
-private func ScheduleUpdateBackpack()
+// Remove all HUD-Objects
+protected func Destruction()
 {
-	ScheduleCall(this, "UpdateBackpack", 1, 0);
+	// remove all hud objects that are managed by this object
+	if(wealth)
+		wealth->RemoveObject();
+	if(actionbar)
+	{
+		for(var i=0; i<GetLength(actionbar); ++i)
+		{
+			if(actionbar[i])
+				actionbar[i]->RemoveObject();
+		}
+	}
+
+	if(inventory)
+		for(var i=0; i<GetLength(inventory); ++i)
+		{
+			if(inventory[i])
+				inventory[i]->RemoveObject();
+		}
+	
+	if(markers)
+	{
+		for(var i=0; i<GetLength(markers); ++i)
+		{
+			if(markers[i])
+				markers[i]->RemoveObject();
+		}
+	}
+	
+	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
+	if(HUDgoal)
+		HUDgoal->RemoveObject();
+		
+	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
+	for(var o in crew)
+		o->RemoveObject();
 }
 
 /* Inventory-Bar stuff */
-private func MakeBackpack()
+
+// Updates the Inventory in 1 frame
+private func ScheduleUpdateInventory()
+{
+	ScheduleCall(this, "UpdateInventory", 1, 0);
+}
+
+private func MakeInventory()
 {
 	// distance between slots
 	var d = 72;
 	// upper barrier
-	//var y = -225-35 - d*BackpackSize();
 	var y = 200;
 
-	// create background
-	/*
-	hoverhelper = CreateObject(GUI_Backpack_Background,0,0,GetOwner());
-	hoverhelper->SetHUDController(this);
-	hoverhelper->SetPosition(0,y-10);
-	hoverhelper->SetShape(0,0,40+48/2+25, d*BackpackSize() - 48 - 20);
-	hoverhelper.Visibility = VIS_None;
-*/
-
-	// create backpack slots
-	for(var i=0; i<BackpackSize(); i++)
-	{
-		var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-		bt->SetHUDController(this);
-		bt->SetPosition(40, y + d*i);
-		bt->SetSlotId(i);
-		//bt->SetCon(115);
-		
-		CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
-		backpack[GetLength(backpack)] = bt;
-	}
-	
-	// and the lock-button
-	/*
-	var bt = CreateObject(GUI_Lock_Button,0,0,GetOwner());
-	bt->SetHUDController(this);
-	bt->SetPosition(60,y-55);
-	
-	lockbutton = bt;
-	*/
-	
 	// and the carry heavy slot
 	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
 	bt->SetHUDController(this);
@@ -131,100 +116,7 @@ private func MakeBackpack()
 	bt->SetSlotId(-1);
 	bt.Visibility = VIS_None;
 	
-	
 	carryheavy = bt;
-}
-
-public func ShowInventory()
-{
-	return;
-	/*
-	var effect;
-	if(effect = GetEffect("InventoryTransition", this))
-		effect.position = 40;
-	else
-		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 40, backpack[0]);
-	
-	hoverhelper.Visibility = VIS_None;
-	
-	ClearScheduleCall(this, "HideInventory");
-	*/
-}
-
-public func HideInventory()
-{
-	return;
-	/*
-	// don't hide if the inventory is locked
-	if(lockbutton->IsLocked())
-		return;
-		
-	var effect;
-	if(effect = GetEffect("InventoryTransition", this))
-		effect.position = 0;
-	else
-		AddEffect("InventoryTransition", this, 150, 1, this, GUI_Controller, 0, backpack[0]);
-	
-	hoverhelper.Visibility = VIS_Owner;
-	*/
-}
-
-public func ScheduleHideInventory()
-{
-	return;
-	//ScheduleCall(this, "HideInventory", 120);
-}
-
-
-private func FxInventoryTransitionStart(object target, proplist effect, int tmp, int pos, object ref)
-{
-	if(tmp != 0)
-		return;
-		
-	// make stuff visible. It wants to be seen transitioning!
-	var bt;
-	for(bt in backpack)
-		bt.Visibility = VIS_Owner;
-	
-	effect.position = pos;
-	effect.reference = ref;
-}
-
-private func FxInventoryTransitionTimer(object target, proplist effect, int time)
-{
-	// don't move in the initial frame - used if the moving is aborted by hovering
-	if(time < 1)
-		return;
-		
-	var dist = effect.position - effect.reference->GetX();
-	var dir = BoundBy(dist, -8,8);
-	
-	// if we haven't reached our destination yet, we move everything
-	if(dir != 0)
-	{
-		var bt;
-		for(bt in backpack)
-			bt->MovePosition(dir, 0);
-		
-		bt = lockbutton;
-		bt->MovePosition(dir, 0);
-	}
-	// else the effect is allowed to cease existing
-	else
-		return -1;
-}
-
-private func FxInventoryTransitionStop(object target, proplist effect, int reason, int tmp)
-{
-	if(tmp != 0)
-		return;
-		
-	if(effect.position == 0)
-	{
-		var bt;
-		for(bt in backpack)
-			bt.Visibility = VIS_None;
-	}
 }
 
 /*-- Wealth --*/
@@ -255,62 +147,8 @@ public func OnGoalUpdate(object goal)
 	}
 }
 
-/*-- Health tube --*/
 
-private func MakeHealthTube()
-{	
-	var tube = CreateObject(GUI_HealthTube, 0, 0, GetOwner());
-	tube->MakeTube();
-	tube->Update();
-	healthtube = tube;
-	return;
-}
-
-public func UpdateHealthTube()
-{
-	if (healthtube)
-		healthtube->Update();
-	return;
-}
-
-/*-- Breath tube --*/
-
-private func MakeBreathTube()
-{
-	var tube = CreateObject(GUI_BreathTube, 0, 0, GetOwner());
-	tube->MakeTube();
-	tube->Update();
-	breathtube = tube;
-	return;
-}
-
-public func UpdateBreathTube()
-{
-	if (breathtube)
-		breathtube->Update();
-	return;
-}
-
-/*
-protected func MakeManaTube()
-{
-	var tube = CreateObject(GUI_ManaTube,0,0,this->GetOwner());
-	tube->SetPosition(1,-1);
-	tube->SetAction("Swirl");
-	var ftube = CreateObject(GUI_ManaTube,0,0,this->GetOwner());
-	ftube->SetPosition(1,-1);
-	ftube->MakeTop();
-	//tube->SetTubes(btube,ftube);
-	tube->SetTubes(ftube);
-	tube->Update();
-	AddEffect("Update",tube,100,1,tube);
-	
-	tubes[GetLength(tubes)] =  tube;
-	tubes[GetLength(tubes)] = ftube;
-
-}
-*/
-
+/* Markers */
 
 public func GetFreeMarkerPosition()
 {	
@@ -339,18 +177,21 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	return hud.markers[number];
 }
 
-func UpdateBackpack()
+/* Inventory stuff */
+func UpdateInventory()
 {
+	// only display if we have a clonk
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
-
-	ShowInventory();
 	
-	// update backpack-slots
-	for(var i=0; i<GetLength(backpack); i++)
+	// update inventory-slots
+	for(var i=0; i<GetLength(inventory); i++)
 	{
-		backpack[i]->SetSymbol(c->GetItem(backpack[i]->GetSlotId()));
-		backpack[i]->SetUnselected();
+		var item = c->GetItem(inventory[i]->GetSlotId());
+		inventory[i]->SetSymbol(item);
+		inventory[i]->SetUnselected();
+		if(item) inventory[i]->SetTooltip(item.UsageHelp);
+		else inventory[i]->SetTooltip(nil);
 	}
 	
 	// update hand-indicator
@@ -360,36 +201,12 @@ func UpdateBackpack()
 	}
 	else
 		for(var i=0; i < c->HandObjects(); ++i)
-			backpack[c->GetHandItemPos(i)]->SetSelected(i);
-	
-	/*
-	if(!lockbutton->IsLocked())
-	{
-		ScheduleHideInventory();
-	}
-	*/
+		{
+			var handpos = c->GetHandItemPos(i);
+			if(inventory[handpos]) 
+				inventory[handpos]->SetSelected(i);
+		}
 }	
-
-/*
-global func FxUpdateBackpackTimer(target) { 
-	if(!target) return -1;
-	if(!GetCursor(target->GetOwner())) return 1;
-	if(!GetCursor(target->GetOwner())->~HUDShowItems())
-	{
-		for (var i = 0; i < GetLength(target.backpack); i++)
-			target.backpack[i]->SetNothing();
-		return 1;
-	}
-	for(var i=0; i<GetLength(target.backpack); i++)
-	{
-		target.backpack[i]->SetAmount(0);  
-		target.backpack[i]->SetSymbol(GetCursor(target->GetOwner())->GetItem(target.backpack[i]->GetExtraData())); 
-		target.backpack[i]->SetGraphics(nil,nil,9);
-		target.backpack[i]->SetGraphics(nil,nil,10);
-		target.backpack[i]->SetGraphics(nil,nil,11);
-		target.backpack[i]->SetGraphics(nil,nil,12);
-	}
-}*/
 
 // Shows the Carryheavy-Inventoryslot if obj is set
 // Removes it if it's nil
@@ -405,9 +222,30 @@ func OnCarryHeavyChange(object obj)
 	else
 		this.Visibility = VIS_Owner;
 	
-	UpdateBackpack();
+	UpdateInventory();
 }
 
+/* Hotkey Control */
+
+// executes the mouseclick onto an actionbutton through hotkeys
+public func ControlHotkey(int hotindex)
+{
+	// button exists?
+	if(!actionbar[hotindex]) return false;
+	
+	// button is assigned to a clonk?
+    var clonk = actionbar[hotindex]->GetCrew();
+   	if(!clonk) return false;
+   	
+   	// press the button
+  	actionbar[hotindex]->~MouseSelection(GetOwner());
+  	
+   	return true;
+}
+
+/** Callbacks **/
+
+// insert new clonk into crew-selectors on recruitment
 protected func OnClonkRecruitment(object clonk, int plr)
 {
 	// not my business
@@ -440,9 +278,7 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	ReorderCrewSelectors();
 	
 	// update
-	ScheduleUpdateBackpack();
-	UpdateHealthTube();
-	UpdateBreathTube();
+	ScheduleUpdateInventory();
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
@@ -477,58 +313,6 @@ public func RemovePlayer(int plr, int team)
 	return RemoveObject();
 }
 
-public func Destruction()
-{
-	// remove all hud objects that are managed by this object
-	if(wealth)
-		wealth->RemoveObject();
-	if(actionbar)
-	{
-		for(var i=0; i<GetLength(actionbar); ++i)
-		{
-			if(actionbar[i])
-				actionbar[i]->RemoveObject();
-		}
-	}
-	
-	if(hoverhelper)
-		hoverhelper->RemoveObject();
-	if(lockbutton)
-		lockbutton->RemoveObject();
-	
-	if(backpack)
-		for(var i=0; i<GetLength(backpack); ++i)
-		{
-			if(backpack[i])
-				backpack[i]->RemoveObject();
-		}
-	
-	if(healthtube)
-		healthtube->RemoveObject();
-		
-	if (breathtube)
-		breathtube->RemoveObject();
-	
-	if(markers)
-	{
-		for(var i=0; i<GetLength(markers); ++i)
-		{
-			if(markers[i])
-				markers[i]->RemoveObject();
-		}
-	}
-	
-	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
-	if(HUDgoal)
-		HUDgoal->RemoveObject();
-	//if(deco)
-		//deco->RemoveObject();
-		
-	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
-	for(var o in crew)
-		o->RemoveObject();
-}
-
 public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder
@@ -540,9 +324,7 @@ public func OnCrewDisabled(object clonk)
 	}
 	
 	// update
-	ScheduleUpdateBackpack();
-	UpdateHealthTube();
-	UpdateBreathTube();
+	ScheduleUpdateInventory();
 }
 
 public func OnCrewEnabled(object clonk)
@@ -551,39 +333,30 @@ public func OnCrewEnabled(object clonk)
 	ReorderCrewSelectors();
 }
 
+
 // call from HUDAdapter (Clonk)
 public func OnCrewSelection(object clonk, bool deselect)
 {
 	// selected
 	if(!deselect)
 	{
-		// fill actionbar
-		// inventory
-		var i;
-	//	var deco = CreateObject(GUI_ObjectSelector_Background,0,0,clonk->GetOwner());
-	//	deco->SetPosition(337,-38);
-		
-		/*for(i = 0; i < Min(2,clonk->HandObjects()); ++i)
-		{
-			ActionButton(clonk,i,clonk->GetHandItem(i),ACTIONTYPE_INVENTORY);
-		}
-		ClearButtons(i);*/
-		ClearButtons(0);
-		
 		// and start effect to monitor vehicles and structures...
-		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i);
+		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,0);
+		
+		// clear inventory buttons
+		UpdateInventoryButtons(clonk);
 	}
 	else
 	{
 		// remove effect
 		RemoveEffect("IntSearchInteractionObjects",clonk);
-		ClearButtons();
 	}
 	
+	// clear actionbuttons
+	ClearActionButtons();
+		
 	// update
-	ScheduleUpdateBackpack();
-	UpdateHealthTube();
-	UpdateBreathTube();
+	ScheduleUpdateInventory();
 	OnCarryHeavyChange(clonk->~GetCarryHeavy());
 }
 
@@ -618,9 +391,17 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	
 		// add interactables (script interface)
 		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
+		var j, icnt;
 		for(var interactable in interactables)
 		{
-			ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++);
+			icnt = interactable->~GetInteractionCount();
+			if(!icnt)
+				icnt = 1;
+
+			for(j=0; j < icnt; j++)
+			{
+				ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++, j);
+			}
 		}
 		
 		// if carrying heavy, add drop-carry-heavy-button
@@ -642,7 +423,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 	}
 	
-	ClearButtons(i);
+	ClearActionButtons(i);
 	
 	return;
 }
@@ -659,79 +440,103 @@ public func OnSelectionChanged(int old, int new)
 // call from HUDAdapter or inventory-buttons
 public func OnHandSelectionChange(int old, int new, int handslot)
 {
-	backpack[old]->SetUnselected();
-	backpack[new]->SetSelected(handslot);
+	if(inventory[old])
+		inventory[old]->SetUnselected();
+	if(inventory[new])
+		inventory[new]->SetSelected(handslot);
 	
 	OnSlotObjectChanged(handslot);
 }
 
 protected func OnInventoryHotkeyPress(int slot)
 {
-	backpack[slot]->OnMouseOver(GetOwner());
+	if(inventory[slot])
+		inventory[slot]->OnMouseOver(GetOwner());
 }
 
 protected func OnInventoryHotkeyRelease(int slot)
 {
-	backpack[slot]->OnMouseOut(GetOwner());
+	if(inventory[slot])
+		inventory[slot]->OnMouseOut(GetOwner());
 }
 
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
-{
-	/*
-	//Log("slot %d changed", slot);
-	var cursor = GetCursor(GetOwner());
-	if(!cursor) return;
-	var obj = cursor->GetHandItem(slot);
-	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
-	
-	// refresh backpack
-	*/
-	ScheduleUpdateBackpack();
+{	
+	// refresh inventory
+	ScheduleUpdateInventory();
 }
 
-private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey)
+/** Helper Functions **/
+
+// Insert an inventory slot into the inventory-bar
+private func InventoryButton()
 {
-	//var size = GUI_ObjectSelector->GetDefWidth();
-	//var spacing = deco.padding;
+// distance between slots
+	var d = 72;
+	// upper barrier
+	var y = 200;
+
+	// index
+	var i = GetLength(inventory);
+	
+	// create inventory slots
+	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
+	bt->SetHUDController(this);
+	bt->SetPosition(40, y + d*i);
+	bt->SetSlotId(i);
+		
+	CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
+	inventory[i] = bt;
+	
+	return bt;
+}
+
+// sets the inventory size to the currently selected clonk
+private func UpdateInventoryButtons(object clonk)
+{
+	if(!clonk) return;
+	
+	var size = clonk->~MaxContentsCount();
+	
+	// need to create more inventory buttons?
+	if(size > GetLength(inventory))
+		for(var i=0; i < size; ++i)
+			if(!inventory[i])
+				InventoryButton();
+	
+	// need to remove some inventory buttons?
+	if(size < GetLength(inventory))
+		for(i=GetLength(inventory)-1; i >= size; i--)
+			inventory[i]->RemoveObject();
+	
+	SetLength(inventory, size);
+}
+
+// Insert a button into the actionbar at pos
+private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num)
+{
 	var spacing = 100;
 	
 	var bt = actionbar[pos];
+	
 	// no object yet... create it
 	if(!bt)
 	{
 		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
-		//bt->SetGraphics("Slot", GUI_Background);
 	}
-/*
-		if(pos==0)
-		{ 
-			bt->SetGraphics("None");
-			bt->SetPosition(288, -48);
-		}	
-		else if(pos==1) 
-		{
-			bt->SetPosition(381, -48);
-			bt->SetGraphics("None");
-		}
-		else
-		{
-			bt->SetCon(90);
-			bt->SetPosition(491 + (pos-2) * spacing, -45);
-		}
-	*/
-	
-	//bt->SetCon(90);
+
 	bt->SetPosition(401 + pos * spacing, -45);
 	
 	bt->SetCrew(forClonk);
-	bt->SetObject(interaction,actiontype,pos,hotkey);
+	bt->SetObject(interaction,actiontype,pos,hotkey, num);
 	
 	actionbar[pos] = bt;
 	return bt;
 }
 
-private func ClearButtons(int start)
+/** Removes all actionbar buttons after start */
+private func ClearActionButtons(int start)
 {
 
 	// make rest invisible
@@ -739,13 +544,11 @@ private func ClearButtons(int start)
 	{
 		// we don't have to remove them all the time, no?
 		if(actionbar[j])
-			actionbar[j]->Clear();
+			actionbar[j]->Disable();
 	}
-	//if(deco->GetSlotNumber() != -1)
-	//if(deco->GetSlotNumber() != GetRealActionbarLength())
-		//deco->SlideTo(GetRealActionbarLength());
 }
 
+/** Returns how many actionbar-buttons are actually visible */
 private func GetRealActionbarLength()
 {
 	var i=0;
@@ -754,7 +557,8 @@ private func GetRealActionbarLength()
 	return i;
 }
 
-public func ClearButtonMessages()
+/** Removes all messages that the actionbuttons show */
+private func ClearButtonMessages()
 {
 	for(var i = 0; i < GetLength(actionbar); ++i)
 	{
@@ -763,19 +567,9 @@ public func ClearButtonMessages()
 	}
 }
 
-// hotkey control
-public func ControlHotkey(int hotindex)
-{
-	if(!actionbar[hotindex]) return false;
-    var clonk = actionbar[hotindex]->GetCrew();
-   	if(!clonk) return false;
-    //hotindex += clonk->HandObjects();
-   	if(!actionbar[hotindex]) return false;
-   	// only if it is not already used
-  	actionbar[hotindex]->~MouseSelection(GetOwner());
-   	return true;
-}
-
+/** Creates a crew selector for the given clonk.
+    Should be followed by a ReorderCrewSelectors call
+*/
 private func CreateSelectorFor(object clonk)
 {
 	var selector = CreateObject(GUI_CrewSelector,10,10,-1);
@@ -785,8 +579,8 @@ private func CreateSelectorFor(object clonk)
 }
 
 
-
-public func ReorderCrewSelectors(object leaveout)
+/** Rearranges the CrewSelectors in the correct order */
+private func ReorderCrewSelectors(object leaveout)
 {
 	// somehow new crew gets sorted at the beginning
 	// because we dont want that, the for loop starts from the end

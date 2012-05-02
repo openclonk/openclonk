@@ -23,7 +23,7 @@
 #define INC_C4AulDefFunc
 
 #include <C4Object.h>
-#include <C4Effects.h>
+#include <C4Effect.h>
 #include <C4DefList.h>
 #include "C4Numeric.h"
 

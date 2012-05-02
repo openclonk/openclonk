@@ -26,6 +26,11 @@ global func Anim_Y(int position, int begin, int end, int length)
 	return [C4AVP_Y, position, begin, end, length];
 }
 
+global func Anim_R(int begin, int end)
+{
+	return [C4AVP_R, begin, end, this];
+}
+
 global func Anim_AbsX(int position, int begin, int end, int length)
 {
 	return [C4AVP_AbsX, position, begin, end, length];

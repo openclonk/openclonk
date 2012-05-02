@@ -14,9 +14,7 @@
  */
  
 #include <C4Include.h>
-#include <Standard.h>
-#include <StdRegistry.h>
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #include <C4Window.h>
 #include <C4Version.h>
 #include <C4Application.h>
@@ -42,6 +40,7 @@ static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
 	switch (kind)
 	{
 	case C4Window::W_GuiWindow:
+	case C4Window::W_Console:
 		return @"ConsoleGUIWindow";
 	case C4Window::W_Fullscreen:
 		return @"FullscreenWindow";
@@ -52,7 +51,7 @@ static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
 	}
 }
 
-C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
 	Active = true;
 
@@ -61,7 +60,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	this->controller = controller;
 	[NSBundle loadNibNamed:windowNibNameForWindowKind(windowKind) owner:controller];
 	[controller setStdWindow:this];
-	if (windowKind != W_GuiWindow)
+	if (windowKind != W_GuiWindow && windowKind != W_Console)
 	{
 		if (lionAndBeyond())
 			[controller.window setCollectionBehavior:[controller.window collectionBehavior] | NSWindowCollectionBehaviorFullScreenPrimary];

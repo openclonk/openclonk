@@ -32,9 +32,6 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
-#define ConsoleDlgClassName L"C4GUIdlg"
-#define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
-
 #include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"
@@ -48,7 +45,6 @@
 
 #include <StdResStr2.h>
 #include <C4Window.h>
-
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque
@@ -1953,11 +1949,8 @@ namespace C4GUI
 		Dialog* pDialog;
 		DialogWindow(): C4Window(), pDialog(NULL) {}
 		using C4Window::Init;
-		C4Window * Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID);
+		C4Window * Init(C4AbstractApp * pApp, const char * Title, const C4Rect &rcBounds, const char *szID);
 		virtual void Close();
-#ifdef USE_X11
-		virtual void HandleMessage (XEvent &);
-#endif
 		virtual void PerformUpdate();
 	};
 
@@ -2143,7 +2136,6 @@ namespace C4GUI
 	protected:
 		Label *pFullscreenTitle, *pSubTitle; // subtitle to be put in upper-right corner
 		int32_t iDlgMarginX, iDlgMarginY; // dialog margin set by screen size
-		IconButton *pBtnHelp;
 
 		virtual const char *GetID() { return 0; } // no ID needed, because it's never created as a window
 
@@ -2151,9 +2143,6 @@ namespace C4GUI
 		FullscreenDialog(const char *szTitle, const char *szSubtitle); // ctor
 
 		void SetTitle(const char *szToTitle); // change title text; creates or removes title bar if necessary
-
-	private:
-		void UpdateHelpButtonPos();
 
 	protected:
 		virtual void DrawElement(C4TargetFacet &cgo); // draw dlg bg
@@ -2176,8 +2165,6 @@ namespace C4GUI
 
 		// helper func: draw facet to screen background
 		void DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct);
-
-		void OnHelpBtn(C4GUI::Control *pBtn);
 	};
 
 	// a button closing the Dlg

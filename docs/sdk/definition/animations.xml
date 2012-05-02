@@ -41,6 +41,10 @@
           <col>Linear with Y position. When the object moves upwards the animation plays backwards. Can be used if the animation of an object should be synchronized to its vertical movement.</col>
         </row>
         <row>
+          <col><funclink>Anim_R</funclink></col>
+          <col>Linear with rotation. When the object rotates counter-clockwise the animation plays backwards. Can be used if the animation of an object should be synchronized to its rotation.</col>
+        </row>
+        <row>
           <col><funclink>Anim_AbsX</funclink></col>
           <col>Linear with X position. However, the animation is always played in the same direction, not taking into account whether the object moves left or right.</col>
         </row>

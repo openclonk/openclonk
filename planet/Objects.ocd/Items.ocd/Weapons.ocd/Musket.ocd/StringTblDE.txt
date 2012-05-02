@@ -1,2 +1,3 @@
 Name=Muskete
-Description=Ziele und schieße mit [Benutzen]. Die Muskete benötigt Bleikugeln als Munition.
+Description=Feuerwaffe. Die Muskete benötigt Bleikugeln als Munition.
+UsageHelp=Ziele und schieße mit [Benutzen]. Die Muskete benötigt Bleikugeln als Munition.

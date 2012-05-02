@@ -1,2 +1,3 @@
 Name=Bow
-Description=Aim and shoot with [Use]. The bow needs arrows as ammunition.
+Description=Classic ranged weapon. The bow needs arrows as ammunition.
+UsageHelp=Aim and shoot with [Use]. The bow needs arrows as ammunition.

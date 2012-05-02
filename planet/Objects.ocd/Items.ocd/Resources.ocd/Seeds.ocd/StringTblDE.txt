@@ -1,3 +1,4 @@
 Name=Samen
-Description=Zum Anpflanzen von Weizen.
+Description=Samen zum Anpflanzen von Weizen.
+UsageHelp=Drücke [Benutzen] um hier Weizen anzupflanzen.
 NoSuitableGround=Untergrund ist zum|Anbau nicht geeignet!

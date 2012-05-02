@@ -13,8 +13,6 @@ VertexFriction=50,50
 Value=2
 Mass=6
 Components=Wood=1
-ContactIncinerate=1
-BlastIncinerate=5
 Rotate=1
 Float=1
 StretchGrowth=1

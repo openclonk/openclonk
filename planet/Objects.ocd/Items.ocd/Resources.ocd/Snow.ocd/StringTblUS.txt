@@ -1,2 +1,2 @@
 Name=Snowball
-Description=Frozen water.
+Description=Snowball fight!

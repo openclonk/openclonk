@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-09 19:12+0100\n"
+"POT-Creation-Date: 2012-04-15 21:09+0200\n"
 "PO-Revision-Date: 2011-09-07 15:52+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -366,8 +366,8 @@ msgstr "Operator"
 #: sdk/scenario/scenario.xml:186(col)
 #: sdk/scenario/scenario.xml:341(col)
 #: sdk/scenario/scenario.xml:361(col)
-#: sdk/scenario/scenario.xml:406(col)
-#: sdk/scenario/scenario.xml:421(col)
+#: sdk/scenario/scenario.xml:396(col)
+#: sdk/scenario/scenario.xml:411(col)
 #: sdk/scenario/Teams.xml:15(col)
 #: sdk/scenario/Teams.xml:74(col)
 #: sdk/scenario/MapCreatorS2.xml:34(col)
@@ -1041,8 +1041,8 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 #: sdk/script/fn/CreateMenu.xml:93(col)
 #: sdk/script/fn/Anim_Linear.xml:40(col)
 #: sdk/script/fn/AddCommand.xml:76(col)
-#: sdk/script/Effects.xml:512(col)
-#: sdk/script/Effects.xml:564(col)
+#: sdk/script/Effects.xml:514(col)
+#: sdk/script/Effects.xml:570(col)
 #: sdk/scenario/Teams.xml:34(col)
 #: sdk/scenario/Teams.xml:52(col)
 #: sdk/scenario/Teams.xml:58(col)
@@ -1080,8 +1080,8 @@ msgstr "0"
 #: sdk/script/fn/Anim_Linear.xml:41(col)
 #: sdk/script/fn/AddCommand.xml:97(col)
 #: sdk/script/Effects.xml:199(col)
-#: sdk/script/Effects.xml:516(col)
-#: sdk/script/Effects.xml:569(col)
+#: sdk/script/Effects.xml:519(col)
+#: sdk/script/Effects.xml:575(col)
 #: sdk/scenario/Teams.xml:22(col)
 #: sdk/material/ocm.xml:299(col)
 #: sdk/definition/cnat.xml:19(col)
@@ -1555,6 +1555,7 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/CloseMenu.xml:8(category)
 #: sdk/script/fn/ClearMenuItems.xml:8(category)
 #: sdk/script/fn/CheckVisibility.xml:8(category)
+#: sdk/script/fn/CheckConstructionSite.xml:8(category)
 #: sdk/script/fn/ChangeDef.xml:8(category)
 #: sdk/script/fn/CastObjects.xml:8(category)
 #: sdk/script/fn/CanConcatPictureWith.xml:8(category)
@@ -2740,8 +2741,8 @@ msgstr "Index des Vertex."
 #: sdk/scenario/scenario.xml:184(col)
 #: sdk/scenario/scenario.xml:339(col)
 #: sdk/scenario/scenario.xml:359(col)
-#: sdk/scenario/scenario.xml:404(col)
-#: sdk/scenario/scenario.xml:419(col)
+#: sdk/scenario/scenario.xml:394(col)
+#: sdk/scenario/scenario.xml:409(col)
 #: sdk/scenario/Teams.xml:13(col)
 #: sdk/scenario/Teams.xml:72(col)
 #: sdk/playercontrols.xml:21(col)
@@ -2768,8 +2769,8 @@ msgstr "Wert"
 #: sdk/script/fn/GetPhysical.xml:28(col)
 #: sdk/script/fn/Format.xml:31(col)
 #: sdk/script/Effects.xml:451(col)
-#: sdk/script/Effects.xml:509(col)
-#: sdk/script/Effects.xml:560(col)
+#: sdk/script/Effects.xml:510(col)
+#: sdk/script/Effects.xml:566(col)
 msgid "Meaning"
 msgstr "Bedeutung"
 
@@ -3473,8 +3474,8 @@ msgstr "PHYS_Temporary"
 #: sdk/script/fn/CreateMenu.xml:103(col)
 #: sdk/script/fn/Anim_Linear.xml:42(col)
 #: sdk/script/fn/AddCommand.xml:90(col)
-#: sdk/script/Effects.xml:520(col)
-#: sdk/script/Effects.xml:574(col)
+#: sdk/script/Effects.xml:524(col)
+#: sdk/script/Effects.xml:580(col)
 #: sdk/material/ocm.xml:304(col)
 #: sdk/definition/cnat.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
@@ -3497,8 +3498,8 @@ msgstr "PHYS_StackTemporary"
 #: sdk/script/fn/CreateMenu.xml:52(col)
 #: sdk/script/fn/CreateMenu.xml:108(col)
 #: sdk/script/fn/AddCommand.xml:83(col)
-#: sdk/script/Effects.xml:524(col)
-#: sdk/script/Effects.xml:579(col)
+#: sdk/script/Effects.xml:529(col)
+#: sdk/script/Effects.xml:585(col)
 #: sdk/definition/cnat.xml:36(col)
 msgid "3"
 msgstr "3"
@@ -3609,7 +3610,7 @@ msgstr "GFX_BLIT_ClrSfc_OwnClr"
 #: sdk/script/fn/SetGraphics.xml:65(col)
 #: sdk/script/fn/SetGamma.xml:60(col)
 #: sdk/script/fn/CreateMenu.xml:57(col)
-#: sdk/script/Effects.xml:528(col)
+#: sdk/script/Effects.xml:534(col)
 #: sdk/definition/cnat.xml:31(col)
 #: sdk/definition/cnat.xml:42(col)
 msgid "4"
@@ -4206,9 +4207,8 @@ msgid "<code>true</code> if you want to add a clonk to the crew and <code>false<
 msgstr "<code>true</code> wenn der Clonk der Crew hinzugefügt und <code>false</code> wenn er aus dieser entfernt werden soll."
 
 #: sdk/script/fn/SetCrewStatus.xml:26(desc)
-#, fuzzy
 msgid "Adds or removes an object (usually a clonk) to or from the crew of a player. The object must have the CrewMember property set in the DefCore. This does not add the object to the permanent crew of the player, use <placeholder-1/> for that."
-msgstr "Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben."
+msgstr "Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben. Das Objekt wird dabei nicht zur permanenten Crew des Spielers hinzugefügt, dazu dient <placeholder-1/>."
 
 #: sdk/script/fn/SetCrewStatus.xml:32(text)
 #: sdk/script/fn/MakeCrewMember.xml:27(text)
@@ -5334,6 +5334,7 @@ msgstr "Platziert Vegetation im angegebenen Zielrechteck. Bei lokalen Aufrufen g
 #: sdk/script/fn/CreateContents.xml:9(subcat)
 #: sdk/script/fn/CreateConstruction.xml:9(subcat)
 #: sdk/script/fn/ComposeContents.xml:9(subcat)
+#: sdk/script/fn/CheckConstructionSite.xml:9(subcat)
 #: sdk/script/fn/CastObjects.xml:9(subcat)
 #: sdk/script/fn/Buy.xml:9(subcat)
 #: sdk/definition/script.xml:10(h)
@@ -7572,7 +7573,6 @@ msgstr "s"
 #: sdk/scenario/scenario.xml:210(col)
 #: sdk/scenario/scenario.xml:280(col)
 #: sdk/scenario/scenario.xml:285(col)
-#: sdk/scenario/scenario.xml:390(col)
 #: sdk/scenario/Teams.xml:62(col)
 #: sdk/scenario/Teams.xml:103(col)
 #: sdk/playercontrols.xml:32(col)
@@ -8272,27 +8272,24 @@ msgid "Definition of the dynamic map. The enclosing map { ... } tag must be pres
 msgstr "Definition der dynamischen Karte. Das umschließende map { ...} - Tag muss vorhanden sein."
 
 #: sdk/script/fn/DrawMap.xml:40(desc)
-#, fuzzy
 msgid "Draws a dynamic map within the specified rectangle over the old landscape. This is done using the same evaluation as with Landscape.txt components."
-msgstr "Zeichnet eine dynamische Zufallskarte innerhalb eines Bereichs. Dazu wird derselbe Generator benutzt, der auch die Karten der Landscape.txt zeichnet."
+msgstr "Zeichnet eine dynamische Zufallskarte über einen Bereich der alten Landschaft. Dazu wird derselbe Generator benutzt, der auch die Karten der Landscape.txt zeichnet."
 
 #: sdk/script/fn/DrawMap.xml:41(remark)
 msgid "As maximum string length in C4Script is limited by internal buffers you should use <placeholder-1/> for very complex maps."
 msgstr "Da die Maximallänge von Strings in C4Script durch interne Puffer begrenzt ist, wird empfohlen, für aufwändigere Karten <placeholder-1/> zu benutzen."
 
 #: sdk/script/fn/DrawMap.xml:45(text)
-#, fuzzy
 msgid "Fills the top half of the map with earth."
-msgstr "Leert die obere Hälfte der Karte aus."
+msgstr "Füllt die obere hälfte der Karte mit Erde."
 
 #: sdk/script/fn/DrawDefMap.xml:36(desc)
 msgid "Name of the map to be used from Landscape.txt."
 msgstr "Name der zu benutzenden Karte aus der Landscape.txt"
 
 #: sdk/script/fn/DrawDefMap.xml:40(desc)
-#, fuzzy
 msgid "Draws a dynamic map within the specified rectangle over the old landscape using a given map specification from Landscape.txt."
-msgstr "Zeichnet eine dynamische Zufallskarte innerhalb eines Bereichs. Dazu wird die angegebene Karte in der Landscape.txt gesucht."
+msgstr "Zeichnet eine dynamische Zufallskarte über einen Bereich der alten Landschaft. Dazu wird die angegebene Karte in der Landscape.txt gesucht."
 
 #: sdk/script/fn/DrawDefMap.xml:41(remark)
 msgid "The Landscape.txt component is usually removed from memory after scenario initialization. To keep it in memory for later use by this command you should specify the option KeepMapCreator=1 in Scenario.txt section [Landscape]."
@@ -8507,6 +8504,7 @@ msgstr "Gibt an, wie weit der ausgewählte Clonk noch vom Punkt 1000/200 entfern
 #: sdk/script/fn/DigFree.xml:16(desc)
 #: sdk/script/fn/CreateObject.xml:22(desc)
 #: sdk/script/fn/CreateConstruction.xml:22(desc)
+#: sdk/script/fn/CheckConstructionSite.xml:22(desc)
 #: sdk/script/fn/CastPXS.xml:31(desc)
 #: sdk/script/fn/BlastObjects.xml:16(desc)
 msgid "X coordinate"
@@ -8516,6 +8514,7 @@ msgstr "X-Koordinate"
 #: sdk/script/fn/DigFree.xml:21(desc)
 #: sdk/script/fn/CreateObject.xml:27(desc)
 #: sdk/script/fn/CreateConstruction.xml:27(desc)
+#: sdk/script/fn/CheckConstructionSite.xml:27(desc)
 #: sdk/script/fn/CastPXS.xml:36(desc)
 #: sdk/script/fn/BlastObjects.xml:21(desc)
 msgid "Y coordinate"
@@ -8529,23 +8528,28 @@ msgstr "Breite"
 msgid "Height"
 msgstr "Höhe"
 
-#: sdk/script/fn/DigFreeRect.xml:35(desc)
-msgid "Makes a rectangular hole in semi-solid materials."
-msgstr "Gräbt ein rechteckiges Loch in halbfesten Materialien."
+#: sdk/script/fn/DigFreeRect.xml:36(desc)
+#: sdk/script/fn/DigFree.xml:31(desc)
+msgid "Prevent objects from being dug out"
+msgstr ""
 
-#: sdk/script/fn/DigFreeRect.xml:36(remark)
+#: sdk/script/fn/DigFreeRect.xml:40(desc)
+msgid "Makes a rectangular hole in semi-solid materials. The return value is the amount of pixels that were dug free. If no_dig2objects is true, the dug out material does neither create objects according to the Dig2Objects in the <emlink href=\"material/ocm.html\">*.ocm</emlink> nor will the amount be stored in the internal buffer."
+msgstr ""
+
+#: sdk/script/fn/DigFreeRect.xml:41(remark)
 msgid "Drills an elevator shaft."
 msgstr "CreateShaft im Fahrstuhl gräbt einen Fahrstuhlschacht."
 
-#: sdk/script/fn/DigFreeRect.xml:40(text)
+#: sdk/script/fn/DigFreeRect.xml:45(text)
 msgid "Makes a square hole in the middle of the landscape."
 msgstr "Gräbt ein kleines quadratisches Loch mitten in die Landschaft."
 
-#: sdk/script/fn/DigFree.xml:30(desc)
-msgid "Makes a circular hole in semi-solid materials."
-msgstr "Gräbt ein kreisrundes Loch in halbfesten Materialien."
+#: sdk/script/fn/DigFree.xml:35(desc)
+msgid "Makes a circular hole in semi-solid materials. The return value is the amount of pixels that were dug free. If no_dig2objects is true, the dug out material does neither create objects according to the Dig2Objects in the <emlink href=\"material/ocm.html\">*.ocm</emlink> nor will the amount be stored in the internal buffer."
+msgstr ""
 
-#: sdk/script/fn/DigFree.xml:34(text)
+#: sdk/script/fn/DigFree.xml:39(text)
 msgid "Makes a small hole in the middle of the landscape."
 msgstr "Gräbt ein kleines Loch mitten in der Landschaft."
 
@@ -9156,6 +9160,14 @@ msgstr "Vierter Zusatzparameter, der an Fx*Effect-Callbacks übergeben wird"
 msgid "Makes Fx*Effect (and in cases Fx*Add) callbacks to the specified list of effects, without actually creating any effect. The return value is -1 if another effect has rejected the call. If an effect accepts the call, the return value is the effect number of that effect."
 msgstr "Führt Fx*Effect (und ggf. auch Fx*Add)-Callbacks in der entsprechenden Effektliste aus, ohne einen Effekt selber zu erstellen. Rückgabewert ist -1, wenn ein anderer Effekt den Effekt abgelehnt hat, und die Effektnummer des aufnehmenden Effektes, wenn der Effekt aufgenommen wurde."
 
+#: sdk/script/fn/CheckConstructionSite.xml:17(desc)
+msgid "Type of object to be checked."
+msgstr "Typ des zu prüfenden Objekts"
+
+#: sdk/script/fn/CheckConstructionSite.xml:31(desc)
+msgid "Checks whether the given location is suitable for the construction of object_id. The same check is used before creation in <placeholder-1/> if check_side is true. In local calls the specified position will be an offset to the position of the calling object."
+msgstr ""
+
 #: sdk/script/fn/ChangeDef.xml:17(desc)
 msgid "id of the new definition."
 msgstr "ID der neuen Definition für das Objekt"
@@ -9458,19 +9470,16 @@ msgid "Moves the calling object into the background and adds horizontal parallax
 msgstr "Versetzt das aufrufende Objekt in den Hintergrund, und gibt ihm horizontale Parallaxität."
 
 #: sdk/script/fn/C4D_Object.xml:12(desc)
-#, fuzzy
 msgid "Object category: Item that can hit alive objects."
-msgstr "Objektkategorie: Spielregeln"
+msgstr "Objektkategorie: Objekt, welches Lebewesen Bewegungsschaden zufügt"
 
 #: sdk/script/fn/C4D_Object.xml:16(text)
-#, fuzzy
 msgid "Returns the id of the first loaded definition with C4D_Object. Similar scripting is used in the research lab to list researchable objects."
-msgstr "Liefert die id des ersten geladenen Objekts zurück. Ein ähnlicher Code wird vom Forschungslabor benutzt, um die erforschbaren Objekte aufzulisten."
+msgstr "Liefert die id des ersten geladenen Objekts mit Kategorie C4D_Object zurück. Ein ähnlicher Code wird vom Forschungslabor benutzt, um die erforschbaren Objekte aufzulisten."
 
 #: sdk/script/fn/C4D_Living.xml:12(desc)
-#, fuzzy
 msgid "Objects with this category are alive when created."
-msgstr "Objektkategorie: Spielregeln"
+msgstr "Objektkategorie: Lebewesen"
 
 #: sdk/script/fn/C4D_Living.xml:16(text)
 msgid "Returns the first type of living beings which can be built by player 1 - usually none."
@@ -10142,8 +10151,8 @@ msgstr "Beispiel"
 #: sdk/scenario/scenario.xml:320(col)
 #: sdk/scenario/scenario.xml:325(col)
 #: sdk/scenario/scenario.xml:330(col)
-#: sdk/scenario/scenario.xml:395(col)
-#: sdk/scenario/scenario.xml:425(col)
+#: sdk/scenario/scenario.xml:385(col)
+#: sdk/scenario/scenario.xml:415(col)
 #: sdk/scenario/Teams.xml:20(col)
 #: sdk/scenario/Teams.xml:26(col)
 #: sdk/scenario/Teams.xml:32(col)
@@ -10377,9 +10386,8 @@ msgid "When used as a function parameter type, the type check is skipped."
 msgstr "Wenn als Parametertyp für eine Funktion benutzt wird die Typüberprüfung nicht vorgenommen."
 
 #: sdk/script/Typechecks.xml:68(emlink)
-#, fuzzy
 msgid "Object Definition"
-msgstr "Objektdefinitionen"
+msgstr "Objektdefinition"
 
 #: sdk/script/Typechecks.xml:69(col)
 msgid "Represents a DefCore.txt and the associated Script.c. A special kind of proplist."
@@ -11162,12 +11170,12 @@ msgstr "Eigenschaften-Referenz"
 
 #: sdk/script/Effects.xml:332(text)
 msgid "Effects have a number of standard properties:"
-msgstr ""
+msgstr "Effekte haben folgende Standard-eigenschaften"
 
 #: sdk/script/Effects.xml:334(caption)
 #, fuzzy
 msgid "Effect Properties"
-msgstr "Objekteigenschaften"
+msgstr "Effek Properties"
 
 #: sdk/script/Effects.xml:336(col)
 #: sdk/scenario/scenario.xml:15(col)
@@ -11176,8 +11184,8 @@ msgstr "Objekteigenschaften"
 #: sdk/scenario/scenario.xml:185(col)
 #: sdk/scenario/scenario.xml:340(col)
 #: sdk/scenario/scenario.xml:360(col)
-#: sdk/scenario/scenario.xml:405(col)
-#: sdk/scenario/scenario.xml:420(col)
+#: sdk/scenario/scenario.xml:395(col)
+#: sdk/scenario/scenario.xml:410(col)
 #: sdk/scenario/Teams.xml:14(col)
 #: sdk/scenario/Teams.xml:73(col)
 #: sdk/playercontrols.xml:22(col)
@@ -11205,7 +11213,7 @@ msgstr "string"
 #: sdk/script/Effects.xml:343(col)
 #, fuzzy
 msgid "Can be changed."
-msgstr "0-3: Farbwert, der geändert werden soll"
+msgstr "Kann geändert werden"
 
 #: sdk/script/Effects.xml:346(col)
 #: sdk/script/Effects.xml:351(col)
@@ -11413,287 +11421,308 @@ msgid "reason contains the cause of the removal and can be one of the following 
 msgstr "reason gibt den Grund für das Entfernen des Effektes an, und kann einer der folgenden Werte sein:"
 
 #: sdk/script/Effects.xml:508(col)
+#: sdk/script/Effects.xml:564(col)
+msgid "Script constant"
+msgstr "Scriptkonstante"
+
+#: sdk/script/Effects.xml:509(col)
 msgid "reason"
 msgstr "reason"
 
 #: sdk/script/Effects.xml:513(col)
+msgid "FX_Call_Normal"
+msgstr "FX_Call_Normal"
+
+#: sdk/script/Effects.xml:515(col)
 msgid "Normal removal"
 msgstr "Effekt wird regulär entfernt"
 
-#: sdk/script/Effects.xml:517(col)
+#: sdk/script/Effects.xml:518(col)
+msgid "FX_Call_Temp"
+msgstr "FX_Call_Temp"
+
+#: sdk/script/Effects.xml:520(col)
 msgid "Temporary removal (temporary is 1)."
 msgstr "Effekt wird nur temporär entfernt. temporary ist in dem Fall 1."
 
-#: sdk/script/Effects.xml:521(col)
+#: sdk/script/Effects.xml:523(col)
+msgid "FX_Call_TempAddForRemoval"
+msgstr "FX_Call_TempAddForRemoval"
+
+#: sdk/script/Effects.xml:525(col)
 msgid "Not used"
 msgstr "nicht verwendet"
 
-#: sdk/script/Effects.xml:525(col)
+#: sdk/script/Effects.xml:528(col)
+msgid "FX_Call_RemoveClear"
+msgstr "FX_Call_RemoveClear"
+
+#: sdk/script/Effects.xml:530(col)
 msgid "The target object has been deleted"
 msgstr "Effekt wird entfernt, weil das Objekt gelöscht wird"
 
-#: sdk/script/Effects.xml:529(col)
+#: sdk/script/Effects.xml:533(col)
+msgid "FX_Call_RemoveDeath"
+msgstr "FX_Call_RemoveDeath"
+
+#: sdk/script/Effects.xml:535(col)
 msgid "The target object has died"
 msgstr "Effekt wird entfernt, weil das Objekt stirbt"
 
-#: sdk/script/Effects.xml:533(text)
+#: sdk/script/Effects.xml:539(text)
 msgid "The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted."
 msgstr "Wenn der Effekt nicht gelöscht werden soll, kann in der Funktion -1 zurückgegeben werden, um das Löschen zu verhindern. Bei temporären Aufrufen oder wenn das Zielobjekt gelöscht wird, bringt dies natürlich nichts."
 
-#: sdk/script/Effects.xml:534(h)
+#: sdk/script/Effects.xml:540(h)
 msgid "Fx*Timer"
 msgstr "Fx*Timer"
 
-#: sdk/script/Effects.xml:536(text)
+#: sdk/script/Effects.xml:542(text)
 msgid "Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual."
 msgstr "Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall angegeben wurde. target und <code>effect</code> spezifizieren auch hier Zielobjekt und Effekt."
 
-#: sdk/script/Effects.xml:537(text)
+#: sdk/script/Effects.xml:543(text)
 msgid "time specifies how long the effect has now been active. This might alternatively be determined using effect.Time."
 msgstr "time gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch über effect.Time herausfinden."
 
-#: sdk/script/Effects.xml:538(text)
+#: sdk/script/Effects.xml:544(text)
 msgid "If this function is not implemented or returns -1, the effect will be deleted after this call."
 msgstr "Ein Rückgabewert von -1 bedeutet, dass der Effekt nach dem Aufruf gelöscht wird. Dasselbe passiert, wenn die Funktion nicht implementiert wird."
 
-#: sdk/script/Effects.xml:539(h)
+#: sdk/script/Effects.xml:545(h)
 msgid "Fx*Effect"
 msgstr "Fx*Effect"
 
-#: sdk/script/Effects.xml:541(text)
+#: sdk/script/Effects.xml:547(text)
 msgid "A call to all effects of higher priority if a new effect is to be added to the same target object. new_name is the name of the new effect; <code>effect</code> is the effect being called."
 msgstr "Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu demselben Objekt (target) hinzugefügt werden soll. new_name gibt den Namen des neuen Effektes an; <code>effect</code> ist der Effekt bei dem angefragt wird."
 
-#: sdk/script/Effects.xml:542(text)
+#: sdk/script/Effects.xml:548(text)
 msgid "Warning: the new effect is not yet properly initialized and should not be manipulated in any way. Especially the priority field might not yet have been set."
 msgstr "Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert."
 
-#: sdk/script/Effects.xml:543(text)
+#: sdk/script/Effects.xml:549(text)
 msgid "This function can return -1 to reject the new effect. As the new effect might also be rejected by other effects, this callback should not try to add effects or similar (see gravitation spell). Generally you should not try to manipulate any effects during this callback."
 msgstr "Die Funktion sollte -1 zurückgeben, wenn sie den neuen Effekt ablehnt. Da der Effekt auch noch von einem anderen Effekt abgelehnt werden kann, sollte dieser Callback nicht dazu verwendet werden, um beispielsweise Effekte zusammenzufassen (siehe Beispiel zum Gravitationszauber). Überhaupt sollte es möglichst vermieden werden, in diesem Aufruf die Effektliste zu manipulieren."
 
-#: sdk/script/Effects.xml:544(text)
+#: sdk/script/Effects.xml:550(text)
 msgid "Return -2 or -3 to accept the new effect. As long as the new effect is not rejected by any other effect, the Fx*Add call is then made to the accepting effect, the new effect is not actually created, and the calling AddEffect function returns the effect index of the accepting effect. The return value -3 will also temporarily remove all higher prioriy effects just before the Fx*Add callback and re-add them later."
 msgstr "Ein Rückgabewert von -2 oder -3 sollte angegeben werden, wenn der Effekt übernommen wird. Sofern der Effekt dann von keinem anderen Effekt abgelehnt wurde (über Rückgabewert -1), wird ein Fx*Add-Aufruf an den übernehmenden Effekt gesendet, der neue Effekt selber entfernt, und die aufrufende AddEffect-Funktion erhält als Rückgabewert die Nummer des übernehmenden Effektes. Rückgabewert -3 bedeutet dabei im Gegensatz zu -2, dass vor dem Fx*Add-Aufruf alle Effekte mit höherer Priorität temporär entfernt, und nach dem Aufruf dieselben wieder temporär hinzugefügt werden."
 
-#: sdk/script/Effects.xml:545(text)
+#: sdk/script/Effects.xml:551(text)
 msgid "var1 bis var4 are the parameters passed to <placeholder-1/>()"
 msgstr "var1 bis var4 sind die Parameter, die an die <placeholder-1/>()-Funktion übergeben wurden."
 
-#: sdk/script/Effects.xml:546(h)
+#: sdk/script/Effects.xml:552(h)
 msgid "Fx*Add"
 msgstr "Fx*Add"
 
-#: sdk/script/Effects.xml:548(text)
+#: sdk/script/Effects.xml:554(text)
 msgid "Callback to the accepting effect if that has returned -2 or -3 to a prior Fx*Effect call. <code>effect</code> identifies the accepting effect to which the consequences of the new effect will be added; target is the target object (0 for global effects)."
 msgstr "Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-Callback hin -2 oder -3 zurückgegeben hat. <code>effect</code> gibt den Effektes an, zu dem hinzugefügt wird; target das Zielobjekt (0 bei globalen Effekten)."
 
-#: sdk/script/Effects.xml:549(text)
+#: sdk/script/Effects.xml:555(text)
 msgid "new_timer is the timer interval of the new effect; var1 to var4 are the parameters from AddEffect. Notice: in temporary calls, these parameters are not available - here they will be 0."
 msgstr "new_timer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann 0."
 
-#: sdk/script/Effects.xml:550(text)
+#: sdk/script/Effects.xml:556(text)
 msgid "If -1 is returned, the accepting effect is deleted also. Logically, the calling AddEffect function will then return -2."
 msgstr "Wird -1 zurückgegeben, wird auch der übernehmende Effekt entfernt. Logischerweise gibt die erzeugende AddEffect-Funktion dann -2 zurück."
 
-#: sdk/script/Effects.xml:551(h)
+#: sdk/script/Effects.xml:557(h)
 msgid "Fx*Damage"
 msgstr "Fx*Damage"
 
-#: sdk/script/Effects.xml:553(text)
+#: sdk/script/Effects.xml:559(text)
 msgid "Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change."
 msgstr "Jeder Effekt erhält diesen Callback, wann immer sich der Energie- oder Schadenswert des Zielobjektes ändert. Falls die Funktion definiert wird, sollte der Rückgabewert dabei die erlaubte Änderung angeben."
 
-#: sdk/script/Effects.xml:554(text)
+#: sdk/script/Effects.xml:560(text)
 msgid "This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:"
 msgstr "Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber umgekehrt. cause gibt den geänderten Wert und den Grund an:"
 
-#: sdk/script/Effects.xml:558(col)
-msgid "Script constant"
-msgstr "Scriptkonstante"
-
-#: sdk/script/Effects.xml:559(col)
+#: sdk/script/Effects.xml:565(col)
 msgid "cause"
 msgstr "cause"
 
-#: sdk/script/Effects.xml:563(col)
+#: sdk/script/Effects.xml:569(col)
 msgid "FX_Call_DmgScript"
 msgstr "FX_Call_DmgScript"
 
-#: sdk/script/Effects.xml:565(col)
+#: sdk/script/Effects.xml:571(col)
 msgid "Damage by script call <placeholder-1/>()"
 msgstr "Schaden durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:568(col)
+#: sdk/script/Effects.xml:574(col)
 msgid "FX_Call_DmgBlast"
 msgstr "FX_Call_DmgBlast"
 
-#: sdk/script/Effects.xml:570(col)
+#: sdk/script/Effects.xml:576(col)
 msgid "Damage by explosion"
 msgstr "Schaden durch Explosion"
 
-#: sdk/script/Effects.xml:573(col)
+#: sdk/script/Effects.xml:579(col)
 msgid "FX_Call_DmgFire"
 msgstr "FX_Call_DmgFire"
 
-#: sdk/script/Effects.xml:575(col)
+#: sdk/script/Effects.xml:581(col)
 msgid "Damage by fire"
 msgstr "Schaden durch Feuer"
 
-#: sdk/script/Effects.xml:578(col)
+#: sdk/script/Effects.xml:584(col)
 msgid "FX_Call_DmgChop"
 msgstr "FX_Call_DmgChop"
 
-#: sdk/script/Effects.xml:580(col)
+#: sdk/script/Effects.xml:586(col)
 msgid "Damage by chopping (only trees)"
 msgstr "Schaden durch Fällen (nur Bäume)"
 
-#: sdk/script/Effects.xml:583(col)
+#: sdk/script/Effects.xml:589(col)
 msgid "FX_Call_EngScript"
 msgstr "FX_Call_EngScript"
 
-#: sdk/script/Effects.xml:584(col)
+#: sdk/script/Effects.xml:590(col)
 #: sdk/definition/cnat.xml:49(col)
 msgid "32"
 msgstr "32"
 
-#: sdk/script/Effects.xml:585(col)
+#: sdk/script/Effects.xml:591(col)
 msgid "Energy value change by script call <placeholder-1/>()"
 msgstr "Energieänderung durch Scriptaufruf <placeholder-1/>()"
 
-#: sdk/script/Effects.xml:588(col)
+#: sdk/script/Effects.xml:594(col)
 msgid "FX_Call_EngBlast"
 msgstr "FX_Call_EngBlast"
 
-#: sdk/script/Effects.xml:589(col)
+#: sdk/script/Effects.xml:595(col)
 msgid "33"
 msgstr "33"
 
-#: sdk/script/Effects.xml:590(col)
+#: sdk/script/Effects.xml:596(col)
 msgid "Energy loss by explosion"
 msgstr "Energieverlust durch Explosion"
 
-#: sdk/script/Effects.xml:593(col)
+#: sdk/script/Effects.xml:599(col)
 msgid "FX_Call_EngObjHit"
 msgstr "FX_Call_EngObjHit"
 
-#: sdk/script/Effects.xml:594(col)
+#: sdk/script/Effects.xml:600(col)
 msgid "34"
 msgstr "34"
 
-#: sdk/script/Effects.xml:595(col)
+#: sdk/script/Effects.xml:601(col)
 msgid "Energy loss by object hit"
 msgstr "Energieverlust durch Objekttreffer"
 
-#: sdk/script/Effects.xml:598(col)
+#: sdk/script/Effects.xml:604(col)
 msgid "FX_Call_EngFire"
 msgstr "FX_Call_EngFire"
 
-#: sdk/script/Effects.xml:599(col)
+#: sdk/script/Effects.xml:605(col)
 msgid "35"
 msgstr "35"
 
-#: sdk/script/Effects.xml:600(col)
+#: sdk/script/Effects.xml:606(col)
 msgid "Energy loss by fire"
 msgstr "Energieverlust durch Feuer"
 
-#: sdk/script/Effects.xml:603(col)
+#: sdk/script/Effects.xml:609(col)
 msgid "FX_Call_EngBaseRefresh"
 msgstr "FX_Call_EngBaseRefresh"
 
-#: sdk/script/Effects.xml:604(col)
+#: sdk/script/Effects.xml:610(col)
 msgid "36"
 msgstr "36"
 
-#: sdk/script/Effects.xml:605(col)
+#: sdk/script/Effects.xml:611(col)
 msgid "Energy recharge at the home base"
 msgstr "Energieaufnahme in der Basis - auch Abgabe und Kauf der Basis, wenn die Basis ein Lebewesen ist"
 
-#: sdk/script/Effects.xml:608(col)
+#: sdk/script/Effects.xml:614(col)
 msgid "FX_Call_EngAsphyxiation"
 msgstr "FX_Call_EngAsphyxiation"
 
-#: sdk/script/Effects.xml:609(col)
+#: sdk/script/Effects.xml:615(col)
 msgid "37"
 msgstr "37"
 
-#: sdk/script/Effects.xml:610(col)
+#: sdk/script/Effects.xml:616(col)
 msgid "Energy loss by suffocation"
 msgstr "Energieverlust durch Ersticken"
 
-#: sdk/script/Effects.xml:613(col)
+#: sdk/script/Effects.xml:619(col)
 msgid "FX_Call_EngCorrosion"
 msgstr "FX_Call_EngCorrosion"
 
-#: sdk/script/Effects.xml:614(col)
+#: sdk/script/Effects.xml:620(col)
 msgid "38"
 msgstr "38"
 
-#: sdk/script/Effects.xml:615(col)
+#: sdk/script/Effects.xml:621(col)
 msgid "Energy loss through acid"
 msgstr "Energieverlust durch Säure"
 
-#: sdk/script/Effects.xml:618(col)
+#: sdk/script/Effects.xml:624(col)
 msgid "FX_Call_EngStruct"
 msgstr "FX_Call_EngStruct"
 
-#: sdk/script/Effects.xml:619(col)
+#: sdk/script/Effects.xml:625(col)
 msgid "39"
 msgstr "39"
 
-#: sdk/script/Effects.xml:620(col)
+#: sdk/script/Effects.xml:626(col)
 msgid "Energy loss of buildings (only \"living\" buildings)"
 msgstr "Energieverlust von Gebäuden (Nur lebende Gebäude)"
 
-#: sdk/script/Effects.xml:623(col)
+#: sdk/script/Effects.xml:629(col)
 msgid "FX_Call_EngGetPunched"
 msgstr "FX_Call_EngGetPunched"
 
-#: sdk/script/Effects.xml:624(col)
+#: sdk/script/Effects.xml:630(col)
 msgid "40"
 msgstr "40"
 
-#: sdk/script/Effects.xml:625(col)
+#: sdk/script/Effects.xml:631(col)
 msgid "Energy loss through clonk-to-clonk battle"
 msgstr "Energieverlust im Clonk-zu-Clonk-Kampf"
 
-#: sdk/script/Effects.xml:629(text)
+#: sdk/script/Effects.xml:635(text)
 msgid "Generally, the expression \"cause &amp; 32\" can be used to determine whether the energy or damage values were changed."
 msgstr "Allgemein kann der Ausdruck \"cause &amp; 32\" verwendet werden, um festzustellen, ob Energie oder Schadenswert verändert wurden."
 
-#: sdk/script/Effects.xml:630(text)
+#: sdk/script/Effects.xml:636(text)
 msgid "Using this callback, damage to an object can be prevented, lessened, or increased. You could deduct magic energy instead, transfer damage to other objects, or something similar."
 msgstr "Über diesen Callback kann zum Beispiel Schaden an einem Objekt verhindert, abgeschwächt oder verstärkt werden; man kann Lebensschaden zunächst nur von der Zauberenergie abziehen, gleichmäßig auf verbundene Clonks verteilen und so weiter."
 
-#: sdk/script/Effects.xml:632(h)
+#: sdk/script/Effects.xml:638(h)
 msgid "Function Reference"
 msgstr "Funktions-Referenz"
 
-#: sdk/script/Effects.xml:633(text)
+#: sdk/script/Effects.xml:639(text)
 msgid "There are the following functions for manipulation of effects:"
 msgstr "Es gibt folgende Funktionen sind zum Manipulieren und Abfragen von Effekten:"
 
-#: sdk/script/Effects.xml:636(li)
+#: sdk/script/Effects.xml:642(li)
 msgid "<placeholder-1/>() - for effect creation"
 msgstr "<placeholder-1/>() - zum Erzeugen von Effekten"
 
-#: sdk/script/Effects.xml:637(li)
+#: sdk/script/Effects.xml:643(li)
 msgid "<placeholder-1/>() - for effect removal"
 msgstr "<placeholder-1/>() - zum Entfernen von Effekten"
 
-#: sdk/script/Effects.xml:638(li)
+#: sdk/script/Effects.xml:644(li)
 msgid "<placeholder-1/>() - to search for effects"
 msgstr "<placeholder-1/>() - zum Suchen nach Effekten"
 
-#: sdk/script/Effects.xml:639(li)
+#: sdk/script/Effects.xml:645(li)
 msgid "<placeholder-1/>() - for effect counting"
 msgstr "<placeholder-1/>() - um Effekte zu zählen"
 
-#: sdk/script/Effects.xml:640(li)
+#: sdk/script/Effects.xml:646(li)
 msgid "<placeholder-1/>() - for user defined calls in effects"
 msgstr "<placeholder-1/>() - für Benutzeraufrufe in Effekten"
 
-#: sdk/script/Effects.xml:641(li)
+#: sdk/script/Effects.xml:647(li)
 msgid "<placeholder-1/>() - to cause effects callbacks without actually creating an effect"
 msgstr "<placeholder-1/>() - um Effekt-Callbacks auszuführen, ohne den Effekt selber zu erstellen"
 
@@ -11818,7 +11847,7 @@ msgid "Called after the hostility of two players has been changed. See <placehol
 msgstr "Wird aufgerufen wenn die Verfeindung zweier Spieler geändert wird. Siehe <placeholder-1/>."
 
 #: sdk/scenario/script.xml:54(col)
-#: sdk/definition/script.xml:315(col)
+#: sdk/definition/script.xml:320(col)
 msgid "int player, int new_team"
 msgstr "int player, int new_team"
 
@@ -11827,7 +11856,7 @@ msgid "When the team of a player is about to be changed, this function is called
 msgstr "Wenn das Team eines Spielers geändert werden soll, wird diese Funktion zuerst aufgerufen. Wenn sie true zurückgibt, wird das Team des Spielers nicht geändert. Siehe <placeholder-1/>"
 
 #: sdk/scenario/script.xml:59(col)
-#: sdk/definition/script.xml:320(col)
+#: sdk/definition/script.xml:325(col)
 msgid "int player, int new_team, int old_team"
 msgstr "int player, int new_team, int old_team"
 
@@ -11840,8 +11869,8 @@ msgid "Called if a round is ended through the game by player elimination, fulfil
 msgstr "Wird eine Runde durch Spielziele wie Spielereliminierung, Materialabbau, usw. (wie  in der <emlink href=\"scenario/scenario.html#SektionGame\">Scenario.txt</emlink> definiert) oder durch den Scriptbefehl <placeholder-1/> beendet (also nicht bei abgebrochenen Runden), wird diese Funktion aufgerufen."
 
 #: sdk/scenario/script.xml:71(col)
-#: sdk/definition/script.xml:290(col)
-#: sdk/definition/script.xml:310(col)
+#: sdk/definition/script.xml:295(col)
+#: sdk/definition/script.xml:315(col)
 msgid "int player"
 msgstr "int player"
 
@@ -11914,7 +11943,6 @@ msgstr "Version"
 #: sdk/scenario/scenario.xml:370(col)
 #: sdk/scenario/scenario.xml:375(col)
 #: sdk/scenario/scenario.xml:380(col)
-#: sdk/scenario/scenario.xml:385(col)
 #: sdk/material/ocm.xml:215(col)
 #: sdk/folder/foldermap.xml:20(col)
 #: sdk/folder/foldermap.xml:60(col)
@@ -12041,8 +12069,8 @@ msgstr "Rules"
 #: sdk/scenario/scenario.xml:200(col)
 #: sdk/scenario/scenario.xml:345(col)
 #: sdk/scenario/scenario.xml:350(col)
-#: sdk/scenario/scenario.xml:410(col)
-#: sdk/scenario/scenario.xml:435(col)
+#: sdk/scenario/scenario.xml:400(col)
+#: sdk/scenario/scenario.xml:425(col)
 #: sdk/definition/defcore.xml:85(col)
 msgid "ID list"
 msgstr "ID-Liste"
@@ -12315,74 +12343,58 @@ msgid "0-100 with tolerance. Speed of season change."
 msgstr "0-100 und Abweichung. Geschwindigkeit des Jahreszeitenwechsels."
 
 #: sdk/scenario/scenario.xml:379(col)
-msgid "Rain"
-msgstr "Rain"
-
-#: sdk/scenario/scenario.xml:381(col)
-msgid "0-100 with tolerance. Precipitation amount."
-msgstr "0-100 und Abweichung. Regenwahrscheinlichkeit."
-
-#: sdk/scenario/scenario.xml:384(col)
 msgid "Wind"
 msgstr "Wind"
 
-#: sdk/scenario/scenario.xml:386(col)
+#: sdk/scenario/scenario.xml:381(col)
 msgid "-100-100 with tolerance. Wind direction and strength."
 msgstr "-100-100 und Abweichung. Windrichtung und -stärke."
 
-#: sdk/scenario/scenario.xml:389(col)
-msgid "Precipitation"
-msgstr "Precipitation"
-
-#: sdk/scenario/scenario.xml:391(col)
-msgid "Simple material definition precipitation."
-msgstr "Einfache Materialdefinition Niederschlag."
-
-#: sdk/scenario/scenario.xml:394(col)
+#: sdk/scenario/scenario.xml:384(col)
 msgid "NoGamma"
 msgstr "NoGamma"
 
-#: sdk/scenario/scenario.xml:396(col)
+#: sdk/scenario/scenario.xml:386(col)
 msgid "0 or 1. If 1, the current season won't cause a small global color change."
 msgstr "0 oder 1. Bei 1 wirken sich die Jahreszeiten nicht auf die Bildschirmfärbung aus."
 
-#: sdk/scenario/scenario.xml:402(caption)
+#: sdk/scenario/scenario.xml:392(caption)
 msgid "Section [Environment]"
 msgstr "Sektion [Environment]"
 
-#: sdk/scenario/scenario.xml:411(col)
+#: sdk/scenario/scenario.xml:401(col)
 msgid "Environment control objects that are placed at game start."
 msgstr "Umweltsteuerungsobjekte, die am Anfang der Runde platziert werden."
 
-#: sdk/scenario/scenario.xml:417(caption)
+#: sdk/scenario/scenario.xml:407(caption)
 msgid "Section [Definitions]"
 msgstr "Sektion [Definitions]"
 
-#: sdk/scenario/scenario.xml:424(col)
+#: sdk/scenario/scenario.xml:414(col)
 msgid "LocalOnly"
 msgstr "LocalOnly"
 
-#: sdk/scenario/scenario.xml:426(col)
+#: sdk/scenario/scenario.xml:416(col)
 msgid "If LocalOnly is 1, only definitions local to the scenario file will be load."
 msgstr "Wenn LocalOnly den Wert 1 hat, werden alle angegebenen Objektdefinitions-pakete ignoriert und nur lokale Objektdefinitionen geladen."
 
-#: sdk/scenario/scenario.xml:429(col)
+#: sdk/scenario/scenario.xml:419(col)
 msgid "Definition1 to 9"
 msgstr "Definition1 (bis 9)"
 
-#: sdk/scenario/scenario.xml:430(col)
+#: sdk/scenario/scenario.xml:420(col)
 msgid "String(s)"
 msgstr "Zeichenfolge(n)"
 
-#: sdk/scenario/scenario.xml:431(col)
+#: sdk/scenario/scenario.xml:421(col)
 msgid "With Definition<em>x</em> entries you can specify which object definition packs (ocd) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled."
 msgstr "Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (ocd) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert."
 
-#: sdk/scenario/scenario.xml:434(col)
+#: sdk/scenario/scenario.xml:424(col)
 msgid "SkipDefs"
 msgstr "SkipDefs"
 
-#: sdk/scenario/scenario.xml:436(col)
+#: sdk/scenario/scenario.xml:426(col)
 msgid "List of object definitions (C4IDs) which are not to be loaded with this scenario. This can be used to prevent researching certain object types in the game."
 msgstr "Liste der Definitionen, die im Spiel nicht geladen werden sollen. So lässt sich beispielsweise die Erforschung bestimmter Objekte verhindern."
 
@@ -14987,7 +14999,7 @@ msgstr "Wenn das Objekt fertiggestellt wird (<emlink href=\"script/fn/GetCon.htm
 #: sdk/definition/script.xml:115(col)
 #: sdk/definition/script.xml:125(col)
 #: sdk/definition/script.xml:130(col)
-#: sdk/definition/script.xml:275(col)
+#: sdk/definition/script.xml:280(col)
 msgid "object by_object"
 msgstr "object by_object"
 
@@ -15053,8 +15065,8 @@ msgstr "Wenn das Lebewesen nach dem Auftauchen mehr als die Hälfte seiner Atemk
 
 #: sdk/definition/script.xml:100(col)
 #: sdk/definition/script.xml:105(col)
-#: sdk/definition/script.xml:295(col)
 #: sdk/definition/script.xml:300(col)
+#: sdk/definition/script.xml:305(col)
 msgid "int by_player"
 msgstr "int by_player"
 
@@ -15135,8 +15147,8 @@ msgid "When a new inventory object is selected. See <a href=\"#Control-Funktione
 msgstr "Wenn ein neues Inhaltsobjekt angewählt wird. Siehe <a href=\"#Control-Funktionen\">Control-Funktionen</a>."
 
 #: sdk/definition/script.xml:170(col)
-#: sdk/definition/script.xml:260(col)
-#: sdk/definition/script.xml:270(col)
+#: sdk/definition/script.xml:265(col)
+#: sdk/definition/script.xml:275(col)
 msgid "object container"
 msgstr "object container"
 
@@ -15254,7 +15266,7 @@ msgid "When the object has collected another object (obj) (by ingame collection 
 msgstr "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (nur durch einsammeln oder anfassen und ablegen)."
 
 #: sdk/definition/script.xml:255(col)
-#: sdk/definition/script.xml:265(col)
+#: sdk/definition/script.xml:270(col)
 msgid "object obj"
 msgstr "object obj"
 
@@ -15262,67 +15274,75 @@ msgstr "object obj"
 msgid "When the object has collected another object (obj) (in all cases, even in script controlled collection or entering)."
 msgstr "Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (immer, auch durch Scriptbefehl Enter)"
 
+#: sdk/definition/script.xml:260(col)
+msgid "object destroyed"
+msgstr "object destroyed"
+
 #: sdk/definition/script.xml:261(col)
+msgid "When an object contained in the object has been destroyed/removed. The object still exists when the callback is called, but will be destroyed afterwards."
+msgstr "Wenn ein Inhaltsobjekt dieses Objekts zerstört wird. Zum Aufrufzeitpunkt existiert das Objekt noch und wird erst danach zerstört."
+
+#: sdk/definition/script.xml:266(col)
 msgid "When this object has left another object (container)."
 msgstr "Wenn das Objekt ein anderes Objekt (container) verlassen hat."
 
-#: sdk/definition/script.xml:266(col)
+#: sdk/definition/script.xml:271(col)
 msgid "When another object (obj) has left the contents of this object (also see script command Exit)."
 msgstr "Wenn ein Objekt (obj) dieses Objekt verlassen hat (auch durch Scriptbefehl Exit)."
 
-#: sdk/definition/script.xml:271(col)
+#: sdk/definition/script.xml:276(col)
 msgid "When the object has entered another object (container)."
 msgstr "Wenn das Objekt ein anderes Objekt (container) betreten hat."
 
-#: sdk/definition/script.xml:276(col)
+#: sdk/definition/script.xml:281(col)
 msgid "When another object is trying to enter this object through the entrance."
 msgstr "Wenn ein anderes Objekt versucht, das Objekt durch Entrance zu betreten."
 
-#: sdk/definition/script.xml:280(col)
+#: sdk/definition/script.xml:285(col)
 msgid "id def, object obj"
 msgstr "id def, object obj"
 
-#: sdk/definition/script.xml:281(col)
+#: sdk/definition/script.xml:286(col)
 msgid "Called before Collection. If RejectCollect returns <code>true</code>, the collection of the other object is prevented."
 msgstr "Wird vor Collection aufgerufen. Wenn RejectCollect <code>true</code> zurückgibt, kann damit die Aufnahme des anderen Objekts verhindert werden."
 
-#: sdk/definition/script.xml:285(col)
+#: sdk/definition/script.xml:290(col)
 msgid "object into_object"
 msgstr "object into_object"
 
-#: sdk/definition/script.xml:286(col)
+#: sdk/definition/script.xml:291(col)
 msgid "Called before Entrance. If RejectEntrance returns <code>true</code>, then entrance of the other object is prevented."
 msgstr "Wird vor Entrance aufgerufen. Wenn RejectEntrance <code>true</code> zurückgibt, kann damit das Hineinversetzen in das andere Objekt verhindert werden."
 
-#: sdk/definition/script.xml:291(col)
+#: sdk/definition/script.xml:296(col)
 msgid "Called in game goals, rules, or environment objects after the joining of a new player and before the corresponding call in the scenario script."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten nach der Platzierung eines beitretenden Spielers, und vor dem entsprechenden Aufruf im Szenarioscript."
 
-#: sdk/definition/script.xml:296(col)
+#: sdk/definition/script.xml:301(col)
 msgid "When the object is sold. Should return <code>nil</code> or the id of the object type which is actually added to the player's homebase material."
 msgstr "Wenn das Objekt verkauft wird. Rückgabewert <code>nil</code> oder die ID des Objekts, welches dem Heimatbasismaterial hinzugefügt wird."
 
-#: sdk/definition/script.xml:301(col)
+#: sdk/definition/script.xml:306(col)
 msgid "When the object is sold."
 msgstr "Wenn das Objekt verkauft wird."
 
-#: sdk/definition/script.xml:305(col)
+#: sdk/definition/script.xml:310(col)
 msgid "int by_player, object buy_object"
 msgstr "int by_player, object buy_object"
 
-#: sdk/definition/script.xml:306(col)
+#: sdk/definition/script.xml:311(col)
 msgid "When the object is bought."
 msgstr "Wenn das Objekt gekauft wird."
 
-#: sdk/definition/script.xml:311(col)
+#: sdk/definition/script.xml:316(col)
 msgid "When the objet is added to the crew of a player."
 msgstr "Wenn das Objekt der Crew eines Spielers hinzugefügt wird."
 
-#: sdk/definition/script.xml:316(col)
+#: sdk/definition/script.xml:321(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. If RejectTeamSwitch returns <code>true</code>, the team switch of a player can be prevented (see <placeholder-1/>)."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch <code>true</code> zurückgibt, kann der Teamwechsel eines Spielers (durch <placeholder-1/>) verhindert werden."
 
-#: sdk/definition/script.xml:321(col)
+#: sdk/definition/script.xml:326(col)
 msgid "Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <placeholder-1/>)."
 msgstr "Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <placeholder-1/>)."
 
@@ -15401,7 +15421,7 @@ msgstr "Laufen"
 #: sdk/definition/procedures.xml:92(col)
 #, fuzzy
 msgid "According to current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Baut das <emlink href=\"script/fn/SetAction.html\">Zielobjekt</emlink>."
+msgstr "Verhalten nach <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:27(col)
 #: sdk/definition/procedures.xml:39(col)
@@ -16933,6 +16953,24 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "Makes a rectangular hole in semi-solid materials."
+#~ msgstr "Gräbt ein rechteckiges Loch in halbfesten Materialien."
+
+#~ msgid "Makes a circular hole in semi-solid materials."
+#~ msgstr "Gräbt ein kreisrundes Loch in halbfesten Materialien."
+
+#~ msgid "Rain"
+#~ msgstr "Rain"
+
+#~ msgid "0-100 with tolerance. Precipitation amount."
+#~ msgstr "0-100 und Abweichung. Regenwahrscheinlichkeit."
+
+#~ msgid "Precipitation"
+#~ msgstr "Precipitation"
+
+#~ msgid "Simple material definition precipitation."
+#~ msgstr "Einfache Materialdefinition Niederschlag."
 
 #~ msgid "New value for the script counter. The next scenario script function called will be ScriptXXX."
 #~ msgstr "Neue Position des Skriptzählers. Der nächste ScriptXXX-Aufruf wird bei diesem Zählerwert getätigt."

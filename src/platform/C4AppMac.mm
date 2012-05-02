@@ -104,21 +104,10 @@ bool C4AbstractApp::FlushMessages()
 	NSEvent* event;
 	while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
 	{
-		HandleNSEvent(event);
+		[NSApp sendEvent:event];
+		[NSApp updateWindows];
 	}
 	return true;
-}
-
-void C4AbstractApp::HandleNSEvent(void* event)
-{
-	NSEvent* the_event = (NSEvent*)event;
-	KeyMask = [the_event modifierFlags] & (MK_SHIFT|MK_CONTROL|MK_ALT); // MK_* and NS*KeyMask values correspond
-	[NSApp sendEvent:the_event];
-	[NSApp updateWindows];
-	/*
-    // Everything else goes to the window.
-	if (pWindow)
-		pWindow->HandleMessage(event);*/
 }
 
 static int32_t bitDepthFromPixelEncoding(CFStringRef encoding)

@@ -198,7 +198,7 @@ const BYTE
 	COM_CursorRight = 31;
 
 const BYTE 
-	COM_Help = 35,
+//	COM_Help = 35, (obsolete, was: help-mode button)
 	COM_PlayerMenu = 36,
 	COM_Chat = 37;
 

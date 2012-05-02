@@ -14,8 +14,6 @@ Value=5
 Mass=5
 Components=Wood=2;
 Rotate=1
-ContactIncinerate=1
-BlastIncinerate=1
 Rotate=1
 Float=1
 Collectible=1

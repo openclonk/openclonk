@@ -2,14 +2,14 @@
 Icon=15
 Title=Goldmine
 Version=5,0,0,0
-MaxPlayer=3
+MaxPlayer=50
 Difficulty=10
 
 [Definitions]
 Definition1=Objects.ocd
 
 [Game]
-Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;
+Rules=Rule_TeamAccount=1;
 
 [Player1]
 Wealth=10

@@ -51,6 +51,7 @@ public func AddMenuStructures(object constructor, object clonk)
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(structure);
+		item->SetTooltip(structure.Description);
 	}
 	return;
 }
@@ -102,13 +103,6 @@ public func HideConstructionInfo()
 /* Menu properties */
 
 public func IsConstructionMenu() { return true; }
-
-public func Close() 
-{
-	if(menu_object)
-		menu_object->~MenuClosed(this);
-	RemoveObject();
-}
 
 public func HasCommander(object producer)
 {

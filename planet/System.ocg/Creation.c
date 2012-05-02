@@ -92,7 +92,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 		angw = 360;
 	for (var i = 0; i < am; i++)
 	{
-		var obj = CreateObject(def , x, y, NO_OWNER);
+		var obj = CreateObject(def, x, y, NO_OWNER);
 		var ang = angs - 90 + RandomX(-angw / 2, angw / 2);
 		var xdir = Cos(ang, lev) + RandomX(-3, 3);
 		obj->SetR(Random(360));

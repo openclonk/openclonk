@@ -259,6 +259,7 @@ public:
 	enum WindowKind
 	{
 		W_GuiWindow,
+		W_Console,
 		W_Viewport,
 		W_Fullscreen
 	};
@@ -273,7 +274,6 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -291,25 +291,32 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
 
 #ifdef USE_WIN32_WINDOWS
 public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-#elif defined(USE_X11)
+#elif defined(WITH_GLIB)
+public:
+	/*GtkWidget*/void * window;
+	// Set by Init to the widget which is used as a
+	// render target, which can be the whole window.
+	/*GtkWidget*/void * render_widget;
 protected:
 	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
-	Display * dpy;
-	virtual void HandleMessage (XEvent &);
-	// The currently set window hints
-	void * Hints;
-	bool HasFocus; // To clear urgency hint
 	// The XVisualInfo the window was created with
 	void * Info;
+	unsigned long handlerDestroy;
+
+	friend class C4X11AppImpl;
 #elif defined(USE_SDL_MAINLOOP)
 private:
 	int width, height;
@@ -320,17 +327,12 @@ protected:
 public:	
 	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
-public:
-	// request that this window be redrawn in the near future (including immediately)
-	virtual void RequestUpdate();
-	// Invokes actual drawing code - should not be called directly
-	virtual void PerformUpdate();
-public:
+protected:
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;
-	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

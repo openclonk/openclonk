@@ -2,14 +2,14 @@
 Icon=1
 Title=IronPeak
 Version=5,0,0,0
-MaxPlayer=6
+MaxPlayer=50
 Difficulty=20
 
 [Definitions]
 Definition1=Objects.ocd
 
 [Game]
-Rules=Rule_EnergyNeed=1;Rule_TeamAccount=1;
+Rules=Rule_TeamAccount=1;
 
 [Player1]
 Wealth=40

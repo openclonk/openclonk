@@ -1,2 +1,3 @@
 Name=Dynamitkiste
-Description=Die Kiste enthält fünf Dynamitstangen, die eine nach der anderen mit [Benutzen] platziert werden. Ziele in die Richtung, in der Du sie platzieren willst.
+Description=Eine Kiste mit fünf Dynamitstangen welche zusammen platziert und angezündet werden.
+UsageHelp=Die Kiste enthält fünf Dynamitstangen, die eine nach der anderen mit [Benutzen] platziert werden. Ziele in die Richtung, in der Du sie platzieren willst.

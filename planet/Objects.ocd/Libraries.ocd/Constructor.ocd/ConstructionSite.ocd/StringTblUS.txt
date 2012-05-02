@@ -1,0 +1,3 @@
+TxtTransfer=Transfer Material
+TxtAbort=Abort Construction
+TxtConstruction=Construction Site: %s

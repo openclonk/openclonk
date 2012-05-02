@@ -121,7 +121,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 
 	{ VK_SHIFT          , "KeyShift"      , "Shift" },
 	{ VK_CONTROL        , "KeyControl"    , "Control" },
-	{ VK_MENU           , "Menu"          , NULL },
+	{ VK_MENU           , "Alt"           , NULL },
 	{ VK_PAUSE          , "Pause"         , NULL },
 
 	{ VK_CAPITAL        , "Capital"       , NULL },
@@ -556,7 +556,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 #endif
 }
 
-StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
+StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 {
 	static StdStrBuf sResult;
 	sResult.Clear();

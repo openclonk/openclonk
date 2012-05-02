@@ -1,2 +1,3 @@
 Name=Boompack
-Description=Ziele und drücke [Benutzen], um die Rakete zu zünden und auf ihr in eine beliebige Richtung katapultiert zu werden.
+UsageHelp=Ziele und zünde die Rakete um in diese Richtung zu fliegen. Springe rechtzeitig ab bevor sie explodiert!
+Description=Einweg-Transportmittel für besonders wagemütige Clonks.

@@ -50,6 +50,13 @@ public func SetUnselected()
 	SetGraphics(nil,nil,5);
 }
 
+public func SetTooltip(string desc) {
+	this.Tooltip = desc;
+}
+
+public func GetTooltip() {
+	return this.Tooltip;
+}
 
 // SetSymbol from GUI_RingMenu_Icon
 public func SetSymbol(obj)
@@ -77,7 +84,6 @@ public func SetSymbol(obj)
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, obj->Contents());
 			SetClrModulation(RGBa(255,255,255,200),1);
 			SetObjDrawTransform(900,0,0,0,900,0,1);
-			//SetObjDrawTransform(1000,0,32000,0,1000,-28000,2);
 		}
 		// or otherwise, remove it
 		else
@@ -167,15 +173,13 @@ public func OnMouseDragDone(self, object target)
 	}
 }
 
-// highlight and block hiding
+// highlight
 public func OnMouseOver(int plr)
 {
 	if(!controller || GetOwner() == NO_OWNER)
 		return nil;
 	
 	SetGraphics("Focussed", GUI_Backpack_Slot_Icon);
-	
-	controller->ShowInventory();
 }
 
 public func OnMouseOut(int plr)
@@ -184,6 +188,4 @@ public func OnMouseOut(int plr)
 		return nil;
 	
 	SetGraphics(nil, nil);
-	
-	controller->ScheduleHideInventory();
 }

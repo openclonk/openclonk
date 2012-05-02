@@ -1,2 +1,3 @@
 Name=Grappling hook
-Description=Shoot the grappling hook at a ceiling to attach yourself to it.
+Description=Very useful tool to scale difficult terrain.
+UsageHelp=Shoot the grappling hook at a ceiling to attach yourself to it.

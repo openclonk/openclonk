@@ -110,6 +110,14 @@ public func OnMouseOut(int plr, object dragged)
 
 /* Menu item properties */
 
+public func SetTooltip(string desc) {
+	this.Tooltip = desc;
+}
+
+public func GetTooltip() {
+	return this.Tooltip;
+}
+
 public func SetMenu(object menu)
 {
 	item_menu = menu;

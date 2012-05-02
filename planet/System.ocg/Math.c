@@ -32,6 +32,16 @@ global func RandomX(int start, int end)
 	return Random(end - start + 1) + start;
 }
 
+// Returns the sign of x.
+global func Sign(int x)
+{
+	if (x > 0)
+		return 1;
+	else if (x < 0)
+		return -1;
+	return 0;
+}
+
 // Tangens.
 global func Tan(int angle, int radius, int prec)
 {
@@ -99,4 +109,11 @@ global func GetBit(int value, int bit_nr)
 global func ToggleBit(int old_val, int bit_nr)
 {
 	return old_val ^ (1 << bit_nr);
+}
+
+// Returns -1 for DIR_Left and +1 for DIR_Right or 0 if no object context is present
+global func GetCalcDir()
+{
+	if (!this) return 0;
+	return GetDir() * 2 - 1;
 }

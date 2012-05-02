@@ -7,6 +7,11 @@
 
 static g_is_initialized;
 
+func Initialize()
+{
+	if(!ObjectCount(Find_ID(Rule_NoPowerNeed))) CreateObject(Rule_NoPowerNeed, 0, 0, NO_OWNER);
+}
+
 func DoInit(int first_player)
 {
 	// Set time of day to morning and create some clouds and celestials.

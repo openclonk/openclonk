@@ -2,7 +2,7 @@
 	Clonk
 	Author: Randrian
 
-	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+	The protoganist of the game. Witty and nimble if skillfully controlled ;-)
 */
 
 
@@ -41,6 +41,7 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
+	iHandMesh = [0,0];
 }
 
 
@@ -144,10 +145,12 @@ protected func Death(int killed_by)
 	if (GetAlive())
 		return;
 	
+	// Some effects on dying.
 	if(gender == 0)
 		Sound("Die");
 	else
 		Sound("FDie");
+	CloseEyes(1);
 
 	DeathAnnounce();
 	return;
@@ -240,7 +243,6 @@ func DetachHandItem(bool secondary)
 
 func AttachHandItem(bool secondary)
 {
-	if(!iHandMesh) iHandMesh = [0,0];
 	DetachHandItem(secondary);
 	UpdateAttach();
 }
@@ -881,6 +883,8 @@ local MaxEnergy = 50000;
 local MaxBreath = 252; // Clonk can breathe for 7 seconds under water.
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
+local NoBurnDecay = 1;
+local ContactIncinerate = 10;
 
 func Definition(def) {
 	// Set perspective

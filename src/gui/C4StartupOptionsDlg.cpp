@@ -36,7 +36,7 @@
 #include <C4Network2.h>
 #include <C4MouseControl.h>
 
-#include <StdGL.h>
+#include <C4DrawGL.h>
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::SmallButton

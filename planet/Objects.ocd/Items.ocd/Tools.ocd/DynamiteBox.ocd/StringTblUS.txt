@@ -1,2 +1,3 @@
 Name=Dynamite box
-Description=The box contains five sticks of dynamite. Place them one after another with [Use], aiming into the direction you want to place them.
+Description=A box with five sticks of dynamite which are placed and ignited together.
+UsageHelp=The box contains five sticks of dynamite. Place them one after another with [Use], aiming into the direction you want to place them.

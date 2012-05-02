@@ -1,2 +1,2 @@
 Name=Schneeball
-Description=Gefrorenes Wasser.
+Description=Schneeballschlacht!
