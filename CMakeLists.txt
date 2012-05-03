@@ -1307,15 +1307,29 @@ IF(WITH_AUTOMATIC_UPDATE)
 	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
 ENDIF()
 
+# hack to build the data on install, see
+# http://public.kitware.com/Bug/view.php?id=8438
+add_custom_target(data)
+install(
+	CODE
+	"execute_process(
+		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
+		)"
+	)
+
 # TODO: Check for convert at configure step?
-install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
-install(CODE "
-EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
-IF(NOT \${CONVERT_RESULT} EQUAL 0)
-	MESSAGE(SEND_ERROR \"Creating icon failed\")
-ENDIF()
-FILE(MAKE_DIRECTORY $ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk)
-")
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/clonk.png"
+	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+	VERBATIM
+	)
+add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/clonk.png)
+add_dependencies(data icon)
+install(
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	DESTINATION share/icons/hicolor/48x48/apps
+	)
 
 set(OC_C4GROUPS
 	Graphics.ocg
@@ -1339,15 +1353,20 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group
 			)
 	else()
-		INSTALL(CODE "
-		MESSAGE(\"Packing and installing ${group}...\")
-		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"$ENV{DESTDIR}/${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
-		IF(NOT \${PACK_RESULT} EQUAL 0)
-			MESSAGE(SEND_ERROR \"Packing ${group} failed\")
-		ENDIF()
-		")
+		add_custom_command(
+			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+			COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+			DEPENDS c4group
+			VERBATIM
+			)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
 	endif()
 endforeach()
+if (NOT APPLE)
+	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+	add_dependencies(data groups)
+endif()
 
 # Install new files
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
@@ -1363,16 +1382,6 @@ find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
 string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
 string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
-
-foreach(group ${OC_C4GROUPS})
-	add_custom_command(
-		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${group}"
-		COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
-		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-		DEPENDS c4group
-		VERBATIM
-		)
-endforeach()
 
 add_custom_command(
 	OUTPUT setup_openclonk.exe
