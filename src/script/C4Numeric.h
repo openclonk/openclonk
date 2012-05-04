@@ -18,7 +18,8 @@
 // "abstract" type for numeric values
 // is pretty much C4Value with int, float, nil or bool enforced.
 
-#ifndef C4_NUMIERIC_H
+#ifndef C4_NUMERIC_H
+#define C4_NUMERIC_H
 
 #include "C4Value.h"
 
@@ -119,8 +120,6 @@ BICOMP(C4Numeric, bool) { return V1.getBool() == V2; }
 	RC4NUMERIC_OPERATOR(/)
 	RC4NUMERIC_OPERATOR(%)
 #undef RC4NUMERIC_OPERATOR
-#define C4_NUMERIC_H
-#endif
 
 #define BI_INEQ_COMP(t, op) \
 	inline bool operator op (const t & v1, const C4Numeric & v2) { if(v2.GetType() == C4V_Float) return C4Real(v1) op v2.getFloat(); return v1 op v2.getInt(); } \
@@ -142,3 +141,4 @@ inline C4Real Cos(const C4Numeric &real) { return Cos(real.getFloat()); }
 inline C4Numeric Pow(const C4Numeric &x, const C4Numeric &y) { return x.Pow(y); }
 C4Numeric Sqrt(const C4Numeric & v);
 
+#endif // includeguard
