@@ -15,7 +15,6 @@ VertexY=1
 Picture=0,0,0,0
 OCF=12845633
 Graphics=Grass::1
-Effects=(1,0,35,5141,Grass,5352;false;"NoStop"=b1,"Pars"=E1,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Grass
@@ -33,7 +32,6 @@ Vertices=1
 VertexY=1
 Picture=0,0,0,0
 OCF=12845633
-Effects=(1,0,35,5143,Grass,5351;false;"NoStop"=b1,"Pars"=E2,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Grass
@@ -51,7 +49,6 @@ Vertices=1
 VertexY=1
 Picture=0,0,0,0
 OCF=12845633
-Effects=(1,0,35,5144,Grass,5350;false;"NoStop"=b1,"Pars"=E3,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Rule_TeamAccount
@@ -64,7 +61,6 @@ X=F3276800
 Y=F3276800
 Picture=0,0,0,0
 OCF=12845121
-Effects=(1,0,35,2,Rule_TeamAccount,5349;false;"NoStop"=b1,"Pars"=E4,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Tree_Coniferous
@@ -127,7 +123,6 @@ Height=1
 Offset=-1,-1
 Picture=0,0,0,0
 OCF=12845121
-Effects=(1,0,35,23,Library_Power,5346;false;"NoStop"=b1,"Pars"=E11,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Tree_Coniferous
@@ -599,7 +594,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5050,Rank,5326;false;"NoStop"=b1,"Pars"=E50,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -623,7 +617,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5051,Rank,5325;false;"NoStop"=b1,"Pars"=E52,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -648,7 +641,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5054,Rank,5324;false;"NoStop"=b1,"Pars"=E54,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -672,7 +664,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5055,Rank,5323;false;"NoStop"=b1,"Pars"=E56,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -697,7 +688,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5056,Rank,5322;false;"NoStop"=b1,"Pars"=E58,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -722,7 +712,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5059,Rank,5321;false;"NoStop"=b1,"Pars"=E60,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -746,7 +735,6 @@ VertexY=0,3
 VertexCNAT=3,4
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5060,Rank,5320;false;"NoStop"=b1,"Pars"=E62,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -792,7 +780,6 @@ VertexY=-25,25
 VertexCNAT=4,8
 Picture=0,0,0,0
 OCF=12845761
-Effects=(1,0,35,5064,Trunk,5318;false;"NoStop"=b1,"Pars"=E66,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1040,7 +1027,6 @@ Picture=0,0,0,0
 OCF=12845121
 Component=Wood=3
 Contents=5204;5205;5206;5207;5208;5209;5210;5211
-Effects=(1,0,35,17,Chest,5307;false;"NoStop"=b1,"Pars"=E83,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1072,7 +1058,6 @@ Picture=0,0,0,0
 OCF=29625921
 Component=Wood=5;Rock=4
 Contents=678;343;374
-Effects=(1,0,35,21,WoodenCabin,5306;false;"NoStop"=b1,"Pars"=E84,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1096,7 +1081,6 @@ VertexFriction=50,100,50,100
 Picture=0,0,0,0
 OCF=12845637
 Component=GoldBar=3
-Effects=(1,0,35,32,Idol,5305;false;"NoStop"=b1,"Pars"=E85,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1163,7 +1147,6 @@ Picture=0,0,0,0
 OCF=29622277
 Component=Metal=0;Wood=4
 ColorMod=4285032552
-Effects=(1,0,35,78,Catapult,5303;false;"NoStop"=b1,"Pars"=E88,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1203,7 +1186,6 @@ OCF=2360001
 ActionTime=7752
 ActionTarget1=5065
 Component=Wood=1
-Effects=(1,0,35,5068,SproutBerryBush_Sprout,5302;false;"NoStop"=b1,"Pars"=E92,"Name"=s"IntScheduleCall","Function"=s""),(1,7750,37,5068,SproutBerryBush_Sprout,5083;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1256,7 +1238,6 @@ OCF=2360001
 ActionTime=7752
 ActionTarget1=5065
 Component=Wood=1
-Effects=(1,0,35,5073,SproutBerryBush_Sprout,5301;false;"NoStop"=b1,"Pars"=E95,"Name"=s"IntScheduleCall","Function"=s""),(1,7750,37,5073,SproutBerryBush_Sprout,5084;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1309,7 +1290,6 @@ OCF=2360001
 ActionTime=7752
 ActionTarget1=5065
 Component=Wood=1
-Effects=(1,0,35,5078,SproutBerryBush_Sprout,5300;false;"NoStop"=b1,"Pars"=E98,"Name"=s"IntScheduleCall","Function"=s""),(1,7750,38,5078,SproutBerryBush_Sprout,5085;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1362,7 +1342,6 @@ OCF=12845761
 ActionTime=7208
 ActionTarget1=5096
 Component=Wood=1
-Effects=(1,0,35,5099,SproutBerryBush_Sprout,5299;false;"NoStop"=b1,"Pars"=E101,"Name"=s"IntScheduleCall","Function"=s""),(1,7206,30,5099,SproutBerryBush_Sprout,5114;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1415,7 +1394,6 @@ OCF=12845761
 ActionTime=7208
 ActionTarget1=5096
 Component=Wood=1
-Effects=(1,0,35,5104,SproutBerryBush_Sprout,5298;false;"NoStop"=b1,"Pars"=E104,"Name"=s"IntScheduleCall","Function"=s""),(1,7206,36,5104,SproutBerryBush_Sprout,5115;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1468,7 +1446,6 @@ OCF=12845761
 ActionTime=7208
 ActionTarget1=5096
 Component=Wood=1
-Effects=(1,0,35,5109,SproutBerryBush_Sprout,5297;false;"NoStop"=b1,"Pars"=E107,"Name"=s"IntScheduleCall","Function"=s""),(1,7206,31,5109,SproutBerryBush_Sprout,5116;false;"Name"=s"LifeTimer")
 
   [Mesh]
   Valid=true
@@ -1518,7 +1495,6 @@ Mobile=true
 OCF=12845121
 ComDir=-1
 ActionTime=15
-Effects=(1,0,35,5212,FloatingMessage,5296;false;"NoStop"=b1,"Pars"=E109,"Name"=s"IntScheduleCall","Function"=s""),(1,15,4,5212,FloatingMessage,5213;false;"Name"=s"FadeOut","step"=i8)
 
 [Object]
 id=Crate
@@ -1540,7 +1516,6 @@ VertexFriction=25,25,25,25
 Picture=0,0,0,0
 OCF=12845125
 Component=Wood=3
-Effects=(1,0,35,7,Crate,5295;false;"NoStop"=b1,"Pars"=E111,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1572,7 +1547,6 @@ VertexFriction=25,25,25,25
 Picture=0,0,0,0
 OCF=12845125
 Component=Wood=3
-Effects=(1,0,35,8,Crate,5294;false;"NoStop"=b1,"Pars"=E113,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -1603,7 +1577,6 @@ VertexFriction=50,100,100
 Picture=0,0,0,0
 OCF=14942281
 Component=Flour=1
-Effects=(1,0,35,9,Bread,5293;false;"NoStop"=b1,"Pars"=E114,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1625,7 +1598,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5204,Bread,5292;false;"NoStop"=b1,"Pars"=E115,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1647,7 +1619,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5205,Bread,5291;false;"NoStop"=b1,"Pars"=E116,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1669,7 +1640,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5206,Bread,5290;false;"NoStop"=b1,"Pars"=E117,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1691,7 +1661,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5207,Bread,5289;false;"NoStop"=b1,"Pars"=E118,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1713,7 +1682,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5208,Bread,5288;false;"NoStop"=b1,"Pars"=E119,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1735,7 +1703,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5209,Bread,5287;false;"NoStop"=b1,"Pars"=E120,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1757,7 +1724,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5210,Bread,5286;false;"NoStop"=b1,"Pars"=E121,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Bread
@@ -1779,7 +1745,6 @@ Picture=0,0,0,0
 OCF=73
 Contained=17
 Component=Flour=1
-Effects=(1,0,35,5211,Bread,5285;false;"NoStop"=b1,"Pars"=E122,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1801,7 +1766,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::4
-Effects=(1,0,35,10,Nugget,5284;false;"NoStop"=b1,"Pars"=E123,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1823,7 +1787,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::1
-Effects=(1,0,35,11,Nugget,5283;false;"NoStop"=b1,"Pars"=E124,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1845,7 +1808,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::4
-Effects=(1,0,35,12,Nugget,5282;false;"NoStop"=b1,"Pars"=E125,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1867,7 +1829,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::3
-Effects=(1,0,35,5158,Nugget,5281;false;"NoStop"=b1,"Pars"=E126,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1889,7 +1850,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::1
-Effects=(1,0,35,5159,Nugget,5280;false;"NoStop"=b1,"Pars"=E127,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1911,7 +1871,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::3
-Effects=(1,0,35,5173,Nugget,5279;false;"NoStop"=b1,"Pars"=E128,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1932,7 +1891,6 @@ VertexFriction=40,40,40
 Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
-Effects=(1,0,35,5181,Nugget,5278;false;"NoStop"=b1,"Pars"=E129,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1954,7 +1912,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::4
-Effects=(1,0,35,5198,Nugget,5277;false;"NoStop"=b1,"Pars"=E130,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1976,7 +1933,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::4
-Effects=(1,0,35,5199,Nugget,5276;false;"NoStop"=b1,"Pars"=E131,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -1998,7 +1954,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::4
-Effects=(1,0,35,5200,Nugget,5275;false;"NoStop"=b1,"Pars"=E132,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -2020,7 +1975,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::1
-Effects=(1,0,35,5201,Nugget,5274;false;"NoStop"=b1,"Pars"=E133,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Nugget
@@ -2042,7 +1996,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Nugget=1
 Graphics=Nugget::2
-Effects=(1,0,35,5202,Nugget,5273;false;"NoStop"=b1,"Pars"=E134,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Metal
@@ -2063,7 +2016,6 @@ VertexFriction=30,30,30
 Picture=0,0,0,0
 OCF=12845641
 Component=Ore=1
-Effects=(1,0,35,16,Metal,5272;false;"NoStop"=b1,"Pars"=E135,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Coal
@@ -2085,7 +2037,6 @@ Picture=0,0,0,0
 OCF=2360009
 Component=Wood=2
 Graphics=Coal::2
-Effects=(1,0,35,249,Coal,5271;false;"NoStop"=b1,"Pars"=E136,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Coal
@@ -2107,7 +2058,6 @@ Picture=0,0,0,0
 OCF=2360009
 Component=Wood=2
 Graphics=Coal::1
-Effects=(1,0,35,268,Coal,5270;false;"NoStop"=b1,"Pars"=E137,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Coal
@@ -2128,7 +2078,6 @@ VertexFriction=75,75
 Picture=0,0,0,0
 OCF=2360009
 Component=Wood=2
-Effects=(1,0,35,272,Coal,5269;false;"NoStop"=b1,"Pars"=E138,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Rock
@@ -2358,7 +2307,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::3
-Effects=(1,0,35,251,Loam,5268;false;"NoStop"=b1,"Pars"=E139,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2379,7 +2327,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::3
-Effects=(1,0,35,5184,Loam,5267;false;"NoStop"=b1,"Pars"=E140,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2400,7 +2347,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5185,Loam,5266;false;"NoStop"=b1,"Pars"=E141,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2421,7 +2367,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::4
-Effects=(1,0,35,5186,Loam,5265;false;"NoStop"=b1,"Pars"=E142,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2442,7 +2387,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::1
-Effects=(1,0,35,5187,Loam,5264;false;"NoStop"=b1,"Pars"=E143,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2463,7 +2407,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::1
-Effects=(1,0,35,5188,Loam,5263;false;"NoStop"=b1,"Pars"=E144,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2483,7 +2426,6 @@ VertexFriction=40,40
 Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
-Effects=(1,0,35,5189,Loam,5262;false;"NoStop"=b1,"Pars"=E145,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2504,7 +2446,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5190,Loam,5261;false;"NoStop"=b1,"Pars"=E146,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2525,7 +2466,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5191,Loam,5260;false;"NoStop"=b1,"Pars"=E147,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2546,7 +2486,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5192,Loam,5259;false;"NoStop"=b1,"Pars"=E148,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2567,7 +2506,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5193,Loam,5258;false;"NoStop"=b1,"Pars"=E149,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2588,7 +2526,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
-Effects=(1,0,35,5194,Loam,5257;false;"NoStop"=b1,"Pars"=E150,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Loam
@@ -2609,7 +2546,6 @@ Picture=0,0,0,0
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::1
-Effects=(1,0,35,5195,Loam,5256;false;"NoStop"=b1,"Pars"=E151,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Wood
@@ -2633,7 +2569,6 @@ VertexFriction=50,50
 Picture=0,0,0,0
 OCF=14942921
 Component=Wood=1
-Effects=(1,0,35,275,Wood,5255;false;"NoStop"=b1,"Pars"=E152,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Wood
@@ -2656,7 +2591,6 @@ Picture=0,0,0,0
 InLiquid=true
 OCF=13894345
 Component=Wood=1
-Effects=(1,0,35,323,Wood,5254;false;"NoStop"=b1,"Pars"=E153,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Wood
@@ -2681,7 +2615,6 @@ InLiquid=true
 OCF=1311369
 Component=Wood=0
 ColorMod=4281344032
-Effects=(1,0,35,324,Wood,5253;false;"NoStop"=b1,"Pars"=E154,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Ore
@@ -2702,7 +2635,6 @@ VertexFriction=60,60,60
 Picture=0,0,0,0
 OCF=2359881
 Graphics=Ore::3
-Effects=(1,0,35,280,Ore,5252;false;"NoStop"=b1,"Pars"=E155,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2723,7 +2655,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,285,Firestone,5251;false;"NoStop"=b1,"Pars"=E156,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2745,7 +2676,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,286,Firestone,5250;false;"NoStop"=b1,"Pars"=E157,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2768,7 +2698,6 @@ OCF=8388681
 Contained=62
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,287,Firestone,5249;false;"NoStop"=b1,"Pars"=E158,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2790,7 +2719,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,288,Firestone,5248;false;"NoStop"=b1,"Pars"=E159,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2812,7 +2740,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,289,Firestone,5247;false;"NoStop"=b1,"Pars"=E160,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2834,7 +2761,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,290,Firestone,5246;false;"NoStop"=b1,"Pars"=E161,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2855,7 +2781,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,291,Firestone,5245;false;"NoStop"=b1,"Pars"=E162,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2877,7 +2802,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,292,Firestone,5244;false;"NoStop"=b1,"Pars"=E163,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2899,7 +2823,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,293,Firestone,5243;false;"NoStop"=b1,"Pars"=E164,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2921,7 +2844,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,294,Firestone,5242;false;"NoStop"=b1,"Pars"=E165,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2942,7 +2864,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,295,Firestone,5241;false;"NoStop"=b1,"Pars"=E166,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2963,7 +2884,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,296,Firestone,5240;false;"NoStop"=b1,"Pars"=E167,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -2985,7 +2905,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,297,Firestone,5239;false;"NoStop"=b1,"Pars"=E168,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3006,7 +2925,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,298,Firestone,5238;false;"NoStop"=b1,"Pars"=E169,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3028,7 +2946,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,299,Firestone,5237;false;"NoStop"=b1,"Pars"=E170,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3050,7 +2967,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,300,Firestone,5236;false;"NoStop"=b1,"Pars"=E171,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3072,7 +2988,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,301,Firestone,5235;false;"NoStop"=b1,"Pars"=E172,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3094,7 +3009,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,302,Firestone,5234;false;"NoStop"=b1,"Pars"=E173,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3115,7 +3029,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,303,Firestone,5233;false;"NoStop"=b1,"Pars"=E174,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3137,7 +3050,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,316,Firestone,5232;false;"NoStop"=b1,"Pars"=E175,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3159,7 +3071,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,317,Firestone,5231;false;"NoStop"=b1,"Pars"=E176,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3181,7 +3092,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,320,Firestone,5230;false;"NoStop"=b1,"Pars"=E177,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3202,7 +3112,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,321,Firestone,5229;false;"NoStop"=b1,"Pars"=E178,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3224,7 +3133,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,322,Firestone,5228;false;"NoStop"=b1,"Pars"=E179,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3245,7 +3153,6 @@ VertexFriction=20
 Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
-Effects=(1,0,35,5196,Firestone,5227;false;"NoStop"=b1,"Pars"=E180,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3267,7 +3174,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
-Effects=(1,0,35,5197,Firestone,5226;false;"NoStop"=b1,"Pars"=E181,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Firestone
@@ -3289,7 +3195,6 @@ Picture=0,0,0,0
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
-Effects=(1,0,35,5203,Firestone,5225;false;"NoStop"=b1,"Pars"=E182,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Moss
@@ -3311,7 +3216,6 @@ Picture=0,0,0,0
 OCF=12845769
 Component=Moss=1
 Graphics=Moss::2Dry
-Effects=(1,0,35,327,Moss,5224;false;"NoStop"=b1,"Pars"=E184,"Name"=s"IntScheduleCall","Function"=s""),(100,20620,36,327,Moss,328;false;"Name"=s"MossMoisture")
 
 [Object]
 id=Moss
@@ -3334,7 +3238,6 @@ InLiquid=true
 OCF=13894345
 Component=Moss=1
 Graphics=Moss::2
-Effects=(1,0,35,329,Moss,5223;false;"NoStop"=b1,"Pars"=E186,"Name"=s"IntScheduleCall","Function"=s""),(100,20458,36,329,Moss,330;false;"Name"=s"MossMoisture")
 
 [Object]
 id=Moss
@@ -3356,7 +3259,6 @@ Picture=0,0,0,0
 OCF=12845769
 Component=Moss=1
 Graphics=Moss::Dry
-Effects=(1,0,35,333,Moss,5222;false;"NoStop"=b1,"Pars"=E188,"Name"=s"IntScheduleCall","Function"=s""),(100,20228,36,333,Moss,334;false;"Name"=s"MossMoisture")
 
 [Object]
 id=Moss
@@ -3378,7 +3280,6 @@ Picture=0,0,0,0
 OCF=14942921
 Component=Moss=1
 Graphics=Moss::1Dry
-Effects=(1,0,35,335,Moss,5221;false;"NoStop"=b1,"Pars"=E190,"Name"=s"IntScheduleCall","Function"=s""),(100,20066,36,335,Moss,336;false;"Name"=s"MossMoisture")
 
 [Object]
 id=Moss
@@ -3400,7 +3301,6 @@ Picture=0,0,0,0
 OCF=14942921
 Component=Moss=1
 Graphics=Moss::1Dry
-Effects=(1,0,35,339,Moss,5220;false;"NoStop"=b1,"Pars"=E192,"Name"=s"IntScheduleCall","Function"=s""),(100,19956,36,339,Moss,340;false;"Name"=s"MossMoisture")
 
 [Object]
 id=Seeds
@@ -3421,7 +3321,6 @@ Picture=0,0,0,0
 OCF=8388681
 Contained=21
 Component=Rock=1
-Effects=(1,0,35,343,Seeds,5219;false;"NoStop"=b1,"Pars"=E193,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Seeds
@@ -3442,7 +3341,6 @@ Picture=0,0,0,0
 OCF=8388681
 Contained=21
 Component=Rock=1
-Effects=(1,0,35,374,Seeds,5218;false;"NoStop"=b1,"Pars"=E194,"Name"=s"IntScheduleCall","Function"=s"")
 
 [Object]
 id=Sproutberry
@@ -3463,7 +3361,6 @@ VertexFriction=50,100,100
 Picture=0,0,0,0
 OCF=8388681
 Contained=21
-Effects=(1,0,35,678,Sproutberry,5217;false;"NoStop"=b1,"Pars"=E195,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -3490,7 +3387,6 @@ InLiquid=true
 OCF=1310785
 ActionTime=6026
 Phase=49
-Effects=(1,0,35,5134,Seaweed,5216;false;"NoStop"=b1,"Pars"=E197,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -3524,7 +3420,6 @@ InLiquid=true
 OCF=1310785
 ActionTime=5752
 Phase=68
-Effects=(1,0,35,5138,Seaweed,5215;false;"NoStop"=b1,"Pars"=E198,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
@@ -3558,7 +3453,6 @@ InLiquid=true
 OCF=1310785
 ActionTime=16
 Phase=8
-Effects=(1,0,35,5140,Seaweed,5214;false;"NoStop"=b1,"Pars"=E200,"Name"=s"IntScheduleCall","Function"=s"")
 
   [Mesh]
   Valid=true
