@@ -337,7 +337,7 @@ C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj,
 	if(Graphics->Type != C4DefGraphics::TYPE_Bitmap)
 		throw C4RopeError("Can only use bitmap as rope graphics");
 
-	Front = new C4RopeElement(first_obj, true);
+	Front = new C4RopeElement(first_obj, false);
 	Back = new C4RopeElement(second_obj, false);
 
 	const C4Real m(Fix1); // TODO: This should be a property

@@ -84,6 +84,11 @@ public:
 	C4Real GetBackAutoSegmentation() const { return BackAutoSegmentation; }
 	void SetFrontAutoSegmentation(C4Real max) { FrontAutoSegmentation = max; }
 	void SetBackAutoSegmentation(C4Real max) { BackAutoSegmentation = max; }
+
+	bool GetFrontFixed() const { return Front->Fixed; }
+	bool GetBackFixed() const { return Back->Fixed; }
+	void SetFrontFixed(bool fixed) { Front->Fixed = fixed; }
+	void SetBackFixed(bool fixed) { Back->Fixed = fixed; }
 private:
 	C4Real GetL(const C4RopeElement* prev, const C4RopeElement* next) const;
 
