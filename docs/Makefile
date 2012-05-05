@@ -20,12 +20,12 @@ stylesheet = clonk.xsl
 # find all directories neither beginning nor contained within a directory beginning with a dot
 sdk-dirs := $(shell find sdk -name '.*' -prune -o -type d -print)
 
+# find all *.xml files recursively in sdk/
+xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name 'content.xml' -prune -o -name \*.xml -print))
+
 # misc
 extra-files := $(sort $(wildcard *.css *.php *.js images/*.*))
 extra-files-chm := $(sort $(wildcard *.css *.js images/*.*))
-
-# find all *.xml files recursively in sdk/
-xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name 'content.xml' -prune -o -name \*.xml -print))
 
 # Targets:
 
@@ -36,8 +36,8 @@ htmlfiles := $(addsuffix .html, $(basename $(xmlfiles)))
 sdk-de-dirs := $(subst sdk, sdk-de, $(sdk-dirs))
 
 # For openclonk.org
-online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
 online-dirs := $(foreach lang, en de, $(addprefix online/$(lang)/, $(sdk-dirs) images))
+online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
 online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extra-files)))
 
 # For Entwickler.chm
@@ -45,11 +45,11 @@ chm-dirs := $(foreach lang, en de, $(addprefix chm/$(lang)/, . $(sdk-dirs) image
 
 .PHONY: all online-en chm install check clean
 
-all: $(online-dirs) $(sdk-de-dirs) $(online-extra-files) $(online-sdk-files)
+all: $(sdk-de-dirs) $(online-dirs) $(online-sdk-files) $(online-extra-files)
 
 online-en: $(addprefix online/en/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
 
-chm: $(chm-dirs) $(sdk-de-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
+chm: $(sdk-de-dirs) $(chm-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
@@ -59,7 +59,7 @@ check:
 	xmllint --noblanks --noout --valid $(xmlfiles)
 
 clean:
-	rm -f *.mo Entwickler.chm Developer.chm doku.pot
+	rm -f *.mo Entwickler.chm Developer.chm doku.pot sdk/content.xml
 	rm -rf online sdk-de chm
 
 sdk/content.xml: sdk/content.xml.in $(xmlfiles) build_contents.py experimental.py
