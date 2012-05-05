@@ -83,13 +83,11 @@ class C4DefScriptHost: public C4ScriptHost
 {
 public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
-	void Clear();
 
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	virtual C4PropList * GetPropList();
 protected:
 	C4Def *Def; // owning def file
-	void AfterLink(); // get common funcs
 };
 
 
@@ -101,7 +99,6 @@ public:
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
-	void AfterLink();
 	virtual C4PropList * GetPropList() { return ScenPrototype; }
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects

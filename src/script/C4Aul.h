@@ -382,7 +382,6 @@ protected:
 	void LinkFunctions();
 	bool IncludesResolved;
 	virtual void UnLink(); // reset to unlinked state
-	virtual void AfterLink(); // called after linking is completed; presearch common funcs here
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();
 
@@ -418,7 +417,6 @@ public:
 	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
-	virtual void AfterLink();
 	C4AulFunc * GetFirstFunc(const char * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
