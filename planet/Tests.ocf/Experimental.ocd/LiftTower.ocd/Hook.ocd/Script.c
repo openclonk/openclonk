@@ -110,7 +110,7 @@ func Construction(object constructor)
 
 func Initialize()
 {
-	AddTimer("Rotation, 2);
+	AddTimer("Rotation", 2);
 }
 
 func SetRope(bool no_connect)
