@@ -29,6 +29,18 @@ static C4Object* FnGetBack(C4AulContext* Context)
 	return static_cast<C4Rope*>(Context->Def)->GetBack()->GetObject();
 }
 
+static C4Void FnSetFrontAutoSegmentation(C4AulContext* Context, int max)
+{
+	static_cast<C4Rope*>(Context->Def)->SetFrontAutoSegmentation(itofix(max));
+	return C4Void();
+}
+
+static C4Void FnSetBackAutoSegmentation(C4AulContext* Context, int max)
+{
+	static_cast<C4Rope*>(Context->Def)->SetBackAutoSegmentation(itofix(max));
+	return C4Void();
+}
+
 C4RopeAul::C4RopeAul():
 	RopeDef(NULL)
 {
@@ -49,5 +61,7 @@ void C4RopeAul::InitFunctionMap(C4AulScriptEngine* pEngine)
 
 	::AddFunc(this, "GetFront", FnGetFront);
 	::AddFunc(this, "GetBack", FnGetBack);
+	::AddFunc(this, "SetFrontAutoSegmentation", FnSetFrontAutoSegmentation);
+	::AddFunc(this, "SetBackAutoSegmentation", FnSetBackAutoSegmentation);
 	RopeDef->Freeze();
 }

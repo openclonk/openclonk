@@ -77,7 +77,15 @@ public:
 
 	C4RopeElement* GetFront() const { return Front; }
 	C4RopeElement* GetBack() const { return Back; }
+	
+	C4Real GetFrontAutoSegmentation() const { return FrontAutoSegmentation; }
+	C4Real GetBackAutoSegmentation() const { return BackAutoSegmentation; }
+	void SetFrontAutoSegmentation(C4Real max) { FrontAutoSegmentation = max; }
+	void SetBackAutoSegmentation(C4Real max) { BackAutoSegmentation = max; }
 private:
+	C4Real GetL(const C4RopeElement* prev, const C4RopeElement* next) const;
+
+	void DoAutoSegmentation(C4RopeElement* fixed, C4RopeElement* first, C4Real max);
 	void Solve(C4RopeElement* prev, C4RopeElement* next);
 
 	// Whether to apply repulsive forces between rope segments.
@@ -101,6 +109,9 @@ private:
 
 	C4RopeElement* Front;
 	C4RopeElement* Back;
+
+	C4Real FrontAutoSegmentation;
+	C4Real BackAutoSegmentation;
 };
 
 class C4RopeAul: public C4AulScript

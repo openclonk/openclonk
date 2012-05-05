@@ -290,6 +290,13 @@ void C4RopeElement::ResetForceRedirection(C4Real dt)
 void C4RopeElement::SetForceRedirection(const C4Rope* rope, int ox, int oy)
 {
 	SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(75));
+
+#if 0
+	if(!SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(15)))
+		if(!SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(30)))
+			SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(45));
+			//SetForceRedirectionByLookAround(rope, ox, oy, GetVx(), GetVy(), itofix(5), itofix(60));
+#endif
 }
 
 bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, int oy, C4Real dx, C4Real dy, C4Real l, C4Real angle)
@@ -309,8 +316,10 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 
 	// TODO: We should check more than a single pixel. There's some more potential for optimization here.
 	if(v != Fix0 && !GBackSolid(ox + fixtoi(GetX() + vx1*l/v), oy + fixtoi(GetY() + vy1*l/v)))
+	//if(v != Fix0 && PathFree(ox + fixtoi(GetX()), oy + fixtoi(GetY()), ox + fixtoi(GetX() + vx1*l/v), oy + fixtoi(GetY() + vy1*l/v)))
 		{ rx = vx1/v; ry = vy1/v; rdt = Fix1/4; } // Enable force redirection for 1/4th of a frame
 	else if(v != Fix0 && !GBackSolid(ox + fixtoi(GetX() + vx2/v), oy + fixtoi(GetY() + vy2/v)))
+	//else if(v != Fix0 && PathFree(ox + fixtoi(GetX()), oy + fixtoi(GetY()), ox + fixtoi(GetX() + vx2/v), oy + fixtoi(GetY() + vy2/v)))
 		{ rx = vx2/v; ry = vy2/v; rdt = Fix1/4; } // Enable force redirection for 1/4th of a frame
 	else
 		return false;
@@ -319,7 +328,8 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 
 C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
 	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(n_segments),
-	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(20)
+	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(20),
+	FrontAutoSegmentation(Fix0), BackAutoSegmentation(Fix0)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Path between objects is blocked");
@@ -361,6 +371,115 @@ C4Rope::~C4Rope()
 	}
 }
 
+C4Real C4Rope::GetL(const C4RopeElement* prev, const C4RopeElement* next) const
+{
+	// Normally the segment length is fixed at l, however if auto segmentation
+	// is enabled then the first or last segments can be shorter.
+	const C4Real dx = next->GetX() - prev->GetX();
+	const C4Real dy = next->GetY() - prev->GetY();
+
+	if(FrontAutoSegmentation > Fix0)
+		if(prev == Front || next == Front)
+			return Min(itofix(5), ftofix(sqrt(fixtof(dx*dx+dy*dy))));
+	if(BackAutoSegmentation > Fix0)
+		if(prev == Back || next == Back)
+			return Min(itofix(5), ftofix(sqrt(fixtof(dx*dx+dy*dy))));
+
+	return l;
+}
+
+void C4Rope::DoAutoSegmentation(C4RopeElement* fixed, C4RopeElement* first, C4Real max)
+{
+	// TODO: Should add a timeout to prevent oscillations: After one segment was
+	// inserted do not allow segments to be removed in the same frame or couple
+	// of frames, and vice versa. This gives the system a chance to get into
+	// equilibrium before continuing with auto-segmentation.
+
+	// Auto segmentation enabled?
+	if(max > Fix0)
+	{
+		const C4Real dx = first->GetX() - fixed->GetX();
+		const C4Real dy = first->GetY() - fixed->GetY();
+		const C4Real lf = dx*dx+dy*dy;
+
+		if(lf > l*l*itofix(15,10)*itofix(15,10) && l * SegmentCount < max)
+		{
+			const C4Real x = fixed->GetX() + itofix(5,10)*dx;
+			const C4Real y = fixed->GetY() + itofix(5,10)*dy;
+			C4RopeElement* new_elem = new C4RopeElement(x, y, first->GetMass(), false);
+			new_elem->vx = (fixed->GetVx() + first->GetVx())/itofix(2);
+			new_elem->vy = (fixed->GetVy() + first->GetVy())/itofix(2);
+
+			// Link the new element
+			if(fixed->Next == first)
+			{
+				new_elem->Prev = fixed;
+				new_elem->Next = first;
+				fixed->Next = new_elem;
+				first->Prev = new_elem;
+			}
+			else
+			{
+				new_elem->Prev = first;
+				new_elem->Next = fixed;
+				fixed->Prev = new_elem;
+				first->Next = new_elem;
+			}
+			++SegmentCount;
+		}
+		else if(SegmentCount > 0) // Rope cannot be shorter than just Beginning and End segment
+		{
+			// To find out whether we can shorten the rope we do the following:
+			// We go through all elements and if at some point the nominal rope length
+			// is shorter than the distance between that element and the fixpoint
+			// and the path between the two is free, then the rope is shortened.
+			unsigned int i = 1;
+			for(C4RopeElement* cur = fixed->Next; cur != NULL; cur = (fixed->Next == first ? cur->Next : cur->Prev), ++i)
+			{
+				// We use integers, not reals here, to protect for overflows. This works
+				// because these numbers are large enough so we don't need to take care
+				// about subpixel precision.
+				const unsigned int nd = fixtoi(l*itofix(i));
+				
+				const unsigned int dx = fixtoi(cur->GetX() - fixed->GetX());
+				const unsigned int dy = fixtoi(cur->GetY() - fixed->GetY());
+				const unsigned int d2 = dx*dx+dy*dy;
+
+				if(d2 > nd*nd*15/10*15/10)
+					break;
+				else if(d2 < nd*nd*8/10*8/10)
+				{
+					// TODO: Check whether all elements have PathFree, and stop if one hasn't?
+					if(PathFree(fixtoi(fixed->GetX()), fixtoi(fixed->GetY()), fixtoi(cur->GetX()), fixtoi(cur->GetY())))
+					{
+						C4RopeElement* second = ((fixed->Next == first) ? first->Next : first->Prev);
+						assert(second != NULL);
+
+						// Remove first, relink fixed and second
+						C4RopeElement* Del = first;
+
+						if(fixed->Next == first)
+						{
+							fixed->Next = second;
+							second->Prev = fixed;
+						}
+						else
+						{
+							fixed->Prev = second;
+							second->Next = fixed;
+						}
+
+						delete Del;
+						--SegmentCount;
+					}
+
+					break;
+				}
+			}
+		}
+	}
+}
+
 void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 {
 	// Rope forces
@@ -369,6 +488,9 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 
 	if(dx*dx + dy*dy > Fix0)
 	{
+		// Get segment length between prev and next
+		const C4Real l = GetL(prev, next);
+
 		// Compute forces between these points. If there is no material between the
 		// rope segments, this is just a straight line. Otherwise, run the
 		// pathfinder to find out in which direction to pull.
@@ -454,9 +576,15 @@ void C4Rope::Execute()
 	C4Real dt = itofix(1, NumIterations);
 	for(unsigned int i = 0; i < NumIterations; ++i)
 	{
+		// Execute auto-segmentation
+		DoAutoSegmentation(Front, Front->Next, FrontAutoSegmentation);
+		DoAutoSegmentation(Back, Back->Prev, BackAutoSegmentation);
+
+		// Compute forces
 		for(C4RopeElement* cur = Front; cur->Next != NULL; cur = cur->Next)
 			Solve(cur, cur->Next);
 
+		// Apply forces
 		for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
 			cur->Execute(this, dt);
 	}
@@ -468,7 +596,6 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 #if 1
 	Vertex Tmp[4];
 	DrawVertex* Vertices = new DrawVertex[SegmentCount*2+4]; // TODO: Use a vbo and map it into memory instead?
-	const float rsl = fixtof(l)/5.0 * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
 
 	VertexPos(Vertices[0], Vertices[1], Tmp[0], Tmp[1],
 	          Vertex(fixtof(Front->GetX()), fixtof(Front->GetY())),
@@ -479,16 +606,22 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 	Vertices[1].u = 1.0f;
 	Vertices[1].v = 0.0f;
 
+	const float rsl = 1.0f/Width * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
+	float accl = 0.0f;
+
 	unsigned int i = 2;
 	bool parity = true;
 	for(C4RopeElement* cur = Front->Next; cur->Next != NULL; cur = cur->Next, i += 2)
 	{
 		Vertex v1(fixtof(cur->GetX()),
 		          fixtof(cur->GetY()));
-		Vertex v2(fixtof(cur->Next ? cur->Next->GetX() : Back->GetX()), 
-		          fixtof(cur->Next ? cur->Next->GetY() : Back->GetY()));
-		Vertex v3(fixtof(cur->Prev ? cur->Prev->GetX() : Front->GetX()),
-		          fixtof(cur->Prev ? cur->Prev->GetY() : Front->GetY()));
+		Vertex v2(fixtof(cur->Next->GetX()),// ? cur->Next->GetX() : Back->GetX()), 
+		          fixtof(cur->Next->GetY()));// ? cur->Next->GetY() : Back->GetY()));
+		Vertex v3(fixtof(cur->Prev->GetX()),// ? cur->Prev->GetX() : Front->GetX()),
+		          fixtof(cur->Prev->GetY()));// ? cur->Prev->GetY() : Front->GetY()));
+
+		//const C4Real l = GetL(cur->Prev, cur);
+		//const float rsl = fixtof(l)/fixtof(Width) * Graphics->GetBitmap()->Wdt / Graphics->GetBitmap()->Hgt; // rope segment length mapped to Gfx bitmap
 
 		// Parity -- parity swaps for each pointed angle (<90 deg)
 		float cx = v1.x - v3.x;
@@ -522,19 +655,21 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 		Vertices[i+1].x = ( (Tmp[2].x + Tmp[3].x)/2.0f) + BoundBy((Tmp[3].x - Tmp[2].x)*d, -Width, Width)/2.0f;
 		Vertices[i+1].y = ( (Tmp[2].y + Tmp[3].y)/2.0f) + BoundBy((Tmp[3].y - Tmp[2].y)*d, -Width, Width)/2.0f;
 
+		accl += fixtof(GetL(cur->Prev, cur));
 		Vertices[i].u = 0.0f; //parity ? 0.0f : 1.0f;
-		Vertices[i].v = i/2 * rsl;
+		Vertices[i].v = accl * rsl;
 		Vertices[i+1].u = 1.0f; //parity ? 1.0f : 0.0f;
-		Vertices[i+1].v = i/2 * rsl;
+		Vertices[i+1].v = accl * rsl;
 
 		Tmp[0] = Vertices[i+2];
 		Tmp[1] = Vertices[i+3];
 	}
 
+	accl += fixtof(GetL(Back->Prev, Back));
 	Vertices[i].u = 0.0f; //parity ? 0.0f : 1.0f;
-	Vertices[i].v = i/2 * rsl;
+	Vertices[i].v = accl * rsl;
 	Vertices[i+1].u = 1.0f; //parity ? 1.0f : 0.0f;
-	Vertices[i+1].v = i/2 * rsl;
+	Vertices[i+1].v = accl * rsl;
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
