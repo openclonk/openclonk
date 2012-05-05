@@ -10,6 +10,7 @@ local progress, next_part;
 public func Initialize()
 {
 	SetProgress(0);
+	AddTimer("Timer", 10);
 }
 
 func SetProgress(int new_progress)

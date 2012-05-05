@@ -11,6 +11,7 @@ local time;
 func Initialize()
 {
 	SetRDir(RandomX(-200, 200));
+	AddTimer("DoSmoke", 2);
 }
 
 func Hit()

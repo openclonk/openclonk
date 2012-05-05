@@ -2,7 +2,6 @@
 id=MetalBarrel
 Version=5,2,0,1
 Category=C4D_Object
-TimerCall=Check
 Width=16
 Height=16
 Offset=-8,-8

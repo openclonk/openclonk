@@ -7,6 +7,11 @@ local slave, partner, no_connection;
 
 /* Callbacks */
 
+func Initialize()
+{
+	AddTimer("Movement", 1);
+}
+
 // Called by the elevator
 func Connect(object connect_to)
 {
@@ -78,7 +83,7 @@ local move_to, // Y-coordinate to move to on its own
       move_to_delay, // Delay before moving
       move_to_target; // Target to move to
 
-func Movement() // TimerCall
+func Movement()
 {
 	// No elevator?!
 	if (!elevator)

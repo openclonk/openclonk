@@ -24,6 +24,7 @@ protected func Initialize()
 	tremble_anim = PlayAnimation("Tremble", 5, Anim_Const(0), Anim_Const(500));
 
 	iRotWheels = 0;
+	AddTimer("TurnWheels", 1);
 	iTremble = 0;
 	iMovementSpeed = 2;
 	return _inherited(...);

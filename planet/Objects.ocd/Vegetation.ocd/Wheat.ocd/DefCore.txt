@@ -2,8 +2,6 @@
 id=Wheat
 Version=4,10,0,0
 Category=C4D_StaticBack
-Timer=350
-TimerCall=Seed
 Width=12
 Height=20
 Offset=-6,-10

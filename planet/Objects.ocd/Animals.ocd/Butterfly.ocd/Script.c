@@ -21,6 +21,7 @@ protected func Initialize()
 	SetAction("Fly");
 	SetComDir(COMD_None);
 	MoveToTarget();
+	AddTimer("Activity");
 	return 1;
 }
 
@@ -29,8 +30,6 @@ func FxButterflyTurnTimer(object target, int num, int timer)
 	TurnButterfly();
 }
 	
-/* TimerCall */
-
 private func Activity()
 {
 	// Underwater

@@ -168,19 +168,12 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 
 void C4DefScriptHost::Clear()
 {
-	if (Def) Def->TimerCall = 0;
 	C4ScriptHost::Clear();
 }
 
 void C4DefScriptHost::AfterLink()
 {
 	C4ScriptHost::AfterLink();
-	if (Def && Def->STimerCall[0])
-	{
-		Def->TimerCall = Def->GetFunc(Def->STimerCall);
-		if (!Def->TimerCall)
-			DebugLogF("Error getting function \"%s\" for TimerCall of %s", Def->STimerCall, Def->id.ToString());
-	}
 }
 
 C4PropList * C4DefScriptHost::GetPropList() { return Def; }

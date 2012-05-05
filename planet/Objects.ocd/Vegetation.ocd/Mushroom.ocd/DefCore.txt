@@ -2,8 +2,6 @@
 id=Mushroom
 Version=5,2,0,1
 Category=C4D_Object
-Timer=350
-TimerCall=Seed
 Width=12
 Height=20
 Offset=-6,-10

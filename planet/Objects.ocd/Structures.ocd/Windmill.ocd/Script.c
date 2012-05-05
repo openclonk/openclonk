@@ -42,6 +42,7 @@ protected func Initialize()
 	
 	// Set initial position
 	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(GetAnimationLength(TurnAnimation()), 0), Anim_Const(1000));
+	AddTimer("CollectionZone", 1);
 	return _inherited(...);
 }
 

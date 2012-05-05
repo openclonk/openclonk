@@ -13,6 +13,7 @@ func Construction(object mom)
 	previewer = mom;
 	SetPosition(previewer->GetX(), previewer->GetY() - (previewer.dimension_y / 2) - 8);
 	this->Message("@$Space$");
+	AddTimer("KeepPosition", 1);
 }
 
 func KeepPosition()

@@ -29,6 +29,7 @@ protected func Initialize()
 		return RemoveObject();
 	}
 	fade_time = 18; // 18, because the timer will check once per second, so it's aproximately a second.
+	AddTimer("Timer");
 }
 
 protected func Timer() 

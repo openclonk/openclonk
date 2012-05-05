@@ -20,6 +20,7 @@ public func Construction(object creator)
 	var dir = creator->~GetConstructionDirection();
 	if (dir)
 		SetDir(dir);
+	AddTimer("CollectionZone", 1);	
 	return _inherited(creator, ...);
 }
 

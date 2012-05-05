@@ -2,8 +2,6 @@
 id=Foundry
 Version=5,2,0,1
 Category=C4D_Structure
-Timer=1
-TimerCall=CollectionZone
 Width=50
 Height=52
 Offset=-25,-26

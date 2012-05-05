@@ -22,6 +22,7 @@ public func Construction(object creator)
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0), Anim_Const(1000));
+	AddTimer("CollectionZone", 1);
 	return _inherited(...);
 }
 

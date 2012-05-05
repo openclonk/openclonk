@@ -2,8 +2,6 @@
 id=Compensator
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=EnergyCheck
-Timer=100
 Width=30
 Height=20
 Offset=-15,-10

@@ -2,8 +2,6 @@
 id=LiftTower
 Version=5,2,0,1
 Category=C4D_Structure
-Timer=5
-TimerCall=SpinWheel
 Width=23
 Height=68
 Offset=-11,-10

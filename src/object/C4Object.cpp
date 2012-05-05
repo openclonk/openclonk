@@ -191,7 +191,6 @@ void C4Object::Default()
 	InLiquid=0;
 	EntranceStatus=0;
 	Audible=0;
-	Timer=0;
 	t_contact=0;
 	OCF=0;
 	Action.Default();
@@ -1040,14 +1039,6 @@ void C4Object::Execute()
 	// Animation. If the mesh is attached, then don't execute animation here but let the parent object do it to make sure it is only executed once a frame.
 	if (pMeshInstance && !pMeshInstance->GetAttachParent())
 		pMeshInstance->ExecuteAnimation(1.0f/37.0f /* play smoothly at 37 FPS */);
-	// Timer
-	Timer++;
-	if (Timer>=Def->Timer)
-	{
-		Timer=0;
-		// TimerCall
-		if (Def->TimerCall) Def->TimerCall->Exec(this);
-	}
 	// Menu
 	if (Menu) Menu->Execute();
 }
@@ -2326,7 +2317,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	if (Info) nInfo = Info->Name; else nInfo.Clear();
 	pComp->Value(mkNamingAdapt( toC4CStrBuf(nInfo),               "Info",               ""                ));
 	pComp->Value(mkNamingAdapt( Owner,                            "Owner",              NO_OWNER          ));
-	pComp->Value(mkNamingAdapt( Timer,                            "Timer",              0                 ));
 	pComp->Value(mkNamingAdapt( Controller,                       "Controller",         NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));

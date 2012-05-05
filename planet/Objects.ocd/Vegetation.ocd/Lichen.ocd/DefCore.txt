@@ -2,8 +2,6 @@
 id=Lichen
 Version=5,2,0,1
 Category=C4D_StaticBack
-Timer=350
-TimerCall=Seed
 Width=25
 Height=25
 Offset=-12,-12

@@ -2,8 +2,6 @@
 id=WindGenerator
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=Wind2Turn
-Timer=35
 Width=24
 Height=70
 Offset=-12,-35

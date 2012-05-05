@@ -21,6 +21,7 @@ protected func Initialize()
 	SetAction("Roll");
 	olddir = GetDir();
 	aim_anim =  PlayAnimation("Aim", 1,  Anim_Const(0),Anim_Const(1000));
+	AddTimer("Timer", 1);
 }
 
 //some left-overs from Lorry script. Not sure of it's purpose...

@@ -31,6 +31,7 @@ func Initialize()
 			aHomabaseProduction[GetLength(aHomabaseProduction)] = [idID, iCount];
 		iIndex++;
 	}
+	AddTimer("ExecHomeBaseProduction", 2100);
 }
 
 static const BaseMaterial_MaxHomeBaseProduction = 25;

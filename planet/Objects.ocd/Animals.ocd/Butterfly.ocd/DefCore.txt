@@ -2,7 +2,6 @@
 id=Butterfly
 Version=5,2,0,1
 Category=C4D_Living
-TimerCall=Activity
 ContactCalls=1
 Width=6
 Height=4

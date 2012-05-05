@@ -44,6 +44,7 @@ private func Initialize()
 	
 	// no instant berries!
 	AddEffect("DontFlower", this, 1, 35 * SproutBerryBush_average_flower_time + RandomX(-400,400), this);
+	AddTimer("Sprout", 40);
 }
 
 public func IsTree() { return false; }

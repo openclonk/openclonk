@@ -17,6 +17,4 @@ SolidMask=0,26,24,2,0,24
 TopFace=0,0,24,26,0,0
 HorizontalFix=1
 NoPushEnter=1
-Timer=1
-TimerCall=Movement
 ContactCalls=1

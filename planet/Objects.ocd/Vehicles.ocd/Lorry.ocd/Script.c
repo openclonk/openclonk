@@ -24,6 +24,7 @@ protected func Initialize()
 
 	iRotWheels = 0;
 	iTremble = 0;
+	AddTimer("TurnWheels", 1);
 }
 
 /*-- Movement --*/

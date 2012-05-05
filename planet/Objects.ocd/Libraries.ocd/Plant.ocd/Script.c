@@ -31,12 +31,13 @@ private func SeedAmount() { return 8; }
 protected func Construction()
 {
 	Schedule(this, "RootSurface()", 1);
+	AddTimer("Seed", 350);
 	_inherited(...);
 }
 
-/** Reproduction. Make sure to call via TimerCall=Seed and Timer=350 (duration should be fixed so SeedChance controls the chance to reproduce)
+/** Reproduction: Called by a timer (duration is fixed so SeedChance controls the chance to reproduce)
 */
-private func Seed()
+public func Seed()
 {
 	if(!Random(SeedChance()))
 	{

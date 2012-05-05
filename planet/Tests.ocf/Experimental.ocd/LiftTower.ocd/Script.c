@@ -20,6 +20,7 @@ protected func Initialize()
 	hook_pos = CreateArray();
 	anim_no = PlayAnimation("Turn", 10, Anim_Const(0), Anim_Const(1000));
 	stopped = true;
+	AddTimer("SpinWheel", 5);
 }
 
 /* Rope */

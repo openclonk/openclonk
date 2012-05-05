@@ -9,6 +9,7 @@ protected func Construction()
 {
 	// Editable ActMap
 	ActMap = { Prototype = this.Prototype.ActMap };
+	AddTimer("AdjustGrowth");
 }
 
 // The stalk will adjust its growth to the growth of the mother plant

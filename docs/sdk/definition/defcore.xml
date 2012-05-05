@@ -41,16 +41,6 @@
           <col>Maximal allowed count when placed in the menu system.</col>
         </row>
         <row>
-          <literal_col>TimerCall</literal_col>
-          <col>String (max. 30 chars)</col>
-          <col>Regularly called timer function in the <emlink href="definition/script.html">object script</emlink>.</col>
-        </row>
-        <row>
-          <literal_col>Timer</literal_col>
-          <col>Integer</col>
-          <col>Time interval between TimerCalls in frames. Default is 35.</col>
-        </row>
-        <row>
           <literal_col>ContactCalls</literal_col>
           <col>Integer</col>
           <col>0 or 1. If 1, Contactcalls are called in the object script.</col>

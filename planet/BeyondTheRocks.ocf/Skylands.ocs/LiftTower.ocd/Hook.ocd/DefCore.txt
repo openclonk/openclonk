@@ -2,8 +2,6 @@
 id=LiftTower_Hook
 Version=5,2,0,1
 Category=C4D_Object
-Timer=2
-TimerCall=Rotation
 Width=8
 Height=8
 Offset=-4,-4

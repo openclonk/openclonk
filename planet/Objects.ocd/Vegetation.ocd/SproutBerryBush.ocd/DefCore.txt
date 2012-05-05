@@ -2,8 +2,6 @@
 id=SproutBerryBush
 Version=5,2,0,1
 Category=C4D_StaticBack
-Timer=40
-TimerCall=Sprout
 Width=16
 Height=16
 Offset=-8,-8

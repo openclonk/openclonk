@@ -14,5 +14,3 @@ Mass=4000
 Components=Plane_Propeller=1;Plane_Chassis=1;Plane_Skids=1;Plane_Engine=1;Plane_Wings=1;
 Construction=0
 Rotate=0
-TimerCall=Timer
-Timer=10

@@ -108,6 +108,11 @@ func Construction(object constructor)
 	tower = constructor;
 }
 
+func Initialize()
+{
+	AddTimer("Rotation", 2);
+}
+
 func SetRope(bool no_connect)
 {
 	rope = CreateObject(LiftTower_Rope,0,0,NO_OWNER);

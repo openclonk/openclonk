@@ -2,8 +2,6 @@
 id=Tree_Coniferous
 Version=5,2,0,1
 Category=C4D_StaticBack
-Timer=350
-TimerCall=Seed
 Width=60
 Height=110
 Offset=-30,-55

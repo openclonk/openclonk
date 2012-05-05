@@ -148,10 +148,8 @@ public:
 	int32_t VehicleControl;
 	int32_t Pathfinder;
 	int32_t MoveToRange;
-	int32_t Timer;
 	int32_t NoComponentMass;
 	int32_t NoStabilize;
-	char STimerCall[C4AUL_MAX_Identifier];
 	int32_t ClosedContainer;  // if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 	int32_t SilentCommands;   // if set, no command failure messages are printed
 	int32_t TemporaryCrew;    // if set, info objects are not written into regular player files
@@ -182,7 +180,6 @@ public:
 	char Filename[_MAX_FNAME+1];
 	int32_t Creation;
 	int32_t Count; // number of instanciations
-	C4AulFunc *TimerCall;
 
 	C4DefScriptHost Script;
 	C4LangStringTable StringTable;

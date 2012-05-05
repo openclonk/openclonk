@@ -2,8 +2,6 @@
 id=SteamEngine
 Version=5,2,0,1
 Category=C4D_Structure
-Timer=1
-TimerCall=CollectionZone
 Width=66
 Height=48
 Offset=-33,-24

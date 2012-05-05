@@ -25,6 +25,7 @@ public func GetCarryPhase()
 protected func Initialize()
 {
 	iVolume = 0;
+	AddTimer("Check", 5);
 }
 
 private func Hit()

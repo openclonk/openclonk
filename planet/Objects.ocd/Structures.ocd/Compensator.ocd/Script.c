@@ -36,6 +36,7 @@ func Initialize()
 	leftcharge->Init(this);
 	rightcharge = CreateObject(Compensator_ChargeShower, -6 * GetCalcDir(), 10, NO_OWNER);
 	rightcharge->Init(this);
+	AddTimer("EnergyCheck", 100);
 	return _inherited(...);
 }
 

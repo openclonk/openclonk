@@ -49,8 +49,6 @@ void C4Def::DefaultDefCore()
 	Component.Default();
 	BurnTurnTo=C4ID::None;
 	BuildTurnTo=C4ID::None;
-	STimerCall[0]=0;
-	Timer=35;
 	GrowthType=0;
 	CrewMember=0;
 	NativeCrew=0;
@@ -174,8 +172,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(Category, Categories),
 	                           "Category",           0             ));
 
-	pComp->Value(mkNamingAdapt(Timer,                         "Timer",              35                ));
-	pComp->Value(mkNamingAdapt(toC4CStr(STimerCall),          "TimerCall",          ""                ));
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
 	pComp->Value(mkParAdapt(Shape, false));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
@@ -271,7 +267,6 @@ void C4Def::Default()
 	Filename[0]=0;
 	Creation=0;
 	Count=0;
-	TimerCall=NULL;
 	MainFace.Set(NULL,0,0,0,0);
 	Script.Clear();
 	StringTable.Clear();

@@ -26,6 +26,7 @@ protected func Initialize()
 	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(0, GetAnimationLength(TurnAnimation())), Anim_Const(1000));
 	
 	// Set initial position
+	AddTimer("Wind2Turn");
 	Wind2Turn();
 	return _inherited(...);
 }
