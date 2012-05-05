@@ -475,6 +475,9 @@ set(OC_CLONK_SOURCES
 	src/object/C4ObjectPtr.cpp
 	src/object/C4ObjectPtr.h
 	src/object/C4ObjectScript.cpp
+	src/object/C4Rope.cpp
+	src/object/C4Rope.h
+	src/object/C4RopeScript.cpp
 	src/object/C4Sector.cpp
 	src/object/C4Sector.h
 	src/object/C4Shape.cpp
