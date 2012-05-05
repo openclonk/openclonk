@@ -327,7 +327,7 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 
 C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
 	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(n_segments),
-	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(20),
+	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(10),
 	FrontAutoSegmentation(Fix0), BackAutoSegmentation(Fix0)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
