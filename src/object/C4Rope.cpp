@@ -325,15 +325,13 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 	return true;
 }
 
-C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics):
-	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(n_segments),
-	l(ObjectDistance(first_obj, second_obj) / (n_segments + 1)), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(10),
+C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, C4Real segment_length, C4DefGraphics* graphics):
+	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(itofix(ObjectDistance(first_obj, second_obj))/segment_length),
+	l(segment_length), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(10),
 	FrontAutoSegmentation(Fix0), BackAutoSegmentation(Fix0)
 {
 	if(!PathFree(first_obj->GetX(), first_obj->GetY(), second_obj->GetX(), second_obj->GetY()))
 		throw C4RopeError("Path between objects is blocked");
-	if(n_segments < 1)
-		throw C4RopeError("Segments < 1 given");
 	if(Graphics->Type != C4DefGraphics::TYPE_Bitmap)
 		throw C4RopeError("Can only use bitmap as rope graphics");
 
@@ -343,11 +341,11 @@ C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj,
 	const C4Real m(Fix1); // TODO: This should be a property
 
 	C4RopeElement* prev_seg = Front;
-	for(int32_t i = 0; i < n_segments; ++i)
+	for(int32_t i = 0; i < SegmentCount; ++i)
 	{
 		// Create new element
-		C4Real seg_x = first_obj->fix_x + (second_obj->fix_x - first_obj->fix_x) * (i+1) / (n_segments+1);
-		C4Real seg_y = first_obj->fix_y + (second_obj->fix_y - first_obj->fix_y) * (i+1) / (n_segments+1);
+		C4Real seg_x = first_obj->fix_x + (second_obj->fix_x - first_obj->fix_x) * (i+1) / (SegmentCount+1);
+		C4Real seg_y = first_obj->fix_y + (second_obj->fix_y - first_obj->fix_y) * (i+1) / (SegmentCount+1);
 		C4RopeElement* seg = new C4RopeElement(seg_x, seg_y, m, false);
 
 		// Link it
@@ -759,9 +757,9 @@ C4RopeList::C4RopeList()
 		delete Ropes[i];
 }
 
-C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics)
+C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, C4Real segment_length, C4DefGraphics* graphics)
 {
-	Ropes.push_back(new C4Rope(RopeAul.GetPropList(), first_obj, second_obj, n_segments, graphics));
+	Ropes.push_back(new C4Rope(RopeAul.GetPropList(), first_obj, second_obj, segment_length, graphics));
 	return Ropes.back();
 }
 

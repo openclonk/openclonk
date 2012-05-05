@@ -66,7 +66,7 @@ private:
 class C4Rope: public C4PropListNumbered
 {
 public:
-	C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
+	C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, C4Real segment_length, C4DefGraphics* graphics);
 	~C4Rope();
 
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
@@ -143,7 +143,7 @@ public:
 	void Execute();
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
-	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
+	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, C4Real segment_length, C4DefGraphics* graphics);
 	void RemoveRope(C4Rope* rope);
 
 	void ClearPointers(C4Object* obj);

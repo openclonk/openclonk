@@ -22,6 +22,7 @@
 static C4Void FnRemove(C4AulContext* Context)
 {
 	Game.Ropes.RemoveRope(static_cast<C4Rope*>(Context->Def));
+	return C4Void();
 }
 
 static C4Object* FnGetFront(C4AulContext* Context)
