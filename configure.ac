@@ -24,7 +24,7 @@ AC_INIT([clonk], [5])
 AC_COPYRIGHT([©2005-2011 Günther Brammer])
 AC_CONFIG_SRCDIR([/src/C4Include.h])
 AC_CONFIG_AUX_DIR([autotools])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CANONICAL_HOST
 dnl foreign to tell automake to shut up,
