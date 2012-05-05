@@ -656,7 +656,6 @@ Effects=(1,0,35,5054,Rank,5324;false;"NoStop"=b1,"Pars"=E54,"Name"=s"IntSchedule
 [Object]
 id=Rank
 Properties=5055;false;"MeshTransformation"=E55,"Prototype"=DRank
-Timer=12
 Category=1
 Plane=100
 Rotation=4
@@ -681,7 +680,6 @@ Effects=(1,0,35,5055,Rank,5323;false;"NoStop"=b1,"Pars"=E56,"Name"=s"IntSchedule
 [Object]
 id=Rank
 Properties=5056;false;"MeshTransformation"=E57,"Prototype"=DRank
-Timer=21
 Category=1
 Plane=100
 Rotation=343
@@ -707,7 +705,6 @@ Effects=(1,0,35,5056,Rank,5322;false;"NoStop"=b1,"Pars"=E58,"Name"=s"IntSchedule
 [Object]
 id=Rank
 Properties=5059;false;"MeshTransformation"=E59,"Prototype"=DRank
-Timer=9
 Category=1
 Plane=100
 Rotation=23
@@ -733,7 +730,6 @@ Effects=(1,0,35,5059,Rank,5321;false;"NoStop"=b1,"Pars"=E60,"Name"=s"IntSchedule
 [Object]
 id=Rank
 Properties=5060;false;"MeshTransformation"=E61,"Prototype"=DRank
-Timer=29
 Category=1
 Plane=100
 Rotation=8
@@ -758,7 +754,6 @@ Effects=(1,0,35,5060,Rank,5320;false;"NoStop"=b1,"Pars"=E62,"Name"=s"IntSchedule
 [Object]
 id=Tree_Coniferous
 Properties=5061;false;"MeshTransformation"=E63,"Prototype"=DTree_Coniferous
-Timer=165
 Category=1
 Plane=100
 Size=100003
@@ -783,7 +778,6 @@ Effects=(1,0,350,5061,Tree_Coniferous,5319;false;"NoStop"=b1,"Pars"=E64,"Name"=s
 [Object]
 id=Trunk
 Properties=5064;false;"MeshTransformation"=E65,"Prototype"=DTrunk
-Timer=4
 Category=1
 Plane=100
 Size=100000
@@ -806,7 +800,6 @@ Effects=(1,0,35,5064,Trunk,5318;false;"NoStop"=b1,"Pars"=E66,"Name"=s"IntSchedul
 [Object]
 id=SproutBerryBush
 Properties=5065;false;"grown_sprouts_count"=i3,"sprout_count"=i3,"sprout_evolve_counter"=i0,"max_sprouts"=i2,"saved_water"=i85,"Prototype"=DSproutBerryBush,"last_checked_y"=i1
-Timer=32
 Category=1
 Plane=100
 Size=100000
@@ -827,7 +820,6 @@ Effects=(1,0,40,5065,SproutBerryBush,5317;false;"NoStop"=b1,"Pars"=E67,"Name"=s"
 [Object]
 id=Tree_Coniferous
 Properties=5086;false;"MeshTransformation"=E68,"Prototype"=DTree_Coniferous
-Timer=165
 Category=1
 Plane=100
 Size=100003
@@ -852,7 +844,6 @@ Effects=(1,0,350,5086,Tree_Coniferous,5316;false;"NoStop"=b1,"Pars"=E69,"Name"=s
 [Object]
 id=Tree_Coniferous
 Properties=5093;false;"MeshTransformation"=E70,"Prototype"=DTree_Coniferous
-Timer=47
 Category=1
 Plane=100
 Size=100003
@@ -877,7 +868,6 @@ Effects=(1,0,350,5093,Tree_Coniferous,5315;false;"NoStop"=b1,"Pars"=E71,"Name"=s
 [Object]
 id=SproutBerryBush
 Properties=5096;false;"grown_sprouts_count"=i3,"sprout_count"=i3,"sprout_evolve_counter"=i0,"max_sprouts"=i2,"saved_water"=i75,"Prototype"=DSproutBerryBush,"last_checked_y"=i2
-Timer=8
 Category=1
 Plane=100
 Size=100000
@@ -898,7 +888,6 @@ Effects=(1,0,40,5096,SproutBerryBush,5314;false;"NoStop"=b1,"Pars"=E72,"Name"=s"
 [Object]
 id=Wheat
 Properties=5119;false;"stalks"=E73,"Prototype"=DWheat
-Timer=232
 Category=1
 Plane=100
 Size=100300
@@ -920,7 +909,6 @@ Effects=(1,0,350,5119,Wheat,5313;false;"NoStop"=b1,"Pars"=E74,"Name"=s"IntSchedu
 [Object]
 id=Wheat
 Properties=5124;false;"stalks"=E75,"Prototype"=DWheat
-Timer=166
 Category=1
 Plane=100
 Size=100300
@@ -942,7 +930,6 @@ Effects=(1,0,350,5124,Wheat,5312;false;"NoStop"=b1,"Pars"=E76,"Name"=s"IntSchedu
 [Object]
 id=WheatStalk
 Properties=5129;false;"ActMap"=E77,"Prototype"=DWheatStalk
-Timer=12
 Category=1
 Plane=100
 Size=100000
@@ -963,7 +950,6 @@ Effects=(1,0,35,5129,WheatStalk,5311;false;"NoStop"=b1,"Pars"=E78,"Name"=s"IntSc
 [Object]
 id=Tree_Coniferous
 Properties=5160;false;"Prototype"=DTree_Coniferous
-Timer=167
 Category=1
 Plane=100
 Size=47003
@@ -988,7 +974,6 @@ Effects=(1,0,350,5160,Tree_Coniferous,5310;false;"NoStop"=b1,"Pars"=E79,"Name"=s
 [Object]
 id=Tree_Coniferous
 Properties=5176;false;"Prototype"=DTree_Coniferous
-Timer=167
 Category=1
 Plane=100
 Size=17003
@@ -1013,7 +998,6 @@ Effects=(1,0,350,5176,Tree_Coniferous,5309;false;"NoStop"=b1,"Pars"=E80,"Name"=s
 [Object]
 id=Tree_Coniferous
 Properties=5182;false;"Prototype"=DTree_Coniferous
-Timer=237
 Category=1
 Plane=100
 Size=8003
@@ -1071,7 +1055,6 @@ Effects=(1,0,35,17,Chest,5307;false;"NoStop"=b1,"Pars"=E83,"Name"=s"IntScheduleC
 [Object]
 id=WoodenCabin
 Properties=21;false;"Action"=n,"Prototype"=DWoodenCabin
-Timer=11
 Category=2
 Plane=200
 Size=100000
@@ -1097,7 +1080,6 @@ Effects=(1,0,35,21,WoodenCabin,5306;false;"NoStop"=b1,"Pars"=E84,"Name"=s"IntSch
 [Object]
 id=Idol
 Properties=32;false;"Prototype"=DIdol
-Timer=12
 Category=2
 Plane=200
 Size=100000
@@ -1160,7 +1142,6 @@ Effects=(1,0,1,62,Lorry,5304;false;"NoStop"=b1,"Pars"=E87,"Name"=s"IntScheduleCa
 [Object]
 id=Catapult
 Properties=78;false;"olddir"=i1,"Action"=n,"turn_anim"=i1,"dir"=i1,"aim_anim"=i0,"Prototype"=DCatapult
-Timer=33
 Category=4
 Plane=300
 Size=80000
@@ -1204,7 +1185,6 @@ Effects=(1,0,35,78,Catapult,5303;false;"NoStop"=b1,"Pars"=E88,"Name"=s"IntSchedu
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5068;false;"MeshTransformation"=E89,"leaves"=E90,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow2","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=17
 Category=4
 Plane=300
 Rotation=353
@@ -1258,7 +1238,6 @@ Effects=(1,0,35,5068,SproutBerryBush_Sprout,5302;false;"NoStop"=b1,"Pars"=E92,"N
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5073;false;"MeshTransformation"=E93,"leaves"=E94,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow2","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=17
 Category=4
 Plane=300
 Rotation=349
@@ -1312,7 +1291,6 @@ Effects=(1,0,35,5073,SproutBerryBush_Sprout,5301;false;"NoStop"=b1,"Pars"=E95,"N
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5078;false;"MeshTransformation"=E96,"leaves"=E97,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow1","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=17
 Category=4
 Plane=300
 Rotation=9
@@ -1366,7 +1344,6 @@ Effects=(1,0,35,5078,SproutBerryBush_Sprout,5300;false;"NoStop"=b1,"Pars"=E98,"N
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5099;false;"MeshTransformation"=E99,"leaves"=E100,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow2","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=33
 Category=4
 Plane=300
 Rotation=18
@@ -1420,7 +1397,6 @@ Effects=(1,0,35,5099,SproutBerryBush_Sprout,5299;false;"NoStop"=b1,"Pars"=E101,"
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5104;false;"MeshTransformation"=E102,"leaves"=E103,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow1","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=33
 Category=4
 Plane=300
 Rotation=14
@@ -1474,7 +1450,6 @@ Effects=(1,0,35,5104,SproutBerryBush_Sprout,5298;false;"NoStop"=b1,"Pars"=E104,"
 [Object]
 id=SproutBerryBush_Sprout
 Properties=5109;false;"MeshTransformation"=E105,"leaves"=E106,"Action"=E91,"attached_berry"=i-1,"grow_anim"=s"Grow1","Prototype"=DSproutBerryBush_Sprout,"attached_flower"=i-1
-Timer=33
 Category=4
 Plane=300
 Rotation=343
@@ -1528,7 +1503,6 @@ Effects=(1,0,35,5109,SproutBerryBush_Sprout,5297;false;"NoStop"=b1,"Pars"=E107,"
 [Object]
 id=FloatingMessage
 Properties=5212;false;"g"=i255,"b"=i0,"Action"=E108,"r"=i0,"msg"=s"+200</c>{{Library_PowerConsumer}}","Prototype"=DFloatingMessage,"alpha"=i231
-Timer=15
 Category=4
 Plane=300
 Size=100000
@@ -1549,7 +1523,6 @@ Effects=(1,0,35,5212,FloatingMessage,5296;false;"NoStop"=b1,"Pars"=E109,"Name"=s
 [Object]
 id=Crate
 Properties=7;false;"crateanim"=i0,"MeshTransformation"=E110,"Prototype"=DCrate
-Timer=30
 Category=16
 Plane=500
 Size=100000
@@ -1582,7 +1555,6 @@ Effects=(1,0,35,7,Crate,5295;false;"NoStop"=b1,"Pars"=E111,"Name"=s"IntScheduleC
 [Object]
 id=Crate
 Properties=8;false;"crateanim"=i0,"MeshTransformation"=E112,"Prototype"=DCrate
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -1615,7 +1587,6 @@ Effects=(1,0,35,8,Crate,5294;false;"NoStop"=b1,"Pars"=E113,"Name"=s"IntScheduleC
 [Object]
 id=Bread
 Properties=9;false;"Prototype"=DBread
-Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -1637,7 +1608,6 @@ Effects=(1,0,35,9,Bread,5293;false;"NoStop"=b1,"Pars"=E114,"Name"=s"IntScheduleC
 [Object]
 id=Bread
 Properties=5204;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1660,7 +1630,6 @@ Effects=(1,0,35,5204,Bread,5292;false;"NoStop"=b1,"Pars"=E115,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5205;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1683,7 +1652,6 @@ Effects=(1,0,35,5205,Bread,5291;false;"NoStop"=b1,"Pars"=E116,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5206;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1706,7 +1674,6 @@ Effects=(1,0,35,5206,Bread,5290;false;"NoStop"=b1,"Pars"=E117,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5207;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1729,7 +1696,6 @@ Effects=(1,0,35,5207,Bread,5289;false;"NoStop"=b1,"Pars"=E118,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5208;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1752,7 +1718,6 @@ Effects=(1,0,35,5208,Bread,5288;false;"NoStop"=b1,"Pars"=E119,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5209;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1775,7 +1740,6 @@ Effects=(1,0,35,5209,Bread,5287;false;"NoStop"=b1,"Pars"=E120,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5210;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1798,7 +1762,6 @@ Effects=(1,0,35,5210,Bread,5286;false;"NoStop"=b1,"Pars"=E121,"Name"=s"IntSchedu
 [Object]
 id=Bread
 Properties=5211;false;"Prototype"=DBread
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -1821,7 +1784,6 @@ Effects=(1,0,35,5211,Bread,5285;false;"NoStop"=b1,"Pars"=E122,"Name"=s"IntSchedu
 [Object]
 id=Nugget
 Properties=10;false;"Prototype"=DNugget
-Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -1844,7 +1806,6 @@ Effects=(1,0,35,10,Nugget,5284;false;"NoStop"=b1,"Pars"=E123,"Name"=s"IntSchedul
 [Object]
 id=Nugget
 Properties=11;false;"Prototype"=DNugget
-Timer=20
 Category=16
 Plane=500
 Size=100000
@@ -1867,7 +1828,6 @@ Effects=(1,0,35,11,Nugget,5283;false;"NoStop"=b1,"Pars"=E124,"Name"=s"IntSchedul
 [Object]
 id=Nugget
 Properties=12;false;"Prototype"=DNugget
-Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -1890,7 +1850,6 @@ Effects=(1,0,35,12,Nugget,5282;false;"NoStop"=b1,"Pars"=E125,"Name"=s"IntSchedul
 [Object]
 id=Nugget
 Properties=5158;false;"Prototype"=DNugget
-Timer=2
 Category=16
 Plane=500
 Size=100000
@@ -1913,7 +1872,6 @@ Effects=(1,0,35,5158,Nugget,5281;false;"NoStop"=b1,"Pars"=E126,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5159;false;"Prototype"=DNugget
-Timer=31
 Category=16
 Plane=500
 Size=100000
@@ -1936,7 +1894,6 @@ Effects=(1,0,35,5159,Nugget,5280;false;"NoStop"=b1,"Pars"=E127,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5173;false;"Prototype"=DNugget
-Timer=4
 Category=16
 Plane=500
 Size=100000
@@ -1959,7 +1916,6 @@ Effects=(1,0,35,5173,Nugget,5279;false;"NoStop"=b1,"Pars"=E128,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5181;false;"Prototype"=DNugget
-Timer=13
 Category=16
 Plane=500
 Size=100000
@@ -1981,7 +1937,6 @@ Effects=(1,0,35,5181,Nugget,5278;false;"NoStop"=b1,"Pars"=E129,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5198;false;"Prototype"=DNugget
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2004,7 +1959,6 @@ Effects=(1,0,35,5198,Nugget,5277;false;"NoStop"=b1,"Pars"=E130,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5199;false;"Prototype"=DNugget
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2027,7 +1981,6 @@ Effects=(1,0,35,5199,Nugget,5276;false;"NoStop"=b1,"Pars"=E131,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5200;false;"Prototype"=DNugget
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2050,7 +2003,6 @@ Effects=(1,0,35,5200,Nugget,5275;false;"NoStop"=b1,"Pars"=E132,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5201;false;"Prototype"=DNugget
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2073,7 +2025,6 @@ Effects=(1,0,35,5201,Nugget,5274;false;"NoStop"=b1,"Pars"=E133,"Name"=s"IntSched
 [Object]
 id=Nugget
 Properties=5202;false;"Prototype"=DNugget
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2096,7 +2047,6 @@ Effects=(1,0,35,5202,Nugget,5273;false;"NoStop"=b1,"Pars"=E134,"Name"=s"IntSched
 [Object]
 id=Metal
 Properties=16;false;"Prototype"=DMetal
-Timer=30
 Category=16
 Plane=500
 Size=100000
@@ -2118,7 +2068,6 @@ Effects=(1,0,35,16,Metal,5272;false;"NoStop"=b1,"Pars"=E135,"Name"=s"IntSchedule
 [Object]
 id=Coal
 Properties=249;false;"Prototype"=DCoal
-Timer=24
 Category=16
 Plane=500
 Size=100000
@@ -2141,7 +2090,6 @@ Effects=(1,0,35,249,Coal,5271;false;"NoStop"=b1,"Pars"=E136,"Name"=s"IntSchedule
 [Object]
 id=Coal
 Properties=268;false;"Prototype"=DCoal
-Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -2164,7 +2112,6 @@ Effects=(1,0,35,268,Coal,5270;false;"NoStop"=b1,"Pars"=E137,"Name"=s"IntSchedule
 [Object]
 id=Coal
 Properties=272;false;"Prototype"=DCoal
-Timer=7
 Category=16
 Plane=500
 Size=100000
@@ -2186,7 +2133,6 @@ Effects=(1,0,35,272,Coal,5269;false;"NoStop"=b1,"Pars"=E138,"Name"=s"IntSchedule
 [Object]
 id=Rock
 Properties=250;false;"Prototype"=DRock
-Timer=27
 Category=16
 Plane=500
 Size=100000
@@ -2207,7 +2153,6 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=5137;false;"Prototype"=DRock
-Timer=8
 Category=16
 Plane=500
 Size=100000
@@ -2229,7 +2174,6 @@ Graphics=Rock::1
 [Object]
 id=Rock
 Properties=5139;false;"Prototype"=DRock
-Timer=34
 Category=16
 Plane=500
 Size=100000
@@ -2251,7 +2195,6 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=5142;false;"Prototype"=DRock
-Timer=3
 Category=16
 Plane=500
 Size=100000
@@ -2273,7 +2216,6 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=5151;false;"Prototype"=DRock
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -2295,7 +2237,6 @@ Graphics=Rock::8
 [Object]
 id=Rock
 Properties=5152;false;"Prototype"=DRock
-Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -2317,7 +2258,6 @@ Graphics=Rock::7
 [Object]
 id=Rock
 Properties=5163;false;"Prototype"=DRock
-Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -2339,7 +2279,6 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=5164;false;"Prototype"=DRock
-Timer=9
 Category=16
 Plane=500
 Size=100000
@@ -2361,7 +2300,6 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=5167;false;"Prototype"=DRock
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2383,7 +2321,6 @@ Graphics=Rock::4
 [Object]
 id=Rock
 Properties=5172;false;"Prototype"=DRock
-Timer=23
 Category=16
 Plane=500
 Size=100000
@@ -2405,7 +2342,6 @@ Graphics=Rock::7
 [Object]
 id=Loam
 Properties=251;false;"Prototype"=DLoam
-Timer=17
 Category=16
 Plane=500
 Size=100000
@@ -2427,7 +2363,6 @@ Effects=(1,0,35,251,Loam,5268;false;"NoStop"=b1,"Pars"=E139,"Name"=s"IntSchedule
 [Object]
 id=Loam
 Properties=5184;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2449,7 +2384,6 @@ Effects=(1,0,35,5184,Loam,5267;false;"NoStop"=b1,"Pars"=E140,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5185;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2471,7 +2405,6 @@ Effects=(1,0,35,5185,Loam,5266;false;"NoStop"=b1,"Pars"=E141,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5186;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2493,7 +2426,6 @@ Effects=(1,0,35,5186,Loam,5265;false;"NoStop"=b1,"Pars"=E142,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5187;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2515,7 +2447,6 @@ Effects=(1,0,35,5187,Loam,5264;false;"NoStop"=b1,"Pars"=E143,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5188;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2537,7 +2468,6 @@ Effects=(1,0,35,5188,Loam,5263;false;"NoStop"=b1,"Pars"=E144,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5189;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2558,7 +2488,6 @@ Effects=(1,0,35,5189,Loam,5262;false;"NoStop"=b1,"Pars"=E145,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5190;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2580,7 +2509,6 @@ Effects=(1,0,35,5190,Loam,5261;false;"NoStop"=b1,"Pars"=E146,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5191;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2602,7 +2530,6 @@ Effects=(1,0,35,5191,Loam,5260;false;"NoStop"=b1,"Pars"=E147,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5192;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2624,7 +2551,6 @@ Effects=(1,0,35,5192,Loam,5259;false;"NoStop"=b1,"Pars"=E148,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5193;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2646,7 +2572,6 @@ Effects=(1,0,35,5193,Loam,5258;false;"NoStop"=b1,"Pars"=E149,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5194;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2668,7 +2593,6 @@ Effects=(1,0,35,5194,Loam,5257;false;"NoStop"=b1,"Pars"=E150,"Name"=s"IntSchedul
 [Object]
 id=Loam
 Properties=5195;false;"Prototype"=DLoam
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -2690,7 +2614,6 @@ Effects=(1,0,35,5195,Loam,5256;false;"NoStop"=b1,"Pars"=E151,"Name"=s"IntSchedul
 [Object]
 id=Wood
 Properties=275;false;"Prototype"=DWood
-Timer=6
 Category=16
 Plane=500
 Rotation=35
@@ -2715,7 +2638,6 @@ Effects=(1,0,35,275,Wood,5255;false;"NoStop"=b1,"Pars"=E152,"Name"=s"IntSchedule
 [Object]
 id=Wood
 Properties=323;false;"Prototype"=DWood
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2739,7 +2661,6 @@ Effects=(1,0,35,323,Wood,5254;false;"NoStop"=b1,"Pars"=E153,"Name"=s"IntSchedule
 [Object]
 id=Wood
 Properties=324;false;"Action"=n,"Prototype"=DWood
-Timer=11
 Category=16
 Plane=500
 Size=98000
@@ -2765,7 +2686,6 @@ Effects=(1,0,35,324,Wood,5253;false;"NoStop"=b1,"Pars"=E154,"Name"=s"IntSchedule
 [Object]
 id=Ore
 Properties=280;false;"Prototype"=DOre
-Timer=3
 Category=16
 Plane=500
 Size=100000
@@ -2787,7 +2707,6 @@ Effects=(1,0,35,280,Ore,5252;false;"NoStop"=b1,"Pars"=E155,"Name"=s"IntScheduleC
 [Object]
 id=Firestone
 Properties=285;false;"Prototype"=DFirestone
-Timer=34
 Category=16
 Plane=500
 Size=100000
@@ -2809,7 +2728,6 @@ Effects=(1,0,35,285,Firestone,5251;false;"NoStop"=b1,"Pars"=E156,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=286;false;"Prototype"=DFirestone
-Timer=19
 Category=16
 Plane=500
 Size=100000
@@ -2832,7 +2750,6 @@ Effects=(1,0,35,286,Firestone,5250;false;"NoStop"=b1,"Pars"=E157,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=287;false;"Prototype"=DFirestone
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2856,7 +2773,6 @@ Effects=(1,0,35,287,Firestone,5249;false;"NoStop"=b1,"Pars"=E158,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=288;false;"Prototype"=DFirestone
-Timer=2
 Category=16
 Plane=500
 Size=100000
@@ -2879,7 +2795,6 @@ Effects=(1,0,35,288,Firestone,5248;false;"NoStop"=b1,"Pars"=E159,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=289;false;"Prototype"=DFirestone
-Timer=16
 Category=16
 Plane=500
 Size=100000
@@ -2902,7 +2817,6 @@ Effects=(1,0,35,289,Firestone,5247;false;"NoStop"=b1,"Pars"=E160,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=290;false;"Prototype"=DFirestone
-Timer=22
 Category=16
 Plane=500
 Size=100000
@@ -2925,7 +2839,6 @@ Effects=(1,0,35,290,Firestone,5246;false;"NoStop"=b1,"Pars"=E161,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=291;false;"Prototype"=DFirestone
-Timer=22
 Category=16
 Plane=500
 Size=100000
@@ -2947,7 +2860,6 @@ Effects=(1,0,35,291,Firestone,5245;false;"NoStop"=b1,"Pars"=E162,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=292;false;"Prototype"=DFirestone
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -2970,7 +2882,6 @@ Effects=(1,0,35,292,Firestone,5244;false;"NoStop"=b1,"Pars"=E163,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=293;false;"Prototype"=DFirestone
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -2993,7 +2904,6 @@ Effects=(1,0,35,293,Firestone,5243;false;"NoStop"=b1,"Pars"=E164,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=294;false;"Prototype"=DFirestone
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -3016,7 +2926,6 @@ Effects=(1,0,35,294,Firestone,5242;false;"NoStop"=b1,"Pars"=E165,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=295;false;"Prototype"=DFirestone
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -3038,7 +2947,6 @@ Effects=(1,0,35,295,Firestone,5241;false;"NoStop"=b1,"Pars"=E166,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=296;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3060,7 +2968,6 @@ Effects=(1,0,35,296,Firestone,5240;false;"NoStop"=b1,"Pars"=E167,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=297;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3083,7 +2990,6 @@ Effects=(1,0,35,297,Firestone,5239;false;"NoStop"=b1,"Pars"=E168,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=298;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3105,7 +3011,6 @@ Effects=(1,0,35,298,Firestone,5238;false;"NoStop"=b1,"Pars"=E169,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=299;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3128,7 +3033,6 @@ Effects=(1,0,35,299,Firestone,5237;false;"NoStop"=b1,"Pars"=E170,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=300;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3151,7 +3055,6 @@ Effects=(1,0,35,300,Firestone,5236;false;"NoStop"=b1,"Pars"=E171,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=301;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3174,7 +3077,6 @@ Effects=(1,0,35,301,Firestone,5235;false;"NoStop"=b1,"Pars"=E172,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=302;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3197,7 +3099,6 @@ Effects=(1,0,35,302,Firestone,5234;false;"NoStop"=b1,"Pars"=E173,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=303;false;"Prototype"=DFirestone
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3219,7 +3120,6 @@ Effects=(1,0,35,303,Firestone,5233;false;"NoStop"=b1,"Pars"=E174,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=316;false;"Prototype"=DFirestone
-Timer=26
 Category=16
 Plane=500
 Size=100000
@@ -3242,7 +3142,6 @@ Effects=(1,0,35,316,Firestone,5232;false;"NoStop"=b1,"Pars"=E175,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=317;false;"Prototype"=DFirestone
-Timer=33
 Category=16
 Plane=500
 Size=100000
@@ -3265,7 +3164,6 @@ Effects=(1,0,35,317,Firestone,5231;false;"NoStop"=b1,"Pars"=E176,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=320;false;"Prototype"=DFirestone
-Timer=12
 Category=16
 Plane=500
 Size=100000
@@ -3288,7 +3186,6 @@ Effects=(1,0,35,320,Firestone,5230;false;"NoStop"=b1,"Pars"=E177,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=321;false;"Prototype"=DFirestone
-Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -3310,7 +3207,6 @@ Effects=(1,0,35,321,Firestone,5229;false;"NoStop"=b1,"Pars"=E178,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=322;false;"Prototype"=DFirestone
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -3333,7 +3229,6 @@ Effects=(1,0,35,322,Firestone,5228;false;"NoStop"=b1,"Pars"=E179,"Name"=s"IntSch
 [Object]
 id=Firestone
 Properties=5196;false;"Prototype"=DFirestone
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -3355,7 +3250,6 @@ Effects=(1,0,35,5196,Firestone,5227;false;"NoStop"=b1,"Pars"=E180,"Name"=s"IntSc
 [Object]
 id=Firestone
 Properties=5197;false;"Prototype"=DFirestone
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -3378,7 +3272,6 @@ Effects=(1,0,35,5197,Firestone,5226;false;"NoStop"=b1,"Pars"=E181,"Name"=s"IntSc
 [Object]
 id=Firestone
 Properties=5203;false;"Prototype"=DFirestone
-Timer=1
 Category=16
 Plane=500
 Size=100000
@@ -3401,7 +3294,6 @@ Effects=(1,0,35,5203,Firestone,5225;false;"NoStop"=b1,"Pars"=E182,"Name"=s"IntSc
 [Object]
 id=Moss
 Properties=327;false;"graphic"=i2,"wetness"=i0,"Prototype"=DMoss,"lastpos"=E183
-Timer=5
 Category=16
 Plane=500
 Size=100000
@@ -3424,7 +3316,6 @@ Effects=(1,0,35,327,Moss,5224;false;"NoStop"=b1,"Pars"=E184,"Name"=s"IntSchedule
 [Object]
 id=Moss
 Properties=329;false;"graphic"=i2,"wetness"=i30,"Prototype"=DMoss,"lastpos"=E185
-Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -3448,7 +3339,6 @@ Effects=(1,0,35,329,Moss,5223;false;"NoStop"=b1,"Pars"=E186,"Name"=s"IntSchedule
 [Object]
 id=Moss
 Properties=333;false;"graphic"=i0,"wetness"=i0,"Prototype"=DMoss,"lastpos"=E187
-Timer=33
 Category=16
 Plane=500
 Size=100000
@@ -3471,7 +3361,6 @@ Effects=(1,0,35,333,Moss,5222;false;"NoStop"=b1,"Pars"=E188,"Name"=s"IntSchedule
 [Object]
 id=Moss
 Properties=335;false;"graphic"=i1,"wetness"=i0,"Prototype"=DMoss,"lastpos"=E189
-Timer=11
 Category=16
 Plane=500
 Size=100000
@@ -3494,7 +3383,6 @@ Effects=(1,0,35,335,Moss,5221;false;"NoStop"=b1,"Pars"=E190,"Name"=s"IntSchedule
 [Object]
 id=Moss
 Properties=339;false;"graphic"=i1,"wetness"=i0,"Prototype"=DMoss,"lastpos"=E191
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -3517,7 +3405,6 @@ Effects=(1,0,35,339,Moss,5220;false;"NoStop"=b1,"Pars"=E192,"Name"=s"IntSchedule
 [Object]
 id=Seeds
 Properties=343;false;"Prototype"=DSeeds
-Timer=15
 Category=16
 Plane=500
 Size=100000
@@ -3539,7 +3426,6 @@ Effects=(1,0,35,343,Seeds,5219;false;"NoStop"=b1,"Pars"=E193,"Name"=s"IntSchedul
 [Object]
 id=Seeds
 Properties=374;false;"Prototype"=DSeeds
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -3561,7 +3447,6 @@ Effects=(1,0,35,374,Seeds,5218;false;"NoStop"=b1,"Pars"=E194,"Name"=s"IntSchedul
 [Object]
 id=Sproutberry
 Properties=678;false;"Prototype"=DSproutberry
-Timer=32
 Category=16
 Plane=500
 Size=100000
@@ -3586,7 +3471,6 @@ Effects=(1,0,35,678,Sproutberry,5217;false;"NoStop"=b1,"Pars"=E195,"Name"=s"IntS
 [Object]
 id=Seaweed
 Properties=5134;false;"Action"=E196,"Prototype"=DSeaweed
-Timer=6
 Category=16
 Plane=500
 Size=100000
@@ -3621,7 +3505,6 @@ Effects=(1,0,35,5134,Seaweed,5216;false;"NoStop"=b1,"Pars"=E197,"Name"=s"IntSche
 [Object]
 id=Seaweed
 Properties=5138;false;"Action"=E196,"Prototype"=DSeaweed
-Timer=25
 Category=16
 Plane=500
 Size=100000
@@ -3656,7 +3539,6 @@ Effects=(1,0,35,5138,Seaweed,5215;false;"NoStop"=b1,"Pars"=E198,"Name"=s"IntSche
 [Object]
 id=Seaweed
 Properties=5140;false;"Action"=E199,"Prototype"=DSeaweed
-Timer=13
 Category=16
 Plane=500
 Size=100000

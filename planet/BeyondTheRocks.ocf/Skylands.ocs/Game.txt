@@ -1,7 +1,6 @@
 [Object]
 id=Rule_TeamAccount
 Properties=8;false;"Prototype"=DRule_TeamAccount
-Timer=34
 Category=65
 Plane=100
 Size=100000
@@ -15,7 +14,6 @@ Effects=(1,0,35,8,Rule_TeamAccount,665;false;"Function"=s"","Name"=s"IntSchedule
 [Object]
 id=Rule_BuyAtFlagpole
 Properties=9;false;"Prototype"=DRule_BuyAtFlagpole
-Timer=34
 Category=65
 Plane=100
 Size=100000
@@ -29,7 +27,6 @@ Effects=(1,0,35,9,Rule_BuyAtFlagpole,664;false;"Function"=s"","Name"=s"IntSchedu
 [Object]
 id=Tree_Coniferous
 Properties=494;false;"MeshTransformation"=E3,"Prototype"=DTree_Coniferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -54,7 +51,6 @@ Effects=(1,0,350,494,Tree_Coniferous,663;false;"Function"=s"Seed","Name"=s"IntSc
 [Object]
 id=Tree_Coniferous
 Properties=497;false;"MeshTransformation"=E5,"Prototype"=DTree_Coniferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -79,7 +75,6 @@ Effects=(1,0,350,497,Tree_Coniferous,662;false;"Function"=s"Seed","Name"=s"IntSc
 [Object]
 id=Tree_SmallConiferous
 Properties=500;false;"MeshTransformation"=E7,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -104,7 +99,6 @@ Effects=(1,0,350,500,Tree_SmallConiferous,661;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=503;false;"MeshTransformation"=E9,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -129,7 +123,6 @@ Effects=(1,0,350,503,Tree_SmallConiferous,660;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=506;false;"MeshTransformation"=E11,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -154,7 +147,6 @@ Effects=(1,0,350,506,Tree_SmallConiferous,659;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=509;false;"MeshTransformation"=E13,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -179,7 +171,6 @@ Effects=(1,0,350,509,Tree_SmallConiferous,658;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=512;false;"MeshTransformation"=E15,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -204,7 +195,6 @@ Effects=(1,0,350,512,Tree_SmallConiferous,657;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=515;false;"MeshTransformation"=E17,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -229,7 +219,6 @@ Effects=(1,0,350,515,Tree_SmallConiferous,656;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=518;false;"MeshTransformation"=E19,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -254,7 +243,6 @@ Effects=(1,0,350,518,Tree_SmallConiferous,655;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=521;false;"MeshTransformation"=E21,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -279,7 +267,6 @@ Effects=(1,0,350,521,Tree_SmallConiferous,654;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=524;false;"MeshTransformation"=E23,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -304,7 +291,6 @@ Effects=(1,0,350,524,Tree_SmallConiferous,653;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Tree_SmallConiferous
 Properties=527;false;"MeshTransformation"=E25,"Prototype"=DTree_SmallConiferous
-Timer=29
 Category=1
 Plane=100
 Size=100000
@@ -329,7 +315,6 @@ Effects=(1,0,350,527,Tree_SmallConiferous,652;false;"Function"=s"Seed","Name"=s"
 [Object]
 id=Chest
 Properties=10;false;"chestanim"=i0,"MeshTransformation"=E27,"Prototype"=DChest
-Timer=34
 Category=2
 Plane=200
 Size=100000
@@ -364,7 +349,6 @@ Effects=(1,0,35,10,Chest,651;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=11;false;"chestanim"=i0,"MeshTransformation"=E29,"Prototype"=DChest
-Timer=15
 Category=2
 Plane=200
 Size=100000
@@ -399,7 +383,6 @@ Effects=(1,0,35,11,Chest,650;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=12;false;"chestanim"=i0,"MeshTransformation"=E31,"Prototype"=DChest
-Timer=18
 Category=2
 Plane=200
 Size=100000
@@ -434,7 +417,6 @@ Effects=(1,0,35,12,Chest,649;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=13;false;"chestanim"=i0,"MeshTransformation"=E33,"Prototype"=DChest
-Timer=1
 Category=2
 Plane=200
 Size=100000
@@ -469,7 +451,6 @@ Effects=(1,0,35,13,Chest,648;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=14;false;"chestanim"=i0,"MeshTransformation"=E35,"Prototype"=DChest
-Timer=3
 Category=2
 Plane=200
 Size=100000
@@ -504,7 +485,6 @@ Effects=(1,0,35,14,Chest,647;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=15;false;"chestanim"=i0,"MeshTransformation"=E37,"Prototype"=DChest
-Timer=7
 Category=2
 Plane=200
 Size=100000
@@ -539,7 +519,6 @@ Effects=(1,0,35,15,Chest,646;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=16;false;"chestanim"=i0,"MeshTransformation"=E39,"Prototype"=DChest
-Timer=33
 Category=2
 Plane=200
 Size=100000
@@ -574,7 +553,6 @@ Effects=(1,0,35,16,Chest,645;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Chest
 Properties=17;false;"chestanim"=i0,"MeshTransformation"=E41,"Prototype"=DChest
-Timer=2
 Category=2
 Plane=200
 Size=100000
@@ -609,7 +587,6 @@ Effects=(1,0,35,17,Chest,644;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Plane_Construction
 Properties=377;false;"next_part"=DPlane_Skids,"progress"=n,"Prototype"=DPlane_Construction
-Timer=9
 Category=2
 Plane=200
 Size=100000
@@ -632,7 +609,6 @@ Effects=(1,0,10,377,Plane_Construction,643;false;"Function"=s"Timer","Name"=s"In
 [Object]
 id=Plane_Wings
 Properties=18;false;"Prototype"=DPlane_Wings
-Timer=26
 Category=4
 Plane=300
 Rotation=117
@@ -656,7 +632,6 @@ Effects=(1,0,35,18,Plane_Wings,642;false;"Function"=s"","Name"=s"IntScheduleCall
 [Object]
 id=Plane_Skids
 Properties=19;false;"Prototype"=DPlane_Skids
-Timer=17
 Category=4
 Plane=300
 Rotation=13
@@ -680,7 +655,6 @@ Effects=(1,0,35,19,Plane_Skids,641;false;"Function"=s"","Name"=s"IntScheduleCall
 [Object]
 id=Plane_Chassis
 Properties=20;false;"Prototype"=DPlane_Chassis
-Timer=33
 Category=4
 Plane=300
 Rotation=-18
@@ -705,7 +679,6 @@ Effects=(1,0,35,20,Plane_Chassis,640;false;"Function"=s"","Name"=s"IntScheduleCa
 [Object]
 id=Plane_Propeller
 Properties=372;false;"Prototype"=DPlane_Propeller
-Timer=15
 Category=16
 Plane=500
 Rotation=20
@@ -729,7 +702,6 @@ Effects=(1,0,35,372,Plane_Propeller,639;false;"Function"=s"","Name"=s"IntSchedul
 [Object]
 id=GoldBar
 Properties=378;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -753,7 +725,6 @@ Effects=(1,0,35,378,GoldBar,638;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=379;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -777,7 +748,6 @@ Effects=(1,0,35,379,GoldBar,637;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=380;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -801,7 +771,6 @@ Effects=(1,0,35,380,GoldBar,636;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=381;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -825,7 +794,6 @@ Effects=(1,0,35,381,GoldBar,635;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=382;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -849,7 +817,6 @@ Effects=(1,0,35,382,GoldBar,634;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=383;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -873,7 +840,6 @@ Effects=(1,0,35,383,GoldBar,633;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=GoldBar
 Properties=384;false;"Prototype"=DGoldBar
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -897,7 +863,6 @@ Effects=(1,0,35,384,GoldBar,632;false;"Function"=s"","Name"=s"IntScheduleCall","
 [Object]
 id=Nugget
 Properties=385;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -920,7 +885,6 @@ Effects=(1,0,35,385,Nugget,631;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Nugget
 Properties=386;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -944,7 +908,6 @@ Effects=(1,0,35,386,Nugget,630;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Nugget
 Properties=387;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -968,7 +931,6 @@ Effects=(1,0,35,387,Nugget,629;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Nugget
 Properties=388;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -992,7 +954,6 @@ Effects=(1,0,35,388,Nugget,628;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Nugget
 Properties=389;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1015,7 +976,6 @@ Effects=(1,0,35,389,Nugget,627;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Nugget
 Properties=390;false;"Prototype"=DNugget
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1039,7 +999,6 @@ Effects=(1,0,35,390,Nugget,626;false;"Function"=s"","Name"=s"IntScheduleCall","N
 [Object]
 id=Loam
 Properties=391;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1062,7 +1021,6 @@ Effects=(1,0,35,391,Loam,625;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=392;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1084,7 +1042,6 @@ Effects=(1,0,35,392,Loam,624;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=393;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1107,7 +1064,6 @@ Effects=(1,0,35,393,Loam,623;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=394;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1130,7 +1086,6 @@ Effects=(1,0,35,394,Loam,622;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=395;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1153,7 +1108,6 @@ Effects=(1,0,35,395,Loam,621;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=396;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1176,7 +1130,6 @@ Effects=(1,0,35,396,Loam,620;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=397;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1198,7 +1151,6 @@ Effects=(1,0,35,397,Loam,619;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=398;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1221,7 +1173,6 @@ Effects=(1,0,35,398,Loam,618;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=399;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1244,7 +1195,6 @@ Effects=(1,0,35,399,Loam,617;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=400;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1266,7 +1216,6 @@ Effects=(1,0,35,400,Loam,616;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=401;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1288,7 +1237,6 @@ Effects=(1,0,35,401,Loam,615;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=402;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1311,7 +1259,6 @@ Effects=(1,0,35,402,Loam,614;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=403;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1333,7 +1280,6 @@ Effects=(1,0,35,403,Loam,613;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=404;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1355,7 +1301,6 @@ Effects=(1,0,35,404,Loam,612;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=405;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1377,7 +1322,6 @@ Effects=(1,0,35,405,Loam,611;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=406;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1399,7 +1343,6 @@ Effects=(1,0,35,406,Loam,610;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=407;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1422,7 +1365,6 @@ Effects=(1,0,35,407,Loam,609;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=408;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1445,7 +1387,6 @@ Effects=(1,0,35,408,Loam,608;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=409;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1467,7 +1408,6 @@ Effects=(1,0,35,409,Loam,607;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=410;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1490,7 +1430,6 @@ Effects=(1,0,35,410,Loam,606;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=411;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1512,7 +1451,6 @@ Effects=(1,0,35,411,Loam,605;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=412;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1535,7 +1473,6 @@ Effects=(1,0,35,412,Loam,604;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=413;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1558,7 +1495,6 @@ Effects=(1,0,35,413,Loam,603;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=414;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1581,7 +1517,6 @@ Effects=(1,0,35,414,Loam,602;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=415;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1604,7 +1539,6 @@ Effects=(1,0,35,415,Loam,601;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=416;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1627,7 +1561,6 @@ Effects=(1,0,35,416,Loam,600;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=417;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1649,7 +1582,6 @@ Effects=(1,0,35,417,Loam,599;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=418;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1672,7 +1604,6 @@ Effects=(1,0,35,418,Loam,598;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=419;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1695,7 +1626,6 @@ Effects=(1,0,35,419,Loam,597;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=420;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1718,7 +1648,6 @@ Effects=(1,0,35,420,Loam,596;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=421;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1741,7 +1670,6 @@ Effects=(1,0,35,421,Loam,595;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=422;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1763,7 +1691,6 @@ Effects=(1,0,35,422,Loam,594;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=423;false;"Prototype"=DLoam
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1786,7 +1713,6 @@ Effects=(1,0,35,423,Loam,593;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=489;false;"Prototype"=DLoam
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -1808,7 +1734,6 @@ Effects=(1,0,35,489,Loam,592;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=490;false;"Prototype"=DLoam
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -1830,7 +1755,6 @@ Effects=(1,0,35,490,Loam,591;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=491;false;"Prototype"=DLoam
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -1852,7 +1776,6 @@ Effects=(1,0,35,491,Loam,590;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=492;false;"Prototype"=DLoam
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -1874,7 +1797,6 @@ Effects=(1,0,35,492,Loam,589;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=493;false;"Prototype"=DLoam
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -1895,7 +1817,6 @@ Effects=(1,0,35,493,Loam,588;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=530;false;"Prototype"=DLoam
-Timer=29
 Category=16
 Plane=500
 Size=100000
@@ -1917,7 +1838,6 @@ Effects=(1,0,35,530,Loam,587;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Loam
 Properties=531;false;"Prototype"=DLoam
-Timer=29
 Category=16
 Plane=500
 Size=100000
@@ -1939,7 +1859,6 @@ Effects=(1,0,35,531,Loam,586;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=424;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1963,7 +1882,6 @@ Effects=(1,0,35,424,Wood,585;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=425;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -1987,7 +1905,6 @@ Effects=(1,0,35,425,Wood,584;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=426;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2011,7 +1928,6 @@ Effects=(1,0,35,426,Wood,583;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=427;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2035,7 +1951,6 @@ Effects=(1,0,35,427,Wood,582;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=428;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2059,7 +1974,6 @@ Effects=(1,0,35,428,Wood,581;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=429;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2083,7 +1997,6 @@ Effects=(1,0,35,429,Wood,580;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=430;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2107,7 +2020,6 @@ Effects=(1,0,35,430,Wood,579;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=431;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2131,7 +2043,6 @@ Effects=(1,0,35,431,Wood,578;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=432;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2155,7 +2066,6 @@ Effects=(1,0,35,432,Wood,577;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=433;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2179,7 +2089,6 @@ Effects=(1,0,35,433,Wood,576;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=434;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2203,7 +2112,6 @@ Effects=(1,0,35,434,Wood,575;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=435;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2227,7 +2135,6 @@ Effects=(1,0,35,435,Wood,574;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=436;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2251,7 +2158,6 @@ Effects=(1,0,35,436,Wood,573;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=437;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2275,7 +2181,6 @@ Effects=(1,0,35,437,Wood,572;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=438;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2299,7 +2204,6 @@ Effects=(1,0,35,438,Wood,571;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Wood
 Properties=439;false;"Prototype"=DWood
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2323,7 +2227,6 @@ Effects=(1,0,35,439,Wood,570;false;"Function"=s"","Name"=s"IntScheduleCall","NoS
 [Object]
 id=Metal
 Properties=440;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2346,7 +2249,6 @@ Effects=(1,0,35,440,Metal,569;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=441;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2369,7 +2271,6 @@ Effects=(1,0,35,441,Metal,568;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=442;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2392,7 +2293,6 @@ Effects=(1,0,35,442,Metal,567;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=443;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2415,7 +2315,6 @@ Effects=(1,0,35,443,Metal,566;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=444;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2438,7 +2337,6 @@ Effects=(1,0,35,444,Metal,565;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=445;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2461,7 +2359,6 @@ Effects=(1,0,35,445,Metal,564;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=446;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2484,7 +2381,6 @@ Effects=(1,0,35,446,Metal,563;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=447;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2507,7 +2403,6 @@ Effects=(1,0,35,447,Metal,562;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=448;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2530,7 +2425,6 @@ Effects=(1,0,35,448,Metal,561;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=449;false;"Prototype"=DMetal
-Timer=21
 Category=16
 Plane=500
 Size=100000
@@ -2553,7 +2447,6 @@ Effects=(1,0,35,449,Metal,560;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=450;false;"Prototype"=DMetal
-Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -2576,7 +2469,6 @@ Effects=(1,0,35,450,Metal,559;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Metal
 Properties=451;false;"Prototype"=DMetal
-Timer=18
 Category=16
 Plane=500
 Size=100000
@@ -2599,7 +2491,6 @@ Effects=(1,0,35,451,Metal,558;false;"Function"=s"","Name"=s"IntScheduleCall","No
 [Object]
 id=Rock
 Properties=452;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2622,7 +2513,6 @@ Graphics=Rock::6
 [Object]
 id=Rock
 Properties=453;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2645,7 +2535,6 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=454;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2668,7 +2557,6 @@ Graphics=Rock::8
 [Object]
 id=Rock
 Properties=455;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2691,7 +2579,6 @@ Graphics=Rock::5
 [Object]
 id=Rock
 Properties=456;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2714,7 +2601,6 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=457;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2737,7 +2623,6 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=458;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2760,7 +2645,6 @@ Graphics=Rock::3
 [Object]
 id=Rock
 Properties=459;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2783,7 +2667,6 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=460;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2806,7 +2689,6 @@ Graphics=Rock::1
 [Object]
 id=Rock
 Properties=461;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2829,7 +2711,6 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=462;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2852,7 +2733,6 @@ Graphics=Rock::9
 [Object]
 id=Rock
 Properties=463;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2875,7 +2755,6 @@ Graphics=Rock::2
 [Object]
 id=Rock
 Properties=464;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2898,7 +2777,6 @@ Graphics=Rock::4
 [Object]
 id=Rock
 Properties=465;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2920,7 +2798,6 @@ Component=Rock=1
 [Object]
 id=Rock
 Properties=466;false;"Prototype"=DRock
-Timer=14
 Category=16
 Plane=500
 Size=100000
@@ -2943,7 +2820,6 @@ Graphics=Rock::6
 [Object]
 id=Firestone
 Properties=467;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -2967,7 +2843,6 @@ Effects=(1,0,35,467,Firestone,557;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=468;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -2991,7 +2866,6 @@ Effects=(1,0,35,468,Firestone,556;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=469;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3015,7 +2889,6 @@ Effects=(1,0,35,469,Firestone,555;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=470;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3039,7 +2912,6 @@ Effects=(1,0,35,470,Firestone,554;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=471;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3063,7 +2935,6 @@ Effects=(1,0,35,471,Firestone,553;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=472;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3087,7 +2958,6 @@ Effects=(1,0,35,472,Firestone,552;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=473;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3110,7 +2980,6 @@ Effects=(1,0,35,473,Firestone,551;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=474;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3133,7 +3002,6 @@ Effects=(1,0,35,474,Firestone,550;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=475;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3156,7 +3024,6 @@ Effects=(1,0,35,475,Firestone,549;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=476;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3180,7 +3047,6 @@ Effects=(1,0,35,476,Firestone,548;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=477;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3204,7 +3070,6 @@ Effects=(1,0,35,477,Firestone,547;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=478;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3227,7 +3092,6 @@ Effects=(1,0,35,478,Firestone,546;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=479;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3250,7 +3114,6 @@ Effects=(1,0,35,479,Firestone,545;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=480;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3273,7 +3136,6 @@ Effects=(1,0,35,480,Firestone,544;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=481;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3296,7 +3158,6 @@ Effects=(1,0,35,481,Firestone,543;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=482;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3318,7 +3179,6 @@ Effects=(1,0,35,482,Firestone,542;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=483;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3341,7 +3201,6 @@ Effects=(1,0,35,483,Firestone,541;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=484;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3364,7 +3223,6 @@ Effects=(1,0,35,484,Firestone,540;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=485;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3386,7 +3244,6 @@ Effects=(1,0,35,485,Firestone,539;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=486;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3409,7 +3266,6 @@ Effects=(1,0,35,486,Firestone,538;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=487;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3432,7 +3288,6 @@ Effects=(1,0,35,487,Firestone,537;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=488;false;"Prototype"=DFirestone
-Timer=10
 Category=16
 Plane=500
 Size=100000
@@ -3455,7 +3310,6 @@ Effects=(1,0,35,488,Firestone,536;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=532;false;"Prototype"=DFirestone
-Timer=29
 Category=16
 Plane=500
 Size=100000
@@ -3478,7 +3332,6 @@ Effects=(1,0,35,532,Firestone,535;false;"Function"=s"","Name"=s"IntScheduleCall"
 [Object]
 id=Firestone
 Properties=533;false;"Prototype"=DFirestone
-Timer=29
 Category=16
 Plane=500
 Size=100000
