@@ -79,7 +79,9 @@ public:
 
 	C4RopeElement* GetFront() const { return Front; }
 	C4RopeElement* GetBack() const { return Back; }
-	
+	void SetFront(C4Object* obj, C4Real x, C4Real y) { Front->Object = obj; Front->x = x; Front->y = y; }
+	void SetBack(C4Object* obj, C4Real x, C4Real y) { Back->Object = obj; Back->x = x; Back->y = y; }
+
 	C4Real GetFrontAutoSegmentation() const { return FrontAutoSegmentation; }
 	C4Real GetBackAutoSegmentation() const { return BackAutoSegmentation; }
 	void SetFrontAutoSegmentation(C4Real max) { FrontAutoSegmentation = max; }

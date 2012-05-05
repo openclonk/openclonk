@@ -34,6 +34,18 @@ static C4Object* FnGetBack(C4AulContext* Context)
 	return static_cast<C4Rope*>(Context->Def)->GetBack()->GetObject();
 }
 
+static C4Void FnSetFront(C4AulContext* Context, C4Object* obj, Nillable<int> x, Nillable<int> y)
+{
+	static_cast<C4Rope*>(Context->Def)->SetFront(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
+	return C4Void();
+}
+
+static C4Void FnSetBack(C4AulContext* Context, C4Object* obj, Nillable<int> x, Nillable<int> y)
+{
+	static_cast<C4Rope*>(Context->Def)->SetBack(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
+	return C4Void();
+}
+
 static C4Void FnSetFrontAutoSegmentation(C4AulContext* Context, int max)
 {
 	static_cast<C4Rope*>(Context->Def)->SetFrontAutoSegmentation(itofix(max));
@@ -79,6 +91,8 @@ void C4RopeAul::InitFunctionMap(C4AulScriptEngine* pEngine)
 	::AddFunc(this, "Remove", FnRemove);
 	::AddFunc(this, "GetFront", FnGetFront);
 	::AddFunc(this, "GetBack", FnGetBack);
+	::AddFunc(this, "SetFront", FnSetFront);
+	::AddFunc(this, "SetBack", FnSetBack);
 	::AddFunc(this, "SetFrontAutoSegmentation", FnSetFrontAutoSegmentation);
 	::AddFunc(this, "SetBackAutoSegmentation", FnSetBackAutoSegmentation);
 	::AddFunc(this, "SetFrontFixed", FnSetFrontFixed);
