@@ -72,6 +72,8 @@ public:
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 	void Execute();
 
+	void ClearPointers(C4Object* obj);
+
 	C4Real GetSegmentLength() const { return l; }
 	C4Real GetOuterFriction() const { return mu; }
 
@@ -96,11 +98,6 @@ private:
 	const float Width; // Width of rope
 	C4DefGraphics* Graphics;
 	int32_t SegmentCount;
-
-	// TODO: Add a "dynlength" feature which adapts the spring length to the
-	// distance of the two ends, up to a maximum... and/or callbacks to script
-	// when the length should be changed so that script can do it (and maybe
-	// play an animation, such as for the lift tower).
 
 	C4Real l; // spring length in equilibrium
 	C4Real k; // spring constant
@@ -140,6 +137,8 @@ public:
 	void Draw(C4TargetFacet& cgo, C4BltTransform* pTransform);
 
 	C4Rope* CreateRope(C4Object* first_obj, C4Object* second_obj, int32_t n_segments, C4DefGraphics* graphics);
+
+	void ClearPointers(C4Object* obj);
 
 private:
 	C4RopeAul RopeAul;

@@ -262,7 +262,6 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 					if(Target->Shape.GetVertexContact(i, dwCNATCheck, Target->GetX(), Target->GetY()))
 						iContactVertex = i;
 
-				// TODO: Check force redirection at the vertex which has contact
 				if(iContactVertex != -1)
 					SetForceRedirection(rope, Target->Shape.VtxX[iContactVertex], Target->Shape.VtxY[iContactVertex]);
 			}
@@ -590,6 +589,23 @@ void C4Rope::Execute()
 	}
 }
 
+void C4Rope::ClearPointers(C4Object* obj)
+{
+	for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
+	{
+		if(cur->GetObject() == obj)
+		{
+			cur->x = obj->fix_x;
+			cur->y = obj->fix_y;
+			cur->vx = obj->xdir;
+			cur->vy = obj->ydir;
+			cur->m = obj->Mass;
+
+			cur->Object = NULL;
+		}
+	}
+}
+
 // TODO: Move this to StdGL
 void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
@@ -768,4 +784,10 @@ void C4RopeList::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 		Ropes[i]->Draw(cgo, pTransform);
 
 	glPopMatrix();
+}
+
+void C4RopeList::ClearPointers(C4Object* obj)
+{
+	for(unsigned int i = 0; i < Ropes.size(); ++i)
+		Ropes[i]->ClearPointers(obj);
 }

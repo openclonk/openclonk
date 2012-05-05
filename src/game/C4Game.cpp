@@ -914,6 +914,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
+	Ropes.ClearPointers(pObj);
 }
 
 bool C4Game::TogglePause()
