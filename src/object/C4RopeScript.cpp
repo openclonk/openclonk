@@ -19,6 +19,11 @@
 #include <C4Rope.h>
 #include <C4AulDefFunc.h>
 
+static C4Void FnRemove(C4AulContext* Context)
+{
+	Game.Ropes.RemoveRope(static_cast<C4Rope*>(Context->Def));
+}
+
 static C4Object* FnGetFront(C4AulContext* Context)
 {
 	return static_cast<C4Rope*>(Context->Def)->GetFront()->GetObject();
@@ -59,6 +64,7 @@ void C4RopeAul::InitFunctionMap(C4AulScriptEngine* pEngine)
 
 	Reg2List(pEngine);
 
+	::AddFunc(this, "Remove", FnRemove);
 	::AddFunc(this, "GetFront", FnGetFront);
 	::AddFunc(this, "GetBack", FnGetBack);
 	::AddFunc(this, "SetFrontAutoSegmentation", FnSetFrontAutoSegmentation);

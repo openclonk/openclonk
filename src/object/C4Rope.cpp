@@ -765,6 +765,19 @@ C4Rope* C4RopeList::CreateRope(C4Object* first_obj, C4Object* second_obj, int32_
 	return Ropes.back();
 }
 
+void C4RopeList::RemoveRope(C4Rope* rope)
+{
+	for(std::vector<C4Rope*>::iterator iter = Ropes.begin(); iter != Ropes.end(); ++iter)
+	{
+		if(*iter == rope)
+		{
+			Ropes.erase(iter);
+			delete rope;
+			break;
+		}
+	}
+}
+
 void C4RopeList::Execute()
 {
 	for(unsigned int i = 0; i < Ropes.size(); ++i)
