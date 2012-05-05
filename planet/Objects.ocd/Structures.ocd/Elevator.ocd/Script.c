@@ -30,7 +30,7 @@ func Construction(object creator)
 func Initialize()
 {
 	CreateCase();
-	CreateRope();
+	CreateCaseRope();
 
 	if (partner)
 	{
@@ -53,7 +53,7 @@ func CreateCase()
 	case->Connect(this);
 }
 
-func CreateRope()
+func CreateCaseRope()
 {
 	rope = CreateObject(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
 	rope->SetAction("Be", case);

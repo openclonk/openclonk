@@ -2479,7 +2479,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
-	AddFunc(pEngine, "CreateRope2", FnCreateRope);
+	AddFunc(pEngine, "CreateRope", FnCreateRope);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
 	AddFunc(pEngine, "GrabContents", FnGrabContents);
 	AddFunc(pEngine, "Punch", FnPunch);
