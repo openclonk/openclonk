@@ -91,6 +91,9 @@ public:
 	bool GetBackFixed() const { return Back->Fixed; }
 	void SetFrontFixed(bool fixed) { Front->Fixed = fixed; }
 	void SetBackFixed(bool fixed) { Back->Fixed = fixed; }
+
+	void PullFront(C4Real f) { FrontPull = f; }
+	void PullBack(C4Real f) { BackPull = f; }
 private:
 	C4Real GetL(const C4RopeElement* prev, const C4RopeElement* next) const;
 
@@ -116,6 +119,9 @@ private:
 
 	C4Real FrontAutoSegmentation;
 	C4Real BackAutoSegmentation;
+
+	C4Real FrontPull;
+	C4Real BackPull;
 };
 
 class C4RopeAul: public C4AulScript

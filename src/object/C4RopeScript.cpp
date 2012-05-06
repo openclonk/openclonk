@@ -71,6 +71,18 @@ static C4Void FnSetBackFixed(C4AulContext* Context, bool fixed)
 	return C4Void();
 }
 
+static C4Void FnPullFront(C4AulContext* Context, int force)
+{
+	static_cast<C4Rope*>(Context->Def)->PullFront(itofix(force));
+	return C4Void();
+}
+
+static C4Void FnPullBack(C4AulContext* Context, int force)
+{
+	static_cast<C4Rope*>(Context->Def)->PullBack(itofix(force));
+	return C4Void();
+}
+
 C4RopeAul::C4RopeAul():
 	RopeDef(NULL)
 {
@@ -98,5 +110,7 @@ void C4RopeAul::InitFunctionMap(C4AulScriptEngine* pEngine)
 	::AddFunc(this, "SetBackAutoSegmentation", FnSetBackAutoSegmentation);
 	::AddFunc(this, "SetFrontFixed", FnSetFrontFixed);
 	::AddFunc(this, "SetBackFixed", FnSetBackFixed);
+	::AddFunc(this, "PullFront", FnPullFront);
+	::AddFunc(this, "PullBack", FnPullBack);
 	RopeDef->Freeze();
 }
