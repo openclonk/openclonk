@@ -1274,14 +1274,6 @@ static bool FnGrabObjectInfo(C4Object *Obj, C4Object *pFrom)
 	return !!Obj->GrabInfo(pFrom);
 }
 
-static bool FnBlastObject(C4Object *Obj, long iLevel, Nillable<long> iCausedBy)
-{
-	if (iCausedBy.IsNil() && Obj) iCausedBy = Obj->Controller;
-	if (!Obj->Status) return false;
-	Obj->Blast(iLevel, iCausedBy);
-	return true;
-}
-
 static bool FnSetComponent(C4Object *Obj, C4ID idComponent, long iCount)
 {
 	return Obj->Component.SetIDCount(idComponent,iCount,true);
@@ -2362,7 +2354,6 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetComponent", FnSetComponent);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
-	AddFunc(pEngine, "BlastObject", FnBlastObject);
 	AddFunc(pEngine, "CreateMenu", FnCreateMenu);
 	AddFunc(pEngine, "AddMenuItem", FnAddMenuItem);
 	AddFunc(pEngine, "SelectMenuItem", FnSelectMenuItem);

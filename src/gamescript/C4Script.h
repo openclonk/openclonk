@@ -130,7 +130,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CalcSellValue       "~CalcSellValue" // C4Object *pObj, int iObjValue
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
-#define PSF_OnBlastIncinerationDamage "OnBlastIncinerationDamage" // int Level, int Player
 #define PSF_OnInIncendiaryMaterial "OnInIncendiaryMaterial"
 
 // Effect callbacks

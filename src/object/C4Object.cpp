@@ -1238,25 +1238,6 @@ void C4Object::DoBreath(int32_t iChange)
 	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
 }
 
-void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
-{
-	// Damage
-	DoDamage(iLevel,iCausedBy,C4FxCall_DmgBlast);
-	// Energy (alive objects)
-	if (Alive) DoEnergy(-iLevel/3,false,C4FxCall_EngBlast, iCausedBy);
-	// Incinerate
-	if (GetPropertyInt(P_BlastIncinerate))
-		if (Damage >= GetPropertyInt(P_BlastIncinerate))
-		{
-			C4AulFunc *pCallFunc = GetFunc(PSF_OnBlastIncinerationDamage);
-			if (pCallFunc)
-			{
-				C4AulParSet Pars(C4VInt(iLevel), C4VInt(iCausedBy));
-				pCallFunc->Exec(this, &Pars);
-			}
-		}
-}
-
 void C4Object::DoCon(int32_t iChange)
 {
 	int32_t iStepSize=FullCon/100;
