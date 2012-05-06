@@ -543,11 +543,15 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 			else
 				{ dx2 = Fix0; dy2 = Fix0; }
 
-			d = itofix(Info.d) + dp;
+			d = Info.d + dp;
 
-			/*printf("Solved %p via PathFinder, from %d/%d to %d/%d\n", this, pix, piy, nix, niy);
+			/*int index = 0;
+			C4RopeElement* prev2 = prev;
+			while(prev2 != Front) { prev2 = prev2->Prev; ++index; }
+
+			printf("Solved %p(index=%d) via PathFinder, from %d/%d to %d/%d\n", this, index, pix, piy, nix, niy);
 			printf(" --> p to %d/%d, n to %d/%d\n", Info.px, Info.py, Info.nx, Info.ny);
-			printf(" --> vec_p=%f/%f, vec_n=%f/%f, d=%f\n", fixtof(dx1), fixtof(dy1), fixtof(dx2), fixtof(dy2), fixtof(d));*/
+			printf(" --> vec_p=%f/%f, vec_n=%f/%f, d(pathfinder)=%f, d(direct)=%f\n", fixtof(dx1), fixtof(dy1), fixtof(dx2), fixtof(dy2), fixtof(d), fixtof(Len(dx,dy)));*/
 		}
 		else
 		{
