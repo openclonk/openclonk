@@ -131,7 +131,7 @@ public func SetHandItemPos(int hand, int inv)
 		if(GetHandItem(hand2))
 		{
 			this->~OnSlotFull(hand2);
-			GetItem(inv)->~Selection(this, hand2);
+			GetHandItem(hand2)->~Selection(this, hand2);
 		}
 		else
 			this->~OnSlotEmpty(hand2);
