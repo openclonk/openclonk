@@ -1195,7 +1195,7 @@ void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
 	// Change value
 	Damage = Max<int32_t>( Damage+iChange, 0 );
 	// Engine script call
-	Call(PSF_Damage,&C4AulParSet(C4VInt(iChange), C4VInt(iCausedBy)));
+	Call(PSF_Damage,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedBy)));
 }
 
 void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iCausedByPlr)

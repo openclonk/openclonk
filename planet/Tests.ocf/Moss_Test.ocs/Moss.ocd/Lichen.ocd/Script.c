@@ -37,7 +37,7 @@ public func Incineration()
 	return;
 }
 
-public func Damage(int change, int byplayer)
+public func Damage()
 {
 	if (GetDamage() > (size/4)) Destroy();
 }

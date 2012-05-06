@@ -85,8 +85,8 @@
         </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
-          <col>int change, int by_player</col>
-          <col>When the object is damage.</col>
+          <col>int change, int cause, int by_player</col>
+          <col>When the object is damaged. See <emlink href="script/Effects.html#damagecause">Fx*Damage</emlink>for <code>cause</code> values.</col>
         </row>
         <row id="DeepBreath">
           <literal_col>DeepBreath</literal_col>
