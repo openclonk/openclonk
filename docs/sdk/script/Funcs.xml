@@ -48,8 +48,8 @@ func Bar() {
     <code>this == self: true
 this == self: false
 this == self: true</code>
-    <text>The last call to <code>Foo</code> shows the reason for <code>this</code>: Most of the functions in an object need that object to do something with it, and passing the object to every function would result in a lot of repetetive code.</text>
-    <text>Note for everyone familiar with previous versions of C4Script: When calling a function in a definition like <code>Flint->Hit();</code>, the definition is returned from <code>this</code>. In the <code>Flint->Hit();</code> example, that will probably result in an error message from the engine like "passed proplist, but expected object".</text>
+    <text>The last call to <code>Foo</code> shows the reason for <code>this</code>: Most of the functions in an object need that object to do something with it, and passing the object to every function would result in a lot of repetitive code.</text>
+    <text>Note for everyone familiar with previous versions of C4Script: When calling a function in a definition like <code>Flint->Hit();</code>, the definition is returned from <code>this</code>. In the <code>Flint->Hit();</code> example, that will probably result in an error message from the engine like "passed proplist, but expected object", because the Hit function of the Flint is not designed to be called like that.</text>
     <h id="parametertypen">Parameter Types</h>
     <text>You can specify the data type that is to be accepted for a given parameter. To do this, simply write the desired <emlink href="script/Typechecks.html">type name</emlink> before the parameter name:</text>
     <code>func TypeParameterFunction(object myClonk, id def, int count, string msg)
