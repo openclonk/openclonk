@@ -36,17 +36,15 @@ namespace
 		float v;
 	};
 
-	// TODO: For all square roots, we must avoid floating point by using an
-	// integer-based Sqrt algorithm
-	// TODO: Could also use an approximation which works without Sqrt, especially
-	// if this becomes a performance bottleneck. http://www.azillionmonkeys.com/qed/sqroot.html
+	// TODO: If the sqrts become a performance bottleneck we could also use an
+	// approximation which works without Sqrt, cf. http://www.azillionmonkeys.com/qed/sqroot.html
 	C4Real Len(C4Real dx, C4Real dy)
 	{
 		// Prevent possible overflow
 		if(Abs(dx) > 120 || Abs(dy) > 120)
-			return ftofix(sqrt(fixtoi(dx)*fixtoi(dx) + fixtoi(dy)*fixtoi(dy)));
+			return itofix(SqrtI(fixtoi(dx)*fixtoi(dx) + fixtoi(dy)*fixtoi(dy)));// ftofix(sqrt(fixtoi(dx)*fixtoi(dx) + fixtoi(dy)*fixtoi(dy)));
 		else
-			return ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+			return Sqrt(dx*dx + dy*dy);//ftofix(sqrt(fixtof(dx*dx + dy*dy)));
 	}
 
 	// For use in initializer list

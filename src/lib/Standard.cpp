@@ -71,6 +71,28 @@ int Pow(int base, int exponent)
 	return result;
 }
 
+/* Fast(?) Integer square root */
+uint32_t SqrtI(uint32_t a)
+{
+	uint32_t rem = 0;
+	uint32_t root = 0;
+	for(unsigned int i = 0; i < (sizeof(a)*8)/2; i++)
+	{
+		root <<= 1;
+		rem = ((rem << 2) + (a >> (sizeof(a)*8 - 2)));
+		a <<= 2;
+		root ++;
+		if(root <= rem)
+		{
+			rem -= root;
+			root++;
+		}
+		else
+			root--;
+	}
+	return root >> 1;
+}
+
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar,
              int32_t *lastx, int32_t *lasty)
