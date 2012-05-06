@@ -607,20 +607,34 @@ void C4Rope::Execute()
 		// Front/BackPull
 		if(FrontPull != Fix0)
 		{
-			const C4Real dx = Front->Next->GetX() - Front->GetX();
-			const C4Real dy = Front->Next->GetY() - Front->GetY();
-			const C4Real d = Len(dx, dy);
-			if(d != Fix0)
-				Front->Next->AddForce(-dx/d * FrontPull, -dy/d * FrontPull);
+			// Pull at all elements that are near to the front element
+			C4RopeElement* cur = Front;
+			C4Real d;
+			do
+			{
+				cur = cur->Next;
+				const C4Real dx = cur->GetX() - Front->GetX();
+				const C4Real dy = cur->GetY() - Front->GetY();
+				d = Len(dx, dy);
+				if(d != Fix0)
+					cur->AddForce(-dx/d * FrontPull, -dy/d * FrontPull);
+			} while(cur->Next != NULL && d < itofix(5,10*l));
 		}
 
 		if(BackPull != Fix0)
 		{
-			const C4Real dx = Back->Prev->GetX() - Back->GetX();
-			const C4Real dy = Back->Prev->GetY() - Back->GetY();
-			const C4Real d = Len(dx, dy);
-			if(d != Fix0)
-				Back->Prev->AddForce(-dx/d * BackPull, -dy/d * BackPull);
+			// Pull at all elements that are near to the back element
+			C4RopeElement* cur = Back;
+			C4Real d;
+			do
+			{
+				cur = cur->Prev;
+				const C4Real dx = cur->GetX() - Back->GetX();
+				const C4Real dy = cur->GetY() - Back->GetY();
+				d = Len(dx, dy);
+				if(d != Fix0)
+					cur->AddForce(-dx/d * BackPull, -dy/d * BackPull);
+			} while(cur->Prev != NULL && d < itofix(5,10*l));
 		}
 
 		// Apply forces
