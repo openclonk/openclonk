@@ -431,13 +431,13 @@ void C4Rope::DoAutoSegmentation(C4RopeElement* fixed, C4RopeElement* first, C4Re
 			// is shorter than the distance between that element and the fixpoint
 			// and the path between the two is free, then the rope is shortened.
 			unsigned int i = 1;
-			for(C4RopeElement* cur = fixed->Next; cur != NULL; cur = (fixed->Next == first ? cur->Next : cur->Prev), ++i)
+			for(C4RopeElement* cur = first; cur != NULL; cur = (fixed->Next == first ? cur->Next : cur->Prev), ++i)
 			{
 				// We use integers, not reals here, to protect for overflows. This works
 				// because these numbers are large enough so we don't need to take care
 				// about subpixel precision.
 				const unsigned int nd = fixtoi(l*itofix(i));
-				
+
 				const unsigned int dx = fixtoi(cur->GetX() - fixed->GetX());
 				const unsigned int dy = fixtoi(cur->GetY() - fixed->GetY());
 				const unsigned int d2 = dx*dx+dy*dy;
