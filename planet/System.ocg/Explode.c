@@ -195,6 +195,23 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 	return true;
 }
 
+global func BlastObject(int Level, CausedBy)
+{
+	var self = this;
+	if (CausedBy == nil)
+		CausedBy = GetController();
+
+	DoDamage(Level, FX_Call_DmgBlast, CausedBy);
+	if (!self) return;
+
+	if (GetAlive())
+		DoEnergy(-Level/3, false, FX_Call_EngBlast, CausedBy);
+	if (!self) return;
+
+	if (this.BlastIncinerate && GetDamage() >= this.BlastIncinerate)
+		Incinerate(Level, CausedBy);
+}
+
 global func BlastObjectsShockwaveCheck(int x, int y)
 {
 	var def = GetID();

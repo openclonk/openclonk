@@ -110,14 +110,6 @@ public func OnMouseOut(int plr, object dragged)
 
 /* Menu item properties */
 
-public func SetTooltip(string desc) {
-	this.Tooltip = desc;
-}
-
-public func GetTooltip() {
-	return this.Tooltip;
-}
-
 public func SetMenu(object menu)
 {
 	item_menu = menu;
@@ -182,6 +174,10 @@ public func Update()
 	
 	// Update item amount.
 	UpdateCount();
+	
+	// Update tooltip
+	UpdateTooltip();
+	
 	return;
 }	
 
@@ -269,4 +265,14 @@ private func UpdateCount()
 			SetGraphics(nil, nil, 10);
 	}
 	return;
+}
+
+private func UpdateTooltip()
+{
+	if(!item_object)
+		this.Tooltip = nil;
+	else
+	{
+		this.Tooltip = item_object.Description;
+	}
 }

@@ -100,7 +100,7 @@ public func IsProjectileTarget(target,shooter)
 	return 1;
 }
 
-public func Damage(int change, int byplayer)
+public func Damage()
 {
 	Incinerate();
 }

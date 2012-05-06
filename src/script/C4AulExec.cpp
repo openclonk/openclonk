@@ -108,6 +108,29 @@ void C4AulExec::LogCallStack()
 		pCtx->dump(StdStrBuf(" by: "));
 }
 
+C4String *C4AulExec::FnTranslate(C4AulContext *ctx, C4String *text)
+{
+	if (!text || text->GetData().isNull()) return NULL;
+	// Find correct script: translations of the context if possible, containing script as fallback
+	C4AulScript *script = NULL;
+	if (ctx->Def && ctx->Def->GetDef())
+		script = &(ctx->Def->GetDef()->Script);
+	else
+		script = AulExec.pCurCtx[-1].Func->pOrgScript;
+	assert(script);
+	try
+	{
+		return ::Strings.RegString(script->Translate(text->GetCStr()).c_str());
+	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
+		// Trace
+		AulExec.LogCallStack();
+		return text;
+	}
+}
+
 void C4AulExec::ClearPointers(C4Object * obj)
 {
 #if 0
@@ -145,7 +168,6 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	ctx.Func = pSFunc;
 	ctx.TemporaryScript = fTemporaryScript;
 	ctx.CPos = NULL;
-	ctx.Caller = NULL;
 	PushContext(ctx);
 
 	// Execute
@@ -832,7 +854,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		if (ctx.Obj && !ctx.Obj->Status)
 			throw new C4AulExecError(ctx.Obj, "using removed object");
 		ctx.Def = pContext;
-		ctx.Caller = pCurCtx;
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
 		ctx.Vars = pCurVal + 1;
@@ -859,7 +880,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		if (ctx.Obj && !ctx.Obj->Status)
 			throw new C4AulExecError(ctx.Obj, "using removed object");
 		ctx.Def = pContext;
-		ctx.Caller = pCurCtx;
 
 #ifdef DEBUGREC_SCRIPT
 		StdStrBuf sCallText;
@@ -911,7 +931,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			C4AulScriptContext ctx;
 			ctx.Obj = pContext ? pContext->GetObject() : 0;
 			ctx.Def = pContext;
-			ctx.Caller = pCurCtx;
 			ctx.Return = pReturn;
 			ctx.Pars = pPars;
 			ctx.Vars = pPars + pFunc->GetParCount();
@@ -1059,7 +1078,6 @@ C4Value C4AulFunc::Exec(C4PropList * p, C4AulParSet* pPars, bool fPassErrors)
 	C4AulContext ctx;
 	ctx.Obj = p ? p->GetObject() : NULL;
 	ctx.Def = p;
-	ctx.Caller = NULL;
 	// execute
 	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
 }

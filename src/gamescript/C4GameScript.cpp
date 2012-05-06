@@ -1069,10 +1069,10 @@ static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
 	// safety
 	C4String *szFunction = szFunction_C4V->getStr();
 
-	if (!szFunction || !cthr->Obj) return C4Value();
+	if (!szFunction || !cthr->Def) return C4Value();
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
-	return cthr->Obj->Call(FnStringPar(szFunction),&Pars/*, true*/);
+	return cthr->Def->Call(szFunction, &Pars);
 }
 
 static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
@@ -1098,16 +1098,14 @@ static C4Value FnGameCall_C4V(C4AulContext *cthr,
                               C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
                               C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
 {
-	C4String *szFunction = szFunction_C4V->getStr();
+	const char * fn = FnStringPar(szFunction_C4V->getStr());
+	if (!fn[0]) return C4Value();
 
-	if (!szFunction) return C4Value();
-	// Make failsafe
-	char szFunc2[500+1]; sprintf(szFunc2,"~%s",FnStringPar(szFunction));
 	// copy parameters
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
 	// Call
-	return ::GameScript.Call(szFunc2, &Pars, true);
+	return ::GameScript.Call(fn, &Pars, true);
 }
 
 static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
@@ -1115,16 +1113,14 @@ static C4Value FnGameCallEx_C4V(C4AulContext *cthr,
                                 C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
                                 C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
 {
-	C4String *szFunction = szFunction_C4V->getStr();
+	const char * fn = FnStringPar(szFunction_C4V->getStr());
+	if (!fn[0]) return C4Value();
 
-	if (!szFunction) return C4Value();
-	// Make failsafe
-	char szFunc2[500+1]; sprintf(szFunc2,"~%s",FnStringPar(szFunction));
 	// copy parameters
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
 	// Call
-	return ::GameScript.GRBroadcast(szFunc2,&Pars, true);
+	return ::GameScript.GRBroadcast(fn, &Pars, true);
 }
 
 static C4Value FnEditCursor(C4AulContext *cth, C4Value *pPars)
@@ -1506,13 +1502,6 @@ static C4String *FnMaterialName(C4AulContext* cthr, long iMat)
 	if (!MatValid(iMat)) return NULL;
 	// return mat name
 	return String(::MaterialMap.Map[iMat].Name);
-}
-
-static C4String *FnGetNeededMatStr(C4AulContext* cthr)
-{
-	// local/safety
-	if (!cthr->Obj) throw new NeedObjectContext("GetNeededMatStr");
-	return String(cthr->Obj->GetNeededMatStr().getData());
 }
 
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
@@ -2491,7 +2480,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetTime", FnGetTime);
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);
 	AddFunc(pEngine, "MaterialName", FnMaterialName);
-	AddFunc(pEngine, "GetNeededMatStr", FnGetNeededMatStr);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);

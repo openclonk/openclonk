@@ -51,7 +51,6 @@ public func AddMenuStructures(object constructor, object clonk)
 		if (!AddItem(item))
 			return item->RemoveObject();
 		item->SetSymbol(structure);
-		item->SetTooltip(structure.Description);
 	}
 	return;
 }

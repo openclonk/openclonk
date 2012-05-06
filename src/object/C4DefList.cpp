@@ -404,7 +404,6 @@ void C4DefList::CallEveryDefinition()
 #endif
 		C4AulParSet Pars(C4VPropList(it->second));
 		it->second->Call(PSF_Definition, &Pars);
-		it->second->Freeze();
 	}
 }
 

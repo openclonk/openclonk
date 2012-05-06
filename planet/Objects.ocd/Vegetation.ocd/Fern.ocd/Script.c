@@ -2,6 +2,10 @@
 
 #include Library_Plant
 
+private func SeedChance() { return 400; }
+private func SeedArea() { return 120; }
+private func SeedAmount() { return 4; }
+
 func Construction()
 {
 	StartGrowth(1);
@@ -22,3 +26,4 @@ public func Incineration()
 local Name = "$Name$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local Placement = 4;

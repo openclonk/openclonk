@@ -97,11 +97,6 @@ public:
 	inline bool IsNil() const { return true; }
 };
 
-// Some functions require object context.
-// Using this type instead of C4AulContext guarantees validity of Obj member.
-// Don't add any members to this class, or breakage will occur.
-class C4AulObjectContext : public C4AulContext {};
-
 // Some functions are callable in definition context only.
 // This exception gets thrown if they are called from anywhere else.
 class NeedDefinitionContext : public C4AulExecError
@@ -319,7 +314,7 @@ class C4AulDefObjectFunc##N:                  \
 public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4AulObjectContext * LIST(N, PARS)); \
+    typedef RType (*Func)(C4Object * LIST(N, PARS)); \
     virtual int GetParCount() { return N; }   \
     virtual C4V_Type GetRetType()             \
     { return C4ValueConv<RType>::Type(); }    \
@@ -332,7 +327,7 @@ public C4AulDefFuncHelper {                   \
     virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
     { \
       if (!pContext->Obj) throw new NeedObjectContext(GetName()); \
-      return C4ValueConv<RType>::ToC4V(pFunc(static_cast<C4AulObjectContext*>(pContext) LIST(N, CONV_FROM_C4V))); \
+      return C4ValueConv<RType>::ToC4V(pFunc(pContext->Obj LIST(N, CONV_FROM_C4V))); \
     } \
   protected:                                  \
     Func pFunc;                               \
@@ -343,7 +338,7 @@ inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Au
   new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   } \
 template <typename RType LIST(N, TYPENAMES)> \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulObjectContext * LIST(N, PARS)), bool Public=true) \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   }

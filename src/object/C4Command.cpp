@@ -1789,6 +1789,8 @@ void C4Command::Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value
 	cObj=pObj;
 	Target=pTarget;
 	Tx=nTx; Ty=iTy;
+	if (Command != C4CMD_Call && !Tx.CheckConversion(C4V_Int))
+		Tx.SetInt(0);
 	Target2=pTarget2;
 	Data=iData;
 	UpdateInterval=iUpdateInterval;

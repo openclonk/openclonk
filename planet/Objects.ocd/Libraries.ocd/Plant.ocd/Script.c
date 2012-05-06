@@ -16,38 +16,53 @@ public func IsPlant()
 */
 private func SeedChance() {	return 500; }
 
-/** Distance the seeds may travel. Default is 300.
+/** Distance the seeds may travel. Default is 250.
 	@return the maximum distance.
 */
-private func SeedAreaSize() { return 300; }
+private func SeedArea() { return 250; }
 
-/** The amount of plants allowed within SeedAreaSize. Default is 8.
+/** The amount of plants allowed within SeedAreaSize. Default is 10.
 	@return the maximum amount of plants.
 */
-private func SeedAmount() { return 8; }
+private func SeedAmount() { return 10; }
 
 /** Automated positioning via RootSurface, make sure to call this if needed (in case Construction is overloaded)
 */
 protected func Construction()
 {
 	Schedule(this, "RootSurface()", 1);
-	AddTimer("Seed", 350);
+	AddTimer("Seed", 72);
 	_inherited(...);
 }
 
-/** Reproduction: Called by a timer (duration is fixed so SeedChance controls the chance to reproduce)
+/** Reproduction of plants: Called every 2 seconds by a timer.
 */
 public func Seed()
 {
-	if(!Random(SeedChance()))
+	// Find number of plants in seed area.
+	var size = SeedArea();
+	var amount = SeedAmount();
+	var offset = size / -2;	
+	var plant_cnt = ObjectCount(Find_ID(GetID()), Find_InRect(offset, offset, size, size));
+	// If there are not much plants in the seed area compared to seed amount
+	// the chance of seeding is improved, if there are much the chance is reduced.
+	var chance = SeedChance();
+	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
+	// Place a plant if we are lucky, in principle there can be more than seed amount.
+	if (!Random(chance))
 	{
-		var iSize = SeedAreaSize();
-		var iOffset = iSize / -2;
-		if(ObjectCount(Find_ID(this->GetID()), Find_Distance(iSize)) < SeedAmount())
+		// Place the plant but check if it is not close to another one.	
+		var plant = PlaceVegetation(GetID(), offset, offset, size, size, 3);
+		if (plant)
 		{
-			PlaceVegetation(GetID(), iOffset, iOffset, iSize, iSize, 3);
+			var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
+			var distance = ObjectDistance(plant, neighbour);
+			// Closeness determined by seedarea and amount.
+			if (!Random(distance / (size/amount)))
+				plant->RemoveObject();
 		}
 	}
+	return;
 }
 
 /* Chopping */

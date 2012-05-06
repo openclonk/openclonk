@@ -1,5 +1,6 @@
 /**
 	Control object for content menus.
+	This is not a regular menu, because it creates other menus to do the work for it.
 	
 	@author Newton, Maikel
 */
@@ -12,6 +13,8 @@ local menu_object;
 
 local crew_count;
 local container_count;
+
+static const MENU_Contents_MaxCrewDist = 20;
 
 /** Creates a content menu for the calling object. This is supposed to be a crew member, 
 	controlled by a player.
@@ -35,7 +38,7 @@ global func CreateContentsMenus()
 	controller->AddContentMenu(this, index, true);
 	
 	// add all nearby crewmembers
-	var teammates = FindObjects(Find_Distance(20), Find_OCF(OCF_CrewMember), Find_Owner(GetOwner()), Find_Exclude(this));
+	var teammates = FindObjects(Find_Distance(MENU_Contents_MaxCrewDist), Find_OCF(OCF_CrewMember), Find_Owner(GetOwner()), Find_Exclude(this));
 	index = 1;
 	for(var t in teammates)
 		controller->AddContentMenu(t, index++, true);
@@ -50,6 +53,9 @@ global func CreateContentsMenus()
 	return controller;
 }
 
+/** Returns the object for which the menu is shown. */
+public func GetMenuObject() { return menu_object; }
+
 global func SortInventoryObjs()
 {
 	// left: crew members
@@ -62,9 +68,9 @@ global func SortInventoryObjs()
 
 public func IsContentMenu() { return true; }
 
-func SetMenuObject(object menu_object)
+func SetMenuObject(object menuObject)
 {
-	menu_object = menu_object;
+	menu_object = menuObject;
 }
 
 func Construction()
@@ -151,6 +157,9 @@ func RemoveContentMenu(int index)
 	
 	circ_menus[index].Menu->RemoveObject();
 	
+	// for debugging, we'll set debug information here. In case something doesn't work as intended or setLength breaks.
+	circ_menus[index] = {Debug="RemoveContentMenu was called", Index=index};
+	
 	// close the gap
 	for(var i=index; i < length-1; i++)
 		circ_menus[i] = circ_menus[i+1];
@@ -229,7 +238,7 @@ private func PutContentsIntoMenu(object menu, object container)
 				return;
 	}
 	
-	// TODO: find an extra-entry or something like that for this.
+	// TODO: find an extra-entry or something like that to display this.
 	if(container->~IsCarryingHeavy())
 		AddContentsMenuItem(container->GetCarryHeavy(), menu);
 }
@@ -244,10 +253,6 @@ private func AddContentsMenuItem(object obj, object menu, array stack)
 		return false;
 	}
 	item->SetSymbol(obj);
-	if(obj.Description)
-	{
-		item->SetTooltip(obj.Description);
-	}
 	if (stack == nil)
 	{
 		item->SetData([obj]);
@@ -329,6 +334,11 @@ public func FxContainerTrackerTimer(object target, proplist effect)
 		effect.CommandTarget->~OnContainerMovement(effect.Menu, target);
 		effect.Position = target->GetPosition();
 
+		// if it's the clonk that moved
+		if(target == effect.CommandTarget.menu_object)
+			// check all distances.
+			effect.CommandTarget->~OnClonkMovement();
+
 		return 1;
 	}
 	
@@ -393,6 +403,15 @@ public func FxContainerTrackerUpdate(object target, proplist effect)
 	}
 }
 
+/** Called when the position of the clonk that opened the menu changed.
+    Checks if containers are still in range, and removes menu if necessary.
+*/
+public func OnClonkMovement()
+{
+	for(var prop in circ_menus)
+		OnContainerMovement(prop.Menu, prop.Object);
+}
+
 /** Called when the position of a container with an open menu changed.
     Checks if object still is in range, and removes menu if necessary.
 */
@@ -403,8 +422,18 @@ public func OnContainerMovement(object menu, object container)
 		return;
 	
 	// check distance
-	if(ObjectDistance(menu_object, container) > circ_menus[index].Distance)
-		RemoveContentMenu(index);
+	if(menu.isCrew)
+	{
+		Log("%s - %s: %d", menu_object->GetName(), container->GetName(), ObjectDistance(menu_object, container));
+		if(ObjectDistance(menu_object, container) > MENU_Contents_MaxCrewDist)
+			RemoveContentMenu(index);
+	}
+	else
+	{
+		// todo: reverse-find_at_point or something more performant than InFrontOf.
+		if(!menu_object->InFrontOf(container))
+			RemoveContentMenu(index);
+	}
 }
 
 /** Called when a container with an open menu got removed.

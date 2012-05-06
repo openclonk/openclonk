@@ -69,7 +69,7 @@ global func MovePosition(int x, int y, int prec)
 }
 
 // Returns the position as an array
-global func GetPosition(int x, int y, int prec)
+global func GetPosition(int prec)
 {
 	return [GetX(prec), GetY(prec)];
 }
@@ -320,4 +320,14 @@ global func GetTopEdge()
 global func GetBottomEdge()
 {
 	return GetY()+GetObjHeight()/2;
+}
+
+// Returns if the object is standing in front of the back-object
+global func InFrontOf(object back)
+{
+	var front = this;
+	if(!front)
+		return;
+	
+	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
 }

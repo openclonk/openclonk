@@ -397,7 +397,7 @@ public func UpdateSelectionStatus()
 	if(actiontype == ACTIONTYPE_CARRYHEAVY)
 	{
 		SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
-		SetName(Format("$TxtUnGrab$",myobject->GetName()));
+		this.Tooltip = Format("$TxtUnGrab$",myobject->GetName());
 	}
 
 	// script...
@@ -410,7 +410,7 @@ public func UpdateSelectionStatus()
 			SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
 			
 			var desc = metainfo["Description"];
-			if(desc) SetName(desc);
+			if(desc) this.Tooltip = desc;
 			
 			if(metainfo["Selected"])
 				SetObjDrawTransform(1200,0,0,0,1200,0,1);
@@ -446,12 +446,12 @@ public func UpdateSelectionStatus()
 		if(actiontype == ACTIONTYPE_VEHICLE)
 		{
 			SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
-			SetName(Format("$TxtUnGrab$",myobject->GetName()));
+			this.Tooltip = Format("$TxtUnGrab$",myobject->GetName());
 		}
 		else if(actiontype == ACTIONTYPE_STRUCTURE)
 		{
 			SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
-			SetName(Format("$TxtExit$",myobject->GetName()));
+			this.Tooltip = Format("$TxtExit$",myobject->GetName());
 		}
 	}
 	else
@@ -467,18 +467,18 @@ public func UpdateSelectionStatus()
 			if(!(myobject->Contained()))
 			{
 				SetGraphics("Grab",GetID(),2,GFXOV_MODE_Base);
-				SetName(Format("$TxtGrab$",myobject->GetName()));
+				this.Tooltip = Format("$TxtGrab$",myobject->GetName());
 			}
 			else
 			{
 				SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
-				SetName(Format("$TxtPushOut$",myobject->GetName()));
+				this.Tooltip = Format("$TxtPushOut$",myobject->GetName());
 			}
 		}
 		if(actiontype == ACTIONTYPE_STRUCTURE)
 		{
 			SetGraphics("Enter",GetID(),2,GFXOV_MODE_Base);
-			SetName(Format("$TxtEnter$",myobject->GetName()));
+			this.Tooltip = Format("$TxtEnter$",myobject->GetName());
 		}
 	}
 	SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);

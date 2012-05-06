@@ -166,16 +166,6 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	return r;
 }
 
-void C4DefScriptHost::Clear()
-{
-	C4ScriptHost::Clear();
-}
-
-void C4DefScriptHost::AfterLink()
-{
-	C4ScriptHost::AfterLink();
-}
-
 C4PropList * C4DefScriptHost::GetPropList() { return Def; }
 
 /*--- C4GameScriptHost ---*/
@@ -198,12 +188,6 @@ void C4GameScriptHost::Clear()
 	delete ScenPropList; ScenPropList = 0;
 	delete ScenPrototype; ScenPrototype = 0;
 	C4ScriptHost::Clear();
-}
-
-void C4GameScriptHost::AfterLink()
-{
-	C4ScriptHost::AfterLink();
-	ScenPrototype->Freeze();
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)

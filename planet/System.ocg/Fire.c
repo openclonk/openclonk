@@ -67,12 +67,6 @@ global func Incinerate(strength, int caused_by, blasted, incinerating_object)
 	return true;
 }
 
-// Called when an object is hit by an explosion (and can burn).
-global func OnBlastIncinerationDamage(int level, int player)
-{
-	return this->Incinerate(level, player);
-}
-
 // Called if the object is submerged in incendiary material (for example in lava).
 global func OnInIncendiaryMaterial()
 {

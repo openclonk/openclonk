@@ -156,16 +156,9 @@ void C4AulScriptFunc::UnLink()
 	C4AulFunc::UnLink();
 }
 
-void C4AulScript::AfterLink() { }
-
 bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	return false;
-}
-
-void C4AulScriptEngine::AfterLink()
-{
-	GlobalPropList->Freeze();
 }
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
@@ -191,15 +184,16 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// engine is always parsed (for global funcs)
 		State = ASS_PARSED;
 
-		// get common funcs
-		for (C4AulScript *s = Child0; s; s = s->Next)
-			s->AfterLink();
-		AfterLink();
-
 		// update material pointers
 		::MaterialMap.UpdateScriptPointers();
 
 		rDefs->CallEveryDefinition();
+
+		// Done modifying the proplists now
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->GetPropList()->Freeze();
+		GetPropList()->Freeze();
+
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
 		     lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));

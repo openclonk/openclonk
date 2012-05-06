@@ -557,7 +557,7 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <h>Fx*Damage</h>
       <text><code>int Fx*Damage (object target, proplist effect, int damage, int cause);</code></text>
       <text>Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change.</text>
-      <text>This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
+      <text id="damagecause">This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
       <text>
         <table>
           <rowh>

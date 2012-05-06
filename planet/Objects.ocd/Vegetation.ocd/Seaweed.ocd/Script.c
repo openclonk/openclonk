@@ -1,13 +1,5 @@
 /*-- Seaweed --*/
 
-/*
-#include Library_Plant
-
-private func SeedChance() { return 300; }
-private func SeedAreaSize() { return 600; }
-private func SeedAmount() { return 4; }
-*/
-
 private func Initialize()
 {
 	SetAction("Sway");

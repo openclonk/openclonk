@@ -201,7 +201,7 @@ func FxLifeTimerTimer(target, effect, time)
 	}
 }
 
-func Damage(int damage, object from)
+func Damage()
 {
 	// splatter
 	if(grow_anim)
