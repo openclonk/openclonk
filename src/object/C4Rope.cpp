@@ -19,6 +19,8 @@
 #include <C4Landscape.h>
 #include <C4Rope.h>
 
+//#define C4ROPE_DRAW_DEBUG
+
 namespace
 {
 	struct Vertex {
@@ -147,14 +149,14 @@ namespace
 }
 
 C4RopeElement::C4RopeElement(C4Object* obj, bool fixed):
-	Fixed(fixed), fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0),
+	Fixed(fixed), fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
 	Next(NULL), Prev(NULL), Object(obj)
 {
 }
 
 C4RopeElement::C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed):
 	Fixed(fixed), x(x), y(y), vx(Fix0), vy(Fix0), m(m),
-	fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0),
+	fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
 	Next(NULL), Prev(NULL), Object(NULL)
 {
 }
@@ -163,6 +165,11 @@ void C4RopeElement::AddForce(C4Real x, C4Real y)
 {
 	fx += x;
 	fy += y;
+
+#ifdef C4ROPE_DRAW_DEBUG
+	fcx += x;
+	fcy += y;
+#endif
 }
 
 void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
@@ -604,6 +611,12 @@ void C4Rope::Execute()
 		DoAutoSegmentation(Front, Front->Next, FrontAutoSegmentation);
 		DoAutoSegmentation(Back, Back->Prev, BackAutoSegmentation);
 
+		// Reset previous forces
+#ifdef C4ROPE_DRAW_DEBUG
+		for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
+			cur->fcx = cur->fcy = Fix0;
+#endif
+
 		// Compute inter-rope forces
 		for(C4RopeElement* cur = Front; cur->Next != NULL; cur = cur->Next)
 			Solve(cur, cur->Next);
@@ -667,7 +680,7 @@ void C4Rope::ClearPointers(C4Object* obj)
 // TODO: Move this to StdGL
 void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 {
-#if 1
+#ifndef C4ROPE_DRAW_DEBUG
 	Vertex Tmp[4];
 	DrawVertex* Vertices = new DrawVertex[SegmentCount*2+4]; // TODO: Use a vbo and map it into memory instead?
 
@@ -792,6 +805,19 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 			glVertex2f(fixtof(cur->GetX()) + vx/v*4.0f, fixtof(cur->GetY()) + vy/v*4.0f);
 			glVertex2f(fixtof(cur->GetX()) - vy/v*1.5f, fixtof(cur->GetY()) + vx/v*1.5f);
 			glVertex2f(fixtof(cur->GetX()) + vy/v*1.5f, fixtof(cur->GetY()) - vx/v*1.5f);
+			glEnd();
+		}
+
+		const float fx = fixtof(cur->fcx);
+		const float fy = fixtof(cur->fcy);
+		const float f = sqrt(fx*fx + fy*fy);
+		if(f > 0.1)
+		{
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.0f, 1.0f, BoundBy(v/2.5f, 0.0f, 1.0f));
+			glVertex2f(fixtof(cur->GetX()) + fx/f*4.0f, fixtof(cur->GetY()) + fy/f*4.0f);
+			glVertex2f(fixtof(cur->GetX()) - fy/f*1.5f, fixtof(cur->GetY()) + fx/f*1.5f);
+			glVertex2f(fixtof(cur->GetX()) + fy/f*1.5f, fixtof(cur->GetY()) - fx/f*1.5f);
 			glEnd();
 		}
 

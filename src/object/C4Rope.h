@@ -58,6 +58,7 @@ private:
 	C4Real fx, fy; // force
 	C4Real rx, ry; // force redirection
 	C4Real rdt; // force redirection timeout
+	C4Real fcx, fcy; // force after solve -- for debug output only
 	C4RopeElement* Next; // next rope element, or NULL
 	C4RopeElement* Prev; // prev rope element, or NULL
 	C4Object* Object; // Connected object. If set, x/y/vx/vy/m are ignored.
