@@ -26,3 +26,4 @@ public func Incineration()
 local Name = "$Name$";
 local BlastIncinerate = 1;
 local ContactIncinerate = 3;
+local Placement = 4;
