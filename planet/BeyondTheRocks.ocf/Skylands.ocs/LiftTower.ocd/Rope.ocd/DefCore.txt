@@ -4,5 +4,5 @@ Version=5,2,0,1
 Category=C4D_StaticBack
 Vertices=2
 Width=2
-Height=12
-Offset=-1,-6
+Height=11
+Offset=-1,-5
