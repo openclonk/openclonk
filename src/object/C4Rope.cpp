@@ -19,11 +19,6 @@
 #include <C4Landscape.h>
 #include <C4Rope.h>
 
-// TODO: For all square roots, we must avoid floating point by using an
-// integer-based Sqrt algorithm
-// TODO: Could also use an approximation which works without Sqrt, especially
-// if this becomes a performance bottleneck. http://www.azillionmonkeys.com/qed/sqroot.html
-
 namespace
 {
 	struct Vertex {
@@ -39,18 +34,32 @@ namespace
 		float v;
 	};
 
+	// TODO: For all square roots, we must avoid floating point by using an
+	// integer-based Sqrt algorithm
+	// TODO: Could also use an approximation which works without Sqrt, especially
+	// if this becomes a performance bottleneck. http://www.azillionmonkeys.com/qed/sqroot.html
+	C4Real Len(C4Real dx, C4Real dy)
+	{
+		// Prevent possible overflow
+		if(Abs(dx) > 120 || Abs(dy) > 120)
+			return ftofix(sqrt(fixtoi(dx)*fixtoi(dx) + fixtoi(dy)*fixtoi(dy)));
+		else
+			return ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+	}
+
 	// For use in initializer list
 	C4Real ObjectDistance(C4Object* first, C4Object* second)
 	{
 		C4Real dx = second->fix_x - first->fix_x;
 		C4Real dy = second->fix_y - first->fix_y;
-		return ftofix(sqrt(fixtof(dx*dx + dy*dy))); // TODO: Replace by integer sqrt
+		return Len(dx, dy);
 	}
 
 	// Helper function for Draw: determines vertex positions for one segment
 	void VertexPos(Vertex& out1, Vertex& out2, Vertex& out3, Vertex& out4,
 		             const Vertex& v1, const Vertex& v2, float w)
 	{
+		// This is for graphics only, so plain sqrt() is OK.
 		const float l = sqrt( (v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
 
 		out1.x = v1.x + w/2.0f * (v1.y - v2.y) / l;
@@ -129,7 +138,7 @@ namespace
 				C4Real dy = itofix(Info->py - iY);
 				Info->px = iX;
 				Info->py = iY;
-				Info->d += ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+				Info->d += Len(dx, dy);
 			}
 		}
 
@@ -311,7 +320,7 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 	C4Real vy1 = -Sin75 * dx + Cos75 * dy;
 	C4Real vx2 =  Cos75 * dx - Sin75 * dy;
 	C4Real vy2 =  Sin75 * dx + Cos75 * dy;
-	const C4Real v = ftofix(sqrt(fixtof(dx*dx + dy*dy)));
+	const C4Real v = Len(dx, dy);
 
 	// TODO: We should check more than a single pixel. There's some more potential for optimization here.
 	if(v != Fix0 && !GBackSolid(ox + fixtoi(GetX() + vx1*l/v), oy + fixtoi(GetY() + vy1*l/v)))
@@ -326,7 +335,7 @@ bool C4RopeElement::SetForceRedirectionByLookAround(const C4Rope* rope, int ox, 
 }
 
 C4Rope::C4Rope(C4PropList* Prototype, C4Object* first_obj, C4Object* second_obj, C4Real segment_length, C4DefGraphics* graphics):
-	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(itofix(ObjectDistance(first_obj, second_obj))/segment_length),
+	C4PropListNumbered(Prototype), Width(5.0f), Graphics(graphics), SegmentCount(fixtoi(ObjectDistance(first_obj, second_obj)/segment_length)),
 	l(segment_length), k(Fix1*3), mu(Fix1*3), eta(Fix1*3), NumIterations(10),
 	FrontAutoSegmentation(Fix0), BackAutoSegmentation(Fix0), FrontPull(Fix0), BackPull(Fix0)
 {
@@ -377,10 +386,10 @@ C4Real C4Rope::GetL(const C4RopeElement* prev, const C4RopeElement* next) const
 
 	if(FrontAutoSegmentation > Fix0)
 		if(prev == Front || next == Front)
-			return Min(itofix(5), ftofix(sqrt(fixtof(dx*dx+dy*dy))));
+			return Min(itofix(5), Len(dx, dy));
 	if(BackAutoSegmentation > Fix0)
 		if(prev == Back || next == Back)
-			return Min(itofix(5), ftofix(sqrt(fixtof(dx*dx+dy*dy))));
+			return Min(itofix(5), Len(dx, dy));
 
 	return l;
 }
@@ -483,7 +492,7 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 	const C4Real dx = prev->GetX() - next->GetX();
 	const C4Real dy = prev->GetY() - next->GetY();
 
-	if(dx*dx + dy*dy > Fix0)
+	if(dx != Fix0 || dy != Fix0) //dx*dx + dy*dy > Fix0)
 	{
 		// Get segment length between prev and next
 		const C4Real l = GetL(prev, next);
@@ -507,22 +516,33 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 		// TODO: For objects, run PathFree and PathFinder from vertex which has
 		// had contact to the landscape previously.
 
+		// We only run the PathFinder when the distance between the two segments
+		// is at least twice the nominal distance. 
+
 		C4Real dx1, dy1, dx2, dy2, d;
 		PullPathInfo Info = { true, pix, piy, nix, niy, nix, niy, pix, piy, Fix0 };
-		if(dx*dx+dy*dy > 4*l && !PathFree(pix, piy, nix, niy) && Game.PathFinder.Find(pix, piy, nix, niy, PullPathAccumulator, (intptr_t)&Info))
+		if((Abs(dx) > 2*l || Abs(dy) > 2*l || dx*dx+dy*dy > 4*l*l) && // The first two checks exist to avoid an overflow in the dx*dx+dy*dy expression
+		   !PathFree(pix, piy, nix, niy) &&
+		   Game.PathFinder.Find(pix, piy, nix, niy, PullPathAccumulator, (intptr_t)&Info))
 		{
 			C4Real dpx = itofix(Info.px - pix);
 			C4Real dpy = itofix(Info.py - piy);
-			C4Real dp = ftofix(sqrt(fixtof(dpx*dpx + dpy*dpy))); // TODO: Could be computed in accumulator
+			C4Real dp = Len(dpx, dpy); // TODO: Could be computed in accumulator
 
 			C4Real dnx = itofix(Info.nx - nix);
 			C4Real dny = itofix(Info.ny - niy);
-			C4Real dn = ftofix(sqrt(fixtof(dnx*dnx + dny*dny))); // TODO: Could be computed in accumulator
+			C4Real dn = Len(dnx, dny); // TODO: Could be computed in accumulator
 
-			dx1 = dpx / dp;
-			dy1 = dpy / dp;
-			dx2 = dnx / dn;
-			dy2 = dny / dn;
+			if(dp != Fix0)
+				{ dx1 = dpx / dp; dy1 = dpy / dp; }
+			else
+				{ dx1 = Fix0; dy1 = Fix0; }
+
+			if(dn != Fix0)
+				{ dx2 = dnx / dn; dy2 = dny / dn; }
+			else
+				{ dx2 = Fix0; dy2 = Fix0; }
+
 			d = itofix(Info.d) + dp;
 
 			/*printf("Solved %p via PathFinder, from %d/%d to %d/%d\n", this, pix, piy, nix, niy);
@@ -531,9 +551,12 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 		}
 		else
 		{
-			d = ftofix(sqrt(fixtof(dx*dx + dy*dy)));
-			dx1 = -(dx / d);
-			dy1 = -(dy / d);
+			d = Len(dx, dy);
+			if(d != Fix0)
+				{ dx1 = -(dx / d); dy1 = -(dy / d); }
+			else
+				{ dx1 = 0; dx2 = 0; }
+
 			dx2 = -dx1;
 			dy2 = -dy1;
 		}
@@ -586,7 +609,7 @@ void C4Rope::Execute()
 		{
 			const C4Real dx = Front->Next->GetX() - Front->GetX();
 			const C4Real dy = Front->Next->GetY() - Front->GetY();
-			const C4Real d = ftofix(sqrt(fixtof(dx*dx+dy*dy)));
+			const C4Real d = Len(dx, dy);
 			if(d != Fix0)
 				Front->Next->AddForce(-dx/d * FrontPull, -dy/d * FrontPull);
 		}
@@ -595,7 +618,7 @@ void C4Rope::Execute()
 		{
 			const C4Real dx = Back->Prev->GetX() - Back->GetX();
 			const C4Real dy = Back->Prev->GetY() - Back->GetY();
-			const C4Real d = ftofix(sqrt(fixtof(dx*dx+dy*dy)));
+			const C4Real d = Len(dx, dy);
 			if(d != Fix0)
 				Back->Prev->AddForce(-dx/d * BackPull, -dy/d * BackPull);
 		}
