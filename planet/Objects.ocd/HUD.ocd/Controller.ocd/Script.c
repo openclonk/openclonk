@@ -190,8 +190,6 @@ func UpdateInventory()
 		var item = c->GetItem(inventory[i]->GetSlotId());
 		inventory[i]->SetSymbol(item);
 		inventory[i]->SetUnselected();
-		if(item) inventory[i]->SetTooltip(item.UsageHelp);
-		else inventory[i]->SetTooltip(nil);
 	}
 	
 	// update hand-indicator

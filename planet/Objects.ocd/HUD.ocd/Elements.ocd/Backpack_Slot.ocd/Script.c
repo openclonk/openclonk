@@ -50,14 +50,6 @@ public func SetUnselected()
 	SetGraphics(nil,nil,5);
 }
 
-public func SetTooltip(string desc) {
-	this.Tooltip = desc;
-}
-
-public func GetTooltip() {
-	return this.Tooltip;
-}
-
 // SetSymbol from GUI_RingMenu_Icon
 public func SetSymbol(obj)
 {
@@ -70,6 +62,7 @@ public func SetSymbol(obj)
 		//SetGraphics(nil, nil, 3);
 		SetName("");
 		this.MouseDragImage = nil;
+		this.Tooltip = nil;
 	}
 	else
 	{
@@ -93,6 +86,11 @@ public func SetSymbol(obj)
 		
 		SetName(obj->GetName());
 		this.MouseDragImage = obj->GetID();
+		
+		// set tooltip
+		var desc = obj.UsageHelp;
+		if(!desc) desc = obj.Description;
+		this.Tooltip = desc;
 	}
 }
 

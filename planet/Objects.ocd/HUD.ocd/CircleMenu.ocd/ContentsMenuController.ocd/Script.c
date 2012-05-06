@@ -238,7 +238,7 @@ private func PutContentsIntoMenu(object menu, object container)
 				return;
 	}
 	
-	// TODO: find an extra-entry or something like that for this.
+	// TODO: find an extra-entry or something like that to display this.
 	if(container->~IsCarryingHeavy())
 		AddContentsMenuItem(container->GetCarryHeavy(), menu);
 }
@@ -253,10 +253,6 @@ private func AddContentsMenuItem(object obj, object menu, array stack)
 		return false;
 	}
 	item->SetSymbol(obj);
-	if(obj.Description)
-	{
-		item->SetTooltip(obj.Description);
-	}
 	if (stack == nil)
 	{
 		item->SetData([obj]);
