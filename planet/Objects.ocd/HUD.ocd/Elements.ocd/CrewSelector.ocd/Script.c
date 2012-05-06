@@ -158,7 +158,8 @@ public func UpdateController()
 	SetOwner(crew->GetController());
 	// name
 	var fullname = Format("%s %s",crew->GetObjCoreRankName(),crew->GetName());
-	SetName(Format("$TxtSelect$",fullname));
+	SetName(crew->GetName());
+	this.Tooltip = Format("$TxtSelect$",fullname);
 }
 
 public func UpdateSelectionStatus()
