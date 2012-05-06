@@ -150,14 +150,14 @@ namespace
 
 C4RopeElement::C4RopeElement(C4Object* obj, bool fixed):
 	Fixed(fixed), fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
-	Next(NULL), Prev(NULL), Object(obj)
+	Next(NULL), Prev(NULL), Object(obj), LastContactVertex(-1)
 {
 }
 
 C4RopeElement::C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed):
 	Fixed(fixed), x(x), y(y), vx(Fix0), vy(Fix0), m(m),
 	fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
-	Next(NULL), Prev(NULL), Object(NULL)
+	Next(NULL), Prev(NULL), Object(NULL), LastContactVertex(-1)
 {
 }
 
@@ -170,6 +170,30 @@ void C4RopeElement::AddForce(C4Real x, C4Real y)
 	fcx += x;
 	fcy += y;
 #endif
+}
+
+C4Real C4RopeElement::GetTargetX() const
+{
+	// TODO: Prevent against object changes: Reset when Target changes wrt
+	// to the object LastContactVertex refers to.
+	if(LastContactVertex == -1) return Object->fix_x;
+
+	C4Object* obj = Object;
+	while(obj->Contained)
+		obj = obj->Contained;
+	return obj->fix_x + itofix(obj->Shape.VtxX[LastContactVertex]);
+}
+
+C4Real C4RopeElement::GetTargetY() const
+{
+	// TODO: Prevent against object changes: Reset when Target changes wrt
+	// to the object LastContactVertex refers to.
+	if(LastContactVertex == -1) return Object->fix_y;
+
+	C4Object* obj = Object;
+	while(obj->Contained)
+		obj = obj->Contained;
+	return obj->fix_y + itofix(obj->Shape.VtxY[LastContactVertex]);
 }
 
 void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
@@ -279,7 +303,10 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 						iContactVertex = i;
 
 				if(iContactVertex != -1)
+				{
+					LastContactVertex = iContactVertex;
 					SetForceRedirection(rope, Target->Shape.VtxX[iContactVertex], Target->Shape.VtxY[iContactVertex]);
+				}
 			}
 		}
 	}
@@ -519,9 +546,6 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 		int piy = fixtoi(prev->GetY());
 		int nix = fixtoi(next->GetX());
 		int niy = fixtoi(next->GetY());
-
-		// TODO: For objects, run PathFree and PathFinder from vertex which has
-		// had contact to the landscape previously.
 
 		// We only run the PathFinder when the distance between the two segments
 		// is at least twice the nominal distance. 

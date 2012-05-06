@@ -37,12 +37,15 @@ public:
 	C4RopeElement(C4Object* obj, bool fixed);
 	C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed);
 
-	C4Real GetX() const { return Object ? Object->fix_x : x; }
-	C4Real GetY() const { return Object ? Object->fix_y : y; }
+	C4Real GetX() const { return Object ? GetTargetX() : x; }
+	C4Real GetY() const { return Object ? GetTargetY() : y; }
 	C4Real GetVx() const { return Object ? Object->xdir : vx; }
 	C4Real GetVy() const { return Object ? Object->ydir : vy; }
 	C4Real GetMass() const { return Object ? itofix(Object->Mass) : m; }
 	C4Object* GetObject() const { return Object; }
+
+	C4Real GetTargetX() const;
+	C4Real GetTargetY() const;
 
 	void AddForce(C4Real x, C4Real y);
 	void Execute(const C4Rope* rope, C4Real dt);
@@ -62,6 +65,7 @@ private:
 	C4RopeElement* Next; // next rope element, or NULL
 	C4RopeElement* Prev; // prev rope element, or NULL
 	C4Object* Object; // Connected object. If set, x/y/vx/vy/m are ignored.
+	int LastContactVertex; // Vertex which most recently had collision with landscape
 };
 
 class C4Rope: public C4PropListNumbered
@@ -80,8 +84,8 @@ public:
 
 	C4RopeElement* GetFront() const { return Front; }
 	C4RopeElement* GetBack() const { return Back; }
-	void SetFront(C4Object* obj, C4Real x, C4Real y) { Front->Object = obj; Front->x = x; Front->y = y; }
-	void SetBack(C4Object* obj, C4Real x, C4Real y) { Back->Object = obj; Back->x = x; Back->y = y; }
+	void SetFront(C4Object* obj, C4Real x, C4Real y) { Front->Object = obj; Front->x = x; Front->y = y; Front->LastContactVertex = -1; }
+	void SetBack(C4Object* obj, C4Real x, C4Real y) { Back->Object = obj; Back->x = x; Back->y = y; Back->LastContactVertex = -1; }
 
 	C4Real GetFrontAutoSegmentation() const { return FrontAutoSegmentation; }
 	C4Real GetBackAutoSegmentation() const { return BackAutoSegmentation; }
