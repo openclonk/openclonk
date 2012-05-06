@@ -69,7 +69,7 @@ global func MovePosition(int x, int y, int prec)
 }
 
 // Returns the position as an array
-global func GetPosition(int x, int y, int prec)
+global func GetPosition(int prec)
 {
 	return [GetX(prec), GetY(prec)];
 }
