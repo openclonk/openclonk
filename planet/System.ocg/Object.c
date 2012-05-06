@@ -321,3 +321,13 @@ global func GetBottomEdge()
 {
 	return GetY()+GetObjHeight()/2;
 }
+
+// Returns if the object is standing in front of the back-object
+global func InFrontOf(object back)
+{
+	var front = this;
+	if(!front)
+		return;
+	
+	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
+}
