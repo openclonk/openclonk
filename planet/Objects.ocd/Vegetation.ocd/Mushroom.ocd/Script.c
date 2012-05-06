@@ -2,9 +2,9 @@
 
 #include Library_Plant
 
-private func SeedChance() { return 250; }
-private func SeedAreaSize() { return 150; }
-private func SeedAmount() { return 5; }
+private func SeedChance() { return 400; }
+private func SeedArea() { return 150; }
+private func SeedAmount() { return 6; }
 
 /* Initialisation */
 

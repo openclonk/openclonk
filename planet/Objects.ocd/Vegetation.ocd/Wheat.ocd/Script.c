@@ -7,11 +7,16 @@
 
 #include Library_Plant
 
+private func SeedArea() { return 50; }
+private func SeedChance() {	return 250; }
+private func SeedAmount() { return 15; }
+
 local stalks;
 
 protected func Construction()
 {
 	StartGrowth(this.growth);
+	stalks = [];
 	return _inherited(...);
 }
 
@@ -20,7 +25,6 @@ protected func Initialize()
 	if (GetLength(stalks)) return;
 	// Create 3-5 stalks
 	var num = Random(3);
-	stalks = CreateArray();
 	for (var i = 0; i < 3+num; i++)
 	{
 		var x = 12/(3+num) * i - 6;
@@ -152,10 +156,10 @@ protected func FxWindCheckTimer(object obj, effect)
 protected func Destruction()
 {
 	for (var stalk in stalks)
-		{
-			if (stalk)
-				stalk->RemoveObject();
-		}
+	{
+		if (stalk)
+			stalk->RemoveObject();
+	}
 }
 
 public func IsCrop() { return true; }
