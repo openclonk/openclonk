@@ -88,6 +88,7 @@ public:
 	{ return Call(&Strings.P[k], pPars); }
 	C4Value Call(C4String * k, C4AulParSet *pPars=0);
 	C4Value Call(const char * k, C4AulParSet *pPars=0);
+	C4Value CallOrThrow(const char * k, C4AulParSet *pPars=0);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }

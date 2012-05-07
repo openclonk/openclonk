@@ -1066,13 +1066,10 @@ static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
                           C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
                           C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
 {
-	// safety
-	C4String *szFunction = szFunction_C4V->getStr();
-
-	if (!szFunction || !cthr->Def) return C4Value();
+	if (!cthr->Def) return C4Value();
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
-	return cthr->Def->Call(szFunction, &Pars);
+	return cthr->Def->CallOrThrow(FnStringPar(szFunction_C4V->getStr()), &Pars);
 }
 
 static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
