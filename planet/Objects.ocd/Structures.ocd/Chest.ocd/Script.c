@@ -6,12 +6,13 @@
 */
 
 
-local chestanim;
+local is_open;
 
 protected func Construction()
 {
-	chestanim = PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
 	SetProperty("MeshTransformation",Trans_Rotate(RandomX(20,80),0,1,0));
+	is_open = false;
 	return _inherited(...);
 }
 
@@ -29,7 +30,8 @@ private func MaxContentsCount()
 // Open contentsmenu via interaction
 public func Interact(object clonk, int mode)
 {
-	clonk->CreateContentsMenus();
+	// Interaction does the same as the content control.
+	clonk->ObjectControl(clonk->GetOwner(), CON_Contents);
 }
 	
 protected func RejectCollect()
@@ -52,12 +54,18 @@ public func OnContentMenuClosed()
 
 private func Open()
 {
-	chestanim = PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
+	if (is_open)
+		return;
+	is_open = true;	
+	PlayAnimation("Open", 5, Anim_Linear(0, 0, GetAnimationLength("Open"), 22, ANIM_Hold), Anim_Const(1000));
 	Sound("ChestOpen");
 }
 
 private func Close()
 {
+	if (!is_open)
+		return;
+	is_open = false;	
 	PlayAnimation("Close", 5, Anim_Linear(0, 0, GetAnimationLength("Close"), 15, ANIM_Hold), Anim_Const(1000));
 	Sound("ChestClose");
 }
@@ -66,7 +74,7 @@ public func NoConstructionFlip() { return true; }
 
 protected func Definition(def)
 {
-		SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30,1,0,0), Trans_Rotate(30,0,1,0), Trans_Translate(1000,1,0)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0,-3000,-5000), Trans_Rotate(-30,1,0,0), Trans_Rotate(30,0,1,0), Trans_Translate(1000,1,0)),def);
 }
 
 local Name = "$Name$";
