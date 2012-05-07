@@ -1,1 +1,2 @@
-TxtHandsFull=Hands are full; no room in backpack!
+TxtHandsFull=Hands are full!
+TxtPutDown=Put %s down

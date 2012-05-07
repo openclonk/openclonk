@@ -371,6 +371,7 @@ public func FxIntSearchInteractionObjectsStart(object target, effect, int temp, 
 	EffectCall(target,effect,"Timer",target,effect,0);
 }
 
+// takes care of displaying the interactions
 public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 {
 
@@ -380,6 +381,10 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	
 	//var hotkey = i+1-target->HandObjects();
 	var hotkey = i+1;
+	
+	// Get custom interactions from the clonk
+	// extra interactions are an array of proplists. proplists have to contain at least a function pointer "f", a description "desc" and an "icon" definition/object. Optional "front"-boolean for sorting in before/after other interactions.
+	var extra_interactions = target->~GetExtraInteractions()??[]; // if not present, just use []. Less error prone than having multiple if(!foo).
 	
 	// Add buttons:
 	
@@ -402,9 +407,10 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 			}
 		}
 		
-		// if carrying heavy, add drop-carry-heavy-button
-		if(target->~IsCarryingHeavy() && target->GetAction() == "Walk")
-			ActionButton(target, i++, target->GetCarryHeavy(), ACTIONTYPE_CARRYHEAVY, hotkey++);
+		// add extra-interactions before other objects
+		for(var interaction in extra_interactions)
+			if(interaction.SortFront)
+				ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
 		
 		// add vehicles
 		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
@@ -420,6 +426,11 @@ public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
 	{
 		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
 	}
+	
+	// add extra-interactions after everything
+	for(var interaction in extra_interactions)
+		if(!interaction.SortFront)
+			ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
 	
 	ClearActionButtons(i);
 	
@@ -512,7 +523,7 @@ private func UpdateInventoryButtons(object clonk)
 }
 
 // Insert a button into the actionbar at pos
-private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num)
+private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num, proplist extra)
 {
 	var spacing = 100;
 	
@@ -527,7 +538,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	bt->SetPosition(401 + pos * spacing, -45);
 	
 	bt->SetCrew(forClonk);
-	bt->SetObject(interaction,actiontype,pos,hotkey, num);
+	bt->SetObject(interaction,actiontype,pos,hotkey, num, extra);
 	
 	actionbar[pos] = bt;
 	return bt;

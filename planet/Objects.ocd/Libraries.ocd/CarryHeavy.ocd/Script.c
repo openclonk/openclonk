@@ -18,6 +18,8 @@ public func GetCarrySpecial(clonk)
 		return "skeleton_body";
 }
 
+public func GetDropDescription() { return Format("$TxtPutDown$", GetName()); }
+
 public func Grabbed(object clonk, bool grab)
 {
 	if(grab)

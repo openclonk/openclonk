@@ -672,6 +672,27 @@ protected func OnActionChanged(string oldaction)
 	return _inherited(oldaction,...);
 }
 
+/** Returns additional interactions the clonk possesses as an array of function pointers.
+	Returned Proplist contains:
+		Fn			= Name of the function to call
+		Object		= object to call the function in. Will also be displayed on the interaction-button
+		Description	= a description of what the interaction does
+		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
+		IconName	= Namo of the graphic for teh icon (like GetInteractionMetaInfo)
+		[SortFront]	= if true, the interaction will be sorted in before the standard-interactions (but after other script-interactions. those always take priority)
+*/
+public func GetExtraInteractions()
+{
+	var functions = CreateArray();
+	if(IsCarryingHeavy() && GetAction() == "Walk")
+	{
+		var ch = GetCarryHeavy();
+		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, SortFront=true});
+	}
+	
+	return functions;
+}
+
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
 local using, using_type;

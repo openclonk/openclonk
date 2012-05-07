@@ -27,12 +27,13 @@
 */
 
 local selected, crew, hotkey, myobject, actiontype, subselector, position, modus;
+local extra; // function to call and desc for extra-types
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
 static const ACTIONTYPE_SCRIPT = 3;
-static const ACTIONTYPE_CARRYHEAVY = 4;
+static const ACTIONTYPE_EXTRA = 4;
 
 private func HandSize() { return 400; }
 private func IconSize() { return 500; }
@@ -145,10 +146,10 @@ public func MouseSelection(int plr)
 			return true;
 		}
 	}
-	if(actiontype == ACTIONTYPE_CARRYHEAVY)
+	if(actiontype == ACTIONTYPE_EXTRA)
 	{
-		if(myobject == crew->~GetCarryHeavy())
-			crew->DropCarryHeavy();
+		if(extra)
+			extra.Object->Call(extra.Fn, crew);
 	}
 }
 
@@ -277,7 +278,7 @@ public func ClearMessage()
 		CustomMessage("",subselector,GetOwner());
 }
 
-public func SetObject(object obj, int type, int pos, int hot, int number)
+public func SetObject(object obj, int type, int pos, int hot, int number, proplist xtra)
 {
 	this.Visibility = VIS_Owner;
 
@@ -291,6 +292,12 @@ public func SetObject(object obj, int type, int pos, int hot, int number)
 	myobject = obj;
 	hotkey = hot;
 	modus = number;
+	
+	// extra stuff
+	if(xtra)
+		extra = xtra;
+	else
+		extra = nil;
 	
 	// Set mousedrag for inventory objects
 	if (actiontype == ACTIONTYPE_INVENTORY)
@@ -394,10 +401,13 @@ public func UpdateSelectionStatus()
 	// determine...
 	var sel = 0;
 
-	if(actiontype == ACTIONTYPE_CARRYHEAVY)
+	if(actiontype == ACTIONTYPE_EXTRA)
 	{
-		SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
-		this.Tooltip = Format("$TxtUnGrab$",myobject->GetName());
+		if(extra)
+		{
+			SetGraphics(extra.IconName,extra.IconID,2,GFXOV_MODE_IngamePicture);
+			this.Tooltip = extra.Description;
+		}
 	}
 
 	// script...
