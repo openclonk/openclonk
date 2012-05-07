@@ -11,5 +11,21 @@ protected func RejectCollect(id objid, object obj)
 
 public func MaxContentsCount()
 {
-	return 2;
+	return 0;
+}
+
+public func ObjectControl(int plr, int ctrl)
+{
+	if(IsThrowControl(ctrl))
+		return;
+	if(IsDropControl(ctrl))
+		return;
+	
+	return _inherited(plr, ctrl, ...);
+}
+
+// no extra interactions in this scenario. like dropping carry-heavy objects. :(
+public func GetExtraInteractions()
+{
+	return nil;
 }
