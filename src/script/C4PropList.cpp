@@ -477,7 +477,7 @@ C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
 		if (s[0] == '~')
 			return C4Value();
 		throw new C4AulExecError(this->GetObject(),
-                         FormatString("'->': no function \"%s\" in object \"%s\"", s, GetDataString().getData()).getData());
+                         FormatString("Call: no function \"%s\"", s).getData());
 	}
 	return pFn->Exec(this, Pars);
 }
