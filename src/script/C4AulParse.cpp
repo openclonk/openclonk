@@ -1213,6 +1213,7 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 	state.Shift();
 	state.Fn = this;
 	state.Parse_Expression();
+	state.Match(ATT_EOF);
 	GetCodeOwner()->AddBCC(AB_RETURN, 0, state.SPos);
 }
 
