@@ -21,8 +21,6 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Fixed point math extracted from ALLEGRO by Shawn Hargreaves */
-
 /* The Clonk engine uses fixed point math for exact object positions.
    This is rather silly. Nowadays we should simply use floats. However,
    I never dared changing the whole thing. */
@@ -30,7 +28,7 @@
    because floating point calculations are not guaranteed to be network
    safe...however, it can be solved as a data type with operator
    overloading, automatic type conversions, etc now   - Sven2 */
-/* After some time with synchronous float use, C4Real is used again to
+/* After some time with synchronous float use, C4Fixed is used again to
    work around the problem that different compilers produce different
    floating point code, leading to desyncs between linux and windows
    engines. */

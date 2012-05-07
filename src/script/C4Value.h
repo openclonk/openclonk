@@ -41,7 +41,6 @@ enum C4V_Type
 	
 	C4V_Enum, // enumerated array or proplist
 	C4V_C4ObjectEnum, // enumerated object
-	C4V_C4DefEnum,     // enumerated object
 	
 	// for typechecks
 	C4V_Any,
@@ -457,7 +456,7 @@ ALWAYS_INLINE void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value *pN
 ALWAYS_INLINE void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
 	// Do not add this to the same linked list twice.
-	if (Data == nData && Type >= C4V_PropList) return;
+	if (Data == nData && Type == nType) return;
 
 	C4V_Data oData = Data;
 	C4V_Type oType = Type;
