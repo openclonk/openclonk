@@ -45,19 +45,19 @@ public func Grabbed(object clonk, bool grab)
 }
 
 
-private func DoLift()
+private func DoLift(bool forceEnter)
 {
 	if(!liftheavy_carrier)
 		return;
 	if(!IsCarryingHeavy(liftheavy_carrier))
-		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this);
+		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this, nil, forceEnter);
 }
 
 // ------------------
 // Lifting the object
 // ------------------
 static const lift_heavy_time = 60;
-func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp)
+func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp, bool forceEnter)
 {
 	if(tmp) return;
 	if(!clonk) return -1;
@@ -83,7 +83,7 @@ func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp)
 	//Play the animation of the clonk picking up the object
 	effect.anim = clonk->PlayAnimation("CarryArmsPickup", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsPickup"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
 	
-	effect.noExit = true;
+	effect.doExit = !forceEnter; // default: true
 }
 
 func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
@@ -96,7 +96,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 		{
 			if(clonk->GetAction() != "Stand" || clonk->IsJumping() || Abs(clonk->GetXDir()) > 0)
 			{
-				Exit();
 				return -1;
 			}
 		}
@@ -107,7 +106,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 			if(clonk->GetAction() != "Stand")
 			{
 				//If the clonk moved when he was disabled from doing so (or jumped), cancel lifting
-				Exit();
 				return -1;
 			}
 		}
@@ -117,6 +115,8 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 	if(timer >= lift_heavy_time)
 	{
 		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		// don't exit the object
+		effect.doExit = false;
 		return -1;
 	}
 	
@@ -128,6 +128,10 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 func FxIntLiftHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 {
 	if(tmp) return;
+	
+	// drop the object
+	if(effect.doExit && Contained()==clonk) // only if still in the clonk
+		Exit();
 	
 	clonk->DetachMesh(effect.mesh);
 	clonk->StopAnimation(effect.anim);
@@ -246,7 +250,7 @@ protected func Entrance(object obj)
 		{
 			liftheavy_carrier = obj;
 			if(obj->GetAction() == "Walk" && !obj->Contained())
-				DoLift();
+				DoLift(true);
 			else
 				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
