@@ -1072,24 +1072,6 @@ static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
 	return cthr->Def->CallOrThrow(FnStringPar(szFunction_C4V->getStr()), &Pars);
 }
 
-static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
-                                    C4Value* idID_C4V, C4Value* szFunction_C4V,
-                                    C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                                    C4Value* par5, C4Value* par6, C4Value* par7/*, C4Value* par8, C4Value* par9*/)
-{
-	C4PropList * p = idID_C4V->getPropList();
-	if (!p) return C4Value();
-	C4Def * pDef = p->GetDef();
-	C4String *szFunction = szFunction_C4V->getStr();
-	if (!pDef || !szFunction) return C4Value();
-
-	// copy parameters
-	C4AulParSet Pars;
-	Copy2ParSet8(Pars, *par);
-	// Call
-	return pDef->Call(szFunction, &Pars);
-}
-
 static C4Value FnGameCall_C4V(C4AulContext *cthr,
                               C4Value* szFunction_C4V,
                               C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
@@ -2679,7 +2661,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
 	{ "GameCall",             1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
 	{ "GameCallEx",           1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCallEx_C4V ,            0 },
-	{ "DefinitionCall",       0  ,C4V_Any      ,{ C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
 	{ "Call",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
 	{ "GetPlrKnowledge",      1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
 	{ "GetComponent",         1  ,C4V_Int      ,{ C4V_PropList,C4V_Int     ,C4V_Object  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },

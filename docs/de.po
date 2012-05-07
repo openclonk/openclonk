@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-06 15:36+0200\n"
+"POT-Creation-Date: 2012-05-07 21:10+0200\n"
 "PO-Revision-Date: 2012-05-06 15:35+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -218,7 +218,6 @@ msgstr "Steuerung"
 #: sdk/script/fn/GameCallEx.xml:8(category)
 #: sdk/script/fn/GameCall.xml:8(category)
 #: sdk/script/fn/Format.xml:8(category)
-#: sdk/script/fn/DefinitionCall.xml:8(category)
 #: sdk/script/fn/CreateArray.xml:8(category)
 #: sdk/script/fn/ClearScheduleCall.xml:8(category)
 #: sdk/script/fn/Call.xml:8(category)
@@ -2292,7 +2291,6 @@ msgstr "Sortierkriterium: Sortiert die gefundenen Objekte nach ihrer Masse. Die 
 
 #: sdk/script/fn/Sort_Func.xml:17(desc)
 #: sdk/script/fn/Find_Func.xml:17(desc)
-#: sdk/script/fn/DefinitionCall.xml:22(desc)
 msgid "Function to call"
 msgstr "Aufzurufende Funktion"
 
@@ -7449,7 +7447,6 @@ msgstr "Beendet die Runde, falls keine Steine da sind."
 
 #: sdk/script/fn/GameCallEx.xml:9(subcat)
 #: sdk/script/fn/GameCall.xml:9(subcat)
-#: sdk/script/fn/DefinitionCall.xml:9(subcat)
 #: sdk/script/fn/Call.xml:9(subcat)
 msgid "Function call"
 msgstr "Funktionsaufruf"
@@ -8635,18 +8632,6 @@ msgstr "Wurde zuvor mit <placeholder-1/> ein Mesh an einem anderen befestigt, so
 msgid "Script for an <emlink href=\"script/Effects.html\">effect</emlink>: The effect target carries a bow as long as the effect remains active."
 msgstr "Script für einen <emlink href=\"script/Effects.html\">Effekt</emlink>: Während der Effekt aktiv ist trägt das Effektziel einen Bogen."
 
-#: sdk/script/fn/DefinitionCall.xml:17(desc)
-msgid "id of the definition in the script of which to call the function."
-msgstr "ID der Definition, in dessen Script die Funktion aufgerufen wird"
-
-#: sdk/script/fn/DefinitionCall.xml:27(desc)
-msgid "Additional parameters to be passed to the function."
-msgstr "Zusätzliche Parameter, die an die Funktion übergeben werden"
-
-#: sdk/script/fn/DefinitionCall.xml:32(desc)
-msgid "Calls a function in a script without object context. <placeholder-1/> returns <placeholder-2/> in this case (comparable to scenario scripts)."
-msgstr "Ruft eine Funktion in einem Script ohne zugehöriges Objekt auf. Der <placeholder-1/>()-Zeiger gibt in einem solchen Aufruf <placeholder-2/> zurück (Vergleichbar mit dem Szenarioscript)."
-
 #: sdk/script/fn/Definition.xml:8(category)
 #: sdk/script/fn/Construction.xml:8(category)
 msgid "Callbacks"
@@ -8795,7 +8780,8 @@ msgid "CSPF_NoScenarioInit"
 msgstr "CSPF_NoScenarioInit"
 
 #: sdk/script/fn/CreateScriptPlayer.xml:48(col)
-msgid "If true, the scenario initialization (i.e. placement of home base material, clonks, setting of build knowledge, etc.) is not performed for this player. Also, the global callbacks PreInitializePlayer and InitializePlayer to the scenario script and to goal, rule, and environment objects are not performed. Instead, the callback InitializeScriptPlayer(Player number, Team) is made to the object definition specified in extra_data. The call is made as DefinitionCall (without <placeholder-1/> object). Using this parameter you can create script-controlled AI players which do not receive the same standard treatment as user-controlled players."
+#, fuzzy
+msgid "If true, the scenario initialization (i.e. placement of home base material, clonks, setting of build knowledge, etc.) is not performed for this player. Also, the global callbacks PreInitializePlayer and InitializePlayer to the scenario script and to goal, rule, and environment objects are not performed. Instead, the callback InitializeScriptPlayer(Player number, Team) is made to the object definition specified in extra_data. Using this parameter you can create script-controlled AI players which do not receive the same standard treatment as user-controlled players."
 msgstr "Wenn wahr, wird die Szenarieninitialisierung, also das Erzeugen von Heimatbasismaterial und Clonks, das Setzen der Baupläne nach Szenarienvorgaben, etc., nicht durchgeführt. Außerdem werden die globalen PreInitializePlayer- und InitializePlayer-Callbacks ans Szenarienscript und die Spielziel-, Regel- und Umweltobjekte nicht ausgeführt. Stattdessen wird ein InitializeScriptPlayer(Spielernummer, Team)-Callback als DefinitionCall (d.h. ohne <placeholder-1/>-Objekt) auf der in extra_data angegebenen Definition ausgeführt. Mit diesem Parameter lassen sich also spezialisierte Scriptspieler realisieren, die nicht gleichberechtigt mit menschlichen Spielern agieren."
 
 #: sdk/script/fn/CreateScriptPlayer.xml:52(col)
@@ -17006,6 +16992,15 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "id of the definition in the script of which to call the function."
+#~ msgstr "ID der Definition, in dessen Script die Funktion aufgerufen wird"
+
+#~ msgid "Additional parameters to be passed to the function."
+#~ msgstr "Zusätzliche Parameter, die an die Funktion übergeben werden"
+
+#~ msgid "Calls a function in a script without object context. <placeholder-1/> returns <placeholder-2/> in this case (comparable to scenario scripts)."
+#~ msgstr "Ruft eine Funktion in einem Script ohne zugehöriges Objekt auf. Der <placeholder-1/>()-Zeiger gibt in einem solchen Aufruf <placeholder-2/> zurück (Vergleichbar mit dem Szenarioscript)."
 
 #~ msgid "TimerCall"
 #~ msgstr "TimerCall"
