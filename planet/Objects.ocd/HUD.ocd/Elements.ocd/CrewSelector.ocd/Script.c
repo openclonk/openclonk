@@ -99,6 +99,10 @@ public func MouseSelection(int plr)
 
 public func SetCrew(object c)
 {
+	// reset old crew, if there
+	if(crew)
+		RemoveEffect("GUIHealthMonitor", crew);
+	
 	crew = c;
 	UpdateHealthBar();
 	UpdateBreathBar();
@@ -111,7 +115,15 @@ public func SetCrew(object c)
 	
 	this["Visibility"] = VIS_Owner;
 	
-	AddEffect("GUIHealthMonitor", c, 50, 0, this);
+	ScheduleCall(this, "AddMonitorEffect", 1);
+}
+
+private func AddMonitorEffect()
+{
+	if(!crew)
+		return;
+	
+	AddEffect("GUIHealthMonitor", crew, 50, 0, this);
 }
 
 public func SetHotkey(int num)
