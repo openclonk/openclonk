@@ -146,8 +146,8 @@ protected func Hit()
 		JumpOff(rider);
 	}
 	//Message("I have hit something",this);
-	if(GetEffect("Flight",this)) DoFireworks();
 	Sound("GeneralHit?");
+	if(GetEffect("Flight",this)) DoFireworks();
 }
 
 public func OnMount(clonk)
