@@ -679,15 +679,17 @@ protected func OnActionChanged(string oldaction)
 		Description	= a description of what the interaction does
 		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
 		IconName	= Namo of the graphic for teh icon (like GetInteractionMetaInfo)
-		[SortFront]	= if true, the interaction will be sorted in before the standard-interactions (but after other script-interactions. those always take priority)
+		[Priority]	= Where to sort in in the interaction-list. 0=front, 1=after script, 2=after vehicles, >=3=at the end, nil equals 3
 */
 public func GetExtraInteractions()
 {
 	var functions = CreateArray();
+
+	// dropping carry heavy
 	if(IsCarryingHeavy() && GetAction() == "Walk")
 	{
 		var ch = GetCarryHeavy();
-		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, SortFront=true});
+		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, Priority=1});
 	}
 	
 	return functions;
