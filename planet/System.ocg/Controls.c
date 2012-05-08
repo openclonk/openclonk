@@ -67,6 +67,7 @@ global func IsInteractionControl(int ctrl)
 	|| ctrl == CON_GrabNext
 	|| ctrl == CON_Enter
 	|| ctrl == CON_Exit
+	|| ctrl == CON_PushEnter
 	// hotkeys
 	|| ctrl == CON_InteractionHotkey0
 	|| ctrl == CON_InteractionHotkey1
