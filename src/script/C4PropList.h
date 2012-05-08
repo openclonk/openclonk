@@ -176,6 +176,7 @@ public:
 	bool Delete() { return true; }
 	virtual C4PropListStatic * IsStatic() { return this; }
 	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
+	StdStrBuf GetDataString() const;
 protected:
 	const C4PropListStatic * Parent;
 	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in

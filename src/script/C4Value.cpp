@@ -136,17 +136,14 @@ StdStrBuf C4Value::GetDataString(int depth) const
 	{
 		if (Data.PropList == ScriptEngine.GetPropList())
 			return StdStrBuf("Global");
+		C4Object * Obj = Data.PropList->GetObject();
+		if (Obj == Data.PropList)
+			return FormatString("Object(%d)", Obj->Number);
+		const C4PropListStatic * Def = Data.PropList->IsStatic();
+		if (Def)
+			return Def->GetDataString();
 		StdStrBuf DataString;
 		DataString = "{";
-		if (Data.PropList->GetObject())
-		{
-			if (Data.PropList->GetObject()->Status == C4OS_NORMAL)
-				DataString.AppendFormat("#%d, ", Data.PropList->GetObject()->Number);
-			else
-				DataString.AppendFormat("(#%d), ", Data.PropList->GetObject()->Number);
-		}
-		else if (Data.PropList->GetDef())
-			DataString.AppendFormat("%s, ", Data.PropList->GetDef()->id.ToString());
 		Data.PropList->AppendDataString(&DataString, ", ", depth);
 		DataString.AppendChar('}');
 		return DataString;

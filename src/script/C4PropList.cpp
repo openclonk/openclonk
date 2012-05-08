@@ -164,6 +164,20 @@ void C4PropListStatic::RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbe
 	pComp->Value(mkParAdapt(ParentKeyName->GetData(), StdCompiler::RCT_ID));
 }
 
+StdStrBuf C4PropListStatic::GetDataString() const
+{
+	StdStrBuf r;
+	if (Parent)
+	{
+		r.Take(Parent->GetDataString());
+		r.AppendChar('.');
+	}
+	assert(ParentKeyName);
+	if (ParentKeyName)
+		r.Append(ParentKeyName->GetData());
+	return r;
+}
+
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
 #endif

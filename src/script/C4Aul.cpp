@@ -112,27 +112,31 @@ C4AulFunc::~C4AulFunc()
 
 StdStrBuf C4AulFunc::GetFullName()
 {
+	StdStrBuf r;
 	// "lost" function?
-	StdStrBuf sOwner;
 	if (!Owner)
 	{
-		sOwner.Ref("(unknown) ");
+		r.Ref("(unowned) ");
 	}
-	else if (Owner->GetPropList() && Owner->GetPropList()->GetDef())
+	else if (Owner->GetPropList() && Owner->GetPropList()->IsStatic())
 	{
-		sOwner.Format("%s.", Owner->GetPropList()->GetDef()->id.ToString());
+		r.Take(Owner->GetPropList()->IsStatic()->GetDataString());
+		r.AppendChar('.');
+	}
+	else if (Owner == &GameScript)
+	{
+		r.Ref("Scenario.");
 	}
 	else if (Owner->Engine == Owner)
 	{
-		sOwner.Ref("global ");
+		r.Ref("Global.");
 	}
 	else
 	{
-		sOwner.Ref("game ");
+		r.Ref("(unknown) ");
 	}
-	StdStrBuf sResult;
-	sResult.Format("%s%s", sOwner.getData(), GetName());
-	return sResult;
+	r.Append(Name->GetData());
+	return r;
 }
 
 C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef):
