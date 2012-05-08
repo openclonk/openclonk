@@ -1,5 +1,6 @@
-TxtNoconstructionplansa=Keine Baupläne verfügbar
 TxtConstructions=Konstruktion: %s
-TxtCantConstruct=%s kann nicht bauen.
+TxtBlocked=%s blockiert die Baustelle
+TxtNoSiteHere=Kann hier keine Baustelle errichten!
+TxtNeeds=Baustelle braucht noch
 Name=Hammer
 Description=Drücke [Benutzen], um ein Gebäude zu errichten.

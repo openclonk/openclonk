@@ -9,7 +9,7 @@ local dimension_x, dimension_y, clonk, structure, direction, stick_to;
 local GFX_StructureOverlay = 1;
 local GFX_CombineIconOverlay = 2;
 
-public func GetFlipDescription() { return "Flip the construction site"; }
+public func GetFlipDescription() { return "$TxtFlipDesc$"; }
 
 func Initialize()
 {

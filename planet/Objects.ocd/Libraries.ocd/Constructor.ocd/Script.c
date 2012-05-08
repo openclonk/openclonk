@@ -18,14 +18,10 @@ public func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 	// Is the clonk at an construction site?
+	// TODO: check for multiple objects
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{
-	/*	if (structure->GetCon() < 100)
-		{
-			Construct(clonk, structure);
-			return true;
-		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -53,12 +49,6 @@ public func ControlUseHolding(object clonk, int x, int y)
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
 	{	
-	/*
-		if (structure->GetCon() < 100)
-		{
-			Construct(clonk, structure);
-			return true;
-		}*/
 		if (structure->GetDamage() > 0)
 		{
 			Repair(clonk, structure);
@@ -69,50 +59,9 @@ public func ControlUseHolding(object clonk, int x, int y)
 	return true;
 }
 
-private func Construct(object clonk, object structure)
-{
-	// Look for missing components.
-	var structure_id = structure->GetID();
-	var con = structure->GetCon();
-	var comp, index = 0;
-	var can_construct =  true;
-	while (comp = structure->GetComponent(nil, index))
-	{
-		var max_amount = GetComponent(comp, nil, nil, structure_id);
-		// Try to transfer components from constructing clonk to the structure.
-		for (var i = 0; i < max_amount - structure->GetComponent(comp); i++)
-		{
-			var content = FindObject(Find_Container(clonk), Find_ID(comp));
-			if (content)
-			{
-				clonk->Message("Used {{%i}}", comp);
-				content->RemoveObject();
-				structure->SetComponent(comp, structure->GetComponent(comp) + 1);
-			}
-		}		
-		// Check if there now is enough material for current con, if so the construction can continue.
-		if (100 * structure->GetComponent(comp) / max_amount < con)
-			can_construct = false;
-		index++;
-	}
-	// Continue construction if possible.
-	if (can_construct)
-	{
-		structure->DoCon(1);
-		clonk->Message("Constructing %d%", structure->GetCon());
-	}
-	// Otherwise show missing construction materials.
-	else
-	{
-		ShowConstructionMaterial(clonk, structure);
-		clonk->CancelUse();
-	}
-	return;
-}
-
 private func ShowConstructionMaterial(object clonk, object structure)
 {
-	var mat_msg = "Construction needs ";
+	var mat_msg = "$TxtNeeds$";
 	var structure_id = structure->GetID();
 	var comp, index = 0;
 	while (comp = structure->GetComponent(nil, index))
@@ -176,7 +125,7 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 		// Flipping
 		// this is actually realized twice. Once as an Extra-Interaction in the clonk, and here. We don't want the Clonk to get any non-movement controls though, so we handle it here too.
 		// (yes, this means that actionbar-hotkeys wont work for it. However clicking the button will.)
-		else if (IsInteractionControl())
+		else if (IsInteractionControl(ctrl))
 		{
 			if (release)
 				effect.preview->Flip();
@@ -214,7 +163,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		return false;
 	if (!CheckConstructionSite(structure_id, x, y))
 	{
-		CustomMessage("Can't build here!", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+		CustomMessage("$TxtNoSiteHere$", this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
 		return false;
 	} 
 	// intersection-check with all other construction sites... bah
@@ -225,7 +174,7 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 		     other_site->GetTopEdge()    > GetY()+y+structure_id->GetDefHeight()/2 ||
 		     other_site->GetBottomEdge() < GetY()+y-structure_id->GetDefHeight()/2 ))
 		{
-			CustomMessage(Format("Construction blocked by %s",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
+			CustomMessage(Format("$TxtBlocked$",other_site->GetName()), this, clonk->GetOwner(), nil,nil, RGB(255,0,0)); // todo: stringtable
 			return false;
 		}
 	}
