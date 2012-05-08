@@ -157,6 +157,7 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 	if (temp) return;
 
 	effect.structure = structure_id;
+	effect.flipable = !structure_id->~NoConstructionFlip();
 	effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
 	effect.preview->Set(structure_id, clonk);
 }
@@ -170,10 +171,12 @@ func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, 
 		if (ctrl == CON_Use)
 			CreateConstructionSite(clonk, effect.structure, AbsX(effect.preview->GetX()), AbsY(effect.preview->GetY() + effect.preview.dimension_y/2), effect.preview.direction, effect.preview.stick_to);
 		// movement is allowed
-		else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
+		else if (IsMovementControl(ctrl))
 			return false;
 		// Flipping
-		else if (ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+		// this is actually realized twice. Once as an Extra-Interaction in the clonk, and here. We don't want the Clonk to get any non-movement controls though, so we handle it here too.
+		// (yes, this means that actionbar-hotkeys wont work for it. However clicking the button will.)
+		else if (IsInteractionControl())
 		{
 			if (release)
 				effect.preview->Flip();

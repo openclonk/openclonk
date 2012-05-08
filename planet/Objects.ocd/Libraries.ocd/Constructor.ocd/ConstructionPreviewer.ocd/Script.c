@@ -9,6 +9,8 @@ local dimension_x, dimension_y, clonk, structure, direction, stick_to;
 local GFX_StructureOverlay = 1;
 local GFX_CombineIconOverlay = 2;
 
+public func GetFlipDescription() { return "Flip the construction site"; }
+
 func Initialize()
 {
 	SetProperty("Visibility", VIS_Owner);
@@ -17,10 +19,10 @@ func Initialize()
 func Set(id to_construct, object constructing_clonk)
 {
 	SetGraphics(nil, to_construct, GFX_StructureOverlay, GFXOV_MODE_Base);
+	SetGraphics(nil, to_construct, 3, GFXOV_MODE_Picture, nil, GFX_BLIT_Wireframe);
 	dimension_x = to_construct->GetDefWidth();
 	dimension_y = to_construct->GetDefHeight();
-	if (!to_construct->~NoConstructionFlip())
-		CreateObject(ConstructionPreviewer_IconFlip, 0,0, GetOwner());
+
 	clonk = constructing_clonk;
 	structure = to_construct;
 	direction = DIR_Left;

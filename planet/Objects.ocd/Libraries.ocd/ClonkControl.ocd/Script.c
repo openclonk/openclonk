@@ -684,7 +684,15 @@ protected func OnActionChanged(string oldaction)
 public func GetExtraInteractions()
 {
 	var functions = CreateArray();
-
+	
+	// flipping construction-preview
+	var effect;
+	if(effect = GetEffect("ControlConstructionPreview", this))
+	{
+		if(effect.flipable)
+			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=effect.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
+	}
+	
 	// dropping carry heavy
 	if(IsCarryingHeavy() && GetAction() == "Walk")
 	{
