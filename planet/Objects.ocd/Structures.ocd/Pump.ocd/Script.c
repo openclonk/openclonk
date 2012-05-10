@@ -5,6 +5,7 @@
 	Pumps liquids using drain and source pipes.
 --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_PowerConsumer
 
@@ -169,6 +170,7 @@ public func SetPumpableMaterials(string to_val)
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 50;
+local HitPoints = 70;
 local ActMap = {
 	Pump = {
 		Prototype = Action,

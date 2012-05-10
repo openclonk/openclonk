@@ -5,6 +5,7 @@
 	Crushes seeds into flour using power - is an own power producer too
 --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 #include Library_PowerConsumer
@@ -154,5 +155,6 @@ func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
 local BlastIncinerate = 100;
+local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";

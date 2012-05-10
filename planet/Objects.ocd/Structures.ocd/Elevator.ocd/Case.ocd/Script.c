@@ -1,5 +1,6 @@
 /*-- Elevator case --*/
 
+#include Library_Structure
 #include Library_PowerConsumer
 
 local elevator;
@@ -422,3 +423,4 @@ local Description = "$Description$";
 local Touchable = 2;
 local Speed = 15;
 local RushSpeed = 20; // When moving on its own
+local HitPoints = 50;

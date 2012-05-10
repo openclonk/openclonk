@@ -6,6 +6,8 @@
 */
 
 
+#include Library_Structure
+
 local is_open;
 
 protected func Construction()
@@ -78,3 +80,4 @@ protected func Definition(def)
 }
 
 local Name = "$Name$";
+local HitPoints = 50;

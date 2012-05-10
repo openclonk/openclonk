@@ -5,6 +5,7 @@
 	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
 --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 
@@ -208,3 +209,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local SpinStep = 30;
 local BlastIncinerate = 100;
+local HitPoints = 70;

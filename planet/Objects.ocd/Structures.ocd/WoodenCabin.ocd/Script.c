@@ -1,5 +1,6 @@
 /*-- Wooden Cabin --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_DoorControl
 
@@ -62,5 +63,6 @@ func Definition(def) {
 	SetProperty("MeshTransformation", Trans_Rotate(-8,0,1,0));
 }
 local BlastIncinerate = 100;
+local HitPoints = 70;
 local Name = "$Name$";
 local Description = "$Description$";

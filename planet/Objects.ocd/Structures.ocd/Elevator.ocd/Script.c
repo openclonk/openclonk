@@ -1,5 +1,6 @@
 /*-- Elevator --*/
 
+#include Library_Structure
 #include Library_Ownable
 
 local case, rope;
@@ -163,3 +164,4 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 100;
+local HitPoints = 70;

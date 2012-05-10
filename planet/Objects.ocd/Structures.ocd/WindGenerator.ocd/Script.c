@@ -1,5 +1,6 @@
 /*-- Wind generator --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
 
@@ -80,3 +81,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 60;
 local ContactIncinerate = 5;
+local HitPoints = 50;

@@ -5,6 +5,7 @@
 	Melts iron ore to metal, using some sort of fuel.
 --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 
@@ -140,3 +141,4 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 100;
+local HitPoints = 100;

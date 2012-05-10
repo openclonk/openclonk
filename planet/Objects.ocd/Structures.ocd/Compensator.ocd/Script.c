@@ -1,5 +1,6 @@
 /*-- compensator --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
 #include Library_PowerConsumer
@@ -205,4 +206,5 @@ local ActMap = {
 		},
 };
 local BlastIncinerate = 1;
+local HitPoints = 25;
 local ContactIncinerate = 1;
