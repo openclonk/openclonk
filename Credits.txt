@@ -1,20 +1,25 @@
-<Engine Development>
+<Engine and Tools>
 Armin Burgmeier (Clonk-Karl)
 Günther Brammer (Günther)
-Sven Eberhardt (Sven2)
 Nicolas Hake (Isilkor)
-Peter Wortmann (PeterW)
+Sven Eberhardt (Sven2)
 Martin Plicht (Mortimer)
+Peter Wortmann (PeterW)
+Julius Michaelis (Caesar)
+
+<Art and Content>
+Charles Spurrill (Ringwaul)
+Richard Gerum (Randrian)
+Timo Stabbert (Mimmo)
+
+<Scripting and Content>
+Maikel de Vries (Maikel)
+Bernhard Bonigl (Boni)
+Felix Wagner (Clonkonaut)
+David Dormagen (Zapper)
 
 <Coordination, Administration>
 Tobias Zwick (Newton)
 
-<Content, Art and Scripting>
-Charles Spurrill (Ringwaul)
-Maikel de Vries (Maikel)
-Timo Stabbert (Mimmo)
-Richard Gerum (Randrian)
-David Dormagen (Zapper)
-
 <Thanks to Contributors>
-Benjamin Herr (Loriel), Julius Michaelis (Caesar), Felix Wagner (Clonkonaut), Manuel Riecke (MrBeast), Benedict Etzel (B_E), Carl-Philip Hänsch (Carli), Alexander Semeniuk (AlteredARMOR), Asmageddon, Florian Graier (Nachtfalter), Merten Ehmig (pluto), Mark Haßelbusch (Marky), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Matthias Rottländer (Matthi), Faby, Checkmaty, TomyLobo, Stan, Gurkenglas, Clonkine, mizipzor, RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.
+Benjamin Herr (Loriel), Matthias Rottländer (Matthi), Felix Riese (Fungiform), Manuel Riecke (MrBeast), Benedict Etzel (B_E), Carl-Philip Hänsch (Carli), Alexander Semeniuk (AlteredARMOR), Florian Graier (Nachtfalter), ST-DDT, Asmageddon, Merten Ehmig (Pluto), Mark Haßelbusch (Marky), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Faby, Checkmaty, Gurkenglas, Clonkine, mizipzor, mixi, RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.
