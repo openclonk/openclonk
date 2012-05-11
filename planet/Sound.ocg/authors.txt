@@ -28,6 +28,7 @@ HerbertBoland	- WoodHit* (http://www.freesound.org/people/HerbertBoland/sounds/3
 Erdie			- LightMetalHit1 (http://www.freesound.org/people/Erdie/sounds/27826/)
 Anton			- DullWoodHit1 (http://www.freesound.org/people/Anton/sounds/1257/)
 CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
+dobroide		- Fire (http://www.freesound.org/people/dobroide/sounds/4211/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
