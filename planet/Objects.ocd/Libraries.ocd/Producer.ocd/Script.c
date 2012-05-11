@@ -336,6 +336,7 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
+private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
 private func PowerNeed() { return 200; }
 
@@ -347,16 +348,19 @@ private func Produce(id product)
 		
 	// Check if components are available.
 	if (!CheckComponents(product))
-		return false;	
+		return false;
 	// Check need for fuel.
 	if (!CheckFuel(product))
-		return false;	
+		return false;
 	// Check need for liquids.
 	if (!CheckLiquids(product))
-		return false;	
+		return false;
+	// Check need for materials.
+	if (!CheckMaterials(product))
+		return false;
 	// Check need for power.
 	if (!CheckForPower())
-		return false;	
+		return false;
 
 	// Everything available? Start production.
 	// Remove needed components, fuel and liquid.
@@ -441,6 +445,36 @@ private func CheckLiquids(id product, bool remove)
 					break;			
 			}			
 		}		
+	}
+	return true;
+}
+
+private func CheckMaterials(id product, bool remove)
+{
+	var mat_need = MaterialNeed(product);
+	if (mat_need)
+	{
+		var material_amount = 0;
+		var material = mat_need[0];
+		var need = mat_need[1];
+		// Find liquid containers in this producer.
+		for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			if (mat_container->~GetContainedMaterial() == material)
+				material_amount += mat_container->~GetFillLevel();
+		if (material_amount < need)
+			return false;
+		else if (remove)
+		{
+			// Remove the material needed.
+			var extracted = 0;
+			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			{
+				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
+				extracted += val[1];
+				if (extracted >= need)
+					break;
+			}
+		}
 	}
 	return true;
 }
@@ -639,6 +673,13 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
+				return false;
+	}
+	// Material containers may be collected if a product needs them.
+	if (obj->~IsMaterialContainer())
+	{
+		for (var product in GetProducts())
+			if (MaterialNeed(product))
 				return false;
 	}
 	return true;

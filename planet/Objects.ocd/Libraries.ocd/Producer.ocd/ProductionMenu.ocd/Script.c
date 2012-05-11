@@ -91,13 +91,15 @@ public func ShowProductInfo(object item)
 	var product_id = item->GetSymbol();
 	var costs = menu_commander->ProductionCosts(product_id);
 	var cost_msg = "@";
-	var liquid;
+	var liquid, material;
 	for (var comp in costs)
 		cost_msg = Format("%s %dx {{%i}}", cost_msg, comp[1], comp[0]);
 	if (menu_commander->FuelNeed(product_id))
 		cost_msg = Format("%s 1x {{Icon_Producer_Fuel}}", cost_msg);
 	if (liquid = menu_commander->LiquidNeed(product_id))
 		cost_msg = Format("%s %dx {{Icon_Producer_%s}}", cost_msg, liquid[1], liquid[0]);
+	if (material = menu_commander->MaterialNeed(product_id))
+		cost_msg = Format("%s %dx {{%i}}", cost_msg, material[1], product_id->~GetMaterialIcon(material[0]));
 	if (menu_commander->PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 

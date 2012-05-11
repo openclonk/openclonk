@@ -6,9 +6,6 @@
 	@author Clonkonaut
 */
 
-local Name = "$Name$";
-local Description = "$Description$";
-
 // Maximum distance at which material is collected / spilled
 local maxreach = 15;
 // Variable to store extracted material
@@ -65,7 +62,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		Spill(x2, y2, distance >= maxreach);
 		this.spill = false;
 		in_bucket_amount = 0;
-		in_bucket_mat = 0;
+		in_bucket_mat = nil;
 		clonk->CancelUse();
 		return true;
 	}
@@ -181,6 +178,24 @@ private func Hit()
 	Sound("DullWoodHit?");
 }
 
+// Production stuff (for loam)
+public func IsMaterialContainer() { return true; }
+public func GetContainedMaterial() { return MaterialName(in_bucket_mat); }
+public func RemoveContainedMaterial(string material, int amount)
+{
+	if (material != MaterialName(in_bucket_mat)) return 0;
+	if (amount > in_bucket_amount)
+	{
+		var ret = in_bucket_amount;
+		in_bucket_amount = 0;
+		in_bucket_mat = nil;
+		return ret;
+	}
+	in_bucket_amount -= amount;
+	return amount;
+}
+public func GetFillLevel() { return in_bucket_amount; }
+
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
@@ -189,4 +204,6 @@ protected func Definition(def)
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(15,1,0,0), Trans_Rotate(5,0,1,0), Trans_Rotate(-5,0,0,1), Trans_Translate(500,-400,0), Trans_Scale(1350)),def);
 }
 
+local Name = "$Name$";
+local Description = "$Description$";
 local Collectible = true;

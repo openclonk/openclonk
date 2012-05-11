@@ -12,5 +12,4 @@ VertexY=3,-3
 VertexFriction=40,40
 Value=5
 Mass=10
-Components=Earth=2;
 Rotate=1

@@ -162,6 +162,9 @@ private func LoamDone(object clonk)
 
 public func IsFoundryProduct() { return true; }
 public func GetLiquidNeed() { return ["Water", 150]; }
+public func GetMaterialNeed() { return ["Earth", 25]; }
+
+public func GetMaterialIcon(string mat) { return Earth; }
 
 local Collectible = 1;
 local Name = "$Name$";
