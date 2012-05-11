@@ -1,5 +1,2 @@
-FurnaceLoop.ogg, FurnaceStart.ogg, FurnaceStop.ogg
-  by Dynamicell (http://www.freesound.org/people/Dynamicell/sounds/17548/), License: CC Attribution 3.0
-  
 Pop.ogg
   by Traveler (http://www.freesound.org/people/Traveler/sounds/16064/), License: CC Attribution 3.0
