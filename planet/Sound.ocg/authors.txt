@@ -19,7 +19,6 @@ Mirors_         - Sizzle (http://www.freesound.org/people/Mirors_/sounds/81205/)
 juskiddink		- SoftHit1 (http://www.freesound.org/people/juskiddink/sounds/108617/)
 jenc			- BlastMetal (http://www.freesound.org/people/jenc/sounds/511/)
 gelo_papas		- BalloonInflate (http://www.freesound.org/people/gelo_papas/sounds/52070/)
-suonho			- FireLoop (http://www.freesound.org/people/suonho/sounds/17782/)
 FreqMan			- Cash (http://www.freesound.org/people/FreqMan/sounds/31377/)
 fresco			- Munch1 (http://www.freesound.org/people/fresco/sounds/48933/)
 cambra			- FanLoop (http://www.freesound.org/people/Cambra/sounds/102710/)
@@ -28,6 +27,7 @@ digifishmusic	- LiquidBlast2 (http://www.freesound.org/people/digifishmusic/soun
 HerbertBoland	- WoodHit* (http://www.freesound.org/people/HerbertBoland/sounds/33206/)
 Erdie			- LightMetalHit1 (http://www.freesound.org/people/Erdie/sounds/27826/)
 Anton			- DullWoodHit1 (http://www.freesound.org/people/Anton/sounds/1257/)
+CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
