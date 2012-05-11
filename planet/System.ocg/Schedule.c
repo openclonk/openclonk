@@ -87,7 +87,7 @@ global func ClearScheduleCall(object obj, string function)
 		// Check All ScheduleCall-Effects.
 		if (effect = GetEffect("IntScheduleCall", obj, i))
 			// Found right function.
-			if (effect.function == function)
+			if (effect.Function == function)
 				// Remove effect.
 				RemoveEffect(nil, obj, effect);
 	return;
