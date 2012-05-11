@@ -86,7 +86,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 	CreateParticle("ExploSmoke", -16*GetCalcDir(), -27, RandomX(-1,2), -7 + RandomX(-2,2), RandomX(30,90), RGBa(255,255,255,50));
 	
 	// Furnace sound after some time.
-	if (time == 100)
+	if (time == 30)
 		Sound("FurnaceLoop", false, 100, nil, +1);
 
 	// Pour after some time.
