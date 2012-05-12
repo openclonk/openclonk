@@ -181,8 +181,9 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	//target->FirePhase=Random(MaxFirePhase);
 	if ((target->GetDefCoreVal("Width", "DefCore") * target->GetDefCoreVal("Height", "DefCore")) > 500)
 		target->Sound("Inflame", false, 100);
-	if (target->GetMass() >= 100) 
-		target->Sound("Fire", false, 100, 0, true);
+	if (target->GetMass() >= 100)
+		if (target->Sound("Fire", false, 100, nil, 1))
+			effect.fire_sound = true;
 	
 	// callback
 	target->~Incineration(effect.caused_by);
@@ -191,7 +192,7 @@ global func FxFireStart(object target, proplist effect, int temp, int caused_by,
 	return FX_OK;
 }
 
-global func FxFireTimer(object target, effect, int time)
+global func FxFireTimer(object target, proplist effect, int time)
 {
 	// safety
 	if (!target) return FX_Execute_Kill;
@@ -317,7 +318,7 @@ global func FxFireTimer(object target, effect, int time)
 	return FX_OK;
 }
 
-global func FxFireStop(object target, int effect_number, int reason, bool temp)
+global func FxFireStop(object target, proplist effect, int reason, bool temp)
 {
 	// safety
 	if (!target) 
@@ -328,8 +329,8 @@ global func FxFireStop(object target, int effect_number, int reason, bool temp)
 		return true;
 	}
 	// stop sound
-	if (target->GetMass() >= 100)
-		target->Sound("Fire", false,  1, 0, false);
+	if (effect.fire_sound)
+		target->Sound("Fire", false, 100, nil, -1);
 	// done, success
 	return true;
 }
