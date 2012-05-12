@@ -42,9 +42,9 @@ protected func Construction()
 
 	AttachBackpack();
 	iHandMesh = [0,0];
+
+	SetSkin(0);
 }
-
-
 
 /* When adding to the crew of a player */
 
@@ -55,6 +55,7 @@ protected func Recruitment(int iPlr)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
 	if(skin) SetSkin(skin);
+	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
@@ -115,7 +116,7 @@ protected func Hurt()
 	if(gender == 0)
 		Sound("Hurt?");
 	else
-		Sound("FHurt?"); //female 'ouch' sounds TODO :/
+		Sound("FHurt?");
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -553,6 +554,7 @@ func SetSkin(int skin)
 
 	return skin;
 }
+func GetSkinCount() { return 4; }
 
 /* Act Map */
 

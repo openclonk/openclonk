@@ -106,7 +106,7 @@ static long FnGetPlayerColor(C4AulContext *cthr, long iPlayer)
 static long FnGetPlrClonkSkin(C4AulContext *cthr, long iPlayer)
 {
 	C4Player *plr = ::Players.Get(iPlayer);
-	return plr ? plr->PrefClonkSkin : 0;
+	return plr ? plr->PrefClonkSkin : NULL;
 }
 
 static Nillable<long> FnGetX(C4AulContext *cthr, long iPrec)
