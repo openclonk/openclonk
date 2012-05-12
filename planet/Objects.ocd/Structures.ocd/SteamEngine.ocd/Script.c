@@ -15,10 +15,6 @@ func Construction(object creator)
 	power_seconds = 0;
 
 	SetAction("Default");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	AddTimer("CollectionZone", 1);
 	return _inherited(creator, ...);
 }

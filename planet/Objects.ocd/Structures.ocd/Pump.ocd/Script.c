@@ -16,10 +16,6 @@ public func IsLiquidPump() { return true; }
 public func Construction(object creator)
 {
 	SetAction("Wait");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	return _inherited(creator, ...);
 }
 

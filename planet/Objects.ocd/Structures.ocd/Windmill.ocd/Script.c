@@ -22,13 +22,6 @@ protected func Construction(object creator)
 	SetProperty("MeshTransformation", Trans_Rotate(-30,0,1,0));
 	SetAction("Default");
 	
-	if (creator)
-	{
-		var dir = creator->~GetConstructionDirection();
-		if (dir)
-			SetDir(dir);
-	}
-	
 	// uses functions of the wind generator
 	this.Wind2TurnEx = WindGenerator.Wind2Turn;
 	this.GetWeightedWind = WindGenerator.GetWeightedWind;	

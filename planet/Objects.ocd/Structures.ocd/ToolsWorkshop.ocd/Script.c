@@ -10,10 +10,6 @@ local hold_production;
 public func Construction(object creator)
 {
 	SetAction("Default");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	return _inherited(creator, ...);
 }
 

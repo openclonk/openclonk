@@ -17,10 +17,6 @@ public func Construction(object creator)
 	
 	//SetProperty("MeshTransformation",Trans_Rotate(RandomX(-40,20),0,1,0));
 	SetAction("Default");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	AddTimer("CollectionZone", 1);	
 	return _inherited(creator, ...);
 }

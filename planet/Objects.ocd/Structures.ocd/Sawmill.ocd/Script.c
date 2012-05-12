@@ -13,10 +13,6 @@ public func Construction(object creator)
 {
 	SetProperty("MeshTransformation",Trans_Rotate(-20,0,1,0));
 	SetAction("Default");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	return _inherited(creator, ...);
 }
 

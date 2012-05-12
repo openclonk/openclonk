@@ -24,10 +24,6 @@ func Construction(object creator)
 	anim = PlayAnimation("Charge", 1, Anim_Const(GetAnimationLength("Charge")), Anim_Const(1000));
 
 	SetAction("Default");
-	if (!creator) return;
-	var dir = creator->~GetConstructionDirection();
-	if (dir)
-		SetDir(dir);
 	return _inherited(creator, ...);
 }
 
