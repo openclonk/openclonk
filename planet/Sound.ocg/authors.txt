@@ -5,7 +5,7 @@ Author        Work(s)
 ===============================================================================
 
 Ringwaul        - MonsterGrowl*, MonsterDie, Snuff*, WipfAroof, WipfWhine
-Clonkonaut      - Confirm*
+Clonkonaut      - Confirm*, FDie
 Checkmaty       - ProjectileHitLiving*
 dobroide        - BirdsLoop (http://www.freesound.org/people/dobroide/sounds/54746/)
 Benboncan       - Blast*/BlastMetal (http://www.freesound.org/people/Benboncan/sounds/73005/)
