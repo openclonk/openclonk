@@ -12,7 +12,6 @@ VertexFriction=50,50,100,100
 Value=200
 Mass=4500
 Components=Wood=6;Metal=3
-Collection=2,5,20,10
 Exclusive=1
 Construction=1
 ContainBlast=1

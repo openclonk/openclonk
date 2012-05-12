@@ -31,6 +31,7 @@ protected func Construction(object creator)
 	// uses functions of the wind generator
 	this.Wind2TurnEx = WindGenerator.Wind2Turn;
 	this.GetWeightedWind = WindGenerator.GetWeightedWind;	
+	AddTimer("CollectionZone", 1);
 	
 	return _inherited(creator, ...);
 }
@@ -42,7 +43,6 @@ protected func Initialize()
 	
 	// Set initial position
 	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(GetAnimationLength(TurnAnimation()), 0), Anim_Const(1000));
-	AddTimer("CollectionZone", 1);
 	return _inherited(...);
 }
 
