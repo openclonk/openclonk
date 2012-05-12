@@ -328,7 +328,7 @@ global func FxFireStop(object target, int effect_number, int reason, bool temp)
 		return true;
 	}
 	// stop sound
-//	if (target->GetMass() >= 100)
+	if (target->GetMass() >= 100)
 		target->Sound("Fire", false,  1, 0, false);
 	// done, success
 	return true;
