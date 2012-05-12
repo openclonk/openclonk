@@ -1,0 +1,7 @@
+[DefCore]
+id=Elevator_Case_Back
+Version=5,2,0,1
+Width=24
+Height=45
+Offset=-12,-26
+Category=C4D_StaticBack

@@ -5,12 +5,16 @@
 
 local elevator;
 local slave, partner, no_connection;
+// Meshes
+local front, back;
 
 /* Callbacks */
 
 func Initialize()
 {
 	AddTimer("Movement", 1);
+	front = CreateObject(Elevator_Case_Front, 0,13, GetOwner());
+	back = CreateObject(Elevator_Case_Back, 0,13, GetOwner());
 }
 
 // Called by the elevator
@@ -86,6 +90,10 @@ local move_to, // Y-coordinate to move to on its own
 
 func Movement()
 {
+	// Move back and front
+	front->SetPosition(GetX(), GetY()-5);
+	back->SetPosition(GetX(), GetY()-7);
+
 	// No elevator?!
 	if (!elevator)
 	{

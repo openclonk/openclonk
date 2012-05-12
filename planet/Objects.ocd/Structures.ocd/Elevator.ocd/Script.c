@@ -54,7 +54,7 @@ func CreateCase()
 func CreateRope()
 {
 	rope = CreateObject(ElevatorRope, -19 * GetCalcDir(), -11, GetOwner());
-	rope->SetAction("Be", case);
+	rope->SetAction("Be", case.back);
 }
 
 /* Destruction */
