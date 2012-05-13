@@ -31,6 +31,7 @@
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
 #include <C4PlayerControl.h>
+#include <C4Rope.h>
 
 class C4Game
 {
@@ -89,6 +90,8 @@ public:
 	C4KeyboardInput &KeyboardInput;
 	C4FileMonitor *pFileMonitor;
 	C4GameSec1Timer *pSec1Timer;
+
+	C4RopeList Ropes;
 
 	char CurrentScenarioSection[C4MaxName+1];
 	char ScenarioFilename[_MAX_PATH+1];

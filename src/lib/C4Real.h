@@ -71,6 +71,7 @@ class C4Fixed
 	friend C4Fixed itofix(int32_t x, int32_t prec);
 	friend float fixtof(const C4Fixed &x);
 	friend C4Fixed ftofix(float x);
+	friend C4Fixed Sqrt(C4Fixed x);
 #else
 	friend void FIXED_TO_FLOAT(float *pVal);
 #endif
@@ -295,6 +296,8 @@ inline C4Real C4REAL100(int x) { return itofix(x, 100); }
 //inline C4Real C4REAL256(int x) { return itofix(x, 256); }
 inline C4Real C4REAL256(int x) { C4Fixed r; r.val = x * FIXED_FPF / 256; return r; }
 inline C4Real C4REAL10(int x) { return itofix(x, 10); }
+
+C4Fixed Sqrt(C4Fixed x);
 
 #else
 

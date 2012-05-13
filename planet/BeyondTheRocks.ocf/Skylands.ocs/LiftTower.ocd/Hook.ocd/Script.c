@@ -28,7 +28,8 @@ public func ConnectTo(object connect)
 /*	rope->BreakRope(true);
 	SetRope(true);
 	rope->Connect(tower, connect);*/
-	rope->Reconnect(connect);
+	//rope->Reconnect(connect);
+	rope->SetFront(connect);
 	AddEffect("Connecting", this, 1, 1, this, nil, connect);
 	return true;
 }
@@ -61,7 +62,7 @@ private func FxConnectingTimer(object target, effect)
 	if (!effect.connection)
 	{
 		Unhook();
-		rope->BreakRope(true);
+		rope->Remove(); //BreakRope(true);
 		SetRope();
 		return -1;
 	}
@@ -89,7 +90,7 @@ public func Interact(object clonk)
 	{
 		RemoveEffect("Connecting", this);
 		Unhook();
-		rope->BreakRope(true);
+		//rope->BreakRope(true);
 		SetRope();
 		return true;
 	}
@@ -115,22 +116,30 @@ func Initialize()
 
 func SetRope(bool no_connect)
 {
-	rope = CreateObject(LiftTower_Rope,0,0,NO_OWNER);
+	rope = CreateRope(this, tower, 5, LiftTower_Rope);
+	if(rope)
+	{
+		rope->SetBackFixed(true);
+		rope->SetBackAutoSegmentation(250);
+		tower->SetRope(rope);
+	}
+	return rope;
+	/*rope = CreateObject(LiftTower_Rope,0,0,NO_OWNER);
 	if (!no_connect) rope->Connect(tower, this);
 	tower->SetRope(rope);
-	return rope;
+	return rope;*/
 }
 
 public func Destruction()
 {
 	if(rope)
-		rope->HookRemoved();
+		rope->Remove();
 }
 
 protected func Rotation()
 {
 	if (!rope) return;
-	SetR(rope->GetHookAngle());
+	//SetR(rope->GetHookAngle()); // TODO: Hook rotation by last segment
 }
 
 public func NoLiftTowerConnection() { return true; }

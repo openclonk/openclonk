@@ -29,6 +29,16 @@
 
 #ifdef C4REAL_USE_FIXNUM
 
+C4Fixed Sqrt(C4Fixed x)
+{
+	assert(x.val >= 0);
+	assert(FIXED_SHIFT % 2 == 0);
+
+	C4Fixed ret;
+	ret.val = SqrtI(x.val) << (FIXED_SHIFT >> 1);
+	return ret;
+}
+
 // static table with sinus values from 0.00 degree to 90.00 degree inclusively
 long SineTable[9001] =
 {

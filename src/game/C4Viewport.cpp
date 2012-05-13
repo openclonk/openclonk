@@ -255,6 +255,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
 	C4ST_STOP(ObjStat)
 
+	// draw ropes
+	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Ropes")
+	::Game.Ropes.Draw(cgo, NULL);
+	C4ST_STOP(ObjStat)
+
 	// draw global particles
 	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Particles")
 	::Particles.GlobalParticles.Draw(cgo,NULL);

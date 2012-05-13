@@ -674,6 +674,7 @@ bool C4Game::GameOverCheck()
 
 C4ST_NEW(ControlRcvStat,    "C4Game::Execute ReceiveControl")
 C4ST_NEW(ControlStat,       "C4Game::Execute ExecuteControl")
+C4ST_NEW(ExecRopesStat,     "C4Game::Execute ExecRopes")
 C4ST_NEW(ExecObjectsStat,   "C4Game::Execute ExecObjects")
 C4ST_NEW(GEStats,           "C4Game::Execute pGlobalEffects->Execute")
 C4ST_NEW(PXSStat,           "C4Game::Execute PXS.Execute")
@@ -731,6 +732,7 @@ bool C4Game::Execute() // Returns true if the game is over
 
 	// Game
 
+	EXEC_S(     Ropes.Execute();                  , ExecRopesStat )
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
 	if (pGlobalEffects)
 		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
@@ -912,6 +914,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
+	Ropes.ClearPointers(pObj);
 }
 
 bool C4Game::TogglePause()
@@ -2186,6 +2189,7 @@ bool C4Game::InitScriptEngine()
 	InitCoreFunctionMap(&ScriptEngine);
 	InitObjectFunctionMap(&ScriptEngine);
 	InitGameFunctionMap(&ScriptEngine);
+	Ropes.InitFunctionMap(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())

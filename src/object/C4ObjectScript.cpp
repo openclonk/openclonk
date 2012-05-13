@@ -2093,6 +2093,23 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	return true;
 }
 
+static C4PropList* FnCreateRope(C4AulContext *cthr, C4Object* First, C4Object* Second, int SegmentLength, C4PropList* Graphics)
+{
+	try
+	{
+		if(!Graphics) return false;
+		C4Def* Def = Graphics->GetDef();
+		if(!Def) return false;
+
+		return Game.Ropes.CreateRope(First, Second, itofix(SegmentLength), &Def->Graphics);
+	}
+	catch(const C4RopeError& err)
+	{
+		DebugLogF("Failed to create rope: %s", err.what());
+		return NULL;
+	}
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptObjectConstMap[]=
@@ -2413,6 +2430,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
+	AddFunc(pEngine, "CreateRope", FnCreateRope);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
 	AddFunc(pEngine, "GrabContents", FnGrabContents);
 	AddFunc(pEngine, "Punch", FnPunch);

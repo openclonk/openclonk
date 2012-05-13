@@ -20,7 +20,7 @@ protected func Initialize()
 	hook_pos = CreateArray();
 	anim_no = PlayAnimation("Turn", 10, Anim_Const(0), Anim_Const(1000));
 	stopped = true;
-	AddEffect("SpinWheel", 5);
+	AddTimer("SpinWheel", 5);
 }
 
 /* Rope */
@@ -69,7 +69,7 @@ func Interact(object clonk)
 	return false;
 }
 
-func SetRope(object rope_to_set)
+func SetRope(proplist rope_to_set)
 {
 	rope = rope_to_set;
 }
@@ -78,7 +78,7 @@ func SetRope(object rope_to_set)
 
 public func ControlUp(object clonk)
 {
-	return DrawIn();
+	return this->DrawIn();
 }
 public func ControlStop(object clonk)
 {
@@ -92,8 +92,12 @@ public func DrawIn()
 	if (hook->Contained() == this) return false;
 	if (ObjectDistance(hook) < LIFTTOWER_HOOK_LOOSEDIST) return false;
 	if (GetEffect("DrawIn", this)) return false;
-	rope->ConnectPull();
 	return AddEffect("DrawIn", this, 1, 1, this);
+}
+
+private func FxDrawInStart(effect)
+{
+	rope->PullBack(40);
 }
 
 private func FxDrawInTimer(effect)
@@ -104,15 +108,17 @@ private func FxDrawInTimer(effect)
 		OnRopeBreak();
 		return -1;
 	}
-	rope->DoLength(-1);
+	//rope->DoLength(-1);
 	if (ObjectDistance(hook) < LIFTTOWER_HOOK_LOOSEDIST) return -1;
 }
 
 private func FxDrawInStop(object target, effect, int temp)
 {
+	rope->PullBack(0);
+
 	if (temp) return;
 	if (!rope) return;
-	rope->ConnectLoose();
+	//rope->ConnectLoose();
 }
 
 /* Animation */
