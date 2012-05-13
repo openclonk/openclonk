@@ -13,3 +13,4 @@ SolidMask=8,0,8,40,0,0
 Value=10
 Mass=1000
 Components=Rock=10;
+HorizontalFix=1
