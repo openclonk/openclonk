@@ -620,3 +620,21 @@ private func ReorderCrewSelectors(object leaveout)
 		j++;
 	}
 }
+
+
+
+/* When loading a savegame, make sure the GUI still works */
+protected func UpdateTransferZone()
+{
+	ScheduleCall(this, "Reset", 1);
+}
+
+private func Reset()
+{
+	// The simple way: A full UI reset \o/
+	Destruction();
+	Construction();
+	
+	if(GetCursor(GetOwner()))
+		OnCrewSelection(GetCursor(GetOwner()));
+}
