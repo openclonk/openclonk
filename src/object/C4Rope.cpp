@@ -204,7 +204,7 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 		while(Target->Contained)
 			Target = Target->Contained;
 
-	// Apply stricking friction
+	// Apply sticking friction
 	if(!Target)
 	{
 		// Sticking friction: If a segment has contact with the landscape and it
@@ -550,7 +550,7 @@ void C4Rope::Solve(C4RopeElement* prev, C4RopeElement* next)
 
 		C4Real dx1, dy1, dx2, dy2, d;
 		PullPathInfo Info = { true, pix, piy, nix, niy, nix, niy, pix, piy, Fix0 };
-		if((Abs(dx) > 2*l || Abs(dy) > 2*l || dx*dx+dy*dy > 4*l*l) && // The first two checks exist to avoid an overflow in the dx*dx+dy*dy expression
+		if((Abs(dx) > l*2 || Abs(dy) > l*2 || dx*dx+dy*dy > l*l*4) && // The first two checks exist to avoid an overflow in the dx*dx+dy*dy expression
 		   !PathFree(pix, piy, nix, niy) &&
 		   Game.PathFinder.Find(pix, piy, nix, niy, PullPathAccumulator, (intptr_t)&Info))
 		{
