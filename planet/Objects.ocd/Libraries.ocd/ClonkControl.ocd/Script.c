@@ -82,6 +82,18 @@ public func GetItems()
 	return inv;
 }
 
+/** Returns how many items are in the clonks inventory
+    Does not have to be the same as ContentCounts() because of objects with special handling, like CarryHeavy */
+public func GetItemCount()
+{
+	var count = 0;
+	for(var i=0; i < GetLength(inventory); i++)
+		if(inventory[i])
+			count++;
+	
+	return count;
+}
+
 /** Get the 'i'th item in hands.
     These are the items that will be used with use-commands. (Left mouse click, etc...) */
 public func GetHandItem(int i)
@@ -494,7 +506,7 @@ protected func RejectCollect(id objid, object obj)
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
 
-	// Carry heavy only gets picked up if non held already
+	// Carry heavy only gets picked up if none held already
 	if(obj->~IsCarryHeavy())
 	{
 		if(IsCarryingHeavy())
@@ -540,7 +552,7 @@ protected func RejectCollect(id objid, object obj)
 public func AllowTransfer(object obj)
 {
 	// Only check max contents.
-	if (ContentsCount() >= MaxContentsCount()) 
+	if (GetItemCount() >= MaxContentsCount()) 
 		return false;
 
 	// don't allow picking up multiple carryheavy-objects
