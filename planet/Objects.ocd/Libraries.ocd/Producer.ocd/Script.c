@@ -45,7 +45,7 @@ public func IsInteractable() { return GetCon() >= 100; }
 
 public func GetInteractionMetaInfo(object clonk)
 {
-	return { Description = "Produce items", IconName = nil, IconID = nil };
+	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
 }
 
 // On interaction the production menu should be opened.
