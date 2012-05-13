@@ -181,8 +181,6 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	
 	// Set owner for CreateConstruction
 	SetOwner(clonk->GetOwner());
-	// Save direction so the structure can ask for it
-	this.constructionDirection = dir;
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
@@ -229,9 +227,4 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Message
 	clonk->Message("$TxtConstructions$", structure_id->GetName());
 	return true;
-}
-// Returns the desired direction for a construction
-func GetConstructionDirection()
-{
-	return this.constructionDirection;
 }
