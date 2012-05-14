@@ -1765,16 +1765,6 @@ static long FnRemoveUnusedTexMapEntries(C4AulContext *ctx)
 	return true;
 }
 
-static bool FnSetLandscapePixel(C4AulContext* ctx, long iX, long iY, long dwValue)
-{
-	// local call
-	if (ctx->Obj) { iX+=ctx->Obj->GetX(); iY+=ctx->Obj->GetY(); }
-	// set pixel in 32bit-sfc only
-	// TODO: ::Landscape.SetPixDw(iX, iY, dwValue);
-	// success
-	return true;
-}
-
 static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
                                DMQ_Sub = 1, // draw w/ tunnel IFT
                                          DMQ_Bridge = 2; // draw only over materials you can bridge over
@@ -2478,7 +2468,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetGamma", FnSetGamma);
 	AddFunc(pEngine, "ResetGamma", FnResetGamma);
 	AddFunc(pEngine, "FrameCounter", FnFrameCounter);
-	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
 	AddFunc(pEngine, "AddMsgBoardCmd", FnAddMsgBoardCmd);
