@@ -46,6 +46,13 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 {
 	if (!Func)
 		return StdStrBuf("");
+	// Context
+	if (Obj && Obj->Status)
+	{
+		C4Value ObjVal(Obj);
+		Dump.Append(ObjVal.GetDataString(0));
+		Dump.Append("->");
+	}
 	bool fDirectExec = !Func->GetName();
 	if (!fDirectExec)
 	{
@@ -77,16 +84,6 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	}
 	else
 		Dump.Append(Func->Owner->ScriptName);
-	// Context
-	if (Obj)
-	{
-		if (Obj->Status == C4OS_NORMAL)
-			Dump.AppendFormat(" (obj #%d)", Obj->Number);
-		else
-			Dump.AppendFormat(" (obj (#%d))", Obj->Number);
-	}
-	else if (Func->Owner->GetPropList())
-		Dump.AppendFormat(" (def %s)", Func->Owner->GetPropList()->GetName());
 	// Script
 	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
