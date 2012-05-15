@@ -105,13 +105,13 @@ void C4AulExec::LogCallStack()
 		pCtx->dump(StdStrBuf(" by: "));
 }
 
-C4String *C4AulExec::FnTranslate(C4AulContext *ctx, C4String *text)
+C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 {
 	if (!text || text->GetData().isNull()) return NULL;
 	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
-	if (ctx->Def && ctx->Def->GetDef())
-		script = &(ctx->Def->GetDef()->Script);
+	if (_this && _this->GetDef())
+		script = &(_this->GetDef()->Script);
 	else
 		script = AulExec.pCurCtx[-1].Func->pOrgScript;
 	assert(script);
@@ -1098,21 +1098,15 @@ C4Value C4AulScriptFunc::Exec(C4PropList * p, C4AulParSet *pPars, bool fPassErro
 
 C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors)
 {
+	// Determine function call format to use
+	if (Def->FunctionC4V2)
+		return Def->FunctionC4V2(pCallerCtx->Def, pPars);
 
-	// Choose function call format to use
-	if (Def->FunctionC4V2 != 0)
-
-		// C4V function
-		return Def->FunctionC4V2(pCallerCtx, pPars);
-
-	if (Def->FunctionC4V != 0)
-
-		// C4V function
-		return Def->FunctionC4V(pCallerCtx, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
+	if (Def->FunctionC4V)
+		return Def->FunctionC4V(pCallerCtx->Def, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
 
 	// should never happen...
 	return C4VNull;
-
 }
 
 

@@ -58,9 +58,9 @@ struct C4ScriptFnDef
 	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
-	C4Value (*FunctionC4V)(struct C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
+	C4Value (*FunctionC4V)(C4PropList * _this, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
 	                       C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
-	C4Value (*FunctionC4V2)(struct C4AulContext *, C4Value *);
+	C4Value (*FunctionC4V2)(C4PropList * _this, C4Value *);
 };
 
 // add functions to engine

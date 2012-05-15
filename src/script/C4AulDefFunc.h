@@ -52,7 +52,11 @@ inline C4String *String(const char * str)
 {
 	return str ? ::Strings.RegString(str) : NULL;
 }
-StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
+inline C4Object * Object(C4PropList * _this)
+{
+	return _this ? _this->GetObject() : NULL;
+}
+StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
                                 C4Value * Par4=0, C4Value * Par5=0, C4Value * Par6=0, C4Value * Par7=0, C4Value * Par8=0, C4Value * Par9=0);
 enum { MaxFnStringParLen=500 };
 
@@ -294,7 +298,7 @@ class C4AulDefFunc##N:                        \
 public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4AulContext * LIST(N, PARS)); \
+    typedef RType (*Func)(C4PropList * LIST(N, PARS)); \
     virtual int GetParCount() { return N; }   \
     virtual C4V_Type GetRetType()             \
     { return C4ValueConv<RType>::Type(); }    \
@@ -305,7 +309,7 @@ public C4AulDefFuncHelper {                   \
     using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
     virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
-    { return C4ValueConv<RType>::ToC4V(pFunc(pContext LIST(N, CONV_FROM_C4V))); } \
+    { return C4ValueConv<RType>::ToC4V(pFunc(pContext->Def LIST(N, CONV_FROM_C4V))); } \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
@@ -332,8 +336,8 @@ public C4AulDefFuncHelper {                   \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
-template <typename RType LIST(N, TYPENAMES)> \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulContext * LIST(N, PARS)), bool Public=true) \
+template <typename RType LIST(N, TYPENAMES)>  \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   } \

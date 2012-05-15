@@ -84,13 +84,13 @@ static bool FnPunch(C4Object *Obj, C4Object *target, long punch)
 	return !!ObjectComPunch(Obj,target,punch);
 }
 
-static bool FnKill(C4AulContext *cthr, C4Object *pObj, bool fForced)
+static bool FnKill(C4PropList * _this, C4Object *pObj, bool fForced)
 {
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return false;
+	if (!pObj) pObj=Object(_this); if (!pObj) return false;
 	if (!pObj->GetAlive()) return false;
 	// Trace kills by player-owned objects
 	// Do not trace for NO_OWNER, because that would include e.g. the Suicide-rule
-	if (cthr->Obj && ValidPlr(cthr->Obj->Controller)) pObj->UpdatLastEnergyLossCause(cthr->Obj->Controller);
+	if (Object(_this) && ValidPlr(Object(_this)->Controller)) pObj->UpdatLastEnergyLossCause(Object(_this)->Controller);
 	// Do the kill
 	pObj->AssignDeath(!!fForced);
 	return true;
@@ -174,24 +174,24 @@ static long FnGetCon(C4Object *Obj, long iPrec)
 	return iPrec*Obj->GetCon()/FullCon;
 }
 
-static C4String *FnGetName(C4AulContext *cthr)
+static C4String *FnGetName(C4PropList * _this)
 {
-	if (!cthr->Def)
+	if (!_this)
 		throw new NeedNonGlobalContext("GetName");
 	else
-		return String(cthr->Def->GetName());
+		return String(_this->GetName());
 }
 
-static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, bool fMakeValidIfExists)
+static bool FnSetName(C4PropList * _this, C4String *pNewName, bool fSetInInfo, bool fMakeValidIfExists)
 {
-	if (!cthr->Obj)
+	if (!Object(_this))
 	{
-		if (!cthr->Def)
+		if (!_this)
 			throw new NeedNonGlobalContext("SetName");
 		else if (fSetInInfo)
 			return false;
 		// Definition name
-		cthr->Def->SetName(FnStringPar(pNewName));
+		_this->SetName(FnStringPar(pNewName));
 		return true;
 	}
 	else
@@ -200,7 +200,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 		if (fSetInInfo)
 		{
 			// setting name in info
-			C4ObjectInfo *pInfo = cthr->Obj->Info;
+			C4ObjectInfo *pInfo = Object(_this)->Info;
 			if (!pInfo) return false;
 			const char *szName = pNewName->GetCStr();
 			// empty names are bad; e.g., could cause problems in savegames
@@ -213,7 +213,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 			// querying owner info list here isn't 100% accurate, as infos might have been stolen by other players
 			// however, there is no good way to track the original list ATM
 			C4ObjectInfoList *pInfoList = NULL;
-			C4Player *pOwner = ::Players.Get(cthr->Obj->Owner);
+			C4Player *pOwner = ::Players.Get(Object(_this)->Owner);
 			if (pOwner) pInfoList = &pOwner->CrewInfoList;
 			char NameBuf[C4MaxName+1];
 			if (pInfoList) if (pInfoList->NameExists(szName))
@@ -224,14 +224,14 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 					szName = NameBuf;
 				}
 			SCopy(szName, pInfo->Name, C4MaxName);
-			cthr->Obj->SetName(); // make sure object uses info name
-			cthr->Obj->Call(PSF_NameChange,&C4AulParSet(C4VBool(true)));
+			Object(_this)->SetName(); // make sure object uses info name
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(true)));
 		}
 		else
 		{
-			if (!pNewName) cthr->Obj->SetName();
-			else cthr->Obj->SetName(pNewName->GetCStr());
-			cthr->Obj->Call(PSF_NameChange,&C4AulParSet(C4VBool(false)));
+			if (!pNewName) Object(_this)->SetName();
+			else Object(_this)->SetName(pNewName->GetCStr());
+			Object(_this)->Call(PSF_NameChange,&C4AulParSet(C4VBool(false)));
 		}
 	}
 	return true;
@@ -580,15 +580,15 @@ static long FnGetBreath(C4Object *Obj)
 	return Obj->Breath;
 }
 
-static long FnGetMass(C4AulContext *cthr)
+static long FnGetMass(C4PropList * _this)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def || !cthr->Def->GetDef())
+	if (!Object(_this))
+		if (!_this || !_this->GetDef())
 			throw new NeedNonGlobalContext("GetMass");
 		else
-			return cthr->Def->GetDef()->Mass;
+			return _this->GetDef()->Mass;
 	else
-		return cthr->Obj->Mass;
+		return Object(_this)->Mass;
 }
 
 static long FnGetRDir(C4Object *Obj, long iPrec)
@@ -749,15 +749,15 @@ static bool FnSetKiller(C4Object *Obj, long iNewKiller)
 	return true;
 }
 
-static long FnGetCategory(C4AulContext *cthr)
+static long FnGetCategory(C4PropList * _this)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def || !cthr->Def->GetDef())
+	if (!Object(_this))
+		if (!_this || !_this->GetDef())
 			throw new NeedNonGlobalContext("GetCategory");
 		else
-			return cthr->Def->GetDef()->Category;
+			return _this->GetDef()->Category;
 	else
-		return cthr->Obj->Category;
+		return Object(_this)->Category;
 }
 
 static long FnGetOCF(C4Object *Obj)
@@ -770,15 +770,15 @@ static long FnGetDamage(C4Object *Obj)
 	return Obj->Damage;
 }
 
-static long FnGetValue(C4AulContext *cthr, C4Object *pInBase, long iForPlayer)
+static long FnGetValue(C4PropList * _this, C4Object *pInBase, long iForPlayer)
 {
-	if (!cthr->Obj)
-		if (!cthr->Def || !cthr->Def->GetDef())
+	if (!Object(_this))
+		if (!_this || !_this->GetDef())
 			throw new NeedNonGlobalContext("GetValue");
 		else
-			return cthr->Def->GetDef()->GetValue(pInBase, iForPlayer);
+			return _this->GetDef()->GetValue(pInBase, iForPlayer);
 	else
-		return cthr->Obj->GetValue(pInBase, iForPlayer);
+		return Object(_this)->GetValue(pInBase, iForPlayer);
 }
 
 static long FnGetRank(C4Object *Obj)
@@ -1293,9 +1293,9 @@ static long FnSetTransferZone(C4Object *Obj, long iX, long iY, long iWdt, long i
 	return Game.TransferZones.Set(iX,iY,iWdt,iHgt,Obj);
 }
 
-static long FnObjectDistance(C4AulContext *cthr, C4Object *pObj2, C4Object *pObj)
+static long FnObjectDistance(C4PropList * _this, C4Object *pObj2, C4Object *pObj)
 {
-	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj2) return 0;
+	if (!pObj) pObj=Object(_this); if (!pObj || !pObj2) return 0;
 	return Distance(pObj->GetX(),pObj->GetY(),pObj2->GetX(),pObj2->GetY());
 }
 
@@ -1505,13 +1505,13 @@ static bool FnSetGraphics(C4Object *Obj, C4String *pGfxName, C4Def *pSrcDef, lon
 	return Obj->SetGraphics(FnStringPar(pGfxName), pSrcDef);
 }
 
-static long FnGetDefBottom(C4AulContext* cthr)
+static long FnGetDefBottom(C4PropList * _this)
 {
-	if (!cthr->Def || !cthr->Def->GetDef())
+	if (!_this || !_this->GetDef())
 		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!cthr->Obj || cthr->Obj->Def == cthr->Def->GetDef());
-	return cthr->Def->GetDef()->Shape.y+cthr->Def->GetDef()->Shape.Hgt + (cthr->Obj ? cthr->Obj->GetY() : 0);
+	assert(!Object(_this) || Object(_this)->Def == _this->GetDef());
+	return _this->GetDef()->Shape.y+_this->GetDef()->Shape.Hgt + (Object(_this) ? Object(_this)->GetY() : 0);
 }
 
 static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
