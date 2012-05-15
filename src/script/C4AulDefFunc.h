@@ -102,7 +102,7 @@ public:
 class NeedDefinitionContext : public C4AulExecError
 {
 public:
-	NeedDefinitionContext(const char *function) : C4AulExecError(NULL, FormatString("%s: must be called from definition context", function).getData()) {}
+	NeedDefinitionContext(const char *function) : C4AulExecError(FormatString("%s: must be called from definition context", function).getData()) {}
 };
 
 // Other functions are callable in object context only.
@@ -110,7 +110,7 @@ public:
 class NeedObjectContext : public C4AulExecError
 {
 public:
-	NeedObjectContext(const char *function) : C4AulExecError(NULL, FormatString("%s: must be called from object context", function).getData()) {}
+	NeedObjectContext(const char *function) : C4AulExecError(FormatString("%s: must be called from object context", function).getData()) {}
 };
 
 // Then there's functions that don't care, but need either defn or object context.
@@ -118,7 +118,7 @@ public:
 class NeedNonGlobalContext : public C4AulExecError
 {
 public:
-	NeedNonGlobalContext(const char *function) : C4AulExecError(NULL, FormatString("%s: call must not be from global context", function).getData()) {}
+	NeedNonGlobalContext(const char *function) : C4AulExecError(FormatString("%s: call must not be from global context", function).getData()) {}
 };
 
 // return type of functions returning nil

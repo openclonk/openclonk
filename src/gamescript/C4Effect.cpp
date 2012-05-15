@@ -497,15 +497,15 @@ void C4Effect::SetPropertyByS(C4String * k, const C4Value & to)
 		{
 			case P_Name:
 				if (!to.getStr() || !*to.getStr()->GetCStr())
-					throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+					throw new C4AulExecError("effect: Name has to be a nonempty string");
 				C4PropListNumbered::SetPropertyByS(k, to);
 				ReAssignCallbackFunctions();
 				return;
 			case P_Priority:
-				throw new C4AulExecError(0, "effect: Priority is readonly");
+				throw new C4AulExecError("effect: Priority is readonly");
 			case P_Interval: iInterval = to.getInt(); return;
 			case P_CommandTarget:
-				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+				throw new C4AulExecError("effect: CommandTarget is readonly");
 			case P_Time: iTime = to.getInt(); return;
 		}
 	}
@@ -519,12 +519,12 @@ void C4Effect::ResetProperty(C4String * k)
 		switch(k - &Strings.P[0])
 		{
 			case P_Name:
-				throw new C4AulExecError(0, "effect: Name has to be a nonempty string");
+				throw new C4AulExecError("effect: Name has to be a nonempty string");
 			case P_Priority:
-				throw new C4AulExecError(0, "effect: Priority is readonly");
+				throw new C4AulExecError("effect: Priority is readonly");
 			case P_Interval: iInterval = 0; return;
 			case P_CommandTarget:
-				throw new C4AulExecError(0, "effect: CommandTarget is readonly");
+				throw new C4AulExecError("effect: CommandTarget is readonly");
 			case P_Time: iTime = 0; return;
 		}
 	}

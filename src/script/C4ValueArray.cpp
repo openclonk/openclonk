@@ -119,13 +119,13 @@ void C4ValueArray::SetItem(int32_t iElem, const C4Value &Value)
 {
 	// enlarge
 	if (iElem < -iSize)
-		throw new C4AulExecError(NULL,"array access: index out of range");
+		throw new C4AulExecError("array access: index out of range");
 	else if (iElem < 0)
 		iElem = iSize + iElem;
 	else if (iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not get caught, but it's better than a segfault
 	if (iElem >= iSize)
-		throw new C4AulExecError(NULL,"array access: index too large");
+		throw new C4AulExecError("array access: index too large");
 	// set
 	pData[iElem]=Value;
 }
@@ -204,11 +204,11 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 {
 	// adjust indices so that the default end index works and that negative numbers count backwards from the end of the string
 	if (startIndex > iSize) startIndex = iSize;
-	else if (startIndex < -iSize) throw new C4AulExecError(NULL, "array slice: start index out of range");
+	else if (startIndex < -iSize) throw new C4AulExecError("array slice: start index out of range");
 	else if (startIndex < 0) startIndex += iSize;
 
 	if (endIndex > iSize) endIndex = iSize; // this also processes the MAX_INT default if no parameter is given in script
-	else if (endIndex < -iSize) throw new C4AulExecError(NULL, "array slice: end index out of range");
+	else if (endIndex < -iSize) throw new C4AulExecError("array slice: end index out of range");
 	else if (endIndex < 0) endIndex += iSize;
 
 	C4ValueArray* NewArray = new C4ValueArray(std::max(0, endIndex - startIndex));
@@ -221,15 +221,15 @@ C4ValueArray * C4ValueArray::GetSlice(int32_t startIndex, int32_t endIndex)
 void C4ValueArray::SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val)
 {
 	// maximum bounds
-	if(startIndex >= MaxSize) throw new C4AulExecError(NULL, "array slice: start index exceeds maximum capacity");
+	if(startIndex >= MaxSize) throw new C4AulExecError("array slice: start index exceeds maximum capacity");
 
 	// index from back
 	if(startIndex < 0) startIndex += iSize;
 	if(endIndex < 0) endIndex += iSize;
 
 	// ensure relevant bounds
-	if(startIndex < 0) throw new C4AulExecError(NULL, "array slice: start index out of range");
-	if(endIndex < 0) throw new C4AulExecError(NULL, "array slice: end index out of range");
+	if(startIndex < 0) throw new C4AulExecError("array slice: start index out of range");
+	if(endIndex < 0) throw new C4AulExecError("array slice: end index out of range");
 	if(endIndex < startIndex)
 		endIndex = startIndex;
 

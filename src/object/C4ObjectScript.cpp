@@ -895,7 +895,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		else if (Parameter.getPropList()->GetDef())
 			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
 		else
-			throw new C4AulExecError(Obj, "proplist as parameter to AddMenuItem");
+			throw new C4AulExecError("proplist as parameter to AddMenuItem");
 		break;
 	case C4V_String:
 		// note this breaks if there is '"' in the string.
@@ -908,7 +908,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 		break;
 	case C4V_Array:
 		// Arrays were never allowed, so tell the scripter
-		throw new C4AulExecError(Obj, "array as parameter to AddMenuItem");
+		throw new C4AulExecError("array as parameter to AddMenuItem");
 	default:
 		return false;
 	}
@@ -1053,8 +1053,7 @@ static bool FnAddMenuItem(C4Object *Obj, C4String * szCaption, C4String * szComm
 	{
 		// draw object picture
 		if (!XPar.CheckConversion(C4V_Object))
-			throw new C4AulExecError(Obj,
-			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
+			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
 			                                      "AddMenuItem", 8, XPar.GetTypeName(), GetC4VName(C4V_Object)
 			                                     ).getData());
 		pGfxObj = XPar.getObj();
@@ -2006,7 +2005,7 @@ static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * sz
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if (Transformation)
 		if (!C4ValueToMatrix(*Transformation, &trans))
-			throw new C4AulExecError(Obj, "AttachMesh: Transformation is not a valid 3x4 matrix");
+			throw new C4AulExecError("AttachMesh: Transformation is not a valid 3x4 matrix");
 
 	StdMeshInstance::AttachedMesh* attach;
 	C4Object* pObj = Mesh->GetObject();
@@ -2064,7 +2063,7 @@ static bool FnSetAttachTransform(C4Object *Obj, long iAttachNumber, C4ValueArray
 
 	StdMeshMatrix trans;
 	if (!C4ValueToMatrix(*Transformation, &trans))
-		throw new C4AulExecError(Obj, "SetAttachTransform: Transformation is not a valid 3x4 matrix");
+		throw new C4AulExecError("SetAttachTransform: Transformation is not a valid 3x4 matrix");
 
 	attach->SetAttachTransformation(trans);
 	return true;

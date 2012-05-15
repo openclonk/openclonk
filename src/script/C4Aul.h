@@ -62,9 +62,8 @@ public:
 // execution error
 class C4AulExecError : public C4AulError
 {
-	C4Object *cObj;
 public:
-	C4AulExecError(C4Object *pObj, const char *szError); // constructor
+	C4AulExecError(const char *szError);
 };
 
 // function access

@@ -497,8 +497,7 @@ C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
 	{
 		if (s[0] == '~')
 			return C4Value();
-		throw new C4AulExecError(this->GetObject(),
-                         FormatString("Call: no function \"%s\"", s).getData());
+		throw new C4AulExecError(FormatString("Call: no function \"%s\"", s).getData());
 	}
 	return pFn->Exec(this, Pars);
 }
@@ -543,7 +542,7 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 		C4PropList * newpt = to.GetData().PropList;
 		for(C4PropList * it = newpt; it; it = it->prototype)
 			if(it == this)
-				throw new C4AulExecError(NULL, "Trying to create cyclic prototype structure");
+				throw new C4AulExecError("Trying to create cyclic prototype structure");
 		prototype = newpt;
 		//return;
 	}

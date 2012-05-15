@@ -4924,7 +4924,7 @@ void C4Object::SetPropertyByS(C4String * k, const C4Value & to)
 		switch(k - &Strings.P[0])
 		{
 			case P_Plane:
-				if (!to.getInt()) throw new C4AulExecError(this, "invalid Plane 0");
+				if (!to.getInt()) throw new C4AulExecError("invalid Plane 0");
 				SetPlane(to.getInt());
 				return;
 		}

@@ -281,7 +281,7 @@ static C4Value FnObjectCount(C4AulContext *cthr, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, NULL);
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError(cthr->Obj, "ObjectCount: No valid search criterions supplied");
+		throw new C4AulExecError("ObjectCount: No valid search criterions supplied");
 	// Search
 	int32_t iCnt = pFO->Count(::Objects, ::Objects.Sectors);
 	// Free
@@ -298,7 +298,7 @@ static C4Value FnFindObject(C4AulContext *cthr, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs);
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError(cthr->Obj, "FindObject: No valid search criterions supplied");
+		throw new C4AulExecError("FindObject: No valid search criterions supplied");
 	// Search
 	C4Object *pObj = pFO->Find(::Objects, ::Objects.Sectors);
 	// Free
@@ -315,7 +315,7 @@ static C4Value FnFindObjects(C4AulContext *cthr, C4Value *pPars)
 	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs);
 	// Error?
 	if (!pFO)
-		throw new C4AulExecError(cthr->Obj, "FindObjects: No valid search criterions supplied");
+		throw new C4AulExecError("FindObjects: No valid search criterions supplied");
 	// Search
 	C4ValueArray *pResult = pFO->FindMany(::Objects, ::Objects.Sectors);
 	// Free
@@ -2186,11 +2186,11 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, N
 	uint32_t vpos = dwFlags & (C4GM_Top | C4GM_VCenter | C4GM_Bottom);
 	if (((hpos | (hpos-1)) + 1)>>1 != hpos)
 	{
-		throw new C4AulExecError(ctx->Obj, "CustomMessage: Only one horizontal positioning flag allowed");
+		throw new C4AulExecError("CustomMessage: Only one horizontal positioning flag allowed");
 	}
 	if (((vpos | (vpos-1)) + 1)>>1 != vpos)
 	{
-		throw new C4AulExecError(ctx->Obj, "CustomMessage: Only one vertical positioning flag allowed");
+		throw new C4AulExecError("CustomMessage: Only one vertical positioning flag allowed");
 	}
 	// message color
 	if (!dwClr) dwClr = 0xffffffff;

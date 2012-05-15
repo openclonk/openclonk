@@ -64,7 +64,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 				// number
 			case 'd': case 'x': case 'X':
 			{
-				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
 				StringBuf.AppendFormat(szField, Par[cPar++]->getInt());
 				cpFormat+=SLen(szField);
 				break;
@@ -72,7 +72,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			// character
 			case 'c':
 			{
-				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
 				StringBuf.AppendCharacter(Par[cPar++]->getInt());
 				cpFormat+=SLen(szField);
 				break;
@@ -80,7 +80,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			// C4ID
 			case 'i':
 			{
-				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
 				C4ID id = Par[cPar++]->getC4ID();
 				StringBuf.Append(id.ToString());
 				cpFormat+=SLen(szField);
@@ -89,7 +89,7 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			// C4Value
 			case 'v':
 			{
-				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
 				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString(10)));
 				cpFormat+=SLen(szField);
 				break;
@@ -98,12 +98,12 @@ StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * 
 			case 's':
 			{
 				// get string
-				if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
+				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
 				const char *szStr = "(null)";
 				if (Par[cPar]->GetData())
 				{
 					C4String * pStr = Par[cPar++]->getStr();
-					if (!pStr) throw new C4AulExecError(cthr->Obj, "string format placeholder without string");
+					if (!pStr) throw new C4AulExecError("string format placeholder without string");
 					szStr = pStr->GetCStr();
 				}
 				StringBuf.AppendFormat(szField, szStr);
@@ -188,7 +188,7 @@ static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 	C4String * key = key_C4V->_getStr();
 	if (!key) return C4VFalse;
 	if (pObj->IsFrozen())
-		throw new C4AulExecError(cthr->Obj, "proplist write: proplist is readonly");
+		throw new C4AulExecError("proplist write: proplist is readonly");
 	pObj->SetPropertyByS(key, *to);
 	return C4VTrue;
 }
@@ -203,7 +203,7 @@ static C4Value FnResetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Valu
 	if (!key) return C4VFalse;
 	if (!pObj->HasProperty(key)) return C4VFalse;
 	if (pObj->IsFrozen())
-		throw new C4AulExecError(cthr->Obj, "proplist write: proplist is readonly");
+		throw new C4AulExecError("proplist write: proplist is readonly");
 	pObj->ResetProperty(key);
 	return C4VTrue;
 }
@@ -379,7 +379,7 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 	C4String * pStr = pPars->getStr();
 	if (pStr)
 		return C4VInt(GetCharacterCount(pStr->GetData().getData()));
-	throw new C4AulExecError(cthr->Obj, "func \"GetLength\" par 0 cannot be converted to string or array");
+	throw new C4AulExecError("GetLength: parameter 0 cannot be converted to string or array");
 }
 
 static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
@@ -390,7 +390,7 @@ static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 	// if the first param is nonzero, it must be an array
 	const C4ValueArray * pArray = pPars[0].getArray();
 	if (!pArray)
-		throw new C4AulExecError(cthr->Obj, "func \"GetIndexOf\" par 0 cannot be converted to array");
+		throw new C4AulExecError("GetIndexOf: parameter 0 cannot be converted to array");
 	int32_t iSize = pArray->GetSize();
 	for (int32_t i = 0; i<iSize; ++i)
 		if (pPars[1] == pArray->GetItem(i))
@@ -404,7 +404,7 @@ static C4Void FnSetLength(C4AulContext *cthr, C4ValueArray *pArray, int iNewSize
 {
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
-		throw new C4AulExecError(cthr->Obj, FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
+		throw new C4AulExecError(FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
 
 	// set new size
 	pArray->SetSize(iNewSize);
@@ -501,7 +501,7 @@ static long FnWildcardMatch(C4AulContext *ctx, C4String *psString, C4String *psW
 
 static bool FnFatalError(C4AulContext *ctx, C4String *pErrorMsg)
 {
-	throw new C4AulExecError(ctx->Obj, FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
+	throw new C4AulExecError(FormatString("script: %s", pErrorMsg ? pErrorMsg->GetCStr() : "(no error)").getData());
 }
 
 static bool FnStartCallTrace(C4AulContext *ctx)
