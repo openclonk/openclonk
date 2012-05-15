@@ -33,10 +33,12 @@ class C4ScriptHost : public C4AulScript
 public:
 	~C4ScriptHost();
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
-public:
+
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
+	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
+	void Unreg(); // remove from list
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
@@ -58,12 +60,14 @@ protected:
 	C4AulBCC *GetLastCode() { return LastCode; }
 
 	StdStrBuf Script; // script
+	C4ScriptHost *Prev, *Next;
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	C4AulBCC * LastCode;
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
+	friend class C4AulScriptEngine;
 };
 
 // script host for System.ocg scripts

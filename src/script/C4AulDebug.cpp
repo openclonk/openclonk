@@ -247,7 +247,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
-		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next)
+		for (C4ScriptHost* script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			SendLine(RelativePath(script->ScriptName));
 		}
@@ -262,7 +262,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		const char* lineStart = szData+1+scriptPath.getLength();
 		int line = strtol(szData+1+scriptPath.getLength(), const_cast<char**>(&lineStart), 10);
 
-		C4AulScript* script;
+		C4ScriptHost* script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
 			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.getData()))

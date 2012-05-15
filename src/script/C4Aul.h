@@ -301,8 +301,6 @@ public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
 	virtual void Clear(); // remove script, byte code and children
-	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
-	void Unreg(); // remove from list
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
@@ -315,8 +313,8 @@ public:
 	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
 	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
-	void ResetProfilerTimes(); // zero all profiler times of owned functions
-	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
+	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
+	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 
@@ -339,7 +337,6 @@ protected:
 
 	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
-	C4AulScript *Prev, *Next; // tree structure
 
 	C4AulScriptState State; // script state
 	bool Resolving; // set while include-resolving, to catch circular includes
@@ -363,7 +360,7 @@ class C4AulScriptEngine : public C4AulScript
 protected:
 	C4AulFuncMap FuncLookUp;
 	C4PropList * GlobalPropList;
-	C4AulScript *Child0, *ChildL; // tree structure
+	C4ScriptHost *Child0, *ChildL; // tree structure
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors

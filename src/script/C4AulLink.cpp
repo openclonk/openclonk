@@ -187,18 +187,18 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
 
 		// resolve appends
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->ResolveAppends(rDefs);
 
 		// resolve includes
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
 
 		// put script functions into the proplist
 		LinkFunctions();
 
 		// parse the scripts to byte code
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->Parse();
 
 		// engine is always parsed (for global funcs)
@@ -210,7 +210,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		rDefs->CallEveryDefinition();
 
 		// Done modifying the proplists now
-		for (C4AulScript *s = Child0; s; s = s->Next)
+		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->GetPropList()->Freeze();
 		GetPropList()->Freeze();
 
@@ -252,7 +252,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage)
 {
-	C4AulScript * s;
+	C4ScriptHost * s;
 	for (s = Child0; s; s = s->Next)
 		if (s->ReloadScript(szScript, szLanguage))
 			break;

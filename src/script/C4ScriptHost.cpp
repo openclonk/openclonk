@@ -33,13 +33,18 @@
 
 C4ScriptHost::C4ScriptHost()
 {
+	Prev = Next = NULL;
 	Script = NULL;
 	Code.clear();
 	LastCode = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
 }
-C4ScriptHost::~C4ScriptHost() { Clear(); }
+C4ScriptHost::~C4ScriptHost()
+{
+	Clear();
+	Unreg();
+}
 
 void C4ScriptHost::Clear()
 {

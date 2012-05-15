@@ -163,7 +163,6 @@ C4AulScript::C4AulScript()
 	LocalNamed.Reset();
 
 	// prepare lists
-	Prev = Next = NULL;
 	Engine = NULL;
 	Func0 = FuncL = NULL;
 	// prepare include list
@@ -175,12 +174,10 @@ C4AulScript::~C4AulScript()
 {
 	// clear
 	Clear();
-	// unreg
-	Unreg();
 }
 
 
-void C4AulScript::Unreg()
+void C4ScriptHost::Unreg()
 {
 	// remove from list
 	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
@@ -206,7 +203,7 @@ void C4AulScript::Clear()
 }
 
 
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
+void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
 {
 	// already regged? (def reloaded)
 	if (Engine) return;
@@ -335,7 +332,7 @@ void C4AulScriptEngine::Clear()
 void C4AulScriptEngine::UnLink()
 {
 	// unlink scripts
-	for (C4AulScript *s = Child0; s; s = s->Next)
+	for (C4ScriptHost *s = Child0; s; s = s->Next)
 		s->UnLink();
 	C4AulScript::UnLink();
 	// Do not clear global variables and constants, because they are registered by the
