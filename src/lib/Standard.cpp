@@ -554,7 +554,7 @@ void SNewSegment(char *szStr, const char *szSepa)
 int SGetLine(const char *szText, const char *cpPosition)
 {
 	if (!szText || !cpPosition) return 0;
-	int iLines = 0;
+	int iLines = 1;
 	while (*szText && (szText<cpPosition))
 	{
 		if (*szText == 0x0A) iLines++;
@@ -566,11 +566,16 @@ int SGetLine(const char *szText, const char *cpPosition)
 int SLineGetCharacters(const char *szText, const char *cpPosition)
 {
 	if (!szText || !cpPosition) return 0;
-	int iChars = 0;
+	int iChars = 1;
 	while (*szText && (szText<cpPosition))
 	{
-		if (*szText == 0x0A) iChars = 0;
-		iChars++;
+		if (*szText == 0x0A)
+			iChars = 1;
+		else if (*szText == '\t')
+			// assume a tab stop every 8 characters
+			iChars = ((iChars - 1 + 8) & ~7) + 1;
+		else
+			iChars++;
 		szText++;
 	}
 	return iChars;
