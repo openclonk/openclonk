@@ -128,7 +128,7 @@ class C4AulParse
 public:
 	enum Type { PARSER, PREPARSER };
 	C4AulParse(C4ScriptHost * a, enum Type Type):
-			Fn(0), a(a), pOrgScript(a), SPos(a->Script.getData()),
+			Fn(0), a(a), pOrgScript(a), SPos(a->Script.getData()), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
 			Done(false),
 			Type(Type),
@@ -141,6 +141,7 @@ public:
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
 	C4AulScriptFunc *Fn; C4ScriptHost * a; C4ScriptHost * pOrgScript;
 	const char *SPos; // current position in the script
+	const char *TokenSPos; // start of the current token in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
 	C4AulTokenType TokenType; // current token type
 	int32_t cInt; // current int constant
@@ -269,11 +270,11 @@ C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const cha
 		sMessage.AppendFormat(" (in %s", state->Fn->GetName());
 
 		// Exact position
-		if (state->Fn->pOrgScript && state->SPos)
+		if (state->Fn->pOrgScript && state->TokenSPos)
 			sMessage.AppendFormat(", %s:%d:%d)",
 			                      state->Fn->pOrgScript->ScriptName.getData(),
-			                      SGetLine(state->Fn->pOrgScript->GetScript(), state->SPos),
-			                      SLineGetCharacters(state->Fn->pOrgScript->GetScript(), state->SPos));
+			                      SGetLine(state->Fn->pOrgScript->GetScript(), state->TokenSPos),
+			                      SLineGetCharacters(state->Fn->pOrgScript->GetScript(), state->TokenSPos));
 		else
 			sMessage.AppendChar(')');
 	}
@@ -282,8 +283,8 @@ C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const cha
 		// Script name
 		sMessage.AppendFormat(" (%s:%d:%d)",
 		                      state->pOrgScript->ScriptName.getData(),
-		                      SGetLine(state->pOrgScript->GetScript(), state->SPos),
-		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->SPos));
+		                      SGetLine(state->pOrgScript->GetScript(), state->TokenSPos),
+		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->TokenSPos));
 	}
 
 }
@@ -457,7 +458,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 	// move to start of token
 	if (!AdvanceSpaces()) return ATT_EOF;
 	// store offset
-	const char *SPos0 = SPos;
+	TokenSPos = SPos;
 
 	// get char
 	char C = *(SPos++);
@@ -476,7 +477,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 		}
 
 		Len = Min(Len, C4AUL_MAX_Identifier);
-		SCopy(SPos0, Idtf, Len);
+		SCopy(TokenSPos, Idtf, Len);
 		return dir ? ATT_DIR : ATT_IDTF;
 	}
 	else if (C == '(') return ATT_BOPEN;  // "("
@@ -495,7 +496,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 		else
 		{
 			// decimal
-			cInt = StrToI32(SPos0, 10, &SPos);
+			cInt = StrToI32(TokenSPos, 10, &SPos);
 			return ATT_INT;
 		}
 	}
@@ -971,7 +972,7 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 	}
 
 	// Add
-	a->AddBCC(eType, X, SPos);
+	a->AddBCC(eType, X, TokenSPos);
 
 	// Reset jump flag
 	fJump = false;
@@ -1214,7 +1215,7 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 	state.Fn = this;
 	state.Parse_Expression();
 	state.Match(ATT_EOF);
-	GetCodeOwner()->AddBCC(AB_RETURN, 0, state.SPos);
+	GetCodeOwner()->AddBCC(AB_RETURN, 0, state.TokenSPos);
 }
 
 void C4AulParse::Parse_Script()
