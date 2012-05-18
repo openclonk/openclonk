@@ -166,43 +166,37 @@ static C4PropList * FnCreatePropList(C4PropList * _this, C4PropList * prototype)
 	return C4PropList::New(prototype);
 }
 
-static C4Value FnGetProperty_C4V(C4PropList * _this, C4Value * key_C4V, C4Value * pObj_C4V)
+static C4Value FnGetProperty(C4PropList * _this, C4String * key, C4PropList * pObj)
 {
-	C4PropList * pObj = pObj_C4V->_getPropList();
-	if (!pObj) pObj=_this;
+	if (!pObj) pObj = _this;
 	if (!pObj) return C4VNull;
-	C4String * key = key_C4V->_getStr();
 	if (!key) return C4VNull;
 	C4Value r;
 	pObj->GetPropertyByS(key, &r);
 	return r;
 }
 
-static C4Value FnSetProperty_C4V(C4PropList * _this, C4Value * key_C4V, C4Value * to, C4Value * pObj_C4V)
+static bool FnSetProperty(C4PropList * _this, C4String * key, const C4Value & to, C4PropList * pObj)
 {
-	C4PropList * pObj = pObj_C4V->_getPropList();
-	if (!pObj) pObj=_this;
-	if (!pObj) return C4VFalse;
-	C4String * key = key_C4V->_getStr();
-	if (!key) return C4VFalse;
+	if (!pObj) pObj = _this;
+	if (!pObj) return false;
+	if (!key) return false;
 	if (pObj->IsFrozen())
 		throw new C4AulExecError("proplist write: proplist is readonly");
-	pObj->SetPropertyByS(key, *to);
-	return C4VTrue;
+	pObj->SetPropertyByS(key, to);
+	return true;
 }
 
-static C4Value FnResetProperty_C4V(C4PropList * _this, C4Value * key_C4V, C4Value * pObj_C4V)
+static bool FnResetProperty(C4PropList * _this, C4String * key, C4PropList * pObj)
 {
-	C4PropList * pObj = pObj_C4V->_getPropList();
-	if (!pObj) pObj=_this;
-	if (!pObj) return C4VFalse;
-	C4String * key = key_C4V->_getStr();
-	if (!key) return C4VFalse;
-	if (!pObj->HasProperty(key)) return C4VFalse;
+	if (!pObj) pObj = _this;
+	if (!pObj) return false;
+	if (!key) return false;
+	if (!pObj->HasProperty(key)) return false;
 	if (pObj->IsFrozen())
 		throw new C4AulExecError("proplist write: proplist is readonly");
 	pObj->ResetProperty(key);
-	return C4VTrue;
+	return true;
 }
 
 static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
@@ -375,35 +369,30 @@ static C4ValueArray * FnCreateArray(C4PropList * _this, int iSize)
 	return new C4ValueArray(iSize);
 }
 
-static C4Value FnGetLength(C4PropList * _this, C4Value *pPars)
+static int FnGetLength(C4PropList * _this, const C4Value & Par)
 {
 	// support GetLength() etc.
-	if (!pPars[0]) return C4VNull;
-	C4ValueArray * pArray = pPars->getArray();
+	C4ValueArray * pArray = Par.getArray();
 	if (pArray)
-		return C4VInt(pArray->GetSize());
-	C4String * pStr = pPars->getStr();
+		return pArray->GetSize();
+	C4String * pStr = Par.getStr();
 	if (pStr)
-		return C4VInt(GetCharacterCount(pStr->GetData().getData()));
+		return GetCharacterCount(pStr->GetData().getData());
 	throw new C4AulExecError("GetLength: parameter 0 cannot be converted to string or array");
 }
 
-static C4Value FnGetIndexOf(C4PropList * _this, C4Value *pPars)
+static int FnGetIndexOf(C4PropList * _this, C4ValueArray * pArray, const C4Value & Needle)
 {
 	// find first occurance of first parameter in array
 	// support GetIndexOf(0, x)
-	if (!pPars[0]) return C4VInt(-1);
-	// if the first param is nonzero, it must be an array
-	const C4ValueArray * pArray = pPars[0].getArray();
-	if (!pArray)
-		throw new C4AulExecError("GetIndexOf: parameter 0 cannot be converted to array");
+	if (!pArray) return -1;
 	int32_t iSize = pArray->GetSize();
-	for (int32_t i = 0; i<iSize; ++i)
-		if (pPars[1] == pArray->GetItem(i))
+	for (int32_t i = 0; i < iSize; ++i)
+		if (Needle == pArray->GetItem(i))
 			// element found
-			return C4VInt(i);
+			return i;
 	// element not found
-	return C4VInt(-1);
+	return -1;
 }
 
 static C4Void FnSetLength(C4PropList * _this, C4ValueArray *pArray, int iNewSize)
@@ -431,15 +420,15 @@ static Nillable<long> FnGetChar(C4PropList * _this, C4String *pString, long iInd
 	return c;
 }
 
-static C4Value FnEval(C4PropList * _this, C4Value *strScript_C4V)
+static C4Value Fneval(C4PropList * _this, C4String *strScript)
 {
 	// execute script in the same object
 	if (Object(_this))
-		return Object(_this)->Def->Script.DirectExec(Object(_this), FnStringPar(strScript_C4V->getStr()), "eval", true);
+		return Object(_this)->Def->Script.DirectExec(Object(_this), FnStringPar(strScript), "eval", true);
 	else if (_this && _this->GetDef())
-		return _this->GetDef()->Script.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
+		return _this->GetDef()->Script.DirectExec(0, FnStringPar(strScript), "eval", true);
 	else
-		return ::GameScript.DirectExec(0, FnStringPar(strScript_C4V->getStr()), "eval", true);
+		return ::GameScript.DirectExec(0, FnStringPar(strScript), "eval", true);
 }
 
 static bool FnLocateFunc(C4PropList * _this, C4String *funcname, C4PropList * p)
@@ -587,21 +576,11 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-
-	{ "SetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
-	{ "GetProperty",          1  ,C4V_Any      ,{ C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
-	{ "ResetProperty",        1  ,C4V_Any      ,{ C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnResetProperty_C4V ,         0 },
 	{ "Log",                  1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnLog_C4V,                   0 },
 	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
 	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
 
-	{ "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
-	{ "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
-
-	{ "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
-
 	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
-
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
@@ -633,6 +612,9 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(CreateArray);
 	F(CreatePropList);
 	F(GetProperties);
+	F(GetProperty);
+	F(SetProperty);
+	F(ResetProperty);
 	F(C4Id);
 	F(Distance);
 	F(Angle);
@@ -640,12 +622,16 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetType);
 	F(ModulateColor);
 	F(WildcardMatch);
+	F(GetLength);
 	F(SetLength);
+	F(GetIndexOf);
 	F(FatalError);
 	F(StartCallTrace);
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
 	F(LocateFunc);
+
+	F(eval);
 
 	F(this);
 	F(GetConstantNameByValue);
