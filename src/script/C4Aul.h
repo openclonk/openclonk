@@ -390,7 +390,7 @@ public:
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	std::list<const char*> GetFunctionNames(C4AulScript *);
+	std::list<const char*> GetFunctionNames(C4PropList *);
 	void ResetProfilerTimes(); // zero all profiler times of owned functions
 	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 

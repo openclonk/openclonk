@@ -381,37 +381,29 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
 }
 
-std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
+std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 {
 	std::list<const char*> functions;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
+	std::list<const char*> global_functions;
+	if (!p) p = GetPropList();
+	const C4ValueArray * a = p->GetProperties();
+	for (int i = 0; i < a->GetSize(); ++i)
 	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->GetName());
-		}
+		C4String * key = (*a)[i].getStr();
+		if (!key) continue;
+		C4AulFunc * f = p->GetFunc(key);
+		if (!f) continue;
+		if (!f->GetPublic()) continue;
+		if (p->HasProperty(key))
+			functions.push_back(key->GetCStr());
+		else
+			global_functions.push_back(key->GetCStr());
 	}
-	// Add object or scenario script functions
-	if (script)
-	{
-		bool divider = false;
-		C4AulFunc *f = script->FuncL;
-		C4AulScriptFunc *pRef;
-		// Scan all functions
-		while (f)
-		{
-			if ((pRef = f->SFunc()))
-			{
-				// Insert divider if necessary
-				if (!divider)
-					functions.push_back(0);
-				divider = true;
-				// Add function
-				functions.push_back(pRef->GetName());
-			}
-			f = f->Prev;
-		}
-	}
+	delete a;
+	functions.sort();
+	functions.push_back(0);
+	global_functions.sort();
+	functions.splice(functions.end(), global_functions);
 	return functions;
 }
 
