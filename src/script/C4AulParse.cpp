@@ -2726,8 +2726,11 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
 			r = Parse_ConstPropList(parent, Name);
+		else if (a->LocalNamed.GetItemNr(Idtf) != -1)
+			a->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
 		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
-			UnexpectedToken("constant value");
+			if (Type == PARSER)
+				UnexpectedToken("constant value");
 		break;
 	case ATT_BOPEN2:
 		{
