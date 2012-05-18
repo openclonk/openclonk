@@ -26,24 +26,6 @@
 #include <C4Effect.h>
 #include <C4DefList.h>
 
-typedef int32_t t_int;
-typedef bool t_bool;
-typedef C4ID t_id;
-typedef C4Object *t_object;
-typedef C4String *t_string;
-typedef C4Value t_any;
-typedef C4ValueArray *t_array;
-
-inline t_int getPar_int(C4Value *pVal) { return pVal->getInt(); }
-inline t_bool getPar_bool(C4Value *pVal) { return pVal->getBool(); }
-inline t_id getPar_id(C4Value *pVal) { return pVal->getC4ID(); }
-inline t_object getPar_object(C4Value *pVal) { return pVal->getObj(); }
-inline t_string getPar_string(C4Value *pVal) { return pVal->getStr(); }
-inline t_any getPar_any(C4Value *pVal) { return *pVal; }
-inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
-
-#define PAR(type, name) t_##type name = getPar_##type(pPars++)
-
 inline const static char *FnStringPar(C4String *pString)
 {
 	return pString ? pString->GetCStr() : "";

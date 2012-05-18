@@ -69,19 +69,19 @@ static long FnGetGravity(C4PropList * _this)
 	return fixtoi(::Landscape.Gravity * 500);
 }
 
-static C4Value FnPlayerObjectCommand(C4PropList * _this, C4Value *pPars)
+static bool FnPlayerObjectCommand(C4PropList * _this, int iPlr, C4String * szCommand,
+                                  C4Object * pTarget, int iTx, int iTy,
+                                  C4Object * pTarget2, const C4Value & Data)
 {
-	PAR(int, iPlr); PAR(string, szCommand); PAR(object, pTarget); PAR(int, iTx); PAR(int, iTy);
-	PAR(object, pTarget2); PAR(any, Data);
 	// Player
-	if (!ValidPlr(iPlr) || !szCommand) return C4VFalse;
+	if (!ValidPlr(iPlr) || !szCommand) return false;
 	C4Player *pPlr = ::Players.Get(iPlr);
 	// Command
-	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return C4VFalse;
+	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return false;
 	// Set
 	pPlr->ObjectCommand(iCommand, pTarget, iTx, iTy, pTarget2, Data, C4P_Command_Set);
 	// Success
-	return C4VTrue;
+	return true;
 }
 
 static C4String *FnGetPlayerName(C4PropList * _this, long iPlayer)
@@ -232,7 +232,7 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 	// Read all parameters
 	for (i = 0; i < C4AUL_MAX_Par; i++)
 	{
-		PAR(any, Data);
+		C4Value Data = *(pPars++);
 		// No data given?
 		if (!Data) break;
 		// Construct
@@ -1104,10 +1104,10 @@ static C4Value FnGameCallEx_C4V(C4PropList * _this,
 	return ::GameScript.GRBroadcast(fn, &Pars, true);
 }
 
-static C4Value FnEditCursor(C4PropList * _this, C4Value *pPars)
+static C4Object * FnEditCursor(C4PropList * _this)
 {
-	if (::Control.SyncMode()) return C4VNull;
-	return C4VObj(Console.EditCursor.GetTarget());
+	if (::Control.SyncMode()) return NULL;
+	return Console.EditCursor.GetTarget();
 }
 
 static bool FnIsNetwork(C4PropList * _this) { return Game.Parameters.IsNetworkGame; }
@@ -2510,6 +2510,9 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlAssignment", FnGetPlayerControlAssignment);
+	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
+	AddFunc(pEngine, "EditCursor", FnEditCursor);
+
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
@@ -2646,7 +2649,6 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 C4ScriptFnDef C4ScriptGameFnMap[]=
 {
 
-	{ "PlayerObjectCommand",  1  ,C4V_Bool     ,{ C4V_Int     ,C4V_String  ,C4V_Object  ,C4V_Int     ,C4V_Int     ,C4V_Object  ,C4V_Any    ,C4V_Int    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnPlayerObjectCommand },
 	{ "FindObject",           1  ,C4V_Object   ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObject },
 	{ "FindObjects",          1  ,C4V_Array    ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnFindObjects },
 	{ "ObjectCount",          1  ,C4V_Int      ,{ C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnObjectCount },
@@ -2658,7 +2660,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "PlayerMessage",        1  ,C4V_Int      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,         0 },
 	{ "Message",              1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnMessage_C4V,               0 },
 	{ "AddMessage",           1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnAddMessage_C4V,            0 },
-	{ "EditCursor",           1  ,C4V_Object   ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnEditCursor },
 	{ "GetHomebaseMaterial",  1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
 	{ "GetHomebaseProduction",1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V , 0 },
 
