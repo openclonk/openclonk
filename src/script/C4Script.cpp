@@ -156,7 +156,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 
 //=============================== C4Script Functions ====================================
 
-static C4PropList *Fn_this(C4PropList * _this)
+static C4PropList *Fnthis(C4PropList * _this)
 {
 	return _this;
 }
@@ -616,39 +616,40 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
 		pEngine->AddFunc(pDef->Identifier, pDef);
-	AddFunc(pEngine, "Abs", FnAbs);
-	AddFunc(pEngine, "Min", FnMin);
-	AddFunc(pEngine, "Max", FnMax);
-	AddFunc(pEngine, "Sin", FnSin);
-	AddFunc(pEngine, "Cos", FnCos);
-	AddFunc(pEngine, "Sqrt", FnSqrt);
-	AddFunc(pEngine, "ArcSin", FnArcSin);
-	AddFunc(pEngine, "ArcCos", FnArcCos);
-	AddFunc(pEngine, "BoundBy", FnBoundBy);
-	AddFunc(pEngine, "Inside", FnInside);
-	AddFunc(pEngine, "Random", FnRandom);
-	AddFunc(pEngine, "AsyncRandom", FnAsyncRandom);
+#define F(f) AddFunc(pEngine, #f, Fn##f)
+	F(Abs);
+	F(Min);
+	F(Max);
+	F(Sin);
+	F(Cos);
+	F(Sqrt);
+	F(ArcSin);
+	F(ArcCos);
+	F(BoundBy);
+	F(Inside);
+	F(Random);
+	F(AsyncRandom);
 
-	AddFunc(pEngine, "CreateArray", FnCreateArray);
-	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
-	AddFunc(pEngine, "GetProperties", FnGetProperties);
-	AddFunc(pEngine, "C4Id", FnC4Id, false);
-	AddFunc(pEngine, "Distance", FnDistance);
-	AddFunc(pEngine, "Angle", FnAngle);
-	AddFunc(pEngine, "GetChar", FnGetChar);
-	AddFunc(pEngine, "GetType", FnGetType);
-	AddFunc(pEngine, "ModulateColor", FnModulateColor);
-	AddFunc(pEngine, "WildcardMatch", FnWildcardMatch);
-	AddFunc(pEngine, "FatalError", FnFatalError);
-	AddFunc(pEngine, "StartCallTrace", FnStartCallTrace);
-	AddFunc(pEngine, "StartScriptProfiler", FnStartScriptProfiler);
-	AddFunc(pEngine, "StopScriptProfiler", FnStopScriptProfiler);
-	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
+	F(CreateArray);
+	F(CreatePropList);
+	F(GetProperties);
+	F(C4Id);
+	F(Distance);
+	F(Angle);
+	F(GetChar);
+	F(GetType);
+	F(ModulateColor);
+	F(WildcardMatch);
+	F(SetLength);
+	F(FatalError);
+	F(StartCallTrace);
+	F(StartScriptProfiler);
+	F(StopScriptProfiler);
+	F(LocateFunc);
 
-	AddFunc(pEngine, "SetLength", FnSetLength);
-
-	AddFunc(pEngine, "this", Fn_this);
-	AddFunc(pEngine, "GetConstantNameByValue", FnGetConstantNameByValue, false);
+	F(this);
+	F(GetConstantNameByValue);
 
 	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
+#undef F
 }
