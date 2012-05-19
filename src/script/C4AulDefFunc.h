@@ -38,9 +38,7 @@ inline C4Object * Object(C4PropList * _this)
 {
 	return _this ? _this->GetObject() : NULL;
 }
-StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
-                                C4Value * Par4=0, C4Value * Par5=0, C4Value * Par6=0, C4Value * Par7=0, C4Value * Par8=0, C4Value * Par9=0);
-enum { MaxFnStringParLen=500 };
+StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
 
 template <typename T> struct C4ValueConv;
 // Allow parameters to be nil

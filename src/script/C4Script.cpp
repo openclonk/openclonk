@@ -33,19 +33,14 @@
 
 //========================== Some Support Functions =======================================
 
-StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * Par0, C4Value * Par1, C4Value * Par2, C4Value * Par3,
-                                C4Value * Par4, C4Value * Par5, C4Value * Par6, C4Value * Par7, C4Value * Par8, C4Value * Par9)
+StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount)
 {
-	C4Value * Par[11];
-	Par[0]=Par0; Par[1]=Par1; Par[2]=Par2; Par[3]=Par3; Par[4]=Par4;
-	Par[5]=Par5; Par[6]=Par6; Par[7]=Par7; Par[8]=Par8; Par[9]=Par9;
-	Par[10] = 0;
 	int cPar=0;
 
 	StdStrBuf StringBuf("", false);
-	const char * cpFormat = szFormatPar;
+	const char * cpFormat = FnStringPar(szFormatPar);
 	const char * cpType;
-	char szField[MaxFnStringParLen+1];
+	char szField[20];
 	while (*cpFormat)
 	{
 		// Copy normal stuff
@@ -57,31 +52,31 @@ StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * 
 			// Scan field type
 			for (cpType=cpFormat+1; *cpType && (*cpType=='.' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
-			SCopy(cpFormat,szField,cpType-cpFormat+1);
+			SCopy(cpFormat,szField,Min<unsigned int>(sizeof szField - 1, cpType - cpFormat + 1));
 			// Insert field by type
 			switch (*cpType)
 			{
 				// number
 			case 'd': case 'x': case 'X':
 			{
-				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
-				StringBuf.AppendFormat(szField, Par[cPar++]->getInt());
+				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				StringBuf.AppendFormat(szField, Pars[cPar++].getInt());
 				cpFormat+=SLen(szField);
 				break;
 			}
 			// character
 			case 'c':
 			{
-				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
-				StringBuf.AppendCharacter(Par[cPar++]->getInt());
+				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				StringBuf.AppendCharacter(Pars[cPar++].getInt());
 				cpFormat+=SLen(szField);
 				break;
 			}
 			// C4ID
 			case 'i':
 			{
-				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
-				C4ID id = Par[cPar++]->getC4ID();
+				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				C4ID id = Pars[cPar++].getC4ID();
 				StringBuf.Append(id.ToString());
 				cpFormat+=SLen(szField);
 				break;
@@ -89,8 +84,8 @@ StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * 
 			// C4Value
 			case 'v':
 			{
-				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
-				StringBuf.Append(static_cast<const StdStrBuf&>(Par[cPar++]->GetDataString(10)));
+				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
+				StringBuf.Append(static_cast<const StdStrBuf&>(Pars[cPar++].GetDataString(10)));
 				cpFormat+=SLen(szField);
 				break;
 			}
@@ -98,14 +93,15 @@ StdStrBuf FnStringFormat(C4PropList * _this, const char *szFormatPar, C4Value * 
 			case 's':
 			{
 				// get string
-				if (!Par[cPar]) throw new C4AulExecError("format placeholder without parameter");
+				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
 				const char *szStr = "(null)";
-				if (Par[cPar]->GetData())
+				if (Pars[cPar].GetData())
 				{
-					C4String * pStr = Par[cPar++]->getStr();
+					C4String * pStr = Pars[cPar].getStr();
 					if (!pStr) throw new C4AulExecError("string format placeholder without string");
 					szStr = pStr->GetCStr();
 				}
+				++cPar;
 				StringBuf.AppendFormat(szField, szStr);
 				cpFormat+=SLen(szField);
 				break;
@@ -208,21 +204,21 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
-static C4Value FnLog_C4V(C4PropList * _this, C4Value *szMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
-	Log(FnStringFormat(_this, FnStringPar(szMessage->getStr()),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData());
+	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
 	return C4VBool(true);
 }
 
-static C4Value FnDebugLog_C4V(C4PropList * _this, C4Value *szMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 {
-	DebugLog(FnStringFormat(_this, FnStringPar(szMessage->getStr()),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData());
+	DebugLog(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
 	return C4VBool(true);
 }
 
-static C4Value FnFormat_C4V(C4PropList * _this, C4Value *szFormat, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
+static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
-	return C4VString(FnStringFormat(_this, FnStringPar(szFormat->getStr()),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8));
+	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
 }
 
 static C4ID FnC4Id(C4PropList * _this, C4String *szID)
@@ -571,16 +567,13 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ NULL, C4V_Nil, 0}
 };
 
-#define MkFnC4V (C4Value (*)(C4PropList * _this, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
-                                                 C4Value*, C4Value*, C4Value*, C4Value*, C4Value*))
-
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-	{ "Log",                  1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnLog_C4V,                   0 },
-	{ "DebugLog",             1  ,C4V_Bool     ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,              0 },
-	{ "Format",               1  ,C4V_String   ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V &FnFormat_C4V,                0 },
+	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnLog      },
+	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnDebugLog },
+	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnFormat   },
 
-	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
+	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0, 0 }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
