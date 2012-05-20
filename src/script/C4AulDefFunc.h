@@ -355,4 +355,31 @@ TEMPLATE(10)
 #undef CONV_FROM_C4V
 #undef TEMPLATE
 
+
+// a definition of a function exported to script
+struct C4ScriptFnDef
+{
+	const char* Identifier; // the name of the func in the script
+	bool Public;
+	C4V_Type RetType; // type returned. ignored when C4V
+	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
+	C4Value (*FunctionC4V)(C4PropList * _this, C4Value *);
+};
+
+// defined function class
+class C4AulDefFunc : C4AulFunc
+{
+public:
+	C4ScriptFnDef* Def;
+
+	C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef);
+	~C4AulDefFunc();
+
+	virtual bool GetPublic() { return !!Def->Public; }
+	virtual C4V_Type* GetParType() { return Def->ParType; }
+	virtual C4V_Type GetRetType() { return Def->RetType; }
+
+	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false);
+};
+
 #endif

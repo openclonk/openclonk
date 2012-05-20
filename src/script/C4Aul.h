@@ -221,22 +221,6 @@ public:
 	friend class C4ScriptHost;
 };
 
-// defined function class
-class C4AulDefFunc : C4AulFunc
-{
-public:
-	C4ScriptFnDef* Def;
-
-	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef);
-	~C4AulDefFunc();
-
-	virtual bool GetPublic() { return !!Def->Public; }
-	virtual C4V_Type* GetParType() { return Def->ParType; }
-	virtual C4V_Type GetRetType() { return Def->RetType; }
-
-	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false); // execute func
-};
-
 class C4AulFuncMap
 {
 public:
@@ -309,8 +293,6 @@ public:
 
 	virtual C4PropList * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
-
-	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
 
 	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
 	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions

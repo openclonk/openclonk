@@ -139,18 +139,6 @@ StdStrBuf C4AulFunc::GetFullName()
 	return r;
 }
 
-C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef):
-		C4AulFunc(pOwner, pName) // constructor
-{
-	Def = pDef;
-	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
-}
-
-C4AulDefFunc::~C4AulDefFunc()
-{
-	assert(!Owner);
-}
-
 C4AulScript::C4AulScript()
 {
 	// not compiled
@@ -263,14 +251,6 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &Fro
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];
 }
-
-
-void C4AulScript::AddFunc(const char *pIdtf, C4ScriptFnDef* Def)
-{
-	// create def func
-	new C4AulDefFunc(this, pIdtf, Def);
-}
-
 
 /*--- C4AulScriptEngine ---*/
 

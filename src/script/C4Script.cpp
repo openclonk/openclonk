@@ -150,6 +150,23 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix)
 	return true;
 }
 
+C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef):
+		C4AulFunc(pOwner, pDef->Identifier), Def(pDef)
+{
+	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
+}
+
+C4AulDefFunc::~C4AulDefFunc()
+{
+	assert(!Owner);
+}
+
+C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
+{
+	assert(Def->FunctionC4V);
+	return Def->FunctionC4V(p, pPars);
+}
+
 //=============================== C4Script Functions ====================================
 
 static C4PropList *Fnthis(C4PropList * _this)
@@ -569,11 +586,11 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
-	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnLog      },
-	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnDebugLog },
-	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnFormat   },
+	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
+	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
+	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
 
-	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0, 0 }
+	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0          }
 };
 
 void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
@@ -587,7 +604,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
-		pEngine->AddFunc(pDef->Identifier, pDef);
+		new C4AulDefFunc(pEngine, pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
 	F(Abs);
 	F(Min);

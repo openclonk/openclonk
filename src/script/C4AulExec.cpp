@@ -1053,19 +1053,6 @@ C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
 
-C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
-{
-	// Determine function call format to use
-	if (Def->FunctionC4V2)
-		return Def->FunctionC4V2(p, pPars);
-	if (Def->FunctionC4V)
-		return Def->FunctionC4V(p, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
-
-	assert(Def->FunctionC4V2 || Def->FunctionC4V);
-	return C4Value();
-}
-
-
 class C4DirectExecScript: public C4ScriptHost
 {
 public:

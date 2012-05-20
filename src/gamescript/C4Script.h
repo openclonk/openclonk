@@ -45,24 +45,6 @@ struct C4ScriptConstDef
 	long Data;               // raw data
 };
 
-
-
-// ** a definition of a script-function.
-// includes two versions of the Function to be called:
-// * the first (C4V) takes 10 parameters
-// * the second (C4V2) takes an array of 10 parameters
-// only one may be set.
-struct C4ScriptFnDef
-{
-	const char* Identifier; // the name of the func in the script
-	bool Public;
-	C4V_Type RetType; // type returned. ignored when C4V
-	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
-	C4Value (*FunctionC4V)(C4PropList * _this, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
-	                       C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
-	C4Value (*FunctionC4V2)(C4PropList * _this, C4Value *);
-};
-
 // add functions to engine
 void InitGameFunctionMap(C4AulScriptEngine *pEngine);
 void InitObjectFunctionMap(C4AulScriptEngine *pEngine);
