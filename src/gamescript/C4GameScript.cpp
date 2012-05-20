@@ -722,12 +722,8 @@ static bool FnSetPlrKnowledge(C4PropList * _this, long iPlr, C4ID id, bool fRemo
 	}
 }
 
-static C4Value FnGetPlrKnowledge_C4V(C4PropList * _this, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
+static C4Value FnGetPlrKnowledge(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
-	long iPlr = iPlr_C4V->getInt();
-	C4ID id = id_C4V->getC4ID();
-	long iIndex = iIndex_C4V->getInt();
-	DWORD dwCategory = dwCategory_C4V->getInt();
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, check if available, return bool
 	if (id) return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
@@ -740,13 +736,8 @@ static C4Def * FnGetDefinition(C4PropList * _this, long iIndex)
 	return ::Definitions.GetDef(iIndex);
 }
 
-static C4Value FnGetComponent_C4V(C4PropList * _this, C4Value* idComponent_C4V, C4Value* iIndex_C4V, C4Value* pObj_C4V, C4Value* idDef_C4V)
+static C4Value FnGetComponent(C4PropList * _this, C4ID idComponent, int iIndex, C4Object * pObj, C4ID idDef)
 {
-	C4ID idComponent = idComponent_C4V->getC4ID();
-	long iIndex = iIndex_C4V->getInt();
-	C4Object *pObj = pObj_C4V->getObj();
-	C4ID idDef = idDef_C4V->getC4ID();
-
 	// Def component - as seen by scope object as builder
 	if (idDef)
 	{
@@ -770,13 +761,8 @@ static C4Value FnGetComponent_C4V(C4PropList * _this, C4Value* idComponent_C4V, 
 	return C4Value();
 }
 
-static C4Value FnGetHomebaseMaterial_C4V(C4PropList * _this, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
+static C4Value FnGetHomebaseMaterial(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
-	long iPlr = iPlr_C4V->getInt();
-	C4ID id = id_C4V->getC4ID();
-	long iIndex = iIndex_C4V->getInt();
-	DWORD dwCategory = dwCategory_C4V->getInt();
-
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, return available count
 	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
@@ -784,13 +770,8 @@ static C4Value FnGetHomebaseMaterial_C4V(C4PropList * _this, C4Value* iPlr_C4V, 
 	return C4VPropList(C4Id2Def(::Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex )));
 }
 
-static C4Value FnGetHomebaseProduction_C4V(C4PropList * _this, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
+static C4Value FnGetHomebaseProduction(C4PropList * _this, int iPlr, C4ID id, int iIndex, int dwCategory)
 {
-	long iPlr = iPlr_C4V->getInt();
-	C4ID id = id_C4V->getC4ID();
-	long iIndex = iIndex_C4V->getInt();
-	DWORD dwCategory = dwCategory_C4V->getInt();
-
 	if (!ValidPlr(iPlr)) return C4VBool(false);
 	// Search by id, return available count
 	if (id) return C4VInt(::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
@@ -1069,44 +1050,33 @@ C4Object* FnObject(C4PropList * _this, long iNumber)
 	// See FnObjectNumber
 }
 
-static C4Value FnCall_C4V(C4PropList * _this, C4Value* szFunction_C4V,
-                          C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                          C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
+static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 {
 	if (!_this) return C4Value();
-	C4AulParSet Pars;
-	Copy2ParSet9(Pars, *par);
-	return _this->CallOrThrow(FnStringPar(szFunction_C4V->getStr()), &Pars);
+	C4AulParSet ParSet(&Pars[1], 9);
+	return _this->CallOrThrow(FnStringPar(Pars[0].getStr()), &ParSet);
 }
 
-static C4Value FnGameCall_C4V(C4PropList * _this,
-                              C4Value* szFunction_C4V,
-                              C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                              C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
+static C4Value FnGameCall(C4PropList * _this, C4Value * Pars)
 {
-	const char * fn = FnStringPar(szFunction_C4V->getStr());
-	if (!fn[0]) return C4Value();
+	C4String * fn = Pars[0].getStr();
+	if (!fn) return C4Value();
 
 	// copy parameters
-	C4AulParSet Pars;
-	Copy2ParSet9(Pars, *par);
+	C4AulParSet ParSet(&Pars[1], 9);
 	// Call
-	return ::GameScript.Call(fn, &Pars, true);
+	return ::GameScript.Call(fn->GetCStr(), &ParSet, true);
 }
 
-static C4Value FnGameCallEx_C4V(C4PropList * _this,
-                                C4Value* szFunction_C4V,
-                                C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-                                C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
+static C4Value FnGameCallEx(C4PropList * _this, C4Value * Pars)
 {
-	const char * fn = FnStringPar(szFunction_C4V->getStr());
-	if (!fn[0]) return C4Value();
+	C4String * fn = Pars[0].getStr();
+	if (!fn) return C4Value();
 
 	// copy parameters
-	C4AulParSet Pars;
-	Copy2ParSet9(Pars, *par);
+	C4AulParSet ParSet(&Pars[1], 9);
 	// Call
-	return ::GameScript.GRBroadcast(fn, &Pars, true);
+	return ::GameScript.GRBroadcast(fn->GetCStr(), &ParSet, true);
 }
 
 static C4Object * FnEditCursor(C4PropList * _this)
@@ -1357,44 +1327,28 @@ C4Value GetValByStdCompiler(const char *strEntry, const char *strSection, int iE
 	}
 }
 
-static C4Value FnGetDefCoreVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetDefCoreVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iEntryNr)
 {
 	if (!_this || !_this->GetDef())
 		throw new NeedNonGlobalContext("GetDefCoreVal");
 
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (strSection && !*strSection) strSection = NULL;
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*_this->GetDef(), "DefCore"));
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, mkNamingAdapt(*_this->GetDef(), "DefCore"));
 }
 
-static C4Value FnGetObjectVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetObjectVal(C4Object * _this, C4String * strEntry, C4String * strSection, int iEntryNr)
 {
-	if (!Object(_this)) throw new NeedObjectContext("GetObjectVal");
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (!*strSection) strSection = NULL;
-
-	long iEntryNr = iEntryNr_C4V->getInt();
-
 	// get value
 	C4ValueNumbers numbers;
-	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*Object(_this), &numbers), "Object"));
+	C4Value retval = GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, mkNamingAdapt(mkParAdapt(*Object(_this), &numbers), "Object"));
 	numbers.Denumerate();
 	retval.Denumerate(&numbers);
 	return retval;
 }
 
-static C4Value FnGetObjectInfoCoreVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetObjectInfoCoreVal(C4Object * _this, C4String * strEntry, C4String * strSection, int iEntryNr)
 {
-	if (!Object(_this)) throw new NeedObjectContext("GetObjectInfoCoreVal");
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (strSection && !*strSection) strSection = NULL;
-	long iEntryNr = iEntryNr_C4V->getInt();
-
 	// get obj info
 	C4ObjectInfo* pObjInfo = Object(_this)->Info;
 
@@ -1404,69 +1358,47 @@ static C4Value FnGetObjectInfoCoreVal(C4PropList * _this, C4Value* strEntry_C4V,
 	C4ObjectInfoCore* pObjInfoCore = (C4ObjectInfoCore*) pObjInfo;
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pObjInfoCore, "ObjectInfo"));
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, mkNamingAdapt(*pObjInfoCore, "ObjectInfo"));
 }
 
-static C4Value FnGetScenarioVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetScenarioVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iEntryNr)
 {
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	if (strSection && !*strSection) strSection = NULL;
-
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkParAdapt(Game.C4S, false));
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, mkParAdapt(Game.C4S, false));
 }
 
-static C4Value FnGetPlayerVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetPlayerVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iPlayer, int iEntryNr)
 {
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (strSection && !*strSection) strSection = NULL;
-	long iPlr = iPlayer_C4V->getInt();
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	if (!ValidPlr(iPlr)) return C4Value();
-
 	// get player
-	C4Player* pPlayer = ::Players.Get(iPlr);
+	C4Player* pPlayer = ::Players.Get(iPlayer);
+	if (!pPlayer) return C4Value();
 
 	// get value
 	C4ValueNumbers numbers;
-	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, &numbers), "Player"));
+	C4Value retval = GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, &numbers), "Player"));
 	numbers.Denumerate();
 	retval.Denumerate(&numbers);
 	return retval;
 }
 
-static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iPlayer, int iEntryNr)
 {
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (strSection && !*strSection) strSection = NULL;
-	long iPlr = iPlayer_C4V->getInt();
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	if (!ValidPlr(iPlr)) return C4Value();
-
 	// get player
-	C4Player* pPlayer = ::Players.Get(iPlr);
+	C4Player* pPlayer = ::Players.Get(iPlayer);
+	if (!pPlayer) return C4Value();
 
 	// get plr info core
 	C4PlayerInfoCore* pPlayerInfoCore = (C4PlayerInfoCore*) pPlayer;
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, *pPlayerInfoCore);
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL,
+			iEntryNr, *pPlayerInfoCore);
 }
 
-static C4Value FnGetMaterialVal(C4PropList * _this, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iMat_C4V, C4Value *iEntryNr_C4V)
+static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iMat, int iEntryNr)
 {
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	if (strSection && !*strSection) strSection = NULL;
-	long iMat = iMat_C4V->getInt();
-	long iEntryNr = iEntryNr_C4V->getInt();
-
 	if (iMat < 0 || iMat >= ::MaterialMap.Num) return C4Value();
 
 	// get material
@@ -1476,10 +1408,10 @@ static C4Value FnGetMaterialVal(C4PropList * _this, C4Value* strEntry_C4V, C4Val
 	C4MaterialCore* pMaterialCore = static_cast<C4MaterialCore*>(pMaterial);
 
 	// material core implicates section "Material"
-	if (!SEqual(strSection, "Material")) return C4Value();
+	if (!SEqual(FnStringPar(strSection), "Material")) return C4Value();
 
 	// get value
-	return GetValByStdCompiler(strEntry, NULL, iEntryNr, *pMaterialCore);
+	return GetValByStdCompiler(FnStringPar(strEntry), NULL, iEntryNr, *pMaterialCore);
 }
 
 static C4String *FnMaterialName(C4PropList * _this, long iMat)
@@ -1525,19 +1457,16 @@ static long FnGetTime(C4PropList * _this)
 	return GetTime();
 }
 
-static C4Value FnSetPlrExtraData(C4PropList * _this, C4Value *iPlayer_C4V, C4Value *strDataName_C4V, C4Value *Data)
+static C4Value FnSetPlrExtraData(C4PropList * _this, int iPlayer, C4String * DataName, const C4Value & Data)
 {
-	long iPlayer = iPlayer_C4V->getInt();
-	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
-	// valid player? (for great nullpointer prevention)
-	if (!ValidPlr(iPlayer)) return C4Value();
+	const char * strDataName = FnStringPar(DataName);
 	// do not allow data type C4V_Array or C4V_C4Object
-	if (Data->GetType() != C4V_Nil &&
-	    Data->GetType() != C4V_Int &&
-	    Data->GetType() != C4V_Bool &&
-	    Data->GetType() != C4V_String) return C4VNull;
-	// get pointer on player...
+	if (Data.GetType() != C4V_Nil &&
+	    Data.GetType() != C4V_Int &&
+	    Data.GetType() != C4V_Bool &&
+	    Data.GetType() != C4V_String) return C4VNull;
 	C4Player* pPlayer = ::Players.Get(iPlayer);
+	if (!pPlayer) return C4Value();
 	// no name list created yet?
 	if (!pPlayer->ExtraData.pNames)
 		// create name list
@@ -1545,27 +1474,24 @@ static C4Value FnSetPlrExtraData(C4PropList * _this, C4Value *iPlayer_C4V, C4Val
 	// data name already exists?
 	long ival;
 	if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) != -1)
-		pPlayer->ExtraData[ival] = *Data;
+		pPlayer->ExtraData[ival] = Data;
 	else
 	{
 		// add name
 		pPlayer->ExtraData.pNames->AddName(strDataName);
 		// get val id & set
 		if ((ival = pPlayer->ExtraData.pNames->GetItemNr(strDataName)) == -1) return C4Value();
-		pPlayer->ExtraData[ival] = *Data;
+		pPlayer->ExtraData[ival] = Data;
 	}
 	// ok, return the value that has been set
-	return *Data;
+	return Data;
 }
 
-static C4Value FnGetPlrExtraData(C4PropList * _this, C4Value *iPlayer_C4V, C4Value *strDataName_C4V)
+static C4Value FnGetPlrExtraData(C4PropList * _this, int iPlayer, C4String * DataName)
 {
-	long iPlayer = iPlayer_C4V->getInt();
-	const char *strDataName = FnStringPar(strDataName_C4V->getStr());
-	// valid player?
-	if (!ValidPlr(iPlayer)) return C4Value();
-	// get pointer on player...
+	const char *strDataName = FnStringPar(DataName);
 	C4Player* pPlayer = ::Players.Get(iPlayer);
+	if (!pPlayer) return C4Value();
 	// no name list?
 	if (!pPlayer->ExtraData.pNames) return C4Value();
 	long ival;
@@ -1858,20 +1784,16 @@ static long FnLoadScenarioSection(C4PropList * _this, C4String *pstrSection, lon
 	return Game.LoadScenarioSection(szSection, dwFlags);
 }
 
-static C4Value FnAddEffect_C4V(C4PropList * _this, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvpCmdTarget, C4Value *pvidCmdTarget, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
+static C4Value FnAddEffect(C4PropList * _this, C4String * szEffect, C4Object * pTarget,
+                           int iPrio, int iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget,
+                           const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
 {
-	// evaluate parameters
-	C4String *szEffect = pvsEffectName->getStr();
-	C4Object *pTarget = pvpTarget->getObj();
-	long iPrio = pviPrio->getInt(), iTimerInterval = pviTimerInterval->getInt();
-	C4Object *pCmdTarget = pvpCmdTarget->getObj();
-	C4ID idCmdTarget = pvidCmdTarget->getC4ID();
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szEffect || !*szEffect->GetCStr() || !iPrio) return C4Value();
 	// create effect
-	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, *pvVal1, *pvVal2, *pvVal3, *pvVal4);
-	// return effect - may be 0 if he effect has been denied by another effect
+	C4Effect * pEffect = C4Effect::New(pTarget, szEffect, iPrio, iTimerInterval, pCmdTarget, idCmdTarget, Val1, Val2, Val3, Val4);
+	// return effect - may be 0 if the effect has been denied by another effect
 	if (!pEffect) return C4Value();
 	return C4VPropList(pEffect);
 }
@@ -1911,12 +1833,10 @@ static bool FnRemoveEffect(C4PropList * _this, C4String *psEffectName, C4Object 
 	return true;
 }
 
-static C4Value FnCheckEffect_C4V(C4PropList * _this, C4Value *pvsEffectName, C4Value *pvpTarget, C4Value *pviPrio, C4Value *pviTimerInterval, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4)
+static C4Value FnCheckEffect(C4PropList * _this, C4String * psEffectName, C4Object * pTarget,
+                             int iPrio, int iTimerInterval,
+                             const C4Value & Val1, const C4Value & Val2, const C4Value & Val3, const C4Value & Val4)
 {
-	// evaluate parameters
-	C4String *psEffectName = pvsEffectName->getStr();
-	C4Object *pTarget = pvpTarget->getObj();
-	long iPrio = pviPrio->getInt(), iTimerInterval = pviTimerInterval->getInt();
 	const char *szEffect = FnStringPar(psEffectName);
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
@@ -1925,7 +1845,7 @@ static C4Value FnCheckEffect_C4V(C4PropList * _this, C4Value *pvsEffectName, C4V
 	C4Effect *pEffect = pTarget ? pTarget->pEffects : Game.pGlobalEffects;
 	if (!pEffect) return C4Value();
 	// let them check
-	C4Effect * r = pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, *pvVal1, *pvVal2, *pvVal3, *pvVal4);
+	C4Effect * r = pEffect->Check(pTarget, szEffect, iPrio, iTimerInterval, Val1, Val2, Val3, Val4);
 	if (r == (C4Effect *)C4Fx_Effect_Deny) return C4VInt(C4Fx_Effect_Deny);
 	if (r == (C4Effect *)C4Fx_Effect_Annul) return C4VInt(C4Fx_Effect_Annul);
 	return C4VPropList(r);
@@ -1943,19 +1863,19 @@ static long FnGetEffectCount(C4PropList * _this, C4String *psEffectName, C4Objec
 	return pEffect->GetCount(szEffect, iMaxPriority);
 }
 
-static C4Value FnEffectCall_C4V(C4PropList * _this, C4Value *pvpTarget, C4Value *pvEffect, C4Value *pvsCallFn, C4Value *pvVal1, C4Value *pvVal2, C4Value *pvVal3, C4Value *pvVal4, C4Value *pvVal5, C4Value *pvVal6, C4Value *pvVal7)
+static C4Value FnEffectCall(C4PropList * _this, C4Value * Pars)
 {
 	// evaluate parameters
-	C4String *psCallFn = pvsCallFn->getStr();
-	C4Object *pTarget = pvpTarget->getObj();
-	C4Effect * pEffect = pvEffect->getPropList() ? pvEffect->getPropList()->GetEffect() : 0;
+	C4Object *pTarget = Pars[0].getObj();
+	C4Effect * pEffect = Pars[1].getPropList() ? Pars[1].getPropList()->GetEffect() : 0;
+	C4String *psCallFn = Pars[2].getStr();
 	const char *szCallFn = FnStringPar(psCallFn);
 	// safety
 	if (pTarget && !pTarget->Status) return C4Value();
 	if (!szCallFn || !*szCallFn) return C4Value();
 	if (!pEffect) return C4Value();
 	// do call
-	return pEffect->DoCall(pTarget, szCallFn, *pvVal1, *pvVal2, *pvVal3, *pvVal4, *pvVal5, *pvVal6, *pvVal7);
+	return pEffect->DoCall(pTarget, szCallFn, Pars[3], Pars[4], Pars[5], Pars[6], Pars[7], Pars[8], Pars[9]);
 }
 
 static bool FnSetViewOffset(C4PropList * _this, long iPlayer, long iX, long iY)
@@ -2367,6 +2287,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptGameFnMap[0]; pDef->Identifier; pDef++)
 		pEngine->AddFunc(pDef->Identifier, pDef);
+#define F(f) AddFunc(pEngine, #f, Fn##f)
 //  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
 	AddFunc(pEngine, "Smoke", FnSmoke);
 
@@ -2518,6 +2439,21 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
 
+	F(GetPlrKnowledge);
+	F(GetComponent);
+	F(GetHomebaseMaterial);
+	F(GetHomebaseProduction);
+	F(GetDefCoreVal);
+	F(GetObjectVal);
+	F(GetObjectInfoCoreVal);
+	F(GetScenarioVal);
+	F(GetPlayerVal);
+	F(GetPlayerInfoCoreVal);
+	F(GetMaterialVal);
+	F(SetPlrExtraData);
+	F(GetPlrExtraData);
+	F(AddEffect);
+	F(CheckEffect);
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
@@ -2648,39 +2584,19 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ NULL, C4V_Nil, 0}
 };
 
-#define MkFnC4V (C4Value (*)(C4PropList * _this, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,\
-                                                 C4Value*, C4Value*, C4Value*, C4Value*, C4Value*))
-
 C4ScriptFnDef C4ScriptGameFnMap[]=
 {
 
 	{ "FindObject",    1, C4V_Object, { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnFindObject    },
 	{ "FindObjects",   1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnFindObjects   },
 	{ "ObjectCount",   1, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnObjectCount   },
-	{ "GameCall",             1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
-	{ "GameCallEx",           1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGameCallEx_C4V ,            0 },
-	{ "Call",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
-	{ "GetPlrKnowledge",      1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
-	{ "GetComponent",         1  ,C4V_Int      ,{ C4V_PropList,C4V_Int     ,C4V_Object  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
+	{ "GameCall",      1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnGameCall      },
+	{ "GameCallEx",    1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnGameCallEx    },
+	{ "Call",          1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnCall          },
 	{ "PlayerMessage", 1, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnPlayerMessage },
 	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnMessage       },
 	{ "AddMessage",    1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnAddMessage    },
-	{ "GetHomebaseMaterial",  1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
-	{ "GetHomebaseProduction",1  ,C4V_Int      ,{ C4V_Int     ,C4V_PropList,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V , 0 },
-
-	{ "GetDefCoreVal",        1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetDefCoreVal,             0 },
-	{ "GetObjectVal",         1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetObjectVal,              0 },
-	{ "GetObjectInfoCoreVal", 1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetObjectInfoCoreVal,      0 },
-	{ "GetScenarioVal",       1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetScenarioVal,            0 },
-	{ "GetPlayerVal",         1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPlayerVal,              0 },
-	{ "GetPlayerInfoCoreVal", 1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPlayerInfoCoreVal,      0 },
-	{ "GetMaterialVal",       1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetMaterialVal,            0 },
-
-	{ "SetPlrExtraData",      1  ,C4V_Any      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnSetPlrExtraData,           0 },
-	{ "GetPlrExtraData",      1  ,C4V_Any      ,{ C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetPlrExtraData,           0 },
-	{ "AddEffect",            1  ,C4V_PropList ,{ C4V_String  ,C4V_Object  ,C4V_Int     ,C4V_Int     ,C4V_Object,  C4V_PropList,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnAddEffect_C4V,             0 },
-	{ "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_Object  ,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
-	{ "EffectCall",           1  ,C4V_Any      ,{ C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
+	{ "EffectCall",    1, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, 0, FnEffectCall    },
 
 	{ NULL,                   0  ,C4V_Nil      ,{ C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}   ,0,                                   0 }
 
