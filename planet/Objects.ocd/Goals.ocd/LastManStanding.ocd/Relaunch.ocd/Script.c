@@ -62,7 +62,7 @@ private func OpenWeaponMenu(object clonk)
 		{
 			menu = clonk->CreateRingMenu(Clonk, this);
 			for (var weapon in weapons)
-				menu->AddItem(weapon);
+				menu->AddItem(weapon, 1);
 			menu->Show();
 			menu->SetUncloseable();
 		}
@@ -96,7 +96,11 @@ public func Selected(object menu, object selector, bool alt)
 	if (!selector)
 		return false;
 	
-	for (var i = 0; i < selector->GetAmount(); i++)
+	var amount = selector->GetAmount();
+	if (amount > 1)
+		alt = nil;
+	
+	for (var i = 0; i < amount; i++)
 		GiveWeapon(selector->GetSymbol(), alt);
 	
 	has_selected = true;

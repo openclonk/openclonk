@@ -39,10 +39,10 @@ public func GetInteractionMetaInfo(object clonk)
 public func Interact(object clonk)
 {
 	var menu;
-	var i=0,item,player=clonk->GetOwner(), amount;
-	while (item = GetHomebaseMaterial(player, nil, i++))
+	var i = 0, item, amount;
+	while (item = GetHomebaseMaterial(GetOwner(), nil, i++))
 	{
-		amount = GetHomebaseMaterial(player, item);
+		amount = GetHomebaseMaterial(GetOwner(), item);
 		// Add even if amount==0
 		if (!menu) menu = clonk->CreateRingMenu(Flagpole, this);
 		if (!menu) return false;
@@ -65,8 +65,11 @@ public func Selected(object menu, proplist menu_item, bool alt)
 	// Excess objects exit flag (can't get them out...)
 	var i = ContentsCount();
 	var obj;
-	while (i--) if (obj = Contents(i)) Contents(i)->Exit();
+	while (i--) 
+		if (obj = Contents(i))
+			Contents(i)->Exit(0, GetDefHeight() / 2);
 	// Update available count
-	menu_item->SetAmount(GetHomebaseMaterial(clonk->GetOwner(), def));
+	menu_item->SetAmount(GetHomebaseMaterial(GetOwner(), def));
+	menu->Show();
 	return true;
 }

@@ -102,14 +102,7 @@ public func AddItem(new_item, int amount, extra)
 	menu_icons[index] = CreateObject(GUI_RingMenu_Icon,0,0,menu_object->GetOwner());
 	menu_icons[index]->SetSymbol(new_item);
 	menu_icons[index]->SetExtraData(extra);
-	if(amount == nil)
-	{
-		menu_icons[index]->SetAmount(1);
-	}
-	else
-	{
-		menu_icons[index]->SetAmount(amount);
-	}
+	menu_icons[index]->SetAmount(amount);
 	menu_icons[index].Visibility = VIS_None;
 	return index;
 }
