@@ -939,7 +939,11 @@ bool C4ScenarioListLoader::SubFolder::LoadCustom(C4Group &rGrp, bool fNameLoaded
 {
 	// default icon fallback
 	if (!fIconLoaded)
-		fctIcon.Set(C4Startup::Get()->Graphics.fctScenSelIcons.GetSection(C4StartupScenSel_DefaultIcon_Folder));
+	{
+		if(WildcardMatch(C4CFN_Savegames, GetFilename(sFilename.getData()))) iIconIndex = C4StartupScenSel_DefaultIcon_SavegamesFolder;
+		else iIconIndex = C4StartupScenSel_DefaultIcon_Folder;
+		fctIcon.Set(C4Startup::Get()->Graphics.fctScenSelIcons.GetSection(iIconIndex));	
+	}
 	// folder index
 	iFolderIndex = C4F.Head.Index;
 	return true;
