@@ -1,4 +1,4 @@
-/*--
+/**--
 	Time Controller
 	Author:Ringwall
 	
@@ -122,37 +122,74 @@ protected func FxIntTimeCycleTimer(object target)
 	return 1;
 }
 
-// Adjusts the sky, celestial and others to the current time.
+// Adjusts the sky, celestial and others to the current time. Use SetTime() at runtime, not this.
 private func AdjustToTime()
 {
-	var skyshade;
+	var skyshade = [0,0,0,0]; //R,G,B,A
+	var nightcolour = [10,25,40]; //default darkest-night colour
+	
+	//Darkness of night dependant on moon-phase
+	var satellite = FindObject(Find_ID(Moon)); //pointer to the moon
+	if(satellite){
+		var phase = satellite->GetPhase();
+		
+		if(phase == 1 || phase == 5) nightcolour = [4,7,9]; //super dark when moon is crescent
+		else if(phase == 2 || phase == 4) nightcolour = [5,15,25]; //somewhat dark when moon is half
+		else nightcolour = [10,25,40]; //deep-blue when moon is full
+	}
+		
+	
 	// Sunrise 
 	if (Inside(time, time_set["SunriseStart"], time_set["SunriseEnd"]))
 	{
-		skyshade = Sin((GetTime() - 180) / 4, 255);
+		skyshade[0] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[0]) + nightcolour[0];
+		skyshade[1] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[1]) + nightcolour[1];
+		skyshade[2] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[2]) + nightcolour[2];
+		
+		skyshade[3] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255);
 		if (time == 540)
-			if (FindObject(Find_ID(Moon)))
-				FindObject(Find_ID(Moon))->Phase();
+			if (satellite)
+				satellite->Phase();
 	}
 	// Day
 	else if (Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
-		skyshade = 255;
+	{
+		skyshade[0] = 255;
+		skyshade[1] = 255;
+		skyshade[2] = 255;
+		
+		skyshade[3] = 255;
+	}
 	//Sunset
 	else if (Inside(time, time_set["SunsetStart"], time_set["SunsetEnd"]))
-		skyshade = 255 - Sin((GetTime() - 900) / 4, 255);
+	{
+		skyshade[0] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[0]);
+		skyshade[1] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[1]);
+		skyshade[2] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[2]);
+		
+		skyshade[3] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255);
+	}
 	// Night
 	else if (time > time_set["SunsetEnd"] || time < time_set["SunriseStart"])
-		skyshade = 0;
+	{
+		skyshade[0] = nightcolour[0];
+		skyshade[1] = nightcolour[1];
+		skyshade[2] = nightcolour[2];
+		
+		skyshade[3] = 0;
+	}
 	
 	// Shade sky.
-	SetSkyAdjust(RGB(skyshade, skyshade, skyshade));
+	SetSkyAdjust(RGB(skyshade[0], skyshade[1], skyshade[2]));
 	
 	// Adjust celestial objects.
 	for (var celestial in FindObjects(Find_Func("IsCelestial")))
-			celestial->SetObjAlpha(255 - skyshade);
+			celestial->SetObjAlpha(255 - skyshade[3]);
 			
-	// Adjust clouds, TODO remedie this special case of white clouds on black sky.
-	
+	// Adjust clouds
+	for(var cloud in FindObjects(Find_ID(Cloud))){
+		cloud->RequestAlpha(skyshade[3]);
+	}
 	
 	return;
 }
