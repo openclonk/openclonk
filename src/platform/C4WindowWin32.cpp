@@ -240,6 +240,9 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		StoreWindowPosition(hwnd, FormatString("Viewport%i",cvp->Player+1).getData(), Config.GetSubkeyPath("Console"));
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_CREATE:
+		DragAcceptFiles(hwnd, TRUE);
+		break;
 	case WM_CLOSE:
 		cvp->pWindow->Close();
 		break;
@@ -252,11 +255,11 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 		int32_t iFileNum = DragQueryFile(hDrop,0xFFFFFFFF,NULL,0);
 		POINT pntPoint;
+		DragQueryPoint(hDrop,&pntPoint);
 		wchar_t szFilename[500+1];
 		for (int32_t cnt=0; cnt<iFileNum; cnt++)
 		{
 			DragQueryFileW(hDrop,cnt,szFilename,500);
-			DragQueryPoint(hDrop,&pntPoint);
 			cvp->DropFile(StdStrBuf(szFilename).getData(), (float)pntPoint.x, (float)pntPoint.y);
 		}
 		DragFinish(hDrop);
