@@ -533,6 +533,30 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	return 0;
 }
 
+C4ValueArray * C4PropList::GetProperties() const
+{
+	C4ValueArray * a;
+	int i;
+	if (prototype)
+	{
+		a = prototype->GetProperties();
+		i = a->GetSize();
+		a->SetSize(i + Properties.GetSize());
+	}
+	else
+	{
+		a = new C4ValueArray(Properties.GetSize());
+		i = 0;
+	}
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		(*a)[i++] = C4VString(p->Key);
+		p = Properties.Next(p);
+	}
+	return a;
+}
+
 void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);

@@ -4957,3 +4957,13 @@ bool C4Object::GetPropertyByS(C4String *k, C4Value *pResult) const
 	}
 	return C4PropListNumbered::GetPropertyByS(k, pResult);
 }
+
+C4ValueArray * C4Object::GetProperties() const
+{
+	C4ValueArray * a = C4PropList::GetProperties();
+	int i;
+	i = a->GetSize();
+	a->SetSize(i + 1);
+	(*a)[i++] = C4VString(&::Strings.P[P_Plane]);
+	return a;
+}

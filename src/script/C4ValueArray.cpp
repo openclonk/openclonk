@@ -104,6 +104,19 @@ void C4ValueArray::Sort(class C4SortObject &rSort)
 		std::stable_sort(pData, pData+iSize, C4SortObjectSTL(rSort));
 }
 
+struct C4ValueArraySortStringscomp
+{
+	bool operator ()(const C4Value &v1, const C4Value &v2)
+	{
+		return v1.getStr() && v2.getStr() && v1._getStr()->GetData() < v2._getStr()->GetData();
+	}
+};
+
+void C4ValueArray::SortStrings()
+{
+	std::stable_sort(pData, pData+iSize, C4ValueArraySortStringscomp());
+}
+
 C4Value &C4ValueArray::operator[](int32_t iElem)
 {
 	assert(iElem < MaxSize);

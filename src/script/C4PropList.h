@@ -70,9 +70,10 @@ public:
 	// some proplists have references that are not reference-counted
 	virtual bool Delete() { return false; }
 
-	// These three operate on properties as seen by script, which can be dynamic
+	// These four operate on properties as seen by script, which can be dynamic
 	// or reflect C++ variables
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual C4ValueArray * GetProperties() const;
 	// not allowed on frozen proplists
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);

@@ -205,6 +205,15 @@ static C4Value FnResetProperty_C4V(C4PropList * _this, C4Value * key_C4V, C4Valu
 	return C4VTrue;
 }
 
+static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
+{
+	if (!p) p = _this;
+	if (!p) throw new NeedNonGlobalContext("GetProperties");
+	C4ValueArray * r = p->GetProperties();
+	r->SortStrings();
+	return r;
+}
+
 static C4Value FnLog_C4V(C4PropList * _this, C4Value *szMessage, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6, C4Value * iPar7, C4Value * iPar8)
 {
 	Log(FnStringFormat(_this, FnStringPar(szMessage->getStr()),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7,iPar8).getData());
@@ -622,6 +631,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 
 	AddFunc(pEngine, "CreateArray", FnCreateArray);
 	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
+	AddFunc(pEngine, "GetProperties", FnGetProperties);
 	AddFunc(pEngine, "C4Id", FnC4Id, false);
 	AddFunc(pEngine, "Distance", FnDistance);
 	AddFunc(pEngine, "Angle", FnAngle);

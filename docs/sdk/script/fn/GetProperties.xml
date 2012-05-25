@@ -4,19 +4,13 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>GetProperty</title>
+    <title>GetProperties</title>
     <category>Objects</category>
     <subcat>Properties</subcat>
-    <version>5.1 OC</version>
+    <version>5.3 OC</version>
     <syntax>
-      <rtype>any</rtype>
+      <rtype>array</rtype>
       <params>
-        <param>
-          <type>string</type>
-          <name>key</name>
-          <desc>Requested property.</desc>
-          <optional />
-        </param>
         <param>
           <type>proplist</type>
           <name>object</name>
@@ -25,9 +19,14 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the property <code>key</code> of <code>object</code>.</desc>
+    <desc>Returns the names of all properties of <code>object</code>.</desc>
     <related><funclink>SetProperty</funclink></related>
-    <related><funclink>GetProperties</funclink></related>
+    <related><funclink>GetProperty</funclink></related>
+    <examples>
+      <example>
+        <code>GetProperties({foo = 1, bar = 2}) == ["bar", "foo"]</code>
+      </example>
+    </examples>
   </func>
-  <author>Günther</author><date>2009-05</date>
+  <author>Günther</author><date>2012</date>
 </funcs>

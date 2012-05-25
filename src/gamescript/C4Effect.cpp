@@ -556,6 +556,20 @@ bool C4Effect::GetPropertyByS(C4String *k, C4Value *pResult) const
 	return C4PropListNumbered::GetPropertyByS(k, pResult);
 }
 
+C4ValueArray * C4Effect::GetProperties() const
+{
+	C4ValueArray * a = C4PropList::GetProperties();
+	int i;
+	i = a->GetSize();
+	a->SetSize(i + 5);
+	(*a)[i++] = C4VString(&::Strings.P[P_Name]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Priority]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Interval]);
+	(*a)[i++] = C4VString(&::Strings.P[P_CommandTarget]);
+	(*a)[i++] = C4VString(&::Strings.P[P_Time]);
+	return a;
+}
+
 // Some other, internal effects -------------------------------------------------------------
 
 static int32_t GetSmokeLevel()

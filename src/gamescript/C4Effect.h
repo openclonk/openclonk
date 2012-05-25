@@ -133,6 +133,7 @@ public:
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual C4ValueArray * GetProperties() const;
 
 protected:
 	void TempRemoveUpperEffects(C4Object *pObj, bool fTempRemoveThis, C4Effect **ppLastRemovedEffect); // temp remove all effects with higher priority
