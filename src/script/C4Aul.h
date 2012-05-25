@@ -301,7 +301,7 @@ public:
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 
 	// helper functions
-	void Warn(const char *pMsg, const char *pIdtf);
+	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 	friend class C4AulParseError;
 	friend class C4AulFunc;

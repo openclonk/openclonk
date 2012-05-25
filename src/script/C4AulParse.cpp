@@ -182,8 +182,8 @@ public:
 	void UnexpectedToken(const char * Expected) NORETURN;
 	static const char * GetTokenName(C4AulTokenType TokenType);
 
-	void Warn(const char *pMsg, const char *pIdtf=0);
-	void Error(const char *pMsg, const char *pIdtf=0);
+	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 private:
 
@@ -222,28 +222,26 @@ private:
 	void AddLoopControl(bool fBreak);
 };
 
-void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
+void C4AulScript::Warn(const char *pMsg, ...)
 {
-	// display error
+	va_list args; va_start(args, pMsg);
+	StdStrBuf Buf;
+	Buf.FormatV(pMsg, args);
 
-	C4AulParseError warning(this, pMsg, pIdtf, true);
+	C4AulParseError warning(this, Buf.getData(), 0, true);
 	// display it
 	warning.show();
 	// count warnings
 	++::ScriptEngine.warnCnt;
 }
 
-void C4AulParse::Warn(const char *pMsg, const char *pIdtf)
+void C4AulParse::Warn(const char *pMsg, ...)
 {
-	// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-	if (Fn && !Fn->Owner->GetPropList() && !Fn->Owner->Appends.empty()) return;
-	// script doesn't own function -> skip
-	// (exception: global functions)
-	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
-	// display error
+	va_list args; va_start(args, pMsg);
+	StdStrBuf Buf;
+	Buf.FormatV(pMsg, args);
 
-	C4AulParseError warning(this, pMsg, pIdtf, true);
-	// display it
+	C4AulParseError warning(this, Buf.getData(), 0, true);
 	warning.show();
 	if (pOrgScript != a)
 		DebugLogF("  (as #appendto/#include to %s)", a->ScriptName.getData());
@@ -251,9 +249,13 @@ void C4AulParse::Warn(const char *pMsg, const char *pIdtf)
 	++::ScriptEngine.warnCnt;
 }
 
-void C4AulParse::Error(const char *pMsg, const char *pIdtf)
+void C4AulParse::Error(const char *pMsg, ...)
 {
-	throw new C4AulParseError(this, pMsg, pIdtf);
+	va_list args; va_start(args, pMsg);
+	StdStrBuf Buf;
+	Buf.FormatV(pMsg, args);
+
+	throw new C4AulParseError(this, Buf.getData());
 }
 
 C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const char *pIdtf, bool Warn)
@@ -576,8 +578,7 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 					// just insert "\"
 					strbuf.push_back('\\');
 					// show warning
-					char strEscape[2] = { *(SPos + 1), 0 };
-					Warn("unknown escape: ", strEscape);
+					Warn("unknown escape \"%c\"", *(SPos + 1));
 				}
 				}
 			else if (C == 0 || C == 10 || C == 13) // line break / feed
@@ -1379,7 +1380,7 @@ void C4AulParse::Parse_Function()
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
 		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
-			Error("function definition: name already in use (global constant)", 0);
+			Error("function definition: name already in use (global constant)");
 	}
 	// get script fn
 	C4AulScript * owner;
@@ -1395,7 +1396,7 @@ void C4AulParse::Parse_Function()
 		{
 			if (Fn)
 				//throw new C4AulParseError(this, "Duplicate function ", Idtf);
-				Warn("Duplicate function ", Idtf);
+				Warn("Duplicate function %s", Idtf);
 			Fn = f->SFunc();
 		}
 		f = f->Next;
@@ -2224,7 +2225,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			throw new C4AulParseError(this, "'for' may not be used as a parameter");
 		else if (SEqual(Idtf, C4AUL_Return))
 		{
-			Error("return may not be used as a parameter", 0);
+			Error("return may not be used as a parameter");
 		}
 		else if (SEqual(Idtf, C4AUL_Par))
 		{
@@ -2279,7 +2280,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			else if (FoundFn)
 			{
 				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
-					Warn("using deprecated function ", Idtf);
+					Warn("using deprecated function %s", Idtf);
 				Shift();
 				// Function parameters for all functions except "this", which can be used without
 				if (!SEqual(FoundFn->GetName(), C4AUL_this) || TokenType == ATT_BOPEN)
@@ -2681,8 +2682,8 @@ void C4AulParse::Parse_Static()
 				UnexpectedToken("variable name");
 			// global variable definition
 			// check: symbol already in use?
-			if (a->Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name ", Idtf);
-			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name ", Idtf);
+			if (a->Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name %s", Idtf);
+			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name %s", Idtf);
 			// insert variable if not defined already
 			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
 			{
@@ -2852,9 +2853,9 @@ void C4AulParse::Parse_Const()
 		SCopy(Idtf, Name);
 		// check func lists - functions of same name are not allowed
 		if (a->Engine->GetPropList()->GetFunc(Idtf))
-			Error("definition of constant hidden by function ", Idtf);
+			Error("definition of constant hidden by function %s", Idtf);
 		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-			Error("constant and variable with name ", Idtf);
+			Error("constant and variable with name %s", Idtf);
 		Match(ATT_IDTF);
 		// expect '='
 		if (TokenType != ATT_SET)

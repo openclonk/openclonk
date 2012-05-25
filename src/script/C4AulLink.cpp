@@ -49,7 +49,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				Warn("script to #appendto not found: ", a->ToString());
+				Warn("#appendto %s not found", a->ToString());
 			}
 		}
 		else
@@ -106,7 +106,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 			// save id in buffer because AulWarn will use the buffer of C4IdText
 			// to get the id of the object in which the error occurs...
 			// (stupid static buffers...)
-			Warn("script to #include not found: ", i->ToString());
+			Warn("#include %s not found", i->ToString());
 		}
 	}
 	IncludesResolved = true;
