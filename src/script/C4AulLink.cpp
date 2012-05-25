@@ -116,6 +116,19 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 	return true;
 }
 
+void C4AulScript::LinkFunctions()
+{
+	for (C4AulFunc *f = Func0; f; f = f->Next)
+	{
+		C4AulScriptFunc *sf = f->SFunc();
+		if (!sf) continue;
+		sf->OwnerOverloaded = GetPropList()->GetFunc(sf->Name);
+		if (sf->OwnerOverloaded && sf->OwnerOverloaded->Owner == this)
+			sf->OwnerOverloaded->OverloadedBy = sf;
+		GetPropList()->SetPropertyByS(sf->Name, C4VFunction(sf));
+	}
+}
+
 void C4AulScript::UnLink()
 {
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
@@ -125,20 +138,27 @@ void C4AulScript::UnLink()
 	if (p) p->C4PropList::Thaw();
 
 	// delete included/appended functions
-	C4AulFunc* pFunc = Func0;
+	C4AulFunc* pFunc = FuncL;
 	while (pFunc)
 	{
-		C4AulFunc* pNextFunc = pFunc->Next;
+		C4AulFunc* pNextFunc = pFunc->Prev;
 
-		// clear stuff that's set in AfterLink
+		// clear stuff that's set in LinkFunctions
 		pFunc->UnLink();
+		C4Value v;
+		if (p && p->GetFunc(pFunc->Name) == pFunc && pFunc->SFunc())
+		{
+			p->ResetProperty(pFunc->Name);
+			C4AulFunc * overloaded = pFunc->SFunc()->OwnerOverloaded;
+			if (overloaded && overloaded != p->GetFunc(pFunc->Name))
+				p->SetPropertyByS(pFunc->Name, C4VFunction(overloaded));
+		}
 
-		if (pFunc->SFunc())
-			if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
-			{
-				pFunc->RemoveFromScript();
-				pFunc->DecRef();
-			}
+		if (pFunc->SFunc() && pFunc->Owner != Engine && pFunc->Owner != pFunc->SFunc()->pOrgScript)
+		{
+			pFunc->RemoveFromScript();
+			pFunc->DecRef();
+		}
 
 		pFunc = pNextFunc;
 	}

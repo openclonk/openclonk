@@ -2858,19 +2858,6 @@ bool C4AulScript::Parse()
 	return true;
 }
 
-void C4AulScript::LinkFunctions()
-{
-	for (C4AulFunc *f = Func0; f; f = f->Next)
-	{
-		C4AulScriptFunc *sf = f->SFunc();
-		if (!sf) continue;
-		sf->OwnerOverloaded = GetPropList()->GetFunc(sf->Name);
-		if (sf->OwnerOverloaded && sf->OwnerOverloaded->Owner == this)
-			sf->OwnerOverloaded->OverloadedBy = sf;
-		GetPropList()->SetPropertyByS(sf->Name, C4VFunction(sf));
-	}
-}
-
 bool C4ScriptHost::Parse()
 {
 	if (DEBUG_BYTECODE_DUMP)
