@@ -305,11 +305,9 @@ public C4AulDefFuncHelper {                   \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
       C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Avoid hiding base class function */        \
-    using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
-    { return C4ValueConv<RType>::ToC4V(pFunc(pContext->Def LIST(N, CONV_FROM_C4V))); } \
+    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
+    { return C4ValueConv<RType>::ToC4V(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
@@ -325,13 +323,11 @@ public C4AulDefFuncHelper {                   \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefObjectFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
       C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Avoid hiding base class function */        \
-    using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
+    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { \
-      if (!pContext->Obj) throw new NeedObjectContext(GetName()); \
-      return C4ValueConv<RType>::ToC4V(pFunc(pContext->Obj LIST(N, CONV_FROM_C4V))); \
+      C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw new NeedObjectContext(GetName()); \
+      return C4ValueConv<RType>::ToC4V(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
     } \
   protected:                                  \
     Func pFunc;                               \

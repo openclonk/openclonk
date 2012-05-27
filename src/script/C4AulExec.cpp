@@ -867,13 +867,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	}
 	else
 	{
-
-		// Create new context
-		C4AulContext ctx;
-		ctx.Obj = pContext ? pContext->GetObject() : 0;
-		if (ctx.Obj && !ctx.Obj->Status)
+		if (pContext && !pContext->Status)
 			throw new C4AulExecError("using removed object");
-		ctx.Def = pContext;
 
 #ifdef DEBUGREC_SCRIPT
 		StdStrBuf sCallText;
@@ -910,9 +905,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		C4AulScriptContext *pCtx = pCurCtx;
 #endif
 		if (pReturn > pCurVal)
-			PushValue(pFunc->Exec(&ctx, pPars, true));
+			PushValue(pFunc->Exec(pContext, pPars, true));
 		else
-			pReturn->Set(pFunc->Exec(&ctx, pPars, true));
+			pReturn->Set(pFunc->Exec(pContext, pPars, true));
 #ifdef _DEBUG
 		assert(pCtx == pCurCtx);
 #endif
@@ -1065,48 +1060,25 @@ void C4AulProfiler::Show()
 	// done!
 }
 
-
-C4Value C4AulFunc::Exec(C4PropList * p, C4AulParSet* pPars, bool fPassErrors)
-{
-	// construct a dummy caller context
-	C4AulContext ctx;
-	ctx.Obj = p ? p->GetObject() : NULL;
-	ctx.Def = p;
-	// execute
-	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-}
-
-C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErrors)
+C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
 	// handle easiest case first
-	if (Owner->State != ASS_PARSED) return C4VNull;
+	if (Owner->State != ASS_PARSED) return C4Value();
 
 	// execute
-	return AulExec.Exec(this, pCtx->Obj ? pCtx->Obj : pCtx->Def, pPars, fPassErrors);
+	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
 
-
-C4Value C4AulScriptFunc::Exec(C4PropList * p, C4AulParSet *pPars, bool fPassErrors)
-{
-	// handle easiest case first
-	if (Owner->State != ASS_PARSED) return C4VNull;
-
-	// execute
-	return AulExec.Exec(this, p, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-}
-
-
-C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors)
+C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
 	// Determine function call format to use
 	if (Def->FunctionC4V2)
-		return Def->FunctionC4V2(pCallerCtx->Def, pPars);
-
+		return Def->FunctionC4V2(p, pPars);
 	if (Def->FunctionC4V)
-		return Def->FunctionC4V(pCallerCtx->Def, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
+		return Def->FunctionC4V(p, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
 
-	// should never happen...
-	return C4VNull;
+	assert(Def->FunctionC4V2 || Def->FunctionC4V);
+	return C4Value();
 }
 
 
