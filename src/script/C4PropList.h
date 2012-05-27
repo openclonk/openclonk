@@ -86,6 +86,7 @@ public:
 	{ return GetFunc(&Strings.P[k]); }
 	C4AulFunc * GetFunc(C4String * k) const;
 	C4AulFunc * GetFunc(const char * k) const;
+	C4String * EnumerateOwnFuncs(C4String * prev = 0) const;
 	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
 	{ return Call(&Strings.P[k], pPars); }
 	C4Value Call(C4String * k, C4AulParSet *pPars=0);

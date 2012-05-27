@@ -54,7 +54,6 @@ C4AulScript::C4AulScript()
 
 	// prepare lists
 	Engine = NULL;
-	Func0 = FuncL = NULL;
 }
 
 C4AulScript::~C4AulScript()
@@ -76,12 +75,6 @@ void C4ScriptHost::Unreg()
 
 void C4AulScript::Clear()
 {
-	while (Func0)
-	{
-		C4AulFunc * f = Func0;
-		f->RemoveFromScript();
-		f->DecRef(); // see C4AulFunc::C4AulFunc
-	}
 	// reset flags
 	State = ASS_NONE;
 }

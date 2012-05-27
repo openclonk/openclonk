@@ -557,6 +557,18 @@ C4ValueArray * C4PropList::GetProperties() const
 	return a;
 }
 
+C4String * C4PropList::EnumerateOwnFuncs(C4String * prev) const
+{
+	const C4Property * p = prev ? Properties.Next(&Properties.Get(prev)) : Properties.First();
+	while (p)
+	{
+		if (p->Value.getFunction())
+			return p->Key;
+		p = Properties.Next(p);
+	}
+	return 0;
+}
+
 void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);

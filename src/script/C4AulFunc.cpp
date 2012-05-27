@@ -27,57 +27,22 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		Name(pName ? Strings.RegString(pName) : 0),
 		MapNext(NULL)
 {
-	AppendToScript(pOwner);
-	IncRef(); // see C4AulScript::Clear()
-}
-
-void C4AulFunc::AppendToScript(C4AulScript * pOwner)
-{
 	Owner = pOwner;
-	if ((Prev = Owner->FuncL))
-	{
-		Prev->Next = this;
-		Owner->FuncL = this;
-	}
-	else
-	{
-		Owner->Func0 = this;
-		Owner->FuncL = this;
-	}
-	Next = NULL;
 	assert(GetName() || Owner->Temporary);
 	// add to global lookuptable with this name
 	if (GetName())
 		Owner->Engine->FuncLookUp.Add(this, true);
 }
 
-void C4AulFunc::RemoveFromScript()
-{
-	if (Prev) Prev->Next = Next;
-	if (Next) Next->Prev = Prev;
-	if (Owner->Func0 == this) Owner->Func0 = Next;
-	if (Owner->FuncL == this) Owner->FuncL = Prev;
-	assert(Owner);
-	assert(Owner->Temporary || Name);
-	assert(!Owner->GetPropList() || Owner->GetPropList()->GetFunc(Name) != this);
-	if (GetName())
-		Owner->Engine->FuncLookUp.Remove(this);
-	Prev = 0;
-	Next = 0;
-	Owner = 0;
-}
-
 C4AulFunc::~C4AulFunc()
 {
-	// remove from list
-	if (Prev) Prev->Next = Next;
-	if (Next) Next->Prev = Prev;
 	if (Owner)
 	{
-		if (Owner->Func0 == this) Owner->Func0 = Next;
-		if (Owner->FuncL == this) Owner->FuncL = Prev;
+		C4AulScriptEngine * Engine = Owner->Engine;
+		if (!Engine)
+			Engine = &::ScriptEngine;
 		if (GetName())
-			Owner->Engine->FuncLookUp.Remove(this);
+			Engine->FuncLookUp.Remove(this);
 		if (Owner->GetPropList() && Name)
 		{
 			C4Value v;

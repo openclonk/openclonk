@@ -732,11 +732,26 @@ void C4ScriptHost::ClearCode()
 	// add one empty chunk to init CPos and for functions without code.
 	// For example, leftovers from a previous version of a reloaded script
 	AddBCC(AB_ERR);
-	C4AulFunc * f = Func0;
-	while (f)
+	if (Engine) for (C4String *pFn = Engine->GetPropList()->EnumerateOwnFuncs(); pFn; pFn = Engine->GetPropList()->EnumerateOwnFuncs(pFn))
 	{
-		f->SFunc()->CodePos = 0;
-		f = f->Next;
+		C4AulScriptFunc *pSFunc = Engine->GetPropList()->GetFunc(pFn)->SFunc();
+		while (pSFunc)
+		{
+			if (pSFunc->pOrgScript == this)
+				pSFunc->CodePos = 0;
+			pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
+		}
+	}
+	if (!GetPropList()) return;
+	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
+	{
+		C4AulScriptFunc *pSFunc = GetPropList()->GetFunc(pFn)->SFunc();
+		while (pSFunc)
+		{
+			assert(pSFunc->Owner == this);
+			pSFunc->CodePos = 0;
+			pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
+		}
 	}
 }
 
@@ -1495,6 +1510,52 @@ void C4AulParse::Parse_Function()
 	}
 	// add separator
 	AddBCC(AB_EOFN);
+
+	// dump bytecode
+	if (DEBUG_BYTECODE_DUMP && Type == PARSER)
+	{
+		fprintf(stderr, "%s:\n", Fn->GetName());
+		std::map<C4AulBCC *, int> labels;
+		int labeln = 0;
+		for (C4AulBCC *pBCC = Fn->GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
+		{
+			switch (pBCC->bccType)
+			{
+			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
+				labels[pBCC + pBCC->Par.i] = ++labeln; break;
+			default: break;
+			}
+		}
+		for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
+		{
+			C4AulBCCType eType = pBCC->bccType;
+			if (labels.find(pBCC) != labels.end())
+				fprintf(stderr, "%d:\n", labels[pBCC]);
+			fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
+			switch (eType)
+			{
+			case AB_FUNC:
+				fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
+			case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
+				fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
+			case AB_STRING:
+				fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
+			case AB_DEBUG: case AB_NIL: case AB_RETURN:
+			case AB_PAR:
+			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
+			case AB_ERR: case AB_EOFN: case AB_EOF:
+				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
+			case AB_CARRAY: case AB_CPROPLIST:
+				fprintf(stderr, "\t%p\n", reinterpret_cast<void *>(pBCC->Par.X)); break;
+			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
+				fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
+			default:
+				fprintf(stderr, "\t%d\n", pBCC->Par.i); break;
+			}
+			if (eType == AB_EOFN) break;
+		}
+	}
+
 	// Do not blame this function for script errors between functions
 	Fn = 0;
 	Shift();
@@ -1763,7 +1824,7 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 	// too many parameters?
 	if (sWarn && size > iMaxCnt && Type == PARSER)
 		Warn(FormatString("call to %s gives %d parameters, but only %d are used", sWarn, size, iMaxCnt).getData(), NULL);
-	// Balance stack
+	// Balance stack// FIXME: not for CALL/FUNC
 	if (size != iMaxCnt)
 		AddBCC(AB_STACK, iMaxCnt - size);
 	return size;
@@ -2237,7 +2298,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Fn->ParCount = C4AUL_MAX_Par;
 			// and for Par
 			Shift();
-			Parse_Params(1, C4AUL_Par);
+			Parse_Params(1, C4AUL_Par);//FIXME: don't use Parse_Params
 			AddBCC(AB_PAR);
 		}
 		else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
@@ -2900,10 +2961,6 @@ bool C4AulScript::Parse()
 
 bool C4ScriptHost::Parse()
 {
-	if (DEBUG_BYTECODE_DUMP)
-	{
-		fprintf(stderr, "parsing %s...\n", ScriptName.getData());
-	}
 	// check state
 	if (State != ASS_LINKED) return false;
 
@@ -2916,14 +2973,6 @@ bool C4ScriptHost::Parse()
 		// so their contents are not reachable
 		return true;
 	}
-
-	C4AulFunc * thisfuncs = Func0;
-	for (C4AulFunc *f = thisfuncs; f; f = f->Next)
-		if (f->GetName() && f->SFunc())
-		{
-			Engine->FuncLookUp.Remove(f);
-		}
-	Func0 = FuncL = 0;
 
 	C4PropList * p = GetPropList();
 
@@ -2954,16 +3003,7 @@ bool C4ScriptHost::Parse()
 			prop = (*s)->LocalValues.Next(prop);
 		}
 		if (*s == this)
-		{
-			C4AulFunc *f = thisfuncs, *n;
-			while (f)
-			{
-				n = f->Next;
-				f->AppendToScript(this);
-				f = n;
-			}
 			continue;
-		}
 		// definition appends
 		if (GetPropList() && GetPropList()->GetDef() && (*s)->GetPropList() && (*s)->GetPropList()->GetDef())
 			GetPropList()->GetDef()->IncludeDefinition((*s)->GetPropList()->GetDef());
@@ -2978,73 +3018,18 @@ bool C4ScriptHost::Parse()
 	{
 		state.SPos = (*s)->Script.getData();
 		state.pOrgScript = *s;
+		if (DEBUG_BYTECODE_DUMP)
+		{
+			fprintf(stderr, "parsing %s...\n", state.pOrgScript->ScriptName.getData());
+		}
 		state.Parse_Script();
 	}
 
 	// add eof chunk
 	AddBCC(AB_EOF);
 
-	// calc absolute code addresses for script funcs
-	for (C4AulFunc * f = Func0; f; f = f->Next)
-	{
-		C4AulScriptFunc * Fn = f->SFunc();
-		assert(Fn);
-		if (Fn)
-			assert(Fn->GetCodeOwner() == this);
-	}
-
 	// save line count
 	Engine->lineCnt += SGetLine(Script.getData(), Script.getPtr(Script.getLength()));
-
-	// dump bytecode
-	if (DEBUG_BYTECODE_DUMP)
-		for (C4AulFunc * f = Func0; f; f = f->Next)
-		{
-			C4AulScriptFunc *Fn = f->SFunc();
-			assert(Fn);
-			if (!Fn)
-				continue;
-			fprintf(stderr, "%s:\n", Fn->GetName());
-			std::map<C4AulBCC *, int> labels;
-			int labeln = 0;
-			for (C4AulBCC *pBCC = Fn->GetCode(); pBCC->bccType != AB_EOFN; pBCC++)
-			{
-				switch (pBCC->bccType)
-				{
-				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-					labels[pBCC + pBCC->Par.i] = ++labeln; break;
-				default: break;
-				}
-			}
-			for (C4AulBCC *pBCC = Fn->GetCode();; pBCC++)
-			{
-				C4AulBCCType eType = pBCC->bccType;
-				if (labels.find(pBCC) != labels.end())
-					fprintf(stderr, "%d:\n", labels[pBCC]);
-				fprintf(stderr, "\t%d\t%s", Fn->GetLineOfCode(pBCC), GetTTName(eType));
-				switch (eType)
-				{
-				case AB_FUNC:
-					fprintf(stderr, "\t%s\n", pBCC->Par.f->GetName()); break;
-				case AB_CALL: case AB_CALLFS: case AB_LOCALN: case AB_LOCALN_SET: case AB_PROP: case AB_PROP_SET:
-					fprintf(stderr, "\t%s\n", pBCC->Par.s->GetCStr()); break;
-				case AB_STRING:
-					fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
-				case AB_DEBUG: case AB_NIL: case AB_RETURN:
-				case AB_PAR:
-				case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
-				case AB_ERR: case AB_EOFN: case AB_EOF:
-					assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
-				case AB_CARRAY: case AB_CPROPLIST:
-					fprintf(stderr, "\t%p\n", reinterpret_cast<void *>(pBCC->Par.X)); break;
-				case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
-					fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
-				default:
-					fprintf(stderr, "\t%d\n", pBCC->Par.i); break;
-				}
-				if (eType == AB_EOFN) break;
-			}
-		}
 
 	// finished
 	State = ASS_PARSED;

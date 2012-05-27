@@ -70,10 +70,7 @@ public:
 
 protected:
 	C4RefCntPointer<C4String> Name; // function name
-	C4AulFunc *Prev, *Next; // linked list members
 	C4AulFunc *MapNext; // map member
-	void AppendToScript(C4AulScript *);
-	void RemoveFromScript();
 	virtual ~C4AulFunc();
 
 public:

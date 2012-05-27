@@ -238,7 +238,6 @@ public:
 	}
 	~C4AulDefFuncHelper()
 	{
-		assert(!Owner);
 	}
 	virtual C4V_Type* GetParType() { return ParType; }
 	virtual bool GetPublic() { return Public; }

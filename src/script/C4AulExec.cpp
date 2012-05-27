@@ -1064,8 +1064,6 @@ public:
 			p = pObj->Def;
 			LocalNamed = pObj->Def->Script.LocalNamed;
 		}
-		// FIXME: calls from definitions
-		ClearCode();
 		this->stringTable = stringTable;
 	}
 	bool Delete() { return true; }
@@ -1115,8 +1113,8 @@ void C4AulScript::ResetProfilerTimes()
 {
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if ((pSFunc = pFn->SFunc()))
+	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
 			pSFunc->tProfileTime = 0;
 }
 
@@ -1124,8 +1122,8 @@ void C4AulScript::CollectProfilerTimes(C4AulProfiler &rProfiler)
 {
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if ((pSFunc = pFn->SFunc()))
+	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
 			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
 }
 

@@ -317,7 +317,6 @@ public:
 protected:
 	C4LangStringTable *stringTable;	
 
-	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
 
 	C4AulScriptState State; // script state

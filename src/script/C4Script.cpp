@@ -158,7 +158,6 @@ C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef):
 
 C4AulDefFunc::~C4AulDefFunc()
 {
-	assert(!Owner);
 }
 
 C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)

@@ -128,21 +128,6 @@ void C4ScriptHost::UnLink()
 		p->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	}
 
-	// delete included/appended functions
-	C4AulFunc* pFunc = FuncL;
-	while (pFunc)
-	{
-		C4AulFunc* pNextFunc = pFunc->Prev;
-
-		if (pFunc->SFunc() && pFunc->Owner != Engine && pFunc->Owner != pFunc->SFunc()->pOrgScript)
-		{
-			pFunc->RemoveFromScript();
-			pFunc->DecRef();
-		}
-
-		pFunc = pNextFunc;
-	}
-
 	// includes will have to be re-resolved now
 	IncludesResolved = false;
 
