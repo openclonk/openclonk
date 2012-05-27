@@ -25,8 +25,7 @@
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		iRefCnt(0),
 		Name(pName ? Strings.RegString(pName) : 0),
-		MapNext(NULL),
-		OverloadedBy (NULL)
+		MapNext(NULL)
 {
 	AppendToScript(pOwner);
 	IncRef(); // see C4AulScript::Clear()

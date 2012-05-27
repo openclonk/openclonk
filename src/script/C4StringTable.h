@@ -215,6 +215,18 @@ public:
 		}
 		return 0;
 	}
+	void Swap(C4Set<T> * S2)
+	{
+		unsigned int Capacity2 = S2->Capacity;
+		unsigned int Size2 = S2->Size;
+		T * Table2 = S2->Table;
+		S2->Capacity = Capacity;
+		S2->Size = Size;
+		S2->Table = Table;
+		Capacity = Capacity2;
+		Size = Size2;
+		Table = Table2;
+	}
 };
 
 template<> template<>

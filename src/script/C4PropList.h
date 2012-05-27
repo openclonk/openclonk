@@ -126,6 +126,7 @@ private:
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
+	friend class C4ScriptHost;
 public:
 	int32_t Status;
 };

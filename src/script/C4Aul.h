@@ -186,6 +186,7 @@ class C4AulScriptFunc : public C4AulFunc
 {
 public:
 	C4AulFunc *OwnerOverloaded; // overloaded owner function; if present
+	void SetOverloaded(C4AulFunc *);
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
 	int CodePos; // code pos
@@ -201,9 +202,9 @@ public:
 
 	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
 	C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
+	~C4AulScriptFunc();
 
 	void ParseFn(C4AulScriptContext* context = NULL);
-	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
 	virtual int GetParCount() { return ParCount; }

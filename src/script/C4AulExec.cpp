@@ -750,8 +750,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!pFunc)
 					throw new C4AulExecError(FormatString("'->': no function \"%s\" in object \"%s\"", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
 
-				assert(!pFunc->OverloadedBy);
-
 				// Save current position
 				pCurCtx->CPos = pCPos;
 				assert(pCurCtx->Func->GetCode() <= pCPos);

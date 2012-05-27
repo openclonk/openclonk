@@ -148,6 +148,18 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &Fro
 		ParType[i] = FromFunc.ParType[i];
 }
 
+C4AulScriptFunc::~C4AulScriptFunc()
+{
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+}
+
+void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
+{
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	OwnerOverloaded = f;
+	if (f) f->IncRef();
+}
+
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
@@ -203,21 +215,6 @@ void C4AulScriptEngine::Clear()
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 }
-
-
-void C4AulScriptEngine::UnLink()
-{
-	// unlink scripts
-	for (C4ScriptHost *s = Child0; s; s = s->Next)
-		s->UnLink();
-	C4AulScript::UnLink();
-	// Do not clear global variables and constants, because they are registered by the
-	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
-	// variable or constant at runtime by removing it from the script.
-	//GlobalNamedNames.Reset();
-	//GlobalConstNames.Reset();
-}
-
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
 {

@@ -116,43 +116,23 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	return true;
 }
 
-void C4AulScript::LinkFunctions()
-{
-	for (C4AulFunc *f = Func0; f; f = f->Next)
-	{
-		C4AulScriptFunc *sf = f->SFunc();
-		if (!sf) continue;
-		sf->OwnerOverloaded = GetPropList()->GetFunc(sf->Name);
-		if (sf->OwnerOverloaded && sf->OwnerOverloaded->Owner == this)
-			sf->OwnerOverloaded->OverloadedBy = sf;
-		GetPropList()->SetPropertyByS(sf->Name, C4VFunction(sf));
-	}
-}
-
 void C4ScriptHost::UnLink()
 {
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;
 
 	C4PropList * p = GetPropList();
-	if (p) p->C4PropList::Thaw();
+	if (p)
+	{
+		p->C4PropList::Clear();
+		p->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
+	}
 
 	// delete included/appended functions
 	C4AulFunc* pFunc = FuncL;
 	while (pFunc)
 	{
 		C4AulFunc* pNextFunc = pFunc->Prev;
-
-		// clear stuff that's set in LinkFunctions
-		pFunc->UnLink();
-		C4Value v;
-		if (p && p->GetFunc(pFunc->Name) == pFunc && pFunc->SFunc())
-		{
-			p->ResetProperty(pFunc->Name);
-			C4AulFunc * overloaded = pFunc->SFunc()->OwnerOverloaded;
-			if (overloaded && overloaded != p->GetFunc(pFunc->Name))
-				p->SetPropertyByS(pFunc->Name, C4VFunction(overloaded));
-		}
 
 		if (pFunc->SFunc() && pFunc->Owner != Engine && pFunc->Owner != pFunc->SFunc()->pOrgScript)
 		{
@@ -169,11 +149,18 @@ void C4ScriptHost::UnLink()
 	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
 }
 
-void C4AulScriptFunc::UnLink()
+void C4AulScriptEngine::UnLink()
 {
-	OwnerOverloaded = NULL;
-
-	C4AulFunc::UnLink();
+	// unlink scripts
+	for (C4ScriptHost *s = Child0; s; s = s->Next)
+		s->UnLink();
+	GetPropList()->Thaw();
+	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
+	// Do not clear global variables and constants, because they are registered by the
+	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
+	// variable or constant at runtime by removing it from the script.
+	//GlobalNamedNames.Reset();
+	//GlobalConstNames.Reset();
 }
 
 bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
@@ -193,9 +180,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// resolve includes
 		for (C4ScriptHost *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
-
-		// put script functions into the proplist
-		LinkFunctions();
 
 		// parse the scripts to byte code
 		for (C4ScriptHost *s = Child0; s; s = s->Next)

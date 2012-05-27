@@ -77,8 +77,6 @@ protected:
 	virtual ~C4AulFunc();
 
 public:
-	C4AulFunc *OverloadedBy; // function by which this one is overloaded
-
 	virtual C4AulScriptFunc *SFunc() { return NULL; } // type check func...
 
 	// Wether this function should be visible to players
@@ -91,7 +89,6 @@ public:
 		return Exec(p, pPars->Par, fPassErrors);
 	}
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false) = 0;
-	virtual void UnLink() { OverloadedBy = NULL; }
 };
 
 #endif

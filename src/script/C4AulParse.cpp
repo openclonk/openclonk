@@ -770,11 +770,9 @@ bool C4ScriptHost::Preparse()
 	// clear stuff
 	Includes.clear(); Appends.clear();
 
-	if (GetPropList())
-		{
-		GetPropList()->C4PropList::Clear();
-		GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
-		}
+	GetPropList()->C4PropList::Clear();
+	GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
+	LocalValues.Clear();
 
 	// reset code
 	ClearCode();
@@ -784,6 +782,9 @@ bool C4ScriptHost::Preparse()
 
 	// #include will have to be resolved now...
 	IncludesResolved = false;
+
+	// Parse will write the properties back after the ones from included scripts
+	GetPropList()->Properties.Swap(&LocalValues);
 
 	// return success
 	C4AulScript::State = ASS_PREPARSED;
@@ -1389,22 +1390,24 @@ void C4AulParse::Parse_Function()
 	else
 		owner = a;
 	Fn = 0;
-	C4AulFunc * f = owner->Func0;
+	C4AulFunc * f = owner->GetPropList()->GetFunc(Idtf);
 	while (f)
 	{
-		if (SEqual(f->GetName(), Idtf) && f->SFunc() && f->SFunc()->pOrgScript == pOrgScript)
+		if (f->SFunc() && f->SFunc()->pOrgScript == pOrgScript && f->Owner == owner)
 		{
 			if (Fn)
 				//throw new C4AulParseError(this, "Duplicate function ", Idtf);
 				Warn("Duplicate function %s", Idtf);
 			Fn = f->SFunc();
 		}
-		f = f->Next;
+		f = f->SFunc() ? f->SFunc()->OwnerOverloaded : 0;
 	}
 	// first preparser run or a new func in a reloaded script
 	if (!Fn && Type == PREPARSER)
 	{
 		Fn = new C4AulScriptFunc(owner, pOrgScript, Idtf, SPos);
+		Fn->SetOverloaded(owner->GetPropList()->GetFunc(Fn->Name));
+		owner->GetPropList()->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 	}
 	assert(Fn);
 	if (Type == PARSER)
@@ -1898,8 +1901,9 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 			throw new C4AulParseError(this, "internal error: constant proplist is not static");
 		if (p->GetParent() != parent || p->GetParentKeyName() != Name)
 		{
-			// the proplist was overwritten by one in another script
-			// create a temporary replacement
+			// the proplist is from another definition, so don't change it
+			// create a replacement for this defnition
+			// FIXME: shouldn't the copy be made in parse, like functions are handled?
 			v.SetPropList(C4PropList::NewAnon(NULL, parent, Name));
 			p = v.getPropList()->IsStatic();
 		}
@@ -2921,8 +2925,34 @@ bool C4ScriptHost::Parse()
 		}
 	Func0 = FuncL = 0;
 
+	C4PropList * p = GetPropList();
+
 	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{
+		// append all funcs and local variable initializations
+		const C4Property * prop = (*s)->LocalValues.First();
+		while (prop)
+		{
+			switch(prop->Value.GetType())
+			{
+			case C4V_Function:
+				{
+					C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
+					assert(sf->pOrgScript == *s);
+					C4AulScriptFunc *sfc;
+					if (sf->pOrgScript != this)
+						sfc = new C4AulScriptFunc(this, *sf);
+					else
+						sfc = sf;
+					sfc->SetOverloaded(p->GetFunc(sf->Name));
+					p->SetPropertyByS(prop->Key, C4VFunction(sfc));
+				}
+				break;
+			default:
+				p->SetPropertyByS(prop->Key, prop->Value);
+			}
+			prop = (*s)->LocalValues.Next(prop);
+		}
 		if (*s == this)
 		{
 			C4AulFunc *f = thisfuncs, *n;
@@ -2937,21 +2967,10 @@ bool C4ScriptHost::Parse()
 		// definition appends
 		if (GetPropList() && GetPropList()->GetDef() && (*s)->GetPropList() && (*s)->GetPropList()->GetDef())
 			GetPropList()->GetDef()->IncludeDefinition((*s)->GetPropList()->GetDef());
-		// append all funcs
-		C4AulScriptFunc *sf;
-		for (C4AulFunc *f = (*s)->Func0; f; f = f->Next)
-			// funcs from other scripts get appended directly from their script
-			if ((sf = f->SFunc()) && sf->pOrgScript == *s)
-			{
-				// append: create copy
-				C4AulScriptFunc *sfc = new C4AulScriptFunc(this, *sf);
-			}
 		// copy local var definitions
 		for (int ivar = 0; ivar < (*s)->LocalNamed.iSize; ivar ++)
 			LocalNamed.AddName((*s)->LocalNamed.pNames[ivar]);
 	}
-
-	LinkFunctions();
 
 	// parse
 	C4AulParse state(this, C4AulParse::PARSER);
