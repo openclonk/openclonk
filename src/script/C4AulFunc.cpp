@@ -31,7 +31,7 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 	assert(GetName() || Owner->Temporary);
 	// add to global lookuptable with this name
 	if (GetName())
-		Owner->Engine->FuncLookUp.Add(this, true);
+		Owner->Engine->FuncLookUp.Add(this);
 }
 
 C4AulFunc::~C4AulFunc()

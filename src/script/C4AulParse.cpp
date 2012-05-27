@@ -1024,7 +1024,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 	case AB_CALL: case AB_CALLFS:
 	{
 		C4String * pName = a->GetLastCode()->Par.s;
-		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName->GetCStr());
+		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName);
 		bool allwarn = true;
 		from = C4V_Any;
 		while (pFunc2 && allwarn)
@@ -2629,9 +2629,11 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 			Shift();
 			// expect identifier of called function now
 			if (TokenType != ATT_IDTF) throw new C4AulParseError(this, "expecting func name after '->'");
-			pFunc = a->Engine->GetFirstFunc(Idtf);
 			if (Type == PARSER)
+			{
 				pName = ::Strings.RegString(Idtf);
+				pFunc = a->Engine->GetFirstFunc(pName);
+			}
 			Shift();
 			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
 			AddBCC(eCallType, reinterpret_cast<intptr_t>(pName));

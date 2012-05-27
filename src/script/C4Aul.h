@@ -227,15 +227,15 @@ class C4AulFuncMap
 public:
 	C4AulFuncMap();
 	~C4AulFuncMap();
-	C4AulFunc * GetFirstFunc(const char * Name);
+	C4AulFunc * GetFirstFunc(C4String * Name);
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After);
 private:
-	C4AulFunc ** Funcs;
+	enum { HashSize = 1025 };
+	C4AulFunc * Funcs[HashSize];
 	int FuncCnt;
-	int Capacity;
 	static unsigned int Hash(const char * Name);
 protected:
-	void Add(C4AulFunc * func, bool bAtEnd = true);
+	void Add(C4AulFunc * func);
 	void Remove(C4AulFunc * func);
 	friend class C4AulFunc;
 	friend class C4ScriptHost;
@@ -356,7 +356,7 @@ public:
 	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
-	C4AulFunc * GetFirstFunc(const char * Name)
+	C4AulFunc * GetFirstFunc(C4String * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }

@@ -274,16 +274,15 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 }
 
 /*--- C4AulFuncMap ---*/
-static const size_t CapacityInc = 1024;
 
-C4AulFuncMap::C4AulFuncMap(): Funcs(new C4AulFunc*[CapacityInc]), FuncCnt(0), Capacity(CapacityInc)
+C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
 {
-	memset(Funcs, 0, sizeof (C4AulFunc *) * Capacity);
+	memset(Funcs, 0, sizeof (C4AulFunc *) * HashSize);
 }
 
 C4AulFuncMap::~C4AulFuncMap()
 {
-	delete[] Funcs;
+	assert(!FuncCnt);
 }
 
 unsigned int C4AulFuncMap::Hash(const char * name)
@@ -295,11 +294,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
 {
 	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	while (Func && !SEqual(Name, Func->GetName()))
+	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
+	while (Func && Name->GetCStr() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
@@ -307,60 +306,25 @@ C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 C4AulFunc * C4AulFuncMap::GetNextSNFunc(const C4AulFunc * After)
 {
 	C4AulFunc * Func = After->MapNext;
-	while (Func && !SEqual(After->GetName(), Func->GetName()))
+	while (Func && After->GetName() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
 
-void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
+void C4AulFuncMap::Add(C4AulFunc * func)
 {
-	if (++FuncCnt > Capacity)
-	{
-		int NCapacity = Capacity + CapacityInc;
-		C4AulFunc ** NFuncs = new C4AulFunc*[NCapacity];
-		memset(NFuncs, 0, sizeof (C4AulFunc *) * NCapacity);
-		for (int i = 0; i < Capacity; ++i)
-		{
-			while (Funcs[i])
-			{
-				// Get a pointer to the bucket
-				C4AulFunc ** pNFunc = &(NFuncs[Hash(Funcs[i]->GetName()) % NCapacity]);
-				// get a pointer to the end of the linked list
-				while (*pNFunc) pNFunc = &((*pNFunc)->MapNext);
-				// Move the func over
-				*pNFunc = Funcs[i];
-				// proceed with the next list member
-				Funcs[i] = Funcs[i]->MapNext;
-				// Terminate the linked list
-				(*pNFunc)->MapNext = 0;
-			}
-		}
-		Capacity = NCapacity;
-		delete [] Funcs;
-		Funcs = NFuncs;
-	}
+	++FuncCnt;
 	// Get a pointer to the bucket
-	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % Capacity]);
-	if (bAtStart)
-	{
-		// move the current first to the second position
-		func->MapNext = *pFunc;
-	}
-	else
-	{
-		// get a pointer to the end of the linked list
-		while (*pFunc)
-		{
-			pFunc = &((*pFunc)->MapNext);
-		}
-	}
+	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % HashSize]);
+	// move the current first to the second position
+	func->MapNext = *pFunc;
 	// Add the func
 	*pFunc = func;
 }
 
 void C4AulFuncMap::Remove(C4AulFunc * func)
 {
-	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % Capacity];
+	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % HashSize];
 	while (*pFunc != func)
 	{
 		pFunc = &((*pFunc)->MapNext);
