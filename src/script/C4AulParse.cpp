@@ -167,8 +167,8 @@ public:
 	void Parse_Local();
 	void Parse_Static();
 	void Parse_Const();
-	C4Value Parse_ConstExpression(bool really, const C4PropListStatic * parent, C4String * Name);
-	C4Value Parse_ConstPropList(bool really, const C4PropListStatic * parent, C4String * Name);
+	C4Value Parse_ConstExpression(C4PropListStatic * parent, C4String * Name);
+	C4Value Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name);
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
@@ -1869,23 +1869,49 @@ void C4AulParse::Parse_PropList()
 	Shift();
 }
 
-C4Value C4AulParse::Parse_ConstPropList(bool really, const C4PropListStatic * parent, C4String * Name)
+C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name)
 {
+	if (!Name)
+		throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
 	C4PropListStatic * p;
-	Shift();
-	if (really)
+	if (Type == PREPARSER)
 	{
-		if (!Name)
-			throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
 		p = C4PropList::NewAnon(NULL, parent, Name);
 	}
+	else
+	{
+		C4Value v;
+		bool r;
+		if (parent)
+			r = parent->GetPropertyByS(Name, &v);
+		else
+			r = a->Engine->GetGlobalConstant(Name->GetCStr(), &v);
+		if (!r || !v.getPropList())
+		{
+			// the proplist couldn't be parsed or was overwritten by a later constant.
+			// create a temporary replacement
+			v.SetPropList(C4PropList::NewAnon(NULL, parent, Name));
+		}
+		p = v.getPropList()->IsStatic();
+		if (!p)
+			throw new C4AulParseError(this, "internal error: constant proplist is not static");
+		if (p->GetParent() != parent || p->GetParentKeyName() != Name)
+		{
+			// the proplist was overwritten by one in another script
+			// create a temporary replacement
+			v.SetPropList(C4PropList::NewAnon(NULL, parent, Name));
+			p = v.getPropList()->IsStatic();
+		}
+		// In case of script reloads
+		p->Thaw();
+	}
+	Shift();
 	while (TokenType != ATT_BLCLOSE)
 	{
 		C4String * pKey;
 		if (TokenType == ATT_IDTF)
 		{
-			if (really)
-				pKey = Strings.RegString(Idtf);
+			pKey = Strings.RegString(Idtf);
 			Shift();
 		}
 		else if (TokenType == ATT_STRING)
@@ -1897,18 +1923,15 @@ C4Value C4AulParse::Parse_ConstPropList(bool really, const C4PropListStatic * pa
 		if (TokenType != ATT_COLON && TokenType != ATT_SET)
 			UnexpectedToken("':' or '='");
 		Shift();
-		if (really)
-			p->SetPropertyByS(pKey, Parse_ConstExpression(really, p, pKey));
-		else
-			Parse_ConstExpression(really, NULL, NULL);
+		Parse_ConstExpression(p, pKey);
 		if (TokenType == ATT_COMMA)
 			Shift();
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 	}
-	if (really)
+	if (Type == PARSER)
 		p->Freeze();
-	return really ? C4VPropList(p) : C4Value();
+	return C4VPropList(p);
 }
 
 void C4AulParse::Parse_DoWhile()
@@ -2617,16 +2640,9 @@ void C4AulParse::Parse_Local()
 			if (!a->GetPropList())
 				throw new C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
-			// register as constant
-			if (Type == PARSER)
-			{
-				C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
-				a->GetPropList()->SetPropertyByS(key, Parse_ConstExpression(true, a->GetPropList()->IsStatic(), key));
-			}
-			else
-			{
-				Parse_ConstExpression(false, NULL, NULL);
-			}
+			C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
+			assert(a->GetPropList()->IsStatic());
+			Parse_ConstExpression(a->GetPropList()->IsStatic(), key);
 		}
 		switch (TokenType)
 		{
@@ -2693,7 +2709,7 @@ void C4AulParse::Parse_Static()
 	}
 }
 
-C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * parent, C4String * Name)
+C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * Name)
 {
 	C4Value r;
 	switch (TokenType)
@@ -2709,7 +2725,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 		else if (SEqual(Idtf, C4AUL_Nil))
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
-			r = Parse_ConstPropList(really, parent, Name);
+			r = Parse_ConstPropList(parent, Name);
 		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
 			UnexpectedToken("constant value");
 		break;
@@ -2717,7 +2733,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 		{
 			Shift();
 			// Create an array
-			if (really)
+			if (Type == PARSER)
 				r.SetArray(new C4ValueArray());
 			int size = 0;
 			bool fDone = false;
@@ -2729,7 +2745,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 					// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 					if (size > 0)
 					{
-						if (really)
+						if (Type == PARSER)
 							r._getArray()->SetItem(size, C4VNull);
 						++size;
 					}
@@ -2739,7 +2755,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 				case ATT_COMMA:
 				{
 					// got no parameter before a ","? then push nil
-					if (really)
+					if (Type == PARSER)
 						r._getArray()->SetItem(size, C4VNull);
 					Shift();
 					++size;
@@ -2747,10 +2763,10 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 				}
 				default:
 				{
-					if (really)
-						r._getArray()->SetItem(size, Parse_ConstExpression(really, NULL, NULL));
+					if (Type == PARSER)
+						r._getArray()->SetItem(size, Parse_ConstExpression(NULL, NULL));
 					else
-						Parse_ConstExpression(really, NULL, NULL);
+						Parse_ConstExpression(NULL, NULL);
 					++size;
 					if (TokenType == ATT_COMMA)
 						Shift();
@@ -2768,7 +2784,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 		}
 	case ATT_BLOPEN:
 		{
-			r = Parse_ConstPropList(really, parent, Name);
+			r = Parse_ConstPropList(parent, Name);
 			break;
 		}
 	case ATT_OPERATOR:
@@ -2805,9 +2821,17 @@ C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * 
 		if (C4ScriptOpMap[OpID].Code == AB_BitOr)
 		{
 			Shift();
-			C4Value r2 = Parse_ConstExpression(really, NULL, NULL);
+			C4Value r2 = Parse_ConstExpression(NULL, NULL);
 			r.SetInt(r.getInt() | r2.getInt());
 		}
+	}
+	// store as constant or property
+	if (Name)
+	{
+		if (parent)
+			parent->SetPropertyByS(Name, r);
+		else
+			a->Engine->RegisterGlobalConstant(Name->GetCStr(), r);
 	}
 	return r;
 }
@@ -2839,12 +2863,8 @@ void C4AulParse::Parse_Const()
 		// So allow only simple constants for now.
 		Shift();
 
-		// register as constant
 		C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
-		if (Type == PREPARSER)
-			a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression(true, NULL, key));
-		else
-			Parse_ConstExpression(false, NULL, NULL);
+		Parse_ConstExpression(NULL, key);
 
 		switch (TokenType)
 		{

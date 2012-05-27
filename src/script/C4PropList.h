@@ -177,6 +177,8 @@ public:
 	virtual C4PropListStatic * IsStatic() { return this; }
 	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
 	StdStrBuf GetDataString() const;
+	const C4PropListStatic * GetParent() { return Parent; }
+	const C4String * GetParentKeyName() { return ParentKeyName; }
 protected:
 	const C4PropListStatic * Parent;
 	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in
