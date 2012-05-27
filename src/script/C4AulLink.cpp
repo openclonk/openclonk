@@ -30,7 +30,7 @@
 
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
-bool C4AulScript::ResolveAppends(C4DefList *rDefs)
+bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 {
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
@@ -69,7 +69,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 	return true;
 }
 
-bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
+bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 {
 	// Had been preparsed?
 	if (State != ASS_PREPARSED) return false;
@@ -91,7 +91,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )
-			if (!((C4AulScript &)Def->Script).IncludesResolved)
+			if (!Def->Script.IncludesResolved)
 				if (!Def->Script.ResolveIncludes(rDefs))
 					continue; // skip this #include
 
@@ -129,7 +129,7 @@ void C4AulScript::LinkFunctions()
 	}
 }
 
-void C4AulScript::UnLink()
+void C4ScriptHost::UnLink()
 {
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
 	if (Temporary) return;

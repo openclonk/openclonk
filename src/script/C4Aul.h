@@ -288,7 +288,6 @@ public:
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	C4ValueMapNames LocalNamed;
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	virtual C4PropList * GetPropList() { return 0; }
@@ -321,16 +320,7 @@ protected:
 	C4AulScriptEngine *Engine; //owning engine
 
 	C4AulScriptState State; // script state
-	bool Resolving; // set while include-resolving, to catch circular includes
 
-	std::list<C4ID> Includes; // include list
-	std::list<C4ID> Appends; // append list
-
-	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
-	bool ResolveAppends(C4DefList *rDefs); // resolve appends
-	void LinkFunctions();
-	bool IncludesResolved;
-	virtual void UnLink(); // reset to unlinked state
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();
 

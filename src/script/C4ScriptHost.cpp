@@ -39,6 +39,12 @@ C4ScriptHost::C4ScriptHost()
 	LastCode = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
+	LocalNamed.Reset();
+	// prepare include list
+	IncludesResolved = false;
+	Resolving=false;
+	Includes.clear();
+	Appends.clear();
 }
 C4ScriptHost::~C4ScriptHost()
 {
@@ -54,6 +60,9 @@ void C4ScriptHost::Clear()
 	ClearCode();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
+	// remove includes
+	Includes.clear();
+	Appends.clear();
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -130,9 +139,9 @@ C4PropList * C4ExtraScriptHost::GetPropList()
 
 /*--- C4DefScriptHost ---*/
 
-bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
+bool C4DefScriptHost::Parse()
 {
-	bool r = C4ScriptHost::Load(g, f, l, t);
+	bool r = C4ScriptHost::Parse();
 	assert(Def);
 
 	// Check category
@@ -157,7 +166,7 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 			case C4D_Living | C4D_Foreground: Plane = 1400; break;
 			case C4D_Object | C4D_Foreground: Plane = 1500; break;
 			default:
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->id.ToString());
 				gotplane = false;
 				break;
 		}
@@ -165,7 +174,7 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	}
 	if (!Def->GetPlane())
 	{
-		DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->id.ToString());
 		Def->SetProperty(P_Plane, C4VInt(1));
 	}
 	return r;

@@ -48,19 +48,13 @@ C4AulScript::C4AulScript()
 {
 	// not compiled
 	State = ASS_NONE;
-	IncludesResolved = false;
 
 	// defaults
-	Resolving=false;
 	Temporary = false;
-	LocalNamed.Reset();
 
 	// prepare lists
 	Engine = NULL;
 	Func0 = FuncL = NULL;
-	// prepare include list
-	Includes.clear();
-	Appends.clear();
 }
 
 C4AulScript::~C4AulScript()
@@ -82,9 +76,6 @@ void C4ScriptHost::Unreg()
 
 void C4AulScript::Clear()
 {
-	// remove includes
-	Includes.clear();
-	Appends.clear();
 	while (Func0)
 	{
 		C4AulFunc * f = Func0;
