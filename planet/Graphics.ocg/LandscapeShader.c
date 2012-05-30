@@ -11,7 +11,7 @@ uniform vec2 resolution;
 
 // Use sampler if the GPU doesn't support enough uniforms to
 // get the matMap as an array
-#if GL_MAX_FRAGMENT_UNIFORM_COMPONENTS < 259
+#if MAX_FRAGMENT_UNIFORM_COMPONENTS < 259
 #define BROKEN_ARRAYS_WORKAROUND
 #endif
 

@@ -550,9 +550,9 @@ GLhandleARB C4LandscapeRenderGL::CreateShader(GLenum iShaderType, const char *sz
 	// Get number of available uniforms from driver
 	GLint max_uniforms = 0;
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, &max_uniforms);
-	Version.AppendFormat("#define GL_MAX_FRAGMENT_UNIFORM_COMPONENTS %d\n", max_uniforms);
+	Version.AppendFormat("#define MAX_FRAGMENT_UNIFORM_COMPONENTS %d\n", max_uniforms);
 	glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, &max_uniforms);
-	Version.AppendFormat("#define GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", max_uniforms);
+	Version.AppendFormat("#define MAX_VERTEX_UNIFORM_COMPONENTS %d\n", max_uniforms);
 
 	// Build code
 	const char *szCodes[C4LR_ShaderWorkaroundCount + 2];
