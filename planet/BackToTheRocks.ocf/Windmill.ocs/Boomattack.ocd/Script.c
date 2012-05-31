@@ -64,9 +64,9 @@ public func IsProjectileTarget(target,shooter)
 
 public func OnProjectileHit(object shot)
 {
-	DoFireworks();
 	var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
 	if(gol)	gol->IncShotScore(shot->GetController());
+	DoFireworks();
 	return 1;
 }
 
