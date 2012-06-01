@@ -428,7 +428,7 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 			case C4MCV_ScriptFunc:
 			{
 				// get script func of main script
-				C4AulFunc *pSFunc = ::GameScript.ScenPropList->GetFunc(StrPar);
+				C4AulFunc *pSFunc = ::GameScript.ScenPropList._getPropList()->GetFunc(StrPar);
 				if (!pSFunc) throw C4MCParserErr(pParser, C4MCErr_SFuncNotFound, StrPar);
 				// add to main
 				Target.As<C4MCCallbackArray*>() = new C4MCCallbackArray(pSFunc, MapCreator);

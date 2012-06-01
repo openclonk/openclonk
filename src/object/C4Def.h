@@ -102,7 +102,7 @@ C4D_Load_Temporary = 1024;
 #define C4D_Blit_Additive   1
 #define C4D_Blit_ModAdd     2
 
-class C4Def: public C4PropList
+class C4Def: public C4PropListStatic
 {
 public:
 	C4ID id;
@@ -213,7 +213,7 @@ public:
 	void Synchronize();
 	virtual C4Def const * GetDef() const { return this; }	
 	virtual C4Def * GetDef() { return this; }
-	virtual bool IsDef() const { return true; }
+	virtual bool Delete() { return false; }
 protected:
 	bool LoadActMap(C4Group &hGroup);
 	void CrossMapActMap();

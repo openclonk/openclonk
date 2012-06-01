@@ -99,11 +99,11 @@ public:
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
-	virtual C4PropList * GetPropList() { return ScenPrototype; }
+	virtual C4PropList * GetPropList() { return ScenPrototype._getPropList(); }
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
-	C4PropList * ScenPropList;
-	C4PropList * ScenPrototype;
+	C4Value ScenPropList;
+	C4Value ScenPrototype;
 };
 
 extern C4GameScriptHost GameScript;

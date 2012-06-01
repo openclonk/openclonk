@@ -252,7 +252,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def(): Script(this), C4PropList(ScriptEngine.GetPropList())
+C4Def::C4Def(): Script(this), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
 {
 	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
@@ -363,6 +363,7 @@ bool C4Def::Load(C4Group &hGroup,
 
 	// Register ID with script engine
 	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
+	ParentKeyName = ::Strings.RegString(id.ToString());
 
 	// Read script
 	if (dwLoadWhat & C4D_Load_Script)

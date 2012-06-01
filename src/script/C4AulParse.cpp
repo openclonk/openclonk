@@ -167,8 +167,8 @@ public:
 	void Parse_Local();
 	void Parse_Static();
 	void Parse_Const();
-	C4Value Parse_ConstExpression(bool really);
-	C4Value Parse_ConstPropList(bool really);
+	C4Value Parse_ConstExpression(bool really, const C4PropListStatic * parent, C4String * Name);
+	C4Value Parse_ConstPropList(bool really, const C4PropListStatic * parent, C4String * Name);
 
 	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
@@ -1869,12 +1869,16 @@ void C4AulParse::Parse_PropList()
 	Shift();
 }
 
-C4Value C4AulParse::Parse_ConstPropList(bool really)
+C4Value C4AulParse::Parse_ConstPropList(bool really, const C4PropListStatic * parent, C4String * Name)
 {
-	C4Value r;
+	C4PropListStatic * p;
 	Shift();
 	if (really)
-		r.SetPropList(C4PropList::NewAnon());
+	{
+		if (!Name)
+			throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
+		p = C4PropList::NewAnon(NULL, parent, Name);
+	}
 	while (TokenType != ATT_BLCLOSE)
 	{
 		C4String * pKey;
@@ -1894,17 +1898,17 @@ C4Value C4AulParse::Parse_ConstPropList(bool really)
 			UnexpectedToken("':' or '='");
 		Shift();
 		if (really)
-			r._getPropList()->SetPropertyByS(pKey, Parse_ConstExpression(really));
+			p->SetPropertyByS(pKey, Parse_ConstExpression(really, p, pKey));
 		else
-			Parse_ConstExpression(really);
+			Parse_ConstExpression(really, NULL, NULL);
 		if (TokenType == ATT_COMMA)
 			Shift();
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 	}
 	if (really)
-		r._getPropList()->Freeze();
-	return r;
+		p->Freeze();
+	return really ? C4VPropList(p) : C4Value();
 }
 
 void C4AulParse::Parse_DoWhile()
@@ -2615,9 +2619,14 @@ void C4AulParse::Parse_Local()
 			Shift();
 			// register as constant
 			if (Type == PARSER)
-				a->GetPropList()->SetPropertyByS(Strings.RegString(Name), Parse_ConstExpression(true));
+			{
+				C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
+				a->GetPropList()->SetPropertyByS(key, Parse_ConstExpression(true, a->GetPropList()->IsStatic(), key));
+			}
 			else
-				Parse_ConstExpression(false);
+			{
+				Parse_ConstExpression(false, NULL, NULL);
+			}
 		}
 		switch (TokenType)
 		{
@@ -2684,7 +2693,7 @@ void C4AulParse::Parse_Static()
 	}
 }
 
-C4Value C4AulParse::Parse_ConstExpression(bool really)
+C4Value C4AulParse::Parse_ConstExpression(bool really, const C4PropListStatic * parent, C4String * Name)
 {
 	C4Value r;
 	switch (TokenType)
@@ -2700,7 +2709,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really)
 		else if (SEqual(Idtf, C4AUL_Nil))
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
-			r = Parse_ConstPropList(really);
+			r = Parse_ConstPropList(really, parent, Name);
 		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
 			UnexpectedToken("constant value");
 		break;
@@ -2739,9 +2748,9 @@ C4Value C4AulParse::Parse_ConstExpression(bool really)
 				default:
 				{
 					if (really)
-						r._getArray()->SetItem(size, Parse_ConstExpression(really));
+						r._getArray()->SetItem(size, Parse_ConstExpression(really, NULL, NULL));
 					else
-						Parse_ConstExpression(really);
+						Parse_ConstExpression(really, NULL, NULL);
 					++size;
 					if (TokenType == ATT_COMMA)
 						Shift();
@@ -2759,7 +2768,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really)
 		}
 	case ATT_BLOPEN:
 		{
-			r = Parse_ConstPropList(really);
+			r = Parse_ConstPropList(really, parent, Name);
 			break;
 		}
 	case ATT_OPERATOR:
@@ -2796,7 +2805,7 @@ C4Value C4AulParse::Parse_ConstExpression(bool really)
 		if (C4ScriptOpMap[OpID].Code == AB_BitOr)
 		{
 			Shift();
-			C4Value r2 = Parse_ConstExpression(really);
+			C4Value r2 = Parse_ConstExpression(really, NULL, NULL);
 			r.SetInt(r.getInt() | r2.getInt());
 		}
 	}
@@ -2831,10 +2840,11 @@ void C4AulParse::Parse_Const()
 		Shift();
 
 		// register as constant
+		C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
 		if (Type == PREPARSER)
-			a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression(true));
+			a->Engine->RegisterGlobalConstant(Name, Parse_ConstExpression(true, NULL, key));
 		else
-			Parse_ConstExpression(false);
+			Parse_ConstExpression(false, NULL, NULL);
 
 		switch (TokenType)
 		{

@@ -62,7 +62,7 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 	}
 	// Only pure script proplists are garbage collected here, host proplists
 	// like definitions and effects have their own memory management.
-	if (IsScriptPropList()) delete this;
+	if (Delete()) delete this;
 }
 
 C4PropList * C4PropList::New(C4PropList * prototype)
@@ -71,15 +71,9 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
-C4PropList * C4PropList::NewAnon(C4PropList * prototype)
+C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
 {
-	C4PropList * r = new C4PropListScript(prototype);
-	return r;
-}
-
-C4PropList * C4PropList::NewScen(C4PropList * prototype)
-{
-	return new C4PropList(prototype);
+	return new C4PropListStatic(prototype, parent, key);
 }
 
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
@@ -155,6 +149,19 @@ C4PropListNumbered::~C4PropListNumbered()
 		PropLists.Remove(this);
 	else
 		Log("removing numbered proplist without number");
+}
+
+void C4PropListStatic::RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const
+{
+	assert(!pComp->isCompiler());
+	if (Parent)
+	{
+		Parent->RefCompileFunc(pComp, numbers);
+		pComp->Separator(StdCompiler::SEP_PART);
+	}
+	if (!ParentKeyName)
+		pComp->excCorrupt("C4PropListStatic::RefCompileFunc without ParentKeyName");
+	pComp->Value(mkParAdapt(ParentKeyName->GetData(), StdCompiler::RCT_ID));
 }
 
 #ifdef _DEBUG

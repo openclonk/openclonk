@@ -293,7 +293,7 @@ C4PropList * C4AulScriptEngine::GetPropList()
 {
 	if (!GlobalPropList)
 	{
-		GlobalPropList = C4PropList::NewScen();
+		GlobalPropList = C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"));
 		RegisterGlobalConstant("Global", C4VPropList(GlobalPropList));
 	}
 	return GlobalPropList;
@@ -368,7 +368,7 @@ bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
-	GameScript.ScenPropList->Denumerate(numbers);
+	GameScript.ScenPropList.Denumerate(numbers);
 	return true;
 }
 
@@ -377,7 +377,7 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
-	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList, numbers), "Scenario"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
 }
 
 std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)

@@ -210,7 +210,7 @@ void C4Value::Denumerate(class C4ValueNumbers * numbers)
 		Data.Array->Denumerate(numbers); break;
 	case C4V_PropList:
 		// objects and effects are denumerated via the main object list
-		if (!Data.PropList->IsNumbered() && !Data.PropList->IsDef())
+		if (!Data.PropList->IsNumbered() && !Data.PropList->IsStatic())
 			Data.PropList->Denumerate(numbers);
 		break;
 	case C4V_C4ObjectEnum:
@@ -266,23 +266,17 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		case C4V_Bool:
 			cC4VID = 'b'; break;
 		case C4V_PropList:
-			if (getPropList()->IsDef())
+			if (getPropList()->IsStatic())
 				cC4VID = 'D';
 			else if (getPropList()->IsNumbered())
 				cC4VID = 'O';
-			else if (getPropList() == GameScript.ScenPropList)
-				cC4VID = 'c';
-			else if (getPropList() == GameScript.ScenPrototype)
-				cC4VID = 't';
-			else if (getPropList() == ScriptEngine.GetPropList())
-				cC4VID = 'g';
 			else
 				cC4VID = 'E';
 			break;
 		case C4V_Array:
 			cC4VID = 'E'; break;
 		case C4V_Function:
-			cC4VID = 'f'; break;
+			cC4VID = 'D'; break;
 		case C4V_String:
 			cC4VID = 's'; break;
 		default:
@@ -330,21 +324,38 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	case 'D':
 	{
-		C4ID id;
-		if (!fCompiler)
-			id = getPropList()->GetDef()->id;
-		pComp->Value(id);
-		if (fCompiler)
+		if (!pComp->isCompiler())
 		{
-			C4PropList * p = Definitions.ID2Def(id);
-			if (!p)
+			C4PropList * p = getPropList();
+			if (getFunction())
 			{
-				Set0();
-				pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
+				p = Data.Fn->Owner->GetPropList();
+				assert(p);
+				assert(p->GetFunc(Data.Fn->GetName()) == Data.Fn);
+				assert(p->IsStatic());
 			}
-			else
+			p->IsStatic()->RefCompileFunc(pComp, numbers);
+			if (getFunction())
 			{
-				SetPropList(p);
+				pComp->Separator(StdCompiler::SEP_PART);
+				StdStrBuf s; s.Ref(Data.Fn->GetName());
+				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+			}
+		}
+		else
+		{
+			StdStrBuf s;
+			pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+			if (!::ScriptEngine.GetGlobalConstant(s.getData(), this))
+				pComp->excNotFound("static proplist %s", s.getData());
+			while(pComp->Separator(StdCompiler::SEP_PART))
+			{
+				C4PropList * p = getPropList();
+				if (!p)
+					pComp->excNotFound("static proplist is not a proplist anymore", s.getData());
+				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+				if (!p->GetPropertyByS(::Strings.RegString(s), this))
+					pComp->excNotFound("static proplist %s", s.getData());
 			}
 		}
 		break;
@@ -361,14 +372,15 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 	}
 
+	// FIXME: remove these three once Game.txt were re-saved with current version
 	case 'c':
 		if (fCompiler)
-			SetPropList(GameScript.ScenPropList);
+			Set(GameScript.ScenPropList);
 		break;
 
 	case 't':
 		if (fCompiler)
-			SetPropList(GameScript.ScenPrototype);
+			Set(GameScript.ScenPrototype);
 		break;
 
 	case 'g':
@@ -382,34 +394,6 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			Set0();
 		// doesn't have a value, so nothing to store
 		break;
-
-	case 'f':
-	{
-		C4Value Owner;
-		if (!fCompiler)
-		{
-			Owner.SetPropList(Data.Fn->Owner->GetPropList());
-			assert(Owner._getPropList() && Owner._getPropList()->GetFunc(Data.Fn->GetName()) == Data.Fn);
-		}
-		pComp->Value(mkParAdapt(Owner, numbers));
-		pComp->Separator(StdCompiler::SEP_PART);
-		StdStrBuf s;
-		if (!fCompiler)
-			s = Data.Fn->GetName();
-		pComp->Value(s);
-		if (fCompiler)
-		{
-			// Owner was a definition or singleton, so shouldn't have to be denumerated
-			if (!Owner.getPropList())
-			{
-				Set0();
-				pComp->Warn("ERROR: Owner of function %s is missing.", s.getData());
-			}
-			else
-				SetFunction(Owner._getPropList()->GetFunc(s.getData()));
-		}
-		break;
-	}
 
 	default:
 		// shouldn't happen

@@ -59,7 +59,7 @@ public:
 	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
 #ifdef HAVE_RVALUE_REF
 	// Move constructor
-	template <class U> C4RefCntPointer(const C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
+	template <class U> C4RefCntPointer(C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
 	// Move assignment
 	template <class U> C4RefCntPointer& operator = (C4RefCntPointer<U> RREF r)
 	{
