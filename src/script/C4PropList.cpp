@@ -225,13 +225,18 @@ C4PropList::~C4PropList()
 
 bool C4PropList::operator==(const C4PropList &b) const
 {
+	// every numbered proplist has a unique number and is only identical to itself
+	if (this == &b) return true;
+	if (IsNumbered() || b.IsNumbered()) return false;
 	if (Properties.GetSize() != b.Properties.GetSize()) return false;
 	if (GetDef() != b.GetDef()) return false;
 	//if (GetObject() != b.GetObject()) return false;
 	const C4Property * p = Properties.First();
 	while (p)
 	{
-		if (*p != b.Properties.Get(p->Key)) return false;
+		const C4Property & bp = b.Properties.Get(p->Key);
+		if (!bp) return false;
+		if (p->Value != bp.Value) return false;
 		p = Properties.Next(p);
 	}
 	return true;

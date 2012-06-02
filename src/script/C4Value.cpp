@@ -489,30 +489,20 @@ bool C4Value::operator == (const C4Value& Value2) const
 	{
 	case C4V_Nil:
 		assert(!Data);
-		return Value2.Type == Type;
+		return Type == Value2.Type;
 	case C4V_Int:
 	case C4V_Bool:
 		return (Value2.Type == C4V_Int || Value2.Type == C4V_Bool) &&
-		       Data == Value2.Data;
+		       Data.Int == Value2.Data.Int;
 	case C4V_PropList:
-		if (Value2.Type == C4V_PropList)
-		{
-			// Compare as equal if and only if the proplists are indistinguishable
-			// If one or both are mutable, they have to be the same
-			// otherwise, they have to have the same contents
-			if (Data.PropList == Value2.Data.PropList) return true;
-			if (!Data.PropList->IsFrozen() || !Value2.Data.PropList->IsFrozen()) return false;
-			return (*Data.PropList == *Value2.Data.PropList);
-		}
-		return false;
+		return Type == Value2.Type && *Data.PropList == *Value2.Data.PropList;
 	case C4V_String:
 		return Type == Value2.Type && Data.Str == Value2.Data.Str;
 	case C4V_Array:
 		return Type == Value2.Type &&
 		       (Data.Array == Value2.Data.Array || *(Data.Array) == *(Value2.Data.Array));
 	case C4V_Function:
-		return Type == Value2.Type &&
-			Data == Value2.Data;
+		return Type == Value2.Type && Data.Fn == Value2.Data.Fn;
 	default:
 		assert(!"Unexpected C4Value type (denumeration missing?)");
 		return Data == Value2.Data;
