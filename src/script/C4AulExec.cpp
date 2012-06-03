@@ -136,8 +136,6 @@ void C4AulExec::ClearPointers(C4Object * obj)
 	{
 		if (pCtx->Obj == obj)
 			pCtx->Obj = NULL;
-		if (pCtx->Def == obj)
-			pCtx->Def = NULL;
 	}
 #endif
 }
@@ -157,8 +155,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	// Push a new context
 	C4AulScriptContext ctx;
 	ctx.tTime = 0;
-	ctx.Obj = p ? p->GetObject() : NULL;
-	ctx.Def = p;
+	ctx.Obj = p;
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
@@ -247,19 +244,17 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_LOCALN:
-				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
-				if (!pCurCtx->Def)
+				if (!pCurCtx->Obj)
 					throw new C4AulExecError("can't access local variables without this");
 				PushNullVals(1);
-				pCurCtx->Def->GetPropertyByS(pCPos->Par.s, pCurVal);
+				pCurCtx->Obj->GetPropertyByS(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
-				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
-				if (!pCurCtx->Def)
+				if (!pCurCtx->Obj)
 					throw new C4AulExecError("can't access local variables without this");
-				if (pCurCtx->Def->IsFrozen())
+				if (pCurCtx->Obj->IsFrozen())
 					throw new C4AulExecError("local variable: this is readonly");
-				pCurCtx->Def->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
+				pCurCtx->Obj->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				break;
 
 			case AB_PROP:
@@ -827,7 +822,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	if (!pContext)
 	{
 		assert(pCurCtx >= Contexts);
-		pContext = pCurCtx->Def;
+		pContext = pCurCtx->Obj;
 	}
 
 	// Convert parameters (typecheck)
@@ -844,10 +839,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	{
 		// Push a new context
 		C4AulScriptContext ctx;
-		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		ctx.Obj = pContext;
 		if (ctx.Obj && !ctx.Obj->Status)
 			throw new C4AulExecError("using removed object");
-		ctx.Def = pContext;
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
 		ctx.Vars = pCurVal + 1;
@@ -916,16 +910,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		// Notify debugger
 		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		{
-			// Make dummy context
-			C4AulScriptContext ctx;
-			ctx.Obj = pContext ? pContext->GetObject() : 0;
-			ctx.Def = pContext;
-			ctx.Return = pReturn;
-			ctx.Pars = pPars;
-			ctx.Vars = pPars + pFunc->GetParCount();
-			ctx.Func = pSFunc;
-			ctx.TemporaryScript = false;
-			ctx.CPos = NULL;
 			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
 		}
 #endif

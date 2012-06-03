@@ -165,16 +165,10 @@ struct C4AulBCC
 	} Par;    // extra info
 };
 
-// call context
-struct C4AulContext
-{
-	C4Object *Obj;
-	C4PropList *Def;
-};
-
 // execution context
-struct C4AulScriptContext : public C4AulContext
+struct C4AulScriptContext
 {
+	C4PropList *Obj;
 	C4Value *Return;
 	C4Value *Pars;
 	C4Value *Vars;
