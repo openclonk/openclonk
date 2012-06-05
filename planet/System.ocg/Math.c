@@ -79,8 +79,16 @@ global func ComDirLike(int comdir1, int comdir2)
 
 // the shortest direction (left/right) to turn from one angle to another
 // (for example for homing projectiles or aiming)
-global func GetTurnDirection(int from, int to)
+global func GetTurnDirection(
+	int from /* the angle at which the turning starts */
+	, int to /* the angle that should be turned towards */)
 {
+/*
+	// code for a homing missile
+	var dir = GetTurnDirection(my_angle, target_angle);
+	SetR(GetR() + dir / 10);
+	SetSpeed(Sin(GetR(), 10), -Cos(GetR(), 10));
+*/
 	 var dir;
 	 /*if(to < from)*/dir=to-from;
 	 //else dir=from-to;
