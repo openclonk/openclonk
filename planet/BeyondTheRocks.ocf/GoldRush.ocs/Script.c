@@ -22,7 +22,9 @@ protected func Initialize()
 		for (var i = 0; i < 2; i++)
 			PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
 	PlaceGrass(100);
-		
+	
+	CreateEnvironmentObjects("Temperate");
+	
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Water", 15);
