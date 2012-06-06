@@ -2069,10 +2069,12 @@ void CStdGL::ResetTexture()
 
 bool CStdGL::Error(const char *szMsg)
 {
+#ifdef USE_WIN32_WINDOWS
+	DWORD err = GetLastError();
+#endif
 	bool r = C4Draw::Error(szMsg);
 #ifdef USE_WIN32_WINDOWS
 	wchar_t * lpMsgBuf;
-	DWORD err = GetLastError();
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		FORMAT_MESSAGE_FROM_SYSTEM |
