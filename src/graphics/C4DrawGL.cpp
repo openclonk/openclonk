@@ -2069,11 +2069,27 @@ void CStdGL::ResetTexture()
 
 bool CStdGL::Error(const char *szMsg)
 {
+	bool r = C4Draw::Error(szMsg);
+#ifdef USE_WIN32_WINDOWS
+	wchar_t * lpMsgBuf;
+	DWORD err = GetLastError();
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		err,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR) &lpMsgBuf,
+		0, NULL );
+	LogF("  gl: GetLastError() = %d - %s", err, StdStrBuf(lpMsgBuf).getData());
+	LocalFree(lpMsgBuf);
+#endif
 	LogF("  gl: %s", glGetString(GL_VENDOR));
 	LogF("  gl: %s", glGetString(GL_RENDERER));
 	LogF("  gl: %s", glGetString(GL_VERSION));
 	LogF("  gl: %s", glGetString(GL_EXTENSIONS));
-	return C4Draw::Error(szMsg);
+	return r;
 }
 
 bool CStdGL::CheckGLError(const char *szAtOp)
