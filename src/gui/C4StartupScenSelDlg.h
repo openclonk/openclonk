@@ -33,14 +33,15 @@
 class C4StartupScenSelDlg;
 
 const int32_t C4StartupScenSel_DefaultIcon_Scenario  = 14,
-    C4StartupScenSel_DefaultIcon_Folder    =  0,
-        C4StartupScenSel_DefaultIcon_WinFolder = 44,
-            C4StartupScenSel_DefaultIcon_OldIconBG = 18,
-                C4StartupScenSel_IconCount             = 45,
-                    C4StartupScenSel_TitlePictureWdt       = 200,
-                        C4StartupScenSel_TitlePictureHgt       = 150,
-                            C4StartupScenSel_TitlePicturePadding   = 10,
-                                C4StartupScenSel_TitleOverlayMargin    = 10; // number of pixels to each side of title overlay picture
+              C4StartupScenSel_DefaultIcon_Folder    =  0,
+              C4StartupScenSel_DefaultIcon_SavegamesFolder =  29,
+              C4StartupScenSel_DefaultIcon_WinFolder = 44,
+              C4StartupScenSel_DefaultIcon_OldIconBG = 18,
+              C4StartupScenSel_IconCount             = 45,
+              C4StartupScenSel_TitlePictureWdt       = 200,
+              C4StartupScenSel_TitlePictureHgt       = 150,
+              C4StartupScenSel_TitlePicturePadding   = 10,
+              C4StartupScenSel_TitleOverlayMargin    = 10; // number of pixels to each side of title overlay picture
 
 // a list of loaded scenarios
 class C4ScenarioListLoader

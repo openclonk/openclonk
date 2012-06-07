@@ -38,8 +38,17 @@ C4ScriptHost::C4ScriptHost()
 	LastCode = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
+	LocalNamed.Reset();
+	// prepare include list
+	IncludesResolved = false;
+	Resolving=false;
+	Includes.clear();
+	Appends.clear();
 }
-C4ScriptHost::~C4ScriptHost() { Clear(); }
+C4ScriptHost::~C4ScriptHost()
+{
+	Clear();
+}
 
 void C4ScriptHost::Clear()
 {
@@ -49,6 +58,9 @@ void C4ScriptHost::Clear()
 	ClearCode();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
+	// remove includes
+	Includes.clear();
+	Appends.clear();
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -109,7 +121,7 @@ void C4ScriptHost::SetError(const char *szMessage)
 /*--- C4ExtraScriptHost ---*/
 
 C4ExtraScriptHost::C4ExtraScriptHost():
-		ParserPropList(C4PropList::NewAnon())
+		ParserPropList(C4PropList::NewAnon(NULL, NULL, NULL))
 {
 }
 
@@ -125,9 +137,9 @@ C4PropList * C4ExtraScriptHost::GetPropList()
 
 /*--- C4DefScriptHost ---*/
 
-bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
+bool C4DefScriptHost::Parse()
 {
-	bool r = C4ScriptHost::Load(g, f, l, t);
+	bool r = C4ScriptHost::Parse();
 	assert(Def);
 
 	// Check category
@@ -152,7 +164,7 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 			case C4D_Living | C4D_Foreground: Plane = 1400; break;
 			case C4D_Object | C4D_Foreground: Plane = 1500; break;
 			default:
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->id.ToString());
 				gotplane = false;
 				break;
 		}
@@ -160,7 +172,7 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	}
 	if (!Def->GetPlane())
 	{
-		DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->id.ToString());
 		Def->SetProperty(P_Plane, C4VInt(1));
 	}
 	return r;
@@ -176,24 +188,26 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
-	ScenPropList = C4PropList::NewScen(ScenPrototype);
-	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
+	C4PropListStatic * pScen = C4PropList::NewAnon(NULL/*ScenPrototype*/, NULL, ::Strings.RegString("Scenario"));
+	ScenPropList.SetPropList(pScen);
+	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
+	ScenPrototype.SetPropList(C4PropList::NewAnon(ScriptEngine.GetPropList(), pScen, &::Strings.P[P_Prototype]));
+	ScenPropList._getPropList()->SetProperty(P_Prototype, ScenPrototype);
 	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);
 }
 
 void C4GameScriptHost::Clear()
 {
-	delete ScenPropList; ScenPropList = 0;
-	delete ScenPrototype; ScenPrototype = 0;
+	ScenPropList.Set0();
+	ScenPrototype.Set0();
 	C4ScriptHost::Clear();
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
 {
 	// FIXME: Does fPassError make sense?
-	return ScenPropList->Call(szFunction, Pars);
+	return ScenPropList._getPropList()->Call(szFunction, Pars);
 }
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)

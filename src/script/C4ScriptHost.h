@@ -33,7 +33,7 @@ class C4ScriptHost : public C4AulScript
 public:
 	~C4ScriptHost();
 	bool Delete() { return false; } // do NOT delete this - it's just a class member!
-public:
+
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
@@ -52,18 +52,31 @@ protected:
 	void RemoveLastBCC();
 	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
-	bool Parse(); // parse preparsed script; return if successfull
+	virtual bool Parse(); // parse preparsed script; return if successfull
+	virtual void UnLink(); // reset to unlinked state
 	int GetCodePos() const { return Code.size(); }
 	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
 	C4AulBCC *GetLastCode() { return LastCode; }
+
+
+	std::list<C4ID> Includes; // include list
+	std::list<C4ID> Appends; // append list
+
+	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
+	bool ResolveAppends(C4DefList *rDefs); // resolve appends
+	bool Resolving; // set while include-resolving, to catch circular includes
+	bool IncludesResolved;
 
 	StdStrBuf Script; // script
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	C4AulBCC * LastCode;
+	C4ValueMapNames LocalNamed;
+	C4Set<C4Property> LocalValues;
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
+	friend class C4DirectExecScript;
 };
 
 // script host for System.ocg scripts
@@ -84,7 +97,7 @@ class C4DefScriptHost: public C4ScriptHost
 public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
 
-	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
+	virtual bool Parse();
 	virtual C4PropList * GetPropList();
 protected:
 	C4Def *Def; // owning def file
@@ -99,11 +112,11 @@ public:
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
-	virtual C4PropList * GetPropList() { return ScenPrototype; }
+	virtual C4PropList * GetPropList() { return ScenPrototype._getPropList(); }
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
-	C4PropList * ScenPropList;
-	C4PropList * ScenPrototype;
+	C4Value ScenPropList;
+	C4Value ScenPrototype;
 };
 
 extern C4GameScriptHost GameScript;

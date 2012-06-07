@@ -229,7 +229,9 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "EXC") || SEqualNoCase(szCmd, "E"))
 	{
 		C4AulScriptContext* context = pExec->GetContext(pExec->GetContextDepth()-1);
-		int32_t objectNum = context && context->Obj ? context->Obj->Number : C4ControlScript::SCOPE_Global;
+		int32_t objectNum = C4ControlScript::SCOPE_Global;
+		if (context && context->Obj && context->Obj->GetObject())
+			objectNum = context->Obj->GetObject()->Number;
 		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true, true), CDT_Decide);
 	}
 	else if (SEqualNoCase(szCmd, "PSE"))

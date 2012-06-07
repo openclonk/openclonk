@@ -9,6 +9,12 @@ uniform sampler3D materialTex;
 // Resolution of the landscape texture
 uniform vec2 resolution;
 
+// Use sampler if the GPU doesn't support enough uniforms to
+// get the matMap as an array
+#if MAX_FRAGMENT_UNIFORM_COMPONENTS < 259
+#define BROKEN_ARRAYS_WORKAROUND
+#endif
+
 // Texture map
 #ifdef BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;

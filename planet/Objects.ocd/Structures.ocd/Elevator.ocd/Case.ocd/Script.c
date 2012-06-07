@@ -91,8 +91,8 @@ local move_to, // Y-coordinate to move to on its own
 func Movement()
 {
 	// Move back and front
-	front->SetPosition(GetX(), GetY()-5);
-	back->SetPosition(GetX(), GetY()-7);
+	front->SetPosition(GetX(), GetY()-3);
+	back->SetPosition(GetX(), GetY()-5);
 
 	// No elevator?!
 	if (!elevator)

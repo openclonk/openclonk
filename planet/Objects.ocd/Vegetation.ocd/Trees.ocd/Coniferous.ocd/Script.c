@@ -2,6 +2,18 @@
 
 #include Library_Plant
 
+// Overloaded from the plant library to add the foreground parameter, foreground = true will roughly make every 3rd tree foreground (not the offspring though)
+func Place(int amount, proplist rectangle, proplist settings, bool foreground)
+{
+	// Default behaviour
+	var trees = inherited(amount, rectangle, settings);
+	if (GetLength(trees) < 1) return;
+
+	for (var tree in trees)
+		if (!Random(3))
+			tree.Plane = 510;
+}
+
 private func SeedChance() {	return 500; }
 private func SeedArea() { return 400; }
 private func SeedAmount() { return 12; }

@@ -85,7 +85,8 @@ global func DoWealth(int plr, int value)
 	return SetWealth(plr, value + GetWealth(plr));
 }
 
-global func IsAllied(int plr1, int plr2, bool check_one_way_only)
+// checks whether two players are allied - that means they are not hostile and neither of them is NO_OWNER
+global func IsAllied(int plr1, int plr2, bool check_one_way_only /* whether to check the hostility only in one direction */)
 {
 	if(plr1 == NO_OWNER) return false;
 	if(plr2 == NO_OWNER) return false;

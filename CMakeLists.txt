@@ -530,6 +530,7 @@ set(OC_CLONK_SOURCES
 	src/script/C4AulDefFunc.h
 	src/script/C4AulExec.cpp
 	src/script/C4AulExec.h
+	src/script/C4AulFunc.cpp
 	src/script/C4AulFunc.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
@@ -957,6 +958,7 @@ add_executable(c4script
 	src/lib/C4Random.cpp
 	src/script/C4Aul.cpp
 	src/script/C4AulExec.cpp
+	src/script/C4AulFunc.cpp
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
 	src/script/C4StringTable.cpp
@@ -1093,9 +1095,6 @@ endforeach()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	include(GccPchSupport)
-	if(NOT DEFINED USE_GCC_PCH)
-		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
-	endif()
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)

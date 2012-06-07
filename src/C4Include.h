@@ -50,8 +50,32 @@ don't need to include this file or any of the files it includes. */
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
 
-// debug memory management - must come after boost headers,
-// because boost uses placement new
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+
+#include <cmath>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+// debug memory management - must come after standard and boost headers,
+// because those libraries use placement new
 #ifndef NODEBUGMEM
 #if defined(_DEBUG) && defined(_MSC_VER)
 #if _MSC_VER <= 1200
@@ -73,31 +97,7 @@ inline void operator delete(void *p, const char *, long)
 #define new new(__FILE__, __LINE__)
 #endif
 #endif
-
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cerrno>
-#include <climits>
-
-#include <cmath>
-#include <cstdarg>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <iostream>
-#include <list>
-#include <map>
-#include <memory>
 #include <new>
-#include <set>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
 
 #include "Standard.h"
 #include "C4Prototypes.h"

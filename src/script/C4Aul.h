@@ -62,9 +62,8 @@ public:
 // execution error
 class C4AulExecError : public C4AulError
 {
-	C4Object *cObj;
 public:
-	C4AulExecError(C4Object *pObj, const char *szError); // constructor
+	C4AulExecError(const char *szError);
 };
 
 // function access
@@ -75,25 +74,6 @@ enum C4AulAccess
 	AA_PUBLIC,
 	AA_GLOBAL
 };
-
-struct C4AulParSet
-{
-	C4Value Par[C4AUL_MAX_Par];
-
-	C4AulParSet() {} // standard-constructor
-	C4AulParSet(const C4Value &par0,             const C4Value &par1 = C4Value(), const C4Value &par2 = C4Value(), const C4Value &par3 = C4Value(), const C4Value &par4 = C4Value(),
-	            const C4Value &par5 = C4Value(), const C4Value &par6 = C4Value(), const C4Value &par7 = C4Value(), const C4Value &par8 = C4Value(), const C4Value &par9 = C4Value())
-	{
-		Par[0].Set(par0); Par[1].Set(par1); Par[2].Set(par2); Par[3].Set(par3); Par[4].Set(par4);
-		Par[5].Set(par5); Par[6].Set(par6); Par[7].Set(par7); Par[8].Set(par8); Par[9].Set(par9);
-	}
-	C4Value & operator[](int iIdx) { return Par[iIdx]; }
-	C4AulParSet * operator&() { return this; }
-};
-
-#define Copy2ParSet8(Pars, Vars) Pars[0].Set(Vars##0); Pars[1].Set(Vars##1); Pars[2].Set(Vars##2); Pars[3].Set(Vars##3); Pars[4].Set(Vars##4); Pars[5].Set(Vars##5); Pars[6].Set(Vars##6); Pars[7].Set(Vars##7);
-#define Copy2ParSet9(Pars, Vars) Pars[0].Set(Vars##0); Pars[1].Set(Vars##1); Pars[2].Set(Vars##2); Pars[3].Set(Vars##3); Pars[4].Set(Vars##4); Pars[5].Set(Vars##5); Pars[6].Set(Vars##6); Pars[7].Set(Vars##7); Pars[8].Set(Vars##8);
-#define Copy2ParSet10(Pars, Vars) Pars[0].Set(Vars##0); Pars[1].Set(Vars##1); Pars[2].Set(Vars##2); Pars[3].Set(Vars##3); Pars[4].Set(Vars##4); Pars[5].Set(Vars##5); Pars[6].Set(Vars##6); Pars[7].Set(Vars##7); Pars[8].Set(Vars##8); Pars[9].Set(Vars##9);
 
 // byte code chunk type
 // some special script functions defined hard-coded to reduce the exec context
@@ -185,16 +165,10 @@ struct C4AulBCC
 	} Par;    // extra info
 };
 
-// call context
-struct C4AulContext
-{
-	C4Object *Obj;
-	C4PropList *Def;
-};
-
 // execution context
-struct C4AulScriptContext : public C4AulContext
+struct C4AulScriptContext
 {
+	C4PropList *Obj;
 	C4Value *Return;
 	C4Value *Pars;
 	C4Value *Vars;
@@ -212,6 +186,7 @@ class C4AulScriptFunc : public C4AulFunc
 {
 public:
 	C4AulFunc *OwnerOverloaded; // overloaded owner function; if present
+	void SetOverloaded(C4AulFunc *);
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
 	int CodePos; // code pos
@@ -227,18 +202,15 @@ public:
 
 	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
 	C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc); // copy script/code, etc from given func
+	~C4AulScriptFunc();
 
 	void ParseFn(C4AulScriptContext* context = NULL);
-	virtual void UnLink();
 
 	virtual bool GetPublic() { return true; }
 	virtual int GetParCount() { return ParCount; }
 	virtual C4V_Type *GetParType() { return ParType; }
 	virtual C4V_Type GetRetType() { return C4V_Any; }
-	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
-	virtual C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
-
-	void SetError(C4AulContext *ctx, const char *szMessage); // set error message
+	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false); // execute func
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
@@ -250,37 +222,20 @@ public:
 	friend class C4ScriptHost;
 };
 
-// defined function class
-class C4AulDefFunc : C4AulFunc
-{
-public:
-	C4ScriptFnDef* Def;
-
-	C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef);
-	~C4AulDefFunc();
-
-	virtual bool GetPublic() { return !!Def->Public; }
-	virtual C4V_Type* GetParType() { return Def->ParType; }
-	virtual C4V_Type GetRetType() { return Def->RetType; }
-
-	using C4AulFunc::Exec;
-	virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call)
-};
-
 class C4AulFuncMap
 {
 public:
 	C4AulFuncMap();
 	~C4AulFuncMap();
-	C4AulFunc * GetFirstFunc(const char * Name);
+	C4AulFunc * GetFirstFunc(C4String * Name);
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After);
 private:
-	C4AulFunc ** Funcs;
+	enum { HashSize = 1025 };
+	C4AulFunc * Funcs[HashSize];
 	int FuncCnt;
-	int Capacity;
 	static unsigned int Hash(const char * Name);
 protected:
-	void Add(C4AulFunc * func, bool bAtEnd = true);
+	void Add(C4AulFunc * func);
 	void Remove(C4AulFunc * func);
 	friend class C4AulFunc;
 	friend class C4ScriptHost;
@@ -336,22 +291,19 @@ public:
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	C4ValueMapNames LocalNamed;
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	virtual C4PropList * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
-	void AddFunc(const char *pIdtf, C4ScriptFnDef* Def);  // add def def func to table
-
 	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
-	void ResetProfilerTimes(); // zero all profiler times of owned functions
-	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
+	virtual void ResetProfilerTimes(); // zero all profiler times of owned functions
+	virtual void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 
 	bool IsReady() { return State == ASS_PARSED; } // whether script calls may be done
 
 	// helper functions
-	void Warn(const char *pMsg, const char *pIdtf);
+	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
 	friend class C4AulParseError;
 	friend class C4AulFunc;
@@ -367,24 +319,16 @@ public:
 protected:
 	C4LangStringTable *stringTable;	
 
-	C4AulFunc *Func0, *FuncL; // owned functions
 	C4AulScriptEngine *Engine; //owning engine
 	C4AulScript *Prev, *Next; // tree structure
 
 	C4AulScriptState State; // script state
-	bool Resolving; // set while include-resolving, to catch circular includes
 
-	std::list<C4ID> Includes; // include list
-	std::list<C4ID> Appends; // append list
-
-	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
-	bool ResolveAppends(C4DefList *rDefs); // resolve appends
-	void LinkFunctions();
-	bool IncludesResolved;
-	virtual void UnLink(); // reset to unlinked state
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();
-
+	virtual bool ResolveIncludes(C4DefList *rDefs);
+	virtual bool ResolveAppends(C4DefList *rDefs);
+	virtual void UnLink();
 };
 
 // holds all C4AulScripts
@@ -417,13 +361,13 @@ public:
 	virtual C4PropList * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
-	C4AulFunc * GetFirstFunc(const char * Name)
+	C4AulFunc * GetFirstFunc(C4String * Name)
 	{ return FuncLookUp.GetFirstFunc(Name); }
 	C4AulFunc * GetNextSNFunc(const C4AulFunc * After)
 	{ return FuncLookUp.GetNextSNFunc(After); }
 
 	// For the list of functions in the PropertyDlg
-	std::list<const char*> GetFunctionNames(C4AulScript *);
+	std::list<const char*> GetFunctionNames(C4PropList *);
 	void ResetProfilerTimes(); // zero all profiler times of owned functions
 	void CollectProfilerTimes(class C4AulProfiler &rProfiler);
 

@@ -62,7 +62,7 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 	}
 	// Only pure script proplists are garbage collected here, host proplists
 	// like definitions and effects have their own memory management.
-	if (IsScriptPropList()) delete this;
+	if (Delete()) delete this;
 }
 
 C4PropList * C4PropList::New(C4PropList * prototype)
@@ -71,15 +71,9 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
-C4PropList * C4PropList::NewAnon(C4PropList * prototype)
+C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
 {
-	C4PropList * r = new C4PropListScript(prototype);
-	return r;
-}
-
-C4PropList * C4PropList::NewScen(C4PropList * prototype)
-{
-	return new C4PropList(prototype);
+	return new C4PropListStatic(prototype, parent, key);
 }
 
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
@@ -157,6 +151,33 @@ C4PropListNumbered::~C4PropListNumbered()
 		Log("removing numbered proplist without number");
 }
 
+void C4PropListStatic::RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const
+{
+	assert(!pComp->isCompiler());
+	if (Parent)
+	{
+		Parent->RefCompileFunc(pComp, numbers);
+		pComp->Separator(StdCompiler::SEP_PART);
+	}
+	if (!ParentKeyName)
+		pComp->excCorrupt("C4PropListStatic::RefCompileFunc without ParentKeyName");
+	pComp->Value(mkParAdapt(ParentKeyName->GetData(), StdCompiler::RCT_ID));
+}
+
+StdStrBuf C4PropListStatic::GetDataString() const
+{
+	StdStrBuf r;
+	if (Parent)
+	{
+		r.Take(Parent->GetDataString());
+		r.AppendChar('.');
+	}
+	assert(ParentKeyName);
+	if (ParentKeyName)
+		r.Append(ParentKeyName->GetData());
+	return r;
+}
+
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
 #endif
@@ -204,13 +225,18 @@ C4PropList::~C4PropList()
 
 bool C4PropList::operator==(const C4PropList &b) const
 {
+	// every numbered proplist has a unique number and is only identical to itself
+	if (this == &b) return true;
+	if (IsNumbered() || b.IsNumbered()) return false;
 	if (Properties.GetSize() != b.Properties.GetSize()) return false;
 	if (GetDef() != b.GetDef()) return false;
 	//if (GetObject() != b.GetObject()) return false;
 	const C4Property * p = Properties.First();
 	while (p)
 	{
-		if (*p != b.Properties.Get(p->Key)) return false;
+		const C4Property & bp = b.Properties.Get(p->Key);
+		if (!bp) return false;
+		if (p->Value != bp.Value) return false;
 		p = Properties.Next(p);
 	}
 	return true;
@@ -476,8 +502,7 @@ C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
 	{
 		if (s[0] == '~')
 			return C4Value();
-		throw new C4AulExecError(this->GetObject(),
-                         FormatString("Call: no function \"%s\"", s).getData());
+		throw new C4AulExecError(FormatString("Call: no function \"%s\"", s).getData());
 	}
 	return pFn->Exec(this, Pars);
 }
@@ -513,6 +538,42 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	return 0;
 }
 
+C4ValueArray * C4PropList::GetProperties() const
+{
+	C4ValueArray * a;
+	int i;
+	if (prototype)
+	{
+		a = prototype->GetProperties();
+		i = a->GetSize();
+		a->SetSize(i + Properties.GetSize());
+	}
+	else
+	{
+		a = new C4ValueArray(Properties.GetSize());
+		i = 0;
+	}
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		(*a)[i++] = C4VString(p->Key);
+		p = Properties.Next(p);
+	}
+	return a;
+}
+
+C4String * C4PropList::EnumerateOwnFuncs(C4String * prev) const
+{
+	const C4Property * p = prev ? Properties.Next(&Properties.Get(prev)) : Properties.First();
+	while (p)
+	{
+		if (p->Value.getFunction())
+			return p->Key;
+		p = Properties.Next(p);
+	}
+	return 0;
+}
+
 void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 {
 	assert(!constant);
@@ -522,7 +583,7 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 		C4PropList * newpt = to.GetData().PropList;
 		for(C4PropList * it = newpt; it; it = it->prototype)
 			if(it == this)
-				throw new C4AulExecError(NULL, "Trying to create cyclic prototype structure");
+				throw new C4AulExecError("Trying to create cyclic prototype structure");
 		prototype = newpt;
 		//return;
 	}

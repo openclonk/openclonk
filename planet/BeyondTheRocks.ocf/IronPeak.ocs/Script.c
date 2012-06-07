@@ -38,12 +38,10 @@ protected func Initialize()
 	// TODO: Make sure lorry stays on mountains.
 	
 	// Place some coniferous trees, but only up to 2/3 of the mountain.
-	for (var i = 0; i < 16 + Random(5); i++)
-		PlaceVegetation(Tree_Coniferous, 0, LandscapeHeight() / 3, LandscapeWidth(), 2 * LandscapeHeight() / 3, 1000 * (61 + Random(40)));
+	Tree_Coniferous->Place(16+Random(5), Rectangle(0,LandscapeHeight()/3, LandscapeWidth(), 2*LandscapeHeight()/3));
 		
 	// Some mushrooms as source of food.
-	for (var i = 0; i < 30 + Random(10); i++)
-		PlaceVegetation(Mushroom, 0, 0, LandscapeWidth(), LandscapeHeight());
+	Mushroom->Place(30+Random(10));
 		
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(20);

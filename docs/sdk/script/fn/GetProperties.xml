@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetProperties</title>
+    <category>Objects</category>
+    <subcat>Properties</subcat>
+    <version>5.3 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>proplist</type>
+          <name>object</name>
+          <desc>Object to request property from, <code>nil</code> in local calls.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the names of all properties of <code>object</code>.</desc>
+    <related><funclink>SetProperty</funclink></related>
+    <related><funclink>GetProperty</funclink></related>
+    <examples>
+      <example>
+        <code>GetProperties({foo = 1, bar = 2}) == ["bar", "foo"]</code>
+      </example>
+    </examples>
+  </func>
+  <author>Günther</author><date>2012</date>
+</funcs>

@@ -79,8 +79,16 @@ global func ComDirLike(int comdir1, int comdir2)
 
 // the shortest direction (left/right) to turn from one angle to another
 // (for example for homing projectiles or aiming)
-global func GetTurnDirection(int from, int to)
+global func GetTurnDirection(
+	int from /* the angle at which the turning starts */
+	, int to /* the angle that should be turned towards */)
 {
+/*
+	// code for a homing missile
+	var dir = GetTurnDirection(my_angle, target_angle);
+	SetR(GetR() + dir / 10);
+	SetSpeed(Sin(GetR(), 10), -Cos(GetR(), 10));
+*/
 	 var dir;
 	 /*if(to < from)*/dir=to-from;
 	 //else dir=from-to;
@@ -116,4 +124,21 @@ global func GetCalcDir()
 {
 	if (!this) return 0;
 	return GetDir() * 2 - 1;
+}
+
+// Ensure that the first rectangle is fully with the second one and returns an adjusted rectangle. Both rectangles can be created with Rectangle()
+global func RectangleEnsureWithin(proplist first, proplist second)
+{
+	if (GetType(first) != C4V_PropList) return {};
+	if (GetType(second) != C4V_PropList) return {};
+
+	var adjusted = { x = first.x, y = first.y, w = first.w, h = first.h };
+	if (first.x < second.x) adjusted.x = second.x;
+	if (first.w > second.w) adjusted.w = second.w - (adjusted.x - second.x);
+	if (adjusted.x + adjusted.w > second.x + second.w) adjusted.w = second.w - (adjusted.x - second.x);
+	if (first.y < second.y) adjusted.y = second.y;
+	if (first.h > second.h) adjusted.h = second.h - (adjusted.y - second.y);
+	if (adjusted.y + adjusted.h > second.y + second.h) adjusted.h = second.h - (adjusted.y - second.y);
+
+	return adjusted;
 }

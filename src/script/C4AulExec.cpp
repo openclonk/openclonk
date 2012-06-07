@@ -36,7 +36,7 @@
 
 C4AulExec AulExec;
 
-C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
+C4AulExecError::C4AulExecError(const char *szError)
 {
 	// direct error message string
 	sMessage.Format("ERROR: %s.", szError ? szError : "(no error message)");
@@ -46,6 +46,13 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 {
 	if (!Func)
 		return StdStrBuf("");
+	// Context
+	if (Obj && Obj->Status)
+	{
+		C4Value ObjVal(Obj);
+		Dump.Append(ObjVal.GetDataString(0));
+		Dump.Append("->");
+	}
 	bool fDirectExec = !Func->GetName();
 	if (!fDirectExec)
 	{
@@ -77,16 +84,6 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	}
 	else
 		Dump.Append(Func->Owner->ScriptName);
-	// Context
-	if (Obj)
-	{
-		if (Obj->Status == C4OS_NORMAL)
-			Dump.AppendFormat(" (obj #%d)", Obj->Number);
-		else
-			Dump.AppendFormat(" (obj (#%d))", Obj->Number);
-	}
-	else if (Func->Owner->GetPropList())
-		Dump.AppendFormat(" (def %s)", Func->Owner->GetPropList()->GetName());
 	// Script
 	if (!fDirectExec && Func->pOrgScript)
 		Dump.AppendFormat(" (%s:%d)",
@@ -108,13 +105,13 @@ void C4AulExec::LogCallStack()
 		pCtx->dump(StdStrBuf(" by: "));
 }
 
-C4String *C4AulExec::FnTranslate(C4AulContext *ctx, C4String *text)
+C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 {
 	if (!text || text->GetData().isNull()) return NULL;
 	// Find correct script: translations of the context if possible, containing script as fallback
 	C4AulScript *script = NULL;
-	if (ctx->Def && ctx->Def->GetDef())
-		script = &(ctx->Def->GetDef()->Script);
+	if (_this && _this->GetDef())
+		script = &(_this->GetDef()->Script);
 	else
 		script = AulExec.pCurCtx[-1].Func->pOrgScript;
 	assert(script);
@@ -139,8 +136,6 @@ void C4AulExec::ClearPointers(C4Object * obj)
 	{
 		if (pCtx->Obj == obj)
 			pCtx->Obj = NULL;
-		if (pCtx->Def == obj)
-			pCtx->Def = NULL;
 	}
 #endif
 }
@@ -160,8 +155,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	// Push a new context
 	C4AulScriptContext ctx;
 	ctx.tTime = 0;
-	ctx.Obj = p ? p->GetObject() : NULL;
-	ctx.Def = p;
+	ctx.Obj = p;
 	ctx.Return = NULL;
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
@@ -236,10 +230,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_EOF: case AB_EOFN:
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: function didn't return");
+				throw new C4AulExecError("internal error: function didn't return");
 
 			case AB_ERR:
-				throw new C4AulExecError(pCurCtx->Obj, "syntax error: see above for details");
+				throw new C4AulExecError("syntax error: see above for details");
 
 			case AB_PARN_CONTEXT:
 				PushValue(AulExec.GetContext(AulExec.GetContextDepth()-2)->Pars[pCPos->Par.i]);
@@ -250,24 +244,22 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				break;
 
 			case AB_LOCALN:
-				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
-				if (!pCurCtx->Def)
-					throw new C4AulExecError(0, "can't access local variables without this");
+				if (!pCurCtx->Obj)
+					throw new C4AulExecError("can't access local variables without this");
 				PushNullVals(1);
-				pCurCtx->Def->GetPropertyByS(pCPos->Par.s, pCurVal);
+				pCurCtx->Obj->GetPropertyByS(pCPos->Par.s, pCurVal);
 				break;
 			case AB_LOCALN_SET:
-				assert(!pCurCtx->Obj || pCurCtx->Def == pCurCtx->Obj);
-				if (!pCurCtx->Def)
-					throw new C4AulExecError(0, "can't access local variables without this");
-				if (pCurCtx->Def->IsFrozen())
-					throw new C4AulExecError(pCurCtx->Obj, "local variable: this is readonly");
-				pCurCtx->Def->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
+				if (!pCurCtx->Obj)
+					throw new C4AulExecError("can't access local variables without this");
+				if (pCurCtx->Obj->IsFrozen())
+					throw new C4AulExecError("local variable: this is readonly");
+				pCurCtx->Obj->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				break;
 
 			case AB_PROP:
 				if (!pCurVal->CheckConversion(C4V_PropList))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("proplist access: proplist expected, got %s", pCurVal->GetTypeName()).getData());
 				if (!pCurVal->_getPropList()->GetPropertyByS(pCPos->Par.s, pCurVal))
 					pCurVal->Set0();
 				break;
@@ -275,9 +267,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				C4Value *pPropList = pCurVal - 1;
 				if (!pPropList->CheckConversion(C4V_PropList))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("proplist write: proplist expected, got %s", pPropList->GetTypeName()).getData());
 				if (pPropList->_getPropList()->IsFrozen())
-					throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");
+					throw new C4AulExecError("proplist write: proplist is readonly");
 				pPropList->_getPropList()->SetPropertyByS(pCPos->Par.s, pCurVal[0]);
 				pPropList->Set(pCurVal[0]);
 				PopValue();
@@ -325,7 +317,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				CheckOpPars(C4V_Int, C4V_Int, "/");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (!pPar2->_getInt())
-					throw new C4AulExecError(pCurCtx->Obj, "division by zero");
+					throw new C4AulExecError("division by zero");
 				pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
 				PopValue();
 				break;
@@ -512,7 +504,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					assert(pStruct->GetType() == C4V_PropList);
 					C4PropList *pPropList = pStruct->_getPropList();
 					if (pPropList->IsFrozen())
-						throw new C4AulExecError(pCurCtx->Obj, "proplist write: proplist is readonly");					
+						throw new C4AulExecError("proplist write: proplist is readonly");
 					pPropList->SetPropertyByS(pIndex->_getStr(), *pValue);
 				}
 				// Set result, remove array and index from stack
@@ -528,11 +520,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Typcheck
 				if (!Array.CheckConversion(C4V_Array))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
 				if (!StartIndex.CheckConversion(C4V_Int))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
 				if (!EndIndex.CheckConversion(C4V_Int))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
 
 				Array.SetArray(Array.GetData().Array->GetSlice(StartIndex._getInt(), EndIndex._getInt()));
 
@@ -550,11 +542,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Typcheck
 				if (!Array.CheckConversion(C4V_Array))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: can't access %s as an array", Array.GetTypeName()).getData());
 				if (!StartIndex.CheckConversion(C4V_Int))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: start index of type %s, int expected", StartIndex.GetTypeName()).getData());
 				if (!EndIndex.CheckConversion(C4V_Int))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("array slice: end index of type %s, int expected", EndIndex.GetTypeName()).getData());
 
 				C4ValueArray *pArray = Array._getArray();
 				pArray->SetSlice(StartIndex._getInt(), EndIndex._getInt(), Value);
@@ -697,7 +689,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 			case AB_PAR:
 				if (!pCurVal->CheckConversion(C4V_Int))
-					throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected", pCurVal->GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("Par: index of type %s, int expected", pCurVal->GetTypeName()).getData());
 				// Push reference to parameter on the stack
 				if (pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->Func->GetParCount())
 					pCurVal->Set(pCurCtx->Pars[pCurVal->_getInt()]);
@@ -714,7 +706,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				if (!iItem)
 				{
 					if (!pCurVal[-1].CheckConversion(C4V_Array))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got %s", pCurVal[-1].GetTypeName()).getData());
+						throw new C4AulExecError(FormatString("for: array expected, but got %s", pCurVal[-1].GetTypeName()).getData());
 				}
 				C4ValueArray *pArray = pCurVal[-1]._getArray();
 				// No more entries?
@@ -743,8 +735,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					pDest = pTargetVal->_getPropList();
 				}
 				else
-					throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("'->': invalid target type %s, expected proplist", pTargetVal->GetTypeName()).getData());
+					throw new C4AulExecError(FormatString("'->': invalid target type %s, expected proplist", pTargetVal->GetTypeName()).getData());
 
 				// Search function for given context
 				C4AulFunc * pFunc = pDest->GetFunc(pCPos->Par.s);
@@ -757,10 +748,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				// Function not found?
 				if (!pFunc)
-					throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("'->': no function \"%s\" in object \"%s\"", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
-
-				assert(!pFunc->OverloadedBy);
+					throw new C4AulExecError(FormatString("'->': no function \"%s\" in object \"%s\"", pCPos->Par.s->GetCStr(), pTargetVal->GetDataString().getData()).getData());
 
 				// Save current position
 				pCurCtx->CPos = pCPos;
@@ -832,15 +820,14 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	if (!pContext)
 	{
 		assert(pCurCtx >= Contexts);
-		pContext = pCurCtx->Def;
+		pContext = pCurCtx->Obj;
 	}
 
 	// Convert parameters (typecheck)
 	C4V_Type *pTypes = pFunc->GetParType();
 	for (int i = 0; i < pFunc->GetParCount(); i++)
 		if (!pPars[i].CheckParConversion(pTypes[i]))
-			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
+			throw new C4AulExecError(FormatString("call to \"%s\" parameter %d: passed %s, but expected %s",
 			                                      pFunc->GetName(), i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
 			                                     ).getData());
 
@@ -850,10 +837,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	{
 		// Push a new context
 		C4AulScriptContext ctx;
-		ctx.Obj = pContext ? pContext->GetObject() : 0;
+		ctx.Obj = pContext;
 		if (ctx.Obj && !ctx.Obj->Status)
-			throw new C4AulExecError(ctx.Obj, "using removed object");
-		ctx.Def = pContext;
+			throw new C4AulExecError("using removed object");
 		ctx.Return = pReturn;
 		ctx.Pars = pPars;
 		ctx.Vars = pCurVal + 1;
@@ -873,13 +859,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	}
 	else
 	{
-
-		// Create new context
-		C4AulContext ctx;
-		ctx.Obj = pContext ? pContext->GetObject() : 0;
-		if (ctx.Obj && !ctx.Obj->Status)
-			throw new C4AulExecError(ctx.Obj, "using removed object");
-		ctx.Def = pContext;
+		if (pContext && !pContext->Status)
+			throw new C4AulExecError("using removed object");
 
 #ifdef DEBUGREC_SCRIPT
 		StdStrBuf sCallText;
@@ -916,9 +897,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		C4AulScriptContext *pCtx = pCurCtx;
 #endif
 		if (pReturn > pCurVal)
-			PushValue(pFunc->Exec(&ctx, pPars, true));
+			PushValue(pFunc->Exec(pContext, pPars, true));
 		else
-			pReturn->Set(pFunc->Exec(&ctx, pPars, true));
+			pReturn->Set(pFunc->Exec(pContext, pPars, true));
 #ifdef _DEBUG
 		assert(pCtx == pCurCtx);
 #endif
@@ -927,16 +908,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		// Notify debugger
 		if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
 		{
-			// Make dummy context
-			C4AulScriptContext ctx;
-			ctx.Obj = pContext ? pContext->GetObject() : 0;
-			ctx.Def = pContext;
-			ctx.Return = pReturn;
-			ctx.Pars = pPars;
-			ctx.Vars = pPars + pFunc->GetParCount();
-			ctx.Func = pSFunc;
-			ctx.TemporaryScript = false;
-			ctx.CPos = NULL;
 			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
 		}
 #endif
@@ -991,7 +962,7 @@ void C4AulExec::StopProfiling()
 void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 {
 	if (pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
-		throw new C4AulExecError(pCurCtx->Obj, "context stack overflow");
+		throw new C4AulExecError("context stack overflow");
 	*++pCurCtx = rContext;
 	// Trace?
 	if (iTraceStart >= 0)
@@ -1007,7 +978,7 @@ void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 void C4AulExec::PopContext()
 {
 	if (pCurCtx < Contexts)
-		throw new C4AulExecError(pCurCtx->Obj, "internal error: context stack underflow");
+		throw new C4AulExecError("internal error: context stack underflow");
 	// Profiler adding up times
 	if (fProfiling)
 	{
@@ -1071,56 +1042,14 @@ void C4AulProfiler::Show()
 	// done!
 }
 
-
-C4Value C4AulFunc::Exec(C4PropList * p, C4AulParSet* pPars, bool fPassErrors)
-{
-	// construct a dummy caller context
-	C4AulContext ctx;
-	ctx.Obj = p ? p->GetObject() : NULL;
-	ctx.Def = p;
-	// execute
-	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-}
-
-C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErrors)
+C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 {
 	// handle easiest case first
-	if (Owner->State != ASS_PARSED) return C4VNull;
+	if (Owner->State != ASS_PARSED) return C4Value();
 
 	// execute
-	return AulExec.Exec(this, pCtx->Obj ? pCtx->Obj : pCtx->Def, pPars, fPassErrors);
+	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
-
-
-C4Value C4AulScriptFunc::Exec(C4PropList * p, C4AulParSet *pPars, bool fPassErrors)
-{
-	// handle easiest case first
-	if (Owner->State != ASS_PARSED) return C4VNull;
-
-	// execute
-	return AulExec.Exec(this, p, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-}
-
-
-C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors)
-{
-
-	// Choose function call format to use
-	if (Def->FunctionC4V2 != 0)
-
-		// C4V function
-		return Def->FunctionC4V2(pCallerCtx, pPars);
-
-	if (Def->FunctionC4V != 0)
-
-		// C4V function
-		return Def->FunctionC4V(pCallerCtx, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
-
-	// should never happen...
-	return C4VNull;
-
-}
-
 
 class C4DirectExecScript: public C4ScriptHost
 {
@@ -1135,8 +1064,6 @@ public:
 			p = pObj->Def;
 			LocalNamed = pObj->Def->Script.LocalNamed;
 		}
-		// FIXME: calls from definitions
-		ClearCode();
 		this->stringTable = stringTable;
 	}
 	bool Delete() { return true; }
@@ -1186,8 +1113,8 @@ void C4AulScript::ResetProfilerTimes()
 {
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if ((pSFunc = pFn->SFunc()))
+	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
 			pSFunc->tProfileTime = 0;
 }
 
@@ -1195,8 +1122,8 @@ void C4AulScript::CollectProfilerTimes(C4AulProfiler &rProfiler)
 {
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if ((pSFunc = pFn->SFunc()))
+	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
+		if ((pSFunc = GetPropList()->GetFunc(pFn)->SFunc()))
 			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
 }
 

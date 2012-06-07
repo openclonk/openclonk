@@ -15,13 +15,13 @@ public func IsLiquidPump() { return true; }
 
 public func Construction(object creator)
 {
-	SetAction("Wait");
 	return _inherited(creator, ...);
 }
 
 protected func Initialize()
 {
 	MakePowerConsumer(100);
+	SetAction("Wait");
 	turned_on = true;
 	return;
 }
@@ -48,7 +48,10 @@ public func Interact(object clonk)
 		SetAction("Wait");
 	}
 	else
+	{
+		OnWaitStart();
 		turned_on = true;
+	}
 	return true;
 }
 
@@ -189,7 +192,7 @@ local ActMap = {
 		Name = "Wait",
 		Procedure = DFA_NONE,
 		Length = 1,
-		Delay = 50,
+		Delay = 10,
 		Directions = 2,
 		FlipDir = 1,
 		X = 0,

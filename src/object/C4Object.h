@@ -409,6 +409,7 @@ public:
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual C4ValueArray * GetProperties() const;
 };
 
 #endif

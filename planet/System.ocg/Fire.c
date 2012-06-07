@@ -28,7 +28,7 @@ global func OnFire()
 }
 
 // Extinguishes the calling object with specified strength.
-global func Extinguish(strength)
+global func Extinguish(strength /* strength between 0 and 100 */)
 {
 	if (!this)
 		return false;
@@ -47,7 +47,11 @@ global func Extinguish(strength)
 }
 
 // Incinerates the calling object with specified strength.
-global func Incinerate(strength, int caused_by, blasted, incinerating_object)
+global func Incinerate(
+	strength /* strength between 0 and 100 */
+	, int caused_by /* the player that caused the incineration */
+	, blasted /* whether the object was incinerated by an explosion */
+	, incinerating_object /* the object that caused the incineration */)
 {
 	if (!this)
 		return false;

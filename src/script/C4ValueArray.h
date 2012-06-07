@@ -76,6 +76,7 @@ public:
 	void SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val);
 
 	void Sort(class C4SortObject &rSort);
+	void SortStrings();
 
 private:
 	// Reference counter

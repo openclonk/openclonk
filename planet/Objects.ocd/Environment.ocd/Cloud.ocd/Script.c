@@ -278,14 +278,29 @@ protected func Evaporation()
 //Shades the clouds based on iSize: the water density value of the cloud.
 private func ShadeCloud()
 {
-	var shade = Min((rain+50)*425/1000, 255);
+	var cloudAlpha = Min((rain+50)*425/1000, 255);
+	if(rain > 600) cloudAlpha = 255;
+	
+	//from RequestAlpha function
+	if(requestAlpha != nil){
+		cloudAlpha = cloudAlpha - (255 - requestAlpha);
+		if(cloudAlpha < 0) cloudAlpha = 0;
+	}
+	
 	var shade2 = Min(rain-600, 255);
-
-	if (rain <= 600) 
-		SetObjAlpha(shade);
-	if (rain > 600) 
-		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, 255));
+	
+	if (rain <= 600)
+		SetObjAlpha(cloudAlpha);
+	if (rain > 600)
+		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloudAlpha));
 	return;
+}
+
+//Utilized by time to make clouds invisible at night
+local requestAlpha;
+
+public func RequestAlpha(int alpha){
+	requestAlpha = alpha;
 }
 
 local ActMap = {

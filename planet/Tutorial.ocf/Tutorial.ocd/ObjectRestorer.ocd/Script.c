@@ -101,7 +101,7 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 		else
 			to_restore->SetPosition(to_x, to_y);
 		// Restored object might have been removed on enter (Stackable).
-		if (to_restore)
+		if (to_restore && !to_restore->~IsStackable())
 		{
 			// Add new restore mode, either standard one or effect supplied in EffectVar 4.
 			if (ctrl_string)

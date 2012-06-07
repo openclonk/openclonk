@@ -18,17 +18,6 @@ static const SproutBerryBush_water_per_berry = 10;
 static const SproutBerryBush_max_sprouts = 8;
 static const SproutBerryBush_evolve_steps_per_new_sprout = 2;
 
-// static function
-func Place(int amount)
-{
-	// place some sprout berries
-	var bush = PlaceVegetation(SproutBerryBush, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 100000);
-	if(bush)
-		for (var i = 1; i < amount; i++)
-			PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
-	return true;
-}
-
 func Construction()
 {
 	SetCon(100);

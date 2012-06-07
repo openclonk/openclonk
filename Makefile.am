@@ -511,6 +511,7 @@ src/script/C4AulDebug.h \
 src/script/C4AulDefFunc.h \
 src/script/C4AulExec.cpp \
 src/script/C4AulExec.h \
+src/script/C4AulFunc.cpp \
 src/script/C4AulFunc.h \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
@@ -687,6 +688,7 @@ src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
 src/script/C4Aul.cpp \
 src/script/C4AulExec.cpp \
+src/script/C4AulFunc.cpp \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
 src/script/C4StringTable.cpp \

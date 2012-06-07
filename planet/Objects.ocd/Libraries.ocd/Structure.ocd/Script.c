@@ -17,15 +17,3 @@ public func Damage(int change, int cause, int cause_plr)
 		}
 	return _inherited(change, cause, cause_plr);
 }
-
-public func Construction(object creator)
-{
-	if (creator)
-	{
-		// Set dir according to the direction specified by the creator.
-		var dir = creator->~GetConstructionDirection();
-		if (dir)
-			SetDir(dir);
-	}
-	return _inherited(creator, ...);	
-}

@@ -21,7 +21,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// C4Aul script engine CP conversion
+// Miscellaneous script engine bits
 
 #include <C4Include.h>
 #include <C4Aul.h>
@@ -44,127 +44,17 @@ void C4AulError::show()
 		DebugLog(sMessage.getData());
 }
 
-C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
-		iRefCnt(0),
-		Name(pName ? Strings.RegString(pName) : 0),
-		MapNext(NULL),
-		OverloadedBy (NULL)
-{
-	AppendToScript(pOwner);
-	IncRef(); // see C4AulScript::Clear()
-}
-
-void C4AulFunc::AppendToScript(C4AulScript * pOwner)
-{
-	Owner = pOwner;
-	if ((Prev = Owner->FuncL))
-	{
-		Prev->Next = this;
-		Owner->FuncL = this;
-	}
-	else
-	{
-		Owner->Func0 = this;
-		Owner->FuncL = this;
-	}
-	Next = NULL;
-	assert(GetName() || Owner->Temporary);
-	// add to global lookuptable with this name
-	if (GetName())
-		Owner->Engine->FuncLookUp.Add(this, true);
-}
-
-void C4AulFunc::RemoveFromScript()
-{
-	if (Prev) Prev->Next = Next;
-	if (Next) Next->Prev = Prev;
-	if (Owner->Func0 == this) Owner->Func0 = Next;
-	if (Owner->FuncL == this) Owner->FuncL = Prev;
-	assert(Owner);
-	assert(Owner->Temporary || Name);
-	assert(!Owner->GetPropList() || Owner->GetPropList()->GetFunc(Name) != this);
-	if (GetName())
-		Owner->Engine->FuncLookUp.Remove(this);
-	Prev = 0;
-	Next = 0;
-	Owner = 0;
-}
-
-C4AulFunc::~C4AulFunc()
-{
-	// remove from list
-	if (Prev) Prev->Next = Next;
-	if (Next) Next->Prev = Prev;
-	if (Owner)
-	{
-		if (Owner->Func0 == this) Owner->Func0 = Next;
-		if (Owner->FuncL == this) Owner->FuncL = Prev;
-		if (GetName())
-			Owner->Engine->FuncLookUp.Remove(this);
-		if (Owner->GetPropList() && Name)
-		{
-			C4Value v;
-			Owner->GetPropList()->GetPropertyByS(Name, &v);
-			assert(v.getFunction() != this);
-		}
-	}
-}
-
-StdStrBuf C4AulFunc::GetFullName()
-{
-	// "lost" function?
-	StdStrBuf sOwner;
-	if (!Owner)
-	{
-		sOwner.Ref("(unknown) ");
-	}
-	else if (Owner->GetPropList() && Owner->GetPropList()->GetDef())
-	{
-		sOwner.Format("%s.", Owner->GetPropList()->GetDef()->id.ToString());
-	}
-	else if (Owner->Engine == Owner)
-	{
-		sOwner.Ref("global ");
-	}
-	else
-	{
-		sOwner.Ref("game ");
-	}
-	StdStrBuf sResult;
-	sResult.Format("%s%s", sOwner.getData(), GetName());
-	return sResult;
-}
-
-C4AulDefFunc::C4AulDefFunc(C4AulScript *pOwner, const char *pName, C4ScriptFnDef* pDef):
-		C4AulFunc(pOwner, pName) // constructor
-{
-	Def = pDef;
-	Owner->GetPropList()->SetPropertyByS(Name, C4VFunction(this));
-}
-
-C4AulDefFunc::~C4AulDefFunc()
-{
-	assert(!Owner);
-}
-
 C4AulScript::C4AulScript()
 {
 	// not compiled
 	State = ASS_NONE;
-	IncludesResolved = false;
 
 	// defaults
-	Resolving=false;
 	Temporary = false;
-	LocalNamed.Reset();
 
 	// prepare lists
 	Prev = Next = NULL;
 	Engine = NULL;
-	Func0 = FuncL = NULL;
-	// prepare include list
-	Includes.clear();
-	Appends.clear();
 }
 
 C4AulScript::~C4AulScript()
@@ -188,15 +78,6 @@ void C4AulScript::Unreg()
 
 void C4AulScript::Clear()
 {
-	// remove includes
-	Includes.clear();
-	Appends.clear();
-	while (Func0)
-	{
-		C4AulFunc * f = Func0;
-		f->RemoveFromScript();
-		f->DecRef(); // see C4AulFunc::C4AulFunc
-	}
 	// reset flags
 	State = ASS_NONE;
 }
@@ -263,13 +144,17 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &Fro
 		ParType[i] = FromFunc.ParType[i];
 }
 
-
-void C4AulScript::AddFunc(const char *pIdtf, C4ScriptFnDef* Def)
+C4AulScriptFunc::~C4AulScriptFunc()
 {
-	// create def func
-	new C4AulDefFunc(this, pIdtf, Def);
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
 }
 
+void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
+{
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	OwnerOverloaded = f;
+	if (f) f->IncRef();
+}
 
 /*--- C4AulScriptEngine ---*/
 
@@ -293,7 +178,7 @@ C4PropList * C4AulScriptEngine::GetPropList()
 {
 	if (!GlobalPropList)
 	{
-		GlobalPropList = C4PropList::NewScen();
+		GlobalPropList = C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"));
 		RegisterGlobalConstant("Global", C4VPropList(GlobalPropList));
 	}
 	return GlobalPropList;
@@ -327,21 +212,6 @@ void C4AulScriptEngine::Clear()
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 }
 
-
-void C4AulScriptEngine::UnLink()
-{
-	// unlink scripts
-	for (C4AulScript *s = Child0; s; s = s->Next)
-		s->UnLink();
-	C4AulScript::UnLink();
-	// Do not clear global variables and constants, because they are registered by the
-	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
-	// variable or constant at runtime by removing it from the script.
-	//GlobalNamedNames.Reset();
-	//GlobalConstNames.Reset();
-}
-
-
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
 {
 	// Register name and set value.
@@ -368,7 +238,7 @@ bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
-	GameScript.ScenPropList->Denumerate(numbers);
+	GameScript.ScenPropList.Denumerate(numbers);
 	return true;
 }
 
@@ -377,54 +247,45 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
-	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList, numbers), "Scenario"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
 }
 
-std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
+std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 {
 	std::list<const char*> functions;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
+	std::list<const char*> global_functions;
+	if (!p) p = GetPropList();
+	const C4ValueArray * a = p->GetProperties();
+	for (int i = 0; i < a->GetSize(); ++i)
 	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->GetName());
-		}
+		C4String * key = (*a)[i].getStr();
+		if (!key) continue;
+		C4AulFunc * f = p->GetFunc(key);
+		if (!f) continue;
+		if (!f->GetPublic()) continue;
+		if (p->HasProperty(key))
+			functions.push_back(key->GetCStr());
+		else
+			global_functions.push_back(key->GetCStr());
 	}
-	// Add object or scenario script functions
-	if (script)
-	{
-		bool divider = false;
-		C4AulFunc *f = script->FuncL;
-		C4AulScriptFunc *pRef;
-		// Scan all functions
-		while (f)
-		{
-			if ((pRef = f->SFunc()))
-			{
-				// Insert divider if necessary
-				if (!divider)
-					functions.push_back(0);
-				divider = true;
-				// Add function
-				functions.push_back(pRef->GetName());
-			}
-			f = f->Prev;
-		}
-	}
+	delete a;
+	functions.sort();
+	functions.push_back(0);
+	global_functions.sort();
+	functions.splice(functions.end(), global_functions);
 	return functions;
 }
 
 /*--- C4AulFuncMap ---*/
-static const size_t CapacityInc = 1024;
 
-C4AulFuncMap::C4AulFuncMap(): Funcs(new C4AulFunc*[CapacityInc]), FuncCnt(0), Capacity(CapacityInc)
+C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
 {
-	memset(Funcs, 0, sizeof (C4AulFunc *) * Capacity);
+	memset(Funcs, 0, sizeof (C4AulFunc *) * HashSize);
 }
 
 C4AulFuncMap::~C4AulFuncMap()
 {
-	delete[] Funcs;
+	assert(!FuncCnt);
 }
 
 unsigned int C4AulFuncMap::Hash(const char * name)
@@ -436,11 +297,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
 {
 	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	while (Func && !SEqual(Name, Func->GetName()))
+	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
+	while (Func && Name->GetCStr() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
@@ -448,60 +309,25 @@ C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 C4AulFunc * C4AulFuncMap::GetNextSNFunc(const C4AulFunc * After)
 {
 	C4AulFunc * Func = After->MapNext;
-	while (Func && !SEqual(After->GetName(), Func->GetName()))
+	while (Func && After->GetName() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
 
-void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
+void C4AulFuncMap::Add(C4AulFunc * func)
 {
-	if (++FuncCnt > Capacity)
-	{
-		int NCapacity = Capacity + CapacityInc;
-		C4AulFunc ** NFuncs = new C4AulFunc*[NCapacity];
-		memset(NFuncs, 0, sizeof (C4AulFunc *) * NCapacity);
-		for (int i = 0; i < Capacity; ++i)
-		{
-			while (Funcs[i])
-			{
-				// Get a pointer to the bucket
-				C4AulFunc ** pNFunc = &(NFuncs[Hash(Funcs[i]->GetName()) % NCapacity]);
-				// get a pointer to the end of the linked list
-				while (*pNFunc) pNFunc = &((*pNFunc)->MapNext);
-				// Move the func over
-				*pNFunc = Funcs[i];
-				// proceed with the next list member
-				Funcs[i] = Funcs[i]->MapNext;
-				// Terminate the linked list
-				(*pNFunc)->MapNext = 0;
-			}
-		}
-		Capacity = NCapacity;
-		delete [] Funcs;
-		Funcs = NFuncs;
-	}
+	++FuncCnt;
 	// Get a pointer to the bucket
-	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % Capacity]);
-	if (bAtStart)
-	{
-		// move the current first to the second position
-		func->MapNext = *pFunc;
-	}
-	else
-	{
-		// get a pointer to the end of the linked list
-		while (*pFunc)
-		{
-			pFunc = &((*pFunc)->MapNext);
-		}
-	}
+	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % HashSize]);
+	// move the current first to the second position
+	func->MapNext = *pFunc;
 	// Add the func
 	*pFunc = func;
 }
 
 void C4AulFuncMap::Remove(C4AulFunc * func)
 {
-	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % Capacity];
+	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % HashSize];
 	while (*pFunc != func)
 	{
 		pFunc = &((*pFunc)->MapNext);
