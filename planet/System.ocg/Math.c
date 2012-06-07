@@ -125,3 +125,20 @@ global func GetCalcDir()
 	if (!this) return 0;
 	return GetDir() * 2 - 1;
 }
+
+// Ensure that the first rectangle is fully with the second one and returns an adjusted rectangle. Both rectangles can be created with Rectangle()
+global func RectangleEnsureWithin(proplist first, proplist second)
+{
+	if (GetType(first) != C4V_PropList) return {};
+	if (GetType(second) != C4V_PropList) return {};
+
+	var adjusted = { x = first.x, y = first.y, w = first.w, h = first.h };
+	if (first.x < second.x) adjusted.x = second.x;
+	if (first.w > second.w) adjusted.w = second.w - (adjusted.x - second.x);
+	if (adjusted.x + adjusted.w > second.x + second.w) adjusted.w = second.w - (adjusted.x - second.x);
+	if (first.y < second.y) adjusted.y = second.y;
+	if (first.h > second.h) adjusted.h = second.h - (adjusted.y - second.y);
+	if (adjusted.y + adjusted.h > second.y + second.h) adjusted.h = second.h - (adjusted.y - second.y);
+
+	return adjusted;
+}

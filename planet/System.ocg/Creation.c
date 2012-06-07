@@ -147,8 +147,9 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 	@param x The starting X-coordinate of the forest.
 	@param y The lowest line at which to start placing plants. Level ground is determined automatically, goind upwards.
 	@param width The width of the forest
+	@param foreground Will roughly make every third instance of plants[0] foreground
 */
-global func PlaceForest(array plants, int x, int y, int width)
+global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 {
 	// Parameter check
 	if (GetLength(plants) == 0) return;
@@ -197,6 +198,7 @@ global func PlaceForest(array plants, int x, int y, int width)
 
 		plant = CreateObject(plants[0], x + i + x_variance, y_pos+5, NO_OWNER);
 		plant->SetCon(growth);
+		if (foreground && !Random(3)) plant.Plane = 510;
 		// Every ~7th plant: double plant!
 		if (x_variance != 0 && !Random(7))
 		{
@@ -206,6 +208,7 @@ global func PlaceForest(array plants, int x, int y, int width)
 			if (y_pos == 0) continue;
 			plant = CreateObject(plants[0], x + i - x_variance, y_pos+5, NO_OWNER);
 			plant->SetCon(growth);
+			if (foreground && !Random(3)) plant.Plane = 510;
 		}
 	}
 }
