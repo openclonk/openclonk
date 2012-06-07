@@ -25,6 +25,7 @@
 #include <C4Object.h>
 #include <C4Effect.h>
 #include <C4DefList.h>
+#include <C4Rope.h>
 
 inline const static char *FnStringPar(C4String *pString)
 {
@@ -95,6 +96,14 @@ class NeedObjectContext : public C4AulExecError
 {
 public:
 	NeedObjectContext(const char *function) : C4AulExecError(FormatString("%s: must be called from object context", function).getData()) {}
+};
+
+// Other functions are callable in rope context only.
+// This exception gets thrown if they are called from anywhere else.
+class NeedRopeContext : public C4AulExecError
+{
+public:
+	NeedRopeContext(const char *function) : C4AulExecError(FormatString("%s: must be called from rope context", function).getData()) {}
 };
 
 // Then there's functions that don't care, but need either defn or object context.
@@ -312,6 +321,27 @@ public C4AulDefFuncHelper {                   \
     Func pFunc;                               \
   };                                          \
 template <typename RType LIST(N, TYPENAMES)>  \
+class C4AulDefRopeFunc##N:                  \
+public C4AulDefFuncHelper {                   \
+  public:                                     \
+/* A pointer to the function which this class wraps */ \
+    typedef RType (*Func)(C4Rope * LIST(N, PARS)); \
+    virtual int GetParCount() { return N; }   \
+    virtual C4V_Type GetRetType()             \
+    { return C4ValueConv<RType>::Type(); }    \
+/* Constructor, using the base class to create the ParType array */ \
+    C4AulDefRopeFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
+      C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
+/* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
+    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
+    { \
+      C4Rope * Rope; if (!_this || !(Rope = dynamic_cast<C4Rope*>(_this))) throw new NeedRopeContext(GetName()); \
+      return C4ValueConv<RType>::ToC4V(pFunc(Rope LIST(N, CONV_FROM_C4V))); \
+    } \
+  protected:                                  \
+    Func pFunc;                               \
+  };                                          \
+template <typename RType LIST(N, TYPENAMES)>  \
 inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
@@ -320,6 +350,11 @@ template <typename RType LIST(N, TYPENAMES)> \
 inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
+  } \
+template <typename RType LIST(N, TYPENAMES)> \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Rope * LIST(N, PARS)), bool Public=true) \
+  { \
+  new C4AulDefRopeFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   }
 
 TEMPLATE(0)

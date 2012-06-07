@@ -19,67 +19,67 @@
 #include <C4Rope.h>
 #include <C4AulDefFunc.h>
 
-static C4Void FnRemove(C4PropList* Rope)
+static C4Void FnRemove(C4Rope* Rope)
 {
-	Game.Ropes.RemoveRope(static_cast<C4Rope*>(Rope));
+	Game.Ropes.RemoveRope(Rope);
 	return C4Void();
 }
 
-static C4Object* FnGetFront(C4PropList* Rope)
+static C4Object* FnGetFront(C4Rope* Rope)
 {
-	return static_cast<C4Rope*>(Rope)->GetFront()->GetObject();
+	return Rope->GetFront()->GetObject();
 }
 
-static C4Object* FnGetBack(C4PropList* Rope)
+static C4Object* FnGetBack(C4Rope* Rope)
 {
-	return static_cast<C4Rope*>(Rope)->GetBack()->GetObject();
+	return Rope->GetBack()->GetObject();
 }
 
-static C4Void FnSetFront(C4PropList* Rope, C4Object* obj, Nillable<int> x, Nillable<int> y)
+static C4Void FnSetFront(C4Rope* Rope, C4Object* obj, Nillable<int> x, Nillable<int> y)
 {
-	static_cast<C4Rope*>(Rope)->SetFront(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
+	Rope->SetFront(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
 	return C4Void();
 }
 
-static C4Void FnSetBack(C4PropList* Rope, C4Object* obj, Nillable<int> x, Nillable<int> y)
+static C4Void FnSetBack(C4Rope* Rope, C4Object* obj, Nillable<int> x, Nillable<int> y)
 {
-	static_cast<C4Rope*>(Rope)->SetBack(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
+	Rope->SetBack(obj, x.IsNil() ? Fix0 : itofix(x), y.IsNil() ? Fix0 : itofix(y));
 	return C4Void();
 }
 
-static C4Void FnSetFrontAutoSegmentation(C4PropList* Rope, int max)
+static C4Void FnSetFrontAutoSegmentation(C4Rope* Rope, int max)
 {
-	static_cast<C4Rope*>(Rope)->SetFrontAutoSegmentation(itofix(max));
+	Rope->SetFrontAutoSegmentation(itofix(max));
 	return C4Void();
 }
 
-static C4Void FnSetBackAutoSegmentation(C4PropList* Rope, int max)
+static C4Void FnSetBackAutoSegmentation(C4Rope* Rope, int max)
 {
-	static_cast<C4Rope*>(Rope)->SetBackAutoSegmentation(itofix(max));
+	Rope->SetBackAutoSegmentation(itofix(max));
 	return C4Void();
 }
 
-static C4Void FnSetFrontFixed(C4PropList* Rope, bool fixed)
+static C4Void FnSetFrontFixed(C4Rope* Rope, bool fixed)
 {
-	static_cast<C4Rope*>(Rope)->SetFrontFixed(fixed);
+	Rope->SetFrontFixed(fixed);
 	return C4Void();
 }
 
-static C4Void FnSetBackFixed(C4PropList* Rope, bool fixed)
+static C4Void FnSetBackFixed(C4Rope* Rope, bool fixed)
 {
-	static_cast<C4Rope*>(Rope)->SetBackFixed(fixed);
+	Rope->SetBackFixed(fixed);
 	return C4Void();
 }
 
-static C4Void FnPullFront(C4PropList* Rope, int force)
+static C4Void FnPullFront(C4Rope* Rope, int force)
 {
-	static_cast<C4Rope*>(Rope)->PullFront(itofix(force));
+	Rope->PullFront(itofix(force));
 	return C4Void();
 }
 
-static C4Void FnPullBack(C4PropList* Rope, int force)
+static C4Void FnPullBack(C4Rope* Rope, int force)
 {
-	static_cast<C4Rope*>(Rope)->PullBack(itofix(force));
+	Rope->PullBack(itofix(force));
 	return C4Void();
 }
 
