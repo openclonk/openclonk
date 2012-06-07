@@ -141,3 +141,71 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 	// Succes, return number of created particles.
 	return prtnum;
 }
+
+/** Place a nice shaped forest. If no area is given, the whole landscape is used (which is not recommended!).
+	@param plants An array containing all plants that should be in the forest. plants[0] is the main plant, the others will be randomly scattered throughout the forest.
+	@param x The starting X-coordinate of the forest.
+	@param y The lowest line at which to start placing plants. Level ground is determined automatically, goind upwards.
+	@param width The width of the forest
+*/
+global func PlaceForest(array plants, int x, int y, int width)
+{
+	// Parameter check
+	if (GetLength(plants) == 0) return;
+	if (!x) x = 0;
+	if (!y) y = LandscapeHeight();
+	if (!width) width = LandscapeWidth();
+	if (this) { x = AbsX(x); y = AbsY(y); }
+
+	// Roughly 20% of the size (10% per side) are taken for 'forest ending zones'. Plants will be smaller there.
+	var end_zone = width * 10 / 100;
+	// The width of the standard plants will roughly be the measure for our plant size
+	var plant_size = plants[0]->GetDefWidth()/2;
+
+	var growth, y_pos, plant, x_variance, variance = 0, count, j, spot;
+	for (var i = plant_size ; i < width ; i += plant_size)
+	{
+		growth = 100;
+		y_pos = y;
+		x_variance = RandomX(-10,10);
+		// End zone check
+		if (i < end_zone)
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * (i/plant_size), 10,90);
+		else if (i > width - end_zone)
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * ((width-i)/plant_size), 10,90);
+		else if (!Random(10) && GetLength(plants) > 1)
+		{
+			variance = Random(GetLength(plants)-1)+1;
+			// Scatter some other plants
+			count = RandomX(2,4);
+			for (j = 0 ; j < count ; j++)
+			{
+				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
+				y_pos = y;
+				if (!GBackSolid(x + i + spot, y_pos)) continue;
+				while (!GBackSky(x + i + spot, y_pos) && y_pos > 0) y_pos--;
+				if (y_pos == 0) continue;
+				plant = CreateObject(plants[variance], x + i + spot, y_pos+5, NO_OWNER);
+			}
+			continue;
+		}
+		// No ground at y_pos?
+		if (!GBackSolid(x + i + x_variance, y_pos)) continue;
+		// Get level ground
+		while (!GBackSky(x + i + x_variance, y_pos) && y_pos > 0) y_pos--;
+		if (y_pos == 0) continue;
+
+		plant = CreateObject(plants[0], x + i + x_variance, y_pos+5, NO_OWNER);
+		plant->SetCon(growth);
+		// Every ~7th plant: double plant!
+		if (x_variance != 0 && !Random(7))
+		{
+			y_pos = y;
+			if (!GBackSolid(x + i - x_variance, y_pos)) continue;
+			while (!GBackSky(x + i - x_variance, y_pos) && y_pos > 0) y_pos--;
+			if (y_pos == 0) continue;
+			plant = CreateObject(plants[0], x + i - x_variance, y_pos+5, NO_OWNER);
+			plant->SetCon(growth);
+		}
+	}
+}
