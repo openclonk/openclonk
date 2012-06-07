@@ -13,14 +13,9 @@ protected func Initialize()
 	goal->SetWealthGoal(400);
 	
 	// Place some trees.
-	for (var i = 0; i < 16 + Random(4); i++)
-		PlaceVegetation(Tree_Coniferous, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 1000 * (61 + Random(40)));
-	
-	// place some sprout berries
-	var bush = PlaceVegetation(SproutBerryBush, 0, LandscapeHeight() / 3, LandscapeWidth(), LandscapeHeight(), 100000);
-	if(bush)
-		for (var i = 0; i < 2; i++)
-			PlaceVegetation(SproutBerryBush, bush->GetX() - 200, bush->GetY() - 200, 400, 400, 100000);
+	//Tree_Coniferous->Place(16+Random(4), Rectangle(0,LandscapeHeight()/3, LandscapeWidth(), LandscapeHeight()));
+	PlaceForest([Tree_Coniferous, SproutBerryBush],0, LandscapeHeight()/2+50);
+
 	PlaceGrass(100);
 	
 	CreateEnvironmentObjects("Temperate");
