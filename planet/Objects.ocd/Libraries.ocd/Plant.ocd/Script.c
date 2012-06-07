@@ -11,20 +11,47 @@ public func IsPlant()
 	return true;
 }
 
+/* Placement */
+
+/** Places the given amount of plants inside the area. If no area is given, the whole landscape is used.
+	@param amount The amount of plants to be created (not necessarily every plant is created).
+	@param rectangle The area where to put the plants.
+*/
+public func Place(int amount, proplist rectangle)
+{
+	// No calls to objects, only definitions
+	if (GetType(this) == C4V_C4Object) return;
+	if (!rectangle)
+		rectangle = Rectangle(0,0, LandscapeWidth(), LandscapeHeight());
+	for (var i = 0 ; i < amount ; i++)
+		PlaceVegetation(this, rectangle.x, rectangle.y, rectangle.w, rectangle.h, 100000);
+}
+
+/* Reproduction */
+
 /** Chance to reproduce plant. Chances are one out of return value. Default is 500.
 	@return the chance, higher = less chance.
 */
-private func SeedChance() {	return 500; }
+private func SeedChance()
+{
+	return 500;
+}
 
 /** Distance the seeds may travel. Default is 250.
 	@return the maximum distance.
 */
-private func SeedArea() { return 250; }
+private func SeedArea()
+{
+	return 250;
+}
 
 /** The amount of plants allowed within SeedAreaSize. Default is 10.
 	@return the maximum amount of plants.
 */
-private func SeedAmount() { return 10; }
+private func SeedAmount()
+{
+	return 10;
+}
 
 /** Automated positioning via RootSurface, make sure to call this if needed (in case Construction is overloaded)
 */
@@ -105,7 +132,6 @@ protected func Damage()
 	if (GetDamage() > MaxDamage() && IsStanding()) ChopDown();
 	_inherited(...);
 }
-
 
 // restarts the growing of the tree (for example after taking damage)
 func RestartGrowth(int old_value)
