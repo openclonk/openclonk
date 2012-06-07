@@ -33,7 +33,6 @@
 
 C4ScriptHost::C4ScriptHost()
 {
-	Prev = Next = NULL;
 	Script = NULL;
 	Code.clear();
 	LastCode = NULL;
@@ -49,7 +48,6 @@ C4ScriptHost::C4ScriptHost()
 C4ScriptHost::~C4ScriptHost()
 {
 	Clear();
-	Unreg();
 }
 
 void C4ScriptHost::Clear()

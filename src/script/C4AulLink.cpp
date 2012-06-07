@@ -28,6 +28,16 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
+bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
+{
+
+}
+
+bool C4AulScript::ResolveAppends(C4DefList *rDefs)
+{
+
+}
+
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
 bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
@@ -116,6 +126,11 @@ bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 	return true;
 }
 
+void C4AulScript::UnLink()
+{
+
+}
+
 void C4ScriptHost::UnLink()
 {
 	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
@@ -137,7 +152,7 @@ void C4ScriptHost::UnLink()
 void C4AulScriptEngine::UnLink()
 {
 	// unlink scripts
-	for (C4ScriptHost *s = Child0; s; s = s->Next)
+	for (C4AulScript *s = Child0; s; s = s->Next)
 		s->UnLink();
 	GetPropList()->Thaw();
 	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
@@ -159,15 +174,15 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
 
 		// resolve appends
-		for (C4ScriptHost *s = Child0; s; s = s->Next)
+		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->ResolveAppends(rDefs);
 
 		// resolve includes
-		for (C4ScriptHost *s = Child0; s; s = s->Next)
+		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
 
 		// parse the scripts to byte code
-		for (C4ScriptHost *s = Child0; s; s = s->Next)
+		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->Parse();
 
 		// engine is always parsed (for global funcs)
@@ -179,7 +194,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		rDefs->CallEveryDefinition();
 
 		// Done modifying the proplists now
-		for (C4ScriptHost *s = Child0; s; s = s->Next)
+		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->GetPropList()->Freeze();
 		GetPropList()->Freeze();
 
@@ -221,7 +236,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage)
 {
-	C4ScriptHost * s;
+	C4AulScript * s;
 	for (s = Child0; s; s = s->Next)
 		if (s->ReloadScript(szScript, szLanguage))
 			break;

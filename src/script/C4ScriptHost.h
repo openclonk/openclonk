@@ -37,8 +37,6 @@ public:
 	void Clear();
 	virtual bool Load(C4Group &hGroup, const char *szFilename,
 	          const char *szLanguage, C4LangStringTable *pLocalTable);
-	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
-	void Unreg(); // remove from list
 	const char *GetScript() const { return Script.getData(); }
 	virtual C4ScriptHost * GetScriptHost() { return this; }
 	std::list<C4ScriptHost *> SourceScripts;
@@ -70,7 +68,6 @@ protected:
 	bool IncludesResolved;
 
 	StdStrBuf Script; // script
-	C4ScriptHost *Prev, *Next;
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
 	C4AulBCC * LastCode;
@@ -79,7 +76,6 @@ protected:
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
-	friend class C4AulScriptEngine;
 	friend class C4DirectExecScript;
 };
 

@@ -286,6 +286,8 @@ public:
 	C4AulScript(); // constructor
 	virtual ~C4AulScript(); // destructor
 	virtual void Clear(); // remove script, byte code and children
+	void Reg2List(C4AulScriptEngine *pEngine); // reg to linked list
+	void Unreg(); // remove from list
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
@@ -318,12 +320,15 @@ protected:
 	C4LangStringTable *stringTable;	
 
 	C4AulScriptEngine *Engine; //owning engine
+	C4AulScript *Prev, *Next; // tree structure
 
 	C4AulScriptState State; // script state
 
 	virtual bool ReloadScript(const char *szPath, const char *szLanguage); // reload given script
 	virtual bool Parse();
-
+	virtual bool ResolveIncludes(C4DefList *rDefs);
+	virtual bool ResolveAppends(C4DefList *rDefs);
+	virtual void UnLink();
 };
 
 // holds all C4AulScripts
@@ -332,7 +337,7 @@ class C4AulScriptEngine : public C4AulScript
 protected:
 	C4AulFuncMap FuncLookUp;
 	C4PropList * GlobalPropList;
-	C4ScriptHost *Child0, *ChildL; // tree structure
+	C4AulScript *Child0, *ChildL; // tree structure
 
 public:
 	int warnCnt, errCnt; // number of warnings/errors

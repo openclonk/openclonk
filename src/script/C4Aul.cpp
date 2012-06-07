@@ -53,6 +53,7 @@ C4AulScript::C4AulScript()
 	Temporary = false;
 
 	// prepare lists
+	Prev = Next = NULL;
 	Engine = NULL;
 }
 
@@ -60,10 +61,12 @@ C4AulScript::~C4AulScript()
 {
 	// clear
 	Clear();
+	// unreg
+	Unreg();
 }
 
 
-void C4ScriptHost::Unreg()
+void C4AulScript::Unreg()
 {
 	// remove from list
 	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
@@ -80,7 +83,7 @@ void C4AulScript::Clear()
 }
 
 
-void C4ScriptHost::Reg2List(C4AulScriptEngine *pEngine)
+void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
 {
 	// already regged? (def reloaded)
 	if (Engine) return;
