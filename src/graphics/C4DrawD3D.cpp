@@ -766,7 +766,7 @@ void CStdD3D::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWOR
 	lpDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 2 );
 }
 
-void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	// FIXME: zoom width
 	//dwClr |= 0xf0000000;

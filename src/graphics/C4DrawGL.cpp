@@ -1785,7 +1785,7 @@ static inline long int lrintf(float f)
 }
 #endif
 
-void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -1799,8 +1799,8 @@ void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, fl
 		float l = sqrtf(offx * offx + offy * offy);
 		// avoid division by zero
 		l += 0.000000005f;
-		offx /= l; offx *= Zoom;
-		offy /= l; offy *= Zoom;
+		offx /= l; offx *= Zoom * width;
+		offy /= l; offy *= Zoom * width;
 		C4BltVertex vtx[4];
 		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
 		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;

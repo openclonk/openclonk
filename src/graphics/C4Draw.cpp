@@ -1045,7 +1045,7 @@ void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 	PerformPix(sfcDest, tx, ty, dwClr);
 }
 
-void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
@@ -1089,7 +1089,7 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 	// apply color modulation
 	ClrByCurrentBlitMod(dwClr);
 
-	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr);
+	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr, width);
 }
 
 void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?

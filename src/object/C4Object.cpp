@@ -127,13 +127,13 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 	}
 }
 
-static void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
+static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
 	{
-		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
-		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
-		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
+		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col, 0.5f);
+		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col, 0.5f);
+		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-1.5,ty-1.5,tx+1.5,ty+1.5,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 

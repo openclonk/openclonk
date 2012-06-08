@@ -129,7 +129,7 @@ public:
 	void FillBG(DWORD dwClr=0);
 	// Drawing
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width);
 	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects
