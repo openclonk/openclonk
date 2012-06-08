@@ -3086,14 +3086,9 @@ void C4Object::NoAttachAction()
 	}
 }
 
-bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir);
-
 void C4Object::ContactAction()
 {
 	// Take certain action on contact. Evaluate t_contact-CNAT and Procedure.
-	C4Real last_xdir;
-
-	int32_t iDir;
 
 	// Determine Procedure
 	C4PropList* pActionDef = GetAction();
@@ -3112,25 +3107,17 @@ void C4Object::ContactAction()
 				if (ObjectActionFlat(this,Action.Dir)) return;
 			if (OCF & OCF_HitSpeed3)
 				if (ObjectActionKneel(this)) return;
-			// Walk, but keep horizontal momentum (momentum is reset
-			// by ObjectActionWalk) to avoid walk-jump-flipflop on
-			// sideways corner hit if initial walk acceleration is
-			// not enough to reach the next pixel for attachment.
-			// Urks, all those special cases...
-			last_xdir=xdir;
 			ObjectActionWalk(this);
-			xdir=last_xdir;
+			ydir = 0;
 			return;
 		case DFA_SCALE:
-			// Scale up: try corner scale
-			if (!ComDirLike(Action.ComDir, COMD_Down))
+			// Scale down: stand
+			if (ComDirLike(Action.ComDir, COMD_Down))
 			{
-				if (ObjectActionCornerScale(this)) return;
+				ObjectActionStand(this);
 				return;
 			}
-			// Any other: Stand
-			ObjectActionStand(this);
-			return;
+			break;
 		case DFA_DIG:
 			// no special action
 			break;
@@ -3138,7 +3125,7 @@ void C4Object::ContactAction()
 			// Try corner scale out
 			if (!GBackLiquid(GetX(), GetY() - 1))
 				if (ObjectActionCornerScale(this)) return;
-			return;
+			break;
 		}
 
 	//------------------------------- Hit Ceiling -----------------------------------------
@@ -3152,9 +3139,11 @@ void C4Object::ContactAction()
 			// Scale: Try hangle, else stop if going upward
 			if (ComDirLike(Action.ComDir, COMD_Up))
 			{
-				iDir=DIR_Left;
-				if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
-				if (ObjectActionHangle(this,iDir)) return;
+				if (ObjectActionHangle(this))
+				{
+					SetDir(Action.Dir == DIR_Left ? DIR_Right : DIR_Left);
+					return;
+				}
 				Action.ComDir=COMD_Stop;
 			}
 			break;
@@ -3162,8 +3151,8 @@ void C4Object::ContactAction()
 			// Jump: Try hangle, else bounce off
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,Action.Dir,Fix0,Fix0); break; }
-			if (ObjectActionHangle(this,Action.Dir)) return;
+				{ ObjectActionTumble(this,Action.Dir,xdir,ydir); break; }
+			if (ObjectActionHangle(this)) return;
 			break;
 		case DFA_DIG:
 			// No action
@@ -3186,12 +3175,14 @@ void C4Object::ContactAction()
 			else if (ObjectActionScale(this,DIR_Left)) return;
 			break;
 		case DFA_WALK:
-			// Walk: Try scale, else stop
+			// Walk: Try scale
 			if (ComDirLike(Action.ComDir, COMD_Left))
 			{
-				if (ObjectActionScale(this,DIR_Left)) return;
-				// Else stop
-				Action.ComDir=COMD_Stop;
+				if (ObjectActionScale(this,DIR_Left))
+				{
+					ydir = C4REAL100(-1);
+					return;
+				}
 			}
 			// Heading away from solid
 			if (ComDirLike(Action.ComDir, COMD_Right))
@@ -3208,10 +3199,12 @@ void C4Object::ContactAction()
 			if (ObjectActionCornerScale(this)) return;
 			return;
 		case DFA_HANGLE:
-			// Hangle: Try scale, else stop
+			// Hangle: Try scale
 			if (ObjectActionScale(this,DIR_Left))
+			{
+				ydir = C4REAL100(1);
 				return;
-			Action.ComDir=COMD_Stop;
+			}
 			return;
 		case DFA_DIG:
 			// Dig: no action
@@ -3232,11 +3225,14 @@ void C4Object::ContactAction()
 			else if (ObjectActionScale(this,DIR_Right)) return;
 			break;
 		case DFA_WALK:
-			// Walk: Try scale, else stop
+			// Walk: Try scale
 			if (ComDirLike(Action.ComDir, COMD_Right))
 			{
-				if (ObjectActionScale(this,DIR_Right)) return;
-				Action.ComDir=COMD_Stop;
+				if (ObjectActionScale(this,DIR_Right))
+				{
+					ydir = C4REAL100(-1);
+					return;
+				}
 			}
 			// Heading away from solid
 			if (ComDirLike(Action.ComDir, COMD_Left))
@@ -3254,10 +3250,12 @@ void C4Object::ContactAction()
 			// Skip to enable walk out
 			return;
 		case DFA_HANGLE:
-			// Hangle: Try scale, else stop
+			// Hangle: Try scale
 			if (ObjectActionScale(this,DIR_Right))
+			{
+				ydir = C4REAL100(1);
 				return;
-			Action.ComDir=COMD_Stop;
+			}
 			return;
 		case DFA_DIG:
 			// Dig: no action
@@ -3540,10 +3538,13 @@ void C4Object::ExecAction()
 	case DFA_SCALE:
 	{
 		int ComDir = Action.ComDir;
-		if (Action.Dir == DIR_Left && ComDir == COMD_Left)
-			ComDir = COMD_Up;
-		else if (Action.Dir == DIR_Right && ComDir == COMD_Right)
-			ComDir = COMD_Up;
+		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
+		{
+			if (ydir > 0)
+				ComDir = COMD_Down;
+			else
+				ComDir = COMD_Up;
+		}
 		switch (ComDir)
 		{
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:

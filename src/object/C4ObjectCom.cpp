@@ -48,7 +48,6 @@ bool CreateConstructionSite(int32_t ctx, int32_t bty, C4ID strid, int32_t owner,
 bool ObjectActionWalk(C4Object *cObj)
 {
 	if (!cObj->SetActionByName("Walk")) return false;
-	cObj->xdir=cObj->ydir=0;
 	return true;
 }
 
@@ -104,14 +103,12 @@ bool ObjectActionGetPunched(C4Object *cObj, C4Real xdir, C4Real ydir)
 bool ObjectActionKneel(C4Object *cObj)
 {
 	if (!cObj->SetActionByName("KneelDown")) return false;
-	cObj->xdir=cObj->ydir=0;
 	return true;
 }
 
 bool ObjectActionFlat(C4Object *cObj, int32_t dir)
 {
 	if (!cObj->SetActionByName("FlatUp")) return false;
-	cObj->xdir=cObj->ydir=0;
 	cObj->SetDir(dir);
 	return true;
 }
@@ -119,16 +116,13 @@ bool ObjectActionFlat(C4Object *cObj, int32_t dir)
 bool ObjectActionScale(C4Object *cObj, int32_t dir)
 {
 	if (!cObj->SetActionByName("Scale")) return false;
-	cObj->xdir=cObj->ydir=0;
 	cObj->SetDir(dir);
 	return true;
 }
 
-bool ObjectActionHangle(C4Object *cObj, int32_t dir)
+bool ObjectActionHangle(C4Object *cObj)
 {
 	if (!cObj->SetActionByName("Hangle")) return false;
-	cObj->xdir=cObj->ydir=0;
-	cObj->SetDir(dir);
 	return true;
 }
 
@@ -164,7 +158,7 @@ bool ObjectActionPush(C4Object *cObj, C4Object *target)
 	return cObj->SetActionByName("Push",target);
 }
 
-bool CornerScaleOkay(C4Object *cObj, int32_t iRangeX, int32_t iRangeY)
+static bool CornerScaleOkay(C4Object *cObj, int32_t iRangeX, int32_t iRangeY)
 {
 	int32_t ctx,cty;
 	cty=cObj->GetY()-iRangeY;
@@ -179,31 +173,10 @@ bool CornerScaleOkay(C4Object *cObj, int32_t iRangeX, int32_t iRangeY)
 	return false;
 }
 
-bool CheckCornerScale(C4Object *cObj, int32_t &iRangeX, int32_t &iRangeY)
-{
-	for (iRangeX=CornerRange; iRangeX>=1; iRangeX--)
-		for (iRangeY=CornerRange; iRangeY>=1; iRangeY--)
-			if (CornerScaleOkay(cObj,iRangeX,iRangeY))
-				return true;
-	return false;
-}
-
 bool ObjectActionCornerScale(C4Object *cObj)
 {
-	int32_t iRangeX,iRangeY;
-	// Scaling: check range max to min
-	if (cObj->GetProcedure()==DFA_SCALE)
-	{
-		if (!CheckCornerScale(cObj,iRangeX,iRangeY)) return false;
-	}
-	// Swimming: check range min to max
-	else
-	{
-		iRangeY=2;
-		while (!CornerScaleOkay(cObj,iRangeY,iRangeY))
-			{ iRangeY++; if (iRangeY>CornerRange) return false; }
-		iRangeX=iRangeY;
-	}
+	int32_t iRangeX = 1, iRangeY = 1;
+	if (!CornerScaleOkay(cObj,iRangeX,iRangeY)) return false;
 	// Do corner scale
 	if (!cObj->SetActionByName("KneelUp"))
 		cObj->SetActionByName("Walk");
@@ -232,17 +205,6 @@ bool ObjectComMovement(C4Object *cObj, int32_t comdir)
 			break;
 		}
 	return true;
-}
-
-bool ObjectComTurn(C4Object *cObj)
-{
-	// turn around, if standing still
-	if (!cObj->xdir && cObj->GetProcedure() == DFA_WALK)
-	{
-		cObj->SetDir(1-cObj->Action.Dir);
-		return true;
-	}
-	return false;
 }
 
 bool ObjectComStop(C4Object *cObj)

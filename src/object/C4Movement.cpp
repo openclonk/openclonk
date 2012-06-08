@@ -317,37 +317,46 @@ void C4Object::DoMovement()
 		// Move to target
 		do
 		{
-			bool at_xovr = false, at_yovr = false;
 			// Set next step target
 			int step_x = 0, step_y = 0;
-			if (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
-				step_x = Sign<C4Real>(new_x - fix_x);
-			if (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
-				step_y = Sign<C4Real>(new_y - fix_y);
-			int32_t ctx = GetX() + step_x; int32_t cty = GetY() + step_y;
+			if (ctcox != GetX())
+				step_x = Sign(ctcox - GetX());
+			else if (ctcoy != GetY())
+				step_y = Sign(ctcoy - GetY());
+			int32_t ctx = GetX() + step_x;
+			int32_t cty = GetY() + step_y;
 			// Attachment check
 			if (!Shape.Attach(ctx,cty,Action.t_attach))
 				fNoAttach=1;
 			else
 			{
 				// Attachment change to ctx/cty overrides ctco target
-				if (cty != GetY() + step_y) at_yovr = true;
-				if (ctx != GetX() + step_x) at_xovr = true;
+				if (ctx != GetX() + step_x)
+				{
+					ctcox = ctx; xdir = Fix0; new_x = itofix(ctx);
+				}
+				if (cty != GetY() + step_y)
+				{
+					ctcoy = cty; ydir = Fix0; new_y = itofix(cty);
+				}
 			}
 			// Contact check & evaluation
 			if ((iContact=ContactCheck(ctx,cty)))
 			{
 				fAnyContact=true; iContacts |= t_contact;
 				// Abort movement
-				ctcox=GetX(); new_x = fix_x;
-				ctcoy=GetY(); new_y = fix_y;
+				if (ctx != GetX())
+				{
+					ctx = ctcox = GetX(); new_x = fix_x;
+				}
+				if (cty != GetY())
+				{
+					cty = ctcoy = GetY(); new_y = fix_y;
+				}
 			}
-			else // Continue free movement
-				DoMotion(ctx-GetX(),cty-GetY());
-			if (at_xovr) { ctcox=GetX(); xdir=Fix0; new_x = fix_x; }
-			if (at_yovr) { ctcoy=GetY(); ydir=Fix0; new_y = fix_y; }
+			DoMotion(ctx - GetX(), cty - GetY());
 		}
-		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5) || Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5));
+		while (ctcox != GetX() || ctcoy != GetY());
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
