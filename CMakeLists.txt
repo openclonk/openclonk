@@ -149,7 +149,7 @@ endif()
 
 if(WIN32 AND MINGW)
 	# Activate DEP and ASLR
-	list(APPEND OC_EXE_LINKER_FLAGS "--nxcompat --dynamicbase")
+	list(APPEND OC_EXE_LINKER_FLAGS "-Wl,--nxcompat -Wl,--dynamicbase")
 endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
