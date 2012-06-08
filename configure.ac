@@ -365,6 +365,9 @@ else
   if test $WINDRES = no; then
     AC_MSG_ERROR([windres not found.])
   fi
+
+  # ASLR/DEP
+  LDADD="-Wl,--nxcompat -Wl,--dynamicbase $LDADD"
 fi
 
 AC_SUBST(LDADD)
