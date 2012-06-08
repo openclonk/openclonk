@@ -35,6 +35,8 @@ set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
+set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
@@ -143,6 +145,11 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+endif()
+
+if(WIN32 AND MINGW)
+	# Activate DEP and ASLR
+	list(APPEND OC_EXE_LINKER_FLAGS "--nxcompat --dynamicbase")
 endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
@@ -1078,8 +1085,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during deb
 foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
 endforeach()
+if(OC_EXE_LINKER_FLAGS)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
+endforeach()
 if(OC_EXE_LINKER_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
 endif()
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
 foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
