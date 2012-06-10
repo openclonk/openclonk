@@ -190,7 +190,6 @@ public:
 	char Liquid[C4M_MaxDefName+1];
 	bool KeepMapCreator; // set if the mapcreator will be needed in the scenario (for DrawDefMap)
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
-	int32_t NewStyleLandscape; // if set to 2, the landscape uses up to 125 mat/texture pairs
 	int32_t FoWRes; // chunk size of FoGOfWar
 public:
 	void Default();

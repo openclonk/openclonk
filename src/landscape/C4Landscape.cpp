@@ -1065,17 +1065,11 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Modulation,          "MatModulation",         0U));
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
 }
-static CSurface8 *GroupReadSurface8(CStdStream &hGroup)
-{
-	// create surface
-	CSurface8 *pSfc=new CSurface8();
-	if (!pSfc->Read(hGroup))
-		{ delete pSfc; return NULL; }
-	return pSfc;
-}
 
-static CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
+static CSurface8 *GroupReadSurface8(CStdStream &hGroup, const char *szWildCard)
 {
+	if (!hGroup.AccessEntry(szWildCard))
+		return NULL;
 	// create surface
 	CSurface8 *pSfc=new CSurface8();
 	if (!pSfc->Read(hGroup))
@@ -1114,18 +1108,8 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	{
 		CSurface8 * sfcMap=NULL;
 		// Static map from scenario
-		if (hGroup.AccessEntry(C4CFN_Map))
-			if ((sfcMap=GroupReadSurface8(hGroup)))
-				if (!fLandscapeModeSet) Mode=C4LSC_Static;
-
-		// allow C4CFN_Landscape as map for downwards compatibility
-		if (!sfcMap)
-			if (hGroup.AccessEntry(C4CFN_Landscape))
-				if ((sfcMap=GroupReadSurface8(hGroup)))
-				{
-					if (!fLandscapeModeSet) Mode=C4LSC_Static;
-					fMapChanged = true;
-				}
+		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
+			if (!fLandscapeModeSet) Mode=C4LSC_Static;
 
 		// dynamic map from file
 		if (!sfcMap)
@@ -1198,9 +1182,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// progress
 	Game.SetInitProgress(80);
 
-	// mark as new-style
-	Game.C4S.Landscape.NewStyleLandscape = 2;
-
 	// copy noscan-var
 	NoScan=Game.C4S.Landscape.NoScan!=0;
 
@@ -1209,16 +1190,19 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 	// map to big surface and sectionize it
 	// (not for shaders though - they require continous textures)
-	// Create landscape surface
-	Surface8 = new CSurface8();
-	if (!Surface8->Create(Width, Height) || !Mat2Pal())
+	if (!Game.C4S.Landscape.ExactLandscape)
 	{
-		delete Surface8; Surface8 = 0;
-		return false;
-	}
+		// Create landscape surface
+		Surface8 = new CSurface8();
+		if (!Surface8->Create(Width, Height) || !Mat2Pal())
+		{
+			delete Surface8; Surface8 = 0;
+			return false;
+		}
 
-	// Map to landscape
-	if (!MapToLandscape()) return false;
+		// Map to landscape
+		if (!MapToLandscape()) return false;
+	}
 	Game.SetInitProgress(84);
 
 #ifdef DEBUGREC
@@ -1394,57 +1378,24 @@ bool C4Landscape::SaveInitial()
 bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 {
 	// Load exact landscape from group
-	if (!hGroup.AccessEntry(C4CFN_Landscape)) return false;
-	if (!(Surface8=GroupReadSurfaceOwnPal8(hGroup))) return false;
+	if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_Landscape))) return false;
 	int iWidth, iHeight;
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
 	// adjust pal
 	if (!Mat2Pal()) return false;
-	// no PNG: convert old-style landscapes
-	if (!Game.C4S.Landscape.NewStyleLandscape)
-	{
-		// convert all pixels
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
+	// Landscape should be in correct format: Make sure it is!
+	for (int32_t y=0; y<Height; ++y)
+		for (int32_t x=0; x<Width; ++x)
+		{
+			BYTE byPix = Surface8->GetPix(x, y);
+			int32_t iMat = PixCol2Mat(byPix);
+			if (byPix && !MatValid(iMat))
 			{
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2MatOld(byPix); BYTE byIFT = PixColIFTOld(byPix);
-				if (byIFT) byIFT = IFT;
-				// set pixel in 8bpp-surface only, so old-style landscapes won't be screwed up!
-				Surface8->SetPix(x, y, Mat2PixColDefault(iMat)+byIFT);
+				LogFatal(FormatString("Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPix).getData());
+				return false;
 			}
-		// NewStyleLandscape-flag will be set in C4Landscape::Init later
-	}
-	// New style landscape first generation: just correct
-	if (Game.C4S.Landscape.NewStyleLandscape == 1)
-	{
-		// convert all pixels
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-			{
-				// get material
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2MatOld2(byPix);
-				if (MatValid(iMat))
-					// insert pixel
-					Surface8->SetPix(x, y, Mat2PixColDefault(iMat) + (byPix & IFT));
-				else
-					Surface8->SetPix(x, y, 0);
-			}
-	}
-	else
-	{
-		// Landscape should be in correct format: Make sure it is!
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-			{
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2Mat(byPix);
-				if (byPix && !MatValid(iMat))
-				{
-					LogFatal(FormatString("Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPix).getData());
-					return false;
-				}
-			}
-	}
+		}
 	// Init sky
 	if (fLoadSky)
 	{
@@ -1458,8 +1409,7 @@ bool C4Landscape::ApplyDiff(C4Group &hGroup)
 {
 	CSurface8 *pDiff;
 	// Load diff landscape from group
-	if (!hGroup.AccessEntry(C4CFN_DiffLandscape)) return false;
-	if (!(pDiff=GroupReadSurfaceOwnPal8(hGroup))) return false;
+	if (!(pDiff=GroupReadSurface8(hGroup, C4CFN_DiffLandscape))) return false;
 	// convert all pixels: keep if same material; re-set if different material
 	BYTE byPix;
 	for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)

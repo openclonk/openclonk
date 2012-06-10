@@ -290,7 +290,6 @@ void C4SLandscape::Default()
 	NoScan=0;
 	KeepMapCreator=0;
 	SkyScrollMode=0;
-	NewStyleLandscape=0;
 	FoWRes=C4FogOfWar::DefResolutionX;
 }
 
@@ -333,7 +332,6 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoScan,                  "NoScan",                false));
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
-	pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     0));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
 }
 

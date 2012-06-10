@@ -1061,26 +1061,4 @@ C4MaterialShape *C4MaterialMap::GetShapeByName(const char *name)
 	return &(i->second);
 }
 
-
-int32_t PixCol2MatOld(BYTE pixc)
-{
-	const int C4M_ColsPerMat = 3;
-	if (pixc < GBM) return MNone;
-	pixc &= 63; // Substract GBM, ignore IFT
-	if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
-	return pixc / C4M_ColsPerMat;
-}
-
-int32_t PixCol2MatOld2(BYTE pixc)
-{
-	int32_t iMat = ((int32_t) (pixc&0x7f)) -1;
-	// if above MVehic, don't forget additional vehicle-colors
-	if (iMat<=MVehic) return iMat;
-	// equals middle vehicle-color
-	if (iMat==MVehic+1) return MVehic;
-	// above: range check
-	iMat-=2; if (iMat >= ::MaterialMap.Num) return MNone;
-	return iMat;
-}
-
 C4MaterialMap MaterialMap;

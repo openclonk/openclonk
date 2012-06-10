@@ -33,10 +33,7 @@
 #include <CSurface8.h>
 #include <C4Material.h>
 
-const uint8_t GBM = 128,
-              GBM_ColNum = 64,
-              IFT = 0x80,
-              IFTOld = GBM_ColNum;
+const uint8_t IFT = 0x80;
 
 const uint8_t CSkyDef1=104,CSkyDef2=123;
 
@@ -317,13 +314,6 @@ inline bool DensityLiquid(int32_t dens)
 inline BYTE PixColIFT(BYTE pixc)
 {
 	return pixc & IFT;
-}
-
-// always use OldGfx-version (used for convert)
-inline BYTE PixColIFTOld(BYTE pixc)
-{
-	if (pixc>=GBM+IFTOld) return IFTOld;
-	return 0;
 }
 
 inline int32_t PixCol2Tex(BYTE pixc)
