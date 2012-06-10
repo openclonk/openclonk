@@ -405,6 +405,20 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PopValue();
 				break;
 			}
+			case AB_Identical:  // ===
+			{
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->GetType() == pPar2->GetType() && pPar1->GetData() == pPar2->GetData());
+				PopValue();
+				break;
+			}
+			case AB_NotIdentical: // !==
+			{
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->GetType() != pPar2->GetType() || pPar1->GetData() != pPar2->GetData());
+				PopValue();
+				break;
+			}
 			case AB_Equal:  // ==
 			{
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
