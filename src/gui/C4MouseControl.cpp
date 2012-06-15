@@ -559,8 +559,6 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 
 void C4MouseControl::UpdateCursorTarget()
 {
-	int32_t iLastCursor = Cursor;
-
 	C4Object* OldTargetObject = TargetObject;
 
 	if (Scrolling)

@@ -609,8 +609,8 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
 	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
 	// calc stretch regarding texture size and indent
-	float scaleX2 = scaleX * iTexSizeX;
-	float scaleY2 = scaleY * iTexSizeY;
+/*	float scaleX2 = scaleX * iTexSizeX;
+	float scaleY2 = scaleY * iTexSizeY;*/
 	// Enable textures
 	SetTexture();
 	// blit from all these textures
@@ -626,12 +626,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			if (iTexSizeX != pTex->iSizeX)
 			{
 				iTexSizeX = pTex->iSizeX;
-				scaleX2 = scaleX * iTexSizeX;
+				/*scaleX2 = scaleX * iTexSizeX;*/
 			}
 			if (iTexSizeY != pTex->iSizeY)
 			{
 				iTexSizeY = pTex->iSizeY;
-				scaleY2 = scaleY * iTexSizeY;
+				/*scaleY2 = scaleY * iTexSizeY;*/
 			}
 
 			// get new texture source bounds
