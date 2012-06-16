@@ -3418,7 +3418,6 @@ bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 
 void C4Object::ExecAction()
 {
-	Action.t_attach=CNAT_None;
 	C4Real iTXDir;
 	C4Real lftspeed,tydir;
 	int32_t iTargetX;
@@ -3459,11 +3458,32 @@ void C4Object::ExecAction()
 		if (pActionDef->GetPropertyStr(P_InLiquidAction))
 			{ SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction)); return; }
 
-	// assign extra action attachment (CNAT_MultiAttach)
-	// regular attachment values cannot be set for backwards compatibility reasons
-	// this parameter had always been ignored for actions using an internal procedure,
-	// but is for some obscure reasons set in the KneelDown-actions of the golems
-	Action.t_attach |= (pActionDef->GetPropertyInt(P_Attach) & CNAT_MultiAttach);
+	C4Value Attach;
+	if (pActionDef->GetProperty(P_Attach, &Attach))
+	{
+		Action.t_attach = Attach.getInt();
+	}
+	else switch (pActionDef->GetPropertyP(P_Procedure))
+	{
+	case DFA_SCALE:
+		if (Action.Dir == DIR_Left)  Action.t_attach = CNAT_Left;
+		if (Action.Dir == DIR_Right) Action.t_attach = CNAT_Right;
+		break;
+	case DFA_HANGLE:
+		Action.t_attach = CNAT_Top;
+		break;
+	case DFA_WALK:
+	case DFA_KNEEL:
+	case DFA_THROW:
+	case DFA_BRIDGE:
+	case DFA_PUSH:
+	case DFA_PULL:
+	case DFA_DIG:
+		Action.t_attach = CNAT_Bottom;
+		break;
+	default:
+		Action.t_attach = CNAT_None;
+	}
 
 	// if an object is in controllable state, so it can be assumed that if it dies later because of NO_OWNER's cause,
 	// it has been its own fault and not the fault of the last one who threw a flint on it
@@ -3520,7 +3540,6 @@ void C4Object::ExecAction()
 			iPhaseAdvance=+fixtoi(xdir*10);
 		}
 
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		// object is rotateable? adjust to ground, if in horizontal movement or not attached to the center vertex
 		if (Def->Rotateable && Shape.AttachMat != MNone && (!!xdir || Def->Shape.VtxX[Shape.iAttachVtx]))
@@ -3531,7 +3550,6 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_KNEEL:
 		ydir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3561,8 +3579,6 @@ void C4Object::ExecAction()
 		if (ydir<0) iPhaseAdvance=-fixtoi(ydir*14);
 		if (ydir>0) iPhaseAdvance=+fixtoi(ydir*14);
 		xdir=0;
-		if (Action.Dir==DIR_Left)  Action.t_attach|=CNAT_Left;
-		if (Action.Dir==DIR_Right) Action.t_attach|=CNAT_Right;
 		Mobile=1;
 		break;
 	}
@@ -3591,7 +3607,6 @@ void C4Object::ExecAction()
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left); }
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		ydir=0;
-		Action.t_attach|=CNAT_Top;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3624,14 +3639,6 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_DIG:
 	{
-		if (pActionDef->GetPropertyInt(P_Attach))
-		{
-			Action.t_attach |= pActionDef->GetPropertyInt(P_Attach);
-		}
-		else
-		{
-			Action.t_attach |= CNAT_Bottom;
-		}
 		smpx=GetX(); smpy=GetY();
 		bool fAttachOK = false;
 		if (Action.t_attach & CNAT_Bottom && Shape.Attach(smpx,smpy,CNAT_Bottom)) fAttachOK = true;
@@ -3691,14 +3698,11 @@ void C4Object::ExecAction()
 		if (xdir<0) SetDir(DIR_Left);
 		if (xdir>0) SetDir(DIR_Right);
 		iPhaseAdvance=fixtoi(limit*10);
-		Action.t_attach=CNAT_None;
 		Mobile=1;
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_THROW:
-		//ydir=0; xdir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3711,7 +3715,6 @@ void C4Object::ExecAction()
 		case COMD_Right: case COMD_UpRight: SetDir(DIR_Right); break;
 		}
 		ydir=0; xdir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 	}
 	break;
@@ -3766,9 +3769,6 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		// Attachment
-		Action.t_attach|=CNAT_Bottom;
-		// Mobile
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3843,9 +3843,6 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		// Attachment
-		Action.t_attach|=CNAT_Bottom;
-		// Mobile
 		Mobile=1;
 
 		break;
@@ -4027,9 +4024,8 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	default:
 		// Attach
-		if (pActionDef->GetPropertyInt(P_Attach))
+		if (Action.t_attach)
 		{
-			Action.t_attach |= pActionDef->GetPropertyInt(P_Attach);
 			xdir = ydir = 0;
 			Mobile = 1;
 		}

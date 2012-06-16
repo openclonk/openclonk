@@ -630,7 +630,6 @@ Scale = {
 	Procedure = DFA_SCALE,
 	Speed = 60,
 	Accel = 20,
-	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
