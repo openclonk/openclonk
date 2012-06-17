@@ -127,6 +127,18 @@ func RedrawFlagRadius()
 		lflag.range_markers[marker_index] = marker;
 	}
 	
+	// there were unnecessary markers?
+	if(marker_index < GetLength(lflag.range_markers) - 1)
+	{
+		var old = marker_index;
+		while(++marker_index < GetLength(lflag.range_markers))
+		{
+			var marker = lflag.range_markers[marker_index];
+			marker->RemoveObject();
+			lflag.range_markers[marker_index] = nil;
+		}
+		SetLength(lflag.range_markers, old + 1);
+	}
 }
 
 func RefreshOwnershipOfSurrounding()
