@@ -52,7 +52,8 @@ public func UpdateMenu()
 	if(ric == nil)
 	{
 		// we use the square root to get a square layout! trololo!
-		ric = Sqrt(itemcount);
+		// must not be 0
+		ric = Max(1, Sqrt(itemcount));
 		rc = ric;
 		if(itemcount > rc*rc)
 			ric += 1;
