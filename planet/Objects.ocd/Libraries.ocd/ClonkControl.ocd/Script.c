@@ -775,7 +775,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		CreateContentsMenus();
 		// CreateContentsMenus calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
-		GetMenu()->Show();		
+		if(GetMenu())
+			GetMenu()->Show();		
 		return true;
 	}
 	
