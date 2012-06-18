@@ -387,6 +387,30 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	return !!ContactCount;
 }
 
+bool C4Shape::CheckScaleToWalk(int x, int y)
+{
+	for (int32_t i = 0; i < VtxNum; i++)
+	{
+		if (VtxCNAT[i] & CNAT_NoCollision)
+			continue;
+		if (VtxCNAT[i] & CNAT_Bottom)
+		{
+			// no ground under the feet?
+			if (GBackDensity(x + VtxX[i], y + VtxY[i] + 1) < ContactDensity)
+				return false;
+		}
+		else
+		{
+			// can climb with hands?
+			if (GBackDensity(x + VtxX[i] - 1, y + VtxY[i]) >= ContactDensity)
+				return false;
+			if (GBackDensity(x + VtxX[i] + 1, y + VtxY[i]) >= ContactDensity)
+				return false;
+		}
+	}
+	return true;
+}
+
 int32_t C4Shape::GetVertexX(int32_t iVertex)
 {
 	if (!Inside<int32_t>(iVertex,0,VtxNum-1)) return 0;

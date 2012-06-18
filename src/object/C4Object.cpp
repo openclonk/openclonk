@@ -3172,7 +3172,7 @@ void C4Object::ContactAction()
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
 				{ ObjectActionTumble(this,DIR_Left,C4REAL100(+150),Fix0); break; }
 			// Else
-			else if (ObjectActionScale(this,DIR_Left)) return;
+			else if (!ComDirLike(Action.ComDir, COMD_Right) && ObjectActionScale(this,DIR_Left)) return;
 			break;
 		case DFA_WALK:
 			// Walk: Try scale
@@ -3222,7 +3222,7 @@ void C4Object::ContactAction()
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
 				{ ObjectActionTumble(this,DIR_Right,C4REAL100(-150),Fix0); break; }
 			// Else Scale
-			else if (ObjectActionScale(this,DIR_Right)) return;
+			else if (!ComDirLike(Action.ComDir, COMD_Left) && ObjectActionScale(this,DIR_Right)) return;
 			break;
 		case DFA_WALK:
 			// Walk: Try scale
@@ -3448,7 +3448,6 @@ void C4Object::ExecAction()
 		{ SetAction(0); return; }
 
 	C4Real fWalk,fMove;
-	int32_t smpx,smpy;
 
 	// Action time advance
 	Action.Time++;
@@ -3556,6 +3555,11 @@ void C4Object::ExecAction()
 	case DFA_SCALE:
 	{
 		int ComDir = Action.ComDir;
+		if (Shape.CheckScaleToWalk(GetX(), GetY()))
+		{
+			ObjectActionWalk(this);
+			return;
+		}
 		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
 		{
 			if (ydir > 0)
@@ -3639,7 +3643,7 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_DIG:
 	{
-		smpx=GetX(); smpy=GetY();
+		int32_t smpx = GetX(), smpy = GetY();
 		bool fAttachOK = false;
 		if (Action.t_attach & CNAT_Bottom && Shape.Attach(smpx,smpy,CNAT_Bottom)) fAttachOK = true;
 		else if (Action.t_attach & CNAT_Left && Shape.Attach(smpx,smpy,CNAT_Left)) { fAttachOK = true; }
