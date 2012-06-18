@@ -711,6 +711,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					pCurVal->Set0();
 				break;
 
+			case AB_THIS:
+				if (!pCurCtx->Obj || !pCurCtx->Obj->Status)
+					PushNullVals(1);
+				else
+					PushPropList(pCurCtx->Obj);
+				break;
+
 			case AB_FOREACH_NEXT:
 			{
 				// This should always hold

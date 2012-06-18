@@ -93,6 +93,7 @@ enum C4AulBCCType
 	AB_GLOBALN, // a named global
 	AB_GLOBALN_SET,
 	AB_PAR,     // Par statement
+	AB_THIS,    // this()
 	AB_FUNC,    // function
 
 	AB_PARN_CONTEXT,

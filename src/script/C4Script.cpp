@@ -168,11 +168,6 @@ C4Value C4AulDefFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 
 //=============================== C4Script Functions ====================================
 
-static C4PropList *Fnthis(C4PropList * _this)
-{
-	return _this;
-}
-
 static C4PropList * FnCreatePropList(C4PropList * _this, C4PropList * prototype)
 {
 	return C4PropList::New(prototype);
@@ -641,8 +636,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(LocateFunc);
 
 	F(eval);
-
-	F(this);
 	F(GetConstantNameByValue);
 
 	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
