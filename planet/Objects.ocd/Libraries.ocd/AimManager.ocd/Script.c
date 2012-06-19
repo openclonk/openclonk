@@ -433,7 +433,12 @@ public func ResetHands(bool pause)
 	{
 		aim_weapon = nil;
 		aim_set = nil;
-
+		
+		aim_schedule_call = nil;
+		aim_schedule_timer = nil;
+		aim_schedule_call2 = nil;
+		aim_schedule_timer2 = nil;
+		
 		RemoveEffect("IntAimCheckProcedure", this);
 	}
 }
