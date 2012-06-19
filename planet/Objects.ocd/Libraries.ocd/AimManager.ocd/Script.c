@@ -402,6 +402,9 @@ public func ApplySet(set)
 
 public func ResetHands(bool pause)
 {
+	if(!GetEffect("IntAimCheckProcedure", this))
+		return;
+		
 	if(aim_weapon != nil)
 	{
 		aim_weapon->~Reset(this);
