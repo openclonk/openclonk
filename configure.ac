@@ -42,14 +42,14 @@ void f(struct D&&); int main() { return 0; }
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
+# Automake 1.12 breaks if this isn't run unconditionally
+AC_PROG_OBJCXX
 
 case $host in
   *-*-mingw32* | *-*-cygwin* | *-*-windows*)
     win32=true; osx=false;;
   *-*-darwin*)
-    win32=false; osx=true;
-    m4_ifdef([AC_PROG_OBJCXX], [AC_PROG_OBJCXX], [AC_MSG_ERROR([this configure script was created with an autoconf version older than 2.65 and does not support macosx.])])
-    ;;
+    win32=false; osx=true;;
   *)
     win32=false; osx=false;;
 esac
