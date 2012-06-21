@@ -140,10 +140,13 @@ public func SetHandItemPos(int hand, int inv)
 		use_objects[hand] = inv;
 		
 		// additional callbacks
-		if(GetHandItem(hand2))
+		var hand_item;
+		if(hand_item = GetHandItem(hand2))
 		{
 			this->~OnSlotFull(hand2);
-			GetHandItem(hand2)->~Selection(this, hand2);
+			// OnSlotFull might have done something to the item
+			if(GetHandItem(hand2) == hand_item)
+				hand_item->~Selection(this, hand2);
 		}
 		else
 			this->~OnSlotEmpty(hand2);
@@ -152,10 +155,13 @@ public func SetHandItemPos(int hand, int inv)
 		use_objects[hand] = inv;
 	
 	// call callbacks
-	if(GetItem(inv))
+	var item;
+	if(item = GetItem(inv))
 	{
 		this->~OnSlotFull(hand);
-		GetItem(inv)->~Selection(this, hand);
+		// OnSlotFull might have done something to the item
+		if(GetItem(inv) == item)
+			GetItem(inv)->~Selection(this, hand);
 	}
 	else
 	{
@@ -380,7 +386,9 @@ protected func Collection2(object obj)
 		if(handpos != nil)
 		{
 			this->~OnSlotFull(handpos);
-			obj->~Selection(this, handpos);
+			// OnSlotFull might have done something to obj
+			if(GetHandItem(handpos) == obj)
+				obj->~Selection(this, handpos);
 		}
 	}
 		
@@ -476,7 +484,9 @@ protected func Ejection(object obj)
 				if(handpos != nil)
 				{
 					this->~OnSlotFull(handpos);
-					o->~Selection(this, handpos);
+					// OnSlotFull might have done something to o
+					if(GetHandItem(handpos) == o)
+						o->~Selection(this, handpos);
 				}
 					
 				break;
