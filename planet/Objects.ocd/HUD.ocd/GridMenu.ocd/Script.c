@@ -26,6 +26,9 @@ public func SetMenuSpacing(int distance) { menu_spacing = distance; }
 /** Sets the distance from the outer edges to the outer objects */
 public func SetMenuBorder(int distance) { menu_border = distance; }
 
+/** Sets the background color of the menu */
+public func SetBackgroundColor(int rgb) { SetClrModulation(rgb, 1); }
+
 public func Construction()
 {
 	rowitemcount = nil;
