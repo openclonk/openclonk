@@ -1066,7 +1066,7 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
 }
 
-static CSurface8 *GroupReadSurface8(CStdStream &hGroup, const char *szWildCard)
+static CSurface8 *GroupReadSurface8(C4Group &hGroup, const char *szWildCard)
 {
 	if (!hGroup.AccessEntry(szWildCard))
 		return NULL;
