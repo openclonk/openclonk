@@ -10,9 +10,11 @@ func Initialize()
 	score = [];
 	boss = false;
 	wave = 1;
-	// Set scoreboard caption.
-	SetScoreboardData(SBRD_Caption, SBRD_Caption, "$ScoreCaption$", SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_Rockets, "{{Goal_SaveTheWindmills}}", SBRD_Caption);
+	// init scoreboard
+	Scoreboard->Init(
+		[{key = "windmills", title = Goal_SaveTheWindmills, sorted = true, desc = true, default = 0, priority = 80}]
+		);
+	Scoreboard->SetTitle("$ScoreCaption$");
 	// Remove settlement eval data.
 	HideSettlementScoreInEvaluation(true);
 	inherited(...);
@@ -48,8 +50,7 @@ public func IncShotScore(int plr)
 	score[plrid]++;
 	if (plr != NO_OWNER)
 	{
-		SetScoreboardData(plrid, SBRD_Rockets, Format("%d", score[plrid]), score[plrid]);
-		SortScoreboard(SBRD_Rockets, true);
+		Scoreboard->SetPlayerData(plr, "windmills", score[plrid]);
 	}
 	NotifyHUD();
 }
@@ -80,9 +81,8 @@ protected func InitializePlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
 	score[plrid] = 0;
-	// Create scoreboard player entry for this player.
-	SetScoreboardData(plrid, SBRD_Caption, GetTaggedPlayerName(plr), SBRD_Caption);
-	SetScoreboardData(plrid, SBRD_Rockets, Format("%d", score[plrid]), score[plrid]);
+	// Create scoreboard player entry for this player
+	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
 

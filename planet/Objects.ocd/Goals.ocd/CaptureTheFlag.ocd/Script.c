@@ -3,7 +3,6 @@
 	Author: Maikel
 	
 	Capture the flag of the opposing team and bring it to your base to gain points.
-	TODO: Scoreboard.
 --*/
 
 
@@ -11,10 +10,24 @@
 
 local score_list;
 
+func ScoreboardTeamID(int team)
+{
+	return team + 1000;
+}
+
 protected func Initialize()
 {
 	score_list = [];
-
+	
+	// init scoreboard
+	Scoreboard->Init(
+		[
+		{key = "title", title = "Teams"},
+		{key = "ctf", title = Goal_CaptureTheFlag, sorted = true, desc = true, default = 0, priority = 80}
+		]
+		);
+	Scoreboard->SetTitle("Capture the Flag");
+	
 	return _inherited(...);
 }
 
@@ -39,7 +52,9 @@ public func SetFlagBase(int team, int x, int y)
 public func AddTeamScore(int team)
 {
 	score_list[team]++;
-	UpdateScoreboard(team);
+	
+	Scoreboard->SetData(ScoreboardTeamID(team), "ctf", score_list[team]);
+	
 	if (score_list[team] >= GetScoreGoal())
 		EliminateOthers(team);
 	return;
@@ -57,11 +72,14 @@ private func EliminateOthers(int win_team)
 	return;
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
 	// Join new clonk.
 	JoinPlayer(plr);
-	InitScoreboard(GetPlayerTeam(plr));
+	
+	// make scoreboard entry for team
+	Scoreboard->NewEntry(ScoreboardTeamID(team), GetTaggedTeamName(team));
+
 	// Broadcast to scenario.
 	GameCall("OnPlayerRelaunch", plr);
 	return _inherited(plr, ...);
@@ -170,35 +188,6 @@ private func GetPlayerInTeamCount(int team)
 		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
 			cnt++;
 	return cnt;
-}
-
-/*-- Scoreboard --*/
-
-static const SBRD_Score = 1;
-
-private func InitScoreboard(int team)
-{
-	// Scoreboard caption
-	if (GetScoreGoal() == 1)
-		SetScoreboardData(SBRD_Caption, SBRD_Caption, "$MsgScoreboard1$", SBRD_Caption);
-	else
-		SetScoreboardData(SBRD_Caption, SBRD_Caption, Format("$MsgScoreboardX$", GetScoreGoal()), SBRD_Caption);
-	// Team name
-	SetScoreboardData(team, SBRD_Caption, GetTaggedTeamName(team), team);
-	// Team score
-	SetScoreboardData(SBRD_Caption, SBRD_Score, "{{Goal_CaptureTheFlag}}", SBRD_Caption);
-	SetScoreboardData(team, SBRD_Score, Format("%d", 0), 0);
-	return;
-}
-
-private func UpdateScoreboard(int team)
-{
-	// Update the team's score.
-	var score = score_list[team];
-	SetScoreboardData(team, SBRD_Score, Format("%d", score), score);
-	// Sort descending w.r.t. score.
-	SortScoreboard(SBRD_Score, true);
-	return;
 }
 
 local Name = "$Name$";
