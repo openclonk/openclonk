@@ -34,10 +34,10 @@ protected func Initialize()
 	CreateObject(Chest, 610, 340, NO_OWNER);
 	CreateObject(Chest, 355, 390, NO_OWNER);
 	
-	AddEffect("IntFillChests", nil, 100, 2 * 36, this);
+	AddEffect("IntFillChests", nil, 100, 2 * 36, nil);
 	// Smooth brick edges.
-	AddEffect("ChanneledWind", nil, 100, 1, this);
-	AddEffect("Balloons", nil, 100, 100, this);
+	AddEffect("ChanneledWind", nil, 100, 1, nil);
+	AddEffect("Balloons", nil, 100, 100, nil);
 	
 	// Moving bricks.
 	var brick;
