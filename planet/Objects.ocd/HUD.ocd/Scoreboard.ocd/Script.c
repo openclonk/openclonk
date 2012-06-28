@@ -222,21 +222,21 @@ public func Init(array values /* see description */)
 	var len = GetLength(Scoreboard_keys);
 	for(var x = 0; x < len - 1; ++x)
 	{
-		var min = -1, min_val = nil;
+		var max = -1, max_val = nil;
 		for(var i = x; i < len; ++i)
 		{
 			var data = Scoreboard_keys[i]; 
-			if(min_val == nil || (data.priority < min))
+			if(max_val == nil || (data.priority > max_val))
 			{
-				min = i;
-				min_val = data.priority;
+				max = i;
+				max_val = data.priority;
 			}
 		}
-		if(min == -1) break;
+		if(max == -1) break;
 		
 		var t = Scoreboard_keys[x];
-		Scoreboard_keys[x] = Scoreboard_keys[min];
-		Scoreboard_keys[min] = t;
+		Scoreboard_keys[x] = Scoreboard_keys[max];
+		Scoreboard_keys[max] = t;
 	}
 	
 	// assign indices to scoreboard data, they are now sorted - also create scoreboard
