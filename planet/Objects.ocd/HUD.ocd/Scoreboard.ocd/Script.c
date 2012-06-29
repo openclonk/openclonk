@@ -245,13 +245,17 @@ public func Init(array values /* see description */)
 	{
 		Scoreboard_keys[i].index = i;
 		
+		if(Scoreboard_keys[i].key == "title") // title has special index and no headline
+		{
+			Scoreboard_keys[i].index = Scoreboard_X_title;
+			// don't set headline for title (first) column, because that would change the scoreboard title
+			continue;
+		}
+		
 		// check title
 		if(GetType(Scoreboard_keys[i].title) == C4V_Def)
 			Scoreboard_keys[i].title = Format("{{%i}}", Scoreboard_keys[i].title);
-		else
-		if(Scoreboard_keys[i].title == "title") // title has special index
-			Scoreboard_keys[i].index = Scoreboard_X_title;
-			
+					
 		var data = -0xffffff;
 		if(Scoreboard_keys[i].desc) data = 0xffffff;
 		SetScoreboardData(Scoreboard_Y_title, Scoreboard_keys[i].index, Scoreboard_keys[i].title, data);
