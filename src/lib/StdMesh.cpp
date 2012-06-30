@@ -1011,7 +1011,7 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, 
 {
 	StdMeshInstance* instance = new StdMeshInstance(mesh, 1.0f);
 	AttachedMesh* attach = AttachMesh(*instance, denumerator, parent_bone, child_bone, transformation, flags, true);
-	if (!attach) { delete instance; delete denumerator; return NULL; }
+	if (!attach) { delete instance; return NULL; }
 	return attach;
 }
 
