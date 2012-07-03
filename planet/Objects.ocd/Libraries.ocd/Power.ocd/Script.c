@@ -57,11 +57,7 @@ func AddPowerConsumer(object p, int a)
 				// message
 				var diff = 0;
 				{
-					var t = CreateObject(FloatingMessage, o.obj->GetX() - GetX(), o.obj->GetY() - GetY(), NO_OWNER);
-					t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
-					t->SetColor(255, 0, 0);
-					t->SetYDir(-10);
-					t->FadeOut(4, 8);
+					VisualizePowerChange(o.obj, 0, o.amount, false);
 				}
 				
 				o.obj->~OnRemovedFromPowerSleepingQueue();
@@ -109,10 +105,10 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 		
 		diff = a - o.amount;
 		power_balance += diff;
+		before = power_links[i].amount;
 		
 		if(a == 0)
 		{
-			before = power_links[i].amount;
 			power_links[i] = nil;
 		}
 		else power_links[i] = n;
@@ -133,22 +129,13 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 		power_balance += diff;
 	}
 	
-	diff = n.amount;
-	if((diff > 0) || ((a == 0) && (before > 0)))
+	if((n.amount > 0) || ((n.amount == 0) && (before > 0)))
 	{
-		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("+%d</c>{{Library_PowerConsumer}}", diff));
-		t->SetColor(0, 255, 0);
-		t->SetYDir(-10);
-		t->FadeOut(4, 8);
+		VisualizePowerChange(n.obj, n.amount, before, false);
 	}
-	else if((diff < 0) || ((a == 0) && (before < 0)))
+	else if((n.amount < 0) || ((n.amount == 0) && (before < 0)))
 	{
-		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
-		t->SetColor(255, 0, 0);
-		t->SetYDir(-10);
-		t->FadeOut(4, 8);
+		VisualizePowerChange(n.obj, n.amount, before, false);
 	}
 	if(n.amount < 0)
 		n.obj->~OnEnoughPower(); // might be reverted soon, though
@@ -276,6 +263,7 @@ func SleepLink(int index)
 	
 	// sadly not enough power anymore
 	o.obj->~OnNotEnoughPower();
+	VisualizePowerChange(o.obj, 0, o.amount, true);
 	
 	return true;
 }
@@ -322,6 +310,55 @@ public func Init()
 	if(GetType(Library_Power_power_compounds) != C4V_Array)
 		Library_Power_power_compounds = [];
 }
+
+// static
+func VisualizePowerChange(object obj, int to, int before, bool loss)
+{
+	var e = GetEffect("VisualPowerChange", obj);
+	if(!e)
+		e = AddEffect("VisualPowerChange", obj, 1, 5, nil, Library_Power);
+	
+	var to_abs = Abs(to);
+	var before_abs = Abs(before);
+	
+	e.max = Max(to_abs, before_abs);
+	e.current = before_abs;
+	e.to = to_abs;
+	
+	if(before > 0 && to < 0) {e.color = RGB(1, 255, 1); e.back_color = RGB(100, 100, 1);}
+	else if(before < 0 && to > 0){e.color = RGB(1, 255, 1); e.back_color = RGBa(1, 100, 1);}
+	else if(to < 0){e.color = RGB(1, 255, 1); e.back_color = RGB(255, 1, 1);}
+	else if(to > 0) {e.color = RGB(1, 255, 1); e.back_color = RGBa(10, 10, 10, 150);}
+	
+	EffectCall(obj, e, "Refresh");
+}
+
+func FxVisualPowerChangeRefresh(target, effect)
+{
+	if(effect.bar) effect.bar->Close();
+	var vis = VIS_Allies | VIS_Owner;
+	var controller = target->GetController();
+	if(controller == NO_OWNER) vis = VIS_All;
+	var off_x = -(target->GetDefCoreVal("Width", "DefCore") * 3) / 8;
+	var off_y = target->GetDefCoreVal("Height", "DefCore") / 2 - 10;
+	
+	effect.bar = target->CreateProgressBar(GUI_BarProgressBar, effect.max, effect.current, 35
+		, controller, {x = off_x, y = off_y}, vis
+		, {size = 1000, bars = effect.max / 25, color = effect.color, back_color = effect.back_color});
+}
+
+func FxVisualPowerChangeTimer(target, effect, time)
+{
+	if(!effect.bar) return -1;
+	if(effect.current == effect.to) return 1;
+	
+	if(effect.to < effect.current) effect.current = Max(effect.current - 15, effect.to);
+	else effect.current = Min(effect.current + 15, effect.to);
+
+	effect.bar->SetValue(effect.current);
+	return 1;
+}
+
 
 // static
 func GetPowerHelperForObject(object who)
