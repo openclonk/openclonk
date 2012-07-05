@@ -22,11 +22,14 @@ local markers;		// Array, the gui-markers.
 local carryheavy;	// Object, optional inventory-button only shown when clonk is carrying a carry-heavy object
 local wealth;		// Object, displays wealth of the player
 
+local progress_bar_links;
+
 protected func Construction()
 {
 	actionbar = [];
 	markers = [];
 	inventory = [];
+	progress_bar_links = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
@@ -184,12 +187,34 @@ func UpdateInventory()
 	var c = GetCursor(GetOwner());
 	if(!c) return 1;
 	
+	// sort out old progress bars
+	if(GetLength(progress_bar_links))
+	{
+		var old_progress_bar_links = progress_bar_links[:];
+		progress_bar_links = [];
+		
+		for(var bar in old_progress_bar_links)
+		{
+			if(!bar.effect) continue;
+			PushBack(progress_bar_links, bar);
+		}
+	}
+	
 	// update inventory-slots
 	for(var i=0; i<GetLength(inventory); i++)
 	{
 		var item = c->GetItem(inventory[i]->GetSlotId());
 		inventory[i]->SetSymbol(item);
 		inventory[i]->SetUnselected();
+		
+		inventory[i]->ClearProgressBarLink();
+		// re-add progress bar if possible
+		for(var bar in progress_bar_links)
+		{
+			if(bar.obj != item) continue;
+			inventory[i]->SetProgressBarLink(bar.effect);
+			break;
+		}
 	}
 	
 	// update hand-indicator
@@ -205,6 +230,14 @@ func UpdateInventory()
 				inventory[handpos]->SetSelected(i);
 		}
 }	
+
+// sets the link of the progress bar for a certain slot
+// the link is an effect that has the properties "max" and "current"
+func SetProgressBarLinkForObject(object what, proplist e)
+{
+	PushBack(progress_bar_links, {obj = what, effect = e});
+	ScheduleUpdateInventory();
+}
 
 // Shows the Carryheavy-Inventoryslot if obj is set
 // Removes it if it's nil

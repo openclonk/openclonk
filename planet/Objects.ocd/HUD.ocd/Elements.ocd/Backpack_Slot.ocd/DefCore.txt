@@ -8,3 +8,6 @@ Offset=-32,-32
 StretchGrowth=1
 Rotate=1
 Oversize=1
+Vertices=1
+VertexX=0
+VertexY=0

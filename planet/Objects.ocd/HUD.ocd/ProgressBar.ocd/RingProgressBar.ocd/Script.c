@@ -4,12 +4,14 @@
 	
 	additional data the bar takes through the "data" parameter:
 	radius: radius of the bar in pixels, the amount of points is dynamically adjusted
+	amount: number of segments in the ring, usually calculates form radius
 */
 
 local Name = "$Name$";
 local Description = "$Description$";
 
 local maximum, current, timeout_time;
+local my_angle;
 local ring;
 
 local ActMap=
@@ -41,8 +43,10 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 		e.t = timeout_time;
 	}
 	
+	
 	var radius = data.radius ?? 20;
-	var amount = BoundBy(radius, 8, 30);
+	var amount = data.amount ?? BoundBy(radius, 8, 30);
+	
 	ring[0] = this;
 	
 	for(var i = 1; i < amount; ++i)
@@ -133,6 +137,46 @@ func Initialize()
 {
 }	
 
+func SetParallax(f)
+{
+	f = f ?? true;
+	for(var obj in ring)
+	{
+		if(f)
+		{
+			obj->SetCategory(obj->GetCategory() | C4D_Parallax);
+			obj.Parallaxity = [0, 0];
+		}
+		else
+		{
+			obj->SetCategory(obj->GetCategory() & ~C4D_Parallax);
+			obj.Parallaxity = nil;
+		}
+	}
+	return true;
+}
+
+func SetPlane(int to)
+{
+	if(to == nil) return;
+	
+	for(var obj in ring)
+	{
+		obj.Plane = to;
+	}
+	return true;
+}
+
+
+func MakeHUDElement()
+{
+	for(var obj in ring)
+	{
+		obj->SetCategory(C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax);
+	}
+	SetParallax();
+}
+
 func AttachTargetLost()
 {
 	return RemoveObject();
@@ -154,7 +198,8 @@ func Set(to, distance, angle, offset, visibility)
 	var y = +Cos(angle, distance) - offset.y;
 	SetPosition(GetX() - x, GetY() - y + 8); // for good position in first frame
 	SetVertexXY(0, x + to->GetVertex(0, VTX_X), y + to->GetVertex(0, VTX_Y));
-	Rotate(-angle, 0, 0);
+	my_angle = -angle;
+	Rotate(my_angle, 0, 0);
 	
 	this.Visibility = visibility;
 }

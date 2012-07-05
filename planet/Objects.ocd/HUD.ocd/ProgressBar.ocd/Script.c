@@ -50,6 +50,12 @@ func SetOffset(proplist offset){return _inherited(offset, ...);}
 // makes the progress bar 100% parallax
 func SetParallax(){return _inherited(...);}
 
+// sets the Plane property of the progress bar
+func SetPlane(int to) {return _inherited(...);}
+
+// makes the object a HUD element by setting parallaxity and the category C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax
+func MakeHUDElement() {return _inherited(...);}
+
 // called once on creation by CreateProgressBar on the new bar
 func Init(object to /* object to attach the bar to */
 		, int maximum /* maximum value of the progress bar (100%) */

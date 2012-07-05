@@ -206,6 +206,29 @@ public func StartLoad(object weapon)
 		aim_schedule_timer2 = aim_set["LoadTime2"];
 		aim_schedule_call2  = "DuringLoad";
 	}
+	
+	var e = GetEffect("IntLoadingBar", this);
+	if(e)
+	{
+		RemoveEffect(nil, this, e);
+	}
+	
+	e = AddEffect("IntLoadingBar", this, 1, BoundBy(aim_schedule_timer / 20, 3, 20), this);
+	e.max = aim_schedule_timer;
+	e.current = 0;
+	// handled by HUDAdapter to add a progress bar
+	this->~SetProgressBarLinkForObject(weapon, e);
+}
+
+func FxIntLoadingBarTimer(target, effect, time)
+{
+	effect.current = time;
+	
+	if(time > effect.max + 40) // the progress bar int he HUD should have updated by then
+	{
+		return -1;
+	}
+	return 1;
 }
 
 public func DuringLoad() { aim_weapon->~DuringLoad(this); }
@@ -423,6 +446,7 @@ public func ResetHands(bool pause)
 	SetBackwardsSpeed(nil);
 	
 	RemoveEffect("IntAim", this);
+	RemoveEffect("IntLoadingBar", this);
 
 	SetTurnForced(-1);
 

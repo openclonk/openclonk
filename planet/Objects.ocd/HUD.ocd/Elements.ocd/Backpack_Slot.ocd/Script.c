@@ -7,6 +7,8 @@ local selected;
 local position;
 local controller;
 
+local progress_bar, progress_bar_last_max;
+
 public func SetHUDController(object c) { controller = c; }
 
 protected func Construction()
@@ -186,4 +188,61 @@ public func OnMouseOut(int plr)
 		return nil;
 	
 	SetGraphics(nil, nil);
+}
+
+// progress bar handling
+// "link" always refers to an effect with the properties "max" and "current"
+func ClearProgressBarLink()
+{
+	if(GetEffect("UpdateProgressBar", this))
+		RemoveEffect("UpdateProgressBar", this);
+	if(progress_bar)
+	{
+		progress_bar->Close();
+		progress_bar = nil;
+	}
+}
+
+func SetProgressBarLink(proplist effect)
+{
+	if(GetEffect("UpdateProgressBar", this)) return; // not another one
+	AddEffect("UpdateProgressBar", this, 1, Min(effect.Interval, 25), this, nil, effect);
+}
+
+func FxUpdateProgressBarStart(target, effect, temp, delegate)
+{
+	if(temp) return;
+	effect.other = delegate;
+}
+
+func FxUpdateProgressBarTimer(target, effect, time)
+{
+	if(!effect.other) return -1;
+	SetProgressBarValue(effect.other.current, effect.other.max);
+}
+
+public func SetProgressBarValue(int value, int max)
+{
+	if(value == nil)
+	{
+		if(progress_bar) progress_bar->Close();
+		return true;
+	}
+	
+	if(progress_bar_last_max != max)
+		if(progress_bar)
+		{
+			progress_bar->Close();
+			progress_bar = nil;
+		}
+	progress_bar_last_max = max;
+	
+	if(!progress_bar)
+	{
+		progress_bar = this->CreateProgressBar(GUI_RingProgressBar, max, value, 30, GetOwner(), {x=0, y=0}, VIS_Owner, {}); 
+		progress_bar->MakeHUDElement();
+		progress_bar->SetPlane(this.Plane+1);
+	}
+	progress_bar->SetValue(value);
+	return true;
 }
