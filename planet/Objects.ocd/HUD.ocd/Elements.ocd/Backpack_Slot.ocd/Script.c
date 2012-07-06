@@ -239,9 +239,9 @@ public func SetProgressBarValue(int value, int max)
 	
 	if(!progress_bar)
 	{
-		progress_bar = this->CreateProgressBar(GUI_RingProgressBar, max, value, 30, GetOwner(), {x=0, y=0}, VIS_Owner, {}); 
+		progress_bar = this->CreateProgressBar(GUI_PieProgressBar, max, value, 30, GetOwner(), {x=0, y=0}, VIS_Owner, {size=1600, color = RGB(100, 255, 25), back_color = RGBa(100, 50, 0, 100)}); 
 		progress_bar->MakeHUDElement();
-		progress_bar->SetPlane(this.Plane+1);
+		progress_bar->SetPlane(this.Plane-1);
 	}
 	progress_bar->SetValue(value);
 	return true;
