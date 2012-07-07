@@ -127,7 +127,7 @@ func LoseCombination()
 {
 	partner = nil;
 	slave = false;
-	if (case) case->LoseCombination();
+	if (case) case->LoseConnection();
 }
 
 // Called by our case because the case has a timer anyway
