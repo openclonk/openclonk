@@ -815,6 +815,8 @@ func FxIntHangleStop(pTarget, effect, iReasonm, fTmp)
 {
 	PopActionSpeed("Hangle");
 	if(fTmp) return;
+	// Delayed stop request
+	if (effect.request_stop) SetComDir(COMD_Stop);
 }
 
 func FxIntHangleTimer(pTarget, effect, iTime)
