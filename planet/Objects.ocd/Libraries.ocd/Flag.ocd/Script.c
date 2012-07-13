@@ -351,6 +351,18 @@ public func SetFlagRadius(int to)
 	return true;
 }
 
+// reassign owner of flag markers for correct color
+func OnOwnerChange(old)
+{
+	var new_owner = GetOwner();
+	for(var marker in lflag.range_markers)
+	{
+		if(!marker) continue;
+		marker->SetOwner(new_owner);
+		marker->ResetColor();
+	}
+}
+
 public func GetFlagRadius(){return lflag.radius;}
 public func GetFlagConstructionTime() {return lflag.construction_time;}
 public func GetFlagMarkerID(){return LibraryFlag_Marker;}
