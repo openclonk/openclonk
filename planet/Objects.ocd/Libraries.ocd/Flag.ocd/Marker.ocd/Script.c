@@ -20,11 +20,16 @@ public func Initialize()
 {
 	this.Plane=1545;
 	fade = 0;
-	color = GetPlayerColor(GetOwner());
-	SetClrModulation(color|RGBa(0,0,0,fade));
 	SetAction("Fly");
 	SetComDir(COMD_None);
+	ResetColor();
 	return true;
+}
+
+func ResetColor()
+{
+	color = GetPlayerColor(GetOwner());
+	SetClrModulation(color|RGBa(0,0,0,fade));
 }
 
 func MoveTo(int x, int y, int r)

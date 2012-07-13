@@ -390,6 +390,8 @@ static C4ScriptOpDef C4ScriptOpMap[] =
 	{ 10, "<=", AB_LessThanEqual,   AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
 	{ 10, ">",  AB_GreaterThan,     AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
 	{ 10, ">=", AB_GreaterThanEqual,AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 9, "===", AB_Identical,       AB_ERR,  1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 9, "!==", AB_NotIdentical,    AB_ERR,  1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
 	{ 9, "==",  AB_Equal,           AB_ERR,  1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
 	{ 9, "!=",  AB_NotEqual,        AB_ERR,  1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
 	{ 8, "&",   AB_BitAnd,          AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
@@ -428,19 +430,21 @@ int C4AulParse::GetOperator(const char* pScript)
 		return -1;
 	}
 
-	// it is a two-char-operator?
+	// find the longest operator
+	int len = 0; int maxfound = -1;
 	for (i=0; C4ScriptOpMap[i].Identifier; i++)
-		if (SLen(C4ScriptOpMap[i].Identifier) == 2)
-			if (SEqual2(pScript, C4ScriptOpMap[i].Identifier))
-				return i;
-
-	// if not, a one-char one?
-	for (i=0; C4ScriptOpMap[i].Identifier; i++)
-		if (SLen(C4ScriptOpMap[i].Identifier) == 1)
-			if (SEqual2(pScript, C4ScriptOpMap[i].Identifier))
-				return i;
-
-	return -1;
+	{
+		if (SEqual2(pScript, C4ScriptOpMap[i].Identifier))
+		{
+			int oplen = SLen(C4ScriptOpMap[i].Identifier);
+			if (oplen > len)
+			{
+				len = oplen;
+				maxfound = i;
+			}
+		}
+	}
+	return maxfound;
 }
 
 void C4AulParse::ClearToken()
@@ -625,6 +629,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_GLOBALN: return "GLOBALN";  // a named global
 	case AB_GLOBALN_SET: return "GLOBALN_SET";
 	case AB_PAR: return "PAR";      // Par statement
+	case AB_THIS: return "THIS";
 	case AB_FUNC: return "FUNC";    // function
 
 	case AB_PARN_CONTEXT: return "AB_PARN_CONTEXT";
@@ -650,6 +655,8 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_LessThanEqual: return "LessThanEqual";  // <=
 	case AB_GreaterThan: return "GreaterThan";  // >
 	case AB_GreaterThanEqual: return "GreaterThanEqual";  // >=
+	case AB_Identical: return "Identical";  // ===
+	case AB_NotIdentical: return "NotIdentical";  // !==
 	case AB_Equal: return "Equal";  // ==
 	case AB_NotEqual: return "NotEqual";  // !=
 	case AB_BitAnd: return "BitAnd";  // &
@@ -683,7 +690,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_EOFN: return "EOFN";    // end of function
 	case AB_EOF: return "EOF";
 
-	default: return "?";
+	default: assert(false);
 	}
 }
 
@@ -823,6 +830,7 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_LOCALN:
 	case AB_GLOBALN:
 	case AB_DUP:
+	case AB_THIS:
 		return 1;
 
 	case AB_Pow:
@@ -837,6 +845,8 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_LessThanEqual:
 	case AB_GreaterThan:
 	case AB_GreaterThanEqual:
+	case AB_Identical:
+	case AB_NotIdentical:
 	case AB_Equal:
 	case AB_NotEqual:
 	case AB_BitAnd:
@@ -1043,7 +1053,8 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 	case AB_Pow: case AB_Div: case AB_Mul: case AB_Mod: case AB_Sub: case AB_Sum:
 	case AB_LeftShift: case AB_RightShift: case AB_BitAnd: case AB_BitXOr: case AB_BitOr:
 		from = C4V_Int; break;
-	case AB_Not: case AB_LessThan: case AB_LessThanEqual: case AB_GreaterThan: case AB_GreaterThanEqual: case AB_Equal: case AB_NotEqual:
+	case AB_Not: case AB_LessThan: case AB_LessThanEqual: case AB_GreaterThan: case AB_GreaterThanEqual:
+	case AB_Identical: case AB_NotIdentical: case AB_Equal: case AB_NotEqual:
 		from = C4V_Bool; break;
 	default:
 		from = C4V_Any; break;
@@ -1541,7 +1552,7 @@ void C4AulParse::Parse_Function()
 			case AB_STRING:
 				fprintf(stderr, "\t\"%s\"\n", pBCC->Par.s->GetCStr()); break;
 			case AB_DEBUG: case AB_NIL: case AB_RETURN:
-			case AB_PAR:
+			case AB_PAR: case AB_THIS:
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
 			case AB_ERR: case AB_EOFN: case AB_EOF:
 				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
@@ -2301,6 +2312,15 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Parse_Params(1, C4AUL_Par);//FIXME: don't use Parse_Params
 			AddBCC(AB_PAR);
 		}
+		else if (SEqual(Idtf, C4AUL_this))
+		{
+			Shift();
+			if (TokenType == ATT_BOPEN)
+			{
+				Parse_Params(0, Idtf, 0);
+			}
+			AddBCC(AB_THIS);
+		}
 		else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
 		{
 			Shift();
@@ -2347,11 +2367,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
 					Warn("using deprecated function %s", Idtf);
 				Shift();
-				// Function parameters for all functions except "this", which can be used without
-				if (!SEqual(FoundFn->GetName(), C4AUL_this) || TokenType == ATT_BOPEN)
-					Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
-				else
-					AddBCC(AB_STACK, FoundFn->GetParCount());
+				Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
 				AddBCC(AB_FUNC, (intptr_t) FoundFn);
 			}
 			else

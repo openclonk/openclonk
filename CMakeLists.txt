@@ -144,7 +144,7 @@ if(MSVC_VERSION)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
 endif()
 
 if(WIN32 AND MINGW)

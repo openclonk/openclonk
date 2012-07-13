@@ -27,9 +27,9 @@ noinst_LIBRARIES = lib.a
 if RECENT_GCC
 WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
--Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
+-Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
-##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
+##-Weffc++ -Wold-style-cast -Wunsafe-loop-optimizations
 else
 WARNING_FLAGS = -Wall
 endif

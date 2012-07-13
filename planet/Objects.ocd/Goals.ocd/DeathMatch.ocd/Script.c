@@ -9,7 +9,6 @@
 #include Scoreboard_KillStreak
 #include Scoreboard_Death
 #include Scoreboard_Kill
-#include Scoreboard_Player
 
 local maxkills;
 
@@ -45,10 +44,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
-	// Show scoreboard for a while & sort.
-	SortScoreboard(Scoreboard_KillStreak->GetKillStreakCol(), true);
-	SortScoreboard(Scoreboard_Death->GetDeathCol(), true);
-	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
+	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	NotifyHUD();

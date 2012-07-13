@@ -1,5 +1,5 @@
 /**
-	VisualEnvironment
+	Ambience
 	Cares about the placement of purely visual objects.
 	The placement uses categories and thus is forward-compatible.
 */
@@ -28,7 +28,7 @@ static const Environment_Attributes =
 	},
 	
 	Zicadas = {
-		ID = Environment_Zicadas,
+		ID = Ambience_Zicadas,
 	},
 	
 	Frogs = {

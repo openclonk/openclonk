@@ -30,12 +30,12 @@
 
 bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 {
-
+	return false;
 }
 
 bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 {
-
+	return false;
 }
 
 // ResolveAppends and ResolveIncludes must be called both

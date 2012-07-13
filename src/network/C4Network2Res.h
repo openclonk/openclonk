@@ -249,6 +249,7 @@ public:
 	bool        isLoading()     const { return fLoading; }
 	bool        isComplete()    const { return !fLoading; }
 	int32_t     getPresentPercent() const { return fLoading ? Chunks.getPresentPercent() : 100; }
+	bool        isTempFile()    const { return fTempFile; }
 
 	bool SetByFile(const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);
 	bool SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);

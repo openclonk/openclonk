@@ -308,7 +308,4 @@ inline int32_t MatDigFree(int32_t mat)
 	return ::MaterialMap.Map[mat].DigFree;
 }
 
-int32_t PixCol2MatOld(BYTE pixc);
-int32_t PixCol2MatOld2(BYTE pixc);
-
 #endif

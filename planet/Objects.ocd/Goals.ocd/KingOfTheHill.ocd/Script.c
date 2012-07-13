@@ -20,6 +20,7 @@ SearchPosition();
 */
 
 #include Library_Goal
+#include Scoreboard_Death
 
 local player_points;
 local player_deaths;
@@ -37,6 +38,10 @@ func Initialize()
 	SetRadius(300);
 	SetPointLimit(10);
 	
+	Scoreboard->Init(
+		[{key = "koth", title = Goal_KingOfTheHill, sorted = true, desc = true, default = 0, priority = 80}]
+		);
+	Scoreboard->SetTitle("King of the Hill");
 	//CalculatePosition();
 	ScheduleCall(this, "PostInitialize", 3);
 	return _inherited(...);
@@ -44,7 +49,6 @@ func Initialize()
 
 func PostInitialize()
 {
-	ScheduleCall(this, "RefreshScoreboard", 1);
 	Init();
 }
 
@@ -113,11 +117,12 @@ func DoPoint(int player, int count)
 	if (count == nil) 
 		count = 1;
 	player_points[player] = Max(player_points[player] + count, 0);
+	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
 }
 
 protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
-	ScheduleCall(this, "RefreshScoreboard", 1);
+	Scoreboard->NewPlayerEntry(plr);
 	player_suicides[plr]=0;
 	
 	Goal_Melee->MakeHostileToAll(plr, team);
@@ -131,7 +136,6 @@ public func IsFulfilled()
 
 func OnClonkDeath(object clonk, int killer)
 {	
-	ScheduleCall(this, "RefreshScoreboard", 1);
 	if (clonk->GetAlive()) return;
 		
 	if (GetPlayerName(clonk->GetOwner()))
@@ -265,27 +269,6 @@ private func GetTeamPoints()
 		ret[GetLength(ret)]={nr=t, points=p, player_names=names};
 	}
 	return ret;
-}
-
-static const SBRD_Deaths=2;
-static const SBRD_Points=1;
-
-func RefreshScoreboard()
-{
-	SetScoreboardData(SBRD_Caption,SBRD_Caption,"King of the Hill",SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,SBRD_Points,Format("{{Sword}} / %d", GetPointLimit()),SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,SBRD_Deaths,"{{Clonk}}",SBRD_Caption);
-	
-	for(var cnt=0;cnt<GetPlayerCount();cnt++)
-	{
-		var plr=GetPlayerByIndex(cnt);
-		SetScoreboardData(plr+2,SBRD_Caption,GetTaggedPlayerName(plr),SBRD_Caption);
-
-		SetScoreboardData(plr+2,SBRD_Points,Format("%d", player_points[plr]),player_points[plr]);
-		SetScoreboardData(plr+2,SBRD_Deaths,Format("%d", player_deaths[plr]),player_deaths[plr]);
-	}
-	SortScoreboard(SBRD_Deaths,1);
-	SortScoreboard(SBRD_Points,1);
 }
 
 

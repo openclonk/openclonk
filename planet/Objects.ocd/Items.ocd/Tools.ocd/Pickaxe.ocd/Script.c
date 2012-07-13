@@ -88,11 +88,15 @@ protected func DoSwing(object clonk, int ix, int iy)
 	{
 		++iDist;
 	}
-
+		
 	var x2 = Sin(180-angle,iDist);
 	var y2 = Cos(180-angle,iDist);
+	var is_solid = GBackSolid(x2,y2);
+	
+	// alternatively hit certain objects
+	var target_obj = FindObject(Find_AtPoint(x2, y2), Find_Func("CanBeHitByPickaxe"));
 
-	if(GBackSolid(x2,y2))
+	if(is_solid || target_obj)
 	{
 //		Message("Hit %s", MaterialName(GetMaterial(x2,y2))); //for debug
 
@@ -100,7 +104,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 		var tex = GetTexture(x2,y2);
 		
 		// special effects
-		if(GetMaterialVal("DigFree","Material",mat))
+		if(is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
 			var a = 80;
@@ -113,7 +117,12 @@ protected func DoSwing(object clonk, int ix, int iy)
 		}
 
 		// dig out resources too! Don't just remove landscape pixels
-		BlastFree(GetX()+x2,GetY()+y2,5,GetController());
+		if(is_solid)
+			BlastFree(GetX()+x2,GetY()+y2,5,GetController());
+			
+		// notify the object that it has been hit
+		if(target_obj)
+			target_obj->~OnHitByPickaxe(this, clonk);
 	}
 }
 

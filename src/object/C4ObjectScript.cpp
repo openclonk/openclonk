@@ -2020,7 +2020,7 @@ static Nillable<int> FnAttachMesh(C4Object *Obj, C4PropList* Mesh, C4String * sz
 		if (!pDef) return C4Void();
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4Void();
 		attach = Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans, Flags);
-		attach->Child->SetFaceOrderingForClrModulation(Obj->ColorMod);
+		if(attach) attach->Child->SetFaceOrderingForClrModulation(Obj->ColorMod);
 	}
 
 	if (!attach) return C4Void();

@@ -19,17 +19,19 @@ protected func Initialize()
 {
 	// Make sure it is a list.
 	score_killstreak_list = [];
-	// Set scoreboard kill streak count caption.
-	SetScoreboardData(SBRD_Caption, GetKillStreakCol(), "{{Scoreboard_KillStreak}}", SBRD_Caption);
+	// init scoreboard
+	Scoreboard->Init(
+		[{key = "killstreaks", title = Scoreboard_KillStreak, sorted = true, desc = true, default = "", priority = 20}]
+		);
 	return _inherited(...);
 }
 
 protected func InitializePlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
-	// Create scoreboard kill streak count entry for this player.
+	// make scoreboard entry for player
 	score_killstreak_list[plrid] = 0;
-	SetScoreboardData(plrid, GetKillStreakCol(), Format("%d", score_killstreak_list[plrid]), score_killstreak_list[plrid]);
+	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
 
@@ -37,10 +39,10 @@ protected func RelaunchPlayer(int plr, int killer)
 {
 	var plrid = GetPlayerID(plr);
 	var killerid = GetPlayerID(killer);
-	// Modify scoreboard kill streak count entry for killed player.
+	// reset scoreboard kill streak count entry for killed player.
 	score_killstreak_list[plrid] = 0;
-	SetScoreboardData(plrid, GetKillStreakCol(), Format("%d", score_killstreak_list[plrid]), score_killstreak_list[plrid]);
-	// Only if killer exists and has not committed suicide.
+	Scoreboard->SetPlayerData(plr, "killstreaks", nil);
+// Only if killer exists and has not committed suicide.
 	if (plr == killer || !GetPlayerName(killer))
 		return _inherited(plr, killer, ...);
 	// Only if killer and victim are on different teams.
@@ -48,15 +50,12 @@ protected func RelaunchPlayer(int plr, int killer)
 		return _inherited(plr, killer, ...);
 	// Modify scoreboard kill streak count entry for killer.
 	score_killstreak_list[killerid]++;
-	SetScoreboardData(killerid, GetKillStreakCol(), Format("%d", score_killstreak_list[killerid]), score_killstreak_list[killerid]);
+	Scoreboard->SetPlayerData(killer, "killstreaks", score_killstreak_list[killerid]);
 	return _inherited(plr, killer, ...);
 }
 
 protected func RemovePlayer(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	// Clear scoreboard kill streak count entry for this player.
-	SetScoreboardData(plrid, GetKillStreakCol(), nil, nil);
 	return _inherited(plr, ...);
 }
 
@@ -66,6 +65,7 @@ public func SetKillStreakCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_killstreak_list[plrid] = value;
+	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
 	return;
 }
 
@@ -79,13 +79,8 @@ public func DoKillStreakCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_killstreak_list[plrid] += value;
+	Scoreboard->SetPlayerData(plr, "killstreaks", score_killstreak_list[plrid]);
 	return;
-}
-
-public func GetKillStreakCol()
-{
-	//return ScoreboardCol(Scoreboard_KillStreak);
-	return 109;
 }
 
 local Name = "Scoreboard Kill streaks";

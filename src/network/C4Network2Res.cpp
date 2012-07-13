@@ -917,7 +917,7 @@ void C4Network2Res::OnChunk(const C4Network2ResChunk &rChunk)
 		// status changed
 		fDirty = true;
 		// remove load waits
-		for (C4Network2ResLoad *pLoad = pLoads, *pNext, *pPrev = NULL; pLoad; pPrev = pLoad, pLoad = pNext)
+		for (C4Network2ResLoad *pLoad = pLoads, *pNext; pLoad; pLoad = pNext)
 		{
 			pNext = pLoad->Next();
 			if (static_cast<uint32_t>(pLoad->getChunk()) == rChunk.getChunkNr())
