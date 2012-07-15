@@ -362,7 +362,7 @@ global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 
 	str = Max(1, str - str / 5);
 	str--;
-	y_dir += GetGravity() * 2 / 3;
+	y_dir += GetGravity() * 10 / 3;
 
 	var x_dir = x_dir * str / strength;
 	var y_dir = y_dir * str / strength;
@@ -448,7 +448,7 @@ global func FxFireworkTimer(object target, effect, int time)
 	CreateParticle("Flash", x / 100, y / 100, x_dir / 100, y_dir / 100, 50, effect.color | (200 & 255) << 24);
 	
 	// gravity
-	y_dir += GetGravity() * 18 / 100;
+	y_dir += GetGravity() * 18 / 20;
 	
 	effect.speed = speed;
 	effect.angle = Angle(0, 0, x_dir, y_dir);

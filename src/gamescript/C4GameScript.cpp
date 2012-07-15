@@ -60,13 +60,13 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
 
 static C4Void FnSetGravity(C4PropList * _this, long iGravity)
 {
-	::Landscape.Gravity = itofix(BoundBy<long>(iGravity,-300,300)) / 500;
+	::Landscape.Gravity = C4REAL100(BoundBy<long>(iGravity,-1000,1000));
 	return C4Void();
 }
 
 static long FnGetGravity(C4PropList * _this)
 {
-	return fixtoi(::Landscape.Gravity * 500);
+	return fixtoi(::Landscape.Gravity * 100);
 }
 
 static bool FnPlayerObjectCommand(C4PropList * _this, int iPlr, C4String * szCommand,
