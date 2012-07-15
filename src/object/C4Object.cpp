@@ -3151,7 +3151,7 @@ void C4Object::ContactAction()
 			// Jump: Try hangle, else bounce off
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,Action.Dir,xdir,ydir); break; }
+				{ ObjectActionTumble(this, Action.Dir, xdir, ydir); break; }
 			if (ObjectActionHangle(this)) return;
 			break;
 		case DFA_DIG:
@@ -3170,7 +3170,7 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Left,C4REAL100(+150),Fix0); break; }
+				{ ObjectActionTumble(this, DIR_Left, xdir, ydir); break; }
 			// Else
 			else if (!ComDirLike(Action.ComDir, COMD_Right) && ObjectActionScale(this,DIR_Left)) return;
 			break;
@@ -3220,7 +3220,7 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Right,C4REAL100(-150),Fix0); break; }
+				{ ObjectActionTumble(this, DIR_Right, xdir, ydir); break; }
 			// Else Scale
 			else if (!ComDirLike(Action.ComDir, COMD_Left) && ObjectActionScale(this,DIR_Right)) return;
 			break;
