@@ -3458,7 +3458,8 @@ void C4Object::ExecAction()
 			{ SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction)); return; }
 
 	C4Value Attach;
-	if (pActionDef->GetProperty(P_Attach, &Attach))
+	pActionDef->GetProperty(P_Attach, &Attach);
+	if (Attach.GetType() != C4V_Nil)
 	{
 		Action.t_attach = Attach.getInt();
 	}
@@ -3494,11 +3495,14 @@ void C4Object::ExecAction()
 	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
 	int32_t dir = Action.Dir;
 	C4Real accel = C4REAL100(pActionDef->GetPropertyInt(P_Accel));
-	C4Real decel = C4REAL100(pActionDef->GetPropertyInt(P_Decel));
+	C4Real decel = accel;
+	{
+		C4Value decel_val;
+		pActionDef->GetProperty(P_Decel, &decel_val);
+		if (decel_val.GetType() != C4V_Nil)
+			decel = C4REAL100(decel_val.getInt());
+	}
 	C4Real limit = C4REAL100(pActionDef->GetPropertyInt(P_Speed));
-
-	C4Real lFlightAccel;
-	C4Real rFlightAccel;
 
 	switch (pActionDef->GetPropertyP(P_Procedure))
 	{
@@ -3570,13 +3574,17 @@ void C4Object::ExecAction()
 		switch (ComDir)
 		{
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
-			ydir-=accel; if (ydir<-limit) ydir=-limit; break;
+			if (ydir > 0) ydir -= decel;
+			else ydir -= accel;
+			if (ydir < -limit) ydir = -limit; break;
 		case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
-			ydir+=accel; if (ydir>+limit) ydir=+limit; break;
+			if (ydir < 0) ydir += decel;
+			else ydir += accel;
+			if (ydir > +limit) ydir = +limit; break;
 		case COMD_Left: case COMD_Right: case COMD_Stop:
-			if (ydir<0) ydir+=accel;
-			if (ydir>0) ydir-=accel;
-			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
+			if (ydir < 0) ydir += decel;
+			if (ydir > 0) ydir -= decel;
+			if ((ydir > -decel) && (ydir < +decel)) ydir = 0;
 			break;
 		}
 		iPhaseAdvance=0;
@@ -3591,20 +3599,29 @@ void C4Object::ExecAction()
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=accel; if (xdir<-limit) xdir=-limit;
+			if (xdir > 0) xdir -= decel;
+			else xdir -= accel;
+			if (xdir < -limit) xdir = -limit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=accel; if (xdir>+limit) xdir=+limit;
+			if (xdir < 0) xdir += decel;
+			else xdir += accel;
+			if (xdir > +limit) xdir = +limit;
 			break;
 		case COMD_Up:
-			xdir += (Action.Dir == DIR_Left) ? -accel : accel;
-			if (xdir<-limit) xdir=-limit;
-			if (xdir>+limit) xdir=+limit;
+			if (Action.Dir == DIR_Left)
+				if (xdir > 0) xdir -= decel;
+				else xdir -= accel;
+			else
+				if (xdir < 0) xdir += decel;
+				else xdir += accel;
+			if (xdir < -limit) xdir = -limit;
+			if (xdir > +limit) xdir = +limit;
 			break;
 		case COMD_Stop: case COMD_Down:
-			if (xdir<0) xdir+=accel;
-			if (xdir>0) xdir-=accel;
-			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
+			if (xdir < 0) xdir += decel;
+			if (xdir > 0) xdir -= decel;
+			if ((xdir > -decel) && (xdir < +decel)) xdir = 0;
 			break;
 		}
 		iPhaseAdvance=0;
@@ -3623,16 +3640,13 @@ void C4Object::ExecAction()
 				SetCommand(C4CMD_Exit);
 			}
 
-		lFlightAccel = Max(Min(limit+xdir,accel),itofix(0));
-		rFlightAccel = Max(Min(limit-xdir,accel),itofix(0));
-
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=lFlightAccel;
+			xdir -= Max(Min(limit + xdir, xdir > 0 ? decel : accel), itofix(0));
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=rFlightAccel;
+			xdir += Max(Min(limit - xdir, xdir < 0 ? decel : accel), itofix(0));
 			break;
 		}
 
