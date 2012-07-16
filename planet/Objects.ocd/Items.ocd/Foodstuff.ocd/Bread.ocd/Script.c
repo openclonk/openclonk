@@ -5,8 +5,6 @@ protected func Hit()
 	Sound("GeneralHit?");
 }
 
-public func IsOvenProduct() { return true; }
-
 /* Eating */
 
 protected func ControlUse(object clonk, int iX, int iY)
@@ -16,7 +14,9 @@ protected func ControlUse(object clonk, int iX, int iY)
 
 public func NutritionalValue() { return 50; }
 
-public func NeedsWater() { return true; }
+public func IsKitchenProduct() { return true; }
+public func GetLiquidNeed() { return ["Water", 50]; }
+public func GetFuelNeed() { return 50; }
 
 local Name = "$Name$";
 local Description = "$Description$";

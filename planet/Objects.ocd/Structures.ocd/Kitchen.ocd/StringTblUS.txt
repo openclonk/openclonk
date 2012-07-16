@@ -1,0 +1,5 @@
+NoPlrKnowledge=No construction plans
+Construction=Construction
+Production=Production
+Name=Kitchen
+Description=To prepare various meals.
