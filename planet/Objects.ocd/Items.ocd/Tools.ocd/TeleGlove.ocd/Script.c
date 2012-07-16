@@ -261,6 +261,8 @@ func Hit()
 	Sound("GeneralHit?");
 }
 
+func IsInventorProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(-60,1,0,1),def);
 }

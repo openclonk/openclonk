@@ -1,0 +1,5 @@
+NoPlrKnowledge=Keine Baupläne vorhanden
+Construction=Konstruktion
+Production=Produktion
+Name=Erfinderlabor
+Description=Hier können fortgeschrittene Technologien entwickelt werden.
