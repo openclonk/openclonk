@@ -20,4 +20,4 @@ func Split()
 	RemoveObject();
 }
 
-func IsToolProduct() { return true; }
+func IsChemicalProduct() { return true; }
