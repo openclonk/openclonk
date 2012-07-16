@@ -221,6 +221,7 @@ func AirshipDeath()
 	Explode(27);
 }
 
+func IsShipyardProduct() { return true; }
 
 local ActMap = {
 		Fly = {
