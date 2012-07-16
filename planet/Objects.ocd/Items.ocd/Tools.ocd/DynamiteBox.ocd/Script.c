@@ -156,8 +156,7 @@ func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 }
 
 public func IsTool() { return true; }
-public func IsToolProduct() { return true; }
-public func IsAlchemyProduct() { return true; }
+public func IsChemicalProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);

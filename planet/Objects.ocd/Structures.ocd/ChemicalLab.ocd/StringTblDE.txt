@@ -1,0 +1,5 @@
+NoPlrKnowledge=Keine Baupläne vorhanden
+Construction=Konstruktion
+Production=Produktion
+Name=Chemielabor
+Description=Produktionsort von chemischen Produkten, wie Sprengmaterial.
