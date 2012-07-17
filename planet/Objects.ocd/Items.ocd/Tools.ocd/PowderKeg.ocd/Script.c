@@ -115,7 +115,7 @@ func Hit()
 	Sound("DullWoodHit?");
 }
 
-func IsAlchemyProduct() { return true; }
+func IsChemicalProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 
 local Collectible = false;

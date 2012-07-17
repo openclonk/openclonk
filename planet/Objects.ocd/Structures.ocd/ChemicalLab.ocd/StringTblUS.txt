@@ -1,0 +1,5 @@
+NoPlrKnowledge=No construction plans
+Construction=Construction
+Production=Production
+Name=Chemical lab
+Description=Production site for chemical product like explosives.
