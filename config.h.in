@@ -42,9 +42,6 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the <multimon.h> header file. */
-#undef HAVE_MULTIMON_H
-
 /* Define to 1 if you have the <natupnp.h> header file. */
 #undef HAVE_NATUPNP_H
 

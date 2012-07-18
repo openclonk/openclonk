@@ -43,9 +43,6 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
 
-/* Define to 1 if you have the <multimon.h> header file. */
-#cmakedefine HAVE_MULTIMON_H 1
-
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
 

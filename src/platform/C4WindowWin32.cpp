@@ -46,15 +46,6 @@
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 #include <shellapi.h>
-// multimon.h comes with DirectX, some people don't have DirectX.
-#ifdef HAVE_MULTIMON_H
-
-// Lets try this unconditionally so that older windowses get the benefit
-// even if the engine was compiled with a newer sdk. Or something.
-#define COMPILE_MULTIMON_STUBS
-#include <multimon.h>
-
-#endif
 
 #define C4ViewportClassName L"C4Viewport"
 #define C4FullScreenClassName L"C4FullScreen"
