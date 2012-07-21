@@ -179,6 +179,7 @@ public func ChopDown()
 	ClearScheduleCall(this, "RestartGrowth");
 	StopGrowth();
 	this.Touchable = 1;
+	this.Plane = 300;
 	SetCategory(GetCategory()&~C4D_StaticBack);
 	if (Stuck())
 	{
