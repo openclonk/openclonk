@@ -30,8 +30,9 @@ public func IsTree() { return true; }
 
 public func ChopDown()
 {
-	// Remove the bottom vertex
+	// Use Special Vertex Mode 1 (see documentation) so the removed vertex won't come back when rotating the tree.
 	SetVertex(0, VTX_Y, 0, 1);
+	// Remove the bottom vertex
 	RemoveVertex(0);
 
 	_inherited(...);

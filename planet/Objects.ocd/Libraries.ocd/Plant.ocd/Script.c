@@ -190,10 +190,54 @@ public func ChopDown()
 			i--;
 		}
 	}
-	SetRDir(10);
-	if (Random(2)) SetRDir(-10);
-	// Crack!
-	if (GetCon() > 50) Sound("TreeDown?");
+	Sound("TreeCrack");
+	AddEffect("TreeFall", this, 1, 1, this);
+}
+
+// determine a random falling direction and passes it on to the FxTreeFallTimer.
+func FxTreeFallStart(object target, proplist effect)
+{
+	effect.direction = Random(2); 
+	if (effect.direction == 0) effect.direction -= 1;
+}
+
+/* animates the falling of the tree: First 10 slow degress then speed up and play the landing sound at 80+ degrees. 
+remember that degrees range from -180 to 180. */
+func FxTreeFallTimer(object target, proplist effect)
+{
+	//simple falling if tree is not fully grown
+	if (GetCon() <= 50)
+	{
+		SetRDir(effect.direction * 10);
+	} 
+	//else rotate slowly first until about 10 degree. This will be the time needed for the crack sound and makes sense as a tree will start falling slowly.
+	else
+	{
+		if (Abs(GetR()) < 10) 
+		{
+			SetRDir(effect.direction * 1);
+			//Turn of gravity so the tree doesn't get stuck before its done falling.
+			SetYDir(0);
+		} 
+		else 
+		{
+			//Then speed up and let gravity do the rest.
+			SetRDir(effect.direction * 10);
+		}	
+	}
+	//if the tree does not lend on a cliff or sth. (is rotated more then 80 degrees in the plus or minus direction) Play the landing sound of the tree.
+	if (Abs(GetR()) > 80)
+	{
+		SetRDir(0);
+		if (GetCon() > 50) Sound("TreeLanding");
+		return -1;
+	}
+	//check every frame if the tree is stuck and stop rotation in that case this is necessary as a tree could get stuck before reaching 80 degrees
+	if ((GetContact(-1, CNAT_Left) | GetContact(-1, CNAT_Right)) > 0)
+	{
+		SetRDir(0);
+		return -1;
+	}
 }
 
 /* Harvesting */
