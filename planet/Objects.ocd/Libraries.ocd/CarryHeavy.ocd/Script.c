@@ -167,6 +167,9 @@ func FxIntDropHeavyStart(object clonk, proplist effect, bool tmp)
 	clonk->SetTurnForced(clonk->GetDir());
 	clonk->SetHandAction(1);
 	clonk->SetAction("Stand");
+	
+	//Stop the clonk if he is moving
+	if(clonk->GetXDir() != 0) clonk->SetXDir();
 
 	//Attach the mesh of the object. It is not displayed normally because the
 	//hands are told they have an action in the next few lines
