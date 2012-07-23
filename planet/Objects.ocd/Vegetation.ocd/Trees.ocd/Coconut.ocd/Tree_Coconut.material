@@ -1,0 +1,23 @@
+material Tree_Coconut 
+{
+    receive_shadows on
+    technique 
+    {
+        pass
+        {
+			cull_hardware none
+			scene_blend alpha_blend
+		
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.0 0.0 0.0 0.0 0.0
+            emissive 0.0 0.0 0.0 0.0
+            
+            texture_unit
+            {
+                texture coconutTree.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
