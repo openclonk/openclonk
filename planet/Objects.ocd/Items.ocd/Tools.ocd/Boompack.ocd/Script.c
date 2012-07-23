@@ -156,6 +156,12 @@ public func OnMount(clonk)
 	if(clonk->GetDir() == 1) iDir = -1;
 	clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
 	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
+	
+	//Modify picture transform to fit icon on clonk mount
+	//clean pic transform rotations
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(0,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0)));
+	//apply the new one
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0), Trans_Scale(700)));
 	return true;
 }
 
@@ -163,6 +169,7 @@ public func OnUnmount(clonk)
 {
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	DetachMesh(riderattach);
+	DefaultPicTransform();
 	return true;
 }
 
@@ -228,9 +235,12 @@ func GetFuel()
 
 func IsChemicalProduct() { return true; }
 
+private func DefaultPicTransform() { return SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300))); }
+
 func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
+	DefaultPicTransform();
 }
+
 local Collectible = false;
 local Touchable = 2;
 local Name = "$Name$";
