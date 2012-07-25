@@ -104,7 +104,7 @@ template<typename T> class C4Set
 	unsigned int Capacity;
 	unsigned int Size;
 	T * Table;
-	T * AddInternal(T e)
+	T * GetPlaceFor(T const & e)
 	{
 		unsigned int h = Hash(e);
 		T * p = &Table[h % Capacity];
@@ -112,13 +112,43 @@ template<typename T> class C4Set
 		{
 			p = &Table[++h % Capacity];
 		}
+		return p;
+	}
+	T * AddInternal(T const & e)
+	{
+		T * p = GetPlaceFor(e);
 		*p = e;
 		return p;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * AddInternal(T && e)
+	{
+		T * p = GetPlaceFor(e);
+		*p = std::move(e);
+		return p;
+	}
+#endif
+	void MaintainCapacity()
+	{
+		if (Capacity - Size < Max(2u, Capacity / 4))
+		{
+			unsigned int OCapacity = Capacity;
+			Capacity *= 2;
+			T * OTable = Table;
+			Table = new T[Capacity];
+			Clear();
+			for (unsigned int i = 0; i < OCapacity; ++i)
+			{
+				if (OTable[i])
+					AddInternal(std::move(OTable[i]));
+			}
+			delete [] OTable;
+		}
+	}
 public:
-	template<typename H> static unsigned int Hash(H);
-	template<typename H> static bool Equals(T, H);
-	static bool Equals(T a, T b) { return a == b; }
+	template<typename H> static unsigned int Hash(const H &);
+	template<typename H> static bool Equals(const T &, const H &);
+	static bool Equals(const T & a, const T & b) { return a == b; }
 	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
 	{
 		Clear();
@@ -167,26 +197,22 @@ public:
 		return !!*r;
 	}
 	unsigned int GetSize() const { return Size; }
-	T * Add(T e)
+	T * Add(T const & e)
 	{
-		if (Capacity - Size < Max(2u, Capacity / 4))
-		{
-			unsigned int OCapacity = Capacity;
-			Capacity *= 2;
-			T * OTable = Table;
-			Table = new T[Capacity];
-			Clear();
-			for (unsigned int i = 0; i < OCapacity; ++i)
-			{
-				if (OTable[i])
-					AddInternal(OTable[i]);
-			}
-			delete [] OTable;
-		}
+		MaintainCapacity();
 		T * r = AddInternal(e);
 		++Size;
 		return r;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * Add(T && e)
+	{
+		MaintainCapacity();
+		T * r = AddInternal(std::move(e));
+		++Size;
+		return r;
+	}
+#endif
 	template<typename H> void Remove(H e)
 	{
 		unsigned int h = Hash(e);
@@ -203,7 +229,7 @@ public:
 		{
 			T m = *r;
 			*r = 0;
-			AddInternal(m);
+			AddInternal(std::move(m));
 		}
 	}
 	T const * First() const { return Next(Table - 1); }
@@ -230,12 +256,12 @@ public:
 };
 
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * const & e)
 {
 	return e->Hash;
 }
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * const & e)
 {
 	return e->Hash;
 }

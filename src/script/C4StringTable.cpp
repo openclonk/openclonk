@@ -24,17 +24,18 @@
 
 // *** C4Set
 template<> template<>
-unsigned int C4Set<C4String *>::Hash<const char *>(const char * s)
+unsigned int C4Set<C4String *>::Hash<const char *>(const char * const & s)
 {
 	// Fowler/Noll/Vo hash
 	unsigned int h = 2166136261u;
-	while (*s)
-		h = (h ^ *(s++)) * 16777619;
+	const char * p = s;
+	while (*p)
+		h = (h ^ *(p++)) * 16777619;
 	return h;
 }
 
 template<> template<>
-bool C4Set<C4String *>::Equals<const char *>(C4String * a, const char * b)
+bool C4Set<C4String *>::Equals<const char *>(C4String * const & a, const char * const & b)
 {
 	return a->GetData() == b;
 }

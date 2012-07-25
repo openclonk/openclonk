@@ -392,7 +392,7 @@ C4Effect * C4PropList::GetEffect()
 
 
 template<> template<>
-unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
+unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * const & e)
 {
 	assert(e);
 	unsigned int hash = 4, tmp;
@@ -411,13 +411,13 @@ unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 }
 
 template<> template<>
-bool C4Set<C4Property>::Equals<C4String *>(C4Property a, C4String * b)
+bool C4Set<C4Property>::Equals<C4String *>(C4Property const & a, C4String * const & b)
 {
 	return a.Key == b;
 }
 
 template<> template<>
-unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
+unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property const & p)
 {
 	return C4Set<C4Property>::Hash(p.Key);
 }
@@ -589,8 +589,9 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	}
 	else
 	{
-		C4Property p(k, to);
-		Properties.Add(p);
+		//C4Property p(k, to);
+		//Properties.Add(p);
+		Properties.Add(C4Property(k, to));
 	}
 }
 
@@ -600,7 +601,7 @@ void C4PropList::ResetProperty(C4String * k)
 }
 
 template<> template<>
-unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int e)
+unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int const & e)
 {
 	unsigned int hash = 4, tmp;
 	hash += e >> 16;
@@ -617,31 +618,31 @@ unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int e)
 }
 
 template<> template<>
-unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropList *>(C4PropList * e)
+unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropList *>(C4PropList * const & e)
 {
 	return Hash(e->GetPropListNumbered()->Number);
 }
 
 template<> template<>
-unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropListNumbered *>(C4PropListNumbered * e)
+unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropListNumbered *>(C4PropListNumbered * const & e)
 {
 	return Hash(e->Number);
 }
 
 template<> template<>
-bool C4Set<C4PropListNumbered *>::Equals<int>(C4PropListNumbered * a, int b)
+bool C4Set<C4PropListNumbered *>::Equals<int>(C4PropListNumbered * const & a, int const & b)
 {
 	return a->Number == b;
 }
 
 template<> template<>
-bool C4Set<C4PropListNumbered *>::Equals<C4PropList *>(C4PropListNumbered * a, C4PropList * b)
+bool C4Set<C4PropListNumbered *>::Equals<C4PropList *>(C4PropListNumbered * const & a, C4PropList * const & b)
 {
 	return a == b;
 }
 
 template<> template<>
-unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * e)
+unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * const & e)
 {
 	return C4Set<C4PropListNumbered *>::Hash(static_cast<int>(reinterpret_cast<intptr_t>(e)));
 }
