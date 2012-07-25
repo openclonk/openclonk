@@ -56,6 +56,8 @@ void C4ScriptHost::Clear()
 	ComponentHost.Clear();
 	Script.Clear();
 	ClearCode();
+	LocalNamed.Reset();
+	LocalValues.Clear();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
 	// remove includes
