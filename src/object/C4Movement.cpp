@@ -45,6 +45,7 @@ const C4Real HitSpeed1=C4REAL100(150); // Hit Event
 const C4Real HitSpeed2=itofix(2); // Cross Check Hit
 const C4Real HitSpeed3=itofix(6); // Scale disable, kneel
 const C4Real HitSpeed4=itofix(8); // Flat
+const C4Real DefaultGravAccel=C4REAL100(20);
 
 /* Some helper functions */
 

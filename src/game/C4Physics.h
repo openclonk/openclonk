@@ -34,5 +34,6 @@ const int CornerRange=AttachRange+2;
 extern const C4Real HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;
 extern const C4Real FloatFriction;
 extern const C4Real RotateAccel;
+extern const C4Real DefaultGravAccel;
 
 #endif

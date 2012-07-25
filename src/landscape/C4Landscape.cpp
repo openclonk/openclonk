@@ -1019,7 +1019,7 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 void C4Landscape::ScenarioInit()
 {
 	// Gravity
-	Gravity = C4REAL100(Game.C4S.Landscape.Gravity.Evaluate()) /5;
+	Gravity = C4REAL100(Game.C4S.Landscape.Gravity.Evaluate()) * DefaultGravAccel;
 	// Opens
 	LeftOpen=Game.C4S.Landscape.LeftOpen;
 	RightOpen=Game.C4S.Landscape.RightOpen;
@@ -1061,7 +1061,7 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RightOpen,           "RightOpen",             0));
 	pComp->Value(mkNamingAdapt(TopOpen,             "TopOpen",               0));
 	pComp->Value(mkNamingAdapt(BottomOpen,          "BottomOpen",            0));
-	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           C4REAL100(20)));
+	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           DefaultGravAccel));
 	pComp->Value(mkNamingAdapt(Modulation,          "MatModulation",         0U));
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
 }
@@ -1434,7 +1434,7 @@ void C4Landscape::Default()
 	ScanX=0;
 	ScanSpeed=2;
 	LeftOpen=RightOpen=TopOpen=BottomOpen=0;
-	Gravity=C4REAL100(20); // == 0.2
+	Gravity=DefaultGravAccel;
 	MapSeed=0; NoScan=false;
 	pMapCreator=NULL;
 	Modulation=0;
