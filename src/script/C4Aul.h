@@ -339,7 +339,7 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
-	C4PropList * GlobalPropList;
+	C4Value GlobalPropList;
 	C4AulScript *Child0, *ChildL; // tree structure
 
 public:

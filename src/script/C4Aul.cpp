@@ -159,7 +159,8 @@ void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(0), warnCnt(0), errCnt(0), lineCnt(0)
+		GlobalPropList(C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"))),
+		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine
 	Engine = this;
@@ -172,19 +173,18 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
 	Child0 = ChildL = NULL;
+	RegisterGlobalConstant("Global", GlobalPropList);
 }
 
 C4PropList * C4AulScriptEngine::GetPropList()
 {
-	if (!GlobalPropList)
-	{
-		GlobalPropList = C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"));
-		RegisterGlobalConstant("Global", C4VPropList(GlobalPropList));
-	}
-	return GlobalPropList;
+	return GlobalPropList._getPropList();
 }
 
-C4AulScriptEngine::~C4AulScriptEngine() { Clear(); }
+C4AulScriptEngine::~C4AulScriptEngine()
+{
+	Clear();
+}
 
 void C4AulScriptEngine::Clear()
 {
@@ -196,8 +196,7 @@ void C4AulScriptEngine::Clear()
 		if (Child0->Delete()) delete Child0;
 		else Child0->Unreg();
 	// clear own stuff
-	if (GlobalPropList)
-		GlobalPropList->Clear();
+	GlobalPropList._getPropList()->Clear();
 	// clear inherited
 	C4AulScript::Clear();
 	// reset values
@@ -208,6 +207,7 @@ void C4AulScriptEngine::Clear()
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
+	RegisterGlobalConstant("Global", GlobalPropList);
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 }
@@ -336,5 +336,3 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
 }
-
-C4AulScriptEngine ScriptEngine;

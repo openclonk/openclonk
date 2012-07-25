@@ -196,5 +196,3 @@ C4String *C4StringTable::FindString(const char *strString)
 {
 	return Set.Get(strString);
 }
-
-C4StringTable Strings;

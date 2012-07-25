@@ -178,10 +178,6 @@ StdStrBuf C4PropListStatic::GetDataString() const
 	return r;
 }
 
-#ifdef _DEBUG
-C4Set<C4PropList *> C4PropList::PropLists;
-#endif
-
 C4PropList::C4PropList(C4PropList * prototype):
 		FirstRef(NULL), prototype(prototype),
 		constant(false), Status(1)
