@@ -19,8 +19,15 @@ func IsProduct(id product_id)
 	return product_id->~IsKitchenProduct();
 }
 
-private func ProductionTime(id toProduce) { return 100; }
+private func ProductionTime(id toProduce) { return 500; }
 private func PowerNeed() { return 0; }
+
+public func NeedRawMaterial(id rawmat_id)
+{
+	if (rawmat_id->~IsFuel() || rawmat_id == Flour)
+		return true;
+	return false;
+}
 
 public func OnProductionStart(id product)
 {
@@ -53,6 +60,9 @@ private func Smoking()
 {
 	if (!Random(4)) Smoke(16 * GetCalcDir(),-14,16);
 	if (!Random(6)) Smoke(10 * GetCalcDir(),-14,15+Random(3));
+	
+	//Fire
+	CreateParticle("Fire",13*GetCalcDir(),16,RandomX(-1,1),RandomX(-1,1),RandomX(25,50),RGB(255,255,255), this);
 }
 
 local ActMap = {
