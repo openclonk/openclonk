@@ -458,6 +458,18 @@ int32_t C4Shape::GetBottomVertex()
 	return iMax;
 }
 
+int C4Shape::GetBottom()
+{
+	int b = INT_MIN;
+	for (int32_t i = 0; i < VtxNum; i++)
+		if (~VtxCNAT[i] & CNAT_NoCollision)
+			if (VtxY[i] > b)
+				b = VtxY[i];
+	if (b == INT_MIN)
+		return y + Hgt;
+	return b;
+}
+
 C4DensityProvider DefaultDensityProvider;
 
 int32_t C4DensityProvider::GetDensity(int32_t x, int32_t y) const

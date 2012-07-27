@@ -1240,10 +1240,10 @@ void C4Object::DoBreath(int32_t iChange)
 
 void C4Object::DoCon(int32_t iChange)
 {
+	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	int32_t iStepSize=FullCon/100;
-	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
+	int32_t lRHgt=Shape.GetBottom();
 	int32_t iLastStep=Con/iStepSize;
-	C4Real strgt_con_b = fix_y + Shape.GetY() + Shape.Hgt;
 	bool fWasFull = (Con>=FullCon);
 
 	// Change con
@@ -1292,9 +1292,9 @@ void C4Object::DoCon(int32_t iChange)
 	}
 
 	// bottom y-adjust
-	if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
+	if ((Shape.GetBottom()!=lRHgt))
 	{
-		fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
+		fix_y = strgt_con_b - Shape.GetBottom();
 		UpdatePos(); UpdateSolidMask(false);
 	}
 
