@@ -1241,9 +1241,6 @@ void C4Object::DoBreath(int32_t iChange)
 void C4Object::DoCon(int32_t iChange)
 {
 	C4Real strgt_con_b = fix_y + Shape.GetBottom();
-	int32_t iStepSize=FullCon/100;
-	int32_t lRHgt=Shape.GetBottom();
-	int32_t iLastStep=Con/iStepSize;
 	bool fWasFull = (Con>=FullCon);
 
 	// Change con
@@ -1251,54 +1248,43 @@ void C4Object::DoCon(int32_t iChange)
 		Con=Max<int32_t>(Con+iChange,0);
 	else
 		Con=BoundBy<int32_t>(Con+iChange,0,FullCon);
-	int32_t iStepDiff = Con/iStepSize - iLastStep;
 
 	// Update OCF
 	SetOCF();
 
-	// If step changed or limit reached or degraded from full: update mass, face, components, etc.
-	if ( iStepDiff || (Con>=FullCon) || (Con==0) || (fWasFull && (Con<FullCon)) )
+	// Mass
+	UpdateMass();
+
+	// shape and position
+	UpdateShape();
+	// make the bottom-most vertex stay in place
+	fix_y = strgt_con_b - Shape.GetBottom();
+	// Face (except for the shape)
+	UpdateFace(false);
+
+	// component update
+	// Decay: reduce components
+	if (iChange<0)
+		ComponentConCutoff();
+	// Growth: gain components
+	else
+		ComponentConGain();
+
+	// Unfullcon
+	if (fWasFull && (Con<FullCon))
 	{
-		// Mass
-		UpdateMass();
-		// Decay from full remove mask before face is changed
-		if (fWasFull && (Con<FullCon))
-			if (pSolidMaskData) pSolidMaskData->Remove(false);
-		// Face
-		UpdateFace(true);
-		// component update
-		// Decay: reduce components
-		if (iChange<0)
-			ComponentConCutoff();
-		// Growth: gain components
-		else
-			ComponentConGain();
-		// Unfullcon
-		if (Con<FullCon)
+		// Lose contents
+		if (!Def->IncompleteActivity)
 		{
-			// Lose contents
-			if (!Def->IncompleteActivity)
-			{
-				C4Object *cobj;
-				while ((cobj=Contents.GetObject()))
-					if (Contained) cobj->Enter(Contained);
-					else cobj->Exit(cobj->GetX(),cobj->GetY());
-			}
+			C4Object *cobj;
+			while ((cobj=Contents.GetObject()))
+				if (Contained) cobj->Enter(Contained);
+				else cobj->Exit(cobj->GetX(),cobj->GetY());
+			SetAction(0);
 		}
-		// Decay from full stop action
-		if (fWasFull && (Con<FullCon))
-			if (!Def->IncompleteActivity)
-				SetAction(0);
 	}
 
-	// bottom y-adjust
-	if ((Shape.GetBottom()!=lRHgt))
-	{
-		fix_y = strgt_con_b - Shape.GetBottom();
-		UpdatePos(); UpdateSolidMask(false);
-	}
-
-	// Completion (after bottom GetY()-adjust for correct position)
+	// Completion
 	if (!fWasFull && (Con>=FullCon))
 		Call(PSF_Initialize);
 
