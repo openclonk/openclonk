@@ -1,0 +1,2 @@
+Name=Grabsteine
+Description=Ein Grabstein wird errichtet wenn ein Clonk stirbt. Er wird mit einer Grabinschrift versehen.
