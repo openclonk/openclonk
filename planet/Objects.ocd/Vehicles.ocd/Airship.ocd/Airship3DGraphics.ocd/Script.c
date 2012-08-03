@@ -28,6 +28,12 @@ func AnimationForward()
 	//SoundEffect?
 }
 
+public func GetTurnAngle(){
+	var r = GetAnimationPosition(parent.turnanim) * 1242 / 10000;
+	if(parent.animdir == -1) r = 180 + (r * -1);
+	return r;
+}
+
 public func SetAirshipParent(object airship)
 {
 	parent = airship;

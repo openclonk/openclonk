@@ -14,6 +14,8 @@ local reticle;
 local health;
 local clonkmesh;
 
+public func IsVehicle() { return true; }
+
 protected func Construction(object byobj)
 {
 	SetR(-90);

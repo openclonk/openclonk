@@ -15,6 +15,7 @@ local olddir;
 static const Fire_Velocity = 175;
 
 public func IsArmoryProduct() { return true; }
+public func IsVehicle() { return true; }
 
 protected func Initialize()
 {

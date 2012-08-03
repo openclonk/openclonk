@@ -8,6 +8,8 @@
 	and a hitbox for the balloon.
 --*/
 
+#include Library_AlignVehicleRotation
+
 local throttle;
 
 //sums of x,y dir forces upon blimp
@@ -25,6 +27,11 @@ local hitbox;
 //Graphic module variables for animation
 local animdir;
 local turnanim;
+
+//Rectangle defining where to look for objents contained in the gondola
+local gondola = [-20,-2,40,30];
+
+public func IsVehicle() { return true; }
 
 protected func Initialize()
 {
@@ -51,6 +58,14 @@ protected func Initialize()
 
 	//Start the Airship behaviour
 	AddEffect("FlyEffect",this,1,1,this);
+}
+
+//overloads normal getdir
+func GetDir()
+{
+	var dir = animdir;
+	if(dir == -1) dir = 0;
+	return dir;
 }
 
 local enginesound;
@@ -131,25 +146,35 @@ public func FxFlyEffectTimer(object target, int num, int timer)
 	}
 
 	//Turn the airship right
-	if(animdir == -1 && GetXDir() > 1 && xthrottle == 1)
-	{
-		StopAnimation(turnanim);
-		turnanim = graphic->PlayAnimation("TurnRight", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnRight"), 36, ANIM_Hold), Anim_Const(1000));
-		animdir = 1;
+	if(animdir == -1 && GetXDir() > 1 && xthrottle == 1){
+		TurnAirship(1);
 	}
 
 	//turn the airship left
-	if(animdir == 1 && GetXDir() < -1 && xthrottle == -1)
-	{
-		StopAnimation(turnanim);
-		turnanim = graphic->PlayAnimation("TurnLeft", 10, Anim_Linear(0, 0, graphic->GetAnimationLength("TurnLeft"), 36, ANIM_Hold), Anim_Const(1000));
-		animdir = -1;
+	if(animdir == 1 && GetXDir() < -1 && xthrottle == -1){
+		TurnAirship(0);
 	}
 
 	//fun debug output stuff
 /*	if(!AirshipPilot()) Message(Format("^ 3^|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir()));
 	else
 	Message(Format("o _o|XTAR:%d|YTAR:%d|XDIR:%d|YDIR:%d",xtarget,ytarget,GetXDir(),GetYDir())); */
+}
+
+func TurnAirship(int dir)
+{
+	//default direction is left
+	var animName = "TurnLeft";
+	if(dir == 1){
+		animName = "TurnRight";
+	}
+	
+	StopAnimation(turnanim);
+	turnanim = graphic->PlayAnimation(animName, 10, Anim_Linear(0, 0, graphic->GetAnimationLength(animName), 36, ANIM_Hold), Anim_Const(1000));
+	animdir = animdir * -1;
+	
+	var g = gondola;
+	AlignObjectsToRotation(graphic, g[0],g[1],g[2],g[3]);
 }
 
 /* -- Control Inputs -- */
@@ -184,7 +209,8 @@ func ControlStop(object clonk, int control)
 private func AirshipPilot()
 {
 	//Looks for a clonk within the Gondola
-	var clonk = FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive),Find_InRect(-19,0,35,20));
+	var g = gondola;
+	var clonk = FindObject(Find_ID(Clonk), Find_OCF(OCF_Alive),Find_InRect(g[0],g[1],g[2],g[3]));
 	if(clonk)
 		return clonk;
 	else

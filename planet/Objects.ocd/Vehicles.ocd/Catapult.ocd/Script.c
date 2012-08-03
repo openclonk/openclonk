@@ -11,6 +11,7 @@ local olddir;
 local dir;
 local clonkmesh;
 
+public func IsVehicle() { return true; }
 public func IsArmoryProduct() { return true; }
 
 protected func Initialize()
