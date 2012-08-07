@@ -1,21 +1,13 @@
 //Airship Hitbox
 
-local health;
 local parent;
-
-protected func Initialize()
-{
-	health = 30;
-}
 
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage()
+public func Damage(int change)
 {
-	if(GetDamage() > health)
-	{
-		parent->AirshipDeath();
-	}
+	//forward the damage to airship parent
+	parent->DoDamage(change);	
 }
 
 public func SetAirshipParent(object airship)

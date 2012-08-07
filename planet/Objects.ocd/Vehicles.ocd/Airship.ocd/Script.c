@@ -28,6 +28,8 @@ local hitbox;
 local animdir;
 local turnanim;
 
+local health = 30;
+
 //Rectangle defining where to look for objents contained in the gondola
 local gondola = [-20,-2,40,30];
 
@@ -66,6 +68,14 @@ func GetDir()
 	var dir = animdir;
 	if(dir == -1) dir = 0;
 	return dir;
+}
+
+public func Damage()
+{
+	if(GetDamage() >= health)
+	{
+		AirshipDeath();
+	}
 }
 
 local enginesound;
