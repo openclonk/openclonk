@@ -24,7 +24,7 @@ func AlignObjectsToRotation(object turnTarget, int x, int y, int w, int h)
 	if(h == nil) h = this->GetDefCoreVal("Height", "DefCore");
 	
 	//make objects follow ship rotation
-	for(var targetObj in FindObjects(Find_Not(Find_ID(this)), Find_Or(Find_Category(C4D_Living|C4D_Object), Find_Func("IsVehicle")), Find_InRect(x,y,w,h))){
+	for(var targetObj in FindObjects(Find_Not(Find_ID(this)), Find_NoContainer(), Find_Or(Find_Category(C4D_Living), Find_Category(C4D_Object), Find_Func("IsVehicle")), Find_InRect(x,y,w,h))){
 		AlignToRotation(targetObj, turnTarget);
 	}
 }
@@ -36,6 +36,8 @@ func AlignObjectsToRotation(object turnTarget, int x, int y, int w, int h)
 func AlignToRotation(object target, object turnTarget)
 {
 	if(target){
+	//only objects with lower indexes can ride
+	if(target.Plane <= this.Plane) return false;
 	
 		//Must have a turnTarget to check the rotation
 		if(turnTarget == nil){
@@ -45,11 +47,12 @@ func AlignToRotation(object target, object turnTarget)
 		//turnTarget must have a function returning what angle the vehicle is at
 		else {
 			if(turnTarget->~GetTurnAngle() == nil){
-				FatalError(Format("turnTarget %s has no GetTurnAngleFunction", effect.turnTarget->GetName()));
+				FatalError(Format("turnTarget %s has no GetTurnAngleFunction", turnTarget->GetName()));
 			}
 		}
 		
-		if(target->GetYDir() == 0){
+//		if(target->GetContact(-1) > 0){
+		if(target->GetY() > -1 || target->GetY() < 1){
 			var oldNewX = nil;
 			var oldNewR = nil;
 			
@@ -78,20 +81,28 @@ private func FxAlignRotationStart(object target, proplist effect)
 	/// param 'target' is the object which follows 'this'
 	/// 'this' refers to the vehicle the effect is created in the object context of.
 	
-//	DebugLog(Format("Added AlignRotation effect to %s, child of %s", target->GetName(), GetName()));
+	DebugLog(Format("Added AlignRotation effect to %s, child of %s", target->GetName(), GetName()));
 	
 	effect.originalX = target->GetX(100) - this->GetX(100);
 	effect.originalY = target->GetY(100) - this->GetY(100);
 	effect.originalR = nil;
 	if(target->GetDefCoreVal("Rotate", "DefCore") >= 1){
-		effect.originalR = target->GetR();
+		effect.originalR = Normalize(target->GetR(),-180);
+		if(target->GetDefCoreVal("Rotate", "DefCore") == 1){
+			effect.noRSmooth = true;
+		}
 	}
+	
+	//Temporary no collection effect
+	effect.oldCollect = target.Collectible;
+	if(effect.oldCollect == 1) target.Collectible = 0;
 	
 	effect.floorYOff = (effect.originalY  + ((target->GetDefCoreVal("Height", "DefCore") / 2 + 2) * 100));
 	
 	//Create floor helper. Makes certain clonks don't fall while boat is turning
 	//(due to the solid mask flipping and such); so they keep a solid footing.
 	if(target->GetCategory() & C4D_Living){
+//	if(target->GetY() == 0){
 		effect.floorHelper = this->CreateObject(Vehicle_FloorHelper, effect.originalX / 100, (effect.originalY / 100) + (effect.floorYOff / 100) + 1);
 		
 		//adjust floor helper size
@@ -121,7 +132,7 @@ private func FxAlignRotationTimer(object target, proplist effect, int timer)
 	}
 	
 	//Debug
-//	target->Message(Format("%d,%d; %d", effect.originalX, newX, effect.floorYOff));
+	target->Message(Format("%d,%d; %d", effect.originalX, newX, effect.floorYOff));
 	
 	if(newX != effect.originalX * -1){
 		target->SetPosition(newX + this->GetX(100), target->GetY(100), true, 100);
@@ -131,12 +142,14 @@ private func FxAlignRotationTimer(object target, proplist effect, int timer)
 			//debug
 //			target->Message(Format("R=%d", newR));
 
-			target->SetR(newR);
+//			target->SetR(newR);
+			if(target->GetCategory() & C4D_Object) target->SetR();
 		}
 		
 		//Make sure vehicles aren't affected by gravity when rotating
 		if((target->GetCategory() & C4D_Living) == 0){
-			target->SetYDir(-2);
+			if(target->GetProcedure() == "FLOAT") target->SetYDir(0);
+			else target->SetYDir(-2);
 		}
 			
 		//update floor-helper position for clonks/livings
@@ -151,6 +164,9 @@ private func FxAlignRotationTimer(object target, proplist effect, int timer)
 
 private func FxAlignRotationStop(object target, proplist effect)
 {
+	//re-enable collection
+	target.Collectible = effect.oldCollect;
+
 	var newX = effect.originalX * -1;
 	//push vehicle up out of solidmask if it got stuck in it
 	while(target->Stuck()) target->SetPosition(newX + this->GetX(100), target->GetY(100) - 50, true, 100);
