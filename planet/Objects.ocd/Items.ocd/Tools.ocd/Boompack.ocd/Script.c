@@ -31,6 +31,16 @@ protected func Construction()
 	controllable = true;
 }
 
+func Fuse()
+{
+	Launch(GetR());
+}
+
+func Incineration()
+{
+	Fuse();
+}
+
 protected func Destruction()
 {
 	if(rider) JumpOff(rider);
@@ -233,7 +243,18 @@ func GetFuel()
 	return fuel;
 }
 
+public func IsProjectileTarget()
+{
+	return 1;
+}
+
+func OnProjectileHit()
+{
+	Incinerate();
+}
+
 func IsChemicalProduct() { return true; }
+func IsSelfPropellent() { return true; }
 
 private func DefaultPicTransform() { return SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300))); }
 
@@ -247,3 +268,5 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;
