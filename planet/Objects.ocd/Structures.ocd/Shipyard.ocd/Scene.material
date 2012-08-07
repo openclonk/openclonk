@@ -1,0 +1,50 @@
+material Shipyard 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            diffuse 1.0 1.0 1.0 1.0
+            texture_unit
+            {
+                texture shipyard.png
+                tex_address_mode wrap
+				filtering trilinear
+            }
+        }
+    }
+}
+
+material Shipyard.Door
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            diffuse 1.0 1.0 1.0 1.0
+            texture_unit
+            {
+                texture shipyardDoor.png
+                tex_address_mode wrap
+				filtering trilinear
+            }
+        }
+    }
+}
+
+material Shipyard.DoorRaise : Shipyard.Door
+{
+	technique 0
+	{
+		pass 0
+		{
+			scene_blend alpha_blend
+			texture_unit 0
+			{
+				scroll_anim 0 0.75
+			}
+		}
+	}
+}
