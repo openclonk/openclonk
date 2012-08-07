@@ -212,7 +212,7 @@ func FxIntDropHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 		if(clonk->GetDir() == DIR_Left)
 			dir = -1;
 		// Set down at barrel position
-		Exit(7*dir, 12);
+		Exit(6*dir, 9);
 	}
 	
 	UndoLift(clonk);
