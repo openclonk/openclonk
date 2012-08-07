@@ -8,21 +8,21 @@
 
 #include Library_HasExtraSlot
 
-local aim_anim;
-local turn_anim;
-local olddir;
+local animAim;
+local animTurn;
+local turnDir;
 
-static const Fire_Velocity = 175;
+local Fire_Velocity = 175;
 
 public func IsArmoryProduct() { return true; }
 public func IsVehicle() { return true; }
 
 protected func Initialize()
 {
+	turnDir = 1;
 	SetAction("Roll");
-	olddir = GetDir();
-	aim_anim =  PlayAnimation("Aim", 1,  Anim_Const(0),Anim_Const(1000));
-	AddTimer("Timer", 1);
+	animAim = PlayAnimation("Aim", 1,  Anim_Const(0),Anim_Const(1000));
+	animTurn = PlayAnimation("TurnRight", 5, Anim_Const(0), Anim_Const(1000));
 }
 
 //some left-overs from Lorry script. Not sure of it's purpose...
@@ -71,7 +71,7 @@ private func UseAnyStart(object clonk, int ix, int iy, int item)
 
 	//Animation
 	var r = ConvertAngle(Angle(0,0,ix,iy));
-	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
+	SetAnimationPosition(animAim, Anim_Const(AnimAngle(r)*3954444/100000)); //conversion. Apparently 90 blender frames is 3559 ogre frames.
 	return true;
 }
 
@@ -104,6 +104,8 @@ public func ControlUseAltHolding(object clonk, int ix, int iy)
 	return ControlUseHolding(clonk, ix, iy);
 }
 
+local angPrec = 1000;
+
 public func ControlUseHolding(object clonk, int ix, int iy)
 {
 	if (!clonk)
@@ -111,14 +113,14 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 		clonk->CancelUse();
 		return true;
 	}
-	var r = ConvertAngle(Angle(0,0,ix,iy));
+	var r = ConvertAngle(Angle(0,0,ix,iy,angPrec));
 
 	var iColor = RGB(255,255,255);
 	if (!Contents(0) || GetEffect("IntCooldown",this))
 		iColor = RGB(255,0,0);
-	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r-90, Fire_Velocity), Sin(r-90, Fire_Velocity), iColor, 20);
+	AddTrajectory(this, GetX() + 5, GetY() + 2, Cos(r - 90 * angPrec, Fire_Velocity,angPrec), Sin(r - 90 * angPrec, Fire_Velocity,angPrec), iColor, 20);
 
-	SetAnimationPosition(aim_anim, Anim_Const(AnimAngle(r)*3954444/100000));
+	SetAnimationPosition(animAim, Anim_Const(AnimAngle(r/angPrec)*3954444/100000));
 	return true;
 }
 
@@ -135,15 +137,17 @@ private func AnimAngle(int angle)
 
 private func ConvertAngle(int angle)
 {
-	//More confusing conversion ;)
-	var r = angle;
-	if(r > 90 + GetR() && GetDir() == 1) r = 90 + GetR();
-	if(r < 270 + GetR() && r != 0 && GetDir() == 0) r = 270 + GetR();
-	if(r == 360 + GetR() && GetDir() == 0) r = 0 + GetR();
-	//second half. Makes it relative to current direction.
-	if(r - GetR() < 0 && GetDir() == 1) SetDir();
-	if(r - GetR() > 359 && GetDir() == 0) SetDir(1);
-	return r;
+	var nR = BoundBy(Normalize(angle,-180 * angPrec,angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
+	var r2 = nR - GetR() * angPrec;
+	//debug messages
+	Message(Format("nR = %d|rL = %d",nR,r2));
+	
+	//Turn the cannon into the pointed direction
+	if(nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
+	if(nR - (GetR() * angPrec) > 0 && turnDir == 0) TurnCannon(1);
+	
+	//renormalize the angle to 0/360 from -180/180
+	return Normalize(nR,0,angPrec);
 }
 
 public func ControlUseStop(object clonk, int ix, int iy)
@@ -177,14 +181,17 @@ private func UseAnyStop(object clonk, int ix, int iy, int item)
 	
 	if (projectile)
 	{
-		DoFire(projectile, clonk, Angle(0,0,ix,iy));
+		DoFire(projectile, clonk, Angle(0,0,ix,iy,angPrec));
 		var powder = Contents(0)->PowderCount();
-		if(powder >= 1)
+		if(powder >= 1 || projectile->~IsSelfPropellent())
 		{
 			var powderkeg = Contents(0);
-			//If there is a powder keg, take powder from it
-			powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
-			DoFire(projectile, clonk, Angle(0,0,ix,iy));
+			if(projectile->~IsSelfPropellent() != true){
+				//If there is a powder keg, take powder from it
+				powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
+			}
+			
+			DoFire(projectile, clonk, Angle(0,0,ix,iy, angPrec));
 			AddEffect("IntCooldown",this,1,1,this);
 			if(powderkeg->PowderCount() == 0)
 			{
@@ -207,48 +214,74 @@ public func ControlUseAltCancel()
 	return ControlUseCancel();
 }
 
+//Stops the player from shooting for the defined amount of frames
 public func FxIntCooldownTimer(object target, effect, int timer)
 {
 	if(timer > 72) return -1;
 }
 
-//Activate turn animations
+
 func ControlLeft(object clonk)
 {
-	SetDir();
+	if(turnDir == 1){
+		TurnCannon(0);
+	}
 }
 
 func ControlRight(object clonk)
 {
-	SetDir(1);
+	if(turnDir == 0){
+		TurnCannon(1);
+	}
+}
+
+func TurnCannon(int dir)
+{
+	turnDir = dir;
+	//Remove any old effect
+	if(GetEffect("IntTurnCannon", this)) RemoveEffect("IntTurnCannon", this);
+	//Add a new one
+	return AddEffect("IntTurnCannon", this, 1, 1, this);
+}
+	
+
+func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
+{
+	var current = GetAnimationPosition(animTurn);
+	var target = GetAnimationLength("TurnRight");
+	if(turnDir == 1) target = 0;	
+	var tickAmount = 50;	//by how much the animation will move forward each frame	
+	
+	//advance turn animation
+	if((current != GetAnimationLength("TurnRight") && turnDir == 0) || (current != 0 && turnDir == 1)){
+		SetAnimationPosition(animTurn, Anim_Const(MoveTowards(current, target, tickAmount)));
+	}
+	else return -1;
 }
 
 protected func DoFire(object iammo, object clonk, int angle)
 {
-	if(iammo->~HasFuse())
-	{
-		iammo->Fuse();
-	}
+	iammo->~Fuse();
 
 	//Don't excede possible trajectory
-	var r = Normalize(angle,-180);
-	if(r > 90 + GetR()) r = 90 + GetR();
-	if(r < -90 + GetR()) r = -90 + GetR();
+	var r = Normalize(angle,-180 * angPrec, angPrec);
+	if(r > 90 * angPrec + GetR() * angPrec) r = 90 * angPrec + GetR() * angPrec;
+	if(r < -90 * angPrec + GetR() * angPrec) r = -90 * angPrec + GetR() * angPrec;
 
 	//Send ammo flying
-	iammo->SetR(r);
+	iammo->SetR(r / angPrec);
 	iammo->SetRDir(-4 + Random(9));
-	iammo->LaunchProjectile(r, 17, Fire_Velocity);
+	iammo->LaunchProjectile(r, 17, Fire_Velocity, 0,0, angPrec);
 
 	//Particles
 	var dist = 25;
-	var px = Cos(r - 90,dist);
-	var py = Sin(r - 90,dist) - 4;
+	var px = Cos(r/angPrec - 90,dist);
+	var py = Sin(r/angPrec - 90,dist) - 4;
 	CreateParticle("Flash",px,py,0,0,420,RGB(255,255,255));
 	for(var i=0; i<15; ++i) //liberated from musket script... I'm horrible at particles :p
 	{
 		var speed = RandomX(0,10);
-		CreateParticle("ExploSmoke",px,py,+Sin(r,speed)+RandomX(-2,2),-Cos(r,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,75));
+		CreateParticle("ExploSmoke",px,py,+Sin(r/angPrec,speed)+RandomX(-2,2),-Cos(r/angPrec,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,75));
 	}
 	CreateParticle("MuzzleFlash",px,py,px,py+4,700,RGB(255,255,255)); //muzzle flash uses speed as Rotation... so I negate the -4
 
@@ -256,57 +289,12 @@ protected func DoFire(object iammo, object clonk, int angle)
 	Sound("Blast3");
 }
 
-func Timer()
-{
-	//Turning
-	if(olddir != GetDir())
-	{
-		if(olddir == 0)
-		{
-			if(!GetEffect("IntTurning",this))
-			{
-				StopAnimation(turn_anim);
-				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(0, 0, GetAnimationLength("TurnRight"), 36, ANIM_Hold), Anim_Const(1000));
-				AddEffect("IntTurning",this,1,1,this);
-			}
-			else
-			{
-				var new_dist = GetAnimationLength("TurnRight") - GetAnimationPosition(turn_anim);
-				var old_effect = 36 - GetEffect("IntTurning",this).Interval;
-				turn_anim = PlayAnimation("TurnRight", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
-			}
-		}
-		
-		if(olddir == 1)
-		{
-			if(!GetEffect("IntTurning",this))
-			{
-				StopAnimation(turn_anim);
-				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(0, 0, GetAnimationLength("TurnLeft"), 36, ANIM_Hold), Anim_Const(1000));
-				AddEffect("IntTurning",this,1,1,this);
-			}
-			else
-			{
-				var new_dist = GetAnimationLength("TurnLeft") - GetAnimationPosition(turn_anim);
-				var old_effect = 36 - GetEffect("IntTurning",this).Interval;
-				turn_anim = PlayAnimation("TurnLeft", 5, Anim_Linear(new_dist, new_dist, GetAnimationLength("TurnLeft"), old_effect, ANIM_Remove), Anim_Const(1000));
-			}
-		}
-	}
-	olddir = GetDir();
-}
-
-private func FxIntTurningTimer(object target, effect, int timer)
-{
-	if(timer > 36) return -1;
-}
-
 local ActMap = {
 Roll = {
 	Prototype = Action,
 	Name = "Roll",
 	Procedure = DFA_NONE,
-	Directions = 2,
+	Directions = 1,
 	FlipDir = 1,
 	Length = 50,
 	Delay = 2,
