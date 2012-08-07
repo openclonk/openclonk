@@ -1,6 +1,6 @@
 /* shrapnel */
 
-public func ProjectileDamage() { return 1; }
+public func ProjectileDamage() { return 3; }
 public func FlightTime() { return 4; }
 
 protected func Initialize()
@@ -9,20 +9,24 @@ protected func Initialize()
 	AddEffect("Fade", this, 1, 1, this);
 }
 
+public func Launch(int shooter)
+{
+	SetController(shooter);
+	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
+}
+
 protected func FxFadeTimer(object target, int num, int timer)
 {
-/*	SetObjAlpha(255 - ((timer * 1275)/ 100));
-	if(timer >= 20)
-	{
-		RemoveObject();
-	}*/
-
 	if(timer > FlightTime()) RemoveObject();
 }
 
 protected func Hit()
 {
 	ShakeFree(6);
+	RemoveEffect("HitCheck",this);
+	Sound("BulletHitGround?");
+	CastParticles("Spark",1,20,0,0,15,25,RGB(255,200,0),RGB(255,255,150));
+	
 	RemoveObject();
 }
 

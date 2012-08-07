@@ -152,7 +152,6 @@ public func DoExplode()
 }
 
 public func IsChemicalProduct() { return true; }
-public func HasFuse() { return true; }
 
 local ActMap = {
 	Fuse = {
