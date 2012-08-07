@@ -186,10 +186,8 @@ private func UseAnyStop(object clonk, int ix, int iy, int item)
 		if(powder >= 1 || projectile->~IsSelfPropellent())
 		{
 			var powderkeg = Contents(0);
-			if(projectile->~IsSelfPropellent() != true){
-				//If there is a powder keg, take powder from it
-				powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
-			}
+			//If there is a powder keg, take powder from it
+			powderkeg->SetPowderCount(powderkeg->PowderCount() -1);
 			
 			DoFire(projectile, clonk, Angle(0,0,ix,iy, angPrec));
 			AddEffect("IntCooldown",this,1,1,this);
