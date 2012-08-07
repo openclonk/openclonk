@@ -290,7 +290,7 @@ public func IsProjectileTarget(target,shooter) { return true; }
 
 public func Damage()
 {
-	if(GetDamage() > health)
+	if(GetDamage() >= health)
 	{
 		if(Random(2)) PlaneDeath();
 		else
@@ -307,7 +307,7 @@ private func PlaneDeath()
 
 public func Hit()
 {
-	if(GetDamage() > health) PlaneDeath();
+	if(GetDamage() >= health) PlaneDeath();
 }
 
 public func ActivateEntrance(object clonk)
