@@ -62,6 +62,7 @@ protected:
 	std::list<C4ID> Includes; // include list
 	std::list<C4ID> Appends; // append list
 
+	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
 	bool Resolving; // set while include-resolving, to catch circular includes

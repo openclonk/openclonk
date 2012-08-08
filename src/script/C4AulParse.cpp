@@ -1973,11 +1973,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 			throw new C4AulParseError(this, "internal error: constant proplist is not static");
 		if (p->GetParent() != parent || p->GetParentKeyName() != Name)
 		{
-			// the proplist is from another definition, so don't change it
-			// create a replacement for this defnition
-			// FIXME: shouldn't the copy be made in parse, like functions are handled?
-			v.SetPropList(C4PropList::NewAnon(NULL, parent, Name));
-			p = v.getPropList()->IsStatic();
+			throw new C4AulParseError(this, "internal error: constant proplist has the wrong parent");
 		}
 		// In case of script reloads
 		p->Thaw();
@@ -2977,6 +2973,47 @@ bool C4AulScript::Parse()
 	return true;
 }
 
+void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
+{
+	// append all funcs and local variable initializations
+	const C4Property * prop = from.First();
+	while (prop)
+	{
+		switch(prop->Value.GetType())
+		{
+		case C4V_Function:
+			{
+				C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
+				//assert(sf->pOrgScript == *s);
+				C4AulScriptFunc *sfc;
+				if (sf->pOrgScript != this)
+					sfc = new C4AulScriptFunc(this, *sf);
+				else
+					sfc = sf;
+				sfc->SetOverloaded(to->GetFunc(sf->Name));
+				to->SetPropertyByS(prop->Key, C4VFunction(sfc));
+			}
+			break;
+		case C4V_PropList:
+			{
+				C4PropListStatic * p = prop->Value._getPropList()->IsStatic();
+				assert(p);
+				if (prop->Key != &::Strings.P[P_Prototype])
+					if (!p || p->GetParent() != to)
+					{
+						p = C4PropList::NewAnon(NULL, to, prop->Key);
+						CopyPropList(prop->Value._getPropList()->Properties, p);
+					}
+				to->SetPropertyByS(prop->Key, C4VPropList(p));
+			}
+		case C4V_Array: // FIXME: copy the array if necessary
+		default:
+			to->SetPropertyByS(prop->Key, prop->Value);
+		}
+		prop = from.Next(prop);
+	}
+}
+
 bool C4ScriptHost::Parse()
 {
 	// check state
@@ -2996,30 +3033,7 @@ bool C4ScriptHost::Parse()
 
 	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{
-		// append all funcs and local variable initializations
-		const C4Property * prop = (*s)->LocalValues.First();
-		while (prop)
-		{
-			switch(prop->Value.GetType())
-			{
-			case C4V_Function:
-				{
-					C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
-					assert(sf->pOrgScript == *s);
-					C4AulScriptFunc *sfc;
-					if (sf->pOrgScript != this)
-						sfc = new C4AulScriptFunc(this, *sf);
-					else
-						sfc = sf;
-					sfc->SetOverloaded(p->GetFunc(sf->Name));
-					p->SetPropertyByS(prop->Key, C4VFunction(sfc));
-				}
-				break;
-			default:
-				p->SetPropertyByS(prop->Key, prop->Value);
-			}
-			prop = (*s)->LocalValues.Next(prop);
-		}
+		CopyPropList((*s)->LocalValues, p);
 		if (*s == this)
 			continue;
 		// definition appends
