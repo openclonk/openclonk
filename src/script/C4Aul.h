@@ -296,7 +296,7 @@ public:
 	StdCopyStrBuf ScriptName; // script name
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
-	virtual C4PropList * GetPropList() { return 0; }
+	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
 	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
@@ -361,7 +361,7 @@ public:
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
 	C4AulFunc * GetFirstFunc(C4String * Name)

@@ -88,7 +88,7 @@ public:
 	void Clear();
 
 	bool Delete() { return true; }
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 };
 
 // script host for defs
@@ -98,7 +98,7 @@ public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
 
 	virtual bool Parse();
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 protected:
 	C4Def *Def; // owning def file
 };
@@ -112,7 +112,7 @@ public:
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
-	virtual C4PropList * GetPropList() { return ScenPrototype._getPropList(); }
+	virtual C4PropListStatic * GetPropList();
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 	C4Value ScenPropList;

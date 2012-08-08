@@ -176,9 +176,9 @@ C4AulScriptEngine::C4AulScriptEngine():
 	RegisterGlobalConstant("Global", GlobalPropList);
 }
 
-C4PropList * C4AulScriptEngine::GetPropList()
+C4PropListStatic * C4AulScriptEngine::GetPropList()
 {
-	return GlobalPropList._getPropList();
+	return GlobalPropList._getPropList()->IsStatic();
 }
 
 C4AulScriptEngine::~C4AulScriptEngine()

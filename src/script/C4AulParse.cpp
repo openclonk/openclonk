@@ -2992,7 +2992,7 @@ bool C4ScriptHost::Parse()
 		return true;
 	}
 
-	C4PropList * p = GetPropList();
+	C4PropListStatic * p = GetPropList();
 
 	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{

@@ -129,12 +129,12 @@ C4ExtraScriptHost::C4ExtraScriptHost():
 
 void C4ExtraScriptHost::Clear()
 {
-	ParserPropList.getPropList()->Clear();
+	ParserPropList._getPropList()->Clear();
 }
 
-C4PropList * C4ExtraScriptHost::GetPropList()
+C4PropListStatic * C4ExtraScriptHost::GetPropList()
 {
-	return ParserPropList.getPropList();
+	return ParserPropList._getPropList()->IsStatic();
 }
 
 /*--- C4DefScriptHost ---*/
@@ -180,7 +180,7 @@ bool C4DefScriptHost::Parse()
 	return r;
 }
 
-C4PropList * C4DefScriptHost::GetPropList() { return Def; }
+C4PropListStatic * C4DefScriptHost::GetPropList() { return Def; }
 
 /*--- C4GameScriptHost ---*/
 
@@ -201,9 +201,15 @@ bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangS
 
 void C4GameScriptHost::Clear()
 {
+	C4ScriptHost::Clear();
 	ScenPropList.Set0();
 	ScenPrototype.Set0();
-	C4ScriptHost::Clear();
+}
+
+C4PropListStatic * C4GameScriptHost::GetPropList()
+{
+	C4PropList * p = ScenPrototype._getPropList();
+	return p ? p->IsStatic() : 0;
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)

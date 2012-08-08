@@ -1088,8 +1088,8 @@ public:
 		this->stringTable = stringTable;
 	}
 	bool Delete() { return true; }
-	virtual C4PropList * GetPropList() { return p; }
-	C4PropList * p;
+	virtual C4PropListStatic * GetPropList() { return p; }
+	C4PropListStatic * p;
 };
 
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
