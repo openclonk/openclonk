@@ -17,11 +17,13 @@ global func SetSpeed(int x_dir, int y_dir, int prec)
 // Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 {
+	if(!precSpd) precSpd = 10;
+	if(!precAng) precAng = 1;
 	if(!speed)
 		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
 	if(!angle)
 		angle = Angle(0,0, GetXDir(precSpd), GetYDir(precSpd), precAng);
-	if(!precAng) precAng = 1;
+		
 	var x_dir = Sin(angle, speed, precAng);
 	var y_dir = -Cos(angle, speed, precAng);
 
@@ -75,15 +77,18 @@ global func GetPosition(int prec)
 }
 
 // Speed the calling object into the given direction (angle)
-global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
+global func LaunchProjectile(int angle, int dist, int speed, int x, int y, int precAng, int precSpd, bool rel_x)
 {
 	// dist: Distance object travels on angle. Offset from calling object.
 	// x: X offset from container's center
 	// y: Y offset from container's center
 	// rel_x: if true, makes the X offset relative to container direction. (x=+30 will become x=-30 when Clonk turns left. This way offset always stays in front of a Clonk.)
 
-	var x_offset = Sin(angle, dist);
-	var y_offset = -Cos(angle, dist);
+	var x_offset = Sin(angle, dist, precAng);
+	var y_offset = -Cos(angle, dist, precAng);
+	
+	if(!precAng) precAng = 1;
+	if(!precSpd) precSpd = 10;
 
 	if (Contained() != nil && rel_x == true)
 		if (Contained()->GetDir() == 0)
@@ -91,16 +96,16 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 
 	if (Contained() != nil)
 	{
-		Exit(x_offset + x, y_offset + y, angle);
-		SetVelocity(angle, speed);
+		Exit(x_offset + x, y_offset + y, angle / precAng);
+		SetVelocity(angle, speed, precAng, precSpd);
 		return true;
 	}
 
 	if (Contained() == nil)
 	{
 		SetPosition(GetX() + x_offset + x, GetY() + y_offset + y);
-		SetR(angle);
-		SetVelocity(angle, speed);
+		SetR(angle/precAng);
+		SetVelocity(angle, speed, precAng, precSpd);
 		return true;
 	}
 	return false;
