@@ -2,7 +2,7 @@
 
 #include Library_Plant
 
-private func SeedChance() {	return 500; }
+private func SeedChance() {	return 100; }
 private func SeedArea() { return 400; }
 private func SeedAmount() { return 12; }
 
@@ -25,7 +25,7 @@ public func Seed()
 	// If there are not much plants in the seed area compared to seed amount
 	// the chance of seeding is improved, if there are much the chance is reduced.
 	var chance = SeedChance();
-	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
+//	var chance = chance / Max(1, amount - plant_cnt) + chance * Max(0, plant_cnt - amount);
 	// Place a plant if we are lucky, in principle there can be more than seed amount.
 	if (!Random(chance) && GetCon() >= 100)
 	{
@@ -33,13 +33,13 @@ public func Seed()
 //		var plant = PlaceVegetation(GetID(), offset, offset, size, size, 3);
 		var seed = CreateObject(Coconut, 0, -35);
 		seed->SetXDir(-5 + Random(11));
-		if (seed)
+		seed->SetR(Random(360));
+		seed->SetRDir(RandomX(-5,5));
+		
+		//one coconut for each tree
+		if(ObjectCount(Find_ID(Coconut)) > ObjectCount(Find_ID(Tree_Coconut)))
 		{
-			//one coconut for each tree
-			if(ObjectCount(Find_ID(Coconut)) > ObjectCount(Find_ID(Tree_Coconut)))
-			{
-				seed->RemoveObject();
-			}
+			seed->RemoveObject();
 		}
 	}
 	return;

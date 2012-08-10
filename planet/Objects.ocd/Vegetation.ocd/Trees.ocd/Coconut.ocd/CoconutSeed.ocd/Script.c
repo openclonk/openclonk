@@ -2,21 +2,21 @@
 
 local seedTime;
 
-protected func Construction()
+protected func Initialize()
 {
 	//AddEffect to grow trees
-	AddEffect("Seed", this, 30, 18, this);
+	AddEffect("IntSeed", this, 1, 18, this);
 	seedTime = 15 * 2;
 }
 
-public func FxSeedTimer(object coconut, int num, int timer)
+public func FxIntSeedTimer(object coconut, proplist effect, int timer)
 {
 	//Start germination timer if in the environment
 	if(!Contained()){
 		seedTime--;
 	}
 	//If the coconut is on the earth
-	if(seedTime <= 0 && !Contained() && GetMaterial(0,3) == Material("Earth") && GetCon() >= 100)
+	if(seedTime <= 0 && !Contained() && GetMaterialVal("Soil","Material",GetMaterial(0,3)) == 1 && GetCon() >= 100)
 	{
 		//Are there any trees too close? Is the coconut underwater?
 		if(!FindObject(Find_Func("IsTree"), Find_Distance(80)) && !GBackLiquid())
@@ -28,13 +28,13 @@ public func FxSeedTimer(object coconut, int num, int timer)
 	
 	//Destruct if sitting for too long 
 	if(seedTime == -120) this.Collectible = 0;
-	if(timer < -120) DoCon(-5);
+	if(seedTime < -120) DoCon(-5);
 	
 	return 0;
 }
 
 public func Germinate() { AddEffect("Germinate", this, 1,1, this); }
-public func FxGerminateTimer(object coconut, int num, int timer)
+public func FxGerminateTimer(object coconut, proplist effect, int timer)
 {
 	if(timer == 1)
 	{

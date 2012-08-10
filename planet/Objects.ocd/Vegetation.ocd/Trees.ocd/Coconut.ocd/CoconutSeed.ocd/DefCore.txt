@@ -15,5 +15,6 @@ Mass=9
 Components=Coconut=1
 ContactCalls=1
 Projectile=1
+Float=1
 Rotate=1
 
