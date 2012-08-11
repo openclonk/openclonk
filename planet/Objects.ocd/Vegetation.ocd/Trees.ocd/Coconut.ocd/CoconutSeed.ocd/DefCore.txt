@@ -17,4 +17,4 @@ ContactCalls=1
 Projectile=1
 Float=1
 Rotate=1
-
+StretchGrowth=1

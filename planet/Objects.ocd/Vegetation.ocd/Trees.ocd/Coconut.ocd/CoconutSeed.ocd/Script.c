@@ -1,53 +1,71 @@
 /*--- Coconut ---*/
 
-local seedTime;
+private func GetSeedTime() { return 15 * 2; }
 
 protected func Initialize()
 {
-	//AddEffect to grow trees
-	AddEffect("IntSeed", this, 1, 18, this);
-	seedTime = 15 * 2;
+	// AddEffect to grow trees, called every half a second.
+	var effect = AddEffect("IntSeed", this, 100, 18, this);
+	effect.SeedTime = GetSeedTime();
+	return;
 }
 
 public func FxIntSeedTimer(object coconut, proplist effect, int timer)
 {
-	//Start germination timer if in the environment
-	if(!Contained()){
-		seedTime--;
-	}
-	//If the coconut is on the earth
-	if(seedTime <= 0 && !Contained() && GetMaterialVal("Soil","Material",GetMaterial(0,3)) == 1 && GetCon() >= 100)
-	{
-		//Are there any trees too close? Is the coconut underwater?
-		if(!FindObject(Find_Func("IsTree"), Find_Distance(80)) && !GBackLiquid())
+	// Start germination timer if in the environment
+	if (!Contained())
+		effect.SeedTime--;
+		
+	// Germinate if the coconut is on the earth.
+	var has_soil = !!GetMaterialVal("Soil", "Material", GetMaterial(0, 3));
+	if (effect.SeedTime <= 0 && !Contained() && has_soil && GetCon() >= 100)
+ 	{
+		// Are there any trees too close? Is the coconut underwater?
+		if (!FindObject(Find_Func("IsTree"), Find_Distance(40)) && !GBackLiquid())
 		{
-			Germinate();
-			return -1;
+			if (Germinate())
+				return -1;
 		}
 	}
 	
-	//Destruct if sitting for too long 
-	if(seedTime == -120) this.Collectible = 0;
-	if(seedTime < -120) DoCon(-5);
+	// Destruct if sitting for too long 
+	if (effect.SeedTime == -120)
+		coconut.Collectible = 0;
+	if (effect.SeedTime < -120) 
+		coconut->DoCon(-5);	
 	
 	return 0;
 }
 
-public func Germinate() { AddEffect("Germinate", this, 1,1, this); }
-public func FxGerminateTimer(object coconut, proplist effect, int timer)
+public func Germinate() 
 {
-	if(timer == 1)
+	// Try to sprout a coconut tree.
+	var d = 8;
+	if (PlaceVegetation(Tree_Coconut, -d/2, -d/2, d, d, 100))
+	{
+		this.Collectible = 0;	
+		AddEffect("IntGerminate", this, 100, 1, this); 
+		return true;
+	}
+	return false;
+}
+
+public func FxIntGerminateTimer(object coconut, proplist effect, int timer)
+{
+	if (timer == 1)
 	{
 		this.Collectible = 0;
-		//Tree sprouts
+		// Tree sprouts
 		PlaceVegetation(Tree_Coconut, 0, 0, 1,1, 100);
 	}
-	//Fade out
+	// Fade out
 	SetObjAlpha(255 - (timer * 255 / 100));
-	if(timer == 100) coconut->RemoveObject();
+	if (timer == 100)
+		coconut->RemoveObject();
+	return;
 }
 		
-/* Eating */
+/*-- Eating --*/
 
 protected func ControlUse(object clonk, int iX, int iY)
 {
@@ -56,17 +74,21 @@ protected func ControlUse(object clonk, int iX, int iY)
 
 public func NutritionalValue() { return 5; }
 
-/* Bounce */
+/*-- Bounce --*/
 
-protected func Hit(x, y)
+protected func Hit(int dx, int dy)
 {
-	//Bounce; useful for spreading seeds further from parent tree
-	if(y > 1) SetSpeed(x, y / -2, 100);
-	StonyObjectHit(x,y);
-	return true;
+	// Bounce: useful for spreading seeds further from parent tree.
+	if (dy > 1)
+		SetSpeed(dx, dy / -2, 100);
+		
+	StonyObjectHit(dx, dy);
+	return;
 }
 
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
+local BlastIncinerate = 8;
+local ContactIncinerate = 2;
