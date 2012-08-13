@@ -2153,6 +2153,8 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 {
 	int ndx;
 	C4ScriptOpDef * op;
+	C4AulFunc *FoundFn = 0;
+	C4Value val;
 	switch (TokenType)
 	{
 	case ATT_IDTF:
@@ -2209,13 +2211,6 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		else if (SEqual(Idtf, C4AUL_New))
 		{
 			Parse_PropList();
-		}
-		// check for global variable (static)
-		else if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-		{
-			// insert variable by id
-			AddBCC(AB_GLOBALN, Engine->GlobalNamedNames.GetItemNr(Idtf));
-			Shift();
 		}
 		// function identifier: check special functions
 		else if (SEqual(Idtf, C4AUL_If))
@@ -2277,71 +2272,63 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 					AddBCC(AB_STACK, 1);
 				}
 		}
+		else if (Type == PREPARSER)
+		{
+			Shift();
+			// The preparser just assumes that the syntax is correct and all identifiers
+			// will be defined: if no '(' follows, it must be a variable or constant,
+			// otherwise a function with parameters
+			if (TokenType == ATT_BOPEN)
+				Parse_Params(10, NULL);
+		}
+		else if ((FoundFn = Fn->Owner->GetPropList()->GetFunc(Idtf)))
+		{
+			assert(Host == Fn->Owner || Fn->Owner == Engine || (Host && !Host->GetPropList()));
+			if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
+				Warn("using deprecated function %s", Idtf);
+			Shift();
+			Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
+			AddBCC(AB_FUNC, (intptr_t) FoundFn);
+		}
+		// -> func not found
+		// check for global variables (static) or constants (static const)
+		// the global namespace has the lowest priority so that local
+		// functions and variables can overload it
+		else if ((ndx = Engine->GlobalNamedNames.GetItemNr(Idtf)) != -1)
+		{
+			// insert variable by id
+			AddBCC(AB_GLOBALN, ndx);
+			Shift();
+		}
+		else if (Engine->GetGlobalConstant(Idtf, &val))
+		{
+			// store as direct constant
+			switch (val.GetType())
+			{
+			case C4V_Nil:  AddBCC(AB_NIL,  0); break;
+			case C4V_Int:  AddBCC(AB_INT,  val._getInt()); break;
+			case C4V_Bool: AddBCC(AB_BOOL, val._getBool()); break;
+			case C4V_String:
+				AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
+				break;
+			case C4V_PropList:
+				AddBCC(AB_CPROPLIST, reinterpret_cast<intptr_t>(val._getPropList()));
+				break;
+			case C4V_Array:
+				AddBCC(AB_CARRAY, reinterpret_cast<intptr_t>(val._getArray()));
+				break;
+			case C4V_Function:
+				AddBCC(AB_CFUNCTION, reinterpret_cast<intptr_t>(val._getFunction()));
+				break;
+			default:
+				throw new C4AulParseError(this, FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
+			}
+			Shift();
+		}
 		else
 		{
-			// none of these? then it's a function
-			C4AulFunc *FoundFn = 0;
-			// get regular function
-			if (Fn->Owner == Engine || !Host->GetPropList())
-				FoundFn = Engine->GetPropList()->GetFunc(Idtf);
-			else
-			{
-				assert(Host == Fn->Owner);
-				FoundFn = Host->GetPropList()->GetFunc(Idtf);
-			}
-			if (Type == PREPARSER)
-			{
-				Shift();
-				// The preparser just assumes that the syntax is correct: if no '(' follows, it must be a constant
-				if (TokenType == ATT_BOPEN)
-					Parse_Params(FoundFn ? FoundFn->GetParCount() : 10, Idtf, FoundFn);
-			}
-			else if (FoundFn)
-			{
-				if (Config.Developer.ExtraWarnings && !FoundFn->GetPublic())
-					Warn("using deprecated function %s", Idtf);
-				Shift();
-				Parse_Params(FoundFn->GetParCount(), FoundFn->GetName(), FoundFn);
-				AddBCC(AB_FUNC, (intptr_t) FoundFn);
-			}
-			else
-			{
-				// -> func not found
-				// check for global constant (static const)
-				// global constants have lowest priority for backwards compatibility
-				// it is now allowed to have functional overloads of these constants
-				C4Value val;
-				if (Engine->GetGlobalConstant(Idtf, &val))
-				{
-					// store as direct constant
-					switch (val.GetType())
-					{
-					case C4V_Nil:  AddBCC(AB_NIL,  0); break;
-					case C4V_Int:  AddBCC(AB_INT,  val.GetData().Int); break;
-					case C4V_Bool: AddBCC(AB_BOOL, val.GetData().Int); break;
-					case C4V_String:
-						AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
-						break;
-					case C4V_PropList:
-						AddBCC(AB_CPROPLIST, reinterpret_cast<intptr_t>(val._getPropList()));
-						break;
-					case C4V_Array:
-						AddBCC(AB_CARRAY, reinterpret_cast<intptr_t>(val._getArray()));
-						break;
-					case C4V_Function:
-						AddBCC(AB_CFUNCTION, reinterpret_cast<intptr_t>(val._getFunction()));
-						break;
-					default:
-						throw new C4AulParseError(this,FormatString("internal error: constant %s has unsupported type %d", Idtf, val.GetType()).getData());
-					}
-					Shift();
-				}
-				else
-				{
-					// identifier could not be resolved
-					throw new C4AulParseError(this, "unknown identifier: ", Idtf);
-				}
-			}
+			// identifier could not be resolved
+			throw new C4AulParseError(this, "unknown identifier: ", Idtf);
 		}
 		break;
 	case ATT_INT: // constant in cInt
