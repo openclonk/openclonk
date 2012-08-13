@@ -2307,7 +2307,9 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Fn->ParCount = C4AUL_MAX_Par;
 			// and for Par
 			Shift();
-			Parse_Params(1, C4AUL_Par);//FIXME: don't use Parse_Params
+			Match(ATT_BOPEN);
+			Parse_Expression();
+			Match(ATT_BCLOSE);
 			AddBCC(AB_PAR);
 		}
 		else if (SEqual(Idtf, C4AUL_this))
@@ -2315,7 +2317,8 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Shift();
 			if (TokenType == ATT_BOPEN)
 			{
-				Parse_Params(0, Idtf, 0);
+				Shift();
+				Match(ATT_BCLOSE);
 			}
 			AddBCC(AB_THIS);
 		}
