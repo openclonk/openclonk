@@ -123,7 +123,7 @@ void C4ScriptHost::SetError(const char *szMessage)
 /*--- C4ExtraScriptHost ---*/
 
 C4ExtraScriptHost::C4ExtraScriptHost():
-		ParserPropList(C4PropList::NewAnon(NULL, NULL, NULL))
+		ParserPropList(C4PropList::NewStatic(NULL, NULL, NULL))
 {
 }
 
@@ -190,10 +190,10 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = C4PropList::NewAnon(NULL/*ScenPrototype*/, NULL, ::Strings.RegString("Scenario"));
+	C4PropListStatic * pScen = C4PropList::NewStatic(NULL/*ScenPrototype*/, NULL, ::Strings.RegString("Scenario"));
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
-	ScenPrototype.SetPropList(C4PropList::NewAnon(ScriptEngine.GetPropList(), pScen, &::Strings.P[P_Prototype]));
+	ScenPrototype.SetPropList(C4PropList::NewStatic(ScriptEngine.GetPropList(), pScen, &::Strings.P[P_Prototype]));
 	ScenPropList._getPropList()->SetProperty(P_Prototype, ScenPrototype);
 	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);

@@ -106,7 +106,7 @@ public:
 	{ SetPropertyByS(&Strings.P[k], to); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
-	static C4PropListStatic * NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
+	static C4PropListStatic * NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
 
 	// only freeze proplists which are not going to be modified
 	// FIXME: Only C4PropListStatic get frozen. Optimize accordingly.

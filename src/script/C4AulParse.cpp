@@ -1922,7 +1922,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 	C4PropListStatic * p;
 	if (Type == PREPARSER)
 	{
-		p = C4PropList::NewAnon(NULL, parent, Name);
+		p = C4PropList::NewStatic(NULL, parent, Name);
 	}
 	else
 	{
@@ -1936,7 +1936,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		{
 			// the proplist couldn't be parsed or was overwritten by a later constant.
 			// create a temporary replacement
-			v.SetPropList(C4PropList::NewAnon(NULL, parent, Name));
+			v.SetPropList(C4PropList::NewStatic(NULL, parent, Name));
 		}
 		p = v.getPropList()->IsStatic();
 		if (!p)
@@ -2935,7 +2935,7 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 				if (prop->Key != &::Strings.P[P_Prototype])
 					if (!p || p->GetParent() != to)
 					{
-						p = C4PropList::NewAnon(NULL, to, prop->Key);
+						p = C4PropList::NewStatic(NULL, to, prop->Key);
 						CopyPropList(prop->Value._getPropList()->Properties, p);
 					}
 				to->SetPropertyByS(prop->Key, C4VPropList(p));

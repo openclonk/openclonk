@@ -74,7 +74,7 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
-C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
+C4PropListStatic * C4PropList::NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
 {
 	return new C4PropListStatic(prototype, parent, key);
 }

@@ -159,7 +159,7 @@ void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"))),
+		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine
