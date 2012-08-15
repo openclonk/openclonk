@@ -131,10 +131,9 @@ bool CSurface8::Read(CStdStream &hGroup)
 		// Copy palette
 		for (cnt=0; cnt<256; cnt++)
 		{
-			pPal->Colors[cnt*3+0]=BitmapInfo.Colors[cnt].rgbRed;
-			pPal->Colors[cnt*3+1]=BitmapInfo.Colors[cnt].rgbGreen;
-			pPal->Colors[cnt*3+2]=BitmapInfo.Colors[cnt].rgbBlue;
-			pPal->Alpha[cnt]=0xff;
+			pPal->Colors[cnt] = C4RGB(BitmapInfo.Colors[cnt].rgbRed,
+			                          BitmapInfo.Colors[cnt].rgbGreen,
+			                          BitmapInfo.Colors[cnt].rgbBlue);
 		}
 	}
 
@@ -164,10 +163,10 @@ bool CSurface8::Read(CStdStream &hGroup)
 	return true;
 }
 
-bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
+bool CSurface8::Save(const char *szFilename, CStdPalette *bpPalette)
 {
 	C4BMP256Info BitmapInfo;
-	BitmapInfo.Set(Wdt,Hgt,bpPalette ? bpPalette : pPal->Colors);
+	BitmapInfo.Set(Wdt,Hgt, bpPalette ? bpPalette : pPal);
 
 	// Create file & write info
 	CStdFile hFile;

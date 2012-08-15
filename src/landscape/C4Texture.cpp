@@ -422,14 +422,10 @@ void C4TextureMap::Default()
 	fInitialized = false;
 }
 
-void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
+void C4TextureMap::StoreMapPalette(CStdPalette *Palette, C4MaterialMap &rMaterial)
 {
-	// Zero palette
-	ZeroMem(bypPalette,256*3);
 	// Sky color
-	bypPalette[0]=192;
-	bypPalette[1]=196;
-	bypPalette[2]=252;
+	Palette->Colors[0] = C4RGB(192, 196, 252);
 	// Material colors by texture map entries
 	bool fSet[256];
 	ZeroMem(&fSet, sizeof (fSet));
@@ -438,12 +434,8 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
 	{
 		// Find material
 		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
-		bypPalette[3*i+0]=dwPix >> 16;
-		bypPalette[3*i+1]=dwPix >> 8;
-		bypPalette[3*i+2]=dwPix;
-		bypPalette[3*(i+IFT)+0]=dwPix >> 16;
-		bypPalette[3*(i+IFT)+1]=dwPix >> 8;
-		bypPalette[3*(i+IFT)+2]=dwPix | 0x0F; // IFT arbitrarily gets more blue
+		Palette->Colors[i] = dwPix;
+		Palette->Colors[i + IFT] = dwPix | 0x0F; // IFT arbitrarily gets more blue
 		fSet[i] = fSet[i + IFT] = true;
 	}
 	// Crosscheck colors, change equal palette entries
@@ -452,17 +444,16 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
 			{
 				// search equal entry
 				int32_t j = 0;
-				for (; j < i; j++) if (fSet[j])
-						if (bypPalette[3*i+0] == bypPalette[3*j+0] &&
-						    bypPalette[3*i+1] == bypPalette[3*j+1] &&
-						    bypPalette[3*i+2] == bypPalette[3*j+2])
+				for (; j < i; j++)
+					if (fSet[j] && Palette->Colors[i] == Palette->Colors[j])
 							break;
 				// not found? ok then
 				if (j >= i) break;
 				// change randomly
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+0] += 3; else bypPalette[3*i+0] -= 3;
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+1] += 3; else bypPalette[3*i+1] -= 3;
-				if (rand() < RAND_MAX / 2) bypPalette[3*i+2] += 3; else bypPalette[3*i+2] -= 3;
+				Palette->Colors[i] = C4RGB(
+					(rand() < RAND_MAX / 2) ? GetRedValue(Palette->Colors[i]) + 3 : GetRedValue(Palette->Colors[i]) - 3,
+					(rand() < RAND_MAX / 2) ? GetGreenValue(Palette->Colors[i]) + 3 : GetGreenValue(Palette->Colors[i]) - 3,
+					(rand() < RAND_MAX / 2) ? GetBlueValue(Palette->Colors[i]) + 3 : GetBlueValue(Palette->Colors[i]) - 3);
 			}
 }
 

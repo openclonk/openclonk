@@ -1478,11 +1478,11 @@ bool C4Landscape::SaveMap(C4Group &hGroup)
 	if (!Map) return false;
 
 	// Create map palette
-	BYTE bypPalette[3*256];
-	::TextureMap.StoreMapPalette(bypPalette,::MaterialMap);
+	CStdPalette Palette;
+	::TextureMap.StoreMapPalette(&Palette,::MaterialMap);
 
 	// Save map surface
-	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), bypPalette))
+	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), &Palette))
 		return false;
 
 	// Move temp file to group
@@ -3245,13 +3245,8 @@ bool C4Landscape::Mat2Pal()
 			continue;
 		// colors
 		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
-		for (rgb=0; rgb<3; rgb++)
-			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
-			= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-			  = uint8_t(dwPix >> ((2-rgb) * 8));
-		// alpha
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0xff;
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0xff;
+		Surface8->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
+		Surface8->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 	}
 	// success
 	return true;

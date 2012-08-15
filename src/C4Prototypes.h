@@ -131,6 +131,7 @@ class C4ViewportList;
 class C4ViewportWindow;
 class C4Markup;
 class CStdFont;
+struct CStdPalette;
 class CStdStream;
 class CStdVectorFont;
 class CSurface8;
