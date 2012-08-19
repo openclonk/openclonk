@@ -94,10 +94,10 @@ public:
 	C4AulFunc * GetFunc(C4String * k) const;
 	C4AulFunc * GetFunc(const char * k) const;
 	C4String * EnumerateOwnFuncs(C4String * prev = 0) const;
-	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
-	{ return Call(&Strings.P[k], pPars); }
-	C4Value Call(C4String * k, C4AulParSet *pPars=0);
-	C4Value Call(const char * k, C4AulParSet *pPars=0);
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0, bool fPassErrors=false)
+	{ return Call(&Strings.P[k], pPars, fPassErrors); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
+	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }

@@ -473,21 +473,21 @@ C4AulFunc * C4PropList::GetFunc(const char * s) const
 	return GetFunc(k);
 }
 
-C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars)
+C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	C4AulFunc *pFn = GetFunc(k);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
-C4Value C4PropList::Call(const char * s, C4AulParSet *Pars)
+C4Value C4PropList::Call(const char * s, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	assert(s && s[0]);
 	C4AulFunc *pFn = GetFunc(s);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
 C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const

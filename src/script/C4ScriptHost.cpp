@@ -214,8 +214,7 @@ C4PropListStatic * C4GameScriptHost::GetPropList()
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
 {
-	// FIXME: Does fPassError make sense?
-	return ScenPropList._getPropList()->Call(szFunction, Pars);
+	return ScenPropList._getPropList()->Call(szFunction, Pars, fPassError);
 }
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)
