@@ -217,7 +217,7 @@ C4PropList::~C4PropList()
 	assert(PropLists.Has(this));
 	PropLists.Remove(this);
 #endif
-	assert	(!C4PropListNumbered::CheckPropList(this));
+	assert(!C4PropListNumbered::CheckPropList(this));
 }
 
 bool C4PropList::operator==(const C4PropList &b) const
