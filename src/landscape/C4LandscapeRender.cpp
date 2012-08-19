@@ -4,6 +4,7 @@
 
 #include "C4Landscape.h"
 #include "C4Texture.h"
+#include "C4FoW.h"
 
 #include "C4GroupSet.h"
 #include "C4Components.h"
@@ -50,7 +51,9 @@ static const char *GetUniformName(int iUniform)
 	case C4LRU_LandscapeTex: return "landscapeTex";
 	case C4LRU_ScalerTex:    return "scalerTex";
 	case C4LRU_MaterialTex:  return "materialTex";
+	case C4LRU_LightTex:     return "lightTex";
 	case C4LRU_Resolution:   return "resolution";
+	case C4LRU_Center:       return "center";
 	case C4LRU_MatMap:       return "matMap";
 	case C4LRU_MatMapTex:    return "matMapTex";
 	case C4LRU_MaterialDepth:return "materialDepth";
@@ -469,6 +472,7 @@ void C4LandscapeRenderGL::Update(C4Rect To, C4Landscape *pSource)
 			data[C4LR_BiasX] = iHBiasScaled;
 			data[C4LR_BiasY] = iVBiasScaled;
 			data[C4LR_Scaler] = iScaler;
+			data[C4LR_Place] = iPlac;
 
 			for(int i = 0; i < C4LR_SurfaceCount; i++)
 				TexRefs[i]->SetPix4(To.x+x, To.y+y, 
@@ -598,7 +602,7 @@ bool C4LandscapeRenderGL::InitShaders()
 	for(iWorkaround = 0; iWorkaround < (1 << C4LR_ShaderWorkaroundCount); iWorkaround++)
 	{
 		// Create trivial fragment shader
-		const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_Position = ftransform(); } ";
+		const char *szVert = "#version 110\nvoid main() { gl_TexCoord[0] = gl_MultiTexCoord0; gl_TexCoord[1] = gl_MultiTexCoord1; gl_Position = ftransform(); } ";
 		hVert = CreateShader(GL_VERTEX_SHADER_ARB, "vertex shader", szVert, iWorkaround);
 		hFrag = CreateShader(GL_FRAGMENT_SHADER_ARB, "fragment shader", LandscapeShader.getData(), iWorkaround);
 		if(!hFrag || !hVert)
@@ -943,7 +947,7 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 	}
 }
 
-void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
+void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light)
 {
 	// Must have GL and be initialized
 	if(!pGL && !hProg) return;
@@ -965,6 +969,13 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	// Bind data
 	if (hUniforms[C4LRU_Resolution] != GLhandleARB(-1))
 		glUniform2fARB(hUniforms[C4LRU_Resolution], Surfaces[0]->Wdt, Surfaces[0]->Hgt);
+	if (hUniforms[C4LRU_Center] != GLhandleARB(-1))
+	{
+		float x = float(cgo.TargetX)+float(cgo.Wdt)/2,
+		      y = float(cgo.TargetY)+float(cgo.Hgt)/2;
+		glUniform2fARB(hUniforms[C4LRU_Center], 
+			x / float(Surfaces[0]->Wdt), y / float(Surfaces[0]->Hgt));
+	}
 	if (hUniforms[C4LRU_MatMap] != GLhandleARB(-1))
 	{
 		GLfloat MatMap[256];
@@ -986,27 +997,6 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	} while(false)
 
 	// Start binding textures
-	if(hUniforms[C4LRU_ScalerTex] != GLhandleARB(-1))
-	{
-		ALLOC_UNIT(hUniforms[C4LRU_ScalerTex], GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	if(hUniforms[C4LRU_MaterialTex] != GLhandleARB(-1))
-	{
-		ALLOC_UNIT(hUniforms[C4LRU_MaterialTex], GL_TEXTURE_3D);
-
-		// Decide which mip-map level to use
-		double z = 2.0; int iMM = 0;
-		while(pGL->Zoom < z && iMM + 1 <C4LR_MipMapCount)
-			{ z /= 2; iMM++; }
-		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
 	if(hUniforms[C4LRU_LandscapeTex] != GLhandleARB(-1))
 	{
 		GLint iLandscapeUnits[C4LR_SurfaceCount];
@@ -1028,6 +1018,34 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		}
 		glUniform1ivARB(hUniforms[C4LRU_LandscapeTex], C4LR_SurfaceCount, iLandscapeUnits);
 	}
+	if(hUniforms[C4LRU_LightTex] != GLhandleARB(-1))
+	{
+		ALLOC_UNIT(hUniforms[C4LRU_LightTex], GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, Light.getSurface()->ppTex[0]->texName);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	if(hUniforms[C4LRU_ScalerTex] != GLhandleARB(-1))
+	{
+		ALLOC_UNIT(hUniforms[C4LRU_ScalerTex], GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, fctScaler.Surface->ppTex[0]->texName);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	if(hUniforms[C4LRU_MaterialTex] != GLhandleARB(-1))
+	{
+		ALLOC_UNIT(hUniforms[C4LRU_MaterialTex], GL_TEXTURE_3D);
+
+		// Decide which mip-map level to use
+		double z = 2.0; int iMM = 0;
+		while(pGL->Zoom < z && iMM + 1 <C4LR_MipMapCount)
+			{ z /= 2; iMM++; }
+		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
 	if(hUniforms[C4LRU_MatMapTex] != GLhandleARB(-1))
 	{
 		ALLOC_UNIT(hUniforms[C4LRU_MatMapTex], GL_TEXTURE_1D);
@@ -1037,22 +1055,57 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 
-	// set up blit data as rect
-	FLOAT_RECT fTexBlt, tTexBlt;
+	// Calculate coordinates into landscape texture
+	FLOAT_RECT fTexBlt;
 	float fx = float(cgo.TargetX), fy = float(cgo.TargetY);
-	fTexBlt.left  = fx;
-	fTexBlt.top   = fy;
-	fTexBlt.right = fx + float(cgo.Wdt);
-	fTexBlt.bottom= fy + float(cgo.Hgt);
+	fTexBlt.left  = fx / Surfaces[0]->Wdt;
+	fTexBlt.top   = fy / Surfaces[0]->Hgt;
+	fTexBlt.right = (fx + float(cgo.Wdt)) / Surfaces[0]->Wdt;
+	fTexBlt.bottom= (fy + float(cgo.Hgt)) / Surfaces[0]->Hgt;
 
-	// apply Zoom
+	// Calculate coordinates into light texture
+	FLOAT_RECT lTexBlt;
+	C4Rect LightRect = Light.getRegion();
+	int32_t iLightWdt = Light.getSurface()->Wdt,
+		    iLightHgt = Light.getSurface()->Hgt;
+	lTexBlt.left  =       (fx - LightRect.x) / iLightWdt;
+	lTexBlt.top   = 1.0 - (fy - LightRect.y) / iLightHgt;
+	lTexBlt.right =       (fx + cgo.Wdt - LightRect.x) / iLightWdt;
+	lTexBlt.bottom= 1.0 - (fy + cgo.Hgt - LightRect.y) / iLightHgt;
+
+	// Calculate coordinates on screen (zoomed!)
+	FLOAT_RECT tTexBlt;
 	float tx = float(cgo.X), ty = float(cgo.Y);
 	pGL->ApplyZoom(tx, ty);
 	tTexBlt.left  = tx;
 	tTexBlt.top   = ty;
 	tTexBlt.right = tx + float(cgo.Wdt) * pGL->Zoom;
 	tTexBlt.bottom= ty + float(cgo.Hgt) * pGL->Zoom;
+	
+	// Blend it
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#if 1
+
+	// To the blit
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_QUADS);
+
+	#define VERTEX(x, y) \
+		glMultiTexCoord2f(GL_TEXTURE0, fTexBlt.x, fTexBlt.y); \
+		glMultiTexCoord2f(GL_TEXTURE1, lTexBlt.x, lTexBlt.y); \
+		glVertex2f(tTexBlt.x, tTexBlt.y);
+
+	VERTEX(left, top);
+	VERTEX(right, top);
+	VERTEX(right, bottom);
+	VERTEX(left, bottom);
+
+	#undef VERTEX
+	
+	glEnd();
+
+#else
 	// blit positions
 	C4BltVertex Vtx[4];
 	Vtx[0].ftx = tTexBlt.left;  Vtx[0].fty = tTexBlt.top;
@@ -1080,12 +1133,11 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	//for (int i=0; i<4; ++i)
 	//	DwTo4UB(dwModClr | dwModMask, Vtx[i].color);
 
-	// Blend it
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Blit
 	glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(C4BltVertex), Vtx);
 	glDrawArrays(GL_QUADS, 0, 4);
+#endif
 
 	// Remove shader
 	glUseProgramObjectARB(0);

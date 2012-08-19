@@ -57,6 +57,7 @@
 #include <C4GameObjects.h>
 #include <C4Record.h>
 #include <C4MeshAnimation.h>
+#include <C4FoW.h>
 
 namespace
 {
@@ -4132,6 +4133,7 @@ bool C4Object::SetPlrViewRange(int32_t iToRange)
 void C4Object::PlrFoWActualize()
 {
 	C4Player *pPlr;
+	Landscape.pFoW->Add(this);
 	// single owner?
 	if (ValidPlr(Owner))
 	{

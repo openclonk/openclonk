@@ -11,6 +11,7 @@ enum C4LR_Byte {
 	C4LR_BiasX,
 	C4LR_BiasY,
 	C4LR_Scaler,
+	C4LR_Place,
 
 	C4LR_ByteCount
 };
@@ -22,8 +23,10 @@ enum C4LR_Uniforms
 	C4LRU_LandscapeTex,
 	C4LRU_ScalerTex,
 	C4LRU_MaterialTex,
+	C4LRU_LightTex,
 
 	C4LRU_Resolution,
+	C4LRU_Center,
 	C4LRU_MatMap,
 	C4LRU_MatMapTex,
 	C4LRU_MaterialDepth,
@@ -67,7 +70,7 @@ public:
 	// the given rectangle
 	virtual void Update(C4Rect Rect, C4Landscape *pSource) = 0;
 
-	virtual void Draw(const C4TargetFacet &cgo) = 0;
+	virtual void Draw(const C4TargetFacet &cgo, const class C4FoWRegion &Light) = 0;
 };
 
 #ifdef USE_GL
@@ -108,7 +111,7 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light);
 
 	void RefreshShaders();
 
@@ -149,7 +152,7 @@ public:
 	virtual C4Rect GetAffectedRect(C4Rect Rect);
 	virtual void Update(C4Rect Rect, C4Landscape *pSource);
 
-	virtual void Draw(const C4TargetFacet &cgo);
+	virtual void Draw(const C4TargetFacet &cgo, const C4FoWRegion &Light);
 
 };
 

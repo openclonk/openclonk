@@ -28,7 +28,6 @@
 
 #include "C4Sky.h"
 #include "C4Shape.h"
-#include "C4LandscapeRender.h"
 
 #include <CSurface8.h>
 #include <C4Material.h>
@@ -74,9 +73,10 @@ public:
 	C4MapCreatorS2 *pMapCreator; // map creator for script-generated maps
 	bool fMapChanged;
 	BYTE *pInitial; // Initial landscape after creation - used for diff
+	class C4FoW *pFoW;
 protected:
 	CSurface8 * Surface8;
-	C4LandscapeRender *pLandscapeRender;
+	class C4LandscapeRender *pLandscapeRender;
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
 	uint8_t *PixCnt;
@@ -86,7 +86,7 @@ public:
 	void Clear(bool fClearMapCreator=true, bool fClearSky=true);
 	void Execute();
 	void Synchronize();
-	void Draw(C4TargetFacet &cgo, int32_t iPlayer=-1);
+	void Draw(C4TargetFacet &cgo, class C4FoWRegion *pLight = NULL);
 	void ScenarioInit();
 
 	void ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt, int32_t iOfDensity);
@@ -181,6 +181,14 @@ public:
 	inline int32_t GetPlacement(int32_t x, int32_t y) // get landscape material placement (bounds checked)
 	{
 		return Pix2Place[GetPix(x, y)];
+	}
+	inline bool _FastSolidCheck(int32_t x, int32_t y) // checks whether there *might* be something solid at the point
+	{
+		return PixCnt[(x / 17) * PixCntPitch + (y / 15)] > 0;
+	}
+	inline int32_t FastSolidCheckNextX(int32_t x)
+	{
+		return (x / 17) * 17 + 17;
 	}
 	inline int32_t GetPixMat(BYTE byPix) { return Pix2Mat[byPix]; }
 	inline int32_t GetPixDensity(BYTE byPix) { return Pix2Dens[byPix]; }

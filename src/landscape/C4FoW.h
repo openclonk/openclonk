@@ -1,0 +1,242 @@
+
+#ifndef C4FOW_H
+#define C4FOW_H
+
+#include "C4Rect.h"
+#include "C4Surface.h"
+
+// Number of redundant surfaces used for saving FoW information.
+// Having more prevents us from clearing data when it is still in use
+// (think double-buffering)
+const int32_t C4FOW_REGION_SFCS = 2;
+
+// Our fix point factor. Used for sub-pixel accuracy on rays calculation.
+const int32_t C4FOW_FF = 128;
+
+// Sneakily use slight different names than fixtof & co...
+inline float i2fix(int32_t v) { return C4FOW_FF * v; }
+inline float fix2f(int32_t v) { return float(v) / C4FOW_FF; }
+
+class C4FoW
+{
+public:
+	C4FoW();
+
+private:
+	class C4FoWLight *pLights;
+
+public:
+	void Add(C4Object *pObj);
+	void Remove(C4Object *pObj);
+	void Update(C4Rect r);
+	void Invalidate(C4Rect r);
+
+	void Render(class C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+};
+
+class C4FoWRegion
+{
+public:
+	C4FoWRegion(C4FoW *pFoW);
+	~C4FoWRegion();
+
+private:
+	C4FoW *pFoW;
+	C4Rect Region, OldRegion;
+	C4Surface *pSurface[C4FOW_REGION_SFCS];
+	int32_t iCurSurface;
+	GLuint hFrameBufDraw, hFrameBufRead;
+
+public:
+	const C4Rect &getRegion() const { return Region; }
+	const C4Surface *getSurface() const { return pSurface[iCurSurface]; }
+	const C4Surface *getOtherSurface() const { return pSurface[(iCurSurface+C4FOW_REGION_SFCS-1)%C4FOW_REGION_SFCS]; }
+
+	bool Create();
+	void Clear();
+
+	void Set(C4Rect r) { Region = r; }
+	void Render(const C4TargetFacet *pOnScreen = NULL);
+
+	void Draw(const C4TargetFacet &fct);
+
+};
+
+class C4FoWLight
+{
+	friend class C4FoW;
+public:
+	C4FoWLight(C4Object *pObj);
+	~C4FoWLight();
+
+private:
+	int32_t iX, iY; // center position
+	int32_t iReach; // maximum length of rays
+	int32_t iFadeout; // number of pixels over which rays fade out
+	int32_t iSize; // size of the light source. Decides smoothness of shadows
+	class C4FoWLightSection *pSections;
+	C4FoWLight *pNext;
+	C4Object *pObj; // Associated object
+
+public:
+	int32_t getX() const { return iX; }
+	int32_t getY() const { return iY; }
+	int32_t getReach() const { return iReach; }
+	int32_t getFadeout() const { return iFadeout; }
+	int32_t getTotalReach() const { return iReach + iFadeout; }
+	int32_t getSize() const { return iSize; }
+	C4FoWLight *getNext() const { return pNext; }
+	C4Object *getObj() const { return pObj; }
+
+	void SetReach(int32_t iReach, int32_t iFadeout);
+
+	void Invalidate(C4Rect r);
+	void Update(C4Rect r);
+
+	void Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+
+};
+
+class C4FoWLightSection
+{
+public:
+	C4FoWLightSection(C4FoWLight *pLight, int r, C4FoWLightSection *pNext = NULL);
+	~C4FoWLightSection();
+
+private:
+
+	// Center light
+	C4FoWLight *pLight;
+
+	// Transformation matrix
+	int iRot;
+	int a, b, c, d;
+	int ra, rb, rc, rd;
+
+	// Rays
+	class C4FoWRay *pRays;
+
+	// List
+	C4FoWLightSection *pNext;
+
+public:
+
+	C4FoWLightSection *getNext() const { return pNext; }
+
+	void Invalidate(C4Rect r);
+	void Update(C4Rect r);
+
+	void Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScreen = NULL);
+
+	void Prune(int32_t iReach);
+	void Dirty(int32_t iReach);
+	
+	void ClearRays();
+
+private:
+
+	// Ray to landscape. Ray coordinates are with light source at (0,0).
+	template <class T> T transDX(T dx, T dy) const { return T(a) * dx + T(b) * dy; }
+	template <class T> T transDY(T dx, T dy) const { return T(c) * dx + T(d) * dy; }
+	template <class T> T transX(T x, T y) const { return transDX(x, y) + T(pLight->getX()); }
+	template <class T> T transY(T x, T y) const { return transDY(x, y) + T(pLight->getY()); }
+
+	// Landscape to ray
+	template <class T> T rtransDX(T dx, T dy) const { return T(ra) * dx + T(rb) * dy; }
+	template <class T> T rtransDY(T dx, T dy) const { return T(rc) * dx + T(rd) * dy; }
+	template <class T> T rtransX(T x, T y) const { return rtransDX(x-T(pLight->getX()),y-T(pLight->getY())); }
+	template <class T> T rtransY(T x, T y) const { return rtransDY(x-T(pLight->getX()),y-T(pLight->getY())); }
+
+	C4Rect rtransRect(C4Rect r) const {
+		C4Rect Rect(rtransX(r.x, r.y), rtransY(r.x, r.y),
+		            rtransDX(r.Wdt, r.Hgt), rtransDY(r.Wdt, r.Hgt));
+		Rect.Normalize();
+		return Rect;
+	}
+
+	bool isConsistent() const;
+
+	int32_t RectLeftMostY(const C4Rect &r) const { return r.x >= 0 ? r.y+r.Hgt : r.y; }
+	int32_t RectRightMostY(const C4Rect &r) const { return r.x + r.Wdt <= 0 ? r.y+r.Hgt : r.y; }
+
+	C4FoWRay *FindRayLeftOf(int32_t x, int32_t y); // find right-most ray left of point
+	C4FoWRay *FindRayOver(int32_t x, int32_t y); // find left-most ray to extend over point
+
+};
+
+class C4FoWRay
+{
+public:
+	C4FoWRay(int32_t iLeftX, int32_t iLeftY, int32_t iRightX, int32_t iRightY)
+		: iLeftX(iLeftX), iLeftY(iLeftY), iRightX(iRightX), iRightY(iRightY),
+		  iLeftEndY(0), iRightEndY(0),
+		  iError(0),
+		  fDirty(true),
+		  pNext(NULL)
+	{ }
+
+private:
+	int32_t iLeftX, iLeftY; // left delimiter point
+	int32_t iRightX, iRightY; // right delimiter point
+	int32_t iLeftEndY, iRightEndY; // where it hit solid material. C4FoWRayActive while currently being followed.
+	int32_t iError; // How much error this ray has
+	bool fDirty; // landscape changed since it was followed?
+	C4FoWRay *pNext;
+
+public:
+	bool isDirty() const { return fDirty; }
+	bool isClean() const { return !fDirty; }
+	C4FoWRay *getNext() const { return pNext; }
+
+	// Get a point on the ray boundary.
+	// 
+	// The "in" parameter specifies the light intensity we want - with
+	//  1 = full light
+	//  0 = half light (what we are normally interested in)
+	// -1 = no light
+	template <typename T> inline T getLeftXGen(int32_t y, int32_t in = 0) const {
+		return T(iLeftX * y) / T(iLeftY);
+	}
+	template <typename T> inline T getRightXGen(int32_t y, int32_t in = 0) const {
+		return T(iRightX * y) / T(iRightY);
+	}
+	inline int32_t getLeftX(int32_t y, int32_t in = 0) const { return getLeftXGen<int32_t>(y, in); }
+	inline int32_t getRightX(int32_t y, int32_t in = 0) const { return getRightXGen<int32_t>(y, in); }
+	inline float getLeftXf(int32_t y, int32_t in = 0) const { return getLeftXGen<float>(y, in); }
+	inline float getRightXf(int32_t y, int32_t in = 0) const { return getRightXGen<float>(y, in); }
+
+	int32_t getLeftEndY() const { return iLeftEndY; }
+	int32_t getLeftEndX(int32_t in = 0) const { return getLeftX(iLeftEndY, in); }
+	float getLeftEndXf(int32_t in = 0) const { return getLeftXf(iLeftEndY, in); }
+	int32_t getRightEndY() const { return iRightEndY; }
+	int32_t getRightEndX(int32_t in = 0) const { return getRightX(iRightEndY, in); }
+	float getRightEndXf(int32_t in = 0) const { return getRightXf(iRightEndY, in); }
+
+	StdStrBuf getDesc() const;
+
+	bool isLeft(int x, int y) const {
+		return iLeftX * y > x * iLeftY;
+	}
+	bool isRight(int x, int y) const {
+		return iRightX * y < x * iRightY;
+	}
+	bool isInside(int x, int y) const {
+		return !isLeft(x, y) && !isRight(x, y);
+	}
+
+	void SetLeft(int x, int y) { iLeftX = x; iLeftY = y; }
+	void SetRight(int x, int y) { iRightX = x; iRightY = y; }
+
+	bool MergeRight(int x, int y);
+	bool MergeLeft(int x, int y);
+	bool Eliminate(int x, int y);
+	C4FoWRay *Split(int x, int y);
+	void MergeDirty();
+	
+	void Clean(int32_t y);
+	void Dirty(int32_t y);
+	void Prune(int32_t y);
+
+};
+
+#endif // C4FOW_H

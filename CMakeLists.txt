@@ -330,6 +330,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupScenSelDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
+	src/landscape/C4FoW.cpp
+	src/landscape/C4FoW.h
 	src/landscape/C4Landscape.cpp
 	src/landscape/C4Landscape.h
 	src/landscape/C4LandscapeRenderClassic.cpp

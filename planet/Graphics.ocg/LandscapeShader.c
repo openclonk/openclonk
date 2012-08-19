@@ -2,12 +2,16 @@
 #version 110
 
 // Input textures
-uniform sampler2D landscapeTex[1];
+uniform sampler2D landscapeTex[2];
+uniform sampler2D lightTex;
 uniform sampler2D scalerTex;
 uniform sampler3D materialTex;
 
 // Resolution of the landscape texture
 uniform vec2 resolution;
+
+// Center position
+uniform vec2 center;
 
 // Use sampler if the GPU doesn't support enough uniforms to
 // get the matMap as an array
@@ -16,6 +20,7 @@ uniform vec2 resolution;
 #endif
 
 // Texture map
+#define BROKEN_ARRAYS_WORKAROUND
 #ifdef BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;
 #else
@@ -51,22 +56,25 @@ float queryMatMap(int pix)
 
 void main()
 {
+
 	// full pixel steps in the landscape texture (depends on landscape resolution)
 	vec2 fullStep = vec2(1.0, 1.0) / resolution;
 	vec2 fullStepX = vec2(fullStep.x, 0.0);
 	vec2 fullStepY = vec2(0.0, fullStep.y);
 
+	vec2 texCoo = gl_TexCoord[0].st;
+	
 	// calculate pixel position in landscape, find center of current pixel
-	vec2 pixelCoo = gl_TexCoord[0].st * resolution;
+	vec2 pixelCoo = texCoo * resolution;
 	vec2 centerCoo = (floor(pixelCoo) + vec2(0.5, 0.5)) / resolution;
 
 	// our pixel color (with and without interpolation)
 	vec4 lpx = texture2D(landscapeTex[0], centerCoo);
-	vec4 rlpx = texture2D(landscapeTex[0], gl_TexCoord[0].st);
+	vec4 rlpx = texture2D(landscapeTex[0], texCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
-	
+
 #ifdef SCALER_IN_GPU
 	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == lpx.r)
 		scalerCoo += scalerStepX;
@@ -102,15 +110,17 @@ void main()
 	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
 	vec2 otherCoo = centerCoo + fullStep * floor(vec2(-0.5, -0.5) + spx.gb * 255.0 / 64.0);
 	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
-	
+
 	// Get material pixels
-	float mi = queryMatMap(f2i(lpx.r));
-	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), mi));
-	float omi = queryMatMap(f2i(lopx.r));
-	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), omi));
 	
-	// Brightness
-	float ambientBright = 1.0, shadeBright = 0.8;	
+	float mi = queryMatMap(f2i(lpx.r));
+
+	vec4 mpx = texture3D(materialTex, vec3(texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), mi));
+	float omi = queryMatMap(f2i(lopx.r));
+	vec4 ompx = texture3D(materialTex, vec3(texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), omi));
+
+	// Brightness	
+	float ambientBright = texture2D(lightTex, gl_TexCoord[1].st).r*2.0, shadeBright = ambientBright;	
 	vec2 normal = (2.0 * mix(rlpx.yz, lpx.yz, spx.a) - vec2(1.0, 1.0));
 	vec2 normal2 = (2.0 * lopx.yz - vec2(1.0, 1.0));
 	float bright = ambientBright + shadeBright * dot(normal, vec2(0.0, -1.0));

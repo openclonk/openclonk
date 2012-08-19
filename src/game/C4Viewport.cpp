@@ -45,6 +45,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
+#include <C4FoW.h>
 
 void C4Viewport::DropFile(const char* fileName, float x, float y)
 {
@@ -219,30 +220,26 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	}
 	last_game_draw_cgo = cgo;
 
-	// landscape mod by FoW
-	/*
-	Fog of war disabled until proper Shader-implementation is around
-
-	C4Player *pPlr=::Players.Get(Player);
-	if (pPlr && pPlr->fFogOfWar)
-	{
-		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
-		pPlr->FoW2Map(ClrModMap, int(float(cgo.X)/Zoom-cgo.TargetX), int(float(cgo.Y)/Zoom-cgo.TargetY));
-		pDraw->SetClrModMap(&ClrModMap);
-		pDraw->SetClrModMapEnabled(true);
-	}
-	else
-		pDraw->SetClrModMapEnabled(false);
-		*/
+	// --- activate FoW here ---
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
 	::Objects.Draw(cgo, Player, -2147483647 - 1 /* INT32_MIN */, 0);
 
+	// Update FoW
+	if (pFoW)
+	{
+		pFoW->Set(C4Rect(
+			int32_t(cgo.TargetX), int32_t(cgo.TargetY),
+			cgo.Wdt + 1, cgo.Hgt + 1));
+
+		pFoW->Render();
+	}
+
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
-	::Landscape.Draw(cgo,Player);
+	::Landscape.Draw(cgo, pFoW);
 	C4ST_STOP(LandStat)
 
 	// draw PXS (unclipped!)
@@ -260,17 +257,12 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Particles.GlobalParticles.Draw(cgo,NULL);
 	C4ST_STOP(PartStat)
 
+
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
-
-	/* Fog of war disabled, see above 
-	// FogOfWar-mod off
-	pDraw->SetClrModMapEnabled(false);
-
-	*/
 
 	if (fDrawOverlay)
 	{
@@ -632,6 +624,9 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 		// Owned viewport: clear any flash message explaining observer menu
 		if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	}
+	// Initialize FoW
+	if (::Landscape.pFoW)
+		pFoW = new C4FoWRegion(::Landscape.pFoW);
 	return true;
 }
 

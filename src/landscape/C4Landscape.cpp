@@ -55,6 +55,8 @@
 #include <CSurface8.h>
 #include <StdPNG.h>
 #include <C4MaterialList.h>
+#include <C4LandscapeRender.h>
+#include <C4FoW.h>
 
 C4Landscape::C4Landscape()
 {
@@ -269,7 +271,7 @@ void C4Landscape::ScanSideOpen()
 
 
 
-void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
+void C4Landscape::Draw(C4TargetFacet &cgo, C4FoWRegion *pLight)
 {
 	if (Modulation) pDraw->ActivateBlitModulation(Modulation);
 	// blit landscape
@@ -277,8 +279,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		pDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else if(pLandscapeRender)
 	{
-		DoRelights();
-		pLandscapeRender->Draw(cgo);
+		pLandscapeRender->Draw(cgo, *pLight);
 	}
 	if (Modulation) pDraw->DeactivateBlitModulation();
 }
@@ -599,6 +600,9 @@ bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 				Relights[i].Add(CheckRect);
 				break;
 			}
+		// Invalidate FoW
+		if (pFoW)
+			pFoW->Invalidate(CheckRect);
 	}
 	// set pixel
 	return _SetPix(x, y, npix);
@@ -1209,6 +1213,9 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
 	AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
 #endif
+
+	// Create FoW
+	pFoW = new C4FoW();
 
 	// Create renderer
 	pLandscapeRender = NULL;
@@ -3007,6 +3014,9 @@ void C4Landscape::FinishChange(C4Rect BoundingBox)
 	}
 	C4SolidMask::CheckConsistency();
 	UpdatePixCnt(BoundingBox);
+	// update FoW
+	if (pFoW)
+		pFoW->Invalidate(BoundingBox);
 }
 
 
