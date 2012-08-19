@@ -850,9 +850,14 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		return false;
 	}
 	int orientation = dmode.dmDisplayOrientation;
+	if (iXRes == -1 && iYRes == -1)
+	{
+		dspMode=dmode;
+		fFound = true;
+	}
 	// enumerate modes
 	int i=0;
-	while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
+	if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
 		// compare enumerated mode with requested settings
 		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
 			&& (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
@@ -894,10 +899,17 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
-
 	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
-	pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
-	OnResolutionChanged(iXRes, iYRes);
+	if (!fFullScreen && iXRes != -1)
+	{
+		pWindow->SetSize(iXRes, iYRes);
+		OnResolutionChanged(iXRes, iYRes);
+	}
+	if (fFullScreen)
+	{
+		pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+		OnResolutionChanged(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+	}
 	return true;
 #endif
 }

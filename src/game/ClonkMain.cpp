@@ -33,10 +33,10 @@
 #include <C4Version.h>
 #include "C4Network2.h"
 
-void InstallCrashHandler();
-
 #ifdef _WIN32
 #include <shellapi.h>
+
+void InstallCrashHandler();
 
 int WINAPI WinMain (HINSTANCE hInst,
                     HINSTANCE hPrevInstance,

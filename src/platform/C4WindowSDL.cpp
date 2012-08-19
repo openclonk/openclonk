@@ -51,13 +51,13 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 		return NULL;
 	Active = true;
 	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
+	if (!SDL_SetVideoMode(Config.Graphics.ResX == -1 ? 0 : Config.Graphics.ResX, Config.Graphics.ResY == -1 ? 0 : Config.Graphics.ResY,
+			Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
 	{
 		Log(SDL_GetError());
 		return 0;
 	}
 	SDL_ShowCursor(SDL_DISABLE);
-	SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
 	SetTitle(Title);
 	return this;
 }
@@ -86,13 +86,13 @@ bool C4Window::RestorePosition(const char *, const char *, bool) { return true; 
 bool C4Window::GetSize(C4Rect * pRect)
 {
 	pRect->x = pRect->y = 0;
-	pRect->Wdt = width, pRect->Hgt = height;
+	const SDL_VideoInfo * info = SDL_GetVideoInfo();
+	pRect->Wdt = info->current_w, pRect->Hgt = info->current_h;
 	return true;
 }
 
 void C4Window::SetSize(unsigned int X, unsigned int Y)
 {
-	width = X, height = Y;
 }
 
 void C4Window::SetTitle(const char * Title)

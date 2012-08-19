@@ -167,7 +167,8 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	}
 	if (!fFullScreen)
 	{
-		pWindow->SetSize(iXRes, iYRes);
+		if (iXRes != -1)
+			pWindow->SetSize(iXRes, iYRes);
 		return true;
 	}
 	if (Priv->xf86vmode_targetmode.hdisplay == iXRes && Priv->xf86vmode_targetmode.vdisplay == iYRes)
@@ -184,7 +185,14 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		// XF86VidMode has a really weird API.
 		XF86VidModeGetModeLine(dpy, DefaultScreen(dpy), (int*)&Priv->xf86vmode_oldmode.dotclock,
 		                       (XF86VidModeModeLine*)(((char *)&Priv->xf86vmode_oldmode) + sizeof(Priv->xf86vmode_oldmode.dotclock)));
-		//Priv->oldmode = *modes[0];
+		if (iXRes == -1 && iYRes == -1)
+		{
+			Priv->xf86vmode_targetmode = Priv->xf86vmode_oldmode;
+			modefound = true;
+		}
+	}
+	if (Priv->xf86vmode_major_version >= 0 && !modefound)
+	{
 		// Change resolution
 		int mode_num;
 		XF86VidModeModeInfo **modes;
@@ -257,7 +265,7 @@ bool C4X11AppImpl::SwitchToFullscreen(C4AbstractApp * pApp, C4Window * pWindow)
 		gdk_pointer_grab(wnd, true, GdkEventMask(0), wnd, NULL, gdk_x11_display_get_user_time(gdk_display_get_default()));
 		return true;
 	}
-	if (xrandr_major_version >= 0)
+	if (xrandr_major_version >= 0 && !(wdt == -1 && hgt == -1))
 	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 		xrandr_oldmode = XRRConfigCurrentConfiguration (conf, &xrandr_rot);
@@ -297,7 +305,7 @@ void C4X11AppImpl::SwitchToDesktop(C4AbstractApp * pApp, C4Window * pWindow)
 	}
 	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
 	// Restore resolution
-	if (xrandr_major_version >= 0)
+	if (xrandr_major_version >= 0 && !(wdt == -1 && hgt == -1))
 	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 #ifdef _DEBUG

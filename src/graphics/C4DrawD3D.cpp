@@ -463,6 +463,7 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 
 bool CStdD3D::CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
+	// FIXME: this needs to work with iXRes==iYRes==-1, which means "use the desktop resolution"
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
 	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");

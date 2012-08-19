@@ -100,7 +100,6 @@ public:
 	int32_t ShowClock;
 	int32_t ResX,ResY;
 	int32_t RefreshRate;	// monitor vertical refresh rate
-	int32_t GuiResX,GuiResY;
 	int32_t Windowed;
 	int32_t ShowAllResolutions;
 	int32_t ShowCrewNames; // show player name above clonks?

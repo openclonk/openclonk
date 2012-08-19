@@ -948,7 +948,7 @@ void C4Window::Clear()
 
 void C4Window::SetSize(unsigned int width, unsigned int height)
 {
-	 gtk_window_resize(GTK_WINDOW(window), width, height);
+	gtk_window_resize(GTK_WINDOW(window), width, height);
 }
 
 bool C4Window::GetSize(C4Rect * r)

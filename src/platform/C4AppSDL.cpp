@@ -258,14 +258,15 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	//pWindow->GetSize(&r);
 	// FIXME: optimize redundant calls away. maybe make all platforms implicitely call SetVideoMode in C4Window::Init?
 	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
+	if (!SDL_SetVideoMode(iXRes == -1 ? 0 : iXRes, iYRes == -1 ? 0 : iYRes, iColorDepth,
+		SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
 	{
 		sLastError.Copy(SDL_GetError());
 		return false;
 	}
 	SDL_ShowCursor(SDL_DISABLE);
-	pWindow->SetSize(iXRes, iYRes);
-	OnResolutionChanged(iXRes, iYRes);
+	const SDL_VideoInfo * info = SDL_GetVideoInfo();
+	OnResolutionChanged(info->current_w, info->current_h);
 	return true;
 }
 

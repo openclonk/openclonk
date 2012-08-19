@@ -317,9 +317,6 @@ protected:
 	unsigned long handlerDestroy;
 
 	friend class C4X11AppImpl;
-#elif defined(USE_SDL_MAINLOOP)
-private:
-	int width, height;
 #elif defined(USE_COCOA)
 protected:
 	/*ClonkWindowController*/void* controller;

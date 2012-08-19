@@ -1207,6 +1207,7 @@ void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
 {
 	// clear all old entries first to allow a clean refill
 	pFiller->ClearEntries();
+	pFiller->AddEntry(LoadResStr("IDS_MNU_DEFAULTRESOLUTION"), -1);
 	// fill with all possible resolutions
 	int32_t idx = 0, iXRes, iYRes, iBitDepth;
 	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, NULL, Config.Graphics.Monitor))
@@ -1225,6 +1226,8 @@ bool C4StartupOptionsDlg::OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int
 {
 	// get new resolution from string
 	int iResX=(idNewSelection & 0xffff), iResY=(uint32_t(idNewSelection) & 0xffff0000) >> 16;
+	if (idNewSelection == -1)
+		iResX = iResY = -1;
 	// different than current?
 	if (iResX == Config.Graphics.ResX && iResY == Config.Graphics.ResY) return true;
 	// try setting it
@@ -1243,12 +1246,10 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	C4GUI::Screen *pScreen = GetScreen();
 	// resolution change may imply font size change
-	int32_t iNewFontSize;
-	if (iResX < 700)
+	int32_t iNewFontSize = 14; // default (at 800x600)
+	if (iResY >= 0 && iResY < 600)
 		iNewFontSize = 12;
-	else if (iResX < 950)
-		iNewFontSize = 14; // default (at 800x600)
-	else
+	else if (iResY > 800)
 		iNewFontSize = 16;
 	// call application to set it
 	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
@@ -1294,6 +1295,8 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 StdStrBuf C4StartupOptionsDlg::GetGfxResString(int32_t iResX, int32_t iResY)
 {
 	// Display in format like "640 x 480"
+	if (iResX == -1)
+		return StdStrBuf(LoadResStr("IDS_MNU_DEFAULTRESOLUTION"));
 	return FormatString("%d x %d", (int)iResX, (int)iResY);
 }
 

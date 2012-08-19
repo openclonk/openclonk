@@ -437,6 +437,9 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 void C4Application::ApplyResolutionConstraints()
 {
+	// Not changing the resolution always works anyway
+	if (Config.Graphics.ResX == -1 && Config.Graphics.ResY == -1)
+		return;
 	// Enumerate display modes
 	int32_t idx = -1, iXRes, iYRes, iBitDepth, iRefreshRate;
 	int32_t best_match = -1;
