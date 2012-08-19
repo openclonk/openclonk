@@ -6,24 +6,15 @@
 #include "C4DrawGL.h"
 #include "C4Object.h"
 
+#include <float.h>
+
 // TODO: Make sure to use int32_t throughout!
 
-// Hack
-#ifdef _DEBUG
-#undef assert
-#define assert my_assert
-#endif
-
 //#define LIGHT_DEBUG
-
-void my_assert(bool bla) {
-	if(!bla) _asm int 3;
-}
 
 bool glCheck() {
 	if (int err = glGetError()) {
 		LogF("GL error %d: %s", err, gluErrorString(err));
-		_asm int 3;
 		return false;
 	}
 	return true;
@@ -627,12 +618,11 @@ void C4FoWRay::Prune(int32_t y)
 }
 
 C4FoWRegion::C4FoWRegion(C4FoW *pFoW)
-	: pFoW(pFoW), iCurSurface(0)
+	: pFoW(pFoW)
 	, hFrameBufDraw(0), hFrameBufRead(0)
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
+	, pSurface(NULL), pBackSurface(NULL)
 {
-	for (int32_t i = 0; i < C4FOW_REGION_SFCS; i++)
-		pSurface[i] = NULL;
 }
 
 C4FoWRegion::~C4FoWRegion()
@@ -644,16 +634,17 @@ bool C4FoWRegion::Create()
 {
 
 	// Flip texture
-	iCurSurface = (iCurSurface + 1) % C4FOW_REGION_SFCS;
+	C4Surface *pSfc = pSurface;
+	pSurface = pBackSurface;
+	pBackSurface = pSfc;
 
 	// Can simply reuse old texture?
-	if (!pSurface[iCurSurface] ||
-		pSurface[iCurSurface]->Wdt < Region.Wdt || pSurface[iCurSurface]->Hgt < Region.Hgt)
+	if (!pSurface || pSurface->Wdt < Region.Wdt || pSurface->Hgt < Region.Hgt)
 	{
 		// Create texture
-		if (!pSurface[iCurSurface])
-			pSurface[iCurSurface] = new C4Surface();
-		if (!pSurface[iCurSurface]->Create(Region.Wdt, Region.Hgt))
+		if (!pSurface)
+			pSurface = new C4Surface();
+		if (!pSurface->Create(Region.Wdt, Region.Hgt))
 			return false;
 	}
 
@@ -668,17 +659,17 @@ bool C4FoWRegion::Create()
 	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, hFrameBufRead);
 	glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER_EXT,
 		GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-		getSurface()->ppTex[0]->texName, 0);
-	if (getOtherSurface())
+		pSurface->ppTex[0]->texName, 0);
+	if (pBackSurface)
 		glFramebufferTexture2DEXT(GL_READ_FRAMEBUFFER_EXT,
 			GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-			getOtherSurface()->ppTex[0]->texName, 0);
+			pBackSurface->ppTex[0]->texName, 0);
 
 	// Check status, unbind if something was amiss
 	GLenum status1 = glCheckFramebufferStatusEXT(GL_READ_FRAMEBUFFER_EXT),
 		   status2 = glCheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER_EXT);
 	if (status1 != GL_FRAMEBUFFER_COMPLETE_EXT ||
-		(getOtherSurface() && status2 != GL_FRAMEBUFFER_COMPLETE_EXT) ||
+		(pBackSurface && status2 != GL_FRAMEBUFFER_COMPLETE_EXT) ||
 		!glCheck())
 	{
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -696,17 +687,12 @@ void C4FoWRegion::Clear()
 		glDeleteFramebuffersEXT(1, &hFrameBufRead);
 	}
 	hFrameBufDraw = hFrameBufRead = 0;
-	for (int32_t i = 0; i < C4FOW_REGION_SFCS; i++)
-	{
-		delete pSurface[i];
-		pSurface[i] = NULL;
-	}
+	delete pSurface; pSurface = NULL;
+	delete pBackSurface; pBackSurface = NULL;
 }
 
 void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 {
-	assert(!!pSurface);
-
 	// Update FoW at interesting location
 	pFoW->Update(Region);
 
@@ -724,8 +710,8 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 		pDraw->RestorePrimaryClipper();
 		return;
 	}
-	assert(!!hFrameBufDraw);
-	if (!hFrameBufDraw)
+	assert(pSurface && hFrameBufDraw);
+	if (!pSurface || !hFrameBufDraw)
 		return;
 
 	// Set up a clean context
@@ -758,7 +744,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 		// Fade out
 		glBlendFunc(GL_DST_COLOR, GL_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 0.0, 0.8);
+		glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
 		glBegin(GL_QUADS);
 		glVertex2i(0, 0);
 		glVertex2i(getSurface()->Wdt, 0);
@@ -1388,34 +1374,6 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 }
 
-void C4FoWRegion::Draw(const C4TargetFacet &cgo)
-{
-	
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, getSurface()->ppTex[0]->texName);
-
-	float fx0 = (cgo.TargetX - Region.x) / getSurface()->Wdt,
-		  fy1 = (cgo.TargetY - Region.y) / getSurface()->Hgt,
-		  fx1 = (cgo.TargetX + cgo.Wdt - Region.x) / getSurface()->Wdt,
-		  fy0 = (cgo.TargetY + cgo.Hgt - Region.y) / getSurface()->Hgt;
-
-	float tx0 = float(cgo.X),
-		  ty0 = float(cgo.Y),
-		  tx1 = (float(cgo.X) + cgo.Wdt*cgo.Zoom),
-		  ty1 = (float(cgo.Y) + cgo.Hgt*cgo.Zoom);
-
-	glColor3f(1,1,1);
-	glBegin(GL_QUADS);
-	glTexCoord2f(fx0, fy0); glVertex2f(tx0, ty0);
-	glTexCoord2f(fx1, fy0); glVertex2f(tx1, ty0);
-	glTexCoord2f(fx1, fy1); glVertex2f(tx1, ty1);
-	glTexCoord2f(fx0, fy1); glVertex2f(tx0, ty1);
-	glEnd();
-	glCheck();
-
-	glDisable(GL_TEXTURE_2D);
-
-}
 
 StdStrBuf C4FoWRay::getDesc() const {
 	return FormatString("%d:%d@%d:%d%s",

@@ -5,18 +5,6 @@
 #include "C4Rect.h"
 #include "C4Surface.h"
 
-// Number of redundant surfaces used for saving FoW information.
-// Having more prevents us from clearing data when it is still in use
-// (think double-buffering)
-const int32_t C4FOW_REGION_SFCS = 2;
-
-// Our fix point factor. Used for sub-pixel accuracy on rays calculation.
-const int32_t C4FOW_FF = 128;
-
-// Sneakily use slight different names than fixtof & co...
-inline float i2fix(int32_t v) { return C4FOW_FF * v; }
-inline float fix2f(int32_t v) { return float(v) / C4FOW_FF; }
-
 class C4FoW
 {
 public:
@@ -43,22 +31,19 @@ public:
 private:
 	C4FoW *pFoW;
 	C4Rect Region, OldRegion;
-	C4Surface *pSurface[C4FOW_REGION_SFCS];
-	int32_t iCurSurface;
+	C4Surface *pSurface, *pBackSurface;
 	GLuint hFrameBufDraw, hFrameBufRead;
 
 public:
 	const C4Rect &getRegion() const { return Region; }
-	const C4Surface *getSurface() const { return pSurface[iCurSurface]; }
-	const C4Surface *getOtherSurface() const { return pSurface[(iCurSurface+C4FOW_REGION_SFCS-1)%C4FOW_REGION_SFCS]; }
+	const C4Surface *getSurface() const { return pSurface; }
+	const C4Surface *getBackSurface() const { return pBackSurface; }
 
 	bool Create();
 	void Clear();
 
 	void Set(C4Rect r) { Region = r; }
 	void Render(const C4TargetFacet *pOnScreen = NULL);
-
-	void Draw(const C4TargetFacet &fct);
 
 };
 
@@ -189,28 +174,17 @@ public:
 	C4FoWRay *getNext() const { return pNext; }
 
 	// Get a point on the ray boundary.
-	// 
-	// The "in" parameter specifies the light intensity we want - with
-	//  1 = full light
-	//  0 = half light (what we are normally interested in)
-	// -1 = no light
-	template <typename T> inline T getLeftXGen(int32_t y, int32_t in = 0) const {
-		return T(iLeftX * y) / T(iLeftY);
-	}
-	template <typename T> inline T getRightXGen(int32_t y, int32_t in = 0) const {
-		return T(iRightX * y) / T(iRightY);
-	}
-	inline int32_t getLeftX(int32_t y, int32_t in = 0) const { return getLeftXGen<int32_t>(y, in); }
-	inline int32_t getRightX(int32_t y, int32_t in = 0) const { return getRightXGen<int32_t>(y, in); }
-	inline float getLeftXf(int32_t y, int32_t in = 0) const { return getLeftXGen<float>(y, in); }
-	inline float getRightXf(int32_t y, int32_t in = 0) const { return getRightXGen<float>(y, in); }
+	inline int32_t getLeftX(int32_t y) const { return iLeftX * y / iLeftY; }
+	inline int32_t getRightX(int32_t y) const { return iRightX * y / iRightY; }
+	inline float getLeftXf(int32_t y) const { return float(iLeftX * y) / float(iLeftY); }
+	inline float getRightXf(int32_t y) const { return float(iRightX * y) / float(iRightY); }
 
 	int32_t getLeftEndY() const { return iLeftEndY; }
-	int32_t getLeftEndX(int32_t in = 0) const { return getLeftX(iLeftEndY, in); }
-	float getLeftEndXf(int32_t in = 0) const { return getLeftXf(iLeftEndY, in); }
+	int32_t getLeftEndX() const { return getLeftX(iLeftEndY); }
+	float getLeftEndXf() const { return getLeftXf(iLeftEndY); }
 	int32_t getRightEndY() const { return iRightEndY; }
-	int32_t getRightEndX(int32_t in = 0) const { return getRightX(iRightEndY, in); }
-	float getRightEndXf(int32_t in = 0) const { return getRightXf(iRightEndY, in); }
+	int32_t getRightEndX() const { return getRightX(iRightEndY); }
+	float getRightEndXf() const { return getRightXf(iRightEndY); }
 
 	StdStrBuf getDesc() const;
 
