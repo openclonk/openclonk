@@ -193,7 +193,7 @@ C4Window * C4ViewportWindow::Init(int32_t Player)
 {
 	C4Window* result;
 	const char * Title = Player == NO_OWNER ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName();
-	C4Rect r(0,0,400,250);
+	C4Rect r(0,0,800,500);
 	result = C4Window::Init(C4Window::W_Viewport, &Application, Title, &r);
 
 	if (!result) return result;
