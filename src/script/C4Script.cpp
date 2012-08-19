@@ -215,6 +215,28 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4Value FnCall(C4PropList * _this, C4Value * Pars)
+{
+	if (!_this) return C4Value();
+	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulFunc * fn = Pars[0].getFunction();
+	if (!fn)
+		fn = _this->GetFunc(Pars[0].getStr());
+	if (!fn)
+	{
+		const char * s = FnStringPar(Pars[0].getStr());
+		if (s[0] == '~')
+		{
+			fn = _this->GetFunc(&s[1]);
+			if (!fn)
+				return C4Value();
+		}
+	}
+	if (!fn)
+		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	return fn->Exec(_this, &ParSet, true);
+}
+
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
 	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
@@ -579,6 +601,7 @@ C4ScriptConstDef C4ScriptConstMap[]=
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
+	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
 	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
 	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
 	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },

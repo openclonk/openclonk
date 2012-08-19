@@ -1059,13 +1059,6 @@ C4Object* FnObject(C4PropList * _this, long iNumber)
 	// See FnObjectNumber
 }
 
-static C4Value FnCall(C4PropList * _this, C4Value * Pars)
-{
-	if (!_this) return C4Value();
-	C4AulParSet ParSet(&Pars[1], 9);
-	return _this->CallOrThrow(FnStringPar(Pars[0].getStr()), &ParSet);
-}
-
 static C4Value FnGameCall(C4PropList * _this, C4Value * Pars)
 {
 	C4String * fn = Pars[0].getStr();
@@ -2588,7 +2581,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "ObjectCount",   1, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
 	{ "GameCall",      1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCall      },
 	{ "GameCallEx",    1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
-	{ "Call",          1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall          },
 	{ "PlayerMessage", 1, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
 	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
 	{ "AddMessage",    1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },

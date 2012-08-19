@@ -490,18 +490,6 @@ C4Value C4PropList::Call(const char * s, C4AulParSet *Pars)
 	return pFn->Exec(this, Pars);
 }
 
-C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
-{
-	C4AulFunc *pFn = Status ? GetFunc(s) : NULL;
-	if (!pFn)
-	{
-		if (s[0] == '~')
-			return C4Value();
-		throw new C4AulExecError(FormatString("Call: no function \"%s\"", s).getData());
-	}
-	return pFn->Exec(this, Pars);
-}
-
 C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
 {
 	C4String * k = &Strings.P[n];
