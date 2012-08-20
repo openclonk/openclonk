@@ -3,6 +3,7 @@ Unfortunately, xml documents can only have one root, so there needs to be a dumm
 header is an appropiate html element, so it's arbitrarily chosen.
 clonk.xsl also uses it to match the processing for it. -->
 <header>
+	<style type="text/css">@import url("http://www.openclonk.org/header/header.css");</style>
 	<div id="nav_header">
 		<div id="nav_logo">
 			<a href="http://www.openclonk.org/" target="_top"><img src="http://www.openclonk.org/header/logo.png" alt="OpenClonk"/></a>
