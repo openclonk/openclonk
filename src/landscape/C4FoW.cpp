@@ -1155,7 +1155,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		// Midpoint
 		float mx = (gFadeRX[i] + gFadeLX[i+1]) / 2,
 		      my = (gFadeRY[i] + gFadeLY[i+1]) / 2;
-		while (pRay->isRight(mx, my))
+		while (pRay->getNext() && pRay->isRight(mx, my))
 			pRay = pRay->getNext();
 #endif
 
