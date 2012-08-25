@@ -173,11 +173,12 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	while(iMaterialTextureDepth < int32_t(MaterialTextureMap.size()))
 		iMaterialTextureDepth <<= 1;
 
-	// Find first (actual) texture
-	int iRefTexIx = 0; C4Texture *pRefTex; C4Surface *pRefSfc = NULL;
-	for(; pRefTex = pTexs->GetTexture(pTexs->GetTexture(iRefTexIx)); iRefTexIx++)
-		if(pRefSfc = pRefTex->Surface32)
-			break;
+	// Find the largest texture
+	C4Texture *pTex, *pRefTex; C4Surface *pRefSfc = NULL;
+	for(int iTexIx = 0; pTex = pTexs->GetTexture(pTexs->GetTexture(iTexIx)); iTexIx++)
+		if(C4Surface *pSfc = pTex->Surface32)
+			if (!pRefSfc || pRefSfc->Wdt < pSfc->Wdt || pRefSfc->Hgt < pSfc->Hgt)
+				{ pRefTex = pTex; pRefSfc = pSfc; }
 	if(!pRefSfc)
 		return false;
 
