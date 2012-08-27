@@ -141,6 +141,8 @@ private:
 	HINSTANCE hInstance;
 	HANDLE hMainThread; // handle to main thread that initialized the app
 
+	void SetLastErrorFromOS();
+
 public:
 	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
 	HINSTANCE GetInstance() const { return hInstance; }

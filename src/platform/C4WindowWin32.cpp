@@ -757,6 +757,15 @@ bool C4AbstractApp::FlushMessages()
 	return MessageProc.Execute(0);
 }
 
+void C4AbstractApp::SetLastErrorFromOS()
+{
+	LPWSTR buffer = 0;
+	DWORD rv = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+	sLastError.Take(StdStrBuf(buffer));
+	LocalFree(buffer);
+}
+
 int GLMonitorInfoEnumCount;
 
 static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
@@ -779,7 +788,11 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	if (iMonitor)
 		Mon.Format("\\\\.\\Display%d", iMonitor+1);
 	// check if indexed mode exists
-	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode)) return false;
+	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode))
+	{
+		SetLastErrorFromOS();
+		return false;
+	}
 	// mode exists; return it
 	if (piXRes) *piXRes = dmode.dmPelsWidth;
 	if (piYRes) *piYRes = dmode.dmPelsHeight;
@@ -832,7 +845,10 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	
 	// Get current display settings
 	if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
+	{
+		SetLastErrorFromOS();
 		return false;
+	}
 	int orientation = dmode.dmDisplayOrientation;
 	// enumerate modes
 	int i=0;
@@ -858,10 +874,22 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)
 			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
-		if (ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+		DWORD rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL);
+		if (rv != DISP_CHANGE_SUCCESSFUL)
+		{
+			switch (rv)
 			{
-				return false;
+#define CDSE_ERROR(error) case error: sLastError = LoadResStr("IDS_ERR_" #error); break
+				CDSE_ERROR(DISP_CHANGE_BADFLAGS);
+				CDSE_ERROR(DISP_CHANGE_BADMODE);
+				CDSE_ERROR(DISP_CHANGE_BADPARAM);
+				CDSE_ERROR(DISP_CHANGE_RESTART);
+				CDSE_ERROR(DISP_CHANGE_FAILED);
+#undef CDSE_ERROR
+				default: sLastError = LoadResStr("IDS_ERR_FAILURE"); break;
 			}
+			return false;
+		}
 
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
