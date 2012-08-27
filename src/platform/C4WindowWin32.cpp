@@ -865,7 +865,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	// change mode
 	if (!fFullScreen)
 	{
-		ChangeDisplaySettings(NULL, CDS_RESET);
+		ChangeDisplaySettings(NULL, 0);
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	}
