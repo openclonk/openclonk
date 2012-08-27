@@ -60,11 +60,6 @@ AM_CPPFLAGS = \
 -I$(srcdir)/thirdparty \
 $(BOOST_CPPFLAGS)
 
-##BUILT_SOURCES = hgrevision.h
-##hgrevision.h: $(srcdir)/.hg/dirstate
-##	$(srcdir)/tools/get_hg_revision.sh > hgrevision.h
-##$(srcdir)/.hg/dirstate:
-
 BUILT_SOURCES = C4Version.h
 CLEANFILES =
 DISTCLEANFILES = C4Version.h
