@@ -92,6 +92,8 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
 	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
+	pComp->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
 	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));

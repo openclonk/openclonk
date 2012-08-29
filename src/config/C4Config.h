@@ -99,6 +99,7 @@ public:
 	int32_t UpperBoard;
 	int32_t ShowClock;
 	int32_t ResX,ResY;
+	int32_t WindowX,WindowY;
 	int32_t RefreshRate;	// monitor vertical refresh rate
 	int32_t Windowed;
 	int32_t ShowAllResolutions;
@@ -120,6 +121,8 @@ public:
 	int32_t MultiSampling; // multisampling samples
 
 	void CompileFunc(StdCompiler *pComp);
+	int GetWidth() { return Windowed ? WindowX : ResX; }
+	int GetHeight() { return Windowed ? WindowY : ResY; }
 };
 
 class C4ConfigSound

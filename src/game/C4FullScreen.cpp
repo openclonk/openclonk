@@ -58,7 +58,7 @@ C4FullScreen::~C4FullScreen()
 
 C4Window * C4FullScreen::Init(C4AbstractApp * pApp)
 {
-	C4Rect r(0, 0, Config.Graphics.ResX, Config.Graphics.ResY);
+	C4Rect r(0, 0, Config.Graphics.GetWidth(), Config.Graphics.GetHeight());
 	return Init(C4Window::W_Fullscreen, pApp, C4ENGINECAPTION, &r);
 }
 

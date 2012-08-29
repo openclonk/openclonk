@@ -51,7 +51,7 @@ C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const cha
 		return NULL;
 	Active = true;
 	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(Config.Graphics.ResX == -1 ? 0 : Config.Graphics.ResX, Config.Graphics.ResY == -1 ? 0 : Config.Graphics.ResY,
+	if (!SDL_SetVideoMode(Config.Graphics.GetWidth() == -1 ? 0 : Config.Graphics.GetWidth(), Config.Graphics.GetHeight() == -1 ? 0 : Config.Graphics.GetHeight(),
 			Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
 	{
 		Log(SDL_GetError());

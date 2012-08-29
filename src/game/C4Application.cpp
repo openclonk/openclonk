@@ -27,13 +27,13 @@
 
 #include <C4Include.h>
 #include <C4Application.h>
+
 #include <C4Version.h>
 #ifdef _WIN32
-#include <StdRegistry.h>
 #include <C4UpdateDlg.h>
 #endif
-
 #include "C4Game.h"
+#include <C4GfxErrorDlg.h>
 #include "C4GraphicsSystem.h"
 #include "C4GraphicsResource.h"
 #include "C4MessageInput.h"
@@ -48,11 +48,7 @@
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
 
-#include <StdRegistry.h> // For DDraw emulation warning
-
 #include <getopt.h>
-
-#include <C4GfxErrorDlg.h>
 
 static C4Network2IRCClient ApplicationIRCClient;
 
@@ -179,13 +175,13 @@ bool C4Application::DoInit(int argc, char * argv[])
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	bool success = DDrawInit(this, isEditor, false, Config.Graphics.GetWidth(), Config.Graphics.GetHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
 	{
-		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
-			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
+		if (!SetVideoMode(Config.Graphics.GetWidth(), Config.Graphics.GetHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+			pWindow->SetSize(Config.Graphics.GetWidth(), Config.Graphics.GetHeight());
 	}
 
 	// Initialize gamepad
@@ -698,8 +694,18 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 		Game.OnResolutionChanged(iXRes, iYRes);
 		pDraw->OnResolutionChanged(iXRes, iYRes);
 	}
-	if (pWindow && pWindow->pSurface)
-		pWindow->pSurface->UpdateSize(iXRes, iYRes);
+	if (pWindow)
+	{
+		if (pWindow->pSurface)
+			pWindow->pSurface->UpdateSize(iXRes, iYRes);
+		if (Config.Graphics.Windowed)
+		{
+			C4Rect r;
+			pWindow->GetSize(&r);
+			Config.Graphics.WindowX = r.Wdt;
+			Config.Graphics.WindowY = r.Hgt;
+		}
+	}
 }
 
 bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
