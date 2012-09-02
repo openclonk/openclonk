@@ -549,6 +549,11 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
 	NSWindow* window = controller.window;
 
+	if (iXRes == -1 && iYRes == -1)
+	{
+		iXRes = CGDisplayPixelsWide(ClonkOpenGLView.displayID);
+		iYRes = CGDisplayPixelsHigh(ClonkOpenGLView.displayID);
+	}
 	pWindow->SetSize(iXRes, iYRes);
 	[controller setFullscreen:fFullScreen];
 	[window setAspectRatio:[[window contentView] frame].size];
