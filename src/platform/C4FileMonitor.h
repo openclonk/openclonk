@@ -30,9 +30,13 @@
 #ifdef __APPLE__
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreServices/CoreServices.h>
+#import "ObjectiveCAssociated.h"
 #endif
 
 class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback
+#ifdef __APPLE__
+, public ObjectiveCAssociated
+#endif
 {
 
 public:
@@ -85,7 +89,6 @@ private:
 #elif defined(__APPLE__)
 	FSEventStreamRef eventStream;
 	FSEventStreamContext context;
-	CFMutableArrayRef watchedDirectories;
 	void StartStream();
 	void StopStream();
 #endif

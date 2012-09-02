@@ -39,7 +39,7 @@
 }
 
 #ifdef USE_COCOA
-@synthesize addViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController;
+@synthesize addViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController, toggleFullScreen;
 #endif
 
 - (id) init
@@ -48,7 +48,7 @@
 	if (self)
 	{
 		NSArray* processArguments = [[NSProcessInfo processInfo] arguments];
-		gatheredArguments = [[NSMutableArray arrayWithCapacity:[processArguments count]+2] retain];
+		gatheredArguments = [NSMutableArray arrayWithCapacity:[processArguments count]+2];
 		[gatheredArguments addObjectsFromArray:processArguments];
 	}
 	return self;

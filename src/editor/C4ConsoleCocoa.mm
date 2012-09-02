@@ -39,7 +39,7 @@
 
 // implementation of C4Console GUI for Mac OS X
 
-static inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return (ConsoleWindowController*)gui->GetController();}
+static inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return gui->objectiveCObject<ConsoleWindowController>();}
 
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
@@ -63,7 +63,7 @@ public:
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	ClonkWindowController* controller = [ConsoleWindowController new];
-	this->controller = controller;
+	setObjectiveCObject(controller);
 	[NSBundle loadNibNamed:@"ConsoleWindow" owner:controller];
 	[controller setStdWindow:this];
 	this->Active = true;
@@ -76,7 +76,7 @@ void C4ConsoleGUI::Out(const char* message)
 	if (controller)
 	{
 		NSTextStorage* textStorage = controller.outputTextView.textStorage;
-		[textStorage appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]] autorelease]];
+		[textStorage appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%s\n", message]]];
 		[controller.outputTextView scrollRangeToVisible:NSMakeRange([textStorage length]-1, 1)];
 	}
 }
@@ -174,7 +174,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	if (![ctrler(this).objectsPanel isVisible])
 		return;
 	StdStrBuf text = rSelection.GetDataString();
-	[ctrler(this).objectPropertiesText.textStorage setAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:text.getData()]] autorelease]];
+	[ctrler(this).objectPropertiesText.textStorage setAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:text.getData()]]];
 }
 
 void C4ConsoleGUI::ToolsDlgClose()
@@ -204,7 +204,6 @@ void C4ConsoleGUI::ToolsDlgInitMaterialCtrls(class C4ToolsDlg *dlg)
 	{
 		[materialsPopup addItemWithTitle:s];
 	}
-	[ary release];
 	[materialsPopup selectItemWithTitle:[NSString stringWithUTF8String:dlg->Material]];
 }
 

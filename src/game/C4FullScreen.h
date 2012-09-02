@@ -49,9 +49,6 @@ public:
 	virtual void Close();
 	virtual void Clear();
 	virtual void CharIn(const char * c);
-#if defined(USE_COCOA)
-	virtual void HandleMessage (/*NSEvent*/void* event);
-#endif
 	virtual void PerformUpdate();
 };
 

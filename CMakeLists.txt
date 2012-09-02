@@ -655,6 +655,7 @@ elseif(USE_COCOA)
 		src/platform/CocoaKeycodeMap.h
 		src/platform/ConsoleWindowController.h
 		src/platform/ConsoleWindowController.mm
+		src/platform/ObjectiveCAssociated.h
 	)
 endif()
 if(WITH_AUTOMATIC_UPDATE)
@@ -1132,6 +1133,7 @@ if (APPLE)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 	
 	if (USE_APPLE_CLANG)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")

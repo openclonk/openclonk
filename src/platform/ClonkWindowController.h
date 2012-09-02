@@ -27,9 +27,6 @@ class C4Viewport;
 bool lionAndBeyond();
 
 @interface ClonkWindowController : NSWindowController<NSWindowDelegate> {
-	IBOutlet ClonkOpenGLView* openGLView;
-	IBOutlet NSScrollView* scrollView;
-	C4Window* stdWindow;
 	NSWindow* fullscreenWindow;
 	NSSize preferredContentSize;
 }
@@ -42,7 +39,7 @@ bool lionAndBeyond();
 - (IBAction) scroll:(id)sender;
 
 @property (readwrite) C4Window* stdWindow;
-@property (readonly) ClonkOpenGLView* openGLView;
-@property (readonly) NSScrollView* scrollView;
+@property (weak) ClonkOpenGLView* openGLView;
+@property (weak) NSScrollView* scrollView;
 @property (readonly) BOOL isLiveResizing;
 @end

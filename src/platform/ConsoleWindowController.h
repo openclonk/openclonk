@@ -23,37 +23,21 @@
 @class ClonkOpenGLView;
 @class ClonkAppDelegate;
 
-@interface ConsoleWindowController : ClonkWindowController<NSUserInterfaceValidations> {
-	IBOutlet NSTextView* outputTextView;
-	IBOutlet NSComboBox* consoleCombo;
-	IBOutlet NSComboBox* objectCombo;
-	IBOutlet NSPopUpButton* materialsPopup;
-	IBOutlet NSPopUpButton* texturesPopup;
-	IBOutlet NSTextField* frameLabel;
-	IBOutlet NSTextField* timeLabel;
-	IBOutlet NSTextView* objectPropertiesText;
-	IBOutlet NSScrollView* outputScrollView;
-	IBOutlet IKImageView* previewView;
-	IBOutlet NSPanel* toolsPanel;
-	IBOutlet NSPanel* objectsPanel;
-	IBOutlet NSSegmentedControl* toolSelector;
-	IBOutlet NSSegmentedControl* modeSelector;
-}
-@property(readonly) NSTextField* frameLabel;
-@property(readonly) NSTextField* timeLabel;
-@property(readonly) NSTextView* outputTextView;
-@property(readonly) NSTextView* objectPropertiesText;
-@property(readonly) NSPopUpButton* materialsPopup;
-@property(readonly) NSPopUpButton* texturesPopup;
-@property(readonly) NSScrollView* outputScrollView;
-@property(readonly) IKImageView* previewView;
-@property(readonly) NSWindow* toolsPanel;
-@property(readonly) NSWindow* objectsPanel;
-@property(readonly) NSSegmentedControl* toolSelector;
-@property(readonly) NSSegmentedControl* modeSelector;
-@property(readonly) NSComboBox* objectCombo;
-@property(readonly) NSComboBox* consoleCombo;
-
+@interface ConsoleWindowController : ClonkWindowController<NSUserInterfaceValidations> {}
+@property NSTextField* frameLabel;
+@property NSTextField* timeLabel;
+@property NSTextView* outputTextView;
+@property NSTextView* objectPropertiesText;
+@property NSPopUpButton* materialsPopup;
+@property NSPopUpButton* texturesPopup;
+@property NSScrollView* outputScrollView;
+@property IKImageView* previewView;
+@property NSPanel* toolsPanel;
+@property NSPanel* objectsPanel;
+@property NSSegmentedControl* toolSelector;
+@property NSSegmentedControl* modeSelector;
+@property NSComboBox* objectCombo;
+@property NSComboBox* consoleCombo;
 - (IBAction) consoleIn:(id)sender;
 - (IBAction) objectIn:(id)sender;
 - (IBAction) selectMode:(id)sender;
@@ -67,7 +51,6 @@
 - (IBAction) selectLandscapeMode:(id)sender;
 - (IBAction) setGrade:(id)sender;
 - (IBAction) kickPlayer:(id)sender;
-
 @end
 
 #endif

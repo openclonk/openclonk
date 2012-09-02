@@ -33,13 +33,6 @@
 	NSString *addonSupplied;
 	ConsoleWindowController *consoleController;
 	ClonkWindowController *gameWindowController;
-	// declared here since ConsoleWindow.xib can't refer to objects in MainMenu.xib -.-
-	IBOutlet NSMenuItem *addViewportForPlayerMenuItem;
-	IBOutlet NSMenuItem *kickPlayerMenuItem;
-	IBOutlet NSMenuItem *recordMenuItem;
-	IBOutlet NSMenuItem *netMenu;
-	IBOutlet NSMenuItem *toggleFullScreen;
-
 	BOOL running;
 	std::vector<char*> args;
 }
@@ -53,11 +46,12 @@
 + (BOOL) isEditorAndGameRunning;
 
 #ifdef USE_COCOA
-@property(readonly) NSMenuItem* addViewportForPlayerMenuItem;
-@property(readonly) NSMenuItem* kickPlayerMenuItem;
-@property(readwrite, retain) ConsoleWindowController* consoleController;
-@property(readwrite, retain) ClonkWindowController* gameWindowController;
-@property(readonly) NSMenuItem* recordMenuItem;
-@property(readonly) NSMenuItem* netMenu;
+@property(weak, readonly) NSMenuItem* addViewportForPlayerMenuItem;
+@property(weak, readonly) NSMenuItem* kickPlayerMenuItem;
+@property(readwrite, strong) ConsoleWindowController* consoleController;
+@property(readwrite, strong) ClonkWindowController* gameWindowController;
+@property(weak, readonly) NSMenuItem* recordMenuItem;
+@property(weak, readonly) NSMenuItem* netMenu;
+@property(weak) NSMenuItem* toggleFullScreen;
 #endif
 @end

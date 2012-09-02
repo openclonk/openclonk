@@ -41,7 +41,7 @@
 + (void) setSurfaceBackingSizeOf:(NSOpenGLContext*) context width:(int)wdt height:(int)hgt;
 + (NSOpenGLContext*) createContext:(CStdGLCtx*) pMainCtx;
 
-@property(readwrite, retain) NSOpenGLContext* context;
+@property(readwrite, strong) NSOpenGLContext* context;
 @end
 
 @interface ClonkEditorOpenGLView: ClonkOpenGLView

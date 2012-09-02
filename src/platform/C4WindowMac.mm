@@ -22,15 +22,15 @@
 
 #import <Appkit/AppKit.h>
 #import <ClonkWindowController.h>
+#import <ClonkOpenGLView.h>
 
 #ifdef USE_COCOA
 
-#define ctrler ((ClonkWindowController*)this->controller)
+#define ctrler (this->objectiveCObject<ClonkWindowController>())
 
 C4Window::C4Window ():
 	Active(false),
-	pSurface(0),
-	controller(nil) 
+	pSurface(0)
 {}
 
 C4Window::~C4Window () {}
@@ -57,7 +57,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 
 	// Create window
 	ClonkWindowController* controller = [ClonkWindowController new];
-	this->controller = controller;
+	setObjectiveCObject(controller);
 	[NSBundle loadNibNamed:windowNibNameForWindowKind(windowKind) owner:controller];
 	[controller setStdWindow:this];
 	if (windowKind != W_GuiWindow && windowKind != W_Console)
@@ -79,8 +79,7 @@ void C4Window::Clear()
 		[controller.openGLView removeFromSuperview];
 		[controller setStdWindow:NULL];
 		[controller close];
-		[controller release];
-		this->controller = nil;
+		setObjectiveCObject(nil);
 	}
 }
 
@@ -123,10 +122,6 @@ void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
 	ClonkWindowController* controller = ctrler;
 	[controller setContentSize:NSMakeSize(cx, cy)];
-}
-
-void C4Window::HandleMessage(void*)
-{
 }
 
 void C4Window::RequestUpdate()

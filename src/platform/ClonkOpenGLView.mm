@@ -40,11 +40,6 @@
 
 - (BOOL) isOpaque {return YES;}
 
-- (void) dealloc
-{
-	[context release];
-	[super dealloc];
-}
 
 - (id) initWithFrame:(NSRect)frameRect
 {
@@ -469,9 +464,9 @@ static NSOpenGLContext* MainContext;
 	//attribs.push_back(NSOpenGLPFADoubleBuffer);
 	attribs.push_back(NSOpenGLPFAWindow);
 	attribs.push_back(0);
-	NSOpenGLPixelFormat* format = [[[NSOpenGLPixelFormat alloc] initWithAttributes:&attribs[0]] autorelease];
+	NSOpenGLPixelFormat* format = [[NSOpenGLPixelFormat alloc] initWithAttributes:&attribs[0]];
 
-	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? (NSOpenGLContext*)pMainCtx->GetNativeCtx() : nil];
+	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? pMainCtx->objectiveCObject<NSOpenGLContext>() : nil];
 	[self setSurfaceBackingSizeOf:result width:Config.Graphics.ResX height:Config.Graphics.ResY];
 	if (!MainContext)
 	{
@@ -520,21 +515,12 @@ static NSOpenGLContext* MainContext;
 
 #pragma mark CStdGLCtx: Initialization
 
-void* CStdGLCtx::GetNativeCtx()
-{
-	return ctx;
-}
-
-CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(nil) {}
+CStdGLCtx::CStdGLCtx(): pWindow(0) {}
 
 void CStdGLCtx::Clear()
 {
 	Deselect();
-	if (ctx)
-	{
-		[(NSOpenGLContext*)ctx release];
-		ctx = nil;
-	}
+	setObjectiveCObject(nil);
 	pWindow = 0;
 }
 
@@ -546,7 +532,7 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
-	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
+	ClonkWindowController* controller = pWindow->objectiveCObject<ClonkWindowController>();
 	NSWindow* window = controller.window;
 
 	if (iXRes == -1 && iYRes == -1)
@@ -573,7 +559,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
 	NSOpenGLContext* ctx = [ClonkOpenGLView createContext:pGL->pMainCtx];
-	this->ctx = (void*)ctx;
+	setObjectiveCObject(ctx);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions
@@ -584,7 +570,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
 	// set the openglview's context
-	ClonkWindowController* controller = (ClonkWindowController*)pWindow->GetController();
+	auto controller = pWindow->objectiveCObject<ClonkWindowController>();
 	if (controller && controller.openGLView)
 	{
 		[controller.openGLView setContext:ctx];
@@ -596,8 +582,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
-	if (ctx)
-		[(NSOpenGLContext*)ctx makeCurrentContext];
+	[objectiveCObject<NSOpenGLContext>() makeCurrentContext];
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed

@@ -121,7 +121,6 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 			// unhide and rely on cursor rects again
 			[NSCursor unhide];
 		
-			[openGLView retain];
 			[fullscreenWindow close];
 			fullscreenWindow = nil;
 			[self.window setContentView:openGLView];
@@ -248,19 +247,12 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 }
 @end
 
-// C4Fullscreen
-
-void C4FullScreen::HandleMessage (void* event)
-{
-	[NSApp sendEvent:(NSEvent*)event];
-}
-
 // C4ViewportWindow
 
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
-	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
 	[scrollView.horizontalScroller setToLandscapeCoordinate:ViewX size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
 	[scrollView.verticalScroller setToLandscapeCoordinate:ViewY size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
@@ -268,7 +260,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
-	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
 	ViewX = [scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
 	ViewY = [scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
@@ -276,7 +268,7 @@ bool C4Viewport::ViewPositionByScrollBars()
 
 bool C4Viewport::TogglePlayerLock()
 {
-	NSScrollView* scrollView = ((ConsoleWindowController*)pWindow->GetController()).scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
 	if (PlayerLock)
 	{
 		PlayerLock = false;

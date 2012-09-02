@@ -202,6 +202,7 @@
 #define KEY_X 0
 #define KEY_A 0
 #elif defined(USE_COCOA)
+#import "ObjectiveCAssociated.h"
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
 extern int K_F1;
@@ -254,6 +255,9 @@ typedef struct _XDisplay Display;
 #endif
 
 class C4Window
+#ifdef USE_COCOA
+	: public ObjectiveCAssociated
+#endif
 {
 public:
 	enum WindowKind
@@ -317,12 +321,6 @@ protected:
 	unsigned long handlerDestroy;
 
 	friend class C4X11AppImpl;
-#elif defined(USE_COCOA)
-protected:
-	/*ClonkWindowController*/void* controller;
-	virtual void HandleMessage(/*NSEvent*/void*);
-public:	
-	/*ClonkWindowController*/void* GetController() {return controller;}
 #endif
 protected:
 	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
