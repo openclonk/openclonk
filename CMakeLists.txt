@@ -1355,6 +1355,7 @@ set(OC_C4GROUPS
 	System.ocg
 	Objects.ocd
 	BackToTheRocks.ocf
+	BeyondTheRocks.ocf
 	Tutorial.ocf
 )
 
