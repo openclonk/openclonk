@@ -25,8 +25,6 @@
 
 #import <Foundation/Foundation.h>
 
-namespace {const NSTimeInterval FileMonitor_Latency = 0.3;}
-
 // Implementation using FSEvents
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback(pCallback)
@@ -66,7 +64,7 @@ static void FSEvents_Callback(
 			NSString* fullPath = [dir stringByAppendingPathComponent:str];
 			NSDictionary* attribs = [[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:NULL];
 			NSDate* modified = [attribs fileModificationDate];
-			if (modified && abs([modified timeIntervalSinceNow]) <= FileMonitor_Latency)
+			if (modified && -[modified timeIntervalSinceNow] <= 3.0)
 				mon->OnThreadEvent(Ev_FileChange, (void*)[fullPath UTF8String]);
 		}
 	}
@@ -74,7 +72,7 @@ static void FSEvents_Callback(
 
 void C4FileMonitor::StartStream()
 {
-	eventStream = FSEventStreamCreate(kCFAllocatorDefault, &FSEvents_Callback, &context, (__bridge CFArrayRef)objectiveCObject<NSMutableArray>(), kFSEventStreamEventIdSinceNow, FileMonitor_Latency,
+	eventStream = FSEventStreamCreate(kCFAllocatorDefault, &FSEvents_Callback, &context, (__bridge CFArrayRef)objectiveCObject<NSMutableArray>(), kFSEventStreamEventIdSinceNow, 0.3,
 		kFSEventStreamCreateFlagNone);
 	FSEventStreamScheduleWithRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 	FSEventStreamStart(eventStream);
