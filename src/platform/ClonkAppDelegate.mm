@@ -47,9 +47,9 @@
 	self = [super init];
 	if (self)
 	{
-		NSArray* args = [[NSProcessInfo processInfo] arguments];
-		gatheredArguments = [[NSMutableArray arrayWithCapacity:[args count]+2] retain];
-		[gatheredArguments addObjectsFromArray:args];
+		NSArray* processArguments = [[NSProcessInfo processInfo] arguments];
+		gatheredArguments = [[NSMutableArray arrayWithCapacity:[processArguments count]+2] retain];
+		[gatheredArguments addObjectsFromArray:processArguments];
 	}
 	return self;
 }
@@ -127,7 +127,7 @@
 
 #ifdef USE_COCOA
 		// Init application
-		if (!Application.Init(argc, argv))
+		if (!Application.Init(args.size(), &args[0]))
 		{
 			Application.Clear();
 			[NSApp terminate:self];
@@ -267,13 +267,21 @@
 // convert gatheredArguments to c array
 - (void)makeFakeArgs
 {
-	int argCount = [gatheredArguments count];
-	argv = (char**)malloc(sizeof(char*) * argCount);
+	NSArray* nonCocoaArgs = [gatheredArguments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString* arg, NSDictionary *bindings)
+		{
+			return
+				!(
+					[arg hasPrefix:@"-NS"] ||
+					[arg isEqualToString:@"YES"]
+				);
+		}
+	]];
+	int argCount = [nonCocoaArgs count];
+	args.resize(argCount);
 	for (int i = 0; i < argCount; i++)
 	{
-		argv[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding]);
+		args[i] = strdup([[nonCocoaArgs objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding]);
 	}
-	argc = argCount;
 }
 
 - (void) applicationDidBecomeActive:(NSNotification*)notification

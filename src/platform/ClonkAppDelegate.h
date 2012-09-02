@@ -41,8 +41,7 @@
 	IBOutlet NSMenuItem *toggleFullScreen;
 
 	BOOL running;
-	char** argv;
-	int argc;
+	std::vector<char*> args;
 }
 - (NSString*) clonkDirectory;
 - (BOOL) argsLookLikeItShouldBeInstallation;
