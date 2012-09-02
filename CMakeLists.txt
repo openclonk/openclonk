@@ -564,8 +564,8 @@ mark_as_advanced(OC_SYSTEM_SOURCES)
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4FileMonitorMac.mm
-		src/platform/ClonkAppDelegate.h
-		src/platform/ClonkAppDelegate.mm
+		src/platform/C4AppDelegate.h
+		src/platform/C4AppDelegate.mm
 	)
 else()
 	list(APPEND OC_SYSTEM_SOURCES
@@ -647,14 +647,15 @@ elseif(USE_COCOA)
 		src/editor/C4ConsoleCocoa.mm
 		src/platform/C4AppMac.mm
 		src/platform/C4WindowMac.mm
-		src/platform/ClonkMainMenuActions.mm
-		src/platform/ClonkOpenGLView.h
-		src/platform/ClonkOpenGLView.mm
-		src/platform/ClonkWindowController.h
-		src/platform/ClonkWindowController.mm
+		src/platform/C4AppDelegate+MainMenuActions.h
+		src/platform/C4AppDelegate+MainMenuActions.mm
+		src/platform/C4OpenGLView.h
+		src/platform/C4OpenGLView.mm
+		src/platform/C4WindowController.h
+		src/platform/C4WindowController.mm
 		src/platform/CocoaKeycodeMap.h
-		src/platform/ConsoleWindowController.h
-		src/platform/ConsoleWindowController.mm
+		src/platform/C4EditorWindowController.h
+		src/platform/C4EditorWindowController.mm
 		src/platform/ObjectiveCAssociated.h
 	)
 endif()
@@ -869,10 +870,10 @@ if(APPLE)
 		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
 		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
 		src/res/MainMenu.xib
-		src/res/FullscreenWindow.xib
-		src/res/ConsoleGUIWindow.xib
-		src/res/ClonkWindow.xib
-		src/res/ConsoleWindow.xib
+		src/res/FullScreen.xib
+		src/res/EditorGUIWindow.xib
+		src/res/EditorViewport.xib
+		src/res/Editor.xib
 		src/res/Mouse_Trans.png
 		src/res/Cursor_Trans.png
 		src/res/Brush_Trans.png

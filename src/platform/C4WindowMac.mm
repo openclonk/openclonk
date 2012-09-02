@@ -21,12 +21,12 @@
 #include <C4Rect.h>
 
 #import <Appkit/AppKit.h>
-#import <ClonkWindowController.h>
-#import <ClonkOpenGLView.h>
+#import <C4WindowController.h>
+#import <C4OpenGLView.h>
 
 #ifdef USE_COCOA
 
-#define ctrler (this->objectiveCObject<ClonkWindowController>())
+#define ctrler (this->objectiveCObject<C4WindowController>())
 
 C4Window::C4Window ():
 	Active(false),
@@ -35,17 +35,17 @@ C4Window::C4Window ():
 
 C4Window::~C4Window () {}
 
-static NSString* windowNibNameForWindowKind(C4Window::WindowKind kind)
+static NSString* windowXibNameForWindowKind(C4Window::WindowKind kind)
 {
 	switch (kind)
 	{
 	case C4Window::W_GuiWindow:
 	case C4Window::W_Console:
-		return @"ConsoleGUIWindow";
+		return @"EditorGUIWindow";
 	case C4Window::W_Fullscreen:
-		return @"FullscreenWindow";
+		return @"FullScreen";
 	case C4Window::W_Viewport:
-		return @"ClonkWindow";
+		return @"EditorViewport";
 	default:
 		return nil;
 	}
@@ -56,9 +56,9 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 	Active = true;
 
 	// Create window
-	ClonkWindowController* controller = [ClonkWindowController new];
+	C4WindowController* controller = [C4WindowController new];
 	setObjectiveCObject(controller);
-	[NSBundle loadNibNamed:windowNibNameForWindowKind(windowKind) owner:controller];
+	[NSBundle loadNibNamed:windowXibNameForWindowKind(windowKind) owner:controller];
 	[controller setStdWindow:this];
 	if (windowKind != W_GuiWindow && windowKind != W_Console)
 	{
@@ -72,7 +72,7 @@ C4Window * C4Window::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp,
 void C4Window::Clear()
 {
 	// Destroy window
-	ClonkWindowController* controller = ctrler;
+	C4WindowController* controller = ctrler;
 	if (controller)
 	{
 		[controller.openGLView setNeedsDisplay:NO];
@@ -101,14 +101,14 @@ bool C4Window::RestorePosition(const char *szWindowName, const char *szSubKey, b
 
 void C4Window::SetTitle(const char *szToTitle)
 {
-	ClonkWindowController* controller;
+	C4WindowController* controller;
 	if ((controller = ctrler) && controller.window)
 		[controller.window setTitle:[NSString stringWithUTF8String:szToTitle ? szToTitle : ""]];
 }
 
 bool C4Window::GetSize(C4Rect * pRect)
 {
-	ClonkWindowController* controller = ctrler;
+	C4WindowController* controller = ctrler;
 	NSView* view = controller.openGLView ? controller.openGLView : controller.window.contentView;
 	NSRect r = [view frame];
 	pRect->x = 0;
@@ -120,7 +120,7 @@ bool C4Window::GetSize(C4Rect * pRect)
 
 void C4Window::SetSize(unsigned int cx, unsigned int cy)
 {
-	ClonkWindowController* controller = ctrler;
+	C4WindowController* controller = ctrler;
 	[controller setContentSize:NSMakeSize(cx, cy)];
 }
 

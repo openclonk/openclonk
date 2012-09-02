@@ -33,13 +33,13 @@
 #include <StdRegistry.h>
 
 #import <Cocoa/Cocoa.h>
-#import "ClonkAppDelegate.h"
-#import "ConsoleWindowController.h"
-#import "ClonkOpenGLView.h"
+#import "C4AppDelegate.h"
+#import "C4EditorWindowController.h"
+#import "C4OpenGLView.h"
 
 // implementation of C4Console GUI for Mac OS X
 
-static inline ConsoleWindowController* ctrler(C4ConsoleGUI* gui) {return gui->objectiveCObject<ConsoleWindowController>();}
+static inline C4EditorWindowController* ctrler(C4ConsoleGUI* gui) {return gui->objectiveCObject<C4EditorWindowController>();}
 
 class C4ConsoleGUI::State: public C4ConsoleGUI::InternalState<class C4ConsoleGUI>
 {
@@ -62,7 +62,7 @@ public:
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
-	ClonkWindowController* controller = [ConsoleWindowController new];
+	C4WindowController* controller = [C4EditorWindowController new];
 	setObjectiveCObject(controller);
 	[NSBundle loadNibNamed:@"ConsoleWindow" owner:controller];
 	[controller setStdWindow:this];
@@ -72,7 +72,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 
 void C4ConsoleGUI::Out(const char* message)
 {
-	ConsoleWindowController* controller = ctrler(this);
+	C4EditorWindowController* controller = ctrler(this);
 	if (controller)
 	{
 		NSTextStorage* textStorage = controller.outputTextView.textStorage;
@@ -133,16 +133,16 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 void C4ConsoleGUI::AddMenuItemForPlayer(C4Player* player, StdStrBuf& player_text)
 {
 	NSMenuItem* item = [
-		[ClonkAppDelegate instance].addViewportForPlayerMenuItem.submenu
+		[C4AppDelegate instance].addViewportForPlayerMenuItem.submenu
 		addItemWithTitle:[NSString stringWithUTF8String:player_text.getData()] action:@selector(newViewportForPlayer:) keyEquivalent:@""
 	];
 	[item setTag:player->Number];
-	[item setTarget: ClonkAppDelegate.instance];
+	[item setTarget: C4AppDelegate.instance];
 }
 
 void C4ConsoleGUI::ClearViewportMenu()
 {
-	[[ClonkAppDelegate instance].addViewportForPlayerMenuItem.submenu removeAllItems];
+	[[C4AppDelegate instance].addViewportForPlayerMenuItem.submenu removeAllItems];
 }
 
 bool C4ConsoleGUI::Message(const char *message, bool query)
@@ -380,17 +380,17 @@ void C4ConsoleGUI::SetCursor(C4ConsoleGUI::Cursor cursor)
 
 void C4ConsoleGUI::RecordingEnabled()
 {
-	[ClonkAppDelegate.instance.recordMenuItem setEnabled:NO];
+	[C4AppDelegate.instance.recordMenuItem setEnabled:NO];
 }
 
 void C4ConsoleGUI::AddNetMenu()
 {
-	[ClonkAppDelegate.instance.netMenu setHidden:NO];
+	[C4AppDelegate.instance.netMenu setHidden:NO];
 }
 
 void C4ConsoleGUI::ClearNetMenu()
 {
-	[ClonkAppDelegate.instance.netMenu setHidden:YES];
+	[C4AppDelegate.instance.netMenu setHidden:YES];
 }
 
 void C4ConsoleGUI::DoEnableControls(bool fEnable)
@@ -421,7 +421,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 {
 	NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithCString:text.getData() encoding:NSUTF8StringEncoding] action:@selector(kickPlayer:) keyEquivalent:[NSString string]];
 	[item setTarget:ctrler(this)];
-	[ClonkAppDelegate.instance.netMenu.submenu addItem:item];
+	[C4AppDelegate.instance.netMenu.submenu addItem:item];
 }
 
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
@@ -431,7 +431,7 @@ void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)
 {
 	NSMenuItem* item = [
-		[ClonkAppDelegate instance].kickPlayerMenuItem.submenu
+		[C4AppDelegate instance].kickPlayerMenuItem.submenu
 		addItemWithTitle:[NSString stringWithUTF8String:player_text.getData()] action:@selector(kickPlayer:) keyEquivalent:@""
 	];
 	[item setEnabled:enabled];

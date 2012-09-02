@@ -16,14 +16,14 @@
 
 #import <AppKit/AppKit.h>
 #import <Quartz/Quartz.h>
-#import <ClonkWindowController.h>
+#import <C4WindowController.h>
 
 #ifdef USE_COCOA
 
-@class ClonkOpenGLView;
-@class ClonkAppDelegate;
+@class C4OpenGLView;
+@class C4AppDelegate;
 
-@interface ConsoleWindowController : ClonkWindowController<NSUserInterfaceValidations> {}
+@interface C4EditorWindowController : C4WindowController<NSUserInterfaceValidations> {}
 @property NSTextField* frameLabel;
 @property NSTextField* timeLabel;
 @property NSTextView* outputTextView;

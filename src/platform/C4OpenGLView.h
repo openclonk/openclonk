@@ -19,15 +19,15 @@
 
 #ifdef USE_COCOA
 
-@class ClonkWindowController;
+@class C4WindowController;
 
-@interface ClonkOpenGLView : NSView
+@interface C4OpenGLView : NSView
 {
 @private
 	NSOpenGLContext* context;
 	CGPoint savedMouse;
 }
-- (ClonkWindowController*) controller;
+- (C4WindowController*) controller;
 - (void)update;
 - (void) enableEvents;
 - (void) showCursor;
@@ -44,7 +44,7 @@
 @property(readwrite, strong) NSOpenGLContext* context;
 @end
 
-@interface ClonkEditorOpenGLView: ClonkOpenGLView
+@interface C4EditorOpenGLView: C4OpenGLView
 {
 }
 - (IBAction) grabContents:(id) sender;

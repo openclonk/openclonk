@@ -28,13 +28,13 @@
 
 #include <C4DrawGL.h>
 
-#import "ClonkOpenGLView.h"
-#import "ClonkWindowController.h"
-#import "ClonkMainMenuActions.h"
+#import "C4OpenGLView.h"
+#import "C4WindowController.h"
+#import "C4AppDelegate+MainMenuActions.h"
 
 #ifdef USE_COCOA
 
-@implementation ClonkOpenGLView
+@implementation C4OpenGLView
 
 @synthesize context;
 
@@ -129,7 +129,7 @@
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
-- (ClonkWindowController*) controller {return (ClonkWindowController*)[self.window delegate];}
+- (C4WindowController*) controller {return (C4WindowController*)[self.window delegate];}
 
 int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
@@ -276,9 +276,9 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
 	// swiping left triggers going back in startup dialogs
 	if (event.deltaX > 0)
-		[ClonkAppDelegate.instance simulateKeyPressed:K_LEFT];
+		[C4AppDelegate.instance simulateKeyPressed:K_LEFT];
 	else
-		[ClonkAppDelegate.instance simulateKeyPressed:K_RIGHT];
+		[C4AppDelegate.instance simulateKeyPressed:K_RIGHT];
 }
 
 - (void)insertText:(id)insertString
@@ -432,7 +432,7 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 
 - (void) setContextSurfaceBackingSizeToOwnDimensions
 {
-	[ClonkOpenGLView setSurfaceBackingSizeOf:self.context width:self.frame.size.width height:self.frame.size.height];
+	[C4OpenGLView setSurfaceBackingSizeOf:self.context width:self.frame.size.width height:self.frame.size.height];
 }
 
 static NSOpenGLContext* MainContext;
@@ -477,7 +477,7 @@ static NSOpenGLContext* MainContext;
 
 @end
 
-@implementation ClonkEditorOpenGLView
+@implementation C4EditorOpenGLView
 
 - (void) copy:(id) sender
 {
@@ -526,19 +526,19 @@ void CStdGLCtx::Clear()
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-	[ClonkOpenGLView enumerateMultiSamples:samples];
+	[C4OpenGLView enumerateMultiSamples:samples];
 }
 
 bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
 	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
-	ClonkWindowController* controller = pWindow->objectiveCObject<ClonkWindowController>();
+	C4WindowController* controller = pWindow->objectiveCObject<C4WindowController>();
 	NSWindow* window = controller.window;
 
 	if (iXRes == -1 && iYRes == -1)
 	{
-		iXRes = CGDisplayPixelsWide(ClonkOpenGLView.displayID);
-		iYRes = CGDisplayPixelsHigh(ClonkOpenGLView.displayID);
+		iXRes = CGDisplayPixelsWide(C4OpenGLView.displayID);
+		iYRes = CGDisplayPixelsHigh(C4OpenGLView.displayID);
 	}
 	pWindow->SetSize(iXRes, iYRes);
 	[controller setFullscreen:fFullScreen];
@@ -558,7 +558,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 	this->pWindow = pWindow;
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
-	NSOpenGLContext* ctx = [ClonkOpenGLView createContext:pGL->pMainCtx];
+	NSOpenGLContext* ctx = [C4OpenGLView createContext:pGL->pMainCtx];
 	setObjectiveCObject(ctx);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -570,7 +570,7 @@ bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 	}
 	// set the openglview's context
-	auto controller = pWindow->objectiveCObject<ClonkWindowController>();
+	auto controller = pWindow->objectiveCObject<C4WindowController>();
 	if (controller && controller.openGLView)
 	{
 		[controller.openGLView setContext:ctx];
@@ -625,7 +625,7 @@ bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 		g[i] = static_cast<float>(ramp.green[i])/65535.0;
 		b[i] = static_cast<float>(ramp.blue[i])/65535.0;
 	}
-	CGSetDisplayTransferByTable(ClonkOpenGLView.displayID, 256, r, g, b);
+	CGSetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b);
 	return true;
 }
 
@@ -635,7 +635,7 @@ bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
 	CGGammaValue g[256];
 	CGGammaValue b[256];
 	uint32_t count;
-	CGGetDisplayTransferByTable(ClonkOpenGLView.displayID, 256, r, g, b, &count);
+	CGGetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b, &count);
 	for (int i = 0; i < 256; i++)
 	{
 		ramp.red[i]   = r[i]*65535;

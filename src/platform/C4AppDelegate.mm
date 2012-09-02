@@ -12,25 +12,25 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// Roughly adapted from the original ClonkAppDelegate.m; haxxed to death by teh Gurkendoktor.
+// Roughly adapted from the original C4AppDelegate.m; haxxed to death by teh Gurkendoktor.
 // Look at main() to get an idea for what happens here.
 
 #include <C4Include.h>
 #include <C4Application.h>
 #include <C4Game.h>
 
-#import "ClonkAppDelegate.h"
-#import "ClonkMainMenuActions.h"
+#import "C4AppDelegate.h"
+#import "C4AppDelegate+MainMenuActions.h"
 #ifdef USE_SDL_MAINLOOP
 #import "SDL/SDL.h"
 #endif
 
 /* The main class of the application, the application's delegate */
-@implementation ClonkAppDelegate
+@implementation C4AppDelegate
 
-+ (ClonkAppDelegate*) instance;
++ (C4AppDelegate*) instance;
 {
-	return (ClonkAppDelegate*)[[NSApplication sharedApplication] delegate];
+	return (C4AppDelegate*)[[NSApplication sharedApplication] delegate];
 }
 
 + (BOOL) isEditorAndGameRunning

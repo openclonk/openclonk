@@ -23,16 +23,16 @@
 
 #import <Cocoa/Cocoa.h>
 #ifdef USE_COCOA
-#import "ConsoleWindowController.h"
+#import "C4EditorWindowController.h"
 #endif
 
-@interface ClonkAppDelegate: NSObject
+@interface C4AppDelegate: NSObject
 {
 	NSMutableArray *gatheredArguments;
 	NSString *clonkDirectory;
 	NSString *addonSupplied;
-	ConsoleWindowController *consoleController;
-	ClonkWindowController *gameWindowController;
+	C4EditorWindowController *consoleController;
+	C4WindowController *gameWindowController;
 	BOOL running;
 	std::vector<char*> args;
 }
@@ -42,14 +42,14 @@
 - (BOOL)installAddOn;
 - (void)terminate:(NSApplication*)sender;
 
-+ (ClonkAppDelegate*) instance;
++ (C4AppDelegate*) instance;
 + (BOOL) isEditorAndGameRunning;
 
 #ifdef USE_COCOA
 @property(weak, readonly) NSMenuItem* addViewportForPlayerMenuItem;
 @property(weak, readonly) NSMenuItem* kickPlayerMenuItem;
-@property(readwrite, strong) ConsoleWindowController* consoleController;
-@property(readwrite, strong) ClonkWindowController* gameWindowController;
+@property(readwrite, strong) C4EditorWindowController* consoleController;
+@property(readwrite, strong) C4WindowController* gameWindowController;
 @property(weak, readonly) NSMenuItem* recordMenuItem;
 @property(weak, readonly) NSMenuItem* netMenu;
 @property(weak) NSMenuItem* toggleFullScreen;

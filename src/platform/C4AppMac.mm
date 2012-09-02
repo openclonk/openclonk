@@ -21,7 +21,7 @@
 
 #include <GL/glew.h>
 #import <Cocoa/Cocoa.h>
-#import "ClonkWindowController.h"
+#import "C4WindowController.h"
 
 #include <C4Include.h>
 #include <C4Window.h>

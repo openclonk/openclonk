@@ -24,10 +24,10 @@
 
 #import <C4DrawGL.h>
 
-#import "ClonkWindowController.h"
-#import "ClonkOpenGLView.h"
-#import "ConsoleWindowController.h"
-#import "ClonkAppDelegate.h"
+#import "C4WindowController.h"
+#import "C4OpenGLView.h"
+#import "C4EditorWindowController.h"
+#import "C4AppDelegate.h"
 #import "AppKit/NSOpenGL.h"
 
 static SInt32 osVersion()
@@ -55,7 +55,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 }
 @end
 
-@implementation ClonkWindowController
+@implementation C4WindowController
 
 @synthesize stdWindow, openGLView, scrollView;
 
@@ -63,7 +63,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 {
 	[super awakeFromNib];
 	if (!Application.isEditor)
-		ClonkAppDelegate.instance.gameWindowController = self;
+		C4AppDelegate.instance.gameWindowController = self;
 }
 
 - (void) fadeOut:(CGDisplayFadeReservationToken*)token
@@ -179,7 +179,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	{
 	/*
 		NSSize newRes = openGLView.frame.size;
-		[ClonkOpenGLView setSurfaceBackingSizeOf:ClonkOpenGLView.mainContext width:newRes.width height:newRes.height];
+		[C4OpenGLView setSurfaceBackingSizeOf:C4OpenGLView.mainContext width:newRes.width height:newRes.height];
 		Config.Graphics.ResX = newRes.width;
 		Config.Graphics.ResY = newRes.height; */
 	}
@@ -252,7 +252,7 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 bool C4Viewport::ScrollBarsByViewPosition()
 {
 	if (PlayerLock) return false;
-	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
 	[scrollView.horizontalScroller setToLandscapeCoordinate:ViewX size:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
 	[scrollView.verticalScroller setToLandscapeCoordinate:ViewY size:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
@@ -260,7 +260,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
-	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
 	ViewX = [scrollView.horizontalScroller landscapeCoordinateForSize:GBackWdt viewportSize:ViewWdt zoom:GetZoom()];
 	ViewY = [scrollView.verticalScroller landscapeCoordinateForSize:GBackHgt viewportSize:ViewHgt zoom:GetZoom()];
 	return true;
@@ -268,7 +268,7 @@ bool C4Viewport::ViewPositionByScrollBars()
 
 bool C4Viewport::TogglePlayerLock()
 {
-	NSScrollView* scrollView = pWindow->objectiveCObject<ClonkWindowController>().scrollView;
+	NSScrollView* scrollView = pWindow->objectiveCObject<C4WindowController>().scrollView;
 	if (PlayerLock)
 	{
 		PlayerLock = false;

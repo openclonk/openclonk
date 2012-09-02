@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
-#import "ClonkAppDelegate.h"
+#import "C4AppDelegate.h"
 
-@interface ClonkAppDelegate (ClonkMainMenuActions)
+@interface C4AppDelegate (MainMenuActions)
 - (IBAction) openScenario:(id)sender;
 - (IBAction) openScenarioWithPlayers:(id)sender;
 - (IBAction) closeScenario:(id)sender;

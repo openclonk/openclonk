@@ -30,7 +30,7 @@
 		<object class="NSMutableArray" key="IBDocument.RootObjects" id="1000">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<object class="NSCustomObject" id="1001">
-				<string key="NSClassName">ClonkWindowController</string>
+				<string key="NSClassName">C4WindowController</string>
 			</object>
 			<object class="NSCustomObject" id="1003">
 				<string key="NSClassName">FirstResponder</string>
@@ -68,7 +68,7 @@
 											<string key="NSFrameSize">{480, 270}</string>
 											<reference key="NSSuperview" ref="1010538885"/>
 											<bool key="NSViewCanDrawConcurrently">YES</bool>
-											<string key="NSClassName">ClonkEditorOpenGLView</string>
+											<string key="NSClassName">C4EditorOpenGLView</string>
 										</object>
 									</object>
 									<string key="NSFrame">{{1, 1}, {480, 270}}</string>

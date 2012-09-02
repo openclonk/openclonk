@@ -22,11 +22,11 @@
 
 #import <C4DrawGL.h>
 
-#import "ClonkMainMenuActions.h"
-#import "ClonkOpenGLView.h"
-#import "ConsoleWindowController.h"
+#import "C4AppDelegate+MainMenuActions.h"
+#import "C4OpenGLView.h"
+#import "C4EditorWindowController.h"
 
-@implementation ClonkAppDelegate (ClonkMainMenuActions)
+@implementation C4AppDelegate (MainMenuActions)
 
 - (IBAction) openScenario:(id)sender
 {

@@ -20,13 +20,13 @@
 #include <C4Game.h>
 
 #import <Cocoa/Cocoa.h>
-#import <ConsoleWindowController.h>
-#import <ClonkOpenGLView.h>
-#import <ClonkAppDelegate.h>
+#import <C4EditorWindowController.h>
+#import <C4OpenGLView.h>
+#import <C4AppDelegate.h>
 
 #ifdef USE_COCOA
 
-@implementation ConsoleWindowController
+@implementation C4EditorWindowController
 
 @synthesize
 	frameLabel, timeLabel, outputTextView, objectPropertiesText,
@@ -36,7 +36,7 @@
 - (void) awakeFromNib
 {
 	[super awakeFromNib];
-	ClonkAppDelegate.instance.consoleController = self;
+	C4AppDelegate.instance.consoleController = self;
 	NSWindow* window = self.window;
 	[window makeKeyAndOrderFront:self];
 	[window makeMainWindow];
@@ -71,7 +71,7 @@ int indexFromSender(id sender)
 	Console.EditCursor.SetMode(indexFromSender(sender));
 	for (NSWindow* w in [[NSApplication sharedApplication] windows])
 	{
-		if ([[w windowController] isKindOfClass:[ClonkWindowController class]])
+		if ([[w windowController] isKindOfClass:[C4WindowController class]])
 		{
 			[w invalidateCursorRectsForView:[[w windowController] openGLView]];
 		}
@@ -123,14 +123,14 @@ int indexFromSender(id sender)
 
 - (IBAction) consoleIn:(id)sender
 {
-	if (![ClonkAppDelegate isEditorAndGameRunning])
+	if (![C4AppDelegate isEditorAndGameRunning])
 		return;
 	Console.In([[consoleCombo stringValue] cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (IBAction) objectIn:(id)sender
 {
-	if (![ClonkAppDelegate isEditorAndGameRunning])
+	if (![C4AppDelegate isEditorAndGameRunning])
 		return;
 	Console.EditCursor.In([[objectCombo stringValue] cStringUsingEncoding:NSUTF8StringEncoding]);
 }
@@ -157,7 +157,7 @@ int indexFromSender(id sender)
 	while ((s = gameRunningInConsoleModeSelectors[i++]) != nil)
 	{
 		if (s == [item action])
-			return [ClonkAppDelegate isEditorAndGameRunning];
+			return [C4AppDelegate isEditorAndGameRunning];
 	}
 	
 	// always enabled
