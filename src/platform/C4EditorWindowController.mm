@@ -36,7 +36,7 @@
 - (void) awakeFromNib
 {
 	[super awakeFromNib];
-	C4AppDelegate.instance.consoleController = self;
+	C4AppDelegate.instance.editorWindowController = self;
 	NSWindow* window = self.window;
 	[window makeKeyAndOrderFront:self];
 	[window makeMainWindow];

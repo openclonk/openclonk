@@ -39,7 +39,7 @@
 }
 
 #ifdef USE_COCOA
-@synthesize addViewportForPlayerMenuItem, consoleController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController, toggleFullScreen;
+@synthesize addViewportForPlayerMenuItem, editorWindowController, kickPlayerMenuItem, recordMenuItem, netMenu, gameWindowController, toggleFullScreen;
 #endif
 
 - (id) init
@@ -107,6 +107,9 @@
 		system([cmd UTF8String]);
 	}
 }
+
+// return the directory where Clonk.app lives
+- (NSString*)clonkDirectory { return [NSBundle.mainBundle.bundlePath stringByDeletingLastPathComponent]; }
 
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
@@ -179,15 +182,6 @@
 - (NSMutableArray*)gatheredArguments
 {
 	return gatheredArguments;
-}
-
-// return the directory where Clonk.app lives
-- (NSString*)clonkDirectory
-{
-	if (!clonkDirectory) {
-		clonkDirectory = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
-	}
-	return clonkDirectory;
 }
 
 // Look for -psn argument which generally is a clue that the application should open a file (double-clicking, calling /usr/bin/open and such)

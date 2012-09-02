@@ -41,7 +41,7 @@
 - (IBAction) closeScenario:(id)sender
 {
 	Console.FileClose();
-	[consoleController.window setRepresentedFilename:@""];
+	[editorWindowController.window setRepresentedFilename:@""];
 }
 
 
@@ -109,14 +109,14 @@
 
 - (IBAction) setConsoleMode:(id)sender
 {
-	[consoleController selectMode:sender];
-	[consoleController.modeSelector selectSegmentWithTag:[sender tag]];
+	[editorWindowController selectMode:sender];
+	[editorWindowController.modeSelector selectSegmentWithTag:[sender tag]];
 }
 
 - (IBAction) setDrawingTool:(id)sender
 {
-	[consoleController selectTool:sender];
-	[consoleController.toolSelector selectSegmentWithTag:[sender tag]];
+	[editorWindowController selectTool:sender];
+	[editorWindowController.toolSelector selectSegmentWithTag:[sender tag]];
 }
 
 - (IBAction) suggestQuitting:(id)sender;

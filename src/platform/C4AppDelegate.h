@@ -29,14 +29,12 @@
 @interface C4AppDelegate: NSObject
 {
 	NSMutableArray *gatheredArguments;
-	NSString *clonkDirectory;
 	NSString *addonSupplied;
-	C4EditorWindowController *consoleController;
+	C4EditorWindowController *editorWindowController;
 	C4WindowController *gameWindowController;
 	BOOL running;
 	std::vector<char*> args;
 }
-- (NSString*) clonkDirectory;
 - (BOOL) argsLookLikeItShouldBeInstallation;
 - (void)makeFakeArgs;
 - (BOOL)installAddOn;
@@ -48,7 +46,7 @@
 #ifdef USE_COCOA
 @property(weak, readonly) NSMenuItem* addViewportForPlayerMenuItem;
 @property(weak, readonly) NSMenuItem* kickPlayerMenuItem;
-@property(readwrite, strong) C4EditorWindowController* consoleController;
+@property(readwrite, strong) C4EditorWindowController* editorWindowController;
 @property(readwrite, strong) C4WindowController* gameWindowController;
 @property(weak, readonly) NSMenuItem* recordMenuItem;
 @property(weak, readonly) NSMenuItem* netMenu;
