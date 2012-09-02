@@ -25,7 +25,7 @@
 #import <C4DrawGL.h>
 
 #import "C4WindowController.h"
-#import "C4OpenGLView.h"
+#import "C4DrawGLMac.h"
 #import "C4EditorWindowController.h"
 #import "C4AppDelegate.h"
 #import "AppKit/NSOpenGL.h"

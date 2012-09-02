@@ -649,8 +649,8 @@ elseif(USE_COCOA)
 		src/platform/C4WindowMac.mm
 		src/platform/C4AppDelegate+MainMenuActions.h
 		src/platform/C4AppDelegate+MainMenuActions.mm
-		src/platform/C4OpenGLView.h
-		src/platform/C4OpenGLView.mm
+		src/graphics/C4DrawGLMac.h
+		src/graphics/C4DrawGLMac.mm
 		src/platform/C4WindowController.h
 		src/platform/C4WindowController.mm
 		src/platform/CocoaKeycodeMap.h

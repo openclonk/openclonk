@@ -23,7 +23,7 @@
 #import <C4DrawGL.h>
 
 #import "C4AppDelegate+MainMenuActions.h"
-#import "C4OpenGLView.h"
+#import "C4DrawGLMac.h"
 #import "C4EditorWindowController.h"
 
 @implementation C4AppDelegate (MainMenuActions)

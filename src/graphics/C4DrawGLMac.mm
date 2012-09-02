@@ -28,7 +28,7 @@
 
 #include <C4DrawGL.h>
 
-#import "C4OpenGLView.h"
+#import "C4DrawGLMac.h"
 #import "C4WindowController.h"
 #import "C4AppDelegate+MainMenuActions.h"
 
@@ -529,27 +529,6 @@ void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 	[C4OpenGLView enumerateMultiSamples:samples];
 }
 
-bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
-{
-	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
-	C4WindowController* controller = pWindow->objectiveCObject<C4WindowController>();
-	NSWindow* window = controller.window;
-
-	if (iXRes == -1 && iYRes == -1)
-	{
-		iXRes = CGDisplayPixelsWide(C4OpenGLView.displayID);
-		iYRes = CGDisplayPixelsHigh(C4OpenGLView.displayID);
-	}
-	pWindow->SetSize(iXRes, iYRes);
-	[controller setFullscreen:fFullScreen];
-	[window setAspectRatio:[[window contentView] frame].size];
-	[window center];
-	if (!fFullScreen)
-		[window makeKeyAndOrderFront:nil];
-	OnResolutionChanged(iXRes, iYRes);
-	return true;
-}
-
 bool CStdGLCtx::Init(C4Window * pWindow, C4AbstractApp *)
 {
 	// safety
@@ -610,40 +589,6 @@ bool CStdGLCtx::PageFlip()
 	if (!pWindow) return false;
 	//SDL_GL_SwapBuffers();
 	return true;
-}
-
-#pragma mark CStdGLCtx: Gamma
-
-bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
-{
-	CGGammaValue r[256];
-	CGGammaValue g[256];
-	CGGammaValue b[256];
-	for (int i = 0; i < 256; i++)
-	{
-		r[i] = static_cast<float>(ramp.red[i])/65535.0;
-		g[i] = static_cast<float>(ramp.green[i])/65535.0;
-		b[i] = static_cast<float>(ramp.blue[i])/65535.0;
-	}
-	CGSetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b);
-	return true;
-}
-
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
-{
-	CGGammaValue r[256];
-	CGGammaValue g[256];
-	CGGammaValue b[256];
-	uint32_t count;
-	CGGetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b, &count);
-	for (int i = 0; i < 256; i++)
-	{
-		ramp.red[i]   = r[i]*65535;
-		ramp.green[i] = g[i]*65535;
-		ramp.blue[i]  = b[i]*65535;
-	}
-	return true;
-
 }
 
 #endif

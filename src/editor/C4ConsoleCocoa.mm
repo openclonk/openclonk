@@ -35,7 +35,7 @@
 #import <Cocoa/Cocoa.h>
 #import "C4AppDelegate.h"
 #import "C4EditorWindowController.h"
-#import "C4OpenGLView.h"
+#import "C4DrawGLMac.h"
 
 // implementation of C4Console GUI for Mac OS X
 

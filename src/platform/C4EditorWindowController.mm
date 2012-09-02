@@ -21,7 +21,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <C4EditorWindowController.h>
-#import <C4OpenGLView.h>
+#import <C4DrawGLMac.h>
 #import <C4AppDelegate.h>
 
 #ifdef USE_COCOA

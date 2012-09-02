@@ -22,7 +22,7 @@
 
 #import <Appkit/AppKit.h>
 #import <C4WindowController.h>
-#import <C4OpenGLView.h>
+#import <C4DrawGLMac.h>
 
 #ifdef USE_COCOA
 
