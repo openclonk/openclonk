@@ -654,8 +654,8 @@ elseif(USE_COCOA)
 		src/platform/C4WindowController.h
 		src/platform/C4WindowController.mm
 		src/platform/CocoaKeycodeMap.h
-		src/platform/C4EditorWindowController.h
-		src/platform/C4EditorWindowController.mm
+		src/editor/C4EditorWindowController.h
+		src/editor/C4EditorWindowController.mm
 		src/platform/ObjectiveCAssociated.h
 	)
 endif()
