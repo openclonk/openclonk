@@ -230,7 +230,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	// Update FoW
 	if (pFoW)
 	{
-		pFoW->Set(C4Rect(
+		pFoW->Update(C4Rect(
 			int32_t(cgo.TargetX), int32_t(cgo.TargetY),
 			cgo.Wdt + 1, cgo.Hgt + 1));
 
@@ -263,6 +263,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
+
+	//pFoW->Render(&cgo);
 
 	if (fDrawOverlay)
 	{
@@ -626,7 +628,7 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	}
 	// Initialize FoW
 	if (::Landscape.pFoW)
-		pFoW = new C4FoWRegion(::Landscape.pFoW);
+		pFoW = new C4FoWRegion(::Landscape.pFoW, ::Players.Get(iPlayer));
 	return true;
 }
 

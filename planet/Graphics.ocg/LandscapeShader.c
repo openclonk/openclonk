@@ -54,6 +54,13 @@ float queryMatMap(int pix)
 #endif
 }
 
+float dotc(vec2 v1, vec2 v2)
+{
+	vec3 v1p = normalize(vec3(v1, 0.3));
+	vec3 v2p = normalize(vec3(v2, 0.3));
+	return dot(v1p, v2p);
+}
+
 void main()
 {
 
@@ -112,19 +119,21 @@ void main()
 	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 
 	// Get material pixels
-	
 	float mi = queryMatMap(f2i(lpx.r));
-
-	vec4 mpx = texture3D(materialTex, vec3(texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), mi));
+	vec2 tcoo = texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0);
+	vec4 mpx = texture3D(materialTex, vec3(tcoo, mi));
+	vec4 npx = texture3D(materialTex, vec3(tcoo, mi+0.5));
 	float omi = queryMatMap(f2i(lopx.r));
-	vec4 ompx = texture3D(materialTex, vec3(texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), omi));
+	vec4 ompx = texture3D(materialTex, vec3(tcoo, omi));
 
-	// Brightness	
-	float ambientBright = texture2D(lightTex, gl_TexCoord[1].st).r*2.0, shadeBright = ambientBright;	
-	vec2 normal = (2.0 * mix(rlpx.yz, lpx.yz, spx.a) - vec2(1.0, 1.0));
-	vec2 normal2 = (2.0 * lopx.yz - vec2(1.0, 1.0));
-	float bright = ambientBright + shadeBright * dot(normal, vec2(0.0, -1.0));
-	float bright2 = ambientBright + shadeBright * dot(normal2, vec2(0.0, -1.0));
+	// Brightness
+	vec4 lipx = texture2D(lightTex, gl_TexCoord[1].st);
+	float ambientBright = lipx.r, shadeBright = ambientBright;	
+	vec2 normal = (mix(rlpx.yz, lpx.yz, spx.a) + npx.xy - vec2(1.0, 1.0));
+	vec2 normal2 = (lopx.yz + npx.xy - vec2(1.0, 1.0));
+	vec2 light_dir = vec2(1.0, 1.0) - lipx.yz * 3;
+	float bright = 2.0 * shadeBright * dotc(normal, light_dir);
+	float bright2 = 2.0 * shadeBright * dotc(normal2, light_dir);
 
 	gl_FragColor = mix(
 		vec4(bright2 * ompx.rgb, ompx.a),

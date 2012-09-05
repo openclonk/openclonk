@@ -38,7 +38,7 @@ public:
 
 	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
-	char Name[C4M_MaxName+1];
+	StdStrBuf Name;
 	uint32_t AvgColor;
 	C4Texture *Next;
 };

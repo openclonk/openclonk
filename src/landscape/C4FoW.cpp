@@ -617,8 +617,9 @@ void C4FoWRay::Prune(int32_t y)
 		iRightEndY = y;
 }
 
-C4FoWRegion::C4FoWRegion(C4FoW *pFoW)
+C4FoWRegion::C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer)
 	: pFoW(pFoW)
+	, pPlayer(pPlayer)
 	, hFrameBufDraw(0), hFrameBufRead(0)
 	, Region(0,0,0,0), OldRegion(0,0,0,0)
 	, pSurface(NULL), pBackSurface(NULL)
@@ -630,7 +631,7 @@ C4FoWRegion::~C4FoWRegion()
 	Clear();
 }
 
-bool C4FoWRegion::Create()
+bool C4FoWRegion::BindFramebuf()
 {
 
 	// Flip texture
@@ -691,6 +692,12 @@ void C4FoWRegion::Clear()
 	delete pBackSurface; pBackSurface = NULL;
 }
 
+void C4FoWRegion::Update(C4Rect r)
+{
+	// Set the new region
+	Region = r;
+}
+
 void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 {
 	// Update FoW at interesting location
@@ -705,7 +712,7 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 
 	// Create & bind the frame buffer
 	pDraw->StorePrimaryClipper();
-	if(!Create())
+	if(!BindFramebuf())
 	{
 		pDraw->RestorePrimaryClipper();
 		return;
@@ -722,8 +729,8 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 	gluOrtho2D(0, getSurface()->Wdt, getSurface()->Hgt, 0);
 
 	// Clear texture contents
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	//glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Copy over the old state
 	if (OldRegion.Wdt > 0) {
@@ -734,29 +741,33 @@ void C4FoWRegion::Render(const C4TargetFacet *pOnScreen)
 			dy1 = Region.y + Region.Hgt - OldRegion.y - OldRegion.Hgt;
 
 		glBlitFramebufferEXT(
-			Max(0, -dx0),                 Max(0, -dy0),
-			OldRegion.Wdt - Max(0, -dx1), OldRegion.Hgt - Max(0, -dy1),
-			Max(0, dx0),                  Max(0, dy0),
-			Region.Wdt - Max(0, dx1),     Region.Hgt - Max(0, dy1),
+			Max(0, dx0),                  Max(0, -dy1),
+			OldRegion.Wdt - Max(0, -dx1), OldRegion.Hgt - Max(0, dy0),
+			Max(0, -dx0),                 Max(0, dy1),
+			Region.Wdt - Max(0, dx1),     Region.Hgt - Max(0, -dy0),
 			GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
 		glCheck();
 
-		// Fade out
-		glBlendFunc(GL_DST_COLOR, GL_SRC_ALPHA);
-		glColor4f(0.0f, 0.0f, 0.0f, 0.8f);
+		// Fade out. Note we constantly vary the alpha factor all the time -
+		// this is barely visible but makes it a lot less likely that we 
+		// hit cases where we add the same thing every time, but still don't
+		// converge to the same color due to rounding.
+		int iAdd = (Game.FrameCounter/3) % 2;
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0f, 0.5f/1.5f, 0.5f/1.5f, 1.0f/16.0f+iAdd*1.0f/256.0f);
 		glBegin(GL_QUADS);
 		glVertex2i(0, 0);
 		glVertex2i(getSurface()->Wdt, 0);
 		glVertex2i(getSurface()->Wdt, getSurface()->Hgt);
 		glVertex2i(0, getSurface()->Hgt);
 		glEnd();
-	}	
+	}
 
 	// Render FoW to frame buffer object
 	glBlendFunc(GL_ONE, GL_ONE);
 	pFoW->Render(this);
-
+	
 	// Done!
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glMatrixMode(GL_PROJECTION);
@@ -1265,112 +1276,168 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 		}
 	}
 
-	// Draw the fan
-#define LIGHT if(pOnScreen) glColor3f(1.0f, 0.0f, 0.0f); else glColor3f(0.1f, 0.1f, 0.1f)
-#define DARK  if(pOnScreen) glColor3f(0.5f, 0.5f, 0.0f); else glColor3f(0.0f, 0.0f, 0.0f)
-#define BEGIN_TRIANGLE if(pOnScreen) glBegin(GL_LINE_LOOP)
-#define END_TRIANGLE if(pOnScreen) glEnd()
-	LIGHT;
-	glShadeModel(GL_FLAT);
-	glBegin(pOnScreen ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
-	if (!pOnScreen)
-		glVertex2f(float(pLight->getX() - pRegion->getRegion().x),
-				   float(pLight->getY() - pRegion->getRegion().y));
-	for (i = 0; i < iRayCnt; i++) {
-		if (i == 0 || gFanRX[i-1] != gFanLX[i] || gFanRY[i-1] != gFanLY[i])
-			glVertex2f(gFanLX[i], gFanLY[i]);
-		if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i])
-			glVertex2f(gFanRX[i], gFanRY[i]);
-	}
-	glEnd();
+	// Calculate position of the light in the buffer
+	float gLightX = transX(0,0) - pRegion->getRegion().x,
+	      gLightY = transY(0,0) - pRegion->getRegion().y;
 
-	// Draw the fade
-	glShadeModel(GL_SMOOTH);
-	if(!pOnScreen) glBegin(GL_TRIANGLES);
+	// Here's the master plan for updating the lights texture. We
+	// want to add intensity (R channel) as well as the normal (GB channels).
+	// Normals are obviously meant to be though of as signed, though,
+	// so the equation we want would be something like
+	//
+	//  R_new = BoundBy(R_old + R,       0.0, 1.0)
+	//  G_new = BoundBy(G_old + G - 0.5, 0.0, 1.0)
+	//  B_new = BoundBy(B_old + B - 0.5, 0.0, 1.0)
+	//
+	// It seems we can't get that directly though - glBlendFunc only talks
+	// about two operands. Even if we make two passes, we have to take
+	// care that that we don't over- or underflow in the intermediate pass.
+	//
+	// Therefore, we store G/1.5 instead of G, losing a bit of accuracy,
+	// but allowing us to formulate the following approximation without
+	// overflows:
+	//
+	//  G_new = BoundBy(BoundBy(G_old + G / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
+	//  B_new = BoundBy(BoundBy(B_old + B / 1.5), 0.0, 1.0) - 0.5 / 1.5, 0.0, 1.0)
 
-	for (i = 0; i < iRayCnt; i++) {
+	// Two passes
+	for(int iPass = 0; iPass < (pOnScreen ? 1 : 2); iPass++) {  
 
-		// The quad. Will be empty if fan points match
-		if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
-
-			// upper triangle
-			BEGIN_TRIANGLE;
-			LIGHT; glVertex2f(gFanLX[i], gFanLY[i]);
-			LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-			DARK; glVertex2f(gFadeLX[i], gFadeLY[i]);
-			END_TRIANGLE;
-
-			// lower triangle, if necessary
-			if (gFadeLX[i] != gFadeRX[i] || gFadeLY[i] != gFadeRY[i]) {
-				BEGIN_TRIANGLE;
-				LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-				DARK; glVertex2f(gFadeRX[i], gFadeRY[i]);
-				DARK; glVertex2f(gFadeLX[i], gFadeLY[i]);
-				END_TRIANGLE;
-			}
+		// Pass 2: Subtract
+		if (!pOnScreen && iPass == 1) {
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			glBlendFunc(GL_ONE, GL_ONE);
 		}
 
-		// No intermediate fade for last point
-		if (i+1 >= iRayCnt) continue;
+		// Help me! My brain can't program without local function definitions anymore!
+		#define VERTEX(x,y,light)                                        \
+			if(pOnScreen) {                                              \
+				if(light)       glColor3f(1.0f, 0.0f, 0.0f);             \
+				else            glColor3f(0.5f, 0.5f, 0.0f);             \
+			} else if(iPass == 0) {                                      \
+			    float dx = (x) - gLightX, dy = (y) - gLightY;            \
+				float gDist = sqrt(dx*dx+dy*dy);                         \
+				float gMult = Min(0.5f / pLight->getSize(), 0.5f / gDist); \
+				float gNormX = (0.5f + dx * gMult) / 1.5f / 16.0f; \
+				float gNormY = (0.5f + dy * gMult) / 1.5f / 16.0f; \
+				if(light)       glColor3f(0.1f, gNormX, gNormY);         \
+				else            glColor3f(0.0f, gNormX, gNormY);         \
+			} else              glColor3f(0.0f, 0.5f/1.5f/16.0f, 0.5f/1.5f/16.0f);   \
+			glVertex2f(x,y)
+		#define DARK(x,y) VERTEX(x,y,false)
+		#define LIGHT(x,y) VERTEX(x,y,true)
+		#define BEGIN_TRIANGLE                                           \
+			if(pOnScreen) glBegin(GL_LINE_LOOP)
+		#define END_TRIANGLE                                             \
+			if(pOnScreen) glEnd()
 
-		// Ascending?
-		if (fAscend[i]) {
-
-			// Lower fade triangle
-			BEGIN_TRIANGLE;
-			LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-			DARK; glVertex2f(gFadeIX[i], gFadeIY[i]);
-			DARK; glVertex2f(gFadeRX[i], gFadeRY[i]);
-			END_TRIANGLE;
-
-			// Intermediate fade triangle, if necessary
-			if (gFadeIY[i] != gFadeLY[i+1]) {
-				BEGIN_TRIANGLE;
-				LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-				DARK; glVertex2f(gFadeLX[i+1], gFadeLY[i+1]);
-				DARK; glVertex2f(gFadeIX[i], gFadeIY[i]);
-				END_TRIANGLE;
-			}
-
-			// Upper fade triangle
-			BEGIN_TRIANGLE;
-			LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-			LIGHT; glVertex2f(gFanLX[i+1], gFanLY[i+1]);
-			DARK; glVertex2f(gFadeLX[i+1], gFadeLY[i+1]);
-			END_TRIANGLE;
-
-		// Descending?
-		} else {
-
-			// Lower fade triangle
-			BEGIN_TRIANGLE;
-			LIGHT; glVertex2f(gFanLX[i+1], gFanLY[i+1]);
-			DARK; glVertex2f(gFadeLX[i+1], gFadeLY[i+1]);
-			DARK; glVertex2f(gFadeIX[i], gFadeIY[i]);
-			END_TRIANGLE;
-
-			// Intermediate fade triangle, if necessary
-			if (gFadeIY[i] != gFadeRY[i]) {
-				BEGIN_TRIANGLE;
-				LIGHT; glVertex2f(gFanLX[i+1], gFanLY[i+1]);
-				DARK; glVertex2f(gFadeIX[i], gFadeIY[i]);
-				DARK; glVertex2f(gFadeRX[i], gFadeRY[i]);
-				END_TRIANGLE;
-			}
-
-			// Upper fade triangle
-			BEGIN_TRIANGLE;
-			LIGHT; glVertex2f(gFanLX[i+1], gFanLY[i+1]);
-			DARK; glVertex2f(gFadeRX[i], gFadeRY[i]);
-			LIGHT; glVertex2f(gFanRX[i], gFanRY[i]);
-			END_TRIANGLE;
-
+		// Draw the fan
+		glShadeModel(GL_SMOOTH);
+		glBegin(pOnScreen ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
+		if (!pOnScreen) {
+			LIGHT(gLightX, gLightY);
 		}
+		for (i = 0; i < iRayCnt; i++) {
+			if (i == 0 || gFanRX[i-1] != gFanLX[i] || gFanRY[i-1] != gFanLY[i]) {
+				LIGHT(gFanLX[i], gFanLY[i]);
+			}
+			if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
+				LIGHT(gFanRX[i], gFanRY[i]);
+			}
+		}
+		glEnd();
+
+		// Draw the fade
+		glShadeModel(GL_SMOOTH);
+		if(!pOnScreen) glBegin(GL_TRIANGLES);
+
+		for (i = 0; i < iRayCnt; i++) {
+
+			// The quad. Will be empty if fan points match
+			if (gFanLX[i] != gFanRX[i] || gFanLY[i] != gFanRY[i]) {
+
+				// upper triangle
+				BEGIN_TRIANGLE;
+				LIGHT(gFanLX[i], gFanLY[i]);
+				LIGHT(gFanRX[i], gFanRY[i]);
+				DARK(gFadeLX[i], gFadeLY[i]);
+				END_TRIANGLE;
+
+				// lower triangle, if necessary
+				if (gFadeLX[i] != gFadeRX[i] || gFadeLY[i] != gFadeRY[i]) {
+					BEGIN_TRIANGLE;
+					LIGHT(gFanRX[i], gFanRY[i]);
+					DARK(gFadeRX[i], gFadeRY[i]);
+					DARK(gFadeLX[i], gFadeLY[i]);
+					END_TRIANGLE;
+				}
+			}
+
+			// No intermediate fade for last point
+			if (i+1 >= iRayCnt) continue;
+
+			// Ascending?
+			if (fAscend[i]) {
+
+				// Lower fade triangle
+				BEGIN_TRIANGLE;
+				LIGHT(gFanRX[i], gFanRY[i]);
+				DARK(gFadeIX[i], gFadeIY[i]);
+				DARK(gFadeRX[i], gFadeRY[i]);
+				END_TRIANGLE;
+
+				// Intermediate fade triangle, if necessary
+				if (gFadeIY[i] != gFadeLY[i+1]) {
+					BEGIN_TRIANGLE;
+					LIGHT(gFanRX[i], gFanRY[i]);
+					DARK(gFadeLX[i+1], gFadeLY[i+1]);
+					DARK(gFadeIX[i], gFadeIY[i]);
+					END_TRIANGLE;
+				}
+
+				// Upper fade triangle
+				BEGIN_TRIANGLE;
+				LIGHT(gFanRX[i], gFanRY[i]);
+				LIGHT(gFanLX[i+1], gFanLY[i+1]);
+				DARK(gFadeLX[i+1], gFadeLY[i+1]);
+				END_TRIANGLE;
+
+			// Descending?
+			} else {
+
+				// Lower fade triangle
+				BEGIN_TRIANGLE;
+				LIGHT(gFanLX[i+1], gFanLY[i+1]);
+				DARK(gFadeLX[i+1], gFadeLY[i+1]);
+				DARK(gFadeIX[i], gFadeIY[i]);
+				END_TRIANGLE;
+
+				// Intermediate fade triangle, if necessary
+				if (gFadeIY[i] != gFadeRY[i]) {
+					BEGIN_TRIANGLE;
+					LIGHT(gFanLX[i+1], gFanLY[i+1]);
+					DARK(gFadeIX[i], gFadeIY[i]);
+					DARK(gFadeRX[i], gFadeRY[i]);
+					END_TRIANGLE;
+				}
+
+				// Upper fade triangle
+				BEGIN_TRIANGLE;
+				LIGHT(gFanLX[i+1], gFanLY[i+1]);
+				DARK(gFadeRX[i], gFadeRY[i]);
+				LIGHT(gFanRX[i], gFanRY[i]);
+				END_TRIANGLE;
+
+			}
+		}
+		if (!pOnScreen)
+			glEnd(); // GL_TRIANGLES
 	}
-	if (!pOnScreen)
-		glEnd(); // GL_TRIANGLES
-	
+
 	delete[] gFanLX;
+	
+	// Reset GL state
+	glBlendEquation(GL_FUNC_ADD);
 
 }
 

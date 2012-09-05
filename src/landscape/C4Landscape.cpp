@@ -1451,6 +1451,7 @@ void C4Landscape::Default()
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
 	}
+	delete pFoW; pFoW = NULL;
 }
 
 void C4Landscape::ClearMatCount()

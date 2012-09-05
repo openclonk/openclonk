@@ -4,6 +4,7 @@
 
 #include "C4Rect.h"
 #include "C4Surface.h"
+#include "C4DrawGL.h"
 
 class C4FoW
 {
@@ -14,6 +15,8 @@ private:
 	class C4FoWLight *pLights;
 
 public:
+	void Clear();
+
 	void Add(C4Object *pObj);
 	void Remove(C4Object *pObj);
 	void Update(C4Rect r);
@@ -25,11 +28,12 @@ public:
 class C4FoWRegion
 {
 public:
-	C4FoWRegion(C4FoW *pFoW);
+	C4FoWRegion(C4FoW *pFoW, C4Player *pPlayer);
 	~C4FoWRegion();
 
 private:
 	C4FoW *pFoW;
+	C4Player *pPlayer;
 	C4Rect Region, OldRegion;
 	C4Surface *pSurface, *pBackSurface;
 	GLuint hFrameBufDraw, hFrameBufRead;
@@ -39,11 +43,13 @@ public:
 	const C4Surface *getSurface() const { return pSurface; }
 	const C4Surface *getBackSurface() const { return pBackSurface; }
 
-	bool Create();
 	void Clear();
 
-	void Set(C4Rect r) { Region = r; }
+	void Update(C4Rect r);
 	void Render(const C4TargetFacet *pOnScreen = NULL);
+
+private:
+	bool BindFramebuf();
 
 };
 

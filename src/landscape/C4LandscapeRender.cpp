@@ -170,8 +170,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 
 	// Determine depth to use
 	iMaterialTextureDepth = 1;
-	while(iMaterialTextureDepth < int32_t(MaterialTextureMap.size()))
+	while(iMaterialTextureDepth < 2*int32_t(MaterialTextureMap.size()))
 		iMaterialTextureDepth <<= 1;
+	int32_t iNormalDepth = iMaterialTextureDepth / 2;
 
 	// Find the largest texture
 	C4Texture *pTex, *pRefTex; C4Surface *pRefSfc = NULL;
@@ -207,14 +208,15 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	{
 		BYTE *p = pData + i * iTexSize;
 		// Get texture at position
-		const char *szTexture;
+		StdStrBuf Texture;
+		bool fNormal = i >= iNormalDepth;
 		if(i < int32_t(MaterialTextureMap.size()))
-			szTexture = MaterialTextureMap[i].getData();
-		else
-			szTexture = "";
+			Texture.Ref(MaterialTextureMap[i]);
+		else if(fNormal && i < iNormalDepth + int32_t(MaterialTextureMap.size()))
+			Texture.Format("%s_NRM", MaterialTextureMap[i-iNormalDepth].getData());
 		// Try to find the texture
 		C4Texture *pTex; C4Surface *pSurface;
-		if((pTex = pTexs->GetTexture(szTexture)) && (pSurface = pTex->Surface32))
+		if((pTex = pTexs->GetTexture(Texture.getData())) && (pSurface = pTex->Surface32))
 		{
 #ifdef DEBUG_SOLID_COLOR_TEXTURES
 			// Just write a solid color that depends on the texture index
@@ -230,7 +232,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 			{
 				// Size recheck
 				if(pSurface->Wdt != iTexWdt || pSurface->Hgt != iTexHgt)
-					LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", szTexture, pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
+					LogF("   gl: texture %s size mismatch (%dx%d vs %dx%d)!", Texture.getData(), pSurface->Wdt, pSurface->Hgt, iTexWdt, iTexHgt);
 				// Copy bytes
 				DWORD *texdata = reinterpret_cast<DWORD *>(p);
 				pSurface->Lock();
@@ -243,7 +245,7 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 #endif
 		}
 		// Seperator texture?
-		if(SEqual(szTexture, SEPERATOR_TEXTURE))
+		if(SEqual(Texture.getData(), SEPERATOR_TEXTURE))
 		{
 			// Make some ugly stripes
 			DWORD *texdata = reinterpret_cast<DWORD *>(p);
@@ -252,8 +254,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 					*texdata++ = ((x + y) % 32 < 16 ? RGBA(255, 0, 0, 255) : RGBA(0, 255, 255, 255));
 			continue;
 		}
-		// If we didn't "continue" yet, we haven't written the texture yet. Make it transparent.
-		memset(p, 0, iTexSize);
+		// If we didn't "continue" yet, we haven't written the texture yet.
+		// Make color texture transparent, and normal texture flat.
+		memset(p, fNormal ? 127 : 0, iTexSize);
 	}
 
 	// Clear error error(s?)
