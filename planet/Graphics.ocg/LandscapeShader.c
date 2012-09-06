@@ -131,7 +131,7 @@ void main()
 	float ambientBright = lipx.r, shadeBright = ambientBright;	
 	vec2 normal = (mix(rlpx.yz, lpx.yz, spx.a) + npx.xy - vec2(1.0, 1.0));
 	vec2 normal2 = (lopx.yz + npx.xy - vec2(1.0, 1.0));
-	vec2 light_dir = vec2(1.0, 1.0) - lipx.yz * 3;
+	vec2 light_dir = vec2(1.0, 1.0) - lipx.yz * 3.0;
 	float bright = 2.0 * shadeBright * dotc(normal, light_dir);
 	float bright2 = 2.0 * shadeBright * dotc(normal2, light_dir);
 
