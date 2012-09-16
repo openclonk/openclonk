@@ -54,11 +54,9 @@ float queryMatMap(int pix)
 #endif
 }
 
-float dotc(vec2 v1, vec2 v2)
+vec3 extend_normal(vec2 v)
 {
-	vec3 v1p = normalize(vec3(v1, 0.3));
-	vec3 v2p = normalize(vec3(v2, 0.3));
-	return dot(v1p, v2p);
+	return normalize(vec3(v, 0.3));
 }
 
 void main()
@@ -75,36 +73,36 @@ void main()
 	vec2 pixelCoo = texCoo * resolution;
 	vec2 centerCoo = (floor(pixelCoo) + vec2(0.5, 0.5)) / resolution;
 
-	// our pixel color (with and without interpolation)
-	vec4 lpx = texture2D(landscapeTex[0], centerCoo);
-	vec4 rlpx = texture2D(landscapeTex[0], texCoo);
+	// our pixel color (without/with interpolation)
+	vec4 landscapePx = texture2D(landscapeTex[0], centerCoo);
+	vec4 realLandscapePx = texture2D(landscapeTex[0], texCoo);
 
 	// find scaler coordinate
 	vec2 scalerCoo = scalerOffset + mod(pixelCoo, vec2(1.0, 1.0)) * scalerPixel;
 
 #ifdef SCALER_IN_GPU
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX - fullStepY).r == landscapePx.r)
 		scalerCoo += scalerStepX;
-	if(texture2D(landscapeTex[0], centerCoo             - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo             - fullStepY).r == landscapePx.r)
 		scalerCoo += 2.0 * scalerStepX;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX - fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX - fullStepY).r == landscapePx.r)
 		scalerCoo += 4.0 * scalerStepX;
 		
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX            ).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX            ).r == landscapePx.r)
 		scalerCoo += scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX            ).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX            ).r == landscapePx.r)
 		scalerCoo += 2.0 * scalerStepY;
 	
-	if(texture2D(landscapeTex[0], centerCoo - fullStepX + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo - fullStepX + fullStepY).r == landscapePx.r)
 		scalerCoo += 4.0 * scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo             + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo             + fullStepY).r == landscapePx.r)
 		scalerCoo += 8.0 * scalerStepY;
-	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == lpx.r)
+	if(texture2D(landscapeTex[0], centerCoo + fullStepX + fullStepY).r == landscapePx.r)
 		scalerCoo += 16.0 * scalerStepY;
 
 #else
 
-	int iScaler = f2i(lpx.a), iRow = iScaler / 8;
+	int iScaler = f2i(landscapePx.a), iRow = iScaler / 8;
 	scalerCoo.x += float(iScaler - iRow * 8) / 8.0;
 	scalerCoo.y += float(iScaler / 8) / 32.0;
 	
@@ -112,31 +110,38 @@ void main()
 
 	// Note: scalerCoo will jump around a lot, causing some GPUs to apparantly get confused with
 	//       the level-of-detail calculation. We therefore try to disable LOD.
-	vec4 spx = texture2DLod(scalerTex, scalerCoo, 0.0);
+	vec4 scalerPx = texture2DLod(scalerTex, scalerCoo, 0.0);
 
 	// gen3 other coordinate calculation. Still struggles a bit with 3-ways
-	vec2 otherCoo = centerCoo + fullStep * floor(vec2(-0.5, -0.5) + spx.gb * 255.0 / 64.0);
-	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
+	vec2 otherCoo = centerCoo + fullStep * floor(vec2(-0.5, -0.5) + scalerPx.gb * 255.0 / 64.0);
+	vec4 otherLandscapePx = texture2D(landscapeTex[0], otherCoo);
 
 	// Get material pixels
-	float mi = queryMatMap(f2i(lpx.r));
+	float materialIx = queryMatMap(f2i(landscapePx.r));
 	vec2 tcoo = texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0);
-	vec4 mpx = texture3D(materialTex, vec3(tcoo, mi));
-	vec4 npx = texture3D(materialTex, vec3(tcoo, mi+0.5));
-	float omi = queryMatMap(f2i(lopx.r));
-	vec4 ompx = texture3D(materialTex, vec3(tcoo, omi));
+	vec4 materialPx = texture3D(materialTex, vec3(tcoo, materialIx));
+	vec4 normalPx = texture3D(materialTex, vec3(tcoo, materialIx+0.5));
+	float otherMaterialIx = queryMatMap(f2i(otherLandscapePx.r));
+	vec4 otherMaterialPx = texture3D(materialTex, vec3(tcoo, otherMaterialIx));
 
 	// Brightness
-	vec4 lipx = texture2D(lightTex, gl_TexCoord[1].st);
-	float ambientBright = lipx.r, shadeBright = ambientBright;	
-	vec2 normal = (mix(rlpx.yz, lpx.yz, spx.a) + npx.xy - vec2(1.0, 1.0));
-	vec2 normal2 = (lopx.yz + npx.xy - vec2(1.0, 1.0));
-	vec2 light_dir = vec2(1.0, 1.0) - lipx.yz * 3.0;
-	float bright = 2.0 * shadeBright * dotc(normal, light_dir);
-	float bright2 = 2.0 * shadeBright * dotc(normal2, light_dir);
+	vec4 lightPx = texture2D(lightTex, gl_TexCoord[1].st);
+	float ambientBright = lightPx.r, shadeBright = ambientBright;
+
+	// Normal calculation
+	vec3 landscapeNormal = extend_normal(mix(realLandscapePx.yz, landscapePx.yz, scalerPx.a) - vec2(0.5, 0.5));
+	vec3 landscapeNormal2 = extend_normal(otherLandscapePx.yz - vec2(0.5, 0.5));
+	vec3 textureNormal = normalPx.xyz - vec3(0.5,0.5,0.5);
+	vec3 normal = landscapeNormal + textureNormal;
+	vec3 normal2 = landscapeNormal2 + textureNormal;
+
+	// Light calculation
+	vec3 lightDir = extend_normal(vec2(1.0, 1.0) - lightPx.yz * 3.0);
+	float bright = 2.0 * shadeBright * dot(normal, lightDir);
+	float bright2 = 2.0 * shadeBright * dot(normal2, lightDir);
 
 	gl_FragColor = mix(
-		vec4(bright2 * ompx.rgb, ompx.a),
-		vec4(bright * mpx.rgb, mpx.a),
-		spx.r);
+		vec4(bright2 * otherMaterialPx.rgb, otherMaterialPx.a),
+		vec4(bright * materialPx.rgb, materialPx.a),
+		scalerPx.r);
 }
