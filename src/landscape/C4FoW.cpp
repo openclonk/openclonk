@@ -1320,7 +1320,7 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 				float gMult = Min(0.5f / pLight->getSize(), 0.5f / gDist); \
 				float gNormX = (0.5f + dx * gMult) / 1.5f / 16.0f; \
 				float gNormY = (0.5f + dy * gMult) / 1.5f / 16.0f; \
-				if(light)       glColor3f(0.1f, gNormX, gNormY);         \
+				if(light)       glColor3f(0.5f/16.0f, gNormX, gNormY);         \
 				else            glColor3f(0.0f, gNormX, gNormY);         \
 			} else              glColor3f(0.0f, 0.5f/1.5f/16.0f, 0.5f/1.5f/16.0f);   \
 			glVertex2f(x,y)
