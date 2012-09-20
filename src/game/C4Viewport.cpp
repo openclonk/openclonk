@@ -264,7 +264,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
 
-	//pFoW->Render(&cgo);
+	// Lights overlay
+	if (::GraphicsSystem.ShowLights && pFoW) pFoW->Render(&cgo);
 
 	if (fDrawOverlay)
 	{
