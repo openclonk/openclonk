@@ -903,12 +903,12 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 	float gScanLevel = 0;
 	for (int iStep = 0; iStep < 100000; iStep++) {
 
-		// Find the ray to project. This makes this whole alrogithm O(n²),
+		// Find the ray to project. This makes this whole algorithm O(n²),
 		// but I see no other way to make the whole thing robust :/
 		float gBestLevel = FLT_MAX;
 		int j;
 		for (j = 0; j+1 < iRayCnt; j++) {
-			float gLevel = Min(gFanRX[j], gFanLX[j+1]);
+			float gLevel = Min(gFanRY[j], gFanLY[j+1]);
 			if (gLevel <= gScanLevel || gLevel >= gBestLevel)
 				continue;
 			gBestLevel = gLevel;
@@ -919,11 +919,11 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 
 		for(int i = 0; i+1 < iRayCnt; i++) {
 
-		if(Min(gFanRX[i], gFanLX[i+1]) != gBestLevel)
+		if(Min(gFanRY[i], gFanLY[i+1]) != gBestLevel)
 			continue;
 
 		// Debugging
-//#define FAN_STEP_DEBUG
+		// #define FAN_STEP_DEBUG
 #ifdef FAN_STEP_DEBUG
 		LogSilentF("Fan step %d (i=%d)", iStep, i);
 		for (j = 0; j < iRayCnt; j++) {
@@ -1073,9 +1073,14 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 							    &gCrossX, &gCrossY);
 			assert(f);
 
-			// The point should always be lower than both existing points
-			assert(gCrossY >= gFanRY[i]);
-			assert(gCrossY >= gFanLY[i+1]);
+			// Ensure some minimum distance to existing
+			// points - don't bother with too small
+			// bumps. This also catches some floating
+			// point inacurracies.
+			const float gDescendEta = 0.5;
+			if (gCrossY <= gFanRY[i] + gDescendEta ||
+			    gCrossY <= gFanLY[i+1] + gDescendEta)
+			  continue;
 
 			// This should always follow an elimination, but better check
 			assert(iOriginalRayCnt > iRayCnt);
