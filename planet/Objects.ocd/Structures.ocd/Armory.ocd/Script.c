@@ -9,6 +9,7 @@ local hold_production;
 func Construction(object creator)
 {
 	SetAction("Default");
+	this.MeshTransformation = Trans_Rotate(RandomX(-10, 10), 0, 1, 0);
 	return _inherited(creator, ...);
 }
 
