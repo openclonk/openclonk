@@ -38,6 +38,7 @@ class C4ClientList;
 class C4ClientPlayerInfos;
 class C4Command;
 class C4Config;
+class C4ConfigGraphics;
 class C4Console;
 class C4Control;
 class C4Def;

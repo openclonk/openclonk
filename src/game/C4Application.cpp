@@ -175,13 +175,13 @@ bool C4Application::DoInit(int argc, char * argv[])
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, isEditor, false, Config.Graphics.GetWidth(), Config.Graphics.GetHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	bool success = DDrawInit(this, isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
 	{
-		if (!SetVideoMode(Config.Graphics.GetWidth(), Config.Graphics.GetHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
-			pWindow->SetSize(Config.Graphics.GetWidth(), Config.Graphics.GetHeight());
+		if (!SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+			pWindow->SetSize(Application.GetConfigWidth(), Application.GetConfigHeight());
 	}
 
 	// Initialize gamepad
@@ -639,10 +639,14 @@ void C4Application::GameTick()
 			QuitGame();
 			break;
 		}
+		if(Config.Graphics.Windowed == 2)
+			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
+		if(Config.Graphics.Windowed == 2 && !NextMission)
+			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)

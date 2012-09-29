@@ -101,7 +101,7 @@ public:
 	int32_t ResX,ResY;
 	int32_t WindowX,WindowY;
 	int32_t RefreshRate;	// monitor vertical refresh rate
-	int32_t Windowed;
+	int32_t Windowed; // 0: fullscreen, 1: windowed, 2: fullscreen in game, windowed in menu
 	int32_t ShowAllResolutions;
 	int32_t ShowCrewNames; // show player name above clonks?
 	int32_t ShowCrewCNames; // show clonk names above clonks?
@@ -121,8 +121,6 @@ public:
 	int32_t MultiSampling; // multisampling samples
 
 	void CompileFunc(StdCompiler *pComp);
-	int GetWidth() { return Windowed ? WindowX : ResX; }
-	int GetHeight() { return Windowed ? WindowY : ResY; }
 };
 
 class C4ConfigSound

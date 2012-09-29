@@ -329,7 +329,7 @@ bool C4Game::PreInit()
 		{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); return false; }
 
 	// load GUI
-	pGUI->Init(0, 0, Config.Graphics.GetWidth(), Config.Graphics.GetHeight());
+	pGUI->Init(0, 0, Application.GetConfigWidth(), Application.GetConfigHeight());
 
 	fPreinited = true;
 
@@ -618,7 +618,7 @@ void C4Game::Clear()
 	PlayerControlDefaultAssignmentSets.Clear();
 	PlayerControlDefs.Clear();
 	::MeshMaterialManager.Clear();
-	Application.SoundSystem.Init(); // clear it up and re-init it for normal use
+	Application.SoundSystem.Init(); // clear it up and re-init it for startup menu use
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -644,6 +644,7 @@ void C4Game::Clear()
 
 	fPreinited = false;
 	C4PropListNumbered::ResetEnumerationIndex();
+	
 	// FIXME: remove this
 	Default();
 }

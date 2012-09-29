@@ -894,12 +894,21 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 		pCheckGfxClrDepth[iBitDepthIdx]->SetToolTip(LoadResStr("IDS_CTL_BITDEPTH"));
 		pGroupResolution->AddElement(pCheckGfxClrDepth[iBitDepthIdx]);
 	}
-	// fullscreen checkbox
-	pCheck = new C4GUI::CheckBox(caGroupResolution.GetGridCell(0,1,3,4,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FULLSCREEN"), !Config.Graphics.Windowed);
-	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFullscreenChange));
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_FULLSCREEN_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pGroupResolution->AddElement(pCheck);
+	// fullscreen combobox
+	uint32_t wmax = 0;
+	for(int i = 0; i < 3; ++i)
+	{
+		pUseFont->GetTextExtent(GetWindowedName(i),w,q,true);
+		wmax = Max<int32_t>(w, wmax);
+	}
+	C4GUI::ComboBox * pCombo = new C4GUI::ComboBox(caGroupResolution.GetGridCell(0,1,3,4,wmax+40,C4GUI::ComboBox::GetDefaultHeight(), true));
+	pCombo->SetComboCB(new C4GUI::ComboBox_FillCallback<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnWindowedModeComboFill, &C4StartupOptionsDlg::OnWindowedModeComboSelChange));
+	pCombo->SetToolTip(LoadResStr("IDS_MSG_FULLSCREEN_DESC"));
+	pCombo->SetColors(C4StartupFontClr, C4StartupEditBGColor, C4StartupEditBorderColor);
+	pCombo->SetFont(pUseFont);
+	pCombo->SetDecoration(&(C4Startup::Get()->Graphics.fctContext));
+	pCombo->SetText(GetWindowedName());
+	pGroupResolution->AddElement(pCombo);
 	// --subgroup troubleshooting
 	pGroupTrouble = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,1,1,3));
 	pGroupTrouble->SetTitle(LoadResStrNoAmp("IDS_CTL_TROUBLE"));
@@ -1323,10 +1332,27 @@ void C4StartupOptionsDlg::OnGfxClrDepthCheck(C4GUI::Element *pCheckBox)
 	GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), sTitle.getData(), C4GUI::Ico_Notify, &Config.Startup.HideMsgGfxBitDepthChange);
 }
 
-void C4StartupOptionsDlg::OnFullscreenChange(C4GUI::Element *pCheckBox)
+const char * C4StartupOptionsDlg::GetWindowedName(int32_t mode /* = -1*/)
 {
-	Config.Graphics.Windowed = !static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
+	if(mode == -1)
+		mode = Config.Graphics.Windowed;
+	     if(mode == 0) return LoadResStr("IDS_MSG_FULLSCREEN");
+	else if(mode == 1) return LoadResStr("IDS_MSG_WINDOWED");
+	else if(mode == 2) return LoadResStr("IDS_MSG_AUTOWINDOWED");
+}
+
+void C4StartupOptionsDlg::OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller)
+{
+	pFiller->ClearEntries();
+	for(int32_t i = 0; i < 3; ++i)
+		pFiller->AddEntry(GetWindowedName(i), i);
+}
+
+bool C4StartupOptionsDlg::OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
+{
+	Config.Graphics.Windowed = idNewSelection;
 	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+	pForCombo->SetText(GetWindowedName(idNewSelection));
 }
 
 void C4StartupOptionsDlg::OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox)
