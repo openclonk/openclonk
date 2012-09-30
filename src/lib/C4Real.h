@@ -41,16 +41,13 @@
 #if defined(__MINGW32__) || (defined(_MSC_VER) && !defined(_WIN64))
 class m128_alignment_workaround
 {
-	char buf[sizeof(__m128)*2-1];
-	inline __m128 * gptr() const { return (__m128*)((intptr_t)buf-1 & ~(sizeof(__m128)-1)) + 1; }
-	__m128 * ptr;
+	int stor;
 public:
-	inline m128_alignment_workaround() : ptr(gptr()) {}
-	inline m128_alignment_workaround(const __m128 & r)  : ptr(gptr()) { *ptr = r; }
-	inline m128_alignment_workaround(const m128_alignment_workaround & o) : ptr(gptr()) { *ptr = *o.ptr; }
-	inline m128_alignment_workaround & operator = (const m128_alignment_workaround & o) { *ptr = *o.ptr; return *this; }
-	inline operator const __m128 &() const { return *ptr; }
-	// could implement operator new and new[] to be more memory-efficient.
+	inline m128_alignment_workaround() {}
+	inline m128_alignment_workaround(const __m128 & r)  { _mm_store_ss(reinterpret_cast<float*>(&stor), r); }
+	inline m128_alignment_workaround(const m128_alignment_workaround & o) { stor = o.stor; }
+	inline m128_alignment_workaround & operator = (const m128_alignment_workaround & o) { stor = o.stor; return *this; }
+	inline operator const __m128 () const { return _mm_load_ss(reinterpret_cast<const float*>(&stor)); }
 };
 #else
 typedef __m128 m128_alignment_workaround;
@@ -68,7 +65,11 @@ class C4Real
 	friend C4Real Atan2(const C4Real &, const C4Real &);
 
 public:
+#ifdef __MINGW32__
+	inline C4Real(float val = 0.0f) { static __m128 tmp; __asm__("movd %1,%%xmm0\n\tmovaps %%xmm0,(%0)"::"r"(&tmp),"r"(val):"%xmm0"); value = tmp; }
+#else
 	inline C4Real(float val = 0.0f) : value(_mm_set_ss(val)) { }
+#endif
 	inline C4Real(int32_t val, int32_t prec)
 	{
 		value = _mm_div_ss(_mm_cvtsi32_ss(value, val), _mm_cvtsi32_ss(value, prec));
@@ -125,7 +126,7 @@ public:
 	C4REAL_ARITHMETIC_OPERATOR(*)
 	C4REAL_ARITHMETIC_OPERATOR(/)
 #undef C4REAL_ARITHMETIC_OPERATOR
-	
+
 	inline C4Real operator + () const { return *this; }
 	inline C4Real operator - () const
 {
@@ -149,9 +150,14 @@ public:
 #undef C4REAL_COMPARISON_OPERATOR
 
 	// Conversion
+#ifdef __MINGW32__
+	inline operator int() const { int ret; static __m128 tmp; tmp = value; __asm__("cvtss2si (%1),%%eax\n\tmov %%eax,%0":"=r"(ret):"r"(&tmp):"%eax"); return ret; }
+	inline operator float() const { float ret; static __m128 tmp; tmp = value; __asm__("movaps (%1),%%xmm0\n\tmovd %%xmm0,%%eax\n\tmov %%eax,%0":"=r"(ret):"r"(&tmp):"%eax","%xmm0"); return ret; }
+#else
 	inline operator int() const { return _mm_cvtss_si32(value); }
-	inline operator long() const { return this->operator int(); }
 	inline operator float() const { float nrv; _mm_store_ss(&nrv, value); return nrv; }
+#endif
+	inline operator long() const { return this->operator int(); }
 
 	// Boolean operators
 	// Not using safe-bool-idiom here, because we already define conversions
@@ -174,7 +180,7 @@ public:
 
 	inline C4Real(StorageType rhs) : value(_mm_load_ss(reinterpret_cast<float*>(&rhs.v))) {}
 	inline operator StorageType() const { StorageType nrv; _mm_store_ss(reinterpret_cast<float*>(&nrv.v), value); return nrv; }
-	
+
 	public:
 	static const StorageType PI;
 	static const StorageType E;
