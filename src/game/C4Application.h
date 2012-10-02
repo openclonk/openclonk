@@ -81,8 +81,8 @@ public:
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
 	int CheckForUpdates;
 
-	int GetConfigWidth()  { return (Config.Graphics.Windowed == 2 && AppState == C4AS_Game) || Config.Graphics.Windowed ? Config.Graphics.WindowX : Config.Graphics.ResX; }
-	int GetConfigHeight() { return (Config.Graphics.Windowed == 2 && AppState == C4AS_Game) || Config.Graphics.Windowed ? Config.Graphics.WindowY : Config.Graphics.ResY; }
+	int GetConfigWidth()  { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowX : Config.Graphics.ResX; }
+	int GetConfigHeight() { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowY : Config.Graphics.ResY; }
 protected:
 	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_AfterGame, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;

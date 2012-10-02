@@ -1339,6 +1339,8 @@ const char * C4StartupOptionsDlg::GetWindowedName(int32_t mode /* = -1*/)
 	     if(mode == 0) return LoadResStr("IDS_MSG_FULLSCREEN");
 	else if(mode == 1) return LoadResStr("IDS_MSG_WINDOWED");
 	else if(mode == 2) return LoadResStr("IDS_MSG_AUTOWINDOWED");
+	assert(!"Requested name for config value which does not exist");
+	return "ERR: Unknown";
 }
 
 void C4StartupOptionsDlg::OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller)
@@ -1353,6 +1355,7 @@ bool C4StartupOptionsDlg::OnWindowedModeComboSelChange(C4GUI::ComboBox *pForComb
 	Config.Graphics.Windowed = idNewSelection;
 	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 	pForCombo->SetText(GetWindowedName(idNewSelection));
+	return true;
 }
 
 void C4StartupOptionsDlg::OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox)
