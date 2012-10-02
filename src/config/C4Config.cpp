@@ -721,7 +721,6 @@ void C4ConfigStartup::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
 	pComp->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
 	pComp->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
-	pComp->Value(mkNamingAdapt(NoSplash,                    "NoSplash",                   1));
 	pComp->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
 	pComp->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
 }

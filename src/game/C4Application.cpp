@@ -57,7 +57,6 @@ C4Application::C4Application():
 		IRCClient(ApplicationIRCClient),
 		QuitAfterGame(false),
 		CheckForUpdates(false),
-		NoSplash(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
 		AppState(C4AS_None),
@@ -222,7 +221,6 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"editor", no_argument, &isEditor, 1},
 			{"fullscreen", no_argument, &isEditor, 0},
 			{"debugwait", no_argument, &Game.DebugWait, 1},
-			{"nosplash", no_argument, &NoSplash, 1},
 			{"update", no_argument, &CheckForUpdates, 1},
 			{"noruntimejoin", no_argument, &Config.Network.NoRuntimeJoin, 1},
 			{"runtimejoin", no_argument, &Config.Network.NoRuntimeJoin, 0},
@@ -484,9 +482,7 @@ bool C4Application::PreInit()
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
 	if (fUseStartupDialog && !isEditor)
 	{
-		//Log(LoadResStr("IDS_PRC_INITLOADER"));
-		bool fUseBlackScreenLoader = !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
-		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
+		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
 	Game.SetInitProgress(fUseStartupDialog ? 10.0f : 1.0f);

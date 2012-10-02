@@ -74,8 +74,6 @@ public:
 
 	// set by ParseCommandLine
 	int isEditor;
-	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
-	int NoSplash;
 	// set by ParseCommandLine, for manually applying downloaded update packs
 	StdStrBuf IncomingUpdate;
 	// set by ParseCommandLine, for manually invoking an update check by command line or url

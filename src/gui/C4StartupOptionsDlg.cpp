@@ -814,19 +814,13 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_MMTIMER_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetGeneral->AddElement(pCheck);
-	// startup video
-#ifdef _WIN32
-	pCheck = new BoolConfig(caSheetProgram.GetGridCell(0,1,4,7,-1,iCheckHgt, true), LoadResStr("IDS_MSG_STARTUPVIDEO"), NULL, &Config.Startup.NoSplash, true);
-	pCheck->SetToolTip(LoadResStr("IDS_MSG_STARTUPVIDEO_DESC"));
-	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pSheetGeneral->AddElement(pCheck);
-#endif
 	// reset configuration
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETCONFIG");
 	C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton> *pSmallBtn;
 	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
 	C4Rect rcResetBtn = caSheetProgram.GetGridCell(1,2,6,7, Min<int32_t>(iButtonWidth+iButtonHeight*4, caSheetProgram.GetInnerWidth()*2/5), SmallButton::GetDefaultButtonHeight(), true);
-	pSheetGeneral->AddElement(pSmallBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::OnResetConfigBtn, this));
+	pSmallBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::OnResetConfigBtn, this);
+	pSheetGeneral->AddElement(pSmallBtn);
 	pSmallBtn->SetToolTip(LoadResStr("IDS_DESC_RESETCONFIG"));
 
 	// --- page graphics

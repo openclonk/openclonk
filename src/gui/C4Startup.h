@@ -109,7 +109,6 @@ private:
 	static C4Startup *pInstance; // singleton instance
 	static DialogID eLastDlgID;
 	static StdCopyStrBuf sSubDialog; // subdialog to go into (e.g.: property sheet in options dialog)
-	static bool fFirstRun;
 
 	C4StartupDlg *pLastDlg, *pCurrDlg; // startup dlg that is currently shown, and dialog that was last shown
 
@@ -133,7 +132,6 @@ public:
 	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
 
 	static C4Startup *Get() { assert(pInstance); return pInstance; }
-	static bool WasFirstRun() { return fFirstRun; }
 };
 
 #endif // INC_C4Startup

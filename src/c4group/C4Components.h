@@ -132,8 +132,6 @@
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
 
-#define C4CFN_Splash          "Splash.ocv"
-
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"
 #define C4CFN_TempSky         "~Sky.tmp"

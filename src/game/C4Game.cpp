@@ -376,7 +376,7 @@ bool C4Game::Init()
 				{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 			// init loader
-			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+			if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader))
 				{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -442,7 +442,7 @@ bool C4Game::Init()
 			{ LogFatal(LoadResStr("IDS_PRC_ERREXTRA")); return false; }
 
 		// init loader
-		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader, false))
+		if (!Application.isEditor && !GraphicsSystem.InitLoaderScreen(C4S.Head.Loader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 
 		// Init network
