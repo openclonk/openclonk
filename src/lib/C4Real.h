@@ -98,8 +98,7 @@ public:
 		// unfortunately, there is no _mm_mod_ss. The trick is to abuse the 23 bit significancy by adding (or substracting) a value, which will leave the result truncated. We can work with that
 		__m128 div = _mm_div_ss(lhv, rhv);
 		// round
-		__m128 sig = _mm_or_ps(sign, float_hexconst(0x4b000000)); // generate (sign?+:-)2^23
-		__m128 trunc = _mm_sub_ps(_mm_add_ps(div, sig), sig);
+		__m128 trunc = _mm_sub_ps(_mm_add_ps(div, float_hexconst(0x4b000000)), float_hexconst(0x4b000000)); // add and resubstract 2^23
 		// rounding hacks
 		trunc = _mm_add_ps(trunc, _mm_and_ps(_mm_cmpgt_ps(trunc, div), float_hexconst(0xbf800000))); // conditionally substract 1
 		// finish calc and reinclude sign
