@@ -17,7 +17,7 @@ local magic_number;
 
 static const axe_swing_time = 30;
 
-private func Hit(int x, int y)
+private func Hit(num x, num y)
 {
 	StonyObjectHit(x,y);
 	return 1;
@@ -45,7 +45,7 @@ public func GetCarrySpecial(clonk)
 	return carry_bone;
 }
 
-public func ControlUseStart(object clonk, int iX, int iY)
+public func ControlUseStart(object clonk, num iX, num iY)
 {
 	// Can clonk use the axe?
 	if (!clonk->IsWalking() && !clonk->IsJumping())
@@ -156,7 +156,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 protected func HoldingEnabled() { return GetEffect("IntAxe", this); }
 
-func ControlUseHolding(object clonk, int new_x, int new_y)
+func ControlUseHolding(object clonk, num new_x, num new_y)
 {
 	// Can clonk use axe?
 	if (!clonk->IsWalking() || GetXDir() != 0)
@@ -271,13 +271,13 @@ func FxIntSplitStop(object clonk, effect, int temp)
 	if (this->Contained() == clonk) Reset(clonk);
 }
 
-func ControlUseStop(object clonk, int ix, int iy)
+func ControlUseStop(object clonk, num ix, num iy)
 {
 	Reset(clonk);
 	return true;
 }
 
-protected func ControlUseCancel(object clonk, int ix, int iy)
+protected func ControlUseCancel(object clonk, num ix, num iy)
 {
 	Reset(clonk);
 	return true;

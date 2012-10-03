@@ -1,12 +1,12 @@
 
 
-global func BlueExplode(int level)
+global func BlueExplode(num level)
 {
 	// Shake the viewport.
 	ShakeViewPort(level, GetX(), GetY());
 
 	// Sound must be created before object removal, for it to be played at the right position.
-	var grade = BoundBy(level / 10 - 1, 1, 3);
+	var grade = BoundBy(Int(level / 10 - 1), 1, 3);
 	Sound(Format("Blast%d", grade), false);
 
 	// Explosion parameters.
@@ -26,7 +26,7 @@ global func BlueExplode(int level)
 	return;
 }
 
-global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
+global func DoBlueExplosion(float x, float y, num level, object inobj, int cause_plr, object layer)
 {
 	// Container to ContainBlast
 	var container = inobj;
@@ -61,7 +61,7 @@ global func DoBlueExplosion(int x, int y, int level, object inobj, int cause_plr
 	return true;
 }
 
-global func BlueExplosionEffect(int level, int x, int y)
+global func BlueExplosionEffect(num level, float x, float y)
 {
 	// Blast particle.
 	CreateParticle("Blast", x, y, 0, 0, level * 10, RGB(0,25,255));
@@ -85,7 +85,7 @@ global func BlueExplosionEffect(int level, int x, int y)
 	return;
 }
 
-global func BlastObjectsBlue(int x, int y, int level, object container, int cause_plr, object layer)
+global func BlastObjectsBlue(float x, float y, num level, object container, int cause_plr, object layer)
 {
 	var obj;
 	

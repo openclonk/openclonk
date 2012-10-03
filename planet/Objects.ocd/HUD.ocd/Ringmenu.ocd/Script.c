@@ -108,7 +108,7 @@ public func AddItem(new_item, int amount, extra)
 }
 
 // selects by dx,dy and alt=alternative selection
-func OnMouseClick(int dx, int dy, bool alt)
+func OnMouseClick(num dx, num dy, bool alt)
 {
 	var item_count=GetLength(menu_icons);
 	if(!item_count)
@@ -162,7 +162,7 @@ func Show()
 	shown = true;
 }
 
-public func UpdateCursor(int dx, int dy)
+public func UpdateCursor(num dx, num dy)
 {
 	if(shown)
 	{

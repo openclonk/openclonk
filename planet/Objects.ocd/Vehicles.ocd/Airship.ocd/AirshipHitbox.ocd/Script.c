@@ -4,7 +4,7 @@ local parent;
 
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage(int change)
+public func Damage(num change)
 {
 	//forward the damage to airship parent
 	parent->DoDamage(change);	

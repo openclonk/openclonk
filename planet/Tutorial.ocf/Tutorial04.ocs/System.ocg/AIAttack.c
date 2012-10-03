@@ -1,7 +1,7 @@
 #appendto Clonk
 
 
-protected func AI2_Attack(object clonk, int x, int y, object target)
+protected func AI2_Attack(object clonk, num x, num y, object target)
 {
 
 

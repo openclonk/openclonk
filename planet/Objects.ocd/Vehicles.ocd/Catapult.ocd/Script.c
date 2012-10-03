@@ -86,22 +86,22 @@ public func ControlUseAltStart(object clonk)
 
 public func HoldingEnabled()	{	return true;	}
 
-public func ControlUseAnyHolding(object clonk, int x, int y)
+public func ControlUseAnyHolding(object clonk, num x, num y)
 {
 	ArmAnimation(x,y);
 }
 
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object clonk, num x, num y)
 {
 	ControlUseAnyHolding(clonk,x,y);
 }
 
-public func ControlUseAltHolding(object clonk, int x, int y)
+public func ControlUseAltHolding(object clonk, num x, num y)
 {
 	ControlUseAnyHolding(clonk,x,y);
 }
 
-public func DefinePower(int x, int y)
+public func DefinePower(num x, num y)
 {
 	var angle = Angle(0,0,x,y);
 	
@@ -118,23 +118,23 @@ public func DefinePower(int x, int y)
 	return power;
 }
 
-public func ArmAnimation(int x, int y)
+public func ArmAnimation(num x, num y)
 {
 	var power = DefinePower(x,y);
 	SetAnimationPosition(aim_anim, Anim_Const(759 - (power * 759 / 100)));
 }
 
-public func ControlUseStop(object clonk, int x, int y)
+public func ControlUseStop(object clonk, num x, num y)
 {
 	DoFire(clonk,DefinePower(x,y),0);
 }
 
-public func ControlUseAltStop(object clonk, int x, int y)
+public func ControlUseAltStop(object clonk, num x, num y)
 {
 	DoFire(clonk,DefinePower(x,y),1);
 }
 
-public func ContainedUse(object clonk, int x, int y)
+public func ContainedUse(object clonk, num x, num y)
 {
 	DoFire(clonk, 70, nil);
 }

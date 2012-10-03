@@ -170,7 +170,7 @@ protected func OnGuideMessageRemoved(int plr, int index)
 
 /*-- Target control --*/
 
-private func MakeTarget(int x, int y, bool flying)
+private func MakeTarget(float x, float y, bool flying)
 {
 	if (flying == nil)
 		var balloon = false;

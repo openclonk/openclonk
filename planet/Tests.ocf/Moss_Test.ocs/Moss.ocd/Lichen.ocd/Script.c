@@ -37,7 +37,11 @@ public func Incineration()
 	return;
 }
 
+<<<<<<< local
+public func Damage(num change, int byplayer)
+=======
 public func Damage()
+>>>>>>> other
 {
 	if (GetDamage() > (size/4)) Destroy();
 }

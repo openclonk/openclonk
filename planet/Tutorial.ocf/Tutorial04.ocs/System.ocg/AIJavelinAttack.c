@@ -46,7 +46,7 @@ public func AI_CanHitTarget(object target)
 	return false;
 }
 
-protected func AI_JavelinAttack(object clonk, int x, int y, object target)
+protected func AI_JavelinAttack(object clonk, num x, num y, object target)
 {
 	clonk->AI_Log("Javelin attack on %s", target->GetName());
 	
@@ -115,7 +115,7 @@ protected func FxAI_JavelinAimStop(object clonk, effect, int reason, bool tempor
 
 //v = "muzzle speed" (speed at which the projectile is launched)
 //returns an array of x, y or x, y, t
-private func AI_AimPos(int x, int y, int v, bool lob, bool t)
+private func AI_AimPos(num x, num y, num v, bool lob, bool t)
 {
 	var g = GetGravity(); //FnGetGravity() multiplies actual gravity by 100
 	var root = (v**4 - g*(g*x*x - 2*y*v*v));

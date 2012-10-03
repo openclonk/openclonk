@@ -9,7 +9,7 @@
 public func IsConstructor() { return true; }
 
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	// Is the clonk able to construct?
 	if(clonk->GetProcedure() != "WALK")
@@ -37,7 +37,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func HoldingEnabled() { return true; }
 
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object clonk, num x, num y)
 {
 	// Is the clonk still able to construct?
 	if (clonk->GetProcedure() != "WALK")
@@ -112,7 +112,7 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 }
 
 // Called by Control2Effect
-func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, int x, int y, int strength, bool repeat, bool release)
+func FxControlConstructionPreviewControl(object clonk, effect, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	if (ctrl != CON_Aim)
 	{
@@ -151,7 +151,7 @@ func FxControlConstructionPreviewStop(object clonk, effect, int reason, bool tem
 
 /* Construction */
 
-func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir, object stick_to)
+func CreateConstructionSite(object clonk, id structure_id, num x, num y, int dir, object stick_to)
 {
 	// Only when the clonk is standing and outdoors
 	if (clonk->GetAction() != "Walk")

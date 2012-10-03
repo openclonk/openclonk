@@ -4215,14 +4215,14 @@ bool C4Object::IsInLiquidCheck()
 	return GBackLiquid(GetX(),GetY()+Def->Float*Con/FullCon-1);
 }
 
-void C4Object::SetRotation(int32_t nr)
+void C4Object::SetRotation(C4Real nr)
 {
 	while (nr<0) nr+=360; nr%=360;
 	// remove solid mask
 	if (pSolidMaskData) pSolidMaskData->Remove(false);
 	// set rotation
-	r=nr;
-	fix_r=itofix(nr);
+	r=fixtoi(nr);
+	fix_r=nr;
 	// Update face
 	UpdateFace(true);
 }

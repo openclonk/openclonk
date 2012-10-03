@@ -7,7 +7,7 @@
 
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
 // Returns the number of iterations needed, or -1 when the placement failed.
-global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wdt, int hgt, bool onsf, bool nostuck)
+global func PlaceObjects(id id, int amount, string mat_str, num x, num y, num wdt, num hgt, bool onsf, bool nostuck)
 {
 	var i, j;
 	var rndx, rndy, obj;
@@ -86,7 +86,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	return j;
 }
 
-global func CastObjects(id def, int am, int lev, int x, int y, int angs, int angw)
+global func CastObjects(id def, int am, num lev, num x, num y, num angs, num angw)
 {
 	if (!angw)
 		angw = 360;
@@ -105,7 +105,7 @@ global func CastObjects(id def, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
-global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int angw)
+global func CastPXS(string mat, int am, num lev, num x, num y, num angs, num angw)
 {
 	if (!angw)
 		angw = 360;
@@ -117,7 +117,7 @@ global func CastPXS(string mat, int am, int lev, int x, int y, int angs, int ang
 	return;
 }
 
-global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, int prtdist, int a, int b0, int b1, int ydir)
+global func DrawParticleLine (string particle, num x0, num y0, num x1, num y1, num prtdist, num a, num b0, num b1, num ydir)
 {
 	// Right parameters?
 	if (!prtdist)
@@ -149,7 +149,7 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 	@param width The width of the forest
 	@param foreground Will roughly make every third instance of plants[0] foreground
 */
-global func PlaceForest(array plants, int x, int y, int width, bool foreground)
+global func PlaceForest(array plants, num x, num y, num width, num foreground)
 {
 	// Parameter check
 	if (GetLength(plants) == 0) return;

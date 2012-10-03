@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>float<title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>float</rtype>
+			<params>
+				<param><type>int</type><name>i</name><desc>Die Ganzzahl, die in eine Fließkommazahl konvertiert werden soll.</desc></param>
+			</params>
+		</syntax>
+		<desc>Wandelt eine Ganzzahl in eine Fließkommazahl um. Ist der Wert von <em>i</em> nicht exakt darstellbar, wird der darstellbare Wert zurückgegeben, der die geringste Abweichung vom tatsächlichen Wert hat.</desc>
+		<examples>
+			<example>
+				<code>float(2)</code>
+				<text>Gibt die Zahl 2.0 zurück.</text>
+			</example>
+		</examples>
+	</func>
+	<related>
+		<funclink>int</funclink>
+		<funclink>C4Id</funclink>
+	</related>
+	<author>isilkor</author><date>2010-07-10</date>
+</funcs>

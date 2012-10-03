@@ -91,7 +91,7 @@ private func FillBarrel(string szMat)
 	szLiquid = szMat;
 }
 
-private func EmptyBarrel(int angle, int strength, object clonk)
+private func EmptyBarrel(float angle, int strength, object clonk)
 {
 	if (!angle)
 		angle = 0;
@@ -118,7 +118,7 @@ private func UpdateBarrel()
 	return;
 }
 
-public func ControlUse(object clonk, int iX, int iY)
+public func ControlUse(object clonk, num iX, num iY)
 {
 	var AimAngle = Angle(0, 0, iX, iY);
 	if (iVolume >= 1)

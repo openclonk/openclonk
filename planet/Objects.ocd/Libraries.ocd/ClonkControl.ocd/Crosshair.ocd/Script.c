@@ -140,7 +140,7 @@ public func IsAiming()
 	return aiming;
 }
 
-public func Aim(int ctrl, object clonk, int strength, int repeat, int release)
+public func Aim(int ctrl, object clonk, num strength, int repeat, int release)
 {
 	// start (stealth) aiming
 	if(!GetEffect("Move",this))

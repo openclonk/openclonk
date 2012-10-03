@@ -1,5 +1,5 @@
 
-public func Set(int sx, int sy, int ex, int ey) {
+public func Set(num sx, num sy, num ex, num ey) {
 	//SetObjectBlitMode(GFX_BLIT_Additive);
 	SetAction("Vis");
 	SetPosition(sx,sy);

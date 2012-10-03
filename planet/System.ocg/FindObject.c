@@ -43,27 +43,27 @@ global func Find_ID(id def)
 	return [C4FO_ID, def];
 }
 
-global func Find_InRect(int x, int y, int wdt, int hgt)
+global func Find_InRect(float x, float y, num wdt, num hgt)
 {
 	return [C4FO_InRect, GetX() + x, GetY() + y, wdt, hgt];
 }
 
-global func Find_AtPoint(int x, int y)
+global func Find_AtPoint(float x, float y)
 {
 	return [C4FO_AtPoint, GetX() + x, GetY() + y];
 }
 
-global func Find_AtRect(int x, int y, int wdt, int hgt)
+global func Find_AtRect(float x, float y, num wdt, num hgt)
 {
 	return [C4FO_AtRect, GetX() + x, GetY() + y, wdt, hgt];
 }
 
-global func Find_OnLine(int x, int y, int x2, int y2)
+global func Find_OnLine(float x, float y, float x2, float y2)
 {
 	return [C4FO_OnLine, GetX() + x, GetY() + y, GetX() + x2, GetY() + y2];
 }
 
-global func Find_Distance(int r, int x, int y)
+global func Find_Distance(num r, float x, float y)
 {
 	return [C4FO_Distance, GetX() + x, GetY() + y, r];
 }
@@ -183,7 +183,7 @@ global func Sort_Multiple()
 	return result;
 }
 
-global func Sort_Distance(int x, int y)
+global func Sort_Distance(float x, float y)
 {
 	return [C4SO_Distance, GetX() + x, GetY() + y];
 }

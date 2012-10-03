@@ -18,7 +18,7 @@ func Hit()
 }
 
 // Item activation
-func ControlUseStart(object clonk, int x, int y)
+func ControlUseStart(object clonk, num x, num y)
 {
 	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
 	var clnk_proc = clonk->GetProcedure();
@@ -41,7 +41,7 @@ func ControlUseStart(object clonk, int x, int y)
 
 func HoldingEnabled() { return true; }
 
-func FxIntBridgeStart(object clonk, proplist effect, int temp, int x, int y)
+func FxIntBridgeStart(object clonk, proplist effect, int temp, num x, num y)
 {
 	if (temp)
 		return FX_OK;
@@ -121,7 +121,7 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 	return FX_OK;
 }
 
-func ControlUseHolding(object clonk, int new_x, int new_y)
+func ControlUseHolding(object clonk, num new_x, num new_y)
 {
 	var effect = GetEffect("IntBridge", clonk);
 	if (!effect)
@@ -132,13 +132,13 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 	return true;
 }
 
-public func ControlUseStop(object clonk, int x, int y)
+public func ControlUseStop(object clonk, num x, num y)
 {
 	LoamDone(clonk);
 	return true;
 }
 
-public func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, num x, num y)
 {
 	LoamDone(clonk);
 	return true;

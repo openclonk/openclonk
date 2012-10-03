@@ -33,12 +33,12 @@ func Initialize()
 }
 
 
-func AddPowerProducer(object p, int a)
+func AddPowerProducer(object p, num a)
 {
 	return AddPowerLink(p, a);
 }
 
-func AddPowerConsumer(object p, int a)
+func AddPowerConsumer(object p, num a)
 {
 	
 	// possibly sleeping?
@@ -77,7 +77,7 @@ func RemovePowerLink(object p)
 	return AddPowerLink(p, 0);
 }
 
-func AddPowerLink(object p, int a, bool surpress_balance_check)
+func AddPowerLink(object p, num a, bool surpress_balance_check)
 {
 	var n = {obj = p, amount = a};
 	
@@ -299,7 +299,7 @@ public func GetPowerBalance()
 	return power_balance;
 }
 
-public func IsPowerAvailable(object obj, int amount)
+public func IsPowerAvailable(object obj, num amount)
 {
 	// ignore object for now
 	return power_balance > amount;
@@ -446,7 +446,7 @@ global func IsPowerAvailable(int amount)
 }
 
 // turns the object into a power consumer
-global func MakePowerConsumer(int amount /* the amount of power to request, 0 to turn off */)
+global func MakePowerConsumer(num amount /* the amount of power to request, 0 to turn off */)
 {
 	if(!this) return false;
 	Library_Power->Init();

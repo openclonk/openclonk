@@ -34,7 +34,7 @@ local ParticleCount;
 
 local grabber;
 
-public func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, num x, num y)
 {
 	if(!clonk->GetContact(-1)) return true;
 	// Unroll dir
@@ -338,7 +338,7 @@ func UpdateLines()
 static const Ropeladder_Segment_LeftXOffset = 200;
 static const Ropeladder_Segment_RightXOffset = -100;
 
-func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int oldangle)
+func GetRopeConnetPosition(int index, bool fRight, bool fEnd, float angle, int oldangle)
 {
 	if(SwitchRopes && index == 1 && fEnd == 0) fRight = !fRight;
 	if(!(index == 1 && fEnd == 0) && MirrorSegments == -1) fRight = !fRight;
@@ -396,7 +396,7 @@ func GetRopeConnetPosition(int index, bool fRight, bool fEnd, int angle, int old
 	}
 }
 
-func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
+func SetLineTransform(obj, num r, num xoff, num yoff, num length, int layer, int MirrorSegments) {
 	if(!MirrorSegments) MirrorSegments = 1;
 	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
 	// set matrix values

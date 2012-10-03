@@ -105,7 +105,7 @@ func Set(to, angle, offset, visibility, size)
 	this.Visibility = visibility;
 }
 
-func Rotate (int r, int xoff, int yoff, size) {
+func Rotate (num r, num xoff, num yoff, size) {
   var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
   size = size ?? 1000;
   // set matrix values

@@ -6,7 +6,7 @@
 */
 	
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, num x, num y, bool box)
 {
 	// if already activated, nothing (so, throw)
 	if(GetEffect("FuseBurn", this))

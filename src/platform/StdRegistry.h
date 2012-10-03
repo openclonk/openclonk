@@ -82,6 +82,7 @@ public:
 	virtual void Byte(uint8_t &rByte);
 	virtual void Boolean(bool &rBool);
 	virtual void Character(char &rChar);
+	virtual void Float(float &val);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
@@ -142,6 +143,7 @@ public:
 	virtual void Byte(uint8_t &rByte);
 	virtual void Boolean(bool &rBool);
 	virtual void Character(char &rChar);
+	virtual void Float(float &val);
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);

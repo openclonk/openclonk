@@ -14,7 +14,7 @@ protected func JavelinStrength()
 	return 14;
 }
 
-public func DoThrow(object clonk, int angle)
+public func DoThrow(object clonk, float angle)
 {
 	var javelin=TakeObject();
 	if (king_size)

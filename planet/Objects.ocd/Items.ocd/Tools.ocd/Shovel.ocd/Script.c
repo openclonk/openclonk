@@ -16,7 +16,7 @@ local DigX, DigY;
 public func IsDigging() { return fDigging; }
 
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	AddEffect("ShovelDig",clonk,1,1,this);
 //	ControlUseHolding(clonk, x, y);
@@ -25,7 +25,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 public func HoldingEnabled() { return true; }
 
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object clonk, num x, num y)
 {
 	DigX = x;
 	DigY = y;
@@ -34,12 +34,12 @@ public func ControlUseHolding(object clonk, int x, int y)
 	return true;
 }
 
-public func ControlUseCancel(object clonk, int x, int y)
+public func ControlUseCancel(object clonk, num x, num y)
 {
 	ControlUseStop(clonk, x, y);
 }
 
-public func ControlUseStop(object clonk, int x, int y)
+public func ControlUseStop(object clonk, num x, num y)
 {
 	fDigging = 0;
 	RemoveEffect("ShovelDig",clonk);
@@ -102,7 +102,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	if(fDigging)
 	{
 		// Adjust speed at current animation position
-		var speed = clonk.ActMap.Dig.Speed*2;
+		var speed = clonk.ActMap.Dig.Speed*2.0;
 
 		var iAnimation = GetEffect("IntDig", clonk).var1;
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");

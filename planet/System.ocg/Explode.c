@@ -9,7 +9,7 @@
 
 /*-- Explosion --*/
 
-global func Explode(int level, bool silent)
+global func Explode(num level, bool silent)
 {
 	if(!this) FatalError("Function Explode must be called from object context");
 
@@ -42,7 +42,7 @@ global func Explode(int level, bool silent)
 	exploding_id->DoExplosion(x, y, level, container, cause_plr, layer);
 }
 
-global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, object layer)
+global func DoExplosion(float x, float y, num level, object inobj, int cause_plr, object layer)
 {
 	// Container to ContainBlast
 	var container = inobj;
@@ -77,7 +77,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	return true;
 }
 
-global func ExplosionEffect(int level, int x, int y)
+global func ExplosionEffect(num level, float x, float y)
 {
 	// Blast particle.
 	CreateParticle("Blast", x, y, 0, 0, level * 10, RGBa(255, 255, 255, 100));
@@ -104,7 +104,7 @@ global func ExplosionEffect(int level, int x, int y)
 /*-- Blast objects & shockwaves --*/
 
 // Damage and hurl objects away.
-global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer)
+global func BlastObjects(float x, float y, num level, object container, int cause_plr, object layer)
 {
 	var obj;
 	
@@ -212,7 +212,7 @@ global func BlastObject(int Level, CausedBy)
 		Incinerate(Level, CausedBy);
 }
 
-global func BlastObjectsShockwaveCheck(int x, int y)
+global func BlastObjectsShockwaveCheck(float x, float y)
 {
 	var def = GetID();
 	// Some special cases, which won't go into FindObjects.
@@ -229,7 +229,7 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 	// This will catch the most cases in which multiple clonks throw flints at the same time.
 	if (GetCategory() & C4D_Object)
 	{
-		if (GetX() == x && GetY() == y) return false;
+		if (Distance(GetX(), GetY(), x, y) < 0.7) return false;
 		if (GetYDir() > 5) return false;
 	}
 	// No stuck objects.
@@ -241,7 +241,7 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 
 /*-- Shake view port --*/
 
-global func ShakeViewPort(int level, int x_off, int y_off)
+global func ShakeViewPort(num level, float x_off, float y_off)
 {
 	if (level <= 0)
 		return false;
@@ -323,7 +323,7 @@ global func FxShakeEffectStop()
 
 /*-- Smoke trails --*/
 
-global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, bool noblast) {
+global func CreateSmokeTrail(num strength, float angle, float x, float y, int color, bool noblast) {
 	x += GetX();
 	y += GetY();
 	var effect = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, strength, angle, x, y);
@@ -393,7 +393,7 @@ global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 
 /*-- Fireworks --*/
 
-global func Fireworks(int color, int x, int y)
+global func Fireworks(int color, float x, float y)
 {
 	if (!color)
 		color = HSL(Random(8) * 32, 255, 127);

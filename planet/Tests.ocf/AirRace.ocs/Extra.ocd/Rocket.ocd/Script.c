@@ -28,7 +28,7 @@ public func SetShooter(object plane)
 	return;
 }
 
-public func Launch(object plane, int angle)
+public func Launch(object plane, float angle)
 {
 	var rocket = TakeObject();
 	rocket->SetProperty("Collectible",0);

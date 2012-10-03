@@ -8,7 +8,7 @@
 
 /*-- Disaster Control --*/
 
-public func SetChance(int chance)
+public func SetChance(num chance)
 {
 	if (this != Volcano)
 		return;
@@ -54,7 +54,7 @@ protected func FxIntVolcanoControlTimer(object target, proplist effect, int time
 	return FX_OK;
 }
 
-global func LaunchVolcano(int x, int y, int strength, string material, int angle)
+global func LaunchVolcano(int x, int y, int strength, string material, float angle)
 {
 	var volcano = CreateObject(Volcano);
 	return volcano->Launch(x, y, strength, material, angle);
@@ -68,7 +68,7 @@ local angle; // Direction of the volcano.
 local oldx, oldy; // Old coordinates.
 
 // returns true on a succesful volcano launch, false otherwise.
-public func Launch(int x, int y, int strength, string material, int angle)
+public func Launch(int x, int y, int strength, string material, float angle)
 {
 	// Initial coordinates of the volcano.
 	SetPosition(x, y);

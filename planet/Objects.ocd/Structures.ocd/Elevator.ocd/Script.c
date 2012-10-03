@@ -7,7 +7,7 @@ local case, rope;
 local partner, slave;
 
 // Frees a rectangle for the case
-func CreateShaft(int length)
+func CreateShaft(num length)
 {
 	// Move the case out of the way
 	case->SetPosition(case->GetX(), GetY()-10);

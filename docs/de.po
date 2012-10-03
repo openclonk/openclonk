@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-07 21:10+0200\n"
+"POT-Creation-Date: 2012-10-03 23:26+0200\n"
 "PO-Revision-Date: 2012-05-06 15:35+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
@@ -150,6 +150,7 @@ msgstr "Scripte"
 #: sdk/content.xml.in:81(emlink)
 #: sdk/script/fn/SetProperty.xml:9(subcat)
 #: sdk/script/fn/GetProperty.xml:9(subcat)
+#: sdk/script/fn/GetProperties.xml:9(subcat)
 #: sdk/particle/index.xml:161(h)
 #: sdk/definition/properties.xml:6(title)
 #: sdk/definition/properties.xml:7(h)
@@ -546,6 +547,8 @@ msgstr "Potenziert zwei Werte"
 #: sdk/script/operatoren.xml:243(col)
 #: sdk/script/operatoren.xml:250(col)
 #: sdk/script/operatoren.xml:257(col)
+#: sdk/script/operatoren.xml:264(col)
+#: sdk/script/operatoren.xml:271(col)
 msgid "postfix"
 msgstr "postfix"
 
@@ -557,9 +560,9 @@ msgstr "postfix"
 #: sdk/script/operatoren.xml:118(col)
 #: sdk/script/operatoren.xml:125(col)
 #: sdk/script/operatoren.xml:132(col)
-#: sdk/script/operatoren.xml:181(col)
-#: sdk/script/operatoren.xml:188(col)
 #: sdk/script/operatoren.xml:195(col)
+#: sdk/script/operatoren.xml:202(col)
+#: sdk/script/operatoren.xml:209(col)
 msgid "int, int/int"
 msgstr "int, int/int"
 
@@ -675,6 +678,8 @@ msgstr "gibt zurück, ob der erste Wert größer oder gleich dem zweiten ist."
 
 #: sdk/script/operatoren.xml:163(col)
 #: sdk/script/operatoren.xml:170(col)
+#: sdk/script/operatoren.xml:177(col)
+#: sdk/script/operatoren.xml:184(col)
 msgid "9l"
 msgstr "9l"
 
@@ -688,6 +693,8 @@ msgstr "gibt zurück, ob zwei Werte gleich sind"
 
 #: sdk/script/operatoren.xml:167(col)
 #: sdk/script/operatoren.xml:174(col)
+#: sdk/script/operatoren.xml:181(col)
+#: sdk/script/operatoren.xml:188(col)
 msgid "bool, any/any"
 msgstr "bool, any/any"
 
@@ -699,266 +706,295 @@ msgstr "!="
 msgid "Returns whether a is unequal to b."
 msgstr "gibt zurück, ob zwei Werte nicht gleich sind."
 
-#: sdk/script/operatoren.xml:177(col)
+#: sdk/script/operatoren.xml:178(col)
+#, fuzzy
+msgid "==="
+msgstr "=="
+
+#: sdk/script/operatoren.xml:179(col)
+#, fuzzy
+msgid "Returns whether a and b refer to the same thing."
+msgstr "gibt zurück, ob der erste Wert größer als der zweite ist."
+
+#: sdk/script/operatoren.xml:185(col)
+#, fuzzy
+msgid "!=="
+msgstr "=="
+
+#: sdk/script/operatoren.xml:186(col)
+#, fuzzy
+msgid "Returns whether a and b do not refer to the same thing."
+msgstr "gibt zurück, ob der erste Wert größer als der zweite ist."
+
+#: sdk/script/operatoren.xml:191(col)
 msgid "8l"
 msgstr "8l"
 
-#: sdk/script/operatoren.xml:178(col)
+#: sdk/script/operatoren.xml:192(col)
 msgid "&amp;"
 msgstr "&amp;"
 
-#: sdk/script/operatoren.xml:179(col)
+#: sdk/script/operatoren.xml:193(col)
 msgid "Performs a bitwise AND operation."
 msgstr "führt ein bitweises And aus"
 
-#: sdk/script/operatoren.xml:184(col)
-#: sdk/script/operatoren.xml:191(col)
+#: sdk/script/operatoren.xml:198(col)
+#: sdk/script/operatoren.xml:205(col)
 msgid "6l"
 msgstr "6l"
 
-#: sdk/script/operatoren.xml:185(col)
+#: sdk/script/operatoren.xml:199(col)
 msgid "^"
 msgstr "^"
 
-#: sdk/script/operatoren.xml:186(col)
+#: sdk/script/operatoren.xml:200(col)
 msgid "Performs a bitwise XOR operation."
 msgstr "führt ein bitweises XOr aus"
 
-#: sdk/script/operatoren.xml:192(col)
+#: sdk/script/operatoren.xml:206(col)
 msgid "|"
 msgstr "|"
 
-#: sdk/script/operatoren.xml:193(col)
+#: sdk/script/operatoren.xml:207(col)
 msgid "Performs a bitwise OR operation."
 msgstr "führt ein bitweises Or aus"
 
-#: sdk/script/operatoren.xml:198(col)
+#: sdk/script/operatoren.xml:212(col)
 msgid "5l"
 msgstr "5l"
 
-#: sdk/script/operatoren.xml:199(col)
+#: sdk/script/operatoren.xml:213(col)
 msgid "&amp;&amp;"
 msgstr "&amp;&amp;"
 
-#: sdk/script/operatoren.xml:200(col)
+#: sdk/script/operatoren.xml:214(col)
 msgid "Performs a logical AND operation."
 msgstr "führt ein logisches And aus"
 
-#: sdk/script/operatoren.xml:202(col)
-#: sdk/script/operatoren.xml:209(col)
 #: sdk/script/operatoren.xml:216(col)
+#: sdk/script/operatoren.xml:223(col)
+#: sdk/script/operatoren.xml:230(col)
 msgid "any, any/any"
 msgstr "any, any/any"
 
-#: sdk/script/operatoren.xml:205(col)
+#: sdk/script/operatoren.xml:219(col)
 msgid "4l"
 msgstr "4l"
 
-#: sdk/script/operatoren.xml:206(col)
+#: sdk/script/operatoren.xml:220(col)
 msgid "||"
 msgstr "||"
 
-#: sdk/script/operatoren.xml:207(col)
+#: sdk/script/operatoren.xml:221(col)
 msgid "Performs a logical OR operation."
 msgstr "führt ein logisches Or aus"
 
-#: sdk/script/operatoren.xml:212(col)
+#: sdk/script/operatoren.xml:226(col)
 msgid "3l"
 msgstr "3l"
 
-#: sdk/script/operatoren.xml:213(col)
+#: sdk/script/operatoren.xml:227(col)
 msgid "??"
 msgstr "??"
 
-#: sdk/script/operatoren.xml:214(col)
+#: sdk/script/operatoren.xml:228(col)
 msgid "Returns the left-hand operand if the operand is not <code>nil</code>, or the right-hand operand otherwise."
 msgstr "Gibt den rechten Operanden zurück wenn der linke Operand <code>nil</code> ist, ansonsten den linken Operanden."
 
-#: sdk/script/operatoren.xml:219(col)
-#: sdk/script/operatoren.xml:226(col)
 #: sdk/script/operatoren.xml:233(col)
 #: sdk/script/operatoren.xml:240(col)
 #: sdk/script/operatoren.xml:247(col)
 #: sdk/script/operatoren.xml:254(col)
+#: sdk/script/operatoren.xml:261(col)
+#: sdk/script/operatoren.xml:268(col)
 msgid "2r"
 msgstr "2r"
 
-#: sdk/script/operatoren.xml:220(col)
+#: sdk/script/operatoren.xml:234(col)
 msgid "*="
 msgstr "*="
 
-#: sdk/script/operatoren.xml:221(col)
+#: sdk/script/operatoren.xml:235(col)
 msgid "Multiplies the preceeding variables by the following value."
 msgstr "vervielfacht die vorangestellte Variable mit dem nachgestellten Wert"
 
-#: sdk/script/operatoren.xml:223(col)
-#: sdk/script/operatoren.xml:230(col)
 #: sdk/script/operatoren.xml:237(col)
 #: sdk/script/operatoren.xml:244(col)
 #: sdk/script/operatoren.xml:251(col)
+#: sdk/script/operatoren.xml:258(col)
+#: sdk/script/operatoren.xml:265(col)
 msgid "reference, reference/int"
 msgstr "Referenz, Referenz/int"
 
-#: sdk/script/operatoren.xml:227(col)
+#: sdk/script/operatoren.xml:241(col)
 msgid "/="
 msgstr "/="
 
-#: sdk/script/operatoren.xml:228(col)
+#: sdk/script/operatoren.xml:242(col)
 msgid "Divides the preceeding variable by the following value."
 msgstr "teilt den Wert der vorangestellten Variable durch den nachgestellten Wert"
 
-#: sdk/script/operatoren.xml:234(col)
+#: sdk/script/operatoren.xml:248(col)
 msgid "%="
 msgstr "%="
 
-#: sdk/script/operatoren.xml:235(col)
+#: sdk/script/operatoren.xml:249(col)
 msgid "Sets the preceeding variable to the remainder of the devision of that variable by the following value."
 msgstr "Schreibt den Divisionrest der Division des Wertes vorangestellten Variable mit dem nachgestellten Wert in die Variable"
 
-#: sdk/script/operatoren.xml:241(col)
+#: sdk/script/operatoren.xml:255(col)
 msgid "+="
 msgstr "+="
 
-#: sdk/script/operatoren.xml:242(col)
+#: sdk/script/operatoren.xml:256(col)
 msgid "Increases the preceeding variable by the following value."
 msgstr "erhöht die vorangestellte Variable um den nachgestellten Wert"
 
-#: sdk/script/operatoren.xml:248(col)
+#: sdk/script/operatoren.xml:262(col)
 msgid "-="
 msgstr "-="
 
-#: sdk/script/operatoren.xml:249(col)
+#: sdk/script/operatoren.xml:263(col)
 msgid "Decreases the preeceding variable by the following value."
 msgstr "vermindert den Wert der vorangestellten Variable um den nachgestellten Wert"
 
-#: sdk/script/operatoren.xml:255(col)
+#: sdk/script/operatoren.xml:269(col)
 msgid "="
 msgstr "="
 
-#: sdk/script/operatoren.xml:256(col)
+#: sdk/script/operatoren.xml:270(col)
 msgid "Assigns the following value to the preceeding variable."
 msgstr "weist der vorangestellten Variable den nachgestellten Wert zu"
 
-#: sdk/script/operatoren.xml:258(col)
+#: sdk/script/operatoren.xml:272(col)
 msgid "reference, reference/any"
 msgstr "Referenz, Referenz/any"
 
-#: sdk/script/operatoren.xml:262(h)
+#: sdk/script/operatoren.xml:276(h)
 msgid "Explanation and examples:"
 msgstr "Erklärungen und Beispiele:"
 
-#: sdk/script/operatoren.xml:264(h)
+#: sdk/script/operatoren.xml:278(h)
 msgid "Postfix or prefix?"
 msgstr "Postfix oder prefix?"
 
-#: sdk/script/operatoren.xml:266(text)
+#: sdk/script/operatoren.xml:280(text)
 msgid "This property of an operator determines whether it is used <em>before</em> (pre) or <em>after</em> (post) its parameter."
 msgstr "Diese Eigenschaft eines Operators gibt an, ob er <em>vor</em>(pre) oder <em>nach</em>(post) seinem ersten Parameter steht."
 
-#: sdk/script/operatoren.xml:267(text)
+#: sdk/script/operatoren.xml:281(text)
 msgid "Prefix operators only have one parameter while postfix operators usually have two parameters (one preceeding and one following). See also <a href=\"#opppmm\">operators ++/--</a>."
 msgstr "Prefix - Operatoren haben immer nur einen Parameter (nach dem Operator), während Postfix - Operatoren in der Regel 2 Parameter haben, einen vor und einen danach. (siehe auch <a href=\"#opppmm\">Operatoren ++/--</a>)"
 
-#: sdk/script/operatoren.xml:268(h)
+#: sdk/script/operatoren.xml:282(h)
 msgid "Example 1:"
 msgstr "Beispiel 1:"
 
-#: sdk/script/operatoren.xml:272(h)
-#: sdk/script/operatoren.xml:281(h)
+#: sdk/script/operatoren.xml:286(h)
+#: sdk/script/operatoren.xml:295(h)
 #: sdk/script/BreakContinue.xml:25(h)
 msgid "Output:"
 msgstr "Ausgabe:"
 
-#: sdk/script/operatoren.xml:276(text)
+#: sdk/script/operatoren.xml:290(text)
 msgid "Addition, subtraction, multiplication, division, and similar form the group of postfix operators. They combine the two values preceeding and following the operator."
 msgstr "Plus, Minus, Multiplikation u.ä. Operatoren bilden die Klasse der Postfix - Operatoren. Es werden jeweils zwei Werte (die vor bzw. nach dem Operator stehen) verrechnet."
 
-#: sdk/script/operatoren.xml:277(h)
+#: sdk/script/operatoren.xml:291(h)
 msgid "Example 2:"
 msgstr "Beispiel 2:"
 
-#: sdk/script/operatoren.xml:285(text)
+#: sdk/script/operatoren.xml:299(text)
 msgid "Prefix operators are located before the value to which they are applied."
 msgstr "Bei diesen Operatoren handelt es sich um sogenannte Prefix - Operatoren. Sie stehen jeweils vor dem zu verarbeitenden Wert."
 
-#: sdk/script/operatoren.xml:287(h)
+#: sdk/script/operatoren.xml:301(h)
 msgid "Operators ++ and --"
 msgstr "Die Operatoren ++ und --"
 
-#: sdk/script/operatoren.xml:289(text)
+#: sdk/script/operatoren.xml:303(text)
 msgid "Operators ++ and -- exist as both postfix and prefix operators. The postfix version of these operators does not have a second parameter."
 msgstr "Die Operatoren ++ bzw. -- existierten sowohl als postfix- als auch als prefix-Operatoren. Dabei haben die postfix-Varianten noch die Besonderheit, dass sie keinen nachgestellten Wert benötigen."
 
-#: sdk/script/operatoren.xml:290(h)
+#: sdk/script/operatoren.xml:304(h)
 msgid "Example 1 (postfix):"
 msgstr "Beispiel: (postfix)"
 
-#: sdk/script/operatoren.xml:292(strong)
+#: sdk/script/operatoren.xml:306(strong)
 msgid "somevar++"
 msgstr "somevar++"
 
-#: sdk/script/operatoren.xml:294(h)
+#: sdk/script/operatoren.xml:308(h)
 msgid "Example 2 (prefix):"
 msgstr "Beispiel 2: (prefix)"
 
-#: sdk/script/operatoren.xml:296(strong)
+#: sdk/script/operatoren.xml:310(strong)
 msgid "++somevar"
 msgstr "++somevar"
 
-#: sdk/script/operatoren.xml:298(text)
+#: sdk/script/operatoren.xml:312(text)
 msgid "These two examples are almost identical. In both cases the value of <code>somevar</code> is increased by one per loop repetition. The result is compared to 10 in each case."
 msgstr "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung <code>somevar</code> um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
 
-#: sdk/script/operatoren.xml:299(text)
+#: sdk/script/operatoren.xml:313(text)
 msgid "Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of <code>somevar</code> is 9. It is then increased by one (<code>somevar</code> is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed."
 msgstr "Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben. D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist <code>somevar</code> am Anfang 9. Dann wird sie um eins erhöht (<code>somevar</code> ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben."
 
-#: sdk/script/operatoren.xml:300(text)
+#: sdk/script/operatoren.xml:314(text)
 msgid "In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When <code>somevar</code> is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends."
 msgstr "Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn <code>somevar</code> 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen."
 
-#: sdk/script/operatoren.xml:302(h)
+#: sdk/script/operatoren.xml:316(h)
 msgid "The Short-Circuiting Operators &amp;&amp;, || and ??"
 msgstr "Die Operatoren &amp;&amp;, || und ??"
 
-#: sdk/script/operatoren.xml:304(text)
+#: sdk/script/operatoren.xml:318(text)
 msgid "These operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be <code>false</code>, regardless of the result of Explode:"
 msgstr "Diese Operatoren haben eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis <code>false</code> wäre, egal was Explode zurücklieferte:"
 
-#: sdk/script/operatoren.xml:306(text)
+#: sdk/script/operatoren.xml:320(text)
 msgid "Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:"
 msgstr "Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:"
 
-#: sdk/script/operatoren.xml:309(h)
+#: sdk/script/operatoren.xml:323(h)
 msgid "The operator <code>??</code>"
 msgstr "Der Operator <code>??</code>."
 
-#: sdk/script/operatoren.xml:311(text)
+#: sdk/script/operatoren.xml:325(text)
 #, fuzzy
 msgid "The <code>??</code> operator is called the nil-coalescing operator. It can be used to specify a default value for an expression or function call that may evaluate to <code>nil</code>."
 msgstr "Der <code>??</code>-Operator wird ... genannt. Er kann benutzt werden um einen Default-Wert für einen Ausdruck oder Funktionsaufruf anzugeben, wenn dieser <code>nil</code> ergeben könnte."
 
-#: sdk/script/operatoren.xml:313(h)
+#: sdk/script/operatoren.xml:327(h)
+#, fuzzy
+msgid "The equality operators <code>==</code>, <code>!=</code>, <code>===</code> and <code>!==</code>"
+msgstr "Setzt die Eigenschaft <code>\"foo\"</code> von <code>x</code> auf <code>bar</code> wenn <code>x</code> eine proplist ist."
+
+#: sdk/script/operatoren.xml:329(text)
+msgid "The shorter operators basically consider more things equal. For example, two arrays with the same contents are equal, but === only returns true when both sides of the operator contain the same array. This matters mostly when arrays or proplists are modified. Modification can change the return value of the <code>==</code>/<code>!=</code> operators, but not of the <code>===</code>/<code>!==</code> operators."
+msgstr ""
+
+#: sdk/script/operatoren.xml:331(h)
 msgid "Priority and Associating"
 msgstr "Prioritäten und Assoziativität"
 
-#: sdk/script/operatoren.xml:315(text)
+#: sdk/script/operatoren.xml:333(text)
 msgid "This subject shows how operator priority is evaluated in detail."
 msgstr "Dieses Thema ist nicht unbedingt zum Verständnis der Operatoren vonnöten. Es soll nur zeigen, wie die Mechanismen wie Punkt-vor-Strich u.ä. im Detail funktionieren."
 
-#: sdk/script/operatoren.xml:316(text)
+#: sdk/script/operatoren.xml:334(text)
 msgid "To calculate the result of a complex term, first we have to decide in which order to evaluate the individual operations and to which other operator the result is to be passed."
 msgstr "Um einen längeren Ausdruck mit mehreren Operatoren ausrechnen zu können, muss entschieden werden, in welcher Reinfolge die Operatoren ausgeführt werden und welches Ergebnis welchem anderem Operator zu übergeben ist."
 
-#: sdk/script/operatoren.xml:317(text)
+#: sdk/script/operatoren.xml:335(text)
 msgid "Generally, operators with a higher priority are evaluate before operators with a lower priority. Notice: this does not apply to the evaluation of parameters - those are normally evaluated from left to right."
 msgstr "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren mit niedriger Priorität ausgeführt. Anmerkung: das gilt <strong>nicht</strong> für die Reihenfolge der Ausführung der Parameter. Diese werden ganz \"normal\" von links nach rechts ausgeführt."
 
-#: sdk/script/operatoren.xml:318(h)
-#: sdk/script/operatoren.xml:323(h)
-#: sdk/script/operatoren.xml:345(h)
-#: sdk/script/operatoren.xml:471(h)
-#: sdk/script/operatoren.xml:598(h)
+#: sdk/script/operatoren.xml:336(h)
+#: sdk/script/operatoren.xml:341(h)
+#: sdk/script/operatoren.xml:363(h)
+#: sdk/script/operatoren.xml:489(h)
+#: sdk/script/operatoren.xml:616(h)
 #: sdk/script/ScriptPlayers.xml:14(text)
 #: sdk/script/NamedVar.xml:40(h)
 #: sdk/script/Funcs.xml:74(h)
@@ -971,87 +1007,87 @@ msgstr "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren
 msgid "Example:"
 msgstr "Beispiel:"
 
-#: sdk/script/operatoren.xml:320(text)
-#: sdk/script/operatoren.xml:325(text)
+#: sdk/script/operatoren.xml:338(text)
+#: sdk/script/operatoren.xml:343(text)
 msgid "evaluated as:"
 msgstr "entspricht:"
 
-#: sdk/script/operatoren.xml:322(text)
+#: sdk/script/operatoren.xml:340(text)
 msgid "Here we have another problem: what to do when 'neighbouring' operators have the same priority? Should we first process the left or the right term? This is decided by the so called associativity. If an operator is left-associative then the term on the left is evaluated first (this is the usual case). With right-associative operators the term on the right is evaluated first."
 msgstr "Dabei taucht aber noch ein Problem auf: was ist zu tun, wenn \"benachbarte\" Operatoren dieselbe Priorität haben? Ist dann der linke oder der rechte Ausdruck zu klammern? Über diese Frage entscheidet die sog. Assoziativität. Ist ein Operator links-assoziativ, so hat jeweils der linke Operator Priorität (übrigens auch der Regelfall, denn meistens wird von links nach rechts gerechnet). Anders bei den rechts-assoziativen Operatoren, wo jeweils der rechte Operator Priorität hat."
 
-#: sdk/script/operatoren.xml:327(text)
+#: sdk/script/operatoren.xml:345(text)
 msgid "Here you can see that the operator \"+\" is left-associative, the term \"<code>1 + 2 + 3</code>\" is evaluated as \"<code>(1 + 2) + 3</code>\"."
 msgstr "Hier sieht man deutlich, dass der Operator \"+\" links-assoziativ ist, der Ausdruck \"<code>1 + 2 + 3</code>\" wird zu \"<code>(1 + 2) + 3</code>\"."
 
-#: sdk/script/operatoren.xml:328(text)
+#: sdk/script/operatoren.xml:346(text)
 msgid "As opposed to this, the term \"<code>somevar = othervar = x</code>\" becomes \"<code>somevar = (othervar = x)</code>\", since the operator \"=\" is right-associative."
 msgstr "Dagegen wird der Ausdruck \"<code>somevar = othervar = x</code>\" zu \"<code>somevar = (othervar = x)</code>\", da der Operator \"=\" rechts-assoziativ ist."
 
-#: sdk/script/operatoren.xml:329(text)
+#: sdk/script/operatoren.xml:347(text)
 msgid "To find out about an operator's associativity, see the table above."
 msgstr "Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste."
 
-#: sdk/script/operatoren.xml:331(h)
+#: sdk/script/operatoren.xml:349(h)
 msgid "Bit Manipulation Operators"
 msgstr "Bitweise Operatoren"
 
-#: sdk/script/operatoren.xml:332(text)
+#: sdk/script/operatoren.xml:350(text)
 msgid "In the operator list you will have noticed some operators which perform bitwise operations or bit shift."
 msgstr "In der Liste der Operatoren fallen einige Operatoren auf, die bitweise Opererationen oder Bitschieben durchführen."
 
-#: sdk/script/operatoren.xml:333(text)
+#: sdk/script/operatoren.xml:351(text)
 msgid "To start out, a short description of bits: any computer internally works with 'binary numbers'. In this system there are only two digits: 0 and 1. Humans, by the way, usually work with 10 digits: 0 to 9. With the binary system, number can be represented as follows:"
 msgstr "Erst mal eine kurze Beschreibung von Bits: der Computer rechnet intern im sog. binären Zahlensystem. In diesem System gibt es nur zwei Ziffern, nämlich 0 und 1. (wir rechnen üblicherweise im 10er-System, wir haben 10 Ziffern von 0 bis 9). Damit lassen sich die Zahlen folgendermaßen darstellen:"
 
-#: sdk/script/operatoren.xml:334(h)
+#: sdk/script/operatoren.xml:352(h)
 msgid "The Binary System"
 msgstr "Das Binärsystem"
 
-#: sdk/script/operatoren.xml:336(text)
+#: sdk/script/operatoren.xml:354(text)
 msgid "(each number is presented in the decimal system first, then binary)"
 msgstr "(jeweils erst im Zehnersystem, dann im Binärsystem)"
 
-#: sdk/script/operatoren.xml:343(text)
+#: sdk/script/operatoren.xml:361(text)
 msgid "Each digit in the binary system is called a \"bit\". A sequence of 8 bits (see above) is called a \"byte\"."
 msgstr "Dabei wird jede Ziffer als \"Bit\" bezeichnet. Eine Folge von 8 Bits (s.o.) nennt man ein \"Byte\"."
 
-#: sdk/script/operatoren.xml:344(text)
+#: sdk/script/operatoren.xml:362(text)
 msgid "Bitwise operatiors perform actions on the bits of a number."
 msgstr "Bitweise Operatoren bearbeiten Zahlen nun bitweise."
 
-#: sdk/script/operatoren.xml:349(text)
+#: sdk/script/operatoren.xml:367(text)
 msgid "This example shows a binary NOT. That means, each bit of the number is negated individually (0 becomes 1, 1 becomes 0)."
 msgstr "In diesem Beispiel handelt es sich um bitweises Not. D.h. jedes Bit wird einzeln negiert (aus 0 wird 1, aus 1 wird 0)."
 
-#: sdk/script/operatoren.xml:350(text)
+#: sdk/script/operatoren.xml:368(text)
 msgid "Bitwise operators with two parameters combine the bits of two numbers."
 msgstr "Bitweise Operatoren mit 2 Parametern verrechnen nun jeweils die Bits zweier Zahlen."
 
-#: sdk/script/operatoren.xml:351(h)
+#: sdk/script/operatoren.xml:369(h)
 msgid "Examples:"
 msgstr "Beispiele:"
 
-#: sdk/script/operatoren.xml:400(text)
+#: sdk/script/operatoren.xml:418(text)
 msgid "These three operators are (in order) AND (&amp;), OR (|) and EXCLUSIVE-OR (^)."
 msgstr "Diese drei Operatoren sind (der Reihe nach) Und (&amp;), Oder (|) und Exklusiv-Oder (^)."
 
-#: sdk/script/operatoren.xml:401(text)
+#: sdk/script/operatoren.xml:419(text)
 msgid "With the AND operator, the resulting bit will only be 1 if both incoming bits are 1. AND gives the following result:"
 msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn in beiden Eingaben an der entsprechenden Stelle ebenfalls eine 1 steht. \"Und\" hat also die folgende Wahrheitstabelle (senkrecht bzw. waagerecht sind die beiden möglichen Parameter jeweils gelistet, in der Tabelle selbst das Ergebnis):"
 
-#: sdk/script/operatoren.xml:406(col)
-#: sdk/script/operatoren.xml:410(col)
-#: sdk/script/operatoren.xml:411(col)
-#: sdk/script/operatoren.xml:412(col)
-#: sdk/script/operatoren.xml:416(col)
-#: sdk/script/operatoren.xml:426(col)
+#: sdk/script/operatoren.xml:424(col)
+#: sdk/script/operatoren.xml:428(col)
+#: sdk/script/operatoren.xml:429(col)
 #: sdk/script/operatoren.xml:430(col)
-#: sdk/script/operatoren.xml:431(col)
-#: sdk/script/operatoren.xml:446(col)
-#: sdk/script/operatoren.xml:450(col)
-#: sdk/script/operatoren.xml:451(col)
-#: sdk/script/operatoren.xml:457(col)
+#: sdk/script/operatoren.xml:434(col)
+#: sdk/script/operatoren.xml:444(col)
+#: sdk/script/operatoren.xml:448(col)
+#: sdk/script/operatoren.xml:449(col)
+#: sdk/script/operatoren.xml:464(col)
+#: sdk/script/operatoren.xml:468(col)
+#: sdk/script/operatoren.xml:469(col)
+#: sdk/script/operatoren.xml:475(col)
 #: sdk/script/fn/SetPhysical.xml:37(col)
 #: sdk/script/fn/SetGraphics.xml:45(col)
 #: sdk/script/fn/SetGamma.xml:44(col)
@@ -1076,18 +1112,18 @@ msgstr "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn 
 msgid "0"
 msgstr "0"
 
-#: sdk/script/operatoren.xml:407(col)
-#: sdk/script/operatoren.xml:415(col)
-#: sdk/script/operatoren.xml:417(col)
-#: sdk/script/operatoren.xml:427(col)
-#: sdk/script/operatoren.xml:432(col)
+#: sdk/script/operatoren.xml:425(col)
+#: sdk/script/operatoren.xml:433(col)
 #: sdk/script/operatoren.xml:435(col)
-#: sdk/script/operatoren.xml:436(col)
-#: sdk/script/operatoren.xml:437(col)
-#: sdk/script/operatoren.xml:447(col)
-#: sdk/script/operatoren.xml:452(col)
+#: sdk/script/operatoren.xml:445(col)
+#: sdk/script/operatoren.xml:450(col)
+#: sdk/script/operatoren.xml:453(col)
+#: sdk/script/operatoren.xml:454(col)
 #: sdk/script/operatoren.xml:455(col)
-#: sdk/script/operatoren.xml:456(col)
+#: sdk/script/operatoren.xml:465(col)
+#: sdk/script/operatoren.xml:470(col)
+#: sdk/script/operatoren.xml:473(col)
+#: sdk/script/operatoren.xml:474(col)
 #: sdk/script/fn/SetPhysical.xml:42(col)
 #: sdk/script/fn/SetObjectBlitMode.xml:39(col)
 #: sdk/script/fn/SetGraphics.xml:50(col)
@@ -1111,107 +1147,107 @@ msgstr "0"
 msgid "1"
 msgstr "1"
 
-#: sdk/script/operatoren.xml:421(text)
+#: sdk/script/operatoren.xml:439(text)
 msgid "The OR operator results in 1 if one or both of the incoming bits are 1:"
 msgstr "Der Operator \"Oder\" gibt 1 zurück, wenn eins (oder beide) der Eingaben 1 sind:"
 
-#: sdk/script/operatoren.xml:441(text)
+#: sdk/script/operatoren.xml:459(text)
 msgid "The XOR operator results in 1 if either (but not both) of the incoming bits are 1:"
 msgstr "Der Operator \"Exklusiv-Oder\" (XOr) verhält sich wie das \"Oder\", doch wird 0 zurückgegeben, wenn beide Parameter 0 sind."
 
-#: sdk/script/operatoren.xml:461(h)
+#: sdk/script/operatoren.xml:479(h)
 msgid "Applications:"
 msgstr "Anwendungen"
 
-#: sdk/script/operatoren.xml:462(text)
+#: sdk/script/operatoren.xml:480(text)
 msgid "Clonk often uses bitwise operations when storing the characteristics of an object in a single value. The best known example is the category (\"C4D\" values) of an object. Here, each bit of the category value represents a certain class or characteristic."
 msgstr "In Clonk werden häufig Bitoperationen benutzt, wenn es darum geht, verschiedene Eigenschaften eines Objekts in einem Wert zu speichern. Das prominenteste Beispiel sind hier wohl die C4D(Category)-Werte. Hier repräsentiert jedes Bit des C4D-Wertes eine bestimmte Eigenschaft (für Einzelheiten siehe Entwickler-Dokumentation)."
 
-#: sdk/script/operatoren.xml:463(text)
+#: sdk/script/operatoren.xml:481(text)
 msgid "To access or sort out the individual characteristics, you can easily access a C4D value with bitwise operators:"
 msgstr "Auf diese Bits kann man recht bequem über die bitweisen Operatoren zugreifen. Ein C4D-Wert kann z.B. folgendermaßen aussehen:"
 
-#: sdk/script/operatoren.xml:464(h)
+#: sdk/script/operatoren.xml:482(h)
 msgid "Example (wipf):"
 msgstr "Beispiel: (Wipf)"
 
-#: sdk/script/operatoren.xml:466(text)
+#: sdk/script/operatoren.xml:484(text)
 msgid "This value in binary system:"
 msgstr "Dieser Wert ergibt im Binär-System: (kann mit Windows-Taschenrechner umgerechnet werden)"
 
-#: sdk/script/operatoren.xml:468(text)
+#: sdk/script/operatoren.xml:486(text)
 msgid "You can see that bit 3, 12, and 16 are set (counting from left to right, starting with 0)."
 msgstr "Hier sieht man, dass Bit 3, Bit 12 und Bit 16 gesetzt sind (es wird von rechts gezählt und mit 0 begonnen)"
 
-#: sdk/script/operatoren.xml:469(text)
+#: sdk/script/operatoren.xml:487(text)
 msgid "This represents the C4D values <placeholder-1/> (objects is a living being), C4D_SelectAnimal (living being can be selected in the menu system) and C4D_TradeLiving (living being can be bought or sold)."
 msgstr "Dies entspricht der Reihe nach den C4D-Werten <placeholder-1/> (Objekt ist ein Lebewesen), C4D_SelectAnimal (Objekt kann im Menu für Lebewesen hinzugefügt werden) und C4D_TradeLiving (Objekt ist ein Lebewesen, darf aber trotzdem verkauft werden)."
 
-#: sdk/script/operatoren.xml:470(text)
+#: sdk/script/operatoren.xml:488(text)
 msgid "In script you can now easily check whether a given bit is set: simply use the AND operator (&amp;) with a second parameter (\"mask\"). In this mask, only a single bit is set, representing the category value which we we like to test for. In the result of the AND operation all bits that do not interest us, will be 0. Only the one bit that does interest us, has the chance of being 1 - that is, if it is set in the original value. Since a single bit set in a number will already cause that number's value to be different from 0, all you have to do now is to compare the resulting number to 0: if it is different from 0, the characteristic we have been looking for is given; if the result is equal to 0, the characteristic is not given."
 msgstr "Im Script kann nun recht einfach geprüft werden, ob ein bestimmtes Bit gesetzt ist: man benutzt den Operator \"Und\" (<code>&amp;</code>), dem man den Wert und die \"Maske\" übergibt. In der Maske ist nur das Bit gesetzt, dass von Interesse ist. Auf diese Weise müssen im Ergebnis alle Bits, die nicht interessieren, 0 sein (denn sie sind es in der Maske). Ist nun das Bit, das interressiert, 1, so wird diese in das Ergebnis übernommen, ist es 0, so wird im Ergebnis dort auch 0 stehen. Im letzteren Fall ist sogar das gesamte Ergebnis 0, da alle anderen Bits ja auch 0 sind. Es genügt also zu überprüfen, ob das Ergebnis von <code>[Val] &amp; [Mask]</code> ungleich null ist, um herauszufinden, ob ein bestimmtes Bit gesetzt ist."
 
-#: sdk/script/operatoren.xml:477(col)
-#: sdk/script/operatoren.xml:497(col)
-#: sdk/script/operatoren.xml:521(col)
-#: sdk/script/operatoren.xml:541(col)
-#: sdk/script/operatoren.xml:561(col)
-#: sdk/script/operatoren.xml:580(col)
+#: sdk/script/operatoren.xml:495(col)
+#: sdk/script/operatoren.xml:515(col)
+#: sdk/script/operatoren.xml:539(col)
+#: sdk/script/operatoren.xml:559(col)
+#: sdk/script/operatoren.xml:579(col)
+#: sdk/script/operatoren.xml:598(col)
 msgid "(value)"
 msgstr "(Wert)"
 
-#: sdk/script/operatoren.xml:482(col)
-#: sdk/script/operatoren.xml:502(col)
-#: sdk/script/operatoren.xml:526(col)
-#: sdk/script/operatoren.xml:566(col)
-#: sdk/script/operatoren.xml:585(col)
+#: sdk/script/operatoren.xml:500(col)
+#: sdk/script/operatoren.xml:520(col)
+#: sdk/script/operatoren.xml:544(col)
+#: sdk/script/operatoren.xml:584(col)
+#: sdk/script/operatoren.xml:603(col)
 msgid "(mask)"
 msgstr "(Maske)"
 
-#: sdk/script/operatoren.xml:491(text)
+#: sdk/script/operatoren.xml:509(text)
 msgid "In this case, the result is unequal to 0, so we know the bit we have set in the mask is also set in the original value."
 msgstr "Das Ergebnis ist in diesem Fall nicht 0, also ist das Bit, dass in der Maske gesetzt ist, auch im Wert gesetzt."
 
-#: sdk/script/operatoren.xml:511(text)
+#: sdk/script/operatoren.xml:529(text)
 msgid "Here the result is equal to 0, meaning the bit we are looking for was not set in the original value."
 msgstr "Hier ist das Ergebnis 0, denn das Bit in der Maske ist nicht beim Wert gesetzt."
 
-#: sdk/script/operatoren.xml:512(text)
+#: sdk/script/operatoren.xml:530(text)
 msgid "The question remains where to get the proper mask from. In the case of the C4D categories, there are predefined values we can use. They are called <code>C4D_xxx</code>. So to find out whether an object is a living being we use the following code:"
 msgstr "Es bleibt noch die Frage zu klären, wo man die entsprechende Maske denn herbekommt. Im Fall der Category-Werte sind diese bereits mit Namen mitgeliefert, sie können über <code>C4D_[XXX]</code> abgerufen werden. Wollte man z.B. herausfinden, ob es sich bei einem Objekt um ein Lebewesen handelt, so sähe der Script folgendermaßen aus:"
 
-#: sdk/script/operatoren.xml:515(text)
+#: sdk/script/operatoren.xml:533(text)
 msgid "Now we can test whether an individual bit is set. But how can we change bits, for example <strong>set</strong> them? For this, we can use the OR operator (|). Again, it is applied using a value and a mask as a second parameter:"
 msgstr "Auf diese Weise kann man also einzelne Bits gezielt prüfen. Doch wie soll man diese nun bearbeiten? Will man ein einzelnes Bit <strong>setzen</strong>, so wird der Operator \"Oder\" (<code>|</code>) benutzt. Dieser wird wieder auf Wert und Maske angewendet:"
 
-#: sdk/script/operatoren.xml:531(col)
-#: sdk/script/operatoren.xml:551(col)
-#: sdk/script/operatoren.xml:571(col)
-#: sdk/script/operatoren.xml:590(col)
+#: sdk/script/operatoren.xml:549(col)
+#: sdk/script/operatoren.xml:569(col)
+#: sdk/script/operatoren.xml:589(col)
+#: sdk/script/operatoren.xml:608(col)
 msgid "(new value)"
 msgstr "(neuer Wert)"
 
-#: sdk/script/operatoren.xml:535(text)
+#: sdk/script/operatoren.xml:553(text)
 msgid "In this way it is only possible to set a certain bit to 1. If the bit was already set, the value will remain unchanged. To set a certain bit to 0 we have to use the AND operator and the <strong>inverse</strong> (logical NOT) mask, or <code>[value] &amp;~[mask]</code>."
 msgstr "Auf diese Weise ist es allerdings immer nur möglich, ein bestimmtes Bit auf 1 zu setzen. War dieses bereits gesetzt, so bleibt der Wert unverändert. Will man nun ein bestimmtes Bit auf 0 setzen, so benutzt man wieder den \"Und\"-Operator und die <strong>inverse</strong>(logisch Not) Maske, also <code>[Wert] &amp; ~[Maske]</code>:"
 
-#: sdk/script/operatoren.xml:555(text)
+#: sdk/script/operatoren.xml:573(text)
 msgid "It is also possibly to toggle a certain bit from 1 to 0 or 0 to 1, whichever way it is set. This is done with the XOR operator (^):"
 msgstr "Es ist auch möglich, ein bestimmtes Bit gezielt umzuschalten, also von 1 auf 0 und von 0 nach 1. Dies leistet der bitweise \"Exklusiv-Oder\"-Operator (<code>^</code>):"
 
-#: sdk/script/operatoren.xml:595(h)
+#: sdk/script/operatoren.xml:613(h)
 msgid "Bit Shifts"
 msgstr "Bitschiebereien"
 
-#: sdk/script/operatoren.xml:597(text)
+#: sdk/script/operatoren.xml:615(text)
 msgid "Besides operators for bitwise combination of values there are also the <strong>bit shift</strong> operators. All these operators do is move all the bits in a number from left to right (adding a new 0 on the left) or from right to left (adding a new 0 on the right)."
 msgstr "Außer den Operatoren, die bitweises Manipulieren von Werten erlauben (s.o.) gibt es noch sog. <strong>Bitschiebe-Operatoren</strong>. Die Funktion dieser Operatoren beschränkt sich darauf (anschaulich gesprochen), an einen Bit-Wert Nullen anzuhängen (&lt;&lt;) bzw. Ziffern abzuschneiden (&gt;&gt;)."
 
-#: sdk/script/operatoren.xml:604(text)
+#: sdk/script/operatoren.xml:622(text)
 msgid "Mathematically, the operator &lt;&lt; performs a multiplication by 2 (exactly in the same way that in the decimal system appending a 0 performs a multiplication by 10) and the operator &gt;&gt; is a division by 2 (including some rounding)."
 msgstr "Mathematisch entspricht der Operator &lt;&lt; der Multiplikation mit <code>2 ^ X</code> (genau wie im Zehnersystem das Anhängen einer Null mit einer Multiplikation mit 10 gleichkommt) und der Operator &gt;&gt; einer Division mit <code>2 ^ X</code> (mit anschließendem Abrunden)."
 
-#: sdk/script/operatoren.xml:605(text)
+#: sdk/script/operatoren.xml:623(text)
 msgid "Using these operators you can put together masks (1 &lt;&lt; bit-no.) and mix or take apart <placeholder-1/> color values."
 msgstr "Mit den Operatoren können vor allem Masken erstellt (1 &lt;&lt; BitNr), und <placeholder-1/>-Farbwerte zusammengesetzt und auseinandergenommen werden."
 
@@ -1482,6 +1518,7 @@ msgstr "Entfernt alle Objekte."
 #: sdk/script/fn/GetRDir.xml:8(category)
 #: sdk/script/fn/GetR.xml:8(category)
 #: sdk/script/fn/GetProperty.xml:8(category)
+#: sdk/script/fn/GetProperties.xml:8(category)
 #: sdk/script/fn/GetProcedure.xml:8(category)
 #: sdk/script/fn/GetPhysical.xml:8(category)
 #: sdk/script/fn/GetPhase.xml:8(category)
@@ -1639,6 +1676,24 @@ msgstr "Beendet die aktuelle Funktion und gibt einen Wert an den Aufrufer zurüc
 msgid "Divides a by b and returns the result."
 msgstr "Teilt dividend durch divisor und gibt das Ergebnis zurück."
 
+#: sdk/script/fn/int.xml:7(category)
+#: sdk/script/fn/float.xml:7(category)
+#, fuzzy
+msgid "Arithmetik"
+msgstr "Arithmetik"
+
+#: sdk/script/fn/int.xml:12(desc)
+msgid "Die Fließkommazahl, die in eine Ganzzahl konvertiert werden soll."
+msgstr ""
+
+#: sdk/script/fn/int.xml:15(desc)
+msgid "Wandelt eine Fließkommazahl in eine Ganzzahl um. Dabei werden Nachkommastellen abgeschnitten. Ist der Wert von <em>f</em> außerhalb des Wertebereichs einer vorzeichenbehafteten 32-bit-Ganzzahl, so ist der Rückgabewert <em>nil</em>."
+msgstr ""
+
+#: sdk/script/fn/int.xml:19(text)
+msgid "Gibt die Zahl 2 zurück."
+msgstr ""
+
 #: sdk/script/fn/inherited.xml:16(desc)
 #: sdk/script/fn/_inherited.xml:16(desc)
 msgid "Calling Parameters"
@@ -1671,6 +1726,23 @@ msgstr "C4Script"
 #: sdk/script/fn/for.xml:11(desc)
 msgid "See <emlink href=\"script/for.html\">the 'for' loop</emlink>."
 msgstr "Siehe <emlink href=\"script/for.html\">Die For-Schleife</emlink>"
+
+#: sdk/script/fn/float.xml:12(desc)
+msgid "Die Ganzzahl, die in eine Fließkommazahl konvertiert werden soll."
+msgstr ""
+
+#: sdk/script/fn/float.xml:15(desc)
+msgid "Wandelt eine Ganzzahl in eine Fließkommazahl um. Ist der Wert von <em>i</em> nicht exakt darstellbar, wird der darstellbare Wert zurückgegeben, der die geringste Abweichung vom tatsächlichen Wert hat."
+msgstr ""
+
+#: sdk/script/fn/float.xml:19(text)
+msgid "Gibt die Zahl 2.0 zurück."
+msgstr ""
+
+#: sdk/script/fn/float.xml:6(title)
+#, fuzzy
+msgid "<placeholder-1/><placeholder-2/><syntax><placeholder-3/><params><param><placeholder-4/><placeholder-5/><placeholder-6/></param></params></syntax><placeholder-7/><examples><example><placeholder-8/><placeholder-9/></example></examples> int C4Id isilkor2010-07-10"
+msgstr "Befehlsrichtung. Muss <placeholder-1/>, <placeholder-2/>, <placeholder-3/>, <placeholder-4/>, <placeholder-5/>, <placeholder-6/>, <placeholder-7/>, <placeholder-8/>, <placeholder-9/> oder <placeholder-10/> sein."
 
 #: sdk/script/fn/eval.xml:16(desc)
 #: sdk/script/fn/AddMsgBoardCmd.xml:21(desc)
@@ -2531,7 +2603,6 @@ msgstr "Schüttelt alle Lebewesen durch."
 
 #: sdk/script/fn/ShakeFree.xml:8(category)
 #: sdk/script/fn/SetMatAdjust.xml:8(category)
-#: sdk/script/fn/SetLandscapePixel.xml:8(category)
 #: sdk/script/fn/SetClimate.xml:8(category)
 #: sdk/script/fn/PathFree.xml:8(category)
 #: sdk/script/fn/MaterialName.xml:8(category)
@@ -3860,26 +3931,6 @@ msgstr "Neue Länge des Feldes"
 msgid "Changes the length of the array to the specified value. Surplus elements will be deleted, if necessary."
 msgstr "Verändert die Länge eines Arrays auf den angegebenen Wert. Überzählige Elemente werden dabei gegebenenfalls gelöscht."
 
-#: sdk/script/fn/SetLandscapePixel.xml:16(desc)
-msgid "X position of the pixel to be set; relative coordinates in local calls"
-msgstr "X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf"
-
-#: sdk/script/fn/SetLandscapePixel.xml:21(desc)
-msgid "Y position of the pixel to be set; relative coordinates in local calls"
-msgstr "Y-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf"
-
-#: sdk/script/fn/SetLandscapePixel.xml:26(desc)
-msgid "32 bit color value of the pixel"
-msgstr "32Bit-Farbwert des Pixels."
-
-#: sdk/script/fn/SetLandscapePixel.xml:30(desc)
-msgid "Sets a pixel in the landscape. Not available in the old 8 bit graphics system."
-msgstr "Färbt ein Pixel in der Landschaft ein. Diese Funktion ist nicht im 8Bit-Grafiksystem verfügbar."
-
-#: sdk/script/fn/SetLandscapePixel.xml:34(text)
-msgid "Colors the landscape pixel directly behind the calling object brown."
-msgstr "Färbt das Landschaftspixel direkt hinter dem aufrufenden Objekt braun."
-
 #: sdk/script/fn/SetKiller.xml:17(desc)
 msgid "Player number of the new killer. <code>NO_OWNER</code> for no owner."
 msgstr "Spielernummer des neuen Besitzers. <code>NO_OWNER</code> für keinen Besitzer."
@@ -3932,12 +3983,12 @@ msgid "Global"
 msgstr "Global"
 
 #: sdk/script/fn/SetGravity.xml:16(desc)
-msgid "New gravity: value -300 til 300 (in percent)"
-msgstr "Neue Schwerkraft: Werte -300 bis 300 (in Prozent)"
+msgid "New gravity in 1/100 pixel/tick²"
+msgstr ""
 
 #: sdk/script/fn/SetGravity.xml:20(desc)
-msgid "Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10)."
-msgstr "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick. (Zunahme der YDir um 2 pro Tick bei precision=10)"
+msgid "Sets the gravity. It is usually a good idea to set this to a multiple or a fraction of the previous value."
+msgstr ""
 
 #: sdk/script/fn/SetGraphics.xml:17(desc)
 msgid "Name of the graphic to be set. If <code>nil</code>, the default graphic is set."
@@ -6415,11 +6466,17 @@ msgid "Requested property."
 msgstr "Abzufragende Eigenschaft."
 
 #: sdk/script/fn/GetProperty.xml:23(desc)
+#: sdk/script/fn/GetProperties.xml:17(desc)
 msgid "Object to request property from, <code>nil</code> in local calls."
 msgstr "Objekt von dem die Eigenschaft abgefragt wird. <code>nil</code> für lokale Aufrufe."
 
 #: sdk/script/fn/GetProperty.xml:28(desc)
 msgid "Returns the property <code>key</code> of <code>object</code>."
+msgstr "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
+
+#: sdk/script/fn/GetProperties.xml:22(desc)
+#, fuzzy
+msgid "Returns the names of all properties of <code>object</code>."
 msgstr "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
 
 #: sdk/script/fn/GetProcedure.xml:12(desc)
@@ -7017,7 +7074,8 @@ msgid "Kills the highest ranking clonk of the third player."
 msgstr "Tötet den höchstrangigen Clonk des dritten Spielers. (Die Zählung beginnt mit 0)"
 
 #: sdk/script/fn/GetGravity.xml:11(desc)
-msgid "Returns the current gravity in percent."
+#, fuzzy
+msgid "Returns the current gravity in 1/100 pixel/tick²."
 msgstr "Liest die Schwerkraft (in Prozent) aus."
 
 #: sdk/script/fn/GetGravity.xml:16(text)
@@ -9925,8 +9983,9 @@ msgid "Multiplied with the angle. For a higher precision while working with inte
 msgstr "Gibt, wenn angegeben, den Winkel multipliziert mit precision zurück, um so genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen 0 und 3600 zurück."
 
 #: sdk/script/fn/Angle.xml:41(desc)
-msgid "Returns the view angle from the first point to the second in degrees. 0° ist straight up. All coordinates global."
-msgstr "Liefert den Winkel, in dem sich der zweite Punkt vom ersten Punkt aus gesehen befindet. Der Winkel wird in Grad zurückgeliefert, 0° ist senkrecht oben. Alle Koordinaten sind global."
+#, fuzzy
+msgid "Returns the view angle from the first point to the second in degrees. 0° ist straight up. All coordinates global. Always returns zero or positive angles smaller than 360*precision"
+msgstr "Liefert den Winkel, in dem sich der zweite Punkt vom ersten Punkt aus gesehen befindet. Der Winkel wird in Grad zurückgeliefert, 0° ist senkrecht oben. Alle Koordinaten sind global. Liefert werte von 0 bis 360*precision."
 
 #: sdk/script/fn/Angle.xml:46(text)
 msgid "The object rotates so it points from the clonk of player 1 to the clonk of player 2."
@@ -16992,6 +17051,27 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:111(text)
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
+
+#~ msgid "X position of the pixel to be set; relative coordinates in local calls"
+#~ msgstr "X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf"
+
+#~ msgid "Y position of the pixel to be set; relative coordinates in local calls"
+#~ msgstr "Y-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf"
+
+#~ msgid "32 bit color value of the pixel"
+#~ msgstr "32Bit-Farbwert des Pixels."
+
+#~ msgid "Sets a pixel in the landscape. Not available in the old 8 bit graphics system."
+#~ msgstr "Färbt ein Pixel in der Landschaft ein. Diese Funktion ist nicht im 8Bit-Grafiksystem verfügbar."
+
+#~ msgid "Colors the landscape pixel directly behind the calling object brown."
+#~ msgstr "Färbt das Landschaftspixel direkt hinter dem aufrufenden Objekt braun."
+
+#~ msgid "New gravity: value -300 til 300 (in percent)"
+#~ msgstr "Neue Schwerkraft: Werte -300 bis 300 (in Prozent)"
+
+#~ msgid "Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10)."
+#~ msgstr "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick. (Zunahme der YDir um 2 pro Tick bei precision=10)"
 
 #~ msgid "id of the definition in the script of which to call the function."
 #~ msgstr "ID der Definition, in dessen Script die Funktion aufgerufen wird"

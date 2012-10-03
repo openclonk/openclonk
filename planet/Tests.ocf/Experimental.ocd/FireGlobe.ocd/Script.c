@@ -15,7 +15,7 @@ func Construction()
 	aimed = false;
 }
 
-func ControlUse(object clonk, int x, int y)
+func ControlUse(object clonk, num x, num y)
 {
 	if(!aimed) return false;
 	
@@ -28,7 +28,7 @@ func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
-func ControlUseStart(object clonk, int x, int y)
+func ControlUseStart(object clonk, num x, num y)
 {
 	if(aimed) return false;
 
@@ -45,14 +45,14 @@ func ControlUseStart(object clonk, int x, int y)
 
 func HoldingEnabled() { return true; }
 
-func ControlUseHolding(object clonk, int x, int y)
+func ControlUseHolding(object clonk, num x, num y)
 {
 	if(aimed) return false;
 	
 	if(vis) vis->Set(sx,sy,x+clonk->GetX(),y+clonk->GetY());
 }
 
-func ControlUseStop(object clonk, int x, int y)
+func ControlUseStop(object clonk, num x, num y)
 {
 	if(aimed) return false;
 	
@@ -81,7 +81,7 @@ public func Destruction()
 }
 
 
-public func Launch(int angle, int str, object shooter)
+public func Launch(float angle, num str, object shooter)
 {
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
@@ -93,7 +93,7 @@ public func Launch(int angle, int str, object shooter)
 }
 
 
-public func SetDivert(int x1, int y1, int x2, int y2)
+public func SetDivert(num x1, num y1, num x2, num y2)
 {
 	var inflight = GetEffect("InFlight",this);
 	inflight.ax = x1;
@@ -153,7 +153,7 @@ public func FxInFlightTimer(object target, effect, int time)
 }
 
 // Returns nil or coordinates of intersection.
-global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, int Qy)
+global func Intersect(num Ax, num Ay, num Bx, num By, num Px, num Py, num Qx, num Qy)
 {
 	var BAx = Bx-Ax;
 	var BAy = By-Ay;

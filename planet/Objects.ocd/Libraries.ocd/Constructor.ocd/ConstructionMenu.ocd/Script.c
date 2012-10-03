@@ -120,7 +120,7 @@ public func HasCommander(object producer)
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when a click outside the menu has been made.
-public func OnMouseClick(int x, int y, bool alt)
+public func OnMouseClick(num x, num y, bool alt)
 {
 	// Close menu if not clicked on the menu.
 	if (Distance(x, y, 0, 0) > 160)

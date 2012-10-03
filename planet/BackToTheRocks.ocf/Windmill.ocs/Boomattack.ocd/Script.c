@@ -89,7 +89,7 @@ protected func HitObject()
 	DoFireworks();
 }
 
-func Launch(int angle)
+func Launch(float angle)
 {
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
@@ -103,7 +103,7 @@ func Launch(int angle)
 	SetR(angle);
 }
 
-func DoFireworks(int speed)
+func DoFireworks()
 {
 	RemoveEffect("Flight",this);
 	Fireworks();

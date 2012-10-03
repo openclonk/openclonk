@@ -36,7 +36,7 @@ protected func Initialize()
 
 /*-- Control --*/
 
-public func ContainedUseStart(object clonk, int ix, int iy)
+public func ContainedUseStart(object clonk, float ix, float iy)
 {
 	if(!clonk->FindContents(LeadShot))
 	{
@@ -52,7 +52,7 @@ public func ContainedUseStart(object clonk, int ix, int iy)
 	return 1;
 }
 
-public func ContainedUseStop(object clonk, int ix, int iy)
+public func ContainedUseStop(object clonk, float ix, float iy)
 {
 	if(reticle) reticle->RemoveObject();
 
@@ -83,7 +83,7 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 	return 1;
 }
 
-public func ContainedUseCancel(object clonk, int ix, int iy)
+public func ContainedUseCancel(object clonk, float ix, float iy)
 {
 	if(reticle) reticle->RemoveObject();
 	return 1;
@@ -150,7 +150,7 @@ public func StartFlight(int new_throttle)
 	throttle = new_throttle;
 }
 
-public func StartInstantFlight(int angle, int new_throttle)
+public func StartInstantFlight(float angle, int new_throttle)
 {
 	angle -= 10;
 	var effect = AddEffect("IntSoundDelay",this,1,1,this);
@@ -292,7 +292,8 @@ public func Damage()
 {
 	if(GetDamage() >= health)
 	{
-		if(Random(2)) PlaneDeath();
+		if(Random(2))
+			PlaneDeath();
 		else
 			CancelFlight();
 	}

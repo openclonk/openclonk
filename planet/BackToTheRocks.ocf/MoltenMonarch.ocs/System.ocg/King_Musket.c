@@ -6,7 +6,7 @@ public func MakeKingSize() { king_size = true; return(SetMeshMaterial("KingMuske
 public func MakeNormalSize() { king_size = false; return(SetMeshMaterial("Musket",0)); }
 public func Departure() { MakeNormalSize(); }
 
-private func FireWeapon(object clonk, int angle)
+private func FireWeapon(object clonk, float angle)
 {
 	var shot = Contents(0)->TakeObject();
 	

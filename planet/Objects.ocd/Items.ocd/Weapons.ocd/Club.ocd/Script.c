@@ -65,7 +65,7 @@ public func HoldingEnabled() { return true; }
 
 local fAiming;
 
-public func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, num x, num y)
 {
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		ClubChangeHandAnims("R");
@@ -104,7 +104,7 @@ public func ControlUseStop(object clonk, ix, iy)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
+public func FinishedAiming(object clonk, float angle)
 {
 	clonk->StartShoot(this);
 	
@@ -117,7 +117,7 @@ public func FinishedAiming(object clonk, int angle)
 	return true;
 }
 
-protected func ControlUseCancel(object clonk, int x, int y)
+protected func ControlUseCancel(object clonk, num x, num y)
 {
 	clonk->CancelAiming(this);
 	return true;
@@ -129,7 +129,7 @@ public func Reset(clonk)
 }
 
 // Called in the half of the shoot animation (when ShootTime2 is over)
-public func DuringShoot(object clonk, int angle)
+public func DuringShoot(object clonk, float angle)
 {
 	// called only once. We don't want it only once..
 	// DoStrike(clonk, angle);

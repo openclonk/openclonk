@@ -10,7 +10,7 @@
 		self-explanatory
 		
 	scenario callbacks:
-	 func GetSparkItem(int x, int y)
+	 func GetSparkItem(float x, float y)
 		returns the item ID one spark should spawn.
 		called at the creation of the sparks (x=nil, y=nil) for mirrored sparks and on Hit() again, if it returned nil before
 	
@@ -26,7 +26,7 @@
 local toSpawn;
 
 
-global func StartItemSparks(int rate, bool mirror)
+global func StartItemSparks(num rate, bool mirror)
 {
 	AddEffect("GlobalItemSparks", nil, 1, 5, nil, nil, rate, mirror);
 }

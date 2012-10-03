@@ -38,7 +38,7 @@ private func Hit(x, y)
 
 static const Pickaxe_SwingTime = 40;
 
-func ControlUseStart(object clonk, int ix, int iy)
+func ControlUseStart(object clonk, num ix, num iy)
 {
 	// Can clonk use pickaxe?
 	if (clonk->GetProcedure() != "WALK")
@@ -56,7 +56,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 
 protected func HoldingEnabled() { return true; }
 
-func ControlUseHolding(object clonk, int new_x, int new_y)
+func ControlUseHolding(object clonk, num new_x, num new_y)
 {
 	// Can clonk use pickaxe?
 	if (clonk->GetProcedure() != "WALK")
@@ -71,13 +71,13 @@ func ControlUseHolding(object clonk, int new_x, int new_y)
 
 local x, y;
 
-func ControlUseStop(object clonk, int ix, int iy)
+func ControlUseStop(object clonk, num ix, num iy)
 {
 	Reset(clonk);
 	return true;
 }
 
-protected func DoSwing(object clonk, int ix, int iy)
+protected func DoSwing(object clonk, float ix, float iy)
 {
 	var angle = Angle(0,0,ix,iy);
 
@@ -148,7 +148,7 @@ func FxIntPickaxeTimer(clonk, effect, time)
 	clonk->SetYDir(Cos(angle,-speed),100);
 }
 
-protected func ControlUseCancel(object clonk, int ix, int iy)
+protected func ControlUseCancel(object clonk, num ix, num iy)
 {
   Reset(clonk);
 	return true;

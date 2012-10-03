@@ -194,6 +194,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PushInt(pCPos->Par.i);
 				break;
 
+			case AB_FLOAT:
+				PushValue(C4VFloat(pCPos->Par.fl));
+				break;
+
 			case AB_BOOL:
 				PushBool(!!pCPos->Par.i);
 				break;
@@ -292,68 +296,67 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				pCurVal->SetBool(!pCurVal->getBool());
 				break;
 			case AB_Neg:  // -
-				CheckOpPar(C4V_Int, "-");
-				pCurVal->SetInt(-pCurVal->_getInt());
+				CheckOpPar(C4V_Numeric, "-");
+				pCurVal->Set(-*pCurVal);
 				break;
 			case AB_Inc: // ++
-				CheckOpPar(C4V_Int, "++");
+				CheckOpPar(C4V_Numeric, "++");
 				++(*pCurVal);
 				break;
 			case AB_Dec: // --
-				CheckOpPar(C4V_Int, "--");
+				CheckOpPar(C4V_Numeric, "--");
 				--(*pCurVal);
 				break;
 			// postfix
 			case AB_Pow:  // **
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "**");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "**");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(Pow(pPar1->_getInt(), pPar2->_getInt()));
+				pPar1->Set(pPar1->Pow(*pPar2));
 				PopValue();
 				break;
 			}
 			case AB_Div:  // /
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "/");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "/");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (!pPar2->_getInt())
 					throw new C4AulExecError("division by zero");
-				pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
+				*pPar1 /= *pPar2;
 				PopValue();
 				break;
 			}
 			case AB_Mul:  // *
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "*");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "*");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() * pPar2->_getInt());
+				*pPar1 *= *pPar2;
 				PopValue();
 				break;
 			}
 			case AB_Mod:  // %
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "%");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "%");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				if (pPar2->_getInt())
-					pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
-				else
-					pPar1->Set0();
+				if(!pPar2->_getInt())
+					throw new C4AulExecError("modulo operation with zero");
+				*pPar1 %= *pPar2;
 				PopValue();
 				break;
 			}
 			case AB_Sub:  // -
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "-");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "-");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() - pPar2->_getInt());
+				*pPar1 -= *pPar2;
 				PopValue();
 				break;
 			}
 			case AB_Sum:  // +
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "+");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "+");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetInt(pPar1->_getInt() + pPar2->_getInt());
+				*pPar1 += *pPar2;
 				PopValue();
 				break;
 			}
@@ -375,33 +378,33 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			}
 			case AB_LessThan: // <
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "<");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "<");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() < pPar2->_getInt());
+				pPar1->SetBool(*pPar1 < *pPar2);
 				PopValue();
 				break;
 			}
 			case AB_LessThanEqual:  // <=
 			{
-				CheckOpPars(C4V_Int, C4V_Int, "<=");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, "<=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() <= pPar2->_getInt());
+				pPar1->SetBool(*pPar1 <= *pPar2);
 				PopValue();
 				break;
 			}
 			case AB_GreaterThan:  // >
 			{
-				CheckOpPars(C4V_Int, C4V_Int, ">");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, ">");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() > pPar2->_getInt());
+				pPar1->SetBool(*pPar1 > *pPar2);
 				PopValue();
 				break;
 			}
 			case AB_GreaterThanEqual: // >=
 			{
-				CheckOpPars(C4V_Int, C4V_Int, ">=");
+				CheckOpPars(C4V_Numeric, C4V_Numeric, ">=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-				pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
+				pPar1->SetBool(*pPar1 >= *pPar2);
 				PopValue();
 				break;
 			}
@@ -856,6 +859,9 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();
 	if (pSFunc)
 	{
+		// Convert numeric parameters
+		for (int i = 0; i < pFunc->GetParCount(); i++)
+			pPars[i].NumericConversion(pTypes[i]); // Enforce numerics to have the right type, does nothing for other variables
 		// Push a new context
 		C4AulScriptContext ctx;
 		ctx.Obj = pContext;

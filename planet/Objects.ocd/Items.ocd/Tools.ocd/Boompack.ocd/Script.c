@@ -74,13 +74,13 @@ func ControlJump(object clonk)
 	return true;
 }
 
-func ControlUseStart(object clonk, int x, int y)
+func ControlUseStart(object clonk, num x, num y)
 {
 	// forward control to item
 	if(clonk->GetProcedure()=="ATTACH") return false;
 }
 
-func ControlUse(object clonk, int x, int y)
+func ControlUse(object clonk, num x, num y)
 {
 	// forward control to item
 	if(clonk->GetProcedure()=="ATTACH") return false;
@@ -130,7 +130,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	fuel--;
 }
 
-private func JumpOff(object clonk, int speed)
+private func JumpOff(object clonk, float speed)
 {
 	rider = nil;
 
@@ -183,7 +183,7 @@ public func OnUnmount(clonk)
 	return true;
 }
 
-func Launch(int angle, object clonk)
+func Launch(float angle, object clonk)
 {
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
@@ -228,7 +228,7 @@ func SetFuel(int new)
 	fuel = new;
 }
 
-func SetDirectionDeviation(int new)
+func SetDirectionDeviation(num new)
 {
 	dirdev = new;
 }

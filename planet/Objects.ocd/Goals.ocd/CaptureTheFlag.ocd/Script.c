@@ -39,7 +39,7 @@ private func GetScoreGoal()
 	return 1;
 }
 
-public func SetFlagBase(int team, int x, int y)
+public func SetFlagBase(int team, float x, float y)
 {
 	var base = CreateObject(Goal_FlagBase, x, y, NO_OWNER);
 	base->SetTeam(team);
@@ -72,7 +72,7 @@ private func EliminateOthers(int win_team)
 	return;
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(int plr, num x, num y, object base, int team)
 {
 	// Join new clonk.
 	JoinPlayer(plr);
