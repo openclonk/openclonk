@@ -31,7 +31,7 @@ public func SetSize(int to_size)
 	return;
 }
 
-public func SetMoveSpeed(int speed)
+public func SetMoveSpeed(num speed)
 {
 	ActMap.Moving.Speed = Max(0, speed);
 	return;
@@ -39,7 +39,7 @@ public func SetMoveSpeed(int speed)
 
 /*-- Horizontal movement --*/
 
-public func MoveHorizontal(int left, int right, int speed)
+public func MoveHorizontal(num left, num right, num speed)
 {
 	var effect = AddEffect("MoveHorizontal", this, 100, 1, this);
 	effect.Left = left;
@@ -65,7 +65,7 @@ private func FxMoveHorizontalTimer(object target, proplist effect)
 
 /*-- Vertical movement --*/
 
-public func MoveVertical(int top, int bottom, int speed)
+public func MoveVertical(num top, num bottom, num speed)
 {
 	var effect = AddEffect("MoveVertical", this, 100, 1, this);
 	effect.Top = top;

@@ -79,6 +79,8 @@
 #define C4AUL_VarNamed      "var"
 
 #define C4AUL_TypeInt       "int"
+#define C4AUL_TypeFloat     "float"
+#define C4AUL_TypeNumeric   "num"
 #define C4AUL_TypeBool      "bool"
 #define C4AUL_TypeC4ID      "id"
 #define C4AUL_TypeDef       "def"
@@ -103,6 +105,7 @@ enum C4AulTokenType
 	ATT_DIR,    // directive
 	ATT_IDTF,   // identifier
 	ATT_INT,    // integer constant
+	ATT_FLOAT,  // floating point constant
 	ATT_STRING, // string constant
 	ATT_DOT,    // "."
 	ATT_COMMA,  // ","
@@ -366,24 +369,24 @@ static C4ScriptOpDef C4ScriptOpMap[] =
 	// |  |     Bytecode            Result   |  |  no second id
 	// |  |     |                   Modifier |  |  |  RetType   ParType1    ParType2
 	// prefix
-	{ 15, "++", AB_Inc,             AB_ERR,  0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "--", AB_Dec,             AB_ERR,  0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "++", AB_Inc,             AB_ERR,  0, 1, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
+	{ 15, "--", AB_Dec,             AB_ERR,  0, 1, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
 	{ 15, "~",  AB_BitNot,          AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
 	{ 15, "!",  AB_Not,             AB_ERR,  0, 0, 0, C4V_Bool, C4V_Bool,   C4V_Any},
-	{ 15, "+",  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 15, "-",  AB_Neg,             AB_ERR,  0, 0, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "+",  AB_ERR,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
+	{ 15, "-",  AB_Neg,             AB_ERR,  0, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Any},
 	
 	// postfix (whithout second statement)
-	{ 16, "++", AB_Inc,             AB_Dec,  1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
-	{ 16, "--", AB_Dec,             AB_Inc,  1, 1, 1, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 16, "++", AB_Inc,             AB_Dec,  1, 1, 1, C4V_Int,  C4V_Numeric,    C4V_Any},
+	{ 16, "--", AB_Dec,             AB_Inc,  1, 1, 1, C4V_Int,  C4V_Numeric,    C4V_Any},
 	
 	// postfix
-	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 14, "**", AB_Pow,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Numeric,    C4V_Numeric},
+	{ 13, "/",  AB_Div,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
+	{ 13, "*",  AB_Mul,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 13, "%",  AB_Mod,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
-	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "-",  AB_Sub,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
+	{ 12, "+",  AB_Sum,             AB_ERR,  1, 0, 0, C4V_Any,  C4V_Numeric,    C4V_Numeric},
 	{ 11, "<<", AB_LeftShift,       AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 11, ">>", AB_RightShift,      AB_ERR,  1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 10, "<",  AB_LessThan,        AB_ERR,  1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
@@ -447,6 +450,39 @@ int C4AulParse::GetOperator(const char* pScript)
 	return maxfound;
 }
 
+static C4Value StrToV(const char *s, const char **scan_end)
+{
+	C4Value ret(0);
+	const char * orig = s;
+	if (*s == '0' && s[1] == 'x')
+	{
+		ret.SetInt(StrToI32(s+2, 16, scan_end)); // hexadecimal
+		return ret;
+	}
+	if (Inside(*s, '0', '9'))
+	{
+		ret.SetInt(StrToI32(s, 10, &s));
+		*scan_end = s;
+	}
+	if (*s == '.' || *s == 'e' || *s == 'E')
+	{
+		std::istringstream parsf(orig);
+		parsf.imbue(std::locale::classic());
+		float result;
+		parsf >> result;
+		ret.SetFloat(result);
+		while (Inside(*++s, '0', '9'));
+		if (*s == 'e' || *s == 'E')
+		{
+			++s;
+			if(*s == '+' || *s == '-') ++s;
+			while(Inside(*++s, '0', '9'));
+		}
+		*scan_end = s;
+	}
+	return ret;
+}
+
 void C4AulParse::ClearToken()
 {
 	// if last token was a string, make sure its ref is deleted
@@ -490,20 +526,18 @@ C4AulTokenType C4AulParse::GetNextToken(OperatorPolicy Operator)
 	else if (C == ')') return ATT_BCLOSE; // ")"
 	else if (C == ',') return ATT_COMMA;  // ","
 	else if (C == ';') return ATT_SCOLON; // ";"
-	else if (Inside(C, '0', '9'))
+	else if (Inside(C, '0', '9') || (C == '.' && Inside(*SPos, '0', '9')))
 	{
-		// integer
-		if (C == '0' && *SPos == 'x')
-		{
-			// hexadecimal
-			cInt = StrToI32(SPos + 1, 16, &SPos);
+		C4Value v = StrToV(TokenSPos, &SPos);
+		cInt = v.GetData().Int; // Store "raw" data, ignore type
+		if(v.GetType() == C4V_Float)
+			return ATT_FLOAT;
+		else if(v.GetType() == C4V_Int)
 			return ATT_INT;
-		}
 		else
 		{
-			// decimal
-			cInt = StrToI32(TokenSPos, 10, &SPos);
-			return ATT_INT;
+			assert(!"StrToV must return float or int");
+			throw new C4AulParseError(this, "Internal Error, (unexpected return value from StrToV) consider posting this to http://bugs.openclonk.org/");
 		}
 	}
 	else if (C == '-' && *SPos == '>' && *(SPos + 1) == '~')
@@ -667,6 +701,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CALLFS: return "CALLFS";  // failsafe direct call
 	case AB_STACK: return "STACK";    // push nulls / pop
 	case AB_INT: return "INT";      // constant: int
+	case AB_FLOAT: return "FLOAT";  // constant: float
 	case AB_BOOL: return "BOOL";    // constant: bool
 	case AB_STRING: return "STRING";  // constant: string
 	case AB_CPROPLIST: return "CPROPLIST"; // constant: proplist
@@ -819,6 +854,7 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	switch (eType)
 	{
 	case AB_INT:
+	case AB_FLOAT:
 	case AB_BOOL:
 	case AB_STRING:
 	case AB_CPROPLIST:
@@ -1463,6 +1499,8 @@ void C4AulParse::Parse_Function()
 		// type identifier?
 		C4V_Type t = C4V_Any;
 		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeNumeric)) { t = C4V_Numeric; Shift(); }
+		else if (SEqual(Idtf, C4AUL_TypeFloat)) { t = C4V_Float; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeBool)) { t = C4V_Bool; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeC4ID)) { t = C4V_Def; Shift(); }
 		else if (SEqual(Idtf, C4AUL_TypeDef)) { t = C4V_Def; Shift(); }
@@ -2380,6 +2418,12 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 					{
 					case C4V_Nil:  AddBCC(AB_NIL,  0); break;
 					case C4V_Int:  AddBCC(AB_INT,  val.GetData().Int); break;
+					case C4V_Float:
+					{
+						C4Real::StorageType f = val.getFloat();
+						AddBCC(AB_FLOAT, *reinterpret_cast<intptr_t*>(&f));
+						break;
+					}
 					case C4V_Bool: AddBCC(AB_BOOL, val.GetData().Int); break;
 					case C4V_String:
 						AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
@@ -2410,6 +2454,12 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 	case ATT_INT: // constant in cInt
 	{
 		AddBCC(AB_INT, cInt);
+		Shift();
+		break;
+	}
+	case ATT_FLOAT: // constant in cInt
+	{
+		AddBCC(AB_FLOAT, cInt);
 		Shift();
 		break;
 	}

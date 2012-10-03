@@ -25,6 +25,7 @@
 #include <C4Object.h>
 #include <C4Effect.h>
 #include <C4DefList.h>
+#include "C4Numeric.h"
 
 inline const static char *FnStringPar(C4String *pString)
 {
@@ -127,8 +128,22 @@ template <> struct C4ValueConv<int32_t>
 {
 	inline static C4V_Type Type() { return C4V_Int; }
 	inline static int32_t FromC4V(C4Value &v) { return v.getInt(); }
-	inline static int32_t _FromC4V(C4Value &v) { return v._getInt(); }
+	inline static int32_t _FromC4V(C4Value &v) { return v.getInt(); }
 	inline static C4Value ToC4V(int32_t v) { return C4VInt(v); }
+};
+template <> struct C4ValueConv<C4Real>
+{
+	inline static C4V_Type Type() { return C4V_Float; }
+	inline static C4Real FromC4V(C4Value &v) { return v.getFloat(); }
+	inline static C4Real _FromC4V(C4Value &v) { return v.getFloat(); }
+	inline static C4Value ToC4V(C4Real v) { return C4Value(v); }
+};
+template <> struct C4ValueConv<C4Numeric>
+{
+	inline static C4V_Type Type() { return C4V_Numeric; }
+	inline static C4Numeric FromC4V(C4Value &v) { return v; }
+	inline static C4Numeric _FromC4V(C4Value &v) { return C4Numeric(v, C4Numeric::unchecked); }
+	inline static C4Value ToC4V(C4Numeric v) { return v.getVal(); }
 };
 template <> struct C4ValueConv<bool>
 {

@@ -332,7 +332,7 @@ public:
 	void PlrFoWActualize();
 	void SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY);
 	bool IsVisible(int32_t iForPlr, bool fAsOverlay);  // return whether an object is visible for the given player
-	void SetRotation(int32_t nr);
+	void SetRotation(C4Real nr);
 	void PrepareDrawing();  // set blit modulation and/or additive blitting
 	void FinishedDrawing(); // reset any modulation
 	void DrawSolidMask(C4TargetFacet &cgo);     // draw topface image only

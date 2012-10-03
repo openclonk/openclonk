@@ -84,7 +84,7 @@ func AdjustPreview(bool look_up, bool no_call)
 
 // Positions the preview according to the mouse cursor, calls AdjustPreview afterwards
 // x and y are refined mouse coordinates so always centered at the clonk
-func Reposition(int x, int y)
+func Reposition(float x, float y)
 {
 	x = BoundBy(x, -dimension_x/2, dimension_x/2);
 	y = BoundBy(y, -dimension_y/2, dimension_y/2);

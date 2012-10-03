@@ -734,7 +734,7 @@ local virtual_cursor;
 local noholdingcallbacks;
 
 /* Main control function */
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
+public func ObjectControl(int plr, int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 	if (!this) 
 		return false;
@@ -1181,7 +1181,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	return false;
 }
 
-public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
+public func ObjectControlMovement(int plr, int ctrl, num strength, bool release)
 {
 	// from PlayerControl.c
 	var result = inherited(plr,ctrl,strength,release,...);
@@ -1202,7 +1202,7 @@ public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 	return result;
 }
 
-public func ObjectCommand(string command, object target, int tx, int ty, object target2)
+public func ObjectCommand(string command, object target, num tx, num ty, object target2)
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
@@ -1263,7 +1263,7 @@ private func GetUseCallString(string action) {
 	return Format("~%sUse%s%s",control,estr,action);
 }
 
-private func StartUseControl(int ctrl, int x, int y, object obj)
+private func StartUseControl(int ctrl, num x, num y, object obj)
 {
 	using = obj;
 	using_type = DetermineUsageType(obj);
@@ -1308,7 +1308,7 @@ private func StartUseDelayedControl(int ctrl, object obj)
 	return handled;
 }
 
-private func CancelUseControl(int x, int y)
+private func CancelUseControl(num x, num y)
 {
 	// to horse first (if there is one)
 	var horse = GetActionTarget();
@@ -1318,7 +1318,7 @@ private func CancelUseControl(int x, int y)
 	return StopUseControl(x, y, using, true);
 }
 
-private func StopUseControl(int x, int y, object obj, bool cancel)
+private func StopUseControl(num x, num y, object obj, bool cancel)
 {
 	var stop = "Stop";
 	if (cancel) stop = "Cancel";
@@ -1347,7 +1347,7 @@ private func StopUseControl(int x, int y, object obj, bool cancel)
 	return handled;
 }
 
-private func HoldingUseControl(int ctrl, int x, int y, object obj)
+private func HoldingUseControl(int ctrl, num x, num y, object obj)
 {
 	var mex = x;
 	var mey = y;
@@ -1424,7 +1424,7 @@ private func StopUseDelayedControl(object obj)
 
 /* Control to menu */
 
-private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
+private func Control2Menu(int ctrl, num x, num y, num strength, bool repeat, bool release)
 {
 
 	/* all this stuff is already done on a higher layer - in playercontrol.c
@@ -1454,7 +1454,7 @@ private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, boo
 }
 
 // Control use redirected to script
-private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+private func ControlUse2Script(int ctrl, num x, num y, num strength, bool repeat, bool release, object obj)
 {
 	// click on secondary cancels primary and the other way round
 	if (using)
@@ -1511,7 +1511,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 }
 
 // Control use redirected to script
-private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+private func ControlMovement2Script(int ctrl, num x, num y, num strength, bool repeat, bool release, object obj)
 {
 	// overloads of movement commandos
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
@@ -1855,7 +1855,7 @@ func Selected(object mnu, object mnu_item, bool alt)
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 
 // Throwing
-private func DoThrow(object obj, int angle)
+private func DoThrow(object obj, float angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
@@ -1883,7 +1883,7 @@ private func DoThrow(object obj, int angle)
 }
 
 // custom throw
-public func ControlThrow(object target, int x, int y)
+public func ControlThrow(object target, num x, num y)
 {
 	// standard throw after all
 	if (!x && !y) return false;

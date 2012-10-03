@@ -48,7 +48,7 @@ protected func Initialize()
 
 /*-- Checkpoint creation --*/
 
-public func SetStartpoint(int x, int y)
+public func SetStartpoint(float x, float y)
 {
 	// Safety, x and y inside landscape bounds.
 	x = BoundBy(x, 0, LandscapeWidth());
@@ -63,7 +63,7 @@ public func SetStartpoint(int x, int y)
 	return cp;
 }
 
-public func SetFinishpoint(int x, int y, bool team)
+public func SetFinishpoint(float x, float y, bool team)
 {
 	// Safety, x and y inside landscape bounds.
 	x = BoundBy(x, 0, LandscapeWidth());
@@ -82,7 +82,7 @@ public func SetFinishpoint(int x, int y, bool team)
 	return cp;
 }
 
-public func AddCheckpoint(int x, int y, int mode)
+public func AddCheckpoint(float x, float y, int mode)
 {
 	// Safety, x and y inside landscape bounds.
 	x = BoundBy(x, 0, LandscapeWidth());
@@ -305,7 +305,7 @@ private func IsWinner(int plr)
 
 /*-- Player section --*/
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(int plr, num x, num y, object base, int team)
 {
 	// If the parkour is already finished, then immediately eliminate player.
 	if (finished)

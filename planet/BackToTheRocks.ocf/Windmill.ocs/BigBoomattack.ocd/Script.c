@@ -83,7 +83,7 @@ protected func Hit()
 	DoDrill(0);
 }
 
-func DoDrill(int angle)
+func DoDrill(float angle)
 {
 	var x = Sin(angle+GetR(), 40);
 	var y = -Cos(angle+GetR(), 40);

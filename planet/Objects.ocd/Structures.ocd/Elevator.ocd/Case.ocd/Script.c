@@ -319,7 +319,7 @@ func CheckIdle()
 // Moves the case to the specific y-coordinate
 // delay in frames, so the elevator does not freak out
 // target will be checked again for COMD_Stop and distance after delay run out
-func MoveTo(int y, int delay, object target)
+func MoveTo(num y, int delay, object target)
 {
 	// Not idle?
 	if (!CheckIdle()) return false;

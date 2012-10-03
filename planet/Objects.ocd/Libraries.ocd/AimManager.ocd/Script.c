@@ -34,10 +34,10 @@
 	GetAnimationSet();         // Has to return the animation set
 	// The following Stop* Callbacks, have to return true if the clonk doesn't have to be reset (e.g. stating aiming after loading)
 	FinishedLoading(object clonk);             // When the loading animation is over (after LoadTime frames)
-	FinishedAiming(object clonk, int angle);   // When the clonk has finished loading and aiming at the disired position
-	FinishedShooting(object clonk, int angle); // When the shooting animation is over (after ShootTime frames)
+	FinishedAiming(object clonk, float angle);   // When the clonk has finished loading and aiming at the disired position
+	FinishedShooting(object clonk, float angle); // When the shooting animation is over (after ShootTime frames)
 	DuringLoad(object clonk);                  // LoadTime2 frames after load start
-	DuringShoot(object clonk, int angle);      // ShootTime2 frames after shoot start
+	DuringShoot(object clonk, float angle);      // ShootTime2 frames after shoot start
 	// When the clonk has during aiming an action where he can't use his hands, the aiming is paused
 	OnPauseAim(object clonk);  // Callback when the clonk has to pause the aiming
 	OnRestartAim(object clonk);// Callback when the clonk want's to restart aiming. Has to return true if aiming again is possible
@@ -46,7 +46,7 @@
 	The Weapon can use the following functions on the clonk:
 	StartLoad(object weapon);    // The weapon wants to start loading (e.g. on ControlUseStart)
 	StartAim(object weapon);     // The weapon wants to switch in aim mode (e.g. after loading on StopLoad)
-	SetAimPosition(int angle);   // The weapon specifies a new angle (e.g. on  ControlUseHolding)
+	SetAimPosition(float angle);   // The weapon specifies a new angle (e.g. on  ControlUseHolding)
 	StopAim();                   // The weapon wants to shoot (e.g. on ControlUseStop) BUT: the stop is just scheduled! The clonk finished loading or aiming and then really stops aiming!
 	StartShoot(object weapon);   // The weapon wants to start the shoot animation (e.g. on StopAim)
 
@@ -239,7 +239,7 @@ public func StopLoad()
 		ResetHands();
 }
 
-public func StartAim(object weapon, int angle)
+public func StartAim(object weapon, float angle)
 {
 	// only if we aren't adjusted to this weapon already
 	if(weapon != aim_weapon)
@@ -306,7 +306,7 @@ func FxIntAimTimer(target, effect, time)
 	}
 }
 
-public func SetAimPosition(int angle)
+public func SetAimPosition(float angle)
 {
 	// Save angle
 	aim_angle = angle;

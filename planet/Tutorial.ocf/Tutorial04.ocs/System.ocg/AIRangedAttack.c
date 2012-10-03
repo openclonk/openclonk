@@ -2,7 +2,7 @@
 
 #appendto Clonk
 
-protected func AI_RangedAttack(object clonk, int x, int y, object target)
+protected func AI_RangedAttack(object clonk, num x, num y, object target)
 {
 	clonk->AI_LogCommandStack();
 	clonk->AI_Log("Ranged attack on %s", target->GetName());

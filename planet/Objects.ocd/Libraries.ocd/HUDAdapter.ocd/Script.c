@@ -83,7 +83,7 @@ protected func OnNameChanged()
 	return _inherited(...);
 }
 
-protected func OnPhysicalChange(string physical, int change)
+protected func OnPhysicalChange(string physical, num change)
 {
 	if (HUDselector)
 	{		

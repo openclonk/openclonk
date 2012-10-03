@@ -163,7 +163,7 @@ protected func Damage()
 }
 
 // restarts the growing of the tree (for example after taking damage)
-func RestartGrowth(int old_value)
+func RestartGrowth(num old_value)
 {
 	var g = GetGrowthValue(); // safety
 	if(g) StopGrowth();

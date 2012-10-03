@@ -6,13 +6,13 @@
 --*/
 
 // Returns the offset to x.
-global func AbsX(int x)
+global func AbsX(float x)
 {
 	return x - GetX();
 }
 
 // Returns the offset to y.
-global func AbsY(int y)
+global func AbsY(float y)
 {
 	return y - GetY();
 }
@@ -33,7 +33,7 @@ global func RandomX(int start, int end)
 }
 
 // Returns the sign of x.
-global func Sign(int x)
+global func Sign(num x)
 {
 	if (x > 0)
 		return 1;
@@ -43,12 +43,12 @@ global func Sign(int x)
 }
 
 // Tangens.
-global func Tan(int angle, int radius, int prec)
+global func Tan(num angle, num radius, int prec)
 {
 	return radius * Sin(angle, radius * 100, prec) / Cos(angle, radius * 100, prec);
 }
 
-global func Normalize(int angle, int start, int precision)
+global func Normalize(num angle, num start, int precision)
 {
 	if (!precision)
 		precision = 1;
@@ -80,8 +80,8 @@ global func ComDirLike(int comdir1, int comdir2)
 // the shortest direction (left/right) to turn from one angle to another
 // (for example for homing projectiles or aiming)
 global func GetTurnDirection(
-	int from /* the angle at which the turning starts */
-	, int to /* the angle that should be turned towards */)
+	num from /* the angle at which the turning starts */
+	, num to /* the angle that should be turned towards */)
 {
 /*
 	// code for a homing missile

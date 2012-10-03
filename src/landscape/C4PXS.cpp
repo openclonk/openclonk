@@ -331,6 +331,17 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
 		       itofix(Random(level+1)-level)/10);
 }
 
+#include <boost/static_assert.hpp>
+namespace
+{
+	struct C4PXSSystem_Chunk
+	{
+		int32_t mat;
+		float x,y,xdir,ydir;
+	};
+	BOOST_STATIC_ASSERT(sizeof(C4PXSSystem_Chunk) == 4 + 4*4);
+}
+
 bool C4PXSSystem::Save(C4Group &hGroup)
 {
 	unsigned int cnt;
@@ -352,17 +363,23 @@ bool C4PXSSystem::Save(C4Group &hGroup)
 	CStdFile hTempFile;
 	if (!hTempFile.Create(Config.AtTempPath(C4CFN_TempPXS)))
 		return false;
-#ifdef C4REAL_USE_FIXNUM
-	int32_t iNumFormat = 1;
-#else
-	int32_t iNumFormat = 2;
-#endif
-	if (!hTempFile.Write(&iNumFormat, sizeof (iNumFormat)))
-		return false;
+
 	for (cnt=0; cnt<PXSMaxChunk; cnt++)
 		if (Chunk[cnt]) // must save all chunks in order to keep order consistent on all clients
-			if (!hTempFile.Write(Chunk[cnt],PXSChunkSize * sizeof(C4PXS)))
+		{
+			// Serialize chunk
+			C4PXSSystem_Chunk serialize_buffer[PXSChunkSize];
+			for (size_t chunk_idx = 0; chunk_idx < PXSChunkSize; ++chunk_idx)
+			{
+				serialize_buffer[chunk_idx].mat = Chunk[cnt][chunk_idx].Mat;
+				serialize_buffer[chunk_idx].x = Chunk[cnt][chunk_idx].x;
+				serialize_buffer[chunk_idx].y = Chunk[cnt][chunk_idx].y;
+				serialize_buffer[chunk_idx].xdir = Chunk[cnt][chunk_idx].xdir;
+				serialize_buffer[chunk_idx].ydir = Chunk[cnt][chunk_idx].ydir;
+			}
+			if (!hTempFile.Write(&serialize_buffer, sizeof(serialize_buffer)))
 				return false;
+		}
 
 	if (!hTempFile.Close())
 		return false;
@@ -383,36 +400,29 @@ bool C4PXSSystem::Load(C4Group &hGroup)
 	if (!hGroup.AccessEntry(C4CFN_PXS,&iBinSize)) return false;
 	// clear previous
 	Clear();
-	// using C4Real or float?
-	int32_t iNumForm = 1;
-	if (iBinSize % iChunkSize == 4)
-	{
-		if (!hGroup.Read(&iNumForm, sizeof (iNumForm))) return false;
-		if (!Inside<int32_t>(iNumForm, 1, 2)) return false;
-		iBinSize -= 4;
-	}
-	// old pxs-files have no tag for the number format
-	else if (iBinSize % iChunkSize != 0) return false;
 	// calc chunk count
 	iChunkNum = iBinSize / iChunkSize;
 	if (iChunkNum > PXSMaxChunk) return false;
 	for (uint32_t cnt=0; cnt<iChunkNum; cnt++)
 	{
-		if (!(Chunk[cnt]=new C4PXS[PXSChunkSize])) return false;
-		if (!hGroup.Read(Chunk[cnt],iChunkSize)) return false;
+		Chunk[cnt] = new C4PXS[PXSChunkSize];
+		// De-serialize chunk
+		C4PXSSystem_Chunk serialize_buffer[PXSChunkSize];
+		if (!hGroup.Read(&serialize_buffer, sizeof(serialize_buffer))) return false;
+		for (size_t chunk_idx = 0; chunk_idx < PXSChunkSize; ++chunk_idx)
+		{
+			Chunk[cnt][chunk_idx].Mat = serialize_buffer[chunk_idx].mat;
+			Chunk[cnt][chunk_idx].x = serialize_buffer[chunk_idx].x;
+			Chunk[cnt][chunk_idx].y = serialize_buffer[chunk_idx].y;
+			Chunk[cnt][chunk_idx].xdir = serialize_buffer[chunk_idx].xdir;
+			Chunk[cnt][chunk_idx].ydir = serialize_buffer[chunk_idx].ydir;
+		}
 		// count the PXS, Peter!
-		// convert num format, if neccessary
 		C4PXS *pxp; iChunkPXS[cnt]=0;
 		for (cnt2=0,pxp=Chunk[cnt]; cnt2<PXSChunkSize; cnt2++,pxp++)
 			if (pxp->Mat != MNone)
 			{
 				++iChunkPXS[cnt];
-				// convert number format
-#ifdef C4REAL_USE_FIXNUM
-				if (iNumForm == 2) { FLOAT_TO_FIXED(&pxp->x); FLOAT_TO_FIXED(&pxp->y); FLOAT_TO_FIXED(&pxp->xdir); FLOAT_TO_FIXED(&pxp->ydir); }
-#else
-				if (iNumForm == 1) { FIXED_TO_FLOAT(&pxp->x); FIXED_TO_FLOAT(&pxp->y); FIXED_TO_FLOAT(&pxp->xdir); FIXED_TO_FLOAT(&pxp->ydir); }
-#endif
 			}
 	}
 	return true;

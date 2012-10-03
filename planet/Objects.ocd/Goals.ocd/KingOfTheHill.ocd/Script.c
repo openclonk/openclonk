@@ -107,7 +107,7 @@ public func GetRadius()
 	return radius;
 }
 
-public func SetRadius(int to)
+public func SetRadius(num to)
 {
 	radius=to;
 }
@@ -120,7 +120,7 @@ func DoPoint(int player, int count)
 	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
 }
 
-protected func InitializePlayer(int plr, int x, int y, object base, int team)
+protected func InitializePlayer(int plr, num x, num y, object base, int team)
 {
 	Scoreboard->NewPlayerEntry(plr);
 	player_suicides[plr]=0;

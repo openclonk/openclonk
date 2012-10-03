@@ -20,7 +20,7 @@ func Initialize()
 	AddEffect("MossMoisture",this,100,36,this);
 }
 
-public func ControlUse(object clonk, int x, int y, bool box)
+public func ControlUse(object clonk, num x, num y, bool box)
 {
 	if(!clonk->~IsWalking()) return true;
 	// Search for ground

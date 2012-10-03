@@ -126,7 +126,7 @@ static Nillable<long> FnGetY(C4PropList * _this, long iPrec)
 }
 
 static C4Object *FnCreateObject(C4PropList * _this,
-                                C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner)
+                                C4PropList * PropList, C4Real iXOffset, C4Real iYOffset, Nillable<long> owner)
 {
 	if (Object(_this)) // Local object calls override
 	{
@@ -1240,6 +1240,7 @@ protected:
 	virtual void ProcessChar(char &rChar) = 0;
 	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID) = 0;
 	virtual void ProcessString(char **pszString, bool fIsID) = 0;
+	virtual void ProcessFloat(float &) = 0;
 
 public:
 	// value functions
@@ -1251,6 +1252,7 @@ public:
 	virtual void Byte(uint8_t &rByte)      { if (haveCompleteMatch()) if (!iEntryNr--) { int32_t i=rByte;  ProcessInt(i); rByte =i; } }
 	virtual void Boolean(bool &rBool)      { if (haveCompleteMatch()) if (!iEntryNr--) ProcessBool(rBool); }
 	virtual void Character(char &rChar)    { if (haveCompleteMatch()) if (!iEntryNr--) ProcessChar(rChar); }
+	virtual void Float(float &rFloat)      { if (haveCompleteMatch()) if (!iEntryNr--) ProcessFloat(rFloat); }
 
 	// The C4ID-Adaptor will set RCT_ID for it's strings (see C4Id.h), so we don't have to guess the type.
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType)
@@ -1296,9 +1298,10 @@ public:
 
 protected:
 	// get values as C4Value
-	virtual void ProcessInt(int32_t &rInt) { Res = C4VInt(rInt); }
-	virtual void ProcessBool(bool &rBool)  { Res = C4VBool(rBool); }
-	virtual void ProcessChar(char &rChar)  { Res = C4VString(FormatString("%c", rChar)); }
+	virtual void ProcessInt(int32_t &rInt)   { Res = C4VInt(rInt); }
+	virtual void ProcessBool(bool &rBool)    { Res = C4VBool(rBool); }
+	virtual void ProcessChar(char &rChar)    { Res = C4VString(FormatString("%c", rChar)); }
+	virtual void ProcessFloat(float &rFloat) { Res = C4VFloat(rFloat); }
 
 	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID)
 	{ Res = (fIsID ? C4VPropList(C4Id2Def(C4ID(szString))) : C4VString(szString)); }

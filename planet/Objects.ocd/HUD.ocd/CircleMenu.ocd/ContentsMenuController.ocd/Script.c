@@ -559,7 +559,7 @@ private func MoveObjects(proplist p_source, proplist p_target, object menuItem, 
 
 /* Interface to menu item as commander_object */
 
-public func OnMouseClick(int x, int y, bool alt)
+public func OnMouseClick(num x, num y, bool alt)
 {
 	// Close menu if not clicked on one of the menus.
 	var menu = FindObject(Find_Distance(160, x, y), Find_ID(GUI_CircleMenu));

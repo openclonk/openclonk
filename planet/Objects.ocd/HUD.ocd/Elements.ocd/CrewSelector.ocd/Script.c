@@ -362,7 +362,7 @@ public func OnMouseOut(int plr)
 	SetGraphics(nil, nil);
 }
 
-public func FxGUIHealthMonitorDamage(object target, proplist effect, int damage, int cause)
+public func FxGUIHealthMonitorDamage(object target, proplist effect, num damage, int cause)
 {
 
 	var change = Abs(damage)/(target->GetMaxEnergy()*10);

@@ -338,7 +338,7 @@ private func ClearFlagMarkers()
 	lflag.range_markers = [];
 }
 
-public func SetFlagRadius(int to)
+public func SetFlagRadius(num to)
 {
 	lflag.radius = to;
 	

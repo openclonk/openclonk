@@ -60,7 +60,7 @@ local MuskUp; local MuskFront; local MuskDown; local MuskOffset;
 
 protected func HoldingEnabled() { return true; }
 
-func ControlUseStart(object clonk, int x, int y)
+func ControlUseStart(object clonk, num x, num y)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
@@ -129,7 +129,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func FinishedAiming(object clonk, int angle)
+public func FinishedAiming(object clonk, float angle)
 {
 	if(!loaded) return;
 	
@@ -140,7 +140,7 @@ public func FinishedAiming(object clonk, int angle)
 	return true;
 }
 
-protected func ControlUseCancel(object clonk, int x, int y)
+protected func ControlUseCancel(object clonk, num x, num y)
 {
 	clonk->CancelAiming(this);
 	return true;
@@ -151,7 +151,7 @@ public func Reset(clonk)
 	fAiming = 0;
 }
 
-private func FireWeapon(object clonk, int angle)
+private func FireWeapon(object clonk, float angle)
 {
 	var shot = Contents(0)->TakeObject();
 	shot->Launch(clonk,angle,iBarrel,200);

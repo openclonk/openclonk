@@ -18,7 +18,7 @@ public func GetCarryTransform()
 	return Trans_Mul(Trans_Rotate(-90, 0, 0, 1), Trans_Translate(-4000,3500));
 }
 
-public func ControlUseStart(object clonk, int iX, int iY)
+public func ControlUseStart(object clonk, num iX, num iY)
 {
 	// Can clonk use the bucket?
 	if (!clonk->IsWalking() && !clonk->IsJumping())
@@ -84,7 +84,7 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	return true;
 }
 
-private func Spill(int x, int y, bool soft_spill)
+private func Spill(num x, num y, bool soft_spill)
 {
 	// This will only spray out the material because no solid base to stick it on was found
 	if (soft_spill)

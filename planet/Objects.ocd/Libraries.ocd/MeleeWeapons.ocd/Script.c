@@ -218,7 +218,7 @@ func FxIntIsBeingStruckEffect(string szNewEffectName, object pTarget)
 	return 0;
 }
 
-func FxIntIsBeingStruckAdd (object pTarget, effect, string szNewEffectName, int iNewEffectTimer, int damage, int angle)
+func FxIntIsBeingStruckAdd (object pTarget, effect, string szNewEffectName, int iNewEffectTimer, num damage, float angle)
 {
 	// reset delay
 	effect.delay = 3;
@@ -386,14 +386,14 @@ func GetWeaponSlow(pClonk)
 	return EffectCall(nil, e, "GetWeaponSlow");
 }
 
-func ApplyWeaponBash(pTo, int strength, angle)
+func ApplyWeaponBash(pTo, num strength, angle)
 {
 	AddEffect("IntIsBeingStruck", pTo, 2, 1, nil, GetID(), strength, angle);
 }
 
-func TranslateVelocity(object pTarget, int angle, int iLimited, int iExtraVelocity)
+func TranslateVelocity(object pTarget, float angle, int iLimited, float iExtraVelocity)
 {
-	var speed=Sqrt((pTarget->GetXDir(100) ** 2) + (pTarget->GetYDir(100) ** 2)) + iExtraVelocity;
+	var speed=Distance(pTarget->GetXDir(100), pTarget->GetYDir(100)) + iExtraVelocity;
 	var a=Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
 	
 	if(iLimited)

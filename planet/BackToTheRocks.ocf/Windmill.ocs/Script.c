@@ -57,7 +57,7 @@ global func FxBoomAttackTimer(object target, effect, int time)
 	}
 }
 
-global func CreateAttackWave(int angle, int rockets, int anglespread)
+global func CreateAttackWave(float angle, int rockets, float anglespread)
 {
 	var radius = Min(LandscapeWidth()/2, LandscapeHeight()/2);
 	var rocket_id = Boomattack;
@@ -93,7 +93,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 	}
 }
 
-func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
+func InitializePlayer(int iPlr, float iX, float iY, object pBase, int iTeam)
 {
 	SetFoW(false,iPlr);
 	JoinPlayer(iPlr);

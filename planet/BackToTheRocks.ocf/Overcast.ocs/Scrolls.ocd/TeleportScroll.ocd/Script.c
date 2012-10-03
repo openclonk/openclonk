@@ -6,7 +6,7 @@
 --*/
 
 
-public func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, num x, num y)
 {
 	var pos = GetRandomSpawn();
 	x = pos[0];

@@ -93,7 +93,7 @@ private func FxIntAreaMonteCarloTimer()
 }
 
 // Returns whether the point (x,y) is covered by a flagpole.
-private func CoveredByFlag(int x, int y)
+private func CoveredByFlag(num x, num y)
 {
 	for (var flag in FindObjects(Find_Func("IsFlagpole"), Sort_Distance(x - GetX(), y - GetY())))
 		if (Distance(flag->GetX(), flag->GetY(), x, y) < flag->GetFlagRadius())

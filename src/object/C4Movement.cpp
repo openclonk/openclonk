@@ -237,7 +237,7 @@ void C4Object::DoMovement()
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
 				int32_t rad = pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
-				::Landscape.DigFree(ctcox,ctcoy-1,rad,this);
+				::Landscape.DigFree(ctcox,ctcoy,rad,this);
 			}
 		}
 
@@ -257,7 +257,7 @@ void C4Object::DoMovement()
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
+		if(xdir!=0) do
 		{
 			// Next step
 			int step = Sign<C4Real>(new_x - fix_x);
@@ -273,7 +273,7 @@ void C4Object::DoMovement()
 			}
 			else // Free horizontal movement
 				DoMotion(step, 0);
-		}
+		} while (Abs<C4Real>(fix_x - ctcox) >= C4Real(1));
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
 		new_y = fix_y + ydir;
@@ -281,7 +281,7 @@ void C4Object::DoMovement()
 		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
+		if (ydir != 0) do
 		{
 			// Next step
 			int step = Sign<C4Real>(new_y - fix_y);
@@ -309,7 +309,7 @@ void C4Object::DoMovement()
 			}
 			else // Free vertical movement
 				DoMotion(0,step);
-		}
+		} while (Abs<C4Real>(fix_y - ctcoy) >= C4Real(1));
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
@@ -357,7 +357,7 @@ void C4Object::DoMovement()
 			}
 			DoMotion(ctx - GetX(), cty - GetY());
 		}
-		while (ctcox != GetX() || ctcoy != GetY());
+		while (Abs<C4Real>(GetFixedX() - ctcox) >= C4Real(1) || Abs<C4Real>(GetFixedY() - ctcoy) >= C4Real(1));
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
@@ -459,7 +459,7 @@ void C4Object::DoMovement()
 	// Movement Script Execution
 	if (fAnyContact)
 	{
-		C4AulParSet pars(C4VInt(fixtoi(oldxdir, 100)), C4VInt(fixtoi(oldydir, 100)));
+		C4AulParSet pars(C4VFloat(oldxdir*100), C4VFloat(oldydir*100));
 		if (old_ocf & OCF_HitSpeed1) Call(PSF_Hit, &pars);
 		if (old_ocf & OCF_HitSpeed2) Call(PSF_Hit2, &pars);
 		if (old_ocf & OCF_HitSpeed3) Call(PSF_Hit3, &pars);
@@ -469,7 +469,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
+		if ((ix0-GetFixedX())||(iy0-GetFixedY())) UpdatePos();
 }
 
 void C4Object::Stabilize()

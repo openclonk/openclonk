@@ -12,7 +12,7 @@ public func AI_TargetInRange(object target)
 	return false;
 }
 
-protected func AI_SwordAttack(object clonk, int x, int y, object target)
+protected func AI_SwordAttack(object clonk, num x, num y, object target)
 {
 	clonk->AI_Log("Sword attack on %s", target->GetName());
 	

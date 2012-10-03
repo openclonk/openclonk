@@ -149,7 +149,7 @@ static const ProjectileHit_no_query_catch_blow_callback=2; // if you want to cal
 static const ProjectileHit_exact_damage=4; // exact damage, factor 1000
 static const ProjectileHit_no_on_projectile_hit_callback=8;
 
-global func ProjectileHit(object obj, int dmg, int flags, int damage_type)
+global func ProjectileHit(object obj, num dmg, int flags, int damage_type)
 {
 	if(flags == nil) flags=0;
 	if(!damage_type) damage_type=FX_Call_EngObjHit;

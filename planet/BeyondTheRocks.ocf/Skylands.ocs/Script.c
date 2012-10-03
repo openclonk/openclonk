@@ -26,7 +26,7 @@ func DoInit(int first_player)
 	return true;
 }
 
-func EnsureObject(id def, int x, int y, int owner)
+func EnsureObject(id def, float x, float y, int owner)
 {
 	var obj = FindObject(Find_ID(def));
 	if (!obj) obj = CreateObject(def,x,y,owner);

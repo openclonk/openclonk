@@ -308,7 +308,7 @@ func CloseEyes(iCounter)
 --*/
 
 /* Walking backwards */
-func SetBackwardsSpeed(int value)
+func SetBackwardsSpeed(num value)
 {
 	lAnim.backwardsSpeed = value;
 	UpdateBackwardsSpeed();
@@ -392,7 +392,7 @@ func Footstep()
 }
 
 
-func GetWalkAnimationPosition(string anim, int pos)
+func GetWalkAnimationPosition(string anim, num pos)
 {
 	var dir = -1;
 	if(GetDirection() == COMD_Right) dir = +1;
@@ -633,7 +633,7 @@ func FxIntScaleRotTimer(target, eff, time)
 	SetMeshTransformation(Trans_Mul(Trans_Translate(eff.oldX-turnx, eff.oldY-turny), Trans_Rotate(eff.oldR,0,0,1), Trans_Translate(turnx, turny)), 1);
 }
 
-func SetScaleRotation (int r, int xoff, int yoff, int rotZ, int turny, int instant) {
+func SetScaleRotation (num r, num xoff, num yoff, num rotZ, num turny, bool instant) {
 	if(r < -180) r += 360;
 	if(r > 180) r -= 360;
 	// set matrix values
@@ -750,7 +750,7 @@ func FxFallTimer(object target, effect, int timer)
 --*/
 
 /* Replaces the named action by an instance with a different speed */
-func PushActionSpeed(string action, int n)
+func PushActionSpeed(string action, num n)
 {
 	if (ActMap == this.Prototype.ActMap)
 		ActMap = { Prototype = this.Prototype.ActMap };
@@ -760,7 +760,7 @@ func PushActionSpeed(string action, int n)
 }
 
 /* Resets the named action to the previous one */
-func PopActionSpeed(string action, int n) {
+func PopActionSpeed(string action, float n) {
 	// FIXME: This only works if PushActionSpeed and PopActionSpeed are the only functions manipulating the ActMap
 	if (this.Action == ActMap[action])
 		this.Action = ActMap[action].Prototype;
@@ -991,7 +991,7 @@ func GetSwimRotation()
 	When the clonk hits the ground a kneel animation of are roll are performed.
 --*/
 
-func Hit(int iXSpeed, int iYSpeed)
+func Hit(float iXSpeed, float iYSpeed)
 {
 	if(iYSpeed < 450) return;
 	if(GetAction() != "Walk") return;
@@ -1145,7 +1145,7 @@ func FxIntDigTimer(pTarget, effect, iTime)
 
 
 // custom throw
-public func ControlThrow(object target, int x, int y)
+public func ControlThrow(object target, num x, num y)
 {
 	// standard throw after all
 	if (!x && !y) return false;

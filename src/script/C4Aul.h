@@ -131,6 +131,7 @@ enum C4AulBCCType
 	AB_CALLFS,  // failsafe direct call
 	AB_STACK,   // push nulls / pop
 	AB_INT,     // constant: int
+	AB_FLOAT,   // constant: float
 	AB_BOOL,    // constant: bool
 	AB_STRING,  // constant: string
 	AB_CPROPLIST, // constant: proplist
@@ -160,6 +161,7 @@ struct C4AulBCC
 	union
 	{
 		int32_t i;
+		C4Real::StorageType fl;
 		C4String * s;
 		C4PropList * p;
 		C4ValueArray * a;

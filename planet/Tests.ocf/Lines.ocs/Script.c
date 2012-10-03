@@ -122,7 +122,7 @@ func SerializeObjects(ids)
     }
 }
 
-func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
+func InitializePlayer(int iPlr, float iX, float iY, object pBase, int iTeam)
 {
 	JoinPlayer(iPlr);
 	return;

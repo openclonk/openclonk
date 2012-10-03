@@ -21,7 +21,7 @@ protected func Construction()
 	return _inherited(...);
 }
 
-public func Launch(int angle, int str, object shooter)
+public func Launch(float angle, num str, object shooter)
 {
 	//SetGraphics(0, HelpArrow);
 	SetShape(-2,-2,4,11);

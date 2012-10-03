@@ -321,12 +321,12 @@ static C4Void FnSetEntrance(C4Object *Obj, bool e_status)
 }
 
 
-static C4Void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
+static C4Void FnSetXDir(C4Object *Obj, C4Numeric nxdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update xdir
-	Obj->xdir=itofix(nxdir, iPrec);
+	Obj->xdir=nxdir / iPrec;
 	// special: negative dirs must be rounded
 	//if (nxdir<0) pObj->xdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
@@ -334,12 +334,12 @@ static C4Void FnSetXDir(C4Object *Obj, long nxdir, long iPrec)
 	return C4Void();
 }
 
-static C4Void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
+static C4Void FnSetRDir(C4Object *Obj, C4Numeric nrdir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update rdir
-	Obj->rdir=itofix(nrdir, iPrec);
+	Obj->rdir=nrdir  / iPrec;
 	// special: negative dirs must be rounded
 	//if (nrdir<0) pObj->rdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
@@ -347,19 +347,19 @@ static C4Void FnSetRDir(C4Object *Obj, long nrdir, long iPrec)
 	return C4Void();
 }
 
-static C4Void FnSetYDir(C4Object *Obj, long nydir, long iPrec)
+static C4Void FnSetYDir(C4Object *Obj, C4Numeric nydir, long iPrec)
 {
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update ydir
-	Obj->ydir=itofix(nydir, iPrec);
+	Obj->ydir=nydir / iPrec;
 	// special: negative dirs must be rounded
 	//if (nydir<0) pObj->ydir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
 	return C4Void();
 }
 
-static C4Void FnSetR(C4Object *Obj, long nr)
+static C4Void FnSetR(C4Object *Obj, C4Real nr)
 {
 	// set rotation
 	Obj->SetRotation(nr);
@@ -591,28 +591,29 @@ static long FnGetMass(C4PropList * _this)
 		return Object(_this)->Mass;
 }
 
-static long FnGetRDir(C4Object *Obj, long iPrec)
+static C4Real FnGetRDir(C4Object *Obj, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(Obj->rdir, iPrec);
+	return Obj->rdir * iPrec;
 }
 
-static long FnGetXDir(C4Object *Obj, long iPrec)
+
+static C4Real FnGetXDir(C4Object *Obj, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(Obj->xdir, iPrec);
+	return Obj->xdir * iPrec;
 }
 
-static long FnGetYDir(C4Object *Obj, long iPrec)
+static C4Real FnGetYDir(C4Object *Obj, long iPrec)
 {
 	if (!iPrec) iPrec = 10;
-	return fixtoi(Obj->ydir, iPrec);
+	return Obj->ydir * iPrec;
 }
 
-static long FnGetR(C4Object *Obj)
+static C4Real FnGetR(C4Object *Obj)
 {
 	// Adjust range
-	long iR = Obj->r;
+	C4Real iR = Obj->fix_r;
 	while (iR>180) iR-=360;
 	while (iR<-180) iR+=360;
 	return iR;
@@ -1293,7 +1294,7 @@ static long FnSetTransferZone(C4Object *Obj, long iX, long iY, long iWdt, long i
 	return Game.TransferZones.Set(iX,iY,iWdt,iHgt,Obj);
 }
 
-static long FnObjectDistance(C4PropList * _this, C4Object *pObj2, C4Object *pObj)
+static C4Real FnObjectDistance(C4PropList * _this, C4Object *pObj2, C4Object *pObj)
 {
 	if (!pObj) pObj=Object(_this); if (!pObj || !pObj2) return 0;
 	return Distance(pObj->GetX(),pObj->GetY(),pObj2->GetX(),pObj2->GetY());

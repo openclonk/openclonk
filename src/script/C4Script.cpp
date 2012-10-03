@@ -237,69 +237,55 @@ static C4ID FnC4Id(C4PropList * _this, C4String *szID)
 	return(C4ID(FnStringPar(szID)));
 }
 
-static long FnAbs(C4PropList * _this, long iVal)
+static C4Numeric FnAbs(C4PropList * _this, C4Numeric nVal)
 {
-	return Abs(iVal);
+	return Abs(nVal);
 }
 
-static long FnSin(C4PropList * _this, long iAngle, long iRadius, long iPrec)
+static C4Numeric FnSin(C4PropList * _this, C4Numeric nAngle, C4Numeric nRadius, long iPrec)
 {
-	if (!iPrec) iPrec = 1;
-	// Precalculate the modulo operation so the C4Fixed argument to Sin does not overflow
-	iAngle %= 360 * iPrec;
-	// Let itofix and fixtoi handle the division and multiplication because that can handle higher ranges
-	return fixtoi(Sin(itofix(iAngle, iPrec)), iRadius);
+	bool retint = nAngle.GetType() != C4V_Float && nRadius.GetType() != C4V_Float;
+	if(!nRadius)
+		return Sin(nAngle);
+	if(!iPrec)
+		return retint? (Sin(nAngle)*nRadius).getInt() : Sin(nAngle)*nRadius;
+	nAngle %= 360 * iPrec;
+	C4Numeric v = Sin(nAngle.getFloat()/(int)iPrec)*nRadius;
+	if(!retint)
+		return v;
+	return v.getInt();
 }
 
-static long FnCos(C4PropList * _this, long iAngle, long iRadius, long iPrec)
+static C4Numeric FnCos(C4PropList * _this, C4Numeric nAngle, C4Numeric nRadius, long iPrec)
 {
-	if (!iPrec) iPrec = 1;
-	iAngle %= 360 * iPrec;
-	return fixtoi(Cos(itofix(iAngle, iPrec)), iRadius);
+	long iOrtho = 90;
+	if (iPrec) iOrtho *= iPrec;
+	return FnSin(_this, iOrtho - nAngle, nRadius, iPrec);
 }
 
-static long FnSqrt(C4PropList * _this, long iValue)
+static C4Numeric FnSqrt(C4PropList * _this, C4Numeric nValue)
 {
-	if (iValue<0) return 0;
-	long iSqrt = long(sqrt(double(iValue)));
-	if (iSqrt * iSqrt < iValue) iSqrt++;
-	if (iSqrt * iSqrt > iValue) iSqrt--;
-	return iSqrt;
+	return Sqrt(nValue);
 }
 
-static long FnAngle(C4PropList * _this, long iX1, long iY1, long iX2, long iY2, long iPrec)
+static C4Real FnLn(C4PropList * _this, C4Real nVal)
 {
-	long iAngle;
+	return Log(nVal);
+}
 
+static C4Numeric FnAngle(C4PropList * _this, C4Numeric iX1, C4Numeric iY1, C4Numeric iX2, C4Numeric iY2, C4Numeric iPrec)
+{
+	C4Real iAngle;
+
+	bool retint = iPrec.GetType() != C4V_Float && iPrec;
 	// Standard prec
 	if (!iPrec) iPrec = 1;
 
-	long dx=iX2-iX1,dy=iY2-iY1;
-	if (!dx)
-	{
-		if (dy>0) return 180 * iPrec;
-		else return 0;
-	}
-	if (!dy)
-	{
-		if (dx>0) return 90 * iPrec;
-		else return 270 * iPrec;
-	}
+	C4Numeric dx=iX2-iX1,dy=iY1-iY2;
 
-	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / M_PI);
+	iAngle = (Atan2(dx.getFloat(), dy.getFloat()) * iPrec.getFloat());
 
-	if (iX2>iX1 )
-	{
-		if (iY2<iY1) iAngle = (90 * iPrec) - iAngle;
-		else iAngle = (90 * iPrec) + iAngle;
-	}
-	else
-	{
-		if (iY2<iY1) iAngle = (270 * iPrec) + iAngle;
-		else iAngle = (270 * iPrec) - iAngle;
-	}
-
-	return iAngle;
+	return retint ? C4Numeric(iAngle).getInt() : C4Numeric(iAngle);
 }
 
 static long FnArcSin(C4PropList * _this, long iVal, long iRadius)
@@ -326,39 +312,45 @@ static long FnArcCos(C4PropList * _this, long iVal, long iRadius)
 	return (long) floor(f1+0.5);
 }
 
-static long FnMin(C4PropList * _this, long iVal1, long iVal2)
+static C4Numeric FnMin(C4PropList * _this, C4Numeric nVal1, C4Numeric nVal2)
 {
-	return Min(iVal1,iVal2);
+	return Min(nVal1,nVal2);
 }
 
-static long FnMax(C4PropList * _this, long iVal1, long iVal2)
+static C4Numeric FnMax(C4PropList * _this, C4Numeric iVal1, C4Numeric iVal2)
 {
 	return Max(iVal1,iVal2);
 }
 
-static long FnDistance(C4PropList * _this, long iX1, long iY1, long iX2, long iY2)
+static C4Numeric FnDistance(C4PropList * _this, C4Numeric nX1, C4Numeric nY1, C4Numeric nX2, C4Numeric nY2)
 {
-	return Distance(iX1,iY1,iX2,iY2);
+	return Sqrt((nX1-nX2).Pow(2) + (nY1-nY2).Pow(2));
 }
 
-static long FnBoundBy(C4PropList * _this, long iVal, long iRange1, long iRange2)
+static C4Numeric FnBoundBy(C4PropList * _this, C4Numeric nVal, C4Numeric nRange1, C4Numeric nRange2)
 {
-	return BoundBy(iVal,iRange1,iRange2);
+	return BoundBy(nVal,nRange1,nRange2);
 }
 
-static bool FnInside(C4PropList * _this, long iVal, long iRange1, long iRange2)
+static bool FnInside(C4PropList * _this, C4Numeric nVal, C4Numeric nRange1, C4Numeric nRange2)
 {
-	return Inside(iVal,iRange1,iRange2);
+	return Inside(nVal,nRange1,nRange2);
 }
 
-static long FnRandom(C4PropList * _this, long iRange)
+static C4Numeric FnRandom(C4PropList * _this, long iRange)
 {
-	return Random(iRange);
+	if(!iRange)
+		return (Random(1<<11)<<12^Random(1<<12))/C4Real(1<<23);
+	else
+		return Random(iRange);
 }
 
-static long FnAsyncRandom(C4PropList * _this, long iRange)
+static C4Numeric FnAsyncRandom(C4PropList * _this, long iRange)
 {
-	return SafeRandom(iRange);
+	if(!iRange)
+		return (SafeRandom(1<<11)<<12^SafeRandom(1<<12))/C4Real(1<<23);
+	else
+		return SafeRandom(iRange);
 }
 
 static int FnGetType(C4PropList * _this, const C4Value & Value)
@@ -555,12 +547,16 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 	return C4Void();
 }
 
+static int    FnInt  (C4PropList * _this, int i)    { return i; }
+static C4Real FnFloat(C4PropList * _this, C4Real f) { return f; }
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptConstMap[]=
 {
 	{ "C4V_Nil",         C4V_Int, C4V_Nil},
 	{ "C4V_Int",         C4V_Int, C4V_Int},
+	{ "C4V_Float",       C4V_Int, C4V_Float},
 	{ "C4V_Bool",        C4V_Int, C4V_Bool},
 	{ "C4V_C4Object",    C4V_Int, C4V_Object},
 	{ "C4V_Effect",      C4V_Int, C4V_Effect},
@@ -595,24 +591,28 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 		assert(pCDef->ValType == C4V_Int); // only int supported currently
 		pEngine->RegisterGlobalConstant(pCDef->Identifier, C4VInt(pCDef->Data));
 	}
+	pEngine->RegisterGlobalConstant("E",  C4Value(C4Real::E));
+	pEngine->RegisterGlobalConstant("PI", C4Value(C4Real::PI));
 
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
 		new C4AulDefFunc(pEngine, pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
+	F(Int);
+	F(Float);
 	F(Abs);
 	F(Min);
 	F(Max);
 	F(Sin);
 	F(Cos);
 	F(Sqrt);
-	F(ArcSin);
-	F(ArcCos);
+	F(Ln);
+	//F(ArcSin); If anyone should ever require these functions, fix them with C4Reals
+	//F(ArcCos);
 	F(BoundBy);
 	F(Inside);
 	F(Random);
 	F(AsyncRandom);
-
 	F(CreateArray);
 	F(CreatePropList);
 	F(GetProperties);
@@ -634,7 +634,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
 	F(LocateFunc);
-
 	F(eval);
 	F(GetConstantNameByValue);
 

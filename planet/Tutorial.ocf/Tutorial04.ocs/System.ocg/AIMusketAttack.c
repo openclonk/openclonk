@@ -13,7 +13,7 @@ public func AI_CanHitTarget(object target)
 	return true;
 }
 
-protected func AI_MusketAttack(object clonk, int x, int y, object target)
+protected func AI_MusketAttack(object clonk, num x, num y, object target)
 {
 	clonk->FinishCommand(false, 1);
 	clonk->AI_Log("Musket attack on %s", target->GetName());

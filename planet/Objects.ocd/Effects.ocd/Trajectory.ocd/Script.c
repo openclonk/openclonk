@@ -15,12 +15,12 @@ global func RemoveTrajectory(object pObj)
 }
 
 //pObj = Object which has the trajectory. pObj must be owned by a player for the player to see the trajectory.
-//int ix = glogal x coordinate
-//int iy = global y coordinate
-//int iXDir & int iYDir = velocity of simulated shot
+//float ix = glogal x coordinate
+//float iy = global y coordinate
+//float iXDir & float iYDir = velocity of simulated shot
 //int iColor = What colour the trajectory particles are
 //int spacing = distance of pixels between each trajectory particle
-global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int iColor, int spacing)
+global func AddTrajectory(object pObj, float iX, float iY, float iXDir, float iYDir, int iColor, int spacing)
 {
 	// Delete old trajectory
 	RemoveTrajectory(pObj);

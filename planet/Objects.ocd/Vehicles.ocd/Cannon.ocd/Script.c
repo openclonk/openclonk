@@ -41,17 +41,17 @@ private func MaxContentsCount() { return 1; }
 
 /*-- Control --*/
 
-public func ControlUseStart(object clonk, int ix, int iy)
+public func ControlUseStart(object clonk, num ix, num iy)
 {
 	return UseAnyStart(clonk,ix,iy,0);
 }
 
-public func ControlUseAltStart(object clonk, int ix, int iy)
+public func ControlUseAltStart(object clonk, num ix, num iy)
 {
 	return UseAnyStart(clonk,ix,iy,1);
 }
 
-private func UseAnyStart(object clonk, int ix, int iy, int item)
+private func UseAnyStart(object clonk, num ix, num iy, int item)
 {
 	var result = CheckForKeg(clonk);
 	if (!result)
@@ -99,14 +99,13 @@ private func CheckForKeg(object clonk)
 
 public func HoldingEnabled() { return true; }
 
-public func ControlUseAltHolding(object clonk, int ix, int iy)
+public func ControlUseAltHolding(object clonk, num ix, num iy)
 {
 	return ControlUseHolding(clonk, ix, iy);
 }
 
 local angPrec = 1000;
-
-public func ControlUseHolding(object clonk, int ix, int iy)
+public func ControlUseHolding(object clonk, num ix, num iy)
 {
 	if (!clonk)
 	{
@@ -124,7 +123,7 @@ public func ControlUseHolding(object clonk, int ix, int iy)
 	return true;
 }
 
-private func AnimAngle(int angle)
+private func AnimAngle(float angle)
 {
 	//Conversion for animation
 	var r = Normalize(angle,-180);
@@ -135,7 +134,7 @@ private func AnimAngle(int angle)
 	return r;
 }
 
-private func ConvertAngle(int angle)
+private func ConvertAngle(float angle)
 {
 	var nR = BoundBy(Normalize(angle,-180 * angPrec,angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
 	var r2 = nR - GetR() * angPrec;
@@ -150,17 +149,17 @@ private func ConvertAngle(int angle)
 	return Normalize(nR,0,angPrec);
 }
 
-public func ControlUseStop(object clonk, int ix, int iy)
+public func ControlUseStop(object clonk, num ix, num iy)
 {
 	return UseAnyStop(clonk,ix,iy,0);
 }
 
-public func ControlUseAltStop(object clonk, int ix, int iy)
+public func ControlUseAltStop(object clonk, num ix, num iy)
 {
 	return UseAnyStop(clonk,ix,iy,1);
 }
 
-private func UseAnyStop(object clonk, int ix, int iy, int item)
+private func UseAnyStop(object clonk, float ix, float iy, int item)
 {
 
 	RemoveTrajectory(this);
@@ -257,7 +256,7 @@ func FxIntTurnCannonTimer(object cannon, proplist effect, int timer)
 	else return -1;
 }
 
-protected func DoFire(object iammo, object clonk, int angle)
+protected func DoFire(object iammo, object clonk, float angle)
 {
 	iammo->~Fuse();
 

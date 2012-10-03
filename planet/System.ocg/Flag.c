@@ -6,8 +6,8 @@
 
 // returns the flagpole that is currently holding ownership of a specific point in the landscape
 global func GetFlagpoleForPosition(
-	int x /* x position in local coordinates */
-	, int y /* y position in local coordinates */)
+	float x /* x position in local coordinates */,
+	float y /* y position in local coordinates */)
 {
 	if(GetType(LibraryFlag_flag_list) != C4V_Array) return nil;
 	
@@ -29,8 +29,8 @@ global func GetFlagpoleForPosition(
 
 // returns the current owner that controls a certain point with a flagpole or NO_OWNER
 global func GetOwnerOfPosition(
-	int x /* x position in local coordinates */
-	, int y /* y position in local coordinates */)
+	float x /* x position in local coordinates */,
+	float y /* y position in local coordinates */)
 {
 	var flag = GetFlagpoleForPosition(x, y);
 	if(!flag) return NO_OWNER;

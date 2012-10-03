@@ -34,7 +34,7 @@ local aWires;
 
 local pWire;
 
-public func ControlUse(object clonk, int x, int y)
+public func ControlUse(object clonk, num x, num y)
 {
 	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
 	if(!pDyna->ControlUse(clonk, x, y, 1))

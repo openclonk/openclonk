@@ -13,7 +13,7 @@
 
 ///Function must be called from vehicle context
 ///param x,y,w,h = target rectangle to look for objects in to follow the vehicle's rotation
-func AlignObjectsToRotation(object turnTarget, int x, int y, int w, int h)
+func AlignObjectsToRotation(object turnTarget, num x, num y, num w, num h)
 {
 	if(!this) FatalError("Function AlignToRotation must be called from object (vehicle) context");
 	if(!turnTarget) FatalError("Function requires a valid turnTarget to get rotation value from");

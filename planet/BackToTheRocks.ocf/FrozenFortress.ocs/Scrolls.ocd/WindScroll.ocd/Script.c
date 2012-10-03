@@ -6,7 +6,7 @@
 --*/
 
 
-public func ControlUse(object pClonk, int ix, int iy)
+public func ControlUse(object pClonk, num ix, num iy)
 {
 	AddEffect("WindScrollStorm", nil, 100, 1, nil, GetID(), Angle(0,0,ix,iy),pClonk->GetX(), pClonk->GetY());
 	RemoveObject();

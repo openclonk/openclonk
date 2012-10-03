@@ -182,7 +182,7 @@ func AttachTargetLost()
 	return RemoveObject();
 }
 
-func Rotate (int r, int xoff, int yoff) {
+func Rotate (num r, num xoff, num yoff) {
   var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
   // set matrix values
   SetObjDrawTransform (

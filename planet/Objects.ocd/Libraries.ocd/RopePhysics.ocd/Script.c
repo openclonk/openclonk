@@ -103,7 +103,7 @@ protected func Destruction()
 	RemoveRope();
 }
 
-func SetMaxLength(int newlength)
+func SetMaxLength(num newlength)
 {
 	Max_Length = newlength;
 }
@@ -191,7 +191,7 @@ private func RopeRemoved() { }
 * @param yoffset y offset of the newly inserted segment
 */
 /* Adding and removing segments */
-public func AddSegment(int xoffset, int yoffset)
+public func AddSegment(num xoffset, num yoffset)
 {
 	segments[ParticleCount] = CreateSegment(ParticleCount, segments[ParticleCount-1]);
 
@@ -262,7 +262,7 @@ public func MaxLengthReached() { }
 * Segments are inserted or removed to fit the rope to the new length
 * @param dolength the length difference
 */
-public func DoLength(int dolength)
+public func DoLength(num dolength)
 {
 	length += dolength;
 	if(GetMaxLength())
@@ -661,14 +661,14 @@ func Vec_Sub(array x, array y) { return [x[0]-y[0], x[1]-y[1]]; }
 * @param i number
 * @param return \a i times \a x
 */
-func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
+func Vec_Mul(array x, num   i) { return [x[0]*i,    x[1]*i];    }
 
 /** Division of a vector and a number
 * @param x vector
 * @param i number
 * @param return \a x divided throught \a i
 */
-func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
+func Vec_Div(array x, num   i) { return [x[0]/i,    x[1]/i];    }
 
 /** Dot product of two vectors
 * @param x vector 1
@@ -695,7 +695,7 @@ func Vec_Angle(array x, array y) { return Angle(x[0], x[1], y[0], y[1]); }
 * @param precision factor for the resultion length
 * @param return the normalize vector with length 1*precision
 */
-func Vec_Normalize(array x, int precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
+func Vec_Normalize(array x, num precision) { return Vec_Div(Vec_Mul(x, precision), Vec_Length(x)); }
 
 /** Gives the the rounded x coordinate of particles \a index
 * @param index the particle which position is desired

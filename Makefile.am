@@ -511,6 +511,8 @@ src/script/C4AulFunc.h \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
+src/script/C4Numeric.cpp \
+src/script/C4Numeric.h \
 src/script/C4PropList.cpp \
 src/script/C4PropList.h \
 src/script/C4Script.cpp \
@@ -524,6 +526,7 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
+thirdparty/simdmath/sse_mathfun.h \
 thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
@@ -686,6 +689,7 @@ src/script/C4AulExec.cpp \
 src/script/C4AulFunc.cpp \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
+src/script/C4Numeric.cpp \
 src/script/C4StringTable.cpp \
 src/script/C4PropList.cpp \
 src/script/C4ScriptHost.cpp \
