@@ -102,7 +102,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 	if(fDigging)
 	{
 		// Adjust speed at current animation position
-		var speed = clonk.ActMap.Dig.Speed*2;
+		var speed = clonk.ActMap.Dig.Speed*2.0;
 
 		var iAnimation = GetEffect("IntDig", clonk).var1;
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
