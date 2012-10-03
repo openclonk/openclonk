@@ -284,6 +284,8 @@ static C4Numeric FnAngle(C4PropList * _this, C4Numeric iX1, C4Numeric iY1, C4Num
 	C4Numeric dx=iX2-iX1,dy=iY1-iY2;
 
 	iAngle = (Atan2(dx.getFloat(), dy.getFloat()) * iPrec.getFloat());
+	if(iAngle < 0)
+		iAngle += iPrec * 360;
 
 	return retint ? C4Numeric(iAngle).getInt() : C4Numeric(iAngle);
 }

@@ -38,7 +38,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Returns the view angle from the first point to the second in degrees. 0° ist straight up. All coordinates global.</desc>
+    <desc>Returns the view angle from the first point to the second in degrees. 0° ist straight up. All coordinates global. Always returns zero or positive angles smaller than 360*precision</desc>
     <examples>
       <example>
         <code><funclink>SetR</funclink>(Angle(<funclink>GetCursor</funclink>(0)-><funclink>GetX</funclink>(), <funclink>GetCursor</funclink>(0)-><funclink>GetY</funclink>(),
