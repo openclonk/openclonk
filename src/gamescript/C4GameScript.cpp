@@ -2087,14 +2087,6 @@ static long FnActivateGameGoalMenu(C4PropList * _this, long iPlayer)
 	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !::Control.isReplay());
 }
 
-static bool FnPlayVideo(C4PropList * _this, C4String *pFilename)
-{
-	// filename must be valid
-	if (!pFilename || !pFilename->GetCStr()) return false;
-	// play it!
-	return Game.VideoPlayer.PlayVideo(pFilename->GetCStr());
-}
-
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
 	// safeties
@@ -2426,7 +2418,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "HideSettlementScoreInEvaluation", FnHideSettlementScoreInEvaluation);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
-	AddFunc(pEngine, "PlayVideo", FnPlayVideo, false);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);

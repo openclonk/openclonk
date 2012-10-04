@@ -504,8 +504,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundSystem.h
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
-	src/platform/C4VideoPlayback.cpp
-	src/platform/C4VideoPlayback.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp

@@ -572,7 +572,6 @@ void C4Game::Clear()
 	Control.Clear();
 
 	// Clear
-	VideoPlayer.Clear();
 	Scoreboard.Clear();
 	MouseControl.Clear();
 	Players.Clear();
@@ -2019,10 +2018,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		// Materials
 		if (!InitMaterialTexture())
 			{ LogFatal(LoadResStr("IDS_PRC_MATERROR")); return false; }
-		SetInitProgress(59);
-
-		// Videos
-		if (!VideoPlayer.PreloadVideos(hGroup)) return false;
 		SetInitProgress(60);
 	}
 
