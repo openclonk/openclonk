@@ -326,7 +326,7 @@ static C4Void FnSetXDir(C4Object *Obj, C4Numeric nxdir, long iPrec)
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update xdir
-	Obj->xdir=nxdir / iPrec;
+	Obj->xdir=C4Real(nxdir) / iPrec;
 	// special: negative dirs must be rounded
 	//if (nxdir<0) pObj->xdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
@@ -339,7 +339,7 @@ static C4Void FnSetRDir(C4Object *Obj, C4Numeric nrdir, long iPrec)
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update rdir
-	Obj->rdir=nrdir  / iPrec;
+	Obj->rdir=C4Real(nrdir) / iPrec;
 	// special: negative dirs must be rounded
 	//if (nrdir<0) pObj->rdir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
@@ -352,7 +352,7 @@ static C4Void FnSetYDir(C4Object *Obj, C4Numeric nydir, long iPrec)
 	// precision (default 10.0)
 	if (!iPrec) iPrec=10;
 	// update ydir
-	Obj->ydir=nydir / iPrec;
+	Obj->ydir=C4Real(nydir) / iPrec;
 	// special: negative dirs must be rounded
 	//if (nydir<0) pObj->ydir += C4REAL100(-50)/iPrec;
 	Obj->Mobile=1;
