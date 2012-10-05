@@ -36,7 +36,7 @@ namespace C4SoundLoaders
 #endif
 		C4SoundHandle final_handle;
 
-		SoundInfo(): sound_data(), final_handle(NULL) {}
+		SoundInfo(): sound_data(), final_handle(0) {}
 	};
 	
 	class SoundLoader

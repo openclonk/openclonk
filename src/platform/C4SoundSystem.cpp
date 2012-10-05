@@ -44,7 +44,7 @@ using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
-		pSample (NULL),
+		pSample (0),
 		FirstInst (NULL),
 		Next (NULL)
 {
@@ -68,7 +68,7 @@ void C4SoundEffect::Clear()
 #ifdef USE_OPEN_AL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
-	pSample = NULL;
+	pSample = 0;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)

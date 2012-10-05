@@ -136,8 +136,6 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 
 int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 {
-	size_t spaceToEOF;
-	ogg_int64_t actualOffset; // How much we can actually offset it by
 	CompressedData* data = (CompressedData*)datasource;
 	
 	switch (whence)

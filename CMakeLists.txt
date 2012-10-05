@@ -843,9 +843,20 @@ if(USE_GTK)
 endif()
 
 if(USE_OPEN_AL)
-	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
-	FINDLIB(OGG_LIBRARY NAMES ogg)
+	if(MSVC)
+		if(${FIND_LIBRARY_USE_LIB64_PATHS})
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL64)
+		else()
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
+		endif()
+		FINDLIB(OGG_LIBRARY NAMES libogg_static)
+		FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static)
+		FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static)
+	else()
+		FINDLIB(VORBIS_LIBRARY NAMES vorbis)
+		FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
+		FINDLIB(OGG_LIBRARY NAMES ogg)
+	endif()
 endif()
 
 ############################################################################
@@ -991,6 +1002,7 @@ target_link_libraries(clonk
 	${VORBIS_LIBRARY}
 	${VORBISFILE_LIBRARY}
 	${OGG_LIBRARY}
+	${OPENAL_LIBRARY}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
