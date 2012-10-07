@@ -24,10 +24,15 @@
 
 #include <C4Application.h>
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if defined(USE_OPEN_AL) 
+#if defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+#else
+#include <AL/alut.h>
 #endif
+#endif
+
 
 using namespace C4SoundLoaders;
 
@@ -213,6 +218,47 @@ bool VorbisLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, u
 }
 
 VorbisLoader VorbisLoader::singleton;
+
+#ifndef __APPLE__
+bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
+{
+	// load WAV resource
+	Application.MusicSystem.SelectContext();
+	ALuint wav = alutCreateBufferFromFileImage((const ALvoid *)data, data_length);
+	if (wav == AL_NONE)
+	{
+		// wouldn't want an error on any .ogg file
+		//LogF("load wav error: %s", alutGetErrorString(alutGetError()));
+		return false;
+	}
+
+	// get information about sound
+	ALint freq, chans, bits, size;
+	alGetBufferi(wav, AL_FREQUENCY, &freq);
+	result->sample_rate = freq;
+	alGetBufferi(wav, AL_CHANNELS, &chans);
+	alGetBufferi(wav, AL_BITS, &bits);
+	alGetBufferi(wav, AL_SIZE, &size);
+	if (chans == 1)
+		if (bits == 8)
+			result->format = AL_FORMAT_MONO8;
+		else
+			result->format = AL_FORMAT_MONO16;
+	else
+		if (bits == 8)
+			result->format = AL_FORMAT_STEREO8;
+		else
+			result->format = AL_FORMAT_STEREO16;
+	// can't find any function to determine sample length
+	// just calc ourselves
+	result->sample_length = double(size) / double(bits*chans*freq/8);
+	// buffer loaded
+	result->final_handle = wav;
+	return true;
+}
+
+WavLoader WavLoader::singleton;
+#endif
 #endif
 
 #ifdef HAVE_LIBSDL_MIXER

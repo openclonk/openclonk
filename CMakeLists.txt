@@ -857,6 +857,9 @@ if(USE_OPEN_AL)
 		FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
 		FINDLIB(OGG_LIBRARY NAMES ogg)
 	endif()
+	if(NOT APPLE)
+		FINDLIB(ALUT_LIBRARY NAMES alut)
+	endif()
 endif()
 
 ############################################################################
@@ -1003,6 +1006,7 @@ target_link_libraries(clonk
 	${VORBISFILE_LIBRARY}
 	${OGG_LIBRARY}
 	${OPENAL_LIBRARY}
+	${ALUT_LIBRARY}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}

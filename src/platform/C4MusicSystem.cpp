@@ -42,6 +42,10 @@
 #include <SDL.h>
 #endif
 
+#if defined(USE_OPEN_AL) && !defined(__APPLE__)
+#include <AL/alut.h>
+#endif
+
 C4MusicSystem::C4MusicSystem():
 		Songs(NULL),
 		SongCount(0),
@@ -123,10 +127,24 @@ bool C4MusicSystem::InitializeMOD()
 #elif defined(USE_OPEN_AL)
 	alcDevice = alcOpenDevice(NULL);
 	if (!alcDevice)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
 	alcContext = alcCreateContext(alcDevice, NULL);
 	if (!alcContext)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
+#ifndef __APPLE__
+	if (!alutInitWithoutContext(NULL, NULL))
+	{
+		LogF("Sound system: ALUT init error");
+		return false;
+	}
+#endif
+	MODInitialized = true;
 	return true;
 #endif
 	return false;
@@ -144,6 +162,9 @@ void C4MusicSystem::DeinitializeMOD()
 	Mix_CloseAudio();
 	SDL_Quit();
 #elif defined(USE_OPEN_AL)
+#ifndef __APPLE__
+	alutExit();
+#endif
 	alcDestroyContext(alcContext);
 	alcCloseDevice(alcDevice);
 	alcContext = NULL;
