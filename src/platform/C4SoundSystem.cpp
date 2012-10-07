@@ -286,6 +286,8 @@ bool C4SoundInstance::Start()
 #else
 	return false;
 #endif
+	// Safety: Don't execute if start failed, or Execute() would try to start again
+	if (!isStarted()) return false;
 	// Update volume
 	Execute();
 	return true;
