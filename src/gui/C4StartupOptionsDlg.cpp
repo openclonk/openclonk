@@ -312,6 +312,7 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerC
 			if (def && def->GetGUIName() && *def->GetGUIName())
 			{
 				ListItem *element = new ListItem(this, assignment, set);
+				element->SetToolTip(def->GetGUIDesc());	
 				AddElement(element);
 			}
 		}
