@@ -2235,7 +2235,7 @@ namespace C4GUI
 	class ResetButton : public CloseButton
 	{
 	public: ResetButton(const C4Rect &rtBounds) // ctor
-				: CloseButton(LoadResStr("[!]Reset"), rtBounds, true) {} };
+				: CloseButton(LoadResStr("IDS_BTN_RESET"), rtBounds, true) {} };
 
 	// a simple message dialog
 	class MessageDialog : public Dialog
