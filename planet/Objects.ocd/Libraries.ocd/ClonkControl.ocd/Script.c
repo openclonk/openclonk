@@ -50,6 +50,8 @@ local inventory;	// items in the inventory, array
 local carryheavy;	// object beeing carried with carryheavy
 local use_objects;	// hand-slots (mapping onto inventory)
 
+local last_slot;	// last inventory-slot that has been selected. Used for QuickSwitching. 
+
 local handslot_choice_pending;	// used to determine if a slot-hotkey (1-9) has already been handled by a mouseclick
 local hotkeypressed;			// used to determine if an interaction has already been handled by a hotkey (space + 1-9)
 
@@ -130,6 +132,10 @@ public func SetHandItemPos(int hand, int inv)
 			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
 				CancelUseControl(0,0);
 	}
+
+	// save current slot
+	if(hand == 0)
+		last_slot = GetHandItemPos(0);
 
 	// If the item is already selected, we can't hold it in another one too.
 	var hand2 = GetHandPosByItemPos(inv);
@@ -320,6 +326,7 @@ protected func Construction()
 	// inventory variables
 	inventory = CreateArray();
 	use_objects = CreateArray();
+	last_slot = 0;
 
 	for(var i=0; i < HandObjects(); i++)
 		use_objects[i] = i;
@@ -740,6 +747,18 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return false;
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
+	
+	// Quickswitch changes the active slot to the last selected one
+	if(ctrl == CON_QuickSwitch)
+	{
+		// but ignore quickswitch if we have more than 1 hand-slot
+		if(HandObjects() > 1)
+			return false;
+		
+		// select last slot
+		SetHandItemPos(0, last_slot); // last_slot is updated in SetHandItemPos
+		return true;
+	}
 	
 	// some controls should only do something on release (everything that has to do with interaction)
 	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)

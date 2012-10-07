@@ -130,6 +130,11 @@
 	# Inventory
 	
 	[ControlDef]
+	Identifier=QuickSwitch
+	GUIName=QuickSwitch
+	GUIDesc=Change the selection to the last active item slot
+	
+	[ControlDef]
 	Identifier=Throw
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
@@ -705,7 +710,7 @@
 	#
 	# Interact							Space
 	#
-	# Backpack							Q
+	# QuickSwitch						Q
 	# Contents							E
 	# Collect							A,D,W,S
 	#
@@ -731,6 +736,10 @@
 		Key=E
 		Control=Contents
 		Group=1
+	
+		[Assignment]
+		Key=Q
+		Control=QuickSwitch
 	
 		# Menu
 
@@ -898,6 +907,10 @@
 		[Assignment]
 		Key=Period
 		Control=Contents
+		
+		[Assignment]
+		Key=Apostrophe
+		Control=QuickSwitch
 		
 		# Menu
 
