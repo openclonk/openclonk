@@ -59,7 +59,7 @@ local forced_ejection;		// used to recognize if an object was thrown out with or
 
 /* Item limit */
 
-private func HandObjects() { return 2; }			// How many "Hands" the clonk has
+private func HandObjects() { return 1; }			// How many "Hands" the clonk has
 public func MaxContentsCount() { return 7; }		// Size of the clonks inventory
 public func NoStackedContentMenu() { return true; }	// Contents-Menu shall display each object in a seperate slot
 
