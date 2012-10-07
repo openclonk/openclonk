@@ -72,7 +72,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				if (pTexMgr) pTexMgr->IntUnlock();
 				if (!Config.Graphics.Windowed)
 				{
-					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Config.Graphics.Windowed == 1);
+					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Config.Graphics.Windowed != 1);
 				}
 			}
 			else
