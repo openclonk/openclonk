@@ -228,6 +228,8 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(KeyCombo), "Key", KeyComboVec()));
 	pComp->Value(mkNamingAdapt(fComboIsSequence, "ComboIsSequence", false));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIDesc, StdCompiler::RCT_All), "GUIDesc", ""));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
 	pComp->Value(mkNamingAdapt(is_group_start, "Group", false));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] =
@@ -408,6 +410,8 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 	// doesn't compare resolved TriggerKey/iControl
 	return KeyCombo == cmp.KeyCombo
 	       && sControlName == cmp.sControlName
+	       && sGUIName == cmp.sGUIName
+	       && sGUIDesc == cmp.sGUIDesc
 	       && iTriggerMode == cmp.iTriggerMode
 	       && iPriority == cmp.iPriority;
 }
@@ -428,6 +432,33 @@ StdStrBuf C4PlayerControlAssignment::GetKeysAsString(bool human_readable, bool s
 		result.Append(i->Key.ToString(human_readable, short_name));
 	}
 	return result;
+}
+
+const char *C4PlayerControlAssignment::GetGUIName(const C4PlayerControlDefs &defs) const
+{
+	// local name?
+	if (sGUIName.getLength())
+	{
+		// special: None defaults to empty name
+		if (sGUIName == "None") return "";
+		return sGUIName.getData();
+	}
+	// otherwise, fall back to def
+	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
+	if (def) return def->GetGUIName();
+	// no def and no name...
+	return NULL;
+}
+
+const char *C4PlayerControlAssignment::GetGUIDesc(const C4PlayerControlDefs &defs) const
+{
+	// local desc?
+	if (sGUIDesc.getLength()) return sGUIDesc.getData();
+	// otherwise, fall back to def
+	const C4PlayerControlDef *def = defs.GetControlByIndex(GetControl());
+	if (def) return def->GetGUIDesc();
+	// no def and no desc...
+	return NULL;
 }
 
 

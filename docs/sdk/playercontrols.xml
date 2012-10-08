@@ -157,6 +157,16 @@
                 <col>Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href="playercontrols.xml#ControlDef">[ControlDef]</emlink>.</col>
               </row>
               <row>
+                <literal_col>GUIName</literal_col>
+                <col>String</col>
+                <col>Name which is shown to the player in the control configuration dialog and in control tooltips. Localized strings from the corresponding string table can be used ($Name$). If unset, GUIName of the control def is used. If set to "None", the control is not displayed in the user customization dialog even if the control def has a name set.</col>
+              </row>
+              <row>
+                <literal_col>GUIDesc</literal_col>
+                <col>String</col>
+                <col>Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$). If unset, GUIDesc of the control def is used.</col>
+              </row>
+              <row>
                 <literal_col>Priority</literal_col>
                 <col>Integer</col>
                 <col>Priority of the mapping. If more than once mapping is using the same keys then the key with the highest priority is executed first until a command is treated as handled.</col>

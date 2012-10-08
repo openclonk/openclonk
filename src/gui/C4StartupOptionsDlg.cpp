@@ -275,13 +275,14 @@ C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListB
 	int32_t name_col_width = GetBounds().Wdt * 2/3;
 	if (assignment && assignment->IsGroupStart()) has_extra_spacing = true;
 	// child elements: two labels for two columns
-	int32_t con = assignment->GetControl();
-	const C4PlayerControlDef *con_def = Game.PlayerControlDefs.GetControlByIndex(con);
-	C4GUI::Label *name_label = new C4GUI::Label(con_def ? con_def->GetGUIName() : "?undefined?", margin, margin);
+	const char *gui_name = assignment->GetGUIName(Game.PlayerControlDefs);
+	const char *gui_desc = assignment->GetGUIDesc(Game.PlayerControlDefs);
+	C4GUI::Label *name_label = new C4GUI::Label(gui_name ? gui_name : "?undefined?", margin, margin);
 	C4Rect assignment_label_bounds = C4Rect(name_col_width + margin, margin, GetBounds().Wdt - name_col_width - margin, GetBounds().Hgt - 2 * margin);
 	assignment_label = new ControlAssignmentLabel(assignment, assignment_set, assignment_label_bounds);
 	AddElement(name_label);
 	AddElement(assignment_label);
+	if (gui_desc && *gui_desc) SetToolTip(gui_desc);
 }
 
 
@@ -307,12 +308,10 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerC
 		while (assignment = set->GetAssignmentByIndex(i++))
 		{
 			// only show assignments of GUI-named controls
-			int32_t ctrl = assignment->GetControl();
-			const C4PlayerControlDef *def = Game.PlayerControlDefs.GetControlByIndex(ctrl);
-			if (def && def->GetGUIName() && *def->GetGUIName())
+			const char *gui_name = assignment->GetGUIName(Game.PlayerControlDefs);
+			if (gui_name && *gui_name)
 			{
 				ListItem *element = new ListItem(this, assignment, set);
-				element->SetToolTip(def->GetGUIDesc());	
 				AddElement(element);
 			}
 		}
