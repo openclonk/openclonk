@@ -198,6 +198,7 @@ struct C4KeyCodeEx
 
 	// helpers
 	static C4KeyShiftState String2KeyShift(const StdStrBuf &sName);
+	static C4KeyCode GetKeyByScanCode(const char *scan_code);
 	static C4KeyCode String2KeyCode(const StdStrBuf &sName);
 	static StdStrBuf KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool fShort);
 	StdStrBuf ToString(bool fHumanReadable, bool fShort) const;
@@ -214,7 +215,7 @@ struct C4KeyCodeEx
 		return Key == v2.Key && dwShift == v2.dwShift;
 	}
 
-	void CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined=NULL);
+	void CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf=NULL);
 
 	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false)
 			: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}

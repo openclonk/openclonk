@@ -361,3 +361,9 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 	else return false;
 	return true;
 }
+
+void C4Startup::OnKeyboardLayoutChanged()
+{
+	// forward message to current dialog
+	if (pCurrDlg) pCurrDlg->OnKeyboardLayoutChanged();
+}

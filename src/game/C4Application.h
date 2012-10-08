@@ -60,6 +60,7 @@ public:
 	void CloseSystemGroup() { SystemGroup.Close(); }
 	void SetGameTickDelay(int iDelay);
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes);
+	virtual void OnKeyboardLayoutChanged();
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
 	void NextTick();
 

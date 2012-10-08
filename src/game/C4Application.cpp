@@ -708,6 +708,13 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	}
 }
 
+void C4Application::OnKeyboardLayoutChanged()
+{
+	// re-resolve all keys
+	Game.OnKeyboardLayoutChanged();
+	if (AppState == C4AS_Startup) C4Startup::Get()->OnKeyboardLayoutChanged();
+}
+
 bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 {
 #ifndef USE_CONSOLE

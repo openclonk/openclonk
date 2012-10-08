@@ -130,6 +130,8 @@ public:
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0;
+	// Keyboard layout changed
+	virtual void OnKeyboardLayoutChanged() = 0;
 	// notify user to get back to the program
 	void NotifyUserIfInactive();
 	void MessageDialog(const char * message);

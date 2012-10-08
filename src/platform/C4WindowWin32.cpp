@@ -186,6 +186,9 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			break;
 		}
 		break;
+	case WM_INPUTLANGCHANGE:
+		::Application.OnKeyboardLayoutChanged();
+		break;
 	}
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 }

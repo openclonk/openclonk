@@ -3134,6 +3134,13 @@ void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	::Viewports.RecalculateViewports();
 }
 
+void C4Game::OnKeyboardLayoutChanged()
+{
+	// Layout changed: Re-resolve keys
+	PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	PlayerControlUserAssignmentSets.ResolveRefs(&PlayerControlDefs);
+}
+
 bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 {
 	// note on scenario section saving:

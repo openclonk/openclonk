@@ -195,22 +195,11 @@ void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
 		Key.dwShift = 0;
 		sKeyName.Clear();
 		pComp->Value(mkParAdapt(Key, &sKeyName));
-		if (!sKeyName)
-		{
-			// key was not assigned during compilation - this means it's a regular key (or undefined)
-			// store this as the name
-			UpdateKeyName();
-		}
-		else if (Key.dwShift)
-		{
-			// key name and shift was assigned during compilation - keep both in key name for later decompilation
-			sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
-		}
 	}
 	else
 	{
 		// decompiler: If there's a stored key name, just write it. Regardless of whether it's a key, undefined or a reference
-		// IF no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
+		// If no key name is stored, it was probably assigned at runtime and sKeyName needs to be recreated
 		if (!sKeyName) UpdateKeyName();
 		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
 	}
@@ -220,6 +209,8 @@ void C4PlayerControlAssignment::KeyComboItem::UpdateKeyName()
 {
 	// update key name from key
 	sKeyName.Copy(Key.ToString(false, false));
+	if (Key.dwShift)
+		sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
 }
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
@@ -309,6 +300,11 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 			{
 				is_key_reference = true;
 				szKeyName +=4;
+			}
+			else if (*szKeyName == '$')
+			{
+				// this is a scan code. re-resolve in case keyboard layout changed.
+				rKeyComboItem.Key = C4KeyCodeEx::GetKeyByScanCode(szKeyName);
 			}
 		}
 		if (is_key_reference)

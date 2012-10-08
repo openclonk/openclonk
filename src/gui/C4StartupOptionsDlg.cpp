@@ -1050,7 +1050,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	}
 
 	// --- page controls
-	pSheetControls->AddElement(new ControlConfigArea(pSheetControls->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
+	pSheetControls->AddElement(pControlConfigArea = new ControlConfigArea(pSheetControls->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
 
 	// --- page network
 	C4GUI::ComponentAligner caSheetNetwork(pSheetNetwork->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
@@ -1630,4 +1630,11 @@ bool C4StartupOptionsDlg::KeyMusicToggle()
 	pFEMusicCheck->SetChecked(!!Config.Sound.FEMusic);
 	// key processed
 	return true;
+}
+
+void C4StartupOptionsDlg::OnKeyboardLayoutChanged()
+{
+	// keyboard layout changed and thus some keys might have been updated from scan codes
+	// update display in control set
+	pControlConfigArea->UpdateCtrlSet();
 }

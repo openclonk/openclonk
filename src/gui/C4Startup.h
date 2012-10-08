@@ -91,6 +91,7 @@ public:
 	C4StartupDlg(const char *szTitle) : C4GUI::FullscreenDialog(szTitle, NULL) {}
 
 	virtual bool SetSubscreen(const char *szToScreen) { return false; } // go to specified subdialog, e.g. a specific property sheet in the options dlg
+	virtual void OnKeyboardLayoutChanged() {}
 };
 
 class C4Startup
@@ -130,6 +131,7 @@ public:
 	static void InitStartup();
 	static void CloseStartup();
 	static bool SetStartScreen(const char *szScreen); // set screen that is shown first by case insensitive identifier
+	void OnKeyboardLayoutChanged();
 
 	static C4Startup *Get() { assert(pInstance); return pInstance; }
 };
