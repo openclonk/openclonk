@@ -353,7 +353,8 @@ namespace Ogre
 			static Chunk *Read(DataStream *stream);
 		};
 
-		class ChunkUnknown; class ChunkFileHeader;
+		class ChunkUnknown; class 
+		ChunkFileHeader;
 		class ChunkMesh; class ChunkMeshSkeletonLink; class ChunkMeshBoneAssignments; class ChunkMeshBounds;
 		class ChunkSubmesh; class ChunkSubmeshOp;
 		class ChunkGeometry; class ChunkGeometryVertexDecl; class ChunkGeometryVertexDeclElement; class ChunkGeometryVertexBuffer; class ChunkGeometryVertexData;
@@ -538,9 +539,11 @@ namespace Ogre
 		{
 			CID_Invalid = 0,
 			CID_Header = 0x1000,
+			CID_BlendMode=  0x1010,
 			CID_Bone = 0x2000,
 			CID_Bone_Parent = 0x3000,
 			CID_Animation = 0x4000,
+			CID_Animation_BaseInfo = 0x4010,
 			CID_Animation_Track = 0x4100,
 			CID_Animation_Track_KF = 0x4110,
 			CID_Animation_Link = 0x5000
@@ -564,12 +567,22 @@ namespace Ogre
 
 		class ChunkFileHeader : public Chunk
 		{
-			static const std::string ExpectedVersion;
+			typedef std::map<std::string, uint32_t> VersionTable_t;
+			static const VersionTable_t VersionTable;
+			static const uint32_t CurrentVersion;
 		public:
 			std::string version;
 
 		protected:
 			virtual void ReadImpl(DataStream *stream);
+		};
+
+		class ChunkBlendMode : public Chunk
+		{
+		public:
+			uint16_t blend_mode;
+		protected:
+			virtual void ReadImpl(DataStream* stream);
 		};
 
 		class ChunkBone : public Chunk
@@ -602,6 +615,15 @@ namespace Ogre
 			boost::ptr_vector<ChunkAnimationTrack> tracks;
 		protected:
 			virtual void ReadImpl(DataStream *stream);
+		};
+
+		class ChunkAnimationBaseInfo : public Chunk
+		{
+		public:
+			std::string base_animation_name;
+			float base_key_frame_time;
+		protected:
+			virtual void ReadImpl(DataStream* stream);
 		};
 
 		class ChunkAnimationTrack : public Chunk
