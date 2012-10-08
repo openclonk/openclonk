@@ -210,6 +210,7 @@ public:
 	int32_t GetControl() const { return iControl; }
 	bool IsGroupStart() const { return is_group_start; }
 	bool IsRefsResolved() const { return fRefsResolved; }
+	void ResetRefsResolved() { fRefsResolved = false; } // Mark references to other assignments as not resolved
 	bool IsAlwaysUnhandled() const { return !!(iTriggerMode & CTM_AlwaysUnhandled); }
 	int32_t GetTriggerMode() const { return iTriggerMode; }
 	const C4KeyCodeEx &GetTriggerKey() const { return TriggerKey; }

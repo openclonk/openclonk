@@ -281,12 +281,13 @@ void C4PlayerControlAssignment::CopyKeyFrom(const C4PlayerControlAssignment &src
 bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs)
 {
 	// avoid circular chains
-	static C4PlayerControlAssignment *pCircularDetect = NULL;
-	if (!pCircularDetect) pCircularDetect = this; else if (pCircularDetect == this)
+	static int32_t recursion_check = 0;
+	if (recursion_check > 10)
 	{
-		LogFatal(FormatString("Circular reference chain detected in player control assignments of set %s in assignment for key %s!", pParentSet->GetName(), GetControlName()).getData());
+		LogFatal(FormatString("Maximum recursion limit reached while resolving player control assignments of set %s in assignment for key %s. This is probably due to a circular control chain.", pParentSet->GetName(), GetControlName()).getData());
 		return false;
 	}
+	++recursion_check;
 	// resolve control name
 	iControl = pControlDefs->GetControlIndexByIdentifier(sControlName.getData());
 	// resolve keys
@@ -294,21 +295,29 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i)
 	{
 		KeyComboItem &rKeyComboItem = *i;
-		if (rKeyComboItem.Key.Key == KEY_Default && rKeyComboItem.sKeyName.getLength())
+		const char *szKeyName = rKeyComboItem.sKeyName.getData();
+		// check if this is a key reference. A key reference must be preceded by CON_
+		// it may also be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
+		bool is_key_reference = false;
+		int last_shift_delim_pos;
+		if (szKeyName && *szKeyName)
+		{
+			if ((last_shift_delim_pos=SCharLastPos('+', szKeyName)) > -1) szKeyName += last_shift_delim_pos+1;
+			if (SEqual2(szKeyName, "CON_"))
+			{
+				is_key_reference = true;
+				szKeyName +=4;
+			}
+		}
+		if (is_key_reference)
 		{
 			// this is a key reference
-			// it may be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
-			// it may be preceded by CON_ to avoid ambigous keus
-			const char *szKeyName = rKeyComboItem.sKeyName.getData();
-			int last_shift_delim_pos;
-			if ((last_shift_delim_pos=SCharLastPos('+', szKeyName)) > -1) szKeyName += last_shift_delim_pos+1;
-			if (SEqual2(szKeyName, "CON_")) szKeyName +=4;
-			// - find it
+			// - find referenced target assignment
 			C4PlayerControlAssignment *pRefAssignment = pParentSet->GetAssignmentByControlName(szKeyName);
 			if (pRefAssignment)
 			{
 				// resolve itself if necessary
-				if (!pRefAssignment->IsRefsResolved()) if (!pRefAssignment->ResolveRefs(pParentSet, pControlDefs)) return false;
+				if (!pRefAssignment->IsRefsResolved()) if (!pRefAssignment->ResolveRefs(pParentSet, pControlDefs)) { --recursion_check; return false; }
 				// insert all keys of that combo into own combo
 				// add any extra shift states from reference
 				DWORD ref_shift = rKeyComboItem.Key.dwShift;
@@ -335,6 +344,10 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 		}
 		else
 		{
+			// non-reference: check if the assignment was valid
+			if (rKeyComboItem.Key == KEY_Default)
+				LogF("WARNING: Control %s of set %s contains undefined key \"%s.\"", GetControlName(), pParentSet->GetName(), szKeyName);
+			// ...and just keep this item.
 			NewCombo.push_back(rKeyComboItem);
 		}
 	}
@@ -343,7 +356,7 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	if (KeyCombo.size()) TriggerKey = KeyCombo.back().Key; else TriggerKey = C4KeyCodeEx();
 	// done
 	fRefsResolved = true;
-	if (pCircularDetect == this) pCircularDetect = NULL;
+	--recursion_check;
 	return true;
 }
 
@@ -524,6 +537,9 @@ void C4PlayerControlAssignmentSet::RemoveAssignmentByControlName(const char *con
 
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 {
+	// reset all resolved flags to allow re-resolve after overloads
+	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+		(*i).ResetRefsResolved();
 	// resolve in order; ignore already resolved because they might have been resolved by cross reference
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
 		if (!(*i).IsRefsResolved())
