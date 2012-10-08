@@ -28,7 +28,7 @@ protected func Initialize()
 	CreateObject(SwordTarget, 340, 649, NO_OWNER)->SetR(RandomX(-10, 10));
 	CreateObject(SwordTarget, 430, 603, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(StoneDoor, 557, 640, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 555, 640, NO_OWNER);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
