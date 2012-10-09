@@ -163,21 +163,17 @@ StdStrBuf C4StartupOptionsDlg::KeySelDialog::GetDlgMessage(const C4PlayerControl
 {
 	// compose message asking for key, gamepad button and/or mouse button depending on used control set
 	if (!assignment || !assignment_set) return StdStrBuf("err");
-	int32_t ctrl = assignment->GetControl();
-	const C4PlayerControlDef *assignment_def = Game.PlayerControlDefs.GetControlByIndex(ctrl);
 	StdStrBuf result_string;
 	if (assignment_set->HasGamepad())
-		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSBTN"), assignment_def ? assignment_def->GetGUIName() : "undefined"));
+		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSBTN"), assignment->GetGUIName(Game.PlayerControlDefs)));
 	else
-		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSKEY"), assignment_def ? assignment_def->GetGUIName() : "undefined"));
-	if (assignment_def)
+		result_string.Take(FormatString(LoadResStr("IDS_MSG_PRESSKEY"), assignment->GetGUIName(Game.PlayerControlDefs)));
+	const char *ctrl_desc = assignment->GetGUIDesc(Game.PlayerControlDefs);
+
+	if (ctrl_desc && *ctrl_desc)
 	{
-		const char *ctrl_desc = assignment_def->GetGUIDesc();
-		if (ctrl_desc && *ctrl_desc)
-		{
-			result_string.Append("||");
-			result_string.Append(ctrl_desc);
-		}
+		result_string.Append("||");
+		result_string.Append(ctrl_desc);
 	}
 	return result_string;
 }
