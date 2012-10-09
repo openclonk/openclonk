@@ -167,6 +167,7 @@ private:
 	StdCopyStrBuf sControlName; // name of the control to be executed on this key
 	StdCopyStrBuf sGUIName;    // name as displayed to player. If empty, name stored in control def should be used.
 	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog. If empty, name stored in control def should be used.
+	bool fGUIDisabled;   // whether this key can't be reassigned through the GUI dialogue
 	int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 	int32_t iPriority;          // higher priority assignments get handled first
 	bool fOverrideAssignments;  // override all other assignments to the same key?
@@ -212,6 +213,7 @@ public:
 	int32_t GetControl() const { return iControl; }
 	const char *GetGUIName(const C4PlayerControlDefs &defs) const;
 	const char *GetGUIDesc(const C4PlayerControlDefs &defs) const;
+	bool IsGUIDisabled() const;
 	bool IsGroupStart() const { return is_group_start; }
 	bool IsRefsResolved() const { return fRefsResolved; }
 	void ResetRefsResolved() { fRefsResolved = false; } // Mark references to other assignments as not resolved

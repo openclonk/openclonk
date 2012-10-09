@@ -230,17 +230,20 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::MouseInp
 	// left-click to change key
 	if (iButton == C4MC_Button_LeftDown && assignment)
 	{
-		KeySelDialog *dlg = new KeySelDialog(assignment, assignment_set);
-		dlg->SetDelOnClose(false);
-		bool success = GetScreen()->ShowModalDlg(dlg, false);
-		C4KeyCodeEx key = dlg->GetKeyCode();
-		delete dlg;
-		if (success)
+		if(!assignment->IsGUIDisabled())
 		{
-			// dialog closed by pressing a key or by the Reset button (in which case, key==KEY_Undefined)
-			// assign new config
-			C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(assignment_set, assignment, key);
-			UpdateAssignmentString();
+			KeySelDialog *dlg = new KeySelDialog(assignment, assignment_set);
+			dlg->SetDelOnClose(false);
+			bool success = GetScreen()->ShowModalDlg(dlg, false);
+			C4KeyCodeEx key = dlg->GetKeyCode();
+			delete dlg;
+			if (success)
+			{
+				// dialog closed by pressing a key or by the Reset button (in which case, key==KEY_Undefined)
+				// assign new config
+				C4StartupOptionsDlg::ControlConfigListBox::SetUserKey(assignment_set, assignment, key);
+				UpdateAssignmentString();
+			}
 		}
 	}
 	// inherited
@@ -254,7 +257,15 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 	C4KeyCodeEx key(0);
 	if (assignment) key = assignment->GetTriggerKey();
 	SetText(key.ToString(true, true).getData());
-	SetColor((assignment && assignment->IsKeyChanged()) ? C4GUI_CaptionFontClr : C4GUI_InactCaptionFontClr);
+	DWORD color = C4GUI_CaptionFontClr;
+	if (assignment)
+	{
+		if(assignment->IsGUIDisabled())
+			color = C4GUI_InactCaptionFontClr;
+		else if(assignment->IsKeyChanged())
+			color = C4GUI_Caption2FontClr;
+	}
+	SetColor(color);
 }
 
 // ------------------------------------------------
