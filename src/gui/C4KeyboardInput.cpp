@@ -340,11 +340,11 @@ C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 	if (sscanf(scan_code, "$%x", &scan_code_int) != 1) return KEY_Undefined;
 	// resolve using OS function
 #ifdef _WIN32
-	return MapVirtualKey(scan_code_int, MAPVK_VSC_TO_VK);
+	return MapVirtualKey(scan_code_int, 1 /* MAPVK_VSC_TO_VK */); // MAPVK_VSC_TO_VK is undefined due to some bug on some MinGW versions
 #else
 	// cannot resolve scan codes
 	assert(false);
-	return KEY_Undefined
+	return KEY_Undefined;
 #endif
 }
 
