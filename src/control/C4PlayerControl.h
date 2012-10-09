@@ -168,10 +168,10 @@ private:
 	StdCopyStrBuf sGUIName;    // name as displayed to player. If empty, name stored in control def should be used.
 	StdCopyStrBuf sGUIDesc;    // key description displayed to player in config dialog. If empty, name stored in control def should be used.
 	bool fGUIDisabled;   // whether this key can't be reassigned through the GUI dialogue
+	int32_t iGUIGroup;  // in which this control is grouped in the gui
 	int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 	int32_t iPriority;          // higher priority assignments get handled first
 	bool fOverrideAssignments;  // override all other assignments to the same key?
-	bool is_group_start; // true for first assignment in a group (for grouping in control config list box)
 
 	const C4PlayerControlAssignment *inherited_assignment; // valid for assignments that were copied from a parent: source assignment
 	bool is_inherited; // set for assignments that were copied from a parent set without modification
@@ -193,7 +193,7 @@ private:
 	bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 public:
-	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), is_group_start(false) {}
+	C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false), inherited_assignment(NULL),is_inherited(false), iGUIGroup(0) {}
 	~C4PlayerControlAssignment() {}
 
 	void CompileFunc(StdCompiler *pComp);
@@ -214,7 +214,7 @@ public:
 	const char *GetGUIName(const C4PlayerControlDefs &defs) const;
 	const char *GetGUIDesc(const C4PlayerControlDefs &defs) const;
 	bool IsGUIDisabled() const;
-	bool IsGroupStart() const { return is_group_start; }
+	int32_t GetGUIGroup() const; 
 	bool IsRefsResolved() const { return fRefsResolved; }
 	void ResetRefsResolved() { fRefsResolved = false; } // Mark references to other assignments as not resolved
 	bool IsAlwaysUnhandled() const { return !!(iTriggerMode & CTM_AlwaysUnhandled); }
@@ -237,7 +237,8 @@ class C4PlayerControlAssignmentSet
 private:
 	StdCopyStrBuf sName, sGUIName, sParentSetName;
 	const C4PlayerControlAssignmentSet *parent_set;
-	C4PlayerControlAssignmentVec Assignments;
+	C4PlayerControlAssignmentVec Assignments; // ordered by priority
+
 	bool has_keyboard;  
 	bool has_mouse;
 	bool has_gamepad;
@@ -261,7 +262,7 @@ public:
 	const char *GetGUIName() const { return sGUIName.getData(); }
 	bool IsWildcardName() const { return IsWildcardString(sName.getData()); }
 
-	C4PlayerControlAssignment *GetAssignmentByIndex(int32_t index);
+	C4PlayerControlAssignment *GetAssignmentByIndex(int32_t index); // assignments are ordered by priority
 	C4PlayerControlAssignment *GetAssignmentByControlName(const char *szControlName);
 	C4PlayerControlAssignment *GetAssignmentByControl(int32_t control);
 	void GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // match only by TriggerKey (last key of Combo) if fHoldKeysOnly

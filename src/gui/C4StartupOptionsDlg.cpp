@@ -271,8 +271,8 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::ControlConfigListBox::ListItem
 
-C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set)
- : C4GUI::Window(), parent_list(parent_list), assignment_label(NULL), has_extra_spacing(false)
+C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool has_extra_spacing)
+	: C4GUI::Window(), parent_list(parent_list), assignment_label(NULL), has_extra_spacing(has_extra_spacing)
 {
 	int32_t margin = 2;
 	// adding to listbox will size the element horizontally and move to proper position
@@ -280,7 +280,6 @@ C4StartupOptionsDlg::ControlConfigListBox::ListItem::ListItem(ControlConfigListB
 	SetBounds(C4Rect(0,0,42,height));
 	parent_list->InsertElement(this, NULL);
 	int32_t name_col_width = GetBounds().Wdt * 2/3;
-	if (assignment && assignment->IsGroupStart()) has_extra_spacing = true;
 	// child elements: two labels for two columns
 	const char *gui_name = assignment->GetGUIName(Game.PlayerControlDefs);
 	const char *gui_desc = assignment->GetGUIDesc(Game.PlayerControlDefs);
@@ -311,14 +310,24 @@ void C4StartupOptionsDlg::ControlConfigListBox::SetAssignmentSet(class C4PlayerC
 	if (set)
 	{
 		C4PlayerControlAssignment *assignment;
-		int32_t i=0;
-		while (assignment = set->GetAssignmentByIndex(i++))
+		
+		std::vector<C4PlayerControlAssignment *> grouped_assignments;
+		for (int32_t i=0; assignment = set->GetAssignmentByIndex(i); ++i)
+			grouped_assignments.push_back(assignment);
+
+		std::sort(grouped_assignments.begin(),grouped_assignments.end(),&C4StartupOptionsDlg::ControlConfigListBox::sort_by_group);
+
+		int32_t current_group = 0;
+		for (std::vector<C4PlayerControlAssignment *>::iterator i = grouped_assignments.begin(); i != grouped_assignments.end(); ++i)
 		{
+			assignment = *i;
+			bool first_element_of_group = assignment->GetGUIGroup() > current_group;
+			current_group = assignment->GetGUIGroup();
 			// only show assignments of GUI-named controls
 			const char *gui_name = assignment->GetGUIName(Game.PlayerControlDefs);
 			if (gui_name && *gui_name)
 			{
-				ListItem *element = new ListItem(this, assignment, set);
+				ListItem *element = new ListItem(this, assignment, set, first_element_of_group);
 				AddElement(element);
 			}
 		}

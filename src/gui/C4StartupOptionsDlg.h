@@ -218,11 +218,12 @@ private:
 			virtual int32_t GetListItemTopSpacing() { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
 
 		public:
-			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set);
+			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool first_of_group);
 		};
 
 	private:
 		class C4PlayerControlAssignmentSet *set; // assignment set being configured by this box
+		static bool sort_by_group (C4PlayerControlAssignment *i, C4PlayerControlAssignment *j) { return i->GetGUIGroup() < j->GetGUIGroup(); }
 
 	public:
 		ControlConfigListBox(const C4Rect &rcBounds, class C4PlayerControlAssignmentSet *set);

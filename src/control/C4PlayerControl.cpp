@@ -221,9 +221,9 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIName, StdCompiler::RCT_All), "GUIName", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sGUIDesc, StdCompiler::RCT_All), "GUIDesc", ""));
+	pComp->Value(mkNamingAdapt(iGUIGroup,"GUIGroup",0));
 	pComp->Value(mkNamingAdapt(fGUIDisabled, "GUIDisabled", false));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
-	pComp->Value(mkNamingAdapt(is_group_start, "Group", false));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] =
 	{
 		{ "Default",      CTM_Default  },
@@ -464,6 +464,11 @@ bool C4PlayerControlAssignment::IsGUIDisabled() const
 	return fGUIDisabled;
 }
 
+int32_t C4PlayerControlAssignment::GetGUIGroup() const
+{
+	return iGUIGroup;
+}
+
 /* C4PlayerControlAssignmentSet */
 
 void C4PlayerControlAssignmentSet::InitEmptyFromTemplate(const C4PlayerControlAssignmentSet &template_set)
@@ -489,6 +494,8 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkSTLContainerAdapt(Assignments, StdCompiler::SEP_NONE));
 	pComp->NameEnd();
 }
+
+
 
 void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, MergeMode merge_mode)
 {
