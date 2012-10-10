@@ -163,6 +163,12 @@ private func StartConstructing()
 	if(!full_material)
 		return;
 	
+	// find all objects on the bottom of the area that are not stuck
+	var wdt = GetObjWidth();
+	var hgt = GetObjHeight();
+	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)),Find_InRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_OCF(OCF_InFree));
+	Log("%d %d: %v", wdt, hgt, lying_around);
+	
 	// create the construction
 	var site;
 	if(!(site = CreateConstruction(definition, 0, 0, GetOwner(), 1, 1, 1)))
@@ -180,4 +186,45 @@ private func StartConstructing()
 	// Autoconstruct 2.0!
 	Schedule(site, "DoCon(2)",1,50);
 	Schedule(this,"RemoveObject()",1);
+	
+	// clean up stuck objects
+	for(var o in lying_around)
+	{
+		var x, y;
+		var dif = 0;
+		
+		x = o->GetX();
+		y = o->GetY();
+		
+		// move living creatures upwards till they stand on top.
+		if(o->GetOCF() & OCF_Alive)
+		{
+			while(o->GetContact(-1, CNAT_Bottom))
+			{
+				// only up to 20 pixel
+				if(dif > 20)
+				{
+					o->SetPosition(x,y);
+					break;
+				}
+				
+				dif++;
+				o->SetPosition(x, y-dif);
+			}
+		}
+		else {
+			while(o->Stuck())
+			{
+				// only up to 20 pixel
+				if(dif > 20)
+				{
+					o->SetPosition(x,y);
+					break;
+				}
+				
+				dif++;
+				o->SetPosition(x, y-dif);
+			}
+		}
+	}
 }
