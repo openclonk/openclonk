@@ -1368,8 +1368,9 @@ set(OC_C4GROUPS
 	Sound.ocg
 	System.ocg
 	Objects.ocd
-	BackToTheRocks.ocf
-	BeyondTheRocks.ocf
+	Arena.ocf
+	Parkour.ocf
+	Settlement.ocf
 	Tutorial.ocf
 )
 
