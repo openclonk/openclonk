@@ -160,10 +160,10 @@ void C4Object::TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, i
 	}
 }
 
-int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
+int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY, uint32_t *border_hack_contacts)
 {
 	// Check shape contact at given position
-	Shape.ContactCheck(iAtX,iAtY);
+	Shape.ContactCheck(iAtX,iAtY,border_hack_contacts);
 
 	// Store shape contact values in object t_contact
 	t_contact=Shape.ContactCNAT;
@@ -261,9 +261,14 @@ void C4Object::DoMovement()
 		{
 			// Next step
 			int step = Sign<C4Real>(new_x - fix_x);
-			if ((iContact=ContactCheck(GetX() + step, GetY())))
+			uint32_t border_hack_contacts = 0;
+			iContact=ContactCheck(GetX() + step, GetY(), &border_hack_contacts);
+			if (iContact || border_hack_contacts)
 			{
-				fAnyContact=true; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact | border_hack_contacts;
+			}
+			if (iContact)
+			{
 				// Abort horizontal movement
 				ctcox = GetX();
 				new_x = fix_x;
@@ -342,9 +347,14 @@ void C4Object::DoMovement()
 				}
 			}
 			// Contact check & evaluation
-			if ((iContact=ContactCheck(ctx,cty)))
+			uint32_t border_hack_contacts = 0;
+			iContact=ContactCheck(ctx,cty,&border_hack_contacts);
+			if (iContact || border_hack_contacts)
 			{
-				fAnyContact=true; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= border_hack_contacts | t_contact;
+			}
+			if (iContact)
+			{
 				// Abort movement
 				if (ctx != GetX())
 				{

@@ -274,7 +274,7 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf);
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
-	int32_t ContactCheck(int32_t atx, int32_t aty);
+	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0);
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
