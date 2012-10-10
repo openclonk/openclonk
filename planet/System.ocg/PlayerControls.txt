@@ -1709,22 +1709,22 @@
 	
 		[Assignment]
 		Key=CON_Left
-		Priority=10
+		Priority=9
 		Control=Collect
 		
 		[Assignment]
 		Key=CON_Right
-		Priority=10
+		Priority=9
 		Control=Collect
 		
 		[Assignment]
 		Key=CON_Up
-		Priority=10
+		Priority=9
 		Control=Collect
 		
 		[Assignment]
 		Key=CON_Down
-		Priority=10
+		Priority=9
 		Control=Collect
 	
 		# Menu control
