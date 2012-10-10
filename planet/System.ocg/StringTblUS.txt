@@ -1,0 +1,89 @@
+SET_WASD_QWERTZ=Normal keyboard layout
+SET_WASD_DVORAK=DVORAK keyboard layout
+SET_Gamepad=Gamepad
+
+CON_Jump=Jump
+CON_Jump_Desc=Jump while running, jump out of the water or leap from a wall.
+
+CON_AimAxisLeft=Aim - Left (Analog Stick)
+CON_AimAxisRight=Aim - Right (Analog Stick)
+CON_AimAxisUp=Aim - Up (Analog Stick)
+CON_AimAxisDown=Aim - Down (Analog Stick)
+
+CON_Throw=Throw
+CON_Throw_Desc=Throw the item in the hand into the aimed direction.
+CON_ThrowAlt=Throw (other hand)
+CON_ThrowAlt_Desc=Throw the item in the other hand into the aimed direction.
+
+CON_Drop=Drop
+CON_Drop_Desc=Drop the item in the hand.
+CON_DropAlt=Drop (other hand)
+CON_DropAlt_Desc=Drop the item in the other hand.
+
+CON_Use=Use
+CON_Use_Desc=Use the item in the hand.
+CON_UseAlt=Use (other hand)
+CON_UseAlt_Desc=Use the item in the other hand.
+
+CON_Hotkey1=Hotkey 1
+CON_Hotkey2=Hotkey 2
+CON_Hotkey3=Hotkey 3
+CON_Hotkey4=Hotkey 4
+CON_Hotkey5=Hotkey 5
+CON_Hotkey6=Hotkey 6
+CON_Hotkey7=Hotkey 7
+CON_Hotkey8=Hotkey 8
+CON_Hotkey9=Hotkey 9
+CON_Hotkey0=Hotkey 10
+
+CON_Contents=Inventary menu
+CON_Contents_Desc=Open and close the inventory menu. Through the inventory menu, you can take items from and put items into chests, lorries etc. as well as exchange items with other Clonks. 
+CON_PlayerMenu=Player menu
+CON_PlayerMenu_Desc=Open and close the player menu.
+
+CON_MenuSelect=Menu - Select
+CON_MenuSelect_Desc=Confirm a selection in a menu.
+CON_MenuCancel=Menu - Close
+CON_MenuCancel_Desc=Close a menu without having selected anything.
+CON_MenuOKAll=Menü: okay, alle
+CON_MenuOK=Menü: OK
+CON_MenuOK_Desc=Confirm in a menu.
+
+CON_NextCrew=Next Clonk
+CON_NextCrew_Desc=Select the next clonk in your crew. Your crew is displayed at the upper edge of the screen in the game.
+CON_PreviousCrew=Previous Clonk
+CON_PreviousCrew_Desc=Select the previous clonk in your crew. Your crew is displayed at the upper edge of the screen in the game.
+CON_ZoomIn=Zoom in
+CON_ZoomIn_Desc=Zoom into the game world to make visible more details.
+CON_ZoomOut=Zoom out
+CON_ZoomOut_Desc=Zoom out of the game world to get an overview.
+
+# -- Assignment specific strings
+
+KEY_MouseUse=Use / Throw
+KEY_MouseUse_Desc=Use the item in the hand. If the item cannot be used, it is thrown into the direction of the cursor instead.
+KEY_MouseUseAlt=Use / Throw (other hand)
+KEY_MouseUseAlt_Desc=Use the item in the other hand. If the item cannot be used, it is thrown into the direction of the cursor instead.
+
+KEY_GamepadUse=Use / Throw
+KEY_GamepadUse_Desc=Use the item in the hand. If the item cannot be used, it is thrown into the direction in which you aim with the analog stick on release.
+KEY_GamepadUseAlt=Use / Throw (other hand)
+KEY_GamepadUseAlt_Desc=Use the item in the other hand. If the item cannot be used, it is thrown into the direction in which you aim with the analog stick on release.
+
+KEY_Left=Left
+KEY_Left_Desc=Run, swim, hangle to the left or let go from a right wall. While climbing on a left wall, you can collect an item that is stuck in it with this key.
+KEY_Right=Right
+KEY_Right_Desc=Run, swim, hangle to the right or let go from a left wall. While climbing on a right wall, you can collect an item that is stuck in it with this key.
+KEY_Up=Up
+KEY_Up_Desc=Climb or swim up. While hangling, you can collect an item that is stuck in the ceiling.
+KEY_Down=Down
+KEY_Down_Desc=Climb, swim down or drop down from the ceiling while hangling. While standing on the ground, you can collect an item that is lying about.
+
+KEY_AimAxis_Desc=Aim with the analog stick to throw or use some item into a direction. Can also be used instead of the direction pad for controlling the Clonk.
+
+KEY_Interact=Interact
+KEY_Interact_Desc=Interact with vehicles, buildings and other things that stand next to the Clonk: enter and exit buildings, control and push vehicles into buildings, produce tools and weapons in workshops and much more.
+
+KEY_Hotkey_Desc=Hotkeys:|No + l/r mouse click - Take the respective item in the/the other hand|No + Shift - Drop the respective item|No + Interact - Interact with the respective thing|No + Ctrl - Select the respective clonk from the crew list
+
+KEY_Ungrab=Let go vehicle
