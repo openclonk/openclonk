@@ -3421,27 +3421,34 @@ void C4Object::ExecAction()
 				Mobile=1;
 			}
 
-	// Idle objects do natural gravity only
 	C4PropList* pActionDef = GetAction();
+	// No IncompleteActivity? Reset action if there was one
+	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity && pActionDef)
+	{
+		SetAction(0);
+		pActionDef = 0;
+	}
+
+	// InLiquidAction check
+	if (InLiquid)
+		if (pActionDef && pActionDef->GetPropertyStr(P_InLiquidAction))
+		{
+			SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction));
+			pActionDef = GetAction();
+		}
+	
+	// Idle objects do natural gravity only
 	if (!pActionDef)
 	{
+		Action.t_attach = CNAT_None;
 		if (Mobile) DoGravity(this);
 		return;
 	}
-
-	// No IncompleteActivity? Reset action
-	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
-		{ SetAction(0); return; }
 
 	C4Real fWalk,fMove;
 
 	// Action time advance
 	Action.Time++;
-
-	// InLiquidAction check
-	if (InLiquid)
-		if (pActionDef->GetPropertyStr(P_InLiquidAction))
-			{ SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction)); return; }
 
 	C4Value Attach;
 	pActionDef->GetProperty(P_Attach, &Attach);
