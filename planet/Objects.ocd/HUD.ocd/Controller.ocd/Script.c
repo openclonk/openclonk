@@ -24,6 +24,8 @@ local wealth;		// Object, displays wealth of the player
 
 local progress_bar_links;
 
+static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
+
 protected func Construction()
 {
 	actionbar = [];
@@ -568,6 +570,10 @@ private func UpdateInventoryButtons(object clonk)
 // Insert a button into the actionbar at pos
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num, proplist extra)
 {
+	// the actionbar has a maximum size
+	if(pos >= GUI_MAX_ACTIONBAR)
+		return nil;
+
 	var spacing = 100;
 	
 	var bt = actionbar[pos];
