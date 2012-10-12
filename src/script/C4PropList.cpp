@@ -76,9 +76,6 @@ C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListS
 	return new C4PropListStatic(prototype, parent, key);
 }
 
-C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
-int32_t C4PropListNumbered::EnumerationIndex = 0;
-
 C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
 {
 	return PropLists.Get(iNumber);
@@ -216,7 +213,7 @@ C4PropList::~C4PropList()
 	assert(PropLists.Has(this));
 	PropLists.Remove(this);
 #endif
-	assert(!C4PropListNumbered::CheckPropList(this));
+	assert	(!C4PropListNumbered::CheckPropList(this));
 }
 
 bool C4PropList::operator==(const C4PropList &b) const
