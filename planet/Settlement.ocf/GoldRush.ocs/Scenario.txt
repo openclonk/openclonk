@@ -3,7 +3,7 @@ Icon=15
 Title=Goldmine
 Version=5,0,0,0
 MaxPlayer=50
-Difficulty=10
+Difficulty=1
 
 [Definitions]
 Definition1=Objects.ocd
