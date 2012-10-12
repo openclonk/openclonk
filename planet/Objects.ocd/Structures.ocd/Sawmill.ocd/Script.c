@@ -28,6 +28,9 @@ public func Initialize()
 // Sawmill can't be accessed as a container.
 public func IsContainer() { return false; }
 
+// Sawmill can't be interacted with.
+public func IsInteractable() { return false; }
+
 // Automatically search for trees in front of sawmill
 // Temporary solution?
 protected func FindTrees()
