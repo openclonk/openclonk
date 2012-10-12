@@ -33,9 +33,9 @@
 
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
+#endif
 C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
-#endif
 C4StringTable  Strings;
 C4AulScriptEngine ScriptEngine;
 C4Application  Application;
