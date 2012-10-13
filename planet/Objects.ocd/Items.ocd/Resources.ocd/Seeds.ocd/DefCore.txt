@@ -11,4 +11,3 @@ VertexY=1,-1
 VertexFriction=40,40,40
 Value=5
 Mass=2
-Components=Rock=1
