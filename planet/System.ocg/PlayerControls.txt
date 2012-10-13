@@ -494,7 +494,7 @@
 	[ControlDef]
 	Identifier=MenuOK
 	GUIName=$CON_MenuOK$
-	GUIName=$CON_MenuOK_Desc$
+	GUIDesc=$CON_MenuOK_Desc$
 	Action=MenuOK
 	
 	[ControlDef]
@@ -575,7 +575,7 @@
 	[ControlDef]
 	Identifier=PlayerMenu
 	GUIName=$CON_PlayerMenu$
-	GUIName=$CON_PlayerMenu_Desc$
+	GUIDesc=$CON_PlayerMenu_Desc$
 	Action=Menu
 	
 	# Viewport Zoom
