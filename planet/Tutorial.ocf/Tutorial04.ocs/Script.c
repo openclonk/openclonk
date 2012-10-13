@@ -28,7 +28,8 @@ protected func Initialize()
 	CreateObject(SwordTarget, 340, 649, NO_OWNER)->SetR(RandomX(-10, 10));
 	CreateObject(SwordTarget, 430, 603, NO_OWNER)->SetR(RandomX(-10, 10) + 180);
 	// Gate that opens if all targets have been destroyed.
-	var gate = CreateObject(StoneDoor, 555, 640, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 556, 640, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 552, 638, 552, 640, 560, 640, 560, 638);
 	AddEffect("IntOpenGate", gate, 100, 5);
 	
 	// Script player as opponent.
@@ -36,12 +37,14 @@ protected func Initialize()
 	CreateScriptPlayer("$NameOpponent$", RGB(40,30,20), nil, CSPF_FixedAttributes);
 	
 	// Second section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1221, 552, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1220, 552, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 1216, 550, 1216, 552, 1224, 552, 1224, 550);
 	var wheel = CreateObject(SpinWheel, 1140, 568, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Third section: gate that can be opened with a spin wheel.
-	var gate = CreateObject(StoneDoor, 1853, 504, NO_OWNER);
+	var gate = CreateObject(StoneDoor, 1852, 504, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 1848, 502, 1848, 504, 1856, 504, 1856, 502);
 	var wheel = CreateObject(SpinWheel, 1782, 352, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
