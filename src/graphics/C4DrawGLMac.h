@@ -21,6 +21,8 @@
 
 @class C4WindowController;
 
+extern int ActualFullscreenX, ActualFullscreenY;
+
 @interface C4OpenGLView : NSView
 {
 @private

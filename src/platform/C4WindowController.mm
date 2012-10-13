@@ -175,14 +175,6 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 			viewport->ScrollBarsByViewPosition();
 		}
 	}
-	else
-	{
-	/*
-		NSSize newRes = openGLView.frame.size;
-		[C4OpenGLView setSurfaceBackingSizeOf:C4OpenGLView.mainContext width:newRes.width height:newRes.height];
-		Config.Graphics.ResX = newRes.width;
-		Config.Graphics.ResY = newRes.height; */
-	}
 }
 
 - (BOOL) isLiveResizing
