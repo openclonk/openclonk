@@ -112,11 +112,11 @@ public func OnProductionFinish(id product)
 func CollectionZone()
 {
 	if (GetCon() < 100) return;
-
-	if (!(FrameCounter() % 35)) FindTrees();
- 
-	for (var object in FindObjects(Find_InRect(- 13 * GetDir(),0,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		Collect(object);
+	
+	// Only take one tree at a time
+	if (!(FrameCounter() % 35)) 
+		if (GetLength(queue) == 0)
+			FindTrees();
 }
 
 protected func Collection()
