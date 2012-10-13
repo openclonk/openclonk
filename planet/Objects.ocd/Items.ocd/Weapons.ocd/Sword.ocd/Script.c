@@ -69,9 +69,12 @@ public func ControlUse(object clonk, int x, int y)
 		{
 			// check whether the player aims below the Clonk
 			var a=Angle(0, 0, x,y);
-			if(Inside(a, 35+90, 35+180))
+			var x_dir = Sin(a, 60);
+			
+			if(Inside(a, 35+90, 35+180)) // the player aims downwards
+			if((BoundBy(x_dir, -1, 1) == BoundBy(clonk->GetXDir(), -1, 1)) || (clonk->GetXDir() == 0)) // the player aims into the direction the Clonk is already jumping
 			{
-				clonk->SetXDir(Sin(a, 60));
+				clonk->SetXDir(x_dir);
 				clonk->SetYDir(-Cos(a, 60));
 				AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
 				
@@ -79,7 +82,11 @@ public func ControlUse(object clonk, int x, int y)
 				length = 50;
 				animation = Format("SwordSlash1.%s", arm);
 				downwards_stab = true;
+
 				if(GetEffect("Fall", clonk)) RemoveEffect("Fall", clonk);
+				
+				// visual effect
+				AddEffect("VisualJumpStrike", clonk, 1, 2, nil, Sword);
 			}
 		}
 	}
@@ -106,6 +113,25 @@ public func ControlUse(object clonk, int x, int y)
 	
 	this->Sound("WeaponSwing?", false, nil, nil, nil);
 	return true;
+}
+
+func FxVisualJumpStrikeStart(target, effect, temp)
+{
+	if(temp) return;
+	effect.x_add = 20;
+	if(target->GetXDir() < 0) effect.x_add *= -1;
+	effect.visual = CreateObject(Sword_JumpEffect, 0, 0, nil);
+	effect.visual->Point({x = target->GetX() + effect.x_add, y = target->GetY() + 10}, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
+}
+
+func FxVisualJumpStrikeTimer(target, effect, time)
+{
+	if(target->GetContact(-1, CNAT_Bottom))
+	{
+		effect.visual->FadeOut();
+		return -1;
+	}
+	effect.visual->Point(nil, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
 }
 
 func OnWeaponHitCheckStop(clonk)
