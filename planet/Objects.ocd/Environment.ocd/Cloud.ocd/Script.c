@@ -24,6 +24,8 @@ local rain_mat; // Precipitation type from scenario or other.
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 
+// This is an environment object (e.g., shouldn't be a target for the lift tower)
+public func IsEnvironment() { return true; }
 
 protected func Initialize()
 {

@@ -13,7 +13,7 @@ static g_intro_initialized;
 func DoInit(int first_player)
 {
 	// Test
-	CreateObject(LiftTower, 178,405, first_player);
+	//CreateObject(LiftTower, 178,405, first_player);
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(15);
 	EnsureObject(Environment_Celestial,0,0,-1);
@@ -66,6 +66,6 @@ func InitializePlayer(int plr)
 func OnPlaneFinished(object plane)
 {
   // todo: outro
-  plane->CreateObject(Plane, 0,12, NO_OWNER);
+  plane->CreateObject(Plane, 0,0, NO_OWNER);
   plane->RemoveObject();
 }

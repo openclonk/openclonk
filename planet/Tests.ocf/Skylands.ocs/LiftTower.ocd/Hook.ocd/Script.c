@@ -7,7 +7,7 @@ local tower, rope;
 public func ControlUse(object clonk, int x, int y)
 {
 	// Search for objects to connect with!
-	var connect = FindObjects(Find_Category(C4D_Vehicle), Find_AtPoint(), Find_Not(Find_Func("NoLiftTowerConnection")));
+	var connect = FindObjects(Find_Category(C4D_Vehicle), Find_AtPoint(), Find_Not(Find_Func("NoLiftTowerConnection")), Find_Not(Find_Func("IsEnvironment")));
 	if (!GetLength(connect)) return true;
 	if (GetLength(connect) == 1) return ConnectTo(connect[0]);
 
