@@ -3,6 +3,7 @@ Icon=39
 Title=Boomrace
 Version=5,2,0,1
 MaxPlayer=8
+Difficulty=30
 
 [Definitions]
 Definition1=Objects.ocd

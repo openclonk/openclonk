@@ -4,6 +4,7 @@ Title=Boomshire
 Version=4,10
 MinPlayer=2
 MaxPlayer=2
+Difficulty=50
 
 [Definitions]
 Definition1=Objects.ocd

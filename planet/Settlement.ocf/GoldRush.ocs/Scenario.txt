@@ -1,9 +1,9 @@
 [Head]
 Icon=15
-Title=Goldmine
+Title=GoldRush
 Version=5,0,0,0
-MaxPlayer=50
-Difficulty=1
+MaxPlayer=12
+Difficulty=10
 
 [Definitions]
 Definition1=Objects.ocd

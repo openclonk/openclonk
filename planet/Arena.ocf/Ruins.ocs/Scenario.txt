@@ -3,6 +3,7 @@ Title=Ruins
 Version=5,2,0,1
 MinPlayer=2
 MaxPlayer=6
+Difficulty=30
 
 [Definitions]
 Definition1=Objects.ocd

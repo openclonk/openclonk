@@ -4,6 +4,7 @@ Version=5,2,0,1
 Icon=23
 MinPlayer=2
 MaxPlayer=8
+Difficulty=70
 
 [Definitions]
 Definition1=Objects.ocd

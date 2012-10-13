@@ -2,7 +2,7 @@
 Icon=1
 Title=IronPeak
 Version=5,0,0,0
-MaxPlayer=50
+MaxPlayer=12
 Difficulty=20
 
 [Definitions]

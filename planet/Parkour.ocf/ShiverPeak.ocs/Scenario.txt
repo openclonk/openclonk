@@ -3,6 +3,7 @@ Icon=24
 Title=ShiverPeak
 Version=4,10
 MaxPlayer=8
+Difficulty=10
 
 [Definitions]
 Definition1=Objects.ocd
