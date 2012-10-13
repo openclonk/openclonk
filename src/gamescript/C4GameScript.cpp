@@ -372,7 +372,16 @@ static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* Tex
 	// Safety
 	if(!Texture) return C4Void();
 	// Check texture
-	C4Texture* Tex = ::TextureMap.GetTexture(Texture->GetData().getData());
+	StdStrBuf texture_name;
+	texture_name.Ref(Texture->GetCStr());
+	const char* pch = strchr(texture_name.getData(), '-');
+	if (pch != NULL)
+	{
+		size_t len = pch - texture_name.getData();
+		texture_name.Copy();
+		texture_name.SetLength(len);
+	}
+	C4Texture* Tex = ::TextureMap.GetTexture(texture_name.getData());
 	if(!Tex) return C4Void();
 	return Tex->GetAverageColor();
 }
