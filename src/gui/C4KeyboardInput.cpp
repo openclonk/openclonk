@@ -329,6 +329,8 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Default, "None", NULL},
 	{ KEY_Undefined, NULL, NULL }
 };
+#elif defined(USE_X11)
+#include <gdk/gdkx.h>
 #elif defined(USE_COCOA)
 #include "CocoaKeycodeMap.h"
 #endif
@@ -341,6 +343,9 @@ C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
 	// resolve using OS function
 #ifdef _WIN32
 	return MapVirtualKey(scan_code_int, 1 /* MAPVK_VSC_TO_VK */); // MAPVK_VSC_TO_VK is undefined due to some bug on some MinGW versions
+#elif USE_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	return XKeycodeToKeysym(dpy, scan_code_int, 0);
 #else
 	// cannot resolve scan codes
 	assert(false);
