@@ -498,12 +498,6 @@
 	Action=MenuOK
 	
 	[ControlDef]
-	Identifier=MenuSelect
-	GUIName=$CON_MenuSelect$
-	GUIDesc=$CON_MenuSelect_Desc$
-	Action=MenuSelect
-	
-	[ControlDef]
 	Identifier=MenuCancel
 	GUIName=$CON_MenuCancel$
 	GUIDesc=$CON_MenuCancel_Desc$
