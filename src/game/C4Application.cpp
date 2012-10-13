@@ -691,6 +691,8 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	// notify game
 	if (pDraw)
 	{
+		Config.Graphics.ResX = iXRes;
+		Config.Graphics.ResY = iYRes;
 		Game.OnResolutionChanged(iXRes, iYRes);
 		pDraw->OnResolutionChanged(iXRes, iYRes);
 	}
