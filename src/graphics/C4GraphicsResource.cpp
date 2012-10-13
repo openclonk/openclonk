@@ -471,8 +471,25 @@ bool C4GraphicsResource::ReloadResolutionDependantFiles()
 	if(!fInitialized) return false;
 	// reload any files that depend on the current resolution
 	// reloads the cursor
+
+	// Re-open the graphics files if they are not open anymore -- this
+	// happens when the game is running.
+	// Note also that at the moment there are no resolution dependent
+	// graphics files...
+	const bool hadGroupsRegistered = (idRegisteredMainGroupSetFiles != -1);
+	if(!hadGroupsRegistered)
+	{
+		RegisterGlobalGraphics();
+		RegisterMainGroups();
+	}
+
 	fctMouseCursor.idSourceGroup = 0;
-	return LoadCursorGfx();
+	const bool result = true;
+	
+	if(!hadGroupsRegistered)
+		CloseFiles();
+
+	return result;
 }
 
 C4GraphicsResource GraphicsResource;
