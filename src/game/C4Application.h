@@ -50,6 +50,9 @@ public:
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
 	C4Network2IRCClient &IRCClient;
+	// Screen resolution
+	int32_t ScreenX, ScreenY;
+	// clear app
 	void Clear();
 	void ClearCommandLine();
 	// Tick timing
@@ -80,8 +83,8 @@ public:
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
 	int CheckForUpdates;
 
-	int GetConfigWidth()  { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowX : Config.Graphics.ResX; }
-	int GetConfigHeight() { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowY : Config.Graphics.ResY; }
+	int GetConfigWidth(bool fallback_to_screen=true)  { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowX : (Config.Graphics.ResX == -1 || !fallback_to_screen) ? ScreenX : Config.Graphics.ResX; }
+	int GetConfigHeight(bool fallback_to_screen=true) { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowY : (Config.Graphics.ResY == -1 || !fallback_to_screen) ? ScreenY : Config.Graphics.ResY; }
 protected:
 	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_AfterGame, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;

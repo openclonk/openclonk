@@ -60,7 +60,8 @@ C4Application::C4Application():
 		restartAtEnd(false),
 		pGamePadControl(NULL),
 		AppState(C4AS_None),
-		pGameTimer(NULL)
+		pGameTimer(NULL),
+		ScreenX(-1), ScreenY(-1)
 {
 }
 
@@ -173,13 +174,17 @@ bool C4Application::DoInit(int argc, char * argv[])
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
+	// Screen size not known yet; may be set by OnResolutionChanged callback
+	ScreenX = Config.Graphics.ResX;
+	ScreenY = Config.Graphics.ResY;
+
 	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
 	{
-		if (!SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+		if (!SetVideoMode(Application.GetConfigWidth(false), Application.GetConfigHeight(false), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Application.GetConfigWidth(), Application.GetConfigHeight());
 	}
 
@@ -688,11 +693,15 @@ void C4Application::SetGameTickDelay(int iDelay)
 
 void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
+	// store windowed resolution for screen mode
+	if (Config.Graphics.ResX == -1)
+	{
+		ScreenX = iXRes;
+		ScreenY = iYRes;
+	}
 	// notify game
 	if (pDraw)
 	{
-		Config.Graphics.ResX = iXRes;
-		Config.Graphics.ResY = iYRes;
 		Game.OnResolutionChanged(iXRes, iYRes);
 		pDraw->OnResolutionChanged(iXRes, iYRes);
 	}
