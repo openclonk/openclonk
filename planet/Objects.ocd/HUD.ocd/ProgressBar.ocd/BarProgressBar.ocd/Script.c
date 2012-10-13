@@ -1,12 +1,14 @@
 /**
 	BarProgressBar
 	Shows progress.
+	Can also show a custom ID.
 	
 	additional data the bar takes through the "data" parameter:
 	bars: number of bars
 	color: color of filled bars
 	back_color: color of empty bars
 	size: size of the bar 1000 = 100%
+	image: id to use as bar graphics
 */
 
 local Name = "$Name$";
@@ -15,6 +17,10 @@ local Description = "$Description$";
 local maximum, current, timeout_time;
 local bars;
 local color, back_color, number_of_bars, size;
+local image;
+
+local current_clr;
+local active_overlay;
 
 local ActMap=
 {
@@ -31,6 +37,11 @@ local ActMap=
 };
 
 
+func BarID()
+{
+	return GetID();
+}
+
 func Init(to, max, cur, timeout, offset, visibility, data)
 {
 	maximum = max;
@@ -43,21 +54,30 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	color = data.color ?? RGB(1, 255, 1);
 	back_color = data.back_color ?? RGBa(1, 1, 1, 150);
 	size = data.size ?? 1000;
+	image = data.image ?? nil;
 	
 	if(timeout_time)
 	{
-		var e = AddEffect("TimeOut", this, 1, BoundBy(timeout_time/2, 5, 35), this);
+		var e = AddEffect("TimeOut", this, 1, 5, this);
 		e.t = timeout_time;
 	}
 
 	bars[0] = this;
 	
 	for(var i = 1; i < number_of_bars; ++i)
+	{
 		bars[i] = CreateObject(GetID(), 0, 0, GetOwner());
+	}
 		
 	var cnt = 0;
 	for(var obj in bars)
 	{
+		if(image != nil)
+		{
+			obj->SetObjDrawTransform(1, 0, 0, 0, 1); // deactivate overlay 0
+			obj->SetGraphics(nil, image, 1, GFXOV_MODE_IngamePicture, nil, nil);
+			obj.active_overlay = 1;
+		}
 		obj->Set(to, cnt, number_of_bars, size, offset, visibility);
 		++cnt;
 	}
@@ -77,8 +97,11 @@ func FxTimeOutTimer(target, effect, time)
 {
 	effect.t -= effect.Interval;
 	if(effect.t > 0) return 1;
-	Close();
-	return -1;
+	var a = 255 - 5 * Abs(effect.t);
+	if(a <= 20) {Close(); return -1;}
+	else SetFade(a);
+	
+	return 1;
 }
 
 func Update()
@@ -93,10 +116,13 @@ func Update()
 		var obj = bars[i];
 		if(i >= last_colored)
 		{
-			obj->SetClrModulation(back_color);
+			obj.current_clr = back_color;
+			obj->SetClrModulation(back_color, active_overlay);
 			continue;
 		}		
-		obj->SetClrModulation(color);
+		
+		obj.current_clr = color;
+		obj->SetClrModulation(color, active_overlay);
 	}
 }
 
@@ -147,6 +173,16 @@ func Set(to, number, max_num, size, offset, visibility)
 	SetPosition(GetX() - x, GetY() - y + 8); // for good position in first frame
 	SetVertexXY(0, x + to->GetVertex(0, VTX_X), y + to->GetVertex(0, VTX_Y));
 	
-	SetObjDrawTransform(size, 0, 0, 0, size, (6 * (1000 - size)));
+	SetObjDrawTransform(size, 0, 0, 0, size, (6 * (1000 - size)), active_overlay);
 	this.Visibility = visibility;
+}
+
+func SetFade(int a)
+{
+	for(var bar in bars)
+	{
+		var t_a = Min(255, (bar.current_clr & 0xff000000) + a);
+		var clr = bar.current_clr + (t_a << 24);
+		bar->SetClrModulation(clr, active_overlay);
+	}
 }
