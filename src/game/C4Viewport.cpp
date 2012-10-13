@@ -864,11 +864,14 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 		else
 			prev=cvp;
 	}
-	// Recalculate viewports
-	RecalculateViewports();
-	// Action sound
-	if (GetViewportCount()!=iLastCount) if (!fSilent)
-			StartSoundEffect("CloseViewport");
+	// Anything was done?
+	if (GetViewportCount()!=iLastCount)
+	{
+		// Recalculate viewports
+		RecalculateViewports();
+		// Action sound
+		if (!fSilent) StartSoundEffect("CloseViewport");
+	}
 	return true;
 }
 
