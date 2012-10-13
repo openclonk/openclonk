@@ -3087,7 +3087,7 @@ void C4Object::ContactAction()
 		switch (iProcedure)
 		{
 		case DFA_FLIGHT:
-			if (ydir < 0) break;
+			if (ydir < 0) return;
 			// Jump: FlatHit / HardHit / Walk
 			if ((OCF & OCF_HitSpeed4) || fDisabled)
 				if (ObjectActionFlat(this,Action.Dir)) return;
