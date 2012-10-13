@@ -907,8 +907,13 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, static_cast<XVisualInfo*>(new_info)->visualid);
 
-	// Unrealize widget before resetting the visual
-	gtk_widget_unrealize(GTK_WIDGET(render_widget));
+	// Un- and re-realizing the render_widget does not work, the window
+	// remains hidden afterwards. So we re-create it from scratch.
+	gtk_widget_destroy(GTK_WIDGET(render_widget));
+	render_widget = gtk_drawing_area_new();
+	gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+	g_object_set(G_OBJECT(render_widget), "can-focus", TRUE, NULL);
+	
 #if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
@@ -916,12 +921,27 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
 	g_object_unref(cmap);
 #endif
-	// create a new X11 window
-	gtk_widget_realize(GTK_WIDGET(render_widget));
 
 	delete static_cast<XVisualInfo*>(Info);
 	Info = new_info;
 
+	// Wait until window is mapped to get the window's XID
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(render_widget));
+	gtk_widget_show_now(GTK_WIDGET(render_widget));
+
+	if (GTK_IS_LAYOUT(render_widget))
+	{
+		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
+		renderwnd = GDK_WINDOW_XID(bin_wnd);
+	}
+	else
+	{
+		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
+		renderwnd = GDK_WINDOW_XID(render_wnd);
+	}
+
+	gdk_flush();
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
 	return true;
 }
 
