@@ -906,6 +906,9 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, static_cast<XVisualInfo*>(new_info)->visualid);
+
+	// Unrealize widget before resetting the visual
+	gtk_widget_unrealize(GTK_WIDGET(render_widget));
 #if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
@@ -914,7 +917,6 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	g_object_unref(cmap);
 #endif
 	// create a new X11 window
-	gtk_widget_unrealize(GTK_WIDGET(render_widget));
 	gtk_widget_realize(GTK_WIDGET(render_widget));
 
 	delete static_cast<XVisualInfo*>(Info);
