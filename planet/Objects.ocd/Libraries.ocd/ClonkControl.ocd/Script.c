@@ -1054,7 +1054,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Collect)
 	{
 		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
 		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
 		if(obj)
 		{
