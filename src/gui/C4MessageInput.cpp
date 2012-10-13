@@ -372,11 +372,11 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		szMsg = szText+4;
 	}
 	// Starts with "/sound ": Sound-Message
-/*	else if (SEqual2NoCase(szText, "/sound "))
+	else if (SEqual2NoCase(szText, "/sound "))
 	{
 		eMsgType = C4CMT_Sound;
 		szMsg = szText+7;
-	}*/
+	}
 	// Disabled due to spamming
 	// Starts with "/alert": Taskbar flash (message optional)
 	else if (SEqual2NoCase(szText, "/alert ") || SEqualNoCase(szText, "/alert"))
@@ -458,7 +458,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		LogF("/private [player] [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOTHES"));
 		LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
 		LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
-		//LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
+		LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
 		LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
 		LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));
 		LogF("/fast [x] - %s", LoadResStr("IDS_TEXT_SETTOFASTMODESKIPPINGXFRA"));

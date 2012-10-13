@@ -586,7 +586,7 @@ namespace C4GameLobby
 					LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
 					LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));
 					LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
-//					LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
+					LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
 					LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
 					LogF("/plrclr [player] [RGB] - %s", LoadResStr("IDS_TEXT_CHANGETHECOLOROFTHESPECIF"));
 					LogF("/plrclr [RGB] - %s", LoadResStr("IDS_TEXT_CHANGEYOUROWNPLAYERCOLOR"));

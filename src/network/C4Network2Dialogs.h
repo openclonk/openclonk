@@ -95,7 +95,10 @@ public:
 class C4Network2ClientListBox : public C4GUI::ListBox, private C4ApplicationSec1Timer
 {
 public:
-	enum { IconLabelSpacing = 2 }; // space between an icon and its text
+	enum {
+		IconLabelSpacing  = 2,
+		SoundIconShowTime = 1 // seconds. min time a sound icon is shown}; // space between an icon and its text
+	};
 
 private:
 	class ListItem : public C4GUI::Window
@@ -122,6 +125,7 @@ private:
 		C4GUI::Label *pPing;       // client control ping
 		C4GUI::IconButton *pActivateBtn, *pKickBtn; // buttons for host
 		bool fShownActive;
+		time_t last_sound_time; // now() when the client last issued a sound (display as sound icon). 0 for no sound.
 
 	public:
 		ClientListItem(class C4Network2ClientListBox *pForDlg, int iClientID); // ctor
@@ -131,6 +135,8 @@ private:
 
 		void OnButtonActivate(C4GUI::Control *pButton);
 		void OnButtonKick(C4GUI::Control *pButton);
+
+		void SetSoundIcon();
 	};
 
 	class ConnectionListItem : public ListItem
@@ -156,6 +162,8 @@ private:
 private:
 	bool fStartup;
 
+	ClientListItem *GetClientListItem(int32_t iForClientID);
+
 public:
 	C4Network2ClientListBox(C4Rect &rcBounds, bool fStartup);
 	~C4Network2ClientListBox() { Application.Remove(this); }
@@ -165,6 +173,8 @@ public:
 	void Update();
 
 	bool IsStartup() { return fStartup; }
+
+	void SetClientSoundIcon(int32_t client_id);
 };
 
 // dialog framing the C4Network2ClientListBox and a game option list and a status label
@@ -184,8 +194,10 @@ public:
 
 	void OnSec1Timer() { Update(); }
 	void Update();
+	void OnSound(class C4Client *singer); // mark the specified client
 
 	static bool Toggle(); // toggle dlg on/off
+	static C4Network2ClientListDlg *GetInstance() { return pInstance; }
 };
 
 // host dialog shown at initial wait

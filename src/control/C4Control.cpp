@@ -33,6 +33,7 @@
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>
+#include <C4Network2Dialogs.h>
 #include <C4Random.h>
 #include <C4Console.h>
 #include <C4Log.h>
@@ -1141,12 +1142,18 @@ void C4ControlMessage::Execute() const
 	break;
 
 	case C4CMT_Sound:
+	{
 		// tehehe, sound!
-		if (StartSoundEffect(szMessage, false, 100, NULL))
-		{
-			if (pLobby) pLobby->OnClientSound(Game.Clients.getClientByID(iByClient));
-		}
+		C4Client *singer = Game.Clients.getClientByID(iByClient);
+		if (!singer || !singer->IsIgnored())
+			if (!StartSoundEffect(szMessage, false, 100, NULL))
+				// probably wrong sound file name
+				break;
+		// Sound icon even if someone you ignored just tried. So you know you still need to ignore.
+		if (pLobby) pLobby->OnClientSound(singer);
+		if (C4Network2ClientListDlg::GetInstance()) C4Network2ClientListDlg::GetInstance()->OnSound(singer);
 		break;
+	}
 
 	case C4CMT_Alert:
 		// notify inactive users
