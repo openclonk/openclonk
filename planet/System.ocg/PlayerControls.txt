@@ -659,7 +659,7 @@
 		GUIGroup=50
 		
 		[Assignment]
-		Key=Backspace
+		Key=BackSpace
 		Priority=100
 		Control=MenuCancel
 		GUIGroup=50
@@ -792,7 +792,7 @@
 		GUIGroup=50
 		
 		[Assignment]
-		Key=Backspace
+		Key=BackSpace
 		Priority=100
 		Control=MenuCancel
 		GUIGroup=50
