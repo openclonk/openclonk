@@ -10,6 +10,7 @@
 #include Library_Rope
 
 static const Weight = 1;
+static const Library_Rope_MAXLENGTH = 1000;
 
 // Call this to break the rope.
 public func BreakRope(bool silent)
@@ -43,10 +44,11 @@ private func CreateSegment(int index, object previous)
 /*-- Rope connecting --*/
 
 // Connects two objects to the rope, but the length will vary on their positions.
-public func Connect(object obj1, object obj2)
+public func Connect(object obj1, object obj2, int max_length)
 {
 	StartRopeConnect(obj1, obj2);
-	SetMaxLength(200);
+	if (!max_length) max_length = Library_Rope_MAXLENGTH;
+	SetMaxLength(max_length);
 	SetFixed(true, false);
 
 	SetAction("Hide");

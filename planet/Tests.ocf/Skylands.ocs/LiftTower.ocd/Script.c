@@ -20,7 +20,7 @@ protected func Initialize()
 	hook_pos = CreateArray();
 	anim_no = PlayAnimation("Turn", 10, Anim_Const(0), Anim_Const(1000));
 	stopped = true;
-	AddEffect("SpinWheel", 5);
+	AddEffect("SpinWheel", this, 0, 5);
 }
 
 /* Rope */
@@ -53,20 +53,17 @@ func Interact(object clonk)
 {
 	if (!hook) OnRopeBreak();
 
-	if (clonk->GetAction() == "Walk")
+	if (hook->Contained() == this)
 	{
-		if (hook->Contained() == this)
-		{
-			if (clonk->Collect(hook,true))
-				hook->SetRope();
-		}
-		else
-		{
-			clonk->ObjectCommand("Grab", this);
-		}
-		return true;
+		if (clonk->Collect(hook,nil,nil,true))
+			hook->SetRope();
 	}
-	return false;
+	else
+	{
+		clonk->ObjectCommand("Grab", this);
+	}
+
+	return true;
 }
 
 func SetRope(object rope_to_set)
@@ -117,7 +114,7 @@ private func FxDrawInStop(object target, effect, int temp)
 
 /* Animation */
 
-protected func SpinWheel()
+protected func FxSpinWheelTimer()
 {
 	if (!hook) return StopWheel();
 	if (hook->Contained() == this) return StopWheel();
