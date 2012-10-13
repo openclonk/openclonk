@@ -7,44 +7,60 @@ protected func Initialize()
 	var alpha=0;
 	if(GetTime() < 300 || GetTime() > 1140) alpha=255;
 	SetClrModulation(RGBa(255,255,255,alpha));
-	phase = 1;
-	Phase(true);
+	SetAction("Be");
+	Update();
 	this["Parallaxity"] = [40,40];
 }
 
-public func Phase(bool noAdvance)
+public func NextMoonPhase()
 {
-	if(noAdvance!=true)
-	{
-		if(phase <= 5) phase = phase + 1;
-		if(phase >= 6) phase = 1;
-	}
-
-	if(phase == 1) SetGraphics();
-	if(phase > 1) SetGraphics(Format("%d",phase - 1));
-	if(phase == 1) SetPosition(LandscapeWidth() / 4,LandscapeHeight() / 4);
-	if(phase == 2) SetPosition(LandscapeWidth() / 3,LandscapeHeight() / 5);
-	if(phase == 3) SetPosition(LandscapeWidth() / 2,LandscapeHeight() / 6);
-	if(phase == 4) SetPosition(LandscapeWidth() - LandscapeWidth() / 3, LandscapeHeight() / 5);
-	if(phase == 5) SetPosition(LandscapeWidth() - LandscapeWidth() / 4, LandscapeHeight() / 4);
+	SetMoonPhase(phase+1);
 }
 
-//Get phase can also be used to modify the phase... ie: QueryPhase(3) would set
-//the phase of the moon to phase 3. QueryPhase() will simply return the current moon phase.
-public func GetPhase(int iphase)
+/** @return values from 0..100, depending on the full-ness of the moon */
+public func GetMoonLightness()
 {
-	var moonphase = phase;
-	if(iphase != nil && iphase < 6) SetPhase(iphase);
-	return moonphase;
-}
-//ties global to local func
-public func SetPhase(int iphase)
-{
-	phase = iphase;
-	Phase(true);
+	return 100 - Abs(100 * phase / this.ActMap.Be.Length - 50);
 }
 
-//only appears during the night
+public func GetMoonPhase()
+{
+	return phase;
+}
+public func SetMoonPhase(int iphase)
+{
+	phase = iphase % this.ActMap.Be.Length;
+	Update();
+}
+
+private func Update() {
+	SetPhase(phase);
+	
+	var phases = this.ActMap.Be.Length;
+	
+	var x = phase - phases/2;
+	var height = LandscapeHeight() / (6 - (x*x)/phases);
+	var width = 100 + phase * (LandscapeWidth()-200) / phases;
+	
+	SetPosition(width,height);
+}
+
+// only appears during the night
 public func IsCelestial() { return true; }
 
-local Name = "$Name$";
+
+local ActMap = {
+
+Be = {
+	Prototype = Action,
+	Name = "Be",
+	Procedure = DFA_FLOAT,
+	Length = 8,
+	Delay = 0,
+	X = 0,
+	Y = 0,
+	Wdt = 128,
+	Hgt = 128,
+	NextAction = "Hold"
+}
+};

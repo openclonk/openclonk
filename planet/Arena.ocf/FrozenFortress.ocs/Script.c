@@ -14,7 +14,7 @@ protected func Initialize()
 	var time=CreateObject(Environment_Time);
 	time->SetTime();
 	time->SetCycleSpeed();
-	FindObject(Find_ID(Moon))->SetPhase(3);
+	FindObject(Find_ID(Moon))->SetMoonPhase(3);
 	FindObject(Find_ID(Moon))->SetCon(150);
 	FindObject(Find_ID(Moon))->SetPosition(LandscapeWidth()/2,150);
 

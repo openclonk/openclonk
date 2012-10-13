@@ -131,11 +131,9 @@ private func AdjustToTime()
 	//Darkness of night dependant on moon-phase
 	var satellite = FindObject(Find_ID(Moon)); //pointer to the moon
 	if(satellite){
-		var phase = satellite->GetPhase();
+		var lightness = satellite->GetMoonLightness();
 		
-		if(phase == 1 || phase == 5) nightcolour = [4,7,9]; //super dark when moon is crescent
-		else if(phase == 2 || phase == 4) nightcolour = [5,15,25]; //somewhat dark when moon is half
-		else nightcolour = [10,25,40]; //deep-blue when moon is full
+		nightcolour = [ 6 * lightness / 100, 25 * lightness / 100, 40 * lightness / 100 ];
 	}
 		
 	
@@ -149,7 +147,7 @@ private func AdjustToTime()
 		skyshade[3] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255);
 		if (time == 540)
 			if (satellite)
-				satellite->Phase();
+				satellite->NextMoonPhase();
 	}
 	// Day
 	else if (Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
