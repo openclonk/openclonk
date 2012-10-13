@@ -3559,10 +3559,11 @@ void C4Object::ExecAction()
 		}
 		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
 		{
-			if (ydir > 0)
+			/*if (ydir > 0)
 				ComDir = COMD_Down;
 			else
-				ComDir = COMD_Up;
+				ComDir = COMD_Up;*/
+			ComDir = COMD_Up;
 		}
 		switch (ComDir)
 		{
