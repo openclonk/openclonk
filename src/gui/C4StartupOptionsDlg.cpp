@@ -255,8 +255,14 @@ void C4StartupOptionsDlg::ControlConfigListBox::ControlAssignmentLabel::UpdateAs
 	// assignment label text from assigned key
 	StdStrBuf strKey;
 	C4KeyCodeEx key(0);
-	if (assignment) key = assignment->GetTriggerKey();
-	SetText(key.ToString(true, true).getData());
+	if (assignment)
+	{
+		SetText(assignment->GetKeysAsString(true, false).getData());
+	}
+	else
+	{
+		SetText("");
+	}
 	DWORD color = C4GUI_CaptionFontClr;
 	if (assignment)
 	{
