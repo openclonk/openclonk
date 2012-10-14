@@ -833,6 +833,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 			pWindow->SetSize(iXRes, iYRes);
 			OnResolutionChanged(iXRes, iYRes);
 		}
+		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	}
 	else
 	{
@@ -886,7 +887,6 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 					break;
 				}
 		if (!fFound) return false;
-		Log("got that far");
 
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)

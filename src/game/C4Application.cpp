@@ -640,7 +640,7 @@ void C4Application::GameTick()
 			QuitGame();
 			break;
 		}
-		if(Config.Graphics.Windowed == 2 && !isEditor)
+		if(Config.Graphics.Windowed == 2 && FullScreenMode())
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 		break;
 	case C4AS_AfterGame:
@@ -804,13 +804,13 @@ void C4Application::NextTick()
 	pGameTimer->Set();
 }
 
-bool C4Application::FullScreenMode() 
+bool C4Application::FullScreenMode()
 {
 	if(isEditor)
 		return false;
 	if(!Config.Graphics.Windowed)
 		return true;
-	if(Config.Graphics.Windowed == 2 && AppState == C4AS_Game)
+	if(Config.Graphics.Windowed == 2 && Game.IsRunning)
 		return true;
 	return false;
 }
