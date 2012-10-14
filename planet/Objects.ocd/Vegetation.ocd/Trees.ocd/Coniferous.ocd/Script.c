@@ -7,11 +7,12 @@ func Place(int amount, proplist rectangle, proplist settings, bool foreground)
 {
 	// Default behaviour
 	var trees = inherited(amount, rectangle, settings);
-	if (GetLength(trees) < 1) return;
+	if (GetLength(trees) < 1) return trees;
 
 	for (var tree in trees)
 		if (!Random(3))
 			tree.Plane = 510;
+	return trees;
 }
 
 private func SeedChance() {	return 500; }
@@ -38,7 +39,25 @@ public func ChopDown()
 	_inherited(...);
 }
 
+func Damage()
+{
+	if (GetDamage() > MaxDamage() && OnFire())
+	{
+		var burned = CreateObject(Tree_Coniferous_Burned, 0, 0, GetOwner());
+		burned->SetCategory(GetCategory());
+		burned.Touchable = this.Touchable;
+		burned->SetCon(GetCon());
+		burned->SetR(GetR());
+		burned->Incinerate(OnFire());
+		burned->SetPosition(GetX(), GetY());
+		Sound("TreeCrack", false);
+		RemoveObject();
+		return;
+	}
+}
+
 local Name = "$Name$";
 local Touchable = 0;
-local BlastIncinerate = 1;
-local ContactIncinerate = 3;
+local BlastIncinerate = 2;
+local ContactIncinerate = 6;
+local NoBurnDecay = 1;

@@ -259,6 +259,9 @@ global func FxFireTimer(object target, proplist effect, int time)
 				if (!amount)
 					continue;
 				obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+				var min = Min(10, effect.strength);
+				if(effect.strength > 50) min = 50;
+				effect.strength = BoundBy(effect.strength, min, 100);
 			}
 		}
 	}

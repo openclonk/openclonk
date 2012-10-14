@@ -206,36 +206,36 @@ remember that degrees range from -180 to 180. */
 func FxTreeFallTimer(object target, proplist effect)
 {
 	//simple falling if tree is not fully grown
-	if (GetCon() <= 50)
+	if (target->GetCon() <= 50)
 	{
-		SetRDir(effect.direction * 10);
+		target->SetRDir(effect.direction * 10);
 	} 
 	//else rotate slowly first until about 10 degree. This will be the time needed for the crack sound and makes sense as a tree will start falling slowly.
 	else
 	{
-		if (Abs(GetR()) < 10) 
+		if (Abs(target->GetR()) < 10) 
 		{
-			SetRDir(effect.direction * 1);
+			target->SetRDir(effect.direction * 1);
 			//Turn of gravity so the tree doesn't get stuck before its done falling.
-			SetYDir(0);
+			target->SetYDir(0);
 		} 
 		else 
 		{
 			//Then speed up and let gravity do the rest.
-			SetRDir(effect.direction * 10);
+			target->SetRDir(effect.direction * 10);
 		}	
 	}
 	//if the tree does not lend on a cliff or sth. (is rotated more then 80 degrees in the plus or minus direction) Play the landing sound of the tree.
-	if (Abs(GetR()) > 80)
+	if (Abs(target->GetR()) > 80)
 	{
-		SetRDir(0);
-		if (GetCon() > 50) Sound("TreeLanding");
+		target->SetRDir(0);
+		if (target->GetCon() > 50) target->Sound("TreeLanding", false);
 		return -1;
 	}
 	//check every frame if the tree is stuck and stop rotation in that case this is necessary as a tree could get stuck before reaching 80 degrees
-	if ((GetContact(-1, CNAT_Left) | GetContact(-1, CNAT_Right)) > 0)
+	if ((target->GetContact(-1, CNAT_Left) | target->GetContact(-1, CNAT_Right)) > 0)
 	{
-		SetRDir(0);
+		target->SetRDir(0);
 		return -1;
 	}
 }
