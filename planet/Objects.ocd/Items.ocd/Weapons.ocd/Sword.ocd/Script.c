@@ -129,9 +129,17 @@ func FxVisualJumpStrikeTimer(target, effect, time)
 	if(!target->~IsJumping())
 	{
 		effect.visual->FadeOut();
+		effect.visual = nil;
 		return -1;
 	}
 	effect.visual->Point(nil, {x = target->GetX() + effect.x_add, y = target->GetY() + 10});
+}
+
+func FxVisualJumpStrikeStop(target, effect, reason, temp)
+{
+	if(temp) return;
+	if(!effect.visual) return;
+	effect.visual->FadeOut();
 }
 
 func OnWeaponHitCheckStop(clonk)
