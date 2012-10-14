@@ -1043,14 +1043,12 @@ bool C4ViewportList::FreeScroll(C4Vec2D vScrollBy)
 bool C4ViewportList::ViewportZoomOut()
 {
 	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(1.0f/C4GFX_ZoomStep);
-	if (FirstViewport) ::GraphicsSystem.FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 }
 
 bool C4ViewportList::ViewportZoomIn()
 {
 	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(C4GFX_ZoomStep);
-	if (FirstViewport) ::GraphicsSystem.FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 }
 
