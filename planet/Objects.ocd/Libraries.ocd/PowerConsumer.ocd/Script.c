@@ -26,6 +26,7 @@ static const PowerConsumer_LPR_None = 0;
 static const PowerConsumer_LPR_Zero = 1;
 static const PowerConsumer_LPR_NonZero = 2;
 local PowerConsumer_last_power_request = 0;
+local PowerConsumer_last_power_request_amount = 0;
 
 
 public func IsPowerConsumer() { return true; }
@@ -91,14 +92,20 @@ func SetNoPowerNeed(bool to_val)
 
 // wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly
 func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip special treatment for 0 power request */)
-{
+{	
 	if(just_pass_to_global == true)
 	{
 		return inherited(amount, just_pass_to_global, ...);
 	}
 	
 	var no_power_need = !!ObjectCount(Find_ID(Rule_NoPowerNeed)) || GetEffect("NoPowerNeed", this);
-		
+	
+	if((amount > 0) && !no_power_need) // requesting non-zero?
+	if(PowerConsumer_last_power_request == PowerConsumer_LPR_NonZero) // having requested non-zero before?
+	if(PowerConsumer_last_power_request_amount == amount) // requesting the exact amount again? (successive call)
+		// nothing has changed
+		return true;
+	
 	// special handling for amount == 0
 	if((amount == 0) || no_power_need)
 	{
@@ -124,7 +131,11 @@ func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip s
 			return true;
 		}
 	}
-	else PowerConsumer_last_power_request = PowerConsumer_LPR_NonZero; // requesting power != 0
+	else
+	{
+		PowerConsumer_last_power_request = PowerConsumer_LPR_NonZero; // requesting power != 0
+		PowerConsumer_last_power_request_amount = amount;
+	}
 	
 	return inherited(amount, just_pass_to_global,  ...);
 }
@@ -132,6 +143,10 @@ func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip s
 // turns the object off as a power consumer
 func UnmakePowerConsumer()
 {
+	// succesive calls have no effect
+	if(PowerConsumer_last_power_request == PowerConsumer_LPR_None)
+		return true;
+		
 	// we don't have no power anymore
 	PowerConsumer_has_power = false;
 	
