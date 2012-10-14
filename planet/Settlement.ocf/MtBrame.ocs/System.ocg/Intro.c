@@ -136,6 +136,12 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 		for(var i = 0; i < GetPlayerCount(); ++i)
 			SetPlrView(GetPlayerByIndex(i), effect.Sister);
 	}
+	
+	if(effect.Time == 556)
+	{
+		for(var crew in effect.Players)
+			crew->Contained()->Fling(3,-3);
+	}
 
 	if(effect.Time == 570)
 	{
