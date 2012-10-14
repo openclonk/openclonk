@@ -254,7 +254,7 @@ public:
 		Size = Size2;
 		Table = Table2;
 	}
-	static bool SortFunc(T &v1, T &v2)
+	static bool SortFunc(const T &v1, const T &v2)
 	{
 		return v1<v2;
 	}
