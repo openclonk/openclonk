@@ -64,7 +64,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 {
 	C4WindowController* controller = [C4EditorWindowController new];
 	setObjectiveCObject(controller);
-	[NSBundle loadNibNamed:@"ConsoleWindow" owner:controller];
+	[NSBundle loadNibNamed:@"Editor" owner:controller];
 	[controller setStdWindow:this];
 	this->Active = true;
 	return this;
