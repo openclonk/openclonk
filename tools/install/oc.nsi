@@ -94,6 +94,7 @@ Section
 
   File "*.oc?"
   
+  ; delete obsolete folders
   Delete "BackToTheRocks.ocf"
   Delete "BeyondTheRocks.ocf"
 
