@@ -1,0 +1,3 @@
+Name=Sickle
+UsageHelp=Hold down the [Use] key to harvest plants.
+Description=Without a sickle even a clonk can't harvest especially stubborn plants (such as wheat or cotton).

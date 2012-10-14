@@ -7,6 +7,7 @@ local grow_stage;
 private func SeedChance() { return 1000; }
 
 private func IsCrop() { return true; }
+private func SickleHarvesting() { return false; }
 
 protected func Initialize()
 {

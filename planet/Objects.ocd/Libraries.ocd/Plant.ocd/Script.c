@@ -250,6 +250,15 @@ private func IsCrop()
 	return false;
 }
 
+/** Determines whether the plant can only be harvested when using a sickle.
+	These are very sturdy or economically important plants (like cotton or wheat).
+	@return \c true if the plant must be harvested with a sickle (default), \c false otherwise.
+*/
+private func SickleHarvesting()
+{
+	return true;
+}
+
 /** Determines whether the plant is harvestable right now (i.e. is fully grown).
 	@return \c true if the plant is ready to be harvested.
 */
@@ -260,7 +269,7 @@ public func IsHarvestable()
 
 public func IsInteractable(object clonk)
 {
-	return clonk->IsWalking() && IsCrop() && IsHarvestable() || _inherited(clonk);
+	return clonk->IsWalking() && IsCrop() && !SickleHarvesting() && (IsHarvestable() || _inherited(clonk));
 }
 
 public func GetInteractionMetaInfo(object clonk)
