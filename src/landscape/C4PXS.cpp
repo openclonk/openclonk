@@ -325,10 +325,16 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
 {
 	int32_t cnt;
 	for (cnt=0; cnt<num; cnt++)
+	{
+		// Must do these calculation steps separately, because MSVC might
+		// apply some weird type casting if you don't!
+		C4Real xdir = itofix(Random(level+1)-level/2); xdir/=10;
+		C4Real ydir = itofix(Random(level+1)-level); ydir/=10;
 		Create(mat,
 		       itofix(tx),itofix(ty),
-		       itofix(Random(level+1)-level/2)/10,
-		       itofix(Random(level+1)-level)/10);
+		       xdir,
+		       ydir);
+	}
 }
 
 bool C4PXSSystem::Save(C4Group &hGroup)
