@@ -77,6 +77,8 @@ private func StartUsage(object clonk)
 	
 	if(!GetEffect("ShieldStopControl", clonk))
 		AddEffect("ShieldStopControl", clonk, 2, 5, this);
+	
+	clonk->SetTurnType(1, 1);
 }
 
 private func EndUsage(object clonk)
@@ -94,7 +96,10 @@ private func EndUsage(object clonk)
 	AdjustSolidMaskHelper();
 	if(GetEffect("ShieldStopControl", clonk))
 		RemoveEffect("ShieldStopControl", clonk);
-
+	
+	clonk->SetTurnForced(-1);
+	clonk->SetTurnType(0, -1);
+	
 	StopWeaponHitCheckEffect(clonk);
 }
 
@@ -104,15 +109,9 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);
 	
-	if(clonk->GetDir() == DIR_Left)
-	{
-		if(angle > 0) return;
-	}
-	else
-	{
-		if(angle < 0) return;
-	}
-
+	if(angle > 0) clonk->SetTurnForced(DIR_Right);
+	else clonk->SetTurnForced(DIR_Left);
+	
 	iAngle=angle;
 
 	var weight = 0;
