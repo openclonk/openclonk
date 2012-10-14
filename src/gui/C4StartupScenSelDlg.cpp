@@ -1379,7 +1379,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	// right side of book: Displaying current selection
 	C4Rect bounds = caBook.GetFromRight(iBookPageWidth);
 	const int32_t AvailWidth = bounds.Wdt;
-	const int32_t AvailHeight = bounds.Hgt / 3;
+	const int32_t AvailHeight = 2 * bounds.Hgt / 5;
 	int32_t PictureWidth, PictureHeight;
 	if(AvailWidth * C4StartupScenSel_TitlePictureHgt < AvailHeight * C4StartupScenSel_TitlePictureWdt)
 	{
