@@ -1405,11 +1405,17 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 	int32_t cnt;
 	for (cnt=0; cnt<num; cnt++)
 	{
+		// Must do these calculation steps separately, because the order of
+		// invokations of Random() is not defined if they're used as parameters
+		int32_t angle = Random(360);
+		C4Real xdir = C4REAL10(Random(2*level+1)-level);
+		C4Real ydir = C4REAL10(Random(2*level+1)-level);
+		C4Real rdir = itofix(Random(3)+1);
 		CreateObject(id,pCreator,iOwner,
-		             tx,ty,Random(360),
-		             C4REAL10(Random(2*level+1)-level),
-		             C4REAL10(Random(2*level+1)-level),
-		             itofix(Random(3)+1), iController);
+		             tx,ty,angle,
+		             xdir,
+		             ydir,
+		             rdir, iController);
 	}
 }
 

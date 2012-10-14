@@ -605,12 +605,18 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 			// Splash bubbles and liquid
 			for (int32_t cnt=0; cnt<amt; cnt++)
 			{
-				BubbleOut(tx+Random(16)-8,ty+Random(16)-6);
+				int32_t bubble_x = tx+Random(16)-8;
+				int32_t bubble_y = ty+Random(16)-6;
+				BubbleOut(bubble_x,bubble_y);
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
+				{
+					C4Real xdir = C4REAL100(Random(151)-75);
+					C4Real ydir = C4REAL100(-Random(200));
 					::PXS.Create(::Landscape.ExtractMaterial(tx,ty),
 					             itofix(tx),itofix(sy),
-					             C4REAL100(Random(151)-75),
-					             C4REAL100(-Random(200)));
+					             xdir,
+					             ydir);
+				}
 			}
 		}
 	// Splash sound

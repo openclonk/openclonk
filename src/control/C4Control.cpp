@@ -1023,7 +1023,11 @@ void C4ControlEMDrawTool::Execute() const
 		int iMat = ::MaterialMap.Get(szMaterial);
 		if (!MatValid(iMat)) return;
 		for (int cnt=0; cnt<iGrade; cnt++)
-			::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
+		{
+			int32_t itX=iX+Random(iGrade)-iGrade/2;
+			int32_t itY=iY+Random(iGrade)-iGrade/2;
+			::Landscape.InsertMaterial(iMat,itX,itY);
+		}
 	}
 	break;
 	default:
