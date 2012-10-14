@@ -31,25 +31,13 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 	assert(GetName() || Owner->Temporary);
 	// add to global lookuptable with this name
 	if (GetName())
-		Owner->Engine->FuncLookUp.Add(this);
+		::ScriptEngine.FuncLookUp.Add(this);
 }
 
 C4AulFunc::~C4AulFunc()
 {
-	if (Owner)
-	{
-		C4AulScriptEngine * Engine = Owner->Engine;
-		if (!Engine)
-			Engine = &::ScriptEngine;
-		if (GetName())
-			Engine->FuncLookUp.Remove(this);
-		if (Owner->GetPropList() && Name)
-		{
-			C4Value v;
-			Owner->GetPropList()->GetPropertyByS(Name, &v);
-			assert(v.getFunction() != this);
-		}
-	}
+	if (GetName())
+		::ScriptEngine.FuncLookUp.Remove(this);
 }
 
 StdStrBuf C4AulFunc::GetFullName()
