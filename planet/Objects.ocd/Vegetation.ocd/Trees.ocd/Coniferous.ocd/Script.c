@@ -41,6 +41,8 @@ public func ChopDown()
 
 func Damage()
 {
+	_inherited();
+
 	if (GetDamage() > MaxDamage() && OnFire())
 	{
 		var burned = CreateObject(Tree_Coniferous_Burned, 0, 0, GetOwner());
