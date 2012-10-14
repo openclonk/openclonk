@@ -594,7 +594,9 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 		//C4Property p(k, to);
 		//Properties.Add(p);
 #ifdef DEBUGREC_SCRIPT
-		if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
+		// deactivate this debugrec for now, because property orders seem to be out of sync
+		// after loading at the moment. might need to invastigate the cause later...
+		//if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
 #endif
 		Properties.Add(C4Property(k, to));
 	}

@@ -254,14 +254,10 @@ public:
 		Size = Size2;
 		Table = Table2;
 	}
-	static bool SortFunc(const T &v1, const T &v2)
-	{
-		return v1<v2;
-	}
 	void Sort()
 	{
 		// sort by keys
-		std::sort(&Table[0], &Table[Capacity-1], C4Set<T>::SortFunc);
+		std::sort(&Table[0], &Table[Capacity]);
 	}
 };
 
