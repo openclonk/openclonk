@@ -93,6 +93,9 @@ Section
   File "*.dll"
 
   File "*.oc?"
+  
+  Delete "BackToTheRocks.ocf"
+  Delete "BeyondTheRocks.ocf"
 
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
