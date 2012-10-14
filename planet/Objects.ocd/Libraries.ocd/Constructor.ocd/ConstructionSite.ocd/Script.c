@@ -120,7 +120,7 @@ private func ShowMissingComponents()
 			msg = Format("%s %dx{{%i}}", msg, s.count, s.id);
 	
 	//Message("@%s",msg);
-	CustomMessage(msg, this, 0, 0, 23);
+	CustomMessage(msg, this, NO_OWNER, 0, 23);
 }
 
 private func GetMissingComponents()
