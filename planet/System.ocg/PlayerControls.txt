@@ -1220,6 +1220,11 @@
 		
 		[Assignment]
 		Key=CON_Interact
+		Priority=40
+		Control=Ungrab
+		
+		[Assignment]
+		Key=CON_Interact
 		Priority=30
 		Control=Grab
 		
@@ -1544,15 +1549,6 @@
 	
 	[ControlSet]
 	Name=*
-		
-		# Interactions
-		[Assignment]
-		Key=CON_Down,CON_Interact
-		GUIName=$KEY_Ungrab$
-		GUIDisabled=1
-		GUIGroup=40
-		Priority=46
-		Control=Ungrab
 	
 		# Collect
 	
