@@ -314,15 +314,17 @@ public func Init()
 // static
 func VisualizePowerChange(object obj, int to, int before, bool loss)
 {
+	var before_current = nil;
 	var e = GetEffect("VisualPowerChange", obj);
 	if(!e)
 		e = AddEffect("VisualPowerChange", obj, 1, 5, nil, Library_Power);
+	else before_current = e.current;
 	
 	var to_abs = Abs(to);
 	var before_abs = Abs(before);
 	
 	e.max = Max(to_abs, before_abs);
-	e.current = before_abs;
+	e.current = before_current ?? before_abs;
 	e.to = to_abs;
 	
 	if(loss)
@@ -351,7 +353,7 @@ func FxVisualPowerChangeRefresh(target, effect)
 	
 	effect.bar = target->CreateProgressBar(GUI_BarProgressBar, effect.max, effect.current, 35
 		, controller, {x = off_x, y = off_y}, vis
-		, {size = 1000, bars = effect.max / 25, color = effect.color, back_color = effect.back_color, image = Icon_Lightbulb});
+		, {size = 1000, bars = effect.max / 25, color = effect.color, back_color = effect.back_color, image = Icon_Lightbulb, fade_speed = 1});
 }
 
 func FxVisualPowerChangeTimer(target, effect, time)

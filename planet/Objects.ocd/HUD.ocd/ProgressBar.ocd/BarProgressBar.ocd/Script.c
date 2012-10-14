@@ -9,6 +9,7 @@
 	back_color: color of empty bars
 	size: size of the bar 1000 = 100%
 	image: id to use as bar graphics
+	fade_speed: after the time-out the bar starts to fade, this can specify the speed. standard: 5
 */
 
 local Name = "$Name$";
@@ -17,7 +18,7 @@ local Description = "$Description$";
 local maximum, current, timeout_time;
 local bars;
 local color, back_color, number_of_bars, size;
-local image;
+local image, fade_speed;
 
 local current_clr;
 local active_overlay;
@@ -55,6 +56,7 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	back_color = data.back_color ?? RGBa(1, 1, 1, 150);
 	size = data.size ?? 1000;
 	image = data.image ?? nil;
+	fade_speed = data.fade_speed ?? 5;
 	
 	if(timeout_time)
 	{
@@ -97,7 +99,7 @@ func FxTimeOutTimer(target, effect, time)
 {
 	effect.t -= effect.Interval;
 	if(effect.t > 0) return 1;
-	var a = 255 - 5 * Abs(effect.t);
+	var a = 255 - fade_speed * Abs(effect.t);
 	if(a <= 20) {Close(); return -1;}
 	else SetFade(a);
 	
@@ -181,8 +183,8 @@ func SetFade(int a)
 {
 	for(var bar in bars)
 	{
-		var t_a = Min(255, (bar.current_clr & 0xff000000) + a);
-		var clr = bar.current_clr + (t_a << 24);
+		var t_a = BoundBy(((bar.current_clr >> 24)) + a, 0, 255);
+		var clr = (bar.current_clr & 0xffffff) + (t_a << 24);
 		bar->SetClrModulation(clr, active_overlay);
 	}
 }
