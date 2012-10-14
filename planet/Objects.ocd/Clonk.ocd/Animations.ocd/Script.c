@@ -216,7 +216,7 @@ public func ReplaceAction(string action, byaction)
 			}
 		}
 	}
-	SetProperty(action, byaction, PropAnimations);
+	else SetProperty(action, byaction, PropAnimations);
 //	if(ActualReplace != nil)
 //		SetAnimationWeight(ActualReplace, Anim_Const(byaction[2]));
 	ResetAnimationEffects();
@@ -399,8 +399,15 @@ func GetWalkAnimationPosition(string anim, int pos)
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", anim), PropAnimations))
 		{
-			var length = GetAnimationLength(anim);
-			if(GetProperty(anim, PropAnimations)) length = GetAnimationLength(GetProperty(anim, PropAnimations));
+			var length = GetAnimationLength(anim), replacement;
+			if(replacement = GetProperty(anim, PropAnimations))
+			{
+				// at this point /replacement/ may contain an array of two animations that signal a merge
+				// in that case, just take the first one..
+				if(GetType(replacement) == C4V_Array)
+					replacement = replacement[0];
+				length = GetAnimationLength(replacement);
+			}
 			return Anim_X(pos, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations)*dir);
 		}
 	// TODO: Choose proper starting positions, depending on the current
