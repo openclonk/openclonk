@@ -399,7 +399,7 @@ void C4DefList::CallEveryDefinition()
 		// TODO: Might not be synchronous on runtime join since is run by joining
 		// client but not by host. Might need to go to Synchronize().
 		char sz[32+1];
-		strncpy(sz, it->second->GetName(), 32+1);
+		strncpy(sz, it->first.ToString(), 32+1);
 		AddDbgRec(RCT_Definition, sz, 32);
 #endif
 		C4AulParSet Pars(C4VPropList(it->second));
