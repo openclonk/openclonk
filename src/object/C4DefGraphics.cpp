@@ -152,19 +152,19 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const
 	return true;
 }
 
-bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
+bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSkeletonLoader& loader)
 {
 	char* buf = NULL;
 	size_t size;
 
 	try
 	{
-		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
-			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
-		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
+		if(!hGroup.LoadEntry(szFileName, &buf, &size, 1)) return false;
+
+		if(SEqualNoCase(GetExtension(szFileName), "xml"))
 			Mesh = StdMeshLoader::LoadMeshXml(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		else
-			return false;
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, ::MeshMaterialManager, loader, hGroup.GetName());
 		delete[] buf;
 
 		// Create mirrored animations (#401), order submeshes
@@ -208,49 +208,60 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 
 	// Try from Mesh first
-	if (LoadMesh(hGroup, loader)) return true;
-	// load basic graphics
-	if (!LoadBitmap(hGroup, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
+	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
 
 	// load additional graphics
 	C4DefGraphics *pLastGraphics = this;
-	int32_t iWildcardPos;
-	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsExPNG);
-	int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerExPNG);
-	hGroup.ResetSearch();
-	while (hGroup.FindNextEntry(C4CFN_DefGraphicsExPNG, Filename, NULL, !!*Filename))
+	const int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerExPNG);
+	hGroup.ResetSearch(); *Filename=0;
+	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsExPNG, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, NULL };
+	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
 	{
-		// skip def graphics
-		if (SEqualNoCase(Filename, C4CFN_DefGraphicsPNG)) continue;
-		// skip scaled def graphics
-		if (WildcardMatch(C4CFN_DefGraphicsScaledPNG, Filename)) continue;
-		// get name
-		char GrpName[_MAX_PATH+1];
-		SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
-		RemoveExtension(GrpName);
-		// remove trailing number for scaled graphics
-		int32_t extpos; int scale;
-		if ((extpos = SCharLastPos('.', GrpName)) > -1)
-			if (sscanf(GrpName+extpos+1, "%d", &scale) == 1)
-				GrpName[extpos] = '\0';
-		// clip to max length
-		GrpName[C4MaxName]=0;
-		// create new graphics
-		pLastGraphics->pNext = new C4AdditionalDefGraphics(pDef, GrpName);
-		pLastGraphics = pLastGraphics->pNext;
-		// create overlay-filename
-		char OverlayFn[_MAX_PATH+1];
-		if (fColorByOwner)
+		for(const char* const* szWildcard = AdditionalGraphics; *szWildcard != NULL; ++szWildcard)
 		{
-			// GraphicsX.png -> OverlayX.png
-			SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
-			OverlayFn[iOverlayWildcardPos]=0;
-			SAppend(Filename + iWildcardPos, OverlayFn);
-			EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
+			if(!WildcardMatch(*szWildcard, Filename)) continue;
+			// skip def graphics
+			if (SEqualNoCase(Filename, C4CFN_DefGraphicsPNG) || SEqualNoCase(Filename, C4CFN_DefMesh) || SEqualNoCase(Filename, C4CFN_DefMeshXml)) continue;
+			// skip scaled def graphics
+			if (WildcardMatch(C4CFN_DefGraphicsScaledPNG, Filename)) continue;
+			// get name
+			char GrpName[_MAX_PATH+1];
+			const int32_t iWildcardPos = SCharPos('*', *szWildcard);
+			SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
+			RemoveExtension(GrpName);
+			// remove trailing number for scaled graphics
+			int32_t extpos; int scale;
+			if ((extpos = SCharLastPos('.', GrpName)) > -1)
+				if (sscanf(GrpName+extpos+1, "%d", &scale) == 1)
+					GrpName[extpos] = '\0';
+			// clip to max length
+			GrpName[C4MaxName]=0;
+			// create new graphics
+			pLastGraphics->pNext = new C4AdditionalDefGraphics(pDef, GrpName);
+			pLastGraphics = pLastGraphics->pNext;
+			if(*szWildcard == AdditionalGraphics[0])
+			{
+				// create overlay-filename
+				char OverlayFn[_MAX_PATH+1];
+				if(fColorByOwner)
+				{
+					// GraphicsX.png -> OverlayX.png
+					SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
+					OverlayFn[iOverlayWildcardPos]=0;
+					SAppend(Filename + iWildcardPos, OverlayFn);
+					EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
+				}
+
+				// load them
+				if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
+					return false;
+			}
+			else
+			{
+				if(!pLastGraphics->LoadMesh(hGroup, Filename, loader))
+					return false;
+			}
 		}
-		// load them
-		if (!pLastGraphics->LoadBitmap(hGroup, Filename, fColorByOwner ? OverlayFn : NULL, fColorByOwner))
-			return false;
 	}
 	// done, success
 	return true;
