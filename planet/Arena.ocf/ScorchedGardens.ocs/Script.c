@@ -72,6 +72,8 @@ global func FxMeteorsparkleTimer(obj, effect, time)
 	if(obj->Contained()) obj->Hit();
 	if(Abs(obj->GetXDir())<3 && Abs(obj->GetYDir())<3) effect.count++;
 	else effect.count=0;
+	
+	if(obj) // meteor not yet destroyed by Hit() above?
 	if(effect.count>10) obj->Hit();
 }
 global func FxMeteorsparkleStop (obj, effect, reason, iTemp)
