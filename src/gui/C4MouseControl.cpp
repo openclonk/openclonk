@@ -745,27 +745,33 @@ void C4MouseControl::DragSelect()
 
 void C4MouseControl::LeftUp()
 {
+	// Ignore left up after double click
+	if (LeftDoubleIgnoreUp)
+	{
+		LeftDoubleIgnoreUp=false;
+	}
+	else
+	{
+		// Evaluate by drag status
+		switch (Drag)
+		{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Unhandled: // nobreak
+		case C4MC_Drag_None: LeftUpDragNone(); break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Script: ButtonUpDragScript(); break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		}
+	}
 	// Update status flag
 	LeftButtonDown=false;
 	if(!RightButtonDown) DownTarget = NULL;
-	// Ignore left up after double click
-	if (LeftDoubleIgnoreUp) { LeftDoubleIgnoreUp=false; return; }
-	// Evaluate by drag status
-	switch (Drag)
-	{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MC_Drag_Unhandled: // nobreak
-	case C4MC_Drag_None: LeftUpDragNone(); break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	case C4MC_Drag_Script: ButtonUpDragScript(); break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	}
 }
 
 void C4MouseControl::DragMoving()
@@ -865,10 +871,6 @@ void C4MouseControl::RightDown()
 
 void C4MouseControl::RightUp()
 {
-	// Update status flag
-	RightButtonDown=false;
-	if(!LeftButtonDown) DownTarget = NULL;
-
 	// Evaluate by drag status
 	switch (Drag)
 	{
@@ -885,6 +887,9 @@ void C4MouseControl::RightUp()
 	case C4MC_Drag_Script: ButtonUpDragScript(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
+	// Update status flag
+	RightButtonDown=false;
+	if(!LeftButtonDown) DownTarget = NULL;
 }
 
 void C4MouseControl::Wheel(DWORD dwFlags)
@@ -984,7 +989,8 @@ void C4MouseControl::LeftUpDragNone()
 		// Selection
 	case C4MC_Cursor_Select:
 		// Object selection to control queue
-		if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
+		if (!IsPassive() && Selection.GetObject() == DownTarget)
+			Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
 		break;
 	case C4MC_Cursor_Nothing:
 		break;
@@ -1078,7 +1084,7 @@ void C4MouseControl::RightUpDragNone()
 		{ SendControl(DownRegion.RightCom); return; }
 
 	// Alternative object selection
-	if (Cursor==C4MC_Cursor_Select && !IsPassive())
+	if (Cursor==C4MC_Cursor_Select && !IsPassive() && Selection.GetObject() == DownTarget)
 		{ Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,true)); }
 
 	// TODO: Evaluate right click
