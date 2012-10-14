@@ -6,6 +6,8 @@
 
 protected func Departure(object container)
 {
+	if (GetID() != Bow) return;
+
 	if (container->GetOCF() & OCF_CrewMember)
 		AddEffect("Fade", this, 100, 1, this);
 	return _inherited(container, ...);
@@ -53,4 +55,22 @@ protected func FxFadeEffect(string new_name, object target)
 	if (new_name == "Fade")
 		return -1;
 	return -2;
+}
+
+protected func Destruction()
+{
+	if (Inside(GetX(), 0, LandscapeWidth()) && Inside(GetY(), 0, LandscapeHeight())) return;
+
+	var restorer = CreateObject(ObjectRestorer, 0, 0, NO_OWNER);
+	var x = BoundBy(GetX(), 0, LandscapeWidth());
+	var y = BoundBy(GetY(), 0, LandscapeHeight());
+	var duplicate = CreateObject(GetID(), x, y, GetOwner());
+	duplicate->~SetStackCount(GetStackCount());
+	if (GetID() == Bow) duplicate->CreateContents(Arrow)->SetStackCount(FindContents(Arrow)->GetStackCount());
+	restorer->SetPosition(x, y);
+	var to_container = FindObject(Find_OCF(OCF_CrewMember));
+	restorer->SetRestoreObject(duplicate, to_container);
+
+	if (GetEffect("RestoreMode", this))
+		RemoveEffect("RestoreMode", this, nil, true);
 }
