@@ -1377,7 +1377,21 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSheetBook->AddElement(pScenSelProgressLabel);
 
 	// right side of book: Displaying current selection
-	pSelectionInfo = new C4GUI::TextWindow(caBook.GetFromRight(iBookPageWidth), C4StartupScenSel_TitlePictureWdt+2*C4StartupScenSel_TitleOverlayMargin, C4StartupScenSel_TitlePictureHgt+2*C4StartupScenSel_TitleOverlayMargin,
+	C4Rect bounds = caBook.GetFromRight(iBookPageWidth);
+	const int32_t AvailWidth = bounds.Wdt;
+	const int32_t AvailHeight = bounds.Hgt / 3;
+	int32_t PictureWidth, PictureHeight;
+	if(AvailWidth * C4StartupScenSel_TitlePictureHgt < AvailHeight * C4StartupScenSel_TitlePictureWdt)
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+	}
+	else
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+	}
+	pSelectionInfo = new C4GUI::TextWindow(bounds, PictureWidth+2*C4StartupScenSel_TitleOverlayMargin, PictureHeight+2*C4StartupScenSel_TitleOverlayMargin,
 	                                       C4StartupScenSel_TitlePicturePadding, 100, 4096, NULL, true, &C4Startup::Get()->Graphics.fctScenSelTitleOverlay, C4StartupScenSel_TitleOverlayMargin);
 	pSelectionInfo->SetDecoration(false, false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSheetBook->AddElement(pSelectionInfo);
