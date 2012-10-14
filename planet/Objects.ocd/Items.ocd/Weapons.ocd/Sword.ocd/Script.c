@@ -126,7 +126,7 @@ func FxVisualJumpStrikeStart(target, effect, temp)
 
 func FxVisualJumpStrikeTimer(target, effect, time)
 {
-	if(target->GetContact(-1, CNAT_Bottom))
+	if(!target->~IsJumping())
 	{
 		effect.visual->FadeOut();
 		return -1;
