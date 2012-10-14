@@ -12,15 +12,15 @@ SET(C4ENGINENICK        "openclonk")
 SET(C4ENGINEID          "${C4PROJECT_TLD}.${C4PROJECT_DOMAIN}.${C4ENGINENICK}")
 
 SET(C4XVER1             5)
-SET(C4XVER2             2)
-SET(C4XVER3             90)
-SET(C4XVER4             21)
+SET(C4XVER2             3)
+SET(C4XVER3             0)
+SET(C4XVER4             22)
 
 # C4VERSIONBUILDNAME should be witty and somewhat frequently changing
 # for alpha and beta releases, and meaningful and stable for stable releases.
 # Both variables need to start with a space if they aren't empty.
 SET(C4VERSIONBUILDNAME  " Beyond the Rocks")
-SET(C4VERSIONEXTRA      " Alpha")
+SET(C4VERSIONEXTRA      " Delta")
 
 ############################################################################
 # Get revision from Mercurial
