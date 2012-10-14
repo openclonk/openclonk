@@ -79,6 +79,16 @@ public func OnEnoughPower()
 	this->RemoveStatusSymbol(Library_PowerConsumer);
 }
 
+// Add/Remove an effect such that this structure does not need power
+func SetNoPowerNeed(bool to_val)
+{
+	if (to_val)
+		AddEffect("NoPowerNeed", this, 1);
+	else
+		RemoveEffect("NoPowerNeed", this);
+	return true;
+}
+
 // wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly
 func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip special treatment for 0 power request */)
 {
@@ -87,7 +97,7 @@ func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip s
 		return inherited(amount, just_pass_to_global, ...);
 	}
 	
-	var no_power_need = !!ObjectCount(Find_ID(Rule_NoPowerNeed));
+	var no_power_need = !!ObjectCount(Find_ID(Rule_NoPowerNeed)) || GetEffect("NoPowerNeed", this);
 		
 	// special handling for amount == 0
 	if((amount == 0) || no_power_need)
