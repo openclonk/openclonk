@@ -11,6 +11,6 @@ VertexY=4,-3,-3
 VertexFriction=100,100,100
 Value=8
 Mass=10
-Components=Wood=2;Rope=2;
+Components=Wood=2;Rope=1;
 Rotate=1
 NoStabilize=1
