@@ -28,11 +28,11 @@ protected func Initialize()
 	CreateObject(Column,810,179);
 
 	// Chests with weapons.
-	CreateObject(Chest, 175, 200, NO_OWNER);
-	CreateObject(Chest, 800, 150, NO_OWNER);
-	CreateObject(Chest, 430, 240, NO_OWNER);
-	CreateObject(Chest, 610, 340, NO_OWNER);
-	CreateObject(Chest, 355, 390, NO_OWNER);
+	CreateObject(Chest, 175, 200, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 800, 150, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 430, 240, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 610, 340, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 355, 390, NO_OWNER)->MakeInvincible();
 	
 	AddEffect("IntFillChests", nil, 100, 2 * 36, nil);
 	// Smooth brick edges.

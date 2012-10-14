@@ -13,7 +13,7 @@ protected func Initialize()
 	CreateObject(Rule_KillLogs);
 	
 	// Chests with weapons.
-	CreateObject(Chest, 108, 248, NO_OWNER);
+	CreateObject(Chest, 108, 248, NO_OWNER)->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 3 * 36);
 
 	// Objects fade after 5 seconds.

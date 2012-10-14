@@ -22,11 +22,11 @@ protected func Initialize()
 	CreateObject(Firestone,625,480);
 
 	// Chests with weapons.
-	CreateObject(Chest, 320, 80, NO_OWNER);
-	CreateObject(Chest, 720, 192, NO_OWNER);
-	CreateObject(Chest, 668, 336, NO_OWNER);
-	CreateObject(Chest, 320, 440, NO_OWNER);
-	CreateObject(Chest, 48, 256, NO_OWNER);
+	CreateObject(Chest, 320, 80, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 720, 192, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 668, 336, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 320, 440, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 48, 256, NO_OWNER)->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 5 * 36);
 	
 	// Moving bricks.

@@ -99,18 +99,25 @@ protected func Initialize()
 	// Chests with weapons.
 	var chest;
 	chest = CreateObject(Chest, 764, 128, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 732, 336, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 116, 400, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 272, 152, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 424, 480, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 872, 520, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	chest = CreateObject(Chest, 72, 208, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillChest", chest, 100, 72);
 	
 	// Some columns as decoration.

@@ -18,10 +18,10 @@ protected func Initialize()
 	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
 	
 	// Chests with weapons.
-	CreateObject(Chest, 230, 224, NO_OWNER);
-	CreateObject(Chest, 500, 64, NO_OWNER);
-	CreateObject(Chest, 124, 128, NO_OWNER);
-	CreateObject(Chest, 340, 440, NO_OWNER);
+	CreateObject(Chest, 230, 224, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 500, 64, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 124, 128, NO_OWNER)->MakeInvincible();
+	CreateObject(Chest, 340, 440, NO_OWNER)->MakeInvincible();
 	AddEffect("IntFillChests", nil, 100, 2 * 36);
 	
 	// Ropeladders to get to the upper part.

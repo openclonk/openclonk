@@ -34,16 +34,21 @@ protected func Initialize()
 	// Chests with weapons.
 	var chest;
 	chest = CreateObject(Chest, 60, 220, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
 	chest = CreateObject(Chest, 150, 370, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
 	chest = CreateObject(Chest, LandscapeWidth() - 60, 220, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,false);
 	chest = CreateObject(Chest, LandscapeWidth() - 150, 370, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 7 * 36,nil,nil,true);
 
 	
 	chest = CreateObject(Chest, LandscapeWidth()/2, 320, NO_OWNER);
+	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 5 * 36);
 	
 	AddEffect("SnowyWinter", nil, 100, 1);
