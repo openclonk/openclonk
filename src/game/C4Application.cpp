@@ -640,13 +640,13 @@ void C4Application::GameTick()
 			QuitGame();
 			break;
 		}
-		if(Config.Graphics.Windowed == 2)
+		if(Config.Graphics.Windowed == 2 && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
-		if(Config.Graphics.Windowed == 2 && !NextMission)
+		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
 			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
@@ -709,7 +709,7 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	{
 		if (pWindow->pSurface)
 			pWindow->pSurface->UpdateSize(iXRes, iYRes);
-		if (Config.Graphics.Windowed)
+		if (!FullScreenMode())
 		{
 			C4Rect r;
 			pWindow->GetSize(&r);
@@ -802,6 +802,17 @@ void C4Application::NextTick()
 {
 	if (!pGameTimer) return;
 	pGameTimer->Set();
+}
+
+bool C4Application::FullScreenMode() 
+{
+	if(isEditor)
+		return false;
+	if(!Config.Graphics.Windowed)
+		return true;
+	if(Config.Graphics.Windowed == 2 && AppState == C4AS_Game)
+		return true;
+	return false;
 }
 
 // *** C4ApplicationGameTimer

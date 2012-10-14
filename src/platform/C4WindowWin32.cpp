@@ -70,9 +70,9 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			{
 				// restore textures
 				if (pTexMgr) pTexMgr->IntUnlock();
-				if (!Config.Graphics.Windowed)
+				if (Application.FullScreenMode())
 				{
-					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Config.Graphics.Windowed != 1);
+					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 				}
 			}
 			else
@@ -81,7 +81,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 					pTexMgr->IntLock();
 				if (pGL)
 					pGL->TaskOut();
-				if (!Config.Graphics.Windowed)
+				if (Application.FullScreenMode())
 				{
 					::ChangeDisplaySettings(NULL, 0);
 					::ShowWindow(hwnd, SW_MINIMIZE);
@@ -598,7 +598,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// We don't need to change anything with the window for any
 	// configuration option changes on Windows.
-	
+
 	// However, re-create the render window so that another pixel format can
 	// be chosen for it. The pixel format is chosen in CStdGLCtx::Init.
 
@@ -822,63 +822,72 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 #ifdef USE_GL
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
 	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
-	bool fFound=false;
-	DEVMODEW dmode;
-	// if a monitor is given, search on that instead
-	// get monitor infos
-	GLMonitorInfoEnumCount = iMonitor;
-	hMon = NULL;
-	EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
-	// no monitor assigned?
-	if (!hMon)
-	{
-		// Okay for primary; then just use a default
-		if (!iMonitor)
-		{
-			MonitorRect.left = MonitorRect.top = 0;
-			MonitorRect.right = iXRes; MonitorRect.bottom = iYRes;
-		}
-		else return false;
-	}
-	StdStrBuf Mon;
-	if (iMonitor)
-		Mon.Format("\\\\.\\Display%d", iMonitor+1);
-
-	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
-	
-	// Get current display settings
-	if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
-	{
-		SetLastErrorFromOS();
-		return false;
-	}
-	int orientation = dmode.dmDisplayOrientation;
-	if (iXRes == -1 && iYRes == -1)
-	{
-		dspMode=dmode;
-		fFound = true;
-	}
-	// enumerate modes
-	int i=0;
-	if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
-		// compare enumerated mode with requested settings
-		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
-			&& (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
-		{
-			fFound=true;
-			dspMode=dmode;
-			break;
-		}
-	if (!fFound) return false;
 	// change mode
 	if (!fFullScreen)
 	{
+
 		ChangeDisplaySettings(NULL, 0);
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
+		if(iXRes != -1 && iYRes != -1) {
+			pWindow->SetSize(iXRes, iYRes);
+			OnResolutionChanged(iXRes, iYRes);
+		}
 	}
 	else
 	{
+		bool fFound=false;
+		DEVMODEW dmode;
+		// if a monitor is given, search on that instead
+		// get monitor infos
+		GLMonitorInfoEnumCount = iMonitor;
+		hMon = NULL;
+		EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
+		// no monitor assigned?
+		if (!hMon)
+		{
+			// Okay for primary; then just use a default
+			if (!iMonitor)
+			{
+				MonitorRect.left = MonitorRect.top = 0;
+				MonitorRect.right = iXRes;
+				MonitorRect.bottom = iYRes;
+			}
+			else return false;
+		}
+		StdStrBuf Mon;
+		if (iMonitor)
+			Mon.Format("\\\\.\\Display%d", iMonitor+1);
+
+		ZeroMemory(&dmode, sizeof(dmode));
+		dmode.dmSize = sizeof(dmode);
+
+		// Get current display settings
+		if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
+		{
+			SetLastErrorFromOS();
+			return false;
+		}
+		int orientation = dmode.dmDisplayOrientation;
+		if (iXRes == -1 && iYRes == -1)
+		{
+			dspMode=dmode;
+			fFound = true;
+		}
+		// enumerate modes
+		int i=0;
+		if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
+				// compare enumerated mode with requested settings
+				if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
+				        && (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
+				{
+					fFound=true;
+					dspMode=dmode;
+					break;
+				}
+		if (!fFound) return false;
+		Log("got that far");
+
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)
 			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
@@ -894,24 +903,19 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 				CDSE_ERROR(DISP_CHANGE_RESTART);
 				CDSE_ERROR(DISP_CHANGE_FAILED);
 #undef CDSE_ERROR
-				default: sLastError = LoadResStr("IDS_ERR_FAILURE"); break;
+			default:
+				sLastError = LoadResStr("IDS_ERR_FAILURE");
+				break;
 			}
 			return false;
 		}
 
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
-	}
-	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
-	if (!fFullScreen && iXRes != -1)
-	{
-		pWindow->SetSize(iXRes, iYRes);
-		OnResolutionChanged(iXRes, iYRes);
-	}
-	if (fFullScreen)
-	{
+
 		pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
 		OnResolutionChanged(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	}
 	return true;
 #endif

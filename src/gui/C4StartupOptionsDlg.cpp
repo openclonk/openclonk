@@ -1276,7 +1276,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	else if (iResY > 800)
 		iNewFontSize = 16;
 	// call application to set it
-	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+	if (!Application.SetVideoMode(iResX, iResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true))
 	{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
 		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
@@ -1313,6 +1313,8 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	// resolution may be kept!
 	Config.Graphics.ResX = iResX;
 	Config.Graphics.ResY = iResY;
+	if(Config.Graphics.Windowed)
+		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 	return true;
 }
 
