@@ -30,14 +30,6 @@ protected func Initialize()
 	return;
 }
 
-private func FindHeight(int x)
-{
-	var y = 0;
-	while (!GBackSemiSolid(x, y) && y < LandscapeHeight())
-		y += 10;
-	return y;
-}
-
 protected func InitializePlayer(int plr)
 { 
 	// Increase wealth goal per player.
