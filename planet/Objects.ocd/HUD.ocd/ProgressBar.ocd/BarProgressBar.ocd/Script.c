@@ -7,6 +7,8 @@
 	bars: number of bars
 	color: color of filled bars
 	back_color: color of empty bars
+	graphics_name: graphics name of filled bars
+	back_graphics_name: graphics name of empty bars
 	size: size of the bar 1000 = 100%
 	image: id to use as bar graphics
 	fade_speed: after the time-out the bar starts to fade, this can specify the speed. standard: 5
@@ -18,6 +20,7 @@ local Description = "$Description$";
 local maximum, current, timeout_time;
 local bars;
 local color, back_color, number_of_bars, size;
+local graphics_name, back_graphics_name;
 local image, fade_speed;
 
 local current_clr;
@@ -52,8 +55,27 @@ func Init(to, max, cur, timeout, offset, visibility, data)
 	bars = [];
 	
 	number_of_bars = data.bars ?? 10;
-	color = data.color ?? RGB(1, 255, 1);
-	back_color = data.back_color ?? RGBa(1, 1, 1, 150);
+	
+	graphics_name = data.graphics_name;
+	back_graphics_name = data.back_graphics_name;
+	color = data.color;
+	back_color = data.back_color; 
+	
+	if(!color) 
+	{
+		if(graphics_name)
+			color = RGB(255,255,255);
+		else
+			color = RGB(1, 255, 1);
+	}
+	if(!back_color)
+	{
+		if(back_graphics_name)
+			back_color = RGB(255,255,255);
+		else
+			back_color = RGBa(1, 1, 1, 150);
+	}
+	
 	size = data.size ?? 1000;
 	image = data.image ?? nil;
 	fade_speed = data.fade_speed ?? 5;
@@ -120,11 +142,13 @@ func Update()
 		{
 			obj.current_clr = back_color;
 			obj->SetClrModulation(back_color, active_overlay);
+			obj->SetGraphics(back_graphics_name, image, active_overlay, GFXOV_MODE_IngamePicture, nil, nil);
 			continue;
 		}		
 		
 		obj.current_clr = color;
 		obj->SetClrModulation(color, active_overlay);
+		obj->SetGraphics(graphics_name, image, active_overlay, GFXOV_MODE_IngamePicture, nil, nil);
 	}
 }
 
