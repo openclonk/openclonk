@@ -25,6 +25,9 @@
 #include <C4GameObjects.h>
 #include <C4Game.h>
 #include <C4Object.h>
+#ifdef DEBUGREC
+#include <C4Record.h>
+#endif
 
 void C4PropList::AddRef(C4Value *pRef)
 {
@@ -327,13 +330,15 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		DataString.Append("...");
 		return;
 	}
-	const C4Property * p = Properties.First();
+	C4Set<C4Property> sorted_props = Properties;
+	sorted_props.Sort();
+	const C4Property * p = sorted_props.First();
 	while (p)
 	{
 		DataString.Append(p->Key->GetData());
 		DataString.Append(" = ");
 		DataString.Append(p->Value.GetDataString(depth - 1));
-		p = Properties.Next(p);
+		p = sorted_props.Next(p);
 		if (p) DataString.Append(delim);
 	}
 }
@@ -588,6 +593,9 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	{
 		//C4Property p(k, to);
 		//Properties.Add(p);
+#ifdef DEBUGREC_SCRIPT
+		if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
+#endif
 		Properties.Add(C4Property(k, to));
 	}
 }

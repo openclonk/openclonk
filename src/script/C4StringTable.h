@@ -169,6 +169,7 @@ public:
 		Table = new T[Capacity];
 		for (unsigned int i = 0; i < Capacity; ++i)
 			Table[i] = b.Table[i];
+		return *this;
 	}
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
@@ -252,6 +253,15 @@ public:
 		Capacity = Capacity2;
 		Size = Size2;
 		Table = Table2;
+	}
+	static bool SortFunc(T &v1, T &v2)
+	{
+		return v1<v2;
+	}
+	void Sort()
+	{
+		// sort by keys
+		std::sort(&Table[0], &Table[Capacity-1], C4Set<T>::SortFunc);
 	}
 };
 

@@ -37,11 +37,11 @@ public:
 	{ assert(Key); Key->IncRef(); /*assert(Strings.Set.Has(Key));*/ }
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
-	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	{ if(o.Key) o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
 #ifdef HAVE_RVALUE_REF
 	C4Property(C4Property && o) : Key(o.Key), Value(std::move(o.Value)) { o.Key = 0; }
 	C4Property & operator = (C4Property && o)
-	{ assert(o.Key); if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
+	{ if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
 #endif
 	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
@@ -50,6 +50,8 @@ public:
 	operator const void * () const { return Key; }
 	C4Property & operator = (void * p)
 	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
+	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return NULL
 };
 class C4PropListNumbered;
 class C4PropList
