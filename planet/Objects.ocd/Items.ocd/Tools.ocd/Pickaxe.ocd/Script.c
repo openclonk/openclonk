@@ -95,15 +95,21 @@ protected func DoSwing(object clonk, int ix, int iy)
 	
 	// alternatively hit certain objects
 	var target_obj = FindObject(Find_AtPoint(x2, y2), Find_Func("CanBeHitByPickaxe"));
+	
+	// notify the object that it has been hit
+	if(target_obj)
+		target_obj->~OnHitByPickaxe(this, clonk);
 
+	BlastFree(GetX()+x2,GetY()+y2,5,GetController());
+		
+	// special effects only ifhit something
 	if(is_solid || target_obj)
 	{
-//		Message("Hit %s", MaterialName(GetMaterial(x2,y2))); //for debug
 
 		var mat = GetMaterial(x2,y2);
 		var tex = GetTexture(x2,y2);
 		
-		// special effects
+
 		if(is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
@@ -114,16 +120,9 @@ protected func DoSwing(object clonk, int ix, int iy)
 		{
 			CastParticles("Spark",RandomX(3,9),35,x2*9/10,y2*9/10,10,30,RGB(255,255,150),RGB(255,255,200));
 			Sound("Clang?");
-		}
-
-		// dig out resources too! Don't just remove landscape pixels
-		if(is_solid)
-			BlastFree(GetX()+x2,GetY()+y2,5,GetController());
-			
-		// notify the object that it has been hit
-		if(target_obj)
-			target_obj->~OnHitByPickaxe(this, clonk);
+		}			
 	}
+
 }
 
 func FxIntPickaxeTimer(clonk, effect, time)
@@ -150,7 +149,7 @@ func FxIntPickaxeTimer(clonk, effect, time)
 
 protected func ControlUseCancel(object clonk, int ix, int iy)
 {
-  Reset(clonk);
+	Reset(clonk);
 	return true;
 }
 
