@@ -51,10 +51,10 @@ protected func Construction()
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin) SetSkin(skin);
+	if(skin != nil) SetSkin(skin);
 	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
