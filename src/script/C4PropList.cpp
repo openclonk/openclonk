@@ -330,16 +330,13 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		DataString.Append("...");
 		return;
 	}
-	C4Set<C4Property> sorted_props = Properties;
-	sorted_props.Sort();
-	const C4Property * p = sorted_props.First();
-	while (p)
+	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
+	for (std::list<const C4Property *>::const_iterator p = sorted_props.begin(); p != sorted_props.end(); ++p)
 	{
-		DataString.Append(p->Key->GetData());
+		if (p != sorted_props.begin()) DataString.Append(delim);
+		DataString.Append((*p)->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append(p->Value.GetDataString(depth - 1));
-		p = sorted_props.Next(p);
-		if (p) DataString.Append(delim);
+		DataString.Append((*p)->Value.GetDataString(depth - 1));
 	}
 }
 

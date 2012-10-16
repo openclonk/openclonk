@@ -254,10 +254,21 @@ public:
 		Size = Size2;
 		Table = Table2;
 	}
-	void Sort()
+	static bool SortFunc(const T *p1, const T*p2)
 	{
-		// sort by keys
-		std::sort(&Table[0], &Table[Capacity]);
+		// elements are guarantueed to be non-NULL
+		return *p1<*p2;
+	}
+	std::list<const T *> GetSortedListOfElementPointers() const
+	{
+		// return a list of pointers to all elements in this set sorted by the standard less-than operation
+		// of the elements
+		// elements of resulting lists are guarantueed to be non-NULL
+		// list remains valid as long as this set is not changed
+		std::list<const T *> result;
+		for (const T *p = First(); p; p = Next(p)) result.push_back(p);
+		result.sort(C4Set<T>::SortFunc);
+		return result;
 	}
 };
 
