@@ -64,24 +64,37 @@ public func FxMeteorSparkleStart(obj, effect, iTemp, natural)
 
 global func FxMeteorsparkleTimer(obj, effect, time)
 {
-
+	if (!obj)
+		return -1;
 	var x=obj->GetX(), y=obj->GetY();
 	CreateParticle("FireballSmoke",x,y,Sin(Random(360),2),Cos(Random(360),2),RandomX(120,180),RGBa(100,100,100,70));
 	for(var i=0; i<6; i++) CreateParticle("MagicFire",x,y,Sin(Random(360),RandomX(5,6)),Cos(Random(360),RandomX(5,6)),RandomX(50,90),HSL(Random(50), 200+Random(25), Random(100)));
 	CreateParticle("MagicSpark",x,y,Sin(Random(360),RandomX(15,33)),Cos(Random(360),RandomX(15,33)),RandomX(30,70),RGB(255,255,255));
-	if(obj->Contained()) obj->Hit();
-	if(Abs(obj->GetXDir())<3 && Abs(obj->GetYDir())<3) effect.count++;
+	if (obj->Contained())
+	{
+		obj->Hit();
+		return -1;	
+	}
+	if (Abs(obj->GetXDir())<3 && Abs(obj->GetYDir())<3) 
+		effect.count++;
 	else effect.count=0;
 	
-	if(obj) // meteor not yet destroyed by Hit() above?
-	if(effect.count>10) obj->Hit();
+ 	if (effect.count>10)
+ 	{
+ 		obj->Hit();
+ 		return -1;
+ 	}	
+	return 1;
 }
 global func FxMeteorsparkleStop (obj, effect, reason, iTemp)
 {
-	if(iTemp) return;
-	for(var i=0; i<30; i++) CreateParticle("MagicSpark",obj->GetX(),obj->GetY(),Sin(Random(360),RandomX(15,33)),Cos(Random(360),RandomX(15,33)),RandomX(30,70),RGB(255,255,255));
-	
-	return ;
+	if (iTemp) 
+		return;
+	if (!obj)
+		return;
+	for (var i = 0; i < 30; i++)
+		CreateParticle("MagicSpark",obj->GetX(),obj->GetY(),Sin(Random(360),RandomX(15,33)),Cos(Random(360),RandomX(15,33)),RandomX(30,70),RGB(255,255,255));
+	return;
 }
 
 private func PlaceEdges()
