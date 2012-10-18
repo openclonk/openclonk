@@ -68,7 +68,7 @@ enum C4SFilmMode
 class C4SHead
 {
 public:
-	int32_t  C4XVer[4];
+	int32_t  C4XVer[3];
 	char Title[C4MaxTitle+1];
 	char Loader[C4MaxTitle+1];
 	char Font[C4MaxTitle+1]; // scenario specific font; may be 0

@@ -146,7 +146,7 @@ bool C4Game::InitDefs()
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return false; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3,C4XVER4);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3);
 	if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
@@ -207,9 +207,9 @@ bool C4Game::OpenScenario()
 		{ LogFatal(LoadResStr("IDS_PRC_FILEINVALID")); return false; }
 
 	// Check minimum engine version
-	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2],C4S.Head.C4XVer[3]) > 0)
+	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]) > 0)
 	{
-		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2],C4S.Head.C4XVer[3]).getData());
+		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]).getData());
 		return false;
 	}
 

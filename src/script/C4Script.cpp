@@ -573,7 +573,6 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},
 	{ "C4X_Ver2",        C4V_Int, C4XVER2},
 	{ "C4X_Ver3",        C4V_Int, C4XVER3},
-	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
 	{ NULL, C4V_Nil, 0}
 };
