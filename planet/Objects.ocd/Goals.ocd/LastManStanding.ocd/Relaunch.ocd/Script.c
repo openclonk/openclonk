@@ -58,7 +58,7 @@ private func OpenWeaponMenu(object clonk)
 	if (!menu)
 	{
 		var weapons = WeaponList();
-		if(weapons)
+		if (weapons)
 		{
 			menu = clonk->CreateRingMenu(Clonk, this);
 			for (var weapon in weapons)
@@ -79,7 +79,7 @@ func FxIntTimeLimitTimer(object target, effect, int fxtime)
 	}
 	if (fxtime >= time)
 	{
-		if (!has_selected)
+		if (!has_selected && WeaponList())
 			GiveWeapon(WeaponList()[Random(GetLength(WeaponList()))]);
 		RelaunchClonk();
 		return -1;
