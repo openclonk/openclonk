@@ -143,4 +143,3 @@ func OnClonkLeftRelaunch(object clonk)
 
 
 func WinKillCount() { return 5; }
-func RelaunchWeaponList() { return []; }
