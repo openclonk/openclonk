@@ -317,7 +317,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 
 	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
 	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
 	if (UpdateClient.Init() && UpdateClient.SetServer(strQuery.getData()) && UpdateClient.QueryUpdateURL())
 	{
