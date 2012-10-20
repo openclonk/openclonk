@@ -22,7 +22,7 @@ protected func Initialize()
 	
 	// Set time of day to evening and create some clouds and celestials.
 	Cloud->Place(10);
-	Cloud->SetPrecipitation("Water", 15);
+	Cloud->SetPrecipitation("Water", 8);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);

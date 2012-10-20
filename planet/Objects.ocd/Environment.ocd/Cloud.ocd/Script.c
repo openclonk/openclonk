@@ -47,14 +47,15 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	SetPhase(RandomX(1,16));
 
-	//Push low flying clouds up to proper height
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true)
+	// Push low flying clouds up to proper height
+	while (MaterialDepthCheck(GetX(), GetY(), "Sky", 150) != true)
 	{
-		SetPosition(GetX(),GetY()-1);
+		SetPosition(GetX(), GetY()-1);
 	}
 
-	//Failsafe for stupid grounded clouds
-	if (GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
+	// Failsafe for stupid grounded clouds
+	if (GetMaterial(0, 30) != Material("Sky")) 
+		SetPosition(GetX(), GetY() - 180);
 	
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
@@ -280,29 +281,33 @@ protected func Evaporation()
 //Shades the clouds based on iSize: the water density value of the cloud.
 private func ShadeCloud()
 {
-	var cloudAlpha = Min((rain+50)*425/1000, 255);
-	if(rain > 600) cloudAlpha = 255;
+	var cloud_alpha = Min((rain+50)*425/1000, 255);
+	if (rain > 600) 
+		cloud_alpha = 255;
 	
-	//from RequestAlpha function
-	if(requestAlpha != nil){
-		cloudAlpha = cloudAlpha - (255 - requestAlpha);
-		if(cloudAlpha < 0) cloudAlpha = 0;
+	// From RequestAlpha function
+	if (request_alpha != nil)
+	{
+		cloud_alpha = cloud_alpha - (255 - request_alpha);
+		if (cloud_alpha < 0) 
+			cloud_alpha = 0;
 	}
 	
 	var shade2 = Min(rain-600, 255);
 	
 	if (rain <= 600)
-		SetObjAlpha(cloudAlpha);
+		SetObjAlpha(cloud_alpha);
 	if (rain > 600)
-		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloudAlpha));
+		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloud_alpha));
 	return;
 }
 
-//Utilized by time to make clouds invisible at night
-local requestAlpha;
+// Utilized by time to make clouds invisible at night
+local request_alpha;
 
-public func RequestAlpha(int alpha){
-	requestAlpha = alpha;
+public func RequestAlpha(int alpha)
+{
+	request_alpha = alpha;
 }
 
 local ActMap = {
