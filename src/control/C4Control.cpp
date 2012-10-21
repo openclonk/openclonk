@@ -757,7 +757,7 @@ void C4ControlJoinPlayer::Execute() const
 	}
 	else if (::Control.isNetwork())
 	{
-		// Find ressource
+		// Find resource
 		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if (pRes && pRes->isComplete())
 			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
@@ -811,7 +811,7 @@ bool C4ControlJoinPlayer::PreExecute() const
 	if (!Game.Clients.getClientByID(iAtClient)) return true;
 	// network only
 	if (!::Control.isNetwork()) return true;
-	// search ressource
+	// search resource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
 	if (!pRes) { pRes = ::Network.ResList.AddByCore(ResCore, true); }

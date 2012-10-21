@@ -641,7 +641,7 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 		iLastStatistic = iLastExecute;
 	}
 
-	// ressources
+	// resources
 	::Network.ResList.OnTimer();
 
 	// ok
@@ -946,7 +946,7 @@ void C4Network2IO::CallHandlers(int iHandlerID, const C4IDPacket *pPkt, C4Networ
 		assert(!fThread);
 		::Network.Players.HandlePacket(cStatus, pPacket, pConn);
 	}
-	// ressource list class (network thread)
+	// resource list class (network thread)
 	if (iHandlerID & PH_C4Network2ResList)
 	{
 		assert(fThread);

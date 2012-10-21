@@ -45,7 +45,7 @@ public:
 	C4Network2ClientDlg(int iForClientID); // ctor
 };
 
-// ressource dialog: created as listbox inside another dialog
+// resource dialog: created as listbox inside another dialog
 class C4Network2ResDlg : public C4GUI::ListBox, private C4ApplicationSec1Timer
 {
 public:
@@ -86,7 +86,7 @@ public:
 	// enable/disable updates by timer calls
 	void Activate(); void Deactivate();
 
-	// update by ressources
+	// update by resources
 	void OnSec1Timer() { Update(); }
 	void Update();
 };

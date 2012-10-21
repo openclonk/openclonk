@@ -213,7 +213,7 @@ bool C4GameSave::SaveRuntimeData()
 	if (GetSaveUserPlayers() || GetSaveScriptPlayers())
 	{
 		// player infos
-		// the stored player info filenames will point into the scenario file, and no ressource information
+		// the stored player info filenames will point into the scenario file, and no resource information
 		// will be saved. PlayerInfo must be saved first, because those will generate the storage filenames to be used by
 		// C4PlayerList
 		C4PlayerInfoList RestoreInfos;

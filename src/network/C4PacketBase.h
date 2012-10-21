@@ -126,7 +126,7 @@ enum C4PacketType
 	// * lobby
 	PID_LobbyCountdown = 0x20,
 
-	// * ressources
+	// * resources
 	PID_NetResDis     = 0x30,
 	PID_NetResStat    = 0x31,
 	PID_NetResDerive  = 0x32,
@@ -184,7 +184,7 @@ enum C4PacketHandlerID
 	PH_C4GUIMainDlg           = 1 << 2,   // network lobby class
 	PH_C4Network2ClientList   = 1 << 3,   // client list class
 	PH_C4Network2Players      = 1 << 4,   // player list class
-	PH_C4Network2ResList      = 1 << 5,   // ressource list class
+	PH_C4Network2ResList      = 1 << 5,   // resource list class
 	PH_C4GameControlNetwork   = 1 << 6      // network control class
 };
 

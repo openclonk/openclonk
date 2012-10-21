@@ -46,13 +46,13 @@
 #include <C4MeshAnimation.h>
 #include "StdMeshLoader.h"
 
-// Helper class to load additional ressources required for meshes from
+// Helper class to load additional resources required for meshes from
 // a C4Group.
-class AdditionalRessourcesLoader:
+class AdditionalResourcesLoader:
 		public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
 {
 public:
-	AdditionalRessourcesLoader(C4Group& hGroup): Group(hGroup) {}
+	AdditionalResourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
 	virtual C4Surface* LoadTexture(const char* filename)
 	{
@@ -184,7 +184,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, const char* szFileName, StdMeshSke
 bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 {
 	char Filename[_MAX_PATH+1]; *Filename=0;
-	AdditionalRessourcesLoader loader(hGroup);
+	AdditionalResourcesLoader loader(hGroup);
 
 	// Load all materials for this definition:
 	hGroup.ResetSearch();

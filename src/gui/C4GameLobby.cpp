@@ -205,7 +205,7 @@ namespace C4GameLobby
 		//C4GUI::CallbackButton<MainDlg> *btnTest = new C4GUI::CallbackButton<MainDlg>("test", caBottom.GetFromRight(90), &MainDlg::OnTestBtn);
 		pGameOptionButtons = new C4GameOptionButtons(caBottom.GetCentered(caBottom.GetInnerWidth(), Min<int32_t>(C4GUI_IconExHgt, caBottom.GetHeight())), true, fHost, true);
 
-		// players / ressources sidebar
+		// players / resources sidebar
 		C4GUI::ComponentAligner caRight(caMain.GetFromRight(iClientListWdt), iIndentX3,iIndentY4);
 		pRightTabLbl = new C4GUI::WoodenLabel("", caRight.GetFromTop(C4GUI::WoodenLabel::GetDefaultHeight(&(::GraphicsResource.TextFont))), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont, ALeft);
 		caRight.ExpandTop(iIndentY4*2 + 1); // undo margin, so client list is located directly under label
@@ -258,7 +258,7 @@ namespace C4GameLobby
 		AddElement(pLbl); AddElement(pEdt); // chat
 
 		AddElement(pRightTabLbl);
-		//(new C4GUI::ContextButton(pRightTabLbl, true))->SetToolTip("[.!] Switches between player and ressource view"); // right tab label+ctx menu
+		//(new C4GUI::ContextButton(pRightTabLbl, true))->SetToolTip("[.!] Switches between player and resource view"); // right tab label+ctx menu
 		if (btnTeams) AddElement(btnTeams);
 		AddElement(btnPlayers);
 		AddElement(btnResources);
@@ -711,7 +711,7 @@ namespace C4GameLobby
 	{
 		// create context menu
 		C4GUI::ContextMenu *pMenu = new C4GUI::ContextMenu();
-		// players/ressources
+		// players/resources
 		C4GUI::Tabular::Sheet *pPlayerSheet = pRightTab->GetSheet(0);
 		C4GUI::Tabular::Sheet *pResSheet = pRightTab->GetSheet(1);
 		C4GUI::Tabular::Sheet *pOptionsSheet = pRightTab->GetSheet(2);

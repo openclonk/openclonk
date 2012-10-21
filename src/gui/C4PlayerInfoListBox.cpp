@@ -299,7 +299,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 	// join
 	if (fHasJoinedInfo)
 	{
-		// make sure we're not drawing on GraphicsRessource
+		// make sure we're not drawing on GraphicsResource
 		if (!pIcon->EnsureOwnSurface()) return;
 		// draw join info
 		C4Facet fctDraw = pIcon->GetFacet();

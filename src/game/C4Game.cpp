@@ -2262,7 +2262,7 @@ bool C4Game::InitPlayers(C4ValueNumbers * numbers)
 		if (!PlayerInfos.RestoreSavegameInfos(RestorePlayerInfos))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRSAVEINFORECR")); return false; }
 		RestorePlayerInfos.Clear();
-		// try to associate local filenames (non-net+replay) or ressources (net) with all player infos
+		// try to associate local filenames (non-net+replay) or resources (net) with all player infos
 		if (!PlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate players by joining all players whose joined-flag is already set
