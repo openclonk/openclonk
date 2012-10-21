@@ -1859,8 +1859,8 @@ private func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
-	iX = 8; if (!GetDir()) iX = -iX;
-	iY = Cos(angle,-8);
+	iX = 4; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-4);
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 
