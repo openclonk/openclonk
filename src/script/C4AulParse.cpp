@@ -1556,8 +1556,10 @@ void C4AulParse::Parse_Function()
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
 			case AB_ERR: case AB_EOFN: case AB_EOF:
 				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
-			case AB_CARRAY: case AB_CPROPLIST:
-				fprintf(stderr, "\t%p\n", reinterpret_cast<void *>(pBCC->Par.X)); break;
+			case AB_CARRAY:
+				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;
+			case AB_CPROPLIST:
+				fprintf(stderr, "\t%s\n", C4VPropList(pBCC->Par.p).GetDataString().getData()); break;
 			case AB_JUMP: case AB_JUMPAND: case AB_JUMPOR: case AB_JUMPNNIL: case AB_CONDN: case AB_COND:
 				fprintf(stderr, "\t%d\n", labels[pBCC + pBCC->Par.i]); break;
 			default:
