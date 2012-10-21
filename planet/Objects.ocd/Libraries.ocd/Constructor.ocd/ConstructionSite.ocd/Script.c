@@ -167,7 +167,6 @@ private func StartConstructing()
 	var wdt = GetObjWidth();
 	var hgt = GetObjHeight();
 	var lying_around = FindObjects(Find_Or(Find_Category(C4D_Vehicle), Find_Category(C4D_Object), Find_Category(C4D_Living)),Find_InRect(-wdt/2 - 2, -hgt, wdt + 2, hgt + 12), Find_OCF(OCF_InFree));
-	Log("%d %d: %v", wdt, hgt, lying_around);
 	
 	// create the construction
 	var site;
