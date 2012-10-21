@@ -1264,7 +1264,7 @@ void C4AulParse::Parse_Script()
 			case ATT_DIR:
 			{
 				if (found_code)
-					Warn(FormatString("Found %s after declarations", Idtf).getData());
+					Warn("Found %s after declarations", Idtf);
 				// check for include statement
 				if (SEqual(Idtf, C4AUL_Include))
 				{
@@ -1477,7 +1477,7 @@ void C4AulParse::Parse_Function()
 		{
 			if (Type == PREPARSER) Fn->AddPar(Idtf);
 			if (Config.Developer.ExtraWarnings)
-				Warn(FormatString("'%s' used as parameter name", Idtf).getData());
+				Warn("'%s' used as parameter name", Idtf);
 		}
 		else if (TokenType != ATT_IDTF)
 		{
