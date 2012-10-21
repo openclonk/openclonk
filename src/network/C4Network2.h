@@ -232,7 +232,6 @@ public:
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
 	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
-	bool InitHostResources();
 	bool DoLobby();
 	bool Start();
 	bool Pause();
