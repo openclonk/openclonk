@@ -1085,7 +1085,7 @@ if(UNIX)
 	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
 	# and when the path is changed both the old and new definition appears
 	# in the list of flags.
-	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/openclonk\"")
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
 endif()
 if(OC_CXX_FLAGS)
 	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
@@ -1392,7 +1392,7 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group
 			VERBATIM
 			)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
 	endif()
 endforeach()
 if (NOT APPLE)
