@@ -535,6 +535,13 @@ src/res/engine.rc \
 src/res/resource.h
 endif
 
+if MACOSX
+clonk_SOURCES += \
+src/platform/C4AppDelegate.h \
+src/platform/C4AppDelegate.mm \
+src/platform/C4FileMonitorMac.mm
+endif
+
 if SDL_MAIN_LOOP
 clonk_SOURCES += \
 src/platform/C4AppSDL.cpp \
@@ -559,20 +566,18 @@ endif
 if MACOSX
 clonk_SOURCES += \
 src/editor/C4ConsoleCocoa.mm \
+src/editor/C4EditorWindowController.h \
+src/editor/C4EditorWindowController.mm \
+src/graphics/C4DrawGLMac.h \
+src/graphics/C4DrawGLMac.mm \
+src/platform/C4AppDelegate+MainMenuActions.h \
+src/platform/C4AppDelegate+MainMenuActions.mm \
 src/platform/C4AppMac.mm \
-src/platform/C4FileMonitorMac.mm \
+src/platform/C4WindowController.h \
+src/platform/C4WindowController.mm \
 src/platform/C4WindowMac.mm \
-src/platform/ClonkAppDelegate.h \
-src/platform/ClonkAppDelegate.mm \
-src/platform/ConsoleWindowController.h \
-src/platform/ConsoleWindowController.mm \
-src/platform/ClonkWindowController.h \
-src/platform/ClonkWindowController.mm \
-src/platform/ClonkOpenGLView.h \
-src/platform/ClonkOpenGLView.mm \
 src/platform/CocoaKeycodeMap.h \
-src/platform/ClonkMainMenuActions.h \
-src/platform/ClonkMainMenuActions.mm
+src/platform/ObjectiveCAssociated.h
 endif
 endif
 endif
@@ -722,7 +727,9 @@ c4groups = \
   Sound.ocg \
   System.ocg \
   Objects.ocd \
-  BackToTheRocks.ocf \
+  Arena.ocf \
+  Parkour.ocf \
+  Settlement.ocf \
   Tutorial.ocf
 
 CLEANFILES += $(c4groups)

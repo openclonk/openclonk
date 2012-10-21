@@ -147,7 +147,7 @@ AC_ARG_WITH([openal],
   [AS_HELP_STRING([--with-openal],[compile with openal support [default=no]])],
   , [with_openal=no])
 if test $with_openal = yes; then
-  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal])
+  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal freealut])
   AC_DEFINE([USE_OPEN_AL], 1, [OpenAL sound])
   if test $enable_sound = no; then
     AC_MSG_ERROR([--with-openal cannot be used with --disable-sound.])
