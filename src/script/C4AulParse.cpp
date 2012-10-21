@@ -688,13 +688,12 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_ERR: return "ERR";      // parse error at this position
 	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
-	case AB_EOF: return "EOF";
 
 	default: assert(false);
 	}
 }
 
-void C4ScriptHost::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
+void C4AulScriptFunc::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 {
 	// store chunk
 	C4AulBCC bcc;
@@ -702,7 +701,6 @@ void C4ScriptHost::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	bcc.Par.X = X;
 	Code.push_back(bcc);
 	PosForCode.push_back(SPos);
-	LastCode = &Code.back();
 
 	switch (eType)
 	{
@@ -714,7 +712,7 @@ void C4ScriptHost::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	}
 }
 
-void C4ScriptHost::RemoveLastBCC()
+void C4AulScriptFunc::RemoveLastBCC()
 {
 	C4AulBCC *pBCC = &Code.back();
 	switch (pBCC->bccType)
@@ -726,62 +724,24 @@ void C4ScriptHost::RemoveLastBCC()
 	}
 	Code.pop_back();
 	PosForCode.pop_back();
-	if (Code.size())
-		LastCode = &Code.back();
-	else
-		LastCode = NULL;
 }
 
-void C4ScriptHost::ClearCode()
+void C4AulScriptFunc::ClearCode()
 {
 	while(Code.size() > 0)
 		RemoveLastBCC();
-	// add one empty chunk to init CPos and for functions without code.
-	// For example, leftovers from a previous version of a reloaded script
-	AddBCC(AB_ERR);
-	if (Engine) for (C4String *pFn = Engine->GetPropList()->EnumerateOwnFuncs(); pFn; pFn = Engine->GetPropList()->EnumerateOwnFuncs(pFn))
-	{
-		C4AulScriptFunc *pSFunc = Engine->GetPropList()->GetFunc(pFn)->SFunc();
-		while (pSFunc)
-		{
-			if (pSFunc->pOrgScript == this)
-				pSFunc->CodePos = 0;
-			pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
-		}
-	}
-	if (!GetPropList()) return;
-	for (C4String *pFn = GetPropList()->EnumerateOwnFuncs(); pFn; pFn = GetPropList()->EnumerateOwnFuncs(pFn))
-	{
-		C4AulScriptFunc *pSFunc = GetPropList()->GetFunc(pFn)->SFunc();
-		while (pSFunc)
-		{
-			assert(pSFunc->Owner == this);
-			pSFunc->CodePos = 0;
-			pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
-		}
-	}
+	// This function is now broken until an AddBCC call
 }
 
 int C4AulScriptFunc::GetLineOfCode(C4AulBCC * bcc)
 {
-	return SGetLine(pOrgScript->GetScript(), GetCodeOwner()->PosForCode[bcc - &GetCodeOwner()->Code[0]]);
+	return SGetLine(pOrgScript->GetScript(), PosForCode[bcc - &Code[0]]);
 }
 
 C4AulBCC * C4AulScriptFunc::GetCode()
 {
-	return &GetCodeOwner()->Code[CodePos];
-}
-
-C4ScriptHost * C4AulScriptFunc::GetCodeOwner()
-{
-	if (Owner == Owner->Engine)
-	{
-		return pOrgScript->GetScriptHost();
-	}
-	else
-	{
-		return Owner->GetScriptHost();
-	}
+	assert(!Code.empty());
+	return &Code[0];
 }
 
 bool C4ScriptHost::Preparse()
@@ -795,9 +755,6 @@ bool C4ScriptHost::Preparse()
 	GetPropList()->C4PropList::Clear();
 	GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	LocalValues.Clear();
-
-	// reset code
-	ClearCode();
 
 	C4AulParse state(this, C4AulParse::PREPARSER);
 	state.Parse_Script();
@@ -885,7 +842,6 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	case AB_FOREACH_NEXT:
 	case AB_ERR:
 	case AB_EOFN:
-	case AB_EOF:
 	case AB_JUMP:
 	case AB_DEBUG:
 		return 0;
@@ -927,14 +883,14 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 	}
 
 	// Join checks only if it's not a jump target
-	if (!fJump && a->GetLastCode())
+	if (!fJump && Fn->GetLastCode())
 	{
-		C4AulBCC *pCPos1 = a->GetLastCode();
+		C4AulBCC *pCPos1 = Fn->GetLastCode();
 
 		// Skip noop stack operation
 		if(eType == AB_STACK && X == 0)
 		{
-			return a->GetCodePos() - 1;
+			return Fn->GetCodePos() - 1;
 		}
 
 		// Join together stack operations
@@ -946,8 +902,8 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 			// multiple negative stack operations consecutively, as
 			// that could result in removing a jump target bytecode.
 			if (!pCPos1->Par.i)
-				a->RemoveLastBCC();
-			return a->GetCodePos() - 1;
+				Fn->RemoveLastBCC();
+			return Fn->GetCodePos() - 1;
 		}
 
 		// Prune unneeded Incs / Decs
@@ -957,13 +913,13 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 			{
 				pCPos1->bccType = eType;
 				pCPos1->Par.i = X;
-				return a->GetCodePos() - 1;
+				return Fn->GetCodePos() - 1;
 			}
 			else
 			{
 				// If it was a result modifier, we can safely remove it knowing that it was neither
 				// the first chunk nor a jump target. We can therefore apply additional optimizations.
-				a->RemoveLastBCC();
+				Fn->RemoveLastBCC();
 				pCPos1--;
 			}
 		}
@@ -972,7 +928,7 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 		if(eType == AB_STACK && X == -1 && pCPos1->bccType == AB_STACK_SET)
 		{
 			pCPos1->bccType = AB_POP_TO;
-			return a->GetCodePos() - 1;
+			return Fn->GetCodePos() - 1;
 		}
 
 		// Reduce some constructs like SUM + INT 1 to INC or DEC
@@ -985,7 +941,7 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 			else
 				pCPos1->bccType = AB_Dec;
 			pCPos1->Par.i = X;
-			return a->GetCodePos() - 1;
+			return Fn->GetCodePos() - 1;
 		}
 
 		// Reduce Not + CONDN to COND
@@ -993,47 +949,47 @@ int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 		{
 			pCPos1->bccType = AB_COND;
 			pCPos1->Par.i = X;
-			return a->GetCodePos() - 1;
+			return Fn->GetCodePos() - 1;
 		}
 
 	}
 
 	// Add
-	a->AddBCC(eType, X, TokenSPos);
+	Fn->AddBCC(eType, X, TokenSPos);
 
 	// Reset jump flag
 	fJump = false;
 
-	return a->GetCodePos() - 1;
+	return Fn->GetCodePos() - 1;
 }
 
 void C4AulParse::RemoveLastBCC()
 {
 	// Security: This is unsafe on anything that might get optimized away
-	C4AulBCC *pBCC = a->GetLastCode();
+	C4AulBCC *pBCC = Fn->GetLastCode();
 	assert(pBCC->bccType != AB_STACK);
 	// Correct stack
 	iStack -= GetStackValue(pBCC->bccType, pBCC->Par.X);
 	// Remove
-	a->RemoveLastBCC();
+	Fn->RemoveLastBCC();
 }
 
 C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 {
 	C4V_Type from;
-	switch (a->GetLastCode()->bccType)
+	switch (Fn->GetLastCode()->bccType)
 	{
-	case AB_INT: from = Config.Developer.ExtraWarnings || a->GetLastCode()->Par.i ? C4V_Int : C4V_Any; break;
+	case AB_INT: from = Config.Developer.ExtraWarnings || Fn->GetLastCode()->Par.i ? C4V_Int : C4V_Any; break;
 	case AB_STRING: from = C4V_String; break;
 	case AB_NEW_ARRAY: case AB_CARRAY: case AB_ARRAY_SLICE: from = C4V_Array; break;
 	case AB_CFUNCTION: from = C4V_Function; break;
 	case AB_NEW_PROPLIST: case AB_CPROPLIST: from = C4V_PropList; break;
 	case AB_BOOL: from = C4V_Bool; break;
 	case AB_FUNC:
-		from = a->GetLastCode()->Par.f->GetRetType(); break;
+		from = Fn->GetLastCode()->Par.f->GetRetType(); break;
 	case AB_CALL: case AB_CALLFS:
 	{
-		C4String * pName = a->GetLastCode()->Par.s;
+		C4String * pName = Fn->GetLastCode()->Par.s;
 		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName);
 		bool allwarn = true;
 		from = C4V_Any;
@@ -1065,7 +1021,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 C4AulBCC C4AulParse::MakeSetter(bool fLeaveValue)
 {
 	if(Type != PARSER) { C4AulBCC Dummy; Dummy.bccType = AB_ERR; return Dummy; }
-	C4AulBCC Value = *(a->GetLastCode()), Setter = Value;
+	C4AulBCC Value = *(Fn->GetLastCode()), Setter = Value;
 	// Check type
 	switch (Value.bccType)
 	{
@@ -1110,7 +1066,7 @@ int C4AulParse::JumpHere()
 {
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
-	return a->GetCodePos();
+	return Fn->GetCodePos();
 }
 
 static bool IsJump(C4AulBCCType t)
@@ -1122,9 +1078,9 @@ void C4AulParse::SetJumpHere(int iJumpOp)
 {
 	if (Type != PARSER) return;
 	// Set target
-	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
+	C4AulBCC *pBCC = Fn->GetCodeByPos(iJumpOp);
 	assert(IsJump(pBCC->bccType));
-	pBCC->Par.i = a->GetCodePos() - iJumpOp;
+	pBCC->Par.i = Fn->GetCodePos() - iJumpOp;
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
 }
@@ -1133,14 +1089,14 @@ void C4AulParse::SetJump(int iJumpOp, int iWhere)
 {
 	if (Type != PARSER) return;
 	// Set target
-	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
+	C4AulBCC *pBCC = Fn->GetCodeByPos(iJumpOp);
 	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = iWhere - iJumpOp;
 }
 
 void C4AulParse::AddJump(C4AulBCCType eType, int iWhere)
 {
-	AddBCC(eType, iWhere - a->GetCodePos());
+	AddBCC(eType, iWhere - Fn->GetCodePos());
 }
 
 void C4AulParse::PushLoop()
@@ -1176,7 +1132,7 @@ void C4AulParse::AddLoopControl(bool fBreak)
 	if (Type != PARSER) return;
 	Loop::Control *pNew = new Loop::Control();
 	pNew->Break = fBreak;
-	pNew->Pos = a->GetCodePos();
+	pNew->Pos = Fn->GetCodePos();
 	pNew->Next = pLoopStack->Controls;
 	pLoopStack->Controls = pNew;
 }
@@ -1230,12 +1186,9 @@ void C4AulParse::UnexpectedToken(const char * Expected)
 
 void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 {
-	// store byte code pos
-	// (relative position to code start; code pointer may change while
-	//  parsing)
-	CodePos = GetCodeOwner()->Code.size();
+	ClearCode();
 	// parse
-	C4AulParse state(GetCodeOwner(), C4AulParse::PARSER);
+	C4AulParse state(Owner->GetScriptHost(), C4AulParse::PARSER);
 	state.ContextToExecIn = context;
 	// get first token
 	state.SPos = Script;
@@ -1243,7 +1196,8 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 	state.Fn = this;
 	state.Parse_Expression();
 	state.Match(ATT_EOF);
-	GetCodeOwner()->AddBCC(AB_RETURN, 0, state.TokenSPos);
+	AddBCC(AB_RETURN, 0, state.SPos);
+	AddBCC(AB_EOFN, 0, state.SPos);
 }
 
 void C4AulParse::Parse_Script()
@@ -1358,12 +1312,12 @@ void C4AulParse::Parse_Script()
 		if (Fn)
 		{
 			// make all jumps that don't have their destination yet jump here
-			for (unsigned int i = Fn->CodePos; i < a->Code.size(); i++)
+			for (unsigned int i = 0; i < Fn->Code.size(); i++)
 			{
-				C4AulBCC *pBCC = &a->Code[i];
+				C4AulBCC *pBCC = &Fn->Code[i];
 				if (IsJump(pBCC->bccType))
 					if (!pBCC->Par.i)
-						pBCC->Par.i = a->Code.size() - i;
+						pBCC->Par.i = Fn->Code.size() - i;
 			}
 			// add an error chunk
 			AddBCC(AB_ERR);
@@ -1434,8 +1388,7 @@ void C4AulParse::Parse_Function()
 	assert(Fn);
 	if (Type == PARSER)
 	{
-		assert(Fn->GetCodeOwner() == a);
-		Fn->CodePos = a->Code.size();
+		Fn->ClearCode();
 	}
 
 	// Parse function body
@@ -1507,7 +1460,7 @@ void C4AulParse::Parse_Function()
 		assert(!iStack);
 	}
 	// return nil if the function doesn't return anything
-	C4AulBCC * CPos = a->GetLastCode();
+	C4AulBCC * CPos = Fn->GetLastCode();
 	if (!CPos || CPos->bccType != AB_RETURN || fJump)
 	{
 		if (C4AulDebug::GetDebugger())
@@ -1550,7 +1503,7 @@ void C4AulParse::Parse_Function()
 			case AB_DEBUG: case AB_NIL: case AB_RETURN:
 			case AB_PAR: case AB_THIS:
 			case AB_ARRAYA: case AB_ARRAYA_SET: case AB_ARRAY_SLICE: case AB_ARRAY_SLICE_SET:
-			case AB_ERR: case AB_EOFN: case AB_EOF:
+			case AB_ERR: case AB_EOFN:
 				assert(!pBCC->Par.X); fprintf(stderr, "\n"); break;
 			case AB_CARRAY:
 				fprintf(stderr, "\t%s\n", C4VArray(pBCC->Par.a).GetDataString().getData()); break;
@@ -1879,7 +1832,7 @@ void C4AulParse::Parse_PropList()
 		{
 			Warn(FormatString("Prototype is %s instead of %s", GetC4VName(from), GetC4VName(C4V_PropList)).getData(), NULL);
 		}
-		if (a->GetLastCode()->bccType == AB_CPROPLIST && a->GetLastCode()->Par.p->GetDef())
+		if (Fn->GetLastCode()->bccType == AB_CPROPLIST && Fn->GetLastCode()->Par.p->GetDef())
 		{
 			throw new C4AulParseError(this, "Can't use new on definitions yet.");
 		}
@@ -2410,9 +2363,9 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			break;
 		// negate constant?
 		if (Type == PARSER && SEqual(op->Identifier, "-"))
-			if (a->GetLastCode()->bccType == AB_INT)
+			if (Fn->GetLastCode()->bccType == AB_INT)
 			{
-				a->GetLastCode()->Par.i = - a->GetLastCode()->Par.i;
+				Fn->GetLastCode()->Par.i = - Fn->GetLastCode()->Par.i;
 				break;
 			}
 		// changer? make a setter BCC, leave value for operator
@@ -2959,9 +2912,6 @@ bool C4ScriptHost::Parse()
 	// check state
 	if (State != ASS_LINKED) return false;
 
-	// delete existing code
-	ClearCode();
-
 	if (!Appends.empty())
 	{
 		// #appendto scripts are not allowed to contain global functions or belong to definitions
@@ -2996,9 +2946,6 @@ bool C4ScriptHost::Parse()
 		}
 		state.Parse_Script();
 	}
-
-	// add eof chunk
-	AddBCC(AB_EOF);
 
 	// save line count
 	Engine->lineCnt += SGetLine(Script.getData(), Script.getPtr(Script.getLength()));

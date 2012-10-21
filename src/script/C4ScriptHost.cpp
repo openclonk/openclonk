@@ -34,8 +34,6 @@
 C4ScriptHost::C4ScriptHost()
 {
 	Script = NULL;
-	Code.clear();
-	LastCode = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
 	LocalNamed.Reset();
@@ -55,7 +53,6 @@ void C4ScriptHost::Clear()
 	C4AulScript::Clear();
 	ComponentHost.Clear();
 	Script.Clear();
-	ClearCode();
 	LocalNamed.Reset();
 	LocalValues.Clear();
 	SourceScripts.clear();
