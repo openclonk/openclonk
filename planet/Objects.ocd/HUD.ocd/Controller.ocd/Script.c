@@ -146,8 +146,11 @@ public func OnGoalUpdate(object goal)
 	}
 	else
 	{
-		if (!HUDgoal) HUDgoal = CreateObject(GUI_Goal, 0, 0, GetOwner());
-		HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
+		if (!HUDgoal)
+		{
+			HUDgoal = CreateObject(GUI_Goal, 0, 0, GetOwner());
+			HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
+		}
 		HUDgoal->SetGoal(goal);
 	}
 }
