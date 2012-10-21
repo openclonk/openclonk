@@ -20,8 +20,8 @@ protected func Initialize()
 
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 135, 264);
-	goal->SetFlagBase(2, LandscapeWidth() - 135, 264);
+	goal->SetFlagBase(1, 135, 266);
+	goal->SetFlagBase(2, LandscapeWidth() - 135, 266);
 	CreateObject(Rule_KillLogs);	
 	
 	var gate = CreateObject(StoneDoor, 345, 272, NO_OWNER);

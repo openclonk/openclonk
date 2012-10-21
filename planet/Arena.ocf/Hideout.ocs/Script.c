@@ -14,34 +14,42 @@ protected func Initialize()
 	
 	// Goal: Capture the flag, with bases in both hideouts.
 	var goal = CreateObject(Goal_CaptureTheFlag, 0, 0, NO_OWNER);
-	goal->SetFlagBase(1, 120, 504);
-	goal->SetFlagBase(2, LandscapeWidth() - 120, 504);
+	goal->SetFlagBase(1, 120, 506);
+	goal->SetFlagBase(2, LandscapeWidth() - 120, 506);
 	
 	// Rules
 	CreateObject(Rule_Restart);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
 	
+	var lwidth = LandscapeWidth();
+	
 	// Doors and spinwheels.
 	var gate, wheel;
 	gate = CreateObject(StoneDoor, 365, 448, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 361, 446, 361, 448, 365, 448, 365, 446);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
 	gate->SetAutoControl(1);
 	gate = CreateObject(StoneDoor, 341, 584, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 337, 582, 337, 584, 345, 584, 345, 582);
 	gate->SetAutoControl(1);
 	gate = CreateObject(StoneDoor, 693, 544, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 689, 542, 689, 544, 697, 544, 697, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObject(SpinWheel, 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 364, 448, NO_OWNER);
+	gate = CreateObject(StoneDoor, lwidth - 364, 448, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", lwidth - 361, 446, lwidth - 361, 448, lwidth - 365, 448, lwidth - 365, 446);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
 	gate->SetAutoControl(2);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 340, 584, NO_OWNER);
+	gate = CreateObject(StoneDoor, lwidth - 340, 584, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", lwidth - 337, 582, lwidth - 337, 584, lwidth - 345, 584, lwidth - 345, 582);
 	gate->SetAutoControl(2);
-	gate = CreateObject(StoneDoor, LandscapeWidth() - 692, 544, NO_OWNER);
+	gate = CreateObject(StoneDoor, lwidth - 692, 544, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", lwidth - 689, 542, lwidth - 689, 544, lwidth - 697, 544, lwidth - 697, 542);
 	gate->DoDamage(80);		// Middle doors even easier
-	wheel = CreateObject(SpinWheel, LandscapeWidth() - 660, 552, NO_OWNER);
+	wheel = CreateObject(SpinWheel, lwidth - 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
 	
 	// Chests with weapons.
@@ -55,16 +63,16 @@ protected func Initialize()
 	chest = CreateObject(Chest, 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
-	chest = CreateObject(Chest, LandscapeWidth() - 110, 592, NO_OWNER);
+	chest = CreateObject(Chest, lwidth - 110, 592, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,true);
-	chest = CreateObject(Chest, LandscapeWidth() - 25, 464, NO_OWNER);
+	chest = CreateObject(Chest, lwidth - 25, 464, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillBaseChest", chest, 100, 6 * 36,nil,nil,false);
-	chest = CreateObject(Chest, LandscapeWidth() - 730, 408, NO_OWNER);
+	chest = CreateObject(Chest, lwidth - 730, 408, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillOtherChest", chest, 100, 6 * 36);
-	chest = CreateObject(Chest, LandscapeWidth()/2, 512, NO_OWNER);
+	chest = CreateObject(Chest, lwidth/2, 512, NO_OWNER);
 	chest->MakeInvincible();
 	AddEffect("FillSpecialChest", chest, 100, 4 * 36);
 	
@@ -76,7 +84,7 @@ protected func Initialize()
 	cannon->SetDir(DIR_Right);
 	cannon->SetR(15);
 	cannon->CreateContents(PowderKeg);
-	cannon = CreateObject(Cannon, LandscapeWidth() - 429, 444, NO_OWNER);
+	cannon = CreateObject(Cannon, lwidth - 429, 444, NO_OWNER);
 	cannon->SetDir(DIR_Left);
 	cannon->SetR(-15);
 	cannon->CreateContents(PowderKeg);
