@@ -2187,6 +2187,7 @@ void C4AulParse::Parse_ForEach()
 void C4AulParse::Parse_Expression(int iParentPrio)
 {
 	int ndx;
+	C4ScriptOpDef * op;
 	switch (TokenType)
 	{
 	case ATT_IDTF:
@@ -2387,28 +2388,28 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		Shift();
 		break;
 	case ATT_OPERATOR:
-	{
 		// -> must be a prefix operator
-		// get operator ID
-		int OpID = cInt;
+		op = &C4ScriptOpMap[cInt];
 		// postfix?
-		if (C4ScriptOpMap[OpID].Postfix)
+		if (op->Postfix)
 			// oops. that's wrong
 			throw new C4AulParseError(this, "postfix operator without first expression");
 		Shift();
 		// generate code for the following expression
-		Parse_Expression(C4ScriptOpMap[OpID].Priority);
-		C4V_Type to = C4ScriptOpMap[OpID].Type1;
-		C4V_Type from = GetLastRetType(to);
-		if (C4Value::WarnAboutConversion(from, to))
+		Parse_Expression(op->Priority);
 		{
-			Warn(FormatString("operator \"%s\" gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+			C4V_Type to = op->Type1;
+			C4V_Type from = GetLastRetType(to);
+			if (C4Value::WarnAboutConversion(from, to))
+			{
+				Warn(FormatString("operator \"%s\" gets %s instead of %s", op->Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+			}
 		}
 		// ignore?
-		if (SEqual(C4ScriptOpMap[OpID].Identifier, "+"))
+		if (SEqual(op->Identifier, "+"))
 			break;
 		// negate constant?
-		if (Type == PARSER && SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
+		if (Type == PARSER && SEqual(op->Identifier, "-"))
 			if (a->GetLastCode()->bccType == AB_INT)
 			{
 				a->GetLastCode()->Par.i = - a->GetLastCode()->Par.i;
@@ -2416,15 +2417,14 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			}
 		// changer? make a setter BCC, leave value for operator
 		C4AulBCC Changer;
-		if(C4ScriptOpMap[OpID].Changer)
+		if(op->Changer)
 			Changer = MakeSetter(true);
 		// write byte code
-		AddBCC(C4ScriptOpMap[OpID].Code, OpID);
+		AddBCC(op->Code, ndx);
 		// writter setter
-		if(C4ScriptOpMap[OpID].Changer)
+		if(op->Changer)
 			AddBCC(Changer.bccType, Changer.Par.X);
 		break;
-	}
 	case ATT_BOPEN:
 		Shift();
 		Parse_Expression();
@@ -2464,32 +2464,32 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 	case ATT_OPERATOR:
 		{
 			// expect postfix operator
-			int OpID = cInt;
-			if (!C4ScriptOpMap[OpID].Postfix)
+			C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+			if (!op->Postfix)
 			{
 				// does an operator with the same name exist?
 				// when it's a postfix-operator, it can be used instead.
-				int nOpID;
-				for (nOpID = OpID+1; C4ScriptOpMap[nOpID].Identifier; nOpID++)
-					if (SEqual(C4ScriptOpMap[OpID].Identifier, C4ScriptOpMap[nOpID].Identifier))
-						if (C4ScriptOpMap[nOpID].Postfix)
+				C4ScriptOpDef * postfixop;
+				for (postfixop = op + 1; postfixop->Identifier; ++postfixop)
+					if (SEqual(op->Identifier, postfixop->Identifier))
+						if (postfixop->Postfix)
 							break;
 				// not found?
-				if (!C4ScriptOpMap[nOpID].Identifier)
+				if (!postfixop->Identifier)
 				{
-					throw new C4AulParseError(this, "unexpected prefix operator: ", C4ScriptOpMap[OpID].Identifier);
+					throw new C4AulParseError(this, "unexpected prefix operator: ", op->Identifier);
 				}
 				// otherwise use the new-found correct postfix operator
-				OpID = nOpID;
+				op = postfixop;
 			}
 
 			// changer?
 			C4AulBCC Setter;
-			if (C4ScriptOpMap[OpID].Changer)
+			if (op->Changer)
 			{
 				// changer: back out only if parent operator is stronger
 				// (everything but setters and other changers, as changers are right-associative)
-				if(iParentPrio > C4ScriptOpMap[OpID].Priority)
+				if(iParentPrio > op->Priority)
 					return;
 				// generate setter, leave value on stack for operator
 				Setter = MakeSetter(true);
@@ -2498,54 +2498,54 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 			{
 				// normal operator: back out if parent operator is at least as strong
 				// (non-setter operators are left-associative)
-				if(iParentPrio >= C4ScriptOpMap[OpID].Priority)
+				if(iParentPrio >= op->Priority)
 					return;
 			}
 			Shift();
 
-			if (C4ScriptOpMap[OpID].Code == AB_JUMPAND || C4ScriptOpMap[OpID].Code == AB_JUMPOR || C4ScriptOpMap[OpID].Code == AB_JUMPNNIL)
+			if (op->Code == AB_JUMPAND || op->Code == AB_JUMPOR || op->Code == AB_JUMPNNIL)
 			{
 				// create bytecode, remember position
 				// Jump or discard first parameter
-				int iCond = AddBCC(C4ScriptOpMap[OpID].Code);
+				int iCond = AddBCC(op->Code);
 				// parse second expression
-				Parse_Expression(C4ScriptOpMap[OpID].Priority);
+				Parse_Expression(op->Priority);
 				// set condition jump target
 				SetJumpHere(iCond);
 				// write setter (unused - could also optimize to skip self-assign, but must keep stack balanced)
-				if (C4ScriptOpMap[OpID].Changer)
+				if (op->Changer)
 					AddBCC(Setter.bccType, Setter.Par.X);
 				break;
 			}
 			else
 			{
-				C4V_Type to = C4ScriptOpMap[OpID].Type1;
+				C4V_Type to = op->Type1;
 				C4V_Type from = GetLastRetType(to);
 				if (C4Value::WarnAboutConversion(from, to))
 				{
-					Warn(FormatString("operator \"%s\" left side gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+					Warn(FormatString("operator \"%s\" left side gets %s instead of %s", op->Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
 				}
 				// expect second parameter for operator
-				if (!C4ScriptOpMap[OpID].NoSecondStatement)
-					Parse_Expression(C4ScriptOpMap[OpID].Priority);
-				to = C4ScriptOpMap[OpID].Type2;
+				if (!op->NoSecondStatement)
+					Parse_Expression(op->Priority);
+				to = op->Type2;
 				from = GetLastRetType(to);
 				if (C4Value::WarnAboutConversion(from, to))
 				{
-					Warn(FormatString("operator \"%s\" right side gets %s instead of %s", C4ScriptOpMap[OpID].Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
+					Warn(FormatString("operator \"%s\" right side gets %s instead of %s", op->Identifier, GetC4VName(from), GetC4VName(to)).getData(), NULL);
 				}
 				// write byte code
-				AddBCC(C4ScriptOpMap[OpID].Code, OpID);
+				AddBCC(op->Code, op - &C4ScriptOpMap[0]);
 				// write setter and mofidier
-				if (C4ScriptOpMap[OpID].Changer)
+				if (op->Changer)
 					{
 					AddBCC(Setter.bccType, Setter.Par.X);
-					if(C4ScriptOpMap[OpID].ResultModifier != AB_ERR)
-						AddBCC(C4ScriptOpMap[OpID].ResultModifier, OpID);
+					if(op->ResultModifier != AB_ERR)
+						AddBCC(op->ResultModifier, op - &C4ScriptOpMap[0]);
 					}
 			}
-			break;
 		}
+		break;
 	case ATT_BOPEN2:
 		// parse either [index], or [start:end] in which case either index is optional
 		Shift();
@@ -2814,9 +2814,8 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	case ATT_OPERATOR:
 		{
 			// -> must be a prefix operator
-			// get operator ID
-			int OpID = cInt;
-			if (SEqual(C4ScriptOpMap[OpID].Identifier, "+"))
+			C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+			if (SEqual(op->Identifier, "+"))
 			{
 				Shift();
 				if (TokenType == ATT_INT)
@@ -2824,7 +2823,7 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 					r.SetInt(cInt); break;
 				}
 			}
-			if (SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
+			if (SEqual(op->Identifier, "-"))
 			{
 				Shift();
 				if (TokenType == ATT_INT)
@@ -2841,8 +2840,8 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	Shift();
 	if (TokenType == ATT_OPERATOR)
 	{
-		int OpID = cInt;
-		if (C4ScriptOpMap[OpID].Code == AB_BitOr)
+		C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
+		if (op->Code == AB_BitOr)
 		{
 			Shift();
 			C4Value r2 = Parse_ConstExpression(NULL, NULL);
