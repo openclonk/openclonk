@@ -12,6 +12,7 @@ protected func Initialize()
 	// Goal.
 	CreateObject(Goal_LastManStanding);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
 	Cloud->Place(25);

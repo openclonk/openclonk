@@ -14,6 +14,7 @@ protected func Initialize()
 	// Goal.
 	CreateObject(Goal_DeathMatch, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);

@@ -16,6 +16,7 @@ protected func Initialize()
 	goal->SetPointLimit(5);
 	AddEffect("BlessTheKing",goal,100,1,nil);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//Enviroment.
 	//SetSkyAdjust(RGBa(250,250,255,128),RGB(200,200,220));

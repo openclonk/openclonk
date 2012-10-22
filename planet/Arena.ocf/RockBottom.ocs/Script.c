@@ -11,6 +11,7 @@ protected func Initialize()
 	// Goal.
 	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	// Chests with weapons.
 	CreateObject(Chest, 108, 248, NO_OWNER)->MakeInvincible();

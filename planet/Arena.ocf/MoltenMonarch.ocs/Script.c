@@ -17,6 +17,7 @@ protected func Initialize()
 	// Objects fade after 7 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	//make lava collapse
 	CreateObject(Firestone,625,480);
