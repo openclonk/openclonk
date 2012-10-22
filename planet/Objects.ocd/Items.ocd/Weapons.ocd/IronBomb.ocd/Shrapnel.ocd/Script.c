@@ -12,7 +12,7 @@ protected func Initialize()
 public func Launch(int shooter)
 {
 	SetController(shooter);
-	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
+	AddEffect("HitCheck", this, 1,1, nil, nil);
 }
 
 protected func FxFadeTimer(object target, int num, int timer)
