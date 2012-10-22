@@ -1,2 +1,2 @@
 Name=Chunk of earth
-Description=Can be dug out, crumbles to earth on impact.
+Description=Can be dug out of the ground. Will crumble to powder on impact.

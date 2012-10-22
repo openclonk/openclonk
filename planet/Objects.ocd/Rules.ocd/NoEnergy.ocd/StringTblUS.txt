@@ -1,2 +1,2 @@
 Name=No power need
-Description=Power consumers do not need power anymore.
+Description=Power consuming buildings function without power.

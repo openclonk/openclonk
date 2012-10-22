@@ -1,2 +1,2 @@
 Name=Gravestones
-Description=Gravestones are created to collect a clonk's corpse, providing a monument for the dead.
+Description=Gravestones are created to cover a clonk's corpse, providing monuments for the dead.

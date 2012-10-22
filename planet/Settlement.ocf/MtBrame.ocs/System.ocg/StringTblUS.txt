@@ -1,11 +1,11 @@
 NameSister=Ruth
 
 # Intro
-MsgIntro1=Hey sleepyheads! Check out what I have found!
-MsgIntro2=...what? And where?
-MsgIntro3=Down there, at the hillside!
+MsgIntro1=Hey sleepyheads! Check out what I found!
+MsgIntro2=...What? Where?
+MsgIntro3=Down there, at the bottom of the hill!
 MsgIntro4=And what's supposed to be here..?
 MsgIntro5=Hihi...!
 MsgIntro6=Waaaaaah!
-MsgIntro7=Hm, maybe it was a bit deep in the end?
-MsgIntro8=Whatever, they will find their way...
+MsgIntro7=Hm, maybe that was a bit too deep?
+MsgIntro8=Whatever, they'll find their way back...

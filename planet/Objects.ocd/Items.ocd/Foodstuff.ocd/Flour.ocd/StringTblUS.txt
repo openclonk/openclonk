@@ -1,2 +1,2 @@
 Name=Flour
-Description=Made from grain. Basic ingredient for bakery products.
+Description=Made from grain. Basic ingredient for baked goods.

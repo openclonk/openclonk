@@ -1,2 +1,2 @@
 Name=Elevator
-Description=Simple vertical transport.
+Description=Simple vertical transport. Two eleavtors placed side-by-side can join together.

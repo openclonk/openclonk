@@ -2,4 +2,4 @@ NoPlrKnowledge=No construction plans
 Construction=Construction
 Production=Production
 Name=Kitchen
-Description=To prepare various meals.
+Description=A place to prepare various meals.

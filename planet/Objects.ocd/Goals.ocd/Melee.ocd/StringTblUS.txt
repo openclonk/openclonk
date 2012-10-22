@@ -1,4 +1,4 @@
 Name=Melee
 
 MsgGoalFulfilled=All opponents eliminated.
-MsgGoalUnfulfilled=Still %d opponents in the game.
+MsgGoalUnfulfilled=There are still %d opponents in the game.

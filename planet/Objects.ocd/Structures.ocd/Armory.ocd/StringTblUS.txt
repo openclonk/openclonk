@@ -2,4 +2,4 @@ NoPlrKnowledge=No construction plans
 Construction=Construction
 Production=Production
 Name=Armory
-Description=To produce smaller and bigger weapons.
+Description=This is where weapons are produced, both large and small.

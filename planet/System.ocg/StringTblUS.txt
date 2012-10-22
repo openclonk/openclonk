@@ -36,7 +36,7 @@ CON_Hotkey8=Hotkey 8
 CON_Hotkey9=Hotkey 9
 CON_Hotkey0=Hotkey 10
 
-CON_Contents=Inventary menu
+CON_Contents=Inventory menu
 CON_Contents_Desc=Open and close the inventory menu. Through the inventory menu, you can take items from and put items into chests, lorries etc. as well as exchange items with other Clonks. 
 CON_PlayerMenu=Player menu
 CON_PlayerMenu_Desc=Open and close the player menu.

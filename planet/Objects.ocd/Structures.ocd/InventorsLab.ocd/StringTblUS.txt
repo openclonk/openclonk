@@ -2,4 +2,4 @@ NoPlrKnowledge=No construction plans
 Construction=Construction
 Production=Production
 Name=Inventor's lab
-Description=The right place to get advanced technology.
+Description=The right place to research advanced technology.

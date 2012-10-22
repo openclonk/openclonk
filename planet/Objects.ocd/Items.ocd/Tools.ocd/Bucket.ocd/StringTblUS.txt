@@ -1,3 +1,3 @@
 Name=Bucket
-Description=You can gather earth with the bucket to use it as a material for bridge or similar tasks.
+Description=You can gather earth with the bucket to use it as a material for bridges or other similar tasks.
 UsageHelp=Press [Use] to collect or dump earth.

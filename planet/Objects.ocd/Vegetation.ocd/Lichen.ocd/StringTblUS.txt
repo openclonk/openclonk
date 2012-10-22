@@ -1,2 +1,2 @@
 Name=Lichen
-Description=Sprawls in dark, wet tunnels. Gives moss when harvested.
+Description=Thrives in dark, wet tunnels. Moss can be harvested from it.
