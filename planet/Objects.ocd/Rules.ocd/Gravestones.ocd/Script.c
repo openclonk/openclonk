@@ -4,7 +4,7 @@
 protected func Initialize()
 {	
 	// Under no circumstance there may by multiple copies of this rule.
-	if (ObjectCount(Find_ID(Rule_TeamAccount)) > 1)
+	if (ObjectCount(Find_ID(Rule_Gravestones)) > 1)
 		return RemoveObject();
 	return;
 }
