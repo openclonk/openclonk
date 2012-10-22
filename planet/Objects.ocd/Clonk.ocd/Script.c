@@ -153,36 +153,9 @@ protected func Death(int killed_by)
 		Sound("FDie");
 	CloseEyes(1);
 	
-	//Are gravestones used in the scenario?
-	if(FindObject(Find_ID(Rule_Gravestones)))
-		AddEffect("GravestoneAdd", this, 1, 1, this);
-
 	DeathAnnounce();
 	return;
 }
-
-func FxGravestoneAddTimer(object target, proplist effect, int timer)
-{	
-	//is the death animation over?
-	if(timer >= 20){
-		AddEffect("Gravestone",this, 1, nil, this);
-		return -1;
-	}
-}
-
-func FxGravestoneStart(object clonk, proplist effect){
-	effect.grave = CreateObject(Clonk_Grave,0,0,clonk->GetController());
-	this->Enter(effect.grave);
-	
-	//smoke effect
-	CastParticles("ExploSmoke", RandomX(10,15), 0, 0, 6, 200, 250, HSLa(0,0,255,64), HSLa(0,0,255,64));
-}
-
-func FxGravestoneStop(object clonk, proplist effect){
-	clonk->Exit();
-	effect.grave->RemoveObject();
-}
-	
 
 protected func Destruction()
 {

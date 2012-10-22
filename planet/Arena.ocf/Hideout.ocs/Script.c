@@ -21,6 +21,7 @@ protected func Initialize()
 	CreateObject(Rule_Restart);
 	CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 	CreateObject(Rule_KillLogs);
+	CreateObject(Rule_Gravestones);
 	
 	var lwidth = LandscapeWidth();
 	
