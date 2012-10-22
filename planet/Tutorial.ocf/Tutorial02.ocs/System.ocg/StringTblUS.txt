@@ -1,1 +1,1 @@
-CatapultEntryDeactivated=This function is used to shoot even Clonks with a catapult. But it is deactived in this tutorial round.
+CatapultEntryDeactivated=This button is used to make the catapult shoot clonks. But it is deactived in this tutorial round.

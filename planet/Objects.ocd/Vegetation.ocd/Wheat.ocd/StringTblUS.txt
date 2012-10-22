@@ -1,2 +1,2 @@
 Name=Wheat
-Description=Provides seeds for flour production. Growing faster if watered.
+Description=Provides seeds for flour production. Grows faster if watered.
