@@ -329,7 +329,12 @@ bool C4Game::PreInit()
 		{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); return false; }
 
 	// load GUI
-	pGUI->Init(0, 0, Application.GetConfigWidth(), Application.GetConfigHeight());
+	C4Rect r;
+	if (Application.isEditor)
+		Console.GetSize(&r);
+	else
+		FullScreen.GetSize(&r);
+	pGUI->Init(0, 0, r.Wdt, r.Hgt);
 
 	fPreinited = true;
 

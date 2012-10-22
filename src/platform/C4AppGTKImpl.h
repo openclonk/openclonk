@@ -125,7 +125,10 @@ public:
 	C4X11AppImpl(C4AbstractApp *pApp):
 			GLibProc(g_main_context_default()),
 			tasked_out(false), pending_desktop(false),
-			argc(0), argv(0) { }
+			argc(0), argv(0)
+	{
+		xf86vmode_targetmode.hdisplay = -1;
+	}
 	bool SwitchToFullscreen(C4AbstractApp * pApp, C4Window * );
 	void SwitchToDesktop(C4AbstractApp * pApp, C4Window * );
 
