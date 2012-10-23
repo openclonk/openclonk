@@ -2,7 +2,6 @@
 Icon=39
 Title=Windmill
 Version=5,2,0,1
-MaxPlayer=8
 Difficulty=10
 
 [Definitions]

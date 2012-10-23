@@ -2,7 +2,6 @@
 Icon=23
 Title=Krakatoa
 Version=5,2,90,20
-MaxPlayer=6
 Difficulty=40
 
 [Definitions]

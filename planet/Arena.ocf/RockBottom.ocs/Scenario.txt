@@ -2,7 +2,6 @@
 Title=Bottom
 Version=5,2,0,1
 MinPlayer=2
-MaxPlayer=4
 Difficulty=20
 
 [Definitions]

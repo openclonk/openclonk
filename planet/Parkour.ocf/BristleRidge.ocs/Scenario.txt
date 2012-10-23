@@ -2,7 +2,6 @@
 Icon=34
 Title=BristleRidge
 Version=4,10,0
-MaxPlayer=16
 Difficulty=40
 
 [Definitions]
