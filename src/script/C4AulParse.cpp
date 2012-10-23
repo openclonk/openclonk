@@ -2854,7 +2854,13 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 		if (parent)
 			parent->SetPropertyByS(Name, r);
 		else
+		{
+			C4Value oldval;
+			if (Type == PREPARSER && a->Engine->GetGlobalConstant(Name->GetCStr(), &oldval) && oldval != r)
+				Warn("redefining constant %s from %s to %s",
+				     Name->GetCStr(), oldval.GetDataString().getData(), r.GetDataString().getData());
 			a->Engine->RegisterGlobalConstant(Name->GetCStr(), r);
+		}
 	}
 	return r;
 }
