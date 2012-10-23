@@ -2,7 +2,6 @@
 Icon=34
 Title=Cavern
 Version=5,2,0,1
-MaxPlayer=12
 Difficulty=20
 
 [Definitions]

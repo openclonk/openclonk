@@ -2,7 +2,6 @@
 Icon=24
 Title=MtBrame
 Version=5,2,90,21
-MaxPlayer=12
 Difficulty=50
 NoInitialize=true
 

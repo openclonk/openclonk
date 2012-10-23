@@ -2,7 +2,6 @@
 Icon=15
 Title=GoldRush
 Version=5,0,0,0
-MaxPlayer=12
 Difficulty=10
 
 [Definitions]
