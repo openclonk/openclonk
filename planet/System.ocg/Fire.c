@@ -232,17 +232,17 @@ global func FxFireTimer(object target, proplist effect, int time)
 		// check spreading of fire
 		if (effect.strength > 10)
 		{
-			// If contained only incinerate objects inside the same container and the container itself.
 			var container = target->Contained(), inc_objs;
+			// If contained do not incinerate anything. This would mostly affect inventory items and burns the Clonk too easily while lacking feedback.
 			if (container)
 			{
-				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Container(container));
-				inc_objs[GetLength(inc_objs)] = container;	
+				inc_objs = [];
 			}
-			// Or if not contained incinerate all objects outside and inside the burning object.
+			// Or if not contained incinerate all objects outside the burning object.
+			// Do not incinerate inventory objects, since this, too, would mostly affect Clonks and losing one's bow in a fight without noticing it is nothing but annoying to the player.
 			else
 			{
-				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_Or(Find_NoContainer(), Find_Container(target)));
+				inc_objs = FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_Exclude(target), Find_Layer(target->GetObjectLayer()), Find_NoContainer());
 			}
 			// Loop through the selected set of objects and check contact incinerate.
 			for (var obj in inc_objs)
@@ -258,10 +258,19 @@ global func FxFireTimer(object target, proplist effect, int time)
 	
 				if (!amount)
 					continue;
-				obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
-				var min = Min(10, effect.strength);
-				if(effect.strength > 50) min = 50;
-				effect.strength = BoundBy(effect.strength, min, 100);
+					
+				var old_fire_value = obj->OnFire();
+				if(old_fire_value < 100) // only if the object was not already fully ablaze
+				{
+					// incinerate the other object a bit
+					obj->Incinerate(Max(10, amount), effect.caused_by, false, effect.incinerating_obj);
+				
+					// Incinerating other objects weakens the own fire.
+					// This is done in order to make fires spread slower especially as a chain reaction.
+					var min = Min(10, effect.strength);
+					if(effect.strength > 50) min = 50;
+					effect.strength = BoundBy(effect.strength - amount/2, min, 100);
+				}
 			}
 		}
 	}
