@@ -26,6 +26,13 @@ local ContactIncinerate = 2;
 
 // can be harvested?
 func IsCrop(){ return true; }
+
+// berries can simply be plucked
+private func SickleHarvesting()
+{
+	return false;
+}
+
 public func IsHarvestable()
 {
 	return !!Contents();
