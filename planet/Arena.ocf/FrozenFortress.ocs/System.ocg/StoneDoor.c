@@ -2,8 +2,6 @@
 
 #appendto StoneDoor
 
-private func GetStrength() { return 300; }
-
 protected func Damage()
 {
 	// Destroy if damage above strength.
