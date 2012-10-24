@@ -356,6 +356,8 @@ func FxVisualPowerChangeRefresh(target, effect)
 	effect.bar = target->CreateProgressBar(GUI_BarProgressBar, effect.max, effect.current, 35
 		, controller, {x = off_x, y = off_y}, vis
 		, {size = 1000, bars = effect.max / 25, graphics_name = effect.graphics_name, back_graphics_name = effect.back_graphics_name, image = Icon_Lightbulb, fade_speed = 1});
+	// appear on a GUI level in front of other objects (f.e. trees)
+	effect.bar->SetPlane(1010);
 }
 
 func FxVisualPowerChangeTimer(target, effect, time)
