@@ -212,3 +212,12 @@ func SetFade(int a)
 		bar->SetClrModulation(clr, active_overlay);
 	}
 }
+
+func SetPlane(int to)
+{
+	// called on a slave?
+	if(GetType(bars) != C4V_Array) return;
+	
+	for(var bar in bars)
+		bar.Plane = to;
+}
