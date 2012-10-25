@@ -14,8 +14,9 @@ protected func Initialize()
 	
 	// Place some trees.
 	//Tree_Coniferous->Place(16+Random(4), Rectangle(0,LandscapeHeight()/3, LandscapeWidth(), LandscapeHeight()));
-	PlaceForest([Tree_Coniferous, SproutBerryBush],0, LandscapeHeight()/2+50, nil, true);
+	PlaceForest([Tree_Coniferous], 0, LandscapeHeight()/2+50, nil, true);
 
+	SproutBerryBush->Place();
 	PlaceGrass(100);
 	
 	CreateEnvironmentObjects("Temperate");
