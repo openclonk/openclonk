@@ -128,7 +128,19 @@ class C4AulParse
 public:
 	enum Type { PARSER, PREPARSER };
 	C4AulParse(C4ScriptHost * a, enum Type Type):
-			Fn(0), a(a), pOrgScript(a), SPos(a->Script.getData()), TokenSPos(SPos),
+			Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
+			SPos(a->Script.getData()), TokenSPos(SPos),
+			TokenType(ATT_INVALID),
+			Done(false),
+			Type(Type),
+			ContextToExecIn(NULL),
+			fJump(false),
+			iStack(0),
+			pLoopStack(NULL)
+	{ }
+	C4AulParse(C4AulScriptFunc * Fn, enum Type Type):
+			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(Fn->Owner->Engine),
+			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
 			Done(false),
 			Type(Type),
@@ -139,7 +151,8 @@ public:
 	{ }
 	~C4AulParse()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
-	C4AulScriptFunc *Fn; C4ScriptHost * a; C4ScriptHost * pOrgScript;
+	C4AulScriptFunc *Fn; C4ScriptHost * Host; C4ScriptHost * pOrgScript;
+	C4AulScriptEngine *Engine;
 	const char *SPos; // current position in the script
 	const char *TokenSPos; // start of the current token in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
@@ -243,8 +256,8 @@ void C4AulParse::Warn(const char *pMsg, ...)
 
 	C4AulParseError warning(this, Buf.getData(), 0, true);
 	warning.show();
-	if (pOrgScript != a)
-		DebugLogF("  (as #appendto/#include to %s)", a->ScriptName.getData());
+	if (pOrgScript != Host)
+		DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 	// count warnings
 	++::ScriptEngine.warnCnt;
 }
@@ -990,7 +1003,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 	case AB_CALL: case AB_CALLFS:
 	{
 		C4String * pName = Fn->GetLastCode()->Par.s;
-		C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName);
+		C4AulFunc * pFunc2 = Engine->GetFirstFunc(pName);
 		bool allwarn = true;
 		from = C4V_Any;
 		while (pFunc2 && allwarn)
@@ -1001,7 +1014,7 @@ C4V_Type C4AulParse::GetLastRetType(C4V_Type to)
 				allwarn = false;
 				from = C4V_Any;
 			}
-			pFunc2 = a->Engine->GetNextSNFunc(pFunc2);
+			pFunc2 = Engine->GetNextSNFunc(pFunc2);
 		}
 		break;
 	}
@@ -1188,12 +1201,10 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
-	C4AulParse state(Owner->GetScriptHost(), C4AulParse::PARSER);
+	C4AulParse state(this, C4AulParse::PARSER);
 	state.ContextToExecIn = context;
 	// get first token
-	state.SPos = Script;
 	state.Shift();
-	state.Fn = this;
 	state.Parse_Expression();
 	state.Match(ATT_EOF);
 	AddBCC(AB_RETURN, 0, state.SPos);
@@ -1228,7 +1239,7 @@ void C4AulParse::Parse_Script()
 				if (Type == PREPARSER)
 				{
 					// add to include list
-					a->Includes.push_back(C4ID(StdStrBuf(Idtf)));
+					Host->Includes.push_back(C4ID(StdStrBuf(Idtf)));
 				}
 				Shift();
 			}
@@ -1255,7 +1266,7 @@ void C4AulParse::Parse_Script()
 						UnexpectedToken("identifier or '*'");
 					}
 					// add to append list
-					a->Appends.push_back(Id);
+					Host->Appends.push_back(Id);
 				}
 				Shift();
 			}
@@ -1299,8 +1310,8 @@ void C4AulParse::Parse_Script()
 		{
 			err->show();
 			// show a warning if the error is in a remote script
-			if (pOrgScript != a)
-				DebugLogF("  (as #appendto/#include to %s)", a->ScriptName.getData());
+			if (pOrgScript != Host)
+				DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 			// and count (visible only ;) )
 			++::ScriptEngine.errCnt;
 		}
@@ -1346,25 +1357,25 @@ void C4AulParse::Parse_Function()
 	case AA_PRIVATE:
 	case AA_PROTECTED:
 	case AA_PUBLIC:
-		if (a->LocalNamed.GetItemNr(Idtf) != -1)
+		if (Host->LocalNamed.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (local variable)");
-		if (a->GetPropList())
+		if (Host->GetPropList())
 			break;
 		// func in global context: fallthru
 	case AA_GLOBAL:
-		if (a != pOrgScript)
+		if (Host != pOrgScript)
 			throw new C4AulParseError(this, "global func in appendto/included script: ", Idtf);
-		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
+		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			throw new C4AulParseError(this, "function definition: name already in use (global variable)");
-		if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
+		if (Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
 			Error("function definition: name already in use (global constant)");
 	}
 	// get script fn
 	C4AulScript * owner;
 	if (Acc == AA_GLOBAL)
-		owner = a->Engine;
+		owner = Engine;
 	else
-		owner = a;
+		owner = Host;
 	Fn = 0;
 	C4AulFunc * f = owner->GetPropList()->GetFunc(Idtf);
 	while (f)
@@ -1743,7 +1754,7 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 			// pFunc either is the return value from a GetFirstFunc-Call or
 			// the only function that could be called. When in doubt, don't warn.
 			C4AulFunc * pFunc2 = pFunc;
-			while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
+			while ((pFunc2 = Engine->GetNextSNFunc(pFunc2)))
 				if (pFunc2->GetParType()[size] != to) to = C4V_Any;
 			C4V_Type from = GetLastRetType(to);
 			if (C4Value::WarnAboutConversion(from, to))
@@ -1884,7 +1895,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		if (parent)
 			r = parent->GetPropertyByS(Name, &v);
 		else
-			r = a->Engine->GetGlobalConstant(Name->GetCStr(), &v);
+			r = Engine->GetGlobalConstant(Name->GetCStr(), &v);
 		if (!r || !v.getPropList())
 		{
 			// the proplist couldn't be parsed or was overwritten by a later constant.
@@ -2170,7 +2181,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Shift();
 		}
 		// check for variable (local)
-		else if (a->LocalNamed.GetItemNr(Idtf) != -1)
+		else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
 		{
 			// global func?
 			if (Fn->Owner == &::ScriptEngine)
@@ -2200,10 +2211,10 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			Parse_PropList();
 		}
 		// check for global variable (static)
-		else if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
+		else if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 		{
 			// insert variable by id
-			AddBCC(AB_GLOBALN, a->Engine->GlobalNamedNames.GetItemNr(Idtf));
+			AddBCC(AB_GLOBALN, Engine->GlobalNamedNames.GetItemNr(Idtf));
 			Shift();
 		}
 		// function identifier: check special functions
@@ -2271,12 +2282,12 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 			// none of these? then it's a function
 			C4AulFunc *FoundFn = 0;
 			// get regular function
-			if (Fn->Owner == a->Engine || !a->GetPropList())
-				FoundFn = a->Engine->GetPropList()->GetFunc(Idtf);
+			if (Fn->Owner == Engine || !Host->GetPropList())
+				FoundFn = Engine->GetPropList()->GetFunc(Idtf);
 			else
 			{
-				assert(a == Fn->Owner);
-				FoundFn = a->GetPropList()->GetFunc(Idtf);
+				assert(Host == Fn->Owner);
+				FoundFn = Host->GetPropList()->GetFunc(Idtf);
 			}
 			if (Type == PREPARSER)
 			{
@@ -2300,7 +2311,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 				// global constants have lowest priority for backwards compatibility
 				// it is now allowed to have functional overloads of these constants
 				C4Value val;
-				if (a->Engine->GetGlobalConstant(Idtf, &val))
+				if (Engine->GetGlobalConstant(Idtf, &val))
 				{
 					// store as direct constant
 					switch (val.GetType())
@@ -2555,7 +2566,7 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 			if (Type == PARSER)
 			{
 				pName = ::Strings.RegString(Idtf);
-				pFunc = a->Engine->GetFirstFunc(pName);
+				pFunc = Engine->GetFirstFunc(pName);
 			}
 			Shift();
 			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
@@ -2616,22 +2627,22 @@ void C4AulParse::Parse_Local()
 			if (TokenType != ATT_IDTF)
 				UnexpectedToken("variable name");
 			// check: symbol already in use?
-			if (a->GetPropList() && a->GetPropList()->GetFunc(Idtf))
+			if (Host->GetPropList() && Host->GetPropList()->GetFunc(Idtf))
 				throw new C4AulParseError(this, "variable definition: name already in use");
 			// insert variable
-			a->LocalNamed.AddName(Idtf);
+			Host->LocalNamed.AddName(Idtf);
 		}
 		char Name[C4AUL_MAX_Identifier] = ""; // current identifier
 		SCopy(Idtf, Name);
 		Match(ATT_IDTF);
 		if (TokenType == ATT_SET)
 		{
-			if (!a->GetPropList())
+			if (!Host->GetPropList())
 				throw new C4AulParseError(this, "local variables can only be initialized on proplists");
 			Shift();
 			C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
-			assert(a->GetPropList()->IsStatic());
-			Parse_ConstExpression(a->GetPropList()->IsStatic(), key);
+			assert(Host->GetPropList()->IsStatic());
+			Parse_ConstExpression(Host->GetPropList()->IsStatic(), key);
 		}
 		switch (TokenType)
 		{
@@ -2664,12 +2675,12 @@ void C4AulParse::Parse_Static()
 				UnexpectedToken("variable name");
 			// global variable definition
 			// check: symbol already in use?
-			if (a->Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name %s", Idtf);
-			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name %s", Idtf);
+			if (Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name %s", Idtf);
+			if (Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name %s", Idtf);
 			// insert variable if not defined already
-			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
+			if (Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
 			{
-				a->Engine->GlobalNamedNames.AddName(Idtf);
+				Engine->GlobalNamedNames.AddName(Idtf);
 			}
 		}
 		Match(ATT_IDTF);
@@ -2703,9 +2714,9 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 			r.Set0();
 		else if (SEqual(Idtf, C4AUL_New))
 			r = Parse_ConstPropList(parent, Name);
-		else if (a->LocalNamed.GetItemNr(Idtf) != -1)
-			a->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
-		else if (!a->Engine->GetGlobalConstant(Idtf, &r))
+		else if (Host && Host->LocalNamed.GetItemNr(Idtf) != -1)
+			Host->GetPropList()->GetPropertyByS(::Strings.FindString(Idtf), &r);
+		else if (!Engine->GetGlobalConstant(Idtf, &r))
 			if (Type == PARSER)
 				UnexpectedToken("constant value");
 		break;
@@ -2810,10 +2821,10 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 		else
 		{
 			C4Value oldval;
-			if (Type == PREPARSER && a->Engine->GetGlobalConstant(Name->GetCStr(), &oldval) && oldval != r)
+			if (Type == PREPARSER && Engine->GetGlobalConstant(Name->GetCStr(), &oldval) && oldval != r)
 				Warn("redefining constant %s from %s to %s",
 				     Name->GetCStr(), oldval.GetDataString().getData(), r.GetDataString().getData());
-			a->Engine->RegisterGlobalConstant(Name->GetCStr(), r);
+			Engine->RegisterGlobalConstant(Name->GetCStr(), r);
 		}
 	}
 	return r;
@@ -2831,9 +2842,9 @@ void C4AulParse::Parse_Const()
 			UnexpectedToken("constant name");
 		SCopy(Idtf, Name);
 		// check func lists - functions of same name are not allowed
-		if (a->Engine->GetPropList()->GetFunc(Idtf))
+		if (Engine->GetPropList()->GetFunc(Idtf))
 			Error("definition of constant hidden by function %s", Idtf);
-		if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
+		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			Error("constant and variable with name %s", Idtf);
 		Match(ATT_IDTF);
 		// expect '='
