@@ -173,7 +173,6 @@ struct C4AulScriptContext
 	C4Value *Pars;
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
-	bool TemporaryScript;
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
@@ -297,7 +296,6 @@ public:
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }

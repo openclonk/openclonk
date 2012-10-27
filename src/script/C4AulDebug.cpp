@@ -523,10 +523,12 @@ void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 
 StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 {
-	// Get position in script
-	int iLine = pCtx->Func->GetLineOfCode(pCPos);
-	// Format
-	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
+	if (pCtx->Func->pOrgScript)
+		return FormatString("%s:%d",
+		                    RelativePath(pCtx->Func->pOrgScript->ScriptName),
+		                    pCtx->Func->GetLineOfCode(pCPos));
+	else
+		return StdStrBuf("(eval)");
 }
 
 C4AulDebug * C4AulDebug::pDebug = NULL;

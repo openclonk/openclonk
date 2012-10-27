@@ -28,7 +28,6 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		MapNext(NULL)
 {
 	Owner = pOwner;
-	assert(GetName() || Owner->Temporary);
 	// add to global lookuptable with this name
 	if (GetName())
 		::ScriptEngine.FuncLookUp.Add(this);

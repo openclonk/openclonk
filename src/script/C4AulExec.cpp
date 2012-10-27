@@ -114,7 +114,7 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 		script = &(_this->GetDef()->Script);
 	else
 		script = AulExec.pCurCtx[-1].Func->pOrgScript;
-	assert(script);
+	if (!script) return NULL;
 	try
 	{
 		return ::Strings.RegString(script->Translate(text->GetCStr()).c_str());
@@ -140,7 +140,7 @@ void C4AulExec::ClearPointers(C4Object * obj)
 #endif
 }
 
-C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
+C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars, bool fPassErrors)
 {
 	// Push parameters
 	C4Value *pPars = pCurVal + 1;
@@ -160,7 +160,6 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value *pnPars
 	ctx.Pars = pPars;
 	ctx.Vars = pCurVal + 1;
 	ctx.Func = pSFunc;
-	ctx.TemporaryScript = fTemporaryScript;
 	ctx.CPos = NULL;
 	PushContext(ctx);
 
@@ -808,7 +807,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	}
 	catch (C4AulError *e)
 	{
-		// Show
 		if(!e->shown) e->show();
 		// Save current position
 		assert(pCurCtx->Func->GetCode() <= pCPos);
@@ -865,7 +863,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.Pars = pPars;
 		ctx.Vars = pCurVal + 1;
 		ctx.Func = pSFunc;
-		ctx.TemporaryScript = false;
 		ctx.CPos = NULL;
 		PushContext(ctx);
 
@@ -1015,8 +1012,6 @@ void C4AulExec::PopContext()
 			iTraceStart = -1;
 		}
 	}
-	if (pCurCtx->TemporaryScript)
-		delete pCurCtx->Func->Owner;
 	pCurCtx--;
 }
 
@@ -1072,26 +1067,6 @@ C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 	return AulExec.Exec(this, p, pPars, fPassErrors);
 }
 
-class C4DirectExecScript: public C4ScriptHost
-{
-public:
-	C4DirectExecScript(C4AulScript * a, C4Object * pObj, const char *szContext, C4LangStringTable * stringTable): p(NULL)
-	{
-		ScriptName = FormatString("%s in %s", szContext, a->ScriptName.getData());
-		Temporary = true;
-		State = ASS_LINKED;
-		if (pObj)
-		{
-			p = pObj->Def;
-			LocalNamed = pObj->Def->Script.LocalNamed;
-		}
-		this->stringTable = stringTable;
-	}
-	bool Delete() { return true; }
-	virtual C4PropListStatic * GetPropList() { return p; }
-	C4PropListStatic * p;
-};
-
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
 {
 #ifdef DEBUGREC_SCRIPT
@@ -1101,32 +1076,27 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 #endif
 	// profiler
 	AulExec.StartDirectExec();
-	// Create a new temporary script as child of this script
-	C4ScriptHost* pScript = new C4DirectExecScript(this, pObj, szContext, stringTable);
-	pScript->Reg2List(Engine);
 	// Add a new function
-	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, pScript, 0, szScript);
+	C4AulScriptFunc *pFunc = new C4AulScriptFunc(this, GetScriptHost(), 0, szScript);
 	// Parse function
 	try
 	{
 		pFunc->ParseFn(context);
+		C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors));
+		delete pFunc; pFunc = 0;
+		// profiler
+		AulExec.StopDirectExec();
+		return vRetVal;
 	}
 	catch (C4AulError *ex)
 	{
 		delete pFunc;
-		delete pScript;
-		ex->show();
 		if(fPassErrors)
 			throw;
+		ex->show();
 		delete ex;
 		return C4VNull;
 	}
-	pScript->State = ASS_PARSED;
-	// Execute. The TemporaryScript-parameter makes sure the script will be deleted.
-	C4Value vRetVal(AulExec.Exec(pFunc, pObj, NULL, fPassErrors, true));
-	// profiler
-	AulExec.StopDirectExec();
-	return vRetVal;
 }
 
 void C4AulScript::ResetProfilerTimes()

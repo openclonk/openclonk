@@ -133,9 +133,6 @@ void C4AulScript::UnLink()
 
 void C4ScriptHost::UnLink()
 {
-	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
-	if (Temporary) return;
-
 	C4PropList * p = GetPropList();
 	if (p)
 	{

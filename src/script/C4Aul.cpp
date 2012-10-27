@@ -49,9 +49,6 @@ C4AulScript::C4AulScript()
 	// not compiled
 	State = ASS_NONE;
 
-	// defaults
-	Temporary = false;
-
 	// prepare lists
 	Prev = Next = NULL;
 	Engine = NULL;
