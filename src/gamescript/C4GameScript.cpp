@@ -1406,7 +1406,7 @@ static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4String * strEntry, C
 			iEntryNr, *pPlayerInfoCore);
 }
 
-static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iMat, int iEntryNr)
+static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry,  C4String* strSection, int iMat, int iEntryNr)
 {
 	if (iMat < 0 || iMat >= ::MaterialMap.Num) return C4Value();
 
@@ -1416,11 +1416,8 @@ static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry, C4Strin
 	// get plr info core
 	C4MaterialCore* pMaterialCore = static_cast<C4MaterialCore*>(pMaterial);
 
-	// material core implicates section "Material"
-	if (!SEqual(FnStringPar(strSection), "Material")) return C4Value();
-
 	// get value
-	return GetValByStdCompiler(FnStringPar(strEntry), NULL, iEntryNr, *pMaterialCore);
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL, iEntryNr, *pMaterialCore);
 }
 
 static C4String *FnMaterialName(C4PropList * _this, long iMat)
