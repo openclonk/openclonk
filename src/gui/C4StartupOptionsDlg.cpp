@@ -421,62 +421,6 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	caArea.ExpandTop(caArea.GetVMargin());
 	control_list = new ControlConfigListBox(caArea.GetFromLeft(caArea.GetInnerWidth()), NULL);
 	AddElement(control_list);
-	/*C4Facet &rfctKey = ::GraphicsResource.fctKey;
-	int32_t iKeyAreaMaxWdt = caArea.GetWidth()-2*caArea.GetHMargin(), iKeyAreaMaxHgt = caArea.GetHeight()-2*caArea.GetVMargin();
-	int32_t iKeyWdt = rfctKey.Wdt*3/2, iKeyHgt = rfctKey.Hgt*3/2;
-	int32_t iKeyUseWdt = iKeyWdt + iKeyHgt*3; // add space for label
-	int32_t iKeyMargin = 20;
-	int32_t iKeyAreaWdt = (iKeyUseWdt+2*iKeyMargin) * iKeyPosMaxX, iKeyAreaHgt = (iKeyHgt+2*iKeyMargin) * iKeyPosMaxY;
-	if (iKeyAreaWdt > iKeyAreaMaxWdt || iKeyAreaHgt > iKeyAreaMaxHgt)
-	{
-		// scale down
-		float fScaleX = float(iKeyAreaMaxWdt) / float(Max<int32_t>(iKeyAreaWdt,1)),
-		                fScaleY = float(iKeyAreaMaxHgt) / float(Max<int32_t>(iKeyAreaHgt,1)), fScale;
-		if (fScaleX > fScaleY) fScale = fScaleY; else fScale = fScaleX;
-		iKeyMargin = int32_t(fScale*iKeyMargin);
-		iKeyWdt = int32_t(fScale*iKeyWdt);
-		iKeyUseWdt = int32_t(fScale*iKeyUseWdt);
-		iKeyHgt = int32_t(fScale*iKeyHgt);
-		iKeyAreaWdt = int32_t(fScale*iKeyAreaWdt);
-		iKeyAreaHgt = int32_t(fScale*iKeyAreaHgt);
-	}
-	C4GUI::ComponentAligner caCtrlKeys(caArea.GetFromTop(iKeyAreaHgt, iKeyAreaWdt), 0,iKeyMargin);
-	int32_t iKeyNum;
-	for (int iY = 0; iY < iKeyPosMaxY; ++iY)
-	{
-		C4GUI::ComponentAligner caCtrlKeysLine(caCtrlKeys.GetFromTop(iKeyHgt), iKeyMargin,0);
-		for (int iX = 0; iX < iKeyPosMaxX; ++iX)
-		{
-			C4Rect rcKey = caCtrlKeysLine.GetFromLeft(iKeyWdt);
-			caCtrlKeysLine.ExpandLeft(iKeyWdt - iKeyUseWdt);
-			if ((iKeyNum=iKeyPosis[iY][iX])<0) continue;
-			KeySelButton *pKeyBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, KeySelButton>(iKeyNum, rcKey, 0, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn, this);
-			AddElement(KeyControlBtns[iKeyNum] = pKeyBtn);
-			pKeyBtn->SetToolTip(KeyID2Desc(iKeyNum));
-		}
-	}
-	// bottom area controls
-	caArea.ExpandBottom(-iKeyHgt/2);
-	C4GUI::ComponentAligner caKeyBottomBtns(caArea.GetFromBottom(C4GUI_ButtonHgt), 2,0);
-	// gamepad: Use for GUI
-	if (fGamepad)
-	{
-		int iWdt=100,iHgt=20;
-		const char *szResetText = LoadResStr("IDS_CTL_GAMEPADFORMENU");
-		C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, &iHgt, szResetText, pUseFont);
-		pGUICtrl = new C4GUI::CheckBox(caKeyBottomBtns.GetFromLeft(iWdt, iHgt), szResetText, !!Config.Controls.GamepadGuiControl);
-		pGUICtrl->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg::ControlConfigArea>(this, &C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange));
-		pGUICtrl->SetToolTip(LoadResStr("IDS_DESC_GAMEPADFORMENU"));
-		pGUICtrl->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-		AddElement(pGUICtrl);
-	}
-	// reset button
-	const char *szBtnText = LoadResStr("IDS_BTN_RESETKEYBOARD");
-	int32_t iButtonWidth=100, iButtonHeight=20; C4GUI::Button *btn;
-	::GraphicsResource.CaptionFont.GetTextExtent(szBtnText, iButtonWidth, iButtonHeight, true);
-	C4Rect rcResetBtn = caKeyBottomBtns.GetFromRight(Min<int32_t>(iButtonWidth+iButtonHeight*4, caKeyBottomBtns.GetInnerWidth()));
-	AddElement(btn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, SmallButton>(szBtnText, rcResetBtn, &C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn, this));
-	btn->SetToolTip(LoadResStr("IDS_MSG_RESETKEYSETS"));*/
 
 	UpdateCtrlSet();
 }

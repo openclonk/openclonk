@@ -1416,26 +1416,6 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	UpdatePlayerSkin();
 
 	caMain.ExpandTop(-BetweenElementDist);
-	// AutoStopControl: currently unused
-	// once we have an idea how many control schemes we have, we might revive this for selecting e.g. between "Mouse+Keyboard" and "Gamepad".
-	// place AutoStopControl label
-	//AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_DLG_MOVEMENT")).getData(), caMain.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
-	// place AutoStopControl controls
-	//C4Facet &rfctMovementIcons = C4Startup::Get()->Graphics.fctPlrCtrlType;
-	//C4GUI::ComponentAligner caMovement(caMain.GetFromTop(rfctMovementIcons.Hgt), 5, 0);
-	//C4Rect rcBtn = caMovement.GetFromLeft(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_JUMPANDRUN"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	//szTip = LoadResStr("IDS_DLGTIP_JUMPANDRUN");
-	//pLbl->SetToolTip(szTip);
-	//AddElement(pJumpNRunBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'J' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	//pJumpNRunBtn->SetToolTip(szTip);
-	//rcBtn = caMovement.GetFromRight(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_CLASSIC"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	//szTip = LoadResStr("IDS_DLGTIP_CLASSIC");
-	//pLbl->SetToolTip(szTip);
-	//AddElement(pClassicBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'C' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	//pClassicBtn->SetToolTip(szTip);
-	//UpdatePlayerMovement();
 	// place buttons
 	// OK
 	C4GUI::Button *pBtnOK = new C4GUI::OKIconButton(C4Rect(147-GetMarginLeft(), 295+35-GetMarginTop(), 54, 33), C4GUI::Ico_None);
