@@ -12,6 +12,14 @@ local crateanim;
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 800; }
 
+public func GetCarryTransform(clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 3500, -6500);
+	
+	return Trans_Translate(-1500, 0, 0);
+}
+
 protected func Construction()
 {
 	crateanim = PlayAnimation("Open", 1, Anim_Linear(0, 0, 1, 20, ANIM_Hold), Anim_Const(1000));
