@@ -108,12 +108,14 @@ func FxFadeInTimer(target, effect, time)
 {
 	if(fade == 255) return -1;
 	fade = BoundBy(fade+3, 0, 255);
-	SetClrModulation(color|RGBa(0,0,0,fade));
+	//SetClrModulation(color|RGBa(0,0,0,fade));
+	SetObjAlpha(fade);
 }
 
 func FxFadeOutTimer(target, effect, time)
 {
 	if(fade == 0) return -1;
 	fade = BoundBy(fade-3, 0, 255);
-	SetClrModulation(color|RGBa(0,0,0,fade));
+	//SetClrModulation(color|RGBa(0,0,0,fade));
+	SetObjAlpha(fade);
 }
