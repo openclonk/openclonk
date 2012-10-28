@@ -11,37 +11,35 @@
 
 
 local time; 
+local advance_seconds_per_tick;
 
-// Sets the current time using a 24*60 minute clock scheme.
+/** Sets the current time using a 24*60 minute clock scheme. */
 public func SetTime(int to_time) 
 {
 	// Set time.
-	time = to_time % (24 * 60);
+	time = (to_time*60) % (24 * 60 * 60);
 	// Adjust to time.
 	AdjustToTime();
 	return;
 }
 
-// Returns the time in minutes.
+/** Returns the time in minutes. */
 public func GetTime()
 {
-	return time;
+	return time / 60;
 }
 
-// Sets the number of frames per clonk-minute.
-// Standard is 18 frames per minute, making a day-night cycle of 12 minutes.
-// Setting minute lenght to 0 will stop day-night cycle.
-public func SetCycleSpeed(int speed)
+/** Sets the number of seconds the day will advance each tick (10 frames).
+    Setting to 0 will stop day-night cycle. Default is 30 seconds. */
+public func SetCycleSpeed(int seconds_per_tick)
 {
-	//GetEffect("IntTimeCycle", this).Interval = Max(0, speed);
-	RemoveEffect("IntTimeCycle", this);
-	AddEffect("IntTimeCycle", this, 100, Max(0, speed), this);
-	return;
+	advance_seconds_per_tick = seconds_per_tick;
 }
 
+/** Returns the number of seconds the day advances each tick (10 frames). */
 public func GetCycleSpeed()
 {
-	return GetEffect("IntTimeCycle", this).Interval;
+	return advance_seconds_per_tick;
 }
 
 local time_set;
@@ -54,17 +52,18 @@ protected func Initialize()
 		return RemoveObject();
 		
 	time_set = {
-		SunriseStart = 180,
-		SunriseEnd = 540,
-		SunsetStart = 900,
-		SunsetEnd = 1260,
+		SunriseStart = 10800, // 3:00
+		SunriseEnd = 32400, // 9:00
+		SunsetStart = 54000, // 15:00
+		SunsetEnd = 75600, // 21:00
 	};
 	
 	// Add effect that controls time cycle.
-	AddEffect("IntTimeCycle", this, 100, 18, this);
+	advance_seconds_per_tick = 30;
+	AddEffect("IntTimeCycle", this, 100, 10, this);
 	
 	// Set the time to midday (12:00).
-	time = 720; 
+	time = 43200; 
 
 	// Create moon and stars.
 	if (FindObject(Find_ID(Environment_Celestial)))
@@ -116,8 +115,8 @@ protected func FxIntTimeCycleTimer(object target)
 	AdjustToTime();
 
 	// Advance time.
-	time++;
-	time %= (24 * 60);
+	time += advance_seconds_per_tick;
+	time %= (24 * 60 * 60);
 	
 	return 1;
 }
@@ -126,28 +125,39 @@ protected func FxIntTimeCycleTimer(object target)
 private func AdjustToTime()
 {
 	var skyshade = [0,0,0,0]; //R,G,B,A
-	var nightcolour = [10,25,40]; //default darkest-night colour
 	
-	//Darkness of night dependant on moon-phase
-	var satellite = FindObject(Find_ID(Moon)); //pointer to the moon
+	var nightcolour = [10,25,40]; // default darkest-night colour
+	var daycolour = [255,255,255];
+	var sunsetcolour = [140,45,10];
+	var sunrisecolour = [140,100,70];
+	
+	// Darkness of night dependent on the moon-phase
+	var satellite = FindObject(Find_ID(Moon));
 	if(satellite){
 		var lightness = satellite->GetMoonLightness();
+		nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];
 		
-		nightcolour = [ 6 * lightness / 100, 25 * lightness / 100, 40 * lightness / 100 ];
+		if (Abs(time - time_set["SunriseEnd"]) <= advance_seconds_per_tick)
+			satellite->NextMoonPhase();
 	}
 		
-	
 	// Sunrise 
 	if (Inside(time, time_set["SunriseStart"], time_set["SunriseEnd"]))
 	{
-		skyshade[0] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[0]) + nightcolour[0];
-		skyshade[1] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[1]) + nightcolour[1];
-		skyshade[2] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255 - nightcolour[2]) + nightcolour[2];
+		var time_since_sunrise = time - time_set["SunriseStart"];
+		// progress in 0..1800
+		var progress = time_since_sunrise * 1800 / (time_set["SunriseEnd"] - time_set["SunriseStart"]);
+	
+		for(var i=0; i<3; ++i)
+		{
+			var nightfade = Cos(progress/2, nightcolour[i],10);
+			var dayfade = daycolour[i] - Cos(progress/2, daycolour[i],10);
+			var sunrisefade = Sin(progress, sunrisecolour[i],10);
+			
+			skyshade[i] = Min(255,dayfade + nightfade + sunrisefade);
+		}
 		
-		skyshade[3] = Sin((GetTime() - time_set["SunriseStart"]) / 4, 255);
-		if (time == 540)
-			if (satellite)
-				satellite->NextMoonPhase();
+		skyshade[3] = Min(255,progress);
 	}
 	// Day
 	else if (Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
@@ -158,14 +168,23 @@ private func AdjustToTime()
 		
 		skyshade[3] = 255;
 	}
-	//Sunset
+	// Sunset
 	else if (Inside(time, time_set["SunsetStart"], time_set["SunsetEnd"]))
 	{
-		skyshade[0] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[0]);
-		skyshade[1] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[1]);
-		skyshade[2] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255 - nightcolour[2]);
+		var time_since_sunset = time - time_set["SunsetStart"];
+		// progress in 0..1800
+		var progress = time_since_sunset * 1800 / (time_set["SunsetEnd"] - time_set["SunsetStart"]);
 		
-		skyshade[3] = 255 - Sin((GetTime() - time_set["SunsetStart"]) / 4, 255);
+		for(var i=0; i<3; ++i)
+		{
+			var dayfade = Cos(progress/2, daycolour[i],10);
+			var nightfade = nightcolour[i] - Cos(progress/2, nightcolour[i],10);
+			var sunsetfade = Sin(progress, sunsetcolour[i],10);
+			
+			skyshade[i] = Min(255,dayfade + nightfade + sunsetfade);
+		}
+		
+		skyshade[3] = Min(255,1800-progress);
 	}
 	// Night
 	else if (time > time_set["SunsetEnd"] || time < time_set["SunriseStart"])
@@ -186,7 +205,7 @@ private func AdjustToTime()
 			
 	// Adjust clouds
 	for(var cloud in FindObjects(Find_ID(Cloud))){
-		cloud->RequestAlpha(skyshade[3]);
+		cloud->SetLightingShade(255 - skyshade[2]);
 	}
 	
 	return;
