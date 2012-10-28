@@ -37,4 +37,7 @@ StdBuf GetWideCharBuf(const char * utf8);
 #define ADDL2(s) L##s
 #define ADDL(s) ADDL2(s)
 
+#define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
+
 #endif // INC_C4windowswrapper
