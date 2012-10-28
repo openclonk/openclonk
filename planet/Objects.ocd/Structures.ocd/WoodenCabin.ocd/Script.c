@@ -14,6 +14,11 @@ protected func IsBuilt()
 	return GetCon() >= 100;
 }
 
+protected func RejectCollect(id objid, object obj)
+{
+	return true;
+}
+
 public func NoConstructionFlip() { return true; }
 
 local ActMap = {/*
