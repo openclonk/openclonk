@@ -198,6 +198,19 @@ private func BeamFlag(bool msg)
 	return;
 }
 
+func StartAttachCarrier()
+{
+	// attach fourth vertex of the flag to third vertex of Clonk
+	// this results in the best overlapping of the shapes
+	SetActionData((4 << 8) + 3);
+}
+
+func StartAttachBase()
+{
+	// reset possible action data
+	SetActionData(0);
+}
+
 local Name = "$Name$";
 local ActMap = {
 	AttachCarrier = {
@@ -206,8 +219,9 @@ local ActMap = {
 		Procedure = DFA_ATTACH,
 		Length = 1,
 		Delay = 0,
-		NextAction = "Attach",
+		NextAction = "AttachCarrier",
 		Animation = "Wave",
+		StartCall = "StartAttachCarrier"
 	},
 	AttachBase = {
 		Prototype = Action,
@@ -215,8 +229,9 @@ local ActMap = {
 		Procedure = DFA_ATTACH,
 		Length = 1,
 		Delay = 0,
-		NextAction = "Attach",
+		NextAction = "AttachBase",
 		Animation = "Wave",
+		StartCall = "StartAttachBase"
 	},
 };
 
