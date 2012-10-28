@@ -368,8 +368,8 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 		DWORD tKeyLast = GetTime();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
-		C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin();
-		for (KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1; i!=KeyCombo.rend(); ++i,++ri)
+		KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1;
+		for (C4PlayerControlRecentKeyList::const_reverse_iterator ri = RecentKeys.rbegin(); i!=KeyCombo.rend(); ++ri)
 		{
 			// no more keys pressed but combo didn't end? -> no combo match
 			if (ri == RecentKeys.rend()) return false;
@@ -379,8 +379,14 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 			if (tKeyLast - tKeyRecent > C4PlayerControl::MaxSequenceKeyDelay) return false;
 			// key doesn't match?
 			const KeyComboItem &k = *i;
-			if (!(rk.matched_key == k.Key)) return false;
+			if (!(rk.matched_key == k.Key))
+			{
+				// mouse movement commands do not break sequences
+				if (Key_IsMouse(rk.matched_key.Key) && Key_GetMouseEvent(rk.matched_key.Key) == KEY_MOUSE_Move) continue;
+				return false;
+			}
 			// key OK
+			++i;
 		}
 	}
 	else
