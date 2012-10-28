@@ -57,8 +57,8 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	static bool NativeCursorShown = true;
 
 	POINT p;
-	p.x = LOWORD(lParam);
-	p.y = HIWORD(lParam);
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
 
 	// Process message
 	switch (uMsg)
@@ -330,8 +330,8 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	}
 
 	POINT p;
-	p.x = LOWORD(lParam);
-	p.y = HIWORD(lParam);
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
 
 	// Viewport mouse control
 	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
@@ -418,8 +418,8 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	POINT p;
-	p.x = LOWORD(lParam);
-	p.y = HIWORD(lParam);
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
 
 	// Process message
 	switch (uMsg)
