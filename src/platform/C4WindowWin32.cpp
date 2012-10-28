@@ -55,6 +55,11 @@
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static bool NativeCursorShown = true;
+
+	POINT p;
+	p.x = LOWORD(lParam);
+	p.y = HIWORD(lParam);
+
 	// Process message
 	switch (uMsg)
 	{
@@ -149,16 +154,21 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Log((const char *)lParam);
 		return false;
 	case WM_LBUTTONDOWN:
-		C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_LeftDown,p.x,p.y,wParam, NULL);
 		break;
-	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEWHEEL: C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, NULL); break;
+	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, NULL); break;
+	case WM_MOUSEWHEEL:
+		// the coordinates are screen-coordinates here (but only on this uMsg),
+		// we need to convert them to client area coordinates
+		ScreenToClient(hwnd, &p);
+		C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, NULL);
+		break;
 	case WM_MOUSEMOVE:
-		C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, NULL);
 		// Hide cursor in client area
 		if (NativeCursorShown)
 		{
@@ -180,9 +190,9 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 		case SIZE_RESTORED:
 		case SIZE_MAXIMIZED:
-			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
+			::Application.OnResolutionChanged(p.x, p.y);
 			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
 		break;
@@ -319,33 +329,38 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		//----------------------------------------------------------------------------------------------------------------------------------
 	}
 
+	POINT p;
+	p.x = LOWORD(lParam);
+	p.y = HIWORD(lParam);
+
 	// Viewport mouse control
 	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch (uMsg)
 		{
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_LeftDown, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE:
-			if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
-			     && Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
+			if ( Inside<int32_t>(p.x-cvp->DrawX,0,cvp->ViewWdt-1)
+			     && Inside<int32_t>(p.y-cvp->DrawY,0,cvp->ViewHgt-1) )
 				SetCursor(NULL);
-			C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEWHEEL:
-			C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			ScreenToClient(hwnd, &p);
+			C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 
@@ -379,7 +394,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
-			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState);
+			cvp->pWindow->EditCursorMove(p.x, p.y, dwKeyState);
 			Console.EditCursor.LeftButtonDown(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(dwKeyState); break;
@@ -388,7 +403,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState); break;
+		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(p.x, p.y, dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		}
 	}
@@ -401,6 +416,10 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	// Determine dialog
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(hwnd);
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+	POINT p;
+	p.x = LOWORD(lParam);
+	p.y = HIWORD(lParam);
 
 	// Process message
 	switch (uMsg)
@@ -441,25 +460,26 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);  break;
+	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble, p.x, p.y, wParam, pDlg, NULL);  break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEMOVE:
 		//SetCursor(NULL);
-		::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		::pGUI->MouseInput(C4MC_Button_None, p.x, p.y, wParam, pDlg, NULL);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEWHEEL:
-		::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		ScreenToClient(hwnd, &p);
+		::pGUI->MouseInput(C4MC_Button_Wheel, p.x, p.y, wParam, pDlg, NULL);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	}
