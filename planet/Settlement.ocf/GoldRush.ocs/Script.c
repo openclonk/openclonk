@@ -19,6 +19,8 @@ protected func Initialize()
 	SproutBerryBush->Place();
 	PlaceGrass(100);
 	
+	SetSkyParallax(0,20,20);
+	
 	CreateEnvironmentObjects("Temperate");
 	
 	// Set time of day to evening and create some clouds and celestials.
