@@ -1169,13 +1169,13 @@ C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
 	vPickerRect.Hgt = 256 - PlayerColorValueLowBound;
 
 	C4Facet &flagPreviewPic = ::GraphicsResource.fctFlagClr;
-	int preview_width = std::min(flagPreviewPic.Wdt, caMain.GetInnerWidth());
+	int preview_width = std::min<int>(flagPreviewPic.Wdt, caMain.GetInnerWidth());
 	flagPreview = new C4GUI::Picture(caMain.GetFromTop(flagPreviewPic.GetHeightByWidth(preview_width), preview_width), true);
 	flagPreview->SetFacet(flagPreviewPic);
 	AddElement(flagPreview);
 
 	C4Facet &crewPreviewPic = ::GraphicsResource.fctCrewClr;
-	preview_width = std::min(crewPreviewPic.Wdt, caMain.GetInnerWidth());
+	preview_width = std::min<int>(crewPreviewPic.Wdt, caMain.GetInnerWidth());
 	crewPreview = new C4GUI::Picture(caMain.GetFromTop(crewPreviewPic.GetHeightByWidth(preview_width), preview_width), true);
 	crewPreview->SetFacet(crewPreviewPic);
 	AddElement(crewPreview);

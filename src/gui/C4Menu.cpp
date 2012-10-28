@@ -123,7 +123,7 @@ int32_t C4MenuItem::GetSymbolWidth(int32_t iForHeight)
 {
 	// Context or dialog menus
 	if (iStyle==C4MN_Style_Context || (iStyle==C4MN_Style_Dialog && Symbol.Surface))
-		return Max(Symbol.Wdt * iForHeight / Max<int32_t>(Symbol.Hgt, 1), iForHeight);
+		return Max(Symbol.Wdt * iForHeight / Max(Symbol.Hgt, 1.0f), static_cast<float>(iForHeight));
 	// Info menus
 	if (iStyle==C4MN_Style_Info && Symbol.Surface && Symbol.Wdt)
 		return Symbol.Wdt;

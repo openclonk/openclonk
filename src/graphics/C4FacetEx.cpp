@@ -29,7 +29,7 @@
 #include <C4Group.h>
 
 
-void C4TargetFacet::Set(C4Surface * nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty, float Zoom)
+void C4TargetFacet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt, float ntx, float nty, float Zoom)
 {
 	C4Facet::Set(nsfc, nx, ny, nwdt, nhgt);
 	TargetX = ntx; TargetY = nty; this->Zoom = Zoom;

@@ -121,15 +121,15 @@ class C4Facet
 {
 public:
 	C4Surface * Surface;
-	int32_t X,Y,Wdt,Hgt;
+	float X,Y,Wdt,Hgt;
 public:
 	C4Facet();
-	C4Facet(C4Surface * pSfc, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+	C4Facet(C4Surface * pSfc, float iX, float iY, float iWdt, float iHgt)
 			: Surface(pSfc), X(iX), Y(iY), Wdt(iWdt), Hgt(iHgt) {  }
 public:
 	void Default();
 	void Set(C4Surface &rSfc);
-	void Set(C4Surface * nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
+	void Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt);
 	void Set(const C4Facet &cpy) { *this=cpy; }
 	void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
 	void DrawTile(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
