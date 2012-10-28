@@ -854,20 +854,24 @@ void C4EditCursor::ApplyToolPicker()
 	switch (::Landscape.Mode)
 	{
 	case C4LSC_Static:
-		// Material-texture from map
-		if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 		{
-			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
-			if (pTex)
+			bool material_set = false;
+			// Material-texture from map
+			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 			{
-				Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
-				Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-				Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+				if (pTex && pTex->GetMaterialName() && *pTex->GetMaterialName())
+				{
+					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
+					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
+					Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+					material_set = true;
+				}
 			}
+			// default to sky, because invalid materials are always rendered as sky
+			if (!material_set) Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
+			break;
 		}
-		else
-			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
-		break;
 	case C4LSC_Exact:
 		// Material only from landscape
 		if (MatValid(iMaterial=GBackMat(X,Y)))
