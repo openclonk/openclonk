@@ -282,32 +282,17 @@ protected func Evaporation()
 private func ShadeCloud()
 {
 	var cloud_alpha = Min((rain+50)*425/1000, 255);
-	if (rain > 600) 
-		cloud_alpha = 255;
-	
-	// From RequestAlpha function
-	if (request_alpha != nil)
-	{
-		cloud_alpha = cloud_alpha - (255 - request_alpha);
-		if (cloud_alpha < 0) 
-			cloud_alpha = 0;
-	}
-	
-	var shade2 = Min(rain-600, 255);
-	
-	if (rain <= 600)
-		SetObjAlpha(cloud_alpha);
-	if (rain > 600)
-		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloud_alpha));
-	return;
+	var shade2 = BoundBy(Max(0,rain-600) + lighting_shade, 0, 255);
+
+	SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloud_alpha));
 }
 
 // Utilized by time to make clouds invisible at night
-local request_alpha;
+local lighting_shade;
 
-public func RequestAlpha(int alpha)
+public func SetLightingShade(int darkness)
 {
-	request_alpha = alpha;
+	lighting_shade = darkness;
 }
 
 local ActMap = {
