@@ -9,7 +9,7 @@ protected func Initialize()
 	SetClrModulation(RGBa(255,255,255,alpha));
 	SetAction("Be");
 	Update();
-	this["Parallaxity"] = [40,40];
+	this["Parallaxity"] = [30,30];
 }
 
 public func NextMoonPhase()
