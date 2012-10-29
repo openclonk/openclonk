@@ -130,28 +130,59 @@ protected func FxIntTimeCycleTimer(object target)
 	return 1;
 }
 
-// Adjusts the sky, celestial and others to the current time. Use SetTime() at runtime, not this.
-private func AdjustToTime()
+private func onSunriseEnd()
 {
-	var skyshade = [0,0,0,0]; //R,G,B,A
+	// next moon phase
+	var satellite = FindObject(Find_ID(Moon));
+	if(satellite)
+		satellite->NextMoonPhase();
 	
+	// hide celestial objects, they will not be drawn during the day
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+		celestial.Visibility = VIS_None;
+}
+
+private func onSunsetStart()
+{
+	// show celestial objects
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+		celestial.Visibility = VIS_All;
+}
+
+private func doSkyShade()
+{
+	// first determine the time phase we are in
+	var sunrise, sunset, night, day;
+	sunrise = sunset = night = day = false;
+	
+	if (Inside(time, time_set["SunriseStart"], time_set["SunriseEnd"]))
+		sunrise = true;
+	else if(Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
+		day = true;
+	else if(Inside(time, time_set["SunsetStart"], time_set["SunsetEnd"]))
+		sunset = true;
+	else
+		night = true;
+	
+	var skyshade = [0,0,0,0]; //R,G,B,A
 	var nightcolour = [10,25,40]; // default darkest-night colour
 	var daycolour = [255,255,255];
 	var sunsetcolour = [140,45,10];
 	var sunrisecolour = [140,100,70];
 	
-	// Darkness of night dependent on the moon-phase
-	var satellite = FindObject(Find_ID(Moon));
-	if(satellite){
-		var lightness = satellite->GetMoonLightness();
-		nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];
-		
-		if (Abs(time - time_set["SunriseEnd"]) <= advance_seconds_per_tick)
-			satellite->NextMoonPhase();
+	if (!day)
+	{
+		// Darkness of night dependent on the moon-phase
+		var satellite = FindObject(Find_ID(Moon));
+		if(satellite)
+		{
+			var lightness = satellite->GetMoonLightness();
+			nightcolour = [ 6 * lightness / 100, 8 + 25 * lightness / 100, 15 + 60 * lightness / 100 ];
+		}
 	}
 		
 	// Sunrise 
-	if (Inside(time, time_set["SunriseStart"], time_set["SunriseEnd"]))
+	if (sunrise)
 	{
 		var time_since_sunrise = time - time_set["SunriseStart"];
 		// progress in 0..1800
@@ -166,10 +197,10 @@ private func AdjustToTime()
 			skyshade[i] = Min(255,dayfade + nightfade + sunrisefade);
 		}
 		
-		skyshade[3] = Min(255,progress);
+		skyshade[3] = Min(255,progress/2);
 	}
 	// Day
-	else if (Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
+	else if (day)
 	{
 		skyshade[0] = 255;
 		skyshade[1] = 255;
@@ -178,7 +209,7 @@ private func AdjustToTime()
 		skyshade[3] = 255;
 	}
 	// Sunset
-	else if (Inside(time, time_set["SunsetStart"], time_set["SunsetEnd"]))
+	else if (sunset)
 	{
 		var time_since_sunset = time - time_set["SunsetStart"];
 		// progress in 0..1800
@@ -193,10 +224,10 @@ private func AdjustToTime()
 			skyshade[i] = Min(255,dayfade + nightfade + sunsetfade);
 		}
 		
-		skyshade[3] = Min(255,1800-progress);
+		skyshade[3] = Min(255,900-progress/2);
 	}
 	// Night
-	else if (time > time_set["SunsetEnd"] || time < time_set["SunriseStart"])
+	else if (night)
 	{
 		skyshade[0] = nightcolour[0];
 		skyshade[1] = nightcolour[1];
@@ -208,16 +239,28 @@ private func AdjustToTime()
 	// Shade sky.
 	SetSkyAdjust(RGB(skyshade[0], skyshade[1], skyshade[2]));
 	
-	// Adjust celestial objects.
-	for (var celestial in FindObjects(Find_Func("IsCelestial")))
-			celestial->SetObjAlpha(255 - skyshade[3]);
-			
-	// Adjust clouds
-	for(var cloud in FindObjects(Find_ID(Cloud))){
-		cloud->SetLightingShade(255 - skyshade[2]);
+	if(!day && !night)
+	{
+		// Adjust celestial objects.
+		for (var celestial in FindObjects(Find_Func("IsCelestial")))
+				celestial->SetObjAlpha(255 - skyshade[3]);
+				
+		// Adjust clouds
+		for(var cloud in FindObjects(Find_ID(Cloud))){
+			cloud->SetLightingShade(255 - skyshade[2]);
+		}
 	}
-	
-	return;
+}
+
+// Adjusts the sky, celestial and others to the current time. Use SetTime() at runtime, not this.
+private func AdjustToTime()
+{
+	if (Abs(time - time_set["SunriseEnd"]) <= advance_seconds_per_tick)
+		onSunriseEnd();
+	else if (Abs(time - time_set["SunsetStart"]) <= advance_seconds_per_tick)
+		onSunsetStart();
+
+	doSkyShade();
 }
 
 local Name = "Time";
