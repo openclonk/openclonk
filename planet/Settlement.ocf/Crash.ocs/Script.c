@@ -16,7 +16,7 @@ func DoInit(int first_player)
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(600);
-	time->SetCycleSpeed(12);
+	time->SetCycleSpeed(20);
 	// Waterfall
 	AddEffect("IntWaterfall", nil, 1, 1);
 	// Windmill owner

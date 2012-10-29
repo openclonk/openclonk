@@ -28,8 +28,8 @@ protected func Initialize()
 	Cloud->SetPrecipitation("Water", 8);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(600);
-	time->SetCycleSpeed(12);
+	time->SetTime(60*12);
+	time->SetCycleSpeed(20);
 	return;
 }
 

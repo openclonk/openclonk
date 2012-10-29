@@ -20,7 +20,7 @@ func DoInit(int first_player)
 	EnsureObject(Rule_BuyAtFlagpole,0,0,-1);
 	var time = EnsureObject(Environment_Time,0,0,-1);
 	time->SetTime(600);
-	time->SetCycleSpeed(12);
+	time->SetCycleSpeed(20);
 	// Goal
 	CreateObject(Goal_Plane);
 	// Plane part restore
