@@ -58,7 +58,7 @@ protected func Initialize()
 		SunsetEnd = 75600, // 21:00
 	};
 	
-	// Add effect that controls time cycle.
+	// Add effect that controls time cycle.a
 	advance_seconds_per_tick = 30;
 	AddEffect("IntTimeCycle", this, 100, 10, this);
 	
@@ -68,8 +68,8 @@ protected func Initialize()
 	// Create moon and stars.
 	if (FindObject(Find_ID(Environment_Celestial)))
 	{
-		CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 		PlaceStars();
+		CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 	}
 	return;
 }
@@ -94,17 +94,26 @@ public func IsNight()
 
 private func PlaceStars()
 {
+	// since stars are almost completely parallax (=in screen coordinates), we only need
+	// to place stars for max. a reasonable maximum resolution. Lets say 1600x1200
+	var lw = Min(LandscapeWidth(), 1600);
+	var lh = Min(LandscapeHeight(),1200);
+	
 	//Star Creation
-	var maxamount = LandscapeWidth() * LandscapeHeight() / 40000;
-	var amount = 0;
+	var maxfailedtries = lw * lh / 40000;
+	var failed = 0;
 
-	while (amount != maxamount)
+	while (failed != maxfailedtries)
 	{
-		var pos;
-		if (pos = FindPosInMat("Sky", 0, 0, LandscapeWidth(), LandscapeHeight()))
-			CreateObject(Star, pos[0], pos[1]); 
-		amount++;
+		var pos = [Random(lw), Random(lh)];
+		if(!FindObject(Find_ID(Stars),Find_AtPoint(pos[0],pos[1])))
+		{
+			CreateObject(Stars, pos[0], pos[1]); 
+			continue;
+		}
+		failed++;
 	}
+	
 	return;
 }
 
