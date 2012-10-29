@@ -19,7 +19,7 @@ func DoInit(int first_player)
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
 	time->SetTime(400);
-	time->SetCycleSpeed(4);
+	time->SetCycleSpeed(6);
 	
 	// Workshop owner
 	var workshop = FindObject(Find_ID(ToolsWorkshop));
