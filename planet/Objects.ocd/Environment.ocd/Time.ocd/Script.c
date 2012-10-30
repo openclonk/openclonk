@@ -18,6 +18,12 @@ public func SetTime(int to_time)
 {
 	// Set time.
 	time = (to_time*60) % (24 * 60 * 60);
+	// hide celestials during day
+	if(Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
+		hideCelestials();
+	else
+		showCelestials();
+	
 	// Adjust to time.
 	AdjustToTime();
 	return;
@@ -57,13 +63,6 @@ protected func Initialize()
 		SunsetStart = 54000, // 15:00
 		SunsetEnd = 75600, // 21:00
 	};
-	
-	// Add effect that controls time cycle.a
-	advance_seconds_per_tick = 30;
-	AddEffect("IntTimeCycle", this, 100, 10, this);
-	
-	// Set the time to midday (12:00).
-	time = 43200; 
 
 	// Create moon and stars.
 	if (FindObject(Find_ID(Environment_Celestial)))
@@ -71,7 +70,13 @@ protected func Initialize()
 		PlaceStars();
 		CreateObject(Moon, LandscapeWidth() / 2, LandscapeHeight() / 6);
 	}
-	return;
+	
+	// Set the time to midday (12:00).
+	SetTime(43200); 
+	
+	// Add effect that controls time cycle.
+	SetCycleSpeed(30);
+	AddEffect("IntTimeCycle", this, 100, 10, this);
 }
 
 public func IsDay()
@@ -130,6 +135,25 @@ protected func FxIntTimeCycleTimer(object target)
 	return 1;
 }
 
+private func hideCelestials()
+{
+	// hide celestial objects, they will not be drawn during the day
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+	{
+		celestial.Visibility = VIS_None;
+		celestial->SetObjAlpha(0);
+	}
+}
+
+private func showCelestials()
+{
+	// show celestial objects
+	for (var celestial in FindObjects(Find_Func("IsCelestial")))
+	{
+		celestial.Visibility = VIS_All;
+	}
+}
+
 private func onSunriseEnd()
 {
 	// next moon phase
@@ -137,16 +161,12 @@ private func onSunriseEnd()
 	if(satellite)
 		satellite->NextMoonPhase();
 	
-	// hide celestial objects, they will not be drawn during the day
-	for (var celestial in FindObjects(Find_Func("IsCelestial")))
-		celestial.Visibility = VIS_None;
+	hideCelestials();
 }
 
 private func onSunsetStart()
 {
-	// show celestial objects
-	for (var celestial in FindObjects(Find_Func("IsCelestial")))
-		celestial.Visibility = VIS_All;
+	showCelestials();
 }
 
 private func doSkyShade()
@@ -243,7 +263,7 @@ private func doSkyShade()
 	{
 		// Adjust celestial objects.
 		for (var celestial in FindObjects(Find_Func("IsCelestial")))
-				celestial->SetObjAlpha(255 - skyshade[3]);
+			celestial->SetObjAlpha(255 - skyshade[3]);
 				
 		// Adjust clouds
 		for(var cloud in FindObjects(Find_ID(Cloud))){
