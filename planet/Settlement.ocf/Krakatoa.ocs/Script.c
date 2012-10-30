@@ -44,7 +44,7 @@ func Initialize()
 	// Some natural disasters, earthquakes, volcanos, meteorites.
 	Meteor->SetChance(15);
 	Earthquake->SetChance(2);
-	Volcano->SetChance(0);
+	Volcano->SetChance(4);
 	Volcano->SetMaterial("DuroLava");
 	
 	// Vegetation.
