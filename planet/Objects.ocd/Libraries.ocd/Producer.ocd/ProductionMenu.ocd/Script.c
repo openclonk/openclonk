@@ -51,7 +51,7 @@ protected func Construction()
 
 public func AddMenuProducts(object producer)
 {
-	for (var product in producer->GetProducts())
+	for (var product in producer->GetProducts(GetMenuObject()))
 	{
 		var item = CreateObject(GUI_MenuItem);
 		if (!AddItem(item))

@@ -100,21 +100,24 @@ private func IsProduct(id product_id)
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
 */
-public func GetProducts()
+public func GetProducts(object for_clonk)
 {
+	var for_plr = GetOwner();
+	if (for_clonk)
+		for_plr = for_clonk-> GetOwner();
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	if (!IgnoreKnowledge() && GetOwner() != NO_OWNER)
+	if (!IgnoreKnowledge() && for_plr != NO_OWNER)
 	{
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Object))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
 			index++;
 		}
 		index = 0;
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Vehicle))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Vehicle))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
