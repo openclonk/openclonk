@@ -1892,7 +1892,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY());
 
 	// Output boundary
-	if (!fYStretchObject && !eDrawMode)
+	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
 	{
 		if (pActionDef && !r && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 		{
