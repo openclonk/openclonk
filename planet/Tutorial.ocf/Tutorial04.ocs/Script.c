@@ -15,7 +15,7 @@ protected func Initialize()
 	Cloud->Place(15);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(1125);
+	time->SetTime(22*60);
 	time->SetCycleSpeed(0);
 	Sound("WindLoop", true, 40, nil, 1);
 	
