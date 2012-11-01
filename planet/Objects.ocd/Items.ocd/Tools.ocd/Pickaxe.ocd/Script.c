@@ -45,7 +45,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 		return true;
 	using = 1;
 	// Create an offset, so that the hit matches with the animation
-	swingtime = Pickaxe_SwingTime*4/38;
+	swingtime = Pickaxe_SwingTime*1/38;
 	clonk->SetTurnType(1);
 	clonk->UpdateAttach();
 	clonk->PlayAnimation("StrikePickaxe", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
@@ -88,7 +88,8 @@ protected func DoSwing(object clonk, int ix, int iy)
 	{
 		++iDist;
 	}
-		
+	
+	//Point of contact, where the pick strikes the landscape
 	var x2 = Sin(180-angle,iDist);
 	var y2 = Cos(180-angle,iDist);
 	var is_solid = GBackSolid(x2,y2);
@@ -99,28 +100,30 @@ protected func DoSwing(object clonk, int ix, int iy)
 	// notify the object that it has been hit
 	if(target_obj)
 		target_obj->~OnHitByPickaxe(this, clonk);
-
-	BlastFree(GetX()+x2,GetY()+y2,5,GetController());
 		
 	// special effects only ifhit something
 	if(is_solid || target_obj)
-	{
-
+	{	
 		var mat = GetMaterial(x2,y2);
 		var tex = GetTexture(x2,y2);
-		
 
+		//Is the material struck made of a diggable material?
 		if(is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
 			var a = 80;
 			CreateParticle("Dust",x2,y2,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),DoRGBaValue(clr,-255+a,0));
+			Sound("Dig?");
 		}
+		//It's solid, but not diggable. So it is a hard mineral.
 		else
 		{
 			CastParticles("Spark",RandomX(3,9),35,x2*9/10,y2*9/10,10,30,RGB(255,255,150),RGB(255,255,200));
 			Sound("Clang?");
-		}			
+		}
+		
+		//Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
+		BlastFree(GetX()+x2,GetY()+y2,5,GetController());
 	}
 
 }

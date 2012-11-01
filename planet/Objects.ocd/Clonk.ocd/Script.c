@@ -535,17 +535,17 @@ func SetSkin(int skin)
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics(nil, Skin_Steampunk);
+	{	SetGraphics("Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics(nil, Skin_Alchemist);
+	{	SetGraphics("Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics(nil, Skin_Farmer);
+	{	SetGraphics("Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
