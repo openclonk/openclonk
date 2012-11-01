@@ -27,15 +27,15 @@ protected func Initialize()
 	
 	// Doors and spinwheels.
 	var gate, wheel;
-	gate = CreateObject(StoneDoor, 365, 448, NO_OWNER);
-	DrawMaterialQuad("Tunnel-brickback", 361, 446, 361, 448, 365, 448, 365, 446);
+	gate = CreateObject(StoneDoor, 364, 448, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 360, 446, 360, 448, 368, 448, 368, 446);
 	gate->DoDamage(50);		// Upper doors are easier to destroy
 	gate->SetAutoControl(1);
-	gate = CreateObject(StoneDoor, 341, 584, NO_OWNER);
-	DrawMaterialQuad("Tunnel-brickback", 337, 582, 337, 584, 345, 584, 345, 582);
+	gate = CreateObject(StoneDoor, 340, 584, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 336, 582, 336, 584, 344, 584, 344, 582);
 	gate->SetAutoControl(1);
-	gate = CreateObject(StoneDoor, 693, 544, NO_OWNER);
-	DrawMaterialQuad("Tunnel-brickback", 689, 542, 689, 544, 697, 544, 697, 542);
+	gate = CreateObject(StoneDoor, 692, 544, NO_OWNER);
+	DrawMaterialQuad("Tunnel-brickback", 688, 542, 688, 544, 696, 544, 696, 542);
 	gate->DoDamage(80);		// Middle doors even easier
 	wheel = CreateObject(SpinWheel, 660, 552, NO_OWNER);
 	wheel->SetStoneDoor(gate);
