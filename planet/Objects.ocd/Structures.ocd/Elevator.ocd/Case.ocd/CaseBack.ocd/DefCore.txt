@@ -5,3 +5,8 @@ Width=24
 Height=45
 Offset=-12,-26
 Category=C4D_StaticBack
+# for attachment
+Vertices=1
+VertexX=-12
+VertexY=-2
+VertexFriction=0

@@ -3,6 +3,9 @@
 #include Library_Structure
 #include Library_Ownable
 
+// used in the elevator case
+static const Elevator_needed_power = 50;
+
 local case, rope;
 local partner, slave;
 
@@ -27,6 +30,7 @@ func Construction(object creator)
 
 func Initialize()
 {
+	SetCategory(C4D_StaticBack);
 	CreateCase();
 	CreateRope();
 
@@ -36,7 +40,6 @@ func Initialize()
 		{
 			partner->LetsBecomeFriends(this);
 			slave = true; // Note: This is liberal slavery
-			case.slave = true; // I guess this is not so liberal
 			SetPosition(GetX(), partner->GetY());
 		}
 		else
@@ -61,8 +64,17 @@ func CreateRope()
 
 func Destruction()
 {
-	rope->RemoveObject();
+	if(rope) rope->RemoveObject();
+	if(case) case->LostElevator();
 	if (partner) partner->LoseCombination();
+}
+
+func LostCase()
+{
+	if(partner) partner->LoseCombination();
+	if(rope) rope->RemoveObject();
+	
+	DoCon(-1);
 }
 
 /* Effects */
@@ -119,7 +131,7 @@ func CombineWith(object other)
 func LetsBecomeFriends(object other)
 {
 	partner = other;
-	if (case) case->StartConnection(other);
+	if (case) case->StartConnection(other.case);
 }
 
 // Partner was destroyed or moved
