@@ -47,7 +47,7 @@ protected func Initialize()
 	Cloud->Place(20);
 	CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
-	time->SetTime(1125);
+	time->SetTime(60*22);
 	time->SetCycleSpeed(0);
 	
 	// A light blue hue, to indicate the cold climate.

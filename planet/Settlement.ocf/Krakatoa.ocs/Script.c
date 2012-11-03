@@ -36,6 +36,12 @@ func Initialize()
 	var dark = 40;
 	SetSkyAdjust(RGB(150, 42, 0));
 	SetGamma(RGB(0,0,0), RGB(128-dark,128-dark,128-dark), RGB(255-2*dark,255-2*dark,255-2*dark));
+	
+	// Time of days and celestials.
+	CreateObject(Environment_Celestial);
+	var time = CreateObject(Environment_Time);
+	time->SetTime(60*20);
+	time->SetCycleSpeed(20);
 		
 	// Some dark clouds which rain few ashes.
 	Cloud->Place(15);

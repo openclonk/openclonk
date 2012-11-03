@@ -19,15 +19,45 @@ protected func Initialize()
 
 	// Objects fade after 5 seconds.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(7 * 36);
+	
+	// Some decoration trunks ranks and a waterfall.
+	var trunk = CreateObject(Trunk, 76, 324);
+	trunk->SetR(60); trunk.Plane = 510;
+	trunk.MeshTransformation = [-731, 0, 682, 0, 0, 1000, 0, 0, -682, 0, -731, 0];
+	trunk = CreateObject(Trunk, 123, 68);
+	trunk->SetR(115); trunk.Plane = 510;
+	trunk.MeshTransformation = [469, 0, 883, 0, 0, 1000, 0, 0, -883, 0, 469, 0];
+	trunk = CreateObject(Trunk, 172, 134);
+	trunk->SetR(-110); trunk.Plane = 510;
+	trunk.MeshTransformation = [-545, 0, -839, 0, 0, 1000, 0, 0, 839, 0, -545, 0];
+	
+	var waterfall;
+	waterfall = CreateWaterfall(130, 53, 2, "Water");
+	waterfall->SetDirection(4, 0, 3, 6);
+	waterfall = CreateWaterfall(144, 50, 8, "Water");
+	waterfall->SetDirection(6, 0, 5, 6);
+	CreateLiquidDrain(100, 315, 10);
+	CreateLiquidDrain(130, 315, 10);
+	CreateLiquidDrain(160, 315, 10);
+	
+	CreateObject(Fern, 48, 114);
+	CreateObject(Fern, 284, 128);
+	CreateObject(Lorry, 294, 128)->SetR(20);
+	CreateObject(Pickaxe, 260, 128)->SetR(-45); 
+	CreateObject(Mushroom, 271, 136);
+	
+	CreateObject(Rank, 146, 302)->SetR(180);
+	CreateObject(Rank, 198, 190)->SetR(225);
+	CreateObject(Rank, 54, 66)->SetR(180);
+	CreateObject(Rank, 42, 232)->SetR(120);
+	CreateObject(Rank, 269, 230)->SetR(-120);
+	
+	for (var i = 0; i < 2 + Random(6); i++) 
+		CreateObject(Rank, 114, 10 + Random(140))->SetR(RandomX(60, 120));
+	for (var i = 0; i < 2 + Random(6); i++) 
+		CreateObject(Rank, 190, 10 + Random(140))->SetR(-RandomX(60, 120));
 
-	//Water needs to be OK
-	AddEffect("Refiller",nil,100,6);
 	return;
-}
-
-global func FxRefillerTimer(object pTarget, effect, int timer)
-{
-	for(var i=0; i<10; i++) if(!GBackLiquid(100,315)) InsertMaterial(Material("Water"),135,385);
 }
 
 // Gamecall from LastManStanding goal, on respawning.
