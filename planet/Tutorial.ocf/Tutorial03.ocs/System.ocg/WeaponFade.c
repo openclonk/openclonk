@@ -65,7 +65,8 @@ protected func Destruction()
 	var x = BoundBy(GetX(), 0, LandscapeWidth());
 	var y = BoundBy(GetY(), 0, LandscapeHeight());
 	var duplicate = CreateObject(GetID(), x, y, GetOwner());
-	duplicate->~SetStackCount(GetStackCount());
+	var cnt = this->~GetStackCount();
+	duplicate->~SetStackCount(cnt);
 	if (GetID() == Bow) duplicate->CreateContents(Arrow)->SetStackCount(FindContents(Arrow)->GetStackCount());
 	restorer->SetPosition(x, y);
 	var to_container = FindObject(Find_OCF(OCF_CrewMember));
