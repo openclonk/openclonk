@@ -140,7 +140,7 @@ private func ConvertAngle(int angle)
 	var nR = BoundBy(Normalize(angle,-180 * angPrec,angPrec), (-90 * angPrec) + (GetR() * angPrec), (90 * angPrec) + (GetR() * angPrec));
 	var r2 = nR - GetR() * angPrec;
 	//debug messages
-	Message(Format("nR = %d|rL = %d",nR,r2));
+	//Message(Format("nR = %d|rL = %d",nR,r2));
 	
 	//Turn the cannon into the pointed direction
 	if(nR - (GetR() * angPrec) < 0 && turnDir == 1) TurnCannon(0);
