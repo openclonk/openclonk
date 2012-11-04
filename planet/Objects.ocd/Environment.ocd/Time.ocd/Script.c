@@ -20,9 +20,9 @@ public func SetTime(int to_time)
 	time = (to_time*60) % (24 * 60 * 60);
 	// hide celestials during day
 	if(Inside(time, time_set["SunriseEnd"], time_set["SunsetStart"]))
-		hideCelestials();
+		HideCelestials();
 	else
-		showCelestials();
+		ShowCelestials();
 	
 	// Adjust to time.
 	AdjustToTime();
@@ -135,7 +135,7 @@ protected func FxIntTimeCycleTimer(object target)
 	return 1;
 }
 
-private func hideCelestials()
+private func HideCelestials()
 {
 	// hide celestial objects, they will not be drawn during the day
 	for (var celestial in FindObjects(Find_Func("IsCelestial")))
@@ -145,7 +145,7 @@ private func hideCelestials()
 	}
 }
 
-private func showCelestials()
+private func ShowCelestials()
 {
 	// show celestial objects
 	for (var celestial in FindObjects(Find_Func("IsCelestial")))
@@ -154,22 +154,22 @@ private func showCelestials()
 	}
 }
 
-private func onSunriseEnd()
+private func OnSunriseEnd()
 {
 	// next moon phase
 	var satellite = FindObject(Find_ID(Moon));
 	if(satellite)
 		satellite->NextMoonPhase();
 	
-	hideCelestials();
+	HideCelestials();
 }
 
-private func onSunsetStart()
+private func OnSunsetStart()
 {
-	showCelestials();
+	ShowCelestials();
 }
 
-private func doSkyShade()
+private func DoSkyShade()
 {
 	// first determine the time phase we are in
 	var sunrise, sunset, night, day;
@@ -276,11 +276,11 @@ private func doSkyShade()
 private func AdjustToTime()
 {
 	if (Abs(time - time_set["SunriseEnd"]) <= advance_seconds_per_tick)
-		onSunriseEnd();
+		OnSunriseEnd();
 	else if (Abs(time - time_set["SunsetStart"]) <= advance_seconds_per_tick)
-		onSunsetStart();
+		OnSunsetStart();
 
-	doSkyShade();
+	DoSkyShade();
 }
 
 local Name = "Time";
