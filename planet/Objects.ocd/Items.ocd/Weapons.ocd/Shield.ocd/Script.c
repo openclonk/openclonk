@@ -108,14 +108,9 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 {
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);
-	
-	if(angle > 0) clonk->SetTurnForced(DIR_Right);
-	else clonk->SetTurnForced(DIR_Left);
-	
-	iAngle=angle;
-
+		
 	var weight = 0;
-	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
+	if( Abs(angle) > 90) weight = 1000*( Abs(angle)-60 )/90;
 
 	var handLR;
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
@@ -129,7 +124,10 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 
 	if(!GetEffect("IntShieldSuspend", clonk))
 	{
-		clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(iAngle) * 11111/1000));
+		if(angle > 0) clonk->SetTurnForced(DIR_Right);
+		else clonk->SetTurnForced(DIR_Left);
+	
+		clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(angle) * 11111/1000));
 		AdjustSolidMaskHelper();
 	}
 }
