@@ -20,8 +20,10 @@ bool glCheck() {
 	return true;
 }
 
+const float C4FoWSmooth = 8.0;
+
 // Maximum error allowed while merging rays. Actually double, see below.
-const int32_t C4FoWMergeThreshold = 5; // (in landscape pixels)
+const int32_t C4FoWMergeThreshold = 10; // (in landscape pixels)
 
 // A = 1/2 | a x b |
 static inline int32_t getTriangleSurface(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3)
@@ -1323,11 +1325,11 @@ void C4FoWLightSection::Render(C4FoWRegion *pRegion, const C4TargetFacet *pOnScr
 			    float dx = (x) - gLightX, dy = (y) - gLightY;            \
 				float gDist = sqrt(dx*dx+dy*dy);                         \
 				float gMult = Min(0.5f / pLight->getSize(), 0.5f / gDist); \
-				float gNormX = (0.5f + dx * gMult) / 1.5f / 16.0f; \
-				float gNormY = (0.5f + dy * gMult) / 1.5f / 16.0f; \
-				if(light)       glColor3f(0.5f/16.0f, gNormX, gNormY);         \
+				float gNormX = (0.5f + dx * gMult) / 1.5f / C4FoWSmooth; \
+				float gNormY = (0.5f + dy * gMult) / 1.5f / C4FoWSmooth; \
+				if(light)       glColor3f(0.5f/C4FoWSmooth, gNormX, gNormY);         \
 				else            glColor3f(0.0f, gNormX, gNormY);         \
-			} else              glColor3f(0.0f, 0.5f/1.5f/16.0f, 0.5f/1.5f/16.0f);   \
+			} else              glColor3f(0.0f, 0.5f/1.5f/C4FoWSmooth, 0.5f/1.5f/C4FoWSmooth);   \
 			glVertex2f(x,y)
 		#define DARK(x,y) VERTEX(x,y,false)
 		#define LIGHT(x,y) VERTEX(x,y,true)
