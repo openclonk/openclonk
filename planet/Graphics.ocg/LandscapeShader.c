@@ -9,14 +9,8 @@ uniform sampler3D materialTex;
 // Resolution of the landscape texture
 uniform vec2 resolution;
 
-// Use sampler if the GPU doesn't support enough uniforms to
-// get the matMap as an array
-#if MAX_FRAGMENT_UNIFORM_COMPONENTS < 259
-#define BROKEN_ARRAYS_WORKAROUND
-#endif
-
 // Texture map
-#ifdef BROKEN_ARRAYS_WORKAROUND
+#ifndef NO_BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;
 #else
 uniform float matMap[256];
@@ -42,7 +36,7 @@ int f2i(float x) {
 
 float queryMatMap(int pix)
 {
-#ifdef BROKEN_ARRAYS_WORKAROUND
+#ifndef NO_BROKEN_ARRAYS_WORKAROUND
 	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
 	return float(idx) / 256.0 + 0.5 / float(materialDepth);
 #else
