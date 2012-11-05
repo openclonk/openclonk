@@ -334,7 +334,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
-	pComp->Value(mkNamingAdapt(FoWRes,                  "MaterialZoom",          8));
+	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          8));
 }
 
 void C4SWeather::Default()
