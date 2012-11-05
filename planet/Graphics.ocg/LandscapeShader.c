@@ -20,6 +20,7 @@ uniform sampler1D matMapTex;
 uniform float matMap[256];
 #endif
 uniform int materialDepth;
+uniform vec2 materialSize;
 
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
@@ -111,7 +112,7 @@ void main()
 
 	// Get material pixels
 	float materialIx = queryMatMap(f2i(landscapePx.r));
-	vec2 tcoo = texCoo * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0);
+	vec2 tcoo = texCoo * resolution / materialSize;
 	vec4 materialPx = texture3D(materialTex, vec3(tcoo, materialIx));
 	vec4 normalPx = texture3D(materialTex, vec3(tcoo, materialIx+0.5));
 	float otherMaterialIx = queryMatMap(f2i(otherLandscapePx.r));
