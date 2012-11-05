@@ -27,18 +27,22 @@ private func Destroy()
 	RemoveObject();
 }
 
-global func PlaceGrass(int amount, int start, int end)
+global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 {
 	if (!start)
 		start = 0;
 	if (!end)
 		end = LandscapeWidth();
+	if(!height)
+		height = 0;
+	if(!bottom)
+		bottom = LandscapeHeight();
 		
 	var x = start, y; 
 	while (x < end)
 	{
-		y = 0;
-		while (y < LandscapeHeight())
+		y = height;
+		while (y < bottom)
 		{
 			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky"))
 				if (GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
