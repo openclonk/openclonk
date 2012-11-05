@@ -27,6 +27,7 @@ enum C4LR_Uniforms
 	C4LRU_MatMap,
 	C4LRU_MatMapTex,
 	C4LRU_MaterialDepth,
+	C4LRU_MaterialSize,
 
 	C4LRU_Count
 };
@@ -39,7 +40,7 @@ const int C4LR_BytesPerSurface = 4;
 const int C4LR_SurfaceCount = (C4LR_ByteCount + C4LR_BytesPerSurface - 1) / C4LR_BytesPerSurface;
 
 // How many mip-map levels should be used at maximum?
-const int C4LR_MipMapCount = 4;
+const int C4LR_MipMapCount = 6;
 
 class C4Landscape; class C4TextureMap;
 
@@ -96,6 +97,8 @@ private:
 	std::vector<StdCopyStrBuf> MaterialTextureMap;
 	// depth of material texture in layers
 	int32_t iMaterialTextureDepth;
+	// size of material textures (unzoomed)
+	int32_t iMaterialWidth, iMaterialHeight;
 
 	// scaler image
 	C4FacetSurface fctScaler;
