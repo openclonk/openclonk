@@ -2420,7 +2420,7 @@ void C4AulParse::Parse_Expression(int iParentPrio)
 		if(op->Changer)
 			Changer = MakeSetter(true);
 		// write byte code
-		AddBCC(op->Code, ndx);
+		AddBCC(op->Code, 0);
 		// writter setter
 		if(op->Changer)
 			AddBCC(Changer.bccType, Changer.Par.X);
