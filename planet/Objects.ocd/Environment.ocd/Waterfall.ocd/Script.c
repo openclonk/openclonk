@@ -17,6 +17,7 @@ protected func Initialize()
 global func CreateWaterfall(int x, int y, int strength, string mat)
 {
 	var fall = CreateObject(Waterfall, x, y, NO_OWNER);
+	if(!mat) mat = "Water";
 	AddEffect("IntWaterfall", fall, 100, 1, fall, nil, x, y, strength, mat);
 	return fall;
 }
@@ -38,7 +39,7 @@ protected func FxIntWaterfallTimer(object target, proplist effect)
 {
 	// Insert liquid at location every frame.
 	for (var i = 0; i < effect.Strength / 2; i++)
-		InsertMaterial(Material("Water"), AbsX(effect.X), AbsY(effect.Y), effect.XDir + Random(effect.XVar), effect.YDir + Random(effect.YVar));
+		InsertMaterial(Material(effect.Material), AbsX(effect.X), AbsY(effect.Y), effect.XDir + Random(effect.XVar), effect.YDir + Random(effect.YVar));
 	return 1;
 }
 
