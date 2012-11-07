@@ -53,7 +53,7 @@ protected func Initialize()
 	chest->CreateContents(Club);
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
