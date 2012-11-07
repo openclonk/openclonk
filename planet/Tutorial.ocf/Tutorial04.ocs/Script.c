@@ -53,7 +53,7 @@ protected func Initialize()
 	chest->CreateContents(Club);
 	
 	// Dialogue options -> repeat round.
-	SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgRepeatRoundDesc$");
+	SetNextMission("Tutorial.ocf\\Tutorial04.ocs", "$MsgRepeatRound$", "$MsgRepeatRoundDesc$");
 	return;
 }
 
@@ -61,8 +61,7 @@ protected func Initialize()
 protected func OnGoalsFulfilled()
 {
 	// Dialogue options -> next round.
-	// Uncomment if there is a 5th tutorial.
-	// SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
+	SetNextMission("Tutorial.ocf\\Tutorial05.ocs", "$MsgNextTutorial$", "$MsgNextTutorialDesc$"); 
 	// Normal scenario ending by goal library.
 	return false;
 }
