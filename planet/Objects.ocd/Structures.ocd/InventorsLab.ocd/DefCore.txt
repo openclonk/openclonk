@@ -2,13 +2,13 @@
 id=InventorsLab
 Version=5,2,90,21
 Category=C4D_Structure
-Width=50
-Height=52
-Offset=-25,-26
-Vertices=6
-VertexX=-1,10,20,-23,-23,0
-VertexY=-17,-25,-14,25,25,25
-VertexFriction=50,50,50,100,100,100
+Width=82
+Height=82
+Offset=-41,-41
+Vertices=7
+VertexX= 1,  1,-24,17,35, 32,-28
+VertexY=41,-41, 41,41,41,11,2
+VertexFriction=100,10,100,100,100,10,10
 Value=200
 Mass=4500
 Components=Wood=3;Metal=3
