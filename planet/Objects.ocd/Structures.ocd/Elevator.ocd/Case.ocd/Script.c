@@ -35,8 +35,6 @@ func Initialize()
 	AddEffect("CheckAutoMoveTo", this, 1, 30, this);
 	AddEffect("ElevatorUpperLimitCheck", this, 1, 1, this);
 	AddEffect("FetchVehicles", this, 1, 10, this);
-	// effect to circumvent SolidMask bug
-	AddEffect("CheckForceAdjustVehicles", this, 1, 5, this);
 	
 	case_speed = ElevatorCase_move_speed;
 	case_speed_automatic = 2 * case_speed;
@@ -709,62 +707,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 2;
 local HitPoints = 50;
-
-
-/*
-	The following part is a temporary solution to the current SolidMask problem leading to lorries falling through the elevator
-	The effect CheckForceAdjustVehicles is added in Initialize()
-*/
-local force_adjust_vehicles;
-
-func FxCheckForceAdjustVehiclesStart(target, effect, temp)
-{
-	if(temp) return;
-	force_adjust_vehicles = [];
-}
-
-func FxCheckForceAdjustVehiclesTimer(target, effect, time)
-{
-	var filled = GetLength(force_adjust_vehicles) > 0;
-	for(var obj in FindObjects(Find_AtRect(-10, -10, 20, 20)))
-	{
-		if(obj.Touchable != 1) continue;
-		var found = false;
-		for(var i = GetLength(force_adjust_vehicles) - 1; i >= 0; --i)
-			if(force_adjust_vehicles[i][0] == obj) {found = true; break;}
-		if(found) continue;
-
-		if(!obj->GetContact(-1, CNAT_Bottom)) continue;
-		PushBack(force_adjust_vehicles, [obj, GetY() - obj->GetY()]);
-	}
-	
-	if(!filled && GetLength(force_adjust_vehicles) > 0)
-		AddEffect("ForceAdjustVehicles", this, 1, 1, this);
-	return 1;
-}
-
-func FxForceAdjustVehiclesTimer(target, effect, time)
-{
-	var new = [];
-	for(var obj_data in force_adjust_vehicles)
-	{
-		var obj = obj_data[0];
-		var dis = obj_data[1];
-		if(ObjectDistance(this, obj) > 10) continue;
-		PushBack(new, obj_data);
-		obj->SetYDir(GetYDir());
-		var old_stuck = obj->Stuck();
-		if(old_stuck) continue;
-		
-		var old_y = obj->GetY();
-		obj->SetPosition(obj->GetX(), GetY() - dis);
-		
-		// we pushed the object into solid titanium??
-		if(!old_stuck && obj->Stuck())
-			obj->SetPosition(obj->GetX(), old_y);
-	}
-	
-	force_adjust_vehicles = new;
-	if(GetLength(force_adjust_vehicles) == 0) return -1;
-	return 1;
-}
+local Plane = 280;
