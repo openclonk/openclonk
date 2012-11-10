@@ -112,19 +112,21 @@ func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip s
 		if(PowerConsumer_last_power_request == PowerConsumer_LPR_None) // initially requesting 0 power?
 		{
 			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
-
+			PowerConsumer_last_power_request_amount = amount;
 			// always enable
 			this->~OnEnoughPower();
 			return true;
 		}
 		else if(PowerConsumer_last_power_request == PowerConsumer_LPR_Zero)// requesting 0 power as a second request
 		{
+			PowerConsumer_last_power_request_amount = amount;
 			// should still have power at this point
 			return true;
 		}
 		else // requesting 0 power after having requested nonzero power
 		{
 			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
+			PowerConsumer_last_power_request_amount = amount;
 			inherited(0); // removes as official power consumer
 			// re-enable power supply
 			this->~OnEnoughPower();
