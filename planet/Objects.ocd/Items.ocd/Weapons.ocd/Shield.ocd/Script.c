@@ -108,6 +108,8 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 {
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);
+	
+	iAngle = angle;
 		
 	var weight = 0;
 	if( Abs(angle) > 90) weight = 1000*( Abs(angle)-60 )/90;
