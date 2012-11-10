@@ -707,4 +707,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Touchable = 2;
 local HitPoints = 50;
-local Plane = 280;
+local Plane = 250;
