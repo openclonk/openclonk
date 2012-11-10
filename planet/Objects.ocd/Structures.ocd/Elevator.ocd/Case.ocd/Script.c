@@ -35,6 +35,8 @@ func Initialize()
 	AddEffect("CheckAutoMoveTo", this, 1, 30, this);
 	AddEffect("ElevatorUpperLimitCheck", this, 1, 1, this);
 	AddEffect("FetchVehicles", this, 1, 10, this);
+	// effect to circumvent SolidMask bug
+	AddEffect("CheckForceAdjustVehicles", this, 1, 5, this);
 	
 	case_speed = ElevatorCase_move_speed;
 	case_speed_automatic = 2 * case_speed;
