@@ -74,7 +74,8 @@ func LostCase()
 	if(partner) partner->LoseCombination();
 	if(rope) rope->RemoveObject();
 	
-	DoCon(-1);
+	// for now: the elevator dies, too
+	Incinerate();
 }
 
 /* Effects */
