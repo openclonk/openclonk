@@ -47,6 +47,7 @@ func ControlUseStart(object clonk, int ix, int iy)
 	// Create an offset, so that the hit matches with the animation
 	swingtime = Pickaxe_SwingTime*1/38;
 	clonk->SetTurnType(1);
+	clonk->SetHandAction(1);
 	clonk->UpdateAttach();
 	clonk->PlayAnimation("StrikePickaxe", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikePickaxe"), Pickaxe_SwingTime, ANIM_Loop), Anim_Const(1000));
 
@@ -160,6 +161,7 @@ public func Reset(clonk)
 {
 	using = 0;
 	clonk->SetTurnType(0);
+	clonk->SetHandAction(false);
 	clonk->UpdateAttach();
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	swingtime=0;
