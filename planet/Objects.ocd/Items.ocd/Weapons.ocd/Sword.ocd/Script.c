@@ -18,12 +18,9 @@ public func Initialize()
 public func GetCarryMode() { return CARRY_HandBack; }
 public func GetCarryBone() { return "main"; }
 public func GetCarrySpecial(clonk) { return carry_bone; }
-public func GetCarryTransform()
+public func GetCarryTransform(clonk, sec, back)
 {
-	var act = Contained()->GetAction();
-	if(act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Translate(0,4500,0), Trans_Rotate(90,0,1,0), Trans_Rotate(180,0,0,1) );
-
+	if(back) return Trans_Mul(Trans_Rotate(180,0,0,1), Trans_Rotate(90,0,1,0), Trans_Translate(0,-7000,0));
 	return Trans_Rotate(90, 0, 1, 0);
 }
 
