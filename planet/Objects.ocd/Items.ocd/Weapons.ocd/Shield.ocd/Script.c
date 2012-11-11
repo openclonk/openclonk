@@ -281,7 +281,7 @@ public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform(clonk, sec, back)
 {
 	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,0,1),Trans_Rotate(90,0,0,1));
-	if(aim_anim && sec) return Trans_Rotate(180,1,0,0);
+	if(aim_anim && sec) return Trans_Mul(Trans_Rotate(180,1,0,0), Trans_Rotate(90,0,0,1));
 
 	if(mTrans != nil) return mTrans;
 	if(!sec)
