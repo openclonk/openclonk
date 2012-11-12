@@ -60,7 +60,7 @@ private func OpenWeaponMenu(object clonk)
 		var weapons = WeaponList();
 		if (weapons)
 		{
-			menu = clonk->CreateRingMenu(Clonk, this);
+			menu = clonk->CreateRingMenu(this, this);
 			for (var weapon in weapons)
 				menu->AddItem(weapon, 1);
 			menu->Show();
