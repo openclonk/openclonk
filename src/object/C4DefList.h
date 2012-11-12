@@ -25,11 +25,7 @@
 
 #include <StdFont.h>
 
-const int32_t C4D_None           =    0,
-C4D_All            =    ~C4D_None;
-
-class C4DefList
-		: public CStdFont::CustomImages
+class C4DefList: public CStdFont::CustomImages
 {
 public:
 	C4DefList();

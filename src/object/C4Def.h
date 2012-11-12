@@ -44,6 +44,7 @@
 #include <set>
 
 const int32_t
+C4D_All            =      ~0,
 C4D_StaticBack     =    1<<0,
 C4D_Structure      =    1<<1,
 C4D_Vehicle        =    1<<2,
