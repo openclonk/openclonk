@@ -32,6 +32,7 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
+#include <C4FontLoader.h>
 #include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"

@@ -44,7 +44,6 @@
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
-#include <C4Fonts.h>
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
 
@@ -723,7 +722,7 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!::FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
+	if (!::FontLoader.InitFont(&TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);

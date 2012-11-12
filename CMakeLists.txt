@@ -255,8 +255,8 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4FacetEx.cpp
 	src/graphics/C4FacetEx.h
 	src/graphics/C4Facet.h
-	src/graphics/C4Fonts.cpp
-	src/graphics/C4Fonts.h
+	src/graphics/C4FontLoader.cpp
+	src/graphics/C4FontLoader.h
 	src/graphics/C4GraphicsResource.cpp
 	src/graphics/C4GraphicsResource.h
 	src/graphics/C4Surface.cpp
@@ -510,8 +510,6 @@ set(OC_CLONK_SOURCES
 	src/platform/PlatformAbstraction.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
-	src/platform/StdFont.cpp
-	src/platform/StdFont.h
 	src/platform/StdRegistry.cpp
 	src/platform/StdRegistry.h
 	src/platform/StdScheduler.cpp

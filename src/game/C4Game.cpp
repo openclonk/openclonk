@@ -77,7 +77,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#include <C4Fonts.h>
 #include <C4Version.h>
 #include <C4AulExec.h>
 #include <StdFile.h>

@@ -26,12 +26,12 @@
 #include <C4Draw.h>
 
 #include "C4App.h"
+#include <C4FontLoader.h>
 #include <C4Window.h>
 #include <C4DrawD3D.h>
 #include <C4DrawGL.h>
 #include <C4DrawT.h>
 #include <C4Markup.h>
-#include <StdFont.h>
 #include "C4Rect.h"
 #include <C4Config.h>
 #include "StdMesh.h"

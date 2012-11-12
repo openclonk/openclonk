@@ -45,6 +45,34 @@
 class C4Markup;
 class CStdVectorFont;
 
+// font loader
+class C4FontLoader
+{
+public:
+	// enum of different fonts used in the clonk engine
+	enum FontType { C4FT_Log, C4FT_MainSmall, C4FT_Main, C4FT_Caption, C4FT_Title };
+
+	C4FontLoader(): pLastUsedFont(NULL), LastUsedGrpID(0) { } // ctor
+	~C4FontLoader() { Clear(); } // dtor
+
+	void Clear();                   // clear loaded fonts
+	// init a font class of the given type
+	// iSize is always the size of the normal font, which is adjusted for larger (title) and smaller (log) font types
+	bool InitFont(CStdFont * Font, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow=true);
+
+protected:
+	CStdVectorFont * pLastUsedFont; // cache
+	StdCopyStrBuf LastUsedName;
+	int32_t LastUsedGrpID;
+
+	CStdVectorFont * CreateFont(StdBuf & Data);
+	CStdVectorFont * CreateFont(const char *szFaceName);
+	void DestroyFont(CStdVectorFont * pFont);
+	friend class CStdFont;
+};
+
+extern C4FontLoader FontLoader;
+
 class CStdFont
 {
 public:
@@ -60,10 +88,6 @@ public:
 		virtual ~CustomImages() { }
 	};
 
-	static CStdVectorFont * CreateFont(StdBuf & Data);
-	static CStdVectorFont * CreateFont(const char *szFaceName);
-	static void DestroyFont(CStdVectorFont * pFont);
-public:
 	int id;                // used by the engine to keep track of where the font came from
 
 protected:

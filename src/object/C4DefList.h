@@ -23,7 +23,7 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include <StdFont.h>
+#include <C4FontLoader.h>
 
 class C4DefList: public CStdFont::CustomImages
 {

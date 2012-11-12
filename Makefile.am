@@ -228,8 +228,8 @@ src/graphics/C4Facet.cpp \
 src/graphics/C4FacetEx.cpp \
 src/graphics/C4FacetEx.h \
 src/graphics/C4Facet.h \
-src/graphics/C4Fonts.cpp \
-src/graphics/C4Fonts.h \
+src/graphics/C4FontLoader.cpp \
+src/graphics/C4FontLoader.h \
 src/graphics/C4GraphicsResource.cpp \
 src/graphics/C4GraphicsResource.h \
 src/graphics/C4Surface.cpp \
@@ -468,8 +468,6 @@ src/platform/C4Window.h \
 src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.cpp \
 src/platform/PlatformAbstraction.h \
-src/platform/StdFont.cpp \
-src/platform/StdFont.h \
 src/platform/StdSync.h \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \

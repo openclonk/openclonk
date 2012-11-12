@@ -23,6 +23,7 @@
 #include <C4Include.h>
 #include <C4Startup.h>
 
+#include <C4FontLoader.h>
 #include <C4StartupMainDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupNetDlg.h>
@@ -34,7 +35,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
-#include <C4Fonts.h>
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 {
@@ -95,16 +95,16 @@ bool C4StartupGraphics::Init()
 bool C4StartupGraphics::InitFonts()
 {
 	const char *szFont = Config.General.RXFontName;
-	if (!::FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (1)"); return false; }
 	Game.SetInitProgress(97);
-	if (!::FontLoader.InitFont(BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (2)"); return false; }
 	Game.SetInitProgress(98);
-	if (!::FontLoader.InitFont(BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (3)"); return false; }
 	Game.SetInitProgress(99);
-	if (!::FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
+	if (!::FontLoader.InitFont(&BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (4)"); return false; }
 	return true;
 }
