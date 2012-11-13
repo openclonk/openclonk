@@ -2,6 +2,16 @@
 
 local parent;
 
+public func Initialize()
+{
+	AddEffect("CheckParent", this,1,1,this);
+}
+
+private func FxCheckParentTimer(object target, proplist, int timer)
+{
+	if(!parent) target->RemoveObject();
+}
+
 public func IsProjectileTarget(target,shooter) { return true; }
 
 public func Damage(int change)
