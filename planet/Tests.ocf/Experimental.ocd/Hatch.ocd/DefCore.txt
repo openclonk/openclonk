@@ -1,0 +1,17 @@
+[DefCore]
+id=Hatch
+Version=5,2,0,1
+Category=C4D_Structure
+Width=26
+Height=26
+Offset=-13,-13
+Vertices=5
+VertexX=0,-12,12,-10,10
+VertexY=0,0,0,6,6
+VertexFriction=100,100,100,100,100
+VertexCNAT=64,1,2,1,2
+SolidMask=0,0,20,20,0,0
+Components=Wood=4;
+Construction=1
+Value=8
+Mass=10
