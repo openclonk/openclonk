@@ -45,7 +45,9 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 	 	)
 	{
 		CreateObject(Dynamite,x,y,effect.owner)->BlueExplode();
-		CreateObject(Star,x,y,-1)->Sound("GlassShatter");
+		var dummy = CreateObject(Dummy,x,y,-1);
+		dummy->Sound("GlassShatter");
+		ScheduleCall(dummy, "RemoveObject", 36);
 		for(var i=0; i<=60;i++)
 		{
 			var r=Random(10)+Random(18);
