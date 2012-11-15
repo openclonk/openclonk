@@ -23,7 +23,8 @@
 /* A wrapper class to OS dependent event and window interfaces, Text version */
 
 #include <C4Include.h>
-#ifdef USE_CONSOLE
+#include "C4App.h"
+
 #include <C4Window.h>
 #include <C4Draw.h>
 #include <C4Application.h>
@@ -125,7 +126,7 @@ CStdInProc::~CStdInProc()
 
 bool CStdInProc::Execute(int iTimeout, pollfd *)
 {
-#ifdef _WIN32
+#if 0 && defined(_WIN32)
 	while (_kbhit())
 	{
 		// Surely not the most efficient way to do it, but we won't have to read much data anyway.
@@ -213,5 +214,3 @@ bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
 void C4Window::RequestUpdate() {}
 void C4Window::SetSize(unsigned int, unsigned int) {}
 void C4Window::SetTitle(char const*) {}
-
-#endif // USE_CONSOLE

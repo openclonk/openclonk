@@ -488,7 +488,6 @@ set(OC_CLONK_SOURCES
 	src/object/C4Shape.h
 	src/platform/C4App.cpp
 	src/platform/C4App.h
-	src/platform/C4AppT.cpp
 	src/platform/C4AppWin32Impl.h
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
@@ -632,6 +631,10 @@ elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4AppSDL.cpp
 		src/platform/C4WindowSDL.cpp
+	)
+elseif(USE_CONSOLE)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppT.cpp
 	)
 elseif(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES

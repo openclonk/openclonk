@@ -41,8 +41,10 @@
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
 #define MK_ALT (KMOD_LALT | KMOD_RALT)
 #elif defined(USE_CONSOLE)
+#ifndef _WIN32
 #define MK_SHIFT 0
 #define MK_CONTROL 0
+#endif
 #define MK_ALT 0
 #elif defined(USE_COCOA)
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
@@ -84,11 +86,15 @@ public:
 
 	// StdSchedulerProc override
 	virtual bool Execute(int iTimeout, pollfd *);
+#ifdef STDSCHEDULER_USE_EVENTS
+	virtual HANDLE GetEvent() { return GetStdHandle(STD_INPUT_HANDLE); }
+#else
 	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
 	{
 		pollfd pfd = { 0, POLLIN, 0 };
 		checkfds.push_back(pfd);
 	}
+#endif
 private:
 	// commands from stdin
 	StdCopyStrBuf CmdBuf;
