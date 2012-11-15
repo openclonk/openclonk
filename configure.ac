@@ -208,6 +208,7 @@ else
   enable_sdlmainloop=no
   VL_LIB_READLINE
 fi
+AM_CONDITIONAL([CONSOLE], [test $enable_console = yes])
 
 # Check for boost
 AX_BOOST_BASE([1.40.0], [], [

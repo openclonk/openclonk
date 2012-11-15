@@ -204,7 +204,6 @@ src/game/C4GraphicsSystem.h \
 src/game/C4Physics.h \
 src/game/C4Viewport.cpp \
 src/game/C4Viewport.h \
-src/game/ClonkMain.cpp \
 src/gamescript/C4Effect.cpp \
 src/gamescript/C4Effects.h \
 src/gamescript/C4FindObject.cpp \
@@ -451,7 +450,6 @@ src/object/C4Shape.cpp \
 src/object/C4Shape.h \
 src/platform/C4App.cpp \
 src/platform/C4App.h \
-src/platform/C4AppT.cpp \
 src/platform/C4AppWin32Impl.h \
 src/platform/C4FileMonitor.cpp \
 src/platform/C4FileMonitor.h \
@@ -541,6 +539,9 @@ clonk_SOURCES += \
 src/platform/C4AppDelegate.h \
 src/platform/C4AppDelegate.mm \
 src/platform/C4FileMonitorMac.mm
+else
+clonk_SOURCES += \
+src/game/ClonkMain.cpp
 endif
 
 if SDL_MAIN_LOOP
@@ -556,6 +557,10 @@ src/editor/C4ConsoleGTKDlg.h \
 src/platform/C4AppGTK.cpp \
 src/platform/C4AppGTKImpl.h \
 src/platform/C4WindowGTK.cpp
+else
+if CONSOLE
+clonk_SOURCES += \
+src/platform/C4AppT.cpp
 else
 if WIN32
 clonk_SOURCES += \
@@ -579,6 +584,7 @@ src/platform/C4WindowController.mm \
 src/platform/C4WindowMac.mm \
 src/platform/CocoaKeycodeMap.h \
 src/platform/ObjectiveCAssociated.h
+endif
 endif
 endif
 endif
