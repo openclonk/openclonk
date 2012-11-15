@@ -1,0 +1,11 @@
+[DefCore]
+id=Raiders_CastleBack
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=264
+Height=171
+Offset=-132,-86
+Value=13
+Mass=5000
+Exclusive=1
+Construction=1
