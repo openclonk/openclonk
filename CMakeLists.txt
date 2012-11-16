@@ -67,6 +67,8 @@ endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+else()
+	SET(USE_CONSOLE OFF)
 endif()
 if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -1003,12 +1005,17 @@ target_link_libraries(clonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
-	${VORBIS_LIBRARY}
-	${VORBISFILE_LIBRARY}
-	${OGG_LIBRARY}
-	${OPENAL_LIBRARY}
-	${ALUT_LIBRARY}
 )
+
+if(USE_OPEN_AL)
+	target_link_libraries(clonk
+		${OPENAL_LIBRARY}
+		${ALUT_LIBRARY}
+		${VORBIS_LIBRARY}
+		${VORBISFILE_LIBRARY}
+		${OGG_LIBRARY}
+	)
+endif()
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 )
