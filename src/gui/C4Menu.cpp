@@ -157,7 +157,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	// Draw if there is no text progression at all (TextDisplayProgress==-1, or if it's progressed far enough already (TextDisplayProgress>0)
 	if(pSymbolObj && TextDisplayProgress)
 	{
-		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL, NULL);
+		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL);
 	}
 	else if (pSymbolGraphics && TextDisplayProgress)
 	{
@@ -242,30 +242,6 @@ void C4MenuItem::MouseEnter(C4GUI::CMouse &rMouse)
 	typedef C4GUI::Element ParentClass;
 	ParentClass::MouseEnter(rMouse);
 }
-
-void C4MenuItem::DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// is this a drag element?
-	if (!IsDragElement()) { rMouse.pDragElement = NULL; }
-	// check if outside drag range
-	if (Max(Abs(iX - iDragX), Abs(iY - iDragY)) >= C4MC_DragSensitivity)
-	{
-		// then do a drag!
-		::MouseControl.StartConstructionDrag(id);
-		// this disables the window: Release mouse
-		rMouse.ReleaseButtons();
-		rMouse.pDragElement = NULL;
-		rMouse.pMouseOverElement = NULL;
-	}
-}
-
-void C4MenuItem::StopDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// drag stop: Nothing to do, really
-	// Mouse up will be processed by regular procedure
-	rMouse.pDragElement = NULL;
-}
-
 
 // -----------------------------------------------------------
 // C4Menu

@@ -106,8 +106,6 @@ class C4PXSSystem;
 class C4RankSystem;
 class C4Record;
 class C4Rect;
-class C4Region;
-class C4RegionList;
 class C4RoundResult;
 class C4RoundResults;
 class C4Scenario;

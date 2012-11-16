@@ -351,8 +351,6 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4PathFinder.h
 	src/landscape/C4PXS.cpp
 	src/landscape/C4PXS.h
-	src/landscape/C4Region.cpp
-	src/landscape/C4Region.h
 	src/landscape/C4Scenario.cpp
 	src/landscape/C4Scenario.h
 	src/landscape/C4Sky.cpp

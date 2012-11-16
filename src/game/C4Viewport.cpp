@@ -100,7 +100,6 @@ void C4Viewport::Clear()
 	ViewWdt=ViewHgt=0;
 	OutX=OutY=ViewWdt=ViewHgt=0;
 	DrawX=DrawY=0;
-	Regions.Clear();
 	ViewOffsX = ViewOffsY = 0;
 }
 
@@ -330,17 +329,6 @@ void C4Viewport::BlitOutput()
 
 void C4Viewport::Execute()
 {
-	// Update regions
-	static int32_t RegionUpdate=0;
-	SetRegions=NULL;
-	RegionUpdate++;
-	if (RegionUpdate>=5)
-	{
-		RegionUpdate=0;
-		Regions.Clear();
-		Regions.SetAdjust(-OutX,-OutY);
-		SetRegions=&Regions;
-	}
 	// Adjust position
 	AdjustPosition();
 	// Current graphics output
@@ -587,8 +575,6 @@ void C4Viewport::Default()
 	Next=NULL;
 	PlayerLock=true;
 	ResetMenuPositions=false;
-	SetRegions=NULL;
-	Regions.Default();
 	ViewOffsX = ViewOffsY = 0;
 	fIsNoOwnerViewport = false;
 	last_game_draw_cgo.Default();
@@ -646,11 +632,6 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 
 	// Control
 	// unnecessary with the current control sets
-/*	if (pPlr->MouseControl)
-		GfxR->fctMouse.Draw(cgo.Surface,
-		                    cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
-		                    cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
-		                    0,0);*/
 	if (pPlr && pPlr->ControlSet)
 	{
 		C4Facet controlset_facet = pPlr->ControlSet->GetPicture();
@@ -693,7 +674,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 
 void C4Viewport::ClearPointers(C4Object *pObj)
 {
-	Regions.ClearPointers(pObj);
+
 }
 
 void C4Viewport::NextPlayer()

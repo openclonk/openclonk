@@ -2445,12 +2445,10 @@ void C4Object::Denumerate(C4ValueNumbers * numbers)
 	if (pMeshInstance) pMeshInstance->DenumeratePointers();
 }
 
-void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions, C4DrawTransform* transform)
+void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4DrawTransform* transform)
 {
 	// Draw def picture with object color
 	Def->Draw(cgo,fSelected,Color,this,0,0,transform);
-	// Region
-	if (pRegions) pRegions->Add(cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,GetName(),COM_None,this);
 }
 
 void C4Object::Picture2Facet(C4FacetSurface &cgo)

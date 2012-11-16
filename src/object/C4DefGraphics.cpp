@@ -954,7 +954,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			C4Facet fctTarget;
 			fctTarget.Set(cgo.Surface, offX+pForObj->Shape.x, offY+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
 
-			OverlayObj->DrawPicture(fctTarget, false, NULL, &C4DrawTransform(Transform, fctTarget.X+float(fctTarget.Wdt)/2, fctTarget.Y+float(fctTarget.Hgt)/2));
+			OverlayObj->DrawPicture(fctTarget, false, &C4DrawTransform(Transform, fctTarget.X+float(fctTarget.Wdt)/2, fctTarget.Y+float(fctTarget.Hgt)/2));
 		}
 		else
 		{
