@@ -242,7 +242,7 @@ public:
 	bool Read(void *pBuffer, size_t iSize);
 	bool Advance(int iOffset);
 	void SetStdOutput(bool fStatus);
-	void ResetSearch();
+	void ResetSearch(bool reload_contents=false); // reset search pointer so calls to FindNextEntry find first entry again. if reload_contents is set, the file list for directories is also refreshed.
 	const char *GetError();
 	const char *GetName();
 	StdStrBuf GetFullName() const;
