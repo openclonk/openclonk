@@ -276,19 +276,15 @@ if test $enable_console = no; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Define to 1 if you have FreeType2.])
 fi
 
-# X11, Xpm, Xrandr
+# X11, Xrandr
 AC_PATH_XTRA
 if test $have_x = yes; then
   AC_DEFINE(USE_X11, 1, [Define to 1 if the X Window System is used])
   CLONK_LIBS="$X_LIBS $CLONK_LIBS"
-  AC_CHECK_HEADERS([X11/keysym.h X11/extensions/xf86vmode.h X11/xpm.h X11/extensions/Xrandr.h], ,
+  AC_CHECK_HEADERS([X11/keysym.h X11/extensions/Xrandr.h], ,
     [AC_MSG_ERROR([A required X11 header was not found.])], [[#include <X11/Xlib.h>]])
   AC_CHECK_LIB(X11, XOpenDisplay, [CLONK_LIBS="-lX11 $CLONK_LIBS"],
     [AC_MSG_ERROR([libX11 not found.])], [$X_LIBS])
-  AC_CHECK_LIB(Xpm, XpmCreatePixmapFromData, [CLONK_LIBS="-lXpm $CLONK_LIBS"],
-    [AC_MSG_ERROR([libXpm not found.])], [$X_LIBS])
-  AC_CHECK_LIB(Xxf86vm, XF86VidModeQueryVersion, [CLONK_LIBS="-lXxf86vm $CLONK_LIBS"],
-    [AC_MSG_ERROR([XF86VidMode not found.])], [$X_LIBS])
   AC_CHECK_LIB(Xrandr, XRRQueryExtension, [CLONK_LIBS="-lXrandr $CLONK_LIBS"],
     [AC_MSG_ERROR([libXrandr not found.])], [$X_LIBS])
 fi

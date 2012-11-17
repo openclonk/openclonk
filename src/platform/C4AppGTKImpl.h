@@ -124,16 +124,11 @@ public:
 	C4GLibProc GLibProc;
 	C4X11AppImpl(C4AbstractApp *pApp):
 			GLibProc(g_main_context_default()),
-			tasked_out(false), pending_desktop(false),
+			xrandr_oldmode(-1),
 			argc(0), argv(0)
 	{
-		xf86vmode_targetmode.hdisplay = -1;
 	}
-	bool SwitchToFullscreen(C4AbstractApp * pApp, C4Window * );
-	void SwitchToDesktop(C4AbstractApp * pApp, C4Window * );
 
-	int xf86vmode_major_version, xf86vmode_minor_version;
-	XF86VidModeModeInfo xf86vmode_oldmode, xf86vmode_targetmode;
 	int gammasize; // Size of gamma ramps
 
 	int xrandr_major_version, xrandr_minor_version;
@@ -141,8 +136,6 @@ public:
 	unsigned short xrandr_rot;
 	int xrandr_event;
 
-	bool tasked_out; int wdt; int hgt;
-	bool pending_desktop;
 	int argc; char ** argv;
 };
 
