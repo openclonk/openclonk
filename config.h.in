@@ -6,11 +6,20 @@
 /* define if the Boost library is available */
 #undef HAVE_BOOST
 
+/* Generate minidumps on crash */
+#undef HAVE_DBGHELP
+
+/* Define to 1 if you have the <dbghelp.h> header file. */
+#undef HAVE_DBGHELP_H
+
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
 /* The backtrace function is declared in execinfo.h and works */
 #undef HAVE_EXECINFO_H
+
+/* Whether FMOD shall be used */
+#undef HAVE_FMOD
 
 /* Define to 1 if you have FreeType2. */
 #undef HAVE_FREETYPE
@@ -45,6 +54,9 @@
 /* Define to 1 if you have the <natupnp.h> header file. */
 #undef HAVE_NATUPNP_H
 
+/* Define to 1 if you have support for nullptr. */
+#undef HAVE_NULLPTR
+
 /* Define to 1 if you have the <poll.h> header file. */
 #undef HAVE_POLL_H
 
@@ -77,6 +89,9 @@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
+
+/* Define to 1 if your compiler supports static_assert */
+#undef HAVE_STATIC_ASSERT
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -171,9 +186,6 @@
 
 /* DirectX graphics */
 #undef USE_DIRECTX
-
-/* Whether FMOD shall be used */
-#undef USE_FMOD
 
 /* OpenGL graphics */
 #undef USE_GL

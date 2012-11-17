@@ -38,9 +38,28 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_PROG_CXX
 AC_LANG([C++])
 AX_CHECK_COMPILE_FLAG([-std=gnu++0x], [CXX="${CXX} -std=gnu++0x"], [])
-AC_COMPILE_IFELSE([
-void f(struct D&&); int main() { return 0; }
-], [AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])], [AX_PROG_CXX_REFTOTEMP])
+
+AC_MSG_CHECKING([for rvalue references])
+AC_COMPILE_IFELSE([void f(struct D&&); int main() { return 0; }], [
+    AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])
+    AC_MSG_RESULT([yes])
+  ], [
+    AC_MSG_RESULT([no])
+    AX_PROG_CXX_REFTOTEMP
+  ])
+
+AC_MSG_CHECKING([for nullptr])
+AC_COMPILE_IFELSE([int main() { void *d = nullptr; }], [
+    AC_DEFINE([HAVE_NULLPTR], [], [Define to 1 if you have support for nullptr.])
+    AC_MSG_RESULT([yes])
+  ], [AC_MSG_RESULT([no])])
+
+AC_MSG_CHECKING([for static_assert])
+AC_COMPILE_IFELSE([int main() { static_assert(true, \"\"); }], [
+    AC_DEFINE([HAVE_STATIC_ASSERT], [], [Define to 1 if your compiler supports static_assert])
+    AC_MSG_RESULT([yes])
+  ], [AC_MSG_RESULT([no])])
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
@@ -65,7 +84,7 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
 AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h], , , [[ ]])
-AC_CHECK_HEADERS([io.h direct.h share.h natupnp.h], [], [], [[#include <windows.h>]])
+AC_CHECK_HEADERS([io.h direct.h share.h natupnp.h dbghelp.h], [], [], [[#include <windows.h>]])
 # iconv
 AX_ICONV
 # vasprintf is a GNU extension
@@ -281,8 +300,7 @@ AC_ARG_WITH([gl],
 if test $with_gl = yes; then
   if test $osx = true; then
     CLONK_LIBS="-framework OpenGL $CLONK_LIBS"
-    AC_CHECK_LIB(GLEW, glewInit, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
-      [AC_MSG_ERROR([glew not found.])])
+    PKG_CHECK_MODULES(GLEW, [glew], [CLONK_LIBS="$GLEW_LIBS $CLONK_LIBS"], [AC_MSG_ERROR([glew not found.])])
   elif test $win32 = true; then
     AC_CHECK_LIB(opengl32, main, [CLONK_LIBS="-lopengl32 $CLONK_LIBS"],
       [AC_MSG_ERROR([opengl32 not found.])])
@@ -356,9 +374,14 @@ else
     AC_DEFINE([HAVE_VFW32], 1, [ ])
     ], [])
 
+  AC_CHECK_LIB([dbghelp], main, [AS_IF([test "x$ac_cv_header_dbghelp_h" = xyes], [
+    CLONK_LIBS="-ldbghelp $CLONK_LIBS"
+    AC_DEFINE([HAVE_DBGHELP], 1, [Generate minidumps on crash])
+    ])], [])
+
   # FMod (Library comes with standard)
   if test "$enable_sound" = yes; then
-    AC_DEFINE([USE_FMOD], 1, [Whether FMOD shall be used])
+    AC_DEFINE([HAVE_FMOD], 1, [Whether FMOD shall be used])
   fi
   AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
 
