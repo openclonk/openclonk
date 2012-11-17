@@ -1885,7 +1885,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 				return false;
 			}
 			// send a ping packet
-			const PacketHdr PingPacket = { IPID_Ping | char(0x80), 0 };
+			const PacketHdr PingPacket = { IPID_Ping | static_cast<uint8_t>(0x80u), 0 };
 			if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&PingPacket, sizeof(PingPacket))))
 			{
 				C4NetIOSimpleUDP::CloseBroadcast();
