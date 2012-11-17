@@ -103,8 +103,9 @@ public:
 	const char * operator * () const;
 	DirectoryIterator& operator ++ ();
 	DirectoryIterator operator ++ (int);
-	void Reset(const char * dirname);
-	void Reset();
+	void Clear(); // put iterator into empty state and clear any cached directory listing
+	void Reset(const char * dirname, bool force_reread=false); // reset iterator to front of file list. re-read directory if it changed or force_reread is set.
+	void Reset(); // reset iterator to front of file list without re-reading directory
 private:
 	void Read(const char *dirname);
 	friend struct DirectoryIteratorP;

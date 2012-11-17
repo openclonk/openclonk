@@ -501,7 +501,7 @@ void C4Group::Init()
 	SearchPtr=NULL;
 	// Folder only
 	//hFdt=-1;
-	FolderSearch.Reset();
+	FolderSearch.Clear();
 	// Error status
 	SCopy("No Error",ErrorString,C4GroupMaxError);
 }
@@ -1041,13 +1041,13 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 	return true;
 }
 
-void C4Group::ResetSearch()
+void C4Group::ResetSearch(bool reload_contents)
 {
 	switch (Status)
 	{
 	case GRPF_Folder:
 		SearchPtr=NULL;
-		FolderSearch.Reset(FileName);
+		FolderSearch.Reset(FileName, reload_contents);
 		if (*FolderSearch)
 		{
 			FolderSearchEntry.Set(FolderSearch,FileName);
@@ -1465,6 +1465,8 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 			if (!EraseItem(szPath)) return false;
 		}
 		break;
+		// refresh file list
+		ResetSearch(true);
 	}
 	return true;
 }
@@ -1493,6 +1495,8 @@ bool C4Group::Rename(const char *szFile, const char *szNewName)
 		char path2[_MAX_FNAME+1]; SCopy(FileName,path2,_MAX_PATH-1);
 		AppendBackslash(path2); SAppend(szNewName,path2,_MAX_PATH);
 		if (!RenameFile(path,path2)) return Error("Rename: Failure");
+		// refresh file list
+		ResetSearch(true);
 		break;
 	}
 
