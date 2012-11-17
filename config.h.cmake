@@ -1,11 +1,17 @@
 /* Activate DebugRecs */
 #cmakedefine DEBUGREC 1
 
+/* Generate minidumps on crash */
+#cmakedefine HAVE_DBGHELP 1
+
 /* Define to 1 if you have the <direct.h> header file. */
 #cmakedefine HAVE_DIRECT_H 1
 
-/* Define to 1 if you have the <execinfo.h> header file. */
+/* The backtrace function is declared in execinfo.h and works */
 #cmakedefine HAVE_EXECINFO_H 1
+
+/* Whether FMOD shall be used */
+#cmakedefine HAVE_FMOD 1
 
 /* Define to 1 if you have FreeType2. */
 #cmakedefine HAVE_FREETYPE 1
@@ -31,17 +37,14 @@
 /* Define to 1 if you have SDL_mixer. */
 #cmakedefine HAVE_LIBSDL_MIXER 1
 
-/* Define to 1 if FMOD is available */
-#cmakedefine HAVE_FMOD 1
-
-/* Use OpenAL for playing sounds */
-#cmakedefine USE_OPEN_AL 1
-
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #cmakedefine HAVE_MEMORY_H 1
+
+/* Define to 1 if you have support for nullptr. */
+#cmakedefine HAVE_NULLPTR 1
 
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
@@ -61,6 +64,9 @@
 /* Define to 1 if you have the <readline/readline.h> header file. */
 #cmakedefine HAVE_READLINE_READLINE_H 1
 
+/* C++ Compiler has rvalue references, a C++0x feature. */
+#cmakedefine HAVE_RVALUE_REF 1
+
 /* Define to 1 if you have SDL. */
 #cmakedefine HAVE_SDL 1
 
@@ -69,6 +75,9 @@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
+
+/* Define to 1 if your compiler supports static_assert */
+#cmakedefine HAVE_STATIC_ASSERT 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
@@ -82,14 +91,14 @@
 /* Define to 1 if you have the <string.h> header file. */
 #cmakedefine HAVE_STRING_H 1
 
-/* Define to 1 if you have the <sys/inotify.h> header file. */
-#cmakedefine HAVE_SYS_INOTIFY_H 1
-
 /* Define to 1 if you have the <sys/eventfd.h> header file. */
-#cmakedefine HAVE_SYS_EVENTFD_H
+#cmakedefine HAVE_SYS_EVENTFD_H 1
 
 /* Define to 1 if you have the <sys/file.h> header file. */
 #cmakedefine HAVE_SYS_FILE_H 1
+
+/* Define to 1 if you have the <sys/inotify.h> header file. */
+#cmakedefine HAVE_SYS_INOTIFY_H 1
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #cmakedefine HAVE_SYS_SOCKET_H 1
@@ -166,11 +175,17 @@
 /* MP3 music */
 #cmakedefine USE_MP3 1
 
+/* OpenAL sound */
+#cmakedefine USE_OPEN_AL 1
+
 /* Define to 1 if SDL is used for the main loop */
 #cmakedefine USE_SDL_MAINLOOP 1
 
 /* Define to 1 if the X Window System is used */
 #cmakedefine USE_X11 1
+
+/* Enable automatic update system */
+#cmakedefine WITH_AUTOMATIC_UPDATE 1
 
 /* Developer mode */
 #cmakedefine WITH_DEVELOPER_MODE 1
@@ -178,32 +193,14 @@
 /* Glib */
 #cmakedefine WITH_GLIB 1
 
-/* Use GTK+3 for the developer mode */
-#cmakedefine WITH_GTK3 1
-
-/* Enable the automatic update system */
-#cmakedefine WITH_AUTOMATIC_UPDATE 1
-
 /* Define to 1 if the X Window System is missing or not being used. */
 #cmakedefine X_DISPLAY_MISSING 1
 
 /* compile with debug options */
-#cmakedefine _DEBUG
-
-/* Define to 1 if rvalue references are supported */
-#cmakedefine HAVE_RVALUE_REF 1
+#cmakedefine _DEBUG 1
 
 /* Define to 1 if you have support for precompiled headers */
 #cmakedefine HAVE_PRECOMPILED_HEADERS 1
 
-/* Define to 1 if you have support for nullptr. */
-#cmakedefine HAVE_NULLPTR 1
-
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
-
-/* Define to 1 if your compiler supports static_assert */
-#cmakedefine HAVE_STATIC_ASSERT 1
-
-/* Generate minidumps on crash */
-#cmakedefine HAVE_DBGHELP 1
