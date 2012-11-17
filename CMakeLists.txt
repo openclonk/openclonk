@@ -734,10 +734,8 @@ CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
 # as a CXX version (yet?).
 include(CheckIncludeFiles)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/xpm.h HAVE_X11_XPM_H)
 CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
 
 if(HAVE_ICONV)
@@ -1234,13 +1232,9 @@ if(USE_GTK)
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XPM_LIBRARIES Xpm)
-	FINDLIB(XXF86VM_LIBRARIES Xxf86vm)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
 	target_link_libraries(clonk
 		${X11_LIBRARIES}
-		${XPM_LIBRARIES}
-		${XXF86VM_LIBRARIES}
 		${XRANDR_LIBRARIES}
 	)
 endif()
