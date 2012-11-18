@@ -71,6 +71,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	int xrandr_error_base;
 	if (!XRRQueryExtension(dpy, &Priv->xrandr_event, &xrandr_error_base)
 	    || !XRRQueryVersion(dpy, &Priv->xrandr_major_version, &Priv->xrandr_minor_version))
@@ -196,54 +197,82 @@ void C4AbstractApp::RestoreVideoMode()
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
 {
-	if (Priv->xf86vmode_major_version < 0) return false;
-	bool r = false;
-	int mode_num;
-	XF86VidModeModeInfo **modes;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	XF86VidModeGetAllModeLines(dpy, DefaultScreen(dpy), &mode_num, &modes);
-	if (iIndex < mode_num)
+	int n;
+	XRRScreenSize * sizes = XRRSizes(dpy, XDefaultScreen(dpy), &n);
+	if (iIndex < n && iIndex >= 0)
 	{
-		*piXRes = modes[iIndex]->hdisplay;
-		*piYRes = modes[iIndex]->vdisplay;
+		*piXRes = sizes[iIndex].width;
+		*piYRes = sizes[iIndex].height;
 		*piBitDepth = 32;
-		r = true;
+		return true;
 	}
-	XFree(modes);
-	return r;
+	return false;
 }
 
 bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 {
+	fprintf(stderr,"ApplyGammaRamp\n");
 	if (!Active && !fForce) return false;
-	if (Priv->xf86vmode_major_version < 2) return false;
+	if (Priv->xrandr_major_version < 1 || Priv->xrandr_minor_version < 3) return false;
 	if (Priv->gammasize != 256) return false;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	return XF86VidModeSetGammaRamp(dpy, DefaultScreen(dpy), 256,
-	                               ramp.red, ramp.green, ramp.blue);
+	XRRCrtcGamma g = { Priv->gammasize, ramp.red, ramp.green, ramp.blue };
+	XRRScreenResources * r = XRRGetScreenResources(dpy, pWindow->wnd);
+	if (!r)
+	{
+		Log("  Error setting gamma ramp: XRRGetScreenResources");
+		return false;
+	}
+	XRROutputInfo * i = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, pWindow->wnd));
+	XRRFreeScreenResources(r);
+	if (!i)
+	{
+		Log("  Error setting gamma ramp: XRRGetOutputInfo");
+		return false;
+	}
+	XRRSetCrtcGamma(dpy, i->crtc, &g);
+	XRRFreeOutputInfo(i);
+	return true;
 }
 
 bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
 {
-	if (Priv->xf86vmode_major_version < 2) return false;
-	// Get the Display
+	fprintf(stderr,"SaveDefaultGammaRamp\n");
+	if (Priv->xrandr_major_version < 1 || Priv->xrandr_minor_version < 3) return false;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &Priv->gammasize);
+	XRRScreenResources * r = XRRGetScreenResources(dpy, pWindow->wnd);
+	if (!r)
+	{
+		Log("  Error getting default gamma ramp: XRRGetScreenResources");
+		return false;
+	}
+	XRROutputInfo * i = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, pWindow->wnd));
+	XRRFreeScreenResources(r);
+	if (!i)
+	{
+		Log("  Error getting default gamma ramp: XRRGetOutputInfo");
+		return false;
+	}
+	XRRCrtcGamma * g = XRRGetCrtcGamma(dpy, i->crtc);
+	XRRFreeOutputInfo(i);
+	if (!g)
+	{
+		Log("  Error getting default gamma ramp: XRRGetCrtcGamma");
+		return false;
+	}
+	Priv->gammasize = g->size;
 	if (Priv->gammasize != 256)
 	{
 		LogF("  Size of GammaRamp is %d, not 256", Priv->gammasize);
 	}
 	else
 	{
-		// store default gamma
-		if (!XF86VidModeGetGammaRamp(dpy, DefaultScreen(dpy), 256,
-		                             ramp.red, ramp.green, ramp.blue))
-		{
-			Log("  Error getting default gamma ramp; using standard");
-			return false;
-		}
+		memcpy(ramp.red, g->red, sizeof(ramp.red));
+		memcpy(ramp.green, g->green, sizeof(ramp.green));
+		memcpy(ramp.blue, g->blue, sizeof(ramp.blue));
 	}
-	return true;
+	XRRFreeGamma(g);
 }
 
 // Copy the text to the clipboard or the primary selection
