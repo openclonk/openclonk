@@ -18,9 +18,6 @@
 /* The backtrace function is declared in execinfo.h and works */
 #undef HAVE_EXECINFO_H
 
-/* Whether FMOD shall be used */
-#undef HAVE_FMOD
-
 /* Define to 1 if you have FreeType2. */
 #undef HAVE_FREETYPE
 

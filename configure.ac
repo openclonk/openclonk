@@ -126,7 +126,7 @@ AC_ARG_ENABLE([console],
 
 AC_ARG_ENABLE([sound],
   [AS_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
-  , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
+  , [if test $enable_console = yes; then enable_sound=no; else enable_sound=yes; fi])
 
 # GTK+
 GTK2_REQUIRED="glib-2.0 >= 2.8 gtk+-2.0 >= 2.8"
@@ -353,9 +353,6 @@ if test $win32 = false; then
   AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
-
-  # FMod is used for windows only
-  AM_CONDITIONAL(USE_FMOD, false)
 else
   # Windows
   for WIN32LIB in gdi32 comdlg32 ws2_32
@@ -374,12 +371,6 @@ else
     CLONK_LIBS="-ldbghelp $CLONK_LIBS"
     AC_DEFINE([HAVE_DBGHELP], 1, [Generate minidumps on crash])
     ])], [])
-
-  # FMod (Library comes with standard)
-  if test "$enable_sound" = yes; then
-    AC_DEFINE([HAVE_FMOD], 1, [Whether FMOD shall be used])
-  fi
-  AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
 
   # windres
   AC_CHECK_TOOL(WINDRES, windres, no)
