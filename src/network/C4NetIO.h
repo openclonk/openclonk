@@ -39,6 +39,8 @@
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #include <arpa/inet.h>
+// for htons
+#include <netinet/in.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
