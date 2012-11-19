@@ -1589,7 +1589,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 	case GRPF_File: // Copy entry to target
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFilename))) return false;
+		if (!(pEntry=GetEntry(szFilename))) return Error("Extract: Entry not found");
 		// Create dummy file to reserve target file name
 		hDummy.Create(szTargetFName,false);
 		hDummy.Write("Dummy",5);
