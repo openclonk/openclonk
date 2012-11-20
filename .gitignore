@@ -1,5 +1,3 @@
-syntax: glob
-
 autom4te.cache
 *~
 *.bak
