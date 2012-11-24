@@ -304,8 +304,6 @@ src/gui/C4StartupPlrSelDlg.cpp \
 src/gui/C4StartupPlrSelDlg.h \
 src/gui/C4StartupScenSelDlg.cpp \
 src/gui/C4StartupScenSelDlg.h \
-src/gui/C4UpdateDlg.cpp \
-src/gui/C4UpdateDlg.h \
 src/gui/C4UpperBoard.cpp \
 src/gui/C4UpperBoard.h \
 src/landscape/C4Landscape.cpp \
@@ -577,6 +575,12 @@ src/platform/ClonkMainMenuActions.h \
 src/platform/ClonkMainMenuActions.mm
 endif
 endif
+endif
+
+if AUTOUPDATE
+clonk_SOURCES += \
+src/gui/C4UpdateDlg.cpp \
+src/gui/C4UpdateDlg.h
 endif
 
 if LIBUPNP
