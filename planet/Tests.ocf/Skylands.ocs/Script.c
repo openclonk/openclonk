@@ -18,6 +18,10 @@ func DoInit(int first_player)
 	Cloud->Place(15);
 	EnsureObject(Environment_Celestial,0,0,-1);
 	EnsureObject(Rule_BuyAtFlagpole,0,0,-1);
+	SetSkyAdjust(0xff000000);
+	var storm = EnsureObject(Storm,0,0,NO_OWNER);
+	storm->SetStorm(-20,0,2000);
+	SetSkyParallax(1); // move background with the wind
 	var time = EnsureObject(Environment_Time,0,0,-1);
 	time->SetTime(600);
 	time->SetCycleSpeed(20);
