@@ -744,9 +744,13 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 
 void C4Application::OnCommand(const char *szCmd)
 {
-	// reroute to whatever seems to take commands at the moment
 	if (AppState == C4AS_Game)
 		::MessageInput.ProcessInput(szCmd);
+	else if (AppState == C4AS_Startup)
+	{
+		AppState = C4AS_PreInit;
+		Game.SetScenarioFilename(szCmd);
+	}
 }
 
 void C4Application::Activate()
