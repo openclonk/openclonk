@@ -81,7 +81,9 @@ bool C4MusicSystem::InitializeMOD()
 		break;
 	case 1:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
+#ifdef USE_WIN32_WINDOWS
 		FSOUND_SetHWND(Application.pWindow->hWindow);
+#endif
 		break;
 	case 2:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
