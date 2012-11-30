@@ -23,6 +23,7 @@
 
 #include <StdScheduler.h>
 #include <StdSync.h>
+#include <C4StdInProc.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -73,31 +74,6 @@ public:
 	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
 	virtual HANDLE GetEvent() { return STDSCHEDULER_EVENT_MESSAGE; }
 
-};
-#endif
-
-#ifdef USE_CONSOLE
-// A simple alertable proc
-class CStdInProc : public StdSchedulerProc
-{
-public:
-	CStdInProc();
-	~CStdInProc();
-
-	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
-#ifdef STDSCHEDULER_USE_EVENTS
-	virtual HANDLE GetEvent() { return GetStdHandle(STD_INPUT_HANDLE); }
-#else
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { 0, POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
-#endif
-private:
-	// commands from stdin
-	StdCopyStrBuf CmdBuf;
 };
 #endif
 
@@ -188,7 +164,7 @@ public:
 
 #elif defined(USE_CONSOLE)
 protected:
-	CStdInProc InProc;
+	C4StdInProc InProc;
 #endif
 
 #ifdef USE_WIN32_WINDOWS
