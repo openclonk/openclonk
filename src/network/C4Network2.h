@@ -297,6 +297,7 @@ public:
 	// lobby countdown
 	void StartLobbyCountdown(int32_t iCountdownTime);
 	void AbortLobbyCountdown();
+	bool isLobbyCountDown() { return pLobbyCountdown != 0; }
 
 	// streaming
 	size_t getPendingStreamData() const { return StreamingBuf.getSize() - StreamCompressor.avail_out; }
