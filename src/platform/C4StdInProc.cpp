@@ -58,7 +58,7 @@ static void readline_callback (char * line)
 
 C4StdInProc::C4StdInProc()
 {
-	rl_callback_handler_install (">", readline_callback);
+	rl_callback_handler_install ("", readline_callback);
 }
 
 C4StdInProc::~C4StdInProc()

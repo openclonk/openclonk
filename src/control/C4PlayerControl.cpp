@@ -344,8 +344,10 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 		else
 		{
 			// non-reference: check if the assignment was valid
+#ifndef USE_CONSOLE
 			if (rKeyComboItem.Key == KEY_Default)
-				LogF("WARNING: Control %s of set %s contains undefined key \"%s.\"", GetControlName(), pParentSet->GetName(), szKeyName);
+				LogF("WARNING: Control %s of set %s contains undefined key \"%s\".", GetControlName(), pParentSet->GetName(), szKeyName);
+#endif
 			// ...and just keep this item.
 			NewCombo.push_back(rKeyComboItem);
 		}
