@@ -60,7 +60,8 @@ func InitializePlayer(int plr)
 		else
 		{
 			crew->CreateContents(Axe);
-			crew->CreateContents(GrappleBow);
+			crew->CreateContents(Wood,3);
+			crew->CreateContents(Metal,2);
 		}
 		index++;
 	}

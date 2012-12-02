@@ -16,6 +16,8 @@ Fly = {
 }
 };
 
+func IsEnvironment() { return true; } // shouldn't be affected by wind, etc.
+
 public func Initialize()
 {
 	this.Plane=1545;
