@@ -13,6 +13,8 @@ func Initialize()
 
 local wall_left, wall_right, wall_top, wall_bottom;
 
+local wall_right2, wall_bottom2; // Hack to make Skylands work for now...
+
 func ControlUp()
 {
 	if (wall_top)
@@ -36,7 +38,13 @@ func ControlLeft()
 func ControlRight()
 {
 	if (wall_right)
-		wall_right->RemoveObject();
+		if (wall_right2)
+		{
+			wall_right->RemoveObject();
+			wall_right2->RemoveObject();
+		}
+		else
+			(wall_right2 = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetRight2(this);
 	else
 		(wall_right = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetRight(this);
 	Sound("DullWoodHit1");
@@ -46,7 +54,13 @@ func ControlRight()
 func ControlDown()
 {
 	if (wall_bottom)
-		wall_bottom->RemoveObject();
+		if (wall_bottom2)
+		{
+			wall_bottom->RemoveObject();
+			wall_bottom2->RemoveObject();
+		}
+		else
+			(wall_bottom2 = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetBottom2(this);
 	else
 		(wall_bottom = CreateObject(ScaffoldWall,0,0,GetOwner()))->SetBottom(this);
 	Sound("DullWoodHit1");

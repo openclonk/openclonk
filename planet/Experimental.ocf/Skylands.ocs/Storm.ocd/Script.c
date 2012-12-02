@@ -28,8 +28,8 @@ func Initialize()
 	SetPosition();
 	// defaults
 	StormStream = {
-		max_segment_stretch = 200, // maximum number of pixels per segment that can be deviated from dir in either direction
-		max_segment_stretch_want = 10, // maximum movement back into original position that is preferred (i.e.: speed at which gaps behind sky islands close)
+		max_segment_stretch = 100, // maximum number of pixels per segment that can be deviated from dir in either direction
+		max_segment_stretch_want = 5, // maximum movement back into original position that is preferred (i.e.: speed at which gaps behind sky islands close)
 		search_steps = 10,        // steps in pixels in which to search for holes to blow through
 		search_steps_mult = 200,  // multiplyer, in percent, by which search steps get larger with each iteration
 	};
@@ -267,7 +267,7 @@ private func ExecuteStream(proplist s)
 			tx = new_tx; ty = new_ty;
 			// fling objects along path
 			vx = vx * strength / s.dir_len;
-			vy = vy * strength / s.dir_len - 200;
+			vy = vy * strength / s.dir_len; // - 20;
 			for (var obj in FindObjects(find_mask, Find_OnLine(x,y,new_tx,new_ty)))
 			{
 				var ovx = obj->GetXDir(100);

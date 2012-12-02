@@ -29,8 +29,8 @@ Category=1
 Plane=100
 Size=100500
 Mass=150
-X=F63730910
-Y=F58074672
+X=F63065378
+Y=F51973940
 Width=60
 Height=110
 Offset=-30,-55
@@ -41,7 +41,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=5
-Effects=(1,60,350,494,Tree_Coniferous,663;false;"Pars"=E2,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,494,Tree_Coniferous,663;false;"Pars"=E2,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -65,7 +65,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=5
-Effects=(1,60,350,497,Tree_Coniferous,662;false;"Pars"=E4,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,497,Tree_Coniferous,662;false;"Pars"=E4,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -89,7 +89,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,500,Tree_SmallConiferous,661;false;"Pars"=E6,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,500,Tree_SmallConiferous,661;false;"Pars"=E6,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -116,7 +116,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,503,Tree_SmallConiferous,660;false;"Pars"=E8,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,503,Tree_SmallConiferous,660;false;"Pars"=E8,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -140,7 +140,8 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,506,Tree_SmallConiferous,659;false;"Pars"=E10,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+ColorMod=4289769600
+Effects=(1,9623,350,506,Tree_SmallConiferous,659;false;"Pars"=E10,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -152,8 +153,8 @@ Category=1
 Plane=100
 Size=100500
 Mass=80
-X=F24161246
-Y=F58994972
+X=F24438552
+Y=F58884048
 Width=30
 Height=55
 Offset=-15,-27
@@ -164,7 +165,8 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,509,Tree_SmallConiferous,658;false;"Pars"=E12,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+ColorMod=4286611584
+Effects=(1,9623,350,509,Tree_SmallConiferous,658;false;"Pars"=E12,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -176,8 +178,8 @@ Category=1
 Plane=100
 Size=100500
 Mass=80
-X=F4767142
-Y=F47344816
+X=F4711681
+Y=F47233892
 Width=30
 Height=55
 Offset=-15,-27
@@ -188,7 +190,8 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,512,Tree_SmallConiferous,657;false;"Pars"=E14,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+ColorMod=4286611584
+Effects=(1,9623,350,512,Tree_SmallConiferous,657;false;"Pars"=E14,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -212,7 +215,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,515,Tree_SmallConiferous,656;false;"Pars"=E16,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,515,Tree_SmallConiferous,656;false;"Pars"=E16,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -224,8 +227,8 @@ Category=1
 Plane=100
 Size=100500
 Mass=80
-X=F69337088
-Y=F19529728
+X=F65732112
+Y=F19917958
 Width=30
 Height=55
 Offset=-15,-27
@@ -236,7 +239,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,518,Tree_SmallConiferous,655;false;"Pars"=E18,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,518,Tree_SmallConiferous,655;false;"Pars"=E18,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -260,7 +263,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,521,Tree_SmallConiferous,654;false;"Pars"=E20,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,521,Tree_SmallConiferous,654;false;"Pars"=E20,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -284,7 +287,7 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,524,Tree_SmallConiferous,653;false;"Pars"=E22,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,350,524,Tree_SmallConiferous,653;false;"Pars"=E22,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
   Valid=true
@@ -294,10 +297,38 @@ id=Tree_SmallConiferous
 Properties=527;false;"MeshTransformation"=E23,"Prototype"=DTree_SmallConiferous
 Category=1
 Plane=100
+Rotation=355
 Size=100500
 Mass=80
 X=F8456239
 Y=F25339618
+R=F23265280
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=2,1,1,0,0,0,-1,-1,-2
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4292124008
+Effects=(1,9623,350,527,Tree_SmallConiferous,652;false;"Pars"=E24,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=534;false;"MeshTransformation"=E25,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Size=100500
+Mass=80
+X=F5111808
+Y=F27394048
 Width=30
 Height=55
 Offset=-15,-27
@@ -308,14 +339,364 @@ VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
 Component=Wood=4
-Effects=(1,60,350,527,Tree_SmallConiferous,652;false;"Pars"=E24,"Function"=s"Seed","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9529,72,534,Tree_SmallConiferous,537;false;"Pars"=E26,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=538;false;"MeshTransformation"=E27,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=358
+Size=100500
+Mass=80
+X=F11948201
+Y=F25307170
+R=F23461888
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=1,1,0,0,0,0,0,-1,-1
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4291467676
+Effects=(1,9529,72,538,Tree_SmallConiferous,541;false;"Pars"=E28,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=542;false;"MeshTransformation"=E29,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=8
+Size=100500
+Mass=80
+X=F13127648
+Y=F25297094
+R=F524288
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=-3,-2,-1,-1,0,1,1,2,3
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4294436334
+Effects=(1,9529,72,542,Tree_SmallConiferous,545;false;"Pars"=E30,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=546;false;"MeshTransformation"=E31,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Size=100500
+Mass=80
+X=F1476413
+Y=F28185666
+Width=30
+Height=55
+Offset=-15,-27
+Vertices=9
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+Effects=(1,9447,72,546,Tree_SmallConiferous,549;false;"Pars"=E32,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-131,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=550;false;"MeshTransformation"=E33,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=1
+Size=100500
+Mass=80
+X=F7234006
+Y=F25418092
+R=F65536
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4293518000
+Effects=(1,9380,72,550,Tree_SmallConiferous,553;false;"Pars"=E34,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-130,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=554;false;"MeshTransformation"=E35,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=356
+Size=100500
+Mass=80
+X=F10969749
+Y=F25241434
+R=F23330816
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=2,1,1,0,0,0,-1,-1,-2
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4293786242
+Effects=(1,9143,72,554,Tree_SmallConiferous,557;false;"Pars"=E36,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-126,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=562;false;"MeshTransformation"=E37,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=350
+Size=100500
+Mass=80
+X=F6124775
+Y=F26693700
+R=F22937600
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=4,3,2,1,0,-1,-2,-3,-4
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4293784774
+Effects=(1,9090,72,562,Tree_SmallConiferous,565;false;"Pars"=E38,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-126,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=566;false;"MeshTransformation"=E39,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=358
+Size=100500
+Mass=80
+X=F2348037
+Y=F27782776
+R=F23461888
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=1,1,0,0,0,0,0,-1,-1
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4291465421
+Effects=(1,8242,72,566,Tree_SmallConiferous,569;false;"Pars"=E40,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=570;false;"MeshTransformation"=E41,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=357
+Size=100500
+Mass=80
+X=F9885862
+Y=F25140788
+R=F23396352
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=1,1,1,0,0,0,-1,-1,-1
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4292401120
+Effects=(1,8242,72,570,Tree_SmallConiferous,573;false;"Pars"=E42,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=574;false;"MeshTransformation"=E43,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Size=100500
+Mass=80
+X=F10389601
+Y=F25241636
+Width=30
+Height=55
+Offset=-15,-27
+Vertices=9
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4291944808
+Effects=(1,8242,72,574,Tree_SmallConiferous,577;false;"Pars"=E44,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=578;false;"MeshTransformation"=E45,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=350
+Size=100500
+Mass=80
+X=F3941149
+Y=F27349162
+R=F22937600
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=4,3,2,1,0,-1,-2,-3,-4
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4292396189
+Effects=(1,8242,72,578,Tree_SmallConiferous,581;false;"Pars"=E46,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=582;false;"MeshTransformation"=E47,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=10
+Size=100500
+Mass=80
+X=F23262287
+Y=F19095516
+R=F655360
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=-4,-3,-2,-1,0,1,2,3,4
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+Effects=(1,8242,72,582,Tree_SmallConiferous,585;false;"Pars"=E48,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=685;false;"MeshTransformation"=E49,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Size=100000
+Mass=80
+X=F8666408
+Y=F46152508
+Width=30
+Height=55
+Offset=-15,-27
+Vertices=9
+VertexY=22,15,10,5,0,-5,-10,-15,-22
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+Effects=(1,12,72,685,Tree_SmallConiferous,688;false;"NoStop"=b1,"Name"=s"IntScheduleCall","Pars"=E50,"Function"=s"Seed"),(1,14,35,0,None,686;false;"Name"=s"IntGrowth","growth"=i5)
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Tree_SmallConiferous
+Properties=689;false;"MeshTransformation"=E51,"Prototype"=DTree_SmallConiferous
+Category=1
+Plane=100
+Rotation=330
+Size=100000
+Mass=80
+X=F31934385
+Y=F51517284
+R=F21626880
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=9
+VertexX=11,7,5,2,0,-2,-5,-7,-11
+VertexY=19,13,9,4,0,-4,-9,-13,-19
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+Effects=(1,12,72,689,Tree_SmallConiferous,692;false;"NoStop"=b1,"Name"=s"IntScheduleCall","Pars"=E52,"Function"=s"Seed"),(1,16,35,0,None,690;false;"Name"=s"IntGrowth","growth"=i5)
 
   [Mesh]
   Valid=true
 
 [Object]
 id=Chest
-Properties=10;false;"chestanim"=i0,"MeshTransformation"=E25,"Prototype"=DChest
+Properties=10;false;"MeshTransformation"=E53,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -331,7 +712,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=477;476;475;448;417;416;387;386;385
@@ -345,11 +725,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=11;false;"chestanim"=i0,"MeshTransformation"=E26,"Prototype"=DChest
+Properties=11;false;"MeshTransformation"=E54,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -365,7 +745,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=472;470;468;464;463;462;461;451;450;446;444;415;411;407;403
@@ -379,11 +758,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=12;false;"chestanim"=i0,"MeshTransformation"=E27,"Prototype"=DChest
+Properties=12;false;"MeshTransformation"=E55,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -399,7 +778,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=478;449;420;419;418;381;380;379
@@ -413,11 +791,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=13;false;"chestanim"=i0,"MeshTransformation"=E28,"Prototype"=DChest
+Properties=13;false;"MeshTransformation"=E56,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -433,7 +811,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=471;469;467;460;459;458;457;456;445;443;430;429;428;427;426;425;424;414;410;406;402;384
@@ -447,11 +824,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=14;false;"chestanim"=i0,"MeshTransformation"=E29,"Prototype"=DChest
+Properties=14;false;"MeshTransformation"=E57,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -467,7 +844,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=442;441;440;439;437;435;413;409;405;401;383
@@ -481,11 +857,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=15;false;"chestanim"=i0,"MeshTransformation"=E30,"Prototype"=DChest
+Properties=15;false;"MeshTransformation"=E58,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -501,7 +877,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=474;473;455;454;453;452;423;422;421;378
@@ -515,11 +890,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=16;false;"chestanim"=i0,"MeshTransformation"=E31,"Prototype"=DChest
+Properties=16;false;"MeshTransformation"=E59,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -535,7 +910,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=433;432;431;399;398;397;396;395;394;393;392;391;390;389;388
@@ -549,11 +923,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Chest
-Properties=17;false;"chestanim"=i0,"MeshTransformation"=E32,"Prototype"=DChest
+Properties=17;false;"MeshTransformation"=E60,"Prototype"=DChest,"chestanim"=i0
 Category=2
 Plane=200
 Size=100000
@@ -569,7 +943,6 @@ VertexY=-2,11,-2,11
 VertexCNAT=5,9,6,10
 VertexFriction=50,50,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3
 Contents=466;465;447;438;436;434;412;408;404;400;382
@@ -583,11 +956,11 @@ ColorMod=3506438143
     Number=0
     Type=Leaf
     Animation=Open
-    Position=linear(F65,F0,F65,20,Hold,60)
+    Position=linear(F65,F0,F65,20,Hold,12)
 
 [Object]
 id=Plane_Construction
-Properties=377;false;"Prototype"=DPlane_Construction,"next_part"=DPlane_Skids,"progress"=n
+Properties=377;false;"progress"=n,"next_part"=DPlane_Skids,"Prototype"=DPlane_Construction
 Category=2
 Plane=200
 Size=100000
@@ -602,11 +975,10 @@ VertexX=-18,18
 VertexY=14,14
 VertexFriction=100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Plane_Propeller=1;Plane_Chassis=1;Plane_Skids=1;Plane_Engine=1;Plane_Wings=1
 Graphics=Plane_Construction::Site
-Effects=(1,60,10,377,Plane_Construction,643;false;"Pars"=E33,"Repeats"=i-6,"Function"=s"Timer","Name"=s"IntScheduleCall","NoStop"=b1)
+Effects=(1,9623,10,377,Plane_Construction,643;false;"Pars"=E61,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-962,"Function"=s"Timer")
 
 [Object]
 id=Plane_Wings
@@ -627,7 +999,6 @@ VertexX=16,-12,12,-16
 VertexY=4,-11,11,-4
 VertexFriction=60,60,60,60
 Picture=0,0,0,0
-Mobile=true
 OCF=12845637
 Component=Wood=2;Metal=1
 
@@ -650,7 +1021,6 @@ VertexX=-18,-11,8,17,-1
 VertexY=-1,-6,-1,7,3
 VertexFriction=30,60,60,30,30
 Picture=0,0,0,0
-Mobile=true
 OCF=12845637
 Component=Metal=2
 
@@ -673,7 +1043,6 @@ VertexX=-22,-26,2,-2,23,24
 VertexY=14,1,7,-7,-16,-7
 VertexFriction=30,60,30,60,60,30
 Picture=0,0,0,0
-Mobile=true
 InLiquid=true
 OCF=13894209
 Component=Wood=3;Metal=2
@@ -697,7 +1066,6 @@ VertexX=-4,4,1
 VertexY=-1,-3,5
 VertexFriction=60,60,60
 Picture=0,0,0,0
-Mobile=true
 OCF=12845641
 Component=Wood=1;Metal=1
 
@@ -1673,8 +2041,8 @@ Category=16
 Plane=500
 Size=100000
 Mass=10
-X=F7655487
-Y=F49958942
+X=F7600026
+Y=F49306513
 Width=8
 Height=8
 Offset=-4,-4
@@ -1682,7 +2050,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
@@ -1703,7 +2070,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::4
@@ -1724,7 +2090,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::4
@@ -1745,7 +2110,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::2
@@ -1766,7 +2130,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 
@@ -1786,7 +2149,6 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
 Graphics=Loam::1
@@ -1807,9 +2169,27 @@ Vertices=2
 VertexY=3,-3
 VertexFriction=40,40
 Picture=0,0,0,0
-Mobile=true
 OCF=2359881
 Component=Earth=2
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=684;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F11595383
+Y=F48766803
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
 Graphics=Loam::1
 
 [Object]
@@ -3022,7 +3402,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3044,7 +3423,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
@@ -3066,7 +3444,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3088,7 +3465,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 
@@ -3109,7 +3485,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3131,7 +3506,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3153,7 +3527,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 
@@ -3174,7 +3547,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3196,7 +3568,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
@@ -3218,7 +3589,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::1
@@ -3240,7 +3610,6 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
@@ -3262,11 +3631,114 @@ VertexX=-3,3
 VertexY=1,-1
 VertexFriction=20
 Picture=0,0,0,0
-Mobile=true
 OCF=2359369
 Component=Sulphur=1
 Graphics=Firestone::2
 
+[Object]
+id=Firestone
+Properties=618;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F11166258
+Y=F29194822
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=619;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F18961151
+Y=F29456966
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=620;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F19485439
+Y=F29194822
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=621;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F22958248
+Y=F27098346
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=683;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F30746858
+Y=F59788980
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
 [Script]
-Scenario=false;"Prototype"=DScenario.Prototype
-Values=a(12;i-829,i0,i-559,i0,i0,i1000,i0,i0,i559,i0,i-829,i0),a(0;),a(12;i883,i0,i469,i0,i0,i1000,i0,i0,i-469,i0,i883,i0),a(0;),a(12;i-449,i0,i219,i0,i0,i500,i0,i0,i-219,i0,i-449,i0),a(0;),a(12;i-457,i0,i203,i0,i0,i500,i0,i0,i-203,i0,i-457,i0),a(0;),a(12;i-328,i0,i377,i0,i0,i500,i0,i0,i-377,i0,i-328,i0),a(0;),a(12;i-424,i0,i-265,i0,i0,i500,i0,i0,i265,i0,i-424,i0),a(0;),a(12;i445,i0,i227,i0,i0,i500,i0,i0,i-227,i0,i445,i0),a(0;),a(12;i129,i0,i483,i0,i0,i500,i0,i0,i-483,i0,i129,i0),a(0;),a(12;i334,i0,i371,i0,i0,i500,i0,i0,i-371,i0,i334,i0),a(0;),a(12;i487,i0,i112,i0,i0,i500,i0,i0,i-112,i0,i487,i0),a(0;),a(12;i-404,i0,i294,i0,i0,i500,i0,i0,i-294,i0,i-404,i0),a(0;),a(12;i-104,i0,i489,i0,i0,i500,i0,i0,i-489,i0,i-104,i0),a(0;),a(12;i719,i0,i695,i0,i0,i1000,i0,i0,i-695,i0,i719,i0),a(12;i914,i0,i407,i0,i0,i1000,i0,i0,i-407,i0,i914,i0),a(12;i588,i0,i809,i0,i0,i1000,i0,i0,i-809,i0,i588,i0),a(12;i454,i0,i891,i0,i0,i1000,i0,i0,i-891,i0,i454,i0),a(12;i719,i0,i695,i0,i0,i1000,i0,i0,i-695,i0,i719,i0),a(12;i309,i0,i951,i0,i0,i1000,i0,i0,i-951,i0,i309,i0),a(12;i799,i0,i602,i0,i0,i1000,i0,i0,i-602,i0,i799,i0),a(12;i695,i0,i719,i0,i0,i1000,i0,i0,i-719,i0,i695,i0),a(0;),
+Scenario=false;"Prototype"=DGlobal
+Values=a(12;i-829,i0,i-559,i0,i0,i1000,i0,i0,i559,i0,i-829,i0),a(0;),a(12;i883,i0,i469,i0,i0,i1000,i0,i0,i-469,i0,i883,i0),a(0;),a(12;i-449,i0,i219,i0,i0,i500,i0,i0,i-219,i0,i-449,i0),a(0;),a(12;i-457,i0,i203,i0,i0,i500,i0,i0,i-203,i0,i-457,i0),a(0;),a(12;i-328,i0,i377,i0,i0,i500,i0,i0,i-377,i0,i-328,i0),a(0;),a(12;i-424,i0,i-265,i0,i0,i500,i0,i0,i265,i0,i-424,i0),a(0;),a(12;i445,i0,i227,i0,i0,i500,i0,i0,i-227,i0,i445,i0),a(0;),a(12;i129,i0,i483,i0,i0,i500,i0,i0,i-483,i0,i129,i0),a(0;),a(12;i334,i0,i371,i0,i0,i500,i0,i0,i-371,i0,i334,i0),a(0;),a(12;i487,i0,i112,i0,i0,i500,i0,i0,i-112,i0,i487,i0),a(0;),a(12;i-404,i0,i294,i0,i0,i500,i0,i0,i-294,i0,i-404,i0),a(0;),a(12;i-104,i0,i489,i0,i0,i500,i0,i0,i-489,i0,i-104,i0),a(0;),a(12;i404,i0,i294,i0,i0,i500,i0,i0,i-294,i0,i404,i0),a(0;),a(12;i-485,i0,i-121,i0,i0,i500,i0,i0,i121,i0,i-485,i0),a(0;),a(12;i-470,i0,i-171,i0,i0,i500,i0,i0,i171,i0,i-470,i0),a(0;),a(12;i409,i0,i287,i0,i0,i500,i0,i0,i-287,i0,i409,i0),a(0;),a(12;i-499,i0,i-35,i0,i0,i500,i0,i0,i35,i0,i-499,i0),a(0;),a(12;i-494,i0,i78,i0,i0,i500,i0,i0,i-78,i0,i-494,i0),a(0;),a(12;i359,i0,i-347,i0,i0,i500,i0,i0,i347,i0,i359,i0),a(0;),a(12;i399,i0,i301,i0,i0,i500,i0,i0,i-301,i0,i399,i0),a(0;),a(12;i-494,i0,i-78,i0,i0,i500,i0,i0,i78,i0,i-494,i0),a(0;),a(12;i-499,i0,i17,i0,i0,i500,i0,i0,i-17,i0,i-499,i0),a(0;),a(12;i-414,i0,i279,i0,i0,i500,i0,i0,i-279,i0,i-414,i0),a(0;),a(12;i-171,i0,i-470,i0,i0,i500,i0,i0,i470,i0,i-171,i0),a(0;),a(12;i-35,i0,i-499,i0,i0,i500,i0,i0,i499,i0,i-35,i0),a(0;),a(12;i480,i0,i-138,i0,i0,i500,i0,i0,i138,i0,i480,i0),a(0;),a(12;i719,i0,i695,i0,i0,i1000,i0,i0,i-695,i0,i719,i0),a(12;i914,i0,i407,i0,i0,i1000,i0,i0,i-407,i0,i914,i0),a(12;i588,i0,i809,i0,i0,i1000,i0,i0,i-809,i0,i588,i0),a(12;i454,i0,i891,i0,i0,i1000,i0,i0,i-891,i0,i454,i0),a(12;i719,i0,i695,i0,i0,i1000,i0,i0,i-695,i0,i719,i0),a(12;i309,i0,i951,i0,i0,i1000,i0,i0,i-951,i0,i309,i0),a(12;i799,i0,i602,i0,i0,i1000,i0,i0,i-602,i0,i799,i0),a(12;i695,i0,i719,i0,i0,i1000,i0,i0,i-719,i0,i695,i0),a(0;),

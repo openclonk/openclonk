@@ -22,6 +22,16 @@ func SetRight(object host)
 	return true;
 }
 
+func SetRight2(object host)
+{
+	SetGraphics("Right");
+	SetAction("Right", host);
+	SetShape(0,0,4,32);
+	SetSolidMask(2,0,2,32,2,0);
+	SetVertexXY(0,-27-3,1+32);
+	return true;
+}
+
 func SetTop(object host)
 {
 	SetGraphics("Top");
@@ -39,6 +49,16 @@ func SetBottom(object host)
 	SetShape(0,0,32,4);
 	SetSolidMask(0,4,32,4);
 	SetVertexXY(0,1,-27);
+	return true;
+}
+
+func SetBottom2(object host)
+{
+	SetGraphics("Bottom");
+	SetAction("Bottom", host);
+	SetShape(0,0,32,4);
+	SetSolidMask(0,4,32,4);
+	SetVertexXY(0,1-29,-27);
 	return true;
 }
 
