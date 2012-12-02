@@ -268,7 +268,9 @@ private func ExecuteStream(proplist s)
 			// fling objects along path
 			vx = vx * strength / s.dir_len;
 			vy = vy * strength / s.dir_len; // - 20;
-			for (var obj in FindObjects(find_mask, Find_OnLine(x,y,new_tx,new_ty)))
+			var fling_objs = FindObjects(find_mask, Find_OnLine(x,y,new_tx,new_ty)), obj;
+			for (obj in fling_objs) if (obj->GetID()==ElevatorCase) { fling_objs = []; break; } // do not fling stuff in elevator case
+			for (obj in fling_objs) if (!obj->Stuck())
 			{
 				var ovx = obj->GetXDir(100);
 				var ovy = obj->GetYDir(100);

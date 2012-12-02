@@ -88,7 +88,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,500,Tree_SmallConiferous,661;false;"Pars"=E6,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -115,7 +115,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,503,Tree_SmallConiferous,660;false;"Pars"=E8,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -139,7 +139,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4289769600
 Effects=(1,9623,350,506,Tree_SmallConiferous,659;false;"Pars"=E10,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
@@ -164,7 +164,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4286611584
 Effects=(1,9623,350,509,Tree_SmallConiferous,658;false;"Pars"=E12,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
@@ -189,7 +189,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4286611584
 Effects=(1,9623,350,512,Tree_SmallConiferous,657;false;"Pars"=E14,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
@@ -214,7 +214,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,515,Tree_SmallConiferous,656;false;"Pars"=E16,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -238,7 +238,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,518,Tree_SmallConiferous,655;false;"Pars"=E18,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -262,7 +262,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,521,Tree_SmallConiferous,654;false;"Pars"=E20,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -286,7 +286,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9623,350,524,Tree_SmallConiferous,653;false;"Pars"=E22,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
   [Mesh]
@@ -313,7 +313,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4292124008
 Effects=(1,9623,350,527,Tree_SmallConiferous,652;false;"Pars"=E24,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-27,"Function"=s"Seed")
 
@@ -338,7 +338,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9529,72,534,Tree_SmallConiferous,537;false;"Pars"=E26,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
 
   [Mesh]
@@ -365,7 +365,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4291467676
 Effects=(1,9529,72,538,Tree_SmallConiferous,541;false;"Pars"=E28,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
 
@@ -393,7 +393,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4294436334
 Effects=(1,9529,72,542,Tree_SmallConiferous,545;false;"Pars"=E30,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-132,"Function"=s"Seed")
 
@@ -418,7 +418,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,9447,72,546,Tree_SmallConiferous,549;false;"Pars"=E32,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-131,"Function"=s"Seed")
 
   [Mesh]
@@ -444,7 +444,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4293518000
 Effects=(1,9380,72,550,Tree_SmallConiferous,553;false;"Pars"=E34,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-130,"Function"=s"Seed")
 
@@ -472,7 +472,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4293786242
 Effects=(1,9143,72,554,Tree_SmallConiferous,557;false;"Pars"=E36,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-126,"Function"=s"Seed")
 
@@ -500,7 +500,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4293784774
 Effects=(1,9090,72,562,Tree_SmallConiferous,565;false;"Pars"=E38,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-126,"Function"=s"Seed")
 
@@ -528,7 +528,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4291465421
 Effects=(1,8242,72,566,Tree_SmallConiferous,569;false;"Pars"=E40,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
 
@@ -556,7 +556,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4292401120
 Effects=(1,8242,72,570,Tree_SmallConiferous,573;false;"Pars"=E42,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
 
@@ -581,7 +581,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4291944808
 Effects=(1,8242,72,574,Tree_SmallConiferous,577;false;"Pars"=E44,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
 
@@ -609,7 +609,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 ColorMod=4292396189
 Effects=(1,8242,72,578,Tree_SmallConiferous,581;false;"Pars"=E46,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
 
@@ -637,7 +637,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,8242,72,582,Tree_SmallConiferous,585;false;"Pars"=E48,"Name"=s"IntScheduleCall","NoStop"=b1,"Repeats"=i-114,"Function"=s"Seed")
 
   [Mesh]
@@ -661,7 +661,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,12,72,685,Tree_SmallConiferous,688;false;"NoStop"=b1,"Name"=s"IntScheduleCall","Pars"=E50,"Function"=s"Seed"),(1,14,35,0,None,686;false;"Name"=s"IntGrowth","growth"=i5)
 
   [Mesh]
@@ -688,7 +688,7 @@ VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
 Picture=0,0,0,0
 OCF=12845761
-Component=Wood=4
+Component=Wood=8
 Effects=(1,12,72,689,Tree_SmallConiferous,692;false;"NoStop"=b1,"Name"=s"IntScheduleCall","Pars"=E52,"Function"=s"Seed"),(1,16,35,0,None,690;false;"Name"=s"IntGrowth","growth"=i5)
 
   [Mesh]
