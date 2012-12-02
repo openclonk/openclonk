@@ -296,6 +296,7 @@ bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
 		memcpy(ramp.blue, g->blue, sizeof(ramp.blue));
 	}
 	XRRFreeGamma(g);
+	return true;
 }
 
 // Copy the text to the clipboard or the primary selection
