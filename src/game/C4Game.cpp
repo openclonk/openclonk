@@ -2229,8 +2229,13 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
-			return false;
+	{
+		if (Parameters.isLeague())
+			Log("Debugger disabled. Not allowed in league.");
+		else
+			if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
+				return false;
+	}
 
 	return true;
 }
