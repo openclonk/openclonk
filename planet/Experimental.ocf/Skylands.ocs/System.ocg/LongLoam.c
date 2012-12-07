@@ -2,4 +2,4 @@
 
 #appendto Loam
 
-local BridgeLength = 650;
+local BridgeLength = 65;
