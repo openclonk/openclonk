@@ -5,6 +5,9 @@
 	Used to construct the plane
 --*/
 
+#include Library_PlanePart
+#include Library_ElevatorControl
+
 private func Hit()
 {
 	Sound("WoodHit");
@@ -20,4 +23,5 @@ local Collectible = false;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
-local Touchable = 1; // todo: Later, this must be done with the lift tower
+local Touchable = 1; // Later, this could be done with the lift tower. There is no working lift tower at the moment though :(
+local HitPoints = 20;

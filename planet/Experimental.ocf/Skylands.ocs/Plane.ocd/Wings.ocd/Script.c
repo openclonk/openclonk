@@ -5,6 +5,7 @@
 	Used to construct the plane
 --*/
 
+#include Library_PlanePart
 #include Library_ElevatorControl
 
 private func Hit()
@@ -23,3 +24,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
 local Touchable = 1;
+local HitPoints = 20;

@@ -5,8 +5,6 @@
 	@authors Sven2
 */
 
-static const LOAM_Bridge_Amount = 65; // longer bridges!
-
 static g_is_initialized;
 static g_intro_initialized;
 
@@ -20,7 +18,7 @@ func DoInit(int first_player)
 	EnsureObject(Rule_BuyAtFlagpole,0,0,-1);
 	SetSkyAdjust(0xff000000);
 	var storm = EnsureObject(Storm,0,0,NO_OWNER);
-	storm->SetStorm(-20,0,2000);
+	storm->SetStorm(-20,0,1000);
 	SetSkyParallax(1); // move background with the wind
 	var time = EnsureObject(Environment_Time,0,0,-1);
 	time->SetTime(600);

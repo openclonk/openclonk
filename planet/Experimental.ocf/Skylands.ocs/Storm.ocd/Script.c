@@ -265,17 +265,36 @@ private func ExecuteStream(proplist s)
 			var new_ty = y + s.dir_y + search_off * s.dir_x / s.dir_len;
 			if (new_tx != tx || new_ty != ty) StreamMoveVertex(s, i_segment+1, tx, ty, new_tx, new_ty);
 			tx = new_tx; ty = new_ty;
+			// determine storm density at this position
+			var map_idx = MapXYToIdx(tx, ty), local_strength;
+			if (map_idx>=0) local_strength = map[map_idx]; else local_strength=1;
 			// fling objects along path
 			vx = vx * strength / s.dir_len;
 			vy = vy * strength / s.dir_len; // - 20;
 			var fling_objs = FindObjects(find_mask, Find_OnLine(x,y,new_tx,new_ty)), obj;
 			for (obj in fling_objs) if (obj->GetID()==ElevatorCase) { fling_objs = []; break; } // do not fling stuff in elevator case
-			for (obj in fling_objs) if (!obj->Stuck())
+			for (obj in fling_objs)
 			{
+				// check if object can be pushed
+				if (obj->Stuck()) continue;
+				if (!PathFree(x,y,obj->GetX(),obj->GetY())) continue; // don't push through solid
+				// determine push strength. subsequent pushes of overlapping storm pathes stack diminishingly
+				var push_strength = strength/20,pushfx;
+				if (pushfx=GetEffect("StormPush",obj))
+				{
+					push_strength /= pushfx.count++;
+					if (!push_strength) continue;
+				}
+				else
+				{
+					pushfx=AddEffect("StormPush", obj, 1, 5, this);
+					if (pushfx) pushfx.count = 1;
+				}
+				// now push
 				var ovx = obj->GetXDir(100);
 				var ovy = obj->GetYDir(100);
-				var push_strength = strength/20;
-				if (Distance(ovx,ovy,vx,vy) > strength/3)
+				// check max speed
+				if (Distance(ovx,ovy,vx,vy) > push_strength*6)
 				{
 					if (Distance(ovx,ovy) > 500)
 						obj->Fling(BoundBy(vx-ovx,-push_strength,push_strength),BoundBy(vy-ovy,-push_strength,push_strength),100,true);
@@ -287,22 +306,17 @@ private func ExecuteStream(proplist s)
 				}
 			}
 			// Gfx
-			if (do_particles)
+			if (do_particles && map_idx>=0)
 			{
-				var map_idx = MapXYToIdx(tx, ty);
-				if (map_idx>=0)
+				if (local_strength >= 1)
 				{
-					var local_strength = map[map_idx];
-					if (local_strength >= 1)
-					{
-						// Two streams coincide here. Gfx!
-						vx = tx-x; vy = ty-y;
-						var v = Distance(vx,vy);
-						vx = vx * s.dir_len / v;
-						vy = vy * s.dir_len / v / 2;
-						for (var i_part = 5; i_part<local_strength*6; ++i_part)
-							CreateParticle("StormParticle", x+Random(vx+20)-10, y+Random(vy+20)-10, vx*(Random(40)+80)/100,vy*(Random(40)+100)/100, 40, 0xffffffff);
-					}
+					// Two streams coincide here. Gfx!
+					vx = tx-x; vy = ty-y;
+					var v = Distance(vx,vy);
+					vx = vx * s.dir_len / v;
+					vy = vy * s.dir_len / v / 2;
+					for (var i_part = 5; i_part<local_strength*6; ++i_part)
+						CreateParticle("StormParticle", x+Random(vx+20)-10, y+Random(vy+20)-10, vx*(Random(40)+80)/100,vy*(Random(40)+100)/100, 40, 0xffffffff);
 				}
 			}
 		}

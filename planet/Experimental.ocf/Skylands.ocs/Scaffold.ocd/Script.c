@@ -9,6 +9,29 @@ func Initialize()
 	return _inherited(...);
 }
 
+func Destruction()
+{
+	RemoveWalls();
+	return _inherited(...);
+}
+
+func Incineration()
+{
+	RemoveWalls();
+	return _inherited(...);
+}
+
+func RemoveWalls()
+{
+	if (wall_left)    wall_left->RemoveObject();
+	if (wall_right)   wall_right->RemoveObject();
+	if (wall_top)     wall_top->RemoveObject();
+	if (wall_bottom)  wall_bottom->RemoveObject();
+	if (wall_right2)  wall_right2->RemoveObject();
+	if (wall_bottom2) wall_bottom2->RemoveObject();
+	return true;
+}
+
 /* Interaction */
 
 local wall_left, wall_right, wall_top, wall_bottom;
@@ -89,6 +112,6 @@ func Definition(def) {
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 100;
-local HitPoints = 70;
+local HitPoints = 30;
 local Plane = 120;
 local Touchable = 1;
