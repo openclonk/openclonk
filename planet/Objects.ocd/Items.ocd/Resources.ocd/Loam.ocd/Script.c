@@ -1,8 +1,6 @@
 /* Loam */
 
-local loamused;       // amound of loam already used
-
-static const LOAM_Bridge_Amount = 37; // bridge length in pixels
+local loamused;       // amount of loam already used
 
 protected func Construction()
 {
@@ -114,7 +112,7 @@ func FxIntBridgeTimer(object clonk, proplist effect, int time)
 
 	// bridge time is up?
 	loamused += Max(line_len/10,1);
-	if (loamused >= LOAM_Bridge_Amount)
+	if (loamused >= BridgeLength)
 	{
 		clonk->CancelUse();
 	}
@@ -155,7 +153,7 @@ private func LoamDone(object clonk)
 	// Remove Effect
 	RemoveEffect("IntBridge", clonk);
 	// Remove loam object if most of it has been consumed
-	if (loamused > LOAM_Bridge_Amount - 10)
+	if (loamused > BridgeLength - 10)
 		RemoveObject();
 	return;
 }
@@ -171,3 +169,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local BridgeLength = 37; // bridge length in pixels
