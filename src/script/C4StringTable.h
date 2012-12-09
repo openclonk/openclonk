@@ -341,6 +341,7 @@ enum C4PropertyName
 	P_BlastIncinerate,
 	P_ContactIncinerate,
 	P_Global,
+	P_JumpSpeed,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

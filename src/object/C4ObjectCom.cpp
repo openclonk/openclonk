@@ -255,8 +255,9 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	// Calculate direction & forces
 	C4Real TXDir=Fix0;
-	C4Real iPhysicalWalk = itofix(0);//FIXME: ValByPhysical(280, pPhysical->Walk) * itofix(cObj->GetCon(), FullCon);
-	C4Real iPhysicalJump = itofix(0);//FIXME: ValByPhysical(1000, pPhysical->Jump) * itofix(cObj->GetCon(), FullCon);
+	C4PropList *pActionWalk = cObj->GetAction();
+	C4Real iPhysicalWalk = C4REAL100(pActionWalk->GetPropertyInt(P_Speed)) * itofix(cObj->GetCon(), FullCon);
+	C4Real iPhysicalJump = C4REAL100(cObj->GetPropertyInt(P_JumpSpeed)) * itofix(cObj->GetCon(), FullCon);
 
 	if (cObj->Action.ComDir==COMD_Left || cObj->Action.ComDir==COMD_UpLeft)  TXDir=-iPhysicalWalk;
 	else if (cObj->Action.ComDir==COMD_Right || cObj->Action.ComDir==COMD_UpRight) TXDir=+iPhysicalWalk;
