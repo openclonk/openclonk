@@ -66,18 +66,18 @@ void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 	StdStrBuf sReactionFuncName;
 	int32_t i=0; while (ReactionFuncMap[i].szRFName && (ReactionFuncMap[i].pFunc != pFunc)) ++i;
 	sReactionFuncName = ReactionFuncMap[i].szRFName;
-	pComp->Value(mkNamingAdapt(sReactionFuncName,   "Type",                     StdStrBuf()     ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sReactionFuncName, StdCompiler::RCT_IdtfAllowEmpty),   "Type",                     StdCopyStrBuf() ));
 	i=0; while (ReactionFuncMap[i].szRFName && !SEqual(ReactionFuncMap[i].szRFName, sReactionFuncName.getData())) ++i;
 	pFunc = ReactionFuncMap[i].pFunc;
 	// compile the rest
-	pComp->Value(mkNamingAdapt(TargetSpec,          "TargetSpec",               StdCopyStrBuf() ));
-	pComp->Value(mkNamingAdapt(ScriptFunc,          "ScriptFunc",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(TargetSpec, StdCompiler::RCT_All),          "TargetSpec",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptFunc, StdCompiler::RCT_IdtfAllowEmpty),          "ScriptFunc",               StdCopyStrBuf() ));
 	pComp->Value(mkNamingAdapt(iExecMask,           "ExecMask",                 ~0u             ));
 	pComp->Value(mkNamingAdapt(fReverse,            "Reverse",                  false           ));
 	pComp->Value(mkNamingAdapt(fInverseSpec,        "InverseSpec",              false           ));
 	pComp->Value(mkNamingAdapt(fInsertionCheck,     "CheckSlide",               true            ));
 	pComp->Value(mkNamingAdapt(iDepth,              "Depth",                    0               ));
-	pComp->Value(mkNamingAdapt(sConvertMat,         "ConvertMat",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sConvertMat, StdCompiler::RCT_IdtfAllowEmpty),         "ConvertMat",               StdCopyStrBuf() ));
 	pComp->Value(mkNamingAdapt(iCorrosionRate,      "CorrosionRate",            100             ));
 }
 

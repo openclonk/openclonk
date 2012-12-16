@@ -772,16 +772,21 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		if (GetDensity(tx,ty+1)<mdens)
 			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
-	// Try reaction with material below
+	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
-	if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel)))))
+	int32_t check_dir = 0;
+	for (int32_t i=0; i<2; ++i)
 	{
-		C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
-		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
+		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+check_dir))))
 		{
-			// the material to be inserted killed itself in some material reaction below
-			return true;
+			C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
+			if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
+			{
+				// the material to be inserted killed itself in some material reaction below
+				return true;
+			}
 		}
+		if (!(check_dir = Sign(GravAccel))) break;
 	}
 
 	// Insert as dead material
