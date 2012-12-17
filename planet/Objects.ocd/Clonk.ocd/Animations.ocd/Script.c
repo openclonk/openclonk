@@ -383,7 +383,7 @@ func Footstep()
 		Sound("StepHard?");
 	else
 	{
-		var dir = GetXDir() / Abs(GetXDir());
+		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
 		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
