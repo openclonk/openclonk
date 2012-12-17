@@ -17,7 +17,7 @@ func Place(int amount, proplist rectangle, proplist settings, bool foreground)
 
 private func SeedChance() {	return 500; }
 private func SeedArea() { return 400; }
-private func SeedAmount() { return 12; }
+private func SeedAmount() { return 10; }
 
 func Construction()
 {
