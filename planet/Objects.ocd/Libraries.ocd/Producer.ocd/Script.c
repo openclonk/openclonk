@@ -371,6 +371,7 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
+	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -473,7 +474,7 @@ private func CheckMaterials(id product, bool remove)
 			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
 			{
 				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
-				extracted += val[1];
+				extracted += val;
 				if (extracted >= need)
 					break;
 			}
