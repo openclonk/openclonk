@@ -385,8 +385,7 @@ private func CheckComponents(id product, bool remove)
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
+		if (!CheckComponent(mat_id, mat_cost))
 			return false; // Components missing.
 		else if (remove)
 		{
@@ -397,7 +396,13 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
-private func CheckFuel(id product, bool remove)
+public func CheckComponent(id component, int amount)
+{
+	// check if at least the given amount of the given component is available to be used for production
+	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+}
+
+public func CheckFuel(id product, bool remove)
 {
 	if (FuelNeed(product) > 0)
 	{
@@ -423,7 +428,7 @@ private func CheckFuel(id product, bool remove)
 	return true;
 }
 
-private func CheckLiquids(id product, bool remove)
+public func CheckLiquids(id product, bool remove)
 {
 	var liq_need = LiquidNeed(product);
 	if (liq_need)
@@ -453,7 +458,7 @@ private func CheckLiquids(id product, bool remove)
 	return true;
 }
 
-private func CheckMaterials(id product, bool remove)
+public func CheckMaterials(id product, bool remove)
 {
 	var mat_need = MaterialNeed(product);
 	if (mat_need)
