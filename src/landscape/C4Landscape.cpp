@@ -3337,7 +3337,7 @@ bool C4Landscape::Mat2Pal()
 {
 	if (!Surface8) return false;
 	// set landscape pal
-	int32_t tex,rgb;
+	int32_t tex;
 	for (tex=0; tex<C4M_MaxTexIndex; tex++)
 	{
 		const C4TexMapEntry *pTex = ::TextureMap.GetEntry(tex);

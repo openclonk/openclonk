@@ -1163,7 +1163,6 @@ C4Object* C4Game::FindObject(C4ID id,
 	// Scan all objects
 	for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 	{
-		C4PropList* pActionDef = cObj->GetAction();
 		// Not skipping to find next
 		if (!pFindNext)
 			// Status
