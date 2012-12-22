@@ -2336,9 +2336,104 @@ bool PathFreePix(int32_t x, int32_t y, int32_t par)
 	return !GBackSolid(x,y);
 }
 
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+	return ForLine(x1,y1,x2,y2,&PathFreePix,0,0,0);
+}
+
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
 {
-	return ForLine(x1,y1,x2,y2,&PathFreePix,0,ix,iy);
+	// use the standard Bresenham algorithm and just adjust it to behave correctly in the inversed case
+	bool reverse = false;
+	bool steep = Abs(y2 - y1) > Abs(x2 - x1);
+
+	if (steep)
+	{
+		Swap(x1, y1);
+		Swap(x2, y2);
+	}
+
+	if (x1 > x2)
+	{
+		Swap(x1, x2);
+		Swap(y1, y2);
+		reverse = true;
+	}
+
+	if (!reverse)
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y1;
+
+		for (int32_t x = x1; x <= x2; x++)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+				{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error += deltay;
+			if (2 * error >= deltax)
+			{
+				y += ystep;
+				error -= deltax;
+			}
+		}
+	}
+	else // reverse
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y2;
+
+		// normal (inverse) routine
+		for (int32_t x = x2; x >= x1; x--)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+					{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error -= deltay;
+			if (2 * error <= -deltax)
+			{
+				y -= ystep;
+				error += deltax;
+			}
+
+		}
+	}
+	// no solid material encountered: path free!
+	return true;
 }
 
 bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
