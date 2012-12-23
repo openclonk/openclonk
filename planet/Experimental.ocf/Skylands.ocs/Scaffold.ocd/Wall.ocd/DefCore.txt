@@ -1,0 +1,10 @@
+[DefCore]
+id=ScaffoldWall
+Version=5,2,0,1
+Category=C4D_Structure | C4D_MouseIgnore
+Width=32
+Height=32
+Offset=0,0
+Vertices=1
+Mass=100
+Components=Wood=1

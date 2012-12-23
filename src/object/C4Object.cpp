@@ -1892,7 +1892,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY());
 
 	// Output boundary
-	if (!fYStretchObject && !eDrawMode)
+	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
 	{
 		if (pActionDef && !r && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 		{
@@ -2445,12 +2445,10 @@ void C4Object::Denumerate(C4ValueNumbers * numbers)
 	if (pMeshInstance) pMeshInstance->DenumeratePointers();
 }
 
-void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions, C4DrawTransform* transform)
+void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4DrawTransform* transform)
 {
 	// Draw def picture with object color
 	Def->Draw(cgo,fSelected,Color,this,0,0,transform);
-	// Region
-	if (pRegions) pRegions->Add(cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,GetName(),COM_None,this);
 }
 
 void C4Object::Picture2Facet(C4FacetSurface &cgo)
@@ -2983,6 +2981,14 @@ bool C4Object::SetActionByName(C4String *ActName,
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);
 }
 
+C4PropList *C4Object::GetActionByName(C4PropertyName &act_name, C4Value *rval_holder)
+{
+	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
+	if (!ActMap.getPropList()) return false;
+	ActMap.getPropList()->GetProperty(act_name, rval_holder);
+	return rval_holder->getPropList();
+}
+
 bool C4Object::SetActionByName(const char * szActName,
                                C4Object *pTarget, C4Object *pTarget2,
                                int32_t iCalls, bool fForce)
@@ -3087,7 +3093,7 @@ void C4Object::ContactAction()
 		switch (iProcedure)
 		{
 		case DFA_FLIGHT:
-			if (ydir < 0) break;
+			if (ydir < 0) return;
 			// Jump: FlatHit / HardHit / Walk
 			if ((OCF & OCF_HitSpeed4) || fDisabled)
 				if (ObjectActionFlat(this,Action.Dir)) return;
@@ -3421,27 +3427,34 @@ void C4Object::ExecAction()
 				Mobile=1;
 			}
 
-	// Idle objects do natural gravity only
 	C4PropList* pActionDef = GetAction();
+	// No IncompleteActivity? Reset action if there was one
+	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity && pActionDef)
+	{
+		SetAction(0);
+		pActionDef = 0;
+	}
+
+	// InLiquidAction check
+	if (InLiquid)
+		if (pActionDef && pActionDef->GetPropertyStr(P_InLiquidAction))
+		{
+			SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction));
+			pActionDef = GetAction();
+		}
+	
+	// Idle objects do natural gravity only
 	if (!pActionDef)
 	{
+		Action.t_attach = CNAT_None;
 		if (Mobile) DoGravity(this);
 		return;
 	}
-
-	// No IncompleteActivity? Reset action
-	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
-		{ SetAction(0); return; }
 
 	C4Real fWalk,fMove;
 
 	// Action time advance
 	Action.Time++;
-
-	// InLiquidAction check
-	if (InLiquid)
-		if (pActionDef->GetPropertyStr(P_InLiquidAction))
-			{ SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction)); return; }
 
 	C4Value Attach;
 	pActionDef->GetProperty(P_Attach, &Attach);
@@ -3552,10 +3565,11 @@ void C4Object::ExecAction()
 		}
 		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
 		{
-			if (ydir > 0)
+			/*if (ydir > 0)
 				ComDir = COMD_Down;
 			else
-				ComDir = COMD_Up;
+				ComDir = COMD_Up;*/
+			ComDir = COMD_Up;
 		}
 		switch (ComDir)
 		{
@@ -3935,11 +3949,11 @@ void C4Object::ExecAction()
 				Exit(GetX(),GetY(),r);
 		}
 
-		// Force position
-		ForcePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
-		              -Shape.VtxX[Action.Data>>8],
+		// Move position (so objects on solidmask move)
+		MovePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
+		              -Shape.VtxX[Action.Data>>8] - fix_x,
 		              Action.Target->fix_y + Action.Target->Shape.VtxY[Action.Data&255]
-		              -Shape.VtxY[Action.Data>>8]);
+		              -Shape.VtxY[Action.Data>>8] - fix_y);
 		// must zero motion...
 		xdir=ydir=0;
 

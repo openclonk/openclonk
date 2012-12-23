@@ -47,28 +47,20 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	// bounds
 	SetBounds(rcBounds);
 	// can't get specialized desc from object at the moment because of potential script callbacks!
-	StdStrBuf strGoalName, strGoalDesc;
-	/*C4Object *pGoalObj = ::Objects.FindInternal(idGoal);
-	if (pGoalObj)
-	  {
-	  pGoalObj->GetInfoString().getData();
-	  }
-	else*/
+	StdStrBuf strGoalName;
+	// just get desc from def
+	C4Def *pGoalDef = ::Definitions.ID2Def(idGoal);
+	if (pGoalDef)
 	{
-		// just get desc from def
-		C4Def *pGoalDef = ::Definitions.ID2Def(idGoal);
-		if (pGoalDef)
-		{
-			strGoalName.Copy(pGoalDef->GetName());
-			// strGoalDesc.Copy(pGoalDef->GetDesc());
-		}
+		strGoalName.Copy(pGoalDef->GetName());
+		// strGoalDesc.Copy(pGoalDef->GetDesc());
 	}
 	// get tooltip
 	StdStrBuf sToolTip;
 	if (fFulfilled)
-		sToolTip.Format(LoadResStr("IDS_DESC_GOALFULFILLED"), strGoalName.getData(), strGoalDesc.getData());
+		sToolTip.Format(LoadResStr("IDS_DESC_GOALFULFILLED"), strGoalName.getData());
 	else
-		sToolTip.Format(LoadResStr("IDS_DESC_GOALNOTFULFILLED"), strGoalName.getData(), strGoalDesc.getData());
+		sToolTip.Format(LoadResStr("IDS_DESC_GOALNOTFULFILLED"), strGoalName.getData());
 	SetToolTip(sToolTip.getData());
 	// create buffered picture of goal definition
 	C4Def *pDrawDef = ::Definitions.ID2Def(idGoal);

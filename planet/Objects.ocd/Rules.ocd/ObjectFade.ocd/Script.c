@@ -40,7 +40,7 @@ protected func Timer()
 			continue;
 		if (fade->GetEffect("IntFadeOut", fade)) 
 			continue;
-		if (GBackSolid(AbsX(fade->GetX()), AbsY(fade->GetY()))) 
+		if (fade->Stuck()) 
 			continue;
 		if (fade->~HasNoFadeOut())
 			continue;		

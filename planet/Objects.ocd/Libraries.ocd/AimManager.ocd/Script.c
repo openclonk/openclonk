@@ -163,7 +163,10 @@ func PauseAim()
 {
 	if(!aim_weapon) return CancelAiming();
 	ResetHands(1);
-	aim_weapon->~OnPauseAim(this);
+	
+	// might be invalid if the weapon does anything weird on Reset() 
+	if(aim_weapon)
+		aim_weapon->~OnPauseAim(this);
 }
 
 func RestartAim()

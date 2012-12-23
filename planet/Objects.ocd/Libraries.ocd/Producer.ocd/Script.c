@@ -100,21 +100,24 @@ private func IsProduct(id product_id)
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
 */
-public func GetProducts()
+public func GetProducts(object for_clonk)
 {
+	var for_plr = GetOwner();
+	if (for_clonk)
+		for_plr = for_clonk-> GetOwner();
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	if (!IgnoreKnowledge() && GetOwner() != NO_OWNER)
+	if (!IgnoreKnowledge() && for_plr != NO_OWNER)
 	{
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Object))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
 			index++;
 		}
 		index = 0;
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Vehicle))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Vehicle))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
@@ -368,6 +371,7 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
+	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -381,8 +385,7 @@ private func CheckComponents(id product, bool remove)
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
+		if (!CheckComponent(mat_id, mat_cost))
 			return false; // Components missing.
 		else if (remove)
 		{
@@ -393,7 +396,13 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
-private func CheckFuel(id product, bool remove)
+public func CheckComponent(id component, int amount)
+{
+	// check if at least the given amount of the given component is available to be used for production
+	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+}
+
+public func CheckFuel(id product, bool remove)
 {
 	if (FuelNeed(product) > 0)
 	{
@@ -419,7 +428,7 @@ private func CheckFuel(id product, bool remove)
 	return true;
 }
 
-private func CheckLiquids(id product, bool remove)
+public func CheckLiquids(id product, bool remove)
 {
 	var liq_need = LiquidNeed(product);
 	if (liq_need)
@@ -449,7 +458,7 @@ private func CheckLiquids(id product, bool remove)
 	return true;
 }
 
-private func CheckMaterials(id product, bool remove)
+public func CheckMaterials(id product, bool remove)
 {
 	var mat_need = MaterialNeed(product);
 	if (mat_need)
@@ -470,7 +479,7 @@ private func CheckMaterials(id product, bool remove)
 			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
 			{
 				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
-				extracted += val[1];
+				extracted += val;
 				if (extracted >= need)
 					break;
 			}

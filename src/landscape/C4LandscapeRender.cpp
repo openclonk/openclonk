@@ -34,7 +34,7 @@ const int C4LR_BiasDistanceY = 8;
 // Workarounds to try if shader fails to compile
 const char *C4LR_ShaderWorkarounds[] = {
 	"#define NO_TEXTURE_LOD_IN_FRAGMENT\n",
-	"#define BROKEN_ARRAYS_WORKAROUND\n",
+	"#define NO_BROKEN_ARRAYS_WORKAROUND\n",
 	"#define SCALER_IN_GPU\n",
 };
 const int C4LR_ShaderWorkaroundCount = sizeof(C4LR_ShaderWorkarounds) / sizeof(*C4LR_ShaderWorkarounds);
@@ -54,6 +54,7 @@ static const char *GetUniformName(int iUniform)
 	case C4LRU_MatMap:       return "matMap";
 	case C4LRU_MatMapTex:    return "matMapTex";
 	case C4LRU_MaterialDepth:return "materialDepth";
+	case C4LRU_MaterialSize: return "materialSize";
 	}
 	assert(false);
 	return "mysterious";
@@ -193,6 +194,8 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 		LogF("   gl: Too many material textures! GPU only supports 3D texture depth of %d!", iMaxTexSize);
 		return false;
 	}
+	iMaterialWidth = iTexWdt;
+	iMaterialHeight = iTexHgt;
 
 	// Compose together data of all textures
 	const int iBytesPP = pRefSfc->byBytesPP;
@@ -255,16 +258,11 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	// Clear error error(s?)
 	while(glGetError()) {}
 	
-	int iMMLevels = 3;
-	while(iTexWdt <= (1 >> iMMLevels) || iTexHgt <= (1 >> iMMLevels))
-		iMMLevels--;
-	
 	// Alloc 3D textures
 	glEnable(GL_TEXTURE_3D);
-	glGenTextures(iMMLevels, hMaterialTexture);
+	glGenTextures(C4LR_MipMapCount, hMaterialTexture);
 	
 	// Generate textures (mipmaps too!)
-	int iFullWdt = iTexWdt, iFullHgt = iTexHgt;
 	int iSizeSum = 0;
 	BYTE *pLastData = new BYTE [iSize / 4];
 	for(int iMMLevel = 0; iMMLevel < C4LR_MipMapCount; iMMLevel++)
@@ -333,9 +331,9 @@ bool C4LandscapeRenderGL::InitMaterialTexture(C4TextureMap *pTexs)
 	}
 
 	// Announce the good news
-	LogF(" gl: Texturing uses %d slots at %dx%d, %d levels (%d MB total)",
+	LogF("  gl: Texturing uses %d slots at %dx%d, %d levels (%d MB total)",
 		static_cast<int>(MaterialTextureMap.size()),
-		iFullWdt, iFullHgt,
+		iMaterialWidth, iMaterialHeight,
 		C4LR_MipMapCount,
 		iSizeSum / 1000000);
 
@@ -973,7 +971,10 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	}
 	if (hUniforms[C4LRU_MaterialDepth] != GLhandleARB(-1))
 		glUniform1iARB(hUniforms[C4LRU_MaterialDepth], iMaterialTextureDepth);
-
+	if (hUniforms[C4LRU_MaterialSize] != GLhandleARB(-1))
+		glUniform2fARB(hUniforms[C4LRU_MaterialSize], float(iMaterialWidth) / ::Game.C4S.Landscape.MaterialZoom,
+		                                              float(iMaterialHeight) / ::Game.C4S.Landscape.MaterialZoom);
+		
 	// Setup facilities for texture unit allocation (gimme local functions...)
 	int iUnit = 0; int iUnitMap[32]; ZeroMem(iUnitMap, sizeof(iUnitMap));
 	#define ALLOC_UNIT(hUniform, iType) do { \
@@ -1000,8 +1001,8 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 		ALLOC_UNIT(hUniforms[C4LRU_MaterialTex], GL_TEXTURE_3D);
 
 		// Decide which mip-map level to use
-		double z = 2.0; int iMM = 0;
-		while(pGL->Zoom < z && iMM + 1 <C4LR_MipMapCount)
+		double z = 0.5; int iMM = 0;
+		while(pGL->Zoom < z * ::Game.C4S.Landscape.MaterialZoom && iMM + 1 <C4LR_MipMapCount)
 			{ z /= 2; iMM++; }
 		glBindTexture(GL_TEXTURE_3D, hMaterialTexture[iMM]);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

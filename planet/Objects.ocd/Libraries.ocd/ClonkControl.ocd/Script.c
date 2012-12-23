@@ -761,7 +761,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// some controls should only do something on release (everything that has to do with interaction)
-	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_GrabNext || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
 	{
 		if(!release)
 		{
@@ -1072,8 +1072,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Collecting
 	if (ctrl == CON_Collect)
 	{
+		// only if not inside something
+		if(Contained()) return false; // not handled
+		
 		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
 		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
 		if(obj)
 		{
@@ -1081,6 +1084,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// collected into the hands
 			Collect(obj,nil,nil,true);
 		}
+		
+		// return not handled to still receive other controls - collection should not block anything else
+		return false;
 	}
 	
 	// Throwing and dropping
@@ -1102,7 +1108,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				CancelUse();
 				
-				if (proc == "SCALE" || proc == "HANGLE")
+				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
@@ -1878,8 +1884,8 @@ private func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
-	iX = 8; if (!GetDir()) iX = -iX;
-	iY = Cos(angle,-8);
+	iX = 4; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-4);
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 

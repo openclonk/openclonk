@@ -68,7 +68,7 @@ enum C4SFilmMode
 class C4SHead
 {
 public:
-	int32_t  C4XVer[4];
+	int32_t  C4XVer[3];
 	char Title[C4MaxTitle+1];
 	char Loader[C4MaxTitle+1];
 	char Font[C4MaxTitle+1]; // scenario specific font; may be 0
@@ -191,6 +191,7 @@ public:
 	bool KeepMapCreator; // set if the mapcreator will be needed in the scenario (for DrawDefMap)
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
 	int32_t FoWRes; // chunk size of FoGOfWar
+	int32_t MaterialZoom;
 public:
 	void Default();
 	void GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum);

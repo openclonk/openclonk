@@ -314,22 +314,33 @@ public func Init()
 // static
 func VisualizePowerChange(object obj, int to, int before, bool loss)
 {
+	var before_current = nil;
 	var e = GetEffect("VisualPowerChange", obj);
 	if(!e)
 		e = AddEffect("VisualPowerChange", obj, 1, 5, nil, Library_Power);
+	else before_current = e.current;
 	
 	var to_abs = Abs(to);
 	var before_abs = Abs(before);
 	
 	e.max = Max(to_abs, before_abs);
-	e.current = before_abs;
+	e.current = before_current ?? before_abs;
 	e.to = to_abs;
 	
-	if(before > 0 && to < 0) {e.color = RGB(1, 255, 1); e.back_color = RGB(100, 100, 1);}
-	else if(before < 0 && to > 0){e.color = RGB(1, 255, 1); e.back_color = RGBa(1, 100, 1);}
-	else if(to < 0){e.color = RGB(1, 255, 1); e.back_color = RGB(255, 1, 1);}
-	else if(to > 0) {e.color = RGB(1, 255, 1); e.back_color = RGBa(10, 10, 10, 150);}
 	
+	
+	if(loss)
+		e.back_graphics_name = "Red";
+	else e.back_graphics_name = nil;
+	
+	if(to < 0) e.graphics_name = "Yellow";
+	else if(to > 0) e.graphics_name = "Green";
+	else // off now
+	{
+		if(before < 0) e.graphics_name = "Yellow";
+		else e.graphics_name = "Green";
+	}
+
 	EffectCall(obj, e, "Refresh");
 }
 
@@ -344,7 +355,9 @@ func FxVisualPowerChangeRefresh(target, effect)
 	
 	effect.bar = target->CreateProgressBar(GUI_BarProgressBar, effect.max, effect.current, 35
 		, controller, {x = off_x, y = off_y}, vis
-		, {size = 1000, bars = effect.max / 25, color = effect.color, back_color = effect.back_color});
+		, {size = 1000, bars = effect.max / 25, graphics_name = effect.graphics_name, back_graphics_name = effect.back_graphics_name, image = Icon_Lightbulb, fade_speed = 1});
+	// appear on a GUI level in front of other objects (f.e. trees)
+	effect.bar->SetPlane(1010);
 }
 
 func FxVisualPowerChangeTimer(target, effect, time)

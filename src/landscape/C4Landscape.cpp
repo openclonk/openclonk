@@ -772,16 +772,21 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		if (GetDensity(tx,ty+1)<mdens)
 			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
-	// Try reaction with material below
+	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
-	if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel)))))
+	int32_t check_dir = 0;
+	for (int32_t i=0; i<2; ++i)
 	{
-		C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
-		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
+		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+check_dir))))
 		{
-			// the material to be inserted killed itself in some material reaction below
-			return true;
+			C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
+			if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
+			{
+				// the material to be inserted killed itself in some material reaction below
+				return true;
+			}
 		}
+		if (!(check_dir = Sign(GravAccel))) break;
 	}
 
 	// Insert as dead material
@@ -1478,11 +1483,11 @@ bool C4Landscape::SaveMap(C4Group &hGroup)
 	if (!Map) return false;
 
 	// Create map palette
-	BYTE bypPalette[3*256];
-	::TextureMap.StoreMapPalette(bypPalette,::MaterialMap);
+	CStdPalette Palette;
+	::TextureMap.StoreMapPalette(&Palette,::MaterialMap);
 
 	// Save map surface
-	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), bypPalette))
+	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), &Palette))
 		return false;
 
 	// Move temp file to group
@@ -2331,9 +2336,104 @@ bool PathFreePix(int32_t x, int32_t y, int32_t par)
 	return !GBackSolid(x,y);
 }
 
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+	return ForLine(x1,y1,x2,y2,&PathFreePix,0,0,0);
+}
+
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
 {
-	return ForLine(x1,y1,x2,y2,&PathFreePix,0,ix,iy);
+	// use the standard Bresenham algorithm and just adjust it to behave correctly in the inversed case
+	bool reverse = false;
+	bool steep = Abs(y2 - y1) > Abs(x2 - x1);
+
+	if (steep)
+	{
+		Swap(x1, y1);
+		Swap(x2, y2);
+	}
+
+	if (x1 > x2)
+	{
+		Swap(x1, x2);
+		Swap(y1, y2);
+		reverse = true;
+	}
+
+	if (!reverse)
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y1;
+
+		for (int32_t x = x1; x <= x2; x++)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+				{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error += deltay;
+			if (2 * error >= deltax)
+			{
+				y += ystep;
+				error -= deltax;
+			}
+		}
+	}
+	else // reverse
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y2;
+
+		// normal (inverse) routine
+		for (int32_t x = x2; x >= x1; x--)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+					{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error -= deltay;
+			if (2 * error <= -deltax)
+			{
+				y -= ystep;
+				error += deltax;
+			}
+
+		}
+	}
+	// no solid material encountered: path free!
+	return true;
 }
 
 bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
@@ -3245,13 +3345,8 @@ bool C4Landscape::Mat2Pal()
 			continue;
 		// colors
 		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
-		for (rgb=0; rgb<3; rgb++)
-			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
-			= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-			  = uint8_t(dwPix >> ((2-rgb) * 8));
-		// alpha
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0xff;
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0xff;
+		Surface8->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
+		Surface8->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 	}
 	// success
 	return true;

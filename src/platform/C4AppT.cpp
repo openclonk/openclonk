@@ -23,27 +23,11 @@
 /* A wrapper class to OS dependent event and window interfaces, Text version */
 
 #include <C4Include.h>
-#ifdef USE_CONSOLE
+#include "C4App.h"
+
 #include <C4Window.h>
 #include <C4Draw.h>
 #include <C4Application.h>
-
-#ifdef HAVE_LIBREADLINE
-#  if defined(HAVE_READLINE_READLINE_H)
-#    include <readline/readline.h>
-#  elif defined(HAVE_READLINE_H)
-#    include <readline.h>
-#  endif
-static void readline_callback (char *);
-#endif /* HAVE_LIBREADLINE */
-
-#ifdef HAVE_READLINE_HISTORY
-#  if defined(HAVE_READLINE_HISTORY_H)
-#    include <readline/history.h>
-#  elif defined(HAVE_HISTORY_H)
-#    include <history.h>
-#  endif
-#endif /* HAVE_READLINE_HISTORY */
 
 /* C4AbstractApp */
 
@@ -109,86 +93,6 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return false;
 }
 
-CStdInProc::CStdInProc()
-{
-#if USE_CONSOLE && HAVE_LIBREADLINE
-	rl_callback_handler_install (">", readline_callback);
-#endif
-}
-
-CStdInProc::~CStdInProc()
-{
-#if USE_CONSOLE && HAVE_LIBREADLINE
-	rl_callback_handler_remove();
-#endif
-}
-
-bool CStdInProc::Execute(int iTimeout, pollfd *)
-{
-#ifdef _WIN32
-	while (_kbhit())
-	{
-		// Surely not the most efficient way to do it, but we won't have to read much data anyway.
-		char c = getch();
-		if (c == '\r')
-		{
-			if (!CmdBuf.isNull())
-			{
-				Application.OnCommand(CmdBuf.getData());
-				CmdBuf.Clear();
-			}
-		}
-		else if (isprint((unsigned char)c))
-			CmdBuf.AppendChar(c);
-	}
-	// FIXME: handle stdin-close
-	return true;
-#elif defined(HAVE_LIBREADLINE)
-	rl_callback_read_char();
-	return true;
-#else
-	// Surely not the most efficient way to do it, but we won't have to read much data anyway.
-	char c;
-	if (read(0, &c, 1) != 1)
-	{
-		Application.Quit();
-		return false;
-	}
-	if (c == '\n')
-	{
-		if (!CmdBuf.isNull())
-		{
-			Application.OnCommand(CmdBuf.getData());
-			CmdBuf.Clear();
-		}
-	}
-	else if (isprint((unsigned char)c))
-		CmdBuf.AppendChar(c);
-	return true;
-#endif
-}
-
-#if HAVE_LIBREADLINE
-static void readline_callback (char * line)
-{
-	if (!line)
-	{
-		Application.Quit();
-	}
-	else
-	{
-		Application.OnCommand(line);
-	}
-#if HAVE_READLINE_HISTORY
-	if (line && *line)
-	{
-		add_history (line);
-	}
-#endif
-	free(line);
-}
-#endif
-
 bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP&, bool) { return true; }
 bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP&) { return true; }
 void C4AbstractApp::MessageDialog(const char * message) {}
@@ -213,5 +117,3 @@ bool C4Window::RestorePosition(char const*, char const*, bool) {return 0;}
 void C4Window::RequestUpdate() {}
 void C4Window::SetSize(unsigned int, unsigned int) {}
 void C4Window::SetTitle(char const*) {}
-
-#endif // USE_CONSOLE

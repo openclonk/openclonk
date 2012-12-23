@@ -164,6 +164,9 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		iXRes = CGDisplayPixelsWide(C4OpenGLView.displayID);
 		iYRes = CGDisplayPixelsHigh(C4OpenGLView.displayID);
 	}
+	ActualFullscreenX = iXRes;
+	ActualFullscreenY = iYRes;
+	[C4OpenGLView setSurfaceBackingSizeOf:[C4OpenGLView mainContext] width:ActualFullscreenX height:ActualFullscreenY];
 	pWindow->SetSize(iXRes, iYRes);
 	[controller setFullscreen:fFullScreen];
 	[window setAspectRatio:[[window contentView] frame].size];

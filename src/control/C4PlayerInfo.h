@@ -24,7 +24,7 @@
 // This list is used for:
 // -player information to be known before actual join
 //  (player count for landscape width, team, color, etc.)
-// -player file ressource association (network mode)
+// -player file resource association (network mode)
 // -league information to be stored for each player; even after elimination
 // *-startup loader screen information; e.g. for replays
 //
@@ -119,12 +119,12 @@ public:
 	void SetColor(DWORD dwUseClr) { dwColor = dwUseClr; } // set color to be used
 	void SetOriginalColor(DWORD dwUseClr) { dwOriginalColor = dwUseClr; } // set color the player wishes to have
 	void SetFilename(const char *szToFilename);           // set new player filename
-	void SetToScenarioFilename(const char *szScenFilename); // set to file within scenario; discard ressource
+	void SetToScenarioFilename(const char *szScenFilename); // set to file within scenario; discard resource
 	void SetTempFile() { assert(!!szFilename); dwFlags |= PIF_TempFile; } // mark filename as temp, so it is deleted in dtor or after join
 	void SetTeam(int32_t idToTeam) { idTeam = idToTeam; }
 	void DeleteTempFile();                                // delete filename if temp
 	void LoadResource();                                  // network: Load resource if present and not being loaded yet
-	void DiscardResource();                               // delete any source ressource for network player infos
+	void DiscardResource();                               // delete any source resource for network player infos
 	void SetAssociatedSavegamePlayer(int32_t aidSavegamePlayer)   // link with savegame player from restore list
 	{ idSavegamePlayer=aidSavegamePlayer; }
 	int32_t GetAssociatedSavegamePlayerID() const
@@ -160,7 +160,7 @@ public:
 	StdStrBuf GetLobbyName() const; // return player name including clan/team tag if known; fallback to regular player name
 	const char *GetFilename() const { return szFilename.getData(); } // get filename for local games
 	const char *GetLocalJoinFilename() const;              // get name of file to join the player from
-	C4Network2Res *GetRes() const { return pRes; }         // get player ressource for network games
+	C4Network2Res *GetRes() const { return pRes; }         // get player resource for network games
 	bool IsRemoved() const { return !!(dwFlags & PIF_Removed); }
 	bool HasJoined() const { return !!(dwFlags & PIF_Joined); }    // return whether player has joined
 	bool IsJoined() const { return HasJoined() && !(dwFlags & PIF_Removed); } // return whether player is currently in the game
@@ -250,7 +250,7 @@ public:
 	C4PlayerInfo *GetPlayerInfo(int32_t iIndex) const;      // get indexed player info
 	C4PlayerInfo *GetPlayerInfo(int32_t iIndex, C4PlayerType eType) const;      // get indexed player info of given type
 	C4PlayerInfo *GetPlayerInfoByID(int32_t id) const;      // get player info by unique player ID
-	C4PlayerInfo *GetPlayerInfoByRes(int32_t idResID) const; // get player info by ressource ID
+	C4PlayerInfo *GetPlayerInfoByRes(int32_t idResID) const; // get player info by resource ID
 	int32_t GetClientID() const { return iClientID; }       // get target client ID
 	bool HasUnjoinedPlayers() const;                          // check all players and return whether one of them didn't join
 	int32_t GetJoinedPlayerCount() const;                   // return number of players that are IsJoined()

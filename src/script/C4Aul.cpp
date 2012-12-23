@@ -119,7 +119,6 @@ std::string C4AulScript::Translate(const std::string &text) const
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
 		C4AulFunc(pOwner, pName),
-		CodePos(0),
 		Script(Script),
 		OwnerOverloaded(NULL),
 		ParCount(0),
@@ -127,11 +126,11 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, 
 		tProfileTime(0)
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+	AddBCC(AB_EOFN);
 }
 
 C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
 		C4AulFunc(pOwner, FromFunc.GetName()),
-		CodePos(0),
 		Script(FromFunc.Script),
 		VarNamed(FromFunc.VarNamed),
 		ParNamed(FromFunc.ParNamed),
@@ -142,11 +141,13 @@ C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &Fro
 {
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];
+	AddBCC(AB_EOFN);
 }
 
 C4AulScriptFunc::~C4AulScriptFunc()
 {
 	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	ClearCode();
 }
 
 void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
@@ -159,7 +160,7 @@ void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		GlobalPropList(C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Global"))),
+		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
 		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine

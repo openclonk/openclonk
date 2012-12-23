@@ -66,18 +66,18 @@ void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 	StdStrBuf sReactionFuncName;
 	int32_t i=0; while (ReactionFuncMap[i].szRFName && (ReactionFuncMap[i].pFunc != pFunc)) ++i;
 	sReactionFuncName = ReactionFuncMap[i].szRFName;
-	pComp->Value(mkNamingAdapt(sReactionFuncName,   "Type",                     StdStrBuf()     ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sReactionFuncName, StdCompiler::RCT_IdtfAllowEmpty),   "Type",                     StdCopyStrBuf() ));
 	i=0; while (ReactionFuncMap[i].szRFName && !SEqual(ReactionFuncMap[i].szRFName, sReactionFuncName.getData())) ++i;
 	pFunc = ReactionFuncMap[i].pFunc;
 	// compile the rest
-	pComp->Value(mkNamingAdapt(TargetSpec,          "TargetSpec",               StdCopyStrBuf() ));
-	pComp->Value(mkNamingAdapt(ScriptFunc,          "ScriptFunc",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(TargetSpec, StdCompiler::RCT_All),          "TargetSpec",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(ScriptFunc, StdCompiler::RCT_IdtfAllowEmpty),          "ScriptFunc",               StdCopyStrBuf() ));
 	pComp->Value(mkNamingAdapt(iExecMask,           "ExecMask",                 ~0u             ));
 	pComp->Value(mkNamingAdapt(fReverse,            "Reverse",                  false           ));
 	pComp->Value(mkNamingAdapt(fInverseSpec,        "InverseSpec",              false           ));
 	pComp->Value(mkNamingAdapt(fInsertionCheck,     "CheckSlide",               true            ));
 	pComp->Value(mkNamingAdapt(iDepth,              "Depth",                    0               ));
-	pComp->Value(mkNamingAdapt(sConvertMat,         "ConvertMat",               StdCopyStrBuf() ));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sConvertMat, StdCompiler::RCT_IdtfAllowEmpty),         "ConvertMat",               StdCopyStrBuf() ));
 	pComp->Value(mkNamingAdapt(iCorrosionRate,      "CorrosionRate",            100             ));
 }
 
@@ -804,7 +804,10 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Incindiary mats smoke on contact even before doing their slide
 	if (::MaterialMap.Map[iPxsMat].Incindiary)
-		if (!Random(25)) Smoke(iX, iY, 4+Random(3) );
+		if (!Random(25))
+		{
+			Smoke(iX, iY, 4 + Random(3));
+		}
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
@@ -916,16 +919,19 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 	case meeMassMove: // MassMover-movement
 	{
 		// evaluate corrosion percentage
-		bool fDoCorrode;
+		bool fDoCorrode; int d100 = Random(100);
 		if (pReaction->fUserDefined)
-			fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
+			fDoCorrode = (d100 < pReaction->iCorrosionRate);
 		else
-			fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
+			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
 			ClearBackPix(iLSPosX,iLSPosY);
 			//::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
-			if (!Random(5)) Smoke(iX,iY,3+Random(3));
+			if (!Random(5))
+			{
+				Smoke(iX, iY, 3 + Random(3));
+			}
 			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 			return true;
 		}
@@ -940,16 +946,19 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 				// either splash or slide prevented interaction
 				return false;
 		// evaluate corrosion percentage
-		bool fDoCorrode;
+		bool fDoCorrode; int d100 = Random(100);
 		if (pReaction->fUserDefined)
-			fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
+			fDoCorrode = (d100 < pReaction->iCorrosionRate);
 		else
-			fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
+			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
 			ClearBackPix(iLSPosX,iLSPosY);
 			::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
-			if (!Random(5)) Smoke(iX,iY,3+Random(3));
+			if (!Random(5))
+			{
+				Smoke(iX,iY,3+Random(3));
+			}
 			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 			return true;
 		}

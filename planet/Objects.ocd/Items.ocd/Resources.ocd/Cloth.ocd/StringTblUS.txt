@@ -1,0 +1,2 @@
+Name=Cloth
+Description=Basic material for fabric related objects.

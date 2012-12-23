@@ -20,6 +20,12 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	AddEffect("ShovelDig",clonk,1,1,this);
 //	ControlUseHolding(clonk, x, y);
+
+	//temporary workaround to allow clonks to dig free when they are stuck in dirt
+	if(clonk->Stuck()){
+		DigFree(clonk->GetX(), clonk->GetY(), 10);
+	}
+	
 	return true;
 }
 

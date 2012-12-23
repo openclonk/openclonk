@@ -2,7 +2,7 @@
 id=Scoreboard_Relaunch
 Version=5,2,0,1
 Category=C4D_StaticBack|C4D_Rule
-Picture=0,0,128,128
-Width=128
-Height=128
-Offset=-64,-64
+Picture=0,0,32,32
+Width=32
+Height=32
+Offset=-16,-16

@@ -51,25 +51,21 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if (!clonk->IsWalking() && !clonk->IsJumping())
 		return true;
 
-	if(Distance(0,0,iX,iY) < 35)
-		tree = FindObject(Find_AtPoint(iX,iY), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
+	// find tree that is closest to the clonk's axe when swung
+	var x_offs = 10;
+	if(clonk->GetDir() == DIR_Left) {
+		x_offs = -x_offs;
+	}
+	tree = FindObject(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer());
 	
-	if(!tree)
-		tree = FindObject(Find_AtPoint(0,0), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
-
 	// Chopping
 	if(tree && clonk->IsWalking())
 	{
 		//treedist - the x-distance the clonk is from the centre of a tree-trunk
-		var treedist = Abs(clonk->GetX() - tree->GetX());
-		if(tree->IsStanding() && treedist < 15 && treedist > 6)
+		var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
+		if(tree->IsStanding() && treedist <= 6)
 		{
 			using = 1;
-			//Set the clonk's dir to face the tree if he isn't
-			if(clonk->GetX() < tree->GetX() && clonk->GetDir() == 0)
-				clonk->SetDir(1);
-			else if(clonk->GetX() > tree->GetX() && clonk->GetDir() == 1)
-				clonk->SetDir(0);
 
 			//The clonk cannot hold other items in hand while swinging an axe
 			clonk->SetHandAction(1);

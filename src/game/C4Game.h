@@ -157,6 +157,7 @@ public:
 	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
 	void SetInitProgress(float fToProgress);
 	void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // update anything that's dependant on screen resolution
+	void OnKeyboardLayoutChanged();
 	void InitFullscreenComponents(bool fRunning);
 	bool ToggleChat();
 	// Pause

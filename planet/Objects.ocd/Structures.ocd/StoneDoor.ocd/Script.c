@@ -72,7 +72,7 @@ protected func FxAutoControlTimer(object target, effect, int time)
 		{
 			var plr = clonk->GetOwner();
 			var plr_team = GetPlayerTeam(plr);
-			if (plr_team == team)
+			if (team == 0 || plr_team == team)
 				open_door = true;			
 		}
 	// Player control

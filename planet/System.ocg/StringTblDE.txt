@@ -1,0 +1,89 @@
+﻿SET_WASD_QWERTZ=Normales Tastaturlayout
+SET_WASD_DVORAK=DVORAK Tastaturlayout
+SET_Gamepad=Gamepad
+
+CON_Jump=Springen
+CON_Jump_Desc=Im Laufen abspringen, aus dem Wasser springen oder sich von einer Wand abstoßen.
+
+CON_AimAxisLeft=Zielen - Links (Analog Stick)
+CON_AimAxisRight=Zielen - Rechts (Analog Stick)
+CON_AimAxisUp=Zielen - Hoch (Analog Stick)
+CON_AimAxisDown=Zielen - Runter (Analog Stick)
+
+CON_Throw=Werfen
+CON_Throw_Desc=Werfen des Gegenstandes in der Hand in die anvisierte Richtung.
+CON_ThrowAlt=Werfen (andere Hand)
+CON_ThrowAlt_Desc=Werfen des Gegenstandes in der anderen Hand in die anvisierte Richtung.
+
+CON_Drop=Ablegen
+CON_Drop_Desc=Ablegen des Gegenstandes in der Hand.
+CON_DropAlt=Ablegen (andere Hand)
+CON_DropAlt_Desc=Ablegen des Gegenstandes in der anderen Hand.
+
+CON_Use=Benutzen
+CON_Use_Desc=Benutzen des Gegenstandes in der Hand.
+CON_UseAlt=Benutzen (andere Hand)
+CON_UseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand.
+
+CON_Hotkey1=Hotkey 1
+CON_Hotkey2=Hotkey 2
+CON_Hotkey3=Hotkey 3
+CON_Hotkey4=Hotkey 4
+CON_Hotkey5=Hotkey 5
+CON_Hotkey6=Hotkey 6
+CON_Hotkey7=Hotkey 7
+CON_Hotkey8=Hotkey 8
+CON_Hotkey9=Hotkey 9
+CON_Hotkey0=Hotkey 10
+
+CON_Contents=Inventarmenü
+CON_Contents_Desc=Öffnen und schließen des Inventarmenüs. Über das Inventarmenü können Gegenstände aus Truhen, Loren usw. herausgenommen und hineingetan werden sowie Dinge mit anderen Clonks getauscht werden.
+CON_PlayerMenu=Spielermenü
+CON_PlayerMenu_Desc=Öffnen und schließen des Spielermenüs.
+
+CON_MenuSelect=Menü - Auswählen
+CON_MenuSelect_Desc=Bestätigen einer Auswahl im Menü.
+CON_MenuCancel=Menü: Schließen
+CON_MenuCancel_Desc=Schließen eines Menüs ohne eine Auswahl getroffen zu haben.
+CON_MenuOKAll=Menü - okay, alle
+CON_MenuOK=Menü: OK
+CON_MenuOK_Desc=Im Menü bestätigen.
+
+CON_NextCrew=Nächster Clonk
+CON_NextCrew_Desc=Auswählen des nächsten Clonks der eigenen Mannschaft. Im Spiel wird die eigene Mannschaft in der Anzeige am oberen Bildschirmrand angezeigt.
+CON_PreviousCrew=Letzter Clonk
+CON_PreviousCrew_Desc=Auswählen des vorherigen Clonks der eigenen Mannschaft. Im Spiel wird die eigene Mannschaft in der Anzeige am oberen Bildschirmrand angezeigt.
+CON_ZoomIn=Reinzoomen
+CON_ZoomIn_Desc=In die Spielwelt hineinzoomen um Details sichtbar zu machen.
+CON_ZoomOut=Rauszoomen
+CON_ZoomOut_Desc=Aus der Spielwelt herauszoomen um eine Übersicht zu bekommen.
+
+# -- Assignment specific strings
+
+KEY_MouseUse=Benutzen / Werfen
+KEY_MouseUse_Desc=Benutzen des Gegenstandes in der Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen in die Richtung geworfen in die der Cursor zeigt.
+KEY_MouseUseAlt=Benutzen / Werfen (andere Hand)
+KEY_MouseUseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen in die Richtung geworfen in die der Cursor zeigt.
+
+KEY_GamepadUse=Benutzen / Werfen
+KEY_GamepadUse_Desc=Benutzen des Gegenstandes in der Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen bei Loslassen der Taste in die Richtung geworfen in die mit dem Analog Stick gezielt wird.
+KEY_GamepadUseAlt=Benutzen / Werfen (andere Hand)
+KEY_GamepadUseAlt_Desc=Benutzen des Gegenstandes in der anderen Hand. Falls der Gegenstand nicht benutzt werden kann, wird er stattdessen bei Loslassen der Taste in die Richtung geworfen in die mit dem Analog Stick gezielt wird.
+
+KEY_Left=Links
+KEY_Left_Desc=Nach links laufen, schwimmen, hangeln oder sich nach links von einer Wand abstoßen. Beim Klettern links an einer Wand kann hiermit ein Gegenstand aufgenommen werden der in der Wand steckt.
+KEY_Right=Rechts
+KEY_Right_Desc=Nach rechts laufen, schwimmen, hangeln oder sich nach rechts von einer Wand abstoßen. Beim Klettern rechts an einer Wand kann hiermit ein Gegenstand aufgenommen werden der in der Wand steckt.
+KEY_Up=Hoch
+KEY_Up_Desc=Nach oben klettern oder schwimmen. Beim Hangeln wird hiermit ein Gegenstand aufgesammelt der in der Decke steckt.
+KEY_Down=Runter
+KEY_Down_Desc=Nach unten klettern, schwimmen oder sich beim Hangeln fallen lassen. Im Stehen wird hiermit ein herumliegender Gegenstand aufgesammelt.
+
+KEY_AimAxis_Desc=Mit dem Analog Stick zum Werfen oder Benutzen eines Gegenständes zielen. Kann auch statt den Richtungstasten zum Steuern des Clonks verwendet werden.
+
+KEY_Interact=Interagieren
+KEY_Interact_Desc=Interagieren mit Fahrzeugen, Gebäuden und anderen Dingen die bei dem Clonk stehen: Gebäude betreten und verlassen, Fahrzeuge anfassen und in Gebäude schieben, Werkzeuge und Waffen in Werkstätten herstellen und vieles mehr.
+
+KEY_Hotkey_Desc=Hotkeys:|Nr + l/r Maustaste - Den jeweiligen Gegenstand in die eine/andere Hand nehmen|Nr + Shift - Den jeweiligen Gegenstand ablegen|Nr + Interagieren - Mit dem jeweiligen Ding interagieren|Nr + Strg - Den jeweiligen Clonk aus der Mannschaftsleiste auswählen
+
+KEY_Ungrab=Fahrzeug loslassen

@@ -22,6 +22,7 @@ private func Initialize()
 /* Harvesting */
 
 private func IsCrop() { return true; }
+private func SickleHarvesting() { return false; }
 
 public func Harvest(object clonk)
 {

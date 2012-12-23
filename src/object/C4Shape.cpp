@@ -345,7 +345,7 @@ bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 	return false;
 }
 
-bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
+bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts)
 {
 	// Check all vertices at given object position.
 	// Set ContactCNAT and ContactCount.
@@ -362,24 +362,30 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
 
 		{
-
 			VtxContactCNAT[cvtx]=CNAT_None;
-			VtxContactMat[cvtx]=GBackMat(cx+VtxX[cvtx],cy+VtxY[cvtx]);
+			int32_t x = cx+VtxX[cvtx];
+			int32_t y = cy+VtxY[cvtx];
+			VtxContactMat[cvtx]=GBackMat(x,y);
 
-			if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]) >= ContactDensity)
+			if (GBackDensity(x,y) >= ContactDensity)
 			{
 				ContactCNAT |= VtxCNAT[cvtx];
 				VtxContactCNAT[cvtx]|=CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top,bottom,left,right
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]-1) >= ContactDensity)
+				if (GBackDensity(x,y-1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Top;
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]+1) >= ContactDensity)
+				if (GBackDensity(x,y+1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Bottom;
-				if (GBackDensity(cx+VtxX[cvtx]-1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x-1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Left;
-				if (GBackDensity(cx+VtxX[cvtx]+1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x+1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Right;
+			}
+			if (border_hack_contacts)
+			{
+				if (x == 0 && GBackDensity(x-1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Left;
+				else if (x == ::Landscape.Width && GBackDensity(x+1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Right;
 			}
 		}
 

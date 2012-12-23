@@ -45,7 +45,6 @@
     <desc>Inserts a material pixel at the given position and given speed.</desc>
     <related>
       <funclink>Material</funclink>
-      <funclink>InsertMaterialAmount</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2001-11</date>

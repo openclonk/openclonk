@@ -47,16 +47,9 @@ protected:
 	bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
 
-
-	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
-	void RemoveLastBCC();
-	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
 	virtual void UnLink(); // reset to unlinked state
-	int GetCodePos() const { return Code.size(); }
-	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
-	C4AulBCC *GetLastCode() { return LastCode; }
 
 
 	std::list<C4ID> Includes; // include list
@@ -69,9 +62,6 @@ protected:
 	bool IncludesResolved;
 
 	StdStrBuf Script; // script
-	std::vector<C4AulBCC> Code;
-	std::vector<const char *> PosForCode;
-	C4AulBCC * LastCode;
 	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
 	friend class C4AulParse;

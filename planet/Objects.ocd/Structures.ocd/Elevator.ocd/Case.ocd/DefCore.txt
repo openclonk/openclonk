@@ -5,11 +5,13 @@ Category=C4D_Vehicle
 Width=24
 Height=26
 Offset=-12,-13
-Vertices=4
-VertexX=-12,11,-12,11
-VertexY=-10,-10,10,10
-VertexCNAT=5,6,9,10
-VertexFriction=100,100,100,100
+# important: 4 vertices (5 to 8) are used in script!
+# if you change the number of vertices, make sure to adjust the script
+Vertices=8
+VertexX=-12,11,-12,11, -12,11,-12,11
+VertexY=-10,-10,9,9, -10,-10,9,9
+VertexCNAT=5,6,9,10, 5,6,9,10
+VertexFriction=100,100,100,100, 100,100,100,100
 Value=0
 Mass=30
 Components=Wood=1
@@ -19,3 +21,4 @@ Picture=24,0,152,128
 HorizontalFix=1
 NoPushEnter=1
 ContactCalls=1
+

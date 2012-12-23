@@ -150,7 +150,6 @@ enum C4AulBCCType
 	AB_ERR,     // parse error at this position
 	AB_DEBUG,   // debug break
 	AB_EOFN,    // end of function
-	AB_EOF      // end of file
 };
 
 // byte code chunk
@@ -192,7 +191,14 @@ public:
 	void SetOverloaded(C4AulFunc *);
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
-	int CodePos; // code pos
+	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
+	void ClearCode();
+	int GetCodePos() const { return Code.size(); }
+	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
+	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
+	std::vector<C4AulBCC> Code;
+	std::vector<const char *> PosForCode;
 
 public:
 	const char *Script; // script pos
@@ -217,7 +223,6 @@ public:
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
-	C4ScriptHost * GetCodeOwner();
 
 	time_t tProfileTime; // internally set by profiler
 

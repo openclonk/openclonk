@@ -25,6 +25,9 @@
 #include <C4GameObjects.h>
 #include <C4Game.h>
 #include <C4Object.h>
+#ifdef DEBUGREC
+#include <C4Record.h>
+#endif
 
 void C4PropList::AddRef(C4Value *pRef)
 {
@@ -71,13 +74,10 @@ C4PropList * C4PropList::New(C4PropList * prototype)
 	return r;
 }
 
-C4PropListStatic * C4PropList::NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
+C4PropListStatic * C4PropList::NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key)
 {
 	return new C4PropListStatic(prototype, parent, key);
 }
-
-C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
-int32_t C4PropListNumbered::EnumerationIndex = 0;
 
 C4PropList *C4PropListNumbered::GetByNumber(int32_t iNumber)
 {
@@ -216,7 +216,7 @@ C4PropList::~C4PropList()
 	assert(PropLists.Has(this));
 	PropLists.Remove(this);
 #endif
-	assert(!C4PropListNumbered::CheckPropList(this));
+	assert	(!C4PropListNumbered::CheckPropList(this));
 }
 
 bool C4PropList::operator==(const C4PropList &b) const
@@ -330,14 +330,13 @@ void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth
 		DataString.Append("...");
 		return;
 	}
-	const C4Property * p = Properties.First();
-	while (p)
+	std::list<const C4Property *> sorted_props = Properties.GetSortedListOfElementPointers();
+	for (std::list<const C4Property *>::const_iterator p = sorted_props.begin(); p != sorted_props.end(); ++p)
 	{
-		DataString.Append(p->Key->GetData());
+		if (p != sorted_props.begin()) DataString.Append(delim);
+		DataString.Append((*p)->Key->GetData());
 		DataString.Append(" = ");
-		DataString.Append(p->Value.GetDataString(depth - 1));
-		p = Properties.Next(p);
-		if (p) DataString.Append(delim);
+		DataString.Append((*p)->Value.GetDataString(depth - 1));
 	}
 }
 
@@ -474,33 +473,21 @@ C4AulFunc * C4PropList::GetFunc(const char * s) const
 	return GetFunc(k);
 }
 
-C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars)
+C4Value C4PropList::Call(C4String * k, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	C4AulFunc *pFn = GetFunc(k);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
-C4Value C4PropList::Call(const char * s, C4AulParSet *Pars)
+C4Value C4PropList::Call(const char * s, C4AulParSet *Pars, bool fPassErrors)
 {
 	if (!Status) return C4Value();
 	assert(s && s[0]);
 	C4AulFunc *pFn = GetFunc(s);
 	if (!pFn) return C4Value();
-	return pFn->Exec(this, Pars);
-}
-
-C4Value C4PropList::CallOrThrow(const char * s, C4AulParSet *Pars)
-{
-	C4AulFunc *pFn = Status ? GetFunc(s) : NULL;
-	if (!pFn)
-	{
-		if (s[0] == '~')
-			return C4Value();
-		throw new C4AulExecError(FormatString("Call: no function \"%s\"", s).getData());
-	}
-	return pFn->Exec(this, Pars);
+	return pFn->Exec(this, Pars, fPassErrors);
 }
 
 C4PropertyName C4PropList::GetPropertyP(C4PropertyName n) const
@@ -591,6 +578,11 @@ void C4PropList::SetPropertyByS(C4String * k, const C4Value & to)
 	{
 		//C4Property p(k, to);
 		//Properties.Add(p);
+#ifdef DEBUGREC_SCRIPT
+		// deactivate this debugrec for now, because property orders seem to be out of sync
+		// after loading at the moment. might need to invastigate the cause later...
+		//if (k->GetCStr()) AddDbgRec(RCT_SetProperty, k->GetCStr(), strlen(k->GetCStr())+1);
+#endif
 		Properties.Add(C4Property(k, to));
 	}
 }

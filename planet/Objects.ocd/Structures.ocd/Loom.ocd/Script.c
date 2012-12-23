@@ -1,117 +1,103 @@
-/*-- Tools workshop --*/
+/*-- Loom --*/
 
 #include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 
+local animWork;
+local meshAttach;
 
-local hold_production;
-local production_animation;
-
-public func Construction(object creator)
+func Initialize()
 {
-	var r = 5; if(!Random(2)) r = -5;
-	this.MeshTransformation = Trans_Mul(Trans_Rotate(r, 0, 1, 0), Trans_Rotate(-2, 1, 0, 0));
-	SetAction("Default");
-	production_animation = PlayAnimation("Working", 1, Anim_Const(0), Anim_Const(1000));
-	return _inherited(creator, ...);
+	animWork = PlayAnimation("Working", 1, Anim_Const(0), Anim_Const(1000));
+	return _inherited(...);
 }
 
-public func Initialize()
+func Construction(object creator)
 {
-	hold_production = false;
-	production_animation = -1;
-	return _inherited(...);
+	SetAction("Wait");
+	return _inherited(creator, ...);
 }
 
 /*-- Production --*/
 
 public func IsProduct(id product_id)
 {
-	return product_id->~IsToolProduct();
+	return product_id->~IsLoomProduct();
 }
 
-private func ProductionTime(id toProduce) { return 150; }
-private func PowerNeed() { return 50; }
+private func ProductionTime(id toProduce) { return 140; }
+private func PowerNeed() { return 100; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
 	return true;
 }
 
+private func FxIntWorkAnimTimer(object target, proplist effect, int timer)
+{
+	if(effect.paused == true) return 1;
+
+	var tickAmount = 50;
+	var animSpot = GetAnimationPosition(animWork);
+	//-50 is to dodge around an engine crash. If it reaches (near) the end of the
+	//animation, it dies for some reason. :(
+	var animLength = GetAnimationLength("Working") - 50;
+	
+	//loop anim
+	if(animSpot + tickAmount > animLength){
+		SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount - animLength));
+	}
+	//otherwise, advance animation
+	else SetAnimationPosition(animWork, Anim_Const(animSpot + tickAmount));
+}
+
+local workEffect;
+
 public func OnProductionStart(id product)
 {
-	SetSign(product);
-	AddEffect("Working", this, 100, 1, this);
-	hold_production = false;
-	ContinueProductionAnimation(true);
-	return;
+	workEffect = AddEffect("IntWorkAnim", this, 1,1,this);
+	return _inherited(...);
 }
 
 public func OnProductionHold(id product)
 {
-	hold_production = true;
-	ContinueProductionAnimation(false);
-	return;
+	workEffect.paused = true;
+	return _inherited(...);
 }
 
 public func OnProductionContinued(id product)
 {
-	hold_production = false;
-	ContinueProductionAnimation(true);
-	return;
+	workEffect.paused = false;
+	return _inherited(...);
 }
 
 public func OnProductionFinish(id product)
 {
-	RemoveEffect("Working", this);
-	ContinueProductionAnimation(false);
-	SetSign(nil);
-	return;
+	RemoveEffect(nil, this, workEffect);
+	return _inherited(...);
 }
 
-protected func FxWorkingTimer()
-{
-	return 1;
-}
-
-func ContinueProductionAnimation(bool play)
-{
-	var pos = 0;
-	if(production_animation != -1)
-		pos = GetAnimationPosition(production_animation);
-	else
-		production_animation = PlayAnimation("Working", 1, Anim_Linear(pos, 0, GetAnimationLength("Working"), ProductionTime()/2, ANIM_Loop), Anim_Const(1000));
-	if(play)
-		SetAnimationPosition(production_animation, Anim_Linear(pos, 0, GetAnimationLength("Working"), ProductionTime()/2, ANIM_Loop));
-	else SetAnimationPosition(production_animation, Anim_Const(pos));
-}
-
-public func SetSign(id def)
-{
-	if (!def)
-		return SetGraphics("", nil, GFX_Overlay, 4);
-	SetGraphics("", def, GFX_Overlay, 4);
-	SetObjDrawTransform(200, 0, -19500 * GetCalcDir(), 0, 200, 2500, GFX_Overlay);
+func Definition(def){
+	SetProperty("MeshTransformation", Trans_Rotate(70, 0,1,0), def);
+	SetProperty("PictureTransformation", Trans_Rotate(65,0,1,0), def);
 }
 
 local ActMap = {
-	Default = {
+	Wait = {
 		Prototype = Action,
-		Name = "Default",
+		Name = "Wait",
 		Procedure = DFA_NONE,
 		Directions = 2,
 		FlipDir = 1,
 		Length = 1,
 		Delay = 0,
 		FacetBase=1,
-		NextAction = "Default",
+		NextAction = "Wait",
 	},
 };
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
-}
+
 local Name = "$Name$";
 local Description ="$Description$";
 local BlastIncinerate = 100;
-local HitPoints = 40;
+local HitPoints = 70;

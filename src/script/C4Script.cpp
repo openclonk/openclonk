@@ -215,6 +215,28 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4Value FnCall(C4PropList * _this, C4Value * Pars)
+{
+	if (!_this) return C4Value();
+	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulFunc * fn = Pars[0].getFunction();
+	if (!fn)
+		fn = _this->GetFunc(Pars[0].getStr());
+	if (!fn)
+	{
+		const char * s = FnStringPar(Pars[0].getStr());
+		if (s[0] == '~')
+		{
+			fn = _this->GetFunc(&s[1]);
+			if (!fn)
+				return C4Value();
+		}
+	}
+	if (!fn)
+		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	return fn->Exec(_this, &ParSet, true);
+}
+
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
 	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
@@ -555,6 +577,32 @@ static Nillable<C4String *> FnGetConstantNameByValue(C4PropList * _this, int val
 	return C4Void();
 }
 
+static bool FnSortArray(C4PropList * _this, C4ValueArray *pArray, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArray: no array given");
+	// sort array by its members
+	pArray->Sort(descending);
+	return true;
+}
+
+static bool FnSortArrayByProperty(C4PropList * _this, C4ValueArray *pArray, C4String *prop_name, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArrayByProperty: no array given");
+	if (!prop_name) throw new C4AulExecError("SortArrayByProperty: no property name given");
+	// sort array by property
+	if (!pArray->SortByProperty(prop_name, descending)) throw new C4AulExecError("SortArrayByProperty: not all array elements are proplists");
+	return true;
+}
+
+static bool FnSortArrayByArrayElement(C4PropList * _this, C4ValueArray *pArray, int32_t element_index, bool descending)
+{
+	if (!pArray) throw new C4AulExecError("SortArrayByArrayElement: no array given");
+	if (element_index<0) throw new C4AulExecError("SortArrayByArrayElement: element index must be >=0");
+	// sort array by array element
+	if (!pArray->SortByArrayElement(element_index, descending)) throw new C4AulExecError("SortArrayByArrayElement: not all array elements are arrays of sufficient length");
+	return true;
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptConstMap[]=
@@ -573,13 +621,13 @@ C4ScriptConstDef C4ScriptConstMap[]=
 	{ "C4X_Ver1",        C4V_Int, C4XVER1},
 	{ "C4X_Ver2",        C4V_Int, C4XVER2},
 	{ "C4X_Ver3",        C4V_Int, C4XVER3},
-	{ "C4X_Ver4",        C4V_Int, C4XVER4},
 
 	{ NULL, C4V_Nil, 0}
 };
 
 C4ScriptFnDef C4ScriptFnMap[]=
 {
+	{ "Call",          1, C4V_Any,    { C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall     },
 	{ "Log",           1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnLog      },
 	{ "DebugLog",      1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnDebugLog },
 	{ "Format",        1, C4V_String, { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFormat   },
@@ -633,6 +681,9 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(StartCallTrace);
 	F(StartScriptProfiler);
 	F(StopScriptProfiler);
+	F(SortArray);
+	F(SortArrayByProperty);
+	F(SortArrayByArrayElement);
 	F(LocateFunc);
 
 	F(eval);

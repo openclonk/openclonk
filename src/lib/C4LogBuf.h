@@ -20,8 +20,6 @@
 #ifndef INC_C4LogBuf
 #define INC_C4LogBuf
 
-#include <StdFont.h>
-
 // circular log buffer to holding line-wise log data
 class C4LogBuffer
 {

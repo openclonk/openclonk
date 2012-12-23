@@ -77,7 +77,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#include <C4Fonts.h>
 #include <C4Version.h>
 #include <C4AulExec.h>
 #include <StdFile.h>
@@ -146,7 +145,7 @@ bool C4Game::InitDefs()
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return false; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3,C4XVER4);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3);
 	if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
@@ -207,9 +206,9 @@ bool C4Game::OpenScenario()
 		{ LogFatal(LoadResStr("IDS_PRC_FILEINVALID")); return false; }
 
 	// Check minimum engine version
-	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2],C4S.Head.C4XVer[3]) > 0)
+	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]) > 0)
 	{
-		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2],C4S.Head.C4XVer[3]).getData());
+		LogFatal(FormatString(LoadResStr("IDS_PRC_NOREQC4X"), C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2]).getData());
 		return false;
 	}
 
@@ -329,7 +328,12 @@ bool C4Game::PreInit()
 		{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); return false; }
 
 	// load GUI
-	pGUI->Init(0, 0, Application.GetConfigWidth(), Application.GetConfigHeight());
+	C4Rect r;
+	if (Application.isEditor)
+		Console.GetSize(&r);
+	else
+		FullScreen.GetSize(&r);
+	pGUI->Init(0, 0, r.Wdt, r.Hgt);
 
 	fPreinited = true;
 
@@ -1405,11 +1409,17 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 	int32_t cnt;
 	for (cnt=0; cnt<num; cnt++)
 	{
+		// Must do these calculation steps separately, because the order of
+		// invokations of Random() is not defined if they're used as parameters
+		int32_t angle = Random(360);
+		C4Real xdir = C4REAL10(Random(2*level+1)-level);
+		C4Real ydir = C4REAL10(Random(2*level+1)-level);
+		C4Real rdir = itofix(Random(3)+1);
 		CreateObject(id,pCreator,iOwner,
-		             tx,ty,Random(360),
-		             C4REAL10(Random(2*level+1)-level),
-		             C4REAL10(Random(2*level+1)-level),
-		             itofix(Random(3)+1), iController);
+		             tx,ty,angle,
+		             xdir,
+		             ydir,
+		             rdir, iController);
 	}
 }
 
@@ -2219,8 +2229,13 @@ bool C4Game::LinkScriptEngine()
 
 	// Activate debugger if requested
 	if (DebugPort)
-		if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
-			return false;
+	{
+		if (Parameters.isLeague())
+			Log("Debugger disabled. Not allowed in league.");
+		else
+			if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
+				return false;
+	}
 
 	return true;
 }
@@ -2256,7 +2271,7 @@ bool C4Game::InitPlayers(C4ValueNumbers * numbers)
 		if (!PlayerInfos.RestoreSavegameInfos(RestorePlayerInfos))
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRSAVEINFORECR")); return false; }
 		RestorePlayerInfos.Clear();
-		// try to associate local filenames (non-net+replay) or ressources (net) with all player infos
+		// try to associate local filenames (non-net+replay) or resources (net) with all player infos
 		if (!PlayerInfos.RecreatePlayerFiles())
 			{ LogFatal(LoadResStr("IDS_ERR_NOPLRFILERECR")); return false; }
 		// recreate players by joining all players whose joined-flag is already set
@@ -3132,6 +3147,13 @@ void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	// doesn't matter; old gfx are kept in this case
 	GraphicsResource.ReloadResolutionDependantFiles();
 	::Viewports.RecalculateViewports();
+}
+
+void C4Game::OnKeyboardLayoutChanged()
+{
+	// Layout changed: Re-resolve keys
+	PlayerControlDefaultAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	PlayerControlUserAssignmentSets.ResolveRefs(&PlayerControlDefs);
 }
 
 bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)

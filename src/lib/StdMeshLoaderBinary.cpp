@@ -294,13 +294,21 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 	boost::ptr_map<uint16_t, StdMeshBone> bones;
 	boost::ptr_vector<Ogre::Skeleton::ChunkAnimation> animations;
 	for (Ogre::Skeleton::ChunkID id = Ogre::Skeleton::Chunk::Peek(&stream);
-	     id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
+	     id == Ogre::Skeleton::CID_BlendMode || id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
 	     id = Ogre::Skeleton::Chunk::Peek(&stream)
 	    )
 	{
 		std::auto_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
 		switch (chunk->GetType())
 		{
+		case Ogre::Skeleton::CID_BlendMode:
+		{
+			Ogre::Skeleton::ChunkBlendMode& cblend = *static_cast<Ogre::Skeleton::ChunkBlendMode*>(chunk.get());
+			// TODO: Handle it
+			if(cblend.blend_mode != 0) // 0 is average, 1 is cumulative. I'm actually not sure what the difference really is... anyway we implement only one method yet. I think it's average, but not 100% sure.
+				LogF("StdMeshLoader: CID_BlendMode not implemented.");
+		}
+		break;
 		case Ogre::Skeleton::CID_Bone:
 		{
 			Ogre::Skeleton::ChunkBone &cbone = *static_cast<Ogre::Skeleton::ChunkBone*>(chunk.get());

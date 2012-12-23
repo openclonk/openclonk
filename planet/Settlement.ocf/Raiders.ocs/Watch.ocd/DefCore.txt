@@ -1,0 +1,16 @@
+[DefCore]
+id=Pocketwatch
+Version=5,2,0,1
+Category=C4D_Object
+Width=6
+Height=6
+Offset=-3,-3
+Vertices=2
+VertexX=0,0
+VertexY=-2,2
+VertexFriction=25,25
+Timer=1
+TimerCall=WatchUpdate
+Components=Metal=1;
+Value=6
+Mass=3

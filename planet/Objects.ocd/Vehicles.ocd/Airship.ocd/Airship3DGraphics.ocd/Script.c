@@ -6,6 +6,13 @@ local parent;
 protected func Initialize()
 {
 	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
+	AddEffect("CheckParent", this, 1, 1,this);
+}
+
+private func FxCheckParentTimer(object target, proplist, int timer)
+{
+	if(!parent) target->RemoveObject();
+	else return;
 }
 
 //Moves the propeller 1 tick per call

@@ -21,6 +21,7 @@
 
 #include "C4Include.h"
 #include <Bitmap256.h>
+#include <StdColors.h>
 
 C4BMPInfo::C4BMPInfo()
 {
@@ -73,7 +74,7 @@ int C4BMP256Info::FileBitsOffset()
 	return Head.bfOffBits-sizeof(C4BMP256Info);
 }
 
-void C4BMP256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
+void C4BMP256Info::Set(int iWdt, int iHgt, CStdPalette *Palette)
 {
 	Default();
 	// Set header
@@ -92,9 +93,9 @@ void C4BMP256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 	// Set palette
 	for (int cnt=0; cnt<256; cnt++)
 	{
-		Colors[cnt].rgbRed   = bypPalette[cnt*3+0];
-		Colors[cnt].rgbGreen = bypPalette[cnt*3+1];
-		Colors[cnt].rgbBlue  = bypPalette[cnt*3+2];
+		Colors[cnt].rgbRed   = GetRedValue(Palette->Colors[cnt]);
+		Colors[cnt].rgbGreen = GetGreenValue(Palette->Colors[cnt]);
+		Colors[cnt].rgbBlue  = GetBlueValue(Palette->Colors[cnt]);
 	}
 }
 

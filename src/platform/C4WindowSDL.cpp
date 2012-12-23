@@ -25,6 +25,7 @@
 #include <C4Include.h>
 #include <C4Window.h>
 
+#include <C4Application.h>
 #include <C4DrawGL.h>
 #include <StdFile.h>
 #include <StdBuf.h>

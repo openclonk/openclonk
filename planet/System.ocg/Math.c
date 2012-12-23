@@ -151,3 +151,13 @@ global func MoveTowards(int a, int b, int max)
 	if(a < b) return BoundBy(a + max,a,b);
 	if(a > b) return BoundBy(a - max,b,a);
 }
+
+global func FindHeight(int x)
+{
+	var y = 0;
+	while (!GBackSemiSolid(x, y) && y < LandscapeHeight())
+		y += 10;
+	while (GBackSemiSolid(x, y) && y)
+		y--;
+	return y;
+}

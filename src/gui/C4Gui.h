@@ -32,6 +32,7 @@
 #ifndef INC_C4Gui
 #define INC_C4Gui
 
+#include <C4FontLoader.h>
 #include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"
@@ -2235,7 +2236,7 @@ namespace C4GUI
 	class ResetButton : public CloseButton
 	{
 	public: ResetButton(const C4Rect &rtBounds) // ctor
-				: CloseButton(LoadResStr("[!]Reset"), rtBounds, true) {} };
+				: CloseButton(LoadResStr("IDS_BTN_RESET"), rtBounds, true) {} };
 
 	// a simple message dialog
 	class MessageDialog : public Dialog
