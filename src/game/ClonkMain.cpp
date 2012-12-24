@@ -8,7 +8,7 @@
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Nicolas Hake
+ * Copyright (c) 2011-2012  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -47,6 +47,23 @@ int WINAPI WinMain (HINSTANCE hInst,
 	// enable debugheap!
 	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
+
+	// This should be handled in an application manifest, but that is
+	// decidedly non-trivial to do portably across compilers and compiler
+	// versions, so we do it in code instead.
+	// Also we aren't really DPI aware (we'd have to default ingame zoom
+	// differently and scale the menus), but this is better than clipping.
+	// Fixes #891.
+	HMODULE user32 = LoadLibrary(L"user32");
+	if (user32)
+	{
+		typedef BOOL (WINAPI *SETPROCESSDPIAWAREPROC)();
+		SETPROCESSDPIAWAREPROC SetProcessDPIAware =
+			reinterpret_cast<SETPROCESSDPIAWAREPROC>(GetProcAddress(user32, "SetProcessDPIAware"));
+		if (SetProcessDPIAware)
+			SetProcessDPIAware();
+		FreeLibrary(user32);
+	}
 
 	InstallCrashHandler();
 
