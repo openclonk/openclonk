@@ -484,14 +484,14 @@ private func TransferObjects(proplist p_source, proplist p_target, object menu_i
 		
 	// Move to object from source container to target container.
 	// Memorize which objects have been put where in order to know which menu items to update
-	// how (Because the collection can be rejected by RejectCollect/AllowTransfer).
+	// how (Because the collection can be rejected by RejectCollect).
 	var moved_to_target = [];
 	var moved_length = 0;
 	for (var i = 0; i < amount; i++) 
 	{
 		var obj = objects[i];
 		// Try to enter the object, but check for some collect callbacks.
-		if (p_target.Object->~RejectCollect(obj->GetID(), obj) && !p_target.Object->~AllowTransfer(obj))
+		if (p_target.Object->~RejectCollect(obj->GetID(), obj))
 			continue;
 		// see if the container actually allows taking it out
 		if(p_source.Object->~RefuseTransfer(obj))

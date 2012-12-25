@@ -11,8 +11,7 @@
 	Grabbing, ungrabbing, shifting and pushing vehicles into buildings;
 	entering and exiting buildings; throwing, dropping; backpack control,
 	(object) menu control, hotkey controls, usage and it's callbacks and
-	forwards to script. Also handled by this library is the aiming with
-	the gamepad conrols.
+	forwards to script.
 	
 	Objects that inherit this object need to return _inherited() in the
 	following callbacks (if defined):
@@ -29,617 +28,53 @@
 	the Use*-calls. If the callback is handled, you should return true.
 	Currently, this is explained more in detail here:
 	http://forum.openclonk.org/topic_show.pl?tid=337
-	
-	The inventory management:
-	The objects in the inventory are saved (parallel to Contents()) in the
-	array 'inventory'. They are accessed via GetItem(i) and GetItemPos(obj).
-	Other functions are MaxContentsCount() (defines the maximum number of
-	contents)
-	
-	Furthermore the clonk has a defined amount of "hands", defined by HandObjects().
-	The array 'use_objects' is a mapping of "hands" onto the inventory-slots.
-	The functions GetHandItem(i) returns the object in the "i"th hand.
-	
-	Carryheavy is also handled here. When a clonk picks up a carryheavy object
-	it's saved in 'carryheavy'
 */
+
+// make use of other sub-libraries
+#include Library_Inventory
+#include Library_ClonkInventoryControl
+#include Library_ClonkGamepadControl
+
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local inventory;	// items in the inventory, array
-local carryheavy;	// object beeing carried with carryheavy
-local use_objects;	// hand-slots (mapping onto inventory)
+/*
+	used properties
+	this.control.hotkeypressed: used to determine if an interaction has already been handled by a hotkey (space + 1-9)
+	
+	this.control.current_object: object that is being used at the moment
+	this.control.using_type: way of usage
+	this.control.alt: whether the current object is on mousebutton 2
+	this.control.mlastx: last x position of the cursor
+	this.control.mlasty: last y position of the cursor
+	this.control.noholdingcallbacks: whether to do HoldingUseControl callbacks
+*/
 
-local last_slot;	// last inventory-slot that has been selected. Used for QuickSwitching. 
-
-local handslot_choice_pending;	// used to determine if a slot-hotkey (1-9) has already been handled by a mouseclick
-local hotkeypressed;			// used to determine if an interaction has already been handled by a hotkey (space + 1-9)
-
-local disableautosort;		// used to get default-Collection-behaviour (see Collection2)
-local force_collection;		// used to pick stuff up, even though the hand-slots are all full (see RejectCollect + Collect with CON_Collect)
-local forced_ejection;		// used to recognize if an object was thrown out with or without the force-key (Shift). If not, next hand slot will be selected. 
 
 /* Item limit */
-
-private func HandObjects() { return 1; }			// How many "Hands" the clonk has
 public func MaxContentsCount() { return 7; }		// Size of the clonks inventory
+public func HandObjects() { return 1; } // Amount of hands to select items
 public func NoStackedContentMenu() { return true; }	// Contents-Menu shall display each object in a seperate slot
 
-
-/** Get the 'i'th item in the inventory */
-public func GetItem(int i)
-{
-	if (i >= GetLength(inventory))
-		return nil;
-	if (i < 0) return nil;
-		
-	return inventory[i];
-}
-
-/** Returns all items in the inventory */
-public func GetItems()
-{
-	var inv = inventory[:];
-	RemoveHoles(inv);
-	return inv;
-}
-
-/** Returns how many items are in the clonks inventory
-    Does not have to be the same as ContentCounts() because of objects with special handling, like CarryHeavy */
-public func GetItemCount()
-{
-	var count = 0;
-	for(var i=0; i < GetLength(inventory); i++)
-		if(inventory[i])
-			count++;
-	
-	return count;
-}
-
-/** Get the 'i'th item in hands.
-    These are the items that will be used with use-commands. (Left mouse click, etc...) */
-public func GetHandItem(int i)
-{
-	// i is valid range
-	if (i >= GetLength(use_objects))
-		return nil;
-	if (i < 0) return nil;
-
-	// carrying a carry heavy item always returns said item. (he holds it in both hands, after all!)
-	if (IsCarryingHeavy())
-		return GetCarryHeavy();
-		
-	return GetItem(use_objects[i]);
-}
-
-/** Set the 'hand'th use-item to the 'inv'th slot */
-public func SetHandItemPos(int hand, int inv)
-{
-	// indices are in range?	
-	if(hand >= HandObjects() || inv >= MaxContentsCount())
-		return nil;
-	if(hand < 0 || inv < 0) return nil;
-
-	// can't use anything except carryheavy if carrying heavy object.
-	if(IsCarryingHeavy())
-		return nil;
-
-	// changing slots cancels using, if the slot with the used object is contained
-	if(using)
-	{
-		var used_slot = GetItemPos(using);
-		if(used_slot != nil)
-			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
-				CancelUseControl(0,0);
-	}
-
-	// save current slot
-	if(hand == 0)
-		last_slot = GetHandItemPos(0);
-
-	// If the item is already selected, we can't hold it in another one too.
-	var hand2 = GetHandPosByItemPos(inv);
-	if(hand2 != nil)
-	{
-		// switch places
-		use_objects[hand2] = use_objects[hand];
-		use_objects[hand] = inv;
-		
-		// additional callbacks
-		var hand_item;
-		if(hand_item = GetHandItem(hand2))
-		{
-			this->~OnSlotFull(hand2);
-			// OnSlotFull might have done something to the item
-			if(GetHandItem(hand2) == hand_item)
-				hand_item->~Selection(this, hand2);
-		}
-		else
-			this->~OnSlotEmpty(hand2);
-	}
-	else
-		use_objects[hand] = inv;
-	
-	// call callbacks
-	var item;
-	if(item = GetItem(inv))
-	{
-		this->~OnSlotFull(hand);
-		// OnSlotFull might have done something to the item
-		if(GetItem(inv) == item)
-			GetItem(inv)->~Selection(this, hand);
-	}
-	else
-	{
-		this->~OnSlotEmpty(hand);
-	}
-	
-	handslot_choice_pending = false;
-}
-
-/** Returns the position in the inventory of the 'i'th use item */
-public func GetHandItemPos(int i)
-{
-	if (i >= GetLength(use_objects))
-		return nil;
-	if (i < 0) return nil;
-	
-	return use_objects[i];
-}
-
-/** Returns in which hand-slot the inventory-slot is */
-private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
-{
-	for(var i=0; i < GetLength(use_objects); i++)
-		if(use_objects[i] == o)
-			return i;
-	
-	return nil;
-}
- 
-/** Drops the item in the inventory slot, if any */
-public func DropInventoryItem(int slot)
-{
-	var obj = GetItem(slot);
-	if(!obj)
-		return nil;
-	
-	this->SetCommand("Drop",obj);
-}
-
-/** Search for the index of an item */
-public func GetItemPos(object item)
-{
-	if (item)
-		if (item->Contained() == this)
-		{
-			var i = 0;
-			for(var obj in inventory)
-			{
-				if (obj == item) return i;
-				++i;
-			}
-		}
-	return nil;
-}
-
-/** Switch two items in the clonk's inventory */
-
-public func Switch2Items(int one, int two)
-{
-	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount()-1)) return;
-	if (!Inside(two,0,MaxContentsCount()-1)) return;
-
-	// switch them around
-	var temp = inventory[one];
-	inventory[one] = inventory[two];
-	inventory[two] = temp;
-	
-	// callbacks: cancel use
-	if (using == inventory[one] || using == inventory[two])
-		CancelUse();
-	
-	var handone, handtwo;
-	handone = GetHandPosByItemPos(one);
-	handtwo = GetHandPosByItemPos(two);
-	
-	// callbacks: (de)selection
-	if (handone != nil)
-		if (inventory[two]) inventory[two]->~Deselection(this,one);
-	if (handtwo != nil)
-		if (inventory[one]) inventory[one]->~Deselection(this,two);
-		
-	if (handone != nil)
-		if (inventory[one]) inventory[one]->~Selection(this,one);
-	if (handtwo != nil)
-		if (inventory[two]) inventory[two]->~Selection(this,two);
-	
-	// callbacks: to self, for HUD
-	if (handone != nil)
-	{
-		if (inventory[one])
-			this->~OnSlotFull(handone);
-		else
-			this->~OnSlotEmpty(handone);
-	}
-	if (handtwo != nil)
-	{
-		if (inventory[two])
-			this->~OnSlotFull(handtwo);
-		else
-			this->~OnSlotEmpty(handtwo);
-	}
-	
-	this->~OnInventoryChange(one, two);
-}
-
-/* Overload of Collect function
-   Allows inventory/hands-Handling with forced-collection
-*/
-public func Collect(object item, bool ignoreOCF, int pos, bool force)
-{
-	force_collection = force;
-	var success = false;
-	if (pos == nil || item->~IsCarryHeavy())
-	{
-		success = _inherited(item,ignoreOCF);
-		force_collection = false;
-		return success;
-	}
-	// fail if the specified slot is full
-	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
-	{
-		if (item)
-		{
-			disableautosort = true;
-			// collect but do not sort in_
-			// Collection2 will be called which attempts to automatically sort in
-			// the collected item into the next free inventory slot. Since 'pos'
-			// is given as a parameter, we don't want that to happen and sort it
-			// in manually afterwards
-			var success = _inherited(item);
-			disableautosort = false;
-			if (success)
-			{
-				inventory[pos] = item;
-				var handpos = GetHandPosByItemPos(pos); 
-				// if the slot was a selected hand slot -> update it
-				if(handpos != nil)
-				{
-					this->~OnSlotFull(handpos);
-				}
-			}
-		}
-	}
-	
-	force_collection = false;
-	return success;
-}
 
 /* ################################################# */
 
 protected func Construction()
 {
+	if(this.control == nil)
+		this.control = {};
+	this.control.hotkeypressed = false;
+	
 	menu = nil;
 
-	// inventory variables
-	inventory = CreateArray();
-	use_objects = CreateArray();
-	last_slot = 0;
-
-	for(var i=0; i < HandObjects(); i++)
-		use_objects[i] = i;
-
-	force_collection = false;
-	
-	// using variables
-	alt = false;
-	using = nil;
-	using_type = nil;
+	this.control.alt = false;
+	this.control.current_object = nil;
+	this.control.using_type = nil;
 	
 	return _inherited(...);
 }
 
-protected func Collection2(object obj)
-{
-	// carryheavy object gets special treatment
-	if(obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
-	{
-		if(obj != GetCarryHeavy())
-			CarryHeavy(obj);
-		
-		return true;
-	}
-	
-	var sel = 0;
-
-	// See Collect()
-	if (disableautosort) return _inherited(obj,...);
-	
-	var success = false;
-	var i;
-	
-	// sort into selected hands if empty
-	for(i = 0; i < HandObjects(); i++)
-		if(!GetHandItem(i))
-		{
-			sel = GetHandItemPos(i);
-			inventory[sel] = obj;
-			success = true;
-			break;
-		}
-		
-	// otherwise, first empty slot
-	if(!success)
-	{
-		for(var i = 0; i < MaxContentsCount(); ++i)
-		{
-			if (!GetItem(i))
-			{
-				sel = i;
-				inventory[sel] = obj;
-				success = true;
-				break;
-			}
-		}
-	}
-	
-	// callbacks
-	if (success)
-	{
-		var handpos = GetHandPosByItemPos(sel); 
-		// if the slot was a selected hand slot -> update it
-		if(handpos != nil)
-		{
-			this->~OnSlotFull(handpos);
-			// OnSlotFull might have done something to obj
-			if(GetHandItem(handpos) == obj)
-				obj->~Selection(this, handpos);
-		}
-	}
-		
-
-	return _inherited(obj,...);
-}
-
-protected func Ejection(object obj)
-{
-	// carry heavy special treatment
-	if(obj == GetCarryHeavy())
-	{
-		StopCarryHeavy();
-		return true;
-	}
-
-	// if an object leaves this object
-	// find obj in array and delete (cancel using too)
-	var i = 0;
-	var success = false;
-	
-	for(var item in inventory)
-    {
-	   if (obj == item)
-	   {
-			inventory[i] = nil;
-			success = true;
-			break;
-	   }
-	   ++i;
-    }
-	if (using == obj) CancelUse();
-
-	// callbacks
-	if (success)
-	{
-		var handpos = GetHandPosByItemPos(i); 
-		// if the slot was a selected hand slot -> update it
-		if(handpos != nil)
-		{
-			// if it was a forced ejection, the hand will remain empty
-			if(forced_ejection == obj)
-			{
-				this->~OnSlotEmpty(handpos);
-				obj->~Deselection(this, handpos);
-			}
-			// else we'll select the next full slot
-			else
-			{
-				// look for following non-selected non-free slots
-				var found_slot = false;
-				for(var j=i; j < MaxContentsCount(); j++)
-					if(GetItem(j) && !GetHandPosByItemPos(j))
-					{
-						found_slot = true;
-						break;
-					}
-				
-				if(found_slot)
-					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
-				// no full next slot could be found. we'll stay at the same, and empty.
-				else
-				{
-					this->~OnSlotEmpty(handpos);
-					obj->~Deselection(this, handpos);
-				}
-			}
-		}
-	}
-	
-	// we have over-weight? Put the next unindexed object inside that slot
-	// this happens if the clonk is stuffed full with items he can not
-	// carry via Enter, CreateContents etc.
-	var inventory_count = 0;
-	for(var io in inventory)
-		if(io != nil)
-			inventory_count++;
-			
-	if (ContentsCount() > inventory_count && !GetItem(i))
-	{
-		for(var c = 0; c < ContentsCount(); ++c)
-		{
-			var o = Contents(c);
-			if(o->~IsCarryHeavy())
-				continue;
-			if (GetItemPos(o) == nil)
-			{
-				// found it! Collect it properly
-				inventory[i] = o;
-				
-				var handpos = GetHandPosByItemPos(i); 
-				// if the slot was a selected hand slot -> update it
-				if(handpos != nil)
-				{
-					this->~OnSlotFull(handpos);
-					// OnSlotFull might have done something to o
-					if(GetHandItem(handpos) == o)
-						o->~Selection(this, handpos);
-				}
-					
-				break;
-			}
-		}
-	}
-	
-	_inherited(obj,...);
-}
-
-protected func ContentsDestruction(object obj)
-{
-	// tell the Hud that something changed
-	this->~OnInventoryChange();
-	
-	// check if it was carryheavy
-	if(obj == GetCarryHeavy())
-	{
-		StopCarryHeavy();
-	}
-
-	_inherited(...);
-}
-
-protected func RejectCollect(id objid, object obj)
-{
-	// collection of that object magically disabled?
-	if(GetEffect("NoCollection", obj)) return true;
-
-	// Carry heavy only gets picked up if none held already
-	if(obj->~IsCarryHeavy())
-	{
-		if(IsCarryingHeavy())
-			return true;
-		else
-		{
-			return false;
-		}
-	}
-
-	//No collection if the clonk is carrying a 'carry-heavy' object
-	// todo: does this still make sense with carry heavy not beeing in inventory and new inventory in general?
-	if(IsCarryingHeavy() && !force_collection) return true;
-	
-	// try to stuff obj into an object with an extra slot
-	for(var i=0; Contents(i); ++i)
-		if (Contents(i)->~HasExtraSlot())
-			if (!(Contents(i)->Contents(0)))
-				if (Contents(i)->Collect(obj,true))
-					return true;
-					
-	// try to stuff an object in clonk into obj if it has an extra slot
-	if (obj->~HasExtraSlot())
-		if (!(obj->Contents(0)))
-			for(var i=0; Contents(i); ++i)
-				if (obj->Collect(Contents(i),true))
-					return false;
-			
-
-	// check max contents
-	if (ContentsCount() >= MaxContentsCount()) return true;
-
-	// check if the two first slots are full. If the overloaded
-	// Collect() is called, this check will be skipped
-	if (!force_collection)
-		if (GetHandItem(0) && GetHandItem(1))
-			return true;
-	
-	return _inherited(objid,obj,...);
-}
-
-// To allow transfer of contents which are not allowed through collection.
-public func AllowTransfer(object obj)
-{
-	// Only check max contents.
-	if (GetItemCount() >= MaxContentsCount()) 
-		return false;
-
-	// don't allow picking up multiple carryheavy-objects
-	if(IsCarryingHeavy() && obj->~IsCarryHeavy())
-		return false;
-
-	return true;
-}
-
-public func GetUsedObject() { return using; }
-
-
-
-/* Carry heavy stuff */
-
-/** Tells the clonk that he is carrying the given carry heavy object */
-public func CarryHeavy(object target)
-{
-	if(!target)
-		return;
-	// actually.. is it a carry heavy object?
-	if(!target->~IsCarryHeavy())
-		return;
-	// only if not carrying a heavy objcet already
-	if(IsCarryingHeavy())
-		return;	
-	
-	carryheavy = target;
-	
-	if(target->Contained() != this)
-		target->Enter(this);
-	
-	// notify UI about carryheavy pickup
-	this->~OnCarryHeavyChange(carryheavy);
-	
-	// Update attach stuff
-	this->~OnSlotFull();
-	
-	return true;
-}
-
-/** Drops the carried heavy object, if any */
-public func DropCarryHeavy()
-{
-	// only if actually possible
-	if(!IsCarryingHeavy())
-		return;
-	
-	GetCarryHeavy()->Drop();
-	StopCarryHeavy();
-	
-	return true;
-}
-
-// Internal function to clear carryheavy-status
-private func StopCarryHeavy()
-{
-	if(!IsCarryingHeavy())
-		return;
-	
-	carryheavy = nil;
-	this->~OnCarryHeavyChange(nil);
-	this->~OnSlotEmpty();
-}
-
-public func GetCarryHeavy() { return carryheavy; }
-
-public func IsCarryingHeavy() { return carryheavy != nil; }
-
-/* ################################################# */
+public func GetUsedObject() { return this.control.current_object; }
 
 // The using-command hast to be canceled if the clonk is entered into
 // or exited from a building.
@@ -721,24 +156,11 @@ public func GetExtraInteractions()
 		if(effect.flipable)
 			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=effect.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
 	}
-	
-	// dropping carry heavy
-	if(IsCarryingHeavy() && GetAction() == "Walk")
-	{
-		var ch = GetCarryHeavy();
-		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, Priority=1});
-	}
-	
+		
 	return functions;
 }
 
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
-
-local using, using_type;
-local alt;
-local mlastx, mlasty;
-local virtual_cursor;
-local noholdingcallbacks;
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
@@ -746,31 +168,17 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!this) 
 		return false;
 	
-	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
-	
-	// Quickswitch changes the active slot to the last selected one
-	if(ctrl == CON_QuickSwitch)
-	{
-		// but ignore quickswitch if we have more than 1 hand-slot
-		if(HandObjects() > 1)
-			return false;
-		
-		// select last slot
-		SetHandItemPos(0, last_slot); // last_slot is updated in SetHandItemPos
-		return true;
-	}
-	
 	// some controls should only do something on release (everything that has to do with interaction)
 	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_GrabNext || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
 	{
 		if(!release)
 		{
 			// this is needed to reset the hotkey-memory
-			hotkeypressed = false;
+			this.control.hotkeypressed = false;
 			return false;
 		}
 		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
-		else if(hotkeypressed)
+		else if(this.control.hotkeypressed)
 			return false;
 		// check if we can handle it by simply accessing the first actionbar item (for consistency)
 		else
@@ -818,9 +226,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	   For the rest of the control code, it looks like the x,y coordinates
 	   came from CON_Use.
 	  */
-	if (using && ctrl == CON_Aim)
+	if (this.control.current_object && ctrl == CON_Aim)
 	{
-		if (alt) ctrl = CON_UseAlt;
+		if (this.control.alt) ctrl = CON_UseAlt;
 		else     ctrl = CON_Use;
 				
 		repeat = true;
@@ -854,124 +262,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// is available. Thus, the last x,y position needs to be saved
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
-		mlastx = x;
-		mlasty = y;
+		this.control.mlastx = x;
+		this.control.mlasty = y;
 	}
-	
-	// hotkeys (inventory, vehicle and structure control)
-	var hot = 0;
-	if (ctrl == CON_InteractionHotkey0) hot = 10;
-	if (ctrl == CON_InteractionHotkey1) hot = 1;
-	if (ctrl == CON_InteractionHotkey2) hot = 2;
-	if (ctrl == CON_InteractionHotkey3) hot = 3;
-	if (ctrl == CON_InteractionHotkey4) hot = 4;
-	if (ctrl == CON_InteractionHotkey5) hot = 5;
-	if (ctrl == CON_InteractionHotkey6) hot = 6;
-	if (ctrl == CON_InteractionHotkey7) hot = 7;
-	if (ctrl == CON_InteractionHotkey8) hot = 8;
-	if (ctrl == CON_InteractionHotkey9) hot = 9;
-	
-	if (hot > 0)
-	{
-		hotkeypressed = true;
-		this->~ControlHotkey(hot-1);
-		return true;
-	}
-	
-	// dropping items via hotkey
-	hot = 0;
-	if (ctrl == CON_DropHotkey0) hot = 10;
-	if (ctrl == CON_DropHotkey1) hot = 1;
-	if (ctrl == CON_DropHotkey2) hot = 2;
-	if (ctrl == CON_DropHotkey3) hot = 3;
-	if (ctrl == CON_DropHotkey4) hot = 4;
-	if (ctrl == CON_DropHotkey5) hot = 5;
-	if (ctrl == CON_DropHotkey6) hot = 6;
-	if (ctrl == CON_DropHotkey7) hot = 7;
-	if (ctrl == CON_DropHotkey8) hot = 8;
-	if (ctrl == CON_DropHotkey9) hot = 9;
-	
-	if (hot > 0)
-	{
-		this->~DropInventoryItem(hot-1);
-		return true;
-	}
-	
-	// this wall of text is called when 1-0 is beeing held, and left or right mouse button is pressed.
-	var hand = 0;
-	hot = 0;
-	if (ctrl == CON_Hotkey0Select) hot = 10;
-	if (ctrl == CON_Hotkey1Select) hot = 1;
-	if (ctrl == CON_Hotkey2Select) hot = 2;
-	if (ctrl == CON_Hotkey3Select) hot = 3;
-	if (ctrl == CON_Hotkey4Select) hot = 4;
-	if (ctrl == CON_Hotkey5Select) hot = 5;
-	if (ctrl == CON_Hotkey6Select) hot = 6;
-	if (ctrl == CON_Hotkey7Select) hot = 7;
-	if (ctrl == CON_Hotkey8Select) hot = 8;
-	if (ctrl == CON_Hotkey9Select) hot = 9;
-	if (ctrl == CON_Hotkey0SelectAlt) {hot = 10; hand=1; }
-	if (ctrl == CON_Hotkey1SelectAlt) {hot = 1; hand=1; }
-	if (ctrl == CON_Hotkey2SelectAlt) {hot = 2; hand=1; }
-	if (ctrl == CON_Hotkey3SelectAlt) {hot = 3; hand=1; }
-	if (ctrl == CON_Hotkey4SelectAlt) {hot = 4; hand=1; }
-	if (ctrl == CON_Hotkey5SelectAlt) {hot = 5; hand=1; }
-	if (ctrl == CON_Hotkey6SelectAlt) {hot = 6; hand=1; }
-	if (ctrl == CON_Hotkey7SelectAlt) {hot = 7; hand=1; }
-	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
-	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
-	
-	if(hot > 0  && hot <= MaxContentsCount())
-	{
-		SetHandItemPos(hand, hot-1);
-		this->~OnInventoryHotkeyRelease(hot-1);
-		return true;
-	}
-	
-	// inventory
-	hot = 0;
-	if (ctrl == CON_Hotkey0) hot = 10;
-	if (ctrl == CON_Hotkey1) hot = 1;
-	if (ctrl == CON_Hotkey2) hot = 2;
-	if (ctrl == CON_Hotkey3) hot = 3;
-	if (ctrl == CON_Hotkey4) hot = 4;
-	if (ctrl == CON_Hotkey5) hot = 5;
-	if (ctrl == CON_Hotkey6) hot = 6;
-	if (ctrl == CON_Hotkey7) hot = 7;
-	if (ctrl == CON_Hotkey8) hot = 8;
-	if (ctrl == CON_Hotkey9) hot = 9;
-	
-	// only the last-pressed key is taken into consideration.
-	// if 2 hotkeys are held, the earlier one is beeing treated as released
-	if (hot > 0 && hot <= MaxContentsCount())
-	{
-		// if released, we chose, if not chosen already
-		if(release)
-		{
-			if(handslot_choice_pending == hot)
-			{
-				SetHandItemPos(0, hot-1);
-				this->~OnInventoryHotkeyRelease(hot-1);
-			}
-		}
-		// else we just highlight
-		else
-		{
-			if(handslot_choice_pending)
-			{
-				this->~OnInventoryHotkeyRelease(handslot_choice_pending-1);
-			}
-			handslot_choice_pending = hot;
-			this->~OnInventoryHotkeyPress(hot-1);
-		}
 		
-		return true;
-	}
-	
 	var proc = GetProcedure();
 
 	// cancel usage
-	if (using && ctrl == CON_Ungrab)
+	if (this.control.current_object && ctrl == CON_Ungrab)
 	{
 		CancelUse();
 		return true;
@@ -982,12 +280,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		if(ObjectControlInteract(plr,ctrl))
 			return true;
-		else if(IsCarryingHeavy() && GetAction() == "Walk")
-		{
-			DropCarryHeavy();
-			return true;
-		}
-			
+		return _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 	}
 	// Push controls
 	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
@@ -1013,8 +306,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
 	
-	var contents = GetHandItem(0);
-	var contents2 = GetHandItem(1);	
+	var contents = this->GetHandItem(0);
+	var contents2 = this->GetHandItem(1);	
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
@@ -1050,43 +343,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				// handled if the horse is the used object
 				// ("using" is set to the object in StartUse(Delayed)Control - when the
 				// object returns true on that callback. Exactly what we want)
-				if (using == vehicle) return true;
+				if (this.control.current_object == vehicle) return true;
 				// has been cancelled (it is not the start of the usage but no object is used)
-				if (!using && (repeat || release)) return true;
+				if (!this.control.current_object && (repeat || release)) return true;
 			}
 		}
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
-		if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
+		if ((contents || (release && this.control.current_object)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
 				return true;
 		}
-		else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
+		else if ((contents2 || (release && this.control.current_object)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents2))
 				return true;
 		}
-	}
-
-	// Collecting
-	if (ctrl == CON_Collect)
-	{
-		// only if not inside something
-		if(Contained()) return false; // not handled
-		
-		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
-		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
-		if(obj)
-		{
-			// hackery to prevent the clonk from rejecting the collect because it is not being
-			// collected into the hands
-			Collect(obj,nil,nil,true);
-		}
-		
-		// return not handled to still receive other controls - collection should not block anything else
-		return false;
 	}
 	
 	// Throwing and dropping
@@ -1100,7 +373,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if(ctrl == CON_ForcedThrow)
 			{
 				ctrl = CON_Throw;
-				forced_ejection = contents;
+				this.inventory.forced_ejection = contents; // used in Inventory.ocd
 			}
 			
 			// throw
@@ -1124,7 +397,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					if (proc == "SCALE" || proc == "HANGLE")
 						return ObjectCommand("Drop", contents);
 					else
-						return ObjectCommand("Throw", contents, mlastx, mlasty);
+						return ObjectCommand("Throw", contents, this.control.mlastx, this.control.mlasty);
 				}
 				else
 				{
@@ -1146,7 +419,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if(ctrl == CON_ForcedThrowAlt)
 			{
 				ctrl = CON_ThrowAlt;
-				forced_ejection = contents2;
+				this.inventory.forced_ejection = contents2; // used in Inventory.ocd
 			}
 		
 			// throw
@@ -1169,7 +442,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					if (proc == "SCALE" || proc == "HANGLE")
 						return ObjectCommand("Drop", contents2);
 					else
-						return ObjectCommand("Throw", contents2, mlastx, mlasty);
+						return ObjectCommand("Throw", contents2, this.control.mlastx, this.control.mlasty);
 				}
 				else
 				{
@@ -1203,28 +476,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Unhandled control
-	return false;
-}
-
-public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
-{
-	// from PlayerControl.c
-	var result = inherited(plr,ctrl,strength,release,...);
-
-	// do the following only if strength >= CON_Gamepad_Deadzone
-	if(!release)
-		if(strength != nil && strength < CON_Gamepad_Deadzone)
-			return result;
-
-	
-	virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
-	if(!virtual_cursor) return result;
-
-	// change direction of virtual_cursor
-	if(!release)
-		virtual_cursor->Direction(ctrl);
-
-	return result;
+	return _inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
 public func ObjectCommand(string command, object target, int tx, int ty, object target2)
@@ -1244,44 +496,38 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 
 public func CancelUse()
 {
-	if (!using) return;
+	if (!this.control.current_object) return;
 
 	// use the saved x,y coordinates for canceling
-	CancelUseControl(mlastx, mlasty);
+	CancelUseControl(this.control.mlastx, this.control.mlasty);
 }
-
-// for testing if the calls in ControlUse2Script are issued correctly
-//global func Call(string call)
-//{
-//	Log("calling %s to %s",call,GetName());
-//	return inherited(call,...);
-//}
 
 private func DetermineUsageType(object obj)
 {
+	if(!obj) return nil;
 	// house
 	if (obj == Contained())
 		return C4D_Structure;
 	// object
-	if (obj)
-		if (obj->Contained() == this)
-			return C4D_Object;
+	if (obj->Contained() == this)
+		return C4D_Object;
 	// vehicle
 	var proc = GetProcedure();
 	if (obj == GetActionTarget())
 		if (proc == "ATTACH" && proc == "PUSH")
 			return C4D_Vehicle;
-	// unkown
+	// unknown
 	return nil;
 }
 
-private func GetUseCallString(string action) {
+private func GetUseCallString(string action)
+{
 	// Control... or Contained...
 	var control = "Control";
-	if (using_type == C4D_Structure) control = "Contained";
+	if (this.control.using_type == C4D_Structure) control = "Contained";
 	// ..Use.. or ..UseAlt...
 	var estr = "";
-	if (alt && using_type != C4D_Object) estr = "Alt";
+	if (this.control.alt && this.control.using_type != C4D_Object) estr = "Alt";
 	// Action
 	if (!action) action = "";
 	
@@ -1290,9 +536,9 @@ private func GetUseCallString(string action) {
 
 private func StartUseControl(int ctrl, int x, int y, object obj)
 {
-	using = obj;
-	using_type = DetermineUsageType(obj);
-	alt = ctrl != CON_Use;
+	this.control.current_object = obj;
+	this.control.using_type = DetermineUsageType(obj);
+	this.control.alt = ctrl != CON_Use;
 	
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
@@ -1304,12 +550,12 @@ private func StartUseControl(int ctrl, int x, int y, object obj)
 	if (!handled)
 	{
 		handled = obj->Call(GetUseCallString(),this,x,y);
-		noholdingcallbacks = handled;
+		this.control.noholdingcallbacks = handled;
 	}
 	if (!handled)
 	{
-		using = nil;
-		using_type = nil;
+		this.control.current_object = nil;
+		this.control.using_type = nil;
 		if (hold_enabled)
 			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		return false;
@@ -1320,15 +566,15 @@ private func StartUseControl(int ctrl, int x, int y, object obj)
 
 private func StartUseDelayedControl(int ctrl, object obj)
 {
-	using = obj;
-	using_type = DetermineUsageType(obj);
-	alt = ctrl != CON_UseDelayed;
+	this.control.current_object = obj;
+	this.control.using_type = DetermineUsageType(obj);
+	this.control.alt = ctrl != CON_UseDelayed;
 				
 	VirtualCursor()->StartAim(this);
 			
 	// call UseStart
-	var handled = obj->Call(GetUseCallString("Start"),this,mlastx,mlasty);
-	noholdingcallbacks = !handled;
+	var handled = obj->Call(GetUseCallString("Start"),this,this.control.mlastx,this.control.mlasty);
+	this.control.noholdingcallbacks = !handled;
 	
 	return handled;
 }
@@ -1337,10 +583,10 @@ private func CancelUseControl(int x, int y)
 {
 	// to horse first (if there is one)
 	var horse = GetActionTarget();
-	if(horse && GetProcedure() == "ATTACH" && using != horse)
+	if(horse && GetProcedure() == "ATTACH" && this.control.current_object != horse)
 		StopUseControl(x, y, horse, true);
 
-	return StopUseControl(x, y, using, true);
+	return StopUseControl(x, y, this.control.current_object, true);
 }
 
 private func StopUseControl(int x, int y, object obj, bool cancel)
@@ -1350,18 +596,18 @@ private func StopUseControl(int x, int y, object obj, bool cancel)
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
 	var handled = obj->Call(GetUseCallString(stop),this,x,y);
-	if (obj == using)
+	if (obj == this.control.current_object)
 	{
 		// if ControlUseStop returned -1, the current object is kept as "used object"
 		// but no more callbacks except for ControlUseCancel are made. The usage of this
 		// object is finally cancelled on ControlUseCancel.
 		if(cancel || handled != -1)
 		{
-			using = nil;
-			using_type = nil;
-			alt = false;
+			this.control.current_object = nil;
+			this.control.using_type = nil;
+			this.control.alt = false;
 		}
-		noholdingcallbacks = false;
+		this.control.noholdingcallbacks = false;
 		
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 
@@ -1378,8 +624,8 @@ private func HoldingUseControl(int ctrl, int x, int y, object obj)
 	var mey = y;
 	if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
-		mex = mlastx;
-		mey = mlasty;
+		mex = this.control.mlastx;
+		mey = this.control.mlasty;
 	}
 	
 	//Message("%d,%d",this,mex,mey);
@@ -1388,7 +634,7 @@ private func HoldingUseControl(int ctrl, int x, int y, object obj)
 	// --------------------
 	// if this is desired for ALL objects is the question, we will find out.
 	// For now, this is done for items and vehicles, not for buildings and
-	// mounts (naturally). If turning vehicles just liket hat without issuing
+	// mounts (naturally). If turning vehicles just like that without issuing
 	// a turning animation is the question. But after all, the clonk can turn
 	// by setting the dir too.
 	
@@ -1427,65 +673,35 @@ private func StopUseDelayedControl(object obj)
 {
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
 	
-	var handled = obj->Call(GetUseCallString("Stop"),this,mlastx,mlasty);
+	var handled = obj->Call(GetUseCallString("Stop"),this,this.control.mlastx,this.control.mlasty);
 	if (!handled)
-		handled = obj->Call(GetUseCallString(),this,mlastx,mlasty);
+		handled = obj->Call(GetUseCallString(),this,this.control.mlastx,this.control.mlasty);
 	
-	if (obj == using)
+	if (obj == this.control.current_object)
 	{
 		VirtualCursor()->StopAim();
 		// see StopUseControl
 		if(handled != -1)
 		{
-			using = nil;
-			using_type = nil;
-			alt = false;
+			this.control.current_object = nil;
+			this.control.using_type = nil;
+			this.control.alt = false;
 		}
-		noholdingcallbacks = false;
+		this.control.noholdingcallbacks = false;
 	}
 		
 	return handled;
 }
 
-/* Control to menu */
-
-private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
-{
-
-	/* all this stuff is already done on a higher layer - in playercontrol.c
-	   now this is just the same for gamepad control */
-	if (!PlayerHasVirtualCursor(GetOwner()))
-		return true;
-
-	// fix pos of x and y
-	var mex = mlastx+GetX()-GetMenu()->GetX();
-	var mey = mlasty+GetY()-GetMenu()->GetY();
-	
-	// update angle for visual effect on the menu
-	if (repeat)
-	{
-		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->~UpdateCursor(mex,mey);
-	}
-	// click on menu
-	if (release)
-	{
-		// select
-		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->~OnMouseClick(mex,mey, ctrl == CON_UseAltDelayed);
-	}
-	
-	return true;
-}
 
 // Control use redirected to script
 private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// click on secondary cancels primary and the other way round
-	if (using)
+	if (this.control.current_object)
 	{
-		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt
-		||  ctrl == CON_UseDelayed && alt || ctrl == CON_UseAltDelayed && !alt)
+		if (ctrl == CON_Use && this.control.alt || ctrl == CON_UseAlt && !this.control.alt
+		||  ctrl == CON_UseDelayed && this.control.alt || ctrl == CON_UseAltDelayed && !this.control.alt)
 		{
 			CancelUseControl(x, y);
 			return true;
@@ -1499,7 +715,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		{
 			return StartUseControl(ctrl,x, y, obj);
 		}
-		else if (release && obj == using)
+		else if (release && obj == this.control.current_object)
 		{
 			return StopUseControl(x, y, obj);
 		}
@@ -1511,7 +727,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 		{
 			return StartUseDelayedControl(ctrl, obj);
 		}
-		else if (release && obj == using)
+		else if (release && obj == this.control.current_object)
 		{
 			return StopUseDelayedControl(obj);
 		}
@@ -1526,7 +742,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 			CancelUse();
 			return true;
 		}
-		else if (repeat && !noholdingcallbacks)
+		else if (repeat && !this.control.noholdingcallbacks)
 		{
 			return HoldingUseControl(ctrl, x, y, obj);
 		}
@@ -1551,7 +767,7 @@ private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool r
 		}
 		else
 		{
-			// what about deadzone?
+			// what about gamepad-deadzone?
 			if (strength != nil && strength < CON_Gamepad_Deadzone)
 				return true;
 			
@@ -1720,56 +936,7 @@ private func ShiftVehicle(int plr, bool back)
 	return true;
 }
 
-/* Virtual cursor stuff */
 
-// get virtual cursor, if noone is there, create it
-private func VirtualCursor()
-{
-	if (!virtual_cursor)
-	{
-		virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
-	}
-	if (!virtual_cursor)
-	{
-		virtual_cursor = CreateObject(GUI_Crosshair,0,0,GetOwner());
-	}
-	
-	return virtual_cursor;
-}
-
-// virtual cursor is visible
-private func VirtualCursorAiming()
-{
-	if (!virtual_cursor) return false;
-	return virtual_cursor->IsAiming();
-}
-
-// store pos of virtual cursor into mlastx, mlasty
-public func UpdateVirtualCursorPos()
-{
-	mlastx = VirtualCursor()->GetX()-GetX();
-	mlasty = VirtualCursor()->GetY()-GetY();
-}
-
-public func TriggerHoldingControl()
-{
-	// using has been commented because it must be possible to use the virtual
-	// cursor aim also without a used object - for menus
-	// However, I think the check for 'using' here is just an unecessary safeguard
-	// since there is always a using-object if the clonk is aiming for a throw
-	// or a use. If the clonk uses it, there will be callbacks that cancel the
-	// callbacks to the virtual cursor
-	// - Newton
-	if (/*using && */!noholdingcallbacks)
-	{
-		var ctrl;
-		if (alt) ctrl = CON_UseAltDelayed;
-		else     ctrl = CON_UseDelayed;
-				
-		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, false);
-	}
-
-}
 
 public func IsMounted() { return GetProcedure() == "ATTACH"; }
 
@@ -1785,14 +952,14 @@ func HasMenuControl()
 func SetMenu(object m)
 {
 	// already the same
-	if (menu == m && m)
+	if ((menu == m) && m)
 	{
 		return;
 	}
 	// no multiple menus: close old one
 	if (menu && m)
 	{
-		menu->RemoveObject();
+		menu->Close();
 	}
 	// new one
 	menu = m;
@@ -1816,8 +983,7 @@ func SetMenu(object m)
 	// close menu
 	if (!menu)
 	{
-		if (virtual_cursor)
-			virtual_cursor->StopAim();
+		RemoveVirtualCursor(); // for gamepads
 		SetPlayerControlEnabled(GetOwner(), CON_GUICursor, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick1, false);
 		SetPlayerControlEnabled(GetOwner(), CON_GUIClick2, false);
@@ -1846,36 +1012,6 @@ func CancelMenu()
 	return false;
 }
 
-func ReinitializeControls()
-{
-	if(PlayerHasVirtualCursor(GetOwner()))
-	{
-		// if is aiming or in menu and no virtual cursor is there? Create one
-		if (!virtual_cursor)
-			if (menu || using)
-				VirtualCursor()->StartAim(this,false,menu);
-	}
-	else
-	{
-		// remove any virtual cursor
-		if (virtual_cursor)
-			virtual_cursor->RemoveObject();
-	}
-}
-
-/* Backpack control */
-
-func Selected(object mnu, object mnu_item, bool alt)
-{
-	var backpack_index = mnu_item->GetExtraData();
-	var hands_index = 0;
-	if (alt) hands_index = 1;
-	// Update menu
-	var show_new_item = GetItem(hands_index);
-	mnu_item->SetSymbol(show_new_item);
-	// swap index with backpack index
-	Switch2Items(hands_index, backpack_index);
-}
 
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 

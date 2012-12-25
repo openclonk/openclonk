@@ -245,7 +245,7 @@ func IsCarryingHeavy(object clonk)
 	return false;
 }
 
-protected func Entrance(object obj)
+func Entrance(object obj)
 {
 	// tell the carrier to carryheavy if it got moved into it by script
 	if(!liftheavy_carrier)
@@ -257,21 +257,22 @@ protected func Entrance(object obj)
 			else
 				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
+	return _inherited(obj, ...);
 }
 
-protected  func Departure(object obj)
+func Departure(object obj)
 {
 	if(!liftheavy_carrier)
 		return;
 	
 	liftheavy_carrier = nil;
+	return _inherited(obj, ...);
 }
 
 
 // Cannot pickup other carryheavy objects (is that really what you intended, Ringwaul?)
-protected func RejectCollect(id collectid, object collect)
+func RejectCollect(id collectid, object collect)
 {
 	if(collect->~IsCarryHeavy()) return true;
-	else
-		return false;
+	return _inherited(collectid, collect, ...);
 }

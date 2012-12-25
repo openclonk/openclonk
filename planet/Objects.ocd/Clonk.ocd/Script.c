@@ -10,6 +10,7 @@
 #include Library_HUDAdapter
 // standard controls
 #include Library_ClonkControl
+#include Library_CarryHeavyControl
 // manager for aiming
 #include Library_AimManager
 
