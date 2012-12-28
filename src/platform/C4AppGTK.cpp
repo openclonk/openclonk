@@ -215,14 +215,19 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	XRRScreenResources * r = XRRGetScreenResources(dpy, w);
 	if (!r) return NULL;
 
-	XRROutputInfo * info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
-	if (!info)
+	XRROutputInfo * info = NULL;
+	RROutput output = XRRGetOutputPrimary(dpy, w);
+	if(output != 0)
 	{
-		XRRFreeScreenResources(r);
-		return NULL;
+		info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
+		if (!info)
+		{
+			XRRFreeScreenResources(r);
+			return NULL;
+		}
 	}
 
-	if(info->connection == RR_Disconnected || info->crtc == 0)
+	if(!info || info->connection == RR_Disconnected || info->crtc == 0)
 	{
 		// The default "primary" output does not seem to be connected
 		// to a piece of actual hardware. As a fallback, go through
