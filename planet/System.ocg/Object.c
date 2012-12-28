@@ -38,6 +38,11 @@ global func SetCon(num new_con)
 	return DoCon(new_con - GetCon());
 }
 
+global func GetObjAlpha()
+{
+	return (GetClrModulation() >> 24) & 0xFF;
+}
+
 // Sets the object's transparency.
 global func SetObjAlpha(int by_alpha)
 {

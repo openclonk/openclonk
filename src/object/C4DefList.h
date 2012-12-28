@@ -23,13 +23,9 @@
 #ifndef INC_C4DefList
 #define INC_C4DefList
 
-#include <StdFont.h>
+#include <C4FontLoader.h>
 
-const int32_t C4D_None           =    0,
-C4D_All            =    ~C4D_None;
-
-class C4DefList
-		: public CStdFont::CustomImages
+class C4DefList: public CStdFont::CustomImages
 {
 public:
 	C4DefList();
@@ -58,7 +54,7 @@ public:
 	int32_t GetDefCount();
 	int32_t GetIndex(C4ID id);
 	int32_t RemoveTemporary();
-	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
+	int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3);
 	int32_t CheckRequireDef();
 	void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
 	void Remove(C4Def *def);

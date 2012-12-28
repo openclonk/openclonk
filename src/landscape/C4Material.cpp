@@ -804,7 +804,10 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Incindiary mats smoke on contact even before doing their slide
 	if (::MaterialMap.Map[iPxsMat].Incindiary)
-		if (!Random(25)) Smoke(iX, iY, 4+Random(3) );
+		if (!Random(25))
+		{
+			Smoke(iX, iY, 4 + Random(3));
+		}
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
@@ -916,16 +919,19 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 	case meeMassMove: // MassMover-movement
 	{
 		// evaluate corrosion percentage
-		bool fDoCorrode;
+		bool fDoCorrode; int d100 = Random(100);
 		if (pReaction->fUserDefined)
-			fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
+			fDoCorrode = (d100 < pReaction->iCorrosionRate);
 		else
-			fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
+			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
 			ClearBackPix(iLSPosX,iLSPosY);
 			//::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
-			if (!Random(5)) Smoke(iX,iY,3+Random(3));
+			if (!Random(5))
+			{
+				Smoke(iX, iY, 3 + Random(3));
+			}
 			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 			return true;
 		}
@@ -940,16 +946,19 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 				// either splash or slide prevented interaction
 				return false;
 		// evaluate corrosion percentage
-		bool fDoCorrode;
+		bool fDoCorrode; int d100 = Random(100);
 		if (pReaction->fUserDefined)
-			fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
+			fDoCorrode = (d100 < pReaction->iCorrosionRate);
 		else
-			fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
+			fDoCorrode = (d100 < ::MaterialMap.Map[iPxsMat].Corrosive) && (d100 < ::MaterialMap.Map[iLsMat].Corrode);
 		if (fDoCorrode)
 		{
 			ClearBackPix(iLSPosX,iLSPosY);
 			::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
-			if (!Random(5)) Smoke(iX,iY,3+Random(3));
+			if (!Random(5))
+			{
+				Smoke(iX,iY,3+Random(3));
+			}
 			if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 			return true;
 		}

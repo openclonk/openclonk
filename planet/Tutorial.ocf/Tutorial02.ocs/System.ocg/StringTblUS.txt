@@ -1,0 +1,1 @@
+CatapultEntryDeactivated=This button is used to make the catapult shoot clonks. But it is deactived in this tutorial round.

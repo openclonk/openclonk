@@ -297,16 +297,10 @@ inline bool RGB2rgb(int R, int G, int B, double *pr, double *pg, double *pb, dou
 // a standard pal
 struct CStdPalette
 {
-	BYTE Colors[3*256];
-	BYTE Alpha[3*256]; // TODO: alphapal: Why 3*? Isn't Alpha[256] enough?
+	DWORD Colors[256];
 
 	DWORD GetClr(BYTE byCol)
-	{ return C4RGB(Colors[byCol*3], Colors[byCol*3+1], Colors[byCol*3+2])+(Alpha[byCol]<<24); }
-
-	void EnforceC0Transparency()
-	{
-		Colors[0]=Colors[1]=Colors[2]=0; Alpha[0]=0;
-	}
+	{ return Colors[byCol]; }
 };
 
 // clrmod-add-map to cover a drawing range in which all draws shall be adjusted by the map

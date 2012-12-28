@@ -44,6 +44,7 @@
 #include <set>
 
 const int32_t
+C4D_All            =      ~0,
 C4D_StaticBack     =    1<<0,
 C4D_Structure      =    1<<1,
 C4D_Vehicle        =    1<<2,
@@ -106,7 +107,7 @@ class C4Def: public C4PropListStatic
 {
 public:
 	C4ID id;
-	int32_t rC4XVer[4];
+	int32_t rC4XVer[3];
 	C4IDList RequireDef;
 	C4Shape Shape;
 	C4Rect Entrance;

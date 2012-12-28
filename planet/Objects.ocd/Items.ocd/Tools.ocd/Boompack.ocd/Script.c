@@ -23,6 +23,14 @@ local controllable;
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 700; }
 
+public func GetCarryTransform(clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 0, -6500);
+	
+	return Trans_Translate(-1500, 0, 0);
+}
+
 protected func Construction()
 {
 	//flight length

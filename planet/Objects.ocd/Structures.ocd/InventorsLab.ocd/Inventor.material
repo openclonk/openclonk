@@ -1,0 +1,73 @@
+material inventorsLab 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            diffuse 1.0 1.0 1.0 1.0
+            texture_unit
+            {
+                texture inventorMain.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material inventorsLabNoCull 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			scene_blend alpha_blend
+			cull_hardware none
+			
+            diffuse 1.0 1.0 1.0 1.0
+            texture_unit
+            {
+                texture inventorMain.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material inventorsLabDetail 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+			scene_blend alpha_blend
+		
+            diffuse 1.0 1.0 1.0 1.0
+            texture_unit
+            {
+                texture inventorDetail.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+material inventorsLabTeleScope 
+{
+    receive_shadows on
+    technique
+    {
+        pass
+        {
+            diffuse 1.0 1.0 1.0 1.0
+
+            texture_unit
+            {
+                texture inventorTelescope.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}

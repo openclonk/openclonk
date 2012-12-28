@@ -53,7 +53,7 @@ chm: $(sdk-de-dirs) $(chm-dirs) chm/en/Developer.chm chm/de/Entwickler.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
-	$(CP_R) $(PWD)/online/* $(prefix)
+	$(CP_R) online/* $(prefix)
 
 check:
 	xmllint --noblanks --noout --valid $(xmlfiles)

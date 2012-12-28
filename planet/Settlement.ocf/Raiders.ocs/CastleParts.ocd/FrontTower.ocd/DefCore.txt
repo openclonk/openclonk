@@ -1,0 +1,12 @@
+[DefCore]
+id=Raiders_FrontTower
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=38
+Height=166
+Offset=-19,-83
+Value=16
+Mass=1000
+Exclusive=1
+Construction=1
+SolidMask=38,0,38,166,0,0

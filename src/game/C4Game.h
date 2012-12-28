@@ -29,7 +29,6 @@
 #include <C4PathFinder.h>
 #include <C4Extra.h>
 #include "C4Scoreboard.h"
-#include <C4VideoPlayback.h>
 #include <C4PlayerControl.h>
 
 class C4Game
@@ -84,7 +83,6 @@ public:
 	C4PlayerControlDefs PlayerControlDefs;
 	C4PlayerControlAssignmentSets PlayerControlUserAssignmentSets, PlayerControlDefaultAssignmentSets;
 	C4Scoreboard        Scoreboard;
-	C4VideoPlayer       VideoPlayer;
 	C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
 	C4KeyboardInput &KeyboardInput;
 	C4FileMonitor *pFileMonitor;
@@ -159,6 +157,7 @@ public:
 	bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
 	void SetInitProgress(float fToProgress);
 	void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // update anything that's dependant on screen resolution
+	void OnKeyboardLayoutChanged();
 	void InitFullscreenComponents(bool fRunning);
 	bool ToggleChat();
 	// Pause

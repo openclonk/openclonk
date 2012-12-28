@@ -195,11 +195,11 @@ void C4GraphicsSystem::ClearFullscreenBackground()
 	--iRedrawBackground;
 }
 
-bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
+bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec)
 {
 	// create new loader; overwrite current only if successful
 	C4LoaderScreen *pNewLoader = new C4LoaderScreen();
-	pNewLoader->SetBlackScreen(fDrawBlackScreenFirst);
+	pNewLoader->SetBlackScreen(false);
 	if (!pNewLoader->Init(szLoaderSpec)) { delete pNewLoader; return false; }
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;

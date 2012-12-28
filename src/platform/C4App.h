@@ -23,6 +23,7 @@
 
 #include <StdScheduler.h>
 #include <StdSync.h>
+#include <C4StdInProc.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
@@ -41,8 +42,10 @@
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
 #define MK_ALT (KMOD_LALT | KMOD_RALT)
 #elif defined(USE_CONSOLE)
+#ifndef _WIN32
 #define MK_SHIFT 0
 #define MK_CONTROL 0
+#endif
 #define MK_ALT 0
 #elif defined(USE_COCOA)
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
@@ -71,27 +74,6 @@ public:
 	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
 	virtual HANDLE GetEvent() { return STDSCHEDULER_EVENT_MESSAGE; }
 
-};
-#endif
-
-#ifdef USE_CONSOLE
-// A simple alertable proc
-class CStdInProc : public StdSchedulerProc
-{
-public:
-	CStdInProc();
-	~CStdInProc();
-
-	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { 0, POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
-private:
-	// commands from stdin
-	StdCopyStrBuf CmdBuf;
 };
 #endif
 
@@ -130,6 +112,8 @@ public:
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0;
+	// Keyboard layout changed
+	virtual void OnKeyboardLayoutChanged() = 0;
 	// notify user to get back to the program
 	void NotifyUserIfInactive();
 	void MessageDialog(const char * message);
@@ -180,7 +164,7 @@ public:
 
 #elif defined(USE_CONSOLE)
 protected:
-	CStdInProc InProc;
+	C4StdInProc InProc;
 #endif
 
 #ifdef USE_WIN32_WINDOWS

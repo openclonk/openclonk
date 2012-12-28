@@ -58,7 +58,7 @@ func DoExplode()
 	else
 		Sound("BlastMetal");
 	CreateParticle("ExploSmoke", 0,0,0,0,390,RGBa(255,255,255,165));
-	Explode(14);
+	Explode(24);
 }
 
 protected func Hit(x, y)

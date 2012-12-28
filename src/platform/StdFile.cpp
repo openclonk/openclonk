@@ -932,14 +932,28 @@ DirectoryIterator::~DirectoryIterator()
 		delete p;
 }
 
+void DirectoryIterator::Clear()
+{
+	// clear cache
+	if (p->ref > 1)
+	{
+		// Detach from shared memory
+		--p->ref;
+		p = new DirectoryIteratorP;
+	}
+	p->directory.clear();
+	p->files.clear();
+	iter = p->files.end();
+}
+
 void DirectoryIterator::Reset ()
 {
 	iter = p->files.begin();
 }
 
-void DirectoryIterator::Reset (const char * dirname)
+void DirectoryIterator::Reset (const char * dirname, bool force_reread)
 {
-	if (p->directory == dirname)
+	if (p->directory == dirname && !force_reread)
 	{
 		// Skip reinitialisation and just reset the iterator
 		iter = p->files.begin();

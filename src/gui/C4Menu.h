@@ -29,7 +29,6 @@
 #include "C4Shape.h"
 #include "C4Gui.h"
 #include "C4IDList.h"
-#include "C4Region.h"
 
 class C4Viewport;
 
@@ -119,8 +118,6 @@ protected:
 	// GUI calls
 	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 	virtual void MouseEnter(class C4GUI::CMouse &rMouse); // called when mouse cursor enters element region: Select this item (deselects any other)
-	virtual void DoDragging(class C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // called by mouse: dragging process
-	virtual void StopDragging(class C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam); // called by mouse: mouse released after dragging process
 
 public:
 	C4ID GetC4ID() const { return id; }
@@ -224,7 +221,7 @@ private:
 protected:
 	bool DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 	bool DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
-	void DrawBuffer(C4Facet &cgo, C4RegionList *pRegions);
+	void DrawBuffer(C4Facet &cgo);
 	void AdjustSelection();
 	void AdjustPosition();
 	bool CheckBuffer();

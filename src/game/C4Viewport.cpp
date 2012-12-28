@@ -100,7 +100,6 @@ void C4Viewport::Clear()
 	ViewWdt=ViewHgt=0;
 	OutX=OutY=ViewWdt=ViewHgt=0;
 	DrawX=DrawY=0;
-	Regions.Clear();
 	ViewOffsX = ViewOffsY = 0;
 }
 
@@ -330,17 +329,6 @@ void C4Viewport::BlitOutput()
 
 void C4Viewport::Execute()
 {
-	// Update regions
-	static int32_t RegionUpdate=0;
-	SetRegions=NULL;
-	RegionUpdate++;
-	if (RegionUpdate>=5)
-	{
-		RegionUpdate=0;
-		Regions.Clear();
-		Regions.SetAdjust(-OutX,-OutY);
-		SetRegions=&Regions;
-	}
 	// Adjust position
 	AdjustPosition();
 	// Current graphics output
@@ -587,8 +575,6 @@ void C4Viewport::Default()
 	Next=NULL;
 	PlayerLock=true;
 	ResetMenuPositions=false;
-	SetRegions=NULL;
-	Regions.Default();
 	ViewOffsX = ViewOffsY = 0;
 	fIsNoOwnerViewport = false;
 	last_game_draw_cgo.Default();
@@ -646,11 +632,6 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 
 	// Control
 	// unnecessary with the current control sets
-/*	if (pPlr->MouseControl)
-		GfxR->fctMouse.Draw(cgo.Surface,
-		                    cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
-		                    cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
-		                    0,0);*/
 	if (pPlr && pPlr->ControlSet)
 	{
 		C4Facet controlset_facet = pPlr->ControlSet->GetPicture();
@@ -693,7 +674,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 
 void C4Viewport::ClearPointers(C4Object *pObj)
 {
-	Regions.ClearPointers(pObj);
+
 }
 
 void C4Viewport::NextPlayer()
@@ -864,11 +845,14 @@ bool C4ViewportList::CloseViewport(int32_t iPlayer, bool fSilent)
 		else
 			prev=cvp;
 	}
-	// Recalculate viewports
-	RecalculateViewports();
-	// Action sound
-	if (GetViewportCount()!=iLastCount) if (!fSilent)
-			StartSoundEffect("CloseViewport");
+	// Anything was done?
+	if (GetViewportCount()!=iLastCount)
+	{
+		// Recalculate viewports
+		RecalculateViewports();
+		// Action sound
+		if (!fSilent) StartSoundEffect("CloseViewport");
+	}
 	return true;
 }
 
@@ -1040,14 +1024,12 @@ bool C4ViewportList::FreeScroll(C4Vec2D vScrollBy)
 bool C4ViewportList::ViewportZoomOut()
 {
 	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(1.0f/C4GFX_ZoomStep);
-	if (FirstViewport) ::GraphicsSystem.FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 }
 
 bool C4ViewportList::ViewportZoomIn()
 {
 	for (C4Viewport *vp = FirstViewport; vp; vp = vp->Next) vp->ChangeZoom(C4GFX_ZoomStep);
-	if (FirstViewport) ::GraphicsSystem.FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 }
 

@@ -82,7 +82,7 @@ public:
 	RGBQUAD Colors[256];
 public:
 	void Default();
-	void Set(int iWdt, int iHgt, BYTE *bypPalette);
+	void Set(int iWdt, int iHgt, CStdPalette *);
 	bool Valid();
 
 	int FileBitsOffset();

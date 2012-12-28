@@ -1,6 +1,0 @@
-
-[Definitions]
-Definition1=Objects.ocd
-
-[Landscape]
-MapZoom=10

@@ -5,7 +5,7 @@ local user;
 func ControlUseStart(object clonk, num ix, num iy)
 {
 	if(GBackSolid(0,15) || GBackLiquid(0,15) || clonk->GetActionTarget() != nil) return 1;
-	var balloon = CreateObject(BalloonDeployed,0,-5);
+	var balloon = CreateObject(BalloonDeployed,0,5);
 	balloon->SetSpeed(clonk->GetXDir(),clonk->GetYDir());
 
 	//sound

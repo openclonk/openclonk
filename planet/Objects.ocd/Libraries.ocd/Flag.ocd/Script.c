@@ -154,6 +154,9 @@ func RefreshOwnershipOfSurrounding()
 }
 public func Initialize()
 {
+	// no falling down anymore
+	SetCategory(C4D_StaticBack);
+	
 	if(GetIndexOf(LibraryFlag_flag_list, this) == -1)
 		LibraryFlag_flag_list[GetLength(LibraryFlag_flag_list)] = this;
 

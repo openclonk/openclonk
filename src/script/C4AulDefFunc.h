@@ -42,7 +42,8 @@ inline C4Object * Object(C4PropList * _this)
 StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
 
 template <typename T> struct C4ValueConv;
-// Allow parameters to be nil
+// Allow integer and boolean parameters to be nil
+// pointer parameters represent nil via plain NULL
 template<typename T>
 class Nillable
 {

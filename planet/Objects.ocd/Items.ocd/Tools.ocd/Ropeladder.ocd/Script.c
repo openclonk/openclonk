@@ -454,6 +454,9 @@ func Hit()
 	Sound("WoodHit?");
 }
 
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
+
 local ActMap = {
 Hanging = {
 	Prototype = Action,

@@ -274,27 +274,27 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			C4AulBCC* foundDebugChunk = NULL;
 			C4ScriptHost * sh = script->GetScriptHost();
 			const char* scriptText = sh->GetScript();
-			for (C4AulBCC* chunk = &sh->Code[0]; chunk; chunk++)
+			for (C4String *pFn = sh->GetPropList()->EnumerateOwnFuncs(); pFn; pFn = sh->GetPropList()->EnumerateOwnFuncs(pFn))
 			{
-				switch (chunk->bccType)
+				C4AulScriptFunc *pSFunc = sh->GetPropList()->GetFunc(pFn)->SFunc();
+				while (pSFunc)
 				{
-				case AB_DEBUG:
+					for (C4AulBCC* chunk = pSFunc->GetCode(); chunk->bccType != AB_EOFN; chunk++)
 					{
-					int lineOfThisOne = SGetLine(scriptText, sh->PosForCode[chunk - &sh->Code[0]]);
-					if (lineOfThisOne == line)
-					{
-						foundDebugChunk = chunk;
-						goto Done;
+						if (chunk->bccType == AB_DEBUG)
+						{
+							int lineOfThisOne = pSFunc->GetLineOfCode(chunk);
+							if (lineOfThisOne == line)
+							{
+								foundDebugChunk = chunk;
+								goto Done;
+							}
+							/*else {
+							  DebugLogF("Debug chunk at %d", lineOfThisOne);
+							}*/
+						}
 					}
-					/*else {
-					  DebugLogF("Debug chunk at %d", lineOfThisOne);
-					}*/
-					}
-					break;
-				case AB_EOF:
-					goto Done;
-				default:
-					break;
+					pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
 				}
 			}
 Done:

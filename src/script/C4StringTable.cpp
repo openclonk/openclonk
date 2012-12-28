@@ -148,6 +148,7 @@ C4StringTable::C4StringTable()
 	P[P_Placement] = "Placement";
 	P[P_BlastIncinerate] = "BlastIncinerate";
 	P[P_ContactIncinerate] = "ContactIncinerate";
+	P[P_Global] = "Global";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

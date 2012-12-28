@@ -290,14 +290,14 @@ int32_t C4DefList::RemoveTemporary()
 	return removed;
 }
 
-int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4)
+int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3)
 {
 	int32_t rcount=0;
 	C4Def *cdef,*prev,*next;
 	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
 	{
 		next=cdef->Next;
-		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],cdef->rC4XVer[3],ver1,ver2,ver3,ver4) > 0)
+		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],ver1,ver2,ver3) > 0)
 		{
 			if (prev) prev->Next=cdef->Next;
 			else FirstDef=cdef->Next;
@@ -399,7 +399,7 @@ void C4DefList::CallEveryDefinition()
 		// TODO: Might not be synchronous on runtime join since is run by joining
 		// client but not by host. Might need to go to Synchronize().
 		char sz[32+1];
-		strncpy(sz, it->second->GetName(), 32+1);
+		strncpy(sz, it->first.ToString(), 32+1);
 		AddDbgRec(RCT_Definition, sz, 32);
 #endif
 		C4AulParSet Pars(C4VPropList(it->second));

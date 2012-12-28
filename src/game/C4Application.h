@@ -50,6 +50,7 @@ public:
 	C4InteractiveThread InteractiveThread;
 	// IRC client for global chat
 	C4Network2IRCClient &IRCClient;
+	// clear app
 	void Clear();
 	void ClearCommandLine();
 	// Tick timing
@@ -60,6 +61,7 @@ public:
 	void CloseSystemGroup() { SystemGroup.Close(); }
 	void SetGameTickDelay(int iDelay);
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes);
+	virtual void OnKeyboardLayoutChanged();
 	bool SetGameFont(const char *szFontFace, int32_t iFontSize);
 	void NextTick();
 
@@ -74,15 +76,15 @@ public:
 
 	// set by ParseCommandLine
 	int isEditor;
-	// set by ParseCommandLine, only pertains to this program start - independent of Config.Startup.NoSplash
-	int NoSplash;
 	// set by ParseCommandLine, for manually applying downloaded update packs
 	StdStrBuf IncomingUpdate;
 	// set by ParseCommandLine, for manually invoking an update check by command line or url
 	int CheckForUpdates;
 
-	int GetConfigWidth()  { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowX : Config.Graphics.ResX; }
-	int GetConfigHeight() { return (Config.Graphics.Windowed == 2 && AppState != C4AS_Game) || Config.Graphics.Windowed == 1 ? Config.Graphics.WindowY : Config.Graphics.ResY; }
+	bool FullScreenMode();
+	int GetConfigWidth()  { return (!FullScreenMode()) ? Config.Graphics.WindowX : Config.Graphics.ResX; }
+	int GetConfigHeight() { return (!FullScreenMode()) ? Config.Graphics.WindowY : Config.Graphics.ResY; }
+	
 protected:
 	enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_AfterGame, C4AS_Quit } AppState;
 	C4ApplicationGameTimer *pGameTimer;

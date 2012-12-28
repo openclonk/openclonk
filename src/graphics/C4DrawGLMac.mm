@@ -183,8 +183,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	savedMouse = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
 	// emulate MouseEvent assuming this method is called in game mode
 	::C4GUI::MouseMove(C4MC_Button_None,
-		savedMouse.x*Config.Graphics.ResX/self.frame.size.width,
-		savedMouse.y*Config.Graphics.ResY/self.frame.size.height,
+		savedMouse.x*ActualFullscreenX/self.frame.size.width,
+		savedMouse.y*ActualFullscreenY/self.frame.size.height,
 		0, NULL
 	);
 }
@@ -193,23 +193,23 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 {
 	DWORD flags = 0;
 	int32_t button = mouseButtonFromEvent(event, &flags);
-	int actualSizeX = Application.isEditor ? self.frame.size.width  : Config.Graphics.ResX;
-	int actualSizeY = Application.isEditor ? self.frame.size.height : Config.Graphics.ResY;
+	int actualSizeX = Application.isEditor ? self.frame.size.width  : ActualFullscreenX;
+	int actualSizeY = Application.isEditor ? self.frame.size.height : ActualFullscreenY;
 	if (!Application.isEditor && lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
 	{
 		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
 		if (button != C4MC_Button_Wheel)
 		{
-			savedMouse.x += event.deltaX * (Config.Graphics.ResX/self.frame.size.width);
-			savedMouse.y -= event.deltaY * (Config.Graphics.ResY/self.frame.size.height);
+			savedMouse.x += event.deltaX * (ActualFullscreenX/self.frame.size.width);
+			savedMouse.y -= event.deltaY * (ActualFullscreenY/self.frame.size.height);
 		}
 	} else
 	{
 		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
 		if (!Application.isEditor)
 		{
-			savedMouse.x *= Config.Graphics.ResX/self.frame.size.width;
-			savedMouse.y *= Config.Graphics.ResY/self.frame.size.height;
+			savedMouse.x *= ActualFullscreenX/self.frame.size.width;
+			savedMouse.y *= ActualFullscreenY/self.frame.size.height;
 		}
 	}
 	savedMouse.x = fmin(fmax(savedMouse.x, 0), actualSizeX);
@@ -467,11 +467,8 @@ static NSOpenGLContext* MainContext;
 	NSOpenGLPixelFormat* format = [[NSOpenGLPixelFormat alloc] initWithAttributes:&attribs[0]];
 
 	NSOpenGLContext* result = [[NSOpenGLContext alloc] initWithFormat:format shareContext:pMainCtx ? pMainCtx->objectiveCObject<NSOpenGLContext>() : nil];
-	[self setSurfaceBackingSizeOf:result width:Config.Graphics.ResX height:Config.Graphics.ResY];
 	if (!MainContext)
-	{
 		MainContext = result;
-	}
 	return result;
 }
 
@@ -590,5 +587,7 @@ bool CStdGLCtx::PageFlip()
 	//SDL_GL_SwapBuffers();
 	return true;
 }
+
+int ActualFullscreenX = 0, ActualFullscreenY = 0;
 
 #endif

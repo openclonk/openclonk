@@ -83,7 +83,7 @@ public:
 	void RemoveEntry(int32_t iIndex) { if (Inside<int32_t>(iIndex, 1, C4M_MaxTexIndex-1)) Entry[iIndex].Clear(); }
 	void Default();
 	void Clear();
-	void StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterials);
+	void StoreMapPalette(CStdPalette *, C4MaterialMap &rMaterials);
 	static bool LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 	int32_t Init();

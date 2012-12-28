@@ -24,8 +24,6 @@
 #ifndef INC_C4Viewport
 #define INC_C4Viewport
 
-#include <C4Region.h>
-
 #include <C4Shape.h>
 
 class C4Viewport
@@ -34,7 +32,6 @@ class C4Viewport
 public:
 	C4Viewport();
 	~C4Viewport();
-	C4RegionList Regions;
 	// "landscape" coordinates
 	float ViewX,ViewY;
 	int32_t ViewOffsX, ViewOffsY;
@@ -82,7 +79,6 @@ protected:
 	bool PlayerLock;
 	int32_t OutX,OutY;
 	bool ResetMenuPositions;
-	C4RegionList *SetRegions;
 	C4Viewport *Next;
 	class C4ViewportWindow * pWindow;
 	C4FogOfWar ClrModMap; // color modulation map for viewport drawing

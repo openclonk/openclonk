@@ -36,7 +36,7 @@ namespace C4SoundLoaders
 #endif
 		C4SoundHandle final_handle;
 
-		SoundInfo(): sound_data(), final_handle(NULL) {}
+		SoundInfo(): sound_data(), final_handle(0) {}
 	};
 	
 	class SoundLoader
@@ -88,7 +88,17 @@ namespace C4SoundLoaders
 	protected:
 		static VorbisLoader singleton;
 	};
-#endif
+#ifndef __APPLE__
+	// non-apple wav loader: using ALUT
+	class WavLoader: public SoundLoader
+	{
+	public:
+		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
+	protected:
+		static WavLoader singleton;
+	};
+#endif // apple
+#endif // openal
 
 #ifdef HAVE_LIBSDL_MIXER
 	class SDLMixerSoundLoader: public SoundLoader

@@ -44,7 +44,7 @@ using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
-		pSample (NULL),
+		pSample (0),
 		FirstInst (NULL),
 		Next (NULL)
 {
@@ -68,7 +68,7 @@ void C4SoundEffect::Clear()
 #ifdef USE_OPEN_AL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
-	pSample = NULL;
+	pSample = 0;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
@@ -286,6 +286,8 @@ bool C4SoundInstance::Start()
 #else
 	return false;
 #endif
+	// Safety: Don't execute if start failed, or Execute() would try to start again
+	if (!isStarted()) return false;
 	// Update volume
 	Execute();
 	return true;
@@ -306,8 +308,12 @@ bool C4SoundInstance::Stop()
 		Mix_HaltChannel(iChannel);
 #endif
 #ifdef USE_OPEN_AL
-	if (Playing())
-		alSourceStop(iChannel);
+	if (iChannel != -1)
+	{
+		if (Playing()) alSourceStop(iChannel);
+		ALuint c = iChannel;
+		alDeleteSources(1, &c);
+	}
 #endif
 	iChannel = -1;
 	iStarted = 0;

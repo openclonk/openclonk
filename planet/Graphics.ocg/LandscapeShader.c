@@ -9,19 +9,14 @@ uniform sampler3D materialTex;
 // Resolution of the landscape texture
 uniform vec2 resolution;
 
-// Use sampler if the GPU doesn't support enough uniforms to
-// get the matMap as an array
-#if MAX_FRAGMENT_UNIFORM_COMPONENTS < 259
-#define BROKEN_ARRAYS_WORKAROUND
-#endif
-
 // Texture map
-#ifdef BROKEN_ARRAYS_WORKAROUND
+#ifndef NO_BROKEN_ARRAYS_WORKAROUND
 uniform sampler1D matMapTex;
 #else
 uniform float matMap[256];
 #endif
 uniform int materialDepth;
+uniform vec2 materialSize;
 
 // Expected parameters for the scaler
 const vec2 scalerStepX = vec2(1.0 / 8.0, 0.0);
@@ -41,7 +36,7 @@ int f2i(float x) {
 
 float queryMatMap(int pix)
 {
-#ifdef BROKEN_ARRAYS_WORKAROUND
+#ifndef NO_BROKEN_ARRAYS_WORKAROUND
 	int idx = f2i(texture1D(matMapTex, float(pix) / 256.0 + 0.5 / 256.0).r);
 	return float(idx) / 256.0 + 0.5 / float(materialDepth);
 #else
@@ -104,10 +99,11 @@ void main()
 	vec4 lopx = texture2D(landscapeTex[0], otherCoo);
 	
 	// Get material pixels
+	vec2 tcoo = gl_TexCoord[0].st * resolution / materialSize;
 	float mi = queryMatMap(f2i(lpx.r));
-	vec4 mpx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), mi));
+	vec4 mpx = texture3D(materialTex, vec3(tcoo, mi));
 	float omi = queryMatMap(f2i(lopx.r));
-	vec4 ompx = texture3D(materialTex, vec3(gl_TexCoord[0].st * resolution / vec2(512.0, 512.0) * vec2(4.0, 4.0), omi));
+	vec4 ompx = texture3D(materialTex, vec3(tcoo, omi));
 	
 	// Brightness
 	float ambientBright = 1.0, shadeBright = 0.8;	

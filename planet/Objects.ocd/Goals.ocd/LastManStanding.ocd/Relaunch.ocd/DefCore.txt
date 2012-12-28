@@ -3,3 +3,4 @@ id=RelaunchContainer
 Version=5,2,0,1
 Category=C4D_StaticBack
 ClosedContainer=2
+Picture=0,0,92,92

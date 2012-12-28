@@ -114,7 +114,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 {
 	{ VK_CANCEL         , "Cancel"        , NULL },
 
-	{ VK_BACK           , "Backspace"     , NULL },
+	{ VK_BACK           , "BackSpace"     , NULL },
 	{ VK_TAB            , "Tab"           , NULL },
 	{ VK_CLEAR          , "Clear"         , NULL },
 	{ VK_RETURN         , "Return"        , NULL },
@@ -329,9 +329,29 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Default, "None", NULL},
 	{ KEY_Undefined, NULL, NULL }
 };
+#elif defined(USE_X11)
+#include <gdk/gdkx.h>
 #elif defined(USE_COCOA)
 #include "CocoaKeycodeMap.h"
 #endif
+
+C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
+{
+	// scan code is in hex format
+	unsigned int scan_code_int;
+	if (sscanf(scan_code, "$%x", &scan_code_int) != 1) return KEY_Undefined;
+	// resolve using OS function
+#ifdef _WIN32
+	return MapVirtualKey(scan_code_int, 1 /* MAPVK_VSC_TO_VK */); // MAPVK_VSC_TO_VK is undefined due to some bug on some MinGW versions
+#elif USE_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	return XKeycodeToKeysym(dpy, scan_code_int, 0);
+#else
+	// cannot resolve scan codes
+	assert(false);
+	return KEY_Undefined;
+#endif
+}
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
@@ -340,6 +360,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	{
 		unsigned int dwRVal;
 		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
+		// scan code
+		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
 #ifdef _WIN32
 		if (!strnicmp(sName.getData(), "Joy", 3))
@@ -583,16 +605,25 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 
 /* ----------------- C4KeyCodeEx ------------------ */
 
-void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
+void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 {
 	if (pComp->isCompiler())
 	{
 		// reading from file
 		StdStrBuf sCode;
+		bool is_scan_code;
+		// read shifts
 		DWORD dwSetShift = 0;
 		for (;;)
 		{
+			is_scan_code = pComp->Separator(StdCompiler::SEP_DOLLAR);
+			if (!is_scan_code) pComp->NoSeparator();
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));
+			if (is_scan_code) // scan codes start with $. Reassamble the two tokens that were split by StdCompiler
+			{
+				sCode.Take(FormatString("$%s", sCode.getData()));
+				break;
+			}
 			if (!pComp->Separator(StdCompiler::SEP_PLUS)) break; // no more separator: Parse this as keyboard code
 			// try to convert to shift state
 			C4KeyShiftState eAddState = String2KeyShift(sCode);
@@ -607,10 +638,9 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			C4KeyCode eCode = String2KeyCode(sCode);
 			if (eCode == KEY_Undefined)
 			{
-				if (pOutBufIfUndefined)
+				if (pOutBuf)
 				{
-					// unknown key, but an output buffer for unknown keys was provided. Use it.
-					pOutBufIfUndefined->Take(std::move(sCode));
+					// unknown key, but an output buffer for unknown keys was provided. No failure; caller might resolve key.
 					eCode = KEY_Default;
 				}
 				else
@@ -620,6 +650,7 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			}
 			dwShift = dwSetShift;
 			Key = eCode;
+			if (pOutBuf) pOutBuf->Take(std::move(sCode));
 		}
 	}
 	else

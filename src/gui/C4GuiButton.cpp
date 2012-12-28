@@ -239,7 +239,7 @@ namespace C4GUI
 		if (sText.getLength())
 		{
 			CStdFont &rUseFont = pCustomFont ? *pCustomFont : ::GraphicsResource.TextFont;
-			pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt-rUseFont.GetLineHeight()*4/5, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
+			pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
 		}
 	}
 

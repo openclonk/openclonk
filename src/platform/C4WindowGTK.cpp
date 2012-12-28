@@ -47,7 +47,6 @@
 #ifdef USE_X11
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
-#include <X11/extensions/xf86vmode.h>
 #include <GL/glx.h>
 #endif
 
@@ -457,7 +456,7 @@ static bool fullscreen_needs_restore = false;
 static gboolean fullscreen_restore(gpointer data)
 {
 	if (fullscreen_needs_restore)
-		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+		Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, Application.FullScreenMode());
 	fullscreen_needs_restore = false;
 	return FALSE;
 }
@@ -465,7 +464,7 @@ static gboolean fullscreen_restore(gpointer data)
 static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = true;
-	if (!Config.Graphics.Windowed)
+	if (Application.FullScreenMode())
 	{
 		fullscreen_needs_restore = true;
 		gdk_threads_add_idle(fullscreen_restore, NULL);
@@ -475,7 +474,7 @@ static gboolean OnFocusInFS(GtkWidget *widget, GdkEvent  *event, gpointer user_d
 static gboolean OnFocusOutFS(GtkWidget *widget, GdkEvent  *event, gpointer user_data)
 {
 	Application.Active = false;
-	if (!Config.Graphics.Windowed)
+	if (Application.FullScreenMode() && Application.GetConfigWidth() != -1)
 	{
 		Application.RestoreVideoMode();
 		gtk_window_iconify(GTK_WINDOW(widget));
@@ -906,6 +905,14 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 
 	GdkScreen * scr = gtk_widget_get_screen(GTK_WIDGET(render_widget));
 	GdkVisual * vis = gdk_x11_screen_lookup_visual(scr, static_cast<XVisualInfo*>(new_info)->visualid);
+
+	// Un- and re-realizing the render_widget does not work, the window
+	// remains hidden afterwards. So we re-create it from scratch.
+	gtk_widget_destroy(GTK_WIDGET(render_widget));
+	render_widget = gtk_drawing_area_new();
+	gtk_widget_set_double_buffered (GTK_WIDGET(render_widget), false);
+	g_object_set(G_OBJECT(render_widget), "can-focus", TRUE, NULL);
+	
 #if GTK_CHECK_VERSION(2,91,0)
 	gtk_widget_set_visual(GTK_WIDGET(render_widget),vis);
 #else
@@ -913,13 +920,27 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	gtk_widget_set_colormap(GTK_WIDGET(render_widget), cmap);
 	g_object_unref(cmap);
 #endif
-	// create a new X11 window
-	gtk_widget_unrealize(GTK_WIDGET(render_widget));
-	gtk_widget_realize(GTK_WIDGET(render_widget));
 
 	delete static_cast<XVisualInfo*>(Info);
 	Info = new_info;
 
+	// Wait until window is mapped to get the window's XID
+	gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(render_widget));
+	gtk_widget_show_now(GTK_WIDGET(render_widget));
+
+	if (GTK_IS_LAYOUT(render_widget))
+	{
+		GdkWindow* bin_wnd = gtk_layout_get_bin_window(GTK_LAYOUT(render_widget));
+		renderwnd = GDK_WINDOW_XID(bin_wnd);
+	}
+	else
+	{
+		GdkWindow* render_wnd = gtk_widget_get_window(GTK_WIDGET(render_widget));
+		renderwnd = GDK_WINDOW_XID(render_wnd);
+	}
+
+	gdk_flush();
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(render_widget)), gdk_cursor_new(GDK_BLANK_CURSOR));
 	return true;
 }
 

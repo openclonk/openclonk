@@ -233,7 +233,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PopValue();
 				break;
 
-			case AB_EOF: case AB_EOFN:
+			case AB_EOFN:
 				throw new C4AulExecError("internal error: function didn't return");
 
 			case AB_ERR:
@@ -1115,7 +1115,6 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// Parse function
 	try
 	{
-		assert(pFunc->GetCodeOwner() == pScript);
 		pFunc->ParseFn(context);
 	}
 	catch (C4AulError *ex)

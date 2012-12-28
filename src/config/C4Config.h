@@ -185,7 +185,6 @@ public:
 	int32_t HideMsgPlrNoTakeOver;
 	int32_t HideMsgNoOfficialLeague;
 	int32_t HideMsgIRCDangerous;
-	int32_t NoSplash;
 	int32_t AlphabeticalSorting; // if set, Folder.txt-sorting is ignored in scenario selection
 	int32_t LastPortraitFolderIdx;
 	void CompileFunc(StdCompiler *pComp);
@@ -195,7 +194,7 @@ class C4ConfigLobby
 {
 public:
 	int32_t CountdownTime;
-	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player ressources
+	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player resources
 	void CompileFunc(StdCompiler *pComp);
 };
 

@@ -15,10 +15,10 @@ clonk.xsl also uses it to match the processing for it. -->
 				search <input id="searchInput" name="s" type="text" value="" /> in the
 				<select name="p">
 					<option  value="blog">blog</option>
-					<option  value="functions">c4script function list</option>
+					<option selected="selected"  value="functions">c4script function list</option>
 					<option value="docs">c4script reference</option>
 					<option  value="functionsDE">c4script function list (DE)</option>
-					<option value="docsDE">c4script reference (DE)</option>
+					<option  value="docsDE">c4script reference (DE)</option>
 					<option  value="bugtrack">bugtracker</option>
 					<option  value="forum">forum</option>
 					<option  value="hg">hg changelog</option>
@@ -59,7 +59,7 @@ clonk.xsl also uses it to match the processing for it. -->
 		<li><a href="http://hg.openclonk.org/openclonk-resources/" target="_top">Resource Repository</a></li>
 	</ul>
 	</li>
-	<li><!--[if lt IE 9]><span><![endif]--><a href="http://wiki.openclonk.org/w/C4Script_Documentation" target="_top">Documentation</a><!--[if lt IE 9]></span><![endif]-->	<ul>
+	<li><!--[if lt IE 9]><span><![endif]--><a class="current" href="http://wiki.openclonk.org/w/C4Script_Documentation" target="_top">Documentation</a><!--[if lt IE 9]></span><![endif]-->	<ul>
 		<li><a href="http://docs.openclonk.org/en/sdk/" target="_top">C4Script Reference</a></li>
 	</ul>
 	</li>

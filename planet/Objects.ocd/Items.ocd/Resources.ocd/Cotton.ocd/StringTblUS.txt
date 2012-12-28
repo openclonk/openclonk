@@ -1,0 +1,4 @@
+Name=Cotton
+Description=Cotton for planting a cotton plant or producing cloth.
+UsageHelp=Press [Use] to plant a cotton plant here.
+NoSuitableGround=Ground not suitable|for planting!

@@ -10,8 +10,6 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-03 23:26+0200\n"
-"PO-Revision-Date: 2012-05-06 15:35+0200\n"
 "Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
@@ -19,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: sdk/content.xml.in:5(title)
 #: sdk/content.xml.in:54(h)
@@ -371,11 +370,11 @@ msgstr "Operator"
 #: sdk/scenario/Teams.xml:15(col)
 #: sdk/scenario/Teams.xml:74(col)
 #: sdk/scenario/MapCreatorS2.xml:34(col)
-#: sdk/playercontrols.xml:23(col)
-#: sdk/playercontrols.xml:84(col)
-#: sdk/playercontrols.xml:128(col)
-#: sdk/playercontrols.xml:142(col)
-#: sdk/playercontrols.xml:173(col)
+#: sdk/playercontrols.xml:22(col)
+#: sdk/playercontrols.xml:83(col)
+#: sdk/playercontrols.xml:147(col)
+#: sdk/playercontrols.xml:181(col)
+#: sdk/playercontrols.xml:232(col)
 #: sdk/particle/index.xml:32(col)
 #: sdk/material/ocm.xml:16(col)
 #: sdk/material/ocm.xml:230(col)
@@ -2368,7 +2367,7 @@ msgstr "Aufzurufende Funktion"
 
 #: sdk/script/fn/Sort_Func.xml:22(desc)
 #: sdk/script/fn/Find_Func.xml:22(desc)
-#: sdk/script/fn/Call.xml:22(desc)
+#: sdk/script/fn/Call.xml:23(desc)
 msgid "Parameters of the function."
 msgstr "Parameter für die Funktion"
 
@@ -2840,11 +2839,11 @@ msgstr "Index des Vertex."
 #: sdk/scenario/scenario.xml:409(col)
 #: sdk/scenario/Teams.xml:13(col)
 #: sdk/scenario/Teams.xml:72(col)
-#: sdk/playercontrols.xml:21(col)
-#: sdk/playercontrols.xml:83(col)
-#: sdk/playercontrols.xml:126(col)
-#: sdk/playercontrols.xml:140(col)
-#: sdk/playercontrols.xml:172(col)
+#: sdk/playercontrols.xml:20(col)
+#: sdk/playercontrols.xml:82(col)
+#: sdk/playercontrols.xml:145(col)
+#: sdk/playercontrols.xml:179(col)
+#: sdk/playercontrols.xml:231(col)
 #: sdk/particle/index.xml:30(col)
 #: sdk/material/ocm.xml:14(col)
 #: sdk/material/ocm.xml:228(col)
@@ -7700,12 +7699,15 @@ msgstr "s"
 #: sdk/scenario/scenario.xml:285(col)
 #: sdk/scenario/Teams.xml:62(col)
 #: sdk/scenario/Teams.xml:103(col)
-#: sdk/playercontrols.xml:32(col)
-#: sdk/playercontrols.xml:37(col)
-#: sdk/playercontrols.xml:77(col)
-#: sdk/playercontrols.xml:132(col)
-#: sdk/playercontrols.xml:146(col)
+#: sdk/playercontrols.xml:31(col)
+#: sdk/playercontrols.xml:36(col)
+#: sdk/playercontrols.xml:76(col)
+#: sdk/playercontrols.xml:151(col)
 #: sdk/playercontrols.xml:156(col)
+#: sdk/playercontrols.xml:185(col)
+#: sdk/playercontrols.xml:195(col)
+#: sdk/playercontrols.xml:200(col)
+#: sdk/playercontrols.xml:205(col)
 #: sdk/material/ocm.xml:234(col)
 #: sdk/material/ocm.xml:239(col)
 #: sdk/material/ocm.xml:244(col)
@@ -9412,13 +9414,13 @@ msgstr "Das Object mit dem verglichen werden soll."
 msgid "Checks whether the pictures of two objects are the same and therefore can be stacked in contents menus."
 msgstr "Tested ob die Bilder zweier Objekte gleich sind und sie somit in Inhaltsanzeigen gestapelt werden können."
 
-#: sdk/script/fn/Call.xml:17(desc)
+#: sdk/script/fn/Call.xml:18(desc)
 msgid "Function to be called."
 msgstr "Funktion, die aufgerufen werden soll."
 
-#: sdk/script/fn/Call.xml:26(desc)
-msgid "Calls the local function function. If \"~\" is prepended to the function name then the call does not fail if the function does not exist."
-msgstr "Ruft die lokale Funktion function auf. Wird \"~\" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt."
+#: sdk/script/fn/Call.xml:27(desc)
+msgid "Calls the specified function. If given a string, the function is looked up in the context object (<code>this</code>). For example, <code>obj-&gt;Call(\"Foo\")</code> is the same as <code>obj-&gt;Foo()</code>. Using Call like this is primarily useful when the name of the function can vary. If \"~\" is prepended to the function name then the call does not fail if the function does not exist."
+msgstr ""
 
 #: sdk/script/fn/COMD_UpRight.xml:12(desc)
 msgid "Movement direction: diagonally up and to the right. For more information see <placeholder-1/>."
@@ -10301,9 +10303,10 @@ msgstr "Beispiel"
 #: sdk/scenario/MapCreatorS2.xml:78(col)
 #: sdk/scenario/MapCreatorS2.xml:88(col)
 #: sdk/scenario/MapCreatorS2.xml:113(col)
-#: sdk/playercontrols.xml:52(col)
-#: sdk/playercontrols.xml:57(col)
-#: sdk/playercontrols.xml:161(col)
+#: sdk/playercontrols.xml:51(col)
+#: sdk/playercontrols.xml:56(col)
+#: sdk/playercontrols.xml:210(col)
+#: sdk/playercontrols.xml:220(col)
 #: sdk/particle/index.xml:41(col)
 #: sdk/particle/index.xml:46(col)
 #: sdk/particle/index.xml:51(col)
@@ -10467,11 +10470,15 @@ msgstr "Eine ganze Zahl im Bereich von -2.147.483.648 bis +2.147.483.647."
 #: sdk/scenario/MapCreatorS2.xml:93(col)
 #: sdk/scenario/MapCreatorS2.xml:98(col)
 #: sdk/scenario/MapCreatorS2.xml:108(col)
-#: sdk/playercontrols.xml:42(col)
-#: sdk/playercontrols.xml:47(col)
-#: sdk/playercontrols.xml:62(col)
-#: sdk/playercontrols.xml:72(col)
-#: sdk/playercontrols.xml:151(col)
+#: sdk/playercontrols.xml:41(col)
+#: sdk/playercontrols.xml:46(col)
+#: sdk/playercontrols.xml:61(col)
+#: sdk/playercontrols.xml:71(col)
+#: sdk/playercontrols.xml:161(col)
+#: sdk/playercontrols.xml:166(col)
+#: sdk/playercontrols.xml:171(col)
+#: sdk/playercontrols.xml:190(col)
+#: sdk/playercontrols.xml:215(col)
 #: sdk/material/ocm.xml:254(col)
 #: sdk/material/ocm.xml:259(col)
 #: sdk/material/ocm.xml:264(col)
@@ -11124,7 +11131,7 @@ msgid "To store the previous status of the target object, properties of the effe
 msgstr "Zum Speichern der vorherigen Statuswerte des Effektziels werden die Eigenschaften des Effekts verwendet. Dies ist nötig, da die Effekt-Callbacks in diesem Fall keinen Befehlskontext haben. Es können also keine objektlokalen Variablen verwendet werden - das Zauberobjekt wurde schließlich gelöscht. Falls ein Objektkontext benötigt wird, kann man diesen auch an <placeholder-1/>() übergeben. Die Aufrufe sind dann objektlokal, und der Effekt wird automatisch gelöscht, wenn das Befehlszielobjekt gelöscht wurde."
 
 #: sdk/script/Effects.xml:101(h)
-#: sdk/playercontrols.xml:357(h)
+#: sdk/playercontrols.xml:412(h)
 msgid "Priorities"
 msgstr "Prioritäten"
 
@@ -11311,9 +11318,9 @@ msgstr "Effekt Properties"
 #: sdk/scenario/scenario.xml:410(col)
 #: sdk/scenario/Teams.xml:14(col)
 #: sdk/scenario/Teams.xml:73(col)
-#: sdk/playercontrols.xml:22(col)
-#: sdk/playercontrols.xml:127(col)
-#: sdk/playercontrols.xml:141(col)
+#: sdk/playercontrols.xml:21(col)
+#: sdk/playercontrols.xml:146(col)
+#: sdk/playercontrols.xml:180(col)
 #: sdk/particle/index.xml:31(col)
 #: sdk/material/ocm.xml:15(col)
 #: sdk/material/ocm.xml:229(col)
@@ -12740,7 +12747,7 @@ msgstr "Sektion [Teams]"
 
 #: sdk/scenario/Teams.xml:16(col)
 #: sdk/scenario/Teams.xml:75(col)
-#: sdk/playercontrols.xml:176(col)
+#: sdk/playercontrols.xml:235(col)
 msgid "Default value"
 msgstr "Standardwert"
 
@@ -13235,285 +13242,334 @@ msgid "PlayerControls.txt"
 msgstr "PlayerControls.txt"
 
 #: sdk/playercontrols.xml:11(text)
-msgid "All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder**."
+#, fuzzy
+msgid "All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder."
 msgstr "Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.ocg. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.ocg hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**."
 
-#: sdk/playercontrols.xml:12(text)
-msgid "Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**."
-msgstr "Zusaetzliche Dateien PlayerControls.txt koennen in Sprachpaketen abgelegt werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen Sprachen an die Tastaturen des jeweiligen Landes anzupassen**."
-
-#: sdk/playercontrols.xml:14(h)
+#: sdk/playercontrols.xml:13(h)
 msgid "Section [ControlDefs]"
 msgstr "Sektion [ControlDefs]"
 
-#: sdk/playercontrols.xml:19(caption)
+#: sdk/playercontrols.xml:18(caption)
 msgid "Any number of sections [ControlDef]"
 msgstr "Beliebig viele Sektionen [ControlDef]"
 
-#: sdk/playercontrols.xml:27(col)
+#: sdk/playercontrols.xml:26(col)
 msgid "String (max. 96 chars)"
 msgstr "Zeichenfolge (Max. 96 Zeichen)"
 
-#: sdk/playercontrols.xml:28(col)
+#: sdk/playercontrols.xml:27(col)
 msgid "Internally used name for identification of the command. The command is referenced by that name in standard mappings and it is predefined in script as CON_Name. The name should therefore be a valid identifier in script, i.e. only consist of letters, numbers and _. Especially there should be no space characters or German umlauts. To avoid conflicts the same rules as for object IDs apply for definitions local to a certain scenario or object."
 msgstr "Intern benutzter Name zur Identifikation des Kommandos. Das Kommando wird unter diesem Namen in Standardbelegungen referenziert und im Script als CON_Name-Konstante vordefiniert. Der Name sollte folglich im Script gueltig sein, d.h. nur aus Buchstaben, Zahlen sowie _ bestehen. Insbesondere sollten keine Leerzeichen oder deutsche Umlaute verwendet werden. Zur Vermeidung von Konflikten gelten in szenarienlokalen sowie Objektpaketlokalen Definitionen dieselben Benennungsregeln wie zur Vergabe von Objekt-IDs."
 
-#: sdk/playercontrols.xml:33(col)
+#: sdk/playercontrols.xml:32(col)
 msgid "Name which is shown to the player in the control configuration dialog and in control tooltips. Localized strings from the corresponding string table can be used ($Name$)."
 msgstr "Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
 
-#: sdk/playercontrols.xml:38(col)
-msgid "Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
-msgstr "Erlaeuternde Beschreibung, die dem Spieler im Steuerungskonfigurationsdialog angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
+#: sdk/playercontrols.xml:37(col)
+#, fuzzy
+msgid "Informative description which is displayed to the player in the control configuration dialog. Localized strings from the corresponding string table can be used ($Desc$)."
+msgstr "Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
 
-#: sdk/playercontrols.xml:43(col)
+#: sdk/playercontrols.xml:42(col)
 msgid "If true this is a global definition, i.e. not assigned to a particular player. See <emlink href=\"playercontrols.xml#Globals\">Global definitions</emlink>."
 msgstr "Wenn wahr, ist dies eine globale, d.h. keinem Spieler zugeordnete Definition. Siehe <emlink href=\"playercontrols.xml#Globals\">Globale Definitionen</emlink>."
 
-#: sdk/playercontrols.xml:48(col)
+#: sdk/playercontrols.xml:47(col)
 msgid "If true this command is interpreted as a held command. Such a command remembers whether the control key is pressed and generates another scripting event when it is released. See <emlink href=\"playercontrols.xml#Hold\">Held keys</emlink>."
 msgstr "Wenn wahr, wird das Kommando als ein gehaltenes Kommando interpretiert. Ein solches Kommando speichert, ob die Steuerungstaste gedrueckt ist und generiert beim Loslassen ein zusaetzliches Scriptereignis. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 
-#: sdk/playercontrols.xml:53(col)
+#: sdk/playercontrols.xml:52(col)
 msgid "Only valid if <em>Hold</em> is true. If greater than 0 then this key generates additional scripting events while pressed every that many number of frames. See <emlink href=\"playercontrols.xml#Repeat\">Key repeats</emlink>."
 msgstr "Nur gueltig wenn <em>Hold</em> wahr. Wenn groesser 0, generiert die Taste im gehaltenen Zustand im angegebenen Abstand (in Frames) weitere Scriptereignisse. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
 
-#: sdk/playercontrols.xml:58(col)
+#: sdk/playercontrols.xml:57(col)
 msgid "If specified then the delay of the first key repeat event can be changed. See <emlink href=\"playercontrols.xml#Repeat\">Key repeats</emlink>."
 msgstr "Wenn angegeben, kann die Wartezeit fuer das erste Tastenwiederholungsereignis geaendert werden. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
 
-#: sdk/playercontrols.xml:63(col)
+#: sdk/playercontrols.xml:62(col)
 msgid "If true then the command is deactivated in the normal case and needs to be activated by script first. This is useful for commands that are only required in special situations. See <emlink href=\"playercontrols.xml#Deactivate\">Deactivated commands</emlink>."
 msgstr "Wenn wahr, ist das Kommando im Normalfall deaktiviert und muss erst per Script aktiviert werden. Nuetzlich fuer Kommandos, die nur in sehr speziellen Situationen benoetigt werden. Siehe <emlink href=\"playercontrols.xml#Deactivate\">Deaktivierte Kommandos</emlink>."
 
-#: sdk/playercontrols.xml:67(col)
+#: sdk/playercontrols.xml:66(col)
 #: sdk/definition/properties.xml:145(col)
 #: sdk/definition/defcore.xml:170(col)
 msgid "C4ID"
 msgstr "C4ID"
 
-#: sdk/playercontrols.xml:68(col)
+#: sdk/playercontrols.xml:67(col)
 msgid "Optional ID that is passed to the script function. See <emlink href=\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
 msgstr "Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href=\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
 
-#: sdk/playercontrols.xml:73(col)
+#: sdk/playercontrols.xml:72(col)
 msgid "If true then the GUI mouse position at the time of triggering the command will be sent as a separate CON_CursorPos command. If the mouse is not activated then the cursor position in GUI coordinates is transmitted."
 msgstr "Wenn wahr, wird mit dem Kommando die GUI-Mausposition zum Zeitpunkt des Ausloesens des Kommandos als separates CON_CursorPos-Kommando gesendet. Ist keine Maus aktiviert, wird die Cursorposition in GUI-Koordinaten uebertragen."
 
-#: sdk/playercontrols.xml:88(col)
+#: sdk/playercontrols.xml:87(col)
 msgid "No action."
 msgstr "Keine Aktion."
 
-#: sdk/playercontrols.xml:92(col)
+#: sdk/playercontrols.xml:91(col)
 msgid "Execution of the script function <em>PlayerControl</em>. See <emlink href=\"playercontrols.xml#Script\">Script callbacks</emlink>. (Default value)"
 msgstr "Ausführung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href=\"playercontrols.xml#Script\">Script-Callbacks</emlink>."
 
-#: sdk/playercontrols.xml:96(col)
+#: sdk/playercontrols.xml:95(col)
+msgid "Zoom in one unit"
+msgstr "Zoomt eine Einheit rein"
+
+#: sdk/playercontrols.xml:99(col)
+msgid "Zoom out one unit"
+msgstr "Zoomt eine Einheit raus"
+
+#: sdk/playercontrols.xml:103(col)
 msgid "Open the player menu (asynchronous command)."
 msgstr "Oeffnen des Spielermenues (asynchrones Kommando)."
 
-#: sdk/playercontrols.xml:100(col)
+#: sdk/playercontrols.xml:107(col)
 msgid "Confirmation of the selected item in the player menu (asynchronous command)."
 msgstr "Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones Kommando)."
 
-#: sdk/playercontrols.xml:104(col)
+#: sdk/playercontrols.xml:111(col)
 msgid "Close the player menu (asynchronous command)."
 msgstr "Schliessen des Spielermenues (asynchrones Kommando)."
 
-#: sdk/playercontrols.xml:108(col)
+#: sdk/playercontrols.xml:115(col)
 msgid "Navigation in the player menu (asynchronous command)."
 msgstr "Navigation im Spielermenu (asynchrones Kommando)."
 
-#: sdk/playercontrols.xml:78(col)
+#: sdk/playercontrols.xml:119(col)
+#, fuzzy
+msgid "Confirmation of the selected item in a menu (synchronous command)."
+msgstr "Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones Kommando)."
+
+#: sdk/playercontrols.xml:123(col)
+#, fuzzy
+msgid "Close a menu (synchronous command)."
+msgstr "Schliessen des Spielermenues (asynchrones Kommando)."
+
+#: sdk/playercontrols.xml:127(col)
+#, fuzzy
+msgid "Navigation in a menu (synchronous command)."
+msgstr "Navigation im Spielermenu (asynchrones Kommando)."
+
+#: sdk/playercontrols.xml:77(col)
 msgid "Action to be executed for this command. Possible values: <placeholder-1/>"
 msgstr "Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte: <placeholder-1/>"
 
-#: sdk/playercontrols.xml:15(text)
-msgid "Definition of possible player commands. Not valid in language packages. Subordinated to this section: <placeholder-1/>"
+#: sdk/playercontrols.xml:14(text)
+#, fuzzy
+msgid "Definition of possible player commands. Subordinated to this section: <placeholder-1/>"
 msgstr "Definition der moeglichen Spielerkommandos. Nicht gueltig in Sprachpaketen. Dieser Sektion untergeordnet: <placeholder-1/>"
 
-#: sdk/playercontrols.xml:119(h)
+#: sdk/playercontrols.xml:138(h)
 msgid "Section [ControlSets]"
 msgstr "Sektion [ControlSets]"
 
-#: sdk/playercontrols.xml:124(caption)
+#: sdk/playercontrols.xml:143(caption)
 msgid "Any number of sections [ControlSet]"
 msgstr "Beliebig viele Sektionen [ControlSet]"
 
-#: sdk/playercontrols.xml:133(col)
-msgid "Internal name for identification of otherwise equal control mappings. The names of the standard mappings are <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. By using placeholders (*) keys can directly be defined in multiple mappings**."
+#: sdk/playercontrols.xml:152(col)
+#, fuzzy
+msgid "Internal name for identification of otherwise equal control mappings. By using placeholders (*) keys can directly be defined in multiple mappings."
 msgstr "Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. Ueber Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert werden**."
 
-#: sdk/playercontrols.xml:138(caption)
+#: sdk/playercontrols.xml:157(col)
+msgid "Name for the control assignment set which is shown to the player in the control configuration dialog."
+msgstr "Name der Steuerung welche wie sie in den Optionen angezeigt wird."
+
+#: sdk/playercontrols.xml:162(col)
+msgid "Whether this control assignment set uses the keyboard. Default 1."
+msgstr "Ob diese Steuerung die Tastatur benutzt. Default 1."
+
+#: sdk/playercontrols.xml:167(col)
+msgid "Whether this control assignment set uses the mouse. Default 1."
+msgstr "Ob diese Steuerung die Maus benutzt. Default 1."
+
+#: sdk/playercontrols.xml:172(col)
+msgid "Whether this control assignment set uses the gamepad. Default 0."
+msgstr "Ob diese Steuerung ein Gamepad benutzt. Default 0."
+
+#: sdk/playercontrols.xml:177(caption)
 msgid "Any number of sections [Assignment]"
 msgstr "Beliebig viele Sektionen [Assignment]"
 
-#: sdk/playercontrols.xml:147(col)
+#: sdk/playercontrols.xml:186(col)
 msgid "Specifies the key(s) of this mapping or a reference to another mapping. See <emlink href=\"playercontrols.xml#Keys\">Key mappings</emlink>."
 msgstr "Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 
-#: sdk/playercontrols.xml:152(col)
+#: sdk/playercontrols.xml:191(col)
 msgid "If true then multiple keys are taken as a sequence, i.e. they need to be pressed one after the other instead of all at the same time. See <emlink href=\"playercontrols.xml#Keys\">Key mappings</emlink>."
 msgstr "Wenn wahr, werden mehrfache Tasten als Sequenz interpretiert. Das heisst, sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
 
-#: sdk/playercontrols.xml:157(col)
+#: sdk/playercontrols.xml:196(col)
 msgid "Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href=\"playercontrols.xml#ControlDef\">[ControlDef]</emlink>."
 msgstr "Kommando, das mit dieser Belegung verknuepft wird. Der Name sollte dem <em>Identifier</em> eines in einer <emlink href=\"playercontrols.xml#ControlDef\">[ControlDef]</emlink> definierten Kommandos entsprechen."
 
-#: sdk/playercontrols.xml:162(col)
+#: sdk/playercontrols.xml:201(col)
+#, fuzzy
+msgid "Name which is shown to the player in the control configuration dialog and in control tooltips. Localized strings from the corresponding string table can be used ($Name$). If unset, GUIName of the control def is used. If set to \"None\", the control is not displayed in the user customization dialog even if the control def has a name set."
+msgstr "Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
+
+#: sdk/playercontrols.xml:206(col)
+#, fuzzy
+msgid "Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$). If unset, GUIDesc of the control def is used."
+msgstr "Erlaeuternde Beschreibung, die dem Spieler im Steuerungskonfigurationsdialog angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
+
+#: sdk/playercontrols.xml:211(col)
+msgid "Control assignments in the same group are displayed grouped together in the control assignment dialog. The group with the lowest number is displayed at the top. Default 0."
+msgstr "Tastenbelegungen in der gleichen Gruppe werden in den Optionen zusammen angezeigt. Die Gruppe mit der kleinsten Nummer erscheint ganz oben in der Liste."
+
+#: sdk/playercontrols.xml:216(col)
+msgid "Whether this control assignment can not be changed in the control assignment dialog. Default 0."
+msgstr "Ob diese Tastenbelegung nicht in den Optionen angepasst werden kann. Default 0."
+
+#: sdk/playercontrols.xml:221(col)
 msgid "Priority of the mapping. If more than once mapping is using the same keys then the key with the highest priority is executed first until a command is treated as handled."
 msgstr "Prioritaet der Belegung. Nutzen mehrere Belegungen die gleichen Tasten, so wird zunaechst die Taste mit der hoeheren Prioritaet ausgefuehrt, bis ein Kommando als behandelt gilt."
 
-#: sdk/playercontrols.xml:166(col)
+#: sdk/playercontrols.xml:225(col)
 msgid "bitmask"
 msgstr "Bitmaske"
 
-#: sdk/playercontrols.xml:177(col)
+#: sdk/playercontrols.xml:236(col)
 msgid "No particular action."
 msgstr "Keine besondere Aktion."
 
-#: sdk/playercontrols.xml:181(col)
+#: sdk/playercontrols.xml:240(col)
 msgid "The key changes the state of the command linked to to be held even if the key itself is pressed only shortly. Only valid if the <em>Hold</em> attribute is set for the command. This state remains until a corresponding mapping with trigger mode <em>Release</em> is being pressed. See <emlink href=\"playercontrols.xml#Hold\">Held keys</emlink>."
 msgstr "Die Taste versetzt das verlinkte Kommando in den gedrueckten Zustand, selbst wenn die Taste selbst nur angeschlagen wird. Nur gueltig, wenn das Kommando das <em>Hold</em>-Attribut gesetzt hat. Dieser Zustand bleibt erhalten, bis eine entsprechende Belegung mit Ausloesemodus <em>Release</em> gedrueckt wird. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 
-#: sdk/playercontrols.xml:185(col)
+#: sdk/playercontrols.xml:244(col)
 msgid "The key removes the held state. A key can have both Hold and Release set to toggle between the two states. See <emlink href=\"playercontrols.xml#Hold\">Held keys</emlink>."
 msgstr "Die Taste entfernt den gedrueckten Zustand. Eine Taste kann auch sowohl Hold als auch Release setzen, um zwischen den Zustaenden hin und her zu schalten. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
 
-#: sdk/playercontrols.xml:189(col)
+#: sdk/playercontrols.xml:248(col)
 msgid "The key press is always passed to the mapping with the next lowest priority, independent of whether the previous command was executed successfully or not."
 msgstr "Der Tastendruck wird immer an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, unabhaengig davon, ob das vorherige Kommando erfolgreich ausgefuehrt wurde."
 
-#: sdk/playercontrols.xml:193(col)
-msgid "The keypress is passed to the mapping with the next lower priority only if the previous command was executed successfully. This can be used to define macros. **"
-msgstr "Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
-
-#: sdk/playercontrols.xml:197(col)
+#: sdk/playercontrols.xml:252(col)
 msgid "The assignment overwrites all other assignments for the same control with the same press/release trigger mode."
 msgstr "Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Control mit gleichem Press/Release-Triggermodus."
 
-#: sdk/playercontrols.xml:167(col)
+#: sdk/playercontrols.xml:226(col)
 msgid "Trigger mode of this mapping. Bitmask based on the following values: <placeholder-1/>"
 msgstr "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
 
-#: sdk/playercontrols.xml:120(text)
+#: sdk/playercontrols.xml:139(text)
 msgid "Definition of standard control mappings. <placeholder-1/>"
 msgstr "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
 
-#: sdk/playercontrols.xml:210(h)
+#: sdk/playercontrols.xml:265(h)
 msgid "Script callbacks"
 msgstr "Script-Callbacks"
 
-#: sdk/playercontrols.xml:211(text)
+#: sdk/playercontrols.xml:266(text)
 msgid "To initialize the player control the script function InitializePlayerControl is called for each player. This call might be delayed by a few frames with respect to InitializePlayer since the initialization of the control needs to be transmitted in the network. When continuing savegames InitalizePlayerControl will be called again. The chosen control might be different from the original one. The same can happen if a player chooses to change its controls during the game."
 msgstr "Zum Initialisieren der Spielersteuerung wird für jeden gesteuerten Spieler die Funktion InitializePlayerControl aufgerufen. Dieser Aufruf erfolgt gegebenenfalls einige Frames verspätet nach InitializePlayer, da die Initialisierung der Steuerung im Netzwerk übertragen werden muss. Beim Fortsetzen von Spielständen wird InitializePlayerControl wiederholt aufgerufen. Die gewählte Steuerung kann sich hier von der ursprünglichen Steuerung unterscheiden. Gleiches gilt, falls der Spieler mitten im Spiel die Steuerung wechselt."
 
-#: sdk/playercontrols.xml:218(text)
+#: sdk/playercontrols.xml:273(text)
 msgid "most commands (except for asynchronous commands in the player menu) call a global script function:"
 msgstr "Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:"
 
-#: sdk/playercontrols.xml:220(text)
+#: sdk/playercontrols.xml:275(text)
 msgid "For an explanation of the parameters see <placeholder-1/>. Amongst others, the function receives the calling player in player as well as the command to be executed in control."
 msgstr "Fuer eine Erlaeuterung der Parameter siehe <placeholder-1/>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in player, sowie das ausgefuehrte Kommando in iControl."
 
-#: sdk/playercontrols.xml:221(text)
+#: sdk/playercontrols.xml:276(text)
 msgid "As a simple example let's assume that in the global <em>PlayerControls.txt</em> the following command has been defined:"
 msgstr "Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:"
 
-#: sdk/playercontrols.xml:238(text)
+#: sdk/playercontrols.xml:293(text)
 msgid "This defines a Jump key and the corresponding standard mapping on the keyboard for the first player. The following script is used to handle the control:"
 msgstr "Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:"
 
-#: sdk/playercontrols.xml:256(h)
+#: sdk/playercontrols.xml:311(h)
 msgid "ExtraData"
 msgstr "ExtraData"
 
-#: sdk/playercontrols.xml:257(text)
+#: sdk/playercontrols.xml:312(text)
 msgid "Since not every object definition is able to overload the global PlayerControl function the ExtraData field can be used to distribute commands. As an example consider the following definition:"
 msgstr "Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:"
 
-#: sdk/playercontrols.xml:264(text)
+#: sdk/playercontrols.xml:319(text)
 msgid "Let shovel be the ID of a shovel object. In the global script there could be the following, generic handling for unknown commands, for example:"
 msgstr "Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
 
-#: sdk/playercontrols.xml:274(text)
+#: sdk/playercontrols.xml:329(text)
 msgid "And in the script of the shovel:"
 msgstr "Und im Script der Schaufel:"
 
-#: sdk/playercontrols.xml:291(h)
+#: sdk/playercontrols.xml:346(h)
 msgid "Held keys"
 msgstr "Gehaltene Tasten"
 
-#: sdk/playercontrols.xml:292(text)
+#: sdk/playercontrols.xml:347(text)
 msgid "If the <em>Hold</em> flag is set for a command then the engines saves the current key state for that key. These kind of keys have a few specialties:"
 msgstr "Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:"
 
-#: sdk/playercontrols.xml:295(li)
+#: sdk/playercontrols.xml:350(li)
 msgid "When released they also generate <placeholder-1/> calls in the script with the <em>Release</em> flag set."
 msgstr "Sie generieren auch beim Loslassen <placeholder-1/>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script."
 
-#: sdk/playercontrols.xml:296(li)
+#: sdk/playercontrols.xml:351(li)
 msgid "Mappings can emulate permanent key presses using the <em>Hold</em>/<em>Release</em> flags."
 msgstr "Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren."
 
-#: sdk/playercontrols.xml:297(li)
+#: sdk/playercontrols.xml:352(li)
 msgid "<emlink href=\"playercontrols.xml#Repeat\">Key repeats</emlink> are generated."
 msgstr "<emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink> werden erzeugt."
 
-#: sdk/playercontrols.xml:298(li)
+#: sdk/playercontrols.xml:353(li)
 msgid "The held state of the key can be queried in the script via <placeholder-1/>."
 msgstr "Der Haltezustand der Taste kann mit <placeholder-1/> im Script abgefragt werden."
 
-#: sdk/playercontrols.xml:301(text)
+#: sdk/playercontrols.xml:356(text)
 msgid "A good example for this functionality is a directional command:"
 msgstr "Bestes Beispiel hierfuer ist ein Richtungskommando:"
 
-#: sdk/playercontrols.xml:307(text)
+#: sdk/playercontrols.xml:362(text)
 msgid "In the script the direction is transferred to the Clonk:"
 msgstr "Im Script wird die Richtung dann auf den Clonk uebertragen:"
 
-#: sdk/playercontrols.xml:330(text)
+#: sdk/playercontrols.xml:385(text)
 msgid "To achieve the behaviour of classic controls a mapping can emulate the <em>Hold</em> state:"
 msgstr "Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:"
 
-#: sdk/playercontrols.xml:340(h)
+#: sdk/playercontrols.xml:395(h)
 msgid "Global definitions"
 msgstr "Globale Definitionen"
 
-#: sdk/playercontrols.xml:341(text)
-#: sdk/playercontrols.xml:354(text)
-#: sdk/playercontrols.xml:356(text)
-#: sdk/playercontrols.xml:358(text)
+#: sdk/playercontrols.xml:396(text)
+#: sdk/playercontrols.xml:409(text)
+#: sdk/playercontrols.xml:411(text)
+#: sdk/playercontrols.xml:413(text)
 msgid "..."
 msgstr "..."
 
-#: sdk/playercontrols.xml:342(h)
+#: sdk/playercontrols.xml:397(h)
 msgid "Key repeats"
 msgstr "Tastenwiederholungen"
 
-#: sdk/playercontrols.xml:343(text)
+#: sdk/playercontrols.xml:398(text)
 msgid "If a command has <em>RepeatDelay</em> defined then repeated commands are generated while the key is pressed. For example for a throwing command:"
 msgstr "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
 
-#: sdk/playercontrols.xml:351(text)
+#: sdk/playercontrols.xml:406(text)
 msgid "In the example one could keep the key pressed after having it pressed for the first time. The Throw command then would be sent every 5 seconds automatically after an initial delay of 35 frames (about one second)."
 msgstr "Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt."
 
-#: sdk/playercontrols.xml:352(text)
+#: sdk/playercontrols.xml:407(text)
 msgid "Repeats are only generated when the command also has the <em>Hold</em> flag set."
 msgstr "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat."
 
-#: sdk/playercontrols.xml:353(h)
+#: sdk/playercontrols.xml:408(h)
 msgid "Deactivated commands**"
 msgstr "Deaktivierte Kommandos**"
 
-#: sdk/playercontrols.xml:355(h)
+#: sdk/playercontrols.xml:410(h)
 msgid "Keyboard shortcuts"
 msgstr "Tastenbelegungen"
-
-#: sdk/playercontrols.xml:360(em)
-msgid "** - not yet implemented"
-msgstr "** - noch nicht implementiert"
 
 #: sdk/particle/index.xml:9(text)
 msgid "Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead."
@@ -17052,6 +17108,9 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 
+#~ msgid "Calls the local function function. If \"~\" is prepended to the function name then the call does not fail if the function does not exist."
+#~ msgstr "Ruft die lokale Funktion function auf. Wird \"~\" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt."
+
 #~ msgid "X position of the pixel to be set; relative coordinates in local calls"
 #~ msgstr "X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf"
 
@@ -17072,6 +17131,15 @@ msgstr "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. 
 
 #~ msgid "Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10)."
 #~ msgstr "Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick. (Zunahme der YDir um 2 pro Tick bei precision=10)"
+
+#~ msgid "Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**."
+#~ msgstr "Zusaetzliche Dateien PlayerControls.txt koennen in Sprachpaketen abgelegt werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen Sprachen an die Tastaturen des jeweiligen Landes anzupassen**."
+
+#~ msgid "The keypress is passed to the mapping with the next lower priority only if the previous command was executed successfully. This can be used to define macros. **"
+#~ msgstr "Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
+
+#~ msgid "** - not yet implemented"
+#~ msgstr "** - noch nicht implementiert"
 
 #~ msgid "id of the definition in the script of which to call the function."
 #~ msgstr "ID der Definition, in dessen Script die Funktion aufgerufen wird"

@@ -132,7 +132,7 @@ private func FxAlignRotationTimer(object target, proplist effect, int timer)
 	}
 	
 	//Debug
-	target->Message(Format("%d,%d; %d", effect.originalX, newX, effect.floorYOff));
+	//target->Message(Format("%d,%d; %d", effect.originalX, newX, effect.floorYOff));
 	
 	if(newX != effect.originalX * -1){
 		target->SetPosition(newX + this->GetX(100), target->GetY(100), true, 100);

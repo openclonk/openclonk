@@ -147,7 +147,7 @@ void C4SHead::Default()
 	Origin.Clear();
 	Icon=18;
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
-	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
+	C4XVer[0] = C4XVer[1] = C4XVer[2] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = 0;
 	SaveGame = Replay = NoInitialize = false;
 	Film = 0;
@@ -291,6 +291,7 @@ void C4SLandscape::Default()
 	KeepMapCreator=0;
 	SkyScrollMode=0;
 	FoWRes=C4FogOfWar::DefResolutionX;
+	MaterialZoom=4;
 }
 
 void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
@@ -333,6 +334,7 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
 	pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(C4FogOfWar::DefResolutionX)));
+	pComp->Value(mkNamingAdapt(MaterialZoom,            "MaterialZoom",          4));
 }
 
 void C4SWeather::Default()

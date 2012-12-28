@@ -78,7 +78,7 @@ int iC4GroupRewindFilePtrNoWarn=0;
 //---------------------------- Global C4Group_Functions -------------------------------------------
 
 char C4Group_TempPath[_MAX_PATH+1]="";
-char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db";
+char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
 const char **C4Group_SortList = NULL;
 time_t C4Group_AssumeTimeOffset=0;
 bool (*C4Group_ProcessCallback)(const char *, int)=NULL;
@@ -501,7 +501,7 @@ void C4Group::Init()
 	SearchPtr=NULL;
 	// Folder only
 	//hFdt=-1;
-	FolderSearch.Reset();
+	FolderSearch.Clear();
 	// Error status
 	SCopy("No Error",ErrorString,C4GroupMaxError);
 }
@@ -1041,13 +1041,13 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 	return true;
 }
 
-void C4Group::ResetSearch()
+void C4Group::ResetSearch(bool reload_contents)
 {
 	switch (Status)
 	{
 	case GRPF_Folder:
 		SearchPtr=NULL;
-		FolderSearch.Reset(FileName);
+		FolderSearch.Reset(FileName, reload_contents);
 		if (*FolderSearch)
 		{
 			FolderSearchEntry.Set(FolderSearch,FileName);
@@ -1465,6 +1465,8 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 			if (!EraseItem(szPath)) return false;
 		}
 		break;
+		// refresh file list
+		ResetSearch(true);
 	}
 	return true;
 }
@@ -1493,6 +1495,8 @@ bool C4Group::Rename(const char *szFile, const char *szNewName)
 		char path2[_MAX_FNAME+1]; SCopy(FileName,path2,_MAX_PATH-1);
 		AppendBackslash(path2); SAppend(szNewName,path2,_MAX_PATH);
 		if (!RenameFile(path,path2)) return Error("Rename: Failure");
+		// refresh file list
+		ResetSearch(true);
 		break;
 	}
 
@@ -1585,7 +1589,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 	case GRPF_File: // Copy entry to target
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFilename))) return false;
+		if (!(pEntry=GetEntry(szFilename))) return Error("Extract: Entry not found");
 		// Create dummy file to reserve target file name
 		hDummy.Create(szTargetFName,false);
 		hDummy.Write("Dummy",5);

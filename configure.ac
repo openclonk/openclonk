@@ -38,9 +38,28 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_PROG_CXX
 AC_LANG([C++])
 AX_CHECK_COMPILE_FLAG([-std=gnu++0x], [CXX="${CXX} -std=gnu++0x"], [])
-AC_COMPILE_IFELSE([
-void f(struct D&&); int main() { return 0; }
-], [AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])], [AX_PROG_CXX_REFTOTEMP])
+
+AC_MSG_CHECKING([for rvalue references])
+AC_COMPILE_IFELSE([void f(struct D&&); int main() { return 0; }], [
+    AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])
+    AC_MSG_RESULT([yes])
+  ], [
+    AC_MSG_RESULT([no])
+    AX_PROG_CXX_REFTOTEMP
+  ])
+
+AC_MSG_CHECKING([for nullptr])
+AC_COMPILE_IFELSE([int main() { void *d = nullptr; }], [
+    AC_DEFINE([HAVE_NULLPTR], [], [Define to 1 if you have support for nullptr.])
+    AC_MSG_RESULT([yes])
+  ], [AC_MSG_RESULT([no])])
+
+AC_MSG_CHECKING([for static_assert])
+AC_COMPILE_IFELSE([int main() { static_assert(true, \"\"); }], [
+    AC_DEFINE([HAVE_STATIC_ASSERT], [], [Define to 1 if your compiler supports static_assert])
+    AC_MSG_RESULT([yes])
+  ], [AC_MSG_RESULT([no])])
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
@@ -65,7 +84,7 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
 AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/file.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/eventfd.h sys/timerfd.h sys/inotify.h], , , [[ ]])
-AC_CHECK_HEADERS([io.h direct.h share.h natupnp.h], [], [], [[#include <windows.h>]])
+AC_CHECK_HEADERS([io.h direct.h share.h natupnp.h dbghelp.h], [], [], [[#include <windows.h>]])
 # iconv
 AX_ICONV
 # vasprintf is a GNU extension
@@ -107,7 +126,7 @@ AC_ARG_ENABLE([console],
 
 AC_ARG_ENABLE([sound],
   [AS_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
-  , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
+  , [if test $enable_console = yes; then enable_sound=no; else enable_sound=yes; fi])
 
 # GTK+
 GTK2_REQUIRED="glib-2.0 >= 2.8 gtk+-2.0 >= 2.8"
@@ -147,7 +166,7 @@ AC_ARG_WITH([openal],
   [AS_HELP_STRING([--with-openal],[compile with openal support [default=no]])],
   , [with_openal=no])
 if test $with_openal = yes; then
-  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal])
+  PKG_CHECK_MODULES(OPENAL, [vorbis vorbisfile openal freealut])
   AC_DEFINE([USE_OPEN_AL], 1, [OpenAL sound])
   if test $enable_sound = no; then
     AC_MSG_ERROR([--with-openal cannot be used with --disable-sound.])
@@ -208,6 +227,7 @@ else
   enable_sdlmainloop=no
   VL_LIB_READLINE
 fi
+AM_CONDITIONAL([CONSOLE], [test $enable_console = yes])
 
 # Check for boost
 AX_BOOST_BASE([1.40.0], [], [
@@ -256,19 +276,15 @@ if test $enable_console = no; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Define to 1 if you have FreeType2.])
 fi
 
-# X11, Xpm, Xrandr
+# X11, Xrandr
 AC_PATH_XTRA
 if test $have_x = yes; then
   AC_DEFINE(USE_X11, 1, [Define to 1 if the X Window System is used])
   CLONK_LIBS="$X_LIBS $CLONK_LIBS"
-  AC_CHECK_HEADERS([X11/keysym.h X11/extensions/xf86vmode.h X11/xpm.h X11/extensions/Xrandr.h], ,
+  AC_CHECK_HEADERS([X11/keysym.h X11/extensions/Xrandr.h], ,
     [AC_MSG_ERROR([A required X11 header was not found.])], [[#include <X11/Xlib.h>]])
   AC_CHECK_LIB(X11, XOpenDisplay, [CLONK_LIBS="-lX11 $CLONK_LIBS"],
     [AC_MSG_ERROR([libX11 not found.])], [$X_LIBS])
-  AC_CHECK_LIB(Xpm, XpmCreatePixmapFromData, [CLONK_LIBS="-lXpm $CLONK_LIBS"],
-    [AC_MSG_ERROR([libXpm not found.])], [$X_LIBS])
-  AC_CHECK_LIB(Xxf86vm, XF86VidModeQueryVersion, [CLONK_LIBS="-lXxf86vm $CLONK_LIBS"],
-    [AC_MSG_ERROR([XF86VidMode not found.])], [$X_LIBS])
   AC_CHECK_LIB(Xrandr, XRRQueryExtension, [CLONK_LIBS="-lXrandr $CLONK_LIBS"],
     [AC_MSG_ERROR([libXrandr not found.])], [$X_LIBS])
 fi
@@ -280,8 +296,7 @@ AC_ARG_WITH([gl],
 if test $with_gl = yes; then
   if test $osx = true; then
     CLONK_LIBS="-framework OpenGL $CLONK_LIBS"
-    AC_CHECK_LIB(GLEW, glewInit, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
-      [AC_MSG_ERROR([glew not found.])])
+    PKG_CHECK_MODULES(GLEW, [glew], [CLONK_LIBS="$GLEW_LIBS $CLONK_LIBS"], [AC_MSG_ERROR([glew not found.])])
   elif test $win32 = true; then
     AC_CHECK_LIB(opengl32, main, [CLONK_LIBS="-lopengl32 $CLONK_LIBS"],
       [AC_MSG_ERROR([opengl32 not found.])])
@@ -338,9 +353,6 @@ if test $win32 = false; then
   AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
-
-  # FMod is used for windows only
-  AM_CONDITIONAL(USE_FMOD, false)
 else
   # Windows
   for WIN32LIB in gdi32 comdlg32 ws2_32
@@ -355,11 +367,10 @@ else
     AC_DEFINE([HAVE_VFW32], 1, [ ])
     ], [])
 
-  # FMod (Library comes with standard)
-  if test "$enable_sound" = yes; then
-    AC_DEFINE([USE_FMOD], 1, [Whether FMOD shall be used])
-  fi
-  AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
+  AC_CHECK_LIB([dbghelp], main, [AS_IF([test "x$ac_cv_header_dbghelp_h" = xyes], [
+    CLONK_LIBS="-ldbghelp $CLONK_LIBS"
+    AC_DEFINE([HAVE_DBGHELP], 1, [Generate minidumps on crash])
+    ])], [])
 
   # windres
   AC_CHECK_TOOL(WINDRES, windres, no)
