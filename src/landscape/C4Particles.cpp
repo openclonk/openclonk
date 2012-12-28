@@ -811,8 +811,8 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	C4ParticleDef *def = particle->pDef;
 
 	// apply parallaxity to target pos
-	int32_t tax = cgo.TargetX * def->Parallaxity[0] / 100;
-	int32_t tay = cgo.TargetY * def->Parallaxity[1] / 100;
+	float tax = cgo.TargetX * def->Parallaxity[0] / 100;
+	float tay = cgo.TargetY * def->Parallaxity[1] / 100;
 
 	// get the phases per row
 	int32_t phases = def->PhasesX;
@@ -834,7 +834,7 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	if (!Inside(dy, tay-particle->a, tay + cgo.Hgt + particle->a)) return;
 
 	// get pos
-	int32_t cgox = cgo.X - tax, cgoy = cgo.Y - tay;
+	float cgox = cgo.X - tax, cgoy = cgo.Y - tay;
 	float cx = dx + cgox;
 	float cy = dy + cgoy;
 
