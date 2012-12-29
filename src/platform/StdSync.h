@@ -56,14 +56,22 @@ public:
 	HANDLE GetEvent() { return hEvent; }
 };
 
-#elif defined(HAVE_PTHREAD)
-
-#include <pthread.h>
-
+#else
 // Value to specify infinite wait.
-#ifndef INFINITE
 #define INFINITE (~0u)
+
+#if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
+inline long InterlockedIncrement(long * p) { return __sync_add_and_fetch(p, 1); }
+inline long InterlockedDecrement(long * p) { return __sync_sub_and_fetch(p, 1); }
+#else
+// Defined in Standard.cpp
+long InterlockedIncrement(long *);
+long InterlockedDecrement(long *);
+#define NEED_FALLBACK_ATOMIC_FUNCS 1
 #endif
+
+#if defined(HAVE_PTHREAD)
+#include <pthread.h>
 
 class CStdCSec
 {
@@ -144,16 +152,6 @@ public:
 	}
 };
 
-#if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
-inline long InterlockedIncrement(long * p) { return __sync_add_and_fetch(p, 1); }
-inline long InterlockedDecrement(long * p) { return __sync_sub_and_fetch(p, 1); }
-#else
-// Defined in Standard.cpp
-long InterlockedIncrement(long *);
-long InterlockedDecrement(long *);
-#define NEED_FALLBACK_ATOMIC_FUNCS 1
-#endif
-
 #else
 // Some stubs to silence the compiler
 class CStdCSec
@@ -175,6 +173,7 @@ public:
 	bool WaitFor(int) { return false; }
 };
 #endif // HAVE_PTHREAD
+#endif // _WIN32
 
 class CStdLock
 {
