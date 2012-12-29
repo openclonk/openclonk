@@ -39,8 +39,6 @@
 	DuringLoad(object clonk);                  // LoadTime2 frames after load start
 	DuringShoot(object clonk, int angle);      // ShootTime2 frames after shoot start
 	// When the clonk has during aiming an action where he can't use his hands, the aiming is paused
-	OnPauseAim(object clonk);  // Callback when the clonk has to pause the aiming
-	OnRestartAim(object clonk);// Callback when the clonk want's to restart aiming. Has to return true if aiming again is possible
 	Reset(object clonk);       // Callback when the clonk has been reseted
 
 	The Weapon can use the following functions on the clonk:
@@ -60,15 +58,12 @@ local aim_weapon;
 local aim_animation_index;
 local aim_angle;
 local aim_stop;
-local aim_pause;
 
 local aim_schedule_timer;
 local aim_schedule_call;
 
 local aim_schedule_timer2;
 local aim_schedule_call2;
-
-local aim_pause_timer;
 
 // Aim modes
 static const AIM_Position = 1; // The aim angle alters the position of the animation (0° menas 0% animation position, 180° menas 100% andimation position)
@@ -86,8 +81,6 @@ func IsAiming() { return !!GetEffect("IntAim", this); }
 func FxIntAimCheckProcedureStart(target, effect, tmp)
 {
 	if(tmp) return;
-	aim_pause = 0;
-	aim_pause_timer = 0;
 }
 
 func FxIntAimCheckProcedureTimer()
@@ -116,40 +109,7 @@ func FxIntAimCheckProcedureTimer()
 	
 	// check procedure
 	if(!ReadyToAction())
-	{
-		if(aim_pause_timer >= 20 || GetAction() != "Scale") // Wait 20 frames, so a very short scale passage doesn't ruin aiming TODO: see if this is a good idea
-		{
-			// Already released? cancel
-			if(aim_stop)
-			{
-				CancelAiming();
-				return -1;
-			}
-			if(aim_pause != 1)
-			{
-				PauseAim();
-				aim_schedule_call = nil;
-				aim_schedule_timer = nil;
-				aim_pause = 1;
-			}
-			aim_pause_timer = 0;
-		}
-		else aim_pause_timer++;
-	}
-	else
-	{
-		aim_pause_timer = 0;
-		if(aim_pause == 1)
-		{
-			if(!RestartAim()) // Can't start again? :-( stop
-			{
-				aim_weapon = nil;
-				aim_set = nil;
-				return -1;
-			}
-			aim_pause = 0;
-		}
-	}
+		PauseAim();
 }
 
 func FxIntAimCheckProcedureStop(target, effect, reason, tmp)
@@ -162,20 +122,9 @@ func FxIntAimCheckProcedureStop(target, effect, reason, tmp)
 func PauseAim()
 {
 	if(!aim_weapon) return CancelAiming();
-	ResetHands(1);
-	
-	// might be invalid if the weapon does anything weird on Reset() 
-	if(aim_weapon)
-		aim_weapon->~OnPauseAim(this);
-}
-
-func RestartAim()
-{
-	if(!aim_weapon) return false;
-	if(!aim_weapon->~OnRestartAim(this)) return false;
-	// Applay the set
-	ApplySet(aim_set);
-	return true;
+	// reissue the CON_Use command to the weapon when ready
+	this->PauseUse(aim_weapon);
+	CancelAiming();
 }
 
 public func StartLoad(object weapon)
@@ -319,9 +268,6 @@ public func SetAimPosition(int angle)
 
 public func StopAim()
 {
-	// while pausing interpret this as cancel
-	if(aim_pause == 1)
-		return CancelAiming();
 	// Schedule Stop
 	aim_stop = 1;
 }
@@ -426,7 +372,7 @@ public func ApplySet(set)
 		SetBackwardsSpeed(set["WalkBack"]);
 }
 
-public func ResetHands(bool pause)
+public func ResetHands()
 {
 	if(!GetEffect("IntAimCheckProcedure", this))
 		return;
@@ -456,18 +402,15 @@ public func ResetHands(bool pause)
 	SetTurnType(0, -1);
 	SetHandAction(0);
 
-	if(!pause)
-	{
-		aim_weapon = nil;
-		aim_set = nil;
+	aim_weapon = nil;
+	aim_set = nil;
 		
-		aim_schedule_call = nil;
-		aim_schedule_timer = nil;
-		aim_schedule_call2 = nil;
-		aim_schedule_timer2 = nil;
+	aim_schedule_call = nil;
+	aim_schedule_timer = nil;
+	aim_schedule_call2 = nil;
+	aim_schedule_timer2 = nil;
 		
-		RemoveEffect("IntAimCheckProcedure", this);
-	}
+	RemoveEffect("IntAimCheckProcedure", this);
 }
 
 /* +++++++++++ Slow walk +++++++++++ */

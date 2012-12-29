@@ -24,11 +24,7 @@ global func IsThrowControl(int ctrl)
 	// left mouse button
 	if(ctrl == CON_Throw
 	|| ctrl == CON_ForcedThrow
-	|| ctrl == CON_ThrowDelayed
-	// right mouse button
-	|| ctrl == CON_ThrowAlt
-	|| ctrl == CON_ForcedThrowAlt
-	|| ctrl == CON_ThrowAltDelayed)
+	|| ctrl == CON_ThrowDelayed)
 		return true;
 	
 	return false;
@@ -39,7 +35,6 @@ global func IsDropControl(int ctrl)
 {
 	// selected items
 	if(ctrl == CON_Drop
-	|| ctrl == CON_DropAlt
 	// hotkeys
 	|| ctrl == CON_DropHotkey0
 	|| ctrl == CON_DropHotkey1

@@ -309,7 +309,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var contents = this->GetHandItem(0);	
 	
 	// usage
-	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed);
+	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
 	if (use)
 	{
 		if (house)
@@ -347,9 +347,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				if (!this.control.current_object && (repeat || release)) return true;
 			}
 		}
+		// releasing the use-key always cancels shelved commands (in that case no this.control.current_object exists)
+		if(release) StopShelvedCommand();
 		// Release commands are always forwarded even if contents is 0, in case we
 		// need to cancel use of an object that left inventory
-		if ((contents || (release && this.control.current_object)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
+		if (contents || (release && this.control.current_object))
 		{
 			if (ControlUse2Script(ctrl, x, y, strength, repeat, release, contents))
 				return true;
@@ -441,6 +443,35 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
 }
 
+public func ShelveCommand(object condition_obj, string condition, object callback_obj, string callback, proplist data)
+{
+	this.control.shelved_command = { cond = condition, cond_obj = condition_obj, callback = callback, callback_obj = callback_obj, data = data };
+	AddEffect("ShelvedCommand", this, 1, 5, this);
+}
+
+public func StopShelvedCommand()
+{
+	this.control.shelved_command = nil;
+	if(GetEffect("ShelvedCommand", this))
+		RemoveEffect("ShelvedCommand", this);
+}
+
+func FxShelvedCommandTimer(_, effect, time)
+{
+	if(!this.control.shelved_command) return -1;
+	if(!this.control.shelved_command.callback_obj) return -1;
+	if(!this.control.shelved_command.cond_obj) return -1;
+	if(!this.control.shelved_command.cond_obj->Call(this.control.shelved_command.cond, this.control.shelved_command.data)) return 1;
+	this.control.shelved_command.callback_obj->Call(this.control.shelved_command.callback, this.control.shelved_command.data);
+	return -1;
+}
+
+func FxShelvedCommandStop(target, effect, reason, temp)
+{
+	if(temp) return;
+	this.control.shelved_command = nil;
+}
+
 /* ++++++++++++++++++++++++ Use Controls ++++++++++++++++++++++++ */
 
 public func CancelUse()
@@ -449,6 +480,30 @@ public func CancelUse()
 
 	// use the saved x,y coordinates for canceling
 	CancelUseControl(this.control.mlastx, this.control.mlasty);
+}
+
+// to be called during usage of an object to re-start usage as soon as possible
+func PauseUse(object obj, string custom_condition, proplist data)
+{
+	// cancel use first, since it removes old shelved commands
+	if(this.control.started_use)
+	{
+		CancelUse();
+		this.control.started_use = false;
+	}
+	
+	var callback_obj = this;
+	
+	if(custom_condition != nil)
+	{
+		callback_obj = obj;
+	}
+	else custom_condition = "CanReIssueCommand";
+	
+	data = data ?? {};
+	data.obj = obj;
+	data.ctrl = CON_Use;
+	ShelveCommand(callback_obj, custom_condition, this, "ReIssueCommand", data);
 }
 
 private func DetermineUsageType(object obj)
@@ -480,8 +535,36 @@ private func GetUseCallString(string action)
 	return Format("~%sUse%s",control,action);
 }
 
+func CanReIssueCommand(proplist data)
+{
+	if(data.ctrl == CON_Use)
+		return !data.obj->~RejectUse(this);
+	
+	if(data.ctrl == CON_UseDelayed)
+		return !data.obj->~RejectUse(this);
+}
+
+func ReIssueCommand(proplist data)
+{
+	if(data.ctrl == CON_Use)
+		return StartUseControl(data.ctrl, this.control.mlastx, this.control.mlasty, data.obj);
+	
+	if(data.ctrl == CON_UseDelayed)
+		return StartUseDelayedControl(data.ctrl, data.obj);
+}
+
 private func StartUseControl(int ctrl, int x, int y, object obj)
 {
+	this.control.started_use = false;
+	
+	if(obj->~RejectUse(this))
+	{
+		// remember for later:
+		PauseUse(obj);
+		// but still catch command
+		return true;
+	}
+	
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
 	
@@ -497,6 +580,7 @@ private func StartUseControl(int ctrl, int x, int y, object obj)
 		handled = obj->Call(GetUseCallString(),this,x,y);
 		this.control.noholdingcallbacks = handled;
 	}
+	
 	if (!handled)
 	{
 		this.control.current_object = nil;
@@ -505,12 +589,24 @@ private func StartUseControl(int ctrl, int x, int y, object obj)
 			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		return false;
 	}
+	else
+		this.control.started_use = true;
 		
 	return handled;
 }
 
 private func StartUseDelayedControl(int ctrl, object obj)
 {
+	this.control.started_use = false;
+	
+	if(obj->~RejectUse(this))
+	{
+		// remember for later:
+		ShelveCommand(this, "CanReIssueCommand", this, "ReIssueCommand", {obj = obj, ctrl = ctrl});
+		// but still catch command
+		return true;
+	}
+	
 	this.control.current_object = obj;
 	this.control.using_type = DetermineUsageType(obj);
 				
@@ -520,11 +616,17 @@ private func StartUseDelayedControl(int ctrl, object obj)
 	var handled = obj->Call(GetUseCallString("Start"),this,this.control.mlastx,this.control.mlasty);
 	this.control.noholdingcallbacks = !handled;
 	
+	if(handled)
+		this.control.started_use = true;
+		
 	return handled;
 }
 
 private func CancelUseControl(int x, int y)
 {
+	// forget possibly stored commands
+	StopShelvedCommand();
+	
 	// to horse first (if there is one)
 	var horse = GetActionTarget();
 	if(horse && GetProcedure() == "ATTACH" && this.control.current_object != horse)
@@ -640,13 +742,12 @@ private func StopUseDelayedControl(object obj)
 private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// click on UseAlt cancels Use
-	if (this.control.current_object)
+	if ((ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed) && !release)
 	{
-		if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-		{
+		if (this.control.current_object)
 			CancelUseControl(x, y);
-			return true;
-		}
+		StopShelvedCommand();
+		return true;
 	}
 	
 	// standard use

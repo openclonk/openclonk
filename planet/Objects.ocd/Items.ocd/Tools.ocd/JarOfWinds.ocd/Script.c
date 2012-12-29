@@ -37,15 +37,25 @@ protected func Initialize()
 	sound=false;
 }
 
-protected func ControlUse(object pClonk, iX, iY)
+func RejectUse(object clonk)
 {
-	if (pClonk->GetProcedure() == "ATTACH")
-		return true;
+	return clonk->GetProcedure() == "ATTACH";
+}
+
+// used by this object
+func ReadyToBeUsed(proplist data)
+{
+	var clonk = data.clonk;
+	return !RejectUse(clonk) && !GetEffect("JarReload", this);
+}
+
+protected func ControlUse(object clonk, iX, iY)
+{
 	if(!GetEffect("JarReload",this))
 	{
 		if(!GBackLiquid())
 		{
-			FireWeapon(pClonk, iX, iY);
+			FireWeapon(clonk, iX, iY);
 			Amount=0;
 			AddEffect("JarReload",this,100,1,this);
 			Sound("WindCharge",false,nil,nil,1);
@@ -56,10 +66,10 @@ protected func ControlUse(object pClonk, iX, iY)
 	}
 	else
 	{
-		pClonk->Message("Reloading!");
+		clonk->Message("Reloading!");
+		clonk->PauseUse(this, "ReadyToBeUsed", {clonk = clonk});
 		return true;
 	}
-//	ChargeSoundStop();
 }
 
 protected func Load()

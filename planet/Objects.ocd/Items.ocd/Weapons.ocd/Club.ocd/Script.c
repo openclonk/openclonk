@@ -65,19 +65,17 @@ public func HoldingEnabled() { return true; }
 
 local fAiming;
 
+public func RejectUse(object clonk)
+{
+	return !CanStrikeWithWeapon(clonk) || !clonk->HasHandAction();
+}
+
 public func ControlUseStart(object clonk, int x, int y)
 {
 	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		ClubChangeHandAnims("R");
 	else
 		ClubChangeHandAnims("L");
-
-	// cooldown?
-	if(!CanStrikeWithWeapon(clonk)) return true;
-	
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-		return true;
 
 	fAiming = true;
 

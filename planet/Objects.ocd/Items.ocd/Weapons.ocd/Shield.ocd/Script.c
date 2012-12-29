@@ -11,18 +11,15 @@ local solid_mask_helper;
 
 /* Usage callbacks */
 
+func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction() || !clonk->IsWalking() || !CanStrikeWithWeapon(clonk);
+}
+
 public func ControlUseStart(object clonk, int x, int y)
 {
-	// may only be used while walking
-	if(!clonk->HasHandAction() || !clonk->IsWalking() || !CanStrikeWithWeapon(clonk))
-	{
-		AddEffect("IntShieldSuspend", clonk, 1, 5, this);
-	}
-	else
-	{
-		StartUsage(clonk);
-		UpdateShieldAngle(clonk, x,y);
-	}
+	StartUsage(clonk);
+	UpdateShieldAngle(clonk, x,y);
 	return true;
 }
 
@@ -124,14 +121,11 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	clonk->ReplaceAction("Walk", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), weight]);
 	clonk->ReplaceAction("Run", [Format("ShieldWalkUp.%s",handLR), Format("ShieldWalkDown.%s",handLR), weight]);
 
-	if(!GetEffect("IntShieldSuspend", clonk))
-	{
-		if(angle > 0) clonk->SetTurnForced(DIR_Right);
-		else clonk->SetTurnForced(DIR_Left);
+	if(angle > 0) clonk->SetTurnForced(DIR_Right);
+	else clonk->SetTurnForced(DIR_Left);
 	
-		clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(angle) * 11111/1000));
-		AdjustSolidMaskHelper();
-	}
+	clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(angle) * 11111/1000));
+	AdjustSolidMaskHelper();
 }
 
 // Adjust solid mask of shield
@@ -216,9 +210,10 @@ func FxShieldStopControlTimer(object target, effect)
 	// suspend usage if not walking
 	if(!target->IsWalking())
 	{
-		AddEffect("IntShieldSuspend", target, 1, 5, this);
-		EndUsage(target);
+		target->PauseUse(this);
+		return -1;
 	}
+	return 1;
 }
 
 func FxShieldStopControlQueryCatchBlow(object target, effect, object obj)
@@ -255,17 +250,6 @@ func FxShieldStopControlQueryCatchBlow(object target, effect, object obj)
 	Sound("ShieldMetalHit?");
 	
 	return true;
-}
-
-/* Suspend effect */
-
-func FxIntShieldSuspendTimer(object target, effect)
-{
-	if(target->IsWalking() && CanStrikeWithWeapon(target))
-	{
-		StartUsage(target);
-		return -1;
-	}
 }
 
 /* Colour by owner */

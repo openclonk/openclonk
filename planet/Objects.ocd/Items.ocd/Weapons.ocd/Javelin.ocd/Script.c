@@ -34,12 +34,13 @@ public func GetCarryBone() { return "Javelin"; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryTransform() { if(fAiming == 1) return Trans_Rotate(180, 1, 0, 0); }
 
+public func RejectUse(object clonk)
+{
+	return !clonk->HasHandAction();
+}
+
 public func ControlUseStart(object clonk, int x, int y)
 {
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-		return true;
-
 	fAiming = true;
 
 	clonk->StartAim(this);

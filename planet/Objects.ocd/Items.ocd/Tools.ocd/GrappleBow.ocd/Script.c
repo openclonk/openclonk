@@ -83,6 +83,13 @@ protected func Departure()
 
 public func GetAnimationSet() { return animation_set; }
 
+func RejectUse(object clonk)
+{
+	// able to cut the hook?
+	if(hook->Contained() != this) return false;
+	return !clonk->HasHandAction();
+}
+
 public func ControlUseStart(object clonk, int x, int y)
 {
 	// Cut rope, or otherwise remove helper object.
@@ -94,12 +101,6 @@ public func ControlUseStart(object clonk, int x, int y)
 			rope->DrawIn();
 		//	rope->BreakRope();
 		}
-		return true;
-	}
-
-	// if the clonk doesn't have an action where he can use it's hands do nothing
-	if(!clonk->HasHandAction())
-	{
 		return true;
 	}
 
@@ -163,18 +164,6 @@ public func ControlUseCancel(object clonk, int x, int y)
 {
 	clonk->CancelAiming();
 	return true;
-}
-
-public func OnPauseAim(object clonk)
-{
-	Reset(clonk);
-}
-
-public func OnRestartAim(object clonk)
-{
-	ControlUseStart(clonk);
-	if(fAiming) return true;
-	return false;
 }
 
 /* ++++++++ Animation functions ++++++++ */
