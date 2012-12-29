@@ -220,11 +220,16 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	if (!_this) return C4Value();
 	C4AulParSet ParSet(&Pars[1], 9);
 	C4AulFunc * fn = Pars[0].getFunction();
-	if (!fn)
-		fn = _this->GetFunc(Pars[0].getStr());
+	C4String * name;
 	if (!fn)
 	{
-		const char * s = FnStringPar(Pars[0].getStr());
+		name = Pars[0].getStr();
+		if (name)
+			fn = _this->GetFunc(name);
+	}
+	if (!fn)
+	{
+		const char * s = FnStringPar(name);
 		if (s[0] == '~')
 		{
 			fn = _this->GetFunc(&s[1]);
