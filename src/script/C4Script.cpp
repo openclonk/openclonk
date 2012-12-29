@@ -215,6 +215,33 @@ static C4ValueArray * FnGetProperties(C4PropList * _this, C4PropList * p)
 	return r;
 }
 
+static C4Value FnCall(C4PropList * _this, C4Value * Pars)
+{
+	if (!_this) return C4Value();
+	C4AulParSet ParSet(&Pars[1], 9);
+	C4AulFunc * fn = Pars[0].getFunction();
+	C4String * name;
+	if (!fn)
+	{
+		name = Pars[0].getStr();
+		if (name)
+			fn = _this->GetFunc(name);
+	}
+	if (!fn)
+	{
+		const char * s = FnStringPar(name);
+		if (s[0] == '~')
+		{
+			fn = _this->GetFunc(&s[1]);
+			if (!fn)
+				return C4Value();
+		}
+	}
+	if (!fn)
+		throw new C4AulExecError(FormatString("Call: no function %s", Pars[0].GetDataString().getData()).getData());
+	return fn->Exec(_this, &ParSet, true);
+}
+
 static C4Value FnLog(C4PropList * _this, C4Value * Pars)
 {
 	Log(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9).getData());
