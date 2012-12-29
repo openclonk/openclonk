@@ -30,10 +30,10 @@ func RejectCollect(id objid, object obj)
 	var rejected = _inherited(objid,obj,...);
 	if(rejected) return rejected;
 	
-	// check if the two first slots are full. If the overloaded
+	// check if the hand slot is full. If the overloaded
 	// Collect() is called, this check will be skipped
 	if (!this.inventory.force_collection)
-		if (this->GetHandItem(0) && this->GetHandItem(1))
+		if (this->GetHandItem(0))
 			return true;
 	
 	return false;
@@ -108,16 +108,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey7Select) hot = 7;
 	if (ctrl == CON_Hotkey8Select) hot = 8;
 	if (ctrl == CON_Hotkey9Select) hot = 9;
-	if (ctrl == CON_Hotkey0SelectAlt) {hot = 10; hand=1; }
-	if (ctrl == CON_Hotkey1SelectAlt) {hot = 1; hand=1; }
-	if (ctrl == CON_Hotkey2SelectAlt) {hot = 2; hand=1; }
-	if (ctrl == CON_Hotkey3SelectAlt) {hot = 3; hand=1; }
-	if (ctrl == CON_Hotkey4SelectAlt) {hot = 4; hand=1; }
-	if (ctrl == CON_Hotkey5SelectAlt) {hot = 5; hand=1; }
-	if (ctrl == CON_Hotkey6SelectAlt) {hot = 6; hand=1; }
-	if (ctrl == CON_Hotkey7SelectAlt) {hot = 7; hand=1; }
-	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
-	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
 	
 	if(hot > 0  && hot <= this->MaxContentsCount())
 	{
@@ -199,11 +189,10 @@ public func SetHandItemPos(int hand, int inv)
 	return r;
 }
 /* Backpack control */
-func Selected(object mnu, object mnu_item, bool alt)
+func Selected(object mnu, object mnu_item)
 {
 	var backpack_index = mnu_item->GetExtraData();
 	var hands_index = 0;
-	if (alt) hands_index = 1;
 	// Update menu
 	var show_new_item = this->GetItem(hands_index);
 	mnu_item->SetSymbol(show_new_item);

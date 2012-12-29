@@ -15,6 +15,8 @@ CON_Throw_Desc=Werfen des Gegenstandes in der Hand in die anvisierte Richtung.
 CON_ThrowAlt=Werfen (andere Hand)
 CON_ThrowAlt_Desc=Werfen des Gegenstandes in der anderen Hand in die anvisierte Richtung.
 
+CON_QuickSwitch=Schnellwechsel
+CON_QuickSwitch_Desc=Das zuletzt angewählte Inventarobjekt auswählen.
 CON_Drop=Ablegen
 CON_Drop_Desc=Ablegen des Gegenstandes in der Hand.
 CON_DropAlt=Ablegen (andere Hand)

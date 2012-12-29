@@ -32,7 +32,7 @@ func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool releas
 	// update angle for visual effect on the menu
 	if (repeat)
 	{
-		if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+		if (ctrl == CON_UseDelayed)
 			this->GetMenu()->~UpdateCursor(mex,mey);
 	}
 	// click on menu
@@ -127,9 +127,7 @@ public func TriggerHoldingControl()
 	// - Newton
 	if (/*this.control.current_object && */!this.control.noholdingcallbacks)
 	{
-		var ctrl;
-		if (this.control.alt) ctrl = CON_UseAltDelayed;
-		else     ctrl = CON_UseDelayed;
+		var ctrl = CON_UseDelayed;
 				
 		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, false);
 	}
