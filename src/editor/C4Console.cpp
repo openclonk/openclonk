@@ -83,7 +83,7 @@ bool C4Console::In(const char *szText)
 		// done
 		return true;
 	}
-	// begins with '#'? then it's a message. Route cia ProcessInput to allow #/sound
+	// begins with '#'? then it's a message. Route via ProcessInput to allow #/sound
 	if (*szText == '#')
 	{
 		::MessageInput.ProcessInput(szText + 1);
@@ -558,7 +558,7 @@ bool C4ConsoleGUI::ClearLog() {return 0;}
 void C4ConsoleGUI::ClearNetMenu() {}
 void C4ConsoleGUI::ClearPlayerMenu() {}
 void C4ConsoleGUI::ClearViewportMenu() {}
-C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) {return 0;}
+C4Window * C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp*) { return this; }
 void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType, StdStrBuf&) {}
 void C4ConsoleGUI::DoEnableControls(bool) {}
 bool C4ConsoleGUI::DoUpdateHaltCtrls(bool) {return 0;}

@@ -31,6 +31,14 @@
 #include <C4Reloc.h>
 #include <C4Record.h>
 
+#ifdef _DEBUG
+C4Set<C4PropList *> C4PropList::PropLists;
+#endif
+C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+int32_t C4PropListNumbered::EnumerationIndex = 0;
+C4StringTable Strings;
+C4AulScriptEngine ScriptEngine;
+
 C4Config Config;
 C4Config::C4Config() {}
 C4Config::~C4Config() {}

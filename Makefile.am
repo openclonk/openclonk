@@ -27,9 +27,9 @@ noinst_LIBRARIES = lib.a
 if RECENT_GCC
 WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
--Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
+-Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
-##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
+##-Weffc++ -Wold-style-cast -Wunsafe-loop-optimizations
 else
 WARNING_FLAGS = -Wall
 endif
@@ -59,11 +59,6 @@ AM_CPPFLAGS = \
 -I$(srcdir)/src/script \
 -I$(srcdir)/thirdparty \
 $(BOOST_CPPFLAGS)
-
-##BUILT_SOURCES = hgrevision.h
-##hgrevision.h: $(srcdir)/.hg/dirstate
-##	$(srcdir)/tools/get_hg_revision.sh > hgrevision.h
-##$(srcdir)/.hg/dirstate:
 
 BUILT_SOURCES = C4Version.h
 CLEANFILES =
@@ -208,7 +203,6 @@ src/game/C4GraphicsSystem.h \
 src/game/C4Physics.h \
 src/game/C4Viewport.cpp \
 src/game/C4Viewport.h \
-src/game/ClonkMain.cpp \
 src/gamescript/C4Effect.cpp \
 src/gamescript/C4Effects.h \
 src/gamescript/C4FindObject.cpp \
@@ -234,8 +228,8 @@ src/graphics/C4Facet.cpp \
 src/graphics/C4FacetEx.cpp \
 src/graphics/C4FacetEx.h \
 src/graphics/C4Facet.h \
-src/graphics/C4Fonts.cpp \
-src/graphics/C4Fonts.h \
+src/graphics/C4FontLoader.cpp \
+src/graphics/C4FontLoader.h \
 src/graphics/C4GraphicsResource.cpp \
 src/graphics/C4GraphicsResource.h \
 src/graphics/C4Surface.cpp \
@@ -309,8 +303,6 @@ src/gui/C4StartupPlrSelDlg.cpp \
 src/gui/C4StartupPlrSelDlg.h \
 src/gui/C4StartupScenSelDlg.cpp \
 src/gui/C4StartupScenSelDlg.h \
-src/gui/C4UpdateDlg.cpp \
-src/gui/C4UpdateDlg.h \
 src/gui/C4UpperBoard.cpp \
 src/gui/C4UpperBoard.h \
 src/landscape/C4Landscape.cpp \
@@ -334,8 +326,6 @@ src/landscape/C4PathFinder.cpp \
 src/landscape/C4PathFinder.h \
 src/landscape/C4PXS.cpp \
 src/landscape/C4PXS.h \
-src/landscape/C4Region.cpp \
-src/landscape/C4Region.h \
 src/landscape/C4Scenario.cpp \
 src/landscape/C4Scenario.h \
 src/landscape/C4Sky.cpp \
@@ -457,7 +447,6 @@ src/object/C4Shape.cpp \
 src/object/C4Shape.h \
 src/platform/C4App.cpp \
 src/platform/C4App.h \
-src/platform/C4AppT.cpp \
 src/platform/C4AppWin32Impl.h \
 src/platform/C4FileMonitor.cpp \
 src/platform/C4FileMonitor.h \
@@ -471,16 +460,14 @@ src/platform/C4SoundLoaders.cpp \
 src/platform/C4SoundLoaders.h \
 src/platform/C4SoundSystem.cpp \
 src/platform/C4SoundSystem.h \
+src/platform/C4StdInProc.cpp \
+src/platform/C4StdInProc.h \
 src/platform/C4Video.cpp \
 src/platform/C4Video.h \
-src/platform/C4VideoPlayback.cpp \
-src/platform/C4VideoPlayback.h \
 src/platform/C4Window.h \
 src/platform/C4windowswrapper.h \
 src/platform/PlatformAbstraction.cpp \
 src/platform/PlatformAbstraction.h \
-src/platform/StdFont.cpp \
-src/platform/StdFont.h \
 src/platform/StdSync.h \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
@@ -544,6 +531,16 @@ src/res/engine.rc \
 src/res/resource.h
 endif
 
+if MACOSX
+clonk_SOURCES += \
+src/platform/C4AppDelegate.h \
+src/platform/C4AppDelegate.mm \
+src/platform/C4FileMonitorMac.mm
+else
+clonk_SOURCES += \
+src/game/ClonkMain.cpp
+endif
+
 if SDL_MAIN_LOOP
 clonk_SOURCES += \
 src/platform/C4AppSDL.cpp \
@@ -558,6 +555,10 @@ src/platform/C4AppGTK.cpp \
 src/platform/C4AppGTKImpl.h \
 src/platform/C4WindowGTK.cpp
 else
+if CONSOLE
+clonk_SOURCES += \
+src/platform/C4AppT.cpp
+else
 if WIN32
 clonk_SOURCES += \
 src/editor/C4ConsoleWin32.cpp \
@@ -568,22 +569,27 @@ endif
 if MACOSX
 clonk_SOURCES += \
 src/editor/C4ConsoleCocoa.mm \
+src/editor/C4EditorWindowController.h \
+src/editor/C4EditorWindowController.mm \
+src/graphics/C4DrawGLMac.h \
+src/graphics/C4DrawGLMac.mm \
+src/platform/C4AppDelegate+MainMenuActions.h \
+src/platform/C4AppDelegate+MainMenuActions.mm \
 src/platform/C4AppMac.mm \
-src/platform/C4FileMonitorMac.mm \
+src/platform/C4WindowController.h \
+src/platform/C4WindowController.mm \
 src/platform/C4WindowMac.mm \
-src/platform/ClonkAppDelegate.h \
-src/platform/ClonkAppDelegate.mm \
-src/platform/ConsoleWindowController.h \
-src/platform/ConsoleWindowController.mm \
-src/platform/ClonkWindowController.h \
-src/platform/ClonkWindowController.mm \
-src/platform/ClonkOpenGLView.h \
-src/platform/ClonkOpenGLView.mm \
 src/platform/CocoaKeycodeMap.h \
-src/platform/ClonkMainMenuActions.h \
-src/platform/ClonkMainMenuActions.mm
+src/platform/ObjectiveCAssociated.h
 endif
 endif
+endif
+endif
+
+if AUTOUPDATE
+clonk_SOURCES += \
+src/gui/C4UpdateDlg.cpp \
+src/gui/C4UpdateDlg.h
 endif
 
 if LIBUPNP
@@ -725,7 +731,9 @@ c4groups = \
   Sound.ocg \
   System.ocg \
   Objects.ocd \
-  BackToTheRocks.ocf \
+  Arena.ocf \
+  Parkour.ocf \
+  Settlement.ocf \
   Tutorial.ocf
 
 CLEANFILES += $(c4groups)

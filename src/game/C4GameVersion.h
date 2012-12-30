@@ -28,14 +28,14 @@ struct C4GameVersion
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> sEngineName; // status only - not used for comparison
 	int32_t iVer[4];
 
-	C4GameVersion(const char *szEngine=C4ENGINENAME, int32_t iVer1=C4XVER1, int32_t iVer2=C4XVER2, int32_t iVer3=C4XVER3, int32_t iVer4=C4XVER4)
-	{ Set(szEngine, iVer1, iVer2, iVer3, iVer4); }
-	void Set(const char *szEngine=C4ENGINENAME, int32_t iVer1=C4XVER1, int32_t iVer2=C4XVER2, int32_t iVer3=C4XVER3, int32_t iVer4=C4XVER4)
-	{ sEngineName.CopyValidated(szEngine); iVer[0]=iVer1; iVer[1]=iVer2; iVer[2]=iVer3; iVer[3]=iVer4; }
+	C4GameVersion(const char *szEngine=C4ENGINENAME, int32_t iVer1=C4XVER1, int32_t iVer2=C4XVER2, int32_t iVer3=C4XVER3)
+	{ Set(szEngine, iVer1, iVer2, iVer3); }
+	void Set(const char *szEngine=C4ENGINENAME, int32_t iVer1=C4XVER1, int32_t iVer2=C4XVER2, int32_t iVer3=C4XVER3)
+	{ sEngineName.CopyValidated(szEngine); iVer[0]=iVer1; iVer[1]=iVer2; iVer[2]=iVer3; }
 	StdStrBuf GetString() const
-	{ return FormatString("%s %d.%d.%d [%03d]", sEngineName.getData(), (int)iVer[0], (int)iVer[1], (int)iVer[2], (int)iVer[3]); }
+	{ return FormatString("%s %d.%d.%d", sEngineName.getData(), (int)iVer[0], (int)iVer[1], (int)iVer[2]); }
 	bool operator == (const C4GameVersion &rCmp) const
-	{ return /*sEngineName==rCmp.sEngineName &&*/ iVer[0]==rCmp.iVer[0] && iVer[1]==rCmp.iVer[1] && iVer[2]==rCmp.iVer[2] && iVer[3]==rCmp.iVer[3]; }
+	{ return /*sEngineName==rCmp.sEngineName &&*/ iVer[0]==rCmp.iVer[0] && iVer[1]==rCmp.iVer[1] && iVer[2]==rCmp.iVer[2]; }
 
 	void CompileFunc(StdCompiler *pComp, bool fEngineName)
 	{
@@ -46,18 +46,17 @@ struct C4GameVersion
 		}
 		else if (pComp->isCompiler())
 			sEngineName = "";
-		pComp->Value(mkArrayAdapt(iVer,4,0));;
+		pComp->Value(mkArrayAdapt(iVer,3,0));;
 	}
 };
 
 // helper
-inline int CompareVersion(int iVer1, int iVer2, int iVer3, int iVer4,
-                          int iRVer1 = C4XVER1, int iRVer2 = C4XVER2, int iRVer3 = C4XVER3, int iRVer4 = C4XVER4)
+inline int CompareVersion(int iVer1, int iVer2, int iVer3,
+                          int iRVer1 = C4XVER1, int iRVer2 = C4XVER2, int iRVer3 = C4XVER3)
 {
 	if (iVer1 > iRVer1) return 1; if (iVer1 < iRVer1) return -1;
 	if (iVer2 > iRVer2) return 1; if (iVer2 < iRVer2) return -1;
 	if (iVer3 > iRVer3) return 1; if (iVer3 < iRVer3) return -1;
-	if (iVer4 > iRVer4) return 1; if (iVer4 < iRVer4) return -1;
 	return 0;
 }
 

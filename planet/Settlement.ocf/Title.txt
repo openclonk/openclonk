@@ -1,0 +1,2 @@
+DE:Siedlung
+US:Settlement

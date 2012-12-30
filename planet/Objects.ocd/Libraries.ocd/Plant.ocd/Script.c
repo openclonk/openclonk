@@ -179,6 +179,7 @@ public func ChopDown()
 	ClearScheduleCall(this, "RestartGrowth");
 	StopGrowth();
 	this.Touchable = 1;
+	this.Plane = 300;
 	SetCategory(GetCategory()&~C4D_StaticBack);
 	if (Stuck())
 	{
@@ -189,10 +190,54 @@ public func ChopDown()
 			i--;
 		}
 	}
-	SetRDir(10);
-	if (Random(2)) SetRDir(-10);
-	// Crack!
-	if (GetCon() > 50) Sound("TreeDown?");
+	Sound("TreeCrack");
+	AddEffect("TreeFall", this, 1, 1, this);
+}
+
+// determine a random falling direction and passes it on to the FxTreeFallTimer.
+func FxTreeFallStart(object target, proplist effect)
+{
+	effect.direction = Random(2); 
+	if (effect.direction == 0) effect.direction -= 1;
+}
+
+/* animates the falling of the tree: First 10 slow degress then speed up and play the landing sound at 80+ degrees. 
+remember that degrees range from -180 to 180. */
+func FxTreeFallTimer(object target, proplist effect)
+{
+	//simple falling if tree is not fully grown
+	if (target->GetCon() <= 50)
+	{
+		target->SetRDir(effect.direction * 10);
+	} 
+	//else rotate slowly first until about 10 degree. This will be the time needed for the crack sound and makes sense as a tree will start falling slowly.
+	else
+	{
+		if (Abs(target->GetR()) < 10) 
+		{
+			target->SetRDir(effect.direction * 1);
+			//Turn of gravity so the tree doesn't get stuck before its done falling.
+			target->SetYDir(0);
+		} 
+		else 
+		{
+			//Then speed up and let gravity do the rest.
+			target->SetRDir(effect.direction * 10);
+		}	
+	}
+	//if the tree does not lend on a cliff or sth. (is rotated more then 80 degrees in the plus or minus direction) Play the landing sound of the tree.
+	if (Abs(target->GetR()) > 80)
+	{
+		target->SetRDir(0);
+		if (target->GetCon() > 50) target->Sound("TreeLanding", false);
+		return -1;
+	}
+	//check every frame if the tree is stuck and stop rotation in that case this is necessary as a tree could get stuck before reaching 80 degrees
+	if ((target->GetContact(-1, CNAT_Left) | target->GetContact(-1, CNAT_Right)) > 0)
+	{
+		target->SetRDir(0);
+		return -1;
+	}
 }
 
 /* Harvesting */
@@ -205,6 +250,15 @@ private func IsCrop()
 	return false;
 }
 
+/** Determines whether the plant can only be harvested when using a sickle.
+	These are very sturdy or economically important plants (like cotton or wheat).
+	@return \c true if the plant must be harvested with a sickle (default), \c false otherwise.
+*/
+private func SickleHarvesting()
+{
+	return true;
+}
+
 /** Determines whether the plant is harvestable right now (i.e. is fully grown).
 	@return \c true if the plant is ready to be harvested.
 */
@@ -215,7 +269,7 @@ public func IsHarvestable()
 
 public func IsInteractable(object clonk)
 {
-	return clonk->IsWalking() && IsCrop() && IsHarvestable() || _inherited(clonk);
+	return clonk->IsWalking() && IsCrop() && !SickleHarvesting() && (IsHarvestable() || _inherited(clonk));
 }
 
 public func GetInteractionMetaInfo(object clonk)

@@ -1089,8 +1089,8 @@ namespace
 		glPopMatrix();
 
 #if 0
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attach->ParentBone)
-			                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
+			const StdMeshMatrix& own_trans = attach->Parent->GetBoneTransform(attach->ParentBone)
+			                                 * StdMeshMatrix::Transform(attach->Parent->GetMesh().GetBone(attach->ParentBone).Transformation);
 
 			// Draw attached bone
 			glDisable(GL_DEPTH_TEST);
@@ -1137,13 +1137,12 @@ namespace
 			glPolygonMode(GL_BACK, modes[1]);
 		}
 
-
 #if 0
 		// Draw attached bone
 		if (instance.GetAttachParent())
 		{
 			const StdMeshInstance::AttachedMesh* attached = instance.GetAttachParent();
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.Mesh.GetBone(attached->ChildBone).Transformation);
+			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.GetMesh().GetBone(attached->ChildBone).Transformation);
 
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_LIGHTING);
@@ -1270,7 +1269,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 			parity = !parity;
 
 		// Scale so that the mesh fits in (tx,ty,twdt,thgt)
-		const float rx = -std::min(v1.x,v1.y) / fabs(v2.x - v1.x);
+		const float rx = -std::min(v1.x,v2.x) / fabs(v2.x - v1.x);
 		const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
 		const float dx = tx + rx*twdt;
 		const float dy = ty + ry*thgt;
@@ -1785,7 +1784,7 @@ static inline long int lrintf(float f)
 }
 #endif
 
-void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -1799,8 +1798,8 @@ void CStdGL::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, fl
 		float l = sqrtf(offx * offx + offy * offy);
 		// avoid division by zero
 		l += 0.000000005f;
-		offx /= l; offx *= Zoom;
-		offy /= l; offy *= Zoom;
+		offx /= l; offx *= Zoom * width;
+		offy /= l; offy *= Zoom * width;
 		C4BltVertex vtx[4];
 		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
 		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;

@@ -262,7 +262,7 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 			return IR_Error;
 		}
 	}
-	// initialize ressources
+	// initialize resources
 	if (!Game.Parameters.InitNetwork(&ResList))
 		return IR_Fatal;
 	// init league
@@ -658,7 +658,7 @@ void C4Network2::Clear()
 	Clients.Clear();
 	// close net classes
 	NetIO.Clear();
-	// clear ressources
+	// clear resources
 	ResList.Clear();
 	// clear password
 	sPassword.Clear();
@@ -1073,9 +1073,9 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 
 	// check engine version
 	bool fWrongPassword = false;
-	if (Pkt.getVer() != C4XVER4)
+	if (Pkt.getVer() != C4XVER1*10000 + C4XVER2*100 + C4XVER3)
 	{
-		reply.Format("wrong engine (%d, I have %d)", Pkt.getVer(), C4XVER4);
+		reply.Format("wrong engine (%d.%d.%d, I have %d.%d.%d)", Pkt.getVer()/10000, Pkt.getVer()/100%100, Pkt.getVer()%100, C4XVER1, C4XVER2, C4XVER3);
 		fOK = false;
 	}
 	else
@@ -1372,12 +1372,12 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 	pControl->CopyClientList(Game.Parameters.Clients);
 	// set local core
 	NetIO.SetLocalCCore(pLocalClient->getCore());
-	// add the resources to the network ressource list
+	// add the resources to the network resource list
 	Game.Parameters.GameRes.InitNetwork(&ResList);
 	// load dynamic
 	if (!ResList.AddByCore(ResDynamic))
 		{ LogFatal("Network: can not not retrieve dynamic!"); Clear(); return; }
-	// load player ressources
+	// load player resources
 	Game.Parameters.PlayerInfos.LoadResources();
 	// send additional addresses
 	Clients.SendAddresses(NULL);
@@ -1504,10 +1504,10 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
 	int32_t iProcess = -1; uint32_t iTimeout = GetTime() + iTimeoutLen;
-	// wait for ressource
+	// wait for resource
 	while (isEnabled())
 	{
-		// find ressource
+		// find resource
 		C4Network2Res::Ref pRes = ResList.getRefRes(Core.getID());
 		// res not found?
 		if (!pRes)
@@ -1604,7 +1604,7 @@ bool C4Network2::CreateDynamic(bool fInit)
 	C4GameSaveNetwork SaveGame(fInit);
 	if (!SaveGame.Save(szDynamicFilename) || !SaveGame.Close())
 		{ Log(LoadResStr("IDS_NET_SAVE_ERR_SAVEDYNFILE")); return false; }
-	// add ressource
+	// add resource
 	C4Network2Res::Ref pRes = ResList.AddByFile(szDynamicFilename, true, NRT_Dynamic);
 	if (!pRes) { Log(LoadResStr("IDS_NET_SAVE_ERR_ADDDYNDATARES")); return false; }
 	// save

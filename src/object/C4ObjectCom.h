@@ -43,7 +43,7 @@ bool ObjectActionGetPunched(C4Object *cObj, C4Real xdir, C4Real ydir);
 bool ObjectActionKneel(C4Object *cObj);
 bool ObjectActionFlat(C4Object *cObj, int32_t dir);
 bool ObjectActionScale(C4Object *cObj, int32_t dir);
-bool ObjectActionHangle(C4Object *cObj, int32_t dir);
+bool ObjectActionHangle(C4Object *cObj);
 bool ObjectActionThrow(C4Object *cObj, C4Object *pThing=NULL);
 bool ObjectActionDig(C4Object *cObj);
 bool ObjectActionPush(C4Object *cObj, C4Object *pTarget);

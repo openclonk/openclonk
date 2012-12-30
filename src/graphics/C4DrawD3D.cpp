@@ -463,6 +463,7 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 
 bool CStdD3D::CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
+	// FIXME: this needs to work with iXRes==iYRes==-1, which means "use the desktop resolution"
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
 	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");
@@ -766,7 +767,7 @@ void CStdD3D::DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWOR
 	lpDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 2 );
 }
 
-void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void CStdD3D::PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	// FIXME: zoom width
 	//dwClr |= 0xf0000000;

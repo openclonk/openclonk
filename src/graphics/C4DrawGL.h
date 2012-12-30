@@ -30,6 +30,9 @@
 #include <GL/glew.h>
 
 #if defined(__APPLE__)
+#ifdef USE_COCOA
+#import "ObjectiveCAssociated.h"
+#endif
 #include <OpenGL/glu.h>
 #else
 #include <GL/glu.h>
@@ -40,6 +43,9 @@ class C4Window;
 
 // one OpenGL context
 class CStdGLCtx
+#ifdef USE_COCOA
+	: public ObjectiveCAssociated
+#endif
 {
 public:
 	CStdGLCtx();  // ctor
@@ -52,10 +58,6 @@ public:
 	std::vector<int> EnumerateMultiSamples() const;
 #else
 	bool Init(C4Window * pWindow, C4AbstractApp *pApp);
-#endif
-
-#ifdef USE_COCOA
-	/*NSOpenGLContext*/void* GetNativeCtx();
 #endif
 
 	bool Select(bool verbose = false);              // select this context
@@ -74,8 +76,6 @@ protected:
 	static bool InitGlew(HINSTANCE hInst);
 #elif defined(USE_X11)
 	/*GLXContext*/void * ctx;
-#elif defined(USE_COCOA)
-	/*NSOpenGLContext*/void* ctx;
 #endif
 
 	friend class CStdGL;
@@ -129,7 +129,7 @@ public:
 	void FillBG(DWORD dwClr=0);
 	// Drawing
 	void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
-	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr);
+	void PerformLine(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width);
 	void PerformPix(C4Surface * sfcDest, float tx, float ty, DWORD dwCol);
 	// device objects
 	bool RestoreDeviceObjects();    // restore device dependent objects

@@ -772,16 +772,21 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		if (GetDensity(tx,ty+1)<mdens)
 			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
-	// Try reaction with material below
+	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
-	if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel)))))
+	int32_t check_dir = 0;
+	for (int32_t i=0; i<2; ++i)
 	{
-		C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
-		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
+		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+check_dir))))
 		{
-			// the material to be inserted killed itself in some material reaction below
-			return true;
+			C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
+			if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
+			{
+				// the material to be inserted killed itself in some material reaction below
+				return true;
+			}
 		}
+		if (!(check_dir = Sign(GravAccel))) break;
 	}
 
 	// Insert as dead material
@@ -1019,7 +1024,7 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 void C4Landscape::ScenarioInit()
 {
 	// Gravity
-	Gravity = C4REAL100(Game.C4S.Landscape.Gravity.Evaluate()) /5;
+	Gravity = C4REAL100(Game.C4S.Landscape.Gravity.Evaluate()) * DefaultGravAccel;
 	// Opens
 	LeftOpen=Game.C4S.Landscape.LeftOpen;
 	RightOpen=Game.C4S.Landscape.RightOpen;
@@ -1061,21 +1066,15 @@ void C4Landscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RightOpen,           "RightOpen",             0));
 	pComp->Value(mkNamingAdapt(TopOpen,             "TopOpen",               0));
 	pComp->Value(mkNamingAdapt(BottomOpen,          "BottomOpen",            0));
-	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           C4REAL100(20)));
+	pComp->Value(mkNamingAdapt(mkCastIntAdapt(Gravity), "Gravity",           DefaultGravAccel));
 	pComp->Value(mkNamingAdapt(Modulation,          "MatModulation",         0U));
 	pComp->Value(mkNamingAdapt(Mode,                "Mode",                  C4LSC_Undefined));
 }
-static CSurface8 *GroupReadSurface8(CStdStream &hGroup)
-{
-	// create surface
-	CSurface8 *pSfc=new CSurface8();
-	if (!pSfc->Read(hGroup))
-		{ delete pSfc; return NULL; }
-	return pSfc;
-}
 
-static CSurface8 *GroupReadSurfaceOwnPal8(CStdStream &hGroup)
+static CSurface8 *GroupReadSurface8(C4Group &hGroup, const char *szWildCard)
 {
+	if (!hGroup.AccessEntry(szWildCard))
+		return NULL;
 	// create surface
 	CSurface8 *pSfc=new CSurface8();
 	if (!pSfc->Read(hGroup))
@@ -1114,18 +1113,8 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	{
 		CSurface8 * sfcMap=NULL;
 		// Static map from scenario
-		if (hGroup.AccessEntry(C4CFN_Map))
-			if ((sfcMap=GroupReadSurface8(hGroup)))
-				if (!fLandscapeModeSet) Mode=C4LSC_Static;
-
-		// allow C4CFN_Landscape as map for downwards compatibility
-		if (!sfcMap)
-			if (hGroup.AccessEntry(C4CFN_Landscape))
-				if ((sfcMap=GroupReadSurface8(hGroup)))
-				{
-					if (!fLandscapeModeSet) Mode=C4LSC_Static;
-					fMapChanged = true;
-				}
+		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
+			if (!fLandscapeModeSet) Mode=C4LSC_Static;
 
 		// dynamic map from file
 		if (!sfcMap)
@@ -1198,9 +1187,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	// progress
 	Game.SetInitProgress(80);
 
-	// mark as new-style
-	Game.C4S.Landscape.NewStyleLandscape = 2;
-
 	// copy noscan-var
 	NoScan=Game.C4S.Landscape.NoScan!=0;
 
@@ -1209,16 +1195,19 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 	// map to big surface and sectionize it
 	// (not for shaders though - they require continous textures)
-	// Create landscape surface
-	Surface8 = new CSurface8();
-	if (!Surface8->Create(Width, Height) || !Mat2Pal())
+	if (!Game.C4S.Landscape.ExactLandscape)
 	{
-		delete Surface8; Surface8 = 0;
-		return false;
-	}
+		// Create landscape surface
+		Surface8 = new CSurface8();
+		if (!Surface8->Create(Width, Height) || !Mat2Pal())
+		{
+			delete Surface8; Surface8 = 0;
+			return false;
+		}
 
-	// Map to landscape
-	if (!MapToLandscape()) return false;
+		// Map to landscape
+		if (!MapToLandscape()) return false;
+	}
 	Game.SetInitProgress(84);
 
 #ifdef DEBUGREC
@@ -1394,57 +1383,24 @@ bool C4Landscape::SaveInitial()
 bool C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 {
 	// Load exact landscape from group
-	if (!hGroup.AccessEntry(C4CFN_Landscape)) return false;
-	if (!(Surface8=GroupReadSurfaceOwnPal8(hGroup))) return false;
+	if (!(Surface8=GroupReadSurface8(hGroup, C4CFN_Landscape))) return false;
 	int iWidth, iHeight;
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
 	// adjust pal
 	if (!Mat2Pal()) return false;
-	// no PNG: convert old-style landscapes
-	if (!Game.C4S.Landscape.NewStyleLandscape)
-	{
-		// convert all pixels
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
+	// Landscape should be in correct format: Make sure it is!
+	for (int32_t y=0; y<Height; ++y)
+		for (int32_t x=0; x<Width; ++x)
+		{
+			BYTE byPix = Surface8->GetPix(x, y);
+			int32_t iMat = PixCol2Mat(byPix);
+			if (byPix && !MatValid(iMat))
 			{
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2MatOld(byPix); BYTE byIFT = PixColIFTOld(byPix);
-				if (byIFT) byIFT = IFT;
-				// set pixel in 8bpp-surface only, so old-style landscapes won't be screwed up!
-				Surface8->SetPix(x, y, Mat2PixColDefault(iMat)+byIFT);
+				LogFatal(FormatString("Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPix).getData());
+				return false;
 			}
-		// NewStyleLandscape-flag will be set in C4Landscape::Init later
-	}
-	// New style landscape first generation: just correct
-	if (Game.C4S.Landscape.NewStyleLandscape == 1)
-	{
-		// convert all pixels
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-			{
-				// get material
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2MatOld2(byPix);
-				if (MatValid(iMat))
-					// insert pixel
-					Surface8->SetPix(x, y, Mat2PixColDefault(iMat) + (byPix & IFT));
-				else
-					Surface8->SetPix(x, y, 0);
-			}
-	}
-	else
-	{
-		// Landscape should be in correct format: Make sure it is!
-		for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
-			{
-				BYTE byPix = Surface8->GetPix(x, y);
-				int32_t iMat = PixCol2Mat(byPix);
-				if (byPix && !MatValid(iMat))
-				{
-					LogFatal(FormatString("Landscape loading error at (%d/%d): Pixel value %d not a valid material!", (int) x, (int) y, (int) byPix).getData());
-					return false;
-				}
-			}
-	}
+		}
 	// Init sky
 	if (fLoadSky)
 	{
@@ -1458,8 +1414,7 @@ bool C4Landscape::ApplyDiff(C4Group &hGroup)
 {
 	CSurface8 *pDiff;
 	// Load diff landscape from group
-	if (!hGroup.AccessEntry(C4CFN_DiffLandscape)) return false;
-	if (!(pDiff=GroupReadSurfaceOwnPal8(hGroup))) return false;
+	if (!(pDiff=GroupReadSurface8(hGroup, C4CFN_DiffLandscape))) return false;
 	// convert all pixels: keep if same material; re-set if different material
 	BYTE byPix;
 	for (int32_t y=0; y<Height; ++y) for (int32_t x=0; x<Width; ++x)
@@ -1484,7 +1439,7 @@ void C4Landscape::Default()
 	ScanX=0;
 	ScanSpeed=2;
 	LeftOpen=RightOpen=TopOpen=BottomOpen=0;
-	Gravity=C4REAL100(20); // == 0.2
+	Gravity=DefaultGravAccel;
 	MapSeed=0; NoScan=false;
 	pMapCreator=NULL;
 	Modulation=0;
@@ -1528,11 +1483,11 @@ bool C4Landscape::SaveMap(C4Group &hGroup)
 	if (!Map) return false;
 
 	// Create map palette
-	BYTE bypPalette[3*256];
-	::TextureMap.StoreMapPalette(bypPalette,::MaterialMap);
+	CStdPalette Palette;
+	::TextureMap.StoreMapPalette(&Palette,::MaterialMap);
 
 	// Save map surface
-	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), bypPalette))
+	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), &Palette))
 		return false;
 
 	// Move temp file to group
@@ -2381,9 +2336,104 @@ bool PathFreePix(int32_t x, int32_t y, int32_t par)
 	return !GBackSolid(x,y);
 }
 
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+	return ForLine(x1,y1,x2,y2,&PathFreePix,0,0,0);
+}
+
 bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
 {
-	return ForLine(x1,y1,x2,y2,&PathFreePix,0,ix,iy);
+	// use the standard Bresenham algorithm and just adjust it to behave correctly in the inversed case
+	bool reverse = false;
+	bool steep = Abs(y2 - y1) > Abs(x2 - x1);
+
+	if (steep)
+	{
+		Swap(x1, y1);
+		Swap(x2, y2);
+	}
+
+	if (x1 > x2)
+	{
+		Swap(x1, x2);
+		Swap(y1, y2);
+		reverse = true;
+	}
+
+	if (!reverse)
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y1;
+
+		for (int32_t x = x1; x <= x2; x++)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+				{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error += deltay;
+			if (2 * error >= deltax)
+			{
+				y += ystep;
+				error -= deltax;
+			}
+		}
+	}
+	else // reverse
+	{
+		int32_t deltax = x2 - x1;
+		int32_t deltay = Abs(y2 - y1);
+		int32_t error = 0;
+		int32_t ystep = (y1 < y2) ? 1 : -1;
+		int32_t y = y2;
+
+		// normal (inverse) routine
+		for (int32_t x = x2; x >= x1; x--)
+		{
+			if (steep)
+			{
+				if (GBackSolid(y, x))
+				{
+					if (ix) {*ix = y; *iy = x;}
+					return false;
+				}
+			}
+			else
+			{
+				if (GBackSolid(x, y))
+					{
+					if (ix) {*ix = x; *iy = y;}
+					return false;
+				}
+			}
+
+			error -= deltay;
+			if (2 * error <= -deltax)
+			{
+				y -= ystep;
+				error += deltax;
+			}
+
+		}
+	}
+	// no solid material encountered: path free!
+	return true;
 }
 
 bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
@@ -3295,13 +3345,8 @@ bool C4Landscape::Mat2Pal()
 			continue;
 		// colors
 		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
-		for (rgb=0; rgb<3; rgb++)
-			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
-			= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-			  = uint8_t(dwPix >> ((2-rgb) * 8));
-		// alpha
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0xff;
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0xff;
+		Surface8->pPal->Colors[MatTex2PixCol(tex)] = dwPix;
+		Surface8->pPal->Colors[MatTex2PixCol(tex) + IFT] = dwPix;
 	}
 	// success
 	return true;

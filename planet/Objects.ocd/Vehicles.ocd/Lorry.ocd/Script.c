@@ -11,6 +11,7 @@ protected func Construction()
 }
 
 public func IsLorry() { return true; }
+public func IsVehicle() { return true; }
 public func IsContainer() { return true; }
 public func IsToolProduct() { return true; }
 

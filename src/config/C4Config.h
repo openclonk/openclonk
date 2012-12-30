@@ -99,9 +99,9 @@ public:
 	int32_t UpperBoard;
 	int32_t ShowClock;
 	int32_t ResX,ResY;
+	int32_t WindowX,WindowY;
 	int32_t RefreshRate;	// monitor vertical refresh rate
-	int32_t GuiResX,GuiResY;
-	int32_t Windowed;
+	int32_t Windowed; // 0: fullscreen, 1: windowed, 2: fullscreen in game, windowed in menu
 	int32_t ShowAllResolutions;
 	int32_t ShowCrewNames; // show player name above clonks?
 	int32_t ShowCrewCNames; // show clonk names above clonks?
@@ -185,7 +185,6 @@ public:
 	int32_t HideMsgPlrNoTakeOver;
 	int32_t HideMsgNoOfficialLeague;
 	int32_t HideMsgIRCDangerous;
-	int32_t NoSplash;
 	int32_t AlphabeticalSorting; // if set, Folder.txt-sorting is ignored in scenario selection
 	int32_t LastPortraitFolderIdx;
 	void CompileFunc(StdCompiler *pComp);
@@ -195,7 +194,7 @@ class C4ConfigLobby
 {
 public:
 	int32_t CountdownTime;
-	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player ressources
+	int32_t AllowPlayerSave; // whether save-to-disk function is enabled for player resources
 	void CompileFunc(StdCompiler *pComp);
 };
 

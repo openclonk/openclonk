@@ -164,22 +164,22 @@ global func PlaceForest(array plants, int x, int y, int width, bool foreground)
 	var plant_size = plants[0]->GetDefWidth()/2;
 
 	var growth, y_pos, plant, x_variance, variance = 0, count, j, spot;
-	for (var i = plant_size ; i < width ; i += plant_size)
+	for (var i = plant_size; i < width; i += plant_size)
 	{
 		growth = 100;
 		y_pos = y;
-		x_variance = RandomX(-10,10);
+		x_variance = RandomX(-plant_size/2, plant_size/2);
 		// End zone check
 		if (i < end_zone)
-			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * (i/plant_size), 10,90);
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * (i/plant_size), 10, 90);
 		else if (i > width - end_zone)
-			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * ((width-i)/plant_size), 10,90);
+			growth = BoundBy(90 / ((end_zone * 100 / plant_size)/100) * ((width-i)/plant_size), 10, 90);
 		else if (!Random(10) && GetLength(plants) > 1)
 		{
 			variance = Random(GetLength(plants)-1)+1;
 			// Scatter some other plants
-			count = RandomX(2,4);
-			for (j = 0 ; j < count ; j++)
+			count = RandomX(2, 4);
+			for (j = 0; j < count; j++)
 			{
 				spot = (plant_size*2 / count) * j + RandomX(-5,5) - plant_size;
 				y_pos = y;

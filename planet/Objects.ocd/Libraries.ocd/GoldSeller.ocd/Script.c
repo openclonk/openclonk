@@ -60,7 +60,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	// assert: at least one object in to_remove
 	var value = 0;
 	var fm = CreateObject(FloatingMessage, comp->GetX() - GetX(), comp->GetY() - GetY(), NO_OWNER);
-	fm->SetColor(50, 100, 50);
+	fm->SetColor(250, 200, 50);
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);
 	
@@ -77,7 +77,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 		valuable->RemoveObject();
 	}
 	
-	fm->SetMessage(Format("%d$", value));
+	fm->SetMessage(Format("%d</c>{{Icon_Coins}}", value));
 	Sound("Cash");
 	
 	effect.TimerIntervall = BoundBy(effect.TimerIntervall - Random(LIBRARY_GOLDSELLER_TimerStep), LIBRARY_GOLDSELLER_MaxTimer, LIBRARY_GOLDSELLER_MaxTimer);

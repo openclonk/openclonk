@@ -284,6 +284,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		return false;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_COPYDATA:
+		{
 		COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
 		if (pcds->dwData == WM_USER_RELOADFILE)
 		{
@@ -294,6 +295,10 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			Game.ReloadFile(szPath);
 		}
 		return false;
+		}
+		//------------------------------------------------------------------------------------------------------------
+	case WM_INPUTLANGCHANGE:
+		::Application.OnKeyboardLayoutChanged();
 	}
 
 	return false;

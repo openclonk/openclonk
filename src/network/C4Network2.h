@@ -42,7 +42,7 @@ const int16_t C4NetStdPortTCP = 11112,
               C4NetStdPortPuncher = 11115,
               C4NetStdPortHTTP = 80;
 
-// ressource retrieve wait timeout
+// resource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
@@ -118,7 +118,7 @@ public:
 	// network i/o class
 	C4Network2IO NetIO;
 
-	// ressource list
+	// resource list
 	C4Network2ResList ResList;
 
 	// client list
@@ -141,7 +141,7 @@ protected:
 	// join resource
 	C4Network2ResCore ResDynamic;
 
-	// ressources
+	// resources
 	int32_t iDynamicTick;
 	bool fDynamicNeeded;
 
@@ -232,7 +232,6 @@ public:
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
 	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
-	bool InitHostRessources();
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -298,6 +297,7 @@ public:
 	// lobby countdown
 	void StartLobbyCountdown(int32_t iCountdownTime);
 	void AbortLobbyCountdown();
+	bool isLobbyCountDown() { return pLobbyCountdown != 0; }
 
 	// streaming
 	size_t getPendingStreamData() const { return StreamingBuf.getSize() - StreamCompressor.avail_out; }
@@ -333,7 +333,7 @@ protected:
 
 	void SendJoinData(C4Network2Client *pClient);
 
-	// ressource list
+	// resource list
 	bool CreateDynamic(bool fInit);
 	void RemoveDynamic();
 

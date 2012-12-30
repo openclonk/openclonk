@@ -93,6 +93,7 @@ enum C4AulBCCType
 	AB_GLOBALN, // a named global
 	AB_GLOBALN_SET,
 	AB_PAR,     // Par statement
+	AB_THIS,    // this()
 	AB_FUNC,    // function
 
 	AB_PARN_CONTEXT,
@@ -118,6 +119,8 @@ enum C4AulBCCType
 	AB_LessThanEqual, // <=
 	AB_GreaterThan, // >
 	AB_GreaterThanEqual,  // >=
+	AB_Identical, // ===
+	AB_NotIdentical,  // !==
 	AB_Equal, // ==
 	AB_NotEqual,  // !=
 	AB_BitAnd,  // &
@@ -147,7 +150,6 @@ enum C4AulBCCType
 	AB_ERR,     // parse error at this position
 	AB_DEBUG,   // debug break
 	AB_EOFN,    // end of function
-	AB_EOF      // end of file
 };
 
 // byte code chunk
@@ -189,7 +191,14 @@ public:
 	void SetOverloaded(C4AulFunc *);
 	C4AulScriptFunc *SFunc() { return this; } // type check func...
 protected:
-	int CodePos; // code pos
+	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
+	void RemoveLastBCC();
+	void ClearCode();
+	int GetCodePos() const { return Code.size(); }
+	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
+	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
+	std::vector<C4AulBCC> Code;
+	std::vector<const char *> PosForCode;
 
 public:
 	const char *Script; // script pos
@@ -214,7 +223,6 @@ public:
 
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
-	C4ScriptHost * GetCodeOwner();
 
 	time_t tProfileTime; // internally set by profiler
 
@@ -293,7 +301,7 @@ public:
 	StdCopyStrBuf ScriptName; // script name
 	bool Temporary; // set for DirectExec-scripts; do not parse those
 
-	virtual C4PropList * GetPropList() { return 0; }
+	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }
 
 	C4Value DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors = false, C4AulScriptContext* context = NULL); // directly parse uncompiled script (WARG! CYCLES!)
@@ -336,7 +344,7 @@ class C4AulScriptEngine : public C4AulScript
 {
 protected:
 	C4AulFuncMap FuncLookUp;
-	C4PropList * GlobalPropList;
+	C4Value GlobalPropList;
 	C4AulScript *Child0, *ChildL; // tree structure
 
 public:
@@ -358,7 +366,7 @@ public:
 	void Clear(); // clear data
 	void Link(C4DefList *rDefs); // link and parse all scripts
 	void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 	using C4AulScript::ReloadScript;
 	bool ReloadScript(const char *szScript, C4DefList *pDefs, const char *szLanguage); // search script and reload + relink, if found
 	C4AulFunc * GetFirstFunc(C4String * Name)

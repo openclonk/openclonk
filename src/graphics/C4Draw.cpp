@@ -26,12 +26,12 @@
 #include <C4Draw.h>
 
 #include "C4App.h"
+#include <C4FontLoader.h>
 #include <C4Window.h>
 #include <C4DrawD3D.h>
 #include <C4DrawGL.h>
 #include <C4DrawT.h>
 #include <C4Markup.h>
-#include <StdFont.h>
 #include "C4Rect.h"
 #include <C4Config.h>
 #include "StdMesh.h"
@@ -609,8 +609,8 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 	int iTexX2=Min((int)(fx+fwdt-1)/iTexSizeX +1, sfcSource->iTexX);
 	int iTexY2=Min((int)(fy+fhgt-1)/iTexSizeY +1, sfcSource->iTexY);
 	// calc stretch regarding texture size and indent
-	float scaleX2 = scaleX * iTexSizeX;
-	float scaleY2 = scaleY * iTexSizeY;
+/*	float scaleX2 = scaleX * iTexSizeX;
+	float scaleY2 = scaleY * iTexSizeY;*/
 	// Enable textures
 	SetTexture();
 	// blit from all these textures
@@ -626,12 +626,12 @@ bool C4Draw::BlitUnscaled(C4Surface * sfcSource, float fx, float fy, float fwdt,
 			if (iTexSizeX != pTex->iSizeX)
 			{
 				iTexSizeX = pTex->iSizeX;
-				scaleX2 = scaleX * iTexSizeX;
+				/*scaleX2 = scaleX * iTexSizeX;*/
 			}
 			if (iTexSizeY != pTex->iSizeY)
 			{
 				iTexSizeY = pTex->iSizeY;
-				scaleY2 = scaleY * iTexSizeY;
+				/*scaleY2 = scaleY * iTexSizeY;*/
 			}
 
 			// get new texture source bounds
@@ -1045,7 +1045,7 @@ void C4Draw::DrawPix(C4Surface * sfcDest, float tx, float ty, DWORD dwClr)
 	PerformPix(sfcDest, tx, ty, dwClr);
 }
 
-void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
+void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr, float width)
 {
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
@@ -1089,7 +1089,7 @@ void C4Draw::DrawLineDw(C4Surface * sfcTarget, float x1, float y1, float x2, flo
 	// apply color modulation
 	ClrByCurrentBlitMod(dwClr);
 
-	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr);
+	PerformLine(sfcTarget, x1, y1, x2, y2, dwClr, width);
 }
 
 void C4Draw::DrawFrameDw(C4Surface * sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?

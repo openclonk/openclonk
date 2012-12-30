@@ -3,6 +3,9 @@
 #include Library_Structure
 #include Library_Ownable
 
+// used in the elevator case
+static const Elevator_needed_power = 50;
+
 local case, rope;
 local partner, slave;
 
@@ -27,6 +30,7 @@ func Construction(object creator)
 
 func Initialize()
 {
+	SetCategory(C4D_StaticBack);
 	CreateCase();
 	CreateCaseRope();
 
@@ -36,7 +40,6 @@ func Initialize()
 		{
 			partner->LetsBecomeFriends(this);
 			slave = true; // Note: This is liberal slavery
-			case.slave = true; // I guess this is not so liberal
 			SetPosition(GetX(), partner->GetY());
 		}
 		else
@@ -61,8 +64,18 @@ func CreateCaseRope()
 
 func Destruction()
 {
-	rope->RemoveObject();
+	if(rope) rope->RemoveObject();
+	if(case) case->LostElevator();
 	if (partner) partner->LoseCombination();
+}
+
+func LostCase()
+{
+	if(partner) partner->LoseCombination();
+	if(rope) rope->RemoveObject();
+	
+	// for now: the elevator dies, too
+	Incinerate();
 }
 
 /* Effects */
@@ -119,7 +132,7 @@ func CombineWith(object other)
 func LetsBecomeFriends(object other)
 {
 	partner = other;
-	if (case) case->StartConnection(other);
+	if (case) case->StartConnection(other.case);
 }
 
 // Partner was destroyed or moved
@@ -127,7 +140,7 @@ func LoseCombination()
 {
 	partner = nil;
 	slave = false;
-	if (case) case->LoseCombination();
+	if (case) case->LoseConnection();
 }
 
 // Called by our case because the case has a timer anyway
@@ -162,3 +175,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 100;
 local HitPoints = 70;
+local Plane = 249;

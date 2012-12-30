@@ -136,12 +136,12 @@ public:
 	virtual ~C4RopeAul();
 
 	virtual bool Delete() { return false; }
-	virtual C4PropList* GetPropList() { return RopeDef; }
+	virtual C4PropListStatic* GetPropList() { return RopeDef; }
 
 	void InitFunctionMap(C4AulScriptEngine* pEngine);
 
 protected:
-	C4PropList* RopeDef;
+	C4PropListStatic* RopeDef;
 };
 
 class C4RopeList

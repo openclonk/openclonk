@@ -60,13 +60,13 @@ static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
 
 static C4Void FnSetGravity(C4PropList * _this, long iGravity)
 {
-	::Landscape.Gravity = itofix(BoundBy<long>(iGravity,-300,300)) / 500;
+	::Landscape.Gravity = C4REAL100(BoundBy<long>(iGravity,-1000,1000));
 	return C4Void();
 }
 
 static long FnGetGravity(C4PropList * _this)
 {
-	return fixtoi(::Landscape.Gravity * 500);
+	return fixtoi(::Landscape.Gravity * 100);
 }
 
 static bool FnPlayerObjectCommand(C4PropList * _this, int iPlr, C4String * szCommand,
@@ -372,7 +372,16 @@ static Nillable<long> FnGetAverageTextureColor(C4PropList * _this, C4String* Tex
 	// Safety
 	if(!Texture) return C4Void();
 	// Check texture
-	C4Texture* Tex = ::TextureMap.GetTexture(Texture->GetData().getData());
+	StdStrBuf texture_name;
+	texture_name.Ref(Texture->GetCStr());
+	const char* pch = strchr(texture_name.getData(), '-');
+	if (pch != NULL)
+	{
+		size_t len = pch - texture_name.getData();
+		texture_name.Copy();
+		texture_name.SetLength(len);
+	}
+	C4Texture* Tex = ::TextureMap.GetTexture(texture_name.getData());
 	if(!Tex) return C4Void();
 	return Tex->GetAverageColor();
 }
@@ -1050,13 +1059,6 @@ C4Object* FnObject(C4PropList * _this, long iNumber)
 	// See FnObjectNumber
 }
 
-static C4Value FnCall(C4PropList * _this, C4Value * Pars)
-{
-	if (!_this) return C4Value();
-	C4AulParSet ParSet(&Pars[1], 9);
-	return _this->CallOrThrow(FnStringPar(Pars[0].getStr()), &ParSet);
-}
-
 static C4Value FnGameCall(C4PropList * _this, C4Value * Pars)
 {
 	C4String * fn = Pars[0].getStr();
@@ -1397,7 +1399,7 @@ static C4Value FnGetPlayerInfoCoreVal(C4PropList * _this, C4String * strEntry, C
 			iEntryNr, *pPlayerInfoCore);
 }
 
-static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry, C4String * strSection, int iMat, int iEntryNr)
+static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry,  C4String* strSection, int iMat, int iEntryNr)
 {
 	if (iMat < 0 || iMat >= ::MaterialMap.Num) return C4Value();
 
@@ -1407,11 +1409,8 @@ static C4Value FnGetMaterialVal(C4PropList * _this, C4String * strEntry, C4Strin
 	// get plr info core
 	C4MaterialCore* pMaterialCore = static_cast<C4MaterialCore*>(pMaterial);
 
-	// material core implicates section "Material"
-	if (!SEqual(FnStringPar(strSection), "Material")) return C4Value();
-
 	// get value
-	return GetValByStdCompiler(FnStringPar(strEntry), NULL, iEntryNr, *pMaterialCore);
+	return GetValByStdCompiler(FnStringPar(strEntry), strSection ? strSection->GetCStr() : NULL, iEntryNr, *pMaterialCore);
 }
 
 static C4String *FnMaterialName(C4PropList * _this, long iMat)
@@ -2087,14 +2086,6 @@ static long FnActivateGameGoalMenu(C4PropList * _this, long iPlayer)
 	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !::Control.isReplay());
 }
 
-static bool FnPlayVideo(C4PropList * _this, C4String *pFilename)
-{
-	// filename must be valid
-	if (!pFilename || !pFilename->GetCStr()) return false;
-	// play it!
-	return Game.VideoPlayer.PlayVideo(pFilename->GetCStr());
-}
-
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
 	// safeties
@@ -2443,7 +2434,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "HideSettlementScoreInEvaluation", FnHideSettlementScoreInEvaluation);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
-	AddFunc(pEngine, "PlayVideo", FnPlayVideo, false);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);
@@ -2609,7 +2599,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "ObjectCount",   1, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
 	{ "GameCall",      1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCall      },
 	{ "GameCallEx",    1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
-	{ "Call",          1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnCall          },
 	{ "PlayerMessage", 1, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
 	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
 	{ "AddMessage",    1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },

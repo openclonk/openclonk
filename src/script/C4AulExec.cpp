@@ -229,7 +229,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				PopValue();
 				break;
 
-			case AB_EOF: case AB_EOFN:
+			case AB_EOFN:
 				throw new C4AulExecError("internal error: function didn't return");
 
 			case AB_ERR:
@@ -402,6 +402,20 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				CheckOpPars(C4V_Int, C4V_Int, ">=");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_Identical:  // ===
+			{
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->GetType() == pPar2->GetType() && pPar1->GetData() == pPar2->GetData());
+				PopValue();
+				break;
+			}
+			case AB_NotIdentical: // !==
+			{
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->GetType() != pPar2->GetType() || pPar1->GetData() != pPar2->GetData());
 				PopValue();
 				break;
 			}
@@ -695,6 +709,13 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					pCurVal->Set(pCurCtx->Pars[pCurVal->_getInt()]);
 				else
 					pCurVal->Set0();
+				break;
+
+			case AB_THIS:
+				if (!pCurCtx->Obj || !pCurCtx->Obj->Status)
+					PushNullVals(1);
+				else
+					PushPropList(pCurCtx->Obj);
 				break;
 
 			case AB_FOREACH_NEXT:
@@ -1067,8 +1088,8 @@ public:
 		this->stringTable = stringTable;
 	}
 	bool Delete() { return true; }
-	virtual C4PropList * GetPropList() { return p; }
-	C4PropList * p;
+	virtual C4PropListStatic * GetPropList() { return p; }
+	C4PropListStatic * p;
 };
 
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
@@ -1088,7 +1109,6 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// Parse function
 	try
 	{
-		assert(pFunc->GetCodeOwner() == pScript);
 		pFunc->ParseFn(context);
 	}
 	catch (C4AulError *ex)

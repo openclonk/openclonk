@@ -140,10 +140,13 @@ public func SetHandItemPos(int hand, int inv)
 		use_objects[hand] = inv;
 		
 		// additional callbacks
-		if(GetHandItem(hand2))
+		var hand_item;
+		if(hand_item = GetHandItem(hand2))
 		{
 			this->~OnSlotFull(hand2);
-			GetHandItem(hand2)->~Selection(this, hand2);
+			// OnSlotFull might have done something to the item
+			if(GetHandItem(hand2) == hand_item)
+				hand_item->~Selection(this, hand2);
 		}
 		else
 			this->~OnSlotEmpty(hand2);
@@ -152,10 +155,13 @@ public func SetHandItemPos(int hand, int inv)
 		use_objects[hand] = inv;
 	
 	// call callbacks
-	if(GetItem(inv))
+	var item;
+	if(item = GetItem(inv))
 	{
 		this->~OnSlotFull(hand);
-		GetItem(inv)->~Selection(this, hand);
+		// OnSlotFull might have done something to the item
+		if(GetItem(inv) == item)
+			GetItem(inv)->~Selection(this, hand);
 	}
 	else
 	{
@@ -380,7 +386,9 @@ protected func Collection2(object obj)
 		if(handpos != nil)
 		{
 			this->~OnSlotFull(handpos);
-			obj->~Selection(this, handpos);
+			// OnSlotFull might have done something to obj
+			if(GetHandItem(handpos) == obj)
+				obj->~Selection(this, handpos);
 		}
 	}
 		
@@ -476,7 +484,9 @@ protected func Ejection(object obj)
 				if(handpos != nil)
 				{
 					this->~OnSlotFull(handpos);
-					o->~Selection(this, handpos);
+					// OnSlotFull might have done something to o
+					if(GetHandItem(handpos) == o)
+						o->~Selection(this, handpos);
 				}
 					
 				break;
@@ -732,7 +742,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// some controls should only do something on release (everything that has to do with interaction)
-	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
+	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_GrabNext || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
 	{
 		if(!release)
 		{
@@ -775,7 +785,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		CreateContentsMenus();
 		// CreateContentsMenus calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
-		GetMenu()->Show();		
+		if(GetMenu())
+			GetMenu()->Show();		
 		return true;
 	}
 	
@@ -1042,8 +1053,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Collecting
 	if (ctrl == CON_Collect)
 	{
+		// only if not inside something
+		if(Contained()) return false; // not handled
+		
 		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
 		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
 		if(obj)
 		{
@@ -1051,6 +1065,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// collected into the hands
 			Collect(obj,nil,nil,true);
 		}
+		
+		// return not handled to still receive other controls - collection should not block anything else
+		return false;
 	}
 	
 	// Throwing and dropping
@@ -1072,7 +1089,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			{
 				CancelUse();
 				
-				if (proc == "SCALE" || proc == "HANGLE")
+				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
@@ -1848,8 +1865,8 @@ private func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
-	iX = 8; if (!GetDir()) iX = -iX;
-	iY = Cos(angle,-8);
+	iX = 4; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-4);
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 

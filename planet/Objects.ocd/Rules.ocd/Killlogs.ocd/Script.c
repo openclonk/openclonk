@@ -23,6 +23,9 @@ func OnClonkDeath(object clonk, int killed_by)
 	return _inherited(clonk, killed_by, ...);
 }
 
+// parameters: clonk, owner, killed_by
+global func GetAdditionalPlayerRelaunchString(){return _inherited(...);} // dummy
+
 func OnClonkDeathEx(object clonk, int plr, int killed_by)
 {
 	if(!GetPlayerName(plr)) return;
@@ -82,6 +85,11 @@ func OnClonkDeathEx(object clonk, int plr, int killed_by)
 		log=Format("%s %s", log, other);
 	}
 	
+	// also allow global callback function to add to death messages
+	other = GetAdditionalPlayerRelaunchString(clonk, plr, killed_by);
+	if(other)
+		log = Format("%s, %s", log, other);
+		
 	Log(log);
 }
 

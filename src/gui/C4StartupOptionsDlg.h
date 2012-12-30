@@ -52,6 +52,7 @@ public:
 	void DoBack(); // back to main menu
 	
 	virtual bool SetSubscreen(const char *szToScreen); // go to specified property sheet
+	virtual void OnKeyboardLayoutChanged(); // keyboard layout changed: update keys from scan codes
 
 public:
 	void RecreateDialog(bool fFade);
@@ -125,7 +126,8 @@ private:
 		virtual const char *GetID() { return "ResChangeConfirmDialog"; }
 	};
 
-	void OnFullscreenChange(C4GUI::Element *pCheckBox);
+	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
+	bool OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox);
 	void OnGfxEngineCheck(C4GUI::Element *pCheckBox);
 	void OnGfxTroubleCheck(C4GUI::Element *pCheckBox)
@@ -137,6 +139,7 @@ private:
 	bool TryNewResolution(int32_t iResX, int32_t iResY);
 	void OnGfxClrDepthCheck(C4GUI::Element *pCheckBox);
 	StdStrBuf GetGfxResString(int32_t iResX, int32_t iResY); // convert resolution to string to be displayed in resolution choice combobox
+	const char * GetWindowedName(int32_t mode = -1);
 	void OnEffectsSliderChange(int32_t iNewVal);
 
 	C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
@@ -215,11 +218,12 @@ private:
 			virtual int32_t GetListItemTopSpacing() { return C4GUI::Window::GetListItemTopSpacing() + (has_extra_spacing*GetBounds().Hgt/2); }
 
 		public:
-			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set);
+			ListItem(ControlConfigListBox *parent_list, class C4PlayerControlAssignment *assignment, class C4PlayerControlAssignmentSet *assignment_set, bool first_of_group);
 		};
 
 	private:
 		class C4PlayerControlAssignmentSet *set; // assignment set being configured by this box
+		static bool sort_by_group (C4PlayerControlAssignment *i, C4PlayerControlAssignment *j) { return i->GetGUIGroup() < j->GetGUIGroup(); }
 
 	public:
 		ControlConfigListBox(const C4Rect &rcBounds, class C4PlayerControlAssignmentSet *set);
@@ -246,13 +250,16 @@ private:
 		ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg);
 		virtual ~ControlConfigArea();
 
-	protected:
 		void UpdateCtrlSet();
+
+	protected:
 
 		void OnCtrlSetBtn(C4GUI::Control *btn);
 		void OnResetKeysBtn(C4GUI::Control *btn);
 		void OnGUIGamepadCheckChange(C4GUI::Element *pCheckBox);
 	};
+
+	ControlConfigArea *pControlConfigArea;
 
 	class C4GamePadControl *GamePadCon;
 

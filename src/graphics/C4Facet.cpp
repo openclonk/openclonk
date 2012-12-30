@@ -38,7 +38,7 @@ void C4Facet::Default()
 	Set(NULL,0,0,0,0);
 }
 
-void C4Facet::Set(C4Surface * nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt)
+void C4Facet::Set(C4Surface * nsfc, float nx, float ny, float nwdt, float nhgt)
 {
 	Surface=nsfc; X=nx; Y=ny; Wdt=nwdt; Hgt=nhgt;
 }
@@ -553,7 +553,7 @@ C4Facet C4Facet::GetFraction(int32_t percentWdt, int32_t percentHgt, int32_t ali
 	// Simple spec for square fractions
 	if (percentHgt == 0) percentHgt = percentWdt;
 	// Alignment
-	int iX = X, iY = Y, iWdt = Max(Wdt*percentWdt/100, 1), iHgt = Max(Hgt*percentHgt/100, 1);
+	int iX = X, iY = Y, iWdt = Max(Wdt*percentWdt/100, 1.0f), iHgt = Max(Hgt*percentHgt/100, 1.0f);
 	if (alignX & C4FCT_Right) iX += Wdt - iWdt;
 	if (alignX & C4FCT_Center)  iX += Wdt/2 - iWdt/2;
 	if (alignY & C4FCT_Bottom) iY += Hgt - iHgt;

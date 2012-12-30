@@ -87,11 +87,13 @@
 #define C4CFN_ScenarioDesc    "Desc%s.rtf"
 #define C4CFN_DefMaterials    "*.material"
 #define C4CFN_DefMesh         "Graphics.mesh"
-#define C4CFN_DefMeshXml      (C4CFN_DefMesh ".xml")
+#define C4CFN_DefMeshXml      C4CFN_DefMesh ".xml"
 #define C4CFN_DefGraphicsPNG  "Graphics.png"
 #define C4CFN_ClrByOwnerPNG   "Overlay.png"
 #define C4CFN_DefGraphicsEx   "Graphics*.bmp"
 #define C4CFN_DefGraphicsExPNG "Graphics*.png"
+#define C4CFN_DefGraphicsExMesh "Graphics*.mesh"
+#define C4CFN_DefGraphicsExMeshXml C4CFN_DefGraphicsExMesh ".xml"
 #define C4CFN_DefGraphicsScaled    "Graphics.*.bmp"
 #define C4CFN_DefGraphicsScaledPNG "Graphics.*.png"
 #define C4CFN_ClrByOwnerExPNG "Overlay*.png"
@@ -131,8 +133,6 @@
 #define C4CFN_Names           "Names.txt"
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
-
-#define C4CFN_Splash          "Splash.ocv"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"

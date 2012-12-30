@@ -37,7 +37,12 @@ public:
 	{ assert(Key); Key->IncRef(); /*assert(Strings.Set.Has(Key));*/ }
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
-	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	{ if(o.Key) o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+#ifdef HAVE_RVALUE_REF
+	C4Property(C4Property && o) : Key(o.Key), Value(std::move(o.Value)) { o.Key = 0; }
+	C4Property & operator = (C4Property && o)
+	{ if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
+#endif
 	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;
@@ -45,6 +50,8 @@ public:
 	operator const void * () const { return Key; }
 	C4Property & operator = (void * p)
 	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
+	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return NULL
 };
 class C4PropListNumbered;
 class C4PropList
@@ -87,11 +94,10 @@ public:
 	C4AulFunc * GetFunc(C4String * k) const;
 	C4AulFunc * GetFunc(const char * k) const;
 	C4String * EnumerateOwnFuncs(C4String * prev = 0) const;
-	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
-	{ return Call(&Strings.P[k], pPars); }
-	C4Value Call(C4String * k, C4AulParSet *pPars=0);
-	C4Value Call(const char * k, C4AulParSet *pPars=0);
-	C4Value CallOrThrow(const char * k, C4AulParSet *pPars=0);
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0, bool fPassErrors=false)
+	{ return Call(&Strings.P[k], pPars, fPassErrors); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
+	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }
@@ -100,7 +106,7 @@ public:
 	{ SetPropertyByS(&Strings.P[k], to); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
-	static C4PropListStatic * NewAnon(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
+	static C4PropListStatic * NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
 
 	// only freeze proplists which are not going to be modified
 	// FIXME: Only C4PropListStatic get frozen. Optimize accordingly.

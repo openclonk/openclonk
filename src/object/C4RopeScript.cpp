@@ -96,7 +96,7 @@ C4RopeAul::~C4RopeAul()
 void C4RopeAul::InitFunctionMap(C4AulScriptEngine* pEngine)
 {
 	delete RopeDef;
-	RopeDef = C4PropList::NewAnon(NULL, NULL, ::Strings.RegString("Rope"));
+	RopeDef = C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Rope"));
 	RopeDef->SetName("Rope");
 	pEngine->RegisterGlobalConstant("Rope", C4VPropList(RopeDef));
 

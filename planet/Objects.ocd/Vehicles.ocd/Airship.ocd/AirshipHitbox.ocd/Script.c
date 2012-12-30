@@ -1,21 +1,23 @@
 //Airship Hitbox
 
-local health;
 local parent;
 
-protected func Initialize()
+public func Initialize()
 {
-	health = 30;
+	AddEffect("CheckParent", this,1,1,this);
+}
+
+private func FxCheckParentTimer(object target, proplist, int timer)
+{
+	if(!parent) target->RemoveObject();
 }
 
 public func IsProjectileTarget(target,shooter) { return true; }
 
-public func Damage()
+public func Damage(int change)
 {
-	if(GetDamage() > health)
-	{
-		parent->AirshipDeath();
-	}
+	//forward the damage to airship parent
+	parent->DoDamage(change);	
 }
 
 public func SetAirshipParent(object airship)

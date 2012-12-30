@@ -127,13 +127,13 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 	}
 }
 
-static void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
+static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
 	{
-		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col);
-		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col);
-		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-2,ty-2,tx+2,ty+2,C4RGB(0xff, 0xff, 0xff));
+		pDraw->DrawLineDw(cgo.Surface, tx - 1, ty, tx + 1, ty, col, 0.5f);
+		pDraw->DrawLineDw(cgo.Surface, tx, ty - 1, tx, ty + 1, col, 0.5f);
+		if (contact) pDraw->DrawFrameDw(cgo.Surface,tx-1.5,ty-1.5,tx+1.5,ty+1.5,C4RGB(0xff, 0xff, 0xff));
 	}
 }
 
@@ -1240,10 +1240,7 @@ void C4Object::DoBreath(int32_t iChange)
 
 void C4Object::DoCon(int32_t iChange)
 {
-	int32_t iStepSize=FullCon/100;
-	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
-	int32_t iLastStep=Con/iStepSize;
-	C4Real strgt_con_b = fix_y + Shape.GetY() + Shape.Hgt;
+	C4Real strgt_con_b = fix_y + Shape.GetBottom();
 	bool fWasFull = (Con>=FullCon);
 
 	// Change con
@@ -1251,54 +1248,43 @@ void C4Object::DoCon(int32_t iChange)
 		Con=Max<int32_t>(Con+iChange,0);
 	else
 		Con=BoundBy<int32_t>(Con+iChange,0,FullCon);
-	int32_t iStepDiff = Con/iStepSize - iLastStep;
 
 	// Update OCF
 	SetOCF();
 
-	// If step changed or limit reached or degraded from full: update mass, face, components, etc.
-	if ( iStepDiff || (Con>=FullCon) || (Con==0) || (fWasFull && (Con<FullCon)) )
+	// Mass
+	UpdateMass();
+
+	// shape and position
+	UpdateShape();
+	// make the bottom-most vertex stay in place
+	fix_y = strgt_con_b - Shape.GetBottom();
+	// Face (except for the shape)
+	UpdateFace(false);
+
+	// component update
+	// Decay: reduce components
+	if (iChange<0)
+		ComponentConCutoff();
+	// Growth: gain components
+	else
+		ComponentConGain();
+
+	// Unfullcon
+	if (fWasFull && (Con<FullCon))
 	{
-		// Mass
-		UpdateMass();
-		// Decay from full remove mask before face is changed
-		if (fWasFull && (Con<FullCon))
-			if (pSolidMaskData) pSolidMaskData->Remove(false);
-		// Face
-		UpdateFace(true);
-		// component update
-		// Decay: reduce components
-		if (iChange<0)
-			ComponentConCutoff();
-		// Growth: gain components
-		else
-			ComponentConGain();
-		// Unfullcon
-		if (Con<FullCon)
+		// Lose contents
+		if (!Def->IncompleteActivity)
 		{
-			// Lose contents
-			if (!Def->IncompleteActivity)
-			{
-				C4Object *cobj;
-				while ((cobj=Contents.GetObject()))
-					if (Contained) cobj->Enter(Contained);
-					else cobj->Exit(cobj->GetX(),cobj->GetY());
-			}
+			C4Object *cobj;
+			while ((cobj=Contents.GetObject()))
+				if (Contained) cobj->Enter(Contained);
+				else cobj->Exit(cobj->GetX(),cobj->GetY());
+			SetAction(0);
 		}
-		// Decay from full stop action
-		if (fWasFull && (Con<FullCon))
-			if (!Def->IncompleteActivity)
-				SetAction(0);
 	}
 
-	// bottom y-adjust
-	if ((Shape.Hgt!=lRHgt) || (Shape.GetY()!=lRy))
-	{
-		fix_y = strgt_con_b - Shape.Hgt - Shape.GetY();
-		UpdatePos(); UpdateSolidMask(false);
-	}
-
-	// Completion (after bottom GetY()-adjust for correct position)
+	// Completion
 	if (!fWasFull && (Con>=FullCon))
 		Call(PSF_Initialize);
 
@@ -1906,7 +1892,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY());
 
 	// Output boundary
-	if (!fYStretchObject && !eDrawMode)
+	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
 	{
 		if (pActionDef && !r && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 		{
@@ -2459,12 +2445,10 @@ void C4Object::Denumerate(C4ValueNumbers * numbers)
 	if (pMeshInstance) pMeshInstance->DenumeratePointers();
 }
 
-void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions, C4DrawTransform* transform)
+void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4DrawTransform* transform)
 {
 	// Draw def picture with object color
 	Def->Draw(cgo,fSelected,Color,this,0,0,transform);
-	// Region
-	if (pRegions) pRegions->Add(cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,GetName(),COM_None,this);
 }
 
 void C4Object::Picture2Facet(C4FacetSurface &cgo)
@@ -2997,6 +2981,14 @@ bool C4Object::SetActionByName(C4String *ActName,
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);
 }
 
+C4PropList *C4Object::GetActionByName(C4PropertyName &act_name, C4Value *rval_holder)
+{
+	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
+	if (!ActMap.getPropList()) return false;
+	ActMap.getPropList()->GetProperty(act_name, rval_holder);
+	return rval_holder->getPropList();
+}
+
 bool C4Object::SetActionByName(const char * szActName,
                                C4Object *pTarget, C4Object *pTarget2,
                                int32_t iCalls, bool fForce)
@@ -3086,14 +3078,9 @@ void C4Object::NoAttachAction()
 	}
 }
 
-bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir);
-
 void C4Object::ContactAction()
 {
 	// Take certain action on contact. Evaluate t_contact-CNAT and Procedure.
-	C4Real last_xdir;
-
-	int32_t iDir;
 
 	// Determine Procedure
 	C4PropList* pActionDef = GetAction();
@@ -3106,31 +3093,23 @@ void C4Object::ContactAction()
 		switch (iProcedure)
 		{
 		case DFA_FLIGHT:
-			if (ydir < 0) break;
+			if (ydir < 0) return;
 			// Jump: FlatHit / HardHit / Walk
 			if ((OCF & OCF_HitSpeed4) || fDisabled)
 				if (ObjectActionFlat(this,Action.Dir)) return;
 			if (OCF & OCF_HitSpeed3)
 				if (ObjectActionKneel(this)) return;
-			// Walk, but keep horizontal momentum (momentum is reset
-			// by ObjectActionWalk) to avoid walk-jump-flipflop on
-			// sideways corner hit if initial walk acceleration is
-			// not enough to reach the next pixel for attachment.
-			// Urks, all those special cases...
-			last_xdir=xdir;
 			ObjectActionWalk(this);
-			xdir=last_xdir;
+			ydir = 0;
 			return;
 		case DFA_SCALE:
-			// Scale up: try corner scale
-			if (!ComDirLike(Action.ComDir, COMD_Down))
+			// Scale down: stand
+			if (ComDirLike(Action.ComDir, COMD_Down))
 			{
-				if (ObjectActionCornerScale(this)) return;
+				ObjectActionStand(this);
 				return;
 			}
-			// Any other: Stand
-			ObjectActionStand(this);
-			return;
+			break;
 		case DFA_DIG:
 			// no special action
 			break;
@@ -3138,7 +3117,7 @@ void C4Object::ContactAction()
 			// Try corner scale out
 			if (!GBackLiquid(GetX(), GetY() - 1))
 				if (ObjectActionCornerScale(this)) return;
-			return;
+			break;
 		}
 
 	//------------------------------- Hit Ceiling -----------------------------------------
@@ -3152,9 +3131,11 @@ void C4Object::ContactAction()
 			// Scale: Try hangle, else stop if going upward
 			if (ComDirLike(Action.ComDir, COMD_Up))
 			{
-				iDir=DIR_Left;
-				if (Action.Dir==DIR_Left) { iDir=DIR_Right; }
-				if (ObjectActionHangle(this,iDir)) return;
+				if (ObjectActionHangle(this))
+				{
+					SetDir(Action.Dir == DIR_Left ? DIR_Right : DIR_Left);
+					return;
+				}
 				Action.ComDir=COMD_Stop;
 			}
 			break;
@@ -3162,8 +3143,8 @@ void C4Object::ContactAction()
 			// Jump: Try hangle, else bounce off
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,Action.Dir,Fix0,Fix0); break; }
-			if (ObjectActionHangle(this,Action.Dir)) return;
+				{ ObjectActionTumble(this, Action.Dir, xdir, ydir); break; }
+			if (ObjectActionHangle(this)) return;
 			break;
 		case DFA_DIG:
 			// No action
@@ -3181,17 +3162,19 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Left,C4REAL100(+150),Fix0); break; }
+				{ ObjectActionTumble(this, DIR_Left, xdir, ydir); break; }
 			// Else
-			else if (ObjectActionScale(this,DIR_Left)) return;
+			else if (!ComDirLike(Action.ComDir, COMD_Right) && ObjectActionScale(this,DIR_Left)) return;
 			break;
 		case DFA_WALK:
-			// Walk: Try scale, else stop
+			// Walk: Try scale
 			if (ComDirLike(Action.ComDir, COMD_Left))
 			{
-				if (ObjectActionScale(this,DIR_Left)) return;
-				// Else stop
-				Action.ComDir=COMD_Stop;
+				if (ObjectActionScale(this,DIR_Left))
+				{
+					ydir = C4REAL100(-1);
+					return;
+				}
 			}
 			// Heading away from solid
 			if (ComDirLike(Action.ComDir, COMD_Right))
@@ -3208,10 +3191,12 @@ void C4Object::ContactAction()
 			if (ObjectActionCornerScale(this)) return;
 			return;
 		case DFA_HANGLE:
-			// Hangle: Try scale, else stop
+			// Hangle: Try scale
 			if (ObjectActionScale(this,DIR_Left))
+			{
+				ydir = C4REAL100(1);
 				return;
-			Action.ComDir=COMD_Stop;
+			}
 			return;
 		case DFA_DIG:
 			// Dig: no action
@@ -3227,16 +3212,19 @@ void C4Object::ContactAction()
 		case DFA_FLIGHT:
 			// High Speed Flight: Tumble
 			if ((OCF & OCF_HitSpeed3) || fDisabled)
-				{ ObjectActionTumble(this,DIR_Right,C4REAL100(-150),Fix0); break; }
+				{ ObjectActionTumble(this, DIR_Right, xdir, ydir); break; }
 			// Else Scale
-			else if (ObjectActionScale(this,DIR_Right)) return;
+			else if (!ComDirLike(Action.ComDir, COMD_Left) && ObjectActionScale(this,DIR_Right)) return;
 			break;
 		case DFA_WALK:
-			// Walk: Try scale, else stop
+			// Walk: Try scale
 			if (ComDirLike(Action.ComDir, COMD_Right))
 			{
-				if (ObjectActionScale(this,DIR_Right)) return;
-				Action.ComDir=COMD_Stop;
+				if (ObjectActionScale(this,DIR_Right))
+				{
+					ydir = C4REAL100(-1);
+					return;
+				}
 			}
 			// Heading away from solid
 			if (ComDirLike(Action.ComDir, COMD_Left))
@@ -3254,10 +3242,12 @@ void C4Object::ContactAction()
 			// Skip to enable walk out
 			return;
 		case DFA_HANGLE:
-			// Hangle: Try scale, else stop
+			// Hangle: Try scale
 			if (ObjectActionScale(this,DIR_Right))
+			{
+				ydir = C4REAL100(1);
 				return;
-			Action.ComDir=COMD_Stop;
+			}
 			return;
 		case DFA_DIG:
 			// Dig: no action
@@ -3420,7 +3410,6 @@ bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 
 void C4Object::ExecAction()
 {
-	Action.t_attach=CNAT_None;
 	C4Real iTXDir;
 	C4Real lftspeed,tydir;
 	int32_t iTargetX;
@@ -3438,34 +3427,62 @@ void C4Object::ExecAction()
 				Mobile=1;
 			}
 
-	// Idle objects do natural gravity only
 	C4PropList* pActionDef = GetAction();
+	// No IncompleteActivity? Reset action if there was one
+	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity && pActionDef)
+	{
+		SetAction(0);
+		pActionDef = 0;
+	}
+
+	// InLiquidAction check
+	if (InLiquid)
+		if (pActionDef && pActionDef->GetPropertyStr(P_InLiquidAction))
+		{
+			SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction));
+			pActionDef = GetAction();
+		}
+	
+	// Idle objects do natural gravity only
 	if (!pActionDef)
 	{
+		Action.t_attach = CNAT_None;
 		if (Mobile) DoGravity(this);
 		return;
 	}
 
-	// No IncompleteActivity? Reset action
-	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
-		{ SetAction(0); return; }
-
 	C4Real fWalk,fMove;
-	int32_t smpx,smpy;
 
 	// Action time advance
 	Action.Time++;
 
-	// InLiquidAction check
-	if (InLiquid)
-		if (pActionDef->GetPropertyStr(P_InLiquidAction))
-			{ SetActionByName(pActionDef->GetPropertyStr(P_InLiquidAction)); return; }
-
-	// assign extra action attachment (CNAT_MultiAttach)
-	// regular attachment values cannot be set for backwards compatibility reasons
-	// this parameter had always been ignored for actions using an internal procedure,
-	// but is for some obscure reasons set in the KneelDown-actions of the golems
-	Action.t_attach |= (pActionDef->GetPropertyInt(P_Attach) & CNAT_MultiAttach);
+	C4Value Attach;
+	pActionDef->GetProperty(P_Attach, &Attach);
+	if (Attach.GetType() != C4V_Nil)
+	{
+		Action.t_attach = Attach.getInt();
+	}
+	else switch (pActionDef->GetPropertyP(P_Procedure))
+	{
+	case DFA_SCALE:
+		if (Action.Dir == DIR_Left)  Action.t_attach = CNAT_Left;
+		if (Action.Dir == DIR_Right) Action.t_attach = CNAT_Right;
+		break;
+	case DFA_HANGLE:
+		Action.t_attach = CNAT_Top;
+		break;
+	case DFA_WALK:
+	case DFA_KNEEL:
+	case DFA_THROW:
+	case DFA_BRIDGE:
+	case DFA_PUSH:
+	case DFA_PULL:
+	case DFA_DIG:
+		Action.t_attach = CNAT_Bottom;
+		break;
+	default:
+		Action.t_attach = CNAT_None;
+	}
 
 	// if an object is in controllable state, so it can be assumed that if it dies later because of NO_OWNER's cause,
 	// it has been its own fault and not the fault of the last one who threw a flint on it
@@ -3477,11 +3494,14 @@ void C4Object::ExecAction()
 	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
 	int32_t dir = Action.Dir;
 	C4Real accel = C4REAL100(pActionDef->GetPropertyInt(P_Accel));
-	C4Real decel = C4REAL100(pActionDef->GetPropertyInt(P_Decel));
+	C4Real decel = accel;
+	{
+		C4Value decel_val;
+		pActionDef->GetProperty(P_Decel, &decel_val);
+		if (decel_val.GetType() != C4V_Nil)
+			decel = C4REAL100(decel_val.getInt());
+	}
 	C4Real limit = C4REAL100(pActionDef->GetPropertyInt(P_Speed));
-
-	C4Real lFlightAccel;
-	C4Real rFlightAccel;
 
 	switch (pActionDef->GetPropertyP(P_Procedure))
 	{
@@ -3522,7 +3542,6 @@ void C4Object::ExecAction()
 			iPhaseAdvance=+fixtoi(xdir*10);
 		}
 
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		// object is rotateable? adjust to ground, if in horizontal movement or not attached to the center vertex
 		if (Def->Rotateable && Shape.AttachMat != MNone && (!!xdir || Def->Shape.VtxX[Shape.iAttachVtx]))
@@ -3533,35 +3552,45 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_KNEEL:
 		ydir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_SCALE:
 	{
 		int ComDir = Action.ComDir;
-		if (Action.Dir == DIR_Left && ComDir == COMD_Left)
+		if (Shape.CheckScaleToWalk(GetX(), GetY()))
+		{
+			ObjectActionWalk(this);
+			return;
+		}
+		if ((Action.Dir == DIR_Left && ComDir == COMD_Left) || (Action.Dir == DIR_Right && ComDir == COMD_Right))
+		{
+			/*if (ydir > 0)
+				ComDir = COMD_Down;
+			else
+				ComDir = COMD_Up;*/
 			ComDir = COMD_Up;
-		else if (Action.Dir == DIR_Right && ComDir == COMD_Right)
-			ComDir = COMD_Up;
+		}
 		switch (ComDir)
 		{
 		case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
-			ydir-=accel; if (ydir<-limit) ydir=-limit; break;
+			if (ydir > 0) ydir -= decel;
+			else ydir -= accel;
+			if (ydir < -limit) ydir = -limit; break;
 		case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
-			ydir+=accel; if (ydir>+limit) ydir=+limit; break;
+			if (ydir < 0) ydir += decel;
+			else ydir += accel;
+			if (ydir > +limit) ydir = +limit; break;
 		case COMD_Left: case COMD_Right: case COMD_Stop:
-			if (ydir<0) ydir+=accel;
-			if (ydir>0) ydir-=accel;
-			if ((ydir>-accel) && (ydir<+accel)) ydir=0;
+			if (ydir < 0) ydir += decel;
+			if (ydir > 0) ydir -= decel;
+			if ((ydir > -decel) && (ydir < +decel)) ydir = 0;
 			break;
 		}
 		iPhaseAdvance=0;
 		if (ydir<0) iPhaseAdvance=-fixtoi(ydir*14);
 		if (ydir>0) iPhaseAdvance=+fixtoi(ydir*14);
 		xdir=0;
-		if (Action.Dir==DIR_Left)  Action.t_attach|=CNAT_Left;
-		if (Action.Dir==DIR_Right) Action.t_attach|=CNAT_Right;
 		Mobile=1;
 		break;
 	}
@@ -3570,27 +3599,35 @@ void C4Object::ExecAction()
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=accel; if (xdir<-limit) xdir=-limit;
+			if (xdir > 0) xdir -= decel;
+			else xdir -= accel;
+			if (xdir < -limit) xdir = -limit;
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=accel; if (xdir>+limit) xdir=+limit;
+			if (xdir < 0) xdir += decel;
+			else xdir += accel;
+			if (xdir > +limit) xdir = +limit;
 			break;
 		case COMD_Up:
-			xdir += (Action.Dir == DIR_Left) ? -accel : accel;
-			if (xdir<-limit) xdir=-limit;
-			if (xdir>+limit) xdir=+limit;
+			if (Action.Dir == DIR_Left)
+				if (xdir > 0) xdir -= decel;
+				else xdir -= accel;
+			else
+				if (xdir < 0) xdir += decel;
+				else xdir += accel;
+			if (xdir < -limit) xdir = -limit;
+			if (xdir > +limit) xdir = +limit;
 			break;
 		case COMD_Stop: case COMD_Down:
-			if (xdir<0) xdir+=accel;
-			if (xdir>0) xdir-=accel;
-			if ((xdir>-accel) && (xdir<+accel)) xdir=0;
+			if (xdir < 0) xdir += decel;
+			if (xdir > 0) xdir -= decel;
+			if ((xdir > -decel) && (xdir < +decel)) xdir = 0;
 			break;
 		}
 		iPhaseAdvance=0;
 		if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left); }
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		ydir=0;
-		Action.t_attach|=CNAT_Top;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3603,16 +3640,13 @@ void C4Object::ExecAction()
 				SetCommand(C4CMD_Exit);
 			}
 
-		lFlightAccel = Max(Min(limit+xdir,accel),itofix(0));
-		rFlightAccel = Max(Min(limit-xdir,accel),itofix(0));
-
 		switch (Action.ComDir)
 		{
 		case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-			xdir-=lFlightAccel;
+			xdir -= Max(Min(limit + xdir, xdir > 0 ? decel : accel), itofix(0));
 			break;
 		case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-			xdir+=rFlightAccel;
+			xdir += Max(Min(limit - xdir, xdir < 0 ? decel : accel), itofix(0));
 			break;
 		}
 
@@ -3623,15 +3657,7 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_DIG:
 	{
-		if (pActionDef->GetPropertyInt(P_Attach))
-		{
-			Action.t_attach |= pActionDef->GetPropertyInt(P_Attach);
-		}
-		else
-		{
-			Action.t_attach |= CNAT_Bottom;
-		}
-		smpx=GetX(); smpy=GetY();
+		int32_t smpx = GetX(), smpy = GetY();
 		bool fAttachOK = false;
 		if (Action.t_attach & CNAT_Bottom && Shape.Attach(smpx,smpy,CNAT_Bottom)) fAttachOK = true;
 		else if (Action.t_attach & CNAT_Left && Shape.Attach(smpx,smpy,CNAT_Left)) { fAttachOK = true; }
@@ -3690,14 +3716,11 @@ void C4Object::ExecAction()
 		if (xdir<0) SetDir(DIR_Left);
 		if (xdir>0) SetDir(DIR_Right);
 		iPhaseAdvance=fixtoi(limit*10);
-		Action.t_attach=CNAT_None;
 		Mobile=1;
 
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_THROW:
-		//ydir=0; xdir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3710,7 +3733,6 @@ void C4Object::ExecAction()
 		case COMD_Right: case COMD_UpRight: SetDir(DIR_Right); break;
 		}
 		ydir=0; xdir=0;
-		Action.t_attach|=CNAT_Bottom;
 		Mobile=1;
 	}
 	break;
@@ -3765,9 +3787,6 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		// Attachment
-		Action.t_attach|=CNAT_Bottom;
-		// Mobile
 		Mobile=1;
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3842,9 +3861,6 @@ void C4Object::ExecAction()
 		if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
 		// No YDir
 		ydir=0;
-		// Attachment
-		Action.t_attach|=CNAT_Bottom;
-		// Mobile
 		Mobile=1;
 
 		break;
@@ -3933,11 +3949,11 @@ void C4Object::ExecAction()
 				Exit(GetX(),GetY(),r);
 		}
 
-		// Force position
-		ForcePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
-		              -Shape.VtxX[Action.Data>>8],
+		// Move position (so objects on solidmask move)
+		MovePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
+		              -Shape.VtxX[Action.Data>>8] - fix_x,
 		              Action.Target->fix_y + Action.Target->Shape.VtxY[Action.Data&255]
-		              -Shape.VtxY[Action.Data>>8]);
+		              -Shape.VtxY[Action.Data>>8] - fix_y);
 		// must zero motion...
 		xdir=ydir=0;
 
@@ -4026,9 +4042,8 @@ void C4Object::ExecAction()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	default:
 		// Attach
-		if (pActionDef->GetPropertyInt(P_Attach))
+		if (Action.t_attach)
 		{
-			Action.t_attach |= pActionDef->GetPropertyInt(P_Attach);
 			xdir = ydir = 0;
 			Mobile = 1;
 		}

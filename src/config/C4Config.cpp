@@ -90,16 +90,16 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",          800           ,false, true));
-	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",          600           ,false, true));
+	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
+	pComp->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
 	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
-	pComp->Value(mkNamingAdapt(GuiResX,                 "GuiResolutionX",       800           ,false, true));
-	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
-	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     0             ,false, true));
+	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(SmokeLevel,            "SmokeLevel",           200           ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
@@ -721,7 +721,6 @@ void C4ConfigStartup::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
 	pComp->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
 	pComp->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
-	pComp->Value(mkNamingAdapt(NoSplash,                    "NoSplash",                   1));
 	pComp->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
 	pComp->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
 }

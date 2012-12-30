@@ -30,7 +30,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	}
 	
 	// Otherwise create a menu with possible structures to build.
-	clonk->CreateConstructionMenu(this);
+	clonk->CreateConstructionMenu(this, true);
 	clonk->CancelUse();
 	return true;
 }

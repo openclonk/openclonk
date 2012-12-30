@@ -68,7 +68,7 @@ bool C4GameSave::SaveCore()
 	rC4S = Game.C4S;
 	// Always mark current engine version
 	rC4S.Head.C4XVer[0]=C4XVER1; rC4S.Head.C4XVer[1]=C4XVER2;
-	rC4S.Head.C4XVer[2]=C4XVER3; rC4S.Head.C4XVer[3]=C4XVER4;
+	rC4S.Head.C4XVer[2]=C4XVER3;
 	// Some flags are not to be set for initial settings:
 	//  They depend on whether specific runtime data is present, which may simply not be stored into initial
 	//  saves, because they rely on any data present and up-to-date within the scenario!
@@ -213,7 +213,7 @@ bool C4GameSave::SaveRuntimeData()
 	if (GetSaveUserPlayers() || GetSaveScriptPlayers())
 	{
 		// player infos
-		// the stored player info filenames will point into the scenario file, and no ressource information
+		// the stored player info filenames will point into the scenario file, and no resource information
 		// will be saved. PlayerInfo must be saved first, because those will generate the storage filenames to be used by
 		// C4PlayerList
 		C4PlayerInfoList RestoreInfos;
@@ -303,7 +303,7 @@ void C4GameSave::WriteDescGameTime(StdStrBuf &sBuf)
 
 void C4GameSave::WriteDescEngine(StdStrBuf &sBuf)
 {
-	char ver[5]; sprintf(ver, "%03d", (int) C4XVER4);
+	char ver[32]; sprintf(ver, "%d.%d.%d", (int)C4XVER1, (int)C4XVER2, (int)C4XVER3);
 	sBuf.AppendFormat(LoadResStr("IDS_DESC_VERSION"), ver);
 	WriteDescLineFeed(sBuf);
 }
@@ -545,7 +545,7 @@ void C4GameSaveRecord::AdjustCore(C4Scenario &rC4S)
 	rC4S.Head.Icon=29;
 	// default record title
 	char buf[1024 + 1];
-	sprintf(buf, "%03i %s [%d]", iNum, Game.ScenarioTitle.getData(), (int) C4XVER4);
+	sprintf(buf, "%03i %s [%d.%d.%d]", iNum, Game.ScenarioTitle.getData(), (int)C4XVER1, (int)C4XVER2, (int)C4XVER3);
 	SCopy(buf, rC4S.Head.Title, C4MaxTitle);
 }
 

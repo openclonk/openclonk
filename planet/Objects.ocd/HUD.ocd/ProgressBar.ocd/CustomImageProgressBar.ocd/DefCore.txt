@@ -1,0 +1,12 @@
+[DefCore]
+id=GUI_CustomImageProgressBar
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=64
+Height=64
+Offset=-32,-32
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=20
+

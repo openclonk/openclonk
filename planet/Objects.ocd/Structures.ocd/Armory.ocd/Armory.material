@@ -1,0 +1,36 @@
+// Armory genrated by blender2ogre 0.5.8
+
+material Armory 
+{
+    receive_shadows off 
+
+    technique
+    {
+        pass Armory
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.0 0.0 0.0 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+			scene_blend alpha_blend
+			depth_write on
+			cull_hardware none
+
+            texture_unit 
+            {
+                texture Armory.png
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op alpha_blend
+            }
+            
+            texture_unit Light
+			{
+				// apply lighting
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
+        }
+    }
+}

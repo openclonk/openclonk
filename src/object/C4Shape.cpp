@@ -177,74 +177,75 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
 
 }
 
-
+// Adjust given position to one pixel before contact
+// at vertices matching CNAT request.
 bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 {
-	// Adjust given position to one pixel before contact
-	// at vertices matching CNAT request.
-
-	bool fAttached=false;
-
-
-	int32_t vtx,xcnt,ycnt,xcrng,ycrng,xcd,ycd;
-	BYTE cpix;
-
 	// reset attached material
 	AttachMat=MNone;
-
-	// New attachment behaviour in CE:
-	// Before, attachment was done by searching through all vertices,
-	// and doing attachment to any vertex with a matching CNAT.
-	// While this worked well for normal Clonk attachment, it caused nonsense
-	// behaviour if multiple vertices matched the same CNAT. In effect, attachment
-	// was then done to the last vertex only, usually stucking the object sooner
-	// or later.
-	// For instance, the scaling procedure of regular Clonks uses two CNAT_Left-
-	// vertices (shoulder+belly), which "block" each other in situations like
-	// scaling up battlements of towers. That way, the 2px-overhang of the
-	// battlement is sufficient for keeping out scaling Clonks. The drawback is
-	// that sometimes Clonks get stuck scaling in very sharp edges or single
-	// floating material pixels; occuring quite often in Caverace, or maps where
-	// you blast Granite and many single pixels remain.
-
+	int xcd = 0;
+	int ycd = 0;
 	// determine attachment direction
-	xcd=ycd=0;
 	switch (cnat_pos & (~CNAT_Flags))
 	{
 	case CNAT_Top:    ycd=-1; break;
 	case CNAT_Bottom: ycd=+1; break;
 	case CNAT_Left:   xcd=-1; break;
 	case CNAT_Right:  xcd=+1; break;
+	default: return false;
 	}
-	// check within attachment range
-	xcrng=AttachRange*xcd*(-1); ycrng=AttachRange*ycd*(-1);
-	for (xcnt=xcrng,ycnt=ycrng; (xcnt!=-xcrng) || (ycnt!=-ycrng); xcnt+=xcd,ycnt+=ycd)
-		// check all vertices with matching CNAT
-		for (vtx=0; vtx<VtxNum; vtx++)
-			if (VtxCNAT[vtx] & cnat_pos)
+	int testx = cx;
+	int testy = cy;
+	bool increase_distance = true;
+	bool any_contact = false;
+	// Find the nearest position that has at least one vertex adjacent to dense material
+	// and no vertices in dense materials
+	while (Abs(testx - cx) < AttachRange && Abs(testy - cy) < AttachRange)
+	{
+		bool found = false;
+		for (int i = 0; i < VtxNum; ++i)
+		{
+			if (VtxCNAT[i] & cnat_pos)
 			{
 				// get new vertex pos
-				int32_t ax=cx+VtxX[vtx]+xcnt+xcd, ay=cy+VtxY[vtx]+ycnt+ycd;
-				// can attach here?
-				cpix=GBackPix(ax,ay);
-				if (MatDensity(PixCol2Mat(cpix)) >= ContactDensity)
+				int32_t ax = testx + VtxX[i], ay = testy + VtxY[i];
+				if (GBackDensity(ax, ay) >= ContactDensity)
 				{
-					// store attachment material
-					AttachMat=PixCol2Mat(cpix);
-					// store absolute attachment position
-					iAttachX=ax; iAttachY=ay;
-					iAttachVtx=vtx;
-					// move position here
-					cx+=xcnt; cy+=ycnt;
-					// mark attachment
-					fAttached=1;
-					// break both looops
-					xcnt=-xcrng-xcd; ycnt=-ycrng-ycd;
+					found = false;
 					break;
 				}
-			}
+				// can attach here?
+				if (GBackDensity(ax + xcd, ay + ycd) >= ContactDensity)
+				{
+					found = true;
+					any_contact = true;
+					// store attachment material
+					AttachMat = GBackMat(ax + xcd, ay + ycd);
+					// store absolute attachment position
+					iAttachX = ax + xcd; iAttachY = ay + ycd;
+					iAttachVtx = i;
+				}
 
-	return fAttached;
+			}
+		}
+		if (found)
+		{
+			cx = testx;
+			cy = testy;
+			return true;
+		}
+		// Try positions in order of distance from the origin,
+		// and alternating the direction
+		testx = cx - (testx - cx);
+		testy = cy - (testy - cy);
+		if (increase_distance)
+		{
+			testx += xcd;
+			testy += ycd;
+		}
+		increase_distance = !increase_distance;
+	}
+	return any_contact;
 }
 
 
@@ -344,7 +345,7 @@ bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 	return false;
 }
 
-bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
+bool C4Shape::ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts)
 {
 	// Check all vertices at given object position.
 	// Set ContactCNAT and ContactCount.
@@ -361,29 +362,59 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
 
 		{
-
 			VtxContactCNAT[cvtx]=CNAT_None;
-			VtxContactMat[cvtx]=GBackMat(cx+VtxX[cvtx],cy+VtxY[cvtx]);
+			int32_t x = cx+VtxX[cvtx];
+			int32_t y = cy+VtxY[cvtx];
+			VtxContactMat[cvtx]=GBackMat(x,y);
 
-			if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]) >= ContactDensity)
+			if (GBackDensity(x,y) >= ContactDensity)
 			{
 				ContactCNAT |= VtxCNAT[cvtx];
 				VtxContactCNAT[cvtx]|=CNAT_Center;
 				ContactCount++;
 				// Vertex center contact, now check top,bottom,left,right
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]-1) >= ContactDensity)
+				if (GBackDensity(x,y-1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Top;
-				if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]+1) >= ContactDensity)
+				if (GBackDensity(x,y+1) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Bottom;
-				if (GBackDensity(cx+VtxX[cvtx]-1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x-1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Left;
-				if (GBackDensity(cx+VtxX[cvtx]+1,cy+VtxY[cvtx]) >= ContactDensity)
+				if (GBackDensity(x+1,y) >= ContactDensity)
 					VtxContactCNAT[cvtx]|=CNAT_Right;
+			}
+			if (border_hack_contacts)
+			{
+				if (x == 0 && GBackDensity(x-1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Left;
+				else if (x == ::Landscape.Width && GBackDensity(x+1, y) >= ContactDensity) *border_hack_contacts |= CNAT_Right;
 			}
 		}
 
 
 	return !!ContactCount;
+}
+
+bool C4Shape::CheckScaleToWalk(int x, int y)
+{
+	for (int32_t i = 0; i < VtxNum; i++)
+	{
+		if (VtxCNAT[i] & CNAT_NoCollision)
+			continue;
+		if (VtxCNAT[i] & CNAT_Bottom)
+		{
+			// no ground under the feet?
+			if (GBackDensity(x + VtxX[i], y + VtxY[i] + 1) < ContactDensity)
+				return false;
+		}
+		else
+		{
+			// can climb with hands?
+			if (GBackDensity(x + VtxX[i] - 1, y + VtxY[i]) >= ContactDensity)
+				return false;
+			if (GBackDensity(x + VtxX[i] + 1, y + VtxY[i]) >= ContactDensity)
+				return false;
+		}
+	}
+	return true;
 }
 
 int32_t C4Shape::GetVertexX(int32_t iVertex)
@@ -431,6 +462,18 @@ int32_t C4Shape::GetBottomVertex()
 			if (iMax == -1 || VtxY[i] < VtxY[iMax])
 				iMax = i;
 	return iMax;
+}
+
+int C4Shape::GetBottom()
+{
+	int b = INT_MIN;
+	for (int32_t i = 0; i < VtxNum; i++)
+		if (~VtxCNAT[i] & CNAT_NoCollision)
+			if (VtxY[i] > b)
+				b = VtxY[i];
+	if (b == INT_MIN)
+		return y + Hgt;
+	return b;
 }
 
 C4DensityProvider DefaultDensityProvider;

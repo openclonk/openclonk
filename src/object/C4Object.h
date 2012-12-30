@@ -228,7 +228,7 @@ public:
 	bool AssignInfo();
 	bool ValidateOwner();
 	bool AssignPlrViewRange();
-	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4RegionList *pRegions=NULL,C4DrawTransform* transform=NULL);
+	void DrawPicture(C4Facet &cgo, bool fSelected=false, C4DrawTransform* transform=NULL);
 	void Picture2Facet(C4FacetSurface &cgo); // set picture to facet, or create facet in current size and draw if specific states are being needed
 	void Default();
 	bool Init(C4PropList *ndef, C4Object *pCreator,
@@ -274,13 +274,14 @@ public:
 	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf);
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
-	int32_t ContactCheck(int32_t atx, int32_t aty);
+	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0);
 	bool Contact(int32_t cnat);
 	void TargetBounds(C4Real &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 	enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 	C4PropList* GetAction() const;
 	bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+	C4PropList *GetActionByName(C4PropertyName &act_name, C4Value *rval_holder);
 	bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	void SetDir(int32_t tdir);
 	void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }

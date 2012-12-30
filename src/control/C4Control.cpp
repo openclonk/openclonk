@@ -33,6 +33,7 @@
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>
+#include <C4Network2Dialogs.h>
 #include <C4Random.h>
 #include <C4Console.h>
 #include <C4Log.h>
@@ -756,7 +757,7 @@ void C4ControlJoinPlayer::Execute() const
 	}
 	else if (::Control.isNetwork())
 	{
-		// Find ressource
+		// Find resource
 		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if (pRes && pRes->isComplete())
 			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
@@ -810,7 +811,7 @@ bool C4ControlJoinPlayer::PreExecute() const
 	if (!Game.Clients.getClientByID(iAtClient)) return true;
 	// network only
 	if (!::Control.isNetwork()) return true;
-	// search ressource
+	// search resource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
 	if (!pRes) { pRes = ::Network.ResList.AddByCore(ResCore, true); }
@@ -1022,7 +1023,11 @@ void C4ControlEMDrawTool::Execute() const
 		int iMat = ::MaterialMap.Get(szMaterial);
 		if (!MatValid(iMat)) return;
 		for (int cnt=0; cnt<iGrade; cnt++)
-			::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
+		{
+			int32_t itX=iX+Random(iGrade)-iGrade/2;
+			int32_t itY=iY+Random(iGrade)-iGrade/2;
+			::Landscape.InsertMaterial(iMat,itX,itY);
+		}
 	}
 	break;
 	default:
@@ -1141,12 +1146,18 @@ void C4ControlMessage::Execute() const
 	break;
 
 	case C4CMT_Sound:
+	{
 		// tehehe, sound!
-		if (StartSoundEffect(szMessage, false, 100, NULL))
-		{
-			if (pLobby) pLobby->OnClientSound(Game.Clients.getClientByID(iByClient));
-		}
+		C4Client *singer = Game.Clients.getClientByID(iByClient);
+		if (!singer || !singer->IsIgnored())
+			if (!StartSoundEffect(szMessage, false, 100, NULL))
+				// probably wrong sound file name
+				break;
+		// Sound icon even if someone you ignored just tried. So you know you still need to ignore.
+		if (pLobby) pLobby->OnClientSound(singer);
+		if (C4Network2ClientListDlg::GetInstance()) C4Network2ClientListDlg::GetInstance()->OnSound(singer);
 		break;
+	}
 
 	case C4CMT_Alert:
 		// notify inactive users

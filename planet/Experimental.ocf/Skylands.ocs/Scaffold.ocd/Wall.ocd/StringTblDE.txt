@@ -1,0 +1,2 @@
+Name=Geruestwand
+Description=Erlaubt den Bau groesserer Strukturen.

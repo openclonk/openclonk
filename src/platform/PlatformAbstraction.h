@@ -217,7 +217,7 @@ inline int stricmp(const char *s1, const char *s2)
 #elif defined(__APPLE__)
 #define C4_OS "mac-x86"
 #else
-#define C4_OS "unknown";
+#define C4_OS ""
 #endif
 
 // delete item to the recycle bin

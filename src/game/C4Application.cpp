@@ -27,13 +27,13 @@
 
 #include <C4Include.h>
 #include <C4Application.h>
+
 #include <C4Version.h>
 #ifdef _WIN32
-#include <StdRegistry.h>
 #include <C4UpdateDlg.h>
 #endif
-
 #include "C4Game.h"
+#include <C4GfxErrorDlg.h>
 #include "C4GraphicsSystem.h"
 #include "C4GraphicsResource.h"
 #include "C4MessageInput.h"
@@ -44,15 +44,10 @@
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
-#include <C4Fonts.h>
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
 
-#include <StdRegistry.h> // For DDraw emulation warning
-
 #include <getopt.h>
-
-#include <C4GfxErrorDlg.h>
 
 static C4Network2IRCClient ApplicationIRCClient;
 
@@ -61,7 +56,6 @@ C4Application::C4Application():
 		IRCClient(ApplicationIRCClient),
 		QuitAfterGame(false),
 		CheckForUpdates(false),
-		NoSplash(false),
 		restartAtEnd(false),
 		pGamePadControl(NULL),
 		AppState(C4AS_None),
@@ -179,13 +173,13 @@ bool C4Application::DoInit(int argc, char * argv[])
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, isEditor, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)
 	{
-		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
-			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
+		if (!SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+			pWindow->SetSize(Config.Graphics.WindowX, Config.Graphics.WindowY);
 	}
 
 	// Initialize gamepad
@@ -226,7 +220,6 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"editor", no_argument, &isEditor, 1},
 			{"fullscreen", no_argument, &isEditor, 0},
 			{"debugwait", no_argument, &Game.DebugWait, 1},
-			{"nosplash", no_argument, &NoSplash, 1},
 			{"update", no_argument, &CheckForUpdates, 1},
 			{"noruntimejoin", no_argument, &Config.Network.NoRuntimeJoin, 1},
 			{"runtimejoin", no_argument, &Config.Network.NoRuntimeJoin, 0},
@@ -437,6 +430,9 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 
 void C4Application::ApplyResolutionConstraints()
 {
+	// Not changing the resolution always works anyway
+	if (Config.Graphics.ResX == -1 && Config.Graphics.ResY == -1)
+		return;
 	// Enumerate display modes
 	int32_t idx = -1, iXRes, iYRes, iBitDepth, iRefreshRate;
 	int32_t best_match = -1;
@@ -485,9 +481,7 @@ bool C4Application::PreInit()
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
 	if (fUseStartupDialog && !isEditor)
 	{
-		//Log(LoadResStr("IDS_PRC_INITLOADER"));
-		bool fUseBlackScreenLoader = !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
-		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
+		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 	}
 	Game.SetInitProgress(fUseStartupDialog ? 10.0f : 1.0f);
@@ -640,10 +634,14 @@ void C4Application::GameTick()
 			QuitGame();
 			break;
 		}
+		if(Config.Graphics.Windowed == 2 && FullScreenMode())
+			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 		break;
 	case C4AS_AfterGame:
 		// stop game
 		Game.Clear();
+		if(Config.Graphics.Windowed == 2 && !NextMission && !isEditor)
+			Application.SetVideoMode(GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, false);
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)
@@ -695,8 +693,25 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 		Game.OnResolutionChanged(iXRes, iYRes);
 		pDraw->OnResolutionChanged(iXRes, iYRes);
 	}
-	if (pWindow && pWindow->pSurface)
-		pWindow->pSurface->UpdateSize(iXRes, iYRes);
+	if (pWindow)
+	{
+		if (pWindow->pSurface)
+			pWindow->pSurface->UpdateSize(iXRes, iYRes);
+		if (!FullScreenMode())
+		{
+			C4Rect r;
+			pWindow->GetSize(&r);
+			Config.Graphics.WindowX = r.Wdt;
+			Config.Graphics.WindowY = r.Hgt;
+		}
+	}
+}
+
+void C4Application::OnKeyboardLayoutChanged()
+{
+	// re-resolve all keys
+	Game.OnKeyboardLayoutChanged();
+	if (AppState == C4AS_Startup) C4Startup::Get()->OnKeyboardLayoutChanged();
 }
 
 bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
@@ -707,7 +722,7 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!::FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
+	if (!::FontLoader.InitFont(&TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);
@@ -729,9 +744,13 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 
 void C4Application::OnCommand(const char *szCmd)
 {
-	// reroute to whatever seems to take commands at the moment
 	if (AppState == C4AS_Game)
 		::MessageInput.ProcessInput(szCmd);
+	else if (AppState == C4AS_Startup)
+	{
+		AppState = C4AS_PreInit;
+		Game.SetScenarioFilename(szCmd);
+	}
 }
 
 void C4Application::Activate()
@@ -775,6 +794,17 @@ void C4Application::NextTick()
 {
 	if (!pGameTimer) return;
 	pGameTimer->Set();
+}
+
+bool C4Application::FullScreenMode()
+{
+	if(isEditor)
+		return false;
+	if(!Config.Graphics.Windowed)
+		return true;
+	if(Config.Graphics.Windowed == 2 && Game.IsRunning)
+		return true;
+	return false;
 }
 
 // *** C4ApplicationGameTimer

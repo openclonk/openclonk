@@ -140,6 +140,17 @@ if ($link && $db) {
 					$version = $row['new_version'];
 					if ($version) {
 						$message .= 'Version=' . $version . PHP_EOL;
+						// strip build version from client request
+						$n = 0;
+						for($i=0;$i<strlen($client_version);$i++){
+							if($client_version[$i]=='.'){
+								$n++;
+								if($n>=3){
+									break;
+								}
+							}
+						}
+						$client_version = substr($client_version,0,$i);
 						if (version_compare($client_version, $version) < 0) { //We need to update
 							$result = mysql_query('SELECT `file` FROM `' . $prefix . 'update` WHERE `old_version` = \'' . $client_version . '\' AND `platform` = \'' . $platform . '\'');
 							$row = mysql_fetch_assoc($result);

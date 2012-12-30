@@ -6,6 +6,13 @@ local parent;
 protected func Initialize()
 {
 	propanim = PlayAnimation("Flight", 5, Anim_Const(0), Anim_Const(1000));
+	AddEffect("CheckParent", this, 1, 1,this);
+}
+
+private func FxCheckParentTimer(object target, proplist, int timer)
+{
+	if(!parent) target->RemoveObject();
+	else return;
 }
 
 //Moves the propeller 1 tick per call
@@ -26,6 +33,12 @@ func AnimationForward()
 		return 1;
 	}
 	//SoundEffect?
+}
+
+public func GetTurnAngle(){
+	var r = GetAnimationPosition(parent.turnanim) * 1242 / 10000;
+	if(parent.animdir == -1) r = 180 + (r * -1);
+	return r;
 }
 
 public func SetAirshipParent(object airship)

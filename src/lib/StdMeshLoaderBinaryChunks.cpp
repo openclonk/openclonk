@@ -27,10 +27,12 @@ namespace Ogre
 {
 	namespace Mesh
 	{
-		const uint32_t ChunkFileHeader::CurrentVersion = 1041; // Major * 1000 + Minor
+		const uint32_t ChunkFileHeader::CurrentVersion = 1080; // Major * 1000 + Minor
 		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
-		    // 1.41: Current version
-		    ("[MeshSerializer_v1.41]", CurrentVersion)
+		    // 1.8: Current version
+		    ("[MeshSerializer_v1.8]",  CurrentVersion)
+		    // 1.41: Changes to morph keyframes and poses. We don't use either, so no special handling needed
+		    ("[MeshSerializer_v1.41]", 1041)
 		    // 1.40: Changes to CID_Mesh_LOD chunks, we ignore those, so no special handling needed
 		    ("[MeshSerializer_v1.40]", 1040);
 
@@ -334,7 +336,12 @@ namespace Ogre
 
 	namespace Skeleton
 	{
-		const std::string ChunkFileHeader::ExpectedVersion("[Serializer_v1.10]");
+		const uint32_t ChunkFileHeader::CurrentVersion = 1080; // Major * 1000 + Minor
+		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
+		    // 1.80: Current version
+		    ("[Serializer_v1.80]",  CurrentVersion)
+		    // 1.10: adds SKELETON_BLENDMODE and SKELETON_ANIMATION_BASEINFO chunks. The chunks have been added to the loader, but we ignore them for now.
+		    ("[Serializer_v1.10]", 1010);
 
 		Chunk *Chunk::Read(DataStream *stream)
 		{
@@ -357,9 +364,11 @@ namespace Ogre
 			switch (id)
 			{
 			case CID_Header: chunk.reset(new ChunkFileHeader()); break;
+			case CID_BlendMode: chunk.reset(new ChunkBlendMode()); break;
 			case CID_Bone: chunk.reset(new ChunkBone()); break;
 			case CID_Bone_Parent: chunk.reset(new ChunkBoneParent()); break;
 			case CID_Animation: chunk.reset(new ChunkAnimation()); break;
+			case CID_Animation_BaseInfo: chunk.reset(new ChunkAnimationBaseInfo()); break;
 			case CID_Animation_Track: chunk.reset(new ChunkAnimationTrack()); break;
 			case CID_Animation_Track_KF: chunk.reset(new ChunkAnimationTrackKF()); break;
 			case CID_Animation_Link: chunk.reset(new ChunkAnimationLink()); break;
@@ -378,9 +387,14 @@ namespace Ogre
 		void ChunkFileHeader::ReadImpl(DataStream *stream)
 		{
 			// Simple version check
-			version = stream->Read<std::string>();
-			if (version != ExpectedVersion)
+			VersionTable_t::const_iterator it = VersionTable.find(stream->Read<std::string>());
+			if (it == VersionTable.end())
 				throw InvalidVersion();
+		}
+
+		void ChunkBlendMode::ReadImpl(DataStream* stream)
+		{
+			blend_mode = stream->Read<uint16_t>();
 		}
 
 		void ChunkBone::ReadImpl(DataStream *stream)
@@ -417,12 +431,27 @@ namespace Ogre
 		{
 			name = stream->Read<std::string>();
 			duration = stream->Read<float>();
+
+			if(!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_BaseInfo)
+			{
+				Chunk* chunk = Chunk::Read(stream);
+				assert(chunk->GetType() == CID_Animation_BaseInfo);
+				// TODO: Handle it
+				LogF("StdMeshLoader: CID_Animation_BaseInfo not implemented. Skeleton might not be imported properly.");
+			}
+
 			while (!stream->AtEof() && Chunk::Peek(stream) == CID_Animation_Track)
 			{
 				Chunk *chunk = Chunk::Read(stream);
 				assert(chunk->GetType() == CID_Animation_Track);
 				tracks.push_back(static_cast<ChunkAnimationTrack*>(chunk));
 			}
+		}
+
+		void ChunkAnimationBaseInfo::ReadImpl(DataStream* stream)
+		{
+			base_animation_name = stream->Read<std::string>();
+			base_key_frame_time = stream->Read<float>();
 		}
 
 		void ChunkAnimationTrack::ReadImpl(DataStream *stream)

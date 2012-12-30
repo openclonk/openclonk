@@ -26,6 +26,9 @@ public func SetMenuSpacing(int distance) { menu_spacing = distance; }
 /** Sets the distance from the outer edges to the outer objects */
 public func SetMenuBorder(int distance) { menu_border = distance; }
 
+/** Sets the background color of the menu */
+public func SetBackgroundColor(int rgb) { SetClrModulation(rgb, 1); }
+
 public func Construction()
 {
 	rowitemcount = nil;
@@ -52,7 +55,8 @@ public func UpdateMenu()
 	if(ric == nil)
 	{
 		// we use the square root to get a square layout! trololo!
-		ric = Sqrt(itemcount);
+		// must not be 0
+		ric = Max(1, Sqrt(itemcount));
 		rc = ric;
 		if(itemcount > rc*rc)
 			ric += 1;

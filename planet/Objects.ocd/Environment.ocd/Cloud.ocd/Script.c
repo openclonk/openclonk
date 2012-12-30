@@ -24,6 +24,8 @@ local rain_mat; // Precipitation type from scenario or other.
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 
+// This is an environment object (e.g., shouldn't be a target for the lift tower)
+public func IsEnvironment() { return true; }
 
 protected func Initialize()
 {
@@ -45,14 +47,15 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	SetPhase(RandomX(1,16));
 
-	//Push low flying clouds up to proper height
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true)
+	// Push low flying clouds up to proper height
+	while (MaterialDepthCheck(GetX(), GetY(), "Sky", 150) != true)
 	{
-		SetPosition(GetX(),GetY()-1);
+		SetPosition(GetX(), GetY()-1);
 	}
 
-	//Failsafe for stupid grounded clouds
-	if (GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
+	// Failsafe for stupid grounded clouds
+	if (GetMaterial(0, 30) != Material("Sky")) 
+		SetPosition(GetX(), GetY() - 180);
 	
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
@@ -278,29 +281,18 @@ protected func Evaporation()
 //Shades the clouds based on iSize: the water density value of the cloud.
 private func ShadeCloud()
 {
-	var cloudAlpha = Min((rain+50)*425/1000, 255);
-	if(rain > 600) cloudAlpha = 255;
-	
-	//from RequestAlpha function
-	if(requestAlpha != nil){
-		cloudAlpha = cloudAlpha - (255 - requestAlpha);
-		if(cloudAlpha < 0) cloudAlpha = 0;
-	}
-	
-	var shade2 = Min(rain-600, 255);
-	
-	if (rain <= 600)
-		SetObjAlpha(cloudAlpha);
-	if (rain > 600)
-		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloudAlpha));
-	return;
+	var cloud_alpha = Min((rain+50)*425/1000, 255);
+	var shade2 = BoundBy(Max(0,rain-600) + lighting_shade, 0, 255);
+
+	SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, cloud_alpha));
 }
 
-//Utilized by time to make clouds invisible at night
-local requestAlpha;
+// Utilized by time to make clouds invisible at night
+local lighting_shade;
 
-public func RequestAlpha(int alpha){
-	requestAlpha = alpha;
+public func SetLightingShade(int darkness)
+{
+	lighting_shade = darkness;
 }
 
 local ActMap = {

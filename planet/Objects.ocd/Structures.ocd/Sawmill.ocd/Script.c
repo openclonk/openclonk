@@ -28,6 +28,9 @@ public func Initialize()
 // Sawmill can't be accessed as a container.
 public func IsContainer() { return false; }
 
+// Sawmill can't be interacted with.
+public func IsInteractable() { return false; }
+
 // Automatically search for trees in front of sawmill
 // Temporary solution?
 protected func FindTrees()
@@ -63,7 +66,7 @@ private func IsProduct(id product_id)
 	return product_id->~IsSawmillProduct();
 }
 private func ProductionTime(id toProduce) { return 100; }
-private func PowerNeed() { return 100; }
+private func PowerNeed() { return 50; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
@@ -109,11 +112,11 @@ public func OnProductionFinish(id product)
 func CollectionZone()
 {
 	if (GetCon() < 100) return;
-
-	if (!(FrameCounter() % 35)) FindTrees();
- 
-	for (var object in FindObjects(Find_InRect(- 13 * GetDir(),0,13,13), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
-		Collect(object);
+	
+	// Only take one tree at a time
+	if (!(FrameCounter() % 35)) 
+		if (GetLength(queue) == 0)
+			FindTrees();
 }
 
 protected func Collection()

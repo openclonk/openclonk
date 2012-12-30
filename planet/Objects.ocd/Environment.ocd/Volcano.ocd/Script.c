@@ -154,7 +154,8 @@ private func Erupt()
 
 	// Cast other particles (lava chunks, ashes, ashclouds).
 	if (!Random(6))
-		CastObjects(LavaChunk, 1, 60, 0, 0, 0, 40);
+		if (WildcardMatch(MaterialName(mat), "*Lava*"))		
+			CastObjects(LavaChunk, 1, 60, 0, 0, 0, 40);
 
 	// Reduce strength.
 	if(!Random(3))

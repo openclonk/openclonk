@@ -167,6 +167,9 @@ func FxIntDropHeavyStart(object clonk, proplist effect, bool tmp)
 	clonk->SetTurnForced(clonk->GetDir());
 	clonk->SetHandAction(1);
 	clonk->SetAction("Stand");
+	
+	//Stop the clonk if he is moving
+	if(clonk->GetXDir() != 0) clonk->SetXDir();
 
 	//Attach the mesh of the object. It is not displayed normally because the
 	//hands are told they have an action in the next few lines
@@ -209,7 +212,7 @@ func FxIntDropHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 		if(clonk->GetDir() == DIR_Left)
 			dir = -1;
 		// Set down at barrel position
-		Exit(7*dir, 12);
+		Exit(6*dir, 9);
 	}
 	
 	UndoLift(clonk);

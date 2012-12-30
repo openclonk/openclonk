@@ -995,7 +995,7 @@
 				<string key="NSClassName">NSFontManager</string>
 			</object>
 			<object class="NSCustomObject" id="898186092">
-				<string key="NSClassName">ClonkAppDelegate</string>
+				<string key="NSClassName">C4AppDelegate</string>
 			</object>
 			<object class="NSUserDefaultsController" id="285433277">
 				<bool key="NSSharedInstance">YES</bool>
@@ -2641,7 +2641,7 @@
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBPartialClassDescription">
-					<string key="className">ClonkAppDelegate</string>
+					<string key="className">C4AppDelegate</string>
 					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2842,12 +2842,12 @@
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/ClonkAppDelegate.h</string>
+						<string key="minorKey">./Classes/C4AppDelegate.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">ClonkEditorOpenGLView</string>
-					<string key="superclassName">ClonkOpenGLView</string>
+					<string key="className">C4EditorOpenGLView</string>
+					<string key="superclassName">C4OpenGLView</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
@@ -2910,15 +2910,15 @@
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/ClonkEditorOpenGLView.h</string>
+						<string key="minorKey">./Classes/C4EditorOpenGLView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">ClonkOpenGLView</string>
+					<string key="className">C4OpenGLView</string>
 					<string key="superclassName">NSView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/ClonkOpenGLView.h</string>
+						<string key="minorKey">./Classes/C4OpenGLView.h</string>
 					</object>
 				</object>
 			</object>

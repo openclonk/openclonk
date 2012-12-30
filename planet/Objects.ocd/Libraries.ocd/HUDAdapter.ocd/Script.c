@@ -143,6 +143,14 @@ protected func OnSlotEmpty(int slot)
 	return _inherited(slot, ...);
 }
 
+// used to add a progress bar to an inventory slot
+// "effect" refers to an effect with the properties "max" and "current" that is used to keep the progress bar state up-to-date
+func SetProgressBarLinkForObject(object what, proplist effect)
+{
+	if(HUDcontroller)
+		HUDcontroller->SetProgressBarLinkForObject(what, effect);
+	return _inherited(what, effect, ...);
+}
 
 protected func OnHandSelectionChange(int old, int new, int handslot)
 {

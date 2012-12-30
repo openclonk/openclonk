@@ -216,7 +216,7 @@ public func ReplaceAction(string action, byaction)
 			}
 		}
 	}
-	SetProperty(action, byaction, PropAnimations);
+	else SetProperty(action, byaction, PropAnimations);
 //	if(ActualReplace != nil)
 //		SetAnimationWeight(ActualReplace, Anim_Const(byaction[2]));
 	ResetAnimationEffects();
@@ -383,7 +383,7 @@ func Footstep()
 		Sound("StepHard?");
 	else
 	{
-		var dir = GetXDir() / Abs(GetXDir());
+		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
 		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
@@ -399,8 +399,15 @@ func GetWalkAnimationPosition(string anim, int pos)
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", anim), PropAnimations))
 		{
-			var length = GetAnimationLength(anim);
-			if(GetProperty(anim, PropAnimations)) length = GetAnimationLength(GetProperty(anim, PropAnimations));
+			var length = GetAnimationLength(anim), replacement;
+			if(replacement = GetProperty(anim, PropAnimations))
+			{
+				// at this point /replacement/ may contain an array of two animations that signal a merge
+				// in that case, just take the first one..
+				if(GetType(replacement) == C4V_Array)
+					replacement = replacement[0];
+				length = GetAnimationLength(replacement);
+			}
 			return Anim_X(pos, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations)*dir);
 		}
 	// TODO: Choose proper starting positions, depending on the current
@@ -541,20 +548,11 @@ func StopScale()
 	if(GetAction() != "Scale") RemoveEffect("IntScale", this);
 }
 
-func CheckPosition(int off_x, int off_y)
-{
-	var free = 1;
-	SetPosition(GetX()+off_x, GetY()+off_y);
-	if(Stuck()) free = 0;
-	SetPosition(GetX()-off_x, GetY()-off_y);
-	return free;
-}
-
 func CheckScaleTop()
 {
 	// Test whether the clonk has reached a top corner
-	if(GBackSolid(-8+16*GetDir(),-8)) return false;
-	if(!CheckPosition(-7*(-1+2*GetDir()),-17)) return false;
+	// That is, the leg vertices are the only ones attached to the wall
+	if(GBackSolid(-3+6*GetDir(),-3) || GBackSolid(-5+10*GetDir(),2)) return false;
 	return true;
 }
 
@@ -573,24 +571,20 @@ func FxIntScaleTimer(target, number, time)
 	{
 		// If the animation is not already set
 		var dist = 0;
-		while(!GBackSolid(-8+16*GetDir(),dist-8) && dist < 10) dist++;
+		while(!(GBackSolid(-3+6*GetDir(),dist-3) || GBackSolid(-5+10*GetDir(),dist+2)) && dist < 8) dist++;
 		dist *= 100;
-		dist += GetY(100)-GetY()*100;
+		// add the fractional part of the position (dist counts in the opposite direction of y)
+		dist -= GetY(100)-GetY()*100;
 		if(number.animation_mode != 1)
 		{
-			number.animation_id = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			number.animation_id = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/800), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.animation_mode = 1;
 		}
 		this.dist = dist;
-		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000));
+		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/800));
 		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
 		var pos = GetAnimationPosition(number.animation_id);
-		//var percent = pos*1000/GetAnimationLength("ScaleTop");
-		var offset_list = [[0,0], [0,-1], [-1,-2], [-2,-3], [-2,-5], [-2,-7], [-4,-8], [-6,-10], [-7,-9], [-8,-8]];
-		var offset = offset_list[dist/100-1];
-		var rot = 0;
-		if(dist/100-1 > 5) rot = 5*dist/100-25;
-		SetScaleRotation(0, -offset[0]*(-1+2*GetDir())*1000, offset[1]*1000, -rot*(-1+2*GetDir()), 0, 1);
+		SetScaleRotation(0, 0, 0, 0, 0, 1);
 	}
 	else if(!GBackSolid(-10+20*GetDir(), 8))
 	{
@@ -815,6 +809,8 @@ func FxIntHangleStop(pTarget, effect, iReasonm, fTmp)
 {
 	PopActionSpeed("Hangle");
 	if(fTmp) return;
+	// Delayed stop request
+	if (effect.request_stop) SetComDir(COMD_Stop);
 }
 
 func FxIntHangleTimer(pTarget, effect, iTime)

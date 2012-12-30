@@ -47,30 +47,21 @@ protected:
 	bool ReloadScript(const char *szPath, const char *szLanguage);
 	C4ComponentHost ComponentHost;
 
-
-	void AddBCC(C4AulBCCType eType, intptr_t = 0, const char * SPos = 0); // add byte code chunk and advance
-	void RemoveLastBCC();
-	void ClearCode();
 	bool Preparse(); // preparse script; return if successfull
 	virtual bool Parse(); // parse preparsed script; return if successfull
 	virtual void UnLink(); // reset to unlinked state
-	int GetCodePos() const { return Code.size(); }
-	C4AulBCC *GetCodeByPos(int iPos) { return &Code[iPos]; }
-	C4AulBCC *GetLastCode() { return LastCode; }
 
 
 	std::list<C4ID> Includes; // include list
 	std::list<C4ID> Appends; // append list
 
+	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
 	bool Resolving; // set while include-resolving, to catch circular includes
 	bool IncludesResolved;
 
 	StdStrBuf Script; // script
-	std::vector<C4AulBCC> Code;
-	std::vector<const char *> PosForCode;
-	C4AulBCC * LastCode;
 	C4ValueMapNames LocalNamed;
 	C4Set<C4Property> LocalValues;
 	friend class C4AulParse;
@@ -88,7 +79,7 @@ public:
 	void Clear();
 
 	bool Delete() { return true; }
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 };
 
 // script host for defs
@@ -98,7 +89,7 @@ public:
 	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
 
 	virtual bool Parse();
-	virtual C4PropList * GetPropList();
+	virtual C4PropListStatic * GetPropList();
 protected:
 	C4Def *Def; // owning def file
 };
@@ -112,7 +103,7 @@ public:
 	~C4GameScriptHost();
 	virtual bool Load(C4Group &, const char *, const char *, C4LangStringTable *);
 	void Clear();
-	virtual C4PropList * GetPropList() { return ScenPrototype._getPropList(); }
+	virtual C4PropListStatic * GetPropList();
 	C4Value Call(const char *szFunction, C4AulParSet *pPars=0, bool fPassError=false);
 	C4Value GRBroadcast(const char *szFunction, C4AulParSet *pPars = 0, bool fPassError=false, bool fRejectTest=false);  // call function in scenario script and all goals/rules/environment objects
 	C4Value ScenPropList;

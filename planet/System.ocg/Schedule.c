@@ -65,6 +65,25 @@ func CheckForEnemies()
 	return true;
 }
 
+// removes a timer from an object that was added earlier with AddTimer. This removes exactly one timer that fits to the name and returns true on success
+global func RemoveTimer(string function /* name of the timer to remove */)
+{
+	if(!this)
+		return false;
+		
+	var effect, index = 0;
+	while(effect = GetEffect("IntScheduleCall", this, index++))
+	{
+		if(effect.Function != function) continue;
+		if(effect.NoStop != true) continue;
+		RemoveEffect(nil, this, effect);
+		return true;
+	}
+	
+	// not found
+	return false;
+}
+
 // Executes a function repetitively with delay.
 global func ScheduleCall(object obj, string function, int interval, int repeats, par0, par1, par2, par3, par4)
 {

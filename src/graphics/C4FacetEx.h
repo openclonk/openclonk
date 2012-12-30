@@ -47,7 +47,7 @@ public:
 
 	void Set(const C4Facet &cpy) { TargetX=TargetY=0; Zoom=1; C4Facet::Set(cpy); }
 	void Set(const C4TargetFacet &cpy) { *this = cpy; }
-	void Set(class C4Surface *nsfc, int nx, int ny, int nwdt, int nhgt, float ntx=0, float nty=0, float Zoom=1);
+	void Set(class C4Surface *nsfc, float nx, float ny, float nwdt, float nhgt, float ntx=0, float nty=0, float Zoom=1);
 	void Set(class C4Surface *nsfc, const C4Rect & r, float ntx=0, float nty=0, float Zoom=1);
 
 	void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2); // uses Target and position

@@ -78,7 +78,7 @@ void C4Team::AddPlayer(C4PlayerInfo &rInfo, bool fAdjustPlayer)
 	if (rInfo.IsJoined())
 	{
 		C4Player *pJoinedPlr = ::Players.GetByInfoID(rInfo.GetID());
-		assert(pJoinedPlr);
+		assert(pJoinedPlr || (rInfo.GetType() == C4PT_Script));
 		if (pJoinedPlr)
 		{
 			pJoinedPlr->Team = GetID();

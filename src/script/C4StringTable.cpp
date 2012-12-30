@@ -24,17 +24,18 @@
 
 // *** C4Set
 template<> template<>
-unsigned int C4Set<C4String *>::Hash<const char *>(const char * s)
+unsigned int C4Set<C4String *>::Hash<const char *>(const char * const & s)
 {
 	// Fowler/Noll/Vo hash
 	unsigned int h = 2166136261u;
-	while (*s)
-		h = (h ^ *(s++)) * 16777619;
+	const char * p = s;
+	while (*p)
+		h = (h ^ *(p++)) * 16777619;
 	return h;
 }
 
 template<> template<>
-bool C4Set<C4String *>::Equals<const char *>(C4String * a, const char * b)
+bool C4Set<C4String *>::Equals<const char *>(C4String * const & a, const char * const & b)
 {
 	return a->GetData() == b;
 }
@@ -147,6 +148,8 @@ C4StringTable::C4StringTable()
 	P[P_Placement] = "Placement";
 	P[P_BlastIncinerate] = "BlastIncinerate";
 	P[P_ContactIncinerate] = "ContactIncinerate";
+	P[P_Global] = "Global";
+	P[P_JumpSpeed] = "JumpSpeed";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
@@ -196,5 +199,3 @@ C4String *C4StringTable::FindString(const char *strString)
 {
 	return Set.Get(strString);
 }
-
-C4StringTable Strings;

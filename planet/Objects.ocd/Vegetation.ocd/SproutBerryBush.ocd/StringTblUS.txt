@@ -1,2 +1,2 @@
 Name=Sprout-Berry bush
-Description=A very fast-growing and water-loving bush that produces tasty berries which have to be eaten fast.
+Description=A very fast-growing, water-loving bush that produces tasty berries which have to be eaten fast.

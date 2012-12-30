@@ -49,6 +49,7 @@ func DoExplode()
 		var shrapnel = CreateObject(Shrapnel);
 		shrapnel->SetVelocity(Random(359), RandomX(100,140));
 		shrapnel->SetRDir(-30+ Random(61));
+		shrapnel->Launch(GetController());
 		CreateObject(BulletTrail)->Set(2,30,shrapnel);
 		i--;
 	}
@@ -57,7 +58,7 @@ func DoExplode()
 	else
 		Sound("BlastMetal");
 	CreateParticle("ExploSmoke", 0,0,0,0,390,RGBa(255,255,255,165));
-	Explode(14);
+	Explode(24);
 }
 
 protected func Hit(x, y)
@@ -75,7 +76,6 @@ protected func RejectEntrance()
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
-public func HasFuse() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";

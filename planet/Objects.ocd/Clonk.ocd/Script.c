@@ -51,10 +51,10 @@ protected func Construction()
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin) SetSkin(skin);
+	if(skin != nil) SetSkin(skin);
 	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
@@ -152,7 +152,7 @@ protected func Death(int killed_by)
 	else
 		Sound("FDie");
 	CloseEyes(1);
-
+	
 	DeathAnnounce();
 	return;
 }
@@ -535,17 +535,17 @@ func SetSkin(int skin)
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics(nil, Skin_Steampunk);
+	{	SetGraphics("Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics(nil, Skin_Alchemist);
+	{	SetGraphics("Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics(nil, Skin_Farmer);
+	{	SetGraphics("Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
@@ -630,7 +630,6 @@ Scale = {
 	Procedure = DFA_SCALE,
 	Speed = 60,
 	Accel = 20,
-	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,

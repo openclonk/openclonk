@@ -117,6 +117,78 @@ void C4ValueArray::SortStrings()
 	std::stable_sort(pData, pData+iSize, C4ValueArraySortStringscomp());
 }
 
+struct C4ValueArraySortcomp
+{
+	bool operator ()(const C4Value &v1, const C4Value &v2)
+	{
+		// sort by whatever type the values have
+		if (v1.getStr() && v2.getStr()) return v1._getStr()->GetData() < v2._getStr()->GetData();
+		if (v1.CheckConversion(C4V_Int) && v2.CheckConversion(C4V_Int)) return v1._getInt() < v2._getInt();
+		return false;
+	}
+};
+
+void C4ValueArray::Sort(bool descending)
+{
+	// sort by whatever type the values have
+	std::stable_sort(pData, pData+iSize, C4ValueArraySortcomp());
+	if (descending) std::reverse(pData, pData+iSize);
+}
+
+struct C4ValueArraySortPropertycomp
+{
+	C4String *prop_name; C4ValueArraySortcomp value_sort;
+	C4ValueArraySortPropertycomp(C4String *prop_name) : prop_name(prop_name) {}
+	bool operator ()(const C4Value &v1, const C4Value &v2)
+	{
+		C4Value p1,p2;
+		if (!v1._getPropList()->GetPropertyByS(prop_name, &p1)) p1.Set0();
+		if (!v2._getPropList()->GetPropertyByS(prop_name, &p2)) p2.Set0();
+		return value_sort(p1,p2);
+	}
+};
+
+bool C4ValueArray::SortByProperty(C4String *prop_name, bool descending)
+{
+	// expect this to be an array of proplists and sort by given property
+	// make sure we're all proplists before
+	for (int32_t i=0; i<iSize; ++i)
+		if (!pData[i].getPropList())
+			return false;
+	// now sort
+	std::stable_sort(pData, pData+iSize, C4ValueArraySortPropertycomp(prop_name));
+	if (descending) std::reverse(pData, pData+iSize);
+	return true;
+}
+
+struct C4ValueArraySortArrayElementcomp
+{
+	int32_t element_idx; C4ValueArraySortcomp value_sort;
+	C4ValueArraySortArrayElementcomp(int32_t element_idx) : element_idx(element_idx) {}
+	bool operator ()(const C4Value &v1, const C4Value &v2)
+	{
+		return value_sort(v1._getArray()->GetItem(element_idx), v2._getArray()->GetItem(element_idx));
+	}
+};
+
+bool C4ValueArray::SortByArrayElement(int32_t element_idx, bool descending)
+{
+	assert(element_idx>=0);
+	// expect this to be an array of arrays and sort by given element
+	// make sure we're all arrays before
+	for (int32_t i=0; i<iSize; ++i)
+	{
+		if (!pData[i].getArray())
+			return false;
+		if (pData[i]._getArray()->GetSize() <= element_idx)
+			return false;
+	}
+	// now sort
+	std::stable_sort(pData, pData+iSize, C4ValueArraySortArrayElementcomp(element_idx));
+	if (descending) std::reverse(pData, pData+iSize);
+	return true;
+}
+
 C4Value &C4ValueArray::operator[](int32_t iElem)
 {
 	assert(iElem < MaxSize);

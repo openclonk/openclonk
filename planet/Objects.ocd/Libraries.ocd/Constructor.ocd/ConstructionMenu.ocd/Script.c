@@ -14,7 +14,7 @@ local constructinfo_shown;
 	@param producer the producer for which to create the production menu.
 	@return a pointer to the created menu, or \c nil if failed.
 */
-global func CreateConstructionMenu(object constructor)
+global func CreateConstructionMenu(object constructor, bool create_at_mouse_pos)
 {
 	// Safety checks.
 	if (!this) return;
@@ -26,6 +26,13 @@ global func CreateConstructionMenu(object constructor)
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	controller->SetCommander(constructor);
+	
+	if(create_at_mouse_pos)
+	{
+		var xy = GetPlayerCursorPos(constructor->GetOwner());
+		if(xy)
+			controller->SetPosition(xy[0],xy[1],true);
+	}
 	
 	// Add all possible structures to the menu.
 	controller->AddMenuStructures(constructor, this);

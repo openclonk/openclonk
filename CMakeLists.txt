@@ -35,6 +35,8 @@ set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
+set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
@@ -65,6 +67,8 @@ endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+else()
+	SET(USE_CONSOLE OFF)
 endif()
 if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -142,7 +146,12 @@ if(MSVC_VERSION)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
+endif()
+
+if(WIN32 AND MINGW)
+	# Activate DEP and ASLR
+	list(APPEND OC_EXE_LINKER_FLAGS "-Wl,--nxcompat -Wl,--dynamicbase")
 endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
@@ -246,8 +255,8 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4FacetEx.cpp
 	src/graphics/C4FacetEx.h
 	src/graphics/C4Facet.h
-	src/graphics/C4Fonts.cpp
-	src/graphics/C4Fonts.h
+	src/graphics/C4FontLoader.cpp
+	src/graphics/C4FontLoader.h
 	src/graphics/C4GraphicsResource.cpp
 	src/graphics/C4GraphicsResource.h
 	src/graphics/C4Surface.cpp
@@ -344,8 +353,6 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4PathFinder.h
 	src/landscape/C4PXS.cpp
 	src/landscape/C4PXS.h
-	src/landscape/C4Region.cpp
-	src/landscape/C4Region.h
 	src/landscape/C4Scenario.cpp
 	src/landscape/C4Scenario.h
 	src/landscape/C4Sky.cpp
@@ -484,7 +491,6 @@ set(OC_CLONK_SOURCES
 	src/object/C4Shape.h
 	src/platform/C4App.cpp
 	src/platform/C4App.h
-	src/platform/C4AppT.cpp
 	src/platform/C4AppWin32Impl.h
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
@@ -498,10 +504,10 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
+	src/platform/C4StdInProc.cpp
+	src/platform/C4StdInProc.h
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
-	src/platform/C4VideoPlayback.cpp
-	src/platform/C4VideoPlayback.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
@@ -509,8 +515,6 @@ set(OC_CLONK_SOURCES
 	src/platform/PlatformAbstraction.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
-	src/platform/StdFont.cpp
-	src/platform/StdFont.h
 	src/platform/StdRegistry.cpp
 	src/platform/StdRegistry.h
 	src/platform/StdScheduler.cpp
@@ -560,8 +564,8 @@ mark_as_advanced(OC_SYSTEM_SOURCES)
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4FileMonitorMac.mm
-		src/platform/ClonkAppDelegate.h
-		src/platform/ClonkAppDelegate.mm
+		src/platform/C4AppDelegate.h
+		src/platform/C4AppDelegate.mm
 	)
 else()
 	list(APPEND OC_SYSTEM_SOURCES
@@ -631,6 +635,10 @@ elseif(USE_SDL_MAINLOOP)
 		src/platform/C4AppSDL.cpp
 		src/platform/C4WindowSDL.cpp
 	)
+elseif(USE_CONSOLE)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppT.cpp
+	)
 elseif(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/editor/C4ConsoleWin32.cpp
@@ -643,14 +651,16 @@ elseif(USE_COCOA)
 		src/editor/C4ConsoleCocoa.mm
 		src/platform/C4AppMac.mm
 		src/platform/C4WindowMac.mm
-		src/platform/ClonkMainMenuActions.mm
-		src/platform/ClonkOpenGLView.h
-		src/platform/ClonkOpenGLView.mm
-		src/platform/ClonkWindowController.h
-		src/platform/ClonkWindowController.mm
+		src/platform/C4AppDelegate+MainMenuActions.h
+		src/platform/C4AppDelegate+MainMenuActions.mm
+		src/graphics/C4DrawGLMac.h
+		src/graphics/C4DrawGLMac.mm
+		src/platform/C4WindowController.h
+		src/platform/C4WindowController.mm
 		src/platform/CocoaKeycodeMap.h
-		src/platform/ConsoleWindowController.h
-		src/platform/ConsoleWindowController.mm
+		src/editor/C4EditorWindowController.h
+		src/editor/C4EditorWindowController.mm
+		src/platform/ObjectiveCAssociated.h
 	)
 endif()
 if(WITH_AUTOMATIC_UPDATE)
@@ -730,10 +740,8 @@ CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
 # as a CXX version (yet?).
 include(CheckIncludeFiles)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/xpm.h HAVE_X11_XPM_H)
 CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
 
 if(HAVE_ICONV)
@@ -839,9 +847,23 @@ if(USE_GTK)
 endif()
 
 if(USE_OPEN_AL)
-	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
-	FINDLIB(OGG_LIBRARY NAMES ogg)
+	if(MSVC)
+		if(${FIND_LIBRARY_USE_LIB64_PATHS})
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL64)
+		else()
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
+		endif()
+		FINDLIB(OGG_LIBRARY NAMES libogg_static)
+		FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static)
+		FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static)
+	else()
+		FINDLIB(VORBIS_LIBRARY NAMES vorbis)
+		FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
+		FINDLIB(OGG_LIBRARY NAMES ogg)
+	endif()
+	if(NOT APPLE)
+		FINDLIB(ALUT_LIBRARY NAMES alut)
+	endif()
 endif()
 
 ############################################################################
@@ -864,10 +886,10 @@ if(APPLE)
 		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
 		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
 		src/res/MainMenu.xib
-		src/res/FullscreenWindow.xib
-		src/res/ConsoleGUIWindow.xib
-		src/res/ClonkWindow.xib
-		src/res/ConsoleWindow.xib
+		src/res/FullScreen.xib
+		src/res/EditorGUIWindow.xib
+		src/res/EditorViewport.xib
+		src/res/Editor.xib
 		src/res/Mouse_Trans.png
 		src/res/Cursor_Trans.png
 		src/res/Brush_Trans.png
@@ -984,10 +1006,17 @@ target_link_libraries(clonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
-	${VORBIS_LIBRARY}
-	${VORBISFILE_LIBRARY}
-	${OGG_LIBRARY}
 )
+
+if(USE_OPEN_AL)
+	target_link_libraries(clonk
+		${OPENAL_LIBRARY}
+		${ALUT_LIBRARY}
+		${VORBIS_LIBRARY}
+		${VORBISFILE_LIBRARY}
+		${OGG_LIBRARY}
+	)
+endif()
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 )
@@ -1065,7 +1094,7 @@ if(UNIX)
 	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
 	# and when the path is changed both the old and new definition appears
 	# in the list of flags.
-	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/openclonk\"")
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
 endif()
 if(OC_CXX_FLAGS)
 	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
@@ -1081,8 +1110,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during deb
 foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
 endforeach()
+if(OC_EXE_LINKER_FLAGS)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
+endforeach()
 if(OC_EXE_LINKER_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
 endif()
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
 foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
@@ -1121,6 +1157,7 @@ if (APPLE)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 	
 	if (USE_APPLE_CLANG)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
@@ -1206,13 +1243,9 @@ if(USE_GTK)
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XPM_LIBRARIES Xpm)
-	FINDLIB(XXF86VM_LIBRARIES Xxf86vm)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
 	target_link_libraries(clonk
 		${X11_LIBRARIES}
-		${XPM_LIBRARIES}
-		${XXF86VM_LIBRARIES}
 		${XRANDR_LIBRARIES}
 	)
 endif()
@@ -1340,7 +1373,9 @@ set(OC_C4GROUPS
 	Sound.ocg
 	System.ocg
 	Objects.ocd
-	BackToTheRocks.ocf
+	Arena.ocf
+	Parkour.ocf
+	Settlement.ocf
 	Tutorial.ocf
 )
 
@@ -1362,7 +1397,7 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group
 			VERBATIM
 			)
-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/openclonk)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
 	endif()
 endforeach()
 if (NOT APPLE)

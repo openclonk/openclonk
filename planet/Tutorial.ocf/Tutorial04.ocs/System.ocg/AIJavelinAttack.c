@@ -117,7 +117,7 @@ protected func FxAI_JavelinAimStop(object clonk, effect, int reason, bool tempor
 //returns an array of x, y or x, y, t
 private func AI_AimPos(int x, int y, int v, bool lob, bool t)
 {
-	var g = GetGravity()/5; //FnGetGravity() multiplies actual gravity by 500
+	var g = GetGravity(); //FnGetGravity() multiplies actual gravity by 100
 	var root = (v**4 - g*(g*x*x - 2*y*v*v));
 	if(root < 0)
 		return nil;

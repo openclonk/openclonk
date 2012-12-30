@@ -105,7 +105,7 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 	if (!pRes) return;
 	const char *szResFile = pRes->getFile();
 	StdCopyStrBuf strErrCopyFile(LoadResStr("IDS_NET_ERR_COPYFILE"));
-	if (!SEqual2(szResFile, Config.Network.WorkPath))
+	if (!pRes->isTempFile())
 	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_NET_ERR_COPYFILE_LOCAL"), strErrCopyFile.getData(), C4GUI::Ico_Error);
 		return;
@@ -119,7 +119,7 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 	const char *szTarget = Config.AtUserDataPath(szFilename);
 	if (!fDoOverwrite && ItemExists(szTarget))
 	{
-		// show a confirmation dlg, asking whether the ressource should be overwritten
+		// show a confirmation dlg, asking whether the resource should be overwritten
 		GetScreen()->ShowRemoveDlg(new C4GUI::ConfirmationDialog(
 		                             FormatString(LoadResStr("IDS_NET_RES_SAVE_OVERWRITE"), GetFilename(szTarget)).getData(), LoadResStr("IDS_NET_RES_SAVE"),
 		                             new C4GUI::CallbackHandler<C4Network2ResDlg::ListItem>(this, &C4Network2ResDlg::ListItem::OnButtonSaveConfirm), C4GUI::MessageDialog::btnYesNo));
@@ -142,13 +142,12 @@ C4Network2Res::Ref C4Network2ResDlg::ListItem::GetRefRes()
 
 bool C4Network2ResDlg::ListItem::IsSavePossible()
 {
-	// check ressource
+	// check resource
 	bool fCanSave = false;
 	C4Network2Res::Ref pRes = GetRefRes();
 	if (!pRes) return false;
-	// check for local filename
-	const char *szResFile = pRes->getFile();
-	if (SEqual2(szResFile, Config.Network.WorkPath))
+	// temp files from network folder only
+	if (pRes->isTempFile())
 	{
 		// check type
 		C4Network2ResType eType = pRes->getType();
@@ -193,7 +192,7 @@ void C4Network2ResDlg::Update()
 	while ((pRes = ::Network.ResList.getRefNextRes(++iResID)))
 	{
 		iResID = pRes->getResID();
-		// resource checking: deleted ressource(s) present?
+		// resource checking: deleted resource(s) present?
 		while (pItem && (pItem->GetResID() < iResID))
 		{
 			pNext = static_cast<ListItem *>(pItem->GetNext());

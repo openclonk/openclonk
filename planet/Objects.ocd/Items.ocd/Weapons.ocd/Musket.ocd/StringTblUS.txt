@@ -1,3 +1,3 @@
 Name=Musket
-Description=Firearm. The musket needs lead shots as ammunition.
-UsageHelp=Aim and shoot with [Use]. The musket needs lead shots as ammunition.
+Description=Firearm. The musket needs lead shot for ammunition.
+UsageHelp=Aim and shoot with [Use]. The musket needs lead shot for ammunition.

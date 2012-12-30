@@ -56,7 +56,7 @@ public:
 	void FlashMessageOnOff(const char *strWhat, bool fOn);
 	void DeactivateDebugOutput();
 	bool Init();
-	bool InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst);
+	bool InitLoaderScreen(const char *szLoaderSpec);
 	void EnableLoaderDrawing(); // reset black screen loader flag
 	bool SaveScreenshot(bool fSaveAll);
 	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);

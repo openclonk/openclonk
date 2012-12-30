@@ -10,7 +10,6 @@ material Compensator
 			specular 0.000000 0.000000 0.000000 1.000000 12.500000
 			emissive 0.000000 0.000000 0.000000 1.000000
 			scene_blend alpha_blend
-			depth_write off
 			cull_hardware none
 			texture_unit
 			{

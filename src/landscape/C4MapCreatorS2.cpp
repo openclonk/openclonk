@@ -485,7 +485,12 @@ void C4MCOverlay::Evaluate()
 		}
 	}
 	// calc seed
-	if (!(Seed=FixedSeed)) Seed=(Random(32768)<<16) | Random(65536);
+	if (!(Seed=FixedSeed))
+	{
+		int32_t r1=Random(32768);
+		int32_t r2=Random(65536);
+		Seed=(r1<<16) | r2;
+	}
 }
 
 C4MCOverlay *C4MCOverlay::FirstOfChain()

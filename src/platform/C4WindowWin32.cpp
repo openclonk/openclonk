@@ -46,15 +46,6 @@
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 #include <shellapi.h>
-// multimon.h comes with DirectX, some people don't have DirectX.
-#ifdef HAVE_MULTIMON_H
-
-// Lets try this unconditionally so that older windowses get the benefit
-// even if the engine was compiled with a newer sdk. Or something.
-#define COMPILE_MULTIMON_STUBS
-#include <multimon.h>
-
-#endif
 
 #define C4ViewportClassName L"C4Viewport"
 #define C4FullScreenClassName L"C4FullScreen"
@@ -64,6 +55,11 @@
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static bool NativeCursorShown = true;
+
+	POINT p;
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
+
 	// Process message
 	switch (uMsg)
 	{
@@ -79,9 +75,9 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			{
 				// restore textures
 				if (pTexMgr) pTexMgr->IntUnlock();
-				if (!Config.Graphics.Windowed)
+				if (Application.FullScreenMode())
 				{
-					Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed);
+					Application.SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, true);
 				}
 			}
 			else
@@ -90,7 +86,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 					pTexMgr->IntLock();
 				if (pGL)
 					pGL->TaskOut();
-				if (!Config.Graphics.Windowed)
+				if (Application.FullScreenMode())
 				{
 					::ChangeDisplaySettings(NULL, 0);
 					::ShowWindow(hwnd, SW_MINIMIZE);
@@ -158,16 +154,21 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Log((const char *)lParam);
 		return false;
 	case WM_LBUTTONDOWN:
-		C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_LeftDown,p.x,p.y,wParam, NULL);
 		break;
-	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-	case WM_MOUSEWHEEL: C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+	case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, NULL); break;
+	case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, NULL); break;
+	case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, NULL); break;
+	case WM_MOUSEWHEEL:
+		// the coordinates are screen-coordinates here (but only on this uMsg),
+		// we need to convert them to client area coordinates
+		ScreenToClient(hwnd, &p);
+		C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, NULL);
+		break;
 	case WM_MOUSEMOVE:
-		C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+		C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, NULL);
 		// Hide cursor in client area
 		if (NativeCursorShown)
 		{
@@ -189,11 +190,14 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		{
 		case SIZE_RESTORED:
 		case SIZE_MAXIMIZED:
-			::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
+			::Application.OnResolutionChanged(p.x, p.y);
 			if(Application.pWindow) // this might be called from C4Window::Init in which case Application.pWindow is not yet set
-				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+				::SetWindowPos(Application.pWindow->hRenderWindow, NULL, 0, 0, p.x, p.y, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 			break;
 		}
+		break;
+	case WM_INPUTLANGCHANGE:
+		::Application.OnKeyboardLayoutChanged();
 		break;
 	}
 	return DefWindowProcW(hwnd, uMsg, wParam, lParam);
@@ -325,33 +329,38 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		//----------------------------------------------------------------------------------------------------------------------------------
 	}
 
+	POINT p;
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
+
 	// Viewport mouse control
 	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch (uMsg)
 		{
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_LeftDown, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONUP: C4GUI::MouseMove(C4MC_Button_LeftUp, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDOWN: C4GUI::MouseMove(C4MC_Button_RightDown, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONUP: C4GUI::MouseMove(C4MC_Button_RightUp, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
+		case WM_LBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_LeftDouble, p.x, p.y, wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDBLCLK: C4GUI::MouseMove(C4MC_Button_RightDouble, p.x, p.y, wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE:
-			if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
-			     && Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
+			if ( Inside<int32_t>(p.x-cvp->DrawX,0,cvp->ViewWdt-1)
+			     && Inside<int32_t>(p.y-cvp->DrawY,0,cvp->ViewHgt-1) )
 				SetCursor(NULL);
-			C4GUI::MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			C4GUI::MouseMove(C4MC_Button_None, p.x, p.y, wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEWHEEL:
-			C4GUI::MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			ScreenToClient(hwnd, &p);
+			C4GUI::MouseMove(C4MC_Button_Wheel, p.x, p.y, wParam, cvp);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 
@@ -385,7 +394,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
 			// movement update needed before, so target is always up-to-date
-			cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState);
+			cvp->pWindow->EditCursorMove(p.x, p.y, dwKeyState);
 			Console.EditCursor.LeftButtonDown(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(dwKeyState); break;
@@ -394,7 +403,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(LOWORD(lParam), HIWORD(lParam), dwKeyState); break;
+		case WM_MOUSEMOVE: cvp->pWindow->EditCursorMove(p.x, p.y, dwKeyState); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		}
 	}
@@ -407,6 +416,10 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	// Determine dialog
 	C4GUI::Dialog *pDlg = ::pGUI->GetDialog(hwnd);
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+	POINT p;
+	p.x = GET_X_LPARAM(lParam);
+	p.y = GET_Y_LPARAM(lParam);
 
 	// Process message
 	switch (uMsg)
@@ -447,25 +460,26 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 		return 0;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+	case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble, p.x, p.y, wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);  break;
+	case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble, p.x, p.y, wParam, pDlg, NULL);  break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEMOVE:
 		//SetCursor(NULL);
-		::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		::pGUI->MouseInput(C4MC_Button_None, p.x, p.y, wParam, pDlg, NULL);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_MOUSEWHEEL:
-		::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+		ScreenToClient(hwnd, &p);
+		::pGUI->MouseInput(C4MC_Button_Wheel, p.x, p.y, wParam, pDlg, NULL);
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	}
@@ -604,7 +618,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// We don't need to change anything with the window for any
 	// configuration option changes on Windows.
-	
+
 	// However, re-create the render window so that another pixel format can
 	// be chosen for it. The pixel format is chosen in CStdGLCtx::Init.
 
@@ -766,6 +780,15 @@ bool C4AbstractApp::FlushMessages()
 	return MessageProc.Execute(0);
 }
 
+void C4AbstractApp::SetLastErrorFromOS()
+{
+	LPWSTR buffer = 0;
+	DWORD rv = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+		0, ::GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&buffer), 0, 0);
+	sLastError.Take(StdStrBuf(buffer));
+	LocalFree(buffer);
+}
+
 int GLMonitorInfoEnumCount;
 
 static BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
@@ -788,7 +811,11 @@ bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32
 	if (iMonitor)
 		Mon.Format("\\\\.\\Display%d", iMonitor+1);
 	// check if indexed mode exists
-	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode)) return false;
+	if (!EnumDisplaySettingsW(Mon.GetWideChar(), iIndex, &dmode))
+	{
+		SetLastErrorFromOS();
+		return false;
+	}
 	// mode exists; return it
 	if (piXRes) *piXRes = dmode.dmPelsWidth;
 	if (piYRes) *piYRes = dmode.dmPelsHeight;
@@ -815,70 +842,101 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 #ifdef USE_GL
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
 	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
-	bool fFound=false;
-	DEVMODEW dmode;
-	// if a monitor is given, search on that instead
-	// get monitor infos
-	GLMonitorInfoEnumCount = iMonitor;
-	hMon = NULL;
-	EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
-	// no monitor assigned?
-	if (!hMon)
-	{
-		// Okay for primary; then just use a default
-		if (!iMonitor)
-		{
-			MonitorRect.left = MonitorRect.top = 0;
-			MonitorRect.right = iXRes; MonitorRect.bottom = iYRes;
-		}
-		else return false;
-	}
-	StdStrBuf Mon;
-	if (iMonitor)
-		Mon.Format("\\\\.\\Display%d", iMonitor+1);
-
-	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
-	
-	// Get current display settings
-	if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
-		return false;
-	int orientation = dmode.dmDisplayOrientation;
-	// enumerate modes
-	int i=0;
-	while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
-		// compare enumerated mode with requested settings
-		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
-			&& (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
-		{
-			fFound=true;
-			dspMode=dmode;
-			break;
-		}
-	if (!fFound) return false;
 	// change mode
 	if (!fFullScreen)
 	{
-		ChangeDisplaySettings(NULL, CDS_RESET);
+
+		ChangeDisplaySettings(NULL, 0);
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) | (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
+		if(iXRes != -1 && iYRes != -1) {
+			pWindow->SetSize(iXRes, iYRes);
+			OnResolutionChanged(iXRes, iYRes);
+		}
+		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
 	}
 	else
 	{
+		bool fFound=false;
+		DEVMODEW dmode;
+		// if a monitor is given, search on that instead
+		// get monitor infos
+		GLMonitorInfoEnumCount = iMonitor;
+		hMon = NULL;
+		EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
+		// no monitor assigned?
+		if (!hMon)
+		{
+			// Okay for primary; then just use a default
+			if (!iMonitor)
+			{
+				MonitorRect.left = MonitorRect.top = 0;
+				MonitorRect.right = iXRes;
+				MonitorRect.bottom = iYRes;
+			}
+			else return false;
+		}
+		StdStrBuf Mon;
+		if (iMonitor)
+			Mon.Format("\\\\.\\Display%d", iMonitor+1);
+
+		ZeroMemory(&dmode, sizeof(dmode));
+		dmode.dmSize = sizeof(dmode);
+
+		// Get current display settings
+		if (!EnumDisplaySettingsW(Mon.GetWideChar(), ENUM_CURRENT_SETTINGS, &dmode))
+		{
+			SetLastErrorFromOS();
+			return false;
+		}
+		int orientation = dmode.dmDisplayOrientation;
+		if (iXRes == -1 && iYRes == -1)
+		{
+			dspMode=dmode;
+			fFound = true;
+		}
+		// enumerate modes
+		int i=0;
+		if (!fFound) while (EnumDisplaySettingsW(Mon.GetWideChar(), i++, &dmode))
+				// compare enumerated mode with requested settings
+				if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth && dmode.dmDisplayOrientation==orientation
+				        && (iRefreshRate == 0 || dmode.dmDisplayFrequency == iRefreshRate))
+				{
+					fFound=true;
+					dspMode=dmode;
+					break;
+				}
+		if (!fFound) return false;
+
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (iRefreshRate != 0)
 			dspMode.dmFields |= DM_DISPLAYFREQUENCY;
-		if (ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+		DWORD rv = ChangeDisplaySettingsExW(iMonitor ? Mon.GetWideChar() : NULL, &dspMode, NULL, CDS_FULLSCREEN, NULL);
+		if (rv != DISP_CHANGE_SUCCESSFUL)
+		{
+			switch (rv)
 			{
-				return false;
+#define CDSE_ERROR(error) case error: sLastError = LoadResStr("IDS_ERR_" #error); break
+				CDSE_ERROR(DISP_CHANGE_BADFLAGS);
+				CDSE_ERROR(DISP_CHANGE_BADMODE);
+				CDSE_ERROR(DISP_CHANGE_BADPARAM);
+				CDSE_ERROR(DISP_CHANGE_RESTART);
+				CDSE_ERROR(DISP_CHANGE_FAILED);
+#undef CDSE_ERROR
+			default:
+				sLastError = LoadResStr("IDS_ERR_FAILURE");
+				break;
 			}
+			return false;
+		}
 
 		SetWindowLong(pWindow->hWindow, GWL_STYLE,
 		              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~ (WS_CAPTION|WS_THICKFRAME|WS_BORDER));
-	}
 
-	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
-	pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
-	OnResolutionChanged(iXRes, iYRes);
+		pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+		OnResolutionChanged(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+		::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW|SWP_FRAMECHANGED);
+	}
 	return true;
 #endif
 }

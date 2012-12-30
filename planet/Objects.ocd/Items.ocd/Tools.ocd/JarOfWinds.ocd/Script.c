@@ -170,6 +170,8 @@ private func FireWeapon(object pClonk,iX,iY)
 	}
 }
 
+func IsInventorProduct() { return true; }
+
 local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
