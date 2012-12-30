@@ -19,7 +19,7 @@
 #include <C4Landscape.h>
 #include <C4Rope.h>
 
-//#define C4ROPE_DRAW_DEBUG
+#define C4ROPE_DRAW_DEBUG
 
 namespace
 {
@@ -147,16 +147,28 @@ namespace
 }
 
 C4RopeElement::C4RopeElement(C4Object* obj, bool fixed):
-	Fixed(fixed), fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
-	Next(NULL), Prev(NULL), Object(obj), LastContactVertex(-1)
+	Fixed(fixed), oldx(obj->fix_x), oldy(obj->fix_y), fx(Fix0), fy(Fix0),
+	rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
+	Next(NULL), Prev(NULL), FirstLink(NULL), LastLink(NULL),
+	Object(obj), LastContactVertex(-1)
 {
 }
 
 C4RopeElement::C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed):
-	Fixed(fixed), x(x), y(y), vx(Fix0), vy(Fix0), m(m),
+	Fixed(fixed), x(x), y(y), oldx(x), oldy(y), vx(Fix0), vy(Fix0), m(m),
 	fx(Fix0), fy(Fix0), rx(Fix0), ry(Fix0), rdt(Fix0), fcx(Fix0), fcy(Fix0),
-	Next(NULL), Prev(NULL), Object(NULL), LastContactVertex(-1)
+	Next(NULL), Prev(NULL), FirstLink(NULL), LastLink(NULL),
+	Object(NULL), LastContactVertex(-1)
 {
+}
+
+C4RopeElement::~C4RopeElement()
+{
+	for(C4RopeLink* link = FirstLink, *next; link != NULL; link = next)
+	{
+		next = link->Next;
+		delete link;
+	}
 }
 
 void C4RopeElement::AddForce(C4Real x, C4Real y)
@@ -194,6 +206,116 @@ C4Real C4RopeElement::GetTargetY() const
 	return obj->fix_y + itofix(obj->Shape.VtxY[LastContactVertex]);
 }
 
+bool C4RopeElement::InsertLinkPosition(int from_x, int from_y, int to_x, int to_y, int link_x, int link_y, int& insert_x, int& insert_y)
+{
+	if(PathFree(to_x, to_y, link_x, link_y)) return false;
+
+	// Sanity check, these might be violated if the landscape changed.
+	// In that case the rope might end up buried in earth, in which case we
+	// do not want to do any maneuvering around, but the rope is just stuck.
+	if(!PathFree(from_x, from_y, link_x, link_y)) return false;
+
+	// If the element has been moved through solid material, only take the part
+	// of the way into account that is free.
+	int stop_x, stop_y;
+	if(!PathFree(from_x, from_y, to_x, to_y, &stop_x, &stop_y))
+	{
+		to_x = stop_x;
+		to_y = stop_y;
+	}
+
+	// Find the position between from_x,from_y, and to_x,to_y
+	// where there is no path free to link_x,link_y anymore.
+	int prev_x = from_x;
+	int prev_y = from_y;
+	int coll_x = -1;
+	int coll_y = -1;
+	int max_p = Max(abs(to_x - from_x), abs(to_y - from_y));
+	for(int i = 1; i <= max_p; ++i)
+	{
+		int inter_x = from_x + i * (to_x - from_x) / max_p;
+		int inter_y = from_y + i * (to_y - from_y) / max_p;
+		if(!PathFree(inter_x, inter_y, link_x, link_y))
+		{
+			coll_x = inter_x;
+			coll_y = inter_y;
+			break;
+		}
+
+		prev_x = inter_x;
+		prev_y = inter_y;
+	}
+
+	// Such a position must have been found, because of the initial
+	// PathFree(to_x, to_y, link_x, link_y) check.
+	assert(coll_x != -1 && coll_y != -1);
+
+	// Now we have:
+	// prev_x,prev_y: Last position between from_x,from_y and to_x,to_y
+	// where the path to link_x,link_y is still free.
+	// coll_x,coll_y: First position between from_x,from_y and to_x,to_y
+	// where the path to link_x,link_y is no longer free.
+	// prev_x,prev_y and coll_x,coll_y are 1 pixel apart from each other.
+
+	// Now the idea is to insert a new link somewhere on the line from
+	// prev_x,prev_y to link_x,link_y such that
+	// PathFree(coll_x, coll_y, insert_x, insert_y) holds and the point is
+	// as close to link_x, link_y as possible.
+	max_p = Max(abs(link_x - prev_x), abs(link_y - prev_y));
+	for(int i = 1; i <= max_p; ++i)
+	{
+		int inter_x = link_x + i * (prev_x - link_x) / max_p;
+		int inter_y = link_y + i * (prev_y - link_y) / max_p;
+
+		// Again a sanity check, to account for pixel rounding mismatches
+		if(!PathFree(inter_x, inter_y, link_x, link_y)) continue;
+
+		if(PathFree(coll_x, coll_y, inter_x, inter_y))
+		{
+			insert_x = inter_x;
+			insert_y = inter_y;
+			return true;
+		}
+	}
+
+	// The final point in the loop is prev_x, prev_y, and there should be a
+	// free path from it, as per the sanity check precondition.
+	assert(false);
+	return false;
+}
+
+void C4RopeElement::InsertLink(C4RopeElement* from, C4RopeElement* to, int insert_x, int insert_y)
+{
+	assert(this == from || this == to);
+
+	C4RopeLink* Link = new C4RopeLink;
+	Link->x = itofix(insert_x);
+	Link->y = itofix(insert_y);
+
+	if(this == from)
+	{
+		assert(from->Next == to);
+
+		Link->Next = from->FirstLink;
+		from->FirstLink = Link;
+		Link->Prev = NULL;
+
+		if(to->LastLink == NULL)
+			to->LastLink = Link;
+	}
+	else
+	{
+		assert(to->Prev == from);
+
+		Link->Prev = to->LastLink;
+		to->LastLink = Link;
+		Link->Next = NULL;
+
+		if(from->FirstLink == NULL)
+			from->FirstLink = Link;
+	}
+}
+
 void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 {
 	ResetForceRedirection(dt);
@@ -214,9 +336,9 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 		int iy = fixtoi(y);
 		if(GBackSolid(ix+1, iy) || GBackSolid(ix-1, iy) || GBackSolid(ix, iy-1) || GBackSolid(ix, iy+1))
 		{
-			if(vx*vx + vy*vy < Fix1/4)
+			if(vx*vx + vy*vy < Fix1/4) // TODO: Threshold should be made a property
 			{
-				if(fx*fx + fy*fy < Fix1/4)
+				if(fx*fx + fy*fy < Fix1/4) // TODO: Threshold should be made a property
 				{
 					fx = fy = Fix0;
 					vx = vy = Fix0;
@@ -248,19 +370,25 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 	// Execute movement
 	if(!Target)
 	{
+		// Compute old and new coordinates
 		int old_x = fixtoi(x);
 		int old_y = fixtoi(y);
 		int new_x = fixtoi(x + dt * vx);
 		int new_y = fixtoi(y + dt * vy);
+		// Maximum distance in pixels in either X or Y
 		int max_p = Max(abs(new_x - old_x), abs(new_y - old_y));
 
+		// Check all pixels between old and new position
 		int prev_x = old_x;
 		int prev_y = old_y;
 		bool hit = false;
 		for(int i = 1; i <= max_p; ++i)
 		{
+			// Intermediate pixel position
 			int inter_x = old_x + i * (new_x - old_x) / max_p;
 			int inter_y = old_y + i * (new_y - old_y) / max_p;
+
+			// Collision check
 			if(GBackSolid(inter_x, inter_y))
 			{
 				x = itofix(prev_x);
@@ -683,6 +811,28 @@ void C4Rope::Execute()
 		for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
 			cur->Execute(this, dt);
 	}
+
+	// Insert/remove links between rope elements. We rely that object movement
+	// is executed before rope movement at this point, so this needs to stay in
+	// sync with C4Game::Execute().
+	for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
+	{
+		int insert_x, insert_y;
+		if(cur->Prev && cur->InsertLinkPosition(cur->oldx, cur->oldy, cur->GetX(), cur->GetY(), cur->GetPrevLinkX(), cur->GetPrevLinkY(), insert_x, insert_y))
+			cur->InsertLink(cur->Prev, cur, insert_x, insert_y);
+		if(cur->Next && cur->InsertLinkPosition(cur->oldx, cur->oldy, cur->GetX(), cur->GetY(), cur->GetNextLinkX(), cur->GetNextLinkY(), insert_x, insert_y))
+			cur->InsertLink(cur, cur->Next, insert_x, insert_y);
+
+		// TODO: removal
+	}
+
+	// Update old coordinates for next iteration. Don't do this in the loop above,
+	// so that GetPrevLinkX/GetPrevLinkY still return the old values.
+	for(C4RopeElement* cur = Front; cur != NULL; cur = cur->Next)
+	{
+		cur->oldx = cur->GetX();
+		cur->oldy = cur->GetY();
+	}
 }
 
 void C4Rope::ClearPointers(C4Object* obj)
@@ -817,6 +967,18 @@ void C4Rope::Draw(C4TargetFacet& cgo, C4BltTransform* pTransform)
 			glVertex2f(fixtof(cur->x)-1.5f, fixtof(cur->y)+1.5f);
 			glVertex2f(fixtof(cur->x)+1.5f, fixtof(cur->y)+1.5f);
 			glVertex2f(fixtof(cur->x)+1.5f, fixtof(cur->y)-1.5f);
+			glEnd();
+		}
+
+		// Draw links
+		for(C4RopeLink* link = cur->FirstLink; link != NULL; link = link->Next)
+		{
+			glBegin(GL_QUADS);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glVertex2f(fixtof(cur->x)-1.0f, fixtof(cur->y)-1.0f);
+			glVertex2f(fixtof(cur->x)-1.0f, fixtof(cur->y)+1.0f);
+			glVertex2f(fixtof(cur->x)+1.0f, fixtof(cur->y)+1.0f);
+			glVertex2f(fixtof(cur->x)+1.0f, fixtof(cur->y)-1.0f);
 			glEnd();
 		}
 

@@ -29,6 +29,16 @@ public:
 	C4RopeError(const std::string& message): std::runtime_error(message) {}
 };
 
+// C4RopeLinks are intermediate rope elements that are inserted and removed
+// such that
+class C4RopeLink
+{
+public:
+	C4Real x, y; // pos
+	C4RopeLink* Next;
+	C4RopeLink* Prev;
+};
+
 class C4Rope;
 class C4RopeElement
 {
@@ -36,6 +46,7 @@ class C4RopeElement
 public:
 	C4RopeElement(C4Object* obj, bool fixed);
 	C4RopeElement(C4Real x, C4Real y, C4Real m, bool fixed);
+	~C4RopeElement();
 
 	C4Real GetX() const { return Object ? GetTargetX() : x; }
 	C4Real GetY() const { return Object ? GetTargetY() : y; }
@@ -47,23 +58,34 @@ public:
 	C4Real GetTargetX() const;
 	C4Real GetTargetY() const;
 
+	C4Real GetPrevLinkX() const { assert(Prev); return LastLink ? LastLink->x : Prev->oldx; }
+	C4Real GetPrevLinkY() const { assert(Prev); return LastLink ? LastLink->y : Prev->oldy; }
+	C4Real GetNextLinkX() const { assert(Next); return FirstLink ? FirstLink->x : Next->oldx; }
+	C4Real GetNextLinkY() const { assert(Next); return FirstLink ? FirstLink->y : Next->oldy; }
+
 	void AddForce(C4Real x, C4Real y);
 	void Execute(const C4Rope* rope, C4Real dt);
 private:
+	bool InsertLinkPosition(int from_x, int from_y, int to_x, int to_y, int link_x, int link_y, int& insert_x, int& insert_y);
+	void InsertLink(C4RopeElement* from, C4RopeElement* to, int insert_x, int insert_y);
+
 	void ResetForceRedirection(C4Real dt);
 	void SetForceRedirection(const C4Rope* rope, int ox, int oy);
 	bool SetForceRedirectionByLookAround(const C4Rope* rope, int ox, int oy, C4Real dx, C4Real dy, C4Real l, C4Real angle);
 
 	bool Fixed; // Apply rope forces to this element?
-	C4Real x, y; // pos
-	C4Real vx, vy; // velocity
-	C4Real m; // mass
+	C4Real x, y; // pos; ignored if Object != NULL
+	C4Real oldx, oldy; // position in the previous frame. Used for linking
+	C4Real vx, vy; // velocity; ignored if Object != NULL
+	C4Real m; // mass; ignored if Object != NULL
 	C4Real fx, fy; // force
 	C4Real rx, ry; // force redirection
 	C4Real rdt; // force redirection timeout
 	C4Real fcx, fcy; // force after solve -- for debug output only
 	C4RopeElement* Next; // next rope element, or NULL
 	C4RopeElement* Prev; // prev rope element, or NULL
+	C4RopeLink* FirstLink; // first rope link between this and next, or NULL
+	C4RopeLink* LastLink; // last rope link between this and prev, or NULL
 	C4Object* Object; // Connected object. If set, x/y/vx/vy/m are ignored.
 	int LastContactVertex; // Vertex which most recently had collision with landscape
 };

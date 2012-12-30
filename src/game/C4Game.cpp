@@ -736,8 +736,8 @@ bool C4Game::Execute() // Returns true if the game is over
 
 	// Game
 
-	EXEC_S(     Ropes.Execute();                  , ExecRopesStat )
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )
+	EXEC_S(     Ropes.Execute();                  , ExecRopesStat )
 	if (pGlobalEffects)
 		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
