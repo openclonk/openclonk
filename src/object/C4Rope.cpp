@@ -236,8 +236,11 @@ void C4RopeElement::Execute(const C4Rope* rope, C4Real dt)
 		}
 		else if( (Target->Category & C4D_StaticBack) == 0)
 		{
-			Target->xdir += dt * fx / Target->Mass;
-			Target->ydir += dt * fy / Target->Mass;
+			// Only apply xdir/ydir to targets if they are not attached
+			if((Target->Action.t_attach & (CNAT_Left | CNAT_Right)) == 0)
+				Target->xdir += dt * fx / Target->Mass;
+			if((Target->Action.t_attach & (CNAT_Top | CNAT_Bottom)) == 0)
+				Target->ydir += dt * fy / Target->Mass;
 		}
 	}
 	fx = fy = Fix0;
