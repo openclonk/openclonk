@@ -198,16 +198,3 @@
 
 /* Use Apple Cocoa for the UI */
 #cmakedefine USE_COCOA 1
-
-/* Define to 1 if your compiler supports static_assert */
-#cmakedefine HAVE_STATIC_ASSERT 1
-
-/* Generate minidumps on crash */
-#cmakedefine HAVE_DBGHELP 1
-
-/* Define to 1 if your compiler supports static_assert */
-#cmakedefine HAVE_STATIC_ASSERT 1
-
-/* Define to 1 if your compiler correctly supports boost::is_pod */
-#cmakedefine HAVE_WORKING_IS_POD 1
-
