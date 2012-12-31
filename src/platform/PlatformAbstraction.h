@@ -232,26 +232,6 @@ bool OpenURL(const char* szURL);
 // Get a monotonically increasing timestamp in milliseconds
 unsigned int GetTime();
 
-// Windows swprintf: MinGW vs MSVC
-#if defined(__MINGW32__) || defined(__MINGW64__)
-// See http://lists-archives.org/mingw-users/17617-compilation-problem-with-swprintf.html
-
-// For _vsnwprintf:
-#include <cstdio>
-#include <cstdarg>
-
-inline int swprintf(wchar_t* buffer, size_t n, const wchar_t* format, ...)
-{
-	int retval;
-	va_list argptr;
-
-	va_start(argptr, format);
-	retval = _vsnwprintf(buffer, n, format, argptr);
-	va_end(argptr);
-	return retval;
-}
-#endif
-
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0
