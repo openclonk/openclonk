@@ -192,7 +192,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			{
 				C4Object *pObj = ppAttachingObjects[i];
 				if (pObj->IsMoveableBySolidMask(pForObject->GetPlane()))
-					if (!pObj->Shape.ContactCheck(pObj->GetFixedX()+dx, pObj->GetFixedY()+dy))
+					if (!pObj->Shape.ContactCheck(fixtoi(pObj->GetFixedX()+dx), fixtoi(pObj->GetFixedY()+dy)))
 						if (pObj->iLastAttachMovementFrame != Game.FrameCounter)
 						{
 							pObj->iLastAttachMovementFrame = Game.FrameCounter;
@@ -295,8 +295,7 @@ void C4SolidMask::Remove(bool fBackupAttachment)
 					int iVtx = 0;
 					for (; iVtx < pObj->Shape.VtxNum; ++iVtx)
 						if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
-							if (pObj->Shape.GetVertexContact(iVtx, pObj->Action.t_attach | CNAT_Bottom, pObj->GetX(), pObj->GetY(), DensityProvider(pForObject, *this)))
-								break;
+							break;
 					if (iVtx == pObj->Shape.VtxNum) continue; // no contact
 					// contact: Add object to list
 					if (iAttachingObjectsCapacity == iAttachingObjectsCount)
