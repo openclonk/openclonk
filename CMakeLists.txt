@@ -601,19 +601,33 @@ set(MAPE_SOURCES
 	src/mape/texture.h
 	src/mape/window.c
 	src/mape/window.h
-	src/mape/icon/c4d.c
-	src/mape/icon/c4f.c
-	src/mape/icon/c4g.c
-	src/mape/icon/c4m.c
-	src/mape/icon/c4s.c
-	src/mape/icon/tex.c
-	src/mape/icon/icons.h
 )
 
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
 mark_as_advanced(OC_MAIN_SOURCES)
 mark_as_advanced(MAPE_SOURCES)
+
+# generated source files
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	COMMAND
+		gdk-pixbuf-csource "--raw" "--static" "--build-list"
+		"mape_icon_ocd" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico"
+		"mape_icon_ocf" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico"
+		"mape_icon_ocg" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico"
+		"mape_icon_ocm" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico"
+		"mape_icon_ocs" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico"
+		> ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
+	VERBATIM
+)
+list(APPEND MAPE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h)
 
 # source files specific to an operating system
 if(APPLE)

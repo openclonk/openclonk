@@ -161,14 +161,9 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 	mape_icon_view_clear(view->view_tex);
 	for(i = 0; i < mape_texture_map_get_texture_count(new_tex_map); ++ i)
 	{
-		icon = mape_file_icon_set_lookup(
-			view->icon_set,
-			MAPE_FILE_ICON_C4TEXTURE
-		);
-
 		mape_icon_view_add(
 			view->view_tex,
-			mape_file_icon_get(icon),
+			NULL,
 			mape_texture_map_get_texture_name(new_tex_map, i)
 		);
 	}

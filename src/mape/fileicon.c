@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 
-#include "mape/icon/icons.h"
 #include "mape/fileicon.h"
+#include "mape-icons.h" // Generated file
 
 static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
                                         MapeFileIconType type)
@@ -50,7 +50,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	case MAPE_FILE_ICON_C4OBJECT:
 		pixbuf = gdk_pixbuf_new_from_inline(
 			-1,
-			mape_icon_c4d,
+			mape_icon_ocd,
 			FALSE,
 			NULL
 		);
@@ -58,7 +58,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	case MAPE_FILE_ICON_C4FOLDER:
 		pixbuf = gdk_pixbuf_new_from_inline(
 			-1,
-			mape_icon_c4f,
+			mape_icon_ocf,
 			FALSE,
 			NULL
 		);
@@ -66,7 +66,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	case MAPE_FILE_ICON_C4GROUP:
 		pixbuf = gdk_pixbuf_new_from_inline(
 			-1,
-			mape_icon_c4g,
+			mape_icon_ocg,
 			FALSE,
 			NULL
 		);
@@ -74,7 +74,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	case MAPE_FILE_ICON_C4SCENARIO:
 		pixbuf = gdk_pixbuf_new_from_inline(
 			-1,
-			mape_icon_c4s,
+			mape_icon_ocs,
 			FALSE,
 			NULL
 		);
@@ -82,15 +82,7 @@ static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
 	case MAPE_FILE_ICON_C4MATERIAL:
 		pixbuf = gdk_pixbuf_new_from_inline(
 			-1,
-			mape_icon_c4m,
-			FALSE,
-			NULL
-		);
-		break;
-	case MAPE_FILE_ICON_C4TEXTURE:
-		pixbuf = gdk_pixbuf_new_from_inline(
-			-1,
-			mape_icon_tex,
+			mape_icon_ocm,
 			FALSE,
 			NULL
 		);
