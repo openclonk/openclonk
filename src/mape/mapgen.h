@@ -18,31 +18,40 @@
 #ifndef INC_MAPE_MAPGEN_H
 #define INC_MAPE_MAPGEN_H
 
+#include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
 #include "mape/material.h"
 #include "mape/texture.h"
 
-#ifdef MAPE_COMPILING_CPP
-extern "C" {
-#endif
+G_BEGIN_DECLS
 
-typedef enum MapeMapgenError_ {
-	MAPE_MAPGEN_ERROR_MEMORY,
-	MAPE_MAPGEN_ERROR_COMPILE,
-	MAPE_MAPGEN_ERROR_MISSING_MAP,
-
-	MAPE_MAPGEN_ERROR_FAILED
+/**
+ * MapeMapgenError:
+ * @MAPE_MAPGEN_ERROR_COMPILE: An error occured while compiling the
+ * Landscape.txt source code.
+ * @MAPE_GROUP_ERROR_MEMORY: Insufficient memory was available to render the
+ * map.
+ *
+ * These errors are from the MAPE_MAPGEN_ERROR error domain. They can occur
+ * when rendering a map from a Landscape.txt file.
+ */
+typedef enum _MapeMapgenError {
+  MAPE_MAPGEN_ERROR_COMPILE,
+  MAPE_MAPGEN_ERROR_MEMORY
 } MapeMapgenError;
 
-GdkPixbuf* mape_mapgen_generate(const gchar* source,
-                                MapeMaterialMap* material_map,
-                                MapeTextureMap* texture_map,
-                                GError** error,
-								unsigned int map_with,
-								unsigned int map_height);
+GdkPixbuf*
+mape_mapgen_render(const gchar* filename,
+                   const gchar* source,
+                   MapeMaterialMap* material_map,
+                   MapeTextureMap* texture_map,
+                   guint width,
+                   guint height,
+                   GError** error);
 
-#ifdef MAPE_COMPILING_CPP
-} /* extern "C" */
-#endif
+G_END_DECLS
 
 #endif /* INC_MAPE_MAPGEN_H */
+
+/* vim:set et sw=2 ts=2: */

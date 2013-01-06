@@ -561,6 +561,8 @@ set(OC_CLONK_SOURCES
 set(MAPE_SOURCES
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/mapgen-handle.h
+	src/mape/cpp-handles/mapgen-handle.cpp
 	src/mape/cpp-handles/material-handle.h
 	src/mape/cpp-handles/material-handle.cpp
 	src/mape/cpp-handles/texture-handle.h
@@ -581,7 +583,7 @@ set(MAPE_SOURCES
 	src/mape/iconview.c
 	src/mape/iconview.h
 	src/mape/mape.c
-	src/mape/mapgen.cpp
+	src/mape/mapgen.c
 	src/mape/mapgen.h
 	src/mape/material.c
 	src/mape/material.h

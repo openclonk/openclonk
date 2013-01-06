@@ -87,13 +87,14 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 		return NULL;
 	}
 
-	pixbuf = mape_mapgen_generate(
+	pixbuf = mape_mapgen_render(
+		"Landscape.txt", /* TODO: Use actual filename */
 		source,
 		mat_map,
 		tex_map,
-		error,
 		map_width,
-		map_height
+		map_height,
+		error
 	);
 
 	return pixbuf;
