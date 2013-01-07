@@ -136,7 +136,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 	gboolean overload_materials;
 	gboolean overload_textures;
 
-	/* Open Material.c4g group */
+	/* Open Material.ocg group */
 	gtk_tree_model_get(
 		disk_view->tree_store,
 		material_iter,
@@ -172,7 +172,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		
 		group = mape_group_open_child(
 			parent_group,
-			"Material.c4g",
+			"Material.ocg",
 			error
 		);
 
@@ -199,7 +199,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 
 	if(overload_materials || overload_textures)
 	{
-		/* Look for overloaded Material.c4g */
+		/* Look for overloaded Material.ocg */
 		has_parent = gtk_tree_model_iter_parent(
 			disk_view->tree_store,
 			&parent_iter,
@@ -229,14 +229,14 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 				-1
 			);
 		
-			if(mape_group_has_entry(overloaded_group, "Material.c4g") ==
+			if(mape_group_has_entry(overloaded_group, "Material.ocg") ==
 				 TRUE)
 			{
 				/* TODO: Check if the group is already open!
 					 (mape_disk_view_find_iter). */
 				overloaded_group = mape_group_open_child(
 					overloaded_group,
-					"Material.c4g",
+					"Material.ocg",
 					error
 				);
 
@@ -455,7 +455,7 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 		);
 
 		/* Create temporary entry to show the expander arrow */
-		if(g_strcasecmp(filename, "Material.c4g") != 0)
+		if(g_strcasecmp(filename, "Material.ocg") != 0)
 		{
 			gtk_tree_store_append(
 				GTK_TREE_STORE(disk_view->tree_store),
@@ -469,13 +469,13 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 
 		if(fileext != NULL)
 		{
-			if(g_strcasecmp(fileext, ".c4d") == 0)
+			if(g_strcasecmp(fileext, ".ocd") == 0)
 				icon_type = MAPE_FILE_ICON_C4OBJECT;
-			else if(g_strcasecmp(fileext, ".c4f") == 0)
+			else if(g_strcasecmp(fileext, ".ocf") == 0)
 				icon_type = MAPE_FILE_ICON_C4FOLDER;
-			else if(g_strcasecmp(fileext, ".c4g") == 0)
+			else if(g_strcasecmp(fileext, ".ocg") == 0)
 				icon_type = MAPE_FILE_ICON_C4GROUP;
-			else if(g_strcasecmp(fileext, ".c4s") == 0)
+			else if(g_strcasecmp(fileext, ".ocs") == 0)
 				icon_type = MAPE_FILE_ICON_C4SCENARIO;
 		}
 
@@ -640,8 +640,8 @@ static gboolean mape_disk_view_cb_button_press_event(GtkWidget* widget,
 			-1
 		);
 
-		/* Load Material.c4g */
-		if(g_strcasecmp(filename, "Material.c4g") == 0)
+		/* Load Material.ocg */
+		if(g_strcasecmp(filename, "Material.ocg") == 0)
 		{
 			result = mape_disk_view_load_materials(
 				disk_view,
@@ -1092,7 +1092,7 @@ gboolean mape_disk_view_extend_to_path(MapeDiskView* disk_view,
 				return FALSE;
 			}
 
-			if(g_ascii_strcasecmp(file, "Material.c4g") == 0)
+			if(g_ascii_strcasecmp(file, "Material.ocg") == 0)
 			{
 				/* Assume end of path */
 				result = mape_disk_view_load_materials(
@@ -1132,7 +1132,7 @@ gboolean mape_disk_view_extend_to_path(MapeDiskView* disk_view,
 		}
 	}
 
-	/* All nodes expanded without opening Material.c4g */
+	/* All nodes expanded without opening Material.ocg */
 	g_strfreev(path_components);
 	return TRUE;
 }

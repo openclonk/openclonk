@@ -23,7 +23,7 @@
  * @stability: Unstable
  *
  * #MapeMaterialMap is a simple GObject-based interface to C4MaterialMap.
- * It supports loading a material map from a Material.c4g group file. It can
+ * It supports loading a material map from a Material.ocg group file. It can
  * load multiple files, with newer entries overloading previous ones in case
  * of name clashes to support material overloading.
  **/

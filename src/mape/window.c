@@ -537,7 +537,7 @@ MapeWindow* mape_window_new(int argc,
 	for(i = 1; i < argc; ++ i)
 	{
 		basename = g_path_get_basename(argv[i]);
-		if(g_strcasecmp(basename, "Material.c4g") == 0)
+		if(g_strcasecmp(basename, "Material.ocg") == 0)
 		{
 			if(!g_path_is_absolute(argv[i]))
 			{

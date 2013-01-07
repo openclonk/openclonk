@@ -81,7 +81,7 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 			error,
 			g_quark_from_static_string("MAPE_EDIT_VIEW_ERROR"),
 			MAPE_EDIT_VIEW_ERROR_MISSING_MAPS,
-			"Material.c4g is not loaded"
+			"Material.ocg is not loaded"
 		);
 
 		return NULL;
