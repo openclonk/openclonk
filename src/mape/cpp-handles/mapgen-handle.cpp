@@ -46,8 +46,8 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, C
 		C4SLandscape landscape;
 		landscape.Default();
 
-		landscape.MapWdt = map_width;
-		landscape.MapHgt = map_height;
+		landscape.MapWdt.Set(map_width, 0, map_width, map_width);
+		landscape.MapHgt.Set(map_height, 0, map_height, map_height);
 		landscape.MapPlayerExtend = 0;
 
 		C4MapCreatorS2 mapgen(

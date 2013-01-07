@@ -132,7 +132,7 @@ mape_mapgen_render(const gchar* filename,
     c4_mapgen_handle_free(handle);
     return NULL;
   }
-  
+
   out_width = c4_mapgen_handle_get_width(handle);
   out_height = c4_mapgen_handle_get_height(handle);
 
