@@ -35,6 +35,7 @@ extern "C" {
 struct _C4MapgenHandle {
 	unsigned int width;
 	unsigned int height;
+	unsigned int rowstride;
 	StdCopyStrBuf error_message;
 	BYTE* data;
 };
@@ -65,8 +66,9 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, C
 		if(array == NULL) throw C4MCParserErr(&parser, "No map definition in source file");
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
-		handle->width = out_width;
-		handle->height = out_height;
+		handle->width = map_width;
+		handle->height = map_height;
+		handle->rowstride = out_width;
 		handle->error_message = NULL;
 		handle->data = array;
 		return handle;
@@ -108,7 +110,7 @@ unsigned int c4_mapgen_handle_get_height(C4MapgenHandle* mapgen)
 unsigned int c4_mapgen_handle_get_rowstride(C4MapgenHandle* mapgen)
 {
 	assert(mapgen->data != NULL);
-	return DWordAligned(mapgen->width);
+	return mapgen->rowstride;
 }
 
 const char* c4_mapgen_handle_get_error(C4MapgenHandle* mapgen)
