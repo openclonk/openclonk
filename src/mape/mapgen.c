@@ -164,9 +164,9 @@ mape_mapgen_render(const gchar* filename,
   datawidth = gdk_pixbuf_get_width(pixbuf) * 3;
   memset(matclrs, 0, sizeof(matclrs) );
 
-  for(x = 0; x < out_width; ++x)
+  for(y = 0; y < out_height; ++y)
   {
-    for(y = 0; y < out_height; ++y)
+    for(x = 0; x < out_width; ++x)
     {
       unsigned int matnum = *in_p & 0x7f;
       if(matclrs[matnum * 4] == 0)
