@@ -377,11 +377,13 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
         if(!gdk_pixbuf_loader_write(loader, data, datalen, error))
         {
           g_free(name);
+          g_free(data);
           gdk_pixbuf_loader_close(loader, NULL);
           g_object_unref(loader);
           return FALSE;
         }
 
+        g_free(data);
         if(!gdk_pixbuf_loader_close(loader, error))
         {
           g_free(name);
