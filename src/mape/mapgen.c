@@ -35,10 +35,11 @@ static GQuark mape_mapgen_error_quark()
 }
 
 static void mape_mapgen_read_color(guint8* dest,
-                                   MapeMaterialMap* material_map,
+                                   MapeTextureMap* texture_map,
                                    unsigned int matnum)
 {
-  const MapeMaterial* mat;
+  const gchar* texture_name;
+  guint32 color;
 
   if(matnum == 0)
   {
@@ -48,14 +49,29 @@ static void mape_mapgen_read_color(guint8* dest,
   }
   else
   {
-    /* TODO: matnum is actually texmap entry, so find matnum from
-     * it. Actually we don't need to know the material
-     * actually, just get color from texture + render... */
-    mat = mape_material_map_get_material(material_map, matnum - 1);
+    texture_name = mape_texture_map_get_texture_name_from_mapping(
+      texture_map,
+      matnum
+    );
 
-    dest[matnum * 4 + 1] = 0xff;
-    dest[matnum * 4 + 2] = 0xff;
-    dest[matnum * 4 + 3] = 0xff;
+    if(!texture_name)
+    {
+      /* Texture not found, make the pixel black */
+      dest[matnum * 4 + 1] = 0;
+      dest[matnum * 4 + 2] = 0;
+      dest[matnum * 4 + 3] = 0;
+    }
+    else
+    {
+      color = mape_texture_map_get_average_texture_color(
+        texture_map,
+        texture_name
+      );
+
+      dest[matnum * 4 + 1] = (color      ) & 0xff;
+      dest[matnum * 4 + 2] = (color >>  8) & 0xff;
+      dest[matnum * 4 + 3] = (color >> 16) & 0xff;
+    }
   }
 }
 
@@ -108,6 +124,7 @@ mape_mapgen_render(const gchar* filename,
   guint datawidth;
   guint8 matclrs[128 * 4];
   unsigned int x, y;
+  unsigned int matnum;
 
   handle = c4_mapgen_handle_new(
     filename,
@@ -168,12 +185,12 @@ mape_mapgen_render(const gchar* filename,
   {
     for(x = 0; x < out_width; ++x)
     {
-      unsigned int matnum = *in_p & 0x7f;
+      matnum = *in_p & 0x7f;
       if(matclrs[matnum * 4] == 0)
       {
         mape_mapgen_read_color(
           matclrs,
-          material_map,
+          texture_map,
           matnum
         );
 
