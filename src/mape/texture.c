@@ -52,6 +52,48 @@ static GQuark mape_texture_map_error_quark;
 G_DEFINE_TYPE(MapeTextureMap, mape_texture_map, G_TYPE_OBJECT)
 
 /*
+ * Private helper functions
+ */
+static guint32
+mape_texture_map_get_average_color(GdkPixbuf* pixbuf)
+{
+  int width;
+  int height;
+  int bpp;
+  const guchar* pixels;
+  int x, y;
+  int rowstride;
+  unsigned int accum[4];
+  double size;
+
+  width = gdk_pixbuf_get_width(pixbuf);
+  height = gdk_pixbuf_get_height(pixbuf);
+  bpp = gdk_pixbuf_get_n_channels(pixbuf);
+  pixels = gdk_pixbuf_get_pixels(pixbuf);
+  rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+  accum[0] = accum[1] = accum[2] = accum[3] = 0;
+
+  for(y = 0; y < height; ++y)
+  {
+    for(x = 0; x < width; ++x)
+    {
+      accum[0] += (int)pixels[bpp*x + y*rowstride + 0];
+      accum[1] += (int)pixels[bpp*x + y*rowstride + 1];
+      accum[2] += (int)pixels[bpp*x + y*rowstride + 2];
+      if(bpp >= 4)
+        accum[3] += (int)pixels[bpp*x + y*rowstride + 3];
+    }
+  }
+
+  size = width * height;
+  accum[0] = (unsigned int)(accum[0] / size + 0.5);
+  accum[1] = (unsigned int)(accum[1] / size + 0.5);
+  accum[2] = (unsigned int)(accum[2] / size + 0.5);
+  accum[3] = (unsigned int)(accum[3] / size + 0.5);
+  return accum[0] | (accum[1] << 8) | (accum[2] << 16) | (accum[3] << 24);
+}
+
+/*
  * GObject overrides.
  */
 
@@ -351,10 +393,14 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
         g_object_ref(pixbuf);
         g_object_unref(loader);
 
-        /* Add texture to texmap (without actual Surface),
+        /* Add texture to texmap (without actual Surface, only texture color),
          * just so that the map generator knows the presence
          * of the texture. */
-        c4_texture_map_handle_add_texture(priv->handle, name);
+        c4_texture_map_handle_add_texture(
+          priv->handle,
+          name,
+          mape_texture_map_get_average_color(pixbuf)
+        );
         g_hash_table_insert(priv->texture_table, casefold_name, pixbuf);
       }
       else
@@ -518,6 +564,27 @@ mape_texture_map_get_texture_name_from_mapping(MapeTextureMap* texture_map,
   g_return_val_if_fail(MAPE_IS_TEXTURE_MAP(texture_map), NULL);
   priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
   return mape_texture_handle_get_entry_texture_name(priv->handle, index);
+}
+
+/**
+ * mape_texture_map_get_average_texture_color:
+ * @texture_map: A #MapeTextureMap.
+ * @name: The name of the texture whose color to retrieve.
+ *
+ * Returns the average color of the texture with name @name. The color is
+ * returned in 32-bit ABGR format.
+ *
+ * Returns: The average texture color of the texture with name @name as a
+ * 32-bit integer.
+ */
+guint32
+mape_texture_map_get_average_texture_color(MapeTextureMap* texture_map,
+                                           const gchar* name)
+{
+  MapeTextureMapPrivate* priv;
+  g_return_val_if_fail(MAPE_IS_TEXTURE_MAP(texture_map), 0);
+  priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
+  return mape_texture_handle_get_average_texture_color(priv->handle, name);
 }
 
 /* This function is for internal use only */

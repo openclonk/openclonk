@@ -48,14 +48,22 @@ guint c4_texture_map_handle_load_map(C4TextureMapHandle* texture_map, C4GroupHan
   return retval;
 }
 
-gboolean c4_texture_map_handle_add_texture(C4TextureMapHandle* texture_map, const char* texture)
+gboolean c4_texture_map_handle_add_texture(C4TextureMapHandle* texture_map, const char* texture, guint32 avg_color)
 {
-  return HANDLE_TO_TEXTURE_MAP(texture_map)->AddTexture(texture, NULL);
+  gboolean result = HANDLE_TO_TEXTURE_MAP(texture_map)->AddTexture(texture, NULL);
+  if(!result) return FALSE;
+  HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(texture)->SetAverageColor(avg_color);
+  return TRUE;
 }
 
 const char* c4_texture_map_handle_get_texture(C4TextureMapHandle* texture_map, guint index)
 {
-	return HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(index);
+  return HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(index);
+}
+
+guint32 mape_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_map, const char* name)
+{
+  return HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(name)->GetAverageColor();
 }
 
 const char* mape_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index)

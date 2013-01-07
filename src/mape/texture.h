@@ -108,6 +108,10 @@ const gchar*
 mape_texture_map_get_texture_name_from_mapping(MapeTextureMap* texture_map,
                                                guint index);
 
+guint32
+mape_texture_map_get_average_texture_color(MapeTextureMap* texture_map,
+                                           const gchar* name);
+
 G_END_DECLS
 
 #endif /* INC_MAPE_TEXTURE_MAP_H */
