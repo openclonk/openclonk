@@ -21,6 +21,7 @@
 #include <glib-object.h>
 
 #include "mape/group.h"
+#include "mape/texture.h"
 
 G_BEGIN_DECLS
 
@@ -86,6 +87,10 @@ mape_material_map_load(MapeMaterialMap* map,
 
 guint
 mape_material_map_get_material_count(MapeMaterialMap* map);
+
+void
+mape_material_map_set_default_textures(MapeMaterialMap* matmap,
+                                       MapeTextureMap* texmap);
 
 const MapeMaterial*
 mape_material_map_get_material(MapeMaterialMap* map,

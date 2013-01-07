@@ -39,6 +39,9 @@ _mape_group_get_handle(MapeGroup* group);
 C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map);
 
+C4TextureMapHandle*
+_mape_texture_map_get_handle(MapeTextureMap* map);
+
 typedef struct _MapeMaterialMapPrivate MapeMaterialMapPrivate;
 struct _MapeMaterialMapPrivate {
   C4MaterialMapHandle* handle;
@@ -275,6 +278,24 @@ mape_material_map_get_material_count(MapeMaterialMap* map)
   g_return_val_if_fail(MAPE_IS_MATERIAL_MAP(map), 0);
   return c4_material_map_handle_get_num(
     MAPE_MATERIAL_MAP_PRIVATE(map)->handle);
+}
+
+/**
+ * mape_material_map_set_default_textures:
+ * @mapmap: A #MapeMaterialMap.
+ * @texmap: A #MapeTextureMap to load textures from.
+ *
+ * Sets the default textures for the materials in @matmap by looking up the
+ * texture overlay specified in the material file in @texmap.
+ **/
+void
+mape_material_map_set_default_textures(MapeMaterialMap* matmap,
+                                       MapeTextureMap* texmap)
+{
+  c4_material_map_crossmap_materials(
+    MAPE_MATERIAL_MAP_PRIVATE(matmap)->handle,
+    _mape_texture_map_get_handle(texmap)
+  );
 }
 
 /**

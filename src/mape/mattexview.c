@@ -136,6 +136,8 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 		}
 	}
 
+	mape_material_map_set_default_textures(new_mat_map, new_tex_map);
+
 	if(view->mat_map != NULL) g_object_unref(view->mat_map);
 	if(view->tex_map != NULL) g_object_unref(view->tex_map);
 	view->mat_map = new_mat_map; view->tex_map = new_tex_map;
