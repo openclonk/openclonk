@@ -36,6 +36,7 @@ public:
 	~C4Texture();
 	C4Surface * Surface32;
 
+	void SetAverageColor(uint32_t Color) { AvgColor = Color; }
 	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
 	char Name[C4M_MaxName+1];

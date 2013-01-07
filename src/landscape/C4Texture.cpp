@@ -162,11 +162,11 @@ bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 		avg_c[1] = static_cast<uint32_t>(avg_c[1] / Size + 0.5);
 		avg_c[2] = static_cast<uint32_t>(avg_c[2] / Size + 0.5);
 		avg_c[3] = static_cast<uint32_t>(avg_c[3] / Size + 0.5);
-		pTexture->AvgColor = avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24);
+		pTexture->SetAverageColor(avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24));
 	}
 	else
 	{
-		pTexture->AvgColor = 0x00000000;
+		pTexture->SetAverageColor(0x00000000);
 	}
 
 	return true;
