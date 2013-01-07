@@ -163,7 +163,10 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 	{
 		mape_icon_view_add(
 			view->view_tex,
-			NULL,
+			mape_texture_map_lookup_texture(
+				new_tex_map,
+				mape_texture_map_get_texture_name(new_tex_map, i)
+			),
 			mape_texture_map_get_texture_name(new_tex_map, i)
 		);
 	}
