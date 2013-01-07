@@ -15,19 +15,15 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#define MAPE_COMPILING_CPP
+#ifndef INC_MAPE_C4_RANDOM_HANDLE_H
+#define INC_MAPE_C4_RANDOM_HANDLE_H
 
-#include <stdlib.h>
-#include <C4Include.h>
-#include <C4Random.h>
+#include <glib.h>
 
-#include "mape/random.h"
+G_BEGIN_DECLS
 
-extern "C" {
+void c4_random_handle_seed(unsigned int seed);
 
-void mape_random_seed(unsigned int seed)
-{
-	FixedRandom(seed);
-}
+G_END_DECLS
 
-} // extern "C"
+#endif /* INC_MAPE_C4_RANDOM_HANDLE_H */

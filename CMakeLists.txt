@@ -565,6 +565,8 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/mapgen-handle.cpp
 	src/mape/cpp-handles/material-handle.h
 	src/mape/cpp-handles/material-handle.cpp
+	src/mape/cpp-handles/random-handle.h
+	src/mape/cpp-handles/random-handle.cpp
 	src/mape/cpp-handles/texture-handle.h
 	src/mape/cpp-handles/texture-handle.cpp
 	src/mape/configfile.c
@@ -595,7 +597,7 @@ set(MAPE_SOURCES
 	src/mape/preferencesdialog.h
 	src/mape/preview.c
 	src/mape/preview.h
-	src/mape/random.cpp
+	src/mape/random.c
 	src/mape/random.h
 	src/mape/statusbar.c
 	src/mape/statusbar.h
