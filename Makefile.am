@@ -328,6 +328,7 @@ src/landscape/C4PXS.cpp \
 src/landscape/C4PXS.h \
 src/landscape/C4Scenario.cpp \
 src/landscape/C4Scenario.h \
+src/landscape/C4ScenarioSection.cpp \
 src/landscape/C4Sky.cpp \
 src/landscape/C4Sky.h \
 src/landscape/C4SolidMask.cpp \
