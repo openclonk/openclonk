@@ -882,7 +882,7 @@ bool C4Game::InitMaterialTexture()
 	TextureMap.Init();
 
 	// Cross map mats (after texture init, because Material-Texture-combinations are used)
-	if (!::MaterialMap.CrossMapMaterials()) return false;
+	if (!::MaterialMap.CrossMapMaterials(C4S.Landscape.Material)) return false;
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();
