@@ -142,7 +142,7 @@ bool C4ParticleDef::Load(C4Group &group)
 		}
 		delete [] particle_source;
 		// load graphics
-		if (!Gfx.Load(group, C4CFN_DefGraphicsPNG))
+		if (!Gfx.Load(group, C4CFN_DefGraphics))
 		{
 			DebugLogF("particle %s has no valid graphics defined", Name.getData());
 			return false;

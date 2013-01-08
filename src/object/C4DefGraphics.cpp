@@ -116,11 +116,11 @@ void C4DefGraphics::Clear()
 	pNext = NULL; fColorBitmapAutoCreated = false;
 }
 
-bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner)
+bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szOverlay, bool fColorByOwner)
 {
-	if (!szFilenamePNG) return false;
+	if (!szFilename) return false;
 	Bmp.Bitmap = new C4Surface();
-	if (!Bmp.Bitmap->Load(hGroup, szFilenamePNG)) return false;
+	if (!Bmp.Bitmap->Load(hGroup, szFilename)) return false;
 
 	// Create owner color bitmaps
 	if (fColorByOwner)
@@ -128,23 +128,23 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilenamePNG, const
 		// Create additionmal bitmap
 		Bmp.BitmapClr=new C4Surface();
 		// if overlay-surface is present, load from that
-		if (szOverlayPNG && hGroup.AccessEntry(szOverlayPNG))
+		if (szOverlay && Bmp.BitmapClr->Load(hGroup, szOverlay))
 		{
-			if (!Bmp.BitmapClr->ReadPNG(hGroup))
-				return false;
 			// set as Clr-surface, also checking size
 			if (!Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap))
 			{
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
-				          hGroup.GetFullName().getData(), szFilenamePNG, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
-				          szOverlayPNG, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
+				          hGroup.GetFullName().getData(), szFilename, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
+				          szOverlay, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
 				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
 				return false;
 			}
 		}
 		else
+		{
 			// otherwise, create by all blue shades
 			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap)) return false;
+		}
 		fColorBitmapAutoCreated = true;
 	}
 	Type = TYPE_Bitmap;
@@ -208,22 +208,22 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 
 	// Try from Mesh first
-	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
+	if (!LoadMesh(hGroup, C4CFN_DefMesh, loader) && !LoadMesh(hGroup, C4CFN_DefMeshXml, loader) && !LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_ClrByOwner, fColorByOwner)) return false;
 
 	// load additional graphics
 	C4DefGraphics *pLastGraphics = this;
-	const int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerExPNG);
+	const int32_t iOverlayWildcardPos = SCharPos('*', C4CFN_ClrByOwnerEx);
 	hGroup.ResetSearch(); *Filename=0;
-	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsExPNG, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, NULL };
+	const char* const AdditionalGraphics[] = { C4CFN_DefGraphicsEx, C4CFN_DefGraphicsExMesh, C4CFN_DefGraphicsExMeshXml, NULL };
 	while (hGroup.FindNextEntry("*", Filename, NULL, !!*Filename))
 	{
 		for(const char* const* szWildcard = AdditionalGraphics; *szWildcard != NULL; ++szWildcard)
 		{
 			if(!WildcardMatch(*szWildcard, Filename)) continue;
 			// skip def graphics
-			if (SEqualNoCase(Filename, C4CFN_DefGraphicsPNG) || SEqualNoCase(Filename, C4CFN_DefMesh) || SEqualNoCase(Filename, C4CFN_DefMeshXml)) continue;
+			if (SEqualNoCase(Filename, C4CFN_DefGraphics) || SEqualNoCase(Filename, C4CFN_DefMesh) || SEqualNoCase(Filename, C4CFN_DefMeshXml)) continue;
 			// skip scaled def graphics
-			if (WildcardMatch(C4CFN_DefGraphicsScaledPNG, Filename)) continue;
+			if (WildcardMatch(C4CFN_DefGraphicsScaled, Filename)) continue;
 			// get name
 			char GrpName[_MAX_PATH+1];
 			const int32_t iWildcardPos = SCharPos('*', *szWildcard);
@@ -246,10 +246,10 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 				if(fColorByOwner)
 				{
 					// GraphicsX.png -> OverlayX.png
-					SCopy(C4CFN_ClrByOwnerExPNG, OverlayFn, _MAX_PATH);
+					SCopy(C4CFN_ClrByOwnerEx, OverlayFn, _MAX_PATH);
 					OverlayFn[iOverlayWildcardPos]=0;
 					SAppend(Filename + iWildcardPos, OverlayFn);
-					EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerExPNG));
+					EnforceExtension(OverlayFn, GetExtension(C4CFN_ClrByOwnerEx));
 				}
 
 				// load them
