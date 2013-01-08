@@ -161,8 +161,6 @@ endif()
 # OC_CLONK_SOURCES: Sources for OpenClonk that are needed by every build.
 # OC_SYSTEM_SOURCES: Sources for OpenClonk that are only needed by specific
 # 	configurations.
-# OC_MAIN_SOURCES: The file with the executable's entry point, not to be added
-#	to libclonk
 set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
 	src/c4group/C4ComponentHost.cpp
@@ -559,6 +557,75 @@ set(OC_CLONK_SOURCES
 	thirdparty/timsort/sort.h
 )
 
+set(MAPE_BASE_SOURCES
+	src/c4group/C4ComponentHost.cpp
+	src/c4group/C4ComponentHost.h
+	src/c4group/C4Group.cpp
+	src/c4group/C4Group.h
+	src/c4group/C4GroupSet.cpp
+	src/c4group/C4GroupSet.h
+	src/c4group/C4LangStringTable.cpp
+	src/c4group/C4LangStringTable.h
+	src/c4group/CStdFile.cpp
+	src/c4group/CStdFile.h
+	src/landscape/C4MapCreatorS2.cpp
+	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4Material.cpp
+	src/landscape/C4Material.h
+	src/landscape/C4Texture.cpp
+	src/landscape/C4Texture.h
+	src/landscape/C4Scenario.cpp
+	src/landscape/C4Scenario.h
+	src/lib/C4InputValidation.cpp
+	src/lib/C4InputValidation.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
+	src/lib/C4NameList.cpp
+	src/lib/C4NameList.h
+	src/lib/C4Random.cpp
+	src/lib/C4Random.h
+	src/lib/C4Real.cpp
+	src/lib/C4Real.h
+	src/lib/C4Rect.cpp
+	src/lib/C4Rect.h
+	src/lib/C4SimpleLog.cpp
+	src/lib/Standard.cpp
+	src/lib/Standard.h
+	src/lib/StdBuf.cpp
+	src/lib/StdBuf.h
+	src/lib/StdCompiler.cpp
+	src/lib/StdCompiler.h
+	src/lib/StdResStr2.cpp
+	src/lib/StdResStr2.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
+	src/platform/GetTime.cpp
+	src/platform/StdFile.cpp
+	src/platform/StdFile.h
+	src/script/C4Aul.cpp
+	src/script/C4Aul.h
+	src/script/C4AulExec.cpp
+	src/script/C4AulExec.h
+	src/script/C4AulFunc.cpp
+	src/script/C4AulFunc.h
+	src/script/C4AulLink.cpp
+	src/script/C4AulParse.cpp
+	src/script/C4PropList.cpp
+	src/script/C4PropList.h
+	src/script/C4ScriptHost.cpp
+	src/script/C4ScriptHost.h
+	src/script/C4StringTable.cpp
+	src/script/C4StringTable.h
+	src/script/C4Value.cpp
+	src/script/C4Value.h
+	src/script/C4ValueArray.cpp
+	src/script/C4ValueArray.h
+	src/script/C4ValueMap.cpp
+	src/script/C4ValueMap.h
+	src/zlib/gzio.c
+	src/C4Include.cpp
+)
+
 set(MAPE_SOURCES
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
@@ -570,6 +637,7 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/random-handle.cpp
 	src/mape/cpp-handles/texture-handle.h
 	src/mape/cpp-handles/texture-handle.cpp
+	src/mape/cpp-handles/stub-handle.cpp
 	src/mape/configfile.c
 	src/mape/configfile.h
 	src/mape/diskview.c
@@ -610,7 +678,6 @@ set(MAPE_SOURCES
 
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
-mark_as_advanced(OC_MAIN_SOURCES)
 mark_as_advanced(MAPE_SOURCES)
 
 # generated source files
@@ -640,12 +707,12 @@ if(APPLE)
 		src/platform/C4FileMonitorMac.mm
 	)
 
-	list(APPEND OC_MAIN_SOURCES
+	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
 	)
 else()
-	list(APPEND OC_MAIN_SOURCES
+	list(APPEND OC_SYSTEM_SOURCES
 		src/game/ClonkMain.cpp
 	)
 endif()
@@ -998,18 +1065,13 @@ endif()
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
 
-add_library(libclonk STATIC
+add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
 
-add_executable(clonk WIN32 MACOSX_BUNDLE
-	${OC_MAIN_SOURCES}
-)
-#target_link_libraries(clonk)
-
 if(WITH_MAPE)
-	add_executable(mape ${MAPE_SOURCES})
+	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 endif()
 
 add_executable(c4group
@@ -1108,11 +1170,7 @@ endif()
 
 if(WITH_MAPE)
 	target_link_libraries(mape
-		${FREETYPE_LIBRARIES}
 		${ZLIB_LIBRARIES}
-		${PNG_LIBRARIES}
-		${JPEG_LIBRARIES}
-		${ICONV_LIBRARY}
 	)
 endif()
 
@@ -1129,6 +1187,11 @@ if(HAVE_PTHREAD)
 	target_link_libraries(c4script
 		pthread
 	)
+	if(WITH_MAPE)
+		target_link_libraries(mape
+			pthread
+		)
+	endif()
 endif()
 if(USE_CONSOLE)
 	target_link_libraries(clonk
@@ -1146,11 +1209,8 @@ if(UNIX AND NOT APPLE)
 endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 
-set(OC_CLONK_LIBRARIES libclonk)
-
 #set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 #set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
-set_property(TARGET libclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
@@ -1241,7 +1301,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
-	add_precompiled_header(libclonk src/C4Include.h)
+	add_precompiled_header(clonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
 	add_precompiled_header(c4script src/C4Include.h)
 endif()
@@ -1287,12 +1347,12 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 if(NOT HAVE_GETOPT_H)
 	include_directories(thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} getopt)
+	target_link_libraries(clonk getopt)
 elseif(MINGW)
 	# Link libiberty which my contain getopt with mingw
 	FINDLIB(iberty_LIBRARIES iberty)
 	if(iberty_LIBRARIES)
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} iberty)
+		target_link_libraries(clonk iberty)
 	endif()
 endif()
 
@@ -1300,7 +1360,7 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
 # TinyXML
 add_subdirectory(thirdparty/tinyxml)
-set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} tinyxml)
+target_link_libraries(clonk tinyxml)
 
 if(WIN32)
 	find_package(DbgHelp)
@@ -1315,7 +1375,10 @@ if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+	target_link_libraries(clonk
+		${GLEW_LIBRARIES}
+		${OPENGL_LIBRARIES}
+	)
 	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_DIRECTX)
@@ -1323,7 +1386,10 @@ if(USE_DIRECTX)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
 	FIND_PATH(DIRECT3DX_INCLUDE_DIR NAMES d3dx9.h)
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${DIRECT3D_LIBRARIES} ${DIRECT3DX_LIBRARIES})
+	target_link_libraries(clonk
+		${DIRECT3D_LIBRARIES}
+		${DIRECT3DX_LIBRARIES}
+	)
 	include_directories(
 		${DIRECT3D_INCLUDE_DIR}
 		${DIRECT3DX_INCLUDE_DIR}
@@ -1333,9 +1399,9 @@ if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${GTK3_LIBRARIES})
+		target_link_libraries(clonk ${GTK3_LIBRARIES})
 	else()
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${GTK_LIBRARIES})
+		target_link_libraries(clonk ${GTK_LIBRARIES})
 	endif()
 endif()
 if(WITH_MAPE)
@@ -1347,13 +1413,16 @@ if(WITH_MAPE)
 		# hrm, cmake doesn't have target_include_directories...
 		include_directories(${MAPE_GTK_INCLUDE_DIRS})
 		link_directories(${MAPE_GTK_LIBRARY_DIRS})
-		set(MAPE_LIBRARIES ${MAPE_LIBRARIES} ${MAPE_GTK_LIBRARIES})
+		target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
 	endif()
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${X11_LIBRARIES} ${XRANDR_LIBRARIES})
+	target_link_libraries(clonk
+		${X11_LIBRARIES}
+		${XRANDR_LIBRARIES}
+	)
 endif()
 if(USE_COCOA)
 	#stupid fix: just link to iconv that way
@@ -1365,14 +1434,14 @@ if (WIN32)
 	FINDLIB(VFW32_LIBRARIES vfw32)
 	FINDLIB(wavifil32_LIBRARIES wavifil32)
 	if (VFW32_LIBRARIES)
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} vfw32)
+		target_link_libraries(clonk vfw32)
 		set(HAVE_VFW32 TRUE)
 	elseif(wavifil32_LIBRARIES)
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} msvfw32)
+		target_link_libraries(clonk msvfw32)
 		set(HAVE_VFW32 TRUE)
 	endif()
 
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ws2_32 winmm)
+	target_link_libraries(clonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(netpuncher ws2_32 winmm)
 	target_link_libraries(c4script ws2_32 winmm)
@@ -1381,7 +1450,7 @@ if (WIN32)
 		find_package(FMod)
 		if(FMOD_FOUND)
 			set(HAVE_FMOD TRUE)
-			set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${FMOD_LIBRARIES})
+			target_link_libraries(clonk ${FMOD_LIBRARIES})
 			include_directories(${FMOD_INCLUDE_DIR})
 		else()
 			set(HAVE_FMOD FALSE)
@@ -1397,26 +1466,13 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 		if(SDLMIXER_LIBRARIES)
 			SET(HAVE_LIBSDL_MIXER ON)
 		endif()
-		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${SDL_LIBRARY} ${SDLMIXER_LIBRARIES})
+		target_link_libraries(clonk ${SDL_LIBRARY} ${SDLMIXER_LIBRARIES})
 	endif()
 endif()
 
 if(HAVE_UPNP)
 	include_directories(${UPNP_INCLUDE_DIR})
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${UPNP_LIBRARIES})
-endif()
-
-target_link_libraries(clonk
-	${OC_CLONK_LIBRARIES}
-)
-
-if(WITH_MAPE)
-	# TODO: Remove duplicates in MAPE_LIBRARIES and OC_CLONK_LIBRARIES...
-	# GTK+ might be in both.
-	target_link_libraries(mape
-		${MAPE_LIBRARIES}
-		${OC_CLONK_LIBRARIES}
-	)
+	target_link_libraries(clonk ${UPNP_LIBRARIES})
 endif()
 
 # GTest
