@@ -1934,11 +1934,12 @@ void C4AulParse::Parse_DoWhile()
 {
 	Shift();
 	// Save position for later jump back
-	int iStart = JumpHere();
+	int Start = JumpHere();
 	// We got a loop
 	PushLoop();
 	// Execute body
 	Parse_Statement();
+	int BeforeCond = JumpHere();
 	// Execute condition
 	if (TokenType != ATT_IDTF || !SEqual(Idtf, C4AUL_While))
 		UnexpectedToken("'while'");
@@ -1947,14 +1948,14 @@ void C4AulParse::Parse_DoWhile()
 	Parse_Expression();
 	Match(ATT_BCLOSE);
 	// Jump back
-	AddJump(AB_COND, iStart);
+	AddJump(AB_COND, Start);
 	if (Type != PARSER) return;
 	// Set targets for break/continue
 	for (Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
 		if (pCtrl->Break)
 			SetJumpHere(pCtrl->Pos);
 		else
-			SetJump(pCtrl->Pos, iStart);
+			SetJump(pCtrl->Pos, BeforeCond);
 	PopLoop();
 }
 
