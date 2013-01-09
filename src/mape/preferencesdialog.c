@@ -269,9 +269,10 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 		GTK_RESPONSE_OK,
 		NULL
 	);
-	
+
+	GtkBox * content_area = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog->dialog)));
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->hbox_tab_width,
 		FALSE,
 		TRUE,
@@ -279,7 +280,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->hbox_map_width,
 		FALSE,
 		TRUE,
@@ -287,7 +288,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->hbox_map_height,
 		FALSE,
 		TRUE,
@@ -295,7 +296,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_tab_to_spaces,
 		FALSE,
 		TRUE,
@@ -303,7 +304,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_auto_indentation,
 		FALSE,
 		TRUE,
@@ -311,7 +312,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_text_wrapping,
 		FALSE,
 		TRUE,
@@ -319,7 +320,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_line_numbers,
 		FALSE,
 		TRUE,
@@ -327,7 +328,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_highlight_line,
 		FALSE,
 		TRUE,
@@ -335,23 +336,23 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_bracket_matching,
 		FALSE,
 		TRUE,
 		0
 	);
-	
+
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->cbx_fixed_seed,
 		FALSE,
 		TRUE,
 		0
 	);
-	
+
 	gtk_box_pack_start(
-		GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		dialog->hbox_random_seed,
 		FALSE,
 		TRUE,
@@ -359,11 +360,11 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_container_set_border_width(
-		GTK_CONTAINER(GTK_DIALOG(dialog->dialog)->vbox),
+		content_area,
 		10
 	);
 
-	gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(dialog->dialog)->vbox), 5);
+	gtk_box_set_spacing(content_area, 5);
 
 	gtk_window_set_transient_for(GTK_WINDOW(dialog->dialog), parent);
 	gtk_window_set_resizable(GTK_WINDOW(dialog->dialog), FALSE);
