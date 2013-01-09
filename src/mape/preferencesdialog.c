@@ -39,6 +39,8 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
                                                    MapePreferences* prefs)
 {
 	MapePreferencesDialog* dialog;
+	GtkBox* content_area;
+
 	dialog = malloc(sizeof(MapePreferencesDialog) );
 	
 	dialog->lbl_tab_width = gtk_label_new("Tab width:");
@@ -270,7 +272,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 		NULL
 	);
 
-	GtkBox * content_area = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog->dialog)));
+	content_area = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog->dialog)));
 	gtk_box_pack_start(
 		content_area,
 		dialog->hbox_tab_width,
@@ -360,7 +362,7 @@ MapePreferencesDialog* mape_preferences_dialog_new(GtkWindow* parent,
 	);
 	
 	gtk_container_set_border_width(
-		content_area,
+		GTK_CONTAINER(content_area),
 		10
 	);
 
