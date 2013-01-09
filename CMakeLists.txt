@@ -90,7 +90,6 @@ option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
 option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" OFF)
-option(WITH_MAPE "Build Mape" ON)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -991,6 +990,17 @@ if(USE_GTK)
 	endif()
 endif()
 
+# Try to find GTK for mape
+include(FindPkgConfig)
+if (PKG_CONFIG_FOUND)
+	pkg_check_modules(MAPE_GTK glib-2.0>=2.14 gthread-2.0 gtk+-2.0>=2.12 gtksourceview-2.0)
+endif()
+if(MAPE_GTK_FOUND)
+	# hrm, cmake doesn't have target_include_directories...
+	include_directories(${MAPE_GTK_INCLUDE_DIRS})
+	link_directories(${MAPE_GTK_LIBRARY_DIRS})
+endif()
+
 if(USE_OPEN_AL)
 	if(MSVC)
 		if(${FIND_LIBRARY_USE_LIB64_PATHS})
@@ -1070,7 +1080,7 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_CLONK_SOURCES}
 )
 
-if(WITH_MAPE)
+if(MAPE_GTK_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 endif()
 
@@ -1168,7 +1178,7 @@ if(USE_OPEN_AL)
 	)
 endif()
 
-if(WITH_MAPE)
+if(MAPE_GTK_FOUND)
 	target_link_libraries(mape
 		${ZLIB_LIBRARIES}
 	)
@@ -1187,7 +1197,7 @@ if(HAVE_PTHREAD)
 	target_link_libraries(c4script
 		pthread
 	)
-	if(WITH_MAPE)
+	if(MAPE_GTK_FOUND)
 		target_link_libraries(mape
 			pthread
 		)
@@ -1404,17 +1414,8 @@ if(USE_GTK)
 		target_link_libraries(clonk ${GTK_LIBRARIES})
 	endif()
 endif()
-if(WITH_MAPE)
-	include(FindPkgConfig)
-	if (PKG_CONFIG_FOUND)
-		pkg_check_modules(MAPE_GTK glib-2.0>=2.14 gthread-2.0 gtk+-2.0>=2.12 gtksourceview-2.0)
-	endif()
-	if(MAPE_GTK_FOUND)
-		# hrm, cmake doesn't have target_include_directories...
-		include_directories(${MAPE_GTK_INCLUDE_DIRS})
-		link_directories(${MAPE_GTK_LIBRARY_DIRS})
-		target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
-	endif()
+if(MAPE_GTK_FOUND)
+	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
