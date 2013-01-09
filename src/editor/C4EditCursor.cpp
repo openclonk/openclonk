@@ -2,12 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003  Matthes Bender
- * Copyright (c) 2001, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2001, 2005-2007, 2012  Sven Eberhardt
  * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2005-2012  Günther Brammer
+ * Copyright (c) 2006, 2010, 2012  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

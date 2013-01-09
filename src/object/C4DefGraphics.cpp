@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2004-2008, 2010  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2009-2011  Armin Burgmeier
+ * Copyright (c) 2005, 2009-2012  Armin Burgmeier
  * Copyright (c) 2005-2006, 2010-2011  Günther Brammer
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009-2010  Nicolas Hake

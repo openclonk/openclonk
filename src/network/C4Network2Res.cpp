@@ -9,6 +9,7 @@
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2011  Nicolas Hake
+ * Copyright (c) 2012  Philipp Kern
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

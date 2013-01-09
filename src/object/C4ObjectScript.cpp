@@ -3,9 +3,9 @@
  *
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2001, 2006  Peter Wortmann
+ * Copyright (c) 2004, 2006-2007, 2009-2012  Günther Brammer
+ * Copyright (c) 2005, 2009-2010, 2012  Armin Burgmeier
  * Copyright (c) 2001-2002, 2004-2007, 2010  Sven Eberhardt
- * Copyright (c) 2004, 2006-2007, 2009-2011  Günther Brammer
- * Copyright (c) 2005, 2009-2010  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de

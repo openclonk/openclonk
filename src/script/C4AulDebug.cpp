@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2009, 2011  Günther Brammer
+ * Copyright (c) 2009, 2011-2012  Günther Brammer
  * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2010  Benjamin Herr
  * 
