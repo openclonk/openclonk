@@ -17,7 +17,7 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group puncher c4script
+bin_PROGRAMS = clonk c4group puncher c4script mape
 
 EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 
@@ -706,6 +706,92 @@ c4script_LDADD = \
 if WIN32
 c4script_LDADD += -lwinmm
 endif
+
+## mape
+mape_SOURCES = \
+src/landscape/C4MapCreatorS2.cpp \
+src/landscape/C4Material.cpp \
+src/landscape/C4Texture.cpp \
+src/landscape/C4Scenario.cpp \
+src/lib/C4Rect.cpp \
+src/lib/C4SimpleLog.cpp \
+src/lib/C4NameList.cpp \
+src/mape/cpp-handles/group-handle.h \
+src/mape/cpp-handles/group-handle.cpp \
+src/mape/cpp-handles/mapgen-handle.h \
+src/mape/cpp-handles/mapgen-handle.cpp \
+src/mape/cpp-handles/material-handle.h \
+src/mape/cpp-handles/material-handle.cpp \
+src/mape/cpp-handles/random-handle.h \
+src/mape/cpp-handles/random-handle.cpp \
+src/mape/cpp-handles/texture-handle.h \
+src/mape/cpp-handles/texture-handle.cpp \
+src/mape/cpp-handles/stub-handle.cpp \
+src/mape/configfile.c \
+src/mape/configfile.h \
+src/mape/diskview.c \
+src/mape/diskview.h \
+src/mape/editview.c \
+src/mape/editview.h \
+src/mape/fileicon.c \
+src/mape/fileicon.h \
+src/mape/forward.h \
+src/mape/group.c \
+src/mape/group.h \
+src/mape/header.c \
+src/mape/header.h \
+src/mape/iconview.c \
+src/mape/iconview.h \
+src/mape/mape.c \
+src/mape/mapgen.c \
+src/mape/mapgen.h \
+src/mape/material.c \
+src/mape/material.h \
+src/mape/mattexview.c \
+src/mape/mattexview.h \
+src/mape/preferences.c \
+src/mape/preferences.h \
+src/mape/preferencesdialog.c \
+src/mape/preferencesdialog.h \
+src/mape/preview.c \
+src/mape/preview.h \
+src/mape/random.c \
+src/mape/random.h \
+src/mape/statusbar.c \
+src/mape/statusbar.h \
+src/mape/texture.c \
+src/mape/texture.h \
+src/mape/window.c \
+src/mape/window.h \
+mape-icons.h
+
+mape_CPPFLAGS = \
+$(AM_CPPFLAGS) \
+$(MAPE_CFLAGS)
+
+mape_LDADD = \
+  libc4script.a \
+  libmisc.a \
+  $(LDADD) \
+  $(MAPE_LIBS) \
+  $(Z_LIBS)
+
+mape_icons = \
+$(srcdir)/src/res/ocd.ico \
+$(srcdir)/src/res/ocf.ico \
+$(srcdir)/src/res/ocg.ico \
+$(srcdir)/src/res/ocm.ico \
+$(srcdir)/src/res/ocs.ico
+mape-icons.h: $(mape_icons)
+	gdk-pixbuf-csource --raw --static --build-list \
+		mape_icon_ocd "$(srcdir)/src/res/ocd.ico" \
+		mape_icon_ocf "$(srcdir)/src/res/ocf.ico" \
+		mape_icon_ocg "$(srcdir)/src/res/ocg.ico" \
+		mape_icon_ocm "$(srcdir)/src/res/ocm.ico" \
+		mape_icon_ocs "$(srcdir)/src/res/ocs.ico" \
+		> $@
+BUILT_SOURCES += mape-icons.h
+CLEANFILES += mape-icons.h
 
 ## documentation
 dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt
