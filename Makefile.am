@@ -21,7 +21,7 @@ bin_PROGRAMS = clonk c4group puncher c4script
 
 EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 
-noinst_LIBRARIES = lib.a
+noinst_LIBRARIES = libmisc.a libc4script.a
 
 # Some defines and warning options
 if RECENT_GCC
@@ -107,7 +107,7 @@ WARNING_FLAGS += -Winvalid-pch
 
 endif
 
-lib_a_SOURCES = \
+libmisc_a_SOURCES = \
 src/c4group/C4Group.cpp \
 src/c4group/C4Group.h \
 src/c4group/C4Update.cpp \
@@ -139,17 +139,47 @@ src/zlib/gzio.c \
 src/zlib/gzio.h \
 src/zlib/zutil.h
 
-clonk_SOURCES = \
-src/C4Globals.cpp \
+libc4script_a_SOURCES = \
+src/c4group/C4GroupSet.cpp \
+src/c4group/C4GroupSet.h \
 src/c4group/C4ComponentHost.cpp \
 src/c4group/C4ComponentHost.h \
+src/c4group/C4LangStringTable.cpp \
+src/c4group/C4LangStringTable.h \
+src/lib/C4Real.cpp \
+src/lib/C4Real.h \
+src/lib/C4Random.cpp \
+src/lib/C4Random.h \
+src/object/C4Id.cpp \
+src/object/C4Id.h \
+src/script/C4Aul.cpp \
+src/script/C4AulDefFunc.h \
+src/script/C4AulExec.cpp \
+src/script/C4AulExec.h \
+src/script/C4AulFunc.cpp \
+src/script/C4AulFunc.h \
+src/script/C4Aul.h \
+src/script/C4AulLink.cpp \
+src/script/C4AulParse.cpp \
+src/script/C4PropList.cpp \
+src/script/C4PropList.h \
+src/script/C4Script.cpp \
+src/script/C4ScriptHost.cpp \
+src/script/C4ScriptHost.h \
+src/script/C4StringTable.cpp \
+src/script/C4StringTable.h \
+src/script/C4ValueArray.cpp \
+src/script/C4ValueArray.h \
+src/script/C4Value.cpp \
+src/script/C4Value.h \
+src/script/C4ValueMap.cpp \
+src/script/C4ValueMap.h
+
+clonk_SOURCES = \
+src/C4Globals.cpp \
 src/c4group/C4Components.h \
 src/c4group/C4Extra.cpp \
 src/c4group/C4Extra.h \
-src/c4group/C4GroupSet.cpp \
-src/c4group/C4GroupSet.h \
-src/c4group/C4LangStringTable.cpp \
-src/c4group/C4LangStringTable.h \
 src/c4group/C4Language.cpp \
 src/c4group/C4Language.h \
 src/C4Include.h \
@@ -343,10 +373,6 @@ src/lib/C4Log.cpp \
 src/lib/C4Log.h \
 src/lib/C4NameList.cpp \
 src/lib/C4NameList.h \
-src/lib/C4Random.cpp \
-src/lib/C4Random.h \
-src/lib/C4Real.cpp \
-src/lib/C4Real.h \
 src/lib/C4Rect.cpp \
 src/lib/C4Rect.h \
 src/lib/C4RTF.cpp \
@@ -418,8 +444,6 @@ src/object/C4DefList.cpp \
 src/object/C4DefList.h \
 src/object/C4GameObjects.cpp \
 src/object/C4GameObjects.h \
-src/object/C4Id.cpp \
-src/object/C4Id.h \
 src/object/C4IDList.cpp \
 src/object/C4IDList.h \
 src/object/C4InfoCore.cpp \
@@ -493,30 +517,8 @@ src/res/Play.h \
 src/res/Rect.h \
 src/res/resource.h \
 src/res/Static.h \
-src/script/C4Aul.cpp \
 src/script/C4AulDebug.cpp \
 src/script/C4AulDebug.h \
-src/script/C4AulDefFunc.h \
-src/script/C4AulExec.cpp \
-src/script/C4AulExec.h \
-src/script/C4AulFunc.cpp \
-src/script/C4AulFunc.h \
-src/script/C4Aul.h \
-src/script/C4AulLink.cpp \
-src/script/C4AulParse.cpp \
-src/script/C4PropList.cpp \
-src/script/C4PropList.h \
-src/script/C4Script.cpp \
-src/script/C4ScriptHost.cpp \
-src/script/C4ScriptHost.h \
-src/script/C4StringTable.cpp \
-src/script/C4StringTable.h \
-src/script/C4ValueArray.cpp \
-src/script/C4ValueArray.h \
-src/script/C4Value.cpp \
-src/script/C4Value.h \
-src/script/C4ValueMap.cpp \
-src/script/C4ValueMap.h \
 thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
@@ -613,7 +615,8 @@ $(SDL_CFLAGS) \
 $(LIBUPNP_CFLAGS)
 
 clonk_LDADD = \
-  lib.a \
+  libc4script.a \
+  libmisc.a \
   $(LDADD) \
   $(LIBICONV) \
   $(GTK_LIBS) \
@@ -638,7 +641,7 @@ c4group_SOURCES += src/c4group/Resource.rc
 endif
 
 c4group_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(LIBICONV) \
   $(Z_LIBS) \
@@ -651,7 +654,7 @@ src/lib/C4SimpleLog.cpp \
 src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -663,7 +666,7 @@ src/lib/C4SimpleLog.cpp \
 src/netpuncher/main.cpp
 
 puncher_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(PTHREAD_LIBS)
 
@@ -678,7 +681,7 @@ src/lib/C4SimpleLog.cpp \
 src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -689,31 +692,14 @@ endif
 
 ## c4script shell
 c4script_SOURCES = \
-include/c4script/c4script.h \
 src/lib/C4SimpleLog.cpp \
-src/lib/C4Real.cpp \
-src/lib/C4Random.cpp \
-src/script/C4Aul.cpp \
-src/script/C4AulExec.cpp \
-src/script/C4AulFunc.cpp \
-src/script/C4AulLink.cpp \
-src/script/C4AulParse.cpp \
-src/script/C4StringTable.cpp \
-src/script/C4PropList.cpp \
-src/script/C4ScriptHost.cpp \
+include/c4script/c4script.h \
 src/script/C4ScriptMain.cpp \
-src/script/C4ScriptStandalone.cpp \
-src/script/C4ValueArray.cpp \
-src/script/C4Value.cpp \
-src/script/C4ValueMap.cpp \
-src/object/C4Id.cpp \
-src/script/C4Script.cpp \
-src/c4group/C4GroupSet.cpp \
-src/c4group/C4ComponentHost.cpp \
-src/c4group/C4LangStringTable.cpp
+src/script/C4ScriptStandalone.cpp
 
 c4script_LDADD = \
-  lib.a \
+  libc4script.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS)
 
