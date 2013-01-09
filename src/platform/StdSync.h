@@ -22,8 +22,6 @@
 #ifndef INC_StdSync
 #define INC_StdSync
 
-#include <PlatformAbstraction.h>
-
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 

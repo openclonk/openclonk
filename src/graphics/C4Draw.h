@@ -37,7 +37,7 @@
 #define GFXENGN_NOGFX    3
 
 // Global Draw access pointer
-extern class C4Draw *pDraw;
+extern C4Draw *pDraw;
 
 // rotation info class
 class C4BltTransform

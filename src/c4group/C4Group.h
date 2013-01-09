@@ -31,7 +31,6 @@
 #include <CStdFile.h>
 #include <StdBuf.h>
 #include <StdCompiler.h>
-#include <Standard.h>
 
 // C4Group-Rewind-warning:
 // The current C4Group-implementation cannot handle random file access very well,

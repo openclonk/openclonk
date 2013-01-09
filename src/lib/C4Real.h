@@ -40,9 +40,6 @@
 
 #include <math.h>
 
-#include "PlatformAbstraction.h"
-#include "StdCompiler.h"
-
 // activate to switch to classic fixed-point math
 #define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE

@@ -25,8 +25,6 @@
 
 #include <StdColors.h>
 #include <C4Rect.h>
-#include <C4Group.h>
-#include <C4GroupSet.h>
 
 #ifdef _WIN32
 #include <C4windowswrapper.h>
@@ -73,10 +71,6 @@ class CStdGL;
 class CStdGLCtx;
 extern CStdGL *pGL;
 #endif
-
-class C4AbstractApp;
-class C4Window;
-class C4TexRef;
 
 class C4Surface
 {
