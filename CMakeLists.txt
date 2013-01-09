@@ -704,9 +704,6 @@ list(APPEND MAPE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h)
 if(APPLE)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4FileMonitorMac.mm
-	)
-
-	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
 	)
@@ -1074,7 +1071,6 @@ endif()
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
-
 add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
@@ -1209,7 +1205,6 @@ if(USE_CONSOLE)
 		${READLINE_LIBRARIES}
 	)
 endif()
-
 if(UNIX AND NOT APPLE)
 	target_link_libraries(c4group rt)
 	target_link_libraries(c4script rt)
@@ -1218,9 +1213,6 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(mape rt)
 endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
-
-#set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
-#set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
@@ -1409,9 +1401,13 @@ if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
-		target_link_libraries(clonk ${GTK3_LIBRARIES})
+		target_link_libraries(clonk
+			${GTK3_LIBRARIES}
+		)
 	else()
-		target_link_libraries(clonk ${GTK_LIBRARIES})
+		target_link_libraries(clonk
+			${GTK_LIBRARIES}
+		)
 	endif()
 endif()
 if(MAPE_GTK_FOUND)
@@ -1438,7 +1434,7 @@ if (WIN32)
 		target_link_libraries(clonk vfw32)
 		set(HAVE_VFW32 TRUE)
 	elseif(wavifil32_LIBRARIES)
-		target_link_libraries(clonk msvfw32)
+		target_link_libraries(clonk wavifil32 msvfw32)
 		set(HAVE_VFW32 TRUE)
 	endif()
 
@@ -1451,7 +1447,9 @@ if (WIN32)
 		find_package(FMod)
 		if(FMOD_FOUND)
 			set(HAVE_FMOD TRUE)
-			target_link_libraries(clonk ${FMOD_LIBRARIES})
+			target_link_libraries(clonk
+				${FMOD_LIBRARIES}
+			)
 			include_directories(${FMOD_INCLUDE_DIR})
 		else()
 			set(HAVE_FMOD FALSE)
@@ -1467,7 +1465,10 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 		if(SDLMIXER_LIBRARIES)
 			SET(HAVE_LIBSDL_MIXER ON)
 		endif()
-		target_link_libraries(clonk ${SDL_LIBRARY} ${SDLMIXER_LIBRARIES})
+		target_link_libraries(clonk
+			${SDL_LIBRARY}
+			${SDLMIXER_LIBRARIES}
+		)
 	endif()
 endif()
 
