@@ -636,6 +636,8 @@ set(MAPE_SOURCES
 	src/mape/cpp-handles/random-handle.cpp
 	src/mape/cpp-handles/texture-handle.h
 	src/mape/cpp-handles/texture-handle.cpp
+	src/mape/cpp-handles/version-handle.h
+	src/mape/cpp-handles/version-handle.cpp
 	src/mape/cpp-handles/stub-handle.cpp
 	src/mape/configfile.c
 	src/mape/configfile.h

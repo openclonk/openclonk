@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <gtksourceview/gtksourcebuffer.h>
 
+#include "mape/cpp-handles/version-handle.h"
 #include "mape/fileicon.h"
 #include "mape/configfile.h"
 #include "mape/preferencesdialog.h"
@@ -447,6 +448,7 @@ static void mape_window_cb_help_about(GtkAction* action,
 		"",
 		"Contributors:",
 		"  Tyron Madlener <tm@tyron.at>",
+		"  Günther Brammer <gbrammer@gmx.de>",
 		NULL
 	};
 
@@ -465,12 +467,12 @@ static void mape_window_cb_help_about(GtkAction* action,
 
 	gtk_about_dialog_set_version(
 		GTK_ABOUT_DIALOG(about_dialog),
-		"1.3.90"
+		c4_version_get()
 	);
 
 	gtk_about_dialog_set_copyright(
 		GTK_ABOUT_DIALOG(about_dialog),
-		"Copyright \xc2\xa9 2005-2009 Armin Burgmeier"
+		"Copyright \xc2\xa9 2005-2013 Armin Burgmeier"
 	);
 
 	gtk_about_dialog_set_comments(
