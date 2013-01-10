@@ -61,7 +61,15 @@ void c4_material_map_crossmap_materials(C4MaterialMapHandle* material_map, C4Tex
   for(int i = 0; i < HANDLE_TO_MATERIAL_MAP(material_map)->Num; ++i)
   {
     C4Material* mat = &HANDLE_TO_MATERIAL_MAP(material_map)->Map[i];
-    mat->DefaultMatTex = HANDLE_TO_TEXTURE_MAP(texture_map)->GetIndex(mat->Name, mat->sTextureOverlay.getData(), true);
+    const char* overlay = mat->sTextureOverlay.getData();
+    if(!overlay || *overlay == '\0')
+    {
+      int first_tex_map_entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetIndex(mat->Name, NULL, false);
+      overlay = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(first_tex_map_entry)->GetTextureName();
+    }
+
+    if(overlay)
+      mat->DefaultMatTex = HANDLE_TO_TEXTURE_MAP(texture_map)->GetIndex(mat->Name, overlay, true);
   }
 }
 

@@ -39,10 +39,13 @@ static void mape_mapgen_read_color(guint8* dest,
                                    unsigned int matnum)
 {
   const gchar* texture_name;
+  const gchar* first_tex_separator;
+  gchar* own_texture_name;
   guint32 color;
 
   if(matnum == 0)
   {
+    /* Sky */
     dest[matnum * 4 + 1] = 100;
     dest[matnum * 4 + 2] = 100;
     dest[matnum * 4 + 3] = 255;
@@ -63,10 +66,26 @@ static void mape_mapgen_read_color(guint8* dest,
     }
     else
     {
+      /* When the texture is animated, the texture name consists of more than
+       * one texture, separated with a '-' character. In this case, we simply
+       * use the first one for display. */
+      own_texture_name = NULL;
+      first_tex_separator = strchr(texture_name, '-');
+      if(first_tex_separator != NULL)
+      {
+        own_texture_name = g_strndup(
+          texture_name,
+          first_tex_separator - texture_name
+        );
+
+        texture_name = own_texture_name;
+      }
+
       color = mape_texture_map_get_average_texture_color(
         texture_map,
         texture_name
       );
+      g_free(own_texture_name);
 
       dest[matnum * 4 + 1] = (color      ) & 0xff;
       dest[matnum * 4 + 2] = (color >>  8) & 0xff;
