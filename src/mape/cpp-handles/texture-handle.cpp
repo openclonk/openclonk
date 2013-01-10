@@ -40,8 +40,8 @@ void c4_texture_map_handle_free(C4TextureMapHandle* texture_map)
 
 guint c4_texture_map_handle_load_map(C4TextureMapHandle* texture_map, C4GroupHandle* group, const char* entry_name, gboolean* overload_materials, gboolean* overload_textures)
 {
-  bool fOverloadMaterials;
-  bool fOverloadTextures;
+  bool fOverloadMaterials = false;
+  bool fOverloadTextures = false;
   guint32 retval = HANDLE_TO_TEXTURE_MAP(texture_map)->LoadMap(*HANDLE_TO_GROUP(group), entry_name, &fOverloadMaterials, &fOverloadTextures);
   if(overload_materials) *overload_materials = fOverloadMaterials;
   if(overload_textures) *overload_textures = fOverloadTextures;
