@@ -542,7 +542,7 @@ mape_texture_map_get_material_name_from_mapping(MapeTextureMap* texture_map,
   MapeTextureMapPrivate* priv;
   g_return_val_if_fail(MAPE_IS_TEXTURE_MAP(texture_map), NULL);
   priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
-  return mape_texture_handle_get_entry_material_name(priv->handle, index);
+  return c4_texture_handle_get_entry_material_name(priv->handle, index);
 }
 
 /**
@@ -565,7 +565,7 @@ mape_texture_map_get_texture_name_from_mapping(MapeTextureMap* texture_map,
   MapeTextureMapPrivate* priv;
   g_return_val_if_fail(MAPE_IS_TEXTURE_MAP(texture_map), NULL);
   priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
-  return mape_texture_handle_get_entry_texture_name(priv->handle, index);
+  return c4_texture_handle_get_entry_texture_name(priv->handle, index);
 }
 
 /**
@@ -586,7 +586,7 @@ mape_texture_map_get_average_texture_color(MapeTextureMap* texture_map,
   MapeTextureMapPrivate* priv;
   g_return_val_if_fail(MAPE_IS_TEXTURE_MAP(texture_map), 0);
   priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
-  return mape_texture_handle_get_average_texture_color(priv->handle, name);
+  return c4_texture_handle_get_average_texture_color(priv->handle, name);
 }
 
 /* This function is for internal use only */

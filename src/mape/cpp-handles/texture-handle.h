@@ -33,10 +33,10 @@ guint c4_texture_map_handle_load_map(C4TextureMapHandle* texture_map, C4GroupHan
 gboolean c4_texture_map_handle_add_texture(C4TextureMapHandle* texture_map, const char* texture, guint32 avg_color);
 const char* c4_texture_map_handle_get_texture(C4TextureMapHandle* texture_map, guint index);
 
-const char* mape_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index);
-const char* mape_texture_handle_get_entry_texture_name(C4TextureMapHandle* texture_map, guint index);
+const char* c4_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index);
+const char* c4_texture_handle_get_entry_texture_name(C4TextureMapHandle* texture_map, guint index);
 
-guint32 mape_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_map, const char* name);
+guint32 c4_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_map, const char* name);
 
 G_END_DECLS
 

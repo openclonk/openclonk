@@ -61,19 +61,19 @@ const char* c4_texture_map_handle_get_texture(C4TextureMapHandle* texture_map, g
   return HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(index);
 }
 
-guint32 mape_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_map, const char* name)
+guint32 c4_texture_handle_get_average_texture_color(C4TextureMapHandle* texture_map, const char* name)
 {
   return HANDLE_TO_TEXTURE_MAP(texture_map)->GetTexture(name)->GetAverageColor();
 }
 
-const char* mape_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index)
+const char* c4_texture_handle_get_entry_material_name(C4TextureMapHandle* texture_map, guint index)
 {
   const C4TexMapEntry* entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(index);
   if(!entry) return NULL;
   return entry->GetMaterialName();
 }
 
-const char* mape_texture_handle_get_entry_texture_name(C4TextureMapHandle* texture_map, guint index)
+const char* c4_texture_handle_get_entry_texture_name(C4TextureMapHandle* texture_map, guint index)
 {
   const C4TexMapEntry* entry = HANDLE_TO_TEXTURE_MAP(texture_map)->GetEntry(index);
   if(!entry) return NULL;
