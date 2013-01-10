@@ -30,6 +30,21 @@
 #define HANDLE_TO_MATERIAL_MAP(handle) (reinterpret_cast<C4MaterialMap*>(handle))
 #define HANDLE_TO_TEXTURE_MAP(handle) (reinterpret_cast<C4TextureMap*>(handle))
 
+namespace
+{
+
+bool HasAlgoScript(C4MCNode* node)
+{
+  if(node->Type() == MCN_Overlay && static_cast<C4MCOverlay*>(node)->Algorithm == static_cast<C4MCOverlay*>(node)->GetAlgo("script"))
+    return true;
+
+  if(node->Child0) return HasAlgoScript(node->Child0);
+  if(node->Next) return HasAlgoScript(node->Next);
+  return false;
+}
+
+}
+
 extern "C" {
 
 struct _C4MapgenHandle {
@@ -61,9 +76,14 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, C
 		C4MCParser parser(&mapgen);
 		parser.ParseMemFile(source, filename);
 
+		C4MCMap* map = mapgen.GetMap(NULL);
+		if(!map) throw C4MCParserErr(&parser, "No map definition in source file");
+
+		if(HasAlgoScript(mapgen.GetMap(NULL)))
+			throw C4MCParserErr(&parser, "algo=script is not yet supported!");
+
 		int32_t out_width, out_height;
 		BYTE* array = mapgen.RenderBuf(NULL, out_width, out_height);
-		if(array == NULL) throw C4MCParserErr(&parser, "No map definition in source file");
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
 		handle->width = map_width;
