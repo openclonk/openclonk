@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE doc
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
@@ -71,9 +71,24 @@
         <col>Attachment to surfaces: <emlink href="definition/cnat.html">CNAT Value</emlink>, e.g. value 8 if the object should attach to the floor like a walking clonk does; or 4 for attachment to the ceiling like a hangling clonk. Only evaluated if the procedure is NONE.</col>
       </row>
       <row>
-        <literal_col>Facet</literal_col>
-        <col>6 integers</col>
-        <col>Animation graphics: Target rectangle from Graphics.png relative to upper left corner of unrotated object shape.</col>
+        <literal_col>X</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: X coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Y</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: Y coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Wdt</literal_col>
+        <col>Integer</col>
+        <col>Width of the animation graphic from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Hgt</literal_col>
+        <col>Integer</col>
+        <col>Height of the animation graphic from Graphics.png.</col>
       </row>
       <row>
         <literal_col>FacetBase</literal_col>
