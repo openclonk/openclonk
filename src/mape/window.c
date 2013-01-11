@@ -519,6 +519,7 @@ MapeWindow* mape_window_new(int argc,
                             GError** error)
 {
 	MapeWindow* wnd;
+	MapeConfigFileEntry* entry;
 	gchar* config_path;
 	gchar* material_path;
 	gchar* current_dir;
@@ -822,6 +823,23 @@ MapeWindow* mape_window_new(int argc,
 
 	mape_edit_view_apply_preferences(wnd->edit_view, &wnd->preferences);
 	mape_pre_view_apply_preferences(wnd->pre_view, &wnd->preferences);
+
+	/* Load initial path in disk view, if any. Note this needs to go
+	 * after applying preferences in edit_view, so that the map size is
+	 * correct in case the newly loaded Material.ocg triggers a map update. */
+	entry = mape_config_file_get_entry_by_key(
+		wnd->config,
+		"material_path"
+	);
+
+	if(entry != NULL)
+	{
+		mape_disk_view_extend_to_path(
+			wnd->disk_view,
+			mape_config_file_entry_get_value(entry),
+			NULL
+		);
+	}
 
 	gtk_window_set_title(GTK_WINDOW(wnd->window), "Mape");
 	gtk_window_set_default_size(GTK_WINDOW(wnd->window), 640, 480);

@@ -825,7 +825,6 @@ MapeDiskView* mape_disk_view_new(MapeFileIconSet* icon_set,
                                  GError** error)
 {
 	MapeDiskView* view;
-	MapeConfigFileEntry* entry;
 
 	view = malloc(sizeof(MapeDiskView) );
 
@@ -963,21 +962,6 @@ MapeDiskView* mape_disk_view_new(MapeFileIconSet* icon_set,
 		GTK_SCROLLED_WINDOW(view->window),
 		GTK_SHADOW_IN
 	);
-
-	/* Load initial path, if any */
-	entry = mape_config_file_get_entry_by_key(
-		view->config,
-		"material_path"
-	);
-
-	if(entry != NULL)
-	{
-		mape_disk_view_extend_to_path(
-			view,
-			mape_config_file_entry_get_value(entry),
-			NULL
-		);
-	}
 
 	gtk_widget_set_size_request(view->window, 150, -1);
 	gtk_widget_show(view->window);
