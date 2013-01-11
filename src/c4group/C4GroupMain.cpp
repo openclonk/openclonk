@@ -351,7 +351,7 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
-		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
+		_snwprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"MakeGroupFile", L"C4Group Pack", strCommand))
 			return 0;
 	}
