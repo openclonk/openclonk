@@ -138,19 +138,23 @@ public:
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
-	C4AulParse(C4AulScriptFunc * Fn, enum Type Type):
+	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, enum Type Type):
 			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(Fn->Owner->Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
 			Done(false),
 			Type(Type),
-			ContextToExecIn(NULL),
+			ContextToExecIn(context),
 			fJump(false),
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
 	~C4AulParse()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
+	void Parse_DirectExec();
+	void Parse_Script(C4ScriptHost *);
+
+private:
 	C4AulScriptFunc *Fn; C4ScriptHost * Host; C4ScriptHost * pOrgScript;
 	C4AulScriptEngine *Engine;
 	const char *SPos; // current position in the script
@@ -162,7 +166,6 @@ public:
 	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
-	void Parse_Script();
 	void Parse_Function();
 	void Parse_Statement();
 	void Parse_Block();
@@ -198,8 +201,6 @@ public:
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
-private:
-
 	bool fJump;
 	int iStack;
 
@@ -233,6 +234,7 @@ private:
 	void PushLoop();
 	void PopLoop();
 	void AddLoopControl(bool fBreak);
+	friend class C4AulParseError;
 };
 
 void C4AulScript::Warn(const char *pMsg, ...)
@@ -770,7 +772,7 @@ bool C4ScriptHost::Preparse()
 	LocalValues.Clear();
 
 	C4AulParse state(this, C4AulParse::PREPARSER);
-	state.Parse_Script();
+	state.Parse_Script(this);
 
 	// #include will have to be resolved now...
 	IncludesResolved = false;
@@ -1201,18 +1203,24 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
-	C4AulParse state(this, C4AulParse::PARSER);
-	state.ContextToExecIn = context;
-	// get first token
-	state.Shift();
-	state.Parse_Expression();
-	state.Match(ATT_EOF);
-	AddBCC(AB_RETURN, 0, state.SPos);
-	AddBCC(AB_EOFN, 0, state.SPos);
+	C4AulParse state(this, context, C4AulParse::PARSER);
+	state.Parse_DirectExec();
 }
 
-void C4AulParse::Parse_Script()
+void C4AulParse::Parse_DirectExec()
 {
+	// get first token
+	Shift();
+	Parse_Expression();
+	Match(ATT_EOF);
+	AddBCC(AB_RETURN);
+	AddBCC(AB_EOFN);
+}
+
+void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
+{
+	pOrgScript = scripthost;
+	SPos = pOrgScript->Script.getData();
 	const char * SPos0 = SPos;
 	bool all_ok = true;
 	bool found_code = false;
@@ -2938,13 +2946,11 @@ bool C4ScriptHost::Parse()
 	C4AulParse state(this, C4AulParse::PARSER);
 	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{
-		state.SPos = (*s)->Script.getData();
-		state.pOrgScript = *s;
 		if (DEBUG_BYTECODE_DUMP)
 		{
-			fprintf(stderr, "parsing %s...\n", state.pOrgScript->ScriptName.getData());
+			fprintf(stderr, "parsing %s...\n", (*s)->ScriptName.getData());
 		}
-		state.Parse_Script();
+		state.Parse_Script(*s);
 	}
 
 	// save line count
