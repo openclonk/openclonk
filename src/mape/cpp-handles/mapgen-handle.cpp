@@ -76,14 +76,14 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		parser.ParseMemFile(source, filename);
 
 		C4MCMap* map = mapgen.GetMap(NULL);
-		if(!map) throw C4MCParserErr(&parser, "No map definition in source file");
+		if(!map) throw std::runtime_error("No map definition in source file");
 
 		// Setup the script engine if there is an algo=script overlay in the
 		// Landscape.txt file
 		if(HasAlgoScript(mapgen.GetMap(NULL)))
 		{
 			if(script_path == NULL)
-				throw C4MCParserErr(&parser, "For algo=script overlays to work, save the file first at the location of the Script.c file");
+				throw std::runtime_error("For algo=script overlays to work, save the file first at the location of the Script.c file");
 
 			gchar* dirname = g_path_get_dirname(script_path);
 			gchar* basename = g_path_get_basename(script_path);
@@ -91,9 +91,10 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 			C4Group File;
 			if(!File.Open(dirname))
 			{
+				StdStrBuf error_msg = FormatString("Failed to open directory '%s': %s", dirname, File.GetError());
 				g_free(dirname);
 				g_free(basename);
-				throw C4MCParserErr(&parser, File.GetError());
+				throw std::runtime_error(error_msg.getData());
 			}
 
 			// get scripts
@@ -103,7 +104,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 				g_free(dirname);
 				g_free(basename);
 				StdStrBuf error_msg = FormatString("Failed to load '%s': No such file", script_path);
-				throw C4MCParserErr(&parser, error_msg.getData());
+				throw std::runtime_error(error_msg.getData());
 			}
 
 			// load core functions into script engine
@@ -116,13 +117,13 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 
 			const char* parse_error = c4_log_handle_get_first_log_message();
 			if(parse_error)
-				throw C4MCParserErr(&parser, parse_error);
+				throw std::runtime_error(parse_error);
 
 			// Link script engine (resolve includes/appends, generate code)
 			c4_log_handle_clear();
 			ScriptEngine.Link(&::Definitions);
 			if(ScriptEngine.warnCnt > 0 || ScriptEngine.errCnt > 0)
-				throw C4MCParserErr(&parser, c4_log_handle_get_first_log_message());
+				throw std::runtime_error(c4_log_handle_get_first_log_message());
 			// Set name list for globals
 			ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 		}
@@ -138,7 +139,7 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		if(runtime_error)
 		{
 			delete[] array;
-			throw C4MCParserErr(&parser, runtime_error);
+			throw std::runtime_error(runtime_error);
 		}
 
 		C4MapgenHandle* handle = new C4MapgenHandle;
@@ -155,6 +156,15 @@ C4MapgenHandle* c4_mapgen_handle_new(const char* filename, const char* source, c
 		handle->width = 0;
 		handle->height = 0;
 		handle->error_message.Copy(err.Msg);
+		handle->data = NULL;
+		return handle;
+	}
+	catch(const std::exception& ex)
+	{
+		C4MapgenHandle* handle = new C4MapgenHandle;
+		handle->width = 0;
+		handle->height = 0;
+		handle->error_message.Copy(ex.what());
 		handle->data = NULL;
 		return handle;
 	}
