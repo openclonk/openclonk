@@ -587,7 +587,6 @@ set(MAPE_BASE_SOURCES
 	src/lib/C4Real.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
-	src/lib/C4SimpleLog.cpp
 	src/lib/Standard.cpp
 	src/lib/Standard.h
 	src/lib/StdBuf.cpp
@@ -611,6 +610,7 @@ set(MAPE_BASE_SOURCES
 	src/script/C4AulParse.cpp
 	src/script/C4PropList.cpp
 	src/script/C4PropList.h
+	src/script/C4Script.cpp
 	src/script/C4ScriptHost.cpp
 	src/script/C4ScriptHost.h
 	src/script/C4StringTable.cpp
@@ -628,6 +628,8 @@ set(MAPE_BASE_SOURCES
 set(MAPE_SOURCES
 	src/mape/cpp-handles/group-handle.h
 	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/log-handle.h
+	src/mape/cpp-handles/log-handle.cpp
 	src/mape/cpp-handles/mapgen-handle.h
 	src/mape/cpp-handles/mapgen-handle.cpp
 	src/mape/cpp-handles/material-handle.h

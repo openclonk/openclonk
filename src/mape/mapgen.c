@@ -104,6 +104,7 @@ static void mape_mapgen_read_color(guint8* dest,
  * @filename: The filename of the file that is being parsed. This is only used
  * for display purposes.
  * @source: The map generator source code for the map to generate.
+ * @script_path: Path to the script source for algo=script overlays, or %NULL.
  * @material_map: The material map containing the materials to be used during
  * map generation.
  * @texture_map: The texture map containing the textures to be used during map
@@ -116,6 +117,10 @@ static void mape_mapgen_read_color(guint8* dest,
  * The pixel color depends on the texture at the corresponding position and is
  * determined by the average color of that texture.
  *
+ * If the source contains one or more algo=script overlays and @script_path is
+ * %NULL, an error is generated. Otherwise, the file at @script_path is opened
+ * and used to look up the relevant script functions.
+ *
  * In case an error occurs, for example when the map generator source code is
  * not valid, @error is set and the function returns %NULL.
  *
@@ -125,6 +130,7 @@ static void mape_mapgen_read_color(guint8* dest,
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,
+                   const gchar* script_path,
                    MapeMaterialMap* material_map,
                    MapeTextureMap* texture_map,
                    guint width,
@@ -148,6 +154,7 @@ mape_mapgen_render(const gchar* filename,
   handle = c4_mapgen_handle_new(
     filename,
     source,
+    script_path,
     _mape_material_map_get_handle(material_map),
     _mape_texture_map_get_handle(texture_map),
     width,

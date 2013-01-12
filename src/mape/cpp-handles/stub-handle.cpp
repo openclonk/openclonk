@@ -43,6 +43,7 @@ C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
 int32_t C4PropListNumbered::EnumerationIndex = 0;
 C4StringTable Strings;
 C4AulScriptEngine ScriptEngine;
+C4DefList Definitions;
 
 /* These are just stubs used by dead code: */
 C4Landscape Landscape;
@@ -98,12 +99,16 @@ C4IDListChunk::~C4IDListChunk() {}
 
 void C4Def::IncludeDefinition(C4Def*) {}
 
+C4DefList::C4DefList() {}
+C4DefList::~C4DefList() {}
 C4Def* C4DefList::ID2Def(C4ID) {return NULL;}
 void C4DefList::Draw(C4ID, C4Facet &, bool, int32_t) {}
 C4Def * C4DefList::GetDef(int) {return 0;}
 int C4DefList::GetDefCount() {return 0;}
 void C4DefList::CallEveryDefinition() {}
 void C4DefList::ResetIncludeDependencies() {}
+bool C4DefList::DrawFontImage(const char* szImageTag, C4Facet& rTarget, C4DrawTransform* pTransform) { return false; }
+float C4DefList::GetFontImageAspect(const char* szImageTag) { return -1.0f; }
 
 C4Landscape::C4Landscape() {}
 C4Landscape::~C4Landscape() {}

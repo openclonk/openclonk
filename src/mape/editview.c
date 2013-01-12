@@ -30,6 +30,7 @@ typedef struct _ThreadData ThreadData;
 struct _ThreadData {
 	MapeEditView* view;
 	gchar* source;
+	gchar* file_path;
 	MapeMaterialMap* mat_map;
 	MapeTextureMap* tex_map;
 	guint map_width;
@@ -68,6 +69,7 @@ static void mape_edit_view_cb_update(GtkWidget* widget,
 }
 
 static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
+                                            const gchar* file_path,
                                             MapeMaterialMap* mat_map,
                                             MapeTextureMap* tex_map,
                                             guint map_width,
@@ -75,6 +77,11 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
                                             GError** error)
 {
 	GdkPixbuf* pixbuf;
+	gchar* basename;
+	gchar* dirname;
+	gchar* scriptname;
+	const gchar* filename;
+
 	if(mat_map == NULL || tex_map == NULL)
 	{
 		g_set_error(
@@ -87,9 +94,26 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 		return NULL;
 	}
 
+	if(file_path != NULL)
+	{
+		basename = g_path_get_basename(file_path);
+		filename = basename;
+
+		dirname = g_path_get_dirname(file_path);
+		scriptname = g_build_filename(dirname, "Script.c", NULL);
+		g_free(dirname);
+	}
+	else
+	{
+		basename = NULL;
+		filename = "Landscape.txt";
+		scriptname = NULL;
+	}
+
 	pixbuf = mape_mapgen_render(
-		"Landscape.txt", /* TODO: Use actual filename */
+		filename,
 		source,
+		scriptname,
 		mat_map,
 		tex_map,
 		map_width,
@@ -97,6 +121,7 @@ static GdkPixbuf* mape_edit_view_render_map(const gchar* source,
 		error
 	);
 
+	g_free(basename);
 	return pixbuf;
 }
 
@@ -151,6 +176,7 @@ static gpointer mape_edit_view_thread_entry(gpointer data_)
 
 	res_buf = mape_edit_view_render_map(
 		data->source,
+		data->file_path,
 		data->mat_map,
 		data->tex_map,
 		data->map_width,
@@ -164,6 +190,7 @@ static gpointer mape_edit_view_thread_entry(gpointer data_)
 	result->error = error;
 
 	g_free(data->source);
+	g_free(data->file_path);
 	g_slice_free(ThreadData, data);
 
 	result->idle_id = g_idle_add_full(
@@ -337,6 +364,9 @@ void mape_edit_view_destroy(MapeEditView* view)
 
 void mape_edit_view_clear(MapeEditView* view)
 {
+	g_free(view->file_path);
+	view->file_path = NULL;
+
 	/* TODO: Undoable action dingsen */
 	/* (statische mape_edit_view_set_contents-Call?) */
 	gtk_text_buffer_set_text(
@@ -349,9 +379,6 @@ void mape_edit_view_clear(MapeEditView* view)
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(view->view)),
 		FALSE
 	);
-	
-	g_free(view->file_path);
-	view->file_path = NULL;
 }
 
 gboolean mape_edit_view_open(MapeEditView* view,
@@ -422,6 +449,12 @@ gboolean mape_edit_view_open(MapeEditView* view,
 		view->encoding = "UTF-8";
 	}
 
+	/* TODO: Verify that filename is absolute and make it absolute if
+	   it is not */
+	new_path = g_strdup(filename);
+	g_free(view->file_path);
+	view->file_path = new_path;
+
 	/* TODO: Undoable action dingsen */
 	/* (statische mape_edit_view_set_contents-Call?) */
 	gtk_text_buffer_set_text(
@@ -436,12 +469,6 @@ gboolean mape_edit_view_open(MapeEditView* view,
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(view->view)),
 		FALSE
 	);
-	
-	/* TODO: Verify that filename is absolute and make it absolute if
-	   it is not */
-	new_path = g_strdup(filename);
-	g_free(view->file_path);
-	view->file_path = new_path;
 
 	return TRUE;
 }
@@ -488,7 +515,11 @@ gboolean mape_edit_view_save(MapeEditView* view,
 	new_path = g_strdup(filename);
 	g_free(view->file_path);
 	view->file_path = new_path;
-	
+
+	/* Rerender with new file path --
+	 * different Script.c lookup for algo=script overlays */
+	mape_edit_view_reload(view);
+
 	return TRUE;
 }
 
@@ -596,12 +627,13 @@ void mape_edit_view_reload(MapeEditView* edit_view)
 		 * thread result handler */
 		data->view = edit_view;
 		data->source = gtk_text_buffer_get_text(buffer, &begin, &end, TRUE);
+		data->file_path = g_strdup(edit_view->file_path);
 
 		/* TODO: We need to ref these so noone can delete them while the thread
 		 * uses them. */
 		data->mat_map = edit_view->pre_view->mat_tex->mat_map,
 		data->tex_map = edit_view->pre_view->mat_tex->tex_map,
-		
+
 		data->map_width = edit_view->map_width;
 		data->map_height = edit_view->map_height;
 

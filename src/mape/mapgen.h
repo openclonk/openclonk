@@ -44,6 +44,7 @@ typedef enum _MapeMapgenError {
 GdkPixbuf*
 mape_mapgen_render(const gchar* filename,
                    const gchar* source,
+                   const gchar* script_path,
                    MapeMaterialMap* material_map,
                    MapeTextureMap* texture_map,
                    guint width,
