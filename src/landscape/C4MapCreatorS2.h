@@ -362,7 +362,8 @@ class C4MCParser
 {
 private:
 	C4MapCreatorS2 *MapCreator; // map creator parsing into
-	char *Code; // loaded code
+	char *Code; // loaded code, can be NULL if externally owned
+	const char *BPos; // Beginning of code
 	const char *CPos; // current parser pos in code
 	C4MCTokenType CurrToken; // last token read
 	char CurrTokenIdtf[C4MaxName]; // current token string
