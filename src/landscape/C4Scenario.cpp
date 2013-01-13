@@ -213,8 +213,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 
 void C4SPlrStart::Default()
 {
-	NativeCrew=C4ID::None;
-	Crew.Set(1,0,1,10);
 	Wealth.Set(0,0,0,250);
 	Position[0]=Position[1]=-1;
 	EnforcePosition=0;
@@ -234,9 +232,7 @@ bool C4SPlrStart::EquipmentEqual(C4SPlrStart &rhs)
 
 bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 {
-	return (NativeCrew==rhs.NativeCrew)
-	       && (Crew == rhs.Crew)
-	       && (Wealth == rhs.Wealth)
+	return (Wealth == rhs.Wealth)
 	       && (ReadyCrew == rhs.ReadyCrew)
 	       && (ReadyBase == rhs.ReadyBase)
 	       && (ReadyVehic == rhs.ReadyVehic)
@@ -248,8 +244,6 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(NativeCrew, "StandardCrew",          C4ID::None));
-	pComp->Value(mkNamingAdapt(Crew,                    "Clonks",                C4SVal(1, 0, 1, 10), true));
 	pComp->Value(mkNamingAdapt(Wealth,                  "Wealth",                C4SVal(0, 0, 0,250), true));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
