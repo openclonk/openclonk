@@ -711,12 +711,12 @@
 		# Crew
 		
 		[Assignment]
-		Key=R
+		Key=T
 		GUIGroup=70
 		Control=PreviousCrew
   
 		[Assignment]
-		Key=T
+		Key=R
 		GUIGroup=70
 		Control=NextCrew
 		
@@ -844,12 +844,12 @@
 		# Crew
 		
 		[Assignment]
-		Key=P
+		Key=Y
 		Control=PreviousCrew
 		GUIGroup=70
   
 		[Assignment]
-		Key=Y
+		Key=P
 		Control=NextCrew
 		GUIGroup=70
 

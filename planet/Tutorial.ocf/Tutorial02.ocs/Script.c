@@ -126,7 +126,7 @@ protected func InitializePlayer(int plr)
 	SetPlayerZoomByViewRange(plr, 400, nil, PLRZOOM_Direct);
 	
 	// First clonk.
-	clonk = GetCrew(plr, 1);
+	clonk = GetCrew(plr, 0);
 	clonk->SetPosition(200, 440);
 	effect = AddEffect("ClonkOneRestore", clonk, 100, 10);
 	effect.to_x = 200;
@@ -145,14 +145,14 @@ protected func InitializePlayer(int plr)
 	effect.to_container = clonk;
 	
 	// Second clonk.
-	clonk = GetCrew(plr, 0);
+	clonk = GetCrew(plr, 1);
 	clonk->SetPosition(30, 680);
 	effect = AddEffect("ClonkTwoRestore", clonk, 100, 10);
 	effect.to_x = 30;
 	effect.to_y = 680;
 	
 	// Select first clonk
-	SetCursor(plr, GetCrew(plr, 1));
+	SetCursor(plr, GetCrew(plr, 0));
 	
 	// Create tutorial guide, add messages, show first.
 	guide = CreateTutorialGuide(plr);

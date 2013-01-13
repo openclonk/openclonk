@@ -476,7 +476,7 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 			if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
 			{
 				// Add object to crew
-				Crew.Add(nobj, C4ObjectList::stMain);
+				Crew.Add(nobj, C4ObjectList::stNone);
 				// add visibility range
 				nobj->SetPlrViewRange(C4FOW_Def_View_RangeX);
 				// If base is present, enter base
@@ -1033,7 +1033,7 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 
 	// Add to crew
 	if (!Crew.GetLink(pObj))
-		Crew.Add(pObj, C4ObjectList::stMain);
+		Crew.Add(pObj, C4ObjectList::stNone);
 
 	// add plr view
 	if (!pObj->PlrViewRange) pObj->SetPlrViewRange(C4FOW_Def_View_RangeX); else pObj->PlrFoWActualize();
