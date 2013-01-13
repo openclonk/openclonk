@@ -68,6 +68,7 @@ class CSurface8;
 #define C4MCErr_AlgoNotFound    "algorithm '%s' not found"
 #define C4MCErr_SFuncNotFound   "script func '%s' not found in scenario script"
 #define C4MCErr_PointOnlyOvl    "point only allowed in overlays"
+#define C4MCErr_NoRecTemplate   "cannot use template '%s' within itself"
 
 // predef
 class C4MCCallbackArray;
@@ -161,10 +162,10 @@ public:
 
 public:
 	C4MCNode(C4MCNode *pOwner=NULL); // constructor
-	C4MCNode(C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone); // constructor using template
+	C4MCNode(C4MCParser* pParser, C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone); // constructor using template
 	virtual ~C4MCNode(); // destructor
 
-	virtual C4MCNode *clone(C4MCNode *pToNode) { return new C4MCNode(pToNode, *this, true); }
+	virtual C4MCNode *clone(C4MCParser* pParser, C4MCNode *pToNode) { return new C4MCNode(pParser, pToNode, *this, true); }
 
 	void Clear(); // clear all child nodes
 	void Reg2Owner(C4MCNode *pOwner); // register into list
@@ -206,9 +207,9 @@ class C4MCOverlay : public C4MCNode
 {
 public:
 	C4MCOverlay(C4MCNode *pOwner=NULL); // constructor
-	C4MCOverlay(C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone); // construct of template
+	C4MCOverlay(C4MCParser* pParser, C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone); // construct of template
 
-	C4MCNode *clone(C4MCNode *pToNode) { return new C4MCOverlay(pToNode, *this, true); }
+	C4MCNode *clone(C4MCParser* pParser, C4MCNode *pToNode) { return new C4MCOverlay(pParser, pToNode, *this, true); }
 
 protected:
 	void Default(); // set default values for default presets
@@ -259,9 +260,9 @@ class C4MCPoint : public C4MCNode
 {
 public:
 	C4MCPoint(C4MCNode *pOwner=NULL); // constructor
-	C4MCPoint(C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone); // construct of template
+	C4MCPoint(C4MCParser* pParser, C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone); // construct of template
 
-	C4MCNode *clone(C4MCNode *pToNode) { return new C4MCPoint(pToNode, *this, true); }
+	C4MCNode *clone(C4MCParser* pParser, C4MCNode *pToNode) { return new C4MCPoint(pParser, pToNode, *this, true); }
 
 protected:
 	void Default(); // set default values for default presets
@@ -285,9 +286,9 @@ class C4MCMap : public C4MCOverlay
 {
 public:
 	C4MCMap(C4MCNode *pOwner=NULL); // constructor
-	C4MCMap(C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone); // construct of template
+	C4MCMap(C4MCParser* pParser, C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone); // construct of template
 
-	C4MCNode *clone(C4MCNode *pToNode) { return new C4MCMap(pToNode, *this, true); }
+	C4MCNode *clone(C4MCParser* pParser, C4MCNode *pToNode) { return new C4MCMap(pParser, pToNode, *this, true); }
 
 protected:
 	void Default(); // set default values for default presets

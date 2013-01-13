@@ -196,13 +196,17 @@ C4MCNode::C4MCNode(C4MCNode *pOwner)
 	*Name=0;
 }
 
-C4MCNode::C4MCNode(C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone)
+C4MCNode::C4MCNode(C4MCParser* pParser, C4MCNode *pOwner, C4MCNode &rTemplate, bool fClone)
 {
+	// Make sure the template is not used recursively within itself
+	for(C4MCNode* pParent = pOwner; pParent != NULL; pParent = pParent->Owner)
+		if(pParent == &rTemplate)
+			throw C4MCParserErr(pParser, C4MCErr_NoRecTemplate, rTemplate.Name);
 	// set owner and stuff
 	Reg2Owner(pOwner);
 	// copy children from template
 	for (C4MCNode *pChild=rTemplate.Child0; pChild; pChild=pChild->Next)
-		pChild->clone(this);
+		pChild->clone(pParser, this);
 	// no name
 	*Name=0;
 }
@@ -324,7 +328,7 @@ C4MCOverlay::C4MCOverlay(C4MCNode *pOwner) : C4MCNode(pOwner)
 	pEvaluateFunc=pDrawFunc=NULL;
 }
 
-C4MCOverlay::C4MCOverlay(C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone) : C4MCNode(pOwner, rTemplate, fClone)
+C4MCOverlay::C4MCOverlay(C4MCParser* pParser, C4MCNode *pOwner, C4MCOverlay &rTemplate, bool fClone) : C4MCNode(pParser, pOwner, rTemplate, fClone)
 {
 	// copy fields
 	X=rTemplate.X; Y=rTemplate.Y; Wdt=rTemplate.Wdt; Hgt=rTemplate.Hgt;
@@ -642,7 +646,7 @@ C4MCPoint::C4MCPoint(C4MCNode *pOwner) : C4MCNode(pOwner)
 	X=Y=0;
 }
 
-C4MCPoint::C4MCPoint(C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone) : C4MCNode(pOwner, rTemplate, fClone)
+C4MCPoint::C4MCPoint(C4MCParser* pParser, C4MCNode *pOwner, C4MCPoint &rTemplate, bool fClone) : C4MCNode(pParser, pOwner, rTemplate, fClone)
 {
 	// copy fields
 	X=rTemplate.X; Y=rTemplate.Y;
@@ -695,7 +699,7 @@ C4MCMap::C4MCMap(C4MCNode *pOwner) : C4MCOverlay(pOwner)
 
 }
 
-C4MCMap::C4MCMap(C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone) : C4MCOverlay(pOwner, rTemplate, fClone)
+C4MCMap::C4MCMap(C4MCParser* pParser, C4MCNode *pOwner, C4MCMap &rTemplate, bool fClone) : C4MCOverlay(pParser, pOwner, rTemplate, fClone)
 {
 
 }
@@ -1129,7 +1133,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 				if (SEqual(CurrTokenIdtf, C4MC_Overlay))
 				{
 					// overlay: create overlay node, using default template
-					pNewNode = new C4MCOverlay(pToNode, MapCreator->DefaultOverlay, false);
+					pNewNode = new C4MCOverlay(this, pToNode, MapCreator->DefaultOverlay, false);
 					State=PS_KEYWD1;
 				}
 				else if (SEqual(CurrTokenIdtf, C4MC_Point) && !pToNode->GetNodeByName(CurrTokenIdtf))
@@ -1138,7 +1142,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 					if (!pToNode->Type() == MCN_Overlay)
 						throw C4MCParserErr(this, C4MCErr_PointOnlyOvl);
 					// create point node, using default template
-					pNewNode = new C4MCPoint(pToNode, MapCreator->DefaultPoint, false);
+					pNewNode = new C4MCPoint(this, pToNode, MapCreator->DefaultPoint, false);
 					State=PS_KEYWD1;
 				}
 				else if (SEqual(CurrTokenIdtf, C4MC_Map))
@@ -1147,7 +1151,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 					if (!pToNode->GlobalScope())
 						throw C4MCParserErr(this, C4MCErr_MapNoGlobal);
 					// create map node, using default template
-					pNewNode = new C4MCMap(pToNode, MapCreator->DefaultMap, false);
+					pNewNode = new C4MCMap(this, pToNode, MapCreator->DefaultMap, false);
 					State=PS_KEYWD1;
 				}
 				else
@@ -1229,7 +1233,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 				{
 				case MCN_Overlay:
 					// create overlay
-					pNewNode=new C4MCOverlay(pToNode, *((C4MCOverlay *) pCpyNode), false);
+					pNewNode=new C4MCOverlay(this, pToNode, *((C4MCOverlay *) pCpyNode), false);
 					break;
 				case MCN_Map:
 					// maps not allowed
