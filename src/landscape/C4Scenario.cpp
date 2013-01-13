@@ -244,10 +244,12 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
 {
+	C4IDList crewDefault;
+	crewDefault.SetIDCount(C4ID::Clonk,1,true);
 	pComp->Value(mkNamingAdapt(Wealth,                  "Wealth",                C4SVal(0, 0, 0,250), true));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));
 	pComp->Value(mkNamingAdapt(EnforcePosition,         "EnforcePosition",       0));
-	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  C4IDList()));
+	pComp->Value(mkNamingAdapt(ReadyCrew,               "Crew",                  crewDefault));
 	pComp->Value(mkNamingAdapt(ReadyBase,               "Buildings",             C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyVehic,              "Vehicles",              C4IDList()));
 	pComp->Value(mkNamingAdapt(ReadyMaterial,           "Material",              C4IDList()));
