@@ -238,7 +238,16 @@ void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
 		// Grow
 		Grow(512);
 		// Try output
-		iBytes = vsnprintf(getMPtr(iStart), getLength() - iStart, szFmt, args);
+		va_list args_copy;
+		#ifdef va_copy
+			va_copy(args_copy, args);
+		#else
+			args_copy = args;
+		#endif
+		iBytes = vsnprintf(getMPtr(iStart), getLength() - iStart, szFmt, args_copy);
+		#ifdef va_copy
+			va_end(args_copy);
+		#endif
 	}
 	while (iBytes < 0 || (unsigned int)(iBytes) >= getLength() - iStart);
 	// Calculate real length, if vsnprintf didn't return anything of value
