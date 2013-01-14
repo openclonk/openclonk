@@ -2,3 +2,4 @@ NoPlrKnowledge=Keine Baupläne vorhanden
 Construction=Konstruktion
 Production=Produktion
 Name=Werkzeughütte
+Description=Hier können viele wichtige Werkzeuge zum Bergbau, zum Bäume fällen und zur Erkundung hergestellt werden.

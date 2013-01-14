@@ -8,7 +8,7 @@
     <category>Landscape</category>
     <version>5.1 OC</version>
     <syntax>
-      <rtype>void</rtype>
+      <rtype>int</rtype>
       <params>
         <param>
           <type>int</type>
@@ -30,9 +30,14 @@
           <name>height</name>
           <desc>Height</desc>
         </param>
+		<param>
+          <type>bool</type>
+          <name>no_dig2objects</name>
+          <desc>Prevent objects from being dug out</desc>
+        </param>
       </params>
     </syntax>
-    <desc>Makes a rectangular hole in semi-solid materials.</desc>
+    <desc>Makes a rectangular hole in semi-solid materials. The return value is the amount of pixels that were dug free. If no_dig2objects is true, the dug out material does neither create objects according to the Dig2Objects in the <emlink href="material/ocm.html">*.ocm</emlink> nor will the amount be stored in the internal buffer.</desc>
     <remark>Drills an elevator shaft.</remark>
     <examples>
       <example>

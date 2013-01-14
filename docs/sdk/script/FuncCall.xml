@@ -71,7 +71,7 @@ func MyCall1() { <funclink>Log</funclink>(&quot;Die zweite Funktion wurde aufger
 func MyCall2() { <funclink>Log</funclink>(&quot;Die dritte Funktion wurde aufgerufen!&quot;); }</code>
       <text>In TestFunction() a <em>random</em> function is called (using <funclink>Random</funclink> and <funclink>Format</funclink> one of the three strings "MyCall1", "MyCall2", and "MyCall3" is randomly composed and passed to <code>Call</code>).</text>
       <text>This process has to be done with indirect calls as only at runtime we can know which function is to be called.</text>
-      <text>There are also some other methods of indirect calls. See <funclink>GameCall</funclink>. Also see <funclink>PrivateCall</funclink>. They allow for bypassing the <emlink href="script/Funcs.html#Aufrufb">calling permission</emlink> and only exist as indirect calls.</text>
+      <text>There are also some other methods of indirect calls. See <funclink>GameCall</funclink>.</text>
     </part>
   </part>
   <author>PeterW</author><date>2003-05</date>

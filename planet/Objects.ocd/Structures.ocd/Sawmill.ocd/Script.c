@@ -5,30 +5,39 @@
 	Cuts trees or other objects into wood. Accepts only objects purely made from wood.
 --*/
 
+#include Library_Structure
+#include Library_Ownable
 #include Library_Producer
 
-public func Construction()
+public func Construction(object creator)
 {
-	
 	SetProperty("MeshTransformation",Trans_Rotate(-20,0,1,0));
-	return _inherited(...);
+	SetAction("Default");
+	return _inherited(creator, ...);
 }
 
 public func Initialize()
 {
 	this.SpinAnimation = PlayAnimation("work", 10, Anim_Const(0), Anim_Const(1000));
+	AddTimer("CollectionZone", 1);
 	return _inherited(...);
 }
 
 /*-- Interaction --*/
 
+// Sawmill can't be accessed as a container.
+public func IsContainer() { return false; }
+
+// Sawmill can't be interacted with.
+public func IsInteractable() { return false; }
+
 // Automatically search for trees in front of sawmill
 // Temporary solution?
 protected func FindTrees()
 {
-	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")));
+	var tree = FindObject(Find_AtPoint(), Find_Func("IsTree"), Find_Not(Find_Func("IsStanding")), Find_Func("GetComponent", Wood));
 	if (!tree) return;
-
+	
 	Saw(tree);
 }
 
@@ -56,8 +65,8 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsSawmillProduct();
 }
-private func ProductionTime() { return 100; }
-private func PowerNeed(id product) { return 100; }
+private func ProductionTime(id toProduce) { return 100; }
+private func PowerNeed() { return 50; }
 
 public func NeedRawMaterial(id rawmat_id)
 {
@@ -83,8 +92,11 @@ public func OnProductionHold(id product)
 
 public func OnProductionContinued(id product)
 {
-	SpinOn();
-	AddEffect("Sawing", this, 100, 1, this);
+	if (!GetEffect("Sawing", this))
+	{
+		SpinOn();
+		AddEffect("Sawing", this, 100, 1, this);
+	}
 }
 
 public func OnProductionFinish(id product)
@@ -96,6 +108,17 @@ public func OnProductionFinish(id product)
 	}
 }	
 
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+	
+	// Only take one tree at a time
+	if (!(FrameCounter() % 35)) 
+		if (GetLength(queue) == 0)
+			FindTrees();
+}
+
 protected func Collection()
 {
 	Sound("Clonk");
@@ -104,16 +127,16 @@ protected func Collection()
 public func FxSawingTimer(object target, proplist effect, int time)
 {
 	if (time >= this.SpinStep * 3 && time % 5)
-		CreateParticle("Axe_WoodChip", 6 - Random(3), RandomX(1,4), 5 + Random(11), -RandomX(2,4), 15+Random(10), RGB(255,255,255), this);
+		CreateParticle("Axe_WoodChip", - 6 * GetCalcDir() - Random(3), RandomX(1,4), -(5 + Random(11)) * GetCalcDir(), -RandomX(2,4), 15+Random(10), RGB(255,255,255), this);
 
 	if (!(time % 20))
-		Smoke(-10,10,10);
+		Smoke(10 * GetCalcDir(),10,10);
 }
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() + 25, GetY() - 8);
-	product->SetSpeed(7, 5);
+	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() - 8);
+	product->SetSpeed(-7 * GetCalcDir(), 5);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
 }
@@ -121,10 +144,11 @@ public func OnProductEjection(object product)
 protected func RejectCollect(id id_def, object collect)
 {
 	// Don't collect wood
-	if(id_def == Wood) return true;
-	if(collect->~IsSawmillIngredient() || CheckWoodObject(collect)) return false;
-	else
+	if (id_def == Wood) 
 		return true;
+	if (collect->~IsSawmillIngredient() || CheckWoodObject(collect)) 
+		return false;
+	return true;
 }
 
 /*-- Animation --*/
@@ -163,8 +187,25 @@ private func SpinOff(int call, int animation_no)
 	ScheduleCall(this, "SpinOff", this.SpinStep * 2, nil, call+1);
 }
 
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
+
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
 local Name = "$Name$";
+local Description = "$Description$";
 local SpinStep = 30;
+local BlastIncinerate = 100;
+local HitPoints = 70;

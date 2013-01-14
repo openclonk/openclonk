@@ -1,0 +1,5 @@
+This folder contains objects that have purely decorative purpose, so that they can be added and removed from any scenario without having any impact on the gameplay.
+That means that if you decide to give objects in this folder a meaning beyond decoration, you should move them out into a proper place and also remove them from the proplist "Environment_Attributes" found in Ambience.ocd/Script.c - by the conventions you are guaranteed that nothing will break when you do that.
+For example you could move Ambience_Zicadas into Animals.ocd, give them the ID "Zicadas" and remove the "Zicadas" entry from the proplist - or just set the "ID" field of the "Zicadas" entry to "nil".
+
+You are encouraged to use objects from this folder through the function "CreateEnvironmentObjects" which guarantees full backwards and forwards compatibility. However, all objects in this folder also have Place()-methods if you need to place them manually.

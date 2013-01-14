@@ -9,6 +9,7 @@
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2011  Tobias Zwick
+ * Copyright (c) 2012  Felix Wagner
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -1169,13 +1170,13 @@ C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
 	vPickerRect.Hgt = 256 - PlayerColorValueLowBound;
 
 	C4Facet &flagPreviewPic = ::GraphicsResource.fctFlagClr;
-	int preview_width = std::min(flagPreviewPic.Wdt, caMain.GetInnerWidth());
+	int preview_width = std::min<int>(flagPreviewPic.Wdt, caMain.GetInnerWidth());
 	flagPreview = new C4GUI::Picture(caMain.GetFromTop(flagPreviewPic.GetHeightByWidth(preview_width), preview_width), true);
 	flagPreview->SetFacet(flagPreviewPic);
 	AddElement(flagPreview);
 
 	C4Facet &crewPreviewPic = ::GraphicsResource.fctCrewClr;
-	preview_width = std::min(crewPreviewPic.Wdt, caMain.GetInnerWidth());
+	preview_width = std::min<int>(crewPreviewPic.Wdt, caMain.GetInnerWidth());
 	crewPreview = new C4GUI::Picture(caMain.GetFromTop(crewPreviewPic.GetHeightByWidth(preview_width), preview_width), true);
 	crewPreview->SetFacet(crewPreviewPic);
 	AddElement(crewPreview);
@@ -1416,26 +1417,6 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	UpdatePlayerSkin();
 
 	caMain.ExpandTop(-BetweenElementDist);
-	// AutoStopControl: currently unused
-	// once we have an idea how many control schemes we have, we might revive this for selecting e.g. between "Mouse+Keyboard" and "Gamepad".
-	// place AutoStopControl label
-	//AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_DLG_MOVEMENT")).getData(), caMain.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
-	// place AutoStopControl controls
-	//C4Facet &rfctMovementIcons = C4Startup::Get()->Graphics.fctPlrCtrlType;
-	//C4GUI::ComponentAligner caMovement(caMain.GetFromTop(rfctMovementIcons.Hgt), 5, 0);
-	//C4Rect rcBtn = caMovement.GetFromLeft(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_JUMPANDRUN"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	//szTip = LoadResStr("IDS_DLGTIP_JUMPANDRUN");
-	//pLbl->SetToolTip(szTip);
-	//AddElement(pJumpNRunBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'J' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	//pJumpNRunBtn->SetToolTip(szTip);
-	//rcBtn = caMovement.GetFromRight(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_CLASSIC"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	//szTip = LoadResStr("IDS_DLGTIP_CLASSIC");
-	//pLbl->SetToolTip(szTip);
-	//AddElement(pClassicBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'C' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	//pClassicBtn->SetToolTip(szTip);
-	//UpdatePlayerMovement();
 	// place buttons
 	// OK
 	C4GUI::Button *pBtnOK = new C4GUI::OKIconButton(C4Rect(147-GetMarginLeft(), 295+35-GetMarginTop(), 54, 33), C4GUI::Ico_None);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE doc
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
@@ -71,12 +71,12 @@ func Activate(object caster, object caster2)
 
 func FxInvisPSpellStart(object target, proplist effect)
 {
-  // Vorherige Sichtbarkeit des Zauberers speichern
+  // Save the casters previous visibility
   effect.visibility = target.Visibility;
   effect.old_mod = target-&gt;<funclink>GetClrModulation</funclink>();
-  // Zauberer unsichtbar machen
+  // Make the caster invisible
   target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
-  // Halbdurchsichtig bläulich für den Besitzer und Verbündete
+  // Semitransparent and slightly blue for owner and allies
   target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(effect.old_mod, RGBa(127,127,255,127)));
   // Fertig
   return true;
@@ -328,6 +328,41 @@ func FxGravChangeUSpellAdd(object target, proplist effect, string new_name, int 
   return true;
 }</code>
     <text>Returning -3 in the Fx*Effect callback will cause the Fx*Add callback to be invoked for the new effect. In this case the new effect is not actually created and the function AddEffect will return the effect which has taken on the consequences of the new effect instead. As opposed to the method above this has the advantage that the return value can now be used to determine whether the effect has been created at all.</text>
+    <h id="Properties">Properties Reference</h>
+    <text>Effects have a number of standard properties:</text>
+    <table>
+      <caption id="PropertiesTable">Effect Properties</caption>
+      <rowh>
+        <col>Data type</col>
+        <col>Name</col>
+        <col>Description</col>
+      </rowh>
+      <row>
+        <col>string</col>
+        <col><code>Name</code></col>
+        <col>Can be changed.</col>
+      </row>
+      <row>
+        <col>int</col>
+        <col><code>Priority</code></col>
+        <col>See <a href="Priorities">Priorities</a></col>
+      </row>
+      <row>
+        <col>int</col>
+        <col><code>Interval</code></col>
+        <col>Of the <a href="#TimerCallback">Timer callback</a>.</col>
+      </row>
+      <row>
+        <col>int</col>
+        <col><code>Time</code></col>
+        <col>The age of the effect in frames, used for the <a href="#TimerCallback">Timer callback</a>. Can be changed.</col>
+      </row>
+      <row>
+        <col>proplist</col>
+        <col><code>CommandTarget</code></col>
+        <col>Either the command object or the command definition, depending on which is used.</col>
+      </row>
+    </table>
     <h id="UserCallbacks">User Defined Properties</h>
     <text>Effects can be easily classified by name. In this way, e.g. all magic spell effects can easily be found through the respective wildcard string. If, however, you want to create user-defined properties which also apply to existing effects you can do this by defining additional effect functions:</text>
     <code>global func FxFireIsHot() { return true; }
@@ -454,8 +489,6 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       </table>
     </text>
     <text>Warning: as function names may not be more than 100 characters in length (and you will lose oversight eventually), you should not stuff too much information into the effect name. Effect names are case sensitive. Also, you should avoid using any of these identifiers in your effect names if your effect doesn't have anything to do with them.</text>
-    <h id="Properties">Properties Reference</h>
-    <text>Effects have a number of standard properties: Name, Priority, Interval, CommandTarget and Time. Name, Interval and Time can be changed, Priority and CommandTarget are read-only. CommandTarget returns either the command object or command definition, depending on which is used.</text>
     <h id="CBRef">Callback Reference</h>
     <part>
       <text>The following callbacks are made by the engine and should be implemented in your script according to necessity. * is to be replaced by your effect name.</text>
@@ -472,33 +505,39 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <text>
         <table>
           <rowh>
+            <col>Script constant</col>
             <col>reason</col>
             <col>Meaning</col>
           </rowh>
           <row>
+            <col>FX_Call_Normal</col>
             <col>0</col>
             <col>Normal removal</col>
           </row>
           <row>
+            <col>FX_Call_Temp</col>
             <col>1</col>
             <col>Temporary removal (temporary is 1).</col>
           </row>
           <row>
+            <col>FX_Call_TempAddForRemoval</col>
             <col>2</col>
             <col>Not used</col>
           </row>
           <row>
+            <col>FX_Call_RemoveClear</col>
             <col>3</col>
             <col>The target object has been deleted</col>
           </row>
           <row>
+            <col>FX_Call_RemoveDeath</col>
             <col>4</col>
             <col>The target object has died</col>
           </row>
         </table>
       </text>
       <text>The effect can prevent removal by returning -1. This will not help, however, in temporary removals or if the target object has been deleted.</text>
-      <h>Fx*Timer</h>
+      <h id="TimerCallback">Fx*Timer</h>
       <text><code>int Fx*Timer (object target, proplist effect, int time);</code></text>
       <text>Periodic timer call, if a timer interval has been specified at effect creation. target and <code>effect</code> as usual.</text>
       <text>time specifies how long the effect has now been active. This might alternatively be determined using effect.Time.</text>
@@ -518,7 +557,7 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <h>Fx*Damage</h>
       <text><code>int Fx*Damage (object target, proplist effect, int damage, int cause);</code></text>
       <text>Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change.</text>
-      <text>This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
+      <text id="damagecause">This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
       <text>
         <table>
           <rowh>

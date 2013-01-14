@@ -3,10 +3,10 @@
  * Copyright (c) 1998-2000, 2003-2004, 2007-2008  Matthes Bender
  * Copyright (c) 2002, 2006-2008, 2011  Sven Eberhardt
  * Copyright (c) 2003, 2005-2007  Peter Wortmann
- * Copyright (c) 2005-2009, 2011  Günther Brammer
+ * Copyright (c) 2005-2009, 2011-2012  Günther Brammer
  * Copyright (c) 2006  Alexander Post
  * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2008, 2011  Armin Burgmeier
+ * Copyright (c) 2008, 2011-2012  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -71,6 +71,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ScreenshotFolder,    "ScreenshotFolder",   "Screenshots",  false, true));
 	pComp->Value(mkNamingAdapt(ScrollSmooth,        "ScrollSmooth",       4              ));
 	pComp->Value(mkNamingAdapt(AlwaysDebug,         "DebugMode",          0              ));
+	pComp->Value(mkNamingAdapt(OpenScenarioInGameMode, "OpenScenarioInGameMode", 0   )); 
 #ifdef _WIN32
 	pComp->Value(mkNamingAdapt(MMTimer,             "MMTimer",            1              ));
 #endif
@@ -89,16 +90,16 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",          800           ,false, true));
-	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",          600           ,false, true));
+	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
+	pComp->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
 	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
-	pComp->Value(mkNamingAdapt(GuiResX,                 "GuiResolutionX",       800           ,false, true));
-	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
-	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     0             ,false, true));
+	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(SmokeLevel,            "SmokeLevel",           200           ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
@@ -434,8 +435,18 @@ void C4ConfigGeneral::DeterminePaths()
 	TempPath = StdStrBuf(apath);
 	if (TempPath[0]) TempPath.AppendBackslash();
 #elif defined(__linux__)
-	GetParentPath(Application.Location, &ExePath);
-	ExePath.AppendBackslash();
+	ExePath.SetLength(1024);
+	ssize_t l = readlink("/proc/self/exe", ExePath.getMData(), 1024);
+	if (l < -1)
+	{
+		ExePath.Ref(".");
+	}
+	else
+	{
+		ExePath.SetLength(l);
+		GetParentPath(ExePath.getData(), &ExePath);
+		ExePath.AppendBackslash();
+	}
 	const char * t = getenv("TMPDIR");
 	if (t)
 	{
@@ -710,7 +721,6 @@ void C4ConfigStartup::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
 	pComp->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
 	pComp->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
-	pComp->Value(mkNamingAdapt(NoSplash,                    "NoSplash",                   1));
 	pComp->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
 	pComp->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
 }

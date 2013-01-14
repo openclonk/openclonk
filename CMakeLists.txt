@@ -35,13 +35,15 @@ set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
+set(OC_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
 ############################################################################
 # User selectable options
 ############################################################################
-option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON) 
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_GL "Enable OpenGL support" ON)
 SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 SET(INITIAL_USE_OPEN_AL OFF)
@@ -56,7 +58,7 @@ if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
 			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
 		endif()
 	else()
-		
+
 	endif()
 else()
 	SET(USE_DIRECTX OFF)
@@ -65,6 +67,8 @@ endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+else()
+	SET(USE_CONSOLE OFF)
 endif()
 if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -77,6 +81,7 @@ else()
 endif()
 if(APPLE)
 	option(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON)
+	option(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
 	option(USE_COCOA OFF)
@@ -142,7 +147,12 @@ if(MSVC_VERSION)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo")
+	list(APPEND OC_CXX_FLAGS "-Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo -Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual")
+endif()
+
+if(WIN32 AND MINGW)
+	# Activate DEP and ASLR
+	list(APPEND OC_EXE_LINKER_FLAGS "-Wl,--nxcompat -Wl,--dynamicbase")
 endif()
 ############################################################################
 # List target source files. Don't directly create a target since we condi-
@@ -151,16 +161,10 @@ endif()
 # OC_CLONK_SOURCES: Sources for OpenClonk that are needed by every build.
 # OC_SYSTEM_SOURCES: Sources for OpenClonk that are only needed by specific
 # 	configurations.
+# OC_MAIN_SOURCES: The file with the executable's entry point, not to be added
+#	to libclonk
 set(OC_CLONK_SOURCES
-	src/C4Application.cpp
-	src/C4Application.h
-	src/C4FullScreen.cpp
-	src/C4FullScreen.h
-	src/C4Game.cpp
-	src/C4Game.h
 	src/C4Globals.cpp
-	src/C4GraphicsSystem.cpp
-	src/C4GraphicsSystem.h
 	src/c4group/C4ComponentHost.cpp
 	src/c4group/C4ComponentHost.h
 	src/c4group/C4Components.h
@@ -186,8 +190,6 @@ set(OC_CLONK_SOURCES
 	src/config/C4Constants.h
 	src/config/C4Reloc.cpp
 	src/config/C4Reloc.h
-	src/config/C4SecurityCertificates.cpp
-	src/config/C4SecurityCertificates.h
 	src/control/C4Control.cpp
 	src/control/C4Control.h
 	src/control/C4GameControl.cpp
@@ -211,102 +213,62 @@ set(OC_CLONK_SOURCES
 	src/editor/C4ConsoleGUICommon.h
 	src/editor/C4ConsoleGUI.h
 	src/editor/C4Console.h
-	src/editor/C4DevmodeDlg.cpp
-	src/editor/C4DevmodeDlg.h
 	src/editor/C4EditCursor.cpp
 	src/editor/C4EditCursor.h
 	src/editor/C4ObjectListDlg.cpp
 	src/editor/C4ObjectListDlg.h
 	src/editor/C4ToolsDlg.cpp
 	src/editor/C4ToolsDlg.h
+	src/editor/C4ViewportWindow.cpp
+	src/editor/C4ViewportWindow.h
+	src/game/C4Application.cpp
+	src/game/C4Application.h
+	src/game/C4FullScreen.cpp
+	src/game/C4FullScreen.h
+	src/game/C4Game.cpp
+	src/game/C4Game.h
 	src/game/C4GameVersion.h
+	src/game/C4GraphicsSystem.cpp
+	src/game/C4GraphicsSystem.h
 	src/game/C4Physics.h
-	src/game/landscape/C4Landscape.cpp
-	src/game/landscape/C4Landscape.h
-	src/game/landscape/C4LandscapeRenderClassic.cpp
-	src/game/landscape/C4LandscapeRender.cpp
-	src/game/landscape/C4LandscapeRender.h
-	src/game/landscape/C4Map.cpp
-	src/game/landscape/C4MapCreatorS2.cpp
-	src/game/landscape/C4MapCreatorS2.h
-	src/game/landscape/C4Map.h
-	src/game/landscape/C4MassMover.cpp
-	src/game/landscape/C4MassMover.h
-	src/game/landscape/C4Material.cpp
-	src/game/landscape/C4Material.h
-	src/game/landscape/C4MaterialList.cpp
-	src/game/landscape/C4MaterialList.h
-	src/game/landscape/C4Particles.cpp
-	src/game/landscape/C4Particles.h
-	src/game/landscape/C4PathFinder.cpp
-	src/game/landscape/C4PathFinder.h
-	src/game/landscape/C4PXS.cpp
-	src/game/landscape/C4PXS.h
-	src/game/landscape/C4Region.cpp
-	src/game/landscape/C4Region.h
-	src/game/landscape/C4Scenario.cpp
-	src/game/landscape/C4Scenario.h
-	src/game/landscape/C4Sky.cpp
-	src/game/landscape/C4Sky.h
-	src/game/landscape/C4SolidMask.cpp
-	src/game/landscape/C4SolidMask.h
-	src/game/landscape/C4Texture.cpp
-	src/game/landscape/C4Texture.h
-	src/game/landscape/C4Weather.cpp
-	src/game/landscape/C4Weather.h
-	src/game/object/C4Action.cpp
-	src/game/object/C4Command.cpp
-	src/game/object/C4Command.h
-	src/game/object/C4Def.cpp
-	src/game/object/C4DefGraphics.cpp
-	src/game/object/C4DefGraphics.h
-	src/game/object/C4Def.h
-	src/game/object/C4DefList.cpp
-	src/game/object/C4DefList.h
-	src/game/object/C4GameObjects.cpp
-	src/game/object/C4GameObjects.h
-	src/game/object/C4Id.cpp
-	src/game/object/C4Id.h
-	src/game/object/C4IDList.cpp
-	src/game/object/C4IDList.h
-	src/game/object/C4InfoCore.cpp
-	src/game/object/C4InfoCore.h
-	src/game/object/C4MeshAnimation.cpp
-	src/game/object/C4MeshAnimation.h
-	src/game/object/C4Movement.cpp
-	src/game/object/C4ObjectCom.cpp
-	src/game/object/C4ObjectCom.h
-	src/game/object/C4Object.cpp
-	src/game/object/C4Object.h
-	src/game/object/C4ObjectInfo.cpp
-	src/game/object/C4ObjectInfo.h
-	src/game/object/C4ObjectInfoList.cpp
-	src/game/object/C4ObjectInfoList.h
-	src/game/object/C4ObjectList.cpp
-	src/game/object/C4ObjectList.h
-	src/game/object/C4ObjectMenu.cpp
-	src/game/object/C4ObjectMenu.h
-	src/game/object/C4ObjectPtr.cpp
-	src/game/object/C4ObjectPtr.h
-	src/game/object/C4ObjectScript.cpp
-	src/game/object/C4Sector.cpp
-	src/game/object/C4Sector.h
-	src/game/object/C4Shape.cpp
-	src/game/object/C4Shape.h
-	src/game/player/C4Player.cpp
-	src/game/player/C4Player.h
-	src/game/player/C4PlayerList.cpp
-	src/game/player/C4PlayerList.h
-	src/game/player/C4RankSystem.cpp
-	src/game/player/C4RankSystem.h
-	src/game/script/C4Effect.cpp
-	src/game/script/C4Effects.h
-	src/game/script/C4FindObject.cpp
-	src/game/script/C4FindObject.h
-	src/game/script/C4GameScript.cpp
-	src/game/script/C4Script.h
-	src/game/script/C4TransferZone.cpp
-	src/game/script/C4TransferZone.h
+	src/game/C4Viewport.cpp
+	src/game/C4Viewport.h
+	src/gamescript/C4Effect.cpp
+	src/gamescript/C4Effect.h
+	src/gamescript/C4FindObject.cpp
+	src/gamescript/C4FindObject.h
+	src/gamescript/C4GameScript.cpp
+	src/gamescript/C4Script.h
+	src/gamescript/C4TransferZone.cpp
+	src/gamescript/C4TransferZone.h
+	src/graphics/Bitmap256.cpp
+	src/graphics/Bitmap256.h
+	src/graphics/C4Draw.cpp
+	src/graphics/C4DrawD3D.cpp
+	src/graphics/C4DrawD3D.h
+	src/graphics/C4DrawD3DShader.cpp
+	src/graphics/C4DrawD3DShader.h
+	src/graphics/C4DrawGL.cpp
+	src/graphics/C4DrawGLCtx.cpp
+	src/graphics/C4DrawGL.h
+	src/graphics/C4DrawT.cpp
+	src/graphics/C4DrawT.h
+	src/graphics/C4Draw.h
+	src/graphics/C4Facet.cpp
+	src/graphics/C4FacetEx.cpp
+	src/graphics/C4FacetEx.h
+	src/graphics/C4Facet.h
+	src/graphics/C4FontLoader.cpp
+	src/graphics/C4FontLoader.h
+	src/graphics/C4GraphicsResource.cpp
+	src/graphics/C4GraphicsResource.h
+	src/graphics/C4Surface.cpp
+	src/graphics/C4Surface.h
+	src/graphics/C4SurfaceLoaders.cpp
+	src/graphics/CSurface8.cpp
+	src/graphics/CSurface8.h
+	src/graphics/StdPNG.cpp
+	src/graphics/StdPNG.h
 	src/gui/C4ChatDlg.cpp
 	src/gui/C4ChatDlg.h
 	src/gui/C4DownloadDlg.cpp
@@ -325,6 +287,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4GameOptions.h
 	src/gui/C4GameOverDlg.cpp
 	src/gui/C4GameOverDlg.h
+	src/gui/C4GfxErrorDlg.cpp
+	src/gui/C4GfxErrorDlg.h
 	src/gui/C4GuiButton.cpp
 	src/gui/C4GuiCheckBox.cpp
 	src/gui/C4GuiComboBox.cpp
@@ -369,13 +333,39 @@ set(OC_CLONK_SOURCES
 	src/gui/C4StartupPlrSelDlg.h
 	src/gui/C4StartupScenSelDlg.cpp
 	src/gui/C4StartupScenSelDlg.h
-	src/gui/C4UpdateDlg.cpp
-	src/gui/C4UpdateDlg.h
 	src/gui/C4UpperBoard.cpp
 	src/gui/C4UpperBoard.h
-	src/gui/C4UserMessages.h
-	src/gui/C4Viewport.cpp
-	src/gui/C4Viewport.h
+	src/landscape/C4Landscape.cpp
+	src/landscape/C4Landscape.h
+	src/landscape/C4LandscapeRenderClassic.cpp
+	src/landscape/C4LandscapeRender.cpp
+	src/landscape/C4LandscapeRender.h
+	src/landscape/C4Map.cpp
+	src/landscape/C4MapCreatorS2.cpp
+	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4Map.h
+	src/landscape/C4MassMover.cpp
+	src/landscape/C4MassMover.h
+	src/landscape/C4Material.cpp
+	src/landscape/C4Material.h
+	src/landscape/C4MaterialList.cpp
+	src/landscape/C4MaterialList.h
+	src/landscape/C4Particles.cpp
+	src/landscape/C4Particles.h
+	src/landscape/C4PathFinder.cpp
+	src/landscape/C4PathFinder.h
+	src/landscape/C4PXS.cpp
+	src/landscape/C4PXS.h
+	src/landscape/C4Scenario.cpp
+	src/landscape/C4Scenario.h
+	src/landscape/C4Sky.cpp
+	src/landscape/C4Sky.h
+	src/landscape/C4SolidMask.cpp
+	src/landscape/C4SolidMask.h
+	src/landscape/C4Texture.cpp
+	src/landscape/C4Texture.h
+	src/landscape/C4Weather.cpp
+	src/landscape/C4Weather.h
 	src/lib/C4InputValidation.cpp
 	src/lib/C4InputValidation.h
 	src/lib/C4LogBuf.cpp
@@ -426,15 +416,6 @@ set(OC_CLONK_SOURCES
 	src/lib/StdResStr2.cpp
 	src/lib/StdResStr2.h
 	src/lib/StdResStr.h
-	src/lib/texture/C4Facet.cpp
-	src/lib/texture/C4FacetEx.cpp
-	src/lib/texture/C4FacetEx.h
-	src/lib/texture/C4Facet.h
-	src/lib/texture/C4GraphicsResource.cpp
-	src/lib/texture/C4GraphicsResource.h
-	src/lib/texture/C4SurfaceLoaders.cpp
-	src/lib/texture/StdPNG.cpp
-	src/lib/texture/StdPNG.h
 	src/network/C4Client.cpp
 	src/network/C4Client.h
 	src/network/C4GameControlNetwork.cpp
@@ -469,15 +450,50 @@ set(OC_CLONK_SOURCES
 	src/network/C4Network2UPnP.h
 	src/network/C4Packet2.cpp
 	src/network/C4PacketBase.h
-	src/platform/Bitmap256.cpp
-	src/platform/Bitmap256.h
+	src/object/C4Action.cpp
+	src/object/C4Command.cpp
+	src/object/C4Command.h
+	src/object/C4Def.cpp
+	src/object/C4DefGraphics.cpp
+	src/object/C4DefGraphics.h
+	src/object/C4Def.h
+	src/object/C4DefList.cpp
+	src/object/C4DefList.h
+	src/object/C4GameObjects.cpp
+	src/object/C4GameObjects.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
+	src/object/C4IDList.cpp
+	src/object/C4IDList.h
+	src/object/C4InfoCore.cpp
+	src/object/C4InfoCore.h
+	src/object/C4MeshAnimation.cpp
+	src/object/C4MeshAnimation.h
+	src/object/C4Movement.cpp
+	src/object/C4ObjectCom.cpp
+	src/object/C4ObjectCom.h
+	src/object/C4Object.cpp
+	src/object/C4Object.h
+	src/object/C4ObjectInfo.cpp
+	src/object/C4ObjectInfo.h
+	src/object/C4ObjectInfoList.cpp
+	src/object/C4ObjectInfoList.h
+	src/object/C4ObjectList.cpp
+	src/object/C4ObjectList.h
+	src/object/C4ObjectMenu.cpp
+	src/object/C4ObjectMenu.h
+	src/object/C4ObjectPtr.cpp
+	src/object/C4ObjectPtr.h
+	src/object/C4ObjectScript.cpp
+	src/object/C4Sector.cpp
+	src/object/C4Sector.h
+	src/object/C4Shape.cpp
+	src/object/C4Shape.h
 	src/platform/C4App.cpp
 	src/platform/C4App.h
-	src/platform/C4AppT.cpp
+	src/platform/C4AppWin32Impl.h
 	src/platform/C4FileMonitor.cpp
 	src/platform/C4FileMonitor.h
-	src/platform/C4Fonts.cpp
-	src/platform/C4Fonts.h
 	src/platform/C4GamePadCon.cpp
 	src/platform/C4GamePadCon.h
 	src/platform/C4MusicFile.cpp
@@ -488,48 +504,38 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
-	src/platform/C4Surface.cpp
-	src/platform/C4Surface.h
+	src/platform/C4StdInProc.cpp
+	src/platform/C4StdInProc.h
 	src/platform/C4Video.cpp
 	src/platform/C4Video.h
-	src/platform/C4VideoPlayback.cpp
-	src/platform/C4VideoPlayback.h
-	src/platform/C4ViewportWindow.cpp
-	src/platform/C4ViewportWindow.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
 	src/platform/GetTime.cpp
+	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
-	src/platform/StdD3D.cpp
-	src/platform/StdD3D.h
-	src/platform/StdD3DShader.cpp
-	src/platform/StdD3DShader.h
-	src/platform/StdDDraw2.cpp
-	src/platform/StdDDraw2.h
 	src/platform/StdFile.cpp
 	src/platform/StdFile.h
-	src/platform/StdFont.cpp
-	src/platform/StdFont.h
-	src/platform/StdGL.cpp
-	src/platform/StdGLCtx.cpp
-	src/platform/StdGL.h
-	src/platform/StdNoGfx.cpp
-	src/platform/StdNoGfx.h
 	src/platform/StdRegistry.cpp
 	src/platform/StdRegistry.h
 	src/platform/StdScheduler.cpp
 	src/platform/StdScheduler.h
-	src/platform/StdSurface8.cpp
-	src/platform/StdSurface8.h
 	src/platform/StdSync.h
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
+	src/player/C4Player.cpp
+	src/player/C4Player.h
+	src/player/C4PlayerList.cpp
+	src/player/C4PlayerList.h
+	src/player/C4RankSystem.cpp
+	src/player/C4RankSystem.h
 	src/script/C4Aul.cpp
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
 	src/script/C4AulDefFunc.h
 	src/script/C4AulExec.cpp
 	src/script/C4AulExec.h
+	src/script/C4AulFunc.cpp
+	src/script/C4AulFunc.h
 	src/script/C4Aul.h
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
@@ -546,8 +552,8 @@ set(OC_CLONK_SOURCES
 	src/script/C4Value.h
 	src/script/C4ValueMap.cpp
 	src/script/C4ValueMap.h
-	src/zlib/gzio.h
 	src/zlib/gzio.c
+	src/zlib/gzio.h
 	src/zlib/zutil.h
 	thirdparty/timsort/sort.h
 )
@@ -606,15 +612,27 @@ set(MAPE_SOURCES
 
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
+mark_as_advanced(OC_MAIN_SOURCES)
 mark_as_advanced(MAPE_SOURCES)
 
+# source files specific to an operating system
+if(APPLE)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4FileMonitorMac.mm
+	)
+
+	list(APPEND OC_MAIN_SOURCES
+		src/platform/C4AppDelegate.h
+		src/platform/C4AppDelegate.mm
+	)
+else()
+	list(APPEND OC_MAIN_SOURCES
+		src/game/ClonkMain.cpp
+	)
+endif()
 if(WIN32)
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4WindowWin32.cpp
-		src/platform/StdJoystick.cpp
-		src/platform/StdJoystick.h
 		src/platform/C4CrashHandlerWin32.cpp
-		src/editor/C4ConsoleWin32.cpp
 		src/res/resource.h
 	)
 
@@ -640,45 +658,9 @@ if(WIN32)
 			src/res/engine.rc
 		)
 	endif(MINGW)
-elseif(USE_SDL_MAINLOOP)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppSDL.cpp
-		src/platform/C4WindowSDL.cpp
-	)
-elseif(USE_X11)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppX.cpp
-		src/platform/C4WindowX.cpp
-		src/platform/C4AppXImpl.h
-	)
 endif()
 
-if(NOT APPLE)
-	list(APPEND OC_SYSTEM_SOURCES src/C4WinMain.cpp)
-endif()
-
-if(APPLE)
-	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4AppMac.mm
-		src/platform/C4FileMonitorMac.mm
-		src/platform/C4WindowMac.mm
-		src/platform/ClonkAppDelegate.h
-		src/platform/ClonkAppDelegate.mm
-	)
-	if(USE_COCOA)
-		list(APPEND OC_SYSTEM_SOURCES
-			src/platform/ConsoleWindowController.h
-			src/platform/ConsoleWindowController.mm
-			src/platform/ClonkWindowController.h
-			src/platform/ClonkWindowController.mm
-			src/platform/ClonkOpenGLView.h
-			src/platform/ClonkOpenGLView.mm
-			src/platform/CocoaKeycodeMap.h
-			src/editor/C4ConsoleCocoa.mm
-			src/platform/ClonkMainMenuActions.mm
-		)
-	endif()
-endif()
+# source files specific to a GUI library
 if(USE_GTK)
 	list(APPEND OC_CLONK_SOURCES
 		src/res/Brush.h
@@ -699,25 +681,65 @@ if(USE_GTK)
 	)
 
 	list(APPEND OC_SYSTEM_SOURCES
-		src/platform/C4WindowGTK.cpp
-		src/platform/C4WindowGTK.h
 		src/editor/C4ConsoleGTK.cpp
+		src/editor/C4ConsoleGTKDlg.cpp
+		src/editor/C4ConsoleGTKDlg.h
+		src/platform/C4AppGTK.cpp
+		src/platform/C4AppGTKImpl.h
+		src/platform/C4WindowGTK.cpp
+	)
+elseif(USE_SDL_MAINLOOP)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppSDL.cpp
+		src/platform/C4WindowSDL.cpp
+	)
+elseif(USE_CONSOLE)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/platform/C4AppT.cpp
+	)
+elseif(WIN32)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/editor/C4ConsoleWin32.cpp
+		src/platform/C4WindowWin32.cpp
+		src/platform/StdJoystick.cpp
+		src/platform/StdJoystick.h
+	)
+elseif(USE_COCOA)
+	list(APPEND OC_SYSTEM_SOURCES
+		src/editor/C4ConsoleCocoa.mm
+		src/platform/C4AppMac.mm
+		src/platform/C4WindowMac.mm
+		src/platform/C4AppDelegate+MainMenuActions.h
+		src/platform/C4AppDelegate+MainMenuActions.mm
+		src/graphics/C4DrawGLMac.h
+		src/graphics/C4DrawGLMac.mm
+		src/platform/C4WindowController.h
+		src/platform/C4WindowController.mm
+		src/platform/CocoaKeycodeMap.h
+		src/editor/C4EditorWindowController.h
+		src/editor/C4EditorWindowController.mm
+		src/platform/ObjectiveCAssociated.h
+	)
+endif()
+if(WITH_AUTOMATIC_UPDATE)
+	list(APPEND OC_CLONK_SOURCES
+		src/gui/C4UpdateDlg.cpp
+		src/gui/C4UpdateDlg.h
 	)
 endif()
 
 if(PROJECT_FOLDERS)
-  source_group("Unsorted" .*)
-  source_group("Library\\Platform abstraction" src/platform/.*)
-  source_group("Library\\Utility" src/lib/.*)
-  source_group("Library\\C4Group" src/c4group/.*)
-  source_group("Library\\Graphics" src/lib/texture/.*)
+  source_group("Core" src/.*)
+  source_group("Platform abstraction" src/platform/.*)
+  source_group("Utility" src/lib/.*)
+  source_group("C4Group" src/c4group/.*)
+  source_group("Graphics" src/graphics/.*)
   source_group("GUI" src/gui/.*)
   source_group("Network" src/network/.*)
-  source_group("Game\\Objects" src/game/object/.*)
-  source_group("Game\\Scenario" src/game/landscape/.*)
-  source_group("Game\\Player" src/game/player/.*)
-  source_group("Game\\Script" src/game/script/.*)
-  source_group("Scripting" src/script/.*)
+  source_group("Object" src/object/.*)
+  source_group("Landscape" src/landscape/.*)
+  source_group("Player" src/player/.*)
+  source_group("Script" REGULAR_EXPRESSION .*script/.*)
   source_group("Config" src/config/.*)
   source_group("Control" src/control/.*)
   source_group("Editing" src/editor/.*)
@@ -728,20 +750,20 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${CMAKE_CURRENT_SOURCE_DIR}/src/c4group
-	${CMAKE_CURRENT_SOURCE_DIR}/src/network
-	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
-	${CMAKE_CURRENT_SOURCE_DIR}/src/platform
 	${CMAKE_CURRENT_SOURCE_DIR}/src/config
-	${CMAKE_CURRENT_SOURCE_DIR}/src/res
 	${CMAKE_CURRENT_SOURCE_DIR}/src/control
-	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
 	${CMAKE_CURRENT_SOURCE_DIR}/src/editor
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game/landscape
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game/player
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game/script
 	${CMAKE_CURRENT_SOURCE_DIR}/src/game
-	${CMAKE_CURRENT_SOURCE_DIR}/src/game/object
-	${CMAKE_CURRENT_SOURCE_DIR}/src/lib/texture
+	${CMAKE_CURRENT_SOURCE_DIR}/src/gamescript
+	${CMAKE_CURRENT_SOURCE_DIR}/src/graphics
+	${CMAKE_CURRENT_SOURCE_DIR}/src/gui
+	${CMAKE_CURRENT_SOURCE_DIR}/src/landscape
+	${CMAKE_CURRENT_SOURCE_DIR}/src/lib
+	${CMAKE_CURRENT_SOURCE_DIR}/src/network
+	${CMAKE_CURRENT_SOURCE_DIR}/src/object
+	${CMAKE_CURRENT_SOURCE_DIR}/src/platform
+	${CMAKE_CURRENT_SOURCE_DIR}/src/player
+	${CMAKE_CURRENT_SOURCE_DIR}/src/res
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
 	${CMAKE_CURRENT_SOURCE_DIR}/thirdparty
 )
@@ -777,10 +799,8 @@ CHECK_INCLUDE_FILE_CXX(natupnp.h HAVE_NATUPNP_H)
 # 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
 # as a CXX version (yet?).
 include(CheckIncludeFiles)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
 CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILES(X11/Xlib.h X11/xpm.h HAVE_X11_XPM_H)
 CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
 
 if(HAVE_ICONV)
@@ -886,9 +906,23 @@ if(USE_GTK)
 endif()
 
 if(USE_OPEN_AL)
-	FINDLIB(VORBIS_LIBRARY NAMES vorbis)
-	FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
-	FINDLIB(OGG_LIBRARY NAMES ogg)
+	if(MSVC)
+		if(${FIND_LIBRARY_USE_LIB64_PATHS})
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL64)
+		else()
+			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
+		endif()
+		FINDLIB(OGG_LIBRARY NAMES libogg_static)
+		FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static)
+		FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static)
+	else()
+		FINDLIB(VORBIS_LIBRARY NAMES vorbis)
+		FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
+		FINDLIB(OGG_LIBRARY NAMES ogg)
+	endif()
+	if(NOT APPLE)
+		FINDLIB(ALUT_LIBRARY NAMES alut)
+	endif()
 endif()
 
 ############################################################################
@@ -911,10 +945,10 @@ if(APPLE)
 		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
 		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
 		src/res/MainMenu.xib
-		src/res/FullscreenWindow.xib
-		src/res/ConsoleGUIWindow.xib
-		src/res/ClonkWindow.xib
-		src/res/ConsoleWindow.xib
+		src/res/FullScreen.xib
+		src/res/EditorGUIWindow.xib
+		src/res/EditorViewport.xib
+		src/res/Editor.xib
 		src/res/Mouse_Trans.png
 		src/res/Cursor_Trans.png
 		src/res/Brush_Trans.png
@@ -930,14 +964,14 @@ if(APPLE)
 		src/res/Ift_Trans.png
 		src/res/NoIft_Trans.png
 	)
-	
+
 	# Add icon resources
 	set_source_files_properties(
 		${OC_BUNDLE_RESOURCES}
 		PROPERTIES MACOSX_PACKAGE_LOCATION Resources
 	)
 	list(APPEND OC_SYSTEM_SOURCES ${OC_BUNDLE_RESOURCES})
-	
+
 endif()
 
 ############################################################################
@@ -951,7 +985,7 @@ add_library(libclonk STATIC
 )
 
 add_executable(clonk WIN32 MACOSX_BUNDLE
-	src/C4WinMain.cpp
+	${OC_MAIN_SOURCES}
 )
 #target_link_libraries(clonk)
 
@@ -960,10 +994,9 @@ if(WITH_MAPE)
 endif()
 
 add_executable(c4group
-	src/c4group/c4group_ng.cpp
+	src/c4group/C4GroupMain.cpp
 	src/c4group/C4Group.cpp
 	src/lib/C4InputValidation.cpp
-	src/config/C4SecurityCertificates.cpp
 	src/c4group/C4Update.cpp
 	src/lib/Standard.cpp
 	src/c4group/CStdFile.cpp
@@ -991,6 +1024,7 @@ add_executable(netpuncher EXCLUDE_FROM_ALL
 )
 
 add_executable(c4script
+	include/c4script/c4script.h
 	src/c4group/C4Group.cpp
 	src/c4group/C4Group.h
 	src/c4group/CStdFile.cpp
@@ -1013,18 +1047,20 @@ add_executable(c4script
 	src/platform/StdFile.h
 	src/lib/C4Real.cpp
 	src/lib/C4Random.cpp
-	src/script/shell.cpp
 	src/script/C4Aul.cpp
 	src/script/C4AulExec.cpp
+	src/script/C4AulFunc.cpp
 	src/script/C4AulLink.cpp
 	src/script/C4AulParse.cpp
 	src/script/C4StringTable.cpp
 	src/script/C4PropList.cpp
 	src/script/C4ScriptHost.cpp
+	src/script/C4ScriptMain.cpp
+	src/script/C4ScriptStandalone.cpp
 	src/script/C4ValueArray.cpp
 	src/script/C4Value.cpp
 	src/script/C4ValueMap.cpp
-	src/game/object/C4Id.cpp
+	src/object/C4Id.cpp
 	src/script/C4Script.cpp
 	src/c4group/C4GroupSet.cpp
 	src/c4group/C4ComponentHost.cpp
@@ -1039,10 +1075,18 @@ target_link_libraries(clonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
-	${VORBIS_LIBRARY}
-	${VORBISFILE_LIBRARY}
-	${OGG_LIBRARY}
 )
+
+if(USE_OPEN_AL)
+	target_link_libraries(clonk
+		${OPENAL_LIBRARY}
+		${ALUT_LIBRARY}
+		${VORBIS_LIBRARY}
+		${VORBISFILE_LIBRARY}
+		${OGG_LIBRARY}
+	)
+endif()
+
 if(WITH_MAPE)
 	target_link_libraries(mape
 		${FREETYPE_LIBRARIES}
@@ -1050,11 +1094,9 @@ if(WITH_MAPE)
 		${PNG_LIBRARIES}
 		${JPEG_LIBRARIES}
 		${ICONV_LIBRARY}
-		${VORBIS_LIBRARY}
-		${VORBISFILE_LIBRARY}
-		${OGG_LIBRARY}
 	)
 endif()
+
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 )
@@ -1066,7 +1108,7 @@ if(HAVE_PTHREAD)
 		pthread
 	)
 	target_link_libraries(c4script
-		pthread	
+		pthread
 	)
 endif()
 if(USE_CONSOLE)
@@ -1076,24 +1118,21 @@ if(USE_CONSOLE)
 	)
 endif()
 
+if(UNIX AND NOT APPLE)
+	target_link_libraries(c4group rt)
+	target_link_libraries(c4script rt)
+	target_link_libraries(netpuncher rt)
+	target_link_libraries(clonk rt)
+	target_link_libraries(mape rt)
+endif()
+set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
+
 set(OC_CLONK_LIBRARIES libclonk)
 
 #set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 #set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 set_property(TARGET libclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
-
-if (APPLE)
-	add_custom_command(TARGET clonk
-		POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs.sh"
-	)
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
-	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
-	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
-	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
-endif()
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
@@ -1143,7 +1182,7 @@ if(UNIX)
 	# Don't put this into CMAKE_CXX_FLAGS because otherwise it is cached,
 	# and when the path is changed both the old and new definition appears
 	# in the list of flags.
-	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/openclonk\"")
+	add_definitions("-DOC_SYSTEM_DATA_DIR=\"${CMAKE_INSTALL_PREFIX}/share/games/openclonk\"")
 endif()
 if(OC_CXX_FLAGS)
 	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
@@ -1159,8 +1198,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during deb
 foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
 endforeach()
+if(OC_EXE_LINKER_FLAGS)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS)
+endif()
+set(CMAKE_EXE_LINKER_FLAGS "" CACHE STRING "Flags used by the linker." FORCE)
+foreach(FLAG ${OC_EXE_LINKER_FLAGS})
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" CACHE STRING "Flags used by the linker." FORCE)
+endforeach()
 if(OC_EXE_LINKER_FLAGS_DEBUG)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+	list(REMOVE_DUPLICATES OC_EXE_LINKER_FLAGS_DEBUG)
 endif()
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Flags used by the linker during debug builds." FORCE)
 foreach(FLAG ${OC_EXE_LINKER_FLAGS_DEBUG})
@@ -1171,16 +1217,48 @@ endforeach()
 # Precompiled header support, gcc part (it needs the cxx flags)
 ############################################################################
 
-include(GccPchSupport)
 if(CMAKE_COMPILER_IS_GNUCXX)
-	if(NOT DEFINED USE_GCC_PCH)
-		message("Using GCC precompiled headers! USE_GCC_PCH=Off to disable.")
-	endif()
+	include(GccPchSupport)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
 	add_precompiled_header(libclonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
+	add_precompiled_header(c4script src/C4Include.h)
+endif()
+
+############################################################################
+# Some Xcode/OSX specific settings involving building with clang, precompiled headers...
+############################################################################
+
+if (APPLE)
+	add_custom_command(TARGET clonk
+		POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
+	)
+	
+	set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
+	
+	if (USE_APPLE_CLANG)
+		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++0x")
+		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++ -g -Wall")
+		SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+		SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+				
+		set(HAVE_RVALUE_REF ON)
+	else()
+		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
+	endif()
 endif()
 
 ############################################################################
@@ -1255,10 +1333,8 @@ if(WITH_MAPE)
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
-	FINDLIB(XPM_LIBRARIES Xpm)
-	FINDLIB(XXF86VM_LIBRARIES Xxf86vm)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
-	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${X11_LIBRARIES} ${XPM_LIBRARIES} ${XXF86VM_LIBRARIES} ${XRANDR_LIBRARIES})
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${X11_LIBRARIES} ${XRANDR_LIBRARIES})
 endif()
 if(USE_COCOA)
 	#stupid fix: just link to iconv that way
@@ -1340,6 +1416,14 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+# CMake support for MSVC 2010 is broken. Change the .sln file to avoid
+# millions of "reload X project?" dialog boxes.
+# For best results, also change CMake's ReloadProjects macro to only
+# call StopBuild().
+if(MSVC_VERSION EQUAL 1600)
+	file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.sln" "\n# reload me\n")
+endif()
+
 ############################################################################
 # installation
 ############################################################################
@@ -1353,15 +1437,29 @@ IF(WITH_AUTOMATIC_UPDATE)
 	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
 ENDIF()
 
+# hack to build the data on install, see
+# http://public.kitware.com/Bug/view.php?id=8438
+add_custom_target(data)
+install(
+	CODE
+	"execute_process(
+		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
+		)"
+	)
+
 # TODO: Check for convert at configure step?
-install(DIRECTORY DESTINATION share/icons/hicolor/48x48/apps)
-install(CODE "
-EXECUTE_PROCESS(COMMAND \"convert\" \"${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]\" \"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/48x48/apps/clonk.png\" RESULT_VARIABLE CONVERT_RESULT)
-IF(NOT \${CONVERT_RESULT} EQUAL 0)
-	MESSAGE(SEND_ERROR \"Creating icon failed\")
-ENDIF()
-FILE(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/share/openclonk)
-")
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/clonk.png"
+	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+	VERBATIM
+	)
+add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/clonk.png)
+add_dependencies(data icon)
+install(
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	DESTINATION share/icons/hicolor/48x48/apps
+	)
 
 set(OC_C4GROUPS
 	Graphics.ocg
@@ -1370,7 +1468,9 @@ set(OC_C4GROUPS
 	Sound.ocg
 	System.ocg
 	Objects.ocd
-	BackToTheRocks.ocf
+	Arena.ocf
+	Parkour.ocf
+	Settlement.ocf
 	Tutorial.ocf
 )
 
@@ -1385,15 +1485,20 @@ foreach(group ${OC_C4GROUPS})
 			DEPENDS c4group
 			)
 	else()
-		INSTALL(CODE "
-		MESSAGE(\"Packing and installing ${group}...\")
-		EXECUTE_PROCESS(COMMAND \"${CMAKE_CURRENT_BINARY_DIR}/c4group\" \"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}\" -t \"${CMAKE_INSTALL_PREFIX}/share/openclonk/${group}\" RESULT_VARIABLE PACK_RESULT)
-		IF(NOT \${PACK_RESULT} EQUAL 0)
-			MESSAGE(SEND_ERROR \"Packing ${group} failed\")
-		ENDIF()
-		")
+		add_custom_command(
+			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${group}
+			COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
+			MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
+			DEPENDS c4group
+			VERBATIM
+			)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
 	endif()
 endforeach()
+if (NOT APPLE)
+	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
+	add_dependencies(data groups)
+endif()
 
 # Install new files
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
@@ -1409,16 +1514,6 @@ find_program(MAKENSIS makensis PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\NSIS])
 
 string(REPLACE / \\ C4GROUP_LOCATION ${C4GROUP_LOCATION})
 string(REPLACE / \\ CLONK_LOCATION ${CLONK_LOCATION})
-
-foreach(group ${OC_C4GROUPS})
-	add_custom_command(
-		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${group}"
-		COMMAND c4group ARGS "${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}" -t "${CMAKE_CURRENT_BINARY_DIR}/${group}"
-		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}
-		DEPENDS c4group
-		VERBATIM
-		)
-endforeach()
 
 add_custom_command(
 	OUTPUT setup_openclonk.exe

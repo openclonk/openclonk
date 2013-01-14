@@ -9,7 +9,7 @@ Vertices=4
 VertexX=-1,3,-1,-5
 VertexY=-4,0,4,0
 VertexFriction=50,50,50,50
-Picture=0,1,9,9
+Picture=0,0,64,64
 Value=14
 Mass=15
 Components=Rock=6;Metal=1;

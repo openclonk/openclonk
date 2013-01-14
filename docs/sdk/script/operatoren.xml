@@ -174,6 +174,20 @@
           <col>bool, any/any</col>
         </row>
         <row>
+          <col>9l</col>
+          <col>===</col>
+          <col>Returns whether a and b refer to the same thing.</col>
+          <col>postfix</col>
+          <col>bool, any/any</col>
+        </row>
+        <row>
+          <col>9l</col>
+          <col>!==</col>
+          <col>Returns whether a and b do not refer to the same thing.</col>
+          <col>postfix</col>
+          <col>bool, any/any</col>
+        </row>
+        <row>
           <col>8l</col>
           <col>&amp;</col>
           <col>Performs a bitwise AND operation.</col>
@@ -205,6 +219,13 @@
           <col>4l</col>
           <col>||</col>
           <col>Performs a logical OR operation.</col>
+          <col>postfix</col>
+          <col>any, any/any</col>
+        </row>
+        <row>
+          <col>3l</col>
+          <col>??</col>
+          <col>Returns the left-hand operand if the operand is not <code>nil</code>, or the right-hand operand otherwise.</col>
           <col>postfix</col>
           <col>any, any/any</col>
         </row>
@@ -292,12 +313,20 @@ while(<strong>++somevar</strong> &lt; 10)
         <text>Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of <code>somevar</code> is 9. It is then increased by one (<code>somevar</code> is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed.</text>
         <text>In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When <code>somevar</code> is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends.</text>
       </part>
-      <h id="andor">The Operators &amp;&amp; and ||</h>
+      <h id="shortcircuiting">The Short-Circuiting Operators &amp;&amp;, || and ??</h>
       <part>
-        <text>These two operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be <code>false</code>, regardless of the result of Explode:</text>
+        <text>These operators are special. If the result can be determined by the first parameter alone, the second parameter is not computed at all. For example, this script does not explode an object, because the overall result would be <code>false</code>, regardless of the result of Explode:</text>
         <code>0 &amp;&amp; Explode(20);</code>
         <text>Further, the result is the value of the first or second parameter, depending on whether one or both were evaluated. For example, one can create a knight if possible or else a Clonk:</text>
         <code>CreateObject(Knight,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>
+      </part>
+      <h id="nilcoalesce">The operator <code>??</code></h>
+      <part>
+        <text>The <code>??</code> operator is called the nil-coalescing operator. It can be used to specify a default value for an expression or function call that may evaluate to <code>nil</code>.</text>
+      </part>
+      <h id="equality">The equality operators <code>==</code>, <code>!=</code>, <code>===</code> and <code>!==</code></h>
+      <part>
+        <text>The shorter operators basically consider more things equal. For example, two arrays with the same contents are equal, but === only returns true when both sides of the operator contain the same array. This matters mostly when arrays or proplists are modified. Modification can change the return value of the <code>==</code>/<code>!=</code> operators, but not of the <code>===</code>/<code>!==</code> operators.</text>
       </part>
       <h id="prio">Priority and Associating</h>
       <part>

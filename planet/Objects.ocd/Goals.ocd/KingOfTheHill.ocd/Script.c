@@ -20,6 +20,7 @@ SearchPosition();
 */
 
 #include Library_Goal
+#include Scoreboard_Death
 
 local player_points;
 local player_deaths;
@@ -37,6 +38,10 @@ func Initialize()
 	SetRadius(300);
 	SetPointLimit(10);
 	
+	Scoreboard->Init(
+		[{key = "koth", title = Goal_KingOfTheHill, sorted = true, desc = true, default = 0, priority = 80}]
+		);
+	Scoreboard->SetTitle("King of the Hill");
 	//CalculatePosition();
 	ScheduleCall(this, "PostInitialize", 3);
 	return _inherited(...);
@@ -44,7 +49,6 @@ func Initialize()
 
 func PostInitialize()
 {
-	ScheduleCall(this, "RefreshScoreboard", 1);
 	Init();
 }
 
@@ -113,23 +117,25 @@ func DoPoint(int player, int count)
 	if (count == nil) 
 		count = 1;
 	player_points[player] = Max(player_points[player] + count, 0);
+	Scoreboard->SetPlayerData(player, "koth", player_points[player]);
 }
 
-protected func InitializePlayer(plr)
+protected func InitializePlayer(int plr, int x, int y, object base, int team)
 {
-	ScheduleCall(this, "RefreshScoreboard", 1);
+	Scoreboard->NewPlayerEntry(plr);
 	player_suicides[plr]=0;
-	return Goal_Melee->InitializePlayer(plr, ...); // TODO
+	
+	Goal_Melee->MakeHostileToAll(plr, team);
+	return inherited(plr, x, y, base, team, ...);
 }
 
 public func IsFulfilled()
 {
-	return Goal_Melee->IsFulfilled(); // TODO
+	return Goal_Melee->IsFulfilled(); // the same condition as a normal melee
 }
 
 func OnClonkDeath(object clonk, int killer)
 {	
-	ScheduleCall(this, "RefreshScoreboard", 1);
 	if (clonk->GetAlive()) return;
 		
 	if (GetPlayerName(clonk->GetOwner()))
@@ -222,19 +228,19 @@ public func Activate(int byplr)
 	return MessageWindow(msg, byplr);
 }
 
+// returns a list of the teams ingame
 private func GetTeamList()
 {
-	// Count enemy players.
 	var teams=[];
 	for(var i = 0; i < GetPlayerCount(); i++)
 	{
 		var p=GetPlayerByIndex(i);
 		var t=GetPlayerTeam(p);
-		var found=false;
+		
+		var found = false;
 		for(var x=0;x<GetLength(teams);++x)
-			if(teams[x] == t) found=true;
-		if(found)
-			continue;
+			if(teams[x] == t) {found = true; break;}
+		if(found) continue;
 		teams[GetLength(teams)]=t;
 	}
 	return teams;
@@ -248,45 +254,25 @@ private func GetTeamPoints()
 	
 	for(var i=0;i<GetLength(teams);++i)
 	{
-		var t=teams[i];
-		var p=0;
-		var names="";
+		var t = teams[i];
+		var p = 0;
+		var names = "";
 		for(var d=0;d<GetPlayerCount();++d)
 		{
 			var p=GetPlayerByIndex(d);
-			p+=player_points[p];
-			names=Format("%s, ", names);
-			names=Format("%s%s", names, GetTaggedPlayerName(p));
+			if(GetPlayerTeam(p) != t) continue;
+			
+			p += player_points[p];
+
+			var comma = ", ";
+			if(GetLength(names) == 0) comma = "";
+			names = Format("%s%s%s", names, comma, GetTaggedPlayerName(p));
 		}
 		
 
 		ret[GetLength(ret)]={nr=t, points=p, player_names=names};
 	}
 	return ret;
-}
-
-static const SBRD_Deaths=2;
-static const SBRD_Points=1;
-
-func RefreshScoreboard()
-{
-	SetScoreboardData(SBRD_Caption,SBRD_Caption,"King of the Hill",SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,SBRD_Points,Format("{{Sword}} / %d", GetPointLimit()),SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,SBRD_Deaths,"{{Clonk}}",SBRD_Caption);
-	
-	
-	var points=GetTeamPoints();
-	
-	for(var cnt=0;cnt<GetPlayerCount();cnt++)
-	{
-		var plr=GetPlayerByIndex(cnt);
-		SetScoreboardData(plr+2,SBRD_Caption,GetTaggedPlayerName(plr),SBRD_Caption);
-
-		SetScoreboardData(plr+2,SBRD_Points,Format("%d", player_points[plr]),player_points[plr]);
-		SetScoreboardData(plr+2,SBRD_Deaths,Format("%d", player_deaths[plr]),player_deaths[plr]);
-	}
-	SortScoreboard(SBRD_Deaths,1);
-	SortScoreboard(SBRD_Points,1);
 }
 
 

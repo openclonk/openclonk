@@ -15,34 +15,15 @@
 }  
 </code>
     <text>An object with this script will be given a rock right after it has been created. The Initialize function is called only when the object has reached full size (a building only when its construction has been completed and a living being only when it is fully grown).</text>
-    <h>TimerCall</h>
-    <text>Each object definition can define a timer call in its <emlink href="definition/defcore.html">DefCore</emlink>. The TimerCall is a function which will be called at regular intervals. The DefCore entry Timer determines the rate of calls. If no rate is specifed, the default value is 35 frames (roughly once per second).</text>
     <h>ActMap</h>
     <text>An active object can also define activity script calls in its <emlink href="definition/actmap.html">ActMap</emlink>. The defined StartCall is made whenever an action begins (or repeats), an EndCall is made at the end of each activity. PhaseCall is called at each animation phase step and should only be used for very short animations. The call frequency of PhaseCalls is determined by the speed of the animation.</text>
     <h>#include</h>
     <text>An object script can also include the functionality of another script.</text>
     <code>#include Clonk</code>
-    <text>At this position the complete script of the specified object definition (that of the clonk, in this case) is inserted. Obviously, the included definition must be valid and loaded. Declared functions can be overloaded by functions of the same name that occur later in the script. Also see <funclink>inherited</funclink>().</text>
-    <h id="Zugangsberechtigung">Access Control</h>
-    <text>
-      You can specify an access declaration for functions in object scripts: 
-      <table>
-        <row>
-          <col>public</col>
-          <col>may be called by the object itself, by the engine, or by other objects</col>
-        </row>
-        <row>
-          <col>protected</col>
-          <col>may only be called by the object itself or by the engine</col>
-        </row>
-        <row>
-          <col>private</col>
-          <col>may only be called by the object itself</col>
-        </row>
-      </table>
- A special case: the callbacks TimerCall, StartCall, PhaseCall, and EndCall will work even if the function called was declared private (for downwards compatibility reasons) but the functions for all other engine calls (see below) must be declared protected or public.
-    </text>
-    <text>Functions with no special declaration are public. If you are unsure or don't care, leave your functions public.</text>
+    <text>At this position the complete script of the specified object definition (that of the clonk, in this case) is inserted, including all scripts that that script includes or got via <emlink href="script/AppendTo.html">#appendto</emlink>. The only exception is that every script is included only once, so including both the Clonk script and a script that is included by the Clonk script doesn't include that script twice. Other Obviously, the included definition must be valid and loaded. Declared functions can be overloaded by functions of the same name that occur later in the script. Also see <funclink>inherited</funclink>().</text>
+    <h>Interaction from other scripts</h>
+    <text>Other scripts can call functions of an object <code>obj</code> with the <code>-></code> and <code>->~</code> operators.</text>
+    <code>var obj = CreateObject(Flint); obj->Hit();</code>
     <h id="ObjektCallsderEngine">Object calls made by the engine</h>
     <text>
       The engine calls the following functions is objects at the given time. 
@@ -104,8 +85,8 @@
         </row>
         <row id="Damage">
           <literal_col>Damage</literal_col>
-          <col>int change, int by_player</col>
-          <col>When the object is damage.</col>
+          <col>int change, int cause, int by_player</col>
+          <col>When the object is damaged. See <emlink href="script/Effects.html#damagecause">Fx*Damage</emlink>for <code>cause</code> values.</col>
         </row>
         <row id="DeepBreath">
           <literal_col>DeepBreath</literal_col>
@@ -271,6 +252,11 @@
           <literal_col>Collection2</literal_col>
           <col>object obj</col>
           <col>When the object has collected another object (obj) (in all cases, even in script controlled collection or entering).</col>
+        </row>
+        <row id="ContentsDestruction">
+          <literal_col>ContentsDestruction</literal_col>
+          <col>object destroyed</col>
+          <col>When an object contained in the object has been destroyed/removed. The object still exists when the callback is called, but will be destroyed afterwards.</col>
         </row>
         <row id="Departure">
           <literal_col>Departure</literal_col>

@@ -39,6 +39,8 @@
 #define SOCKET int
 #define INVALID_SOCKET (-1)
 #include <arpa/inet.h>
+// for htons
+#include <netinet/in.h>
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
@@ -46,6 +48,10 @@
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+
+#ifndef SOCK_CLOEXEC
+#define SOCK_CLOEXEC 0
 #endif
 
 #ifndef HAVE_CONFIG_H

@@ -25,34 +25,6 @@
 #ifndef STDFILE_INCLUDED
 #define STDFILE_INCLUDED
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-
-#ifdef _WIN32
-#include <io.h>
-#define F_OK 0
-#else
-#include <dirent.h>
-#include <limits.h>
-#define _O_BINARY 0
-#define _MAX_PATH PATH_MAX
-#define _MAX_FNAME NAME_MAX
-
-bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
-#endif
-
-#ifdef _WIN32
-#define DirSep "\\"
-#define DirectorySeparator '\\'
-#define AltDirectorySeparator '/'
-#else
-#define DirSep "/"
-#define DirectorySeparator '/'
-#define AltDirectorySeparator '\\'
-#endif
-
 /** Create a directory and all of its parents.
  * \p[in] path Directory to create
  * \returns true on success, false otherwise.
@@ -131,8 +103,9 @@ public:
 	const char * operator * () const;
 	DirectoryIterator& operator ++ ();
 	DirectoryIterator operator ++ (int);
-	void Reset(const char * dirname);
-	void Reset();
+	void Clear(); // put iterator into empty state and clear any cached directory listing
+	void Reset(const char * dirname, bool force_reread=false); // reset iterator to front of file list. re-read directory if it changed or force_reread is set.
+	void Reset(); // reset iterator to front of file list without re-reading directory
 private:
 	void Read(const char *dirname);
 	friend struct DirectoryIteratorP;

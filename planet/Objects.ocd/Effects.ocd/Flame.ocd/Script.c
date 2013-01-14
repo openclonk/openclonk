@@ -4,6 +4,7 @@ local Description = "$Description$";
 public func Initialize()
 {
 	Incinerate();
+	AddTimer("Burning");
 	return true;
 }
 

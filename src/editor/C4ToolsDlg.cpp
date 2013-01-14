@@ -33,9 +33,9 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 #include <StdRegistry.h>
-#include <StdD3D.h>
+#include <C4DrawD3D.h>
 #ifdef USE_GL
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #endif
 
 bool C4ToolsDlg::Open()

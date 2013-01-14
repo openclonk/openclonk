@@ -32,7 +32,8 @@
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback(pCallback)
 {
-	fd = inotify_init();
+	fd = inotify_init1(IN_CLOEXEC);
+	if (fd == -1) fd = inotify_init();
 	if (fd == -1) LogF("inotify_init %s", strerror(errno));
 }
 

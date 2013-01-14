@@ -5,6 +5,11 @@
 	A crossbow which is enabled to fire grappling hooks, also has a winching system.
 */
 
+func Hit()
+{
+	Sound("GeneralHit?");
+}
+
 local fAiming;
 
 local hook;
@@ -182,10 +187,15 @@ public func Reset(clonk)
 	StopAnimation(GetRootAnimation(6));
 }
 
+func IsInventorProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-700,400),Trans_Scale(1150),Trans_Rotate(180,0,1,0),Trans_Rotate(-30,-1,0,-1)),def);
 }
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
+local BlastIncinerate = 30;
+local ContactIncinerate = 1;

@@ -17,14 +17,36 @@ local fuel;
 local rider;
 local ridervis;
 local riderattach;
+local dirdev;
+local controllable;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
 public func GetCarryPhase() { return 700; }
+
+public func GetCarryTransform(clonk)
+{
+	if(GetCarrySpecial(clonk))
+		return Trans_Translate(0, 0, -6500);
+	
+	return Trans_Translate(-1500, 0, 0);
+}
 
 protected func Construction()
 {
 	//flight length
 	fuel=100;
+	dirdev=12;
+	controllable = true;
+}
+
+func Fuse()
+{
+	Launch(GetR());
+}
+
+func Incineration()
+{
+	Fuse();
 }
 
 protected func Destruction()
@@ -34,25 +56,29 @@ protected func Destruction()
 
 func ControlRight()
 {
-	SetRDir(+3);
+	if(controllable)
+		SetRDir(+3);
 	return true;
 }
 
 func ControlLeft()
 {
-	SetRDir(-3);
+	if(controllable)
+		SetRDir(-3);
 	return true;
 }
 
 func ControlStop()
 {
-	SetRDir(0);
+	if(controllable)
+		SetRDir(0);
 	return true;
 }
 
 func ControlJump(object clonk)
 {
-	JumpOff(clonk,60);
+	if(controllable)
+		JumpOff(clonk,60);
 	return true;
 }
 
@@ -88,13 +114,14 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 	if(fuel<=0)
 	{
 		DoFireworks();
+		return;
 	}
 
 	var ignition = iEffectTime % 9;
 	
 	if(!ignition)
 	{
-		var angle = GetR()+RandomX(-12,12);
+		var angle = GetR()+RandomX(-dirdev,dirdev);
 		SetXDir(3*GetXDir()/4+Sin(angle,24));
 		SetYDir(3*GetYDir()/4-Cos(angle,24));
 		SetR(angle);
@@ -137,8 +164,8 @@ protected func Hit()
 		JumpOff(rider);
 	}
 	//Message("I have hit something",this);
+	Sound("GeneralHit?");
 	if(GetEffect("Flight",this)) DoFireworks();
-	Sound("WoodHit");
 }
 
 public func OnMount(clonk)
@@ -147,6 +174,12 @@ public func OnMount(clonk)
 	if(clonk->GetDir() == 1) iDir = -1;
 	clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
 	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
+	
+	//Modify picture transform to fit icon on clonk mount
+	//clean pic transform rotations
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(0,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0)));
+	//apply the new one
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(5000 * clonk->GetDir(),0,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(0,0,0,1), Trans_Rotate(0,0,1,0), Trans_Scale(700)));
 	return true;
 }
 
@@ -154,6 +187,7 @@ public func OnUnmount(clonk)
 {
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	DetachMesh(riderattach);
+	DefaultPicTransform();
 	return true;
 }
 
@@ -163,7 +197,7 @@ func Launch(int angle, object clonk)
 	SetCategory(C4D_Vehicle);
 
 	Exit();
-	AddEffect("Flight",this,150,1,this,this);
+	AddEffect("Flight",this,150,1,this);
 	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
@@ -202,16 +236,44 @@ func SetFuel(int new)
 	fuel = new;
 }
 
+func SetDirectionDeviation(int new)
+{
+	dirdev = new;
+}
+
+func SetControllable(bool new)
+{
+	controllable = new;
+}
+
 func GetFuel()
 {
 	return fuel;
 }
 
-func Definition(def) {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
+public func IsProjectileTarget()
+{
+	return 1;
 }
+
+func OnProjectileHit()
+{
+	Incinerate();
+}
+
+func IsChemicalProduct() { return true; }
+
+private func DefaultPicTransform() { return SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300))); }
+
+func Definition(def) {
+	DefaultPicTransform();
+}
+
 local Collectible = false;
 local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;

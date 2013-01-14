@@ -4,7 +4,7 @@
 
 protected func Hit()
 {
-	Sound("RockHit?");
+	Sound("GeneralHit?");
 }
 
 public func IsToolProduct() { return true; }
@@ -67,7 +67,7 @@ private func Find_PipeLine(object obj)
 
 /**
 Extract liquid from this
-@param sznMaterial: Material to extract
+@param sznMaterial: Material to extract. 0 or "*" for any material.
 @param inMaxAmount: Max Amount of Material being extracted 
 @param pnPump: Object which extracts the liquid
 @param pnPipe: Pipe which extracts the liquid (connected to pnPump)
@@ -90,8 +90,9 @@ public func LiquidOutput(string sznMaterial, int inMaxAmount, object pnPump, obj
 		if (GetMaterialVal("Density", "Material", itMaterial) != 25)
 			return ["", 0];
 		//wrong liquid?
-		if (!WildcardMatch(MaterialName(itMaterial),sznMaterial))
-			return ["", 0];
+		if (sznMaterial)
+			if (!WildcardMatch(MaterialName(itMaterial),sznMaterial))
+				return ["", 0];
 		sznMaterial = MaterialName(itMaterial);
 	}
 	else
@@ -119,5 +120,6 @@ public func LiquidInput(string sznMaterial, int inMaxAmount, object pnPump, obje
 
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;

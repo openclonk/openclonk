@@ -278,7 +278,6 @@ private func RopeRemoved()
 /* --------------------- Graphics of segments ---------------------- */
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
 	{
@@ -450,6 +449,14 @@ public func GetLadderData(index)
 	return [startx, starty, endx, endy, angle];
 }
 
+func Hit()
+{
+	Sound("WoodHit?");
+}
+
+public func IsTool() { return true; }
+public func IsToolProduct() { return true; }
+
 local ActMap = {
 Hanging = {
 	Prototype = Action,
@@ -457,6 +464,7 @@ Hanging = {
 },
 };
 local Name = "$Name$";
+local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;

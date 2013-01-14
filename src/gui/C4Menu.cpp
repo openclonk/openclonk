@@ -3,8 +3,9 @@
  *
  * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
  * Copyright (c) 2001-2008  Sven Eberhardt
- * Copyright (c) 2004-2010  Günther Brammer
+ * Copyright (c) 2004-2011  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -54,7 +55,7 @@ const int32_t C4MN_InfoCaption_Delay = 90;
 C4MenuItem::C4MenuItem(C4Menu *pMenu, int32_t iIndex, const char *szCaption,
                        const char *szCommand, int32_t iCount, C4Object *pObject, const char *szInfoCaption,
                        C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable)
-		: C4GUI::Element(), Count(iCount), id(idID), Object(pObject), dwSymbolClr(0u),
+		: C4GUI::Element(), Count(iCount), id(idID), Object(pObject), pSymbolObj(NULL), pSymbolGraphics(NULL), dwSymbolClr(0u),
 		fOwnValue(fOwnValue), iValue(iValue), fSelected(false), iStyle(iStyle), pMenu(pMenu),
 		iIndex(iIndex), IsSelectable(fIsSelectable), TextDisplayProgress(-1)
 {
@@ -95,7 +96,16 @@ void C4MenuItem::DoTextProgress(int32_t &riByVal)
 		MarkupChecker.SkipTags(&szPos);
 		if (!*szPos) break;
 		--riByVal;
-		++szPos;
+
+		// Advance one UTF-8 character
+		uint32_t c = GetNextCharacter(&szPos);
+		// Treat embedded images {{XXX}} as one entity
+		if(c == '{' && *szPos == '{')
+		{
+			int32_t end = SCharPos('}', szPos);
+			if(end > 0 && szPos[end+1] == '}')
+				szPos += end + 2;
+		}
 	}
 	if (!*szPos)
 		TextDisplayProgress=-1;
@@ -114,7 +124,7 @@ int32_t C4MenuItem::GetSymbolWidth(int32_t iForHeight)
 {
 	// Context or dialog menus
 	if (iStyle==C4MN_Style_Context || (iStyle==C4MN_Style_Dialog && Symbol.Surface))
-		return Max(Symbol.Wdt * iForHeight / Max<int32_t>(Symbol.Hgt, 1), iForHeight);
+		return Max(Symbol.Wdt * iForHeight / Max(Symbol.Hgt, 1.0f), static_cast<float>(iForHeight));
 	// Info menus
 	if (iStyle==C4MN_Style_Info && Symbol.Surface && Symbol.Wdt)
 		return Symbol.Wdt;
@@ -139,9 +149,24 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 		// get symbol area
 		cgoItemSymbol=cgoItemText.Truncate(C4FCT_Left, iSymWidth);
 	}
+	// cgoItemSymbol.Hgt is 0. This means rcBounds.Hgt is 0. That
+	// makes no sense at this point, so let's just draw in a
+	// square area at item y.
+	C4Facet cgoSymbolOut(cgoItemSymbol.Surface, cgoItemSymbol.X, cgoItemSymbol.Y, cgoItemSymbol.Wdt, cgoItemSymbol.Wdt);
+
 	// Draw item symbol:
 	// Draw if there is no text progression at all (TextDisplayProgress==-1, or if it's progressed far enough already (TextDisplayProgress>0)
-	if (Symbol.Surface && TextDisplayProgress) Symbol.DrawClr(cgoItemSymbol, true, dwSymbolClr);
+	if(pSymbolObj && TextDisplayProgress)
+	{
+		pSymbolObj->DrawPicture(cgoSymbolOut, false, NULL);
+	}
+	else if (pSymbolGraphics && TextDisplayProgress)
+	{
+		pSymbolGraphics->Draw(cgoSymbolOut, dwSymbolClr ? dwSymbolClr : 0xffffffff, NULL, 0, 0, NULL);
+	}
+	else if (Symbol.Surface && TextDisplayProgress)
+		Symbol.DrawClr(cgoItemSymbol, true, dwSymbolClr);
+
 	// Draw item text
 	pDraw->StorePrimaryClipper(); pDraw->SubPrimaryClipper(cgoItemText.X, cgoItemText.Y, cgoItemText.X+cgoItemText.Wdt-1, cgoItemText.Y+cgoItemText.Hgt-1);
 	switch (iStyle)
@@ -218,30 +243,6 @@ void C4MenuItem::MouseEnter(C4GUI::CMouse &rMouse)
 	typedef C4GUI::Element ParentClass;
 	ParentClass::MouseEnter(rMouse);
 }
-
-void C4MenuItem::DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// is this a drag element?
-	if (!IsDragElement()) { rMouse.pDragElement = NULL; }
-	// check if outside drag range
-	if (Max(Abs(iX - iDragX), Abs(iY - iDragY)) >= C4MC_DragSensitivity)
-	{
-		// then do a drag!
-		::MouseControl.StartConstructionDrag(id);
-		// this disables the window: Release mouse
-		rMouse.ReleaseButtons();
-		rMouse.pDragElement = NULL;
-		rMouse.pMouseOverElement = NULL;
-	}
-}
-
-void C4MenuItem::StopDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam)
-{
-	// drag stop: Nothing to do, really
-	// Mouse up will be processed by regular procedure
-	rMouse.pDragElement = NULL;
-}
-
 
 // -----------------------------------------------------------
 // C4Menu
@@ -372,6 +373,31 @@ bool C4Menu::Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *s
 	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
 }
 
+bool C4Menu::Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
+                 int32_t iCount, C4Object *pObject, const char *szInfoCaption,
+                 C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+{
+	if (!IsActive()) return false;
+	// Create new menu item
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	// Set Symbol
+	pNew->SetGraphics(pGfxObj);
+	// Add
+	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+}
+
+bool C4Menu::Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
+                 int32_t iCount, C4Object *pObject, const char *szInfoCaption,
+                 C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
+{
+	if (!IsActive()) return false;
+	// Create new menu item
+	C4MenuItem *pNew = new C4MenuItem(this, ItemCount, szCaption,szCommand,iCount,pObject,szInfoCaption,idID,szCommand2,fOwnValue,iValue,Style,fIsSelectable);
+	// Set Symbol
+	pNew->SetGraphics(pGfx);
+	// Add
+	return AddItem(pNew, szCaption, szCommand, iCount, pObject, szInfoCaption, idID, szCommand2, fOwnValue, iValue, fIsSelectable);
+}
 
 bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szCommand,
                      int32_t iCount, C4Object *pObject, const char *szInfoCaption,
@@ -1198,8 +1224,7 @@ void C4Menu::ClearPointers(C4Object *pObj)
 {
 	C4MenuItem *pItem;
 	for (int32_t i=0; (pItem = GetItem(i)); ++i)
-		if (pItem->GetObject()==pObj)
-			pItem->ClearObject();
+		pItem->ClearPointers(pObj);
 }
 
 #ifdef _DEBUG

@@ -21,9 +21,6 @@
 #ifndef INC_C4Folder
 #define INC_C4Folder
 
-class StdCompiler;
-class C4Group;
-
 const int C4MaxFolderSort = 4096;
 
 class C4FolderHead

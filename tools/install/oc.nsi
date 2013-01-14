@@ -65,14 +65,14 @@ FunctionEnd
 !insertmacro MUI_UNPAGE_INSTFILES
 
 ; Language files
-!insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "German"
 
 ; Additional language strings
-LangString MUI_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
-LangString MUI_TEXT_USERPATH ${LANG_English} "User Path"
+LangString OC_TEXT_USERPATH ${LANG_German} "Benutzerpfad"
+LangString OC_TEXT_USERPATH ${LANG_English} "User Path"
 
-!insertmacro MUI_RESERVEFILE_LANGDLL
+;!insertmacro MUI_RESERVEFILE_LANGDLL
 ;ReserveFile "${NSISDIR}\Plugins\*.dll"
 ; MUI end ------
 
@@ -93,6 +93,10 @@ Section
   File "*.dll"
 
   File "*.oc?"
+  
+  ; delete obsolete folders
+  Delete "BackToTheRocks.ocf"
+  Delete "BeyondTheRocks.ocf"
 
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
@@ -132,14 +136,14 @@ Section
     CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
 
     ; Create user path shortcut in program directory
-    CreateShortCut "$INSTDIR\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+    CreateShortCut "$INSTDIR\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
     ; Start menu shortcuts
     CreateDirectory "$SMPROGRAMS\OpenClonk"
     CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\Clonk.exe"
     CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\Clonk.exe" "--editor"
     CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-    CreateShortCut "$SMPROGRAMS\OpenClonk\$(MUI_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+    CreateShortCut "$SMPROGRAMS\OpenClonk\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
   EndStartMenu:
 
   ; Uninstaller info
@@ -238,7 +242,7 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\GameExplorer.txt"
   Delete "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-  Delete "$INSTDIR\$(MUI_TEXT_USERPATH).lnk"
+  Delete "$INSTDIR\$(OC_TEXT_USERPATH).lnk"
 
   RMDir "$INSTDIR"
 

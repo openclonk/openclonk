@@ -6,6 +6,7 @@
  * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +26,6 @@
 
 #include <C4Network2Discover.h>
 #include <C4Application.h>
-#include <C4UserMessages.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameControl.h>
@@ -642,7 +642,7 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 		iLastStatistic = iLastExecute;
 	}
 
-	// ressources
+	// resources
 	::Network.ResList.OnTimer();
 
 	// ok
@@ -947,7 +947,7 @@ void C4Network2IO::CallHandlers(int iHandlerID, const C4IDPacket *pPkt, C4Networ
 		assert(!fThread);
 		::Network.Players.HandlePacket(cStatus, pPacket, pConn);
 	}
-	// ressource list class (network thread)
+	// resource list class (network thread)
 	if (iHandlerID & PH_C4Network2ResList)
 	{
 		assert(fThread);

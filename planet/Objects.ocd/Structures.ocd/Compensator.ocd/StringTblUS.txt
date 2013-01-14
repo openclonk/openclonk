@@ -1,0 +1,2 @@
+Name=Compensator
+Description=Is able to buffer a small amount of energy over some time.

@@ -2,7 +2,6 @@
 id=Butterfly
 Version=5,2,0,1
 Category=C4D_Living
-TimerCall=Activity
 ContactCalls=1
 Width=6
 Height=4
@@ -14,11 +13,8 @@ VertexX=0,0,-3,3
 VertexY=-2,2,0,0
 VertexCNAT=4,8,1,2
 VertexFriction=100,100,100,100,100,100
-Placement=2
-ContactIncinerate=0
 Float=1
 BorderBound=7
 StretchGrowth=1
-NoBurnDecay=1
 IncompleteActivity=1
 

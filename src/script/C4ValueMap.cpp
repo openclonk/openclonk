@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001-2002, 2004-2006  Peter Wortmann
  * Copyright (c) 2004-2006  Sven Eberhardt
- * Copyright (c) 2005, 2008  Günther Brammer
+ * Copyright (c) 2005, 2008, 2012  Günther Brammer
  * Copyright (c) 2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -228,6 +228,9 @@ void C4ValueMapData::OnNameListChanged(const char **pOldNames, int32_t iOldSize)
 
 C4Value *C4ValueMapData::GetItem(int32_t iNr)
 {
+	assert(pNames);
+	assert(iNr < pNames->iSize);
+	assert(iNr >= 0);
 	// the list is nothing without name list...
 	if (!pNames) return 0;
 
@@ -238,9 +241,11 @@ C4Value *C4ValueMapData::GetItem(int32_t iNr)
 
 C4Value *C4ValueMapData::GetItem(const char *strName)
 {
+	assert(pNames);
 	if (!pNames) return 0;
 
 	int32_t iNr = pNames->GetItemNr(strName);
+	assert(iNr != -1);
 
 	if (iNr == -1) return 0;
 
@@ -263,6 +268,7 @@ void C4ValueMapData::Denumerate(C4ValueNumbers * numbers)
 void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
 	bool fCompiler = pComp->isCompiler();
+	C4ValueMapNames *pOldNames = pNames;
 	if (fCompiler) Reset();
 	// Compile item count
 	int32_t iValueCnt;
@@ -308,7 +314,6 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	// Set
 	if (fCompiler)
 	{
-		C4ValueMapNames *pOldNames = pNames;
 		// Set
 		CreateTempNameList();
 		pNames->SetNameArray(const_cast<const char **>(ppNames), iValueCnt);
@@ -328,13 +333,13 @@ C4ValueMapNames::C4ValueMapNames()
 
 }
 
-C4ValueMapNames::C4ValueMapNames(C4ValueMapNames& NamesToCopy)
+C4ValueMapNames::C4ValueMapNames(const C4ValueMapNames& NamesToCopy)
 		: pNames(0), iSize(0), pFirst(0)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 }
 
-C4ValueMapNames& C4ValueMapNames::operator = (C4ValueMapNames &NamesToCopy)
+C4ValueMapNames& C4ValueMapNames::operator = (const C4ValueMapNames &NamesToCopy)
 {
 	ChangeNameList(const_cast<const char **>(NamesToCopy.pNames), NamesToCopy.iSize);
 	return *this;

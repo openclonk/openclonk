@@ -1,2 +1,3 @@
-Name=Telekinetic Gyroglove
-Description=You can drag a small object lying about through the landscape by pointing on it while holding the mouse button.
+Name=Tele Glove
+Description=With this experimental glove it is possible to telekinetically move objects through the air and and even fling them away.
+UsageHelp=Aim for a small object in your vicinity and press and hold [Use] to move it around.

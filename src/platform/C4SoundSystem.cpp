@@ -2,12 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2001, 2005-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2001, 2005-2006, 2008, 2012  Sven Eberhardt
  * Copyright (c) 2003-2005  Peter Wortmann
  * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2011  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -44,7 +45,7 @@ using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
-		pSample (NULL),
+		pSample (0),
 		FirstInst (NULL),
 		Next (NULL)
 {
@@ -68,7 +69,7 @@ void C4SoundEffect::Clear()
 #ifdef USE_OPEN_AL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
-	pSample = NULL;
+	pSample = 0;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
@@ -286,6 +287,8 @@ bool C4SoundInstance::Start()
 #else
 	return false;
 #endif
+	// Safety: Don't execute if start failed, or Execute() would try to start again
+	if (!isStarted()) return false;
 	// Update volume
 	Execute();
 	return true;
@@ -306,8 +309,12 @@ bool C4SoundInstance::Stop()
 		Mix_HaltChannel(iChannel);
 #endif
 #ifdef USE_OPEN_AL
-	if (Playing())
-		alSourceStop(iChannel);
+	if (iChannel != -1)
+	{
+		if (Playing()) alSourceStop(iChannel);
+		ALuint c = iChannel;
+		alDeleteSources(1, &c);
+	}
 #endif
 	iChannel = -1;
 	iStarted = 0;

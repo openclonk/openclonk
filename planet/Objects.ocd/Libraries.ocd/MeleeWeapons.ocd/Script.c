@@ -75,16 +75,6 @@ func FxIntWeaponChargeStart(pTarget, effect, iTemp, length)
 
 func FxIntWeaponChargeTimer(pTarget, effect, iEffectTime)
 {
-	// check whether the Clonk is still striking
-	/*if(this->GetChargeType() == L_WN_straight)
-	{
-		if(!pTarget->IsWalking())
-			return -1;
-	}
-	else if(!pTarget->IsJumping())
-	{
-		return -1;
-	}*/
 	if(this->Contained() != pTarget) return -1;
 	if(!pTarget->~IsWalking() && !pTarget->~IsJumping()) return -1;
 	var strikeTime=effect.length;
@@ -385,7 +375,7 @@ func DoWeaponSlow(pClonk, iStrength)
 	pClonk->SetYDir(-Cos(angle, s), 1000);
 	
 	if(e)
-		EffectCall(0, e, "AddWeaponSlow", iStrength);
+		EffectCall(nil, e, "AddWeaponSlow", iStrength);
 	return true;
 }
 
@@ -393,12 +383,12 @@ func GetWeaponSlow(pClonk)
 {
 	var e=GetEffect("IntWeaponCharge", pClonk);
 	if(!e) return 0;
-	return EffectCall(0, e, "GetWeaponSlow");
+	return EffectCall(nil, e, "GetWeaponSlow");
 }
 
 func ApplyWeaponBash(pTo, int strength, angle)
 {
-	AddEffect("IntIsBeingStruck", pTo, 2, 1, 0, GetID(), strength, angle);
+	AddEffect("IntIsBeingStruck", pTo, 2, 1, nil, GetID(), strength, angle);
 }
 
 func TranslateVelocity(object pTarget, int angle, int iLimited, int iExtraVelocity)

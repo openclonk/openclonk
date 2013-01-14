@@ -2,7 +2,6 @@
 id=SteamEngine
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=ContentsCheck
 Width=66
 Height=48
 Offset=-33,-24
@@ -13,8 +12,7 @@ VertexFriction=50,50,100,100
 Value=180
 Mass=4000
 Components=Rock=6;Metal=3
-Collection=-69,20,20,22
 Exclusive=1
-BlastIncinerate=130
 Construction=1
 ContainBlast=1
+IncompleteActivity=1

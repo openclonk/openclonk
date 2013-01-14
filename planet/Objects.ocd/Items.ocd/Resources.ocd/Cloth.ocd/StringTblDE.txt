@@ -1,0 +1,2 @@
+Name=Stoff
+Description=Baumaterial für alle stofflichen Dinge.

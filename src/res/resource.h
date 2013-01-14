@@ -51,13 +51,21 @@
 #define IDC_STATICCURSOR                2023
 #define IDC_STATICFRAME                 2024
 #define IDC_STATICMATERIAL              2025
-#define IDC_STATICSCRIPT                2026
 #define IDC_STATICTEXTURE               2027
 #define IDC_STATICTIME                  2028
+#define IDC_GFXERR_MSG                  2029
+#define IDC_GFXERR_RES                  2030
+#define IDC_GFXERR_X                    2031
+#define IDC_GFXERR_XINP                 2032
+#define IDC_GFXERR_Y                    2033
+#define IDC_GFXERR_YINP                 2034
+#define IDC_GFXERR_FSCRN                2035
+#define IDC_GFXERR_INVAL                2036
 #define IDD_COMPONENT                   3000
 #define IDD_CONSOLE                     3001
 #define IDD_PROPERTIES                  3002
 #define IDD_TOOLS                       3003
+#define IDD_GFXERROR                    3004
 #define IDI_00_C4X                      4000
 #define IDI_01_OCS                      4001
 #define IDI_02_OCG                      4002
@@ -83,6 +91,8 @@
 #define IDM_VIEWPORT_DELETE             5014
 #define IDM_VIEWPORT_DUPLICATE          5015
 #define IDM_VIEWPORT_NEW                5016
+#define IDM_VPORTDYN_FIRST              5050
+	//allocates the next 27
 #define IDR_CONSOLEMENU                 6000
 #define IDR_CONTEXTMENUS                6001
 #define IDM_FILE_RECORD                 40041

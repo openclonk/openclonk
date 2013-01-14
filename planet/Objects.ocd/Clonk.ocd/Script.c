@@ -2,7 +2,7 @@
 	Clonk
 	Author: Randrian
 
-	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+	The protoganist of the game. Witty and nimble if skillfully controlled ;-)
 */
 
 
@@ -41,19 +41,21 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
+	iHandMesh = [0,0];
+
+	SetSkin(0);
 }
-
-
 
 /* When adding to the crew of a player */
 
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin) SetSkin(skin);
+	if(skin != nil) SetSkin(skin);
+	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
@@ -114,7 +116,7 @@ protected func Hurt()
 	if(gender == 0)
 		Sound("Hurt?");
 	else
-		Sound("FHurt?"); //female 'ouch' sounds TODO :/
+		Sound("FHurt?");
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -144,11 +146,13 @@ protected func Death(int killed_by)
 	if (GetAlive())
 		return;
 	
+	// Some effects on dying.
 	if(gender == 0)
 		Sound("Die");
 	else
 		Sound("FDie");
-
+	CloseEyes(1);
+	
 	DeathAnnounce();
 	return;
 }
@@ -198,7 +202,7 @@ public func Eat(object food)
 // adaptions
 public func IsClonk() { return true; }
 
-public func IsJumping(){return GetProcedure() == "FLIGHT";}
+public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
 
 /* Carry items on the clonk */
@@ -225,9 +229,9 @@ func OnSlotFull(int slot)
 
 public func DetachObject(object obj)
 {
-	if(GetItem(0) == obj)
+	if(GetHandItem(0) == obj)
 		DetachHandItem(0);
-	if(GetItem(1) == obj)
+	if(GetHandItem(1) == obj)
 		DetachHandItem(1);
 }
 
@@ -240,7 +244,6 @@ func DetachHandItem(bool secondary)
 
 func AttachHandItem(bool secondary)
 {
-	if(!iHandMesh) iHandMesh = [0,0];
 	DetachHandItem(secondary);
 	UpdateAttach();
 }
@@ -254,8 +257,8 @@ func UpdateAttach()
 
 func DoUpdateAttach(bool sec)
 {
-	var obj = GetItem(sec);
-	var other_obj = GetItem(!sec);
+	var obj = GetHandItem(sec);
+	var other_obj = GetHandItem(!sec);
 	if(!obj) return;
 	var iAttachMode = obj->~GetCarryMode(this);
 	if(iAttachMode == CARRY_None) return;
@@ -369,9 +372,9 @@ func DoUpdateAttach(bool sec)
 
 public func GetHandMesh(object obj)
 {
-	if(GetItem(0) == obj)
+	if(GetHandItem(0) == obj)
 		return iHandMesh[0];
-	if(GetItem(1) == obj)
+	if(GetHandItem(1) == obj)
 		return iHandMesh[1];
 }
 
@@ -404,7 +407,8 @@ func HasHandAction(sec, just_wear)
 
 func HasActionProcedure()
 {
-	if(GetAction() == "Walk" || GetAction() == "Jump" || GetAction() == "Kneel" || GetAction() == "Ride")
+	var action = GetAction();
+	if (action == "Walk" || action == "Jump" || action == "WallJump" || action == "Kneel" || action == "Ride")
 		return true;
 	return false;
 }
@@ -444,7 +448,7 @@ func SetMeshTransformation(array transformation, int layer)
 	if(GetLength(mesh_transformation_list) < layer)
 		SetLength(mesh_transformation_list, layer+1);
 	mesh_transformation_list[layer] = transformation;
-	var all_transformations = 0;
+	var all_transformations = nil;
 	for(var trans in mesh_transformation_list)
 	{
 		if(!trans) continue;
@@ -531,17 +535,17 @@ func SetSkin(int skin)
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics(nil, Skin_Steampunk);
+	{	SetGraphics("Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics(nil, Skin_Alchemist);
+	{	SetGraphics("Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics(nil, Skin_Farmer);
+	{	SetGraphics("Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
@@ -550,6 +554,7 @@ func SetSkin(int skin)
 
 	return skin;
 }
+func GetSkinCount() { return 4; }
 
 /* Act Map */
 
@@ -625,7 +630,6 @@ Scale = {
 	Procedure = DFA_SCALE,
 	Speed = 60,
 	Accel = 20,
-	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
@@ -880,6 +884,8 @@ local MaxEnergy = 50000;
 local MaxBreath = 252; // Clonk can breathe for 7 seconds under water.
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
+local NoBurnDecay = 1;
+local ContactIncinerate = 10;
 
 func Definition(def) {
 	// Set perspective

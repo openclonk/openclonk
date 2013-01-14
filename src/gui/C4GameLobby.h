@@ -28,13 +28,6 @@
 #include "C4Client.h"
 #include "C4PlayerInfo.h"
 
-class C4PlayerInfo;
-class C4PlayerInfoListBox;
-class C4ClientPlayerInfos;
-class C4Network2ResDlg;
-class C4GameOptionsList;
-class C4GameOptionButtons;
-
 namespace C4GameLobby
 {
 	class MainDlg;
@@ -132,7 +125,6 @@ namespace C4GameLobby
 
 	private:
 		void SetCountdownState(CountdownState eToState, int32_t iTimer);
-		void Start(int32_t iCountdownTime); // host only: Do game start with specified countdown time (forwards to network system)
 		int32_t ValidatedCountdownTime(int32_t iTimeout); // correct invalid timeout settings
 
 		void UpdatePlayerList();
@@ -156,6 +148,7 @@ namespace C4GameLobby
 		void OnCountdownPacket(const C4PacketCountdown &Pkt); // called when a countdown packet is received: Update countdown state
 
 		bool IsCountdown();
+		void Start(int32_t iCountdownTime); // host only: Do game start with specified countdown time (forwards to network system)
 		void UpdatePassword();
 		void ClearLog();
 	};

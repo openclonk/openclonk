@@ -26,6 +26,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	// Forward control to cursor
 	var cursor = GetCursor(plr);
 	if (cursor)
+	if (cursor->GetCrewEnabled())
 	{
 		// Object controlled by plr
 		cursor->SetController(plr);
@@ -204,7 +205,6 @@ global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool r
 	
 	// Count down from EffectCount, in case effects get deleted
 	var i = GetEffectCount("*Control*", this), iEffect;
-	var res;
 	while (i--)
 		{
 		iEffect = GetEffect("*Control*", this, i);
@@ -465,6 +465,21 @@ global func ObjectComLetGo(int vx, int vy)
 	return true;
 }
 
+/* Mouse Hovering */
+
+// Engine callback when the mouse hovers over an object (entering) or stops hovering over an object (leaving).
+// Either leaving, entering or both are set. They can be nil, but never both at the same time.
+// dragged is an object being drag(&not dropped yet)
+global func MouseHover(int player, object leaving, object entering, object dragged)
+{
+	// Leaving the hovering zone should be processed first.
+	if(leaving)
+		leaving->~OnMouseOut(player, dragged);
+	// Then process entering a new hovering zone. 
+	if(entering)
+		entering->~OnMouseOver(player, dragged);
+	return true;
+}
 
 /* Drag & Drop */
 
@@ -472,18 +487,18 @@ global func ObjectComLetGo(int vx, int vy)
 global func MouseDragDrop(int plr, object source, object target)
 {
 	//Log("MouseDragDrop(%d, %s, %s)", plr, source->GetName(), target->GetName());
-	var src_drag = source->~MouseDrag(plr);
+	var src_drag = source->~OnMouseDrag(plr);
 	if (!src_drag) 
 		return false;
 	
 	// If there is drop target, check whether it accepts the drop.
 	if (target)
-		if (!target->~MouseDrop(plr, src_drag))
+		if (!target->~OnMouseDrop(plr, src_drag))
 			return false;
 
 	// Notify the drop object it succeeded.
 	if (source)
-		source->~MouseDragDone(src_drag, target);
+		source->~OnMouseDragDone(src_drag, target);
 	return true;
 }
 

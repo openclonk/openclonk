@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Günther Brammer
+ * Copyright (c) 2009-2012  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  *
@@ -37,7 +37,12 @@ public:
 	{ assert(Key); Key->IncRef(); /*assert(Strings.Set.Has(Key));*/ }
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
-	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	{ if(o.Key) o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+#ifdef HAVE_RVALUE_REF
+	C4Property(C4Property && o) : Key(o.Key), Value(std::move(o.Value)) { o.Key = 0; }
+	C4Property & operator = (C4Property && o)
+	{ if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
+#endif
 	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;
@@ -45,6 +50,8 @@ public:
 	operator const void * () const { return Key; }
 	C4Property & operator = (void * p)
 	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
+	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return NULL
 };
 class C4PropListNumbered;
 class C4PropList
@@ -63,15 +70,17 @@ public:
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
 
-	// Whether this proplist should be saved as a reference to a C4Def/C4Object
-	virtual bool IsDef() const { return false; }
+	// saved as a reference to a global constant?
+	virtual class C4PropListStatic * IsStatic() { return NULL; }
+	// saved as a reference to separately saved objects?
 	virtual bool IsNumbered() const { return false; }
-	// Whether this proplist is a pure script proplist, not a host object
-	virtual bool IsScriptPropList() { return false; }
+	// some proplists have references that are not reference-counted
+	virtual bool Delete() { return false; }
 
-	// These three operate on properties as seen by script, which can be dynamic
+	// These four operate on properties as seen by script, which can be dynamic
 	// or reflect C++ variables
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual C4ValueArray * GetProperties() const;
 	// not allowed on frozen proplists
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
@@ -80,6 +89,15 @@ public:
 	bool GetProperty(C4PropertyName k, C4Value *pResult) const
 	{ return GetPropertyByS(&Strings.P[k], pResult); }
 	C4String * GetPropertyStr(C4PropertyName k) const;
+	C4AulFunc * GetFunc(C4PropertyName k) const
+	{ return GetFunc(&Strings.P[k]); }
+	C4AulFunc * GetFunc(C4String * k) const;
+	C4AulFunc * GetFunc(const char * k) const;
+	C4String * EnumerateOwnFuncs(C4String * prev = 0) const;
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0, bool fPassErrors=false)
+	{ return Call(&Strings.P[k], pPars, fPassErrors); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
+	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
 	bool HasProperty(C4String * k) { return Properties.Has(k); }
@@ -88,16 +106,17 @@ public:
 	{ SetPropertyByS(&Strings.P[k], to); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
-	static C4PropList * NewAnon(C4PropList * prototype = 0);
+	static C4PropListStatic * NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
 
 	// only freeze proplists which are not going to be modified
+	// FIXME: Only C4PropListStatic get frozen. Optimize accordingly.
 	void Freeze() { constant = true; }
+	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
 
 	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();
 
-	// Every proplist has to be initialized by either Init or CompileFunc.
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3);
 
@@ -114,6 +133,7 @@ private:
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
+	friend class C4ScriptHost;
 public:
 	int32_t Status;
 };
@@ -121,7 +141,7 @@ public:
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
 
 // Proplists that are created during a game and get saved in a savegame
-// Examples: Objects, Effects, scriptcreated proplists
+// Examples: Objects, Effects
 class C4PropListNumbered: public C4PropList
 {
 public:
@@ -151,8 +171,26 @@ class C4PropListScript: public C4PropList
 {
 public:
 	C4PropListScript(C4PropList * prototype = 0): C4PropList(prototype) { }
-	bool IsScriptPropList() { return true; }
+	bool Delete() { return true; }
 };
 
+// PropLists declared in the game data
+// examples: Definitions, local variable initializers
+class C4PropListStatic: public C4PropList
+{
+public:
+	C4PropListStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key):
+		C4PropList(prototype), Parent(parent), ParentKeyName(key) { }
+	virtual ~C4PropListStatic() { }
+	bool Delete() { return true; }
+	virtual C4PropListStatic * IsStatic() { return this; }
+	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
+	StdStrBuf GetDataString() const;
+	const C4PropListStatic * GetParent() { return Parent; }
+	const C4String * GetParentKeyName() { return ParentKeyName; }
+protected:
+	const C4PropListStatic * Parent;
+	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in
+};
 
 #endif // C4PROPLIST_H

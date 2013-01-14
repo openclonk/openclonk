@@ -2,7 +2,7 @@
 
 private func Hit()
 {
-	Sound("WoodHit");
+	Sound("WoodHit?");
 }
 
 public func GetCarryMode(clonk) { return CARRY_Back; }
@@ -20,6 +20,12 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	AddEffect("ShovelDig",clonk,1,1,this);
 //	ControlUseHolding(clonk, x, y);
+
+	//temporary workaround to allow clonks to dig free when they are stuck in dirt
+	if(clonk->Stuck()){
+		DigFree(clonk->GetX(), clonk->GetY(), 10);
+	}
+	
 	return true;
 }
 
@@ -42,7 +48,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 public func ControlUseStop(object clonk, int x, int y)
 {
 	fDigging = 0;
-	RemoveEffect("ShovelDig",clonk,0);
+	RemoveEffect("ShovelDig",clonk);
 	if(clonk->GetAction() != "Dig") return true;
 
 //	EffectCall(clonk, GetEffect("IntDig", clonk), "StopDig");
@@ -58,10 +64,12 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 {
 	var xdir_boost = 0, ydir_boost = 0;
 	// Currently not digging?
-	if(clonk->GetAction() != "Dig")
+	if(clonk->GetAction() != "Dig" || clonk->GBackLiquid(0,-4))
 	{
 		var is_scaling = (clonk->GetProcedure() == "SCALE");
 		var can_dig = (clonk->GetAction() == "Walk" || is_scaling || clonk->GetProcedure() == "HANGLE");
+		// Prevent clonk from starting to dig if in deep liquid
+		if (clonk->GBackLiquid(0,-4)) can_dig = false;
 		if (can_dig)
 		{
 			clonk->SetAction("Dig");
@@ -86,7 +94,7 @@ public func FxShovelDigTimer(object clonk, effect, int time)
 			if (fDigging)
 			{
 				fDigging = false;
-				RemoveEffect("ShovelDust",clonk,0);
+				RemoveEffect("ShovelDust",clonk);
 			}
 			return true;
 		}
@@ -150,4 +158,5 @@ func Definition(def) {
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

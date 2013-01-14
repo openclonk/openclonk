@@ -24,13 +24,6 @@
 #include "C4GameControl.h"
 #include "StdBuf.h"
 
-#ifdef WITH_DEVELOPER_MODE
-#include <C4WindowGTK.h>
-typedef C4GtkWindow C4ConsoleBase;
-#else
-typedef C4Window C4ConsoleBase;
-#endif
-
 namespace OpenFileFlags
 {
 	const DWORD OFN_HIDEREADONLY = 1 << 0;
@@ -42,7 +35,7 @@ namespace OpenFileFlags
 }
 
 // Separate class containing GUI code for C4Console while C4Console itself only contains functionality
-class C4ConsoleGUI: public C4ConsoleBase
+class C4ConsoleGUI: public C4Window
 {
 public:
 
@@ -61,7 +54,6 @@ public:
 	{
 		CONSOLE_Cursor,
 		CONSOLE_FrameCounter,
-		CONSOLE_ScriptCounter,
 		CONSOLE_TimeFPS
 	};
 
@@ -98,14 +90,13 @@ public:
 	void AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text);
 	void ClearInput();
 	void ClearPlayerMenu();
-	void SetInputFunctions(std::list<char*> &functions);
+	void SetInputFunctions(std::list<const char*> &functions);
 	
 	C4Window* CreateConsoleWindow(C4AbstractApp *application);
 	void Out(const char* message);
 	bool ClearLog();
 	void DisplayInfoText(InfoTextType type, StdStrBuf& text);
 	void SetCaptionToFileName(const char* file_name);
-	void SetCaption(const char *caption);
 	bool FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD dwFlags, bool fSave);
 	void AddMenuItemForPlayer(C4Player  *player, StdStrBuf& player_text);
 	void AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled);
@@ -143,13 +134,10 @@ public:
 	void ToolsDlgSelectTexture(C4ToolsDlg *dlg, const char *texture);
 	void ToolsDlgSelectMaterial(C4ToolsDlg *dlg, const char *material);
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	void Win32KeepDialogsFloating(HWND hwnd = 0);
 	virtual bool Win32DialogMessageHandling(MSG *msg);
 	void UpdateMenuText(HMENU hMenu);
-#endif
-#ifdef WITH_DEVELOPER_MODE
-	virtual GtkWidget* InitGUI();
 #endif
 };
 

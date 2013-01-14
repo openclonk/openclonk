@@ -16,7 +16,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// network ressource: data needed for the game (scenario, plr files, definitions...)
+// network resource: data needed for the game (scenario, plr files, definitions...)
 
 #ifndef INC_C4Network2Res
 #define INC_C4Network2Res
@@ -249,6 +249,7 @@ public:
 	bool        isLoading()     const { return fLoading; }
 	bool        isComplete()    const { return !fLoading; }
 	int32_t     getPresentPercent() const { return fLoading ? Chunks.getPresentPercent() : 100; }
+	bool        isTempFile()    const { return fTempFile; }
 
 	bool SetByFile(const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);
 	bool SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);
@@ -359,7 +360,7 @@ protected:
 	C4Network2Res *getRes(const char *szFile, bool fLocalOnly); // by both
 
 public:
-	// returns referenced ressource ptrs
+	// returns referenced resource ptrs
 	C4Network2Res::Ref getRefRes(int32_t iResID); // by both
 	C4Network2Res::Ref getRefRes(const char *szFile, bool fLocalOnly = false); // by both
 	C4Network2Res::Ref getRefNextRes(int32_t iResID); // by both

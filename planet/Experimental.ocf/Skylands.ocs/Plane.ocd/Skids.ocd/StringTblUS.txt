@@ -1,0 +1,2 @@
+Name=Skids
+Description=An important part of the plane.

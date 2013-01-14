@@ -40,7 +40,7 @@ namespace
 			operator int() const { return sock; }
 
 			socket_wrapper(int domain, int type, int protocol):
-				sock(socket(domain, type, protocol))
+				sock(socket(domain, type | SOCK_CLOEXEC, protocol))
 			{
 				if(sock == -1)
 					throw std::runtime_error(std::string("Failed to create a socket: ") + strerror(errno));

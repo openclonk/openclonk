@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002-2003, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,7 +20,7 @@
 
 #include "C4Include.h"
 #include <C4Markup.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 void C4MarkupTagItalic::Apply(C4BltTransform &rBltTrf, bool fDoClr, DWORD &dwClr)
 {

@@ -1,114 +1,169 @@
 /**
 	Power consumer
-	Should be included by all power consumers. The consumer can check and consume power by calling
-	the function CheckPower(int power_check, bool no_substract), see below for an explanation.
+	Cares about showing the "No Power"-symbol
+	and provides CurrentlyHasPower()
+	also handles requesting 0 power and the NoPowerNeed-rule correctly
 	
-	@author Maikel
+	The main part of the power system is handled by Library_Power
+	
+	Usage:
+	a power consumer should always include this library.
+	production (or anything else) should /only/ be started or continued in the callback OnEnoughPower.
+	in the callback OnNotEnoughPower the user should pause the production.
+	
+	when everything is ready to produce the user should call MakePowerConsumer(amount) where amount is the amount of power to request (works with 0).
+	when the production is done or the building wants to cease consuming power, it should call UnmakePowerConsumer() - note that the callback OnNotEnoughPower is not called this way.
+
+	other:
+	the callback GetActualPowerConsumer can return another object that acts as the power consumer when checking for the affiliation to a flag. For example the elevator case could be the power consumer but use the elevator building as the actual power consumer.
+	CurrentlyHasPower() returns true when the object has requested power and is not in the sleeping queue.
 */
 
+local PowerConsumer_has_power = false;
 
-/** Determines whether the object is a power consumer.
-	@return \c true if the object is a power consumer and \c false otherwise.
-*/
-public func IsPowerConsumer()
+// states for being able to handle 0-power requests
+static const PowerConsumer_LPR_None = 0;
+static const PowerConsumer_LPR_Zero = 1;
+static const PowerConsumer_LPR_NonZero = 2;
+local PowerConsumer_last_power_request = 0;
+local PowerConsumer_last_power_request_amount = 0;
+
+
+public func IsPowerConsumer() { return true; }
+
+public func CurrentlyHasPower()
 {
+	return PowerConsumer_has_power;
+}
+
+// interface to power handling:
+
+// is the object just a part of a building?
+// elevator <-> case for example
+public func GetActualPowerConsumer()
+{
+	return nil;
+}
+
+// how much would you like to withdraw your power request?
+// normal objects: not so much, battery: very much!
+public func QueryWaivePowerRequest()
+{
+	return 0;
+}
+
+// the object requested power but there is no power!
+// should possibly not use MakePowerConsumer/Producer in this callback
+public func OnNotEnoughPower()
+{
+	PowerConsumer_has_power = false;
+	
+	// show symbol
+	this->AddStatusSymbol(Library_PowerConsumer);
+}
+
+// called when the object was deleted from the sleeping queue
+// that means, the object had requested power before
+public func OnRemovedFromPowerSleepingQueue()
+{
+	// remove symbol
+	this->RemoveStatusSymbol(Library_PowerConsumer);
+}
+
+// called when consumer was sleeping but power is available again
+// should possibly not use MakePowerConsumer/Producer in this callback
+public func OnEnoughPower()
+{
+	PowerConsumer_has_power = true;
+	
+	// remove symbol
+	this->RemoveStatusSymbol(Library_PowerConsumer);
+}
+
+// Add/Remove an effect such that this structure does not need power
+func SetNoPowerNeed(bool to_val)
+{
+	if (to_val)
+		AddEffect("NoPowerNeed", this, 1);
+	else
+		RemoveEffect("NoPowerNeed", this);
 	return true;
 }
 
-/** Determines whether a power line can be connected.
-	@return \c true if a power line can be connected to this object, \c false otherwise.
-*/
-public func CanPowerConnect() // Other name?
-{
-	return GetCon() >= 100;
-}
-
-/*-- Power consumption --*/
-
-/** Inspects the network connected to the calling consumer for power.
-	@param power_check amount of power to extract from the network.
-	@param no_substract determines whether the check should substract power_check.
-	@return \c true if the amount of power was available in the network, \c false otherwise.
-*/
-public func CheckPower(int power_check, bool no_substract)
-{
-	// Power consumer only need energy if the rule is active.
-	if (!FindObject(Find_ID(Rule_EnergyNeed)))
-		return true;
-	// Check all power generators connected to this consumer and sort them according to priority.
-	// TODO: Maybe substract partial amounts from high priority generators.
-	for (var generator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority()))
+// wrapper for MakePowerConsumer to handle requesting 0 power and the NoPowerNeed rule correctly
+func MakePowerConsumer(int amount, bool just_pass_to_global /* whether to skip special treatment for 0 power request */)
+{	
+	if(just_pass_to_global == true)
 	{
-		var power = generator->GetPower();
-		if (power > power_check)
+		return inherited(amount, just_pass_to_global, ...);
+	}
+	
+	var no_power_need = !!ObjectCount(Find_ID(Rule_NoPowerNeed)) || GetEffect("NoPowerNeed", this);
+	
+	if((amount > 0) && !no_power_need) // requesting non-zero?
+	if(PowerConsumer_last_power_request == PowerConsumer_LPR_NonZero) // having requested non-zero before?
+	if(PowerConsumer_last_power_request_amount == amount) // requesting the exact amount again? (successive call)
+		// nothing has changed
+		return true;
+	
+	// special handling for amount == 0
+	if((amount == 0) || no_power_need)
+	{
+		if(PowerConsumer_last_power_request == PowerConsumer_LPR_None) // initially requesting 0 power?
 		{
-			if (!no_substract)
-				generator->DoPower(-power_check);
-			RemoveEffect("EnergyNeed", this);
+			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
+			PowerConsumer_last_power_request_amount = amount;
+			// always enable
+			this->~OnEnoughPower();
+			return true;
+		}
+		else if(PowerConsumer_last_power_request == PowerConsumer_LPR_Zero)// requesting 0 power as a second request
+		{
+			PowerConsumer_last_power_request_amount = amount;
+			// should still have power at this point
+			return true;
+		}
+		else // requesting 0 power after having requested nonzero power
+		{
+			PowerConsumer_last_power_request = PowerConsumer_LPR_Zero;
+			PowerConsumer_last_power_request_amount = amount;
+			inherited(0); // removes as official power consumer
+			// re-enable power supply
+			this->~OnEnoughPower();
 			return true;
 		}
 	}
-	if (!GetEffect("EnergyNeed", this)) AddEffect("EnergyNeed", this, 100, 12, this);
-	return false;
-}
-
-// Finds all power generators connected to consumer (can be nil in local calls).
-private func Find_PowerGenerator(object consumer)
-{
-	if (!consumer)
-		consumer = this;
-	return [C4FO_Func, "IsPowerGeneratorFor", consumer];
-}
-
-// Sorts power generators according to GetGeneratorPriority(), highest return value -> first in array.
-private func Sort_GeneratorPriority()
-{
-	return [C4SO_Reverse, [C4SO_Func, "GetGeneratorPriority"]];
-}
-
-/*-- Effect to show energy need --*/
-
-private func FxEnergyNeedStart(object target, effect, int temp)
-{
-	// Start showing energy need symbol.
-	target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
-	target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-	effect.show_symbol = true; // Effect is showing symbol.
-	return 1;
-}
-
-private func FxEnergyNeedTimer(object target, effect, int time)
-{
-	// Alternate showing of the symbol: timer interval of AddEffect determines alternation time.
-	if (effect.show_symbol) // Effect was showing symbol.
+	else
 	{
-		// Do not show symbol.
-		target->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
-		effect.show_symbol = false;
+		PowerConsumer_last_power_request = PowerConsumer_LPR_NonZero; // requesting power != 0
+		PowerConsumer_last_power_request_amount = amount;
 	}
-	else // Effect was not showing symbol.
+	
+	return inherited(amount, just_pass_to_global,  ...);
+}
+
+// turns the object off as a power consumer
+func UnmakePowerConsumer()
+{
+	// succesive calls have no effect
+	if(PowerConsumer_last_power_request == PowerConsumer_LPR_None)
+		return true;
+		
+	// we don't have no power anymore
+	PowerConsumer_has_power = false;
+	
+	// we were not officially registered as power consumer anyway
+	if(PowerConsumer_last_power_request == PowerConsumer_LPR_Zero)
 	{
-		// Do show symbol.
-		target->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
-		target->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500 * GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
-		effect.show_symbol = true;
+		PowerConsumer_last_power_request = PowerConsumer_LPR_None;
+		return true;
 	}
-	return 1;
+	PowerConsumer_last_power_request = PowerConsumer_LPR_None;
+	return MakePowerConsumer(0, true);
 }
 
-private func FxEnergyNeedStop(object target, effect, int iReason, bool temp)
+func Destruction()
 {
-	// Stop showing energy need symbol.
-	target->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
-	return 1;
+	UnmakePowerConsumer();
+	return _inherited(...);
 }
-
-private func FxEnergyNeedEffect(string name, object target)
-{
-	// Only one energy need effect per consumer.
-	if (name == "EnergyNeed")
-		return -1;
-	return 1;
-}
-
-

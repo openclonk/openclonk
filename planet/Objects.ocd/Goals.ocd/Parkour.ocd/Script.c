@@ -324,7 +324,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 		if (!team_list[team])
 			team_list[team] = 0;
 	// Scoreboard.
-	InitScoreboard();
+	Scoreboard->NewPlayerEntry(plr);
 	UpdateScoreboard(plr);
 	DoScoreboardShow(1, plr + 1);
 	JoinPlayer(plr);
@@ -384,10 +384,14 @@ private func InitScoreboard()
 		var caption = Format("$MsgCaptionX$", cp_count);
 	else
 		var caption = "$MsgCaptionNone$";
-	// The above row.
-	SetScoreboardData(SBRD_Caption, SBRD_Caption, caption, SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_Checkpoints, Format("{{%i}}", ParkourCheckpoint), SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_BestTime, "T", SBRD_Caption);
+		
+	Scoreboard->Init(
+		[
+		{key = "checkpoints", title = ParkourCheckpoint, sorted = true, desc = true, default = 0, priority = 80},
+		{key = "besttime", title = "T", sorted = true, desc = true, default = 0, priority = 70}
+		]
+		);
+	Scoreboard->SetTitle(caption);
 	return;
 }
 
@@ -396,14 +400,9 @@ private func UpdateScoreboard(int plr)
 	if (finished)
 		return;
 	var plrid = GetPlayerID(plr);
-	// The player name.
-	SetScoreboardData(plrid, SBRD_Caption, GetTaggedPlayerName(plr), SBRD_Caption);
-	// The player scores.
-	SetScoreboardData(plrid, SBRD_Checkpoints, Format("%d", plr_list[plrid]), plr_list[plrid]);
-	SetScoreboardData(plrid, SBRD_BestTime, TimeToString(GetPlrExtraData(plr, time_store)), GetPlrExtraData(plr, time_store));
-	// Sort.
-	SortScoreboard(SBRD_BestTime, false);
-	SortScoreboard(SBRD_Checkpoints, true);
+	Scoreboard->SetPlayerData(plr, "checkpoints", plr_list[plrid]);
+	var bt = GetPlrExtraData(plr, time_store);
+	Scoreboard->SetPlayerData(plr, "besttime", TimeToString(bt), bt);
 	return;
 }
 
@@ -426,7 +425,7 @@ protected func FxIntDirNextCPTimer(object target, effect)
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", PARKOUR_CP_Check | PARKOUR_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
-		if (!cp->ClearedByPlayer(plr) && (cp->IsActiveForPlayer(plr) || cp->IsActiveForTeam(GetPlayerTeam(plr))))
+		if (!cp->ClearedByPlayer(plr) && (cp->IsActiveForPlayer(plr) || cp->IsActiveForTeam(team)))
 		{
 			nextcp = cp;
 			break;

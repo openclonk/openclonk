@@ -23,7 +23,7 @@ local Max_Length;
 
 func GetRopeGravity()
 {
-	return GetGravity()*Rope_Precision/500;
+	return GetGravity()*Rope_Precision/100;
 }
 
 /** Starts a rope
@@ -443,10 +443,9 @@ public func ConstraintLength()
 {
 	// Satisfy all stick constraints (move the particles to fit the length)
 	var normal_restlength = Rope_SegmentLength*Rope_Precision;
-	var normal_restlength2 = normal_restlength*normal_restlength;
-	var restlength, restlength2;
-	var x1, x2, invmass1, invmass2;
-	var delta = [0,0], deltaDot, deltalength, diff;
+	var restlength;
+	var invmass1, invmass2;
+	var delta = [0,0], deltaDot, deltalength; // diff
 	for(var i=0; i < ParticleCount-1; i++)
 	{
 		// Keep length
@@ -593,9 +592,6 @@ func ForcesOnObjects()
 			obj->SetAction("Jump");
 		if( obj->GetAction() == "Climb")
 			obj->SetAction("Jump");
-
-		var xdist = particles[j][0][0]-obj->GetX(Rope_Precision);
-		var ydist = particles[j][0][1]-obj->GetY(Rope_Precision);
 
 		obj->SetXDir( particles[j][0][0]-particles[j][1][0], Rope_Precision);
 		obj->SetYDir( particles[j][0][1]-particles[j][1][1], Rope_Precision);

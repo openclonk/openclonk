@@ -22,9 +22,6 @@
 #define INC_StdMeshLoader
 #include <stdexcept>
 
-class StdMesh;
-class StdMeshMatManager;
-
 // Interface to load skeleton files. Given a filename occuring in the
 // mesh file, this should load the skeleton file from wherever the mesh file
 // was loaded from, for example from a C4Group. Return default-construted
@@ -39,7 +36,8 @@ public:
 class StdMeshLoader
 {
 public:
-class LoaderException : public std::runtime_error { public: LoaderException(const char *msg) : std::runtime_error(msg) {} };
+	class StdMeshXML;
+	class LoaderException : public std::runtime_error { public: LoaderException(const char *msg) : std::runtime_error(msg) {} };
 
 	// filename is only used to show it in error messages. The model is
 	// loaded from src. Throws LoaderException.

@@ -625,7 +625,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 bool C4NetIOTCP::Connect(const C4NetIO::addr_t &addr) // (mt-safe)
 {
 	// create new socket
-	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	SOCKET nsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 	if (nsock == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
@@ -850,7 +850,11 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 	if (nsock == INVALID_SOCKET)
 	{
 		// accept from listener
+#ifdef __linux__
+		if ((nsock = ::accept4(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize, SOCK_CLOEXEC)) == INVALID_SOCKET)
+#else
 		if ((nsock = ::accept(lsock, reinterpret_cast<sockaddr *>(&addr), &iAddrSize)) == INVALID_SOCKET)
+#endif
 		{
 			// set error
 			SetError("socket accept failed", true);
@@ -954,7 +958,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 	iListenPort = P_NONE;
 
 	// create socket
-	if ((lsock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+	if ((lsock = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP)) == INVALID_SOCKET)
 	{
 		SetError("socket creation failed", true);
 		return false;
@@ -1326,7 +1330,7 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 #endif
 
 	// create socket
-	if ((sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+	if ((sock = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP)) == INVALID_SOCKET)
 	{
 		SetError("could not create socket", true);
 		return false;
@@ -1735,7 +1739,7 @@ const unsigned int C4NetIOUDP::iUDPHeaderSize = 8 + 24; // (bytes)
 // packet structures
 struct C4NetIOUDP::PacketHdr
 {
-	int8_t   StatusByte;
+	uint8_t  StatusByte;
 	uint32_t Nr;    // packet nr
 };
 
@@ -1881,7 +1885,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 				return false;
 			}
 			// send a ping packet
-			const PacketHdr PingPacket = { IPID_Ping | char(0x80), 0 };
+			const PacketHdr PingPacket = { IPID_Ping | static_cast<uint8_t>(0x80u), 0 };
 			if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&PingPacket, sizeof(PingPacket))))
 			{
 				C4NetIOSimpleUDP::CloseBroadcast();
@@ -2167,7 +2171,7 @@ void C4NetIOUDP::OnPacket(const C4NetIOPacket &Packet, C4NetIO *pNetIO)
 		// ping? answer without creating a connection
 		if ((Packet.getStatus() & 0x7F) == IPID_Ping)
 		{
-			PacketHdr PingPacket = { int8_t(IPID_Ping | (Packet.getStatus() & 0x80)), 0 };
+			PacketHdr PingPacket = { uint8_t(IPID_Ping | (Packet.getStatus() & 0x80)), 0 };
 			SendDirect(C4NetIOPacket(&PingPacket, sizeof(PingPacket), false, Packet.getAddr()));
 			return;
 		}
@@ -2997,7 +3001,7 @@ bool C4NetIOUDP::DoLoopbackTest()
 	if (!C4NetIOSimpleUDP::getMCLoopback()) return false;
 
 	// send test packet
-	const PacketHdr TestPacket = { IPID_Test | char(0x80), static_cast<uint32_t>(rand()) };
+	const PacketHdr TestPacket = { uint8_t(IPID_Test | 0x80), static_cast<uint32_t>(rand()) };
 	if (!C4NetIOSimpleUDP::Broadcast(C4NetIOPacket(&TestPacket, sizeof(TestPacket))))
 		return false;
 
@@ -3127,7 +3131,7 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 		{
 			// set up packet
 			CheckPacketHdr Pkt;
-			Pkt.StatusByte = IPID_Check | char(0x80);
+			Pkt.StatusByte = uint8_t(IPID_Check | 0x80);
 			Pkt.Nr = iOPacketCounter;
 			Pkt.AskCount = Pkt.MCAskCount = 0;
 			// send it

@@ -29,7 +29,7 @@
 
 #include <StdBuf.h>
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 #include <C4windowswrapper.h>
 #define K_ALT VK_MENU
 #define K_ESCAPE VK_ESCAPE
@@ -202,6 +202,7 @@
 #define KEY_X 0
 #define KEY_A 0
 #elif defined(USE_COCOA)
+#import "ObjectiveCAssociated.h"
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
 extern int K_F1;
@@ -254,11 +255,15 @@ typedef struct _XDisplay Display;
 #endif
 
 class C4Window
+#ifdef USE_COCOA
+	: public ObjectiveCAssociated
+#endif
 {
 public:
 	enum WindowKind
 	{
 		W_GuiWindow,
+		W_Console,
 		W_Viewport,
 		W_Fullscreen
 	};
@@ -273,7 +278,6 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -291,50 +295,39 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-protected:
-	bool RegisterWindowClass(HINSTANCE hInst);
-#elif defined(USE_X11)
+#elif defined(WITH_GLIB)
+public:
+	/*GtkWidget*/void * window;
+	// Set by Init to the widget which is used as a
+	// render target, which can be the whole window.
+	/*GtkWidget*/void * render_widget;
 protected:
 	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
-	Display * dpy;
-	virtual void HandleMessage (XEvent &);
-	// The currently set window hints
-	void * Hints;
-	bool HasFocus; // To clear urgency hint
 	// The XVisualInfo the window was created with
 	void * Info;
-#elif defined(USE_SDL_MAINLOOP)
-private:
-	int width, height;
-protected:
-	virtual void HandleMessage(SDL_Event&) {}
-#elif defined(USE_COCOA)
-protected:
-	/*ClonkWindowController*/void* controller;
-	virtual void HandleMessage(/*NSEvent*/void*);
-public:	
-	/*ClonkWindowController*/void* GetController() {return controller;}
+	unsigned long handlerDestroy;
+
+	friend class C4X11AppImpl;
 #endif
-public:
-	// request that this window be redrawn in the near future (including immediately)
-	virtual void RequestUpdate();
-	// Invokes actual drawing code - should not be called directly
-	virtual void PerformUpdate();
-public:
+protected:
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;
-	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

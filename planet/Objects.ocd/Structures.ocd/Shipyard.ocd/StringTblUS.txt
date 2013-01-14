@@ -1,0 +1,5 @@
+NoPlrKnowledge=No construction plans
+Construction=Construction
+Production=Production
+Name=Shipyard
+Description=Needed for the production of airships.

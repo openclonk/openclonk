@@ -1,0 +1,5 @@
+Name=Ausdehnung
+
+#Goal window
+MsgGoalFulfilled=Du hast deine Ausdehnungsziele erreicht.
+MsgGoalUnFulfilled=Dehne deine Herrschaft aus, durch das bauen der Flaggen. Momentan kontrollierst du erst %d% der gefragter Herrschaft.

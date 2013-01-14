@@ -24,7 +24,7 @@ public func ExecAutoSell()
 {
 	// Search all objects for objects that want to be sold automatically
 	for(pObj in FindObjects(Find_Container(this), Find_Func("AutoSell")))
-		Sell(pObj);
+		Sell(pObj->GetOwner(), pObj, this);
 }
 
 // Does the base block enemies?
@@ -317,9 +317,7 @@ func UpdateClonkSellMenus()
 func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
 {
 	// Filled with [idDef, iCount, pObj] arrays
-	var aList = [];
 	var aArray;
-	var pObj;
 	var iIndex;
 	if(!fNoListUpdate)
 		UpdateSellList();
@@ -390,38 +388,4 @@ func DoSell(object pObj, int iPlr, bool bRight)
 	return true;
 }
 
-// ------------------------ global functions ---------------------------
-global func Buy (id idBuyObj, int iForPlr, int iPayPlr, object pToBase, bool fShowErrors)
-{
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoBuy(idBuyObj, iForPlr, iPayPlr, 0, 0, fShowErrors);
-}
-
-global func Sell (int iPlr, object pObj, object pToBase)
-{
-	// if no base is given try this
-	if(!pToBase) pToBase = this;
-	// not a base?
-	if( !pToBase->~IsBase() )
-		return 0;
-	return pToBase->DoSell(pObj, iPlr);
-}
-
-global func FindBase (int iPlr, int iIndex)
-{
-	return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
-}
-
-global func GetBase ()
-{
-	if(!(this->~IsBase())) return NO_OWNER;
-	return GetOwner();
-}
-
 local Name = "$Name$";
-
-

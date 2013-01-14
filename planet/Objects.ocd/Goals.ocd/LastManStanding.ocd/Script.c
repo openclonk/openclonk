@@ -4,7 +4,7 @@
 	
 		Premade goal for simple melees with relaunches.
 		Callbacks made to scenario script:
-			* OnPlrRelaunch(int plr) made when the player is relaunched and at game start plr init.
+			* OnPlayerRelaunch(int plr) made when the player is relaunched and at game start plr init.
 			* RelaunchCount() should return the number of relaunches.
 			* KillsToRelaunch() should return how many kills will earn the player an extra relaunch.
 --*/
@@ -17,7 +17,6 @@
 #include Scoreboard_Kill
 //#include Scoreboard_Death
 #include Scoreboard_Relaunch
-#include Scoreboard_Player
 
 // Some static constants.
 static const MIME_RelaunchCount = 5; // Number of relaunches.
@@ -87,10 +86,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
-	// Show scoreboard for a while & sort.
-	SortScoreboard(Scoreboard_KillStreak->GetKillStreakCol(), true);
-	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
-	SortScoreboard(Scoreboard_Relaunch->GetRelaunchCol(), true);
+	// Show scoreboard for a while.
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	return; // _inherited(plr, killer, ...);
@@ -100,7 +96,6 @@ protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	var x, y;
 	var pos = FindRelaunchPos(plr);
 	clonk->SetPosition(pos[0], pos[1]);
 	return;

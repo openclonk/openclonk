@@ -1,0 +1,21 @@
+# Dialogue options
+MsgNextTutorial=&Next tutorial
+MsgNextTutorialDesc=Start the next tutorial scenario.
+MsgRepeatRound=&Repeat this round
+MsgRepeatRoundDesc=Restart this scenario.
+
+# Tutorial messages
+MsgTutIntro0=Welcome to the settlement tutorial of OpenClonk!
+MsgTutIntro1=I've thrown you into this idyllic landscape to teach you the basic steps of creating a settlement.
+MsgTutIntro2=All you need are the three basic tools you were given.
+MsgTutIntro3=If at any time you need help, click on my icon in the upper right corner of the screen. Once you're done reading, click again on the icon to hide the message.
+MsgTutFoundrySite=The first thing we are going to do is creating a construction site for a foundry. To do that, use the hammer and position the building somewhere to your liking.
+MsgTutFoundryChopTree=As you can see, the the foundry requires 2 wood logs and 4 stones to be constructed. Take your axe and start by chopping down a tree with your axe to obtain wood.
+MsgTutFoundryHackTree=Now that you chopped down the tree, you will have to chop it to pieces, just continue swinging your axe.
+MsgTutFoundryStoneBlast=Now you will have to get some stones. Try using a firestone to mine some from the stone vein on the left side. When you stand next to the firestone, press [S] to pick it up into an empty slot.
+MsgTutFoundryMaterialUse=Good! Now, collect the materials and carry them to the foundry's site.||Finish the construction either by just inserting the stones via contents menu [E] or selecting construction via [Space]+[Number].
+MsgTutFlagpoleSite=The next step is building a flagpole. Again, use the hammer to create a construction site, but make sure to select the flagpole from the menu.
+MsgTutFlagpoleIronComponents=As you can see, the flag pole requires 4 wood and one metal. Start by digging out some coal and blasting free some chucks of ore from the vein on the right.
+MsgTutFlagpoleIronSmelt=Now, place the coal and the iron in the foundry (contents menu with [E]) and select the iron bar in the production menu, which can be opened by pressing [Space] when standing in front of the foundry.
+MsgTutFlagpoleIronPraise=Very good, you've produced the first good. All other goods production works the exact same way!||Now, process two trees for the remaining 4 wood you need and build the flagpole.
+MsgTutEnergy=As you can see, the flagpole spans a certain area. Within this area, buildings power each other and enemies can't build. My last assignment for you is building a windmill, which will power further buildings like a tools workshop or a sawmill.

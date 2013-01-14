@@ -1,0 +1,14 @@
+MsgTutIntro0=Wilkommen zum Siedlungstutorial von OpenClonk.
+MsgTutIntro1=Ich habe dich in diese idyllische Landschaft katapultiert, um dir die ersten Schritte des Siedlungsbaus zu zeigen.
+MsgTutIntro2=Alles was du brauchen wirst sind die Grundwerkzeuge, die du bereits bei dir hast.
+MsgTutIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen rechten Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
+MsgTutFoundrySite=Das erste Gebäude, das wir brauchen, ist der Hochofen. Benutze deinen Hammer um eine Baustelle zu errichten!
+MsgTutFoundryChopTree=Wie du siehst braucht der Hochofen 4 Stein und 2 Holz. Nimm dir deine Axt und fang damit an einen Baum umzuhacken!
+MsgTutFoundryHackTree=Du hast den Baum schon gefällt, jetzt musst du ihn noch in kleine Stücke zerhacken. Schwing einfach schön weiter deine Axt!
+MsgTutFoundryStoneBlast=Nun brauchen wir noch Stein. Dazu gräbst du einen Feuerstein aus und sprengst damit etwas vom Vorkommen unten links ab. Wenn Du bei dem Feuerstein stehst, drücke [S] um ihn in einen leeren Slot einzusammeln.
+MsgTutFoundryMaterialUse=Gut. Nimm nun das ganze Material und befördere es in die Baustelle. Du kannst es mit [E] in der Baustelle ablegen. Bau den Hochofen fertig.
+MsgTutFlagpoleSite=Das nächste Gebäude, das wir brauchen, ist ein Flaggenmast. Such dir einen schönen Platz dafür aus und errichte eine Baustelle!
+MsgTutFlagpoleIronComponents=Wie du siehst braucht die Flagge 4 Holz und 1 Eisen. Um das Eisen herzustellen musst du aus der rechten Ader Eisenerz freisprengen, wie bei den Steinen, und Kohle ausgraben.
+MsgTutFlagpoleIronSmelt=Nun da du Kohle und Erz hast, bringe sie in den Hochofen. (Hinenlegen mit [E]) Mit [Leertaste] öffnest du das Produktionsmenü. Wähle das Metallstück aus und warte.
+MsgTutFlagpoleIronPraise=Sehr gut. So wie hier funktioniert jeder Produktionsvorgang in OpenClonk!||Nun musst du nur noch ein wenig Holz fällen um die Flagge fertig zu bauen.
+MsgTutEnergy=Wie du siehst überspannt der Flaggenmast ein gewisses Gebiet. Darin können Gegner nicht bauen und Gebäude versorgen sich gegenseitig mit Energie.|Meine letzte Aufgabe für dich ist: Baue ein Windrad, das den Flaggenmast versorgt. Danach kannst du ausprobieren was du willst, ein Sägewerk oder eine Werkstätte vielleicht?

@@ -1,2 +1,3 @@
 Name=Bread
-Description=Tasty meal.
+Description=This tasty meal restores the clonk's health a lot.
+UsageHelp=Press [Use] to eat the bread.

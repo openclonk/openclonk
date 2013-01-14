@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001, 2004, 2006, 2010  Peter Wortmann
- * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2001, 2012  Sven Eberhardt
  * Copyright (c) 2006, 2010  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -51,10 +51,10 @@ public:
 	}
 
 	C4Value operator[](int32_t iElem) const { return GetItem(iElem); }
-	C4Value &operator[](int32_t iElem);
+	C4Value &operator[](int32_t iElem); // interface for the engine, asserts that 0 <= index < MaxSize
 
 	void Reset();
-	void SetItem(int32_t iElemNr, const C4Value &Value);
+	void SetItem(int32_t iElemNr, const C4Value &Value); // interface for script
 	void SetSize(int32_t inSize); // (enlarge only!)
 
 	void Denumerate(C4ValueNumbers *);
@@ -75,12 +75,16 @@ public:
 	// Sets sub-array [startIndex, endIndex). Might resize the array.
 	void SetSlice(int32_t startIndex, int32_t endIndex, const C4Value &Val);
 
-	void Sort(class C4SortObject &rSort);
+	void Sort(class C4SortObject &rSort); // assume array of objects and sort by object sorting function
+	void SortStrings(); // sort by values as strings
+	void Sort(bool descending=false); // sort by values as integers or strings
+	bool SortByProperty(C4String *prop_name, bool descending=false); // checks that this is an array of all proplists and sorts by values of given property. return false if an element is not a proplist.
+	bool SortByArrayElement(int32_t array_idx, bool descending=false); // checks that this is an array of all arrays and sorts by array elements at index. returns false if an element is not an array or smaller than array_idx+1
 
 private:
 	// Reference counter
 	unsigned int iRefCnt;
-	int32_t iSize;
+	int32_t iSize, iCapacity;
 	C4Value* pData;
 };
 

@@ -18,3 +18,5 @@ local Collectible = 0;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = false;
+local BlastIncinerate = 5;
+local ContactIncinerate = 1;

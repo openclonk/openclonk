@@ -5,6 +5,7 @@
  * Copyright (c) 2005, 2007-2008  Sven Eberhardt
  * Copyright (c) 2006-2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,9 +30,6 @@
 #include "C4Shape.h"
 #include "C4Gui.h"
 #include "C4IDList.h"
-#include "C4Region.h"
-
-class C4Viewport;
 
 enum
 {
@@ -85,6 +83,8 @@ protected:
 	C4ID id;
 	C4Object *Object;
 	C4FacetSurface Symbol;
+	C4Object* pSymbolObj; // drawn instead of symbol, if non-null
+	C4DefGraphics* pSymbolGraphics; // drawn instead of symbol, if non-null
 	uint32_t dwSymbolClr;
 	bool fOwnValue;   // if set, a specific value is to be shown
 	int32_t iValue;       // specific value to be shown
@@ -108,6 +108,8 @@ protected:
 	           int32_t iCount, C4Object *pObject, const char *szInfoCaption,
 	           C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, int32_t iStyle, bool fIsSelectable);
 	void GrabSymbol(C4FacetSurface &fctSymbol) { Symbol.GrabFrom(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
+	void SetGraphics(C4Object* pObj) { pSymbolObj = pObj; }
+	void SetGraphics(C4DefGraphics* pGfx) { pSymbolGraphics = pGfx; }
 	void RefSymbol(const C4Facet &fctSymbol) { Symbol.Set(fctSymbol); if (Symbol.Surface) dwSymbolClr=Symbol.Surface->GetClr(); }
 	void SetSelected(bool fToVal) { fSelected = fToVal; }
 	void DoTextProgress(int32_t &riByVal); // progress number of shown characters by given amount
@@ -115,8 +117,6 @@ protected:
 	// GUI calls
 	virtual void MouseInput(class C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 	virtual void MouseEnter(class C4GUI::CMouse &rMouse); // called when mouse cursor enters element region: Select this item (deselects any other)
-	virtual void DoDragging(class C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // called by mouse: dragging process
-	virtual void StopDragging(class C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam); // called by mouse: mouse released after dragging process
 
 public:
 	C4ID GetC4ID() const { return id; }
@@ -124,7 +124,7 @@ public:
 	C4Object *GetObject() const { return Object; }
 	const char *GetCommand() const { return Command; }
 
-	void ClearObject() { Object = NULL; }
+	void ClearPointers(C4Object* pObj) { if(pObj == Object) Object = NULL; if(pObj == pSymbolObj) pSymbolObj = NULL; }
 };
 
 class C4Menu : public C4GUI::Dialog
@@ -192,6 +192,14 @@ public:
 	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 	         const char *szInfoCaption=NULL,
 	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	bool Add(const char *szCaption, C4Object* pGfxObj, const char *szCommand,
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
+	         const char *szInfoCaption=NULL,
+	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+	bool Add(const char *szCaption, C4DefGraphics* pGfx, const char *szCommand,
+	         int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
+	         const char *szInfoCaption=NULL,
+	         C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 	void ClearItems();
 	void ResetLocation() { LocationSet = false; }
 	bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport
@@ -212,7 +220,7 @@ private:
 protected:
 	bool DoInitRefSym(const C4Facet &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
 	bool DoInit(C4FacetSurface &fctSymbol, const char *szEmpty, int32_t iExtra=C4MN_Extra_None, int32_t iExtraData=0, int32_t iId=0, int32_t iStyle=C4MN_Style_Normal);
-	void DrawBuffer(C4Facet &cgo, C4RegionList *pRegions);
+	void DrawBuffer(C4Facet &cgo);
 	void AdjustSelection();
 	void AdjustPosition();
 	bool CheckBuffer();

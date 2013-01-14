@@ -1,2 +1,3 @@
 Name=Lehm
-Description=Drücke [Benutzen] um eine Lehmbrücke zu bauen.
+Description=Mit Lehm können kleine Lehmbrücken gebaut werden.|Benötigt ein Fass mit Wasser und einen Eimer Erde zur Produktion. 
+UsageHelp=Halte [Benutzen] gedrückt um eine Lehmbrücke in die gezeigte Richtung zu bauen.

@@ -1,0 +1,165 @@
+Functions to be found in System.ocg:
+U
+
+##### Action.c:
+
+Global constants only.
+
+##### Array.c:
+
+Concatenate() - Concatenates two arrays and returns a new array.
+Subtract() - Returns a new array that contains the values of the first array minus the values of the second array.
+RemoveHoles() - Removes nil values from an array; returns the amount of values removed.
+RemoveDuplicates() - Removes duplicate entries - returns the number of entries removed.
+IsValueInArray() - Tests whether a value is in an array.
+RemoveArrayValue() - Removes a value from an array.
+ShuffleArray() - Randomly shuffles an array.
+RemoveArrayIndex() - Deletes an index from an array; does not change the order of items in the array.
+RemoveArrayIndexUnstable() - Deletes an array item - might change the order of elements, but is faster.
+PushBack() - Inserts an element at the end of an array.
+PushFront() - Inserts an element at the beginning of an array.
+PopBack() - Removes the last element from an array and returns it.
+PopFront() - Removes the first element from an array and returns it.
+
+##### ClonkControl.c:
+
+Library dependent.
+
+##### Colors.c:
+
+HSL() - Create a color DWORD from HSL parameters.
+HSLa() - Create a color DWORD from HSL parameters with transparency.
+RGB() - Create a color DWORD from RGB parameters.
+RGBa() - Create a color DWORD from RGB parameters with transparency.
+GetRGBaValue() - Retrieves one value from a color DWORD.
+DoRGBaValue() - Changes one value relatively in a color DWORD.
+SetRGBaValue() - Changes one value absolutely in a color DWORD.
+SplitRGBaValue() - Splits a color DWORD into an array containing RGBa values.
+HSL2RGB() - HSL to RGB conversion.
+Hue_2_RGB() - Apply hue to an RGB value.
+RGB2HSL() - RGB to HSL conversion.
+
+
+##### Creation.c:
+
+PlaceObjects() - Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material.
+CastObjects() - Creates one or more objects at a point and scatters them randomly apart.
+CastPSX() - Creates one or more material pixels at a point and scatters them randomly apart.
+DrawParticleLine() - Draws a line of particles between two points.
+
+##### Explode.c:
+
+Explode() - Object explodes.
+DoExplosion() - Explosion without the need for an object.
+ExplosionEffect() - Explosion effects without damaging.
+BlastObjects() - Apply explosion effects to objects.
+ShakeViewPort() - Shake view ports of nearby players.
+CreateSmokeTrail() - Creates explosion smoke trails.
+Fireworks() - Special firework explosion effect.
+
+##### FindObject.c:
+
+Find_* and Sort_* function for FindObject().
+
+##### Fire.c:
+
+OnFire() - Checks whether the object is on fire.
+Extinguish() - Extinguishes the object.
+Incinerate() - Set the object on fire.
+OnInIncendiaryMaterial() - Callback if an inflammable object falls into incendiary material.
+MakeNonFlammable() - Makes the object immune to fire.
+
+##### Flag.c:
+
+Library dependent.
+
+##### GetXVal.c:
+
+Various function to query values from ActMaps, DefCore.txt, objects, players, Scenario.txt, crew member infos and player infos.
+-> Wrappers for GetDefCoreVal, GetObjectVal, GetPlayerVal, GetScenarioVal, GetObjectInfoCoreVal, GetPlayerInfoCoreVal
+-> GetActMapVal()
+
+##### Goal.c:
+
+Library dependent.
+
+##### HitChecks.c:
+
+Effect for projectiles to detect object hits.
+ProjectileHit() - Object callback when hit by a projectile. 
+
+##### Material.c:
+
+MaterialDepthCheck() - Checks whether a material has a given depth.
+FindPosInMat() - Search for random position in given material.
+ExtractLiquid() - Removes a material pixel from the specified location, if the material is a liquid.
+FlameConsumeMaterial() - Removes a material pixel from the specified location, if the material is flammable.
+
+##### Math.c:
+
+AbsX() - Returns the offset to x.
+AbsY() - Returns the offset to y.
+RandomX() - Supports negative values, and can deliver random values between two bounds.
+Tan() - Tangens.
+Normalize() - Recalculates an angle between given bounds.
+ComDirLike() - Checks whether two comdirs are alike.
+GetTurnDirection() - The shortest direction (left/right) to turn from one angle to another.
+SetBit() - Set a certain bit's value.
+GetBit() - Get a certain bit's value.
+ToggleBit() - Toggle a certain bit's value.
+
+##### MeshAnimation.c:
+
+Various wrappers to use in PlayAnimation().
+
+##### MeshTransformation.c:
+
+Transformation matrices for mesh transformations.
+
+##### Object.c:
+
+SetSpeed() - Does not set the speed of an object. But you can set two components of the velocity vector with this function.
+SetVelocity() - Can set either speed or angle of velocity, or both.
+SetCon() - Sets the completion of this.
+SetObjAlpha() - Sets the object's transparency.
+MakeInvincible() - Makes the calling object invincible.
+MovePosition() - Move an object by the given parameters relative to its position.
+LaunchProjectile() - Speed the calling object into the given direction (angle).
+SetMaxEnergy() - Sets the MaxEnergy value of an object and does the necessary callbacks.
+GetMaxEnergy() - Returns the MaxEnergy value of an object.
+SetMaxBreath() - Sets the MaxBreath value of an object and does the necessary callbacks.
+GetMaxBreath() - Returns the MaxBreath value of an object.
+StartGrowth() - Makes an object gain Con until it is FullCon.
+StopGrowth() - Stops the growth of an object.
+GetGrowthValue() - Get the growing speed.
+StonyObjectHit() - Plays hit sounds for an average object made of stone or stone-like material.
+RemoveAll() - Removes all objects of the given type.
+Split2Components() - Splits the calling object into its components.
+RootSurface() - Pulls an object above ground if it was buried (e.g. by PlaceVegetation).
+Buy() - Buys an object.
+Sell() - Sells an object.
+GetBase() - Returns the owner if this is a base. 
+
+##### Player.c:
+
+GetPlayerByName() - Returns the player number of the player given by name or none if there is no such player.
+GetTeamByName() - Returns the team number of the team given by name or none if there is no such team.
+GetTaggedPlayerName() - Returns the name of a player, including color markup using the player color.
+GetTaggesTeamName() - Returns the name of a team, including color markup using the team color.
+MakeColorReadable() - Brightens dark colors, to be readable on dark backgrounds.
+DoWealth() - Adds value to the account of iPlayer.
+IsAllied() - Checks if two players are allied (opposite of Hostile()).
+MessageWindow() - Shows a message window to the player.
+FindBase() - Find a base of the given player.
+
+##### Schedule.c:
+
+Schedule() - Executes a script repetitively with delay.
+ScheduleCall() - Executes a function repetitively with delay.
+ClearScheduleCall() - Delete a schedule call.
+
+##### Vertices.c:
+
+SetVertexXY() - Sets both the X and Y-coordinate of one vertex.
+VerticesStuck() - Returns the number of stuck vertices.
+HasCNAT() - Returns whether the object has a vertex with the given CNAT value.

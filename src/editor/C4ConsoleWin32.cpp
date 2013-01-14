@@ -3,8 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2003  Matthes Bender
  * Copyright (c) 2004  Peter Wortmann
- * Copyright (c) 2005, 2007  Sven Eberhardt
- * Copyright (c) 2005-2007, 2009-2011  Günther Brammer
+ * Copyright (c) 2005, 2007, 2012  Sven Eberhardt
+ * Copyright (c) 2005-2007, 2009-2012  Günther Brammer
  * Copyright (c) 2009  David Dormagen
  * Copyright (c) 2009, 2011  Nicolas Hake
  * Copyright (c) 2010  Martin Plicht
@@ -23,41 +23,22 @@
 #include <C4Include.h>
 #include <C4Console.h>
 
-#include <C4Aul.h>
-#include <C4Application.h>
-#include <C4GameSave.h>
-#include <C4Game.h>
-#include <C4MessageInput.h>
-#include <C4UserMessages.h>
-#include <C4Version.h>
-#include <C4Language.h>
-#include <C4Object.h>
-#include <C4Player.h>
-#include <C4Landscape.h>
-#include <C4GraphicsSystem.h>
-#include <C4PlayerList.h>
-#include <C4GameControl.h>
-#include <C4Texture.h>
-
-#include <StdFile.h>
-#include <StdRegistry.h>
-
-#ifdef USE_GL
-#include <StdGL.h>
-#endif
-
-#ifdef USE_DIRECTX
-#include <StdD3D.h>
-#endif
-
+#include <C4AppWin32Impl.h>
 #include "C4ConsoleGUI.h"
+#include <C4DrawGL.h>
+#include <C4DrawD3D.h>
+#include <C4Landscape.h>
+#include <C4Object.h>
+#include <C4PlayerList.h>
+#include <C4Texture.h>
+#include <C4Version.h>
 #include "C4Viewport.h"
+#include <StdRegistry.h>
 
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 #include <commdlg.h>
 #include "resource.h"
-
 #define GetWideLPARAM(c) reinterpret_cast<LPARAM>(static_cast<wchar_t*>(GetWideChar(c)))
 
 inline StdStrBuf::wchar_t_holder LoadResStrW(const char *id) { return GetWideChar(LoadResStr(id)); }
@@ -303,6 +284,7 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		return false;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_COPYDATA:
+		{
 		COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
 		if (pcds->dwData == WM_USER_RELOADFILE)
 		{
@@ -313,6 +295,10 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 			Game.ReloadFile(szPath);
 		}
 		return false;
+		}
+		//------------------------------------------------------------------------------------------------------------
+	case WM_INPUTLANGCHANGE:
+		::Application.OnKeyboardLayoutChanged();
 	}
 
 	return false;
@@ -631,7 +617,7 @@ C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp *application)
 	SendMessage(hWindow,WM_SETICON,ICON_BIG,(LPARAM)LoadIcon(application->GetInstance(),MAKEINTRESOURCE(IDI_00_C4X)));
 	SendMessage(hWindow,WM_SETICON,ICON_SMALL,(LPARAM)LoadIcon(application->GetInstance(),MAKEINTRESOURCE(IDI_00_C4X)));
 	// Set text
-	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
+	SetTitle(LoadResStr("IDS_CNS_CONSOLE"));
 	// Load bitmaps
 	state->CreateBitmaps(application);
 	// Enable controls
@@ -741,9 +727,6 @@ void C4ConsoleGUI::DisplayInfoText(C4ConsoleGUI::InfoTextType type, StdStrBuf& t
 		break;
 	case CONSOLE_FrameCounter:
 		dialog_item = IDC_STATICFRAME;
-		break;
-	case CONSOLE_ScriptCounter:
-		dialog_item = IDC_STATICSCRIPT;
 		break;
 	case CONSOLE_TimeFPS:
 		dialog_item = IDC_STATICTIME;
@@ -892,12 +875,11 @@ void C4ConsoleGUI::PropertyDlgClose()
 	::ClearDlg(state->hPropertyDlg);
 }
 
-static void SetComboItems(HWND hCombo, std::list<char*> &items)
+static void SetComboItems(HWND hCombo, std::list<const char*> &items)
 {
-	for (std::list<char*>::iterator it = items.begin(); it != items.end(); it++)
+	for (std::list<const char*>::iterator it = items.begin(); it != items.end(); it++)
 	{
-		char *item = *it;
-		if (!item)
+		if (!*it)
 			SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)L"----------");
 		else
 			SendMessage(hCombo,CB_ADDSTRING,0,GetWideLPARAM(*it));
@@ -916,7 +898,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject);
 	HWND hCombo = GetDlgItem(state->hPropertyDlg, IDC_COMBOINPUT);
 	wchar_t szLastText[500+1];
 	// Remember old window text
@@ -930,7 +912,7 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	SetWindowTextW(hCombo, szLastText);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*> &functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
 	SetComboItems(GetDlgItem(hWindow,IDC_COMBOINPUT), functions);
 }

@@ -250,7 +250,7 @@ protected func DoGraphics()
 {
 	// Clear all overlays first.
 	for (var i = 1; i <= 3; i++)
-		SetGraphics(0, 0, i);
+		SetGraphics(nil, 0, i);
 	// Start & Finish.
 	if (cp_mode & PARKOUR_CP_Start || cp_mode & PARKOUR_CP_Finish)
 	{

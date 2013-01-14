@@ -1,0 +1,17 @@
+[DefCore]
+id=Wheat
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexX=0,0
+VertexY=8,10
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=12,0,64,64
+Components=Seeds=2
+Mass=6
+StretchGrowth=4
+Oversize=1

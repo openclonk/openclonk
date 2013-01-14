@@ -35,36 +35,17 @@ func UpdateTransferZone()
 func RecheckGoalTimer()
 {
 	// Create timer if it doesn't exist yet
-	if (!GetEffect("IntGoalCheck", 0))
+	if (!GetEffect("IntGoalCheck", nil))
 	{
 		var timer_interval = 35;
 		if (GetLeague())
 			timer_interval = 2; // league has more frequent checks
-		var num = AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
+		var num = AddEffect("IntGoalCheck", nil, 1, timer_interval, nil, Library_Goal);
 		FxIntGoalCheckTimer(nil, num);
 	}
 }
 
-public func NotifyHUD()
-{
-	// create hud objects for all players
-	for (var i = 0; i < GetPlayerCount(); ++i)
-	{
-		var plr = GetPlayerByIndex(i);
-		var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-		if (HUD)
-			HUD->OnGoalUpdate(this);
-	}
-}
-
-protected func InitializePlayer(int plr)
-{
-	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
-	if (HUD)
-		HUD->OnGoalUpdate(this);
-}
-
-global func FxIntGoalCheckTimer(object trg, effect, int time)
+protected func FxIntGoalCheckTimer(object trg, effect, int time)
 {
 	if (!time)
 		return true;
@@ -96,7 +77,7 @@ global func FxIntGoalCheckTimer(object trg, effect, int time)
 	return FX_Execute_Kill;
 }
 
-global func AllGoalsFulfilled()
+protected func AllGoalsFulfilled()
 {
 	// Goals fulfilled: Set mission password(s)
 	for (var goal in FindObjects(Find_Category(C4D_Goal)))
@@ -106,12 +87,31 @@ global func AllGoalsFulfilled()
 	if (GameCall("OnGoalsFulfilled")) return true;
 	// We're done. Play some sound and schedule game over call
 	Sound("Fanfare", true);
-	AddEffect("IntGoalDone", 0, 1, 30, 0);
+	AddEffect("IntGoalDone", nil, 1, 30, nil, Library_Goal);
 }
 
-global func FxIntGoalDoneStop()
+protected func FxIntGoalDoneStop()
 {
 	GameOver();
+}
+
+public func NotifyHUD()
+{
+	// create hud objects for all players
+	for (var i = 0; i < GetPlayerCount(); ++i)
+	{
+		var plr = GetPlayerByIndex(i);
+		var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+		if (HUD)
+			HUD->OnGoalUpdate(this);
+	}
+}
+
+protected func InitializePlayer(int plr)
+{
+	var HUD = FindObject(Find_ID(GUI_Controller), Find_Owner(plr));
+	if (HUD)
+		HUD->OnGoalUpdate(this);
 }
 
 // Set mission password to be gained when all goals are fulfilled

@@ -77,7 +77,7 @@ func FxIntFusingTimer()
 		if( (fuse_vertex == 0 && fuse_dir == -1) || (fuse_vertex == GetVertexNum()-1 && fuse_dir == +1))
 		{
 			fuse_call->~OnFuseFinished(this);
-			RemoveObject(this);
+			if (fuse_call) RemoveObject();
 			return -1;
 		}
 		fuse_x = GetVertex(fuse_vertex, 0)*10;

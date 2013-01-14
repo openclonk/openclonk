@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2006-2011  Günther Brammer
  * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -462,8 +462,6 @@ namespace C4GUI
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
-		if (::MouseControl.IsHelp())
-			GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);
 		// ToolTip
 		if (fDrawToolTip && pMouseOverElement)
 		{
@@ -542,8 +540,8 @@ namespace C4GUI
 		Mouse.x = tx+twdt/2;
 		Mouse.y = ty+thgt/2;
 		// calculate zoom
-		float fZoomX = float(Config.Graphics.ResX) / twdt;
-		float fZoomY = float(Config.Graphics.ResY) / thgt;
+		float fZoomX = float(Application.GetConfigWidth()) / twdt;
+		float fZoomY = float(Application.GetConfigHeight()) / thgt;
 		fZoom = Min<float>(fZoomX, fZoomY);
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
@@ -675,7 +673,7 @@ namespace C4GUI
 	{
 		while (pActiveDlg) pActiveDlg->Close(fWithOK);
 	}
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	Dialog *Screen::GetDialog(HWND hWindow)
 	{
 		// get dialog with matching handle
@@ -709,7 +707,7 @@ namespace C4GUI
 	void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 		// draw mouse cursor
-		Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || ::MouseControl.IsHelp());
+		Mouse.Draw(cgo, Mouse.IsMouseStill() && Mouse.IsActiveInput());
 	}
 
 	void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
@@ -735,14 +733,6 @@ namespace C4GUI
 		}
 		// draw mouse cursor
 		if (!Application.isEditor) RenderMouse(cgo);
-	}
-
-	bool Screen::Execute()
-	{
-		// process messages
-		if (!Application.FlushMessages())
-			return false;
-		return true;
 	}
 
 	bool Screen::KeyAny()
@@ -817,27 +807,6 @@ namespace C4GUI
 		float fZoom = pForDlg ? 1.0f : GetZoom(); // Developer mode dialogs are currently drawn unzoomed
 		float fX = float(iPxX) / fZoom;
 		float fY = float(iPxY) / fZoom;
-		// help mode and button pressed: Abort help and discard button
-		if (::MouseControl.IsHelp())
-		{
-			switch (iButton)
-			{
-			case C4MC_Button_None:
-				// just movement
-				break;
-			case C4MC_Button_LeftDown:
-			case C4MC_Button_RightDown:
-				// special for left/right down: Just ignore them, but don't stop help yet
-				// help should be stopped on button-up, so these won't be processed
-				iButton = C4MC_Button_None;
-				break;
-			default:
-				// buttons stop help
-				::MouseControl.AbortHelp();
-				iButton = C4MC_Button_None;
-				break;
-			}
-		}
 		// forward to mouse
 		Mouse.Input(iButton, fX, fY, dwKeyParam);
 		// dragging

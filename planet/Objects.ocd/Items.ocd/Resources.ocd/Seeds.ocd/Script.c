@@ -29,7 +29,7 @@ public func ControlUse(object clonk, int x, int y, bool box)
 
 protected func Hit()
 {
-	return 1;
+	Sound("GeneralHit?");
 }
 
 public func IsMillIngredient() { return true; }
@@ -37,4 +37,5 @@ public func IsMillIngredient() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

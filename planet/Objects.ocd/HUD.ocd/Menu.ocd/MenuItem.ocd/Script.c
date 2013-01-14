@@ -50,9 +50,8 @@ public func MouseSelectionAlt(int plr)
 }
 
 // Called to determine which object is dragged.
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
-	//Log("%s->MouseDrag(%d) for owner: %d, menu: %s, dd: %v", GetName(), plr, GetOwner(), item_menu->GetName(), item_menu->IsDragDropMenu());
 	// Check if the owners match.
 	if (plr != GetOwner()) return;
 		
@@ -66,7 +65,7 @@ public func MouseDrag(int plr)
 }
 
 // Called when an object is dragged onto this one.
-public func MouseDrop(int plr, other)
+public func OnMouseDrop(int plr, other)
 {
 	// Check if the owners match.
 	if (plr != GetOwner()) return false;
@@ -82,13 +81,31 @@ public func MouseDrop(int plr, other)
 }
 
 // Called after this object has been dragged onto another one.
-public func MouseDragDone(self, object target)
+public func OnMouseDragDone(self, object target)
 {
 	// Check if this belongs to a menu.
 	if (!item_menu) return;
 		
 	// Forward command to menu.
 	return item_menu->OnItemDragDone(self, target);
+}
+
+// Called if the mouse cursor starts hovering over this item.
+public func OnMouseOver(int plr, object dragged)
+{
+	if (plr != GetOwner()) return;
+	
+	// Forward command to menu.
+	return item_menu->OnMouseOverItem(this, dragged);
+}
+
+// Called if the mouse cursor stops hovering over this item.
+public func OnMouseOut(int plr, object dragged)
+{
+	if (plr != GetOwner()) return;
+	
+	// Forward command to menu.
+	return item_menu->OnMouseOutItem(this, dragged);
 }
 
 /* Menu item properties */
@@ -157,6 +174,10 @@ public func Update()
 	
 	// Update item amount.
 	UpdateCount();
+	
+	// Update tooltip
+	UpdateTooltip();
+	
 	return;
 }	
 
@@ -172,7 +193,7 @@ private func UpdateSymbol()
 	{
 		if (GetType(item_object) == C4V_C4Object)
 		{
-			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, 0, 0, item_object);
+			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, 0, item_object);
 			if (item_object->~HasExtraSlot())
 			{
 				SetGraphics(nil, GUI_ExtraSlot, 2, GFXOV_MODE_Base);
@@ -180,7 +201,7 @@ private func UpdateSymbol()
 				var content = item_object->Contents(0);
 				if (content)
 				{
-					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetGraphics(nil, nil, 3, GFXOV_MODE_ObjectPicture, nil, 0, content);
 					SetObjDrawTransform(1000/3, 0, 16000, 0, 1000/3, 16000, 3);
 				}
 				else
@@ -244,4 +265,14 @@ private func UpdateCount()
 			SetGraphics(nil, nil, 10);
 	}
 	return;
+}
+
+private func UpdateTooltip()
+{
+	if(!item_object)
+		this.Tooltip = nil;
+	else
+	{
+		this.Tooltip = item_object.Description;
+	}
 }

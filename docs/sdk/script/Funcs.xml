@@ -34,6 +34,22 @@
     <text>The message displays the sum of the four values passed. The call</text>
     <code>ShowSum(1, 2, 3, 4);</code>
     <text>will result in the message "The sum of the first four parameters is 10.".</text>
+    <text>All functions also have a hidden parameter called <code>this</code>. When calling a function in another proplist (which can be an object, a definition, or any other type of proplist) with <code>p -> Foo();</code> or <code>p ->~ Foo();</code>, the function <code>Foo</code> gets the proplist <code>p</code> as <code>this</code>.</text>
+    <code>func Foo(proplist self) {
+	Log("this == self: %v", this == self);
+}
+func Bar() {
+	var p = { Baz = this.Foo };
+	p->Baz(p);
+	p->Baz("not p");
+	Foo(this);
+}</code>
+    <text>Calling Bar in this script results in this output:</text>
+    <code>this == self: true
+this == self: false
+this == self: true</code>
+    <text>The last call to <code>Foo</code> shows the reason for <code>this</code>: Most of the functions in an object need that object to do something with it, and passing the object to every function would result in a lot of repetitive code.</text>
+    <text>Note for everyone familiar with previous versions of C4Script: When calling a function in a definition like <code>Flint->Hit();</code>, the definition is returned from <code>this</code>. In the <code>Flint->Hit();</code> example, that will probably result in an error message from the engine like "passed proplist, but expected object", because the Hit function of the Flint is not designed to be called like that.</text>
     <h id="parametertypen">Parameter Types</h>
     <text>You can specify the data type that is to be accepted for a given parameter. To do this, simply write the desired <emlink href="script/Typechecks.html">type name</emlink> before the parameter name:</text>
     <code>func TypeParameterFunction(object myClonk, id def, int count, string msg)
@@ -67,30 +83,6 @@ ShowSum(1, 2, 3, 4, 5, 6);</code>
 }	</code>
       <text>The call "ShowDifference(5, 2)" will produce the message "The difference between 5 and 2 is 3!".</text>
       <text>If the function does not return a value, an implicit <code>return nil;</code> is implied.</text>
-    </part>
-    <h id="Aufrufb">Permissions</h>
-    <part>
-      <text>A function can have one of three levels of "calling permission". This will determine from where the function may be called:</text>
-      <text>
-        <table>
-          <row>
-            <col><code>public</code></col>
-            <col>may be called from the engine or any other script (default)</col>
-          </row>
-          <row>
-            <col><code>private</code></col>
-            <col>may only be called from the same object script</col>
-          </row>
-        </table>
-      </text>
-      <text>The calling permissions are expected before the <code>func</code> marker:</text>
-      <code>private func PrivateFunction()
-{
-  // This function may only be called from the same script
-}</code>
-      <text>Calling this function from another object script will cause an error.</text>
-      <h>Remark</h>
-      <text>As in some cases it may seem necessary to call a protected function from another object script, there is a workaround through the <funclink>PrivateCall</funclink> function.</text>
     </part>
     <h>Global Functions</h>
     <part>

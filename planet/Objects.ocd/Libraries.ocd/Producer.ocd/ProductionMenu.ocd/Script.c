@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_Menu
+#include GUI_CircleMenu
 
 local menu_queue;
 local productinfo_shown;
@@ -51,7 +51,7 @@ protected func Construction()
 
 public func AddMenuProducts(object producer)
 {
-	for (var product in producer->GetProducts())
+	for (var product in producer->GetProducts(GetMenuObject()))
 	{
 		var item = CreateObject(GUI_MenuItem);
 		if (!AddItem(item))
@@ -91,19 +91,28 @@ public func ShowProductInfo(object item)
 	var product_id = item->GetSymbol();
 	var costs = menu_commander->ProductionCosts(product_id);
 	var cost_msg = "@";
-	var liquid;
+	var liquid, material;
 	for (var comp in costs)
-		cost_msg = Format("%s %dx {{%i}}", cost_msg, comp[1], comp[0]);
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(comp[1], menu_commander->CheckComponent(comp[0], comp[1])), comp[0]);
 	if (menu_commander->FuelNeed(product_id))
-		cost_msg = Format("%s 1x {{Icon_Producer_Fuel}}", cost_msg);
+		cost_msg = Format("%s %s {{Icon_Producer_Fuel}}", cost_msg, GetCostString(1, menu_commander->CheckFuel(product_id)));
 	if (liquid = menu_commander->LiquidNeed(product_id))
-		cost_msg = Format("%s %dx {{Icon_Producer_%s}}", cost_msg, liquid[1], liquid[0]);
+		cost_msg = Format("%s %s {{Icon_Producer_%s}}", cost_msg, GetCostString(liquid[1], menu_commander->CheckLiquids(product_id)), liquid[0]);
+	if (material = menu_commander->MaterialNeed(product_id))
+		cost_msg = Format("%s %s {{%i}}", cost_msg, GetCostString(material[1], menu_commander->CheckMaterials(product_id)), product_id->~GetMaterialIcon(material[0]));
 	if (menu_commander->PowerNeed(product_id))
 		cost_msg = Format("%s + {{Library_PowerConsumer}}", cost_msg);
 
 	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
 	productinfo_shown = item;
 	return;
+}
+
+private func GetCostString(int amount, bool available)
+{
+	// Format amount to colored string; make it red if it's not available
+	if (available) return Format("%dx", amount);
+	return Format("<c ff0000>%dx</c>", amount);
 }
 
 public func HideProductInfo()
@@ -115,8 +124,6 @@ public func HideProductInfo()
 /* Menu properties */
 
 public func IsProductionMenu() { return true; }
-// UpdateCursor is called
-public func CursorUpdatesEnabled() { return true; }
 
 public func AddQueueItem(object item)
 {
@@ -217,21 +224,6 @@ public func HasCommander(object producer)
 	return false;
 }
 
-// Callback if the mouse is moved
-public func UpdateCursor(int dx, int dy)
-{
-	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
-	if (!item || item->GetMenu() != this)
-	{
-		if (productinfo_shown)
-			HideProductInfo();
-		return;
-	}
-	if (item == productinfo_shown)
-		return;
-	ShowProductInfo(item);
-}
-
 /* Callbacks from the menu items, to be translated into commands for the producer. */
 
 // Called when a click outside the menu has been made.
@@ -276,7 +268,7 @@ public func OnItemSelectionAlt(object item)
 }
 
 // Called when an object is dragged onto the menu
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	return _inherited(plr, obj, ...);
 }
@@ -307,5 +299,21 @@ public func OnItemDropped(object drop_item, object on_item)
 public func OnItemDragDone(object drag_item, object on_item)
 {
 	return _inherited(drag_item, on_item, ...);
+}
+
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	ShowProductInfo(over_item);
+	
+	return _inherited(over_item, dragged_item, ...);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	HideProductInfo();
+	
+	return _inherited(out_item, dragged_item, ...);
 }
 

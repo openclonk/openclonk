@@ -1,0 +1,3 @@
+Name=Retrieve the airplane
+MsgGoalFulfilled=You have successfully transported back the plane to its pilot.
+MsgGoalUnFulfilled=Get the plane back to its pilot.

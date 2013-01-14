@@ -45,7 +45,7 @@ public func IsInteractable() { return GetCon() >= 100; }
 
 public func GetInteractionMetaInfo(object clonk)
 {
-	return { Description = "Produce items", IconName = nil, IconID = nil };
+	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
 }
 
 // On interaction the production menu should be opened.
@@ -100,21 +100,24 @@ private func IsProduct(id product_id)
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
 */
-public func GetProducts()
+public func GetProducts(object for_clonk)
 {
+	var for_plr = GetOwner();
+	if (for_clonk)
+		for_plr = for_clonk-> GetOwner();
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	if (!IgnoreKnowledge() && GetOwner() != NO_OWNER)
+	if (!IgnoreKnowledge() && for_plr != NO_OWNER)
 	{
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Object))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
 			index++;
 		}
 		index = 0;
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Vehicle))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Vehicle))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
@@ -336,7 +339,9 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
-private func PowerNeed(id product) { return product->~GetPowerNeed(); }
+private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
+
+private func PowerNeed() { return 200; }
 
 private func Produce(id product)
 {
@@ -346,16 +351,19 @@ private func Produce(id product)
 		
 	// Check if components are available.
 	if (!CheckComponents(product))
-		return false;	
+		return false;
 	// Check need for fuel.
 	if (!CheckFuel(product))
-		return false;	
+		return false;
 	// Check need for liquids.
 	if (!CheckLiquids(product))
-		return false;	
+		return false;
+	// Check need for materials.
+	if (!CheckMaterials(product))
+		return false;
 	// Check need for power.
-	if (!CheckForPower(product))
-		return false;	
+	if (!CheckForPower())
+		return false;
 
 	// Everything available? Start production.
 	// Remove needed components, fuel and liquid.
@@ -363,6 +371,7 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
+	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -376,8 +385,7 @@ private func CheckComponents(id product, bool remove)
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
+		if (!CheckComponent(mat_id, mat_cost))
 			return false; // Components missing.
 		else if (remove)
 		{
@@ -388,7 +396,13 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
-private func CheckFuel(id product, bool remove)
+public func CheckComponent(id component, int amount)
+{
+	// check if at least the given amount of the given component is available to be used for production
+	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+}
+
+public func CheckFuel(id product, bool remove)
 {
 	if (FuelNeed(product) > 0)
 	{
@@ -401,6 +415,7 @@ private func CheckFuel(id product, bool remove)
 		else if (remove)
 		{
 			// Remove the fuel needed.
+			fuel_amount = 0;
 			for (var fuel in FindObjects(Find_Container(this), Find_Func("IsFuel")))
 			{
 				fuel_amount += fuel->~GetFuelAmount();
@@ -413,7 +428,7 @@ private func CheckFuel(id product, bool remove)
 	return true;
 }
 
-private func CheckLiquids(id product, bool remove)
+public func CheckLiquids(id product, bool remove)
 {
 	var liq_need = LiquidNeed(product);
 	if (liq_need)
@@ -443,15 +458,39 @@ private func CheckLiquids(id product, bool remove)
 	return true;
 }
 
-private func CheckForPower(id product)
+public func CheckMaterials(id product, bool remove)
 {
-	if (PowerNeed() > 0)
+	var mat_need = MaterialNeed(product);
+	if (mat_need)
 	{
-		// At least ten percent of the power need must be in the network.
-		if (!CheckPower(PowerNeed() / 10, true))
+		var material_amount = 0;
+		var material = mat_need[0];
+		var need = mat_need[1];
+		// Find liquid containers in this producer.
+		for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			if (mat_container->~GetContainedMaterial() == material)
+				material_amount += mat_container->~GetFillLevel();
+		if (material_amount < need)
 			return false;
+		else if (remove)
+		{
+			// Remove the material needed.
+			var extracted = 0;
+			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			{
+				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
+				extracted += val;
+				if (extracted >= need)
+					break;
+			}
+		}
 	}
 	return true;
+}
+
+private func CheckForPower()
+{
+	return true; // always assume that power is available
 }
 
 private func IsProducing()
@@ -463,7 +502,7 @@ private func IsProducing()
 
 protected func FxProcessProductionStart(object target, proplist effect, int temporary, id product)
 {
-	if (temporary != 0)
+	if (temporary)
 		return 1;
 		
 	// Set product.
@@ -472,47 +511,49 @@ protected func FxProcessProductionStart(object target, proplist effect, int temp
 	// Set production duration to zero.
 	effect.Duration = 0;
 	
-	// Set energy usage to zero.
-	effect.Energy = 0;
-	
 	// Production is active.
 	effect.Active = true;
-	
-	//Log("Production started on %i", effect.Product);
-	
+
 	// Callback to the producer.
 	this->~OnProductionStart(effect.Product);
+	
+	// consume power
+	if(PowerNeed() > 0)
+		MakePowerConsumer(PowerNeed());
 	
 	return 1;
 }
 
+public func OnNotEnoughPower()
+{
+	var effect = GetEffect("ProcessProduction", this);
+	if(effect)
+	{
+		effect.Active = false;
+		this->~OnProductionHold(effect.Product, effect.Duration);
+	} 
+	else
+		FatalError("Producer effect removed when power still active!");
+	return _inherited(...);
+}
+
+public func OnEnoughPower()
+{
+	var effect = GetEffect("ProcessProduction", this);
+	if(effect)
+	{
+		effect.Active = true;
+		this->~OnProductionContinued(effect.Product, effect.Duration);
+	} 
+	else 
+		FatalError("Producer effect removed when power still active!");
+	return _inherited(...);
+}
+
 protected func FxProcessProductionTimer(object target, proplist effect, int time)
 {
-	// Check if energy is available.
-	if (PowerNeed() > 0)
-	{
-		var eng = PowerNeed() * (effect.Duration + effect.Interval) / ProductionTime();
-		if (CheckPower(eng - effect.Energy))
-		{
-			// Energy available, add to Energy value and continue production.
-			effect.Energy = eng;
-			if (!effect.Active)
-			{
-				this->~OnProductionContinued(effect.Product, effect.Duration);
-				effect.Active = true;
-			}
-		}
-		else
-		{
-			// Hold production if energy is not available, callback to the producer.
-			if (effect.Active)
-			{
-				this->~OnProductionHold(effect.Product, effect.Duration);
-				effect.Active = false;
-			}
-			return 1;
-		}
-	}
+	if (!effect.Active)
+		return 1;
 	
 	// Add effect interval to production duration.
 	effect.Duration += effect.Interval;
@@ -520,16 +561,22 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	//Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
 	
 	// Check if production time has been reached.
-	if (effect.Duration >= ProductionTime())
+	if (effect.Duration >= ProductionTime(effect.Product))
 		return -1;
 	
 	return 1;
 }
 
-protected func FxProcessProductionStop(object target, proplist effect, int reason)
+protected func FxProcessProductionStop(object target, proplist effect, int reason, bool temp)
 {
+	if(temp) return;
+	
+	// no need to consume power anymore
+	UnmakePowerConsumer();
+		
 	if (reason != 0)
 		return 1;
+		
 	// Callback to the producer.
 	//Log("Production finished on %i after %d frames", effect.Product, effect.Duration);
 	this->~OnProductionFinish(effect.Product);
@@ -635,6 +682,13 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
+				return false;
+	}
+	// Material containers may be collected if a product needs them.
+	if (obj->~IsMaterialContainer())
+	{
+		for (var product in GetProducts())
+			if (MaterialNeed(product))
 				return false;
 	}
 	return true;

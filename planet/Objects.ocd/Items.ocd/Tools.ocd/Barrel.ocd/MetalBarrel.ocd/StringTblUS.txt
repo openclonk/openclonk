@@ -1,2 +1,2 @@
 Name=Metal Barrel
-Description=You can transport hazardous liquids in a metal barrel.
+Description=Solid container for transporting hazardous liquids like acid.

@@ -104,7 +104,7 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 		delete instance->SubMeshInstances[i];
 	instance->SubMeshInstances.resize(new_mesh.GetNumSubMeshes());
 	for (unsigned int i = 0; i < instance->SubMeshInstances.size(); ++i)
-		instance->SubMeshInstances[i] = new StdSubMeshInstance(new_mesh.GetSubMesh(i));
+		instance->SubMeshInstances[i] = new StdSubMeshInstance(*instance, new_mesh.GetSubMesh(i), instance->GetCompletion());
 
 	// Update child bone of attach parent. If the bone does not exist anymore
 	// in the updated mesh, then detach the mesh from its parent

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetIndexOf</title>
+    <category>Script</category>
+    <subcat>Arrays</subcat>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>array</type>
+          <name>array2search</name>
+          <desc>Array in which the element should be searched. The array can be zero, in which case the element is never found and -1 is returned.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>needle</name>
+          <desc>The value to which every element of the array is to be compared.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Finds the first occurrence of a value in an array and returns its zero-based index. If the element is not found, -1 is returned. The usual rules for comparison using the <emlink href="script/operatoren.html#equality">==-operator</emlink> apply.</desc>
+  </func>
+  <author>Sven2</author><date>2012-12</date>
+</funcs>

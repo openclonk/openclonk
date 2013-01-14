@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2007-2008, 2010  Günther Brammer
+ * Copyright (c) 2007-2008, 2010-2011  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,7 +27,7 @@
 #include <C4Application.h>
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 namespace C4GUI
 {
@@ -239,7 +239,7 @@ namespace C4GUI
 		if (sText.getLength())
 		{
 			CStdFont &rUseFont = pCustomFont ? *pCustomFont : ::GraphicsResource.TextFont;
-			pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt-rUseFont.GetLineHeight()*4/5, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
+			pDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, x0+rcBounds.Wdt/2, y0+rcBounds.Hgt, pCustomFont ? dwCustomFontClr : C4GUI_CaptionFontClr, ACenter);
 		}
 	}
 

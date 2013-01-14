@@ -6,75 +6,88 @@
 --*/
 
 local liftheavy_carrier;
-local liftheavy_mesh;
-local liftheavy_anim;
 
 public func IsCarryHeavy() { return true; }
 public func IsInvInteract() { return true; }
+
+public func GetCarryMode(clonk) { return CARRY_BothHands; }
+public func GetCarrySpecial(clonk)
+{
+	var action = clonk->~GetAction();
+	if(action == "Scale" || action == "Hangle" || action == "Push")
+		return "skeleton_body";
+}
+
+public func GetDropDescription() { return Format("$TxtPutDown$", GetName()); }
 
 public func Grabbed(object clonk, bool grab)
 {
 	if(grab)
 	{
-		if(clonk->ContentsCount() <= clonk->MaxContentsCount() - 2 && !FindObject(Find_Container(clonk), Find_Func("IsCarryHeavy")))
-			this->Enter(clonk);
-		else
+		// clonk already carries something. Don't pick up
+		if(clonk->~IsCarryingHeavy())
 		{
-			//Clonk's inventory is full and cannot switch an item to his backpack
-			//so as to pick up the heavy object with both hands
 			CustomMessage("$TxtHandsFull$", clonk, clonk->GetController(), 0, 0, 0xff0000);
 			//Let go of object
 			clonk->SetAction("Walk");
 			//Clear animation
 			clonk->SetCommand("None");
+			
 			return false;
 		}
-
-		//If there is an object in the clonk's primary hand slot, put it into the rucksack
-		if(clonk->ContentsCount() > 1)
-		{
-			if(clonk.inventory[0])
-				clonk->Switch2Items(0,EmptyHandSlot(clonk, 0));
-
-			if(clonk.inventory[1])
-				EmptyHandSlot(clonk, 1);
-		}
-
+		
+		// do pickup stuff enter stuff whatever
 		liftheavy_carrier = clonk;
-
-		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this);
+		
+		Enter(liftheavy_carrier);
+		DoLift();
 	}
 }
 
-public func EmptyHandSlot(object clonk, int handslot)
+
+private func DoLift(bool forceEnter)
 {
-	//find an empty slot. Switches handslot with a rucksack slot
-	for(var sackslot = 2; clonk.inventory[sackslot] != nil; sackslot++);
-	clonk->Switch2Items(handslot, sackslot);
-	return sackslot;
+	if(!liftheavy_carrier)
+		return;
+	if(!IsCarryingHeavy(liftheavy_carrier))
+		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this, nil, forceEnter);
 }
 
+// ------------------
+// Lifting the object
+// ------------------
 static const lift_heavy_time = 60;
+func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp, bool forceEnter)
+{
+	if(tmp) return;
+	if(!clonk) return -1;
+	if(Contained() != clonk) return -1;
+	
+	// if the clonk is inside, we can skip the animation
+	if(clonk->Contained())
+	{
+		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		return -1;
+	}
+
+	//Stop the clonk from moving, and tell the clonk's control library
+	//it now has a hand action
+	clonk->SetTurnForced(clonk->GetDir());
+	clonk->SetHandAction(1);
+	clonk->SetAction("Stand");
+
+	//Attach the mesh of the object. It is not displayed normally because the
+	//hands are told they have an action in the next few lines
+	effect.mesh = clonk->AttachMesh(this->GetID(), "pos_tool1", "main", this->~GetCarryTransform(clonk));
+
+	//Play the animation of the clonk picking up the object
+	effect.anim = clonk->PlayAnimation("CarryArmsPickup", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsPickup"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
+	
+	effect.doExit = !forceEnter; // default: true
+}
 
 func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 {
-	//Lift the object
-	if(timer == 1)
-	{
-		//Attach the mesh of the object. It is not displayed normally because the
-		//hands are told they have an action in the next few lines
-		liftheavy_mesh = clonk->AttachMesh(this->GetID(), "pos_tool1", "main", this->~GetCarryTransform(clonk));
-
-		//Stop the clonk from moving, and tell the clonk's control library
-		//it now has a hand action
-		clonk->SetTurnForced(clonk->GetDir());
-		clonk->SetHandAction(1);
-		clonk->SetAction("Stand");
-
-		//Play the animation of the clonk picking up the object
-		liftheavy_anim = clonk->PlayAnimation("CarryArmsPickup", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsPickup"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
-	}
-
 	//If the clonk moves, he'll stop lifting and drop the object
 	if(timer < lift_heavy_time)
 	{
@@ -83,7 +96,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 		{
 			if(clonk->GetAction() != "Stand" || clonk->IsJumping() || Abs(clonk->GetXDir()) > 0)
 			{
-				UndoLift(clonk);
 				return -1;
 			}
 		}
@@ -94,7 +106,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 			if(clonk->GetAction() != "Stand")
 			{
 				//If the clonk moved when he was disabled from doing so (or jumped), cancel lifting
-				UndoLift(clonk);
 				return -1;
 			}
 		}
@@ -103,50 +114,119 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 	//When the clonk has finished lifting, remove movement-restrictions and add carry effect
 	if(timer >= lift_heavy_time)
 	{
-		clonk->SetTurnForced(-1);
-		clonk->SetHandAction(0);
-		clonk->SetAction("Walk");
-		//Detach the object's mesh since it is applied in the next animation ("CarryArms") by another script
-		clonk->DetachMesh(liftheavy_mesh);
-		liftheavy_mesh = nil;
 		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		// don't exit the object
+		effect.doExit = false;
 		return -1;
 	}
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
+		return -1;
+}
+
+func FxIntLiftHeavyStop(object clonk, proplist effect, int reason, bool tmp)
+{
+	if(tmp) return;
+	
+	// drop the object
+	if(effect.doExit && Contained()==clonk) // only if still in the clonk
+		Exit();
+	
+	clonk->DetachMesh(effect.mesh);
+	clonk->StopAnimation(effect.anim);
+	
+	UndoLift(clonk);
+}
+
+// -------------------
+// Carrying the object
+// -------------------
+func FxIntCarryHeavyTimer(object clonk, proplist effect, int timer)
+{
+	//Delete this effect if not contained in the clonk anymore
+	if(Contained() != clonk) return -1;
+}
+
+// ------------------
+// Dropping the object
+// ------------------
+func FxIntDropHeavyStart(object clonk, proplist effect, bool tmp)
+{
+	if(tmp) return;
+	if(!clonk) return -1;
+	if(Contained() != clonk) return -1;
+
+	if(clonk->GetEffect("IntCarryHeavy"))
+		clonk->RemoveEffect("IntCarryHeavy");
+
+	// if the clonk is inside, we don't play the animation
+	if(clonk->Contained())
+		return -1;
+
+	clonk->SetTurnForced(clonk->GetDir());
+	clonk->SetHandAction(1);
+	clonk->SetAction("Stand");
+	
+	//Stop the clonk if he is moving
+	if(clonk->GetXDir() != 0) clonk->SetXDir();
+
+	//Attach the mesh of the object. It is not displayed normally because the
+	//hands are told they have an action in the next few lines
+	effect.mesh = clonk->AttachMesh(this->GetID(), "pos_tool1", "main", this->~GetCarryTransform(clonk));
+
+	//Play the animation of the clonk setting down the object
+	effect.anim = clonk->PlayAnimation("CarryArmsPickup", 10, Anim_Linear(clonk->GetAnimationLength("CarryArmsPickup"),clonk->GetAnimationLength("CarryArmsPickup"),0, lift_heavy_time, ANIM_Remove), Anim_Const(1000));
+	//liftheavy_anim = clonk->PlayAnimation("CarryArmsSetdown", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsSetdown"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
 }
 
 func FxIntDropHeavyTimer(object clonk, proplist effect, int timer)
 {
-	//Drop the object
-	if(timer == 1)
-	{
-		liftheavy_mesh = clonk->AttachMesh(this->GetID(), "pos_tool1", "main", this->~GetCarryTransform(clonk));
-
-		clonk->SetTurnForced(clonk->GetDir());
-		clonk->SetHandAction(1);
-		clonk->SetAction("Stand");
-
-		//Play the animation of the clonk setting down the object
-		liftheavy_anim = clonk->PlayAnimation("CarryArmsSetdown", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsSetdown"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
-	}
-
 	//Clonk was interrupted?
 	if(clonk->GetAction() != "Stand")
 	{
-		UndoLift(clonk);
 		return -1;
 	}
 
+	// animation finished?
 	if(timer >= lift_heavy_time)
-	{
-		clonk->SetTurnForced(-1);
-		clonk->SetHandAction(0);
-		clonk->SetAction("Walk");
-		clonk->DetachMesh(liftheavy_mesh);
-		liftheavy_mesh = nil;
 		return -1;
-	}
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
+		return -1;
 }
 
+func FxIntDropHeavyStop(object clonk, proplist effect, int reason, bool tmp)
+{
+	if(tmp) return;
+
+	clonk->DetachMesh(effect.mesh);
+	clonk->StopAnimation(effect.anim);
+	
+	if(clonk->GetAction() != "Stand")
+		Exit();
+	else
+	{
+		var dir = 1;
+		if(clonk->GetDir() == DIR_Left)
+			dir = -1;
+		// Set down at barrel position
+		Exit(6*dir, 9);
+	}
+	
+	UndoLift(clonk);
+}
+
+func Drop()
+{
+	if(liftheavy_carrier == nil)
+		return;
+	if(!IsCarryingHeavy(liftheavy_carrier))
+		return;
+	
+	AddEffect("IntDropHeavy", liftheavy_carrier, 1, 1, this);
+}
 
 func UndoLift(object clonk)
 {
@@ -154,10 +234,6 @@ func UndoLift(object clonk)
 	clonk->SetTurnForced(-1);
 	clonk->SetHandAction(0);
 	if(clonk->GetAction() == "Stand") clonk->SetAction("Walk");
-	clonk->DetachMesh(liftheavy_mesh);
-	//Stop the lifting animation
-	clonk->StopAnimation(liftheavy_anim);
-	this->Exit();
 }
 
 func IsCarryingHeavy(object clonk)
@@ -169,48 +245,31 @@ func IsCarryingHeavy(object clonk)
 	return false;
 }
 
-func FxIntCarryHeavyTimer(object clonk, proplist effect, int timer)
+protected func Entrance(object obj)
 {
-	//Is there more than one carry-heavy object in the clonk? Then exit one
-	if(clonk->GetItemPos(this) !=0 && ObjectCount(Find_Func("IsCarryHeavy"), Find_Container(clonk)) > 1)
-		this->Exit();
-
-	//If the carry-heavy object is not in the first hand slot, move it there
-	if(clonk->GetItemPos(this) != 0)
-		clonk->Switch2Items(0,clonk->GetItemPos(this));
-
-	//Is there an object in the second hand slot? If so, remove it.
-	if(clonk.inventory[1])
-	{
-		//exclude carry-heavy objects from the counting process. Only counts normal items
-		var contentscount = clonk->ContentsCount();
-		if(FindObject(Find_Container(clonk), Find_Func("IsCarryHeavy"))) contentscount--;
-
-		if(contentscount < clonk->MaxContentsCount())
+	// tell the carrier to carryheavy if it got moved into it by script
+	if(!liftheavy_carrier)
+		if(obj->~GetCarryHeavy() == this)
 		{
-			this->EmptyHandSlot(clonk, 1);
-
-			//If the clonk had an object dropped into his inventory by other means than collection, drop it
-			if(clonk.inventory[1])
-			{
-				clonk.inventory[1]->Exit();
-				return -1;
-			}
+			liftheavy_carrier = obj;
+			if(obj->GetAction() == "Walk" && !obj->Contained())
+				DoLift(true);
+			else
+				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
-	}
-
-	//Delete this effect if not contained in the clonk anymore
-	if(Contained() != clonk) return -1;
 }
 
-//In case the object is added via script, add the carry heavy effect
-func Entrance(object container)
+protected  func Departure(object obj)
 {
-	if(container->~IsClonk() && !IsCarryingHeavy())
-		AddEffect("IntCarryHeavy", container, 1, 1, this);
+	if(!liftheavy_carrier)
+		return;
+	
+	liftheavy_carrier = nil;
 }
 
-func RejectCollect(id collectid, object collect)
+
+// Cannot pickup other carryheavy objects (is that really what you intended, Ringwaul?)
+protected func RejectCollect(id collectid, object collect)
 {
 	if(collect->~IsCarryHeavy()) return true;
 	else

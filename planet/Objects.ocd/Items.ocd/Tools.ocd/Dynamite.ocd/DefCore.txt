@@ -5,7 +5,7 @@ Category=C4D_Object
 Width=3
 Height=10
 Offset=-2,-5
-Picture=4,0,16,16
+Picture=16,0,64,64
 Vertices=3
 VertexX=-2,+2,0
 VertexY=5,5,-5
@@ -14,5 +14,3 @@ Value=3
 Mass=8
 Rotate=1
 Components=Coal=1;Sulphur=1
-ContactIncinerate=1
-BlastIncinerate=1

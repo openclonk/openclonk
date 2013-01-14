@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
- * Copyright (c) 2002-2003, 2006-2009, 2011  Sven Eberhardt
+ * Copyright (c) 2002-2003, 2006-2009, 2011-2012  Sven Eberhardt
  * Copyright (c) 2002, 2004-2005, 2008  Peter Wortmann
  * Copyright (c) 2004-2006, 2008, 2011  Günther Brammer
  * Copyright (c) 2009-2011  Nicolas Hake
@@ -547,10 +547,10 @@ bool EraseFile(const char *szFilename)
 #ifndef _WIN32
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 {
-	int fds = open (szSource, O_RDONLY);
+	int fds = open (szSource, O_RDONLY | O_CLOEXEC);
 	if (!fds) return false;
 	struct stat info; fstat(fds, &info);
-	int fdt = open (szTarget, O_WRONLY | O_CREAT | (FailIfExists? O_EXCL : O_TRUNC), info.st_mode);
+	int fdt = open (szTarget, O_CLOEXEC | O_WRONLY | O_CREAT | (FailIfExists? O_EXCL : O_TRUNC), info.st_mode);
 	if (!fdt)
 	{
 		close (fds);
@@ -932,14 +932,28 @@ DirectoryIterator::~DirectoryIterator()
 		delete p;
 }
 
+void DirectoryIterator::Clear()
+{
+	// clear cache
+	if (p->ref > 1)
+	{
+		// Detach from shared memory
+		--p->ref;
+		p = new DirectoryIteratorP;
+	}
+	p->directory.clear();
+	p->files.clear();
+	iter = p->files.end();
+}
+
 void DirectoryIterator::Reset ()
 {
 	iter = p->files.begin();
 }
 
-void DirectoryIterator::Reset (const char * dirname)
+void DirectoryIterator::Reset (const char * dirname, bool force_reread)
 {
-	if (p->directory == dirname)
+	if (p->directory == dirname && !force_reread)
 	{
 		// Skip reinitialisation and just reset the iterator
 		iter = p->files.begin();

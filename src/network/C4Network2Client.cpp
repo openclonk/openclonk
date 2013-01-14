@@ -5,6 +5,7 @@
  * Copyright (c) 2005  Sven Eberhardt
  * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -268,6 +269,8 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 	for(struct ifaddrs* addr = addrs; addr != NULL; addr = addr->ifa_next)
 	{
 		struct sockaddr* ad = addr->ifa_addr;
+		if(ad == NULL) continue;
+
 		if(ad->sa_family == AF_INET && (~addr->ifa_flags & IFF_LOOPBACK)) // Choose only non-loopback IPv4 devices
 			addr_vec.push_back(&reinterpret_cast<sockaddr_in*>(ad)->sin_addr);
 	}

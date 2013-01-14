@@ -20,6 +20,8 @@
 #include "C4Include.h"
 #include "C4LogBuf.h"
 
+#include <C4FontLoader.h>
+
 C4LogBuffer::C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szIndentChars, bool fDynamicGrow, bool fMarkup)
 		: iBufSize(iSize), iFirstLinePos(0), iAfterLastLinePos(0), iLineDataPos(0),
 		iNextLineDataPos(0), iMaxLineCount(iMaxLines), iLineCount(0), iLineBreakWidth(iLBWidth), fDynamicGrow(fDynamicGrow), fMarkup(fMarkup)

@@ -2,9 +2,9 @@
 
 #include Library_Constructor
 
-private func Hit()
+private func Hit(x, y)
 {
-	Sound("RockHit");
+	StonyObjectHit(x, y);
 	return 1;
 }
 
@@ -21,4 +21,5 @@ func Definition(def) {
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

@@ -1,0 +1,16 @@
+[DefCore]
+id=WheatStalk
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=2
+VertexX=0,0
+VertexY=0,10
+VertexCNAT=16,8
+VertexFriction=10,100
+Mass=2
+StretchGrowth=4
+Oversize=1
+IncompleteActivity=1

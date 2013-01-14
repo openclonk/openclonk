@@ -1,1 +1,4 @@
 Name=Pump
+Description=The pump can transport liquid from A to B.
+MsgTurnOff=Turn off pump
+MsgTurnOn=Turn on pump

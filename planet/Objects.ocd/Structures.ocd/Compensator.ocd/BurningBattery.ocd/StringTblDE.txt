@@ -1,0 +1,2 @@
+Name=Brennende Batterie
+Description=Ein Teil eines Kompensators.

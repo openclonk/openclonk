@@ -34,7 +34,6 @@
     <related>
       <funclink>GameCall</funclink>
       <funclink>Call</funclink>
-      <funclink>DefinitionCall</funclink>
     </related>
   </func>
   <author>Newton</author><date>2011-07</date>

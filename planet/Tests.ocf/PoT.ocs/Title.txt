@@ -1,2 +1,0 @@
-DE:Power of Two
-US:Power of Two

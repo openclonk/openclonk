@@ -1,0 +1,3 @@
+src/script/C4Script.cpp
+src/gamescript/C4GameScript.cpp
+src/object/C4ObjectScript.cpp

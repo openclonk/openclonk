@@ -1,0 +1,18 @@
+[DefCore]
+id=SproutBerryBush
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=16
+Height=16
+Offset=-8,-8
+Vertices=2
+VertexX=0, 0
+VertexY=0, 8
+VertexFriction=50, 50
+VertexCNAT=0, 8
+Mass=10
+StretchGrowth=0
+Oversize=0
+Float=1
+Rotate=0
+IncompleteActivity=1

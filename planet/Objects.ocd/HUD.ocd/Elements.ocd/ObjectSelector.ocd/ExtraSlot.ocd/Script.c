@@ -26,7 +26,8 @@ public func MouseSelectionAlt(int plr)
 {
 	if(!myobject) return;
 	
-	var desc = myobject->GetProperty("Description");
+	var desc = myobject.UsageHelp;
+	if(!desc) desc = myobject.Description; // fall back to general description
 	
 	// close other messages...
 	crew->OnDisplayInfoMessage();
@@ -39,7 +40,7 @@ public func MouseSelectionAlt(int plr)
 	return true;
 }
 
-public func MouseDragDone(obj, object target)
+public func OnMouseDragDone(obj, object target)
 {
 	// not on landscape
 	if(target) return;
@@ -48,14 +49,14 @@ public func MouseDragDone(obj, object target)
 		obj->Exit();
 }
 
-public func MouseDrag(int plr)
+public func OnMouseDrag(int plr)
 {
 	if(plr != GetOwner()) return nil;
 	
 	return myobject;
 }
 
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	if(plr != GetOwner()) return false;
 	if(GetType(obj) != C4V_C4Object) return false;
@@ -110,7 +111,7 @@ public func SetObject(object obj)
 	}
 	else
 	{
-		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture,0,0,myobject);
+		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture,nil,0,myobject);
 		this.MouseDragImage = myobject;
 		
 		SetName(myobject->GetName());

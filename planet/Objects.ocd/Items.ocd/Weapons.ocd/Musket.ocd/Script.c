@@ -9,6 +9,11 @@
 //Uses the extra slot library
 #include Library_HasExtraSlot
 
+func Hit()
+{
+	Sound("GeneralHit?");
+}
+
 local fAiming;
 
 public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
@@ -187,5 +192,6 @@ func Definition(def) {
 
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;

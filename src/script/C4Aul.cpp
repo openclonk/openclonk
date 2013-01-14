@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001, 2004, 2007-2008  Sven Eberhardt
  * Copyright (c) 2001, 2009  Peter Wortmann
- * Copyright (c) 2006-2009, 2011  Günther Brammer
+ * Copyright (c) 2006-2009, 2011-2012  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -21,7 +21,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
-// C4Aul script engine CP conversion
+// Miscellaneous script engine bits
 
 #include <C4Include.h>
 #include <C4Aul.h>
@@ -32,7 +32,6 @@
 #include <C4Def.h>
 #include <C4Log.h>
 #include <C4Components.h>
-#include <C4Application.h>
 #include <C4LangStringTable.h>
 
 C4AulError::C4AulError(): shown(false) {}
@@ -45,134 +44,17 @@ void C4AulError::show()
 		DebugLog(sMessage.getData());
 }
 
-C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
-		MapNext(NULL),
-		LinkedTo (NULL),
-		OverloadedBy (NULL)
-{
-	// reg2list (at end or at the beginning)
-	Owner = pOwner;
-	if (bAtEnd)
-	{
-		if ((Prev = Owner->FuncL))
-		{
-			Prev->Next = this;
-			Owner->FuncL = this;
-		}
-		else
-		{
-			Owner->Func0 = this;
-			Owner->FuncL = this;
-		}
-		Next = NULL;
-	}
-	else
-	{
-		if ((Next = Owner->Func0))
-		{
-			Next->Prev = this;
-			Owner->Func0 = this;
-		}
-		else
-		{
-			Owner->Func0 = this;
-			Owner->FuncL = this;
-		}
-		Prev = NULL;
-	}
-
-	// store name
-	SCopy(pName, (char *) &Name, C4AUL_MAX_Identifier);
-	// add to global lookuptable with this name
-	Owner->Engine->FuncLookUp.Add(this, bAtEnd);
-}
-
-
-C4AulFunc::~C4AulFunc()
-{
-	// if it's a global: remove the global link!
-	if (LinkedTo && Owner)
-		if (LinkedTo->Owner == Owner->Engine)
-			delete LinkedTo;
-	// unlink func
-	if (LinkedTo)
-	{
-		// find prev
-		C4AulFunc* pAkt = this;
-		while (pAkt->LinkedTo != this) pAkt = pAkt->LinkedTo;
-		if (pAkt == LinkedTo)
-			pAkt->LinkedTo = NULL;
-		else
-			pAkt->LinkedTo = LinkedTo;
-		LinkedTo = NULL;
-	}
-	// remove from list
-	if (Prev) Prev->Next = Next;
-	if (Next) Next->Prev = Prev;
-	if (Owner)
-	{
-		if (Owner->Func0 == this) Owner->Func0 = Next;
-		if (Owner->FuncL == this) Owner->FuncL = Prev;
-		Owner->Engine->FuncLookUp.Remove(this);
-	}
-}
-
-void C4AulFunc::DestroyLinked()
-{
-	// delete all functions linked to this one.
-	while (LinkedTo)
-		delete LinkedTo;
-}
-
-StdStrBuf C4AulScriptFunc::GetFullName()
-{
-	// "lost" function?
-	StdStrBuf sOwner;
-	if (!Owner)
-	{
-		sOwner.Ref("(unknown) ");
-	}
-	else if (Owner->Def)
-	{
-		sOwner.Format("%s::", Owner->Def->id.ToString());
-	}
-	else if (Owner->Engine == Owner)
-	{
-		sOwner.Ref("global ");
-	}
-	else
-	{
-		sOwner.Ref("game ");
-	}
-	StdStrBuf sResult;
-	sResult.Format("%s%s", sOwner.getData(), Name);
-	return sResult;
-}
-
 C4AulScript::C4AulScript()
 {
 	// not compiled
 	State = ASS_NONE;
-	Script = NULL;
-	Code.clear();
-	LastCode = NULL;
-	IncludesResolved = false;
 
 	// defaults
-	Strict = MAXSTRICT;
-	Preparsing=Resolving=false;
 	Temporary = false;
-	LocalNamed.Reset();
 
 	// prepare lists
-	Child0 = ChildL = Prev = Next = NULL;
-	Owner = Engine = NULL;
-	Func0 = FuncL = NULL;
-	// prepare include list
-	Includes.clear();
-	Appends.clear();
-
-	stringTable = 0;
+	Prev = Next = NULL;
+	Engine = NULL;
 }
 
 C4AulScript::~C4AulScript()
@@ -187,239 +69,103 @@ C4AulScript::~C4AulScript()
 void C4AulScript::Unreg()
 {
 	// remove from list
-	if (Prev) Prev->Next = Next; else if (Owner) Owner->Child0 = Next;
-	if (Next) Next->Prev = Prev; else if (Owner) Owner->ChildL = Prev;
-	Prev = Next = Owner = NULL;
+	if (Prev) Prev->Next = Next; else if (Engine) Engine->Child0 = Next;
+	if (Next) Next->Prev = Prev; else if (Engine) Engine->ChildL = Prev;
+	Prev = Next = NULL;
+	Engine = NULL;
 }
 
 
 void C4AulScript::Clear()
 {
-	// remove includes
-	Includes.clear();
-	Appends.clear();
-	// delete child scripts + funcs
-	while (Child0) // Child0->Unreg();
-			if (Child0->Delete()) delete Child0; else Child0->Unreg();
-	while (Func0) delete Func0;
-	// delete script+code
-	Script.Clear();
-	ClearCode();
 	// reset flags
 	State = ASS_NONE;
 }
 
 
-void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
+void C4AulScript::Reg2List(C4AulScriptEngine *pEngine)
 {
 	// already regged? (def reloaded)
-	if (Owner) return;
+	if (Engine) return;
 	// reg to list
-	Engine = pEngine;
-	if ((Owner = pOwner))
+	if ((Engine = pEngine))
 	{
-		if ((Prev = Owner->ChildL))
+		if ((Prev = Engine->ChildL))
 			Prev->Next = this;
 		else
-			Owner->Child0 = this;
-		Owner->ChildL = this;
+			Engine->Child0 = this;
+		Engine->ChildL = this;
 	}
 	else
 		Prev = NULL;
 	Next = NULL;
 }
 
-
-C4AulFunc *C4AulScript::GetOverloadedFunc(C4AulFunc *ByFunc)
-{
-	assert(ByFunc);
-	// search local list
-	C4AulFunc *f = ByFunc;
-	if (f) f = f->Prev; else f = FuncL;
-	while (f)
-	{
-		if (SEqual(ByFunc->Name, f->Name)) break;
-		f = f->Prev;
-	}
-#ifdef _DEBUG
-	C4AulFunc * f2 = Engine ? Engine->GetFunc(ByFunc->Name, this, ByFunc) : NULL;
-	assert (f == f2);
-#endif
-	// nothing found? then search owner, if existant
-	if (!f && Owner)
-	{
-		if ((f = Owner->GetFuncRecursive(ByFunc->Name)))
-			// just found  the global link?
-			if (ByFunc && f->LinkedTo == ByFunc)
-				f = Owner->GetOverloadedFunc(f);
-	}
-	// return found fn
-	return f;
-}
-
-C4AulFunc *C4AulScript::GetFuncRecursive(const char *pIdtf)
-{
-	// search local list
-	C4AulFunc *f = GetFunc(pIdtf);
-	if (f) return f;
-	// nothing found? then search owner, if existant
-	else if (Owner) return Owner->GetFuncRecursive(pIdtf);
-	return NULL;
-}
-
-C4AulFunc *C4AulScript::GetFunc(const char *pIdtf)
-{
-	C4AulFunc * f = Engine ? Engine->GetFunc(pIdtf, this, NULL) : NULL;
-#if 0
-	// search func list
-	C4AulFunc *f2 = FuncL;
-	while (f2)
-	{
-		if (SEqual(pIdtf, f2->Name)) break;
-		f2 = f2->Prev;
-	}
-	assert (f == f2);
-#endif
-	return f;
-}
-
-
-C4AulScriptFunc *C4AulScript::GetSFuncWarn(const char *pIdtf, C4AulAccess AccNeeded, const char *WarnStr)
-{
-	// no identifier
-	if (!pIdtf || !pIdtf[0]) return NULL;
-	// get func?
-	C4AulScriptFunc *pFn = GetSFunc(pIdtf, AccNeeded, true);
-	if (!pFn)
-		Warn(FormatString("Error getting %s function '%s'", WarnStr, pIdtf).getData(), NULL);
-	return pFn;
-}
-
-C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailsafe)
-{
-	// failsafe call
-	if (*pIdtf=='~') { fFailsafe=true; pIdtf++; }
-
-	// get function reference from table
-	C4AulScriptFunc *pFn = GetSFunc(pIdtf);
-
-	// undefined function
-	if (!pFn)
-	{
-		// not failsafe?
-		if (!fFailsafe)
-		{
-			// show error
-			C4AulParseError err(this, "Undefined function: ", pIdtf);
-			err.show();
-		}
-		return NULL;
-	}
-
-	// check access
-	if (pFn->Access < AccNeeded)
-	{
-		// no access? show error
-		C4AulParseError err(this, "insufficient access level");
-		err.show();
-		// don't even break in strict execution, because the caller might be non-strict
-		//if (Strict) return NULL;
-	}
-
-	// return found function
-	return pFn;
-}
-
-C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf)
-{
-	// get func by name; return script func
-	if (!pIdtf) return NULL;
-	if (!pIdtf[0]) return NULL;
-	if (pIdtf[0] == '~') pIdtf++;
-	C4AulFunc *f = GetFunc(pIdtf);
-	if (!f) return NULL;
-	return f->SFunc();
-}
-
-
-C4AulScriptFunc *C4AulScript::GetSFunc(int iIndex, const char *szPattern)
-{
-	C4AulFunc *f;
-	C4AulScriptFunc *sf;
-	// loop through script funcs
-	f = FuncL;
-	while (f)
-	{
-		if ((sf = f->SFunc()))
-			if (!szPattern || SEqual2(sf->Name, szPattern))
-			{
-				if (!iIndex) return sf;
-				--iIndex;
-			}
-		f = f->Prev;
-	}
-
-	// indexed script func not found
-	return NULL;
-
-}
-
 std::string C4AulScript::Translate(const std::string &text) const
 {
-	const C4AulScript *cursor = this;
-	while (cursor)
+	try
 	{
-		try
-		{
-			if (cursor->stringTable)
-				return cursor->stringTable->Translate(text);
-		}
-		catch (C4LangStringTable::NoSuchTranslation &)
-		{
-			// Ignore, soldier on
-		}
-		// Walk tree structure upwards
-		cursor = cursor->Owner;
+		if (stringTable)
+			return stringTable->Translate(text);
 	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		// Ignore, soldier on
+	}
+	if (Engine && Engine != this)
+		return Engine->Translate(text);
 	throw C4LangStringTable::NoSuchTranslation(text);
 }
 
-void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script):
+		C4AulFunc(pOwner, pName),
+		Script(Script),
+		OwnerOverloaded(NULL),
+		ParCount(0),
+		pOrgScript(pOrgScript),
+		tProfileTime(0)
 {
-	// copy some members, that are set before linking
-	Access = FromFunc.Access;
-	Desc.Copy(FromFunc.Desc);
-	DescText.Copy(FromFunc.DescText);
-	DescLong.Copy(FromFunc.DescLong);
-	Condition = FromFunc.Condition;
-	idImage = FromFunc.idImage;
-	iImagePhase = FromFunc.iImagePhase;
-	Script = FromFunc.Script;
-	VarNamed = FromFunc.VarNamed;
-	ParNamed = FromFunc.ParNamed;
-	ParCount = FromFunc.ParCount;
-	pOrgScript = FromFunc.pOrgScript;
+	for (int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
+	AddBCC(AB_EOFN);
+}
+
+C4AulScriptFunc::C4AulScriptFunc(C4AulScript *pOwner, const C4AulScriptFunc &FromFunc):
+		C4AulFunc(pOwner, FromFunc.GetName()),
+		Script(FromFunc.Script),
+		VarNamed(FromFunc.VarNamed),
+		ParNamed(FromFunc.ParNamed),
+		OwnerOverloaded(NULL),
+		ParCount(FromFunc.ParCount),
+		pOrgScript(FromFunc.pOrgScript),
+		tProfileTime(0)
+{
 	for (int i = 0; i < C4AUL_MAX_Par; i++)
 		ParType[i] = FromFunc.ParType[i];
+	AddBCC(AB_EOFN);
 }
 
-
-void C4AulScript::AddFunc(const char *pIdtf, C4ScriptFnDef* Def)
+C4AulScriptFunc::~C4AulScriptFunc()
 {
-	// create def func
-	new C4AulDefFunc(this, pIdtf, Def);
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	ClearCode();
 }
 
+void C4AulScriptFunc::SetOverloaded(C4AulFunc * f)
+{
+	if (OwnerOverloaded) OwnerOverloaded->DecRef();
+	OwnerOverloaded = f;
+	if (f) f->IncRef();
+}
 
 /*--- C4AulScriptEngine ---*/
 
 C4AulScriptEngine::C4AulScriptEngine():
-		warnCnt(0), errCnt(0), nonStrictCnt(0), lineCnt(0)
+		GlobalPropList(C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("Global"))),
+		warnCnt(0), errCnt(0), lineCnt(0)
 {
 	// /me r b engine
 	Engine = this;
 	ScriptName.Ref(C4CFN_System);
-	Strict = MAXSTRICT;
 
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
@@ -427,10 +173,19 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
+	Child0 = ChildL = NULL;
+	RegisterGlobalConstant("Global", GlobalPropList);
 }
 
+C4PropListStatic * C4AulScriptEngine::GetPropList()
+{
+	return GlobalPropList._getPropList()->IsStatic();
+}
 
-C4AulScriptEngine::~C4AulScriptEngine() { Clear(); }
+C4AulScriptEngine::~C4AulScriptEngine()
+{
+	Clear();
+}
 
 void C4AulScriptEngine::Clear()
 {
@@ -438,33 +193,25 @@ void C4AulScriptEngine::Clear()
 	// stop debugger
 	delete C4AulDebug::GetDebugger();
 #endif
+	while (Child0)
+		if (Child0->Delete()) delete Child0;
+		else Child0->Unreg();
+	// clear own stuff
+	GlobalPropList._getPropList()->Clear();
 	// clear inherited
 	C4AulScript::Clear();
-	// clear own stuff
 	// reset values
-	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
+	warnCnt = errCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
 	// except not...
 	GlobalNamedNames.Reset();
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
+	RegisterGlobalConstant("Global", GlobalPropList);
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
 }
-
-
-void C4AulScriptEngine::UnLink()
-{
-	// unlink scripts
-	C4AulScript::UnLink();
-	// Do not clear global variables and constants, because they are registered by the
-	// preparser. Note that keeping those fields means that you cannot delete a global
-	// variable or constant at runtime by removing it from the script.
-	//GlobalNamedNames.Reset();
-	//GlobalConstNames.Reset();
-}
-
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
 {
@@ -492,6 +239,7 @@ bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 {
 	GlobalNamed.Denumerate(numbers);
 	// runtime data only: don't denumerate consts
+	GameScript.ScenPropList.Denumerate(numbers);
 	return true;
 }
 
@@ -500,50 +248,45 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
+	pComp->Value(mkNamingAdapt(mkParAdapt(*GameScript.ScenPropList._getPropList(), numbers), "Scenario"));
 }
 
-std::list<char*> C4AulScriptEngine::GetFunctionNames(C4AulScript * script)
+std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 {
-	std::list<char*> functions;
-	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
+	std::list<const char*> functions;
+	std::list<const char*> global_functions;
+	if (!p) p = GetPropList();
+	const C4ValueArray * a = p->GetProperties();
+	for (int i = 0; i < a->GetSize(); ++i)
 	{
-		if (pFn->GetPublic())
-		{
-			functions.push_back(pFn->Name);
-		}
+		C4String * key = (*a)[i].getStr();
+		if (!key) continue;
+		C4AulFunc * f = p->GetFunc(key);
+		if (!f) continue;
+		if (!f->GetPublic()) continue;
+		if (p->HasProperty(key))
+			functions.push_back(key->GetCStr());
+		else
+			global_functions.push_back(key->GetCStr());
 	}
-	// Add object or scenario script functions
-	if (script)
-	{
-		// Insert divider if necessary
-		if (script->GetSFunc(0))
-			functions.push_back(static_cast<char*>(0));
-		C4AulScriptFunc *pRef;
-		// Scan all functions
-		for (int cnt=0; (pRef=script->GetSFunc(cnt)); cnt++)
-		{
-			// Public functions only
-			if ((pRef->Access=AA_PUBLIC))
-			{
-				// Add function
-				functions.push_back(pRef->Name);
-			}
-		}
-	}
+	delete a;
+	functions.sort();
+	functions.push_back(0);
+	global_functions.sort();
+	functions.splice(functions.end(), global_functions);
 	return functions;
 }
 
 /*--- C4AulFuncMap ---*/
-static const size_t CapacityInc = 1024;
 
-C4AulFuncMap::C4AulFuncMap(): Funcs(new C4AulFunc*[CapacityInc]), FuncCnt(0), Capacity(CapacityInc)
+C4AulFuncMap::C4AulFuncMap(): FuncCnt(0)
 {
-	memset(Funcs, 0, sizeof (C4AulFunc *) * Capacity);
+	memset(Funcs, 0, sizeof (C4AulFunc *) * HashSize);
 }
 
 C4AulFuncMap::~C4AulFuncMap()
 {
-	delete[] Funcs;
+	assert(!FuncCnt);
 }
 
 unsigned int C4AulFuncMap::Hash(const char * name)
@@ -555,11 +298,11 @@ unsigned int C4AulFuncMap::Hash(const char * name)
 	return h;
 }
 
-C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
+C4AulFunc * C4AulFuncMap::GetFirstFunc(C4String * Name)
 {
 	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	while (Func && !SEqual(Name, Func->Name))
+	C4AulFunc * Func = Funcs[Hash(Name->GetCStr()) % HashSize];
+	while (Func && Name->GetCStr() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
@@ -567,76 +310,25 @@ C4AulFunc * C4AulFuncMap::GetFirstFunc(const char * Name)
 C4AulFunc * C4AulFuncMap::GetNextSNFunc(const C4AulFunc * After)
 {
 	C4AulFunc * Func = After->MapNext;
-	while (Func && !SEqual(After->Name, Func->Name))
+	while (Func && After->GetName() != Func->GetName())
 		Func = Func->MapNext;
 	return Func;
 }
 
-C4AulFunc * C4AulFuncMap::GetFunc(const char * Name, const C4AulScript * Owner, const C4AulFunc * After)
+void C4AulFuncMap::Add(C4AulFunc * func)
 {
-	if (!Name) return NULL;
-	C4AulFunc * Func = Funcs[Hash(Name) % Capacity];
-	if (After)
-	{
-		while (Func && Func != After)
-			Func = Func->MapNext;
-		if (Func)
-			Func = Func->MapNext;
-	}
-	while (Func && (Func->Owner != Owner || !SEqual(Name, Func->Name)))
-		Func = Func->MapNext;
-	return Func;
-}
-
-void C4AulFuncMap::Add(C4AulFunc * func, bool bAtStart)
-{
-	if (++FuncCnt > Capacity)
-	{
-		int NCapacity = Capacity + CapacityInc;
-		C4AulFunc ** NFuncs = new C4AulFunc*[NCapacity];
-		memset(NFuncs, 0, sizeof (C4AulFunc *) * NCapacity);
-		for (int i = 0; i < Capacity; ++i)
-		{
-			while (Funcs[i])
-			{
-				// Get a pointer to the bucket
-				C4AulFunc ** pNFunc = &(NFuncs[Hash(Funcs[i]->Name) % NCapacity]);
-				// get a pointer to the end of the linked list
-				while (*pNFunc) pNFunc = &((*pNFunc)->MapNext);
-				// Move the func over
-				*pNFunc = Funcs[i];
-				// proceed with the next list member
-				Funcs[i] = Funcs[i]->MapNext;
-				// Terminate the linked list
-				(*pNFunc)->MapNext = 0;
-			}
-		}
-		Capacity = NCapacity;
-		delete [] Funcs;
-		Funcs = NFuncs;
-	}
+	++FuncCnt;
 	// Get a pointer to the bucket
-	C4AulFunc ** pFunc = &(Funcs[Hash(func->Name) % Capacity]);
-	if (bAtStart)
-	{
-		// move the current first to the second position
-		func->MapNext = *pFunc;
-	}
-	else
-	{
-		// get a pointer to the end of the linked list
-		while (*pFunc)
-		{
-			pFunc = &((*pFunc)->MapNext);
-		}
-	}
+	C4AulFunc ** pFunc = &(Funcs[Hash(func->GetName()) % HashSize]);
+	// move the current first to the second position
+	func->MapNext = *pFunc;
 	// Add the func
 	*pFunc = func;
 }
 
 void C4AulFuncMap::Remove(C4AulFunc * func)
 {
-	C4AulFunc ** pFunc = &Funcs[Hash(func->Name) % Capacity];
+	C4AulFunc ** pFunc = &Funcs[Hash(func->GetName()) % HashSize];
 	while (*pFunc != func)
 	{
 		pFunc = &((*pFunc)->MapNext);
@@ -645,5 +337,3 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
 }
-
-C4AulScriptEngine ScriptEngine;

@@ -2,12 +2,13 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003  Matthes Bender
- * Copyright (c) 2001, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2001, 2005-2007, 2012  Sven Eberhardt
  * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2006, 2010  Armin Burgmeier
+ * Copyright (c) 2005-2012  Günther Brammer
+ * Copyright (c) 2006, 2010, 2012  Armin Burgmeier
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -61,15 +62,6 @@ C4EditCursor::~C4EditCursor()
 
 void C4EditCursor::Execute()
 {
-	// alt check
-	bool fAltIsDown = Application.IsAltDown();
-	if (fAltIsDown != fAltWasDown)
-	{
-		if ((fAltWasDown = fAltIsDown))
-			AltDown();
-		else
-			AltUp();
-	}
 	// drawing
 	switch (Mode)
 	{
@@ -97,7 +89,7 @@ void C4EditCursor::Execute()
 bool C4EditCursor::Init()
 {
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (!(hMenu = LoadMenu(Application.GetInstance(),MAKEINTRESOURCE(IDR_CONTEXTMENUS))))
 		return false;
 #else // _WIN32
@@ -131,8 +123,23 @@ void C4EditCursor::ClearPointers(C4Object *pObj)
 		OnSelectionChanged();
 }
 
-bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
+bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 {
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
 	// Offset movement
 	float xoff = iX-X; float yoff = iY-Y;
 	X=iX; Y=iY;
@@ -145,18 +152,18 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 		if (!DragFrame && Hold)
 		{
 			MoveSelection(ftofix(xoff),ftofix(yoff));
-			UpdateDropTarget(wKeyFlags);
+			UpdateDropTarget(dwKeyState);
 		}
 		// Update target
 		// Shift always indicates a target outside the current selection
 		else
 		{
-			Target = ((wKeyFlags & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
+			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
 			do
 			{
-				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
+				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, Target);
 			}
-			while ((wKeyFlags & MK_SHIFT) && Target && Selection.GetLink(Target));
+			while ((dwKeyState & MK_SHIFT) && Target && Selection.GetLink(Target));
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -207,7 +214,7 @@ void C4EditCursor::OnSelectionChanged()
 	Console.ObjectListDlg.Update(Selection);
 }
 
-bool C4EditCursor::LeftButtonDown(bool fControl)
+bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 {
 
 	// Hold
@@ -217,7 +224,7 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
-		if (fControl)
+		if (dwKeyState & MK_CONTROL)
 		{
 			// Toggle target
 			if (Target)
@@ -227,8 +234,16 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 		else
 		{
 			// Click on unselected: select single
-			if (Target && !Selection.GetLink(Target))
-				{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			if (Target)
+			{
+				C4ObjectLink * it;
+				for(it = Selection.First; it; it = it->Next){
+					if(it->Obj->At(X, Y))
+						break;
+				}
+				if(!it) // means loop didn't break
+					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			}
 			// Click on nothing: drag frame
 			if (!Target)
 				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
@@ -257,14 +272,14 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 	return true;
 }
 
-bool C4EditCursor::RightButtonDown(bool fControl)
+bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 {
 
 	switch (Mode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
-		if (!fControl)
+		if ( (dwKeyState & MK_CONTROL) == 0)
 		{
 			// Check whether cursor is on anything in the selection
 			bool fCursorIsOnSelection = false;
@@ -293,7 +308,7 @@ bool C4EditCursor::RightButtonDown(bool fControl)
 	return true;
 }
 
-bool C4EditCursor::LeftButtonUp()
+bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 {
 	// Finish edit/tool
 	switch (Mode)
@@ -328,7 +343,55 @@ bool C4EditCursor::LeftButtonUp()
 	return true;
 }
 
-#ifdef _WIN32
+bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
+{
+	C4KeyCodeEx kcx(KeyCode);
+
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	fAltIsDown = fAltIsDown || (kcx.ToString(false, false) == "Alt" || kcx.ToString(false, false) == "Alt_L" || kcx.ToString(false, false) == "Alt_R");
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	fShiftIsDown = fShiftIsDown || (kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
+	return true;
+}
+
+bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
+{
+	C4KeyCodeEx kcx(KeyCode);
+
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	fAltIsDown = fAltIsDown && !(kcx.ToString(false, false) == "Alt" || kcx.ToString(false, false) == "Alt_L" || kcx.ToString(false, false) == "Alt_R");
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	fShiftIsDown = fShiftIsDown && !(kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
+	return true;
+}
+
+#ifdef USE_WIN32_WINDOWS
 bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 {
 	return !!EnableMenuItem(hMenu,id,MF_BYCOMMAND | MF_ENABLED | ( fEnable ? 0 : MF_GRAYED));
@@ -349,11 +412,11 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 }
 #endif
 
-bool C4EditCursor::RightButtonUp()
+bool C4EditCursor::RightButtonUp(DWORD dwKeyState)
 {
 	Target=NULL;
 
-	DoContextMenu();
+	DoContextMenu(dwKeyState);
 
 	// Update
 	UpdateStatusBar();
@@ -412,7 +475,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 		};
 		DrawSelectMark(cgo, frame);
 		// highlight selection if shift is pressed
-		if (Application.IsShiftDown())
+		if (fShiftWasDown)
 		{
 			uint32_t dwOldMod = cobj->ColorMod;
 			uint32_t dwOldBlitMode = cobj->BlitMode;
@@ -502,10 +565,11 @@ bool C4EditCursor::In(const char *szText)
 void C4EditCursor::Default()
 {
 	fAltWasDown=false;
+	fShiftWasDown=false;
 	Mode=C4CNS_ModePlay;
 	X=Y=X2=Y2=0;
 	Target=DropTarget=NULL;
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	hMenu=NULL;
 #endif
 	Hold=DragFrame=DragLine=false;
@@ -514,7 +578,7 @@ void C4EditCursor::Default()
 
 void C4EditCursor::Clear()
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
 #endif
 #ifdef WITH_DEBUG_MODE
@@ -526,7 +590,7 @@ void C4EditCursor::Clear()
 bool C4EditCursor::SetMode(int32_t iMode)
 {
 	// Store focus
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	HWND hFocus=GetFocus();
 #endif
 	// Update console buttons (always)
@@ -555,7 +619,7 @@ bool C4EditCursor::SetMode(int32_t iMode)
 		::MouseControl.HideCursor();
 	}
 	// Restore focus
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	SetFocus(hFocus);
 #endif
 	// Done
@@ -616,10 +680,10 @@ void C4EditCursor::ApplyToolFill()
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
 }
 
-bool C4EditCursor::DoContextMenu()
+bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 {
 	bool fObjectSelected = !!Selection.ObjectCount();
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);
 	SetMenuItemEnable( hContext, IDM_VIEWPORT_DELETE, fObjectSelected && Console.Editing);
@@ -628,6 +692,37 @@ bool C4EditCursor::DoContextMenu()
 	SetMenuItemText(hContext,IDM_VIEWPORT_DELETE,LoadResStr("IDS_MNU_DELETE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_DUPLICATE,LoadResStr("IDS_MNU_DUPLICATE"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
+
+	ObjselectDelItems();
+	C4FindObjectAtPoint pFO(X,Y);
+	C4ValueArray * atcursor; atcursor = pFO.FindMany(::Objects, ::Objects.Sectors); // needs freeing (single object ptr)
+	int itemcount = atcursor->GetSize();
+	if(itemcount > 0)
+	{
+		const int maxitems = 25; // Maximum displayed objects. if you raise it, also change note with IDM_VPORTDYN_FIRST in resource.h
+		if(itemcount > maxitems) itemcount = maxitems+1;
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
+		itemsObjselect[0].ItemId = IDM_VPORTDYN_FIRST;
+		itemsObjselect[0].Object = NULL;
+		AppendMenu(hContext, MF_SEPARATOR, IDM_VPORTDYN_FIRST, NULL);
+		int i = 1;
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
+			C4Object * obj = (*atcursor)[i-1].getObj();
+			assert(obj);
+			it->ItemId = IDM_VPORTDYN_FIRST+i;
+			it->Object = obj;
+			AppendMenu(hContext, MF_STRING, it->ItemId, FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).GetWideChar());
+		}
+		if(atcursor->GetSize() > maxitems)
+		{
+			AppendMenu(hContext, MF_GRAYED, IDM_VPORTDYN_FIRST+maxitems+1, L"...");
+			itemsObjselect[maxitems+1].ItemId = IDM_VPORTDYN_FIRST+maxitems+1;
+			itemsObjselect[maxitems+1].Object = NULL;
+		}
+	}
+	delete atcursor;
+
 	int32_t iItem = TrackPopupMenu(
 	                  hContext,
 	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
@@ -639,7 +734,17 @@ bool C4EditCursor::DoContextMenu()
 	case IDM_VIEWPORT_DELETE: Delete(); break;
 	case IDM_VIEWPORT_DUPLICATE: Duplicate(); break;
 	case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
+	case 0: break;
+	default:
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it)
+			if(it->ItemId == iItem)
+			{
+				DoContextObjsel(it->Object, (dwKeyState & MK_SHIFT) == 0);
+				break;
+			}
+		break;
 	}
+	ObjselectDelItems();
 #else
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
@@ -652,20 +757,20 @@ bool C4EditCursor::DoContextMenu()
 	int itemcount = atcursor->GetSize();
 	if(itemcount > 0)
 	{
-		itemsObjselect.resize(itemcount+1); // +1 for a separator, and +1 for a stop codon
+		itemsObjselect.resize(itemcount+1); // +1 for a separator
 		itemsObjselect[0].MenuItem = gtk_separator_menu_item_new();
 		itemsObjselect[0].EditCursor = this;
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemsObjselect[0].MenuItem);
 		int i = 0;
-		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i) {
+		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it, ++i)
+		{
 			it->EditCursor = this;
 			C4Object * obj = (*atcursor)[i].getObj();
-			if(!obj) continue;
+			assert(obj);
 			it->Object = obj;
 			GtkWidget * wdg = gtk_menu_item_new_with_label(FormatString("%s #%i (%i/%i)", obj->GetName(), obj->Number, obj->GetX(), obj->GetY()).getData());
 			it->MenuItem = wdg;
 			gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), wdg);
-			static_assert(sizeof(std::vector<ObjselItemDt>::iterator) == sizeof(gpointer), "My vector hack is hack.");
 			g_signal_connect(G_OBJECT(wdg), "activate", G_CALLBACK(OnObjselect), &*it);
 		}
 	}
@@ -691,13 +796,13 @@ void C4EditCursor::GrabContents()
 	EMMoveObject(EMMO_Exit, Fix0, Fix0, NULL, &Selection);
 }
 
-void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
+void C4EditCursor::UpdateDropTarget(DWORD dwKeyState)
 {
 	C4Object *cobj; C4ObjectLink *clnk;
 
 	DropTarget=NULL;
 
-	if (wKeyFlags & MK_CONTROL)
+	if (dwKeyState & MK_CONTROL)
 		if (Selection.GetObject())
 			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 				if (cobj->Status)
@@ -750,20 +855,24 @@ void C4EditCursor::ApplyToolPicker()
 	switch (::Landscape.Mode)
 	{
 	case C4LSC_Static:
-		// Material-texture from map
-		if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 		{
-			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
-			if (pTex)
+			bool material_set = false;
+			// Material-texture from map
+			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 			{
-				Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
-				Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-				Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+				if (pTex && pTex->GetMaterialName() && *pTex->GetMaterialName())
+				{
+					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
+					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
+					Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+					material_set = true;
+				}
 			}
+			// default to sky, because invalid materials are always rendered as sky
+			if (!material_set) Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
+			break;
 		}
-		else
-			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
-		break;
 	case C4LSC_Exact:
 		// Material only from landscape
 		if (MatValid(iMaterial=GBackMat(X,Y)))
@@ -821,21 +930,39 @@ void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 
 void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
 {
-	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object);
+	bool IsShiftDown = false;
+	GdkEvent* event = gtk_get_current_event();
+	if(event)
+	{
+		if(event->type == GDK_BUTTON_PRESS)
+			IsShiftDown = ( ((GdkEventButton*)event)->state & MK_SHIFT) != 0;
+		else if(event->type == GDK_KEY_PRESS)
+			IsShiftDown = ( ((GdkEventKey*)event)->state & MK_SHIFT) != 0;
+
+		gdk_event_free(event);
+	}
+
+	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object, !IsShiftDown);
 	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
 }
+
+#endif
 
 void C4EditCursor::ObjselectDelItems() {
 	if(!itemsObjselect.size()) return;
 	std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin();
 	while(it != itemsObjselect.end()) {
+		#if defined(WITH_DEVELOPER_MODE)
 		gtk_widget_destroy(it->MenuItem);
+		#elif defined(USE_WIN32_WINDOWS)
+		if(!it->ItemId) { ++it; continue; }
+		HMENU hContext = GetSubMenu(hMenu,0);
+		DeleteMenu(hContext, it->ItemId, MF_BYCOMMAND);
+		#endif
 		++it;
 	}
 	itemsObjselect.resize(0);
 }
-
-#endif
 
 bool C4EditCursor::AltDown()
 {
@@ -858,10 +985,11 @@ bool C4EditCursor::AltUp()
 	return false;
 }
 
-void C4EditCursor::DoContextObjsel(C4Object * obj)
+void C4EditCursor::DoContextObjsel(C4Object * obj, bool clear)
 {
-	if(!Application.IsControlDown())
+	if(clear)
 		Selection.Clear();
+
 	Selection.Add(obj, C4ObjectList::stNone);
 	OnSelectionChanged();
 }

@@ -1,2 +1,0 @@
-DE:Test 1
-US:Test 1

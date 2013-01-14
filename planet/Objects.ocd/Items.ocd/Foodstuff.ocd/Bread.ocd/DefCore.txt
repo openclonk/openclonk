@@ -12,4 +12,4 @@ VertexFriction=50,100,100
 Value=10
 Mass=2
 Components=Flour=1
-Picture=8,0,16,16
+Picture=32,0,64,64

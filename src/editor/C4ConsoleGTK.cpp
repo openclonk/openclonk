@@ -26,7 +26,6 @@
 #include <C4GameSave.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
-#include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Object.h>
@@ -50,7 +49,7 @@
 # include <res/Cursor.h>
 # include <res/Brush.h>
 # include <C4Language.h>
-# include <C4DevmodeDlg.h>
+# include <C4ConsoleGTKDlg.h>
 
 # include <res/Line.h>
 # include <res/Rect.h>
@@ -146,7 +145,6 @@ public:
 
 	GtkWidget* lblCursor;
 	GtkWidget* lblFrame;
-	GtkWidget* lblScript;
 	GtkWidget* lblTime;
 
 	GtkWidget* propertydlg;
@@ -314,18 +312,13 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	// Calls InitGUI
-	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Rect r(0, 0, 320, 320);
+	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+	state->InitGUI();
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();
 	return retval;
-}
-
-GtkWidget* C4ConsoleGUI::InitGUI()
-{
-	state->InitGUI();
-	return C4ConsoleBase::InitGUI();
 }
 
 void C4ConsoleGUI::State::InitGUI()
@@ -374,20 +367,15 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_container_add(GTK_CONTAINER(status_frame), statusbar);
 
 	lblFrame = gtk_label_new("Frame: 0");
-	lblScript = gtk_label_new("Script: 0");
 	lblTime = gtk_label_new("00:00:00 (0 FPS)");
 
 	gtk_misc_set_alignment(GTK_MISC(lblFrame), 0.0, 0.5);
-	gtk_misc_set_alignment(GTK_MISC(lblScript), 0.0, 0.5);
 	gtk_misc_set_alignment(GTK_MISC(lblTime), 0.0, 0.5);
 
 	GtkWidget* sep1 = gtk_vseparator_new();
-	GtkWidget* sep2 = gtk_vseparator_new();
 
 	gtk_box_pack_start(GTK_BOX(statusbar), lblFrame, true, true, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), sep1, false, false, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), lblScript, true, true, 0);
-	gtk_box_pack_start(GTK_BOX(statusbar), sep2, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(statusbar), lblTime, true, true, 0);
 
 	// ------------ Log view and script entry ---------------------
@@ -488,9 +476,8 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 3);
 	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
 
-	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
-
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
+	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));
 
 	// ------------ Signals ---------------------
 	handlerDestroy = g_signal_connect(G_OBJECT(GetOwner()->window), "destroy", G_CALLBACK(OnDestroy), this);
@@ -551,7 +538,6 @@ void C4ConsoleGUI::State::Clear()
 
 	lblCursor = NULL;
 	lblFrame = NULL;
-	lblScript = NULL;
 	lblTime = NULL;
 
 	handlerDestroy = 0;
@@ -577,9 +563,6 @@ void C4ConsoleGUI::DisplayInfoText(InfoTextType type, StdStrBuf& text)
 	case CONSOLE_FrameCounter:
 		label = state->lblFrame;
 		break;
-	case CONSOLE_ScriptCounter:
-		label = state->lblScript;
-		break;
 	case CONSOLE_TimeFPS:
 		label = state->lblTime;
 	}
@@ -597,7 +580,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player *player, StdStrBuf &player_text
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
 	// Seems not to work. Don't know why...
-	GdkDisplay * display = gtk_widget_get_display(window);
+	GdkDisplay * display = gtk_widget_get_display(GTK_WIDGET(window));
 	GdkCursor * gdkcursor;
 
 	if (cursor == CURSOR_Wait)
@@ -605,11 +588,7 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 	else
 		gdkcursor = NULL;
 
-#if GTK_CHECK_VERSION(2,14,0)
-	GdkWindow* window_wnd = gtk_widget_get_window(window);
-#else
-	GdkWindow* window_wnd = window->window;
-#endif
+	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
 
 	gdk_window_set_cursor(window_wnd, gdkcursor);
 	gdk_display_flush(display);
@@ -850,7 +829,7 @@ void C4ConsoleGUI::ClearInput()
 	gtk_list_store_clear(store);
 }
 
-void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
+void C4ConsoleGUI::SetInputFunctions(std::list<const char*>& functions)
 {
 	if(state->txtScript == NULL) return;
 
@@ -858,9 +837,9 @@ void C4ConsoleGUI::SetInputFunctions(std::list<char*>& functions)
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
 	GtkTreeIter iter;
 	g_assert(store);
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); ++it)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); ++it)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (!fn) continue;
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, fn, -1);
@@ -1007,18 +986,14 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 {
 	if (!state->propertydlg) return;
 	if (!C4DevmodeDlg::GetWindow()) return;
-#if GTK_CHECK_VERSION(2,18,0)
 	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#else
-	if (!GTK_WIDGET_VISIBLE(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#endif
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
 	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
 
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
 	GtkListStore* store;
 
@@ -1044,9 +1019,9 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 	GtkTreeIter iter;
 	gtk_list_store_clear(store);
 
-	for (std::list<char*>::iterator it(functions.begin()); it != functions.end(); it++)
+	for (std::list<const char*>::iterator it(functions.begin()); it != functions.end(); it++)
 	{
-		char* fn = *it;
+		const char* fn = *it;
 		if (fn)
 		{
 			gtk_list_store_append(store, &iter);
@@ -1328,11 +1303,7 @@ void C4ToolsDlg::State::UpdatePreview()
 			}
 		}
 	}
-#if GTK_CHECK_VERSION(2,18,0)
 	if (gtk_widget_is_sensitive(preview))
-#else
-	if (GTK_WIDGET_SENSITIVE(preview))
-#endif
 		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              dlg->Grade,

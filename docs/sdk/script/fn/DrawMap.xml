@@ -35,19 +35,14 @@
           <name>map</name>
           <desc>Definition of the dynamic map. The enclosing map { ... } tag must be present.</desc>
         </param>
-        <param>
-          <type>bool</type>
-          <name>ignore_sky</name>
-          <desc>If true, the old material is retained whenever Sky would be drawn.</desc>
-        </param>
       </params>
     </syntax>
-    <desc>Draws a dynamic map within the specified rectangle. This is done using the same evaluation as with Landscape.txt components.</desc>
+    <desc>Draws a dynamic map within the specified rectangle over the old landscape. This is done using the same evaluation as with Landscape.txt components.</desc>
     <remark>As maximum string length in C4Script is limited by internal buffers you should use <funclink>DrawDefMap</funclink> for very complex maps.</remark>
     <examples>
       <example>
-        <code>DrawMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>()/2, &quot;map Empty{}&quot;);</code>
-        <text>Empties the top half of the map.</text>
+        <code>DrawMap(0,0,<funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>()/2, &quot;map Earth{overlay{mat = Earth;};};&quot;);</code>
+        <text>Fills the top half of the map with earth.</text>
       </example>
     </examples>
     <related><funclink>DrawDefMap</funclink></related>

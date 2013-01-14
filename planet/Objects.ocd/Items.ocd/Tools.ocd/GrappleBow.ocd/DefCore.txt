@@ -13,7 +13,4 @@ Value=12
 Mass=10
 Components=Wood=2;Metal=1;Rope=1;
 Rotate=1
-ContactIncinerate=5
-BlastIncinerate=30
-BurnTo=NONE
 Float=2

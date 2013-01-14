@@ -1,0 +1,9 @@
+[DefCore]
+id=EnergyBar
+Category=C4D_StaticBack
+Width=32
+Height=32
+Offset=-16,-16
+Vertices=1
+VertexX=0
+VertexY=8

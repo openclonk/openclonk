@@ -144,7 +144,7 @@ protected func OnGuideMessageShown(int plr, int index)
 {
 	// Show first three targets with the arrow.
 	if (index == 0)
-		for (target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
+		for (var target in FindObjects(Find_ID(PracticeTarget), Find_InRect(100, 450, 350, 150)))
 			TutArrowShowTarget(target, RandomX(-45, 45), 24);
 	// Show javelin chest with an arrow.
 	if (index == 1)
@@ -173,7 +173,7 @@ protected func OnGuideMessageRemoved(int plr, int index)
 private func MakeTarget(int x, int y, bool flying)
 {
 	if (flying == nil)
-		balloon = false;
+		var balloon = false;
 
 	var target = CreateObject(PracticeTarget, x, y, NO_OWNER);
 	if (flying == true)
@@ -256,7 +256,8 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
 		// Transfer contents.
-		for (var transfer in FindObjects(Find_Container(target)))
+		var transfer, index = target->ContentsCount();
+		while (transfer = target->Contents(--index))
 			transfer->Enter(clonk);
 		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
 	}

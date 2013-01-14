@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <signal.h>
-#include <glib/gthread.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include "mape/editview.h"
 #include "mape/window.h"

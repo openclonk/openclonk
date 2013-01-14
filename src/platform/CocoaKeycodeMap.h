@@ -82,6 +82,9 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	K( 43                , "Comma"     , NULL ),
 	K( 47                , "Period"    , NULL ),
 	K( 43                , "Apostrophe", NULL ),
+	K( 44                , "Backslash" , NULL ),
+	K( 43                , "Comma_US"  , NULL ),
+	K( 49                , "Less"      , NULL ),
 
 	/*K( VK_LWIN           , "WinLeft"      , NULL ),
 	K( VK_RWIN           , "WinRight"     , NULL ),*/

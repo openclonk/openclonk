@@ -49,12 +49,12 @@ private func StartUsage(object clonk)
 {
 	var hand;
 	// which animation to use? (which hand)
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 	{
 		carry_bone = "pos_hand2";
 		hand = "ShieldArms.R";
 	}
-	if(clonk->GetItemPos(this) == 1)
+	else
 	{
 		carry_bone = "pos_hand1";
 		hand = "ShieldArms.L";
@@ -63,9 +63,9 @@ private func StartUsage(object clonk)
 	aim_anim = clonk->PlayAnimation(hand, 10, Anim_Const(clonk->GetAnimationLength(hand)/2), Anim_Const(1000));
 
 	var handLR;
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		handLR = "R";
-	if(clonk->GetItemPos(this) == 1)
+	else
 		handLR = "L";
 
 	clonk->UpdateAttach();
@@ -77,6 +77,8 @@ private func StartUsage(object clonk)
 	
 	if(!GetEffect("ShieldStopControl", clonk))
 		AddEffect("ShieldStopControl", clonk, 2, 5, this);
+	
+	clonk->SetTurnType(1, 1);
 }
 
 private func EndUsage(object clonk)
@@ -94,7 +96,10 @@ private func EndUsage(object clonk)
 	AdjustSolidMaskHelper();
 	if(GetEffect("ShieldStopControl", clonk))
 		RemoveEffect("ShieldStopControl", clonk);
-
+	
+	clonk->SetTurnForced(-1);
+	clonk->SetTurnType(0, -1);
+	
 	StopWeaponHitCheckEffect(clonk);
 }
 
@@ -104,24 +109,15 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 	var angle=Normalize(Angle(0,0, x,y),-180);
 	angle=BoundBy(angle,-150,150);
 	
-	if(clonk->GetDir() == DIR_Left)
-	{
-		if(angle > 0) return;
-	}
-	else
-	{
-		if(angle < 0) return;
-	}
-
-	iAngle=angle;
-
+	iAngle = angle;
+		
 	var weight = 0;
-	if( Abs(iAngle) > 90) weight = 1000*( Abs(iAngle)-60 )/90;
+	if( Abs(angle) > 90) weight = 1000*( Abs(angle)-60 )/90;
 
 	var handLR;
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 		handLR = "R";
-	if(clonk->GetItemPos(this) == 1)
+	else
 		handLR = "L";
 
 	clonk->ReplaceAction("Stand", [Format("ShieldStandUp.%s",handLR), Format("ShieldStandDown.%s",handLR), weight]);
@@ -130,7 +126,10 @@ private func UpdateShieldAngle(object clonk, int x, int y)
 
 	if(!GetEffect("IntShieldSuspend", clonk))
 	{
-		clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(iAngle) * 11111/1000));
+		if(angle > 0) clonk->SetTurnForced(DIR_Right);
+		else clonk->SetTurnForced(DIR_Left);
+	
+		clonk->SetAnimationPosition(aim_anim,  Anim_Const(Abs(angle) * 11111/1000));
 		AdjustSolidMaskHelper();
 	}
 }
@@ -170,7 +169,7 @@ private func AdjustSolidMaskHelper()
 
 func Hit()
 {
-	Sound("WoodHit");
+	Sound("DullMetalHit?");
 }
 
 func OnWeaponHitCheckStop()
@@ -282,15 +281,16 @@ public func GetCarrySpecial(clonk) { return carry_bone; }
 public func GetCarryTransform(clonk, sec, back)
 {
 	if(aim_anim && !sec) return Trans_Mul(Trans_Rotate(180,0,0,1),Trans_Rotate(90,0,0,1));
-	if(aim_anim && sec) return Trans_Rotate(180,1,0,0);
+	if(aim_anim && sec) return Trans_Mul(Trans_Rotate(180,1,0,0), Trans_Rotate(90,0,0,1));
 
 	if(mTrans != nil) return mTrans;
 	if(!sec)
 	{
-		if(back) return Trans_Mul(Trans_Rotate(-90, 0, 0, 1),Trans_Translate(0,0,-400));
+		if(back) return Trans_Mul(Trans_Rotate(-90, 0, 0, 1),Trans_Translate(0,0,400));
 		return nil;
 	}
-	if(back) return Trans_Mul(Trans_Mul(Trans_Rotate(90, 0, 0, 1),Trans_Rotate(180, 0, 1)),Trans_Translate(0,0,-400));
+	
+	if(back) return Trans_Mul(Trans_Mul(Trans_Rotate(90, 0, 0, 1),Trans_Rotate(180, 0, 1)),Trans_Translate(0,0,400));
 	return Trans_Rotate(180,1,0,0);
 }
 
@@ -300,11 +300,11 @@ public func IsArmoryProduct() { return true; }
 /* Definition */
 
 func Definition(def) {
-	def.Name = "$Name$";
-	def.Description = "$Description$";
-	def.Collectible = 1;
-	
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1000,-500),Trans_Rotate(20,1,1,-1),Trans_Scale(1200)),def);
 }
+
+local Name = "$Name$";
+local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;

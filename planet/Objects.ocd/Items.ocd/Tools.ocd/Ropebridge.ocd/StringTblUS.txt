@@ -1,2 +1,1 @@
-Name=Ropeladder
-Description=Press [Use] at a cliff to unroll it. You can also use it while climbing or hangling.
+Name=Suspension bridge

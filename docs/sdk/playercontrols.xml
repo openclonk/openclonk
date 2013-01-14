@@ -8,12 +8,11 @@
   <part>
     <text>The engine allows to define control commands completely arbitrarily. Own keyboard commands can be added and modified. All supported input devices such as mouse, keyboard and gamepads can be mapped freely and commands can consist of any key combinations or sequences.</text>
     <h id="ControlFiles">PlayerControls.txt</h>
-    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder**.</text>
-    <text>Additional PlayerControls.txt files can be put in language packages to adapt the standard key mappings of different loaded languages to the keyboard of their respective country**.</text>
+    <text>All control commands which a player can send to the game are defined in the file PlayerControls.txt. The standard keys as well as their standard mapping for various input devices are contained in the global definition file in the Systems.ocg folder. Object definitions and scenarios can add more keys or overload the parameters of existing commands in their local Systems.ocg folder.</text>
     <part>
       <h id="ControlDefs">Section [ControlDefs]</h>
       <text>
-        Definition of possible player commands. Not valid in language packages. Subordinated to this section: 
+        Definition of possible player commands. Subordinated to this section: 
         <text>
           <table>
             <caption id="ControlDef">Any number of sections [ControlDef]</caption>
@@ -35,7 +34,7 @@
             <row>
               <literal_col>GUIDesc</literal_col>
               <col>String</col>
-              <col>Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$).</col>
+              <col>Informative description which is displayed to the player in the control configuration dialog. Localized strings from the corresponding string table can be used ($Desc$).</col>
             </row>
             <row>
               <literal_col>Global</literal_col>
@@ -92,6 +91,14 @@
                       <col>Execution of the script function <em>PlayerControl</em>. See <emlink href="playercontrols.xml#Script">Script callbacks</emlink>. (Default value)</col>
                     </row>
                     <row>
+                      <literal_col>ZoomIn</literal_col>
+                      <col>Zoom in one unit</col>
+                    </row>
+                    <row>
+                      <literal_col>ZoomOut</literal_col>
+                      <col>Zoom out one unit</col>
+                    </row>
+                    <row>
                       <literal_col>Menu</literal_col>
                       <col>Open the player menu (asynchronous command).</col>
                     </row>
@@ -106,6 +113,18 @@
                     <row>
                       <literal_col>MenuLeft / MenuUp / MenuRight / MenuDown</literal_col>
                       <col>Navigation in the player menu (asynchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>ObjectMenuOK / ObjectMenuSelect / ObjectMenuOKAll</literal_col>
+                      <col>Confirmation of the selected item in a menu (synchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>ObjectMenuCancel</literal_col>
+                      <col>Close a menu (synchronous command).</col>
+                    </row>
+                    <row>
+                      <literal_col>ObjectMenuLeft / ObjectMenuUp / ObjectMenuRight / ObjectMenuDown</literal_col>
+                      <col>Navigation in a menu (synchronous command).</col>
                     </row>
                   </table>
                 </text>
@@ -130,7 +149,27 @@
             <row>
               <literal_col>Name</literal_col>
               <col>String</col>
-              <col>Internal name for identification of otherwise equal control mappings. The names of the standard mappings are <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. By using placeholders (*) keys can directly be defined in multiple mappings**.</col>
+              <col>Internal name for identification of otherwise equal control mappings. By using placeholders (*) keys can directly be defined in multiple mappings.</col>
+            </row>
+            <row>
+              <literal_col>GUIName</literal_col>
+              <col>String</col>
+              <col>Name for the control assignment set which is shown to the player in the control configuration dialog.</col>
+            </row>
+			<row>
+              <literal_col>Keyboard</literal_col>
+              <col>Boolean</col>
+              <col>Whether this control assignment set uses the keyboard. Default 1.</col>
+            </row>
+			<row>
+              <literal_col>Mouse</literal_col>
+              <col>Boolean</col>
+              <col>Whether this control assignment set uses the mouse. Default 1.</col>
+            </row>
+			<row>
+              <literal_col>Gamepad</literal_col>
+              <col>Boolean</col>
+              <col>Whether this control assignment set uses the gamepad. Default 0.</col>
             </row>
           </table>
           <text>
@@ -155,6 +194,26 @@
                 <literal_col>Control</literal_col>
                 <col>String</col>
                 <col>Command that is combined with this mapping. The name should be equivalent to the <em>Identifier</em> of a command defined in a <emlink href="playercontrols.xml#ControlDef">[ControlDef]</emlink>.</col>
+              </row>
+              <row>
+                <literal_col>GUIName</literal_col>
+                <col>String</col>
+                <col>Name which is shown to the player in the control configuration dialog and in control tooltips. Localized strings from the corresponding string table can be used ($Name$). If unset, GUIName of the control def is used. If set to "None", the control is not displayed in the user customization dialog even if the control def has a name set.</col>
+              </row>
+              <row>
+                <literal_col>GUIDesc</literal_col>
+                <col>String</col>
+                <col>Informative description which is displayed to the player in the control configuration dialog. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$). If unset, GUIDesc of the control def is used.</col>
+              </row>
+              <row>
+                <literal_col>GUIGroup</literal_col>
+                <col>Integer</col>
+                <col>Control assignments in the same group are displayed grouped together in the control assignment dialog. The group with the lowest number is displayed at the top. Default 0.</col>
+              </row>
+              <row>
+                <literal_col>GUIDisabled</literal_col>
+                <col>Boolean</col>
+                <col>Whether this control assignment can not be changed in the control assignment dialog. Default 0.</col>
               </row>
               <row>
                 <literal_col>Priority</literal_col>
@@ -187,10 +246,6 @@
                       <row>
                         <literal_col>AlwaysUnhandled</literal_col>
                         <col>The key press is always passed to the mapping with the next lowest priority, independent of whether the previous command was executed successfully or not.</col>
-                      </row>
-                      <row>
-                        <literal_col>ToggleUnhandled</literal_col>
-                        <col>The keypress is passed to the mapping with the next lower priority only if the previous command was executed successfully. This can be used to define macros. **</col>
                       </row>
                       <row>
                         <literal_col>OverrideAssignments</literal_col>
@@ -357,6 +412,5 @@ global func UpdateControlDir(int player)
     <h id="Priority">Priorities</h>
     <text>...</text>
   </part>
-  <text><em>** - not yet implemented</em></text>
   <author>Sven2</author><date>2009-06</date>
 </doc>

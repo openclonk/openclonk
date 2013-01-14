@@ -27,6 +27,7 @@
     </syntax>
     <desc>Returns the property <code>key</code> of <code>object</code>.</desc>
     <related><funclink>SetProperty</funclink></related>
+    <related><funclink>GetProperties</funclink></related>
   </func>
   <author>Günther</author><date>2009-05</date>
 </funcs>

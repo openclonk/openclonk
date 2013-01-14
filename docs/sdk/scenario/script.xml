@@ -8,7 +8,7 @@
   <part>
      <text>Scenario scripts can control a general mission sequence or define specific features such as rejoins or special player placement. For documentation of the scripting language see <emlink href="script/index.html">C4Script</emlink>.</text>
     <h id="Callbacks">Callbacks overview</h>
-	<text>The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. With the functions <funclink>GameCall</funclink> and <funclink>GameCallEx</funclink>, callbacks to the scenario script can be made from scripts.</text>
+	<text>The following callbacks are made to the scenario script. All callbacks except <code>Initialize</code> that are made to scenario script from the engine are also made to all goals, rules and environment objects in the game. Other scripts can access local variables of the scenario and call scenario functions with the global proplist <code>Scenario</code>. With the functions <funclink>GameCall</funclink> and <funclink>GameCallEx</funclink>, callbacks to the scenario script can be made from scripts.</text>
 	<text>
       <table>
         <rowh>
@@ -80,14 +80,7 @@
 {
   <funclink>Log</funclink>(&quot;Hello&quot;); 
   <funclink>CreateObject</funclink>(WindGenerator,250,200);
-  <funclink>ScriptGo</funclink>(1);
 }</code>
-    <text>Sequential scripting: at the start of a round the internal script counter is set to 0. If sequential scripting has been started with ScriptGo, the counter is increased by one every ten frames and the corresponding script function is called in the scenario script, if defined.</text>
-    <code>func Script26()
-{
-  <funclink>Log</funclink>(&quot;This function is executed after 260 frames.&quot;);
-}</code>
-    <text>The script counter can also be manually adjusted using <funclink>goto</funclink>() to jump to certain counter positions.</text>
     <text>After joining a new player the engine calls the function InitializePlayer in the scenario script for that player. This function is called after the basic player objects as defined in Scenario.txt have been placed, so a preliminary starting position has been selected and the player's crew and starting material and buildings are present. In this function, you can now perform more special initial placement.</text>
     <code>func InitializePlayer(int player)
 {

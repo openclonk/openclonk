@@ -39,7 +39,7 @@ global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int
 	{
 		// Speed and gravity offset
 		iX += iXDir;
-		iY += iYDir + GetGravity() * i / 20;
+		iY += iYDir + GetGravity() * i / 22;
 		// If we are far enough away insert a new point
 	if(!spacing) spacing = 10;
 		if(Distance((iXOld - iX) / iFaktor, (iYOld - iY) / iFaktor) >= spacing)

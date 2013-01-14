@@ -6,6 +6,14 @@
 */
 
 
+protected func Initialize()
+{
+	// Under no circumstance there may by multiple copies of this rule.
+	if (ObjectCount(Find_ID(Rule_TeamAccount)) > 1)
+		return RemoveObject();
+	return;
+}
+
 // Only SetWealth needs to be overloaded, DoWealth just uses that.
 global func SetWealth(int plr, int wealth)
 {
@@ -58,7 +66,7 @@ protected func OnTeamSwitch(int player, int new_team, int old_team)
 		if (!Hostile(player, GetPlayerByIndex(i)))
 			count++;		
 	}
-	var share = GetWealth(player) / count;
+	//var share = GetWealth(player) / count;
 
 	// Add player to new team, i.e. add his wealth.
 	// TODO Implement

@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2005  Tobias Zwick
  * Copyright (c) 2005, 2008, 2010  Sven Eberhardt
- * Copyright (c) 2005-2006, 2010  Günther Brammer
+ * Copyright (c) 2005-2006, 2010, 2012  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -20,7 +20,12 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* Main header to include all others */
+/* This header is included first from every source file. It serves three purposes:
+   - PlatformAbstraction.h
+   - Common utility functionality that's used everywhere
+   - Speeding up the compilation by precompiling this header
+All of our headers are designed to be used with C4Include.h included before and
+don't need to include this file or any of the files it includes. */
 
 #ifndef INC_C4Include
 #define INC_C4Include
@@ -30,18 +35,6 @@
 // boost headers - after PlatformAbstraction to prevent redefines of stdint
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-
-#include "Standard.h"
-#include "C4Prototypes.h"
-#include "C4Real.h"
-#include "StdBuf.h"
-#include "StdFile.h"
-#include "StdResStr2.h"
-#include "C4Log.h"
-#include "C4Reloc.h"
-#include "C4Config.h"
-
-#include "C4Game.h"
 
 #ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
@@ -57,8 +50,32 @@
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
 
-// debug memory management - must come after boost headers,
-// because boost uses placement new
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+
+#include <cmath>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+// debug memory management - must come after standard and boost headers,
+// because those libraries use placement new
 #ifndef NODEBUGMEM
 #if defined(_DEBUG) && defined(_MSC_VER)
 #if _MSC_VER <= 1200
@@ -80,30 +97,18 @@ inline void operator delete(void *p, const char *, long)
 #define new new(__FILE__, __LINE__)
 #endif
 #endif
-
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cerrno>
-#include <climits>
-
-#include <cmath>
-#include <cstdarg>
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <iostream>
-#include <list>
-#include <map>
-#include <memory>
 #include <new>
-#include <set>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
+
+#include "Standard.h"
+#include "C4Prototypes.h"
+#include "C4Real.h"
+#include "StdBuf.h"
+#include "StdFile.h"
+#include "StdResStr2.h"
+#include "C4Log.h"
+#include "C4Reloc.h"
+#include "C4Config.h"
+
+#include "C4Game.h"
 
 #endif // INC_C4Include

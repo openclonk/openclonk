@@ -93,7 +93,7 @@ private func GetWall(angle)
 	return false;
 }
 
-protected func Hit() { Sound("WoodHit?"); }
+protected func Hit() { Sound("GeneralHit?"); }
 
 protected func Incineration() { Extinguish(); Fuse(); }
 
@@ -151,9 +151,7 @@ public func DoExplode()
 	Explode(18);
 }
 
-public func IsToolProduct() { return true; }
-public func IsAlchemyProduct() { return true; }
-public func HasFuse() { return true; }
+public func IsChemicalProduct() { return true; }
 
 local ActMap = {
 	Fuse = {
@@ -179,5 +177,8 @@ local ActMap = {
 };
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 1;
 local Rebuy = true;
+local BlastIncinerate = 1;
+local ContactIncinerate = 1;

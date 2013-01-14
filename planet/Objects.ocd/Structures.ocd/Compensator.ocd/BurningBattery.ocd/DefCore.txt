@@ -1,0 +1,16 @@
+[DefCore]
+id=Compensator_BurningBattery
+Version=4,10,0,0
+Category=C4D_Object
+Width=10
+Height=10
+Offset=-5,-5
+Vertices=1
+VertexX=0
+VertexFriction=20
+Value=1
+Mass=20
+Components=Compensatory_BurningBattery=1
+Projectile=1
+Rotate=1
+NoStabilize=1

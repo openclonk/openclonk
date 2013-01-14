@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2007  Alexander Post
  * Copyright (c) 2010  Martin Plicht
+ *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
  *
@@ -37,23 +38,6 @@ bool C4AbstractApp::ScheduleProcs(int iTimeout)
 #endif
 	return StdScheduler::ScheduleProcs(iTimeout);
 }
-
-#if !defined(__APPLE__) && !defined(_WIN32)
-
-bool IsGermanSystem()
-{
-	if (strstr(setlocale(LC_MESSAGES, 0), "de"))
-		return true;
-	else
-		return false;
-}
-
-bool EraseItemSafe(const char *szFilename)
-{
-	return false;
-}
-
-#endif
 
 void C4Window::PerformUpdate()
 {

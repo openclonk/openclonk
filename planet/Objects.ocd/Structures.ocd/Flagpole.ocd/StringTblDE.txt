@@ -1,2 +1,3 @@
 Name=Flagge
 Description=Markiert dein Herrschaftsgebiet, in dem du in Gebäuden Gegenstände kaufen kannst.
+MsgBuy=Einkaufen

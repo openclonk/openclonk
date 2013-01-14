@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2009, 2011  Günther Brammer
+ * Copyright (c) 2009, 2011-2012  Günther Brammer
  * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2010  Benjamin Herr
  * 
@@ -229,7 +229,9 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "EXC") || SEqualNoCase(szCmd, "E"))
 	{
 		C4AulScriptContext* context = pExec->GetContext(pExec->GetContextDepth()-1);
-		int32_t objectNum = context && context->Obj ? context->Obj->Number : C4ControlScript::SCOPE_Global;
+		int32_t objectNum = C4ControlScript::SCOPE_Global;
+		if (context && context->Obj && context->Obj->GetObject())
+			objectNum = context->Obj->GetObject()->Number;
 		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true, true), CDT_Decide);
 	}
 	else if (SEqualNoCase(szCmd, "PSE"))
@@ -267,31 +269,32 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 				break;
 		}
 
-		if (script)
+		if (script && script->GetScriptHost())
 		{
 			C4AulBCC* foundDebugChunk = NULL;
-			const char* scriptText = script->GetScript();
-			for (C4AulBCC* chunk = &script->Code[0]; chunk; chunk++)
+			C4ScriptHost * sh = script->GetScriptHost();
+			const char* scriptText = sh->GetScript();
+			for (C4String *pFn = sh->GetPropList()->EnumerateOwnFuncs(); pFn; pFn = sh->GetPropList()->EnumerateOwnFuncs(pFn))
 			{
-				switch (chunk->bccType)
+				C4AulScriptFunc *pSFunc = sh->GetPropList()->GetFunc(pFn)->SFunc();
+				while (pSFunc)
 				{
-				case AB_DEBUG:
+					for (C4AulBCC* chunk = pSFunc->GetCode(); chunk->bccType != AB_EOFN; chunk++)
 					{
-					int lineOfThisOne = SGetLine(scriptText, script->PosForCode[chunk - &script->Code[0]]);
-					if (lineOfThisOne == line)
-					{
-						foundDebugChunk = chunk;
-						goto Done;
+						if (chunk->bccType == AB_DEBUG)
+						{
+							int lineOfThisOne = pSFunc->GetLineOfCode(chunk);
+							if (lineOfThisOne == line)
+							{
+								foundDebugChunk = chunk;
+								goto Done;
+							}
+							/*else {
+							  DebugLogF("Debug chunk at %d", lineOfThisOne);
+							}*/
+						}
 					}
-					/*else {
-					  DebugLogF("Debug chunk at %d", lineOfThisOne);
-					}*/
-					}
-					break;
-				case AB_EOF:
-					goto Done;
-				default:
-					break;
+					pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
 				}
 			}
 Done:

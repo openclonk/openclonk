@@ -75,10 +75,6 @@ public func MakeBridge(obj1, obj2)
 func FxIntHangTimer()
 {
 	TimeStep();
-  var iLeft = objects[0][0]->GetX()-GetX();
-  var iRight = objects[1][0]->GetX()-GetX();
-  var iTop = Min(objects[0][0]->GetY(),objects[1][0]->GetY())-GetY();
-  var iDown = segments[GetLength(segments)/2]->GetY()-GetY();
   for(var i = 1; i < ParticleCount-1; i++)
     particles[i][2] = [0,segments[i]->~GetLoadWeight()];
 }
@@ -138,7 +134,6 @@ func DrawRopeLine2(start, end, i, int index)
 
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle = Angle(particles[1][0][0], particles[1][0][1], particles[0][0][0], particles[0][0][1]);
 	for(var i=1; i < ParticleCount; i++)
 	{
@@ -251,6 +246,11 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 	);
 }
 
+func Hit()
+{
+	Sound("WoodHit?");
+}
+
 local ActMap = {
 Hanging = {
 	Prototype = Action,
@@ -260,6 +260,5 @@ Hanging = {
 },
 };
 local Name = "$Name$";
-local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;

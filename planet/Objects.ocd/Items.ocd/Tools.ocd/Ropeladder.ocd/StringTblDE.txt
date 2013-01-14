@@ -1,2 +1,3 @@
 Name=Strickleiter
-Description=Drücke an einem Abgrund [Benutzen], um die Strickleiter auszurollen. Du kannst sie auch beim Klettern oder Hangeln benutzen.
+Description=Erleichtert den Auf- und Abstieg an Klippen.
+UsageHelp=Drücke an einem Abgrund [Benutzen], um die Strickleiter auszurollen.

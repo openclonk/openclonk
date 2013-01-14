@@ -6,7 +6,7 @@
  * Copyright (c) 2008  Sven Eberhardt
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
+ * Copyright (c) 2010, 2012  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +23,6 @@
 #include "C4Include.h"
 #include "StdScheduler.h"
 
-#include <C4Window.h>
 #include <stdio.h>
 
 #include <assert.h>
@@ -224,20 +223,18 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 		}
 
 	}
-	else
+
+	// Execute all processes with timeout
+	Now = GetTime();
+	for (i = 0; i < iProcCnt; i++)
 	{
-		// Execute all processes with timeout
-		Now = GetTime();
-		for (i = 0; i < iProcCnt; i++)
-		{
-			iProcTick = ppProcs[i]->GetNextTick(Now);
-			if (iProcTick >= 0 && iProcTick <= Now)
-				if (!ppProcs[i]->Execute(0))
-				{
-					OnError(ppProcs[i]);
-					fSuccess = false;
-				}
-		}
+		iProcTick = ppProcs[i]->GetNextTick(Now);
+		if (iProcTick >= 0 && iProcTick <= Now)
+			if (!ppProcs[i]->Execute(0))
+			{
+				OnError(ppProcs[i]);
+				fSuccess = false;
+			}
 	}
 
 #else
@@ -557,12 +554,9 @@ bool CStdNotifyProc::CheckAndReset()
 
 CStdNotifyProc::CStdNotifyProc()
 {
-	// FIXME: Once linux version 2.6.27 is required, use EFD_NONBLOCK and EFD_CLOEXEC
-	fds[0] = eventfd(0, 0);
+	fds[0] = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
 	if (fds[0] == -1)
 		Fail("eventfd failed");
-	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
-	fcntl(fds[0], F_SETFD, FD_CLOEXEC);
 }
 CStdNotifyProc::~CStdNotifyProc()
 {
@@ -666,11 +660,16 @@ void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
 	if (idCriticalTimer)
 		timeKillEvent(idCriticalTimer);
 
+	// Set new delay
+	uCriticalTimerDelay = iDelay;
+
 	// Set critical timer
 	idCriticalTimer=timeSetEvent(
 	                  uCriticalTimerDelay,uCriticalTimerResolution,
 	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
 
+	if(idCriticalTimer == 0)
+		DebugLogF("Creating Critical Timer failed: %d", GetLastError());
 }
 
 bool CStdMultimediaTimerProc::CheckAndReset()
@@ -686,12 +685,9 @@ bool CStdMultimediaTimerProc::CheckAndReset()
 #include <fcntl.h>
 CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay)
 {
-	// FIXME: Once linux version 2.6.27 is required, use TFD_NONBLOCK and TFD_CLOEXEC
-	fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 	if (fd == -1)
 		Log("timerfd_create failed");
-	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
-	fcntl(fd, F_SETFD, FD_CLOEXEC);
 	SetDelay(iDelay);
 }
 

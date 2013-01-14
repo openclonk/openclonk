@@ -3,8 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004-2011  Günther Brammer
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2009-2011  Nicolas Hake
  * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2010  Martin Plicht
@@ -50,9 +50,14 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
+#define _UNICODE
 #ifndef NOMINMAX
 # define NOMINMAX
 #endif
+#endif
+
+#if defined(_WIN32) && !defined(USE_CONSOLE) && !defined(USE_SDL_MAINLOOP) && !defined(USE_X11) && !defined(USE_COCOA)
+#define USE_WIN32_WINDOWS
 #endif
 
 #ifdef _MSC_VER
@@ -212,7 +217,7 @@ inline int stricmp(const char *s1, const char *s2)
 #elif defined(__APPLE__)
 #define C4_OS "mac-x86"
 #else
-#define C4_OS "unknown";
+#define C4_OS ""
 #endif
 
 // delete item to the recycle bin
@@ -227,24 +232,32 @@ bool OpenURL(const char* szURL);
 // Get a monotonically increasing timestamp in milliseconds
 unsigned int GetTime();
 
-// Windows swprintf: MinGW vs MSVC
-#if defined(__MINGW32__) || defined(__MINGW64__)
-// See http://lists-archives.org/mingw-users/17617-compilation-problem-with-swprintf.html
+#ifdef _WIN32
+#include <io.h>
+#define F_OK 0
+#else
+#include <dirent.h>
+#include <limits.h>
+#define _O_BINARY 0
+#define _MAX_PATH PATH_MAX
+#define _MAX_FNAME NAME_MAX
 
-// For _vsnwprintf:
-#include <cstdio>
-#include <cstdarg>
+bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
+#endif
 
-inline int swprintf(wchar_t* buffer, size_t n, const wchar_t* format, ...)
-{
-	int retval;
-	va_list argptr;
+#include <fcntl.h>
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
 
-	va_start(argptr, format);
-	retval = _vsnwprintf(buffer, n, format, argptr);
-	va_end(argptr);
-	return retval;
-}
+#ifdef _WIN32
+#define DirSep "\\"
+#define DirectorySeparator '\\'
+#define AltDirectorySeparator '/'
+#else
+#define DirSep "/"
+#define DirectorySeparator '/'
+#define AltDirectorySeparator '\\'
 #endif
 
 #endif // INC_PLATFORMABSTRACTION

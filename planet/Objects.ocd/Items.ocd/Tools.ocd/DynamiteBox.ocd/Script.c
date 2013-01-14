@@ -20,7 +20,7 @@ public func Initialize()
 
 private func Hit()
 {
-	Sound("WoodHit"); //TODO Some metal sond
+	Sound("DullWoodHit?");
 }
 
 public func HoldingEnabled() { return true; }
@@ -76,7 +76,6 @@ private func UpdatePicture()
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
-	var spacing = 14000;
 
 	SetGraphics(Format("%d", iCount), Icon_Number, 12, GFXOV_MODE_Picture);
 	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
@@ -157,13 +156,14 @@ func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 }
 
 public func IsTool() { return true; }
-public func IsToolProduct() { return true; }
-public func IsAlchemyProduct() { return true; }
+public func IsChemicalProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);
 }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

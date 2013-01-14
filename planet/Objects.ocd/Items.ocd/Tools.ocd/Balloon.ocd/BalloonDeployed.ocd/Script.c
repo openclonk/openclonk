@@ -39,10 +39,10 @@ private func DeflateEffect()
 private func Pack()
 {
 	RemoveEffect("NoDrop",parent);
-	RemoveObject();
 	rider->SetAction("Jump");
 	rider->SetSpeed(GetXDir(),GetYDir());
 	rider->SetComDir(COMD_Down);
+	RemoveObject();
 }
 
 func ControlLeft()
@@ -79,8 +79,11 @@ public func OnProjectileHit()
 	//Pop!
 	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
 	Sound("BalloonPop");
-	if(rider!=nil) rider->SetAction("Tumble");
-	rider->SetSpeed(GetXDir(),GetYDir());
+	if (rider)
+	{
+		rider->SetAction("Tumble");
+		rider->SetSpeed(GetXDir(),GetYDir());
+	}
 	parent->RemoveObject();
 	RemoveObject();
 }

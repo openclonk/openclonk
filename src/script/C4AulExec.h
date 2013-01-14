@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001, 2006-2007  Sven Eberhardt
  * Copyright (c) 2006, 2009-2010  Peter Wortmann
- * Copyright (c) 2007, 2009-2011  Günther Brammer
+ * Copyright (c) 2007, 2009-2012  Günther Brammer
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -57,7 +57,7 @@ private:
 	C4Value Values[MAX_VALUE_STACK];
 
 public:
-	C4Value Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
+	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 
 	void StartTrace();
@@ -70,6 +70,8 @@ public:
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
 	void LogCallStack();
+	static C4String *FnTranslate(C4PropList * _this, C4String *text);
+	void ClearPointers(C4Object *);
 
 private:
 	void PushContext(const C4AulScriptContext &rContext);
@@ -78,7 +80,7 @@ private:
 	void CheckOverflow(int iCnt)
 	{
 		if (pCurVal - Values >= MAX_VALUE_STACK - iCnt)
-			throw new C4AulExecError(pCurCtx->Obj, "value stack overflow, probably due to too deep recursion");
+			throw new C4AulExecError("value stack overflow, probably due to too deep recursion");
 	}
 
 	void PushInt(int32_t i)
@@ -103,6 +105,12 @@ private:
 	{
 		CheckOverflow(1);
 		(++pCurVal)->SetArray(Array);
+	}
+
+	void PushFunction(C4AulFunc * Fn)
+	{
+		CheckOverflow(1);
+		(++pCurVal)->SetFunction(Fn);
 	}
 
 	void PushPropList(C4PropList * PropList)
@@ -167,42 +175,39 @@ private:
 		C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 
 		// Typecheck parameters
-		if (!pPar1->ConvertTo(Type1))
-			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\" left side got %s, but expected %s",
-			                                      opname, pPar1->GetTypeInfo(), GetC4VName(Type1)).getData());
-		if (!pPar2->ConvertTo(Type2))
-			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\" right side got %s, but expected %s",
-			                                      opname, pPar2->GetTypeInfo(), GetC4VName(Type2)).getData());
+		if (!pPar1->CheckParConversion(Type1))
+			throw new C4AulExecError(FormatString("operator \"%s\" left side got %s, but expected %s",
+			                                      opname, pPar1->GetTypeName(), GetC4VName(Type1)).getData());
+		if (!pPar2->CheckParConversion(Type2))
+			throw new C4AulExecError(FormatString("operator \"%s\" right side got %s, but expected %s",
+			                                      opname, pPar2->GetTypeName(), GetC4VName(Type2)).getData());
 	}
 	ALWAYS_INLINE void CheckOpPar(C4V_Type Type1, const char * opname)
 	{
 		// Typecheck parameter
-		if (!pCurVal->ConvertTo(Type1))
-			throw new C4AulExecError(pCurCtx->Obj,
-			                         FormatString("operator \"%s\": got %s, but expected %s",
-			                                      opname, pCurVal->GetTypeInfo(), GetC4VName(Type1)).getData());
+		if (!pCurVal->CheckParConversion(Type1))
+			throw new C4AulExecError(FormatString("operator \"%s\": got %s, but expected %s",
+			                                      opname, pCurVal->GetTypeName(), GetC4VName(Type1)).getData());
 	}
 
 	C4V_Type CheckArrayAccess(C4Value *pStructure, C4Value *pIndex)
 	{
-		if (pStructure->ConvertToNoNil(C4V_Array))
+		if (pStructure->CheckConversion(C4V_Array))
 		{
-			if (!pIndex->ConvertTo(C4V_Int))
-				throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
+			if (!pIndex->CheckConversion(C4V_Int))
+				throw new C4AulExecError(FormatString("array access: index of type %s, but expected int", pIndex->GetTypeName()).getData());
 			return C4V_Array;
 		}
-		else if (pStructure->ConvertToNoNil(C4V_PropList))
+		else if (pStructure->CheckConversion(C4V_PropList))
 		{
-			if (!pIndex->ConvertToNoNil(C4V_String))
-				throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
+			if (!pIndex->CheckConversion(C4V_String))
+				throw new C4AulExecError(FormatString("proplist access: index of type %s, but expected string", pIndex->GetTypeName()).getData());
 			return C4V_PropList;
 		}
 		else
-			throw new C4AulExecError(pCurCtx->Obj, FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
+			throw new C4AulExecError(FormatString("can't access %s as array or proplist", pStructure->GetTypeName()).getData());
 	}
-	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj = NULL, C4Def *pDef = NULL);
+	C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4PropList * pContext = NULL);
 };
 
 extern C4AulExec AulExec;

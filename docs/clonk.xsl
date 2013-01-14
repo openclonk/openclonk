@@ -14,9 +14,6 @@
       <link rel="stylesheet">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
-      <xsl:if test="not($chm)">
-      <link rel="stylesheet" href="http://www.openclonk.org/header/header.css" />
-      </xsl:if>
       <xsl:if test="descendant::table[bitmask]">
         <script>
           <xsl:attribute name="src"><xsl:value-of select="$relpath" />bitmasks.js</xsl:attribute>
@@ -517,7 +514,7 @@
   <xsl:template name="color2">
     <xsl:param name="s" select="." />
     <!-- the list of keywords -->
-    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|int|proplist|object|array|string|bool|any|return|if|else|break|continue|while|for|func|true|false|nil|'" />
+    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|any|int|bool|def|effect|object|proplist|string|array|func|return|if|else|break|continue|while|for|true|false|nil|'" />
     <xsl:param name="w" select="substring-before($t, '|')" />
     <!-- text before the keyword -->
     <xsl:variable name="l" select="substring-before($s, $w)" />

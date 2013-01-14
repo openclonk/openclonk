@@ -1,0 +1,2 @@
+Name=No power need
+Description=Power consuming buildings function without power.

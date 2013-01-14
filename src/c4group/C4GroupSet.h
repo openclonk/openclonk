@@ -53,16 +53,11 @@
 
 #define C4GSCnt_All        ~0
 
-// class predefs
-class C4Group;
-class C4GroupSet;
-class C4GroupSetNode;
-
 // one node in the group set holds one group
 class C4GroupSetNode
 {
 protected:
-	C4GroupSet *pParent;  // owning set
+	class C4GroupSet *pParent;  // owning set
 	C4GroupSetNode *pPrev, *pNext; // linked list - always valid
 
 	C4Group *pGroup;      // ptr to group owned by this node
@@ -71,7 +66,7 @@ protected:
 	int32_t id;               // group node ID
 
 public:
-	C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id);  // ctor
+	C4GroupSetNode(class C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id);  // ctor
 	~C4GroupSetNode();                                          // dtor
 
 	int32_t Priority;         // group priority

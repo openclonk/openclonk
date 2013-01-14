@@ -55,12 +55,12 @@ private func StartUsage(object clonk)
 {
 	var hand;
 	// which animation to use? (which hand)
-	if(clonk->GetItemPos(this) == 0)
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 0)
 	{
 		carry_bone = "pos_hand2";
 		hand = "AimArmsGeneric.R";
 	}
-	if(clonk->GetItemPos(this) == 1)
+	else
 	{
 		carry_bone = "pos_hand1";
 		hand = "AimArmsGeneric.L";
@@ -144,6 +144,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		CreateParticle("Spark1", Sin(xp, Random(distp)), -Cos(yp, Random(distp)), Sin(xp, 10), -Cos(yp, 10), RandomX(30,90), RGB(185,250,250));
 	}
 
+	var target;
 	if(target_object)
 	{
 		radiusparticle = 30;
@@ -160,7 +161,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 	{
 		radiusparticle = 60;
 
-		var target = FindObject(Find_Exclude(this),
+		target = FindObject(Find_Exclude(this),
 					Find_NoContainer(),
 					Find_Category(C4D_Object),
 					Find_And(Find_Distance(radius, ix, iy),
@@ -255,10 +256,19 @@ protected func CancelUse(object clonk)
 	return 1;
 }
 
+func Hit()
+{
+	Sound("GeneralHit?");
+}
+
+func IsInventorProduct() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Rotate(-60,1,0,1),def);
 }
+
 local Name = "$Name$";
+local UsageHelp = "$UsageHelp$";
 local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;

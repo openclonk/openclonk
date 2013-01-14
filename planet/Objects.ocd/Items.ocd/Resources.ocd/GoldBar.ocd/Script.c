@@ -2,7 +2,7 @@
 
 protected func Hit()
 {
-	Sound("MetalHit?");
+	Sound("GeneralHit?");
 	return 1;
 }
 

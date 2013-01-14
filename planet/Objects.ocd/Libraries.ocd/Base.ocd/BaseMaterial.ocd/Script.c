@@ -31,6 +31,7 @@ func Initialize()
 			aHomabaseProduction[GetLength(aHomabaseProduction)] = [idID, iCount];
 		iIndex++;
 	}
+	AddTimer("ExecHomeBaseProduction", 2100);
 }
 
 static const BaseMaterial_MaxHomeBaseProduction = 25;
@@ -103,6 +104,7 @@ public func DoGetHomebaseMaterial (id idDef, int iIndex, int dwCategory)
 		return nil;
 	}
 	// A index given? Look for the id
+	if (!dwCategory) dwCategory = 0xffffff;
 	for(aArray in aHomebaseMaterial)
 	{
 		if(aArray[0]->GetCategory() & dwCategory)

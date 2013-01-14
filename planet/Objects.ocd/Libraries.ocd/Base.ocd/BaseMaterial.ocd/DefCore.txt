@@ -3,5 +3,3 @@ id=BaseMaterial
 Version=5,2,0,1
 Category=C4D_StaticBack
 Picture=0,0,64,64
-TimerCall=ExecHomeBaseProduction
-Timer=2100

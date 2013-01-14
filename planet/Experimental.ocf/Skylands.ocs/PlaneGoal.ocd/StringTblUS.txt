@@ -1,0 +1,3 @@
+Name=Build the airplane
+MsgGoalFulfilled=You have assembled the airplane!
+MsgGoalUnFulfilled=Collect all the airplane parts and bring them to the construction site.

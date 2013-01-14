@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2009  Sven Eberhardt
+ * Copyright (c) 2005-2009, 2011  Sven Eberhardt
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2006, 2009  Günther Brammer
  * Copyright (c) 2006  Florian Groß
@@ -78,7 +78,7 @@ void C4Team::AddPlayer(C4PlayerInfo &rInfo, bool fAdjustPlayer)
 	if (rInfo.IsJoined())
 	{
 		C4Player *pJoinedPlr = ::Players.GetByInfoID(rInfo.GetID());
-		assert(pJoinedPlr);
+		assert(pJoinedPlr || (rInfo.GetType() == C4PT_Script));
 		if (pJoinedPlr)
 		{
 			pJoinedPlr->Team = GetID();

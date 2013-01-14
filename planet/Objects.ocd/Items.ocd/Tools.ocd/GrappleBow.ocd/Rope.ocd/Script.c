@@ -34,7 +34,7 @@ public func BreakRope()
 	return;
 }
 
-/* --------------------- Callbacks form the rope ---------------------- */
+/* --------------------- Callbacks from the rope ---------------------- */
 
 /* To be overloaded for special segment behaviour */
 private func CreateSegment(int index, object previous)
@@ -159,7 +159,6 @@ local last_point;
 
 func UpdateLines()
 {
-	var fTimeStep = 1;
 	var oldangle;
 	for(var i=1; i < ParticleCount; i++)
 	{
@@ -240,18 +239,6 @@ func GetClonkPos()
 func GetClonkOff()
 {
 	return Vec_Sub(particles[-1][0],last_point);
-	var clonk = objects[1][0];
-	var speed = [clonk->GetXDir(Rope_Precision), clonk->GetYDir(Rope_Precision)];
-	var offset = speed;
-	offset[0] = offset[0]*1000/Rope_Precision;
-	offset[1] = offset[1]*1000/Rope_Precision;
-	if(!ClonkOldSpeed)
-	{
-		ClonkOldSpeed = offset;
-	}
-	var ret = ClonkOldSpeed;
-	ClonkOldSpeed = offset;
-	return ret;
 }
 
 func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int MirrorSegments) {
@@ -262,6 +249,51 @@ func SetLineTransform(obj, int r, int xoff, int yoff, int length, int layer, int
 		+fcos*MirrorSegments, +fsin*length/1000, xoff,
 		-fsin*MirrorSegments, +fcos*length/1000, yoff,layer
 	);
+}
+
+/* --------------------- Overloaded from the rope library --------------------- */
+
+func ForcesOnObjects()
+{
+	if(!length) return;
+
+	var redo = LengthAutoTryCount();
+	while(length_auto && redo)
+	{
+		var speed = Vec_Length(Vec_Sub(particles[-1][0], particles[-1][1]));
+		if(length == GetMaxLength())
+		{
+			if(ObjContact(objects[1][0]))
+				speed = 40;
+			else speed = 100;
+		}
+		if(speed > 150) DoLength(1);
+		else if(speed < 50) DoLength(-1); // TODO not just obj 1
+		else redo = 0;
+		if(redo) redo --;
+	}
+	var j = 0;
+	if(PullObjects() )
+	for(var i = 0; i < 2; i++)
+	{
+		if(i == 1) j = ParticleCount-1;
+		var obj = objects[i][0];
+
+		if(obj == nil || objects[i][1] == 0) continue;
+
+		if(obj->Contained()) obj = obj->Contained();
+
+		if( (obj->GetAction() == "Walk" || obj->GetAction() == "Scale" || obj->GetAction() == "Hangle"))
+			obj->SetAction("Jump");
+		if( obj->GetAction() == "Climb")
+			obj->SetAction("Jump");
+
+		var xdir = BoundBy(particles[j][0][0]-particles[j][1][0], -300, 300);
+		var ydir = BoundBy(particles[j][0][1]-particles[j][1][1], -300, 300);
+
+		obj->SetXDir( xdir, Rope_Precision);
+		obj->SetYDir( ydir, Rope_Precision);
+	}
 }
 
 func Definition(def)

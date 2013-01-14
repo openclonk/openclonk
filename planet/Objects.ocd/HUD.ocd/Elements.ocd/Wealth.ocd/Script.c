@@ -21,12 +21,11 @@ public func Update()
 	// Display wealth via text.
 	CustomMessage(Format("@%d", wealth), this, plr, 0, 90);
 	// Display wealth via graphics.
-	var num;
-	if (wealth < 180) num = 4;
-	if (wealth < 120) num = 3;
-	if (wealth < 70) num = 2;
-	if (wealth < 30) num = 1;
-	if (wealth < 10) num = 0;
+	var num = 0;
+	if (wealth >= 10) num = 1;
+	if (wealth >= 30) num = 2;
+	if (wealth >= 70) num = 3;
+	if (wealth >= 120) num = 4;
 	SetGraphics(Format("%d", num));
 	return;
 }

@@ -35,23 +35,36 @@
 	array 'inventory'. They are accessed via GetItem(i) and GetItemPos(obj).
 	Other functions are MaxContentsCount() (defines the maximum number of
 	contents)
+	
+	Furthermore the clonk has a defined amount of "hands", defined by HandObjects().
+	The array 'use_objects' is a mapping of "hands" onto the inventory-slots.
+	The functions GetHandItem(i) returns the object in the "i"th hand.
+	
+	Carryheavy is also handled here. When a clonk picks up a carryheavy object
+	it's saved in 'carryheavy'
 */
 
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
-local indexed_inventory;
-local disableautosort;
-local force_collection;
-local inventory;
+local inventory;	// items in the inventory, array
+local carryheavy;	// object beeing carried with carryheavy
+local use_objects;	// hand-slots (mapping onto inventory)
+
+local handslot_choice_pending;	// used to determine if a slot-hotkey (1-9) has already been handled by a mouseclick
+local hotkeypressed;			// used to determine if an interaction has already been handled by a hotkey (space + 1-9)
+
+local disableautosort;		// used to get default-Collection-behaviour (see Collection2)
+local force_collection;		// used to pick stuff up, even though the hand-slots are all full (see RejectCollect + Collect with CON_Collect)
+local forced_ejection;		// used to recognize if an object was thrown out with or without the force-key (Shift). If not, next hand slot will be selected. 
 
 /* Item limit */
 
-private func HandObjects() { return 2; }
-public func MaxContentsCount() { return 7; }
-public func NoStackedContentMenu() { return true; }
+private func HandObjects() { return 2; }			// How many "Hands" the clonk has
+public func MaxContentsCount() { return 7; }		// Size of the clonks inventory
+public func NoStackedContentMenu() { return true; }	// Contents-Menu shall display each object in a seperate slot
 
-/* Get the ith item in the inventory */
-// the first two are in the hands
+
+/** Get the 'i'th item in the inventory */
 public func GetItem(int i)
 {
 	if (i >= GetLength(inventory))
@@ -61,11 +74,134 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
-// For the HUD: this object shows its items in the HUD (i.e. has the GetItem function)
-public func HUDShowItems() { return true; }
+/** Returns all items in the inventory */
+public func GetItems()
+{
+	var inv = inventory[:];
+	RemoveHoles(inv);
+	return inv;
+}
 
-/* Search the index of an item */
+/** Returns how many items are in the clonks inventory
+    Does not have to be the same as ContentCounts() because of objects with special handling, like CarryHeavy */
+public func GetItemCount()
+{
+	var count = 0;
+	for(var i=0; i < GetLength(inventory); i++)
+		if(inventory[i])
+			count++;
+	
+	return count;
+}
 
+/** Get the 'i'th item in hands.
+    These are the items that will be used with use-commands. (Left mouse click, etc...) */
+public func GetHandItem(int i)
+{
+	// i is valid range
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+
+	// carrying a carry heavy item always returns said item. (he holds it in both hands, after all!)
+	if (IsCarryingHeavy())
+		return GetCarryHeavy();
+		
+	return GetItem(use_objects[i]);
+}
+
+/** Set the 'hand'th use-item to the 'inv'th slot */
+public func SetHandItemPos(int hand, int inv)
+{
+	// indices are in range?	
+	if(hand >= HandObjects() || inv >= MaxContentsCount())
+		return nil;
+	if(hand < 0 || inv < 0) return nil;
+
+	// can't use anything except carryheavy if carrying heavy object.
+	if(IsCarryingHeavy())
+		return nil;
+
+	// changing slots cancels using, if the slot with the used object is contained
+	if(using)
+	{
+		var used_slot = GetItemPos(using);
+		if(used_slot != nil)
+			if(used_slot == GetHandItemPos(hand) || used_slot == inv)
+				CancelUseControl(0,0);
+	}
+
+	// If the item is already selected, we can't hold it in another one too.
+	var hand2 = GetHandPosByItemPos(inv);
+	if(hand2 != nil)
+	{
+		// switch places
+		use_objects[hand2] = use_objects[hand];
+		use_objects[hand] = inv;
+		
+		// additional callbacks
+		var hand_item;
+		if(hand_item = GetHandItem(hand2))
+		{
+			this->~OnSlotFull(hand2);
+			// OnSlotFull might have done something to the item
+			if(GetHandItem(hand2) == hand_item)
+				hand_item->~Selection(this, hand2);
+		}
+		else
+			this->~OnSlotEmpty(hand2);
+	}
+	else
+		use_objects[hand] = inv;
+	
+	// call callbacks
+	var item;
+	if(item = GetItem(inv))
+	{
+		this->~OnSlotFull(hand);
+		// OnSlotFull might have done something to the item
+		if(GetItem(inv) == item)
+			GetItem(inv)->~Selection(this, hand);
+	}
+	else
+	{
+		this->~OnSlotEmpty(hand);
+	}
+	
+	handslot_choice_pending = false;
+}
+
+/** Returns the position in the inventory of the 'i'th use item */
+public func GetHandItemPos(int i)
+{
+	if (i >= GetLength(use_objects))
+		return nil;
+	if (i < 0) return nil;
+	
+	return use_objects[i];
+}
+
+/** Returns in which hand-slot the inventory-slot is */
+private func GetHandPosByItemPos(int o) // sorry for the horribly long name --boni
+{
+	for(var i=0; i < GetLength(use_objects); i++)
+		if(use_objects[i] == o)
+			return i;
+	
+	return nil;
+}
+ 
+/** Drops the item in the inventory slot, if any */
+public func DropInventoryItem(int slot)
+{
+	var obj = GetItem(slot);
+	if(!obj)
+		return nil;
+	
+	this->SetCommand("Drop",obj);
+}
+
+/** Search for the index of an item */
 public func GetItemPos(object item)
 {
 	if (item)
@@ -81,7 +217,7 @@ public func GetItemPos(object item)
 	return nil;
 }
 
-/* Switch two items in the clonk's inventory */
+/** Switch two items in the clonk's inventory */
 
 public func Switch2Items(int one, int two)
 {
@@ -98,53 +234,58 @@ public func Switch2Items(int one, int two)
 	if (using == inventory[one] || using == inventory[two])
 		CancelUse();
 	
+	var handone, handtwo;
+	handone = GetHandPosByItemPos(one);
+	handtwo = GetHandPosByItemPos(two);
+	
 	// callbacks: (de)selection
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[two]) inventory[two]->~Deselection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[one]) inventory[one]->~Deselection(this,two);
 		
-	if (one < HandObjects())
+	if (handone != nil)
 		if (inventory[one]) inventory[one]->~Selection(this,one);
-	if (two < HandObjects())
+	if (handtwo != nil)
 		if (inventory[two]) inventory[two]->~Selection(this,two);
 	
 	// callbacks: to self, for HUD
-	if (one < HandObjects())
+	if (handone != nil)
 	{
 		if (inventory[one])
-			this->~OnSlotFull(one);
+			this->~OnSlotFull(handone);
 		else
-			this->~OnSlotEmpty(one);
+			this->~OnSlotEmpty(handone);
 	}
-	if (two < HandObjects())
+	if (handtwo != nil)
 	{
 		if (inventory[two])
-			this->~OnSlotFull(two);
+			this->~OnSlotFull(handtwo);
 		else
-			this->~OnSlotEmpty(two);
+			this->~OnSlotEmpty(handtwo);
 	}
+	
+	this->~OnInventoryChange(one, two);
 }
 
-/* Overload of Collect function */
-
+/* Overload of Collect function
+   Allows inventory/hands-Handling with forced-collection
+*/
 public func Collect(object item, bool ignoreOCF, int pos, bool force)
 {
 	force_collection = force;
 	var success = false;
-	if (pos == nil)
+	if (pos == nil || item->~IsCarryHeavy())
 	{
 		success = _inherited(item,ignoreOCF);
 		force_collection = false;
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil)
+	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
 	{
 		if (item)
 		{
-			pos = BoundBy(pos,0,MaxContentsCount()-1);
-			
 			disableautosort = true;
 			// collect but do not sort in_
 			// Collection2 will be called which attempts to automatically sort in
@@ -156,24 +297,18 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 			if (success)
 			{
 				inventory[pos] = item;
-				if (pos < HandObjects())
-					this->~OnSlotFull(pos);
+				var handpos = GetHandPosByItemPos(pos); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+				{
+					this->~OnSlotFull(handpos);
+				}
 			}
 		}
 	}
 	
 	force_collection = false;
 	return success;
-}
-
-// disable ShiftContents for objects with ClonkControl.ocd
-
-global func ShiftContents()
-{
-	if (this)
-		if (this->~HandObjects() != nil)
-			return false;
-	return _inherited(...);
 }
 
 /* ################################################# */
@@ -183,8 +318,11 @@ protected func Construction()
 	menu = nil;
 
 	// inventory variables
-	indexed_inventory = 0;
 	inventory = CreateArray();
+	use_objects = CreateArray();
+
+	for(var i=0; i < HandObjects(); i++)
+		use_objects[i] = i;
 
 	force_collection = false;
 	
@@ -198,91 +336,158 @@ protected func Construction()
 
 protected func Collection2(object obj)
 {
+	// carryheavy object gets special treatment
+	if(obj->~IsCarryHeavy()) // we can assume that we don't have a carryheavy object yet. If we do, Scripters are to blame.
+	{
+		if(obj != GetCarryHeavy())
+			CarryHeavy(obj);
+		
+		return true;
+	}
+	
 	var sel = 0;
 
 	// See Collect()
 	if (disableautosort) return _inherited(obj,...);
 	
 	var success = false;
+	var i;
 	
-	// into selected area if empty
-	if (!inventory[0])
-	{
-		inventory[0] = obj;
-		success = true;
-	}
-	// otherwise, next if empty
-	else
-	{
-		for(var i = 1; i < MaxContentsCount(); ++i)
+	// sort into selected hands if empty
+	for(i = 0; i < HandObjects(); i++)
+		if(!GetHandItem(i))
 		{
-			sel = i % MaxContentsCount();
-			if (!inventory[sel])
+			sel = GetHandItemPos(i);
+			inventory[sel] = obj;
+			success = true;
+			break;
+		}
+		
+	// otherwise, first empty slot
+	if(!success)
+	{
+		for(var i = 0; i < MaxContentsCount(); ++i)
+		{
+			if (!GetItem(i))
 			{
-				indexed_inventory++;
+				sel = i;
 				inventory[sel] = obj;
 				success = true;
 				break;
 			}
 		}
 	}
+	
 	// callbacks
 	if (success)
-		if (sel < HandObjects())
-			this->~OnSlotFull(sel);
-	
-	if (sel == 0 || sel == 1)
-		obj->~Selection(this,sel == 1);
+	{
+		var handpos = GetHandPosByItemPos(sel); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+		{
+			this->~OnSlotFull(handpos);
+			// OnSlotFull might have done something to obj
+			if(GetHandItem(handpos) == obj)
+				obj->~Selection(this, handpos);
+		}
+	}
+		
 
 	return _inherited(obj,...);
 }
 
 protected func Ejection(object obj)
 {
+	// carry heavy special treatment
+	if(obj == GetCarryHeavy())
+	{
+		StopCarryHeavy();
+		return true;
+	}
+
 	// if an object leaves this object
-	
 	// find obj in array and delete (cancel using too)
 	var i = 0;
 	var success = false;
+	
 	for(var item in inventory)
-	{
-		if (obj == item)
-		{
+    {
+	   if (obj == item)
+	   {
 			inventory[i] = nil;
-			indexed_inventory--;
 			success = true;
 			break;
-		}
-		++i;
-	}
+	   }
+	   ++i;
+    }
 	if (using == obj) CancelUse();
 
 	// callbacks
 	if (success)
-		if (i < HandObjects())
-			this->~OnSlotEmpty(i);
-	
-	if (i == 0 || i == 1)
-		obj->~Deselection(this,i == 1);
+	{
+		var handpos = GetHandPosByItemPos(i); 
+		// if the slot was a selected hand slot -> update it
+		if(handpos != nil)
+		{
+			// if it was a forced ejection, the hand will remain empty
+			if(forced_ejection == obj)
+			{
+				this->~OnSlotEmpty(handpos);
+				obj->~Deselection(this, handpos);
+			}
+			// else we'll select the next full slot
+			else
+			{
+				// look for following non-selected non-free slots
+				var found_slot = false;
+				for(var j=i; j < MaxContentsCount(); j++)
+					if(GetItem(j) && !GetHandPosByItemPos(j))
+					{
+						found_slot = true;
+						break;
+					}
+				
+				if(found_slot)
+					SetHandItemPos(handpos, j); // SetHandItemPos handles the missing callbacks
+				// no full next slot could be found. we'll stay at the same, and empty.
+				else
+				{
+					this->~OnSlotEmpty(handpos);
+					obj->~Deselection(this, handpos);
+				}
+			}
+		}
+	}
 	
 	// we have over-weight? Put the next unindexed object inside that slot
 	// this happens if the clonk is stuffed full with items he can not
 	// carry via Enter, CreateContents etc.
-	if (ContentsCount() > indexed_inventory && !inventory[i])
+	var inventory_count = 0;
+	for(var io in inventory)
+		if(io != nil)
+			inventory_count++;
+			
+	if (ContentsCount() > inventory_count && !GetItem(i))
 	{
 		for(var c = 0; c < ContentsCount(); ++c)
 		{
-			if (GetItemPos(Contents(c)) == nil)
+			var o = Contents(c);
+			if(o->~IsCarryHeavy())
+				continue;
+			if (GetItemPos(o) == nil)
 			{
 				// found it! Collect it properly
-				inventory[i] = Contents(c);
-				indexed_inventory++;
+				inventory[i] = o;
 				
-				if (i < HandObjects())
-					this->~OnSlotFull(i);
-				
-				if (i == 0 || i == 1)
-					Contents(c)->~Selection(this,i == 1);
+				var handpos = GetHandPosByItemPos(i); 
+				// if the slot was a selected hand slot -> update it
+				if(handpos != nil)
+				{
+					this->~OnSlotFull(handpos);
+					// OnSlotFull might have done something to o
+					if(GetHandItem(handpos) == o)
+						o->~Selection(this, handpos);
+				}
 					
 				break;
 			}
@@ -292,13 +497,39 @@ protected func Ejection(object obj)
 	_inherited(obj,...);
 }
 
+protected func ContentsDestruction(object obj)
+{
+	// tell the Hud that something changed
+	this->~OnInventoryChange();
+	
+	// check if it was carryheavy
+	if(obj == GetCarryHeavy())
+	{
+		StopCarryHeavy();
+	}
+
+	_inherited(...);
+}
+
 protected func RejectCollect(id objid, object obj)
 {
 	// collection of that object magically disabled?
 	if(GetEffect("NoCollection", obj)) return true;
 
+	// Carry heavy only gets picked up if none held already
+	if(obj->~IsCarryHeavy())
+	{
+		if(IsCarryingHeavy())
+			return true;
+		else
+		{
+			return false;
+		}
+	}
+
 	//No collection if the clonk is carrying a 'carry-heavy' object
-	if(GetEffect("IntCarryHeavy", this) || GetEffect("IntLiftHeavy", this)) return true;
+	// todo: does this still make sense with carry heavy not beeing in inventory and new inventory in general?
+	if(IsCarryingHeavy() && !force_collection) return true;
 	
 	// try to stuff obj into an object with an extra slot
 	for(var i=0; Contents(i); ++i)
@@ -321,7 +552,7 @@ protected func RejectCollect(id objid, object obj)
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
 	if (!force_collection)
-		if (GetItem(0) && GetItem(1))
+		if (GetHandItem(0) && GetHandItem(1))
 			return true;
 	
 	return _inherited(objid,obj,...);
@@ -331,13 +562,75 @@ protected func RejectCollect(id objid, object obj)
 public func AllowTransfer(object obj)
 {
 	// Only check max contents.
-	if (ContentsCount() >= MaxContentsCount()) 
+	if (GetItemCount() >= MaxContentsCount()) 
+		return false;
+
+	// don't allow picking up multiple carryheavy-objects
+	if(IsCarryingHeavy() && obj->~IsCarryHeavy())
 		return false;
 
 	return true;
 }
 
 public func GetUsedObject() { return using; }
+
+
+
+/* Carry heavy stuff */
+
+/** Tells the clonk that he is carrying the given carry heavy object */
+public func CarryHeavy(object target)
+{
+	if(!target)
+		return;
+	// actually.. is it a carry heavy object?
+	if(!target->~IsCarryHeavy())
+		return;
+	// only if not carrying a heavy objcet already
+	if(IsCarryingHeavy())
+		return;	
+	
+	carryheavy = target;
+	
+	if(target->Contained() != this)
+		target->Enter(this);
+	
+	// notify UI about carryheavy pickup
+	this->~OnCarryHeavyChange(carryheavy);
+	
+	// Update attach stuff
+	this->~OnSlotFull();
+	
+	return true;
+}
+
+/** Drops the carried heavy object, if any */
+public func DropCarryHeavy()
+{
+	// only if actually possible
+	if(!IsCarryingHeavy())
+		return;
+	
+	GetCarryHeavy()->Drop();
+	StopCarryHeavy();
+	
+	return true;
+}
+
+// Internal function to clear carryheavy-status
+private func StopCarryHeavy()
+{
+	if(!IsCarryingHeavy())
+		return;
+	
+	carryheavy = nil;
+	this->~OnCarryHeavyChange(nil);
+	this->~OnSlotEmpty();
+}
+
+public func GetCarryHeavy() { return carryheavy; }
+
+public func IsCarryingHeavy() { return carryheavy != nil; }
 
 /* ################################################# */
 
@@ -401,6 +694,37 @@ protected func OnActionChanged(string oldaction)
 	return _inherited(oldaction,...);
 }
 
+/** Returns additional interactions the clonk possesses as an array of function pointers.
+	Returned Proplist contains:
+		Fn			= Name of the function to call
+		Object		= object to call the function in. Will also be displayed on the interaction-button
+		Description	= a description of what the interaction does
+		IconID		= ID of the definition that contains the icon (like GetInteractionMetaInfo)
+		IconName	= Namo of the graphic for teh icon (like GetInteractionMetaInfo)
+		[Priority]	= Where to sort in in the interaction-list. 0=front, 1=after script, 2=after vehicles, >=3=at the end, nil equals 3
+*/
+public func GetExtraInteractions()
+{
+	var functions = CreateArray();
+	
+	// flipping construction-preview
+	var effect;
+	if(effect = GetEffect("ControlConstructionPreview", this))
+	{
+		if(effect.flipable)
+			PushBack(functions, {Fn = "Flip", Description=ConstructionPreviewer->GetFlipDescription(), Object=effect.preview, IconID=ConstructionPreviewer_IconFlip, Priority=0});
+	}
+	
+	// dropping carry heavy
+	if(IsCarryingHeavy() && GetAction() == "Walk")
+	{
+		var ch = GetCarryHeavy();
+		PushBack(functions, {Fn = "Drop", Description=ch->GetDropDescription(), Object=ch, IconName="LetGo", IconID=GUI_ObjectSelector, Priority=1});
+	}
+	
+	return functions;
+}
+
 /* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
 
 local using, using_type;
@@ -417,46 +741,41 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
-	// Backpack menu
-	if (ctrl == CON_Backpack)
+	// some controls should only do something on release (everything that has to do with interaction)
+	if(ctrl == CON_Interact || ctrl == CON_PushEnter || ctrl == CON_Ungrab || ctrl == CON_GrabNext || ctrl == CON_Grab || ctrl == CON_Enter || ctrl == CON_Exit)
 	{
-		// close if menu was open
-		if(GetMenu())
+		if(!release)
 		{
-			var is_backpack = GetMenu()->~GetSymbol() == Icon_Backpack;
-			GetMenu()->RemoveObject();
-			SetMenu(nil);
-			// If backpack menu, don't open new one and return.
-			if (is_backpack)
-				return true;
+			// this is needed to reset the hotkey-memory
+			hotkeypressed = false;
+			return false;
 		}
-		// Cancel usage
-		CancelUse();
-		CreateRingMenu(Icon_Backpack,this);
-		// CreateRingMenu calls SetMenu(this) in the clonk,
-		// so after this call menu = the created menu
+		// if the interaction-command has already been handled by a hotkey (else it'd double-interact)
+		else if(hotkeypressed)
+			return false;
+		// check if we can handle it by simply accessing the first actionbar item (for consistency)
+		else
+		{
+			if(GetMenu())
+				if(!GetMenu()->~Uncloseable())
+					return CancelMenu();
 			
-		// for all contents in the clonks except the first two (hand slots)
-		for(var i = 2; i < MaxContentsCount(); ++i)
-		{
-			// put them in the menu
-			var item = GetItem(i);
-			GetMenu()->AddItem(item,nil,i);
+			if(this->~ControlHotkey(0))
+					return true;
 		}
-		// finally, show the menu.
-		GetMenu()->Show();
-
-		return true;
 	}
+	
 	// Contents menu
 	if (ctrl == CON_Contents)
 	{
 		// Close any menu if open.
 		if (GetMenu())
 		{
+			// Uncloseable menu?
+			if (GetMenu()->~Uncloseable()) return true;
+
 			var is_content = GetMenu()->~IsContentMenu();
-			GetMenu()->RemoveObject();
-			SetMenu(nil);
+			CancelMenu();
 			// If contents menu, don't open new one and return.
 			if (is_content)
 				return true;
@@ -466,7 +785,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		CreateContentsMenus();
 		// CreateContentsMenus calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
-		GetMenu()->Show();		
+		if(GetMenu())
+			GetMenu()->Show();		
 		return true;
 	}
 	
@@ -521,6 +841,76 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
+	if (ctrl == CON_InteractionHotkey0) hot = 10;
+	if (ctrl == CON_InteractionHotkey1) hot = 1;
+	if (ctrl == CON_InteractionHotkey2) hot = 2;
+	if (ctrl == CON_InteractionHotkey3) hot = 3;
+	if (ctrl == CON_InteractionHotkey4) hot = 4;
+	if (ctrl == CON_InteractionHotkey5) hot = 5;
+	if (ctrl == CON_InteractionHotkey6) hot = 6;
+	if (ctrl == CON_InteractionHotkey7) hot = 7;
+	if (ctrl == CON_InteractionHotkey8) hot = 8;
+	if (ctrl == CON_InteractionHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		hotkeypressed = true;
+		this->~ControlHotkey(hot-1);
+		return true;
+	}
+	
+	// dropping items via hotkey
+	hot = 0;
+	if (ctrl == CON_DropHotkey0) hot = 10;
+	if (ctrl == CON_DropHotkey1) hot = 1;
+	if (ctrl == CON_DropHotkey2) hot = 2;
+	if (ctrl == CON_DropHotkey3) hot = 3;
+	if (ctrl == CON_DropHotkey4) hot = 4;
+	if (ctrl == CON_DropHotkey5) hot = 5;
+	if (ctrl == CON_DropHotkey6) hot = 6;
+	if (ctrl == CON_DropHotkey7) hot = 7;
+	if (ctrl == CON_DropHotkey8) hot = 8;
+	if (ctrl == CON_DropHotkey9) hot = 9;
+	
+	if (hot > 0)
+	{
+		this->~DropInventoryItem(hot-1);
+		return true;
+	}
+	
+	// this wall of text is called when 1-0 is beeing held, and left or right mouse button is pressed.
+	var hand = 0;
+	hot = 0;
+	if (ctrl == CON_Hotkey0Select) hot = 10;
+	if (ctrl == CON_Hotkey1Select) hot = 1;
+	if (ctrl == CON_Hotkey2Select) hot = 2;
+	if (ctrl == CON_Hotkey3Select) hot = 3;
+	if (ctrl == CON_Hotkey4Select) hot = 4;
+	if (ctrl == CON_Hotkey5Select) hot = 5;
+	if (ctrl == CON_Hotkey6Select) hot = 6;
+	if (ctrl == CON_Hotkey7Select) hot = 7;
+	if (ctrl == CON_Hotkey8Select) hot = 8;
+	if (ctrl == CON_Hotkey9Select) hot = 9;
+	if (ctrl == CON_Hotkey0SelectAlt) {hot = 10; hand=1; }
+	if (ctrl == CON_Hotkey1SelectAlt) {hot = 1; hand=1; }
+	if (ctrl == CON_Hotkey2SelectAlt) {hot = 2; hand=1; }
+	if (ctrl == CON_Hotkey3SelectAlt) {hot = 3; hand=1; }
+	if (ctrl == CON_Hotkey4SelectAlt) {hot = 4; hand=1; }
+	if (ctrl == CON_Hotkey5SelectAlt) {hot = 5; hand=1; }
+	if (ctrl == CON_Hotkey6SelectAlt) {hot = 6; hand=1; }
+	if (ctrl == CON_Hotkey7SelectAlt) {hot = 7; hand=1; }
+	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
+	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
+	
+	if(hot > 0  && hot <= MaxContentsCount())
+	{
+		SetHandItemPos(hand, hot-1);
+		this->~OnInventoryHotkeyRelease(hot-1);
+		return true;
+	}
+	
+	// inventory
+	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
 	if (ctrl == CON_Hotkey1) hot = 1;
 	if (ctrl == CON_Hotkey2) hot = 2;
@@ -532,21 +922,54 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	if (hot > 0)
+	// only the last-pressed key is taken into consideration.
+	// if 2 hotkeys are held, the earlier one is beeing treated as released
+	if (hot > 0 && hot <= MaxContentsCount())
 	{
-		this->~ControlHotkey(hot-1);
+		// if released, we chose, if not chosen already
+		if(release)
+		{
+			if(handslot_choice_pending == hot)
+			{
+				SetHandItemPos(0, hot-1);
+				this->~OnInventoryHotkeyRelease(hot-1);
+			}
+		}
+		// else we just highlight
+		else
+		{
+			if(handslot_choice_pending)
+			{
+				this->~OnInventoryHotkeyRelease(handslot_choice_pending-1);
+			}
+			handslot_choice_pending = hot;
+			this->~OnInventoryHotkeyPress(hot-1);
+		}
+		
 		return true;
 	}
 	
 	var proc = GetProcedure();
 
 	// cancel usage
-	if (using && ctrl == CON_CancelUse)
+	if (using && ctrl == CON_Ungrab)
 	{
 		CancelUse();
 		return true;
 	}
 
+	// Interact controls
+	if(ctrl == CON_Interact)
+	{
+		if(ObjectControlInteract(plr,ctrl))
+			return true;
+		else if(IsCarryingHeavy() && GetAction() == "Walk")
+		{
+			DropCarryHeavy();
+			return true;
+		}
+			
+	}
 	// Push controls
 	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
 		return ObjectControlPush(plr, ctrl);
@@ -554,10 +977,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Entrance controls
 	if (ctrl == CON_Enter || ctrl == CON_Exit)
 		return ObjectControlEntrance(plr,ctrl);
-		
-	// Interact controls
-	if (ctrl == CON_Interact)
-		return ObjectControlInteract(plr,ctrl);
+	
 	
 	// building, vehicle, mount, contents, menu control
 	var house = Contained();
@@ -574,8 +994,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return Control2Menu(ctrl, x,y,strength, repeat, release);
 	}
 	
-	var contents = GetItem(0);
-	var contents2 = GetItem(1);	
+	var contents = GetHandItem(0);
+	var contents2 = GetHandItem(1);	
 	
 	// usage
 	var use = (ctrl == CON_Use || ctrl == CON_UseDelayed || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed);
@@ -633,8 +1053,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// Collecting
 	if (ctrl == CON_Collect)
 	{
+		// only if not inside something
+		if(Contained()) return false; // not handled
+		
 		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight();
+		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
 		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
 		if(obj)
 		{
@@ -642,19 +1065,31 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// collected into the hands
 			Collect(obj,nil,nil,true);
 		}
+		
+		// return not handled to still receive other controls - collection should not block anything else
+		return false;
 	}
 	
 	// Throwing and dropping
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && (!vehicle || proc == "ATTACH"))
+	// only act on press, not release
+	if (!house && (!vehicle || proc == "ATTACH") && !release)
 	{
 		if (contents)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrow)
+			{
+				ctrl = CON_Throw;
+				forced_ejection = contents;
+			}
+			
 			// throw
 			if (ctrl == CON_Throw)
 			{
 				CancelUse();
-				if (proc == "SCALE" || proc == "HANGLE")
+				
+				if (proc == "SCALE" || proc == "HANGLE" || proc == "SWIM")
 					return ObjectCommand("Drop", contents);
 				else
 					return ObjectCommand("Throw", contents, x, y);
@@ -688,6 +1123,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// same for contents2 (copypasta)
 		if (contents2)
 		{
+			// special treatmant so that we know it's a forced throw
+			if(ctrl == CON_ForcedThrowAlt)
+			{
+				ctrl = CON_ThrowAlt;
+				forced_ejection = contents2;
+			}
+		
 			// throw
 			if (ctrl == CON_ThrowAlt)
 			{
@@ -770,10 +1212,10 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") this->~ControlThrow(target,tx,ty);
-	else if (command == "Jump") this->~ControlJump();
+	if (command == "Throw") return this->~ControlThrow(target,tx,ty);
+	else if (command == "Jump") return this->~ControlJump();
 	// else standard command
-	else SetCommand(command,target,tx,ty,target2);
+	else return SetCommand(command,target,tx,ty,target2);
 	
 	// this function might be obsolete: a normal SetCommand does make a callback to
 	// script before it is executed: ControlCommand(szCommand, pTarget, iTx, iTy)
@@ -1121,8 +1563,6 @@ public func CanEnter()
 // Handles enter and exit
 private func ObjectControlEntrance(int plr, int ctrl)
 {
-	var proc = GetProcedure();
-
 	// enter
 	if (ctrl == CON_Enter)
 	{
@@ -1377,7 +1817,14 @@ func GetMenu()
 
 func CancelMenu()
 {
-	if (menu) menu->Close();
+	if (menu)
+	{
+		menu->Close();
+		SetMenu(nil);
+		return true;
+	}
+	
+	return false;
 }
 
 func ReinitializeControls()
@@ -1418,8 +1865,8 @@ private func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
-	iX = 8; if (!GetDir()) iX = -iX;
-	iY = Cos(angle,-8);
+	iX = 4; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-4);
 	iR = Random(360);
 	iRDir = RandomX(-10,10);
 

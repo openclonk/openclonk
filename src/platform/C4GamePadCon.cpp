@@ -39,7 +39,7 @@ void C4GamePadControl::DoAxisInput()
 	Execute(true);
 }
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 //#include <StdJoystick.h>
 
 C4GamePadControl *C4GamePadControl::pInstance = NULL;

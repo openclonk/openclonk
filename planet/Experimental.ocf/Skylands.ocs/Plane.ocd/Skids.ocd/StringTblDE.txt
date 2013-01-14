@@ -1,0 +1,2 @@
+Name=Kufen
+Description=Ein wichtiges Teil des Flugzeuges.

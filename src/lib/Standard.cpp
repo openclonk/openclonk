@@ -4,9 +4,9 @@
  * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
  * Copyright (c) 2002, 2004, 2007-2008  Sven Eberhardt
  * Copyright (c) 2004-2005  Peter Wortmann
- * Copyright (c) 2005, 2007, 2009, 2011  Günther Brammer
+ * Copyright (c) 2005, 2007, 2009, 2011-2012  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010-2011  Nicolas Hake
+ * Copyright (c) 2010-2012  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -554,7 +554,7 @@ void SNewSegment(char *szStr, const char *szSepa)
 int SGetLine(const char *szText, const char *cpPosition)
 {
 	if (!szText || !cpPosition) return 0;
-	int iLines = 0;
+	int iLines = 1;
 	while (*szText && (szText<cpPosition))
 	{
 		if (*szText == 0x0A) iLines++;
@@ -566,11 +566,16 @@ int SGetLine(const char *szText, const char *cpPosition)
 int SLineGetCharacters(const char *szText, const char *cpPosition)
 {
 	if (!szText || !cpPosition) return 0;
-	int iChars = 0;
+	int iChars = 1;
 	while (*szText && (szText<cpPosition))
 	{
-		if (*szText == 0x0A) iChars = 0;
-		iChars++;
+		if (*szText == 0x0A)
+			iChars = 1;
+		else if (*szText == '\t')
+			// assume a tab stop every 8 characters
+			iChars = ((iChars - 1 + 8) & ~7) + 1;
+		else
+			iChars++;
 		szText++;
 	}
 	return iChars;
@@ -906,32 +911,33 @@ bool IsValidUtf8(const char *text, int length)
 uint32_t GetNextUTF8Character(const char **pszString)
 {
 	// assume the current character is UTF8 already (i.e., highest bit set)
+	const uint32_t REPLACEMENT_CHARACTER = 0xFFFDu;
 	const char *szString = *pszString;
 	unsigned char c = *szString++;
-	uint32_t dwResult = '?';
+	uint32_t dwResult = REPLACEMENT_CHARACTER;
 	assert(c>127);
 	if (c>191 && c<224)
 	{
 		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c2 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		dwResult = (int(c&31)<<6) | (c2&63); // two char code
 	}
 	else if (c >= 224 && c <= 239)
 	{
 		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c2 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c3 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		dwResult = (int(c&15)<<12) | (int(c2&63)<<6) | int(c3&63); // three char code
 	}
 	else if (c >= 240 && c <= 247)
 	{
 		unsigned char c2 = *szString++;
-		if ((c2 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c2 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		unsigned char c3 = *szString++;
-		if ((c3 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c3 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		unsigned char c4 = *szString++;
-		if ((c4 & 192) != 128) { *pszString = szString; return '?'; }
+		if ((c4 & 192) != 128) { *pszString = szString; return REPLACEMENT_CHARACTER; }
 		dwResult = (int(c&7)<<18) | (int(c2&63)<<12) | (int(c3&63)<<6) | int(c4&63); // four char code
 	}
 	*pszString = szString;

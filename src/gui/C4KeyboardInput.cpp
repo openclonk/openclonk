@@ -1,13 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2006, 2008-2010  Sven Eberhardt
- * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2005-2006, 2008-2012  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2011  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005-2006, 2008-2010  Asmageddon
  * Copyright (c) 2008  Julian Raschke
  * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009-2010  Armin Burgmeier
+ * Copyright (c) 2009-2010, 2012  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -40,11 +40,11 @@
 #include <algorithm>
 
 #ifdef USE_SDL_MAINLOOP
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <vector>
 
-#include <SDL/SDL_keysym.h>
+#include <SDL_keysym.h>
 
 namespace
 {
@@ -114,14 +114,14 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 {
 	{ VK_CANCEL         , "Cancel"        , NULL },
 
-	{ VK_BACK           , "Backspace"     , NULL },
+	{ VK_BACK           , "BackSpace"     , NULL },
 	{ VK_TAB            , "Tab"           , NULL },
 	{ VK_CLEAR          , "Clear"         , NULL },
 	{ VK_RETURN         , "Return"        , NULL },
 
 	{ VK_SHIFT          , "KeyShift"      , "Shift" },
 	{ VK_CONTROL        , "KeyControl"    , "Control" },
-	{ VK_MENU           , "Menu"          , NULL },
+	{ VK_MENU           , "Alt"           , NULL },
 	{ VK_PAUSE          , "Pause"         , NULL },
 
 	{ VK_CAPITAL        , "Capital"       , NULL },
@@ -196,7 +196,7 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ 'Z'               , "Z"         , NULL },
 	{ VK_OEM_COMMA      , "Comma"     , NULL },
 	{ VK_OEM_PERIOD     , "Period"    , NULL },
-	{ VK_OEM_5          , "Apostrophe", NULL },
+	{ VK_OEM_7          , "Apostrophe", NULL },
 
 	{ VK_LWIN           , "WinLeft"      , NULL },
 	{ VK_RWIN           , "WinRight"     , NULL },
@@ -278,22 +278,23 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ VK_LAUNCH_APP1         , "LAUNCH_APP1"          , NULL },
 	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
 
-	{ VK_OEM_1          , "OEM Ü"    , "Ü" }, // German hax
+	{ VK_OEM_1          , "Comma_US"    , "Ü" }, // German hax
 	{ VK_OEM_PLUS       , "OEM +"   , "+" },
 	{ VK_OEM_COMMA      , "OEM ,"   , "," },
 	{ VK_OEM_MINUS      , "OEM -"   , "-" },
 	{ VK_OEM_PERIOD     , "OEM ."   , "." },
-	{ VK_OEM_2          , "OEM 2"    , "2" },
-	{ VK_OEM_3          , "OEM Ö"    , "Ö" }, // German hax
-	{ VK_OEM_4          , "OEM 4"    , "4" },
-	{ VK_OEM_5          , "OEM 5"    , "5" },
-	{ VK_OEM_6          , "OEM 6"    , "6" },
-	{ VK_OEM_7          , "OEM Ä"    , "Ä" }, // German hax
+	{ VK_OEM_2          , "OEM 2"   , "2" },
+	{ VK_OEM_3          , "OEM Ö"   , "Ö" }, // German hax
+	{ VK_OEM_4          , "OEM 4"   , "4" },
+	{ VK_OEM_5          , "OEM 5"   , "5" },
+	{ VK_OEM_6          , "OEM 6"   , "6" },
+	{ VK_OEM_7          , "OEM Ä"   , "Ä" }, // German hax
 	{ VK_OEM_8          , "OEM 8"   , "8" },
 	{ VK_OEM_AX         , "AX"      , "AX" },
-	{ VK_OEM_102        , "< > |"    , "<" }, // German hax
+	{ VK_OEM_102        , "Less" , "<" }, // German hax
+	{ VK_OEM_102        , "Backslash", NULL }, // German hax
 	{ VK_ICO_HELP       , "Help"    , "Help" },
-	{ VK_ICO_00         , "ICO_00"   , "00" },
+	{ VK_ICO_00         , "ICO_00"  , "00" },
 
 	{ VK_ICO_CLEAR      , "ICO_CLEAR"     , NULL },
 
@@ -328,9 +329,29 @@ const C4KeyCodeMapEntry KeyCodeMap [] =
 	{ KEY_Default, "None", NULL},
 	{ KEY_Undefined, NULL, NULL }
 };
+#elif defined(USE_X11)
+#include <gdk/gdkx.h>
 #elif defined(USE_COCOA)
 #include "CocoaKeycodeMap.h"
 #endif
+
+C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
+{
+	// scan code is in hex format
+	unsigned int scan_code_int;
+	if (sscanf(scan_code, "$%x", &scan_code_int) != 1) return KEY_Undefined;
+	// resolve using OS function
+#ifdef _WIN32
+	return MapVirtualKey(scan_code_int, 1 /* MAPVK_VSC_TO_VK */); // MAPVK_VSC_TO_VK is undefined due to some bug on some MinGW versions
+#elif USE_X11
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	return XKeycodeToKeysym(dpy, scan_code_int, 0);
+#else
+	// cannot resolve scan codes
+	assert(false);
+	return KEY_Undefined;
+#endif
+}
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
@@ -339,6 +360,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	{
 		unsigned int dwRVal;
 		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
+		// scan code
+		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
 #ifdef _WIN32
 		if (!strnicmp(sName.getData(), "Joy", 3))
@@ -555,7 +578,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 #endif
 }
 
-StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
+StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 {
 	static StdStrBuf sResult;
 	sResult.Clear();
@@ -582,16 +605,25 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
 
 /* ----------------- C4KeyCodeEx ------------------ */
 
-void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
+void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 {
 	if (pComp->isCompiler())
 	{
 		// reading from file
 		StdStrBuf sCode;
+		bool is_scan_code;
+		// read shifts
 		DWORD dwSetShift = 0;
 		for (;;)
 		{
+			is_scan_code = pComp->Separator(StdCompiler::SEP_DOLLAR);
+			if (!is_scan_code) pComp->NoSeparator();
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));
+			if (is_scan_code) // scan codes start with $. Reassamble the two tokens that were split by StdCompiler
+			{
+				sCode.Take(FormatString("$%s", sCode.getData()));
+				break;
+			}
 			if (!pComp->Separator(StdCompiler::SEP_PLUS)) break; // no more separator: Parse this as keyboard code
 			// try to convert to shift state
 			C4KeyShiftState eAddState = String2KeyShift(sCode);
@@ -606,10 +638,9 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			C4KeyCode eCode = String2KeyCode(sCode);
 			if (eCode == KEY_Undefined)
 			{
-				if (pOutBufIfUndefined)
+				if (pOutBuf)
 				{
-					// unknown key, but an output buffer for unknown keys was provided. Use it.
-					pOutBufIfUndefined->Take(std::move(sCode));
+					// unknown key, but an output buffer for unknown keys was provided. No failure; caller might resolve key.
 					eCode = KEY_Default;
 				}
 				else
@@ -619,6 +650,7 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			}
 			dwShift = dwSetShift;
 			Key = eCode;
+			if (pOutBuf) pOutBuf->Take(std::move(sCode));
 		}
 	}
 	else

@@ -9,7 +9,6 @@
 #include Scoreboard_KillStreak
 #include Scoreboard_Death
 #include Scoreboard_Kill
-#include Scoreboard_Player
 
 local maxkills;
 
@@ -45,10 +44,7 @@ protected func RelaunchPlayer(int plr, int killer)
 	JoinPlayer(plr);
 	// Scenario script callback.
 	GameCall("OnPlayerRelaunch", plr);
-	// Show scoreboard for a while & sort.
-	SortScoreboard(Scoreboard_KillStreak->GetKillStreakCol(), true);
-	SortScoreboard(Scoreboard_Death->GetDeathCol(), true);
-	SortScoreboard(Scoreboard_Kill->GetKillCol(), true);
+	// Show scoreboard for a while
 	DoScoreboardShow(1, plr + 1);
 	Schedule(this,Format("DoScoreboardShow(-1, %d)", plr + 1), 35 * MIME_ShowBoardTime);
 	NotifyHUD();
@@ -59,7 +55,6 @@ protected func JoinPlayer(int plr)
 {
 	var clonk = GetCrew(plr);
 	clonk->DoEnergy(100000);
-	var x, y;
 	var pos = FindRelaunchPos(plr);
 	clonk->SetPosition(pos[0], pos[1]);
 	return;
@@ -121,21 +116,30 @@ public func Activate(int byplr)
 		var score = GetRelativeScore(byplr);
 		if(score.kills > 0)      MessageWindow(Format("$MsgAhead$",  score.kills,  GetPlayerName(score.best)), byplr);
 		else if(score.kills < 0) MessageWindow(Format("$MsgBehind$", -score.kills,GetPlayerName(score.best)), byplr);
+		else if(score.best == byplr) MessageWindow(Format("$MsgYouAreBest$", score.kills), byplr);
 		else MessageWindow(Format("$MsgEqual$", GetPlayerName(score.best)), byplr);
 	}
 }
 
 private func GetRelativeScore(int player)
 {
-	var bestplayer = -1, bestscore = 1<<31;
+	var bestplayer = -1, bestscore = -1;
 	for(var i = 0; i < GetPlayerCount(); ++i)
 	{
 		var plr = GetPlayerByIndex(i);
-		if(plr != player && GetKillCount(plr) > bestscore) {
+		if(plr != player && ((GetKillCount(plr) > bestscore) || (bestplayer == -1))) {
 			bestplayer = plr;
 			bestscore = GetKillCount(plr);
 		}
 	}
+	
+	// special case if there is only one player in the game
+	if(bestplayer == -1)
+	{
+		bestplayer = player;
+		bestscore = GetKillCount(player);
+	}
+	
 	return {best: bestplayer, kills: GetKillCount(player)-bestscore};
 }
 

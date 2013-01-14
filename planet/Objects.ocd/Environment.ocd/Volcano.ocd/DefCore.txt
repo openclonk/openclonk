@@ -1,0 +1,4 @@
+[DefCore]
+id=Volcano
+Version=5,2,0,1
+Category=C4D_StaticBack|C4D_Environment

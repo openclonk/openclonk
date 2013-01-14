@@ -12,3 +12,8 @@ Dustin Senos		- earth_rough
 Andrew McConnochie	- granite
 Ben Cloward			- snow1
 Redwolf Design GmbH	- snow, lava
+Pyrit				- sand_smooth
+
+The following textures are licensed under the CC Attribution-Share Alike 3.0 Unported license (http://creativecommons.org/licenses/by-sa/3.0/)
+
+texturepalace.com	- ashes (http://www.texturepalace.com/ash-wood-premium-and-free-stock-textures/)

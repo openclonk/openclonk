@@ -5,14 +5,12 @@ Category=C4D_Object
 Width=6
 Height=6
 Offset=-3,-3
-Picture=6,0,16,16
+Picture=24,0,64,64
 Vertices=3
 VertexX=0,3,-3
 VertexY=-2,2,2
 VertexFriction=20,20,20
 Value=3
 Mass=10
-Components=IronBomb=1;
+Components=Metal=1;Sulphur=1;
 Rotate=1
-ContactIncinerate=1
-BlastIncinerate=1

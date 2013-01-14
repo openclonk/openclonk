@@ -1,2 +1,2 @@
 Name=Wooden Barrel
-Description=You can transport liquids in a wooden barrel.
+Description=Container for transporting liquids.

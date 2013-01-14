@@ -27,9 +27,9 @@ noinst_LIBRARIES = lib.a
 if RECENT_GCC
 WARNING_FLAGS = -Wall -Wextra -Wredundant-decls -Wendif-labels -Wpointer-arith \
 -Wcast-qual -Wcast-align -Wwrite-strings -Winit-self -Wsign-promo \
--Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo
+-Wno-reorder -Wno-unused-parameter -Wnon-virtual-dtor -Woverloaded-virtual
 ##-Wmissing-format-attribute -Wdisabled-optimization -Wlogical-op
-##-Weffc++ -Wold-style-cast -Woverloaded-virtual -Wunsafe-loop-optimizations
+##-Weffc++ -Wold-style-cast -Wunsafe-loop-optimizations
 else
 WARNING_FLAGS = -Wall
 endif
@@ -42,34 +42,23 @@ AM_CPPFLAGS = \
 -I$(builddir) \
 -I$(srcdir)/src \
 -I$(srcdir)/src/c4group \
--I$(srcdir)/src/network \
--I$(srcdir)/src/lib \
--I$(srcdir)/src/platform \
 -I$(srcdir)/src/config \
--I$(srcdir)/src/res \
 -I$(srcdir)/src/control \
--I$(srcdir)/src/gui \
 -I$(srcdir)/src/editor \
--I$(srcdir)/src/game/landscape \
--I$(srcdir)/src/game/player \
--I$(srcdir)/src/game/script \
 -I$(srcdir)/src/game \
--I$(srcdir)/src/game/object \
--I$(srcdir)/src/lib/texture \
+-I$(srcdir)/src/gamescript \
+-I$(srcdir)/src/graphics \
+-I$(srcdir)/src/gui \
+-I$(srcdir)/src/landscape \
+-I$(srcdir)/src/lib \
+-I$(srcdir)/src/network \
+-I$(srcdir)/src/object \
+-I$(srcdir)/src/platform \
+-I$(srcdir)/src/player \
+-I$(srcdir)/src/res \
 -I$(srcdir)/src/script \
 -I$(srcdir)/thirdparty \
-$(GLEW_CFLAGS) \
-$(GTK_CFLAGS) \
-$(OPENAL_CFLAGS) \
-$(FREETYPE_CFLAGS) \
-$(SDL_CFLAGS) \
-$(BOOST_CPPFLAGS) \
-$(LIBUPNP_CFLAGS)
-
-##BUILT_SOURCES = hgrevision.h
-##hgrevision.h: $(srcdir)/.hg/dirstate
-##	$(srcdir)/tools/get_hg_revision.sh > hgrevision.h
-##$(srcdir)/.hg/dirstate:
+$(BOOST_CPPFLAGS)
 
 BUILT_SOURCES = C4Version.h
 CLEANFILES =
@@ -125,8 +114,6 @@ src/c4group/C4Update.cpp \
 src/c4group/C4Update.h \
 src/c4group/CStdFile.cpp \
 src/c4group/CStdFile.h \
-src/config/C4SecurityCertificates.cpp \
-src/config/C4SecurityCertificates.h \
 src/lib/C4InputValidation.cpp \
 src/lib/C4InputValidation.h \
 src/lib/SHA1.h \
@@ -149,18 +136,11 @@ src/platform/StdRegistry.h \
 src/platform/StdScheduler.cpp \
 src/platform/StdScheduler.h \
 src/zlib/gzio.c \
+src/zlib/gzio.h \
 src/zlib/zutil.h
 
 clonk_SOURCES = \
-src/C4Application.cpp \
-src/C4Application.h \
-src/C4FullScreen.cpp \
-src/C4FullScreen.h \
-src/C4Game.cpp \
-src/C4Game.h \
 src/C4Globals.cpp \
-src/C4GraphicsSystem.cpp \
-src/C4GraphicsSystem.h \
 src/c4group/C4ComponentHost.cpp \
 src/c4group/C4ComponentHost.h \
 src/c4group/C4Components.h \
@@ -175,7 +155,6 @@ src/c4group/C4Language.h \
 src/C4Include.h \
 src/C4Prototypes.h \
 src/C4Version.h.in \
-src/C4WinMain.cpp \
 src/config/C4Config.cpp \
 src/config/C4Config.h \
 src/config/C4Constants.h \
@@ -204,102 +183,62 @@ src/editor/C4Console.cpp \
 src/editor/C4ConsoleGUICommon.h \
 src/editor/C4ConsoleGUI.h \
 src/editor/C4Console.h \
-src/editor/C4DevmodeDlg.cpp \
-src/editor/C4DevmodeDlg.h \
 src/editor/C4EditCursor.cpp \
 src/editor/C4EditCursor.h \
 src/editor/C4ObjectListDlg.cpp \
 src/editor/C4ObjectListDlg.h \
 src/editor/C4ToolsDlg.cpp \
 src/editor/C4ToolsDlg.h \
+src/editor/C4ViewportWindow.cpp \
+src/editor/C4ViewportWindow.h \
+src/game/C4Application.cpp \
+src/game/C4Application.h \
+src/game/C4FullScreen.cpp \
+src/game/C4FullScreen.h \
+src/game/C4Game.cpp \
+src/game/C4Game.h \
 src/game/C4GameVersion.h \
+src/game/C4GraphicsSystem.cpp \
+src/game/C4GraphicsSystem.h \
 src/game/C4Physics.h \
-src/game/landscape/C4Landscape.cpp \
-src/game/landscape/C4Landscape.h \
-src/game/landscape/C4LandscapeRender.cpp \
-src/game/landscape/C4LandscapeRenderClassic.cpp \
-src/game/landscape/C4LandscapeRender.h \
-src/game/landscape/C4Map.cpp \
-src/game/landscape/C4MapCreatorS2.cpp \
-src/game/landscape/C4MapCreatorS2.h \
-src/game/landscape/C4Map.h \
-src/game/landscape/C4MassMover.cpp \
-src/game/landscape/C4MassMover.h \
-src/game/landscape/C4Material.cpp \
-src/game/landscape/C4Material.h \
-src/game/landscape/C4MaterialList.cpp \
-src/game/landscape/C4MaterialList.h \
-src/game/landscape/C4Particles.cpp \
-src/game/landscape/C4Particles.h \
-src/game/landscape/C4PathFinder.cpp \
-src/game/landscape/C4PathFinder.h \
-src/game/landscape/C4PXS.cpp \
-src/game/landscape/C4PXS.h \
-src/game/landscape/C4Region.cpp \
-src/game/landscape/C4Region.h \
-src/game/landscape/C4Scenario.cpp \
-src/game/landscape/C4Scenario.h \
-src/game/landscape/C4Sky.cpp \
-src/game/landscape/C4Sky.h \
-src/game/landscape/C4SolidMask.cpp \
-src/game/landscape/C4SolidMask.h \
-src/game/landscape/C4Texture.cpp \
-src/game/landscape/C4Texture.h \
-src/game/landscape/C4Weather.cpp \
-src/game/landscape/C4Weather.h \
-src/game/object/C4Action.cpp \
-src/game/object/C4Command.cpp \
-src/game/object/C4Command.h \
-src/game/object/C4Def.cpp \
-src/game/object/C4DefGraphics.cpp \
-src/game/object/C4DefGraphics.h \
-src/game/object/C4DefList.cpp \
-src/game/object/C4DefList.h \
-src/game/object/C4Def.h \
-src/game/object/C4GameObjects.cpp \
-src/game/object/C4GameObjects.h \
-src/game/object/C4Id.cpp \
-src/game/object/C4Id.h \
-src/game/object/C4IDList.cpp \
-src/game/object/C4IDList.h \
-src/game/object/C4InfoCore.cpp \
-src/game/object/C4InfoCore.h \
-src/game/object/C4MeshAnimation.cpp \
-src/game/object/C4MeshAnimation.h \
-src/game/object/C4Movement.cpp \
-src/game/object/C4ObjectCom.cpp \
-src/game/object/C4ObjectCom.h \
-src/game/object/C4Object.cpp \
-src/game/object/C4Object.h \
-src/game/object/C4ObjectInfo.cpp \
-src/game/object/C4ObjectInfo.h \
-src/game/object/C4ObjectInfoList.cpp \
-src/game/object/C4ObjectInfoList.h \
-src/game/object/C4ObjectList.cpp \
-src/game/object/C4ObjectList.h \
-src/game/object/C4ObjectMenu.cpp \
-src/game/object/C4ObjectMenu.h \
-src/game/object/C4ObjectScript.cpp \
-src/game/object/C4ObjectPtr.cpp \
-src/game/object/C4ObjectPtr.h \
-src/game/object/C4Sector.cpp \
-src/game/object/C4Sector.h \
-src/game/object/C4Shape.cpp \
-src/game/object/C4Shape.h \
-src/game/player/C4Player.cpp \
-src/game/player/C4Player.h \
-src/game/player/C4PlayerList.cpp \
-src/game/player/C4PlayerList.h \
-src/game/player/C4RankSystem.cpp \
-src/game/player/C4RankSystem.h \
-src/game/script/C4Effect.cpp \
-src/game/script/C4Effects.h \
-src/game/script/C4FindObject.cpp \
-src/game/script/C4FindObject.h \
-src/game/script/C4GameScript.cpp \
-src/game/script/C4Script.h \
-src/game/script/C4TransferZone.cpp \
-src/game/script/C4TransferZone.h \
+src/game/C4Viewport.cpp \
+src/game/C4Viewport.h \
+src/gamescript/C4Effect.cpp \
+src/gamescript/C4Effects.h \
+src/gamescript/C4FindObject.cpp \
+src/gamescript/C4FindObject.h \
+src/gamescript/C4GameScript.cpp \
+src/gamescript/C4Script.h \
+src/gamescript/C4TransferZone.cpp \
+src/gamescript/C4TransferZone.h \
+src/graphics/Bitmap256.cpp \
+src/graphics/Bitmap256.h \
+src/graphics/C4Draw.cpp \
+src/graphics/C4DrawD3D.cpp \
+src/graphics/C4DrawD3D.h \
+src/graphics/C4DrawD3DShader.cpp \
+src/graphics/C4DrawD3DShader.h \
+src/graphics/C4DrawGL.cpp \
+src/graphics/C4DrawGLCtx.cpp \
+src/graphics/C4DrawGL.h \
+src/graphics/C4DrawT.cpp \
+src/graphics/C4DrawT.h \
+src/graphics/C4Draw.h \
+src/graphics/C4Facet.cpp \
+src/graphics/C4FacetEx.cpp \
+src/graphics/C4FacetEx.h \
+src/graphics/C4Facet.h \
+src/graphics/C4FontLoader.cpp \
+src/graphics/C4FontLoader.h \
+src/graphics/C4GraphicsResource.cpp \
+src/graphics/C4GraphicsResource.h \
+src/graphics/C4Surface.cpp \
+src/graphics/C4Surface.h \
+src/graphics/C4SurfaceLoaders.cpp \
+src/graphics/CSurface8.cpp \
+src/graphics/CSurface8.h \
+src/graphics/StdPNG.cpp \
+src/graphics/StdPNG.h \
 src/gui/C4ChatDlg.cpp \
 src/gui/C4ChatDlg.h \
 src/gui/C4DownloadDlg.cpp \
@@ -318,6 +257,8 @@ src/gui/C4GameOptions.cpp \
 src/gui/C4GameOptions.h \
 src/gui/C4GameOverDlg.cpp \
 src/gui/C4GameOverDlg.h \
+src/gui/C4GfxErrorDlg.cpp \
+src/gui/C4GfxErrorDlg.h \
 src/gui/C4GuiButton.cpp \
 src/gui/C4GuiCheckBox.cpp \
 src/gui/C4GuiComboBox.cpp \
@@ -362,13 +303,39 @@ src/gui/C4StartupPlrSelDlg.cpp \
 src/gui/C4StartupPlrSelDlg.h \
 src/gui/C4StartupScenSelDlg.cpp \
 src/gui/C4StartupScenSelDlg.h \
-src/gui/C4UpdateDlg.cpp \
-src/gui/C4UpdateDlg.h \
 src/gui/C4UpperBoard.cpp \
 src/gui/C4UpperBoard.h \
-src/gui/C4UserMessages.h \
-src/gui/C4Viewport.cpp \
-src/gui/C4Viewport.h \
+src/landscape/C4Landscape.cpp \
+src/landscape/C4Landscape.h \
+src/landscape/C4LandscapeRenderClassic.cpp \
+src/landscape/C4LandscapeRender.cpp \
+src/landscape/C4LandscapeRender.h \
+src/landscape/C4Map.cpp \
+src/landscape/C4MapCreatorS2.cpp \
+src/landscape/C4MapCreatorS2.h \
+src/landscape/C4Map.h \
+src/landscape/C4MassMover.cpp \
+src/landscape/C4MassMover.h \
+src/landscape/C4Material.cpp \
+src/landscape/C4Material.h \
+src/landscape/C4MaterialList.cpp \
+src/landscape/C4MaterialList.h \
+src/landscape/C4Particles.cpp \
+src/landscape/C4Particles.h \
+src/landscape/C4PathFinder.cpp \
+src/landscape/C4PathFinder.h \
+src/landscape/C4PXS.cpp \
+src/landscape/C4PXS.h \
+src/landscape/C4Scenario.cpp \
+src/landscape/C4Scenario.h \
+src/landscape/C4Sky.cpp \
+src/landscape/C4Sky.h \
+src/landscape/C4SolidMask.cpp \
+src/landscape/C4SolidMask.h \
+src/landscape/C4Texture.cpp \
+src/landscape/C4Texture.h \
+src/landscape/C4Weather.cpp \
+src/landscape/C4Weather.h \
 src/lib/C4LogBuf.cpp \
 src/lib/C4LogBuf.h \
 src/lib/C4Log.cpp \
@@ -406,15 +373,6 @@ src/lib/StdMeshMath.h \
 src/lib/StdMeshUpdate.cpp \
 src/lib/StdMeshUpdate.h \
 src/lib/StdResStr.h \
-src/lib/texture/C4Facet.cpp \
-src/lib/texture/C4FacetEx.cpp \
-src/lib/texture/C4FacetEx.h \
-src/lib/texture/C4Facet.h \
-src/lib/texture/C4GraphicsResource.cpp \
-src/lib/texture/C4GraphicsResource.h \
-src/lib/texture/C4SurfaceLoaders.cpp \
-src/lib/texture/StdPNG.cpp \
-src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
 src/network/C4Client.h \
 src/network/C4GameControlNetwork.cpp \
@@ -448,12 +406,50 @@ src/network/C4Network2Stats.h \
 src/network/C4Network2UPnP.h \
 src/network/C4Packet2.cpp \
 src/network/C4PacketBase.h \
-src/platform/Bitmap256.cpp \
-src/platform/Bitmap256.h \
+src/object/C4Action.cpp \
+src/object/C4Command.cpp \
+src/object/C4Command.h \
+src/object/C4Def.cpp \
+src/object/C4DefGraphics.cpp \
+src/object/C4DefGraphics.h \
+src/object/C4Def.h \
+src/object/C4DefList.cpp \
+src/object/C4DefList.h \
+src/object/C4GameObjects.cpp \
+src/object/C4GameObjects.h \
+src/object/C4Id.cpp \
+src/object/C4Id.h \
+src/object/C4IDList.cpp \
+src/object/C4IDList.h \
+src/object/C4InfoCore.cpp \
+src/object/C4InfoCore.h \
+src/object/C4MeshAnimation.cpp \
+src/object/C4MeshAnimation.h \
+src/object/C4Movement.cpp \
+src/object/C4ObjectCom.cpp \
+src/object/C4ObjectCom.h \
+src/object/C4Object.cpp \
+src/object/C4Object.h \
+src/object/C4ObjectInfo.cpp \
+src/object/C4ObjectInfo.h \
+src/object/C4ObjectInfoList.cpp \
+src/object/C4ObjectInfoList.h \
+src/object/C4ObjectList.cpp \
+src/object/C4ObjectList.h \
+src/object/C4ObjectMenu.cpp \
+src/object/C4ObjectMenu.h \
+src/object/C4ObjectPtr.cpp \
+src/object/C4ObjectPtr.h \
+src/object/C4ObjectScript.cpp \
+src/object/C4Sector.cpp \
+src/object/C4Sector.h \
+src/object/C4Shape.cpp \
+src/object/C4Shape.h \
+src/platform/C4App.cpp \
+src/platform/C4App.h \
+src/platform/C4AppWin32Impl.h \
 src/platform/C4FileMonitor.cpp \
 src/platform/C4FileMonitor.h \
-src/platform/C4Fonts.cpp \
-src/platform/C4Fonts.h \
 src/platform/C4GamePadCon.cpp \
 src/platform/C4GamePadCon.h \
 src/platform/C4MusicFile.cpp \
@@ -464,38 +460,23 @@ src/platform/C4SoundLoaders.cpp \
 src/platform/C4SoundLoaders.h \
 src/platform/C4SoundSystem.cpp \
 src/platform/C4SoundSystem.h \
+src/platform/C4StdInProc.cpp \
+src/platform/C4StdInProc.h \
 src/platform/C4Video.cpp \
 src/platform/C4Video.h \
-src/platform/C4VideoPlayback.cpp \
-src/platform/C4VideoPlayback.h \
-src/platform/C4ViewportWindow.cpp \
-src/platform/C4ViewportWindow.h \
+src/platform/C4Window.h \
 src/platform/C4windowswrapper.h \
+src/platform/PlatformAbstraction.cpp \
 src/platform/PlatformAbstraction.h \
-src/platform/C4App.h \
-src/platform/C4App.cpp \
-src/platform/StdD3D.cpp \
-src/platform/StdD3D.h \
-src/platform/StdD3DShader.cpp \
-src/platform/StdD3DShader.h \
-src/platform/StdDDraw2.cpp \
-src/platform/StdDDraw2.h \
-src/platform/StdFont.cpp \
-src/platform/StdFont.h \
-src/platform/StdGL.cpp \
-src/platform/StdGLCtx.cpp \
-src/platform/StdGL.h \
-src/platform/StdNoGfx.cpp \
-src/platform/StdNoGfx.h \
-src/platform/C4Surface.cpp \
-src/platform/C4Surface.h \
-src/platform/StdSurface8.cpp \
-src/platform/StdSurface8.h \
 src/platform/StdSync.h \
-src/platform/C4AppT.cpp \
 src/platform/StdVideo.cpp \
 src/platform/StdVideo.h \
-src/platform/C4Window.h \
+src/player/C4Player.cpp \
+src/player/C4Player.h \
+src/player/C4PlayerList.cpp \
+src/player/C4PlayerList.h \
+src/player/C4RankSystem.cpp \
+src/player/C4RankSystem.h \
 src/res/Brush.h \
 src/res/Cursor.h \
 src/res/Dynamic.h \
@@ -517,6 +498,8 @@ src/script/C4AulDebug.h \
 src/script/C4AulDefFunc.h \
 src/script/C4AulExec.cpp \
 src/script/C4AulExec.h \
+src/script/C4AulFunc.cpp \
+src/script/C4AulFunc.h \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
@@ -533,52 +516,82 @@ src/script/C4Value.cpp \
 src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
+thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
 thirdparty/tinyxml/tinyxml.cpp \
-thirdparty/tinyxml/tinyxml.h \
 thirdparty/tinyxml/tinyxmlerror.cpp \
+thirdparty/tinyxml/tinyxml.h \
 thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
 clonk_SOURCES += \
-src/editor/C4ConsoleWin32.cpp \
 src/platform/C4CrashHandlerWin32.cpp \
 src/res/engine.rc \
-src/res/resource.h \
+src/res/resource.h
+endif
+
+if MACOSX
+clonk_SOURCES += \
+src/platform/C4AppDelegate.h \
+src/platform/C4AppDelegate.mm \
+src/platform/C4FileMonitorMac.mm
+else
+clonk_SOURCES += \
+src/game/ClonkMain.cpp
+endif
+
+if SDL_MAIN_LOOP
+clonk_SOURCES += \
+src/platform/C4AppSDL.cpp \
+src/platform/C4WindowSDL.cpp
+else
+if GTK
+clonk_SOURCES += \
+src/editor/C4ConsoleGTK.cpp \
+src/editor/C4ConsoleGTKDlg.cpp \
+src/editor/C4ConsoleGTKDlg.h \
+src/platform/C4AppGTK.cpp \
+src/platform/C4AppGTKImpl.h \
+src/platform/C4WindowGTK.cpp
+else
+if CONSOLE
+clonk_SOURCES += \
+src/platform/C4AppT.cpp
+else
+if WIN32
+clonk_SOURCES += \
+src/editor/C4ConsoleWin32.cpp \
+src/platform/C4WindowWin32.cpp \
 src/platform/StdJoystick.cpp \
 src/platform/StdJoystick.h
 endif
 if MACOSX
 clonk_SOURCES += \
-src/platform/C4AppMac.mm \
-src/platform/C4FileMonitorMac.mm \
-src/platform/C4WindowMac.mm \
-src/platform/ClonkAppDelegate.h \
-src/platform/ClonkAppDelegate.mm \
-src/platform/ConsoleWindowController.h \
-src/platform/ConsoleWindowController.mm \
-src/platform/ClonkWindowController.h \
-src/platform/ClonkWindowController.mm \
-src/platform/ClonkOpenGLView.h \
-src/platform/ClonkOpenGLView.mm \
-src/platform/CocoaKeycodeMap.h \
 src/editor/C4ConsoleCocoa.mm \
-src/platform/ClonkMainMenuActions.h \
-src/platform/ClonkMainMenuActions.mm
+src/editor/C4EditorWindowController.h \
+src/editor/C4EditorWindowController.mm \
+src/graphics/C4DrawGLMac.h \
+src/graphics/C4DrawGLMac.mm \
+src/platform/C4AppDelegate+MainMenuActions.h \
+src/platform/C4AppDelegate+MainMenuActions.mm \
+src/platform/C4AppMac.mm \
+src/platform/C4WindowController.h \
+src/platform/C4WindowController.mm \
+src/platform/C4WindowMac.mm \
+src/platform/CocoaKeycodeMap.h \
+src/platform/ObjectiveCAssociated.h
 endif
-if SDL_MAIN_LOOP
-clonk_SOURCES += src/platform/C4AppSDL.cpp src/platform/C4WindowSDL.cpp
-else
-if WIN32
-clonk_SOURCES += src/platform/C4WindowWin32.cpp
-else
-clonk_SOURCES += src/platform/C4AppX.cpp src/platform/C4WindowX.cpp src/platform/C4AppXImpl.h
 endif
 endif
-if DEVELOPER_MODE
-clonk_SOURCES += src/platform/C4WindowGTK.cpp src/platform/C4WindowGTK.h src/editor/C4ConsoleGTK.cpp
 endif
+
+if AUTOUPDATE
+clonk_SOURCES += \
+src/gui/C4UpdateDlg.cpp \
+src/gui/C4UpdateDlg.h
+endif
+
 if LIBUPNP
 clonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
 else
@@ -589,8 +602,18 @@ clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
 endif
 endif
 
+clonk_CPPFLAGS = \
+$(AM_CPPFLAGS) \
+$(GLEW_CFLAGS) \
+$(GTK_CFLAGS) \
+$(OPENAL_CFLAGS) \
+$(FREETYPE_CFLAGS) \
+$(SDL_CFLAGS) \
+$(LIBUPNP_CFLAGS)
+
 clonk_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(GTK_LIBS) \
   $(OPENAL_LIBS) \
@@ -605,29 +628,9 @@ clonk_LDADD = \
 .rc.o:
 	$(WINDRES) -I $(srcdir)/src/res -I $(builddir) -i $< -o $@
 
-c4group_CPPFLAGS = \
-  -I$(builddir) \
-  -I$(srcdir)/src \
-  -I$(srcdir)/src/c4group \
-  -I$(srcdir)/src/network \
-  -I$(srcdir)/src/lib \
-  -I$(srcdir)/src/platform \
-  -I$(srcdir)/src/config \
-  -I$(srcdir)/src/res \
-  -I$(srcdir)/src/control \
-  -I$(srcdir)/src/gui \
-  -I$(srcdir)/src/editor \
-  -I$(srcdir)/src/game/landscape \
-  -I$(srcdir)/src/game/player \
-  -I$(srcdir)/src/game/script \
-  -I$(srcdir)/src/game \
-  -I$(srcdir)/src/game/object \
-  -I$(srcdir)/src/lib/texture \
-  -I$(srcdir)/src/script
-
 c4group_SOURCES = \
 src/lib/C4SimpleLog.cpp \
-src/c4group/c4group_ng.cpp
+src/c4group/C4GroupMain.cpp
 
 if WIN32
 c4group_SOURCES += src/c4group/Resource.rc
@@ -635,6 +638,7 @@ endif
 
 c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(LIBICONV) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -647,6 +651,7 @@ src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
@@ -658,10 +663,11 @@ src/netpuncher/main.cpp
 
 puncher_LDADD = \
   lib.a \
+  $(LDADD) \
   $(PTHREAD_LIBS)
 
 if WIN32
-puncher_LDADD += -lwinmm -lws2_32
+puncher_LDADD += -lws2_32
 endif
 
 ## tstc4netio
@@ -672,30 +678,34 @@ src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
 
 if WIN32
-tstc4netio_LDADD += -lwinmm -lws2_32
+tstc4netio_LDADD += -lws2_32
 endif
 
 ## c4script shell
 c4script_SOURCES = \
+include/c4script/c4script.h \
 src/lib/C4SimpleLog.cpp \
 src/lib/C4Real.cpp \
 src/lib/C4Random.cpp \
-src/script/shell.cpp \
 src/script/C4Aul.cpp \
 src/script/C4AulExec.cpp \
+src/script/C4AulFunc.cpp \
 src/script/C4AulLink.cpp \
 src/script/C4AulParse.cpp \
 src/script/C4StringTable.cpp \
 src/script/C4PropList.cpp \
 src/script/C4ScriptHost.cpp \
+src/script/C4ScriptMain.cpp \
+src/script/C4ScriptStandalone.cpp \
 src/script/C4ValueArray.cpp \
 src/script/C4Value.cpp \
 src/script/C4ValueMap.cpp \
-src/game/object/C4Id.cpp \
+src/object/C4Id.cpp \
 src/script/C4Script.cpp \
 src/c4group/C4GroupSet.cpp \
 src/c4group/C4ComponentHost.cpp \
@@ -703,6 +713,7 @@ src/c4group/C4LangStringTable.cpp
 
 c4script_LDADD = \
   lib.a \
+  $(LDADD) \
   $(Z_LIBS)
 
 if WIN32
@@ -720,7 +731,9 @@ c4groups = \
   Sound.ocg \
   System.ocg \
   Objects.ocd \
-  BackToTheRocks.ocf \
+  Arena.ocf \
+  Parkour.ocf \
+  Settlement.ocf \
   Tutorial.ocf
 
 CLEANFILES += $(c4groups)

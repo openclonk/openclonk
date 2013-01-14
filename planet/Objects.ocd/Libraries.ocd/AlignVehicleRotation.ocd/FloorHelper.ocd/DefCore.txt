@@ -1,0 +1,14 @@
+[DefCore]
+id=Vehicle_FloorHelper
+Version=5,2,0,1
+Category=C4D_Vehicle
+Width=6
+Height=4
+Offset=-3,-2
+Vertices=1
+VertexX=1
+VertexY=1
+VertexFriction=0
+VertexCNAT=6
+SolidMask=0,0,6,4,0,0
+BorderBound=7

@@ -2,7 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002  Peter Wortmann
- * Copyright (c) 2009-2010  Günther Brammer
+ * Copyright (c) 2009-2012  Günther Brammer
+ * Copyright (c) 2012  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -50,26 +51,105 @@ public:
 
 };
 
+template <class T>
+class C4RefCntPointer
+{
+public:
+	C4RefCntPointer(T* p): p(p) { IncRef(); }
+	C4RefCntPointer(): p(0) { }
+	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
+#ifdef HAVE_RVALUE_REF
+	// Move constructor
+	template <class U> C4RefCntPointer(C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
+	// Move assignment
+	template <class U> C4RefCntPointer& operator = (C4RefCntPointer<U> RREF r)
+	{
+		if (p != r.p)
+		{
+			DecRef();
+			p = r.p;
+			r.p = 0;
+		}
+		return *this;
+	}
+#endif
+	~C4RefCntPointer() { DecRef(); }
+	template <class U> C4RefCntPointer& operator = (U* new_p)
+	{
+		if (p != new_p)
+		{
+			DecRef();
+			p = new_p;
+			IncRef();
+		}
+		return *this;
+	}
+	template <class U> C4RefCntPointer& operator = (const C4RefCntPointer<U>& r)
+	{
+		return *this = r.p;
+	}
+	T& operator * () { return *p; }
+	const T& operator * () const { return *p; }
+	T* operator -> () { return p; }
+	const T* operator -> () const { return p; }
+	operator T * () { return p; }
+	operator const T * () const { return p; }
+private:
+	void IncRef() { if (p) p->IncRef(); }
+	void DecRef() { if (p) p->DecRef(); }
+	T * p;
+};
+
 template<typename T> class C4Set
 {
 	unsigned int Capacity;
 	unsigned int Size;
 	T * Table;
-	T * AddInternal(T e)
+	T * GetPlaceFor(T const & e)
 	{
 		unsigned int h = Hash(e);
 		T * p = &Table[h % Capacity];
-		while (*p && *p != e)
+		while (*p && !Equals(*p, e))
 		{
 			p = &Table[++h % Capacity];
 		}
+		return p;
+	}
+	T * AddInternal(T const & e)
+	{
+		T * p = GetPlaceFor(e);
 		*p = e;
 		return p;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * AddInternal(T && e)
+	{
+		T * p = GetPlaceFor(e);
+		*p = std::move(e);
+		return p;
+	}
+#endif
+	void MaintainCapacity()
+	{
+		if (Capacity - Size < Max(2u, Capacity / 4))
+		{
+			unsigned int OCapacity = Capacity;
+			Capacity *= 2;
+			T * OTable = Table;
+			Table = new T[Capacity];
+			Clear();
+			for (unsigned int i = 0; i < OCapacity; ++i)
+			{
+				if (OTable[i])
+					AddInternal(std::move(OTable[i]));
+			}
+			delete [] OTable;
+		}
+	}
 public:
-	template<typename H> static unsigned int Hash(H);
-	template<typename H> static bool Equals(T, H);
-	static bool Equals(T a, T b) { return a == b; }
+	template<typename H> static unsigned int Hash(const H &);
+	template<typename H> static bool Equals(const T &, const H &);
+	static bool Equals(const T & a, const T & b) { return a == b; }
 	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
 	{
 		Clear();
@@ -77,6 +157,20 @@ public:
 	~C4Set()
 	{
 		delete[] Table;
+	}
+	C4Set(const C4Set & b): Capacity(0), Size(0), Table(0)
+	{
+		*this = b;
+	}
+	C4Set & operator = (const C4Set & b)
+	{
+		Capacity = b.Capacity;
+		Size = b.Size;
+		delete[] Table;
+		Table = new T[Capacity];
+		for (unsigned int i = 0; i < Capacity; ++i)
+			Table[i] = b.Table[i];
+		return *this;
 	}
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
@@ -105,26 +199,22 @@ public:
 		return !!*r;
 	}
 	unsigned int GetSize() const { return Size; }
-	T * Add(T e)
+	T * Add(T const & e)
 	{
-		if (Capacity - Size < Max(2u, Capacity / 4))
-		{
-			unsigned int OCapacity = Capacity;
-			Capacity *= 2;
-			T * OTable = Table;
-			Table = new T[Capacity];
-			Clear();
-			for (unsigned int i = 0; i < OCapacity; ++i)
-			{
-				if (OTable[i])
-					AddInternal(OTable[i]);
-			}
-			delete [] OTable;
-		}
+		MaintainCapacity();
 		T * r = AddInternal(e);
 		++Size;
 		return r;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * Add(T && e)
+	{
+		MaintainCapacity();
+		T * r = AddInternal(std::move(e));
+		++Size;
+		return r;
+	}
+#endif
 	template<typename H> void Remove(H e)
 	{
 		unsigned int h = Hash(e);
@@ -141,7 +231,7 @@ public:
 		{
 			T m = *r;
 			*r = 0;
-			AddInternal(m);
+			AddInternal(std::move(m));
 		}
 	}
 	T const * First() const { return Next(Table - 1); }
@@ -153,15 +243,43 @@ public:
 		}
 		return 0;
 	}
+	void Swap(C4Set<T> * S2)
+	{
+		unsigned int Capacity2 = S2->Capacity;
+		unsigned int Size2 = S2->Size;
+		T * Table2 = S2->Table;
+		S2->Capacity = Capacity;
+		S2->Size = Size;
+		S2->Table = Table;
+		Capacity = Capacity2;
+		Size = Size2;
+		Table = Table2;
+	}
+	static bool SortFunc(const T *p1, const T*p2)
+	{
+		// elements are guarantueed to be non-NULL
+		return *p1<*p2;
+	}
+	std::list<const T *> GetSortedListOfElementPointers() const
+	{
+		// return a list of pointers to all elements in this set sorted by the standard less-than operation
+		// of the elements
+		// elements of resulting lists are guarantueed to be non-NULL
+		// list remains valid as long as this set is not changed
+		std::list<const T *> result;
+		for (const T *p = First(); p; p = Next(p)) result.push_back(p);
+		result.sort(C4Set<T>::SortFunc);
+		return result;
+	}
 };
 
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * const & e)
 {
 	return e->Hash;
 }
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * const & e)
 {
 	return e->Hash;
 }
@@ -230,6 +348,12 @@ enum C4PropertyName
 	P_Blasted,
 	P_IncineratingObj,
 	P_Plane,
+	P_Tooltip,
+	P_Placement,
+	P_BlastIncinerate,
+	P_ContactIncinerate,
+	P_Global,
+	P_JumpSpeed,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

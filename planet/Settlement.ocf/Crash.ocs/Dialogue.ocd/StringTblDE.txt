@@ -1,0 +1,2 @@
+Name=Dialogue
+MsgSpeak=%s ansprechen

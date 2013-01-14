@@ -24,7 +24,7 @@
 #ifndef INC_C4GamePadCon
 #define INC_C4GamePadCon
 
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 #include <StdJoystick.h>
 #endif
 
@@ -41,7 +41,7 @@ typedef union SDL_Event SDL_Event;
 
 class C4GamePadControl
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 private:
 	struct Pad
 	{
@@ -78,7 +78,7 @@ public:
 
 class C4GamePadOpener
 {
-#ifdef _WIN32
+#ifdef USE_WIN32_WINDOWS
 	int iGamePad;
 	int GetGamePadIndex() const { return iGamePad; }
 #endif

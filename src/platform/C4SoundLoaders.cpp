@@ -2,8 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2004  Peter Wortmann
- * Copyright (c) 2005-2006, 2008  Sven Eberhardt
- * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2005-2006, 2008, 2012  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2012  Günther Brammer
  * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -24,10 +24,15 @@
 
 #include <C4Application.h>
 
-#if defined(USE_OPEN_AL) && defined(__APPLE__)
+#if defined(USE_OPEN_AL) 
+#if defined(__APPLE__)
 #import <CoreFoundation/CoreFoundation.h>
 #import <AudioToolbox/AudioToolbox.h>
+#else
+#include <AL/alut.h>
 #endif
+#endif
+
 
 using namespace C4SoundLoaders;
 
@@ -136,8 +141,6 @@ size_t VorbisLoader::read_func(void* ptr, size_t byte_size, size_t size_to_read,
 
 int VorbisLoader::seek_func(void* datasource, ogg_int64_t offset, int whence)
 {
-	size_t spaceToEOF;
-	ogg_int64_t actualOffset; // How much we can actually offset it by
 	CompressedData* data = (CompressedData*)datasource;
 	
 	switch (whence)
@@ -215,6 +218,47 @@ bool VorbisLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, u
 }
 
 VorbisLoader VorbisLoader::singleton;
+
+#ifndef __APPLE__
+bool WavLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t)
+{
+	// load WAV resource
+	Application.MusicSystem.SelectContext();
+	ALuint wav = alutCreateBufferFromFileImage((const ALvoid *)data, data_length);
+	if (wav == AL_NONE)
+	{
+		// wouldn't want an error on any .ogg file
+		//LogF("load wav error: %s", alutGetErrorString(alutGetError()));
+		return false;
+	}
+
+	// get information about sound
+	ALint freq, chans, bits, size;
+	alGetBufferi(wav, AL_FREQUENCY, &freq);
+	result->sample_rate = freq;
+	alGetBufferi(wav, AL_CHANNELS, &chans);
+	alGetBufferi(wav, AL_BITS, &bits);
+	alGetBufferi(wav, AL_SIZE, &size);
+	if (chans == 1)
+		if (bits == 8)
+			result->format = AL_FORMAT_MONO8;
+		else
+			result->format = AL_FORMAT_MONO16;
+	else
+		if (bits == 8)
+			result->format = AL_FORMAT_STEREO8;
+		else
+			result->format = AL_FORMAT_STEREO16;
+	// can't find any function to determine sample length
+	// just calc ourselves
+	result->sample_length = double(size) / double(bits*chans*freq/8);
+	// buffer loaded
+	result->final_handle = wav;
+	return true;
+}
+
+WavLoader WavLoader::singleton;
+#endif
 #endif
 
 #ifdef HAVE_LIBSDL_MIXER
@@ -226,7 +270,11 @@ bool SDLMixerSoundLoader::ReadInfo(SoundInfo* result, BYTE* data, size_t data_le
 	// Be paranoid about SDL_Mixer initialisation
 	if (!Application.MusicSystem.IsMODInitialized())
 		{ return false; }
-	if (!(result->final_handle = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, data_length), 1)))
+	SDL_RWops * rwops = SDL_RWFromConstMem(data, data_length);
+	// work around double free in SDL_Mixer by passing 0 here
+	result->final_handle = Mix_LoadWAV_RW(rwops, 0);
+	SDL_RWclose(rwops);
+	if (!result->final_handle)
 		{ return false; }
 	//FIXME: Is this actually correct?
 	result->sample_length = result->final_handle->alen / (44100 * 2);

@@ -5,7 +5,7 @@
 	@author Maikel
 */
 
-#include GUI_Menu
+#include GUI_CircleMenu
 
 local constructinfo_shown;
 
@@ -14,7 +14,7 @@ local constructinfo_shown;
 	@param producer the producer for which to create the production menu.
 	@return a pointer to the created menu, or \c nil if failed.
 */
-global func CreateConstructionMenu(object constructor)
+global func CreateConstructionMenu(object constructor, bool create_at_mouse_pos)
 {
 	// Safety checks.
 	if (!this) return;
@@ -26,6 +26,13 @@ global func CreateConstructionMenu(object constructor)
 	controller->SetMenuObject(this);
 	this->SetMenu(controller);
 	controller->SetCommander(constructor);
+	
+	if(create_at_mouse_pos)
+	{
+		var xy = GetPlayerCursorPos(constructor->GetOwner());
+		if(xy)
+			controller->SetPosition(xy[0],xy[1],true);
+	}
 	
 	// Add all possible structures to the menu.
 	controller->AddMenuStructures(constructor, this);
@@ -39,7 +46,7 @@ protected func Construction()
 {
 	SetPosition(600, 400);
 	// Set original menu graphics.
-	SetGraphics("BG", GUI_Menu);
+	SetGraphics("BG", GUI_CircleMenu);
 	return _inherited(...);
 }
 
@@ -55,6 +62,13 @@ public func AddMenuStructures(object constructor, object clonk)
 	return;
 }
 
+public func Show()
+{
+	// Change look
+	SetGraphics(nil, Library_ProductionMenu);
+	return _inherited(...);
+}
+
 private func ShowConstructionInfo(object item)
 {
 	// TODO: Implement this completely (maybe based on a structure library) and new graphics.
@@ -62,52 +76,45 @@ private func ShowConstructionInfo(object item)
 	var structure_id = item->GetSymbol();
 	var cost_msg = "@";
 	var comp, index = 0;
+	
+	// show energy production/consumption (if any)
+	if(structure_id->~IsPowerConsumer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerConsumer);
+	if(structure_id->~IsPowerProducer())
+		cost_msg = Format("%s {{%i}}", cost_msg, Library_PowerProducer);
+	
+	cost_msg = Format("%s         |",cost_msg);
+	
 	while (comp = GetComponent(nil, index++, nil, structure_id))
 		cost_msg = Format("%s %dx {{%i}}", cost_msg, GetComponent(comp, nil, nil, structure_id), comp);
-	CustomMessage(cost_msg, this, GetOwner(), 250, 270, nil, nil, nil, 1);
+	CustomMessage(cost_msg, this, GetOwner(), 250, 250, nil, nil, nil, 1|2);
 	constructinfo_shown = item;
+	
+	
+	
+	// show big picture
+	SetGraphics(nil, structure_id, 1, GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(400, 0, 270000, 0, 400, -50000, 1);
+	
 	return;
 }
 
 public func HideConstructionInfo()
 {
 	CustomMessage("", this, GetOwner());
+	SetGraphics(nil, nil, 1);
 	constructinfo_shown = false;
 }
 
 /* Menu properties */
 
-public func IsProductionMenu() { return true; }
-// UpdateCursor is called
-public func CursorUpdatesEnabled() { return true; }
-
-public func Close() 
-{
-	if(menu_object)
-		menu_object->~MenuClosed(this);
-	RemoveObject();
-}
+public func IsConstructionMenu() { return true; }
 
 public func HasCommander(object producer)
 {
 	if (menu_commander == producer)
 		return true;
 	return false;
-}
-
-// Callback if the mouse is moved
-public func UpdateCursor(int dx, int dy)
-{
-	var item = FindObject(Find_AtPoint(dx, dy), Find_ID(GUI_MenuItem));
-	if (!item || item->GetMenu() != this)
-	{
-		if (constructinfo_shown)
-			HideConstructionInfo();
-		return;
-	}
-	if (item == constructinfo_shown)
-		return;
-	ShowConstructionInfo(item);
 }
 
 /* Callbacks from the menu items, to be translated into commands for the producer. */
@@ -127,14 +134,18 @@ public func OnItemSelection(object item)
 	if (menu_commander)
 	{
 		// Close menu if a construction site has been created.
-		if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
-			Close();	
+		//if (menu_commander->~CreateConstructionSite(menu_object, item->GetSymbol()))
+		if (menu_commander->~ShowConstructionPreview(menu_object, item->GetSymbol()))
+		{
+			Close();
+			return true;
+		}	
 	}
 	return _inherited(item, ...);
 }
 
 // Called when an object is dragged onto the menu
-public func MouseDrop(int plr, obj)
+public func OnMouseDrop(int plr, obj)
 {
 	return _inherited(plr, obj, ...);
 }
@@ -151,3 +162,18 @@ public func OnItemDragDone(object drag_item, object on_item)
 	return _inherited(drag_item, on_item, ...);
 }
 
+// Called if the mouse cursor enters hovering over an item.
+public func OnMouseOverItem(object over_item, object dragged_item)
+{
+	ShowConstructionInfo(over_item);
+	
+	return _inherited(over_item, dragged_item, ...);
+}
+
+// Called if the mouse cursor exits hovering over an item.
+public func OnMouseOutItem(object out_item, object dragged_item)
+{
+	HideConstructionInfo();
+	
+	return _inherited(out_item, dragged_item, ...);
+}

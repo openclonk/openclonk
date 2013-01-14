@@ -1,0 +1,7 @@
+[DefCore]
+id=Hatch_Graphic
+Version=5,2,0,1
+Width=26
+Height=26
+Offset=-13,-13
+Category=C4D_Structure

@@ -1,0 +1,16 @@
+[DefCore]
+id=Plane_Construction
+Version=5,2,0,1
+Category=C4D_Structure
+Width=60
+Height=29
+Offset=-30,-14
+Vertices=2
+VertexX=-18,18
+VertexY=14,14
+VertexFriction=100,100
+Value=200
+Mass=4000
+Components=Plane_Propeller=1;Plane_Chassis=1;Plane_Skids=1;Plane_Engine=1;Plane_Wings=1;
+Construction=0
+Rotate=0

@@ -1,8 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2009-2012  Armin Burgmeier
  * Copyright (c) 2009  Mark Haßelbusch
- * Copyright (c) 2009-2011  Armin Burgmeier
  * Copyright (c) 2009  Günther Brammer
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -22,7 +22,7 @@
 #include "C4Include.h"
 #include <StdMeshMaterial.h>
 #include <StdMeshUpdate.h>
-#include <StdDDraw2.h>
+#include <C4Draw.h>
 
 #include <cctype>
 #include <memory>
@@ -213,6 +213,7 @@ public:
 	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, const EnumeratorShortcut<Num, EnumType>* shortcuts, EnumType enums[Num]);
 	void Error(const StdStrBuf& message);
 	void ErrorUnexpectedIdentifier(const StdStrBuf& identifier);
+	void WarningNotSupported(const char* identifier);
 
 	// Current parsing data
 	unsigned int Line;
@@ -503,6 +504,10 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
+void StdMeshMaterialParserCtx::WarningNotSupported(const char* identifier)
+{
+	DebugLogF("%s:%d: Warning: \"%s\" is not supported!", FileName.getData(), Line, identifier);
+}
 
 StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
 		: CurIndex(0)
@@ -834,6 +839,7 @@ StdMeshMaterialPass::StdMeshMaterialPass():
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
 	SceneBlendFactors[0] = SB_One; SceneBlendFactors[1] = SB_Zero;
+	AlphaToCoverage = false;
 }
 
 void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
@@ -890,6 +896,73 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		else if (token_name == "scene_blend")
 		{
 			ctx.AdvanceEnums<2, StdMeshMaterialPass::SceneBlendType>(SceneBlendEnumerators, SceneBlendShortcuts, SceneBlendFactors);
+		}
+		else if (token_name == "scene_blend_op")
+		{
+			StdStrBuf op;
+			ctx.AdvanceRequired(op, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "alpha_to_coverage")
+		{
+			AlphaToCoverage = ctx.AdvanceBoolean();
+		}
+		else if (token_name == "colour_write")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported("colour_write");
+		}
+		else if (token_name == "depth_check")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "depth_func")
+		{
+			StdStrBuf func;
+			ctx.AdvanceRequired(func, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "illumination_stage")
+		{
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_clip_planes")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "light_scissor")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "lighting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "normalise_normals" || token_name == "normalize_normals")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "polygon_mode")
+		{
+			StdStrBuf mode;
+			ctx.AdvanceRequired(mode, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "shading")
+		{
+			StdStrBuf shading;
+			ctx.AdvanceRequired(shading, TOKEN_IDTF);
+			ctx.WarningNotSupported(token_name.getData());
+		}
+		else if (token_name == "transparent_sorting")
+		{
+			ctx.AdvanceBoolean();
+			ctx.WarningNotSupported(token_name.getData());
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
