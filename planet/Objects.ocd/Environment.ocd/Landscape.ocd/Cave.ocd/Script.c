@@ -62,7 +62,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 	
 	while((--failsafe > 0) && amount > 0)
 	{
-		var spot = FindLocation([Loc_Solid(), Loc_Condition(Landscape_Cave.IsGoodCaveSpot), Loc_InRect(rectangle)]);
+		var spot = FindLocation(Loc_Solid(), Loc_Func(Landscape_Cave.IsGoodCaveSpot), Loc_InRect(rectangle));
 		if (!spot) continue;
 		
 		DrawMap(spot.x - width, spot.y - height, 2 * width, 2 * height, Format("map Cave { %s };", map));
@@ -73,7 +73,7 @@ public func Place(int amount, proplist rectangle, proplist settings)
 		for (var obj in FindObjects(Find_InRect(spot.x - width, spot.y - height, 2 * width, 2 * height), Find_Category(C4D_Object)))
 		{
 			var originaly = obj->GetY();
-			var max = 100;
+			var max = height;
 			while ((!obj->GetContact(-1, CNAT_Bottom)) && !obj->Stuck() && (--max > 0))
 			{
 				obj->SetPosition(obj->GetX(), obj->GetY() + 1);

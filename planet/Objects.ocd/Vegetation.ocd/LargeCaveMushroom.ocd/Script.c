@@ -14,7 +14,7 @@ func Place(int amount, proplist rectangle, proplist settings)
 	// look for free underground spot to place groups of three or so..
 	while ((amount > 0) && (--max_tries > 0))
 	{
-		var spot = FindLocation([Loc_Tunnel(), Loc_Wall(CNAT_Bottom), Loc_Space(20, true), Loc_Condition(LargeCaveMushroom.GoodSpot)]);
+		var spot = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom), Loc_Space(20, true), Loc_Func(LargeCaveMushroom.GoodSpot));
 		
 		// can't place more
 		if (!spot && !teraform) return plants;
