@@ -49,6 +49,7 @@ protected func UpdateEnergy()
 protected func AttachTargetLost() { RemoveObject(); }
 
 local Name = "$Name$";
+local Plane = 750;
 local ActMap = {
 	Attach = {
 		Prototype = Action,
