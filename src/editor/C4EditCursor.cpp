@@ -219,7 +219,7 @@ void C4EditCursor::AddToSelection(C4Object *add_obj)
 	if (!add_obj || !add_obj->Status) return;
 	// add object to selection and do script callback
 	Selection.Add(add_obj, C4ObjectList::stNone);
-	add_obj->Call(PSF_EditCursorSelection);
+	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorSelection).getData(), add_obj->Number), CDT_Decide);
 }
 
 bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
@@ -227,7 +227,7 @@ bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
 	if (!remove_obj || !remove_obj->Status) return false;
 	// remove object from selection and do script callback
 	if (!Selection.Remove(remove_obj)) return false;
-	remove_obj->Call(PSF_EditCursorDeselection);
+	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorDeselection).getData(), remove_obj->Number), CDT_Decide);
 	return true;
 }
 
@@ -239,7 +239,8 @@ void C4EditCursor::ClearSelection()
 	while (obj = Selection.GetObject(0))
 	{
 		Selection.Remove(obj);
-		if (obj->Status) obj->Call(PSF_EditCursorDeselection);
+		if (obj->Status)
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Call(\"%s\")", PSF_EditCursorDeselection).getData(), obj->Number), CDT_Decide);
 	}
 	Selection.Clear();
 }
