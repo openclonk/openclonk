@@ -114,6 +114,10 @@ protected:
 	void DoContextObjsel(C4Object *, bool clear);
 	void ObjselectDelItems();
 
+	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
+	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
+	void ClearSelection();                          // remove all objects from selection and do script callback. Doesn't do OnSelectionChanged().
+
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);
 	static void OnDuplicate(GtkWidget* widget, gpointer data);

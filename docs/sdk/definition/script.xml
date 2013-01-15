@@ -323,6 +323,16 @@
           <col>int player, int new_team, int old_team</col>
           <col>Callback in game goal, rule, and environment objects and in the scenario script. Called when a player has successfully switch from old_team to new_team (see <funclink>SetPlayerTeam</funclink>).</col>
         </row>
+        <row id="EditCursorSelection">
+          <literal_col>EditCursorSelection</literal_col>
+          <col></col>
+          <col>When object is selected in editor. Use this callback to display extra information for scenario designers.</col>
+        </row>
+        <row id="EditCursorDeselection">
+          <literal_col>EditCursorDeselection</literal_col>
+          <col></col>
+          <col>When object is deselected in editor. Use this callback to hide any information previously shown in EditCursorSelection.</col>
+        </row>
       </table>
 
     </text>

@@ -214,6 +214,36 @@ void C4EditCursor::OnSelectionChanged()
 	Console.ObjectListDlg.Update(Selection);
 }
 
+void C4EditCursor::AddToSelection(C4Object *add_obj)
+{
+	if (!add_obj || !add_obj->Status) return;
+	// add object to selection and do script callback
+	Selection.Add(add_obj, C4ObjectList::stNone);
+	add_obj->Call(PSF_EditCursorSelection);
+}
+
+bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
+{
+	if (!remove_obj || !remove_obj->Status) return false;
+	// remove object from selection and do script callback
+	if (!Selection.Remove(remove_obj)) return false;
+	remove_obj->Call(PSF_EditCursorDeselection);
+	return true;
+}
+
+void C4EditCursor::ClearSelection()
+{
+	// remove all objects from selection and do script callbacks
+	// iterate safely because callback might delete selected objects!
+	C4Object *obj;
+	while (obj = Selection.GetObject(0))
+	{
+		Selection.Remove(obj);
+		if (obj->Status) obj->Call(PSF_EditCursorDeselection);
+	}
+	Selection.Clear();
+}
+
 bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 {
 
@@ -228,8 +258,8 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 		{
 			// Toggle target
 			if (Target)
-				if (!Selection.Remove(Target))
-					Selection.Add(Target, C4ObjectList::stNone);
+				if (!RemoveFromSelection(Target))
+					AddToSelection(Target);
 		}
 		else
 		{
@@ -242,11 +272,11 @@ bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 						break;
 				}
 				if(!it) // means loop didn't break
-					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+					{ ClearSelection(); AddToSelection(Target); }
 			}
 			// Click on nothing: drag frame
 			if (!Target)
-				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
+				{ ClearSelection(); DragFrame=true; X2=X; Y2=Y; }
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -294,10 +324,10 @@ bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 				// Click on unselected
 				if (Target && !Selection.GetLink(Target))
 				{
-					Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone);
+					ClearSelection(); AddToSelection(Target);
 				}
 				// Click on nothing
-				if (!Target) Selection.Clear();
+				if (!Target) ClearSelection();
 			}
 		}
 		break;
@@ -545,13 +575,13 @@ void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 
 void C4EditCursor::FrameSelection()
 {
-	Selection.Clear();
+	ClearSelection();
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
 				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
-					Selection.Add(cobj, C4ObjectList::stNone);
+					AddToSelection(cobj);
 			}
 	OnSelectionChanged();
 }
