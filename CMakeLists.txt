@@ -354,6 +354,7 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4PXS.cpp
 	src/landscape/C4PXS.h
 	src/landscape/C4Scenario.cpp
+	src/landscape/C4ScenarioSection.cpp
 	src/landscape/C4Scenario.h
 	src/landscape/C4Sky.cpp
 	src/landscape/C4Sky.h
@@ -554,8 +555,154 @@ set(OC_CLONK_SOURCES
 	src/zlib/zutil.h
 	thirdparty/timsort/sort.h
 )
+
+set(MAPE_BASE_SOURCES
+	src/c4group/C4ComponentHost.cpp
+	src/c4group/C4ComponentHost.h
+	src/c4group/C4Group.cpp
+	src/c4group/C4Group.h
+	src/c4group/C4GroupSet.cpp
+	src/c4group/C4GroupSet.h
+	src/c4group/C4LangStringTable.cpp
+	src/c4group/C4LangStringTable.h
+	src/c4group/CStdFile.cpp
+	src/c4group/CStdFile.h
+	src/landscape/C4MapCreatorS2.cpp
+	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4Material.cpp
+	src/landscape/C4Material.h
+	src/landscape/C4Texture.cpp
+	src/landscape/C4Texture.h
+	src/landscape/C4Scenario.cpp
+	src/landscape/C4Scenario.h
+	src/lib/C4InputValidation.cpp
+	src/lib/C4InputValidation.h
+	src/lib/C4Markup.cpp
+	src/lib/C4Markup.h
+	src/lib/C4NameList.cpp
+	src/lib/C4NameList.h
+	src/lib/C4Random.cpp
+	src/lib/C4Random.h
+	src/lib/C4Real.cpp
+	src/lib/C4Real.h
+	src/lib/C4Rect.cpp
+	src/lib/C4Rect.h
+	src/lib/Standard.cpp
+	src/lib/Standard.h
+	src/lib/StdBuf.cpp
+	src/lib/StdBuf.h
+	src/lib/StdCompiler.cpp
+	src/lib/StdCompiler.h
+	src/lib/StdResStr2.cpp
+	src/lib/StdResStr2.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
+	src/platform/GetTime.cpp
+	src/platform/StdFile.cpp
+	src/platform/StdFile.h
+	src/script/C4Aul.cpp
+	src/script/C4Aul.h
+	src/script/C4AulExec.cpp
+	src/script/C4AulExec.h
+	src/script/C4AulFunc.cpp
+	src/script/C4AulFunc.h
+	src/script/C4AulLink.cpp
+	src/script/C4AulParse.cpp
+	src/script/C4PropList.cpp
+	src/script/C4PropList.h
+	src/script/C4Script.cpp
+	src/script/C4ScriptHost.cpp
+	src/script/C4ScriptHost.h
+	src/script/C4StringTable.cpp
+	src/script/C4StringTable.h
+	src/script/C4Value.cpp
+	src/script/C4Value.h
+	src/script/C4ValueArray.cpp
+	src/script/C4ValueArray.h
+	src/script/C4ValueMap.cpp
+	src/script/C4ValueMap.h
+	src/zlib/gzio.c
+	src/C4Include.cpp
+)
+
+set(MAPE_SOURCES
+	src/mape/cpp-handles/group-handle.h
+	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/log-handle.h
+	src/mape/cpp-handles/log-handle.cpp
+	src/mape/cpp-handles/mapgen-handle.h
+	src/mape/cpp-handles/mapgen-handle.cpp
+	src/mape/cpp-handles/material-handle.h
+	src/mape/cpp-handles/material-handle.cpp
+	src/mape/cpp-handles/random-handle.h
+	src/mape/cpp-handles/random-handle.cpp
+	src/mape/cpp-handles/texture-handle.h
+	src/mape/cpp-handles/texture-handle.cpp
+	src/mape/cpp-handles/version-handle.h
+	src/mape/cpp-handles/version-handle.cpp
+	src/mape/cpp-handles/stub-handle.cpp
+	src/mape/configfile.c
+	src/mape/configfile.h
+	src/mape/diskview.c
+	src/mape/diskview.h
+	src/mape/editview.c
+	src/mape/editview.h
+	src/mape/fileicon.c
+	src/mape/fileicon.h
+	src/mape/forward.h
+	src/mape/group.c
+	src/mape/group.h
+	src/mape/header.c
+	src/mape/header.h
+	src/mape/iconview.c
+	src/mape/iconview.h
+	src/mape/mape.c
+	src/mape/mapgen.c
+	src/mape/mapgen.h
+	src/mape/material.c
+	src/mape/material.h
+	src/mape/mattexview.c
+	src/mape/mattexview.h
+	src/mape/preferences.c
+	src/mape/preferences.h
+	src/mape/preferencesdialog.c
+	src/mape/preferencesdialog.h
+	src/mape/preview.c
+	src/mape/preview.h
+	src/mape/random.c
+	src/mape/random.h
+	src/mape/statusbar.c
+	src/mape/statusbar.h
+	src/mape/texture.c
+	src/mape/texture.h
+	src/mape/window.c
+	src/mape/window.h
+)
+
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
+mark_as_advanced(MAPE_SOURCES)
+
+# generated source files
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	COMMAND
+		gdk-pixbuf-csource "--raw" "--static" "--build-list"
+		"mape_icon_ocd" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico"
+		"mape_icon_ocf" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico"
+		"mape_icon_ocg" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico"
+		"mape_icon_ocm" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico"
+		"mape_icon_ocs" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico"
+		> ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
+	VERBATIM
+)
+list(APPEND MAPE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h)
 
 # source files specific to an operating system
 if(APPLE)
@@ -682,6 +829,7 @@ if(PROJECT_FOLDERS)
   source_group("Config" src/config/.*)
   source_group("Control" src/control/.*)
   source_group("Editing" src/editor/.*)
+  source_group("Mape" src/mape/.*)
 endif()
 
 include_directories(
@@ -843,6 +991,17 @@ if(USE_GTK)
 	endif()
 endif()
 
+# Try to find GTK for mape
+include(FindPkgConfig)
+if (PKG_CONFIG_FOUND)
+	pkg_check_modules(MAPE_GTK glib-2.0>=2.14 gthread-2.0 gtk+-2.0>=2.12 gtksourceview-2.0)
+endif()
+if(MAPE_GTK_FOUND)
+	# hrm, cmake doesn't have target_include_directories...
+	include_directories(${MAPE_GTK_INCLUDE_DIRS})
+	link_directories(${MAPE_GTK_LIBRARY_DIRS})
+endif()
+
 if(USE_OPEN_AL)
 	if(MSVC)
 		if(${FIND_LIBRARY_USE_LIB64_PATHS})
@@ -920,6 +1079,10 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
+
+if(MAPE_GTK_FOUND)
+	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
+endif()
 
 add_executable(c4group
 	src/c4group/C4GroupMain.cpp
@@ -1014,6 +1177,13 @@ if(USE_OPEN_AL)
 		${OGG_LIBRARY}
 	)
 endif()
+
+if(MAPE_GTK_FOUND)
+	target_link_libraries(mape
+		${ZLIB_LIBRARIES}
+	)
+endif()
+
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 )
@@ -1027,6 +1197,11 @@ if(HAVE_PTHREAD)
 	target_link_libraries(c4script
 		pthread
 	)
+	if(MAPE_GTK_FOUND)
+		target_link_libraries(mape
+			pthread
+		)
+	endif()
 endif()
 if(USE_CONSOLE)
 	target_link_libraries(clonk
@@ -1039,6 +1214,7 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(c4script rt)
 	target_link_libraries(netpuncher rt)
 	target_link_libraries(clonk rt)
+	target_link_libraries(mape rt)
 endif()
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
@@ -1237,6 +1413,9 @@ if(USE_GTK)
 			${GTK_LIBRARIES}
 		)
 	endif()
+endif()
+if(MAPE_GTK_FOUND)
+	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
 endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)

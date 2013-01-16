@@ -247,7 +247,7 @@ public:
 	}
 	C4MaterialReaction *GetReaction(int32_t iPXSMat, int32_t iLandscapeMat);
 	void UpdateScriptPointers(); // set all material script pointers
-	bool CrossMapMaterials();
+	bool CrossMapMaterials(const char* szEarthMaterial);
 	C4MaterialShape *GetShapeByName(const char *name);
 protected:
 	void SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact);

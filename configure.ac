@@ -129,7 +129,7 @@ AC_ARG_ENABLE([sound],
   , [if test $enable_console = yes; then enable_sound=no; else enable_sound=yes; fi])
 
 # GTK+
-GTK2_REQUIRED="glib-2.0 >= 2.8 gtk+-2.0 >= 2.8"
+GTK2_REQUIRED="glib-2.0 >= 2.14 gtk+-2.0 >= 2.12"
 GTK3_REQUIRED="glib-2.0 >= 2.27.5 gtk+-3.0 >= 2.99.0"
 PKG_PROG_PKG_CONFIG
 AC_MSG_CHECKING([which gtk+ version to compile against])
@@ -151,15 +151,23 @@ AC_MSG_RESULT([$with_gtk])
 AS_IF([test $with_gtk != no],[
   case "$with_gtk" in
   2.0) GTK_REQUIRED="$GTK2_REQUIRED"
+       MAPE_REQUIRED="$GTK2_REQUIRED gthread-2.0 gtksourceview-2.0"
        ;;
   3.0) GTK_REQUIRED="$GTK3_REQUIRED"
+       MAPE_REQUIRED="$GTK3_REQUIRED gthread-2.0 gtksourceview-3.0"
        ;;
   esac
   PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
+  AC_ARG_ENABLE([mape],
+    [AS_HELP_STRING([--enable-mape],[build mape landscape.txt editor [default: auto]])], [],
+    [PKG_CHECK_EXISTS([$MAPE_REQUIRED], [enable_mape=yes], [enable_mape=no])])
+  AS_IF([test $enable_mape != no],
+    [PKG_CHECK_MODULES(MAPE, [$MAPE_REQUIRED])])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
 ])
 AM_CONDITIONAL(GTK, [test $with_gtk != no])
+AM_CONDITIONAL(MAPE, [test $enable_mape != no])
 
 # OpenAL
 AC_ARG_WITH([openal],

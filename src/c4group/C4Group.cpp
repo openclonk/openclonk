@@ -2118,7 +2118,7 @@ StdStrBuf C4Group::GetFullName() const
 	{
 		if (*str) SInsert(str, sep, 0, _MAX_PATH);
 		// Avoid double slash
-		if (SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
+		if (pGroup == this || SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
 			SInsert(str, pGroup->FileName, 0, _MAX_PATH);
 		if (pGroup->Status == GRPF_Folder) break; // Folder is assumed to have full path
 	}

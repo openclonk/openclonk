@@ -904,7 +904,7 @@ BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t 
 C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg)
 {
 	// create error message
-	sprintf(Msg, "%s: %s (%d)", pParser->Filename, szMsg, pParser->Code ? SGetLine(pParser->Code, pParser->CPos) : 0);
+	sprintf(Msg, "%s: %s (%d)", pParser->Filename, szMsg, pParser->BPos ? SGetLine(pParser->BPos, pParser->CPos) : 0);
 }
 
 C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg, const char *szPar)
@@ -912,7 +912,7 @@ C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg, const char 
 	char Buf[C4MaxMessage];
 	// create error message
 	sprintf(Buf, szMsg, szPar);
-	sprintf(Msg, "%s: %s (%d)", pParser->Filename, Buf, pParser->Code ? SGetLine(pParser->Code, pParser->CPos) : 0);
+	sprintf(Msg, "%s: %s (%d)", pParser->Filename, Buf, pParser->BPos ? SGetLine(pParser->BPos, pParser->CPos) : 0);
 }
 
 void C4MCParserErr::show()
@@ -929,7 +929,7 @@ C4MCParser::C4MCParser(C4MapCreatorS2 *pMapCreator)
 	// store map creator
 	MapCreator=pMapCreator;
 	// reset some fields
-	Code=NULL; CPos=NULL; *Filename=0;
+	Code=NULL; BPos = NULL; CPos=NULL; *Filename=0;
 }
 
 C4MCParser::~C4MCParser()
@@ -941,7 +941,7 @@ C4MCParser::~C4MCParser()
 void C4MCParser::Clear()
 {
 	// clear code if present
-	if (Code) delete [] Code; Code=NULL; CPos=NULL;
+	if (Code) delete [] Code; Code=NULL; BPos = NULL; CPos=NULL;
 	// reset filename
 	*Filename=0;
 }
@@ -1467,6 +1467,7 @@ void C4MCParser::ParseFile(const char *szFilename, C4Group *pGrp)
 	pGrp->Read((void *) Code, iSize);
 	Code[iSize]=0;
 	// parse it
+	BPos=Code;
 	CPos=Code;
 	ParseTo(MapCreator);
 	if (0) PrintNodeTree(MapCreator, 0);
@@ -1480,6 +1481,7 @@ void C4MCParser::Parse(const char *szScript)
 	// clear any old data
 	Clear();
 	// parse it
+	BPos=szScript;
 	CPos=szScript;
 	ParseTo(MapCreator);
 	if (0) PrintNodeTree(MapCreator, 0);
@@ -1487,6 +1489,20 @@ void C4MCParser::Parse(const char *szScript)
 	// on errors, this will be done be destructor
 	Clear();
 
+}
+
+void C4MCParser::ParseMemFile(const char *szScript, const char *szFilename)
+{
+	// clear any old data
+	Clear();
+	// store filename
+	SCopy(szFilename, Filename, C4MaxName);
+	// parse it
+	BPos=szScript;
+	CPos=szScript;
+	ParseTo(MapCreator);
+	// on errors, this will be done be destructor
+	Clear();
 }
 
 

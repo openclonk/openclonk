@@ -140,27 +140,35 @@ bool C4TextureMap::AddTexture(const char *szTexture, C4Surface * sfcSurface)
 	FirstTexture=pTexture;
 
 	// Compute average texture color
-	sfcSurface->Lock();
-	uint32_t avg_c[4] = { 0, 0, 0, 0 };
-	for(int32_t y = 0; y < sfcSurface->Hgt; ++y)
+	if(sfcSurface)
 	{
-		for(int32_t x = 0; x < sfcSurface->Wdt; ++x)
+		sfcSurface->Lock();
+		uint32_t avg_c[4] = { 0, 0, 0, 0 };
+		for(int32_t y = 0; y < sfcSurface->Hgt; ++y)
 		{
-			DWORD c = sfcSurface->GetPixDw(x, y, false);
-			avg_c[0] += c & 0xff;
-			avg_c[1] += (c >> 8) & 0xff;
-			avg_c[2] += (c >> 16) & 0xff;
-			avg_c[3] += (c >> 24) & 0xff;
+			for(int32_t x = 0; x < sfcSurface->Wdt; ++x)
+			{
+				DWORD c = sfcSurface->GetPixDw(x, y, false);
+				avg_c[0] += c & 0xff;
+				avg_c[1] += (c >> 8) & 0xff;
+				avg_c[2] += (c >> 16) & 0xff;
+				avg_c[3] += (c >> 24) & 0xff;
+			}
 		}
-	}
-	sfcSurface->Unlock();
+		sfcSurface->Unlock();
 
-	double Size = sfcSurface->Wdt * sfcSurface->Hgt;
-	avg_c[0] = static_cast<uint32_t>(avg_c[0] / Size + 0.5);
-	avg_c[1] = static_cast<uint32_t>(avg_c[1] / Size + 0.5);
-	avg_c[2] = static_cast<uint32_t>(avg_c[2] / Size + 0.5);
-	avg_c[3] = static_cast<uint32_t>(avg_c[3] / Size + 0.5);
-	pTexture->AvgColor = avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24);
+		double Size = sfcSurface->Wdt * sfcSurface->Hgt;
+		avg_c[0] = static_cast<uint32_t>(avg_c[0] / Size + 0.5);
+		avg_c[1] = static_cast<uint32_t>(avg_c[1] / Size + 0.5);
+		avg_c[2] = static_cast<uint32_t>(avg_c[2] / Size + 0.5);
+		avg_c[3] = static_cast<uint32_t>(avg_c[3] / Size + 0.5);
+		pTexture->SetAverageColor(avg_c[0] | (avg_c[1] << 8) | (avg_c[2] << 16) | (avg_c[3] << 24));
+	}
+	else
+	{
+		pTexture->SetAverageColor(0x00000000);
+	}
+
 	return true;
 }
 

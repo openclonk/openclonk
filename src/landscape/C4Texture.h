@@ -36,6 +36,7 @@ public:
 	~C4Texture();
 	C4Surface * Surface32;
 
+	void SetAverageColor(uint32_t Color) { AvgColor = Color; }
 	uint32_t GetAverageColor() const { return AvgColor; }
 protected:
 	char Name[C4M_MaxName+1];
@@ -97,9 +98,9 @@ public:
 	C4Texture * GetTexture(const char *szTexture);
 	bool CheckTexture(const char *szTexture); // return whether texture exists
 	bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
+	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 	int32_t GetTextureIndex(const char *pTexName);
 protected:
-	bool AddTexture(const char *szTexture, C4Surface * sfcSurface);
 };
 
 extern C4TextureMap TextureMap;
