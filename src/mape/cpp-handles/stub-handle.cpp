@@ -28,6 +28,7 @@
 #include "C4GraphicsResource.h"
 #include "C4Landscape.h"
 #include "C4PXS.h"
+#include "C4Record.h"
 #include "C4RoundResults.h"
 #include "CSurface8.h"
 
@@ -155,6 +156,8 @@ C4Value C4GameObjects::GRBroadcast(char const*, C4AulParSet*, bool, bool) {retur
 C4PXSSystem::C4PXSSystem() {}
 C4PXSSystem::~C4PXSSystem() {}
 bool C4PXSSystem::Create(int, C4Real, C4Real, C4Real, C4Real) { return false; }
+
+void AddDbgRec(C4RecordChunkType, const void *, int) {}
 
 #if 0
 /* Pulled in by C4Game... */
