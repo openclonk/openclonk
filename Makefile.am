@@ -17,7 +17,11 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group puncher c4script mape
+bin_PROGRAMS = clonk c4group puncher c4script
+
+if MAPE
+bin_PROGRAMS += mape
+endif
 
 EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 

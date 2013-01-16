@@ -158,11 +158,16 @@ AS_IF([test $with_gtk != no],[
        ;;
   esac
   PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
-  PKG_CHECK_MODULES(MAPE, [$MAPE_REQUIRED])
+  AC_ARG_ENABLE([mape],
+    [AS_HELP_STRING([--enable-mape],[build mape landscape.txt editor [default: auto]])], [],
+    [PKG_CHECK_EXISTS([$MAPE_REQUIRED], [enable_mape=yes], [enable_mape=no])])
+  AS_IF([test $enable_mape != no],
+    [PKG_CHECK_MODULES(MAPE, [$MAPE_REQUIRED])])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
 ])
 AM_CONDITIONAL(GTK, [test $with_gtk != no])
+AM_CONDITIONAL(MAPE, [test $enable_mape != no])
 
 # OpenAL
 AC_ARG_WITH([openal],
