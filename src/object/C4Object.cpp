@@ -2981,14 +2981,6 @@ bool C4Object::SetActionByName(C4String *ActName,
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);
 }
 
-C4PropList *C4Object::GetActionByName(C4PropertyName &act_name, C4Value *rval_holder)
-{
-	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
-	if (!ActMap.getPropList()) return false;
-	ActMap.getPropList()->GetProperty(act_name, rval_holder);
-	return rval_holder->getPropList();
-}
-
 bool C4Object::SetActionByName(const char * szActName,
                                C4Object *pTarget, C4Object *pTarget2,
                                int32_t iCalls, bool fForce)
