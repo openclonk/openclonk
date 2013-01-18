@@ -3008,6 +3008,7 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 					}
 				to->SetPropertyByS(prop->Key, C4VPropList(p));
 			}
+			break;
 		case C4V_Array: // FIXME: copy the array if necessary
 		default:
 			to->SetPropertyByS(prop->Key, prop->Value);
