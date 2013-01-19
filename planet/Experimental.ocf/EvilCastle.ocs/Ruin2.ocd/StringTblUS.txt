@@ -1,0 +1,2 @@
+Name=Ruin
+Description=Relic of past settlements.

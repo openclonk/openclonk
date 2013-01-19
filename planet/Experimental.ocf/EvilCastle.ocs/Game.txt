@@ -1,0 +1,1007 @@
+[Object]
+id=Elevator_Case_Back
+Properties=337;false;"Action"=DElevator_Case_Back.ActMap.Attach,"Prototype"=DElevator_Case_Back
+Category=1
+Plane=100
+Size=100000
+Mass=1
+X=F90767360
+Y=F39256064
+Width=24
+Height=45
+Offset=-12,-26
+Vertices=1
+VertexX=-12
+VertexY=-2
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=14897
+ActionTarget1=332
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=ElevatorRope
+Properties=338;false;"Action"=DElevatorRope.ActMap.Be,"Prototype"=DElevatorRope
+Category=1
+Plane=100
+Size=100000
+Mass=1
+X=F90767360
+Y=F37355520
+Width=1
+Height=4
+Offset=0,-2
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=14897
+ActionTarget1=337
+
+[Object]
+id=Elevator_Case_Back
+Properties=426;false;"Action"=DElevator_Case_Back.ActMap.Attach,"Prototype"=DElevator_Case_Back
+Category=1
+Plane=100
+Size=100000
+Mass=1
+X=F12167134
+Y=F76573520
+Width=24
+Height=45
+Offset=-12,-26
+Vertices=1
+VertexX=-12
+VertexY=-2
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=12105
+ActionTarget1=421
+ColorMod=4288708704
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=ElevatorRope
+Properties=427;false;"Action"=DElevatorRope.ActMap.Be,"Prototype"=DElevatorRope
+Category=1
+Plane=100
+Size=100000
+Mass=1
+X=F12167134
+Y=F74672976
+Width=1
+Height=4
+Offset=0,-2
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=12105
+ActionTarget1=426
+ColorMod=4288708704
+
+[Object]
+id=Tree_Coniferous_Burned
+Properties=616;false;"Prototype"=DTree_Coniferous_Burned
+Category=1
+Plane=100
+Rotation=10
+Size=100000
+Mass=120
+X=F1118997
+Y=F71897912
+R=F655360
+Width=128
+Height=128
+Offset=-64,-64
+Vertices=9
+VertexX=-8,-5,-3,-2,0,2,3,5,8
+VertexY=44,30,20,10,0,-10,-20,-30,-44
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=5
+DrawTransform=1.1,0,0,0,1.1,-11,1
+
+[Object]
+id=Tree_Coniferous_Burned
+Properties=621;false;"Action"=n,"Prototype"=DTree_Coniferous_Burned
+Category=1
+Plane=100
+Rotation=100
+Size=75000
+Mass=90
+X=F2809599
+Y=F75368628
+R=F6553600
+Width=96
+Height=96
+Offset=-48,-48
+Vertices=9
+VertexX=-32,-22,-15,-7,0,7,15,22,32
+VertexY=-6,-4,-3,-1,0,1,3,4,6
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845697
+Component=Wood=3
+DrawTransform=1.1,0,0,0,1.1,-11,1
+
+[Object]
+id=Tree_Coniferous
+Properties=710;false;"Action"=n,"Prototype"=DTree_Coniferous,"MeshTransformation"=E1
+Category=1
+Plane=100
+Size=70500
+Mass=105
+X=F15068138
+Y=F75620420
+Width=42
+Height=77
+Offset=-21,-38
+Vertices=9
+VertexY=31,21,14,7,0,-7,-14,-21,-31
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845697
+Component=Wood=3
+ColorMod=4290805856
+Effects=(1,3353,72,710,Tree_Coniferous,713;false;"Repeats"=i-46,"Function"=s"Seed","Pars"=E2,"NoStop"=b1,"Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Ruin1
+Properties=343;false;"Prototype"=DRuin1
+Category=2
+Plane=200
+Rotation=16
+Size=100000
+Mass=1000
+X=F6366623
+Y=F75398050
+R=F1048576
+Width=108
+Height=108
+Offset=-54,-54
+Vertices=7
+VertexX=-23,27,-26,17,-38,-42,33
+VertexY=-14,1,12,25,-7,8,29
+VertexFriction=50,50,100,100
+Picture=0,0,0,0
+OCF=12845633
+Component=Wood=5;Rock=4
+
+[Object]
+id=Ruin2
+Properties=344;false;"Prototype"=DRuin2
+Category=2
+Plane=200
+Size=100000
+Mass=100
+X=F22991454
+Y=F71786581
+Width=80
+Height=96
+Offset=-40,-48
+Vertices=5
+VertexX=0,25,15,-15,-25
+VertexY=-10,-20,47,47,-20
+VertexFriction=50,50,100,100,50
+Picture=0,0,0,0
+OCF=12845121
+Component=Rock=6;Wood=2
+
+[Object]
+id=Ruin3
+Properties=346;false;"Prototype"=DRuin3
+Category=2
+Plane=200
+Size=100000
+Mass=500
+X=F17394010
+Y=F75721422
+XDir=F13107
+Width=50
+Height=52
+Offset=-25,-26
+Vertices=6
+VertexX=-1,10,20,-23,-23
+VertexY=-17,-25,-14,25,25,25
+VertexFriction=50,50,50,100,100,100
+Picture=0,0,0,0
+Mobile=true
+OCF=12845121
+Component=Wood=3;Metal=3
+
+[Object]
+id=Elevator
+Properties=331;false;"rope"=O338,"Action"=DElevator.ActMap.Default,"Prototype"=DElevator,"case"=O332,"MeshTransformation"=E3
+Category=1
+Plane=249
+Size=100000
+Mass=1500
+X=F89522176
+Y=F38207488
+Width=62
+Height=66
+Offset=-31,-33
+Vertices=5
+VertexX=-25,25,-5,-25,28
+VertexY=-27,-27,32,32,32
+VertexFriction=50,50,100,100,100
+Picture=0,0,0,0
+OCF=12846145
+ActionTime=14897
+Component=Wood=3;Metal=1
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Elevator
+Properties=420;false;"rope"=O427,"Action"=DElevator.ActMap.Default,"Prototype"=DElevator,"case"=O421,"MeshTransformation"=E4
+Category=1
+Plane=249
+Size=100000
+Mass=1500
+X=F10921950
+Y=F75524944
+Width=62
+Height=66
+Offset=-31,-33
+Vertices=5
+VertexX=-25,25,-5,-25,28
+VertexY=-27,-27,32,32,32
+VertexFriction=50,50,100,100,100
+Picture=0,0,0,0
+OCF=12846145
+ActionTime=12105
+Component=Wood=3;Metal=1
+ColorMod=4288708704
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=ElevatorCase
+Properties=332;false;"back"=O337,"Action"=DElevatorCase.ActMap.DriveIdle,"elevator"=O331,"case_speed_automatic"=i40,"front"=O336,"partner_was_synced"=b0,"Prototype"=DElevatorCase,"case_speed"=i20
+Category=4
+Plane=250
+Size=100000
+Mass=30
+X=F90767360
+Y=F39780352
+Width=24
+Height=26
+Offset=-12,-13
+Vertices=8
+VertexX=-12,11,-12,11,-12,11,-12,11
+VertexY=-10,-10,9,9,-10,-10,9,9
+VertexCNAT=5,6,9,10,5,6,9,10
+VertexFriction=100,100,100,100,100,100,100,100
+Picture=0,0,0,0
+OCF=12845125
+ComDir=-1
+ActionTime=14897
+Component=Wood=1
+Effects=(1,14897,10,332,ElevatorCase,335;false;"Name"=s"FetchVehicles"),(1,14897,1,332,ElevatorCase,334;false;"Name"=s"ElevatorUpperLimitCheck"),(1,14897,30,332,ElevatorCase,333;false;"Name"=s"CheckAutoMoveTo")
+
+[Object]
+id=ElevatorCase
+Properties=421;false;"back"=O426,"Action"=DElevatorCase.ActMap.DriveIdle,"elevator"=O420,"front"=O425,"case_speed_automatic"=i40,"partner_was_synced"=b0,"Prototype"=DElevatorCase,"case_speed"=i20
+Category=4
+Plane=250
+Size=100000
+Mass=30
+X=F12167134
+Y=F77097808
+Width=24
+Height=26
+Offset=-12,-13
+Vertices=8
+VertexX=-12,11,-12,11,-12,11,-12,11
+VertexY=-10,-10,9,9,-10,-10,9,9
+VertexCNAT=5,6,9,10,5,6,9,10
+VertexFriction=100,100,100,100,100,100,100,100
+Picture=0,0,0,0
+OCF=12845125
+ComDir=-1
+ActionTime=12105
+Component=Wood=1
+ColorMod=4288708704
+Effects=(1,12105,10,421,ElevatorCase,424;false;"Name"=s"FetchVehicles"),(1,12105,1,421,ElevatorCase,423;false;"Name"=s"ElevatorUpperLimitCheck"),(1,12105,30,421,ElevatorCase,422;false;"Name"=s"CheckAutoMoveTo")
+
+[Object]
+id=Catapult
+Properties=134;false;"aim_anim"=i0,"olddir"=i0,"Action"=DCatapult.ActMap.Roll,"Prototype"=DCatapult,"dir"=i0,"turn_anim"=i1
+Category=4
+Plane=300
+Size=100000
+Mass=225
+X=F45651718
+Y=F57306597
+RDir=F-6553
+Width=34
+Height=30
+Offset=-17,-15
+Vertices=4
+VertexX=-16,15,-16,15
+VertexY=-12,-12,13,13
+VertexCNAT=5,6,9,10
+VertexFriction=80,80,10,10
+Picture=0,0,0,0
+Mobile=true
+OCF=29624389
+ActionTime=26485
+Phase=42
+PhaseDelay=1
+Component=Metal=1;Wood=6
+Contents=233;232;231;230;229;228;227;226;225;224
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=ArmPosition
+    Position=const(F0)
+
+    [AnimationNode]
+    Slot=5
+    Number=1
+    Type=Leaf
+    Animation=TurnLeft
+    Position=linear(F115343,F0,F115343,36,Hold,14282)
+
+[Object]
+id=Clonk
+Properties=1;false;"use_objects"=E5,"fBothHanded"=i0,"menu"=n,"PictureTransformation"=E6,"gender"=i0,"ExecuteS2AI"=DS2AI.Execute,"using_type"=n,"ActualReplace"=E7,"mesh_transformation_list"=E8,"MeshTransformation"=E9,"inventory"=E10,"iHandMesh"=E11,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E12,"Prototype"=DClonk,"using"=n,"force_collection"=b0
+Category=8
+Plane=400
+Size=100000
+Mass=96
+Energy=50000
+Alive=true
+Breath=252
+Color=255
+X=F43909120
+Y=F57475072
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=9
+VertexX=0,0,0,-2,2,-4,4,-2,2
+VertexY=2,-7,9,-3,-3,2,2,6,6
+VertexCNAT=0,4,11,1,2,1,2,1,2
+VertexFriction=300,300,100,300,300,300,300,300,300
+AttachX=670
+AttachY=887
+AttachVtx=2
+Picture=0,0,0,0
+OCF=46940353
+ActionTime=36038
+Contents=44;43;42;40
+Effects=(1,32295,10,0,S2AI,49;false;"ranged"=b1,"home_y"=i878,"max_aggro_distance"=i200,"ammo_check"=DS2AI.HasArrows,"home_dir"=i0,"aim_wait"=i0,"weapon"=O44,"Name"=s"S2AI","projectile_speed"=i100,"bound_weapons"=E13,"home_x"=i670,"time"=i32290,"guard_range"=E14,"debug"=n,"target"=n,"guard_range_check"=E15,"strategy"=DS2AI.ExecuteRanged),(1,36039,1,1,Clonk,14;false;"animation_name"=s"Stand","animation_id"=i2,"idle_animation_time"=i50,"idle_time"=i0,"idle_offset"=i76,"Name"=s"IntWalk"),(1,36427,38,1,Clonk,4;false;"Name"=s"IntEyes"),(1,36427,1,1,Clonk,3;false;"rot"=i25,"curr_rot"=i25,"turn_type"=i0,"dir"=i7,"Name"=s"IntTurn")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=3
+    Type=Leaf
+    Animation=IdleScratch
+    Position=linear(F28080,F0,F131072,70,Remove,14282)
+
+    [AnimationNode]
+    Slot=6
+    Number=0
+    Type=Leaf
+    Animation=Close2Hand
+    Position=const(F65536)
+
+    [Attached]
+    Number=1
+    ParentBone=3
+    ChildBone=0
+    AttachTransformation=(F-45875,F0,F0,F0,F0,F45875,F0,F183500,F0,F0,F-26214,F-26214)
+    ChildMesh=BackpackGraphic::
+
+      [ChildInstance]
+      Valid=true
+
+    [Attached]
+    Number=2
+    ParentBone=19
+    ChildBone=2
+    AttachTransformation=(F0,F0,F65536,F0,F0,F65536,F0,F0,F-65536,F0,F0,F0)
+    ChildObject=40
+
+[Object]
+id=Clonk
+Properties=103;false;"use_objects"=E16,"menu"=n,"PictureTransformation"=E17,"gender"=i0,"ExecuteS2AI"=DS2AI.Execute,"using_type"=n,"ActualReplace"=E18,"mesh_transformation_list"=E19,"MeshTransformation"=E20,"inventory"=E21,"iHandMesh"=E22,"backpack"=i1,"Action"=DClonk.ActMap.Push,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E23,"Prototype"=DClonk,"using"=n,"force_collection"=b0
+Category=8
+Plane=400
+Size=100000
+Mass=50
+Energy=50000
+Alive=true
+Breath=252
+Color=255
+X=F46465024
+Y=F57540608
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=9
+VertexX=0,0,0,-2,2,-4,4,-2,2
+VertexY=2,-7,9,-3,-3,2,2,6,6
+VertexCNAT=0,4,11,1,2,1,2,1,2
+VertexFriction=300,300,100,300,300,300,300,300,300
+AttachX=709
+AttachY=888
+AttachVtx=2
+Picture=0,0,0,0
+OCF=46940353
+ActionTime=23368
+Phase=4
+PhaseDelay=9
+ActionTarget1=134
+Effects=(1,19571,10,0,S2AI,234;false;"vehicle"=O134,"ranged"=b1,"home_y"=i877,"max_aggro_distance"=i200,"ammo_check"=DS2AI.CheckVehicleAmmo,"home_dir"=i0,"aim_wait"=i20,"weapon"=O134,"Name"=s"S2AI","bound_weapons"=E24,"home_x"=i709,"time"=i19570,"guard_range"=E25,"debug"=n,"target"=n,"guard_range_check"=E26,"strategy"=DS2AI.ExecuteVehicle),(1,27687,36,103,Clonk,106;false;"Name"=s"IntEyes"),(1,27687,1,103,Clonk,105;false;"rot"=i0,"curr_rot"=i0,"turn_type"=i1,"dir"=i7,"Name"=s"IntTurn")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=2
+    Type=Leaf
+    Animation=Push
+    Position=absx(F0,103,F0,F131072,20)
+
+    [Attached]
+    Number=1
+    ParentBone=3
+    ChildBone=0
+    AttachTransformation=(F-45875,F0,F0,F0,F0,F45875,F0,F183500,F0,F0,F-26214,F-26214)
+    ChildMesh=BackpackGraphic::
+
+      [ChildInstance]
+      Valid=true
+
+[Object]
+id=Clonk
+Properties=239;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E27,"gender"=i0,"ActualReplace"=E28,"using_type"=n,"mesh_transformation_list"=E29,"MeshTransformation"=E30,"inventory"=E31,"iHandMesh"=E32,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E33,"Prototype"=DClonk,"using"=n,"use_objects"=E34
+Category=8
+Plane=400
+Size=100000
+Mass=50
+Energy=50000
+Alive=true
+Breath=252
+Color=255
+X=F51183616
+Y=F43384832
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=9
+VertexX=0,0,0,-2,2,-4,4,-2,2
+VertexY=2,-7,9,-3,-3,2,2,6,6
+VertexCNAT=0,4,11,1,2,1,2,1,2
+VertexFriction=300,300,100,300,300,300,300,300,300
+AttachX=781
+AttachY=672
+AttachVtx=2
+Picture=0,0,0,0
+OCF=46940353
+Dir=1
+ActionTime=16174
+Effects=(1,16175,1,239,Clonk,254;false;"animation_name"=s"Stand","idle_offset"=i247,"idle_animation_time"=i0,"idle_time"=i47,"animation_id"=i2,"Name"=s"IntWalk"),(1,16346,36,239,Clonk,242;false;"Name"=s"IntEyes"),(1,16346,1,239,Clonk,241;false;"rot"=i155,"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn"),(10,3,6,239,Clonk,824;false;"Name"=s"IntEyesClosed")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=3
+    Number=0
+    Type=Leaf
+    Animation=CloseEyes
+    Position=linear(F15290,F0,F22937,3,Hold,14282)
+
+    [AnimationNode]
+    Slot=5
+    Number=2
+    Type=Leaf
+    Animation=Stand
+    Position=linear(F65156,F0,F190054,35,Loop,14282)
+
+    [Attached]
+    Number=1
+    ParentBone=3
+    ChildBone=0
+    AttachTransformation=(F-45875,F0,F0,F0,F0,F45875,F0,F183500,F0,F0,F-26214,F-26214)
+    ChildMesh=BackpackGraphic::
+
+      [ChildInstance]
+      Valid=true
+
+[Object]
+id=Clonk
+Properties=262;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E35,"gender"=i0,"ActualReplace"=E36,"using_type"=n,"mesh_transformation_list"=E37,"MeshTransformation"=E38,"inventory"=E39,"iHandMesh"=E40,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E41,"Prototype"=DClonk,"using"=n,"use_objects"=E42
+Category=8
+Plane=400
+Size=100000
+Mass=50
+Energy=50000
+Alive=true
+Breath=252
+Color=255
+X=F70189056
+Y=F43358607
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=9
+VertexX=0,0,0,-2,2,-4,4,-2,2
+VertexY=2,-7,9,-3,-3,2,2,6,6
+VertexCNAT=0,4,11,1,2,1,2,1,2
+VertexFriction=300,300,100,300,300,300,300,300,300
+AttachX=1071
+AttachY=672
+AttachVtx=2
+Picture=0,0,0,0
+OCF=46940353
+ActionTime=14755
+Effects=(1,14756,1,262,Clonk,345;false;"animation_name"=s"Stand","idle_offset"=i124,"idle_animation_time"=i0,"idle_time"=i409,"animation_id"=i2,"Name"=s"IntWalk"),(1,15899,38,262,Clonk,265;false;"Name"=s"IntEyes"),(1,15899,1,262,Clonk,264;false;"rot"=i25,"curr_rot"=i25,"dir"=i7,"turn_type"=i0,"Name"=s"IntTurn")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=2
+    Type=Leaf
+    Animation=Stand
+    Position=linear(F130276,F0,F190054,35,Loop,14282)
+
+    [Attached]
+    Number=1
+    ParentBone=3
+    ChildBone=0
+    AttachTransformation=(F-45875,F0,F0,F0,F0,F45875,F0,F183500,F0,F0,F-26214,F-26214)
+    ChildMesh=BackpackGraphic::
+
+      [ChildInstance]
+      Valid=true
+
+[Object]
+id=Clonk
+Properties=288;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E43,"gender"=i0,"ActualReplace"=E44,"using_type"=n,"mesh_transformation_list"=E45,"MeshTransformation"=E46,"inventory"=E47,"iHandMesh"=E48,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E49,"Prototype"=DClonk,"using"=n,"use_objects"=E50
+Category=8
+Plane=400
+Size=100000
+Mass=50
+Energy=50000
+Alive=true
+Breath=252
+Color=255
+X=F69271552
+Y=F43319296
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=9
+VertexX=0,0,0,-2,2,-4,4,-2,2
+VertexY=2,-7,9,-3,-3,2,2,6,6
+VertexCNAT=0,4,11,1,2,1,2,1,2
+VertexFriction=300,300,100,300,300,300,300,300,300
+AttachX=1057
+AttachY=671
+AttachVtx=2
+Picture=0,0,0,0
+OCF=46940353
+Dir=1
+ActionTime=15662
+Effects=(1,15663,1,288,Clonk,297;false;"animation_name"=s"Stand","idle_offset"=i270,"idle_animation_time"=i0,"idle_time"=i183,"animation_id"=i0,"Name"=s"IntWalk"),(1,15667,38,288,Clonk,291;false;"Name"=s"IntEyes"),(1,15667,1,288,Clonk,290;false;"rot"=i155,"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=0
+    Type=Leaf
+    Animation=Stand
+    Position=linear(F43420,F0,F190054,35,Loop,14282)
+
+    [Attached]
+    Number=1
+    ParentBone=3
+    ChildBone=0
+    AttachTransformation=(F-45875,F0,F0,F0,F0,F45875,F0,F183500,F0,F0,F-26214,F-26214)
+    ChildMesh=BackpackGraphic::
+
+      [ChildInstance]
+      Valid=true
+
+[Object]
+id=Sword
+Properties=40;false;"Prototype"=DSword,"hWeaponAnimStrike"=n
+Category=16
+Plane=500
+Size=100000
+Mass=20
+X=F43909120
+Y=F57475072
+Width=5
+Height=16
+Offset=-2,-8
+Vertices=3
+VertexY=-7,7
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=585
+Contained=1
+Component=Wood=1;Metal=1
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=0
+    Type=Leaf
+    Animation=Base
+    Position=const(F0)
+
+[Object]
+id=Arrow
+Properties=42;false;"count"=i15,"Prototype"=DArrow,"Name"=s"15x Arrows"
+Category=16
+Plane=500
+Rotation=90
+Size=100000
+Mass=8
+X=F43909120
+Y=F57475072
+R=F5898240
+Width=18
+Height=18
+Offset=-9,-9
+Vertices=3
+VertexX=6,-6
+VertexY=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-6,6
+VertexFriction=120,120,120,0,0,0,0,0,0,0,0,0,0,0,0,120,120,120
+OwnVertices=true
+Picture=0,0,0,0
+OCF=585
+Contained=1
+Component=Wood=3
+GfxOverlay=11,Icon_Number::1,3,,0,0,(0.4,0,8,0,0.4,14,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+[Object]
+id=Arrow
+Properties=43;false;"count"=i15,"Prototype"=DArrow,"Name"=s"15x Arrows"
+Category=16
+Plane=500
+Rotation=90
+Size=100000
+Mass=8
+X=F43909120
+Y=F57475072
+R=F5898240
+Width=18
+Height=18
+Offset=-9,-9
+Vertices=3
+VertexX=6,-6
+VertexY=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-6,6
+VertexFriction=120,120,120,0,0,0,0,0,0,0,0,0,0,0,0,120,120,120
+OwnVertices=true
+Picture=0,0,0,0
+OCF=585
+Contained=1
+Component=Wood=3
+GfxOverlay=11,Icon_Number::1,3,,0,0,(0.4,0,8,0,0.4,14,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+[Object]
+id=Bow
+Properties=44;false;"Prototype"=DBow,"animation_set"=E51
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F43909120
+Y=F57475072
+Width=4
+Height=20
+Offset=-2,-10
+Vertices=4
+VertexX=-2,2,-2,2
+VertexY=-10,-10,10,10
+VertexFriction=100,100,100,100,100
+Picture=0,0,0,0
+OCF=713
+Contained=1
+Component=Wood=3
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Firestone
+Properties=224;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=225;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=226;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=227;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=228;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=229;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=230;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=231;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=232;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=233;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F45651718
+Y=F57306597
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=8388681
+Contained=134
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Elevator_Case_Front
+Properties=336;false;"Action"=DElevator_Case_Front.ActMap.Attach,"Prototype"=DElevator_Case_Front
+Category=1
+Plane=505
+Size=100000
+Mass=1
+X=F90767360
+Y=F39452672
+Width=24
+Height=34
+Offset=-12,-17
+Vertices=1
+VertexX=-12
+VertexY=-5
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=14897
+ActionTarget1=332
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Elevator_Case_Front
+Properties=425;false;"Action"=DElevator_Case_Front.ActMap.Attach,"Prototype"=DElevator_Case_Front
+Category=1
+Plane=505
+Size=100000
+Mass=1
+X=F12167134
+Y=F76770128
+Width=24
+Height=34
+Offset=-12,-17
+Vertices=1
+VertexX=-12
+VertexY=-5
+Picture=0,0,0,0
+OCF=12845121
+ActionTime=12105
+ActionTarget1=421
+ColorMod=4288708704
+
+  [Mesh]
+  Valid=true
+
+[Script]
+StaticVariables=15;CON_VC_Players=n,g_player_cursor_pos=n,Clonk_IdleActions=E52,Scoreboard_keys=n,Scoreboard_data=n,Scoreboard_unique_ids=n,Scoreboard_title_set=n,LibraryFlag_flag_list=n,Library_Power_power_compounds=n,g_enemies=n,g_triggers_invisible=n,g_init=n,g_camera=n,MyClonk=n,g_is_initialized=n
+Scenario=false;"Prototype"=DGlobal
+Values=a(12;i-574,i0,i-819,i0,i0,i1000,i0,i0,i819,i0,i-574,i0),a(0;),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(7;),a(1;E9),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(3;O40,O42),a(2;i2,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(4;O44,O43,O42,O40),p(false;"x"=i400,"y"=i800,"hgt"=i150,"wdt"=i400),a(5;i12,i400,i800,i400,i150),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E20),a(12;i1000,i0,i0,i0,i0,i1000,i0,i0,i0,i0,i1000,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i1,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(0;),p(false;"x"=i250,"y"=i750,"hgt"=i150,"wdt"=i400),a(5;i12,i250,i750,i400,i150),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E30),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i1,"turnForced"=n),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E38),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E46),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(2;i0,i1),p(false;"ShootTime"=i20,"WalkSpeed"=i84,"LoadTime2"=i7,"AnimationReplacements"=E53,"AnimationLoad"=s"BowLoadArms","AnimationAim"=s"BowAimArms","WalkBack"=i56,"AnimationShoot"=n,"TurnType"=i1,"AimMode"=i1,"LoadTime"=i30),a(7;E54,E55,E56,E57,E58,E59,E60),a(5;E61,E62,E63,E64,E65),a(2;s"IdleLookAround",i60),a(2;s"IdleHandwatch",i100),a(2;s"IdleScratch",i70),a(2;s"IdleStrech",i100),a(2;s"IdleShoe",i120),a(2;s"IdleShoeSole",i200),a(2;s"IdleHandstrech",i100),a(2;s"Walk",s"BowWalk"),a(2;s"Walk_Position",i20),a(2;s"Stand",s"BowStand"),a(2;s"Jump",s"BowJump"),a(2;s"KneelDown",s"BowKneel"),

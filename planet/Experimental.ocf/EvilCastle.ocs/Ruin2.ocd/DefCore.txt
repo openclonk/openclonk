@@ -1,0 +1,14 @@
+[DefCore]
+id=Ruin2
+Version=5,2,0,1
+Category=C4D_Structure
+Width=80
+Height=96
+Offset=-40,-48
+Vertices=5
+VertexX=0,25,15,-15,-25
+VertexY=-10,-20,47,47,-20
+VertexFriction=50,50,100,100,50
+Value=5
+Mass=100
+Components=Rock=6;Wood=2;
