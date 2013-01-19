@@ -19,6 +19,9 @@ func DoInit(int first_player)
 	Object(331)->CreateShaft(500);
 	// Left
 	Object(420)->CreateShaft(100);
+	// Shrooms
+	Object(2318)->AddPoisonEffect(0,0);
+	Object(2375)->AddPoisonEffect(-20,0);
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);

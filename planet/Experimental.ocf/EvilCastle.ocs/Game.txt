@@ -1,6 +1,100 @@
 [Object]
+id=Grass
+Properties=2125;false;"Prototype"=DGrass
+Category=4097
+Plane=-500
+Size=108000
+Mass=1
+X=F13369344
+Y=F77332480
+Width=12
+Height=7
+Offset=-6,-3
+Vertices=1
+VertexY=1
+Picture=0,0,0,0
+OCF=12845633
+ColorMod=4288708704
+Graphics=Grass::1
+
+[Object]
+id=Grass
+Properties=2131;false;"Prototype"=DGrass
+Category=4097
+Plane=-500
+Size=122000
+Mass=1
+X=F13959168
+Y=F77529088
+Width=14
+Height=8
+Offset=-7,-3
+Vertices=1
+VertexY=1
+Picture=0,0,0,0
+OCF=2359873
+ColorMod=4288708704
+Graphics=Grass::1
+
+[Object]
+id=Grass
+Properties=2143;false;"Prototype"=DGrass
+Category=4097
+Plane=-500
+Size=147000
+Mass=1
+X=F25952256
+Y=F75235328
+Width=17
+Height=10
+Offset=-8,-4
+Vertices=1
+VertexY=1
+Picture=0,0,0,0
+OCF=12845633
+ColorMod=4288708704
+Graphics=Grass::1
+
+[Object]
+id=Grass
+Properties=2144;false;"Prototype"=DGrass
+Category=4097
+Plane=-500
+Size=118000
+Mass=1
+X=F15204352
+Y=F77332480
+Width=14
+Height=8
+Offset=-7,-3
+Vertices=1
+VertexY=1
+Picture=0,0,0,0
+OCF=12845633
+ColorMod=4288708704
+Graphics=Grass::1
+
+[Object]
+id=Grass
+Properties=2148;false;"Prototype"=DGrass
+Category=4097
+Plane=-500
+Size=122000
+Mass=1
+X=F13631488
+Y=F77398016
+Width=14
+Height=8
+Offset=-7,-3
+Vertices=1
+VertexY=1
+Picture=0,0,0,0
+OCF=12845633
+ColorMod=4288708704
+
+[Object]
 id=Elevator_Case_Back
-Properties=337;false;"Action"=DElevator_Case_Back.ActMap.Attach,"Prototype"=DElevator_Case_Back
+Properties=337;false;"Prototype"=DElevator_Case_Back,"Action"=DElevator_Case_Back.ActMap.Attach
 Category=1
 Plane=100
 Size=100000
@@ -15,7 +109,7 @@ VertexX=-12
 VertexY=-2
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=14897
+ActionTime=70741
 ActionTarget1=332
 
   [Mesh]
@@ -23,7 +117,7 @@ ActionTarget1=332
 
 [Object]
 id=ElevatorRope
-Properties=338;false;"Action"=DElevatorRope.ActMap.Be,"Prototype"=DElevatorRope
+Properties=338;false;"Prototype"=DElevatorRope,"Action"=DElevatorRope.ActMap.Be
 Category=1
 Plane=100
 Size=100000
@@ -35,12 +129,12 @@ Height=4
 Offset=0,-2
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=14897
+ActionTime=70741
 ActionTarget1=337
 
 [Object]
 id=Elevator_Case_Back
-Properties=426;false;"Action"=DElevator_Case_Back.ActMap.Attach,"Prototype"=DElevator_Case_Back
+Properties=426;false;"Prototype"=DElevator_Case_Back,"Action"=DElevator_Case_Back.ActMap.Attach
 Category=1
 Plane=100
 Size=100000
@@ -55,7 +149,7 @@ VertexX=-12
 VertexY=-2
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=12105
+ActionTime=67949
 ActionTarget1=421
 ColorMod=4288708704
 
@@ -64,7 +158,7 @@ ColorMod=4288708704
 
 [Object]
 id=ElevatorRope
-Properties=427;false;"Action"=DElevatorRope.ActMap.Be,"Prototype"=DElevatorRope
+Properties=427;false;"Prototype"=DElevatorRope,"Action"=DElevatorRope.ActMap.Be
 Category=1
 Plane=100
 Size=100000
@@ -76,7 +170,7 @@ Height=4
 Offset=0,-2
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=12105
+ActionTime=67949
 ActionTarget1=426
 ColorMod=4288708704
 
@@ -106,7 +200,7 @@ DrawTransform=1.1,0,0,0,1.1,-11,1
 
 [Object]
 id=Tree_Coniferous_Burned
-Properties=621;false;"Action"=n,"Prototype"=DTree_Coniferous_Burned
+Properties=621;false;"Prototype"=DTree_Coniferous_Burned,"Action"=n
 Category=1
 Plane=100
 Rotation=100
@@ -130,17 +224,20 @@ DrawTransform=1.1,0,0,0,1.1,-11,1
 
 [Object]
 id=Tree_Coniferous
-Properties=710;false;"Action"=n,"Prototype"=DTree_Coniferous,"MeshTransformation"=E1
+Properties=710;false;"MeshTransformation"=E1,"Prototype"=DTree_Coniferous,"Action"=n
 Category=1
 Plane=100
+Rotation=10
 Size=70500
 Mass=105
-X=F15068138
-Y=F75620420
-Width=42
-Height=77
-Offset=-21,-38
+X=F27192298
+Y=F73785412
+R=F655360
+Width=90
+Height=90
+Offset=-45,-45
 Vertices=9
+VertexX=-5,-4,-2,-1,0,1,2,4,5
 VertexY=31,21,14,7,0,-7,-14,-21,-31
 VertexCNAT=8,16,16,16,16,16,16,16,4
 VertexFriction=50,50,25,25,25,25,50,50,50
@@ -148,7 +245,595 @@ Picture=0,0,0,0
 OCF=12845697
 Component=Wood=3
 ColorMod=4290805856
-Effects=(1,3353,72,710,Tree_Coniferous,713;false;"Repeats"=i-46,"Function"=s"Seed","Pars"=E2,"NoStop"=b1,"Name"=s"IntScheduleCall")
+Effects=(1,59197,72,710,Tree_Coniferous,713;false;"NoStop"=b1,"Pars"=E2,"Repeats"=i-822,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Rank
+Properties=2052;false;"Prototype"=DRank,"MeshTransformation"=E3
+Category=1
+Plane=100
+Rotation=17
+Size=100000
+Mass=1
+X=F15794176
+Y=F77332480
+R=F1114112
+Width=32
+Height=32
+Offset=-16,-16
+Vertices=2
+VertexX=0,-1
+VertexY=0,3
+VertexCNAT=3,4
+Picture=0,0,0,0
+OCF=12845761
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Fern
+Properties=2276;false;"Prototype"=DFern,"MeshTransformation"=E4
+Category=1
+Plane=100
+Size=100100
+Mass=1
+X=F20185088
+Y=F93585408
+Width=28
+Height=10
+Offset=-14,-5
+Vertices=2
+VertexY=0,3
+VertexCNAT=16,8
+Picture=0,0,0,0
+OCF=12845249
+ColorMod=4288708704
+Effects=(1,15149,72,2276,Fern,2279;false;"NoStop"=b1,"Pars"=E5,"Repeats"=i-210,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=LargeCaveMushroom
+Properties=2318;false;"Prototype"=DLargeCaveMushroom,"MeshTransformation"=E6
+Category=1
+Plane=100
+Size=100000
+Mass=100
+X=F88801280
+Y=F93126656
+Width=44
+Height=64
+Offset=-22,-32
+Vertices=9
+VertexY=30,15,5,2,0,-2,-5,-15,-25
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4291682271
+Effects=(1,14383,72,2318,LargeCaveMushroom,2321;false;"NoStop"=b1,"Pars"=E7,"Repeats"=i-199,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Pitch1
+    Position=const(F5373)
+
+    [AnimationNode]
+    Slot=2
+    Number=11
+    Type=LinearInterpolation
+
+      [ChildLeft]
+      Slot=2
+      Number=9
+      Type=LinearInterpolation
+
+        [ChildLeft]
+        Slot=2
+        Number=7
+        Type=LinearInterpolation
+
+          [ChildLeft]
+          Slot=2
+          Number=5
+          Type=LinearInterpolation
+
+            [ChildLeft]
+            Slot=2
+            Number=3
+            Type=LinearInterpolation
+
+              [ChildLeft]
+              Slot=2
+              Number=1
+              Type=Leaf
+              Animation=Pitch2
+              Position=const(F10158)
+
+              [ChildRight]
+              Slot=2
+              Number=2
+              Type=Leaf
+              Animation=Rotate1
+              Position=const(F2097)
+            Weight=const(F32768)
+
+            [ChildRight]
+            Slot=2
+            Number=4
+            Type=Leaf
+            Animation=Head1
+            Position=const(F19857)
+          Weight=const(F32768)
+
+          [ChildRight]
+          Slot=2
+          Number=6
+          Type=Leaf
+          Animation=Head2
+          Position=const(F10616)
+        Weight=const(F32768)
+
+        [ChildRight]
+        Slot=2
+        Number=8
+        Type=Leaf
+        Animation=Head3
+        Position=const(F10944)
+      Weight=const(F32768)
+
+      [ChildRight]
+      Slot=2
+      Number=10
+      Type=Leaf
+      Animation=Head4
+      Position=const(F12976)
+    Weight=const(F32768)
+
+[Object]
+id=LargeCaveMushroom
+Properties=2369;false;"Prototype"=DLargeCaveMushroom,"MeshTransformation"=E8
+Category=1
+Plane=100
+Rotation=180
+Size=100000
+Mass=100
+X=F86179840
+Y=F91226112
+R=F11796480
+Width=80
+Height=80
+Offset=-40,-40
+Vertices=9
+VertexY=-30,-15,-5,-2,0,2,5,15,25
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4292536284
+Effects=(1,13313,72,2369,LargeCaveMushroom,2372;false;"NoStop"=b1,"Pars"=E9,"Repeats"=i-184,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Pitch1
+    Position=const(F65)
+
+    [AnimationNode]
+    Slot=2
+    Number=11
+    Type=LinearInterpolation
+
+      [ChildLeft]
+      Slot=2
+      Number=9
+      Type=LinearInterpolation
+
+        [ChildLeft]
+        Slot=2
+        Number=7
+        Type=LinearInterpolation
+
+          [ChildLeft]
+          Slot=2
+          Number=5
+          Type=LinearInterpolation
+
+            [ChildLeft]
+            Slot=2
+            Number=3
+            Type=LinearInterpolation
+
+              [ChildLeft]
+              Slot=2
+              Number=1
+              Type=Leaf
+              Animation=Pitch2
+              Position=const(F8192)
+
+              [ChildRight]
+              Slot=2
+              Number=2
+              Type=Leaf
+              Animation=Rotate1
+              Position=const(F20643)
+            Weight=const(F32768)
+
+            [ChildRight]
+            Slot=2
+            Number=4
+            Type=Leaf
+            Animation=Head1
+            Position=const(F7471)
+          Weight=const(F32768)
+
+          [ChildRight]
+          Slot=2
+          Number=6
+          Type=Leaf
+          Animation=Head2
+          Position=const(F10092)
+        Weight=const(F32768)
+
+        [ChildRight]
+        Slot=2
+        Number=8
+        Type=Leaf
+        Animation=Head3
+        Position=const(F23658)
+      Weight=const(F32768)
+
+      [ChildRight]
+      Slot=2
+      Number=10
+      Type=Leaf
+      Animation=Head4
+      Position=const(F15925)
+    Weight=const(F32768)
+
+[Object]
+id=LargeCaveMushroom
+Properties=2375;false;"Prototype"=DLargeCaveMushroom,"MeshTransformation"=E10
+Category=1
+Plane=100
+Size=100000
+Mass=100
+X=F92471296
+Y=F92864512
+Width=44
+Height=64
+Offset=-22,-32
+Vertices=9
+VertexY=30,15,5,2,0,-2,-5,-15,-25
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4293514717
+Effects=(1,13257,72,2375,LargeCaveMushroom,2378;false;"NoStop"=b1,"Pars"=E11,"Repeats"=i-184,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Pitch1
+    Position=const(F1966)
+
+    [AnimationNode]
+    Slot=2
+    Number=11
+    Type=LinearInterpolation
+
+      [ChildLeft]
+      Slot=2
+      Number=9
+      Type=LinearInterpolation
+
+        [ChildLeft]
+        Slot=2
+        Number=7
+        Type=LinearInterpolation
+
+          [ChildLeft]
+          Slot=2
+          Number=5
+          Type=LinearInterpolation
+
+            [ChildLeft]
+            Slot=2
+            Number=3
+            Type=LinearInterpolation
+
+              [ChildLeft]
+              Slot=2
+              Number=1
+              Type=Leaf
+              Animation=Pitch2
+              Position=const(F16646)
+
+              [ChildRight]
+              Slot=2
+              Number=2
+              Type=Leaf
+              Animation=Rotate1
+              Position=const(F5373)
+            Weight=const(F32768)
+
+            [ChildRight]
+            Slot=2
+            Number=4
+            Type=Leaf
+            Animation=Head1
+            Position=const(F22872)
+          Weight=const(F32768)
+
+          [ChildRight]
+          Slot=2
+          Number=6
+          Type=Leaf
+          Animation=Head2
+          Position=const(F4587)
+        Weight=const(F32768)
+
+        [ChildRight]
+        Slot=2
+        Number=8
+        Type=Leaf
+        Animation=Head3
+        Position=const(F13697)
+      Weight=const(F32768)
+
+      [ChildRight]
+      Slot=2
+      Number=10
+      Type=Leaf
+      Animation=Head4
+      Position=const(F12582)
+    Weight=const(F32768)
+
+[Object]
+id=LargeCaveMushroom
+Properties=2398;false;"Prototype"=DLargeCaveMushroom,"MeshTransformation"=E12
+Category=1
+Plane=100
+Rotation=160
+Size=100000
+Mass=100
+X=F94240768
+Y=F90374144
+R=F10485760
+Width=80
+Height=80
+Offset=-40,-40
+Vertices=9
+VertexX=-10,-5,-2,-1,0,1,2,5,9
+VertexY=-28,-14,-5,-2,0,2,5,14,23
+VertexCNAT=8,16,16,16,16,16,16,16,4
+VertexFriction=50,50,25,25,25,25,50,50,50
+Picture=0,0,0,0
+OCF=12845761
+Component=Wood=4
+ColorMod=4293586427
+Effects=(1,12603,72,2398,LargeCaveMushroom,2401;false;"NoStop"=b1,"Pars"=E13,"Repeats"=i-175,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Pitch1
+    Position=const(F4325)
+
+    [AnimationNode]
+    Slot=2
+    Number=11
+    Type=LinearInterpolation
+
+      [ChildLeft]
+      Slot=2
+      Number=9
+      Type=LinearInterpolation
+
+        [ChildLeft]
+        Slot=2
+        Number=7
+        Type=LinearInterpolation
+
+          [ChildLeft]
+          Slot=2
+          Number=5
+          Type=LinearInterpolation
+
+            [ChildLeft]
+            Slot=2
+            Number=3
+            Type=LinearInterpolation
+
+              [ChildLeft]
+              Slot=2
+              Number=1
+              Type=Leaf
+              Animation=Pitch2
+              Position=const(F21823)
+
+              [ChildRight]
+              Slot=2
+              Number=2
+              Type=Leaf
+              Animation=Rotate1
+              Position=const(F21037)
+            Weight=const(F32768)
+
+            [ChildRight]
+            Slot=2
+            Number=4
+            Type=Leaf
+            Animation=Head1
+            Position=const(F5046)
+          Weight=const(F32768)
+
+          [ChildRight]
+          Slot=2
+          Number=6
+          Type=Leaf
+          Animation=Head2
+          Position=const(F23724)
+        Weight=const(F32768)
+
+        [ChildRight]
+        Slot=2
+        Number=8
+        Type=Leaf
+        Animation=Head3
+        Position=const(F24576)
+      Weight=const(F32768)
+
+      [ChildRight]
+      Slot=2
+      Number=10
+      Type=Leaf
+      Animation=Head4
+      Position=const(F24444)
+    Weight=const(F32768)
+
+[Object]
+id=Rank
+Properties=2484;false;"Prototype"=DRank,"MeshTransformation"=E14
+Category=1
+Plane=100
+Rotation=335
+Size=100000
+Mass=1
+X=F93716480
+Y=F93061120
+R=F21954560
+Width=32
+Height=32
+Offset=-16,-16
+Vertices=2
+VertexX=0,1
+VertexY=0,3
+VertexCNAT=3,4
+Picture=0,0,0,0
+OCF=12845761
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Lichen
+Properties=2509;false;"grow_stage"=i3,"Prototype"=DLichen,"Action"=DLichen.ActMap.Grow
+Category=1
+Plane=100
+Size=100000
+Mass=10
+X=F90898432
+Y=F93519872
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=2
+VertexY=7,12
+VertexCNAT=16,8
+VertexFriction=50,100
+Picture=0,0,0,0
+OCF=12845249
+ActionTime=9480
+Phase=3
+PhaseDelay=1980
+Component=Moss=4
+Effects=(1,9480,72,2509,Lichen,2511;false;"NoStop"=b1,"Pars"=E15,"Repeats"=i-131,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+[Object]
+id=Lichen
+Properties=2516;false;"grow_stage"=i3,"Prototype"=DLichen,"Action"=DLichen.ActMap.Grow
+Category=1
+Plane=100
+Size=100000
+Mass=10
+X=F85852160
+Y=F94568448
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=2
+VertexY=7,12
+VertexCNAT=16,8
+VertexFriction=50,100
+Picture=0,0,0,0
+OCF=12845249
+ActionTime=9376
+Phase=3
+PhaseDelay=1876
+Component=Moss=4
+Effects=(1,9376,72,2516,Lichen,2518;false;"NoStop"=b1,"Pars"=E16,"Repeats"=i-130,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+[Object]
+id=Lichen
+Properties=2525;false;"grow_stage"=i3,"Prototype"=DLichen,"Action"=DLichen.ActMap.Grow
+Category=1
+Plane=100
+Size=100000
+Mass=10
+X=F96075776
+Y=F91947008
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=2
+VertexY=7,12
+VertexCNAT=16,8
+VertexFriction=50,100
+Picture=0,0,0,0
+OCF=12845249
+ActionTime=9237
+Phase=3
+PhaseDelay=1737
+Component=Moss=4
+Effects=(1,9237,72,2525,Lichen,2527;false;"NoStop"=b1,"Pars"=E17,"Repeats"=i-128,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+[Object]
+id=Trunk
+Properties=2538;false;"Prototype"=DTrunk,"MeshTransformation"=E18
+Category=1
+Plane=100
+Rotation=350
+Size=100000
+Mass=40
+X=F14286848
+Y=F76152832
+R=F22937600
+Width=66
+Height=66
+Offset=-33,-33
+Vertices=2
+VertexX=-4,4
+VertexY=-25,25
+VertexCNAT=4,8
+Picture=0,0,0,0
+OCF=12845761
 
   [Mesh]
   Valid=true
@@ -204,7 +889,6 @@ Size=100000
 Mass=500
 X=F17394010
 Y=F75721422
-XDir=F13107
 Width=50
 Height=52
 Offset=-25,-26
@@ -213,13 +897,70 @@ VertexX=-1,10,20,-23,-23
 VertexY=-17,-25,-14,25,25,25
 VertexFriction=50,50,50,100,100,100
 Picture=0,0,0,0
-Mobile=true
 OCF=12845121
 Component=Wood=3;Metal=3
 
 [Object]
+id=Foundry
+Properties=1520;false;"queue"=E19,"Prototype"=DFoundry,"Action"=DFoundry.ActMap.Default
+Category=2
+Plane=200
+Size=100000
+Mass=4500
+X=F15564802
+Y=F82732644
+YDir=F65535
+Width=50
+Height=52
+Offset=-25,-26
+Vertices=6
+VertexX=-1,10,20,-23,23
+VertexY=-17,-25,-14,25,25,25
+VertexFriction=50,50,50,100,100,100
+Picture=0,0,0,0
+OCF=12846145
+ActionTime=35586
+Component=Rock=4;Wood=2
+Effects=(1,35586,1,1520,Foundry,1521;false;"NoStop"=b1,"Pars"=E20,"Repeats"=i-35586,"Function"=s"CollectionZone","Name"=s"IntScheduleCall"),(100,35586,5,1520,Foundry,1522;false;"Name"=s"ProcessQueue")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Chest
+Properties=2539;false;"Prototype"=DChest,"MeshTransformation"=E21,"is_open"=b0
+Category=2
+Plane=200
+Size=100000
+Mass=102
+X=F96534528
+Y=F91907676
+Width=20
+Height=24
+Offset=-10,-12
+Vertices=4
+VertexX=-8,-8,8,8
+VertexY=-2,11,-2,11
+VertexCNAT=5,9,6,10
+VertexFriction=50,50,100,100
+Picture=0,0,0,0
+OCF=12845121
+Component=Wood=3
+Contents=2573;2571;2564;2561
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=1
+    Number=0
+    Type=Leaf
+    Animation=Open
+    Position=linear(F65,F0,F65,20,Hold,4526)
+
+[Object]
 id=Elevator
-Properties=331;false;"rope"=O338,"Action"=DElevator.ActMap.Default,"Prototype"=DElevator,"case"=O332,"MeshTransformation"=E3
+Properties=331;false;"MeshTransformation"=E22,"case"=O332,"Prototype"=DElevator,"rope"=O338,"Action"=DElevator.ActMap.Default
 Category=1
 Plane=249
 Size=100000
@@ -235,7 +976,7 @@ VertexY=-27,-27,32,32,32
 VertexFriction=50,50,100,100,100
 Picture=0,0,0,0
 OCF=12846145
-ActionTime=14897
+ActionTime=70741
 Component=Wood=3;Metal=1
 
   [Mesh]
@@ -243,7 +984,7 @@ Component=Wood=3;Metal=1
 
 [Object]
 id=Elevator
-Properties=420;false;"rope"=O427,"Action"=DElevator.ActMap.Default,"Prototype"=DElevator,"case"=O421,"MeshTransformation"=E4
+Properties=420;false;"MeshTransformation"=E23,"case"=O421,"Prototype"=DElevator,"rope"=O427,"Action"=DElevator.ActMap.Default
 Category=1
 Plane=249
 Size=100000
@@ -259,7 +1000,7 @@ VertexY=-27,-27,32,32,32
 VertexFriction=50,50,100,100,100
 Picture=0,0,0,0
 OCF=12846145
-ActionTime=12105
+ActionTime=67949
 Component=Wood=3;Metal=1
 ColorMod=4288708704
 
@@ -268,7 +1009,7 @@ ColorMod=4288708704
 
 [Object]
 id=ElevatorCase
-Properties=332;false;"back"=O337,"Action"=DElevatorCase.ActMap.DriveIdle,"elevator"=O331,"case_speed_automatic"=i40,"front"=O336,"partner_was_synced"=b0,"Prototype"=DElevatorCase,"case_speed"=i20
+Properties=332;false;"case_speed_automatic"=i40,"Prototype"=DElevatorCase,"Action"=DElevatorCase.ActMap.DriveIdle,"front"=O336,"partner_was_synced"=b0,"back"=O337,"elevator"=O331,"case_speed"=i20
 Category=4
 Plane=250
 Size=100000
@@ -286,13 +1027,13 @@ VertexFriction=100,100,100,100,100,100,100,100
 Picture=0,0,0,0
 OCF=12845125
 ComDir=-1
-ActionTime=14897
+ActionTime=70741
 Component=Wood=1
-Effects=(1,14897,10,332,ElevatorCase,335;false;"Name"=s"FetchVehicles"),(1,14897,1,332,ElevatorCase,334;false;"Name"=s"ElevatorUpperLimitCheck"),(1,14897,30,332,ElevatorCase,333;false;"Name"=s"CheckAutoMoveTo")
+Effects=(1,70741,10,332,ElevatorCase,335;false;"Name"=s"FetchVehicles"),(1,70741,1,332,ElevatorCase,334;false;"Name"=s"ElevatorUpperLimitCheck"),(1,70741,30,332,ElevatorCase,333;false;"Name"=s"CheckAutoMoveTo")
 
 [Object]
 id=ElevatorCase
-Properties=421;false;"back"=O426,"Action"=DElevatorCase.ActMap.DriveIdle,"elevator"=O420,"front"=O425,"case_speed_automatic"=i40,"partner_was_synced"=b0,"Prototype"=DElevatorCase,"case_speed"=i20
+Properties=421;false;"case_speed_automatic"=i40,"Prototype"=DElevatorCase,"Action"=DElevatorCase.ActMap.DriveIdle,"front"=O425,"partner_was_synced"=b0,"back"=O426,"elevator"=O420,"case_speed"=i20
 Category=4
 Plane=250
 Size=100000
@@ -310,21 +1051,21 @@ VertexFriction=100,100,100,100,100,100,100,100
 Picture=0,0,0,0
 OCF=12845125
 ComDir=-1
-ActionTime=12105
+ActionTime=67949
 Component=Wood=1
 ColorMod=4288708704
-Effects=(1,12105,10,421,ElevatorCase,424;false;"Name"=s"FetchVehicles"),(1,12105,1,421,ElevatorCase,423;false;"Name"=s"ElevatorUpperLimitCheck"),(1,12105,30,421,ElevatorCase,422;false;"Name"=s"CheckAutoMoveTo")
+Effects=(1,67949,10,421,ElevatorCase,424;false;"Name"=s"FetchVehicles"),(1,67949,1,421,ElevatorCase,423;false;"Name"=s"ElevatorUpperLimitCheck"),(1,67949,30,421,ElevatorCase,422;false;"Name"=s"CheckAutoMoveTo")
 
 [Object]
 id=Catapult
-Properties=134;false;"aim_anim"=i0,"olddir"=i0,"Action"=DCatapult.ActMap.Roll,"Prototype"=DCatapult,"dir"=i0,"turn_anim"=i1
+Properties=134;false;"dir"=i0,"Action"=DCatapult.ActMap.Roll,"turn_anim"=i1,"Prototype"=DCatapult,"olddir"=i0,"aim_anim"=i0
 Category=4
 Plane=300
 Size=100000
 Mass=225
 X=F45651718
 Y=F57306597
-RDir=F-6553
+RDir=F45875
 Width=34
 Height=30
 Offset=-17,-15
@@ -336,8 +1077,8 @@ VertexFriction=80,80,10,10
 Picture=0,0,0,0
 Mobile=true
 OCF=29624389
-ActionTime=26485
-Phase=42
+ActionTime=82329
+Phase=14
 PhaseDelay=1
 Component=Metal=1;Wood=6
 Contents=233;232;231;230;229;228;227;226;225;224
@@ -357,11 +1098,105 @@ Contents=233;232;231;230;229;228;227;226;225;224
     Number=1
     Type=Leaf
     Animation=TurnLeft
-    Position=linear(F115343,F0,F115343,36,Hold,14282)
+    Position=linear(F115343,F0,F115343,36,Hold,4526)
+
+[Object]
+id=Lorry
+Properties=1058;false;"iRotWheels"=i1120,"iTremble"=i100,"tremble_anim"=n,"drive_anim"=i0,"Prototype"=DLorry,"MeshTransformation"=E24
+Category=4
+Plane=300
+Rotation=24
+Size=100000
+Mass=315
+X=F9736028
+Y=F86209023
+R=F1572864
+Width=30
+Height=30
+Offset=-15,-15
+Vertices=4
+VertexX=-5,9,-10,4
+VertexY=-9,-3,3,9
+VertexCNAT=5,6,9,10
+VertexFriction=80,80,10,10
+Picture=0,0,0,0
+OCF=29639237
+Component=Metal=2;Wood=1
+Contents=2017;2016;2014;2013;2011;2008;2007;2006;2004;1996;1995;1994;1993;1992;1991;1990;1987;1986;1985;1984;1983;1982;1980;1979;1978;1977;1976;1975;1974;1973;1422;1206;795
+Effects=(1,48271,1,1058,Lorry,1059;false;"NoStop"=b1,"Pars"=E25,"Repeats"=i-48271,"Function"=s"TurnWheels","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=0
+    Type=Leaf
+    Animation=Drive
+    Position=const(F65536)
+
+[Object]
+id=Lorry
+Properties=1228;false;"iRotWheels"=i1340,"iTremble"=i500,"tremble_anim"=n,"drive_anim"=i0,"Prototype"=DLorry,"MeshTransformation"=E26
+Category=4
+Plane=300
+Rotation=-30
+Size=100000
+Mass=125
+X=F93555261
+Y=F81489415
+R=F-1966080
+Width=30
+Height=30
+Offset=-15,-15
+Vertices=4
+VertexX=-10,3,-3,10
+VertexY=-1,-9,10,3
+VertexCNAT=5,6,9,10
+VertexFriction=80,80,10,10
+Picture=0,0,0,0
+OCF=29639237
+Component=Metal=2;Wood=1
+Contents=1381;1248
+Effects=(1,43359,1,1228,Lorry,1229;false;"NoStop"=b1,"Pars"=E27,"Repeats"=i-43359,"Function"=s"TurnWheels","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=5
+    Number=0
+    Type=Leaf
+    Animation=Drive
+    Position=const(F65536)
+
+[Object]
+id=Airship_Burnt
+Properties=1077;false;"Prototype"=DAirship_Burnt
+Category=4
+Plane=300
+Size=100000
+Mass=60
+X=F2519206
+Y=F73814382
+Width=64
+Height=54
+Offset=-32,-27
+Vertices=11
+VertexX=0,0,-20,20,-30,30,-20,20,-15,15
+VertexY=0,-30,-30,-30,-15,-15,-5,-5,26,26,26
+VertexCNAT=6
+VertexFriction=20,20,20,20,20,20,20,80,80,80
+Picture=0,0,0,0
+OCF=12845121
+Component=Metal=4;Wood=1
+
+  [Mesh]
+  Valid=true
 
 [Object]
 id=Clonk
-Properties=1;false;"use_objects"=E5,"fBothHanded"=i0,"menu"=n,"PictureTransformation"=E6,"gender"=i0,"ExecuteS2AI"=DS2AI.Execute,"using_type"=n,"ActualReplace"=E7,"mesh_transformation_list"=E8,"MeshTransformation"=E9,"inventory"=E10,"iHandMesh"=E11,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E12,"Prototype"=DClonk,"using"=n,"force_collection"=b0
+Properties=1;false;"alt"=b0,"using_type"=n,"lAnim"=E28,"ActualReplace"=E29,"menu"=n,"force_collection"=b0,"no_ladder_counter"=i0,"Action"=DClonk.ActMap.Walk,"inventory"=E30,"using"=n,"ExecuteS2AI"=DS2AI.Execute,"PictureTransformation"=E31,"gender"=i0,"use_objects"=E32,"fBothHanded"=i0,"Prototype"=DClonk,"MeshTransformation"=E33,"backpack"=i1,"iHandMesh"=E34,"mesh_transformation_list"=E35
 Category=8
 Plane=400
 Size=100000
@@ -385,9 +1220,9 @@ AttachY=887
 AttachVtx=2
 Picture=0,0,0,0
 OCF=46940353
-ActionTime=36038
+ActionTime=91882
 Contents=44;43;42;40
-Effects=(1,32295,10,0,S2AI,49;false;"ranged"=b1,"home_y"=i878,"max_aggro_distance"=i200,"ammo_check"=DS2AI.HasArrows,"home_dir"=i0,"aim_wait"=i0,"weapon"=O44,"Name"=s"S2AI","projectile_speed"=i100,"bound_weapons"=E13,"home_x"=i670,"time"=i32290,"guard_range"=E14,"debug"=n,"target"=n,"guard_range_check"=E15,"strategy"=DS2AI.ExecuteRanged),(1,36039,1,1,Clonk,14;false;"animation_name"=s"Stand","animation_id"=i2,"idle_animation_time"=i50,"idle_time"=i0,"idle_offset"=i76,"Name"=s"IntWalk"),(1,36427,38,1,Clonk,4;false;"Name"=s"IntEyes"),(1,36427,1,1,Clonk,3;false;"rot"=i25,"curr_rot"=i25,"turn_type"=i0,"dir"=i7,"Name"=s"IntTurn")
+Effects=(1,88139,10,0,S2AI,49;false;"time"=i88130,"ammo_check"=DS2AI.HasArrows,"strategy"=DS2AI.ExecuteRanged,"bound_weapons"=E36,"Name"=s"S2AI","guard_range"=E37,"home_dir"=i0,"ranged"=b1,"weapon"=O44,"aim_wait"=i0,"max_aggro_distance"=i200,"home_y"=i878,"projectile_speed"=i100,"target"=n,"debug"=n,"guard_range_check"=E38,"home_x"=i670),(1,91883,1,1,Clonk,14;false;"idle_time"=i163,"animation_name"=s"Stand","idle_animation_time"=i0,"Name"=s"IntWalk","idle_offset"=i66,"animation_id"=i3),(1,92271,38,1,Clonk,4;false;"Name"=s"IntEyes"),(1,92271,1,1,Clonk,3;false;"curr_rot"=i25,"dir"=i7,"turn_type"=i0,"Name"=s"IntTurn","rot"=i25)
 
   [Mesh]
   Valid=true
@@ -396,8 +1231,8 @@ Effects=(1,32295,10,0,S2AI,49;false;"ranged"=b1,"home_y"=i878,"max_aggro_distanc
     Slot=5
     Number=3
     Type=Leaf
-    Animation=IdleScratch
-    Position=linear(F28080,F0,F131072,70,Remove,14282)
+    Animation=Stand
+    Position=linear(F124874,F0,F190054,35,Loop,4526)
 
     [AnimationNode]
     Slot=6
@@ -425,7 +1260,7 @@ Effects=(1,32295,10,0,S2AI,49;false;"ranged"=b1,"home_y"=i878,"max_aggro_distanc
 
 [Object]
 id=Clonk
-Properties=103;false;"use_objects"=E16,"menu"=n,"PictureTransformation"=E17,"gender"=i0,"ExecuteS2AI"=DS2AI.Execute,"using_type"=n,"ActualReplace"=E18,"mesh_transformation_list"=E19,"MeshTransformation"=E20,"inventory"=E21,"iHandMesh"=E22,"backpack"=i1,"Action"=DClonk.ActMap.Push,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E23,"Prototype"=DClonk,"using"=n,"force_collection"=b0
+Properties=103;false;"alt"=b0,"using_type"=n,"lAnim"=E39,"ActualReplace"=E40,"menu"=n,"force_collection"=b0,"no_ladder_counter"=i0,"Action"=DClonk.ActMap.Push,"inventory"=E41,"using"=n,"ExecuteS2AI"=DS2AI.Execute,"PictureTransformation"=E42,"gender"=i0,"use_objects"=E43,"Prototype"=DClonk,"MeshTransformation"=E44,"backpack"=i1,"iHandMesh"=E45,"mesh_transformation_list"=E46
 Category=8
 Plane=400
 Size=100000
@@ -449,11 +1284,11 @@ AttachY=888
 AttachVtx=2
 Picture=0,0,0,0
 OCF=46940353
-ActionTime=23368
-Phase=4
-PhaseDelay=9
+ActionTime=79212
+Phase=7
+PhaseDelay=8
 ActionTarget1=134
-Effects=(1,19571,10,0,S2AI,234;false;"vehicle"=O134,"ranged"=b1,"home_y"=i877,"max_aggro_distance"=i200,"ammo_check"=DS2AI.CheckVehicleAmmo,"home_dir"=i0,"aim_wait"=i20,"weapon"=O134,"Name"=s"S2AI","bound_weapons"=E24,"home_x"=i709,"time"=i19570,"guard_range"=E25,"debug"=n,"target"=n,"guard_range_check"=E26,"strategy"=DS2AI.ExecuteVehicle),(1,27687,36,103,Clonk,106;false;"Name"=s"IntEyes"),(1,27687,1,103,Clonk,105;false;"rot"=i0,"curr_rot"=i0,"turn_type"=i1,"dir"=i7,"Name"=s"IntTurn")
+Effects=(1,75415,10,0,S2AI,234;false;"time"=i75410,"ammo_check"=DS2AI.CheckVehicleAmmo,"vehicle"=O134,"strategy"=DS2AI.ExecuteVehicle,"bound_weapons"=E47,"Name"=s"S2AI","guard_range"=E48,"home_dir"=i0,"ranged"=b1,"weapon"=O134,"aim_wait"=i20,"max_aggro_distance"=i200,"home_y"=i877,"target"=n,"debug"=n,"guard_range_check"=E49,"home_x"=i709),(1,83531,36,103,Clonk,106;false;"Name"=s"IntEyes"),(1,83531,1,103,Clonk,105;false;"curr_rot"=i0,"dir"=i7,"turn_type"=i1,"Name"=s"IntTurn","rot"=i0)
 
   [Mesh]
   Valid=true
@@ -477,7 +1312,7 @@ Effects=(1,19571,10,0,S2AI,234;false;"vehicle"=O134,"ranged"=b1,"home_y"=i877,"m
 
 [Object]
 id=Clonk
-Properties=239;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E27,"gender"=i0,"ActualReplace"=E28,"using_type"=n,"mesh_transformation_list"=E29,"MeshTransformation"=E30,"inventory"=E31,"iHandMesh"=E32,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E33,"Prototype"=DClonk,"using"=n,"use_objects"=E34
+Properties=239;false;"alt"=b0,"using_type"=n,"lAnim"=E50,"ActualReplace"=E51,"menu"=n,"force_collection"=b0,"no_ladder_counter"=i0,"Action"=DClonk.ActMap.Walk,"inventory"=E52,"using"=n,"PictureTransformation"=E53,"gender"=i0,"use_objects"=E54,"Prototype"=DClonk,"MeshTransformation"=E55,"backpack"=i1,"iHandMesh"=E56,"mesh_transformation_list"=E57
 Category=8
 Plane=400
 Size=100000
@@ -502,25 +1337,18 @@ AttachVtx=2
 Picture=0,0,0,0
 OCF=46940353
 Dir=1
-ActionTime=16174
-Effects=(1,16175,1,239,Clonk,254;false;"animation_name"=s"Stand","idle_offset"=i247,"idle_animation_time"=i0,"idle_time"=i47,"animation_id"=i2,"Name"=s"IntWalk"),(1,16346,36,239,Clonk,242;false;"Name"=s"IntEyes"),(1,16346,1,239,Clonk,241;false;"rot"=i155,"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn"),(10,3,6,239,Clonk,824;false;"Name"=s"IntEyesClosed")
+ActionTime=72018
+Effects=(1,72019,1,239,Clonk,254;false;"idle_time"=i138,"animation_name"=s"Stand","idle_animation_time"=i0,"Name"=s"IntWalk","idle_offset"=i280,"animation_id"=i2),(1,72190,36,239,Clonk,242;false;"Name"=s"IntEyes"),(1,72190,1,239,Clonk,241;false;"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn","rot"=i155)
 
   [Mesh]
   Valid=true
-
-    [AnimationNode]
-    Slot=3
-    Number=0
-    Type=Leaf
-    Animation=CloseEyes
-    Position=linear(F15290,F0,F22937,3,Hold,14282)
 
     [AnimationNode]
     Slot=5
     Number=2
     Type=Leaf
     Animation=Stand
-    Position=linear(F65156,F0,F190054,35,Loop,14282)
+    Position=linear(F179178,F0,F190054,35,Loop,4526)
 
     [Attached]
     Number=1
@@ -534,7 +1362,7 @@ Effects=(1,16175,1,239,Clonk,254;false;"animation_name"=s"Stand","idle_offset"=i
 
 [Object]
 id=Clonk
-Properties=262;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E35,"gender"=i0,"ActualReplace"=E36,"using_type"=n,"mesh_transformation_list"=E37,"MeshTransformation"=E38,"inventory"=E39,"iHandMesh"=E40,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E41,"Prototype"=DClonk,"using"=n,"use_objects"=E42
+Properties=262;false;"alt"=b0,"using_type"=n,"lAnim"=E58,"ActualReplace"=E59,"menu"=n,"force_collection"=b0,"no_ladder_counter"=i0,"Action"=DClonk.ActMap.Walk,"inventory"=E60,"using"=n,"PictureTransformation"=E61,"gender"=i0,"use_objects"=E62,"Prototype"=DClonk,"MeshTransformation"=E63,"backpack"=i1,"iHandMesh"=E64,"mesh_transformation_list"=E65
 Category=8
 Plane=400
 Size=100000
@@ -558,18 +1386,18 @@ AttachY=672
 AttachVtx=2
 Picture=0,0,0,0
 OCF=46940353
-ActionTime=14755
-Effects=(1,14756,1,262,Clonk,345;false;"animation_name"=s"Stand","idle_offset"=i124,"idle_animation_time"=i0,"idle_time"=i409,"animation_id"=i2,"Name"=s"IntWalk"),(1,15899,38,262,Clonk,265;false;"Name"=s"IntEyes"),(1,15899,1,262,Clonk,264;false;"rot"=i25,"curr_rot"=i25,"dir"=i7,"turn_type"=i0,"Name"=s"IntTurn")
+ActionTime=70599
+Effects=(1,70600,1,262,Clonk,345;false;"idle_time"=i301,"animation_name"=s"Stand","idle_animation_time"=i0,"Name"=s"IntWalk","idle_offset"=i4,"animation_id"=i1),(1,71743,38,262,Clonk,265;false;"Name"=s"IntEyes"),(1,71743,1,262,Clonk,264;false;"curr_rot"=i25,"dir"=i7,"turn_type"=i0,"Name"=s"IntTurn","rot"=i25)
 
   [Mesh]
   Valid=true
 
     [AnimationNode]
     Slot=5
-    Number=2
+    Number=1
     Type=Leaf
     Animation=Stand
-    Position=linear(F130276,F0,F190054,35,Loop,14282)
+    Position=linear(F113998,F0,F190054,35,Loop,4526)
 
     [Attached]
     Number=1
@@ -583,7 +1411,7 @@ Effects=(1,14756,1,262,Clonk,345;false;"animation_name"=s"Stand","idle_offset"=i
 
 [Object]
 id=Clonk
-Properties=288;false;"force_collection"=b0,"menu"=n,"PictureTransformation"=E43,"gender"=i0,"ActualReplace"=E44,"using_type"=n,"mesh_transformation_list"=E45,"MeshTransformation"=E46,"inventory"=E47,"iHandMesh"=E48,"backpack"=i1,"Action"=DClonk.ActMap.Walk,"no_ladder_counter"=i0,"alt"=b0,"lAnim"=E49,"Prototype"=DClonk,"using"=n,"use_objects"=E50
+Properties=288;false;"alt"=b0,"using_type"=n,"lAnim"=E66,"ActualReplace"=E67,"menu"=n,"force_collection"=b0,"no_ladder_counter"=i0,"Action"=DClonk.ActMap.Walk,"inventory"=E68,"using"=n,"PictureTransformation"=E69,"gender"=i0,"use_objects"=E70,"Prototype"=DClonk,"MeshTransformation"=E71,"backpack"=i1,"iHandMesh"=E72,"mesh_transformation_list"=E73
 Category=8
 Plane=400
 Size=100000
@@ -608,18 +1436,31 @@ AttachVtx=2
 Picture=0,0,0,0
 OCF=46940353
 Dir=1
-ActionTime=15662
-Effects=(1,15663,1,288,Clonk,297;false;"animation_name"=s"Stand","idle_offset"=i270,"idle_animation_time"=i0,"idle_time"=i183,"animation_id"=i0,"Name"=s"IntWalk"),(1,15667,38,288,Clonk,291;false;"Name"=s"IntEyes"),(1,15667,1,288,Clonk,290;false;"rot"=i155,"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn")
+ActionTime=71506
+Effects=(1,71507,1,288,Clonk,297;false;"idle_time"=i0,"animation_name"=s"Stand","idle_animation_time"=i190,"Name"=s"IntWalk","idle_offset"=i114,"animation_id"=i1),(1,71511,38,288,Clonk,291;false;"Name"=s"IntEyes"),(1,71511,1,288,Clonk,290;false;"curr_rot"=i155,"dir"=i3,"turn_type"=i0,"Name"=s"IntTurn","rot"=i155)
 
   [Mesh]
   Valid=true
 
     [AnimationNode]
     Slot=5
-    Number=0
-    Type=Leaf
-    Animation=Stand
-    Position=linear(F43420,F0,F190054,35,Loop,14282)
+    Number=3
+    Type=LinearInterpolation
+
+      [ChildLeft]
+      Slot=5
+      Number=1
+      Type=Leaf
+      Animation=Stand
+      Position=linear(F48826,F0,F190054,35,Loop,4526)
+
+      [ChildRight]
+      Slot=5
+      Number=2
+      Type=Leaf
+      Animation=IdleShoeSole
+      Position=linear(F4095,F0,F163840,200,Remove,4526)
+    Weight=linear(F65535,F0,F65536,5,Remove,4526)
 
     [Attached]
     Number=1
@@ -663,7 +1504,7 @@ Component=Wood=1;Metal=1
 
 [Object]
 id=Arrow
-Properties=42;false;"count"=i15,"Prototype"=DArrow,"Name"=s"15x Arrows"
+Properties=42;false;"Name"=s"15x Arrows","Prototype"=DArrow,"count"=i15
 Category=16
 Plane=500
 Rotation=90
@@ -688,7 +1529,7 @@ GfxOverlay=11,Icon_Number::1,3,,0,0,(0.4,0,8,0,0.4,14,1),16777215,0;12,Icon_Numb
 
 [Object]
 id=Arrow
-Properties=43;false;"count"=i15,"Prototype"=DArrow,"Name"=s"15x Arrows"
+Properties=43;false;"Name"=s"15x Arrows","Prototype"=DArrow,"count"=i15
 Category=16
 Plane=500
 Rotation=90
@@ -713,7 +1554,7 @@ GfxOverlay=11,Icon_Number::1,3,,0,0,(0.4,0,8,0,0.4,14,1),16777215,0;12,Icon_Numb
 
 [Object]
 id=Bow
-Properties=44;false;"Prototype"=DBow,"animation_set"=E51
+Properties=44;false;"animation_set"=E74,"Prototype"=DBow
 Category=16
 Plane=500
 Size=100000
@@ -955,8 +1796,3005 @@ Component=Sulphur=1;Coal=1
 Graphics=Firestone::2
 
 [Object]
+id=Firestone
+Properties=722;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F2490368
+Y=F77948518
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=723;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F6619136
+Y=F79586918
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=724;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F24182784
+Y=F83977830
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=725;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F1441792
+Y=F82142822
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=728;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F24641536
+Y=F79717990
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=729;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F9109504
+Y=F88237670
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=731;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F18350080
+Y=F95905382
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=732;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F29556736
+Y=F94266982
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=733;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F44433408
+Y=F89417318
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=734;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F54919168
+Y=F72115814
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=735;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F57671680
+Y=F71394918
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=736;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F66977792
+Y=F80307814
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=737;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F87687168
+Y=F82667110
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=738;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F74973184
+Y=F92235366
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=740;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F68878336
+Y=F89482854
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=742;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F87031808
+Y=F97412710
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=743;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F96141312
+Y=F95708774
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=744;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F59703296
+Y=F64251494
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=745;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F73269248
+Y=F50161254
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+
+[Object]
+id=Firestone
+Properties=746;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F62128128
+Y=F51603046
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Firestone
+Properties=747;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F51445760
+Y=F58549862
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=748;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F88866816
+Y=F52782694
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::1
+
+[Object]
+id=Firestone
+Properties=749;false;"Prototype"=DFirestone
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F84344832
+Y=F55797350
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexX=-3,3
+VertexY=1,-1
+VertexFriction=20
+Picture=0,0,0,0
+OCF=2359369
+Component=Sulphur=1;Coal=1
+Graphics=Firestone::2
+
+[Object]
+id=Coal
+Properties=712;false;"Prototype"=DCoal
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F3866624
+Y=F88172134
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=75,75
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=2
+Graphics=Coal::3
+
+[Object]
+id=Coal
+Properties=714;false;"Prototype"=DCoal
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F10223616
+Y=F89744998
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=75,75
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=2
+Graphics=Coal::1
+
+[Object]
+id=Coal
+Properties=715;false;"Prototype"=DCoal
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F15925248
+Y=F101869158
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=75,75
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=2
+Graphics=Coal::1
+
+[Object]
+id=Coal
+Properties=716;false;"Prototype"=DCoal
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F3997696
+Y=F97936998
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=75,75
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=2
+Graphics=Coal::3
+
+[Object]
+id=Coal
+Properties=717;false;"Prototype"=DCoal
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F9175040
+Y=F90400358
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=75,75
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=2
+
+[Object]
+id=Nugget
+Properties=718;false;"Prototype"=DNugget
+Category=16
+Plane=500
+Size=100000
+Mass=12
+X=F70713344
+Y=F79717990
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Nugget=1
+Graphics=Nugget::4
+
+[Object]
+id=Nugget
+Properties=719;false;"Prototype"=DNugget
+Category=16
+Plane=500
+Size=100000
+Mass=12
+X=F81526784
+Y=F74606182
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Nugget=1
+Graphics=Nugget::3
+
+[Object]
+id=Nugget
+Properties=720;false;"Prototype"=DNugget
+Category=16
+Plane=500
+Size=100000
+Mass=12
+X=F75759616
+Y=F76244582
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Nugget=1
+Graphics=Nugget::2
+
+[Object]
+id=Nugget
+Properties=721;false;"Prototype"=DNugget
+Category=16
+Plane=500
+Size=100000
+Mass=12
+X=F73859072
+Y=F76375654
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Nugget=1
+Graphics=Nugget::4
+
+[Object]
+id=Rock
+Properties=750;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F57606144
+Y=F65693286
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::7
+
+[Object]
+id=Rock
+Properties=751;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F17170432
+Y=F77424220
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=14942793
+Component=Rock=1
+Graphics=Rock::4
+
+[Object]
+id=Rock
+Properties=752;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F9175040
+Y=F77489755
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=12845641
+Component=Rock=1
+
+[Object]
+id=Rock
+Properties=753;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F3171948
+Y=F75391283
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=12845641
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=754;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F18731488
+Y=F77361278
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=12845641
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=755;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F19165347
+Y=F77290516
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=12845641
+Component=Rock=1
+Graphics=Rock::4
+
+[Object]
+id=Rock
+Properties=756;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F15648681
+Y=F84246503
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=12845641
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=757;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F22151168
+Y=F82339430
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=758;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F43319296
+Y=F91252326
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+
+[Object]
+id=Rock
+Properties=759;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F54525952
+Y=F56059494
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::2
+
+[Object]
+id=Rock
+Properties=760;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F58523648
+Y=F84567654
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=761;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F81788928
+Y=F71263846
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::6
+
+[Object]
+id=Rock
+Properties=762;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F87425024
+Y=F66283110
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::1
+
+[Object]
+id=Rock
+Properties=763;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F83099648
+Y=F61105766
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+
+[Object]
+id=Rock
+Properties=764;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F84934656
+Y=F52061798
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::4
+
+[Object]
+id=Rock
+Properties=765;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F98369536
+Y=F61105766
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::7
+
+[Object]
+id=Rock
+Properties=766;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F96534528
+Y=F44263014
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::5
+
+[Object]
+id=Rock
+Properties=767;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F89587712
+Y=F42886758
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+
+[Object]
+id=Rock
+Properties=768;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F98631680
+Y=F76179046
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=769;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F97124352
+Y=F68773478
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::9
+
+[Object]
+id=Rock
+Properties=770;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F91881472
+Y=F94856806
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::8
+
+[Object]
+id=Rock
+Properties=771;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F67174400
+Y=F91252326
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::4
+
+[Object]
+id=Rock
+Properties=772;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F48627712
+Y=F99706470
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::3
+
+[Object]
+id=Rock
+Properties=773;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F46661632
+Y=F88499814
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::8
+
+[Object]
+id=Rock
+Properties=774;false;"Prototype"=DRock
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F68616192
+Y=F79062630
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=40,40,40
+Picture=0,0,0,0
+OCF=2359881
+Component=Rock=1
+Graphics=Rock::3
+
+[Object]
+id=Wood
+Properties=775;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F1245184
+Y=F74409574
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=2360009
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=776;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F49086464
+Y=F69182475
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+InLiquid=true
+OCF=13894345
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=780;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F11010048
+Y=F99079997
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+InLiquid=true
+OCF=13894345
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1973;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1974;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1975;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1976;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1977;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1978;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1979;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1980;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1982;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1983;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1984;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1985;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1986;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1987;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1990;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1991;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1992;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1993;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1994;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1995;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=1996;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2004;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2006;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2007;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2008;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2011;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2013;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2014;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2016;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Wood
+Properties=2017;false;"Prototype"=DWood
+Category=16
+Plane=500
+Size=100000
+Mass=6
+X=F9736028
+Y=F86209023
+Width=12
+Height=5
+Offset=-6,-3
+Vertices=3
+VertexX=5,-4
+VertexCNAT=1,2
+VertexFriction=50,50
+Picture=0,0,0,0
+OCF=8389321
+Contained=1058
+Component=Wood=1
+
+[Object]
+id=Loam
+Properties=795;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F9736028
+Y=F86209023
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=8389193
+Contained=1058
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=799;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F13041664
+Y=F84174434
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+Graphics=Loam::3
+
+[Object]
+id=Loam
+Properties=804;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F18532264
+Y=F93610300
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+Graphics=Loam::4
+
+[Object]
+id=Loam
+Properties=806;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F24379392
+Y=F90924635
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+
+[Object]
+id=Loam
+Properties=808;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F27197440
+Y=F93611604
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+Graphics=Loam::4
+
+[Object]
+id=Loam
+Properties=811;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F31698456
+Y=F97281625
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+Graphics=Loam::3
+
+[Object]
+id=Loam
+Properties=814;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F33513792
+Y=F98268586
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=822;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F2424832
+Y=F83322470
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::2
+
+[Object]
+id=Loam
+Properties=829;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F13025991
+Y=F103506229
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+InLiquid=true
+OCF=1311305
+Graphics=Loam::3
+
+[Object]
+id=Loam
+Properties=834;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F23330816
+Y=F101934670
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+InLiquid=true
+OCF=1311305
+Graphics=Loam::2
+
+[Object]
+id=Loam
+Properties=840;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F20578304
+Y=F80504422
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=844;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F60358656
+Y=F84174438
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::2
+
+[Object]
+id=Loam
+Properties=845;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F68288512
+Y=F91055718
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+
+[Object]
+id=Loam
+Properties=847;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F77332480
+Y=F103245414
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+
+[Object]
+id=Loam
+Properties=851;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F97073215
+Y=F92564284
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+
+[Object]
+id=Loam
+Properties=860;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F100073472
+Y=F91973208
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+
+[Object]
+id=Loam
+Properties=865;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F62783488
+Y=F64251494
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=868;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F83034112
+Y=F58549862
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+
+[Object]
+id=Loam
+Properties=871;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F55705600
+Y=F57435750
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=875;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F91291648
+Y=F42034790
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::1
+
+[Object]
+id=Loam
+Properties=878;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F95813632
+Y=F70542950
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Loam::4
+
+[Object]
+id=Loam
+Properties=2613;false;"Prototype"=DLoam
+Category=16
+Plane=500
+Size=100000
+Mass=10
+X=F98369536
+Y=F92497510
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=2
+VertexY=3,-3
+VertexFriction=40,40
+Picture=0,0,0,0
+OCF=12845641
+
+[Object]
+id=Ore
+Properties=891;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F14876672
+Y=F89482854
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::3
+
+[Object]
+id=Ore
+Properties=897;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F4225768
+Y=F93028335
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=12845641
+
+[Object]
+id=Ore
+Properties=900;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F17301504
+Y=F95250022
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+
+[Object]
+id=Ore
+Properties=902;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F30277632
+Y=F96888422
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::4
+
+[Object]
+id=Ore
+Properties=906;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F5046272
+Y=F97347174
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::1
+
+[Object]
+id=Ore
+Properties=922;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F97058816
+Y=F94922342
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::3
+
+[Object]
+id=Ore
+Properties=927;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F94240768
+Y=F95905382
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::1
+
+[Object]
+id=Ore
+Properties=935;false;"Prototype"=DOre
+Category=16
+Plane=500
+Size=100000
+Mass=9
+X=F102629376
+Y=F102327910
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
+VertexFriction=60,60,60
+Picture=0,0,0,0
+OCF=2359881
+Graphics=Ore::2
+
+[Object]
+id=GoldBar
+Properties=986;false;"Prototype"=DGoldBar
+Category=16
+Plane=500
+Rotation=22
+Size=100000
+Mass=16
+X=F92536832
+Y=F82208357
+R=F1441792
+Width=14
+Height=14
+Offset=-7,-7
+Vertices=3
+VertexX=-4,4
+VertexY=-1,1,-1
+VertexCNAT=1,2,16
+VertexFriction=30,30,30
+Picture=0,0,0,0
+InLiquid=true
+OCF=11797065
+Component=Nugget=3
+
+[Object]
+id=GoldBar
+Properties=2571;false;"Prototype"=DGoldBar
+Category=16
+Plane=500
+Size=100000
+Mass=16
+X=F96534528
+Y=F91907676
+Width=10
+Height=4
+Offset=-5,-2
+Vertices=3
+VertexX=-4,4
+VertexY=0,0,-1
+VertexCNAT=1,2,16
+VertexFriction=30,30,30
+Picture=0,0,0,0
+OCF=585
+Contained=2539
+Component=Nugget=3
+
+[Object]
+id=GoldBar
+Properties=2573;false;"Prototype"=DGoldBar
+Category=16
+Plane=500
+Size=100000
+Mass=16
+X=F96534528
+Y=F91907676
+Width=10
+Height=4
+Offset=-5,-2
+Vertices=3
+VertexX=-4,4
+VertexY=0,0,-1
+VertexCNAT=1,2,16
+VertexFriction=30,30,30
+Picture=0,0,0,0
+OCF=585
+Contained=2539
+Component=Nugget=3
+
+[Object]
+id=Boompack
+Properties=1181;false;"fuel"=i100,"dirdev"=i12,"controllable"=b1,"Prototype"=DBoompack
+Category=16
+Plane=500
+Size=100000
+Mass=20
+Color=255
+X=F8847360
+Y=F86140516
+Width=10
+Height=18
+Offset=-5,-7
+Vertices=4
+VertexX=0,0,-4,4
+VertexY=3,-6,10,10
+VertexFriction=80,60,60
+Picture=0,0,0,0
+OCF=12845765
+Component=PowderKeg=1;Sulphur=1
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=DynamiteBox
+Properties=1206;false;"iCount"=i5,"aDynamites"=E75,"Prototype"=DDynamiteBox,"PictureTransformation"=E76,"aWires"=E77
+Category=16
+Plane=500
+Size=100000
+Mass=30
+X=F9736028
+Y=F86209023
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,0,0
+Mobile=true
+OCF=8389193
+Contained=1058
+Component=Wood=1;Metal=1;Coal=2;Sulphur=3
+GfxOverlay=1,Fuse::5,3,,0,0,(1,0,0,0,1,0,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=DynamiteBox
+Properties=1248;false;"iCount"=i5,"aDynamites"=E78,"Prototype"=DDynamiteBox,"PictureTransformation"=E79,"aWires"=E80
+Category=16
+Plane=500
+Size=100000
+Mass=30
+X=F93555261
+Y=F81489415
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,0,0
+Mobile=true
+OCF=8389193
+Contained=1228
+Component=Wood=1;Metal=1;Coal=2;Sulphur=3
+GfxOverlay=1,Fuse::5,3,,0,0,(1,0,0,0,1,0,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=DynamiteBox
+Properties=2561;false;"iCount"=i5,"aDynamites"=E81,"Prototype"=DDynamiteBox,"PictureTransformation"=E82,"aWires"=E83
+Category=16
+Plane=500
+Size=100000
+Mass=30
+X=F96534528
+Y=F91907676
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,0,0
+OCF=585
+Contained=2539
+Component=Wood=1;Metal=1;Coal=2;Sulphur=3
+GfxOverlay=1,Fuse::5,3,,0,0,(1,0,0,0,1,0,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=DynamiteBox
+Properties=2564;false;"iCount"=i5,"aDynamites"=E84,"Prototype"=DDynamiteBox,"PictureTransformation"=E85,"aWires"=E86
+Category=16
+Plane=500
+Size=100000
+Mass=30
+X=F96534528
+Y=F91907676
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,0,0
+OCF=585
+Contained=2539
+Component=Wood=1;Metal=1;Coal=2;Sulphur=3
+GfxOverlay=1,Fuse::5,3,,0,0,(1,0,0,0,1,0,1),16777215,0;12,Icon_Number::5,3,,0,0,(0.4,0,22,0,0.4,14,1),16777215,0
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Dynamite
+Properties=1256;false;"Prototype"=DDynamite
+Category=16
+Plane=500
+Size=100000
+Mass=8
+X=F87453844
+Y=F79914560
+Width=3
+Height=10
+Offset=-2,-5
+Vertices=3
+VertexX=-2,2
+VertexY=5,5,-5
+VertexFriction=90,90,90
+Picture=0,0,0,0
+OCF=12845769
+Component=Coal=1;Sulphur=1
+
+[Object]
+id=Pickaxe
+Properties=1381;false;"swingtime"=i0,"Prototype"=DPickaxe,"maxreach"=i12
+Category=16
+Plane=500
+Size=100000
+Mass=20
+X=F93555261
+Y=F81489415
+Width=10
+Height=10
+Offset=-5,-5
+Vertices=4
+VertexX=0,-4,4
+VertexY=-6,-5,-5,4
+VertexFriction=50,100,100,40
+Picture=0,0,0,0
+Mobile=true
+OCF=8389193
+Contained=1228
+Component=Wood=1;Metal=1
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Shovel
+Properties=1422;false;"Prototype"=DShovel
+Category=16
+Plane=500
+Size=100000
+Mass=20
+X=F9736028
+Y=F86209023
+Width=8
+Height=18
+Offset=-4,-8
+Vertices=3
+VertexY=-7,9
+VertexFriction=50,50,50
+Picture=0,0,0,0
+Mobile=true
+OCF=8389193
+Contained=1058
+Component=Wood=1;Metal=1
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Barrel
+Properties=1463;false;"szLiquid"=n,"iVolume"=i0,"Value"=i10,"Prototype"=DBarrel
+Category=16
+Plane=500
+Rotation=-13
+Size=100000
+Mass=20
+X=F10958937
+Y=F86987231
+R=F-851968
+Width=26
+Height=26
+Offset=-13,-13
+Vertices=6
+VertexX=-3,1,-1,3,3,-3
+VertexY=-5,-6,6,5,-1,1
+VertexFriction=60,60,60,60,60,60
+Picture=0,0,0,0
+OCF=12845765
+Component=Wood=2;Metal=1
+Effects=(1,37320,5,1463,Barrel,1464;false;"NoStop"=b1,"Pars"=E87,"Repeats"=i-7464,"Function"=s"Check","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Seaweed
+Properties=2053;false;"Prototype"=DSeaweed,"Action"=DSeaweed.ActMap.Sway
+Category=16
+Plane=500
+Size=100000
+Mass=1
+X=F11075584
+Y=F100623971
+YDir=F65535
+Width=6
+Height=16
+Offset=-3,-8
+Vertices=2
+VertexY=-7,7
+VertexCNAT=4,3
+VertexFriction=10,100
+Picture=0,0,0,0
+InLiquid=true
+OCF=1310785
+ActionTime=20689
+Phase=48
+PhaseDelay=1
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=0
+    Number=0
+    Type=Leaf
+    Animation=Sway
+    Position=action(F63569,2053)
+
+[Object]
+id=Seaweed
+Properties=2054;false;"Prototype"=DSeaweed,"Action"=DSeaweed.ActMap.Sway
+Category=16
+Plane=500
+Size=100000
+Mass=1
+X=F53405296
+Y=F87516744
+YDir=F65535
+Width=6
+Height=16
+Offset=-3,-8
+Vertices=2
+VertexY=-7,7
+VertexCNAT=4,3
+VertexFriction=10,100
+Picture=0,0,0,0
+InLiquid=true
+OCF=1310785
+ActionTime=20689
+Phase=48
+PhaseDelay=1
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=0
+    Number=0
+    Type=Leaf
+    Animation=Sway
+    Position=action(F63569,2054)
+
+[Object]
+id=Seaweed
+Properties=2069;false;"Prototype"=DSeaweed,"Action"=DSeaweed.ActMap.Sway
+Category=16
+Plane=500
+Size=100000
+Mass=1
+X=F47120384
+Y=F70215266
+YDir=F65535
+Width=6
+Height=16
+Offset=-3,-8
+Vertices=2
+VertexY=-7,7
+VertexCNAT=4,3
+VertexFriction=10,100
+Picture=0,0,0,0
+InLiquid=true
+OCF=1310785
+ActionTime=20258
+Phase=67
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=0
+    Number=0
+    Type=Leaf
+    Animation=Sway
+    Position=action(F87818,2069)
+
+[Object]
+id=Seaweed
+Properties=2076;false;"Prototype"=DSeaweed,"Action"=DSeaweed.ActMap.Sway
+Category=16
+Plane=500
+Size=100000
+Mass=1
+X=F50593792
+Y=F70805088
+YDir=F65535
+Width=6
+Height=16
+Offset=-3,-8
+Vertices=2
+VertexY=-7,7
+VertexCNAT=4,3
+VertexFriction=10,100
+Picture=0,0,0,0
+InLiquid=true
+OCF=1310785
+ActionTime=20139
+Phase=7
+PhaseDelay=1
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=0
+    Number=0
+    Type=Leaf
+    Animation=Sway
+    Position=action(F9830,2076)
+
+[Object]
+id=Seaweed
+Properties=2080;false;"Prototype"=DSeaweed,"Action"=DSeaweed.ActMap.Sway
+Category=16
+Plane=500
+Size=100000
+Mass=1
+X=F82378752
+Y=F83322459
+YDir=F65535
+Width=6
+Height=16
+Offset=-3,-8
+Vertices=2
+VertexY=-7,7
+VertexCNAT=4,3
+VertexFriction=10,100
+Picture=0,0,0,0
+InLiquid=true
+OCF=1310785
+ActionTime=19960
+Phase=74
+
+  [Mesh]
+  Valid=true
+
+    [AnimationNode]
+    Slot=0
+    Number=0
+    Type=Leaf
+    Animation=Sway
+    Position=action(F96993,2080)
+
+[Object]
+id=Mushroom
+Properties=2087;false;"Prototype"=DMushroom,"MeshTransformation"=E88
+Category=16
+Plane=500
+Size=100300
+Mass=6
+X=F8257536
+Y=F86271590
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=0,0,0,0
+OCF=12845121
+Effects=(1,19795,72,2087,Mushroom,2090;false;"NoStop"=b1,"Pars"=E89,"Repeats"=i-274,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Mushroom
+Properties=2091;false;"Prototype"=DMushroom,"MeshTransformation"=E90
+Category=16
+Plane=500
+Size=100300
+Mass=6
+X=F13893632
+Y=F84174438
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=0,0,0,0
+OCF=12845121
+Effects=(1,19707,72,2091,Mushroom,2094;false;"NoStop"=b1,"Pars"=E91,"Repeats"=i-273,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Mushroom
+Properties=2099;false;"Prototype"=DMushroom,"MeshTransformation"=E92
+Category=16
+Plane=500
+Size=100300
+Mass=6
+X=F24051712
+Y=F90990182
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=0,0,0,0
+OCF=12845121
+Effects=(1,19620,72,2099,Mushroom,2102;false;"NoStop"=b1,"Pars"=E93,"Repeats"=i-272,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
+id=Mushroom
+Properties=2107;false;"Prototype"=DMushroom,"MeshTransformation"=E94
+Category=16
+Plane=500
+Size=100300
+Mass=6
+X=F17563648
+Y=F93611622
+Width=12
+Height=20
+Offset=-6,-10
+Vertices=2
+VertexY=1,4
+VertexCNAT=16,8
+VertexFriction=10,100
+Picture=0,0,0,0
+OCF=12845121
+Effects=(1,19523,72,2107,Mushroom,2110;false;"NoStop"=b1,"Pars"=E95,"Repeats"=i-271,"Function"=s"Seed","Name"=s"IntScheduleCall")
+
+  [Mesh]
+  Valid=true
+
+[Object]
 id=Elevator_Case_Front
-Properties=336;false;"Action"=DElevator_Case_Front.ActMap.Attach,"Prototype"=DElevator_Case_Front
+Properties=336;false;"Prototype"=DElevator_Case_Front,"Action"=DElevator_Case_Front.ActMap.Attach
 Category=1
 Plane=505
 Size=100000
@@ -971,7 +4809,7 @@ VertexX=-12
 VertexY=-5
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=14897
+ActionTime=70741
 ActionTarget1=332
 
   [Mesh]
@@ -979,7 +4817,7 @@ ActionTarget1=332
 
 [Object]
 id=Elevator_Case_Front
-Properties=425;false;"Action"=DElevator_Case_Front.ActMap.Attach,"Prototype"=DElevator_Case_Front
+Properties=425;false;"Prototype"=DElevator_Case_Front,"Action"=DElevator_Case_Front.ActMap.Attach
 Category=1
 Plane=505
 Size=100000
@@ -994,7 +4832,7 @@ VertexX=-12
 VertexY=-5
 Picture=0,0,0,0
 OCF=12845121
-ActionTime=12105
+ActionTime=67949
 ActionTarget1=421
 ColorMod=4288708704
 
@@ -1002,6 +4840,6 @@ ColorMod=4288708704
   Valid=true
 
 [Script]
-StaticVariables=15;CON_VC_Players=n,g_player_cursor_pos=n,Clonk_IdleActions=E52,Scoreboard_keys=n,Scoreboard_data=n,Scoreboard_unique_ids=n,Scoreboard_title_set=n,LibraryFlag_flag_list=n,Library_Power_power_compounds=n,g_enemies=n,g_triggers_invisible=n,g_init=n,g_camera=n,MyClonk=n,g_is_initialized=n
+StaticVariables=10;CON_VC_Players=n,g_player_cursor_pos=n,Clonk_IdleActions=E96,Scoreboard_keys=n,Scoreboard_data=n,Scoreboard_unique_ids=n,Scoreboard_title_set=n,LibraryFlag_flag_list=n,Library_Power_power_compounds=n,g_is_initialized=n
 Scenario=false;"Prototype"=DGlobal
-Values=a(12;i-574,i0,i-819,i0,i0,i1000,i0,i0,i819,i0,i-574,i0),a(0;),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(7;),a(1;E9),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(3;O40,O42),a(2;i2,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(4;O44,O43,O42,O40),p(false;"x"=i400,"y"=i800,"hgt"=i150,"wdt"=i400),a(5;i12,i400,i800,i400,i150),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E20),a(12;i1000,i0,i0,i0,i0,i1000,i0,i0,i0,i0,i1000,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i1,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(0;),p(false;"x"=i250,"y"=i750,"hgt"=i150,"wdt"=i400),a(5;i12,i250,i750,i400,i150),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E30),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i1,"turnForced"=n),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E38),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(2;i0,i1),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(6;),a(1;E46),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(0;),a(2;i0,i0),p(false;"rollDir"=n,"turnType"=i0,"backwardsSpeed"=n,"backwards"=n,"rollLength"=n,"turnSpecial"=n,"closedEyes"=i0,"turnForced"=n),a(2;i0,i1),p(false;"ShootTime"=i20,"WalkSpeed"=i84,"LoadTime2"=i7,"AnimationReplacements"=E53,"AnimationLoad"=s"BowLoadArms","AnimationAim"=s"BowAimArms","WalkBack"=i56,"AnimationShoot"=n,"TurnType"=i1,"AimMode"=i1,"LoadTime"=i30),a(7;E54,E55,E56,E57,E58,E59,E60),a(5;E61,E62,E63,E64,E65),a(2;s"IdleLookAround",i60),a(2;s"IdleHandwatch",i100),a(2;s"IdleScratch",i70),a(2;s"IdleStrech",i100),a(2;s"IdleShoe",i120),a(2;s"IdleShoeSole",i200),a(2;s"IdleHandstrech",i100),a(2;s"Walk",s"BowWalk"),a(2;s"Walk_Position",i20),a(2;s"Stand",s"BowStand"),a(2;s"Jump",s"BowJump"),a(2;s"KneelDown",s"BowKneel"),
+Values=a(12;i-574,i0,i-819,i0,i0,i1000,i0,i0,i819,i0,i-574,i0),a(0;),a(12;i-819,i0,i574,i0,i0,i1000,i0,i0,i-574,i0,i-819,i0),a(12;i-87,i0,i-996,i0,i0,i1000,i0,i0,i996,i0,i-87,i0),a(0;),a(12;i105,i0,i995,i0,i0,i1000,i0,i0,i-995,i0,i105,i0),a(0;),a(12;i122,i0,i993,i0,i0,i1000,i0,i0,i-993,i0,i122,i0),a(0;),a(12;i829,i0,i-559,i0,i0,i1000,i0,i0,i559,i0,i829,i0),a(0;),a(12;i242,i0,i970,i0,i0,i1000,i0,i0,i-970,i0,i242,i0),a(0;),a(12;i342,i0,i-940,i0,i0,i1000,i0,i0,i940,i0,i342,i0),a(0;),a(0;),a(0;),a(12;i934,i0,i358,i0,i0,i1000,i0,i0,i-358,i0,i934,i0),a(0;),a(0;),a(12;i292,i0,i956,i0,i0,i1000,i0,i0,i-956,i0,i292,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i719,i0,i-695,i0,i0,i1000,i0,i0,i695,i0,i719,i0),a(12;i974,i0,i225,i0,i0,i1000,i0,i0,i-225,i0,i974,i0),a(0;),a(12;i974,i0,i225,i0,i0,i1000,i0,i0,i-225,i0,i974,i0),a(0;),p(false;"rollLength"=n,"rollDir"=n,"turnSpecial"=n,"closedEyes"=i0,"turnType"=i0,"backwards"=n,"turnForced"=n,"backwardsSpeed"=n),a(7;),a(3;O40,O42),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(2;i2,i0),a(1;E33),a(4;O44,O43,O42,O40),p(false;"hgt"=i150,"x"=i400,"wdt"=i400,"y"=i800),a(5;i12,i400,i800,i400,i150),p(false;"rollLength"=n,"rollDir"=n,"turnSpecial"=n,"closedEyes"=i0,"turnType"=i1,"backwards"=n,"turnForced"=n,"backwardsSpeed"=n),a(6;),a(0;),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i1000,i0,i0,i0,i0,i1000,i0,i0,i0,i0,i1000,i0),a(2;i0,i0),a(1;E44),a(0;),p(false;"hgt"=i150,"x"=i250,"wdt"=i400,"y"=i750),a(5;i12,i250,i750,i400,i150),p(false;"rollLength"=n,"rollDir"=n,"turnSpecial"=n,"closedEyes"=i0,"turnType"=i0,"backwards"=n,"turnForced"=n,"backwardsSpeed"=n),a(6;),a(0;),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(2;i0,i0),a(1;E55),p(false;"rollLength"=n,"rollDir"=n,"turnSpecial"=n,"closedEyes"=i0,"turnType"=i0,"backwards"=n,"turnForced"=n,"backwardsSpeed"=n),a(6;),a(0;),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i906,i0),a(2;i0,i0),a(1;E63),p(false;"rollLength"=n,"rollDir"=n,"turnSpecial"=n,"closedEyes"=i0,"turnType"=i0,"backwards"=n,"turnForced"=n,"backwardsSpeed"=n),a(6;),a(0;),a(12;i342,i0,i940,i0,i0,i1000,i0,i1000,i-940,i0,i342,i5000),a(2;i0,i1),a(12;i-906,i0,i423,i0,i0,i1000,i0,i0,i-423,i0,i-906,i0),a(2;i0,i0),a(1;E71),p(false;"WalkBack"=i56,"AnimationReplacements"=E97,"ShootTime"=i20,"AnimationShoot"=n,"AnimationLoad"=s"BowLoadArms","AnimationAim"=s"BowAimArms","LoadTime2"=i7,"TurnType"=i1,"LoadTime"=i30,"WalkSpeed"=i84,"AimMode"=i1),a(5;i0,i0,i0,i0,i0),a(12;n,i0,i0,i0,i0,n,i0,i0,i0,i0,n,i0),a(5;i0,i0,i0,i0,i0),a(5;i0,i0,i0,i0,i0),a(12;n,i0,i0,i0,i0,n,i0,i0,i0,i0,n,i0),a(5;i0,i0,i0,i0,i0),a(5;i0,i0,i0,i0,i0),a(12;n,i0,i0,i0,i0,n,i0,i0,i0,i0,n,i0),a(5;i0,i0,i0,i0,i0),a(5;i0,i0,i0,i0,i0),a(12;n,i0,i0,i0,i0,n,i0,i0,i0,i0,n,i0),a(5;i0,i0,i0,i0,i0),a(0;),a(12;i105,i0,i-995,i0,i0,i1000,i0,i0,i995,i0,i105,i0),a(0;),a(12;i454,i0,i-891,i0,i0,i1000,i0,i0,i891,i0,i454,i0),a(0;),a(12;i-174,i0,i-985,i0,i0,i1000,i0,i0,i985,i0,i-174,i0),a(0;),a(12;i-292,i0,i-956,i0,i0,i1000,i0,i0,i956,i0,i-292,i0),a(0;),a(7;E98,E99,E100,E101,E102,E103,E104),a(5;E105,E106,E107,E108,E109),a(2;s"IdleLookAround",i60),a(2;s"IdleHandwatch",i100),a(2;s"IdleScratch",i70),a(2;s"IdleStrech",i100),a(2;s"IdleShoe",i120),a(2;s"IdleShoeSole",i200),a(2;s"IdleHandstrech",i100),a(2;s"Walk",s"BowWalk"),a(2;s"Walk_Position",i20),a(2;s"Stand",s"BowStand"),a(2;s"Jump",s"BowJump"),a(2;s"KneelDown",s"BowKneel"),
