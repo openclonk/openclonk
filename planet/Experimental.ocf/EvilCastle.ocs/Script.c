@@ -16,12 +16,16 @@ func DoInit(int first_player)
 	// Elevators
 	// Top
 	Object(332)->SetNoPowerNeed(true);
-	Object(331)->CreateShaft(500);
+	Object(331)->CreateShaft(470);
 	// Left
 	Object(420)->CreateShaft(100);
 	// Shrooms
 	Object(2318)->AddPoisonEffect(0,0);
 	Object(2375)->AddPoisonEffect(-20,0);
+	// Scorching village
+	Object(343)->AddScorch(-20,-10, -45, 50, 1500);
+	Object(344)->AddScorch(-15,42, 90, 50, 1200);
+	Object(346)->AddScorch(-12,18, 130, 80, 1300);
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);
