@@ -1677,7 +1677,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 {
 	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
 	if (!pMaterial) return;
-	C4MaterialCoreShape iChunkType = pMaterial->MapChunkType;
+	C4MaterialCoreShape iChunkType = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : pMaterial->MapChunkType;
 	BYTE byColor = MatTex2PixCol(iTexture);
 	// Get map & landscape size
 	int iMapWidth, iMapHeight;
@@ -2979,6 +2979,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	if (!GetMapColorIndex(szMaterial, szTexture, bIFT, byColor)) return false;
 
 	int32_t iMaterial = ::MaterialMap.Get(szMaterial); if (!MatValid(iMaterial)) return false;
+	C4MaterialCoreShape shape = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : ::MaterialMap.Map[iMaterial].MapChunkType;
 
 	C4Rect BoundingBox(tx - 5, ty - 5, wdt + 10, hgt + 10);
 	PrepareChange(BoundingBox);
@@ -2991,7 +2992,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	int32_t x, y;
 	for (x = 0; x < icntx; x++)
 		for (y = 0; y < icnty; y++)
-			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,::MaterialMap.Map[iMaterial].MapChunkType,Random(1000));
+			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,shape,Random(1000));
 
 	// remove clipper
 	Surface8->NoClip();

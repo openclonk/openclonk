@@ -188,6 +188,7 @@ public:
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
 	int32_t FoWRes; // chunk size of FoGOfWar
 	int32_t MaterialZoom;
+	bool FlatChunkShapes; // if true, all material chunks are drawn flat
 public:
 	void Default();
 	void GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum);
