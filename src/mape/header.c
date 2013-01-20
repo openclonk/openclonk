@@ -59,7 +59,7 @@ static const GtkActionEntry mape_header_file_entries[] = {
 		"FileQuit",
 		GTK_STOCK_QUIT,
 		"_Quit",
-		"<alt>F4",
+		"<control>Q",
 		"Exit the program",
 		NULL
 	}
