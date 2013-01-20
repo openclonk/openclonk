@@ -678,10 +678,10 @@ mape_group_is_child_folder(MapeGroup* group,
   ext = strrchr(child, '.');
   if(ext != NULL)
   {
-    if(g_ascii_strcasecmp(ext, ".o4s") == 0 ||
-       g_ascii_strcasecmp(ext, ".o4d") == 0 ||
-       g_ascii_strcasecmp(ext, ".o4f") == 0 ||
-       g_ascii_strcasecmp(ext, ".o4g") == 0)
+    if(g_ascii_strcasecmp(ext, ".ocs") == 0 ||
+       g_ascii_strcasecmp(ext, ".ocd") == 0 ||
+       g_ascii_strcasecmp(ext, ".ocf") == 0 ||
+       g_ascii_strcasecmp(ext, ".ocg") == 0)
    {
      return TRUE;
    }
