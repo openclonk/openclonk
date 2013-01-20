@@ -129,8 +129,8 @@ AC_ARG_ENABLE([sound],
   , [if test $enable_console = yes; then enable_sound=no; else enable_sound=yes; fi])
 
 # GTK+
-GTK2_REQUIRED="glib-2.0 >= 2.14 gtk+-2.0 >= 2.12"
-GTK3_REQUIRED="glib-2.0 >= 2.27.5 gtk+-3.0 >= 2.99.0"
+GTK2_REQUIRED="glib-2.0 >= 2.24 gtk+-2.0 >= 2.20"
+GTK3_REQUIRED="glib-2.0 >= 2.32 gtk+-3.0 >= 3.4"
 PKG_PROG_PKG_CONFIG
 AC_MSG_CHECKING([which gtk+ version to compile against])
 AC_ARG_WITH([gtk],
