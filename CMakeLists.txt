@@ -40,6 +40,13 @@ separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
+function(unseparate_arguments _var _list)
+	foreach(_arg ${_list})
+		set(_string "${_string} ${_arg}")
+	endforeach()
+	set(${_var} "${_string}" PARENT_SCOPE)
+endfunction()
+
 ############################################################################
 # User selectable options
 ############################################################################
@@ -1082,6 +1089,10 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 
 if(MAPE_GTK_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
+	unseparate_arguments(MAPE_GTK_CFLAGS "${MAPE_GTK_CFLAGS}")
+	set_property(TARGET mape APPEND_STRING PROPERTY COMPILE_FLAGS ${MAPE_GTK_CFLAGS})
+	unseparate_arguments(MAPE_GTK_LDFLAGS "${MAPE_GTK_LDFLAGS}")
+	set_property(TARGET mape APPEND_STRING PROPERTY LINK_FLAGS ${MAPE_GTK_LDFLAGS})
 endif()
 
 add_executable(c4group
