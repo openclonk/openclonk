@@ -131,7 +131,6 @@ public:
 			Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
 			SPos(a->Script.getData()), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Done(false),
 			Type(Type),
 			ContextToExecIn(NULL),
 			fJump(false),
@@ -142,7 +141,6 @@ public:
 			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(Fn->Owner->Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Done(false),
 			Type(Type),
 			ContextToExecIn(context),
 			fJump(false),
@@ -163,7 +161,6 @@ private:
 	C4AulTokenType TokenType; // current token type
 	int32_t cInt; // current int constant
 	C4String * cStr; // current string constant
-	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
 	void Parse_Function();
@@ -303,6 +300,9 @@ C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const cha
 		                      SGetLine(state->pOrgScript->GetScript(), state->TokenSPos),
 		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->TokenSPos));
 	}
+	// show a warning if the error is in a remote script
+	if (state->pOrgScript != state->Host && state->Host)
+		sMessage.AppendFormat(" (as #appendto/#include to %s)", state->Host->ScriptName.getData());
 
 }
 
@@ -1317,17 +1317,12 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 		if (all_ok)
 		{
 			err->show();
-			// show a warning if the error is in a remote script
-			if (pOrgScript != Host)
-				DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 			// and count (visible only ;) )
 			++::ScriptEngine.errCnt;
 		}
 		all_ok = false;
 		delete err;
 
-		// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-		//if (Fn->Owner->GetPropList() || Fn->Owner->Appends.empty()) show
 		if (Fn)
 		{
 			// make all jumps that don't have their destination yet jump here
