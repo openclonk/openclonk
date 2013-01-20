@@ -275,7 +275,7 @@ static void OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 
 static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-#if GTK_CHECK_VERSION(2,90,7)
+#if GTK_CHECK_VERSION(2,21,8)
 	if (event->keyval == GDK_KEY_Scroll_Lock)
 #else
 	if (event->keyval == GDK_Scroll_Lock)
