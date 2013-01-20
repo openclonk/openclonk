@@ -28,7 +28,7 @@ Sky=Clouds2
 MapWidth=200,0,64,10000
 MapHeight=200,0,40,10000
 NoScan=true
-FlatChunkShapes=false
+FlatChunkShapes=0
 
 [Weather]
 Climate=0,10,0,100

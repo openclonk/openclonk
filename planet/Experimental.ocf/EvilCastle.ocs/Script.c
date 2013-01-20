@@ -12,7 +12,8 @@ static g_is_initialized;
 func DoInit(int first_player)
 {
 	// Goal
-	//CreateObject(Goal_Plane);
+	var goal = CreateObject(Goal_Assassination);
+	if (goal) goal->SetVictim(Object(3816));
 	// Elevators
 	// Top
 	Object(332)->SetNoPowerNeed(true);
