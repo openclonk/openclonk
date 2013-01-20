@@ -533,7 +533,7 @@ mape_group_get_next_entry(MapeGroup* group)
 #endif
 
   buf = g_malloc(512 * sizeof(gchar));
-  if(!c4_group_handle_access_next_entry(priv->handle, "*", NULL, buf, FALSE))
+  if(!c4_group_handle_find_next_entry(priv->handle, "*", NULL, buf, FALSE))
   {
     g_free(buf);
     buf = NULL;
@@ -545,12 +545,12 @@ mape_group_get_next_entry(MapeGroup* group)
 /**
  * mape_group_load_entry:
  * @group: An open #MapeGroup.
+ * @entry: The name of the file to open.
  * @size: Location to store the size of the entry in, or %NULL.
  * @error: Location to store error information, if any.
  *
- * Attempts to load the entry the group's internal iterator currently points
- * to into memory. The internal iterator can be moved via mape_group_rewind()
- * and mape_group_get_next_entry(). If @size is non-%NULL, the size of the
+ * Attempts to load the entry with the given name
+ * into memory. If @size is non-%NULL, the size of the
  * entry will be stored at the location @size points to. On error, %NULL
  * is returned, @error is set and @size is left untouched.
  *
@@ -558,6 +558,7 @@ mape_group_get_next_entry(MapeGroup* group)
  */
 guchar*
 mape_group_load_entry(MapeGroup* group,
+                      const gchar* entry,
                       gsize* size,
                       GError** error)
 {
@@ -570,7 +571,13 @@ mape_group_load_entry(MapeGroup* group,
   g_return_val_if_fail(error == NULL || *error == NULL, NULL);
 
   priv = MAPE_GROUP_PRIVATE(group);
-  s = c4_group_handle_accessed_entry_size(priv->handle);
+  if(!c4_group_handle_access_entry(priv->handle, entry, &s, NULL, FALSE))
+  {
+    g_set_error(error, mape_group_error_quark, MAPE_GROUP_ERROR_ACCESS,
+              "%s", c4_group_handle_get_error(priv->handle));
+    return NULL;
+  }
+
   res = g_malloc(s);
   if(!c4_group_handle_read(priv->handle, (char*)res, s))
   {

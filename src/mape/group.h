@@ -108,6 +108,7 @@ mape_group_get_next_entry(MapeGroup* group);
 
 guchar*
 mape_group_load_entry(MapeGroup* group,
+                      const gchar* entry,
                       gsize* size,
                       GError** error);
 

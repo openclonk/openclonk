@@ -78,6 +78,11 @@ gboolean c4_group_handle_access_next_entry(C4GroupHandle* handle, const gchar* w
   return HANDLE_TO_GROUP(handle)->AccessNextEntry(wildcard, size, filename, start_at_filename);
 }
 
+gboolean c4_group_handle_access_entry(C4GroupHandle* handle, const gchar* wildcard, gsize* size, gchar* filename, gboolean needs_to_be_a_group)
+{
+  return HANDLE_TO_GROUP(handle)->AccessEntry(wildcard, size, filename, needs_to_be_a_group);
+}
+
 gsize c4_group_handle_accessed_entry_size(C4GroupHandle* handle)
 {
   return HANDLE_TO_GROUP(handle)->AccessedEntrySize();

@@ -332,7 +332,6 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
   g_return_val_if_fail(MAPE_IS_GROUP(group), FALSE);
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
-
   priv = MAPE_TEXTURE_MAP_PRIVATE(texture_map);
 
   if(priv->texture_table == NULL)
@@ -356,7 +355,6 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
     {
       /* Make texname out of filename */
       len = strlen(name)-strlen(*ext);
-      name[len] = '\0';
       /* Use this for hashtable lookup */
       casefold_name = g_utf8_casefold(name, len);
 
@@ -365,7 +363,7 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
        * then the overloaded one. */
       if(g_hash_table_lookup(priv->texture_table, casefold_name) == NULL)
       {
-        data = mape_group_load_entry(group, &datalen, error);
+        data = mape_group_load_entry(group, name, &datalen, error);
         if(data == NULL)
         {
           g_free(name);
@@ -398,6 +396,7 @@ mape_texture_map_load_textures(MapeTextureMap* texture_map,
         /* Add texture to texmap (without actual Surface, only texture color),
          * just so that the map generator knows the presence
          * of the texture. */
+        name[len] = '\0';
         c4_texture_map_handle_add_texture(
           priv->handle,
           name,
