@@ -708,10 +708,6 @@ c4script_LDADD = \
   $(LDADD) \
   $(Z_LIBS)
 
-if WIN32
-c4script_LDADD += -lwinmm
-endif
-
 ## mape
 mape_SOURCES = \
 mape-icons.h \
