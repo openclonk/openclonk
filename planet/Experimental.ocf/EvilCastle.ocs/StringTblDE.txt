@@ -1,0 +1,1 @@
+MsgIntro1=Hilfe! King Horax hat unser Dorf zerstoert und wir sind alle zu feige, ihn anzugreifen. Koennt Ihr ihm Einhalt gebieten?

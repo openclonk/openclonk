@@ -29,6 +29,9 @@ func DoInit(int first_player)
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);
+	// Intro. Message 250 frames + regular message time
+	Dialogue->MessageBoxAll("$MsgIntro1$", Object(2648), true);
+	Schedule(nil, "Dialogue->MessageBoxAll(\"$MsgIntro1$\", Object(2648))", 250, 1);
 	return true;
 }
 
@@ -38,14 +41,44 @@ func InitializePlayer(int plr)
 	if (GetPlayerType(plr)!=C4PT_User) return;
 	// Scenario init
 	if (!g_is_initialized) g_is_initialized = DoInit(plr);
-	// Start intro if not yet started
-	//IntroStart();
+	// Harsh zoom range
+	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
+		SetPlayerZoomByViewRange(plr,400,250,flag);
+	// Initial join
+	JoinPlayer(plr);
+	return true;
+}
+
+func RelaunchPlayer(int plr)
+{
+	var clonk = CreateObject(Clonk, 50, 1000, plr);
+	clonk->MakeCrewMember(plr);
+	SetCursor(plr, clonk);
+	JoinPlayer(plr);
+	return true;
+}
+
+func JoinPlayer(int plr)
+{
 	// Place in village
 	var crew;
 	for(var index = 0; crew = GetCrew(plr, index); ++index)
 	{
-		var x = 50 + Random(50);
-		var y = 850;
+		var x = 35 + Random(10);
+		var y = 1140;
 		crew->SetPosition(x , y);
+		crew->SetDir(DIR_Right);
+		crew->DoEnergy(1000);
+		// First crew member gets shovel and hammer. Try to get those items from the corpse if they still exist
+		// so we don't end up with dozens of useless shovels
+		if (!index)
+		{
+			for (var equip_id in [Shovel, Hammer])
+			{
+				var obj = FindObject(Find_ID(equip_id), Find_Owner(plr));
+				if (obj) obj->Enter(crew); else crew->CreateContents(equip_id);
+			}
+		}
 	}
+	return true;
 }
