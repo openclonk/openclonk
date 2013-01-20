@@ -55,7 +55,7 @@ C4Reloc Reloc;
 class C4Draw *pDraw = NULL;
 
 bool EraseItemSafe(const char *szFilename) {return false;}
-void Smoke(int, int, int, unsigned int) {}
+void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr) {}
 class C4SoundInstance *StartSoundEffectAt(const char *, int32_t, int32_t, bool, int32_t) { return NULL; }
 
 C4Config::C4Config() {}
