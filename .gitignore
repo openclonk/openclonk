@@ -108,8 +108,6 @@ BuildLog.htm
 xcode/build
 *.xcodeproj
 
-.anjuta*
-
 # Binaries
 *.app
 *.exe
