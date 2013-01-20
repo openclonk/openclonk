@@ -1090,9 +1090,9 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 if(MAPE_GTK_FOUND)
 	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
 	unseparate_arguments(MAPE_GTK_CFLAGS "${MAPE_GTK_CFLAGS}")
-	set_property(TARGET mape APPEND_STRING PROPERTY COMPILE_FLAGS ${MAPE_GTK_CFLAGS})
+	set_property(TARGET mape PROPERTY COMPILE_FLAGS "${MAPE_GTK_CFLAGS}")
 	unseparate_arguments(MAPE_GTK_LDFLAGS "${MAPE_GTK_LDFLAGS}")
-	set_property(TARGET mape APPEND_STRING PROPERTY LINK_FLAGS ${MAPE_GTK_LDFLAGS})
+	set_property(TARGET mape PROPERTY LINK_FLAGS "${MAPE_GTK_LDFLAGS}")
 endif()
 
 add_executable(c4group
