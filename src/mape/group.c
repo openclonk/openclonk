@@ -32,6 +32,10 @@
 #include "mape/cpp-handles/group-handle.h"
 #include "mape/group.h"
 
+#ifdef G_OS_WIN32
+#include <windows.h>
+#endif
+
 /* Declare private API */
 C4GroupHandle*
 _mape_group_get_handle(MapeGroup* group); /* shut up gcc */
@@ -315,7 +319,7 @@ mape_group_open_child(MapeGroup* group,
   if(parent_priv->handle == NULL)
   {
     child = mape_group_new();
-    if(mape_group_open(child, entry, error) == NULL)
+    if(!mape_group_open(child, entry, error))
     {
       g_object_unref(child);
       return NULL;
@@ -627,8 +631,11 @@ mape_group_is_drive_container(MapeGroup* group)
   g_return_val_if_fail(mape_group_is_open(group), FALSE);
 
 #ifdef G_OS_WIN32
-  if(priv->handle == NULL)
-    return TRUE;
+  {
+    MapeGroupPrivate* priv = MAPE_GROUP_PRIVATE(group);
+    if(priv->handle == NULL)
+      return TRUE;
+  }
 #endif
 
   return FALSE;
