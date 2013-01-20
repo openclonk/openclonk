@@ -526,7 +526,7 @@ mape_group_get_next_entry(MapeGroup* group)
     buf[0] = 'A' + drive;
     buf[1] = ':';
     buf[2] = '\0';
-    group->drive = drive + 1;
+    priv->drive = drive + 1;
 
     return buf;
   }
