@@ -514,19 +514,18 @@ mape_group_get_next_entry(MapeGroup* group)
   if(priv->handle == NULL)
   {
     drv_c = GetLogicalDrives();
-    drive = priv->drive - 1;
 
     /* Find next available drive or wait for overflow */
+    drive = priv->drive - 1;
     while( (drive < DRV_C_SUPPORT) && ((~drv_c & (1 << drive)) != 0))
       ++drive;
-
     if(drive >= DRV_C_SUPPORT) return NULL;
 
     buf = g_malloc(3 * sizeof(gchar));
     buf[0] = 'A' + drive;
     buf[1] = ':';
     buf[2] = '\0';
-    priv->drive = drive + 1;
+    priv->drive = drive + 2;
 
     return buf;
   }
