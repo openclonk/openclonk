@@ -122,3 +122,7 @@ func AttachTargetLost()
 	return RemoveObject();
 }
 
+func SetPlane(int to)
+{
+	this.Plane = to;
+}
