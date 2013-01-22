@@ -111,7 +111,7 @@ private func InitializeScriptPlayer(int plr)
 	spearman1->CreateContents(Javelin);
 	spearman1->AI_GuardArea(800, 400, 400, 250);
 	AddEffect("IntContentRemoval", spearman1, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(spearman1);
+	spearman1->AddEnergyBar();
 	
 	// Third section: Two opponents in a tower.
 	// Lower part: a weak spearman.
@@ -121,7 +121,7 @@ private func InitializeScriptPlayer(int plr)
 	spearman2->CreateContents(Javelin);
 	spearman2->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", spearman2, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(spearman2);
+	spearman2->AddEnergyBar();
 	// Upper part: a normal bowman.
 	var bowman = CreateObject(Clonk, 1732, 352, plr);
 	bowman->MakeCrewMember(plr);
@@ -129,7 +129,7 @@ private func InitializeScriptPlayer(int plr)
 	bowman->CreateContents(Bow)->CreateContents(Arrow);
 	bowman->AI_GuardArea(1350, 200, 500, 400);
 	AddEffect("IntContentRemoval", bowman, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(bowman);
+	bowman->AddEnergyBar();
 	
 	// Fourth section: Opponent with sword and shield.
 	var swordman = CreateObject(Clonk, 2250, 360, plr);
@@ -139,7 +139,7 @@ private func InitializeScriptPlayer(int plr)
 	swordman->CreateContents(Sword);
 	swordman->AI_GuardArea(2050, 300, 300, 100);
 	AddEffect("IntContentRemoval", swordman, 100, 0);
-	CreateObject(EnergyBar)->SetTarget(swordman);
+	swordman->AddEnergyBar();
 	return;
 }
 
