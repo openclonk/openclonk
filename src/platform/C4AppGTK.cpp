@@ -170,18 +170,15 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		}
 		XRRFreeScreenConfigInfo(conf);
 	}
-	if (fDspModeSet)
-		gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
-	return fDspModeSet;
+	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
+	return fDspModeSet || (iXRes == -1 && iYRes == -1);
 }
 
 void C4AbstractApp::RestoreVideoMode()
 {
-	if (!fDspModeSet)
-		return;
 	// Restore resolution
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	if (Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
+	if (fDspModeSet && Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
 	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 #ifdef _DEBUG
@@ -190,9 +187,9 @@ void C4AbstractApp::RestoreVideoMode()
 		XRRSetScreenConfig (dpy, conf, pWindow->wnd, Priv->xrandr_oldmode, Priv->xrandr_rot, CurrentTime);
 		Priv->xrandr_oldmode = -1;
 		XRRFreeScreenConfigInfo(conf);
+		fDspModeSet = false;
 	}
 	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
-	fDspModeSet = false;
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
