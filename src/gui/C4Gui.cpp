@@ -539,10 +539,7 @@ namespace C4GUI
 	{
 		Mouse.x = tx+twdt/2;
 		Mouse.y = ty+thgt/2;
-		// calculate zoom
-		float fZoomX = float(Application.GetConfigWidth()) / twdt;
-		float fZoomY = float(Application.GetConfigHeight()) / thgt;
-		fZoom = Min<float>(fZoomX, fZoomY);
+		fZoom = 1.0f;
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
