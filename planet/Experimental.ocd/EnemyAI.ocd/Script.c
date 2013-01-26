@@ -1,6 +1,7 @@
 static const S2AI_DefMaxAggroDistance = 200, // lose sight to target if it is this far away (unles we're ranged - then always guard the range rect)
              S2AI_DefGuardRangeX = 300,  // search targets this far away in either direction (searching in rectangle)
-             S2AI_DefGuardRangeY = 150;  // search targets this far away in either direction (searching in rectangle)
+             S2AI_DefGuardRangeY = 150,  // search targets this far away in either direction (searching in rectangle)
+             S2AI_AlertTime      = 800; // number of frames after alert after which AI no longer checks for projectiles
              
 /* Public interface */
 
@@ -67,11 +68,34 @@ func SetMaxAggroDistance(object clonk, int max_dist)
 	return true;
 }
 
-/* Internal functions */
+// Set range in which, on first encounter, allied AI Clonks get the same aggro target set
+func SetAllyAlertRange(object clonk, int new_range)
+{
+	var fx = GetEffect("S2AI", clonk);
+	if (!fx || !clonk) return false;
+	fx.ally_alert_range = new_range;
+	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	return true;
+}
 
-func FxS2AITimer(clonk, fx, int time) { clonk->ExecuteS2AI(fx, time); return FX_OK; }
+// Set callback function name to be called in game script when this AI is first encountered
+// Callback function first parameter is (this) AI clonk, second parameter is player clonk.
+// The callback should return true to be cleared and not called again. Otherwise, it will be called every time a new target is found.
+func SetEncounterCB(object clonk, string cb_fn)
+{
+	var fx = GetEffect("S2AI", clonk);
+	if (!fx || !clonk) return false;
+	fx.encounter_cb = cb_fn;
+	clonk->Call(S2AI.UpdateDebugDisplay, fx);
+	return true;
+}
 
-func FxS2AIStop(clonk, fx, int reason)
+
+/* AI effect callback functions */
+
+protected func FxS2AITimer(clonk, fx, int time) { clonk->ExecuteS2AI(fx, time); return FX_OK; }
+
+protected func FxS2AIStop(clonk, fx, int reason)
 {
 	// remove debug display
 	if (fx.debug) clonk->Call(S2AI.EditCursorDeselection, fx);
@@ -83,23 +107,67 @@ func FxS2AIStop(clonk, fx, int reason)
 	return FX_OK;
 }
 
+protected func FxS2AIDamage(clonk, fx, int dmg, int cause)
+{
+	// AI takes damage: Make sure we're alert so evasion and healing scripts are executed!
+	// It might also be feasible to execute encounter callbacks here (in case an AI is shot from a position it cannot see).
+	// However, the attacking Clonk is not known and the callback might be triggered e.g. by an unfortunate meteorite or lightning blast.
+	// So let's just keep it at alert state for now.
+	if (dmg<0) fx.alert=fx.time;
+	return dmg;
+}
+
+
+/* AI execution timer functions */
 
 // called in context of the Clonk that is being controlled
-func Execute(proplist fx, int time)
+private func Execute(proplist fx, int time)
 {
 	fx.time = time;
+	// Evasion, healing etc. if alert
+	if (fx.alert) if (ExecuteProtection(fx)) return true;
 	// Find something to fight with
 	if (!fx.weapon) { CancelAiming(fx); if (!ExecuteArm(fx)) return ExecuteIdle(fx); else if (!fx.weapon) return true; }
 	// Weapon out of ammo?
-	if (fx.ammo_check && !Call(fx.ammo_check, fx.weapon)) { fx.weapon=nil; return false; }
+	if (fx.ammo_check && !Call(fx.ammo_check, fx, fx.weapon)) { fx.weapon=nil; return false; }
 	// Find an enemy
 	if (fx.target) if (!fx.target->GetAlive() || (!fx.ranged && ObjectDistance(fx.target) >= fx.max_aggro_distance)) fx.target = nil;
-	if (!fx.target) { CancelAiming(fx); if (!(fx.target = FindTarget(fx))) return ExecuteIdle(fx); }
+	if (!fx.target)
+	{
+		CancelAiming(fx);
+		if (!(fx.target = FindTarget(fx))) return ExecuteIdle(fx);
+		// first encounter callback. might display a message.
+		if (fx.encounter_cb) if (GameCall(fx.encounter_cb, this, fx.target)) fx.encounter_cb = nil;
+		// wake up nearby allies
+		if (fx.ally_alert_range)
+		{
+			var ally_fx;
+			for (var ally in FindObjects(Find_Distance(fx.ally_alert_range), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner())))
+				if (ally_fx = S2AI->GetAI(ally))
+					if (!ally_fx.target)
+					{
+						ally_fx.target = fx.target;
+						ally_fx.alert = ally_fx.time;
+						if (ally_fx.encounter_cb) if (GameCall(ally_fx.encounter_cb, ally, fx.target)) ally_fx.encounter_cb = nil;
+					}
+			// waking up works only once. after that, AI might have moved and wake up Clonks it shouldn't
+			fx.ally_alert_range = nil;
+		}
+	}
 	// Attack it!
 	return Call(fx.strategy, fx);
 }
 
-func CheckTargetInGuardRange(fx)
+private func ExecuteProtection(fx)
+{
+	// TODO: Projectile and enemy evasion. Reset fx.alert=fx.time if evasion has happened.
+	// stay alert if there's a target. Otherwise alert state may wear off
+	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > S2AI_AlertTime) fx.alert=nil;
+	// nothing to do
+	return false;
+}
+
+private func CheckTargetInGuardRange(fx)
 {
 	// if target is not in guard range, reset it and return false
 	if (!Inside(fx.target->GetX()-fx.guard_range.x, -10, fx.guard_range.wdt+9)
@@ -108,7 +176,7 @@ func CheckTargetInGuardRange(fx)
 	return true;
 }
 
-func ExecuteVehicle(fx)
+private func ExecuteVehicle(fx)
 {
 	// only knows how to use catapult
 	if (!fx.vehicle || fx.vehicle->GetID() != Catapult) { fx.vehicle = nil; return false; }
@@ -150,7 +218,7 @@ func ExecuteVehicle(fx)
 	return true;
 }
 
-func CancelAiming(fx)
+private func CancelAiming(fx)
 {
 	if (fx.aim_weapon)
 	{
@@ -160,14 +228,16 @@ func CancelAiming(fx)
 	return true;
 }
 
-func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
+private func IsAimingOrLoading() { return !!GetEffect("IntAim*", this); }
 
-func ExecuteRanged(fx)
+private func ExecuteRanged(fx)
 {
 	// Still carrying the bow?
 	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
 	// Target still in guard range?
 	if (!CheckTargetInGuardRange(fx)) return false;
+	// Look at target
+	ExecuteLookAtTarget(fx);
 	// Make sure we can shoot
 	if (!IsAimingOrLoading() || !fx.aim_weapon)
 	{
@@ -180,6 +250,8 @@ func ExecuteRanged(fx)
 		// Enough for now
 		return;
 	}
+	// Stuck in aim procedure check?
+	if (GetEffect("IntAimCheckProcedure", this) && !this->ReadyToAction()) return ExecuteStand(fx);
 	// Calculate offset to target. Take movement into account
 	// Also aim for the head (y-4) so it's harder to evade by jumping
 	var x=GetX(), y=GetY(), tx=fx.target->GetX(), ty=fx.target->GetY()-4;
@@ -195,27 +267,49 @@ func ExecuteRanged(fx)
 		var shooting_angle = GetBallisticAngle(tx-x, ty-y, fx.projectile_speed, 160);
 		if (GetType(shooting_angle) != C4V_Nil)
 		{
-			//Message("Bow @ %d!!!", shooting_angle);
-			// Aim/Shoot there
-			x = Sin(shooting_angle,100);
-			y = -Cos(shooting_angle,100);
-			fx.aim_weapon->ControlUseHolding(this, x,y);
-			if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+			// No ally on path?
+			var ally = FindObject(Find_OnLine(0,0,tx-x,ty-y), Find_Exclude(this), Find_OCF(OCF_Alive), Find_Owner(GetOwner()));
+			if (ally)
 			{
-				//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
-				fx.aim_weapon->ControlUseStop(this, x,y);
-				fx.aim_weapon = nil;
+				if (ExecuteJump()) return true;
+				// can't jump and ally is in the way. just wait.
 			}
-			return true;
+			else
+			{
+				//Message("Bow @ %d!!!", shooting_angle);
+				// Aim/Shoot there
+				x = Sin(shooting_angle,100);
+				y = -Cos(shooting_angle,100);
+				fx.aim_weapon->ControlUseHolding(this, x,y);
+				if (this->IsAiming() && fx.time >= fx.aim_time + fx.aim_wait)
+				{
+					//Log("Throw angle %v speed %v to reach %d %d", shooting_angle, fx.projectile_speed, tx-GetX(), ty-GetY());
+					fx.aim_weapon->ControlUseStop(this, x,y);
+					fx.aim_weapon = nil;
+				}
+				return true;
+			}
 		}
 	}
 	// Path not free or out of range. Just wait for enemy to come...
 	//Message("Bow @ %s!!!", fx.target->GetName());
 	fx.aim_weapon->ControlUseHolding(this,tx-x,ty-y);
+	// Might also change target if current is unreachable
+	var new_target;
+	if (!Random(3)) if (new_target = FindTarget(fx)) fx.target = new_target;
 	return true;
 }
 
-func ExecuteThrow(fx)
+private func ExecuteLookAtTarget(fx)
+{
+	// set direction to look at target. can assume this is instantanuous
+	var dir;
+	if (fx.target->GetX() > GetX()) dir = DIR_Right; else dir = DIR_Left;
+	SetDir(dir);
+	return true;
+}
+
+private func ExecuteThrow(fx)
 {
 	// Still carrying the weapon to throw?
 	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
@@ -250,7 +344,7 @@ func ExecuteThrow(fx)
 	return true;
 }
 
-func CheckHandsAction(fx)
+private func CheckHandsAction(fx)
 {
 	// can use hands?
 	if (this->~HasHandAction()) return true;
@@ -261,13 +355,16 @@ func CheckHandsAction(fx)
 	return false;
 }
 
-func ExecuteStand(fx)
+private func ExecuteStand(fx)
 {
 	//Message("Stand");
 	SetCommand("None");
 	if (GetProcedure() == "SCALE")
 	{
-		if (GetDir()==DIR_Left) SetComDir(COMD_Right); else SetComDir(COMD_Left);
+		if (GetDir()==DIR_Left)
+			ObjectControlMovement(GetOwner(), CON_Right, 100);
+		else
+			ObjectControlMovement(GetOwner(), CON_Left, 100);
 	}
 	else if (GetProcedure() == "HANGLE")
 	{
@@ -282,7 +379,7 @@ func ExecuteStand(fx)
 	return true;
 }
 
-func ExecuteMelee(fx)
+private func ExecuteMelee(fx)
 {
 	// Still carrying the melee weapon?
 	if (fx.weapon->Contained() != this) { fx.weapon=nil; return false; }
@@ -320,26 +417,35 @@ func ExecuteMelee(fx)
 	return true;
 }
 
-func ExecuteEvade(fx,int threat_dx,int threat_dy)
+private func ExecuteEvade(fx,int threat_dx,int threat_dy)
 {
 	// Evade from threat at position delta threat_*
 	if (threat_dx < 0) SetComDir(COMD_Left); else SetComDir(COMD_Right);
-	if (threat_dy >= -5 && !Random(2)) this->ControlJump();
+	if (threat_dy >= -5 && !Random(2)) if (ExecuteJump(fx)) return true;
 	// shield? todo
 	return true;
 }
 
-func ExecuteArm(fx)
+private func ExecuteJump(fx)
+{
+	// Jump if standing on floor
+	if (GetProcedure() == "WALK")
+		//if (GetContact(-1, CNAT_Bottom)) - implied by walk
+			return this->ControlJump();
+	return false;
+}
+
+private func ExecuteArm(fx)
 {
 	fx.ammo_check = nil; fx.ranged = false;
 	// Find a weapon. For now, just search own inventory
 	if (fx.weapon = fx.vehicle)
-		if (CheckVehicleAmmo(fx.weapon))
+		if (CheckVehicleAmmo(fx, fx.weapon))
 			{ fx.strategy = S2AI.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = S2AI.CheckVehicleAmmo; return true; }
 		else
 			fx.weapon = nil;
 	if (fx.weapon = FindContents(Bow))
-		if (HasArrows(fx.weapon))
+		if (HasArrows(fx, fx.weapon))
 			{ fx.strategy = S2AI.ExecuteRanged; fx.projectile_speed = 100; fx.aim_wait = 0; fx.ammo_check = S2AI.HasArrows; fx.ranged=true; return true; }
 		else
 			fx.weapon = nil;
@@ -351,19 +457,23 @@ func ExecuteArm(fx)
 	return false;
 }
 
-func HasArrows(object weapon)
+private func HasArrows(fx, object weapon)
 {
 	if (weapon->Contents(0)) return true;
 	if (FindObject(Find_Container(this), Find_Func("IsArrow"))) return true;
 	return false;
 }
 
-func CheckVehicleAmmo(object catapult)
+private func CheckVehicleAmmo(fx, object catapult)
 {
-	return catapult->ContentsCount();
+	if (catapult->ContentsCount()) return true;
+	// Vehicle out of ammo: Can't really be refilled. Stop using that weapon.
+	fx.vehicle = nil;
+	this->ObjectCommand("UnGrab");
+	return false;
 }
 
-func ExecuteIdle(fx)
+private func ExecuteIdle(fx)
 {
 	if (!Inside(GetX()-fx.home_x, -5,5) || !Inside(GetY()-fx.home_y, -15,15))
 	{
@@ -377,7 +487,7 @@ func ExecuteIdle(fx)
 	return true;
 }
 
-func FindTarget(fx)
+private func FindTarget(fx)
 {
 	// could search for hostile...for now, just search for all other players
 	for (var target in FindObjects(fx.guard_range_check, Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Sort_Random()))
@@ -411,6 +521,7 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 	return a;
 }
 
+
 /* Editor display */
 
 // called in clonk context
@@ -423,17 +534,36 @@ func UpdateDebugDisplay(fx)
 // called in clonk context
 func EditCursorSelection(fx)
 {
+	// clear previous
 	if (fx.debug) EditCursorDeselection(fx);
+	// encounter message
 	var msg = "";
+	if (fx.encounter_cb) msg = Format("%s%v", msg, fx.encounter_cb);
+	// contents message
 	for (var i=0; i<ContentsCount(); ++i)
 		msg = Format("%s{{%i}}", msg, Contents(i)->GetID());
 	Message("@AI %s", msg);
+	// draw ally alert range. draw as square, although a circle would be more appropriate
 	fx.debug = {};
-	var clr = 0xffff0000;
-	fx.debug.r1 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,clr);
-	fx.debug.r2 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,clr);
-	fx.debug.r3 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,clr);
-	fx.debug.r4 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y,clr);
+	var clr;
+	var x=GetX(), y=GetY();
+	if (fx.ally_alert_range)
+	{
+		clr = 0xffffff00;
+		fx.debug.a1 = DebugLine->Create(x,y-fx.ally_alert_range,x+fx.ally_alert_range,y,clr);
+		fx.debug.a2 = DebugLine->Create(x+fx.ally_alert_range,y,x,y+fx.ally_alert_range,clr);
+		fx.debug.a3 = DebugLine->Create(x,y+fx.ally_alert_range,x-fx.ally_alert_range,y,clr);
+		fx.debug.a4 = DebugLine->Create(x-fx.ally_alert_range,y,x,y-fx.ally_alert_range,clr);
+	}
+	// draw guard range
+	if (fx.guard_range.wdt && fx.guard_range.hgt)
+	{
+		clr = 0xffff0000;
+		fx.debug.r1 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,clr);
+		fx.debug.r2 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y,fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,clr);
+		fx.debug.r3 = DebugLine->Create(fx.guard_range.x+fx.guard_range.wdt,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,clr);
+		fx.debug.r4 = DebugLine->Create(fx.guard_range.x,fx.guard_range.y+fx.guard_range.hgt,fx.guard_range.x,fx.guard_range.y,clr);
+	}
 	return true;
 }
 
@@ -446,6 +576,10 @@ func EditCursorDeselection(fx)
 		if (fx.debug.r2) fx.debug.r2->RemoveObject();
 		if (fx.debug.r3) fx.debug.r3->RemoveObject();
 		if (fx.debug.r4) fx.debug.r4->RemoveObject();
+		if (fx.debug.a1) fx.debug.a1->RemoveObject();
+		if (fx.debug.a2) fx.debug.a2->RemoveObject();
+		if (fx.debug.a3) fx.debug.a3->RemoveObject();
+		if (fx.debug.a4) fx.debug.a4->RemoveObject();
 		Message("");
 	}
 	fx.debug = nil;

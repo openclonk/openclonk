@@ -45,6 +45,7 @@ func InitializePlayer(int plr)
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
 		SetPlayerZoomByViewRange(plr,400,250,flag);
+	SetPlayerViewLock(plr, true);
 	// Initial join
 	JoinPlayer(plr);
 	return true;
@@ -81,5 +82,27 @@ func JoinPlayer(int plr)
 			}
 		}
 	}
+	return true;
+}
+
+
+/* Enemy encounter messages */
+
+func EncounterCave(object enemy, object player)
+{
+	Dialogue->MessageBoxAll("$MsgEncounterCave$", enemy);
+	return true;
+}
+
+func EncounterOutpost(object enemy, object player)
+{
+	Dialogue->MessageBoxAll("$MsgEncounterOutpost$", enemy);
+	return true;
+}
+
+func EncounterKing(object enemy, object player)
+{
+	if (!player) player = enemy; // Leads to a funny message, but better than a null pointer.
+	Dialogue->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
 	return true;
 }
