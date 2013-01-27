@@ -32,6 +32,8 @@ func DoInit(int first_player)
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);
+	// Horax
+	Object(3816).JumpSpeed = 200;
 	// Update AI stuff
 	var fx;
 	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
@@ -39,6 +41,7 @@ func DoInit(int first_player)
 		{
 			fx.weapon = fx.target = nil;
 			S2AI->BindInventory(enemy);
+			enemy->DoEnergy(10000);
 			enemy->AddEnergyBar();
 		}
 	// Intro. Message 250 frames + regular message time
