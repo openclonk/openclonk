@@ -30,6 +30,15 @@ func DoInit(int first_player)
 	// Rules
 	CreateObject(Rule_TeamAccount);
 	CreateObject(Rule_NoPowerNeed);
+	// Update AI stuff
+	var fx;
+	for (var enemy in FindObjects(Find_ID(Clonk), Find_Owner(NO_OWNER)))
+		if (fx = S2AI->GetAI(enemy))
+		{
+			fx.weapon = fx.target = nil;
+			S2AI->BindInventory(enemy);
+			enemy->AddEnergyBar();
+		}
 	// Intro. Message 250 frames + regular message time
 	Dialogue->MessageBoxAll("$MsgIntro1$", Object(2648), true);
 	Schedule(nil, "Dialogue->MessageBoxAll(\"$MsgIntro1$\", Object(2648))", 250, 1);

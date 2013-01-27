@@ -9,7 +9,7 @@ static const S2AI_DefMaxAggroDistance = 200, // lose sight to target if it is th
 func AddAI(object clonk)
 {
 	var fx = GetEffect("S2AI", clonk);
-	if (!fx) fx = AddEffect("S2AI", clonk, 1, 10, nil, S2AI);
+	if (!fx) fx = AddEffect("S2AI", clonk, 1, 3, nil, S2AI);
 	if (!fx || !clonk) return nil;
 	clonk.ExecuteS2AI = S2AI.Execute;
 	if (clonk->GetProcedure() == "PUSH") fx.vehicle = clonk->GetActionTarget();
@@ -160,7 +160,64 @@ private func Execute(proplist fx, int time)
 
 private func ExecuteProtection(fx)
 {
-	// TODO: Projectile and enemy evasion. Reset fx.alert=fx.time if evasion has happened.
+	// Search for nearby projectiles. Ranged AI also searches for enemy clonks to evade.
+	var enemy_search;
+	if (fx.ranged) enemy_search = Find_And(Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())));
+	//Log("ExecProt");
+	var projectiles = FindObjects(Find_InRect(-150,-50,300,80), Find_Or(Find_Category(C4D_Object), Find_Func("IsDangerous4AI"), Find_Func("IsArrow"), enemy_search), Find_OCF(OCF_HitSpeed2), Find_NoContainer(), Sort_Distance());
+	for (var obj in projectiles)
+	{
+		var dx = obj->GetX()-GetX(), dy = obj->GetY()-GetY();
+		var vx = obj->GetXDir(), vy = obj->GetYDir();
+		if (Abs(dx)>40 && vx) dy += (Abs(10*dx/vx)**2)*GetGravity()/200;
+		var v2 = Max(vx*vx+vy*vy, 1);
+		var d2 = dx*dx+dy*dy;
+		if (d2/v2 > 4)
+		{
+			// won't hit within the next 20 frames
+			//obj->Message("ZZZ");
+			continue;
+		}
+		//obj->Message("###%d", Sqrt(100*d2/v2));
+		// Distance at which projectile will pass Clonk should be larger than Clonk size (erroneously assumes Clonk is a sphere)
+		var l = dx*vx+dy*vy;
+		//Log("%s l=%d  d=%d  r=%d   gravcorr=%d", obj->GetName(), l, Sqrt(d2), Sqrt(d2-l*l/v2), (Abs(10*dx/vx)**2)*GetGravity()/200);
+		if (l<0 && Sqrt(d2-l*l/v2)<=GetCon()/8)
+		{
+			// Not if there's a wall between
+			if (!PathFree(GetX(),GetY(),obj->GetX(),obj->GetY())) continue;
+			// This might hit :o
+			fx.alert=fx.time;
+			// do we have a shield?
+			if (fx.shield)
+			{
+				// use it!
+				if (fx.aim_weapon == fx.shield)
+				{
+					// continue to hold shield
+					//Log("shield HOLD %d %d", dx,dy);
+					fx.shield->ControlUseHolding(this, dx,dy);
+				}
+				else
+				{
+					// start holding shield
+					if (fx.aim_weapon) CancelAiming(fx);
+					if (!CheckHandsAction(fx)) return true;
+					if (!fx.shield->ControlUseStart(this, dx,dy)) return false; // something's broken :(
+					//Log("shield START %d %d", dx,dy);
+					fx.shield->ControlUseHolding(this, dx,dy);
+					fx.aim_weapon = fx.shield;
+				}
+				return true;
+			}
+			// no shield. try to jump away
+			if (dx<0) SetComDir(COMD_Right); else SetComDir(COMD_Left);
+			if (ExecuteJump()) return true;
+			// Can only try to evade one projectile
+			break;
+		}
+	}
+	//Log("OK");
 	// stay alert if there's a target. Otherwise alert state may wear off
 	if (fx.target) fx.alert=fx.time; else if (fx.time-fx.alert > S2AI_AlertTime) fx.alert=nil;
 	// nothing to do
@@ -222,6 +279,7 @@ private func CancelAiming(fx)
 {
 	if (fx.aim_weapon)
 	{
+		//if (fx.aim_weapon==fx.shield) Log("cancel shield");
 		fx.aim_weapon->~ControlUseCancel(this);
 		fx.aim_weapon = nil;
 	}
@@ -368,7 +426,7 @@ private func ExecuteStand(fx)
 	}
 	else if (GetProcedure() == "HANGLE")
 	{
-		SetComDir(COMD_Down);
+		ObjectControlMovement(GetOwner(), CON_Down, 100);
 	}
 	else
 	{
@@ -437,8 +495,22 @@ private func ExecuteJump(fx)
 
 private func ExecuteArm(fx)
 {
-	fx.ammo_check = nil; fx.ranged = false;
+	// Find shield
+	if (fx.shield = FindContents(Shield)) this->SetHandItemPos(1, this->GetItemPos(fx.shield));
 	// Find a weapon. For now, just search own inventory
+	if (FindInventoryWeapon(fx) && fx.weapon->Contained()==this)
+	{
+		this->SetHandItemPos(0, this->GetItemPos(fx.weapon));
+		return true;
+	}
+	// no weapon :(
+	return false;
+}
+
+private func FindInventoryWeapon(fx)
+{
+	fx.ammo_check = nil; fx.ranged = false;
+	// Find weapon in inventory, mark it as equipped and set according strategy, etc.
 	if (fx.weapon = fx.vehicle)
 		if (CheckVehicleAmmo(fx, fx.weapon))
 			{ fx.strategy = S2AI.ExecuteVehicle; fx.ranged=true; fx.aim_wait = 20; fx.ammo_check = S2AI.CheckVehicleAmmo; return true; }
@@ -451,8 +523,9 @@ private func ExecuteArm(fx)
 			fx.weapon = nil;
 	if (fx.weapon = FindContents(Javelin)) { fx.strategy = S2AI.ExecuteRanged; fx.projectile_speed = this.ThrowSpeed*21/100; fx.aim_wait = 16; fx.ranged=true; return true; }
 	if (fx.weapon = FindContents(Firestone)) { fx.strategy = S2AI.ExecuteThrow; return true; }
+	if (fx.weapon = FindContents(Rock)) { fx.strategy = S2AI.ExecuteThrow; return true; }
 	if (fx.weapon = FindContents(Sword)) { fx.strategy = S2AI.ExecuteMelee; return true; }
-	if (fx.weapon = Contents(0)) { fx.strategy = S2AI.ExecuteThrow; return true; }
+	//if (fx.weapon = Contents(0)) { fx.strategy = S2AI.ExecuteThrow; return true; } - don't throw empty bow, etc.
 	// no weapon :(
 	return false;
 }
