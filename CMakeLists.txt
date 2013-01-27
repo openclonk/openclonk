@@ -255,6 +255,7 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4DrawGL.cpp
 	src/graphics/C4DrawGLCtx.cpp
 	src/graphics/C4DrawGL.h
+	src/graphics/C4DrawMeshGL.cpp
 	src/graphics/C4DrawT.cpp
 	src/graphics/C4DrawT.h
 	src/graphics/C4Draw.h
