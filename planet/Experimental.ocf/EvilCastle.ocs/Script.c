@@ -21,8 +21,10 @@ func DoInit(int first_player)
 	// Left
 	Object(420)->CreateShaft(100);
 	// Shrooms
-	Object(2318)->AddPoisonEffect(0,0);
-	Object(2375)->AddPoisonEffect(-20,0);
+	Object(2318)->AddPoisonEffect(0,0); // floor left
+	Object(2369)->AddPoisonEffect(0,0); // ceiling left
+	Object(2375)->AddPoisonEffect(-20,0); // floor right
+	Object(2398)->AddPoisonEffect(10,-10); // ceiling right
 	// Scorching village
 	Object(343)->AddScorch(-20,-10, -45, 50, 1500);
 	Object(344)->AddScorch(-15,42, 90, 50, 1200);
