@@ -1549,7 +1549,7 @@ install(
 		)"
 	)
 
-# TODO: Check for convert at configure step?
+FIND_PACKAGE(ImageMagick COMPONENTS convert)
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
 	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
