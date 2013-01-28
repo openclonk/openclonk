@@ -43,7 +43,7 @@ and pass --with-directx to configure below.
 Start msys (your MinGW directory, e.g. C:\MinGW -> msys.bat),
 cd to this directory, and execute:
 
-    ./autogen.sh && ./configure && make
+    autoreconf -i && ./configure && make
 
 To compile a debugbuild, pass --enable-debug to configure. Other options are
 listed by ./configure --help.
