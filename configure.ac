@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 AC_PREREQ([2.67])
-AC_INIT([clonk], [m4_esyscmd([sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' Version.txt | tr -d '\n' | tr -d '\r'
+AC_INIT([openclonk], [m4_esyscmd([sed -n 's/SET(C4XVER1\s\+\(.\+\))/\1/ p' Version.txt | tr -d '\n' | tr -d '\r'
     ]).m4_esyscmd([sed -n 's/SET(C4XVER2\s\+\(.\+\))/\1/ p' Version.txt | tr -d '\n' | tr -d '\r'
     ]).m4_esyscmd([sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' Version.txt | tr -d '\n' | tr -d '\r'])])
 AC_COPYRIGHT([©2005-2011 Günther Brammer])

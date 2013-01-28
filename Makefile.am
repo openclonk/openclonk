@@ -17,7 +17,7 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group puncher c4script
+bin_PROGRAMS = openclonk c4group puncher c4script
 
 if MAPE
 bin_PROGRAMS += mape
@@ -179,7 +179,7 @@ src/script/C4Value.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h
 
-clonk_SOURCES = \
+openclonk_SOURCES = \
 src/C4Globals.cpp \
 src/c4group/C4Components.h \
 src/c4group/C4Extra.cpp \
@@ -533,29 +533,29 @@ thirdparty/tinyxml/tinyxml.h \
 thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4CrashHandlerWin32.cpp \
 src/res/engine.rc \
 src/res/resource.h
 endif
 
 if MACOSX
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppDelegate.h \
 src/platform/C4AppDelegate.mm \
 src/platform/C4FileMonitorMac.mm
 else
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/game/ClonkMain.cpp
 endif
 
 if SDL_MAIN_LOOP
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppSDL.cpp \
 src/platform/C4WindowSDL.cpp
 else
 if GTK
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleGTK.cpp \
 src/editor/C4ConsoleGTKDlg.cpp \
 src/editor/C4ConsoleGTKDlg.h \
@@ -564,18 +564,18 @@ src/platform/C4AppGTKImpl.h \
 src/platform/C4WindowGTK.cpp
 else
 if CONSOLE
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppT.cpp
 else
 if WIN32
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleWin32.cpp \
 src/platform/C4WindowWin32.cpp \
 src/platform/StdJoystick.cpp \
 src/platform/StdJoystick.h
 endif
 if MACOSX
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleCocoa.mm \
 src/editor/C4EditorWindowController.h \
 src/editor/C4EditorWindowController.mm \
@@ -595,22 +595,22 @@ endif
 endif
 
 if AUTOUPDATE
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/gui/C4UpdateDlg.cpp \
 src/gui/C4UpdateDlg.h
 endif
 
 if LIBUPNP
-clonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
 else
 if NATUPNP
-clonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
 else
-clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
 endif
 endif
 
-clonk_CPPFLAGS = \
+openclonk_CPPFLAGS = \
 $(AM_CPPFLAGS) \
 $(GLEW_CFLAGS) \
 $(GTK_CFLAGS) \
@@ -619,7 +619,7 @@ $(FREETYPE_CFLAGS) \
 $(SDL_CFLAGS) \
 $(LIBUPNP_CFLAGS)
 
-clonk_LDADD = \
+openclonk_LDADD = \
   libc4script.a \
   libmisc.a \
   $(LDADD) \
@@ -834,7 +834,7 @@ if WIN32
 tools/install/firewall.dll: $(srcdir)/tools/install/firewall.cpp
 	mkdir -p tools/install
 	$(CXX) -shared -o tools/install/firewall.dll $(srcdir)/tools/install/firewall.cpp -lole32 -loleaut32
-setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
+setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) openclonk$(EXEEXT) $(c4groups)
 	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
 	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  -DPRODUCT_COMPANY="$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \

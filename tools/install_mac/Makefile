@@ -5,7 +5,7 @@ VERSION = 2.0
 
 # Assume default XCode output directory
 SOURCE_DIR = ../../Release
-SOURCE_FILES = clonk.app
+SOURCE_FILES = openclonk.app
 
 TEMPLATE_DMG = template.dmg
 

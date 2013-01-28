@@ -1087,7 +1087,7 @@ endif()
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
-add_executable(clonk WIN32 MACOSX_BUNDLE
+add_executable(openclonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
@@ -1176,7 +1176,7 @@ add_executable(c4script
 	src/C4Include.cpp
 )
 
-target_link_libraries(clonk
+target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
@@ -1185,7 +1185,7 @@ target_link_libraries(clonk
 )
 
 if(USE_OPEN_AL)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${OPENAL_LIBRARY}
 		${ALUT_LIBRARY}
 		${VORBIS_LIBRARY}
@@ -1220,7 +1220,7 @@ if(HAVE_PTHREAD)
 	endif()
 endif()
 if(USE_CONSOLE)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		pthread
 		${READLINE_LIBRARIES}
 	)
@@ -1229,17 +1229,17 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(c4group rt)
 	target_link_libraries(c4script rt)
 	target_link_libraries(netpuncher rt)
-	target_link_libraries(clonk rt)
+	target_link_libraries(openclonk rt)
 	if(MAPE_GTK_FOUND)
 		target_link_libraries(mape rt)
 	endif()
 endif()
-set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
+set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
-set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
+set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
 if(MSVC)
 	# set target output filenames to a per-configuration value
@@ -1253,7 +1253,7 @@ if(MSVC)
 			endif()
 		endforeach()
 	endfunction()
-	oc_set_target_names(clonk)
+	oc_set_target_names(openclonk)
 	oc_set_target_names(c4group)
 	oc_set_target_names(c4script)
 	oc_set_target_names(netpuncher)
@@ -1264,7 +1264,7 @@ endif()
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
 	if(MSVC_VERSION)
-		get_property(OC_SOURCES TARGET clonk PROPERTY SOURCES)
+		get_property(OC_SOURCES TARGET openclonk PROPERTY SOURCES)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
 			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
@@ -1325,7 +1325,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
-	add_precompiled_header(clonk src/C4Include.h)
+	add_precompiled_header(openclonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
 	add_precompiled_header(c4script src/C4Include.h)
 endif()
@@ -1335,20 +1335,20 @@ endif()
 ############################################################################
 
 if (APPLE)
-	add_custom_command(TARGET clonk
+	add_custom_command(TARGET openclonk
 		POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
 	)
 	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 	
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 	
 	if (USE_APPLE_CLANG)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
@@ -1356,7 +1356,7 @@ if (APPLE)
 		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++ -g -Wall")
 		SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
-		SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+		SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 				
 		set(HAVE_RVALUE_REF ON)
 	else()
@@ -1371,12 +1371,12 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 if(NOT HAVE_GETOPT_H)
 	include_directories(thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
-	target_link_libraries(clonk getopt)
+	target_link_libraries(openclonk getopt)
 elseif(MINGW)
 	# Link libiberty which my contain getopt with mingw
 	FINDLIB(iberty_LIBRARIES iberty)
 	if(iberty_LIBRARIES)
-		target_link_libraries(clonk iberty)
+		target_link_libraries(openclonk iberty)
 	endif()
 endif()
 
@@ -1384,12 +1384,12 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
 # TinyXML
 add_subdirectory(thirdparty/tinyxml)
-target_link_libraries(clonk tinyxml)
+target_link_libraries(openclonk tinyxml)
 
 if(WIN32)
 	find_package(DbgHelp)
 	if(DBGHELP_FOUND)
-		target_link_libraries(clonk ${DBGHELP_LIBRARIES})
+		target_link_libraries(openclonk ${DBGHELP_LIBRARIES})
 		include_directories(${DBGHELP_INCLUDE_DIR})
 	endif()
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
@@ -1399,7 +1399,7 @@ if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${GLEW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
@@ -1410,7 +1410,7 @@ if(USE_DIRECTX)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
 	FIND_PATH(DIRECT3DX_INCLUDE_DIR NAMES d3dx9.h)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${DIRECT3D_LIBRARIES}
 		${DIRECT3DX_LIBRARIES}
 	)
@@ -1423,11 +1423,11 @@ if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${GTK3_LIBRARIES}
 		)
 	else()
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${GTK_LIBRARIES}
 		)
 	endif()
@@ -1438,14 +1438,14 @@ endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${X11_LIBRARIES}
 		${XRANDR_LIBRARIES}
 	)
 endif()
 if(USE_COCOA)
 	#stupid fix: just link to iconv that way
-	TARGET_LINK_LIBRARIES(clonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
@@ -1453,14 +1453,14 @@ if (WIN32)
 	FINDLIB(VFW32_LIBRARIES vfw32)
 	FINDLIB(wavifil32_LIBRARIES wavifil32)
 	if (VFW32_LIBRARIES)
-		target_link_libraries(clonk vfw32)
+		target_link_libraries(openclonk vfw32)
 		set(HAVE_VFW32 TRUE)
 	elseif(wavifil32_LIBRARIES)
-		target_link_libraries(clonk wavifil32 msvfw32)
+		target_link_libraries(openclonk wavifil32 msvfw32)
 		set(HAVE_VFW32 TRUE)
 	endif()
 
-	target_link_libraries(clonk ws2_32 winmm)
+	target_link_libraries(openclonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(netpuncher ws2_32 winmm)
 	target_link_libraries(c4script ws2_32 winmm)
@@ -1472,7 +1472,7 @@ if (WIN32)
 		find_package(FMod)
 		if(FMOD_FOUND)
 			set(HAVE_FMOD TRUE)
-			target_link_libraries(clonk
+			target_link_libraries(openclonk
 				${FMOD_LIBRARIES}
 			)
 			include_directories(${FMOD_INCLUDE_DIR})
@@ -1490,7 +1490,7 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 		if(SDLMIXER_LIBRARIES)
 			SET(HAVE_LIBSDL_MIXER ON)
 		endif()
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${SDL_LIBRARY}
 			${SDLMIXER_LIBRARIES}
 		)
@@ -1499,7 +1499,7 @@ endif()
 
 if(HAVE_UPNP)
 	include_directories(${UPNP_INCLUDE_DIR})
-	target_link_libraries(clonk ${UPNP_LIBRARIES})
+	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
 
 # GTest
@@ -1529,7 +1529,7 @@ endif()
 ############################################################################
 # installation
 ############################################################################
-# Install the icon into share/icons/hicolor/48x48/apps/clonk.png. Do this by
+# Install the icon into share/icons/hicolor/48x48/apps/openclonk.png. Do this by
 # extracting the correct size from oc.ico. Currently this is layer 2 - let's
 # hope that it stays this way.
 
@@ -1551,15 +1551,15 @@ install(
 
 # TODO: Check for convert at configure step?
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
-	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/clonk.png"
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
 	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 	VERBATIM
 	)
-add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/clonk.png)
+add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
 add_dependencies(data icon)
 install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
 	DESTINATION share/icons/hicolor/48x48/apps
 	)
 
@@ -1577,10 +1577,10 @@ set(OC_C4GROUPS
 )
 
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
-get_target_property(CLONK_LOCATION clonk LOCATION)
+get_target_property(CLONK_LOCATION openclonk LOCATION)
 foreach(group ${OC_C4GROUPS})
 	if (APPLE)
-		add_custom_command(TARGET clonk
+		add_custom_command(TARGET openclonk
 			POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
 			"${C4GROUP_LOCATION}"
 			"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
@@ -1603,10 +1603,10 @@ if (NOT APPLE)
 endif()
 
 # Install new files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 
 # Install binaries
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
 
 ############################################################################
 # setup_openclonk.exe
@@ -1626,7 +1626,7 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
-		${OC_C4GROUPS} clonk c4group
+		${OC_C4GROUPS} openclonk c4group
 	VERBATIM
 )
 
