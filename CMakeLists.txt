@@ -1406,19 +1406,7 @@ if(HAVE_UPNP)
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
 
-# GTest
-include(FindGTest)
-if(GTEST_FOUND)
-	include_directories(${GTEST_INCLUDE_DIRS})
-	add_executable(tests EXCLUDE_FROM_ALL
-		tests/UnicodeHandlingTest.cpp
-		tests/main.cpp
-	)
-	target_link_libraries(tests ${GTEST_LIBRARIES})
-	if(HAVE_PTHREAD)
-		target_link_libraries(tests pthread)
-	endif()
-endif()
+add_subdirectory(tests EXCLUDE_FROM_ALL)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
