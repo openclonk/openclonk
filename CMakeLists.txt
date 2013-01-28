@@ -169,23 +169,11 @@ endif()
 # 	configurations.
 set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
-	src/c4group/C4ComponentHost.cpp
-	src/c4group/C4ComponentHost.h
 	src/c4group/C4Components.h
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
-	src/c4group/C4Group.cpp
-	src/c4group/C4Group.h
-	src/c4group/C4GroupSet.cpp
-	src/c4group/C4GroupSet.h
-	src/c4group/C4LangStringTable.cpp
-	src/c4group/C4LangStringTable.h
 	src/c4group/C4Language.cpp
 	src/c4group/C4Language.h
-	src/c4group/C4Update.cpp
-	src/c4group/C4Update.h
-	src/c4group/CStdFile.cpp
-	src/c4group/CStdFile.h
 	src/C4Include.h
 	src/C4Prototypes.h
 	src/C4Version.h
@@ -372,20 +360,12 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4Texture.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
-	src/lib/C4InputValidation.cpp
-	src/lib/C4InputValidation.h
 	src/lib/C4LogBuf.cpp
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
-	src/lib/C4Random.cpp
-	src/lib/C4Random.h
-	src/lib/C4Real.cpp
-	src/lib/C4Real.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4RTF.cpp
@@ -394,17 +374,10 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Stat.h
 	src/lib/PathFinder.cpp
 	src/lib/PathFinder.h
-	src/lib/SHA1.h
-	src/lib/Standard.cpp
-	src/lib/Standard.h
 	src/lib/StdAdaptors.h
 	src/lib/StdBase64.cpp
 	src/lib/StdBase64.h
-	src/lib/StdBuf.cpp
-	src/lib/StdBuf.h
 	src/lib/StdColors.h
-	src/lib/StdCompiler.cpp
-	src/lib/StdCompiler.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
 	src/lib/StdMeshLoaderBinaryChunks.cpp
@@ -419,8 +392,6 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshMath.h
 	src/lib/StdMeshUpdate.cpp
 	src/lib/StdMeshUpdate.h
-	src/lib/StdResStr2.cpp
-	src/lib/StdResStr2.h
 	src/lib/StdResStr.h
 	src/network/C4Client.cpp
 	src/network/C4Client.h
@@ -430,8 +401,6 @@ set(OC_CLONK_SOURCES
 	src/network/C4InteractiveThread.h
 	src/network/C4League.cpp
 	src/network/C4League.h
-	src/network/C4NetIO.cpp
-	src/network/C4NetIO.h
 	src/network/C4Network2Client.cpp
 	src/network/C4Network2Client.h
 	src/network/C4Network2.cpp
@@ -467,8 +436,6 @@ set(OC_CLONK_SOURCES
 	src/object/C4DefList.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
-	src/object/C4Id.cpp
-	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
 	src/object/C4InfoCore.cpp
@@ -516,15 +483,8 @@ set(OC_CLONK_SOURCES
 	src/platform/C4Video.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
-	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
-	src/platform/StdFile.cpp
-	src/platform/StdFile.h
-	src/platform/StdRegistry.cpp
-	src/platform/StdRegistry.h
-	src/platform/StdScheduler.cpp
-	src/platform/StdScheduler.h
 	src/platform/StdSync.h
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
@@ -534,47 +494,12 @@ set(OC_CLONK_SOURCES
 	src/player/C4PlayerList.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
-	src/script/C4Aul.cpp
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
-	src/script/C4AulDefFunc.h
-	src/script/C4AulExec.cpp
-	src/script/C4AulExec.h
-	src/script/C4AulFunc.cpp
-	src/script/C4AulFunc.h
-	src/script/C4Aul.h
-	src/script/C4AulLink.cpp
-	src/script/C4AulParse.cpp
-	src/script/C4PropList.cpp
-	src/script/C4PropList.h
-	src/script/C4Script.cpp
-	src/script/C4ScriptHost.cpp
-	src/script/C4ScriptHost.h
-	src/script/C4StringTable.cpp
-	src/script/C4StringTable.h
-	src/script/C4ValueArray.cpp
-	src/script/C4ValueArray.h
-	src/script/C4Value.cpp
-	src/script/C4Value.h
-	src/script/C4ValueMap.cpp
-	src/script/C4ValueMap.h
-	src/zlib/gzio.c
-	src/zlib/gzio.h
-	src/zlib/zutil.h
 	thirdparty/timsort/sort.h
 )
 
 set(MAPE_BASE_SOURCES
-	src/c4group/C4ComponentHost.cpp
-	src/c4group/C4ComponentHost.h
-	src/c4group/C4Group.cpp
-	src/c4group/C4Group.h
-	src/c4group/C4GroupSet.cpp
-	src/c4group/C4GroupSet.h
-	src/c4group/C4LangStringTable.cpp
-	src/c4group/C4LangStringTable.h
-	src/c4group/CStdFile.cpp
-	src/c4group/CStdFile.h
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
 	src/landscape/C4Material.cpp
@@ -583,54 +508,10 @@ set(MAPE_BASE_SOURCES
 	src/landscape/C4Texture.h
 	src/landscape/C4Scenario.cpp
 	src/landscape/C4Scenario.h
-	src/lib/C4InputValidation.cpp
-	src/lib/C4InputValidation.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
-	src/lib/C4Random.cpp
-	src/lib/C4Random.h
-	src/lib/C4Real.cpp
-	src/lib/C4Real.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
-	src/lib/Standard.cpp
-	src/lib/Standard.h
-	src/lib/StdBuf.cpp
-	src/lib/StdBuf.h
-	src/lib/StdCompiler.cpp
-	src/lib/StdCompiler.h
-	src/lib/StdResStr2.cpp
-	src/lib/StdResStr2.h
-	src/object/C4Id.cpp
-	src/object/C4Id.h
-	src/platform/GetTime.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdFile.h
-	src/script/C4Aul.cpp
-	src/script/C4Aul.h
-	src/script/C4AulExec.cpp
-	src/script/C4AulExec.h
-	src/script/C4AulFunc.cpp
-	src/script/C4AulFunc.h
-	src/script/C4AulLink.cpp
-	src/script/C4AulParse.cpp
-	src/script/C4PropList.cpp
-	src/script/C4PropList.h
-	src/script/C4Script.cpp
-	src/script/C4ScriptHost.cpp
-	src/script/C4ScriptHost.h
-	src/script/C4StringTable.cpp
-	src/script/C4StringTable.h
-	src/script/C4Value.cpp
-	src/script/C4Value.h
-	src/script/C4ValueArray.cpp
-	src/script/C4ValueArray.h
-	src/script/C4ValueMap.cpp
-	src/script/C4ValueMap.h
-	src/zlib/gzio.c
-	src/C4Include.cpp
 )
 
 set(MAPE_SOURCES
@@ -1102,86 +983,102 @@ endif()
 
 add_executable(c4group
 	src/c4group/C4GroupMain.cpp
-	src/c4group/C4Group.cpp
-	src/lib/C4InputValidation.cpp
-	src/c4group/C4Update.cpp
-	src/lib/Standard.cpp
-	src/c4group/CStdFile.cpp
-	src/lib/C4Markup.cpp
-	src/lib/StdBuf.cpp
-	src/lib/StdCompiler.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdRegistry.cpp
-	src/lib/StdResStr2.cpp
-	src/lib/C4SimpleLog.cpp
-	src/zlib/gzio.c
-	src/C4Include.cpp
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/C4Include.cpp
-	src/lib/C4SimpleLog.cpp
-	src/lib/StdBuf.cpp
-	src/lib/Standard.cpp
-	src/platform/GetTime.cpp
 	src/platform/StdScheduler.cpp
-	src/platform/StdFile.cpp
-	src/network/C4NetIO.cpp
 	src/netpuncher/main.cpp
+)
+
+add_library(libmisc
+src/c4group/C4Group.cpp
+src/c4group/C4Group.h
+src/c4group/C4Update.cpp
+src/c4group/C4Update.h
+src/c4group/CStdFile.cpp
+src/c4group/CStdFile.h
+src/lib/C4InputValidation.cpp
+src/lib/C4InputValidation.h
+src/lib/SHA1.h
+src/lib/Standard.cpp
+src/lib/Standard.h
+src/lib/StdBuf.cpp
+src/lib/StdBuf.h
+src/lib/StdCompiler.cpp
+src/lib/StdCompiler.h
+src/lib/C4Markup.cpp
+src/lib/C4Markup.h
+src/lib/StdResStr2.cpp
+src/lib/StdResStr2.h
+src/network/C4NetIO.cpp
+src/network/C4NetIO.h
+src/platform/GetTime.cpp
+src/platform/StdFile.cpp
+src/platform/StdFile.h
+src/platform/StdRegistry.cpp
+src/platform/StdRegistry.h
+src/platform/StdScheduler.cpp
+src/platform/StdScheduler.h
+src/zlib/gzio.c
+src/zlib/gzio.h
+src/zlib/zutil.h
+
+src/C4Include.cpp
+src/lib/C4SimpleLog.cpp
+)
+
+target_link_libraries(libmisc ${ZLIB_LIBRARIES})
+
+add_library(libc4script
+src/c4group/C4GroupSet.cpp
+src/c4group/C4GroupSet.h
+src/c4group/C4ComponentHost.cpp
+src/c4group/C4ComponentHost.h
+src/c4group/C4LangStringTable.cpp
+src/c4group/C4LangStringTable.h
+src/lib/C4Real.cpp
+src/lib/C4Real.h
+src/lib/C4Random.cpp
+src/lib/C4Random.h
+src/object/C4Id.cpp
+src/object/C4Id.h
+src/script/C4Aul.cpp
+src/script/C4AulDefFunc.h
+src/script/C4AulExec.cpp
+src/script/C4AulExec.h
+src/script/C4AulFunc.cpp
+src/script/C4AulFunc.h
+src/script/C4Aul.h
+src/script/C4AulLink.cpp
+src/script/C4AulParse.cpp
+src/script/C4PropList.cpp
+src/script/C4PropList.h
+src/script/C4Script.cpp
+src/script/C4ScriptHost.cpp
+src/script/C4ScriptHost.h
+src/script/C4StringTable.cpp
+src/script/C4StringTable.h
+src/script/C4ValueArray.cpp
+src/script/C4ValueArray.h
+src/script/C4Value.cpp
+src/script/C4Value.h
+src/script/C4ValueMap.cpp
+src/script/C4ValueMap.h
 )
 
 add_executable(c4script
 	include/c4script/c4script.h
-	src/c4group/C4Group.cpp
-	src/c4group/C4Group.h
-	src/c4group/CStdFile.cpp
-	src/c4group/CStdFile.h
-	src/lib/C4InputValidation.cpp
-	src/lib/C4InputValidation.h
-	src/lib/C4SimpleLog.cpp
-	src/lib/Standard.cpp
-	src/lib/Standard.h
-	src/lib/StdBuf.cpp
-	src/lib/StdBuf.h
-	src/lib/StdCompiler.cpp
-	src/lib/StdCompiler.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
-	src/lib/StdResStr2.cpp
-	src/lib/StdResStr2.h
-	src/platform/GetTime.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdFile.h
-	src/lib/C4Real.cpp
-	src/lib/C4Random.cpp
-	src/script/C4Aul.cpp
-	src/script/C4AulExec.cpp
-	src/script/C4AulFunc.cpp
-	src/script/C4AulLink.cpp
-	src/script/C4AulParse.cpp
-	src/script/C4StringTable.cpp
-	src/script/C4PropList.cpp
-	src/script/C4ScriptHost.cpp
 	src/script/C4ScriptMain.cpp
 	src/script/C4ScriptStandalone.cpp
-	src/script/C4ValueArray.cpp
-	src/script/C4Value.cpp
-	src/script/C4ValueMap.cpp
-	src/object/C4Id.cpp
-	src/script/C4Script.cpp
-	src/c4group/C4GroupSet.cpp
-	src/c4group/C4ComponentHost.cpp
-	src/c4group/C4LangStringTable.cpp
-	src/zlib/gzio.c
-	src/C4Include.cpp
 )
 
 target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
-	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
+	libc4script
+	libmisc
 )
 
 if(USE_OPEN_AL)
@@ -1196,15 +1093,22 @@ endif()
 
 if(MAPE_GTK_FOUND)
 	target_link_libraries(mape
-		${ZLIB_LIBRARIES}
+		libc4script
+		libmisc
 	)
 endif()
 
-target_link_libraries(c4group
-	${ZLIB_LIBRARIES}
+target_link_libraries(netpuncher
+	libmisc
 )
+
+target_link_libraries(c4group
+	libmisc
+)
+
 target_link_libraries(c4script
-	${ZLIB_LIBRARIES}
+	libc4script
+	libmisc
 )
 if(HAVE_PTHREAD)
 	target_link_libraries(netpuncher
