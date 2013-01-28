@@ -67,7 +67,6 @@ protected:
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
-	friend class C4DirectExecScript;
 };
 
 // script host for System.ocg scripts
