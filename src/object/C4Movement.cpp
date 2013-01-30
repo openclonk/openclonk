@@ -627,12 +627,19 @@ bool SimFlight(C4Real &x, C4Real &y, C4Real &xdir, C4Real &ydir, int32_t iDensit
 	do
 	{
 		if (!--i) {hitOnTime = false; break;}
+		// If the object isn't moving and there is no gravity either, abort
+		if (xdir == 0 && ydir == 0 && GravAccel == 0)
+			return false;
+		// If the object is above the landscape flying upwards in no/negative gravity, abort
+		if (ydir <= 0 && GravAccel <= 0 && cy < 0)
+			return false;
 		// Set target position by momentum
 		x+=xdir; y+=ydir;
 		// Movement to target
 		ctcox=fixtoi(x); ctcoy=fixtoi(y);
 		// Bounds
-		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt)) return false;
+		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt))
+			return false;
 		// Move to target
 		do
 		{
