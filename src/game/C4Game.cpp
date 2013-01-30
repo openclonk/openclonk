@@ -2,15 +2,17 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2005, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2009, 2011  Sven Eberhardt
+ * Copyright (c) 2001-2009, 2011-2012  Sven Eberhardt
  * Copyright (c) 2001-2009  Peter Wortmann
  * Copyright (c) 2004, 2011  Tobias Zwick
- * Copyright (c) 2004-2011  Günther Brammer
+ * Copyright (c) 2004-2012  Günther Brammer
  * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2008, 2010-2011  Armin Burgmeier
+ * Copyright (c) 2008, 2010-2012  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2009  David Dormagen
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2011  Felix Wagner
+ * Copyright (c) 2011-2012  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -880,7 +882,7 @@ bool C4Game::InitMaterialTexture()
 	TextureMap.Init();
 
 	// Cross map mats (after texture init, because Material-Texture-combinations are used)
-	if (!::MaterialMap.CrossMapMaterials()) return false;
+	if (!::MaterialMap.CrossMapMaterials(C4S.Landscape.Material)) return false;
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();
@@ -1163,7 +1165,6 @@ C4Object* C4Game::FindObject(C4ID id,
 	// Scan all objects
 	for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 	{
-		C4PropList* pActionDef = cObj->GetAction();
 		// Not skipping to find next
 		if (!pFindNext)
 			// Status

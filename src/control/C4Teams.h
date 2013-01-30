@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2005-2007, 2011  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -22,12 +22,6 @@
 #define INC_C4Teams
 
 #include "C4InputValidation.h"
-
-class C4Group;
-
-// class predec
-class C4TeamList;
-namespace C4GUI { class ComboBox_FillCB; }
 
 // constant used by lobby to indicate invisible, random team
 const int32_t TEAMID_Unknown = -1;

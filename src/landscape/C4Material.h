@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2001-2002, 2005-2007, 2011  Sven Eberhardt
  * Copyright (c) 2005, 2007  Peter Wortmann
- * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2009, 2011  Günther Brammer
  * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2011  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -31,8 +31,6 @@
 #include <C4Shape.h>
 #include <C4Facet.h>
 #include <vector>
-
-class C4AulFunc;
 
 #define C4MatOv_Default     0
 #define C4MatOv_Exact       1
@@ -249,7 +247,7 @@ public:
 	}
 	C4MaterialReaction *GetReaction(int32_t iPXSMat, int32_t iLandscapeMat);
 	void UpdateScriptPointers(); // set all material script pointers
-	bool CrossMapMaterials();
+	bool CrossMapMaterials(const char* szEarthMaterial);
 	C4MaterialShape *GetShapeByName(const char *name);
 protected:
 	void SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact);

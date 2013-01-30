@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001-2002, 2005, 2009  Sven Eberhardt
- * Copyright (c) 2004-2007  Peter Wortmann
+ * Copyright (c) 2004-2007, 2011  Peter Wortmann
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -30,8 +30,6 @@
 #include "C4Client.h"
 #include "C4KeyboardInput.h"
 #include "C4ObjectList.h"
-
-class C4Record;
 
 // *** control base classes
 

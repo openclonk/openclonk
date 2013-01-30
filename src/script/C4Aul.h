@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001, 2004, 2006, 2009-2010  Peter Wortmann
  * Copyright (c) 2001-2002, 2004, 2006-2007  Sven Eberhardt
- * Copyright (c) 2004, 2006-2010  Günther Brammer
+ * Copyright (c) 2004, 2006-2012  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
@@ -35,8 +35,6 @@
 
 // consts
 #define C4AUL_MAX_Identifier  100 // max length of function identifiers
-
-class C4ScriptHost;
 
 // generic C4Aul error class
 class C4AulError
@@ -175,7 +173,6 @@ struct C4AulScriptContext
 	C4Value *Pars;
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
-	bool TemporaryScript;
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
@@ -299,7 +296,6 @@ public:
 	virtual bool Delete() { return true; } // allow deletion on pure class
 
 	StdCopyStrBuf ScriptName; // script name
-	bool Temporary; // set for DirectExec-scripts; do not parse those
 
 	virtual C4PropListStatic * GetPropList() { return 0; }
 	virtual C4ScriptHost * GetScriptHost() { return 0; }

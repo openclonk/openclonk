@@ -32,8 +32,6 @@
 #include "C4PacketBase.h"
 #include "C4FacetEx.h"
 
-class C4Player;
-
 // Contains additional data not present in C4PlayerInfo
 class C4RoundResultsPlayer
 {

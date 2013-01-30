@@ -30,7 +30,6 @@
 #include <C4App.h>
 
 class C4ApplicationGameTimer;
-class C4GamePadControl;
 
 /* Main class to initialize configuration and execute the game */
 

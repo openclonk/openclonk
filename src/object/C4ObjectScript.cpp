@@ -3,9 +3,9 @@
  *
  * Copyright (c) 1998-2000, 2004  Matthes Bender
  * Copyright (c) 2001, 2006  Peter Wortmann
+ * Copyright (c) 2004, 2006-2007, 2009-2012  Günther Brammer
+ * Copyright (c) 2005, 2009-2010, 2012  Armin Burgmeier
  * Copyright (c) 2001-2002, 2004-2007, 2010  Sven Eberhardt
- * Copyright (c) 2004, 2006-2007, 2009-2011  Günther Brammer
- * Copyright (c) 2005, 2009-2010  Armin Burgmeier
  * Copyright (c) 2009-2010  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -28,6 +28,7 @@
 #include <C4AulDefFunc.h>
 #include <C4Command.h>
 #include <C4DefList.h>
+#include <C4Draw.h>
 #include <C4GameMessage.h>
 #include <C4GraphicsResource.h>
 #include <C4Material.h>
@@ -2092,6 +2093,120 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	return true;
 }
 
+static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* szBoneName, C4ValueArray* Pos, C4ValueArray* Dir, long a, long b, C4Object* pTarget, bool fBehindTarget)
+{
+	// safety
+	if(pTarget && !pTarget->Status) return false;
+	// Get bone
+	if(!Obj->pMeshInstance) return false;
+	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
+	const StdMeshBone* bone = mesh.GetBoneByName(szBoneName->GetData());
+	if(!bone) return false;
+	// Get transform
+	Obj->pMeshInstance->UpdateBoneTransforms();
+	const StdMeshMatrix transform = Obj->pMeshInstance->GetBoneTransform(bone->Index) * StdMeshMatrix::Transform(bone->Transformation);
+	// Get offset and direction
+	StdMeshVector x, dir;
+	if(Pos)
+	{
+		if(Pos->GetSize() != 3)
+			throw new C4AulExecError("CreateParticleAtBone: Pos is not a three-vector");
+		x.x = (*Pos)[0].getInt();
+		x.y = (*Pos)[1].getInt();
+		x.z = (*Pos)[2].getInt();
+	}
+	else { x.x = x.y = x.z = 0.0f; }
+
+	if(Dir)
+	{
+		if(Dir->GetSize() != 3)
+			throw new C4AulExecError("CreateParticleAtBone: Dir is not a three-vector");
+		dir.x = (*Dir)[0].getInt() / 10.0f;
+		dir.y = (*Dir)[1].getInt() / 10.0f;
+		dir.z = (*Dir)[2].getInt() / 10.0f;
+	}
+	else { dir.x = dir.y = dir.z = 0.0f; }
+	// Apply the bone transformation to them, to go from bone coordinates
+	// to mesh coordinates (note that bone coordinates use the OGRE
+	// coordinate system, so they need to be transformed to Clonk coordinates).
+	const StdMeshMatrix ClonkToOgre = StdMeshMatrix::Inverse(C4Draw::OgreToClonk);
+	// This is a good example why we should have different types for
+	// position vectors and displacement vectors. TODO.
+	StdMeshVector transformed_x = transform * (ClonkToOgre * x);
+	transformed_x.x += transform(0,3);
+	transformed_x.y += transform(1,3);
+	transformed_x.z += transform(2,3);
+	x = C4Draw::OgreToClonk * transformed_x;
+	dir = C4Draw::OgreToClonk * (transform * (ClonkToOgre * dir));
+	// Apply MeshTransformation in the mesh reference frame
+	C4Value value;
+	Obj->GetProperty(P_MeshTransformation, &value);
+	StdMeshMatrix MeshTransform;
+	if (!C4ValueToMatrix(value, &MeshTransform))
+		MeshTransform = StdMeshMatrix::Identity();
+	x = MeshTransform * x;
+	dir = MeshTransform * dir;
+	x.x += MeshTransform(0,3);
+	x.y += MeshTransform(1,3);
+	x.z += MeshTransform(2,3);
+	// Now go to world coordinates -- this code is copied from and needs to
+	// stay in sync with C4DrawGL::PerformMesh, so the particles are
+	// created at the correct position.
+	// TODO: This should be moved into a common function.
+	const StdMeshBox& box = mesh.GetBoundingBox();
+	StdMeshVector v1, v2;
+	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
+	v2.x = box.x2; v2.y = box.y2; v2.z = box.z2;
+	v1 = C4Draw::OgreToClonk * v1; // TODO: Include translation
+	v2 = C4Draw::OgreToClonk * v2; // TODO: Include translation
+	const float tx = fixtof(Obj->fix_x) + Obj->Def->Shape.GetX();
+	const float ty = fixtof(Obj->fix_y) + Obj->Def->Shape.GetY();
+	const float twdt = Obj->Def->Shape.Wdt;
+	const float thgt = Obj->Def->Shape.Hgt;
+	const float rx = -std::min(v1.x,v2.x) / fabs(v2.x - v1.x);
+	const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
+	const float dx = tx + rx*twdt;
+	const float dy = ty + ry*thgt;
+	x.x += dx;
+	x.y += dy;
+	// Finally, apply DrawTransform to the world coordinates
+	StdMeshMatrix DrawTransform;
+	if(Obj->pDrawTransform)
+	{
+		C4DrawTransform transform(*Obj->pDrawTransform, fixtof(Obj->fix_x), fixtof(Obj->fix_y));
+
+		DrawTransform(0, 0) = transform.mat[0];
+		DrawTransform(0, 1) = transform.mat[1];
+		DrawTransform(0, 2) = 0.0f;
+		DrawTransform(0, 3) = transform.mat[2];
+		DrawTransform(1, 0) = transform.mat[3];
+		DrawTransform(1, 1) = transform.mat[4];
+		DrawTransform(1, 2) = 0.0f;
+		DrawTransform(1, 3) = transform.mat[5];
+		DrawTransform(2, 0) = 0.0f;
+		DrawTransform(2, 1) = 0.0f;
+		DrawTransform(2, 2) = 1.0f;
+		DrawTransform(2, 3) = 0.0f;
+	}
+	else
+	{
+		DrawTransform = StdMeshMatrix::Identity();
+	}
+	x = DrawTransform * x;
+	dir = DrawTransform * dir;
+	x.x += DrawTransform(0,3);
+	x.y += DrawTransform(1,3);
+	x.z += DrawTransform(2,3);
+	// get particle
+	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
+	if (!pDef) return false;
+	// cast
+	::Particles.Create(pDef, x.x, x.y, dir.x, dir.y, (float) a/10.0f, b, pTarget ? (fBehindTarget ? &pTarget->BackParticles : &pTarget->FrontParticles) : NULL, pTarget);
+	// success, even if not created
+	return true;
+
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptObjectConstMap[]=
@@ -2412,6 +2527,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
+	AddFunc(pEngine, "CreateParticleAtBone", FnCreateParticleAtBone);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
 	AddFunc(pEngine, "GrabContents", FnGrabContents);
 	AddFunc(pEngine, "Punch", FnPunch);

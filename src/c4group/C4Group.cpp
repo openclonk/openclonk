@@ -2,9 +2,9 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2003-2005, 2007  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2008  Sven Eberhardt
+ * Copyright (c) 2001-2003, 2005-2008, 2012  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
- * Copyright (c) 2004-2009, 2011  Günther Brammer
+ * Copyright (c) 2004-2009, 2011-2012  Günther Brammer
  * Copyright (c) 2005  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Carl-Philip Hänsch
@@ -2118,7 +2118,7 @@ StdStrBuf C4Group::GetFullName() const
 	{
 		if (*str) SInsert(str, sep, 0, _MAX_PATH);
 		// Avoid double slash
-		if (SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
+		if (pGroup == this || SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
 			SInsert(str, pGroup->FileName, 0, _MAX_PATH);
 		if (pGroup->Status == GRPF_Folder) break; // Folder is assumed to have full path
 	}

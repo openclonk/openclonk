@@ -3,8 +3,9 @@
  *
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2006, 2012  Armin Burgmeier
  * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2012  Julius Michaelis
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -112,6 +113,10 @@ protected:
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 	void DoContextObjsel(C4Object *, bool clear);
 	void ObjselectDelItems();
+
+	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
+	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
+	void ClearSelection();                          // remove all objects from selection and do script callback. Doesn't do OnSelectionChanged().
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);

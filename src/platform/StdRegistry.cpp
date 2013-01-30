@@ -169,15 +169,15 @@ bool SetRegShell(const wchar_t *szClassName,
 {
 	wchar_t szKeyName[256+1];
 	// Set shell caption
-	swprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
+	_snwprintf(szKeyName,256,L"%s\\Shell\\%s",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
 	// Set shell command
-	swprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
+	_snwprintf(szKeyName,256,L"%s\\Shell\\%s\\Command",szClassName,szShellName);
 	if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
-		swprintf(szKeyName, 256,L"%s\\Shell", szClassName);
+		_snwprintf(szKeyName, 256,L"%s\\Shell", szClassName);
 		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
 	}
 	return true;
@@ -187,7 +187,7 @@ bool RemoveRegShell(const char *szClassName,
                     const char *szShellName)
 {
 	wchar_t strKey[256+1];
-	swprintf(strKey, 256, L"%s\\Shell\\%s", GetWideChar(szClassName).p, GetWideChar(szShellName).p);
+	_snwprintf(strKey, 256, L"%s\\Shell\\%s", GetWideChar(szClassName).p, GetWideChar(szShellName).p);
 	if (!DeleteRegistryKey(HKEY_CLASSES_ROOT, strKey)) return false;
 	return true;
 }

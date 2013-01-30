@@ -1,0 +1,15 @@
+[DefCore]
+id=Ruin1
+Version=5,2,0,1
+Category=C4D_Structure
+Width=94
+Height=43
+Offset=-47,-23
+Vertices=7
+VertexX=-26,26,-22,23,-38,-38,40
+VertexY=-7,-6,19,19,4,19,19
+VertexFriction=50,50,100,100
+Value=20
+Mass=1000
+Components=Wood=5;Rock=4
+Rotate=1

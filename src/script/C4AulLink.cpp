@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001, 2006-2007  Sven Eberhardt
  * Copyright (c) 2001-2002, 2004, 2007  Peter Wortmann
- * Copyright (c) 2006-2009, 2011  Günther Brammer
+ * Copyright (c) 2006-2009, 2011-2012  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -133,9 +133,6 @@ void C4AulScript::UnLink()
 
 void C4ScriptHost::UnLink()
 {
-	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
-	if (Temporary) return;
-
 	C4PropList * p = GetPropList();
 	if (p)
 	{

@@ -27,11 +27,6 @@
 
 #include <C4Id.h>
 
-class C4Object;
-class C4ObjectList;
-class C4ObjectInfo;
-class C4TargetFacet;
-
 class C4ObjectLink
 {
 public:

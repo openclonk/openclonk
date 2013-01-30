@@ -19,7 +19,10 @@ func Initialize()
 	goal->SetWealthGoal(250);
 	goal = CreateObject(Goal_Expansion);
 	goal->SetExpansionGoal(250);
-
+	
+	// some rules
+	CreateObject(Rule_EnergyBarsAboveStructures, 0, 0, NO_OWNER);
+	
 	// Find start location and place lorry plus extras there.
 	FindVolcanoLocation();
 	var lorry = CreateObject(Lorry);
@@ -83,7 +86,7 @@ func Initialize()
 		
 	// Initialize the effect for controlling the big volcano.
 	AddEffect("BigVolcano", nil, 100, 5, nil);
-
+	
 	return;
 }
 

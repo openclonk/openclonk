@@ -1,9 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2011  Günther Brammer
+ * Copyright (c) 2005-2012  Günther Brammer
  * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2006, 2008-2009  Armin Burgmeier
+ * Copyright (c) 2006, 2008-2009, 2012  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -170,18 +170,15 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 		}
 		XRRFreeScreenConfigInfo(conf);
 	}
-	if (fDspModeSet)
-		gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
-	return fDspModeSet;
+	gtk_window_fullscreen(GTK_WINDOW(pWindow->window));
+	return fDspModeSet || (iXRes == -1 && iYRes == -1);
 }
 
 void C4AbstractApp::RestoreVideoMode()
 {
-	if (!fDspModeSet)
-		return;
 	// Restore resolution
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
-	if (Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
+	if (fDspModeSet && Priv->xrandr_major_version >= 0 && Priv->xrandr_oldmode != -1)
 	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (dpy, pWindow->wnd);
 #ifdef _DEBUG
@@ -190,9 +187,9 @@ void C4AbstractApp::RestoreVideoMode()
 		XRRSetScreenConfig (dpy, conf, pWindow->wnd, Priv->xrandr_oldmode, Priv->xrandr_rot, CurrentTime);
 		Priv->xrandr_oldmode = -1;
 		XRRFreeScreenConfigInfo(conf);
+		fDspModeSet = false;
 	}
 	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
-	fDspModeSet = false;
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
@@ -215,14 +212,19 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	XRRScreenResources * r = XRRGetScreenResources(dpy, w);
 	if (!r) return NULL;
 
-	XRROutputInfo * info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
-	if (!info)
+	XRROutputInfo * info = NULL;
+	RROutput output = XRRGetOutputPrimary(dpy, w);
+	if(output != 0)
 	{
-		XRRFreeScreenResources(r);
-		return NULL;
+		info = XRRGetOutputInfo(dpy, r, XRRGetOutputPrimary(dpy, w));
+		if (!info)
+		{
+			XRRFreeScreenResources(r);
+			return NULL;
+		}
 	}
 
-	if(info->connection == RR_Disconnected || info->crtc == 0)
+	if(!info || info->connection == RR_Disconnected || info->crtc == 0)
 	{
 		// The default "primary" output does not seem to be connected
 		// to a piece of actual hardware. As a fallback, go through

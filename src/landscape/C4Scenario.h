@@ -28,8 +28,6 @@
 #include <C4NameList.h>
 #include <C4IDList.h>
 
-class C4Group;
-
 class C4SVal
 {
 public:
@@ -145,8 +143,6 @@ const int32_t C4S_MaxMapPlayerExtend = 4;
 class C4SPlrStart
 {
 public:
-	C4ID NativeCrew; // Obsolete
-	C4SVal Crew; // Obsolete
 	C4SVal Wealth;
 	int32_t Position[2];
 	int32_t EnforcePosition;
@@ -192,6 +188,7 @@ public:
 	int32_t SkyScrollMode;  // sky scrolling mode for newgfx
 	int32_t FoWRes; // chunk size of FoGOfWar
 	int32_t MaterialZoom;
+	bool FlatChunkShapes; // if true, all material chunks are drawn flat
 public:
 	void Default();
 	void GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum);
@@ -251,9 +248,6 @@ public:
 	void CompileFunc(StdCompiler *pComp, bool fSection);
 	int32_t GetMinPlayer(); // will try to determine the minimum player count for this scenario
 };
-
-class C4ScenarioSection;
-
 
 extern const char *C4ScenSect_Main;
 

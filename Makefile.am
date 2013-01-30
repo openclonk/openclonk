@@ -17,11 +17,15 @@
 
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk c4group puncher c4script
+bin_PROGRAMS = openclonk c4group puncher c4script
+
+if MAPE
+bin_PROGRAMS += mape
+endif
 
 EXTRA_PROGRAMS = tstc4netio gunzip4c4group
 
-noinst_LIBRARIES = lib.a
+noinst_LIBRARIES = libmisc.a libc4script.a
 
 # Some defines and warning options
 if RECENT_GCC
@@ -107,7 +111,7 @@ WARNING_FLAGS += -Winvalid-pch
 
 endif
 
-lib_a_SOURCES = \
+libmisc_a_SOURCES = \
 src/c4group/C4Group.cpp \
 src/c4group/C4Group.h \
 src/c4group/C4Update.cpp \
@@ -139,17 +143,47 @@ src/zlib/gzio.c \
 src/zlib/gzio.h \
 src/zlib/zutil.h
 
-clonk_SOURCES = \
-src/C4Globals.cpp \
+libc4script_a_SOURCES = \
+src/c4group/C4GroupSet.cpp \
+src/c4group/C4GroupSet.h \
 src/c4group/C4ComponentHost.cpp \
 src/c4group/C4ComponentHost.h \
+src/c4group/C4LangStringTable.cpp \
+src/c4group/C4LangStringTable.h \
+src/lib/C4Real.cpp \
+src/lib/C4Real.h \
+src/lib/C4Random.cpp \
+src/lib/C4Random.h \
+src/object/C4Id.cpp \
+src/object/C4Id.h \
+src/script/C4Aul.cpp \
+src/script/C4AulDefFunc.h \
+src/script/C4AulExec.cpp \
+src/script/C4AulExec.h \
+src/script/C4AulFunc.cpp \
+src/script/C4AulFunc.h \
+src/script/C4Aul.h \
+src/script/C4AulLink.cpp \
+src/script/C4AulParse.cpp \
+src/script/C4PropList.cpp \
+src/script/C4PropList.h \
+src/script/C4Script.cpp \
+src/script/C4ScriptHost.cpp \
+src/script/C4ScriptHost.h \
+src/script/C4StringTable.cpp \
+src/script/C4StringTable.h \
+src/script/C4ValueArray.cpp \
+src/script/C4ValueArray.h \
+src/script/C4Value.cpp \
+src/script/C4Value.h \
+src/script/C4ValueMap.cpp \
+src/script/C4ValueMap.h
+
+openclonk_SOURCES = \
+src/C4Globals.cpp \
 src/c4group/C4Components.h \
 src/c4group/C4Extra.cpp \
 src/c4group/C4Extra.h \
-src/c4group/C4GroupSet.cpp \
-src/c4group/C4GroupSet.h \
-src/c4group/C4LangStringTable.cpp \
-src/c4group/C4LangStringTable.h \
 src/c4group/C4Language.cpp \
 src/c4group/C4Language.h \
 src/C4Include.h \
@@ -221,6 +255,7 @@ src/graphics/C4DrawD3DShader.h \
 src/graphics/C4DrawGL.cpp \
 src/graphics/C4DrawGLCtx.cpp \
 src/graphics/C4DrawGL.h \
+src/graphics/C4DrawMeshGL.cpp \
 src/graphics/C4DrawT.cpp \
 src/graphics/C4DrawT.h \
 src/graphics/C4Draw.h \
@@ -328,6 +363,7 @@ src/landscape/C4PXS.cpp \
 src/landscape/C4PXS.h \
 src/landscape/C4Scenario.cpp \
 src/landscape/C4Scenario.h \
+src/landscape/C4ScenarioSection.cpp \
 src/landscape/C4Sky.cpp \
 src/landscape/C4Sky.h \
 src/landscape/C4SolidMask.cpp \
@@ -342,10 +378,6 @@ src/lib/C4Log.cpp \
 src/lib/C4Log.h \
 src/lib/C4NameList.cpp \
 src/lib/C4NameList.h \
-src/lib/C4Random.cpp \
-src/lib/C4Random.h \
-src/lib/C4Real.cpp \
-src/lib/C4Real.h \
 src/lib/C4Rect.cpp \
 src/lib/C4Rect.h \
 src/lib/C4RTF.cpp \
@@ -417,8 +449,6 @@ src/object/C4DefList.cpp \
 src/object/C4DefList.h \
 src/object/C4GameObjects.cpp \
 src/object/C4GameObjects.h \
-src/object/C4Id.cpp \
-src/object/C4Id.h \
 src/object/C4IDList.cpp \
 src/object/C4IDList.h \
 src/object/C4InfoCore.cpp \
@@ -492,30 +522,8 @@ src/res/Play.h \
 src/res/Rect.h \
 src/res/resource.h \
 src/res/Static.h \
-src/script/C4Aul.cpp \
 src/script/C4AulDebug.cpp \
 src/script/C4AulDebug.h \
-src/script/C4AulDefFunc.h \
-src/script/C4AulExec.cpp \
-src/script/C4AulExec.h \
-src/script/C4AulFunc.cpp \
-src/script/C4AulFunc.h \
-src/script/C4Aul.h \
-src/script/C4AulLink.cpp \
-src/script/C4AulParse.cpp \
-src/script/C4PropList.cpp \
-src/script/C4PropList.h \
-src/script/C4Script.cpp \
-src/script/C4ScriptHost.cpp \
-src/script/C4ScriptHost.h \
-src/script/C4StringTable.cpp \
-src/script/C4StringTable.h \
-src/script/C4ValueArray.cpp \
-src/script/C4ValueArray.h \
-src/script/C4Value.cpp \
-src/script/C4Value.h \
-src/script/C4ValueMap.cpp \
-src/script/C4ValueMap.h \
 thirdparty/timsort/sort.h \
 thirdparty/tinyxml/tinystr.cpp \
 thirdparty/tinyxml/tinystr.h \
@@ -525,29 +533,29 @@ thirdparty/tinyxml/tinyxml.h \
 thirdparty/tinyxml/tinyxmlparser.cpp
 
 if WIN32
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4CrashHandlerWin32.cpp \
 src/res/engine.rc \
 src/res/resource.h
 endif
 
 if MACOSX
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppDelegate.h \
 src/platform/C4AppDelegate.mm \
 src/platform/C4FileMonitorMac.mm
 else
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/game/ClonkMain.cpp
 endif
 
 if SDL_MAIN_LOOP
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppSDL.cpp \
 src/platform/C4WindowSDL.cpp
 else
 if GTK
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleGTK.cpp \
 src/editor/C4ConsoleGTKDlg.cpp \
 src/editor/C4ConsoleGTKDlg.h \
@@ -556,18 +564,18 @@ src/platform/C4AppGTKImpl.h \
 src/platform/C4WindowGTK.cpp
 else
 if CONSOLE
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/platform/C4AppT.cpp
 else
 if WIN32
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleWin32.cpp \
 src/platform/C4WindowWin32.cpp \
 src/platform/StdJoystick.cpp \
 src/platform/StdJoystick.h
 endif
 if MACOSX
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/editor/C4ConsoleCocoa.mm \
 src/editor/C4EditorWindowController.h \
 src/editor/C4EditorWindowController.mm \
@@ -587,22 +595,22 @@ endif
 endif
 
 if AUTOUPDATE
-clonk_SOURCES += \
+openclonk_SOURCES += \
 src/gui/C4UpdateDlg.cpp \
 src/gui/C4UpdateDlg.h
 endif
 
 if LIBUPNP
-clonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPLinux.cpp
 else
 if NATUPNP
-clonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPWin32.cpp
 else
-clonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
+openclonk_SOURCES += src/network/C4Network2UPnPDummy.cpp
 endif
 endif
 
-clonk_CPPFLAGS = \
+openclonk_CPPFLAGS = \
 $(AM_CPPFLAGS) \
 $(GLEW_CFLAGS) \
 $(GTK_CFLAGS) \
@@ -611,8 +619,9 @@ $(FREETYPE_CFLAGS) \
 $(SDL_CFLAGS) \
 $(LIBUPNP_CFLAGS)
 
-clonk_LDADD = \
-  lib.a \
+openclonk_LDADD = \
+  libc4script.a \
+  libmisc.a \
   $(LDADD) \
   $(LIBICONV) \
   $(GTK_LIBS) \
@@ -637,7 +646,7 @@ c4group_SOURCES += src/c4group/Resource.rc
 endif
 
 c4group_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(LIBICONV) \
   $(Z_LIBS) \
@@ -650,7 +659,7 @@ src/lib/C4SimpleLog.cpp \
 src/c4group/gunzip4c4group.cpp
 
 gunzip4c4group_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -662,7 +671,7 @@ src/lib/C4SimpleLog.cpp \
 src/netpuncher/main.cpp
 
 puncher_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(PTHREAD_LIBS)
 
@@ -677,7 +686,7 @@ src/lib/C4SimpleLog.cpp \
 src/netio/TstC4NetIO.cpp
 
 tstc4netio_LDADD = \
-  lib.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS) \
   $(PTHREAD_LIBS)
@@ -688,37 +697,110 @@ endif
 
 ## c4script shell
 c4script_SOURCES = \
-include/c4script/c4script.h \
 src/lib/C4SimpleLog.cpp \
-src/lib/C4Real.cpp \
-src/lib/C4Random.cpp \
-src/script/C4Aul.cpp \
-src/script/C4AulExec.cpp \
-src/script/C4AulFunc.cpp \
-src/script/C4AulLink.cpp \
-src/script/C4AulParse.cpp \
-src/script/C4StringTable.cpp \
-src/script/C4PropList.cpp \
-src/script/C4ScriptHost.cpp \
+include/c4script/c4script.h \
 src/script/C4ScriptMain.cpp \
-src/script/C4ScriptStandalone.cpp \
-src/script/C4ValueArray.cpp \
-src/script/C4Value.cpp \
-src/script/C4ValueMap.cpp \
-src/object/C4Id.cpp \
-src/script/C4Script.cpp \
-src/c4group/C4GroupSet.cpp \
-src/c4group/C4ComponentHost.cpp \
-src/c4group/C4LangStringTable.cpp
+src/script/C4ScriptStandalone.cpp
 
 c4script_LDADD = \
-  lib.a \
+  libc4script.a \
+  libmisc.a \
   $(LDADD) \
   $(Z_LIBS)
 
 if WIN32
 c4script_LDADD += -lwinmm
 endif
+
+## mape
+mape_SOURCES = \
+mape-icons.h \
+src/landscape/C4MapCreatorS2.cpp \
+src/landscape/C4Material.cpp \
+src/landscape/C4Scenario.cpp \
+src/landscape/C4Texture.cpp \
+src/lib/C4NameList.cpp \
+src/lib/C4Rect.cpp \
+src/mape/configfile.c \
+src/mape/configfile.h \
+src/mape/cpp-handles/group-handle.cpp \
+src/mape/cpp-handles/group-handle.h \
+src/mape/cpp-handles/log-handle.cpp \
+src/mape/cpp-handles/log-handle.h \
+src/mape/cpp-handles/mapgen-handle.cpp \
+src/mape/cpp-handles/mapgen-handle.h \
+src/mape/cpp-handles/material-handle.cpp \
+src/mape/cpp-handles/material-handle.h \
+src/mape/cpp-handles/random-handle.cpp \
+src/mape/cpp-handles/random-handle.h \
+src/mape/cpp-handles/stub-handle.cpp \
+src/mape/cpp-handles/texture-handle.cpp \
+src/mape/cpp-handles/texture-handle.h \
+src/mape/cpp-handles/version-handle.cpp \
+src/mape/cpp-handles/version-handle.h \
+src/mape/diskview.c \
+src/mape/diskview.h \
+src/mape/editview.c \
+src/mape/editview.h \
+src/mape/fileicon.c \
+src/mape/fileicon.h \
+src/mape/forward.h \
+src/mape/group.c \
+src/mape/group.h \
+src/mape/header.c \
+src/mape/header.h \
+src/mape/iconview.c \
+src/mape/iconview.h \
+src/mape/mape.c \
+src/mape/mapgen.c \
+src/mape/mapgen.h \
+src/mape/material.c \
+src/mape/material.h \
+src/mape/mattexview.c \
+src/mape/mattexview.h \
+src/mape/preferences.c \
+src/mape/preferences.h \
+src/mape/preferencesdialog.c \
+src/mape/preferencesdialog.h \
+src/mape/preview.c \
+src/mape/preview.h \
+src/mape/random.c \
+src/mape/random.h \
+src/mape/statusbar.c \
+src/mape/statusbar.h \
+src/mape/texture.c \
+src/mape/texture.h \
+src/mape/window.c \
+src/mape/window.h \
+src/script/C4Script.cpp
+
+mape_CPPFLAGS = \
+$(AM_CPPFLAGS) \
+$(MAPE_CFLAGS)
+
+mape_LDADD = \
+  libc4script.a \
+  libmisc.a \
+  $(LDADD) \
+  $(MAPE_LIBS) \
+  $(Z_LIBS)
+
+mape_icons = \
+$(srcdir)/src/res/ocd.ico \
+$(srcdir)/src/res/ocf.ico \
+$(srcdir)/src/res/ocg.ico \
+$(srcdir)/src/res/ocm.ico \
+$(srcdir)/src/res/ocs.ico
+mape-icons.h: $(mape_icons)
+	gdk-pixbuf-csource --raw --static --build-list \
+		mape_icon_ocd "$(srcdir)/src/res/ocd.ico" \
+		mape_icon_ocf "$(srcdir)/src/res/ocf.ico" \
+		mape_icon_ocg "$(srcdir)/src/res/ocg.ico" \
+		mape_icon_ocm "$(srcdir)/src/res/ocm.ico" \
+		mape_icon_ocs "$(srcdir)/src/res/ocs.ico" \
+		> $@
+BUILT_SOURCES += mape-icons.h
+CLEANFILES += mape-icons.h
 
 ## documentation
 dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt
@@ -752,7 +834,7 @@ if WIN32
 tools/install/firewall.dll: $(srcdir)/tools/install/firewall.cpp
 	mkdir -p tools/install
 	$(CXX) -shared -o tools/install/firewall.dll $(srcdir)/tools/install/firewall.cpp -lole32 -loleaut32
-setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) clonk$(EXEEXT) $(c4groups)
+setup_openclonk.exe: $(srcdir)/tools/install/oc.nsi c4group$(EXEEXT) openclonk$(EXEEXT) $(c4groups)
 	makensis -NOCD -DSRCDIR=$(srcdir) '-DPROGRAMFILES=$$PROGRAMFILES' \
 	  -DPRODUCT_NAME="$$(sed -n 's/SET(C4ENGINENAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \
 	  -DPRODUCT_COMPANY="$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)" \

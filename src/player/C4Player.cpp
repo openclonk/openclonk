@@ -3,12 +3,12 @@
  *
  * Copyright (c) 1998-2000, 2008  Matthes Bender
  * Copyright (c) 2001-2010  Sven Eberhardt
- * Copyright (c) 2002-2008  Peter Wortmann
+ * Copyright (c) 2002-2008, 2011  Peter Wortmann
  * Copyright (c) 2004, 2010  Armin Burgmeier
  * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2009  Tobias Zwick
  * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2010, 2012  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -447,27 +447,28 @@ bool C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
 
 void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
 {
-	int32_t cnt,crewnum,ctx,cty;
+	int32_t cnt,ctx,cty;
 	C4Object *nobj;
 	C4ObjectInfo *pInfo;
 	C4Def *pDef;
 
-	// Old specification
-	if (Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.IsClear())
+	// Place crew
+	int32_t iCount;
+	C4ID id;
+	for (cnt=0; (id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount)); cnt++)
 	{
-		// Target number of ready crew
-		crewnum=Game.C4S.PlrStart[PlrStartIndex].Crew.Evaluate();
-		// Place crew
-		for (cnt=0; cnt<crewnum; cnt++)
+		// Minimum one clonk if empty id
+		iCount = Max<int32_t>(iCount,1);
+
+		for (int32_t cnt2=0; cnt2<iCount; cnt2++)
 		{
-			// Set standard crew
-			C4ID idStdCrew = Game.C4S.PlrStart[PlrStartIndex].NativeCrew;
 			// Select member from home crew, add new if necessary
-			while (!(pInfo=CrewInfoList.GetIdle(idStdCrew,::Definitions)))
-				if (!CrewInfoList.New(idStdCrew,&::Definitions))
+			while (!(pInfo=CrewInfoList.GetIdle(id,::Definitions)))
+				if (!CrewInfoList.New(id,&::Definitions))
 					break;
-			// Crew placement location
+			// Safety
 			if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
+			// Crew placement location
 			ctx=tx1+Random(tx2-tx1); cty=ty;
 			if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
 				FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
@@ -475,65 +476,20 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 			if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
 			{
 				// Add object to crew
-				Crew.Add(nobj, C4ObjectList::stMain);
+				Crew.Add(nobj, C4ObjectList::stNone);
 				// add visibility range
 				nobj->SetPlrViewRange(C4FOW_Def_View_RangeX);
 				// If base is present, enter base
 				if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
 				// OnJoinCrew callback
-#ifndef DEBUGREC_RECRUITMENT
-				C4DebugRecOff DBGRECOFF;
-#endif
-				C4AulParSet parset(C4VInt(Number));
-				nobj->Call(PSF_OnJoinCrew, &parset);
-			}
-		}
-	}
-
-	// New specification
-	else
-	{
-		// Place crew
-		int32_t iCount;
-		C4ID id;
-		for (cnt=0; (id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount)); cnt++)
-		{
-
-			// Minimum one clonk if empty id
-			iCount = Max<int32_t>(iCount,1);
-
-			for (int32_t cnt2=0; cnt2<iCount; cnt2++)
-			{
-				// Select member from home crew, add new if necessary
-				while (!(pInfo=CrewInfoList.GetIdle(id,::Definitions)))
-					if (!CrewInfoList.New(id,&::Definitions))
-						break;
-				// Safety
-				if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
-				// Crew placement location
-				ctx=tx1+Random(tx2-tx1); cty=ty;
-				if (!Game.C4S.PlrStart[PlrStartIndex].EnforcePosition)
-					FindSolidGround(ctx,cty,pDef->Shape.Wdt*3);
-				// Create object
-				if ((nobj=Game.CreateInfoObject(pInfo,Number,ctx,cty)))
 				{
-					// Add object to crew
-					Crew.Add(nobj, C4ObjectList::stMain);
-					// add visibility range
-					nobj->SetPlrViewRange(C4FOW_Def_View_RangeX);
-					// If base is present, enter base
-					if (FirstBase) { nobj->Enter(FirstBase); nobj->SetCommand(C4CMD_Exit); }
-					// OnJoinCrew callback
-					{
 #if !defined(DEBUGREC_RECRUITMENT)
-						C4DebugRecOff DbgRecOff;
+					C4DebugRecOff DbgRecOff;
 #endif
-						C4AulParSet parset(C4VInt(Number));
-						nobj->Call(PSF_OnJoinCrew, &parset);
-					}
+					C4AulParSet parset(C4VInt(Number));
+					nobj->Call(PSF_OnJoinCrew, &parset);
 				}
 			}
-
 		}
 	}
 
@@ -1077,7 +1033,7 @@ bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 
 	// Add to crew
 	if (!Crew.GetLink(pObj))
-		Crew.Add(pObj, C4ObjectList::stMain);
+		Crew.Add(pObj, C4ObjectList::stNone);
 
 	// add plr view
 	if (!pObj->PlrViewRange) pObj->SetPlrViewRange(C4FOW_Def_View_RangeX); else pObj->PlrFoWActualize();

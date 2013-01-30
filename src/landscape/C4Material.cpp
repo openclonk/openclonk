@@ -4,8 +4,9 @@
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2001-2002, 2005-2007, 2011  Sven Eberhardt
  * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006-2007, 2009  Günther Brammer
+ * Copyright (c) 2006-2007, 2009, 2011-2012  Günther Brammer
  * Copyright (c) 2010-2011  Nicolas Hake
+ * Copyright (c) 2012  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -35,7 +36,6 @@
 #include <C4Landscape.h>
 #include <C4SoundSystem.h>
 #include <C4Effect.h>
-#include <C4Game.h>
 #include <C4Log.h>
 #include <C4Physics.h> // For GravAccel
 
@@ -483,7 +483,7 @@ int32_t C4MaterialMap::Get(const char *szMaterial)
 }
 
 
-bool C4MaterialMap::CrossMapMaterials() // Called after load
+bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called after load
 {
 	// Check material number
 	if (::MaterialMap.Num>C4MaxMaterial)
@@ -675,10 +675,11 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 			if (ppReactionMap[(cnt2+1)*(Num+1) + cnt+1])
 				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
 #endif
+
 	// Get hardcoded system material indices
-	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(Game.C4S.Landscape.Material));
+	const C4TexMapEntry* earth_entry = ::TextureMap.GetEntry(::TextureMap.GetIndexMatTex(szEarthMaterial));
 	if(!earth_entry)
-		{ LogFatal(FormatString("Earth material \"%s\" not found!", Game.C4S.Landscape.Material).getData()); return false; }
+		{ LogFatal(FormatString("Earth material \"%s\" not found!", szEarthMaterial).getData()); return false; }
 
 	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
 	MTunnel  = Get("Tunnel");
@@ -687,6 +688,7 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 
 	if ((MVehic==MNone) || (MTunnel==MNone))
 		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }
+
 	return true;
 }
 

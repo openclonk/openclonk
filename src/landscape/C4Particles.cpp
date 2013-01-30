@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2002, 2004-2005  Sven Eberhardt
  * Copyright (c) 2005, 2009-2010  Tobias Zwick
- * Copyright (c) 2005-2006, 2008, 2010  Günther Brammer
+ * Copyright (c) 2005-2006, 2008, 2010-2011  Günther Brammer
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -142,7 +142,7 @@ bool C4ParticleDef::Load(C4Group &group)
 		}
 		delete [] particle_source;
 		// load graphics
-		if (!Gfx.Load(group, C4CFN_DefGraphicsPNG))
+		if (!Gfx.Load(group, C4CFN_DefGraphics))
 		{
 			DebugLogF("particle %s has no valid graphics defined", Name.getData());
 			return false;
@@ -811,8 +811,8 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	C4ParticleDef *def = particle->pDef;
 
 	// apply parallaxity to target pos
-	int32_t tax = cgo.TargetX * def->Parallaxity[0] / 100;
-	int32_t tay = cgo.TargetY * def->Parallaxity[1] / 100;
+	float tax = cgo.TargetX * def->Parallaxity[0] / 100;
+	float tay = cgo.TargetY * def->Parallaxity[1] / 100;
 
 	// get the phases per row
 	int32_t phases = def->PhasesX;
@@ -834,7 +834,7 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 	if (!Inside(dy, tay-particle->a, tay + cgo.Hgt + particle->a)) return;
 
 	// get pos
-	int32_t cgox = cgo.X - tax, cgoy = cgo.Y - tay;
+	float cgox = cgo.X - tax, cgoy = cgo.Y - tay;
 	float cx = dx + cgox;
 	float cy = dy + cgoy;
 

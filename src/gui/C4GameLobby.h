@@ -28,13 +28,6 @@
 #include "C4Client.h"
 #include "C4PlayerInfo.h"
 
-class C4PlayerInfo;
-class C4PlayerInfoListBox;
-class C4ClientPlayerInfos;
-class C4Network2ResDlg;
-class C4GameOptionsList;
-class C4GameOptionButtons;
-
 namespace C4GameLobby
 {
 	class MainDlg;

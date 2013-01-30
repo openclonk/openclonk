@@ -143,6 +143,12 @@ global func RectangleEnsureWithin(proplist first, proplist second)
 	return adjusted;
 }
 
+// checks whether a point {x, y} is in a normalized rectangle {x, y, w, h}
+global func IsPointInRectangle(proplist point, proplist rectangle)
+{
+	return (point.x >= rectangle.x && point.x <= rectangle.x + rectangle.w) && (point.y >= rectangle.y && point.y <= rectangle.w + rectangle.h);
+}
+
 //Moves param 'a' towards param 'b' by 'max' amount per frame
 global func MoveTowards(int a, int b, int max)
 {

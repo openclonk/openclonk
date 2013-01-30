@@ -4,6 +4,7 @@
  * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001, 2005, 2007  Sven Eberhardt
  * Copyright (c) 2009  Günther Brammer
+ * Copyright (c) 2012  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -42,10 +43,6 @@ const int32_t C4MC_DragSensitivity = 5;
 const int32_t C4MC_MD_DragSource = 1,
               C4MC_MD_DropTarget = 2,
               C4MC_MD_NoClick = 4;
-
-class C4Viewport;
-class C4Menu;
-class C4Player;
 
 class C4MouseControl
 {

@@ -26,9 +26,6 @@
 
 #include <C4Value.h>
 
-class C4AulScriptEngine;
-class StdMeshMatrix;
-
 const int C4SCR_Access_Public     = 0,
           C4SCR_Access_Protected  = 1,
           C4SCR_Access_Private    = 2;
@@ -113,6 +110,8 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
 #define PSF_OnInIncendiaryMaterial "OnInIncendiaryMaterial"
+#define PSF_EditCursorSelection   "~EditCursorSelection"
+#define PSF_EditCursorDeselection "~EditCursorDeselection"
 
 // Effect callbacks
 

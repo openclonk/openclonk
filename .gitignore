@@ -4,9 +4,10 @@ autom4te.cache
 .deps
 deps
 *.o
-./clonk
-./netpuncher
-./c4group
+/clonk
+/netpuncher
+/c4group
+/c4script
 .dirstamp
 *.a
 *.c4p
@@ -107,8 +108,6 @@ BuildLog.htm
 xcode/build
 *.xcodeproj
 
-.anjuta*
-
 # Binaries
 *.app
 *.exe
@@ -120,11 +119,16 @@ planet/nohg*
 planet/.project
 
 # Code::Blocks files
-clonk.layout
-clonk.sdf
-clonk.cbp
+openclonk.layout
+openclonk.sdf
+openclonk.cbp
 
 # MacOSX saved searches
 *.savedSearch
 planet/OpenClonk.bat
 planet/openclonk.sln
+WindowsGamesExplorer.xml
+
+# Mape
+mape
+mape-icons.h

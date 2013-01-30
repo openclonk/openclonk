@@ -2,14 +2,14 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2001, 2003-2004, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2010  Sven Eberhardt
+ * Copyright (c) 2001-2010, 2012  Sven Eberhardt
  * Copyright (c) 2001-2007  Peter Wortmann
  * Copyright (c) 2001  Carlo Teubner
  * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2004-2011  Günther Brammer
+ * Copyright (c) 2004-2012  Günther Brammer
  * Copyright (c) 2005, 2009-2011  Tobias Zwick
- * Copyright (c) 2006, 2009-2011  Armin Burgmeier
- * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2006, 2009-2012  Armin Burgmeier
+ * Copyright (c) 2009-2010, 2012  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010-2011  Maikel de Vries
  * Copyright (c) 2011  David Dormagen
@@ -2979,14 +2979,6 @@ bool C4Object::SetActionByName(C4String *ActName,
 	C4Value Action; ActMap.getPropList()->GetPropertyByS(ActName, &Action);
 	if (!Action.getPropList()) return false;
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);
-}
-
-C4PropList *C4Object::GetActionByName(C4PropertyName &act_name, C4Value *rval_holder)
-{
-	C4Value ActMap; GetProperty(P_ActMap, &ActMap);
-	if (!ActMap.getPropList()) return false;
-	ActMap.getPropList()->GetProperty(act_name, rval_holder);
-	return rval_holder->getPropList();
 }
 
 bool C4Object::SetActionByName(const char * szActName,

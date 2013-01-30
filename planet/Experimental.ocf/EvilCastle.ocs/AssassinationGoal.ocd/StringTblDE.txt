@@ -1,0 +1,4 @@
+Name=Toeten!
+Name2=Toete %s!
+MsgGoalFulfilled=%s ist tot.
+MsgGoalUnFulfilled=Toete %s!

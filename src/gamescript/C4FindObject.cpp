@@ -4,7 +4,7 @@
  * Copyright (c) 2006-2008  Peter Wortmann
  * Copyright (c) 2006-2009, 2011  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2009-2010, 2012  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *

@@ -64,7 +64,7 @@ Running
 
 You can run the game from the build directory:
 
-  ./clonk
+  ./openclonk
 
 See docs/sdk/cmdline.xml for the supported command line options.
 

@@ -10,6 +10,7 @@
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Armin Burgmeier
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

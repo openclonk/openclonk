@@ -2,13 +2,15 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2008, 2010-2011  Sven Eberhardt
+ * Copyright (c) 2001-2008, 2010-2012  Sven Eberhardt
  * Copyright (c) 2002, 2004-2008, 2011  Peter Wortmann
- * Copyright (c) 2006-2011  Günther Brammer
+ * Copyright (c) 2006-2012  Günther Brammer
  * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Nicolas Hake
  * Copyright (c) 2011  Tobias Zwick
+ * Copyright (c) 2011-2012  Felix Wagner
+ * Copyright (c) 2012  David Dormagen
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -1675,7 +1677,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 {
 	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
 	if (!pMaterial) return;
-	C4MaterialCoreShape iChunkType = pMaterial->MapChunkType;
+	C4MaterialCoreShape iChunkType = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : pMaterial->MapChunkType;
 	BYTE byColor = MatTex2PixCol(iTexture);
 	// Get map & landscape size
 	int iMapWidth, iMapHeight;
@@ -2977,6 +2979,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	if (!GetMapColorIndex(szMaterial, szTexture, bIFT, byColor)) return false;
 
 	int32_t iMaterial = ::MaterialMap.Get(szMaterial); if (!MatValid(iMaterial)) return false;
+	C4MaterialCoreShape shape = ::Game.C4S.Landscape.FlatChunkShapes ? C4M_Flat : ::MaterialMap.Map[iMaterial].MapChunkType;
 
 	C4Rect BoundingBox(tx - 5, ty - 5, wdt + 10, hgt + 10);
 	PrepareChange(BoundingBox);
@@ -2989,7 +2992,7 @@ bool C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	int32_t x, y;
 	for (x = 0; x < icntx; x++)
 		for (y = 0; y < icnty; y++)
-			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,::MaterialMap.Map[iMaterial].MapChunkType,Random(1000));
+			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,shape,Random(1000));
 
 	// remove clipper
 	Surface8->NoClip();
@@ -3337,7 +3340,7 @@ bool C4Landscape::Mat2Pal()
 {
 	if (!Surface8) return false;
 	// set landscape pal
-	int32_t tex,rgb;
+	int32_t tex;
 	for (tex=0; tex<C4M_MaxTexIndex; tex++)
 	{
 		const C4TexMapEntry *pTex = ::TextureMap.GetEntry(tex);

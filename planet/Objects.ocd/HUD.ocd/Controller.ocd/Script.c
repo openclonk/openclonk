@@ -34,7 +34,7 @@ protected func Construction()
 	progress_bar_links = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
-	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
+	for(var i=0; i < GetCrewCount(GetOwner()); ++i)
 	{
 		var crew = GetCrew(GetOwner(),i);
 		if(!(crew->HUDAdapter())) continue;
@@ -643,10 +643,8 @@ private func CreateSelectorFor(object clonk)
 /** Rearranges the CrewSelectors in the correct order */
 private func ReorderCrewSelectors(object leaveout)
 {
-	// somehow new crew gets sorted at the beginning
-	// because we dont want that, the for loop starts from the end
 	var j = 0;
-	for(var i=GetCrewCount(GetOwner())-1; i >= 0; --i)
+	for(var i=0; i < GetCrewCount(GetOwner()); ++i)
 	{
 		var spacing = 12;
 		var crew = GetCrew(GetOwner(),i);

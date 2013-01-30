@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2006-2010  Günther Brammer
+ * Copyright (c) 2006-2011  Günther Brammer
  * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -539,10 +539,7 @@ namespace C4GUI
 	{
 		Mouse.x = tx+twdt/2;
 		Mouse.y = ty+thgt/2;
-		// calculate zoom
-		float fZoomX = float(Application.GetConfigWidth()) / twdt;
-		float fZoomY = float(Application.GetConfigHeight()) / thgt;
-		fZoom = Min<float>(fZoomX, fZoomY);
+		fZoom = 1.0f;
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));

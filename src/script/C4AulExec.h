@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2001, 2006-2007  Sven Eberhardt
  * Copyright (c) 2006, 2009-2010  Peter Wortmann
- * Copyright (c) 2007, 2009-2011  Günther Brammer
+ * Copyright (c) 2007, 2009-2012  Günther Brammer
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -57,7 +57,7 @@ private:
 	C4Value Values[MAX_VALUE_STACK];
 
 public:
-	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
+	C4Value Exec(C4AulScriptFunc *pSFunc, C4PropList * p, C4Value pPars[], bool fPassErrors);
 	C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
 
 	void StartTrace();

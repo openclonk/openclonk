@@ -31,8 +31,6 @@
 #include "C4Id.h"
 #include "StdMeshUpdate.h"
 
-class C4Def;
-
 // defintion graphics
 class C4AdditionalDefGraphics;
 class C4DefGraphicsPtrBackup;

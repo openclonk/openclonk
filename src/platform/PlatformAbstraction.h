@@ -3,8 +3,8 @@
  *
  * Copyright (c) 1998-2000, 2007  Matthes Bender
  * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004-2011  Günther Brammer
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
  * Copyright (c) 2009-2011  Nicolas Hake
  * Copyright (c) 2010  Tobias Zwick
  * Copyright (c) 2010  Martin Plicht
@@ -231,26 +231,6 @@ bool OpenURL(const char* szURL);
 
 // Get a monotonically increasing timestamp in milliseconds
 unsigned int GetTime();
-
-// Windows swprintf: MinGW vs MSVC
-#if defined(__MINGW32__) || defined(__MINGW64__)
-// See http://lists-archives.org/mingw-users/17617-compilation-problem-with-swprintf.html
-
-// For _vsnwprintf:
-#include <cstdio>
-#include <cstdarg>
-
-inline int swprintf(wchar_t* buffer, size_t n, const wchar_t* format, ...)
-{
-	int retval;
-	va_list argptr;
-
-	va_start(argptr, format);
-	retval = _vsnwprintf(buffer, n, format, argptr);
-	va_end(argptr);
-	return retval;
-}
-#endif
 
 #ifdef _WIN32
 #include <io.h>

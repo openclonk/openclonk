@@ -2,8 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2004, 2006-2007, 2010  Sven Eberhardt
- * Copyright (c) 2005-2011  Günther Brammer
+ * Copyright (c) 2004, 2006-2007, 2010, 2012  Sven Eberhardt
+ * Copyright (c) 2005-2012  Günther Brammer
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
@@ -220,11 +220,16 @@ static C4Value FnCall(C4PropList * _this, C4Value * Pars)
 	if (!_this) return C4Value();
 	C4AulParSet ParSet(&Pars[1], 9);
 	C4AulFunc * fn = Pars[0].getFunction();
-	if (!fn)
-		fn = _this->GetFunc(Pars[0].getStr());
+	C4String * name;
 	if (!fn)
 	{
-		const char * s = FnStringPar(Pars[0].getStr());
+		name = Pars[0].getStr();
+		if (name)
+			fn = _this->GetFunc(name);
+	}
+	if (!fn)
+	{
+		const char * s = FnStringPar(name);
 		if (s[0] == '~')
 		{
 			fn = _this->GetFunc(&s[1]);

@@ -53,7 +53,7 @@ public func Set(id def, int dir, object stick)
 	SetObjDrawTransform(xw,0,0,0,1000, -h*500,2);
 	SetShape(-w/2, -h, w, h);
 	
-	SetName(Format("TxtConstruction",def->GetName()));
+	SetName(Translate(Format("TxtConstruction",def->GetName())));
 	
 	this.visibility = VIS_Owner | VIS_Allies;
 	

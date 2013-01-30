@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2010-2011  Nicolas Hake
+ * Copyright (c) 2012  Armin Burgmeier
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.

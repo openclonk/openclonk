@@ -2,15 +2,16 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2001-2010  Sven Eberhardt
+ * Copyright (c) 2001-2010, 2012  Sven Eberhardt
  * Copyright (c) 2001  Michael Käser
  * Copyright (c) 2001-2008, 2010  Peter Wortmann
- * Copyright (c) 2004-2005, 2007-2010  Armin Burgmeier
- * Copyright (c) 2004-2011  Günther Brammer
- * Copyright (c) 2009-2010  Nicolas Hake
- * Copyright (c) 2009-2011  Tobias Zwick
+ * Copyright (c) 2004-2005, 2007-2011  Armin Burgmeier
+ * Copyright (c) 2004-2012  Günther Brammer
+ * Copyright (c) 2009-2010, 2012  Nicolas Hake
+ * Copyright (c) 2009-2012  Tobias Zwick
  * Copyright (c) 2009-2010  Richard Gerum
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2012  Felix Wagner
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -1057,17 +1058,6 @@ C4Object* FnObject(C4PropList * _this, long iNumber)
 {
 	return ::Objects.SafeObjectPointer(iNumber);
 	// See FnObjectNumber
-}
-
-static C4Value FnGameCall(C4PropList * _this, C4Value * Pars)
-{
-	C4String * fn = Pars[0].getStr();
-	if (!fn) return C4Value();
-
-	// copy parameters
-	C4AulParSet ParSet(&Pars[1], 9);
-	// Call
-	return ::GameScript.Call(fn->GetCStr(), &ParSet, true);
 }
 
 static C4Value FnGameCallEx(C4PropList * _this, C4Value * Pars)
@@ -2579,7 +2569,6 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "FindObject",    1, C4V_Object, { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObject    },
 	{ "FindObjects",   1, C4V_Array,  { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnFindObjects   },
 	{ "ObjectCount",   1, C4V_Int,    { C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnObjectCount   },
-	{ "GameCall",      1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCall      },
 	{ "GameCallEx",    1, C4V_Any,    { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnGameCallEx    },
 	{ "PlayerMessage", 1, C4V_Int,    { C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPlayerMessage },
 	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },

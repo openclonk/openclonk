@@ -338,11 +338,11 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
 	{
 		// Unpack
-		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-u\"", strModule);
+		_snwprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-u\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"MakeFolder", L"C4Group Unpack", strCommand))
 			return 0;
 		// Explode
-		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-x\"", strModule);
+		_snwprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-x\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"ExplodeFolder", L"C4Group Explode", strCommand))
 			return 0;
 	}
@@ -351,7 +351,7 @@ int RegisterShellExtensions()
 	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
-		swprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
+		_snwprintf(strCommand, 2048, L"\"%s\" \"%%1\" \"-p\"", strModule);
 		if (!SetRegShell(GetWideChar(strClass), L"MakeGroupFile", L"C4Group Pack", strCommand))
 			return 0;
 	}

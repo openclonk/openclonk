@@ -40,6 +40,13 @@ separate_arguments(OC_EXE_LINKER_FLAGS)
 set(OC_EXE_LINKER_FLAGS_DEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
 separate_arguments(OC_EXE_LINKER_FLAGS_DEBUG)
 
+function(unseparate_arguments _var _list)
+	foreach(_arg ${_list})
+		set(_string "${_string} ${_arg}")
+	endforeach()
+	set(${_var} "${_string}" PARENT_SCOPE)
+endfunction()
+
 ############################################################################
 # User selectable options
 ############################################################################
@@ -162,23 +169,11 @@ endif()
 # 	configurations.
 set(OC_CLONK_SOURCES
 	src/C4Globals.cpp
-	src/c4group/C4ComponentHost.cpp
-	src/c4group/C4ComponentHost.h
 	src/c4group/C4Components.h
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
-	src/c4group/C4Group.cpp
-	src/c4group/C4Group.h
-	src/c4group/C4GroupSet.cpp
-	src/c4group/C4GroupSet.h
-	src/c4group/C4LangStringTable.cpp
-	src/c4group/C4LangStringTable.h
 	src/c4group/C4Language.cpp
 	src/c4group/C4Language.h
-	src/c4group/C4Update.cpp
-	src/c4group/C4Update.h
-	src/c4group/CStdFile.cpp
-	src/c4group/CStdFile.h
 	src/C4Include.h
 	src/C4Prototypes.h
 	src/C4Version.h
@@ -248,6 +243,7 @@ set(OC_CLONK_SOURCES
 	src/graphics/C4DrawGL.cpp
 	src/graphics/C4DrawGLCtx.cpp
 	src/graphics/C4DrawGL.h
+	src/graphics/C4DrawMeshGL.cpp
 	src/graphics/C4DrawT.cpp
 	src/graphics/C4DrawT.h
 	src/graphics/C4Draw.h
@@ -354,6 +350,7 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4PXS.cpp
 	src/landscape/C4PXS.h
 	src/landscape/C4Scenario.cpp
+	src/landscape/C4ScenarioSection.cpp
 	src/landscape/C4Scenario.h
 	src/landscape/C4Sky.cpp
 	src/landscape/C4Sky.h
@@ -363,20 +360,12 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4Texture.h
 	src/landscape/C4Weather.cpp
 	src/landscape/C4Weather.h
-	src/lib/C4InputValidation.cpp
-	src/lib/C4InputValidation.h
 	src/lib/C4LogBuf.cpp
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
 	src/lib/C4Log.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
 	src/lib/C4NameList.cpp
 	src/lib/C4NameList.h
-	src/lib/C4Random.cpp
-	src/lib/C4Random.h
-	src/lib/C4Real.cpp
-	src/lib/C4Real.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
 	src/lib/C4RTF.cpp
@@ -385,17 +374,10 @@ set(OC_CLONK_SOURCES
 	src/lib/C4Stat.h
 	src/lib/PathFinder.cpp
 	src/lib/PathFinder.h
-	src/lib/SHA1.h
-	src/lib/Standard.cpp
-	src/lib/Standard.h
 	src/lib/StdAdaptors.h
 	src/lib/StdBase64.cpp
 	src/lib/StdBase64.h
-	src/lib/StdBuf.cpp
-	src/lib/StdBuf.h
 	src/lib/StdColors.h
-	src/lib/StdCompiler.cpp
-	src/lib/StdCompiler.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
 	src/lib/StdMeshLoaderBinaryChunks.cpp
@@ -410,8 +392,6 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshMath.h
 	src/lib/StdMeshUpdate.cpp
 	src/lib/StdMeshUpdate.h
-	src/lib/StdResStr2.cpp
-	src/lib/StdResStr2.h
 	src/lib/StdResStr.h
 	src/network/C4Client.cpp
 	src/network/C4Client.h
@@ -421,8 +401,6 @@ set(OC_CLONK_SOURCES
 	src/network/C4InteractiveThread.h
 	src/network/C4League.cpp
 	src/network/C4League.h
-	src/network/C4NetIO.cpp
-	src/network/C4NetIO.h
 	src/network/C4Network2Client.cpp
 	src/network/C4Network2Client.h
 	src/network/C4Network2.cpp
@@ -458,8 +436,6 @@ set(OC_CLONK_SOURCES
 	src/object/C4DefList.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
-	src/object/C4Id.cpp
-	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
 	src/object/C4InfoCore.cpp
@@ -507,15 +483,8 @@ set(OC_CLONK_SOURCES
 	src/platform/C4Video.h
 	src/platform/C4Window.h
 	src/platform/C4windowswrapper.h
-	src/platform/GetTime.cpp
 	src/platform/PlatformAbstraction.cpp
 	src/platform/PlatformAbstraction.h
-	src/platform/StdFile.cpp
-	src/platform/StdFile.h
-	src/platform/StdRegistry.cpp
-	src/platform/StdRegistry.h
-	src/platform/StdScheduler.cpp
-	src/platform/StdScheduler.h
 	src/platform/StdSync.h
 	src/platform/StdVideo.cpp
 	src/platform/StdVideo.h
@@ -525,37 +494,104 @@ set(OC_CLONK_SOURCES
 	src/player/C4PlayerList.h
 	src/player/C4RankSystem.cpp
 	src/player/C4RankSystem.h
-	src/script/C4Aul.cpp
 	src/script/C4AulDebug.cpp
 	src/script/C4AulDebug.h
-	src/script/C4AulDefFunc.h
-	src/script/C4AulExec.cpp
-	src/script/C4AulExec.h
-	src/script/C4AulFunc.cpp
-	src/script/C4AulFunc.h
-	src/script/C4Aul.h
-	src/script/C4AulLink.cpp
-	src/script/C4AulParse.cpp
-	src/script/C4PropList.cpp
-	src/script/C4PropList.h
-	src/script/C4Script.cpp
-	src/script/C4ScriptHost.cpp
-	src/script/C4ScriptHost.h
-	src/script/C4StringTable.cpp
-	src/script/C4StringTable.h
-	src/script/C4ValueArray.cpp
-	src/script/C4ValueArray.h
-	src/script/C4Value.cpp
-	src/script/C4Value.h
-	src/script/C4ValueMap.cpp
-	src/script/C4ValueMap.h
-	src/zlib/gzio.c
-	src/zlib/gzio.h
-	src/zlib/zutil.h
 	thirdparty/timsort/sort.h
 )
+
+set(MAPE_BASE_SOURCES
+	src/landscape/C4MapCreatorS2.cpp
+	src/landscape/C4MapCreatorS2.h
+	src/landscape/C4Material.cpp
+	src/landscape/C4Material.h
+	src/landscape/C4Texture.cpp
+	src/landscape/C4Texture.h
+	src/landscape/C4Scenario.cpp
+	src/landscape/C4Scenario.h
+	src/lib/C4NameList.cpp
+	src/lib/C4NameList.h
+	src/lib/C4Rect.cpp
+	src/lib/C4Rect.h
+)
+
+set(MAPE_SOURCES
+	src/mape/cpp-handles/group-handle.h
+	src/mape/cpp-handles/group-handle.cpp
+	src/mape/cpp-handles/log-handle.h
+	src/mape/cpp-handles/log-handle.cpp
+	src/mape/cpp-handles/mapgen-handle.h
+	src/mape/cpp-handles/mapgen-handle.cpp
+	src/mape/cpp-handles/material-handle.h
+	src/mape/cpp-handles/material-handle.cpp
+	src/mape/cpp-handles/random-handle.h
+	src/mape/cpp-handles/random-handle.cpp
+	src/mape/cpp-handles/texture-handle.h
+	src/mape/cpp-handles/texture-handle.cpp
+	src/mape/cpp-handles/version-handle.h
+	src/mape/cpp-handles/version-handle.cpp
+	src/mape/cpp-handles/stub-handle.cpp
+	src/mape/configfile.c
+	src/mape/configfile.h
+	src/mape/diskview.c
+	src/mape/diskview.h
+	src/mape/editview.c
+	src/mape/editview.h
+	src/mape/fileicon.c
+	src/mape/fileicon.h
+	src/mape/forward.h
+	src/mape/group.c
+	src/mape/group.h
+	src/mape/header.c
+	src/mape/header.h
+	src/mape/iconview.c
+	src/mape/iconview.h
+	src/mape/mape.c
+	src/mape/mapgen.c
+	src/mape/mapgen.h
+	src/mape/material.c
+	src/mape/material.h
+	src/mape/mattexview.c
+	src/mape/mattexview.h
+	src/mape/preferences.c
+	src/mape/preferences.h
+	src/mape/preferencesdialog.c
+	src/mape/preferencesdialog.h
+	src/mape/preview.c
+	src/mape/preview.h
+	src/mape/random.c
+	src/mape/random.h
+	src/mape/statusbar.c
+	src/mape/statusbar.h
+	src/mape/texture.c
+	src/mape/texture.h
+	src/mape/window.c
+	src/mape/window.h
+)
+
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
+mark_as_advanced(MAPE_SOURCES)
+
+# generated source files
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	COMMAND
+		gdk-pixbuf-csource "--raw" "--static" "--build-list"
+		"mape_icon_ocd" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico"
+		"mape_icon_ocf" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico"
+		"mape_icon_ocg" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico"
+		"mape_icon_ocm" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico"
+		"mape_icon_ocs" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico"
+		> ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocd.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocf.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocg.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocm.ico
+		${CMAKE_CURRENT_SOURCE_DIR}/src/res/ocs.ico
+	VERBATIM
+)
+list(APPEND MAPE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h)
 
 # source files specific to an operating system
 if(APPLE)
@@ -682,6 +718,7 @@ if(PROJECT_FOLDERS)
   source_group("Config" src/config/.*)
   source_group("Control" src/control/.*)
   source_group("Editing" src/editor/.*)
+  source_group("Mape" src/mape/.*)
 endif()
 
 include_directories(
@@ -833,14 +870,29 @@ endif()
 if(USE_GTK)
 	include(FindPkgConfig)
 	if (USE_GTK3)
-		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.27.5" "gtk+-3.0 >= 2.99.0")
+		pkg_check_modules(GTK3 REQUIRED "glib-2.0 >= 2.32" "gtk+-3.0 >= 3.4")
 		include_directories(${GTK3_INCLUDE_DIRS})
 		link_directories(${GTK3_LIBRARY_DIRS})
 	else()
-		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.8" "gtk+-2.0 >= 2.8")
+		pkg_check_modules(GTK REQUIRED "glib-2.0 >= 2.24" "gtk+-2.0 >= 2.20")
 		include_directories(${GTK_INCLUDE_DIRS})
 		link_directories(${GTK_LIBRARY_DIRS})
 	endif()
+endif()
+
+# Try to find GTK for mape
+include(FindPkgConfig)
+if (PKG_CONFIG_FOUND)
+	if (USE_GTK3)
+		pkg_check_modules(MAPE_GTK glib-2.0>=2.32 gthread-2.0 gtk+-3.0>=3.4 gtksourceview-3.0)
+	else()
+		pkg_check_modules(MAPE_GTK glib-2.0>=2.24 gthread-2.0 gtk+-2.0>=2.20 gtksourceview-2.0)
+	endif()
+endif()
+if(MAPE_GTK_FOUND)
+	# hrm, cmake doesn't have target_include_directories...
+	include_directories(${MAPE_GTK_INCLUDE_DIRS})
+	link_directories(${MAPE_GTK_LIBRARY_DIRS})
 endif()
 
 if(USE_OPEN_AL)
@@ -916,97 +968,121 @@ endif()
 # Generate output files
 ############################################################################
 add_definitions(-DHAVE_CONFIG_H)
-add_executable(clonk WIN32 MACOSX_BUNDLE
+add_executable(openclonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
 
+if(MAPE_GTK_FOUND)
+	add_executable(mape ${MAPE_BASE_SOURCES} ${MAPE_SOURCES})
+	unseparate_arguments(MAPE_GTK_CFLAGS "${MAPE_GTK_CFLAGS}")
+	set_property(TARGET mape PROPERTY COMPILE_FLAGS "${MAPE_GTK_CFLAGS}")
+	unseparate_arguments(MAPE_GTK_LDFLAGS "${MAPE_GTK_LDFLAGS}")
+	set_property(TARGET mape PROPERTY LINK_FLAGS "${MAPE_GTK_LDFLAGS}")
+endif()
+
 add_executable(c4group
 	src/c4group/C4GroupMain.cpp
-	src/c4group/C4Group.cpp
-	src/lib/C4InputValidation.cpp
-	src/c4group/C4Update.cpp
-	src/lib/Standard.cpp
-	src/c4group/CStdFile.cpp
-	src/lib/C4Markup.cpp
-	src/lib/StdBuf.cpp
-	src/lib/StdCompiler.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdRegistry.cpp
-	src/lib/StdResStr2.cpp
-	src/lib/C4SimpleLog.cpp
-	src/zlib/gzio.c
-	src/C4Include.cpp
 )
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
-	src/C4Include.cpp
-	src/lib/C4SimpleLog.cpp
-	src/lib/StdBuf.cpp
-	src/lib/Standard.cpp
-	src/platform/GetTime.cpp
 	src/platform/StdScheduler.cpp
-	src/platform/StdFile.cpp
-	src/network/C4NetIO.cpp
 	src/netpuncher/main.cpp
+)
+
+add_library(libmisc
+src/c4group/C4Group.cpp
+src/c4group/C4Group.h
+src/c4group/C4Update.cpp
+src/c4group/C4Update.h
+src/c4group/CStdFile.cpp
+src/c4group/CStdFile.h
+src/lib/C4InputValidation.cpp
+src/lib/C4InputValidation.h
+src/lib/SHA1.h
+src/lib/Standard.cpp
+src/lib/Standard.h
+src/lib/StdBuf.cpp
+src/lib/StdBuf.h
+src/lib/StdCompiler.cpp
+src/lib/StdCompiler.h
+src/lib/C4Markup.cpp
+src/lib/C4Markup.h
+src/lib/StdResStr2.cpp
+src/lib/StdResStr2.h
+src/network/C4NetIO.cpp
+src/network/C4NetIO.h
+src/platform/GetTime.cpp
+src/platform/StdFile.cpp
+src/platform/StdFile.h
+src/platform/StdRegistry.cpp
+src/platform/StdRegistry.h
+src/platform/StdScheduler.cpp
+src/platform/StdScheduler.h
+src/zlib/gzio.c
+src/zlib/gzio.h
+src/zlib/zutil.h
+
+src/C4Include.cpp
+src/lib/C4SimpleLog.cpp
+)
+
+target_link_libraries(libmisc ${ZLIB_LIBRARIES})
+
+add_library(libc4script
+src/c4group/C4GroupSet.cpp
+src/c4group/C4GroupSet.h
+src/c4group/C4ComponentHost.cpp
+src/c4group/C4ComponentHost.h
+src/c4group/C4LangStringTable.cpp
+src/c4group/C4LangStringTable.h
+src/lib/C4Real.cpp
+src/lib/C4Real.h
+src/lib/C4Random.cpp
+src/lib/C4Random.h
+src/object/C4Id.cpp
+src/object/C4Id.h
+src/script/C4Aul.cpp
+src/script/C4AulDefFunc.h
+src/script/C4AulExec.cpp
+src/script/C4AulExec.h
+src/script/C4AulFunc.cpp
+src/script/C4AulFunc.h
+src/script/C4Aul.h
+src/script/C4AulLink.cpp
+src/script/C4AulParse.cpp
+src/script/C4PropList.cpp
+src/script/C4PropList.h
+src/script/C4Script.cpp
+src/script/C4ScriptHost.cpp
+src/script/C4ScriptHost.h
+src/script/C4StringTable.cpp
+src/script/C4StringTable.h
+src/script/C4ValueArray.cpp
+src/script/C4ValueArray.h
+src/script/C4Value.cpp
+src/script/C4Value.h
+src/script/C4ValueMap.cpp
+src/script/C4ValueMap.h
 )
 
 add_executable(c4script
 	include/c4script/c4script.h
-	src/c4group/C4Group.cpp
-	src/c4group/C4Group.h
-	src/c4group/CStdFile.cpp
-	src/c4group/CStdFile.h
-	src/lib/C4InputValidation.cpp
-	src/lib/C4InputValidation.h
-	src/lib/C4SimpleLog.cpp
-	src/lib/Standard.cpp
-	src/lib/Standard.h
-	src/lib/StdBuf.cpp
-	src/lib/StdBuf.h
-	src/lib/StdCompiler.cpp
-	src/lib/StdCompiler.h
-	src/lib/C4Markup.cpp
-	src/lib/C4Markup.h
-	src/lib/StdResStr2.cpp
-	src/lib/StdResStr2.h
-	src/platform/GetTime.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdFile.h
-	src/lib/C4Real.cpp
-	src/lib/C4Random.cpp
-	src/script/C4Aul.cpp
-	src/script/C4AulExec.cpp
-	src/script/C4AulFunc.cpp
-	src/script/C4AulLink.cpp
-	src/script/C4AulParse.cpp
-	src/script/C4StringTable.cpp
-	src/script/C4PropList.cpp
-	src/script/C4ScriptHost.cpp
 	src/script/C4ScriptMain.cpp
 	src/script/C4ScriptStandalone.cpp
-	src/script/C4ValueArray.cpp
-	src/script/C4Value.cpp
-	src/script/C4ValueMap.cpp
-	src/object/C4Id.cpp
-	src/script/C4Script.cpp
-	src/c4group/C4GroupSet.cpp
-	src/c4group/C4ComponentHost.cpp
-	src/c4group/C4LangStringTable.cpp
-	src/zlib/gzio.c
-	src/C4Include.cpp
 )
 
-target_link_libraries(clonk
+target_link_libraries(openclonk
 	${FREETYPE_LIBRARIES}
-	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${ICONV_LIBRARY}
+	libc4script
+	libmisc
 )
 
 if(USE_OPEN_AL)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${OPENAL_LIBRARY}
 		${ALUT_LIBRARY}
 		${VORBIS_LIBRARY}
@@ -1014,11 +1090,25 @@ if(USE_OPEN_AL)
 		${OGG_LIBRARY}
 	)
 endif()
-target_link_libraries(c4group
-	${ZLIB_LIBRARIES}
+
+if(MAPE_GTK_FOUND)
+	target_link_libraries(mape
+		libc4script
+		libmisc
+	)
+endif()
+
+target_link_libraries(netpuncher
+	libmisc
 )
+
+target_link_libraries(c4group
+	libmisc
+)
+
 target_link_libraries(c4script
-	${ZLIB_LIBRARIES}
+	libc4script
+	libmisc
 )
 if(HAVE_PTHREAD)
 	target_link_libraries(netpuncher
@@ -1027,9 +1117,14 @@ if(HAVE_PTHREAD)
 	target_link_libraries(c4script
 		pthread
 	)
+	if(MAPE_GTK_FOUND)
+		target_link_libraries(mape
+			pthread
+		)
+	endif()
 endif()
 if(USE_CONSOLE)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		pthread
 		${READLINE_LIBRARIES}
 	)
@@ -1038,14 +1133,17 @@ if(UNIX AND NOT APPLE)
 	target_link_libraries(c4group rt)
 	target_link_libraries(c4script rt)
 	target_link_libraries(netpuncher rt)
-	target_link_libraries(clonk rt)
+	target_link_libraries(openclonk rt)
+	if(MAPE_GTK_FOUND)
+		target_link_libraries(mape rt)
+	endif()
 endif()
-set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
+set_property(TARGET openclonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 # This expands some variables in Info.plist as a side-effect. XCode might then 
 # expand a second time, using the same syntax. Try not to get confused by this!
-set_target_properties(clonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
+set_target_properties(openclonk PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Info.plist")
 
 if(MSVC)
 	# set target output filenames to a per-configuration value
@@ -1059,7 +1157,7 @@ if(MSVC)
 			endif()
 		endforeach()
 	endfunction()
-	oc_set_target_names(clonk)
+	oc_set_target_names(openclonk)
 	oc_set_target_names(c4group)
 	oc_set_target_names(c4script)
 	oc_set_target_names(netpuncher)
@@ -1070,7 +1168,7 @@ endif()
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
 	if(MSVC_VERSION)
-		get_property(OC_SOURCES TARGET clonk PROPERTY SOURCES)
+		get_property(OC_SOURCES TARGET openclonk PROPERTY SOURCES)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
 			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
@@ -1131,7 +1229,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
-	add_precompiled_header(clonk src/C4Include.h)
+	add_precompiled_header(openclonk src/C4Include.h)
 	add_precompiled_header(c4group src/C4Include.h)
 	add_precompiled_header(c4script src/C4Include.h)
 endif()
@@ -1141,20 +1239,20 @@ endif()
 ############################################################################
 
 if (APPLE)
-	add_custom_command(TARGET clonk
+	add_custom_command(TARGET openclonk
 		POST_BUILD COMMAND "/usr/bin/ruby" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_bundle_libs"
 	)
 	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 	
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
-	SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
+	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 	
 	if (USE_APPLE_CLANG)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvm.clang.1_0")
@@ -1162,7 +1260,7 @@ if (APPLE)
 		set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -stdlib=libc++ -g -Wall")
 		SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
-		SET_TARGET_PROPERTIES(clonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
+		SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++0x objective-c++0x")
 				
 		set(HAVE_RVALUE_REF ON)
 	else()
@@ -1177,12 +1275,12 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 if(NOT HAVE_GETOPT_H)
 	include_directories(thirdparty/getopt)
 	add_subdirectory(thirdparty/getopt)
-	target_link_libraries(clonk getopt)
+	target_link_libraries(openclonk getopt)
 elseif(MINGW)
 	# Link libiberty which my contain getopt with mingw
 	FINDLIB(iberty_LIBRARIES iberty)
 	if(iberty_LIBRARIES)
-		target_link_libraries(clonk iberty)
+		target_link_libraries(openclonk iberty)
 	endif()
 endif()
 
@@ -1190,12 +1288,12 @@ CHECK_INCLUDE_FILE_CXX(getopt.h HAVE_GETOPT_H)
 
 # TinyXML
 add_subdirectory(thirdparty/tinyxml)
-target_link_libraries(clonk tinyxml)
+target_link_libraries(openclonk tinyxml)
 
 if(WIN32)
 	find_package(DbgHelp)
 	if(DBGHELP_FOUND)
-		target_link_libraries(clonk ${DBGHELP_LIBRARIES})
+		target_link_libraries(openclonk ${DBGHELP_LIBRARIES})
 		include_directories(${DBGHELP_INCLUDE_DIR})
 	endif()
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
@@ -1205,7 +1303,7 @@ if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${GLEW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
@@ -1216,7 +1314,7 @@ if(USE_DIRECTX)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
 	FIND_PATH(DIRECT3DX_INCLUDE_DIR NAMES d3dx9.h)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${DIRECT3D_LIBRARIES}
 		${DIRECT3DX_LIBRARIES}
 	)
@@ -1229,26 +1327,29 @@ if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 	SET(WITH_GLIB ${GTK_FOUND})
 	if(USE_GTK3)
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${GTK3_LIBRARIES}
 		)
 	else()
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${GTK_LIBRARIES}
 		)
 	endif()
 endif()
+if(MAPE_GTK_FOUND)
+	target_link_libraries(mape ${MAPE_GTK_LIBRARIES})
+endif()
 if(USE_X11)
 	FINDLIB(X11_LIBRARIES X11)
 	FINDLIB(XRANDR_LIBRARIES Xrandr)
-	target_link_libraries(clonk
+	target_link_libraries(openclonk
 		${X11_LIBRARIES}
 		${XRANDR_LIBRARIES}
 	)
 endif()
 if(USE_COCOA)
 	#stupid fix: just link to iconv that way
-	TARGET_LINK_LIBRARIES(clonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
+	TARGET_LINK_LIBRARIES(openclonk "-framework Cocoa -framework AppKit -framework Quartz -framework OpenAL -framework AudioToolBox -liconv")
 endif()
 if (WIN32)
 	# CMake is too incompetent to check whether these libraries can be linked to
@@ -1256,23 +1357,26 @@ if (WIN32)
 	FINDLIB(VFW32_LIBRARIES vfw32)
 	FINDLIB(wavifil32_LIBRARIES wavifil32)
 	if (VFW32_LIBRARIES)
-		target_link_libraries(clonk vfw32)
+		target_link_libraries(openclonk vfw32)
 		set(HAVE_VFW32 TRUE)
 	elseif(wavifil32_LIBRARIES)
-		target_link_libraries(clonk wavifil32 msvfw32)
+		target_link_libraries(openclonk wavifil32 msvfw32)
 		set(HAVE_VFW32 TRUE)
 	endif()
 
-	target_link_libraries(clonk ws2_32 winmm)
+	target_link_libraries(openclonk ws2_32 winmm)
 	target_link_libraries(c4group ws2_32)
 	target_link_libraries(netpuncher ws2_32 winmm)
 	target_link_libraries(c4script ws2_32 winmm)
+	if(MAPE_GTK_FOUND)
+		target_link_libraries(mape winmm)
+	endif()
 
 	if(NOT USE_OPEN_AL)
 		find_package(FMod)
 		if(FMOD_FOUND)
 			set(HAVE_FMOD TRUE)
-			target_link_libraries(clonk
+			target_link_libraries(openclonk
 				${FMOD_LIBRARIES}
 			)
 			include_directories(${FMOD_INCLUDE_DIR})
@@ -1290,7 +1394,7 @@ if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 		if(SDLMIXER_LIBRARIES)
 			SET(HAVE_LIBSDL_MIXER ON)
 		endif()
-		target_link_libraries(clonk
+		target_link_libraries(openclonk
 			${SDL_LIBRARY}
 			${SDLMIXER_LIBRARIES}
 		)
@@ -1299,22 +1403,10 @@ endif()
 
 if(HAVE_UPNP)
 	include_directories(${UPNP_INCLUDE_DIR})
-	target_link_libraries(clonk ${UPNP_LIBRARIES})
+	target_link_libraries(openclonk ${UPNP_LIBRARIES})
 endif()
 
-# GTest
-include(FindGTest)
-if(GTEST_FOUND)
-	include_directories(${GTEST_INCLUDE_DIRS})
-	add_executable(tests EXCLUDE_FROM_ALL
-		tests/UnicodeHandlingTest.cpp
-		tests/main.cpp
-	)
-	target_link_libraries(tests ${GTEST_LIBRARIES})
-	if(HAVE_PTHREAD)
-		target_link_libraries(tests pthread)
-	endif()
-endif()
+add_subdirectory(tests EXCLUDE_FROM_ALL)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -1329,7 +1421,7 @@ endif()
 ############################################################################
 # installation
 ############################################################################
-# Install the icon into share/icons/hicolor/48x48/apps/clonk.png. Do this by
+# Install the icon into share/icons/hicolor/48x48/apps/openclonk.png. Do this by
 # extracting the correct size from oc.ico. Currently this is layer 2 - let's
 # hope that it stays this way.
 
@@ -1349,17 +1441,17 @@ install(
 		)"
 	)
 
-# TODO: Check for convert at configure step?
+FIND_PACKAGE(ImageMagick COMPONENTS convert)
 add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
-	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/clonk.png"
+	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
 	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
 	VERBATIM
 	)
-add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/clonk.png)
+add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
 add_dependencies(data icon)
 install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/clonk.png
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
 	DESTINATION share/icons/hicolor/48x48/apps
 	)
 
@@ -1377,10 +1469,10 @@ set(OC_C4GROUPS
 )
 
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
-get_target_property(CLONK_LOCATION clonk LOCATION)
+get_target_property(CLONK_LOCATION openclonk LOCATION)
 foreach(group ${OC_C4GROUPS})
 	if (APPLE)
-		add_custom_command(TARGET clonk
+		add_custom_command(TARGET openclonk
 			POST_BUILD COMMAND "/bin/sh" "${CMAKE_CURRENT_SOURCE_DIR}/tools/osx_pack_gamedata.sh"
 			"${C4GROUP_LOCATION}"
 			"${CMAKE_CURRENT_SOURCE_DIR}/planet/${group}"
@@ -1403,10 +1495,10 @@ if (NOT APPLE)
 endif()
 
 # Install new files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/clonk.desktop DESTINATION share/applications)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 
 # Install binaries
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
 
 ############################################################################
 # setup_openclonk.exe
@@ -1426,7 +1518,7 @@ add_custom_command(
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/header.bmp
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/inst.ico
 		${CMAKE_CURRENT_SOURCE_DIR}/tools/install/uninst.ico
-		${OC_C4GROUPS} clonk c4group
+		${OC_C4GROUPS} openclonk c4group
 	VERBATIM
 )
 

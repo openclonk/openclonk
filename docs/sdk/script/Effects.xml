@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE doc
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
@@ -71,12 +71,12 @@ func Activate(object caster, object caster2)
 
 func FxInvisPSpellStart(object target, proplist effect)
 {
-  // Vorherige Sichtbarkeit des Zauberers speichern
+  // Save the casters previous visibility
   effect.visibility = target.Visibility;
   effect.old_mod = target-&gt;<funclink>GetClrModulation</funclink>();
-  // Zauberer unsichtbar machen
+  // Make the caster invisible
   target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
-  // Halbdurchsichtig bläulich für den Besitzer und Verbündete
+  // Semitransparent and slightly blue for owner and allies
   target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(effect.old_mod, RGBa(127,127,255,127)));
   // Fertig
   return true;
