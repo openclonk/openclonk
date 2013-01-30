@@ -1,0 +1,4 @@
+Name=Objektinfo Anzeige
+Description=Zeigt nützliche Informationen an.
+
+NotOwned=Besitzerlos

@@ -1,0 +1,4 @@
+Name=ObjectInfoDisplay
+Description=Helps showing informations about objects.
+
+NotOwned=No Owner

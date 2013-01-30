@@ -1,0 +1,1 @@
+HitPoints=Hit Points

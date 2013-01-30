@@ -506,7 +506,7 @@ func PauseUse(object obj, string custom_condition, proplist data)
 	ShelveCommand(callback_obj, custom_condition, this, "ReIssueCommand", data);
 }
 
-private func DetermineUsageType(object obj)
+func DetermineUsageType(object obj)
 {
 	if(!obj) return nil;
 	// house
@@ -524,7 +524,7 @@ private func DetermineUsageType(object obj)
 	return nil;
 }
 
-private func GetUseCallString(string action)
+func GetUseCallString(string action)
 {
 	// Control... or Contained...
 	var control = "Control";
@@ -553,7 +553,7 @@ func ReIssueCommand(proplist data)
 		return StartUseDelayedControl(data.ctrl, data.obj);
 }
 
-private func StartUseControl(int ctrl, int x, int y, object obj)
+func StartUseControl(int ctrl, int x, int y, object obj)
 {
 	this.control.started_use = false;
 	
@@ -595,7 +595,7 @@ private func StartUseControl(int ctrl, int x, int y, object obj)
 	return handled;
 }
 
-private func StartUseDelayedControl(int ctrl, object obj)
+func StartUseDelayedControl(int ctrl, object obj)
 {
 	this.control.started_use = false;
 	
@@ -622,7 +622,7 @@ private func StartUseDelayedControl(int ctrl, object obj)
 	return handled;
 }
 
-private func CancelUseControl(int x, int y)
+func CancelUseControl(int x, int y)
 {
 	// forget possibly stored commands
 	StopShelvedCommand();
@@ -635,7 +635,7 @@ private func CancelUseControl(int x, int y)
 	return StopUseControl(x, y, this.control.current_object, true);
 }
 
-private func StopUseControl(int x, int y, object obj, bool cancel)
+func StopUseControl(int x, int y, object obj, bool cancel)
 {
 	var stop = "Stop";
 	if (cancel) stop = "Cancel";
@@ -663,7 +663,7 @@ private func StopUseControl(int x, int y, object obj, bool cancel)
 	return handled;
 }
 
-private func HoldingUseControl(int ctrl, int x, int y, object obj)
+func HoldingUseControl(int ctrl, int x, int y, object obj)
 {
 	var mex = x;
 	var mey = y;
@@ -714,7 +714,7 @@ private func HoldingUseControl(int ctrl, int x, int y, object obj)
 	return handled;
 }
 
-private func StopUseDelayedControl(object obj)
+func StopUseDelayedControl(object obj)
 {
 	// ControlUseStop, etc...
 	
@@ -739,7 +739,7 @@ private func StopUseDelayedControl(object obj)
 
 
 // Control use redirected to script
-private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// click on UseAlt cancels Use
 	if ((ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed) && !release)
@@ -794,7 +794,7 @@ private func ControlUse2Script(int ctrl, int x, int y, int strength, bool repeat
 }
 
 // Control use redirected to script
-private func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
+func ControlMovement2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, object obj)
 {
 	// overloads of movement commandos
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
@@ -838,7 +838,7 @@ public func CanEnter()
 }
 
 // Handles enter and exit
-private func ObjectControlEntrance(int plr, int ctrl)
+func ObjectControlEntrance(int plr, int ctrl)
 {
 	// enter
 	if (ctrl == CON_Enter)
@@ -868,7 +868,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	return false;
 }
 
-private func ObjectControlInteract(int plr, int ctrl)
+func ObjectControlInteract(int plr, int ctrl)
 {
 	var interactables = FindObjects(Find_Or(Find_Container(this), Find_AtPoint(0,0)),
 						Find_Func("IsInteractable",this), Find_Layer(GetObjectLayer()));
@@ -884,7 +884,7 @@ private func ObjectControlInteract(int plr, int ctrl)
 }
 
 // Handles push controls
-private func ObjectControlPush(int plr, int ctrl)
+func ObjectControlPush(int plr, int ctrl)
 {
 	if (!this) return false;
 	
@@ -940,7 +940,7 @@ private func ObjectControlPush(int plr, int ctrl)
 }
 
 // grabs the next/previous vehicle (if there is any)
-private func ShiftVehicle(int plr, bool back)
+func ShiftVehicle(int plr, bool back)
 {
 	if (!this) return false;
 	
@@ -1058,7 +1058,7 @@ func CancelMenu()
 /* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 
 // Throwing
-private func DoThrow(object obj, int angle)
+func DoThrow(object obj, int angle)
 {
 	// parameters...
 	var iX, iY, iR, iXDir, iYDir, iRDir;
