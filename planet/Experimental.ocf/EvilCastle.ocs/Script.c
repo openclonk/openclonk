@@ -25,6 +25,8 @@ func DoInit(int first_player)
 	Object(2369)->AddPoisonEffect(0,0); // ceiling left
 	Object(2375)->AddPoisonEffect(-20,0); // floor right
 	Object(2398)->AddPoisonEffect(10,-10); // ceiling right
+	// Message when first player enters shroom area
+	ScheduleCall(nil, Scenario.ShroomCaveCheck, 21, 0xffffff);
 	// Scorching village
 	Object(343)->AddScorch(-20,-10, -45, 50, 1500);
 	Object(344)->AddScorch(-15,42, 90, 50, 1200);
@@ -118,5 +120,17 @@ func EncounterKing(object enemy, object player)
 {
 	if (!player) player = enemy; // Leads to a funny message, but better than a null pointer.
 	Dialogue->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
+	return true;
+}
+
+
+/* Mushroom cave encounter */
+
+func ShroomCaveCheck()
+{
+	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
+	if (!intruder) return true;
+	Dialogue->MessageBoxAll("$MsgEncounterShrooms$", intruder);
+	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);
 	return true;
 }
