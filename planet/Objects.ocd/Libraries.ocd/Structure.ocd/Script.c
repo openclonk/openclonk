@@ -23,6 +23,11 @@ public func GetHitPoints()
 	return this.HitPoints;
 }
 
+public func GetRemainingHitPoints()
+{
+	return this.HitPoints - GetDamage();
+}
+
 public func Damage(int change, int cause, int cause_plr)
 {
 	// Only do stuff if the object has the HitPoints property.
@@ -47,10 +52,16 @@ public func OnObjectInformationDialogueOpen(object dialogue)
 {
 	dialogue->SetDisplayData(
 	[
-		{type = HUD_OBJECTINFODISPLAY_CUSTOM, width = 200, lines = 0},
-		{type = HUD_OBJECTINFODISPLAY_BORDER},
+		{type = HUD_OBJECTINFODISPLAY_CUSTOM, width = 200},
 		{type = HUD_OBJECTINFODISPLAY_NAME, owner = true, lines = 1},
-		{type = HUD_OBJECTINFODISPLAY_BAR, name = "$HitPoints$", lines = 1, cur = this.GetDamage, max = this.GetHitPoints}
 	]
 	);
+	
+	if (this.HitPoints)
+		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_BAR, name = "$HitPoints$", cur = this.GetRemainingHitPoints, max = this.GetHitPoints, color = RGB(255, 1, 1)});
+	else dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_TEXT, name = "$Indestructible$"});
+	
+	if (GetOwner() == NO_OWNER)
+		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_STATUS, name = "$NoFlag$", priority = 0});
+	return true;
 }

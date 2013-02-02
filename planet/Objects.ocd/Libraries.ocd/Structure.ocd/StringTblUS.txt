@@ -1,1 +1,3 @@
 HitPoints=Hit Points
+NoFlag=No flag pole in range
+Indestructible=Indestructible

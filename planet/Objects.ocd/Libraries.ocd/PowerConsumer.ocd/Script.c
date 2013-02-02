@@ -167,3 +167,15 @@ func Destruction()
 	UnmakePowerConsumer();
 	return _inherited(...);
 }
+
+public func OnObjectInformationDialogueOpen(object dialogue)
+{
+	_inherited(dialogue, ...);
+	if (PowerConsumer_last_power_request == PowerConsumer_LPR_NonZero)
+	{
+		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_TEXT, name = Format("$EnergyConsumption$: <c 00ff00>%5d</c>", PowerConsumer_last_power_request_amount), lines = 1 });
+		if (!PowerConsumer_has_power)
+			dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_STATUS, name = "$NotEnoughEnergy$", priority = 3});
+	}
+	return true;
+}

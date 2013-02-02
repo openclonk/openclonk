@@ -1,1 +1,3 @@
 HitPoints=Lebenspunkte
+NoFlag=Kein Flaggenmast in Reichweite
+Indestructible=Unzerstörbar

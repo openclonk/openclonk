@@ -693,3 +693,26 @@ protected func RejectEntrance(object obj)
 	}
 	return true;
 }
+
+
+public func OnObjectInformationDialogueOpen(object dialogue)
+{
+	_inherited(dialogue, ...);
+	
+	
+	var items = [];
+	
+	var e = GetEffect("ProcessProduction", this);
+	if (e && e.Product)
+		items[0] = e.Product;
+	
+	for (var q in queue)
+	{
+		for (var i = q.Amount; --i >= 0;)
+			PushBack(items, q.Product);
+	}
+	
+	if (GetLength(items) > 0)
+		dialogue->AddLine({type = HUD_OBJECTINFODISPLAY_ITEMLIST, name = "$DescInteraction$", items = items});
+	return true;
+}
