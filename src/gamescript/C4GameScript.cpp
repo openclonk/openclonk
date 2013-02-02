@@ -2078,9 +2078,9 @@ static long FnActivateGameGoalMenu(C4PropList * _this, long iPlayer)
 
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
-	// safeties
+	// safeties: for global messages pSrc needs to be object/definition. For object-local messages, any proplist is OK
 	if (pSrc)
-		if(!pSrc->GetDef() && !pSrc->GetObject()) return false;
+		if(!pSrc->GetDef() && !pSrc->GetObject() && !pObj) return false;
 	if (!pMsg) return false;
 	if (pObj && !pObj->Status) return false;
 	const char *szMsg = pMsg->GetCStr();
@@ -2542,6 +2542,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "MSG_WidthRel"              ,C4V_Int,      C4GM_WidthRel },
 	{ "MSG_XRel"                  ,C4V_Int,      C4GM_XRel },
 	{ "MSG_YRel"                  ,C4V_Int,      C4GM_YRel },
+	{ "MSG_Zoom"                  ,C4V_Int,      C4GM_Zoom },
 
 	{ "C4PT_User"                 ,C4V_Int,      C4PT_User },
 	{ "C4PT_Script"               ,C4V_Int,      C4PT_Script },
