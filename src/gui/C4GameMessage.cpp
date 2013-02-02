@@ -57,27 +57,26 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * TextMsgDelayFactor);
 	DecoID=idDecoID;
 	this->dwFlags=dwFlags;
-	PictureDef=NULL;
+
 	if (pSrc)
 	{
-		// for a global message
-		if (pSrc->GetDef() || pSrc->GetObject())
-			PictureDef = pSrc;
-		else // a targeted message
+		// retain special width/height properties when using a message box on an object-local message
+		if (Target)
 		{
 			C4Value val;
 			if (pSrc->GetProperty(P_Wdt, &val))
 				Wdt = val.getInt();
 			if (pSrc->GetProperty(P_Hgt, &val))
 				Hgt = val.getInt();
-			if (pSrc->GetProperty(P_Prototype, &val))
-			{
-				PictureDef = val.getPropList();
-				if (!pSrc->GetDef() && !pSrc->GetObject())
-					PictureDef = NULL;
-			}
 		}
+
+		// retain object or definition from the proplist
+		PictureDef = pSrc->GetObject();
+		if (!PictureDef) PictureDef = pSrc->GetDef();
 	}
+	else
+		PictureDef = NULL;
+
 	// Permanent message
 	if ('@' == Text[0])
 	{
