@@ -26,8 +26,6 @@
 
 //========================= Component File Names ============================================
 
-#define C4CFN_Engine          "Clonk.exe"
-
 #define C4CFN_Material        "Material.ocg"
 #define C4CFN_Sound           "Sound.ocg"
 #define C4CFN_Graphics        "Graphics.ocg"
@@ -130,8 +128,8 @@
 #define C4CFN_Language        "Language*.txt"
 #define C4CFN_KeyConfig       "KeyConfig.txt"
 
-#define C4CFN_Log             "Clonk.log"
-#define C4CFN_LogEx           "Clonk%d.log" // created if regular logfile is in use
+#define C4CFN_Log             "OpenClonk.log"
+#define C4CFN_LogEx           "OpenClonk%d.log" // created if regular logfile is in use
 #define C4CFN_Intro           "Clonk4.avi"
 #define C4CFN_Names           "Names.txt"
 #define C4CFN_Titles          "Title*.txt|Title.txt"

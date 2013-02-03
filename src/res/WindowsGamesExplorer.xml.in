@@ -7,7 +7,7 @@
             <Genre>Strategy</Genre>
         </Genres>
         <Version>
-            <VersionFile path="Clonk.exe" />
+            <VersionFile path="openclonk.exe" />
         </Version>
         <SavedGames baseKnownFolderID="{f1b32785-6fba-4fcf-9d55-7b8e7f157091}" path="@C4ENGINENAME@" />
         <Developers>

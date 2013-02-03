@@ -5,14 +5,15 @@
 # Armin Burgmeier <armin@arbur.net>, 2010.
 # Benedict Etzel <benedict.etzel@gmail.com>, 2011.
 # Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011, 2012.
+# Nicolas Hake <isilkor@openclonk.org>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-03 20:22+0100\n"
-"PO-Revision-Date: 2012-10-13 14:30+0100\n"
-"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
+"POT-Creation-Date: 2013-02-03 20:32+0100\n"
+"PO-Revision-Date: 2013-02-03 20:36+0100\n"
+"Last-Translator: Nicolas Hake <isilkor@openclonk.org>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
 "MIME-Version: 1.0\n"
@@ -15064,8 +15065,8 @@ msgid "Useful Hints"
 msgstr "Tipps zur Entwicklung"
 
 #: sdk/folder/foldermap.xml:161(text)
-msgid "For testing purposes a folder map can be loaded from an unpacked scenario folder and reloaded an runtime using F5. If the classic scenario selection appears instead of the folder map, an error has occured in the folder map declaration, such as missing image files. With debug mode activated, there will also be an error message in Clonk.log."
-msgstr "Zum Testen kann die FolderMap mit einem entpackten Rundenordner entworfen, und dann in der Szenarienauswahl mit Druck auf F5 jeweils neu geladen werden. Erscheint statt der FolderMap die klassische Szenarienauswahl, ist beim Laden der Definitionsdatei ein Fehler aufgetreten, oder zum Beispiel eine referenzierte Grafikdatei nicht gefunden worden. Bei aktiviertem Debugmodus findet sich in dem Fall eine Fehlermeldung in der Datei Clonk.log."
+msgid "For testing purposes a folder map can be loaded from an unpacked scenario folder and reloaded an runtime using F5. If the classic scenario selection appears instead of the folder map, an error has occured in the folder map declaration, such as missing image files. With debug mode activated, there will also be an error message in OpenClonk.log."
+msgstr "Zum Testen kann die FolderMap mit einem entpackten Rundenordner entworfen, und dann in der Szenarienauswahl mit Druck auf F5 jeweils neu geladen werden. Erscheint statt der FolderMap die klassische Szenarienauswahl, ist beim Laden der Definitionsdatei ein Fehler aufgetreten, oder zum Beispiel eine referenzierte Grafikdatei nicht gefunden worden. Bei aktiviertem Debugmodus findet sich in dem Fall eine Fehlermeldung in der Datei OpenClonk.log."
 
 #: sdk/files.xml:6(title)
 #: sdk/files.xml:7(h)
@@ -16990,12 +16991,12 @@ msgid "Ctrl-W, Ctrl-M, Ctrl-T, Ctrl-I, +/- : Change settings in landscape drawin
 msgstr "Ctrl-W, Ctrl-M, Ctrl-T, Ctrl-I, +/- : Einstellungen im Zeichenmodus"
 
 #: sdk/cmdline.xml:8(text)
-msgid "The installation directory of Clonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified."
-msgstr "Das Installationsverzeichnis von Clonk enthält die unten beschriebenen Programmdateien. Durch einen Start per Doppelklick oder Startmenü werden Programme ohne zusätzliche Parameter ausgeführt. Innerhalb einer Konsole (Eingabeaufforderung) oder Script-Datei (Batch-Datei) lassen sich die Programme jedoch mit zusätzlichen Kommandozeilenparametern starten, die hier ausführlich erklärt werden."
+msgid "The installation directory of OpenClonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified."
+msgstr "Das Installationsverzeichnis von OpenClonk enthält die unten beschriebenen Programmdateien. Durch einen Start per Doppelklick oder Startmenü werden Programme ohne zusätzliche Parameter ausgeführt. Innerhalb einer Konsole (Eingabeaufforderung) oder Script-Datei (Batch-Datei) lassen sich die Programme jedoch mit zusätzlichen Kommandozeilenparametern starten, die hier ausführlich erklärt werden."
 
 #: sdk/cmdline.xml:10(h)
-msgid "Clonk.exe (Windows) clonk (Linux) Clonk (Mac)"
-msgstr "Clonk.exe (Windows) clonk (Linux) Clonk (Mac)"
+msgid "openclonk.exe (Windows) openclonk (Linux) Openclonk (Mac)"
+msgstr "openclonk.exe (Windows) openclonk (Linux) Openclonk (Mac)"
 
 #: sdk/cmdline.xml:11(text)
 msgid "The engine. The main program of the game. Without startup parameters, the game starts in fullscreen (player mode) and shows the startup menu. The following command line parameters are recognized:"
@@ -17150,8 +17151,8 @@ msgid "--recdump=&lt;<em>Filename</em>&gt;"
 msgstr "--recdump=&lt;<em>Dateiname</em>&gt;"
 
 #: sdk/cmdline.xml:85(text)
-msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt)."
-msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.ocf/Record001.ocs --recdump=CtrlRec.txt)."
+msgid "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. openclonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt)."
+msgstr "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel openclonk.exe Aufnahmen.ocf/Record001.ocs --recdump=CtrlRec.txt)."
 
 #: sdk/cmdline.xml:87(dt)
 msgid "--startup=&lt;<em>Name</em>&gt;"
