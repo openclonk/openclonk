@@ -13,7 +13,7 @@ Rules=Rule_KillLogs=1;Rule_Gravestones=1;
 MapWidth=20
 MapHeight=20
 TopOpen=1
-BottomOpen=0
+BottomOpen=1
 MapZoom=20,0,0,20
 
 [Weather]
