@@ -25,6 +25,250 @@
 
 #ifdef USE_GL
 
+namespace
+{
+	////////////////////////////////////////////
+	// Shader code generation
+	// This translates the fixed function instructions in a material script
+	// to an equivalent fragment shader. The generated code can certainly
+	// be optimized more.
+	////////////////////////////////////////////
+	StdStrBuf TextureUnitSourceToCode(int index, StdMeshMaterialTextureUnit::BlendOpSourceType source, const float manualColor[3], float manualAlpha)
+	{
+		switch(source)
+		{
+		case StdMeshMaterialTextureUnit::BOS_Current: return StdStrBuf("currentColor");
+		case StdMeshMaterialTextureUnit::BOS_Texture: return FormatString("texture2D(oc_Textures[%d], texcoord)", index);
+		case StdMeshMaterialTextureUnit::BOS_Diffuse: return StdStrBuf("diffuse");
+		case StdMeshMaterialTextureUnit::BOS_Specular: return StdStrBuf("diffuse"); // TODO: Should be specular
+		case StdMeshMaterialTextureUnit::BOS_PlayerColor: return StdStrBuf("vec4(oc_PlayerColor, 1.0)");
+		case StdMeshMaterialTextureUnit::BOS_Manual: return FormatString("vec4(%f, %f, %f, %f)", manualColor[0], manualColor[1], manualColor[2], manualAlpha);
+		default: assert(false); return StdStrBuf("vec4(0.0, 0.0, 0.0, 0.0)");
+		}
+	}
+
+	StdStrBuf TextureUnitBlendToCode(int index, StdMeshMaterialTextureUnit::BlendOpExType blend_type, const char* source1, const char* source2, float manualFactor)
+	{
+		switch(blend_type)
+		{
+		case StdMeshMaterialTextureUnit::BOX_Source1: return StdStrBuf(source1);
+		case StdMeshMaterialTextureUnit::BOX_Source2: return StdStrBuf(source2);
+		case StdMeshMaterialTextureUnit::BOX_Modulate: return FormatString("%s * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_ModulateX2: return FormatString("2.0 * %s * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_ModulateX4: return FormatString("4.0 * %s * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_Add: return FormatString("%s + %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_AddSigned: return FormatString("%s + %s - 0.5", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_AddSmooth: return FormatString("%s + %s - %s*%s", source1, source2, source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_Subtract: return FormatString("%s - %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1 - diffuse.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1 - currentColor.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1 - %f) * %s", manualFactor, source1, manualFactor, source2);
+		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor: return FormatString("diffuse.rgb * %s + (1 - diffuse.rgb) * %s", source1, source2);
+		default: assert(false); return StdStrBuf(source1);
+		}
+	}
+
+	StdStrBuf TextureUnitToCode(int index, const StdMeshMaterialTextureUnit& texunit)
+	{
+		StdStrBuf color_source1 = FormatString("%s.rgb", TextureUnitSourceToCode(index, texunit.ColorOpSources[0], texunit.ColorOpManualColor1, texunit.AlphaOpManualAlpha1).getData());
+		StdStrBuf color_source2 = FormatString("%s.rgb", TextureUnitSourceToCode(index, texunit.ColorOpSources[1], texunit.ColorOpManualColor2, texunit.AlphaOpManualAlpha2).getData());
+		StdStrBuf alpha_source1 = FormatString("%s.a", TextureUnitSourceToCode(index, texunit.AlphaOpSources[0], texunit.ColorOpManualColor1, texunit.AlphaOpManualAlpha1).getData());
+		StdStrBuf alpha_source2 = FormatString("%s.a", TextureUnitSourceToCode(index, texunit.AlphaOpSources[1], texunit.ColorOpManualColor2, texunit.AlphaOpManualAlpha2).getData());
+
+		return FormatString("currentColor = clamp(vec4(%s, %s), 0.0, 1.0);", TextureUnitBlendToCode(index, texunit.ColorOpEx, color_source1.getData(), color_source2.getData(), texunit.ColorOpManualFactor).getData(), TextureUnitBlendToCode(index, texunit.AlphaOpEx, alpha_source1.getData(), alpha_source2.getData(), texunit.AlphaOpManualFactor).getData());
+	}
+
+	// Simple helper function
+	inline GLenum OgreBlendTypeToGL(StdMeshMaterialPass::SceneBlendType blend)
+	{
+		switch(blend)
+		{
+		case StdMeshMaterialPass::SB_One: return GL_ONE;
+		case StdMeshMaterialPass::SB_Zero: return GL_ZERO;
+		case StdMeshMaterialPass::SB_DestColor: return GL_DST_COLOR;
+		case StdMeshMaterialPass::SB_SrcColor: return GL_SRC_COLOR;
+		case StdMeshMaterialPass::SB_OneMinusDestColor: return GL_ONE_MINUS_DST_COLOR;
+		case StdMeshMaterialPass::SB_OneMinusSrcColor: return GL_ONE_MINUS_SRC_COLOR;
+		case StdMeshMaterialPass::SB_DestAlpha: return GL_DST_ALPHA;
+		case StdMeshMaterialPass::SB_SrcAlpha: return GL_SRC_ALPHA;
+		case StdMeshMaterialPass::SB_OneMinusDestAlpha: return GL_ONE_MINUS_DST_ALPHA;
+		case StdMeshMaterialPass::SB_OneMinusSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
+		default: assert(false); return GL_ZERO;
+		}
+	}
+} // anonymous namespace
+
+class C4DrawMeshGLShader: public StdMeshMaterialPass::Shader
+{
+public:
+	C4DrawMeshGLShader(const StdMeshMaterialPass& pass);
+	virtual ~C4DrawMeshGLShader();
+
+	class Error
+	{
+	public:
+		Error(const StdStrBuf& buf): Message(buf) {}
+		StdCopyStrBuf Message;
+	};
+
+	class ShaderObject
+	{
+		friend class C4DrawMeshGLShader;
+	public:
+		ShaderObject(GLint shader_type);
+		~ShaderObject();
+
+		void Load(const char* code);
+	private:
+		GLuint Shader;
+	};
+
+	GLuint Program;
+
+	GLint TexturesLocation;
+	GLint PlayerColorLocation;
+	GLint ColorModulationLocation;
+	GLint Mod2Location;
+};
+
+C4DrawMeshGLShader::ShaderObject::ShaderObject(GLint shader_type)
+{
+	Shader = glCreateShaderObjectARB(shader_type);
+	if(!Shader) throw Error(StdStrBuf("Failed to create shader"));
+}
+
+C4DrawMeshGLShader::ShaderObject::~ShaderObject()
+{
+	glDeleteObjectARB(Shader);
+}
+
+void C4DrawMeshGLShader::ShaderObject::Load(const char* code)
+{
+	glShaderSourceARB(Shader, 1, &code, NULL);
+	glCompileShaderARB(Shader);
+
+	GLint compile_status;
+	glGetObjectParameterivARB(Shader, GL_OBJECT_COMPILE_STATUS_ARB, &compile_status);
+	if(compile_status != GL_TRUE)
+	{
+		GLint shader_type;
+		glGetObjectParameterivARB(Shader, GL_OBJECT_TYPE_ARB, &shader_type);
+		const char* shader_type_str;
+		switch(shader_type)
+		{
+		case GL_VERTEX_SHADER_ARB: shader_type_str = "vertex"; break;
+		case GL_FRAGMENT_SHADER_ARB: shader_type_str = "fragment"; break;
+		//case GL_GEOMETRY_SHADER_ARB: shader_type_str = "geometry"; break;
+		default: assert(false); break;
+		}
+
+		GLint length;
+		glGetObjectParameterivARB(Shader, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Shader, length, NULL, &error_message[0]);
+			throw Error(FormatString("Failed to compile %s shader: %s", shader_type_str, &error_message[0]));
+		}
+		else
+		{
+			throw Error(FormatString("Failed to compile %s shader", shader_type_str));
+		}
+	}
+}
+
+C4DrawMeshGLShader::C4DrawMeshGLShader(const StdMeshMaterialPass& pass)
+{
+	ShaderObject FragmentShader(GL_FRAGMENT_SHADER_ARB);
+	ShaderObject VertexShader(GL_VERTEX_SHADER_ARB);
+
+	VertexShader.Load(
+		"varying vec4 diffuse;"
+		"varying vec2 texcoord;"
+		"void main()"
+		"{"
+		"  vec3 normal = normalize(gl_NormalMatrix * gl_Normal);" // TODO: Do we need to normalize? I think we enable GL_NORMALIZE in cases we have to...
+		"  vec3 lightDir = normalize(gl_LightSource[0].position.xyz);" // TODO: Do we need to normalize?
+		"  diffuse = clamp(gl_FrontLightModelProduct.sceneColor + gl_FrontLightProduct[0].ambient + gl_FrontLightProduct[0].diffuse * max(0.0, dot(normal, lightDir)), 0.0, 1.0);"
+		"  texcoord = gl_MultiTexCoord0.xy;"
+		"  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;"
+		"}"
+	);
+
+	// Produce the fragment shader... first we create one code fragment for each
+	// texture unit, and we count the number of active textures, i.e. texture
+	// units that actually use a texture.
+	unsigned int texIndex = 0;
+	StdStrBuf textureUnitCode("");
+	for(unsigned int i = 0; i < pass.TextureUnits.size(); ++i)
+	{
+		const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[i];
+		textureUnitCode.Append(TextureUnitToCode(texIndex, texunit));
+
+		if(texunit.HasTexture())
+			++texIndex;
+	}
+
+	FragmentShader.Load(
+		FormatString(
+			"varying vec4 diffuse;"
+			"varying vec2 texcoord;"
+			"%s" // Texture units with active textures, only if >0 texture units
+			"uniform vec3 oc_PlayerColor;"
+			"uniform vec4 oc_ColorModulation;"
+			"uniform int oc_Mod2;"
+			"void main()"
+			"{"
+			"  vec4 currentColor = diffuse;"
+			"  %s"
+			"  if(oc_Mod2 != 0)"
+			"    gl_FragColor = clamp(2.0 * currentColor * oc_ColorModulation - 0.5, 0.0, 1.0);"
+			"  else"
+			"    gl_FragColor = currentColor * oc_ColorModulation;"
+			"}",
+			((texIndex > 0) ? FormatString("uniform sampler2D oc_Textures[%d];", texIndex).getData() : ""),
+			textureUnitCode.getData()
+		).getData()
+	);
+
+	Program = glCreateProgramObjectARB();
+	glAttachObjectARB(Program, VertexShader.Shader);
+	glAttachObjectARB(Program, FragmentShader.Shader);
+	glLinkProgramARB(Program);
+
+	GLint link_status;
+	glGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &link_status);
+	if(link_status != GL_TRUE)
+	{
+		GLint length;
+		glGetObjectParameterivARB(Program, GL_OBJECT_INFO_LOG_LENGTH_ARB, &length);
+		if(length > 0)
+		{
+			std::vector<char> error_message(length);
+			glGetInfoLogARB(Program, length, NULL, &error_message[0]);
+			glDeleteObjectARB(Program);
+			throw Error(FormatString("Failed to link program: %s", &error_message[0]));
+		}
+		else
+		{
+			glDeleteObjectARB(Program);
+			throw Error(StdStrBuf("Failed to link program"));
+		}
+	}
+
+	TexturesLocation = glGetUniformLocationARB(Program, "oc_Textures");
+	PlayerColorLocation = glGetUniformLocationARB(Program, "oc_PlayerColor");
+	ColorModulationLocation = glGetUniformLocationARB(Program, "oc_ColorModulation");
+	Mod2Location = glGetUniformLocationARB(Program, "oc_Mod2");
+}
+
+C4DrawMeshGLShader::~C4DrawMeshGLShader()
+{
+	glDeleteObjectARB(Program);
+}
+
 bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 {
 	// TODO: If a technique is not available, show an error message what the problem is
@@ -43,7 +287,13 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 			GLint max_texture_units;
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
 			assert(max_texture_units >= 1);
-			if (pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for clrmodmap as soon as we apply clrmodmap with a shader for meshes
+			
+			unsigned int active_texture_units = 0;
+			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
+				if(pass.TextureUnits[k].HasTexture())
+					++active_texture_units;
+
+			if (active_texture_units > static_cast<unsigned int>(max_texture_units))
 				technique.Available = false;
 
 			for (unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
@@ -174,31 +424,18 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						}
 					}
 				} // loop over textures
+			} // loop over texture units
 
-#if 0
-				// Check blending: Can only have one manual source color
-				unsigned int manu_count = 0;
-				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-					++manu_count;
-				if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-				if (texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-
-				if (manu_count > 1)
-					technique.Available = false;
-
-				manu_count = 0;
-				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-					++manu_count;
-				if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-				if (texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-					++manu_count;
-
-				if (manu_count > 1)
-					technique.Available = false;
-#endif
+			try
+			{
+				assert(pass.Program == NULL);
+				pass.Program = new C4DrawMeshGLShader(pass);
+			}
+			catch(const C4DrawMeshGLShader::Error& error)
+			{
+				technique.Available = false;
+				LogF("Failed to compile shader: %s\n", error.Message.getData());
+				throw error;
 			}
 		}
 
@@ -211,221 +448,6 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 
 namespace
 {
-	inline void SetTexCombine(GLenum combine, StdMeshMaterialTextureUnit::BlendOpExType blendop)
-	{
-		switch (blendop)
-		{
-		case StdMeshMaterialTextureUnit::BOX_Source1:
-		case StdMeshMaterialTextureUnit::BOX_Source2:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_REPLACE);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Modulate:
-		case StdMeshMaterialTextureUnit::BOX_ModulateX2:
-		case StdMeshMaterialTextureUnit::BOX_ModulateX4:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_MODULATE);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Add:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_ADD);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_AddSigned:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_ADD_SIGNED);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_AddSmooth:
-			// b+c-b*c == a*c + b*(1-c) for a==1.
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_INTERPOLATE);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Subtract:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_SUBTRACT);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendManual:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_INTERPOLATE);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Dotproduct:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_DOT3_RGB);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor:
-			glTexEnvi(GL_TEXTURE_ENV, combine, GL_INTERPOLATE);
-			break;
-		}
-	}
-
-	inline void SetTexScale(GLenum scale, StdMeshMaterialTextureUnit::BlendOpExType blendop)
-	{
-		switch (blendop)
-		{
-		case StdMeshMaterialTextureUnit::BOX_Source1:
-		case StdMeshMaterialTextureUnit::BOX_Source2:
-		case StdMeshMaterialTextureUnit::BOX_Modulate:
-			glTexEnvf(GL_TEXTURE_ENV, scale, 1.0f);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_ModulateX2:
-			glTexEnvf(GL_TEXTURE_ENV, scale, 2.0f);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_ModulateX4:
-			glTexEnvf(GL_TEXTURE_ENV, scale, 4.0f);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Add:
-		case StdMeshMaterialTextureUnit::BOX_AddSigned:
-		case StdMeshMaterialTextureUnit::BOX_AddSmooth:
-		case StdMeshMaterialTextureUnit::BOX_Subtract:
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendManual:
-		case StdMeshMaterialTextureUnit::BOX_Dotproduct:
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor:
-			glTexEnvf(GL_TEXTURE_ENV, scale, 1.0f);
-			break;
-		}
-	}
-
-	inline void SetTexSource(GLenum source, StdMeshMaterialTextureUnit::BlendOpSourceType blendsource)
-	{
-		switch (blendsource)
-		{
-		case StdMeshMaterialTextureUnit::BOS_Current:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_PREVIOUS);
-			break;
-		case StdMeshMaterialTextureUnit::BOS_Texture:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_TEXTURE);
-			break;
-		case StdMeshMaterialTextureUnit::BOS_Diffuse:
-		case StdMeshMaterialTextureUnit::BOS_Specular:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_PRIMARY_COLOR);
-			break;
-		case StdMeshMaterialTextureUnit::BOS_PlayerColor:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_CONSTANT);
-			break;
-		case StdMeshMaterialTextureUnit::BOS_Manual:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_CONSTANT);
-			break;
-		}
-	}
-
-	inline void SetTexSource2(GLenum source, StdMeshMaterialTextureUnit::BlendOpExType blendop)
-	{
-		// Set Arg2 for interpolate (Arg0 for BOX_Add_Smooth)
-		switch (blendop)
-		{
-		case StdMeshMaterialTextureUnit::BOX_AddSmooth:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_CONSTANT); // 1.0, Set in SetTexColor
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_PRIMARY_COLOR);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_TEXTURE);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_PREVIOUS);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendManual:
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_CONSTANT); // Set in SetTexColor
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor:
-			// difference to BOX_Blend_Diffuse_Alpha is operand, see SetTexOperand2
-			glTexEnvi(GL_TEXTURE_ENV, source, GL_PRIMARY_COLOR);
-			break;
-		default:
-			// TODO
-			break;
-		}
-	}
-
-	inline void SetTexOperand2(GLenum operand, StdMeshMaterialTextureUnit::BlendOpExType blendop)
-	{
-		switch (blendop)
-		{
-		case StdMeshMaterialTextureUnit::BOX_Add:
-		case StdMeshMaterialTextureUnit::BOX_AddSigned:
-		case StdMeshMaterialTextureUnit::BOX_AddSmooth:
-		case StdMeshMaterialTextureUnit::BOX_Subtract:
-			glTexEnvi(GL_TEXTURE_ENV, operand, GL_SRC_COLOR);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha:
-		case StdMeshMaterialTextureUnit::BOX_BlendManual:
-			glTexEnvi(GL_TEXTURE_ENV, operand, GL_SRC_ALPHA);
-			break;
-		case StdMeshMaterialTextureUnit::BOX_Dotproduct:
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor:
-			glTexEnvi(GL_TEXTURE_ENV, operand, GL_SRC_COLOR);
-			break;
-		default:
-			// TODO
-			break;
-		}
-	}
-
-	inline void SetTexColor(const StdMeshMaterialTextureUnit& texunit, DWORD PlayerColor)
-	{
-		float Color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-		if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-		{
-			Color[0] = Color[1] = Color[2] = 1.0f;
-		}
-		else if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-		{
-			// operand of GL_CONSTANT is set to alpha for this blend mode
-			// see SetTexOperand2
-			Color[3] = texunit.ColorOpManualFactor;
-		}
-		else if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
-		{
-			Color[0] = ((PlayerColor >> 16) & 0xff) / 255.0f;
-			Color[1] = ((PlayerColor >>  8) & 0xff) / 255.0f;
-			Color[2] = ((PlayerColor      ) & 0xff) / 255.0f;
-		}
-		else if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-		{
-			Color[0] = texunit.ColorOpManualColor1[0];
-			Color[1] = texunit.ColorOpManualColor1[1];
-			Color[2] = texunit.ColorOpManualColor1[2];
-		}
-		else if (texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-		{
-			Color[0] = texunit.ColorOpManualColor2[0];
-			Color[1] = texunit.ColorOpManualColor2[1];
-			Color[2] = texunit.ColorOpManualColor2[2];
-		}
-
-		if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-			Color[3] = 1.0f;
-		else if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
-			Color[3] = texunit.AlphaOpManualFactor;
-		else if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
-			Color[3] = ((PlayerColor >> 24) & 0xff) / 255.0f;
-		else if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
-			Color[3] = texunit.AlphaOpManualAlpha1;
-		else if (texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
-			Color[3] = texunit.AlphaOpManualAlpha2;
-
-		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
-	}
-
-	inline GLenum OgreBlendTypeToGL(StdMeshMaterialPass::SceneBlendType blend)
-	{
-		switch(blend)
-		{
-		case StdMeshMaterialPass::SB_One: return GL_ONE;
-		case StdMeshMaterialPass::SB_Zero: return GL_ZERO;
-		case StdMeshMaterialPass::SB_DestColor: return GL_DST_COLOR;
-		case StdMeshMaterialPass::SB_SrcColor: return GL_SRC_COLOR;
-		case StdMeshMaterialPass::SB_OneMinusDestColor: return GL_ONE_MINUS_DST_COLOR;
-		case StdMeshMaterialPass::SB_OneMinusSrcColor: return GL_ONE_MINUS_SRC_COLOR;
-		case StdMeshMaterialPass::SB_DestAlpha: return GL_DST_ALPHA;
-		case StdMeshMaterialPass::SB_SrcAlpha: return GL_SRC_ALPHA;
-		case StdMeshMaterialPass::SB_OneMinusDestAlpha: return GL_ONE_MINUS_DST_ALPHA;
-		case StdMeshMaterialPass::SB_OneMinusSrcAlpha: return GL_ONE_MINUS_SRC_ALPHA;
-		default: assert(false); return GL_ZERO;
-		}
-	}
-
 	void RenderSubMeshImpl(const StdMeshInstance& mesh_instance, const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwBlitMode, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMeshMaterial& material = instance.GetMaterial();
@@ -445,91 +467,12 @@ namespace
 			else
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 
-			// Apply ClrMod to material
-			// TODO: ClrModMap is not taken into account by this; we should just check
-			// mesh center.
-			// TODO: Or in case we have shaders enabled use the shader... note the
-			// clrmodmap texture needs to be the last texture in that case... we should
-			// change the index to maxtextures-1 instead of 3.
-
-			const float dwMod[4] = {
-				((dwModClr >> 16) & 0xff) / 255.0f,
-				((dwModClr >>  8) & 0xff) / 255.0f,
-				((dwModClr      ) & 0xff) / 255.0f,
-				((dwModClr >> 24) & 0xff) / 255.0f
-			};
-
-			if(!(dwBlitMode & C4GFXBLIT_MOD2) && dwModClr == 0xffffffff)
-			{
-				// Fastpath for the easy case
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
-				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
-			}
-			else
-			{
-				float Ambient[4], Diffuse[4], Specular[4], Emissive[4];
-
-				// TODO: We could also consider applying dwmod using an additional
-				// texture unit, maybe we can even re-use the one which is reserved for
-				// the clrmodmap texture anyway (+adapt the shader).
-				if(!(dwBlitMode & C4GFXBLIT_MOD2))
-				{
-					Ambient[0] = pass.Ambient[0] * dwMod[0];
-					Ambient[1] = pass.Ambient[1] * dwMod[1];
-					Ambient[2] = pass.Ambient[2] * dwMod[2];
-					Ambient[3] = pass.Ambient[3] * dwMod[3];
-
-					Diffuse[0] = pass.Diffuse[0] * dwMod[0];
-					Diffuse[1] = pass.Diffuse[1] * dwMod[1];
-					Diffuse[2] = pass.Diffuse[2] * dwMod[2];
-					Diffuse[3] = pass.Diffuse[3] * dwMod[3];
-
-					Specular[0] = pass.Specular[0] * dwMod[0];
-					Specular[1] = pass.Specular[1] * dwMod[1];
-					Specular[2] = pass.Specular[2] * dwMod[2];
-					Specular[3] = pass.Specular[3] * dwMod[3];
-
-					Emissive[0] = pass.Emissive[0] * dwMod[0];
-					Emissive[1] = pass.Emissive[1] * dwMod[1];
-					Emissive[2] = pass.Emissive[2] * dwMod[2];
-					Emissive[3] = pass.Emissive[3] * dwMod[3];
-				}
-				else
-				{
-					// The RGB part for fMod2 drawing is set in the texture unit,
-					// since its effect cannot be achieved properly by playing with
-					// the material color.
-					// TODO: This should go into an additional texture unit.
-					Ambient[0] = pass.Ambient[0];
-					Ambient[1] = pass.Ambient[1];
-					Ambient[2] = pass.Ambient[2];
-					Ambient[3] = pass.Ambient[3];
-
-					Diffuse[0] = pass.Diffuse[0];
-					Diffuse[1] = pass.Diffuse[1];
-					Diffuse[2] = pass.Diffuse[2];
-					Diffuse[3] = pass.Diffuse[3];
-
-					Specular[0] = pass.Specular[0];
-					Specular[1] = pass.Specular[1];
-					Specular[2] = pass.Specular[2];
-					Specular[3] = pass.Specular[3];
-
-					Emissive[0] = pass.Emissive[0];
-					Emissive[1] = pass.Emissive[1];
-					Emissive[2] = pass.Emissive[2];
-					Emissive[3] = pass.Emissive[3];
-				}
-
-				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Ambient);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Diffuse);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Specular);
-				glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Emissive);
-				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
-			}
+			// Set material properties
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, pass.Ambient);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, pass.Diffuse);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, pass.Specular);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, pass.Emissive);
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, pass.Shininess);
 
 			// Use two-sided light model so that vertex normals are inverted for lighting calculation on back-facing polygons
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, 1);
@@ -585,198 +528,113 @@ namespace
 			glNormalPointer(GL_FLOAT, sizeof(StdMeshVertex), &vertices->nx);
 
 			glMatrixMode(GL_TEXTURE);
-			GLuint have_texture = 0;
+
+			std::vector<GLint> textures;
+			textures.reserve(pass.TextureUnits.size());
 			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
-				// Note that it is guaranteed that the GL_TEXTUREn
-				// constants are contiguous.
-				glActiveTexture(GL_TEXTURE0+j);
-				glClientActiveTexture(GL_TEXTURE0+j);
-
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
+				const unsigned int texIndex = textures.size();
 
-				glEnable(GL_TEXTURE_2D);
 				if (texunit.HasTexture())
 				{
+					// Array with texture indices set for passing the textures to the
+					// shader -- shader cannot use fixed texture image units before OGL 4.2.
+					textures.push_back(texIndex);
+
+					// Note that it is guaranteed that the GL_TEXTUREn
+					// constants are contiguous.
+					glActiveTexture(GL_TEXTURE0+texIndex);
+					glClientActiveTexture(GL_TEXTURE0+texIndex);
+					glEnable(GL_TEXTURE_2D);
+
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
-					have_texture = texunit.GetTexture(Phase).texName;
 					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName);
-				}
-				else
-				{
-					// We need to bind a valid texture here, even if the texture unit
-					// does not access the texture.
-					// TODO: Could use StdGL::lines_tex... this function should be a
-					// member of StdGL anyway.
-					glBindTexture(GL_TEXTURE_2D, have_texture);
-				}
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
 
-				// Setup texture coordinate transform
-				glLoadIdentity();
-				const double Position = instance.GetTexturePosition(i, j);
-				for (unsigned int k = 0; k < texunit.Transformations.size(); ++k)
-				{
-					const StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[k];
-					switch (trans.TransformType)
+					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+					glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &vertices->u);
+
+					// Setup texture coordinate transform
+					glLoadIdentity();
+					const double Position = instance.GetTexturePosition(i, j);
+					for (unsigned int k = 0; k < texunit.Transformations.size(); ++k)
 					{
-					case StdMeshMaterialTextureUnit::Transformation::T_SCROLL:
-						glTranslatef(trans.Scroll.X, trans.Scroll.Y, 0.0f);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_SCROLL_ANIM:
-						glTranslatef(trans.GetScrollX(Position), trans.GetScrollY(Position), 0.0f);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_ROTATE:
-						glRotatef(trans.Rotate.Angle, 0.0f, 0.0f, 1.0f);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_ROTATE_ANIM:
-						glRotatef(trans.GetRotate(Position), 0.0f, 0.0f, 1.0f);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_SCALE:
-						glScalef(trans.Scale.X, trans.Scale.Y, 1.0f);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM:
-						glMultMatrixf(trans.Transform.M);
-						break;
-					case StdMeshMaterialTextureUnit::Transformation::T_WAVE_XFORM:
-						switch (trans.WaveXForm.XForm)
+						const StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[k];
+						switch (trans.TransformType)
 						{
-						case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X:
-							glTranslatef(trans.GetWaveXForm(Position), 0.0f, 0.0f);
+						case StdMeshMaterialTextureUnit::Transformation::T_SCROLL:
+							glTranslatef(trans.Scroll.X, trans.Scroll.Y, 0.0f);
 							break;
-						case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y:
-							glTranslatef(0.0f, trans.GetWaveXForm(Position), 0.0f);
+						case StdMeshMaterialTextureUnit::Transformation::T_SCROLL_ANIM:
+							glTranslatef(trans.GetScrollX(Position), trans.GetScrollY(Position), 0.0f);
 							break;
-						case StdMeshMaterialTextureUnit::Transformation::XF_ROTATE:
-							glRotatef(trans.GetWaveXForm(Position), 0.0f, 0.0f, 1.0f);
+						case StdMeshMaterialTextureUnit::Transformation::T_ROTATE:
+							glRotatef(trans.Rotate.Angle, 0.0f, 0.0f, 1.0f);
 							break;
-						case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X:
-							glScalef(trans.GetWaveXForm(Position), 1.0f, 1.0f);
+						case StdMeshMaterialTextureUnit::Transformation::T_ROTATE_ANIM:
+							glRotatef(trans.GetRotate(Position), 0.0f, 0.0f, 1.0f);
 							break;
-						case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y:
-							glScalef(1.0f, trans.GetWaveXForm(Position), 1.0f);
+						case StdMeshMaterialTextureUnit::Transformation::T_SCALE:
+							glScalef(trans.Scale.X, trans.Scale.Y, 1.0f);
 							break;
-						}
-						break;
-					}
-				}
-
-				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
-				bool fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
-
-				// Overwrite texcombine and texscale for fMod2 drawing.
-				// TODO: Use an additional texture unit or a shader to do this,
-				// so that the settings of this texture unit are not lost.
-
-				if(fMod2)
-				{
-					// Special case RGBA setup for fMod2
-					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
-					glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD_SIGNED);
-					glTexEnvf(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1.0f);
-					glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
-					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]); // TODO: Fails for StdMeshMaterialTextureUnit::BOX_Source2
-					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_CONSTANT);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
-					glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_CONSTANT);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-					glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, dwMod);
-				}
-				else
-				{
-					// Combine
-					SetTexCombine(GL_COMBINE_RGB, texunit.ColorOpEx);
-					SetTexCombine(GL_COMBINE_ALPHA, texunit.AlphaOpEx);
-
-					// Scale
-					SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
-					SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
-
-					if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
-					{
-						SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-					}
-					else
-					{
-						if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-						{
-							// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-							SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
-							SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[0]);
-							SetTexSource(GL_SOURCE2_RGB, texunit.ColorOpSources[1]);
-
-							SetTexOperand2(GL_OPERAND0_RGB, texunit.ColorOpEx);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
-						}
-						else
-						{
-							SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-
-							if (texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						case StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM:
+							glMultMatrixf(trans.Transform.M);
+							break;
+						case StdMeshMaterialTextureUnit::Transformation::T_WAVE_XFORM:
+							switch (trans.WaveXForm.XForm)
 							{
-								SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
-								glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+							case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X:
+								glTranslatef(trans.GetWaveXForm(Position), 0.0f, 0.0f);
+								break;
+							case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y:
+								glTranslatef(0.0f, trans.GetWaveXForm(Position), 0.0f);
+								break;
+							case StdMeshMaterialTextureUnit::Transformation::XF_ROTATE:
+								glRotatef(trans.GetWaveXForm(Position), 0.0f, 0.0f, 1.0f);
+								break;
+							case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X:
+								glScalef(trans.GetWaveXForm(Position), 1.0f, 1.0f);
+								break;
+							case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y:
+								glScalef(1.0f, trans.GetWaveXForm(Position), 1.0f);
+								break;
 							}
-
-							SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
-							SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);
+							break;
 						}
 					}
-
-					if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
-					{
-						SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-					}
-					else
-					{
-						if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-						{
-							// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-							SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
-							SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[0]);
-							SetTexSource(GL_SOURCE2_ALPHA, texunit.AlphaOpSources[1]);
-
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
-						}
-						else
-						{
-							SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-
-							if (texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
-							{
-								SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
-								glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-							}
-
-							SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
-							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
-						}
-					}
-
-					SetTexColor(texunit, dwPlayerColor);
 				}
 			}
 
 			glMatrixMode(GL_MODELVIEW);
 
+			const float dwMod[4] = {
+				((dwModClr >> 16) & 0xff) / 255.0f,
+				((dwModClr >>  8) & 0xff) / 255.0f,
+				((dwModClr      ) & 0xff) / 255.0f,
+				((dwModClr >> 24) & 0xff) / 255.0f
+			};
+			
+			const float dwPlrClr[3] = {
+				((dwPlayerColor >> 16) & 0xff) / 255.0f,
+				((dwPlayerColor >>  8) & 0xff) / 255.0f,
+				((dwPlayerColor      ) & 0xff) / 255.0f
+			};
+
+			const int fMod2 = (dwBlitMode & C4GFXBLIT_MOD2) != 0;
+
+			const C4DrawMeshGLShader& shader = static_cast<const C4DrawMeshGLShader&>(*pass.Program);
+
+			glUseProgramObjectARB(shader.Program);
+			if(shader.TexturesLocation != -1 && !textures.empty()) glUniform1ivARB(shader.TexturesLocation, textures.size(), &textures[0]);
+			if(shader.PlayerColorLocation != -1) glUniform3fvARB(shader.PlayerColorLocation, 1, dwPlrClr);
+			if(shader.ColorModulationLocation != -1) glUniform4fvARB(shader.ColorModulationLocation, 1, dwMod);
+			if(shader.Mod2Location != -1) glUniform1iARB(shader.Mod2Location, fMod2);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
-			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+			for (unsigned int j = 0; j < textures.size(); ++j)
 			{
-				glActiveTexture(GL_TEXTURE0+j);
-				glClientActiveTexture(GL_TEXTURE0+j);
+				glActiveTexture(GL_TEXTURE0+textures[j]);
+				glClientActiveTexture(GL_TEXTURE0+textures[j]);
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
@@ -1146,6 +1004,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	}
 
 	RenderMeshImpl(instance, dwModClr, dwBlitMode, dwPlayerColor, parity);
+
+	glUseProgramObjectARB(0);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

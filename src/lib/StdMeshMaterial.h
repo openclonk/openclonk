@@ -273,6 +273,34 @@ public:
 	CullHardwareType CullHardware;
 	SceneBlendType SceneBlendFactors[2];
 	bool AlphaToCoverage;
+
+	// An abstract shader class. This is supposed to be implemented by the
+	// GFX implementation, such as C4DrawGL.
+	class Shader { public: virtual ~Shader() {} };
+
+	// This is a simple reference to a shader. It is allowed to be copied as long
+	// as the shader is not set.
+	class ShaderRef
+	{
+	public:
+		ShaderRef(): Program(NULL) {}
+		ShaderRef(const ShaderRef& other) { Program = NULL; /* don't copy the program pointer */ }
+		~ShaderRef() { delete Program; }
+
+		ShaderRef& operator=(Shader* NewProgram) { assert(Program == NULL); Program = NewProgram; return *this; }
+		ShaderRef& operator=(const ShaderRef& other) { assert(Program == NULL); assert(other.Program == NULL); Program = NULL; return *this; }
+
+		const Shader* operator->() const { return Program; }
+		const Shader& operator*() const { return *Program; }
+		operator const Shader*() const { return Program; }
+
+		Shader* Program;
+	};
+
+	// A compiled shader which applies the blending between the texture units,
+	// and also applies color modulation and MOD2.
+	// The actual compilation is being done in PrepareMaterial() of the C4Draw.
+	ShaderRef Program;
 };
 
 class StdMeshMaterialTechnique
