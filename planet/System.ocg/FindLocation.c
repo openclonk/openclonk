@@ -77,7 +77,10 @@ global func Loc_InRect(x, int y, int w, int h)
 */
 global func Loc_Material(string material, string texture)
 {
-	return [LOC_MATERIAL, Material(material), texture];
+	if (texture)
+		return [LOC_MATERIAL, Material(material), texture];
+	else
+		return [LOC_MATERIAL, Material(material)];
 }
 
 global func Loc_Tunnel()
