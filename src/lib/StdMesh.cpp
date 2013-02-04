@@ -621,7 +621,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 				pComp->excCorrupt("Slot of left child does not match parent slot");
 			if(LinearInterpolation.ChildRight->Slot != Slot)
 				pComp->excCorrupt("Slof of right child does not match parent slot");
-			LinearInterpolation.ChildRight->Parent = this;
+			LinearInterpolation.ChildLeft->Parent = this;
 			LinearInterpolation.ChildRight->Parent = this;
 		}
 		break;
