@@ -28,6 +28,21 @@
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H
 
+/* C4PropList have a somewhat complicated reference counting scheme. You can:
+ - Store a C4Proplist* in a C4Value. This is the preferred and often only way.
+ - Store a C4Object* from GetObject in a C4Object* or C4PropList* if there is a ClearPointer function for it
+   Use a C4ObjectPtr for help with storing the Object in Savegames.
+ - Store a C4Def* from GetDef() in a C4Def* or C4PropList*
+
+All PropLists can be destroyed while there are still C4Values referencing them, though
+Definitions do not get destroyed during the game. So always check for nullpointers.
+
+The linked list formed by C4PropList::FirstRef and C4Value::NextRef is used to
+change all C4Values referencing the destroyed Proplist to contain nil instead.
+Objects are also cleaned up via various ClearPointer functions.
+The list is also used as a reference count to remove unused Proplists.
+The exception are C4PropListNumbered and C4Def, which have implicit references
+from C4GameObjects, C4Object and C4DefList. They have to be destroyed when loosing that reference.*/
 
 class C4Property
 {
@@ -57,12 +72,11 @@ class C4PropListNumbered;
 class C4PropList
 {
 public:
-	void AddRef(C4Value *pRef);
-	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
 	const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
 
+	// These functions return this or a prototype.
 	virtual C4Def const * GetDef() const;
 	virtual C4Def * GetDef();
 	virtual C4Object * GetObject();
@@ -127,12 +141,16 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
-	C4Value *FirstRef; // No-Save
+	void ClearRefs() { while (FirstRef) FirstRef->Set0(); }
 
 private:
+	void AddRef(C4Value *pRef);
+	void DelRef(const C4Value *pRef, C4Value * pNextRef);
+	C4Value *FirstRef; // No-Save
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
+	friend class C4Value;
 	friend class C4ScriptHost;
 public:
 	int32_t Status;
@@ -149,7 +167,6 @@ public:
 	~C4PropListNumbered();
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 	virtual C4PropListNumbered * GetPropListNumbered();
-	void AcquireNumber();
 	virtual bool IsNumbered() const { return true; }
 
 	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
@@ -159,11 +176,12 @@ public:
 	static void ResetEnumerationIndex();
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
+	void AcquireNumber();
 
 	static C4Set<C4PropListNumbered *> PropLists;
 	static int32_t EnumerationIndex;
-	friend class C4GameObjects;
 	friend class C4Game;
+	friend class C4GameObjects;
 };
 
 // Proplists created by script at runtime

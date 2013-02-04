@@ -391,7 +391,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (Info) Info->Retire();
 	Info = NULL;
 	// Object system operation
-	while (FirstRef) FirstRef->Set0();
+	ClearRefs();
 	Game.ClearPointers(this);
 	ClearCommands();
 	if (pSolidMaskData)
