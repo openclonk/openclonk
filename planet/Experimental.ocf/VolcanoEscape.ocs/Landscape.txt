@@ -1,0 +1,99 @@
+/* Escape the volcano - by Sven2 */
+
+overlay VaryTex { mat=Earth; turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
+overlay AshBorder { algo=border; mat=Ashes; tex=ashes; a=1; b=1; };
+overlay MixedBorder { algo=border; mat=Ashes; tex=ashes; a=1; b=1;
+  VaryTex { mat=Earth; tex=earth_topSoil; };
+  VaryTex { mat=Rock; tex=rock_cracked; };
+};
+overlay RockyBorder { algo=border; mat=Rock; tex=rock_cracked; a=3; b=3; turbulence=10;
+  VaryTex { mat=Granite; tex=granite; a=1; };
+  VaryTex { mat=Earth; tex=earth_topSoil; a=1; };  
+  VaryTex { mat=Ashes; tex=ashes; a=1; };  
+};
+
+map LavaParkour {
+
+  // Basic background is earth
+  mat=Earth; tex=earth;
+  VaryTex { tex=earth_rough; a=0; };
+  VaryTex { tex=earth_dry; a=2; };
+
+  // Tip of volcano
+  algo=poly;
+  point {x=-100%; y=25%; };
+  point {x=0%; y=25%; };
+  point {x=30%; y=10%; };
+  point {x=70%; y=10%; };
+  point {x=100%; y=25%; };
+  point {x=200%; y=25%; };
+  point {x=200%; y=200%; };
+  point {x=-100%; y=200%; };
+  turbulence=10;
+
+  // Rock
+  overlay Rock { algo=rndchecker; zoomX=10; zoomY=-100; a=1; turbulence=10; mask=1;
+    overlay { algo=border; a=0; b=2; invert=1; mat=rock; tex=rock; };
+  };
+
+  // Granite
+  overlay Granite { algo=rndchecker; zoomX=10; zoomY=-100; a=1; turbulence=10; mask=1;
+    overlay { algo=border; a=0; b=2; invert=1; mat=Granite; tex=granite; };
+  };
+
+  // lava; lots of it
+  overlay LavaVeins { algo=rndchecker; zoomX=-50; zoomY=-50; a=6; turbulence=100; mat=DuroLava; tex=lava_red;
+    // some ashes to the bottom of lava veins
+    AshBorder { a=0; b=1; oy=-1px; turbulence=10; };
+    // no ashes on top of lava vein
+    overlay  { algo=border; a=0; b=2; oy=2px; mat=DuroLava; tex=lava_red; };
+  }; LavaVeins;
+
+
+  // Extra caves
+  overlay Caves { algo=rndchecker; zoomX=-100; zoomY=-50; a=3; turbulence=100; mat=Tunnel; tex=tunnel;
+    // some ashes to the bottom of lava veins
+    AshBorder { a=0; b=1; oy=-1px; turbulence=10; };
+    // no ashes on top of lava vein
+    MixedBorder;
+  };
+
+  // Some water
+  overlay Water { algo=rndchecker; zoomX=-100; zoomY=10; a=15; turbulence=100;  mask=1;
+    overlay { algo=border; a=0; b=2; invert=1;  mat=Water; MixedBorder; };
+  };
+
+  // Bottom end
+  overlay BottomWall { y=99; mat=Granite; tex=granite; };
+
+  // Starting cave
+  overlay {
+    algo=poly; mat=Tunnel;
+    point { x=10%; y=200%; };
+    point { x=10%; y=100%; };
+    point { x=20%; y=85%; };
+    point { x=40%; y=85%; };
+    point { x=80%; y=100%; };
+    point { x=80%; y=200%; };
+    turbulence=20;
+
+    // Cave background
+    overlay { algo=sin; ox=20%; oy=93%; zoomY=-100; zoomX=-100; turbulence=10; mat=Tunnel; tex=brickback; };
+
+    // Cave floor
+    overlay { y=99%; mat=Brick; };
+    overlay { x=55%; wdt=1px; y=99%; mat=Tunnel; tex=brickback; };
+
+    // Cave bounds
+    RockyBorder;
+    RockyBorder {a=1; b=1; turbulence=0; };
+  };
+
+  RockyBorder;
+  RockyBorder {a=1; b=1; turbulence=0; };
+
+  // Left and right border is all granite
+  overlay SideWall { x=-45; y=25; wdt=50; turbulence=10; loosebounds=1; mat=Granite; tex=granite; 
+    overlay { algo=border; mat=Rock; tex=rock_cracked; a=1; b=1; turbulence=0; }; };
+  SideWall { x=94; };
+};
