@@ -24,12 +24,14 @@ local respawn_list; // List of last reached respawn CP per player.
 local plr_list; // Number of checkpoints the player completed.
 local team_list; // Number of checkpoints the team completed.
 local time_store; // String for best time storage in player file.
+local no_respawn_handling; // set to true if this goal should not handle respawn
 
 /*-- General --*/
 
 protected func Initialize()
 {
 	finished = false;
+	no_respawn_handling = false;
 	cp_list = [];
 	cp_count = 0;
 	respawn_list = [];
@@ -106,6 +108,16 @@ public func AddCheckpoint(int x, int y, int mode)
 	}
 	cp_count++;
 	return cp;
+}
+
+public func DisableRespawnHandling()
+{
+	// Call this to disable respawn handling by goal
+	// This might be useful if
+	// a) you don't want any respawns or
+	// b) the scenario already provides an alternate respawn handling
+	no_respawn_handling = true;
+	return true;
 }
 
 /*-- Checkpoint interaction --*/
@@ -335,6 +347,7 @@ protected func InitializePlayer(int plr, int x, int y, object base, int team)
 
 protected func RelaunchPlayer(int plr)
 {
+	if (no_respawn_handling) return;
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
