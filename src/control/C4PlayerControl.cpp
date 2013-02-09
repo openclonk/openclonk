@@ -306,6 +306,7 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 			else if (*szKeyName == '$')
 			{
 				// this is a scan code. re-resolve in case keyboard layout changed.
+				// is this still relevant?
 				rKeyComboItem.Key = C4KeyCodeEx::GetKeyByScanCode(szKeyName);
 			}
 		}

@@ -29,93 +29,48 @@
 
 #include <StdBuf.h>
 
-#ifdef USE_WIN32_WINDOWS
-#include <C4windowswrapper.h>
-#define K_ALT VK_MENU
-#define K_ESCAPE VK_ESCAPE
-#define K_PAUSE VK_PAUSE
-#define K_TAB VK_TAB
-#define K_RETURN VK_RETURN
-#define K_DELETE VK_DELETE
-#define K_INSERT VK_INSERT
-#define K_BACK VK_BACK
-#define K_SPACE VK_SPACE
-#define K_F1 VK_F1
-#define K_F2 VK_F2
-#define K_F3 VK_F3
-#define K_F4 VK_F4
-#define K_F5 VK_F5
-#define K_F6 VK_F6
-#define K_F7 VK_F7
-#define K_F8 VK_F8
-#define K_F9 VK_F9
-#define K_F10 VK_F10
-#define K_F11 VK_F11
-#define K_F12 VK_F12
-#define K_ADD VK_ADD
-#define K_SUBTRACT VK_SUBTRACT
-#define K_MULTIPLY VK_MULTIPLY
-#define K_UP VK_UP
-#define K_DOWN VK_DOWN
-#define K_LEFT VK_LEFT
-#define K_RIGHT VK_RIGHT
-#define K_HOME VK_HOME
-#define K_END VK_END
-#define K_SCROLL VK_SCROLL
-#define K_MENU VK_APPS
-#define K_PAGEUP VK_PRIOR
-#define K_PAGEDOWN VK_NEXT
-#define KEY_A ((WORD) 'A') // select all in GUI-editbox
-#define KEY_C ((WORD) 'C') // copy in GUI-editbox
-#define KEY_I ((WORD) 'I') // console mode control key
-#define KEY_M ((WORD) 'M') // console mode control key
-#define KEY_T ((WORD) 'T') // console mode control key
-#define KEY_V ((WORD) 'V') // paste in GUI-editbox
-#define KEY_W ((WORD) 'W') // console mode control key
-#define KEY_X ((WORD) 'X') // cut from GUI-editbox
-#elif defined(USE_X11)
-#include <X11/keysym.h>
-#define K_F1 XK_F1
-#define K_F2 XK_F2
-#define K_F3 XK_F3
-#define K_F4 XK_F4
-#define K_F5 XK_F5
-#define K_F6 XK_F6
-#define K_F7 XK_F7
-#define K_F8 XK_F8
-#define K_F9 XK_F9
-#define K_F10 XK_F10
-#define K_F11 XK_F11
-#define K_F12 XK_F12
-#define K_ADD XK_KP_Add
-#define K_SUBTRACT XK_KP_Subtract
-#define K_MULTIPLY XK_KP_Multiply
-#define K_ESCAPE XK_Escape
-#define K_PAUSE XK_Pause
-#define K_TAB XK_Tab
-#define K_RETURN XK_Return
-#define K_DELETE XK_Delete
-#define K_INSERT XK_Insert
-#define K_BACK XK_BackSpace
-#define K_SPACE XK_space
-#define K_UP XK_Up
-#define K_DOWN XK_Down
-#define K_LEFT XK_Left
-#define K_RIGHT XK_Right
-#define K_HOME XK_Home
-#define K_END XK_End
-#define K_SCROLL XK_Scroll_Lock
-#define K_MENU XK_Menu
-#define K_PAGEUP XK_Page_Up
-#define K_PAGEDOWN XK_Page_Down
-#define KEY_A XK_a // select all in GUI-editbox
-#define KEY_C XK_c // copy in GUI-editbox
-#define KEY_I XK_i // console mode control key
-#define KEY_M XK_m // console mode control key
-#define KEY_T XK_t // console mode control key
-#define KEY_V XK_v // paste in GUI-editbox
-#define KEY_W XK_w // console mode control key
-#define KEY_X XK_x // cut from GUI-editbox
+#if defined(USE_WIN32_WINDOWS) || defined(USE_X11)
+#define K_F1 59
+#define K_F2 60
+#define K_F3 61
+#define K_F4 62
+#define K_F5 63
+#define K_F6 64
+#define K_F7 65
+#define K_F8 66
+#define K_F9 67
+#define K_F10 68
+#define K_F11 87
+#define K_F12 88
+#define K_ADD 78
+#define K_SUBTRACT 74
+#define K_MULTIPLY 55
+#define K_ESCAPE 1
+#define K_PAUSE 119
+#define K_TAB 15
+#define K_RETURN 28
+#define K_DELETE 111
+#define K_INSERT 110
+#define K_BACK 14
+#define K_SPACE 57
+#define K_UP 103
+#define K_DOWN 108
+#define K_LEFT 105
+#define K_RIGHT 106
+#define K_HOME 102
+#define K_END 107
+#define K_SCROLL 70
+#define K_MENU 127
+#define K_PAGEUP 104
+#define K_PAGEDOWN 109
+#define KEY_A 30 // select all in GUI-editbox
+#define KEY_C 46 // copy in GUI-editbox
+#define KEY_I 23 // console mode control key
+#define KEY_M 50 // console mode control key
+#define KEY_T 20 // console mode control key
+#define KEY_V 47 // paste in GUI-editbox
+#define KEY_W 17 // console mode control key
+#define KEY_X 45 // cut from GUI-editbox
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
 #define K_F1 SDLK_F1
