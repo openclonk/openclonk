@@ -35,11 +35,7 @@ global func RandomX(int start, int end)
 // Returns the sign of x.
 global func Sign(int x)
 {
-	if (x > 0)
-		return 1;
-	else if (x < 0)
-		return -1;
-	return 0;
+	return (x>0)-(x<0);
 }
 
 // Tangens.
