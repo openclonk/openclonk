@@ -13,7 +13,7 @@ func Initialize()
 	Earthquake->SetChance(100);
 	Volcano->SetChance(3);
 	Volcano->SetMaterial("DuroLava");
-	Meteor->SetChance(15);
+	Meteor->SetChance(22);
 	// We aren't doing much outside anyway; celestials are a bit of a waste
 	/*CreateObject(Environment_Celestial);
 	var time = CreateObject(Environment_Time);
@@ -24,22 +24,24 @@ func Initialize()
 	var lorry = CreateObject(Lorry, pos.x, pos.y);
 	if (lorry)
 	{
-		lorry->CreateContents(WallKit,3);
+		lorry->CreateContents(WallKit,5);
 		lorry->CreateContents(Wood,12);
 		lorry->CreateContents(Metal,5);
 		lorry->CreateContents(Rock,5);
-		lorry->CreateContents(Bread,3);
+		lorry->CreateContents(Bread,8);
+		lorry->CreateContents(Firestone,5);
+		lorry->CreateContents(Dynamite,3);
+		lorry->CreateContents(DynamiteBox,2);
 	}
 	// Mushrooms before any earth materials, because they create their own caves
 	LargeCaveMushroom->Place(15, Rectangle(LandscapeWidth()/4,LandscapeHeight()*72/100,LandscapeWidth()/2,LandscapeHeight()*7/100));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting
-	PlaceBatches([Firestone], 5, 100, 15);
-	PlaceBatches([Dynamite], 3, 50, 6);
+	PlaceBatches([Firestone], 3, 100, 5);
 	PlaceBatches([Rock, Loam, Loam], 10, 200, 10);
 	// Create some chests in caves
 	var chest_pos, chest;
-	var chest_sets = [[[DynamiteBox,2], [Dynamite,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,5],[Firestone,5],[Wood,8]]];
+	var chest_sets = [[[DynamiteBox,2], [Dynamite,5], [Bread,5]], [[Loam,5], [WallKit,3], [Wood,8]], [[Bread,10],[Firestone,5],[Wood,8]]];
 	for (var i=0; i<3; ++i)
 		if (chest_pos = FindLocation(Loc_Material("Tunnel"), Loc_Wall(CNAT_Bottom)))
 			if (chest = CreateObject(Chest, chest_pos.x, chest_pos.y))
