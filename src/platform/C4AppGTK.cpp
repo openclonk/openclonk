@@ -39,7 +39,7 @@
 #include <gdk/gdkx.h>
 #endif
 
-#include "c4x.xpm"
+#include <oc-icon.h>
 
 #include "C4AppGTKImpl.h"
 
@@ -65,7 +65,7 @@ bool C4AbstractApp::Init(int argc, char * argv[])
 	setlocale(LC_ALL,"");
 	gtk_init(&argc, &argv);
 
-	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
+	GdkPixbuf* icon = gdk_pixbuf_new_from_inline(-1, oc_icon_pixbuf_data, false, NULL);
 	gtk_window_set_default_icon(icon);
 	g_object_unref(icon);
 	// Try to figure out the location of the executable

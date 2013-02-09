@@ -637,23 +637,55 @@ endif()
 
 # source files specific to a GUI library
 if(USE_GTK)
-	list(APPEND OC_CLONK_SOURCES
-		src/res/Brush.h
-		src/res/Cursor.h
-		src/res/Dynamic.h
-		src/res/Exact.h
-		src/res/Fill.h
-		src/res/Halt.h
-		src/res/Ift.h
-		src/res/Line.h
-		src/res/Mouse.h
-		src/res/NoIft.h
-		src/res/Picker.h
-		src/res/Play.h
-		src/res/Rect.h
-		src/res/resource.h
-		src/res/Static.h
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+		COMMAND
+			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			"brush_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png"
+			"halt_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png"
+			"picker_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png"
+			"cursor_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png"
+			"ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png"
+			"play_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png"
+			"dynamic_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png"
+			"line_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png"
+			"rect_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png"
+			"exact_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png"
+			"mouse_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png"
+			"static_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png"
+			"fill_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png"
+			"no_ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png"
+			> ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png
+		VERBATIM
 	)
+	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h)
+
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
+		COMMAND
+			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			"oc_icon_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico"
+			> ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+		VERBATIM
+	)
+	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h)
 
 	list(APPEND OC_SYSTEM_SOURCES
 		src/editor/C4ConsoleGTK.cpp

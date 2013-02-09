@@ -21,6 +21,8 @@
 #include <C4Include.h>
 #include <C4Console.h>
 
+#include <C4ConsoleGTKDlg.h>
+#include <C4Language.h>
 #include <C4Aul.h>
 #include <C4Application.h>
 #include <C4GameSave.h>
@@ -40,28 +42,9 @@
 #include <StdFile.h>
 #include <StdRegistry.h>
 
-# include <gdk/gdkx.h>
-# include <gtk/gtk.h>
-
-# include <res/Play.h>
-# include <res/Halt.h>
-# include <res/Mouse.h>
-# include <res/Cursor.h>
-# include <res/Brush.h>
-# include <C4Language.h>
-# include <C4ConsoleGTKDlg.h>
-
-# include <res/Line.h>
-# include <res/Rect.h>
-# include <res/Fill.h>
-# include <res/Picker.h>
-
-# include <res/Dynamic.h>
-# include <res/Static.h>
-# include <res/Exact.h>
-
-# include <res/Ift.h>
-# include <res/NoIft.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+#include <editor-icons.h>
 
 using namespace OpenFileFlags;
 
