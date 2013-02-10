@@ -27,7 +27,6 @@ func Initialize()
 		lorry->CreateContents(WallKit,5);
 		lorry->CreateContents(Wood,12);
 		lorry->CreateContents(Metal,5);
-		lorry->CreateContents(Rock,5);
 		lorry->CreateContents(Bread,8);
 		lorry->CreateContents(Firestone,5);
 		lorry->CreateContents(Dynamite,3);

@@ -2,7 +2,7 @@
 
 #include Library_Stackable
 
-func MaxStackCount() { return 3; }
+func MaxStackCount() { return 4; }
 
 /* Item usage */
 
