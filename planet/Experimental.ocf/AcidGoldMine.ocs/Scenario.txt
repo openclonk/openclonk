@@ -10,6 +10,7 @@ Definition1=Objects.ocd
 
 [Game]
 Goals=Goal_Wealth=1;
+Rules=Rule_TeamAccount=1;
 
 [Player1]
 Crew=Clonk=2
@@ -33,12 +34,12 @@ SkyScrollMode=1
 TopOpen=1
 BottomOpen=0
 MapWidth=120
-MapHeight=240
+MapHeight=280
 MapZoom=6
 
 [Weather]
 Climate=00,0,0,00
 StartSeason=0,0,0,00
 YearSpeed=0,0,0,000
-Wind=1,100,-100,100
+Wind=100,0,100,100
 

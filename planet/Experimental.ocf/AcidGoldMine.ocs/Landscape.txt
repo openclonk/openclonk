@@ -3,17 +3,18 @@
 overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
 overlay Mats { algo=rndchecker; a=10; zoomX=-100; zoomY=-100; turbulence=100; y=17; hgt=60; };
 overlay GraniteTop { algo=border; a=0; b=2; mat=Granite; oy=5; turbulence=10; };
+overlay LavaSurround { algo=border; a=0; b=2; mat=DuroLava; oy=5; turbulence=10; };
 overlay SoilBorder { algo=border; a=1; b=1; mat=Earth; tex=earth_midSoil; loosebounds=1; };
 overlay Ground { algo=poly;
-    point { x=-50%; y=50%; };
-    point { x=0%; y=50%; };
-    point { x=20%; y=40%; };
+    point { x=-50%; y=40%; };
+    point { x=0%; y=40%; };
+    point { x=20%; y=35%; };
     point { x=25%; y=10%; };
     point { x=50%; y=10%; };
-    point { x=60%; y=60%; };
-    point { x=75%; y=60%; };
-    point { x=85%; y=40%; };
-    point { x=150%; y=40%; };
+    point { x=60%; y=50%; };
+    point { x=75%; y=50%; };
+    point { x=85%; y=35%; };
+    point { x=150%; y=35%; };
     point { x=150%; y=150%; };
     point { x=-50%; y=150%; };
 };
@@ -22,7 +23,7 @@ map AcidWorld {
 
   // Acid lake
   overlay { mat=Acid; y=15%; sub=0; };
-  overlay { mat=Acid; y=30%; };
+  overlay { mat=Acid; y=45%; };
 
   // Ground
   Ground {
@@ -41,13 +42,13 @@ map AcidWorld {
 
     // In earth acid
     Mats { turbulence=10000; y=50; hgt=25; a=3; mat=Acid; };
-    Mats { turbulence=10000; y=75; hgt=10; a=0; mat=Acid; };
+    Mats { turbulence=10000; y=75; hgt=9; a=0; mat=Acid; };
 
     // In earth water
     Mats { turbulence=10000; y=65; hgt=20; a=5; zoomX=10; zoomY=10; mat=Water; SoilBorder; };
 
     // Lava bottom
-    //Mats { turbulence=10000; y=80; a=6; mat=DuroLava; loosebounds=1; SoilBorder; };
+    overlay { turbulence=10; y=85; hgt=2; mat=DuroLava; loosebounds=1; };
     Mats { turbulence=10000; y=95; a=0; mat=DuroLava; loosebounds=1; SoilBorder; };
     Mats { turbulence=100; algo=sin; y=95; a=0; mat=DuroLava; loosebounds=1; SoilBorder; };
 
@@ -59,21 +60,28 @@ map AcidWorld {
     };
 
     // Ground materials
-    Mats { mat=Sulphur; y=20; hgt=50; turbulence=1000; };
+    Mats { mat=Sulphur; y=30; hgt=50; turbulence=1000; };
     Mats { mat=Rock; zoomX=10; a=5; VaryTex { mat=rock; tex=rock_cracked;};};
     Mats { mat=Coal; y=20; hgt=50; turbulence=1000; };
     Mats { mat=Ore; y=30; hgt=40; turbulence=10; };
     Mats { mat=Granite; y=70; };
-    Mats { mat=Gold; a=6; y=80; hgt=15; zoomX=-10; zoomY=-10;
-      GraniteTop;
+    Mats { mat=Granite; y=87; a=1; hgt=10; };
+    Mats { mat=Gold; a=1; y=85; hgt=10; zoomX=-10; zoomY=-10;
+      LavaSurround;
     };
 
     // Ground border
     Ground { mask=1; overlay {algo=border; mat=Rock; tex=rock_cracked; a=2; b=1; turbulence=10; };};
 
     // Some safety granit in pit
-    overlay { x=50; y=50; wdt=30; hgt=14; mat=Granite; loosebounds=1; turbulence=10; VaryTex { mat=Rock; }; };
+    overlay { x=50; y=40; wdt=30; hgt=14; mat=Granite; loosebounds=1; turbulence=10; VaryTex { mat=Rock; }; };
 
+    // Mid cave
+    overlay { x=38; y=50; wdt=8; hgt=6; turbulence=10; loosebounds=1; mat=Tunnel;
+      overlay { x=20; y=0; wdt=60; hgt=100; turbulence=10; loosebounds=1; };
+      SoilBorder;
+    };
+    
   };
 
   // Granite border
@@ -104,6 +112,6 @@ map AcidWorld {
 
   // Extra gold
   overlay { x=85; y=40; wdt=10; hgt=2; mat=Gold; loosebounds=1; turbulence=10; };
-  overlay { x=45; y=88; wdt=10; hgt=5; mat=Gold; loosebounds=1; turbulence=10; GraniteTop; };
+  overlay { x=45; y=88; wdt=10; hgt=5; mat=Gold; loosebounds=1; turbulence=10; LavaSurround; };
 
 };

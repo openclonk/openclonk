@@ -1,17 +1,21 @@
 /* Acid gold mine */
 
+static g_highest_plr_count; // max number of players that were ever in the round
+
 func Initialize()
 {
 	// Goal
 	var goal = FindObject(Find_ID(Goal_Wealth));
 	if (!goal) goal = CreateObject(Goal_Wealth);
-	goal->SetWealthGoal(225);
+	goal->SetWealthGoal(200); // updated in InitializePlayer
+	// Rules
+	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	// Acid rain!
 	Cloud->Place(10);
 	Cloud->SetPrecipitation("Acid", 100);
 	// Earthquacks and lava!
 	Earthquake->SetChance(100);
-	Volcano->SetChance(3);
+	Volcano->SetChance(2);
 	Volcano->SetMaterial("DuroLava");
 	Meteor->SetChance(22);
 	// We aren't doing much outside anyway; celestials are a bit of a waste
@@ -79,6 +83,16 @@ func InitializePlayer(int plr)
 		else if (i==1)
 		{
 			crew->CreateContents(Axe);
+		}
+	}
+	// Update goal: More players need to mine more gold
+	if (GetPlayerCount() > g_highest_plr_count)
+	{
+		g_highest_plr_count = GetPlayerCount();
+		var goal = FindObject(Find_ID(Goal_Wealth));
+		if (goal)
+		{
+			goal->SetWealthGoal(BoundBy(125+75*g_highest_plr_count, 225, 300));
 		}
 	}
 	return true;
