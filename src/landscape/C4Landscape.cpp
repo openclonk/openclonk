@@ -680,12 +680,27 @@ bool C4Landscape::_SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask)
 	return true;
 }
 
-bool C4Landscape::CheckInstability(int32_t tx, int32_t ty)
+bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
 {
 	int32_t mat=GetMat(tx,ty);
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Instable)
 			return ::MassMover.Create(tx,ty);
+		// Get rid of single pixels
+		else if (::MaterialMap.Map[mat].DigFree && recursion_count<10)
+			if ((!::GBackSolid(tx,ty+1)) + (!::GBackSolid(tx,ty-1)) + (!::GBackSolid(tx+1,ty)) + (!::GBackSolid(tx-1,ty)) >= 3)
+			{
+				if (!ClearPix(tx,ty)) return false;
+				::PXS.Create(mat,itofix(tx),itofix(ty));
+				// check other pixels around this
+				// Note this cannot lead to an endless recursion (unless you do funny stuff like e.g. set DigFree=1 in material Tunnel).
+				// Check recursion anyway, because very large strips of single pixel width might cause sufficient recursion to crash
+				CheckInstability(tx+1,ty,++recursion_count);
+				CheckInstability(tx-1,ty,recursion_count);
+				CheckInstability(tx,ty-1,recursion_count);
+				CheckInstability(tx,ty+1,recursion_count);
+				return true;
+			}
 	return false;
 }
 

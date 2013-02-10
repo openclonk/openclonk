@@ -242,7 +242,7 @@ public:
 	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
 
 	void CheckInstabilityRange(int32_t tx, int32_t ty);
-	bool CheckInstability(int32_t tx, int32_t ty);
+	bool CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count=0);
 
 	bool ClearPix(int32_t tx, int32_t ty);	// also used by mass mover (corrode)
 
