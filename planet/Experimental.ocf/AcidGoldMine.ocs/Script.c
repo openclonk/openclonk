@@ -37,7 +37,7 @@ func Initialize()
 		lorry->CreateContents(DynamiteBox,2);
 	}
 	// Mushrooms before any earth materials, because they create their own caves
-	LargeCaveMushroom->Place(15, Rectangle(LandscapeWidth()/4,LandscapeHeight()*72/100,LandscapeWidth()/2,LandscapeHeight()*7/100));
+	LargeCaveMushroom->Place(15, Rectangle(LandscapeWidth()/4,172*6,LandscapeWidth()/2,60*6));
 	// Create earth materials
 	// Create them in big clusters so the whole object arrangement looks a bit less uniform and more interesting
 	PlaceBatches([Firestone], 3, 100, 5);

@@ -34,7 +34,7 @@ SkyScrollMode=1
 TopOpen=1
 BottomOpen=0
 MapWidth=120
-MapHeight=280
+MapHeight=315
 MapZoom=6
 
 [Weather]
