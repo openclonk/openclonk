@@ -1797,8 +1797,17 @@ bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, 
 	// Scan map pixels
 	for (iY = iMapY; iY < iMapY+iMapHgt; iY++)
 		for (iX = iMapX; iX < iMapX + iMapWdt; iX++)
+		{
+			int32_t tex = sfcMap->GetPix(iX, iY) & (IFT - 1);
 			// Count texture map index only (no IFT)
-			dwpTextureUsage[sfcMap->GetPix(iX, iY) & (IFT - 1)]++;
+			if (!dwpTextureUsage[tex]++) if (tex)
+			{
+				// Check if texture actually exists
+				if (!::TextureMap.GetEntry(tex)->GetMaterial())
+					LogF("Map2Landscape error: Texture index %d at (%d/%d) not defined in texture map!", (int) tex, (int) iX, (int) iY);
+				// No error. Landscape is usually fine but might contain some holes where material should be
+			}
+		}
 	// Done
 	return true;
 }
