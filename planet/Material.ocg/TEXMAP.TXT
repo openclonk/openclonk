@@ -1,40 +1,33 @@
 # Static Map Material/Texture Table 
 # Index +128 for underground materials
+
 10=Tunnel-tunnel
-11=Tunnel-tunnel
 12=Tunnel-brickback
+
 13=BrickSoft-brick1
+
 19=DuroLava-lava_red
 20=Water-water1-water2-water3-water1-water3-water2
-#21=Oil-Liquid
 22=Acid-acid
 23=Lava-lava_red
-24=DuroLava-lava_red
 25=Water-water
-#26=Oil-Smooth
-27=Acid-acid
-28=Lava-lava_red
+
+28=Earth-earth
 29=Earth-earth_dry
 30=Earth-earth_rough
 31=Earth-earth_topsoil
 32=Earth-earth_midsoil
 33=Ashes-ashes
-#34=Ashes-Rough
-#35=Ashes-Ridge
 
 36=Ore-ore
-37=Ore-ore
-38=Ore-ore
 
 40=Granite-granite
-41=Granite-granite
 42=Granite-rock
 
 45=Gold-gold
 
 50=Rock-rock
 51=Rock-rock_cracked
-52=Rock-rock
 
 53=Sulphur-sulphur
 
@@ -42,28 +35,10 @@
 
 55=Sand-sand_rough
 56=Sand-sand_smooth
-#57=Sand-Smooth3
-
-
-
-#59=FlyAshes-Smooth
-
-#60=Crystal-Flare
-#61=Crystal-Structure
-#62=Crystal-Structure2
 
 65=Ice-ice2
-66=Ice-ice2
 67=Ice-ice3
-68=Ice-ice3
 
 70=Snow-snow1
-71=Snow-snow1
-72=Snow-snow1
+
 73=Brick-brick1
-
-#80=FlySand-Smooth2
-#81=FlySand-Smooth3
-#82=FlySand-Smooth
-
-
