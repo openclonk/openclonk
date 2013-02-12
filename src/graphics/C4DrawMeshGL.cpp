@@ -435,7 +435,6 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 			{
 				technique.Available = false;
 				LogF("Failed to compile shader: %s\n", error.Message.getData());
-				throw error;
 			}
 		}
 
