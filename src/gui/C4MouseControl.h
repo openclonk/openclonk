@@ -142,6 +142,7 @@ protected:
 
 public:
 	bool IsDragging();
+	bool IsLeftDown() { return LeftButtonDown; }
 	int32_t GetPlayer() { return Player; }
 };
 

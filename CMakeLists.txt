@@ -306,6 +306,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4MessageBoard.h
 	src/gui/C4MessageInput.cpp
 	src/gui/C4MessageInput.h
+	src/gui/C4MenuWindow.cpp
+	src/gui/C4MenuWindow.h
 	src/gui/C4MouseControl.cpp
 	src/gui/C4MouseControl.h
 	src/gui/C4PlayerInfoListBox.cpp

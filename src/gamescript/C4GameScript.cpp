@@ -43,6 +43,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Log.h>
 #include <C4MessageInput.h>
+#include <C4MenuWindow.h>
 #include <C4MouseControl.h>
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
@@ -2120,6 +2121,70 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
 }
 
+static int FnCustomMenuOpen(C4PropList * _this, C4PropList *menu)
+{
+	C4MenuWindow *window = new C4MenuWindow;
+
+	::MenuWindowRoot.AddChild(window);
+
+	if (!window->CreateFromPropList(menu))
+	{
+		::MenuWindowRoot.RemoveChild(window, false);
+		return 0;
+	}
+
+	window->SetTag(&Strings.P[P_Std]);
+
+
+	return window->GetID();
+}
+
+static bool FnCustomMenuSetTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
+{
+	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	if (!window) return false;
+	if (childID) // note: valid child IDs are always non-zero
+	{
+		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		if (!subwindow) return false;
+		subwindow->SetTag(tag);
+		return true;
+	}
+	window->SetTag(tag);
+	return true;
+}
+
+static bool FnCustomMenuClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
+{
+	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	if (!window) return false;
+	if (childID) // note: valid child IDs are always non-zero
+	{
+		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		if (!subwindow) return false;
+		subwindow->Close();
+		return true;
+	}
+	window->Close();
+	return true;
+}
+
+static bool FxCustomMenuUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
+{
+	if (!update) return false;
+	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	if (!window) return false;
+	if (childID) // note: valid child IDs are always non-zero
+	{
+		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		if (!subwindow) return false;
+		subwindow->CreateFromPropList(update);
+		return true;
+	}
+	window->CreateFromPropList(update);
+	return true;
+}
+
 /*static long FnSetSaturation(C4AulContext *ctx, long s)
   {
   return pDraw->SetSaturation(BoundBy(s,0l,255l));
@@ -2408,6 +2473,10 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
+	AddFunc(pEngine, "CustomMenuOpen", FnCustomMenuOpen);
+	AddFunc(pEngine, "CustomMenuSetTag", FnCustomMenuSetTag);
+	AddFunc(pEngine, "CustomMenuClose", FnCustomMenuClose);
+	AddFunc(pEngine, "CustomMenuUpdate", FxCustomMenuUpdate);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "PathFree2", FnPathFree2);
@@ -2560,6 +2629,9 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },
 	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
 	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
+
+	{ "MENU_SetTag"               ,C4V_Int,      C4MenuWindowActionID::SetTag },
+	{ "MENU_Call"                 ,C4V_Int,      C4MenuWindowActionID::Call },
 
 	{ NULL, C4V_Nil, 0}
 };
