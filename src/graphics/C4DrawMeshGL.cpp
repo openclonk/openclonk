@@ -154,7 +154,7 @@ void C4DrawMeshGLShader::ShaderObject::Load(const char* code)
 	if(compile_status != GL_TRUE)
 	{
 		GLint shader_type;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_TYPE_ARB, &shader_type);
+		glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
 		const char* shader_type_str;
 		switch(shader_type)
 		{
