@@ -60,12 +60,12 @@ namespace
 		case StdMeshMaterialTextureUnit::BOX_AddSigned: return FormatString("%s + %s - 0.5", source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_AddSmooth: return FormatString("%s + %s - %s*%s", source1, source2, source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_Subtract: return FormatString("%s - %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1 - diffuse.a) * %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1 - currentColor.a) * %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1 - %f) * %s", manualFactor, source1, manualFactor, source2);
-		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor: return FormatString("diffuse.rgb * %s + (1 - diffuse.rgb) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1.0 - diffuse.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1.0 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1.0 - currentColor.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1.0 - %f) * %s", manualFactor, source1, manualFactor, source2);
+		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor: return FormatString("diffuse.rgb * %s + (1.0 - diffuse.rgb) * %s", source1, source2);
 		default: assert(false); return StdStrBuf(source1);
 		}
 	}
