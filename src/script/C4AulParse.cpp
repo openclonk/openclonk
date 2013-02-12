@@ -1881,6 +1881,7 @@ void C4AulParse::Parse_PropList()
 
 C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name)
 {
+	C4Value v;
 	if (!Name)
 		throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
 	C4PropListStatic * p;
@@ -1890,7 +1891,6 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 	}
 	else
 	{
-		C4Value v;
 		bool r;
 		if (parent)
 			r = parent->GetPropertyByS(Name, &v);
@@ -1899,7 +1899,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		if (!r || !v.getPropList())
 		{
 			// the proplist couldn't be parsed or was overwritten by a later constant.
-			// create a temporary replacement
+			// create a temporary replacement, make v hold the reference to it for now
 			v.SetPropList(C4PropList::NewStatic(NULL, parent, Name));
 		}
 		p = v.getPropList()->IsStatic();
