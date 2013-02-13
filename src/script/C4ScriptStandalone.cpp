@@ -75,7 +75,6 @@ bool C4GameObjects::Remove(C4Object*) {return 0;}
 bool C4GameObjects::AssignInfo() {return 0;}
 bool C4GameObjects::ValidateOwners() {return 0;}
 C4Value C4GameObjects::GRBroadcast(char const*, C4AulParSet*, bool, bool) {return C4Value();}
-C4Object * C4GameObjects::ObjectPointer(int) {return 0;}
 
 C4ObjectList::C4ObjectList() {}
 C4ObjectList::~C4ObjectList() {}
