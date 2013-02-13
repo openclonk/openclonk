@@ -38,8 +38,8 @@ int Random(int iRange)
 		rc.Val=0;
 	else
 	{
-		RandomHold = RandomHold * 214013L + 2531011L;
-		rc.Val=(RandomHold >> 16) % iRange;
+		RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
+		rc.Val = RandomHold % iRange;
 	}
 	AddDbgRec(RCT_Random, &rc, sizeof(rc));
 	return rc.Val;

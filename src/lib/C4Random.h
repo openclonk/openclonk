@@ -33,7 +33,7 @@ inline void FixedRandom(DWORD dwSeed)
 {
 	// for SafeRandom
 	srand((unsigned)time(NULL));
-	RandomHold=dwSeed; // srand(dwSeed);
+	RandomHold=dwSeed;
 	RandomCount=0;
 }
 
@@ -44,8 +44,8 @@ inline int Random(int iRange)
 {
 	RandomCount++;
 	if (iRange==0) return 0;
-	RandomHold = RandomHold * 214013L + 2531011L;
-	return (RandomHold >> 16) % iRange;
+	RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
+	return RandomHold % iRange;
 }
 #endif
 
