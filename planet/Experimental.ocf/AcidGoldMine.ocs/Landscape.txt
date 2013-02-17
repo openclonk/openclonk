@@ -2,7 +2,7 @@
 
 overlay VaryTex { turbulence=10; algo=rndchecker; zoomX=-100; zoomY=-100; };
 overlay Mats { algo=rndchecker; a=10; zoomX=-100; zoomY=-100; turbulence=100; y=48px; hgt=168px; };
-overlay GraniteTop { algo=border; a=0; b=2; mat=Granite; oy=14px; turbulence=10; };
+overlay GraniteTop { algo=border; a=0; b=2; mat=Granite; oy=2px; turbulence=0; };
 overlay LavaSurround { algo=border; a=0; b=2; mat=DuroLava; oy=14px; turbulence=10; };
 overlay SoilBorder { algo=border; a=1; b=1; mat=Earth; tex=earth_midSoil; loosebounds=1; };
 overlay SideLava { mat=DuroLava; algo=bozo; turbulence=100; };
@@ -49,7 +49,7 @@ map AcidWorld {
     Mats { turbulence=10000; y=182px; hgt=56px; a=5; zoomX=10; zoomY=10; mat=Water; SoilBorder; };
 
     // Lava bottom
-    overlay { turbulence=10; y=238px; hgt=20px; mat=DuroLava; loosebounds=1; };
+    overlay { turbulence=10; y=238px; hgt=20px; mat=DuroLava; loosebounds=1; GraniteTop; };
     Mats { turbulence=10000; y=266px; a=0; mat=DuroLava; loosebounds=1; SoilBorder; };
     Mats { turbulence=100; algo=sin; y=266px; a=0; mat=DuroLava; loosebounds=1; SoilBorder; };
 
@@ -67,7 +67,7 @@ map AcidWorld {
     Mats { mat=Ore; y=84px; hgt=112px; turbulence=10; };
     Mats { mat=Granite; y=196px; };
     Mats { mat=Granite; y=244px; a=1; hgt=28px; };
-    overlay { algo=bozo; mat=Gold; a=10; y=245px; hgt=55px; zoomX=10; zoomY=10; turbulence=100; };
+    overlay { algo=bozo; mat=Gold; a=10; y=270px; hgt=55px; zoomX=10; zoomY=10; turbulence=100; };
     Mats { mat=Gold; a=4; y=270px; hgt=30px; zoomX=10; zoomY=10; };
 
     // Ground border
@@ -113,6 +113,6 @@ map AcidWorld {
 
   // Extra gold
   overlay { x=102px; y=112px; wdt=12px; hgt=6px; mat=Gold; loosebounds=1; turbulence=10; };
-  overlay { x=54px; y=249px; wdt=10px; hgt=12px; mat=Gold; loosebounds=1; turbulence=10; };
+  overlay { x=54px; y=255px; wdt=10px; hgt=12px; mat=Gold; loosebounds=1; turbulence=10; };
 
 };
