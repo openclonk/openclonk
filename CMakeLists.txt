@@ -1261,9 +1261,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
+	add_precompiled_header(libmisc src/C4Include.h)
+	add_precompiled_header(libc4script src/C4Include.h)
 	add_precompiled_header(openclonk src/C4Include.h)
-	add_precompiled_header(c4group src/C4Include.h)
-	add_precompiled_header(c4script src/C4Include.h)
 endif()
 
 ############################################################################
