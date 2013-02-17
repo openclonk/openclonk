@@ -751,7 +751,7 @@ int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
 	return mat;
 }
 
-bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx, int32_t vy)
+bool C4Landscape::InsertMaterial(int32_t mat, int32_t &tx, int32_t &ty, int32_t vx, int32_t vy)
 {
 	int32_t mdens;
 	if (!MatValid(mat)) return false;
@@ -839,7 +839,10 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
-		InsertMaterial(omat, tx, ty-1);
+	{
+		int32_t tyo = ty-1;
+		InsertMaterial(omat, tx, tyo);
+	}
 
 	return true;
 }
