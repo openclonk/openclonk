@@ -336,7 +336,7 @@ static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long 
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	int32_t insert_x=x, insert_y=y;
-	if (!::Landscape.InsertMaterial(mat,insert_x,insert_y,vx,vy)) return false;
+	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,vx,vy)) return false;
 	// output insertion position if desired
 	if (insert_position && !insert_position->IsFrozen())
 	{

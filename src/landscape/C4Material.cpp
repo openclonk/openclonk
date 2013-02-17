@@ -965,7 +965,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			return true;
 		}
 		// Else: dead. Insert material here
-		::Landscape.InsertMaterial(iPxsMat,iX,iY);
+		::Landscape.InsertMaterial(iPxsMat,&iX,&iY);
 		return true;
 	}
 	}
@@ -992,7 +992,7 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 		// evaluate inflammation (should always succeed)
 		if (::Landscape.Incinerate(iX, iY)) return true;
 		// Else: dead. Insert material here
-		::Landscape.InsertMaterial(iPxsMat,iX,iY);
+		::Landscape.InsertMaterial(iPxsMat,&iX,&iY);
 		return true;
 	}
 	// not handled
@@ -1015,7 +1015,7 @@ bool C4MaterialMap::mrfInsert(C4MaterialReaction *pReaction, int32_t &iX, int32_
 				// continue existing
 				return false;
 		// Else: dead. Insert material here
-		::Landscape.InsertMaterial(iPxsMat,iX,iY);
+		::Landscape.InsertMaterial(iPxsMat,&iX,&iY);
 		return true;
 	}
 

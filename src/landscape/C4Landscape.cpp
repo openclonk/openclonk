@@ -751,53 +751,54 @@ int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
 	return mat;
 }
 
-bool C4Landscape::InsertMaterial(int32_t mat, int32_t &tx, int32_t &ty, int32_t vx, int32_t vy)
+bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy)
 {
+	assert(tx); assert(ty);
 	int32_t mdens;
 	if (!MatValid(mat)) return false;
 	mdens=MatDensity(mat);
 	if (!mdens) return true;
 
 	// Bounds
-	if (!Inside<int32_t>(tx,0,Width-1) || !Inside<int32_t>(ty,0,Height)) return false;
+	if (!Inside<int32_t>(*tx,0,Width-1) || !Inside<int32_t>(*ty,0,Height)) return false;
 
 	if (Game.C4S.Game.Realism.LandscapePushPull)
 	{
 		// Same or higher density?
-		if (GetDensity(tx, ty) >= mdens)
+		if (GetDensity(*tx, *ty) >= mdens)
 			// Push
-			if (!FindMatPathPush(tx, ty, mdens, ::MaterialMap.Map[mat].MaxSlide, !! ::MaterialMap.Map[mat].Instable))
+			if (!FindMatPathPush(*tx, *ty, mdens, ::MaterialMap.Map[mat].MaxSlide, !! ::MaterialMap.Map[mat].Instable))
 				// Or die
 				return false;
 	}
 	else
 	{
 		// Move up above same density
-		while (mdens==GetDensity(tx,ty))
+		while (mdens==GetDensity(*tx,*ty))
 		{
-			ty--; if (ty<0) return false;
+			(*ty)--; if (*ty<0) return false;
 			// Primitive slide (1)
-			if (GetDensity(tx-1,ty)<mdens) tx--;
-			if (GetDensity(tx+1,ty)<mdens) tx++;
+			if (GetDensity(*tx-1,*ty)<mdens) (*tx)--;
+			if (GetDensity(*tx+1,*ty)<mdens) (*tx)++;
 		}
 		// Stuck in higher density
-		if (GetDensity(tx,ty)>mdens) return false;
+		if (GetDensity(*tx,*ty)>mdens) return false;
 	}
 
 	// Try slide
-	while (FindMatSlide(tx,ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
-		if (GetDensity(tx,ty+1)<mdens)
-			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+	while (FindMatSlide(*tx,*ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
+		if (GetDensity(*tx,*ty+1)<mdens)
+			{ ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
 	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
 	int32_t check_dir = 0;
 	for (int32_t i=0; i<2; ++i)
 	{
-		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+check_dir))))
+		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(*tx,*ty+check_dir))))
 		{
 			C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
-			if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
+			if ((*pReact->pFunc)(pReact, *tx,*ty, *tx,*ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
 			{
 				// the material to be inserted killed itself in some material reaction below
 				return true;
@@ -807,7 +808,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t &tx, int32_t &ty, int32_t 
 	}
 
 	// Insert as dead material
-	return InsertDeadMaterial(mat, tx, ty);
+	return InsertDeadMaterial(mat, *tx, *ty);
 }
 
 bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
@@ -841,7 +842,7 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
 	{
 		int32_t tyo = ty-1;
-		InsertMaterial(omat, tx, tyo);
+		InsertMaterial(omat, &tx, &tyo);
 	}
 
 	return true;

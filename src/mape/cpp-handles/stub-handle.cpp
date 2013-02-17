@@ -115,7 +115,7 @@ C4Landscape::C4Landscape() {}
 C4Landscape::~C4Landscape() {}
 bool C4Landscape::FindMatSlide(int&, int&, int, int, int) { return false; }
 int32_t C4Landscape::ExtractMaterial(int32_t, int32_t) { return 0; }
-bool C4Landscape::InsertMaterial(int32_t, int32_t &, int32_t &, int32_t, int32_t) { return false; }
+bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t) { return false; }
 bool C4Landscape::Incinerate(int32_t, int32_t) { return false; }
 bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
 void C4Landscape::CheckInstabilityRange(int32_t, int32_t) {}
