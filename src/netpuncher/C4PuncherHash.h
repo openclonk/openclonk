@@ -60,10 +60,25 @@ namespace std {
 	};
 
 	template<>
-	struct hash<::sockaddr_in> {
-		size_t operator()(const ::sockaddr_in& addr) const {
-			auto unpack = make_tuple(addr.sin_family, addr.sin_addr.s_addr, addr.sin_port);
-			return hash<decltype(unpack)>()(unpack);
+	struct hash<C4NetIO::addr_t> {
+		size_t operator()(const C4NetIO::addr_t& addr) const {
+			switch (addr.GetFamily())
+			{
+			case C4NetIO::HostAddress::IPv4:
+			{
+				sockaddr_in v4 = addr;
+				auto unpack = make_tuple(v4.sin_family, v4.sin_addr.s_addr, v4.sin_port);
+				return hash<decltype(unpack)>()(unpack);
+			}
+			case C4NetIO::HostAddress::IPv6:
+			{
+				sockaddr_in6 v6 = addr;
+				auto unpack = make_tuple(v6.sin6_family, v6.sin6_port, v6.sin6_flowinfo, std::string((char*) v6.sin6_addr.s6_addr, 16), v6.sin6_scope_id);
+				return hash<decltype(unpack)>()(unpack);
+			}
+			default:
+				return 0;
+			}
 		}
 	};
 }

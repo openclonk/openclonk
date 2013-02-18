@@ -60,9 +60,11 @@ private:
 	// Network addresses
 	uint8_t iAddrCnt;
 	C4Network2Address Addrs[C4ClientMaxAddr];
+	C4NetIO::EndpointAddress source;
 
 public:
 	const C4Network2Address &getAddr(int i) const { return Addrs[i]; }
+	C4Network2Address &getAddr(int i) { return Addrs[i]; }
 	int getAddrCnt() const { return iAddrCnt; }
 	const char *getTitle() const { return Title.getData(); }
 	int32_t getIcon() const { return Icon; }
@@ -80,7 +82,8 @@ public:
 	C4NetpuncherID_t getNetpuncherGameID() const { return NetpuncherGameID; }
 	StdStrBuf getNetpuncherAddr() const { return NetpuncherAddr; }
 
-	void SetSourceIP(in_addr ip);
+	void SetSourceAddress(const C4NetIO::EndpointAddress &ip);
+	const C4NetIO::EndpointAddress &GetSourceAddress() const { return source; }
 
 	void InitLocal();
 

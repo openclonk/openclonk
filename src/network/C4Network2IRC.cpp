@@ -246,7 +246,7 @@ size_t C4Network2IRCClient::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::ad
 bool C4Network2IRCClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
 	// Security checks
-	if (!fConnecting || fConnected || !AddrEqual(AddrConnect, ServerAddr)) return false;
+	if (!fConnecting || fConnected || AddrConnect != ServerAddr) return false;
 	CStdLock Lock(&CSec);
 	// Save connection data
 	fConnected = true;

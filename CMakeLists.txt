@@ -1248,6 +1248,7 @@ target_link_libraries(netpuncher
 )
 
 if(WIN32)
+	target_link_libraries(libmisc iphlpapi)
 	target_link_libraries(openclonk ws2_32)
 	target_link_libraries(openclonk-server ws2_32)
 	target_link_libraries(c4group ws2_32)

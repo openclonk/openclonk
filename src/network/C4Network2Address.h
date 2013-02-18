@@ -24,7 +24,7 @@ class C4Network2Address
 public:
 	C4Network2Address()
 			: eProtocol(P_NONE)
-	{ ZeroMem(&addr, sizeof(addr)); }
+	{ }
 
 	C4Network2Address(C4NetIO::addr_t addr, C4Network2IOProtocol eProtocol)
 			: addr(addr), eProtocol(eProtocol)
@@ -45,16 +45,18 @@ protected:
 
 public:
 	const C4NetIO::addr_t &getAddr() const { return addr; }
-	in_addr               getIPAddr() const { return addr.sin_addr; }
-	bool                  isIPNull() const { return !addr.sin_addr.s_addr; }
-	uint16_t              getPort() const { return htons(addr.sin_port); }
+	C4NetIO::addr_t &getAddr() { return addr; }
+	//in_addr               getIPAddr() const { return addr.sin_addr; }
+	bool                  isIPNull() const { return addr.IsNull(); }
+	uint16_t              getPort() const { return addr.GetPort(); }
 	C4Network2IOProtocol  getProtocol() const { return eProtocol; }
 
 	StdStrBuf toString() const;
 
 	void SetAddr(C4NetIO::addr_t naddr) { addr = naddr; }
-	void SetIP(in_addr ip) { addr.sin_addr = ip; }
-	void SetPort(uint16_t iPort) { addr.sin_port = htons(iPort); }
+	//void SetIP(in_addr ip) { addr.SetAddress(ip); }
+	void SetIP(C4NetIO::addr_t ip) { addr.SetAddress(ip); }
+	void SetPort(uint16_t iPort) { addr.SetPort(iPort); }
 	void SetProtocol(C4Network2IOProtocol enProtocol) { eProtocol = enProtocol; }
 
 	void CompileFunc(StdCompiler *pComp);
