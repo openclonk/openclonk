@@ -67,7 +67,7 @@ func InitializePlayer(int plr)
 {
 	// Harsh zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,400,250,flag);
+		SetPlayerZoomByViewRange(plr,500,350,flag);
 	SetPlayerViewLock(plr, true);
 	// Position and materials
 	var i, crew;
