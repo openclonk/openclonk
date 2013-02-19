@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2002  Sven Eberhardt
  * Copyright (c) 2005, 2011  Günther Brammer
+ * Copyright (c) 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,14 +24,10 @@
 
 #include <StdColors.h>
 
-CPNGFile *pCurrPng=NULL; // global crap for file-reading callback
-
 // png reading proc
-void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)
+void PNGAPI CPNGFile::CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)
 {
-	// read from current pnt
-	if (!pCurrPng) return;
-	pCurrPng->Read(data, length);
+	static_cast<CPNGFile*>(png_get_io_ptr(png_ptr))->Read(data, length);
 }
 
 void CPNGFile::Read(unsigned char *pData, int iLength)
@@ -44,8 +41,6 @@ void CPNGFile::Read(unsigned char *pData, int iLength)
 
 bool CPNGFile::DoLoad()
 {
-	// set current png ptr
-	pCurrPng=this;
 	// reset file ptr
 	pFilePtr=pFile;
 	// check file
@@ -61,7 +56,7 @@ bool CPNGFile::DoLoad()
 	// error handling
 	if (setjmp(png_jmpbuf(png_ptr))) return false;
 	// set file-reading proc
-	png_set_read_fn(png_ptr, png_get_io_ptr(png_ptr), &CPNGReadFn);
+	png_set_read_fn(png_ptr, this, &CPNGFile::CPNGReadFn);
 	// read info
 	png_read_info(png_ptr, info_ptr);
 	// assign local vars
