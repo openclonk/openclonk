@@ -57,6 +57,8 @@
 #include <CSurface8.h>
 #include <StdPNG.h>
 #include <C4MaterialList.h>
+#include <C4FindObject.h>
+#include <C4GameObjects.h>
 
 C4Landscape::C4Landscape()
 {
@@ -406,6 +408,15 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 	int32_t amount;
 
+	// Remember any collectible objects in area
+	C4FindObjectInRect fo_inrect(BoundingBox);
+	C4FindObjectOCF fo_collectible(OCF_Carryable);
+	C4FindObjectOCF fo_insolid(OCF_InSolid);
+	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
+	C4FindObject *fo_list[] = {&fo_inrect, &fo_collectible, &fo_insolid, &fo_layer};
+	C4FindObjectAndStatic fo_srch(4, fo_list);
+	std::auto_ptr<C4ValueArray> dig_objects(fo_srch.FindMany(::Objects, ::Objects.Sectors));
+
 	if(by_object)
 	{
 		if(!by_object->MaterialContents)
@@ -426,6 +437,22 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 					DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
 				}
 	}
+
+	// Do callbacks to digger for objects that are now dug free
+	if (by_object)
+	{
+		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
+		{
+			C4Object *dig_object = dig_objects->GetItem(i).getObj();
+			if (!GBackSolid(dig_object->GetX(), dig_object->GetY()))
+				if (!dig_object->Contained && dig_object->Status)
+				{
+					C4AulParSet pars(C4VObj(dig_object));
+					by_object->Call(PSF_DigOutObject, &pars);
+				}
+		}
+	}
+
 	return amount;
 }
 

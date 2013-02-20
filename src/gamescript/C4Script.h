@@ -112,6 +112,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_OnInIncendiaryMaterial "OnInIncendiaryMaterial"
 #define PSF_EditCursorSelection   "~EditCursorSelection"
 #define PSF_EditCursorDeselection "~EditCursorDeselection"
+#define PSF_DigOutObject        "~DigOutObject" // C4Object *obj
 
 // Effect callbacks
 
