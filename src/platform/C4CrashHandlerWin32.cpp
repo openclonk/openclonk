@@ -30,6 +30,7 @@
 #ifdef HAVE_DBGHELP
 
 // Dump generation on crash
+#include <C4Version.h>
 #include <C4windowswrapper.h>
 #include <dbghelp.h>
 #include <fcntl.h>
@@ -80,7 +81,12 @@ namespace {
 #else
 #	define POINTER_FORMAT "0x%" POINTER_FORMAT_SUFFIX
 #endif
-		
+
+		LOG_STATIC_TEXT("**********************************************************************\n");
+		LOG_STATIC_TEXT("* UNHANDLED EXCEPTION\n");
+		if (OC_BUILD_ID[0] != '\0')
+			LOG_STATIC_TEXT("* Build Identifier: " OC_BUILD_ID "\n");
+		LOG_STATIC_TEXT("**********************************************************************\n");
 		// Log exception type
 		switch (exc->ExceptionRecord->ExceptionCode)
 		{
@@ -349,6 +355,11 @@ namespace {
 }
 LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
+	enum
+	{
+		MDST_BuildId = LastReservedStream + 1
+	};
+
 	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
 	FirstCrash = false;
 
@@ -359,12 +370,23 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	// Write dump (human readable format)
 	SafeTextDump(pExceptionPointers, GetLogFD());
 
+	MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
+	MINIDUMP_USER_STREAM user_stream = {0};
+	if (OC_BUILD_ID[0] != '\0')
+	{
+		user_stream.Type = MDST_BuildId;
+		user_stream.Buffer = &OC_BUILD_ID;
+		user_stream.BufferSize = sizeof(OC_BUILD_ID);
+		user_stream_info.UserStreamCount = 1;
+		user_stream_info.UserStreamArray = &user_stream;
+	}
+
 	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
 	ExpParam.ThreadId = GetCurrentThreadId();
 	ExpParam.ExceptionPointers = pExceptionPointers;
 	ExpParam.ClientPointers = true;
 	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-	                  file, MiniDumpNormal, &ExpParam, NULL, NULL);
+	                  file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
 	CloseHandle(file);
 
 	// Pass exception

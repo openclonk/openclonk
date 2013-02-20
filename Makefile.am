@@ -76,7 +76,8 @@ do_subst = sed -e 's,[@]C4PROJECT[@],'"$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/
   -e 's,[@]C4XVER3[@],'"$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4XVER4[@],'"$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4VERSIONBUILDNAME[@],'"$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g'
+  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]OC_BUILD_ID[@],,g'
 
 C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
