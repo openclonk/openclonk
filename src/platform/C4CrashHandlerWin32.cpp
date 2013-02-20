@@ -8,7 +8,7 @@
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Nicolas Hake
+ * Copyright (c) 2011, 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -283,24 +283,33 @@ namespace {
 			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0))
 			{
 				LOG_DYNAMIC_TEXT("#%3d ", frame_number);
+				module->SizeOfStruct = sizeof(*module);
+				DWORD64 image_base = 0;
 				if (SymGetModuleInfo64(process, frame.AddrPC.Offset, module))
 				{
-					LOG_DYNAMIC_TEXT("%s!", module->ImageName);
+					LOG_DYNAMIC_TEXT("%s", module->ModuleName);
+					image_base = module->BaseOfImage;
 				}
 				DWORD64 disp64;
 				symbol->MaxNameLen = DumpBufferSize - sizeof(*symbol);
+				symbol->SizeOfStruct = sizeof(*symbol);
 				if (SymFromAddr(process, frame.AddrPC.Offset, &disp64, symbol))
 				{
-					LOG_DYNAMIC_TEXT("%s + %#lx bytes", symbol->Name, static_cast<long>(disp64));
+					LOG_DYNAMIC_TEXT("!%s+%#lx", symbol->Name, static_cast<long>(disp64));
+				}
+				else if (image_base > 0)
+				{
+					LOG_DYNAMIC_TEXT("+%#lx", static_cast<size_t>(frame.AddrPC.Offset - image_base));
 				}
 				else
 				{
-					LOG_DYNAMIC_TEXT("[" POINTER_FORMAT "]", static_cast<size_t>(frame.AddrPC.Offset));
+					LOG_DYNAMIC_TEXT("%#lx", static_cast<size_t>(frame.AddrPC.Offset));
 				}
 				DWORD disp;
+				line->SizeOfStruct = sizeof(*line);
 				if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &disp, line))
 				{
-					LOG_DYNAMIC_TEXT(" (%s Line %u + %#lx bytes)", line->FileName, static_cast<unsigned int>(line->LineNumber), static_cast<long>(disp));
+					LOG_DYNAMIC_TEXT(" [%s @ %u]", line->FileName, static_cast<unsigned int>(line->LineNumber));
 				}
 				LOG_STATIC_TEXT("\n");
 				++frame_number;
