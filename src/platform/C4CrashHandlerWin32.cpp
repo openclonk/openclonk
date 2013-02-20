@@ -64,24 +64,21 @@ namespace {
 #endif
 #define LOG_STATIC_TEXT(text) write(fd, text, sizeof(text) - 1)
 #define LOG_DYNAMIC_TEXT(...) write(fd, DumpBuffer, LOG_SNPRINTF(DumpBuffer, DumpBufferSize-1, __VA_ARGS__))
-#if OC_MACHINE == OC_MACHINE_X64
-#	if defined(_MSC_VER) || defined(__MINGW32__)
-#		define POINTER_FORMAT "0x%016Ix"
-#	elif defined(__GNUC__)
-#		define POINTER_FORMAT "0x%016zx"
-#	else
-#		define POINTER_FORMAT "0x%016p"
-#	endif
-#elif OC_MACHINE == OC_MACHINE_X86
-#	if defined(_MSC_VER) || defined(__MINGW32__)
-#		define POINTER_FORMAT "0x%08Ix"
-#	elif defined(__GNUC__)
-#		define POINTER_FORMAT "0x%08zx"
-#	else
-#		define POINTER_FORMAT "0x%08p"
-#	endif
+
+// Figure out which kind of format string will output a pointer in hex
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#	define POINTER_FORMAT_SUFFIX "Ix"
+#elif defined(__GNUC__)
+#	define POINTER_FORMAT_SUFFIX "zx"
 #else
-#	define POINTER_FORMAT "0x%p"
+#	define POINTER_FORMAT_SUFFIX "p"
+#endif
+#if OC_MACHINE == OC_MACHINE_X64
+#	define POINTER_FORMAT "0x%016" POINTER_FORMAT_SUFFIX
+#elif OC_MACHINE == OC_MACHINE_X86
+#	define POINTER_FORMAT "0x%08" POINTER_FORMAT_SUFFIX
+#else
+#	define POINTER_FORMAT "0x%" POINTER_FORMAT_SUFFIX
 #endif
 		
 		// Log exception type
@@ -343,6 +340,8 @@ namespace {
 		// (Try to) log it
 		if (exc->ExceptionRecord->ExceptionCode != STATUS_ASSERTION_FAILURE)
 		LOG_STATIC_TEXT("FATAL: Clonk crashed! Some developer might be interested in Clonk.dmp...");
+#undef POINTER_FORMAT_SUFFIX
+#undef POINTER_FORMAT
 #undef LOG_SNPRINTF
 #undef LOG_DYNAMIC_TEXT
 #undef LOG_STATIC_TEXT
