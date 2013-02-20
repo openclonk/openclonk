@@ -187,14 +187,14 @@ namespace {
 			static_cast<size_t>(exc->ContextRecord->Eip));
 #endif
 #if OC_MACHINE == OC_MACHINE_X64 || OC_MACHINE == OC_MACHINE_X86
-		LOG_DYNAMIC_TEXT("EFLAGS: %#08x (%c%c%c%c%c%c%c)\n", static_cast<unsigned int>(exc->ContextRecord->EFlags),
-			exc->ContextRecord->EFlags & 0x800 ? 'O' : '.',
-			exc->ContextRecord->EFlags & 0x400 ? 'D' : '.',
-			exc->ContextRecord->EFlags &  0x80 ? 'S' : '.',
-			exc->ContextRecord->EFlags &  0x40 ? 'Z' : '.',
-			exc->ContextRecord->EFlags &  0x10 ? 'A' : '.',
-			exc->ContextRecord->EFlags &   0x4 ? 'P' : '.',
-			exc->ContextRecord->EFlags &   0x1 ? 'C' : '.');
+		LOG_DYNAMIC_TEXT("EFLAGS: 0x%08x (%c%c%c%c%c%c%c)\n", static_cast<unsigned int>(exc->ContextRecord->EFlags),
+			exc->ContextRecord->EFlags & 0x800 ? 'O' : '.',	// overflow
+			exc->ContextRecord->EFlags & 0x400 ? 'D' : '.',	// direction
+			exc->ContextRecord->EFlags &  0x80 ? 'S' : '.',	// sign
+			exc->ContextRecord->EFlags &  0x40 ? 'Z' : '.',	// zero
+			exc->ContextRecord->EFlags &  0x10 ? 'A' : '.',	// auxiliary carry
+			exc->ContextRecord->EFlags &   0x4 ? 'P' : '.',	// parity
+			exc->ContextRecord->EFlags &   0x1 ? 'C' : '.');	// carry
 #endif
 
 		// Dump stack
