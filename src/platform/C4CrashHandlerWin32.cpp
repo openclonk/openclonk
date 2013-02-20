@@ -372,11 +372,12 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 	MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
 	MINIDUMP_USER_STREAM user_stream = {0};
+	char build_id[] = OC_BUILD_ID;
 	if (OC_BUILD_ID[0] != '\0')
 	{
 		user_stream.Type = MDST_BuildId;
-		user_stream.Buffer = &OC_BUILD_ID;
-		user_stream.BufferSize = sizeof(OC_BUILD_ID);
+		user_stream.Buffer = build_id;
+		user_stream.BufferSize = sizeof(build_id) - 1;	// don't need the terminating NUL
 		user_stream_info.UserStreamCount = 1;
 		user_stream_info.UserStreamArray = &user_stream;
 	}
