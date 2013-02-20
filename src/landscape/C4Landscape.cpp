@@ -444,7 +444,7 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
 		{
 			C4Object *dig_object = dig_objects->GetItem(i).getObj();
-			if (!GBackSolid(dig_object->GetX(), dig_object->GetY()))
+			if (dig_object && !GBackSolid(dig_object->GetX(), dig_object->GetY()))
 				if (!dig_object->Contained && dig_object->Status)
 				{
 					C4AulParSet pars(C4VObj(dig_object));
