@@ -1,8 +1,15 @@
-# Notable targets:
-# all (default): German and English onlinedocs
-# online-en: only English onlinedocs, which can be partially updated
-# Enwickler.chm: the German offline doc
-#                use with make Entwickler.chm HHC = /path/to/hhc
+# German and English online docs:
+#   make all
+#   make install prefix=/path/to/webspace
+# The offline docs:
+#   make chm HHC=/path/to/hhc.exe
+
+# Only English online docs, which can be partially updated:
+#   make online-en
+# The English offline doc:
+#   make chm/en/Developer.chm HHC=/path/to/hhc.exe
+# XML syntax check:
+#   make check
 
 # Extra Parameters for xsltproc can be given in the XSLTFLAGS variable.
 # Use prefix to select the directory where the docs are to be installed
