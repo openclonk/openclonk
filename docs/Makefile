@@ -129,7 +129,7 @@ $(addprefix chm/de/, $(extra-files-chm)): chm/de/%: %
 	$(CP) $< $@
 
 chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(addprefix chm/en/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
-	"$(HHC)" $<
+	! "$(HHC)" $<
 chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
-	"$(HHC)" $<
+	! "$(HHC)" $<
 
