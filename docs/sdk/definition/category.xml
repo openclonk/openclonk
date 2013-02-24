@@ -6,7 +6,7 @@
   <title>Object Categories</title>
   <h>Object Categories</h>
   <part>
-    <text>An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
+    <text>An object's category specifies parts of its behavior. For a definition it is set by the <code id="Category">Category</code> entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
     <text>
       <table>
         <rowh>

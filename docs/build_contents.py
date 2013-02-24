@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import xml.sax
+from xml.sax.saxutils import escape, quoteattr
 import experimental
 
 class ClonkEntityResolver(xml.sax.handler.EntityResolver):
@@ -125,11 +126,11 @@ class Clonkparser(xml.sax.handler.ContentHandler):
 
 def printfunctions(f, _):
     def folder(name):
-        f.write("<li>" + name + "\n<ul>\n")
+        f.write("<li>" + escape(name) + "\n<ul>\n")
     def sheet(url, name):
-        f.write("<li><emlink href='" + url[4:] + "'>" + name + "</emlink></li>\n")
+        f.write("<li><emlink href=" + quoteattr(url[4:]) + ">" + escape(name) + "</emlink></li>\n")
     def sheetE(url, name):
-        f.write("<li><emlink href='" + url[4:] + "'>" + name + "</emlink> (extended)</li>\n")
+        f.write("<li><emlink href=" + quoteattr(url[4:]) + ">" + escape(name) + "</emlink> (extended)</li>\n")
     folder("Functions by Category")
     cats = parser.cats.keys()
     cats.sort()
@@ -153,9 +154,9 @@ def printfunctions(f, _):
 
 def printindex(f, _):
     def folder(name):
-        f.write("<li class='index'>" + name + "\n<ul>\n")
+        f.write("<li class='index'>" + escape(name) + "\n<ul>\n")
     def sheet(url, name):
-        f.write("<li><emlink href='" + url[4:] + "'>" + name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') + "</emlink></li>\n")
+        f.write("<li><emlink href=" + quoteattr(url[4:]) + ">" + escape(name) + "</emlink></li>\n")
     folder("Index")
     titles = parser.files.keys()
     titles.sort(key=unicode.lower)

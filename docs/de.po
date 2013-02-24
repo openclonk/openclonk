@@ -4,16 +4,16 @@
 # Sven2 <sven2@goldwipf.de>
 # Armin Burgmeier <armin@arbur.net>, 2010.
 # Benedict Etzel <benedict.etzel@gmail.com>, 2011.
-# Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011, 2012.
 # Nicolas Hake <isilkor@openclonk.org>, 2013.
+# Günther Brammer <gbrammer@gmx.de>, 2009, 2010, 2011, 2012, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: OpenClonk documentation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-03 20:32+0100\n"
-"PO-Revision-Date: 2013-02-03 20:36+0100\n"
-"Last-Translator: Nicolas Hake <isilkor@openclonk.org>\n"
+"POT-Creation-Date: 2013-02-24 02:40+0100\n"
+"PO-Revision-Date: 2013-02-23 22:09+0100\n"
+"Last-Translator: Günther Brammer <gbrammer@gmx.de>\n"
 "Language-Team: German <>\n"
 "Language: German\n"
 "MIME-Version: 1.0\n"
@@ -712,24 +712,20 @@ msgid "Returns whether a is unequal to b."
 msgstr "gibt zurück, ob zwei Werte nicht gleich sind."
 
 #: sdk/script/operatoren.xml:178(col)
-#, fuzzy
 msgid "==="
-msgstr "=="
+msgstr "==="
 
 #: sdk/script/operatoren.xml:179(col)
-#, fuzzy
 msgid "Returns whether a and b refer to the same thing."
-msgstr "gibt zurück, ob der erste Wert größer als der zweite ist."
+msgstr "gibt zurück, ob a und b dasselbe (nicht nur das gleiche) sind."
 
 #: sdk/script/operatoren.xml:185(col)
-#, fuzzy
 msgid "!=="
-msgstr "=="
+msgstr "!=="
 
 #: sdk/script/operatoren.xml:186(col)
-#, fuzzy
 msgid "Returns whether a and b do not refer to the same thing."
-msgstr "gibt zurück, ob der erste Wert größer als der zweite ist."
+msgstr "gibt zurück, ob a und b nicht dasselbe sind."
 
 #: sdk/script/operatoren.xml:191(col)
 msgid "8l"
@@ -971,13 +967,12 @@ msgid "The <code>??</code> operator is called the nil-coalescing operator. It ca
 msgstr "Der <code>??</code>-Operator wird ... genannt. Er kann benutzt werden um einen Default-Wert für einen Ausdruck oder Funktionsaufruf anzugeben, wenn dieser <code>nil</code> ergeben könnte."
 
 #: sdk/script/operatoren.xml:327(h)
-#, fuzzy
 msgid "The equality operators <code>==</code>, <code>!=</code>, <code>===</code> and <code>!==</code>"
-msgstr "Setzt die Eigenschaft <code>\"foo\"</code> von <code>x</code> auf <code>bar</code> wenn <code>x</code> eine proplist ist."
+msgstr "Die Gleichheits-Operatoren <code>==</code>, <code>!=</code>, <code>===</code> und <code>!==</code>"
 
 #: sdk/script/operatoren.xml:329(text)
 msgid "The shorter operators basically consider more things equal. For example, two arrays with the same contents are equal, but === only returns true when both sides of the operator contain the same array. This matters mostly when arrays or proplists are modified. Modification can change the return value of the <code>==</code>/<code>!=</code> operators, but not of the <code>===</code>/<code>!==</code> operators."
-msgstr ""
+msgstr "Kurzgefasst betrachten die kürzeren Operatoren mehr Dinge als gleich. Zum Beispiel sind zwei Arrays mit dem gleichen Inhalt für == gleich, aber für === nur, wenn auf beiden Seiten des Operators dasselbe Array steht. Dies spielt hauptsächlich dann eine Rolle, wenn Arrays oder Proplisten geändert werden."
 
 #: sdk/script/operatoren.xml:331(h)
 msgid "Priority and Associating"
@@ -2401,19 +2396,16 @@ msgstr "Arrays"
 #: sdk/script/fn/SortArrayByProperty.xml:17(desc)
 #: sdk/script/fn/SortArrayByArrayElement.xml:17(desc)
 #: sdk/script/fn/SortArray.xml:17(desc)
-#, fuzzy
 msgid "Array that is to be sorted"
-msgstr "Array, dessen Länge verändert werden soll"
+msgstr "Array das sortiert werden soll"
 
 #: sdk/script/fn/SortArrayByProperty.xml:22(desc)
-#, fuzzy
 msgid "Name of property by which the array is to be sorted"
-msgstr "[opt] Variable, in der der Rotanteil gespeichert werden soll"
+msgstr "Name der Eigenschaft nach der das Array sortiert werden soll"
 
 #: sdk/script/fn/SortArrayByProperty.xml:27(desc)
 #: sdk/script/fn/SortArrayByArrayElement.xml:27(desc)
 #: sdk/script/fn/SortArray.xml:22(desc)
-#, fuzzy
 msgid "If true, elements are sorted in descending (highest to lowest) order. Otherwise ascending order."
 msgstr "Wenn wahr, wird in absteigender Reihenfolge sortiert. Ansonsten in aufsteigender Reihenfolge."
 
@@ -4201,9 +4193,8 @@ msgid "The eight gamma ramps have the following effects:<br/><br/><placeholder-1
 msgstr "Die acht Gammarampen haben folgende, für eigene Szenarien selbstverständlich nicht bindende Funktionen:<br/><br/><placeholder-1/><br/> Allgemein stehen niedrigere Rampenindizes für längerfristige Farbveränderungen; höhere für kürzere Effekte."
 
 #: sdk/script/fn/SetGamma.xml:81(text)
-#, fuzzy
 msgid "Adds a light red hue to the game."
-msgstr "Gibt dem Spiel einen leichten Blauschimmer"
+msgstr "Gibt dem Spiel einen leichten Rotschimmer."
 
 #: sdk/script/fn/SetGameSpeed.xml:16(desc)
 msgid "Game speed in FPS (frames per second). If this parameter is omitted or <code>false</code>, the default game speed of 38 FPS is used."
@@ -6100,9 +6091,17 @@ msgstr "X-Geschwindigkeit des eingefügten Mateiralpixels"
 msgid "vertical speed of material pixel to be inserted"
 msgstr "Y-Geschwindigkeit des eingefügten Mateiralpixels"
 
-#: sdk/script/fn/InsertMaterial.xml:45(desc)
+#: sdk/script/fn/InsertMaterial.xml:46(desc)
+msgid "If a writeable proplist is passed, members x and y are filled with the actual insertion position."
+msgstr ""
+
+#: sdk/script/fn/InsertMaterial.xml:51(desc)
 msgid "Inserts a material pixel at the given position and given speed."
 msgstr "Fügt ein Materialpixel an der angegebenen Position in der angegebenen Geschwindigkeit ein."
+
+#: sdk/script/fn/InsertMaterial.xml:52(remark)
+msgid "If the target position already contains material of the same density as the inserted material, the engine will search upwards for a proper insertion position. Use the parameter out_insertpos to find out where material was actually inserted."
+msgstr ""
 
 #: sdk/script/fn/Incinerate.xml:11(desc)
 msgid "Incinerates the specified object. This may cause an Incineration() call in the object."
@@ -6490,9 +6489,8 @@ msgid "Returns the property <code>key</code> of <code>object</code>."
 msgstr "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
 
 #: sdk/script/fn/GetProperties.xml:22(desc)
-#, fuzzy
 msgid "Returns the names of all properties of <code>object</code>."
-msgstr "Liefert die Eigenschaft <code>key</code> von <code>object</code>."
+msgstr "Liefert die Namen aller Eigenschaften von <code>object</code>."
 
 #: sdk/script/fn/GetProcedure.xml:12(desc)
 msgid "Returns the procedure of the current activity of an object (e.g. FLOAT, ATTACH, WALK). If the procedure is NONE or the object has no activity set the return value is <code>nil</code>."
@@ -7101,9 +7099,8 @@ msgid "Kills the highest ranking clonk of the third player."
 msgstr "Tötet den höchstrangigen Clonk des dritten Spielers. (Die Zählung beginnt mit 0)"
 
 #: sdk/script/fn/GetGravity.xml:11(desc)
-#, fuzzy
 msgid "Returns the current gravity in 1/100 pixel/tick²."
-msgstr "Liest die Schwerkraft (in Prozent) aus."
+msgstr "Liest die Schwerkraft in 1/100 pixel/tick² aus."
 
 #: sdk/script/fn/GetGravity.xml:16(text)
 msgid "Makes the gravitation within a radius of 100 pixels vanish if called every frame."
@@ -15641,9 +15638,8 @@ msgid "Probability of incineration by contact: 0 none, or 1 (high) to 5 (low)."
 msgstr "Kontaktentzündlichkeit: 0 keine, 1 (hoch) bis 5 (niedrig)"
 
 #: sdk/definition/procedures.xml:8(text)
-#, fuzzy
 msgid "For object activity the engine offers various standard procedures which perform typical physical behaviour. In procedure WALK, for instance, the activity automatically changes to \"Jump\" if the ground under the feet is lost."
-msgstr "Für Objekt-Aktivitäten bietet die Engine diverse Standardprozeduren an, die verschiedene typische Verhaltensweisen steuern. Durch die Standardprozedur WALK wechselt z.B. die Aktivität Walk automatisch nach Jump, sobald der Boden unter den Füßen verloren wurde."
+msgstr "Für Objekt-Aktivitäten bietet die Engine diverse Standardprozeduren an, die verschiedene typische Verhaltensweisen steuern. Die Standardprozedur WALK wechselt z.B. automatisch nach \"Jump\", sobald der Boden unter den Füßen verloren wurde."
 
 #: sdk/definition/procedures.xml:15(col)
 #: sdk/definition/cnat.xml:14(col)
@@ -15680,9 +15676,8 @@ msgstr "Laufen"
 #: sdk/definition/procedures.xml:50(col)
 #: sdk/definition/procedures.xml:62(col)
 #: sdk/definition/procedures.xml:92(col)
-#, fuzzy
 msgid "According to current <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
-msgstr "Verhalten nach <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
+msgstr "Verhalten nach derzeitiger <emlink href=\"script/fn/SetComDir.html\">ComDir</emlink>."
 
 #: sdk/definition/procedures.xml:27(col)
 #: sdk/definition/procedures.xml:39(col)
@@ -16478,7 +16473,8 @@ msgid "When a crew member is created, it gets an own physical section in it's Ob
 msgstr "Sobald ein Mannschaftsmitglied erschaffen wird, wird für dieses eine eigenständige Physical-Sektion erschaffen, die zusammen mit dem Mannschaftsmitglied in der Objektinfo (oci) gespeichert wird. Jedes Mannschaftsmitglied behält seine eigene Physical-Sektion, da hier alle individuellen Veränderungen (z.B. erweiterte Fähigkeiten durch Beförderung) vorgenommen werden. Die Physical-Sektion der Objektdefinition wird also nur bei der Erschaffung des Objekts verwendet und nicht etwa bei ChangeDef."
 
 #: sdk/definition/cnat.xml:8(text)
-msgid "In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the CNAT bit <em>left</em>. If that object has <emlink href=\"definition/defcore.html\">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:"
+#, fuzzy
+msgid "In multiple places the engine uses ContactAttachment values (a bitmask) to manage the orientation of objects and processes. For example, a vertex of an object can have the <code id=\"CNAT\">CNAT</code> bit <em>left</em>. If that object has <emlink href=\"definition/defcore.html\">ContactCalls</emlink> activated, the engine calls on every contact of that vertex with the landscape the object script function <em>ContactLeft</em>. CNAT values are composed of the following bits:"
 msgstr "An zahlreichen Stellen benutzt die Engine ContactAttachment-Werte (DWord-Bitmasken), um Ausrichtungen von Objekten und Vorgängen zu verwalten. So kann z.B. einem Objekt-Vertex ein CNAT-Wert zugewiesen werden, der die Ausrichtung <em>Links</em> enthält. Sind für dieses Objekt <em>ContactCalls</em> aktiviert (siehe <emlink href=\"definition/defcore.html\">DefCore.txt</emlink>), so ruft die Engine bei jedem Kontakt dieses Vertex mit der Landschaft die Objektscript-Funktion <em>ContactLeft</em> auf. CNAT-Werte setzen sich aus folgenden Bits zusammen:"
 
 #: sdk/definition/cnat.xml:20(col)
@@ -16539,8 +16535,8 @@ msgid "Object Categories"
 msgstr "Objektkategorien"
 
 #: sdk/definition/category.xml:9(text)
-msgid "An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator."
-msgstr "Die Kategorie eines Objekts legt Teile seines Verhaltens fest. Sie wird für eine Definition durch den Eintrag Category in der DefCore.txt festgelegt. Dabei können verschiedene Kategorien mit einem binären oder-Operator kombiniert werden."
+msgid "An object's category specifies parts of its behavior. For a definition it is set by the <code id=\"Category\">Category</code> entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator."
+msgstr "Die Kategorie eines Objekts legt Teile seines Verhaltens fest. Sie wird für eine Definition durch den Eintrag <code id=\"Category\">Category</code> in der DefCore.txt festgelegt. Dabei können verschiedene Kategorien mit einem binären oder-Operator kombiniert werden."
 
 #: sdk/definition/category.xml:17(col)
 msgid "C4D_StaticBack"
