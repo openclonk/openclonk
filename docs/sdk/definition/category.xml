@@ -71,15 +71,13 @@
         </row>
       </table>
     </text>
-    <h id="Beispiel">Example</h>
-    <text>
-      <examples>
-        <example>
-          <code>Category=C4D_StaticBack|C4D_Rule</code>
-          <text>Category for a rule.</text>
-        </example>
-      </examples>
-    </text>
+    <h>Example</h>
+    <examples>
+      <example>
+        <code>Category=C4D_StaticBack|C4D_Rule</code>
+        <text>Category for a rule.</text>
+      </example>
+    </examples>
   </part>
   <author>Sven2</author><date>2006-05</date>
   <author>Newton</author><date>2005-01</date>

@@ -63,7 +63,7 @@ install: all
 	$(CP_R) online/* $(prefix)
 
 check:
-	xmllint --noblanks --noout --valid $(xmlfiles)
+	@xmllint --noblanks --noout --valid $(xmlfiles)
 
 clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot sdk/content.xml
