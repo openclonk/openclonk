@@ -105,7 +105,11 @@ func Execute()
 					if (speed<=10)
 					{
 						// Blast away solid
-						BlastFree(x,y-3,5+Random(5),GetController());
+						var blast_size = 5+Random(5);
+						BlastFree(x,y-3,blast_size,GetController());
+						// gfx
+						CreateParticle("MagicFire", x,y-3, 0,0, blast_size*5, 0xffffffff);
+						if (!Random(5)) SoundAt("RockHit*", x,y-3, 100);
 					}
 					else if (speed <=50)
 					{
@@ -178,6 +182,7 @@ func FxVolcanoBranchTimer(object q, fx, int time)
 	if (behaviour == BigVolcanoBehaviour_Fill)
 	{
 		CastPXS("DuroLava", 4+Cos(fx.fill_time*40,2), 30+Cos(fx.fill_time*40,25), nx,ny-1, 0,50);
+		if (!(fx.fill_time%20) && !GBackSemiSolid(nx,ny-6)) SoundAt("BigVolcanoBubble*", nx,ny, 10);
 		if (fx.fill_time++ > 31) return FX_Execute_Kill; // Done?
 	}
 	else if (behaviour != BigVolcanoBehaviour_Stop)
@@ -308,6 +313,17 @@ func ExtendVerticalBranch(int x1, int y1, int x2, int y2, int from_half_wdt, int
 		DrawMaterialQuad("DuroLava-lava_red",x1+to_half_wdt,y1, x1+from_half_wdt,y1, x2+from_half_wdt,y2, x2+to_half_wdt,y2, true);
 	}
 	return true;
+}
+
+func SoundAt(string sound_name, int x, int y, int vol)
+{
+	var sound_host = CreateObject(BigVolcano,x,y), r;
+	if (sound_host)
+	{
+		r = sound_host->Sound(sound_name, false, vol);
+		ScheduleCall(sound_host, Global.RemoveObject, 100);
+	}
+	return r;
 }
 
 local Name = "BigVolcano";
