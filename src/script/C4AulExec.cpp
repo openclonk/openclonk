@@ -318,6 +318,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 				if (!pPar2->_getInt())
 					throw new C4AulExecError("division by zero");
+				// INT_MIN/-1 cannot be represented in an int and would cause an uncaught exception
+				if (pPar1->_getInt()==0x80000000 && pPar2->_getInt()==-1)
+					throw new C4AulExecError("division overflow");
 				pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
 				PopValue();
 				break;
@@ -334,6 +337,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			{
 				CheckOpPars(C4V_Int, C4V_Int, "%");
 				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				// INT_MIN%-1 cannot be represented in an int and would cause an uncaught exception
+				if (pPar1->_getInt()==0x80000000 && pPar2->_getInt()==-1)
+					throw new C4AulExecError("modulo division overflow");
 				if (pPar2->_getInt())
 					pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
 				else
