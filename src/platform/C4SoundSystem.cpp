@@ -387,10 +387,7 @@ void C4SoundInstance::Execute()
 		// start
 		if (!isStarted())
 			if (!CheckStart())
-			{
-				LogF("%s nostart", this->pEffect->Name);
 				return;
-			}
 		// set volume & panning
 #ifdef HAVE_FMOD
 		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
