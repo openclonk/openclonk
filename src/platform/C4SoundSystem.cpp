@@ -387,7 +387,10 @@ void C4SoundInstance::Execute()
 		// start
 		if (!isStarted())
 			if (!CheckStart())
+			{
+				LogF("%s nostart", this->pEffect->Name);
 				return;
+			}
 		// set volume & panning
 #ifdef HAVE_FMOD
 		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
@@ -400,7 +403,7 @@ void C4SoundInstance::Execute()
 #endif
 #ifdef USE_OPEN_AL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
-		alSourcef(iChannel, AL_GAIN, iVol / 100);
+		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));
 #endif
 	}
 }
