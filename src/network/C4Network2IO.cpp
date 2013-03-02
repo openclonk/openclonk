@@ -1495,6 +1495,15 @@ bool C4Network2IOConnection::Send(const C4NetIOPacket &rPkt)
 	bool fSuccess = pNetClass->Send(pLogEntry->Pkt);
 	if (fSuccess)
 		assert(!fPostMortemSent);
+	else {
+		// Not being able to send a packet is actually a big deal,
+		// as this means that we will have hole in the packet
+		// order. Better close the connection - post mortem should
+		// ideally sort everything out from here.
+		LogF("Network: Fatal: Send failed (%s)", pNetClass->GetError());
+		pNetClass->ResetError();
+		Close();
+	}
 	return fSuccess;
 }
 
