@@ -755,7 +755,8 @@ void C4ScriptHost::ClearCode()
 		C4AulScriptFunc *pSFunc = GetPropList()->GetFunc(pFn)->SFunc();
 		while (pSFunc)
 		{
-			assert(pSFunc->Owner == this);
+			// see http://forum.openclonk.org/topic_show.pl?pid=22432#pid22432 (only for this stable branch)
+			// assert(pSFunc->Owner == this);
 			pSFunc->CodePos = 0;
 			pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
 		}
