@@ -1381,7 +1381,8 @@ void C4Player::NotifyOwnedObjects()
 				C4AulFunc *pFn = cobj->GetFunc(PSF_OnOwnerRemoved);
 				if (pFn)
 				{
-					pFn->Exec(cobj);
+					C4AulParSet pars(C4VInt(iNewOwner));
+					pFn->Exec(cobj, &pars);
 				}
 				else
 				{
@@ -1389,9 +1390,8 @@ void C4Player::NotifyOwnedObjects()
 					if (Crew.IsContained(cobj))
 						continue;
 					// Regular objects: Try to find a new, suitable owner from the same team
-					// Ignore StaticBack, because this would not be backwards compatible with many internal objects such as team account
-					// Do not ignore flags which might be StaticBack if being attached to castle parts
-					if ((~cobj->Category & C4D_StaticBack) || (cobj->id == C4ID::Flag))
+					// Ignore StaticBack, because this would not be compatible with many internal objects such as team account
+					if ((~cobj->Category & C4D_StaticBack))
 						cobj->SetOwner(iNewOwner);
 				}
 			}

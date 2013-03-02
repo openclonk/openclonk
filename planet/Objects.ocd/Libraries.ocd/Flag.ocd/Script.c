@@ -149,7 +149,6 @@ func RefreshOwnershipOfSurrounding()
 		if(obj->GetOwner() == o) continue;
 		var old = obj->GetOwner();
 		obj->SetOwner(o);
-		obj->~OnOwnerChange(old);
 	}
 }
 public func Initialize()
@@ -355,9 +354,8 @@ public func SetFlagRadius(int to)
 }
 
 // reassign owner of flag markers for correct color
-func OnOwnerChange(old)
+func OnOwnerChanged(int new_owner, int old_owner)
 {
-	var new_owner = GetOwner();
 	for(var marker in lflag.range_markers)
 	{
 		if(!marker) continue;
