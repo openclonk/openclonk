@@ -243,6 +243,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	}
 #endif
 	// Conversion
+	bool conv_to_is_solid = (conv_to>-1) && DensitySolid(::MaterialMap.Map[conv_to].Density);
 	for (cy2 = cy; mconvs >= 0 && Inside<int32_t>(cy2, 0, GBackHgt-1); cy2 += ydir, mconvs--)
 	{
 		// material changed?
@@ -256,7 +257,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 #endif
 		// set mat
 		SBackPix(cx,cy2,MatTex2PixCol(conv_to_tex)+PixColIFT(pix));
-		CheckInstabilityRange(cx,cy2);
+		if (!conv_to_is_solid) CheckInstabilityRange(cx,cy2);
 	}
 	// return pixel converted
 	return Abs(cy2 - cy);
