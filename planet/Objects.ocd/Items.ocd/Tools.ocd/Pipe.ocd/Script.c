@@ -113,9 +113,9 @@ Insert liquid to this
 */
 public func LiquidInput(string sznMaterial, int inMaxAmount, object pnPump, object pnPipe)
 {
-	var i=Max(0,inMaxAmount),itMaterial=Material(sznMaterial);
-	while (i--) InsertMaterial(itMaterial);
-	return inMaxAmount;
+	var i=Max(0,inMaxAmount),itMaterial=Material(sznMaterial), n_inserted;
+	while (i--) if (InsertMaterial(itMaterial)) ++n_inserted; else break;
+	return n_inserted;
 }
 
 local Name = "$Name$";

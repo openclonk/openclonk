@@ -113,9 +113,10 @@ protected func Pumping()
 	else
 	{
 		var i = Max(0, aMaterials[1]), itMaterial = Material(aMaterials[0]);
-		while (i--)
-			InsertMaterial(itMaterial);
-		aMaterials = ["", 0];
+		while (i)
+			if (InsertMaterial(itMaterial)) i--; else break;
+		aMaterials[1] = i;
+		if (!i) aMaterials[0] = "";
 	}
 	// maybe add the possebility to empty pump (invaild mats?)
 	return;	
