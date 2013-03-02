@@ -28,7 +28,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	
 	if(!GetPlayerName(owner))
 	{
-		effect.TimerIntervall = LIBRARY_GOLDSELLER_MaxTimer;
+		effect.Interval = LIBRARY_GOLDSELLER_MaxTimer;
 		return 1;
 	}
 	
@@ -43,7 +43,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	
 	if(!GetLength(objs))
 	{
-		effect.TimerIntervall = LIBRARY_GOLDSELLER_MaxTimer;
+		effect.Interval = LIBRARY_GOLDSELLER_MaxTimer;
 		return 1;
 	}
 	
@@ -80,6 +80,6 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	fm->SetMessage(Format("%d</c>{{Icon_Coins}}", value));
 	Sound("Cash");
 	
-	effect.TimerIntervall = BoundBy(effect.TimerIntervall - Random(LIBRARY_GOLDSELLER_TimerStep), LIBRARY_GOLDSELLER_MaxTimer, LIBRARY_GOLDSELLER_MaxTimer);
+	effect.Interval = BoundBy(effect.Interval - Random(LIBRARY_GOLDSELLER_TimerStep), LIBRARY_GOLDSELLER_MinTimer, LIBRARY_GOLDSELLER_MaxTimer);
 	return 1;
 }
