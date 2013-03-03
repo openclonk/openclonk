@@ -860,8 +860,10 @@ if(MSVC)
 	endif()
 endif()
 
-SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
-include(FindJPEG)
+if(NOT USE_CONSOLE)
+	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
+	include(FindJPEG)
+endif()
 include(FindPNG)
 include(FindZLIB)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
@@ -879,10 +881,12 @@ if(NOT WIN32)
 endif()
 
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
-find_library(FREETYPE_LIBRARY NAMES freetype239)
-include(FindFreetype)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
+if(NOT USE_CONSOLE)
+	find_library(FREETYPE_LIBRARY NAMES freetype239)
+	include(FindFreetype)
+	include_directories(${FREETYPE_INCLUDE_DIRS})
+	SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
+endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
 # advanced so it doesn't show in GUIs by default
