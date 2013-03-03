@@ -167,7 +167,7 @@ bool C4DefScriptHost::Parse()
 			case C4D_Living | C4D_Foreground: Plane = 1400; break;
 			case C4D_Object | C4D_Foreground: Plane = 1500; break;
 			default:
-				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->id.ToString());
+				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->GetDataString().getData());
 				gotplane = false;
 				break;
 		}
@@ -175,7 +175,7 @@ bool C4DefScriptHost::Parse()
 	}
 	if (!Def->GetPlane())
 	{
-		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->id.ToString());
+		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->GetDataString().getData());
 		Def->SetProperty(P_Plane, C4VInt(1));
 	}
 	return r;

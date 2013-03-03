@@ -169,13 +169,13 @@ protected:
 	virtual bool Check(C4Object *pObj);
 };
 
-class C4FindObjectID : public C4FindObject
+class C4FindObjectDef : public C4FindObject
 {
 public:
-	C4FindObjectID(C4ID id)
-			: id(id) { }
+	C4FindObjectDef(C4PropList * def)
+			: def(def) { }
 private:
-	C4ID id;
+	C4PropList * def;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();

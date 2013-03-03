@@ -67,13 +67,6 @@ StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pa
 			}
 			// C4ID
 			case 'i':
-			{
-				if (cPar >= ParCount) throw new C4AulExecError("format placeholder without parameter");
-				C4ID id = Pars[cPar++].getC4ID();
-				StringBuf.Append(id.ToString());
-				cpFormat+=SLen(szField);
-				break;
-			}
 			// C4Value
 			case 'v':
 			{
@@ -249,11 +242,6 @@ static C4Value FnDebugLog(C4PropList * _this, C4Value * Pars)
 static C4Value FnFormat(C4PropList * _this, C4Value * Pars)
 {
 	return C4VString(FnStringFormat(_this, Pars[0].getStr(), &Pars[1], 9));
-}
-
-static C4ID FnC4Id(C4PropList * _this, C4String *szID)
-{
-	return(C4ID(FnStringPar(szID)));
 }
 
 static long FnAbs(C4PropList * _this, long iVal)
@@ -532,16 +520,12 @@ static bool FnStartCallTrace(C4PropList * _this)
 	return true;
 }
 
-static bool FnStartScriptProfiler(C4PropList * _this, C4ID idScript)
+static bool FnStartScriptProfiler(C4PropList * _this, C4Def * pDef)
 {
 	// get script to profile
 	C4AulScript *pScript;
-	if (idScript)
-	{
-		C4Def *pDef = C4Id2Def(idScript);
-		if (!pDef) return false;
+	if (pDef)
 		pScript = &pDef->Script;
-	}
 	else
 		pScript = &::ScriptEngine;
 	// profile it
@@ -676,7 +660,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetProperty);
 	F(SetProperty);
 	F(ResetProperty);
-	F(C4Id);
 	F(Distance);
 	F(Angle);
 	F(GetChar);

@@ -74,6 +74,16 @@ C4Object * C4Value::_getObj() const
 	return Data.PropList ? Data.PropList->GetObject() : NULL;
 }
 
+C4Def * C4Value::getDef() const
+{
+	return CheckConversion(C4V_Object) ? Data.PropList->GetDef() : NULL;
+}
+
+C4Def * C4Value::_getDef() const
+{
+	return Data.PropList ? Data.PropList->GetDef() : NULL;
+}
+
 C4Value C4VObj(C4Object *pObj) { return C4Value(static_cast<C4PropList*>(pObj)); }
 
 bool C4Value::FnCnvObject() const
@@ -562,15 +572,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 bool C4Value::operator != (const C4Value& Value2) const
 {
 	return !(*this == Value2);
-}
-
-C4ID C4Value::getC4ID() const
-{
-	C4PropList * p = getPropList();
-	if (!p) return C4ID::None;
-	C4Def * d = p->GetDef();
-	if (!d) return C4ID::None;
-	return d->id;
 }
 
 void C4Value::LogDeletedObjectWarning(C4PropList * p)

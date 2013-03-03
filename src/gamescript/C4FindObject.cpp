@@ -87,7 +87,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		return new C4FindObjectExclude(Data[1].getObj());
 
 	case C4FO_ID:
-		return new C4FindObjectID(Data[1].getC4ID());
+		return new C4FindObjectDef(Data[1].getPropList());
 
 
 	// #973: For all criteria using coordinates: If FindObject et al. are called in object context, offset by object center
@@ -606,15 +606,14 @@ bool C4FindObjectExclude::Check(C4Object *pObj)
 	return pObj != pExclude;
 }
 
-bool C4FindObjectID::Check(C4Object *pObj)
+bool C4FindObjectDef::Check(C4Object *pObj)
 {
-	return pObj->id == id;
+	return pObj->GetPrototype() == def;
 }
 
-bool C4FindObjectID::IsImpossible()
+bool C4FindObjectDef::IsImpossible()
 {
-	C4Def * pDef = C4Id2Def(id);
-	return !pDef || !pDef->Count;
+	return !def || !def->GetDef() || !def->GetDef()->Count;
 }
 
 bool C4FindObjectInRect::Check(C4Object *pObj)

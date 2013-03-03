@@ -804,8 +804,8 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	{
 		if (!ValidPlr(Player)) return false; // observers may not look at goal/rule info, because it requires queue activation
 		Close(true);
-		C4Object *pObj; C4ID idItem(szCommand+12);
-		if ((pObj = ::Objects.Find(idItem)))
+		C4Object *pObj; C4ID idItem(szCommand+12); C4Def * pDef = C4Id2Def(idItem);
+		if (pDef && (pObj = ::Objects.Find(pDef)))
 			::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::ActivateGoal(::Players.Get(Player), pObj), CDT_Queue);
 		else
 			return false;

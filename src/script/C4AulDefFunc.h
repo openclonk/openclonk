@@ -137,7 +137,7 @@ template <> struct C4ValueConv<bool>
 template <> struct C4ValueConv<C4ID>
 {
 	inline static C4V_Type Type() { return C4V_PropList; }
-	inline static C4ID FromC4V(C4Value &v) { return v.getC4ID(); }
+	inline static C4ID FromC4V(C4Value &v) { C4Def * def = v.getDef(); return def ? def->id : C4ID::None; }
 	inline static C4ID _FromC4V(C4Value &v) { return FromC4V(v); }
 	inline static C4Value ToC4V(C4ID v) { return C4VPropList(C4Id2Def(v)); }
 };
@@ -186,8 +186,8 @@ template <> struct C4ValueConv<C4Effect *>
 template <> struct C4ValueConv<C4Def *>
 {
 	inline static C4V_Type Type() { return C4V_Def; }
-	inline static C4Def *FromC4V(C4Value &v) { C4PropList * p = v.getPropList(); return p ? p->GetDef() : 0; }
-	inline static C4Def *_FromC4V(C4Value &v) { C4PropList * p = v._getPropList(); return p ? p->GetDef() : 0; }
+	inline static C4Def *FromC4V(C4Value &v) { return v.getDef(); }
+	inline static C4Def *_FromC4V(C4Value &v) { return v._getDef(); }
 	inline static C4Value ToC4V(C4Def *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<const C4Value &>

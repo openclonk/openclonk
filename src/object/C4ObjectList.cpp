@@ -270,13 +270,13 @@ bool C4ObjectList::Remove(C4Object *pObj)
 	return true;
 }
 
-C4Object* C4ObjectList::Find(C4ID id, int owner, DWORD dwOCF)
+C4Object* C4ObjectList::Find(C4Def * def, int owner, DWORD dwOCF)
 {
 	C4ObjectLink *cLnk;
 	// Find link and object
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
-			if (cLnk->Obj->Def->id==id)
+			if (cLnk->Obj->Def==def)
 				if ((owner==ANY_OWNER) || (cLnk->Obj->Owner==owner))
 					if (dwOCF & cLnk->Obj->OCF)
 						return cLnk->Obj;

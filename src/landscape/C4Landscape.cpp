@@ -20,6 +20,7 @@
 #include <C4Include.h>
 #include <C4Landscape.h>
 
+#include <C4DefList.h>
 #include <C4SolidMask.h>
 #include <C4Game.h>
 #include <C4Group.h>
@@ -929,7 +930,7 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Inflammable)
 			// Not too much FLAMs
-			if (!Game.FindObject (C4ID::Flame, x - 4, y - 1, 8, 20))
+			if (!Game.FindObject (C4Id2Def(C4ID::Flame), x - 4, y - 1, 8, 20))
 				if (Game.CreateObject(C4ID::Flame,NULL,NO_OWNER,x,y))
 					return true;
 	return false;

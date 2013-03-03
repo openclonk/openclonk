@@ -1249,7 +1249,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 				if (Type == PREPARSER)
 				{
 					// add to include list
-					Host->Includes.push_back(C4ID(StdStrBuf(Idtf)));
+					Host->Includes.push_back(StdCopyStrBuf(Idtf));
 				}
 				Shift();
 			}
@@ -1262,14 +1262,14 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 				if (Type == PREPARSER)
 				{
 					// get id of script to include/append
-					C4ID Id;
+					StdCopyStrBuf Id;
 					switch (TokenType)
 					{
 					case ATT_IDTF:
-						Id = C4ID(StdStrBuf(Idtf));
+						Id = StdCopyStrBuf(Idtf);
 						break;
 					case ATT_STAR: // "*"
-						Id = C4ID::None;
+						Id = StdCopyStrBuf("*");
 						break;
 					default:
 						// -> ID expected

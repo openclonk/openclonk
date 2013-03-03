@@ -24,6 +24,7 @@
 #include <C4Object.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4DefList.h>
 
 // *** C4RoundResultsPlayer
 
@@ -282,8 +283,8 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
-		C4Object *pObj;
-		if ((pObj = ::Objects.Find(idGoal)))
+		C4Object *pObj = C4Id2Def(idGoal) ? ::Objects.Find(::Definitions.ID2Def(idGoal)) : NULL;
+		if (pObj)
 		{
 			// Check fulfilled per player, this enables the possibility of rivalry.
 			C4AulParSet pars(C4VInt(iPlayerNumber));

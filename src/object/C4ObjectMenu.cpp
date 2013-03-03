@@ -162,7 +162,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				{
 					// easy way: only if first concat check matches
 					// this doesn't catch all possibilities, but that will rarely matter
-					C4Object *pObj2=pTarget->Contents.Find(pDef->id, ANY_OWNER, OCF_FullCon);
+					C4Object *pObj2=pTarget->Contents.Find(pDef, ANY_OWNER, OCF_FullCon);
 					if (pObj2) if (pObj2->CanConcatPictureWith(pObj)) pObj = pObj2;
 				}
 				// Caption
@@ -199,7 +199,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				{
 					// easy way: only if first concat check matches
 					// this doesn't catch all possibilities, but that will rarely matter
-					C4Object *pObj2 = pTarget->Contents.Find(pDef->id, ANY_OWNER, OCF_FullCon);
+					C4Object *pObj2 = pTarget->Contents.Find(pDef, ANY_OWNER, OCF_FullCon);
 					if (pObj2) if (pObj2->CanConcatPictureWith(pObj)) pObj = pObj2;
 				}
 				// Determine whether to get or activate

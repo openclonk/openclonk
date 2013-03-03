@@ -48,8 +48,8 @@ protected:
 	virtual void UnLink(); // reset to unlinked state
 
 
-	std::list<C4ID> Includes; // include list
-	std::list<C4ID> Appends; // append list
+	std::list<StdCopyStrBuf> Includes; // include list
+	std::list<StdCopyStrBuf> Appends; // append list
 
 	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);

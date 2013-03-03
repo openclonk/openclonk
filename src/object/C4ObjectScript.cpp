@@ -1156,7 +1156,7 @@ static C4Object *FnContents(C4Object *Obj, long index)
 	return NULL;
 }
 
-static bool FnShiftContents(C4Object *Obj, bool fShiftBack, C4ID idTarget, bool fDoCalls)
+static bool FnShiftContents(C4Object *Obj, bool fShiftBack, C4Def * idTarget, bool fDoCalls)
 {
 	// regular shift
 	if (!idTarget) return !!Obj->ShiftContents(fShiftBack, fDoCalls);
@@ -1186,7 +1186,7 @@ static long FnContentsCount(C4Object *Obj, C4ID id)
 	return Obj->Contents.ObjectCount(id);
 }
 
-static C4Object *FnFindContents(C4Object *Obj, C4ID c_id)
+static C4Object *FnFindContents(C4Object *Obj, C4Def * c_id)
 {
 	return Obj->Contents.Find(c_id);
 }

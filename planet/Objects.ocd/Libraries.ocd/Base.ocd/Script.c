@@ -209,7 +209,7 @@ func OpenBuyMenu(object pClonk, id idDef, int iSelection)
 	var aBuy = [0,0,0];
 	var iIndex, iSelection;
 	AddClonkBuyList(pClonk);
-	pClonk->CreateMenu (Library_Base, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal, 0, C4Id("BuyMenu"));
+	pClonk->CreateMenu (Library_Base, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal);
 	for(aBuy in GetBuyObjects())
 	{
 		if(aBuy[0] == idDef) iSelection = iIndex;

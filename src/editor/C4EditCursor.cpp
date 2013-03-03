@@ -153,7 +153,7 @@ bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
 			do
 			{
-				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, Target);
+				Target = Game.FindObject(NULL,X,Y,0,0,OCF_NotContained, Target);
 			}
 			while ((dwKeyState & MK_SHIFT) && Target && Selection.GetLink(Target));
 		}

@@ -1126,7 +1126,7 @@ C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	return NULL;
 }
 
-C4Object* C4Game::FindObject(C4ID id,
+C4Object* C4Game::FindObject(C4Def * pDef,
                              int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt,
                              DWORD ocf,
                              C4Object *pFindNext)
@@ -1136,15 +1136,10 @@ C4Object* C4Game::FindObject(C4ID id,
 	int32_t iClosest = 0,iDistance,iFartherThan=-1;
 	C4Object *cObj;
 	C4ObjectLink *cLnk;
-	C4Def *pDef;
 	C4Object *pFindNextCpy=pFindNext;
 
-	// check the easy cases first
-	if (id!=C4ID::None)
-	{
-		if (!(pDef=C4Id2Def(id))) return NULL; // no valid def
-		if (!pDef->Count) return NULL; // no instances at all
-	}
+	// check the easy case first: no instances at all?
+	if (pDef && !pDef->Count) return NULL;
 
 	// Finding next closest: find closest but further away than last closest
 	if (pFindNext && (iWdt==-1) && (iHgt==-1))
@@ -1161,7 +1156,7 @@ C4Object* C4Game::FindObject(C4ID id,
 			// Status
 			if (cObj->Status)
 				// ID
-				if ((id==C4ID::None) || (cObj->Def->id==id))
+				if (!pDef || (cObj->Def == pDef))
 					// OCF (match any specified)
 					if (cObj->OCF & ocf)
 						// Area

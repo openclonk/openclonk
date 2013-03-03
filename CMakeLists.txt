@@ -407,6 +407,8 @@ set(OC_CLONK_SOURCES
 	src/object/C4DefList.h
 	src/object/C4GameObjects.cpp
 	src/object/C4GameObjects.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 	src/object/C4IDList.cpp
 	src/object/C4IDList.h
 	src/object/C4InfoCore.cpp
@@ -485,6 +487,8 @@ set(MAPE_BASE_SOURCES
 	src/lib/C4NameList.h
 	src/lib/C4Rect.cpp
 	src/lib/C4Rect.h
+	src/object/C4Id.cpp
+	src/object/C4Id.h
 )
 
 set(MAPE_SOURCES
@@ -1060,8 +1064,6 @@ src/lib/C4Real.cpp
 src/lib/C4Real.h
 src/lib/C4Random.cpp
 src/lib/C4Random.h
-src/object/C4Id.cpp
-src/object/C4Id.h
 src/script/C4Aul.cpp
 src/script/C4AulDefFunc.h
 src/script/C4AulExec.cpp

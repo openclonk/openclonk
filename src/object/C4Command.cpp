@@ -940,7 +940,7 @@ void C4Command::Get()
 
 	// Get target specified by container and type
 	if (!Target && Target2 && Data)
-		if (!(Target = Target2->Contents.Find(Data.getC4ID())))
+		if (!(Target = Target2->Contents.Find(Data.getDef())))
 			{ Finish(); return; }
 
 	// No target: failure
@@ -1116,7 +1116,7 @@ void C4Command::Activate()
 			C4Object *pObj; C4ObjectLink *cLnk;
 			if (!Target)
 				for (cLnk=Target2->Contents.First; cLnk && (pObj=cLnk->Obj); cLnk=cLnk->Next)
-					if (pObj->Status && (pObj->Def->id==Data.getC4ID()))
+					if (pObj->Status && (pObj->Def==Data.getDef()))
 						if (!pObj->Command || (pObj->Command->Command!=C4CMD_Exit))
 							{ Target=pObj; break; }
 			// No target
@@ -1155,7 +1155,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 	// Thing to put specified by type
 	if (!Target2 && Data)
-		if (!(Target2 = cObj->Contents.Find(Data.getC4ID())))
+		if (!(Target2 = cObj->Contents.Find(Data.getDef())))
 			{ Finish(); return; }
 
 	// No thing to put specified
@@ -1623,7 +1623,7 @@ void C4Command::Acquire()
 	if (!Data) { Finish(); return; }
 
 	// Target material in inventory: done
-	if (cObj->Contents.Find(Data.getC4ID()))
+	if (cObj->Contents.Find(Data.getDef()))
 		{ Finish(true); return; }
 
 	// script overload
@@ -1640,7 +1640,7 @@ void C4Command::Acquire()
 	// Find available material
 	C4Object *pMaterial=NULL;
 	// Next closest
-	while ((pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
+	while ((pMaterial = Game.FindObject(Data.getDef(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,pMaterial)))
 		// Object is not in container to be ignored
 		if (!Target2 || pMaterial->Contained!=Target2)
 			// Object is near enough
@@ -1733,7 +1733,7 @@ void C4Command::Fail(const char *szFailMessage)
 			if (szFailMessage) break;
 			// Fail message with name of target type
 			SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-			C4Def *pDef; pDef = ::Definitions.ID2Def(Data.getC4ID());
+			C4Def *pDef; pDef = Data.getDef();
 			SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
 			str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 			break;
