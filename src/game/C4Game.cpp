@@ -244,10 +244,11 @@ bool C4Game::OpenScenario()
 	  if (pGrp) delete pGrp;*/
 
 	// Check mission access
-	if(!USE_CONSOLE)
-		if (C4S.Head.MissionAccess[0])
-			if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
-				{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+#ifdef USE_CONSOLE
+	if (C4S.Head.MissionAccess[0])
+		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
+			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+#endif
 
 	// Title
 	Title.LoadEx(ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
