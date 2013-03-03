@@ -7,12 +7,12 @@
 func AutoSellValuablesRadius(){return 50;}
 
 static const LIBRARY_GOLDSELLER_MinTimer = 10;
-static const LIBRARY_GOLDSELLER_MaxTimer = 60;
+static const LIBRARY_GOLDSELLER_MaxTimer = 30;
 static const LIBRARY_GOLDSELLER_TimerStep = 10;
 
 func Initialize()
 {
-	AddEffect("AutoSellValuables", this, 1, 20, this);
+	AddEffect("AutoSellValuables", this, 1, LIBRARY_GOLDSELLER_MaxTimer, this);
 	return _inherited(...);
 }
 
