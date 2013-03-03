@@ -1,0 +1,2 @@
+Name=Amethyst
+Description=Valuable clunker
