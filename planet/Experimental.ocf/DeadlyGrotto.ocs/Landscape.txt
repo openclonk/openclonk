@@ -41,7 +41,7 @@ map AcidCave {
   };
 
   // End cave
-  overlay { algo=poly; mat=Lava; turbulence=10;
+  overlay { algo=poly; mat=DuroLava; turbulence=10;
     point { x=250px; y=70px; };
     point { x=260px; y=40px; };
     point { x=280px; y=35px; };
