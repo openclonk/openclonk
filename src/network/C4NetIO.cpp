@@ -1374,6 +1374,14 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 
 #else
 
+	// disable blocking
+	if (::fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK) == SOCKET_ERROR)
+	{
+		// set error
+		SetError("could not disable blocking", true);
+		return false;
+	}
+
 	// create pipe
 	if (pipe(Pipe) != 0)
 	{
@@ -1590,7 +1598,8 @@ bool C4NetIOSimpleUDP::Send(const C4NetIOPacket &rPacket)
 	C4NetIO::addr_t addr = rPacket.getAddr();
 	if (::sendto(sock, getBufPtr<char>(rPacket), rPacket.getSize(), 0,
 	             reinterpret_cast<sockaddr *>(&addr), sizeof(addr))
-	    != int(rPacket.getSize()))
+	    != int(rPacket.getSize()) &&
+	    !HaveWouldBlockError())
 	{
 		SetError("socket sendto failed", true);
 		return false;
@@ -2522,7 +2531,11 @@ bool C4NetIOUDP::Peer::Send(const C4NetIOPacket &rPacket) // (mt-safe)
 	// is etablished completly.
 	if (eStatus != CS_Works) return true;
 	// send it
-	return SendDirect(*pnPacket);
+	if (!SendDirect(*pnPacket)) {
+		Close("failed to send packet");
+		return false;
+	}
+	return true;
 }
 
 bool C4NetIOUDP::Peer::Check(bool fForceCheck)
