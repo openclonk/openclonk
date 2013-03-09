@@ -50,53 +50,29 @@ endfunction()
 ############################################################################
 # User selectable options
 ############################################################################
+include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
-option(USE_GL "Enable OpenGL support" ON)
-SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
-SET(INITIAL_USE_OPEN_AL OFF)
-option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
-	option(USE_DIRECTX "Enable DirectX support" ON)
-	if(EXISTS $ENV{DXSDK_DIR})
-		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
-		if(CMAKE_CL_64)
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
-		else()
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
-		endif()
-	else()
+option(USE_CONSOLE "Build dedicated server" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GL "Enable OpenGL support" ON "NOT USE_CONSOLE" OFF)
+# DirectX is disabled because it misses essential features
+CMAKE_DEPENDENT_OPTION(USE_DIRECTX "Enable DirectX support" OFF "WIN32 AND NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF "NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
+	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP AND NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" ON "USE_GTK" OFF)
 
-	endif()
-else()
-	SET(USE_DIRECTX OFF)
-	SET(HAVE_FMOD OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
-else()
-	SET(USE_CONSOLE OFF)
-endif()
-if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
-	option(USE_X11 "Use X11 to create windows etc." ON)
-	option(USE_GTK "Use GTK for the developer mode" ON)
-	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
-else()
-	SET(USE_X11 OFF)
-	SET(USE_GTK OFF)
-	SET(USE_GTK3 OFF)
-endif()
+CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON "APPLE" OFF)
 if(APPLE)
-	option(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON)
-	option(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
-	option(USE_COCOA OFF)
+	SET(INITIAL_USE_OPEN_AL OFF)
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
-option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" OFF)
+option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -567,10 +543,6 @@ set(MAPE_SOURCES
 	src/mape/window.c
 	src/mape/window.h
 )
-
-mark_as_advanced(OC_CLONK_SOURCES)
-mark_as_advanced(OC_SYSTEM_SOURCES)
-mark_as_advanced(MAPE_SOURCES)
 
 # generated source files
 add_custom_command(
@@ -1351,6 +1323,14 @@ if(USE_GL)
 	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_DIRECTX)
+	if(EXISTS $ENV{DXSDK_DIR})
+		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
+		if(CMAKE_CL_64)
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
+		else()
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
+		endif()
+	endif()
 	FINDLIB(DIRECT3D_LIBRARIES d3d9)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
@@ -1425,6 +1405,8 @@ if (WIN32)
 			set(HAVE_FMOD FALSE)
 		endif()
 	endif()
+else()
+	SET(HAVE_FMOD FALSE)
 endif()
 if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	include(FindSDL)
@@ -1466,7 +1448,7 @@ endif()
 # extracting the correct size from oc.ico. Currently this is layer 2 - let's
 # hope that it stays this way.
 
-# Only allow installation for WITH_AUTOMATIC_UPDATE because otherwise
+# Don't allow installation for WITH_AUTOMATIC_UPDATE because otherwise
 # the installed binary wouldn't find its game data in the system data path.
 IF(WITH_AUTOMATIC_UPDATE)
 	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
