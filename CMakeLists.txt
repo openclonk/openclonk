@@ -854,7 +854,7 @@ endif()
 
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
 if(NOT USE_CONSOLE)
-	find_library(FREETYPE_LIBRARY NAMES freetype239)
+	find_library(FREETYPE_LIBRARY NAMES freetype239 freetype2411)
 	include(FindFreetype)
 	include_directories(${FREETYPE_INCLUDE_DIRS})
 	SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
