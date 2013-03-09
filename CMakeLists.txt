@@ -1461,22 +1461,24 @@ install(
 	CODE
 	"execute_process(
 		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
-		)"
-	)
+	)"
+)
 
 FIND_PACKAGE(ImageMagick COMPONENTS convert)
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
-	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
-	VERBATIM
+if(ImageMagick_convert_FOUND)
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+		COMMAND "${ImageMagick_convert_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
+		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+		VERBATIM
 	)
-add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
-add_dependencies(data icon)
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-	DESTINATION share/icons/hicolor/48x48/apps
+	add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
+	add_dependencies(data icon)
+	install(
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+		DESTINATION share/icons/hicolor/48x48/apps
 	)
+endif()
 
 set(OC_C4GROUPS
 	Graphics.ocg
@@ -1546,7 +1548,7 @@ add_custom_command(
 )
 
 add_custom_target(setup
-	DEPENDS setup_openclonk.exe
+	DEPENDS setup_openclonk.exe groups
 )
 
 ############################################################################
