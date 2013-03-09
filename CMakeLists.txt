@@ -29,7 +29,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
 
-set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
+set(CMAKE_ADDITIONAL_DEPS_PATH "${CMAKE_CURRENT_BINARY_DIR}/deps" CACHE PATH "Additional directory to search for libraries and headers")
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
 set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
