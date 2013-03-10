@@ -351,7 +351,8 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 				if (!p)
 					pComp->excCorrupt("static proplist %s is not a proplist anymore", s.getData());
 				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
-				if (!p->GetPropertyByS(::Strings.RegString(s), this))
+				C4String * c4s = ::Strings.FindString(s.getData());
+				if (!c4s || !p->GetPropertyByS(c4s, this))
 					pComp->excCorrupt("Cannot find property %s in %s", s.getData(), GetDataString().getData());
 			}
 		}
