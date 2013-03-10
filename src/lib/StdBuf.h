@@ -668,7 +668,7 @@ public:
 	// get an indexed section from the string like Section1;Section2;Section3
 	bool GetSection(size_t idx, StdStrBuf *psOutSection, char cSeparator=';') const;
 
-	// Checks wether the contents are valid UTF-8, and if not, convert them from windows-1252 to UTF-8.
+	// Checks whether the content is valid UTF-8, and if not, convert it from windows-1252 to UTF-8.
 	void EnsureUnicode();
 
 	// convert to lower case
