@@ -130,16 +130,19 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(Number);
+	int32_t n = Number;
+	pComp->Value(n);
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	C4PropList::CompileFunc(pComp, numbers);
 	if (pComp->isCompiler())
 	{
-		if (PropLists.Get(Number))
+		if (PropLists.Get(n))
 		{
-			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			pComp->excCorrupt("multiple PropLists with Number %d", n);
 			return;
 		}
+		// Once this proplist has a Number, it has to be in PropLists. See the destructor below.
+		Number = n;
 		PropLists.Add(this);
 	}
 }
