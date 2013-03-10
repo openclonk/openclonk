@@ -1147,6 +1147,9 @@ target_link_libraries(c4script
 	libmisc
 )
 if(HAVE_PTHREAD)
+	target_link_libraries(openclonk
+		pthread
+	)
 	target_link_libraries(netpuncher
 		pthread
 	)
@@ -1161,7 +1164,6 @@ if(HAVE_PTHREAD)
 endif()
 if(USE_CONSOLE)
 	target_link_libraries(openclonk
-		pthread
 		${READLINE_LIBRARIES}
 	)
 endif()
