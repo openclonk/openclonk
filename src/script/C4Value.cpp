@@ -344,15 +344,15 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			StdStrBuf s;
 			pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
 			if (!::ScriptEngine.GetGlobalConstant(s.getData(), this))
-				pComp->excNotFound("static proplist %s", s.getData());
+				pComp->excCorrupt("Cannot find global constant %s", s.getData());
 			while(pComp->Separator(StdCompiler::SEP_PART))
 			{
 				C4PropList * p = getPropList();
 				if (!p)
-					pComp->excNotFound("static proplist is not a proplist anymore", s.getData());
+					pComp->excCorrupt("static proplist %s is not a proplist anymore", s.getData());
 				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
 				if (!p->GetPropertyByS(::Strings.RegString(s), this))
-					pComp->excNotFound("static proplist %s", s.getData());
+					pComp->excCorrupt("Cannot find property %s in %s", s.getData(), GetDataString().getData());
 			}
 		}
 		break;
