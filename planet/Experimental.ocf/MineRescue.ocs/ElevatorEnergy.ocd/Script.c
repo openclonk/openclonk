@@ -24,7 +24,8 @@ public func SetTarget(object target_)
 // The goal is fulfilled if the target has been supplied with energy.
 public func IsFulfilled()
 {
-	return target->CurrentlyHasPower();
+	//return target->CurrentlyHasPower();
+	return target->IsPowerAvailable(target->GetNeededPower());
 }
 
 // Shows or hides a message window with information.
