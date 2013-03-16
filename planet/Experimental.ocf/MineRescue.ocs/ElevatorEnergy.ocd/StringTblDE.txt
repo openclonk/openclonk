@@ -1,0 +1,5 @@
+Name=Energieversorgung
+
+#Goal window
+MsgGoalFulfilled=Der Fahrstuhl ist in Betrieb.
+MsgGoalUnFulfilled=Du hast den Fahrstuhl noch nicht mit Energie versorgt.
