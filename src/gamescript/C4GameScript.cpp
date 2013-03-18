@@ -2262,6 +2262,12 @@ static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, l
 	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
 }
 
+static int32_t FnGetStartupPlayerCount(C4PropList * _this)
+{
+	// returns number of players when game was initially started
+	return ::Game.StartupPlayerCount;
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2424,6 +2430,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlAssignment", FnGetPlayerControlAssignment);
+	AddFunc(pEngine, "GetStartupPlayerCount", FnGetStartupPlayerCount);
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
 
