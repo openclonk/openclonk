@@ -313,6 +313,9 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
 	src/landscape/C4Map.h
+	src/landscape/C4MapScript.cpp
+	src/landscape/C4MapScriptAlgo.cpp
+	src/landscape/C4MapScript.h
 	src/landscape/C4MassMover.cpp
 	src/landscape/C4MassMover.h
 	src/landscape/C4Material.cpp

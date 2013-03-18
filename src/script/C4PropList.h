@@ -83,6 +83,8 @@ public:
 	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
+	virtual class C4MapScriptLayer * GetMapScriptLayer() { return NULL; }
+	virtual class C4MapScriptMap * GetMapScriptMap() { return NULL; }
 
 	// saved as a reference to a global constant?
 	virtual class C4PropListStatic * IsStatic() { return NULL; }
@@ -114,7 +116,8 @@ public:
 	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
-	bool HasProperty(C4String * k) { return Properties.Has(k); }
+	C4PropList *GetPropertyPropList(C4PropertyName k) const;
+	bool HasProperty(C4String * k) const { return Properties.Has(k); }
 	// not allowed on frozen proplists
 	void SetProperty(C4PropertyName k, const C4Value & to)
 	{ SetPropertyByS(&Strings.P[k], to); }

@@ -21,6 +21,7 @@
 #include <C4AulFunc.h>
 #include <C4Aul.h>
 #include <C4ScriptHost.h>
+#include <C4MapScript.h>
 
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName):
 		iRefCnt(0),
@@ -55,6 +56,10 @@ StdStrBuf C4AulFunc::GetFullName()
 	else if (Owner == &GameScript)
 	{
 		r.Ref("Scenario.");
+	}
+	else if (Owner == &MapScript)
+	{
+		r.Ref("MapLayer.");
 	}
 	else if (Owner->Engine == Owner)
 	{

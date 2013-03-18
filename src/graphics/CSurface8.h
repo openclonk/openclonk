@@ -45,6 +45,11 @@ public:
 		// set pix in local copy...
 		if (Bits) Bits[iY*Pitch+iX]=byCol;
 	}
+	void _SetPix(int iX, int iY, BYTE byCol)
+	{
+		// set pix in local copy without bounds or surface checks
+		Bits[iY*Pitch+iX]=byCol;
+	}
 	BYTE GetPix(int iX, int iY) // get pixel
 	{
 		if (iX<0 || iY<0 || iX>=Wdt || iY>=Hgt) return 0;

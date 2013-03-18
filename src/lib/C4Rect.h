@@ -43,11 +43,11 @@ public:
 	bool operator ==(const C4Rect &r2) { return !((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
 	bool operator !=(const C4Rect &r2) { return 0 != ((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
 
-	bool Contains(int32_t iX, int32_t iY)
+	bool Contains(int32_t iX, int32_t iY) const
 	{ return iX>=x && iX<x+Wdt && iY>=y && iY<y+Hgt; }
-	bool Contains(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
+	bool Contains(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt) const
 	{ return iX>=x && iX+iWdt<x+Wdt && iY>=y && iY+iHgt<y+Hgt; }
-	bool Contains(const C4Rect &rect)
+	bool Contains(const C4Rect &rect) const
 	{ return Contains(rect.x, rect.y, rect.Wdt, rect.Hgt); }
 	bool IntersectsLine(int32_t iX, int32_t iY, int32_t iX2, int32_t iY2);
 

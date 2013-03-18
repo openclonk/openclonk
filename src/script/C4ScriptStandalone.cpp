@@ -30,6 +30,7 @@
 #include <C4Material.h>
 #include <C4Reloc.h>
 #include <C4Record.h>
+#include <C4MapScript.h>
 
 #ifdef _DEBUG
 C4Set<C4PropList *> C4PropList::PropLists;
@@ -99,6 +100,14 @@ void C4LSector::Clear() {}
 void C4Def::IncludeDefinition(C4Def*) {}
 bool EraseItemSafe(const char *szFilename) {return false;}
 void AddDbgRec(C4RecordChunkType, const void *, int) {}
+
+C4MapScriptHost MapScript;
+C4MapScriptHost::C4MapScriptHost() {}
+C4MapScriptHost::~C4MapScriptHost() {}
+void C4MapScriptHost::Clear() {}
+C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
+bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+void C4MapScriptHost::AddEngineFunctions() {}
 
 int c4s_runscript(const char * filename)
 {

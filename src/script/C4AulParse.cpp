@@ -771,6 +771,9 @@ bool C4ScriptHost::Preparse()
 	GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	LocalValues.Clear();
 
+	// Add any engine functions specific to this script
+	AddEngineFunctions();
+
 	C4AulParse state(this, C4AulParse::PREPARSER);
 	state.Parse_Script(this);
 
@@ -2879,14 +2882,22 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 		case C4V_Function:
 			{
 				C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
-				//assert(sf->pOrgScript == *s);
-				C4AulScriptFunc *sfc;
-				if (sf->pOrgScript != this)
-					sfc = new C4AulScriptFunc(this, *sf);
+				if (sf)
+				{
+					//assert(sf->pOrgScript == *s);
+					C4AulScriptFunc *sfc;
+					if (sf->pOrgScript != this)
+						sfc = new C4AulScriptFunc(this, *sf);
+					else
+						sfc = sf;
+					sfc->SetOverloaded(to->GetFunc(sf->Name));
+					to->SetPropertyByS(prop->Key, C4VFunction(sfc));
+				}
 				else
-					sfc = sf;
-				sfc->SetOverloaded(to->GetFunc(sf->Name));
-				to->SetPropertyByS(prop->Key, C4VFunction(sfc));
+				{
+					// engine function
+					to->SetPropertyByS(prop->Key, prop->Value);
+				}
 			}
 			break;
 		case C4V_PropList:

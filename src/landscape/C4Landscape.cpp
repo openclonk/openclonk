@@ -59,6 +59,7 @@
 #include <C4MaterialList.h>
 #include <C4FindObject.h>
 #include <C4GameObjects.h>
+#include <C4MapScript.h>
 
 C4Landscape::C4Landscape()
 {
@@ -1165,16 +1166,19 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
 			if (!fLandscapeModeSet) Mode=C4LSC_Static;
 
-		// dynamic map from file
+		// dynamic map from Landscape.txt
 		if (!sfcMap)
 			if ((sfcMap=CreateMapS2(hGroup)))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
+
+		// script may create or edit map
+		if (MapScript.InitializeMap(hGroup, &sfcMap))
+			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
 		if (!sfcMap && !fOverloadCurrent)
 			if ((sfcMap=CreateMap()))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
-
 
 		// No map failure
 		if (!sfcMap)

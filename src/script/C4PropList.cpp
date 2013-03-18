@@ -525,6 +525,20 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 	return 0;
 }
 
+C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getPropList();
+	}
+	if (prototype)
+	{
+		return prototype->GetPropertyPropList(n);
+	}
+	return NULL;
+}
+
 C4ValueArray * C4PropList::GetProperties() const
 {
 	C4ValueArray * a;
