@@ -177,9 +177,20 @@ C4StringTable::~C4StringTable()
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
 			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
-				fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+			{
+				if ((*s)->RefCnt != 1)
+#ifdef _WIN32
+					OutputDebugString(FormatString(" \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
+					fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
+			}
 			else
+#ifdef _WIN32
+				OutputDebugString(FormatString("\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
 				fprintf(stderr, "\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
 		}
 	}
 #endif
