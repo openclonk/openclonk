@@ -11,6 +11,11 @@ global func Bubble(int amount, int x, int y)
 	return;
 }
 
+global func CastBubbles(int num, int level, int x, int y)
+{
+	return CastObjects(Fx_Bubble, num, level, x, y);
+}
+
 protected func Initialize()
 {
 	DoCon(RandomX(25, 100));
