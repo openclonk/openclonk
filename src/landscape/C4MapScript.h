@@ -118,7 +118,7 @@ public:
 class C4MapScriptAlgoEllipsis : public C4MapScriptAlgo
 {
 	int32_t cx,cy;
-	uint32_t wdt,hgt;
+	int32_t wdt,hgt;
 public:
 	C4MapScriptAlgoEllipsis(const C4PropList *props);
 

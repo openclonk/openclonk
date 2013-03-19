@@ -131,8 +131,8 @@ uint8_t C4MapScriptAlgoEllipsis::operator () (int32_t x, int32_t y) const
 	// Evaluate MAPALGO_Ellipsis at x,y: Return 1 for pixels within ellipsis, 0 otherwise
 	// warning: overflows for large values (wdt or hgt >=256)
 	// but who would draw such large ellipsis anyway?
-	uint32_t dx = Abs((cx-x)*int32_t(hgt)), dy = Abs((cy-y)*int32_t(wdt));
-	return dx*dx+dy*dy < wdt*wdt*hgt*hgt;
+	uint64_t dx = Abs((cx-x)*hgt), dy = Abs((cy-y)*wdt);
+	return dx*dx+dy*dy < uint64_t(wdt)*wdt*hgt*hgt;
 }
 
 C4MapScriptAlgoPolygon::C4MapScriptAlgoPolygon(const C4PropList *props)
@@ -168,7 +168,7 @@ uint8_t C4MapScriptAlgoPolygon::operator () (int32_t x, int32_t y) const
 		int32_t pdx = pt2.x-pt1.x, pdy = pt2.y-pt1.y, dx = x-pt1.x, dy = y-pt1.y;
 		if (i!=poly.size()-1 || !open)
 		{
-			int32_t d = dx*pdy-dy*pdx;
+			int64_t d = dx*pdy-dy*pdx;
 			int32_t lsq = (pdx*pdx+pdy*pdy);
 			if (d*d < wdt*wdt*lsq) // check distance perpendicular to line
 			{
