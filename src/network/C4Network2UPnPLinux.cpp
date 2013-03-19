@@ -242,7 +242,7 @@ int C4Network2UPnPP::Callback_Static(Upnp_EventType EventType, void* Event, void
 		break;
 	case UPNP_CONTROL_ACTION_COMPLETE:
 		{
-			std::auto_ptr<ActionData> data(static_cast<ActionData*>(Cookie));
+			std::unique_ptr<ActionData> data(static_cast<ActionData*>(Cookie));
 			Upnp_Action_Complete* complete = static_cast<Upnp_Action_Complete*>(Event);
 			std::string action = ixmlNode_getNodeName(ixmlNode_getFirstChild(&complete->ActionRequest->n));
 			Application.InteractiveThread.PushEvent(Ev_UPNP_Response, new NotifyActionComplete(*data, action, complete->ErrCode));
@@ -258,7 +258,7 @@ int C4Network2UPnPP::Callback_Static(Upnp_EventType EventType, void* Event, void
 
 void C4Network2UPnPP::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData)
 {
-	std::auto_ptr<Notify> notify(static_cast<Notify*>(pEventData));
+	std::unique_ptr<Notify> notify(static_cast<Notify*>(pEventData));
 
 	// TODO: Should call a virtual method instead of dynamic_casting
 	NotifySearchResult* notify_search_result = dynamic_cast<NotifySearchResult*>(notify.get());

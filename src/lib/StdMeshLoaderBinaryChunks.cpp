@@ -55,7 +55,7 @@ namespace Ogre
 			}
 
 			// Create chunk
-			std::auto_ptr<Chunk> chunk;
+			std::unique_ptr<Chunk> chunk;
 			switch (id)
 			{
 			case CID_Header: chunk.reset(new ChunkFileHeader()); break;
@@ -361,7 +361,7 @@ namespace Ogre
 			}
 
 			// Create chunk
-			std::auto_ptr<Chunk> chunk;
+			std::unique_ptr<Chunk> chunk;
 			switch (id)
 			{
 			case CID_Header: chunk.reset(new ChunkFileHeader()); break;

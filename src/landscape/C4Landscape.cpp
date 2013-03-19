@@ -417,7 +417,7 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
 	C4FindObject *fo_list[] = {&fo_inrect, &fo_collectible, &fo_insolid, &fo_layer};
 	C4FindObjectAndStatic fo_srch(4, fo_list);
-	std::auto_ptr<C4ValueArray> dig_objects(fo_srch.FindMany(::Objects, ::Objects.Sectors));
+	std::unique_ptr<C4ValueArray> dig_objects(fo_srch.FindMany(::Objects, ::Objects.Sectors));
 
 	if(by_object)
 	{

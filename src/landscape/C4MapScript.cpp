@@ -197,7 +197,7 @@ static bool FnLayerDraw(C4PropList * _this, C4String *mattex, C4PropList *mask_a
 	if (!layer || icol<0) return false;
 	C4Rect rcBounds;
 	if (!FnParRect(layer, rect, &rcBounds)) return false;
-	std::auto_ptr<C4MapScriptAlgo> algo(FnParAlgo(mask_algo));
+	std::unique_ptr<C4MapScriptAlgo> algo(FnParAlgo(mask_algo));
 	return layer->Fill(icol, rcBounds, algo.get());
 }
 
@@ -208,7 +208,7 @@ static bool FnLayerBlit(C4PropList * _this, C4PropList *mask_algo, C4ValueArray 
 	if (!layer) return false;
 	C4Rect rcBounds;
 	if (!FnParRect(layer, rect, &rcBounds)) return false;
-	std::auto_ptr<C4MapScriptAlgo> algo(FnParAlgo(mask_algo));
+	std::unique_ptr<C4MapScriptAlgo> algo(FnParAlgo(mask_algo));
 	if (!algo.get()) return false;
 	return layer->Blit(rcBounds, algo.get());
 }
@@ -579,7 +579,7 @@ bool C4MapScriptHost::InitializeMap(C4Group &group, CSurface8 **pmap_surface)
 		if (!scen_proplist || !scen_proplist->GetFunc(PSF_InitializeMap)) return false;
 	}
 	// Create proplist as script context
-	std::auto_ptr<C4MapScriptMap> map(CreateMap());
+	std::unique_ptr<C4MapScriptMap> map(CreateMap());
 	// Drawing on existing map or create new?
 	if (*pmap_surface)
 	{

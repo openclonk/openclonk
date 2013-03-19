@@ -1017,7 +1017,7 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, 
 
 StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, uint32_t flags, bool own_child)
 {
-	std::auto_ptr<AttachedMesh::Denumerator> auto_denumerator(denumerator);
+	std::unique_ptr<AttachedMesh::Denumerator> auto_denumerator(denumerator);
 
 	// We don't allow an instance to be attached to multiple parent instances for now
 	if (instance.AttachParent) return NULL;

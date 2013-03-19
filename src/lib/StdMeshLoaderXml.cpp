@@ -244,7 +244,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 {
 	StdMeshXML xml(filename ? filename : "<unknown>", xml_data);
 
-	std::auto_ptr<StdMesh> mesh(new StdMesh);
+	std::unique_ptr<StdMesh> mesh(new StdMesh);
 
 	TiXmlElement* mesh_elem = xml.RequireFirstChild(NULL, "mesh");
 
