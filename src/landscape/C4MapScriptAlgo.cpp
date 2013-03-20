@@ -40,7 +40,7 @@ bool C4MapScriptAlgo::GetXYProps(const C4PropList *props, C4PropertyName k, int3
 	if (arr = val.getArray())
 	{
 		if (arr->GetSize() != 2)
-			throw new C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k]).getData());
+			throw new C4AulExecError(FormatString("C4MapScriptAlgo: Expected either integer or array with two integer elements in property \"%s\".", Strings.P[k].GetCStr()).getData());
 		out_xy[0] = arr->GetItem(0).getInt();
 		out_xy[1] = arr->GetItem(1).getInt();
 	}
