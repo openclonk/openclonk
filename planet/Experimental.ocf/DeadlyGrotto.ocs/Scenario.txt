@@ -2,7 +2,6 @@
 Title=DeadlyGrotto
 Icon=24
 Version=5,2,0,1
-MinPlayer=2
 Difficulty=90
 
 [Definitions]
