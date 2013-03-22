@@ -88,12 +88,14 @@ func DrawLiquidVein(string mat, int wdt, int spread, array rect, inmat)
 	return true;
 }
 
-func DrawRegularGround(array rect)
+func DrawRegularGround(array rect, yoff, turbulence)
 {
 	// Draw regular (boring) ground level
 	if (!rect) rect = [0,0,this.Wdt, this.Hgt];
-	var ground_rect = {Algo=MAPALGO_Rect, X=-100, Y=rect[1]+rect[3]/4, Wdt=rect[0]+rect[2]+200, Hgt=rect[3]+100};
-	var ground_algo = {Algo=MAPALGO_Turbulence, Amplitude=30, Scale=30, Op=ground_rect};
+	if (GetType(yoff) == C4V_Nil) yoff = rect[3]/4;
+	if (GetType(turbulence) == C4V_Nil) turbulence = 30;
+	var ground_rect = {Algo=MAPALGO_Rect, X=-100, Y=rect[1]+yoff, Wdt=rect[0]+rect[2]+200, Hgt=rect[3]+100};
+	var ground_algo = {Algo=MAPALGO_Turbulence, Amplitude=turbulence, Scale=30, Op=ground_rect};
 	var earth_shape = DrawVaried("Earth-earth", ground_algo, rect, [["Earth-earth_dry", 3,10], ["Earth-earth_rough", 6,2]]);
 	var top1 = {Algo=MAPALGO_Border, Top=[-10, 3], Op=earth_shape};
 	var top2 = {Algo=MAPALGO_Border, Top=[-10, 1], Op=earth_shape};
@@ -122,4 +124,24 @@ func FixLiquidBorders(border_material, lava_border_material)
 	var acid_borders = {Algo=MAPALGO_Border, Op=this->Duplicate("Acid")};
 	this->Draw(border_material, {Algo=MAPALGO_And, Op=[acid_borders, liquids]});
 	return true;
+}
+
+func DrawPlatform(string material, int x0, int y0, int wdt, int hgt_up, int hgt_down)
+{
+	var ground_mask = this->Duplicate("~Background");
+	for (var x=x0; x<x0+wdt; ++x)
+	{
+		// Adjust materials bottom
+		var y, px;
+		for (y=y0+1; y<=y0+hgt_down; ++y)
+		{
+			px = ground_mask->GetPixel(x,y);
+			if (px) break;
+		}
+		if (px) for (--y; y>y0; --y) this->SetPixel(x,y,px);
+	}
+	// Free top
+	if (hgt_up) this->Draw("Sky", nil, [x0,y0-hgt_up,wdt,hgt_up]);
+	// Draw platform itself
+	if (material) this->Draw(material, nil, [x0,y0,wdt,1]);
 }
