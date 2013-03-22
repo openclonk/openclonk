@@ -258,12 +258,21 @@ static int32_t FnLayerGetPixel(C4PropList * _this, int32_t x, int32_t y)
 	return layer->GetPix(x,y,0);
 }
 
-static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, int32_t to_value)
+static bool FnLayerSetPixel(C4PropList * _this, int32_t x, int32_t y, const C4Value &to_value_c4v)
 {
 	// Layer script function: Set pixel at position x,y to to_value in _this layer
 	C4MapScriptLayer *layer = _this->GetMapScriptLayer();
 	if (!layer) return false;
-	if (!Inside(to_value, 0, 255)) throw new C4AulExecError(FormatString("MapLayer::SetPixel: TRying to set invalid pixel value %d.", (int)to_value).getData());
+	int32_t to_value; C4String *to_value_s;
+	if (to_value_s = to_value_c4v.getStr())
+	{
+		to_value = FnParTexCol(to_value_s);
+	}
+	else
+	{
+		to_value = to_value_c4v.getInt();
+	}
+	if (!Inside(to_value, 0, 255)) throw new C4AulExecError("MapLayer::SetPixel: Trying to set invalid pixel value.");
 	return layer->SetPix(x,y,to_value);
 }
 
