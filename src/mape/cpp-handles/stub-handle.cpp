@@ -201,3 +201,10 @@ void C4AulDebug::DebugStepIn(C4AulBCC*) {}
 void C4AulDebug::DebugStepOut(C4AulBCC*, C4AulScriptContext*, C4Value*) {}
 void C4AulDebug::DebugStep(C4AulBCC*) {}
 
+C4MapScriptHost MapScript;
+C4MapScriptHost::C4MapScriptHost() {}
+C4MapScriptHost::~C4MapScriptHost() {}
+void C4MapScriptHost::Clear() {}
+C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
+bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+void C4MapScriptHost::AddEngineFunctions() {}
