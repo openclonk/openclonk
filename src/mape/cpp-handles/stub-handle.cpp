@@ -31,6 +31,7 @@
 #include "C4Record.h"
 #include "C4RoundResults.h"
 #include "CSurface8.h"
+#include "C4MapScript.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. It also instantiates global variables required by mape that are
