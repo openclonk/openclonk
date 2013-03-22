@@ -353,6 +353,7 @@ enum C4PropertyName
 	P_BlastIncinerate,
 	P_ContactIncinerate,
 	P_Global,
+	P_Scenario,
 	P_JumpSpeed,
 	P_Algo,
 	P_Layer,

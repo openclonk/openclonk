@@ -149,6 +149,7 @@ C4StringTable::C4StringTable()
 	P[P_BlastIncinerate] = "BlastIncinerate";
 	P[P_ContactIncinerate] = "ContactIncinerate";
 	P[P_Global] = "Global";
+	P[P_Scenario] = "Scenario";
 	P[P_JumpSpeed] = "JumpSpeed";
 	P[P_Algo] = "Algo";
 	P[P_Layer] = "Layer";
