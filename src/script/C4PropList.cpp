@@ -381,6 +381,18 @@ C4Def const * C4PropList::GetDef() const
 	return 0;
 }
 
+class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
+{
+	if (prototype) return prototype->GetMapScriptLayer();
+	return NULL;
+}
+
+class C4MapScriptMap * C4PropList::GetMapScriptMap()
+{
+	if (prototype) return prototype->GetMapScriptMap();
+	return NULL;
+}
+
 C4PropListNumbered * C4PropList::GetPropListNumbered()
 {
 	if (prototype) return prototype->GetPropListNumbered();

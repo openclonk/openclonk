@@ -83,8 +83,8 @@ public:
 	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
-	virtual class C4MapScriptLayer * GetMapScriptLayer() { return NULL; }
-	virtual class C4MapScriptMap * GetMapScriptMap() { return NULL; }
+	virtual class C4MapScriptLayer * GetMapScriptLayer();
+	virtual class C4MapScriptMap * GetMapScriptMap();
 
 	// saved as a reference to a global constant?
 	virtual class C4PropListStatic * IsStatic() { return NULL; }
