@@ -319,6 +319,18 @@ static bool FnLayerFindPosition(C4PropList * _this, C4PropList *out_pos, const C
 	return result;
 }
 
+static C4ValueArray *FnLayerCreateMatTexMask(C4PropList * _this, const C4Value &mask_spec)
+{
+	// layer script function: Generate an array 256 bools representing the given mask_spec
+	C4MapScriptMatTexMask mat_mask(mask_spec);
+	C4ValueArray *result = new C4ValueArray(256);
+	for (int32_t i=0; i<256; ++i)
+	{
+		result->SetItem(i, C4VBool(mat_mask(uint8_t(i))));
+	}
+	return result;
+}
+
 C4MapScriptLayer::C4MapScriptLayer(C4PropList *prototype, C4MapScriptMap *map) : C4PropListNumbered(prototype), surface(NULL), surface_owned(false), map(map)
 {
 	// It seems like numbered PropLists need a number. I don't know why.
@@ -529,6 +541,7 @@ void C4MapScriptHost::AddEngineFunctions()
 	::AddFunc(this, "GetPixelCount", FnLayerGetPixelCount);
 	::AddFunc(this, "Resize", FnLayerResize);
 	::AddFunc(this, "FindPosition", FnLayerFindPosition);
+	::AddFunc(this, "CreateMatTexMask", FnLayerCreateMatTexMask);
 }
 
 bool C4MapScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)

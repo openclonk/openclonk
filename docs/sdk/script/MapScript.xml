@@ -465,6 +465,8 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
       <text>Returns number of pixels on this layer or map within rect that fulfill mask_spec.</text>
       <text><code>bool FindPosition(proplist out_pos, mask_spec, array rect, int max_tries);</code></text>
       <text>Tries to find a position on this layer for which the pixel color matches mask_spec. If a position is found, true is returned and the position is set as X and Y parameters in the out_pos prop list. If no position is found after max_tries, the function will walk through all pixels of the layer starting from a random starting position to find a point. If still no position is found, false is returned and out_pos is not changed. max_tries defaults to 500.</text>
+      <text><code>array CreateMatTexMask(any mask_spec);</code></text>
+      <text>Returns mask_spec as an array of 256 bools to be used e.g. in conjunction with the return value of GetPixel.</text>
      </part>
   </part>
 
