@@ -33,7 +33,6 @@
 #include <C4Window.h>
 
 #ifdef USE_X11
-#include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
 #include <X11/XKBlib.h>
