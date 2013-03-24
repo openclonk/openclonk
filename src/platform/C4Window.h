@@ -30,6 +30,10 @@
 #include <StdBuf.h>
 
 #if defined(USE_WIN32_WINDOWS) || defined(USE_X11)
+#define K_SHIFT_L 42
+#define K_SHIFT_R 54
+#define K_ALT_L 56
+#define K_ALT_R 100
 #define K_F1 59
 #define K_F2 60
 #define K_F3 61
@@ -73,6 +77,10 @@
 #define KEY_X 45 // cut from GUI-editbox
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
+#define K_SHIFT_L SDLK_LSHIFT
+#define K_SHIFT_R SDLK_RSHIFT
+#define K_ALT_L SDLK_LALT
+#define K_ALT_R SDLK_RALT
 #define K_F1 SDLK_F1
 #define K_F2 SDLK_F2
 #define K_F3 SDLK_F3
@@ -115,6 +123,10 @@
 #define KEY_X SDLK_x
 #define KEY_A SDLK_a
 #elif defined(USE_CONSOLE)
+#define K_SHIFT_L 0
+#define K_SHIFT_R 0
+#define K_ALT_L 0
+#define K_ALT_R 0
 #define K_F1 0
 #define K_F2 0
 #define K_F3 0
@@ -160,6 +172,10 @@
 #import "ObjectiveCAssociated.h"
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
+extern int K_SHIFT_L;
+extern int K_SHIFT_R;
+extern int K_ALT_L;
+extern int K_ALT_R;
 extern int K_F1;
 extern int K_F2;
 extern int K_F3;

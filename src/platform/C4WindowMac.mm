@@ -134,6 +134,10 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	return true;
 }
 
+int K_SHIFT_L; // FIXME
+int K_SHIFT_R;
+int K_ALT_L;
+int K_ALT_R;
 int K_F1 = 122 + CocoaKeycodeOffset;
 int K_F2 = 120 + CocoaKeycodeOffset;
 int K_F3 = 99 + CocoaKeycodeOffset;
