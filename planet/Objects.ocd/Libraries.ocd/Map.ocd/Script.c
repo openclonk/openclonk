@@ -145,3 +145,93 @@ func DrawPlatform(string material, int x0, int y0, int wdt, int hgt_up, int hgt_
 	// Draw platform itself
 	if (material) this->Draw(material, nil, [x0,y0,wdt,1]);
 }
+
+func FindBottomPeaks(array rect, int min_dx)
+{
+	// Find downwards peaks in bottom-most nonzero pixels in rect
+	// Peaks are minimum min_dx apart horizontally
+	var x1,y1,x2,y2;
+	if (rect)
+		{ x1=rect[0]; y1=rect[1]; x2=x1+rect[2]; y2=y1+rect[3]; }
+	else
+		{ x2=this.Wdt; y2=this.Hgt; }
+	var last_y = y2+1, last_dy = 0, num_dy_0 = 0, last_peak_x = -min_dx-1;
+	var peaks = [];
+	for (var x=x1; x<x2; ++x)
+	{
+		var y = y2;
+		while (!this->GetPixel(x,y)) if (y1>=--y) break;
+		var dy = y - last_y;
+		if (!dy)
+		{
+			++num_dy_0;
+		}
+		else
+		{
+			if (dy < 0 && last_dy > 0)
+			{
+				var peak_x = x-1-num_dy_0/2;
+				if (num_dy_0%2 && !Random(2)) --peak_x;
+				if (peak_x-last_peak_x < min_dx)
+				{
+					if (!Random(2)) peaks[GetLength(peaks)-1] = {X=peak_x, Y=last_y};
+				}
+				else
+				{
+					peaks[GetLength(peaks)] = {X=peak_x, Y=last_y};
+				}
+				last_peak_x = peaks[GetLength(peaks)-1].X;
+			}
+			num_dy_0 = 0;
+			last_dy = dy;
+		}
+		last_y = y;
+	}
+	return peaks;
+}
+
+func FillLiquid(string mat, int x, int y, max_wdt, int max_hgt)
+{
+	// Fill area downwards and sideways of given x and y with mat
+	// Stay within rectangle x-max_wdt and x+max_wdt horizontally and within y and y+max_hgt vertically
+	var background_mask = this->CreateMatTexMask("Background");
+	var open_ranges = [[x,x]], n_open = 1;
+	max_hgt = BoundBy(max_hgt, 0, this.Hgt-y);
+	if (GetType(max_wdt) != C4V_Array) max_wdt = [max_wdt,max_wdt];
+	var min_x1 = Max(x-max_wdt[0]), min_x2 = Max(x-max_wdt[1]);
+	var max_x1 = Min(x+max_wdt[0], this.Wdt-1), max_x2 = Min(x+max_wdt[1], this.Wdt-1);
+	var min_x = (min_x1+min_x2)/2, max_x = (max_x1+max_x2)/2;
+	var n_pix_set = 0;
+	while (n_open && max_hgt)
+	{
+		var next_ranges = [], n_next = 0;
+		x = -1;
+		for (var range in open_ranges)
+		{
+			var x1=range[0], x2=range[1];
+			if (x>x1) continue; // two or more paths merged
+			while (x1>min_x && background_mask[this->GetPixel(x1-1,y)]) --x1;
+			while (x2<max_x && background_mask[this->GetPixel(x2+1,y)]) ++x2;
+			var below_was_background = false;
+			for (x=x1; x<=x2; ++x)
+			{
+				this->SetPixel(x,y,mat); ++n_pix_set;
+				var below_is_background = background_mask[this->GetPixel(x,y+1)];
+				if (below_is_background)
+				{
+					if (!below_was_background)
+						next_ranges[n_next++] = [x,x];
+					else
+						++next_ranges[n_next-1][1];
+				}
+				below_was_background = below_is_background;
+			}
+		}
+		open_ranges = next_ranges;
+		n_open = n_next;
+		++y; --max_hgt;
+		min_x = BoundBy(min_x+Random(3)-1, min_x1,min_x2);
+		max_x = BoundBy(max_x+Random(3)-1, max_x1,max_x2);
+	}
+	return n_pix_set;
+}
