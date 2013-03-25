@@ -1,4 +1,4 @@
-/*
+	
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
@@ -393,10 +393,10 @@ int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_o
 	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects);
 }
 
-void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object)
+void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object, int32_t iMaxDensity)
 {
 	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,30));
-	BlastFreeShape(&vertices[0],vertices.size(),by_object,caused_by);
+	BlastFreeShape(&vertices[0],vertices.size(),by_object,caused_by,iMaxDensity);
 }
 
 void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
@@ -458,22 +458,29 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 	return amount;
 }
 
-void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player)
+void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player, int32_t iMaxDensity)
 {
 	C4MaterialList *MaterialContents = NULL;
 
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 
+	uint8_t *pblast_tbl = NULL, blast_tbl[256];
+	if (iMaxDensity < C4M_Vehicle)
+	{
+		for (int32_t i=0; i<256; ++i) blast_tbl[i] = (GetPixDensity(i)<=iMaxDensity);
+		pblast_tbl = blast_tbl;
+	}
+
 	if(by_object)
 	{
 		if(!by_object->MaterialContents)
 			by_object->MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents);
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents, 0, pblast_tbl);
 	}
 	else
 	{
 		MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,MaterialContents);
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,MaterialContents,iMaxDensity);
 	}
 
 	// create objects from the material
@@ -1016,21 +1023,27 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 			// Fix coordinates
 			if (x1>x2) Swap(x1,x2);
 			// Set line
-			if (conversion_table)
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
-			else if(col)
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
-			else
+			if (fnCallback)
+			{
 				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
 				{
-					int32_t mat = GetMat(x1+xcnt,y);
-					if((this->*fnCallback)(x1+xcnt,y))
-						if(mats_count)
-						{
-							mats_count->Add(mat,1);
-							amount++;
-						}
+					uint8_t pix = GetPix(x1+xcnt, y);
+					if (!conversion_table || conversion_table[pix])
+					{
+						int32_t mat = GetPixMat(pix);
+						if((this->*fnCallback)(x1+xcnt,y))
+							if(mats_count)
+							{
+								mats_count->Add(mat,1);
+								amount++;
+							}
+					}
 				}
+			}
+			else if (conversion_table)
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+			else
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
 			edge = edge->next->next;
 		}
 

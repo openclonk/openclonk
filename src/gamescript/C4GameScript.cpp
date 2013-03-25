@@ -430,11 +430,12 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	return extracted;
 }
 
-static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy)
+static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy, Nillable<long> iMaxDensity)
 {
 	if (iCausedBy.IsNil() && Object(_this)) iCausedBy = Object(_this)->Controller;
+	if (iMaxDensity.IsNil()) iMaxDensity = C4M_Vehicle;
 
-	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this));
+	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this), iMaxDensity);
 	return C4Void();
 }
 

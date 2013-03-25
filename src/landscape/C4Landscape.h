@@ -233,13 +233,13 @@ public:
 	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
 
 	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false);
-	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER);
+	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
 
 	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
 	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false);
 	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false);
 	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
+	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL, int32_t iMaxDensity = C4M_Vehicle);
 
 	void CheckInstabilityRange(int32_t tx, int32_t ty);
 	bool CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count=0);
