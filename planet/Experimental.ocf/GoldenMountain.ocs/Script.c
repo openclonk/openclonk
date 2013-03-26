@@ -57,12 +57,12 @@ private func InitBase(int owner)
 	var lorry = CreateObject(Lorry, 690,y-2, owner);
 	if (lorry)
 	{
-		lorry->CreateContents(GrappleBow, GetStartupPlayerCount());
-		lorry->CreateContents(JarOfWinds, 2);
-		lorry->CreateContents(TeleGlove, 1);
+		//lorry->CreateContents(GrappleBow, GetStartupPlayerCount());
+		//lorry->CreateContents(JarOfWinds, 2);
+		//lorry->CreateContents(TeleGlove, 1);
 		lorry->CreateContents(Axe, 1);
 		lorry->CreateContents(Hammer, 1);
-		//lorry->CreateContents(DynamiteBox, 1);
+		lorry->CreateContents(DynamiteBox, 1);
 		lorry->CreateContents(Dynamite, 2);
 	}
 	return true;
