@@ -1,4 +1,4 @@
-	
+/*	
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
