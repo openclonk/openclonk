@@ -309,7 +309,7 @@ public:
 class C4MapScriptHost : public C4ScriptHost
 {
 private:
-	C4PropListStatic *LayerPrototype, *MapPrototype;
+	C4PropListStaticMember *LayerPrototype, *MapPrototype;
 
 	C4MapScriptMap *CreateMap();
 public:

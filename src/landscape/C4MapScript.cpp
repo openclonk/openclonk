@@ -505,8 +505,8 @@ void C4MapScriptHost::InitFunctionMap(C4AulScriptEngine *pEngine)
 	// Register script host. Add Map and MapLayer prototypes, related constants and engine functions
 	assert(pEngine && pEngine->GetPropList());
 	Clear();
-	LayerPrototype = C4PropList::NewStatic(NULL, NULL, ::Strings.RegString("MapLayer"));
-	MapPrototype = C4PropList::NewStatic(LayerPrototype, NULL, ::Strings.RegString("Map"));
+	LayerPrototype = new C4PropListStaticMember(NULL, NULL, ::Strings.RegString("MapLayer"));
+	MapPrototype = new C4PropListStaticMember(LayerPrototype, NULL, ::Strings.RegString("Map"));
 	LayerPrototype->SetName("MapLayer");
 	MapPrototype->SetName("Map");
 	::ScriptEngine.RegisterGlobalConstant("MapLayer", C4VPropList(LayerPrototype));

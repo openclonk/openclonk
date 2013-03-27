@@ -214,4 +214,13 @@ protected:
 	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in
 };
 
+// static PropList of which another class owns the pointer
+class C4PropListStaticMember : public C4PropListStatic
+{
+public:
+	C4PropListStaticMember(C4PropList * prototype, const C4PropListStatic * parent, C4String * key):
+	  C4PropListStatic(prototype, parent, key) {}
+	virtual bool Delete() { return false; }
+};
+
 #endif // C4PROPLIST_H
