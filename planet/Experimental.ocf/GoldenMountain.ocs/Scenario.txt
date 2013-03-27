@@ -12,6 +12,7 @@ Definition3=Experimental.ocd\Gems.ocd
 [Game]
 Goals=Goal_SellGems=1;
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
+ValueOverloads=Ruby=5;Amethyst=5;
 
 [Player1]
 Crew=Clonk=2
