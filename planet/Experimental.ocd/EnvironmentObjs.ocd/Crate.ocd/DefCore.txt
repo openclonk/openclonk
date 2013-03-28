@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_Crate
+Category=C4D_StaticBack
+Width=10
+Height=10
+Offset=-5,-5
+StretchGrowth=1

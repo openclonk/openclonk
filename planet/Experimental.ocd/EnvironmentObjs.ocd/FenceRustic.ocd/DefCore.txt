@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_FenceRustic
+Category=C4D_StaticBack
+Width=16
+Height=12
+Offset=-8,-6
+StretchGrowth=1
