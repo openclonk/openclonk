@@ -75,7 +75,7 @@ private func SeedAmount() { return 5; }
 
 func Construction()
 {
-	AddTimer("Growing", 30);
+	AddTimer("Growing", 80);
 	// set random rotation so trees don't look alike too much
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(-90,90),0,1,0));
 	
@@ -121,6 +121,8 @@ public func ChopDown()
 	SetVertex(0, VTX_Y, 0, 1);
 	// Remove the bottom vertex
 	RemoveVertex(0);
+	// Stop growing
+	RemoveTimer("Growing");
 
 	_inherited(...);
 }
