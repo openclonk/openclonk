@@ -81,6 +81,7 @@ public func SetFinishpoint(int x, int y, bool team)
 	cp->SetCPController(this);
 	cp_count++;
 	cp_list[cp_count] = cp;
+	UpdateScoreboardTitle();
 	return cp;
 }
 
@@ -107,6 +108,7 @@ public func AddCheckpoint(int x, int y, int mode)
 		cp_list[cp_count + 1] = cp;
 	}
 	cp_count++;
+	UpdateScoreboardTitle();
 	return cp;
 }
 
@@ -391,20 +393,24 @@ protected func RemovePlayer(int plr)
 static const SBRD_Checkpoints = 0;
 static const SBRD_BestTime = 1;
 
-private func InitScoreboard()
+private func UpdateScoreboardTitle()
 {
 	if (cp_count > 0)
 		var caption = Format("$MsgCaptionX$", cp_count);
 	else
 		var caption = "$MsgCaptionNone$";
-		
+	return Scoreboard->SetTitle(caption);
+}
+
+private func InitScoreboard()
+{
 	Scoreboard->Init(
 		[
 		{key = "checkpoints", title = ParkourCheckpoint, sorted = true, desc = true, default = 0, priority = 80},
 		{key = "besttime", title = "T", sorted = true, desc = true, default = 0, priority = 70}
 		]
 		);
-	Scoreboard->SetTitle(caption);
+	UpdateScoreboardTitle();
 	return;
 }
 
