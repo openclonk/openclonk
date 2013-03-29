@@ -775,11 +775,13 @@ Y=F42729472
 Width=20
 Height=60
 Offset=-10,-30
-Vertices=2
-VertexY=-25,25
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true

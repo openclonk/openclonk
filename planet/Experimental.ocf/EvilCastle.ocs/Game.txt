@@ -784,12 +784,13 @@ R=F22937600
 Width=66
 Height=66
 Offset=-33,-33
-Vertices=2
-VertexX=-4,4
-VertexY=-25,25
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true
