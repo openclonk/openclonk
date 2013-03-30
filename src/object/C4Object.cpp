@@ -2307,7 +2307,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( xdir,                             "XDir",               0                 ));
 	pComp->Value(mkNamingAdapt( ydir,                             "YDir",               0                 ));
 	pComp->Value(mkNamingAdapt( rdir,                             "RDir",               0                 ));
-	pComp->Value(mkParAdapt(Shape, true));
+	pComp->Value(mkParAdapt(Shape, &Def->Shape));
 	pComp->Value(mkNamingAdapt( fOwnVertices,                     "OwnVertices",        false             ));
 	pComp->Value(mkNamingAdapt( SolidMask,                        "SolidMask",          Def->SolidMask    ));
 	pComp->Value(mkNamingAdapt( PictureRect,                      "Picture"                               ));
@@ -2320,7 +2320,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
-	pComp->Value(mkNamingAdapt( Component,                        "Component"                             ));
+	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));

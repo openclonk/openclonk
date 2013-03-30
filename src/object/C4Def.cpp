@@ -173,7 +173,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	                           "Category",           0             ));
 
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
-	pComp->Value(mkParAdapt(Shape, false));
+	pComp->Value(mkParAdapt(Shape, NULL));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
 	pComp->Value(mkNamingAdapt(Component,                     "Components",         C4IDList()        ));
