@@ -502,8 +502,8 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 			// natural stuff: material conversion here?
 			if (pMatPXS && pMatPXS->sInMatConvert.getLength() && SEqualNoCase(pMatPXS->sInMatConvert.getData(), pMatLS ? pMatLS->Name : C4TLS_MatSky))
 				pReaction = &DefReactConvert;
-			// the rest is happening for same/higher densities only
-			else if ((MatDensity(iMatPXS) <= MatDensity(iMatLS)) && pMatPXS && pMatLS)
+			// non-sky reactions
+			else if (pMatPXS && pMatLS)
 			{
 				// incindiary vs extinguisher
 				if ((pMatPXS->Incindiary && pMatLS->Extinguisher) || (pMatPXS->Extinguisher && pMatLS->Incindiary))
@@ -514,8 +514,11 @@ bool C4MaterialMap::CrossMapMaterials(const char* szEarthMaterial) // Called aft
 				// corrosive vs corrode
 				else if (pMatPXS->Corrosive && pMatLS->Corrode)
 					pReaction = &DefReactCorrode;
-				// otherwise, when hitting same or higher density: Material insertion
-				else
+				// liquid hitting liquid or solid: Material insertion
+				else if (DensityLiquid(MatDensity(iMatPXS)) && DensitySemiSolid(MatDensity(iMatLS)))
+					pReaction = &DefReactInsert;
+				// solid hitting solid: Material insertion
+				else if (DensitySolid(MatDensity(iMatPXS)) && DensitySolid(MatDensity(iMatLS)))
 					pReaction = &DefReactInsert;
 			}
 			// assign the function; or NULL for no reaction
@@ -813,7 +816,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, C4Real &fXDir, C4Real &fYDir, int3
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
-	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),::MaterialMap.Map[iPxsMat].Density,::MaterialMap.Map[iPxsMat].MaxSlide))
+	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Min(::MaterialMap.Map[iPxsMat].Density, C4M_Solid),::MaterialMap.Map[iPxsMat].MaxSlide))
 	{
 		if (iPxsMat == iLsMat)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }

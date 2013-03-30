@@ -755,8 +755,7 @@ void C4Landscape::DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t 
 	int32_t cx,cy;
 	for (cy=ty; cy<ty+hgt; cy++)
 		for (cx=tx; cx<tx+wdt; cx++)
-			if ( (MatDensity(mat)>GetDensity(cx,cy))
-			     || ((MatDensity(mat)==GetDensity(cx,cy)) && (MatDigFree(mat)<=MatDigFree(GetMat(cx,cy)))) )
+			if ( (MatDensity(mat)>=GetDensity(cx,cy)))
 				SetPix(cx,cy,Mat2PixColDefault(mat)+GBackIFT(cx,cy));
 }
 
@@ -792,7 +791,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 	assert(tx); assert(ty);
 	int32_t mdens;
 	if (!MatValid(mat)) return false;
-	mdens=MatDensity(mat);
+	mdens=Min(MatDensity(mat), C4M_Solid);
 	if (!mdens) return true;
 
 	// Bounds
@@ -810,7 +809,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 	else
 	{
 		// Move up above same density
-		while (mdens==GetDensity(*tx,*ty))
+		while (mdens==Min(GetDensity(*tx,*ty),C4M_Solid))
 		{
 			(*ty)--; if (*ty<0) return false;
 			// Primitive slide (1)
@@ -2144,14 +2143,14 @@ bool FindTunnelHeight(int32_t cx, int32_t &ry, int32_t hgt)
 		// Check upwards
 		if (cy1>=0)
 		{
-			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < 25)
+			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < C4M_Liquid)
 				{ rl1++; if (rl1>=hgt) { ry=cy1+hgt/2; return true; } }
 			else rl1=0;
 		}
 		// Check downwards
 		if (cy2+1<GBackHgt)
 		{
-			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < 25)
+			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < C4M_Liquid)
 				{ rl2++; if (rl2>=hgt) { ry=cy2-hgt/2; return true; } }
 			else rl2=0;
 		}
@@ -2634,6 +2633,8 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 // Finds the next pixel position moving to desired slide.
 bool C4Landscape::FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide)
 {
+	assert(mdens<=C4M_Solid); // mdens normalized in InsertMaterial
+
 	int32_t cslide;
 	bool fLeft=true,fRight=true;
 
@@ -2667,6 +2668,7 @@ bool C4Landscape::FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t md
 // Finds the closest immediate slide position.
 bool C4Landscape::FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide)
 {
+	assert(mdens<=C4M_Solid); // mdens normalized in InsertMaterial and mrfInsertCheck
 	int32_t cslide;
 	bool fLeft=true,fRight=true;
 
@@ -3120,8 +3122,7 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
 		conv_map = new uint8_t[256];
 		for (int32_t i=0; i<256; ++i)
 		{
-			if ( (MatDensity(for_material)>GetPixDensity(i))
-			     || ((MatDensity(for_material)==GetPixDensity(i)) && (MatDigFree(for_material)<=MatDigFree(GetPixMat(i)))) )
+			if ( (MatDensity(for_material)>=GetPixDensity(i)))
 			{
 				// bridge pixel OK here. change pixel; keep IFT.
 				conv_map[i] = (i & IFT) + Mat2PixColDefault(for_material);
