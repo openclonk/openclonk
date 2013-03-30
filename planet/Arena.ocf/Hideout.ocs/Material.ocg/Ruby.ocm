@@ -1,7 +1,7 @@
 [Material]
 Name=Ruby
 Shape=Rough
-Density=50
+Density=70
 Friction=15
 BlastFree=1
 Blast2Object=Ice
