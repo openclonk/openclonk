@@ -1103,6 +1103,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
 	delete pLandscapeRender; pLandscapeRender=NULL;
+	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
 	// clear initial landscape
@@ -1273,6 +1274,10 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		// Map to landscape
 		if (!MapToLandscape()) return false;
 	}
+
+	// Init out-of-landscape pixels for bottom
+	InitBottomRowPix();
+
 	Game.SetInitProgress(84);
 
 #ifdef DEBUGREC
@@ -1496,6 +1501,7 @@ void C4Landscape::Default()
 {
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
+	BottomRowPix=NULL;
 	pLandscapeRender=NULL;
 	Map=NULL;
 	Width=Height=0;
@@ -1599,6 +1605,35 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 		if (!fSuccess) return false;
 	}
 	// done, success
+	return true;
+}
+
+bool C4Landscape::InitBottomRowPix()
+{
+	// Init BottomRowPix array, which determines if out-of-landscape pixels on bottom side of the map are solid or not
+	// In case of BottomOpen=2, unit by map and not landscape to avoid runtime join sync losses
+	delete [] BottomRowPix; // safety
+	if (!Width) return true;
+	BottomRowPix = new uint8_t[Width];
+	// must access Game.C4S here because Landscape.BottomOpen may not be initialized yet
+	// why is there a local copy of that static variable anyway?
+	int32_t bottom_open_flag = Game.C4S.Landscape.BottomOpen;
+	if (bottom_open_flag == 2 && !Map) bottom_open_flag = 1;
+	switch (bottom_open_flag)
+	{
+	// BottomOpen=0: Bottom is closed
+	case 0: for (int32_t x=0; x<Width; ++x) BottomRowPix[x] = MCVehic; break;
+	// BottomOpen=2: Bottom is open when pixel above has sky background
+	case 2:
+		for (int32_t x=0; x<Width; ++x)
+		{
+			uint8_t map_pix = Map->GetPix(x/MapZoom,Map->Hgt-1);
+			BottomRowPix[x] = ((map_pix & IFT) ? MCVehic : 0);
+		}
+		break;
+	// BottomOpen=1: Bottom is open
+	default: for (int32_t x=0; x<Width; ++x) BottomRowPix[x] = 0; break;
+	}
 	return true;
 }
 

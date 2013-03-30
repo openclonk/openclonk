@@ -39,7 +39,7 @@ HomeBaseMaterial=Clonk=2;Bread=2;
 HomeBaseProduction=Clonk=2;Bread=2;
 
 [Landscape]
-BottomOpen=true
+BottomOpen=2
 MapWidth=200,0,64,10000
 MapHeight=75,0,40,10000
 
