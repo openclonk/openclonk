@@ -1029,14 +1029,14 @@ static C4Void FnShakeFree(C4PropList * _this, long x, long y, long rad)
 	return C4Void();
 }
 
-static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects)
+static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFree(x,y,rad,Object(_this),no_dig2objects);
+	return ::Landscape.DigFree(x,y,rad,Object(_this),no_dig2objects,no_instability_check);
 }
 
-static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects)
+static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects);
+	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects,no_instability_check);
 }
 
 static C4Void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)

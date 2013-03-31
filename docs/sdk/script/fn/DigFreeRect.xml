@@ -30,10 +30,15 @@
           <name>height</name>
           <desc>Height</desc>
         </param>
-		<param>
+        <param>
           <type>bool</type>
           <name>no_dig2objects</name>
           <desc>Prevent objects from being dug out</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>no_instability_check</name>
+          <desc>Does not perform instability checks around dug pixels, i.e. prevents surrounding single pixels and liquids from becoming loose.</desc>
         </param>
       </params>
     </syntax>
