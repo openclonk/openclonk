@@ -527,12 +527,12 @@ void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 	// (see C4Object::CompileFunc and C4Def::CompileFunc)
 	pComp->Value(mkNamingAdapt( Wdt,                        "Width",              default_shape->Wdt));
 	pComp->Value(mkNamingAdapt( Hgt,                        "Height",             default_shape->Hgt));
-	pComp->Value(mkNamingAdapt( mkArrayAdapt(&x,2,0),       "Offset",             &default_shape->x));
-	pComp->Value(mkNamingAdapt( VtxNum,                     "Vertices",           default_shape->VtxNum));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxX),             "VertexX",            default_shape->VtxX));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxY),             "VertexY",            default_shape->VtxY));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxCNAT),          "VertexCNAT",         default_shape->VtxCNAT));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxFriction),      "VertexFriction",     default_shape->VtxFriction));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDefArr(&x,2,&default_shape->x),               "Offset",             &default_shape->x));
+	pComp->Value(mkNamingAdapt( VtxNum,                                                   "Vertices",           default_shape->VtxNum));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxX, default_shape->VtxX),               "VertexX",            default_shape->VtxX));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxY, default_shape->VtxY),               "VertexY",            default_shape->VtxY));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxCNAT, default_shape->VtxCNAT),         "VertexCNAT",         default_shape->VtxCNAT));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxFriction, default_shape->VtxFriction), "VertexFriction",     default_shape->VtxFriction));
 	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     default_shape->ContactDensity));
 	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            default_shape->FireTop));
 	if (fRuntime)
