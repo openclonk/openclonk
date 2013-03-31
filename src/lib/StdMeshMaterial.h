@@ -269,7 +269,9 @@ public:
 	float Emissive[4];
 	float Shininess;
 
+	bool DepthCheck;
 	bool DepthWrite;
+
 	CullHardwareType CullHardware;
 	SceneBlendType SceneBlendFactors[2];
 	bool AlphaToCoverage;

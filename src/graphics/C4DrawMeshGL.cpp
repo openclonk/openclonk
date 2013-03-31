@@ -459,6 +459,9 @@ namespace
 		{
 			const StdMeshMaterialPass& pass = technique.Passes[i];
 
+			if(!pass.DepthCheck)
+				glDisable(GL_DEPTH_TEST);
+
 			glDepthMask(pass.DepthWrite ? GL_TRUE : GL_FALSE);
 
 			if(pass.AlphaToCoverage)
@@ -630,6 +633,7 @@ namespace
 			if(shader.Mod2Location != -1) glUniform1iARB(shader.Mod2Location, fMod2);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
+			// Clean-up, re-set default state
 			for (unsigned int j = 0; j < textures.size(); ++j)
 			{
 				glActiveTexture(GL_TEXTURE0+textures[j]);
@@ -637,6 +641,9 @@ namespace
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
+
+			if(!pass.DepthCheck)
+				glEnable(GL_DEPTH_TEST);
 		}
 	}
 
