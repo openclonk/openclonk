@@ -252,8 +252,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def(): Script(this), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
 {
+	Script.SetDef(this);
 	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 	Default();

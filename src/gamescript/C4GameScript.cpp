@@ -1144,9 +1144,9 @@ static bool FnOnMessageBoardAnswer(C4PropList * _this, C4Object *pObj, long iFor
 	C4AulParSet ps = C4AulParSet(C4VString(szAnswerString), C4VInt(iForPlr));
 	// get script
 	if (pObj)
-		return pObj->Call(PSF_InputCallback, &ps);
+		return pObj->Call(PSF_InputCallback, &ps).getBool();
 	else
-		return ::GameScript.Call(PSF_InputCallback, &ps);
+		return ::GameScript.Call(PSF_InputCallback, &ps).getBool();
 }
 
 static C4Void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)

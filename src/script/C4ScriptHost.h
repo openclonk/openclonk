@@ -86,8 +86,9 @@ public:
 class C4DefScriptHost: public C4ScriptHost
 {
 public:
-	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
+	C4DefScriptHost() : C4ScriptHost(), Def(NULL) { }
 
+	void SetDef(C4Def *to_def) { Def=to_def; }
 	virtual bool Parse();
 	virtual C4PropListStatic * GetPropList();
 protected:

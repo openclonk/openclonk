@@ -294,7 +294,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 'b':
 		iTmp = Data.Int;
 		pComp->Value(iTmp);
-		SetBool(iTmp);
+		SetBool(!!iTmp);
 		break;
 
 	case 'E':

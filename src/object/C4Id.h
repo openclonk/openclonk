@@ -55,7 +55,7 @@ public:
 	static const C4ID Clonk;
 	DEPRECATED static const C4ID Flame;
 	static const C4ID Melee;
-	DEPRECATED static const C4ID Bubble;
+	static const C4ID Bubble;
 
 	C4ID(): v(None.v) {}
 	C4ID(const C4ID &other): v(other.v) {}

@@ -31,6 +31,7 @@
 #ifndef _WIN32_IE
 #define _WIN32_IE 0x0400
 #endif
+#undef MK_ALT
 #include <shlobj.h>
 #ifndef CSIDL_MYPICTURES
 #define CSIDL_MYPICTURES 0x0027

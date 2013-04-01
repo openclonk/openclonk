@@ -704,7 +704,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
 
-	default: assert(false);
+	default: assert(false); return "UNKNOWN";
 	}
 }
 

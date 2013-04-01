@@ -53,8 +53,10 @@ extern int MK_SHIFT;
 extern int MK_CONTROL;
 extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
-#define MK_ALT 0x10000 // well beyond the pre-defined values
 #include <C4windowswrapper.h>
+#ifndef MK_ALT
+#define MK_ALT 0x20 // as defined in oleidl.h
+#endif
 #endif
 
 #ifdef USE_WIN32_WINDOWS
