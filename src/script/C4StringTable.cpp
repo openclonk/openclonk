@@ -157,7 +157,10 @@ C4StringTable::C4StringTable()
 	P[P_Std] = "Std";
 	P[P_Text] = "Text";
 	P[P_OnClick] = "OnClick";
+	P[P_OnMouseIn] = "OnMouseIn";
+	P[P_OnMouseOut] = "OnMouseOut";
 	P[P_ID] = "ID";
+	P[P_Style] = "Style";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

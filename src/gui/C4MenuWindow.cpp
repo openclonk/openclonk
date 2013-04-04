@@ -27,8 +27,10 @@
 
 #include <C4Application.h>
 #include <C4DefList.h>
+#include <C4GraphicsSystem.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
+#include <C4Control.h>
 #include <C4MouseControl.h>
 #include <C4Object.h>
 #include <C4Player.h>
@@ -45,37 +47,65 @@ C4MenuWindowAction::~C4MenuWindowAction()
 {
 	if (text)
 		text->DecRef();
+	if (nextAction)
+		delete nextAction;
 }
 
 void C4MenuWindowAction::ClearPointers(C4Object *pObj)
 {
-	if (target == pObj)
+	C4Object *targetObj = target ? target->GetObject() : 0;
+
+	if (targetObj == pObj)
 	{
 		// not only forget object, but completely invalidate action
 		action = 0;
 		target = 0;
 	}
+	if (nextAction)
+		nextAction->ClearPointers(pObj);
 }
-bool C4MenuWindowAction::Init(C4ValueArray *array)
+bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 {
 	if (array->GetSize() == 0) // safety
 		return false;
 
-	action = array->GetItem(0).getInt();
+	// an array of actions?
+	if (array->GetItem(0).getArray())
+	{
+		LogF("..initing multi-action event (index %d)", index);
+		// add action to action chain?
+		if (index+1 < array->GetSize())
+		{
+			nextAction = new C4MenuWindowAction();
+			nextAction->Init(array, index + 1);
+		}
+		// continue with one sub array
+		array = array->GetItem(index).getArray();
+		if (!array) return false;
+	}
+	// retrieve type of action
+	int newAction = array->GetItem(0).getInt();
+	action = 0; // still invalid!
 
-	switch (action)
+	switch (newAction)
 	{
 	case C4MenuWindowActionID::Call:
 		if (array->GetSize() < 3) return false;
-		target = array->GetItem(1).getObj();
+		target = array->GetItem(1).getPropList();
 		text = array->GetItem(2).getStr();
 		if (!target || !text) return false;
+		if (array->GetSize() >= 4)
+			value = C4Value(array->GetItem(3));
 		text->IncRef();
+
+		// important! needed to identify actions later!
+		id = ::MenuWindowRoot.GenerateActionID();
+
 		break;
 
 	case C4MenuWindowActionID::SetTag:
 		if (array->GetSize() < 4) return false;
-		target = array->GetItem(1).getObj();
+		target = array->GetItem(1).getObj(); // getObj on purpose. Need to validate that.
 		subwindowID = array->GetItem(2).getInt();
 		text = array->GetItem(3).getStr();
 		if (!text) return false;
@@ -85,54 +115,91 @@ bool C4MenuWindowAction::Init(C4ValueArray *array)
 	default:
 		return false;
 	}
-
+	if (index > 0)
+		LogF("..chained action setup OK");
+	action = newAction;
 	return true;
 }
 
-void C4MenuWindowAction::Execute(C4MenuWindow *parent)
+void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned int tag, int32_t actionType)
 {
 	assert(parent && "C4MenuWindow::Execute must always be called with parent");
-
+	LogF("Excuting action (nextAction: %x, target: %x, text: %s, type: %d)", nextAction, target, text->GetCStr(), actionType);
 	// invalid ID? can be set by removal of target object
-	if (!action) return;
-
-	// get menu main window
-	C4MenuWindow *main = parent;
-	C4MenuWindow *from = main;
-	while (from->parent)
+	if (action)
 	{
-		main = from;
-		from = from->parent;
+		// get menu main window
+		C4MenuWindow *main = parent;
+		C4MenuWindow *from = main;
+		while (from->parent)
+		{
+			main = from;
+			from = from->parent;
+		}
+
+		switch (action)
+		{
+		case C4MenuWindowActionID::Call:
+		{
+			if (!target) // ohject removed in the meantime?
+				break;
+			// the action needs to be synchronized! Assemble command and put it into control queue!
+			Game.Input.Add(CID_MenuCommand, new C4ControlMenuCommand(id, player, main->GetID(), parent->GetID(), parent->target, tag, actionType));
+			Log("syncing command...");
+			break;
+		}
+
+		case C4MenuWindowActionID::SetTag:
+		{
+			C4MenuWindow *window = main;
+			if (subwindowID == 0)
+				window = parent;
+			else if (subwindowID > 0)
+			{
+				C4Object *targetObj = dynamic_cast<C4Object*> (target);
+				window = main->GetSubWindow(subwindowID, targetObj);
+			}
+			if (window)
+				window->SetTag(text);
+			break;
+		}
+
+		default:
+			assert(false && "C4MenuWindowAction without valid or invalidated ID");
+			break;
+		}
+	} // action
+
+	if (nextAction)
+	{
+		Log("..executing chained action..");
+		nextAction->Execute(parent, player, tag, actionType);
 	}
+}
 
-	switch (action)
+bool C4MenuWindowAction::ExecuteCommand(int32_t actionID, C4MenuWindow *parent, int32_t player)
+{
+	// target has already been checked for validity
+	if (id == actionID && action)
 	{
-	case C4MenuWindowActionID::Call:
-	{
-		if (!target) // ohject removed in the meantime?
-			return;
+		assert(action == C4MenuWindowActionID::Call && "C4ControlMenuCommand for invalid action!");
 
-		C4AulParSet Pars(C4VInt(main->GetID()), C4VInt(parent->GetID()));
+		// get menu main window
+		C4MenuWindow *main = parent;
+		C4MenuWindow *from = main;
+		while (from->parent)
+		{
+			main = from;
+			from = from->parent;
+		}
+		LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
+		C4AulParSet Pars(C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target), value);
 		target->Call(text->GetCStr(), &Pars);
-		break;
+		return true;
 	}
-
-	case C4MenuWindowActionID::SetTag:
-	{
-		C4MenuWindow *window = main;
-		if (subwindowID == 0)
-			window = parent;
-		else if (subwindowID > 0)
-			window = main->GetSubWindow(subwindowID, target);
-		if (window)
-			window->SetTag(text);
-		break;
-	}
-
-	default:
-		assert(false && "C4MenuWindowAction without valid or invalidated ID");
-		break;
-	}
+	if (nextAction)
+		return nextAction->ExecuteCommand(actionID, parent, player);
+	return false;
 }
 
 C4MenuWindowScrollBar::C4MenuWindowScrollBar() : offset(0.5f), decoration(0), parent(0)
@@ -150,10 +217,11 @@ void C4MenuWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float paren
 	C4GUI::ScrollBarFacets &facets = decoration ? *decoration : ::GraphicsResource.sfctScroll;
 	C4GUI::DynBarFacet bar = facets.barScroll;
 
-	float off = 25.0f;
-	float x = cgo.X + parentRight - off;
-	float yOrigin = cgo.Y + parentTop + off;
-	float hgt = (parentBottom - parentTop) - off;
+	float offX = 25.0f;
+	float offY = 0.0f;
+	float x = cgo.X + parentRight - offX;
+	float yOrigin = cgo.Y + parentTop + offY;
+	float hgt = (parentBottom - parentTop) - offY;
 
 	bar.fctBegin.Draw(cgo.Surface, x, yOrigin);
 	float yOffset = bar.fctBegin.Hgt;
@@ -172,7 +240,7 @@ void C4MenuWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float paren
 		yOffset += segmentHeight;
 	}
 	bar.fctMiddle.Hgt = segmentHeight;
-	bar.fctEnd.Draw(cgo.Surface, x, yOrigin + yOffset - bar.fctEnd.Hgt);
+	bar.fctEnd.Draw(cgo.Surface, x, yOrigin + yOffset /*- bar.fctEnd.Hgt*/);
 }
 
 bool C4MenuWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
@@ -193,6 +261,12 @@ C4MenuWindowProperty::~C4MenuWindowProperty()
 	// is cleaned up from destructor of C4MenuWindow
 }
 
+C4MenuWindowAction *C4MenuWindowProperty::GetActionForTag(unsigned int hash)
+{
+	if (!taggedProperties.count(hash)) return 0;
+	return taggedProperties[hash].action;
+}
+
 void C4MenuWindowProperty::CleanUp(Prop &prop)
 {
 	switch (type)
@@ -201,6 +275,8 @@ void C4MenuWindowProperty::CleanUp(Prop &prop)
 		if (prop.deco) delete prop.deco;
 		break;
 	case onClickAction:
+	case onMouseInAction:
+	case onMouseOutAction:
 		if (prop.action) delete prop.action;
 		break;
 	case text:
@@ -249,24 +325,27 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 	// in order to make /current/ sane, always reset it - not relying about implementation of std::map
 	// if the user wants a special tag selected, he should do that (standard selection will still be "Std")
 	current = &taggedProperties[hash];
+	currentTag = hash;
 
 	switch (type)
 	{
-	case left:
-	case right:
-	case top:
-	case bottom:
-	case backgroundColor:
+	case C4MenuWindowPropertyName::left:
+	case C4MenuWindowPropertyName::right:
+	case C4MenuWindowPropertyName::top:
+	case C4MenuWindowPropertyName::bottom:
+	case C4MenuWindowPropertyName::backgroundColor:
+	case C4MenuWindowPropertyName::style:
+	case C4MenuWindowPropertyName::priority:
 		current->d = value.getInt();
 		break;
 
-	case relLeft:
-	case relRight:
-	case relTop:
-	case relBottom:
+	case C4MenuWindowPropertyName::relLeft:
+	case C4MenuWindowPropertyName::relRight:
+	case C4MenuWindowPropertyName::relTop:
+	case C4MenuWindowPropertyName::relBottom:
 		current->f = float(value.getInt()) / 1000.0f;
 		break;
-	case symbolObject:
+	case C4MenuWindowPropertyName::symbolObject:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -274,7 +353,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		else current->def = 0;
 		break;
 	}
-	case symbolDef:
+	case C4MenuWindowPropertyName::symbolDef:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -282,7 +361,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		else current->def = 0;
 		break;
 	}
-	case frameDecoration:
+	case C4MenuWindowPropertyName::frameDecoration:
 	{
 		C4ID id = value.getC4ID();
 		if (id != C4ID::None)
@@ -297,7 +376,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 			}
 		break;
 	}
-	case text:
+	case C4MenuWindowPropertyName::text:
 	{
 		C4String *string = value.getStr();
 		StdCopyStrBuf *buf = new StdCopyStrBuf();
@@ -307,23 +386,22 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		current->strBuf = buf;
 		break;
 	}
-	case onClickAction:
+	case C4MenuWindowPropertyName::onClickAction:
+	case C4MenuWindowPropertyName::onMouseInAction:
+	case C4MenuWindowPropertyName::onMouseOutAction:
 	{
 		C4ValueArray *array = value.getArray();
 		if (array)
 		{
+			assert (!current->action && "Prop() contains action prior to assignment");
 			current->action = new C4MenuWindowAction();
-			if (!current->action->Init(array))
-			{
-				delete current->action;
-				current->action = 0;
-			}
+			current->action->Init(array);
 		}
 		break;
 	}
 
 	default:
-		assert (false && "C4MenuWindowAction should never have undefined type");
+		assert(false && "C4MenuWindowAction should never have undefined type");
 		break;
 	} // switch
 }
@@ -341,6 +419,8 @@ void C4MenuWindowProperty::ClearPointers(C4Object *pObj)
 		break;
 
 		case C4MenuWindowPropertyName::onClickAction:
+		case C4MenuWindowPropertyName::onMouseInAction:
+		case C4MenuWindowPropertyName::onMouseOutAction:
 			if (iter->second.action)
 				iter->second.action->ClearPointers(pObj);
 		break;
@@ -350,11 +430,14 @@ void C4MenuWindowProperty::ClearPointers(C4Object *pObj)
 	}
 }
 
-void C4MenuWindowProperty::SwitchTag(C4String *tag)
+bool C4MenuWindowProperty::SwitchTag(C4String *tag)
 {
 	unsigned int hash = tag->Hash;
-	if (taggedProperties.count(hash))
-		current = &taggedProperties[hash];
+	if (!taggedProperties.count(hash)) return false; // tag not available
+	if (current == &taggedProperties[hash]) return false; // tag already set?
+	current = &taggedProperties[hash];
+	currentTag = hash;
+	return true;
 }
 
 C4MenuWindow::C4MenuWindow()
@@ -368,7 +451,7 @@ C4MenuWindow::C4MenuWindow(float stdBorderX, float stdBorderY)
 
 	// set border values for "Std"
 	unsigned int hash = Strings.P[P_Std].Hash;
-	// exact offsets are standard 0
+	// relative offsets are standard, only need to set exact offset
 	props[C4MenuWindowPropertyName::left].SetInt(hash, int32_t(stdBorderX));
 	props[C4MenuWindowPropertyName::right].SetInt(hash, int32_t(-stdBorderX));
 	props[C4MenuWindowPropertyName::top].SetInt(hash, int32_t(stdBorderY));
@@ -403,9 +486,15 @@ void C4MenuWindow::Init()
 	props[C4MenuWindowPropertyName::symbolDef].SetNull(hash);
 	props[C4MenuWindowPropertyName::text].SetNull(hash);
 	props[C4MenuWindowPropertyName::onClickAction].SetNull(hash);
+	props[C4MenuWindowPropertyName::onMouseInAction].SetNull(hash);
+	props[C4MenuWindowPropertyName::onMouseOutAction].SetNull(hash);
+	props[C4MenuWindowPropertyName::style].SetNull(hash);
+	props[C4MenuWindowPropertyName::priority].SetNull(hash);
 
 	parent = 0;
+	wasRemoved = false;
 	visible = true;
+	hasMouseFocus = false;
 	target = 0;
 	scrollBar = 0;
 }
@@ -439,6 +528,8 @@ void C4MenuWindow::SetArrayTupleProperty(const C4Value &property, C4MenuWindowPr
 bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 {
 	assert(parent && "MenuWindow created from proplist without parent (fails for ID tag)");
+
+	bool layoutUpdateRequired = false; // needed for position changes etc
 	// get properties from proplist
 	// make sure to delete the array later, we took ownership
 	C4ValueArray *properties = proplist->GetProperties();
@@ -455,13 +546,25 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 		C4Value value;
 
 		if(&Strings.P[P_X] == key)
+		{
 			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relLeft, C4MenuWindowPropertyName::left, standardHash);
+			layoutUpdateRequired = true;
+		}
 		else if(&Strings.P[P_Y] == key)
+		{
 			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relTop, C4MenuWindowPropertyName::top, standardHash);
+			layoutUpdateRequired = true;
+		}
 		else if(&Strings.P[P_Wdt] == key)
+		{
 			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relRight, C4MenuWindowPropertyName::right, standardHash);
+			layoutUpdateRequired = true;
+		}
 		else if(&Strings.P[P_Hgt] == key)
+		{
 			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relBottom, C4MenuWindowPropertyName::bottom, standardHash);
+			layoutUpdateRequired = true;
+		}
 		else if(&Strings.P[P_BackgroundColor] == key)
 			props[C4MenuWindowPropertyName::backgroundColor].Set(property, standardHash);
 		else if(&Strings.P[P_Target] == key)
@@ -476,7 +579,14 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 			props[C4MenuWindowPropertyName::frameDecoration].Set(property, standardHash);
 		}
 		else if(&Strings.P[P_Text] == key)
+		{
 			props[C4MenuWindowPropertyName::text].Set(property, standardHash);
+			layoutUpdateRequired = true;
+		}
+		else if(&Strings.P[P_Prototype] == key)
+			; // do nothing
+		else if(&Strings.P[P_Mode] == key) // note that "Mode" is abused here for saving whether we have mouse focus
+			hasMouseFocus = property.getBool();
 		else if(&Strings.P[P_ID] == key)
 		{
 			// setting IDs is only valid for subwindows!
@@ -488,10 +598,23 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 				if (id != 0)
 					parent->ChildGotID(this);
 			}
-			props[C4MenuWindowPropertyName::text].Set(property, standardHash);
 		}
 		else if(&Strings.P[P_OnClick] == key)
 			props[C4MenuWindowPropertyName::onClickAction].Set(property, standardHash);
+		else if(&Strings.P[P_OnMouseIn] == key)
+			props[C4MenuWindowPropertyName::onMouseInAction].Set(property, standardHash);
+		else if(&Strings.P[P_OnMouseOut] == key)
+			props[C4MenuWindowPropertyName::onMouseOutAction].Set(property, standardHash);
+		else if(&Strings.P[P_Style] == key)
+		{
+			props[C4MenuWindowPropertyName::style].Set(property, standardHash);
+			layoutUpdateRequired = true;
+		}
+		else if(&Strings.P[P_Priority] == key)
+		{
+			props[C4MenuWindowPropertyName::priority].Set(property, standardHash);
+			layoutUpdateRequired = true;
+		}
 		else
 		{
 			// possibly sub-window?
@@ -503,10 +626,13 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 
 				if (!child->CreateFromPropList(subwindow))
 					RemoveChild(child, false);
+				else
+					layoutUpdateRequired = true;
 			}
 		}
 	}
-
+	if (layoutUpdateRequired)
+		parent->lastDrawPosition.dirty = 2;
 	return true;
 }
 
@@ -520,6 +646,8 @@ void C4MenuWindow::ClearPointers(C4Object *pObj)
 	}
 	props[C4MenuWindowPropertyName::symbolObject].ClearPointers(pObj);
 	props[C4MenuWindowPropertyName::onClickAction].ClearPointers(pObj);
+	props[C4MenuWindowPropertyName::onMouseInAction].ClearPointers(pObj);
+	props[C4MenuWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
 
 	// can't iterate directly over the children, since they might get deleted in the process
 	std::vector<C4MenuWindow*> temp;
@@ -537,6 +665,7 @@ C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
 	{
 		child->SetID(GenerateMenuID());
 		child->isMainWindow = true;
+		LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::MenuWindowRoot));
 	}
 	children.push_back(child);
 	return child;
@@ -554,16 +683,18 @@ void C4MenuWindow::ChildWithIDRemoved(C4MenuWindow *child)
 	{
 		if (iter->second != child) continue;
 		childrenIDMap.erase(iter);
+		LogF("child-map-size: %d, remov %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 		return;
 	}
 }
 
 void C4MenuWindow::ChildGotID(C4MenuWindow *child)
 {
-	assert (parent && "ChildGotID called on window root, should not propagate over main windows!");
+	assert(parent && "ChildGotID called on window root, should not propagate over main windows!");
 	if (!isMainWindow)
 		return parent->ChildGotID(child);
 	childrenIDMap.insert(std::make_pair(child->GetID(), child));
+	LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
 C4MenuWindow *C4MenuWindow::GetChildByID(int32_t child)
@@ -590,13 +721,13 @@ C4MenuWindow *C4MenuWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
 	return 0;
 }
 
-void C4MenuWindow::RemoveChild(C4MenuWindow *child, bool close)
+void C4MenuWindow::RemoveChild(C4MenuWindow *child, bool close, bool all)
 {
 	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		if (*iter != child) continue;
+		if (child && (*iter != child)) continue;
 		// don't delete twice
-		(*iter)->parent = 0;
+		(*iter)->wasRemoved = true;
 		// close properly (calls etc.?)
 		if (close)
 			(*iter)->Close();
@@ -606,31 +737,23 @@ void C4MenuWindow::RemoveChild(C4MenuWindow *child, bool close)
 			ChildWithIDRemoved(*iter);
 
 		delete *iter;
-		children.erase(iter);
-		return;
+		if (!all)
+		{
+			children.erase(iter);
+			return;
+		}
 	}
+	if (all)
+		children.clear();
 }
 
 void C4MenuWindow::ClearChildren(bool close)
 {
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-	{
-		(*iter)->parent = 0; // don't delete twice
-
-		if (close)
-			(*iter)->Close();
-		delete *iter;
-	}
-	children.clear();
+	RemoveChild(0, close, true);
 }
 
 void C4MenuWindow::Close()
 {
-	// if we have a parent, make it forget us at end of call
-	// when delete from the parent, "parent" is 0
-	C4MenuWindow *_parent = parent;
-	parent = 0;
-
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
 
@@ -639,38 +762,232 @@ void C4MenuWindow::Close()
 	{
 		// todo
 	}
+	LogF("C4MenuWindow::Close, parent: %d [I am %d]", parent ? parent->GetID() : 0, id);
 
-	if (_parent)
-		_parent->RemoveChild(this);
+	if (!wasRemoved && parent)
+		parent->RemoveChild(this);
 }
 
-void C4MenuWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
+void C4MenuWindow::EnableScrollBar(bool enable)
 {
+	if (!enable && scrollBar)
+	{
+		delete scrollBar; scrollBar = 0;
+	}
+	else if (enable && !scrollBar)
+	{
+		scrollBar = new C4MenuWindowScrollBar();
+		scrollBar->parent = this;
+	}
+}
+
+void C4MenuWindow::UpdateLayout()
+{
+	LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::MenuWindowRoot), int(isMainWindow), props[C4MenuWindowPropertyName::style].GetInt());
+	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
+
+	// update scroll bar according to children
+	bool first = true;
 	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-		(*iter)->Draw(cgo, player, parentLeft, parentTop, parentRight, parentBottom);
+	{
+		C4MenuWindow *child = *iter;
+		// offset is against rounding weirdnesses
+		if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
+			lastDrawPosition.topMostChild = child->lastDrawPosition.top + 1.0f;
+		if (first || (child->lastDrawPosition.bottom > lastDrawPosition.bottomMostChild))
+			lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom - 1.0f;
+		first = false;
+	}
+	if (first) // no children?
+	{
+		lastDrawPosition.topMostChild = 0.0f;
+		lastDrawPosition.bottomMostChild = 0.0f;
+	}
+
+	// check whether we need a scroll-bar and then add it
+	float height = lastDrawPosition.bottom - lastDrawPosition.top;
+	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
+
+	if (childHgt > height) // need a scroll bar or adjustment!
+	{
+		// adjust size or just use a scroll bar?
+		if (style & C4MenuWindowStyleFlag::FitChildren)
+		{
+			// just overwrite the current active tag
+			props[C4MenuWindowPropertyName::bottom].current->d += (childHgt - height);
+		}
+		else
+			EnableScrollBar(true);
+	}
+	else
+	{
+		// revert possible height adjustment?
+		if (style & C4MenuWindowStyleFlag::FitChildren)
+		{
+			// just overwrite the current active tag
+			props[C4MenuWindowPropertyName::bottom].current->d += (childHgt - height);
+		}
+
+		// deactivate scrollbar always
+		EnableScrollBar(false);
+	}
+
+	// special layout selected?
+	if (style & C4MenuWindowStyleFlag::Grid)
+		UpdateLayoutGrid();
+	else if (style & C4MenuWindowStyleFlag::Vertical)
+		UpdateLayoutVertical();
 }
 
-void C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
+void C4MenuWindow::UpdateLayoutGrid()
 {
-	if (!IsVisible()) return;
+	Log("Updating grid layout!");
+	const int32_t width = lastDrawPosition.right - lastDrawPosition.left;
+	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
+
+	unsigned int stdHash = Strings.P[P_Std].Hash;
+
+	std::list<C4MenuWindow*> sorted;
+	sorted.insert(sorted.begin(), children.begin(), children.end());
+	sorted.sort(C4MenuWindow::CompareMenuWindowsByPriority);
+
+	int32_t borderX(0), borderY(0);
+	int32_t currentX = borderX;
+	int32_t currentY = borderY;
+	int32_t maxChildHeight = 0;
+
+	for(std::list<C4MenuWindow*>::iterator iter = sorted.begin(); iter != sorted.end(); ++iter)
+	{
+		C4MenuWindow *child = *iter;
+		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left;
+		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
+		// remember the heighest child
+		if (!maxChildHeight || (childHgt > maxChildHeight))
+			maxChildHeight = childHgt;
+
+		child->props[C4MenuWindowPropertyName::left].SetInt(stdHash, currentX);
+		child->props[C4MenuWindowPropertyName::right].SetInt(stdHash, currentX + childWdt);
+		child->props[C4MenuWindowPropertyName::top].SetInt(stdHash, currentY);
+		child->props[C4MenuWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
+
+		currentX += childWdt + borderX;
+		if (currentX + childWdt >= width)
+		{
+			currentX = borderX;
+			currentY += maxChildHeight + borderY;
+		}
+	}
+
+	lastDrawPosition.topMostChild = 0;
+	lastDrawPosition.bottomMostChild = currentY;
+
+	// do we need a scroll bar?
+	EnableScrollBar(currentY >= height);
+}
+
+void C4MenuWindow::UpdateLayoutVertical()
+{
+	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
+
+	unsigned int stdHash = Strings.P[P_Std].Hash;
+
+	std::list<C4MenuWindow*> sorted;
+	sorted.insert(sorted.begin(), children.begin(), children.end());
+	sorted.sort(C4MenuWindow::CompareMenuWindowsByPriority);
+
+	int32_t borderY(0);
+	int32_t currentY = borderY;
+
+	for(std::list<C4MenuWindow*>::iterator iter = sorted.begin(); iter != sorted.end(); ++iter)
+	{
+		C4MenuWindow *child = *iter;
+		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
+
+		child->props[C4MenuWindowPropertyName::top].SetInt(stdHash, currentY);
+		child->props[C4MenuWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
+
+		currentY += childHgt + borderY;
+	}
+
+	lastDrawPosition.topMostChild = 0;
+	lastDrawPosition.bottomMostChild = currentY;
+
+	// do we need a scroll bar?
+	EnableScrollBar(currentY >= height);
+}
+
+bool C4MenuWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
+{
+	// note that withMultipleFlag only plays a roll for the root-menu
+	bool oneDrawn = false; // was at least one child drawn?
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		C4MenuWindow *child = *iter;
+		if (lastDrawPosition.dirty == 1)
+			child->lastDrawPosition.dirty = 2;
+		if (withMultipleFlag != -1)
+		{
+			const int32_t &style = child->props[C4MenuWindowPropertyName::style].GetInt();
+			if ((withMultipleFlag == 0) &&  (style & C4MenuWindowStyleFlag::Multiple)) continue;
+			if ((withMultipleFlag == 1) && !(style & C4MenuWindowStyleFlag::Multiple)) continue;
+		}
+
+		if (child->Draw(cgo, player, parentLeft, parentTop, parentRight, parentBottom))
+			oneDrawn = true;
+		// draw only one window when drawing non-Multiple windows
+		if (oneDrawn && (withMultipleFlag == 0)) return true;
+	}
+	return oneDrawn;
+}
+
+bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
+{
+	if (!IsVisible()) return false;
 	// assume I am the root and use the whole viewport for drawing - minus some standard border
 	const int32_t &left = props[C4MenuWindowPropertyName::left].GetInt();
 	const int32_t &right = props[C4MenuWindowPropertyName::right].GetInt();
 	const int32_t &top = props[C4MenuWindowPropertyName::top].GetInt();
 	const int32_t &bottom = props[C4MenuWindowPropertyName::bottom].GetInt();
-	DrawChildren(cgo, player, cgo.X + left, cgo.Y + top, cgo.X + cgo.Wdt * cgo.Zoom + right, cgo.Y + cgo.Hgt * cgo.Zoom + bottom);
+
+	float leftDrawX = cgo.X + left;
+	float topDrawY = cgo.Y + top;
+	float rightDrawX = cgo.X + cgo.Wdt * cgo.Zoom + right;
+	float bottomDrawY = cgo.Y + cgo.Hgt * cgo.Zoom + bottom;
+
+	float wdt = rightDrawX - leftDrawX;
+	float hgt = bottomDrawY - topDrawY;
+
+	// abuse properties, we are root, we are allowed to do that
+	// rounding against small errors
+	if ((int(wdt) != int(lastDrawPosition.right)) || (int(hgt) != int(lastDrawPosition.bottom)))
+	{
+		LogF("Updating root lastDrawPosition %f|%f // %f|%f", cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
+		lastDrawPosition.right = wdt;
+		lastDrawPosition.bottom = hgt;
+		lastDrawPosition.dirty = 1;
+	}
+	else
+		lastDrawPosition.dirty = 0;
+
+	// step one: draw all non-multiple windows
+	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 1);
+	// TODO: adjust rectangle for main menu if multiple windows exist
+	// step two: draw one "main" menu
+	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 0);
+	return true;
 }
 
-void C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
+bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
 {
 	// message hidden?
-	if (!IsVisible()) return;
+	if (!IsVisible()) return false;
 
-	// player can see message?
+	// player can see menu?
 	if (target)
 		if (!target->IsVisible(player, false))
-			return;
-
+			return false;
+	// fetch style
+	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
 	const int32_t &left = props[C4MenuWindowPropertyName::left].GetInt();
 	const int32_t &right = props[C4MenuWindowPropertyName::right].GetInt();
@@ -693,53 +1010,29 @@ void C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 	float height = bottomDrawY - topDrawY;
 	float childOffsetY = 0.0f; // for scrolling
 
-	// update last drawing position if changed, needed for input etc.
-	if (leftDrawX != lastDrawPosition.left)
-	{
-		lastDrawPosition.left = leftDrawX;
-		lastDrawPosition.right = rightDrawX;
-		lastDrawPosition.top = topDrawY;
-		lastDrawPosition.bottom = bottomDrawY;
-
-		// host should update asap
-		parent->lastDrawPosition.dirty = 1;
-	}
+	// always update drawing position, needed for mouse input etc.
+	lastDrawPosition.left = leftDrawX;
+	lastDrawPosition.right = rightDrawX;
+	lastDrawPosition.top = topDrawY;
+	lastDrawPosition.bottom = bottomDrawY;
 
 	// do we need to update children positions etc.?
-	if (lastDrawPosition.dirty)
+	bool updateLayout = lastDrawPosition.dirty == 1;
+	if (lastDrawPosition.dirty > 0)
 	{
-		lastDrawPosition.dirty = 0;
-		bool first = true;
-		for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
-		{
-			C4MenuWindow *child = *iter;
-			// offset is against rounding weirdnesses
-			if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
-				lastDrawPosition.topMostChild = child->lastDrawPosition.top + 1.0f;
-			if (first || (child->lastDrawPosition.bottom > lastDrawPosition.bottomMostChild))
-				lastDrawPosition.bottomMostChild = child->lastDrawPosition.bottom - 1.0f;
-			first = false;
-		}
-	}
-	// check whether we need a scroll-bar and then add it
-	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
-	bool needScrollBar = (lastDrawPosition.dirty == 0) && (childHgt > height);
+		--lastDrawPosition.dirty;
 
-	if (!needScrollBar && scrollBar)
-	{
-		delete scrollBar; scrollBar = 0;
+		if (updateLayout)
+			UpdateLayout();
 	}
-	else if (needScrollBar && !scrollBar)
-	{
-		scrollBar = new C4MenuWindowScrollBar();
-		scrollBar->parent = this;
-	}
+	// check whether we are scrolling
+	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
 
 	if (scrollBar)
-		childOffsetY = -0.5f * (scrollBar->offset * childHgt);
+		childOffsetY = -1.0f * (scrollBar->offset * (childHgt - height));
 
 	// if ANY PARENT has scroll bar, then adjust clipper
-	float clipX1, clipX2, clipY1, clipY2;
+	float clipX1(0.0f), clipX2(0.0f), clipY1(0.0f), clipY2(0.0f);
 	bool clipping = parent->GetClippingRect(clipX1, clipY1, clipX2, clipY2);
 	if (clipping)
 	{
@@ -781,21 +1074,52 @@ void C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 	if (strBuf)
 	{
 		StdStrBuf sText;
+		int alignment = ALeft;
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), int32_t(width), &sText, true);
-		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + leftDrawX, cgo.Y + topDrawY, 0xffffffff, ALeft);
+		float textYOffset = 0.0f, textXOffset = 0.0f;
+		if (style & C4MenuWindowStyleFlag::TextVCenter)
+			textYOffset = height/2.0f - float(textHgt)/2.0f;
+		else if (style & C4MenuWindowStyleFlag::TextBottom)
+			textYOffset += height - float(textHgt);
+		if (style & C4MenuWindowStyleFlag::TextHCenter)
+		{
+			int wdt, hgt;
+			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
+			textXOffset = width/2.0f - float(wdt)/2.0f;
+		}
+		else if (style & C4MenuWindowStyleFlag::TextRight)
+		{
+			alignment = ARight;
+			int wdt, hgt;
+			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
+			textXOffset = width - float(wdt);
+		}
+		pDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + leftDrawX + textXOffset, cgo.Y + topDrawY + textYOffset, 0xffffffff, ALeft);
 		// enable auto scroll
-		float textBottom = topDrawY + float(textHgt);
+		float textBottom = lastDrawPosition.top + float(textHgt);
 		if (textBottom > lastDrawPosition.bottom)
 			lastDrawPosition.bottom = textBottom;
 	}
 
 	if (clipping)
+	{
 		pDraw->RestorePrimaryClipper();
+	}
+
+	if (GraphicsSystem.ShowMenuInfo) // print helpful debug info
+	{
+		pDraw->DrawFrameDw(cgo.Surface, leftDrawX, topDrawY, rightDrawX,bottomDrawY, clipping ? C4RGB(255, 255, 0) :C4RGB(0, 255, 0));
+		StdStrBuf buf = FormatString("%s(%d)", target ? target->GetName() : "", id);
+		pDraw->TextOut(buf.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + leftDrawX, cgo.Y + topDrawY, 0xffff00ff, ALeft);
+	}
 
 	if (scrollBar)
+	{
 		scrollBar->Draw(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY);
+	}
 
 	DrawChildren(cgo, player, leftDrawX, topDrawY + childOffsetY, rightDrawX, bottomDrawY + childOffsetY);
+	return true;
 }
 
 bool C4MenuWindow::GetClippingRect(float &left, float &top, float &right, float &bottom)
@@ -817,23 +1141,71 @@ void C4MenuWindow::SetTag(C4String *tag)
 {
 	// set tag on all properties
 	for (uint32_t i = 0; i < C4MenuWindowPropertyName::_lastProp; ++i)
-		props[i].SwitchTag(tag);
+		if (props[i].SwitchTag(tag))
+		{
+			// only if tag could have changed position etc.
+			if (i <= C4MenuWindowPropertyName::relBottom || i == C4MenuWindowPropertyName::text || i == C4MenuWindowPropertyName::style || i == C4MenuWindowPropertyName::priority)
+			if (parent)
+			{
+				parent->lastDrawPosition.dirty = 2;
+				LogF("Change tag %d to %s", i, tag->GetCStr());
+			}
 
+		}
+	if (parent->lastDrawPosition.dirty == 2) Log("Tag change forces update");
 	// .. and children
 	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 		(*iter)->SetTag(tag);
 }
 
-bool C4MenuWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+void C4MenuWindow::OnMouseIn(int32_t player)
+{
+	assert(!hasMouseFocus && "custom menu window properly loaded incorrectly!");
+	hasMouseFocus = true;
+
+	// no need to notify children, this is done in MouseInput
+
+	// execute action
+	int32_t actionType = C4MenuWindowPropertyName::onMouseInAction;
+	C4MenuWindowAction *action = props[actionType].GetAction();
+	if (!action) return;
+	action->Execute(this, player, props[actionType].GetCurrentTag(), actionType);
+}
+
+void C4MenuWindow::OnMouseOut(int32_t player)
+{
+	assert(hasMouseFocus && "custom menu window properly loaded incorrectly!");
+	hasMouseFocus = false;
+
+	// needs to notify children
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		C4MenuWindow *child = *iter;
+		if (child->hasMouseFocus)
+			child->OnMouseOut(player);
+	}
+
+	// execute action
+	int32_t actionType = C4MenuWindowPropertyName::onMouseOutAction;
+	C4MenuWindowAction *action = props[actionType].GetAction();
+	if (!action) return;
+	action->Execute(this, player, props[actionType].GetCurrentTag(), actionType);
+}
+
+bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
 {
 	if (!visible) return false;
+
+	// we have mouse focus! Is this new?
+	if (!hasMouseFocus)
+		OnMouseIn(player);
 
 	/*if (parent && mouse.IsLDown())
 		LogF("%f|%f - %d|%d", lastDrawPosition.left, lastDrawPosition.top, mouseX, mouseY);
 	else LogF("called on root %d|%d", mouseX, mouseY);*/
 
 	// children actually have a higher priority
-	bool overChild = false;
+	bool overChild = false; // remember for later, catch all actions that are in theory over children, even if not reaction (if main window)
 	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4MenuWindow *child = *iter;
@@ -842,11 +1214,19 @@ bool C4MenuWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DW
 		int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
 		int32_t childBottom = static_cast<int32_t>(child->lastDrawPosition.bottom);
 		//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
-		if ((mouseX < childLeft) || (mouseX > childRight)) continue;
-		if ((mouseY < childTop) || (mouseY > childBottom)) continue;
+		bool inArea = true;
+		if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
+		else if ((mouseY < childTop) || (mouseY > childBottom)) inArea = false;
+
+		if (!inArea) // notify child if it had mouse focus before
+		{
+			if (child->hasMouseFocus)
+				child->OnMouseOut(player);
+			continue;
+		}
 
 		overChild = true;
-		if (child->MouseInput(button, mouseX, mouseY, dwKeyParam))
+		if (child->MouseInput(player, button, mouseX, mouseY, dwKeyParam))
 			return true;
 	}
 
@@ -855,7 +1235,7 @@ bool C4MenuWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DW
 		C4MenuWindowAction *action = props[C4MenuWindowPropertyName::onClickAction].GetAction();
 		if (action)
 		{
-			action->Execute(this);
+			action->Execute(this, player, props[C4MenuWindowPropertyName::onClickAction].GetCurrentTag(), C4MenuWindowPropertyName::onClickAction);
 			return true;
 		}
 	}
@@ -864,7 +1244,7 @@ bool C4MenuWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DW
 	if (scrollBar && (button == C4MC_Button_Wheel))
 	{
 		short delta = (short)(dwKeyParam >> 16);
-		float fac = (lastDrawPosition.right - lastDrawPosition.left) / 10.0f;
+		float fac = (lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild);
 		if (fac == 0.0f) fac = 1.0f;
 		scrollBar->ScrollBy(-float(delta) / fac);
 		return true;
@@ -881,5 +1261,51 @@ bool C4MenuWindow::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DW
 	// but do that only on the top-level to not stop traversin other branches
 	if (isMainWindow)
 		return overChild;
+	return false;
+}
+
+bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag)
+{
+	if (isMainWindow && subwindowID) // we are a main window! try a shortcut through the ID?
+	{
+		LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
+		// the reasoning for that shortcut is that I assume that usually windows with actions will also have an ID assigned
+		// this obviously doesn't have to be the case, but I believe it's worth the try
+		std::pair<std::multimap<int32_t, C4MenuWindow*>::iterator, std::multimap<int32_t, C4MenuWindow*>::iterator> range;
+		range = childrenIDMap.equal_range(subwindowID);
+
+		for (std::multimap<int32_t, C4MenuWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+		{
+			LogF("iterating.. size %d", childrenIDMap.size());
+			if (iter->second->ExecuteCommand(actionID, player, subwindowID, actionType, target, tag))
+				return true;
+		}
+		// it is not possible that another window would match the criteria. Abort later after self-check
+	}
+
+	// are we elligible?
+	if ((id == subwindowID) && (this->target == target))
+	{
+		Log("command target found");
+		C4MenuWindowAction *action = props[actionType].GetActionForTag(tag);
+		if (action)
+		{
+			if (action->ExecuteCommand(actionID, this, player))
+				return true;
+		}
+		// note that we should not simply return false here
+		// there is no guarantee that only one window with that target&ID existss
+	}
+
+	// not caught, forward to children!
+	// abort if main window, though. See above
+	if (isMainWindow && subwindowID) return false;
+
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		C4MenuWindow *child = *iter;
+		if (child->ExecuteCommand(actionID, player, subwindowID, actionType, target, tag))
+			return true;
+	}
 	return false;
 }

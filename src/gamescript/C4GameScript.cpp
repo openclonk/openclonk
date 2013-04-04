@@ -2632,7 +2632,16 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 
 	{ "MENU_SetTag"               ,C4V_Int,      C4MenuWindowActionID::SetTag },
 	{ "MENU_Call"                 ,C4V_Int,      C4MenuWindowActionID::Call },
-
+	{ "MENU_GridLayout"           ,C4V_Int,      C4MenuWindowStyleFlag::Grid },
+	{ "MENU_VerticalLayout"       ,C4V_Int,      C4MenuWindowStyleFlag::Vertical },
+	{ "MENU_TextVCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextVCenter },
+	{ "MENU_TextHCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextHCenter },
+	{ "MENU_TextRight"            ,C4V_Int,      C4MenuWindowStyleFlag::TextRight },
+	{ "MENU_TextBottom"           ,C4V_Int,      C4MenuWindowStyleFlag::TextBottom },
+	{ "MENU_TextTop"              ,C4V_Int,      C4MenuWindowStyleFlag::None }, // note that top and left are considered default
+	{ "MENU_TextLeft"             ,C4V_Int,      C4MenuWindowStyleFlag::None }, // they are only included for completeness
+	{ "MENU_FitChildren"          ,C4V_Int,      C4MenuWindowStyleFlag::FitChildren },
+	{ "MENU_Multiple"             ,C4V_Int,      C4MenuWindowStyleFlag::Multiple },
 	{ NULL, C4V_Nil, 0}
 };
 

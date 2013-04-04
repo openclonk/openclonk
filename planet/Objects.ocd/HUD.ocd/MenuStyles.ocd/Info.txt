@@ -1,0 +1,1 @@
+This folder contains some easy-to-use styles for working with menus.

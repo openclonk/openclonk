@@ -362,6 +362,9 @@ enum C4PropertyName
 	P_Text,
 	P_ID,
 	P_OnClick,
+	P_OnMouseIn,
+	P_OnMouseOut,
+	P_Style,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

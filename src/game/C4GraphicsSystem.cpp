@@ -126,7 +126,7 @@ void C4GraphicsSystem::Execute()
 		return;
 	}
 
-	
+
 	// Reset object audibility
 	::Objects.ResetAudibility();
 
@@ -182,6 +182,7 @@ void C4GraphicsSystem::Default()
 	ShowPathfinder=false;
 	ShowNetstatus=false;
 	ShowSolidMask=false;
+	ShowMenuInfo=false;
 	ShowHelp=false;
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
@@ -306,6 +307,7 @@ void C4GraphicsSystem::DeactivateDebugOutput()
 	ShowPathfinder=false; // allow pathfinder! - why this??
 	ShowSolidMask=false;
 	ShowNetstatus=false;
+	ShowMenuInfo=false;
 }
 
 void C4GraphicsSystem::DrawHoldMessages()
@@ -398,7 +400,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("\n\n[%s]\n\n", "Debug");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgModeToggle").getData(), LoadResStr("IDS_CTL_DEBUGMODE"));
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowVtxToggle").getData(), "Entrance+Vertices");
-	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
+	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder/Menu Info");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
 	pDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 	                           iX + iWdt/2 + 64, iY + 64, C4Draw::DEFAULT_MESSAGE_COLOR, ALeft);
@@ -422,14 +424,16 @@ bool C4GraphicsSystem::ToggleShowVertices()
 bool C4GraphicsSystem::ToggleShowAction()
 {
 	if (!Game.DebugMode && !Console.Active) { FlashMessage(LoadResStr("IDS_MSG_NODEBUGMODE")); return false; }
-	if (!(ShowAction || ShowCommand || ShowPathfinder))
+	if (!(ShowAction || ShowCommand || ShowPathfinder || ShowMenuInfo))
 		{ ShowAction = true; FlashMessage("Actions"); }
 	else if (ShowAction)
 		{ ShowAction = false; ShowCommand = true; FlashMessage("Commands"); }
 	else if (ShowCommand)
 		{ ShowCommand = false; ShowPathfinder = true; FlashMessage("Pathfinder"); }
 	else if (ShowPathfinder)
-		{ ShowPathfinder = false; FlashMessageOnOff("Actions/Commands/Pathfinder", false); }
+		{ ShowPathfinder = false; ShowMenuInfo = true; FlashMessage("Menu Info"); }
+	else if (ShowMenuInfo)
+		{ ShowMenuInfo = false; FlashMessageOnOff("Actions/Commands/Pathfinder", false); }
 	return true;
 }
 

@@ -23,6 +23,8 @@
 #include <C4Surface.h>
 #include <C4Gui.h>
 
+#include <C4Value.h>
+
 #include <map>
 
 enum C4MenuWindowPropertyName
@@ -41,6 +43,10 @@ enum C4MenuWindowPropertyName
 	symbolDef,
 	text,
 	onClickAction,
+	onMouseInAction,
+	onMouseOutAction,
+	style,
+	priority,
 	_lastProp
 };
 
@@ -50,6 +56,19 @@ enum C4MenuWindowActionID
 	Call,
 };
 
+enum C4MenuWindowStyleFlag
+{
+	None = 0,
+	Grid = 1,
+	Vertical = 2,
+	TextVCenter = 4,
+	TextHCenter = 8,
+	TextRight = 16,
+	TextBottom = 32,
+	FitChildren = 64,
+	Multiple = 128,
+};
+
 class C4MenuWindow;
 
 class C4MenuWindowAction
@@ -57,18 +76,27 @@ class C4MenuWindowAction
 	friend class C4MenuWindow;
 
 	private:
+	// the ID is unique among all actions. It is used later to synchronize callbacks
+	int32_t id;
+
 	int32_t action;
+	C4MenuWindowAction *nextAction; // a linked list of actions
 	// note: depending on the action not all of the following attributes always have values
-	C4Object *target;
+	C4PropList *target; // contains a valid C4Object in case of SetTag, a generic proplist in case of Call
 	C4String *text; // can be either a function name to call or a tag to set
+	C4Value value; // arbitrary value used for Call
 	int32_t subwindowID;
 
 	public:
-	C4MenuWindowAction() : action(0), target(0), text(0), subwindowID(0) { }
+	C4MenuWindowAction() : id(0), action(0), nextAction(0), target(0), text(0), value(0), subwindowID(0) { }
 	~C4MenuWindowAction();
 	void ClearPointers(C4Object *pObj);
-	void Execute(C4MenuWindow *parent);
-	bool Init(C4ValueArray *array);
+	bool Init(C4ValueArray *array, int32_t index = 0); // index is the current action in an array of actions
+	// executes non-synced actions and syncs the others
+	// the tag and action type parameters are only used to be able to sync commands
+	void Execute(C4MenuWindow *parent, int32_t player, unsigned int tag, int32_t actionType);
+	// used to execute synced commands, explanation see C4MenuWindow::ExecuteCommand
+	bool ExecuteCommand(int32_t actionID, C4MenuWindow *parent, int32_t player);
 };
 
 class C4MenuWindowProperty
@@ -89,6 +117,9 @@ class C4MenuWindowProperty
 	} Prop;
 
 	Prop *current;
+	// the last tag is used to be able to call the correct action on re-synchronizing commands
+	unsigned int currentTag;
+
 	std::map<unsigned int, Prop> taggedProperties;
 	void CleanUp(Prop &prop);
 	void CleanUpAll();
@@ -101,7 +132,7 @@ class C4MenuWindowProperty
 
 	public:
 	~C4MenuWindowProperty();
-	C4MenuWindowProperty() : current(0), type(-1) {}
+	C4MenuWindowProperty() : current(0), currentTag(0), type(-1) {}
 	void Set(const C4Value &value, unsigned int hash);
 
 	int32_t GetInt() { return current->d; }
@@ -111,8 +142,10 @@ class C4MenuWindowProperty
 	C4GUI::FrameDecoration *GetFrameDecoration() { return current->deco; }
 	StdCopyStrBuf *GetStrBuf() { return current->strBuf; }
 	C4MenuWindowAction *GetAction() { return current->action; }
+	C4MenuWindowAction *GetActionForTag(unsigned int hash); // used to synchronize actions
 
-	void SwitchTag(C4String *tag);
+	bool SwitchTag(C4String *tag);
+	unsigned int GetCurrentTag() { return currentTag; }
 
 	void ClearPointers(C4Object *pObj);
 };
@@ -148,17 +181,33 @@ class C4MenuWindow
 
 	std::list<C4MenuWindow*> children;
 	C4MenuWindow *parent;
+	bool wasRemoved; // to notify the window that it should not inform its parent on Close() a second time
 
 	bool visible;
 	C4Object *target;
-	C4Object *GetTarget() { return target; }
+	const C4Object *GetTarget() { return target; }
 	C4MenuWindowScrollBar *scrollBar;
+
+	// this remembers whether the window currently has mouse focus
+	// all windows with this property set are remembered by their parents and notified when the mouse left
+	bool hasMouseFocus; // this needs to be saved in savegames!!!
+	// OnMouseOut() called by this window, sets "hasMouseFocus" from true to false
+	// must notify children, too!
+	void OnMouseOut(int32_t player);
+	void OnMouseIn(int32_t player); // called by this window, sets "hasMouseFocus" from false to true
 
 	// properties are stored extra to make "tags" possible
 	C4MenuWindowProperty props[C4MenuWindowPropertyName::_lastProp];
+	// used for sorting the windows in a layout
+	static bool CompareMenuWindowsByPriority(C4MenuWindow *left, C4MenuWindow *right) { return left->props[C4MenuWindowPropertyName::priority].GetInt() < right->props[C4MenuWindowPropertyName::priority].GetInt(); };
 
 	void Init();
-	void DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom);
+	// withMultipleFlag is there to draw only the non-multiple or the multiple windows
+	// withMultipleFlag == -1: all windows are drawn (standard)
+	// withMultipleFlag ==  0: only one non-Multiple window is drawn
+	// withMultipleFlag ==  1: only Multiple windows are drawn
+	// returns whether at least one child was drawn
+	bool DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag = -1);
 	// ID is set by parent, parent gives unique IDs to children
 	void SetID(int32_t to) { id = to; }
 	// to be used to generate the quick-access children map for main menus
@@ -171,8 +220,15 @@ class C4MenuWindow
 	void SetArrayTupleProperty(const C4Value &property, C4MenuWindowPropertyName first, C4MenuWindowPropertyName second, unsigned int hash);
 
 	// this is only supposed to be called at ::MenuWindowRoot since it uses the "ID" property
-	// this is done to make saving easier
+	// this is done to make saving easier. Since IDs do not need to be sequental, action&menu IDs can both be derived from "id"
 	int32_t GenerateMenuID() { return ++id; }
+	int32_t GenerateActionID() { return ++id; }
+
+	void UpdateLayout();
+	void UpdateLayoutGrid();
+	void UpdateLayoutVertical();
+	void EnableScrollBar(bool enable = true);
+
 	public:
 	// used by mouse input, this is in screen coordinates
 	struct _lastDrawPosition
@@ -211,16 +267,22 @@ class C4MenuWindow
 	C4MenuWindow *AddChild(C4MenuWindow *child);
 	C4MenuWindow *AddChild() { return AddChild(new C4MenuWindow()); }
 
-	void ClearChildren(bool close = true); // close: whether to properly "Close" them
-	void RemoveChild(C4MenuWindow *child, bool close = true);
+	void ClearChildren(bool close = true); // close: whether to properly "Close" them, alias for RemoveChild
+	void RemoveChild(C4MenuWindow *child, bool close = true, bool all = false); // child = 0 & all = true to clear all
 	void Close();
 	void ClearPointers(C4Object *pObj);
 
 	// Draw without parameters can be used for the root
-	void Draw(C4TargetFacet &cgo, int32_t player);
-	void Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom);
+	bool Draw(C4TargetFacet &cgo, int32_t player);
+	bool Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom);
 	bool GetClippingRect(float &left, float &top, float &right, float &bottom);
-	virtual bool MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
+
+	// used for commands that have been synchronized and are coming from the command queue
+	// the command is basically just a script that is executed, however, the plausibility is checked first
+	// this plausibility check is the only reason CID_Script is not used!
+	// attention: calls to this need to be synchronized!
+	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag);
+	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
 };
 
 extern C4MenuWindow MenuWindowRoot;

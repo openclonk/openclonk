@@ -1,0 +1,2 @@
+Name=Classic
+Description=Mimics the interface to a classic menu.
