@@ -44,6 +44,10 @@ public func IsFulfilled()
 	while (iplr--)
 	{
 		var plr = GetPlayerByIndex(iplr);
+		// Free view when game is over
+		for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
+			SetPlayerZoomByViewRange(plr,LandscapeWidth(),LandscapeWidth(),flag);
+		SetPlayerViewLock(plr, false);
 		if (GetIndexOf(winners, plr) >= 0) continue;
 		if (winner_teams) if (GetIndexOf(winner_teams, GetPlayerTeam(plr)) >= 0) continue;
 		EliminatePlayer(plr);
