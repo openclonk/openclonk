@@ -92,7 +92,8 @@ protected func Initialize()
 	var starting_cave = g_caves[0];
 	var goal = FindObject(Find_ID(Goal_RubyHunt));
 	if (!goal) goal = CreateObject(Goal_RubyHunt);
-	goal->SetGoalRect(Rectangle(0, starting_cave.Y-25, starting_cave.X-20, 25));
+	goal->SetPosition();
+	goal->SetGoalRect(Rectangle(0, starting_cave.Y-40, starting_cave.X-20, 40));
 	goal_cave = g_caves[n_caves-1];
 	// Place extra elements in caves (except at start/end)
 	for (cave in g_caves)
