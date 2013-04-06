@@ -1,0 +1,4 @@
+Name=Rubinsuche
+#Goal window
+MsgGoalFulfilled=Ein Rubin wurde abgeliefert.
+MsgGoalUnfulfilled=Noch kein Rubin am Start.
