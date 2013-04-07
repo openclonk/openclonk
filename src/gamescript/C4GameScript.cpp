@@ -2127,14 +2127,11 @@ static int FnCustomMenuOpen(C4PropList * _this, C4PropList *menu)
 
 	::MenuWindowRoot.AddChild(window);
 
-	if (!window->CreateFromPropList(menu))
+	if (!window->CreateFromPropList(menu, true))
 	{
 		::MenuWindowRoot.RemoveChild(window, false);
 		return 0;
 	}
-
-	window->SetTag(&Strings.P[P_Std]);
-
 
 	return window->GetID();
 }
@@ -2178,10 +2175,10 @@ static bool FxCustomMenuUpdate(C4PropList *_this, C4PropList *update, int32_t me
 	{
 		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
-		subwindow->CreateFromPropList(update);
+		subwindow->CreateFromPropList(update, false, true);
 		return true;
 	}
-	window->CreateFromPropList(update);
+	window->CreateFromPropList(update, false, true);
 	return true;
 }
 
@@ -2632,8 +2629,8 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 
 	{ "MENU_SetTag"               ,C4V_Int,      C4MenuWindowActionID::SetTag },
 	{ "MENU_Call"                 ,C4V_Int,      C4MenuWindowActionID::Call },
-	{ "MENU_GridLayout"           ,C4V_Int,      C4MenuWindowStyleFlag::Grid },
-	{ "MENU_VerticalLayout"       ,C4V_Int,      C4MenuWindowStyleFlag::Vertical },
+	{ "MENU_GridLayout"           ,C4V_Int,      C4MenuWindowStyleFlag::GridLayout },
+	{ "MENU_VerticalLayout"       ,C4V_Int,      C4MenuWindowStyleFlag::VerticalLayout },
 	{ "MENU_TextVCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextVCenter },
 	{ "MENU_TextHCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextHCenter },
 	{ "MENU_TextRight"            ,C4V_Int,      C4MenuWindowStyleFlag::TextRight },

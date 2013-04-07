@@ -5,30 +5,40 @@ func Initialize()
 	var starter_menu =
 	{
 		Style = MENU_Multiple,
-		X = [1000], Y = [0, -100],
-		Wdt = [1000, 200], Hgt = [0, 100],
-		text = {Style = MENU_TextVCenter | MENU_TextHCenter, Text = "OPEN MENU"}
+		Decoration = GUI_MenuDeco,
+		X = [1000, -100], Y = [0, 50],
+		Wdt = [1000], Hgt = [0, 100],
+		text = {Style = MENU_TextVCenter | MENU_TextHCenter, Text = "OPEN MENU"},
+		BackgroundColor = {Std = 0, Hover = 0xffff0000},
+		OnMouseIn = MenuAction_SetTag(nil, nil, "Hover"),
+		OnMouseOut = MenuAction_SetTag(nil, nil, "Std"),
+		OnClick = MenuAction_Call(Scenario, "StartMenu")
 	};
+	CustomMenuOpen(starter_menu);
 }
-/* -------------------------------- MAIN ----------------------------- */
 
-func InitializePlayer(plr)
+func CloseCurrentMenu()
 {
-	Schedule(nil, "Scenario->StartMenu()", 5, 0);
-}
+	CustomMenuClose(active_menu);
+	active_menu = 0;
+}	
 
+/* -------------------------------- MAIN ----------------------------- */
 func MainOnHover(parameter, int ID)
 {
 	Menu_UpdateText(parameter, active_menu, 9999);
 }
 func StartMenu(plr)
 {
+	if (active_menu)
+		CustomMenuClose(active_menu);
 	var main_menu = 
 	{
 		Decoration = GUI_MenuDeco,
 		head = {Hgt = [0, 50], Text = "Please choose a test!", Style = MENU_TextHCenter | MENU_TextVCenter, IDs = 0},
 		body = {Y = [0, 60], right = {X = 500, BackgroundColor = 0x50ffffff } },
 	};
+	Menu_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
 	var menu = CreateCustomMenu(MenuStyle_List);
 	main_menu.body.left = menu;
 	
@@ -36,6 +46,8 @@ func StartMenu(plr)
 	menu->SetMouseOverCallback(Scenario, "MainOnHover");
 	menu->AddItem(Chest, "Test Multiple Lists (Inventory)", nil, Scenario, "StartMultipleListTest", "Shows multiple list-style menus in one big menu.");
 	menu->AddItem(Rule_TeamAccount, "Test Client/Host (Scenario Options)", nil, Scenario, "StartScenarioOptionsTest", "Shows how to display a dialogue that behaves differently for players.");
+	menu->AddItem(Clonk, "Test Multiple Windows (Player List)", nil, Scenario, "StartPlayerListTest", "Shows how to display a permanent info dialogue.");
+	menu->AddItem(Lorry, "Tests Two Grid Menus (Trade Menu)", nil, Scenario, "StartTransferTest", "Shows how to work with two grid menus.");
 	
 	active_menu = CustomMenuOpen(main_menu);
 }
@@ -53,6 +65,7 @@ func StartMultipleListTest()
 		head = { ID = 999, Hgt = [0, 50], Text = "Inventory: <c ff0000>Empty</c>", Style = MENU_TextHCenter | MENU_TextVCenter, BackgroundColor = 0x55000000},
 		contents = { Y = [0, 50], X = [0, 20], Wdt = [1000, -20] },
 	};
+	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
 	var x = [0, [500, 20], 0, [500, 20]], y = [0, 0, [500, 20], [500, 20]], w = [[500, -20], 1000, [500, -20], 1000], h = [[500, -20], [500, -20], 1000, 1000];
@@ -149,6 +162,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 	};
 	Menu_AddMargin(menu.right.hostdesc, 25, 25);
 	Menu_AddMargin(menu.right.clientdesc, 25, 25);
+	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var def, rules =[], i = 0;
 	while (def = GetDefinition(i++))
@@ -169,7 +183,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			{
 				Target = scenoptions_dummies[0],
 				Priority = 1,
-				BackgroundColor = {Std = 0, Hover = 0x50ff0000, On = 0x5000ff00},
+				BackgroundColor = {Std = 0, Hover = 0x50ff0000, On = 0x2000ff00},
 				OnMouseIn = {
 					Std = [MenuAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, false]), MenuAction_SetTag(nil, nil, "Hover")],
 					On = MenuAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, true])
@@ -179,6 +193,12 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 					Hover = [MenuAction_Call(Scenario, "ScenOptsActivate", [rule.def, rule.ID]), MenuAction_SetTag(nil, nil, "On")],
 					On = [MenuAction_Call(Scenario, "ScenOptsDeactivate", [rule.def, rule.ID]), MenuAction_SetTag(nil, nil, "Hover")],
 					},
+			},
+			tick = 
+			{
+				X = [1000, -60], Y = [500, -15],
+				Wdt = [1000, -30], Hgt =[500, 15],
+				Symbol = {Std = 0, Unticked = 0, Ticked = Icon_Ok}
 			}
 		};
 		Menu_AddSubmenu(subm, menu.list);
@@ -191,11 +211,13 @@ func ScenOptsActivate(int player, int ID, int subwindowID, object target, data)
 {
 	if (!ObjectCount(Find_ID(data[0])))
 		CreateObject(data[0]);
+	CustomMenuSetTag("Ticked", active_menu, data[1], nil);
 }
 
 func ScenOptsDeactivate(int player, int ID, int subwindowID, object target, data)
 {
 	RemoveAll(Find_ID(data[0]));
+	CustomMenuSetTag("Unticked", active_menu, data[1], nil);
 }
 
 func ScenOptsUpdateDesc(int player, int ID, int subwindowID, object target, data)
@@ -204,4 +226,125 @@ func ScenOptsUpdateDesc(int player, int ID, int subwindowID, object target, data
 	if (!data[2])
 		text = data[0].Description;
 	Menu_UpdateText(text, active_menu, 1, scenoptions_dummies[0]);
+}
+
+/* ------------------------ player list test ----------------------------- */
+static player_list_menu;
+func StartPlayerListTest(parameter, int ID, int player)
+{
+	if (player_list_menu)
+	{
+		CustomMenuClose(player_list_menu);
+		player_list_menu = nil;
+		return -1;
+	}
+	
+	var menu =
+	{
+		X = [1000, -150], Y = [0, 100],
+		Wdt = [1000, -5], Hgt = [0, 200],
+		Style = MENU_Multiple | MENU_VerticalLayout | MENU_FitChildren,
+		BackgroundColor = 0x30000000,
+	};
+	
+	var player_names = [];
+	for (var i = 0; i < 15; ++i)
+	{
+		var p = GetPlayerByIndex(i);
+		var name;
+		if (p == NO_OWNER) name = Format("Player %d", i + 1);
+		else name = GetTaggedPlayerName(p);
+		var subm =
+		{
+			Priority = i,
+			Hgt = [0, 25],
+			Text = name,
+			Style = MENU_TextRight | MENU_TextVCenter,
+			icon = 
+			{
+				Symbol = Clonk,
+				Wdt = [0, 25]
+			}
+		};
+		Menu_AddSubmenu(subm, menu);
+	}
+	
+	player_list_menu = CustomMenuOpen(menu);
+	
+	return -1; // keep open
+}
+
+/* ------------------------ transfer test ----------------------------- */
+static transfer_left, transfer_right, transfer_menus, transfer_id_count;
+func StartTransferTest()
+{
+	CustomMenuClose(active_menu);
+	if (transfer_left == nil)
+	{
+		transfer_left = [Rock, Loam, Wood, Metal, Nugget, Coal, Shovel, Sword, Bow, Arrow, Boompack];
+		transfer_right = [Clonk];
+		transfer_menus = [];
+		transfer_id_count = 1;
+	}
+	
+	// layout: headline and two submenus
+	var menu = 
+	{
+		head = { Hgt = [0, 50], Text = "Welcome to the trade menu!", Style = MENU_TextHCenter | MENU_TextVCenter, BackgroundColor = 0x55000000},
+		contents = { Y = [0, 50], X = [0, 20], Wdt = [1000, -20] },
+	};
+	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	
+	for (var i = 0; i < 2; ++i)
+	{
+		var deco = { Decoration = GUI_MenuDeco, Text = "FROM", Style = MENU_TextHCenter};
+		if (i == 1)
+		{
+			deco.X = 500;
+			deco.Text = "TO";
+		}
+		else deco.Wdt = 500;
+		var m = CreateCustomMenu(MenuStyle_Grid);
+		deco.menu = m;
+		Menu_AddSubmenu(deco, menu.contents);
+		Menu_AddMargin(m, 20, 20);
+		var a = transfer_left;
+		if (i == 1) a = transfer_right;
+		
+		for (var c = 0; c < GetLength(a); ++c)
+		{
+			var obj = a[c];
+			m->AddItem(obj, obj.Name, ++transfer_id_count, Scenario, "SelectTransferGood", [obj, i]);
+		}
+		transfer_menus[i] = m;
+	}
+	active_menu = CustomMenuOpen(menu);
+}
+
+func SelectTransferGood(data, int user_id, int player)
+{
+	var obj = data[0];
+	var fromLeft = 0 == data[1];
+	var menu = transfer_menus[data[1]];
+	
+	// first, move item from array to array
+	var from = transfer_left, to = transfer_right;
+	if (!fromLeft)
+	{
+		from = transfer_right;
+		to = transfer_left;
+	}
+	var found = false;
+	for (var i = 0; i < GetLength(from); ++i)
+	{
+		if (from[i] != obj) continue;
+		found = true;
+		PushBack(to, obj);
+		RemoveArrayIndex(from, i);
+		break;
+	}
+	if (!found) return -1;
+	if (!menu->RemoveItem(user_id, active_menu)) Log("remove fail!");
+	transfer_menus[1 - data[1]]->AddItem(obj, obj.Name, user_id, Scenario, "SelectTransferGood", [obj, 1 - data[1]], nil, active_menu);
+	return -1;
 }

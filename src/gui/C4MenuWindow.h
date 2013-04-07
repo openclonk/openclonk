@@ -45,6 +45,7 @@ enum C4MenuWindowPropertyName
 	onClickAction,
 	onMouseInAction,
 	onMouseOutAction,
+	onCloseAction,
 	style,
 	priority,
 	_lastProp
@@ -59,8 +60,8 @@ enum C4MenuWindowActionID
 enum C4MenuWindowStyleFlag
 {
 	None = 0,
-	Grid = 1,
-	Vertical = 2,
+	GridLayout = 1,
+	VerticalLayout = 2,
 	TextVCenter = 4,
 	TextHCenter = 8,
 	TextRight = 16,
@@ -227,7 +228,8 @@ class C4MenuWindow
 	void UpdateLayout();
 	void UpdateLayoutGrid();
 	void UpdateLayoutVertical();
-	void EnableScrollBar(bool enable = true);
+	// children height should be set when enabling a scroll bar so that, with style FitChildren, the size can simply be changed
+	void EnableScrollBar(bool enable = true, float childrenHeight = 0.0f);
 
 	public:
 	// used by mouse input, this is in screen coordinates
@@ -260,8 +262,9 @@ class C4MenuWindow
 
 
 	// pass a proplist to create a window + subwindows as specified
-	// in theory, you could call this function on a window more than once
-	bool CreateFromPropList(C4PropList *proplist);
+	// you can call this function on a window more than once
+	// if isUpdate is true, all new children will have resetStdTag set
+	bool CreateFromPropList(C4PropList *proplist, bool resetStdTag = false, bool isUpdate = false);
 
 	// C4MenuWindow will delete its children on close. Make sure you don't delete anything twice
 	C4MenuWindow *AddChild(C4MenuWindow *child);

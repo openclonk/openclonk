@@ -429,7 +429,6 @@ C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int
 
 void C4ControlMenuCommand::Execute() const
 {
-	LogF("C4ControlMenuCommand::Execute: %d::%d::%d, %d", menuID, subwindowID, actionID, target);
 	// invalid action? The action needs to be in bounds!
 	if (actionType < 0 || actionType >= C4MenuWindowPropertyName::_lastProp)
 	{

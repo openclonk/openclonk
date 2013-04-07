@@ -39,6 +39,23 @@ global func Menu_AddMargin(proplist submenu, int marginX, int marginY)
 	return true;
 }
 
+global func Menu_AddCloseButton(proplist menu, proplist target, string callback, parameter)
+{
+	var close_button =
+	{
+		Priority = 0x0fffff,
+		X = [1000, -32], Y = 0,
+		Wdt = 1000, Hgt = [0, 32],
+		Symbol = Icon_Cancel,
+		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
+		OnMouseIn = MenuAction_SetTag(nil, nil, "Hover"),
+		OnMouseOut = MenuAction_SetTag(nil, nil, "Std"),
+		OnClick = MenuAction_Call(target, callback, parameter)
+	};
+	Menu_AddSubmenu(close_button, menu);
+	return close_button;
+}
+
 global func Menu_UpdateText(string text, int menu, int submenu, object target)
 {
 	var update = {Text = text};

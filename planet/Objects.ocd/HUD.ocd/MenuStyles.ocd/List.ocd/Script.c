@@ -17,6 +17,15 @@ func Construction()
 	entries = [];
 	this.Style = MENU_VerticalLayout;
 	this.Target = this;
+	this.ID = 0xffffff;
+	
+	this.OnClose = MenuAction_Call(this, "OnCloseCallback");
+}
+
+func OnCloseCallback()
+{
+	menu_id = 0;
+	Close();
 }
 
 func Close()
@@ -45,8 +54,11 @@ func SetMouseOutCallback(proplist target, callback)
 	on_mouse_out_callback = [target, callback];
 }
 
-func AddItem(symbol, string text, user_ID, proplist target, command, parameter, custom_entry)
+// custom_menu_id should be passed if the menu was manually opened and not via Open()
+func AddItem(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id)
 {
+	custom_menu_id = custom_menu_id ?? menu_id;
+	
 	var on_hover = MenuAction_SetTag(nil, 0, "OnHover");
 	if (on_mouse_over_callback)
 		on_hover = [on_hover, MenuAction_Call(this, "DoCallback", on_mouse_over_callback)];
@@ -73,7 +85,31 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	entries[ID - 1] = [target, command, parameter, user_ID];
 	this[Format("menuChild%d", ID)] = custom_entry;
 	
+	// need to add to existing menu?
+	if (custom_menu_id)
+	{
+		var temp = {child = custom_entry};
+		CustomMenuUpdate(temp, custom_menu_id, this.ID, this);
+	}
+	
 	return custom_entry;
+}
+
+// can be used when the menu has already been opened
+// needs to be passed the menu ID if the menu was not opened using Open()
+func RemoveItem(user_ID, int custom_menu_id)
+{
+	custom_menu_id = custom_menu_id ?? menu_id;
+	for (var i = 0; i < GetLength(entries); ++i)
+	{
+		var ID = i+1;
+		if (!entries[i]) continue;
+		if (entries[i][3] != user_ID) continue;
+		CustomMenuClose(custom_menu_id, ID, this);
+		entries[i] = nil;
+		return true;
+	}
+	return false;
 }
 
 func DoCall(int ID, command, proplist target, bool noclose, int player)
@@ -86,7 +122,6 @@ func DoCall(int ID, command, proplist target, bool noclose, int player)
 	{
 		if (target->Call(command ?? entry[1], entry[2], entry[3], player) == -1) return;
 	}
-	Log("self: %v, noclose: %d, permanent: %d", self, noclose, permanent);
 	if (self)
 	if (!noclose && !permanent)
 		Close();

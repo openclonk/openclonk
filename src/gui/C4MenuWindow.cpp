@@ -72,7 +72,7 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 	// an array of actions?
 	if (array->GetItem(0).getArray())
 	{
-		LogF("..initing multi-action event (index %d)", index);
+		//LogF("..initing multi-action event (index %d)", index);
 		// add action to action chain?
 		if (index+1 < array->GetSize())
 		{
@@ -115,8 +115,7 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 	default:
 		return false;
 	}
-	if (index > 0)
-		LogF("..chained action setup OK");
+
 	action = newAction;
 	return true;
 }
@@ -124,7 +123,7 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned int tag, int32_t actionType)
 {
 	assert(parent && "C4MenuWindow::Execute must always be called with parent");
-	LogF("Excuting action (nextAction: %x, target: %x, text: %s, type: %d)", nextAction, target, text->GetCStr(), actionType);
+	//LogF("Excuting action (nextAction: %x, subwID: %d, target: %x, text: %s, type: %d)", nextAction, subwindowID, target, text->GetCStr(), actionType);
 	// invalid ID? can be set by removal of target object
 	if (action)
 	{
@@ -145,7 +144,6 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 				break;
 			// the action needs to be synchronized! Assemble command and put it into control queue!
 			Game.Input.Add(CID_MenuCommand, new C4ControlMenuCommand(id, player, main->GetID(), parent->GetID(), parent->target, tag, actionType));
-			Log("syncing command...");
 			break;
 		}
 
@@ -172,7 +170,6 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 
 	if (nextAction)
 	{
-		Log("..executing chained action..");
 		nextAction->Execute(parent, player, tag, actionType);
 	}
 }
@@ -192,7 +189,7 @@ bool C4MenuWindowAction::ExecuteCommand(int32_t actionID, C4MenuWindow *parent, 
 			main = from;
 			from = from->parent;
 		}
-		LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
+		//LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
 		C4AulParSet Pars(C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target), value);
 		target->Call(text->GetCStr(), &Pars);
 		return true;
@@ -277,6 +274,7 @@ void C4MenuWindowProperty::CleanUp(Prop &prop)
 	case onClickAction:
 	case onMouseInAction:
 	case onMouseOutAction:
+	case onCloseAction:
 		if (prop.action) delete prop.action;
 		break;
 	case text:
@@ -389,6 +387,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 	case C4MenuWindowPropertyName::onClickAction:
 	case C4MenuWindowPropertyName::onMouseInAction:
 	case C4MenuWindowPropertyName::onMouseOutAction:
+	case C4MenuWindowPropertyName::onCloseAction:
 	{
 		C4ValueArray *array = value.getArray();
 		if (array)
@@ -421,6 +420,7 @@ void C4MenuWindowProperty::ClearPointers(C4Object *pObj)
 		case C4MenuWindowPropertyName::onClickAction:
 		case C4MenuWindowPropertyName::onMouseInAction:
 		case C4MenuWindowPropertyName::onMouseOutAction:
+		case C4MenuWindowPropertyName::onCloseAction:
 			if (iter->second.action)
 				iter->second.action->ClearPointers(pObj);
 		break;
@@ -488,6 +488,7 @@ void C4MenuWindow::Init()
 	props[C4MenuWindowPropertyName::onClickAction].SetNull(hash);
 	props[C4MenuWindowPropertyName::onMouseInAction].SetNull(hash);
 	props[C4MenuWindowPropertyName::onMouseOutAction].SetNull(hash);
+	props[C4MenuWindowPropertyName::onCloseAction].SetNull(hash);
 	props[C4MenuWindowPropertyName::style].SetNull(hash);
 	props[C4MenuWindowPropertyName::priority].SetNull(hash);
 
@@ -525,7 +526,7 @@ void C4MenuWindow::SetArrayTupleProperty(const C4Value &property, C4MenuWindowPr
 	else props[first].Set(property, hash);
 }
 
-bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
+bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate)
 {
 	assert(parent && "MenuWindow created from proplist without parent (fails for ID tag)");
 
@@ -605,6 +606,8 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 			props[C4MenuWindowPropertyName::onMouseInAction].Set(property, standardHash);
 		else if(&Strings.P[P_OnMouseOut] == key)
 			props[C4MenuWindowPropertyName::onMouseOutAction].Set(property, standardHash);
+		else if(&Strings.P[P_OnClose] == key)
+			props[C4MenuWindowPropertyName::onCloseAction].Set(property, standardHash);
 		else if(&Strings.P[P_Style] == key)
 		{
 			props[C4MenuWindowPropertyName::style].Set(property, standardHash);
@@ -624,15 +627,20 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist)
 				C4MenuWindow *child = new C4MenuWindow();
 				AddChild(child);
 
-				if (!child->CreateFromPropList(subwindow))
+				if (!child->CreateFromPropList(subwindow, isUpdate == true, false))
 					RemoveChild(child, false);
 				else
 					layoutUpdateRequired = true;
 			}
 		}
 	}
+
 	if (layoutUpdateRequired)
 		parent->lastDrawPosition.dirty = 2;
+
+	if (resetStdTag)
+		SetTag(&Strings.P[P_Std]);
+
 	return true;
 }
 
@@ -648,6 +656,7 @@ void C4MenuWindow::ClearPointers(C4Object *pObj)
 	props[C4MenuWindowPropertyName::onClickAction].ClearPointers(pObj);
 	props[C4MenuWindowPropertyName::onMouseInAction].ClearPointers(pObj);
 	props[C4MenuWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
+	props[C4MenuWindowPropertyName::onCloseAction].ClearPointers(pObj);
 
 	// can't iterate directly over the children, since they might get deleted in the process
 	std::vector<C4MenuWindow*> temp;
@@ -665,7 +674,7 @@ C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
 	{
 		child->SetID(GenerateMenuID());
 		child->isMainWindow = true;
-		LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::MenuWindowRoot));
+		//LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::MenuWindowRoot));
 	}
 	children.push_back(child);
 	return child;
@@ -683,7 +692,7 @@ void C4MenuWindow::ChildWithIDRemoved(C4MenuWindow *child)
 	{
 		if (iter->second != child) continue;
 		childrenIDMap.erase(iter);
-		LogF("child-map-size: %d, remov %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
+		//LogF("child-map-size: %d, remov %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 		return;
 	}
 }
@@ -694,7 +703,7 @@ void C4MenuWindow::ChildGotID(C4MenuWindow *child)
 	if (!isMainWindow)
 		return parent->ChildGotID(child);
 	childrenIDMap.insert(std::make_pair(child->GetID(), child));
-	LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
+	//LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
 C4MenuWindow *C4MenuWindow::GetChildByID(int32_t child)
@@ -758,18 +767,27 @@ void C4MenuWindow::Close()
 	ClearChildren(true);
 
 	// make call to target object if applicable
-	if (target)
+	C4MenuWindowAction *action = props[C4MenuWindowPropertyName::onCloseAction].GetAction();
+	if (action)
 	{
-		// todo
+		action->Execute(this, NO_OWNER, props[C4MenuWindowPropertyName::onCloseAction].GetCurrentTag(), C4MenuWindowPropertyName::onCloseAction);
 	}
-	LogF("C4MenuWindow::Close, parent: %d [I am %d]", parent ? parent->GetID() : 0, id);
+	//LogF("C4MenuWindow::Close, parent: %d [I am %d]", parent ? parent->GetID() : 0, id);
 
 	if (!wasRemoved && parent)
 		parent->RemoveChild(this);
 }
 
-void C4MenuWindow::EnableScrollBar(bool enable)
+void C4MenuWindow::EnableScrollBar(bool enable, float childrenHeight)
 {
+	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
+	if (style & C4MenuWindowStyleFlag::FitChildren)
+	{
+		float height = lastDrawPosition.bottom - lastDrawPosition.top;
+		props[C4MenuWindowPropertyName::bottom].current->d += (childrenHeight - height);
+		return;
+	}
+
 	if (!enable && scrollBar)
 	{
 		delete scrollBar; scrollBar = 0;
@@ -783,7 +801,7 @@ void C4MenuWindow::EnableScrollBar(bool enable)
 
 void C4MenuWindow::UpdateLayout()
 {
-	LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::MenuWindowRoot), int(isMainWindow), props[C4MenuWindowPropertyName::style].GetInt());
+	//LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::MenuWindowRoot), int(isMainWindow), props[C4MenuWindowPropertyName::style].GetInt());
 	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
 
 	// update scroll bar according to children
@@ -808,40 +826,17 @@ void C4MenuWindow::UpdateLayout()
 	float height = lastDrawPosition.bottom - lastDrawPosition.top;
 	float childHgt = lastDrawPosition.bottomMostChild - lastDrawPosition.topMostChild;
 
-	if (childHgt > height) // need a scroll bar or adjustment!
-	{
-		// adjust size or just use a scroll bar?
-		if (style & C4MenuWindowStyleFlag::FitChildren)
-		{
-			// just overwrite the current active tag
-			props[C4MenuWindowPropertyName::bottom].current->d += (childHgt - height);
-		}
-		else
-			EnableScrollBar(true);
-	}
-	else
-	{
-		// revert possible height adjustment?
-		if (style & C4MenuWindowStyleFlag::FitChildren)
-		{
-			// just overwrite the current active tag
-			props[C4MenuWindowPropertyName::bottom].current->d += (childHgt - height);
-		}
-
-		// deactivate scrollbar always
-		EnableScrollBar(false);
-	}
+	EnableScrollBar(childHgt > height, childHgt);
 
 	// special layout selected?
-	if (style & C4MenuWindowStyleFlag::Grid)
+	if (style & C4MenuWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
-	else if (style & C4MenuWindowStyleFlag::Vertical)
+	else if (style & C4MenuWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
 }
 
 void C4MenuWindow::UpdateLayoutGrid()
 {
-	Log("Updating grid layout!");
 	const int32_t width = lastDrawPosition.right - lastDrawPosition.left;
 	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
 
@@ -882,7 +877,7 @@ void C4MenuWindow::UpdateLayoutGrid()
 	lastDrawPosition.bottomMostChild = currentY;
 
 	// do we need a scroll bar?
-	EnableScrollBar(currentY >= height);
+	EnableScrollBar(currentY >= height, currentY);
 }
 
 void C4MenuWindow::UpdateLayoutVertical()
@@ -913,7 +908,7 @@ void C4MenuWindow::UpdateLayoutVertical()
 	lastDrawPosition.bottomMostChild = currentY;
 
 	// do we need a scroll bar?
-	EnableScrollBar(currentY >= height);
+	EnableScrollBar(currentY >= height, currentY);
 }
 
 bool C4MenuWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
@@ -961,7 +956,7 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
 	// rounding against small errors
 	if ((int(wdt) != int(lastDrawPosition.right)) || (int(hgt) != int(lastDrawPosition.bottom)))
 	{
-		LogF("Updating root lastDrawPosition %f|%f // %f|%f", cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
+		//LogF("Updating root lastDrawPosition %f|%f // %f|%f", cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt);
 		lastDrawPosition.right = wdt;
 		lastDrawPosition.bottom = hgt;
 		lastDrawPosition.dirty = 1;
@@ -970,7 +965,7 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
 		lastDrawPosition.dirty = 0;
 
 	// step one: draw all non-multiple windows
-	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 1);
+	DrawChildren(cgo, player, leftDrawX - standardHorizontalBorder, topDrawY  - standardVerticalBorder, rightDrawX + standardHorizontalBorder, bottomDrawY + standardVerticalBorder, 1);
 	// TODO: adjust rectangle for main menu if multiple windows exist
 	// step two: draw one "main" menu
 	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 0);
@@ -1148,11 +1143,11 @@ void C4MenuWindow::SetTag(C4String *tag)
 			if (parent)
 			{
 				parent->lastDrawPosition.dirty = 2;
-				LogF("Change tag %d to %s", i, tag->GetCStr());
+				//LogF("Change tag %d to %s", i, tag->GetCStr());
 			}
 
 		}
-	if (parent->lastDrawPosition.dirty == 2) Log("Tag change forces update");
+
 	// .. and children
 	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 		(*iter)->SetTag(tag);
@@ -1196,6 +1191,10 @@ bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, in
 {
 	if (!visible) return false;
 
+	if (target)
+		if (!target->IsVisible(player, false))
+			return false;
+
 	// we have mouse focus! Is this new?
 	if (!hasMouseFocus)
 		OnMouseIn(player);
@@ -1206,7 +1205,8 @@ bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, in
 
 	// children actually have a higher priority
 	bool overChild = false; // remember for later, catch all actions that are in theory over children, even if not reaction (if main window)
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	// use reverse iterator since children with higher Priority appear later in the list
+	for (std::list<C4MenuWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
 	{
 		C4MenuWindow *child = *iter;
 		int32_t childLeft = static_cast<int32_t>(child->lastDrawPosition.left);
@@ -1268,7 +1268,7 @@ bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subw
 {
 	if (isMainWindow && subwindowID) // we are a main window! try a shortcut through the ID?
 	{
-		LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
+		//LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
 		// the reasoning for that shortcut is that I assume that usually windows with actions will also have an ID assigned
 		// this obviously doesn't have to be the case, but I believe it's worth the try
 		std::pair<std::multimap<int32_t, C4MenuWindow*>::iterator, std::multimap<int32_t, C4MenuWindow*>::iterator> range;
@@ -1276,7 +1276,6 @@ bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subw
 
 		for (std::multimap<int32_t, C4MenuWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 		{
-			LogF("iterating.. size %d", childrenIDMap.size());
 			if (iter->second->ExecuteCommand(actionID, player, subwindowID, actionType, target, tag))
 				return true;
 		}
@@ -1286,7 +1285,6 @@ bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subw
 	// are we elligible?
 	if ((id == subwindowID) && (this->target == target))
 	{
-		Log("command target found");
 		C4MenuWindowAction *action = props[actionType].GetActionForTag(tag);
 		if (action)
 		{
