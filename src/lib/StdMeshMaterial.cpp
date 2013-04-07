@@ -649,7 +649,7 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 
 void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
 {
-	std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
+	std::unique_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
 	if (!surface.get())
 		ctx.Error(StdCopyStrBuf("Could not load texture '") + texname + "'");
 
@@ -831,7 +831,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass():
-		DepthWrite(true), CullHardware(CH_Clockwise)
+	DepthCheck(true), DepthWrite(true), CullHardware(CH_Clockwise)
 {
 	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
 	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
@@ -885,6 +885,10 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			ctx.AdvanceColor(true, Emissive);
 		}
+		else if (token_name == "depth_check")
+		{
+			DepthCheck = ctx.AdvanceBoolean();
+		}
 		else if (token_name == "depth_write")
 		{
 			DepthWrite = ctx.AdvanceBoolean();
@@ -911,11 +915,6 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			ctx.AdvanceBoolean();
 			ctx.WarningNotSupported("colour_write");
-		}
-		else if (token_name == "depth_check")
-		{
-			ctx.AdvanceBoolean();
-			ctx.WarningNotSupported(token_name.getData());
 		}
 		else if (token_name == "depth_func")
 		{

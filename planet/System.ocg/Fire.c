@@ -347,6 +347,8 @@ global func FxFireStop(object target, proplist effect, int reason, bool temp)
 	// stop sound
 	if (effect.fire_sound)
 		target->Sound("Fire", false, 100, nil, -1);
+	// callback
+	target->~Extinguishing();
 	// done, success
 	return true;
 }

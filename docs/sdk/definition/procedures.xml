@@ -38,7 +38,7 @@
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row iD="SCALE">
+      <row id="SCALE">
         <col>SCALE</col>
         <col>Scaling a wall</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>

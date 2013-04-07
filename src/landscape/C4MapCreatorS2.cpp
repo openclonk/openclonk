@@ -709,12 +709,7 @@ void C4MCMap::Default()
 	// inherited
 	C4MCOverlay::Default();
 	// size by landscape def
-	Wdt=MapCreator->Landscape->MapWdt.Evaluate();
-	Hgt=MapCreator->Landscape->MapHgt.Evaluate();
-	// map player extend
-	MapCreator->PlayerCount = Max(MapCreator->PlayerCount, 1);
-	if (MapCreator->Landscape->MapPlayerExtend)
-		Wdt = Min(Wdt * Min(MapCreator->PlayerCount, (int) C4S_MaxMapPlayerExtend), (int) MapCreator->Landscape->MapWdt.Max);
+	MapCreator->Landscape->GetMapSize(Wdt, Hgt, MapCreator->PlayerCount);
 }
 
 bool C4MCMap::RenderTo(BYTE *pToBuf, int32_t iPitch)

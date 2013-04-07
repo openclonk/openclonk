@@ -325,7 +325,7 @@ void C4DefGraphics::Draw(C4Facet &cgo, DWORD iColor, C4Object *pObj, int32_t iPh
 		break;
 	case C4DefGraphics::TYPE_Mesh:
 		// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-		std::auto_ptr<StdMeshInstance> dummy;
+		std::unique_ptr<StdMeshInstance> dummy;
 		StdMeshInstance* instance;
 
 		C4Value value;

@@ -7,17 +7,18 @@ func Place(int amount, proplist rectangle, proplist settings)
 	if (settings == nil) settings = {};
 	// Default behaviour
 	var plants = [];
-	var teraform = settings.terafom ?? true;
+	var terraform = settings.terrafom ?? true;
 	
 	var max_tries = 2 * amount;
+	var loc_area = nil;
+	if (rectangle) loc_area = Loc_InRect(rectangle);
 	
 	// look for free underground spot to place groups of three or so..
 	while ((amount > 0) && (--max_tries > 0))
 	{
-		var spot = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom), Loc_Space(20, true), Loc_Func(LargeCaveMushroom.GoodSpot));
-		
+		var spot = FindLocation(Loc_Tunnel(), Loc_Wall(CNAT_Bottom), Loc_Space(20, true), Loc_Func(LargeCaveMushroom.GoodSpot), loc_area);
 		// can't place more
-		if (!spot && !teraform) return plants;
+		if (!spot && !terraform) return plants;
 		
 		if (!spot)
 		{
@@ -75,7 +76,7 @@ private func SeedAmount() { return 5; }
 
 func Construction()
 {
-	AddTimer("Growing", 30);
+	AddTimer("Growing", 80);
 	// set random rotation so trees don't look alike too much
 	SetProperty("MeshTransformation", Trans_Rotate(RandomX(-90,90),0,1,0));
 	
@@ -121,6 +122,8 @@ public func ChopDown()
 	SetVertex(0, VTX_Y, 0, 1);
 	// Remove the bottom vertex
 	RemoveVertex(0);
+	// Stop growing
+	RemoveTimer("Growing");
 
 	_inherited(...);
 }

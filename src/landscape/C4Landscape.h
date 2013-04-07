@@ -72,6 +72,7 @@ public:
 	BYTE *pInitial; // Initial landscape after creation - used for diff
 protected:
 	CSurface8 * Surface8;
+	uint8_t * BottomRowPix; // array size of landscape width: Filled with 0s for bottom row pixels that are open and MCVehic for pixels that are closed
 	C4LandscapeRender *pLandscapeRender;
 	int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 	int32_t PixCntPitch;
@@ -107,7 +108,7 @@ public:
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
-	bool InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx = 0, int32_t vy = 0);
+	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0); // modifies tx/ty to actual insertion position
 	bool InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty);
 	bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
 	bool FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
@@ -149,8 +150,7 @@ public:
 		}
 		if (y>=Height)
 		{
-			if (BottomOpen) return 0;
-			else return MCVehic;
+			return BottomRowPix[x];
 		}
 		return Surface8->_GetPix(x,y);
 	}
@@ -212,6 +212,7 @@ protected:
 	bool TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
 	bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0, bool noClear = false); // zoom map segment to surface (or sector surfaces)
+	bool InitBottomRowPix(); // inti out-of-landscape pixels for bottom side
 	bool GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE &rbyCol);
 	bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 	CSurface8 * CreateMap(); // create map by landscape attributes
@@ -232,17 +233,17 @@ public:
 	int32_t ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCallback)(int32_t, int32_t),
 	                C4MaterialList *mats_count = NULL, int col = 0, uint8_t *conversion_table = NULL);
 
-	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false);
-	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER);
+	int32_t DigFreeShape(int *vtcs, int length, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
+	void BlastFreeShape(int *vtcs, int length, C4Object *by_object = NULL, int32_t by_player = NO_OWNER, int32_t iMaxDensity = C4M_Vehicle);
 
 	void ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
-	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false);
-	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false);
+	int32_t DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
+	int32_t DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object = NULL, bool no_dig2objects = false, bool no_instability_check = false);
 	void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL);
+	void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by = NO_OWNER, C4Object *by_object = NULL, int32_t iMaxDensity = C4M_Vehicle);
 
 	void CheckInstabilityRange(int32_t tx, int32_t ty);
-	bool CheckInstability(int32_t tx, int32_t ty);
+	bool CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count=0);
 
 	bool ClearPix(int32_t tx, int32_t ty);	// also used by mass mover (corrode)
 
@@ -255,6 +256,7 @@ private:
 	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str);
 
 	bool DigFreePix(int32_t tx, int32_t ty);
+	bool DigFreePixNoInstability(int32_t tx, int32_t ty);
 	bool BlastFreePix(int32_t tx, int32_t ty);
 	bool ShakeFreePix(int32_t tx, int32_t ty);
 

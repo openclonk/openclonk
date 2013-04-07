@@ -60,12 +60,12 @@ namespace
 		case StdMeshMaterialTextureUnit::BOX_AddSigned: return FormatString("%s + %s - 0.5", source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_AddSmooth: return FormatString("%s + %s - %s*%s", source1, source2, source1, source2);
 		case StdMeshMaterialTextureUnit::BOX_Subtract: return FormatString("%s - %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1 - diffuse.a) * %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1 - currentColor.a) * %s", source1, source2);
-		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1 - %f) * %s", manualFactor, source1, manualFactor, source2);
-		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5), 4 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
-		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor: return FormatString("diffuse.rgb * %s + (1 - diffuse.rgb) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha: return FormatString("diffuse.a * %s + (1.0 - diffuse.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha: return FormatString("texture2D(oc_Textures[%d], texcoord).a * %s + (1.0 - texture2D(oc_Textures[%d], texcoord).a) * %s", index, source1, index, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha: return FormatString("currentColor.a * %s + (1.0 - currentColor.a) * %s", source1, source2);
+		case StdMeshMaterialTextureUnit::BOX_BlendManual: return FormatString("%f * %s + (1.0 - %f) * %s", manualFactor, source1, manualFactor, source2);
+		case StdMeshMaterialTextureUnit::BOX_Dotproduct: return FormatString("vec3(4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5), 4.0 * dot(%s - 0.5, %s - 0.5));", source1, source2, source1, source2, source1, source2); // TODO: Needs special handling for the case of alpha
+		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor: return FormatString("diffuse.rgb * %s + (1.0 - diffuse.rgb) * %s", source1, source2);
 		default: assert(false); return StdStrBuf(source1);
 		}
 	}
@@ -154,7 +154,7 @@ void C4DrawMeshGLShader::ShaderObject::Load(const char* code)
 	if(compile_status != GL_TRUE)
 	{
 		GLint shader_type;
-		glGetObjectParameterivARB(Shader, GL_OBJECT_TYPE_ARB, &shader_type);
+		glGetObjectParameterivARB(Shader, GL_OBJECT_SUBTYPE_ARB, &shader_type);
 		const char* shader_type_str;
 		switch(shader_type)
 		{
@@ -435,7 +435,6 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 			{
 				technique.Available = false;
 				LogF("Failed to compile shader: %s\n", error.Message.getData());
-				throw error;
 			}
 		}
 
@@ -459,6 +458,9 @@ namespace
 		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
 		{
 			const StdMeshMaterialPass& pass = technique.Passes[i];
+
+			if(!pass.DepthCheck)
+				glDisable(GL_DEPTH_TEST);
 
 			glDepthMask(pass.DepthWrite ? GL_TRUE : GL_FALSE);
 
@@ -631,6 +633,7 @@ namespace
 			if(shader.Mod2Location != -1) glUniform1iARB(shader.Mod2Location, fMod2);
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
+			// Clean-up, re-set default state
 			for (unsigned int j = 0; j < textures.size(); ++j)
 			{
 				glActiveTexture(GL_TEXTURE0+textures[j]);
@@ -638,6 +641,9 @@ namespace
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
+
+			if(!pass.DepthCheck)
+				glEnable(GL_DEPTH_TEST);
 		}
 	}
 

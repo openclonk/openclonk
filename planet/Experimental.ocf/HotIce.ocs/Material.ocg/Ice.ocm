@@ -1,7 +1,7 @@
 [Material]
 Name=Ice
 Shape=TopFlat
-Density=50
+Density=60
 Friction=15
 DigFree=1
 BlastFree=1

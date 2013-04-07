@@ -13,7 +13,7 @@
     <examples>
       <example>
         <code><funclink>GetCursor</funclink>(0)-&gt;<funclink>SetComDir</funclink>(<funclink>COMD_None</funclink>);
-<funclink><funclink>GetCursor</funclink>()-&gt;SetDir</funclink>(DIR_Left);</code>
+<funclink>GetCursor</funclink>()-&gt;<funclink>SetDir</funclink>(DIR_Left);</code>
         <text>The selected clonk stops and looks to the left.</text>
       </example>
     </examples>

@@ -11,10 +11,10 @@
       <rtype>bool</rtype>
       <params>
         <param>
-		  <optional/>
           <type>string</type>
           <name>message</name>
           <desc>Error message to be displayed</desc>
+          <optional/>
         </param>
       </params>
     </syntax>

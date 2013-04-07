@@ -40,7 +40,7 @@ InEarthLevel=30,0,0,100
 Sky=Clouds2
 MapWidth=150
 MapHeight=150
-BottomOpen=1
+BottomOpen=2
 
 [Weather]
 Climate=100

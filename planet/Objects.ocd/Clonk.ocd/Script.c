@@ -196,6 +196,14 @@ public func Eat(object food)
 	}
 }
 
+func DigOutObject(object obj)
+{
+	// Collect fragile objects when dug out
+	if (obj->GetDefFragile())
+		return Collect(obj,nil,nil,true);
+	return false;
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other

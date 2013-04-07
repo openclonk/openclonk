@@ -758,6 +758,7 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 {
 	enum { ArbitraryMaximumLength = 4096 };
 	wchar_t buffer[ArbitraryMaximumLength];
+	sFilename->ReplaceChar('/', '\\'); // GetSaveFileNameW has trouble with forward slashes
 	wcsncpy(buffer, sFilename->GetWideChar(), ArbitraryMaximumLength - 1);
 	buffer[ArbitraryMaximumLength - 1] = 0;
 	OPENFILENAMEW ofn;
@@ -785,7 +786,6 @@ bool C4ConsoleGUI::FileSelect(StdStrBuf *sFilename, const char * szFilter, DWORD
 		fResult = !!GetSaveFileNameW(&ofn);
 	else
 		fResult = !!GetOpenFileNameW(&ofn);
-
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectoryW(wd);
 	delete[] wd;

@@ -1,20 +1,20 @@
 # Dialogue options
-MsgNextTutorial=&Nächste Lernrunde
-MsgNextTutorialDesc=Die nächste Lernrunde starten.
+MsgNextTutorial=&NÃ¤chste Lernrunde
+MsgNextTutorialDesc=Die nÃ¤chste Lernrunde starten.
 MsgRepeatRound=&Lernrunde wiederholen
 MsgRepeatRoundDesc=Diese Lernrunde wiederholen.
 
 # Tutorial messages
 MsgTutIntro0=Willkommen bei OpenClonk!
 MsgTutIntro1=Dies ist dein Clonk.
-MsgTutIntro2=Das Ziel der Lernrunde ist, mit deinem Clonk durch die Höhle an den rechten Kartenrand zu kommen. Das Spielziel wird in jeder Runde in der oberen rechten Ecke des Bildschirms angezeigt.
-MsgTutIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen rechten Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schließen.
-MsgTutMovement=Clonks werden durch die WASD Tasten gesteuert. Drücke [A] oder [D], um nach links oder rechts zu gehen. Mit [W] springst du.
-MsgTutScale=Hier musst du an der Wand hochklettern, um weiterzukommen. Dein Clonk fängt automatisch an zu klettern, wenn du gegen eine Wand läufst oder springst. Dann kannst du mit [W] hoch- und [S] runterklettern.
-MsgTutHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst du normal nach links oder rechts hangeln. Um schließlich loszulassen, drücke [S].
-MsgTutSwim=Im Wasser kannst du in jede Richtung schwimmen. Wenn du untertauchst, hält dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertringt er.
+MsgTutIntro2=Das Ziel der Lernrunde ist, mit deinem Clonk durch die HÃ¶hle an den rechten Kartenrand zu kommen. Das Spielziel wird in jeder Runde in der oberen rechten Ecke des Bildschirms angezeigt.
+MsgTutIntro3=Wenn du an einer Stelle einen Tipp brauchst, klicke auf mein Bildchen in der oberen rechten Ecke des Bildschirms. Klicke nochmal, um den Tipp wieder zu schlieÃŸen.
+MsgTutMovement=Clonks werden durch die WASD Tasten gesteuert. DrÃ¼cke [A] oder [D], um nach links oder rechts zu gehen. Mit [W] springst du.
+MsgTutScale=Hier musst du an der Wand hochklettern, um weiterzukommen. Dein Clonk fÃ¤ngt automatisch an zu klettern, wenn du gegen eine Wand lÃ¤ufst oder springst. Dann kannst du mit [W] hoch- und [S] runterklettern.
+MsgTutHangle=Um zu hangeln, springe einfach an die Decke. Dann kannst du normal nach links oder rechts hangeln. Um schlieÃŸlich loszulassen, drÃ¼cke [S].
+MsgTutSwim=Im Wasser kannst du in jede Richtung schwimmen. Wenn du untertauchst, hÃ¤lt dein Clonk den Atem an. Pass auf, rechtzeitig wieder aufzutauchen, sonst ertrinkt er.
 MsgTutDig=Hier brauchst du eine Schaufel um hindurchzugraben. Was ist das da unter Wasser?
-MsgTutTools=Das Inventar deines Clonks am linken Bildschirmrand zeigt nun die Schaufel. Dieses hat mehrere Slots, zwei davon können als aktiv markiert werden. Mit der linken Maustaste weist du den Slot der linken Hand zu; mit der rechten Maustaste der rechten Hand.||Wenn du mit der Maus über die Schaufel im Inventar fährst, wird eine eine kurze Beschreibung angezeigt, die erklärt wie sie funktioniert.
-MsgTutChest=Um hier weiterzukommen, musst du eine Lehmbrücke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drücke [E], um das Inventarmenü zu öffnen. Um den Lehmklumpen dann einzusammeln, klicke im Menü darauf oder ziehe ihn in den Kreis vom Clonk. Drücke nochmal [E] um das Menü wieder zu schließen.
-MsgTutLoam=Um eine Lehmbrücke zu bauen, halte die Maustaste gedrückt. Die Konstruktion funktioniert wie das Graben, nur statt einem Tunnel wird eine Lehmbrücke gebaut.
-MsgTutFlint=Oh! was ist das? Der Höhlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um dir einen Weg freizusprengen (ziele und werfe mit der Maus).
+MsgTutTools=Das Inventar deines Clonks am linken Bildschirmrand zeigt nun die Schaufel. Dieses hat mehrere Slots, zwei davon kÃ¶nnen als aktiv markiert werden. Mit der linken Maustaste weist du den Slot der linken Hand zu; mit der rechten Maustaste der rechten Hand.||Wenn du mit der Maus Ã¼ber die Schaufel im Inventar fÃ¤hrst, wird eine eine kurze Beschreibung angezeigt, die erklÃ¤rt wie sie funktioniert.
+MsgTutChest=Um hier weiterzukommen, musst du eine LehmbrÃ¼cke bauen. In der Truhe ist ein Lehmklumpen. Stell dich vor die Truhe und drÃ¼cke [E], um das InventarmenÃ¼ zu Ã¶ffnen. Um den Lehmklumpen dann einzusammeln, klicke im MenÃ¼ darauf oder ziehe ihn in den Kreis vom Clonk. DrÃ¼cke nochmal [E] um das MenÃ¼ wieder zu schlieÃŸen.
+MsgTutLoam=Um eine LehmbrÃ¼cke zu bauen, halte die Maustaste gedrÃ¼ckt. Die Konstruktion funktioniert wie das Graben, nur statt einem Tunnel wird eine LehmbrÃ¼cke gebaut.
+MsgTutFlint=Oh! was ist das? Der HÃ¶hlenausgang ist durch solides Gestein versperrt. Mit der Schaufel kommst du da nicht durch.|In der Truhe sind Feuersteine, die bei Aufprall explodieren. Hole sie dir und wirf sie auf die Felswand, um dir einen Weg freizusprengen (ziele und werfe mit der Maus).

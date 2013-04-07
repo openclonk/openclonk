@@ -206,7 +206,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 
 	// Generate mesh from data
 	Ogre::Mesh::ChunkMesh &cmesh = *static_cast<Ogre::Mesh::ChunkMesh*>(root.get());
-	std::auto_ptr<StdMesh> mesh(new StdMesh);
+	std::unique_ptr<StdMesh> mesh(new StdMesh);
 	mesh->BoundingBox = cmesh.bounds;
 	mesh->BoundingRadius = cmesh.radius;
 
@@ -298,7 +298,7 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 	     id = Ogre::Skeleton::Chunk::Peek(&stream)
 	    )
 	{
-		std::auto_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
+		std::unique_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
 		switch (chunk->GetType())
 		{
 		case Ogre::Skeleton::CID_BlendMode:

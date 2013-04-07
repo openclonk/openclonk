@@ -9,7 +9,6 @@
 
 #include Library_MeleeWeapon
 
-local tree;
 local swing_anim;
 local using;
 local carry_bone;
@@ -56,10 +55,9 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if(clonk->GetDir() == DIR_Left) {
 		x_offs = -x_offs;
 	}
-	tree = FindObject(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer());
 	
 	// Chopping
-	if(tree && clonk->IsWalking())
+	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
 	{
 		//treedist - the x-distance the clonk is from the centre of a tree-trunk
 		var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
@@ -197,11 +195,11 @@ func FxIntAxeTimer(object clonk, effect, int time)
 		{
 			//random speed & angle
 			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), tree);
+			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree);
 		}
 
 		// Damage tree
-		tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
+		effect.tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
 	}
 	//Make sure the clonk does not move
 	clonk->SetComDir(COMD_Stop);
@@ -247,7 +245,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 		{
 			//random speed & angle
 			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), tree);
+			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree);
 		}
 	}
 	// Tree split!
@@ -288,7 +286,6 @@ public func Reset(clonk)
 	clonk->SetTurnForced(-1);
 	clonk->StopAnimation(swing_anim);
 	swing_anim = nil;
-	tree = nil;
 	RemoveEffect("IntAxe", clonk);
 	RemoveEffect("IntSplit", clonk);
 }

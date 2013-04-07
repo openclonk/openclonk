@@ -793,10 +793,10 @@ static long FnGetActTime(C4Object *Obj)
 	return Obj->Action.Time;
 }
 
-static C4ID FnGetID(C4Object *Obj)
+static C4PropList* FnGetID(C4Object *Obj)
 {
 	// return id of object
-	return Obj->Def->id;
+	return Obj->GetPrototype();
 }
 
 static Nillable<C4ID> FnGetMenu(C4Object *Obj)

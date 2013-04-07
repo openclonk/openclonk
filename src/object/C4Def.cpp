@@ -173,7 +173,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	                           "Category",           0             ));
 
 	pComp->Value(mkNamingAdapt(ContactFunctionCalls,          "ContactCalls",       0                 ));
-	pComp->Value(mkParAdapt(Shape, false));
+	pComp->Value(mkParAdapt(Shape, static_cast<C4Shape*>(NULL)));
 	pComp->Value(mkNamingAdapt(Value,                         "Value",              0                 ));
 	pComp->Value(mkNamingAdapt(Mass,                          "Mass",               0                 ));
 	pComp->Value(mkNamingAdapt(Component,                     "Components",         C4IDList()        ));
@@ -252,8 +252,9 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 
 //-------------------------------- C4Def -------------------------------------------------------
 
-C4Def::C4Def(): Script(this), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
+C4Def::C4Def(): Script(), C4PropListStatic(ScriptEngine.GetPropList(), NULL, NULL)
 {
+	Script.SetDef(this);
 	assert(ScriptEngine.GetPropList());
 	Graphics.pDef = this;
 	Default();

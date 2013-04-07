@@ -21,28 +21,28 @@
         </rowh>
         <row>
           <col>15</col>
-          <col>++</col>
+          <col id="++">++</col>
           <col>Increases the value of the <strong>following</strong> variable by 1.</col>
           <col>prefix</col>
           <col>reference, reference</col>
         </row>
         <row>
           <col>15</col>
-          <col>--</col>
+          <col id="--">--</col>
           <col>Decreases the value of the <strong>following</strong> variable by 1.</col>
           <col>prefix</col>
           <col>reference, reference</col>
         </row>
         <row>
           <col>15</col>
-          <col>~</col>
+          <col id="~">~</col>
           <col>Bitwise negation of the following value.</col>
           <col>prefix</col>
           <col>int, int</col>
         </row>
         <row>
           <col>15</col>
-          <col>!</col>
+          <col id="!">!</col>
           <col>Logical negation of the following value.</col>
           <col>prefix</col>
           <col>bool, bool</col>
@@ -77,70 +77,70 @@
         </row>
         <row>
           <col>14l</col>
-          <col>**</col>
+          <col id="**">**</col>
           <col>Yields the power of a to b.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>13l</col>
-          <col>/</col>
+          <col id="/">/</col>
           <col>Divides a by b.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>13l</col>
-          <col>*</col>
+          <col id="*">*</col>
           <col>Multiplies a by b.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>13l</col>
-          <col>%</col>
+          <col id="%">%</col>
           <col>Yields the remainder of the devision of a by b.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>12l</col>
-          <col>-</col>
+          <col id="-">-</col>
           <col>Subtracts b from a.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>12l</col>
-          <col>+</col>
+          <col id="+">+</col>
           <col>Adds a to b.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>11l</col>
-          <col>&lt;&lt;</col>
+          <col id="&lt;&lt;">&lt;&lt;</col>
           <col>Performs a bit shift operation to the left.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>11l</col>
-          <col>&gt;&gt;</col>
+          <col id="&gt;&gt;">&gt;&gt;</col>
           <col>Performs a bit shift operation to the right.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>10l</col>
-          <col>&lt;</col>
+          <col id="&lt;">&lt;</col>
           <col>Returns whether a is less than b.</col>
           <col>postfix</col>
           <col>bool, int/int</col>
         </row>
         <row>
           <col>10l</col>
-          <col>&lt;=</col>
+          <col id="&lt;=">&lt;=</col>
           <col>Returns whether a is less than or equal to b.</col>
           <col>postfix</col>
           <col>bool, int/int</col>
@@ -148,125 +148,125 @@
         <row>
           <col>10l</col>
           <col>&gt;</col>
-          <col>Returns whether a is greater than b.</col>
+          <col id="&gt;">Returns whether a is greater than b.</col>
           <col>postfix</col>
           <col>bool, int/int</col>
         </row>
         <row>
           <col>10l</col>
-          <col>&gt;=</col>
+          <col id="&gt;=">&gt;=</col>
           <col>Returns whether the first value is greater than or equal to the second.</col>
           <col>postfix</col>
           <col>bool, int/int</col>
         </row>
         <row>
           <col>9l</col>
-          <col>==</col>
+          <col id="==">==</col>
           <col>Returns whether a equals b.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>
         <row>
           <col>9l</col>
-          <col>!=</col>
+          <col id="!=">!=</col>
           <col>Returns whether a is unequal to b.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>
         <row>
           <col>9l</col>
-          <col>===</col>
+          <col id="===">===</col>
           <col>Returns whether a and b refer to the same thing.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>
         <row>
           <col>9l</col>
-          <col>!==</col>
+          <col id="!==">!==</col>
           <col>Returns whether a and b do not refer to the same thing.</col>
           <col>postfix</col>
           <col>bool, any/any</col>
         </row>
         <row>
           <col>8l</col>
-          <col>&amp;</col>
+          <col id="&amp;">&amp;</col>
           <col>Performs a bitwise AND operation.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>6l</col>
-          <col>^</col>
+          <col id="^">^</col>
           <col>Performs a bitwise XOR operation.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>6l</col>
-          <col>|</col>
+          <col id="|">|</col>
           <col>Performs a bitwise OR operation.</col>
           <col>postfix</col>
           <col>int, int/int</col>
         </row>
         <row>
           <col>5l</col>
-          <col>&amp;&amp;</col>
+          <col id="&amp;&amp;">&amp;&amp;</col>
           <col>Performs a logical AND operation.</col>
           <col>postfix</col>
           <col>any, any/any</col>
         </row>
         <row>
           <col>4l</col>
-          <col>||</col>
+          <col id="||">||</col>
           <col>Performs a logical OR operation.</col>
           <col>postfix</col>
           <col>any, any/any</col>
         </row>
         <row>
           <col>3l</col>
-          <col>??</col>
+          <col id="??">??</col>
           <col>Returns the left-hand operand if the operand is not <code>nil</code>, or the right-hand operand otherwise.</col>
           <col>postfix</col>
           <col>any, any/any</col>
         </row>
         <row>
           <col>2r</col>
-          <col>*=</col>
+          <col id="*=">*=</col>
           <col>Multiplies the preceeding variables by the following value.</col>
           <col>postfix</col>
           <col>reference, reference/int</col>
         </row>
         <row>
           <col>2r</col>
-          <col>/=</col>
+          <col id="/=">/=</col>
           <col>Divides the preceeding variable by the following value.</col>
           <col>postfix</col>
           <col>reference, reference/int</col>
         </row>
         <row>
           <col>2r</col>
-          <col>%=</col>
+          <col id="%=">%=</col>
           <col>Sets the preceeding variable to the remainder of the devision of that variable by the following value.</col>
           <col>postfix</col>
           <col>reference, reference/int</col>
         </row>
         <row>
           <col>2r</col>
-          <col>+=</col>
+          <col id="+=">+=</col>
           <col>Increases the preceeding variable by the following value.</col>
           <col>postfix</col>
           <col>reference, reference/int</col>
         </row>
         <row>
           <col>2r</col>
-          <col>-=</col>
+          <col id="-=">-=</col>
           <col>Decreases the preeceding variable by the following value.</col>
           <col>postfix</col>
           <col>reference, reference/int</col>
         </row>
         <row>
           <col>2r</col>
-          <col>=</col>
+          <col id="=">=</col>
           <col>Assigns the following value to the preceeding variable.</col>
           <col>postfix</col>
           <col>reference, reference/any</col>

@@ -108,7 +108,7 @@
   </part>
   <part>
     <h id="C4Group">c4group.exe (Windows) c4group (Linux) c4group (Mac)</h>
-    <text>This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking).</text>
+    <text>This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<em>not</em> by double clicking).</text>
   </part>
   <author>Sven2</author><date>2007-02</date>
   <author>Günther</author><date>2011</date>

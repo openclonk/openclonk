@@ -6,7 +6,7 @@
   <title>Object Categories</title>
   <h>Object Categories</h>
   <part>
-    <text>An object's category specifies parts of its behavior. For a definition it is set by the Category entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
+    <text>An object's category specifies parts of its behavior. For a definition it is set by the <code id="Category">Category</code> entry in the DefCore.txt file. Multiple categories can be combined using the binary OR operator.</text>
     <text>
       <table>
         <rowh>
@@ -71,15 +71,13 @@
         </row>
       </table>
     </text>
-    <h id="Beispiel">Example</h>
-    <text>
-      <examples>
-        <example>
-          <code>Category=C4D_StaticBack|C4D_Rule</code>
-          <text>Category for a rule.</text>
-        </example>
-      </examples>
-    </text>
+    <h>Example</h>
+    <examples>
+      <example>
+        <code>Category=C4D_StaticBack|C4D_Rule</code>
+        <text>Category for a rule.</text>
+      </example>
+    </examples>
   </part>
   <author>Sven2</author><date>2006-05</date>
   <author>Newton</author><date>2005-01</date>

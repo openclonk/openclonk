@@ -169,7 +169,7 @@ public:
 	C4IDList Vegetation;
 	C4SVal InEarthLevel;
 	C4IDList InEarth;
-	bool BottomOpen,TopOpen;
+	int32_t BottomOpen,TopOpen;
 	int32_t LeftOpen,RightOpen;
 	bool AutoScanSideOpen;
 	char SkyDef[C4MaxDefString+1];

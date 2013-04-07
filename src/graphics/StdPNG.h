@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2002  Sven Eberhardt
  * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,8 +23,6 @@
 #define INC_STDPNG
 
 #include <png.h>
-
-void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length); // reading proc (callback)
 
 class CPNGFile
 {
@@ -69,6 +68,7 @@ public:
 	BYTE *GetImageData() { return pImageData; }   // return raw image data
 	int GetBitsPerPixel();                        // return number of bits per pixel in raw image data
 
-	friend void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length);
+private:
+	static void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length); // reading proc (callback)
 };
 #endif //INC_STDPNG

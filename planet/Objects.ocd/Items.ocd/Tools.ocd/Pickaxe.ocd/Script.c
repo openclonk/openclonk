@@ -124,7 +124,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 		}
 		
 		//Do blastfree after landscape checks are made. Otherwise, mat always returns as "tunnel"
-		BlastFree(GetX()+x2,GetY()+y2,5,GetController());
+		BlastFree(GetX()+x2,GetY()+y2,5,GetController(),MaxPickDensity);
 	}
 
 }
@@ -176,3 +176,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
+local MaxPickDensity = 80;

@@ -1,0 +1,16 @@
+[DefCore]
+id=MinersStatue
+Version=5,2,0,1
+Category=C4D_Structure
+Width=46
+Height=80
+Offset=-23,-40
+Vertices=2
+VertexX=-5,12
+VertexY=32,32
+VertexFriction=100,100
+Value=200
+Mass=300
+Components=Rock=10;Metal=5;
+Rotate=0
+

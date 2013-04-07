@@ -294,7 +294,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 'b':
 		iTmp = Data.Int;
 		pComp->Value(iTmp);
-		SetBool(iTmp);
+		SetBool(!!iTmp);
 		break;
 
 	case 'E':
@@ -342,18 +342,21 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		else
 		{
 			StdStrBuf s;
+			C4Value temp;
 			pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
-			if (!::ScriptEngine.GetGlobalConstant(s.getData(), this))
-				pComp->excNotFound("static proplist %s", s.getData());
+			if (!::ScriptEngine.GetGlobalConstant(s.getData(), &temp))
+				pComp->excCorrupt("Cannot find global constant %s", s.getData());
 			while(pComp->Separator(StdCompiler::SEP_PART))
 			{
-				C4PropList * p = getPropList();
+				C4PropList * p = temp.getPropList();
 				if (!p)
-					pComp->excNotFound("static proplist is not a proplist anymore", s.getData());
+					pComp->excCorrupt("static proplist %s is not a proplist anymore", s.getData());
 				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
-				if (!p->GetPropertyByS(::Strings.RegString(s), this))
-					pComp->excNotFound("static proplist %s", s.getData());
+				C4String * c4s = ::Strings.FindString(s.getData());
+				if (!c4s || !p->GetPropertyByS(c4s, &temp))
+					pComp->excCorrupt("Cannot find property %s in %s", s.getData(), GetDataString().getData());
 			}
+			Set(temp);
 		}
 		break;
 	}

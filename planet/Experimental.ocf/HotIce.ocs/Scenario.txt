@@ -14,7 +14,7 @@ MapWidth=20
 MapHeight=20
 TopOpen=1
 BottomOpen=1
-MapZoom=20,0,0,20
+MapZoom=18,0,0,18
 
 [Weather]
 Climate=0

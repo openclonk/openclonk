@@ -576,7 +576,7 @@ private:
 
 inline void CompileNewFuncCtx(StdMeshInstance::SerializableValueProvider *&pStruct, StdCompiler *pComp, const StdMeshInstance::SerializableValueProvider::IDBase& rID)
 {
-	std::auto_ptr<StdMeshInstance::SerializableValueProvider> temp(rID.newfunc());
+	std::unique_ptr<StdMeshInstance::SerializableValueProvider> temp(rID.newfunc());
 	pComp->Value(*temp);
 	pStruct = temp.release();
 }

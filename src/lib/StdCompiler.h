@@ -331,7 +331,7 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
 	// a) Define a standard constructor for T
 	// b) Specialize this function to do whatever the correct
 	//    behaviour is to construct the object from compiler data
-	std::auto_ptr<T> temp(new T); // exception-safety
+	std::unique_ptr<T> temp(new T); // exception-safety
 	// Compile
 	pComp->Value(*temp);
 	pStruct = temp.release();
@@ -345,7 +345,7 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
 	// a) Define a standard constructor for T
 	// b) Specialize this function to do whatever the correct
 	//    behaviour is to construct the object from compiler data
-	std::auto_ptr<T> temp(new T); // exception-safety
+	std::unique_ptr<T> temp(new T); // exception-safety
 	// Compile
 	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
@@ -361,7 +361,7 @@ void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx)
 	// b) Specialize this function to do whatever the correct
 	//    behaviour is to construct the object from compiler data
 	//    and context
-	std::auto_ptr<T> temp(new T(rCtx)); // exception-safety
+	std::unique_ptr<T> temp(new T(rCtx)); // exception-safety
 	// Compile
 	pComp->Value(*temp);
 	pStruct = temp.release();
@@ -376,7 +376,7 @@ void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx, co
 	// b) Specialize this function to do whatever the correct
 	//    behaviour is to construct the object from compiler data
 	//    and context
-	std::auto_ptr<T> temp(new T(rCtx));  // exception-safety
+	std::unique_ptr<T> temp(new T(rCtx));  // exception-safety
 	// Compile
 	//temp->CompileFunc(pComp, rPar);
 	pComp->Value(mkParAdapt(*temp, rPar));
