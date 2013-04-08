@@ -58,7 +58,7 @@ public:
 	CSurface8 * Map;
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
-	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
+	uint8_t *BridgeMatConversion[128]; // NoSave //
 
 	bool NoScan; // ExecuteScan() disabled
 	int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
@@ -225,7 +225,7 @@ protected:
 	void PrepareChange(C4Rect BoundingBox);
 	void FinishChange(C4Rect BoundingBox);
 	static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
-	uint8_t *GetBridgeMatConversion(int for_material);
+	uint8_t *GetBridgeMatConversion(int for_material_col);
 	bool SaveInternal(C4Group &hGroup);
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
 
