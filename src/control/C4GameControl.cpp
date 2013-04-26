@@ -52,7 +52,7 @@ C4GameControl::~C4GameControl()
 
 bool C4GameControl::InitLocal(C4Client *pLocal)
 {
-	eMode = CM_Local; fPreInit = fInitComplete = true;
+	eMode = CM_Local; fInitComplete = true;
 	fHost = true; iClientID = pLocal->getID();
 	ControlRate = 1;
 	// ok
@@ -65,7 +65,7 @@ bool C4GameControl::InitNetwork(C4Client *pLocal)
 	if (!Network.IsEnabled())
 		return false;
 	// set mode
-	eMode = CM_Network; fPreInit = fInitComplete = true;
+	eMode = CM_Network; fInitComplete = true;
 	fHost = pLocal->isHost(); iClientID = pLocal->getID();
 	// control rate by parameters
 	ControlRate = Game.Parameters.ControlRate;
@@ -219,7 +219,7 @@ void C4GameControl::Default()
 	Input.Clear();
 	Network.Clear();
 	eMode = CM_None;
-	fHost = fPreInit = fInitComplete = false;
+	fHost = fInitComplete = false;
 	iClientID = C4ClientIDUnknown;
 	pRecord = NULL;
 	pPlayback = NULL;
@@ -388,13 +388,11 @@ void C4GameControl::SetActivated(bool fnActivated)
 
 void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4ControlDeliveryType eDelivery)
 {
-	assert(fPreInit);
+	assert(fInitComplete || pPkt->Lobby());
 
 	// check if the control can be executed
 	if (eDelivery == CDT_Direct || eDelivery == CDT_Private)
 		assert(!pPkt->Sync());
-	if (!fInitComplete)
-		assert(pPkt->Lobby());
 
 	// decide control type
 	if (eDelivery == CDT_Decide)
