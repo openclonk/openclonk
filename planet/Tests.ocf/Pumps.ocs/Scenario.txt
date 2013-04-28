@@ -1,0 +1,8 @@
+[Head]
+Title=Pumps
+
+[Landscape]
+MapWidth=20
+
+[Weather]
+Climate=0,0,0,0
