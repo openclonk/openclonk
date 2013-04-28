@@ -152,6 +152,8 @@ protected func Pumping()
 		// no material to pump?
 		if ((aMaterials[0] == "") || (aMaterials[1] == 0))
 			pump_ok = false;
+		else
+			pump_amount += aMaterials[1];
 	}
 	if (pump_ok)
 	{
