@@ -63,7 +63,7 @@ func AddPowerConsumer(object p, int a)
 				o.obj->~OnRemovedFromPowerSleepingQueue();
 				return true;
 			}
-			sleeping_links[i].amount = a;
+			sleeping_links[i].amount = -a;
 			return true;
 		}
 	}
