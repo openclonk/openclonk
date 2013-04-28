@@ -804,7 +804,7 @@ int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
 	return mat;
 }
 
-bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy)
+bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy, bool query_only)
 {
 	assert(tx); assert(ty);
 	int32_t mdens;
@@ -841,7 +841,10 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 	// Try slide
 	while (FindMatSlide(*tx,*ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
 		if (GetDensity(*tx,*ty+1)<mdens)
-			{ ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+			{ if (!query_only) ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+
+	// Insertion OK here
+	if (query_only) return true;
 
 	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
