@@ -617,6 +617,8 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bo
 		{
 			props[C4MenuWindowPropertyName::priority].Set(property, standardHash);
 			layoutUpdateRequired = true;
+			// resort into parent's list
+			parent->ChildChangedPriority(this);
 		}
 		else
 		{
@@ -676,8 +678,45 @@ C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
 		child->isMainWindow = true;
 		//LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::MenuWindowRoot));
 	}
-	children.push_back(child);
+	// child's priority is ususally 0 here, so just insert it in front of other windows with a priority below 0
+	// when the child's priority updates, the update function will be called and the child will be sorted to the correct position
+	bool inserted = false;
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		C4MenuWindow *otherChild = *iter;
+		if (otherChild->props[C4MenuWindowPropertyName::priority].GetInt() < 0) continue;
+		children.insert(iter, child);
+		inserted = true;
+		break;
+	}
+	if (!inserted)
+		children.push_back(child);
+
 	return child;
+}
+
+void C4MenuWindow::ChildChangedPriority(C4MenuWindow *child)
+{
+	int prio = child->props[C4MenuWindowPropertyName::priority].GetInt();
+	// remove child from list first
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		if (*iter != child) continue;
+		children.erase(iter);
+		break;
+	}
+	// now insert into list at correct position
+	bool inserted = false;
+	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	{
+		C4MenuWindow *otherChild = *iter;
+		if (otherChild->props[C4MenuWindowPropertyName::priority].GetInt() < prio) continue;
+		children.insert(iter, child);
+		inserted = true;
+		break;
+	}
+	if (!inserted)
+		children.push_back(child);
 }
 
 void C4MenuWindow::ChildWithIDRemoved(C4MenuWindow *child)
@@ -842,16 +881,12 @@ void C4MenuWindow::UpdateLayoutGrid()
 
 	unsigned int stdHash = Strings.P[P_Std].Hash;
 
-	std::list<C4MenuWindow*> sorted;
-	sorted.insert(sorted.begin(), children.begin(), children.end());
-	sorted.sort(C4MenuWindow::CompareMenuWindowsByPriority);
-
 	int32_t borderX(0), borderY(0);
 	int32_t currentX = borderX;
 	int32_t currentY = borderY;
 	int32_t maxChildHeight = 0;
 
-	for(std::list<C4MenuWindow*>::iterator iter = sorted.begin(); iter != sorted.end(); ++iter)
+	for(std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4MenuWindow *child = *iter;
 		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left;
@@ -886,14 +921,10 @@ void C4MenuWindow::UpdateLayoutVertical()
 
 	unsigned int stdHash = Strings.P[P_Std].Hash;
 
-	std::list<C4MenuWindow*> sorted;
-	sorted.insert(sorted.begin(), children.begin(), children.end());
-	sorted.sort(C4MenuWindow::CompareMenuWindowsByPriority);
-
 	int32_t borderY(0);
 	int32_t currentY = borderY;
 
-	for(std::list<C4MenuWindow*>::iterator iter = sorted.begin(); iter != sorted.end(); ++iter)
+	for(std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		C4MenuWindow *child = *iter;
 		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;

@@ -199,9 +199,6 @@ class C4MenuWindow
 
 	// properties are stored extra to make "tags" possible
 	C4MenuWindowProperty props[C4MenuWindowPropertyName::_lastProp];
-	// used for sorting the windows in a layout
-	static bool CompareMenuWindowsByPriority(C4MenuWindow *left, C4MenuWindow *right) { return left->props[C4MenuWindowPropertyName::priority].GetInt() < right->props[C4MenuWindowPropertyName::priority].GetInt(); };
-
 	void Init();
 	// withMultipleFlag is there to draw only the non-multiple or the multiple windows
 	// withMultipleFlag == -1: all windows are drawn (standard)
@@ -215,7 +212,9 @@ class C4MenuWindow
 	void ChildGotID(C4MenuWindow *child);
 	void ChildWithIDRemoved(C4MenuWindow *child);
 	std::multimap<int32_t, C4MenuWindow *> childrenIDMap;
-
+	// should be called when the Priority property of a child changes
+	// will sort the child correctly into the children list
+	void ChildChangedPriority(C4MenuWindow *child);
 	// helper function
 	// sets property value from possible(!) array
 	void SetArrayTupleProperty(const C4Value &property, C4MenuWindowPropertyName first, C4MenuWindowPropertyName second, unsigned int hash);
