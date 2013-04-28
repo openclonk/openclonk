@@ -516,7 +516,7 @@ C4MenuWindow::~C4MenuWindow()
 void C4MenuWindow::SetArrayTupleProperty(const C4Value &property, C4MenuWindowPropertyName first, C4MenuWindowPropertyName second, unsigned int hash)
 {
 	C4ValueArray *array;
-	if (array = property.getArray())
+	if ((array = property.getArray()))
 	{
 		if (array->GetSize() > 0)
 			props[first].Set(array->GetItem(0), hash);
@@ -1077,7 +1077,7 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 
 	if (frameDecoration)
 	{
-		C4Rect rect(leftDrawX - cgo.TargetX, topDrawY - cgo.TargetY, width, height);
+		C4Rect rect(leftDrawX - cgo.TargetX - frameDecoration->iBorderLeft, topDrawY - cgo.TargetY - frameDecoration->iBorderTop, width + frameDecoration->iBorderRight, height + frameDecoration->iBorderBottom);
 		frameDecoration->Draw(cgo, rect);
 	}
 

@@ -73,12 +73,12 @@ func StartMultipleListTest()
 	{
 		var inv = inventory[i];
 		var ID = 9000 + i;
-		var deco = { Decoration = GUI_MenuDeco, X = x[i], Y = y[i], Wdt = w[i], Hgt = h[i] };
 		var m = CreateCustomMenu(MenuStyle_List);
-		deco.menu = m;
-		Menu_AddSubmenu(deco, menu.contents);
+		m.Decoration = GUI_MenuDeco;
+		m.X = x[i]; m.Y = y[i];
+		m.Wdt = w[i]; m.Hgt = h[i];
+		Menu_AddSubmenu(m, menu.contents);
 		PushBack(inv_menus, m); // remember for later
-		Menu_AddMargin(m, 20, 20);
 		for (var obj in inv)
 			m->AddItem(obj, obj.Description, nil, Scenario, "SelectInventory", [obj, ID]);
 	}
@@ -297,17 +297,16 @@ func StartTransferTest()
 	
 	for (var i = 0; i < 2; ++i)
 	{
-		var deco = { Decoration = GUI_MenuDeco, Text = "FROM", Style = MENU_TextHCenter};
+		var m = CreateCustomMenu(MenuStyle_Grid);
+		m.Decoration = GUI_MenuDeco;
+		m.Text = "FROM";
+		m.Style = MENU_TextHCenter;
 		if (i == 1)
 		{
-			deco.X = 500;
-			deco.Text = "TO";
-		}
-		else deco.Wdt = 500;
-		var m = CreateCustomMenu(MenuStyle_Grid);
-		deco.menu = m;
-		Menu_AddSubmenu(deco, menu.contents);
-		Menu_AddMargin(m, 20, 20);
+			m.X = 500;
+			m.Text = "TO";
+		} else m.Wdt = 500;
+		Menu_AddSubmenu(m, menu.contents);
 		var a = transfer_left;
 		if (i == 1) a = transfer_right;
 		
