@@ -804,7 +804,7 @@ int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
 	return mat;
 }
 
-bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy)
+bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy, bool query_only)
 {
 	assert(tx); assert(ty);
 	int32_t mdens;
@@ -841,7 +841,10 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 	// Try slide
 	while (FindMatSlide(*tx,*ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
 		if (GetDensity(*tx,*ty+1)<mdens)
-			{ ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+			{ if (!query_only) ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+
+	// Insertion OK here
+	if (query_only) return true;
 
 	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
@@ -1133,7 +1136,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	delete [] PixCnt; PixCnt = NULL;
 	PixCntPitch = 0;
 	// clear bridge material conversion temp buffers
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
@@ -1533,7 +1536,7 @@ void C4Landscape::Default()
 	pMapCreator=NULL;
 	Modulation=0;
 	fMapChanged = false;
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
@@ -3152,8 +3155,7 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	uint8_t *conversion_map = NULL;
 	if (fDrawBridge)
 	{
-		int32_t iMat = GetPixMat(iMatTex);
-		conversion_map = GetBridgeMatConversion(iMat);
+		conversion_map = GetBridgeMatConversion(MatTex2PixCol(iMatTex));
 	}
 	// prepare pixel count update
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
@@ -3164,12 +3166,13 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	return true;
 }
 
-uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
+uint8_t *C4Landscape::GetBridgeMatConversion(int32_t for_material_col)
 {
 	// safety
+	int32_t for_material = GetPixMat(for_material_col);
 	if (for_material < 0 || for_material >= MaterialMap.Num) return NULL;
 	// query map. create if not done yet
-	uint8_t *conv_map = BridgeMatConversion[for_material];
+	uint8_t *conv_map = BridgeMatConversion[for_material_col];
 	if (!conv_map)
 	{
 		conv_map = new uint8_t[256];
@@ -3178,7 +3181,7 @@ uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
 			if ( (MatDensity(for_material)>=GetPixDensity(i)))
 			{
 				// bridge pixel OK here. change pixel; keep IFT.
-				conv_map[i] = (i & IFT) + Mat2PixColDefault(for_material);
+				conv_map[i] = (i & IFT) + for_material_col;
 			}
 			else
 			{
@@ -3456,7 +3459,7 @@ void C4Landscape::UpdatePixMaps()
 	for (i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
 	Pix2Place[0] = 0;
 	// clear bridge mat conversion buffers
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;

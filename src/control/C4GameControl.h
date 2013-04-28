@@ -72,7 +72,7 @@ public:
 
 protected:
 	C4ControlMode       eMode;
-	bool                fPreInit, fInitComplete;
+	bool                fInitComplete;
 	bool                fHost;              // (set for local, too)
 	bool                fActivated;
 	bool                fRecordNeeded;

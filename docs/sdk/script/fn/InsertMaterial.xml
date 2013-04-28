@@ -46,6 +46,12 @@
           <desc>If a writeable proplist is passed, members x and y are filled with the actual insertion position.</desc>
           <optional />
         </param>
+        <param>
+          <type>bool</type>
+          <name>query_only</name>
+          <desc>If set, the material is not actually inserted. Use this if you are only interested if insertion would be possible and where it would take place.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Inserts a material pixel at the given position and given speed.</desc>

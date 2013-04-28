@@ -58,7 +58,7 @@ public:
 	CSurface8 * Map;
 	DWORD MatCount[C4MaxMaterial]; // NoSave //
 	DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
-	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
+	uint8_t *BridgeMatConversion[128]; // NoSave //
 
 	bool NoScan; // ExecuteScan() disabled
 	int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
@@ -108,7 +108,7 @@ public:
 	bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
 	bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
 	bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
-	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0); // modifies tx/ty to actual insertion position
+	bool InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx = 0, int32_t vy = 0, bool query_only=false); // modifies tx/ty to actual insertion position
 	bool InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty);
 	bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
 	bool FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
@@ -225,7 +225,7 @@ protected:
 	void PrepareChange(C4Rect BoundingBox);
 	void FinishChange(C4Rect BoundingBox);
 	static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
-	uint8_t *GetBridgeMatConversion(int for_material);
+	uint8_t *GetBridgeMatConversion(int for_material_col);
 	bool SaveInternal(C4Group &hGroup);
 	bool SaveDiffInternal(C4Group &hGroup, bool fSyncSave);
 

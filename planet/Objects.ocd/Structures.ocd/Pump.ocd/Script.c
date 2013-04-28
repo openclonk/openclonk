@@ -1,6 +1,6 @@
 /*--
 	Pump
-	Author: Maikel, ST-DDT
+	Author: Maikel, ST-DDT, Sven2
 	
 	Pumps liquids using drain and source pipes.
 --*/
@@ -8,8 +8,9 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerConsumer
+#include Library_PowerProducer
 
-func NeededPower() { return 100; }
+local current_pump_power; // Current power needed for pumping. Negative if power is being produced.
 
 // This object is a liquid pump, thus pipes can be connected.
 public func IsLiquidPump() { return true; }
@@ -72,20 +73,50 @@ func QueryWaivePowerRequest()
 
 func OnNotEnoughPower()
 {
-	// assert: current action is "Pump"
-	SetAction("WillPump");
+	// assert: current action is "Pump" or "PumpWaitLiquid"
+	SetActionKeepPhase("PumpWaitPower");
 	return _inherited(...);
 }
 
 func OnEnoughPower()
 {
-	// assert: current action is either WillPump or Wait
-	SetAction("Pump");
+	// assert: current action is either PumpWaitPower or Wait
+	SetActionKeepPhase("Pump");
 	return _inherited(...);
+}
+
+func PumpWaitPowerStart() { return AddTimer(this.PumpingWaitForPower, 60); }
+func PumpWaitPowerStop() { return RemoveTimer(this.PumpingWaitForPower); }
+
+func PumpingWaitForPower()
+{
+	// Waiting for power: Check pump height, because we might become a producer
+	if (!source_pipe) return CheckCurrentState();
+	if (last_source_y != (source_pipe->GetConnectedObject(this) ?? this)->GetY() || last_drain_y != GetDrainObject()->GetY()) UpdatePumpHeight(true);
 }
 
 local aMaterials=["", 0]; //contained liquids
 local pumpable_materials; // materials that can be pumped
+local last_source_y, last_drain_y;
+local pump_amount; // mat amount pumped since last height check
+
+protected func PumpingWaitForLiquid()
+{
+	// Pump is ready; check for liquids to pump
+	if (!source_pipe) return CheckCurrentState();
+	if(!HasLiquidToPump()) return;
+	// Check stuck drain
+	if (aMaterials[1] && (aMaterials[0] != "")) if (!InsertMaterial(Material(aMaterials[0]), 0,0,0,0, nil, true)) return;
+	// OK; let's pump
+	SetActionKeepPhase("Pump");
+	UpdatePumpHeight();
+}
+
+private func GetDrainObject()
+{
+	if (drain_pipe) return drain_pipe->GetConnectedObject(this) ?? this;
+	return this;
+}
 
 protected func Pumping()
 {
@@ -96,8 +127,22 @@ protected func Pumping()
 	if (!source_pipe)
 		return CheckCurrentState();
 	
-	// not able to pump right now?
-	if(!HasLiquidToPump()) return;
+	// nothing to pump right now?
+	if(!HasLiquidToPump())
+	{
+		UnmakePowerActuator();
+		SetActionKeepPhase("PumpWaitLiquid");
+		return;
+	}
+	
+	// Recheck pump height
+	if (pump_amount > 200 || last_source_y != (source_pipe->GetConnectedObject(this) ?? this)->GetY() || last_drain_y != GetDrainObject()->GetY())
+	{
+		UpdatePumpHeight(true);
+		if (GetAction() != "Pump") return;
+	}
+	
+	var pump_ok = true;
 	
 	// is empty?
 	if ((aMaterials[1] == 0) || (aMaterials[0] == ""))
@@ -106,20 +151,104 @@ protected func Pumping()
 		aMaterials = source_pipe->GetLiquid(pumpable_materials, 5, this, true);
 		// no material to pump?
 		if ((aMaterials[0] == "") || (aMaterials[1] == 0))
-			return;
+			pump_ok = false;
+		else
+			pump_amount += aMaterials[1];
 	}
-	if (drain_pipe)
-		aMaterials[1] -= BoundBy(drain_pipe->PutLiquid(aMaterials[0], aMaterials[1], this), 0, aMaterials[1]);
-	else
+	if (pump_ok)
 	{
-		var i = Max(0, aMaterials[1]), itMaterial = Material(aMaterials[0]);
-		while (i)
-			if (InsertMaterial(itMaterial)) i--; else break;
-		aMaterials[1] = i;
-		if (!i) aMaterials[0] = "";
+		if (drain_pipe)
+		{
+			var pumped = BoundBy(drain_pipe->PutLiquid(aMaterials[0], aMaterials[1], this), 0, aMaterials[1]);
+			aMaterials[1] -= pumped;
+			// Drain is stuck?
+			if (!pumped) pump_ok = false;
+		}
+		else
+		{
+			var i = Max(0, aMaterials[1]), itMaterial = Material(aMaterials[0]);
+			while (i)
+				if (InsertMaterial(itMaterial))
+					i--;
+				else
+				{
+					// Drain is stuck.
+					pump_ok = false;
+					break;
+				}
+			aMaterials[1] = i;
+			if (!i) aMaterials[0] = "";
+		}
+	}
+	if (!pump_ok)
+	{
+		// Couldn't pump. Probably drain stuck.
+		UnmakePowerActuator();
+		SetActionKeepPhase("PumpWaitLiquid");
 	}
 	// maybe add the possebility to empty pump (invaild mats?)
-	return;	
+	return;
+}
+
+// Get current height the pump has to push liquids upwards (input.y - output.y)
+func GetPumpHeight()
+{
+	var src = source_pipe->GetConnectedObject(this) ?? this, dst = GetDrainObject();
+	var out_pos = {X=dst->GetX(), Y=dst->GetY()};
+	dst->InsertMaterial(Material("Water"), 0,0,0,0, out_pos, true); // TODO assumes water material is loaded
+	var src_x = src->GetX(), src_y = src->GetY();
+	if (Global->GBackLiquid(src_x, src_y))
+	{
+		var src_mat = Global->GetMaterial(src_x, src_y);
+		while (src_y>0 && src_mat == Global->GetMaterial(src_x, src_y-1)) --src_y;
+	}
+	return src_y - out_pos.Y;
+}
+
+// Recheck power usage/production for current pump height
+func UpdatePumpHeight(bool unmake_actuator)
+{
+	pump_amount = 0;
+	last_source_y = (source_pipe->GetConnectedObject(this) ?? this)->GetY();
+	last_drain_y = GetDrainObject()->GetY();
+	var new_power = PumpHeight2Power(GetPumpHeight());
+	if (unmake_actuator)
+		UnmakePowerActuator();
+	else
+		if (new_power == current_pump_power) return true;
+	return MakePowerActuator(new_power);
+}
+
+// Makes this a power consumer or producer and sets appropriate waiting actions
+func MakePowerActuator(int new_power)
+{
+	if (new_power > 0)
+	{
+		SetActionKeepPhase("PumpWaitPower");
+		MakePowerConsumer(new_power);
+	}
+	else
+	{
+		SetActionKeepPhase("Pump");
+		if (new_power < 0) MakePowerProducer(-new_power);
+	}
+	current_pump_power = new_power;
+	return true;
+}
+
+func UnmakePowerActuator()
+{
+	if (current_pump_power > 0)
+		UnmakePowerConsumer();
+	else if (current_pump_power < 0)
+		MakePowerProducer(0);
+	return true;
+}
+
+// Transform pump height (input.y - output.y) to required power
+func PumpHeight2Power(int pump_height)
+{
+	return BoundBy((pump_height + 35)/30*10, -150,150);
 }
 
 func CheckCurrentState()
@@ -133,8 +262,7 @@ func CheckCurrentState()
 		{
 			if(has_source_pipe && is_fullcon)
 			{
-				SetAction("WillPump");
-				MakePowerConsumer(NeededPower());
+				UpdatePumpHeight();
 				return;
 			}
 			else return; // waiting and no source pipe, keep waiting
@@ -143,7 +271,7 @@ func CheckCurrentState()
 		{
 			if(!has_source_pipe || !is_fullcon)
 			{
-				UnmakePowerConsumer();
+				UnmakePowerActuator();
 				SetAction("Wait");
 				return;
 			}
@@ -153,9 +281,9 @@ func CheckCurrentState()
 	}
 	else // turned off
 	{
-		if(GetAction() != "Wait") // consuming power
+		if(GetAction() != "Wait") // consuming power (except in PumpWaitLiquid condition)
 		{
-			UnmakePowerConsumer();
+			UnmakePowerActuator();
 			SetAction("Wait");
 			return;
 		}
@@ -234,18 +362,44 @@ local ActMap = {
 		NextAction = "Wait",
 		StartCall = "CheckCurrentState"
 	},
-	WillPump = {
+	PumpWaitPower = {
 		Prototype = Action,
-		Name = "WillPump",
+		Name = "PumpWaitPower",
 		Procedure = DFA_NONE,
-		Length = 1,
-		Delay = 60,
+		Length = 30,
+		Delay = 0,
 		Directions = 2,
 		FlipDir = 1,
 		X = 0,
 		Y = 0,
 		Wdt = 28,
 		Hgt = 32,
-		NextAction = "WillPump",
+		StartCall = "PumpWaitPowerStart",
+		AbortCall = "PumpWaitPowerStop",
+		NextAction = "PumpWaitPower"
+	},
+	PumpWaitLiquid = { // Pump waiting for liquid: Move slowly to indicate we're turned on
+		Prototype = Action,
+		Name = "PumpWaitLiquid",
+		Procedure = DFA_NONE,
+		Length = 30,
+		Delay = 10,
+		Directions = 2,
+		FlipDir = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 28,
+		Hgt = 32,
+		NextAction = "PumpWaitLiquid",
+		PhaseCall = "PumpingWaitForLiquid"
 	}
 };
+
+// Set action while retaining phase from last action
+func SetActionKeepPhase(string act)
+{
+	var phase = GetPhase();
+	if (!SetAction(act)) return false;
+	SetPhase(phase);
+	return true;
+}

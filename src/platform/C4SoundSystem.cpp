@@ -283,6 +283,7 @@ bool C4SoundInstance::Start()
 	Application.MusicSystem.SelectContext();
 	alGenSources(1, (ALuint*)&iChannel);
 	alSourcei(iChannel, AL_BUFFER, pEffect->pSample);
+	alSourcei(iChannel, AL_LOOPING,  fLooping ? AL_TRUE : AL_FALSE);
 	alSourcePlay(iChannel);
 #else
 	return false;
