@@ -1,0 +1,2 @@
+Name=Energiekristall
+Description=Markiert neutrales Gebiet, das nicht für Energietransfer genutzt werden kann.
