@@ -300,6 +300,7 @@ enum C4PropertyName
 	P_Parallaxity,
 	P_LineColors,
 	P_LineAttach,
+	P_LineMaxDistance,
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,

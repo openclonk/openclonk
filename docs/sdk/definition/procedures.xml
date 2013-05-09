@@ -101,7 +101,7 @@
       <row id="CONNECT">
         <col>CONNECT</col>
         <col>Line connections</col>
-        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
+        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>. If property LineMaxDistance is a nonzero integer, the line breaks when the target objects are further apart than the given distance.</col>
         <col>CNAT_None</col>
       </row>
       <row id="PULL">
