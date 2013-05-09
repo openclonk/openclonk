@@ -39,7 +39,7 @@
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
-#include <C4MenuWindow.h>
+#include <C4GuiWindow.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
@@ -303,10 +303,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		C4ST_STOP(MsgStat)
 
 		// ingame menus
-		C4ST_STARTNEW(MenuWindowStat, "C4Viewport::DrawOverlay: Menus")
+		C4ST_STARTNEW(GuiWindowStat, "C4Viewport::DrawOverlay: Menus")
 		pDraw->SetZoom(0, 0, 1.0);
-		::MenuWindowRoot.Draw(gui_cgo, Player);
-		C4ST_STOP(MenuWindowStat)
+		::GuiWindowRoot.Draw(gui_cgo, Player);
+		C4ST_STOP(GuiWindowStat)
 
 		DrawOverlay(gui_cgo, GameZoom);
 

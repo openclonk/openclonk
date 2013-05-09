@@ -4,41 +4,41 @@ func Initialize()
 {
 	var starter_menu =
 	{
-		Style = MENU_Multiple,
+		Style = GUI_Multiple | GUI_TextVCenter | GUI_TextHCenter,
 		Decoration = GUI_MenuDeco,
 		X = [1000, -100], Y = [0, 50],
 		Wdt = [1000], Hgt = [0, 100],
-		text = {Style = MENU_TextVCenter | MENU_TextHCenter, Text = "OPEN MENU"},
+		Text = "OPEN MENU",
 		BackgroundColor = {Std = 0, Hover = 0xffff0000},
-		OnMouseIn = MenuAction_SetTag(nil, nil, "Hover"),
-		OnMouseOut = MenuAction_SetTag(nil, nil, "Std"),
-		OnClick = MenuAction_Call(Scenario, "StartMenu")
+		OnMouseIn = GuiAction_SetTag(nil, nil, "Hover"),
+		OnMouseOut = GuiAction_SetTag(nil, nil, "Std"),
+		OnClick = GuiAction_Call(Scenario, "StartMenu")
 	};
-	CustomMenuOpen(starter_menu);
+	CustomGuiOpen(starter_menu);
 }
 
 func CloseCurrentMenu()
 {
-	CustomMenuClose(active_menu);
+	CustomGuiClose(active_menu);
 	active_menu = 0;
 }	
 
 /* -------------------------------- MAIN ----------------------------- */
 func MainOnHover(parameter, int ID)
 {
-	Menu_UpdateText(parameter, active_menu, 9999);
+	Gui_UpdateText(parameter, active_menu, 9999);
 }
 func StartMenu(plr)
 {
 	if (active_menu)
-		CustomMenuClose(active_menu);
+		CustomGuiClose(active_menu);
 	var main_menu = 
 	{
 		Decoration = GUI_MenuDeco,
-		head = {Hgt = [0, 50], Text = "Please choose a test!", Style = MENU_TextHCenter | MENU_TextVCenter, IDs = 0},
-		body = {Y = [0, 60], right = {X = 500, BackgroundColor = 0x50ffffff } },
+		head = {Hgt = [0, 50], Text = "Please choose a test!", Style = GUI_TextHCenter | GUI_TextVCenter, IDs = 0},
+		body = {Y = [0, 60], right = {ID = 9999, X = 500} },
 	};
-	Menu_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
+	Gui_AddCloseButton(main_menu, Scenario, "CloseCurrentMenu");
 	var menu = CreateCustomMenu(MenuStyle_List);
 	main_menu.body.left = menu;
 	
@@ -48,24 +48,25 @@ func StartMenu(plr)
 	menu->AddItem(Rule_TeamAccount, "Test Client/Host (Scenario Options)", nil, Scenario, "StartScenarioOptionsTest", "Shows how to display a dialogue that behaves differently for players.");
 	menu->AddItem(Clonk, "Test Multiple Windows (Player List)", nil, Scenario, "StartPlayerListTest", "Shows how to display a permanent info dialogue.");
 	menu->AddItem(Lorry, "Tests Two Grid Menus (Trade Menu)", nil, Scenario, "StartTransferTest", "Shows how to work with two grid menus.");
+	menu->AddItem(Sproutberry, "Test HP Bars (HP Bars!)", nil, Scenario, "StartHPBarTest", "HP BARS!!!");
 	
-	active_menu = CustomMenuOpen(main_menu);
+	active_menu = CustomGuiOpen(main_menu);
 }
 
 /* ------------------------ inventory test ----------------------------- */
 static selected_inventory, inv_menus;
 func StartMultipleListTest()
 {
-	CustomMenuClose(active_menu);
+	CustomGuiClose(active_menu);
 	selected_inventory = [];
 	inv_menus = [];
 	// layout: headline and four sections with items
 	var menu = 
 	{
-		head = { ID = 999, Hgt = [0, 50], Text = "Inventory: <c ff0000>Empty</c>", Style = MENU_TextHCenter | MENU_TextVCenter, BackgroundColor = 0x55000000},
+		head = { ID = 999, Hgt = [0, 50], Text = "Inventory: <c ff0000>Empty</c>", Style = GUI_TextHCenter | GUI_TextVCenter, BackgroundColor = 0x55000000},
 		contents = { Y = [0, 50], X = [0, 20], Wdt = [1000, -20] },
 	};
-	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var inventory = [[Sword, Axe, Club], [IronBomb, Dynamite, Boompack, Firestone], [Bow, Musket, Javelin], [Shield, Bread, Sproutberry, CookedMushroom]];
 	var x = [0, [500, 20], 0, [500, 20]], y = [0, 0, [500, 20], [500, 20]], w = [[500, -20], 1000, [500, -20], 1000], h = [[500, -20], [500, -20], 1000, 1000];
@@ -77,12 +78,12 @@ func StartMultipleListTest()
 		m.Decoration = GUI_MenuDeco;
 		m.X = x[i]; m.Y = y[i];
 		m.Wdt = w[i]; m.Hgt = h[i];
-		Menu_AddSubmenu(m, menu.contents);
+		Gui_AddSubwindow(m, menu.contents);
 		PushBack(inv_menus, m); // remember for later
 		for (var obj in inv)
 			m->AddItem(obj, obj.Description, nil, Scenario, "SelectInventory", [obj, ID]);
 	}
-	active_menu = CustomMenuOpen(menu);
+	active_menu = CustomGuiOpen(menu);
 }
 
 func SelectInventory(info)
@@ -98,12 +99,12 @@ func SelectInventory(info)
 		Log("HERO! YOU WILL SPAWN NOW! %s", text);
 		for (var m in inv_menus)
 			if (m) m->Close();
-		CustomMenuClose(active_menu);
+		CustomGuiClose(active_menu);
 	}
 	else
 	{
 		var update = { Text = text };
-		CustomMenuUpdate(update, active_menu, 999);
+		CustomGuiUpdate(update, active_menu, 999);
 	}
 }
 
@@ -111,7 +112,7 @@ func SelectInventory(info)
 static scenoptions_dummies;
 func StartScenarioOptionsTest(parameter, int ID, int player)
 {
-	CustomMenuClose(active_menu);
+	CustomGuiClose(active_menu);
 	scenoptions_dummies = [];
 	scenoptions_dummies[0] = CreateObject(Dummy, nil, nil, player);
 	scenoptions_dummies[1] = CreateObject(Dummy, nil, nil, player);
@@ -140,7 +141,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 		list = 
 		{
 			Wdt = 500,
-			Style = MENU_VerticalLayout,
+			Style = GUI_VerticalLayout,
 		},
 		right = {
 			X = 500,
@@ -160,9 +161,9 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			}
 		}
 	};
-	Menu_AddMargin(menu.right.hostdesc, 25, 25);
-	Menu_AddMargin(menu.right.clientdesc, 25, 25);
-	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	Gui_AddMargin(menu.right.hostdesc, 25, 25);
+	Gui_AddMargin(menu.right.clientdesc, 25, 25);
+	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var def, rules =[], i = 0;
 	while (def = GetDefinition(i++))
@@ -177,7 +178,7 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			ID = rule.ID,
 			Hgt = [0, 64],
 			icon = {Priority = 10, Symbol = rule.def, Wdt = [0, 64], Hgt = [0, 64]},
-			text = {Priority = 10, X = [0, 64], Style = MENU_TextVCenter, Text = rule.def.Name},
+			text = {Priority = 10, X = [0, 64], Style = GUI_TextVCenter, Text = rule.def.Name},
 			
 			selector = // only visible for host
 			{
@@ -185,13 +186,13 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				Priority = 1,
 				BackgroundColor = {Std = 0, Hover = 0x50ff0000, On = 0x2000ff00},
 				OnMouseIn = {
-					Std = [MenuAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, false]), MenuAction_SetTag(nil, nil, "Hover")],
-					On = MenuAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, true])
+					Std = [GuiAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, false]), GuiAction_SetTag(nil, nil, "Hover")],
+					On = GuiAction_Call(Scenario, "ScenOptsUpdateDesc", [rule.def, rule.ID, true])
 					},
-				OnMouseOut = { Hover = MenuAction_SetTag(nil, nil, "Std"), On = nil },
+				OnMouseOut = { Hover = GuiAction_SetTag(nil, nil, "Std"), On = nil },
 				OnClick = {
-					Hover = [MenuAction_Call(Scenario, "ScenOptsActivate", [rule.def, rule.ID]), MenuAction_SetTag(nil, nil, "On")],
-					On = [MenuAction_Call(Scenario, "ScenOptsDeactivate", [rule.def, rule.ID]), MenuAction_SetTag(nil, nil, "Hover")],
+					Hover = [GuiAction_Call(Scenario, "ScenOptsActivate", [rule.def, rule.ID]), GuiAction_SetTag(nil, nil, "On")],
+					On = [GuiAction_Call(Scenario, "ScenOptsDeactivate", [rule.def, rule.ID]), GuiAction_SetTag(nil, nil, "Hover")],
 					},
 			},
 			tick = 
@@ -201,23 +202,23 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 				Symbol = {Std = 0, Unticked = 0, Ticked = Icon_Ok}
 			}
 		};
-		Menu_AddSubmenu(subm, menu.list);
+		Gui_AddSubwindow(subm, menu.list);
 	}
 	
-	active_menu = CustomMenuOpen(menu);
+	active_menu = CustomGuiOpen(menu);
 }
 
 func ScenOptsActivate(int player, int ID, int subwindowID, object target, data)
 {
 	if (!ObjectCount(Find_ID(data[0])))
 		CreateObject(data[0]);
-	CustomMenuSetTag("Ticked", active_menu, data[1], nil);
+	CustomGuiSetTag("Ticked", active_menu, data[1], nil);
 }
 
 func ScenOptsDeactivate(int player, int ID, int subwindowID, object target, data)
 {
 	RemoveAll(Find_ID(data[0]));
-	CustomMenuSetTag("Unticked", active_menu, data[1], nil);
+	CustomGuiSetTag("Unticked", active_menu, data[1], nil);
 }
 
 func ScenOptsUpdateDesc(int player, int ID, int subwindowID, object target, data)
@@ -225,7 +226,7 @@ func ScenOptsUpdateDesc(int player, int ID, int subwindowID, object target, data
 	var text = "<c ff0000>Do you really want to remove the rule???</c>";
 	if (!data[2])
 		text = data[0].Description;
-	Menu_UpdateText(text, active_menu, 1, scenoptions_dummies[0]);
+	Gui_UpdateText(text, active_menu, 1, scenoptions_dummies[0]);
 }
 
 /* ------------------------ player list test ----------------------------- */
@@ -234,7 +235,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 {
 	if (player_list_menu)
 	{
-		CustomMenuClose(player_list_menu);
+		CustomGuiClose(player_list_menu);
 		player_list_menu = nil;
 		return -1;
 	}
@@ -243,7 +244,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 	{
 		X = [1000, -150], Y = [0, 100],
 		Wdt = [1000, -5], Hgt = [0, 200],
-		Style = MENU_Multiple | MENU_VerticalLayout | MENU_FitChildren,
+		Style = GUI_Multiple | GUI_VerticalLayout | GUI_FitChildren,
 		BackgroundColor = 0x30000000,
 	};
 	
@@ -259,17 +260,17 @@ func StartPlayerListTest(parameter, int ID, int player)
 			Priority = i,
 			Hgt = [0, 25],
 			Text = name,
-			Style = MENU_TextRight | MENU_TextVCenter,
+			Style = GUI_TextRight | GUI_TextVCenter,
 			icon = 
 			{
 				Symbol = Clonk,
 				Wdt = [0, 25]
 			}
 		};
-		Menu_AddSubmenu(subm, menu);
+		Gui_AddSubwindow(subm, menu);
 	}
 	
-	player_list_menu = CustomMenuOpen(menu);
+	player_list_menu = CustomGuiOpen(menu);
 	
 	return -1; // keep open
 }
@@ -278,7 +279,7 @@ func StartPlayerListTest(parameter, int ID, int player)
 static transfer_left, transfer_right, transfer_menus, transfer_id_count;
 func StartTransferTest()
 {
-	CustomMenuClose(active_menu);
+	CustomGuiClose(active_menu);
 	if (transfer_left == nil)
 	{
 		transfer_left = [Rock, Loam, Wood, Metal, Nugget, Coal, Shovel, Sword, Bow, Arrow, Boompack];
@@ -290,23 +291,23 @@ func StartTransferTest()
 	// layout: headline and two submenus
 	var menu = 
 	{
-		head = { Hgt = [0, 50], Text = "Welcome to the trade menu!", Style = MENU_TextHCenter | MENU_TextVCenter, BackgroundColor = 0x55000000},
-		contents = { Y = [0, 50], X = [0, 20], Wdt = [1000, -20] },
+		head = { Hgt = [0, 50], Text = "Welcome to the trade menu!", Style = GUI_TextHCenter | GUI_TextVCenter},
+		contents = { Y = [0, 25], X = [0, 20], Wdt = [1000, -20] },
 	};
-	Menu_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
+	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	for (var i = 0; i < 2; ++i)
 	{
 		var m = CreateCustomMenu(MenuStyle_Grid);
 		m.Decoration = GUI_MenuDeco;
 		m.Text = "FROM";
-		m.Style = MENU_TextHCenter;
+		m.Style = GUI_TextHCenter | GUI_GridLayout;
 		if (i == 1)
 		{
-			m.X = 500;
+			m.X = [500, 15];
 			m.Text = "TO";
-		} else m.Wdt = 500;
-		Menu_AddSubmenu(m, menu.contents);
+		} else m.Wdt = [500, -15];
+		Gui_AddSubwindow(m, menu.contents);
 		var a = transfer_left;
 		if (i == 1) a = transfer_right;
 		
@@ -317,7 +318,7 @@ func StartTransferTest()
 		}
 		transfer_menus[i] = m;
 	}
-	active_menu = CustomMenuOpen(menu);
+	active_menu = CustomGuiOpen(menu);
 }
 
 func SelectTransferGood(data, int user_id, int player)
@@ -346,4 +347,45 @@ func SelectTransferGood(data, int user_id, int player)
 	if (!menu->RemoveItem(user_id, active_menu)) Log("remove fail!");
 	transfer_menus[1 - data[1]]->AddItem(obj, obj.Name, user_id, Scenario, "SelectTransferGood", [obj, 1 - data[1]], nil, active_menu);
 	return -1;
+}
+
+
+/* ------------------------ HP bar test ----------------------------- */
+static HP_bar_menu;
+func StartHPBarTest(parameter, int ID, int player)
+{	
+	if (HP_bar_menu)
+	{
+		CustomGuiClose(HP_bar_menu);
+		return -1; // keep open
+	}
+	
+	var menu =
+	{
+		X = [0, 10], Y = [0, 50],
+		Wdt = [0, 15], Hgt = [1000, -50],
+		Style = GUI_Multiple | GUI_IgnoreMouse,
+		BackgroundColor = RGB(255, 0, 0),
+		blackOverlay = {ID = 1, Hgt = 0, BackgroundColor = RGB(10, 10, 10)},
+		OnClose = GuiAction_Call(Scenario, "OnHPBarClose")
+	};
+	if (!GetEffect("FoolAroundWithHPBars"))
+		AddEffect("FoolAroundWithHPBar", nil, 1, 2);
+	HP_bar_menu = CustomGuiOpen(menu);
+	
+	return -1; // keep open
+}
+
+global func FxFoolAroundWithHPBarTimer(target, effect, time)
+{
+	var state = Abs(Cos(time, 1000));
+	var update = {Hgt = state};
+	CustomGuiUpdate(update, HP_bar_menu, 1);
+}
+
+func OnHPBarClose()
+{
+	RemoveEffect("FoolAroundWithHPBar");
+	HP_bar_menu = nil;
+	Log("HP bar off!");
 }

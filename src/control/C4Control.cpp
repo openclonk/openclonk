@@ -49,7 +49,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#include <C4MenuWindow.h>
+#include <C4GuiWindow.h>
 
 #ifndef NOAULDEBUG
 #include <C4AulDebug.h>
@@ -430,13 +430,13 @@ C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int
 void C4ControlMenuCommand::Execute() const
 {
 	// invalid action? The action needs to be in bounds!
-	if (actionType < 0 || actionType >= C4MenuWindowPropertyName::_lastProp)
+	if (actionType < 0 || actionType >= C4GuiWindowPropertyName::_lastProp)
 	{
 		// this could only come from a malicious attempt to crash the engine!
 		Log("Warning: invalid action type for C4ControlMenuCommand!");
 		return;
 	}
-	C4MenuWindow *menu = ::MenuWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *menu = ::GuiWindowRoot.GetChildByID(menuID);
 	// menu was closed?
 	if (!menu) return;
 

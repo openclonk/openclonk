@@ -43,7 +43,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Log.h>
 #include <C4MessageInput.h>
-#include <C4MenuWindow.h>
+#include <C4GuiWindow.h>
 #include <C4MouseControl.h>
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
@@ -2130,28 +2130,28 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
 	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, pSrc, dwFlags, iHSize);
 }
 
-static int FnCustomMenuOpen(C4PropList * _this, C4PropList *menu)
+static int FnCustomGuiOpen(C4PropList * _this, C4PropList *menu)
 {
-	C4MenuWindow *window = new C4MenuWindow;
+	C4GuiWindow *window = new C4GuiWindow;
 
-	::MenuWindowRoot.AddChild(window);
+	::GuiWindowRoot.AddChild(window);
 
 	if (!window->CreateFromPropList(menu, true))
 	{
-		::MenuWindowRoot.RemoveChild(window, false);
+		::GuiWindowRoot.RemoveChild(window, false);
 		return 0;
 	}
 
 	return window->GetID();
 }
 
-static bool FnCustomMenuSetTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnCustomGuiSetTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
 {
-	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->SetTag(tag);
 		return true;
@@ -2160,13 +2160,13 @@ static bool FnCustomMenuSetTag(C4PropList * _this, C4String *tag, int32_t menuID
 	return true;
 }
 
-static bool FnCustomMenuClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
+static bool FnCustomGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
 {
-	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->Close();
 		return true;
@@ -2175,14 +2175,14 @@ static bool FnCustomMenuClose(C4PropList *_this, int32_t menuID, int32_t childID
 	return true;
 }
 
-static bool FxCustomMenuUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
+static bool FxCustomGuiUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
 {
 	if (!update) return false;
-	C4MenuWindow *window = ::MenuWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
-		C4MenuWindow *subwindow = window->GetSubWindow(childID, target);
+		C4GuiWindow *subwindow = window->GetSubWindow(childID, target);
 		if (!subwindow) return false;
 		subwindow->CreateFromPropList(update, false, true);
 		return true;
@@ -2485,10 +2485,10 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);
 	AddFunc(pEngine, "GetEffectCount", FnGetEffectCount);
 	AddFunc(pEngine, "CustomMessage", FnCustomMessage);
-	AddFunc(pEngine, "CustomMenuOpen", FnCustomMenuOpen);
-	AddFunc(pEngine, "CustomMenuSetTag", FnCustomMenuSetTag);
-	AddFunc(pEngine, "CustomMenuClose", FnCustomMenuClose);
-	AddFunc(pEngine, "CustomMenuUpdate", FxCustomMenuUpdate);
+	AddFunc(pEngine, "CustomGuiOpen", FnCustomGuiOpen);
+	AddFunc(pEngine, "CustomGuiSetTag", FnCustomGuiSetTag);
+	AddFunc(pEngine, "CustomGuiClose", FnCustomGuiClose);
+	AddFunc(pEngine, "CustomGuiUpdate", FxCustomGuiUpdate);
 	AddFunc(pEngine, "PauseGame", FnPauseGame, false);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "PathFree2", FnPathFree2);
@@ -2643,18 +2643,19 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
 	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
 
-	{ "MENU_SetTag"               ,C4V_Int,      C4MenuWindowActionID::SetTag },
-	{ "MENU_Call"                 ,C4V_Int,      C4MenuWindowActionID::Call },
-	{ "MENU_GridLayout"           ,C4V_Int,      C4MenuWindowStyleFlag::GridLayout },
-	{ "MENU_VerticalLayout"       ,C4V_Int,      C4MenuWindowStyleFlag::VerticalLayout },
-	{ "MENU_TextVCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextVCenter },
-	{ "MENU_TextHCenter"          ,C4V_Int,      C4MenuWindowStyleFlag::TextHCenter },
-	{ "MENU_TextRight"            ,C4V_Int,      C4MenuWindowStyleFlag::TextRight },
-	{ "MENU_TextBottom"           ,C4V_Int,      C4MenuWindowStyleFlag::TextBottom },
-	{ "MENU_TextTop"              ,C4V_Int,      C4MenuWindowStyleFlag::None }, // note that top and left are considered default
-	{ "MENU_TextLeft"             ,C4V_Int,      C4MenuWindowStyleFlag::None }, // they are only included for completeness
-	{ "MENU_FitChildren"          ,C4V_Int,      C4MenuWindowStyleFlag::FitChildren },
-	{ "MENU_Multiple"             ,C4V_Int,      C4MenuWindowStyleFlag::Multiple },
+	{ "GUI_SetTag"               ,C4V_Int,      C4GuiWindowActionID::SetTag },
+	{ "GUI_Call"                 ,C4V_Int,      C4GuiWindowActionID::Call },
+	{ "GUI_GridLayout"           ,C4V_Int,      C4GuiWindowStyleFlag::GridLayout },
+	{ "GUI_VerticalLayout"       ,C4V_Int,      C4GuiWindowStyleFlag::VerticalLayout },
+	{ "GUI_TextVCenter"          ,C4V_Int,      C4GuiWindowStyleFlag::TextVCenter },
+	{ "GUI_TextHCenter"          ,C4V_Int,      C4GuiWindowStyleFlag::TextHCenter },
+	{ "GUI_TextRight"            ,C4V_Int,      C4GuiWindowStyleFlag::TextRight },
+	{ "GUI_TextBottom"           ,C4V_Int,      C4GuiWindowStyleFlag::TextBottom },
+	{ "GUI_TextTop"              ,C4V_Int,      C4GuiWindowStyleFlag::None }, // note that top and left are considered default
+	{ "GUI_TextLeft"             ,C4V_Int,      C4GuiWindowStyleFlag::None }, // they are only included for completeness
+	{ "GUI_FitChildren"          ,C4V_Int,      C4GuiWindowStyleFlag::FitChildren },
+	{ "GUI_Multiple"             ,C4V_Int,      C4GuiWindowStyleFlag::Multiple },
+	{ "GUI_IgnoreMouse"          ,C4V_Int,      C4GuiWindowStyleFlag::IgnoreMouse },
 	{ NULL, C4V_Nil, 0}
 };
 

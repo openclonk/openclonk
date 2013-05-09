@@ -10,7 +10,7 @@ local Name = "Grid Menu";
 func Construction()
 {
 	inherited(...);
-	this.Style = MENU_GridLayout;
+	this.Style = GUI_GridLayout;
 }
 
 // custom_menu_id should be passed if the menu was manually opened and not via Open()
@@ -18,12 +18,12 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 {
 	custom_menu_id = custom_menu_id ?? menu_id;
 	
-	var on_hover = MenuAction_SetTag(nil, 0, "OnHover");
+	var on_hover = GuiAction_SetTag(nil, 0, "OnHover");
 	if (on_mouse_over_callback)
-		on_hover = [on_hover, MenuAction_Call(this, "DoCallback", on_mouse_over_callback)];
-	var on_hover_stop = MenuAction_SetTag(nil, 0, "Std");
+		on_hover = [on_hover, GuiAction_Call(this, "DoCallback", on_mouse_over_callback)];
+	var on_hover_stop = GuiAction_SetTag(nil, 0, "Std");
 	if (on_mouse_out_callback)
-		on_hover_stop = [on_hover_stop, MenuAction_Call(this, "DoCallback", on_mouse_out_callback)];
+		on_hover_stop = [on_hover_stop, GuiAction_Call(this, "DoCallback", on_mouse_out_callback)];
 	
 	var ID = GetLength(entries) + 1;
 	if (!custom_entry)
@@ -31,12 +31,12 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 		custom_entry = {Hgt = [0, 64], Wdt = [0, 64], desc = {Y = [1000, -15]}};
 		custom_entry.Symbol = symbol;
 		custom_entry.desc.Text = text;
-		custom_entry.desc.Style = MENU_TextRight;
+		custom_entry.desc.Style = GUI_TextRight;
 		custom_entry.ID = ID;
 		custom_entry.Target = this;
 		custom_entry.Priority = ID;
 		custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};
-		custom_entry.OnClick = MenuAction_Call(this, "OnClick");
+		custom_entry.OnClick = GuiAction_Call(this, "OnClick");
 		custom_entry.OnMouseIn = on_hover;
 		custom_entry.OnMouseOut = on_hover_stop;
 	}
@@ -47,7 +47,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	if (custom_menu_id)
 	{
 		var temp = {child = custom_entry};
-		CustomMenuUpdate(temp, custom_menu_id, this.ID, this);
+		CustomGuiUpdate(temp, custom_menu_id, this.ID, this);
 	}
 	
 	return custom_entry;

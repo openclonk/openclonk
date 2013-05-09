@@ -9,17 +9,17 @@ global func CreateCustomMenu(id menuStyle)
 	return menu;
 }
 
-global func MenuAction_Call(proplist target, string function, value)
+global func GuiAction_Call(proplist target, string function, value)
 {
-	return [MENU_Call, target, function, value];
+	return [GUI_Call, target, function, value];
 }
 
-global func MenuAction_SetTag(object target, int subwindow, string tag)
+global func GuiAction_SetTag(object target, int subwindow, string tag)
 {
-	return [MENU_SetTag, target, subwindow, tag];
+	return [GUI_SetTag, target, subwindow, tag];
 }
 
-global func Menu_AddMargin(proplist submenu, int marginX, int marginY)
+global func Gui_AddMargin(proplist submenu, int marginX, int marginY)
 {
 	submenu.X = submenu.X ?? [0, 0];
 	submenu.Y = submenu.Y ?? [0, 0];
@@ -39,7 +39,7 @@ global func Menu_AddMargin(proplist submenu, int marginX, int marginY)
 	return true;
 }
 
-global func Menu_AddCloseButton(proplist menu, proplist target, string callback, parameter)
+global func Gui_AddCloseButton(proplist menu, proplist target, string callback, parameter)
 {
 	var close_button =
 	{
@@ -48,23 +48,23 @@ global func Menu_AddCloseButton(proplist menu, proplist target, string callback,
 		Wdt = 1000, Hgt = [0, 32],
 		Symbol = Icon_Cancel,
 		BackgroundColor = {Std = 0, Hover = 0x50ffff00},
-		OnMouseIn = MenuAction_SetTag(nil, nil, "Hover"),
-		OnMouseOut = MenuAction_SetTag(nil, nil, "Std"),
-		OnClick = MenuAction_Call(target, callback, parameter)
+		OnMouseIn = GuiAction_SetTag(nil, nil, "Hover"),
+		OnMouseOut = GuiAction_SetTag(nil, nil, "Std"),
+		OnClick = GuiAction_Call(target, callback, parameter)
 	};
-	Menu_AddSubmenu(close_button, menu);
+	Gui_AddSubwindow(close_button, menu);
 	return close_button;
 }
 
-global func Menu_UpdateText(string text, int menu, int submenu, object target)
+global func Gui_UpdateText(string text, int menu, int submenu, object target)
 {
 	var update = {Text = text};
-	CustomMenuUpdate(update, menu, submenu, target);
+	CustomGuiUpdate(update, menu, submenu, target);
 	return true;
 }
 
 // adds proplist /submenu/ as a new property to /menu/
-global func Menu_AddSubmenu(proplist submenu, proplist menu)
+global func Gui_AddSubwindow(proplist submenu, proplist menu)
 {
 	do
 	{

@@ -42,7 +42,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#include <C4MenuWindow.h>
+#include <C4GuiWindow.h>
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,
@@ -326,7 +326,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// are custom menus active?
 	bool menuProcessed = false;
 	if (pPlayer)
-		menuProcessed = ::MenuWindowRoot.MouseInput(Player, iButton, iX, iY, dwKeyFlags);
+		menuProcessed = ::GuiWindowRoot.MouseInput(Player, iButton, iX, iY, dwKeyFlags);
 
 	// if not caught by a menu
 	if (!menuProcessed)

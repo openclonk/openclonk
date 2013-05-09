@@ -1,12 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
- * Copyright (c) 2001-2008  Sven Eberhardt
- * Copyright (c) 2004-2011  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2012  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2013 David Dormagen
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -23,7 +18,7 @@
  /* a flexisble ingame menu system that can be composed out of multiple windows */
 
 #include <C4Include.h>
-#include <C4MenuWindow.h>
+#include <C4GuiWindow.h>
 
 #include <C4Application.h>
 #include <C4DefList.h>
@@ -41,9 +36,9 @@
 const float standardVerticalBorder = 100.0f;
 const float standardHorizontalBorder = 100.0f;
 
-C4MenuWindow MenuWindowRoot = C4MenuWindow(standardVerticalBorder, standardHorizontalBorder);
+C4GuiWindow GuiWindowRoot = C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
 
-C4MenuWindowAction::~C4MenuWindowAction()
+C4GuiWindowAction::~C4GuiWindowAction()
 {
 	if (text)
 		text->DecRef();
@@ -51,7 +46,7 @@ C4MenuWindowAction::~C4MenuWindowAction()
 		delete nextAction;
 }
 
-void C4MenuWindowAction::ClearPointers(C4Object *pObj)
+void C4GuiWindowAction::ClearPointers(C4Object *pObj)
 {
 	C4Object *targetObj = target ? target->GetObject() : 0;
 
@@ -64,7 +59,7 @@ void C4MenuWindowAction::ClearPointers(C4Object *pObj)
 	if (nextAction)
 		nextAction->ClearPointers(pObj);
 }
-bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
+bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 {
 	if (array->GetSize() == 0) // safety
 		return false;
@@ -76,7 +71,7 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 		// add action to action chain?
 		if (index+1 < array->GetSize())
 		{
-			nextAction = new C4MenuWindowAction();
+			nextAction = new C4GuiWindowAction();
 			nextAction->Init(array, index + 1);
 		}
 		// continue with one sub array
@@ -89,7 +84,7 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 
 	switch (newAction)
 	{
-	case C4MenuWindowActionID::Call:
+	case C4GuiWindowActionID::Call:
 		if (array->GetSize() < 3) return false;
 		target = array->GetItem(1).getPropList();
 		text = array->GetItem(2).getStr();
@@ -99,11 +94,11 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 		text->IncRef();
 
 		// important! needed to identify actions later!
-		id = ::MenuWindowRoot.GenerateActionID();
+		id = ::GuiWindowRoot.GenerateActionID();
 
 		break;
 
-	case C4MenuWindowActionID::SetTag:
+	case C4GuiWindowActionID::SetTag:
 		if (array->GetSize() < 4) return false;
 		target = array->GetItem(1).getObj(); // getObj on purpose. Need to validate that.
 		subwindowID = array->GetItem(2).getInt();
@@ -120,16 +115,17 @@ bool C4MenuWindowAction::Init(C4ValueArray *array, int32_t index)
 	return true;
 }
 
-void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned int tag, int32_t actionType)
+void C4GuiWindowAction::Execute(C4GuiWindow *parent, int32_t player, unsigned int tag, int32_t actionType)
 {
-	assert(parent && "C4MenuWindow::Execute must always be called with parent");
+	assert(parent && "C4GuiWindow::Execute must always be called with parent");
 	//LogF("Excuting action (nextAction: %x, subwID: %d, target: %x, text: %s, type: %d)", nextAction, subwindowID, target, text->GetCStr(), actionType);
+
 	// invalid ID? can be set by removal of target object
 	if (action)
 	{
 		// get menu main window
-		C4MenuWindow *main = parent;
-		C4MenuWindow *from = main;
+		C4GuiWindow *main = parent;
+		C4GuiWindow *from = main;
 		while (from->parent)
 		{
 			main = from;
@@ -138,7 +134,7 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 
 		switch (action)
 		{
-		case C4MenuWindowActionID::Call:
+		case C4GuiWindowActionID::Call:
 		{
 			if (!target) // ohject removed in the meantime?
 				break;
@@ -147,9 +143,9 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 			break;
 		}
 
-		case C4MenuWindowActionID::SetTag:
+		case C4GuiWindowActionID::SetTag:
 		{
-			C4MenuWindow *window = main;
+			C4GuiWindow *window = main;
 			if (subwindowID == 0)
 				window = parent;
 			else if (subwindowID > 0)
@@ -163,7 +159,7 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 		}
 
 		default:
-			assert(false && "C4MenuWindowAction without valid or invalidated ID");
+			assert(false && "C4GuiWindowAction without valid or invalidated ID");
 			break;
 		}
 	} // action
@@ -174,16 +170,16 @@ void C4MenuWindowAction::Execute(C4MenuWindow *parent, int32_t player, unsigned 
 	}
 }
 
-bool C4MenuWindowAction::ExecuteCommand(int32_t actionID, C4MenuWindow *parent, int32_t player)
+bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, int32_t player)
 {
 	// target has already been checked for validity
 	if (id == actionID && action)
 	{
-		assert(action == C4MenuWindowActionID::Call && "C4ControlMenuCommand for invalid action!");
+		assert(action == C4GuiWindowActionID::Call && "C4ControlMenuCommand for invalid action!");
 
 		// get menu main window
-		C4MenuWindow *main = parent;
-		C4MenuWindow *from = main;
+		C4GuiWindow *main = parent;
+		C4GuiWindow *from = main;
 		while (from->parent)
 		{
 			main = from;
@@ -199,17 +195,17 @@ bool C4MenuWindowAction::ExecuteCommand(int32_t actionID, C4MenuWindow *parent, 
 	return false;
 }
 
-C4MenuWindowScrollBar::C4MenuWindowScrollBar() : offset(0.5f), decoration(0), parent(0)
+C4GuiWindowScrollBar::C4GuiWindowScrollBar() : offset(0.5f), decoration(0), parent(0)
 {
 
 }
 
-C4MenuWindowScrollBar::~C4MenuWindowScrollBar()
+C4GuiWindowScrollBar::~C4GuiWindowScrollBar()
 {
 
 }
 
-void C4MenuWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
+void C4GuiWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
 {
 	C4GUI::ScrollBarFacets &facets = decoration ? *decoration : ::GraphicsResource.sfctScroll;
 	C4GUI::DynBarFacet bar = facets.barScroll;
@@ -240,7 +236,7 @@ void C4MenuWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float paren
 	bar.fctEnd.Draw(cgo.Surface, x, yOrigin + yOffset /*- bar.fctEnd.Hgt*/);
 }
 
-bool C4MenuWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+bool C4GuiWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
 {
 	if (::MouseControl.IsLeftDown())
 	{
@@ -253,18 +249,18 @@ bool C4MenuWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t m
 	return false;
 }
 
-C4MenuWindowProperty::~C4MenuWindowProperty()
+C4GuiWindowProperty::~C4GuiWindowProperty()
 {
-	// is cleaned up from destructor of C4MenuWindow
+	// is cleaned up from destructor of C4GuiWindow
 }
 
-C4MenuWindowAction *C4MenuWindowProperty::GetActionForTag(unsigned int hash)
+C4GuiWindowAction *C4GuiWindowProperty::GetActionForTag(unsigned int hash)
 {
 	if (!taggedProperties.count(hash)) return 0;
 	return taggedProperties[hash].action;
 }
 
-void C4MenuWindowProperty::CleanUp(Prop &prop)
+void C4GuiWindowProperty::CleanUp(Prop &prop)
 {
 	switch (type)
 	{
@@ -285,13 +281,13 @@ void C4MenuWindowProperty::CleanUp(Prop &prop)
 	}
 }
 
-void C4MenuWindowProperty::CleanUpAll()
+void C4GuiWindowProperty::CleanUpAll()
 {
 	for (std::map<unsigned int, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 		CleanUp(iter->second);
 }
 
-void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
+void C4GuiWindowProperty::Set(const C4Value &value, unsigned int hash)
 {
 	C4PropList *proplist = value.getPropList();
 	bool isTaggedPropList = false;
@@ -327,23 +323,23 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 
 	switch (type)
 	{
-	case C4MenuWindowPropertyName::left:
-	case C4MenuWindowPropertyName::right:
-	case C4MenuWindowPropertyName::top:
-	case C4MenuWindowPropertyName::bottom:
-	case C4MenuWindowPropertyName::backgroundColor:
-	case C4MenuWindowPropertyName::style:
-	case C4MenuWindowPropertyName::priority:
+	case C4GuiWindowPropertyName::left:
+	case C4GuiWindowPropertyName::right:
+	case C4GuiWindowPropertyName::top:
+	case C4GuiWindowPropertyName::bottom:
+	case C4GuiWindowPropertyName::backgroundColor:
+	case C4GuiWindowPropertyName::style:
+	case C4GuiWindowPropertyName::priority:
 		current->d = value.getInt();
 		break;
 
-	case C4MenuWindowPropertyName::relLeft:
-	case C4MenuWindowPropertyName::relRight:
-	case C4MenuWindowPropertyName::relTop:
-	case C4MenuWindowPropertyName::relBottom:
+	case C4GuiWindowPropertyName::relLeft:
+	case C4GuiWindowPropertyName::relRight:
+	case C4GuiWindowPropertyName::relTop:
+	case C4GuiWindowPropertyName::relBottom:
 		current->f = float(value.getInt()) / 1000.0f;
 		break;
-	case C4MenuWindowPropertyName::symbolObject:
+	case C4GuiWindowPropertyName::symbolObject:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -351,7 +347,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		else current->def = 0;
 		break;
 	}
-	case C4MenuWindowPropertyName::symbolDef:
+	case C4GuiWindowPropertyName::symbolDef:
 	{
 		C4PropList *symbol = value.getPropList();
 		if (symbol)
@@ -359,7 +355,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		else current->def = 0;
 		break;
 	}
-	case C4MenuWindowPropertyName::frameDecoration:
+	case C4GuiWindowPropertyName::frameDecoration:
 	{
 		C4ID id = value.getC4ID();
 		if (id != C4ID::None)
@@ -374,7 +370,7 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 			}
 		break;
 	}
-	case C4MenuWindowPropertyName::text:
+	case C4GuiWindowPropertyName::text:
 	{
 		C4String *string = value.getStr();
 		StdCopyStrBuf *buf = new StdCopyStrBuf();
@@ -384,43 +380,43 @@ void C4MenuWindowProperty::Set(const C4Value &value, unsigned int hash)
 		current->strBuf = buf;
 		break;
 	}
-	case C4MenuWindowPropertyName::onClickAction:
-	case C4MenuWindowPropertyName::onMouseInAction:
-	case C4MenuWindowPropertyName::onMouseOutAction:
-	case C4MenuWindowPropertyName::onCloseAction:
+	case C4GuiWindowPropertyName::onClickAction:
+	case C4GuiWindowPropertyName::onMouseInAction:
+	case C4GuiWindowPropertyName::onMouseOutAction:
+	case C4GuiWindowPropertyName::onCloseAction:
 	{
 		C4ValueArray *array = value.getArray();
 		if (array)
 		{
 			assert (!current->action && "Prop() contains action prior to assignment");
-			current->action = new C4MenuWindowAction();
+			current->action = new C4GuiWindowAction();
 			current->action->Init(array);
 		}
 		break;
 	}
 
 	default:
-		assert(false && "C4MenuWindowAction should never have undefined type");
+		assert(false && "C4GuiWindowAction should never have undefined type");
 		break;
 	} // switch
 }
 
-void C4MenuWindowProperty::ClearPointers(C4Object *pObj)
+void C4GuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
 	for (std::map<unsigned int, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
 		switch (type)
 		{
-		case C4MenuWindowPropertyName::symbolObject:
+		case C4GuiWindowPropertyName::symbolObject:
 			if (iter->second.obj == pObj)
 				iter->second.obj = 0;
 		break;
 
-		case C4MenuWindowPropertyName::onClickAction:
-		case C4MenuWindowPropertyName::onMouseInAction:
-		case C4MenuWindowPropertyName::onMouseOutAction:
-		case C4MenuWindowPropertyName::onCloseAction:
+		case C4GuiWindowPropertyName::onClickAction:
+		case C4GuiWindowPropertyName::onMouseInAction:
+		case C4GuiWindowPropertyName::onMouseOutAction:
+		case C4GuiWindowPropertyName::onCloseAction:
 			if (iter->second.action)
 				iter->second.action->ClearPointers(pObj);
 		break;
@@ -430,7 +426,7 @@ void C4MenuWindowProperty::ClearPointers(C4Object *pObj)
 	}
 }
 
-bool C4MenuWindowProperty::SwitchTag(C4String *tag)
+bool C4GuiWindowProperty::SwitchTag(C4String *tag)
 {
 	unsigned int hash = tag->Hash;
 	if (!taggedProperties.count(hash)) return false; // tag not available
@@ -440,72 +436,73 @@ bool C4MenuWindowProperty::SwitchTag(C4String *tag)
 	return true;
 }
 
-C4MenuWindow::C4MenuWindow()
+C4GuiWindow::C4GuiWindow()
 {
 	Init();
 }
 
-C4MenuWindow::C4MenuWindow(float stdBorderX, float stdBorderY)
+C4GuiWindow::C4GuiWindow(float stdBorderX, float stdBorderY)
 {
 	Init();
 
 	// set border values for "Std"
 	unsigned int hash = Strings.P[P_Std].Hash;
 	// relative offsets are standard, only need to set exact offset
-	props[C4MenuWindowPropertyName::left].SetInt(hash, int32_t(stdBorderX));
-	props[C4MenuWindowPropertyName::right].SetInt(hash, int32_t(-stdBorderX));
-	props[C4MenuWindowPropertyName::top].SetInt(hash, int32_t(stdBorderY));
-	props[C4MenuWindowPropertyName::bottom].SetInt(hash, int32_t(-stdBorderY));
+	props[C4GuiWindowPropertyName::left].SetInt(hash, int32_t(stdBorderX));
+	props[C4GuiWindowPropertyName::right].SetInt(hash, int32_t(-stdBorderX));
+	props[C4GuiWindowPropertyName::top].SetInt(hash, int32_t(stdBorderY));
+	props[C4GuiWindowPropertyName::bottom].SetInt(hash, int32_t(-stdBorderY));
 }
 
-void C4MenuWindow::Init()
+void C4GuiWindow::Init()
 {
 	id = 0;
 	isMainWindow = false;
 
 	// properties must know what they stand for
-	for (int32_t i = 0; i < C4MenuWindowPropertyName::_lastProp; ++i)
+	for (int32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
 		props[i].type = i;
 
 	// standard values for all of the properties
 	unsigned int hash = Strings.P[P_Std].Hash;
 	// exact offsets are standard 0
-	props[C4MenuWindowPropertyName::left].SetNull(hash);
-	props[C4MenuWindowPropertyName::right].SetNull(hash);
-	props[C4MenuWindowPropertyName::top].SetNull(hash);
-	props[C4MenuWindowPropertyName::bottom].SetNull(hash);
+	props[C4GuiWindowPropertyName::left].SetNull(hash);
+	props[C4GuiWindowPropertyName::right].SetNull(hash);
+	props[C4GuiWindowPropertyName::top].SetNull(hash);
+	props[C4GuiWindowPropertyName::bottom].SetNull(hash);
 	// relative offsets are standard full screen 0,0 - 1,1
-	props[C4MenuWindowPropertyName::relLeft].SetNull(hash);
-	props[C4MenuWindowPropertyName::relTop].SetNull(hash);
-	props[C4MenuWindowPropertyName::relBottom].SetFloat(hash, 1.0f);
-	props[C4MenuWindowPropertyName::relRight].SetFloat(hash, 1.0f);
+	props[C4GuiWindowPropertyName::relLeft].SetNull(hash);
+	props[C4GuiWindowPropertyName::relTop].SetNull(hash);
+	props[C4GuiWindowPropertyName::relBottom].SetFloat(hash, 1.0f);
+	props[C4GuiWindowPropertyName::relRight].SetFloat(hash, 1.0f);
 	// other properties are 0
-	props[C4MenuWindowPropertyName::backgroundColor].SetNull(hash);
-	props[C4MenuWindowPropertyName::frameDecoration].SetNull(hash);
-	props[C4MenuWindowPropertyName::symbolObject].SetNull(hash);
-	props[C4MenuWindowPropertyName::symbolDef].SetNull(hash);
-	props[C4MenuWindowPropertyName::text].SetNull(hash);
-	props[C4MenuWindowPropertyName::onClickAction].SetNull(hash);
-	props[C4MenuWindowPropertyName::onMouseInAction].SetNull(hash);
-	props[C4MenuWindowPropertyName::onMouseOutAction].SetNull(hash);
-	props[C4MenuWindowPropertyName::onCloseAction].SetNull(hash);
-	props[C4MenuWindowPropertyName::style].SetNull(hash);
-	props[C4MenuWindowPropertyName::priority].SetNull(hash);
+	props[C4GuiWindowPropertyName::backgroundColor].SetNull(hash);
+	props[C4GuiWindowPropertyName::frameDecoration].SetNull(hash);
+	props[C4GuiWindowPropertyName::symbolObject].SetNull(hash);
+	props[C4GuiWindowPropertyName::symbolDef].SetNull(hash);
+	props[C4GuiWindowPropertyName::text].SetNull(hash);
+	props[C4GuiWindowPropertyName::onClickAction].SetNull(hash);
+	props[C4GuiWindowPropertyName::onMouseInAction].SetNull(hash);
+	props[C4GuiWindowPropertyName::onMouseOutAction].SetNull(hash);
+	props[C4GuiWindowPropertyName::onCloseAction].SetNull(hash);
+	props[C4GuiWindowPropertyName::style].SetNull(hash);
+	props[C4GuiWindowPropertyName::priority].SetNull(hash);
 
 	parent = 0;
 	wasRemoved = false;
+	closeActionWasExecuted = false;
 	visible = true;
 	hasMouseFocus = false;
 	target = 0;
 	scrollBar = 0;
 }
 
-C4MenuWindow::~C4MenuWindow()
+C4GuiWindow::~C4GuiWindow()
 {
 	ClearChildren(false);
 
 	// delete certain properties that contain allocated elements or referenced strings
-	for (int32_t i = 0; i < C4MenuWindowPropertyName::_lastProp; ++i)
+	for (int32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
 		props[i].CleanUpAll();
 
 	if (scrollBar)
@@ -513,7 +510,7 @@ C4MenuWindow::~C4MenuWindow()
 }
 
 // helper function
-void C4MenuWindow::SetArrayTupleProperty(const C4Value &property, C4MenuWindowPropertyName first, C4MenuWindowPropertyName second, unsigned int hash)
+void C4GuiWindow::SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, unsigned int hash)
 {
 	C4ValueArray *array;
 	if ((array = property.getArray()))
@@ -526,9 +523,9 @@ void C4MenuWindow::SetArrayTupleProperty(const C4Value &property, C4MenuWindowPr
 	else props[first].Set(property, hash);
 }
 
-bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate)
+bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate)
 {
-	assert(parent && "MenuWindow created from proplist without parent (fails for ID tag)");
+	assert(parent && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
 	// get properties from proplist
@@ -548,40 +545,40 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bo
 
 		if(&Strings.P[P_X] == key)
 		{
-			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relLeft, C4MenuWindowPropertyName::left, standardHash);
+			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Y] == key)
 		{
-			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relTop, C4MenuWindowPropertyName::top, standardHash);
+			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Wdt] == key)
 		{
-			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relRight, C4MenuWindowPropertyName::right, standardHash);
+			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Hgt] == key)
 		{
-			SetArrayTupleProperty(property, C4MenuWindowPropertyName::relBottom, C4MenuWindowPropertyName::bottom, standardHash);
+			SetArrayTupleProperty(property, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_BackgroundColor] == key)
-			props[C4MenuWindowPropertyName::backgroundColor].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::backgroundColor].Set(property, standardHash);
 		else if(&Strings.P[P_Target] == key)
 			target = property.getObj();
 		else if(&Strings.P[P_Symbol] == key)
 		{
-			props[C4MenuWindowPropertyName::symbolDef].Set(property, standardHash);
-			props[C4MenuWindowPropertyName::symbolObject].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::symbolDef].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::symbolObject].Set(property, standardHash);
 		}
 		else if(&Strings.P[P_Decoration] == key)
 		{
-			props[C4MenuWindowPropertyName::frameDecoration].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::frameDecoration].Set(property, standardHash);
 		}
 		else if(&Strings.P[P_Text] == key)
 		{
-			props[C4MenuWindowPropertyName::text].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::text].Set(property, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Prototype] == key)
@@ -601,21 +598,21 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bo
 			}
 		}
 		else if(&Strings.P[P_OnClick] == key)
-			props[C4MenuWindowPropertyName::onClickAction].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::onClickAction].Set(property, standardHash);
 		else if(&Strings.P[P_OnMouseIn] == key)
-			props[C4MenuWindowPropertyName::onMouseInAction].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::onMouseInAction].Set(property, standardHash);
 		else if(&Strings.P[P_OnMouseOut] == key)
-			props[C4MenuWindowPropertyName::onMouseOutAction].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::onMouseOutAction].Set(property, standardHash);
 		else if(&Strings.P[P_OnClose] == key)
-			props[C4MenuWindowPropertyName::onCloseAction].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::onCloseAction].Set(property, standardHash);
 		else if(&Strings.P[P_Style] == key)
 		{
-			props[C4MenuWindowPropertyName::style].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::style].Set(property, standardHash);
 			layoutUpdateRequired = true;
 		}
 		else if(&Strings.P[P_Priority] == key)
 		{
-			props[C4MenuWindowPropertyName::priority].Set(property, standardHash);
+			props[C4GuiWindowPropertyName::priority].Set(property, standardHash);
 			layoutUpdateRequired = true;
 			// resort into parent's list
 			parent->ChildChangedPriority(this);
@@ -626,7 +623,7 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bo
 			C4PropList *subwindow = property.getPropList();
 			if (subwindow)
 			{
-				C4MenuWindow *child = new C4MenuWindow();
+				C4GuiWindow *child = new C4GuiWindow();
 				AddChild(child);
 
 				if (!child->CreateFromPropList(subwindow, isUpdate == true, false))
@@ -646,29 +643,32 @@ bool C4MenuWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bo
 	return true;
 }
 
-void C4MenuWindow::ClearPointers(C4Object *pObj)
+void C4GuiWindow::ClearPointers(C4Object *pObj)
 {
+	// not removing or clearing anything twice
+	// if this flag is set, the object will not be used after this frame (callbacks?) anyway
+	if (wasRemoved) return;
+
 	if (target == pObj)
 	{
-		target = 0;
 		Close();
 		return;
 	}
-	props[C4MenuWindowPropertyName::symbolObject].ClearPointers(pObj);
-	props[C4MenuWindowPropertyName::onClickAction].ClearPointers(pObj);
-	props[C4MenuWindowPropertyName::onMouseInAction].ClearPointers(pObj);
-	props[C4MenuWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
-	props[C4MenuWindowPropertyName::onCloseAction].ClearPointers(pObj);
+	props[C4GuiWindowPropertyName::symbolObject].ClearPointers(pObj);
+	props[C4GuiWindowPropertyName::onClickAction].ClearPointers(pObj);
+	props[C4GuiWindowPropertyName::onMouseInAction].ClearPointers(pObj);
+	props[C4GuiWindowPropertyName::onMouseOutAction].ClearPointers(pObj);
+	props[C4GuiWindowPropertyName::onCloseAction].ClearPointers(pObj);
 
 	// can't iterate directly over the children, since they might get deleted in the process
-	std::vector<C4MenuWindow*> temp;
+	std::vector<C4GuiWindow*> temp;
 	temp.reserve(children.size());
 	temp.assign(children.begin(), children.end());
-	for (std::vector<C4MenuWindow*>::iterator iter = temp.begin(); iter != temp.end(); ++iter)
+	for (std::vector<C4GuiWindow*>::iterator iter = temp.begin(); iter != temp.end(); ++iter)
 		(*iter)->ClearPointers(pObj);
 }
 
-C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
+C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
 {
 	child->parent = this;
 	// are we the root menu? Is this a "main" submenu?
@@ -676,15 +676,15 @@ C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
 	{
 		child->SetID(GenerateMenuID());
 		child->isMainWindow = true;
-		//LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::MenuWindowRoot));
+		//LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::GuiWindowRoot));
 	}
 	// child's priority is ususally 0 here, so just insert it in front of other windows with a priority below 0
 	// when the child's priority updates, the update function will be called and the child will be sorted to the correct position
 	bool inserted = false;
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *otherChild = *iter;
-		if (otherChild->props[C4MenuWindowPropertyName::priority].GetInt() < 0) continue;
+		C4GuiWindow *otherChild = *iter;
+		if (otherChild->props[C4GuiWindowPropertyName::priority].GetInt() < 0) continue;
 		children.insert(iter, child);
 		inserted = true;
 		break;
@@ -695,11 +695,11 @@ C4MenuWindow *C4MenuWindow::AddChild(C4MenuWindow *child)
 	return child;
 }
 
-void C4MenuWindow::ChildChangedPriority(C4MenuWindow *child)
+void C4GuiWindow::ChildChangedPriority(C4GuiWindow *child)
 {
-	int prio = child->props[C4MenuWindowPropertyName::priority].GetInt();
+	int prio = child->props[C4GuiWindowPropertyName::priority].GetInt();
 	// remove child from list first
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		if (*iter != child) continue;
 		children.erase(iter);
@@ -707,10 +707,10 @@ void C4MenuWindow::ChildChangedPriority(C4MenuWindow *child)
 	}
 	// now insert into list at correct position
 	bool inserted = false;
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *otherChild = *iter;
-		if (otherChild->props[C4MenuWindowPropertyName::priority].GetInt() < prio) continue;
+		C4GuiWindow *otherChild = *iter;
+		if (otherChild->props[C4GuiWindowPropertyName::priority].GetInt() < prio) continue;
 		children.insert(iter, child);
 		inserted = true;
 		break;
@@ -719,15 +719,15 @@ void C4MenuWindow::ChildChangedPriority(C4MenuWindow *child)
 		children.push_back(child);
 }
 
-void C4MenuWindow::ChildWithIDRemoved(C4MenuWindow *child)
+void C4GuiWindow::ChildWithIDRemoved(C4GuiWindow *child)
 {
 	if (!parent) return;
 	if (!isMainWindow)
 		return parent->ChildWithIDRemoved(child);
-	std::pair<std::multimap<int32_t, C4MenuWindow*>::iterator, std::multimap<int32_t, C4MenuWindow*>::iterator> range;
+	std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
 	range = childrenIDMap.equal_range(child->GetID());
 
-	for (std::multimap<int32_t, C4MenuWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+	for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 	{
 		if (iter->second != child) continue;
 		childrenIDMap.erase(iter);
@@ -736,7 +736,7 @@ void C4MenuWindow::ChildWithIDRemoved(C4MenuWindow *child)
 	}
 }
 
-void C4MenuWindow::ChildGotID(C4MenuWindow *child)
+void C4GuiWindow::ChildGotID(C4GuiWindow *child)
 {
 	assert(parent && "ChildGotID called on window root, should not propagate over main windows!");
 	if (!isMainWindow)
@@ -745,9 +745,9 @@ void C4MenuWindow::ChildGotID(C4MenuWindow *child)
 	//LogF("child+map+size: %d, added %d [I am %d]", childrenIDMap.size(), child->GetID(), id);
 }
 
-C4MenuWindow *C4MenuWindow::GetChildByID(int32_t child)
+C4GuiWindow *C4GuiWindow::GetChildByID(int32_t child)
 {
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		if ((*iter)->id != child) continue;
 		return *iter;
@@ -755,27 +755,29 @@ C4MenuWindow *C4MenuWindow::GetChildByID(int32_t child)
 	return 0;
 }
 
-C4MenuWindow *C4MenuWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
+C4GuiWindow *C4GuiWindow::GetSubWindow(int32_t childID, C4Object *childTarget)
 {
-	std::pair<std::multimap<int32_t, C4MenuWindow*>::iterator, std::multimap<int32_t, C4MenuWindow*>::iterator> range;
+	std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
 	range = childrenIDMap.equal_range(childID);
 
-	for (std::multimap<int32_t, C4MenuWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+	for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 	{
-		C4MenuWindow *subwindow = iter->second;
+		C4GuiWindow *subwindow = iter->second;
 		if (subwindow->GetTarget() != childTarget) continue;
 		return subwindow;
 	}
 	return 0;
 }
 
-void C4MenuWindow::RemoveChild(C4MenuWindow *child, bool close, bool all)
+void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 {
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
 		if (child && (*iter != child)) continue;
-		// don't delete twice
+
+		// prevent the child from calling the parent (this window) again
 		(*iter)->wasRemoved = true;
+
 		// close properly (calls etc.?)
 		if (close)
 			(*iter)->Close();
@@ -795,35 +797,45 @@ void C4MenuWindow::RemoveChild(C4MenuWindow *child, bool close, bool all)
 		children.clear();
 }
 
-void C4MenuWindow::ClearChildren(bool close)
+void C4GuiWindow::ClearChildren(bool close)
 {
 	RemoveChild(0, close, true);
 }
 
-void C4MenuWindow::Close()
+void C4GuiWindow::Close()
 {
 	// first, close all children and dispose of them properly
 	ClearChildren(true);
 
-	// make call to target object if applicable
-	C4MenuWindowAction *action = props[C4MenuWindowPropertyName::onCloseAction].GetAction();
-	if (action)
+	if (!closeActionWasExecuted)
 	{
-		action->Execute(this, NO_OWNER, props[C4MenuWindowPropertyName::onCloseAction].GetCurrentTag(), C4MenuWindowPropertyName::onCloseAction);
-	}
-	//LogF("C4MenuWindow::Close, parent: %d [I am %d]", parent ? parent->GetID() : 0, id);
+		closeActionWasExecuted = true;
 
-	if (!wasRemoved && parent)
+		// make call to target object if applicable
+		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onCloseAction].GetAction();
+		// only calls are valid actions for OnClose
+		if (action && action->action == C4GuiWindowActionID::Call)
+		{
+			// close is always syncronized (script call/object removal) and thus the action can be executed immediately
+			// (otherwise the GUI&action would have been removed anyway..)
+			action->ExecuteCommand(action->id, this, NO_OWNER);
+		}
+	}
+
+	if (!wasRemoved)
+	{
+		assert(parent && "Close()ing GUIWindow without parent");
 		parent->RemoveChild(this);
+	}
 }
 
-void C4MenuWindow::EnableScrollBar(bool enable, float childrenHeight)
+void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 {
-	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
-	if (style & C4MenuWindowStyleFlag::FitChildren)
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+	if (style & C4GuiWindowStyleFlag::FitChildren)
 	{
 		float height = lastDrawPosition.bottom - lastDrawPosition.top;
-		props[C4MenuWindowPropertyName::bottom].current->d += (childrenHeight - height);
+		props[C4GuiWindowPropertyName::bottom].current->d += (childrenHeight - height);
 		return;
 	}
 
@@ -833,21 +845,21 @@ void C4MenuWindow::EnableScrollBar(bool enable, float childrenHeight)
 	}
 	else if (enable && !scrollBar)
 	{
-		scrollBar = new C4MenuWindowScrollBar();
+		scrollBar = new C4GuiWindowScrollBar();
 		scrollBar->parent = this;
 	}
 }
 
-void C4MenuWindow::UpdateLayout()
+void C4GuiWindow::UpdateLayout()
 {
-	//LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::MenuWindowRoot), int(isMainWindow), props[C4MenuWindowPropertyName::style].GetInt());
-	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
+	//LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::GuiWindowRoot), int(isMainWindow), props[C4GuiWindowPropertyName::style].GetInt());
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 
 	// update scroll bar according to children
 	bool first = true;
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		// offset is against rounding weirdnesses
 		if (first || (child->lastDrawPosition.top < lastDrawPosition.topMostChild))
 			lastDrawPosition.topMostChild = child->lastDrawPosition.top + 1.0f;
@@ -868,13 +880,13 @@ void C4MenuWindow::UpdateLayout()
 	EnableScrollBar(childHgt > height, childHgt);
 
 	// special layout selected?
-	if (style & C4MenuWindowStyleFlag::GridLayout)
+	if (style & C4GuiWindowStyleFlag::GridLayout)
 		UpdateLayoutGrid();
-	else if (style & C4MenuWindowStyleFlag::VerticalLayout)
+	else if (style & C4GuiWindowStyleFlag::VerticalLayout)
 		UpdateLayoutVertical();
 }
 
-void C4MenuWindow::UpdateLayoutGrid()
+void C4GuiWindow::UpdateLayoutGrid()
 {
 	const int32_t width = lastDrawPosition.right - lastDrawPosition.left;
 	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
@@ -886,19 +898,19 @@ void C4MenuWindow::UpdateLayoutGrid()
 	int32_t currentY = borderY;
 	int32_t maxChildHeight = 0;
 
-	for(std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		const int32_t childWdt = child->lastDrawPosition.right - child->lastDrawPosition.left;
 		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
 		// remember the heighest child
 		if (!maxChildHeight || (childHgt > maxChildHeight))
 			maxChildHeight = childHgt;
 
-		child->props[C4MenuWindowPropertyName::left].SetInt(stdHash, currentX);
-		child->props[C4MenuWindowPropertyName::right].SetInt(stdHash, currentX + childWdt);
-		child->props[C4MenuWindowPropertyName::top].SetInt(stdHash, currentY);
-		child->props[C4MenuWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
+		child->props[C4GuiWindowPropertyName::left].SetInt(stdHash, currentX);
+		child->props[C4GuiWindowPropertyName::right].SetInt(stdHash, currentX + childWdt);
+		child->props[C4GuiWindowPropertyName::top].SetInt(stdHash, currentY);
+		child->props[C4GuiWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
 
 		currentX += childWdt + borderX;
 		if (currentX + childWdt >= width)
@@ -915,7 +927,7 @@ void C4MenuWindow::UpdateLayoutGrid()
 	EnableScrollBar(currentY >= height, currentY);
 }
 
-void C4MenuWindow::UpdateLayoutVertical()
+void C4GuiWindow::UpdateLayoutVertical()
 {
 	const int32_t height = lastDrawPosition.bottom - lastDrawPosition.top;
 
@@ -924,13 +936,13 @@ void C4MenuWindow::UpdateLayoutVertical()
 	int32_t borderY(0);
 	int32_t currentY = borderY;
 
-	for(std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for(std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		const int32_t childHgt = child->lastDrawPosition.bottom - child->lastDrawPosition.top;
 
-		child->props[C4MenuWindowPropertyName::top].SetInt(stdHash, currentY);
-		child->props[C4MenuWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
+		child->props[C4GuiWindowPropertyName::top].SetInt(stdHash, currentY);
+		child->props[C4GuiWindowPropertyName::bottom].SetInt(stdHash, currentY + childHgt);
 
 		currentY += childHgt + borderY;
 	}
@@ -942,20 +954,20 @@ void C4MenuWindow::UpdateLayoutVertical()
 	EnableScrollBar(currentY >= height, currentY);
 }
 
-bool C4MenuWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
+bool C4GuiWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom, int32_t withMultipleFlag)
 {
 	// note that withMultipleFlag only plays a roll for the root-menu
 	bool oneDrawn = false; // was at least one child drawn?
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		if (lastDrawPosition.dirty == 1)
 			child->lastDrawPosition.dirty = 2;
 		if (withMultipleFlag != -1)
 		{
-			const int32_t &style = child->props[C4MenuWindowPropertyName::style].GetInt();
-			if ((withMultipleFlag == 0) &&  (style & C4MenuWindowStyleFlag::Multiple)) continue;
-			if ((withMultipleFlag == 1) && !(style & C4MenuWindowStyleFlag::Multiple)) continue;
+			const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
+			if ((withMultipleFlag == 0) &&  (style & C4GuiWindowStyleFlag::Multiple)) continue;
+			if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
 		}
 
 		if (child->Draw(cgo, player, parentLeft, parentTop, parentRight, parentBottom))
@@ -966,14 +978,14 @@ bool C4MenuWindow::DrawChildren(C4TargetFacet &cgo, int32_t player, float parent
 	return oneDrawn;
 }
 
-bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
+bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 {
 	if (!IsVisible()) return false;
 	// assume I am the root and use the whole viewport for drawing - minus some standard border
-	const int32_t &left = props[C4MenuWindowPropertyName::left].GetInt();
-	const int32_t &right = props[C4MenuWindowPropertyName::right].GetInt();
-	const int32_t &top = props[C4MenuWindowPropertyName::top].GetInt();
-	const int32_t &bottom = props[C4MenuWindowPropertyName::bottom].GetInt();
+	const int32_t &left = props[C4GuiWindowPropertyName::left].GetInt();
+	const int32_t &right = props[C4GuiWindowPropertyName::right].GetInt();
+	const int32_t &top = props[C4GuiWindowPropertyName::top].GetInt();
+	const int32_t &bottom = props[C4GuiWindowPropertyName::bottom].GetInt();
 
 	float leftDrawX = cgo.X + left;
 	float topDrawY = cgo.Y + top;
@@ -1003,7 +1015,7 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player)
 	return true;
 }
 
-bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
+bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
 {
 	// message hidden?
 	if (!IsVisible()) return false;
@@ -1013,17 +1025,17 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 		if (!target->IsVisible(player, false))
 			return false;
 	// fetch style
-	const int32_t &style = props[C4MenuWindowPropertyName::style].GetInt();
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
-	const int32_t &left = props[C4MenuWindowPropertyName::left].GetInt();
-	const int32_t &right = props[C4MenuWindowPropertyName::right].GetInt();
-	const int32_t &top = props[C4MenuWindowPropertyName::top].GetInt();
-	const int32_t &bottom = props[C4MenuWindowPropertyName::bottom].GetInt();
+	const int32_t &left = props[C4GuiWindowPropertyName::left].GetInt();
+	const int32_t &right = props[C4GuiWindowPropertyName::right].GetInt();
+	const int32_t &top = props[C4GuiWindowPropertyName::top].GetInt();
+	const int32_t &bottom = props[C4GuiWindowPropertyName::bottom].GetInt();
 
-	const float &relLeft = props[C4MenuWindowPropertyName::relLeft].GetFloat();
-	const float &relRight = props[C4MenuWindowPropertyName::relRight].GetFloat();
-	const float &relTop = props[C4MenuWindowPropertyName::relTop].GetFloat();
-	const float &relBottom = props[C4MenuWindowPropertyName::relBottom].GetFloat();
+	const float &relLeft = props[C4GuiWindowPropertyName::relLeft].GetFloat();
+	const float &relRight = props[C4GuiWindowPropertyName::relRight].GetFloat();
+	const float &relTop = props[C4GuiWindowPropertyName::relTop].GetFloat();
+	const float &relBottom = props[C4GuiWindowPropertyName::relBottom].GetFloat();
 
 	// calculate drawing rectangle
 	float parentWidth = parentRight - parentLeft;
@@ -1069,11 +1081,11 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 	// draw various properties
 	C4Facet cgoOut(cgo.Surface, leftDrawX, topDrawY, width, height);
 
-	const int32_t &backgroundColor = props[C4MenuWindowPropertyName::backgroundColor].GetInt();
+	const int32_t &backgroundColor = props[C4GuiWindowPropertyName::backgroundColor].GetInt();
 	if (backgroundColor)
 		pDraw->DrawBoxDw(cgo.Surface, leftDrawX, topDrawY, rightDrawX - 1.0f, bottomDrawY - 1.0f, backgroundColor);
 
-	C4GUI::FrameDecoration *frameDecoration = props[C4MenuWindowPropertyName::frameDecoration].GetFrameDecoration();
+	C4GUI::FrameDecoration *frameDecoration = props[C4GuiWindowPropertyName::frameDecoration].GetFrameDecoration();
 
 	if (frameDecoration)
 	{
@@ -1081,21 +1093,21 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 		frameDecoration->Draw(cgo, rect);
 	}
 
-	C4Object *symbolObject = props[C4MenuWindowPropertyName::symbolObject].GetObject();
+	C4Object *symbolObject = props[C4GuiWindowPropertyName::symbolObject].GetObject();
 	if (symbolObject)
 	{
 		symbolObject->DrawPicture(cgoOut, false, NULL);
 	}
 	else
 	{
-		C4Def *symbolDef = props[C4MenuWindowPropertyName::symbolDef].GetDef();
+		C4Def *symbolDef = props[C4GuiWindowPropertyName::symbolDef].GetDef();
 		if (symbolDef)
 		{
 			symbolDef->Draw(cgoOut);
 		}
 	}
 
-	StdCopyStrBuf *strBuf = props[C4MenuWindowPropertyName::text].GetStrBuf();
+	StdCopyStrBuf *strBuf = props[C4GuiWindowPropertyName::text].GetStrBuf();
 
 	if (strBuf)
 	{
@@ -1103,17 +1115,17 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 		int alignment = ALeft;
 		int32_t textHgt = ::GraphicsResource.FontRegular.BreakMessage(strBuf->getData(), int32_t(width), &sText, true);
 		float textYOffset = 0.0f, textXOffset = 0.0f;
-		if (style & C4MenuWindowStyleFlag::TextVCenter)
+		if (style & C4GuiWindowStyleFlag::TextVCenter)
 			textYOffset = height/2.0f - float(textHgt)/2.0f;
-		else if (style & C4MenuWindowStyleFlag::TextBottom)
+		else if (style & C4GuiWindowStyleFlag::TextBottom)
 			textYOffset += height - float(textHgt);
-		if (style & C4MenuWindowStyleFlag::TextHCenter)
+		if (style & C4GuiWindowStyleFlag::TextHCenter)
 		{
 			int wdt, hgt;
 			::GraphicsResource.FontRegular.GetTextExtent(sText.getData(), wdt, hgt, true);
 			textXOffset = width/2.0f - float(wdt)/2.0f;
 		}
-		else if (style & C4MenuWindowStyleFlag::TextRight)
+		else if (style & C4GuiWindowStyleFlag::TextRight)
 		{
 			alignment = ARight;
 			int wdt, hgt;
@@ -1148,7 +1160,7 @@ bool C4MenuWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, fl
 	return true;
 }
 
-bool C4MenuWindow::GetClippingRect(float &left, float &top, float &right, float &bottom)
+bool C4GuiWindow::GetClippingRect(float &left, float &top, float &right, float &bottom)
 {
 	if (scrollBar)
 	{
@@ -1163,14 +1175,14 @@ bool C4MenuWindow::GetClippingRect(float &left, float &top, float &right, float 
 	return false;
 }
 
-void C4MenuWindow::SetTag(C4String *tag)
+void C4GuiWindow::SetTag(C4String *tag)
 {
 	// set tag on all properties
-	for (uint32_t i = 0; i < C4MenuWindowPropertyName::_lastProp; ++i)
+	for (uint32_t i = 0; i < C4GuiWindowPropertyName::_lastProp; ++i)
 		if (props[i].SwitchTag(tag))
 		{
 			// only if tag could have changed position etc.
-			if (i <= C4MenuWindowPropertyName::relBottom || i == C4MenuWindowPropertyName::text || i == C4MenuWindowPropertyName::style || i == C4MenuWindowPropertyName::priority)
+			if (i <= C4GuiWindowPropertyName::relBottom || i == C4GuiWindowPropertyName::text || i == C4GuiWindowPropertyName::style || i == C4GuiWindowPropertyName::priority)
 			if (parent)
 			{
 				parent->lastDrawPosition.dirty = 2;
@@ -1180,11 +1192,11 @@ void C4MenuWindow::SetTag(C4String *tag)
 		}
 
 	// .. and children
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 		(*iter)->SetTag(tag);
 }
 
-void C4MenuWindow::OnMouseIn(int32_t player)
+void C4GuiWindow::OnMouseIn(int32_t player)
 {
 	assert(!hasMouseFocus && "custom menu window properly loaded incorrectly!");
 	hasMouseFocus = true;
@@ -1192,34 +1204,77 @@ void C4MenuWindow::OnMouseIn(int32_t player)
 	// no need to notify children, this is done in MouseInput
 
 	// execute action
-	int32_t actionType = C4MenuWindowPropertyName::onMouseInAction;
-	C4MenuWindowAction *action = props[actionType].GetAction();
+	int32_t actionType = C4GuiWindowPropertyName::onMouseInAction;
+	C4GuiWindowAction *action = props[actionType].GetAction();
 	if (!action) return;
 	action->Execute(this, player, props[actionType].GetCurrentTag(), actionType);
 }
 
-void C4MenuWindow::OnMouseOut(int32_t player)
+void C4GuiWindow::OnMouseOut(int32_t player)
 {
 	assert(hasMouseFocus && "custom menu window properly loaded incorrectly!");
 	hasMouseFocus = false;
 
 	// needs to notify children
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		if (child->hasMouseFocus)
 			child->OnMouseOut(player);
 	}
 
 	// execute action
-	int32_t actionType = C4MenuWindowPropertyName::onMouseOutAction;
-	C4MenuWindowAction *action = props[actionType].GetAction();
+	int32_t actionType = C4GuiWindowPropertyName::onMouseOutAction;
+	C4GuiWindowAction *action = props[actionType].GetAction();
 	if (!action) return;
 	action->Execute(this, player, props[actionType].GetCurrentTag(), actionType);
 }
 
-bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
+bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
 {
+	// special handling for root
+	if (!parent)
+	{
+		// non-multiple-windows have a higher priority
+		// this is important since they are also drawn on top
+		for (int withMultipleFlag = 0; withMultipleFlag <= 1; ++withMultipleFlag)
+		{
+			for (std::list<C4GuiWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
+			{
+				C4GuiWindow *child = *iter;
+
+				const int32_t &style = child->props[C4GuiWindowPropertyName::style].GetInt();
+				if ((withMultipleFlag == 0) &&  (style & C4GuiWindowStyleFlag::Multiple)) continue;
+				if ((withMultipleFlag == 1) && !(style & C4GuiWindowStyleFlag::Multiple)) continue;
+
+				int32_t childLeft = static_cast<int32_t>(child->lastDrawPosition.left);
+				int32_t childRight = static_cast<int32_t>(child->lastDrawPosition.right);
+				int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
+				int32_t childBottom = static_cast<int32_t>(child->lastDrawPosition.bottom);
+				//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
+				bool inArea = true;
+				if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
+				else if ((mouseY < childTop) || (mouseY > childBottom)) inArea = false;
+
+				if (!inArea) // notify child if it had mouse focus before
+				{
+					if (child->hasMouseFocus)
+						child->OnMouseOut(player);
+					continue;
+				}
+
+				if (child->MouseInput(player, button, mouseX, mouseY, dwKeyParam))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	// completely ignore mouse if the appropriate flag is set
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+	if (style & C4GuiWindowStyleFlag::IgnoreMouse)
+		return false;
+
 	if (!visible) return false;
 
 	if (target)
@@ -1237,9 +1292,9 @@ bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, in
 	// children actually have a higher priority
 	bool overChild = false; // remember for later, catch all actions that are in theory over children, even if not reaction (if main window)
 	// use reverse iterator since children with higher Priority appear later in the list
-	for (std::list<C4MenuWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
+	for (std::list<C4GuiWindow*>::reverse_iterator iter = children.rbegin(); iter != children.rend(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		int32_t childLeft = static_cast<int32_t>(child->lastDrawPosition.left);
 		int32_t childRight = static_cast<int32_t>(child->lastDrawPosition.right);
 		int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
@@ -1263,10 +1318,10 @@ bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, in
 
 	if (button == C4MC_Button_LeftDown)
 	{
-		C4MenuWindowAction *action = props[C4MenuWindowPropertyName::onClickAction].GetAction();
+		C4GuiWindowAction *action = props[C4GuiWindowPropertyName::onClickAction].GetAction();
 		if (action)
 		{
-			action->Execute(this, player, props[C4MenuWindowPropertyName::onClickAction].GetCurrentTag(), C4MenuWindowPropertyName::onClickAction);
+			action->Execute(this, player, props[C4GuiWindowPropertyName::onClickAction].GetCurrentTag(), C4GuiWindowPropertyName::onClickAction);
 			return true;
 		}
 	}
@@ -1295,17 +1350,17 @@ bool C4MenuWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, in
 	return false;
 }
 
-bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag)
+bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag)
 {
 	if (isMainWindow && subwindowID) // we are a main window! try a shortcut through the ID?
 	{
 		//LogF("passing command... %d, %d, %d, %d, %d [I am %d, MW]", actionID, player, subwindowID, actionType, tag, id);
 		// the reasoning for that shortcut is that I assume that usually windows with actions will also have an ID assigned
 		// this obviously doesn't have to be the case, but I believe it's worth the try
-		std::pair<std::multimap<int32_t, C4MenuWindow*>::iterator, std::multimap<int32_t, C4MenuWindow*>::iterator> range;
+		std::pair<std::multimap<int32_t, C4GuiWindow*>::iterator, std::multimap<int32_t, C4GuiWindow*>::iterator> range;
 		range = childrenIDMap.equal_range(subwindowID);
 
-		for (std::multimap<int32_t, C4MenuWindow*>::iterator iter = range.first; iter != range.second; ++iter)
+		for (std::multimap<int32_t, C4GuiWindow*>::iterator iter = range.first; iter != range.second; ++iter)
 		{
 			if (iter->second->ExecuteCommand(actionID, player, subwindowID, actionType, target, tag))
 				return true;
@@ -1316,7 +1371,7 @@ bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subw
 	// are we elligible?
 	if ((id == subwindowID) && (this->target == target))
 	{
-		C4MenuWindowAction *action = props[actionType].GetActionForTag(tag);
+		C4GuiWindowAction *action = props[actionType].GetActionForTag(tag);
 		if (action)
 		{
 			if (action->ExecuteCommand(actionID, this, player))
@@ -1330,9 +1385,9 @@ bool C4MenuWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subw
 	// abort if main window, though. See above
 	if (isMainWindow && subwindowID) return false;
 
-	for (std::list<C4MenuWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
+	for (std::list<C4GuiWindow*>::iterator iter = children.begin(); iter != children.end(); ++iter)
 	{
-		C4MenuWindow *child = *iter;
+		C4GuiWindow *child = *iter;
 		if (child->ExecuteCommand(actionID, player, subwindowID, actionType, target, tag))
 			return true;
 	}

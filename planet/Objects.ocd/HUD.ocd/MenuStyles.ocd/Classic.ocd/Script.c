@@ -11,7 +11,6 @@ local menu_layout;
 local target;
 
 // set later
-local menu_id;
 local entries;
 
 func Construction()
@@ -39,7 +38,7 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 			{
 				Hgt = [0, 32],
 				icon = {Symbol = symbol, Wdt = [0, 32], Hgt = [0, 32]}, 
-				caption = {X = [0, 32], Text = caption, Style = MENU_TextVCenter}
+				caption = {X = [0, 32], Text = caption, Style = GUI_TextVCenter}
 			},
 			body =
 			{
@@ -47,7 +46,7 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 				items =
 				{
 					Wdt = 500,
-					Style = MENU_GridLayout
+					Style = GUI_GridLayout
 				},
 				description =
 				{
@@ -59,7 +58,7 @@ global func CreateClassicMenu(id symbol, object command_object, int extra, strin
 			}
 		}
 	};
-	Menu_AddMargin(menu.menu_layout.inner, 15, 15);
+	Gui_AddMargin(menu.menu_layout.inner, 15, 15);
 	return menu;
 }
 
@@ -76,9 +75,9 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 		Hgt = [0, 64],
 		Text = Format("%dx", count),
 		Priority = ID,
-		OnClick = MenuAction_Call(this, "OnClick", [symbol, ID, command, parameter]),
-		OnMouseIn = [MenuAction_SetTag(nil, 0, "Hover"), MenuAction_Call(this, "UpdateDesc")],
-		OnMouseOut = MenuAction_SetTag(nil, 0, "Std"),
+		OnClick = GuiAction_Call(this, "OnClick", [symbol, ID, command, parameter]),
+		OnMouseIn = [GuiAction_SetTag(nil, 0, "Hover"), GuiAction_Call(this, "UpdateDesc")],
+		OnMouseOut = GuiAction_SetTag(nil, 0, "Std"),
 	};
 	entries[ID] = [info_caption ?? symbol.Description];
 	
@@ -88,18 +87,18 @@ public func AddMenuItem(string caption, string command, symbol, int count, param
 
 func Open()
 {
-	return CustomMenuOpen(menu_layout);
+	return CustomGuiOpen(menu_layout);
 }
 
 func UpdateDesc(int player, int ID, int subwindowID, object target, data)
 {
 	var update = { Text = entries[subwindowID][0] };
-	CustomMenuUpdate(update, ID, 1, 0);
+	CustomGuiUpdate(update, ID, 1, 0);
 }
 
 func OnClick(int player, int ID, int subwindowID, object target, data)
 {
 	target->Call(data[2], data[0], data[3]);
 	if (!permanent)
-		CustomMenuClose(ID);
+		CustomGuiClose(ID);
 }

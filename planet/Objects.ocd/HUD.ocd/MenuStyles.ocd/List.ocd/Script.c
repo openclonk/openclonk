@@ -15,11 +15,11 @@ local menu_id;
 func Construction()
 {
 	entries = [];
-	this.Style = MENU_VerticalLayout;
+	this.Style = GUI_VerticalLayout;
 	this.Target = this;
 	this.ID = 0xffffff;
 	
-	this.OnClose = MenuAction_Call(this, "OnCloseCallback");
+	this.OnClose = GuiAction_Call(this, "OnCloseCallback");
 }
 
 func OnCloseCallback()
@@ -31,7 +31,7 @@ func OnCloseCallback()
 func Close()
 {
 	if (menu_id)
-		CustomMenuClose(menu_id);
+		CustomGuiClose(menu_id);
 	if (on_close_callback && on_close_callback[0])
 		on_close_callback[0]->Call(on_close_callback[1], on_close_callback[2]);
 	RemoveObject();
@@ -59,12 +59,12 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 {
 	custom_menu_id = custom_menu_id ?? menu_id;
 	
-	var on_hover = MenuAction_SetTag(nil, 0, "OnHover");
+	var on_hover = GuiAction_SetTag(nil, 0, "OnHover");
 	if (on_mouse_over_callback)
-		on_hover = [on_hover, MenuAction_Call(this, "DoCallback", on_mouse_over_callback)];
-	var on_hover_stop = MenuAction_SetTag(nil, 0, "Std");
+		on_hover = [on_hover, GuiAction_Call(this, "DoCallback", on_mouse_over_callback)];
+	var on_hover_stop = GuiAction_SetTag(nil, 0, "Std");
 	if (on_mouse_out_callback)
-		on_hover_stop = [on_hover_stop, MenuAction_Call(this, "DoCallback", on_mouse_out_callback)];
+		on_hover_stop = [on_hover_stop, GuiAction_Call(this, "DoCallback", on_mouse_out_callback)];
 	
 	var ID = GetLength(entries) + 1;
 	if (!custom_entry)
@@ -72,13 +72,13 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 		custom_entry = {Hgt = [0, 64], sym = {Wdt = [0, 64], Hgt = [0, 64]}, desc = {X = [0, 64]}};
 		custom_entry.sym.Symbol = symbol;
 		custom_entry.desc.Text = text;
-		custom_entry.desc.Style = MENU_TextVCenter;
-		custom_entry.Style = MENU_FitChildren;
+		custom_entry.desc.Style = GUI_TextVCenter;
+		custom_entry.Style = GUI_FitChildren;
 		custom_entry.ID = ID;
 		custom_entry.Target = this;
 		custom_entry.Priority = ID;
 		custom_entry.BackgroundColor = {Std = 0, OnHover = 0x50ff0000};
-		custom_entry.OnClick = MenuAction_Call(this, "OnClick");
+		custom_entry.OnClick = GuiAction_Call(this, "OnClick");
 		custom_entry.OnMouseIn = on_hover;
 		custom_entry.OnMouseOut = on_hover_stop;
 	}
@@ -89,7 +89,7 @@ func AddItem(symbol, string text, user_ID, proplist target, command, parameter, 
 	if (custom_menu_id)
 	{
 		var temp = {child = custom_entry};
-		CustomMenuUpdate(temp, custom_menu_id, this.ID, this);
+		CustomGuiUpdate(temp, custom_menu_id, this.ID, this);
 	}
 	
 	return custom_entry;
@@ -105,7 +105,7 @@ func RemoveItem(user_ID, int custom_menu_id)
 		var ID = i+1;
 		if (!entries[i]) continue;
 		if (entries[i][3] != user_ID) continue;
-		CustomMenuClose(custom_menu_id, ID, this);
+		CustomGuiClose(custom_menu_id, ID, this);
 		entries[i] = nil;
 		return true;
 	}
@@ -139,6 +139,6 @@ func DoCallback(int player, int ID, int subwindowID, object target, data)
 
 func Open()
 {
-	menu_id = CustomMenuOpen(this);
+	menu_id = CustomGuiOpen(this);
 	return menu_id;
 }
