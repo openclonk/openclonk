@@ -28,7 +28,7 @@ func LaunchPlayer(int plr)
 	for (i=0; crew=GetCrew(plr,i); ++i)
 	{
 		crew->SetPosition(starting_cave.X/2, starting_cave.Y-18);
-		for (var tool in [Pickaxe, GrappleBow])
+		for (var tool in [Pickaxe, GrappleBow, SprayCan])
 			if (obj = FindObject(Find_ID(tool), Find_Owner(plr), Find_NoContainer()))
 				obj->Enter(crew);
 			else

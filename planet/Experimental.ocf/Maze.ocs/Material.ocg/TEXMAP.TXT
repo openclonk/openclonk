@@ -1,6 +1,12 @@
 OverloadMaterials
 OverloadTextures
 
+3=Tunnel-PaintRed
+4=Tunnel-PaintGreen
+5=Tunnel-PaintTeal
+6=Tunnel-PaintYellow
+7=Tunnel-PaintWhite
+
 10=Tunnel-tunnel
 12=Tunnel-brickback
 
