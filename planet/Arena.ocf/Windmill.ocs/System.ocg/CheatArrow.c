@@ -17,7 +17,7 @@ public func HitObject(object obj)
 {
 	if(obj->GetOCF() & OCF_CrewMember) return;
 	inherited(obj,...);
-	RemoveObject();
+	if (this) RemoveObject();
 }
 
 func UpdatePicture()
