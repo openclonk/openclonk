@@ -4,7 +4,7 @@
 public func SetStackCount(int amount)
 {
 	count = MaxStackCount();
-	Update();
+	UpdateStackDisplay();
 }
 
 public func Hit()
