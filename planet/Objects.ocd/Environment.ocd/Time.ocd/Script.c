@@ -259,6 +259,9 @@ private func DoSkyShade()
 	// Shade sky.
 	SetSkyAdjust(RGB(skyshade[0], skyshade[1], skyshade[2]));
 	
+	// Shade landscape.
+	SetGamma(0, RGB(BoundBy(36+skyshade[0]/2, 40, 128), BoundBy(77+skyshade[1]/2, 80, 128), BoundBy(77+skyshade[2]/2, 105, 128)), RGB(255,255, 255), 3);
+	
 	if(!day && !night)
 	{
 		// Adjust celestial objects.
