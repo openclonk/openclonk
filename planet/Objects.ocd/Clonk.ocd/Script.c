@@ -564,6 +564,24 @@ func SetSkin(int skin)
 }
 func GetSkinCount() { return 4; }
 
+
+/* AI editor helper */
+
+func EditCursorSelection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorSelection, ai);
+	return _inherited(...);
+}
+
+func EditCursorDeselection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorDeselection, ai);
+	return _inherited(...);
+}
+
+
 /* Act Map */
 
 local ActMap = {

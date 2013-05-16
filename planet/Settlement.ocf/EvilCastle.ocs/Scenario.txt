@@ -5,10 +5,6 @@ Version=5,3,90
 Difficulty=30
 NoInitialize=true
 
-[Definitions]
-Definition2=Experimental.ocd\EnemyAI.ocd
-Definition3=Experimental.ocd\EnvironmentObjs.ocd
-
 [Game]
 Rules=Rule_TeamAccount=1;Rule_NoPowerNeed=1;
 
