@@ -2,7 +2,7 @@
 Icon=36
 Title=EvilCastle
 Version=5,3,90
-Difficulty=30
+Difficulty=75
 NoInitialize=true
 
 [Game]

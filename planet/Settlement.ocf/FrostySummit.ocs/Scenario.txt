@@ -2,7 +2,7 @@
 Title=FrostySummit
 Icon=24
 Version=5,2,0,1
-Difficulty=90
+Difficulty=60
 
 [Definitions]
 Definition1=Objects.ocd

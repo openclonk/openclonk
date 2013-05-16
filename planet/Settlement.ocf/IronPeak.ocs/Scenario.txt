@@ -2,7 +2,7 @@
 Icon=1
 Title=IronPeak
 Version=5,0,0,0
-Difficulty=20
+Difficulty=40
 
 [Definitions]
 Definition1=Objects.ocd

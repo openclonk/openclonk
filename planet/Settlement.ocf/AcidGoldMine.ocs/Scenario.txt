@@ -2,7 +2,7 @@
 Title=AcidGoldMine
 Icon=22
 Version=5,2,0,1
-Difficulty=90
+Difficulty=130
 
 [Definitions]
 Definition1=Objects.ocd

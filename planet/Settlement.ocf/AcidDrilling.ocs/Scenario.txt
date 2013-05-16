@@ -2,7 +2,7 @@
 Title=AcidDrilling
 Icon=30
 Version=5,2,0,1
-Difficulty=90
+Difficulty=100
 
 [Definitions]
 Definition1=Objects.ocd

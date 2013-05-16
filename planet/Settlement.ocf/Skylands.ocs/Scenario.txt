@@ -2,7 +2,7 @@
 Icon=25
 Title=Skylands
 Version=5,2,90,20
-Difficulty=20
+Difficulty=90
 MaxPlayer=30
 NoInitialize=true
 
