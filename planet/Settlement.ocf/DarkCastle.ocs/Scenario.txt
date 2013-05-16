@@ -1,6 +1,6 @@
 [Head]
 Icon=36
-Title=EvilCastle
+Title=DarkCastle
 Version=5,3,90
 Difficulty=75
 NoInitialize=true
