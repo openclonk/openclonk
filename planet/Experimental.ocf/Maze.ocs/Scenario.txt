@@ -6,7 +6,6 @@ Difficulty=20
 
 [Definitions]
 Definition1=Objects.ocd
-Definition2=Experimental.ocd\Gems.ocd
 
 [Game]
 Goals=Goal_RubyHunt=1;

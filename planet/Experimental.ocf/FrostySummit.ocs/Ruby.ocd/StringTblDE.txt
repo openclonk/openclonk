@@ -1,2 +1,0 @@
-Name=Rubin
-Description=Wertvoller Klunker

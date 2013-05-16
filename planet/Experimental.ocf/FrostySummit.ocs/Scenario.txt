@@ -6,7 +6,6 @@ Difficulty=90
 
 [Definitions]
 Definition1=Objects.ocd
-; Definition1=Objects.ocd\Libraries.ocd\Map.ocd
 
 [Game]
 Goals=Goal_SellGems=1;

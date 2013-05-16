@@ -176,4 +176,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
-local MaxPickDensity = 80;
+local MaxPickDensity = 70; // can't pick granite

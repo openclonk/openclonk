@@ -6,7 +6,6 @@ Difficulty=90
 
 [Definitions]
 Definition1=Objects.ocd
-Definition2=Experimental.ocd\WallKit.ocd
 
 [Game]
 Goals=Goal_AcidDrilling=1;
