@@ -116,35 +116,31 @@ Section
     Pop $0
     WriteIniStr $INSTDIR\GameExplorer.txt GameExplorer InstanceID $0
     ${GameExplorer_AddGame} $MultiUser.InstallMode $INSTDIR\${CLONK} $INSTDIR $INSTDIR\${CLONK} $0
-    IfErrors StartMenu 0
+    IfErrors EndGameExplorer 0
     ; Create tasks.
-    ; FIXME: Theoretically this should also be done on older windows versions without gameexplorer,
-    ; but that requires some some obscure registry entries and would require upgrading windows to test
     CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0
     CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\0\Play.lnk "$INSTDIR\${CLONK}"
     CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1
     CreateShortcut $APPDATA\Microsoft\Windows\GameExplorer\$0\PlayTasks\1\Editor.lnk "$INSTDIR\${CLONK}" --editor
     CreateDirectory $APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0
     CreateShortcut "$APPDATA\Microsoft\Windows\GameExplorer\$0\SupportTasks\0\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-    IfErrors StartMenu EndStartMenu
+    goto EndGameExplorer
   UpdateInstallation:
     ${GameExplorer_UpdateGame} $0
-    IfErrors StartMenu EndStartMenu
+  EndGameExplorer:
 
-  StartMenu:
-    ; Create desktop shortcut
-    CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\${CLONK}"
+  ; Create desktop shortcut
+  CreateShortcut "$DESKTOP\OpenClonk.lnk" "$INSTDIR\${CLONK}"
 
-    ; Create user path shortcut in program directory
-    CreateShortCut "$INSTDIR\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
+  ; Create user path shortcut in program directory
+  CreateShortCut "$INSTDIR\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
-    ; Start menu shortcuts
-    CreateDirectory "$SMPROGRAMS\OpenClonk"
-    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\${CLONK}"
-    CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\${CLONK}" "--editor"
-    CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
-    CreateShortCut "$SMPROGRAMS\OpenClonk\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
-  EndStartMenu:
+  ; Start menu shortcuts
+  CreateDirectory "$SMPROGRAMS\OpenClonk"
+  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk.lnk" "$INSTDIR\${CLONK}"
+  CreateShortCut "$SMPROGRAMS\OpenClonk\OpenClonk Editor.lnk" "$INSTDIR\${CLONK}" "--editor"
+  CreateShortCut "$SMPROGRAMS\OpenClonk\${PRODUCT_WEB_SITE_NAME}.lnk" "$INSTDIR\${PRODUCT_WEB_SITE_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\OpenClonk\$(OC_TEXT_USERPATH).lnk" "%APPDATA%\OpenClonk"
 
   ; Uninstaller info
   WriteUninstaller "$INSTDIR\uninst.exe"
