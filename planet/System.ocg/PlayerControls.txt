@@ -170,52 +170,42 @@
 	[ControlDef]
 	Identifier=Hotkey1
 	GUIName=$CON_Hotkey1$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey2
 	GUIName=$CON_Hotkey2$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey3
 	GUIName=$CON_Hotkey3$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey4
 	GUIName=$CON_Hotkey4$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey5
 	GUIName=$CON_Hotkey5$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey6
 	GUIName=$CON_Hotkey6$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey7
 	GUIName=$CON_Hotkey7$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey8
 	GUIName=$CON_Hotkey8$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey9
 	GUIName=$CON_Hotkey9$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=Hotkey0
 	GUIName=$CON_Hotkey0$
-	Hold=1
 	
 	[ControlDef]
 	Identifier=DropHotkey1
@@ -246,36 +236,6 @@
 	
 	[ControlDef]
 	Identifier=DropHotkey0
-	
-	[ControlDef]
-	Identifier=Hotkey1Select
-		
-	[ControlDef]
-	Identifier=Hotkey2Select
-	
-	[ControlDef]
-	Identifier=Hotkey3Select
-
-	[ControlDef]
-	Identifier=Hotkey4Select
-
-	[ControlDef]
-	Identifier=Hotkey5Select
-
-	[ControlDef]
-	Identifier=Hotkey6Select
-
-	[ControlDef]
-	Identifier=Hotkey7Select
-
-	[ControlDef]
-	Identifier=Hotkey8Select
-
-	[ControlDef]
-	Identifier=Hotkey9Select
-
-	[ControlDef]
-	Identifier=Hotkey0Select
 
 	# Controlling (contents, vehicles, structures)
 	
@@ -1289,58 +1249,6 @@
 		Control=Hotkey0
 		GUIDesc=$KEY_Hotkey_Desc$
 		GUIGroup=80
-		
-		# Hotkey + Mousebutton Select
-		[Assignment]
-		Key=CON_Hotkey1,Mouse1ButtonLeft
-		Control=Hotkey1Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey2,Mouse1ButtonLeft
-		Control=Hotkey2Select
-		Priority=200
-		
-		[Assignment]
-		Key=CON_Hotkey3,Mouse1ButtonLeft
-		Control=Hotkey3Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey4,Mouse1ButtonLeft
-		Control=Hotkey4Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey5,Mouse1ButtonLeft
-		Control=Hotkey5Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey6,Mouse1ButtonLeft
-		Control=Hotkey6Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey7,Mouse1ButtonLeft
-		Control=Hotkey7Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey8,Mouse1ButtonLeft
-		Control=Hotkey8Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey9,Mouse1ButtonLeft
-		Control=Hotkey9Select
-		Priority=200
-
-		[Assignment]
-		Key=CON_Hotkey0,Mouse1ButtonLeft
-		Control=Hotkey0Select
-		Priority=200
-
 		
 		[Assignment]
 		Key=Shift+CON_Hotkey1

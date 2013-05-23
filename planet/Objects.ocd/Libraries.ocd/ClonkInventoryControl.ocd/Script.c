@@ -8,7 +8,6 @@
 /*
 	used properties:
 	this.inventory.last_slot: last inventory-slot that has been selected. Used for QuickSwitching
-	this.inventory.handslot_choice_pending: used to determine if a slot-hotkey (1-9) has already been handled by a mouseclick
 
 	other used properties of "this.inventory" might have been declared in Inventory.ocd
 	
@@ -21,7 +20,6 @@ func Construction()
 	if(this.inventory == nil)
 		this.inventory = {};
 	this.inventory.last_slot = 0;
-	this.inventory.handslot_choice_pending = false;
 	return _inherited(...);
 }
 
@@ -105,28 +103,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		this->~DropInventoryItem(hot-1);
 		return true;
 	}
-	
-	// this wall of text is called when 1-0 is beeing held, and left or right mouse button is pressed.
-	var hand = 0;
-	hot = 0;
-	if (ctrl == CON_Hotkey0Select) hot = 10;
-	if (ctrl == CON_Hotkey1Select) hot = 1;
-	if (ctrl == CON_Hotkey2Select) hot = 2;
-	if (ctrl == CON_Hotkey3Select) hot = 3;
-	if (ctrl == CON_Hotkey4Select) hot = 4;
-	if (ctrl == CON_Hotkey5Select) hot = 5;
-	if (ctrl == CON_Hotkey6Select) hot = 6;
-	if (ctrl == CON_Hotkey7Select) hot = 7;
-	if (ctrl == CON_Hotkey8Select) hot = 8;
-	if (ctrl == CON_Hotkey9Select) hot = 9;
-	
-	if(hot > 0  && hot <= this->MaxContentsCount())
-	{
-		SetHandItemPos(hand, hot-1);
-		this->~OnInventoryHotkeyRelease(hot-1);
-		return true;
-	}
-	
+		
 	// inventory
 	hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -141,31 +118,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
 	// only the last-pressed key is taken into consideration.
-	// if 2 hotkeys are held, the earlier one is beeing treated as released
+	// if 2 hotkeys are held, the earlier one is being treated as released
 	if (hot > 0 && hot <= this->MaxContentsCount())
 	{
-		// if released, we chose, if not chosen already
-		if(release)
-		{
-			if(this.inventory.handslot_choice_pending == hot)
-			{
-				SetHandItemPos(0, hot-1);
-				this->~OnInventoryHotkeyRelease(hot-1);
-			}
-		}
-		// else we just highlight
-		else
-		{
-			if(this.inventory.handslot_choice_pending)
-			{
-				this->~OnInventoryHotkeyRelease(this.inventory.handslot_choice_pending-1);
-			}
-			this.inventory.handslot_choice_pending = hot;
-			this->~OnInventoryHotkeyPress(hot-1);
-		}
-		
+		SetHandItemPos(0, hot-1);
 		return true;
-	}	
+	}
 	
 	// Collecting
 	if (ctrl == CON_Collect)
@@ -195,9 +153,7 @@ public func SetHandItemPos(int hand, int inv)
 	if(hand == 0)
 		this.inventory.last_slot = this->GetHandItemPos(0);
 		
-	var r = _inherited(hand, inv, ...);
-	this.inventory.handslot_choice_pending = false;
-	return r;
+	return _inherited(hand, inv, ...);
 }
 /* Backpack control */
 func Selected(object mnu, object mnu_item)

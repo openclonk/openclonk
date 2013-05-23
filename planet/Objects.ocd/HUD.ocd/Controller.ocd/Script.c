@@ -505,18 +505,6 @@ public func OnHandSelectionChange(int old, int new, int handslot)
 	OnSlotObjectChanged(handslot);
 }
 
-protected func OnInventoryHotkeyPress(int slot)
-{
-	if(inventory[slot])
-		inventory[slot]->OnMouseOver(GetOwner());
-}
-
-protected func OnInventoryHotkeyRelease(int slot)
-{
-	if(inventory[slot])
-		inventory[slot]->OnMouseOut(GetOwner());
-}
-
 // call from HUDAdapter (Clonk)
 public func OnSlotObjectChanged(int slot)
 {	
