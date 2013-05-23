@@ -1142,7 +1142,7 @@ void C4Player::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt(ViewMode,            "ViewMode",             C4PVM_Cursor));
 	pComp->Value(mkNamingAdapt(ViewX,               "ViewX",                0));
 	pComp->Value(mkNamingAdapt(ViewY,               "ViewY",                0));
-	pComp->Value(mkNamingAdapt(ViewLock,            "ViewLock",             false));
+	pComp->Value(mkNamingAdapt(ViewLock,            "ViewLock",             true));
 	pComp->Value(mkNamingAdapt(ZoomLimitMinWdt,     "ZoomLimitMinWdt",      0));
 	pComp->Value(mkNamingAdapt(ZoomLimitMinHgt,     "ZoomLimitMinHgt",      0));
 	pComp->Value(mkNamingAdapt(ZoomLimitMaxWdt,     "ZoomLimitMaxWdt",      0));
