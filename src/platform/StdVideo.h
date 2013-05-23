@@ -27,6 +27,7 @@
 #pragma once
 
 #include <C4windowswrapper.h> // some vfw.h versions do not compile without this
+#undef MK_ALT
 #include <mmsystem.h>
 #include <vfw.h>
 #include <io.h>

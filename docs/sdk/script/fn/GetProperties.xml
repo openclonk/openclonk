@@ -20,13 +20,15 @@
       </params>
     </syntax>
     <desc>Returns the names of all properties of <code>object</code>.</desc>
-    <related><funclink>SetProperty</funclink></related>
-    <related><funclink>GetProperty</funclink></related>
     <examples>
       <example>
         <code>GetProperties({foo = 1, bar = 2}) == ["bar", "foo"]</code>
       </example>
     </examples>
+    <related>
+      <funclink>SetProperty</funclink>
+      <funclink>GetProperty</funclink>
+    </related>
   </func>
   <author>Günther</author><date>2012</date>
 </funcs>

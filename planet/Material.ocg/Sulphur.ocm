@@ -1,7 +1,7 @@
 [Material]
 Name=Sulphur
 Shape=Rough
-Density=50
+Density=60
 Friction=75
 DigFree=1
 BlastFree=1

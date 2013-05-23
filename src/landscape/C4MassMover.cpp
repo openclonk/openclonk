@@ -164,7 +164,7 @@ bool C4MassMover::Execute()
 	if (Random(10))
 		::Landscape.InsertDeadMaterial(mat, tx, ty);
 	else
-		::Landscape.InsertMaterial(mat, tx, ty, 0, 1);
+		::Landscape.InsertMaterial(mat, &tx, &ty, 0, 1); // modifies tx/ty to actual insertion position
 
 	// Create new mover at target
 	::MassMover.Create(tx,ty,!Random(3));

@@ -179,6 +179,25 @@ bool C4DefScriptHost::Parse()
 
 C4PropListStatic * C4DefScriptHost::GetPropList() { return Def; }
 
+class C4PropListScen: public C4PropListStatic
+{
+public:
+	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(NULL, parent, key)
+	{
+		C4PropList * proto = C4PropList::NewStatic(ScriptEngine.GetPropList(), this, &::Strings.P[P_Prototype]);
+		C4PropListStatic::SetPropertyByS(&::Strings.P[P_Prototype], C4VPropList(proto));
+	}
+	virtual void SetPropertyByS(C4String * k, const C4Value & to)
+	{
+		if (k == &Strings.P[P_Prototype])
+		{
+			DebugLog("ERROR: Attempt to set Scenario.Prototype.");
+			return;
+		}
+		C4PropListStatic::SetPropertyByS(k, to);
+	}
+};
+
 /*--- C4GameScriptHost ---*/
 
 C4GameScriptHost::C4GameScriptHost(): ScenPrototype(0), ScenPropList(0) { }
@@ -187,11 +206,10 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	C4PropListStatic * pScen = C4PropList::NewStatic(NULL/*ScenPrototype*/, NULL, ::Strings.RegString("Scenario"));
+	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
 	ScenPropList.SetPropList(pScen);
 	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
-	ScenPrototype.SetPropList(C4PropList::NewStatic(ScriptEngine.GetPropList(), pScen, &::Strings.P[P_Prototype]));
-	ScenPropList._getPropList()->SetProperty(P_Prototype, ScenPrototype);
+	ScenPrototype.SetPropList(pScen->GetPropertyPropList(P_Prototype));
 	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);
 }

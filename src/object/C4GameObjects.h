@@ -55,7 +55,7 @@ public:
 	void Synchronize(); // network synchronization
 	void UpdateSolidMasks();
 
-	virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
+	C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
 	C4Object* SafeObjectPointer(int32_t iNumber);
 
 	int PostLoad(bool fKeepInactive, C4ValueNumbers *);

@@ -130,6 +130,7 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = "Parallaxity";
 	P[P_LineColors] = "LineColors";
 	P[P_LineAttach] = "LineAttach";
+	P[P_LineMaxDistance] = "LineMaxDistance";
 	P[P_MouseDrag] = "MouseDrag";
 	P[P_MouseDragImage] = "MouseDragImage";
 	P[P_PictureTransformation] = "PictureTransformation";
@@ -149,7 +150,25 @@ C4StringTable::C4StringTable()
 	P[P_BlastIncinerate] = "BlastIncinerate";
 	P[P_ContactIncinerate] = "ContactIncinerate";
 	P[P_Global] = "Global";
+	P[P_Scenario] = "Scenario";
 	P[P_JumpSpeed] = "JumpSpeed";
+	P[P_Algo] = "Algo";
+	P[P_Layer] = "Layer";
+	P[P_Seed] = "Seed";
+	P[P_Ratio] = "Ratio";
+	P[P_FixedOffset] = "FixedOffset";
+	P[P_Op] = "Op";
+	P[P_R] = "R";
+	P[P_Scale] = "Scale";
+	P[P_Amplitude] = "Amplitude";
+	P[P_Iterations] = "Iterations";
+	P[P_Empty] = "Empty";
+	P[P_Open] = "Open";
+	P[P_Left] = "Left";
+	P[P_Top] = "Top";
+	P[P_Right] = "Right";
+	P[P_Bottom] = "Bottom";
+	P[P_Filter] = "Filter";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
@@ -177,9 +196,20 @@ C4StringTable::~C4StringTable()
 		for (C4String * const * s = Set.First(); s; s = Set.Next(s))
 		{
 			if (*s >= &Strings.P[0] && *s < &Strings.P[P_LAST])
-				fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+			{
+				if ((*s)->RefCnt != 1)
+#ifdef _WIN32
+					OutputDebugString(FormatString(" \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
+					fprintf(stderr, " \"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
+			}
 			else
+#ifdef _WIN32
+				OutputDebugString(FormatString("\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt).GetWideChar());
+#else
 				fprintf(stderr, "\"%s\" %d\n", (*s)->GetCStr(), (*s)->RefCnt);
+#endif
 		}
 	}
 #endif

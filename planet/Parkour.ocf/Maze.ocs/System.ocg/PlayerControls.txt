@@ -1,0 +1,14 @@
+[ControlDefs]
+
+	[ControlDef]
+	Identifier=TryScreenshot
+ 
+[ControlSets]
+
+	[ControlSet]
+	Name=*
+		
+		[Assignment]
+		Key=Ctrl+F9
+		Priority=999
+		Control=TryScreenshot

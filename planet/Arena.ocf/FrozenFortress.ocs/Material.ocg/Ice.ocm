@@ -1,7 +1,7 @@
 [Material]
 Name=Ice
 Shape=TopFlat
-Density=50
+Density=60
 Friction=15
 BlastFree=1
 Blast2Object=Ice

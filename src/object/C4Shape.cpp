@@ -517,20 +517,24 @@ void C4Shape::CreateOwnOriginalCopy(C4Shape &rFrom)
 	memcpy(VtxContactMat+C4D_VertexCpyPos, rFrom.VtxContactMat, VtxNum*sizeof(*VtxContactMat));
 }
 
-void C4Shape::CompileFunc(StdCompiler *pComp, bool fRuntime)
+void C4Shape::CompileFunc(StdCompiler *pComp, const C4Shape *default_shape)
 {
+	// a default shape is given in object compilation context only
+	bool fRuntime = !!default_shape;
+	C4Shape default_def_shape;
+	if (!default_shape) default_shape = &default_def_shape;
 	// Note: Compiled directly into "Object" and "DefCore"-categories, so beware of name clashes
 	// (see C4Object::CompileFunc and C4Def::CompileFunc)
-	pComp->Value(mkNamingAdapt( Wdt,                        "Width",              0                 ));
-	pComp->Value(mkNamingAdapt( Hgt,                        "Height",             0                 ));
-	pComp->Value(mkNamingAdapt( mkArrayAdapt(&x,2,0),       "Offset"                                ));
-	pComp->Value(mkNamingAdapt( VtxNum,                     "Vertices",           0                 ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxX),             "VertexX"                               ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxY),             "VertexY"                               ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxCNAT),          "VertexCNAT"                            ));
-	pComp->Value(mkNamingAdapt( toC4CArr(VtxFriction),      "VertexFriction"                        ));
-	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     C4M_Solid         ));
-	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            0                 ));
+	pComp->Value(mkNamingAdapt( Wdt,                        "Width",              default_shape->Wdt));
+	pComp->Value(mkNamingAdapt( Hgt,                        "Height",             default_shape->Hgt));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDefArr(&x,2,&default_shape->x),               "Offset",             &default_shape->x));
+	pComp->Value(mkNamingAdapt( VtxNum,                                                   "Vertices",           default_shape->VtxNum));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxX, default_shape->VtxX),               "VertexX",            default_shape->VtxX));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxY, default_shape->VtxY),               "VertexY",            default_shape->VtxY));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxCNAT, default_shape->VtxCNAT),         "VertexCNAT",         default_shape->VtxCNAT));
+	pComp->Value(mkNamingAdapt( mkArrayAdaptDMA(VtxFriction, default_shape->VtxFriction), "VertexFriction",     default_shape->VtxFriction));
+	pComp->Value(mkNamingAdapt( ContactDensity,             "ContactDensity",     default_shape->ContactDensity));
+	pComp->Value(mkNamingAdapt( FireTop,                    "FireTop",            default_shape->FireTop));
 	if (fRuntime)
 	{
 		pComp->Value(mkNamingAdapt( iAttachX,                   "AttachX",            0                 ));

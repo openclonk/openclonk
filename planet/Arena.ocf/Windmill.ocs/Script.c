@@ -90,6 +90,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 			gui_arrow->SetObjectBlitMode(GFX_BLIT_Mod2);
 		}
 		gui_arrow->SetR(angle);
+		gui_arrow.Plane = 500;
 	}
 }
 

@@ -232,7 +232,7 @@ void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
 	// if we didn't handle this properly and the user would have no clue what was
 	// going on. See also http://forum.openclonk.org/topic_show.pl?tid=905.
 	char control[3] = { DirectorySeparator, AltDirectorySeparator, '\0' };
-	const size_t len = strlen(szPath);
+	const int32_t len = (int32_t)strlen(szPath);
 	for (int32_t iPrev=0; (iBackslash = strcspn(szPath+iPrev, control) + iPrev) < len; iPrev = iBackslash + 1)
 #else
 	for (int32_t cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)

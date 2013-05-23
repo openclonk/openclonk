@@ -46,7 +46,7 @@ bool C4Extra::InitGroup()
 	// register extra root into game group set
 	for(C4Reloc::iterator iter = Reloc.begin(); iter != Reloc.end(); ++iter)
 	{
-		std::auto_ptr<C4Group> pGroup(new C4Group);
+		std::unique_ptr<C4Group> pGroup(new C4Group);
 		if(pGroup->Open( ((*iter).strBuf + DirSep + C4CFN_Extra).getData()))
 			ExtraGroups.push_back(pGroup.release());
 	}

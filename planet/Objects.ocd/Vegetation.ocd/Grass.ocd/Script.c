@@ -47,7 +47,7 @@ global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 			if (GetMaterial(AbsX(x), AbsY(y)) == Material("Sky"))
 				if (GetMaterial(AbsX(x), AbsY(y + 3)) == Material("Earth"))
 					if (Random(100) < amount)
-						CreateObject(Grass, AbsX(x), AbsY(y + 4), NO_OWNER);
+						CreateObject(Grass, AbsX(x), AbsY(y + 1), NO_OWNER);
 			y += 3;
 		}
 		x += 9;

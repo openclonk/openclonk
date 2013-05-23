@@ -133,6 +133,16 @@ protected:
 	virtual bool UseShapes() { return fUseShapes; }
 	virtual bool IsEnsured() { return !iCnt; }
 	virtual bool IsImpossible();
+	void ForgetConditions() { ppConds=NULL; iCnt=0; }
+};
+
+// Special variant of C4FindObjectAnd that does not free its conditions
+class C4FindObjectAndStatic : public C4FindObjectAnd
+{
+public:
+	C4FindObjectAndStatic(int32_t iCnt, C4FindObject **ppConds)
+		: C4FindObjectAnd(iCnt, ppConds, true) {}
+	virtual ~C4FindObjectAndStatic() {ForgetConditions(); }
 };
 
 class C4FindObjectOr : public C4FindObject

@@ -1,0 +1,4 @@
+MsgGoalAbove=The goal is above this post.
+MsgGoalBelow=The goal is below this post.
+MsgGoalLeft=The goal is left of this post.
+MsgGoalRight=The goal is right of this post.

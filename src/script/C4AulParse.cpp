@@ -131,26 +131,28 @@ public:
 			Fn(0), Host(a), pOrgScript(a), Engine(a->Engine),
 			SPos(a->Script.getData()), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Done(false),
 			Type(Type),
 			ContextToExecIn(NULL),
 			fJump(false),
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
-	C4AulParse(C4AulScriptFunc * Fn, enum Type Type):
+	C4AulParse(C4AulScriptFunc * Fn, C4AulScriptContext* context, enum Type Type):
 			Fn(Fn), Host(Fn->pOrgScript), pOrgScript(Fn->pOrgScript), Engine(Fn->Owner->Engine),
 			SPos(Fn->Script), TokenSPos(SPos),
 			TokenType(ATT_INVALID),
-			Done(false),
 			Type(Type),
-			ContextToExecIn(NULL),
+			ContextToExecIn(context),
 			fJump(false),
 			iStack(0),
 			pLoopStack(NULL)
 	{ }
 	~C4AulParse()
 	{ while (pLoopStack) PopLoop(); ClearToken(); }
+	void Parse_DirectExec();
+	void Parse_Script(C4ScriptHost *);
+
+private:
 	C4AulScriptFunc *Fn; C4ScriptHost * Host; C4ScriptHost * pOrgScript;
 	C4AulScriptEngine *Engine;
 	const char *SPos; // current position in the script
@@ -159,10 +161,8 @@ public:
 	C4AulTokenType TokenType; // current token type
 	int32_t cInt; // current int constant
 	C4String * cStr; // current string constant
-	bool Done; // done parsing?
 	enum Type Type; // emitting bytecode?
 	C4AulScriptContext* ContextToExecIn;
-	void Parse_Script();
 	void Parse_Function();
 	void Parse_Statement();
 	void Parse_Block();
@@ -198,8 +198,6 @@ public:
 	void Warn(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	void Error(const char *pMsg, ...) GNUC_FORMAT_ATTRIBUTE_O;
 
-private:
-
 	bool fJump;
 	int iStack;
 
@@ -233,6 +231,7 @@ private:
 	void PushLoop();
 	void PopLoop();
 	void AddLoopControl(bool fBreak);
+	friend class C4AulParseError;
 };
 
 void C4AulScript::Warn(const char *pMsg, ...)
@@ -301,6 +300,9 @@ C4AulParseError::C4AulParseError(C4AulParse * state, const char *pMsg, const cha
 		                      SGetLine(state->pOrgScript->GetScript(), state->TokenSPos),
 		                      SLineGetCharacters(state->pOrgScript->GetScript(), state->TokenSPos));
 	}
+	// show a warning if the error is in a remote script
+	if (state->pOrgScript != state->Host && state->Host)
+		sMessage.AppendFormat(" (as #appendto/#include to %s)", state->Host->ScriptName.getData());
 
 }
 
@@ -702,7 +704,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_DEBUG: return "DEBUG";      // debug break
 	case AB_EOFN: return "EOFN";    // end of function
 
-	default: assert(false);
+	default: assert(false); return "UNKNOWN";
 	}
 }
 
@@ -769,8 +771,11 @@ bool C4ScriptHost::Preparse()
 	GetPropList()->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	LocalValues.Clear();
 
+	// Add any engine functions specific to this script
+	AddEngineFunctions();
+
 	C4AulParse state(this, C4AulParse::PREPARSER);
-	state.Parse_Script();
+	state.Parse_Script(this);
 
 	// #include will have to be resolved now...
 	IncludesResolved = false;
@@ -1201,18 +1206,24 @@ void C4AulScriptFunc::ParseFn(C4AulScriptContext* context)
 {
 	ClearCode();
 	// parse
-	C4AulParse state(this, C4AulParse::PARSER);
-	state.ContextToExecIn = context;
-	// get first token
-	state.Shift();
-	state.Parse_Expression();
-	state.Match(ATT_EOF);
-	AddBCC(AB_RETURN, 0, state.SPos);
-	AddBCC(AB_EOFN, 0, state.SPos);
+	C4AulParse state(this, context, C4AulParse::PARSER);
+	state.Parse_DirectExec();
 }
 
-void C4AulParse::Parse_Script()
+void C4AulParse::Parse_DirectExec()
 {
+	// get first token
+	Shift();
+	Parse_Expression();
+	Match(ATT_EOF);
+	AddBCC(AB_RETURN);
+	AddBCC(AB_EOFN);
+}
+
+void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
+{
+	pOrgScript = scripthost;
+	SPos = pOrgScript->Script.getData();
 	const char * SPos0 = SPos;
 	bool all_ok = true;
 	bool found_code = false;
@@ -1309,17 +1320,12 @@ void C4AulParse::Parse_Script()
 		if (all_ok)
 		{
 			err->show();
-			// show a warning if the error is in a remote script
-			if (pOrgScript != Host)
-				DebugLogF("  (as #appendto/#include to %s)", Host->ScriptName.getData());
 			// and count (visible only ;) )
 			++::ScriptEngine.errCnt;
 		}
 		all_ok = false;
 		delete err;
 
-		// do not show errors for System.ocg scripts that appear to be pure #appendto scripts
-		//if (Fn->Owner->GetPropList() || Fn->Owner->Appends.empty()) show
 		if (Fn)
 		{
 			// make all jumps that don't have their destination yet jump here
@@ -1881,6 +1887,7 @@ void C4AulParse::Parse_PropList()
 
 C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4String * Name)
 {
+	C4Value v;
 	if (!Name)
 		throw new C4AulParseError(this, "a static proplist is not allowed to be anonymous");
 	C4PropListStatic * p;
@@ -1890,7 +1897,6 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 	}
 	else
 	{
-		C4Value v;
 		bool r;
 		if (parent)
 			r = parent->GetPropertyByS(Name, &v);
@@ -1899,7 +1905,7 @@ C4Value C4AulParse::Parse_ConstPropList(const C4PropListStatic * parent, C4Strin
 		if (!r || !v.getPropList())
 		{
 			// the proplist couldn't be parsed or was overwritten by a later constant.
-			// create a temporary replacement
+			// create a temporary replacement, make v hold the reference to it for now
 			v.SetPropList(C4PropList::NewStatic(NULL, parent, Name));
 		}
 		p = v.getPropList()->IsStatic();
@@ -2876,14 +2882,22 @@ void C4ScriptHost::CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to)
 		case C4V_Function:
 			{
 				C4AulScriptFunc * sf = prop->Value.getFunction()->SFunc();
-				//assert(sf->pOrgScript == *s);
-				C4AulScriptFunc *sfc;
-				if (sf->pOrgScript != this)
-					sfc = new C4AulScriptFunc(this, *sf);
+				if (sf)
+				{
+					//assert(sf->pOrgScript == *s);
+					C4AulScriptFunc *sfc;
+					if (sf->pOrgScript != this)
+						sfc = new C4AulScriptFunc(this, *sf);
+					else
+						sfc = sf;
+					sfc->SetOverloaded(to->GetFunc(sf->Name));
+					to->SetPropertyByS(prop->Key, C4VFunction(sfc));
+				}
 				else
-					sfc = sf;
-				sfc->SetOverloaded(to->GetFunc(sf->Name));
-				to->SetPropertyByS(prop->Key, C4VFunction(sfc));
+				{
+					// engine function
+					to->SetPropertyByS(prop->Key, prop->Value);
+				}
 			}
 			break;
 		case C4V_PropList:
@@ -2938,13 +2952,11 @@ bool C4ScriptHost::Parse()
 	C4AulParse state(this, C4AulParse::PARSER);
 	for (std::list<C4ScriptHost *>::iterator s = SourceScripts.begin(); s != SourceScripts.end(); ++s)
 	{
-		state.SPos = (*s)->Script.getData();
-		state.pOrgScript = *s;
 		if (DEBUG_BYTECODE_DUMP)
 		{
-			fprintf(stderr, "parsing %s...\n", state.pOrgScript->ScriptName.getData());
+			fprintf(stderr, "parsing %s...\n", (*s)->ScriptName.getData());
 		}
-		state.Parse_Script();
+		state.Parse_Script(*s);
 	}
 
 	// save line count

@@ -197,6 +197,14 @@ public func Eat(object food)
 	}
 }
 
+func DigOutObject(object obj)
+{
+	// Collect fragile objects when dug out
+	if (obj->GetDefFragile())
+		return Collect(obj,nil,nil,true);
+	return false;
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other
@@ -557,6 +565,24 @@ func SetSkin(int skin)
 }
 func GetSkinCount() { return 4; }
 
+
+/* AI editor helper */
+
+func EditCursorSelection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorSelection, ai);
+	return _inherited(...);
+}
+
+func EditCursorDeselection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorDeselection, ai);
+	return _inherited(...);
+}
+
+
 /* Act Map */
 
 local ActMap = {
@@ -882,7 +908,7 @@ Eat = {
 };
 local Name = "Clonk";
 local MaxEnergy = 50000;
-local MaxBreath = 252; // Clonk can breathe for 7 seconds under water.
+local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
 local NoBurnDecay = 1;

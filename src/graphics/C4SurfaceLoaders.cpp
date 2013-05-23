@@ -265,6 +265,8 @@ bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 
 /* JPEG loading */
 
+#ifndef USE_CONSOLE
+
 // Some distributions ship jpeglib.h with extern "C", others don't - gah.
 extern "C"
 {
@@ -394,3 +396,13 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup)
 	// return if successful
 	return true;
 }
+
+#else // ifndef USE_CONSOLE
+
+bool C4Surface::ReadJPEG(CStdStream &hGroup) {
+	// Dummy surface
+	if (!Create(1, 1)) return false;
+	return true;
+}
+
+#endif // USE_CONSOLE

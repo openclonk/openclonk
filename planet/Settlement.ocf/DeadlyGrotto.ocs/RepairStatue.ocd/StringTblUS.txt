@@ -1,0 +1,5 @@
+Name=Repair statue
+
+#Goal window
+MsgGoalFulfilled=Congratulations, the statue is shining in its full glory again!
+MsgGoalUnfulfilled=Find the missing statue part and return it to the statue.

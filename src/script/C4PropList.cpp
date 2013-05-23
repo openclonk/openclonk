@@ -130,16 +130,19 @@ C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
 
 void C4PropListNumbered::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
-	pComp->Value(Number);
+	int32_t n = Number;
+	pComp->Value(n);
 	pComp->Separator(StdCompiler::SEP_SEP2);
 	C4PropList::CompileFunc(pComp, numbers);
 	if (pComp->isCompiler())
 	{
-		if (PropLists.Get(Number))
+		if (PropLists.Get(n))
 		{
-			pComp->excCorrupt("multiple PropLists with Number %d", Number);
+			pComp->excCorrupt("multiple PropLists with Number %d", n);
 			return;
 		}
+		// Once this proplist has a Number, it has to be in PropLists. See the destructor below.
+		Number = n;
 		PropLists.Add(this);
 	}
 }
@@ -248,7 +251,7 @@ void C4PropList::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar)
 {
-	std::auto_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
+	std::unique_ptr<C4PropList> temp(C4PropList::New()); // exception-safety
 	pComp->Value(mkParAdapt(*temp, rPar));
 	pStruct = temp.release();
 }
@@ -376,6 +379,18 @@ C4Def const * C4PropList::GetDef() const
 {
 	if (prototype) return prototype->GetDef();
 	return 0;
+}
+
+class C4MapScriptLayer * C4PropList::GetMapScriptLayer()
+{
+	if (prototype) return prototype->GetMapScriptLayer();
+	return NULL;
+}
+
+class C4MapScriptMap * C4PropList::GetMapScriptMap()
+{
+	if (prototype) return prototype->GetMapScriptMap();
+	return NULL;
 }
 
 C4PropListNumbered * C4PropList::GetPropListNumbered()
@@ -520,6 +535,20 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n) const
 		return prototype->GetPropertyInt(n);
 	}
 	return 0;
+}
+
+C4PropList *C4PropList::GetPropertyPropList(C4PropertyName n) const
+{
+	C4String * k = &Strings.P[n];
+	if (Properties.Has(k))
+	{
+		return Properties.Get(k).Value.getPropList();
+	}
+	if (prototype)
+	{
+		return prototype->GetPropertyPropList(n);
+	}
+	return NULL;
 }
 
 C4ValueArray * C4PropList::GetProperties() const

@@ -332,10 +332,18 @@ static bool FnSmoke(C4PropList * _this, long tx, long ty, long level, long dwClr
 	return true;
 }
 
-static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy)
+static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy, C4PropList *insert_position, bool query_only)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
-	return !!::Landscape.InsertMaterial(mat,x,y,vx,vy);
+	int32_t insert_x=x, insert_y=y;
+	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,vx,vy,query_only)) return false;
+	// output insertion position if desired
+	if (insert_position && !insert_position->IsFrozen())
+	{
+		insert_position->SetProperty(P_X, C4VInt(insert_x));
+		insert_position->SetProperty(P_Y, C4VInt(insert_y));
+	}
+	return true;
 }
 
 static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
@@ -422,11 +430,12 @@ static long FnExtractMaterialAmount(C4PropList * _this, long x, long y, long mat
 	return extracted;
 }
 
-static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy)
+static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nillable<long> iCausedBy, Nillable<long> iMaxDensity)
 {
 	if (iCausedBy.IsNil() && Object(_this)) iCausedBy = Object(_this)->Controller;
+	if (iMaxDensity.IsNil()) iMaxDensity = C4M_Vehicle;
 
-	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this));
+	::Landscape.BlastFree(iX, iY, iLevel, iCausedBy, Object(_this), iMaxDensity);
 	return C4Void();
 }
 
@@ -1020,14 +1029,14 @@ static C4Void FnShakeFree(C4PropList * _this, long x, long y, long rad)
 	return C4Void();
 }
 
-static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects)
+static long FnDigFree(C4PropList * _this, long x, long y, long rad, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFree(x,y,rad,Object(_this),no_dig2objects);
+	return ::Landscape.DigFree(x,y,rad,Object(_this),no_dig2objects,no_instability_check);
 }
 
-static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects)
+static long FnDigFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt, bool no_dig2objects, bool no_instability_check)
 {
-	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects);
+	return ::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,Object(_this),no_dig2objects,no_instability_check);
 }
 
 static C4Void FnClearFreeRect(C4PropList * _this, long iX, long iY, long iWdt, long iHgt)
@@ -1135,9 +1144,9 @@ static bool FnOnMessageBoardAnswer(C4PropList * _this, C4Object *pObj, long iFor
 	C4AulParSet ps = C4AulParSet(C4VString(szAnswerString), C4VInt(iForPlr));
 	// get script
 	if (pObj)
-		return pObj->Call(PSF_InputCallback, &ps);
+		return pObj->Call(PSF_InputCallback, &ps).getBool();
 	else
-		return ::GameScript.Call(PSF_InputCallback, &ps);
+		return ::GameScript.Call(PSF_InputCallback, &ps).getBool();
 }
 
 static C4Void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)
@@ -2254,6 +2263,12 @@ static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, l
 	return String(assignment->GetKeysAsString(human_readable, short_name).getData());
 }
 
+static int32_t FnGetStartupPlayerCount(C4PropList * _this)
+{
+	// returns number of players when game was initially started
+	return ::Game.StartupPlayerCount;
+}
+
 extern C4ScriptConstDef C4ScriptGameConstMap[];
 extern C4ScriptFnDef C4ScriptGameFnMap[];
 
@@ -2416,6 +2431,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlAssignment", FnGetPlayerControlAssignment);
+	AddFunc(pEngine, "GetStartupPlayerCount", FnGetStartupPlayerCount);
 	AddFunc(pEngine, "PlayerObjectCommand", FnPlayerObjectCommand);
 	AddFunc(pEngine, "EditCursor", FnEditCursor);
 

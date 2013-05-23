@@ -1,0 +1,5 @@
+Name=Säurebohrung
+
+#Goal window
+MsgGoalFulfilled=Geschafft! Das Säurebecken ist gefüllt.
+MsgGoalUnfulfilled=Fülle das Becken mit Säure!

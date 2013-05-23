@@ -80,7 +80,8 @@ do_subst = sed -e 's,[@]C4PROJECT[@],'"$$(sed -n 's/SET(C4PROJECT\s\+"\(.\+\)")/
   -e 's,[@]C4XVER3[@],'"$$(sed -n 's/SET(C4XVER3\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4XVER4[@],'"$$(sed -n 's/SET(C4XVER4\s\+\(.\+\))/\1/ p' $(srcdir)/Version.txt)"',g' \
   -e 's,[@]C4VERSIONBUILDNAME[@],'"$$(sed -n 's/SET(C4VERSIONBUILDNAME\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
-  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g'
+  -e 's,[@]C4VERSIONEXTRA[@],'"$$(sed -n 's/SET(C4VERSIONEXTRA\s\+"\(.\+\)")/\1/ p' $(srcdir)/Version.txt)"',g' \
+  -e 's,[@]OC_BUILD_ID[@],,g'
 
 C4Version.h: $(srcdir)/src/C4Version.h.in $(srcdir)/Version.txt
 	$(do_subst) < $< > $@
@@ -348,6 +349,9 @@ src/landscape/C4LandscapeRender.h \
 src/landscape/C4Map.cpp \
 src/landscape/C4MapCreatorS2.cpp \
 src/landscape/C4MapCreatorS2.h \
+src/landscape/C4MapScript.cpp \
+src/landscape/C4MapScriptAlgo.cpp \
+src/landscape/C4MapScript.h \
 src/landscape/C4Map.h \
 src/landscape/C4MassMover.cpp \
 src/landscape/C4MassMover.h \
@@ -556,6 +560,7 @@ src/platform/C4WindowSDL.cpp
 else
 if GTK
 openclonk_SOURCES += \
+editor-icons.h oc-icon.h \
 src/editor/C4ConsoleGTK.cpp \
 src/editor/C4ConsoleGTKDlg.cpp \
 src/editor/C4ConsoleGTKDlg.h \
@@ -637,6 +642,46 @@ openclonk_LDADD = \
 .rc.o:
 	$(WINDRES) -I $(srcdir)/src/res -I $(builddir) -i $< -o $@
 
+if GTK
+editor-icons.h: \
+src/res/Brush_Trans.png \
+src/res/Halt_Trans.png \
+src/res/Picker_Trans.png \
+src/res/Cursor_Trans.png \
+src/res/Ift_Trans.png \
+src/res/Play_Trans.png \
+src/res/Dynamic_Trans.png \
+src/res/Line_Trans.png \
+src/res/Rect_Trans.png \
+src/res/Exact_Trans.png \
+src/res/Mouse_Trans.png \
+src/res/Static_Trans.png \
+src/res/Fill_Trans.png \
+src/res/NoIft_Trans.png
+	gdk-pixbuf-csource --raw --rle --static --build-list \
+		brush_pixbuf_data "$(srcdir)/src/res/Brush_Trans.png" \
+		halt_pixbuf_data "$(srcdir)/src/res/Halt_Trans.png" \
+		picker_pixbuf_data "$(srcdir)/src/res/Picker_Trans.png" \
+		cursor_pixbuf_data "$(srcdir)/src/res/Cursor_Trans.png" \
+		ift_pixbuf_data "$(srcdir)/src/res/Ift_Trans.png" \
+		play_pixbuf_data "$(srcdir)/src/res/Play_Trans.png" \
+		dynamic_pixbuf_data "$(srcdir)/src/res/Dynamic_Trans.png" \
+		line_pixbuf_data "$(srcdir)/src/res/Line_Trans.png" \
+		rect_pixbuf_data "$(srcdir)/src/res/Rect_Trans.png" \
+		exact_pixbuf_data "$(srcdir)/src/res/Exact_Trans.png" \
+		mouse_pixbuf_data "$(srcdir)/src/res/Mouse_Trans.png" \
+		static_pixbuf_data "$(srcdir)/src/res/Static_Trans.png" \
+		fill_pixbuf_data "$(srcdir)/src/res/Fill_Trans.png" \
+		no_ift_pixbuf_data "$(srcdir)/src/res/NoIft_Trans.png" \
+		> $@
+oc-icon.h: src/res/oc.ico
+	gdk-pixbuf-csource --raw --rle --static --build-list oc_icon_pixbuf_data "$(srcdir)/src/res/oc.ico" > $@
+BUILT_SOURCES += editor-icons.h oc-icon.h
+CLEANFILES += editor-icons.h oc-icon.h
+endif
+
+## c4group
+
 c4group_SOURCES = \
 src/lib/C4SimpleLog.cpp \
 src/c4group/C4GroupMain.cpp
@@ -708,11 +753,8 @@ c4script_LDADD = \
   $(LDADD) \
   $(Z_LIBS)
 
-if WIN32
-c4script_LDADD += -lwinmm
-endif
-
 ## mape
+if MAPE
 mape_SOURCES = \
 mape-icons.h \
 src/landscape/C4MapCreatorS2.cpp \
@@ -801,6 +843,7 @@ mape-icons.h: $(mape_icons)
 		> $@
 BUILT_SOURCES += mape-icons.h
 CLEANFILES += mape-icons.h
+endif
 
 ## documentation
 dist_doc_DATA = planet/AUTHORS planet/COPYING licenses/LGPL.txt Credits.txt

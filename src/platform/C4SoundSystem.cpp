@@ -283,6 +283,7 @@ bool C4SoundInstance::Start()
 	Application.MusicSystem.SelectContext();
 	alGenSources(1, (ALuint*)&iChannel);
 	alSourcei(iChannel, AL_BUFFER, pEffect->pSample);
+	alSourcei(iChannel, AL_LOOPING,  fLooping ? AL_TRUE : AL_FALSE);
 	alSourcePlay(iChannel);
 #else
 	return false;
@@ -400,7 +401,7 @@ void C4SoundInstance::Execute()
 #endif
 #ifdef USE_OPEN_AL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
-		alSourcef(iChannel, AL_GAIN, iVol / 100);
+		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));
 #endif
 	}
 }

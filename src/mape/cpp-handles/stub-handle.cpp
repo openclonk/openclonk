@@ -31,6 +31,7 @@
 #include "C4Record.h"
 #include "C4RoundResults.h"
 #include "CSurface8.h"
+#include "C4MapScript.h"
 
 /* This file implements stubs for the parts of the engine that are not used
  * by mape. It also instantiates global variables required by mape that are
@@ -115,7 +116,7 @@ C4Landscape::C4Landscape() {}
 C4Landscape::~C4Landscape() {}
 bool C4Landscape::FindMatSlide(int&, int&, int, int, int) { return false; }
 int32_t C4Landscape::ExtractMaterial(int32_t, int32_t) { return 0; }
-bool C4Landscape::InsertMaterial(int32_t, int32_t, int32_t, int32_t, int32_t) { return false; }
+bool C4Landscape::InsertMaterial(int32_t, int32_t *, int32_t *, int32_t, int32_t, bool) { return false; }
 bool C4Landscape::Incinerate(int32_t, int32_t) { return false; }
 bool C4Landscape::ClearPix(int32_t, int32_t) { return false; }
 void C4Landscape::CheckInstabilityRange(int32_t, int32_t) {}
@@ -201,3 +202,10 @@ void C4AulDebug::DebugStepIn(C4AulBCC*) {}
 void C4AulDebug::DebugStepOut(C4AulBCC*, C4AulScriptContext*, C4Value*) {}
 void C4AulDebug::DebugStep(C4AulBCC*) {}
 
+C4MapScriptHost MapScript;
+C4MapScriptHost::C4MapScriptHost() {}
+C4MapScriptHost::~C4MapScriptHost() {}
+void C4MapScriptHost::Clear() {}
+C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
+bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+void C4MapScriptHost::AddEngineFunctions() {}

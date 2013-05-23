@@ -2,7 +2,7 @@
 Icon=1
 Title=IronPeak
 Version=5,0,0,0
-Difficulty=20
+Difficulty=40
 
 [Definitions]
 Definition1=Objects.ocd
@@ -40,7 +40,7 @@ InEarthLevel=30,0,0,100
 Sky=Clouds2
 MapWidth=150
 MapHeight=150
-BottomOpen=1
+BottomOpen=2
 
 [Weather]
 Climate=100

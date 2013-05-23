@@ -1,0 +1,3 @@
+Name=Signpost
+MsgRead=Read
+MsgUnreadable=Unreadable.

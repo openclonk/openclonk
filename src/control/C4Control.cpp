@@ -1026,7 +1026,7 @@ void C4ControlEMDrawTool::Execute() const
 		{
 			int32_t itX=iX+Random(iGrade)-iGrade/2;
 			int32_t itY=iY+Random(iGrade)-iGrade/2;
-			::Landscape.InsertMaterial(iMat,itX,itY);
+			::Landscape.InsertMaterial(iMat,&itX,&itY);
 		}
 	}
 	break;

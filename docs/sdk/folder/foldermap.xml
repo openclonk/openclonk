@@ -158,7 +158,7 @@
     </text>
     <text>The image is always stretched to the full available screen area. All coordinates given for section elements are relative to the unstretched background image.</text>
     <h id="devel">Useful Hints</h>
-    <text>For testing purposes a folder map can be loaded from an unpacked scenario folder and reloaded an runtime using F5. If the classic scenario selection appears instead of the folder map, an error has occured in the folder map declaration, such as missing image files. With debug mode activated, there will also be an error message in Clonk.log.</text>
+    <text>For testing purposes a folder map can be loaded from an unpacked scenario folder and reloaded an runtime using F5. If the classic scenario selection appears instead of the folder map, an error has occured in the folder map declaration, such as missing image files. With debug mode activated, there will also be an error message in OpenClonk.log.</text>
   </part>
   <author>Sven2</author><date>2006-09</date>
 </doc>

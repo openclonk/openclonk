@@ -332,11 +332,13 @@ Y=F34136180
 Width=20
 Height=60
 Offset=-10,-30
-Vertices=2
-VertexY=-25,25
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -353,11 +355,13 @@ Y=F34735944
 Width=16
 Height=48
 Offset=-8,-24
-Vertices=2
-VertexY=-20,20
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -374,11 +378,13 @@ Y=F33963176
 Width=13
 Height=39
 Offset=-6,-19
-Vertices=2
-VertexY=-16,16
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -395,11 +401,13 @@ Y=F35136616
 Width=8
 Height=24
 Offset=-4,-12
-Vertices=2
-VertexY=-10,10
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -416,11 +424,13 @@ Y=F37240914
 Width=20
 Height=60
 Offset=-10,-30
-Vertices=2
-VertexY=-25,25
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -437,11 +447,13 @@ Y=F35964668
 Width=20
 Height=60
 Offset=-10,-30
-Vertices=2
-VertexY=-25,25
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -625,11 +637,13 @@ R=F11796480
 Width=36
 Height=36
 Offset=-18,-18
-Vertices=2
-VertexY=13,-13
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -646,11 +660,13 @@ Y=F12668325
 Width=13
 Height=39
 Offset=-6,-19
-Vertices=2
-VertexY=-16,16
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -1297,11 +1313,13 @@ Y=F69795840
 Width=16
 Height=48
 Offset=-8,-24
-Vertices=2
-VertexY=-20,20
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -1318,11 +1336,13 @@ Y=F74055680
 Width=14
 Height=42
 Offset=-7,-21
-Vertices=2
-VertexY=-17,17
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -1341,12 +1361,13 @@ R=F12779520
 Width=66
 Height=66
 Offset=-33,-33
-Vertices=2
-VertexX=-6,6
-VertexY=24,-24
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845761
+Component=Wood=3
 
   [Mesh]
   Valid=true
@@ -1411,11 +1432,13 @@ Y=F32981494
 Width=6
 Height=18
 Offset=-3,-9
-Vertices=2
-VertexY=-7,7
-VertexCNAT=4,8
+Vertices=4
+VertexX=-3,-5,5,0
+VertexY=-23,17,17,25
+VertexCNAT=4,8,8,8
 Picture=0,0,0,0
 OCF=12845697
+Component=Wood=3
 
   [Mesh]
   Valid=true

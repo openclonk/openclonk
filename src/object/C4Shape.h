@@ -83,7 +83,7 @@ public:
 	int32_t GetVertexContact(int32_t iVtx, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider = DefaultDensityProvider); // get CNAT-mask for given vertex - does not check range for iVtx!
 	bool CheckScaleToWalk(int x, int y);
 	void CreateOwnOriginalCopy(C4Shape &rFrom); // create copy of all vertex members in back area of own buffers
-	void CompileFunc(StdCompiler *pComp, bool fRuntime);
+	void CompileFunc(StdCompiler *pComp, const C4Shape *default_shape);
 };
 
 #endif // INC_C4Shape

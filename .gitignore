@@ -4,7 +4,7 @@ autom4te.cache
 .deps
 deps
 *.o
-/clonk
+/openclonk
 /netpuncher
 /c4group
 /c4script
@@ -40,6 +40,8 @@ planet/CMakeCache.txt
 CPackConfig.cmake
 CPackSourceConfig.cmake
 *.rule
+editor-icons.h
+oc-icon.h
 
 # Documentation
 *.pyc
@@ -84,6 +86,7 @@ openclonk.ilk
 *.vcproj
 *.vcxproj
 *.vcxproj.filters
+/ipch
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -122,6 +125,7 @@ planet/.project
 openclonk.layout
 openclonk.sdf
 openclonk.cbp
+tests/openclonk_unittest.cbp
 
 # MacOSX saved searches
 *.savedSearch
@@ -132,3 +136,5 @@ WindowsGamesExplorer.xml
 # Mape
 mape
 mape-icons.h
+
+

@@ -8,7 +8,7 @@
  * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Nicolas Hake
+ * Copyright (c) 2011, 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -30,6 +30,7 @@
 #ifdef HAVE_DBGHELP
 
 // Dump generation on crash
+#include <C4Version.h>
 #include <C4windowswrapper.h>
 #include <dbghelp.h>
 #include <fcntl.h>
@@ -64,26 +65,28 @@ namespace {
 #endif
 #define LOG_STATIC_TEXT(text) write(fd, text, sizeof(text) - 1)
 #define LOG_DYNAMIC_TEXT(...) write(fd, DumpBuffer, LOG_SNPRINTF(DumpBuffer, DumpBufferSize-1, __VA_ARGS__))
-#if OC_MACHINE == OC_MACHINE_X64
-#	if defined(_MSC_VER) || defined(__MINGW32__)
-#		define POINTER_FORMAT "0x%016Ix"
-#	elif defined(__GNUC__)
-#		define POINTER_FORMAT "0x%016zx"
-#	else
-#		define POINTER_FORMAT "0x%016p"
-#	endif
-#elif OC_MACHINE == OC_MACHINE_X86
-#	if defined(_MSC_VER) || defined(__MINGW32__)
-#		define POINTER_FORMAT "0x%08Ix"
-#	elif defined(__GNUC__)
-#		define POINTER_FORMAT "0x%08zx"
-#	else
-#		define POINTER_FORMAT "0x%08p"
-#	endif
+
+// Figure out which kind of format string will output a pointer in hex
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#	define POINTER_FORMAT_SUFFIX "Ix"
+#elif defined(__GNUC__)
+#	define POINTER_FORMAT_SUFFIX "zx"
 #else
-#	define POINTER_FORMAT "0x%p"
+#	define POINTER_FORMAT_SUFFIX "p"
 #endif
-		
+#if OC_MACHINE == OC_MACHINE_X64
+#	define POINTER_FORMAT "0x%016" POINTER_FORMAT_SUFFIX
+#elif OC_MACHINE == OC_MACHINE_X86
+#	define POINTER_FORMAT "0x%08" POINTER_FORMAT_SUFFIX
+#else
+#	define POINTER_FORMAT "0x%" POINTER_FORMAT_SUFFIX
+#endif
+
+		LOG_STATIC_TEXT("**********************************************************************\n");
+		LOG_STATIC_TEXT("* UNHANDLED EXCEPTION\n");
+		if (OC_BUILD_ID[0] != '\0')
+			LOG_STATIC_TEXT("* Build Identifier: " OC_BUILD_ID "\n");
+		LOG_STATIC_TEXT("**********************************************************************\n");
 		// Log exception type
 		switch (exc->ExceptionRecord->ExceptionCode)
 		{
@@ -187,14 +190,14 @@ namespace {
 			static_cast<size_t>(exc->ContextRecord->Eip));
 #endif
 #if OC_MACHINE == OC_MACHINE_X64 || OC_MACHINE == OC_MACHINE_X86
-		LOG_DYNAMIC_TEXT("EFLAGS: %#08x (%c%c%c%c%c%c%c)\n", static_cast<unsigned int>(exc->ContextRecord->EFlags),
-			exc->ContextRecord->EFlags & 0x800 ? 'O' : '.',
-			exc->ContextRecord->EFlags & 0x400 ? 'D' : '.',
-			exc->ContextRecord->EFlags &  0x80 ? 'S' : '.',
-			exc->ContextRecord->EFlags &  0x40 ? 'Z' : '.',
-			exc->ContextRecord->EFlags &  0x10 ? 'A' : '.',
-			exc->ContextRecord->EFlags &   0x4 ? 'P' : '.',
-			exc->ContextRecord->EFlags &   0x1 ? 'C' : '.');
+		LOG_DYNAMIC_TEXT("EFLAGS: 0x%08x (%c%c%c%c%c%c%c)\n", static_cast<unsigned int>(exc->ContextRecord->EFlags),
+			exc->ContextRecord->EFlags & 0x800 ? 'O' : '.',	// overflow
+			exc->ContextRecord->EFlags & 0x400 ? 'D' : '.',	// direction
+			exc->ContextRecord->EFlags &  0x80 ? 'S' : '.',	// sign
+			exc->ContextRecord->EFlags &  0x40 ? 'Z' : '.',	// zero
+			exc->ContextRecord->EFlags &  0x10 ? 'A' : '.',	// auxiliary carry
+			exc->ContextRecord->EFlags &   0x4 ? 'P' : '.',	// parity
+			exc->ContextRecord->EFlags &   0x1 ? 'C' : '.');	// carry
 #endif
 
 		// Dump stack
@@ -283,24 +286,33 @@ namespace {
 			while (StackWalk64(image_type, process, GetCurrentThread(), &frame, &context, 0, SymFunctionTableAccess64, SymGetModuleBase64, 0))
 			{
 				LOG_DYNAMIC_TEXT("#%3d ", frame_number);
+				module->SizeOfStruct = sizeof(*module);
+				DWORD64 image_base = 0;
 				if (SymGetModuleInfo64(process, frame.AddrPC.Offset, module))
 				{
-					LOG_DYNAMIC_TEXT("%s!", module->ImageName);
+					LOG_DYNAMIC_TEXT("%s", module->ModuleName);
+					image_base = module->BaseOfImage;
 				}
 				DWORD64 disp64;
 				symbol->MaxNameLen = DumpBufferSize - sizeof(*symbol);
+				symbol->SizeOfStruct = sizeof(*symbol);
 				if (SymFromAddr(process, frame.AddrPC.Offset, &disp64, symbol))
 				{
-					LOG_DYNAMIC_TEXT("%s + %#lx bytes", symbol->Name, static_cast<long>(disp64));
+					LOG_DYNAMIC_TEXT("!%s+%#lx", symbol->Name, static_cast<long>(disp64));
+				}
+				else if (image_base > 0)
+				{
+					LOG_DYNAMIC_TEXT("+%#lx", static_cast<size_t>(frame.AddrPC.Offset - image_base));
 				}
 				else
 				{
-					LOG_DYNAMIC_TEXT("[" POINTER_FORMAT "]", static_cast<size_t>(frame.AddrPC.Offset));
+					LOG_DYNAMIC_TEXT("%#lx", static_cast<size_t>(frame.AddrPC.Offset));
 				}
 				DWORD disp;
+				line->SizeOfStruct = sizeof(*line);
 				if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &disp, line))
 				{
-					LOG_DYNAMIC_TEXT(" (%s Line %u + %#lx bytes)", line->FileName, static_cast<unsigned int>(line->LineNumber), static_cast<long>(disp));
+					LOG_DYNAMIC_TEXT(" [%s @ %u]", line->FileName, static_cast<unsigned int>(line->LineNumber));
 				}
 				LOG_STATIC_TEXT("\n");
 				++frame_number;
@@ -334,6 +346,8 @@ namespace {
 		// (Try to) log it
 		if (exc->ExceptionRecord->ExceptionCode != STATUS_ASSERTION_FAILURE)
 		LOG_STATIC_TEXT("FATAL: Clonk crashed! Some developer might be interested in Clonk.dmp...");
+#undef POINTER_FORMAT_SUFFIX
+#undef POINTER_FORMAT
 #undef LOG_SNPRINTF
 #undef LOG_DYNAMIC_TEXT
 #undef LOG_STATIC_TEXT
@@ -341,6 +355,11 @@ namespace {
 }
 LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 {
+	enum
+	{
+		MDST_BuildId = LastReservedStream + 1
+	};
+
 	if (!FirstCrash) return EXCEPTION_EXECUTE_HANDLER;
 	FirstCrash = false;
 
@@ -351,12 +370,24 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	// Write dump (human readable format)
 	SafeTextDump(pExceptionPointers, GetLogFD());
 
+	MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
+	MINIDUMP_USER_STREAM user_stream = {0};
+	char build_id[] = OC_BUILD_ID;
+	if (OC_BUILD_ID[0] != '\0')
+	{
+		user_stream.Type = MDST_BuildId;
+		user_stream.Buffer = build_id;
+		user_stream.BufferSize = sizeof(build_id) - 1;	// don't need the terminating NUL
+		user_stream_info.UserStreamCount = 1;
+		user_stream_info.UserStreamArray = &user_stream;
+	}
+
 	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
 	ExpParam.ThreadId = GetCurrentThreadId();
 	ExpParam.ExceptionPointers = pExceptionPointers;
 	ExpParam.ClientPointers = true;
 	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-	                  file, MiniDumpNormal, &ExpParam, NULL, NULL);
+	                  file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
 	CloseHandle(file);
 
 	// Pass exception

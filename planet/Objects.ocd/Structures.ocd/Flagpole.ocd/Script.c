@@ -73,3 +73,11 @@ public func Selected(object menu, proplist menu_item, bool alt)
 	menu->Show();
 	return true;
 }
+
+func OnOwnerRemoved(int new_owner)
+{
+	// Our owner is dead :(
+	// Flag is passed on to the next best owner
+	SetOwner(new_owner);
+	return true;
+}

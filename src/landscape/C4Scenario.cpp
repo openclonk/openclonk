@@ -309,8 +309,8 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
 	pComp->Value(mkNamingAdapt(mkStringAdaptMA(SkyDef), "Sky",                   ""));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
-	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            false));
-	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               true));
+	pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            0));
+	pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               1));
 	pComp->Value(mkNamingAdapt(LeftOpen,                "LeftOpen",              0));
 	pComp->Value(mkNamingAdapt(RightOpen,               "RightOpen",             0));
 	pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      true));
@@ -484,5 +484,5 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
 
 bool C4SGame::IsMelee()
 {
-	return (Goals.GetIDCount(C4ID::Melee));
+	return !!(Goals.GetIDCount(C4ID::Melee));
 }

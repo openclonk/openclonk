@@ -41,7 +41,7 @@
         <text>Makes a clonk explode after 1000 ticks delay.</text>
       </example>
       <example>
-        <code>Schedule(<code>nil</code>, &quot;<funclink>DoWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), 1)&quot;<funclink></funclink>, 1, 100);</code>
+        <code>Schedule(nil, &quot;<funclink>DoWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), 1)&quot;<funclink></funclink>, 1, 100);</code>
         <text>Gives one unit of money per frame to the first player for 100 frames. Notice that if the first player is eliminated, the donations will continue for the next (first) player, since the receiving player is determined anew in each execution.</text>
       </example>
     </examples>

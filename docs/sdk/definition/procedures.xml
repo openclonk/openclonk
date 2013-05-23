@@ -38,7 +38,7 @@
         <col>Behaviour according to <emlink href="definition/actmap.html">activity</emlink>.</col>
         <col>CNAT_Bottom</col>
       </row>
-      <row iD="SCALE">
+      <row id="SCALE">
         <col>SCALE</col>
         <col>Scaling a wall</col>
         <col>According to current <emlink href="script/fn/SetComDir.html">ComDir</emlink>.</col>
@@ -101,7 +101,7 @@
       <row id="CONNECT">
         <col>CONNECT</col>
         <col>Line connections</col>
-        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>.</col>
+        <col>Only <emlink href="definition/lineconnect.html">line objects</emlink>. Connects <emlink href="script/fn/SetAction.html">target object 1</emlink> and <emlink href="script/fn/SetAction.html">target object 2</emlink>. If property LineMaxDistance is a nonzero integer, the line breaks when the target objects are further apart than the given distance.</col>
         <col>CNAT_None</col>
       </row>
       <row id="PULL">

@@ -5,9 +5,9 @@
 <doc>
   <title>Command Line Parameters</title>
   <h>Command Line Parameters</h>
-  <text>The installation directory of Clonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified.</text>
+  <text>The installation directory of OpenClonk contains various executable program files. Usually programs are started with a double click or from a start menu without additional parameters. When starting programs from a command line shell or script file (batch file), additional command line parameters can be specified.</text>
   <part>
-    <h id="Clonk">Clonk.exe (Windows) clonk (Linux) Clonk (Mac)</h>
+    <h id="Clonk">openclonk.exe (Windows) openclonk (Linux) Openclonk (Mac)</h>
     <text>The engine. The main program of the game. Without startup parameters, the game starts in fullscreen (player mode) and shows the startup menu. The following command line parameters are recognized:</text>
     <dl>
       <dt id="editor">--editor</dt>
@@ -82,7 +82,7 @@
       </dd>
       <dt id="recdump">--recdump=&lt;<em>Filename</em>&gt;</dt>
       <dd>
-        <text>Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt).</text>
+        <text>Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. openclonk.exe Records.ocf/Record001.ocs --recdump=CtrlRec.txt).</text>
       </dd>
       <dt id="startup">--startup=&lt;<em>Name</em>&gt;</dt>
       <dd>
@@ -108,7 +108,7 @@
   </part>
   <part>
     <h id="C4Group">c4group.exe (Windows) c4group (Linux) c4group (Mac)</h>
-    <text>This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking).</text>
+    <text>This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<em>not</em> by double clicking).</text>
   </part>
   <author>Sven2</author><date>2007-02</date>
   <author>Günther</author><date>2011</date>

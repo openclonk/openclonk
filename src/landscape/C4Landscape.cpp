@@ -1,4 +1,4 @@
-/*
+/*	
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 1998-2000  Matthes Bender
@@ -57,6 +57,9 @@
 #include <CSurface8.h>
 #include <StdPNG.h>
 #include <C4MaterialList.h>
+#include <C4FindObject.h>
+#include <C4GameObjects.h>
+#include <C4MapScript.h>
 
 C4Landscape::C4Landscape()
 {
@@ -241,6 +244,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	}
 #endif
 	// Conversion
+	bool conv_to_is_solid = (conv_to>-1) && DensitySolid(::MaterialMap.Map[conv_to].Density);
 	for (cy2 = cy; mconvs >= 0 && Inside<int32_t>(cy2, 0, GBackHgt-1); cy2 += ydir, mconvs--)
 	{
 		// material changed?
@@ -254,7 +258,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 #endif
 		// set mat
 		SBackPix(cx,cy2,MatTex2PixCol(conv_to_tex)+PixColIFT(pix));
-		CheckInstabilityRange(cx,cy2);
+		if (!conv_to_is_solid) CheckInstabilityRange(cx,cy2);
 	}
 	// return pixel converted
 	return Abs(cy2 - cy);
@@ -377,22 +381,22 @@ void C4Landscape::ClearFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ClearPix);
 }
 
-int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects)
+int32_t C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
 {
 	std::vector<int32_t> vertices(GetRectangle(tx,ty,wdt,hgt));
-	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects, no_instability_check);
 }
 
-int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object, bool no_dig2objects)
+int32_t C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
 {
 	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,80));
-	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects);
+	return DigFreeShape(&vertices[0],vertices.size(),by_object, no_dig2objects, no_instability_check);
 }
 
-void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object)
+void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t caused_by, C4Object *by_object, int32_t iMaxDensity)
 {
 	std::vector<int32_t> vertices(GetRoundPolygon(tx,ty,rad,30));
-	BlastFreeShape(&vertices[0],vertices.size(),by_object,caused_by);
+	BlastFreeShape(&vertices[0],vertices.size(),by_object,caused_by,iMaxDensity);
 }
 
 void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
@@ -401,19 +405,34 @@ void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
 	ForPolygon(&vertices[0],vertices.size()/2,&C4Landscape::ShakeFreePix);
 }
 
-int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bool no_dig2objects)
+int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bool no_dig2objects, bool no_instability_check)
 {
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 	int32_t amount;
+
+	// Remember any collectible objects in area
+	C4FindObjectInRect fo_inrect(BoundingBox);
+	C4FindObjectOCF fo_collectible(OCF_Carryable);
+	C4FindObjectOCF fo_insolid(OCF_InSolid);
+	C4FindObjectLayer fo_layer(by_object ? by_object->Layer : NULL);
+	C4FindObject *fo_list[] = {&fo_inrect, &fo_collectible, &fo_insolid, &fo_layer};
+	C4FindObjectAndStatic fo_srch(4, fo_list);
+	std::unique_ptr<C4ValueArray> dig_objects(fo_srch.FindMany(::Objects, ::Objects.Sectors));
 
 	if(by_object)
 	{
 		if(!by_object->MaterialContents)
 			by_object->MaterialContents = new C4MaterialList;
-		amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,by_object->MaterialContents);
+		if (no_instability_check)
+			amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePixNoInstability,by_object->MaterialContents);
+		else
+			amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,by_object->MaterialContents);
 	}
 	else
-		amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,NULL);
+		if (no_instability_check)
+			amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePixNoInstability,NULL);
+		else
+			amount = ForPolygon(vtcs,length/2,&C4Landscape::DigFreePix,NULL);
 
 	// create objects from the material
 	if(!::Game.iTick5)
@@ -426,25 +445,48 @@ int32_t C4Landscape::DigFreeShape(int *vtcs, int length, C4Object *by_object, bo
 					DigMaterial2Objects(tx,ty,by_object->MaterialContents, by_object);
 				}
 	}
+
+	// Do callbacks to digger for objects that are now dug free
+	if (by_object)
+	{
+		for (int32_t i=0; i<dig_objects->GetSize(); ++i)
+		{
+			C4Object *dig_object = dig_objects->GetItem(i).getObj();
+			if (dig_object && !GBackSolid(dig_object->GetX(), dig_object->GetY()))
+				if (!dig_object->Contained && dig_object->Status)
+				{
+					C4AulParSet pars(C4VObj(dig_object));
+					by_object->Call(PSF_DigOutObject, &pars);
+				}
+		}
+	}
+
 	return amount;
 }
 
-void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player)
+void C4Landscape::BlastFreeShape(int *vtcs, int length, C4Object *by_object, int32_t by_player, int32_t iMaxDensity)
 {
 	C4MaterialList *MaterialContents = NULL;
 
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
 
+	uint8_t *pblast_tbl = NULL, blast_tbl[256];
+	if (iMaxDensity < C4M_Vehicle)
+	{
+		for (int32_t i=0; i<256; ++i) blast_tbl[i] = (GetPixDensity(i)<=iMaxDensity);
+		pblast_tbl = blast_tbl;
+	}
+
 	if(by_object)
 	{
 		if(!by_object->MaterialContents)
 			by_object->MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents);
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,by_object->MaterialContents, 0, pblast_tbl);
 	}
 	else
 	{
 		MaterialContents = new C4MaterialList;
-		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,MaterialContents);
+		ForPolygon(vtcs,length/2,&C4Landscape::BlastFreePix,MaterialContents,iMaxDensity);
 	}
 
 	// create objects from the material
@@ -516,6 +558,18 @@ void C4Landscape::DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *ma
 					}
 		}
 	}
+}
+
+bool C4Landscape::DigFreePixNoInstability(int32_t tx, int32_t ty)
+{
+	int32_t mat = GetMat(tx,ty);
+	if (MatValid(mat))
+		if (::MaterialMap.Map[mat].DigFree)
+		{
+			ClearPix(tx,ty);
+			return true;
+		}
+	return false;
 }
 
 bool C4Landscape::DigFreePix(int32_t tx, int32_t ty)
@@ -680,12 +734,27 @@ bool C4Landscape::_SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask)
 	return true;
 }
 
-bool C4Landscape::CheckInstability(int32_t tx, int32_t ty)
+bool C4Landscape::CheckInstability(int32_t tx, int32_t ty, int32_t recursion_count)
 {
 	int32_t mat=GetMat(tx,ty);
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Instable)
 			return ::MassMover.Create(tx,ty);
+		// Get rid of single pixels
+		else if (::MaterialMap.Map[mat].DigFree && recursion_count<10)
+			if ((!::GBackSolid(tx,ty+1)) + (!::GBackSolid(tx,ty-1)) + (!::GBackSolid(tx+1,ty)) + (!::GBackSolid(tx-1,ty)) >= 3)
+			{
+				if (!ClearPix(tx,ty)) return false;
+				::PXS.Create(mat,itofix(tx),itofix(ty));
+				// check other pixels around this
+				// Note this cannot lead to an endless recursion (unless you do funny stuff like e.g. set DigFree=1 in material Tunnel).
+				// Check recursion anyway, because very large strips of single pixel width might cause sufficient recursion to crash
+				CheckInstability(tx+1,ty,++recursion_count);
+				CheckInstability(tx-1,ty,recursion_count);
+				CheckInstability(tx,ty-1,recursion_count);
+				CheckInstability(tx,ty+1,recursion_count);
+				return true;
+			}
 	return false;
 }
 
@@ -704,8 +773,7 @@ void C4Landscape::DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t 
 	int32_t cx,cy;
 	for (cy=ty; cy<ty+hgt; cy++)
 		for (cx=tx; cx<tx+wdt; cx++)
-			if ( (MatDensity(mat)>GetDensity(cx,cy))
-			     || ((MatDensity(mat)==GetDensity(cx,cy)) && (MatDigFree(mat)<=MatDigFree(GetMat(cx,cy)))) )
+			if ( (MatDensity(mat)>=GetDensity(cx,cy)))
 				SetPix(cx,cy,Mat2PixColDefault(mat)+GBackIFT(cx,cy));
 }
 
@@ -736,53 +804,57 @@ int32_t C4Landscape::ExtractMaterial(int32_t fx, int32_t fy)
 	return mat;
 }
 
-bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx, int32_t vy)
+bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t vx, int32_t vy, bool query_only)
 {
+	assert(tx); assert(ty);
 	int32_t mdens;
 	if (!MatValid(mat)) return false;
-	mdens=MatDensity(mat);
+	mdens=Min(MatDensity(mat), C4M_Solid);
 	if (!mdens) return true;
 
 	// Bounds
-	if (!Inside<int32_t>(tx,0,Width-1) || !Inside<int32_t>(ty,0,Height)) return false;
+	if (!Inside<int32_t>(*tx,0,Width-1) || !Inside<int32_t>(*ty,0,Height)) return false;
 
 	if (Game.C4S.Game.Realism.LandscapePushPull)
 	{
 		// Same or higher density?
-		if (GetDensity(tx, ty) >= mdens)
+		if (GetDensity(*tx, *ty) >= mdens)
 			// Push
-			if (!FindMatPathPush(tx, ty, mdens, ::MaterialMap.Map[mat].MaxSlide, !! ::MaterialMap.Map[mat].Instable))
+			if (!FindMatPathPush(*tx, *ty, mdens, ::MaterialMap.Map[mat].MaxSlide, !! ::MaterialMap.Map[mat].Instable))
 				// Or die
 				return false;
 	}
 	else
 	{
 		// Move up above same density
-		while (mdens==GetDensity(tx,ty))
+		while (mdens==Min(GetDensity(*tx,*ty),C4M_Solid))
 		{
-			ty--; if (ty<0) return false;
+			(*ty)--; if (*ty<0) return false;
 			// Primitive slide (1)
-			if (GetDensity(tx-1,ty)<mdens) tx--;
-			if (GetDensity(tx+1,ty)<mdens) tx++;
+			if (GetDensity(*tx-1,*ty)<mdens) (*tx)--;
+			if (GetDensity(*tx+1,*ty)<mdens) (*tx)++;
 		}
 		// Stuck in higher density
-		if (GetDensity(tx,ty)>mdens) return false;
+		if (GetDensity(*tx,*ty)>mdens) return false;
 	}
 
 	// Try slide
-	while (FindMatSlide(tx,ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
-		if (GetDensity(tx,ty+1)<mdens)
-			{ ::PXS.Create(mat,itofix(tx),itofix(ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+	while (FindMatSlide(*tx,*ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
+		if (GetDensity(*tx,*ty+1)<mdens)
+			{ if (!query_only) ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
+
+	// Insertion OK here
+	if (query_only) return true;
 
 	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
 	int32_t check_dir = 0;
 	for (int32_t i=0; i<2; ++i)
 	{
-		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+check_dir))))
+		if ((pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(*tx,*ty+check_dir))))
 		{
 			C4Real fvx=C4REAL10(vx), fvy=C4REAL10(vy);
-			if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
+			if ((*pReact->pFunc)(pReact, *tx,*ty, *tx,*ty+check_dir, fvx,fvy, mat,tmat, meePXSPos,NULL))
 			{
 				// the material to be inserted killed itself in some material reaction below
 				return true;
@@ -792,7 +864,7 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 	}
 
 	// Insert as dead material
-	return InsertDeadMaterial(mat, tx, ty);
+	return InsertDeadMaterial(mat, *tx, *ty);
 }
 
 bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
@@ -824,7 +896,10 @@ bool C4Landscape::InsertDeadMaterial(int32_t mat, int32_t tx, int32_t ty)
 
 	// Search a position for the old material pixel
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat))
-		InsertMaterial(omat, tx, ty-1);
+	{
+		int32_t tyo = ty-1;
+		InsertMaterial(omat, &tx, &tyo);
+	}
 
 	return true;
 }
@@ -968,21 +1043,27 @@ int32_t C4Landscape::ForPolygon(int *vtcs, int length, bool (C4Landscape::*fnCal
 			// Fix coordinates
 			if (x1>x2) Swap(x1,x2);
 			// Set line
-			if (conversion_table)
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
-			else if(col)
-				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
-			else
+			if (fnCallback)
+			{
 				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--)
 				{
-					int32_t mat = GetMat(x1+xcnt,y);
-					if((this->*fnCallback)(x1+xcnt,y))
-						if(mats_count)
-						{
-							mats_count->Add(mat,1);
-							amount++;
-						}
+					uint8_t pix = GetPix(x1+xcnt, y);
+					if (!conversion_table || conversion_table[pix])
+					{
+						int32_t mat = GetPixMat(pix);
+						if((this->*fnCallback)(x1+xcnt,y))
+							if(mats_count)
+							{
+								mats_count->Add(mat,1);
+								amount++;
+							}
+					}
 				}
+			}
+			else if (conversion_table)
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+			else
+				for (int xcnt=x2-x1-1; xcnt>=0; xcnt--) Surface8->SetPix(x1+xcnt, y, col);
 			edge = edge->next->next;
 		}
 
@@ -1043,6 +1124,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
 	delete pLandscapeRender; pLandscapeRender=NULL;
+	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
 	// clear initial landscape
@@ -1054,7 +1136,7 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	delete [] PixCnt; PixCnt = NULL;
 	PixCntPitch = 0;
 	// clear bridge material conversion temp buffers
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
@@ -1118,16 +1200,19 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		if ((sfcMap=GroupReadSurface8(hGroup, C4CFN_Map)))
 			if (!fLandscapeModeSet) Mode=C4LSC_Static;
 
-		// dynamic map from file
+		// dynamic map from Landscape.txt
 		if (!sfcMap)
 			if ((sfcMap=CreateMapS2(hGroup)))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
+
+		// script may create or edit map
+		if (MapScript.InitializeMap(hGroup, &sfcMap))
+			if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
 
 		// Dynamic map by scenario
 		if (!sfcMap && !fOverloadCurrent)
 			if ((sfcMap=CreateMap()))
 				if (!fLandscapeModeSet) Mode=C4LSC_Dynamic;
-
 
 		// No map failure
 		if (!sfcMap)
@@ -1210,6 +1295,10 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		// Map to landscape
 		if (!MapToLandscape()) return false;
 	}
+
+	// Init out-of-landscape pixels for bottom
+	InitBottomRowPix();
+
 	Game.SetInitProgress(84);
 
 #ifdef DEBUGREC
@@ -1433,6 +1522,7 @@ void C4Landscape::Default()
 {
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
+	BottomRowPix=NULL;
 	pLandscapeRender=NULL;
 	Map=NULL;
 	Width=Height=0;
@@ -1446,7 +1536,7 @@ void C4Landscape::Default()
 	pMapCreator=NULL;
 	Modulation=0;
 	fMapChanged = false;
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;
@@ -1536,6 +1626,35 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 		if (!fSuccess) return false;
 	}
 	// done, success
+	return true;
+}
+
+bool C4Landscape::InitBottomRowPix()
+{
+	// Init BottomRowPix array, which determines if out-of-landscape pixels on bottom side of the map are solid or not
+	// In case of BottomOpen=2, unit by map and not landscape to avoid runtime join sync losses
+	delete [] BottomRowPix; // safety
+	if (!Width) return true;
+	BottomRowPix = new uint8_t[Width];
+	// must access Game.C4S here because Landscape.BottomOpen may not be initialized yet
+	// why is there a local copy of that static variable anyway?
+	int32_t bottom_open_flag = Game.C4S.Landscape.BottomOpen;
+	if (bottom_open_flag == 2 && !Map) bottom_open_flag = 1;
+	switch (bottom_open_flag)
+	{
+	// BottomOpen=0: Bottom is closed
+	case 0: for (int32_t x=0; x<Width; ++x) BottomRowPix[x] = MCVehic; break;
+	// BottomOpen=2: Bottom is open when pixel above has sky background
+	case 2:
+		for (int32_t x=0; x<Width; ++x)
+		{
+			uint8_t map_pix = Map->GetPix(x/MapZoom,Map->Hgt-1);
+			BottomRowPix[x] = ((map_pix & IFT) ? MCVehic : 0);
+		}
+		break;
+	// BottomOpen=1: Bottom is open
+	default: for (int32_t x=0; x<Width; ++x) BottomRowPix[x] = 0; break;
+	}
 	return true;
 }
 
@@ -1782,8 +1901,17 @@ bool C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, 
 	// Scan map pixels
 	for (iY = iMapY; iY < iMapY+iMapHgt; iY++)
 		for (iX = iMapX; iX < iMapX + iMapWdt; iX++)
+		{
+			int32_t tex = sfcMap->GetPix(iX, iY) & (IFT - 1);
 			// Count texture map index only (no IFT)
-			dwpTextureUsage[sfcMap->GetPix(iX, iY) & (IFT - 1)]++;
+			if (!dwpTextureUsage[tex]++) if (tex)
+			{
+				// Check if texture actually exists
+				if (!::TextureMap.GetEntry(tex)->GetMaterial())
+					LogF("Map2Landscape error: Texture index %d at (%d/%d) not defined in texture map!", (int) tex, (int) iX, (int) iY);
+				// No error. Landscape is usually fine but might contain some holes where material should be
+			}
+		}
 	// Done
 	return true;
 }
@@ -2071,14 +2199,14 @@ bool FindTunnelHeight(int32_t cx, int32_t &ry, int32_t hgt)
 		// Check upwards
 		if (cy1>=0)
 		{
-			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < 25)
+			if (GBackIFT(cx,cy1) && MatDensity(GBackMat(cx,cy1)) < C4M_Liquid)
 				{ rl1++; if (rl1>=hgt) { ry=cy1+hgt/2; return true; } }
 			else rl1=0;
 		}
 		// Check downwards
 		if (cy2+1<GBackHgt)
 		{
-			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < 25)
+			if (GBackIFT(cx,cy2) && MatDensity(GBackMat(cx,cy2)) < C4M_Liquid)
 				{ rl2++; if (rl2>=hgt) { ry=cy2-hgt/2; return true; } }
 			else rl2=0;
 		}
@@ -2561,6 +2689,8 @@ bool ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *
 // Finds the next pixel position moving to desired slide.
 bool C4Landscape::FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide)
 {
+	assert(mdens<=C4M_Solid); // mdens normalized in InsertMaterial
+
 	int32_t cslide;
 	bool fLeft=true,fRight=true;
 
@@ -2594,6 +2724,7 @@ bool C4Landscape::FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t md
 // Finds the closest immediate slide position.
 bool C4Landscape::FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide)
 {
+	assert(mdens<=C4M_Solid); // mdens normalized in InsertMaterial and mrfInsertCheck
 	int32_t cslide;
 	bool fLeft=true,fRight=true;
 
@@ -3024,8 +3155,7 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	uint8_t *conversion_map = NULL;
 	if (fDrawBridge)
 	{
-		int32_t iMat = GetPixMat(iMatTex);
-		conversion_map = GetBridgeMatConversion(iMat);
+		conversion_map = GetBridgeMatConversion(MatTex2PixCol(iMatTex));
 	}
 	// prepare pixel count update
 	C4Rect BoundingBox = getBoundingBox(vtcs,length);
@@ -3036,22 +3166,22 @@ bool C4Landscape::DrawPolygon(int *vtcs, int length, const char *szMaterial, boo
 	return true;
 }
 
-uint8_t *C4Landscape::GetBridgeMatConversion(int for_material)
+uint8_t *C4Landscape::GetBridgeMatConversion(int32_t for_material_col)
 {
 	// safety
+	int32_t for_material = GetPixMat(for_material_col);
 	if (for_material < 0 || for_material >= MaterialMap.Num) return NULL;
 	// query map. create if not done yet
-	uint8_t *conv_map = BridgeMatConversion[for_material];
+	uint8_t *conv_map = BridgeMatConversion[for_material_col];
 	if (!conv_map)
 	{
 		conv_map = new uint8_t[256];
 		for (int32_t i=0; i<256; ++i)
 		{
-			if ( (MatDensity(for_material)>GetPixDensity(i))
-			     || ((MatDensity(for_material)==GetPixDensity(i)) && (MatDigFree(for_material)<=MatDigFree(GetPixMat(i)))) )
+			if ( (MatDensity(for_material)>=GetPixDensity(i)))
 			{
 				// bridge pixel OK here. change pixel; keep IFT.
-				conv_map[i] = (i & IFT) + Mat2PixColDefault(for_material);
+				conv_map[i] = (i & IFT) + for_material_col;
 			}
 			else
 			{
@@ -3329,7 +3459,7 @@ void C4Landscape::UpdatePixMaps()
 	for (i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
 	Pix2Place[0] = 0;
 	// clear bridge mat conversion buffers
-	for (int32_t i = 0; i<C4MaxMaterial; ++i)
+	for (int32_t i = 0; i<128; ++i)
 	{
 		delete [] BridgeMatConversion[i];
 		BridgeMatConversion[i] = NULL;

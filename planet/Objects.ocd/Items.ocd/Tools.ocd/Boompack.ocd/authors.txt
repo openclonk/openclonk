@@ -1,0 +1,11 @@
+"BoompackFly.ogg" includes a rocket sound by "primeval_polypod":
+	http://www.freesound.org/people/primeval_polypod/sounds/158894/
+
+"BlastFirework" includes the sound
+	http://www.freesound.org/people/soundscalpel.com/sounds/110391/
+by freesound.org user "soundscalpel.com"
+and
+	http://www.freesound.org/people/sarge4267/sounds/102720/?page=2#comment
+by "sarge4267"
+
+License: CC Attribution 3.0

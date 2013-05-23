@@ -55,6 +55,7 @@ protected:
 	std::list<C4ID> Includes; // include list
 	std::list<C4ID> Appends; // append list
 
+	virtual void AddEngineFunctions() {}; // add any engine functions specific to this script host
 	void CopyPropList(C4Set<C4Property> & from, C4PropListStatic * to);
 	bool ResolveIncludes(C4DefList *rDefs); // resolve includes
 	bool ResolveAppends(C4DefList *rDefs); // resolve appends
@@ -67,7 +68,6 @@ protected:
 	friend class C4AulParse;
 	friend class C4AulScriptFunc;
 	friend class C4AulDebug;
-	friend class C4DirectExecScript;
 };
 
 // script host for System.ocg scripts
@@ -86,8 +86,9 @@ public:
 class C4DefScriptHost: public C4ScriptHost
 {
 public:
-	C4DefScriptHost(C4Def * Def) : C4ScriptHost(), Def(Def) { }
+	C4DefScriptHost() : C4ScriptHost(), Def(NULL) { }
 
+	void SetDef(C4Def *to_def) { Def=to_def; }
 	virtual bool Parse();
 	virtual C4PropListStatic * GetPropList();
 protected:

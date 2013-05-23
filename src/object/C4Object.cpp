@@ -391,7 +391,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (Info) Info->Retire();
 	Info = NULL;
 	// Object system operation
-	while (FirstRef) FirstRef->Set0();
+	ClearRefs();
 	Game.ClearPointers(this);
 	ClearCommands();
 	if (pSolidMaskData)
@@ -2307,7 +2307,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( xdir,                             "XDir",               0                 ));
 	pComp->Value(mkNamingAdapt( ydir,                             "YDir",               0                 ));
 	pComp->Value(mkNamingAdapt( rdir,                             "RDir",               0                 ));
-	pComp->Value(mkParAdapt(Shape, true));
+	pComp->Value(mkParAdapt(Shape, &Def->Shape));
 	pComp->Value(mkNamingAdapt( fOwnVertices,                     "OwnVertices",        false             ));
 	pComp->Value(mkNamingAdapt( SolidMask,                        "SolidMask",          Def->SolidMask    ));
 	pComp->Value(mkNamingAdapt( PictureRect,                      "Picture"                               ));
@@ -2320,7 +2320,7 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
-	pComp->Value(mkNamingAdapt( Component,                        "Component"                             ));
+	pComp->Value(mkNamingAdapt( Component,                        "Component",          Def->Component    ));
 	pComp->Value(mkNamingAdapt( mkParAdapt(Contents, numbers),    "Contents"                              ));
 	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu       ));
@@ -3952,84 +3952,88 @@ void C4Object::ExecAction()
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case DFA_CONNECT:
-
-		bool fBroke;
-		fBroke=false;
-		int32_t iConnectX, iConnectY;
-
-		// Line destruction check: Target missing or incomplete
-		if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
-		if (!Action.Target2 || (Action.Target2->Con<FullCon)) fBroke=true;
-		if (fBroke)
 		{
-			Call(PSF_LineBreak,&C4AulParSet(C4VBool(true)));
-			AssignRemoval();
-			return;
-		}
+			bool fBroke=false;
 
-		// Movement by Target
-		if (Action.Target)
-		{
+			// Line destruction check: Target missing or incomplete
+			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
+			if (!Action.Target2 || (Action.Target2->Con<FullCon)) fBroke=true;
+			if (fBroke)
+			{
+				Call(PSF_LineBreak,&C4AulParSet(C4VBool(true)));
+				AssignRemoval();
+				return;
+			}
+
+			// Movement by Target
 			// Connect to attach vertex
-			C4Value lineAttachV;
+			C4Value lineAttachV; C4ValueArray *lineAttach;
 			Action.Target->GetProperty(P_LineAttach, &lineAttachV);
-			C4ValueArray *lineAttach = lineAttachV.getArray();
-			iConnectX = Action.Target->GetX();
-			iConnectY = Action.Target->GetY();
+			lineAttach = lineAttachV.getArray();
+			int32_t iConnectX1, iConnectY1;
+			iConnectX1 = Action.Target->GetX();
+			iConnectY1 = Action.Target->GetY();
 			if (lineAttach)
 			{
-				iConnectX += lineAttach->GetItem(0).getInt();
-				iConnectY += lineAttach->GetItem(1).getInt();
+				iConnectX1 += lineAttach->GetItem(0).getInt();
+				iConnectY1 += lineAttach->GetItem(1).getInt();
 			}
-			if ((iConnectX!=Shape.VtxX[0]) || (iConnectY!=Shape.VtxY[0]))
+			if ((iConnectX1!=Shape.VtxX[0]) || (iConnectY1!=Shape.VtxY[0]))
 			{
 				// Regular wrapping line
 				if (Def->LineIntersect == 0)
-					if (!Shape.LineConnect(iConnectX,iConnectY,0,+1,
-					                       Shape.VtxX[0],Shape.VtxY[0])) fBroke=true;
+					if (!Shape.LineConnect(iConnectX1,iConnectY1,0,+1,
+											Shape.VtxX[0],Shape.VtxY[0])) fBroke=true;
 				// No-intersection line
 				if (Def->LineIntersect == 1)
-					{ Shape.VtxX[0]=iConnectX; Shape.VtxY[0]=iConnectY; }
+					{ Shape.VtxX[0]=iConnectX1; Shape.VtxY[0]=iConnectY1; }
 			}
-		}
-		// Movement by Target2
-		if (Action.Target2)
-		{
+
+			// Movement by Target2
 			// Connect to attach vertex
-			C4Value lineAttachV;
 			Action.Target2->GetProperty(P_LineAttach, &lineAttachV);
-			C4ValueArray *lineAttach = lineAttachV.getArray();
-			iConnectX = Action.Target2->GetX();
-			iConnectY = Action.Target2->GetY();
+			lineAttach = lineAttachV.getArray();
+			int32_t iConnectX2, iConnectY2;
+			iConnectX2 = Action.Target2->GetX();
+			iConnectY2 = Action.Target2->GetY();
 			if (lineAttach)
 			{
-				iConnectX += lineAttach->GetItem(0).getInt();
-				iConnectY += lineAttach->GetItem(1).getInt();
+				iConnectX2 += lineAttach->GetItem(0).getInt();
+				iConnectY2 += lineAttach->GetItem(1).getInt();
 			}
-			if ((iConnectX!=Shape.VtxX[Shape.VtxNum-1]) || (iConnectY!=Shape.VtxY[Shape.VtxNum-1]))
+			if ((iConnectX2!=Shape.VtxX[Shape.VtxNum-1]) || (iConnectY2!=Shape.VtxY[Shape.VtxNum-1]))
 			{
 				// Regular wrapping line
 				if (Def->LineIntersect == 0)
-					if (!Shape.LineConnect(iConnectX,iConnectY,Shape.VtxNum-1,-1,
-					                       Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1])) fBroke=true;
+					if (!Shape.LineConnect(iConnectX2,iConnectY2,Shape.VtxNum-1,-1,
+											Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1])) fBroke=true;
 				// No-intersection line
 				if (Def->LineIntersect == 1)
-					{ Shape.VtxX[Shape.VtxNum-1]=iConnectX; Shape.VtxY[Shape.VtxNum-1]=iConnectY; }
+					{ Shape.VtxX[Shape.VtxNum-1]=iConnectX2; Shape.VtxY[Shape.VtxNum-1]=iConnectY2; }
 			}
+
+			// Check max length
+			int32_t max_dist;
+			max_dist = GetPropertyInt(P_LineMaxDistance);
+			if (max_dist)
+			{
+				int32_t dist_x = iConnectX2 - iConnectX1, dist_y = iConnectY2 - iConnectY1;
+				int64_t dist_x2 = int64_t(dist_x)*dist_x, dist_y2 = int64_t(dist_y)*dist_y, max_dist2 = int64_t(max_dist)*max_dist;
+				if (dist_x2+dist_y2 > max_dist2) fBroke = true;
+			}
+
+			// Line fBroke
+			if (fBroke)
+			{
+				Call(PSF_LineBreak,0);
+				AssignRemoval();
+				return;
+			}
+
+			// Reduce line segments
+			if (!::Game.iTick35)
+				ReduceLineSegments(Shape, !::Game.iTick2);
 		}
-
-		// Line fBroke
-		if (fBroke)
-		{
-			Call(PSF_LineBreak,0);
-			AssignRemoval();
-			return;
-		}
-
-		// Reduce line segments
-		if (!::Game.iTick35)
-			ReduceLineSegments(Shape, !::Game.iTick2);
-
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	default:

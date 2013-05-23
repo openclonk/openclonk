@@ -29,7 +29,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(Version.txt)
 
-set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
+set(CMAKE_ADDITIONAL_DEPS_PATH "${CMAKE_CURRENT_BINARY_DIR}/deps" CACHE PATH "Additional directory to search for libraries and headers")
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
 set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
@@ -50,53 +50,29 @@ endfunction()
 ############################################################################
 # User selectable options
 ############################################################################
+include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
-option(USE_GL "Enable OpenGL support" ON)
-SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
-SET(INITIAL_USE_OPEN_AL OFF)
-option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32 AND FALSE) # disable DX option while it doesn't work anyway
-	option(USE_DIRECTX "Enable DirectX support" ON)
-	if(EXISTS $ENV{DXSDK_DIR})
-		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
-		if(CMAKE_CL_64)
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
-		else()
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
-		endif()
-	else()
+option(USE_CONSOLE "Build dedicated server" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GL "Enable OpenGL support" ON "NOT USE_CONSOLE" OFF)
+# DirectX is disabled because it misses essential features
+CMAKE_DEPENDENT_OPTION(USE_DIRECTX "Enable DirectX support" OFF "WIN32 AND NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF "NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
+	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP AND NOT USE_CONSOLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GTK "Use GTK for the developer mode" ON "USE_X11" OFF)
+CMAKE_DEPENDENT_OPTION(USE_GTK3 "Use GTK3 instead of GTK2" OFF "USE_GTK" OFF)
 
-	endif()
-else()
-	SET(USE_DIRECTX OFF)
-	SET(HAVE_FMOD OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
-else()
-	SET(USE_CONSOLE OFF)
-endif()
-if(UNIX AND NOT USE_SDL_MAINLOOP AND NOT APPLE AND NOT USE_CONSOLE)
-	option(USE_X11 "Use X11 to create windows etc." ON)
-	option(USE_GTK "Use GTK for the developer mode" ON)
-	option(USE_GTK3 "Use GTK3 instead of GTK2" OFF)
-else()
-	SET(USE_X11 OFF)
-	SET(USE_GTK OFF)
-	SET(USE_GTK3 OFF)
-endif()
+CMAKE_DEPENDENT_OPTION(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON "APPLE" OFF)
+CMAKE_DEPENDENT_OPTION(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON "APPLE" OFF)
 if(APPLE)
-	option(USE_COCOA "Use Apple Cocoa for the developer mode and the windows." ON)
-	option(USE_APPLE_CLANG "Use Apple Clang Compiler as C++ compiler." ON)
 	SET(INITIAL_USE_OPEN_AL ON)
 else()
-	option(USE_COCOA OFF)
+	SET(INITIAL_USE_OPEN_AL OFF)
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
 option(DEBUGREC "Debug records" OFF)
 option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
-option(WITH_AUTOMATIC_UPDATE "Build engine without automatic update support" OFF)
+option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -120,6 +96,8 @@ endforeach()
 # out because it does not understand -std=gnu++0x
 set(SAFE_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+include(RequireCXXSourceCompiles)
+REQUIRE_CXX_SOURCE_COMPILES("#include <memory>\nint main() { std::unique_ptr<int> a; std::shared_ptr<int> b; }" HAVE_C11_SMART_PTRS)
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
@@ -337,6 +315,9 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4MapCreatorS2.cpp
 	src/landscape/C4MapCreatorS2.h
 	src/landscape/C4Map.h
+	src/landscape/C4MapScript.cpp
+	src/landscape/C4MapScriptAlgo.cpp
+	src/landscape/C4MapScript.h
 	src/landscape/C4MassMover.cpp
 	src/landscape/C4MassMover.h
 	src/landscape/C4Material.cpp
@@ -568,10 +549,6 @@ set(MAPE_SOURCES
 	src/mape/window.h
 )
 
-mark_as_advanced(OC_CLONK_SOURCES)
-mark_as_advanced(OC_SYSTEM_SOURCES)
-mark_as_advanced(MAPE_SOURCES)
-
 # generated source files
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mape-icons.h
@@ -637,23 +614,55 @@ endif()
 
 # source files specific to a GUI library
 if(USE_GTK)
-	list(APPEND OC_CLONK_SOURCES
-		src/res/Brush.h
-		src/res/Cursor.h
-		src/res/Dynamic.h
-		src/res/Exact.h
-		src/res/Fill.h
-		src/res/Halt.h
-		src/res/Ift.h
-		src/res/Line.h
-		src/res/Mouse.h
-		src/res/NoIft.h
-		src/res/Picker.h
-		src/res/Play.h
-		src/res/Rect.h
-		src/res/resource.h
-		src/res/Static.h
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+		COMMAND
+			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			"brush_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png"
+			"halt_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png"
+			"picker_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png"
+			"cursor_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png"
+			"ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png"
+			"play_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png"
+			"dynamic_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png"
+			"line_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png"
+			"rect_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png"
+			"exact_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png"
+			"mouse_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png"
+			"static_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png"
+			"fill_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png"
+			"no_ift_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png"
+			> ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Brush_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Halt_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Picker_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Cursor_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Ift_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Play_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Dynamic_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Line_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Rect_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Exact_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Mouse_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Static_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/Fill_Trans.png
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/NoIft_Trans.png
+		VERBATIM
 	)
+	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/editor-icons.h)
+
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
+		COMMAND
+			gdk-pixbuf-csource "--raw" "--rle" "--static" "--build-list"
+			"oc_icon_pixbuf_data" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico"
+			> ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h
+		DEPENDS
+			${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+		VERBATIM
+	)
+	list(APPEND OC_CLONK_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/oc-icon.h)
 
 	list(APPEND OC_SYSTEM_SOURCES
 		src/editor/C4ConsoleGTK.cpp
@@ -828,8 +837,10 @@ if(MSVC)
 	endif()
 endif()
 
-SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
-include(FindJPEG)
+if(NOT USE_CONSOLE)
+	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
+	include(FindJPEG)
+endif()
 include(FindPNG)
 include(FindZLIB)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
@@ -847,10 +858,12 @@ if(NOT WIN32)
 endif()
 
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
-find_library(FREETYPE_LIBRARY NAMES freetype239)
-include(FindFreetype)
-include_directories(${FREETYPE_INCLUDE_DIRS})
-SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
+if(NOT USE_CONSOLE)
+	find_library(FREETYPE_LIBRARY NAMES freetype239 freetype2411)
+	include(FindFreetype)
+	include_directories(${FREETYPE_INCLUDE_DIRS})
+	SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
+endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
 # advanced so it doesn't show in GUIs by default
@@ -902,16 +915,12 @@ if(USE_OPEN_AL)
 		else()
 			FINDLIB(OPENAL_LIBRARY NAMES OpenAL32)
 		endif()
-		FINDLIB(OGG_LIBRARY NAMES libogg_static)
-		FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static)
-		FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static)
-	else()
-		FINDLIB(VORBIS_LIBRARY NAMES vorbis)
-		FINDLIB(VORBISFILE_LIBRARY NAMES vorbisfile)
-		FINDLIB(OGG_LIBRARY NAMES ogg)
 	endif()
+	FINDLIB(OGG_LIBRARY NAMES libogg_static libogg ogg)
+	FINDLIB(VORBIS_LIBRARY NAMES libvorbis_static libvorbis vorbis)
+	FINDLIB(VORBISFILE_LIBRARY NAMES libvorbisfile_static libvorbisfile vorbisfile)
 	if(NOT APPLE)
-		FINDLIB(ALUT_LIBRARY NAMES alut)
+		FINDLIB(ALUT_LIBRARY NAMES alut_static alut)
 	endif()
 endif()
 
@@ -1111,6 +1120,9 @@ target_link_libraries(c4script
 	libmisc
 )
 if(HAVE_PTHREAD)
+	target_link_libraries(openclonk
+		pthread
+	)
 	target_link_libraries(netpuncher
 		pthread
 	)
@@ -1125,7 +1137,6 @@ if(HAVE_PTHREAD)
 endif()
 if(USE_CONSOLE)
 	target_link_libraries(openclonk
-		pthread
 		${READLINE_LIBRARIES}
 	)
 endif()
@@ -1229,9 +1240,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 	option(USE_GCC_PCH "Use GCC precompiled headers" ON)
 endif()
 if(USE_GCC_PCH)
+	add_precompiled_header(libmisc src/C4Include.h)
+	add_precompiled_header(libc4script src/C4Include.h)
 	add_precompiled_header(openclonk src/C4Include.h)
-	add_precompiled_header(c4group src/C4Include.h)
-	add_precompiled_header(c4script src/C4Include.h)
 endif()
 
 ############################################################################
@@ -1252,6 +1263,9 @@ if (APPLE)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
 	SET_TARGET_PROPERTIES(c4group PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
+	SET_TARGET_PROPERTIES(libmisc PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
+	SET_TARGET_PROPERTIES(libmisc PROPERTIES XCODE_ATTRIBUTE_GCC_PFE_FILE_C_DIALECTS "c++ objective-c++")
+	SET_TARGET_PROPERTIES(libmisc PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 	SET_TARGET_PROPERTIES(openclonk PROPERTIES XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES)
 	
 	if (USE_APPLE_CLANG)
@@ -1310,6 +1324,14 @@ if(USE_GL)
 	include_directories(${GLEW_INCLUDE_DIR})
 endif()
 if(USE_DIRECTX)
+	if(EXISTS $ENV{DXSDK_DIR})
+		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
+		if(CMAKE_CL_64)
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
+		else()
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
+		endif()
+	endif()
 	FINDLIB(DIRECT3D_LIBRARIES d3d9)
 	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
@@ -1384,6 +1406,8 @@ if (WIN32)
 			set(HAVE_FMOD FALSE)
 		endif()
 	endif()
+else()
+	SET(HAVE_FMOD FALSE)
 endif()
 if(NOT HAVE_FMOD AND NOT USE_OPEN_AL OR USE_SDL_MAINLOOP AND NOT USE_OPEN_AL)
 	include(FindSDL)
@@ -1425,7 +1449,7 @@ endif()
 # extracting the correct size from oc.ico. Currently this is layer 2 - let's
 # hope that it stays this way.
 
-# Only allow installation for WITH_AUTOMATIC_UPDATE because otherwise
+# Don't allow installation for WITH_AUTOMATIC_UPDATE because otherwise
 # the installed binary wouldn't find its game data in the system data path.
 IF(WITH_AUTOMATIC_UPDATE)
 	INSTALL(CODE "MESSAGE(SEND_ERROR \"Installation is only supported for WITH_AUTOMATIC_UPDATE disabled\")")
@@ -1438,22 +1462,24 @@ install(
 	CODE
 	"execute_process(
 		COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target data
-		)"
-	)
+	)"
+)
 
 FIND_PACKAGE(ImageMagick COMPONENTS convert)
-add_custom_command(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-	COMMAND convert "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
-	MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
-	VERBATIM
+if(ImageMagick_convert_FOUND)
+	add_custom_command(
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+		COMMAND "${ImageMagick_convert_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
+		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
+		VERBATIM
 	)
-add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
-add_dependencies(data icon)
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-	DESTINATION share/icons/hicolor/48x48/apps
+	add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
+	add_dependencies(data icon)
+	install(
+		FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
+		DESTINATION share/icons/hicolor/48x48/apps
 	)
+endif()
 
 set(OC_C4GROUPS
 	Graphics.ocg
@@ -1523,7 +1549,7 @@ add_custom_command(
 )
 
 add_custom_target(setup
-	DEPENDS setup_openclonk.exe
+	DEPENDS setup_openclonk.exe groups
 )
 
 ############################################################################

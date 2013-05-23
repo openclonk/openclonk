@@ -1,7 +1,7 @@
 [Material]
 Name=Earth
 Shape=Smooth
-Density=50
+Density=60
 Friction=80
 DigFree=1
 BlastFree=1

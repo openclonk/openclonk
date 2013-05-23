@@ -82,6 +82,7 @@
 #include <C4Version.h>
 #include <C4AulExec.h>
 #include <StdFile.h>
+#include <C4MapScript.h>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
@@ -244,9 +245,11 @@ bool C4Game::OpenScenario()
 	  if (pGrp) delete pGrp;*/
 
 	// Check mission access
+#ifndef USE_CONSOLE
 	if (C4S.Head.MissionAccess[0])
 		if (!SIsModule(Config.General.MissionAccess, C4S.Head.MissionAccess))
 			{ LogFatal(LoadResStr("IDS_PRC_NOMISSIONACCESS")); return false; }
+#endif
 
 	// Title
 	Title.LoadEx(ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
@@ -599,6 +602,7 @@ void C4Game::Clear()
 	MessageInput.Clear();
 	Info.Clear();
 	Title.Clear();
+	::MapScript.Clear();
 	::GameScript.Clear();
 	Names.Clear();
 	GameText.Clear();
@@ -2008,6 +2012,8 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 		// Scenario scripts (and local system.ocg)
 		GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
+		// Map scripts
+		MapScript.Load(ScenarioFile, C4CFN_MapScript, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// After defs to get overloading priority
 		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
@@ -2193,6 +2199,7 @@ bool C4Game::InitScriptEngine()
 	InitCoreFunctionMap(&ScriptEngine);
 	InitObjectFunctionMap(&ScriptEngine);
 	InitGameFunctionMap(&ScriptEngine);
+	::MapScript.InitFunctionMap(&ScriptEngine);
 
 	// system functions: check if system group is open
 	if (!Application.OpenSystemGroup())
