@@ -72,11 +72,11 @@ private func InitBase(int owner)
 		foundry->CreateContents(Coal, 3);
 		foundry->CreateContents(Metal, 2);
 	}
-	var lorry = CreateObject(Lorry, 260,y, owner);
-	if (lorry)
+	var chest = CreateObject(Chest, 260,y, owner);
+	if (chest)
 	{
-		lorry->CreateContents(DynamiteBox, 1);
-		lorry->CreateContents(Dynamite, 2);
+		chest->CreateContents(DynamiteBox, 1);
+		chest->CreateContents(Dynamite, 2);
 	}
 	return true;
 }
