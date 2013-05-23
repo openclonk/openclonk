@@ -237,6 +237,6 @@ local ActMap = {
 
 protected func Definition(def) 
 {
-	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-79000, 1000, 0), Trans_Rotate(60, 0, 1, 0)), def);
+	SetProperty("MeshTransformation", Trans_Mul(Trans_Translate(-9000, 1000, 0), Trans_Rotate(60, 0, 1, 0)), def);
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(60, 0, 1, 0), Trans_Scale(1200), Trans_Translate(-4000, 6500, -3000)), def);
 }
