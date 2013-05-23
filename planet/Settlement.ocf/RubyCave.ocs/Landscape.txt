@@ -88,7 +88,7 @@ map CrystalCaves {
     // sky back
     VaryTex { a=2; wdt=23px; };
     // windmill positions
-    overlay { x=10px; wdt=15px; y=10px; turbulence=10; loosebounds=1;};
+    overlay { x=5px; wdt=22px; y=10px; turbulence=10; loosebounds=1;};
 
     overlay { y=24px; mat=Brick; };
 
