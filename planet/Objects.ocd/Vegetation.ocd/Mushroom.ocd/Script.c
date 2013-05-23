@@ -51,5 +51,7 @@ protected func ControlUse(object clonk, int iX, int iY)
 public func NutritionalValue() { return 5; }
 
 local Name = "$Name$";
+local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Collectible = 0;
 local Placement = 4;
