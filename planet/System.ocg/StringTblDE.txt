@@ -17,6 +17,10 @@ CON_ThrowAlt_Desc=Werfen des Gegenstandes in der anderen Hand in die anvisierte 
 
 CON_QuickSwitch=Schnellwechsel
 CON_QuickSwitch_Desc=Das zuletzt angewählte Inventarobjekt auswählen.
+CON_InventoryShiftForward=Nächstes Item
+CON_InventoryShiftForward_Desc=Wählt das nächste Item im Inventar aus.
+CON_InventoryShiftBackward=Letztes Item
+CON_InventoryShiftBackward_Desc=Wählt das vorherige Item im Inventar aus.
 CON_Drop=Ablegen
 CON_Drop_Desc=Ablegen des Gegenstandes in der Hand.
 CON_DropAlt=Ablegen (andere Hand)

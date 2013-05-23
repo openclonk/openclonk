@@ -131,6 +131,16 @@
 	GUIDesc=$CON_QuickSwitch_Desc$
 	
 	[ControlDef]
+	Identifier=InventoryShiftForward
+	GUIName=$CON_InventoryShiftForward$
+	GUIDesc=$CON_InventoryShiftForward_Desc$
+	
+	[ControlDef]
+	Identifier=InventoryShiftBackward
+	GUIName=$CON_InventoryShiftBackward$
+	GUIDesc=$CON_InventoryShiftBackward_Desc$
+	
+	[ControlDef]
 	Identifier=Throw
 	GUIName=$CON_Throw$
 	GUIDesc=$CON_Throw_Desc$
@@ -597,6 +607,8 @@
 	# Interact							Space
 	#
 	# QuickSwitch						Q
+	# InventoryShiftForward             MouseWheelUp
+	# InventoryShiftBackward            MouseWheelDown
 	# Contents							E
 	# Collect							A,D,W,S
 	#
@@ -628,6 +640,16 @@
 		Key=Q
 		Control=QuickSwitch
 		GUIGroup=50
+		
+		[Assignment]
+		Key=Mouse1Wheel1Up
+		GUIGroup=50
+		Control=InventoryShiftBackward
+  
+		[Assignment]
+		Key=Mouse1Wheel1Down
+		GUIGroup=50
+		Control=InventoryShiftForward
 		
 		# Menu
 
@@ -733,13 +755,13 @@
 		# Zoom
 		
 		[Assignment]
-		Key=Mouse1Wheel1Up
+		Key=Shift+Mouse1Wheel1Up
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomIn
   
 		[Assignment]
-		Key=Mouse1Wheel1Down
+		Key=Shift+Mouse1Wheel1Down
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomOut

@@ -45,7 +45,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 		
 	// Quickswitch changes the active slot to the last selected one
-	if(ctrl == CON_QuickSwitch)
+	if (ctrl == CON_QuickSwitch)
 	{
 		// but ignore quickswitch if we have more than 1 hand-slot
 		if(this->HandObjects() > 1)
@@ -53,6 +53,17 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		
 		// select last slot
 		SetHandItemPos(0, this.inventory.last_slot); // last_slot is updated in SetHandItemPos
+		return true;
+	}
+	
+	if (ctrl == CON_InventoryShiftForward)
+	{
+		ShiftContents();
+		return true;
+	}
+	if (ctrl == CON_InventoryShiftBackward)
+	{
+		ShiftContents(true);
 		return true;
 	}
 	
