@@ -8,15 +8,13 @@
 
 public func IsConstructor() { return true; }
 
+func RejectUse(object clonk)
+{
+	return !clonk->IsWalking();
+}
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	// Is the clonk able to construct?
-	if(clonk->GetProcedure() != "WALK")
-	{
-		clonk->CancelUse();
-		return true;
-	}
 	// Is the clonk at an construction site?
 	// TODO: check for multiple objects
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
@@ -39,12 +37,6 @@ public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	// Is the clonk still able to construct?
-	if (clonk->GetProcedure() != "WALK")
-	{
-		clonk->CancelUse();
-		return true;
-	}
 	// Is the clonk still at an construction site?
 	var structure = FindObject(Find_Category(C4D_Structure), Find_Or(Find_Distance(20), Find_AtPoint()), Find_Layer(GetObjectLayer()));
 	if (structure)
@@ -55,7 +47,6 @@ public func ControlUseHolding(object clonk, int x, int y)
 			return true;
 		}
 	}	
-	clonk->CancelUse();
 	return true;
 }
 
