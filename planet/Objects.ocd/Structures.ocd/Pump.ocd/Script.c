@@ -37,8 +37,8 @@ public func IsInteractable() { return GetCon() >= 100; }
 public func GetInteractionMetaInfo(object clonk)
 {
 	if (turned_on)
-		return { Description = "$MsgTurnOff$", IconName = nil, IconID = nil };
-	return { Description = "$MsgTurnOn$", IconName = nil, IconID = nil };
+		return { Description = "$MsgTurnOff$", IconName = nil, IconID = Icon_Stop };
+	return { Description = "$MsgTurnOn$", IconName = nil, IconID = Icon_Play };
 }
 
 // On interaction the pump can be turned on or off.
