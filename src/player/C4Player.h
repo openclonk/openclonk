@@ -43,9 +43,9 @@ const int32_t C4MaxPlayer = 5000; // ought to be enough for everybody (used to c
 const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to catch invalid client counts)
 
 // view ranges in "CR-pixels" covered by viewport
-static const int C4VP_DefViewRangeX    = 1000,
-                 C4VP_DefMinViewRangeX = 100,
-                 C4VP_DefMaxViewRangeX = 3000;
+static const int C4VP_DefViewRangeX    = 300,
+                 C4VP_DefMinViewRangeX = 150,
+                 C4VP_DefMaxViewRangeX = 750;
 #define C4FOW_Def_View_RangeX 500
 
 class C4Player: public C4PlayerInfoCore

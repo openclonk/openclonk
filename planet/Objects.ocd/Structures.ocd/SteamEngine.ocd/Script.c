@@ -15,22 +15,34 @@ func Construction(object creator)
 	power_seconds = 0;
 
 	SetAction("Default");
-	AddTimer("ContentsCheck", 30);
+	AddTimer("CollectionZone", 1);
 	return _inherited(creator, ...);
 }
 
 public func IsContainer() { return true; }
 
-func RejectCollect(id item, object obj)
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	if (!(FrameCounter() % 35)) ContentsCheck();
+ 
+	for (var object in FindObjects(Find_InRect(- 31 + 52 * GetDir(),9,10,10), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
+protected func RejectEntrance(object obj)
 {
 	if (obj->~IsFuel())
 		return false;
 	return true;
 }
 
-func Collection(object obj, bool put)
+protected func RejectCollect(id item, object obj)
 {
-	Sound("Clonk");
+	// Just return RejectEntrance for this object.
+	return RejectEntrance(obj);
 }
 
 func ContentsCheck()
