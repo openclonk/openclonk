@@ -57,12 +57,14 @@ public func EmptyBucket()
 {
 	in_bucket_amount = 0;
 	in_bucket_mat = nil;
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350));
 }
 
 public func FillBucket(int mat, int amount)
 {
 	in_bucket_amount = amount;
 	in_bucket_mat = mat;
+	this.PictureTransformation = Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-20,1,0,0), Trans_Rotate(20,0,1,0), Trans_Rotate(-15,0,0,1), Trans_Scale(1350));
 }
 
 public func IsBucketFilled()
@@ -228,7 +230,7 @@ public func IsToolProduct() { return true; }
 
 protected func Definition(def)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(15,1,0,0), Trans_Rotate(5,0,1,0), Trans_Rotate(-5,0,0,1), Trans_Translate(500,-400,0), Trans_Scale(1350)),def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350)),def);
 }
 
 local Name = "$Name$";
