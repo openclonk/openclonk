@@ -99,6 +99,8 @@ class C4GuiWindowAction
 	void Execute(C4GuiWindow *parent, int32_t player, unsigned int tag, int32_t actionType);
 	// used to execute synced commands, explanation see C4GuiWindow::ExecuteCommand
 	bool ExecuteCommand(int32_t actionID, C4GuiWindow *parent, int32_t player);
+	// used for serialization. The "first" parameter is used so that chained actions are stored correctly into an array
+	const C4Value ToC4Value(bool first = true);
 };
 
 class C4GuiWindowProperty
@@ -148,6 +150,8 @@ class C4GuiWindowProperty
 
 	bool SwitchTag(C4String *tag);
 	unsigned int GetCurrentTag() { return currentTag; }
+
+	const C4Value ToC4Value();
 
 	void ClearPointers(C4Object *pObj);
 };
@@ -221,7 +225,7 @@ class C4GuiWindow
 	void SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, unsigned int hash);
 
 	// this is only supposed to be called at ::GuiWindowRoot since it uses the "ID" property
-	// this is done to make saving easier. Since IDs do not need to be sequental, action&menu IDs can both be derived from "id"
+	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
 	int32_t GenerateMenuID() { return ++id; }
 	int32_t GenerateActionID() { return ++id; }
 
@@ -266,6 +270,9 @@ class C4GuiWindow
 	// if isUpdate is true, all new children will have resetStdTag set
 	bool CreateFromPropList(C4PropList *proplist, bool resetStdTag = false, bool isUpdate = false);
 
+	// constructs a C4Value (proplist) that contains everything that is needed for saving this window
+	const C4Value ToC4Value();
+
 	// C4GuiWindow will delete its children on close. Make sure you don't delete anything twice
 	C4GuiWindow *AddChild(C4GuiWindow *child);
 	C4GuiWindow *AddChild() { return AddChild(new C4GuiWindow()); }
@@ -281,8 +288,6 @@ class C4GuiWindow
 	bool GetClippingRect(float &left, float &top, float &right, float &bottom);
 
 	// used for commands that have been synchronized and are coming from the command queue
-	// the command is basically just a script that is executed, however, the plausibility is checked first
-	// this plausibility check is the only reason CID_Script is not used!
 	// attention: calls to this need to be synchronized!
 	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag);
 	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
