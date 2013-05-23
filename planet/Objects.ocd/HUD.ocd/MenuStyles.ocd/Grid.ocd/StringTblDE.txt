@@ -1,0 +1,2 @@
+Name=Gitter
+Description=Ein einfaches Gittermenü.

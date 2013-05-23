@@ -49,6 +49,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4GuiWindow.h>
 
 #ifndef NOAULDEBUG
 #include <C4AulDebug.h>
@@ -416,6 +417,44 @@ void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iTarget2, "Target2", 0));
 	pComp->Value(mkNamingAdapt(iData, "Data", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddMode), "AddMode", 0));
+	C4ControlPacket::CompileFunc(pComp);
+}
+// *** C4ControlMenuCommand
+
+C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID, C4Object *target, unsigned int tag, int32_t actionType)
+	: actionID(actionID), player(player), menuID(menuID), subwindowID(subwindowID), target(target ? target->Number : 0), tag(static_cast<int32_t>(tag)), actionType(actionType)
+{
+
+}
+
+void C4ControlMenuCommand::Execute() const
+{
+	// invalid action? The action needs to be in bounds!
+	if (actionType < 0 || actionType >= C4GuiWindowPropertyName::_lastProp)
+	{
+		// this could only come from a malicious attempt to crash the engine!
+		Log("Warning: invalid action type for C4ControlMenuCommand!");
+		return;
+	}
+	C4GuiWindow *menu = ::GuiWindowRoot.GetChildByID(menuID);
+	// menu was closed?
+	if (!menu) return;
+
+	C4Object *obj = target ? ::Objects.ObjectPointer(target) : 0;
+	// target has been removed in the meantime? abort now
+	if (target && !obj) return;
+
+	menu->ExecuteCommand(actionID, player, subwindowID, actionType, obj, static_cast<unsigned int>(tag));
+}
+
+void C4ControlMenuCommand::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(actionID), "ID", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(player), "Player", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(menuID), "Menu", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(subwindowID), "Window", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(actionType), "Action", 0));
+	pComp->Value(mkNamingAdapt(target, "Target", 0));
 	C4ControlPacket::CompileFunc(pComp);
 }
 

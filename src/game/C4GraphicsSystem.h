@@ -45,6 +45,7 @@ public:
 	bool ShowPathfinder;
 	bool ShowNetstatus;
 	bool ShowSolidMask;
+	bool ShowMenuInfo;
 	C4Video Video;
 	C4LoaderScreen *pLoaderScreen;
 	void Default();

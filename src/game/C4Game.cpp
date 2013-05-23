@@ -69,6 +69,7 @@
 #include <C4RankSystem.h>
 #include <C4RoundResults.h>
 #include <C4GameMessage.h>
+#include <C4GuiWindow.h>
 #include <C4Material.h>
 #include <C4Network2Reference.h>
 #include <C4Weather.h>
@@ -653,7 +654,7 @@ void C4Game::Clear()
 
 	fPreinited = false;
 	C4PropListNumbered::ResetEnumerationIndex();
-	
+
 	// FIXME: remove this
 	Default();
 }
@@ -919,6 +920,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MessageInput.ClearPointers(pObj);
 	::Console.ClearPointers(pObj);
 	::MouseControl.ClearPointers(pObj);
+	::GuiWindowRoot.ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);

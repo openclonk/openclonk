@@ -42,6 +42,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4GuiWindow.h>
 
 const int32_t C4MC_Drag_None            = 0,
               C4MC_Drag_Script          = 6,
@@ -322,20 +323,27 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	case C4MC_Button_Wheel: Wheel(dwKeyFlags); break;
 	}
 
-	// script handling of mouse control for everything but regular movement (which is sent at control frame intervals only)
-	if (iButton != C4MC_Button_None)
-		// not if blocked by selection object
-		if (!TargetObject)
-			// safety (can't really happen in !IsPassive, but w/e
-			if (pPlayer && pPlayer->ControlSet)
-			{
-				if (pPlayer->ControlSet->IsMouseControlAssigned(iButton))
+	// are custom menus active?
+	bool menuProcessed = false;
+	if (pPlayer)
+		menuProcessed = ::GuiWindowRoot.MouseInput(Player, iButton, iX, iY, dwKeyFlags);
+
+	// if not caught by a menu
+	if (!menuProcessed)
+		// script handling of mouse control for everything but regular movement (which is sent at control frame intervals only)
+		if (iButton != C4MC_Button_None)
+			// not if blocked by selection object
+			if (!TargetObject)
+				// safety (can't really happen in !IsPassive, but w/e
+				if (pPlayer && pPlayer->ControlSet)
 				{
-					int wheel_dir = 0;
-					if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyFlags >> 16);
-					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, (dwKeyFlags & MK_CONTROL) != 0, (dwKeyFlags & MK_SHIFT) != 0, (dwKeyFlags & MK_ALT) != 0, wheel_dir);
+					if (!menuProcessed && pPlayer->ControlSet->IsMouseControlAssigned(iButton))
+					{
+						int wheel_dir = 0;
+						if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyFlags >> 16);
+						pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, (dwKeyFlags & MK_CONTROL) != 0, (dwKeyFlags & MK_SHIFT) != 0, (dwKeyFlags & MK_ALT) != 0, wheel_dir);
+					}
 				}
-			}
 }
 
 void C4MouseControl::DoMoveInput()
@@ -441,7 +449,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				uint32_t BlitMode = DragImageObject->BlitMode;
 				DragImageObject->ColorMod = (Drag == C4MC_Drag_Script) ? 0x7fffffff : (/*DragImagePhase*/0 ? 0x8f7f0000 : 0x1f007f00);
 				DragImageObject->BlitMode = C4GFXBLIT_MOD2;
-	
+
 				DragImageObject->DrawPicture(ccgo, false, NULL);
 
 				DragImageObject->ColorMod = ColorMod;

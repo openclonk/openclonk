@@ -39,6 +39,7 @@
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
+#include <C4GuiWindow.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
@@ -265,7 +266,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
 
-	/* Fog of war disabled, see above 
+	/* Fog of war disabled, see above
 	// FogOfWar-mod off
 	pDraw->SetClrModMapEnabled(false);
 
@@ -295,13 +296,19 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		if (Application.isEditor) Console.EditCursor.Draw(cgo);
 
-		DrawOverlay(gui_cgo, GameZoom);
-
 		// Game messages
 		C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
 		pDraw->SetZoom(0, 0, 1.0);
 		::Messages.Draw(gui_cgo, cgo, Player);
 		C4ST_STOP(MsgStat)
+
+		// ingame menus
+		C4ST_STARTNEW(GuiWindowStat, "C4Viewport::DrawOverlay: Menus")
+		pDraw->SetZoom(0, 0, 1.0);
+		::GuiWindowRoot.Draw(gui_cgo, Player);
+		C4ST_STOP(GuiWindowStat)
+
+		DrawOverlay(gui_cgo, GameZoom);
 
 		// Netstats
 		if (::GraphicsSystem.ShowNetstatus)
@@ -470,7 +477,7 @@ void C4Viewport::AdjustPosition()
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 	{
-		
+
 		float ScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float ExtraBoundsX = 0, ExtraBoundsY = 0;
 		if (pPlr->ViewMode == C4PVM_Scrolling)
@@ -585,7 +592,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 {
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
-	
+
 	// Controls
 	DrawPlayerStartup(cgo);
 }
