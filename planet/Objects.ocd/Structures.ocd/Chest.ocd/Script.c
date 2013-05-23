@@ -25,7 +25,7 @@ public func IsInteractable() { return true; }
 
 private func MaxContentsCount()
 {
-	return 5;
+	return 25;
 }
 
 
