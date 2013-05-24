@@ -72,7 +72,7 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 		break;
 
 	default:
-		assert(false && "trying to save C4GuiWindowAction without valid action);
+		assert(false && "trying to save C4GuiWindowAction without valid action");
 		break;
 	}
 
@@ -338,9 +338,9 @@ void C4GuiWindowProperty::CleanUpAll()
 		CleanUp(iter->second);
 }
 
-C4Value C4GuiWindowProperty::ToC4Value()
+const C4Value C4GuiWindowProperty::ToC4Value()
 {
-	C4PropList *proplist = new C4PropList();
+	C4PropList *proplist = C4PropList::New();
 
 	for(std::map<unsigned int, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
@@ -360,35 +360,35 @@ C4Value C4GuiWindowProperty::ToC4Value()
 		case C4GuiWindowPropertyName::backgroundColor:
 		case C4GuiWindowPropertyName::style:
 		case C4GuiWindowPropertyName::priority:
-			val = C4Value(prop->d);
+			val = C4Value(prop.d);
 			break;
 
 		case C4GuiWindowPropertyName::relLeft:
 		case C4GuiWindowPropertyName::relRight:
 		case C4GuiWindowPropertyName::relTop:
 		case C4GuiWindowPropertyName::relBottom:
-			val = C4Value(int32_t (prop->f * 1000.0f));
+			val = C4Value(int32_t (prop.f * 1000.0f));
 			break;
 
 		case C4GuiWindowPropertyName::symbolObject:
-			val = C4Value(prop->obj);
+			val = C4Value(prop.obj);
 			break;
 
 		case C4GuiWindowPropertyName::symbolDef:
-			val = C4Value(prop->def);
+			val = C4Value(prop.def);
 			break;
 
 		case C4GuiWindowPropertyName::frameDecoration:
-			val = C4Value(prop->frameDecoration ? prop->frameDecoration->idSourceDef : C4ID::None);
+			val = C4Value(prop.deco ? prop.deco->idSourceDef : C4ID::None);
 			break;
 
 		case C4GuiWindowPropertyName::text:
 		{
-			if (prop->strBuf)
+			if (prop.strBuf)
 			{
 				// string existing?
-				C4String *s = Strings.FindString(prop->strBuf->GetCStr());
-				if (!s) s = Strings.ReqString(prop->strBuf);
+				C4String *s = Strings.FindString(prop.strBuf->getData());
+				if (!s) s = Strings.RegString(prop.strBuf->getData());
 				val = C4Value(s);
 			}
 			break;
@@ -398,8 +398,8 @@ C4Value C4GuiWindowProperty::ToC4Value()
 		case C4GuiWindowPropertyName::onMouseInAction:
 		case C4GuiWindowPropertyName::onMouseOutAction:
 		case C4GuiWindowPropertyName::onCloseAction:
-			if (prop->action)
-				val = prop->action->ToC4Value();
+			if (prop.action)
+				val = prop.action->ToC4Value();
 			break;
 
 		default:
@@ -649,9 +649,9 @@ void C4GuiWindow::SetArrayTupleProperty(const C4Value &property, C4GuiWindowProp
 	else props[first].Set(property, hash);
 }
 
-C4Value C4GuiWindow::ToC4Value()
+const C4Value C4GuiWindow::ToC4Value()
 {
-	C4PropList *proplist = new C4PropList;
+	C4PropList *proplist = C4PropList::New();
 
 	// TODO: save IDs
 
@@ -677,7 +677,7 @@ C4Value C4GuiWindow::ToC4Value()
 		P_Priority
 	};
 
-	for (int32_t i = 0; i < sizeof(toSave); ++i)
+	for (size_t i = 0; i < sizeof(toSave); ++i)
 	{
 		int32_t prop = toSave[i];
 		C4Value val;
@@ -692,10 +692,9 @@ C4Value C4GuiWindow::ToC4Value()
 			C4Value first, second;
 #define ARRAY_TUPLE(p, prop1, prop2) if (prop == p) { first = props[prop1].ToC4Value(); second = props[prop2].ToC4Value(); }
 			ARRAY_TUPLE(P_X, C4GuiWindowPropertyName::relLeft, C4GuiWindowPropertyName::left);
-			else ARRAY_TUPLE(P_Y, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top);
-			else ARRAY_TUPLE(P_Wdt, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right);
-			else ARRAY_TUPLE(P_Hgt, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom);
-			else assert(false);
+			ARRAY_TUPLE(P_Y, C4GuiWindowPropertyName::relTop, C4GuiWindowPropertyName::top);
+			ARRAY_TUPLE(P_Wdt, C4GuiWindowPropertyName::relRight, C4GuiWindowPropertyName::right);
+			ARRAY_TUPLE(P_Hgt, C4GuiWindowPropertyName::relBottom, C4GuiWindowPropertyName::bottom);
 #undef ARRAY_TUPLE
 			C4ValueArray *array = new C4ValueArray();
 			array->SetSize(2);
@@ -714,7 +713,7 @@ C4Value C4GuiWindow::ToC4Value()
 			break;
 		case P_Target: val = C4Value(target); break;
 		case P_Text: val = props[C4GuiWindowPropertyName::text].ToC4Value(); break;
-		case P_ID: val = C4Value(id) break;
+		case P_ID: val = C4Value(id); break;
 		case P_OnClick: val = props[C4GuiWindowPropertyName::onClickAction].ToC4Value(); break;
 		case P_OnMouseIn: val = props[C4GuiWindowPropertyName::onMouseInAction].ToC4Value(); break;
 		case P_OnMouseOut: val = props[C4GuiWindowPropertyName::onMouseOutAction].ToC4Value(); break;
@@ -727,7 +726,7 @@ C4Value C4GuiWindow::ToC4Value()
 			break;
 		}
 
-		proplist->SetProperty(prop, val);
+		proplist->SetProperty(C4PropertyName(prop), val);
 	}
 
 	// save children now, construct new names for them
