@@ -152,6 +152,7 @@ public func DoExplode()
 }
 
 public func IsChemicalProduct() { return true; }
+public func IsGrenadeLauncherAmmo() { return true; }
 
 local ActMap = {
 	Fuse = {

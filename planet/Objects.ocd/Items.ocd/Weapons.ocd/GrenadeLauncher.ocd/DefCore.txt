@@ -1,0 +1,15 @@
+[DefCore]
+id=GrenadeLauncher
+Version=5,2,0,1
+Category=C4D_Object
+Width=16
+Height=6
+Offset=-8,-3
+Vertices=4
+VertexX=-7,3,5,0
+VertexY=0,0,2,0
+VertexFriction=50,50,70
+Value=25
+Mass=15
+Components=Metal=3;Wood=1;
+Rotate=1

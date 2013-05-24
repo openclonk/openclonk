@@ -1,8 +1,8 @@
 /*--
-	Musket
-	Author: Ringwaul
+	Grenade Launcher
+	Author: Clonkonaut
 
-	A single shot musket which fires metal-shot at incredible speed.
+	A single shot grenade launcher which fires dangerous iron bombs.
 
 --*/
 
@@ -21,7 +21,7 @@ public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
 public func GetCarryTransform()
 {
-	return Trans_Rotate(-90, 0, 1, 0);
+	return Trans_Mul(Trans_Rotate(-90,0,1,0), Trans_Rotate(10,1,0,0));
 }
 
 local animation_set;
@@ -29,10 +29,10 @@ local animation_set;
 func Initialize()
 {
 	//Tweaking options
-	MuskUp = 12;
-	MuskFront = 13;
-	MuskDown = 16;
-	MuskOffset = -8;
+	MuzzleUp = 12;
+	MuzzleFront = 13;
+	MuzzleDown = 16;
+	MuzzleOffset = -8;
 	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
@@ -56,23 +56,25 @@ local iBarrel;
 
 local holding;
 
-local MuskUp; local MuskFront; local MuskDown; local MuskOffset;
+local MuzzleUp; local MuzzleFront; local MuzzleDown; local MuzzleOffset;
 
 protected func HoldingEnabled() { return true; }
 
-func RejectUse(object clonk)
-{
-	return !clonk->HasHandAction();
-}
-
 func ControlUseStart(object clonk, int x, int y)
 {
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
+	{
+		holding = true;
+		return true;
+	}
+
 	// nothing in extraslot?
 	if(!Contents(0))
 	{
 		// put something inside
 		var obj;
-		if(obj = FindObject(Find_Container(clonk), Find_Func("IsMusketAmmo")))
+		if(obj = FindObject(Find_Container(clonk), Find_Func("IsGrenadeLauncherAmmo")))
 		{
 			obj->Enter(this);
 		}
@@ -111,7 +113,7 @@ public func FinishedLoading(object clonk)
 
 func ControlUseHolding(object clonk, ix, iy)
 {
-	var angle = Angle(0,0,ix,iy-MuskOffset);
+	var angle = Angle(0,0,ix,iy-MuzzleOffset);
 	angle = Normalize(angle,-180);
 
 	clonk->SetAimPosition(angle);
@@ -132,7 +134,7 @@ public func FinishedAiming(object clonk, int angle)
 	if(!loaded) return;
 	
 	// Fire
-	if(Contents(0) && Contents(0)->IsMusketAmmo())
+	if(Contents(0) && Contents(0)->IsGrenadeLauncherAmmo())
 		FireWeapon(clonk, angle);
 	clonk->StartShoot(this);
 	return true;
@@ -151,21 +153,23 @@ public func Reset(clonk)
 
 private func FireWeapon(object clonk, int angle)
 {
-	// calculate offset for shot and effects
-	var IX=Sin(180-angle,MuskFront);
-	var IY=Cos(180-angle,MuskUp)+MuskOffset;
-	if(Abs(Normalize(angle,-180)) > 90)
-		IY=Cos(180-angle,MuskDown)+MuskOffset;
-	
-	var shot = Contents(0)->TakeObject();
-	shot->Launch(clonk, angle, iBarrel, 200, IX, IY);
-	
+	var shot = Contents(0)->~TakeObject() ?? Contents(0);
+
+	var IX=Sin(180-angle,MuzzleFront);
+	var IY=Cos(180-angle,MuzzleUp)+MuzzleOffset;
+
+	shot->LaunchProjectile(angle, 0, 75, IX, IY);
+	shot->~Fuse(true);
+
 	loaded = false;
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));
 
 	Sound("GunShoot?");
 
 	// Muzzle Flash & gun smoke
+	if(Abs(Normalize(angle,-180)) > 90)
+		IY=Cos(180-angle,MuzzleDown)+MuzzleOffset;
+
 	for(var i=0; i<10; ++i)
 	{
 		var speed = RandomX(0,10);
@@ -178,12 +182,14 @@ private func FireWeapon(object clonk, int angle)
 
 func RejectCollect(id shotid, object shot)
 {
-	// Only collect musket-ammo
-	if(!(shot->~IsMusketAmmo())) return true;
+	// Only collect grenade launcher ammo
+	if(!(shot->~IsGrenadeLauncherAmmo())) return true;
 }
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
+
+
 
 func Definition(def) {
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)),def);

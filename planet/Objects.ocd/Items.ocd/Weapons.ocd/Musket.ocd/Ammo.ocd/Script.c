@@ -23,12 +23,12 @@ protected func Hit()
 	}
 }
 
-public func Launch(object shooter, int angle, int dist, int speed)
+public func Launch(object shooter, int angle, int dist, int speed, int offset_x, int offset_y)
 {
 	SetController(shooter->GetController());
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 
-	LaunchProjectile(angle, dist, speed);
+	LaunchProjectile(angle, dist, speed, offset_x, offset_y);
 	
 	// remove after some time
 	SetAction("Travel");
