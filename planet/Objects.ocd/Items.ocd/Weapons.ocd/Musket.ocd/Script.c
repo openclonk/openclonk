@@ -153,8 +153,14 @@ public func Reset(clonk)
 
 private func FireWeapon(object clonk, int angle)
 {
+	// calculate offset for shot and effects
+	var IX=Sin(180-angle,MuskFront);
+	var IY=Cos(180-angle,MuskUp)+MuskOffset;
+	if(Abs(Normalize(angle,-180)) > 90)
+		IY=Cos(180-angle,MuskDown)+MuskOffset;
+	
 	var shot = Contents(0)->TakeObject();
-	shot->Launch(clonk,angle,iBarrel,200);
+	shot->Launch(clonk, angle, iBarrel, 200, IX, IY);
 	
 	loaded = false;
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(1500,0,-1500),Trans_Rotate(170,0,1,0),Trans_Rotate(30,0,0,1)));
@@ -162,11 +168,6 @@ private func FireWeapon(object clonk, int angle)
 	Sound("GunShoot?");
 
 	// Muzzle Flash & gun smoke
-	var IX=Sin(180-angle,MuskFront);
-	var IY=Cos(180-angle,MuskUp)+MuskOffset;
-	if(Abs(Normalize(angle,-180)) > 90)
-		IY=Cos(180-angle,MuskDown)+MuskOffset;
-
 	for(var i=0; i<10; ++i)
 	{
 		var speed = RandomX(0,10);
