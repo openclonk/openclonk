@@ -224,16 +224,18 @@ static gboolean OnDelete(GtkWidget* widget, GdkEvent* event, gpointer data)
 static gboolean OnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	// keycode = scancode + 8
+	if (event->hardware_keycode <= 8) return false;
+	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	wnd->CharIn(event->string); // FIXME: Use GtkIMContext somehow
 	return true;
 }
 
 static gboolean OnKeyRelease(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Game.DoKeyboardInput(key, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
+	// keycode = scancode + 8
+	if (event->hardware_keycode <= 8) return false;
+	Game.DoKeyboardInput(event->hardware_keycode-8, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	return true;
 }
 
@@ -285,16 +287,15 @@ static gboolean OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 		return true;
 	}
-
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Console.EditCursor.KeyDown(key, event->state);
+	if (event->hardware_keycode <= 8) return false;
+	Console.EditCursor.KeyDown(event->hardware_keycode - 8, event->state);
 	return false;
 }
 
 static gboolean OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
-	Console.EditCursor.KeyUp(key, event->state);
+	if (event->hardware_keycode <= 8) return false;
+	Console.EditCursor.KeyUp(event->hardware_keycode - 8, event->state);
 	return false;
 }
 

@@ -64,6 +64,9 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	p.x = GET_X_LPARAM(lParam);
 	p.y = GET_Y_LPARAM(lParam);
 
+	// compute scancode
+	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+
 	// Process message
 	switch (uMsg)
 	{
@@ -128,16 +131,16 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			Application.MusicSystem.NotifySuccess();
 		return true;
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL))
 			return 0;
 		break;
 	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
 			return 0;
 		break;
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL))
 			return 0;
 		break;
 	case WM_CHAR:
@@ -214,6 +217,9 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (!(cvp=::Viewports.GetViewport(hwnd)))
 		return DefWindowProcW(hwnd, uMsg, wParam, lParam);
 
+	// compute scancode
+	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+
 	// Process message
 	switch (uMsg)
 	{
@@ -229,19 +235,19 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		default:
-			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
+			if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
 			break;
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 		break;
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, NULL)) return 0;
 		break;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), NULL)) return 0;
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:
@@ -384,16 +390,16 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		switch (uMsg)
 		{
 		case WM_KEYDOWN:
-			Console.EditCursor.KeyDown(wParam, dwKeyState);
+			Console.EditCursor.KeyDown(scancode, dwKeyState);
 			break;
 		case WM_KEYUP:
-			Console.EditCursor.KeyUp(wParam, dwKeyState);
+			Console.EditCursor.KeyUp(scancode, dwKeyState);
 			break;
 		case WM_SYSKEYDOWN:
-			Console.EditCursor.KeyDown(wParam, dwKeyState);
+			Console.EditCursor.KeyDown(scancode, dwKeyState);
 			break;
 		case WM_SYSKEYUP:
-			Console.EditCursor.KeyUp(wParam, dwKeyState);
+			Console.EditCursor.KeyUp(scancode, dwKeyState);
 			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN:
@@ -425,21 +431,24 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	p.x = GET_X_LPARAM(lParam);
 	p.y = GET_Y_LPARAM(lParam);
 
+	// compute scancode
+	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+
 	// Process message
 	switch (uMsg)
 	{
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYDOWN:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
 		break;
 		//---------------------------------------------------------------------------------------------------------------------------
 	case WM_KEYUP:
-		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, pDlg)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Up, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, false, pDlg)) return 0;
 		break;
 		//------------------------------------------------------------------------------------------------------------
 	case WM_SYSKEYDOWN:
 		if (wParam == 18) break;
-		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
+		if (Game.DoKeyboardInput(scancode, KEYEV_Down, !!(lParam & 0x20000000), GetKeyState(VK_CONTROL) < 0, GetKeyState(VK_SHIFT) < 0, !!(lParam & 0x40000000), pDlg)) return 0;
 		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 	case WM_DESTROY:

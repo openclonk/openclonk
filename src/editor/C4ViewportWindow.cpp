@@ -37,10 +37,7 @@
 #include <StdRegistry.h>
 
 #ifdef USE_X11
-#include <X11/Xlib.h>
 #ifdef WITH_DEVELOPER_MODE
-#include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #endif
 #endif

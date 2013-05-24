@@ -134,6 +134,10 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 	return true;
 }
 
+C4KeyCode K_SHIFT_L; // FIXME
+C4KeyCode K_SHIFT_R;
+C4KeyCode K_ALT_L;
+C4KeyCode K_ALT_R;
 C4KeyCode K_F1 = 122 + CocoaKeycodeOffset;
 C4KeyCode K_F2 = 120 + CocoaKeycodeOffset;
 C4KeyCode K_F3 = 99 + CocoaKeycodeOffset;

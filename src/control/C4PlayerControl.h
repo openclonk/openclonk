@@ -156,7 +156,7 @@ private:
 		StdCopyStrBuf sKeyName;
 		void CompileFunc(StdCompiler *pComp);
 		void UpdateKeyName();
-		bool operator ==(const KeyComboItem &cmp) const { return sKeyName==cmp.sKeyName; }
+		bool operator ==(const KeyComboItem &cmp) const { return Key==cmp.Key; }
 	};
 	typedef std::vector<KeyComboItem> KeyComboVec;
 	KeyComboVec KeyCombo;
