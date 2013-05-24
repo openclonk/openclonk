@@ -1,9 +1,8 @@
 /*--
-	Jar of Winds
+	Windbag (aka Jar of Winds)
 	Author: MimmoO
 
 	Collect air until you're full, then release it with a blast.
-
 --*/
 
 local Amount;
@@ -12,10 +11,14 @@ local sound;
 
 func Hit()
 {
-	Sound("GlassHit?");
+	Sound("GeneralHit?");
 }
 
-public func GetCarryMode(clonk) { return CARRY_BothHands; }
+public func GetCarryMode(clonk) { return CARRY_Musket; }
+public func GetCarryTransform()
+{
+	return Trans_Mul(Trans_Rotate(-80,0,1,0),Trans_Rotate(-30,1,0,0),Trans_Rotate(-25,0,0,1));
+}
 public func GetCarryPhase() { return 600; }
 
 public func FxJarReloadTimer(object target, effect, int time)
@@ -172,6 +175,10 @@ private func FireWeapon(object pClonk,iX,iY)
 }
 
 func IsInventorProduct() { return true; }
+
+func Definition(def) {
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Scale(1500)),def);
+}
 
 local Name = "$Name$";
 local Description = "$Description$";
