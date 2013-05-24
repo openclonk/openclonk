@@ -2,6 +2,7 @@
 #                                                                             #
 #                                ControlDefs                                  #
 #                                                                             #
+#                                                                             #
 ###############################################################################
 
 [ControlDefs]
@@ -10,7 +11,7 @@
 	# Summary
 	# --------
 	# Left Right Up Down Jump
-	# Throw Drop Use Collect ForcedThrow
+	# Throw Drop Use ForcedThrow
 	# UseAlt
 	# 
 	# CancelUse CancelMenu
@@ -162,9 +163,6 @@
 	GUIDesc=$CON_Drop_Desc$
 	Hold=1
 
-	[ControlDef]
-	Identifier=Collect
-		
 	# Hotkeys (Inventory)
 	
 	[ControlDef]
@@ -570,7 +568,6 @@
 	# InventoryShiftForward             MouseWheelUp
 	# InventoryShiftBackward            MouseWheelDown
 	# Contents							E
-	# Collect							A,D,W,S
 	#
 	# NextCrew							T
 	# PreviousCrew						R
@@ -1385,38 +1382,12 @@
 		Control=PlayerHotkey0				
 	
 	# ======================================================================= #
-	#                      Menu controls & Collect sets                       #
+	#                              Menu controls                              #
 	# ======================================================================= #
 	
 	[ControlSet]
 	Name=*
-	
-		# Collect
-	
-		[Assignment]
-		Key=CON_Left
-		GUIName=None
-		Priority=9
-		Control=Collect
 		
-		[Assignment]
-		Key=CON_Right
-		GUIName=None
-		Priority=9
-		Control=Collect
-		
-		[Assignment]
-		Key=CON_Up
-		GUIName=None
-		Priority=9
-		Control=Collect
-		
-		[Assignment]
-		Key=CON_Down
-		GUIName=None
-		Priority=9
-		Control=Collect
-	
 		# Menu control
 	
 		[Assignment]

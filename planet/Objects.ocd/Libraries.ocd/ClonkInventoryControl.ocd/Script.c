@@ -54,14 +54,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	if (ctrl == CON_InventoryShiftForward)
+	// shift inventory
+	var inventory_shift = 0;
+	if (ctrl == CON_InventoryShiftForward) inventory_shift = 1;
+	else if (ctrl == CON_InventoryShiftBackward) inventory_shift = -1;
+	
+	if (inventory_shift)
 	{
-		ShiftContents();
-		return true;
-	}
-	if (ctrl == CON_InventoryShiftBackward)
-	{
-		ShiftContents(true);
+		var current = (this->GetHandItemPos(0) + inventory_shift) % this->MaxContentsCount();
+		this->SetHandItemPos(0, current);
 		return true;
 	}
 	
@@ -123,26 +124,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		SetHandItemPos(0, hot-1);
 		return true;
-	}
-	
-	// Collecting
-	if (ctrl == CON_Collect)
-	{
-		// only if not inside something
-		if(Contained()) return false; // not handled
-		
-		var dx = -GetDefWidth()/2, dy = -GetDefHeight()/2;
-		var wdt = GetDefWidth(), hgt = GetDefHeight()+2;
-		var obj = FindObject(Find_InRect(dx,dy,wdt,hgt), Find_OCF(OCF_Collectible), Find_NoContainer());
-		if(obj)
-		{
-			// hackery to prevent the clonk from rejecting the collect because it is not being
-			// collected into the hands
-			this->Collect(obj,nil,nil,true);
-		}
-		
-		// return not handled to still receive other controls - collection should not block anything else
-		return false;
 	}
 }
 
