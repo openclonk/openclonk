@@ -417,7 +417,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		// for config files and such: dump scancode
 		return FormatString("$%x", static_cast<unsigned int>(wCode));
 	}
-#if defined(_WIN32) || defined(USE_COCOA)
+#if defined(_WIN32)
 
 //  TODO: Works?
 //  StdStrBuf Name; Name.SetLength(1000);
@@ -435,6 +435,13 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		// buf is nullterminated name
 		return StdStrBuf(buf);
 	}
+#elif defined (USE_COCOA)
+	// query map
+	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
+	while (pCheck->szName)
+			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
+	// not found: Compose as direct code
+	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
 #elif defined(USE_X11)
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
