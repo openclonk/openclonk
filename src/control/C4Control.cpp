@@ -421,8 +421,8 @@ void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 }
 // *** C4ControlMenuCommand
 
-C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID, C4Object *target, unsigned int tag, int32_t actionType)
-	: actionID(actionID), player(player), menuID(menuID), subwindowID(subwindowID), target(target ? target->Number : 0), tag(static_cast<int32_t>(tag)), actionType(actionType)
+C4ControlMenuCommand::C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID, C4Object *target, int32_t actionType)
+	: actionID(actionID), player(player), menuID(menuID), subwindowID(subwindowID), target(target ? target->Number : 0), actionType(actionType)
 {
 
 }
@@ -444,7 +444,7 @@ void C4ControlMenuCommand::Execute() const
 	// target has been removed in the meantime? abort now
 	if (target && !obj) return;
 
-	menu->ExecuteCommand(actionID, player, subwindowID, actionType, obj, static_cast<unsigned int>(tag));
+	menu->ExecuteCommand(actionID, player, subwindowID, actionType, obj);
 }
 
 void C4ControlMenuCommand::CompileFunc(StdCompiler *pComp)

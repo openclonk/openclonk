@@ -220,9 +220,9 @@ public:
 	C4ControlMenuCommand()
 			: menuID(0), subwindowID(0) { }
 	C4ControlMenuCommand(int32_t actionID, int32_t player, int32_t menuID, int32_t subwindowID,
-	                       C4Object *target, unsigned int tag, int32_t actionType);
+	                       C4Object *target, int32_t actionType);
 protected:
-	int32_t actionID, player, menuID, subwindowID, target, tag, actionType;
+	int32_t actionID, player, menuID, subwindowID, target, actionType;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };

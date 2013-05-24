@@ -95,8 +95,8 @@ class C4GuiWindowAction
 	void ClearPointers(C4Object *pObj);
 	bool Init(C4ValueArray *array, int32_t index = 0); // index is the current action in an array of actions
 	// executes non-synced actions and syncs the others
-	// the tag and action type parameters are only used to be able to sync commands
-	void Execute(C4GuiWindow *parent, int32_t player, unsigned int tag, int32_t actionType);
+	// the action type parameters is only used to be able to sync commands
+	void Execute(C4GuiWindow *parent, int32_t player, int32_t actionType);
 	// used to execute synced commands, explanation see C4GuiWindow::ExecuteCommand
 	bool ExecuteCommand(int32_t actionID, C4GuiWindow *parent, int32_t player);
 	// used for serialization. The "first" parameter is used so that chained actions are stored correctly into an array
@@ -122,22 +122,24 @@ class C4GuiWindowProperty
 
 	Prop *current;
 	// the last tag is used to be able to call the correct action on re-synchronizing commands
-	unsigned int currentTag;
+	C4String* currentTag;
 
-	std::map<unsigned int, Prop> taggedProperties;
+	std::map<C4String*, Prop> taggedProperties;
 	void CleanUp(Prop &prop);
 	void CleanUpAll();
 
 	int32_t type; // which property do I stand for?
 
-	void SetInt(unsigned int hash, int32_t to) { taggedProperties[hash] = Prop(); current = &taggedProperties[hash]; current->d = to; }
-	void SetFloat(unsigned int hash, float to) { taggedProperties[hash] = Prop(); current = &taggedProperties[hash]; current->f = to; }
-	void SetNull(unsigned int hash) { taggedProperties[hash] = Prop(); current = &taggedProperties[hash]; current->data = 0; }
+	// the following methods will set the value for the standard tag
+	// the string's ref-count is not increased
+	void SetInt(int32_t to);
+	void SetFloat(float to);
+	void SetNull();
 
 	public:
 	~C4GuiWindowProperty();
 	C4GuiWindowProperty() : current(0), currentTag(0), type(-1) {}
-	void Set(const C4Value &value, unsigned int hash);
+	void Set(const C4Value &value, C4String *tag);
 
 	int32_t GetInt() { return current->d; }
 	float GetFloat() { return current->f; }
@@ -146,10 +148,10 @@ class C4GuiWindowProperty
 	C4GUI::FrameDecoration *GetFrameDecoration() { return current->deco; }
 	StdCopyStrBuf *GetStrBuf() { return current->strBuf; }
 	C4GuiWindowAction *GetAction() { return current->action; }
-	C4GuiWindowAction *GetActionForTag(unsigned int hash); // used to synchronize actions
+	std::list<C4GuiWindowAction*> GetAllActions(); // used to synchronize actions
 
 	bool SwitchTag(C4String *tag);
-	unsigned int GetCurrentTag() { return currentTag; }
+	C4String *GetCurrentTag() { return currentTag; }
 
 	const C4Value ToC4Value();
 
@@ -222,7 +224,7 @@ class C4GuiWindow
 	void ChildChangedPriority(C4GuiWindow *child);
 	// helper function
 	// sets property value from possible(!) array
-	void SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, unsigned int hash);
+	void SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, C4String *tag);
 
 	// this is only supposed to be called at ::GuiWindowRoot since it uses the "ID" property
 	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
@@ -289,7 +291,7 @@ class C4GuiWindow
 
 	// used for commands that have been synchronized and are coming from the command queue
 	// attention: calls to this need to be synchronized!
-	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target, unsigned int tag);
+	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target);
 	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
 };
 
