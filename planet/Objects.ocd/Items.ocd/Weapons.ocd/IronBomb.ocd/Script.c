@@ -1,10 +1,11 @@
 /*
 	IronBomb
-	Author: Ringwaul
+	Author: Ringwaul, Clonkonaut
 
-	Explodes after a short fuse.
+	Explodes after a short fuse. Explodes on contact if shot by the grenade launcher
 */
-	
+
+local armed; // If true, explodes on contact
 
 public func ControlUse(object clonk, int x, int y, bool box)
 {
@@ -20,8 +21,9 @@ public func ControlUse(object clonk, int x, int y, bool box)
 	}
 }
 
-func Fuse()
+func Fuse(bool explode_on_hit)
 {
+	armed = explode_on_hit;
 	AddEffect("FuseBurn", this, 1,1, this);
 }
 
@@ -63,8 +65,8 @@ func DoExplode()
 
 protected func Hit(x, y)
 {
+	if (armed) return DoExplode();
 	StonyObjectHit(x,y);
-	return true;
 }
 
 protected func Incineration() { Extinguish(); Fuse(); }
@@ -76,6 +78,7 @@ protected func RejectEntrance()
 
 public func IsWeapon() { return true; }
 public func IsArmoryProduct() { return true; }
+public func IsGrenadeLauncherAmmo() { return true; }
 
 local Name = "$Name$";
 local Description = "$Description$";
