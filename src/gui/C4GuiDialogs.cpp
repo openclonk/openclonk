@@ -41,16 +41,6 @@
 #include <C4DrawGL.h>
 #include <StdRegistry.h>
 
-#ifdef _WIN32
-#include "resource.h"
-#endif
-
-#ifdef USE_X11
-#define None Die_XLib_Die
-#include <X11/Xlib.h>
-#undef None
-#endif
-
 namespace C4GUI
 {
 

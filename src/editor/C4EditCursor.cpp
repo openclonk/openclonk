@@ -376,11 +376,9 @@ bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 
 bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
 {
-	C4KeyCodeEx kcx(KeyCode);
-
 	// alt check
 	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
-	fAltIsDown = fAltIsDown || (kcx.ToString(false, false) == "Alt" || kcx.ToString(false, false) == "Alt_L" || kcx.ToString(false, false) == "Alt_R");
+	fAltIsDown = fAltIsDown || KeyCode == K_ALT_L || KeyCode == K_ALT_R;
 	if (fAltIsDown != fAltWasDown)
 	{
 		if ((fAltWasDown = fAltIsDown))
@@ -391,7 +389,7 @@ bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
 
 	// shift check
 	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
-	fShiftIsDown = fShiftIsDown || (kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
+	fShiftIsDown = fShiftIsDown || KeyCode == K_SHIFT_L || KeyCode == K_SHIFT_R;
 	if(fShiftIsDown != fShiftWasDown)
 		fShiftWasDown = fShiftIsDown;
 
@@ -400,11 +398,9 @@ bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
 
 bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
 {
-	C4KeyCodeEx kcx(KeyCode);
-
 	// alt check
 	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
-	fAltIsDown = fAltIsDown && !(kcx.ToString(false, false) == "Alt" || kcx.ToString(false, false) == "Alt_L" || kcx.ToString(false, false) == "Alt_R");
+	fAltIsDown = fAltIsDown && !( KeyCode == K_ALT_L || KeyCode == K_ALT_R);
 	if (fAltIsDown != fAltWasDown)
 	{
 		if ((fAltWasDown = fAltIsDown))
@@ -415,7 +411,7 @@ bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
 
 	// shift check
 	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
-	fShiftIsDown = fShiftIsDown && !(kcx.ToString(false, false) == "Shift" || kcx.ToString(false, false) == "Shift_L" || kcx.ToString(false, false) == "Shift_R");
+	fShiftIsDown = fShiftIsDown && !(KeyCode == K_SHIFT_L || KeyCode == K_SHIFT_R);
 	if(fShiftIsDown != fShiftWasDown)
 		fShiftWasDown = fShiftIsDown;
 
