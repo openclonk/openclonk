@@ -62,6 +62,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (inventory_shift)
 	{
 		var current = (this->GetHandItemPos(0) + inventory_shift) % this->MaxContentsCount();
+		if (current < 0) current = this->MaxContentsCount() + current;
 		this->SetHandItemPos(0, current);
 		return true;
 	}
