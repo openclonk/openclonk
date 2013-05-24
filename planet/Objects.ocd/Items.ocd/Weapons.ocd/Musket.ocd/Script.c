@@ -60,7 +60,7 @@ local MuskUp; local MuskFront; local MuskDown; local MuskOffset;
 
 protected func HoldingEnabled() { return true; }
 
-func RejectUs(object clonk)
+func RejectUse(object clonk)
 {
 	return !clonk->HasHandAction();
 }
