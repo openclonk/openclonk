@@ -215,7 +215,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 
 void C4Object::DoMovement()
 {
-	int32_t ctcox,ctcoy,ctcor/*,ctx,cty*/,iContact=0;
+	int32_t ctcox,ctcoy,iContact=0;
 	bool fAnyContact=false; int iContacts = 0;
 	BYTE fTurned=0,fRedirectYR=0,fNoAttach=0;
 	// Restrictions
@@ -378,25 +378,23 @@ void C4Object::DoMovement()
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (OCF & OCF_Rotate && !!rdir)
 	{
-		// Set target
-		fix_r+=rdir*5;
+		C4Real target_r = fix_r + rdir * 5;
 		// Rotation limit
 		if (Def->Rotateable>1)
 		{
-			if (fix_r > itofix(Def->Rotateable))
-				{ fix_r = itofix(Def->Rotateable); rdir=0; }
-			if (fix_r < itofix(-Def->Rotateable))
-				{ fix_r = itofix(-Def->Rotateable); rdir=0; }
+			if (target_r > itofix(Def->Rotateable))
+				{ target_r = itofix(Def->Rotateable); rdir=0; }
+			if (target_r < itofix(-Def->Rotateable))
+				{ target_r = itofix(-Def->Rotateable); rdir=0; }
 		}
-		ctcor=fixtoi(fix_r);
 		int32_t ctx=GetX(); int32_t cty=GetY();
 		// Move to target
-		while (r!=ctcor)
+		while (fixtoi(fix_r) != fixtoi(target_r))
 		{
 			// Save step undos
-			int32_t lcobjr=r; C4Shape lshape=Shape;
+			C4Real lcobjr = fix_r; C4Shape lshape=Shape;
 			// Try next step
-			r+=Sign(ctcor-r);
+			fix_r += itofix(Sign(fixtoi(target_r) - fixtoi(fix_r)));
 			UpdateShape();
 			// attached rotation: rotate around attachment pos
 			if (Action.t_attach && !fNoAttach)
@@ -415,9 +413,7 @@ void C4Object::DoMovement()
 				fAnyContact=true; iContacts |= t_contact;
 				// Undo step and abort movement
 				Shape=lshape;
-				r=lcobjr;
-				ctcor=r;
-				fix_r=itofix(r);
+				target_r = fix_r = lcobjr;
 				// last UpdateShape-call might have changed sector lists!
 				UpdatePos();
 				// Redirect to GetY()
@@ -433,8 +429,9 @@ void C4Object::DoMovement()
 			}
 		}
 		// Circle bounds
-		if (fix_r<-FixHalfCircle) { fix_r+=FixFullCircle; r=fixtoi(fix_r); }
-		if (fix_r>+FixHalfCircle) { fix_r-=FixFullCircle; r=fixtoi(fix_r); }
+		if (target_r < -FixHalfCircle) { target_r += FixFullCircle; }
+		if (target_r > +FixHalfCircle) { target_r -= FixFullCircle; }
+		fix_r = target_r;
 	}
 	// Reput solid mask: Might have been removed by motion or
 	// motion might be out of date from last frame.
@@ -487,24 +484,25 @@ void C4Object::Stabilize()
 	// def allows stabilization?
 	if (Def->NoStabilize) return;
 	// normalize angle
-	int32_t nr = r; while (nr < -180) nr+=360; while (nr > 180) nr-=360;
-	if (nr!=0)
-		if (Inside<int32_t>(nr,-StableRange,+StableRange))
+	C4Real nr = fix_r;
+	while (nr < itofix(-180)) nr += 360;
+	while (nr > itofix(180)) nr -= 360;
+	if (nr != Fix0)
+		if (Inside<C4Real>(nr,itofix(-StableRange),itofix(+StableRange)))
 		{
 			// Save step undos
-			int32_t lcobjr=r;
+			C4Real lcobjr=fix_r;
 			C4Shape lshape=Shape;
 			// Try rotation
-			r=0;
+			fix_r=Fix0;
 			UpdateShape();
 			if (ContactCheck(GetX(),GetY()))
 			{ // Undo rotation
 				Shape=lshape;
-				r=lcobjr;
+				fix_r=lcobjr;
 			}
 			else
 			{ // Stabilization okay
-				fix_r=itofix(r);
 				UpdateFace(true);
 			}
 		}
@@ -580,13 +578,12 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 		{
 			// Gravity mobilization
 			xdir=ydir=rdir=0;
-			fix_r=itofix(r);
 			Mobile=1;
 		}
 	}
 
 	// Enforce zero rotation
-	if (!Def->Rotateable) r=0;
+	if (!Def->Rotateable) fix_r=Fix0;
 
 	// Out of bounds check
 	if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))

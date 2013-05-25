@@ -261,8 +261,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if (!Def->Rotateable) { nr=0; nrdir=0; }
 	fix_x=itofix(nx);
 	fix_y=itofix(ny);
-	r=nr;
-	fix_r=itofix(r);
+	fix_r=itofix(nr);
 	xdir=nxdir; ydir=nydir; rdir=nrdir;
 
 	// Initial mobility
@@ -423,7 +422,7 @@ void C4Object::UpdateShape(bool bUpdateVertices)
 
 	// Rotation
 	if (Def->Rotateable)
-		if (r!=0)
+		if (fix_r != Fix0)
 			Shape.Rotate(fix_r, bUpdateVertices);
 
 	// covered area changed? to be on the save side, update pos
@@ -454,7 +453,7 @@ void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
 
 	// newgfx: TopFace only
 	if (Con>=FullCon || Def->GrowthType)
-		if (!Def->Rotateable || (r==0))
+		if (!Def->Rotateable || (fix_r == Fix0))
 			if (Def->TopFace.Wdt>0) // Fullcon & no rotation
 				TopFace.Set(GetGraphics()->GetBitmap(Color),
 				            Def->TopFace.x,Def->TopFace.y,
@@ -600,7 +599,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 	}
 
 	// Straight
-	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
+	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
@@ -615,11 +614,11 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		if (pDrawTransform)
 		{
 			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (r) rot.Rotate(r * 100, offX, offY);
+			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
 		}
 		else
 		{
-			rot.SetRotate(r * 100, offX, offY);
+			rot.SetRotate(fixtof(fix_r), offX, offY);
 		}
 		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
 		/*    pDraw->Blit(GetGraphics()->GetBitmap(Color),
@@ -673,7 +672,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	}
 
 	// Straight
-	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
+	if ((!Def->Rotateable || (fix_r == Fix0)) && !pDrawTransform)
 	{
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
 		/*pDraw->Blit(Action.Facet.Surface,
@@ -690,11 +689,11 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 		if (pDrawTransform)
 		{
 			rot.SetTransformAt(*pDrawTransform, offX, offY);
-			if (r) rot.Rotate(r * 100, offX, offY);
+			if (fix_r != Fix0) rot.Rotate(fixtof(fix_r), offX, offY);
 		}
 		else
 		{
-			rot.SetRotate(r * 100, offX, offY);
+			rot.SetRotate(fixtof(fix_r), offX, offY);
 		}
 		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
 		/*    pDraw->Blit(Action.Facet.Surface,
@@ -768,7 +767,7 @@ void C4Object::SetOCF()
 	OCF=OCF_Normal;
 	// OCF_Construct: Can be built outside
 	if (Def->Constructable && (Con<FullCon)
-	    && (r==0) && !OnFire)
+	    && (fix_r==Fix0) && !OnFire)
 		OCF|=OCF_Construct;
 	// OCF_Grab: Can be pushed
 	if (GetPropertyInt(P_Touchable))
@@ -795,7 +794,7 @@ void C4Object::SetOCF()
 		OCF|=OCF_Exclusive;
 	// OCF_Entrance: Can currently be entered/activated
 	if ((Def->Entrance.Wdt>0) && (Def->Entrance.Hgt>0))
-		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (r <= Def->RotatedEntrance)))
+		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (GetR() <= Def->RotatedEntrance)))
 			OCF|=OCF_Entrance;
 	// HitSpeeds
 	if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
@@ -869,11 +868,11 @@ void C4Object::UpdateOCF()
 		OCF|=OCF_Carryable;
 	// OCF_Construct: Can be built outside
 	if (Def->Constructable && (Con<FullCon)
-	    && (r==0) && !OnFire)
+	    && (fix_r == Fix0) && !OnFire)
 		OCF|=OCF_Construct;
 	// OCF_Entrance: Can currently be entered/activated
 	if ((Def->Entrance.Wdt>0) && (Def->Entrance.Hgt>0))
-		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (r <= Def->RotatedEntrance)))
+		if ((OCF & OCF_FullCon) && ((Def->RotatedEntrance == 1) || (GetR() <= Def->RotatedEntrance)))
 			OCF|=OCF_Entrance;
 	// HitSpeeds
 	if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
@@ -1165,7 +1164,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	// if it had been ColorByOwner, but is not now, this will be caught in UpdateGraphics()
 	if (!Color && ValidPlr(Owner))
 		Color=::Players.Get(Owner)->ColorDw;
-	if (!Def->Rotateable) { r=0; fix_r=rdir=Fix0; }
+	if (!Def->Rotateable) { fix_r=rdir=Fix0; }
 	// Reset solid mask
 	SolidMask=Def->SolidMask;
 	// Post change updates
@@ -1327,8 +1326,8 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, C4Real iXDir, C4Real iYD
 	// No container
 	Contained=NULL;
 	// Position/motion
-	r=iR;
-	fix_x=itofix(iX); fix_y=itofix(iY); fix_r=itofix(r);
+	fix_x=itofix(iX); fix_y=itofix(iY);
+	fix_r=itofix(iR);
 	BoundsCheck(fix_x, fix_y);
 	xdir=iXDir; ydir=iYDir; rdir=iRDir;
 	// Misc updates
@@ -1461,13 +1460,13 @@ bool C4Object::Push(C4Real txdir, C4Real dforce, bool fStraighten)
 	// Straighten
 	if (fStraighten)
 	{
-		if (Inside<int32_t>(r,-StableRange,+StableRange))
+		if (Inside<int32_t>(GetR(),-StableRange,+StableRange))
 		{
 			rdir=0; // cheap way out
 		}
 		else
 		{
-			if (r>0) { if (rdir>-RotateAccel) rdir-=dforce; }
+			if (fix_r > Fix0) { if (rdir>-RotateAccel) rdir-=dforce; }
 			else { if (rdir<+RotateAccel) rdir+=dforce; }
 		}
 	}
@@ -1894,7 +1893,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// Output boundary
 	if (!fYStretchObject && !eDrawMode && !(Category & C4D_Parallax))
 	{
-		if (pActionDef && !r && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
+		if (pActionDef && fix_r == Fix0 && !pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 		{
 			// active
 			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
@@ -2019,7 +2018,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 		{
 			C4Facet fgo;
 			// Straight: Full Shape.Rect on fire
-			if (r==0)
+			if (fix_r == Fix0)
 			{
 				fgo.Set(cgo.Surface,offX + Shape.GetX(),offY + Shape.GetY(),
 				        Shape.Wdt,Shape.Hgt-Shape.FireTop);
@@ -2191,7 +2190,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Contained
 	if (Contained) if (eDrawMode!=ODM_Overlay) return;
 	// Construction sign
-	if (OCF & OCF_Construct && r == 0)
+	if (OCF & OCF_Construct && fix_r == Fix0)
 		if (eDrawMode!=ODM_BaseOnly)
 		{
 			C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
@@ -2288,8 +2287,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,        "LastEngLossPlr",     NO_OWNER          ));
 	pComp->Value(mkNamingAdapt( Category,                         "Category",           0                 ));
 	pComp->Value(mkNamingAdapt( Plane,                            "Plane",              0                 ));
-
-	pComp->Value(mkNamingAdapt( r,                                "Rotation",           0                 ));
 
 	pComp->Value(mkNamingAdapt( iLastAttachMovementFrame,         "LastSolidAtchFrame", -1                ));
 	pComp->Value(mkNamingAdapt( NoCollectDelay,                   "NoCollectDelay",     0                 ));
@@ -2647,8 +2644,6 @@ void C4Object::SyncClearance()
 	Action.t_attach = CNAT_None;
 	InMat = MNone;
 	t_contact = 0;
-	// Fixed point values - precision reduction
-	fix_r = itofix( r );
 	// Update OCF
 	SetOCF();
 	// Menu
@@ -3413,7 +3408,7 @@ void C4Object::ExecAction()
 	// Upright attachment check
 	if (!Mobile)
 		if (Def->UprightAttach)
-			if (Inside<int32_t>(r,-StableRange,+StableRange))
+			if (Inside<int32_t>(GetR(),-StableRange,+StableRange))
 			{
 				Action.t_attach|=Def->UprightAttach;
 				Mobile=1;
@@ -3938,7 +3933,7 @@ void C4Object::ExecAction()
 			if (Action.Target->Contained)
 				Enter(Action.Target->Contained);
 			else
-				Exit(GetX(),GetY(),r);
+				Exit(GetX(),GetY(),GetR());
 		}
 
 		// Move position (so objects on solidmask move)
@@ -4231,7 +4226,6 @@ void C4Object::SetRotation(int32_t nr)
 	// remove solid mask
 	if (pSolidMaskData) pSolidMaskData->Remove(false);
 	// set rotation
-	r=nr;
 	fix_r=itofix(nr);
 	// Update face
 	UpdateFace(true);
@@ -4734,9 +4728,9 @@ bool C4Object::AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpe
 			iDestAngle = 50;
 	}
 	// move to destination angle
-	if (Abs(iDestAngle-r)>2)
+	if (Abs(iDestAngle-GetR())>2)
 	{
-		rdir = itofix(BoundBy<int32_t>(iDestAngle-r, -15,+15));
+		rdir = itofix(BoundBy<int32_t>(iDestAngle-GetR(), -15,+15));
 		rdir/=(10000/iSpeed);
 	}
 	else rdir=0;

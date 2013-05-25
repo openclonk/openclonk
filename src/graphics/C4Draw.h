@@ -48,12 +48,12 @@ public:
 	C4BltTransform() {} // default: don't init fields
 	void Set(float fA, float fB, float fC, float fD, float fE, float fF, float fG, float fH, float fI)
 	{ mat[0]=fA; mat[1]=fB; mat[2]=fC; mat[3]=fD; mat[4]=fE; mat[5]=fF; mat[6]=fG; mat[7]=fH; mat[8]=fI; }
-	void SetRotate(int iAngle, float fOffX, float fOffY); // set by angle and rotation offset
+	void SetRotate(float iAngle, float fOffX, float fOffY); // set by angle and rotation offset
 	bool SetAsInv(C4BltTransform &rOfTransform);
-	void Rotate(int iAngle, float fOffX, float fOffY) // rotate by angle around rotation offset
+	void Rotate(float Angle, float fOffX, float fOffY) // rotate by angle around rotation offset
 	{
 		// multiply matrix as seen in SetRotate by own matrix
-		C4BltTransform rot; rot.SetRotate(iAngle, fOffX, fOffY);
+		C4BltTransform rot; rot.SetRotate(Angle, fOffX, fOffY);
 		(*this) *= rot;
 	}
 	void SetMoveScale(float dx, float dy, float sx, float sy)

@@ -954,7 +954,7 @@ void C4ControlEMMoveObject::Execute() const
 		C4Object *pObj;
 		for (int i=0; i<iObjectNum; ++i)
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
-				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
+				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->GetR());
 	}
 	break;
 	}

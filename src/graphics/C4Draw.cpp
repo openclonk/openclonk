@@ -50,13 +50,13 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
-void C4BltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by angle and rotation offset
+void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
-	// iAngle is in 1/100-degrees (cycling from 0 to 36000)
+	// iAngle is in degrees (cycling from 0 to 360)
 	// determine sine and cos of reversed angle in radians
-	// fAngle = -iAngle/100 * pi/180 = iAngle * -pi/18000
-	float fAngle=(float) iAngle*(-1.7453292519943295769236907684886e-4f);
-	float fsin=(float)sin(fAngle); float fcos=(float)cos(fAngle);
+	// fAngle = -iAngle * pi/180 = iAngle * -pi/180
+	float fAngle = iAngle * -0.0174532925f;
+	float fsin = sinf(fAngle); float fcos = cosf(fAngle);
 	// set matrix values
 	mat[0] = +fcos; mat[1] = +fsin; mat[2] = (1-fcos)*fOffX - fsin*fOffY;
 	mat[3] = -fsin; mat[4] = +fcos; mat[5] = (1-fcos)*fOffY + fsin*fOffX;
