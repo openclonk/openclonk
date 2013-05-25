@@ -839,8 +839,11 @@ void C4Object::SetOCF()
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
 #ifdef DEBUGREC_OCF
-	C4RCOCF rc = { dwOCFOld, OCF, false };
-	AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	if (Config.General.DebugRec)
+	{
+		C4RCOCF rc = { dwOCFOld, OCF, false };
+		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	}
 #endif
 }
 
@@ -907,8 +910,11 @@ void C4Object::UpdateOCF()
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
 #ifdef DEBUGREC_OCF
-	C4RCOCF rc = { dwOCFOld, OCF, true };
-	AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	if (Config.General.DebugRec)
+	{
+		C4RCOCF rc = { dwOCFOld, OCF, true };
+		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	}
 #endif
 #ifdef _DEBUG
 	DEBUGREC_OFF
