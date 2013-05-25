@@ -112,10 +112,7 @@ public func CarryHeavy(object target)
 	
 	if(target->Contained() != this)
 		target->Enter(this);
-	
-	// notify UI about carryheavy pickup
-	this->~OnCarryHeavyChange(carryheavy);
-	
+
 	// Update attach stuff
 	this->~OnSlotFull();
 	
@@ -142,7 +139,6 @@ private func StopCarryHeavy()
 		return;
 	
 	carryheavy = nil;
-	this->~OnCarryHeavyChange(nil);
 	this->~OnSlotEmpty();
 }
 

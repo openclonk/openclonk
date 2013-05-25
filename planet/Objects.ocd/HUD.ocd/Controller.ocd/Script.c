@@ -15,14 +15,13 @@
 	@authors Newton, Mimmo_O
 */
 
+#include GUI_Controller_InventoryBar
+
 // Local variables containing the GUI-Elements
 local actionbar;	// Array, action-buttons at the bottom
-local inventory;	// Array, inventory-buttons at the left side
 local markers;		// Array, the gui-markers.
-local carryheavy;	// Object, optional inventory-button only shown when clonk is carrying a carry-heavy object
 local wealth;		// Object, displays wealth of the player
 
-local progress_bar_links;
 
 static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
 
@@ -30,8 +29,6 @@ protected func Construction()
 {
 	actionbar = [];
 	markers = [];
-	inventory = [];
-	progress_bar_links = [];
 	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=0; i < GetCrewCount(GetOwner()); ++i)
@@ -53,8 +50,7 @@ protected func Construction()
 	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
 	
-	// inventory display
-	MakeInventory();
+	return _inherited();
 }
 
 /* Destruction */
@@ -73,13 +69,6 @@ protected func Destruction()
 				actionbar[i]->RemoveObject();
 		}
 	}
-
-	if(inventory)
-		for(var i=0; i<GetLength(inventory); ++i)
-		{
-			if(inventory[i])
-				inventory[i]->RemoveObject();
-		}
 	
 	if(markers)
 	{
@@ -97,32 +86,10 @@ protected func Destruction()
 	var crew = FindObjects(Find_ID(GUI_CrewSelector), Find_Owner(GetOwner()));
 	for(var o in crew)
 		o->RemoveObject();
+		
+	return _inherited();
 }
 
-/* Inventory-Bar stuff */
-
-// Updates the Inventory in 1 frame
-private func ScheduleUpdateInventory()
-{
-	ScheduleCall(this, "UpdateInventory", 1, 0);
-}
-
-private func MakeInventory()
-{
-	// distance between slots
-	var d = 72;
-	// upper barrier
-	var y = 200;
-
-	// and the carry heavy slot
-	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-	bt->SetHUDController(this);
-	bt->SetPosition(40+d, y);
-	bt->SetSlotId(-1);
-	bt.Visibility = VIS_None;
-	
-	carryheavy = bt;
-}
 
 /*-- Wealth --*/
 
@@ -185,82 +152,6 @@ global func AddHUDMarker(int player, picture, string altpicture, string text, in
 	return hud.markers[number];
 }
 
-/* Inventory stuff */
-func UpdateInventory()
-{
-	// only display if we have a clonk
-	var c = GetCursor(GetOwner());
-	if(!c) return 1;
-	
-	// sort out old progress bars
-	if(GetLength(progress_bar_links))
-	{
-		var old_progress_bar_links = progress_bar_links[:];
-		progress_bar_links = [];
-		
-		for(var bar in old_progress_bar_links)
-		{
-			if(!bar.effect) continue;
-			PushBack(progress_bar_links, bar);
-		}
-	}
-	
-	// update inventory-slots
-	for(var i=0; i<GetLength(inventory); i++)
-	{
-		var item = c->GetItem(inventory[i]->GetSlotId());
-		inventory[i]->SetSymbol(item);
-		inventory[i]->SetUnselected();
-		
-		inventory[i]->ClearProgressBarLink();
-		// re-add progress bar if possible
-		for(var bar in progress_bar_links)
-		{
-			if(bar.obj != item) continue;
-			inventory[i]->SetProgressBarLink(bar.effect);
-			break;
-		}
-	}
-	
-	// update hand-indicator
-	if(c->IsCarryingHeavy())
-	{
-		carryheavy->SetSelected(-1);
-	}
-	else
-		for(var i=0; i < c->HandObjects(); ++i)
-		{
-			var handpos = c->GetHandItemPos(i);
-			if(inventory[handpos]) 
-				inventory[handpos]->SetSelected(i);
-		}
-}	
-
-// sets the link of the progress bar for a certain slot
-// the link is an effect that has the properties "max" and "current"
-func SetProgressBarLinkForObject(object what, proplist e)
-{
-	PushBack(progress_bar_links, {obj = what, effect = e});
-	ScheduleUpdateInventory();
-}
-
-// Shows the Carryheavy-Inventoryslot if obj is set
-// Removes it if it's nil
-func OnCarryHeavyChange(object obj)
-{
-	carryheavy->SetSymbol(obj);
-
-	if(obj == nil)
-	{
-		carryheavy->SetUnselected();
-		carryheavy.Visibility = VIS_None;
-	}
-	else
-		this.Visibility = VIS_Owner;
-	
-	UpdateInventory();
-}
-
 /* Hotkey Control */
 
 // executes the mouseclick onto an actionbutton through hotkeys
@@ -283,12 +174,7 @@ public func ControlHotkey(int hotindex)
 
 // insert new clonk into crew-selectors on recruitment
 protected func OnClonkRecruitment(object clonk, int plr)
-{
-	// not my business
-	if(plr != GetOwner()) return;
-	
-	if(!(clonk->HUDAdapter())) return;
-	
+{	
 	// not enabled
 	if(!clonk->GetCrewEnabled()) return;
 	
@@ -313,24 +199,16 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	// reorder the crew selectors
 	ReorderCrewSelectors();
 	
-	// update
-	ScheduleUpdateInventory();
+	return _inherited(clonk, plr, ...);
 }
 
 protected func OnClonkDeRecruitment(object clonk, int plr)
 {
-	// not my business
-	if(plr != GetOwner()) return;
-	if(!(clonk->HUDAdapter())) return;
-	
 	OnCrewDisabled(clonk);
 }
 
 protected func OnClonkDeath(object clonk, int killer)
 {
-	if(clonk->GetController() != GetOwner()) return;
-	if(!(clonk->~HUDAdapter())) return;
-	
 	OnCrewDisabled(clonk);
 }
 
@@ -339,9 +217,6 @@ protected func OnClonkDeath(object clonk, int killer)
 // called from engine on player eliminated
 public func RemovePlayer(int plr, int team)
 {
-	// not my business
-	if(plr != GetOwner()) return;
-	
 	// at this point, we can assume that all crewmembers have been
 	// removed already. Whats left to do is to remove this object,
 	// the lower hud and the upper right hud
@@ -358,15 +233,15 @@ public func OnCrewDisabled(object clonk)
 		selector->CrewGone();
 		ReorderCrewSelectors(clonk);
 	}
-	
-	// update
-	ScheduleUpdateInventory();
+	return _inherited(clonk, ...);
 }
 
 public func OnCrewEnabled(object clonk)
 {
 	CreateSelectorFor(clonk);
 	ReorderCrewSelectors();
+	
+	return _inherited(clonk, ...);
 }
 
 
@@ -378,9 +253,6 @@ public func OnCrewSelection(object clonk, bool deselect)
 	{
 		// and start effect to monitor vehicles and structures...
 		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,0);
-		
-		// clear inventory buttons
-		UpdateInventoryButtons(clonk);
 	}
 	else
 	{
@@ -390,10 +262,8 @@ public func OnCrewSelection(object clonk, bool deselect)
 	
 	// clear actionbuttons
 	ClearActionButtons();
-		
-	// update
-	ScheduleUpdateInventory();
-	OnCarryHeavyChange(clonk->~GetCarryHeavy());
+
+	return _inherited(clonk, deselect, ...);
 }
 
 public func FxIntSearchInteractionObjectsEffect(string newname, object target)
@@ -494,69 +364,8 @@ public func OnSelectionChanged(int old, int new)
 	actionbar[new]->UpdateSelectionStatus();
 }
 
-// call from HUDAdapter or inventory-buttons
-public func OnHandSelectionChange(int old, int new, int handslot)
-{
-	if(inventory[old])
-		inventory[old]->SetUnselected();
-	if(inventory[new])
-		inventory[new]->SetSelected(handslot);
-	
-	OnSlotObjectChanged(handslot);
-}
-
-// call from HUDAdapter (Clonk)
-public func OnSlotObjectChanged(int slot)
-{	
-	// refresh inventory
-	ScheduleUpdateInventory();
-}
 
 /** Helper Functions **/
-
-// Insert an inventory slot into the inventory-bar
-private func InventoryButton()
-{
-// distance between slots
-	var d = 72;
-	// upper barrier
-	var y = 200;
-
-	// index
-	var i = GetLength(inventory);
-	
-	// create inventory slots
-	var bt = CreateObject(GUI_Backpack_Slot_Icon,0,0,GetOwner());
-	bt->SetHUDController(this);
-	bt->SetPosition(40, y + d*i);
-	bt->SetSlotId(i);
-		
-	CustomMessage(Format("@%d.", i+1), bt, nil, -40, 54);
-	inventory[i] = bt;
-	
-	return bt;
-}
-
-// sets the inventory size to the currently selected clonk
-private func UpdateInventoryButtons(object clonk)
-{
-	if(!clonk) return;
-	
-	var size = clonk->~MaxContentsCount();
-	
-	// need to create more inventory buttons?
-	if(size > GetLength(inventory))
-		for(var i=0; i < size; ++i)
-			if(!inventory[i])
-				InventoryButton();
-	
-	// need to remove some inventory buttons?
-	if(size < GetLength(inventory))
-		for(i=GetLength(inventory)-1; i >= size; i--)
-			inventory[i]->RemoveObject();
-	
-	SetLength(inventory, size);
-}
 
 // Insert a button into the actionbar at pos
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num, proplist extra)
