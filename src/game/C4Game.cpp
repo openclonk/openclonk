@@ -1701,11 +1701,13 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	// Game not running
 	if (!FrameCounter)
 	{
-		char *bpBytes; size_t iSize;
-		if (ScenarioFile.LoadEntry(C4CFN_ScenarioTitle,&bpBytes,&iSize))
-			hGroup.Add(C4CFN_ScenarioTitle,bpBytes,iSize,false,true);
-		if (ScenarioFile.LoadEntry(C4CFN_ScenarioTitlePNG,&bpBytes,&iSize))
-			hGroup.Add(C4CFN_ScenarioTitlePNG,bpBytes,iSize,false,true);
+		char* bpBytes;
+		size_t iSize;
+		StdStrBuf realFilename;
+
+		if(ScenarioFile.FindEntry(FormatString("%s.*",C4CFN_ScenarioTitle).getData(),&realFilename,&iSize))
+			if (ScenarioFile.LoadEntry(realFilename.getData(),&bpBytes,&iSize))
+				hGroup.Add(realFilename.getData(),bpBytes,iSize,false,true);
 	}
 
 	// Fullscreen screenshot
@@ -1720,11 +1722,10 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 
 		bool fOkay=true;
-		const char *szDestFn;
 		fOkay = sfcPic->SavePNG(Config.AtTempPath(C4CFN_TempTitle), false, true, false);
-		szDestFn = C4CFN_ScenarioTitlePNG;
+		StdStrBuf destFilename = FormatString("%s.png",C4CFN_ScenarioTitle);
 		delete sfcPic; if (!fOkay) return false;
-		if (!hGroup.Move(Config.AtTempPath(C4CFN_TempTitle),szDestFn)) return false;
+		if (!hGroup.Move(Config.AtTempPath(C4CFN_TempTitle),destFilename.getData())) return false;
 	}
 
 	return true;

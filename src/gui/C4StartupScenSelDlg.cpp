@@ -531,8 +531,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			sDesc.Take(rtf.GetPlainText());
 		}
 		// load title
-		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
-			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
+		fctTitle.Load(Group, C4CFN_ScenarioTitle,C4FCT_Full,C4FCT_Full,false,true);
 		fExLoaded = true;
 		// load version
 		Group.LoadEntryString(C4CFN_Version, &sVersion);
