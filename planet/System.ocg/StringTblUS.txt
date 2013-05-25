@@ -1,5 +1,4 @@
-SET_WASD_QWERTZ=Normal keyboard layout
-SET_WASD_DVORAK=DVORAK keyboard layout
+SET_WASD_QWERTZ=Keyboard and mouse
 SET_Gamepad=Gamepad
 
 CON_Jump=Jump

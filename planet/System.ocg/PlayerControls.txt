@@ -622,7 +622,7 @@
 [ControlSets]
 
 	# ======================================================================= #
-	#                   Mouse control with keyboard (QWERTY)                  #
+	#                   Mouse control with keyboard                           #
 	# ======================================================================= #
 
 	[ControlSet]
@@ -754,140 +754,6 @@
 		Priority=100
 		Control=WheelZoomOut
 
-	# ======================================================================= #
-	#                   Mouse control with keyboard (DVORAK)                  #
-	# ======================================================================= #
-
-	[ControlSet]
-	Name=DVORAK_Hotkeys_IntQueue_MouseCon_
-	GUIName=$SET_WASD_DVORAK$
-	Keyboard=1
-	Mouse=1
-	Gamepad=0
-
-		# Contents Menu
-
-		[Assignment]
-		Key=Period
-		Control=Contents
-		GUIGroup=50
-  
-		# Menu
-
-		[Assignment]
-		Key=U
-		Control=PlayerMenu
-		GUIGroup=50
-  
-		[Assignment]
-		Key=Space
-		Priority=100
-		Control=MenuOK
-		GUIGroup=50
-		
-		[Assignment]
-		Key=BackSpace
-		Priority=100
-		Control=MenuCancel
-		GUIGroup=50
-		
-		# Movement
-		
-		[Assignment]
-		Key=A
-		Priority=50
-		GUIName=$KEY_Left$
-		GUIDesc=$KEY_Left_Desc$
-		GUIGroup=10
-		Control=Left
-
-		[Assignment]
-		Key=E
-		Priority=50
-		GUIName=$KEY_Right$
-		GUIDesc=$KEY_Right_Desc$
-		GUIGroup=10
-		Control=Right
-
-		[Assignment]
-		Key=O
-		Priority=50
-		GUIName=$KEY_Down$
-		GUIDesc=$KEY_Down_Desc$
-		GUIGroup=10
-		Control=Down
-
-		[Assignment]
-		Key=Comma
-		Priority=50
-		GUIName=$KEY_Up$
-		GUIDesc=$KEY_Up_Desc$
-		GUIGroup=10
-		Control=Up
-
-		[Assignment]
-		Key=Comma
-		Priority=10
-		GUIGroup=10
-		Control=Jump
-		
-		# Object interaction
-		
-		[Assignment]
-		Key=Space
-		Priority=35
-		GUIName=$KEY_Interact$
-		GUIDesc=$KEY_Interact_Desc$
-		GUIGroup=40
-		Control=Interact
-  
-		# Crew
-		
-		[Assignment]
-		Key=Y
-		Control=PreviousCrew
-		GUIGroup=70
-  
-		[Assignment]
-		Key=P
-		Control=NextCrew
-		GUIGroup=70
-
-		# Use
-		
-		[Assignment]
-		Key=Mouse1ButtonLeft
-		GUIName=$KEY_MouseUse$
-		GUIDesc=$KEY_MouseUse_Desc$
-		GUIGroup=20
-		GUIDisabled=1
-		Priority=100
-		Control=Use
-  
-		[Assignment]
-		Key=Mouse1ButtonRight
-		GUIName=$KEY_MouseUseAlt$
-		GUIDesc=$KEY_MouseUseAlt_Desc$
-		GUIGroup=20
-		GUIDisabled=1
-		Priority=100
-		Control=UseAlt
-		
-		
-		# Zoom
-		
-		[Assignment]
-		Key=Mouse1Wheel1Up
-		GUIGroup=60
-		Priority=100
-		Control=WheelZoomIn
-  
-		[Assignment]
-		Key=Mouse1Wheel1Down
-		GUIGroup=60
-		Priority=100
-		Control=WheelZoomOut		
-		
 	# ======================================================================= #
 	#     Dualshock-like gamepad (10-12 buttons, 1 D-Pad, 2 analog stick)     #
 	# ======================================================================= #
