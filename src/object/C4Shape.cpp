@@ -59,7 +59,7 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 {
 #ifdef DEBUGREC
 	C4RCRotVtx rc;
-	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=iAngle;
+	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=Angle;
 	int32_t i = 0;
 	for (; i<4; ++i)
 		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
