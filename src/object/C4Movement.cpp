@@ -215,7 +215,7 @@ void C4Object::VerticalBounds(C4Real &ctcoy)
 
 void C4Object::DoMovement()
 {
-	int32_t ctcox,ctcoy,iContact=0;
+	int32_t iContact=0;
 	bool fAnyContact=false; int iContacts = 0;
 	BYTE fTurned=0,fRedirectYR=0,fNoAttach=0;
 	// Restrictions
@@ -225,6 +225,7 @@ void C4Object::DoMovement()
 	if (pActionDef)
 		if (pActionDef->GetPropertyInt(P_DigFree))
 		{
+			int ctcox, ctcoy;
 			// Shape size square
 			if (pActionDef->GetPropertyInt(P_DigFree)==1)
 			{
@@ -251,16 +252,15 @@ void C4Object::DoMovement()
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
-	ctcox = fixtoi(new_x);
 
 	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (Abs<C4Real>(fix_x - ctcox) > C4REAL10(5))
+		while (fixtoi(new_x) != fixtoi(fix_x))
 		{
 			// Next step
-			int step = Sign<C4Real>(new_x - fix_x);
+			int step = Sign(new_x - fix_x);
 			uint32_t border_hack_contacts = 0;
 			iContact=ContactCheck(GetX() + step, GetY(), &border_hack_contacts);
 			if (iContact || border_hack_contacts)
@@ -270,7 +270,6 @@ void C4Object::DoMovement()
 			if (iContact)
 			{
 				// Abort horizontal movement
-				ctcox = GetX();
 				new_x = fix_x;
 				// Vertical redirection (always)
 				RedirectForce(xdir,ydir,-1);
@@ -284,16 +283,15 @@ void C4Object::DoMovement()
 		new_y = fix_y + ydir;
 		// Movement bounds (vertical)
 		VerticalBounds(new_y);
-		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (Abs<C4Real>(fix_y - ctcoy) > C4REAL10(5))
+		while (fixtoi(new_y) != fixtoi(fix_y))
 		{
 			// Next step
-			int step = Sign<C4Real>(new_y - fix_y);
+			int step = Sign(new_y - fix_y);
 			if ((iContact=ContactCheck(GetX(), GetY() + step)))
 			{
 				fAnyContact=true; iContacts |= t_contact;
-				ctcoy=GetY(); new_y = fix_y;
+				new_y = fix_y;
 				// Vertical contact horizontal friction
 				ApplyFriction(xdir,ContactVtxFriction(this));
 				// Redirection slide or rotate
@@ -319,16 +317,15 @@ void C4Object::DoMovement()
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	{
 		VerticalBounds(new_y);
-		ctcoy=fixtoi(new_y);
 		// Move to target
 		do
 		{
 			// Set next step target
 			int step_x = 0, step_y = 0;
-			if (ctcox != GetX())
-				step_x = Sign(ctcox - GetX());
-			else if (ctcoy != GetY())
-				step_y = Sign(ctcoy - GetY());
+			if (fixtoi(new_x) != GetX())
+				step_x = Sign(fixtoi(new_x) - GetX());
+			else if (fixtoi(new_y) != GetY())
+				step_y = Sign(fixtoi(new_y) - GetY());
 			int32_t ctx = GetX() + step_x;
 			int32_t cty = GetY() + step_y;
 			// Attachment check
@@ -336,14 +333,14 @@ void C4Object::DoMovement()
 				fNoAttach=1;
 			else
 			{
-				// Attachment change to ctx/cty overrides ctco target
+				// Attachment change to ctx/cty overrides target
 				if (ctx != GetX() + step_x)
 				{
-					ctcox = ctx; xdir = Fix0; new_x = itofix(ctx);
+					xdir = Fix0; new_x = itofix(ctx);
 				}
 				if (cty != GetY() + step_y)
 				{
-					ctcoy = cty; ydir = Fix0; new_y = itofix(cty);
+					ydir = Fix0; new_y = itofix(cty);
 				}
 			}
 			// Contact check & evaluation
@@ -358,16 +355,16 @@ void C4Object::DoMovement()
 				// Abort movement
 				if (ctx != GetX())
 				{
-					ctx = ctcox = GetX(); new_x = fix_x;
+					ctx = GetX(); new_x = fix_x;
 				}
 				if (cty != GetY())
 				{
-					cty = ctcoy = GetY(); new_y = fix_y;
+					cty = GetY(); new_y = fix_y;
 				}
 			}
 			DoMotion(ctx - GetX(), cty - GetY());
 		}
-		while (ctcox != GetX() || ctcoy != GetY());
+		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
@@ -394,7 +391,7 @@ void C4Object::DoMovement()
 			// Save step undos
 			C4Real lcobjr = fix_r; C4Shape lshape=Shape;
 			// Try next step
-			fix_r += itofix(Sign(fixtoi(target_r) - fixtoi(fix_r)));
+			fix_r += Sign(target_r - fix_r);
 			UpdateShape();
 			// attached rotation: rotate around attachment pos
 			if (Action.t_attach && !fNoAttach)
