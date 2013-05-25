@@ -17,7 +17,7 @@ func Hit()
 public func GetCarryMode(clonk) { return CARRY_Musket; }
 public func GetCarryTransform()
 {
-	return Trans_Mul(Trans_Rotate(-80,0,1,0),Trans_Rotate(-30,1,0,0),Trans_Rotate(-25,0,0,1));
+	return Trans_Mul(Trans_Rotate(220,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Rotate(26,0,1,0));
 }
 public func GetCarryPhase() { return 600; }
 
@@ -177,7 +177,7 @@ private func FireWeapon(object pClonk,iX,iY)
 func IsInventorProduct() { return true; }
 
 func Definition(def) {
-	SetProperty("PictureTransformation",Trans_Mul(Trans_Scale(1500)),def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Scale(1500),Trans_Rotate(150,0,0,1),Trans_Rotate(-170,1,0,0),Trans_Rotate(10,0,1,0)),def);
 }
 
 local Name = "$Name$";
