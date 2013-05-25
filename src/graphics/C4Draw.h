@@ -250,9 +250,9 @@ public:
 	bool Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 	           C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
 	           bool fSrcColKey=false, const C4BltTransform *pTransform=NULL);
-	bool BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+	bool BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	                C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-	                int iAngle, bool fTransparency=true);
+	                bool fTransparency=true);
 	bool BlitSurface(C4Surface * sfcSurface, C4Surface * sfcTarget, int tx, int ty, bool fBlitBase);
 	bool BlitSurfaceTile(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
 	bool BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
