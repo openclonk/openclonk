@@ -40,9 +40,7 @@
 #include <C4Command.h>
 #include <C4Viewport.h>
 #include <C4MaterialList.h>
-#ifdef DEBUGREC
 #include <C4Record.h>
-#endif
 #include <C4SolidMask.h>
 #include <C4Random.h>
 #include <C4Log.h>
@@ -322,14 +320,15 @@ void C4Object::AssignRemoval(bool fExitContents)
 {
 	// check status
 	if (!Status) return;
-#ifdef DEBUGREC
-	C4RCCreateObj rc;
-	memset(&rc, '\0', sizeof(rc));
-	rc.oei=Number;
-	if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
-	rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
-	AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCCreateObj rc;
+		memset(&rc, '\0', sizeof(rc));
+		rc.oei=Number;
+		if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
+		rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
+		AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
+	}
 	// Destruction call in container
 	if (Contained)
 	{
@@ -1000,15 +999,16 @@ bool C4Object::ExecLife()
 
 void C4Object::Execute()
 {
-#ifdef DEBUGREC
-	// record debug
-	C4RCExecObj rc;
-	rc.Number=Number;
-	rc.fx=fix_x;
-	rc.fy=fix_y;
-	rc.fr=fix_r;
-	AddDbgRec(RCT_ExecObj, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		// record debug
+		C4RCExecObj rc;
+		rc.Number=Number;
+		rc.fx=fix_x;
+		rc.fy=fix_y;
+		rc.fr=fix_r;
+		AddDbgRec(RCT_ExecObj, &rc, sizeof(rc));
+	}
 	// reset temporary marker
 	Marker = 0;
 	// OCF

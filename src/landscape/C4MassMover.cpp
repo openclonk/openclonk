@@ -75,11 +75,12 @@ void C4MassMoverSet::Execute()
 bool C4MassMoverSet::Create(int32_t x, int32_t y, bool fExecute)
 {
 	if (Count == C4MassMoverChunk) return false;
-#ifdef DEBUGREC
-	C4RCMassMover rc;
-	rc.x=x; rc.y=y;
-	AddDbgRec(RCT_MMC, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCMassMover rc;
+		rc.x=x; rc.y=y;
+		AddDbgRec(RCT_MMC, &rc, sizeof(rc));
+	}
 	int32_t cptr=CreatePtr;
 	do
 	{
@@ -118,11 +119,12 @@ bool C4MassMover::Init(int32_t tx, int32_t ty)
 
 void C4MassMover::Cease()
 {
-#ifdef DEBUGREC
-	C4RCMassMover rc;
-	rc.x=x; rc.y=y;
-	AddDbgRec(RCT_MMD, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCMassMover rc;
+		rc.x=x; rc.y=y;
+		AddDbgRec(RCT_MMD, &rc, sizeof(rc));
+	}
 	::MassMover.Count--;
 	Mat=MNone;
 }

@@ -26,9 +26,7 @@
 #include <C4GameObjects.h>
 #include <C4Game.h>
 #include <C4Object.h>
-#ifdef DEBUGREC
 #include <C4Record.h>
-#endif
 
 void C4PropList::AddRef(C4Value *pRef)
 {

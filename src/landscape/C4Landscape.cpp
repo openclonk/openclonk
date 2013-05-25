@@ -135,7 +135,8 @@ void C4Landscape::ExecuteScan()
 		return;
 
 #ifdef DEBUGREC_MATSCAN
-	AddDbgRec(RCT_MatScan, &ScanX, sizeof(ScanX));
+	if (Config.General.DebugRec)
+		AddDbgRec(RCT_MatScan, &ScanX, sizeof(ScanX));
 #endif
 
 	for (int32_t cnt=0; cnt<ScanSpeed; cnt++)
@@ -192,8 +193,11 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	int32_t mconv = ::MaterialMap.Map[mat].TempConvStrength,
 	                mconvs = mconv;
 #ifdef DEBUGREC_MATSCAN
-	C4RCMatScan rc = { cx, cy, mat, conv_to, dir, mconvs };
-	AddDbgRec(RCT_MatScanDo, &rc, sizeof(C4RCMatScan));
+	if (Config.General.DebugRec)
+	{
+		C4RCMatScan rc = { cx, cy, mat, conv_to, dir, mconvs };
+		AddDbgRec(RCT_MatScanDo, &rc, sizeof(C4RCMatScan));
+	}
 #endif
 	int32_t ydir = (dir == 0 ? +1 : -1), cy2;
 #ifdef PRETTY_TEMP_CONV
@@ -634,11 +638,12 @@ bool C4Landscape::ClearPix(int32_t tx, int32_t ty)
 }
 bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 {
-#ifdef DEBUGREC
-	C4RCSetPix rc;
-	rc.x=x; rc.y=y; rc.clr=npix;
-	AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCSetPix rc;
+		rc.x=x; rc.y=y; rc.clr=npix;
+		AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
+	}
 	// check bounds
 	if (x < 0 || y < 0 || x >= Width || y >= Height)
 		return false;
@@ -662,11 +667,12 @@ bool C4Landscape::SetPix(int32_t x, int32_t y, BYTE npix)
 
 bool C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
 {
-#ifdef DEBUGREC
-	C4RCSetPix rc;
-	rc.x=x; rc.y=y; rc.clr=npix;
-	AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCSetPix rc;
+		rc.x=x; rc.y=y; rc.clr=npix;
+		AddDbgRec(RCT_SetPix, &rc, sizeof(rc));
+	}
 	assert(x >= 0 && y >= 0 && x < Width && y < Height);
 	// get and check pixel
 	BYTE opix = _GetPix(x, y);
@@ -1223,10 +1229,11 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 			return true;
 		}
 
-#ifdef DEBUGREC
-		AddDbgRec(RCT_Block, "|---MAP---|", 12);
-		AddDbgRec(RCT_Map, sfcMap->Bits, sfcMap->Pitch*sfcMap->Hgt);
-#endif
+		if (Config.General.DebugRec)
+		{
+			AddDbgRec(RCT_Block, "|---MAP---|", 12);
+			AddDbgRec(RCT_Map, sfcMap->Bits, sfcMap->Pitch*sfcMap->Hgt);
+		}
 
 		// Store map size and calculate map zoom
 		int iWdt, iHgt;
@@ -1301,10 +1308,11 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 	Game.SetInitProgress(84);
 
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
-	AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
-#endif
+	if (Config.General.DebugRec)
+	{
+		AddDbgRec(RCT_Block, "|---LANDSCAPE---|", 18);
+		AddDbgRec(RCT_Map, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
+	}
 
 	// Create renderer
 	pLandscapeRender = NULL;
@@ -1327,10 +1335,11 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);
 		Game.SetInitProgress(87);
 	}
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "|---LS---|", 11);
-	AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
-#endif
+	if (Config.General.DebugRec)
+	{
+		AddDbgRec(RCT_Block, "|---LS---|", 11);
+		AddDbgRec(RCT_Ls, Surface8->Bits, Surface8->Pitch*Surface8->Hgt);
+	}
 
 
 	// Create pixel count array
