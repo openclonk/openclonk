@@ -72,7 +72,7 @@ func CreateBonus(int x, int y, int value)
 		if (obj)
 		{
 			if (Random(value) > 90) obj->CreateContents(Shovel);
-			if (Random(value) > 90) obj->CreateContents(JarOfWinds);
+			if (Random(value) > 90) obj->CreateContents(WindBag);
 			if (Random(value) > 90) obj->CreateContents(TeleGlove);
 			if (Random(value) > 90) obj->CreateContents(Sword);
 			if (Random(value) > 5) obj->CreateContents(Loam, 1+Random(2));

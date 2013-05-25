@@ -1,6 +1,6 @@
 // Limits the use of an object to a certain amount.
 
-#appendto JarOfWinds
+#appendto WindBag
 #appendto Club
 
 local use_count;

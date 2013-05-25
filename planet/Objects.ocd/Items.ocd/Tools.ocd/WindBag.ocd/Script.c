@@ -34,7 +34,7 @@ public func DoFullLoad()
 
 protected func Initialize()
 {
-	MaxCap = 60; //Changes duration and power of the Jar
+	MaxCap = 60; //Changes duration and power
 	SetR(-45);
 	AddEffect("JarReload",this,100,2,this);
 	sound=false;
@@ -158,7 +158,7 @@ private func FireWeapon(object pClonk,iX,iY)
 				),
 		Find_Not(Find_Category(C4D_Structure)),
 		Find_Not(Find_Func("IsEnvironment")),
-		Find_Not(Find_Func("NoWindjarForce")),
+		Find_Not(Find_Func("NoWindbagForce")),
 		Find_Layer(GetObjectLayer()), Find_NoContainer()
 								)
 		)

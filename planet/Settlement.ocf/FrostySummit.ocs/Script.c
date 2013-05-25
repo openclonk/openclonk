@@ -63,7 +63,7 @@ func JoinPlayer(int plr)
 		if (!i)
 		{
 			crew->CreateContents(GrappleBow, 2);
-			crew->CreateContents(JarOfWinds);
+			crew->CreateContents(WindBag);
 			crew->CreateContents(TeleGlove);
 			crew->CreateContents(Dynamite, 2);
 		}

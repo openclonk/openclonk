@@ -1,9 +1,9 @@
 #appendto Clonk
 
-// The clonk can only hold one item and only collect Jar of Winds.
+// The clonk can only hold one item and only collect the windbag
 protected func RejectCollect(id objid, object obj)
 {
-	if (objid != JarOfWinds) 
+	if (objid != WindBag) 
 		return true;
 	return _inherited(objid, obj);
 }
