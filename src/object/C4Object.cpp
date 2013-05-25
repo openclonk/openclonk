@@ -424,7 +424,7 @@ void C4Object::UpdateShape(bool bUpdateVertices)
 	// Rotation
 	if (Def->Rotateable)
 		if (r!=0)
-			Shape.Rotate(r, bUpdateVertices);
+			Shape.Rotate(fix_r, bUpdateVertices);
 
 	// covered area changed? to be on the save side, update pos
 	UpdatePos();

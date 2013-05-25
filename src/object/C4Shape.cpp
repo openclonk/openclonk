@@ -55,7 +55,7 @@ void C4Shape::Clear()
 	ZeroMem(this, sizeof (C4Shape));
 }
 
-void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
+void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 {
 #ifdef DEBUGREC
 	C4RCRotVtx rc;
@@ -65,52 +65,64 @@ void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
 		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
 	AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
 #endif
-	int32_t cnt,nvtx,nvty,rdia;
+	int32_t cnt,nvtx,nvty,nwdt,nhgt;
 
-	//int32_t *vtx=VtxX;
-	//int32_t *vty=VtxY;
 	C4Real mtx[4];
-	C4Real fAngle = itofix(iAngle);
+
+	// Calculate rotation matrix
+	mtx[0] = Cos(Angle); mtx[1] = -Sin(Angle);
+	mtx[2] = -mtx[1];     mtx[3] = mtx[0];
 
 	if (bUpdateVertices)
 	{
-
-		// Calculate rotation matrix
-		mtx[0]=Cos(fAngle); mtx[1]=-Sin(fAngle);
-		mtx[2]=-mtx[1]; mtx[3]= mtx[0];
 		// Rotate vertices
-		for (cnt=0; cnt<VtxNum; cnt++)
+		for (cnt = 0; cnt < VtxNum; cnt++)
 		{
-			//nvtx= (int32_t) ( mtx[0]*vtx[cnt] + mtx[1]*vty[cnt] );
-			//nvty= (int32_t) ( mtx[2]*vtx[cnt] + mtx[3]*vty[cnt] );
-			nvtx = fixtoi(mtx[0]*VtxX[cnt] + mtx[1]*VtxY[cnt]);
-			nvty = fixtoi(mtx[2]*VtxX[cnt] + mtx[3]*VtxY[cnt]);
-			VtxX[cnt]=nvtx; VtxY[cnt]=nvty;
+			nvtx = fixtoi(mtx[0] * VtxX[cnt] + mtx[1] * VtxY[cnt]);
+			nvty = fixtoi(mtx[2] * VtxX[cnt] + mtx[3] * VtxY[cnt]);
+			VtxX[cnt] = nvtx; VtxY[cnt] = nvty;
 		}
-
-		/* This is freaking nuts. I used the int32_t* to shortcut the
-		  two int32_t arrays Shape.Vtx_[]. Without modifications to
-		  this code, after rotation the x-values of vertex 2 and 4
-		  are screwed to that of vertex 0. Direct use of the array
-		  variables instead of the pointers helped. Later in
-		  development, again without modification to this code, the
-		  same error occured again. I moved back to pointer array
-		  shortcut and it worked again. ?!
-
-		  The error occurs after the C4DefCore structure has
-		  changed. It must have something to do with struct
-		  member alignment. But why does pointer usage vs. array
-		  index make a difference?
-		*/
-
 	}
 
 	// Enlarge Rect
-	rdia= (int32_t) sqrt(double(x*x+y*y)) + 2;
-	x=-rdia;
-	y=-rdia;
-	Wdt=2*rdia;
-	Hgt=2*rdia;
+	nvtx = fixtoi(mtx[0] * x + mtx[1] * y);
+	nvty = fixtoi(mtx[2] * x + mtx[3] * y);
+	if (mtx[0] > 0)
+	{
+		if (mtx[1] > 0)
+		{
+			nwdt = fixtoi(mtx[0] * Wdt + mtx[1] * Hgt);
+			nhgt = fixtoi(mtx[1] * Wdt + mtx[0] * Hgt);
+			x = nvtx;
+			y = nvty - fixtoi(mtx[1] * Wdt);
+		}
+		else
+		{
+			nwdt = fixtoi(mtx[0] * Wdt - mtx[1] * Hgt);
+			nhgt = fixtoi(- mtx[1] * Wdt + mtx[0] * Hgt);
+			x = nvtx + fixtoi(mtx[1] * Hgt);
+			y = nvty;
+		}
+	}
+	else
+	{
+		if (mtx[1] > 0)
+		{
+			nwdt = fixtoi(- mtx[0] * Wdt + mtx[1] * Hgt);
+			nhgt = fixtoi(mtx[1] * Wdt - mtx[0] * Hgt);
+			x = nvtx + fixtoi(mtx[0] * Wdt);
+			y = nvty - nhgt;
+		}
+		else
+		{
+			nwdt = fixtoi(- mtx[0] * Wdt - mtx[1] * Hgt);
+			nhgt = fixtoi(- mtx[1] * Wdt - mtx[0] * Hgt);
+			x = nvtx - nwdt;
+			y = nvty + fixtoi(mtx[0] * Hgt);
+		}
+	}
+	Wdt = nwdt;
+	Hgt = nhgt;
 #ifdef DEBUGREC
 	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
 	for (i=0; i<4; ++i)

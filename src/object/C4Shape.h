@@ -62,7 +62,7 @@ public:
 public:
 	void Default();
 	void Clear();
-	void Rotate(int32_t iAngle, bool bUpdateVertices);
+	void Rotate(C4Real Angle, bool bUpdateVertices);
 	void Stretch(int32_t iCon, bool bUpdateVertices);
 	void Jolt(int32_t iCon, bool bUpdateVertices);
 	void GetVertexOutline(C4Rect &rRect);
