@@ -438,7 +438,7 @@ public func GetLadderData(index)
 		var angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return [startx, starty, startx, starty-5000, angle];
 	}
-	if(index == ParticleCount-1 || segments[index+1]->CanNotBeClimbed())
+	if(index == ParticleCount-1 || segments[index+1]->~CanNotBeClimbed())
 	{
 		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}

@@ -196,7 +196,7 @@ public func UpdateRank()
 	var rankx = -1000 * GetDefWidth()/2 + 12000;
 	var ranky = -13000;
 	
-	SetGraphics(nil,0,GUI_CS_Rank,GFXOV_MODE_Rank,nil,0,crew);
+	SetGraphics(nil,nil,GUI_CS_Rank,GFXOV_MODE_Rank,nil,0,crew);
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, GUI_CS_Rank);
 }
 

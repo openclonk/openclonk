@@ -316,7 +316,6 @@ func GetJumpLength(pClonk)
 		// not a very good approximation. I really think SimFlight should return the number of iterations
 		return Sqrt((x - pClonk->GetX()) ** 2 + (y - pClonk->GetY()) ** 2);
 	}
-	return -1;
 }
 
 func ApplyShieldFactor(pFrom, pTo, damage)

@@ -228,7 +228,7 @@ global func PlaceEdges()
 protected func OnPlayerRespawn(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
-	clonk->CreateContents(JarOfWinds);
+	clonk->CreateContents(WindBag);
 	return;
 }
 
