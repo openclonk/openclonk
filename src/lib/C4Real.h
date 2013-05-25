@@ -105,10 +105,10 @@ private:
 	int32_t to_int() const
 	{
 		int32_t r = val;
-		r >>= 1;
-		r += FIXED_FPF / 4;
-		r -= (val < 0);
+		// round towards positive infinity
 		r >>= (FIXED_SHIFT - 1);
+		r += 1;
+		r >>= 1;
 		return r;
 	}
 	int32_t to_int(int32_t prec) const
@@ -116,7 +116,6 @@ private:
 		int64_t r = val;
 		r *= prec;
 		r += FIXED_FPF / 2;
-		r -= (val < 0);
 		r >>= FIXED_SHIFT;
 		return int32_t(r);
 	}
