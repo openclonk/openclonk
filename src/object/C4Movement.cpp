@@ -425,7 +425,10 @@ void C4Object::DoMovement()
 			else
 			{
 				fTurned=1;
-				fix_x=itofix(ctx); fix_y=itofix(cty);
+				if (ctx != GetX() || cty != GetY())
+				{
+					fix_x = itofix(ctx); fix_y = itofix(cty);
+				}
 			}
 		}
 		// Circle bounds
