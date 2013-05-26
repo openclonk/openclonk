@@ -29,11 +29,65 @@
 
 #include <StdBuf.h>
 
-#if defined(USE_WIN32_WINDOWS) || defined(USE_X11)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_X11) || defined(USE_CONSOLE)
+#define K_ESCAPE 1
+#define K_1 2
+#define K_2 3
+#define K_3 4
+#define K_4 5
+#define K_5 6
+#define K_6 7
+#define K_7 8
+#define K_8 9
+#define K_9 10
+#define K_0 11
+#define K_MINUS 12
+#define K_EQUAL 13
+#define K_BACK 14
+#define K_TAB 15
+#define K_Q 16
+#define K_W 17
+#define K_E 18
+#define K_R 19
+#define K_T 20
+#define K_Y 21
+#define K_U 22
+#define K_I 23
+#define K_O 24
+#define K_P 25
+#define K_LEFT_BRACKET 26
+#define K_RIGHT_BRACKET 27
+#define K_RETURN 28
+#define K_CONTROL_L 29
+#define K_A 30
+#define K_S 31
+#define K_D 32
+#define K_F 33
+#define K_G 34
+#define K_H 35
+#define K_J 36
+#define K_K 37
+#define K_L 38
+#define K_SEMICOLON 39
+#define K_APOSTROPHE 40
+#define K_GRAVE_ACCENT 41
 #define K_SHIFT_L 42
+#define K_BACKSLASH 43
+#define K_Z 44
+#define K_X 45
+#define K_C 46
+#define K_V 47
+#define K_B 48
+#define K_N 49
+#define K_M 50
+#define K_COMMA 51
+#define K_PERIOD 52
+#define K_SLASH 53
 #define K_SHIFT_R 54
-#define K_ALT_L 56
-#define K_ALT_R 100
+#define K_MULTIPLY 55
+#define K_ALT_L 56 
+#define K_SPACE 57
+#define K_CAPS 58
 #define K_F1 59
 #define K_F2 60
 #define K_F3 61
@@ -44,39 +98,94 @@
 #define K_F8 66
 #define K_F9 67
 #define K_F10 68
+#define K_NUM 69
+#define K_SCROLL 70
+#define K_SUBTRACT 74
+#define K_ADD 78
+#define K_86 86 // also backslash?
 #define K_F11 87
 #define K_F12 88
-#define K_ADD 78
-#define K_SUBTRACT 74
-#define K_MULTIPLY 55
-#define K_ESCAPE 1
-#define K_PAUSE 119
-#define K_TAB 15
-#define K_RETURN 28
-#define K_DELETE 111
-#define K_INSERT 110
-#define K_BACK 14
-#define K_SPACE 57
+
+// starting from here, scancodes between windows and linux differ
+#if defined(USE_WIN32_WINDOWS)
+
+#define K_HOME 71
+#define K_UP 72
+#define K_PAGEUP 73
+#define K_LEFT 75
+#define K_CENTER 76
+#define K_RIGHT 77
+#define K_END 79
+#define K_DOWN 80
+#define K_PAGEDOWN 81
+#define K_INSERT 82
+#define K_DELETE 83
+#define K_WIN_L 91
+#define K_WIN_R 92
+#define K_MENU 93
+#define K_PAUSE 69 // same as numlock?!
+#define K_PRINT 55 // same as multiply?!
+
+#define K_ALT_R K_ALT_L // 29 56
+#define K_CONTROL_R K_CONTROL_L // 29 29
+#define K_NUM_RETURN K_RETURN // 28 57
+
+// FIXME?
+
+// these are all not differed
+#define K_NUM7 K_HOME
+#define K_NUM8 K_UP
+#define K_NUM9 K_PAGEUP
+#define K_NUM4 K_LEFT
+#define K_NUM5 K_CENTER
+#define K_NUM6 K_RIGHT
+#define K_NUM1 K_END
+#define K_NUM2 K_DOWN
+#define K_NUM3 K_PAGEDOWN
+#define K_NUM0 K_INSERT
+#define K_DECIMAL K_DELETE
+#define K_DIVIDE K_SLASH
+
+#elif defined(USE_X11) || defined(USE_CONSOLE)
+
+#define K_NUM7 71
+#define K_NUM8 72
+#define K_NUM9 73
+#define K_NUM4 75
+#define K_NUM5 76
+#define K_NUM6 77
+#define K_NUM1 79
+#define K_NUM2 80
+#define K_NUM3 81
+#define K_NUM0 82
+#define K_DECIMAL 83
+#define K_DIVIDE 98
+
+#define K_ALT_R 100
+#define K_CONTROL_R ???
+#define K_NUM_RETURN ???
+
+#define K_HOME 102
 #define K_UP 103
-#define K_DOWN 108
+#define K_PAGEUP 104
 #define K_LEFT 105
 #define K_RIGHT 106
-#define K_HOME 102
 #define K_END 107
-#define K_SCROLL 70
-#define K_MENU 127
-#define K_PAGEUP 104
+#define K_DOWN 108
 #define K_PAGEDOWN 109
-#define KEY_A 30 // select all in GUI-editbox
-#define KEY_C 46 // copy in GUI-editbox
-#define KEY_I 23 // console mode control key
-#define KEY_M 50 // console mode control key
-#define KEY_T 20 // console mode control key
-#define KEY_V 47 // paste in GUI-editbox
-#define KEY_W 17 // console mode control key
-#define KEY_X 45 // cut from GUI-editbox
+#define K_INSERT 110
+#define K_DELETE 111
+#define K_WIN_L ???
+#define K_WIN_R ???
+#define K_MENU 127
+#define K_PAUSE 119
+#define K_PRINT ???
+
+#endif
+
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
+// FIXME
 #define K_SHIFT_L SDLK_LSHIFT
 #define K_SHIFT_R SDLK_RSHIFT
 #define K_ALT_L SDLK_LALT
@@ -114,62 +223,17 @@
 #define K_MENU SDLK_MENU
 #define K_PAGEUP SDLK_PAGEUP
 #define K_PAGEDOWN SDLK_PAGEDOWN
-#define KEY_M SDLK_m
-#define KEY_T SDLK_t
-#define KEY_W SDLK_w
-#define KEY_I SDLK_i
-#define KEY_C SDLK_c
-#define KEY_V SDLK_v
-#define KEY_X SDLK_x
-#define KEY_A SDLK_a
-#elif defined(USE_CONSOLE)
-#define K_SHIFT_L 0
-#define K_SHIFT_R 0
-#define K_ALT_L 0
-#define K_ALT_R 0
-#define K_F1 0
-#define K_F2 0
-#define K_F3 0
-#define K_F4 0
-#define K_F5 0
-#define K_F6 0
-#define K_F7 0
-#define K_F8 0
-#define K_F9 0
-#define K_F10 0
-#define K_F11 0
-#define K_F12 0
-#define K_ADD 0
-#define K_SUBTRACT 0
-#define K_MULTIPLY 0
-#define K_ESCAPE 0
-#define K_PAUSE 0
-#define K_TAB 0
-#define K_RETURN 0
-#define K_DELETE 0
-#define K_INSERT 0
-#define K_BACK 0
-#define K_SPACE 0
-#define K_UP 0
-#define K_DOWN 0
-#define K_LEFT 0
-#define K_RIGHT 0
-#define K_HOME 0
-#define K_END 0
-#define K_SCROLL 0
-#define K_MENU 0
-#define K_PAGEUP 0
-#define K_PAGEDOWN 0
-#define KEY_M 0
-#define KEY_T 0
-#define KEY_W 0
-#define KEY_I 0
-#define KEY_C 0
-#define KEY_V 0
-#define KEY_X 0
-#define KEY_A 0
+#define K_M SDLK_m
+#define K_T SDLK_t
+#define K_W SDLK_w
+#define K_I SDLK_i
+#define K_C SDLK_c
+#define K_V SDLK_v
+#define K_X SDLK_x
+#define K_A SDLK_a
 #elif defined(USE_COCOA)
 #import "ObjectiveCAssociated.h"
+// FIXME
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
 extern C4KeyCode K_SHIFT_L;
@@ -209,14 +273,14 @@ extern C4KeyCode K_SCROLL;
 extern C4KeyCode K_MENU;
 extern C4KeyCode K_PAGEUP;
 extern C4KeyCode K_PAGEDOWN;
-extern C4KeyCode KEY_M;
-extern C4KeyCode KEY_T;
-extern C4KeyCode KEY_W;
-extern C4KeyCode KEY_I;
-extern C4KeyCode KEY_C;
-extern C4KeyCode KEY_V;
-extern C4KeyCode KEY_X;
-extern C4KeyCode KEY_A;
+extern C4KeyCode K_M;
+extern C4KeyCode K_T;
+extern C4KeyCode K_W;
+extern C4KeyCode K_I;
+extern C4KeyCode K_C;
+extern C4KeyCode K_V;
+extern C4KeyCode K_X;
+extern C4KeyCode K_A;
 #endif
 
 #ifdef USE_X11
