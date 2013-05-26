@@ -69,6 +69,7 @@ enum C4GuiWindowStyleFlag
 	FitChildren = 64,
 	Multiple = 128,
 	IgnoreMouse = 256,
+	NoCrop = 512
 };
 
 class C4GuiWindow;

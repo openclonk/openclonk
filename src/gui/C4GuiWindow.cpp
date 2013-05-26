@@ -1086,12 +1086,15 @@ void C4GuiWindow::Close()
 void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 {
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+
 	if (style & C4GuiWindowStyleFlag::FitChildren)
 	{
 		float height = lastDrawPosition.bottom - lastDrawPosition.top;
 		props[C4GuiWindowPropertyName::bottom].current->d += (childrenHeight - height);
 		return;
 	}
+
+	if (style & C4GuiWindowStyleFlag::NoCrop) return;
 
 	if (!enable && scrollBar)
 	{
@@ -1420,7 +1423,9 @@ bool C4GuiWindow::GetClippingRect(float &left, float &top, float &right, float &
 		bottom = lastDrawPosition.bottom;
 		return true;
 	}
-	if (parent)
+
+	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
+	if (parent && !(style & C4GuiWindowStyleFlag::NoCrop))
 		return parent->GetClippingRect(left, top, right, bottom);
 	return false;
 }

@@ -2657,6 +2657,7 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "GUI_FitChildren"          ,C4V_Int,      C4GuiWindowStyleFlag::FitChildren },
 	{ "GUI_Multiple"             ,C4V_Int,      C4GuiWindowStyleFlag::Multiple },
 	{ "GUI_IgnoreMouse"          ,C4V_Int,      C4GuiWindowStyleFlag::IgnoreMouse },
+	{ "GUI_NoCrop"               ,C4V_Int,      C4GuiWindowStyleFlag::NoCrop },
 	{ NULL, C4V_Nil, 0}
 };
 
