@@ -1,5 +1,5 @@
 [DefCore]
-id=Icon_Hand
+id=Icon_Grab
 Version=5,2,0,1
 Category=C4D_StaticBack
 Width=64

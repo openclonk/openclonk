@@ -56,13 +56,6 @@ global func IsInteractionControl(int ctrl)
 {
 	// Interaction itself
 	if(ctrl == CON_Interact
-	// other interactions
-	|| ctrl == CON_Grab
-	|| ctrl == CON_Ungrab
-	|| ctrl == CON_GrabNext
-	|| ctrl == CON_Enter
-	|| ctrl == CON_Exit
-	|| ctrl == CON_PushEnter
 	// hotkeys
 	|| ctrl == CON_InteractionHotkey0
 	|| ctrl == CON_InteractionHotkey1

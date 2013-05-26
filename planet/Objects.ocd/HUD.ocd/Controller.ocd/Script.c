@@ -16,20 +16,16 @@
 */
 
 #include GUI_Controller_InventoryBar
+#include GUI_Controller_ActionBar
 
 // Local variables containing the GUI-Elements
-local actionbar;	// Array, action-buttons at the bottom
-local markers;		// Array, the gui-markers.
 local wealth;		// Object, displays wealth of the player
 
 
-static const GUI_MAX_ACTIONBAR = 10; // maximum amount of actionbar-slots
+
 
 protected func Construction()
 {
-	actionbar = [];
-	markers = [];
-	
 	// find all clonks of this crew which do not have a selector yet (and can have one)
 	for(var i=0; i < GetCrewCount(GetOwner()); ++i)
 	{
@@ -61,23 +57,6 @@ protected func Destruction()
 	// remove all hud objects that are managed by this object
 	if(wealth)
 		wealth->RemoveObject();
-	if(actionbar)
-	{
-		for(var i=0; i<GetLength(actionbar); ++i)
-		{
-			if(actionbar[i])
-				actionbar[i]->RemoveObject();
-		}
-	}
-	
-	if(markers)
-	{
-		for(var i=0; i<GetLength(markers); ++i)
-		{
-			if(markers[i])
-				markers[i]->RemoveObject();
-		}
-	}
 	
 	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
 	if(HUDgoal)
@@ -123,52 +102,8 @@ public func OnGoalUpdate(object goal)
 }
 
 
-/* Markers */
-
-public func GetFreeMarkerPosition()
-{	
-	for(var i=0; i < GetLength(markers); i++)
-	{
-		if(!markers[i]) return i;	
-	}
-	return GetLength(markers);
-}
 
 
-global func AddHUDMarker(int player, picture, string altpicture, string text, int duration, bool urgent, object inform)
-{
-	var number = 0;
-	var padding = GUI_Marker->GetDefHeight()+5;
-	var hud = FindObject(Find_ID(GUI_Controller),Find_Owner(player));
-	number = hud->GetFreeMarkerPosition();
-	hud.markers[number] = CreateObject(GUI_Marker,0,0,player);
-	hud.markers[number] -> SetPosition(5+(GUI_Marker->GetDefWidth()/2),-240-(GUI_Marker->GetDefHeight()/2) - number*padding);
-	hud.markers[number] -> SetVisual(picture, altpicture);
-	if(inform) hud.markers[number].toInform = inform;
-	if(duration) AddEffect("IntRemoveMarker",hud.markers[number],100,duration,hud.markers[number]);
-	if(urgent) AddEffect("IntUrgentMarker",hud.markers[number],100,2,hud.markers[number]);
-	if(text) hud.markers[number]->SetName(text);
-	
-	return hud.markers[number];
-}
-
-/* Hotkey Control */
-
-// executes the mouseclick onto an actionbutton through hotkeys
-public func ControlHotkey(int hotindex)
-{
-	// button exists?
-	if(!actionbar[hotindex]) return false;
-	
-	// button is assigned to a clonk?
-    var clonk = actionbar[hotindex]->GetCrew();
-   	if(!clonk) return false;
-   	
-   	// press the button
-  	actionbar[hotindex]->~MouseSelection(GetOwner());
-  	
-   	return true;
-}
 
 /** Callbacks **/
 
@@ -245,185 +180,6 @@ public func OnCrewEnabled(object clonk)
 }
 
 
-// call from HUDAdapter (Clonk)
-public func OnCrewSelection(object clonk, bool deselect)
-{
-	// selected
-	if(!deselect)
-	{
-		// and start effect to monitor vehicles and structures...
-		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,0);
-	}
-	else
-	{
-		// remove effect
-		RemoveEffect("IntSearchInteractionObjects",clonk);
-	}
-	
-	// clear actionbuttons
-	ClearActionButtons();
-
-	return _inherited(clonk, deselect, ...);
-}
-
-public func FxIntSearchInteractionObjectsEffect(string newname, object target)
-{
-	if(newname == "IntSearchInteractionObjects")
-		return -1;
-}
-
-public func FxIntSearchInteractionObjectsStart(object target, effect, int temp, startAt)
-{
-	if(temp != 0) return;
-	effect.startAt = startAt;
-	EffectCall(target,effect,"Timer",target,effect,0);
-}
-
-// takes care of displaying the interactions
-public func FxIntSearchInteractionObjectsTimer(object target, effect, int time)
-{
-
-	// find vehicles & structures & script interactables
-	var startAt = effect.startAt;
-	var i = startAt;
-	
-	//var hotkey = i+1-target->HandObjects();
-	var hotkey = i+1;
-	
-	// Get custom interactions from the clonk
-	// extra interactions are an array of proplists. proplists have to contain at least a function pointer "f", a description "desc" and an "icon" definition/object. Optional "front"-boolean for sorting in before/after other interactions.
-	var extra_interactions = target->~GetExtraInteractions()??[]; // if not present, just use []. Less error prone than having multiple if(!foo).
-	// we could sort the interactions, but there usually will only be like 1-3. Not really worth it.
-	
-	// Add buttons:
-	
-	// all except structures only if outside
-	if(!target->Contained())
-	{
-		// add extra-interactions Priority 0
-		for(var interaction in extra_interactions)
-			if(interaction.Priority == 0)
-				ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
-	
-		// add interactables (script interface)
-		var interactables = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_Func("IsInteractable",target),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
-		var j, icnt;
-		for(var interactable in interactables)
-		{
-			icnt = interactable->~GetInteractionCount();
-			if(!icnt)
-				icnt = 1;
-
-			for(j=0; j < icnt; j++)
-			{
-				ActionButton(target,i++,interactable,ACTIONTYPE_SCRIPT,hotkey++, j);
-			}
-		}
-		
-		// add extra-interactions Priority 1
-		for(var interaction in extra_interactions)
-			if(interaction.Priority == 1)
-				ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
-		
-		// add vehicles
-		var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
-		for(var vehicle in vehicles)
-		{
-			ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE,hotkey++);
-		}
-		
-		// add extra-interactions Priority 2
-		for(var interaction in extra_interactions)
-			if(interaction.Priority == 2)
-				ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
-	}
-
-	// add structures
-	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer(), Find_Layer(target->GetObjectLayer()));
-	for(var structure in structures)
-	{
-		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE,hotkey++);
-	}
-	
-	// add extra-interactions after everything
-	for(var interaction in extra_interactions)
-		if(interaction.Priority == nil || interaction.Priority > 2)
-			ActionButton(target, i++, interaction.Object, ACTIONTYPE_EXTRA, hotkey++, nil, interaction);
-	
-	ClearActionButtons(i);
-	
-	return;
-}
-
-// call from HUDAdapter (Clonk)
-public func OnSelectionChanged(int old, int new)
-{
-	//Log("selection changed from %d to %d", old, new);
-	// update both old and new
-	actionbar[old]->UpdateSelectionStatus();
-	actionbar[new]->UpdateSelectionStatus();
-}
-
-
-/** Helper Functions **/
-
-// Insert a button into the actionbar at pos
-private func ActionButton(object forClonk, int pos, object interaction, int actiontype, int hotkey, int num, proplist extra)
-{
-	// the actionbar has a maximum size
-	if(pos >= GUI_MAX_ACTIONBAR)
-		return nil;
-
-	var spacing = 100;
-	
-	var bt = actionbar[pos];
-	
-	// no object yet... create it
-	if(!bt)
-	{
-		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
-	}
-
-	bt->SetPosition(401 + pos * spacing, -45);
-	
-	bt->SetCrew(forClonk);
-	bt->SetObject(interaction,actiontype,pos,hotkey, num, extra);
-	
-	actionbar[pos] = bt;
-	return bt;
-}
-
-/** Removes all actionbar buttons after start */
-private func ClearActionButtons(int start)
-{
-
-	// make rest invisible
-	for(var j = start; j < GetLength(actionbar); ++j)
-	{
-		// we don't have to remove them all the time, no?
-		if(actionbar[j])
-			actionbar[j]->Disable();
-	}
-}
-
-/** Returns how many actionbar-buttons are actually visible */
-private func GetRealActionbarLength()
-{
-	var i=0;
-	for(var j = 0; j < GetLength(actionbar); ++j)
-		if(actionbar[j]->ShowsItem())	i++;
-	return i;
-}
-
-/** Removes all messages that the actionbuttons show */
-private func ClearButtonMessages()
-{
-	for(var i = 0; i < GetLength(actionbar); ++i)
-	{
-		if(actionbar[i])
-			actionbar[i]->ClearMessage();
-	}
-}
 
 /** Creates a crew selector for the given clonk.
     Should be followed by a ReorderCrewSelectors call

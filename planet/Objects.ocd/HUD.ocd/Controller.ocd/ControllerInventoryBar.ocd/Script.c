@@ -22,7 +22,7 @@ local inventory_gui_id;
 
 local progress_bar_links;
 
-func GetCurrentGuiID()
+func GetInventoryGuiID()
 {
 	if (inventory_gui_id) return inventory_gui_id;
 	var menu =
@@ -30,14 +30,14 @@ func GetCurrentGuiID()
 		Target = GetInventoryGuiTarget(),
 		Style = GUI_Multiple | GUI_IgnoreMouse | GUI_NoCrop,
 		Y = [1000, -(GUI_Controller_InventoryBar_IconMarginScreenBottom + GUI_Controller_InventoryBar_IconSize)],
-		OnClose = GuiAction_Call(this, "OnGuiClose")
+		OnClose = GuiAction_Call(this, "OnInventoryGuiClose")
 		
 	};
 	inventory_gui_id = CustomGuiOpen(menu);
 	return inventory_gui_id;
 }
 
-func OnGuiClose()
+func OnInventoryGuiClose()
 {
 	inventory_gui_id = nil;
 }
@@ -65,7 +65,7 @@ func Destruction()
 	if (inventory_gui_target)
 		inventory_gui_target->RemoveObject();
 		
-	var menu = GetCurrentGuiID();
+	var menu = GetInventoryGuiID();
 	if (menu)
 	{
 		CustomGuiClose(menu, nil, this);
@@ -95,8 +95,8 @@ public func OnCrewSelection(object clonk, bool deselect)
 // call from HUDAdapter or inventory-buttons
 public func OnHandSelectionChange(int old, int new, int handslot)
 {
-	CustomGuiSetTag("Std", GetCurrentGuiID(), inventory_slots[old].ID + 1000, GetInventoryGuiTarget());
-	CustomGuiSetTag("Selected", GetCurrentGuiID(), inventory_slots[new].ID + 1000, GetInventoryGuiTarget());
+	CustomGuiSetTag("Std", GetInventoryGuiID(), inventory_slots[old].ID + 1000, GetInventoryGuiTarget());
+	CustomGuiSetTag("Selected", GetInventoryGuiID(), inventory_slots[new].ID + 1000, GetInventoryGuiTarget());
 	
 	OnSlotObjectChanged(handslot);
 	return _inherited(old, new, handslot, ...);
@@ -159,10 +159,10 @@ func UpdateInventory()
 		if ((item != slot_info.obj) || (needs_selection != slot_info.hand))
 		{
 			var update = { Symbol = item };
-			CustomGuiUpdate(update, GetCurrentGuiID(), 1000 + slot_info.ID, GetInventoryGuiTarget());
+			CustomGuiUpdate(update, GetInventoryGuiID(), 1000 + slot_info.ID, GetInventoryGuiTarget());
 			var tag = "Std";
 			if (needs_selection) tag = "Selected";
-			CustomGuiSetTag(tag, GetCurrentGuiID(), slot_info.ID, GetInventoryGuiTarget());
+			CustomGuiSetTag(tag, GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
 			slot_info.hand = needs_selection;
 		}
 		
@@ -237,7 +237,7 @@ func CreateNewInventoryButton(int max_slots)
 			Hgt = [1000, {Std = 0, Selected = 16}]
 		}
 	};
-	CustomGuiUpdate({new_icon = icon}, GetCurrentGuiID(), 0);	
+	CustomGuiUpdate({new_icon = icon}, GetInventoryGuiID(), 0);	
 	//return bt;
 }
 
@@ -255,14 +255,14 @@ private func UpdateInventoryButtons(object clonk)
 	while (max_contents_count < GetLength(inventory_slots))
 	{
 		var slot_info = inventory_slots[-1];
-		CustomGuiClose(GetCurrentGuiID(), slot_info.ID, GetInventoryGuiTarget());
+		CustomGuiClose(GetInventoryGuiID(), slot_info.ID, GetInventoryGuiTarget());
 		SetLength(inventory_slots, GetLength(inventory_slots)-1);
 	}
 	
 	// modifications occured? Adjust position of old slots
 	if (old_count != max_contents_count)
 	{
-		var gui_id = GetCurrentGuiID();
+		var gui_id = GetInventoryGuiID();
 		var gui_target = GetInventoryGuiTarget();
 		for (var i = 0; i < old_count; ++i)
 		{

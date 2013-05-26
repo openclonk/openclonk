@@ -16,10 +16,6 @@
 	# 
 	# CancelUse CancelMenu
 	#
-	# Grab Ungrab GrabPrevious GrabNext PushEnter
-	#
-	# Enter Exit
-	#
 	# NextCrew PreviousCrew
 	#
 	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight MenuSelect
@@ -277,40 +273,11 @@
 	GUIName=$CON_Contents$
 	GUIDesc=$CON_Contents_Desc$
 	SendCursorPos=1
-	
-	[ControlDef]
-	Identifier=Grab
-	SendCursorPos=1
-	Hold=1
-	
-	[ControlDef]
-	Identifier=Ungrab
-	Hold=1
-	
-	[ControlDef]
-	Identifier=GrabPrevious
-	
-	[ControlDef]
-	Identifier=GrabNext
-	
-	[ControlDef]
-	Identifier=PushEnter
-	Hold=1
 
 	[ControlDef]
 	Identifier=Interact
 	SendCursorPos=1
 	Hold=1
-	
-	[ControlDef]
-	Identifier=Enter
-	SendCursorPos=1
-	Hold=1
-	
-	[ControlDef]
-	Identifier=Exit
-	Hold=1
-	
 	
 	# Interaction Hotkeys (lower bar)
 	
@@ -994,44 +961,6 @@
 		GUIName=None
 		Priority=50
 		Control=Throw
-		
-		
-	# ======================================================================= #
-	#                              Interaction queue                          #
-	# ======================================================================= #
-	
-	[ControlSet]
-	Name=*_IntQueue_*
-			
-		[Assignment]
-		Key=CON_Interact
-		Priority=50
-		Control=PushEnter
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=45
-		Control=GrabNext
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=40
-		Control=Ungrab
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=30
-		Control=Grab
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=25
-		Control=Exit
-		
-		[Assignment]
-		Key=CON_Interact
-		Priority=20
-		Control=Enter
 		
 	# ======================================================================= #
 	#                          Default hotkey controls                        #

@@ -1,0 +1,7 @@
+TxtSlot=Slot %d auswählen
+TxtSelect=%s auswählen
+TxtGrab=%s anfassen
+TxtUnGrab=%s loslassen
+TxtEnter=%s betreten
+TxtExit=%s verlassen
+TxtPushOut=%s hinausschieben

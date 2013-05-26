@@ -67,25 +67,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	// hotkeys (inventory, vehicle and structure control)
-	var hot = 0;
-	if (ctrl == CON_InteractionHotkey0) hot = 10;
-	if (ctrl == CON_InteractionHotkey1) hot = 1;
-	if (ctrl == CON_InteractionHotkey2) hot = 2;
-	if (ctrl == CON_InteractionHotkey3) hot = 3;
-	if (ctrl == CON_InteractionHotkey4) hot = 4;
-	if (ctrl == CON_InteractionHotkey5) hot = 5;
-	if (ctrl == CON_InteractionHotkey6) hot = 6;
-	if (ctrl == CON_InteractionHotkey7) hot = 7;
-	if (ctrl == CON_InteractionHotkey8) hot = 8;
-	if (ctrl == CON_InteractionHotkey9) hot = 9;
-	
-	if (hot > 0)
-	{
-		this.control.hotkeypressed = true; // see ClonkControl.ocd
-		this->~ControlHotkey(hot-1);
-		return true;
-	}
+	var hot;
 	
 	// dropping items via hotkey
 	hot = 0;
@@ -126,6 +108,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		SetHandItemPos(0, hot-1);
 		return true;
 	}
+	
+	return inherited(plr, ctrl, x, y, strength, repeat, release, ...);
 }
 
 // used in Inventory.ocd

@@ -47,8 +47,7 @@ protected func Recruitment(int plr)
 
 public func OnDisplayInfoMessage()
 {
-	if (HUDcontroller)
-		HUDcontroller->ClearButtonMessages();
+	
 }
 	
 // calls to the crew selector hud
@@ -157,6 +156,20 @@ protected func OnHandSelectionChange(int old, int new, int handslot)
 	if (HUDcontroller)
 		HUDcontroller->OnHandSelectionChange(old, new, handslot);
 	return _inherited(old, new, handslot, ...);
+}
+
+// handled by GUI_Controller_ActionBars
+func StartInteractionCheck(object clonk)
+{
+	if (HUDcontroller)
+		return HUDcontroller->~StartInteractionCheck(clonk, ...);
+}
+
+// handled by GUI_Controller_ActionBars
+func StopInteractionCheck()
+{
+	if (HUDcontroller)
+		return HUDcontroller->~StopInteractionCheck(...);
 }
 
 protected func OnInventoryHotkeyPress(int slot)
