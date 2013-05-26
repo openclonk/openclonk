@@ -158,8 +158,8 @@
 #define K_DIVIDE 98
 
 #define K_ALT_R 100
-#define K_CONTROL_R 99999 // todo
-#define K_NUM_RETURN 99999 // todo
+#define K_CONTROL_R 97
+#define K_NUM_RETURN 96
 
 #define K_HOME 102
 #define K_UP 103
@@ -171,14 +171,12 @@
 #define K_PAGEDOWN 109
 #define K_INSERT 110
 #define K_DELETE 111
-#define K_WIN_L 99999 // todo
-#define K_WIN_R 99999 // todo
+#define K_WIN_L 125
+#define K_WIN_R 126
 #define K_MENU 127
 #define K_PAUSE 119
-#define K_PRINT 99999 // todo
-#define K_CENTER 99999 // todo
-
-#endif
+#define K_PRINT 99
+#define K_CENTER 76
 
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
