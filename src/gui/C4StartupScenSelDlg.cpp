@@ -1346,22 +1346,29 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);
 	C4Rect rcMap = caMain.GetCentered(caMain.GetWidth(), caMain.GetHeight());
+#if 0
+	// Was used for the custom map scenario selection style
 	int iYOversize = caMain.GetHeight()/10; // overlap of map to top
 	rcMap.y -= iYOversize; rcMap.Hgt += iYOversize;
-	C4GUI::ComponentAligner caMap(rcMap, 0,0, true);
+#endif
+	C4GUI::ComponentAligner caMap(rcMap, caMain.GetWidth()/10,0, true);
+#if 0
 	caMap.ExpandTop(-iYOversize);
-	C4GUI::ComponentAligner caBook(caMap.GetCentered(caMap.GetWidth()*11/12-4*iExtraHPadding, caMap.GetHeight()), rcBounds.Wdt/30,iExtraVPadding, false);
-	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+#endif
 
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
 	pScenSelStyleTabular->SetSheetMargin(0);
-	pScenSelStyleTabular->SetDrawDecoration(false);
+	//pScenSelStyleTabular->SetDrawDecoration(false);
+	pScenSelStyleTabular->SetGfx(&C4Startup::Get()->Graphics.fctDlgPaper, &C4Startup::Get()->Graphics.fctOptionsTabClip, &C4Startup::Get()->Graphics.fctOptionsIcons, &C4Startup::Get()->Graphics.BookSmallFont, false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
 	/* C4GUI::Tabular::Sheet *pSheetMap = */ pScenSelStyleTabular->AddSheet(NULL);
 
 	// scenario selection list
+	C4GUI::ComponentAligner caBook(pSheetBook->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
+	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+
 	CStdFont &rScenSelCaptionFont = C4Startup::Get()->Graphics.BookFontTitle;
 	pScenSelCaption = new C4GUI::Label("", caBookLeft.GetFromTop(rScenSelCaptionFont.GetLineHeight()), ACenter, ClrScenarioItem, &rScenSelCaptionFont, false);
 	pSheetBook->AddElement(pScenSelCaption);
@@ -1448,8 +1455,10 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	if (pfctBackground)
 		DrawBackground(cgo, *pfctBackground);
+#if 0
 	else
 		DrawBackground(cgo, C4Startup::Get()->Graphics.fctScenSelBG);
+#endif
 }
 
 void C4StartupScenSelDlg::OnShown()

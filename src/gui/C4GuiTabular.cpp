@@ -383,13 +383,18 @@ namespace C4GUI
 		if (!fGfx) Draw3DFrame(cgo, false, 1, 0xaf, eTabPos!=tbTop, GetTopSize(), eTabPos!=tbLeft, GetLeftSize());
 		// calc positions
 		int32_t x0 = cgo.TargetX + rcBounds.x + GetLeftSize(),
-		             y0 = cgo.TargetY + rcBounds.y + GetTopSize(),
-		                  x1 = cgo.TargetX + rcBounds.x + rcBounds.Wdt - 1,
-		                       y1 = cgo.TargetY + rcBounds.y + rcBounds.Hgt - 1;
+		        y0 = cgo.TargetY + rcBounds.y + GetTopSize(),
+		        x1 = cgo.TargetX + rcBounds.x + rcBounds.Wdt - 1,
+		        y1 = cgo.TargetY + rcBounds.y + rcBounds.Hgt - 1;
 		// main area BG
 		if (!fGfx) pDraw->DrawBoxDw(cgo.Surface, x0,y0,x1,y1, C4GUI_StandardBGColor);
 		// no tabs?
-		if (!eTabPos) return;
+		if (!eTabPos)
+		{
+			if (fGfx)
+				pfctBack->DrawX(cgo.Surface, x0, y0, x1-x0+1, y1-y0+1);
+			return;
+		}
 		bool fLeft = (eTabPos == tbLeft);
 		// top or left bar
 		int32_t d=(fLeft ? y0 : x0)+iSheetOff; // current tab position (leave some space to the left/top)

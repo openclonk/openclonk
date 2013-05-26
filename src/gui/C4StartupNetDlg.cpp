@@ -762,7 +762,11 @@ C4StartupNetDlg::~C4StartupNetDlg()
 void C4StartupNetDlg::DrawElement(C4TargetFacet &cgo)
 {
 	// draw background
+	typedef C4GUI::FullscreenDialog Base;
+	Base::DrawElement(cgo);
+#if 0
 	DrawBackground(cgo, C4Startup::Get()->Graphics.fctNetBG);
+#endif
 }
 
 void C4StartupNetDlg::OnShown()
