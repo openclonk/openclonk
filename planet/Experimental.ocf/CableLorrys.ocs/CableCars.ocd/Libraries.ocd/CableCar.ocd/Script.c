@@ -5,7 +5,7 @@
 	@author Randrian, Clonkonaut, Maikel
 */
 
-#appendto Lorry
+//#appendto Lorry
 
 local iMovementSpeed;
 

@@ -7,8 +7,7 @@
 	@author Randrian, Clonkonaut, Maikel
 */
 
-#appendto ToolsWorkshop
-#appendto WoodenCabin
+//#appendto ToolsWorkshop
 
 // Set to true to make this a station
 local is_station;
