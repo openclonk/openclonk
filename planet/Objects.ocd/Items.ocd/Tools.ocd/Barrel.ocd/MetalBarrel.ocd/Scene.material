@@ -11,7 +11,70 @@ material MetalBarrel
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture metalbarrel.png
+				texture metalbarrel.jpg
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material MB_Water
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture MB_water.jpg
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material MB_Acid
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture MB_acid.jpg
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}
+
+material MB_Lava
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 1.000000 1.000000 1.000000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture MB_lava.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

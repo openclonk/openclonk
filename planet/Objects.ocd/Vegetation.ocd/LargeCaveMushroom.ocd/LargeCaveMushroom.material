@@ -20,7 +20,7 @@ material LargeCaveMushroom
 
             texture_unit 
             {
-                texture LargeCaveMushroom.png
+                texture LargeCaveMushroom.jpg
                 tex_address_mode wrap
                 scale 1.0 1.0
                 colour_op modulate

@@ -20,7 +20,7 @@ material sickle
 
             texture_unit 
             {
-                texture sickle.png
+                texture sickle.jpg
                 tex_address_mode wrap
                 scale 1.0 1.0
                 colour_op modulate
