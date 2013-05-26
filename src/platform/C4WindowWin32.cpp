@@ -80,7 +80,6 @@ static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode)
 	case VK_PAUSE:		s = K_PAUSE; break;
 	case VK_PRINT:		s = K_PRINT; break;
 	case VK_RCONTROL:	s = K_CONTROL_R; break;
-
 	case VK_NUMLOCK:	s = K_NUM; break;
 	case VK_NUMPAD1:	s = K_NUM1; break;
 	case VK_NUMPAD2:	s = K_NUM2; break;
@@ -92,8 +91,6 @@ static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode)
 	case VK_NUMPAD8:	s = K_NUM8; break;
 	case VK_NUMPAD9:	s = K_NUM9; break;
 	case VK_NUMPAD0:	s = K_NUM0; break;
-	default:
-		// others are fine.
 	}
 }
 
