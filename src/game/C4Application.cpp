@@ -228,8 +228,8 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"nosignup", no_argument, &Config.Network.MasterServerSignUp, 0},
 			{"signup", no_argument, &Config.Network.MasterServerSignUp, 1},
 			
-			{"debugrecread", optional_argument, 0, 'K'},
-			{"debugrecwrite", optional_argument, 0, 'w'},
+			{"debugrecread", required_argument, 0, 'K'},
+			{"debugrecwrite", required_argument, 0, 'w'},
 
 			{"client", required_argument, 0, 'c'},
 			{"host", no_argument, 0, 'h'},
@@ -293,7 +293,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			SCopy(optarg, Game.DirectJoinAddress, _MAX_PATH);
 			break;
 		case 'K':
-			if (optarg)
+			if (optarg && optarg[0])
 			{
 				LogF("Reading from DebugRec file '%s'", optarg);
 				SCopy(optarg, Config.General.DebugRecExternalFile, _MAX_PATH);
@@ -304,7 +304,7 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			Config.General.DebugRecWrite = 0;
 			break;
 		case 'w':
-			if (optarg)
+			if (optarg && optarg[0])
 			{
 				LogF("Writing to DebugRec file '%s'", optarg);
 				SCopy(optarg, Config.General.DebugRecExternalFile, _MAX_PATH);
