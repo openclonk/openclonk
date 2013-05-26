@@ -62,7 +62,7 @@ material clonkAlchemistTunic
 			}
 			texture_unit Clonk
 			{
-				texture clonkAlchemist.png
+				texture clonkAlchemist.jpg
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture
