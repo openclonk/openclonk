@@ -78,7 +78,7 @@ public func GetConstructionPlans(int plr)
 {
 	var construction_plans = [];
 	var construct_id, index = 0;
-	while (construct_id = GetPlrKnowledge(plr, 0, index++, C4D_Structure))
+	while (construct_id = GetPlrKnowledge(plr, nil, index++, C4D_Structure))
 		construction_plans[index-1] = construct_id;
 	return construction_plans;
 }

@@ -1,3 +1,0 @@
-Name=Jar of Winds
-Description=Contains compressed wind that can be released in one gust.
-UsageHelp=Aim and press [Use] to release a gust of wind in the direction specified.

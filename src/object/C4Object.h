@@ -133,7 +133,6 @@ public:
 	int32_t LastEnergyLossCausePlayer; // last player that caused an energy loss to this Clonk (used to trace kills when player tumbles off a cliff, etc.)
 	int32_t Category;
 	int32_t old_x, old_y; C4LArea Area; // position as currently seen by Game.Objecets.Sectors. UpdatePos to sync.
-	int32_t r;
 	int32_t NoCollectDelay;
 	int32_t Mass, OwnMass;
 	int32_t Damage;
@@ -310,8 +309,10 @@ public:
 	inline int32_t Height() { return Shape.Hgt+addtop(); } // height of shape (+build-top)
 	inline int32_t GetX() { return fixtoi(fix_x); }
 	inline int32_t GetY() { return fixtoi(fix_y); }
+	inline int32_t GetR() { return fixtoi(fix_r); }
 	inline C4Real GetFixedX() { return fix_x; }
 	inline C4Real GetFixedY() { return fix_y; }
+	inline C4Real GetFixedR() { return fix_r; }
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
 	C4Real GetSpeed();

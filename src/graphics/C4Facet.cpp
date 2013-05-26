@@ -162,20 +162,20 @@ void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY,
 	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
 	// Drawing area
 	C4Facet ccgo = cgo;
-	// Adjust for fixed aspect ratio
+	// Adjust for fixed aspect ratio (letterbox)
 	if (fAspect)
 	{
 		// By height
-		if (100*cgo.Wdt/Wdt<100*cgo.Hgt/Hgt)
+		if (cgo.Wdt / Wdt < cgo.Hgt / Hgt)
 		{
-			ccgo.Hgt=Hgt*cgo.Wdt/Wdt;
-			ccgo.Y+=(cgo.Hgt-ccgo.Hgt)/2;
+			ccgo.Hgt = Hgt * cgo.Wdt / Wdt;
+			ccgo.Y += (cgo.Hgt - ccgo.Hgt) / 2;
 		}
 		// By width
-		else if (100*cgo.Hgt/Hgt<100*cgo.Wdt/Wdt)
+		else if (cgo.Hgt / Hgt < cgo.Wdt / Wdt)
 		{
-			ccgo.Wdt=Wdt*cgo.Hgt/Hgt;
-			ccgo.X+=(cgo.Wdt-ccgo.Wdt)/2;
+			ccgo.Wdt = Wdt * cgo.Hgt / Hgt;
+			ccgo.X += (cgo.Wdt - ccgo.Wdt) / 2;
 		}
 	}
 	// Blit
@@ -188,14 +188,31 @@ void C4Facet::Draw(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY,
 
 void C4Facet::DrawFullScreen(C4Facet &cgo)
 {
+	// Valid parameter check
+	if (!pDraw || !Surface || !cgo.Surface || !Wdt || !Hgt) return;
+	// Drawing area
+	C4Facet ccgo = cgo;
 	// stretched fullscreen blit: make sure right and lower side are cleared, because this may be missed due to stretching
 	if (cgo.Wdt > Wdt+2 || cgo.Hgt > Wdt+2)
 	{
-		pDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
-		pDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
+		ccgo.X -= 1; ccgo.Y -= 1;
+		ccgo.Wdt += 2; ccgo.Hgt += 2;
 	}
-	// normal blit OK
-	Draw(cgo, false);
+	// Adjust for fixed aspect ratio (crop)
+	// By height
+	if (cgo.Wdt / Wdt < cgo.Hgt / Hgt)
+	{
+		ccgo.Wdt = Wdt * cgo.Hgt / Hgt;
+		ccgo.X += (cgo.Wdt - ccgo.Wdt) / 2;
+	}
+	// By width
+	else if (cgo.Hgt / Hgt < cgo.Wdt / Wdt)
+	{
+		ccgo.Hgt = Hgt * cgo.Wdt / Wdt;
+		ccgo.Y += (cgo.Hgt - ccgo.Hgt) / 2;
+	}
+	// Blit
+	pDraw->Blit(Surface, X, Y, Wdt, Hgt, ccgo.Surface, ccgo.X, ccgo.Y, ccgo.Wdt, ccgo.Hgt);
 }
 
 void C4Facet::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)

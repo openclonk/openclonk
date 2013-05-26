@@ -56,6 +56,44 @@
 #define ConsoleDlgClassName L"C4GUIdlg"
 #define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
+/** Convert certain keys to unix scancodes (those that differ from unix scancodes) */
+static void ConvertToUnixScancode(WPARAM wParam, C4KeyCode *scancode)
+{
+	C4KeyCode &s = *scancode;
+
+	switch(wParam)
+	{
+	case VK_HOME:		s = K_HOME; break;
+	case VK_END:		s = K_END; break;
+	case VK_PRIOR:		s = K_PAGEUP; break;
+	case VK_NEXT:		s = K_PAGEDOWN; break;
+	case VK_UP:			s = K_UP; break;
+	case VK_DOWN:		s = K_DOWN; break;
+	case VK_LEFT:		s = K_LEFT; break;
+	case VK_RIGHT:		s = K_RIGHT; break;
+	case VK_CLEAR:		s = K_CENTER; break;
+	case VK_INSERT:		s = K_INSERT; break;
+	case VK_DELETE:		s = K_DELETE; break;
+	case VK_LWIN:		s = K_WIN_L; break;
+	case VK_RWIN:		s = K_WIN_R; break;
+	case VK_MENU:		s = K_MENU; break;
+	case VK_PAUSE:		s = K_PAUSE; break;
+	case VK_PRINT:		s = K_PRINT; break;
+	case VK_RCONTROL:	s = K_CONTROL_R; break;
+	case VK_NUMLOCK:	s = K_NUM; break;
+	case VK_NUMPAD1:	s = K_NUM1; break;
+	case VK_NUMPAD2:	s = K_NUM2; break;
+	case VK_NUMPAD3:	s = K_NUM3; break;
+	case VK_NUMPAD4:	s = K_NUM4; break;
+	case VK_NUMPAD5:	s = K_NUM5; break;
+	case VK_NUMPAD6:	s = K_NUM6; break;
+	case VK_NUMPAD7:	s = K_NUM7; break;
+	case VK_NUMPAD8:	s = K_NUM8; break;
+	case VK_NUMPAD9:	s = K_NUM9; break;
+	case VK_NUMPAD0:	s = K_NUM0; break;
+	}
+}
+
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static bool NativeCursorShown = true;
@@ -66,6 +104,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+	ConvertToUnixScancode(wParam, &scancode);
 
 	// Process message
 	switch (uMsg)

@@ -46,14 +46,16 @@ bool C4StartupGraphics::Init()
 	::GraphicsResource.ProgressStart = 50;
 	::GraphicsResource.ProgressIncrement = 8;
 	// load startup specific graphics from gfxsys groupset
-	fctScenSelBG.GetFace().SetBackground();
 	Game.SetInitProgress(38.0f);
+#if 0
 	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
 	if (!LoadFile(fctPlrSelBG, "StartupPlrSelBG")) return false;
-	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
 	if (!LoadFile(fctNetBG, "StartupNetworkBG")) return false;
+#endif
+	if (!LoadFile(fctDlgPaper, "StartupDlgPaper")) return false;
+	if (!LoadFile(fctPlrPropBG, "StartupPlrPropBG")) return false;
 	if (!LoadFile(fctAboutBG, "StartupAboutBG")) return false;
-	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
+	fctAboutBG.GetFace().SetBackground();
 	if (!LoadFile(fctStartupLogo, "StartupLogo")) return false;
 	::GraphicsResource.ProgressStart = 92;
 	::GraphicsResource.ProgressIncrement = 0.5;
@@ -66,14 +68,6 @@ bool C4StartupGraphics::Init()
 	sfctBookScrollR.Set(fctBookScroll, 1);
 	sfctBookScrollG.Set(fctBookScroll, 2);
 	sfctBookScrollB.Set(fctBookScroll, 3);
-	/*  if (!LoadFile(fctCrew, "StartupCrew")) return false; - currently unused
-	  if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
-	    {
-	    if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return false; }
-	    fctCrewClr.Wdt=fctCrew.Wdt;
-	    fctCrewClr.Hgt=fctCrew.Hgt;
-	    fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
-	    }*/
 	if (!LoadFile(fctContext, "StartupContext")) return false;
 	fctContext.Set(fctContext.Surface,0,0,fctContext.Hgt,fctContext.Hgt);
 	if (!LoadFile(fctScenSelIcons, "StartupScenSelIcons")) return false;

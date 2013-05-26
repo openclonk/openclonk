@@ -819,11 +819,8 @@ namespace C4GUI
 	{
 		// draw across fullscreen bounds - zoom 1px border to prevent flashing borders by blit offsets
 		Screen *pScr = GetScreen();
-		C4Facet cgoScreen = cgo;
 		C4Rect &rcScreenBounds = pScr ? pScr->GetBounds() : GetBounds();
-		cgoScreen.X = rcScreenBounds.x-1; cgoScreen.Y = rcScreenBounds.y-1;
-		cgoScreen.Wdt = rcScreenBounds.Wdt+2; cgoScreen.Hgt = rcScreenBounds.Hgt+2;
-		rFromFct.DrawFullScreen(cgoScreen);
+		rFromFct.DrawFullScreen(cgo);
 	}
 
 // --------------------------------------------------

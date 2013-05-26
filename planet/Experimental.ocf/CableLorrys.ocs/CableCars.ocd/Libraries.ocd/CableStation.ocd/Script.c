@@ -7,8 +7,7 @@
 	@author Randrian, Clonkonaut, Maikel
 */
 
-#appendto ToolsWorkshop
-#appendto WoodenCabin
+//#appendto ToolsWorkshop
 
 // Set to true to make this a station
 local is_station;
@@ -190,7 +189,7 @@ public func AddCableDestination(object new_destination, object crossing, int dis
 			break;
 		}
 	}
-	// Failsafe²
+	// Failsafe
 	if (!crossing_item) return false;
 	// Save the new destination
 	destination_list[GetLength(destination_list)] = [new_destination, crossing_item[const_nextwaypoint], crossing_item[const_distance] + distance_add];
@@ -219,7 +218,7 @@ public func UpdateCableDestination(object known_destination, object crossing, in
 			destination_item = i;
 		i++;
 	}
-	// Failsafe²
+	// Failsafe
 	if (!crossing_item || !destination_item) return false;
 	// Save the updated path
 	destination_list[destination_item][const_nextwaypoint] = crossing_item[const_nextwaypoint];
@@ -412,7 +411,7 @@ public func DoAcquire(id object_id, int amount)
 	var car = CheckAcquiringCar(container);
 	if (!car) return false;
 	container->AddReservation(object_id, amount);
-	car->AddDelivery(container, object_id, amount);
+	car->AddDelivery(container, nil, object_id, amount);
 	return true;
 }
 

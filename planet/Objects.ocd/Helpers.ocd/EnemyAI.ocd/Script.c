@@ -302,7 +302,7 @@ private func ExecuteRanged(fx)
 		CancelAiming(fx);
 		if (!CheckHandsAction(fx)) return true;
 		// Start aiming
-		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), ty=fx.target->GetY()-GetY())) return false; // something's broken :(
+		if (!fx.weapon->ControlUseStart(this, fx.target->GetX()-GetX(), fx.target->GetY()-GetY())) return false; // something's broken :(
 		fx.aim_weapon = fx.weapon;
 		fx.aim_time = fx.time;
 		// Enough for now
@@ -583,7 +583,7 @@ private func GetBallisticAngle(int dx, int dy, int v, int max_angle)
 	// engine adds gravity after movement, so targets fly higher than they should
 	// thus, we aim lower. we don't know the travel time yet, so we assume some 90% of v is horizontal
 	// (it's ~2px correction for 200px shooting distance)
-	dy += Abs(dx)*q*10/(v*180);
+	dy += Abs(dx)*g*10/(v*180);
 	//Log("Correction: Aiming %d lower!", Abs(dx)*q*10/(v*180));
 	// q is in 1/10000 (pix/frame)^4
 	var q = v**4 - g*(g*dx*dx-2*dy*v*v); // dy is negative up

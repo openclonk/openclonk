@@ -49,7 +49,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	if (!pClipRect)
 	{
 		// Regular Put: Update MaskPutRect and MaskPutRotation
-		MaskPutRotation = pForObject->r;
+		MaskPutRotation = pForObject->GetR();
 		pClipRect = &MaskPutRect;
 		RegularPut = true;
 	}

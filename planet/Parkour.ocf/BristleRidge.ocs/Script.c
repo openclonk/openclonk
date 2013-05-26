@@ -3,7 +3,7 @@
 	Authors: Mimmo_O, Asmageddon, Maikel
 	
 	Parkour on a dynamic map, the player starts on the bottom left and has to make it to the upper right.
-	The landscape consists of several pillers seperated by abyss, the player must use the grappler, jar of winds
+	The landscape consists of several pillers seperated by abyss, the player must use the grappler, wind bag
 	and shovel to cover the abyss and climb the pillars.
 --*/
 
@@ -55,7 +55,7 @@ protected func OnPlayerRespawn(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
 	clonk->CreateContents(GrappleBow);
-	clonk->CreateContents(JarOfWinds)->DoFullLoad();
+	clonk->CreateContents(WindBag)->DoFullLoad();
 	clonk->CreateContents(Shovel);
 	return;
 }

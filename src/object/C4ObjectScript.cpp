@@ -613,9 +613,9 @@ static long FnGetYDir(C4Object *Obj, long iPrec)
 static long FnGetR(C4Object *Obj)
 {
 	// Adjust range
-	long iR = Obj->r;
-	while (iR>180) iR-=360;
-	while (iR<-180) iR+=360;
+	long iR = Obj->GetR();
+	while (iR > 180) iR -= 360;
+	while (iR < -180) iR += 360;
 	return iR;
 }
 

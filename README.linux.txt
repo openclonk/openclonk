@@ -6,7 +6,7 @@ following packages:
 
   make gcc g++
   cmake OR automake autoconf
-  libc6-dev libx11-dev libxxf86vm-dev libxrandr-dev libxpm-dev libglew1.5-dev
+  libc6-dev libx11-dev libxxf86vm-dev libxrandr-dev libxpm-dev libglew-dev
   libgl1-mesa-dev libpng12-dev libsdl1.2-dev libsdl-mixer1.2-dev libgtk2.0-dev
   libjpeg62-dev zlib1g-dev libboost-dev
 

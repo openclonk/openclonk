@@ -11,6 +11,8 @@
 	# Summary
 	# --------
 	# Left Right Up Down Jump
+
+
 	# Throw Drop Use ForcedThrow
 	# UseAlt
 	# 
@@ -509,7 +511,7 @@
 [ControlSets]
 
 	# ======================================================================= #
-	#                   Mouse control with keyboard (QWERTY)                  #
+	#                   Mouse control with keyboard                           #
 	# ======================================================================= #
 	#
 	#
@@ -689,7 +691,7 @@
 		GUIGroup=60
 		Priority=100
 		Control=WheelZoomOut
-		
+
 	# ======================================================================= #
 	#     Dualshock-like gamepad (10-12 buttons, 1 D-Pad, 2 analog stick)     #
 	# ======================================================================= #

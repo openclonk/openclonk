@@ -32,7 +32,7 @@ material Chest
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture chest.png
+				texture chest.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

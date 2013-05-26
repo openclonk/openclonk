@@ -159,7 +159,7 @@ private:
 
 
 protected:
-	virtual bool HasBackground() { return true; }
+	virtual bool HasBackground() { return false; }
 	virtual void DrawElement(C4TargetFacet &cgo);
 
 	virtual C4GUI::Control *GetDefaultControl(); // get Auto-Focus control

@@ -45,7 +45,7 @@
 #include <algorithm>
 
 // font clrs
-const uint32_t ClrPlayerItem   = 0xff000000;
+const uint32_t ClrPlayerItem   = 0xffffffff;
 
 // Arbitrary cut-off value for player color value. This avoids pitch black
 // colors which look ugly. Note that this limit is only applied in the UI,
@@ -80,7 +80,7 @@ StdStrBuf DateString(int iTime)
 C4StartupPlrSelDlg::ListItem::ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement, bool fActivated)
 		: Control(C4Rect(0,0,0,0)), pCheck(NULL), pNameLabel(NULL), pPlrSelDlg(pForDlg), pIcon(NULL)
 {
-	CStdFont &rUseFont = C4Startup::Get()->Graphics.BookFont;
+	CStdFont &rUseFont = GraphicsResource.FontRegular;
 	// calc height
 	int32_t iHeight = rUseFont.GetLineHeight() + 2 * IconLabelSpacing;
 	// create subcomponents
@@ -497,17 +497,17 @@ C4StartupPlrSelDlg::C4StartupPlrSelDlg() : C4StartupDlg("W"), eMode(PSDM_Player)
 	rcBottomButtons = caButtonArea.GetCentered(caMain.GetWidth(), iButtonHeight);
 	iBottomButtonWidth = (caButtonArea.GetWidth() - iButtonXSpacing * (iButtonCount-1)) / iButtonCount;
 	C4Rect rcMain = caMain.GetAll();
-	C4Rect rcPlrList = C4Rect(rcMain.Wdt/10, rcMain.Hgt*10/36, rcMain.Wdt*25/81, rcMain.Hgt*2/3);
-	C4Rect rcInfoWindow = C4Rect(rcMain.Wdt*371/768, rcMain.Hgt*10/36, rcMain.Wdt*121/384, rcMain.Hgt*2/3);
+	C4Rect rcPlrList = C4Rect(rcMain.Wdt/8, rcMain.Hgt/8, rcMain.Wdt*5/16, rcMain.Hgt*6/8);
+	C4Rect rcInfoWindow = C4Rect(rcMain.Wdt*9/16, rcMain.Hgt/8, rcMain.Wdt*5/16, rcMain.Hgt*6/8);
 
 	AddElement(pPlrListBox = new C4GUI::ListBox(rcPlrList));
 	pPlrListBox->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERFILES"));
-	pPlrListBox->SetDecoration(false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
+	pPlrListBox->SetDecoration(true, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pPlrListBox->UpdateElementPositions();
 	pPlrListBox->SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelChange));
 	pPlrListBox->SetSelectionDblClickFn(new C4GUI::CallbackHandler<C4StartupPlrSelDlg>(this, &C4StartupPlrSelDlg::OnSelDblClick));
 	AddElement(pSelectionInfo = new C4GUI::TextWindow(rcInfoWindow));
-	pSelectionInfo->SetDecoration(false, false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
+	pSelectionInfo->SetDecoration(true, true, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSelectionInfo->UpdateHeight();
 
 	// bottom line buttons - positioning done in UpdateBottomButtons by UpdatePlayerList
@@ -568,7 +568,11 @@ void C4StartupPlrSelDlg::AbortRenaming()
 void C4StartupPlrSelDlg::DrawElement(C4TargetFacet &cgo)
 {
 	// draw background
+	typedef C4GUI::FullscreenDialog Base;
+	Base::DrawElement(cgo);
+#if 0
 	DrawBackground(cgo, C4Startup::Get()->Graphics.fctPlrSelBG);
+#endif
 }
 
 void C4StartupPlrSelDlg::UpdateBottomButtons()

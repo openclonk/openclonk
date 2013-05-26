@@ -50,13 +50,13 @@ inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	return RGBA(((dwTxtClr >>  0) % 256) / 3, ((dwTxtClr >>  8) % 256) / 3, ((dwTxtClr >> 16) % 256) / 3, (dwTxtClr >> 24) % 256);
 }
 
-void C4BltTransform::SetRotate(int iAngle, float fOffX, float fOffY) // set by angle and rotation offset
+void C4BltTransform::SetRotate(float iAngle, float fOffX, float fOffY) // set by angle and rotation offset
 {
-	// iAngle is in 1/100-degrees (cycling from 0 to 36000)
+	// iAngle is in degrees (cycling from 0 to 360)
 	// determine sine and cos of reversed angle in radians
-	// fAngle = -iAngle/100 * pi/180 = iAngle * -pi/18000
-	float fAngle=(float) iAngle*(-1.7453292519943295769236907684886e-4f);
-	float fsin=(float)sin(fAngle); float fcos=(float)cos(fAngle);
+	// fAngle = -iAngle * pi/180 = iAngle * -pi/180
+	float fAngle = iAngle * -0.0174532925f;
+	float fsin = sinf(fAngle); float fcos = cosf(fAngle);
 	// set matrix values
 	mat[0] = +fcos; mat[1] = +fsin; mat[2] = (1-fcos)*fOffX - fsin*fOffY;
 	mat[3] = -fsin; mat[4] = +fcos; mat[5] = (1-fcos)*fOffY + fsin*fOffX;
@@ -746,7 +746,7 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
                       C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
                       bool fSrcColKey, const C4BltTransform *pTransform)
 {
-	if (!pTransform) return BlitRotate(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, 0, fSrcColKey!=false);
+	if (!pTransform) return BlitSimple(sfcSource, fx, fy, fwdt, fhgt, sfcTarget, tx, ty, twdt, thgt, fSrcColKey!=false);
 	// safety
 	if (!fwdt || !fhgt) return true;
 	// Lock the surfaces
@@ -787,21 +787,17 @@ bool C4Draw::Blit8(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
 	return true;
 }
 
-bool C4Draw::BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
+bool C4Draw::BlitSimple(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhgt,
                            C4Surface * sfcTarget, int tx, int ty, int twdt, int thgt,
-                           int iAngle, bool fTransparency)
+                           bool fTransparency)
 {
 	// rendertarget?
 	if (sfcTarget->IsRenderTarget())
 	{
-		C4BltTransform rot;
-		rot.SetRotate(iAngle, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
-		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true, &rot);
+		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true);
 	}
-	// Object is first stretched to dest rect, then rotated at place.
-	int xcnt,ycnt,fcx,fcy,tcx,tcy,cpcx,cpcy;
-	int npcx,npcy;
-	double mtx[4],dang;
+	// Object is first stretched to dest rect
+	int xcnt,ycnt,tcx,tcy,cpcx,cpcy;
 	if (!fwdt || !fhgt || !twdt || !thgt) return false;
 	// Lock the surfaces
 	if (!sfcSource->Lock())
@@ -809,71 +805,12 @@ bool C4Draw::BlitRotate(C4Surface * sfcSource, int fx, int fy, int fwdt, int fhg
 	if (!sfcTarget->Lock())
 		{ sfcSource->Unlock(); return false; }
 	// Rectangle centers
-	fcx=fwdt/2; fcy=fhgt/2;
 	tcx=twdt/2; tcy=thgt/2;
-	// Adjust angle range
-	while (iAngle<0) iAngle+=36000; while (iAngle>35999) iAngle-=36000;
-	// Exact/free rotation
-	switch (iAngle)
-	{
-	case 0:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcy=ty+tcy-thgt/2+ycnt,0,sfcTarget->Hgt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcx=tx+tcx-twdt/2+xcnt,0,sfcTarget->Wdt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 9000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcx=ty+tcy+thgt/2-ycnt,0,sfcTarget->Wdt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcy=tx+tcx-twdt/2+xcnt,0,sfcTarget->Hgt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 18000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcy=ty+tcy+thgt/2-ycnt,0,sfcTarget->Hgt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcx=tx+tcx+twdt/2-xcnt,0,sfcTarget->Wdt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	case 27000:
-		for (ycnt=0; ycnt<thgt; ycnt++)
-			if (Inside(cpcx=ty+tcy-thgt/2+ycnt,0,sfcTarget->Wdt-1))
-				for (xcnt=0; xcnt<twdt; xcnt++)
-					if (Inside(cpcy=tx+tcx+twdt/2-xcnt,0,sfcTarget->Hgt-1))
-						sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
-		break;
-
-	default:
-		// Calculate rotation matrix
-		dang=M_PI*iAngle/18000.0;
-		mtx[0]=cos(dang); mtx[1]=-sin(dang);
-		mtx[2]=sin(dang); mtx[3]= cos(dang);
-		// Blit source rect
-		for (ycnt=0; ycnt<fhgt; ycnt++)
-		{
-			// Source line start
-			for (xcnt=0; xcnt<fwdt; xcnt++)
-			{
-				// Current pixel coordinate as from source
-				cpcx=xcnt-fcx; cpcy=ycnt-fcy;
-				// Convert to coordinate as in dest
-				cpcx=cpcx*twdt/fwdt; cpcy=cpcy*thgt/fhgt;
-				// Rotate current pixel coordinate
-				npcx= (int) ( mtx[0]*cpcx + mtx[1]*cpcy );
-				npcy= (int) ( mtx[2]*cpcx + mtx[3]*cpcy );
-				// Place in dest
-				sfcTarget->BltPix(tx+tcx+npcx, ty+tcy+npcy, sfcSource, xcnt+fx, ycnt+fy, fTransparency);
-				sfcTarget->BltPix(tx+tcx+npcx+1, ty+tcy+npcy, sfcSource, xcnt+fx, ycnt+fy, fTransparency);
-			}
-		}
-		break;
-	}
-
+	for (ycnt=0; ycnt<thgt; ycnt++)
+		if (Inside(cpcy=ty+tcy-thgt/2+ycnt,0,sfcTarget->Hgt-1))
+			for (xcnt=0; xcnt<twdt; xcnt++)
+				if (Inside(cpcx=tx+tcx-twdt/2+xcnt,0,sfcTarget->Wdt-1))
+					sfcTarget->BltPix(cpcx, cpcy, sfcSource, xcnt*fwdt/twdt+fx, ycnt*fhgt/thgt+fy, fTransparency);
 	// Unlock the surfaces
 	sfcSource->Unlock();
 	sfcTarget->Unlock();

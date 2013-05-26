@@ -21,7 +21,7 @@ material farmerClonk
 			}
 			texture_unit Clonk
 			{
-				texture clonkFarmer.png
+				texture clonkFarmer.jpg
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture

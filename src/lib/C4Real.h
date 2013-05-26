@@ -105,13 +105,10 @@ private:
 	int32_t to_int() const
 	{
 		int32_t r = val;
-		// be careful not to overflow
-		r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
-		// ensure that -x.50 is rounded to -(x+1)
-		r -= (val < 0);
-		r >>= FIXED_SHIFT;
-		// round 32767.5 to 32768 (not that anybody cares)
-		r += (val > 0x7fffffff - FIXED_FPF / 2);
+		// round towards positive infinity
+		r >>= (FIXED_SHIFT - 1);
+		r += 1;
+		r >>= 1;
 		return r;
 	}
 	int32_t to_int(int32_t prec) const
@@ -119,7 +116,6 @@ private:
 		int64_t r = val;
 		r *= prec;
 		r += FIXED_FPF / 2;
-		r -= (val < 0);
 		r >>= FIXED_SHIFT;
 		return int32_t(r);
 	}

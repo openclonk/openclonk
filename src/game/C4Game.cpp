@@ -1724,11 +1724,13 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	// Game not running
 	if (!FrameCounter)
 	{
-		char *bpBytes; size_t iSize;
-		if (ScenarioFile.LoadEntry(C4CFN_ScenarioTitle,&bpBytes,&iSize))
-			hGroup.Add(C4CFN_ScenarioTitle,bpBytes,iSize,false,true);
-		if (ScenarioFile.LoadEntry(C4CFN_ScenarioTitlePNG,&bpBytes,&iSize))
-			hGroup.Add(C4CFN_ScenarioTitlePNG,bpBytes,iSize,false,true);
+		char* bpBytes;
+		size_t iSize;
+		StdStrBuf realFilename;
+
+		if(ScenarioFile.FindEntry(FormatString("%s.*",C4CFN_ScenarioTitle).getData(),&realFilename,&iSize))
+			if (ScenarioFile.LoadEntry(realFilename.getData(),&bpBytes,&iSize))
+				hGroup.Add(realFilename.getData(),bpBytes,iSize,false,true);
 	}
 
 	// Fullscreen screenshot
@@ -1743,11 +1745,10 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 
 		bool fOkay=true;
-		const char *szDestFn;
 		fOkay = sfcPic->SavePNG(Config.AtTempPath(C4CFN_TempTitle), false, true, false);
-		szDestFn = C4CFN_ScenarioTitlePNG;
+		StdStrBuf destFilename = FormatString("%s.png",C4CFN_ScenarioTitle);
 		delete sfcPic; if (!fOkay) return false;
-		if (!hGroup.Move(Config.AtTempPath(C4CFN_TempTitle),szDestFn)) return false;
+		if (!hGroup.Move(Config.AtTempPath(C4CFN_TempTitle),destFilename.getData())) return false;
 	}
 
 	return true;
@@ -2729,7 +2730,7 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F3                ), "MusicToggle",            C4KeyScope(KEYSCOPE_Generic | KEYSCOPE_Gui),    new C4KeyCB  <C4MusicSystem>   (Application.MusicSystem, &C4MusicSystem::ToggleOnOff)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F9                ), "Screenshot",             C4KeyScope(KEYSCOPE_Fullscreen | KEYSCOPE_Gui), new C4KeyCBEx<C4GraphicsSystem, bool>(GraphicsSystem, false, &C4GraphicsSystem::SaveScreenshot)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F9,   KEYS_Control), "ScreenshotEx",           KEYSCOPE_Fullscreen, new C4KeyCBEx<C4GraphicsSystem, bool>(GraphicsSystem, true, &C4GraphicsSystem::SaveScreenshot)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_C,      KEYS_Alt), "ToggleChat",             C4KeyScope(KEYSCOPE_Generic | KEYSCOPE_Gui),    new C4KeyCB  <C4Game>   (*this, &C4Game::ToggleChat)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_C,      KEYS_Alt), "ToggleChat",             C4KeyScope(KEYSCOPE_Generic | KEYSCOPE_Gui),    new C4KeyCB  <C4Game>   (*this, &C4Game::ToggleChat)));
 
 	// main ingame
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_F1                ), "ToggleShowHelp",         KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowHelp)));
@@ -2800,10 +2801,10 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SPACE             ), "EditCursorModeToggle",   KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::ToggleMode)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_ADD               ), "ToolsDlgGradeUp",        KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, +5, &C4ToolsDlg::ChangeGrade)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_SUBTRACT          ), "ToolsDlgGradeDown",      KEYSCOPE_Console,    new C4KeyCBEx<C4ToolsDlg, int32_t>(Console.ToolsDlg, -5, &C4ToolsDlg::ChangeGrade)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_M,  KEYS_Control), "ToolsDlgPopMaterial",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopMaterial)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_T,  KEYS_Control), "ToolsDlgPopTextures",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopTextures)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_I,  KEYS_Control), "ToolsDlgIFTToggle",      KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::ToggleIFT)));
-	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_W,  KEYS_Control), "ToolsDlgToolToggle",     KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::ToggleTool)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_M,  KEYS_Control), "ToolsDlgPopMaterial",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopMaterial)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_T,  KEYS_Control), "ToolsDlgPopTextures",    KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::PopTextures)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_I,  KEYS_Control), "ToolsDlgIFTToggle",      KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::ToggleIFT)));
+	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_W,  KEYS_Control), "ToolsDlgToolToggle",     KEYSCOPE_Console,    new C4KeyCB  <C4ToolsDlg>(Console.ToolsDlg, &C4ToolsDlg::ToggleTool)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(K_DELETE            ), "EditCursorDelete",       KEYSCOPE_Console,    new C4KeyCB  <C4EditCursor>(Console.EditCursor, &C4EditCursor::Delete)));
 
 	// no default keys assigned

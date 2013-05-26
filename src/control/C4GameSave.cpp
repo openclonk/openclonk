@@ -444,7 +444,7 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 	// remove: Title text, image and icon if specified
 	if (!GetKeepTitle())
 	{
-		pSaveGroup->Delete(C4CFN_ScenarioTitle);
+		pSaveGroup->Delete(FormatString("%s.*",C4CFN_ScenarioTitle).getData());
 		pSaveGroup->Delete(C4CFN_ScenarioIcon);
 		pSaveGroup->Delete(FormatString(C4CFN_ScenarioDesc,"*").getData());
 		pSaveGroup->Delete(C4CFN_Titles);

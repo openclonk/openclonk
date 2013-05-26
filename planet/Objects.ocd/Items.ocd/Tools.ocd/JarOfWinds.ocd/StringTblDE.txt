@@ -1,3 +1,0 @@
-Name=Windkrug
-Description=Enthält komprimierten Wind der in einem Stoß entfesselt werden kann.
-UsageHelp=Ziele und drücke [Benutzen], um einen Windstoß in diese Richtung zu entfesseln.

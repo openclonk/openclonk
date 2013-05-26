@@ -206,7 +206,7 @@ protected:
 
 protected:
 	virtual int32_t GetMarginTop() { return (rcBounds.Hgt/7); }
-	virtual bool HasBackground() { return true; }
+	virtual bool HasBackground() { return false; }
 	virtual void DrawElement(C4TargetFacet &cgo);
 
 	virtual bool OnEnter() { return false; } // Enter ignored

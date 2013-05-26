@@ -1,5 +1,4 @@
-﻿SET_WASD_QWERTZ=Normales Tastaturlayout
-SET_WASD_DVORAK=DVORAK Tastaturlayout
+﻿SET_WASD_QWERTZ=Tastatur und Maus
 SET_Gamepad=Gamepad
 
 CON_Jump=Springen

@@ -58,7 +58,7 @@ private func InitBase(int owner)
 	if (lorry)
 	{
 		//lorry->CreateContents(GrappleBow, GetStartupPlayerCount());
-		//lorry->CreateContents(JarOfWinds, 2);
+		//lorry->CreateContents(WindBag, 2);
 		//lorry->CreateContents(TeleGlove, 1);
 		lorry->CreateContents(Axe, 1);
 		lorry->CreateContents(Hammer, 1);

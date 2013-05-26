@@ -20,7 +20,7 @@ material Shield
 			}
 			texture_unit
 			{
-				texture shield.png
+				texture shield.jpg
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture

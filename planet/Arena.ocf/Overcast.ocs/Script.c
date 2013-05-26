@@ -140,7 +140,7 @@ protected func Initialize()
 		grass->SetR(r[i]); 
 	}
 	
-	// Blue chest with jar of winds.
+	// Blue chest with wind bag
 	var chest_blue = CreateObject(Chest, 850, 648, NO_OWNER);
 	chest_blue->SetClrModulation(RGB(100,180,255));
 	AddEffect("FillBlueChest", chest_blue, 100, 72);
@@ -267,7 +267,7 @@ global func FxFillBlueChestStart(object target, proplist effect, int temporary)
 {
 	if (temporary) 
 		return 1;		
-	target->CreateContents(JarOfWinds);
+	target->CreateContents(WindBag);
 	var w_list = [Firestone, Boompack, Balloon, FireballScroll, WindScroll];
 	for (var i = 0; i < 4; i++)
 		target->CreateContents(w_list[Random(GetLength(w_list))]);	
@@ -282,8 +282,8 @@ global func FxFillBlueChestTimer(object target, proplist effect)
 	if (target->ContentsCount() < 6)
 		target->CreateContents(w_list[Random(GetLength(w_list))]);
 		
-	if (!FindObject(Find_ID(JarOfWinds)))
-		target->CreateContents(JarOfWinds);
+	if (!FindObject(Find_ID(WindBag)))
+		target->CreateContents(WindBag);
 	return 1;
 }
 
