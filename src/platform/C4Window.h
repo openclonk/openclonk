@@ -102,15 +102,13 @@
 #define K_SCROLL 70
 #define K_SUBTRACT 74
 #define K_ADD 78
-#define K_86 86
+#define K_86 86 // also backslash?
 #define K_F11 87
 #define K_F12 88
 
-/*
 // starting from here, scancodes between windows and linux differ
-// this is not used because the windows scancodes are converted to
-// unix scancodes in C4WindowWin32.cpp ConvertToUnixScancode
 #if defined(USE_WIN32_WINDOWS)
+
 #define K_HOME 71
 #define K_UP 72
 #define K_PAGEUP 73
@@ -127,9 +125,14 @@
 #define K_MENU 93
 #define K_PAUSE 69 // same as numlock?!
 #define K_PRINT 55 // same as multiply?!
+
 #define K_ALT_R K_ALT_L // 29 56
 #define K_CONTROL_R K_CONTROL_L // 29 29
 #define K_NUM_RETURN K_RETURN // 28 57
+
+// FIXME?
+
+// these are all not differed
 #define K_NUM7 K_HOME
 #define K_NUM8 K_UP
 #define K_NUM9 K_PAGEUP
@@ -142,8 +145,9 @@
 #define K_NUM0 K_INSERT
 #define K_DECIMAL K_DELETE
 #define K_DIVIDE K_SLASH
+
 #elif defined(USE_X11) || defined(USE_CONSOLE)
-*/
+
 #define K_NUM7 71
 #define K_NUM8 72
 #define K_NUM9 73
@@ -158,8 +162,8 @@
 #define K_DIVIDE 98
 
 #define K_ALT_R 100
-#define K_CONTROL_R 99999 // todo
-#define K_NUM_RETURN 99999 // todo
+#define K_CONTROL_R ???
+#define K_NUM_RETURN ???
 
 #define K_HOME 102
 #define K_UP 103
@@ -171,12 +175,11 @@
 #define K_PAGEDOWN 109
 #define K_INSERT 110
 #define K_DELETE 111
-#define K_WIN_L 99999 // todo
-#define K_WIN_R 99999 // todo
+#define K_WIN_L ???
+#define K_WIN_R ???
 #define K_MENU 127
 #define K_PAUSE 119
-#define K_PRINT 99999 // todo
-#define K_CENTER 99999 // todo
+#define K_PRINT ???
 
 #endif
 
