@@ -80,13 +80,13 @@ namespace C4GUI
 		pKeyCursorEnd   = RegisterCursorOp(COP_END   , K_END   , "GUIEditCursorEnd", eKeyPrio);
 		pKeyEnter = new C4KeyBinding(C4KeyCodeEx(K_RETURN), "GUIEditConfirm", KEYSCOPE_Gui,
 		                             new ControlKeyCB<Edit>(*this, &Edit::KeyEnter), eKeyPrio);
-		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(KEY_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
+		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
 		                            new ControlKeyCB<Edit>(*this, &Edit::KeyCopy), eKeyPrio);
-		pKeyPaste = new C4KeyBinding(C4KeyCodeEx(KEY_V, KEYS_Control), "GUIEditPaste", KEYSCOPE_Gui,
+		pKeyPaste = new C4KeyBinding(C4KeyCodeEx(K_V, KEYS_Control), "GUIEditPaste", KEYSCOPE_Gui,
 		                             new ControlKeyCB<Edit>(*this, &Edit::KeyPaste), eKeyPrio);
-		pKeyCut = new C4KeyBinding(C4KeyCodeEx(KEY_X, KEYS_Control), "GUIEditCut", KEYSCOPE_Gui,
+		pKeyCut = new C4KeyBinding(C4KeyCodeEx(K_X, KEYS_Control), "GUIEditCut", KEYSCOPE_Gui,
 		                           new ControlKeyCB<Edit>(*this, &Edit::KeyCut), eKeyPrio);
-		pKeySelAll = new C4KeyBinding(C4KeyCodeEx(KEY_A, KEYS_Control), "GUIEditSelAll", KEYSCOPE_Gui,
+		pKeySelAll = new C4KeyBinding(C4KeyCodeEx(K_A, KEYS_Control), "GUIEditSelAll", KEYSCOPE_Gui,
 		                              new ControlKeyCB<Edit>(*this, &Edit::KeySelectAll), eKeyPrio);
 	}
 
