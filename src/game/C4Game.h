@@ -31,6 +31,8 @@
 #include "C4Scoreboard.h"
 #include <C4PlayerControl.h>
 
+class C4GuiWindow;
+
 class C4Game
 {
 private:
@@ -226,6 +228,7 @@ public:
 	bool InitPlayerControlSettings();
 	bool InitPlayerControlUserSettings(); // merge player control default settings and config overloads into user setting
 
+	C4GuiWindow *GuiWindowRoot;
 protected:
 	void Default();
 	void InitInEarth();

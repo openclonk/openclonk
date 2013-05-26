@@ -108,7 +108,8 @@ C4Game::C4Game():
 		pFileMonitor(NULL),
 		pSec1Timer(new C4GameSec1Timer()),
 		fPreinited(false), StartupLogPos(0), QuitLogPos(0),
-		fQuitWithError(false)
+		fQuitWithError(false),
+		GuiWindowRoot(0)
 {
 	Default();
 }
@@ -920,7 +921,7 @@ void C4Game::ClearPointers(C4Object * pObj)
 	::MessageInput.ClearPointers(pObj);
 	::Console.ClearPointers(pObj);
 	::MouseControl.ClearPointers(pObj);
-	::GuiWindowRoot.ClearPointers(pObj);
+	GuiWindowRoot->ClearPointers(pObj);
 	TransferZones.ClearPointers(pObj);
 	if (pGlobalEffects)
 		pGlobalEffects->ClearPointers(pObj);
@@ -1496,6 +1497,11 @@ void C4Game::Default()
 	DebugPassword.Clear();
 	DebugHost.Clear();
 	DebugWait = false;
+
+	delete GuiWindowRoot;
+	const float standardVerticalBorder = 100.0f;
+	const float standardHorizontalBorder = 100.0f;
+	GuiWindowRoot = new C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
 }
 
 void C4Game::Evaluate()
@@ -1631,6 +1637,21 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
 		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
 		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
+
+		// save custom GUIs only if a real savegame and not for editor-scenario-saves
+
+		if (pComp->isCompiler())
+		{
+			C4Value val;
+			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
+			assert (GuiWindowRoot->GetID() == 0);
+			GuiWindowRoot->CreateFromPropList(val.getPropList(), false, false, true);
+		}
+		else
+		{
+			C4Value val = GuiWindowRoot->ToC4Value();
+			pComp->Value(mkNamingAdapt(mkParAdapt(val, numbers), "CustomGUIs", C4VNull));
+		}
 	}
 
 	if (comp.fPlayers)

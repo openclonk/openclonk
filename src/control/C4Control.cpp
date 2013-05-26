@@ -436,7 +436,7 @@ void C4ControlMenuCommand::Execute() const
 		Log("Warning: invalid action type for C4ControlMenuCommand!");
 		return;
 	}
-	C4GuiWindow *menu = ::GuiWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *menu = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	// menu was closed?
 	if (!menu) return;
 

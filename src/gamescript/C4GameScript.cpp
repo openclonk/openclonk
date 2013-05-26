@@ -2134,11 +2134,11 @@ static int FnCustomGuiOpen(C4PropList * _this, C4PropList *menu)
 {
 	C4GuiWindow *window = new C4GuiWindow;
 
-	::GuiWindowRoot.AddChild(window);
+	::Game.GuiWindowRoot->AddChild(window);
 
 	if (!window->CreateFromPropList(menu, true))
 	{
-		::GuiWindowRoot.RemoveChild(window, false);
+		::Game.GuiWindowRoot->RemoveChild(window, false);
 		return 0;
 	}
 
@@ -2147,7 +2147,7 @@ static int FnCustomGuiOpen(C4PropList * _this, C4PropList *menu)
 
 static bool FnCustomGuiSetTag(C4PropList * _this, C4String *tag, int32_t menuID, int32_t childID, C4Object *target)
 {
-	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
@@ -2162,7 +2162,7 @@ static bool FnCustomGuiSetTag(C4PropList * _this, C4String *tag, int32_t menuID,
 
 static bool FnCustomGuiClose(C4PropList *_this, int32_t menuID, int32_t childID, C4Object *target)
 {
-	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{
@@ -2178,7 +2178,7 @@ static bool FnCustomGuiClose(C4PropList *_this, int32_t menuID, int32_t childID,
 static bool FxCustomGuiUpdate(C4PropList *_this, C4PropList *update, int32_t menuID, int32_t childID, C4Object *target)
 {
 	if (!update) return false;
-	C4GuiWindow *window = ::GuiWindowRoot.GetChildByID(menuID);
+	C4GuiWindow *window = ::Game.GuiWindowRoot->GetChildByID(menuID);
 	if (!window) return false;
 	if (childID) // note: valid child IDs are always non-zero
 	{

@@ -31,13 +31,6 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 
-
-
-const float standardVerticalBorder = 100.0f;
-const float standardHorizontalBorder = 100.0f;
-
-C4GuiWindow GuiWindowRoot = C4GuiWindow(standardVerticalBorder, standardHorizontalBorder);
-
 C4GuiWindowAction::~C4GuiWindowAction()
 {
 	if (text)
@@ -75,6 +68,10 @@ const C4Value C4GuiWindowAction::ToC4Value(bool first)
 		assert(false && "trying to save C4GuiWindowAction without valid action");
 		break;
 	}
+
+	assert (array->GetSize() < 6);
+	array->SetSize(6);
+	array->SetItem(5, C4Value(id));
 
 	if (!first || !nextAction) return C4Value(array);
 
@@ -133,6 +130,10 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 	int newAction = array->GetItem(0).getInt();
 	action = 0; // still invalid!
 
+	// when loading, the array has a size of 6 with the 5th element being the ID
+	if (array->GetSize() == 6)
+		id = array->GetItem(3).getInt();
+
 	switch (newAction)
 	{
 	case C4GuiWindowActionID::Call:
@@ -145,7 +146,8 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 		text->IncRef();
 
 		// important! needed to identify actions later!
-		id = ::GuiWindowRoot.GenerateActionID();
+		if (!id)
+			id = ::Game.GuiWindowRoot->GenerateActionID();
 
 		break;
 
@@ -710,7 +712,9 @@ const C4Value C4GuiWindow::ToC4Value()
 		P_Priority
 	};
 
-	for (size_t i = 0; i < sizeof(toSave); ++i)
+	const int32_t entryCount = sizeof(toSave) / sizeof(int32_t);
+
+	for (size_t i = 0; i < entryCount; ++i)
 	{
 		int32_t prop = toSave[i];
 		C4Value val;
@@ -753,6 +757,7 @@ const C4Value C4GuiWindow::ToC4Value()
 		case P_OnClose: val = props[C4GuiWindowPropertyName::onCloseAction].ToC4Value(); break;
 		case P_Style: val = props[C4GuiWindowPropertyName::style].ToC4Value(); break;
 		case P_Mode: val = C4Value(int32_t(hasMouseFocus)); break;
+		case P_Priority: val = props[C4GuiWindowPropertyName::priority].ToC4Value(); break;
 
 		default:
 			assert(false);
@@ -777,9 +782,11 @@ const C4Value C4GuiWindow::ToC4Value()
 	return C4Value(proplist);
 }
 
-bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate)
+bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, bool isUpdate, bool isLoading)
 {
-	assert(parent && "GuiWindow created from proplist without parent (fails for ID tag)");
+	if (!proplist) return false;
+
+	assert((parent || isLoading) && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
 	// get properties from proplist
@@ -841,8 +848,8 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 			hasMouseFocus = property.getBool();
 		else if(&Strings.P[P_ID] == key)
 		{
-			// setting IDs is only valid for subwindows!
-			if (!isMainWindow)
+			// setting IDs is only valid for subwindows or when loading savegames!
+			if (parent && !isMainWindow)
 			{
 				if (id) // already have an ID? remove from parent
 					parent->ChildWithIDRemoved(this);
@@ -850,6 +857,9 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 				if (id != 0)
 					parent->ChildGotID(this);
 			}
+			else
+				if (!isLoading)
+					id = property.getInt();
 		}
 		else if(&Strings.P[P_OnClick] == key)
 			props[C4GuiWindowPropertyName::onClickAction].Set(property, stdTag);
@@ -869,7 +879,8 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 			props[C4GuiWindowPropertyName::priority].Set(property, stdTag);
 			layoutUpdateRequired = true;
 			// resort into parent's list
-			parent->ChildChangedPriority(this);
+			if (parent)
+				parent->ChildChangedPriority(this);
 		}
 		else
 		{
@@ -880,7 +891,7 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 				C4GuiWindow *child = new C4GuiWindow();
 				AddChild(child);
 
-				if (!child->CreateFromPropList(subwindow, isUpdate == true, false))
+				if (!child->CreateFromPropList(subwindow, isUpdate == true, false, isLoading))
 					RemoveChild(child, false);
 				else
 					layoutUpdateRequired = true;
@@ -888,7 +899,7 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 		}
 	}
 
-	if (layoutUpdateRequired)
+	if (layoutUpdateRequired && parent)
 		parent->lastDrawPosition.dirty = 2;
 
 	if (resetStdTag)
@@ -930,7 +941,6 @@ C4GuiWindow *C4GuiWindow::AddChild(C4GuiWindow *child)
 	{
 		child->SetID(GenerateMenuID());
 		child->isMainWindow = true;
-		//LogF("adding main window: %d [I am %d, root: %d]", child->GetID(), id, int(this == &::GuiWindowRoot));
 	}
 	// child's priority is ususally 0 here, so just insert it in front of other windows with a priority below 0
 	// when the child's priority updates, the update function will be called and the child will be sorted to the correct position
@@ -1109,7 +1119,6 @@ void C4GuiWindow::EnableScrollBar(bool enable, float childrenHeight)
 
 void C4GuiWindow::UpdateLayout()
 {
-	//LogF("Updating Layout %p, root: %d, main: %d, style: %d", this, int(this == &::GuiWindowRoot), int(isMainWindow), props[C4GuiWindowPropertyName::style].GetInt());
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 
 	// update scroll bar according to children
@@ -1261,7 +1270,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 		lastDrawPosition.dirty = 0;
 
 	// step one: draw all non-multiple windows
-	DrawChildren(cgo, player, leftDrawX - standardHorizontalBorder, topDrawY  - standardVerticalBorder, rightDrawX + standardHorizontalBorder, bottomDrawY + standardVerticalBorder, 1);
+	DrawChildren(cgo, player, leftDrawX - left, topDrawY  - top, rightDrawX + left, bottomDrawY + top, 1);
 	// TODO: adjust rectangle for main menu if multiple windows exist
 	// step two: draw one "main" menu
 	DrawChildren(cgo, player, leftDrawX, topDrawY, rightDrawX, bottomDrawY, 0);

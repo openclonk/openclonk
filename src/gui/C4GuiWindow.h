@@ -227,7 +227,7 @@ class C4GuiWindow
 	// sets property value from possible(!) array
 	void SetArrayTupleProperty(const C4Value &property, C4GuiWindowPropertyName first, C4GuiWindowPropertyName second, C4String *tag);
 
-	// this is only supposed to be called at ::GuiWindowRoot since it uses the "ID" property
+	// this is only supposed to be called at ::Game.GuiWindowRoot since it uses the "ID" property
 	// this is done to make saving easier. Since IDs do not need to be sequential, action&menu IDs can both be derived from "id"
 	int32_t GenerateMenuID() { return ++id; }
 	int32_t GenerateActionID() { return ++id; }
@@ -271,7 +271,7 @@ class C4GuiWindow
 	// pass a proplist to create a window + subwindows as specified
 	// you can call this function on a window more than once
 	// if isUpdate is true, all new children will have resetStdTag set
-	bool CreateFromPropList(C4PropList *proplist, bool resetStdTag = false, bool isUpdate = false);
+	bool CreateFromPropList(C4PropList *proplist, bool resetStdTag = false, bool isUpdate = false, bool isLoading = false);
 
 	// constructs a C4Value (proplist) that contains everything that is needed for saving this window
 	const C4Value ToC4Value();
@@ -295,7 +295,5 @@ class C4GuiWindow
 	bool ExecuteCommand(int32_t actionID, int32_t player, int32_t subwindowID, int32_t actionType, C4Object *target);
 	virtual bool MouseInput(int32_t player, int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam);
 };
-
-extern C4GuiWindow GuiWindowRoot;
 
 #endif
