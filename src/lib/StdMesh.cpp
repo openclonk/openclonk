@@ -641,10 +641,28 @@ void StdMeshInstance::AnimationNode::DenumeratePointers()
 		break;
 	case LinearInterpolationNode:
 		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		// non-recursive, StdMeshInstance::DenumeratePointers walks over all nodes
 		break;
 	}
 
 	if(value_provider) value_provider->DenumeratePointers();
+}
+
+void StdMeshInstance::AnimationNode::ClearPointers(class C4Object* pObj)
+{
+	SerializableValueProvider* value_provider = NULL;
+	switch(Type)
+	{
+	case LeafNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		break;
+	case LinearInterpolationNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		// non-recursive, StdMeshInstance::ClearPointers walks over all nodes
+		break;
+	}
+
+	if(value_provider) value_provider->ClearPointers(pObj);
 }
 
 StdMeshInstance::AttachedMesh::AttachedMesh():
@@ -723,6 +741,11 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 void StdMeshInstance::AttachedMesh::DenumeratePointers()
 {
 	ChildDenumerator->DenumeratePointers(this);
+}
+
+bool StdMeshInstance::AttachedMesh::ClearPointers(class C4Object* pObj)
+{
+	ChildDenumerator->ClearPointers(pObj);
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
@@ -1292,6 +1315,21 @@ void StdMeshInstance::DenumeratePointers()
 
 	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
 		AttachChildren[i]->DenumeratePointers();
+}
+
+void StdMeshInstance::ClearPointers(class C4Object* pObj)
+{
+	for(unsigned int i = 0; i < AnimationNodes.size(); ++i)
+		if(AnimationNodes[i])
+			AnimationNodes[i]->ClearPointers(pObj);
+
+	std::vector<unsigned int> Removal;
+	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
+		if(!AttachChildren[i]->ClearPointers(pObj))
+			Removal.push_back(AttachChildren[i]->Number);
+
+	for(unsigned int i = 0; i < Removal.size(); ++i)
+		DetachMesh(Removal[i]);
 }
 
 StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlot(int slot, bool create)
