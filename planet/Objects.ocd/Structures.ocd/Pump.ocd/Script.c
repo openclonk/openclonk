@@ -11,19 +11,30 @@
 #include Library_PowerProducer
 
 local current_pump_power; // Current power needed for pumping. Negative if power is being produced.
+local current_animation; // Current animation handle
 
 // This object is a liquid pump, thus pipes can be connected.
 public func IsLiquidPump() { return true; }
 
 public func Construction(object creator)
 {
+	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(0,3)*90+45+RandomX(-5,5),0,1,0));
 	return _inherited(creator, ...);
+}
+
+public func Definition(def) 
+{
+	SetProperty("MeshTransformation",Trans_Rotate(45,0,1,0));
 }
 
 protected func Initialize()
 {
 	turned_on = true;
-	SetAction("Wait");
+	var start = 0;
+	var end = GetAnimationLength("pump");
+	current_animation = PlayAnimation("pump", 5, Anim_Linear(0, start, end, 90, ANIM_Loop), Anim_Const(1));
+	SetActionKeepPhase("Wait");
 	CheckCurrentState();
 	return;
 }
@@ -272,7 +283,7 @@ func CheckCurrentState()
 			if(!has_source_pipe || !is_fullcon)
 			{
 				UnmakePowerActuator();
-				SetAction("Wait");
+				SetActionKeepPhase("Wait");
 				return;
 			}
 			return;
@@ -284,7 +295,7 @@ func CheckCurrentState()
 		if(GetAction() != "Wait") // consuming power (except in PumpWaitLiquid condition)
 		{
 			UnmakePowerActuator();
-			SetAction("Wait");
+			SetActionKeepPhase("Wait");
 			return;
 		}
 		else // already waiting
@@ -337,12 +348,6 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 30,
 		Delay = 3,
-		Directions = 2,
-		FlipDir = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 28,
-		Hgt = 32,
 		NextAction = "Pump",
 		StartCall = "CheckCurrentState",
 		PhaseCall = "Pumping"
@@ -353,12 +358,6 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 1,
 		Delay = 60,
-		Directions = 2,
-		FlipDir = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 28,
-		Hgt = 32,
 		NextAction = "Wait",
 		StartCall = "CheckCurrentState"
 	},
@@ -368,12 +367,6 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 30,
 		Delay = 0,
-		Directions = 2,
-		FlipDir = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 28,
-		Hgt = 32,
 		StartCall = "PumpWaitPowerStart",
 		AbortCall = "PumpWaitPowerStop",
 		NextAction = "PumpWaitPower"
@@ -384,12 +377,6 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 30,
 		Delay = 10,
-		Directions = 2,
-		FlipDir = 1,
-		X = 0,
-		Y = 0,
-		Wdt = 28,
-		Hgt = 32,
 		NextAction = "PumpWaitLiquid",
 		PhaseCall = "PumpingWaitForLiquid"
 	}
@@ -398,6 +385,24 @@ local ActMap = {
 // Set action while retaining phase from last action
 func SetActionKeepPhase(string act)
 {
+	Log("action ist:%s", act);
+	// Action for being off
+	if (act == "PumpWaitPower" || act == "Wait")
+	{
+		SetAnimationPosition(current_animation, Anim_Const(GetAnimationPosition(current_animation)));
+	} 
+	else if (act == "PumpWaitLiquid")
+	{
+		var start = 0;
+		var end = GetAnimationLength("pump");
+		SetAnimationPosition(current_animation, Anim_Linear(GetAnimationPosition(current_animation), start, end, 300, ANIM_Loop));
+	}
+	else 
+	{
+		var start = 0;
+		var end = GetAnimationLength("pump");
+		SetAnimationPosition(current_animation, Anim_Linear(GetAnimationPosition(current_animation), start, end, 90, ANIM_Loop));
+	}
 	var phase = GetPhase();
 	if (!SetAction(act)) return false;
 	SetPhase(phase);
