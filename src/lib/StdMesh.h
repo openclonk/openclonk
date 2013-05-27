@@ -371,10 +371,11 @@ public:
 		friend class StdMeshInstance;
 		friend class StdMeshUpdate;
 	public:
-		enum NodeType { LeafNode, LinearInterpolationNode };
+		enum NodeType { LeafNode, CustomNode, LinearInterpolationNode };
 
 		AnimationNode();
 		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
+		AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans);
 		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
 		~AnimationNode();
 
@@ -411,6 +412,12 @@ public:
 				const StdMeshAnimation* Animation;
 				ValueProvider* Position;
 			} Leaf;
+
+			struct
+			{
+				unsigned int BoneIndex;
+				StdMeshTransformation* Transformation;
+			} Custom;
 
 			struct
 			{
@@ -490,6 +497,7 @@ public:
 
 	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
 	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	AnimationNode* PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight);
 	void StopAnimation(AnimationNode* node);
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
@@ -498,6 +506,7 @@ public:
 	// Set new value providers for a node's position or weight - cannot be in
 	// class AnimationNode since we need to mark BoneTransforms dirty.
 	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
+	void SetAnimationBoneTransform(AnimationNode* node, const StdMeshTransformation& trans);
 	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
 
 	// Update animations; call once a frame
@@ -553,6 +562,7 @@ protected:
 	typedef std::vector<AnimationNode*> AnimationNodeList;
 
 	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
+	void InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight);
 	bool ExecuteAnimationNode(AnimationNode* node);
 	void ApplyBoneTransformToVertices(const std::vector<StdSubMesh::Vertex>& mesh_vertices, std::vector<StdMeshVertex>& instance_vertices);
 

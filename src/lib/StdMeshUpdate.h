@@ -64,7 +64,7 @@ private:
 	const StdMesh* OldMesh;
 
 	std::map<const StdMeshAnimation*, StdCopyStrBuf> AnimationNames;
-	std::vector<StdCopyStrBuf> BoneNames;
+	std::vector<StdCopyStrBuf> BoneNamesByIndex;
 };
 
 #endif
