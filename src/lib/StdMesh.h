@@ -361,6 +361,7 @@ public:
 
 		virtual void CompileFunc(StdCompiler* pComp);
 		virtual void DenumeratePointers() {}
+		virtual void ClearPointers(class C4Object* pObj) {}
 	};
 
 	// A node in the animation tree
@@ -395,6 +396,7 @@ public:
 
 		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
 		void DenumeratePointers();
+		void ClearPointers(class C4Object* pObj);
 
 	protected:
 		int Slot;
@@ -432,6 +434,7 @@ public:
 
 			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
 			virtual void DenumeratePointers(AttachedMesh* attach) {}
+			virtual bool ClearPointers(class C4Object* pObj) { return true; }
 		};
 
 		typedef Denumerator*(*DenumeratorFactoryFunc)();
@@ -458,6 +461,7 @@ public:
 
 		void CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory);
 		void DenumeratePointers();
+		bool ClearPointers(class C4Object* pObj);
 
 	private:
 		unsigned int ParentBone;
@@ -541,6 +545,7 @@ public:
 
 	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
 	void DenumeratePointers();
+	void ClearPointers(class C4Object* pObj);
 
 	const StdMesh& GetMesh() const { assert(Mesh != NULL); return *Mesh; }
 

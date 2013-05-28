@@ -11,13 +11,24 @@
 #include Library_PowerProducer
 
 /** This object is a liquid pump, thus pipes can be connected. */
+local current_animation; // Current animation handle
 public func IsLiquidPump() { return true; }
+
+	// Rotate at a 45 degree angle towards viewer and add a litte bit of Random
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(0,3)*90+45+RandomX(-5,5),0,1,0));
+public func Definition(def) 
+{
+	SetProperty("MeshTransformation",Trans_Rotate(45,0,1,0));
+}
 
 protected func Initialize()
 {
 	turned_on = true;
-	SetAction("Wait");
-	AddTimer("CheckState",30);
+	var start = 0;
+	var end = GetAnimationLength("pump");
+	current_animation = PlayAnimation("pump", 5, Anim_Linear(0, start, end, 90, ANIM_Loop), Anim_Const(1));
+	SetActionKeepPhase("Wait");
+	AddTimer("CheckTimer");
 	return;
 }
 
@@ -313,11 +324,8 @@ local ActMap = {
 		Prototype = Action,
 		Name = "Pump",
 		Procedure = DFA_NONE,
-		Directions = 2,
-		FlipDir = 1,
 		Length = 30,
 		Delay = 3,
-		FacetBase = 1,
 		NextAction = "Pump",
 		PhaseCall = "Pumping"
 	},
@@ -325,23 +333,19 @@ local ActMap = {
 		Prototype = Action,
 		Name = "Wait",
 		Procedure = DFA_NONE,
-		Directions = 2,
-		FlipDir = 1,
 		Length = 1,
 		Delay = 60,
-		FacetBase = 1,
 		NextAction = "Wait",
 	},
 	PumpWaitPower = {
 		Prototype = Action,
 		Name = "PumpWaitPower",
 		Procedure = DFA_NONE,
-		Directions = 2,
-		FlipDir = 1,
-		Length = 1,
-		Delay = 60,
-		FacetBase = 1,
-		NextAction = "PumpWaitPower",
+		Length = 30,
+		Delay = 0,
+		StartCall = "PumpWaitPowerStart",
+		AbortCall = "PumpWaitPowerStop",
+		NextAction = "PumpWaitPower"
 	},
 	PumpWaitLiquid = { // Pump waiting for liquid: Move slowly to indicate we're turned on
 		Prototype = Action,
@@ -349,10 +353,29 @@ local ActMap = {
 		Procedure = DFA_NONE,
 		Length = 30,
 		Delay = 10,
-		Directions = 2,
-		FlipDir = 1,
-		FacetBase = 1,
 		NextAction = "PumpWaitLiquid",
 		PhaseCall = "PumpingWaitForLiquid"
 	}
 };
+
+// Set action while retaining phase from last action
+func SetActionKeepPhase(string act)
+{
+	Log("action ist:%s", act);
+	// Action for being off
+	if (act == "PumpWaitPower" || act == "Wait")
+	{
+		SetAnimationPosition(current_animation, Anim_Const(GetAnimationPosition(current_animation)));
+	} 
+	else if (act == "PumpWaitLiquid")
+	{
+		var start = 0;
+		var end = GetAnimationLength("pump");
+		SetAnimationPosition(current_animation, Anim_Linear(GetAnimationPosition(current_animation), start, end, 300, ANIM_Loop));
+	}
+	else 
+	{
+		var start = 0;
+		var end = GetAnimationLength("pump");
+		SetAnimationPosition(current_animation, Anim_Linear(GetAnimationPosition(current_animation), start, end, 90, ANIM_Loop));
+	}

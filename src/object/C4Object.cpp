@@ -127,6 +127,18 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 	}
 }
 
+bool C4MeshDenumerator::ClearPointers(C4Object* pObj)
+{
+	if(Object == pObj)
+	{
+		Object = NULL;
+		// Return false causes the attached mesh to be deleted by StdMeshInstance
+		return false;
+	}
+
+	return true;
+}
+
 static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
 {
 	if (Inside<int32_t>(tx,cgo.X,cgo.X+cgo.Wdt) && Inside<int32_t>(ty,cgo.Y,cgo.Y+cgo.Hgt))
@@ -479,10 +491,19 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		}
 
 		// Keep mesh instance if it uses the same underlying mesh
-		if(!pMeshInstance || !pGraphics->Type == C4DefGraphics::TYPE_Mesh ||
+		if(!pMeshInstance || pGraphics->Type != C4DefGraphics::TYPE_Mesh ||
 		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
 		{
+			// If this mesh is attached somewhere, detach it before deletion
+			if(pMeshInstance && pMeshInstance->GetAttachParent() != NULL)
+			{
+				// TODO: If the new mesh has a bone with the same name, we could try updating...
+				StdMeshInstance::AttachedMesh* attach_parent = pMeshInstance->GetAttachParent();
+				attach_parent->Parent->DetachMesh(attach_parent->Number);
+			}
+
 			delete pMeshInstance;
+
 			if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 			{
 				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
@@ -1815,10 +1836,8 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 
 void C4Object::ClearPointers(C4Object *pObj)
 {
-	// TODO: Clear pointers on mesh instance:
-	// Check for attach children using pObj's mesh instance
-	// Check for animation nodes refering to pObj (Anim_X, ...).
-
+	// mesh attachments and animation nodes
+	if(pMeshInstance) pMeshInstance->ClearPointers(pObj);
 	// effects
 	if (pEffects) pEffects->ClearPointers(pObj);
 	// contents/contained: not necessary, because it's done in AssignRemoval and StatusDeactivate

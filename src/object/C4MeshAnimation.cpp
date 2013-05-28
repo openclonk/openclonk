@@ -201,6 +201,9 @@ C4ValueProviderX::C4ValueProviderX(C4Object* object, C4Real pos, C4Real begin, C
 
 bool C4ValueProviderX::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value += (End - Begin) * (Object->xdir) / Length;
 
 	if (End > Begin)
@@ -242,6 +245,9 @@ C4ValueProviderY::C4ValueProviderY(C4Object* object, C4Real pos, C4Real begin, C
 
 bool C4ValueProviderY::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value += (End - Begin) * (Object->ydir) / Length;
 
 	if (End > Begin)
@@ -283,6 +289,9 @@ C4ValueProviderR::C4ValueProviderR(C4Object* object, C4Real begin, C4Real end):
 
 bool C4ValueProviderR::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	C4Real r = Object->fix_r;
 	if(r < 0) r += 360;
 
@@ -309,6 +318,9 @@ C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, C4Real pos, C4Real be
 
 bool C4ValueProviderAbsX::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value += (End - Begin) * Abs(Object->xdir) / Length;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
@@ -339,6 +351,9 @@ C4ValueProviderAbsY::C4ValueProviderAbsY(C4Object* object, C4Real pos, C4Real be
 
 bool C4ValueProviderAbsY::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value += (End - Begin) * Abs(Object->ydir) / Length;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
@@ -369,6 +384,9 @@ C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderXDir::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->xdir/MaxXDir), itofix(1));
 	return true;
 }
@@ -394,6 +412,9 @@ C4ValueProviderYDir::C4ValueProviderYDir(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderYDir::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->ydir/MaxYDir), itofix(1));
 	return true;
 }
@@ -419,6 +440,9 @@ C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderRDir::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value = Begin + (End - Begin) * Min<C4Real>(Abs(Object->rdir/MaxRDir), itofix(1));
 	return true;
 }
@@ -444,6 +468,9 @@ C4ValueProviderCosR::C4ValueProviderCosR(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderCosR::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value = Begin + (End - Begin) * Cos(Object->fix_r + Offset);
 	return true;
 }
@@ -469,6 +496,9 @@ C4ValueProviderSinR::C4ValueProviderSinR(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderSinR::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	Value = Begin + (End - Begin) * Sin(Object->fix_r + Offset);
 	return true;
 }
@@ -494,6 +524,9 @@ C4ValueProviderCosV::C4ValueProviderCosV(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderCosV::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	// TODO: Maybe we can optimize this by using cos(r) = x/sqrt(x*x+y*y), sin(r)=y/sqrt(x*x+y*y)
 	// plus addition theorems for sin or cos.
 
@@ -523,6 +556,9 @@ C4ValueProviderSinV::C4ValueProviderSinV(C4Object* object, C4Real begin, C4Real 
 
 bool C4ValueProviderSinV::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	// TODO: Maybe we can optimize this by using cos(r) = x/sqrt(x*x+y*y), sin(r)=y/sqrt(x*x+y*y),
 	// plus addition theorems for sin or cos.
 
@@ -551,6 +587,9 @@ C4ValueProviderAction::C4ValueProviderAction(C4Object* object):
 
 bool C4ValueProviderAction::Execute()
 {
+	// Object might have been removed
+	if(!Object) return false;
+
 	const C4Action& Action = Object->Action;
 	C4PropList* pActionDef = Object->GetAction();
 
