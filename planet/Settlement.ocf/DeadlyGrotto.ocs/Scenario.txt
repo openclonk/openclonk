@@ -8,7 +8,7 @@ Difficulty=50
 Definition1=Objects.ocd
 
 [Game]
-Goals=Goal_SellGems=1;
+Goals=Goal_RepairStatue=1;
 Rules=Rule_TeamAccount=1;Rule_BuyAtFlagpole=1;
 
 [Player1]
