@@ -745,7 +745,7 @@ void StdMeshInstance::AttachedMesh::DenumeratePointers()
 
 bool StdMeshInstance::AttachedMesh::ClearPointers(class C4Object* pObj)
 {
-	ChildDenumerator->ClearPointers(pObj);
+	return ChildDenumerator->ClearPointers(pObj);
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh, float completion):
