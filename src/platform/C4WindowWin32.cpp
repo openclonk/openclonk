@@ -258,6 +258,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+	ConvertToUnixScancode(wParam, &scancode);
 
 	// Process message
 	switch (uMsg)
@@ -472,6 +473,7 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	// compute scancode
 	C4KeyCode scancode = (((unsigned int)lParam) >> 16) & 0xFF;
+	ConvertToUnixScancode(wParam, &scancode);
 
 	// Process message
 	switch (uMsg)
