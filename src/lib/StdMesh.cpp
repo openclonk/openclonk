@@ -153,11 +153,27 @@ namespace
 
 	ValueProviderAdapt mkValueProviderAdapt(StdMeshInstance::ValueProvider** ValueProvider) { return ValueProviderAdapt(ValueProvider); }
 
-	// Serialize a bone index by name with StdCompiler
-	struct TransformAdapt
+	void CompileFloat(StdCompiler* pComp, float& f)
+	{
+		// TODO: Teach StdCompiler how to handle float
+		if(pComp->isCompiler())
+		{
+			C4Real r;
+			pComp->Value(r);
+			f = fixtof(r);
+		}
+		else
+		{
+			C4Real r = ftofix(f);
+			pComp->Value(r);
+		}
+	}
+
+	// Serialize a transformation matrix by name with StdCompiler
+	struct MatrixAdapt
 	{
 		StdMeshMatrix& Matrix;
-		TransformAdapt(StdMeshMatrix& matrix): Matrix(matrix) {}
+		MatrixAdapt(StdMeshMatrix& matrix): Matrix(matrix) {}
 
 		void CompileFunc(StdCompiler* pComp)
 		{
@@ -167,30 +183,42 @@ namespace
 				for(unsigned int j = 0; j < 4; ++j)
 				{
 					if(i != 0 || j != 0) pComp->Separator();
-					// TODO: Teach StdCompiler how to handle float
-//					pComp->Value(Matrix(i, j));
-					
-					if(pComp->isCompiler())
-					{
-						C4Real f;
-						pComp->Value(f);
-						Matrix(i,j) = fixtof(f);
-					}
-					else
-					{
-						C4Real f = ftofix(Matrix(i,j));
-						pComp->Value(f);
-					}
+					CompileFloat(pComp, Matrix(i, j));
 				}
 			}
 
 			pComp->Separator(StdCompiler::SEP_END);
 		}
 
-		ALLOW_TEMP_TO_REF(TransformAdapt)
+		ALLOW_TEMP_TO_REF(MatrixAdapt)
 	};
-	
-	TransformAdapt mkTransformAdapt(StdMeshMatrix& Matrix) { return TransformAdapt(Matrix); }
+
+	struct TransformAdapt
+	{
+		StdMeshTransformation& Trans;
+		TransformAdapt(StdMeshTransformation& trans): Trans(trans) {}
+
+		void CompileFunc(StdCompiler* pComp)
+		{
+			pComp->Separator(StdCompiler::SEP_START);
+			CompileFloat(pComp, Trans.translate.x);
+			CompileFloat(pComp, Trans.translate.y);
+			CompileFloat(pComp, Trans.translate.z);
+			CompileFloat(pComp, Trans.rotate.w);
+			CompileFloat(pComp, Trans.rotate.x);
+			CompileFloat(pComp, Trans.rotate.y);
+			CompileFloat(pComp, Trans.rotate.z);
+			CompileFloat(pComp, Trans.scale.x);
+			CompileFloat(pComp, Trans.scale.y);
+			CompileFloat(pComp, Trans.scale.z);
+			pComp->Separator(StdCompiler::SEP_END);
+		}
+
+		ALLOW_TEMP_TO_REF(TransformAdapt);
+	};
+
+	MatrixAdapt mkMatrixAdapt(StdMeshMatrix& Matrix) { return MatrixAdapt(Matrix); }
+	TransformAdapt mkTransformAdapt(StdMeshTransformation& Trans) { return TransformAdapt(Trans); }
 
 	// Reset all animation list entries corresponding to node or its children
 	void ClearAnimationListRecursively(std::vector<StdMeshInstance::AnimationNode*>& list, StdMeshInstance::AnimationNode* node)
@@ -530,6 +558,13 @@ StdMeshInstance::AnimationNode::AnimationNode(const StdMeshAnimation* animation,
 	Leaf.Position = position;
 }
 
+StdMeshInstance::AnimationNode::AnimationNode(const StdMeshBone* bone, const StdMeshTransformation& trans):
+		Type(CustomNode), Parent(NULL)
+{
+	Custom.BoneIndex = bone->Index;
+	Custom.Transformation = new StdMeshTransformation(trans);
+}
+
 StdMeshInstance::AnimationNode::AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight):
 		Type(LinearInterpolationNode), Parent(NULL)
 {
@@ -544,6 +579,9 @@ StdMeshInstance::AnimationNode::~AnimationNode()
 	{
 	case LeafNode:
 		delete Leaf.Position;
+		break;
+	case CustomNode:
+		delete Custom.Transformation;
 		break;
 	case LinearInterpolationNode:
 		delete LinearInterpolation.ChildLeft;
@@ -566,6 +604,12 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 		if (!track) return false;
 		transformation = track->GetTransformAt(fixtof(Leaf.Position->Value));
 		return true;
+	case CustomNode:
+		if(bone == Custom.BoneIndex)
+			transformation = *Custom.Transformation;
+		else
+			return false;
+		return true;
 	case LinearInterpolationNode:
 		if (!LinearInterpolation.ChildLeft->GetBoneTransform(bone, transformation))
 			return LinearInterpolation.ChildRight->GetBoneTransform(bone, transformation);
@@ -585,6 +629,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 	static const StdEnumEntry<NodeType> NodeTypes[] =
 	{
 		{ "Leaf",                  LeafNode                      },
+		{ "Custom",                CustomNode                    },
 		{ "LinearInterpolation",   LinearInterpolationNode       },
 
 		{ NULL,     static_cast<NodeType>(0)  }
@@ -610,6 +655,22 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 		}
 
 		pComp->Value(mkNamingAdapt(mkValueProviderAdapt(&Leaf.Position), "Position"));
+		break;
+	case CustomNode:
+		if(pComp->isCompiler())
+		{
+			StdCopyStrBuf bone_name;
+			pComp->Value(mkNamingAdapt(toC4CStrBuf(bone_name), "Bone"));
+			const StdMeshBone* bone = Mesh->GetBoneByName(bone_name);
+			if(!bone) pComp->excCorrupt("No such bone: \"%s\"", bone_name.getData());
+			Custom.BoneIndex = bone->Index;
+		}
+		else
+		{
+			pComp->Value(mkNamingAdapt(mkParAdapt(mkDecompileAdapt(Mesh->GetBone(Custom.BoneIndex).Name), StdCompiler::RCT_All), "Bone"));
+		}
+
+		pComp->Value(mkNamingAdapt(mkTransformAdapt(*Custom.Transformation), "Transformation"));
 		break;
 	case LinearInterpolationNode:
 		pComp->Value(mkParAdapt(mkNamingPtrAdapt(LinearInterpolation.ChildLeft, "ChildLeft"), Mesh));
@@ -639,6 +700,9 @@ void StdMeshInstance::AnimationNode::DenumeratePointers()
 	case LeafNode:
 		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
 		break;
+	case CustomNode:
+		value_provider = NULL;
+		break;
 	case LinearInterpolationNode:
 		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
 		// non-recursive, StdMeshInstance::DenumeratePointers walks over all nodes
@@ -655,6 +719,9 @@ void StdMeshInstance::AnimationNode::ClearPointers(class C4Object* pObj)
 	{
 	case LeafNode:
 		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		break;
+	case CustomNode:
+		value_provider = NULL;
 		break;
 	case LinearInterpolationNode:
 		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
@@ -729,8 +796,8 @@ void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorF
 	pComp->Value(mkNamingAdapt(Number, "Number"));
 	pComp->Value(mkNamingAdapt(ParentBone, "ParentBone")); // TODO: Save as string
 	pComp->Value(mkNamingAdapt(ChildBone, "ChildBone")); // TODO: Save as string (note we can only resolve this in DenumeratePointers then!)
-	pComp->Value(mkNamingAdapt(mkTransformAdapt(AttachTrans), "AttachTransformation"));
-	
+	pComp->Value(mkNamingAdapt(mkMatrixAdapt(AttachTrans), "AttachTransformation"));
+
 	uint8_t dwSyncFlags = static_cast<uint8_t>(Flags);
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, AM_Entries), "Flags", 0u));
 	if(pComp->isCompiler()) Flags = dwSyncFlags;
@@ -829,70 +896,16 @@ StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& 
 
 StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
-	// Default
-	if (!sibling) sibling = GetRootAnimationForSlot(slot);
-	assert(!sibling || sibling->Slot == slot);
-
-	// Find two subsequent numbers in case we need to create two nodes, so
-	// script can deduce the second node.
-	unsigned int Number1, Number2;
-	for (Number1 = 0; Number1 < AnimationNodes.size(); ++Number1)
-		if (AnimationNodes[Number1] == NULL && (!sibling || Number1+1 == AnimationNodes.size() || AnimationNodes[Number1+1] == NULL))
-			break;
-	/*  for(Number2 = Number1+1; Number2 < AnimationNodes.size(); ++Number2)
-	    if(AnimationNodes[Number2] == NULL)
-	      break;*/
-	Number2 = Number1 + 1;
-
 	position->Value = BoundBy(position->Value, Fix0, ftofix(animation.Length));
-	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
-
-	if (Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
-	if (sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
-
 	AnimationNode* child = new AnimationNode(&animation, position);
-	AnimationNodes[Number1] = child;
-	child->Number = Number1;
-	child->Slot = slot;
+	InsertAnimationNode(child, slot, sibling, weight);
+	return child;
+}
 
-	if (sibling)
-	{
-		AnimationNode* parent = new AnimationNode(child, sibling, weight);
-		AnimationNodes[Number2] = parent;
-		parent->Number = Number2;
-		parent->Slot = slot;
-
-		child->Parent = parent;
-		parent->Parent = sibling->Parent;
-		parent->LinearInterpolation.ChildLeft = sibling;
-		parent->LinearInterpolation.ChildRight = child;
-		if (sibling->Parent)
-		{
-			if (sibling->Parent->LinearInterpolation.ChildLeft == sibling)
-				sibling->Parent->LinearInterpolation.ChildLeft = parent;
-			else
-				sibling->Parent->LinearInterpolation.ChildRight = parent;
-		}
-		else
-		{
-			// set new parent
-			AnimationNodeList::iterator iter = GetStackIterForSlot(slot, false);
-			// slot must not be empty, since sibling uses same slot
-			assert(iter != AnimationStack.end() && *iter != NULL);
-			*iter = parent;
-		}
-
-		sibling->Parent = parent;
-	}
-	else
-	{
-		delete weight;
-		AnimationNodeList::iterator iter = GetStackIterForSlot(slot, true);
-		assert(!*iter); // we have a sibling if slot is not empty
-		*iter = child;
-	}
-
-	BoneTransformsDirty = true;
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshBone* bone, const StdMeshTransformation& trans, int slot, AnimationNode* sibling, ValueProvider* weight)
+{
+	AnimationNode* child = new AnimationNode(bone, trans);
+	InsertAnimationNode(child, slot, sibling, weight);
 	return child;
 }
 
@@ -974,6 +987,13 @@ void StdMeshInstance::SetAnimationPosition(AnimationNode* node, ValueProvider* p
 
 	position->Value = BoundBy(position->Value, Fix0, ftofix(node->Leaf.Animation->Length));
 
+	BoneTransformsDirty = true;
+}
+
+void StdMeshInstance::SetAnimationBoneTransform(AnimationNode* node, const StdMeshTransformation& trans)
+{
+	assert(node->GetType() == AnimationNode::CustomNode);
+	*node->Custom.Transformation = trans;
 	BoneTransformsDirty = true;
 }
 
@@ -1356,6 +1376,72 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 		return AnimationStack.insert(AnimationStack.end(), NULL);
 }
 
+void StdMeshInstance::InsertAnimationNode(AnimationNode* node, int slot, AnimationNode* sibling, ValueProvider* weight)
+{
+	// Default
+	if (!sibling) sibling = GetRootAnimationForSlot(slot);
+	assert(!sibling || sibling->Slot == slot);
+
+	// Find two subsequent numbers in case we need to create two nodes, so
+	// script can deduce the second node.
+	unsigned int Number1, Number2;
+	for (Number1 = 0; Number1 < AnimationNodes.size(); ++Number1)
+		if (AnimationNodes[Number1] == NULL && (!sibling || Number1+1 == AnimationNodes.size() || AnimationNodes[Number1+1] == NULL))
+			break;
+	/*  for(Number2 = Number1+1; Number2 < AnimationNodes.size(); ++Number2)
+	    if(AnimationNodes[Number2] == NULL)
+	      break;*/
+	Number2 = Number1 + 1;
+
+	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
+
+	if (Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
+	if (sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
+
+	AnimationNodes[Number1] = node;
+	node->Number = Number1;
+	node->Slot = slot;
+
+	if (sibling)
+	{
+		AnimationNode* parent = new AnimationNode(node, sibling, weight);
+		AnimationNodes[Number2] = parent;
+		parent->Number = Number2;
+		parent->Slot = slot;
+
+		node->Parent = parent;
+		parent->Parent = sibling->Parent;
+		parent->LinearInterpolation.ChildLeft = sibling;
+		parent->LinearInterpolation.ChildRight = node;
+		if (sibling->Parent)
+		{
+			if (sibling->Parent->LinearInterpolation.ChildLeft == sibling)
+				sibling->Parent->LinearInterpolation.ChildLeft = parent;
+			else
+				sibling->Parent->LinearInterpolation.ChildRight = parent;
+		}
+		else
+		{
+			// set new parent
+			AnimationNodeList::iterator iter = GetStackIterForSlot(slot, false);
+			// slot must not be empty, since sibling uses same slot
+			assert(iter != AnimationStack.end() && *iter != NULL);
+			*iter = parent;
+		}
+
+		sibling->Parent = parent;
+	}
+	else
+	{
+		delete weight;
+		AnimationNodeList::iterator iter = GetStackIterForSlot(slot, true);
+		assert(!*iter); // we have a sibling if slot is not empty
+		*iter = node;
+	}
+
+	BoneTransformsDirty = true;
+}
+
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 {
 	ValueProvider* provider = NULL;
@@ -1369,6 +1455,9 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 		min = Fix0;
 		max = ftofix(node->GetAnimation()->Length);
 		break;
+	case AnimationNode::CustomNode:
+		// No execution necessary
+		return true;
 	case AnimationNode::LinearInterpolationNode:
 		provider = node->GetWeightProvider();
 		min = Fix0;
@@ -1378,6 +1467,8 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 		assert(false);
 		break;
 	}
+
+	assert(provider);
 	const C4Real old_value = provider->Value;
 
 	if (!provider->Execute())

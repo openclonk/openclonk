@@ -348,6 +348,53 @@ float StdMeshMatrix::Determinant() const
 	       - a[0][0]*a[1][2]*a[2][1] - a[0][1]*a[1][0]*a[2][2] - a[0][2]*a[1][1]*a[2][0];
 }
 
+StdMeshTransformation StdMeshMatrix::Decompose() const
+{
+	// Extract the scale part of the matrix
+	const float sx = sqrt(a[0][0]*a[0][0] + a[1][0]*a[1][0] + a[2][0]*a[2][0]);
+	const float sy = sqrt(a[0][1]*a[0][1] + a[1][1]*a[1][1] + a[2][1]*a[2][1]);
+	const float sz = sqrt(a[0][2]*a[0][2] + a[1][2]*a[1][2] + a[2][2]*a[2][2]);
+
+	// What remains is the rotation part
+	// TODO: This can be optimized by not doing the full matrix multiplication
+	StdMeshMatrix rot = Scale(1.0f/sx, 1.0f/sy, 1.0f/sz) * *this;
+
+	// Note that this does not work for skew matrices -- we cannot
+	// represent skews in StdMeshTransformation
+	const float cos_angle = 0.5f * (rot.a[0][0] + rot.a[1][1] + rot.a[2][2] - 1.0f);
+
+	const float rdx = rot.a[2][1] - rot.a[1][2];
+	const float rdy = rot.a[0][2] - rot.a[2][0];
+	const float rdz = rot.a[1][0] - rot.a[0][1];
+	const float det = sqrt(rdx*rdx + rdy*rdy + rdz*rdz);
+
+	const float rx = (rot.a[2][1] - rot.a[1][2]) / det;
+	const float ry = (rot.a[0][2] - rot.a[2][0]) / det;
+	const float rz = (rot.a[1][0] - rot.a[0][1]) / det;
+
+	const float angle = acos(cos_angle);
+
+	StdMeshTransformation trans;
+	trans.scale.x = sx;
+	trans.scale.y = sy;
+	trans.scale.z = sz;
+	trans.rotate = StdMeshQuaternion::AngleAxis(acos(cos_angle), StdMeshVector::Translate(rx, ry, rz));
+	trans.translate.x = a[0][3];
+	trans.translate.y = a[1][3];
+	trans.translate.z = a[2][3];
+
+#if 0
+	// Double check that the result is correct. This check will fail if
+	// the original matrix has skew components.
+	StdMeshMatrix mat2 = StdMeshMatrix::Transform(trans);
+	for(unsigned int i = 0; i < 3; ++i)
+		for(unsigned int j = 0; j < 4; ++j)
+			assert( fabs(mat2.a[i][j] - a[i][j]) < 1e-3);
+#endif
+
+	return trans;
+}
+
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
 {
 	StdMeshMatrix m;

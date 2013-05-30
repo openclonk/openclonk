@@ -20,6 +20,12 @@
           <name>weight</name>
           <desc>Specifies how to compute the weight of the animation in case the animation is combined with another animation in the given slot. The value needs to be created with one of the "Anim_" animation functions.</desc>
         </param>
+	<param>
+	  <type>int</type>
+	  <name>attach_number</name>
+	  <desc>If given, refers to the number of the attached mesh whose animation to change.</desc>
+	  <optional />
+	</param>
       </params>
     </syntax>
     <desc>Sets a new weight for the given animation. Returns <code>true</code> if the new AVP was set or <code>false</code> if there is no such animation with the given number or the refernced node is an animation node.</desc>

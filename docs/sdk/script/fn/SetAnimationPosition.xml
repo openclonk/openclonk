@@ -20,6 +20,12 @@
           <name>position</name>
           <desc>Specifies how to compute the position of the animation. The value needs to be created with one of the "Anim_" animation functions.</desc>
         </param>
+	<param>
+	  <type>int</type>
+	  <name>attach_number</name>
+	  <desc>If given, refers to the number of the attached mesh whose animation to change.</desc>
+	  <optional />
+	</param>
       </params>
     </syntax>
     <desc>Sets a new position for the given animation. Returns <code>true</code> if the new AVP was set or <code>false</code> if there is no such animation with the given number or the number refers to a combination node.</desc>
