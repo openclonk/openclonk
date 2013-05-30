@@ -85,8 +85,8 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 	InsertMaterial(Material("Water"),Random(LandscapeWidth()-60)+30,1,Random(7)-3,100+Random(100));
 		return 1;
 	}
-	for(var i=0; i<6+Random(4);i++)
-		ExtractLiquid(310+Random(50),430+Random(10));
+	ExtractLiquidAmount(310+Random(50),430+Random(10),6+Random(4));
+	
 	if(!GBackLiquid(335,430))
 	{
 		AddEffect("Rain",nil,100,2);

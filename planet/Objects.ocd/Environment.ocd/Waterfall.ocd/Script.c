@@ -108,8 +108,7 @@ protected func FxIntLiquidDrainStart(object target, proplist effect, int tempora
 
 protected func FxIntLiquidDrainTimer(object target, proplist effect)
 {
-	for (var i = 0; i < effect.Strength / 2; i++)
-		ExtractLiquid(AbsX(effect.X), AbsY(effect.Y));
+	ExtractLiquidAmount(AbsX(effect.X), AbsY(effect.Y),effect.Strength / 2);
 	return 1;
 }
 
