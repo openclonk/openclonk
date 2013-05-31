@@ -62,9 +62,10 @@ local ActMap = {
 
 local animation; // animation handle
 
-local switched_on; // the pump can be switched on and off with interact
+local switched_on; // controlled by Interaction. Indicates whether the user wants to pump or not
 
-local powered; // whether the pump is powered (either has enough power as consumer or even produces power)
+local powered; // whether the pump has enough power as a consumer, always true if producing
+local power_used; // the amount of power currently consumed or (if negative) produced
 
 local stored_material_index; //contained liquid
 local stored_material_amount;
@@ -144,7 +145,7 @@ func OnNotEnoughPower()
 {
 	Log("not enough power");
 	powered = false;
-	CheckState();
+	ScheduleCall(this, "CheckState", 1);
 	return _inherited(...);
 }
 
@@ -152,7 +153,7 @@ func OnEnoughPower()
 {
 	Log("enough power");
 	powered = true;
-	CheckState();
+	ScheduleCall(this, "CheckState", 1);
 	return _inherited(...);
 }
 
@@ -163,7 +164,7 @@ private func GetDrainObject()
 	return this;
 }
 
-/** Returns object to which the liquid is pumped */
+/** Re	turns object to which the liquid is pumped */
 private func GetSourceObject()
 {
 	if (source_pipe) return source_pipe->GetConnectedObject(this) ?? this;
@@ -309,17 +310,36 @@ private func UpdatePowerUsage()
 	else
 		new_power = 0;
 	
+	// do nothing if not necessary
+	if (new_power == power_used)
+		return;
+	
 	// and update energy system
 	if (new_power > 0)
 	{
-		UnmakePowerProducer();
+		if (power_used < 0)
+		{
+			powered = false; // needed since the flag was set manually
+			UnmakePowerProducer();
+		}
 		MakePowerConsumer(new_power);
+		
 	}
-	else if (new_power <= 0)
+	else if (new_power < 0)
 	{
-		UnmakePowerConsumer();
+		if (power_used > 0)
+			UnmakePowerConsumer();
 		MakePowerProducer(-new_power);
+		powered = true; // when producing, we always have power
 	}
+	else // new_power == 0
+	{
+		if (power_used < 0) UnmakePowerProducer();
+		else if (power_used > 0) UnmakePowerConsumer();
+		powered = false;
+	}
+	
+	power_used = new_power;
 	
 	Message("@%d",new_power);
 }
@@ -327,8 +347,7 @@ private func UpdatePowerUsage()
 /** Return whether the pump should be using power in the current state */
 private func IsUsingPower()
 {
-	// does also not consume power if waiting (for source pipe)
-	return switched_on && GetAction() != "Wait" && GetAction() != "WaitForLiquid";
+	return switched_on && (GetAction() == "Pump" || GetAction() == "WaitForPower");
 }
 
 /** Transform pump height (input.y - output.y) to required power */
@@ -381,11 +400,13 @@ func SetState(string act)
 		SetAnimationPosition(animation, Anim_Const(GetAnimationPosition(animation)));
 	}
 	
-	// deactivate power usage on wait
-	if (act == "Wait")
+	// deactivate power usage when not pumping
+	if (powered && (act == "Wait" || act == "WaitForLiquid"))
 	{
-		UnmakePowerProducer();
-		UnmakePowerConsumer();
+		if (power_used < 0) UnmakePowerProducer();
+		else if(power_used > 0) UnmakePowerConsumer();
+		power_used = 0;
+		powered = false;
 		Message("@OFF");
 	}
 	// finally, set the action
