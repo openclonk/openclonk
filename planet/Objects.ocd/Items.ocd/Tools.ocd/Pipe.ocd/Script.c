@@ -37,7 +37,7 @@ protected func ControlUse(object clonk, int x, int y)
 	// already two pipes connected
 	if(liquid_pump->GetSource() && liquid_pump->GetDrain())
 	{
-		clonk->Message("MsgHasPipes");
+		clonk->Message("$MsgHasPipes$");
 		return true;
 	}
 	
