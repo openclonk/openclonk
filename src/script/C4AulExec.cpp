@@ -887,33 +887,36 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			throw new C4AulExecError("using removed object");
 
 #ifdef DEBUGREC_SCRIPT
-		StdStrBuf sCallText;
-		if (pContext && pContext->GetObject())
-			sCallText.AppendFormat("Object(%d): ", pContext->GetObject()->Number);
-		sCallText.Append(pFunc->GetName());
-		sCallText.AppendChar('(');
-		for (int i=0; i<C4AUL_MAX_Par; ++i)
+		if (Config.General.DebugRec)
 		{
-			if (i) sCallText.AppendChar(',');
-			C4Value &rV = pPars[i];
-			if (rV.GetType() == C4V_String)
+			StdStrBuf sCallText;
+			if (pContext && pContext->GetObject())
+				sCallText.AppendFormat("Object(%d): ", pContext->GetObject()->Number);
+			sCallText.Append(pFunc->GetName());
+			sCallText.AppendChar('(');
+			for (int i=0; i<C4AUL_MAX_Par; ++i)
 			{
-				C4String *s = rV.getStr();
-				if (!s)
-					sCallText.Append("(Snull)");
-				else
+				if (i) sCallText.AppendChar(',');
+				C4Value &rV = pPars[i];
+				if (rV.GetType() == C4V_String)
 				{
-					sCallText.Append("\"");
-					sCallText.Append(s->GetData());
-					sCallText.Append("\"");
+					C4String *s = rV.getStr();
+					if (!s)
+						sCallText.Append("(Snull)");
+					else
+					{
+						sCallText.Append("\"");
+						sCallText.Append(s->GetData());
+						sCallText.Append("\"");
+					}
 				}
+				else
+					sCallText.Append(rV.GetDataString());
 			}
-			else
-				sCallText.Append(rV.GetDataString());
+			sCallText.AppendChar(')');
+			sCallText.AppendChar(';');
+			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 		}
-		sCallText.AppendChar(')');
-		sCallText.AppendChar(';');
-		AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 #endif
 
 		// Execute
@@ -1076,9 +1079,12 @@ C4Value C4AulScriptFunc::Exec(C4PropList * p, C4Value pPars[], bool fPassErrors)
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, C4AulScriptContext* context)
 {
 #ifdef DEBUGREC_SCRIPT
-	AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
-	int32_t iObjNumber = pObj ? pObj->Number : -1;
-	AddDbgRec(RCT_DirectExec, &iObjNumber, sizeof(int32_t));
+	if (Config.General.DebugRec)
+	{
+		AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
+		int32_t iObjNumber = pObj ? pObj->Number : -1;
+		AddDbgRec(RCT_DirectExec, &iObjNumber, sizeof(int32_t));
+	}
 #endif
 	// profiler
 	AulExec.StartDirectExec();

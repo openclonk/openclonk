@@ -62,6 +62,11 @@ public:
 	char ScreenshotPath[CFG_MaxString+1];
 	bool GamepadEnabled;
 	bool FirstStart;
+	int32_t DebugRec;
+	// if defined, the external file is used for debugrec writing. Otherwise read/check
+	int32_t DebugRecWrite;
+	// if defined, an external file is used for debugrec writing (replays only)
+	char DebugRecExternalFile[_MAX_PATH+1];
 
 public:
 	static int GetLanguageSequence(const char *strSource, char *strTarget);

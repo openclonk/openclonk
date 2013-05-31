@@ -516,11 +516,12 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 {
 	// bounds match?
 	if (!LooseBounds) if (iX<X || iY<Y || iX>=X+Wdt || iY>=Y+Hgt) return false;
-#ifdef DEBUGREC
-	C4RCTrf rc;
-	rc.x=iX; rc.y=iY; rc.Rotate=Rotate; rc.Turbulence=Turbulence;
-	AddDbgRec(RCT_MCT1, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCTrf rc;
+		rc.x=iX; rc.y=iY; rc.Rotate=Rotate; rc.Turbulence=Turbulence;
+		AddDbgRec(RCT_MCT1, &rc, sizeof(rc));
+	}
 	C4Real dX=itofix(iX); C4Real dY=itofix(iY);
 	// apply turbulence
 	if (Turbulence)
@@ -558,11 +559,12 @@ bool C4MCOverlay::CheckMask(int32_t iX, int32_t iY)
 		{ iX=fixtoi(dX, ZoomX); iY=fixtoi(dY, ZoomY); }
 	else
 		{ iX*=ZoomX; iY*=ZoomY; }
-#ifdef DEBUGREC
-	C4RCPos rc2;
-	rc2.x=iX; rc2.y=iY;
-	AddDbgRec(RCT_MCT2, &rc2, sizeof(rc2));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCPos rc2;
+		rc2.x=iX; rc2.y=iY;
+		AddDbgRec(RCT_MCT2, &rc2, sizeof(rc2));
+	}
 	// apply offset
 	iX-=OffX*ZoomX; iY-=OffY*ZoomY;
 	// check bounds, if loose
