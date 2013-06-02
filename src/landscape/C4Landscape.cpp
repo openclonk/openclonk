@@ -849,8 +849,13 @@ bool C4Landscape::InsertMaterial(int32_t mat, int32_t *tx, int32_t *ty, int32_t 
 		if (GetDensity(*tx,*ty+1)<mdens)
 			{ if (!query_only) ::PXS.Create(mat,itofix(*tx),itofix(*ty),C4REAL10(vx),C4REAL10(vy)); return true; }
 
-	// Insertion OK here
-	if (query_only) return true;
+	if (query_only) 
+	{
+		// since tx and ty changed, we need to re-check the bounds here
+		// if we really inserted it, the check is made again in InsertDeadMaterial
+		if (!Inside<int32_t>(*tx,0,Width-1) || !Inside<int32_t>(*ty,0,Height)) return false;
+		return true;		
+	}
 
 	// Try reaction with material below and at insertion position
 	C4MaterialReaction *pReact; int32_t tmat;
