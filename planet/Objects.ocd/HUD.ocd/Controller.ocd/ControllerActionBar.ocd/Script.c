@@ -324,7 +324,7 @@ func SortActionBar()
 	}
 }
 
-func OnActionBarSelected(int player, int guiID, int subwindowID, target, int button_index)
+func OnActionBarSelected(int button_index, int player, int guiID, int subwindowID, target)
 {
 	OnActionBarButtonSelected(button_index);
 }
