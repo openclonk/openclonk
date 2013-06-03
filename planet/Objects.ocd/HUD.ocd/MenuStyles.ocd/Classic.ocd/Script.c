@@ -90,13 +90,13 @@ func Open()
 	return CustomGuiOpen(menu_layout);
 }
 
-func UpdateDesc(int player, int ID, int subwindowID, object target, data)
+func UpdateDesc(data, int player, int ID, int subwindowID, object target)
 {
 	var update = { Text = entries[subwindowID][0] };
 	CustomGuiUpdate(update, ID, 1, 0);
 }
 
-func OnClick(int player, int ID, int subwindowID, object target, data)
+func OnClick(data, int player, int ID, int subwindowID, object target)
 {
 	target->Call(data[2], data[0], data[3]);
 	if (!permanent)

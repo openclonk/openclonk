@@ -127,12 +127,12 @@ func DoCall(int ID, command, proplist target, bool noclose, int player)
 		Close();
 }
 
-func OnClick(int player, int ID, int subwindowID, object target, data)
+func OnClick(data, int player, int ID, int subwindowID, object target)
 {
 	DoCall(subwindowID, nil, nil, nil, player);	
 }
 
-func DoCallback(int player, int ID, int subwindowID, object target, data)
+func DoCallback(data, int player, int ID, int subwindowID, object target)
 {
 	DoCall(subwindowID, data[1], data[0], true, player);
 }

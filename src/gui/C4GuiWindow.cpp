@@ -15,7 +15,18 @@
  * See clonk_trademark_license.txt for full license.
  */
 
- /* a flexisble ingame menu system that can be composed out of multiple windows */
+ /*
+	A flexible ingame menu system that can be used to compose large GUIs out of multiple windows.
+	
+	Every window is basically a rectangle that can contain some make-up-information (symbol/text/...) and coordinates.
+	Those coordinates can either be relative to the window's parent or in total pixels or a mixture of both.
+	
+	The entry point for all of the callbacks for mouse input, drawing, etc. is one normal window which always exists and happens
+	to be the parent of ALL of the script-created menus. Callbacks are usually forwarded to the children.
+	
+	If you want to add new window properties (similar to backgroundColor, onClickAction etc.) you have to make sure that they are
+	serialized correctly and cleaned up if necessary when a menu window is closed or the property is overwritten by a script call!
+*/
 
 #include <C4Include.h>
 #include <C4GuiWindow.h>
@@ -42,7 +53,7 @@ C4GuiWindowAction::~C4GuiWindowAction()
 const C4Value C4GuiWindowAction::ToC4Value(bool first)
 {
 	C4ValueArray *array = new C4ValueArray();
-	// TODO: save action ID with array
+
 	switch (action)
 	{
 	case C4GuiWindowActionID::Call:
@@ -115,7 +126,6 @@ bool C4GuiWindowAction::Init(C4ValueArray *array, int32_t index)
 	// an array of actions?
 	if (array->GetItem(0).getArray())
 	{
-		//LogF("..initing multi-action event (index %d)", index);
 		// add action to action chain?
 		if (index+1 < array->GetSize())
 		{
@@ -239,7 +249,7 @@ bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, in
 			from = from->parent;
 		}
 		//LogF("command synced.. target: %x, targetObj: %x, func: %s", target, target->GetObject(), text->GetCStr());
-		C4AulParSet Pars(C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target), value);
+		C4AulParSet Pars(value, C4VInt(player), C4VInt(main->GetID()), C4VInt(parent->GetID()), C4VObj(parent->target));
 		target->Call(text->GetCStr(), &Pars);
 		return true;
 	}
@@ -363,7 +373,9 @@ void C4GuiWindowProperty::CleanUpAll()
 const C4Value C4GuiWindowProperty::ToC4Value()
 {
 	C4PropList *proplist = C4PropList::New();
-
+	
+	// go through all of the tagged properties and add a property to the proplist containing both the tag name
+	// and the serialzed C4Value of the properties' value
 	for(std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
 		C4String *tagString = iter->first;
@@ -466,11 +478,13 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 			tag->IncRef();
 
 	taggedProperties[tag] = Prop();
-	// in order to make /current/ sane, always reset it - not relying about implementation of std::map
+	// in order to make /current/ sane, always reset it - not relying on implementation details of std::map
 	// if the user wants a special tag selected, he should do that (standard selection will still be "Std")
 	current = &taggedProperties[tag];
 	currentTag = tag;
-
+	
+	
+	// now that a new property entry has been created and the old has been cleaned up, get the data from the C4Value
 	switch (type)
 	{
 	case C4GuiWindowPropertyName::left:
@@ -554,6 +568,7 @@ void C4GuiWindowProperty::Set(const C4Value &value, C4String *tag)
 void C4GuiWindowProperty::ClearPointers(C4Object *pObj)
 {
 	// assume that we actually contain an object
+	// go through all the tags and, in case the tag has anything to do with objects, check and clear it
 	for (std::map<C4String*, Prop>::iterator iter = taggedProperties.begin(); iter != taggedProperties.end(); ++iter)
 	{
 		switch (type)
@@ -688,9 +703,9 @@ const C4Value C4GuiWindow::ToC4Value()
 {
 	C4PropList *proplist = C4PropList::New();
 
-	// TODO: save IDs
-
-	// save all properties
+	
+	// it is necessary that this list contains all of the properties which can also be set somehow
+	// if you add something, don't forget to also add the real serialization to the loop below
 	int32_t toSave[] =
 	{
 		P_X,
@@ -789,8 +804,7 @@ bool C4GuiWindow::CreateFromPropList(C4PropList *proplist, bool resetStdTag, boo
 	assert((parent || isLoading) && "GuiWindow created from proplist without parent (fails for ID tag)");
 
 	bool layoutUpdateRequired = false; // needed for position changes etc
-	// get properties from proplist
-	// make sure to delete the array later, we took ownership
+	// get properties from proplist and check for those, that match an allowed property to set them
 	C4ValueArray *properties = proplist->GetProperties();
 	C4String *stdTag = &Strings.P[P_Std];
 	for (int32_t i = 0; i < properties->GetSize(); ++i)
@@ -919,6 +933,8 @@ void C4GuiWindow::ClearPointers(C4Object *pObj)
 		Close();
 		return;
 	}
+	
+	// all properties which have anything to do with objects need to be called from here!
 	props[C4GuiWindowPropertyName::symbolObject].ClearPointers(pObj);
 	props[C4GuiWindowPropertyName::onClickAction].ClearPointers(pObj);
 	props[C4GuiWindowPropertyName::onMouseInAction].ClearPointers(pObj);
@@ -1548,10 +1564,6 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 	if (!hasMouseFocus)
 		OnMouseIn(player);
 
-	/*if (parent && mouse.IsLDown())
-		LogF("%f|%f - %d|%d", lastDrawPosition.left, lastDrawPosition.top, mouseX, mouseY);
-	else LogF("called on root %d|%d", mouseX, mouseY);*/
-
 	// children actually have a higher priority
 	bool overChild = false; // remember for later, catch all actions that are in theory over children, even if not reaction (if main window)
 	// use reverse iterator since children with higher Priority appear later in the list
@@ -1562,7 +1574,7 @@ bool C4GuiWindow::MouseInput(int32_t player, int32_t button, int32_t mouseX, int
 		int32_t childRight = static_cast<int32_t>(child->lastDrawPosition.right);
 		int32_t childTop = static_cast<int32_t>(child->lastDrawPosition.top);
 		int32_t childBottom = static_cast<int32_t>(child->lastDrawPosition.bottom);
-		//LogF("%d|%d in %d|%d // %d|%d", mouseX, mouseY, childLeft, childTop, childRight, childBottom);
+
 		bool inArea = true;
 		if ((mouseX < childLeft) || (mouseX > childRight)) inArea = false;
 		else if ((mouseY < childTop) || (mouseY > childBottom)) inArea = false;
@@ -1646,7 +1658,7 @@ bool C4GuiWindow::ExecuteCommand(int32_t actionID, int32_t player, int32_t subwi
 		}
 
 		// note that we should not simply return false here
-		// there is no guarantee that only one window with that target&ID existss
+		// there is no guarantee that only one window with that target&ID exists
 	}
 
 	// not caught, forward to children!

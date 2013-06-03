@@ -208,20 +208,20 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 	active_menu = CustomGuiOpen(menu);
 }
 
-func ScenOptsActivate(int player, int ID, int subwindowID, object target, data)
+func ScenOptsActivate(data, int player, int ID, int subwindowID, object target)
 {
 	if (!ObjectCount(Find_ID(data[0])))
 		CreateObject(data[0]);
 	CustomGuiSetTag("Ticked", active_menu, data[1], nil);
 }
 
-func ScenOptsDeactivate(int player, int ID, int subwindowID, object target, data)
+func ScenOptsDeactivate(data, int player, int ID, int subwindowID, object target)
 {
 	RemoveAll(Find_ID(data[0]));
 	CustomGuiSetTag("Unticked", active_menu, data[1], nil);
 }
 
-func ScenOptsUpdateDesc(int player, int ID, int subwindowID, object target, data)
+func ScenOptsUpdateDesc(data, int player, int ID, int subwindowID, object target)
 {
 	var text = "<c ff0000>Do you really want to remove the rule???</c>";
 	if (!data[2])
