@@ -128,7 +128,6 @@ public func GetDrain() { return drain_pipe; }
 
 public func SetSource(object pipe)
 {
-	Log("source pipe connected");
 	source_pipe = pipe;
 	CheckState();
 }
@@ -143,7 +142,6 @@ func QueryWaivePowerRequest()
 
 func OnNotEnoughPower()
 {
-	Log("not enough power");
 	_inherited(...);
 	powered = false;
 	CheckState();
@@ -151,7 +149,6 @@ func OnNotEnoughPower()
 
 func OnEnoughPower()
 {
-	Log("enough power");
 	_inherited(...);
 	powered = true;
 	CheckState();
@@ -226,10 +223,7 @@ protected func Pumping()
 		stored_material_amount = i;
 		if (stored_material_amount <= 0)
 			stored_material_index = nil;
-
-		if(!pump_ok) {Log("cant drain liquid");}
 	}
-	else { Log("cant get liquid"); }
 	
 	if(!pump_ok)
 	{
@@ -242,8 +236,6 @@ func CheckState()
 {
 	var is_fullcon = GetCon() >= 100;
 	var can_pump = source_pipe && is_fullcon && switched_on;
-	
-	Message("@0");
 	
 	// can't pump at all -> wait
 	if (!can_pump)
@@ -335,8 +327,6 @@ private func UpdatePowerUsage()
 	}
 	
 	power_used = new_power;
-	
-	Message("@%d",new_power);
 }
 
 /** Return whether the pump should be using power in the current state */
@@ -378,8 +368,6 @@ func SetState(string act)
 {
 	if(act == GetAction()) return;
 
-	Log("setting state %s",act);
-
 	var start = 0;
 	var end = GetAnimationLength("pump");
 	var anim_pos = GetAnimationPosition(animation);
@@ -403,7 +391,6 @@ func SetState(string act)
 		else if(power_used > 0) UnmakePowerConsumer();
 		power_used = 0;
 		powered = false;
-		Message("@OFF");
 	}
 	// finally, set the action
 	SetAction(act);
