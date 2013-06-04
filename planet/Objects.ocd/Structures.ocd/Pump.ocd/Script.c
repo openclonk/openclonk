@@ -289,15 +289,10 @@ private func GetPumpHeight()
 		while (src_mat == GetSourceObject()->GetMaterial(0, source_y-1))
 			--source_y;
 	}
-	// same for target
-	var target_y = 0;
-	if (GetDrainObject()->GBackLiquid())
-	{
-		var src_mat = GetDrainObject()->GetMaterial();
-		while (src_mat == GetDrainObject()->GetMaterial(0, target_y-1))
-			--target_y;
-	}
-	return (GetSourceObject()->GetY() + source_y) - (GetDrainObject()->GetY() + target_y);
+	// same for target (use same function as if inserting)
+	var target_pos = {X=0, Y=0};
+	GetDrainObject()->CanInsertMaterial(Material("Water"),0,0,target_pos);
+	return (GetSourceObject()->GetY() + source_y) - target_pos.Y;
 }
 
 /** Recheck power usage/production for current pump height
