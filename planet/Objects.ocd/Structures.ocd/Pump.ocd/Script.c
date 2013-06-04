@@ -47,7 +47,7 @@ local ActMap = {
 	WaitForPower = {
 		Prototype = Action,
 		Name = "WaitForPower",
-		Delay = 150,
+		Delay = 30,
 		NextAction = "WaitForPower",
 		EndCall = "CheckState"
 	},
@@ -144,17 +144,17 @@ func QueryWaivePowerRequest()
 func OnNotEnoughPower()
 {
 	Log("not enough power");
+	_inherited(...);
 	powered = false;
-	ScheduleCall(this, "CheckState", 1);
-	return _inherited(...);
+	CheckState();
 }
 
 func OnEnoughPower()
 {
 	Log("enough power");
+	_inherited(...);
 	powered = true;
-	ScheduleCall(this, "CheckState", 1);
-	return _inherited(...);
+	CheckState();
 }
 
 /** Returns object to which the liquid is pumped */
@@ -331,7 +331,7 @@ private func UpdatePowerUsage()
 	{
 		if (power_used < 0) UnmakePowerProducer();
 		else if (power_used > 0) UnmakePowerConsumer();
-		powered = false;
+		powered = true;
 	}
 	
 	power_used = new_power;
@@ -349,11 +349,11 @@ private func IsUsingPower()
 private func PumpHeight2Power(int pump_height)
 {
 	// pumping downwards will only produce energy after an offset
-	var power_offset = 35;
+	var power_offset = 40;
 	// max power consumed/produced
 	var max_power = 150;
 	
-	return BoundBy((pump_height + power_offset)/15*5, -max_power,max_power);
+	return BoundBy((pump_height + power_offset)/15*5, -max_power,max_power+power_offset);
 }
 
 /** Returns whether there is liquid at the source pipe to pump */
@@ -366,7 +366,7 @@ private func HasLiquidToPump()
 	if(!GetSourceObject()->GBackLiquid())
 		return false;
 	
-	// target (test with the very popular liquid "water"
+	// target (test with the very popular liquid "water")
 	if(!GetDrainObject()->CanInsertMaterial(Material("Water"),0,0))
 		return false;
 	
@@ -382,17 +382,18 @@ func SetState(string act)
 
 	var start = 0;
 	var end = GetAnimationLength("pump");
+	var anim_pos = GetAnimationPosition(animation);
 	if (act == "Pump")
 	{
-		SetAnimationPosition(animation, Anim_Linear(GetAnimationPosition(animation), start, end, 35, ANIM_Loop));
+		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 35, ANIM_Loop));
 	}
 	else if(act == "WaitForLiquid")
 	{
-		SetAnimationPosition(animation, Anim_Linear(GetAnimationPosition(animation), start, end, 350, ANIM_Loop));
+		SetAnimationPosition(animation, Anim_Linear(anim_pos, start, end, 350, ANIM_Loop));
 	}
 	else
 	{
-		SetAnimationPosition(animation, Anim_Const(GetAnimationPosition(animation)));
+		SetAnimationPosition(animation, Anim_Const(anim_pos));
 	}
 	
 	// deactivate power usage when not pumping
