@@ -57,14 +57,15 @@ void C4Shape::Clear()
 
 void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 {
-#ifdef DEBUGREC
 	C4RCRotVtx rc;
-	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=Angle;
 	int32_t i = 0;
-	for (; i<4; ++i)
-		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
-	AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=Angle;
+		for (; i<4; ++i)
+			{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
+		AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
+	}
 	int32_t cnt,nvtx,nvty,nwdt,nhgt;
 
 	C4Real mtx[4];
@@ -123,12 +124,13 @@ void C4Shape::Rotate(C4Real Angle, bool bUpdateVertices)
 	}
 	Wdt = nwdt;
 	Hgt = nhgt;
-#ifdef DEBUGREC
-	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
-	for (i=0; i<4; ++i)
-		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
-	AddDbgRec(RCT_RotVtx2, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
+		for (i=0; i<4; ++i)
+			{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
+		AddDbgRec(RCT_RotVtx2, &rc, sizeof(rc));
+	}
 }
 
 void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)

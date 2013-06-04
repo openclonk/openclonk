@@ -404,13 +404,14 @@ bool C4Menu::AddItem(C4MenuItem *pNew, const char *szCaption, const char *szComm
                      C4ID idID, const char *szCommand2, bool fOwnValue, int32_t iValue, bool fIsSelectable)
 {
 #ifdef DEBUGREC_MENU
-	if (pObject)
-	{
-		C4RCMenuAdd rc = { pObject ? pObject->Number : -1, iCount, idID, fOwnValue, iValue, fIsSelectable };
-		AddDbgRec(RCT_MenuAdd, &rc, sizeof(C4RCMenuAdd));
-		if (szCommand) AddDbgRec(RCT_MenuAddC, szCommand, strlen(szCommand)+1);
-		if (szCommand2) AddDbgRec(RCT_MenuAddC, szCommand2, strlen(szCommand2)+1);
-	}
+	if (Config.General.DebugRec)
+		if (pObject)
+		{
+			C4RCMenuAdd rc = { pObject ? pObject->Number : -1, iCount, idID, fOwnValue, iValue, fIsSelectable };
+			AddDbgRec(RCT_MenuAdd, &rc, sizeof(C4RCMenuAdd));
+			if (szCommand) AddDbgRec(RCT_MenuAddC, szCommand, strlen(szCommand)+1);
+			if (szCommand2) AddDbgRec(RCT_MenuAddC, szCommand2, strlen(szCommand2)+1);
+		}
 #endif
 	// Add it to the list
 	pClientWindow->AddElement(pNew);

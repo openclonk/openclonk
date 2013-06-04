@@ -39,9 +39,7 @@
 
 #include <algorithm>
 
-#ifdef DEBUGREC
 #include "C4Record.h"
-#endif
 
 /* C4PlayerControlDef */
 
@@ -1073,12 +1071,13 @@ void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *p
 		const C4PlayerControlDef *pCtrlDef = ControlDefs.GetControlByIndex(rItem.iControl);
 		if (pCtrlDef)
 		{
-#ifdef DEBUGREC
-			if (pCtrlDef->IsSync())
+			if (Config.General.DebugRec)
 			{
-				AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
+				if (pCtrlDef->IsSync())
+				{
+					AddDbgRec(RCT_PlrCom, &rItem.iControl, sizeof(rItem.iControl));
+				}
 			}
-#endif
 			if (ExecuteControl(rItem.iControl, pCtrl->IsReleaseControl(), pCtrl->GetExtraData(), rItem.iTriggerMode, false, fHandleDownStateOnly))
 				if (pCtrlDef->IsSync())
 				{
