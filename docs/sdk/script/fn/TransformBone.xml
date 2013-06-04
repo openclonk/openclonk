@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>TransformBone</title>
+    <category>Animations</category>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>bone</name>
+          <desc>Name of the bone to be transformed.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>transformation</name>
+          <desc>An array with 12 entries representing a 3x4 transformation matrix in row-major order. These matrices can be created via <funclink>Trans_Identity</funclink>, <funclink>Trans_Translate</funclink>, <funclink>Trans_Rotate</funclink> and <funclink>Trans_Scale</funclink> or they can be combined via <funclink>Trans_Mul</funclink>.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>slot</name>
+          <desc>Slot in the animation stack in which the animation should be inserted. See <emlink href="definition/animations.html">Animations</emlink>.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>weight</name>
+          <desc>Specifies how to compute the weight of the bone transformation in case it is combined with another animation in the given slot. The value needs to be created with one of the "Anim_" animation functions.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>sibling</name>
+          <desc>If the bone transformation is combined with another animation then this refers to the node with which the new node is combined. If not given or <code>nil</code> then the animation is combined with the animation at the top of the slot as returned by <funclink>GetRootAnimation</funclink>.</desc>
+          <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>This function is very similar to <funclink>PlayAnimation</funclink>. Instead of playing an animation which is pre-defined in the skeleton of the mesh, it allows individual bones to be transformed arbitrarily. The transformation is inserted as a leaf node into the animation tree for the given slot. The return value of this function is the animation number of the animation node inserted which can be used to manipulate or remove the animation later. If there are already animations in the given slot then additionally a combination node is created. This combination node is assigned the returned number plus 1.</desc>
+    <remark>See the <emlink href="definition/animations.html">animation documentation</emlink> for further explanations of the animation system.</remark>
+    <remark>The transformation passed to this function is not completely arbitrary, in particular it must not have components which skew the mesh along one of the axes. Skewing is not supported by the animation blending system. Skew matrices cannot be produced with one of the Trans_* functions directly, but it can result of the multiplication of a rotation matrix with a rotated scale matrix, e.g. <code><funclink>Trans_Mul</funclink>(<funclink>Trans_Rotate</funclink>(...), <funclink>Trans_Scale(...)</funclink>, <funclink>Trans_Rotate</funclink>(...))</code>. Skewing cannot occur by combining translation and rotation matrices only.</remark>
+    <examples>
+      <example>
+        <code><funclink>TransformBone</funclink>("skeleton_arm_upper.R", Trans_Rotate(90, 0, 1, 0), 5, <funclink>Anim_Const</funclink>(1000));</code>
+        <text>Rotates the right arm of a Clonk by 90 degrees around the Y axis (in bone coordinates).</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>StopAnimation</funclink>
+      <funclink>SetAnimationBoneTransform</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>2013-05</date>
+</funcs>

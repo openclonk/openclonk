@@ -700,13 +700,8 @@ C4ST_NEW(MessagesStat,      "C4Game::Execute Messages.Execute")
 #define EXEC_S(Expressions, Stat) \
   { C4ST_START(Stat) Expressions C4ST_STOP(Stat) }
 
-#ifdef DEBUGREC
-#define EXEC_S_DR(Expressions, Stat, DebugRecName) { AddDbgRec(RCT_Block, DebugRecName, 6); EXEC_S(Expressions, Stat) }
-#define EXEC_DR(Expressions, DebugRecName) { AddDbgRec(RCT_Block, DebugRecName, 6); Expressions }
-#else
-#define EXEC_S_DR(Expressions, Stat, DebugRecName) EXEC_S(Expressions, Stat)
-#define EXEC_DR(Expressions, DebugRecName) Expressions
-#endif
+#define EXEC_S_DR(Expressions, Stat, DebugRecName) { if (Config.General.DebugRec) AddDbgRec(RCT_Block, DebugRecName, 6); EXEC_S(Expressions, Stat) }
+#define EXEC_DR(Expressions, DebugRecName) { if (Config.General.DebugRec) AddDbgRec(RCT_Block, DebugRecName, 6); Expressions }
 
 bool C4Game::Execute() // Returns true if the game is over
 {
@@ -725,9 +720,8 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Halt
 	if (HaltCount) return false;
 
-#ifdef DEBUGREC
-	Landscape.DoRelights();
-#endif
+	if (Config.General.DebugRec)
+		Landscape.DoRelights();
 
 	// Execute the control
 	Control.Execute();
@@ -736,10 +730,9 @@ bool C4Game::Execute() // Returns true if the game is over
 	// Ticks
 	EXEC_DR(    Ticks();                                                , "Ticks")
 
-#ifdef DEBUGREC
-	// debugrec
-	AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
-#endif
+	if (Config.General.DebugRec)
+		// debugrec
+		AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
 
 	// Game
 
@@ -777,11 +770,11 @@ bool C4Game::Execute() // Returns true if the game is over
 		C4ST_RESETPART
 	}
 
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "eGame", 6);
-
-	Landscape.DoRelights();
-#endif
+	if (Config.General.DebugRec)
+	{
+		AddDbgRec(RCT_Block, "eGame", 6);
+		Landscape.DoRelights();
+	}
 
 	return true;
 }
@@ -1004,14 +997,15 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
 {
 	// Safety
 	if (!pDef) return NULL;
-#ifdef DEBUGREC
-	C4RCCreateObj rc;
-	memset(&rc, '\0', sizeof(rc));
-	strncpy(rc.id, pDef->GetName(), 32+1);
-	rc.oei=C4PropListNumbered::GetEnumerationIndex()+1;
-	rc.x=iX; rc.y=iY; rc.ownr=iOwner;
-	AddDbgRec(RCT_CrObj, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCCreateObj rc;
+		memset(&rc, '\0', sizeof(rc));
+		strncpy(rc.id, pDef->GetName(), 32+1);
+		rc.oei=C4PropListNumbered::GetEnumerationIndex()+1;
+		rc.x=iX; rc.y=iY; rc.ownr=iOwner;
+		AddDbgRec(RCT_CrObj, &rc, sizeof(rc));
+	}
 	// Create object
 	C4Object *pObj;
 	if (!(pObj=new C4Object)) return NULL;
@@ -1319,9 +1313,8 @@ void C4Game::ObjectRemovalCheck() // Every ::Game.iTick255 by ExecObjects
 
 void C4Game::ExecObjects() // Every Tick1 by Execute
 {
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "ObjEx", 6);
-#endif
+	if (Config.General.DebugRec)
+		AddDbgRec(RCT_Block, "ObjEx", 6);
 
 	// Execute objects - reverse order to ensure
 	C4Object *cObj; C4ObjectLink *clnk;
@@ -1333,9 +1326,8 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 			// Status reset: process removal delay
 			if (cObj->RemovalDelay>0) cObj->RemovalDelay--;
 
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "ObjCC", 6);
-#endif
+	if (Config.General.DebugRec)
+		AddDbgRec(RCT_Block, "ObjCC", 6);
 
 	// Can savely reset object marker here
 	Objects.LastUsedMarker = 0;
@@ -1343,9 +1335,8 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 	// Cross check objects
 	Objects.CrossCheck();
 
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "ObjRs", 6);
-#endif
+	if (Config.General.DebugRec)
+		AddDbgRec(RCT_Block, "ObjRs", 6);
 
 	// Resort
 	if (fResortAnyObject)
@@ -1354,9 +1345,8 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 		Objects.ResortUnsorted();
 	}
 
-#ifdef DEBUGREC
-	AddDbgRec(RCT_Block, "ObjRm", 6);
-#endif
+	if (Config.General.DebugRec)
+		AddDbgRec(RCT_Block, "ObjRm", 6);
 
 	// Removal
 	if (!::Game.iTick255) ObjectRemovalCheck();

@@ -90,6 +90,7 @@ public:
 
 	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
 	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
+	virtual bool ClearPointers(C4Object* pObj);
 };
 
 class C4Action

@@ -26,23 +26,30 @@
 int RandomCount = 0;
 unsigned int RandomHold = 0;
 
-#ifdef DEBUGREC
 int Random(int iRange)
 {
-	// next pseudorandom value
-	RandomCount++;
-	C4RCRandom rc;
-	rc.Cnt=RandomCount;
-	rc.Range=iRange;
-	if (iRange==0)
-		rc.Val=0;
+	if (Config.General.DebugRec)
+	{
+		// next pseudorandom value
+		RandomCount++;
+		C4RCRandom rc;
+		rc.Cnt=RandomCount;
+		rc.Range=iRange;
+		if (iRange==0)
+			rc.Val=0;
+		else
+		{
+			RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
+			rc.Val = RandomHold % iRange;
+		}
+		AddDbgRec(RCT_Random, &rc, sizeof(rc));
+		return rc.Val;
+	}
 	else
 	{
+		RandomCount++;
+		if (iRange==0) return 0;
 		RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
-		rc.Val = RandomHold % iRange;
+		return RandomHold % iRange;
 	}
-	AddDbgRec(RCT_Random, &rc, sizeof(rc));
-	return rc.Val;
 }
-#endif
-

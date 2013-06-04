@@ -40,9 +40,7 @@
 #include <C4Command.h>
 #include <C4Viewport.h>
 #include <C4MaterialList.h>
-#ifdef DEBUGREC
 #include <C4Record.h>
-#endif
 #include <C4SolidMask.h>
 #include <C4Random.h>
 #include <C4Log.h>
@@ -125,6 +123,18 @@ void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach
 		if(!attach->Child)
 			attach->Child = Object->pMeshInstance;
 	}
+}
+
+bool C4MeshDenumerator::ClearPointers(C4Object* pObj)
+{
+	if(Object == pObj)
+	{
+		Object = NULL;
+		// Return false causes the attached mesh to be deleted by StdMeshInstance
+		return false;
+	}
+
+	return true;
 }
 
 static void DrawVertex(C4Facet &cgo, float tx, float ty, int32_t col, int32_t contact)
@@ -322,14 +332,15 @@ void C4Object::AssignRemoval(bool fExitContents)
 {
 	// check status
 	if (!Status) return;
-#ifdef DEBUGREC
-	C4RCCreateObj rc;
-	memset(&rc, '\0', sizeof(rc));
-	rc.oei=Number;
-	if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
-	rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
-	AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4RCCreateObj rc;
+		memset(&rc, '\0', sizeof(rc));
+		rc.oei=Number;
+		if (Def && Def->GetName()) strncpy(rc.id, Def->GetName(), 32+1);
+		rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
+		AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
+	}
 	// Destruction call in container
 	if (Contained)
 	{
@@ -479,10 +490,19 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		}
 
 		// Keep mesh instance if it uses the same underlying mesh
-		if(!pMeshInstance || !pGraphics->Type == C4DefGraphics::TYPE_Mesh ||
+		if(!pMeshInstance || pGraphics->Type != C4DefGraphics::TYPE_Mesh ||
 		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
 		{
+			// If this mesh is attached somewhere, detach it before deletion
+			if(pMeshInstance && pMeshInstance->GetAttachParent() != NULL)
+			{
+				// TODO: If the new mesh has a bone with the same name, we could try updating...
+				StdMeshInstance::AttachedMesh* attach_parent = pMeshInstance->GetAttachParent();
+				attach_parent->Parent->DetachMesh(attach_parent->Number);
+			}
+
 			delete pMeshInstance;
+
 			if (pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 			{
 				pMeshInstance = new StdMeshInstance(*pGraphics->Mesh, Def->GrowthType ? 1.0f : static_cast<float>(Con)/static_cast<float>(FullCon));
@@ -840,8 +860,11 @@ void C4Object::SetOCF()
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
 #ifdef DEBUGREC_OCF
-	C4RCOCF rc = { dwOCFOld, OCF, false };
-	AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	if (Config.General.DebugRec)
+	{
+		C4RCOCF rc = { dwOCFOld, OCF, false };
+		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	}
 #endif
 }
 
@@ -908,8 +931,11 @@ void C4Object::UpdateOCF()
 	if ((Def->GrabPutGet & C4D_Grab_Put) || (Def->GrabPutGet & C4D_Grab_Get) || (OCF & OCF_Entrance))
 		OCF|=OCF_Container;
 #ifdef DEBUGREC_OCF
-	C4RCOCF rc = { dwOCFOld, OCF, true };
-	AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	if (Config.General.DebugRec)
+	{
+		C4RCOCF rc = { dwOCFOld, OCF, true };
+		AddDbgRec(RCT_OCF, &rc, sizeof(rc));
+	}
 #endif
 #ifdef _DEBUG
 	DEBUGREC_OFF
@@ -1000,15 +1026,16 @@ bool C4Object::ExecLife()
 
 void C4Object::Execute()
 {
-#ifdef DEBUGREC
-	// record debug
-	C4RCExecObj rc;
-	rc.Number=Number;
-	rc.fx=fix_x;
-	rc.fy=fix_y;
-	rc.fr=fix_r;
-	AddDbgRec(RCT_ExecObj, &rc, sizeof(rc));
-#endif
+	if (Config.General.DebugRec)
+	{
+		// record debug
+		C4RCExecObj rc;
+		rc.Number=Number;
+		rc.fx=fix_x;
+		rc.fy=fix_y;
+		rc.fr=fix_r;
+		AddDbgRec(RCT_ExecObj, &rc, sizeof(rc));
+	}
 	// reset temporary marker
 	Marker = 0;
 	// OCF
@@ -1815,10 +1842,8 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 
 void C4Object::ClearPointers(C4Object *pObj)
 {
-	// TODO: Clear pointers on mesh instance:
-	// Check for attach children using pObj's mesh instance
-	// Check for animation nodes refering to pObj (Anim_X, ...).
-
+	// mesh attachments and animation nodes
+	if(pMeshInstance) pMeshInstance->ClearPointers(pObj);
 	// effects
 	if (pEffects) pEffects->ClearPointers(pObj);
 	// contents/contained: not necessary, because it's done in AssignRemoval and StatusDeactivate

@@ -36,16 +36,13 @@ don't need to include this file or any of the files it includes. */
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
 #define DEBUGREC_START_FRAME 0
 #define DEBUGREC_PXS
 #define DEBUGREC_OBJCOM
 #define DEBUGREC_MATSCAN
-//#define DEBUGREC_RECRUITMENT
 #define DEBUGREC_MENU
 #define DEBUGREC_OCF
-#endif
 
 // solidmask debugging
 //#define SOLIDMASK_DEBUG

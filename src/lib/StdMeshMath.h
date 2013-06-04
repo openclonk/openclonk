@@ -95,6 +95,7 @@ public:
 	float operator()(int i, int j) const { return a[i][j]; }
 
 	float Determinant() const;
+	StdMeshTransformation Decompose() const;
 
 private:
 	// 3x3 orthogonal + translation in last column

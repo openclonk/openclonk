@@ -1830,6 +1830,56 @@ static Nillable<int> FnPlayAnimation(C4Object *Obj, C4String *szAnimation, int i
 	return n_node->GetNumber();
 }
 
+static Nillable<int> FnTransformBone(C4Object *Obj, C4String *szBoneName, C4ValueArray* Transformation, int iSlot, C4ValueArray* WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
+{
+	if (!Obj) return C4Void();
+	if (!Obj->pMeshInstance) return C4Void();
+	if (iSlot == 0) return C4Void(); // Reserved for ActMap animations
+	if (!Transformation) return C4Void();
+	if (!WeightProvider) return C4Void();
+
+	StdMeshInstance* Instance = Obj->pMeshInstance;
+	if (!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if (!Attached || !Attached->OwnChild) return C4Void();
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* s_node = NULL;
+	if (!iSibling.IsNil())
+	{
+		s_node = Instance->GetAnimationNodeByNumber(iSibling);
+		if (!s_node || s_node->GetSlot() != iSlot) return C4Void();
+	}
+
+	const StdMeshBone* bone = Instance->GetMesh().GetBoneByName(szBoneName->GetData());
+	if(!bone) return C4Void();
+
+	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(Obj, *WeightProvider);
+	if (!w_provider) return C4Void();
+
+	StdMeshMatrix matrix;
+	if (!C4ValueToMatrix(*Transformation, &matrix))
+		throw new C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
+
+	// For bone transformations we cannot use general matrix transformations, but we use decomposed
+	// translate, scale and rotation components (represented by the StdMeshTransformation class). This
+	// is less generic since it does not support skewing.
+	// Still, in the script API we want to expose a matrix parameter so that the convenient Trans_*
+	// functions can be used. We decompose the passed matrix at this point. If the matrix indeed has
+	// skewing components, the results will probably look strange since the decomposition would yield
+	// bogus values, however I don't think that's a practical use case. In the worst case we could add
+	// a check here and return nil if the matrix cannot be decomposed.
+	StdMeshTransformation trans = matrix.Decompose();
+
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(bone, trans, iSlot, s_node, w_provider);
+	if (!n_node) return C4Void();
+
+	return n_node->GetNumber();
+}
+
 static bool FnStopAnimation(C4Object *Obj, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if (!Obj) return false;
@@ -1971,6 +2021,35 @@ static bool FnSetAnimationPosition(C4Object *Obj, Nillable<int> iAnimationNumber
 	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(Obj, *PositionProvider);
 	if (!p_provider) return false;
 	Instance->SetAnimationPosition(node, p_provider);
+	return true;
+}
+
+static bool FnSetAnimationBoneTransform(C4Object *Obj, Nillable<int> iAnimationNumber, C4ValueArray* Transformation, Nillable<int> iAttachNumber)
+{
+	if (!Obj) return false;
+	if (!Obj->pMeshInstance) return false;
+	if (iAnimationNumber.IsNil()) return false; // distinguish nil from 0
+
+	StdMeshInstance* Instance = Obj->pMeshInstance;
+	if (!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if (!Attached || !Attached->OwnChild) return false;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
+	// slot 0 is reserved for ActMap animations
+	if (!node || node->GetSlot() == 0 || node->GetType() != StdMeshInstance::AnimationNode::CustomNode) return false;
+
+	StdMeshMatrix matrix;
+	if (!C4ValueToMatrix(*Transformation, &matrix))
+		throw new C4AulExecError("TransformBone: Transformation is not a valid 3x4 matrix");
+	// Here the same remark applies as in FnTransformBone
+	StdMeshTransformation trans = matrix.Decompose();
+
+	Instance->SetAnimationBoneTransform(node, trans);
 	return true;
 }
 
@@ -2513,6 +2592,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ExecuteCommand", FnExecuteCommand);
 
 	AddFunc(pEngine, "PlayAnimation", FnPlayAnimation);
+	AddFunc(pEngine, "TransformBone", FnTransformBone);
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
 	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
 	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
@@ -2520,6 +2600,7 @@ void InitObjectFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);
 	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
 	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
+	AddFunc(pEngine, "SetAnimationBoneTransform", FnSetAnimationBoneTransform);
 	AddFunc(pEngine, "SetAnimationWeight", FnSetAnimationWeight);
 	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
 	AddFunc(pEngine, "DetachMesh", FnDetachMesh);

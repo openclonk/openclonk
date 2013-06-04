@@ -184,9 +184,8 @@ void C4GameControl::RequestRuntimeRecord()
 	fRecordNeeded = true;
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
-#ifndef DEBUGREC
-	::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
-#endif
+	if (Config.General.DebugRec)
+		::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
 }
 
 bool C4GameControl::IsRuntimeRecordPossible() const
@@ -422,18 +421,19 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 
 void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t iSize)
 {
-#ifdef DEBUGREC
-	if (DoNoDebugRec>0) return;
-	// record data
-	if (pRecord)
+	if (Config.General.DebugRec)
 	{
-		C4PktDebugRec dr(eType, StdBuf(pData, iSize));
-		pRecord->Rec(Game.FrameCounter, DecompileToBuf<StdCompilerBinWrite>(dr), eType);
+		if (DoNoDebugRec>0) return;
+		// record data
+		if (pRecord)
+		{
+			C4PktDebugRec dr(eType, StdBuf(pData, iSize));
+			pRecord->Rec(Game.FrameCounter, DecompileToBuf<StdCompilerBinWrite>(dr), eType);
+		}
+		// check against playback
+		if (pPlayback)
+			pPlayback->Check(eType, pData, iSize);
 	}
-	// check against playback
-	if (pPlayback)
-		pPlayback->Check(eType, pData, iSize);
-#endif // DEBUGREC
 }
 
 C4ControlDeliveryType C4GameControl::DecideControlDelivery()

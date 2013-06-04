@@ -227,6 +227,9 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 			{"league", no_argument, &Config.Network.LeagueServerSignUp, 1},
 			{"nosignup", no_argument, &Config.Network.MasterServerSignUp, 0},
 			{"signup", no_argument, &Config.Network.MasterServerSignUp, 1},
+			
+			{"debugrecread", required_argument, 0, 'K'},
+			{"debugrecwrite", required_argument, 0, 'w'},
 
 			{"client", required_argument, 0, 'c'},
 			{"host", no_argument, 0, 'h'},
@@ -288,6 +291,28 @@ void C4Application::ParseCommandLine(int argc, char * argv[])
 		case 'j':
 			Game.NetworkActive = true;
 			SCopy(optarg, Game.DirectJoinAddress, _MAX_PATH);
+			break;
+		case 'K':
+			if (optarg && optarg[0])
+			{
+				LogF("Reading from DebugRec file '%s'", optarg);
+				SCopy(optarg, Config.General.DebugRecExternalFile, _MAX_PATH);
+			}
+			else
+				Log("Reading DebugRec from CtrlRec file in scenario record");
+			Config.General.DebugRec = 1;
+			Config.General.DebugRecWrite = 0;
+			break;
+		case 'w':
+			if (optarg && optarg[0])
+			{
+				LogF("Writing to DebugRec file '%s'", optarg);
+				SCopy(optarg, Config.General.DebugRecExternalFile, _MAX_PATH);
+			}
+			else
+				Log("Writing DebugRec to CtrlRec file in scenario record");
+			Config.General.DebugRec = 1;
+			Config.General.DebugRecWrite = 1;
 			break;
 		case 'r': Game.Record = true; break;
 		case 'n': Game.NetworkActive = true; break;

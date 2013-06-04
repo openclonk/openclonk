@@ -27,16 +27,10 @@ class C4Record;
 #include "C4Group.h"
 #include "C4Control.h"
 
-#ifdef DEBUGREC
 extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 
 #define DEBUGREC_OFF ++DoNoDebugRec;
 #define DEBUGREC_ON --DoNoDebugRec;
-
-#else
-#define DEBUGREC_OFF
-#define DEBUGREC_ON
-#endif
 
 // turn off debugrecs in current block
 class C4DebugRecOff
@@ -100,9 +94,7 @@ enum C4RecordChunkType // record file chunk type
 	RCT_Undefined = 0xff
 };
 
-#ifdef DEBUGREC
 void AddDbgRec(C4RecordChunkType eType, const void *pData=NULL, int iSize=0); // record debug stuff
-#endif
 
 #pragma pack(1)
 
@@ -306,9 +298,7 @@ private:
 	StdBuf sequentialBuffer; // buffer to manage sequential reads
 	uint32_t iLastSequentialFrame; // frame number of last chunk read
 	void Finish(); // end playback
-#ifdef DEBUGREC
 	C4PacketList DebugRec;
-#endif
 public:
 	C4Playback(); // constructor; init playback
 	~C4Playback(); // destructor; deinit playback
@@ -324,10 +314,8 @@ public:
 	bool ExecuteControl(C4Control *pCtrl, int iFrame); // assign control
 	bool IsFinished() { return Finished; }
 	void Clear();
-#ifdef DEBUGREC
 	void Check(C4RecordChunkType eType, const uint8_t *pData, int iSize); // compare with debugrec
 	void DebugRecError(const char *szError);
-#endif
 	static bool StreamToRecord(const char *szStream, StdStrBuf *pRecord);
 };
 

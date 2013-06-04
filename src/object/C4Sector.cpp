@@ -109,9 +109,8 @@ void C4LSectors::Add(C4Object *pObj, C4ObjectList *pMainList)
 	{
 		pSct->ObjectShapes.Add(pObj, C4ObjectList::stMain, pMainList);
 	}
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'A');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'A');
 }
 
 void C4LSectors::Update(C4Object *pObj, C4ObjectList *pMainList)
@@ -152,9 +151,8 @@ void C4LSectors::Update(C4Object *pObj, C4ObjectList *pMainList)
 		}
 	// Update area
 	pObj->Area = NewArea;
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'U');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'U');
 }
 
 void C4LSectors::Remove(C4Object *pObj)
@@ -187,9 +185,8 @@ void C4LSectors::Remove(C4Object *pObj)
 	// Remove from all sectors in shape area
 	for (pSct = pObj->Area.First(); pSct; pSct = pObj->Area.Next(pSct))
 		pSct->ObjectShapes.Remove(pObj);
-#ifdef DEBUGREC
-	pObj->Area.DebugRec(pObj, 'R');
-#endif
+	if (Config.General.DebugRec)
+		pObj->Area.DebugRec(pObj, 'R');
 }
 
 void C4LSectors::AssertObjectNotInList(C4Object *pObj)
@@ -338,7 +335,6 @@ C4ObjectList *C4LArea::NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct)
 	return &(*ppSct)->ObjectShapes;
 }
 
-#ifdef DEBUGREC
 void C4LArea::DebugRec(class C4Object *pObj, char cMarker)
 {
 	C4RCArea rc;
@@ -352,4 +348,3 @@ void C4LArea::DebugRec(class C4Object *pObj, char cMarker)
 	rc.out = !!pOut;
 	AddDbgRec(RCT_Area, &rc, sizeof(C4RCArea));
 }
-#endif

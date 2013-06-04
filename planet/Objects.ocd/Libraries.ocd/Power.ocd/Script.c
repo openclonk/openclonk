@@ -450,6 +450,12 @@ global func MakePowerProducer(int amount /* the amount of power to produce const
 	return (Library_Power->GetPowerHelperForObject(this))->AddPowerProducer(this, amount);
 }
 
+/** Turns the power producer into an object that does not produce power */
+global func UnmakePowerProducer()
+{
+	MakePowerProducer(0);
+}
+
 // returns true if the current power balance is bigger or equal amount
 global func IsPowerAvailable(int amount)
 {

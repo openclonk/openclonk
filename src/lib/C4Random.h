@@ -37,17 +37,7 @@ inline void FixedRandom(DWORD dwSeed)
 	RandomCount=0;
 }
 
-#ifdef DEBUGREC
 int Random(int iRange);
-#else
-inline int Random(int iRange)
-{
-	RandomCount++;
-	if (iRange==0) return 0;
-	RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
-	return RandomHold % iRange;
-}
-#endif
 
 inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
 {

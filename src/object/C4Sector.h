@@ -126,9 +126,7 @@ public:
 	{ *ppSct=NULL; return NextObjectShapes(NULL, ppSct); }
 	C4ObjectList *NextObjectShapes(C4ObjectList *pPrev, C4LSector **ppSct); // get next object shapes list of this area
 
-#ifdef DEBUGREC
 	void DebugRec(class C4Object *pObj, char cMarker);
-#endif
 };
 
 #endif

@@ -28,12 +28,7 @@ private func Melt()
 private func Freeze()
 {
 	DoCon(1);
-	var i=2;
-	while(i>0)
-	{
-		ExtractLiquid();
-		i=--i;
-	}
+	ExtractMaterialAmount(0,0,Material("Water"),2);
 }
 
 local Collectible = 1;
