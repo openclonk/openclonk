@@ -332,18 +332,32 @@ static bool FnSmoke(C4PropList * _this, long tx, long ty, long level, long dwClr
 	return true;
 }
 
-static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy)
+static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy, C4PropList *insert_position)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	int32_t insert_x=x, insert_y=y;
-	return ::Landscape.InsertMaterial(mat,&insert_x,&insert_y,vx,vy);
+	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,vx,vy)) return false;
+	// output insertion position if desired
+	if (insert_position && !insert_position->IsFrozen())
+	{
+		insert_position->SetProperty(P_X, C4VInt(insert_x));
+		insert_position->SetProperty(P_Y, C4VInt(insert_y));
+	}
+	return true;
 }
 
-static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y)
+static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y, C4PropList *insert_position)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
 	int32_t insert_x=x, insert_y=y;
-	return ::Landscape.InsertMaterial(mat,&insert_x,&insert_y,0,0,true);
+	if (!::Landscape.InsertMaterial(mat,&insert_x,&insert_y,0,0,true)) return false;
+	// output insertion position if desired
+	if (insert_position && !insert_position->IsFrozen())
+	{
+		insert_position->SetProperty(P_X, C4VInt(insert_x));
+		insert_position->SetProperty(P_Y, C4VInt(insert_y));
+	}
+	return true;
 }
 
 

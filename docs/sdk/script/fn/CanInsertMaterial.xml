@@ -28,6 +28,12 @@
           <desc>Y insert position or offset</desc>
           <optional />
         </param>
+        <param>
+          <type>proplist</type>
+          <name>out_insertpos</name>
+          <desc>If a writeable proplist is passed, members x and y are filled with the position at which the material would be inserted.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Tests if a material pixel at the given position can be inserted.</desc>
