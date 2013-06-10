@@ -499,7 +499,7 @@ func OnMaterialChanged(int new, int old)
 	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
 	// into water
 	if(newliquid && !oldliquid)
-		AddEffect("Bubble", this, 1, 52, this);
+		AddEffect("Bubble", this, 1, 8, this);
 	// out of water
 	else if(!newliquid && oldliquid)
 		RemoveEffect("Bubble", this);
@@ -509,8 +509,21 @@ func FxBubbleTimer(pTarget, effect, iTime)
 {
 	if(GBackLiquid(0,-5))
 	{
+		var mouth_off = GetCon()/11;
 		var iRot = GetSwimRotation();
-		Bubble(1, +Sin(iRot, 9), Cos(iRot, 9));
+		var mouth_off_x = Sin(iRot, mouth_off), mouth_off_y = Cos(iRot, mouth_off);
+		// Search for bubbles to breath from
+		var bubble = FindObject(Find_Func("CanBeBreathed", this), Find_AtRect(mouth_off_x-mouth_off/2, mouth_off_y, mouth_off, mouth_off/3));
+		if (bubble)
+		{
+			bubble->~OnClonkBreath(this);
+		}
+		else if (!Random(6))
+		{
+			// Make your own bubbles
+			
+			Bubble(1, mouth_off_x, mouth_off_y);
+		}
 	}
 }
 
