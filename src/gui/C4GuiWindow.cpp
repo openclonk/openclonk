@@ -272,6 +272,7 @@ void C4GuiWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float parent
 {
 	C4GUI::ScrollBarFacets &facets = decoration ? *decoration : ::GraphicsResource.sfctScroll;
 	C4GUI::DynBarFacet bar = facets.barScroll;
+	C4Facet &scrollBarPin = facets.fctScrollPin;
 
 	float offX = 25.0f;
 	float offY = 0.0f;
@@ -297,6 +298,9 @@ void C4GuiWindowScrollBar::Draw(C4TargetFacet &cgo, int32_t player, float parent
 	}
 	bar.fctMiddle.Hgt = segmentHeight;
 	bar.fctEnd.Draw(cgo.Surface, x, yOrigin + yOffset /*- bar.fctEnd.Hgt*/);
+
+	// only the pin left
+	scrollBarPin.Draw(cgo.Surface, x, yOrigin + float(C4GUI_ScrollArrowHgt)/2.0f + ((hgt - 2.5f*float(C4GUI_ScrollArrowHgt)) * offset));
 }
 
 bool C4GuiWindowScrollBar::MouseInput(int32_t button, int32_t mouseX, int32_t mouseY, DWORD dwKeyParam)
@@ -1075,6 +1079,9 @@ void C4GuiWindow::RemoveChild(C4GuiWindow *child, bool close, bool all)
 	}
 	if (all)
 		children.clear();
+
+	// do a layout update asap
+	lastDrawPosition.dirty = 2;
 }
 
 void C4GuiWindow::ClearChildren(bool close)
@@ -1367,7 +1374,7 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 
 	if (frameDecoration)
 	{
-		C4Rect rect(leftDrawX - cgo.TargetX - frameDecoration->iBorderLeft, topDrawY - cgo.TargetY - frameDecoration->iBorderTop, width + frameDecoration->iBorderRight, height + frameDecoration->iBorderBottom);
+		C4Rect rect(leftDrawX - cgo.TargetX - frameDecoration->iBorderLeft, topDrawY - cgo.TargetY - frameDecoration->iBorderTop, width + frameDecoration->iBorderRight + frameDecoration->iBorderLeft, height + frameDecoration->iBorderBottom + frameDecoration->iBorderTop);
 		frameDecoration->Draw(cgo, rect);
 	}
 
