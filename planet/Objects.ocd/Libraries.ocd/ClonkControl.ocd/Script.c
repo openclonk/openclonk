@@ -224,7 +224,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	
 	// Contents menu
-	if (ctrl == CON_Contents)
+	if (ctrl == CON_Contents && !release)
 	{
 		// Close any menu if open.
 		if (GetMenu())
@@ -240,8 +240,8 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 		// Open contents menu.
 		CancelUse();
-		CreateContentsMenus();
-		// CreateContentsMenus calls SetMenu(this) in the clonk
+		GUI_ObjectInteractionMenu->CreateFor(this);
+		// the interaction menu calls SetMenu(this) in the clonk
 		// so after this call menu = the created menu
 		if(GetMenu())
 			GetMenu()->Show();		
