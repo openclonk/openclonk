@@ -105,9 +105,11 @@ func FxControlConstructionPreviewStart(object clonk, effect, int temp, id struct
 {
 	if (temp) return;
 
+	var previewer_id = 
 	effect.structure = structure_id;
 	effect.flipable = !structure_id->~NoConstructionFlip();
-	effect.preview = CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
+	effect.preview = structure_id->~CreateConstructionPreview(clonk);
+	if (!effect.preview) effect.preview->CreateObject(ConstructionPreviewer, AbsX(clonk->GetX()), AbsY(clonk->GetY()), clonk->GetOwner());
 	effect.preview->Set(structure_id, clonk);
 }
 

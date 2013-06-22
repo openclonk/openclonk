@@ -177,7 +177,7 @@ public func Construction()
 	lflag =
 	{
 		construction_time = FrameCounter(),
-		radius = LibraryFlag_standard_radius,
+		radius = GetID()->GetFlagRadius(),
 		range_markers = [],
 		linked_flags = [],
 		power_helper = nil
@@ -227,6 +227,20 @@ func FxRefreshLinkedFlagsTimer()
 {
 	this->RefreshLinkedFlags();
 	return -1;
+}
+
+// Returns all flags allied to owner of which the radius intersects the given circle
+func FindFlagsInRadius(object center_object, int radius, int owner)
+{
+	var flag_list = [];
+	if (LibraryFlag_flag_list) for(var flag in LibraryFlag_flag_list)
+	{
+		if(!IsAllied(flag->GetOwner(), owner)) continue;
+		if(flag == center_object) continue;
+		if(ObjectDistance(center_object, flag) > radius + flag->GetFlagRadius()) continue;
+		flag_list[GetLength(flag_list)] = flag;
+	}
+	return flag_list;
 }
 
 func RefreshLinkedFlags()
@@ -364,6 +378,12 @@ func OnOwnerChanged(int new_owner, int old_owner)
 	}
 }
 
-public func GetFlagRadius(){return lflag.radius;}
+// callback from construction library: Create a special preview that gives extra info about affected buildings / flags
+func CreateConstructionPreview(object constructing_clonk)
+{
+	return CreateObject(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
+}
+
+public func GetFlagRadius(){if (lflag) return lflag.radius; else return LibraryFlag_standard_radius;}
 public func GetFlagConstructionTime() {return lflag.construction_time;}
 public func GetFlagMarkerID(){return LibraryFlag_Marker;}
