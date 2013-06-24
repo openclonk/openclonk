@@ -74,8 +74,8 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 			//Make sure the clonk is holding the axe in the correct position
 			var hand = "Chop.R";
-			if(clonk->GetDir() == 0) hand = "Chop.L";
-			swing_anim = clonk->PlayAnimation(hand, 10, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), axe_swing_time, ANIM_Loop), Anim_Const(1000));
+			if((clonk->GetDir() == 0) != (clonk.Plane < tree.Plane)) hand = "Chop.L";
+			swing_anim = clonk->PlayAnimation(hand, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), axe_swing_time, ANIM_Loop), Anim_Const(1000));
 
 			//The timed effect for when the axe actually hits the tree
 			AddEffect("IntAxe", clonk, 1, 1, this, 0, tree);
@@ -195,7 +195,7 @@ func FxIntAxeTimer(object clonk, effect, int time)
 		{
 			//random speed & angle
 			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree);
+			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree, clonk.Plane < effect.tree.Plane);
 		}
 
 		// Damage tree
