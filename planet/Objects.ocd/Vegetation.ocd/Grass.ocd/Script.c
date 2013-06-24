@@ -80,6 +80,7 @@ global func MakeGrasFunction()
 	Log("}");
 }
 
+local Plane = -1;
 local Name = "Grass";
 local Placement = 0;
 local BlastIncinerate = 1;
