@@ -1000,7 +1000,7 @@ void C4ChatDlg::StopChat()
 bool C4ChatDlg::ToggleChat()
 {
 	if (pInstance && pInstance->IsShown())
-		StopChat();
+		pInstance->Close(false);
 	else
 		ShowChat();
 	return true;
