@@ -83,7 +83,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	return 1;
 }
 
-public func HoldingEnabled() { return true; }
 
 func ControlUseHolding(object clonk, ix, iy)
 {
@@ -200,7 +199,7 @@ func DoStrike(clonk, angle)
 		if (obj->GetOCF() & OCF_Alive)
 		{
 			var damage=5*1000;
-			ApplyWeaponBash(obj, 400, angle);
+			ApplyWeaponBash(obj, 400, angle, clonk);
 			obj->DoEnergy(-damage, true, FX_Call_EngGetPunched, clonk->GetOwner());
 		}
 		else
