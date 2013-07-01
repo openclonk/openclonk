@@ -7,7 +7,7 @@ func Initialize()
 		Style = GUI_Multiple | GUI_TextVCenter | GUI_TextHCenter,
 		Decoration = GUI_MenuDeco,
 		X = [1000, -100], Y = [0, 50],
-		Wdt = [1000], Hgt = [0, 100],
+		Wdt = [1000, -25], Hgt = [0, 75],
 		Text = "OPEN MENU",
 		BackgroundColor = {Std = 0, Hover = 0xffff0000},
 		OnMouseIn = GuiAction_SetTag(nil, nil, "Hover"),
@@ -161,8 +161,6 @@ func StartScenarioOptionsTest(parameter, int ID, int player)
 			}
 		}
 	};
-	Gui_AddMargin(menu.right.hostdesc, 25, 25);
-	Gui_AddMargin(menu.right.clientdesc, 25, 25);
 	Gui_AddCloseButton(menu, Scenario, "CloseCurrentMenu");
 	
 	var def, rules =[], i = 0;
