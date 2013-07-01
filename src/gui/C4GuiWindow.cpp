@@ -258,7 +258,7 @@ bool C4GuiWindowAction::ExecuteCommand(int32_t actionID, C4GuiWindow *parent, in
 	return false;
 }
 
-C4GuiWindowScrollBar::C4GuiWindowScrollBar() : offset(0.5f), decoration(0), parent(0)
+C4GuiWindowScrollBar::C4GuiWindowScrollBar() : offset(0.0f), decoration(0), parent(0)
 {
 
 }
@@ -1303,12 +1303,17 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player)
 bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, float parentTop, float parentRight, float parentBottom)
 {
 	// message hidden?
-	if (!IsVisible()) return false;
+	if (!IsVisible() || (target && !target->IsVisible(player, false)))
+	{
+		// however, we need to set the rectangle to something unobstructive so that it doesn't interfere with the parent's layout
+		lastDrawPosition.left = parentLeft;
+		lastDrawPosition.right = parentRight;
+		lastDrawPosition.top = parentTop;
+		lastDrawPosition.bottom = parentBottom;
+		lastDrawPosition.dirty = 0;
+		return false;
+	}
 
-	// player can see menu?
-	if (target)
-		if (!target->IsVisible(player, false))
-			return false;
 	// fetch style
 	const int32_t &style = props[C4GuiWindowPropertyName::style].GetInt();
 	// fetch current position as shortcut for overview
@@ -1434,6 +1439,15 @@ bool C4GuiWindow::Draw(C4TargetFacet &cgo, int32_t player, float parentLeft, flo
 		pDraw->DrawFrameDw(cgo.Surface, leftDrawX, topDrawY, rightDrawX,bottomDrawY, clipping ? C4RGB(255, 255, 0) :C4RGB(0, 255, 0));
 		StdStrBuf buf = FormatString("%s(%d)", target ? target->GetName() : "", id);
 		pDraw->TextOut(buf.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + leftDrawX, cgo.Y + topDrawY, 0xffff00ff, ALeft);
+
+		if (scrollBar || (parent && parent->scrollBar))
+		{
+			float scroll = scrollBar ? scrollBar->offset : 0.0f;
+			StdStrBuf buf2 = FormatString("childHgt: %d of %d (scroll %3d%%)", int(childHgt), int(height), int(100.0f * scroll));
+			int wdt, hgt;
+			::GraphicsResource.FontRegular.GetTextExtent(buf2.getData(), wdt, hgt, true);
+			pDraw->TextOut(buf2.getData(), ::GraphicsResource.FontCaption, 1.0, cgo.Surface, cgo.X + rightDrawX, cgo.Y + bottomDrawY - hgt, 0xff9999ff, ARight);
+		}
 	}
 
 	if (scrollBar)
