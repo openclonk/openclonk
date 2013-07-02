@@ -142,8 +142,8 @@ int32_t CommandByName(const char *szCommand)
 void AdjustMoveToTarget(int32_t &rX, int32_t &rY, bool fFreeMove, int32_t iShapeHgt)
 {
 	// Above solid (always)
-	int32_t iY;
-	for (iY=rY; (iY>=0) && GBackSolid(rX,iY); iY--) {}
+	int32_t iY=Min(rY, GBackHgt);
+	while ((iY>=0) && GBackSolid(rX,iY)) iY--;
 	if (iY>=0) rY=iY;
 	// No-free-move adjustments (i.e. if walking)
 	if (!fFreeMove)
