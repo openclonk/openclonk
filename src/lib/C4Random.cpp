@@ -35,7 +35,7 @@ int Random(int iRange)
 		C4RCRandom rc;
 		rc.Cnt=RandomCount;
 		rc.Range=iRange;
-		if (iRange==0)
+		if (iRange<=0)
 			rc.Val=0;
 		else
 		{
@@ -48,7 +48,7 @@ int Random(int iRange)
 	else
 	{
 		RandomCount++;
-		if (iRange==0) return 0;
+		if (iRange<=0) return 0;
 		RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
 		return RandomHold % iRange;
 	}
