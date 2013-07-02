@@ -1,0 +1,4 @@
+Name=Objektinteraktionsmenü
+Description=Kümmert sich um die Spielerinteraktion mit Gebäuden, Fahrzeugen etc.
+
+Contents=Inventar
