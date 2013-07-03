@@ -1128,13 +1128,13 @@ void C4Landscape::ScenarioInit()
 	if (Game.C4S.Landscape.AutoScanSideOpen) ScanSideOpen();
 }
 
-void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
+void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky, bool fClearRenderer)
 {
 	if (pMapCreator && fClearMapCreator) { delete pMapCreator; pMapCreator=NULL; }
 	// clear sky
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
-	delete pLandscapeRender; pLandscapeRender=NULL;
+	if (fClearRenderer) { delete pLandscapeRender; pLandscapeRender=NULL; }
 	delete [] BottomRowPix; BottomRowPix=NULL;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
@@ -1255,7 +1255,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 
 		// if overloading, clear current landscape (and sections, etc.)
 		// must clear, of course, before new sky is eventually read
-		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky);
+		if (fOverloadCurrent) Clear(!Game.C4S.Landscape.KeepMapCreator, fLoadSky, false);
 
 		// assign new map
 		Map = sfcMap;
@@ -1305,7 +1305,12 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		}
 
 		// Map to landscape
-		if (!MapToLandscape()) return false;
+		// Landscape render disabled during initial landscape zoom (will be updated later)
+		C4LandscapeRender *lsrender_backup  = pLandscapeRender;
+		pLandscapeRender = NULL;
+		bool map2landscape_success = MapToLandscape();
+		pLandscapeRender = lsrender_backup;
+		if (!map2landscape_success) return false;
 	}
 
 	// Init out-of-landscape pixels for bottom
@@ -1320,7 +1325,6 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Create renderer
-	pLandscapeRender = NULL;
 #ifdef USE_GL
 	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
 		pLandscapeRender = new C4LandscapeRenderGL();
@@ -1333,8 +1337,16 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	if(pLandscapeRender)
 	{
 		// Initialize renderer
-		if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
-			return false;
+		if (fOverloadCurrent)
+		{
+			if(!pLandscapeRender->ReInit(Width, Height))
+				return false;
+		}
+		else
+		{
+			if(!pLandscapeRender->Init(Width, Height, &::TextureMap, &::GraphicsResource.Files))
+				return false;
+		}
 
 		// Write landscape data
 		pLandscapeRender->Update(C4Rect(0, 0, Width, Height), this);

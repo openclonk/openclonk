@@ -80,7 +80,7 @@ protected:
 	C4Rect Relights[C4LS_MaxRelights];
 public:
 	void Default();
-	void Clear(bool fClearMapCreator=true, bool fClearSky=true);
+	void Clear(bool fClearMapCreator=true, bool fClearSky=true, bool fClearRenderer=true);
 	void Execute();
 	void Synchronize();
 	void Draw(C4TargetFacet &cgo, int32_t iPlayer=-1);

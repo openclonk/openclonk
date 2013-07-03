@@ -114,6 +114,28 @@ bool C4LandscapeRenderGL::Init(int32_t iWidth, int32_t iHeight, C4TextureMap *pT
 	return true;
 }
 
+bool C4LandscapeRenderGL::ReInit(int32_t iWidth, int32_t iHeight)
+{
+	// Safe info
+	this->iWidth = iWidth;
+	this->iHeight = iHeight;
+
+	// Clear old landscape textures
+	for (int i = 0; i < C4LR_SurfaceCount; i++)
+	{
+		delete Surfaces[i];
+		Surfaces[i] = NULL;
+	}
+
+	// Allocate new landscape textures
+	if (!InitLandscapeTexture())
+	{
+		LogFatal("[!] Could not initialize landscape texture!");
+		return false;
+	}
+	return true;
+}
+
 void C4LandscapeRenderGL::Clear()
 {
 	ClearShaders();
