@@ -2098,7 +2098,7 @@ bool C4Group::EnsureChildFilePtr(C4Group *pChild)
 	if ( !ItemIdentical( StdFile.Name, szChildPath ) )
 	{
 		// Reopen correct child stdfile
-		if ( !SetFilePtr2Entry( GetFilename(pChild->FileName) ) )
+		if ( !SetFilePtr2Entry( GetFilename(pChild->FileName), true ) )
 			return false;
 		// Advance to child's old file ptr
 		if ( !AdvanceFilePtr( pChild->EntryOffset + pChild->FilePtr ) )
