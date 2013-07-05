@@ -27,7 +27,6 @@ extern int ActualFullscreenX, ActualFullscreenY;
 {
 @private
 	NSOpenGLContext* context;
-	CGPoint savedMouse;
 }
 - (C4WindowController*) controller;
 - (void)update;
@@ -36,7 +35,6 @@ extern int ActualFullscreenX, ActualFullscreenY;
 - (void) hideCursor;
 - (BOOL) shouldHideMouseCursor;
 - (void) setContextSurfaceBackingSizeToOwnDimensions;
-- (void) centerMouse;
 
 + (CGDirectDisplayID) displayID;
 + (NSOpenGLContext*) mainContext;

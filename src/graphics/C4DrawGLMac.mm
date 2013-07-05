@@ -178,44 +178,22 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		[NSCursor hide];
 }
 
-- (void) centerMouse
-{
-	savedMouse = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
-	// emulate MouseEvent assuming this method is called in game mode
-	::C4GUI::MouseMove(C4MC_Button_None,
-		savedMouse.x*ActualFullscreenX/self.frame.size.width,
-		savedMouse.y*ActualFullscreenY/self.frame.size.height,
-		0, NULL
-	);
-}
-
 - (void) mouseEvent:(NSEvent*)event
 {
 	DWORD flags = 0;
 	int32_t button = mouseButtonFromEvent(event, &flags);
 	int actualSizeX = Application.isEditor ? self.frame.size.width  : ActualFullscreenX;
 	int actualSizeY = Application.isEditor ? self.frame.size.height : ActualFullscreenY;
-	if (!Application.isEditor && lionAndBeyond() && (self.window.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask)
+	CGPoint mouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
+	if (!Application.isEditor)
 	{
-		//CGWarpMouseCursorPosition(CGPointMake(actualSizeX/2, actualSizeY/2));
-		if (button != C4MC_Button_Wheel)
-		{
-			savedMouse.x += event.deltaX * (ActualFullscreenX/self.frame.size.width);
-			savedMouse.y -= event.deltaY * (ActualFullscreenY/self.frame.size.height);
-		}
-	} else
-	{
-		savedMouse = [self convertPoint:[self.window mouseLocationOutsideOfEventStream] fromView:nil];
-		if (!Application.isEditor)
-		{
-			savedMouse.x *= ActualFullscreenX/self.frame.size.width;
-			savedMouse.y *= ActualFullscreenY/self.frame.size.height;
-		}
+		mouse.x *= ActualFullscreenX/self.frame.size.width;
+		mouse.y *= ActualFullscreenY/self.frame.size.height;
 	}
-	savedMouse.x = fmin(fmax(savedMouse.x, 0), actualSizeX);
-	savedMouse.y = fmin(fmax(savedMouse.y, 0), actualSizeY);
-	int x = savedMouse.x;
-	int y = actualSizeY - savedMouse.y;
+	mouse.x = fmin(fmax(mouse.x, 0), actualSizeX);
+	mouse.y = fmin(fmax(mouse.y, 0), actualSizeY);
+	int x = mouse.x;
+	int y = actualSizeY - mouse.y;
 	
 	{
 		C4Viewport* viewport = self.controller.viewport;
