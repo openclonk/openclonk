@@ -226,6 +226,7 @@ func Bridge()
 // TODO: Make this more sophisticated, readd turn animation and other
 // adaptions
 public func IsClonk() { return true; }
+public func IsPrey() { return true; }
 
 public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
