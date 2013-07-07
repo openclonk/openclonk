@@ -5,8 +5,8 @@
 
 #include Library_FuzzyLogic
 
-static const FISH_SWIM_MAX_ANGLE = 30;
-static const FISH_SWIM_MAX_SPEED = 50;
+static const FISH_SWIM_MAX_ANGLE = 15;
+static const FISH_SWIM_MAX_SPEED = 30;
 static const FISH_VISION_MAX_ANGLE = 140;
 static const FISH_VISION_MAX_RANGE = 200;
 
@@ -41,11 +41,15 @@ func Construction()
 	StartGrowth(15);
 	current_angle = Random(360);
 	current_speed = RandomX(FISH_SWIM_MAX_SPEED/5, FISH_SWIM_MAX_SPEED);
-	SetAction("Swim");
-	SetComDir(COMD_None);
+	
 	var len = GetAnimationLength("Swim");
 	swim_animation = PlayAnimation("Swim", 5, Anim_Linear(0, 0, len, 100, ANIM_Loop), Anim_Const(500));
 	UpdateSwim();
+	
+	SetAction("Swim");
+	SetComDir(COMD_None);
+	Schedule(this, "AddTimer(\"Activity\", 15)",  1 + Random(10), 0);
+	AddTimer("UpdateSwim", 2);
 	
 	// FUZZY LOGIC INIT BELOW
 	_inherited(...);
@@ -55,9 +59,9 @@ func Construction()
 func InitFuzzyRules()
 {
 	// ACTION SETS
-	AddFuzzySet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [0, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
+	AddFuzzySet("swim", "left", [[-FISH_SWIM_MAX_ANGLE, 1], [-FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 0]]);
 	AddFuzzySet("swim", "straight", [[-5, 0], [0, 1], [5, 0]]);
-	AddFuzzySet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [0, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
+	AddFuzzySet("swim", "right", [[-FISH_SWIM_MAX_ANGLE, 0], [FISH_SWIM_MAX_ANGLE/2, 0], [FISH_SWIM_MAX_ANGLE, 1]]);
 	
 	AddFuzzySet("speed", "slow", [[0, 1], [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 0]]);
 	AddFuzzySet("speed", "fast", [[0, 0],  [FISH_SWIM_MAX_SPEED/2, 0], [FISH_SWIM_MAX_SPEED, 1]]);
@@ -93,23 +97,12 @@ func InitFuzzyRules()
 	
 	AddFuzzyRule(FuzzyAnd(FuzzyNot("wall_range=close"), FuzzyOr("food=left", FuzzyAnd("friend=left", "enemy_range=far", "food_range=far"), "enemy=right")), "swim=left");
 	AddFuzzyRule(FuzzyAnd(FuzzyNot("wall_range=close"), FuzzyOr("food=right", FuzzyAnd("friend=right", "enemy_range=far", "food_range=far"), "enemy=left")), "swim=right");
-	AddFuzzyRule(FuzzyAnd("wall=right", "wall_range=close"), "swim=left");
+	AddFuzzyRule(FuzzyAnd(FuzzyOr("wall=straight", "wall=right"), "wall_range=close"), "swim=left");
 	AddFuzzyRule(FuzzyAnd("wall=left", "wall_range=close"), "swim=right");
 	
 }
 
 
-protected func Initialize()
-{
-	SetAction("Swim");
-	SetComDir(COMD_None);
-	Schedule(this, "AddTimer(\"Activity\", 15)",  1 + Random(10), 0);
-	AddTimer("Activity", 15);
-	AddTimer("UpdateSwim", 5);
-	return 1;
-}
-
-	
 func Activity()
 {
 	UpdateVision();
@@ -143,19 +136,8 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		
 		// now that we fuzzified our food - can we actually eat it, too???
 		if (is_food && distance < 10)
-		{
-			// fishes can nom on food not only once - they will eat it piece for piece
-			var x = obj->GetX() - GetX();
-			var y = obj->GetY() - GetY();
-			Bubble(1, 0, 0);
-			Bubble(1, x, y);
-			CreateParticle("MaterialSpark", x, y, RandomX(-5, 5), RandomX(-5, 5), 50, RGB(50, 25, 0));
-			
-			var effect = GetEffect("IsBeingEaten", obj);
-			if (!effect)
-				effect = AddEffect("IsBeingEaten", obj, 1, 0, nil, Fish);
-			EffectCall(obj, effect, "Add");
-		}
+			DoEat(obj);
+
 		return true;
 	}
 	
@@ -166,34 +148,57 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 
 func UpdateWallVision()
 {
+	// anything in this function, that appears weird, looks that way due to optimization..
+	
 	// asses direction of wall
 	var closest = 0;
 	var closest_distance = FISH_VISION_MAX_RANGE;
-	for (var angle = -FISH_VISION_MAX_ANGLE; angle <= FISH_VISION_MAX_ANGLE; angle += FISH_VISION_MAX_ANGLE/3)
+	//for (var angle = -FISH_VISION_MAX_ANGLE/3; angle <= FISH_VISION_MAX_ANGLE; angle += FISH_VISION_MAX_ANGLE/3)
+	
+	var angle = -FISH_VISION_MAX_ANGLE/5;
+	do
 	{
-		
 		// quickly check solid point
-		var point = nil;
-		for (var d = 5; d <= FISH_VISION_MAX_RANGE; d += 20)
+		var max = FISH_VISION_MAX_RANGE/3;
+		var px, py;
+		for (var d = 5; d <= max; d += 20)
 		{
+			//var x = (x_fac * d) / 1000;
+			//var y = (y_fac * d) / 1000;
 			var x = Sin(current_angle + angle, d);
 			var y = -Cos(current_angle + angle, d);
 			if (GBackLiquid(x, y)) continue;
-			point = [x, y];
+
+			px = x;
+			py = y;
 			break;
 		}
 		
 		/*var px = Sin(current_angle + angle, FISH_VISION_MAX_RANGE);
 		var py = -Cos(current_angle + angle, FISH_VISION_MAX_RANGE);		
-		var line = PathFree2(GetX(), GetY(), GetX() + px, GetY() + py);*/
-		
-		if (!point) continue;
-		//CreateParticle("MagicSpark", point[0], point[1], 0, 0, 60, RGB(255, 0, 0));
-		var distance = Distance(0, 0, point[0], point[1]);
-		if (distance >= closest_distance) continue;
+		var point = PathFree2(GetX(), GetY(), GetX() + px, GetY() + py);
+		*/
+		if (!px && !py) { angle *= -1; continue; }
+		CreateParticle("MagicSpark", px , py, 0, 0, 60, RGB(255, 0, 0));
+		var distance = Distance(0, 0, px, py);
+		if (distance >= closest_distance) { angle *= -1; continue; }
 		closest = angle;
 		closest_distance = distance;
+		
+		angle *= -1;
 	}
+	while (angle > 0);
+	
+	if (closest_distance == FISH_VISION_MAX_RANGE)
+	{
+		// check for material in front, happens occasionally
+		var d = 5;
+		if (!GBackLiquid(Sin(current_angle, d), -Cos(current_angle, d)))
+		{
+			closest_distance = d;
+		}
+	}
+	
 	Fuzzify("wall", closest);
 	Fuzzify("wall_range", closest_distance);
 }
@@ -202,7 +207,6 @@ func DoActions(proplist actions)
 {
 	current_speed = actions.speed;
 	current_direction = actions.swim;
-	UpdateSwim();
 }
 
 func UpdateSwim()
@@ -214,11 +218,27 @@ func UpdateSwim()
 	
 	var len = GetAnimationLength("Swim");
 	var pos = GetAnimationPosition(swim_animation);
-	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, 2 * FISH_SWIM_MAX_SPEED, ANIM_Loop));
+	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, FISH_SWIM_MAX_SPEED - current_speed + 1, ANIM_Loop));
 	
 	var t = current_angle - 270;
 	this.MeshTransformation = Trans_Mul(Trans_Rotate(t, 0, 0, 1), Trans_Rotate(t, 1, 0, 0));
 }
+
+func DoEat(object obj)
+{
+	// fishes can nom on food not only once - they will eat it piece for piece
+	var x = obj->GetX() - GetX();
+	var y = obj->GetY() - GetY();
+	Bubble(1, 0, 0);
+	Bubble(1, x, y);
+	CreateParticle("MaterialParticle", x, y, RandomX(-5, 5), RandomX(-5, 5), 20, RGB(50, 25, 0));
+	
+	var effect = GetEffect("IsBeingEaten", obj);
+	if (!effect)
+		effect = AddEffect("IsBeingEaten", obj, 1, 0, nil, Fish);
+	EffectCall(obj, effect, "Add");
+}
+
 
 func FxIsBeingEatenStart(target, effect, temp)
 {

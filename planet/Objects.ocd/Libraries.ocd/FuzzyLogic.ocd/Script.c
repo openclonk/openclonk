@@ -1,7 +1,14 @@
 /**
 	FuzzyLogic
 	Contains functions to evaluate fuzzy sets.
-
+	Objects using this library first need to declare fuzzy sets with AddFuzzySet and fuzzy rules with AddFuzzyRule
+	and can then update the fuzzy values using Fuzzify.
+	FuzzyExec can then be called to evaluate the current upates and returns an array of actions based on the AddFuzzyRules calls.
+	
+	For an example, see the fish.
+	
+	
+	If you happen to notice anything weird regarding how the data of this library is handled internally, it is probably due to optimizations.
 	@author Zapper
 	
 	
@@ -22,7 +29,13 @@ func Construction()
 		rules = [],
 		sets = {},
 		actions = {},
+		// updates[set][subset]=[unused, value, usage_count]
 		updates = {},
+		
+		// both caches help when values change either not at all or only slowly
+		// which could happen quite often. (For example the "hunger" of an animal could be at the same value for quite some FuzzyExecs)
+		cache_defuz = {}, // optimizes defuzzification
+		cache_fuz = {}, // optimizes fuzzification
 	};
 	return _inherited(...);
 }
@@ -30,15 +43,29 @@ func Construction()
 /*
 	AddFuzzySet("swim", "left", [[-1000, 1], [-500, 1], [0, 0]]);
 */
-func AddFuzzySet(string set, string subset, array data)
+func AddFuzzySet(string set, string subset, array data, bool no_warn)
 {
 	if (!FuzzyLogic.sets[set])
 		FuzzyLogic.sets[set] = {};
 	// normaliz data
 	// the Y values should normally be 0 or 1 and are normalized to 0 and 1000 here
 	for (var item in data)
-		item[1] *= 1000;
+	{
+		if (item[1] != 0 && item[1] != 1 && !no_warn)
+			Log("Warning: AddFuzzyAction for %s/%s has a strength value of %d", set, subset, item[1]);
+		else
+			item[1] *= 1000;
+	}
 	FuzzyLogic.sets[set][subset] = data;
+	
+	// init cache for that entry
+	if (!FuzzyLogic.cache_defuz[set])
+		FuzzyLogic.cache_defuz[set] = {};
+	FuzzyLogic.cache_defuz[set][subset] = [-1, nil];
+	
+	if (!FuzzyLogic.cache_fuz[set])
+		FuzzyLogic.cache_fuz[set] = {};
+	FuzzyLogic.cache_fuz[set] = 0xffffff;
 }
 
 func FuzzyExec()
@@ -54,18 +81,28 @@ func FuzzyExec()
 	}
 	
 	// now defuzzify the actions
-	FuzzyLogic.actions = {};
 	for (var action in GetProperties(actions))
 	{
 		var weighted_sum = 0, sum = 0;
 		
 		for (var subset in GetProperties(actions[action]))
 		{
+			var strength = actions[action][subset];
 			var defuz; // [centroid, weight]
-			defuz = Defuzzify(action, subset, actions);
+			
+			// try the cache
+			if (FuzzyLogic.cache_defuz[action][subset][0] == strength)
+			{
+				defuz = FuzzyLogic.cache_defuz[action][subset][1];
+			}
+			else // cache miss
+			{
+				defuz = Defuzzify(action, subset, strength);
+				FuzzyLogic.cache_defuz[action][subset] = [strength, defuz];
+			}
+			
 			weighted_sum += defuz[0] * defuz[1];
 			sum += defuz[1];
-			
 			//Log("Fuzzy exec: action %s/%s: %d -> cx: %d, weight: %d", action, subset, actions[action][subset], defuz[0], defuz[1]);
 		}
 		
@@ -84,15 +121,15 @@ func FuzzyExec()
 	calculates the centroid of an action set
 	returns [centroid-X, weight]
 */
-func Defuzzify(string action, string subset, proplist actions)
+func Defuzzify(string action, string subset, int strength)
 {
 	var subset_data = FuzzyLogic.sets[action][subset];
 	var centroid_data = [];
 	for (var i = 0; i <= 1; ++i)
 	{
-		var data = DefuzzifyGetCentroidFromGraph(subset_data[i], subset_data[i+1], actions[action][subset], nil, true, i == 0);
+		var data = DefuzzifyGetCentroidFromGraph(subset_data[i], subset_data[i+1], strength, nil, true, i == 0);
 		PushBack(centroid_data, data);
-		//Log("     -> %d/%d, %d/%d with Y=%d: cx: %d, weight: %d", subset_data[i][0], subset_data[i][1], subset_data[i+1][0], subset_data[i+1][1], actions[action][subset], data[0], data[1]);
+		//Log("     -> %d/%d, %d/%d with Y=%d: cx: %d, weight: %d", subset_data[i][0], subset_data[i][1], subset_data[i+1][0], subset_data[i+1][1], strength, data[0], data[1]);
 	}
 	
 	// calculate joint weight from array
@@ -162,6 +199,7 @@ func ApplyFuzzyRule(array rule)
 	if (rule[0] == FUZZY_AND)
 	{
 		var v1 = ApplyFuzzyRule(rule[1]);
+		if (v1 < 50) return 0;
 		var v2 = ApplyFuzzyRule(rule[2]);
 		return Min(v1, v2);
 	}
@@ -169,6 +207,7 @@ func ApplyFuzzyRule(array rule)
 	if (rule[0] == FUZZY_OR)
 	{
 		var v1 = ApplyFuzzyRule(rule[1]);
+		if (v1 > 950) return 1000;
 		var v2 = ApplyFuzzyRule(rule[2]);
 		return Max(v1, v2);
 	}
@@ -179,21 +218,25 @@ func ApplyFuzzyRule(array rule)
 		return 1000 - ApplyFuzzyRule(rule[1]);
 	}
 	
-	// normal rule, figure out value for subset
-	return FuzzyLogic.updates[rule[0]][rule[1]];
+	// normal rule, value has already been calcuated in FuzzyExec
+	return rule[1];
 }
 
 
 /*
 	takes "position", 3
-	puts position = {left=0, middle=0.5, right=0.9} into updates
+	puts position = {left=[nil, 0], middle=[nil, 0.5], right=[nil, 0.9]} into updates (only for actually used subsets, though)
 */
 func Fuzzify(string set, int value)
 {
-	FuzzyLogic.updates[set] = {};
+	// does not need to change the updates at all if the value didn't change between two calls
+	if (FuzzyLogic.cache_fuz[set] == value) return true;
+	FuzzyLogic.cache_fuz[set] = value;
 	
-	var results = [];
-	for (var subset in GetProperties(FuzzyLogic.sets[set]))
+	// no rules for that set?
+	if (!FuzzyLogic.updates[set]) return true;
+	
+	for (var subset in GetProperties(FuzzyLogic.updates[set]))
 	{
 		var subset_data = FuzzyLogic.sets[set][subset];
 		var result_value = nil;
@@ -220,7 +263,7 @@ func Fuzzify(string set, int value)
 			}
 		}
 		
-		FuzzyLogic.updates[set][subset] = result_value;
+		FuzzyLogic.updates[set][subset][1] = result_value;
 		//Log("Fuzzify %s/%s: %d [from value %d]", set, subset, result_value, value);
 	}
 }
@@ -249,8 +292,8 @@ func FuzzyCalcLineIntersectY(array coords1, array coords2, int Y)
 	return coords1[0] + ((Y - coords1[1]) / m);
 }
 
-// takes "position=left", return ["position", "left"]
-func FuzzyStateStringToArray(state)
+// takes "position=left", returns [value=0, usage_count=0] for !no_cache and ["position", "left"] for no_cache
+func FuzzyStateStringToArray(state, bool no_cache)
 {
 	// already an array?
 	if (GetType(state) == C4V_Array) return state;
@@ -280,7 +323,17 @@ func FuzzyStateStringToArray(state)
 		FatalError(Format("FuzzyLogic: Error in rule string: %s [unknown set %s]", state, first));
 	if (!FuzzyLogic.sets[first][second])
 		FatalError(Format("FuzzyLogic: Error in rule string: %s [unknown subset %s]", state, second));
-	return [first, second];
+	
+	if (no_cache)
+		return [first, second];
+	
+	// see whether that entry already exists in the cache
+	if (!FuzzyLogic.updates[first])
+		FuzzyLogic.updates[first] = {};
+	if (!FuzzyLogic.updates[first][second])
+		FuzzyLogic.updates[first][second] = [nil, 0, 0];
+		
+	return FuzzyLogic.updates[first][second];
 }
 
 func FuzzyAnd(condA, condB)
@@ -310,7 +363,10 @@ func AddFuzzyRule(condition, string result)
 		FatalError("FuzzyLogic::AddFuzzyRule needs result string");
 	if (GetType(condition) == C4V_String)
 		condition = FuzzyStateStringToArray(condition);
-	result = FuzzyStateStringToArray(result);
+	result = FuzzyStateStringToArray(result, true);
 	PushBack(FuzzyLogic.rules, [condition, result]);
+	
+	FuzzyLogic.actions[result[0]] = 0;
+	
 	return true;
 }
