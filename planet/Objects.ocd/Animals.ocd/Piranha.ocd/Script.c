@@ -13,7 +13,7 @@ local hunger;
 func Construction()
 {
 	hunger = 0;
-	AddTimer("MoreHunger", 40);
+	AddTimer("MoreHunger", 80);
 	_inherited(...);
 }
 
@@ -74,7 +74,7 @@ func InitFuzzyRules()
 func UpdateVision()
 {
 	Fuzzify("hunger", hunger);
-	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_Func("IsPrey"), Find_NoContainer(), Sort_Distance()), true);
+	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Func("IsPrey"), Find_NoContainer(), Sort_Distance()), true);
 	UpdateWallVision();
 }
 

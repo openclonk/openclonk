@@ -113,7 +113,7 @@ func Activity()
 
 func UpdateVision()
 {
-	UpdateVisionFor("enemy", "enemy_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_Or(Find_Func("IsPredator"), Find_Func("IsClonk")), Find_NoContainer(), Sort_Distance()));
+	UpdateVisionFor("enemy", "enemy_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_OCF(OCF_Alive), Find_Or(Find_Func("IsPredator"), Find_Func("IsClonk")), Find_NoContainer(), Sort_Distance()));
 	UpdateVisionFor("friend", "friend_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_ID(GetID()), Find_Exclude(this), Find_NoContainer(), Sort_Distance()));
 	UpdateVisionFor("food", "food_range", FindObjects(Find_Distance(FISH_VISION_MAX_RANGE), Find_Func("NutritionalValue"), Find_NoContainer(), Sort_Distance()), true);
 	UpdateWallVision();
@@ -128,6 +128,10 @@ func UpdateVisionFor(string set, string range_set, array objects, bool is_food)
 		var angle = Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
 		var d = GetTurnDirection(current_angle, angle);
 		if (!Inside(d, -FISH_VISION_MAX_ANGLE, FISH_VISION_MAX_ANGLE)) continue;
+		
+		// prevent piranhas to jump out of the water to eat unsuspecting Clonks
+		if (is_food && (obj->GetMaterial() != GetMaterial())) continue;
+		
 		//CreateParticle("MagicSpark", obj->GetX() - GetX(), obj->GetY() - GetY(), 0, 0, 60, RGB(0, 255, 0));
 		//this->Message("%s@%d (me %d, it %d)", obj->GetName(), d, current_angle, angle);
 		var distance = ObjectDistance(this, obj);
@@ -179,7 +183,7 @@ func UpdateWallVision()
 		var point = PathFree2(GetX(), GetY(), GetX() + px, GetY() + py);
 		*/
 		if (!px && !py) { angle *= -1; continue; }
-		CreateParticle("MagicSpark", px , py, 0, 0, 60, RGB(255, 0, 0));
+		//CreateParticle("MagicSpark", px , py, 0, 0, 60, RGB(255, 0, 0));
 		var distance = Distance(0, 0, px, py);
 		if (distance >= closest_distance) { angle *= -1; continue; }
 		closest = angle;
