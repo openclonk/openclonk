@@ -163,3 +163,24 @@ global func FindHeight(int x)
 		y--;
 	return y;
 }
+
+/*
+	Returns the normal vector of the (solid) landscape at a point relative to an object.
+	Can f.e. be used to bounce projectiles.
+*/
+global func GetSurfaceVector(int x, int y)
+{
+	var normal = {x = 0, y = 0};
+	
+	var fac = 1;
+	for(var fac = 1; fac <= 4; fac *= 2)
+	{
+		if(GBackSolid(x + fac, y)) {--normal.x;}
+		if(GBackSolid(x - fac, y)) {++normal.x;}
+	
+		if(GBackSolid(x, y + fac)) {--normal.y;}
+		if(GBackSolid(x, y - fac)) {++normal.y;}
+	}
+	
+	return normal;
+}
