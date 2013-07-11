@@ -1,0 +1,2 @@
+Name=Coral
+Description=Grows under water and, once dug out, can even be eaten.

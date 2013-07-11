@@ -3,6 +3,8 @@ func Initialize()
 {
 	Fish->Place(20, Rectangle(0, 0, LandscapeWidth() / 2 - 50, LandscapeHeight()));
 	Piranha->Place(20, Rectangle(LandscapeWidth() / 2 + 50, 0, LandscapeWidth(), LandscapeHeight()));
+	Seaweed->Place(20);
+	Coral->Place(30);
 	
 	CastObjects(Bread, 10, 10, LandscapeWidth()/2, 30);
 }
