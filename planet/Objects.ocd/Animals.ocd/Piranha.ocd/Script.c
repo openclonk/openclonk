@@ -88,6 +88,8 @@ func DoEat(object obj)
 	hunger -= 10;
 	if (hunger < 0) hunger = 0;
 	CastParticles("MaterialParticle", 10, 10, 0, 0, 10, 20, RGB(200, 5, 5), RGB(200, 5, 5));
+	
+	DoEnergy(5);
 }
 
 local Name = "$Name$";

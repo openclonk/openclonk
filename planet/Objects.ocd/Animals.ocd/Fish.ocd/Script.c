@@ -10,6 +10,7 @@ static const FISH_SWIM_MAX_SPEED = 30;
 static const FISH_VISION_MAX_ANGLE = 140;
 static const FISH_VISION_MAX_RANGE = 200;
 
+local walking, swimming;
 local current_angle, current_speed, current_direction;
 local swim_animation;
 
@@ -105,9 +106,46 @@ func InitFuzzyRules()
 
 func Activity()
 {
-	UpdateVision();
-	var actions = FuzzyExec();
-	DoActions(actions);
+	if (swimming)
+	{
+		UpdateVision();
+		var actions = FuzzyExec();
+		DoActions(actions);
+	}
+	else if (walking)
+	{
+		// PANIC WHERE THE WATER AT
+		var rx = RandomX(10, 25);
+		if (!Random(2)) rx *= -1;
+		
+		var has_water = false;
+		for (var y = 0; y <= 12; y += 4)
+		{
+			if (!GBackLiquid(rx, y)) continue;
+			has_water = true;
+			break;
+		}
+		
+		if (has_water)
+		{
+			if (rx < 0) SetComDir(COMD_Left);
+			else SetComDir(COMD_Right);
+			
+			if (!Random(2))
+				DoJump();
+			return true;
+		}
+		else
+		{
+			if (!Random(2))
+			{
+				if (!Random(2)) SetComDir(COMD_Left);
+				else SetComDir(COMD_Right);
+			}
+			if (!Random(3))
+				DoJump();
+		}
+	}
 	return 1;
 }
 
@@ -215,6 +253,8 @@ func DoActions(proplist actions)
 
 func UpdateSwim()
 {
+	if (!swimming) return;
+	
 	current_angle = (current_angle + current_direction) % 360;
 	if (current_angle < 0) current_angle = 360 + current_angle;
 	
@@ -241,6 +281,8 @@ func DoEat(object obj)
 	if (!effect)
 		effect = AddEffect("IsBeingEaten", obj, 1, 0, nil, Fish);
 	EffectCall(obj, effect, "Add");
+	
+	DoEnergy(2);
 }
 
 
@@ -257,13 +299,55 @@ func FxIsBeingEatenAdd(target, effect)
 	target->RemoveObject();
 }
 
-/* Contact */
-protected func ContactBottom()
+
+func DoJump()
 {
-	return 1;
+	SetAction("Jump");
+	Sound("SoftTouch*");
+	
+	var x_dir = RandomX(ActMap.Jump.Speed/2, ActMap.Jump.Speed);
+	if (GetComDir() == COMD_Left) x_dir *= -1;
+	var y_dir = -RandomX(ActMap.Jump.Speed/3, ActMap.Jump.Speed);
+	SetSpeed(x_dir, y_dir);
 }
 
+func StartWalk() 
+{
+	if (GBackLiquid())
+	{
+		SetAction("Swim");
+		return;
+	}
+	walking = true;
+	swimming = false;
+	
+	var len = GetAnimationLength("Swim");
+	var pos = GetAnimationPosition(swim_animation);
+	SetAnimationPosition(swim_animation, Anim_Linear(pos, 0, len, 10, ANIM_Loop));
+	this.MeshTransformation = Trans_Rotate(90 + RandomX(-10, 10), 1, 0, 0);
+}
 
+func StartSwim()
+{
+	swimming = true;
+	walking = false;
+	
+	// make sure we go down when entering the water
+	current_direction = RandomX(170, 190);
+	
+	UpdateSwim();
+}
+func StartJump()
+{
+	if (GBackLiquid())
+	{
+		SetAction("Swim");
+		return;
+	}
+	
+	swimming = false;
+	walking = false;
+}
 
 local ActMap = {
 
@@ -275,17 +359,48 @@ Swim = {
 	Accel = 16,
 	Decel = 16,
 	Length = 1,
-	Delay = 10,
-	X = 0,
-	Y = 0,
-	Wdt = 24,
-	Hgt = 24,
+	Delay = 0,
+	FacetBase=1,
 	NextAction = "Swim",
-}
+	StartCall = "StartSwim"
+},
+Walk = {
+	Prototype = Action,
+	Name = "Walk",
+	Procedure = DFA_WALK,
+	Speed = 30,
+	Accel = 16,
+	Decel = 16,
+	Length = 1,
+	Delay = 0,
+	FacetBase=1,
+	Directions = 2,
+	FlipDir = 1,
+	NextAction = "Walk",
+	StartCall = "StartWalk",
+	InLiquidAction = "Swim",
+},
+Jump = {
+	Prototype = Action,
+	Name = "Jump",
+	Procedure = DFA_FLIGHT,
+	Speed = 30,
+	Accel = 16,
+	Decel = 16,
+	Length = 1,
+	Delay = 0,
+	FacetBase=1,
+	Directions = 2,
+	FlipDir = 1,
+	NextAction = "Jump",
+	StartCall = "StartJump",
+	InLiquidAction = "Swim",
+},
 };
 local Name = "$Name$";
 local Description = "$Description$";
 local MaxEnergy = 40000;
+local MaxBreath = 180; // 180 = five seconds
 local Placement = 1;
 local NoBurnDecay = 1;
 local BreatheWater = 1;
