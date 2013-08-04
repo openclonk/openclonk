@@ -357,8 +357,6 @@ set(OC_CLONK_SOURCES
 	src/lib/PathFinder.cpp
 	src/lib/PathFinder.h
 	src/lib/StdAdaptors.h
-	src/lib/StdBase64.cpp
-	src/lib/StdBase64.h
 	src/lib/StdColors.h
 	src/lib/StdMesh.cpp
 	src/lib/StdMesh.h
