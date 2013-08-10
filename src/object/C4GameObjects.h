@@ -37,12 +37,13 @@ public:
 	void Clear(bool fClearInactive); // clear objects
 	void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
 
+private:
+	uint32_t LastUsedMarker; // last used value for C4Object::Marker
+
 public:
 	C4LSectors Sectors; // section object lists
 	C4ObjectList InactiveObjects; // inactive objects (Status=2)
 	C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
-
-	unsigned int LastUsedMarker; // last used value for C4Object::Marker
 
 	using C4ObjectList::Add;
 	bool Add(C4Object *nObj); // add object
@@ -79,6 +80,8 @@ public:
 	void ResetAudibility();
 	void UpdateTransferZones();
 	void SetOCF();
+
+	uint32_t GetNextMarker(); // Get a new marker. If all markers are exceeded (LastUsedMarker is 0xffffffff), restart marker at 1 and reset all object markers to zero.
 };
 
 extern C4GameObjects Objects;

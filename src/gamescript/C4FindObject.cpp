@@ -256,7 +256,7 @@ int32_t C4FindObject::Count(const C4ObjectList &Objs, const C4LSectors &Sct)
 		if (!Area.Next(pSct))
 			return Count(pSct->ObjectShapes);
 		// Create marker, count over all areas
-		unsigned int iMarker = ++::Objects.LastUsedMarker;
+		uint32_t iMarker = ::Objects.GetNextMarker();
 		int32_t iCount = 0;
 		for (; pLst; pLst=Area.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *pLnk = pLst->First; pLnk; pLnk = pLnk->Next)
@@ -347,7 +347,7 @@ C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors 
 		// Set up array
 		pArray = new C4ValueArray(32); iSize = 0;
 		// Create marker, search all areas
-		unsigned int iMarker = ++::Objects.LastUsedMarker;
+		uint32_t iMarker = ::Objects.GetNextMarker();
 		for (; pLst; pLst=Area.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *pLnk = pLst->First; pLnk; pLnk = pLnk->Next)
 				if (pLnk->Obj->Status)

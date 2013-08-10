@@ -1036,8 +1036,6 @@ void C4Object::Execute()
 		rc.fr=fix_r;
 		AddDbgRec(RCT_ExecObj, &rc, sizeof(rc));
 	}
-	// reset temporary marker
-	Marker = 0;
 	// OCF
 	UpdateOCF();
 	// Command

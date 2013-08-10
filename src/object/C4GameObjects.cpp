@@ -111,7 +111,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	for (C4ObjectList::iterator iter = begin(); iter != end() && (obj1 = *iter); ++iter)
 		if (obj1->Status && !obj1->Contained && (obj1->OCF & focf))
 		{
-			unsigned int Marker = ++LastUsedMarker;
+			uint32_t Marker = GetNextMarker();
 			C4LSector *pSct;
 			for (C4ObjectList *pLst = obj1->Area.FirstObjects(&pSct); pLst; pLst = obj1->Area.NextObjects(pLst, &pSct))
 				for (C4ObjectList::iterator iter2 = pLst->begin(); iter2 != pLst->end() && (obj2 = *iter2); ++iter2)
@@ -548,4 +548,19 @@ void C4GameObjects::SetOCF()
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->SetOCF();
+}
+
+uint32_t C4GameObjects::GetNextMarker()
+{
+	// Get a new marker.
+	uint32_t marker = ++LastUsedMarker;
+	// If all markers are exceeded, restart marker at 1 and reset all object markers to zero.
+	if (!marker)
+	{
+		C4Object *cobj; C4ObjectLink *clnk;
+		for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			cobj->Marker = 0;
+		marker = ++LastUsedMarker;
+	}
+	return marker;
 }

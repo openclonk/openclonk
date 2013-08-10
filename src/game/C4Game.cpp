@@ -1326,9 +1326,6 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 	if (Config.General.DebugRec)
 		AddDbgRec(RCT_Block, "ObjCC", 6);
 
-	// Can savely reset object marker here
-	Objects.LastUsedMarker = 0;
-
 	// Cross check objects
 	Objects.CrossCheck();
 

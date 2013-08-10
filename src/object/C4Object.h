@@ -153,7 +153,7 @@ public:
 	bool EntranceStatus;
 	uint32_t t_contact; // SyncClearance-NoSave //
 	uint32_t OCF;
-	unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
+	uint32_t Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
 	C4ObjectPtr Layer;
 	C4DrawTransform *pDrawTransform; // assigned drawing transformation
 
