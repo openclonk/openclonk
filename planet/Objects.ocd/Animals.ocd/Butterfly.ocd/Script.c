@@ -22,6 +22,10 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	MoveToTarget();
 	AddTimer("Activity");
+	
+	// Make butterflies a bit more colorful.
+	SetClrModulation(HSL(Random(256), 255, 100 + Random(60)));
+	
 	return 1;
 }
 
