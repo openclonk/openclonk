@@ -1,5 +1,7 @@
 /*-- Seaweed --*/
 
+#include Library_Plant
+
 private func Initialize()
 {
 	SetAction("Sway");
