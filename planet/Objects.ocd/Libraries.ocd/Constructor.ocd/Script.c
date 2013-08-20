@@ -185,7 +185,12 @@ func CreateConstructionSite(object clonk, id structure_id, int x, int y, int dir
 	// Create construction site
 	var site;
 	site = CreateObject(ConstructionSite, x, y, Contained()->GetOwner());
-	site->Set(structure_id, dir, stick_to);
+	
+	// Randomize sign rotation
+	site -> SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(RandomX(-30, 30), 0, 1, 0), Trans_Rotate(RandomX(-10, 10), 1, 0, 0)));
+	site -> PlayAnimation("LeftToRight", 1, Anim_Const(RandomX(0, GetAnimationLength("LeftToRight"))), Anim_Const(500));
+	
+	site -> Set(structure_id, dir, stick_to);
 	//if(!(site = CreateConstruction(structure_id, x, y, Contained()->GetOwner(), 1, 1, 1)))
 		//return false;
 	
