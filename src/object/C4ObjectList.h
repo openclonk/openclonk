@@ -89,7 +89,7 @@ public:
 	void Copy(const C4ObjectList &rList);
 	void DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert); // draw all objects that match dwCat (or don't match if fInvert)
 	void Draw(C4TargetFacet &cgo, int iPlayer, int MinPlane, int MaxPlane); // draw all objects
-	void DrawSelectMark(C4TargetFacet &cgo);
+	void DrawSelectMark(C4TargetFacet &cgo) const;
 	void CloseMenus();
 	void UpdateGraphics(bool fGraphicsChanged);
 	void UpdateFaces(bool bUpdateShape);
@@ -103,7 +103,7 @@ public:
 
 	virtual bool AssignInfo();
 	virtual bool ValidateOwners();
-	StdStrBuf GetNameList(C4DefList &rDefs);
+	StdStrBuf GetNameList(C4DefList &rDefs) const;
 	StdStrBuf GetDataString();
 	bool IsClear() const;
 	bool DenumeratePointers();
@@ -112,19 +112,23 @@ public:
 	void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects, C4ValueNumbers *);
 	void Denumerate(C4ValueNumbers *);
 
-	bool IsContained(C4Object *pObj);
+	bool IsContained(const C4Object *pObj) const;
 	int ClearPointers(C4Object *pObj);
 	int ObjectCount(C4ID id=C4ID::None) const;
 	int MassCount();
-	int ListIDCount(int32_t dwCategory);
+	int ListIDCount(int32_t dwCategory) const;
 
-	C4Object* GetObject(int Index=0);
+	const C4Object* GetObject(int Index=0) const;
+	C4Object* GetObject(int Index=0)
+	{ return const_cast<C4Object*>(const_cast<const C4ObjectList*>(this)->GetObject(Index)); }
 	C4Object* Find(C4ID id, int iOwner=ANY_OWNER, DWORD dwOCF=OCF_All);
 	C4Object* FindOther(C4ID id, int iOwner=ANY_OWNER);
 
-	C4ObjectLink* GetLink(C4Object *pObj);
+	const C4ObjectLink* GetLink(const C4Object *pObj) const;
+	C4ObjectLink* GetLink(const C4Object *pObj)
+	{ return const_cast<C4ObjectLink*>(const_cast<const C4ObjectList*>(this)->GetLink(pObj)); }
 
-	C4ID GetListID(int32_t dwCategory, int Index);
+	C4ID GetListID(int32_t dwCategory, int Index) const;
 
 	bool ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
 

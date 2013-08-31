@@ -197,18 +197,18 @@ protected:
 public:
 	void Resort();
 	void SetPlane(int32_t z) { if (z) Plane = z; Resort(); }
-	int32_t GetPlane() { return Plane; }
-	int32_t GetAudible();
+	int32_t GetPlane() const { return Plane; }
+	int32_t GetAudible() const;
 	void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL);
 	void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, bool fControl=false, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL)
 	{ SetCommand(iCommand, pTarget, C4VInt(iTx), iTy, pTarget2, fControl, iData, iRetries, szText); }
 	bool AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0);
 	bool AddCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0)
 	{ return AddCommand(iCommand, pTarget, C4VInt(iTx), iTy, iUpdateInterval, pTarget2, fInitEvaluation, iData, fAppend, iRetries, szText, iBaseMode); }
-	C4Command *FindCommand(int32_t iCommandType); // find a command of the given type
+	C4Command *FindCommand(int32_t iCommandType) const; // find a command of the given type
 	void ClearCommand(C4Command *pUntil);
 	void ClearCommands();
-	void DrawSelectMark(C4TargetFacet &cgo);
+	void DrawSelectMark(C4TargetFacet &cgo) const;
 	void UpdateActionFace();
 	void SyncClearance();
 	void SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY);
@@ -238,9 +238,9 @@ public:
 	enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2 };
 	void Draw(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
 	void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal, float offX=0, float offY=0);
-	void DrawActionFace(C4TargetFacet &cgo, float offX, float offY);
-	void DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX=0, int32_t iPhaseY=0);
-	void DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform);
+	void DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const;
+	void DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX=0, int32_t iPhaseY=0) const;
+	void DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform) const;
 	void Execute();
 	void ClearPointers(C4Object *ptr);
 	bool ExecMovement();
@@ -264,9 +264,9 @@ public:
 	void UpdateFace(bool bUpdateShape, bool fTemp=false);
 	void UpdateGraphics(bool fGraphicsChanged, bool fTemp=false); // recreates solidmasks (if fGraphicsChanged), validates Color
 	void UpdateFlipDir(); // applies new flipdir to draw transform matrix; creates/deletes it if necessary
-	bool At(int32_t ctx, int32_t cty);
-	bool At(int32_t ctx, int32_t cty, DWORD &ocf);
-	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf);
+	bool At(int32_t ctx, int32_t cty) const;
+	bool At(int32_t ctx, int32_t cty, DWORD &ocf) const;
+	void GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const;
 	bool CloseMenu(bool fForce);
 	bool ActivateMenu(int32_t iMenu, int32_t iMenuSelect=0, int32_t iMenuData=0, int32_t iMenuPosition=0, C4Object *pTarget=NULL);
 	int32_t ContactCheck(int32_t atx, int32_t aty, uint32_t *border_hack_contacts=0);
@@ -279,7 +279,7 @@ public:
 	bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 	void SetDir(int32_t tdir);
 	void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }
-	int32_t GetProcedure();
+	int32_t GetProcedure() const;
 	bool Enter(C4Object *pTarget, bool fCalls=true, bool fCopyMotion=true, bool *pfRejectCollect=NULL);
 	bool Exit(int32_t iX=0, int32_t iY=0, int32_t iR=0, C4Real iXDir=Fix0, C4Real iYDir=Fix0, C4Real iRDir=Fix0, bool fCalls=true);
 	void CopyMotion(C4Object *from);
@@ -294,7 +294,7 @@ public:
 	void UpdatLastEnergyLossCause(int32_t iNewCausePlr);
 	void DoBreath(int32_t iChange);
 	void DoCon(int32_t iChange);
-	int32_t GetCon() { return Con; }
+	int32_t GetCon() const { return Con; }
 	void DoExperience(int32_t change);
 	bool Promote(int32_t torank, bool exception, bool fForceRankName);
 	bool Push(C4Real txdir, C4Real dforce, bool fStraighten);
@@ -302,48 +302,48 @@ public:
 	void Fling(C4Real txdir, C4Real tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
 	C4Object* CreateContents(C4PropList *);
 	bool CreateContentsByList(C4IDList &idlist);
-	BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
-	inline int32_t addtop() { return Max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check
-	inline int32_t Left() { return GetX()+Shape.x; } // left border of shape
-	inline int32_t Top() { return GetY()+Shape.y-addtop(); } // top border of shape (+build-top)
-	inline int32_t Width() { return Shape.Wdt; } // width of shape
-	inline int32_t Height() { return Shape.Hgt+addtop(); } // height of shape (+build-top)
-	inline int32_t GetX() { return fixtoi(fix_x); }
-	inline int32_t GetY() { return fixtoi(fix_y); }
-	inline int32_t GetR() { return fixtoi(fix_r); }
-	inline C4Real GetFixedX() { return fix_x; }
-	inline C4Real GetFixedY() { return fix_y; }
-	inline C4Real GetFixedR() { return fix_r; }
-	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
-	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir);
-	C4Real GetSpeed();
+	BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt) const;
+	inline int32_t addtop() const { return Max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check
+	inline int32_t Left() const { return GetX()+Shape.x; } // left border of shape
+	inline int32_t Top() const { return GetY()+Shape.y-addtop(); } // top border of shape (+build-top)
+	inline int32_t Width() const { return Shape.Wdt; } // width of shape
+	inline int32_t Height() const { return Shape.Hgt+addtop(); } // height of shape (+build-top)
+	inline int32_t GetX() const { return fixtoi(fix_x); }
+	inline int32_t GetY() const { return fixtoi(fix_y); }
+	inline int32_t GetR() const { return fixtoi(fix_r); }
+	inline C4Real GetFixedX() const { return fix_x; }
+	inline C4Real GetFixedY() const { return fix_y; }
+	inline C4Real GetFixedR() const { return fix_r; }
+	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt) const;
+	BYTE GetMomentum(C4Real &rxdir, C4Real &rydir) const;
+	C4Real GetSpeed() const;
 	StdStrBuf GetDataString();
 	void SetName (const char *NewName = 0);
 	int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 	bool SetOwner(int32_t iOwner);
 	bool SetPlrViewRange(int32_t iToRange);
 	void SetOnFire(bool OnFire) { this->OnFire = OnFire; SetOCF(); }
-	bool GetOnFire() { return OnFire; }
+	bool GetOnFire() const { return OnFire; }
 	void SetAlive(bool Alive) { this->Alive = Alive; SetOCF(); }
-	bool GetAlive() { return Alive; }
+	bool GetAlive() const { return Alive; }
 	void PlrFoWActualize();
 	void SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY);
-	bool IsVisible(int32_t iForPlr, bool fAsOverlay);  // return whether an object is visible for the given player
+	bool IsVisible(int32_t iForPlr, bool fAsOverlay) const;  // return whether an object is visible for the given player
 	void SetRotation(int32_t nr);
-	void PrepareDrawing();  // set blit modulation and/or additive blitting
-	void FinishedDrawing(); // reset any modulation
-	void DrawSolidMask(C4TargetFacet &cgo);     // draw topface image only
+	void PrepareDrawing() const;  // set blit modulation and/or additive blitting
+	void FinishedDrawing() const; // reset any modulation
+	void DrawSolidMask(C4TargetFacet &cgo) const;     // draw topface image only
 	bool Collect(C4Object *pObj);           // add object to contents if it can be carried - no OCF and range checks are done!
 	bool GrabInfo(C4Object *pFrom);         // grab info object from other object
 	bool ShiftContents(bool fShiftBack, bool fDoCalls); // rotate through contents
 	void DirectComContents(C4Object *pTarget, bool fDoCalls);   // direct com: scroll contents to given ID
-	void GetParallaxity(int32_t *parX, int32_t *parY);
-	bool GetDrawPosition(const C4TargetFacet & cgo, float & resultx, float & resulty, float & resultzoom); // converts the object's position into screen coordinates
-	bool GetDrawPosition(const C4TargetFacet & cgo, float x, float y, float zoom, float & resultx, float & resulty, float & resultzoom); // converts object coordinates into screen coordinates
-	bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
+	void GetParallaxity(int32_t *parX, int32_t *parY) const;
+	bool GetDrawPosition(const C4TargetFacet & cgo, float & resultx, float & resulty, float & resultzoom) const; // converts the object's position into screen coordinates
+	bool GetDrawPosition(const C4TargetFacet & cgo, float x, float y, float zoom, float & resultx, float & resulty, float & resultzoom) const; // converts object coordinates into screen coordinates
+	bool IsInLiquidCheck() const;                        // returns whether the Clonk is within liquid material
 	void UpdateInLiquid(); // makes splash when a liquid is entered
 	void GrabContents(C4Object *pFrom); // grab all contents that don't reject it
-	bool GetDragImage(C4Object **drag_object, C4ID *drag_id); // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
+	bool GetDragImage(C4Object **drag_object, C4ID *drag_id) const; // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
 
 protected:
 	void SideBounds(C4Real &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
@@ -355,15 +355,16 @@ public:
 
 	bool DoSelect(); // cursor callback if not disabled
 	void UnSelect(); // unselect callback
-	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)       // get position this object is seen at (for given scroll)
+	void GetViewPos(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const       // get position this object is seen at (for given scroll)
 	{ if (Category & C4D_Parallax) GetViewPosPar(riX, riY, tx, ty, fctViewport); else { riX=float(GetX()); riY=float(GetY()); } }
-	void GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport);   // get position this object is seen at, calculating parallaxity
+	void GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const;   // get position this object is seen at, calculating parallaxity
 	bool PutAwayUnusedObject(C4Object *pToMakeRoomForObject); // either directly put the least-needed object away, or add a command to do it - return whether successful
 
-	C4DefGraphics *GetGraphics() { return pGraphics; } // return current object graphics
+	C4DefGraphics *GetGraphics() const { return pGraphics; } // return current object graphics
 	bool SetGraphics(const char *szGraphicsName=NULL, C4Def *pSourceDef=NULL);      // set used graphics for object; if szGraphicsName or *szGraphicsName are NULL, the default graphics of the given def are used; pSourceDef defaults to own def
 	bool SetGraphics(C4DefGraphics *pNewGfx, bool fUpdateData);      // set used graphics for object
 
+	class C4GraphicsOverlay *GetGraphicsOverlay(int32_t iForID) const;  // get specified gfx overlay
 	class C4GraphicsOverlay *GetGraphicsOverlay(int32_t iForID, bool fCreate);  // get specified gfx overlay; create if not existant and specified
 	bool RemoveGraphicsOverlay(int32_t iOverlayID);                             // remove specified overlay from the overlay list; return if found
 	bool HasGraphicsOverlayRecursion(const C4Object *pCheckObj) const; // returns whether, at any overlay recursion depth, the given object appears as an MODE_Object-overlay
@@ -378,9 +379,9 @@ public:
 
 	StdStrBuf GetInfoString(); // return def desc plus effects
 
-	bool CanConcatPictureWith(C4Object *pOtherObject); // return whether this object should be grouped with the other in activation lists, contents list, etc.
+	bool CanConcatPictureWith(C4Object *pOtherObject) const; // return whether this object should be grouped with the other in activation lists, contents list, etc.
 
-	bool IsMoveableBySolidMask(int ComparisonPlane)
+	bool IsMoveableBySolidMask(int ComparisonPlane) const
 	{
 		//C4PropList* pActionDef = GetAction();
 		return (Status == C4OS_NORMAL)
@@ -390,12 +391,12 @@ public:
 		       ;
 	}
 
-	StdStrBuf GetNeededMatStr();
+	StdStrBuf GetNeededMatStr() const;
 
 	// This function is used for:
 	// -Objects to be removed when a player is removed
 	// -Objects that are not to be saved in "SaveScenario"-mode
-	bool IsPlayerObject(int32_t iPlayerNumber=NO_OWNER);// true for any object that belongs to any player (NO_OWNER) or a specified player
+	bool IsPlayerObject(int32_t iPlayerNumber=NO_OWNER) const;// true for any object that belongs to any player (NO_OWNER) or a specified player
 
 	// This function is used for:
 	// -Objects that are not to be saved in "SaveScenario"-mode

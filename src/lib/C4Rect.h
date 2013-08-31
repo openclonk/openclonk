@@ -40,8 +40,8 @@ public:
 	bool Overlap(C4Rect &rTarget);
 	void Intersect(const C4Rect &r2);
 	void Add(const C4Rect &r2);
-	bool operator ==(const C4Rect &r2) { return !((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
-	bool operator !=(const C4Rect &r2) { return 0 != ((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
+	bool operator ==(const C4Rect &r2) const { return !((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
+	bool operator !=(const C4Rect &r2) const { return 0 != ((x-r2.x) | (y-r2.y) | (Wdt-r2.Wdt) | (Hgt-r2.Hgt)); }
 
 	bool Contains(int32_t iX, int32_t iY) const
 	{ return iX>=x && iX<x+Wdt && iY>=y && iY<y+Hgt; }

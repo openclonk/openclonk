@@ -556,7 +556,7 @@ void C4Object::UpdateFlipDir()
 	}
 }
 
-void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform)
+void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform) const
 {
 	C4Surface* sfc;
 	switch (GetGraphics()->Type)
@@ -592,7 +592,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 	}
 }
 
-void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX, int32_t iPhaseY)
+void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX, int32_t iPhaseY) const
 {
 	const float swdt = float(Def->Shape.Wdt);
 	const float shgt = float(Def->Shape.Hgt);
@@ -648,7 +648,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 	}
 }
 
-void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
+void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY) const
 {
 	// This should not be called for meshes since Facet has no meaning
 	// for them. Only use DrawFace() with meshes!
@@ -1067,7 +1067,7 @@ void C4Object::Execute()
 	if (Menu) Menu->Execute();
 }
 
-bool C4Object::At(int32_t ctx, int32_t cty)
+bool C4Object::At(int32_t ctx, int32_t cty) const
 {
 	if (Status) if (!Contained) if (Def)
 				if (Inside<int32_t>(cty - (GetY() + Shape.GetY() - addtop()), 0, Shape.Hgt - 1 + addtop()))
@@ -1076,7 +1076,7 @@ bool C4Object::At(int32_t ctx, int32_t cty)
 	return false;
 }
 
-bool C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf)
+bool C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf) const
 {
 	if (Status) if (!Contained) if (Def)
 				if (OCF & ocf)
@@ -1090,7 +1090,7 @@ bool C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf)
 	return false;
 }
 
-void C4Object::GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf)
+void C4Object::GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf) const
 {
 	DWORD rocf=OCF;
 	// Verify entrance area OCF return
@@ -1684,7 +1684,7 @@ bool C4Object::CloseMenu(bool fForce)
 	return true;
 }
 
-BYTE C4Object::GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt)
+BYTE C4Object::GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt) const
 {
 	if (!Status || !Def) return 0;
 	aX = GetX() + Shape.GetX(); aY = GetY() + Shape.GetY();
@@ -1692,7 +1692,7 @@ BYTE C4Object::GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt)
 	return 1;
 }
 
-BYTE C4Object::GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt)
+BYTE C4Object::GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt) const
 {
 	if (!Status || !Def) return 0;
 	// Return actual entrance
@@ -1713,7 +1713,7 @@ BYTE C4Object::GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t 
 	return 1;
 }
 
-BYTE C4Object::GetMomentum(C4Real &rxdir, C4Real &rydir)
+BYTE C4Object::GetMomentum(C4Real &rxdir, C4Real &rydir) const
 {
 	rxdir=rydir=0;
 	if (!Status || !Def) return 0;
@@ -1721,7 +1721,7 @@ BYTE C4Object::GetMomentum(C4Real &rxdir, C4Real &rydir)
 	return 1;
 }
 
-C4Real C4Object::GetSpeed()
+C4Real C4Object::GetSpeed() const
 {
 	C4Real cobjspd=Fix0;
 	if (xdir<0) cobjspd-=xdir; else cobjspd+=xdir;
@@ -2680,7 +2680,7 @@ void C4Object::SyncClearance()
 	}
 }
 
-void C4Object::DrawSelectMark(C4TargetFacet &cgo)
+void C4Object::DrawSelectMark(C4TargetFacet &cgo) const
 {
 	// Status
 	if (!Status) return;
@@ -2817,7 +2817,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 	AddCommand(iCommand,pTarget,iTx,iTy,0,pTarget2,true,iData,false,iRetries,szText,C4CMD_Mode_Base);
 }
 
-C4Command *C4Object::FindCommand(int32_t iCommandType)
+C4Command *C4Object::FindCommand(int32_t iCommandType) const
 {
 	// seek all commands
 	for (C4Command *pCom = Command; pCom; pCom=pCom->Next)
@@ -3030,7 +3030,7 @@ void C4Object::SetDir(int32_t iDir)
 		Action.DrawDir=iDir;
 }
 
-int32_t C4Object::GetProcedure()
+int32_t C4Object::GetProcedure() const
 {
 	C4PropList* pActionDef = GetAction();
 	if (!pActionDef) return -1;
@@ -4189,7 +4189,7 @@ void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 	AudiblePan = BoundBy<int>(200 * (offX - cgo.X - (cgo.Wdt / 2)) / cgo.Wdt, -100, 100);
 }
 
-bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
+bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay) const
 {
 	bool fDraw;
 	C4Value vis;
@@ -4238,7 +4238,7 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	return fDraw;
 }
 
-bool C4Object::IsInLiquidCheck()
+bool C4Object::IsInLiquidCheck() const
 {
 	return GBackLiquid(GetX(),GetY()+Def->Float*Con/FullCon-1);
 }
@@ -4254,7 +4254,7 @@ void C4Object::SetRotation(int32_t nr)
 	UpdateFace(true);
 }
 
-void C4Object::PrepareDrawing()
+void C4Object::PrepareDrawing() const
 {
 	// color modulation
 	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) pDraw->ActivateBlitModulation(ColorMod);
@@ -4262,7 +4262,7 @@ void C4Object::PrepareDrawing()
 	pDraw->SetBlitMode(BlitMode);
 }
 
-void C4Object::FinishedDrawing()
+void C4Object::FinishedDrawing() const
 {
 	// color modulation
 	pDraw->DeactivateBlitModulation();
@@ -4270,7 +4270,7 @@ void C4Object::FinishedDrawing()
 	pDraw->ResetBlitMode();
 }
 
-void C4Object::DrawSolidMask(C4TargetFacet &cgo)
+void C4Object::DrawSolidMask(C4TargetFacet &cgo) const
 {
 	// mask must exist
 	if (!pSolidMaskData) return;
@@ -4405,7 +4405,7 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	return;
 }
 
-void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
+void C4Object::GetParallaxity(int32_t *parX, int32_t *parY) const
 {
 	assert(parX); assert(parY);
 	*parX = 100; *parY = 100;
@@ -4422,7 +4422,7 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
 	*parY = par->GetItem(1).getInt();
 }
 
-bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
+bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id) const
 {
 	// drag is possible if MouseDragImage is assigned
 	C4Value parV; GetProperty(P_MouseDragImage, &parV);
@@ -4454,12 +4454,12 @@ void C4Object::UnSelect()
 }
 
 bool C4Object::GetDrawPosition(const C4TargetFacet & cgo,
-	float & resultx, float & resulty, float & resultzoom)
+	float & resultx, float & resulty, float & resultzoom) const
 {
 	return GetDrawPosition(cgo, fixtof(fix_x), fixtof(fix_y), cgo.Zoom, resultx, resulty, resultzoom);
 }
 
-bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom)
+bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy, float zoom, float & resultx, float & resulty, float & resultzoom) const
 {
 	// for HUD
 	if(Category & C4D_Foreground)
@@ -4509,7 +4509,7 @@ bool C4Object::GetDrawPosition(const C4TargetFacet & cgo, float objx, float objy
 	return true;
 }
 
-void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)
+void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport) const
 {
 	int iParX, iParY;
 	GetParallaxity(&iParX, &iParY);
@@ -4596,6 +4596,17 @@ bool C4Object::SetGraphics(C4DefGraphics *pNewGfx, bool fTemp)
 	pGraphics = pNewGfx;
 	UpdateGraphics(true, fTemp);
 	return true;
+}
+
+C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID) const
+{
+	// search in list until ID is found or passed
+	C4GraphicsOverlay *pOverlay = pGfxOverlay, *pPrevOverlay = NULL;
+	while (pOverlay && pOverlay->GetID() < iForID) { pPrevOverlay = pOverlay; pOverlay = pOverlay->GetNext(); }
+	// exact match found?
+	if (pOverlay && pOverlay->GetID() == iForID) return pOverlay;
+	// none found
+	return NULL;
 }
 
 C4GraphicsOverlay *C4Object::GetGraphicsOverlay(int32_t iForID, bool fCreate)
@@ -4821,7 +4832,7 @@ void C4Object::GrabContents(C4Object *pFrom)
 			cLnk->Obj->Enter(this);
 }
 
-bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
+bool C4Object::CanConcatPictureWith(C4Object *pOtherObject) const
 {
 	// check current definition ID
 	if (id != pOtherObject->id) return false;
@@ -4858,7 +4869,7 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
 			}
 		for (C4GraphicsOverlay *pOtherOverlay = pOtherObject->pGfxOverlay; pOtherOverlay; pOtherOverlay = pOtherOverlay->GetNext())
 			if (pOtherOverlay->IsPicture())
-				if (!GetGraphicsOverlay(pOtherOverlay->GetID(), false)) return false;
+				if (!GetGraphicsOverlay(pOtherOverlay->GetID())) return false;
 	}
 	// concat OK
 	return true;
@@ -4870,7 +4881,7 @@ void C4Object::UpdateScriptPointers()
 		pEffects->ReAssignAllCallbackFunctions();
 }
 
-StdStrBuf C4Object::GetNeededMatStr()
+StdStrBuf C4Object::GetNeededMatStr() const
 {
 	C4Def* pComponent;
 	int32_t cnt, ncnt;
@@ -4907,7 +4918,7 @@ StdStrBuf C4Object::GetNeededMatStr()
 	return result;
 }
 
-bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
+bool C4Object::IsPlayerObject(int32_t iPlayerNumber) const
 {
 	bool fAnyPlr = (iPlayerNumber == NO_OWNER);
 	// if an owner is specified: only owned objects
