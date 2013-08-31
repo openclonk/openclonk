@@ -1,0 +1,5 @@
+[Head]
+Title=Test case for #973
+
+[Definitions]
+LocalOnly=1
