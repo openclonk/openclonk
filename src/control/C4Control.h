@@ -171,6 +171,25 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
+class C4ControlMsgBoardCmd : public C4ControlPacket // sync
+{
+public:
+	C4ControlMsgBoardCmd()
+		: player(NO_OWNER)
+	{}
+	C4ControlMsgBoardCmd(const char *command, const char *parameter, int32_t player)
+		: command(command), parameter(parameter), player(player)
+	{}
+
+private:
+	StdCopyStrBuf command;
+	StdCopyStrBuf parameter;
+	int32_t player;
+
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
 class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:

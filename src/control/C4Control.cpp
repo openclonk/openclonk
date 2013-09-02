@@ -49,6 +49,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include "gui/C4MessageInput.h"
 
 #ifndef NOAULDEBUG
 #include <C4AulDebug.h>
@@ -317,6 +318,45 @@ void C4ControlMsgBoardReply::CompileFunc(StdCompiler *pComp)
 	C4ControlPacket::CompileFunc(pComp);
 }
 
+// *** C4ControlMsgBoardCmd
+void C4ControlMsgBoardCmd::Execute() const
+{
+	C4Player *source_player = ::Players.Get(player);
+
+	// don't handle this if the game isn't actually running
+	if (!::Game.IsRunning) return;
+
+	// fetch command script
+	C4MessageBoardCommand *cmd = ::MessageInput.GetCommand(command.getData());
+	if (!cmd) return;
+	StdCopyStrBuf script(cmd->Script);
+
+	// interpolate parameters as required
+	script.Replace("%player%", FormatString("%d", player).getData());
+	if (parameter)
+	{
+		script.Replace("%d", FormatString("%d", std::atoi(parameter.getData())).getData());
+		StdCopyStrBuf escaped_param(parameter);
+		escaped_param.EscapeString();
+		script.Replace("%s", escaped_param.getData());
+	}
+
+	// Run script
+	C4Value rv(::ScriptEngine.DirectExec(nullptr, script.getData(), "message board command"));
+#ifndef NOAULDEBUG
+	C4AulDebug* pDebug = C4AulDebug::GetDebugger();
+	if (pDebug)
+		pDebug->ControlScriptEvaluated(script.getData(), rv.GetDataString().getData());
+#endif
+}
+
+void C4ControlMsgBoardCmd::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(command, "Command"));
+	pComp->Value(mkNamingAdapt(parameter, "Parameter"));
+	C4ControlPacket::CompileFunc(pComp);
+}
 // *** C4ControlPlayerSelect
 
 C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt)

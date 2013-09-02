@@ -779,40 +779,15 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (Game.IsRunning)
 		if ((pCmd = GetCommand(szCmdName)))
 		{
-			StdStrBuf Script, CmdScript;
-			// replace %player% by calling player number
-			if (SSearch(pCmd->Script, "%player%"))
-			{
-				int32_t iLocalPlr = NO_OWNER;
-				C4Player *pLocalPlr = ::Players.GetLocalByIndex(0);
-				if (pLocalPlr) iLocalPlr = pLocalPlr->Number;
-				StdStrBuf sLocalPlr; sLocalPlr.Format("%d", iLocalPlr);
-				CmdScript.Copy(pCmd->Script);
-				CmdScript.Replace("%player%", sLocalPlr.getData());
-			}
-			else
-			{
-				CmdScript.Ref(pCmd->Script);
-			}
-			// insert parameters
-			if (SSearch(CmdScript.getData(), "%d"))
-			{
-				// make sure it's a number by converting
-				Script.Format(CmdScript.getData(), (int) atoi(pCmdPar));
-			}
-			else if (SSearch(CmdScript.getData(), "%s"))
-			{
-				// escape strings
-				StdStrBuf Par;
-				Par.Copy(pCmdPar);
-				Par.EscapeString();
-				// compose script
-				Script.Format(CmdScript.getData(), Par.getData());
-			}
-			else
-				Script = CmdScript.getData();
-			// add script
-			::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+			// get player number of first local player; if multiple players
+			// share one computer, we can't distinguish between them anyway
+			int32_t player_num = NO_OWNER;
+			C4Player *player = ::Players.GetLocalByIndex(0);
+			if (player) player_num = player->Number;
+
+			// send command to network
+			::Control.DoInput(CID_MsgBoardCmd, new C4ControlMsgBoardCmd(szCmdName, pCmdPar, player_num), CDT_Decide);
+
 			// ok
 			return true;
 		}
