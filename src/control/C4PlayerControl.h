@@ -185,7 +185,8 @@ public:
 		CTM_Hold=      1<<0,        // the control will be put into "down"-mode
 		CTM_Release=   1<<1,        // the hold mode of the control will be released
 		CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
-		CTM_HandleDownStatesOnly = 1<<3 // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_HandleDownStatesOnly = 1<<3, // used when an already handled release key is processed to reset down states of overridden keys only
+		CTM_ClearRecentKeys = 1<<4  // if this assignment is triggered, RecentKeys are reset so no more combos can be generated
 	};
 
 private:
@@ -386,7 +387,7 @@ private:
 	CSync Sync;
 
 	// callbacks from Game.KeyboardInput
-	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false);
+	bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only=false, bool *clear_recent_keys=NULL);
 	bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 	bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 

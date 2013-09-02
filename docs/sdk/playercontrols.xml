@@ -245,12 +245,17 @@
                <col>The key press is always passed to the mapping with the next lowest priority, independent of whether the previous command was executed successfully or not.</col>
              </row>
              <row>
-               <literal_col>OverrideAssignments</literal_col>
-               <col>The assignment overwrites all other assignments for the same control with the same press/release trigger mode.</col>
+               <literal_col>ClearRecentKeys</literal_col>
+               <col>When the assignment is triggered, all recent keys are deleted and the trigger key is not added to the recent list. This means no future key combos can be triggered with any keys including and preceding the current.</col>
              </row>
            </table>
 
          </col>
+       </row>
+       <row>
+         <literal_col>OverrideAssignments</literal_col>
+         <col>Boolean</col>
+         <col>The assignment overwrites all other assignments for the same control with the same press/release trigger mode.</col>
        </row>
       </table>
     </part>

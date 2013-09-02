@@ -229,6 +229,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 		{ "Hold",         CTM_Hold     },
 		{ "Release",      CTM_Release  },
 		{ "AlwaysUnhandled", CTM_AlwaysUnhandled  },
+		{ "ClearRecentKeys", CTM_ClearRecentKeys  },
 		{ NULL, 0 }
 	};
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt< int32_t>(iTriggerMode, TriggerModeNames), "TriggerMode", CTM_Default));
@@ -982,7 +983,7 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", DefaultSync));
 }
 
-bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only)
+bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData, bool reset_down_states_only, bool *clear_recent_keys)
 {
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
@@ -998,6 +999,8 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 		const C4PlayerControlDef *pControlDef = ControlDefs.GetControlByIndex(iControlIndex);
 		if (pControlDef && pControlDef->IsValid() && !Sync.IsControlDisabled(iControlIndex) && (!fUp || pControlDef->IsHoldKey()))
 		{
+			// clear RecentKeys if requested by this assignment. Must be done before sync queue, so multiple combos can be issued in a single control frame.
+			if (clear_recent_keys && (pAssignment->GetTriggerMode() & C4PlayerControlAssignment::CTM_ClearRecentKeys)) *clear_recent_keys = true;
 			// extra data from key or overwrite by current cursor pos if definition requires it
 			if (pControlDef->IsAsync() && !pControlPacket)
 			{
@@ -1041,9 +1044,13 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	}
 	// process!
-	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData());
-	// add to recent list unless repeated
-	if (!pressed_key.IsRepeated()) RecentKeys.push_back(RKey);
+	bool clear_recent_keys = false;
+	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData(), false, &clear_recent_keys);
+	// unless assignment requests a clear, always add keys to recent list even if not handled
+	if (clear_recent_keys)
+		RecentKeys.clear();
+	else if (!pressed_key.IsRepeated()) // events caused by holding down the key are not added to recent list (so you cannot cause "double-Q" just by holding down Q)
+		RecentKeys.push_back(RKey);
 	return fResult;
 }
 
