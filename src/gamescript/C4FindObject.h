@@ -4,7 +4,7 @@
  * Copyright (c) 2006-2007  Peter Wortmann
  * Copyright (c) 2006, 2008  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2009-2010, 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -79,7 +79,7 @@ public:
 	C4FindObject() : pSort(NULL) { }
 	virtual ~C4FindObject();
 
-	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=NULL); // createFindObject or SortObject - if ppSortObj==NULL, SortObject is not allowed
+	static C4FindObject *CreateByValue(const C4Value &Data, C4SortObject **ppSortObj=NULL, const C4Object *context=NULL); // createFindObject or SortObject - if ppSortObj==NULL, SortObject is not allowed
 
 	int32_t Count(const C4ObjectList &Objs); // Counts objects for which the condition is true
 	C4Object *Find(const C4ObjectList &Objs); // Returns first object for which the condition is true
@@ -393,8 +393,8 @@ public:
 	virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2) { return Compare(pObj1, pObj2); }
 
 public:
-	static C4SortObject *CreateByValue(const C4Value &Data);
-	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data);
+	static C4SortObject *CreateByValue(const C4Value &Data, const C4Object *context=NULL);
+	static C4SortObject *CreateByValue(int32_t iType, const C4ValueArray &Data, const C4Object *context=NULL);
 
 	void SortObjects(C4ValueArray *pArray);
 };

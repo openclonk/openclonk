@@ -4,7 +4,7 @@
  * Copyright (c) 2006-2008  Peter Wortmann
  * Copyright (c) 2006-2009, 2011  Günther Brammer
  * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2009-2010, 2012  Nicolas Hake
+ * Copyright (c) 2009-2010, 2012-2013  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -36,7 +36,7 @@ C4FindObject::~C4FindObject()
 	delete pSort;
 }
 
-C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject **ppSortObj)
+C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject **ppSortObj, const C4Object *context)
 {
 	// Must be an array
 	C4ValueArray *pArray = C4Value(DataVal).getArray();
@@ -50,7 +50,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		// sort condition not desired here?
 		if (!ppSortObj) return NULL;
 		// otherwise, create it!
-		*ppSortObj = C4SortObject::CreateByValue(iType, Data);
+		*ppSortObj = C4SortObject::CreateByValue(iType, Data, context);
 		// done
 		return NULL;
 	}
@@ -60,7 +60,7 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_Not:
 	{
 		// Create child condition
-		C4FindObject *pCond = C4FindObject::CreateByValue(Data[1]);
+		C4FindObject *pCond = C4FindObject::CreateByValue(Data[1], nullptr, context);
 		if (!pCond) return NULL;
 		// wrap
 		return new C4FindObjectNot(pCond);
@@ -70,12 +70,12 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	{
 		// Trivial case (one condition)
 		if (Data.GetSize() == 2)
-			return C4FindObject::CreateByValue(Data[1]);
+			return C4FindObject::CreateByValue(Data[1], nullptr, context);
 		// Create all childs
 		int32_t i;
 		C4FindObject **ppConds = new C4FindObject *[Data.GetSize() - 1];
 		for (i = 0; i < Data.GetSize() - 1; i++)
-			ppConds[i] = C4FindObject::CreateByValue(Data[i+1]);
+			ppConds[i] = C4FindObject::CreateByValue(Data[i+1], nullptr, context);
 		// Count real entries, move them to start of list
 		int32_t iSize = 0;
 		for (i = 0; i < Data.GetSize() - 1; i++)
@@ -95,20 +95,75 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 	case C4FO_ID:
 		return new C4FindObjectID(Data[1].getC4ID());
 
+
+	// #973: For all criteria using coordinates: If FindObject et al. are called in object context, offset by object center
 	case C4FO_InRect:
-		return new C4FindObjectInRect(C4Rect(Data[1].getInt(), Data[2].getInt(), Data[3].getInt(), Data[4].getInt()));
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		int32_t w = Data[3].getInt();
+		int32_t h = Data[4].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4FindObjectInRect(C4Rect(x, y, w, h));
+	}
 
 	case C4FO_AtPoint:
-		return new C4FindObjectAtPoint(Data[1].getInt(), Data[2].getInt());
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4FindObjectAtPoint(x, y);
+	}
 
 	case C4FO_AtRect:
-		return new C4FindObjectAtRect(Data[1].getInt(), Data[2].getInt(), Data[3].getInt(),Data[4].getInt());
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		int32_t w = Data[3].getInt();
+		int32_t h = Data[4].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4FindObjectAtRect(x, y, w, h);
+	}
 
 	case C4FO_OnLine:
-		return new C4FindObjectOnLine(Data[1].getInt(), Data[2].getInt(), Data[3].getInt(), Data[4].getInt());
+	{
+		int32_t x1 = Data[1].getInt();
+		int32_t y1 = Data[2].getInt();
+		int32_t x2 = Data[3].getInt();
+		int32_t y2 = Data[4].getInt();
+		if (context)
+		{
+			x1 += context->GetX();
+			x2 += context->GetX();
+			y1 += context->GetY();
+			y2 += context->GetY();
+		}
+		return new C4FindObjectOnLine(x1, y1, x2, y2);
+	}
 
 	case C4FO_Distance:
-		return new C4FindObjectDistance(Data[1].getInt(), Data[2].getInt(), Data[3].getInt());
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4FindObjectDistance(x, y, Data[3].getInt());
+	}
 
 	case C4FO_OCF:
 		return new C4FindObjectOCF(Data[1].getInt());
@@ -721,24 +776,24 @@ bool C4FindObjectLayer::IsImpossible()
 
 // *** C4SortObject
 
-C4SortObject *C4SortObject::CreateByValue(const C4Value &DataVal)
+C4SortObject *C4SortObject::CreateByValue(const C4Value &DataVal, const C4Object *context)
 {
 	// Must be an array
 	const C4ValueArray *pArray = C4Value(DataVal).getArray();
 	if (!pArray) return NULL;
 	const C4ValueArray &Data = *pArray;
 	int32_t iType = Data[0].getInt();
-	return CreateByValue(iType, Data);
+	return CreateByValue(iType, Data, context);
 }
 
-C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Data)
+C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Data, const C4Object *context)
 {
 	switch (iType)
 	{
 	case  C4SO_Reverse:
 	{
 		// create child sort
-		C4SortObject *pChildSort = C4SortObject::CreateByValue(Data[1]);
+		C4SortObject *pChildSort = C4SortObject::CreateByValue(Data[1], context);
 		if (!pChildSort) return NULL;
 		// wrap
 		return new C4SortObjectReverse(pChildSort);
@@ -749,14 +804,14 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 		// Trivial case (one sort)
 		if (Data.GetSize() == 2)
 		{
-			return C4SortObject::CreateByValue(Data[1]);
+			return C4SortObject::CreateByValue(Data[1], context);
 		}
 		// Create all children
 		int32_t i;
 		C4SortObject **ppSorts = new C4SortObject *[Data.GetSize() - 1];
 		for (i = 0; i < Data.GetSize() - 1; i++)
 		{
-			ppSorts[i] = C4SortObject::CreateByValue(Data[i+1]);
+			ppSorts[i] = C4SortObject::CreateByValue(Data[i+1], context);
 		}
 		// Count real entries, move them to start of list
 		int32_t iSize = 0;
@@ -769,7 +824,16 @@ C4SortObject *C4SortObject::CreateByValue(int32_t iType, const C4ValueArray &Dat
 	}
 
 	case C4SO_Distance:
-		return new C4SortObjectDistance(Data[1].getInt(), Data[2].getInt());
+	{
+		int32_t x = Data[1].getInt();
+		int32_t y = Data[2].getInt();
+		if (context)
+		{
+			x += context->GetX();
+			y += context->GetY();
+		}
+		return new C4SortObjectDistance(x, y);
+	}
 
 	case C4SO_Random:
 		return new C4SortObjectRandom();

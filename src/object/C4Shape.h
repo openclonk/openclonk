@@ -68,8 +68,8 @@ public:
 	void GetVertexOutline(C4Rect &rRect);
 	int32_t GetVertexY(int32_t iVertex);
 	int32_t GetVertexX(int32_t iVertex);
-	int32_t GetX() { return x; }
-	int32_t GetY() { return y; }
+	int32_t GetX() const { return x; }
+	int32_t GetY() const { return y; }
 	bool AddVertex(int32_t iX, int32_t iY);
 	bool CheckContact(int32_t cx, int32_t cy);
 	bool ContactCheck(int32_t cx, int32_t cy, uint32_t *border_hack_contacts=0);

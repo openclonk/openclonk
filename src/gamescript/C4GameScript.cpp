@@ -227,7 +227,7 @@ static bool FnCheckConstructionSite(C4PropList * _this, C4PropList * PropList, i
 	return ConstructionCheck(PropList, iXOffset, iYOffset);
 }
 
-C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs)
+C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs, const C4Object *context)
 {
 	int i, iCnt = 0, iSortCnt = 0;
 	// Read all parameters
@@ -238,7 +238,7 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 		if (!Data) break;
 		// Construct
 		C4SortObject *pSO = NULL;
-		C4FindObject *pFO = C4FindObject::CreateByValue(Data, pSOs ? &pSO : NULL);
+		C4FindObject *pFO = C4FindObject::CreateByValue(Data, pSOs ? &pSO : NULL, context);
 		// Add FindObject
 		if (pFO)
 		{
@@ -279,7 +279,7 @@ static C4Value FnObjectCount(C4PropList * _this, C4Value *pPars)
 {
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par];
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, NULL);
+	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, NULL, Object(_this));
 	// Error?
 	if (!pFO)
 		throw new C4AulExecError("ObjectCount: No valid search criterions supplied");
@@ -296,7 +296,7 @@ static C4Value FnFindObject(C4PropList * _this, C4Value *pPars)
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par];
 	C4SortObject *pSOs[C4AUL_MAX_Par];
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs);
+	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
 		throw new C4AulExecError("FindObject: No valid search criterions supplied");
@@ -313,7 +313,7 @@ static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
 	// Create FindObject-structure
 	C4FindObject *pFOs[C4AUL_MAX_Par];
 	C4SortObject *pSOs[C4AUL_MAX_Par];
-	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs);
+	C4FindObject *pFO = CreateCriterionsFromPars(pPars, pFOs, pSOs, Object(_this));
 	// Error?
 	if (!pFO)
 		throw new C4AulExecError("FindObjects: No valid search criterions supplied");

@@ -324,7 +324,7 @@ void C4Property::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	pComp->Value(mkParAdapt(Value, numbers));
 }
 
-void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth)
+void C4PropList::AppendDataString(StdStrBuf * out, const char * delim, int depth) const
 {
 	StdStrBuf & DataString = *out;
 	if (depth <= 0 && Properties.GetSize())
