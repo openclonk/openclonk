@@ -153,6 +153,7 @@ enum C4PacketType
 	CID_Synchronize   = CID_First | 0x06,
 	CID_Set           = CID_First | 0x07,
 	CID_Script        = CID_First | 0x08,
+	CID_MsgBoardReply = CID_First | 0x09,
 
 	CID_PlrInfo       = CID_First | 0x10,
 	CID_JoinPlr       = CID_First | 0x11,

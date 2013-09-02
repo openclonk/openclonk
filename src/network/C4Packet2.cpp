@@ -116,6 +116,7 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_Synchronize,  PC_Control, "Synchronize",                false,  true,   0,                        PKT_UNPACK(C4ControlSynchronize)},
 	{ CID_Set,          PC_Control, "Set",                        false,  true,   0,                        PKT_UNPACK(C4ControlSet)        },
 	{ CID_Script,       PC_Control, "Script",                     false,  true,   0,                        PKT_UNPACK(C4ControlScript)     },
+	{ CID_MsgBoardReply,PC_Control, "Message Board Reply",        false,  true,   0,                        PKT_UNPACK(C4ControlMsgBoardReply)},
 	{ CID_PlrInfo,      PC_Control, "Player Info",                false,  true,   0,                        PKT_UNPACK(C4ControlPlayerInfo) },
 	{ CID_JoinPlr,      PC_Control, "Join Player",                false,  true,   0,                        PKT_UNPACK(C4ControlJoinPlayer) },
 	{ CID_RemovePlr,    PC_Control, "Remove Player",              false,  true,   0,                        PKT_UNPACK(C4ControlRemovePlr)  },

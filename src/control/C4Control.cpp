@@ -8,7 +8,7 @@
  * Copyright (c) 2006, 2009-2010  Günther Brammer
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2006, 2011  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2009, 2013  Nicolas Hake
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2010  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -287,6 +287,33 @@ void C4ControlScript::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
 	pComp->Value(mkNamingAdapt(fUseVarsFromCallerContext, "UseVarsFromCallerContext", false));
 	pComp->Value(mkNamingAdapt(Script, "Script", ""));
+	C4ControlPacket::CompileFunc(pComp);
+}
+
+// *** C4ControlMsgBoardReply
+void C4ControlMsgBoardReply::Execute() const
+{
+	C4Object *target_object = ::Objects.SafeObjectPointer(target);
+	C4Player *target_player = ::Players.Get(player);
+
+	// remove query
+	if (!target_player) return;
+	if (!target_player->RemoveMessageBoardQuery(target_object)) return;
+
+	// execute callback if answer present
+	if (!reply) return;
+	C4AulParSet pars(C4VString(reply), C4VInt(player));
+	if (target_object)
+		target_object->Call(PSF_InputCallback, &pars);
+	else
+		::GameScript.Call(PSF_InputCallback, &pars);
+}
+
+void C4ControlMsgBoardReply::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(target, "TargetObj", -1));
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(reply, "Reply", nullptr));
 	C4ControlPacket::CompileFunc(pComp);
 }
 

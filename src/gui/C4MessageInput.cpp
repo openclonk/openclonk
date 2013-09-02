@@ -106,8 +106,7 @@ void C4ChatInputDialog::OnChatCancel()
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 		{
 			// there was an associated query - it must be removed on all clients synchronized via queue
-			// do this by calling OnMessageBoardAnswer without an answer
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(nullptr, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		}
 	}
 }
@@ -147,10 +146,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		}
 		// then do a script callback, incorporating the input into the answer
 		if (fUppercase) SCapitalize(szInputText);
-		StdStrBuf sInput;
-		sInput.Copy(szInputText);
-		sInput.EscapeString();
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(szInputText, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 	}
 	else

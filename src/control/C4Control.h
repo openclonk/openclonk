@@ -5,6 +5,7 @@
  * Copyright (c) 2001-2002, 2005, 2009  Sven Eberhardt
  * Copyright (c) 2004-2007, 2011  Peter Wortmann
  * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -148,6 +149,25 @@ protected:
 	StdStrBuf Script;
 public:
 	void SetTargetObj(int32_t iObj) { iTargetObj = iObj; }
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
+class C4ControlMsgBoardReply : public C4ControlPacket // sync
+{
+public:
+	C4ControlMsgBoardReply()
+		: target(-1), player(NO_OWNER)
+	{}
+	C4ControlMsgBoardReply(const char *reply, int32_t target, int32_t player)
+		: reply(reply), target(target), player(player)
+	{}
+
+private:
+	StdCopyStrBuf reply;
+	int32_t target;
+	int32_t player;
+
+public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
