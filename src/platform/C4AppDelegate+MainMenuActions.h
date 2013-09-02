@@ -21,4 +21,6 @@
 - (IBAction) suggestQuitting:(id)sender;
 - (IBAction) simulateKeyPressed:(C4KeyCode)key;
 - (IBAction) visitWebsite:(id)sender;
+- (IBAction) makeScreenshot:(id)sender;
+- (IBAction) makeScreenshotOfWholeMap:(id)sender;
 @end
