@@ -124,6 +124,7 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_PlrSelect,    PC_Control, "Player Select",              false,  true,   0,                        PKT_UNPACK(C4ControlPlayerSelect)},
 	{ CID_PlrControl,   PC_Control, "Player Control",             false,  true,   0,                        PKT_UNPACK(C4ControlPlayerControl)},
 	{ CID_PlrCommand,   PC_Control, "Player Command",             false,  true,   0,                        PKT_UNPACK(C4ControlPlayerCommand)},
+	{ CID_PlrAction,    PC_Control, "Player Self-Mgmt Action",    false,  true,   0,                        PKT_UNPACK(C4ControlPlayerAction)},
 	{ CID_Message,      PC_Control, "Message",                    false,  true,   0,                        PKT_UNPACK(C4ControlMessage)    },
 	{ CID_EMMoveObj,    PC_Control, "EM Move Obj",                false,  true,   0,                        PKT_UNPACK(C4ControlEMMoveObject)},
 	{ CID_EMDrawTool,   PC_Control, "EM Draw Tool",               false,  true,   0,                        PKT_UNPACK(C4ControlEMDrawTool) },

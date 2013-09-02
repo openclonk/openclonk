@@ -670,7 +670,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand+13,"NewPlayer")) return ActivateNewPlayer(Player);
 		if (SEqual(szCommand+13,"Goals"))
 		{
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
+			::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::ActivateGoalMenu(::Players.Get(Player)), CDT_Queue);
 			return true;
 		}
 		if (SEqual(szCommand+13,"Rules")) return ActivateRules(Player);
@@ -701,8 +701,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
 		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
-		// TODO: doesn't really work
-		Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetHostility(::Players.Get(Player), pOpponent, !::Players.HostilityDeclared(Player, pOpponent->Number)), CDT_Queue);
 		return true;
 	}
 	// Abort
@@ -714,7 +713,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Surrender
 	if (SEqual2(szCommand,"Surrender"))
 	{
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::Surrender(::Players.Get(Player)), CDT_Queue);
 		return true;
 	}
 	// Save game
@@ -813,7 +812,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		Close(true);
 		C4Object *pObj; C4ID idItem(szCommand+12);
 		if ((pObj = ::Objects.Find(idItem)))
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
+			::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::ActivateGoal(::Players.Get(Player), pObj), CDT_Queue);
 		else
 			return false;
 		return true;
@@ -837,7 +836,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// check if it's still allowed
 		if (!Game.Teams.IsTeamSwitchAllowed()) return false;
 		// OK, join this team
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::SetTeam(::Players.Get(Player), idTeam), CDT_Queue);
 		return true;
 	}
 	// Observe

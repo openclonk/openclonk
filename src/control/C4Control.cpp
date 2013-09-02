@@ -486,6 +486,140 @@ void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 	C4ControlPacket::CompileFunc(pComp);
 }
 
+// *** C4ControlPlayerAction
+C4ControlPlayerAction::C4ControlPlayerAction(const C4Player *source)
+	: action(CPA_NoAction), source(source ? source->Number : NO_OWNER), target(NO_OWNER), parameter(0)
+{
+}
+
+C4ControlPlayerAction *C4ControlPlayerAction::Surrender(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_Surrender;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::ActivateGoal(const C4Player *source, const C4Object *goal)
+{
+	assert(source);
+	assert(goal);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_ActivateGoal;
+	control->target = goal->Number;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::ActivateGoalMenu(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_ActivateGoalMenu;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::SetHostility(const C4Player *source, const C4Player *target, bool hostile)
+{
+	assert(source);
+	assert(target);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_SetHostility;
+	control->target = target ? target->Number : NO_OWNER;
+	control->parameter = hostile;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::SetTeam(const C4Player *source, int32_t team)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_SetTeam;
+	control->target = team;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::InitScenarioPlayer(const C4Player *source, int32_t team)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_InitScenarioPlayer;
+	control->target = team;
+	return control;
+}
+
+void C4ControlPlayerAction::Execute() const
+{
+	// The originating player must exist
+	C4Player *source_player = ::Players.Get(source);
+	if (!source_player) return;
+
+	switch (action)
+	{
+	case CPA_Surrender:
+		source_player->Surrender();
+		break;
+
+	case CPA_ActivateGoal:
+	{
+		// Make sure the object actually exists
+		C4Object *goal = ::Objects.SafeObjectPointer(target);
+		if (!goal) return;
+		// Call it
+		C4AulParSet pars(C4VInt(source_player->Number));
+		goal->Call("Activate", &pars);
+		break;
+	}
+
+	case CPA_ActivateGoalMenu:
+		// open menu
+		source_player->Menu.ActivateGoals(source_player->Number, source_player->LocalControl && !::Control.isReplay());
+		break;
+
+	case CPA_SetHostility:
+	{
+		// Can only set hostility towards a player that exists
+		C4Player *target_player = ::Players.Get(target);
+		if (!target_player) return;
+		
+		// Proxy the hostility change through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(parameter != 0));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetHostility"));
+		assert(callback); // this should always exist since the engine provides a default implementation
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_SetTeam:
+	{
+		// Make sure team switching is allowed in the first place
+		if (!::Game.Teams.IsTeamSwitchAllowed()) return;
+
+		// We can't change teams to one that doesn't exist
+		C4Team *team = ::Game.Teams.GetTeamByID(target);
+		if (!team && target != TEAMID_New) return;
+
+		// Proxy the team switch through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetPlayerTeam"));
+		assert(callback);
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_InitScenarioPlayer:
+	{
+		// Proxy the call through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("InitScenarioPlayer"));
+		assert(callback);
+		callback->Exec(nullptr, &pars);
+	}
+	}
+}
+
+void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(source, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(target, "Target", NO_OWNER));
+	pComp->Value(mkNamingAdapt(parameter, "Data", 0));
+	C4ControlPacket::CompileFunc(pComp);
+}
+
 // *** C4ControlSyncCheck
 
 C4ControlSyncCheck::C4ControlSyncCheck()

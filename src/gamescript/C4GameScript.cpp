@@ -2073,15 +2073,6 @@ static C4Void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 	return C4Void();
 }
 
-static long FnActivateGameGoalMenu(C4PropList * _this, long iPlayer)
-{
-	// get target player
-	C4Player *pPlr = ::Players.Get(iPlayer);
-	if (!pPlr) return false;
-	// open menu
-	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !::Control.isReplay());
-}
-
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
 	// safeties
@@ -2365,7 +2356,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "AbortMessageBoard", FnAbortMessageBoard, false);
 	AddFunc(pEngine, "SetFoW", FnSetFoW);
 	AddFunc(pEngine, "SetMaxPlayer", FnSetMaxPlayer);
-	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
 	AddFunc(pEngine, "Object", FnObject);
 	AddFunc(pEngine, "GetTime", FnGetTime);
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);

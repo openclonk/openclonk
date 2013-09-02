@@ -253,6 +253,41 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
+class C4ControlPlayerAction : public C4ControlPacket // sync
+{
+public:
+	enum Action
+	{
+		CPA_NoAction = 0,
+
+		CPA_Surrender = 0x01,
+		CPA_ActivateGoal = 0x02,
+		CPA_ActivateGoalMenu = 0x03,
+
+		CPA_SetHostility = 0x10,
+		CPA_SetTeam = 0x11,
+		
+		CPA_InitScenarioPlayer = 0x20
+	};
+
+	C4ControlPlayerAction(const C4Player *source = nullptr);
+	static C4ControlPlayerAction *Surrender(const C4Player *source);
+	static C4ControlPlayerAction *ActivateGoalMenu(const C4Player *source);
+	static C4ControlPlayerAction *ActivateGoal(const C4Player *source, const C4Object *target);
+	static C4ControlPlayerAction *SetHostility(const C4Player *source, const C4Player *target, bool hostile);
+	static C4ControlPlayerAction *SetTeam(const C4Player *source, int32_t team);
+	static C4ControlPlayerAction *InitScenarioPlayer(const C4Player *source, int32_t team);
+
+private:
+	Action action;
+	int32_t source;
+	int32_t target;
+	int32_t parameter;
+
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
 class C4ControlSyncCheck : public C4ControlPacket // not sync
 {
 public:

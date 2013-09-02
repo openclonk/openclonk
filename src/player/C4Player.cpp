@@ -1310,7 +1310,7 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 	// stop team selection. This might close the menu forever if the control gets lost
 	// let's hope it doesn't!
 	Status = PS_TeamSelectionPending;
-	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("InitScenarioPlayer(%d,%d)", (int)Number, (int)idTeam).getData()), CDT_Queue);
+	::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::InitScenarioPlayer(this, idTeam), CDT_Queue);
 }
 
 void C4Player::DenumeratePointers()
