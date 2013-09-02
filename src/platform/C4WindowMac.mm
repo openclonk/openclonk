@@ -19,6 +19,7 @@
 #include <C4Version.h>
 #include <C4Application.h>
 #include <C4Rect.h>
+#include <C4FullScreen.h>
 
 #import <Appkit/AppKit.h>
 #import <C4WindowController.h>
@@ -108,13 +109,23 @@ void C4Window::SetTitle(const char *szToTitle)
 
 bool C4Window::GetSize(C4Rect * pRect)
 {
-	C4WindowController* controller = ctrler;
-	NSView* view = controller.openGLView ? controller.openGLView : controller.window.contentView;
-	NSRect r = [view frame];
-	pRect->x = 0;
-	pRect->y = 0;
-	pRect->Wdt = r.size.width;
-	pRect->Hgt = r.size.height;
+	if (this == &::FullScreen)
+	{
+		pRect->x = 0;
+		pRect->y = 0;
+		pRect->Wdt = ActualFullscreenX;
+		pRect->Hgt = ActualFullscreenY;
+	}
+	else
+	{
+		C4WindowController* controller = ctrler;
+		NSView* view = controller.openGLView ? controller.openGLView : controller.window.contentView;
+		NSRect r = [view frame];
+		pRect->x = 0;
+		pRect->y = 0;
+		pRect->Wdt = r.size.width;
+		pRect->Hgt = r.size.height;
+	}
 	return true;
 }
 

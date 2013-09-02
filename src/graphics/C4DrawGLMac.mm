@@ -195,36 +195,34 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 	int x = mouse.x;
 	int y = actualSizeY - mouse.y;
 	
+	C4Viewport* viewport = self.controller.viewport;
+	if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
+	{	
+		DWORD keyMask = flags;
+		if ([event type] == NSScrollWheel)
+			keyMask |= (int)[event deltaY] << 16;
+		::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
+	}
+	else if (viewport)
 	{
-		C4Viewport* viewport = self.controller.viewport;
-		if (::MouseControl.IsViewport(viewport) && Console.EditCursor.GetMode() == C4CNS_ModePlay)
-		{	
-			DWORD keyMask = flags;
-			if ([event type] == NSScrollWheel)
-				keyMask |= (int)[event deltaY] << 16;
-			::C4GUI::MouseMove(button, x, y, keyMask, Application.isEditor ? viewport : NULL);
-		}
-		else if (viewport)
+		switch (button)
 		{
-			switch (button)
-			{
-			case C4MC_Button_LeftDown:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), flags);
-				Console.EditCursor.LeftButtonDown(flags);
-				break;
-			case C4MC_Button_LeftUp:
-				Console.EditCursor.LeftButtonUp(flags);
-				break;
-			case C4MC_Button_RightDown:
-				Console.EditCursor.RightButtonDown(flags);
-				break;
-			case C4MC_Button_RightUp:
-				Console.EditCursor.RightButtonUp(flags);
-				break;
-			case C4MC_Button_None:
-				Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), flags);
-				break;
-			}
+		case C4MC_Button_LeftDown:
+			Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(), viewport->ViewY+y/viewport->GetZoom(), flags);
+			Console.EditCursor.LeftButtonDown(flags);
+			break;
+		case C4MC_Button_LeftUp:
+			Console.EditCursor.LeftButtonUp(flags);
+			break;
+		case C4MC_Button_RightDown:
+			Console.EditCursor.RightButtonDown(flags);
+			break;
+		case C4MC_Button_RightUp:
+			Console.EditCursor.RightButtonUp(flags);
+			break;
+		case C4MC_Button_None:
+			Console.EditCursor.Move(viewport->ViewX+x/viewport->GetZoom(),viewport->ViewY+y/viewport->GetZoom(), flags);
+			break;
 		}
 	}
 

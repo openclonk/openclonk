@@ -187,6 +187,17 @@ bool lionAndBeyond() {return osVersion() >= 0x1070;}
 	return NSMakeRect(newFrame.origin.x, newFrame.origin.y, preferredContentSize.width, preferredContentSize.height);
 }
 
+- (NSSize)window:(NSWindow *)window willUseFullScreenContentSize:(NSSize)proposedSize
+{
+	if (stdWindow == &::FullScreen)
+		return NSMakeSize(
+			CGDisplayPixelsWide(C4OpenGLView.displayID),
+			CGDisplayPixelsHigh(C4OpenGLView.displayID)
+		);
+	else
+		return proposedSize;
+}
+
 - (void) windowWillExitFullScreen:(NSNotification *)notification
 {
 	if (!Application.isEditor)
