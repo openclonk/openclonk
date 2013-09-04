@@ -232,7 +232,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		int32_t objectNum = C4ControlScript::SCOPE_Global;
 		if (context && context->Obj && context->Obj->GetObject())
 			objectNum = context->Obj->GetObject()->Number;
-		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, true, true), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(szData, objectNum, false, true), CDT_Decide);
 	}
 	else if (SEqualNoCase(szCmd, "PSE"))
 		if (Game.IsPaused())
