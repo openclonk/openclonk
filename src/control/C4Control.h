@@ -137,14 +137,13 @@ public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
 	C4ControlScript()
-			: iTargetObj(-1), fInternal(true), fUseVarsFromCallerContext(false)
+			: iTargetObj(-1), fUseVarsFromCallerContext(false)
 	{ }
-	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true, bool fUseVarsFromCallerContext = false)
-			: iTargetObj(iTargetObj), fInternal(fInternal), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
+	C4ControlScript(const char *szScript, int32_t iTargetObj, bool fUseVarsFromCallerContext = false)
+			: iTargetObj(iTargetObj), fUseVarsFromCallerContext(fUseVarsFromCallerContext), Script(szScript, true)
 	{ }
 protected:
 	int32_t iTargetObj;
-	bool fInternal;         // silent execute
 	bool fUseVarsFromCallerContext;
 	StdStrBuf Script;
 public:

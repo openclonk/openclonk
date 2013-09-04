@@ -238,7 +238,10 @@ void C4ControlScript::Execute() const
 {
 	const char *szScript = Script.getData();
 	// user script: from host only
-	if (!fInternal && (iByClient != C4ClientIDHost) && !Console.Active) return;
+	if ((iByClient != C4ClientIDHost) && !Console.Active) return;
+	// only allow scripts when debug mode is not forbidden
+	if (!Game.Parameters.AllowDebug) return;
+
 	// execute
 	C4Object *pObj = NULL;
 	C4AulScript *pScript;
@@ -260,33 +263,29 @@ void C4ControlScript::Execute() const
 	}
 #endif
 	// show messages
-	if (!fInternal)
+	// print script
+	if (pObj)
+		LogF("-> %s::%s", pObj->Def->GetName(), szScript);
+	else
+		LogF("-> %s", szScript);
+	// print result
+	if (!LocalControl())
 	{
-		// print script
-		if (pObj)
-			LogF("-> %s::%s", pObj->Def->GetName(), szScript);
+		C4Network2Client *pClient = NULL;
+		if (::Network.isEnabled())
+			pClient = ::Network.Clients.GetClientByID(iByClient);
+		if (pClient)
+			LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
 		else
-			LogF("-> %s", szScript);
-		// print result
-		if (!LocalControl())
-		{
-			C4Network2Client *pClient = NULL;
-			if (::Network.isEnabled())
-				pClient = ::Network.Clients.GetClientByID(iByClient);
-			if (pClient)
-				LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
-			else
-				LogF(" = %s (by client %d)", rVal.GetDataString().getData(), iByClient);
-		}
-		else
-			LogF(" = %s", rVal.GetDataString().getData());
+			LogF(" = %s (by client %d)", rVal.GetDataString().getData(), iByClient);
 	}
+	else
+		LogF(" = %s", rVal.GetDataString().getData());
 }
 
 void C4ControlScript::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
-	pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
 	pComp->Value(mkNamingAdapt(fUseVarsFromCallerContext, "UseVarsFromCallerContext", false));
 	pComp->Value(mkNamingAdapt(Script, "Script", ""));
 	C4ControlPacket::CompileFunc(pComp);
@@ -1256,7 +1255,7 @@ void C4ControlEMMoveObject::Execute() const
 	{
 		if (!pObjects) return;
 		// execute script ...
-		C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global, false);
+		C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global);
 		ScriptCtrl.SetByClient(iByClient);
 		// ... for each object in selection
 		for (int i=0; i<iObjectNum; ++i)
