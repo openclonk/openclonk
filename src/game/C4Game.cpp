@@ -1383,9 +1383,7 @@ bool C4Game::DropDef(C4ID id, float X, float Y)
 	C4Def *pDef;
 	if ((pDef=C4Id2Def(id)))
 	{
-		StdStrBuf str;
-		str.Format("CreateObject(%s,%d,%d,-1)", id.ToString(), int(X), int(Y));
-		::Control.DoInput(CID_Script, new C4ControlScript(str.getData()), CDT_Decide);
+		::Control.DoInput(CID_EMMoveObj, C4ControlEMMoveObject::CreateObject(id, ftofix(X), ftofix(Y)), CDT_Decide);
 		return true;
 	}
 	else

@@ -263,6 +263,7 @@ public:
 		CPA_Surrender = 0x01,
 		CPA_ActivateGoal = 0x02,
 		CPA_ActivateGoalMenu = 0x03,
+		CPA_Eliminate = 0x04,
 
 		CPA_SetHostility = 0x10,
 		CPA_SetTeam = 0x11,
@@ -273,6 +274,7 @@ public:
 
 	C4ControlPlayerAction(const C4Player *source = nullptr);
 	static C4ControlPlayerAction *Surrender(const C4Player *source);
+	static C4ControlPlayerAction *Eliminate(const C4Player *source);
 	static C4ControlPlayerAction *ActivateGoalMenu(const C4Player *source);
 	static C4ControlPlayerAction *ActivateGoal(const C4Player *source, const C4Object *target);
 	static C4ControlPlayerAction *SetHostility(const C4Player *source, const C4Player *target, bool hostile);
@@ -427,7 +429,10 @@ enum C4ControlEMObjectAction
 	EMMO_Duplicate, // duplicate objects at same position; reset EditCursor
 	EMMO_Script,    // execute Script
 	EMMO_Remove,    // remove objects
-	EMMO_Exit   // exit objects
+	EMMO_Exit,      // exit objects
+	EMMO_Select,    // select object
+	EMMO_Deselect,  // deselect object
+	EMMO_Create     // create a new object (used by C4Game::DropDef)
 };
 
 class C4ControlEMMoveObject : public C4ControlPacket // sync
@@ -436,6 +441,7 @@ public:
 	C4ControlEMMoveObject() : eAction(EMMO_Move), tx(Fix0), ty(Fix0), iTargetObj(0), iObjectNum(0), pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
 	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
+	static C4ControlEMMoveObject *CreateObject(const C4ID &id, C4Real x, C4Real y);
 	~C4ControlEMMoveObject();
 protected:
 	C4ControlEMObjectAction eAction; // action to be performed

@@ -50,6 +50,7 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 #include "gui/C4MessageInput.h"
+#include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG
 #include <C4AulDebug.h>
@@ -499,6 +500,13 @@ C4ControlPlayerAction *C4ControlPlayerAction::Surrender(const C4Player *source)
 	control->action = CPA_Surrender;
 	return control;
 }
+C4ControlPlayerAction *C4ControlPlayerAction::Eliminate(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_Eliminate;
+	return control;
+}
 C4ControlPlayerAction *C4ControlPlayerAction::ActivateGoal(const C4Player *source, const C4Object *goal)
 {
 	assert(source);
@@ -571,6 +579,10 @@ void C4ControlPlayerAction::Execute() const
 		source_player->Surrender();
 		break;
 
+	case CPA_Eliminate:
+		source_player->Eliminate();
+		break;
+	
 	case CPA_ActivateGoal:
 	{
 		// Make sure the object actually exists
@@ -1108,6 +1120,13 @@ C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4
 
 }
 
+C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y)
+{
+	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, nullptr);
+	ctl->iTargetObj = id.GetHandle();
+	return ctl;
+}
+
 C4ControlEMMoveObject::~C4ControlEMMoveObject()
 {
 	delete [] pObjects; pObjects = NULL;
@@ -1196,6 +1215,20 @@ void C4ControlEMMoveObject::Execute() const
 		for (int i=0; i<iObjectNum; ++i)
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->GetR());
+	}
+	break;
+	case EMMO_Select:
+	case EMMO_Deselect:
+	{
+		// callback to script
+		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj);
+		if (!target) return;
+		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection);
+	}
+	break;
+	case EMMO_Create:
+	{
+		::Game.CreateObject(C4ID(iTargetObj), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
 	}
 	break;
 	}
