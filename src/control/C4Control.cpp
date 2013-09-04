@@ -447,6 +447,75 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 	C4ControlPacket::CompileFunc(pComp);
 }
 
+// *** C4ControlPlayerMouse
+C4ControlPlayerMouse *C4ControlPlayerMouse::Hover(const C4Player *player, const C4Object *target, const C4Object *old_target, const C4Object *drag)
+{
+	assert(player != nullptr);
+	if (!player) return nullptr;
+
+	auto control = new C4ControlPlayerMouse();
+	control->action = CPM_Hover;
+	control->player = player->Number;
+	control->drag_obj = drag ? drag->Number : 0;
+	control->target_obj = target ? target->Number : 0;
+	control->old_obj = old_target ? old_target->Number : 0;
+	return control;
+}
+C4ControlPlayerMouse *C4ControlPlayerMouse::DragDrop(const C4Player *player, const C4Object *target, const C4Object *drag)
+{
+	assert(player != nullptr);
+	if (!player) return nullptr;
+
+	auto control = new C4ControlPlayerMouse();
+	control->action = CPM_Drop;
+	control->player = player->Number;
+	control->drag_obj = drag ? drag->Number : 0;
+	control->target_obj = target ? target->Number : 0;
+	return control;
+}
+
+void C4ControlPlayerMouse::Execute() const
+{
+	const char *callback_name = nullptr;
+	C4AulParSet pars(C4VInt(player));
+
+	switch (action)
+	{
+	case CPM_NoAction:
+		return;
+
+	case CPM_Hover:
+		// Mouse movement, object hover state changed
+		callback_name = PSF_MouseHover;
+		pars[1] = C4VObj(::Objects.SafeObjectPointer(old_obj));
+		pars[2] = C4VObj(::Objects.SafeObjectPointer(target_obj));
+		pars[3] = C4VObj(::Objects.SafeObjectPointer(drag_obj));
+		break;
+	
+	case CPM_Drop:
+		// Drag/Drop operation
+		callback_name = PSF_MouseDragDrop;
+		pars[1] = C4VObj(::Objects.SafeObjectPointer(drag_obj));
+		pars[2] = C4VObj(::Objects.SafeObjectPointer(target_obj));
+		break;
+	}
+	
+	// Do call
+	if (!callback_name) return;
+	if (callback_name[0] == '~') ++callback_name;
+	C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
+	if (!callback) return;
+	callback->Exec(nullptr, &pars);
+}
+
+void C4ControlPlayerMouse::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(action, "Action"));
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(target_obj, "TargetObj"));
+	pComp->Value(mkNamingAdapt(drag_obj, "DragObj"));
+	pComp->Value(mkNamingAdapt(old_obj, "OldObj"));
+}
 
 // *** C4ControlPlayerCommand
 

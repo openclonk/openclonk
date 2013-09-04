@@ -240,6 +240,31 @@ public:
 	void SetExtraData(const C4KeyEventData &new_extra_data) { ExtraData = new_extra_data; }
 };
 
+class C4ControlPlayerMouse : public C4ControlPacket // sync
+{
+public:
+	enum Action
+	{
+		CPM_NoAction = 0,
+
+		CPM_Hover = 0x01,
+		CPM_Drop = 0x02
+	};
+
+	C4ControlPlayerMouse() : action(CPM_NoAction), player(NO_OWNER), target_obj(0), drag_obj(0), old_obj(0) {}
+	static C4ControlPlayerMouse *Hover(const C4Player *player, const C4Object *target, const C4Object *old_target, const C4Object *drag = nullptr);
+	static C4ControlPlayerMouse *DragDrop(const C4Player *player, const C4Object *target, const C4Object *drag);
+
+private:
+	int32_t action;
+	int32_t player;
+	int32_t target_obj;
+	int32_t drag_obj;
+	int32_t old_obj;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+};
+
 class C4ControlPlayerCommand : public C4ControlPacket // sync
 {
 public:
