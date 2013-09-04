@@ -267,7 +267,8 @@ public:
 		CPA_SetHostility = 0x10,
 		CPA_SetTeam = 0x11,
 		
-		CPA_InitScenarioPlayer = 0x20
+		CPA_InitScenarioPlayer = 0x20,
+		CPA_InitPlayerControl = 0x21
 	};
 
 	C4ControlPlayerAction(const C4Player *source = nullptr);
@@ -277,12 +278,21 @@ public:
 	static C4ControlPlayerAction *SetHostility(const C4Player *source, const C4Player *target, bool hostile);
 	static C4ControlPlayerAction *SetTeam(const C4Player *source, int32_t team);
 	static C4ControlPlayerAction *InitScenarioPlayer(const C4Player *source, int32_t team);
+	static C4ControlPlayerAction *InitPlayerControl(const C4Player *source, const C4PlayerControlAssignmentSet *ctrl_set = nullptr);
 
 private:
 	Action action;
 	int32_t source;
 	int32_t target;
-	int32_t parameter;
+	int32_t param_int;
+	StdCopyStrBuf param_str;
+
+	enum IpcParam
+	{
+		CPA_IPC_HasKeyboard = 1<<0,
+		CPA_IPC_HasMouse = 1<<1,
+		CPA_IPC_HasGamepad = 1<<2
+	};
 
 public:
 	DECLARE_C4CONTROL_VIRTUALS

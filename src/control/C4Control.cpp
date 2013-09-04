@@ -488,7 +488,7 @@ void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlPlayerAction
 C4ControlPlayerAction::C4ControlPlayerAction(const C4Player *source)
-	: action(CPA_NoAction), source(source ? source->Number : NO_OWNER), target(NO_OWNER), parameter(0)
+	: action(CPA_NoAction), source(source ? source->Number : NO_OWNER), target(NO_OWNER), param_int(0)
 {
 }
 
@@ -522,7 +522,7 @@ C4ControlPlayerAction *C4ControlPlayerAction::SetHostility(const C4Player *sourc
 	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
 	control->action = CPA_SetHostility;
 	control->target = target ? target->Number : NO_OWNER;
-	control->parameter = hostile;
+	control->param_int = hostile;
 	return control;
 }
 C4ControlPlayerAction *C4ControlPlayerAction::SetTeam(const C4Player *source, int32_t team)
@@ -539,6 +539,23 @@ C4ControlPlayerAction *C4ControlPlayerAction::InitScenarioPlayer(const C4Player 
 	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
 	control->action = CPA_InitScenarioPlayer;
 	control->target = team;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::InitPlayerControl(const C4Player *source, const C4PlayerControlAssignmentSet *ctrl_set)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_InitPlayerControl;
+	if (ctrl_set)
+	{
+		control->param_str = ctrl_set->GetName();
+		if (ctrl_set->HasKeyboard())
+			control->param_int |= CPA_IPC_HasKeyboard;
+		if (ctrl_set->HasMouse())
+			control->param_int |= CPA_IPC_HasMouse;
+		if (ctrl_set->HasGamepad())
+			control->param_int |= CPA_IPC_HasGamepad;
+	}
 	return control;
 }
 
@@ -577,7 +594,7 @@ void C4ControlPlayerAction::Execute() const
 		if (!target_player) return;
 		
 		// Proxy the hostility change through C4Aul, in case a script wants to capture it
-		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(parameter != 0));
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(param_int != 0));
 		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetHostility"));
 		assert(callback); // this should always exist since the engine provides a default implementation
 		callback->Exec(nullptr, &pars);
@@ -608,6 +625,28 @@ void C4ControlPlayerAction::Execute() const
 		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("InitScenarioPlayer"));
 		assert(callback);
 		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_InitPlayerControl:
+	{
+		// Notify scripts about player control selection
+		const char *callback_name = PSF_InitializePlayerControl;
+		if (callback_name[0] == '~') ++callback_name;
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
+		if (!callback) return;
+		
+		C4AulParSet pars(C4VInt(source_player->Number));
+		// If the player is using a control set, its name is stored in param_str
+		if (param_str)
+		{
+			pars[1] = C4VString(param_str);
+			pars[2] = C4VBool(CPA_IPC_HasKeyboard == (param_int & CPA_IPC_HasKeyboard));
+			pars[3] = C4VBool(CPA_IPC_HasMouse == (param_int & CPA_IPC_HasMouse));
+			pars[4] = C4VBool(CPA_IPC_HasGamepad == (param_int & CPA_IPC_HasGamepad));
+		}
+		callback->Exec(nullptr, &pars);
+		break;
 	}
 	}
 }
@@ -616,7 +655,8 @@ void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(source, "Player", NO_OWNER));
 	pComp->Value(mkNamingAdapt(target, "Target", NO_OWNER));
-	pComp->Value(mkNamingAdapt(parameter, "Data", 0));
+	pComp->Value(mkNamingAdapt(param_int, "DataI", 0));
+	pComp->Value(mkNamingAdapt(param_str, "DataS", nullptr));
 	C4ControlPacket::CompileFunc(pComp);
 }
 

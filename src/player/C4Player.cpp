@@ -1479,14 +1479,7 @@ void C4Player::InitControl()
 				MouseControl=true;
 		// Some controls such as gamepad control need special synced GUI elements
 		// Do a script callback for selected control
-		if (ControlSet)
-		{
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("%s(%d,\"%s\",%d,%d,%d)", (const char *)PSF_InitializePlayerControl, (int)Number, ControlSet->GetName(), (int)ControlSet->HasKeyboard(), (int)ControlSet->HasMouse(), (int)ControlSet->HasGamepad()).getData()), CDT_Queue);
-		}
-		else
-		{
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("%s(%d)", (const char *)PSF_InitializePlayerControl, (int)Number).getData()), CDT_Queue);
-		}
+		::Control.DoInput(CID_PlrAction, C4ControlPlayerAction::InitPlayerControl(this, ControlSet), CDT_Queue);
 	}
 	// clear old control method and register new
 	Control.RegisterKeyset(Number, ControlSet);
