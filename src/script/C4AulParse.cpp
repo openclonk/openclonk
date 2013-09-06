@@ -182,7 +182,8 @@ private:
 	C4AulTokenType GetNextToken(OperatorPolicy Operator = OperatorsPlease); // get next token of SPos
 
 	void Shift(OperatorPolicy Operator = OperatorsPlease);
-	void Match(C4AulTokenType TokenType, const char * Message = NULL);
+	void Match(C4AulTokenType TokenType, const char * Expected = NULL);
+	void Check(C4AulTokenType TokenType, const char * Expected = NULL);
 	void UnexpectedToken(const char * Expected) NORETURN;
 	static const char * GetTokenName(C4AulTokenType TokenType);
 
@@ -1187,12 +1188,14 @@ void C4AulParse::Shift(OperatorPolicy Operator)
 {
 	TokenType = GetNextToken(Operator);
 }
-void C4AulParse::Match(C4AulTokenType RefTokenType, const char * Message)
+void C4AulParse::Check(C4AulTokenType RefTokenType, const char * Expected)
 {
 	if (TokenType != RefTokenType)
-		// error
-		throw new C4AulParseError(this, Message ? Message :
-		                          FormatString("%s expected, but found %s", GetTokenName(RefTokenType), GetTokenName(TokenType)).getData());
+		UnexpectedToken(Expected ? Expected : GetTokenName(RefTokenType));
+}
+void C4AulParse::Match(C4AulTokenType RefTokenType, const char * Expected)
+{
+	Check(RefTokenType, Expected);
 	Shift();
 }
 void C4AulParse::UnexpectedToken(const char * Expected)
@@ -1243,8 +1246,7 @@ void C4AulParse::Parse_Script(C4ScriptHost * scripthost)
 			{
 				Shift();
 				// get id of script to include
-				if (TokenType != ATT_IDTF)
-					UnexpectedToken("identifier");
+				Check(ATT_IDTF, "script name");
 				if (Type == PREPARSER)
 				{
 					// add to include list
@@ -1353,8 +1355,7 @@ void C4AulParse::Parse_Function()
 		throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
 	Shift();
 	// get next token, must be func name
-	if (TokenType != ATT_IDTF)
-		UnexpectedToken("function name");
+	Check(ATT_IDTF, "function name");
 	// check: symbol already in use?
 	switch (Acc)
 	{
@@ -1412,13 +1413,10 @@ void C4AulParse::Parse_Function()
 	{
 		Fn->ClearCode();
 	}
+	Shift();
 
 	// Parse function body
-	Shift();
-	// expect an opening bracket now
-	if (TokenType != ATT_BOPEN)
-		UnexpectedToken("'('");
-	Shift();
+	Match(ATT_BOPEN);
 	// get pars
 	int cpar = 0;
 	while (TokenType != ATT_BCLOSE)
@@ -1427,10 +1425,7 @@ void C4AulParse::Parse_Function()
 		if (cpar >= C4AUL_MAX_Par)
 			throw new C4AulParseError(this, "'func' parameter list: too many parameters (max 10)");
 		// must be a name or type now
-		if (TokenType != ATT_IDTF)
-		{
-			UnexpectedToken("parameter or closing bracket");
-		}
+		Check(ATT_IDTF, "parameter or ')'");
 		// type identifier?
 		C4V_Type t = C4V_Any;
 		if (SEqual(Idtf, C4AUL_TypeInt)) { t = C4V_Int; Shift(); }
@@ -1465,9 +1460,7 @@ void C4AulParse::Parse_Function()
 			break;
 		}
 		// must be a comma now
-		if (TokenType != ATT_COMMA)
-			UnexpectedToken("comma or closing bracket");
-		Shift();
+		Match(ATT_COMMA, "',' or ')'");
 		cpar++;
 	}
 	Match(ATT_BCLOSE);
@@ -1775,14 +1768,12 @@ int C4AulParse::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc)
 		}
 		++size;
 		// end of parameter list?
-		if (TokenType == ATT_COMMA)
-			Shift();
-		else if (TokenType == ATT_BCLOSE)
+		if (TokenType == ATT_BCLOSE)
 		{
 			Shift();
 			fDone = true;
 		}
-		else UnexpectedToken("',' or ')'");
+		else Match(ATT_COMMA, "',' or ')'");
 		break;
 	} while (!fDone);
 	// too many parameters?
@@ -2115,8 +2106,7 @@ void C4AulParse::Parse_ForEach()
 		Shift();
 	}
 	// get variable name
-	if (TokenType != ATT_IDTF)
-		UnexpectedToken("variable name");
+	Check(ATT_IDTF, "variable name");
 	if (Type == PREPARSER)
 	{
 		// insert variable
@@ -2544,13 +2534,12 @@ void C4AulParse::Parse_Expression2(int iParentPrio)
 		break;
 	case ATT_DOT:
 		Shift();
-		if (TokenType != ATT_IDTF)
-			UnexpectedToken("Identifier");
+		Check(ATT_IDTF, "property name");
 		{
 			C4String * pKey = Strings.RegString(Idtf);
 			AddBCC(AB_PROP, (intptr_t) pKey);
-			Shift();
 		}
+		Shift();
 		break;
 	case ATT_CALL: case ATT_CALLFS:
 		{
@@ -2582,8 +2571,7 @@ void C4AulParse::Parse_Var()
 	while (1)
 	{
 		// get desired variable name
-		if (TokenType != ATT_IDTF)
-			UnexpectedToken("variable name");
+		Check(ATT_IDTF, "variable name");
 		if (Type == PREPARSER)
 		{
 			// insert variable
@@ -2601,16 +2589,9 @@ void C4AulParse::Parse_Var()
 			Parse_Expression();
 			AddBCC(AB_POP_TO, 1 + iVarID - (iStack + Fn->VarNamed.iSize));
 		}
-		switch (TokenType)
-		{
-		case ATT_COMMA:
-			Shift();
-			break;
-		case ATT_SCOLON:
+		if (TokenType == ATT_SCOLON)
 			return;
-		default:
-			UnexpectedToken("',' or ';'");
-		}
+		Match(ATT_COMMA, "',' or ';'");
 	}
 }
 
@@ -2619,11 +2600,10 @@ void C4AulParse::Parse_Local()
 	Shift();
 	while (1)
 	{
+		Check(ATT_IDTF, "variable name");
 		if (Type == PREPARSER)
 		{
 			// get desired variable name
-			if (TokenType != ATT_IDTF)
-				UnexpectedToken("variable name");
 			// check: symbol already in use?
 			if (Host->GetPropList() && Host->GetPropList()->GetFunc(Idtf))
 				throw new C4AulParseError(this, "variable definition: name already in use");
@@ -2632,7 +2612,7 @@ void C4AulParse::Parse_Local()
 		}
 		char Name[C4AUL_MAX_Identifier] = ""; // current identifier
 		SCopy(Idtf, Name);
-		Match(ATT_IDTF);
+		Shift();
 		if (TokenType == ATT_SET)
 		{
 			if (!Host->GetPropList())
@@ -2642,16 +2622,9 @@ void C4AulParse::Parse_Local()
 			assert(Host->GetPropList()->IsStatic());
 			Parse_ConstExpression(Host->GetPropList()->IsStatic(), key);
 		}
-		switch (TokenType)
-		{
-		case ATT_COMMA:
-			Shift();
-			break;
-		case ATT_SCOLON:
+		if (TokenType == ATT_SCOLON)
 			return;
-		default:
-			UnexpectedToken("',' or ';'");
-		}
+		Match(ATT_COMMA, "',' or ';'");
 	}
 }
 
@@ -2666,11 +2639,10 @@ void C4AulParse::Parse_Static()
 	}
 	while (1)
 	{
+		Check(ATT_IDTF, "variable name");
 		if (Type == PREPARSER)
 		{
 			// get desired variable name
-			if (TokenType != ATT_IDTF)
-				UnexpectedToken("variable name");
 			// global variable definition
 			// check: symbol already in use?
 			if (Engine->GetPropList()->GetFunc(Idtf)) Error("function and variable with name %s", Idtf);
@@ -2681,17 +2653,10 @@ void C4AulParse::Parse_Static()
 				Engine->GlobalNamedNames.AddName(Idtf);
 			}
 		}
-		Match(ATT_IDTF);
-		switch (TokenType)
-		{
-		case ATT_COMMA:
-			Shift();
-			break;
-		case ATT_SCOLON:
+		Shift();
+		if (TokenType == ATT_SCOLON)
 			return;
-		default:
-			UnexpectedToken("',' or ';'");
-		}
+		Match(ATT_COMMA, "',' or ';'");
 	}
 }
 
@@ -2834,40 +2799,29 @@ void C4AulParse::Parse_Const()
 	// get global constant definition(s)
 	while (1)
 	{
-		char Name[C4AUL_MAX_Identifier] = ""; // current identifier
+		Check(ATT_IDTF, "constant name");
 		// get desired variable name
-		if (TokenType != ATT_IDTF)
-			UnexpectedToken("constant name");
+		char Name[C4AUL_MAX_Identifier] = "";
 		SCopy(Idtf, Name);
 		// check func lists - functions of same name are not allowed
 		if (Engine->GetPropList()->GetFunc(Idtf))
 			Error("definition of constant hidden by function %s", Idtf);
 		if (Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 			Error("constant and variable with name %s", Idtf);
-		Match(ATT_IDTF);
-		// expect '='
-		if (TokenType != ATT_SET)
-			UnexpectedToken("'='");
+		Shift();
+		Match(ATT_SET);
 		// expect value. Theoretically, something like C4AulScript::ExecOperator could be used here
 		// this would allow for definitions like "static const OCF_CrewMember = 1<<20"
 		// However, such stuff should better be generalized, so the preparser (and parser)
 		// can evaluate any constant expression, including functions with constant retval (e.g. Sqrt)
 		// So allow only simple constants for now.
-		Shift();
 
 		C4RefCntPointer<C4String> key = ::Strings.RegString(Name);
 		Parse_ConstExpression(NULL, key);
 
-		switch (TokenType)
-		{
-		case ATT_COMMA:
-			Shift();
-			break;
-		case ATT_SCOLON:
+		if (TokenType == ATT_SCOLON)
 			return;
-		default:
-			UnexpectedToken("',' or ';'");
-		}
+		Match(ATT_COMMA, "',' or ';'");
 	}
 }
 
