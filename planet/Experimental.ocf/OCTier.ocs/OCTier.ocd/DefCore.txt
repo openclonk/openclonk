@@ -1,0 +1,13 @@
+[DefCore]
+id=OCTier
+Version=5,3,0,0
+Category=C4D_Living
+Width=32
+Height=32
+Offset=-16,-16
+Vertices=2
+VertexX=-12,12
+VertexY=12,12
+VertexFriction=100,100
+VertexCNAT=8,8
+CrewMember=1
