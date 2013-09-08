@@ -401,9 +401,14 @@ bool C4Playback::Open(C4Group &rGrp)
 {
 	// clean up
 	Clear();
-	fLoadSequential = !rGrp.IsPacked();
 	iLastSequentialFrame = 0;
 	bool fStrip = false;
+
+	// open group? Then do some sequential reading for large files
+	// Can't do this when a dump is forced, because the dump needs all data
+	// Also can't do this when stripping is desired
+	fLoadSequential = !rGrp.IsPacked() && !Game.RecordDumpFile.getLength() && !fStrip;
+
 	// get text record file
 	StdStrBuf TextBuf;
 	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, &TextBuf))
@@ -413,10 +418,6 @@ bool C4Playback::Open(C4Group &rGrp)
 	}
 	else
 	{
-		// open group? Then do some sequential reading for large files
-		// Can't do this when a dump is forced, because the dump needs all data
-		// Also can't do this when stripping is desired
-		if (!rGrp.IsPacked()) if (!Game.RecordDumpFile.getLength()) if (!fStrip) fLoadSequential = true;
 		// get record file
 		if (fLoadSequential)
 		{
