@@ -1183,7 +1183,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
-		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
+		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true)
 {
 
 }
@@ -1191,7 +1191,7 @@ C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4
 C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y)
 {
 	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, nullptr);
-	ctl->iTargetObj = id.GetHandle();
+	ctl->StringParam = id.ToString();
 	return ctl;
 }
 
@@ -1255,7 +1255,7 @@ void C4ControlEMMoveObject::Execute() const
 	{
 		if (!pObjects) return;
 		// execute script ...
-		C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global);
+		C4ControlScript ScriptCtrl(StringParam.getData(), C4ControlScript::SCOPE_Global);
 		ScriptCtrl.SetByClient(iByClient);
 		// ... for each object in selection
 		for (int i=0; i<iObjectNum; ++i)
@@ -1296,7 +1296,7 @@ void C4ControlEMMoveObject::Execute() const
 	break;
 	case EMMO_Create:
 	{
-		::Game.CreateObject(C4ID(iTargetObj), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
+		::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
 	}
 	break;
 	}
@@ -1315,7 +1315,9 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjects, iObjectNum), "Objs", -1));
 	if (eAction == EMMO_Script)
-		pComp->Value(mkNamingAdapt(Script, "Script", ""));
+		pComp->Value(mkNamingAdapt(StringParam, "Script", ""));
+	else if (eAction == EMMO_Create)
+		pComp->Value(mkNamingAdapt(StringParam, "ID", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
 

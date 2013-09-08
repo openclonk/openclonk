@@ -473,7 +473,7 @@ protected:
 	int32_t iTargetObj;   // enumerated ptr to target object
 	int32_t iObjectNum;   // number of objects moved
 	int32_t *pObjects;    // pointer on array of objects moved
-	StdStrBuf Script; // script to execute
+	StdStrBuf StringParam; // script to execute, or ID of object to create
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
