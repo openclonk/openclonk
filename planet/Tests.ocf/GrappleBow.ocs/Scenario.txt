@@ -1,0 +1,5 @@
+[Head]
+Title=GrappleBow
+
+[Landscape]
+TopOpen=0
