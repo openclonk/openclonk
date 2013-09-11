@@ -106,8 +106,7 @@ void C4ChatInputDialog::OnChatCancel()
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 		{
 			// there was an associated query - it must be removed on all clients synchronized via queue
-			// do this by calling OnMessageBoardAnswer without an answer
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(nullptr, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		}
 	}
 }
@@ -147,10 +146,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		}
 		// then do a script callback, incorporating the input into the answer
 		if (fUppercase) SCapitalize(szInputText);
-		StdStrBuf sInput;
-		sInput.Copy(szInputText);
-		sInput.EscapeString();
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(szInputText, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 	}
 	else
@@ -609,7 +605,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
 		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
-		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console), CDT_Decide);
 		return true;
 	}
 	// set runtime properties
@@ -783,40 +779,15 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (Game.IsRunning)
 		if ((pCmd = GetCommand(szCmdName)))
 		{
-			StdStrBuf Script, CmdScript;
-			// replace %player% by calling player number
-			if (SSearch(pCmd->Script, "%player%"))
-			{
-				int32_t iLocalPlr = NO_OWNER;
-				C4Player *pLocalPlr = ::Players.GetLocalByIndex(0);
-				if (pLocalPlr) iLocalPlr = pLocalPlr->Number;
-				StdStrBuf sLocalPlr; sLocalPlr.Format("%d", iLocalPlr);
-				CmdScript.Copy(pCmd->Script);
-				CmdScript.Replace("%player%", sLocalPlr.getData());
-			}
-			else
-			{
-				CmdScript.Ref(pCmd->Script);
-			}
-			// insert parameters
-			if (SSearch(CmdScript.getData(), "%d"))
-			{
-				// make sure it's a number by converting
-				Script.Format(CmdScript.getData(), (int) atoi(pCmdPar));
-			}
-			else if (SSearch(CmdScript.getData(), "%s"))
-			{
-				// escape strings
-				StdStrBuf Par;
-				Par.Copy(pCmdPar);
-				Par.EscapeString();
-				// compose script
-				Script.Format(CmdScript.getData(), Par.getData());
-			}
-			else
-				Script = CmdScript.getData();
-			// add script
-			::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+			// get player number of first local player; if multiple players
+			// share one computer, we can't distinguish between them anyway
+			int32_t player_num = NO_OWNER;
+			C4Player *player = ::Players.GetLocalByIndex(0);
+			if (player) player_num = player->Number;
+
+			// send command to network
+			::Control.DoInput(CID_MsgBoardCmd, new C4ControlMsgBoardCmd(szCmdName, pCmdPar, player_num), CDT_Decide);
+
 			// ok
 			return true;
 		}

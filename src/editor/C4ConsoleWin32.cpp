@@ -263,8 +263,9 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 		// Remove player
 		if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
 		{
-			::Control.Input.Add(CID_Script, new C4ControlScript(
-			                      FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
+			C4Player *plr = ::Players.Get(LOWORD(wParam) - IDM_PLAYER_QUIT1);
+			if (!plr) return true;
+			::Control.Input.Add(CID_PlrAction, C4ControlPlayerAction::Eliminate(plr));
 			return true;
 		}
 		// Remove client

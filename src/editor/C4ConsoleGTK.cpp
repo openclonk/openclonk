@@ -1518,7 +1518,9 @@ void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	::Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
+	C4Player *plr = ::Players.Get(GPOINTER_TO_INT(data));
+	if (!plr) return;
+	::Control.Input.Add(CID_PlrAction, C4ControlPlayerAction::Eliminate(plr));	
 }
 
 void C4ConsoleGUI::State::OnViewNew(GtkWidget* item, gpointer data)

@@ -1146,24 +1146,6 @@ static bool FnAbortMessageBoard(C4PropList * _this, C4Object *pObj, long iForPlr
 	return pPlr->RemoveMessageBoardQuery(pObj);
 }
 
-static bool FnOnMessageBoardAnswer(C4PropList * _this, C4Object *pObj, long iForPlr, C4String *szAnswerString)
-{
-	// remove query
-	// fail if query doesn't exist to prevent any doubled answers
-	C4Player *pPlr = ::Players.Get(iForPlr);
-	if (!pPlr) return false;
-	if (!pPlr->RemoveMessageBoardQuery(pObj)) return false;
-	// if no answer string is provided, the user did not answer anything
-	// just remove the query
-	if (!szAnswerString || !szAnswerString->GetCStr()) return true;
-	C4AulParSet ps = C4AulParSet(C4VString(szAnswerString), C4VInt(iForPlr));
-	// get script
-	if (pObj)
-		return pObj->Call(PSF_InputCallback, &ps).getBool();
-	else
-		return ::GameScript.Call(PSF_InputCallback, &ps).getBool();
-}
-
 static C4Void FnSetFoW(C4PropList * _this, bool fEnabled, long iPlr)
 {
 	// safety
@@ -2091,15 +2073,6 @@ static C4Void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 	return C4Void();
 }
 
-static long FnActivateGameGoalMenu(C4PropList * _this, long iPlayer)
-{
-	// get target player
-	C4Player *pPlr = ::Players.Get(iPlayer);
-	if (!pPlr) return false;
-	// open menu
-	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !::Control.isReplay());
-}
-
 static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, Nillable<long> iOwner, long iOffX, long iOffY, long dwClr, C4ID idDeco, C4PropList *pSrc, long dwFlags, long iHSize)
 {
 	// safeties
@@ -2381,10 +2354,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "TestMessageBoard", FnTestMessageBoard, false);
 	AddFunc(pEngine, "CallMessageBoard", FnCallMessageBoard, false);
 	AddFunc(pEngine, "AbortMessageBoard", FnAbortMessageBoard, false);
-	AddFunc(pEngine, "OnMessageBoardAnswer", FnOnMessageBoardAnswer, false);
 	AddFunc(pEngine, "SetFoW", FnSetFoW);
 	AddFunc(pEngine, "SetMaxPlayer", FnSetMaxPlayer);
-	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
 	AddFunc(pEngine, "Object", FnObject);
 	AddFunc(pEngine, "GetTime", FnGetTime);
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);

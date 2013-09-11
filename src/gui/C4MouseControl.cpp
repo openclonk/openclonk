@@ -555,8 +555,7 @@ void C4MouseControl::UpdateCursorTarget()
 		// selectable objects around. If it turns out to be a problem we might want to
 		// deduce these hover callbacks client-side instead.
 		// Or, make sure to send this at most once per control frame.
-		Game.Input.Add(CID_Script, new C4ControlScript(
-		                 FormatString("%s(%d,Object(%d),Object(%d),Object(%d))", PSF_MouseHover, (int)Player, OldTargetObject ? (int)(OldTargetObject->Number) : 0, TargetObject ? (int)(TargetObject->Number) : 0, DragObject ? (int)(DragObject->Number) : 0).getData()));
+		Game.Input.Add(CID_PlrMouseMove, C4ControlPlayerMouse::Hover(::Players.Get(Player), TargetObject, OldTargetObject, DragObject));
 	}
 }
 
@@ -823,12 +822,7 @@ void C4MouseControl::ButtonUpDragScript()
 	if (!pPlr || pPlr->Eliminated) return;
 	// todo: Perform drag/drop validity check
 	// now drag/drop is handled by script
-	if (DropObject)
-		Game.Input.Add(CID_Script, new C4ControlScript(
-		                 FormatString("%s(%d,Object(%d),Object(%d))", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number), (int)(DropObject->Number)).getData()));
-	else
-		Game.Input.Add(CID_Script, new C4ControlScript(
-		                 FormatString("%s(%d,Object(%d),nil)", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number)).getData()));
+	Game.Input.Add(CID_PlrMouseMove, C4ControlPlayerMouse::DragDrop(::Players.Get(Player), DropObject, DragObject));
 }
 
 void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)

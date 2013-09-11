@@ -153,6 +153,8 @@ enum C4PacketType
 	CID_Synchronize   = CID_First | 0x06,
 	CID_Set           = CID_First | 0x07,
 	CID_Script        = CID_First | 0x08,
+	CID_MsgBoardReply = CID_First | 0x09,
+	CID_MsgBoardCmd   = CID_First | 0x0A,
 
 	CID_PlrInfo       = CID_First | 0x10,
 	CID_JoinPlr       = CID_First | 0x11,
@@ -162,6 +164,8 @@ enum C4PacketType
 	CID_PlrControl    = CID_First | 0x21,
 	CID_PlrCommand    = CID_First | 0x22,
 	CID_Message       = CID_First | 0x23,
+	CID_PlrAction     = CID_First | 0x24,
+	CID_PlrMouseMove  = CID_First | 0x25,
 
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
