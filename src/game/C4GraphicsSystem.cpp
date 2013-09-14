@@ -244,10 +244,12 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	// save landscape
 	if (fSaveAll)
 	{
+		// Create full map screenshots at zoom 2x. Fractional zooms (like 1.7x) should work but might cause some trouble at screen borders.
+		float zoom = 2.0f;
 		// get viewport to draw in
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landcape
-		CPNGFile png; int32_t lWdt=GBackWdt,lHgt=GBackHgt;
+		CPNGFile png; int32_t lWdt=GBackWdt * zoom,lHgt=GBackHgt * zoom;
 		if (!png.Create(lWdt, lHgt, false)) return false;
 		// get backbuffer size
 		int32_t bkWdt=C4GUI::GetScreenWdt(), bkHgt=C4GUI::GetScreenHgt();
@@ -269,7 +271,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 				if (iX+bkWdt2>lWdt) bkWdt2-=iX+bkWdt2-lWdt;
 				if (iY+bkHgt2>lHgt) bkHgt2-=iY+bkHgt2-lHgt;
 				// update facet
-				bkFct.Set(FullScreen.pSurface, 0, 0, bkWdt2, bkHgt2, iX, iY);
+				bkFct.Set(FullScreen.pSurface, 0, 0, ceil(float(bkWdt2)/zoom), ceil(float(bkHgt2)/zoom), iX/zoom, iY/zoom, zoom);
 				// draw there
 				pVP->Draw(bkFct, false);
 				// render

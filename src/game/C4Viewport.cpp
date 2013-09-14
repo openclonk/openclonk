@@ -207,15 +207,16 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		if (BorderTop)   pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
 		if (BorderRight) pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
 		if (BorderBottom)pDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
-
-		// Set clippers
-		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
-		GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
-		cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
-		// Apply Zoom
-		pDraw->SetZoom(GameZoom);
-		pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
 	}
+
+	// Set clippers
+	cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/cgo.Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/cgo.Zoom);
+	GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
+	cgo.TargetX += BorderLeft/Zoom; cgo.TargetY += BorderTop/Zoom;
+	// Apply Zoom
+	pDraw->SetZoom(GameZoom);
+	pDraw->SetPrimaryClipper(cgo.X,cgo.Y,DrawX+ViewWdt-1-BorderRight,DrawY+ViewHgt-1-BorderBottom);
+
 	last_game_draw_cgo = cgo;
 
 	// landscape mod by FoW
@@ -309,10 +310,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 
 		C4ST_STOP(OvrStat)
 
-		// Remove zoom n clippers
-		pDraw->SetZoom(0, 0, 1.0);
-		pDraw->NoPrimaryClipper();
 	}
+
+	// Remove zoom n clippers
+	pDraw->SetZoom(0, 0, 1.0);
+	pDraw->NoPrimaryClipper();
 
 }
 

@@ -913,7 +913,10 @@ bool C4Draw::BlitSurfaceTile2(C4Surface * sfcSurface, C4Surface * sfcTarget, int
 			if (iX<iToX) { iBlitX=iToX-iX; iBlitWdt+=iX-iToX; }
 			iOver=tx+iBlitWdt-iToWdt; if (iOver>0) iBlitWdt-=iOver;
 			// blit
-			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey)) return false;
+			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(tx+iToX),float(ty+iToY),float(iBlitWdt),float(iBlitHgt),fSrcColKey))
+			{
+				// Ignore blit errors. This is usually due to blit border lying outside surface and shouldn't cause remaining blits to fail.
+			}
 			// next col
 			tx+=iBlitWdt;
 		}
