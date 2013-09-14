@@ -236,7 +236,7 @@ bool C4Console::FileSave()
 bool C4Console::FileSaveAs(bool fSaveGame)
 {
 	// Do save-as dialog
-	StdStrBuf filename;
+	StdCopyStrBuf filename("");
 	filename.Copy(Game.ScenarioFile.GetName());
 	if (!FileSelect(&filename,
 	                "Clonk 4 Scenario\0*.ocs\0\0",
@@ -259,7 +259,7 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 bool C4Console::FileOpen()
 {
 	// Get scenario file name
-	StdStrBuf c4sfile ("");
+	StdCopyStrBuf c4sfile("");
 	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
@@ -273,13 +273,13 @@ bool C4Console::FileOpen()
 bool C4Console::FileOpenWPlrs()
 {
 	// Get scenario file name
-	StdStrBuf c4sfile ("");
+	StdCopyStrBuf c4sfile("");
 	if (!FileSelect(&c4sfile,
 	                FILE_SELECT_FILTER_FOR_C4S,
 	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
 		return false;
 	// Get player file name(s)
-	StdStrBuf c4pfile ("");
+	StdCopyStrBuf c4pfile("");
 	if (!FileSelect(&c4pfile,
 	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
@@ -437,7 +437,7 @@ void C4Console::UpdateMenus()
 void C4Console::PlayerJoin()
 {
 	// Get player file name(s)
-	StdStrBuf c4pfile ("");
+	StdCopyStrBuf c4pfile("");
 	if (!FileSelect(&c4pfile,
 	                "Clonk 4 Player\0*.ocp\0\0",
 	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
