@@ -1065,6 +1065,8 @@ private:
 		virtual void DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);
 	
 	private:
+		static const unsigned int HSPickerCursorSize = 5;
+		static const unsigned int VPickerCursorSize = 7;
 		C4FacetSurface hsFacet, vFacet; // chooser backgrounds
 		C4Rect hsPickerRect, vPickerRect;
 		C4GUI::Picture *flagPreview, *crewPreview;
@@ -1170,7 +1172,7 @@ C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
 	C4GUI::ComponentAligner caMain(bounds, 8, 8, true);
 	caMain.ExpandBottom(-(caMain.GetInnerHeight() - 256));
 	hsPickerRect = caMain.GetFromLeft(256);
-	vPickerRect = caMain.GetFromLeft(16);
+	vPickerRect = caMain.GetFromLeft(16 + VPickerCursorSize);
 	vPickerRect.Hgt = 256 - PlayerColorValueLowBound;
 
 	C4Facet &flagPreviewPic = ::GraphicsResource.fctFlagClr;
@@ -1186,14 +1188,14 @@ C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
 	AddElement(crewPreview);
 	
 	// Pre-draw the H+S chooser background, it never changes anyway
-	hsFacet.Create(256, 256);
+	hsFacet.Create(hsPickerRect.Wdt, hsPickerRect.Hgt);
 	hsFacet.Surface->Lock();
-	for (int y = 0; y < 256; ++y)
-		for (int x = 0; x < 256; ++x)
+	for (int y = 0; y < hsFacet.Hgt; ++y)
+		for (int x = 0; x < hsFacet.Wdt; ++x)
 			hsFacet.Surface->SetPixDw(x, y, HSV2RGB(C4RGB(x, 255-y, 255)));
 	hsFacet.Surface->Unlock();
 
-	vFacet.Create(16, 256 - PlayerColorValueLowBound);
+	vFacet.Create(vPickerRect.Wdt - VPickerCursorSize, vPickerRect.Hgt);
 	UpdateVFacet(255, 255);
 }
 
@@ -1201,7 +1203,7 @@ void C4StartupPlrColorPickerDlg::Picker::UpdateVFacet(uint32_t h, uint32_t s)
 {
 	// Draw the V chooser background according to current H+S values
 	vFacet.Surface->Lock();
-	for (int y = 0; y < 256 - PlayerColorValueLowBound; ++y)
+	for (int y = 0; y < vPickerRect.Hgt; ++y)
 		for (int x = 0; x < vFacet.Wdt; ++x)
 			vFacet.Surface->SetPixDw(x, y, HSV2RGB(C4RGB(h, s, 255-y)));
 	vFacet.Surface->Unlock();
@@ -1231,17 +1233,17 @@ void C4StartupPlrColorPickerDlg::Picker::DrawElement(C4TargetFacet &cgo)
 	C4Facet cgoPicker(cgo.Surface, cgo.TargetX + hsPickerRect.x, cgo.TargetY + hsPickerRect.y, hsPickerRect.Wdt, hsPickerRect.Hgt);
 	hsFacet.Draw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y);
 	// H+S cursor
-	cgoPicker.Wdt = cgoPicker.Hgt = 5;
+	cgoPicker.Wdt = cgoPicker.Hgt = HSPickerCursorSize;
 	cgoPicker.X += GetRedValue(hsv) - cgoPicker.Wdt / 2;
 	cgoPicker.Y += 255 - GetGreenValue(hsv) - cgoPicker.Hgt / 2;
 	pDraw->DrawLineDw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y, cgoPicker.X + cgoPicker.Wdt, cgoPicker.Y + cgoPicker.Hgt, C4RGB(0, 0, 0));
 	pDraw->DrawLineDw(cgoPicker.Surface, cgoPicker.X + cgoPicker.Wdt, cgoPicker.Y, cgoPicker.X, cgoPicker.Y + cgoPicker.Hgt, C4RGB(0, 0, 0));
 
 	// V chooser background
-	cgoPicker.Set(cgo.Surface, cgo.TargetX + vPickerRect.x, cgo.TargetY + vPickerRect.y, vPickerRect.Wdt, vPickerRect.Hgt);
+	cgoPicker.Set(cgo.Surface, cgo.TargetX + vPickerRect.x + VPickerCursorSize, cgo.TargetY + vPickerRect.y, vPickerRect.Wdt - VPickerCursorSize, vPickerRect.Hgt);
 	vFacet.Draw(cgoPicker.Surface, cgoPicker.X, cgoPicker.Y);
 	// V cursor
-	cgoPicker.Wdt = cgoPicker.Hgt = 7;
+	cgoPicker.Wdt = cgoPicker.Hgt = VPickerCursorSize;
 	cgoPicker.X -= cgoPicker.Wdt / 2 + 1;
 	cgoPicker.Y += 255 - GetBlueValue(hsv) - cgoPicker.Hgt / 2;
 	for (int i = 0; i < cgoPicker.Hgt / 2 + 1; ++i)
