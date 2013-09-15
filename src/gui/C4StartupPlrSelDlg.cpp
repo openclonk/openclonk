@@ -1071,6 +1071,12 @@ private:
 		C4Rect hsPickerRect, vPickerRect;
 		C4GUI::Picture *flagPreview, *crewPreview;
 		uint32_t hsv; // current color
+		enum {
+			PS_Idle, // user isn't dragging anything
+			PS_IdleDragging, // user started the drag on empty space
+			PS_DragHS, // user started the drag over the HS picker
+			PS_DragV // user started the drag over the V picker
+		} state;
 
 		bool HandleMouseDown(int32_t x, int32_t y);
 		void UpdateVFacet(uint32_t h, uint32_t s);
@@ -1167,7 +1173,7 @@ void C4StartupPlrColorPickerDlg::OnClosed(bool commit)
 }
 
 C4StartupPlrColorPickerDlg::Picker::Picker(const C4Rect &bounds)
-	: Control(bounds)
+	: Control(bounds), state(PS_Idle)
 {
 	C4GUI::ComponentAligner caMain(bounds, 8, 8, true);
 	caMain.ExpandBottom(-(caMain.GetInnerHeight() - 256));
@@ -1252,30 +1258,46 @@ void C4StartupPlrColorPickerDlg::Picker::DrawElement(C4TargetFacet &cgo)
 
 bool C4StartupPlrColorPickerDlg::Picker::HandleMouseDown(int32_t x, int32_t y)
 {
-	// Check if mouse was over a picker
-	if (hsPickerRect.Contains(x, y))
+	if (state == PS_IdleDragging)
 	{
-		int h = x - hsPickerRect.x;
-		int s = 255 - (y - hsPickerRect.y);
+		// User is dragging something that is neither of the pickers. Ignore.
+		return false;
+	}
+	// Check if a drag starts or was originally started over a picker
+	else if (state == PS_DragHS || (state == PS_Idle && hsPickerRect.Contains(x, y)))
+	{
+		int h = BoundBy(x - hsPickerRect.x, 0, hsPickerRect.Wdt - 1);
+		assert(Inside(h, 0, 255));
+		int s = 255 - BoundBy(y - hsPickerRect.y, 0, hsPickerRect.Hgt - 1);
+		assert(Inside(s, 0, 255));
 		hsv = C4RGB(h, s, GetBlueValue(hsv));
 		UpdateVFacet(h, s);
 		UpdatePreview();
+		state = PS_DragHS;
 		return true;
 	}
-	else if (vPickerRect.Contains(x, y))
+	else if (state == PS_DragV || (state == PS_Idle && vPickerRect.Contains(x, y)))
 	{
-		int v = 255 - (y - vPickerRect.y);
+		int v = 255 - BoundBy(y - vPickerRect.y, 0, vPickerRect.Hgt - 1);
+		assert(Inside(v, 0, 255));
 		hsv = (hsv & 0xFFFFFF00) | v;
 		UpdatePreview();
+		state = PS_DragV;
 		return true;
 	}
-	return false;
+	else
+	{
+		// Drag started outside of all picker areas; ignore movement until user releases mouse button.
+		state = PS_IdleDragging;
+		return false;
+	}
 }
 
 void C4StartupPlrColorPickerDlg::Picker::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
 {
 	Control::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
 
+	if (!rMouse.IsLDown()) state = PS_Idle;
 	if (rMouse.pDragElement) return;
 	if (rMouse.IsLDown())
 	{
