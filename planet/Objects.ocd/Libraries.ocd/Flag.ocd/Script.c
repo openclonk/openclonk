@@ -3,9 +3,9 @@
 	It also serves as an energy transmitter.
 */
 
-static const LibraryFlag_standard_radius = 200;
 static LibraryFlag_flag_list;
 
+local DefaultFlagRadius = 200; // Radius of new flag of this type, unless overwritten by SetFlagRadius().
 local lflag;
 
 public func IsFlagpole(){return true;}
@@ -167,6 +167,8 @@ public func Initialize()
 	
 	// linked flags - optimization for power system
 	RefreshAllFlagLinks();
+	
+	return _inherited(...);
 }
 
 public func Construction()
@@ -384,6 +386,6 @@ func CreateConstructionPreview(object constructing_clonk)
 	return CreateObject(Library_Flag_ConstructionPreviewer, constructing_clonk->GetX()-GetX(), constructing_clonk->GetY()-GetY(), constructing_clonk->GetOwner());
 }
 
-public func GetFlagRadius(){if (lflag) return lflag.radius; else return LibraryFlag_standard_radius;}
+public func GetFlagRadius(){if (lflag) return lflag.radius; else return DefaultFlagRadius;}
 public func GetFlagConstructionTime() {return lflag.construction_time;}
 public func GetFlagMarkerID(){return LibraryFlag_Marker;}

@@ -4,6 +4,9 @@
 #include Library_Ownable
 #include Library_PowerProducer
 #include Library_PowerConsumer
+#include Library_Flag
+
+local DefaultFlagRadius = 90;
 
 static const Compensator_max_seconds = 15;
 static const Compensator_power_usage = 50;

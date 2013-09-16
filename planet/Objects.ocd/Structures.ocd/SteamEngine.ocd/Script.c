@@ -3,6 +3,9 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 200;
 
 static const SteamEngine_produced_power = 300;
 

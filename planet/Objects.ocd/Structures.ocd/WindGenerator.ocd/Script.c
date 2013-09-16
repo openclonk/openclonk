@@ -3,6 +3,9 @@
 #include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 90;
 
 /* Initialisierung */
 

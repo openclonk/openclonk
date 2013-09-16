@@ -10,6 +10,9 @@
 #include Library_Producer
 #include Library_PowerConsumer
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 90;
 
 local wind_anim;
 local last_wind;
