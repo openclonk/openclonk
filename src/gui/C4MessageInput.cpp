@@ -774,6 +774,15 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (SEqual(szCmdName, "chart"))
 			return Game.ToggleChart();
 
+	// whole map screenshot
+	if (SEqual(szCmdName, "screenshot"))
+	{
+		double zoom = atof(pCmdPar);
+		if (zoom<=0) return false;
+		::GraphicsSystem.SaveScreenshot(true, zoom);
+		return true;
+	}
+
 	// custom command
 	C4MessageBoardCommand *pCmd;
 	if (Game.IsRunning)

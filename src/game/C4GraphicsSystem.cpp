@@ -215,7 +215,7 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
 }
 
-bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
+bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll, float fSaveAllZoom)
 {
 	// Filename
 	char szFilename[_MAX_PATH+1];
@@ -224,7 +224,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	do
 		sprintf(szFilename,"Screenshot%03i.png",iScreenshotIndex++);
 	while (FileExists(strFilePath = Config.AtScreenshotPath(szFilename)));
-	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath);
+	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath, fSaveAllZoom);
 	// log if successful/where it has been stored
 	if (!fSuccess)
 		LogF(LoadResStr("IDS_PRC_SCREENSHOTERROR"), Config.AtUserDataRelativePath(Config.AtScreenshotPath(szFilename)));
@@ -234,7 +234,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	return !!fSuccess;
 }
 
-bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
+bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom)
 {
 	// Fullscreen only
 	if (Application.isEditor) return false;
@@ -245,7 +245,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	if (fSaveAll)
 	{
 		// Create full map screenshots at zoom 2x. Fractional zooms (like 1.7x) should work but might cause some trouble at screen borders.
-		float zoom = 2.0f;
+		float zoom = fSaveAllZoom;
 		// get viewport to draw in
 		C4Viewport *pVP=::Viewports.GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landcape

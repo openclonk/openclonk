@@ -58,8 +58,9 @@ public:
 	bool Init();
 	bool InitLoaderScreen(const char *szLoaderSpec);
 	void EnableLoaderDrawing(); // reset black screen loader flag
-	bool SaveScreenshot(bool fSaveAll);
-	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);
+	bool SaveScreenshotKey(bool fSaveAll) { return SaveScreenshot(fSaveAll, 2.0f); } // keyboard callback for creating screenshot. create at default zoom.
+	bool SaveScreenshot(bool fSaveAll, float fSaveAllZoom);
+	bool DoSaveScreenshot(bool fSaveAll, const char *szFilename, float fSaveAllZoom);
 	inline void InvalidateBg() { iRedrawBackground=2; }
 	inline void OverwriteBg() { InvalidateBg(); }
 protected:
