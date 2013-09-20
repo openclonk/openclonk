@@ -584,6 +584,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			LogF("/chart - %s", LoadResStr("IDS_TEXT_DISPLAYNETWORKSTATISTICS"));
 			LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
 			LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
+			LogF("/screenshot [zoom] - %s", LoadResStr("IDS_TEXT_SAFEZOOMEDFULLSCREENSHOT"));
 		}
 		LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
 		LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));

@@ -905,6 +905,7 @@ IDS_TEXT_PERFORMANACTIONINYOURNAME=Aktion im eigenen Namen ausführen.
 IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO=Geräusch aus der globalen Sound-Gruppe abspielen.
 IDS_TEXT_PREVENTDEBUGMODEINTHISROU=Debug-Modus in dieser Runde unterbinden.
 IDS_TEXT_PROGRAMDIRECTORY=Programmverzeichnis
+IDS_TEXT_SAFEZOOMEDFULLSCREENSHOT=Screenshot der gesammten Spielfläche mit Vergrößerung anfertigen.
 IDS_TEXT_SCORE=Punkte
 IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA=Maximale Spielerzahl für diese Runde festlegen.
 IDS_TEXT_SETANEWNETWORKCOMMENT=Neuen Netzwerk-Kommentar setzen.
