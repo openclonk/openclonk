@@ -18,6 +18,7 @@ local n_lava_y; // size of lava_y array
 local n_branches;
 local mat_behaviours; // array of BigVolcanoBehaviour_*, indexed by GetMaterial(x,y)+1: How to behave in materials
 local mat_advancespeeds; // array of ints from 0 to 100, indexed by GetMaterial(x,y)+1: How to behave in materials
+local speed_multiplier = 1; // number of pixels by which the volcano advances when it does advance
 
 func Activate(int start_y, int end_y)
 {
@@ -99,7 +100,7 @@ func Execute()
 				if (i<n_lava_y-1) if (lava_y[i] > lava_y[i+1]+BigVolcano_XRes*2) speed+=50;
 				this_move = (Random(100) < speed);
 				if (this_move)
-					--lava_y[i];
+					lava_y[i] -= speed_multiplier;
 				else if (!Random(3))
 				{
 					if (speed<=10)
@@ -119,7 +120,7 @@ func Execute()
 				}
 				if (last_move || (this_move && i))
 				{
-					DrawMaterialQuad("DuroLava-lava_red", (i-1)*BigVolcano_XRes,lava_y[i-1], i*BigVolcano_XRes,lava_y[i], i*BigVolcano_XRes,lava_y[i]+2, (i-1)*BigVolcano_XRes,lava_y[i-1]+2, true);
+					DrawMaterialQuad("DuroLava-lava_red", (i-1)*BigVolcano_XRes,lava_y[i-1], i*BigVolcano_XRes,lava_y[i], i*BigVolcano_XRes,lava_y[i]+speed_multiplier+1, (i-1)*BigVolcano_XRes,lava_y[i-1]+speed_multiplier+1, true);
 				}
 				last_move = this_move;
 			}
@@ -324,6 +325,20 @@ func SoundAt(string sound_name, int x, int y, int vol)
 		ScheduleCall(sound_host, Global.RemoveObject, 100);
 	}
 	return r;
+}
+
+// Get highest point of lava surface
+func GetLavaPeak()
+{
+	var y; for (var ly in lava_y) y += ly;
+	return y / n_lava_y;
+}
+
+// Update speed of rising lava
+func SetSpeedMultiplier(int new_multiplier)
+{
+	speed_multiplier = new_multiplier;
+	return true;
 }
 
 local Name = "BigVolcano";

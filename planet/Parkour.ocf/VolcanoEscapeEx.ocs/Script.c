@@ -5,6 +5,8 @@
 	Difficult upwards parkour. Now with extra volcano coming from bottom!
 --*/
 
+static g_volcano;
+
 protected func Initialize()
 {
 	var w = LandscapeWidth(), h = LandscapeHeight();
@@ -30,12 +32,40 @@ protected func Initialize()
 		start_chest->CreateContents(DynamiteBox,2);
 	}
 	// Create big volcano
-	var v=CreateObject(BigVolcano,0,0,NO_OWNER);
+	g_volcano=CreateObject(BigVolcano,0,0,NO_OWNER);
 	var h0 = h-10;
-	v->Activate(h0, h*10/100);
+	g_volcano->Activate(h0, h*10/100);
+	// Schedule script to update volcano speed multiplier
+	ScheduleCall(nil, Scenario.VolcanoTimer, 40, 99999);
 	// Bottom is open, so put some stable lava here to prevent remaining lava from just flowing out of the map
 	DrawMaterialQuad("StableLava",0,h0,w,h0,w,h,0,h);
 	return;
+}
+
+// Timer callback: Update volcano speed (rubberband effect)
+func VolcanoTimer()
+{
+	// Safety
+	if (!g_volcano) return;
+	// Get volcano height
+	var y_volcano = g_volcano->GetLavaPeak();
+	// Get player progress
+	var y_plr, crew, n_crew;
+	for (var i=0; i<GetPlayerCount(C4PT_User); ++i)
+		if (crew = GetCursor(GetPlayerByIndex(i, C4PT_User)))
+		{
+			y_plr += crew->GetY();
+			++n_crew;
+		}
+	// Calc rubber band
+	var new_multiplier;
+	if (n_crew)
+		new_multiplier = Max(1, (y_volcano - y_plr/n_crew) / 150);
+	else
+		new_multiplier = 1;
+	g_volcano->SetSpeedMultiplier(new_multiplier);
+	//Log("speed %v", new_multiplier);
+	return true;
 }
 
 func InitializePlayer(int plr)
