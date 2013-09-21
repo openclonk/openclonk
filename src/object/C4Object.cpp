@@ -1052,6 +1052,8 @@ void C4Object::Execute()
 	// particles
 	if (BackParticles) BackParticles.Exec(this);
 	if (FrontParticles) FrontParticles.Exec(this);
+	DynamicBackParticles.Exec();
+	DynamicFrontParticles.Exec();
 	// effects
 	if (pEffects)
 	{

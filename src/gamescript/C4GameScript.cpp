@@ -1533,6 +1533,32 @@ static bool FnCreateParticle(C4PropList * _this, C4String *szName, long iX, long
 	return true;
 }
 
+static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, C4Value size, int lifetime, C4PropList *properties, int attachment)
+{
+	// safety
+	C4Object *obj = Object(_this);
+	if (obj && !_this->Status) return false;
+	
+	// local offset
+	if (obj)
+	{
+		x += obj->GetX();
+		y += obj->GetY();
+	}
+	// get particle
+	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(name));
+	if (!pDef) return false;
+	// construct data
+	C4DynamicParticleValueProvider valueSpeedX, valueSpeedY, valueSize;
+	valueSpeedX.Set(speedX);
+	valueSpeedY.Set(speedY);
+	valueSize.Set(size);
+	// create
+	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueSize, (float)lifetime, properties, obj ? (attachment == 1 ? &obj->DynamicBackParticles : &obj->DynamicFrontParticles) : NULL, obj);
+	// success, even if not created
+	return true;
+}
+
 static bool FnCastAParticles(C4PropList * _this, C4String *szName, long iAmount, long iLevel, long iX, long iY, long a0, long a1, long b0, long b1, C4Object *pObj, bool fBack)
 {
 	// safety
@@ -1596,6 +1622,25 @@ static bool FnClearParticles(C4PropList * _this, C4String *szName, C4Object *pOb
 		::Particles.GlobalParticles.Remove(pDef);
 	// success
 	return true;
+}
+
+static C4ValueArray* FnPV_Linear(C4PropList * _this, long startValue, long endValue)
+{
+	C4ValueArray *pArray = new C4ValueArray(3);
+	pArray->SetItem(0, C4VInt(C4PV_Linear));
+	pArray->SetItem(1, C4VInt(startValue));
+	pArray->SetItem(2, C4VInt(endValue));
+	return pArray;
+}
+
+static C4ValueArray* FnPV_Random(C4PropList * _this, long startValue, long endValue, long rerollInterval)
+{
+	C4ValueArray *pArray = new C4ValueArray(4);
+	pArray->SetItem(0, C4VInt(C4PV_Linear));
+	pArray->SetItem(1, C4VInt(startValue));
+	pArray->SetItem(2, C4VInt(endValue));
+	pArray->SetItem(3, C4VInt(rerollInterval));
+	return pArray;
 }
 
 static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
@@ -2363,6 +2408,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
+	AddFunc(pEngine, "CreateParticleEx", FnCreateParticleEx);
 	AddFunc(pEngine, "CastParticles", FnCastParticles);
 	AddFunc(pEngine, "CastBackParticles", FnCastBackParticles);
 	AddFunc(pEngine, "PushParticles", FnPushParticles);
@@ -2437,6 +2483,9 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetPlrExtraData);
 	F(AddEffect);
 	F(CheckEffect);
+
+	F(PV_Linear);
+	F(PV_Random);
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);

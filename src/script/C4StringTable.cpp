@@ -169,6 +169,14 @@ C4StringTable::C4StringTable()
 	P[P_Right] = "Right";
 	P[P_Bottom] = "Bottom";
 	P[P_Filter] = "Filter";
+	P[P_ForceX] = "ForceX";
+	P[P_ForceY] = "ForceY";
+	P[P_G] = "G";
+	P[P_B] = "B";
+	P[P_Alpha] = "Alpha";
+	P[P_DampingX] = "DampingX";
+	P[P_DampingY] = "DampingY";
+	P[P_Size] = "Size";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";

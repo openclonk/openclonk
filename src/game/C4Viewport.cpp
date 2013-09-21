@@ -260,6 +260,11 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Particles.GlobalParticles.Draw(cgo,NULL);
 	C4ST_STOP(PartStat)
 
+	// draw global dynamic particles
+	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
+	::DynamicParticles.globalParticles.Draw(cgo, NULL);
+	C4ST_STOP(PartStat)
+
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
