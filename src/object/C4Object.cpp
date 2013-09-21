@@ -170,6 +170,8 @@ void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfW
 
 C4Object::C4Object()
 {
+	DynamicFrontParticles = DynamicBackParticles = 0;
+
 	Default();
 }
 
@@ -229,6 +231,11 @@ void C4Object::Default()
 	pEffects=NULL;
 	pGfxOverlay=NULL;
 	iLastAttachMovementFrame=-1;
+
+	if (DynamicFrontParticles == 0)
+		DynamicFrontParticles = DynamicParticles.GetNewParticleList(this);
+	if (DynamicBackParticles == 0)
+		DynamicBackParticles = DynamicParticles.GetNewParticleList(this);
 }
 
 bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
@@ -1052,8 +1059,6 @@ void C4Object::Execute()
 	// particles
 	if (BackParticles) BackParticles.Exec(this);
 	if (FrontParticles) FrontParticles.Exec(this);
-	DynamicBackParticles.Exec();
-	DynamicFrontParticles.Exec();
 	// effects
 	if (pEffects)
 	{
@@ -2567,6 +2572,9 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 
 void C4Object::Clear()
 {
+	DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
+	DynamicFrontParticles = DynamicBackParticles = NULL;
+
 	if (pEffects) { delete pEffects; pEffects=NULL; }
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();

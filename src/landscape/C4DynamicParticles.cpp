@@ -33,8 +33,19 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 	startValue /= denominator;
 	endValue /= denominator;
 
-	if (valueFunction == &C4DynamicParticleValueProvider::Random)
-		RollRandom();
+	// special treatment for keyframes
+	if (valueFunction == &C4DynamicParticleValueProvider::KeyFrames)
+	{
+		for (int i = 0; i < keyFrameCount; ++i)
+		{
+			keyFrames[2 * i] /= 1000.0f; // even numbers are the time values
+			keyFrames[2 * i + 1] /= denominator; // odd numbers are the actual values
+			//LogF("KF is %f @ %f", keyFrames[2 * i + 1], keyFrames[2 * i]);
+		}
+	}
+	else
+		if (valueFunction == &C4DynamicParticleValueProvider::Random)
+			RollRandom();
 }
 
 void C4DynamicParticleValueProvider::RollRandom()
@@ -64,6 +75,31 @@ float C4DynamicParticleValueProvider::Random(C4DynamicParticle *forParticle)
 	return currentValue;
 }
 
+float C4DynamicParticleValueProvider::KeyFrames(C4DynamicParticle *forParticle)
+{
+	float age = forParticle->GetRelativeAge();
+	if (smoothing == 0) // linear
+	{
+		for (int i = 0; i < keyFrameCount; ++i)
+		{
+			if (age > keyFrames[i * 2]) continue;
+			assert(i >= 1);
+
+			float x1 = keyFrames[(i - 1) * 2];
+			float x2 = keyFrames[i * 2];
+			float y1 = keyFrames[(i - 1) * 2 + 1];
+			float y2 = keyFrames[i * 2 + 1];
+			float position = (age - x1) / (x2 - x1);
+			float totalRange = (y2 - y1);
+			
+			float value = position * totalRange + y1;
+			return value;
+		}
+	}
+
+	return startValue;
+}
+
 void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4ParticleValueProviderID what)
 {
 	startValue = _startValue;
@@ -79,6 +115,10 @@ void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4P
 		break;
 	case C4PV_Random:
 		valueFunction = &C4DynamicParticleValueProvider::Random;
+		break;
+	case C4PV_KeyFrames:
+		valueFunction = &C4DynamicParticleValueProvider::KeyFrames;
+		break;
 	default:
 		assert(false);
 	};
@@ -97,9 +137,9 @@ void C4DynamicParticleValueProvider::Set(const C4Value &value)
 		Set(valueArray);
 		return;
 	}
-	
+
 	int32_t valueInt = value.getInt();
-	
+
 	Set((float)valueInt, (float)valueInt, C4PV_Const); 
 }
 
@@ -122,7 +162,9 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 
 	case C4PV_Linear:
 		if (arraySize >= 3)
+		{
 			Set((float)(*fromArray)[1].getInt(), (float)(*fromArray)[2].getInt(), C4PV_Linear);
+		}
 		break;
 	case C4PV_Random:
 		if (arraySize >= 4)
@@ -130,7 +172,31 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 			Set((float)(*fromArray)[1].getInt(), (float)(*fromArray)[2].getInt(), C4PV_Random);
 			rerollInterval = (*fromArray)[3].getInt();
 			RollRandom();
+
+		}
+	case C4PV_KeyFrames:
+		if (arraySize >= 5)
+		{
+			smoothing = (*fromArray)[1].getInt();
+			keyFrames = (float*) malloc(sizeof(float) * (arraySize + 3)); // 2 additional information floats at the beginning and ending
+			keyFrameCount = 0;
+			const int startingOffset = 2;
+			int i = startingOffset;
+			for (; i < arraySize; ++i)
+			{
+				keyFrames[2 + i - startingOffset] = (float)(*fromArray)[i].getInt();
+			}
+			keyFrameCount = (i - startingOffset) / 2 + 2;
+			Set(keyFrames[2 + 1], keyFrames[2 * keyFrameCount - 1], C4PV_KeyFrames);
 			
+			// add two points for easier interpolation at beginning and ending
+			keyFrames[0] = -500.f;
+			keyFrames[1] = keyFrames[2 + 1];
+			keyFrames[2 * keyFrameCount - 2] = 1500.f;
+			keyFrames[2 * keyFrameCount - 1] = keyFrames[keyFrameCount - 1 - 2];
+
+			//for (int i = 0; i < keyFrameCount; ++i)
+			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
 		}
 	default:
 		break;
@@ -154,6 +220,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 
 void C4DynamicParticleProperties::Floatify()
 {
+	size.Floatify(1.f);
 	forceX.Floatify(10.f);
 	forceY.Floatify(10.f);
 	speedDampingX.Floatify(1000.f);
@@ -229,16 +296,16 @@ void C4DynamicParticle::Init()
 	lifetime = startingLifetime = 5.f * 38.f;
 }
 
-bool C4DynamicParticle::Exec(C4Object *obj)
+bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta)
 {
 	// die of old age? :<
-	lifetime -= 1.f;
+	lifetime -= timeDelta;
 	if (lifetime <= 0.f) return false;
 
 	// movement
 	float currentForceX = properties.forceX.GetValue(this);
 	float currentForceY = properties.forceY.GetValue(this);
-	
+
 	currentSpeedX += currentForceX;
 	currentSpeedY += currentForceY;
 
@@ -251,11 +318,11 @@ bool C4DynamicParticle::Exec(C4Object *obj)
 		currentSpeedY *= currentDampingY;
 
 		// todo: collision check
-		
-		positionX += currentSpeedX;
-		positionY += currentSpeedY;
+
+		positionX += timeDelta * currentSpeedX;
+		positionY += timeDelta * currentSpeedY;
 		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this));
-		
+
 	}
 	else if(!properties.size.IsConstant())
 	{
@@ -284,7 +351,7 @@ void C4DynamicParticleChunk::Clear()
 void C4DynamicParticleChunk::ReplaceParticle(int indexTo, int indexFrom)
 {
 	C4DynamicParticle *oldParticle = particles[indexTo];
-	
+
 	if (indexFrom != indexTo) // false when "replacing" the last one
 	{
 		memcpy(&vertexCoordinates[indexTo * C4DynamicParticle::DrawingData::vertexCountPerParticle], &vertexCoordinates[indexFrom * C4DynamicParticle::DrawingData::vertexCountPerParticle], sizeof(C4DynamicParticle::DrawingData::Vertex) * C4DynamicParticle::DrawingData::vertexCountPerParticle);
@@ -295,11 +362,11 @@ void C4DynamicParticleChunk::ReplaceParticle(int indexTo, int indexFrom)
 	delete oldParticle;
 }
 
-bool C4DynamicParticleChunk::Exec(C4Object *obj)
+bool C4DynamicParticleChunk::Exec(C4Object *obj, float timeDelta)
 {
 	for (int i = 0; i < particleCount; ++i)
 	{
-		if (!particles[i]->Exec(obj))
+		if (!particles[i]->Exec(obj, timeDelta))
 		{
 			ReplaceParticle(i, particleCount - 1);
 			--particleCount;
@@ -359,19 +426,26 @@ C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
 	return newParticle;
 }
 
-void C4DynamicParticleList::Exec(C4Object *obj)
+void C4DynamicParticleList::Exec(float timeDelta)
 {
+	if (particleChunks.empty()) return;
+
+	accessMutex.Enter();
+
 	for (std::list<C4DynamicParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end();)
 	{
-		if (iter->Exec(obj))
+		if (iter->Exec(targetObject, timeDelta))
 		{
 			++iter;
 		}
 		else
 		{
 			iter = particleChunks.erase(iter);
+			lastAccessedChunk = 0;
 		}
 	}
+
+	accessMutex.Leave();
 }
 
 void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
@@ -384,9 +458,9 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
 	pDraw->SetTexture();
-	
+
 	glPrimitiveRestartIndex(0xffffffff);
-	
+
 	// apply zoom
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -400,10 +474,14 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_PRIMITIVE_RESTART);
 
+	accessMutex.Enter();
+
 	for (std::list<C4DynamicParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
 	{
 		iter->Draw(cgo, obj);
 	}
+
+	accessMutex.Leave();
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -416,6 +494,8 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, bool additive)
 {
+	accessMutex.Enter();
+
 	// if not cached, find correct chunk in list
 	C4DynamicParticleChunk *chunk = 0;
 	if (lastAccessedChunk && lastAccessedChunk->IsOfType(def))
@@ -441,7 +521,68 @@ C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, boo
 
 	assert(chunk && "No suitable particle chunk could be found or created.");
 	lastAccessedChunk = chunk;
+
+	accessMutex.Leave();
 	return chunk->AddNewParticle();
+}
+
+void C4DynamicParticleSystem::CalculationThread::Execute()
+{
+	DynamicParticles.ExecuteCalculation();
+}
+
+void C4DynamicParticleSystem::ExecuteCalculation()
+{
+	int gameTime = Game.FrameCounter;
+	if (currentSimulationTime < gameTime)
+	{
+		float timeDelta = 1.f;
+		if (currentSimulationTime != 0)
+			timeDelta = (float)(gameTime - currentSimulationTime);
+		currentSimulationTime = gameTime;
+
+		particleListAccessMutex.Enter();
+
+		for (std::list<C4DynamicParticleList>::iterator iter = particleLists.begin(); iter != particleLists.end(); ++iter)
+		{
+			iter->Exec(timeDelta);
+		}
+
+		particleListAccessMutex.Leave();
+	}
+	Sleep(1000 / 38);
+}
+
+C4DynamicParticleList *C4DynamicParticleSystem::GetNewParticleList(C4Object *forObject)
+{
+	C4DynamicParticleList *newList = 0;
+
+	particleListAccessMutex.Enter();
+	particleLists.push_back(C4DynamicParticleList(forObject));
+	newList = &particleLists.back();
+	particleListAccessMutex.Leave();
+
+	return newList;
+}
+
+void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second)
+{
+	particleListAccessMutex.Enter();
+
+	for(std::list<C4DynamicParticleList>::iterator iter = particleLists.begin(); iter != particleLists.end();)
+	{
+		C4DynamicParticleList *list = &(*iter);
+		if (list == first || list == second)
+		{
+			iter = particleLists.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
+	particleListAccessMutex.Leave();
 }
 
 C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider speedX, C4DynamicParticleValueProvider speedY, C4DynamicParticleValueProvider size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
@@ -449,7 +590,15 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 	// todo: check amount etc
 
 	if (!pxList) 
-		pxList = &globalParticles;
+	{
+		pxList = globalParticles;
+	}
+
+	if (pxList == globalParticles && globalParticles == 0)
+	{
+		globalParticles = GetNewParticleList();
+		pxList = globalParticles;
+	}
 
 	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, true);
 	particle->properties.Set(properties);
@@ -469,7 +618,7 @@ void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(int forAmount)
 {
 	const uint32_t PRI = 0xffffffff;
 	int neededAmount = 5 * forAmount;
-	
+
 	if (primitiveRestartIndices.size() < neededAmount)
 	{
 		uint32_t oldValue = 0;
@@ -496,6 +645,15 @@ void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(int forAmount)
 			}
 		}
 	}
+}
+
+void C4DynamicParticleSystem::Clear()
+{
+	currentSimulationTime = 0;
+
+	particleListAccessMutex.Enter();
+	particleLists.clear();
+	particleListAccessMutex.Leave();
 }
 
 C4DynamicParticleSystem DynamicParticles;

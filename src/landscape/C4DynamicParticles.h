@@ -16,6 +16,7 @@
 */
 
 #include <C4Particles.h>
+#include <StdScheduler.h>
 
 #ifndef INC_C4DynamicParticles
 #define INC_C4DynamicParticles
@@ -25,6 +26,7 @@ enum C4ParticleValueProviderID
 	C4PV_Const,
 	C4PV_Linear,
 	C4PV_Random,
+	C4PV_KeyFrames,
 };
 
 class C4DynamicParticleList;
@@ -41,14 +43,24 @@ protected:
 
 	// used by Random
 	float currentValue;
-	int rerollInterval;
+
+	union
+	{
+		int rerollInterval; // for Random
+		int keyFrameCount; // for KeyFrames
+	};
+	int smoothing;
+	float *keyFrames;
 
 	C4DynamicParticleValueProviderFunction valueFunction;
 	bool isConstant;
 public:
 	bool IsConstant() { return isConstant; }
-	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), valueFunction(0), isConstant(true) { }
-	
+	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true) { }
+	~C4DynamicParticleValueProvider()
+	{
+		if (keyFrames != 0) free(keyFrames);
+	}
 	void RollRandom();
 
 	// divides by denominator
@@ -62,6 +74,7 @@ public:
 	float Linear(C4DynamicParticle *forParticle);
 	float Const(C4DynamicParticle *forParticle);
 	float Random(C4DynamicParticle *forParticle);
+	float KeyFrames(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticleProperties
@@ -164,7 +177,7 @@ public:
 		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this));
 	}
 
-	bool Exec(C4Object *obj);
+	bool Exec(C4Object *obj, float timeDelta);
 
 	friend class C4DynamicParticleChunk;
 	friend class C4DynamicParticleSystem;
@@ -192,7 +205,7 @@ public:
 	}
 	// removes all particles
 	void Clear();
-	bool Exec(C4Object *obj);
+	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	bool IsOfType(C4ParticleDef *def);
 
@@ -206,29 +219,65 @@ class C4DynamicParticleList
 private:
 	std::list<C4DynamicParticleChunk> particleChunks;
 
+	C4Object *targetObject;
+
 	// caching..
 	C4DynamicParticleChunk *lastAccessedChunk;
+
+	// for making sure that the list is not drawn and calculated at the same time
+	CStdCSec accessMutex;
 public:
-	C4DynamicParticleList() : lastAccessedChunk(0)
+	C4DynamicParticleList(C4Object *obj = 0) : targetObject(obj), lastAccessedChunk(0)
 	{
 
 	}
-	void Exec(C4Object *obj = 0);
+	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, bool additive);
 };
 
 class C4DynamicParticleSystem
 {
+	class CalculationThread : public StdThread
+	{
+	protected:
+		virtual void Execute();
+	public:
+		CalculationThread() { StdThread::Start(); }
+	};
+
 private:
 	std::vector<uint32_t> primitiveRestartIndices;
-	std::list<C4ParticleList> particleLists;
+	std::list<C4DynamicParticleList> particleLists;
+
+	CalculationThread calculationThread;
+	CStdCSec particleListAccessMutex;
+	int currentSimulationTime; // in game time
+
+	// calculates the physics in all of the existing particle lists
+	void ExecuteCalculation();
+
+	C4DynamicParticleList *globalParticles;
 public:
+	C4DynamicParticleSystem()
+	{
+		currentSimulationTime = 0;
+		globalParticles = 0;
+	}
+
+	void Clear();
+	void DrawGlobalParticles(C4TargetFacet cgo) { if (globalParticles) globalParticles->Draw(cgo, 0); } 
+
+	C4DynamicParticleList *GetNewParticleList(C4Object *forTarget = 0);
+	// releases up to 2 lists
+	void ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second = 0);
+
 	void PreparePrimitiveRestartIndices(int forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	C4DynamicParticleList globalParticles;
 	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider speedX, C4DynamicParticleValueProvider speedY, C4DynamicParticleValueProvider size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+
+	friend class CalculationThread;
 };
 
 extern C4DynamicParticleSystem DynamicParticles;

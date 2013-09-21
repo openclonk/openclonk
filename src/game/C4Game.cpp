@@ -740,7 +740,6 @@ bool C4Game::Execute() // Returns true if the game is over
 		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
 	EXEC_S_DR(  Particles.GlobalParticles.Exec(); , PartStat            , "ParEx")
-	EXEC_S_DR(  DynamicParticles.globalParticles.Exec(); , DynPartStat     , "DParEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
 	EXEC_S_DR(  Landscape.Execute();              , LandscapeStat       , "LdsEx")

@@ -1554,7 +1554,7 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	valueSpeedY.Set(speedY);
 	valueSize.Set(size);
 	// create
-	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueSize, (float)lifetime, properties, obj ? (attachment == 1 ? &obj->DynamicBackParticles : &obj->DynamicFrontParticles) : NULL, obj);
+	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueSize, (float)lifetime, properties, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
 	// success, even if not created
 	return true;
 }
@@ -1636,12 +1636,33 @@ static C4ValueArray* FnPV_Linear(C4PropList * _this, long startValue, long endVa
 static C4ValueArray* FnPV_Random(C4PropList * _this, long startValue, long endValue, long rerollInterval)
 {
 	C4ValueArray *pArray = new C4ValueArray(4);
-	pArray->SetItem(0, C4VInt(C4PV_Linear));
+	pArray->SetItem(0, C4VInt(C4PV_Random));
 	pArray->SetItem(1, C4VInt(startValue));
 	pArray->SetItem(2, C4VInt(endValue));
 	pArray->SetItem(3, C4VInt(rerollInterval));
 	return pArray;
 }
+
+static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
+{
+	C4ValueArray *pArray = new C4ValueArray(C4AUL_MAX_Par);
+	pArray->SetItem(0, C4VInt(C4PV_KeyFrames));
+	const int offset = 1;
+
+	// Read all parameters
+	int i = 0;
+	for (; i < C4AUL_MAX_Par; i++)
+	{
+		C4Value Data = *(pars++);
+		// No data given?
+		if (Data.GetType() == C4V_Nil) break;
+
+		pArray->SetItem(offset + i, C4VInt(Data.getInt()));
+	}
+	pArray->SetSize(i + offset);
+	return C4Value(pArray);
+}
+
 
 static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
 {
@@ -2486,6 +2507,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 
 	F(PV_Linear);
 	F(PV_Random);
+	// F(PV_KeyFrames); added below
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
@@ -2626,6 +2648,7 @@ C4ScriptFnDef C4ScriptGameFnMap[]=
 	{ "Message",       1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnMessage       },
 	{ "AddMessage",    1, C4V_Bool,   { C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnAddMessage    },
 	{ "EffectCall",    1, C4V_Any,    { C4V_Object  ,C4V_PropList,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnEffectCall    },
+	{ "PV_KeyFrames",  1, C4V_Array,  { C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}, FnPV_KeyFrames  },
 
 	{ NULL,            0, C4V_Nil,    { C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil     ,C4V_Nil    ,C4V_Nil    ,C4V_Nil    ,C4V_Nil}, 0               }
 };
