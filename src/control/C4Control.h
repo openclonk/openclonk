@@ -106,7 +106,7 @@ enum C4CtrlValueType
 {
 	C4CVT_None = -1,
 	C4CVT_ControlRate = 0,
-	C4CVT_AllowDebug = 1,
+	C4CVT_DisableDebug = 1,
 	C4CVT_MaxPlayer = 2,
 	C4CVT_TeamDistribution = 3,
 	C4CVT_TeamColors = 4,

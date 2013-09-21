@@ -729,7 +729,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "nodebug"))
 	{
 		if (!Game.IsRunning) return false;
-		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_DisableDebug, 0), CDT_Decide);
 		return true;
 	}
 

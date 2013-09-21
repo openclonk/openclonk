@@ -178,18 +178,17 @@ void C4ControlSet::Execute() const
 		::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),::Control.ControlRate,Game.FrameCounter).getData());
 		break;
 
-	case C4CVT_AllowDebug: // allow debug mode?
+	case C4CVT_DisableDebug: // force debug mode disabled
 	{
-		bool fSet = !!iData;
-		// disable debug
-		if (!fSet && Game.DebugMode)
+		if (Game.DebugMode)
 		{
 			Game.DebugMode=false;
 			::GraphicsSystem.DeactivateDebugOutput();
 		}
 		// save flag, log
-		Game.Parameters.AllowDebug = fSet;
-		Log(fSet ? "Debug ON" : "Debug OFF");
+		Game.Parameters.AllowDebug = false;
+		C4Client *client = ::Game.Clients.getClientByID(iByClient);
+		LogF("Debug mode forced disabled by %s", client ? client->getName() : "<unknown client>");
 		break;
 	}
 	break;
