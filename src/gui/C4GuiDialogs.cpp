@@ -827,7 +827,7 @@ namespace C4GUI
 // MessageDialog
 
 	MessageDialog::MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize, int32_t *piConfigDontShowAgainSetting, bool fDefaultNo)
-			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting)
+			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting), pKeyCopy(NULL), sCopyText()
 	{
 		CStdFont &rUseFont = ::GraphicsResource.TextFont;
 		// get positions
@@ -929,7 +929,23 @@ namespace C4GUI
 		if (btnFocus) SetFocus(btnFocus, false);
 		// resize to actually needed size
 		SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
+		// Control+C copies text to clipboard
+		sCopyText.Format("[%s] %s", szCaption ? szCaption : "", szMessage ? szMessage : "");
+		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
+		               new DlgKeyCB<MessageDialog>(*this, &MessageDialog::KeyCopy), C4CustomKey::PRIO_CtrlOverride);
 	}
+
+MessageDialog::~MessageDialog()
+{
+	delete pKeyCopy;
+}
+
+bool MessageDialog::KeyCopy()
+{
+	// Copy text to clipboard
+	::Application.Copy(sCopyText);
+	return true;
+}
 
 
 // --------------------------------------------------

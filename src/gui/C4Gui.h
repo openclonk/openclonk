@@ -2244,17 +2244,21 @@ namespace C4GUI
 	private:
 		bool fHasOK;
 		int32_t *piConfigDontShowAgainSetting;
+		class C4KeyBinding *pKeyCopy;
+		StdCopyStrBuf sCopyText; // text that goes into clipboard if user presses Ctrl+C on this window
 	public:
 		enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16, btnReset=32,
 		               btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort
 		             };
 		enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };
 		MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize=dsRegular, int32_t *piConfigDontShowAgainSetting=NULL, bool fDefaultNo=false);
+		~MessageDialog();
 
 	protected:
 		virtual bool OnEnter() { if (!fHasOK) return false; Close(true); return true; }
 		void OnDontShowAgainCheck(C4GUI::Element *pCheckBox)
 		{ if (piConfigDontShowAgainSetting) *piConfigDontShowAgainSetting = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked(); }
+		bool KeyCopy();
 
 		virtual const char *GetID() { return "MessageDialog"; }
 		virtual int32_t GetZOrdering() { return C4GUI_Z_INPUT; }
