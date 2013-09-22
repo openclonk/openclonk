@@ -124,7 +124,6 @@ public func Seed()
 				plant->RemoveObject();
 			else if (this.Confinement)
 				plant->KeepArea(this.Confinement);
-			Log("%v", plant);
 		}
 	}
 	return;
