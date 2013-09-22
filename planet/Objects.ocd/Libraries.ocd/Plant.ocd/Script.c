@@ -87,6 +87,14 @@ private func SeedAmount()
 	return 10;
 }
 
+/** The closest distance a new plant may seed to its nearest neighbour. Default is 20.
+	@return the maximum amount of plants.
+*/
+private func SeedOffset()
+{
+	return 20;
+}
+
 /** Reproduction of plants: Called every 2 seconds by a timer.
 */
 public func Seed()
@@ -94,10 +102,10 @@ public func Seed()
 	// Find number of plants in seed area.
 	var size = SeedArea();
 	var amount = SeedAmount();
-	var area = Rectangle(AbsX(size / -2), AbsY(size / -2), size, size);
+	var area = Rectangle(size / -2, size / -2, size, size);
 	if (this.Confinement)
 		area = RectangleEnsureWithin(area, this.Confinement);
-	var plant_cnt = ObjectCount(Find_ID(GetID()), Find_InRect(area.x - GetX(), area.y - GetY(), area.w, area.h));
+	var plant_cnt = ObjectCount(Find_ID(GetID()), Find_InRect(area.x, area.y, area.w, area.h));
 	// If there are not much plants in the seed area compared to seed amount
 	// the chance of seeding is improved, if there are much the chance is reduced.
 	var chance = SeedChance();
@@ -106,16 +114,17 @@ public func Seed()
 	if (!Random(chance))
 	{
 		// Place the plant but check if it is not close to another one.	
-		var plant = PlaceVegetation(GetID(), area.x - GetX(), area.y - GetY(), area.w, area.h, 3);
+		var plant = PlaceVegetation(GetID(), area.x, area.y, area.w, area.h, 3);
 		if (plant)
 		{
 			var neighbour = FindObject(Find_ID(GetID()), Find_Exclude(plant), Sort_Distance(plant->GetX() - GetX(), plant->GetY() - GetY()));
 			var distance = ObjectDistance(plant, neighbour);
-			// Closeness determined by seedarea and amount.
-			if (!Random(distance / (size/amount)))
+			// Closeness check
+			if (distance < SeedOffset())
 				plant->RemoveObject();
 			else if (this.Confinement)
 				plant->KeepArea(this.Confinement);
+			Log("%v", plant);
 		}
 	}
 	return;

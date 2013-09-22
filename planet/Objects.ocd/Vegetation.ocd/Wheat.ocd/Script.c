@@ -10,6 +10,7 @@
 private func SeedArea() { return 50; }
 private func SeedChance() {	return 250; }
 private func SeedAmount() { return 15; }
+private func SeedOffset() { return 10; }
 
 local stalks;
 
