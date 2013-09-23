@@ -733,6 +733,19 @@ void C4ControlPlayerAction::Execute() const
 void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(source, "Player", NO_OWNER));
+	const StdEnumEntry<Action> ActionNames[] =
+	{
+		{ "Surrender",             CPA_Surrender  },
+		{ "ActivateGoal",          CPA_ActivateGoal  },
+		{ "ActivateGoalMenu",      CPA_ActivateGoalMenu  },
+		{ "Eliminate",             CPA_Eliminate  },
+		{ "SetHostility",          CPA_SetHostility  },
+		{ "SetTeam",               CPA_SetTeam  },
+		{ "InitScenarioPlayer",    CPA_InitScenarioPlayer  },
+		{ "InitPlayerControl",     CPA_InitPlayerControl  },
+		{ NULL, CPA_NoAction }
+	};
+	pComp->Value(mkNamingAdapt(mkEnumAdapt<Action, int32_t>(action, ActionNames), "Action", CPA_NoAction));
 	pComp->Value(mkNamingAdapt(target, "Target", NO_OWNER));
 	pComp->Value(mkNamingAdapt(param_int, "DataI", 0));
 	pComp->Value(mkNamingAdapt(param_str, "DataS", nullptr));
