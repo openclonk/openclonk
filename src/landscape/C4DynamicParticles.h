@@ -63,6 +63,8 @@ public:
 	{
 		if (keyFrames != 0) free(keyFrames);
 	}
+	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other) { *this = other; }
+	C4DynamicParticleValueProvider & operator= (const C4DynamicParticleValueProvider &other);
 	void RollRandom();
 
 	// divides by denominator
@@ -90,6 +92,8 @@ public:
 	C4DynamicParticleValueProvider speedDampingX, speedDampingY;
 	C4DynamicParticleValueProvider colorR, colorG, colorB, colorAlpha;
 	C4DynamicParticleValueProvider rotation;
+
+	int blitMode;
 
 	C4DynamicParticleProperties();
 
@@ -183,7 +187,7 @@ class C4DynamicParticleChunk
 {
 private:
 	C4ParticleDef *sourceDefinition;
-	bool additiveBlit;
+	int blitMode;
 
 	std::vector<C4DynamicParticle*> particles;
 	std::vector<C4DynamicParticle::DrawingData::Vertex> vertexCoordinates;
@@ -191,7 +195,7 @@ private:
 
 	void ReplaceParticle(int indexTo, int indexFrom);
 public:
-	C4DynamicParticleChunk() : sourceDefinition(0), additiveBlit(false), particleCount(0)
+	C4DynamicParticleChunk() : sourceDefinition(0), blitMode(0), particleCount(0)
 	{
 
 	}
@@ -203,7 +207,7 @@ public:
 	void Clear();
 	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	bool IsOfType(C4ParticleDef *def);
+	bool IsOfType(C4ParticleDef *def, int _blitMode);
 
 	C4DynamicParticle *AddNewParticle();
 
@@ -229,7 +233,7 @@ public:
 	}
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, bool additive);
+	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, int blitMode);
 };
 
 class C4DynamicParticleSystem

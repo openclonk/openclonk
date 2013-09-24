@@ -55,6 +55,27 @@ void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, f
 	}
 }
 
+C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (const C4DynamicParticleValueProvider &other)
+{
+	startValue = other.startValue;
+	endValue = other.endValue;
+	currentValue = other.currentValue;
+	rerollInterval = other.rerollInterval;
+	smoothing = other.smoothing;
+	valueFunction = other.valueFunction;
+	isConstant = other.isConstant;
+
+	if (other.keyFrames != 0)
+	{
+		int size = keyFrameCount * 2 * sizeof(float);
+		keyFrames = (float*) malloc(size);
+		memcpy(keyFrames, other.keyFrames, size);
+	}
+	else
+		keyFrames = 0;
+	return (*this);
+}
+
 void C4DynamicParticleValueProvider::Floatify(float denominator)
 {
 	assert (denominator != 0.f && "Trying to floatify C4DynamicParticleValueProvider with denominator of 0");
@@ -268,6 +289,9 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 
 C4DynamicParticleProperties::C4DynamicParticleProperties()
 {
+	blitMode = 0;
+	hasConstantColor = false;
+
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
 	size.Set(8.f);
 	forceX.Set(0.f);
@@ -279,8 +303,6 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 	colorB.Set(255.f);
 	colorAlpha.Set(255.f);
 	rotation.Set(0.f);
-
-	hasConstantColor = false;
 }
 
 void C4DynamicParticleProperties::Floatify()
@@ -355,6 +377,11 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		else if(&Strings.P[P_Rotation] == key)
 		{
 			rotation.Set(property);
+		}
+		else if(&Strings.P[P_BlitMode] == key)
+		{
+			// needs to be constant
+			blitMode = property.getInt();
 		}
 	}
 }
@@ -455,6 +482,8 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	C4TexRef *textureRef = (*sourceDefinition->Gfx.GetFace().ppTex);
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
+	glBlendFunc(GL_SRC_ALPHA, (blitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
 	glActiveTexture(GL_TEXTURE0);
 	glClientActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureRef->texName);
@@ -465,9 +494,9 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	glDrawElements(GL_TRIANGLE_STRIP, 5 * particleCount, GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
 }
 
-bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def)
+bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, int _blitMode)
 {
-	return def == sourceDefinition;
+	return def == sourceDefinition && blitMode == _blitMode;
 }
 
 C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
@@ -529,7 +558,8 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	//	pDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
 	pDraw->DeactivateBlitModulation();
 	pDraw->ResetBlitMode();
-	pDraw->SetTexture();
+	
+	glEnable(GL_TEXTURE_2D);
 
 	glPrimitiveRestartIndex(0xffffffff);
 
@@ -560,23 +590,22 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisable(GL_PRIMITIVE_RESTART);
 
-	//pDraw->ResetBlitMode();
-	pDraw->ResetTexture();
+	glDisable(GL_TEXTURE_2D);
 }
 
-C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, bool additive)
+C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, int blitMode)
 {
 	accessMutex.Enter();
 
 	// if not cached, find correct chunk in list
 	C4DynamicParticleChunk *chunk = 0;
-	if (lastAccessedChunk && lastAccessedChunk->IsOfType(def))
+	if (lastAccessedChunk && lastAccessedChunk->IsOfType(def, blitMode))
 		chunk = lastAccessedChunk;
 	else
 	{
 		for (std::list<C4DynamicParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
 		{
-			if (!iter->IsOfType(def)) continue;
+			if (!iter->IsOfType(def, blitMode)) continue;
 			chunk = &(*iter);
 			break;
 		}
@@ -588,7 +617,7 @@ C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, boo
 		particleChunks.push_back(C4DynamicParticleChunk());
 		chunk = &particleChunks.back();
 		chunk->sourceDefinition = def;
-		chunk->additiveBlit = additive;
+		chunk->blitMode = blitMode;
 	}
 
 	assert(chunk && "No suitable particle chunk could be found or created.");
@@ -672,8 +701,11 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 		pxList = globalParticles;
 	}
 
-	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, true);
-	particle->properties.Set(properties);
+	C4DynamicParticleProperties particleProperties;
+	particleProperties.Set(properties);
+
+	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
+	particle->properties = particleProperties;
 	if (!(size.IsConstant() && size.GetValue(particle) == 0.f))
 		particle->properties.size = size;
 	particle->properties.Floatify();
