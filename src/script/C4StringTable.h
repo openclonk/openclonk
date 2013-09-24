@@ -381,6 +381,7 @@ enum C4PropertyName
 	P_DampingX,
 	P_DampingY,
 	P_Size,
+	P_Rotation,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

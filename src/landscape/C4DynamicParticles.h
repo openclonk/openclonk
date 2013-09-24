@@ -27,6 +27,8 @@ enum C4ParticleValueProviderID
 	C4PV_Linear,
 	C4PV_Random,
 	C4PV_KeyFrames,
+	C4PV_Direction,
+	C4PV_Step,
 };
 
 class C4DynamicParticleList;
@@ -75,6 +77,8 @@ public:
 	float Const(C4DynamicParticle *forParticle);
 	float Random(C4DynamicParticle *forParticle);
 	float KeyFrames(C4DynamicParticle *forParticle);
+	float Direction(C4DynamicParticle *forParticle);
+	float Step(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticleProperties
@@ -85,6 +89,7 @@ public:
 	C4DynamicParticleValueProvider forceX, forceY;
 	C4DynamicParticleValueProvider speedDampingX, speedDampingY;
 	C4DynamicParticleValueProvider colorR, colorG, colorB, colorAlpha;
+	C4DynamicParticleValueProvider rotation;
 
 	C4DynamicParticleProperties();
 
@@ -142,17 +147,7 @@ public:
 			}
 		}
 
-		void SetPosition(float x, float y, float size)
-		{
-			vertices[0].x = x - size;
-			vertices[0].y = y + size;
-			vertices[1].x = x - size;
-			vertices[1].y = y - size;
-			vertices[2].x = x + size;
-			vertices[2].y = y + size;
-			vertices[3].x = x + size;
-			vertices[3].y = y - size;
-		}
+		void SetPosition(float x, float y, float size, float rotation = 0.f);
 
 	} drawingData;
 protected:
@@ -174,11 +169,12 @@ public:
 	{
 		positionX = x;
 		positionY = y;
-		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this));
+		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this),  properties.rotation.GetValue(this));
 	}
 
 	bool Exec(C4Object *obj, float timeDelta);
 
+	friend class C4DynamicParticleValueProvider;
 	friend class C4DynamicParticleChunk;
 	friend class C4DynamicParticleSystem;
 };

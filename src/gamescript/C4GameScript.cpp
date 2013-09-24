@@ -1643,6 +1643,22 @@ static C4ValueArray* FnPV_Random(C4PropList * _this, long startValue, long endVa
 	return pArray;
 }
 
+static C4ValueArray* FnPV_Direction(C4PropList * _this, long factor)
+{
+	C4ValueArray *pArray = new C4ValueArray(2);
+	pArray->SetItem(0, C4VInt(C4PV_Direction));
+	pArray->SetItem(1, C4VInt(factor) ? C4VInt(factor) : C4VInt(360));
+	return pArray;
+}
+
+static C4ValueArray* FnPV_Step(C4PropList * _this, long step)
+{
+	C4ValueArray *pArray = new C4ValueArray(2);
+	pArray->SetItem(0, C4VInt(C4PV_Step));
+	pArray->SetItem(1, C4VInt(step));
+	return pArray;
+}
+
 static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 {
 	C4ValueArray *pArray = new C4ValueArray(C4AUL_MAX_Par);
@@ -2507,6 +2523,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 
 	F(PV_Linear);
 	F(PV_Random);
+	F(PV_Direction);
+	F(PV_Step);
 	// F(PV_KeyFrames); added below
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
