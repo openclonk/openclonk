@@ -41,8 +41,8 @@ void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, f
 	}
 	else
 	{
-		float sine = sinf(rotation + M_PI_2);
-		float cosine = cosf(rotation + M_PI_2);
+		float sine = sinf(rotation);
+		float cosine = cosf(rotation);
 
 		vertices[0].x = x + ((-size) * cosine - (+size) * sine);
 		vertices[0].y = y + ((-size) *   sine + (+size) * cosine);
@@ -53,6 +53,28 @@ void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, f
 		vertices[3].x = x + ((+size) * cosine - (-size) * sine);
 		vertices[3].y = y + ((+size) *   sine + (-size) * cosine);
 	}
+}
+
+void C4DynamicParticle::DrawingData::SetPhase(int phase, C4ParticleDef *sourceDef)
+{
+	this->phase = phase;
+	phase = phase % sourceDef->Length;
+	int offsetY = phase / sourceDef->PhasesX;
+	int offsetX = phase % sourceDef->PhasesX;
+	float wdt = 1.0f / (float)sourceDef->PhasesX;
+	int numOfLines = sourceDef->Length / sourceDef->PhasesX;
+	float hgt = 1.0f / (float)numOfLines;
+
+	float x = wdt * (float)offsetX;
+	float y = hgt * (float)offsetY;
+	float xr = x + wdt;
+	float yr = y + hgt;
+
+	vertices[0].u = x; vertices[0].v = yr;
+	vertices[1].u = x; vertices[1].v = y;
+	vertices[2].u = xr; vertices[2].v = yr;
+	vertices[3].u = xr; vertices[3].v = y;
+
 }
 
 C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (const C4DynamicParticleValueProvider &other)
@@ -79,8 +101,16 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 void C4DynamicParticleValueProvider::Floatify(float denominator)
 {
 	assert (denominator != 0.f && "Trying to floatify C4DynamicParticleValueProvider with denominator of 0");
+
+	if (valueFunction == &C4DynamicParticleValueProvider::Direction)
+	{
+		startValue /= 1000.f;
+		return;
+	}
+
 	startValue /= denominator;
 	endValue /= denominator;
+	currentValue /= denominator;
 
 	// special treatment for keyframes
 	if (valueFunction == &C4DynamicParticleValueProvider::KeyFrames)
@@ -99,7 +129,9 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 
 void C4DynamicParticleValueProvider::RollRandom()
 {
-	currentValue = startValue + SafeRandom((int)(1000.f * (endValue - startValue)) / 1000.0f);
+	int range = (int)(100.f * (endValue - startValue));
+	int randomValue = SafeRandom(range);
+	currentValue = startValue + (float)randomValue / 100.0f;
 }
 
 float C4DynamicParticleValueProvider::GetValue(C4DynamicParticle *forParticle)
@@ -129,14 +161,15 @@ float C4DynamicParticleValueProvider::Direction(C4DynamicParticle *forParticle)
 	float distX = forParticle->currentSpeedX;
 	float distY = forParticle->currentSpeedY;
 
-	if (distX == 0.f) return 0.f;
+	if (distX == 0.f) return distY > 0.f ? M_PI : 0.f;
+	if (distY == 0.f) return distX < 0.f ? 3.0f * M_PI_2 : M_PI_2;
 
-	return startValue * atan2(distY, distX);
+	return startValue * (atan2(distY, distX) + (float)M_PI_2);
 }
 
 float C4DynamicParticleValueProvider::Step(C4DynamicParticle *forParticle)
 {
-	return startValue * forParticle->GetAge();
+	return currentValue + startValue * forParticle->GetAge() / delay;
 }
 
 float C4DynamicParticleValueProvider::KeyFrames(C4DynamicParticle *forParticle)
@@ -237,12 +270,12 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		}
 		break;
 	case C4PV_Random:
-		if (arraySize >= 4)
+		if (arraySize >= 3)
 		{
 			Set((float)(*fromArray)[1].getInt(), (float)(*fromArray)[2].getInt(), C4PV_Random);
-			rerollInterval = (*fromArray)[3].getInt();
+			if (arraySize >= 4)
+				rerollInterval = (*fromArray)[3].getInt();
 			RollRandom();
-
 		}
 		break;
 	case C4PV_Direction:
@@ -255,6 +288,9 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 2)
 		{
 			Set((float)(*fromArray)[1].getInt(), 0.f, C4PV_Step);
+			currentValue = (float)(*fromArray)[2].getInt();
+			delay = (float)(*fromArray)[3].getInt();
+			if (delay == 0.f) delay = 1.f;
 		}
 		break;
 	case C4PV_KeyFrames:
@@ -303,20 +339,22 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 	colorB.Set(255.f);
 	colorAlpha.Set(255.f);
 	rotation.Set(0.f);
+	phase.Set(0.f);
 }
 
 void C4DynamicParticleProperties::Floatify()
 {
 	size.Floatify(1.f);
-	forceX.Floatify(10.f);
-	forceY.Floatify(10.f);
+	forceX.Floatify(100.f);
+	forceY.Floatify(100.f);
 	speedDampingX.Floatify(1000.f);
 	speedDampingY.Floatify(1000.f);
 	colorR.Floatify(255.f);
 	colorG.Floatify(255.f);
 	colorB.Floatify(255.f);
 	colorAlpha.Floatify(255.f);
-	rotation.Floatify(360.f);
+	rotation.Floatify(180.0f / (float)M_PI);
+	phase.Floatify(1.f);
 
 	hasConstantColor = colorR.IsConstant() && colorG.IsConstant() && colorB.IsConstant() && colorAlpha.IsConstant();
 }
@@ -383,6 +421,10 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 			// needs to be constant
 			blitMode = property.getInt();
 		}
+		else if(&Strings.P[P_Phase] == key)
+		{
+			phase.Set(property);
+		}
 	}
 }
 
@@ -393,7 +435,7 @@ void C4DynamicParticle::Init()
 	lifetime = startingLifetime = 5.f * 38.f;
 }
 
-bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta)
+bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sourceDef)
 {
 	// die of old age? :<
 	lifetime -= timeDelta;
@@ -433,6 +475,11 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta)
 	{
 		drawingData.SetColor(properties.colorR.GetValue(this), properties.colorG.GetValue(this), properties.colorB.GetValue(this), properties.colorAlpha.GetValue(this));
 	}
+
+	int currentPhase = (int)(properties.phase.GetValue(this) + 0.5f);
+	if (currentPhase != drawingData.phase)
+		drawingData.SetPhase(currentPhase, sourceDef);
+
 	return true;
 }
 
@@ -465,7 +512,7 @@ bool C4DynamicParticleChunk::Exec(C4Object *obj, float timeDelta)
 {
 	for (int i = 0; i < particleCount; ++i)
 	{
-		if (!particles[i]->Exec(obj, timeDelta))
+		if (!particles[i]->Exec(obj, timeDelta, sourceDefinition))
 		{
 			ReplaceParticle(i, particleCount - 1);
 			--particleCount;
@@ -591,6 +638,13 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glDisable(GL_PRIMITIVE_RESTART);
 
 	glDisable(GL_TEXTURE_2D);
+}
+
+void C4DynamicParticleList::Clear()
+{
+	accessMutex.Enter();
+	particleChunks.clear();
+	accessMutex.Leave();
 }
 
 C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, int blitMode)

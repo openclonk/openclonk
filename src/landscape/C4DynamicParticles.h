@@ -50,6 +50,7 @@ protected:
 	{
 		int rerollInterval; // for Random
 		int keyFrameCount; // for KeyFrames
+		float delay; // for Step
 	};
 	int smoothing;
 	float *keyFrames;
@@ -92,6 +93,7 @@ public:
 	C4DynamicParticleValueProvider speedDampingX, speedDampingY;
 	C4DynamicParticleValueProvider colorR, colorG, colorB, colorAlpha;
 	C4DynamicParticleValueProvider rotation;
+	C4DynamicParticleValueProvider phase;
 
 	int blitMode;
 
@@ -125,6 +127,8 @@ public:
 		};
 		Vertex *vertices;
 		
+		int phase;
+
 		void SetPointer(Vertex *startingVertex, bool initial = false)
 		{
 			vertices = startingVertex;
@@ -137,6 +141,8 @@ public:
 				vertices[3].u = 1.f; vertices[3].v = 0.f;
 
 				SetColor(1.f, 1.f, 1.f, 1.f);
+
+				phase = -1;
 			}
 		}
 
@@ -152,6 +158,7 @@ public:
 		}
 
 		void SetPosition(float x, float y, float size, float rotation = 0.f);
+		void SetPhase(int phase, C4ParticleDef *sourceDef);
 
 	} drawingData;
 protected:
@@ -176,7 +183,7 @@ public:
 		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this),  properties.rotation.GetValue(this));
 	}
 
-	bool Exec(C4Object *obj, float timeDelta);
+	bool Exec(C4Object *obj, float timeDelta, C4ParticleDef *sourceDef);
 
 	friend class C4DynamicParticleValueProvider;
 	friend class C4DynamicParticleChunk;
@@ -231,6 +238,9 @@ public:
 	{
 
 	}
+	// deletes all the particles
+	void Clear();
+
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, int blitMode);

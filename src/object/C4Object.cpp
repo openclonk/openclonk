@@ -369,6 +369,8 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove particles
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
+	if (DynamicFrontParticles) DynamicFrontParticles->Clear();
+	if (DynamicBackParticles) DynamicBackParticles->Clear();
 	// Action idle
 	SetAction(0);
 	// Object system operation
@@ -1902,6 +1904,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 
 	// background particles (bounds not checked)
 	if (BackParticles && !Contained && eDrawMode!=ODM_BaseOnly) BackParticles.Draw(cgo,this);
+	if (DynamicBackParticles) DynamicBackParticles->Draw(cgo, this);
 
 	// Object output position
 	float newzoom;
@@ -1928,13 +1931,21 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			// active
 			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY()+Action.FacetY,cgo.Y-Action.Facet.Hgt,cgo.Y+cgo.Hgt)) )
-				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
+				{
+					if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); 
+					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
+					return;
+				}
 		}
 		else
 			// idle
 			if ( !Inside<float>(offX+Shape.GetX(),cgo.X-Shape.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY(),cgo.Y-Shape.Hgt,cgo.Y+cgo.Hgt)) )
-				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
+				{
+					if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); 
+					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
+					return; 
+				}
 	}
 
 	// ensure correct color is set
@@ -2107,7 +2118,12 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 					pGfxOvrl->Draw(cgo, this, iByPlayer);
 
 	// local particles in front of the object
-	if (FrontParticles) if (eDrawMode!=ODM_BaseOnly) FrontParticles.Draw(cgo,this);
+	if (eDrawMode!=ODM_BaseOnly) 
+	{
+		if (FrontParticles) FrontParticles.Draw(cgo,this);
+		if (DynamicFrontParticles)
+			DynamicFrontParticles->Draw(cgo, this);
+	}
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
 	if (::GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)

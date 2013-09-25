@@ -1647,15 +1647,17 @@ static C4ValueArray* FnPV_Direction(C4PropList * _this, long factor)
 {
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(C4PV_Direction));
-	pArray->SetItem(1, C4VInt(factor) ? C4VInt(factor) : C4VInt(360));
+	pArray->SetItem(1, C4VInt(factor) ? C4VInt(factor) : C4VInt(1000));
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Step(C4PropList * _this, long step)
+static C4ValueArray* FnPV_Step(C4PropList * _this, long step, long startValue, long delay)
 {
-	C4ValueArray *pArray = new C4ValueArray(2);
+	C4ValueArray *pArray = new C4ValueArray(4);
 	pArray->SetItem(0, C4VInt(C4PV_Step));
 	pArray->SetItem(1, C4VInt(step));
+	pArray->SetItem(2, C4VInt(startValue));
+	pArray->SetItem(3, C4VInt(delay));
 	return pArray;
 }
 

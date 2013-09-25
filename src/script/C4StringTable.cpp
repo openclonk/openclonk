@@ -179,6 +179,7 @@ C4StringTable::C4StringTable()
 	P[P_Size] = "Size";
 	P[P_Rotation] = "Rotation";
 	P[P_BlitMode] = "BlitMode";
+	P[P_Phase] = "Phase";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
