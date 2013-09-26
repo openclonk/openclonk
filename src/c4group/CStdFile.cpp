@@ -393,6 +393,6 @@ bool GetFileSHA1(const char *szFilename, BYTE *pSHA1)
 	// close file
 	File.Close();
 	// finish calculation
-	ctx.get_digest((sha1::digest_type) pSHA1);
+	ctx.get_digest((sha1::digest_type) *pSHA1);
 	return true;
 }
