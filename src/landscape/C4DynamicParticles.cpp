@@ -26,32 +26,40 @@
 
 const int C4DynamicParticle::DrawingData::vertexCountPerParticle(4);
 
-void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, float rotation)
+void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, float rotation, float stretch)
 {
+	if (size != originalSize || stretch != currentStretch)
+	{
+		currentStretch = stretch;
+		originalSize = size;
+		sizeX = originalSize / aspect;
+		sizeY = originalSize * currentStretch;
+	}
+
 	if (rotation == 0.f)
 	{
-		vertices[0].x = x - size;
-		vertices[0].y = y + size;
-		vertices[1].x = x - size;
-		vertices[1].y = y - size;
-		vertices[2].x = x + size;
-		vertices[2].y = y + size;
-		vertices[3].x = x + size;
-		vertices[3].y = y - size;
+		vertices[0].x = x - sizeX;
+		vertices[0].y = y + sizeY;
+		vertices[1].x = x - sizeX;
+		vertices[1].y = y - sizeY;
+		vertices[2].x = x + sizeX;
+		vertices[2].y = y + sizeY;
+		vertices[3].x = x + sizeX;
+		vertices[3].y = y - sizeY;
 	}
 	else
 	{
 		float sine = sinf(rotation);
 		float cosine = cosf(rotation);
 
-		vertices[0].x = x + ((-size) * cosine - (+size) * sine);
-		vertices[0].y = y + ((-size) *   sine + (+size) * cosine);
-		vertices[1].x = x + ((-size) * cosine - (-size) * sine);
-		vertices[1].y = y + ((-size) *   sine + (-size) * cosine);
-		vertices[2].x = x + ((+size) * cosine - (+size) * sine);
-		vertices[2].y = y + ((+size) *   sine + (+size) * cosine);
-		vertices[3].x = x + ((+size) * cosine - (-size) * sine);
-		vertices[3].y = y + ((+size) *   sine + (-size) * cosine);
+		vertices[0].x = x + ((-sizeX) * cosine - (+sizeY) * sine);
+		vertices[0].y = y + ((-sizeX) *   sine + (+sizeY) * cosine);
+		vertices[1].x = x + ((-sizeX) * cosine - (-sizeY) * sine);
+		vertices[1].y = y + ((-sizeX) *   sine + (-sizeY) * cosine);
+		vertices[2].x = x + ((+sizeX) * cosine - (+sizeY) * sine);
+		vertices[2].y = y + ((+sizeX) *   sine + (+sizeY) * cosine);
+		vertices[3].x = x + ((+sizeX) * cosine - (-sizeY) * sine);
+		vertices[3].y = y + ((+sizeX) *   sine + (-sizeY) * cosine);
 	}
 }
 
@@ -74,7 +82,6 @@ void C4DynamicParticle::DrawingData::SetPhase(int phase, C4ParticleDef *sourceDe
 	vertices[1].u = x; vertices[1].v = y;
 	vertices[2].u = xr; vertices[2].v = yr;
 	vertices[3].u = xr; vertices[3].v = y;
-
 }
 
 C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (const C4DynamicParticleValueProvider &other)
@@ -197,6 +204,15 @@ float C4DynamicParticleValueProvider::KeyFrames(C4DynamicParticle *forParticle)
 	return startValue;
 }
 
+float C4DynamicParticleValueProvider::Speed(C4DynamicParticle *forParticle)
+{
+	float distX = forParticle->currentSpeedX;
+	float distY = forParticle->currentSpeedY;
+	float speed = sqrtf((distX * distX) + (distY * distY));
+
+	return startValue + speedFactor * speed;
+}
+
 void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4ParticleValueProviderID what)
 {
 	startValue = _startValue;
@@ -222,6 +238,9 @@ void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4P
 	case C4PV_KeyFrames:
 		valueFunction = &C4DynamicParticleValueProvider::KeyFrames;
 		break;
+	case C4PV_Speed:
+		valueFunction = &C4DynamicParticleValueProvider::Speed;
+		break;
 	default:
 		assert(false);
 	};
@@ -230,20 +249,6 @@ void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4P
 	{
 		isConstant = false;
 	}
-}
-
-void C4DynamicParticleValueProvider::Set(const C4Value &value)
-{
-	C4ValueArray *valueArray;
-	if (valueArray = value.getArray())
-	{
-		Set(valueArray);
-		return;
-	}
-
-	int32_t valueInt = value.getInt();
-
-	Set((float)valueInt, (float)valueInt, C4PV_Const); 
 }
 
 void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
@@ -318,9 +323,30 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 			//	LogF("KF is %f @ %d of %d", keyFrames[i * 2 + 1], int(keyFrames[i * 2]), keyFrameCount);
 		}
 		break;
+	case C4PV_Speed:
+		if (arraySize >= 3)
+		{
+			Set((float)(*fromArray)[2].getInt(), 0.f, C4PV_Speed);
+			speedFactor = (float)(*fromArray)[1].getInt() / 1000.f;
+		}
+		break;
 	default:
 		break;
 	}
+}
+
+void C4DynamicParticleValueProvider::Set(const C4Value &value)
+{
+	C4ValueArray *valueArray;
+	if (valueArray = value.getArray())
+	{
+		Set(valueArray);
+		return;
+	}
+
+	int32_t valueInt = value.getInt();
+
+	Set((float)valueInt, (float)valueInt, C4PV_Const); 
 }
 
 C4DynamicParticleProperties::C4DynamicParticleProperties()
@@ -330,6 +356,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
 	size.Set(8.f);
+	stretch.Set(1.f);
 	forceX.Set(0.f);
 	forceY.Set(0.f);
 	speedDampingX.Set(1000.f);
@@ -344,7 +371,8 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 
 void C4DynamicParticleProperties::Floatify()
 {
-	size.Floatify(1.f);
+	size.Floatify(2.f);
+	stretch.Floatify(1000.f);
 	forceX.Floatify(100.f);
 	forceY.Floatify(100.f);
 	speedDampingX.Floatify(1000.f);
@@ -412,6 +440,10 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		{
 			size.Set(property);
 		}
+		else if(&Strings.P[P_Stretch] == key)
+		{
+			stretch.Set(property);
+		}
 		else if(&Strings.P[P_Rotation] == key)
 		{
 			rotation.Set(property);
@@ -441,8 +473,6 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 	lifetime -= timeDelta;
 	if (lifetime <= 0.f) return false;
 
-	float rotation = properties.rotation.GetValue(this);
-
 	// movement
 	float currentForceX = properties.forceX.GetValue(this);
 	float currentForceY = properties.forceY.GetValue(this);
@@ -462,12 +492,12 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 
 		positionX += timeDelta * currentSpeedX;
 		positionY += timeDelta * currentSpeedY;
-		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this), rotation);
+		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this), properties.rotation.GetValue(this), properties.stretch.GetValue(this));
 
 	}
-	else if(!properties.size.IsConstant() || !properties.rotation.IsConstant())
+	else if(!properties.size.IsConstant() || !properties.rotation.IsConstant() || !properties.stretch.IsConstant())
 	{
-		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this), rotation);
+		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this), properties.rotation.GetValue(this), properties.stretch.GetValue(this));
 	}
 
 	// adjust color
@@ -767,6 +797,7 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 	particle->lifetime = particle->startingLifetime = lifetime;
 	particle->currentSpeedX = speedX.GetValue(particle);
 	particle->currentSpeedY = speedY.GetValue(particle);
+	particle->drawingData.aspect = of_def->Aspect;
 	particle->SetPosition(x, y);
 
 	return particle;

@@ -29,6 +29,7 @@ enum C4ParticleValueProviderID
 	C4PV_KeyFrames,
 	C4PV_Direction,
 	C4PV_Step,
+	C4PV_Speed,
 };
 
 class C4DynamicParticleList;
@@ -51,6 +52,7 @@ protected:
 		int rerollInterval; // for Random
 		int keyFrameCount; // for KeyFrames
 		float delay; // for Step
+		float speedFactor; // for Speed
 	};
 	int smoothing;
 	float *keyFrames;
@@ -82,13 +84,14 @@ public:
 	float KeyFrames(C4DynamicParticle *forParticle);
 	float Direction(C4DynamicParticle *forParticle);
 	float Step(C4DynamicParticle *forParticle);
+	float Speed(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticleProperties
 {
 public:
 	bool hasConstantColor;
-	C4DynamicParticleValueProvider size;
+	C4DynamicParticleValueProvider size, stretch;
 	C4DynamicParticleValueProvider forceX, forceY;
 	C4DynamicParticleValueProvider speedDampingX, speedDampingY;
 	C4DynamicParticleValueProvider colorR, colorG, colorB, colorAlpha;
@@ -129,6 +132,11 @@ public:
 		
 		int phase;
 
+		float currentStretch;
+		float originalSize;
+		float sizeX, sizeY;
+		float aspect;
+
 		void SetPointer(Vertex *startingVertex, bool initial = false)
 		{
 			vertices = startingVertex;
@@ -157,8 +165,12 @@ public:
 			}
 		}
 
-		void SetPosition(float x, float y, float size, float rotation = 0.f);
+		void SetPosition(float x, float y, float size, float rotation = 0.f, float stretch = 1.f);
 		void SetPhase(int phase, C4ParticleDef *sourceDef);
+
+		DrawingData() : currentStretch(1.f), originalSize(0.f), aspect(1.f)
+		{
+		}
 
 	} drawingData;
 protected:

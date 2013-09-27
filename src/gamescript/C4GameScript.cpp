@@ -1681,6 +1681,14 @@ static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 	return C4Value(pArray);
 }
 
+static C4ValueArray* FnPV_Speed(C4PropList * _this, long factor, long startValue)
+{
+	C4ValueArray *pArray = new C4ValueArray(3);
+	pArray->SetItem(0, C4VInt(C4PV_Speed));
+	pArray->SetItem(1, C4VInt(factor));
+	pArray->SetItem(2, C4VInt(startValue));
+	return pArray;
+}
 
 static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
 {
@@ -2527,6 +2535,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PV_Random);
 	F(PV_Direction);
 	F(PV_Step);
+	F(PV_Speed);
 	// F(PV_KeyFrames); added below
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
