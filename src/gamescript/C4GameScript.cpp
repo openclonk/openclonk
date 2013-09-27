@@ -1690,6 +1690,21 @@ static C4ValueArray* FnPV_Speed(C4PropList * _this, long factor, long startValue
 	return pArray;
 }
 
+static C4ValueArray* FnPC_Die(C4PropList * _this)
+{
+	C4ValueArray *pArray = new C4ValueArray(1);
+	pArray->SetItem(0, C4VInt(C4PC_Die));
+	return pArray;
+}
+
+static C4ValueArray* FnPC_Bounce(C4PropList * _this, long bouncyness)
+{
+	C4ValueArray *pArray = new C4ValueArray(2);
+	pArray->SetItem(0, C4VInt(C4PC_Bounce));
+	pArray->SetItem(1, bouncyness != 0 ? C4VInt(bouncyness) : C4VInt(1000));
+	return pArray;
+}
+
 static bool FnSetSkyParallax(C4PropList * _this, Nillable<long> iMode, Nillable<long> iParX, Nillable<long> iParY, Nillable<long> iXDir, Nillable<long> iYDir, Nillable<long> iX, Nillable<long> iY)
 {
 	// set all parameters that aren't nil
@@ -2537,6 +2552,8 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PV_Step);
 	F(PV_Speed);
 	// F(PV_KeyFrames); added below
+	F(PC_Die);
+	F(PC_Bounce);
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);

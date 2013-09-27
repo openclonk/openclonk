@@ -32,12 +32,20 @@ enum C4ParticleValueProviderID
 	C4PV_Speed,
 };
 
+enum C4ParticleCollisionFuncID
+{
+	C4PC_Die,
+	C4PC_Bounce,
+};
+
 class C4DynamicParticleList;
 class C4DynamicParticleChunk;
 class C4DynamicParticle;
+class C4DynamicParticleProperties;
 class C4DynamicParticleValueProvider;
 
 typedef float (C4DynamicParticleValueProvider::*C4DynamicParticleValueProviderFunction) (C4DynamicParticle*);
+typedef bool (C4DynamicParticleProperties::*C4DynamicParticleCollisionCallback) (C4DynamicParticle*);
 
 class C4DynamicParticleValueProvider
 {
@@ -99,13 +107,22 @@ public:
 	C4DynamicParticleValueProvider phase;
 	C4DynamicParticleValueProvider collisionVertex;
 
+	float bouncyness;
+	C4DynamicParticleCollisionCallback collisionCallback;
+	void SetCollisionFunc(const C4Value &source);
+
 	int blitMode;
 
 	C4DynamicParticleProperties();
 
+	
 	void Set(C4PropList *dataSource);
 	// divides ints in certain properties by 1000f and in the color properties by 255f
 	void Floatify();
+
+	
+	bool CollisionDie(C4DynamicParticle *forParticle) { return false; }
+	bool CollisionBounce(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticle
@@ -180,7 +197,6 @@ protected:
 	float lifetime, startingLifetime;
 
 	C4DynamicParticleProperties properties;
-
 public:
 	float GetAge() { return startingLifetime - lifetime; }
 	float GetLifetime() { return lifetime; }
@@ -198,6 +214,7 @@ public:
 
 	bool Exec(C4Object *obj, float timeDelta, C4ParticleDef *sourceDef);
 
+	friend class C4DynamicParticleProperties;
 	friend class C4DynamicParticleValueProvider;
 	friend class C4DynamicParticleChunk;
 	friend class C4DynamicParticleSystem;

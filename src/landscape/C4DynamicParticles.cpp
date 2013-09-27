@@ -354,6 +354,8 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 {
 	blitMode = 0;
 	hasConstantColor = false;
+	collisionCallback = 0;
+	bouncyness = 0.f;
 
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
 	collisionVertex.Set(0.f);
@@ -373,6 +375,8 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 
 void C4DynamicParticleProperties::Floatify()
 {
+	bouncyness /= 1000.f;
+
 	collisionVertex.Floatify(1000.f);
 	size.Floatify(2.f);
 	stretch.Floatify(1000.f);
@@ -464,7 +468,45 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		{
 			collisionVertex.Set(property);
 		}
+		else if(&Strings.P[P_OnCollision] == key)
+		{
+			SetCollisionFunc(property);
+		}
 	}
+}
+
+void C4DynamicParticleProperties::SetCollisionFunc(const C4Value &source)
+{
+	C4ValueArray *valueArray;
+	if (!(valueArray = source.getArray())) return;
+
+	int arraySize = valueArray->GetSize();
+	if (arraySize < 1) return;
+
+	int type = (*valueArray)[0].getInt();
+
+	switch (type)
+	{
+	case C4PC_Die:
+		collisionCallback = &C4DynamicParticleProperties::CollisionDie;
+		break;
+	case C4PC_Bounce:
+		collisionCallback = &C4DynamicParticleProperties::CollisionBounce;
+		bouncyness = 1.f;
+		if (arraySize >= 2)
+			bouncyness = ((float)(*valueArray)[1].getInt());
+		break;
+	default:
+		assert(false);
+		break;
+	}
+}
+
+bool C4DynamicParticleProperties::CollisionBounce(C4DynamicParticle *forParticle)
+{
+	forParticle->currentSpeedX = -forParticle->currentSpeedX * bouncyness;
+	forParticle->currentSpeedY = -forParticle->currentSpeedY * bouncyness;
+	return true;
 }
 
 void C4DynamicParticle::Init()
@@ -500,9 +542,10 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 		// note: accessing Landscape.GetDensity here is not protected by locks
 		// it is assumed that the particle system is cleaned up before, f.e., the landscape memory is freed
 		float collisionPoint = properties.collisionVertex.GetValue(this);
-		if (collisionPoint >= 0.01f && GBackSolid(positionX + timeDelta * currentSpeedX * collisionPoint * (1.f + size), positionY + timeDelta * currentSpeedY * collisionPoint * (1.f + size)))
+		if (collisionPoint >= 0.001f && GBackSolid(positionX + timeDelta * currentSpeedX * collisionPoint * (1.f + size), positionY + timeDelta * currentSpeedY * collisionPoint * (1.f + size)))
 		{
 			// exec collision func
+			if (properties.collisionCallback != 0 && !(properties.*properties.collisionCallback)(this)) return false;
 		}
 		else
 		{
