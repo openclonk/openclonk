@@ -97,6 +97,7 @@ public:
 	C4DynamicParticleValueProvider colorR, colorG, colorB, colorAlpha;
 	C4DynamicParticleValueProvider rotation;
 	C4DynamicParticleValueProvider phase;
+	C4DynamicParticleValueProvider collisionVertex;
 
 	int blitMode;
 

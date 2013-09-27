@@ -385,6 +385,7 @@ enum C4PropertyName
 	P_BlitMode,
 	P_Phase,
 	P_Stretch,
+	P_CollisionVertex,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

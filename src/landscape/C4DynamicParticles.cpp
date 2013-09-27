@@ -23,6 +23,7 @@
 #include <C4MeshAnimation.h>
 #include <C4DrawGL.h>
 #include <C4Random.h>
+#include <C4Landscape.h>
 
 const int C4DynamicParticle::DrawingData::vertexCountPerParticle(4);
 
@@ -355,6 +356,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 	hasConstantColor = false;
 
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
+	collisionVertex.Set(0.f);
 	size.Set(8.f);
 	stretch.Set(1.f);
 	forceX.Set(0.f);
@@ -371,6 +373,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 
 void C4DynamicParticleProperties::Floatify()
 {
+	collisionVertex.Floatify(1000.f);
 	size.Floatify(2.f);
 	stretch.Floatify(1000.f);
 	forceX.Floatify(100.f);
@@ -457,6 +460,10 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		{
 			phase.Set(property);
 		}
+		else if(&Strings.P[P_CollisionVertex] == key)
+		{
+			collisionVertex.Set(property);
+		}
 	}
 }
 
@@ -484,15 +491,25 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 	{
 		float currentDampingX = properties.speedDampingX.GetValue(this);
 		float currentDampingY = properties.speedDampingY.GetValue(this);
+		float size = properties.size.GetValue(this);
 
 		currentSpeedX *= currentDampingX;
 		currentSpeedY *= currentDampingY;
 
-		// todo: collision check
-
-		positionX += timeDelta * currentSpeedX;
-		positionY += timeDelta * currentSpeedY;
-		drawingData.SetPosition(positionX, positionY, properties.size.GetValue(this), properties.rotation.GetValue(this), properties.stretch.GetValue(this));
+		// move & collision check
+		// note: accessing Landscape.GetDensity here is not protected by locks
+		// it is assumed that the particle system is cleaned up before, f.e., the landscape memory is freed
+		float collisionPoint = properties.collisionVertex.GetValue(this);
+		if (collisionPoint >= 0.01f && GBackSolid(positionX + timeDelta * currentSpeedX * collisionPoint * (1.f + size), positionY + timeDelta * currentSpeedY * collisionPoint * (1.f + size)))
+		{
+			// exec collision func
+		}
+		else
+		{
+			positionX += timeDelta * currentSpeedX;
+			positionY += timeDelta * currentSpeedY;
+		}
+		drawingData.SetPosition(positionX, positionY, size, properties.rotation.GetValue(this), properties.stretch.GetValue(this));
 
 	}
 	else if(!properties.size.IsConstant() || !properties.rotation.IsConstant() || !properties.stretch.IsConstant())
