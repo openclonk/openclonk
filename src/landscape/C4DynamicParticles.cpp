@@ -360,7 +360,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 	// all values in pre-floatified range (f.e. 0..255 instead of 0..1)
 	collisionVertex.Set(0.f);
 	size.Set(8.f);
-	stretch.Set(1.f);
+	stretch.Set(1000.f);
 	forceX.Set(0.f);
 	forceY.Set(0.f);
 	speedDampingX.Set(1000.f);
