@@ -228,6 +228,12 @@ global func FindLocationConditionCheckIsValid(flag, x, y)
 		return true;
 	}
 	
+	if (flag[0] == LOC_INRECT)
+	{
+		var rect = flag[1];
+		return Inside(x, rect.x, rect.x + rect.w) && Inside(y, rect.y, rect.y + rect.h);
+	}
+	
 	if (flag[0] == LOC_SOLID)
 		return GBackSolid(x, y);
 	
