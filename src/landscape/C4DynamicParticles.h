@@ -99,6 +99,8 @@ class C4DynamicParticleProperties
 {
 public:
 	bool hasConstantColor;
+	bool hasCollisionVertex;
+
 	C4DynamicParticleValueProvider size, stretch;
 	C4DynamicParticleValueProvider forceX, forceY;
 	C4DynamicParticleValueProvider speedDampingX, speedDampingY;

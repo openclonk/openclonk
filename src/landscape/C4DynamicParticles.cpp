@@ -354,6 +354,7 @@ C4DynamicParticleProperties::C4DynamicParticleProperties()
 {
 	blitMode = 0;
 	hasConstantColor = false;
+	hasCollisionVertex = false;
 	collisionCallback = 0;
 	bouncyness = 0.f;
 
@@ -467,6 +468,7 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		else if(&Strings.P[P_CollisionVertex] == key)
 		{
 			collisionVertex.Set(property);
+			hasCollisionVertex = true;
 		}
 		else if(&Strings.P[P_OnCollision] == key)
 		{
@@ -541,13 +543,21 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 		// move & collision check
 		// note: accessing Landscape.GetDensity here is not protected by locks
 		// it is assumed that the particle system is cleaned up before, f.e., the landscape memory is freed
-		float collisionPoint = properties.collisionVertex.GetValue(this);
-		if (collisionPoint >= 0.001f && GBackSolid(positionX + timeDelta * currentSpeedX * collisionPoint * (1.f + size), positionY + timeDelta * currentSpeedY * collisionPoint * (1.f + size)))
+		bool collided = false;
+		if (properties.hasCollisionVertex)
 		{
-			// exec collision func
-			if (properties.collisionCallback != 0 && !(properties.*properties.collisionCallback)(this)) return false;
+			float collisionPoint = properties.collisionVertex.GetValue(this);
+			float size_x = (currentSpeedX > 0.f ? size : -size) * 0.5f * collisionPoint;
+			float size_y = (currentSpeedY > 0.f ? size : -size) * 0.5f * collisionPoint;
+			if (GBackSolid(positionX + size_x + timeDelta * currentSpeedX, positionY + size_y + timeDelta * currentSpeedY))
+			{
+				// exec collision func
+				if (properties.collisionCallback != 0 && !(properties.*properties.collisionCallback)(this)) return false;
+				collided = true;
+			}
 		}
-		else
+
+		if (!collided)
 		{
 			positionX += timeDelta * currentSpeedX;
 			positionY += timeDelta * currentSpeedY;
