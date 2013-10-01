@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CreateParticleEx</title>
+    <category>Particles</category>
+    <version>5.3.4 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>particle_name</name>
+          <desc>Name of the particle definition.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X-coordinate of the new particle (relative to object for local calls)</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+			<desc>Y-coordinate of the new particle (relative to object for local calls)</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>speed_x</name>
+          <desc>Starting speed of the particle in x-direction.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>speed_y</name>
+          <desc>Starting speed of the particle in y-direction.</desc>
+        </param>
+		<param>
+          <type>any</type>
+          <name>size</name>
+          <desc>Size of the particle in pixels. Can be either a constant number or a particle value provider (see <emlink href="particles/particlesEx.html">Particles</emlink>).</desc>
+        </param>
+		<param>
+          <type>int</type>
+          <name>lifetime</name>
+          <desc>Time in frames that the particle will be alive before it is removed.</desc>
+        </param>
+		<param>
+          <type>proplist</type>
+          <name>properties</name>
+          <desc>PropList with the particle attributes (see <emlink href="#attributes">below</emlink>).</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Creates a new particle with the given properties. Note that particle creation is not necessarily synchronized over the network and thus, the return value is not whether the particle was actually created but whether the particle definition was found.</desc>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations.</remark>
+	<examples>    
+		<example>
+			<code>
+var particles =
+{
+	Size = <funclink>PV_KeyFrames</funclink>(0, 0, 0, 200, 50, 1000, 0),
+	DampingX = 900,
+	DampingY = 900,
+	R = 255,
+	G = <funclink>PV_Linear</funclink>(255, 0),
+	B = <funclink>PV_Linear</funclink>(128, 0),
+	Alpha = <funclink>PV_Linear</funclink>(255, 0),
+	Rotation = <funclink>PV_Direction</funclink>(),
+	Stretch = <funclink>PV_Speed</funclink>(5 * 1000),
+	ForceY = <funclink>PV_KeyFrames</funclink>(0, 0, 0, 900, 0, 1000, -20),
+	ForceX = <funclink>PV_Random</funclink>(-5, 5, 15),
+	Phase = <funclink>PV_Step</funclink>(1, 0, 10)
+};
+for (var i = 0; i &lt; 100; ++i)
+<funclink>CreateParticleEx</funclink>("Fire", 0, 0, RandomX(-30, 30), RandomX(-30, 30), nil, RandomX(18, 38 * 5), particles);
+			</code>
+			<text>Casts around 100 particles with a previously defined behavior.</text>
+		  </example>
+	</examples>
+	<related>
+      <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+      <funclink>PC_Die</funclink>
+      <funclink>PC_Bounce</funclink>
+    </related>
+  </func>
+  <author>Zapper</author><date>2013-10</date>
+</funcs>
