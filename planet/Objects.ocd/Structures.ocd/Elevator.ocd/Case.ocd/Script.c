@@ -395,6 +395,7 @@ func SetMoveDirection(int dir, bool user_requested, bool drill)
 	{
 		SetYDir(dir * speed);
 		SetAction(action);
+		SetComDir(COMD_None);
 		ForceSync();
 		
 		Sound("ElevatorStart");

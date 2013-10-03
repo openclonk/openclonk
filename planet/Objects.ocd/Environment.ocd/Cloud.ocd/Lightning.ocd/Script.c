@@ -59,7 +59,13 @@ protected func FxLightningMoveTimer()
 	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
 		if (!obj->~LightningStrike(3 + strength / 10))
-			Punch(obj, 3 + strength / 10);
+		{
+			if (GetOCF() & OCF_Alive)
+				Punch(obj, 3 + strength / 10);
+			else
+				// Todo: Lightning strikes may have controllers? Pass them for kill tracing.
+				obj->DoDamage(3 + strength / 10, FX_Call_DmgScript); 
+		}
 	}
 	
 	// Remove lightning, if struck landscape.
