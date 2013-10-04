@@ -115,7 +115,11 @@ global func Loc_Wall(int direction)
 	if(direction & CNAT_Top) y = -1;
 	else
 	if(direction & CNAT_Bottom) y = 1;
-	return [LOC_WALL, x, y, !!(direction & (CNAT_Left | CNAT_Right)), !!(direction & (CNAT_Top | CNAT_Bottom))];
+	
+	var both_left_right = !!((direction & CNAT_Top) && (direction & CNAT_Bottom));
+	var both_top_bottom = !!((direction & CNAT_Left) && (direction & CNAT_Right));	
+	
+	return [LOC_WALL, x, y, both_left_right, both_top_bottom];
 }
 
 /*
