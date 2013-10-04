@@ -208,8 +208,8 @@ private func Precipitation()
 	// Precipitaion: water or snow.
 	if (rain > 0)
 	{
-		RainDrop(rain_mat);
-		rain--;	
+		if (RainDrop(rain_mat));
+			rain--;	
 	}	
 	// If out of liquids, skip mode.
 	if (rain == 0)
@@ -220,15 +220,22 @@ private func Precipitation()
 // Raindrop somewhere from the cloud.
 private func RainDrop(string mat)
 {
+	// Find Random Position.
+	var con = GetCon();
+	var wdt = GetDefWidth() * con / 500;
+	var hgt = GetDefHeight() * con / 700;
+	var x = RandomX(-wdt, wdt);
+	var y = RandomX(-hgt, hgt);
+	if (!GBackSky(x, y))
+		return false;
 	// Check if liquid is maybe in frozen form.
 	var temp = GetTemperature();
 	var melt_temp = GetMaterialVal("BelowTempConvert", "Material", Material(mat));
 	if (temp < melt_temp)
-		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));	
-	// Create rain drop.
-	var angle = RandomX(0, 359);
-	var dist = Random(51);
-	CastPXS(mat, 1, 1, Sin(angle,dist),Cos(angle,dist));
+		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));		
+	// Create rain drop.	
+	CastPXS(mat, 1, 1, x, y);
+	return true;
 }
 
 // Launches possibly one thunder strike from the cloud.
@@ -248,8 +255,8 @@ private func ThunderStrike()
 	var y = GetY() + RandomX(-hgt, hgt);
 	
 	var pix = 0;
-	// Check if there is no solid ground for at least 60 pixels.
-	while (!GBackSolid(x - GetX(), y - GetY() + pix) && pix <= 60)
+	// Check if there is sky for at least 60 pixels.
+	while (GBackSky(x - GetX(), y - GetY() + pix) && pix <= 60)
 		pix++;
 	if (pix < 60)
 		return; 
