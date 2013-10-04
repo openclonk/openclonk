@@ -195,12 +195,12 @@
 
 - (IBAction) makeScreenshot:(id)sender;
 {
-	::GraphicsSystem.SaveScreenshot(false);
+	::GraphicsSystem.SaveScreenshotKey(false);
 }
 
 - (IBAction) makeScreenshotOfWholeMap:(id)sender;
 {
-	::GraphicsSystem.SaveScreenshot(true);
+	::GraphicsSystem.SaveScreenshotKey(true);
 }
 
 @end
