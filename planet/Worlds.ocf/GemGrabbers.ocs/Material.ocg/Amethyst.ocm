@@ -1,0 +1,13 @@
+[Material]
+Name=Amethyst
+Shape=Rough
+Density=70
+Friction=15
+BlastFree=1
+Blast2Object=Amethyst
+Blast2ObjectRatio=100
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=60
+Placement=21
+TextureOverlay=Amethyst
