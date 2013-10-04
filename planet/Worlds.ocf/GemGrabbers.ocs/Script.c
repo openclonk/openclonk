@@ -62,7 +62,7 @@ protected func InitializePlayer(int plr)
 	GivePlayerKnowledge(plr);
 	
 	// Only clonks for sale at the homebase.
-	DoHomebaseMaterial(plr, Clonk, 5 - SCENOPT_Difficulty);
+	DoHomebaseMaterial(plr, Clonk, Max(4 - SCENOPT_Difficulty, 1));
 	
 	// Claim ownership of structures, last player who joins owns all the main island flags.
 	for (var structure in FindObjects(Find_Or(Find_Category(C4D_Structure), Find_Func("IsFlagpole"))))
