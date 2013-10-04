@@ -357,37 +357,41 @@ public func PlaneDismount(object clonk)
 	return true;
 }
 
-func Definition(def) {
-	SetProperty("ActMap", {
-Fly = {
-	Prototype = Action,
-	Name = "Fly",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 0,
-	Length = 10,
-	Delay = 1,
-	X = 0,
-	Y = 0,
-	Wdt = 40,
-	Hgt = 56,
-	NextAction = "Fly",
-},
-Land = {
-	Prototype = Action,
-	Name = "Land",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 0,
-	Length = 1,
-	Delay = 2,
-	X = 0,
-	Y = 0,
-	Wdt = 40,
-	Hgt = 56,
-	NextAction = "Land",
-},
-}, def);
+func IsShipyardProduct() { return true; }
+
+local ActMap = {
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 10,
+		Delay = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 40,
+		Hgt = 56,
+		NextAction = "Fly",
+	},
+	Land = {
+		Prototype = Action,
+		Name = "Land",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 1,
+		Delay = 2,
+		X = 0,
+		Y = 0,
+		Wdt = 40,
+		Hgt = 56,
+		NextAction = "Land",
+	},
+};
+
+func Definition(def) 
+{
 	SetProperty("Name", "$Name$", def);
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(90,0,0,1), Trans_Translate(-10000,-3375,0), Trans_Rotate(25,0,1,0)));
 	SetProperty("PictureTransformation",Trans_Mul(Trans_Rotate(-5,1,0,0),Trans_Rotate(40,0,1,0),Trans_Translate(-20000,-4000,20000)),def);

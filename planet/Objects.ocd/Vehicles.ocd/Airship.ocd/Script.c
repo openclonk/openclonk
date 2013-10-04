@@ -260,17 +260,17 @@ func AirshipDeath()
 func IsShipyardProduct() { return true; }
 
 local ActMap = {
-		Fly = {
-			Prototype = Action,
-			Name = "Fly",
-			Procedure = DFA_FLOAT,
-			Directions = 1,
-			X = 0,
-			Y = 0,
-			Wdt = 64,
-			Hgt = 54,
-			NextAction = "Fly",
-		},
+	Fly = {
+		Prototype = Action,
+		Name = "Fly",
+		Procedure = DFA_FLOAT,
+		Directions = 1,
+		X = 0,
+		Y = 0,
+		Wdt = 64,
+		Hgt = 54,
+		NextAction = "Fly",
+	},
 };
 
 func Definition(def)
