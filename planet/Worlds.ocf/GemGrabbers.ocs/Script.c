@@ -4,7 +4,6 @@
 	There are many tools either available directly or for production on the other islands. 
 	
 	Todo's:
-	* Fix location finding for stuff on the islands, is a bug in find location.
 	* Rain and wind effects.
 	* Attacking birds on the islands with new buildings.
 	* Some other hurdles.

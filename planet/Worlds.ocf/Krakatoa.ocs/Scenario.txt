@@ -1,8 +1,8 @@
 [Head]
 Icon=23
 Title=Krakatoa
-Version=5,2,90,20
-Difficulty=70
+Version=5,3,0,0
+Difficulty=80
 
 [Definitions]
 Definition1=Objects.ocd

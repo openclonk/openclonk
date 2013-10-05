@@ -1,8 +1,8 @@
 [Head]
 Title=AcidGoldMine
 Icon=22
-Version=5,2,0,1
-Difficulty=130
+Version=5,3,0,0
+Difficulty=120
 
 [Definitions]
 Definition1=Objects.ocd
