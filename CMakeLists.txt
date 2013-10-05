@@ -1491,6 +1491,7 @@ set(OC_C4GROUPS
 	Parkour.ocf
 	Settlement.ocf
 	Tutorial.ocf
+	Worlds.ocf
 )
 
 get_target_property(C4GROUP_LOCATION c4group LOCATION)
