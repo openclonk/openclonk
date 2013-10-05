@@ -595,7 +595,12 @@ public func OnProductEjection(object product)
 	{
 		var x = GetX();
 		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;
-		product->SetPosition(x, y);	
+		product->SetPosition(x, y);
+		// Sometimes, there is material in front of the building. Move vehicles upwards in that case
+		var max_unstick_range = Max(GetDefHeight()/5,5); // 8 pixels for tools workshop
+		var y_off = 0;
+		while (product->Stuck() && y_off < max_unstick_range)
+			product->SetPosition(x, y-++y_off);
 	}
 	// Items should stay inside.
 	else
