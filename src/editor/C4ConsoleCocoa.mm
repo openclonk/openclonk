@@ -426,6 +426,7 @@ void C4ConsoleGUI::AddNetMenuItemForPlayer(int32_t index, StdStrBuf &text)
 
 void C4ConsoleGUI::SetInputFunctions(std::list<const char*> &functions)
 {
+	[ctrler(this) setInputFunctions:functions];
 }
 
 void C4ConsoleGUI::AddKickPlayerMenuItem(C4Player *player, StdStrBuf& player_text, bool enabled)

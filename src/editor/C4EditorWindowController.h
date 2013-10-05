@@ -51,6 +51,7 @@
 - (IBAction) selectLandscapeMode:(id)sender;
 - (IBAction) setGrade:(id)sender;
 - (IBAction) kickPlayer:(id)sender;
+- (void) setInputFunctions:(std::list<const char*>)functions;
 @end
 
 #endif
