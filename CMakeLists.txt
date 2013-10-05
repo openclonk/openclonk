@@ -1489,7 +1489,7 @@ set(OC_C4GROUPS
 	Objects.ocd
 	Arena.ocf
 	Parkour.ocf
-	Settlement.ocf
+	Missions.ocf
 	Tutorial.ocf
 	Worlds.ocf
 )
