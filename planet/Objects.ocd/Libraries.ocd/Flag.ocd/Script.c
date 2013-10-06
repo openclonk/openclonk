@@ -266,6 +266,7 @@ func RefreshLinkedFlags()
 		{
 			if(!IsAllied(flag->GetOwner(), owner)) continue;
 			if(GetIndexOf(current, flag) != -1) continue;
+			if(GetIndexOf(new, flag) != -1) continue;
 			if(flag == this) continue;
 			
 			if(ObjectDistance(oldflag, flag) > oldflag->GetFlagRadius() + flag->GetFlagRadius()) continue;
