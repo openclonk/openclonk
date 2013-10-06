@@ -889,13 +889,29 @@ func StartSwim()
 	if(!InLiquid()) return;
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
-	SetVertex(1,VTX_Y,-4,2);
+	
+	return SetSwimmingVertices(true);
 }
 
 func StopSwim()
 {
 	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
-	SetVertex(1,VTX_Y,-7,2);
+	
+	return SetSwimmingVertices(false);
+}
+
+func SetSwimmingVertices(bool is_swimming)
+{
+	var vtx_list = [[0,2,0], [0,-7,4], [0,9,11], [-2,-3,1], [2,-3,2], [-4,2,1], [4,2,2], [-2,6,1], [2,6,2]];
+	if (is_swimming)
+		vtx_list = [[0,3,0], [0,-2,4], [0,7,11], [-4,0,1], [4,0,2], [-5,3,1], [5,3,2], [-4,4,1], [4,4,2]];
+	for (var i = 0; i < GetVertexNum(); i++)
+	{
+		SetVertex(i, VTX_X, vtx_list[i][0], 2);
+		SetVertex(i, VTX_Y, vtx_list[i][1], 2);
+		SetVertex(i, VTX_CNAT, vtx_list[i][2], 2);
+	}
+	return;
 }
 
 func FxIntSwimStart(pTarget, effect, fTmp)

@@ -3125,7 +3125,7 @@ void C4Object::ContactAction()
 			break;
 		case DFA_SWIM:
 			// Try corner scale out
-			if (!GBackLiquid(GetX(), GetY() - 1))
+			if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1))
 				if (ObjectActionCornerScale(this)) return;
 			break;
 		}
@@ -3194,11 +3194,15 @@ void C4Object::ContactAction()
 			}
 			return;
 		case DFA_SWIM:
-			// Try scale
-			if (ComDirLike(Action.ComDir, COMD_Left))
-				if (ObjectActionScale(this,DIR_Left)) return;
-			// Try corner scale out
-			if (ObjectActionCornerScale(this)) return;
+			// Only scale if swimming at the surface
+			if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1))
+			{
+				// Try scale, only if swimming at the surface.
+				if (ComDirLike(Action.ComDir, COMD_Left))
+					if (ObjectActionScale(this,DIR_Left)) return;
+				// Try corner scale out
+				if (ObjectActionCornerScale(this)) return;
+			}
 			return;
 		case DFA_HANGLE:
 			// Hangle: Try scale
@@ -3244,12 +3248,15 @@ void C4Object::ContactAction()
 			}
 			return;
 		case DFA_SWIM:
-			// Try scale
-			if (ComDirLike(Action.ComDir, COMD_Right))
-				if (ObjectActionScale(this,DIR_Right)) return;
-			// Try corner scale out
-			if (ObjectActionCornerScale(this)) return;
-			// Skip to enable walk out
+			// Only scale if swimming at the surface
+			if (!GBackLiquid(GetX(),GetY()-1+Def->Float*Con/FullCon-1))
+			{
+				// Try scale
+				if (ComDirLike(Action.ComDir, COMD_Right))
+					if (ObjectActionScale(this,DIR_Right)) return;
+				// Try corner scale out
+				if (ObjectActionCornerScale(this)) return;
+			}
 			return;
 		case DFA_HANGLE:
 			// Hangle: Try scale
