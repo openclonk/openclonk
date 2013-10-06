@@ -869,6 +869,7 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 	particle->currentSpeedY = speedY.GetValue(particle);
 	particle->drawingData.aspect = of_def->Aspect;
 	particle->SetPosition(x, y);
+	particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
 
 	return particle;
 }
