@@ -733,6 +733,9 @@ bool C4Game::Execute() // Returns true if the game is over
 		// debugrec
 		AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
 
+	// allow the particle system to execute the next frame BEFORE the other game stuff is calculated since it will run in parallel to the main thread
+	DynamicParticles.CalculateNextStep();
+
 	// Game
 
 	EXEC_S(     ExecObjects();                    , ExecObjectsStat )

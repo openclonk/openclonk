@@ -919,6 +919,8 @@ void C4DynamicParticleSystem::CalculationThread::Execute()
 
 void C4DynamicParticleSystem::ExecuteCalculation()
 {
+	frameCounterAdvancedEvent.WaitFor(INFINITE);
+
 	int gameTime = Game.FrameCounter;
 	if (currentSimulationTime < gameTime)
 	{
@@ -936,7 +938,6 @@ void C4DynamicParticleSystem::ExecuteCalculation()
 
 		particleListAccessMutex.Leave();
 	}
-	Sleep(1000 / 38);
 }
 
 C4DynamicParticleList *C4DynamicParticleSystem::GetNewParticleList(C4Object *forObject)

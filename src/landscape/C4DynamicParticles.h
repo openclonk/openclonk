@@ -325,6 +325,8 @@ private:
 
 	CalculationThread calculationThread;
 	CStdCSec particleListAccessMutex;
+	CStdEvent frameCounterAdvancedEvent;
+
 	int currentSimulationTime; // in game time
 
 	// calculates the physics in all of the existing particle lists
@@ -332,11 +334,13 @@ private:
 
 	C4DynamicParticleList *globalParticles;
 public:
-	C4DynamicParticleSystem()
+	C4DynamicParticleSystem() : frameCounterAdvancedEvent(false)
 	{
 		currentSimulationTime = 0;
 		globalParticles = 0;
 	}
+	// called to allow the particle system the simulation of another step
+	void CalculateNextStep() { frameCounterAdvancedEvent.Pulse(); }
 
 	void Clear();
 	void DrawGlobalParticles(C4TargetFacet cgo) { if (globalParticles) globalParticles->Draw(cgo, 0); } 
