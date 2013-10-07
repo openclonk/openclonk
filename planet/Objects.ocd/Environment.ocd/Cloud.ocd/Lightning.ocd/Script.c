@@ -58,7 +58,7 @@ protected func FxLightningMoveTimer()
 	// Strike objects on the line.
 	for (var obj in FindObjects(Find_OnLine(oldx, oldy, newx, newy), Find_NoContainer(), Find_Layer(GetObjectLayer())))
 	{
-		if (!obj->~LightningStrike(3 + strength / 10))
+		if (obj && !obj->~LightningStrike(3 + strength / 10))
 		{
 			if (GetOCF() & OCF_Alive)
 				Punch(obj, 3 + strength / 10);

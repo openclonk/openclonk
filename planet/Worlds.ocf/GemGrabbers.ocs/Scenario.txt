@@ -41,5 +41,5 @@ MapHeight=200
 Climate=0
 StartSeason=0
 YearSpeed=0
-Wind=0,0,100,100
+Wind=0,100,-100,100
 
