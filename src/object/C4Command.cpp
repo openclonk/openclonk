@@ -422,7 +422,7 @@ void C4Command::MoveTo()
 		// difference to momentum
 		dx -= cObj->xdir; dy -= cObj->ydir;
 		// steer
-		if (Abs(dx)+Abs(dy) < C4REAL100(20)) cObj->Action.ComDir = COMD_None;
+		if (Abs(dx)+Abs(dy) < C4REAL100(20)) cObj->Action.ComDir = COMD_Stop;
 		else if (Abs(dy) * 3 <  dx) cObj->Action.ComDir = COMD_Right;
 		else if (Abs(dy) * 3 < -dx) cObj->Action.ComDir = COMD_Left;
 		else if (Abs(dx) * 3 <  dy) cObj->Action.ComDir = COMD_Down;

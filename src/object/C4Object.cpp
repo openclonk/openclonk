@@ -3909,14 +3909,38 @@ void C4Object::ExecAction()
 		// ComDir changes xdir/ydir
 		switch (Action.ComDir)
 		{
-		case COMD_Up:       ydir-=accel; break;
-		case COMD_UpRight:  ydir-=accel;  xdir+=accel; break;
-		case COMD_Right:                  xdir+=accel; break;
-		case COMD_DownRight:ydir+=accel;  xdir+=accel; break;
-		case COMD_Down:     ydir+=accel; break;
-		case COMD_DownLeft: ydir+=accel;  xdir-=accel; break;
-		case COMD_Left:                   xdir-=accel; break;
-		case COMD_UpLeft:   ydir-=accel;  xdir-=accel; break;
+		case COMD_Up:
+			ydir-=accel;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			break;
+		case COMD_UpRight:  
+			ydir-=accel; xdir+=accel; break;
+		case COMD_Right:
+			xdir+=accel; 
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
+			break;
+		case COMD_DownRight:
+			ydir+=accel; xdir+=accel; break;
+		case COMD_Down: 
+			ydir+=accel;
+			if (xdir<0) xdir+=decel;
+			if (xdir>0) xdir-=decel;
+			if ((xdir>-decel) && (xdir<+decel)) xdir=0;
+			break;
+		case COMD_DownLeft:
+			ydir+=accel; xdir-=accel; break;
+		case COMD_Left:
+			xdir-=accel; 
+			if (ydir<0) ydir+=decel;
+			if (ydir>0) ydir-=decel;
+			if ((ydir>-decel) && (ydir<+decel)) ydir=0;
+			break;
+		case COMD_UpLeft:
+			ydir-=accel; xdir-=accel; break;
 		case COMD_Stop:
 			if (xdir<0) xdir+=decel;
 			if (xdir>0) xdir-=decel;
