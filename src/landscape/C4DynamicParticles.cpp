@@ -18,6 +18,7 @@
 #include <C4Include.h>
 #include <C4DynamicParticles.h>
 
+#include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
 #include <C4MeshAnimation.h>
@@ -32,7 +33,7 @@ void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, f
 	if (size != originalSize || stretch != currentStretch)
 	{
 		currentStretch = stretch;
-		originalSize = size >= 0.f ? size : 0.0001f; // a size of zero results in undefined behavior
+		originalSize = std::max(size, 0.0001f); // a size of zero results in undefined behavior
 		sizeX = originalSize / aspect;
 		sizeY = originalSize * currentStretch;
 	}
@@ -182,12 +183,9 @@ void C4DynamicParticleValueProvider::UpdatePointerValue(C4DynamicParticle *parti
 
 void C4DynamicParticleValueProvider::UpdateChildren(C4DynamicParticle *particle)
 {
-	if (!childrenValueProviders.empty())
+	for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 	{
-		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
-		{
-			(*iter)->UpdatePointerValue(particle, this);
-		}
+		(*iter)->UpdatePointerValue(particle, this);
 	}
 }
 
@@ -198,23 +196,21 @@ void C4DynamicParticleValueProvider::FloatifyParameterValue(float C4DynamicParti
 	else
 		this->*value /= denominator;
 
-	if (!childrenValueProviders.empty())
+	for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 	{
-		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+		C4DynamicParticleValueProvider *child = *iter;
+		if (keyFrameIndex != -1)
 		{
-			C4DynamicParticleValueProvider *child = *iter;
-			if (keyFrameIndex != -1)
-			{
-				if (child->typeOfValueToChange == VAL_TYPE_KEYFRAMES && child->keyFrameIndex == keyFrameIndex)
-					child->Floatify(denominator);
-			}
-			else
-			{
-				if (child->floatValueToChange == value)
-					child->Floatify(denominator);
-			}
+			if (child->typeOfValueToChange == VAL_TYPE_KEYFRAMES && child->keyFrameIndex == keyFrameIndex)
+				child->Floatify(denominator);
+		}
+		else
+		{
+			if (child->floatValueToChange == value)
+				child->Floatify(denominator);
 		}
 	}
+	
 }
 
 void C4DynamicParticleValueProvider::Floatify(float denominator)
@@ -357,7 +353,7 @@ void C4DynamicParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		valueFunction = &C4DynamicParticleValueProvider::Speed;
 		break;
 	default:
-		assert(false);
+		assert(false && "Invalid C4DynamicParticleValueProvider ID passed");
 	};
 
 	if (what != C4PV_Const)
@@ -459,14 +455,15 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		}
 		break;
 	default:
+		throw new C4AulExecError("invalid particle value provider supplied");
 		break;
 	}
 }
 
 void C4DynamicParticleValueProvider::Set(const C4Value &value)
 {
-	C4ValueArray *valueArray;
-	if (valueArray = value.getArray())
+	C4ValueArray *valueArray= value.getArray();
+	if (valueArray != 0)
 	{
 		Set(valueArray);
 		return;
@@ -531,7 +528,7 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 	if (!dataSource) return;
 
 	// get properties from proplist
-	// make sure to delete the array later, we took ownership
+	// todo: make sure to delete the array later, we took ownership
 	C4ValueArray *properties = dataSource->GetProperties();
 
 	for (int32_t i = 0; i < properties->GetSize(); ++i)
@@ -599,7 +596,8 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		else if(&Strings.P[P_CollisionVertex] == key)
 		{
 			collisionVertex.Set(property);
-			hasCollisionVertex = true;
+			if (property.GetType() != C4V_Nil)
+				hasCollisionVertex = true;
 		}
 		else if(&Strings.P[P_OnCollision] == key)
 		{
@@ -644,7 +642,7 @@ bool C4DynamicParticleProperties::CollisionBounce(C4DynamicParticle *forParticle
 
 void C4DynamicParticle::Init()
 {
-	currentSpeedX = currentSpeedX = 0.f;
+	currentSpeedX = currentSpeedY = 0.f;
 	positionX = positionY = 0.f;
 	lifetime = startingLifetime = 5.f * 38.f;
 }
