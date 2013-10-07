@@ -62,28 +62,53 @@ protected:
 		float delay; // for Step
 		float speedFactor; // for Speed
 	};
-	int smoothing;
+
+	union
+	{
+		int alreadyRolled; // for Random
+		int smoothing; // for KeyFrames
+	};
+	
 	float *keyFrames;
 
 	C4DynamicParticleValueProviderFunction valueFunction;
 	bool isConstant;
+
+	std::list<C4DynamicParticleValueProvider*> childrenValueProviders;
+	C4DynamicParticleValueProvider* parent;
+
+	union
+	{
+		float *floatValueToChange;
+		int *intValueToChange;
+	};
+	bool hasIntValueToChange;
+
 public:
+	void UpdatePointerValue(C4DynamicParticle *particle);
+	void UpdateChildren(C4DynamicParticle *particle);
+	void FloatifyParameterValue(float *value, float denominator);
+	void SetParameterValue(void *target, bool isFloat, const C4Value &value);
+
 	bool IsConstant() { return isConstant; }
-	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true) { }
+	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true), parent(0), floatValueToChange(0), hasIntValueToChange(false) { }
 	~C4DynamicParticleValueProvider()
 	{
 		if (keyFrames != 0) free(keyFrames);
+		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+			delete *iter;
 	}
-	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other) { *this = other; }
+	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other, C4DynamicParticleValueProvider *newParent) { parent = newParent; *this = other; }
 	C4DynamicParticleValueProvider & operator= (const C4DynamicParticleValueProvider &other);
 	void RollRandom();
 
 	// divides by denominator
 	void Floatify(float denominator);
 
-	void Set(float _startValue, float _endValue = 1.f, C4ParticleValueProviderID what = C4PV_Const);
+	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	void Set(const C4Value &value);
 	void Set(C4ValueArray *fromArray);
+	void Set(float to); // constant
 	float GetValue(C4DynamicParticle *forParticle);
 
 	float Linear(C4DynamicParticle *forParticle);
@@ -93,6 +118,9 @@ public:
 	float Direction(C4DynamicParticle *forParticle);
 	float Step(C4DynamicParticle *forParticle);
 	float Speed(C4DynamicParticle *forParticle);
+
+protected:
+	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other){ assert(false); } // this can't be implemented since the parent would be unknown
 };
 
 class C4DynamicParticleProperties
@@ -317,7 +345,7 @@ public:
 	void PreparePrimitiveRestartIndices(int forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider speedX, C4DynamicParticleValueProvider speedY, C4DynamicParticleValueProvider size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
 
 	friend class CalculationThread;
 };

@@ -87,6 +87,8 @@ void C4DynamicParticle::DrawingData::SetPhase(int phase, C4ParticleDef *sourceDe
 
 C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (const C4DynamicParticleValueProvider &other)
 {
+	assert ((parent || !other.parent) && "C4DynamicParticleValueProvider's parent HAS to be set before assigning..");
+
 	startValue = other.startValue;
 	endValue = other.endValue;
 	currentValue = other.currentValue;
@@ -94,6 +96,7 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 	smoothing = other.smoothing;
 	valueFunction = other.valueFunction;
 	isConstant = other.isConstant;
+	keyFrameCount = other.keyFrameCount;
 
 	if (other.keyFrames != 0)
 	{
@@ -103,7 +106,111 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 	}
 	else
 		keyFrames = 0;
+
+	// make sure the pointers are correct
+	// since they can either point to some real data IN THE PARENT NODE or the KEYFRAMES OF THE CHILD, only those have to be checked and the offset will be corrected to point to this's members
+	// this might look a little weird at first, but after several optimization considerations, it has been accepted as the best solution (by me)
+	hasIntValueToChange = other.hasIntValueToChange;
+	if (other.floatValueToChange != 0)
+	{
+		assert (parent);
+
+		uintptr_t otherDataPointerAddress = (uintptr_t) other.floatValueToChange;
+		uintptr_t otherParentStartAddress = (uintptr_t) other.parent;
+		uintptr_t otherParentEndAddress = (uintptr_t) (other.parent + 1);
+		uintptr_t ownParentStartAddress = (uintptr_t) parent;
+
+		uintptr_t otherKeyFramesStartAddress = (uintptr_t) other.keyFrames;
+		uintptr_t otherKeyFramesEndAddress = (uintptr_t) (other.keyFrames + keyFrameCount);
+		uintptr_t ownKeyFrameStartAddress = (uintptr_t) keyFrames;
+
+		if ((otherDataPointerAddress >= otherParentStartAddress) && (otherDataPointerAddress < otherParentEndAddress))
+		{
+			floatValueToChange = (float*) (otherDataPointerAddress - otherParentStartAddress + ownParentStartAddress);
+		}
+		else if ((otherDataPointerAddress >= otherKeyFramesStartAddress) && (otherDataPointerAddress < otherKeyFramesEndAddress))
+		{
+			floatValueToChange = (float*) (otherDataPointerAddress - otherKeyFramesStartAddress + ownKeyFrameStartAddress);
+		}
+		else
+			assert(false && "C4DynamicParticleValueProvider's data pointer was off");
+	}
+	else
+		floatValueToChange = 0;
+
+	// copy the other's children, too
+	for (std::list<C4DynamicParticleValueProvider*>::const_iterator iter = other.childrenValueProviders.begin(); iter != other.childrenValueProviders.end(); ++iter)
+	{
+		childrenValueProviders.push_back(new C4DynamicParticleValueProvider(**iter, this)); // custom copy constructor usage
+	}
 	return (*this);
+}
+
+void C4DynamicParticleValueProvider::SetParameterValue(void *target, bool isFloat, const C4Value &value)
+{
+	// just an atomic data type
+	if (value.GetType() == C4V_Int)
+	{
+		if (isFloat)
+			*((float*)target) = (float)value.getInt();
+		else
+			*((int*)target) = value.getInt();
+	}
+	else if (value.GetType() == C4V_Array)
+	{
+		//  might be another value provider!
+		C4DynamicParticleValueProvider *child = new C4DynamicParticleValueProvider();
+		childrenValueProviders.push_back(child);
+
+		child->parent = this;
+		child->Set(value.getArray());
+
+		if (isFloat)
+			child->floatValueToChange = (float*) target;
+		else
+		{
+			child->hasIntValueToChange = true;
+			child->intValueToChange = (int*) target;
+		}
+	}
+	else // invalid
+	{
+		if (isFloat) *((float*)target) = 0.f;
+		else *((int*)target) = 0;
+	}
+}
+
+void C4DynamicParticleValueProvider::UpdatePointerValue(C4DynamicParticle *particle)
+{
+	if (hasIntValueToChange)
+		*intValueToChange = (int) GetValue(particle);
+	else
+		*floatValueToChange = GetValue(particle);
+}
+
+void C4DynamicParticleValueProvider::UpdateChildren(C4DynamicParticle *particle)
+{
+	if (!childrenValueProviders.empty())
+	{
+		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+		{
+			(*iter)->UpdatePointerValue(particle);
+		}
+	}
+}
+
+void C4DynamicParticleValueProvider::FloatifyParameterValue(float *value, float denominator)
+{
+	*value /= denominator;
+
+	if (!childrenValueProviders.empty())
+	{
+		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+		{
+			if ((*iter)->floatValueToChange == value)
+				(*iter)->Floatify(denominator);
+		}
+	}
 }
 
 void C4DynamicParticleValueProvider::Floatify(float denominator)
@@ -112,27 +219,28 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 
 	if (valueFunction == &C4DynamicParticleValueProvider::Direction)
 	{
-		startValue /= 1000.f;
+		FloatifyParameterValue(&startValue, 1000.f);
 		return;
 	}
 
-	startValue /= denominator;
-	endValue /= denominator;
-	currentValue /= denominator;
+	FloatifyParameterValue(&startValue, denominator);
+	FloatifyParameterValue(&endValue, denominator);
+	FloatifyParameterValue(&currentValue, denominator);
 
 	// special treatment for keyframes
 	if (valueFunction == &C4DynamicParticleValueProvider::KeyFrames)
 	{
 		for (int i = 0; i < keyFrameCount; ++i)
 		{
-			keyFrames[2 * i] /= 1000.0f; // even numbers are the time values
-			keyFrames[2 * i + 1] /= denominator; // odd numbers are the actual values
+			FloatifyParameterValue(&keyFrames[2 * i], 1000.f); // even numbers are the time values
+			FloatifyParameterValue(&keyFrames[2 * i + 1], denominator); // odd numbers are the actual values
 			//LogF("KF is %f @ %f", keyFrames[2 * i + 1], keyFrames[2 * i]);
 		}
 	}
-	else
-		if (valueFunction == &C4DynamicParticleValueProvider::Random)
-			RollRandom();
+	else if (valueFunction == &C4DynamicParticleValueProvider::Speed)
+	{
+		FloatifyParameterValue(&speedFactor, 1000.0f);
+	}
 }
 
 void C4DynamicParticleValueProvider::RollRandom()
@@ -144,6 +252,7 @@ void C4DynamicParticleValueProvider::RollRandom()
 
 float C4DynamicParticleValueProvider::GetValue(C4DynamicParticle *forParticle)
 {
+	UpdateChildren(forParticle);
 	return (this->*valueFunction)(forParticle);
 }
 
@@ -159,8 +268,11 @@ float C4DynamicParticleValueProvider::Const(C4DynamicParticle *forParticle)
 
 float C4DynamicParticleValueProvider::Random(C4DynamicParticle *forParticle)
 {
-	if (rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0))
+	if ((rerollInterval != 0 && ((int)forParticle->GetAge() % rerollInterval == 0)) || alreadyRolled == 0)
+	{
+		alreadyRolled = 1;
 		RollRandom();
+	}
 	return currentValue;
 }
 
@@ -214,11 +326,8 @@ float C4DynamicParticleValueProvider::Speed(C4DynamicParticle *forParticle)
 	return startValue + speedFactor * speed;
 }
 
-void C4DynamicParticleValueProvider::Set(float _startValue, float _endValue, C4ParticleValueProviderID what)
+void C4DynamicParticleValueProvider::SetType(C4ParticleValueProviderID what)
 {
-	startValue = _startValue;
-	endValue = _endValue;
-
 	switch (what)
 	{
 	case C4PV_Const:
@@ -266,53 +375,65 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 	{
 	case C4PV_Const:
 		if (arraySize >= 2)
-			Set((float)(*fromArray)[1].getInt(), 0.f, C4PV_Const);
+		{
+			SetType(C4PV_Const);
+			SetParameterValue(&startValue, true, (*fromArray)[1]);
+		}
 		break;
 
 	case C4PV_Linear:
 		if (arraySize >= 3)
 		{
-			Set((float)(*fromArray)[1].getInt(), (float)(*fromArray)[2].getInt(), C4PV_Linear);
+			SetType(C4PV_Linear);
+			SetParameterValue(&startValue, true, (*fromArray)[1]);
+			SetParameterValue(&endValue, true, (*fromArray)[2]);
 		}
 		break;
 	case C4PV_Random:
 		if (arraySize >= 3)
 		{
-			Set((float)(*fromArray)[1].getInt(), (float)(*fromArray)[2].getInt(), C4PV_Random);
+			SetType(C4PV_Random);
+			SetParameterValue(&startValue, true, (*fromArray)[1]);
+			SetParameterValue(&endValue, true, (*fromArray)[2]);
 			if (arraySize >= 4)
-				rerollInterval = (*fromArray)[3].getInt();
-			RollRandom();
+				SetParameterValue(&rerollInterval, false, (*fromArray)[3]);
+			alreadyRolled = 0;
 		}
 		break;
 	case C4PV_Direction:
 		if (arraySize >= 2)
 		{
-			Set((float)(*fromArray)[1].getInt(), 0.f, C4PV_Direction);
+			SetType(C4PV_Direction);
+			SetParameterValue(&startValue, true, (*fromArray)[1]);
 		}
 		break;
 	case C4PV_Step:
 		if (arraySize >= 2)
 		{
-			Set((float)(*fromArray)[1].getInt(), 0.f, C4PV_Step);
-			currentValue = (float)(*fromArray)[2].getInt();
-			delay = (float)(*fromArray)[3].getInt();
+			SetType(C4PV_Step);
+			SetParameterValue(&startValue, true, (*fromArray)[1]);
+			SetParameterValue(&currentValue, true, (*fromArray)[2]);
+			SetParameterValue(&delay, true, (*fromArray)[3]);
 			if (delay == 0.f) delay = 1.f;
 		}
 		break;
 	case C4PV_KeyFrames:
 		if (arraySize >= 5)
 		{
-			smoothing = (*fromArray)[1].getInt();
+			SetType(C4PV_KeyFrames);
+			SetParameterValue(&smoothing, true, (*fromArray)[1]);
 			keyFrames = (float*) malloc(sizeof(float) * (arraySize + 3)); // 2 additional information floats at the beginning and ending
 			keyFrameCount = 0;
 			const int startingOffset = 2;
 			int i = startingOffset;
 			for (; i < arraySize; ++i)
 			{
-				keyFrames[2 + i - startingOffset] = (float)(*fromArray)[i].getInt();
+				SetParameterValue(&keyFrames[2 + i - startingOffset], true, (*fromArray)[i]);
 			}
 			keyFrameCount = (i - startingOffset) / 2 + 2;
-			Set(keyFrames[2 + 1], keyFrames[2 * keyFrameCount - 1], C4PV_KeyFrames);
+
+			startValue = keyFrames[2 + 1];
+			endValue = keyFrames[2 * keyFrameCount - 1];
 
 			// add two points for easier interpolation at beginning and ending
 			keyFrames[0] = -500.f;
@@ -327,8 +448,9 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 	case C4PV_Speed:
 		if (arraySize >= 3)
 		{
-			Set((float)(*fromArray)[2].getInt(), 0.f, C4PV_Speed);
-			speedFactor = (float)(*fromArray)[1].getInt() / 1000.f;
+			SetType(C4PV_Speed);
+			SetParameterValue(&speedFactor, true, (*fromArray)[1]);
+			SetParameterValue(&startValue, true, (*fromArray)[2]);
 		}
 		break;
 	default:
@@ -345,9 +467,13 @@ void C4DynamicParticleValueProvider::Set(const C4Value &value)
 		return;
 	}
 
-	int32_t valueInt = value.getInt();
+	Set((float)value.getInt());
+}
 
-	Set((float)valueInt, (float)valueInt, C4PV_Const); 
+void C4DynamicParticleValueProvider::Set(float to)
+{
+	SetType(C4PV_Const);
+	startValue = endValue = to;
 }
 
 C4DynamicParticleProperties::C4DynamicParticleProperties()
@@ -840,7 +966,7 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 	particleListAccessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider speedX, C4DynamicParticleValueProvider speedY, C4DynamicParticleValueProvider size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
+C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
 {
 	// todo: check amount etc
 

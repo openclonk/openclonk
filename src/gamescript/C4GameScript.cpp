@@ -1624,40 +1624,40 @@ static bool FnClearParticles(C4PropList * _this, C4String *szName, C4Object *pOb
 	return true;
 }
 
-static C4ValueArray* FnPV_Linear(C4PropList * _this, long startValue, long endValue)
+static C4ValueArray* FnPV_Linear(C4PropList * _this, C4Value startValue, C4Value endValue)
 {
 	C4ValueArray *pArray = new C4ValueArray(3);
 	pArray->SetItem(0, C4VInt(C4PV_Linear));
-	pArray->SetItem(1, C4VInt(startValue));
-	pArray->SetItem(2, C4VInt(endValue));
+	pArray->SetItem(1, startValue);
+	pArray->SetItem(2, endValue);
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Random(C4PropList * _this, long startValue, long endValue, long rerollInterval)
+static C4ValueArray* FnPV_Random(C4PropList * _this, C4Value startValue, C4Value endValue, C4Value rerollInterval)
 {
 	C4ValueArray *pArray = new C4ValueArray(4);
 	pArray->SetItem(0, C4VInt(C4PV_Random));
-	pArray->SetItem(1, C4VInt(startValue));
-	pArray->SetItem(2, C4VInt(endValue));
-	pArray->SetItem(3, C4VInt(rerollInterval));
+	pArray->SetItem(1, startValue);
+	pArray->SetItem(2, endValue);
+	pArray->SetItem(3, rerollInterval);
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Direction(C4PropList * _this, long factor)
+static C4ValueArray* FnPV_Direction(C4PropList * _this, C4Value factor)
 {
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(C4PV_Direction));
-	pArray->SetItem(1, C4VInt(factor) ? C4VInt(factor) : C4VInt(1000));
+	pArray->SetItem(1, factor.GetType() != C4V_Nil ? factor : C4VInt(1000));
 	return pArray;
 }
 
-static C4ValueArray* FnPV_Step(C4PropList * _this, long step, long startValue, long delay)
+static C4ValueArray* FnPV_Step(C4PropList * _this, C4Value step, C4Value startValue, C4Value delay)
 {
 	C4ValueArray *pArray = new C4ValueArray(4);
 	pArray->SetItem(0, C4VInt(C4PV_Step));
-	pArray->SetItem(1, C4VInt(step));
-	pArray->SetItem(2, C4VInt(startValue));
-	pArray->SetItem(3, C4VInt(delay));
+	pArray->SetItem(1, step);
+	pArray->SetItem(2, startValue);
+	pArray->SetItem(3, delay);
 	return pArray;
 }
 
@@ -1675,18 +1675,18 @@ static C4Value FnPV_KeyFrames(C4PropList * _this, C4Value *pars)
 		// No data given?
 		if (Data.GetType() == C4V_Nil) break;
 
-		pArray->SetItem(offset + i, C4VInt(Data.getInt()));
+		pArray->SetItem(offset + i, Data);
 	}
 	pArray->SetSize(i + offset);
 	return C4Value(pArray);
 }
 
-static C4ValueArray* FnPV_Speed(C4PropList * _this, long factor, long startValue)
+static C4ValueArray* FnPV_Speed(C4PropList * _this, C4Value factor, C4Value startValue)
 {
 	C4ValueArray *pArray = new C4ValueArray(3);
 	pArray->SetItem(0, C4VInt(C4PV_Speed));
-	pArray->SetItem(1, C4VInt(factor));
-	pArray->SetItem(2, C4VInt(startValue));
+	pArray->SetItem(1, factor);
+	pArray->SetItem(2, startValue);
 	return pArray;
 }
 
@@ -1697,11 +1697,11 @@ static C4ValueArray* FnPC_Die(C4PropList * _this)
 	return pArray;
 }
 
-static C4ValueArray* FnPC_Bounce(C4PropList * _this, long bouncyness)
+static C4ValueArray* FnPC_Bounce(C4PropList * _this, C4Value bouncyness)
 {
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(C4PC_Bounce));
-	pArray->SetItem(1, bouncyness != 0 ? C4VInt(bouncyness) : C4VInt(1000));
+	pArray->SetItem(1, bouncyness.GetType() != C4V_Nil ? bouncyness : C4VInt(1000));
 	return pArray;
 }
 
