@@ -970,7 +970,7 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 	particleListAccessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
+C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
 {
 	// todo: check amount etc
 
@@ -990,8 +990,6 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 
 	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
 	particle->properties = particleProperties;
-	if (!(size.IsConstant() && size.GetValue(particle) == 0.f))
-		particle->properties.size = size;
 	particle->properties.Floatify();
 
 	particle->lifetime = particle->startingLifetime = lifetime;

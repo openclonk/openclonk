@@ -348,7 +348,7 @@ public:
 	void PreparePrimitiveRestartIndices(int forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &size, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
 
 	friend class CalculationThread;
 };

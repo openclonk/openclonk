@@ -36,11 +36,6 @@
           <desc>Starting speed of the particle in y-direction.</desc>
         </param>
 		<param>
-          <type>any</type>
-          <name>size</name>
-          <desc>Size of the particle in pixels. Can be either a constant number or a particle value provider (see <emlink href="particles/particlesEx.html">Particles</emlink>).</desc>
-        </param>
-		<param>
           <type>int</type>
           <name>lifetime</name>
           <desc>Time in frames that the particle will be alive before it is removed.</desc>
@@ -73,7 +68,7 @@ var particles =
 	Phase = <funclink>PV_Step</funclink>(1, 0, 10)
 };
 for (var i = 0; i &lt; 100; ++i)
-<funclink>CreateParticleEx</funclink>("Fire", 0, 0, RandomX(-30, 30), RandomX(-30, 30), nil, RandomX(18, 38 * 5), particles);
+<funclink>CreateParticleEx</funclink>("Fire", 0, 0, RandomX(-30, 30), RandomX(-30, 30), RandomX(18, 38 * 5), particles);
 			</code>
 			<text>Casts around 100 particles with a previously defined behavior.</text>
 		  </example>

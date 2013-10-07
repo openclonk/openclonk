@@ -1533,7 +1533,7 @@ static bool FnCreateParticle(C4PropList * _this, C4String *szName, long iX, long
 	return true;
 }
 
-static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, C4Value size, int lifetime, C4PropList *properties, int attachment)
+static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, int lifetime, C4PropList *properties, int attachment)
 {
 	// safety
 	C4Object *obj = Object(_this);
@@ -1549,12 +1549,11 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(name));
 	if (!pDef) return false;
 	// construct data
-	C4DynamicParticleValueProvider valueSpeedX, valueSpeedY, valueSize;
+	C4DynamicParticleValueProvider valueSpeedX, valueSpeedY;
 	valueSpeedX.Set(speedX);
 	valueSpeedY.Set(speedY);
-	valueSize.Set(size);
 	// create
-	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueSize, (float)lifetime, properties, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
+	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, (float)lifetime, properties, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
 	// success, even if not created
 	return true;
 }
