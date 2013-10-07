@@ -299,7 +299,8 @@ float C4DynamicParticleValueProvider::Step(C4DynamicParticle *forParticle)
 float C4DynamicParticleValueProvider::KeyFrames(C4DynamicParticle *forParticle)
 {
 	float age = forParticle->GetRelativeAge();
-	if (smoothing == 0) // linear
+	// todo, implement smoothing
+	//if (smoothing == 0) // linear
 	{
 		for (int i = 0; i < keyFrameCount; ++i)
 		{
