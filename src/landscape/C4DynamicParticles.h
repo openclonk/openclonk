@@ -75,30 +75,36 @@ protected:
 	bool isConstant;
 
 	std::list<C4DynamicParticleValueProvider*> childrenValueProviders;
-	C4DynamicParticleValueProvider* parent;
 
 	union
 	{
-		float *floatValueToChange;
-		int *intValueToChange;
+		float C4DynamicParticleValueProvider::*floatValueToChange;
+		int C4DynamicParticleValueProvider::*intValueToChange;
+		int keyFrameIndex;
 	};
-	bool hasIntValueToChange;
+	enum
+	{
+		VAL_TYPE_INT,
+		VAL_TYPE_FLOAT,
+		VAL_TYPE_KEYFRAMES,
+	};
+	int typeOfValueToChange;
 
 public:
-	void UpdatePointerValue(C4DynamicParticle *particle);
+	void UpdatePointerValue(C4DynamicParticle *particle, C4DynamicParticleValueProvider *parent);
 	void UpdateChildren(C4DynamicParticle *particle);
-	void FloatifyParameterValue(float *value, float denominator);
-	void SetParameterValue(void *target, bool isFloat, const C4Value &value);
+	void FloatifyParameterValue(float C4DynamicParticleValueProvider::*value, float denominator, int keyFrameIndex = -1);
+	void SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal = 0, int keyFrameIndex = -1);
 
 	bool IsConstant() { return isConstant; }
-	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true), parent(0), floatValueToChange(0), hasIntValueToChange(false) { }
+	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
 	~C4DynamicParticleValueProvider()
 	{
 		if (keyFrames != 0) free(keyFrames);
 		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 			delete *iter;
 	}
-	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other, C4DynamicParticleValueProvider *newParent) { parent = newParent; *this = other; }
+	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other) { *this = other; }
 	C4DynamicParticleValueProvider & operator= (const C4DynamicParticleValueProvider &other);
 	void RollRandom();
 
@@ -118,9 +124,6 @@ public:
 	float Direction(C4DynamicParticle *forParticle);
 	float Step(C4DynamicParticle *forParticle);
 	float Speed(C4DynamicParticle *forParticle);
-
-protected:
-	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other){ assert(false); } // this can't be implemented since the parent would be unknown
 };
 
 class C4DynamicParticleProperties
@@ -216,7 +219,7 @@ public:
 		void SetPosition(float x, float y, float size, float rotation = 0.f, float stretch = 1.f);
 		void SetPhase(int phase, C4ParticleDef *sourceDef);
 
-		DrawingData() : currentStretch(1.f), originalSize(0.f), aspect(1.f)
+		DrawingData() : currentStretch(1.f), originalSize(0.0001f), aspect(1.f)
 		{
 		}
 
