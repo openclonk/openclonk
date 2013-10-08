@@ -100,7 +100,21 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 	keyFrames.assign(other.keyFrames.begin(), other.keyFrames.end());
 
 	typeOfValueToChange = other.typeOfValueToChange;
-	keyFrameIndex = other.keyFrameIndex;
+	switch (typeOfValueToChange)
+	{
+	case VAL_TYPE_FLOAT:
+		floatValueToChange = other.floatValueToChange;
+		break;
+	case VAL_TYPE_INT:
+		intValueToChange = other.intValueToChange;
+		break;
+	case VAL_TYPE_KEYFRAMES:
+		keyFrameIndex = other.keyFrameIndex;
+		break;
+	default:
+		assert (false && "Trying to copy C4DynamicParticleValueProvider with invalid value type");
+		break;
+	}
 	
 	// copy the other's children, too
 	for (std::vector<C4DynamicParticleValueProvider*>::const_iterator iter = other.childrenValueProviders.begin(); iter != other.childrenValueProviders.end(); ++iter)
