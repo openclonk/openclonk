@@ -369,8 +369,9 @@ void C4Object::AssignRemoval(bool fExitContents)
 	// remove particles
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
-	if (DynamicFrontParticles) DynamicFrontParticles->Clear();
-	if (DynamicBackParticles) DynamicBackParticles->Clear();
+	if (DynamicFrontParticles != NULL)
+		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
+	DynamicFrontParticles = DynamicBackParticles = NULL;
 	// Action idle
 	SetAction(0);
 	// Object system operation
@@ -2588,7 +2589,8 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 
 void C4Object::Clear()
 {
-	DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
+	if (DynamicFrontParticles != NULL)
+		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
 	DynamicFrontParticles = DynamicBackParticles = NULL;
 
 	if (pEffects) { delete pEffects; pEffects=NULL; }
@@ -4733,6 +4735,10 @@ bool C4Object::StatusActivate()
 bool C4Object::StatusDeactivate(bool fClearPointers)
 {
 	// clear particles
+	if (DynamicFrontParticles != NULL)
+		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
+	DynamicFrontParticles = DynamicBackParticles = NULL;
+
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// put into inactive list

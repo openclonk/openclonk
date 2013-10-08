@@ -97,27 +97,20 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 	isConstant = other.isConstant;
 	keyFrameCount = other.keyFrameCount;
 
-	if (other.keyFrames != 0)
-	{
-		int size = keyFrameCount * 2 * sizeof(float);
-		keyFrames = (float*) malloc(size);
-		memcpy(keyFrames, other.keyFrames, size);
-	}
-	else
-		keyFrames = 0;
+	keyFrames.assign(other.keyFrames.begin(), other.keyFrames.end());
 
 	typeOfValueToChange = other.typeOfValueToChange;
-	floatValueToChange = other.floatValueToChange;
+	keyFrameIndex = other.keyFrameIndex;
 	
 	// copy the other's children, too
-	for (std::list<C4DynamicParticleValueProvider*>::const_iterator iter = other.childrenValueProviders.begin(); iter != other.childrenValueProviders.end(); ++iter)
+	for (std::vector<C4DynamicParticleValueProvider*>::const_iterator iter = other.childrenValueProviders.begin(); iter != other.childrenValueProviders.end(); ++iter)
 	{
 		childrenValueProviders.push_back(new C4DynamicParticleValueProvider(**iter)); // custom copy constructor usage
 	}
 	return (*this);
 }
 
-void C4DynamicParticleValueProvider::SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal, int keyFrameIndex)
+void C4DynamicParticleValueProvider::SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal, size_t keyFrameIndex)
 {
 	// just an atomic data type
 	if (value.GetType() == C4V_Int)
@@ -135,7 +128,7 @@ void C4DynamicParticleValueProvider::SetParameterValue(int type, const C4Value &
 		C4DynamicParticleValueProvider *child = new C4DynamicParticleValueProvider();
 		childrenValueProviders.push_back(child);
 
-		child->Set(value.getArray());
+		child->Set(*value.getArray());
 		child->typeOfValueToChange = type;
 
 		if (type == VAL_TYPE_FLOAT)
@@ -183,23 +176,23 @@ void C4DynamicParticleValueProvider::UpdatePointerValue(C4DynamicParticle *parti
 
 void C4DynamicParticleValueProvider::UpdateChildren(C4DynamicParticle *particle)
 {
-	for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+	for (std::vector<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 	{
 		(*iter)->UpdatePointerValue(particle, this);
 	}
 }
 
-void C4DynamicParticleValueProvider::FloatifyParameterValue(float C4DynamicParticleValueProvider::*value, float denominator, int keyFrameIndex)
+void C4DynamicParticleValueProvider::FloatifyParameterValue(float C4DynamicParticleValueProvider::*value, float denominator, size_t keyFrameIndex)
 {
-	if (keyFrameIndex != -1)
+	if (value == 0)
 		this->keyFrames[keyFrameIndex] /= denominator;
 	else
 		this->*value /= denominator;
 
-	for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+	for (std::vector<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 	{
 		C4DynamicParticleValueProvider *child = *iter;
-		if (keyFrameIndex != -1)
+		if (value == 0)
 		{
 			if (child->typeOfValueToChange == VAL_TYPE_KEYFRAMES && child->keyFrameIndex == keyFrameIndex)
 				child->Floatify(denominator);
@@ -230,7 +223,7 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 	// special treatment for keyframes
 	if (valueFunction == &C4DynamicParticleValueProvider::KeyFrames)
 	{
-		for (int i = 0; i < keyFrameCount; ++i)
+		for (size_t i = 0; i < keyFrameCount; ++i)
 		{
 			FloatifyParameterValue(0, 1000.f, 2 * i); // even numbers are the time values
 			FloatifyParameterValue(0, denominator, 2 * i + 1); // odd numbers are the actual values
@@ -298,7 +291,7 @@ float C4DynamicParticleValueProvider::KeyFrames(C4DynamicParticle *forParticle)
 	// todo, implement smoothing
 	//if (smoothing == 0) // linear
 	{
-		for (int i = 0; i < keyFrameCount; ++i)
+		for (size_t i = 0; i < keyFrameCount; ++i)
 		{
 			if (age > keyFrames[i * 2]) continue;
 			assert(i >= 1);
@@ -362,15 +355,15 @@ void C4DynamicParticleValueProvider::SetType(C4ParticleValueProviderID what)
 	}
 }
 
-void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
+void C4DynamicParticleValueProvider::Set(const C4ValueArray &fromArray)
 {
 	startValue = endValue = 1.0f;
 	valueFunction = &C4DynamicParticleValueProvider::Const;
-	if (!fromArray) return;
-	int arraySize = fromArray->GetSize();
+
+	size_t arraySize = (size_t) fromArray.GetSize();
 	if (arraySize < 2) return;
 
-	int type = (*fromArray)[0].getInt();
+	int type = fromArray[0].getInt();
 
 	switch (type)
 	{
@@ -378,7 +371,7 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 2)
 		{
 			SetType(C4PV_Const);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::startValue);
 		}
 		break;
 
@@ -386,18 +379,18 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 3)
 		{
 			SetType(C4PV_Linear);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::startValue);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[2], &C4DynamicParticleValueProvider::endValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::endValue);
 		}
 		break;
 	case C4PV_Random:
 		if (arraySize >= 3)
 		{
 			SetType(C4PV_Random);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::startValue);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[2], &C4DynamicParticleValueProvider::endValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::endValue);
 			if (arraySize >= 4)
-				SetParameterValue(VAL_TYPE_INT, (*fromArray)[3], 0, &C4DynamicParticleValueProvider::rerollInterval);
+				SetParameterValue(VAL_TYPE_INT, fromArray[3], 0, &C4DynamicParticleValueProvider::rerollInterval);
 			alreadyRolled = 0;
 		}
 		break;
@@ -405,16 +398,16 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 2)
 		{
 			SetType(C4PV_Direction);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::startValue);
 		}
 		break;
 	case C4PV_Step:
 		if (arraySize >= 2)
 		{
 			SetType(C4PV_Step);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::startValue);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[2], &C4DynamicParticleValueProvider::currentValue);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[3], &C4DynamicParticleValueProvider::delay);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::currentValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[3], &C4DynamicParticleValueProvider::delay);
 			if (delay == 0.f) delay = 1.f;
 		}
 		break;
@@ -422,14 +415,15 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 5)
 		{
 			SetType(C4PV_KeyFrames);
-			SetParameterValue(VAL_TYPE_INT, (*fromArray)[1], 0,  &C4DynamicParticleValueProvider::smoothing);
-			keyFrames = (float*) malloc(sizeof(float) * (arraySize + 3)); // 2 additional information floats at the beginning and ending
+			SetParameterValue(VAL_TYPE_INT, fromArray[1], 0,  &C4DynamicParticleValueProvider::smoothing);
+			keyFrames.resize(arraySize + 4 - 1); // 2*2 additional information floats at the beginning and ending, offset the first array item, though
+
 			keyFrameCount = 0;
-			const int startingOffset = 2;
-			int i = startingOffset;
+			const size_t startingOffset = 2;
+			size_t i = startingOffset;
 			for (; i < arraySize; ++i)
 			{
-				SetParameterValue(VAL_TYPE_KEYFRAMES, (*fromArray)[i], 0, 0, 2 + i - startingOffset);
+				SetParameterValue(VAL_TYPE_KEYFRAMES, fromArray[(int32_t)i], 0, 0, 2 + i - startingOffset);
 			}
 			keyFrameCount = (i - startingOffset) / 2 + 2;
 
@@ -450,8 +444,8 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 		if (arraySize >= 3)
 		{
 			SetType(C4PV_Speed);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[1], &C4DynamicParticleValueProvider::speedFactor);
-			SetParameterValue(VAL_TYPE_FLOAT, (*fromArray)[2], &C4DynamicParticleValueProvider::startValue);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::speedFactor);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::startValue);
 		}
 		break;
 	default:
@@ -463,13 +457,11 @@ void C4DynamicParticleValueProvider::Set(C4ValueArray *fromArray)
 void C4DynamicParticleValueProvider::Set(const C4Value &value)
 {
 	C4ValueArray *valueArray= value.getArray();
-	if (valueArray != 0)
-	{
-		Set(valueArray);
-		return;
-	}
 
-	Set((float)value.getInt());
+	if (valueArray != 0)
+		Set(*valueArray);
+	else
+		Set((float)value.getInt());	
 }
 
 void C4DynamicParticleValueProvider::Set(float to)
@@ -587,7 +579,7 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		else if(&Strings.P[P_BlitMode] == key)
 		{
 			// needs to be constant
-			blitMode = property.getInt();
+			blitMode = (uint32_t) property.getInt();
 		}
 		else if(&Strings.P[P_Phase] == key)
 		{
@@ -604,6 +596,8 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 			SetCollisionFunc(property);
 		}
 	}
+
+	delete properties;
 }
 
 void C4DynamicParticleProperties::SetCollisionFunc(const C4Value &source)
@@ -714,7 +708,7 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 
 void C4DynamicParticleChunk::Clear()
 {
-	for (int i = 0; i < particleCount; ++i)
+	for (size_t i = 0; i < particleCount; ++i)
 	{
 		delete particles[i];
 	}
@@ -723,15 +717,16 @@ void C4DynamicParticleChunk::Clear()
 	vertexCoordinates.clear();
 }
 
-void C4DynamicParticleChunk::ReplaceParticle(int indexTo, int indexFrom)
+void C4DynamicParticleChunk::DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom)
 {
-	C4DynamicParticle *oldParticle = particles[indexTo];
+	C4DynamicParticle *oldParticle = particles[indexToReplace];
 
-	if (indexFrom != indexTo) // false when "replacing" the last one
+	// try to replace the soon-to-be empty slot in the array
+	if (indexFrom != indexToReplace) // false when "replacing" the last one
 	{
-		memcpy(&vertexCoordinates[indexTo * C4DynamicParticle::DrawingData::vertexCountPerParticle], &vertexCoordinates[indexFrom * C4DynamicParticle::DrawingData::vertexCountPerParticle], sizeof(C4DynamicParticle::DrawingData::Vertex) * C4DynamicParticle::DrawingData::vertexCountPerParticle);
-		particles[indexTo] = particles[indexFrom];
-		particles[indexTo]->drawingData.SetPointer(&vertexCoordinates[indexTo * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
+		std::copy(&vertexCoordinates[indexFrom * C4DynamicParticle::DrawingData::vertexCountPerParticle], &vertexCoordinates[indexFrom * C4DynamicParticle::DrawingData::vertexCountPerParticle] + C4DynamicParticle::DrawingData::vertexCountPerParticle, &vertexCoordinates[indexToReplace * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
+		particles[indexToReplace] = particles[indexFrom];
+		particles[indexToReplace]->drawingData.SetPointer(&vertexCoordinates[indexToReplace * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
 	}
 
 	delete oldParticle;
@@ -739,11 +734,11 @@ void C4DynamicParticleChunk::ReplaceParticle(int indexTo, int indexFrom)
 
 bool C4DynamicParticleChunk::Exec(C4Object *obj, float timeDelta)
 {
-	for (int i = 0; i < particleCount; ++i)
+	for (size_t i = 0; i < particleCount; ++i)
 	{
 		if (!particles[i]->Exec(obj, timeDelta, sourceDefinition))
 		{
-			ReplaceParticle(i, particleCount - 1);
+			DeleteAndReplaceParticle(i, particleCount - 1);
 			--particleCount;
 		}
 	}
@@ -767,17 +762,17 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	glVertexPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].x));
 	glTexCoordPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].u));
 	glColorPointer(4, GL_FLOAT, stride, &(vertexCoordinates[0].r));
-	glDrawElements(GL_TRIANGLE_STRIP, 5 * particleCount, GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
+	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
 }
 
-bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, int _blitMode)
+bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode) const
 {
 	return def == sourceDefinition && blitMode == _blitMode;
 }
 
 C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
 {
-	int currentIndex = particleCount++;
+	size_t currentIndex = particleCount++;
 	::DynamicParticles.PreparePrimitiveRestartIndices(particleCount);
 
 	if (currentIndex < particles.size())
@@ -793,7 +788,7 @@ C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
 			vertexCoordinates.reserve(C4DynamicParticle::DrawingData::vertexCountPerParticle + vertexCoordinates.capacity() * 2);
 
 			// update all existing particles' pointers..
-			for (int i = 0; i < currentIndex; ++i)
+			for (size_t i = 0; i < currentIndex; ++i)
 				particles[i]->drawingData.SetPointer(&vertexCoordinates[i * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
 		}
 		vertexCoordinates.resize(vertexCoordinates.size() + C4DynamicParticle::DrawingData::vertexCountPerParticle);
@@ -876,7 +871,7 @@ void C4DynamicParticleList::Clear()
 	accessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, int blitMode)
+C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode)
 {
 	accessMutex.Enter();
 
@@ -918,6 +913,7 @@ void C4DynamicParticleSystem::CalculationThread::Execute()
 void C4DynamicParticleSystem::ExecuteCalculation()
 {
 	frameCounterAdvancedEvent.WaitFor(INFINITE);
+	frameCounterAdvancedEvent.Reset();
 
 	int gameTime = Game.FrameCounter;
 	if (currentSimulationTime < gameTime)
@@ -943,7 +939,7 @@ C4DynamicParticleList *C4DynamicParticleSystem::GetNewParticleList(C4Object *for
 	C4DynamicParticleList *newList = 0;
 
 	particleListAccessMutex.Enter();
-	particleLists.push_back(C4DynamicParticleList(forObject));
+	particleLists.emplace_back(forObject);
 	newList = &particleLists.back();
 	particleListAccessMutex.Leave();
 
@@ -985,13 +981,20 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 		pxList = globalParticles;
 	}
 
+	// initialize the particle properties
+	// this is done here, because it would also be the right place to implement caching
 	C4DynamicParticleProperties particleProperties;
 	particleProperties.Set(properties);
 
+	// create a particle in the fitting chunk
 	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
+
+	// initialize some more properties
 	particle->properties = particleProperties;
+	// this will adjust the initial values of the (possibly cached) particle properties
 	particle->properties.Floatify();
 
+	// setup some more non-property attributes of the particle
 	particle->lifetime = particle->startingLifetime = lifetime;
 	particle->currentSpeedX = speedX.GetValue(particle);
 	particle->currentSpeedY = speedY.GetValue(particle);
@@ -1002,10 +1005,10 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 	return particle;
 }
 
-void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(int forAmount)
+void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 {
 	const uint32_t PRI = 0xffffffff;
-	int neededAmount = 5 * forAmount;
+	size_t neededAmount = 5 * forAmount;
 
 	if (primitiveRestartIndices.size() < neededAmount)
 	{
@@ -1018,10 +1021,10 @@ void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(int forAmount)
 				oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-2];
 			++oldValue;
 		}
-		int oldSize = primitiveRestartIndices.size();
+		size_t oldSize = primitiveRestartIndices.size();
 		primitiveRestartIndices.resize(neededAmount);
 
-		for (int i = oldSize; i < neededAmount; ++i)
+		for (size_t i = oldSize; i < neededAmount; ++i)
 		{
 			if (((i+1) % 5 == 0) && (i != 0))
 			{

@@ -595,6 +595,7 @@ void C4Game::Clear()
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
 	Particles.Clear();
+	DynamicParticles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
 	//::GraphicsResource.Clear();

@@ -17,6 +17,7 @@
 
 #include <C4Particles.h>
 #include <StdScheduler.h>
+#include <boost/noncopyable.hpp>
 
 #ifndef INC_C4DynamicParticles
 #define INC_C4DynamicParticles
@@ -58,7 +59,7 @@ protected:
 	union
 	{
 		int rerollInterval; // for Random
-		int keyFrameCount; // for KeyFrames
+		size_t keyFrameCount; // for KeyFrames
 		float delay; // for Step
 		float speedFactor; // for Speed
 	};
@@ -69,18 +70,18 @@ protected:
 		int smoothing; // for KeyFrames
 	};
 	
-	float *keyFrames;
+	std::vector<float> keyFrames;
 
 	C4DynamicParticleValueProviderFunction valueFunction;
 	bool isConstant;
 
-	std::list<C4DynamicParticleValueProvider*> childrenValueProviders;
+	std::vector<C4DynamicParticleValueProvider*> childrenValueProviders;
 
 	union
 	{
 		float C4DynamicParticleValueProvider::*floatValueToChange;
 		int C4DynamicParticleValueProvider::*intValueToChange;
-		int keyFrameIndex;
+		size_t keyFrameIndex;
 	};
 	enum
 	{
@@ -93,15 +94,14 @@ protected:
 public:
 	void UpdatePointerValue(C4DynamicParticle *particle, C4DynamicParticleValueProvider *parent);
 	void UpdateChildren(C4DynamicParticle *particle);
-	void FloatifyParameterValue(float C4DynamicParticleValueProvider::*value, float denominator, int keyFrameIndex = -1);
-	void SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal = 0, int keyFrameIndex = -1);
+	void FloatifyParameterValue(float C4DynamicParticleValueProvider::*value, float denominator, size_t keyFrameIndex = 0);
+	void SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
 
-	bool IsConstant() { return isConstant; }
-	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), keyFrames(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
+	bool IsConstant() const { return isConstant; }
+	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
 	~C4DynamicParticleValueProvider()
 	{
-		if (keyFrames != 0) free(keyFrames);
-		for (std::list<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
+		for (std::vector<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
 			delete *iter;
 	}
 	C4DynamicParticleValueProvider(const C4DynamicParticleValueProvider &other) { *this = other; }
@@ -113,7 +113,7 @@ public:
 
 	void SetType(C4ParticleValueProviderID what = C4PV_Const);
 	void Set(const C4Value &value);
-	void Set(C4ValueArray *fromArray);
+	void Set(const C4ValueArray &fromArray);
 	void Set(float to); // constant
 	float GetValue(C4DynamicParticle *forParticle);
 
@@ -144,7 +144,7 @@ public:
 	C4DynamicParticleCollisionCallback collisionCallback;
 	void SetCollisionFunc(const C4Value &source);
 
-	int blitMode;
+	uint32_t blitMode;
 
 	C4DynamicParticleProperties();
 
@@ -231,9 +231,9 @@ protected:
 
 	C4DynamicParticleProperties properties;
 public:
-	float GetAge() { return startingLifetime - lifetime; }
-	float GetLifetime() { return lifetime; }
-	float GetRelativeAge() { return 1.0f - (lifetime / startingLifetime);}
+	float GetAge() const { return startingLifetime - lifetime; }
+	float GetLifetime() const { return lifetime; }
+	float GetRelativeAge() const { return 1.0f - (lifetime / startingLifetime);}
 
 	void Init();
 	C4DynamicParticle() { Init(); }
@@ -257,13 +257,14 @@ class C4DynamicParticleChunk
 {
 private:
 	C4ParticleDef *sourceDefinition;
-	int blitMode;
+	uint32_t blitMode;
 
 	std::vector<C4DynamicParticle*> particles;
 	std::vector<C4DynamicParticle::DrawingData::Vertex> vertexCoordinates;
-	int particleCount;
+	size_t particleCount;
 
-	void ReplaceParticle(int indexTo, int indexFrom);
+	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
+	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
 public:
 	C4DynamicParticleChunk() : sourceDefinition(0), blitMode(0), particleCount(0)
 	{
@@ -277,14 +278,15 @@ public:
 	void Clear();
 	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	bool IsOfType(C4ParticleDef *def, int _blitMode);
+	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode) const;
 
 	C4DynamicParticle *AddNewParticle();
 
 	friend class C4DynamicParticleList;
 };
 
-class C4DynamicParticleList
+// this class must not be copied, because deleting the contained CStdCSec twice would be fatal
+class C4DynamicParticleList : public boost::noncopyable
 {
 private:
 	std::list<C4DynamicParticleChunk> particleChunks;
@@ -306,7 +308,7 @@ public:
 
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, int blitMode);
+	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode);
 };
 
 class C4DynamicParticleSystem
@@ -340,7 +342,7 @@ public:
 		globalParticles = 0;
 	}
 	// called to allow the particle system the simulation of another step
-	void CalculateNextStep() { frameCounterAdvancedEvent.Pulse(); }
+	void CalculateNextStep() { frameCounterAdvancedEvent.Set(); }
 
 	void Clear();
 	void DrawGlobalParticles(C4TargetFacet cgo) { if (globalParticles) globalParticles->Draw(cgo, 0); } 
@@ -349,7 +351,7 @@ public:
 	// releases up to 2 lists
 	void ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second = 0);
 
-	void PreparePrimitiveRestartIndices(int forSize);
+	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
 	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
