@@ -839,7 +839,7 @@ if(MSVC)
 endif()
 
 if(NOT USE_CONSOLE)
-	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
+	SET(JPEG_NAMES ${JPEG_NAMES} libjpeg jpeg-static)
 	include(FindJPEG)
 endif()
 include(FindPNG)
