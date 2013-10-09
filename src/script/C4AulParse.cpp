@@ -2764,8 +2764,21 @@ C4Value C4AulParse::Parse_ConstExpression(C4PropListStatic * parent, C4String * 
 	default:
 		UnexpectedToken("constant value");
 	}
-	// expect ',' (next global) or ';' (end of definition) now
 	Shift();
+	while (TokenType == ATT_DOT)
+	{
+		Shift();
+		Check(ATT_IDTF, "property name");
+		if (Type == PARSER)
+		{
+			C4String * k = ::Strings.FindString(Idtf);
+			if (!r.CheckConversion(C4V_PropList))
+				throw new C4AulParseError(this, FormatString("proplist access: proplist expected, got %s", r.GetTypeName()).getData());
+			if (!k || !r._getPropList()->GetPropertyByS(k, &r))
+				r.Set0();
+		}
+		Shift();
+	}
 	if (TokenType == ATT_OPERATOR)
 	{
 		C4ScriptOpDef * op = &C4ScriptOpMap[cInt];
