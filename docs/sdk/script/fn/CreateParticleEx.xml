@@ -28,22 +28,27 @@
         <param>
           <type>int</type>
           <name>speed_x</name>
-          <desc>Starting speed of the particle in x-direction.</desc>
+          <desc>Starting speed of the particle in x-direction. Can also be a value provider function.</desc>
         </param>
         <param>
           <type>int</type>
           <name>speed_y</name>
-          <desc>Starting speed of the particle in y-direction.</desc>
+          <desc>Starting speed of the particle in y-direction. Can also be a value provider function.</desc>
         </param>
 		<param>
           <type>int</type>
           <name>lifetime</name>
-          <desc>Time in frames that the particle will be alive before it is removed.</desc>
+          <desc>Time in frames that the particle will be alive before it is removed. Can also be a value provider function.</desc>
         </param>
 		<param>
           <type>proplist</type>
           <name>properties</name>
-          <desc>PropList with the particle attributes (see <emlink href="#attributes">below</emlink>).</desc>
+          <desc>PropList with the particle attributes (see the <emlink href="particle/index.html#attributes">particle documentation</emlink>).</desc>
+        </param>
+		<param>
+          <type>int</type>
+          <name>amount</name>
+          <desc>Amount of particles to create. Defaults to 1.</desc>
         </param>
       </params>
     </syntax>
@@ -67,10 +72,9 @@ var particles =
 	ForceX = <funclink>PV_Random</funclink>(-5, 5, 15),
 	Phase = <funclink>PV_Step</funclink>(1, 0, 10)
 };
-for (var i = 0; i &lt; 100; ++i)
-<funclink>CreateParticleEx</funclink>("Fire", 0, 0, RandomX(-30, 30), RandomX(-30, 30), RandomX(18, 38 * 5), particles);
+<funclink>CreateParticleEx</funclink>("Fire", 0, 0, <funclink>PV_Random(-200, 200)</funclink>, <funclink>PV_Random</funclink>(-200, 200), <funclink>PV_Random</funclink>(18, 38 * 5), particles, 100);
 			</code>
-			<text>Casts around 100 particles with a previously defined behavior.</text>
+			<text>Casts 100 particles with a previously defined behavior.</text>
 		  </example>
 	</examples>
 	<related>

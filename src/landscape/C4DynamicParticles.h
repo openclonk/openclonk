@@ -98,6 +98,7 @@ public:
 	void SetParameterValue(int type, const C4Value &value, float C4DynamicParticleValueProvider::*floatVal, int C4DynamicParticleValueProvider::*intVal = 0, size_t keyFrameIndex = 0);
 
 	bool IsConstant() const { return isConstant; }
+	bool IsRandom() const { return valueFunction == &C4DynamicParticleValueProvider::Random; }
 	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
 	~C4DynamicParticleValueProvider()
 	{
@@ -354,7 +355,7 @@ public:
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	C4DynamicParticle *Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+	void Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
 
 	friend class CalculationThread;
 };

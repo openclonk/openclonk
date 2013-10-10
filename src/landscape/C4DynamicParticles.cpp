@@ -252,9 +252,9 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 
 void C4DynamicParticleValueProvider::RollRandom()
 {
-	int range = (int)(100.f * (endValue - startValue));
-	int randomValue = SafeRandom(range);
-	currentValue = startValue + (float)randomValue / 100.0f;
+	float range = endValue - startValue;
+	float rnd = (float)(rand()) / (float)(RAND_MAX); 
+	currentValue = startValue + rnd * range;
 }
 
 float C4DynamicParticleValueProvider::GetValue(C4DynamicParticle *forParticle)
@@ -980,7 +980,7 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 	particleListAccessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, float lifetime, C4PropList *properties, C4DynamicParticleList *pxList, C4Object *object)
+void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4DynamicParticleList *pxList, C4Object *object)
 {
 	// todo: check amount etc
 
@@ -1000,23 +1000,31 @@ C4DynamicParticle *C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float 
 	C4DynamicParticleProperties particleProperties;
 	particleProperties.Set(properties);
 
-	// create a particle in the fitting chunk
-	C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
+	speedX.Floatify(10.f);
+	speedY.Floatify(10.f);
 
-	// initialize some more properties
-	particle->properties = particleProperties;
-	// this will adjust the initial values of the (possibly cached) particle properties
-	particle->properties.Floatify();
+	while (amount--)
+	{
+		if (speedX.IsRandom()) speedX.RollRandom();
+		if (speedY.IsRandom()) speedY.RollRandom();
+		if (lifetime.IsRandom()) lifetime.RollRandom();
+		
+		// create a particle in the fitting chunk
+		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
 
-	// setup some more non-property attributes of the particle
-	particle->lifetime = particle->startingLifetime = lifetime;
-	particle->currentSpeedX = speedX.GetValue(particle);
-	particle->currentSpeedY = speedY.GetValue(particle);
-	particle->drawingData.aspect = of_def->Aspect;
-	particle->SetPosition(x, y);
-	particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
+		// initialize some more properties
+		particle->properties = particleProperties;
+		// this will adjust the initial values of the (possibly cached) particle properties
+		particle->properties.Floatify();
 
-	return particle;
+		// setup some more non-property attributes of the particle
+		particle->lifetime = particle->startingLifetime = lifetime.GetValue(particle);
+		particle->currentSpeedX = speedX.GetValue(particle);
+		particle->currentSpeedY = speedY.GetValue(particle);
+		particle->drawingData.aspect = of_def->Aspect;
+		particle->SetPosition(x, y);
+		particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
+	}
 }
 
 void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)

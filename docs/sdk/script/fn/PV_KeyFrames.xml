@@ -38,7 +38,7 @@
       </params>
     </syntax>
     <desc>The value returned will be an interpolated value of the (smoothed) curve between the up to 4 key frames. PV_KeyFrames(0, 0, X, 1000, Y) is equivalent to PV_Linear(X, Y).</desc>
-    <remark>See the <emlink href="particles/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
       <funclink>CreateParticleEx</funclink>
       <funclink>PV_Linear</funclink>

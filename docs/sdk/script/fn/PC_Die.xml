@@ -11,7 +11,7 @@
       <rtype>array</rtype>
     </syntax>
     <desc>A particle collision function. The particle will die on collision.</desc>
-    <remark>See the <emlink href="particles/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
       <funclink>CreateParticleEx</funclink>
       <funclink>PV_Linear</funclink>

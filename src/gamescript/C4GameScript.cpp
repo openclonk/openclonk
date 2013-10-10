@@ -1533,11 +1533,12 @@ static bool FnCreateParticle(C4PropList * _this, C4String *szName, long iX, long
 	return true;
 }
 
-static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, int lifetime, C4PropList *properties, int attachment)
+static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount, int attachment)
 {
 	// safety
 	C4Object *obj = Object(_this);
 	if (obj && !_this->Status) return false;
+	if (amount <= 0) amount = 1;
 	
 	// local offset
 	if (obj)
@@ -1549,11 +1550,12 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(name));
 	if (!pDef) return false;
 	// construct data
-	C4DynamicParticleValueProvider valueSpeedX, valueSpeedY;
+	C4DynamicParticleValueProvider valueSpeedX, valueSpeedY, valueLifetime;
 	valueSpeedX.Set(speedX);
 	valueSpeedY.Set(speedY);
+	valueLifetime.Set(lifetime);
 	// create
-	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, (float)lifetime, properties, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
+	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
 	// success, even if not created
 	return true;
 }

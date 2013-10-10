@@ -49,6 +49,14 @@
 	<h id="properties">Properties</h>
     <text>Each particle has different attributes like position, lifetime, size and more. These are set by script when creating the particle.</text>
     <text>The following properties can be contained in a proplist passed to <funclink>CreateParticleEx</funclink>. For an example, see <funclink>CreateParticleEx</funclink></text>
+	<text>You can assign either constants to the properties (f.e. <code>R = 200</code>) or use certain value provider functions (f.e. <code>R = <funclink>PV_Linear</funclink>(200, 0)</code>). Available value provider functions are:
+	  <funclink>PV_Linear</funclink>
+      <funclink>PV_Direction</funclink>
+      <funclink>PV_Random</funclink>
+      <funclink>PV_Step</funclink>
+      <funclink>PV_Speed</funclink>
+      <funclink>PV_KeyFrames</funclink>
+	  </text>
     <text>
       <table>
         <caption id="particledef">Particle definition proplist</caption>

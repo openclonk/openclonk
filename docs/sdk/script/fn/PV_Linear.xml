@@ -23,7 +23,7 @@
       </params>
     </syntax>
     <desc>The value will go linearly from start_value to end_value over the life of the particle.</desc>
-    <remark>See the <emlink href="particles/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
       <funclink>CreateParticleEx</funclink>
       <funclink>PV_Direction</funclink>

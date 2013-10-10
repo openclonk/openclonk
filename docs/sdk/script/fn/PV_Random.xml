@@ -31,7 +31,7 @@
       </params>
     </syntax>
     <desc>The value will be a random number in the interval from start_value to (not including) end_value. The values in between are not whole integers, but are also in fraction of integers. This means that PV_Random(0, 1) can not only return one value (the 0) but a lot of different values in the interval between 0 and 1.</desc>
-    <remark>See the <emlink href="particles/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
+    <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
       <funclink>CreateParticleEx</funclink>
       <funclink>PV_Linear</funclink>
