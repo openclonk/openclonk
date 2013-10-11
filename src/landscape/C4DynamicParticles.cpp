@@ -924,6 +924,13 @@ void C4DynamicParticleSystem::CalculationThread::Execute()
 	DynamicParticles.ExecuteCalculation();
 }
 
+C4DynamicParticleSystem::CalculationThread::~CalculationThread()
+{
+	SignalStop();
+	DynamicParticles.CalculateNextStep();
+	StdThread::~StdThread();
+}
+
 void C4DynamicParticleSystem::ExecuteCalculation()
 {
 	frameCounterAdvancedEvent.WaitFor(INFINITE);

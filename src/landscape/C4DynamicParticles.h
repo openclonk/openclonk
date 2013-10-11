@@ -320,6 +320,7 @@ class C4DynamicParticleSystem
 		virtual void Execute();
 	public:
 		CalculationThread() { StdThread::Start(); }
+		~CalculationThread();
 	};
 
 private:
