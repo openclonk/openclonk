@@ -924,11 +924,10 @@ void C4DynamicParticleSystem::CalculationThread::Execute()
 	DynamicParticles.ExecuteCalculation();
 }
 
-C4DynamicParticleSystem::CalculationThread::~CalculationThread()
+C4DynamicParticleSystem::~C4DynamicParticleSystem()
 {
-	SignalStop();
-	DynamicParticles.CalculateNextStep();
-	StdThread::~StdThread();
+	calculationThread.SignalStop();
+	CalculateNextStep();
 }
 
 void C4DynamicParticleSystem::ExecuteCalculation()

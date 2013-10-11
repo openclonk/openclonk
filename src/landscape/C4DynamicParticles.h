@@ -320,7 +320,6 @@ class C4DynamicParticleSystem
 		virtual void Execute();
 	public:
 		CalculationThread() { StdThread::Start(); }
-		~CalculationThread();
 	};
 
 private:
@@ -343,6 +342,7 @@ public:
 		currentSimulationTime = 0;
 		globalParticles = 0;
 	}
+	~C4DynamicParticleSystem();
 	// called to allow the particle system the simulation of another step
 	void CalculateNextStep() { frameCounterAdvancedEvent.Set(); }
 
