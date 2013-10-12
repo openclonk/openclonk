@@ -4018,6 +4018,9 @@ void C4Object::ExecAction()
 				Exit(GetX(),GetY(),GetR());
 		}
 
+		// Object might have detached in Enter/Exit call
+		if (!Action.Target) break;
+
 		// Move position (so objects on solidmask move)
 		MovePosition(Action.Target->fix_x + Action.Target->Shape.VtxX[Action.Data&255]
 		              -Shape.VtxX[Action.Data>>8] - fix_x,
