@@ -110,7 +110,10 @@ private func InitEnvironment()
 			cloud.Plane = 600;
 			cloud->SetCloudAlpha(40);
 		}			
-	}		
+	}
+	
+	// Set a certain parallax.
+	SetSkyParallax(0, 20, 20);
 	
 	// Disasters: meteors and lightning.
 	Meteor->SetChance(2 * SCENOPT_Difficulty);

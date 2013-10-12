@@ -10,9 +10,7 @@
 
 
 // Scenario properties which can be set later by the lobby options.
-static const SCENOPT_Material = 3;
 static const SCENOPT_MapSize = 1;
-static const SCENOPT_Difficulty = 2;
 
 // Called be the engine: draw the complete map here.
 protected func InitializeMap(proplist map)
