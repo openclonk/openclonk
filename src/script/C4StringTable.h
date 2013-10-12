@@ -387,6 +387,7 @@ enum C4PropertyName
 	P_Stretch,
 	P_CollisionVertex,
 	P_OnCollision,
+	P_Distance,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

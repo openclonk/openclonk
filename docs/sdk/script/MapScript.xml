@@ -163,6 +163,32 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>If true, the last segment of the polygon is not drawn. Useful to draw lines. Only valid if Empty is true.</col>
           </row>
        </table></text></part>
+    <h>SCRIPTALGO_Lines</h><part>
+    <text>Returns one if the point is on regular stripes and zero otherwise.</text>
+    <text>Vector (X,Y) determines both width and direction of the stripes. So, for instance, if you want to draw vertical stripes of 10 pixels width and a gap of 5 pixels between them, you would set X=10, Y=0, Distance=15.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>X</col>
+            <col>0</col>
+            <col>X size of vector that points perpendicular to stripes.</col>
+          </row><row>
+            <col>Y</col>
+            <col>0</col>
+            <col>Y size of vector that points perpendicular to stripes.</col>
+          </row><row>
+            <col>OffX</col>
+            <col>0</col>
+            <col>Offset of stripes. If unspecified, stripes begin at (0,0).</col>
+          </row><row>
+            <col>OffY</col>
+            <col>0</col>
+            <col>Offset of stripes.</col>
+          </row><row>
+            <col>Distance</col>
+            <col>2*Sqrt(X*X+Y*Y)</col>
+            <col>Distance between two stripes. Includes the stripe width!</col>
+          </row>
+       </table></text></part>
     <h>SCRIPTALGO_And</h><part>
     <text>Returns zero if any of the operands is zero. Otherwise, returns the value of the last operand. If there are zero operands, always returns zero.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
