@@ -321,7 +321,8 @@ int32_t mouseButtonFromEvent(NSEvent* event, DWORD* modifierFlags)
 		{
 			for (NSString* fileName in files)
 			{
-				viewport->DropFile([fileName cStringUsingEncoding:NSUTF8StringEncoding], [sender draggingLocation].x, [sender draggingLocation].y);
+				auto loc = NSMakePoint([sender draggingLocation].x, self.bounds.size.height - [sender draggingLocation].y);
+				viewport->DropFile([fileName cStringUsingEncoding:NSUTF8StringEncoding], loc.x, loc.y);
 			}
 		}
 	}
