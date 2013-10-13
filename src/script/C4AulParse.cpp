@@ -203,6 +203,7 @@ private:
 
 	int GetStackValue(C4AulBCCType eType, intptr_t X = 0);
 	int AddBCC(C4AulBCCType eType, intptr_t X = 0);
+	void DebugChunk();
 	void RemoveLastBCC();
 	C4V_Type GetLastRetType(C4V_Type to); // for warning purposes
 
@@ -886,6 +887,12 @@ int C4AulParse::GetStackValue(C4AulBCCType eType, intptr_t X)
 	return 0;
 }
 
+void C4AulParse::DebugChunk()
+{
+	if (C4AulDebug::GetDebugger())
+		AddBCC(AB_DEBUG);
+}
+
 int C4AulParse::AddBCC(C4AulBCCType eType, intptr_t X)
 {
 	if (Type != PARSER) return -1;
@@ -1480,9 +1487,8 @@ void C4AulParse::Parse_Function()
 	C4AulBCC * CPos = Fn->GetLastCode();
 	if (!CPos || CPos->bccType != AB_RETURN || fJump)
 	{
-		if (C4AulDebug::GetDebugger())
-			AddBCC(AB_DEBUG);
 		AddBCC(AB_NIL);
+		DebugChunk();
 		AddBCC(AB_RETURN);
 	}
 	// add separator
@@ -1547,13 +1553,14 @@ void C4AulParse::Parse_Block()
 	{
 		Parse_Statement();
 	}
+	DebugChunk();
 	Shift();
 }
 
 void C4AulParse::Parse_Statement()
 {
-	if (C4AulDebug::GetDebugger())
-		AddBCC(AB_DEBUG);
+	if (TokenType != ATT_BLOPEN)
+		DebugChunk();
 	switch (TokenType)
 	{
 		// do we have a block start?

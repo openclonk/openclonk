@@ -1953,6 +1953,17 @@ bool C4Game::ReloadParticle(const char *szName)
 
 bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4ValueNumbers * numbers)
 {
+	// Activate debugger if requested
+	// needs to happen before any scripts are compiled to bytecode so AB_DEBUG chunks will be inserted
+	if (DebugPort)
+	{
+		if (Parameters.isLeague())
+			Log("Debugger disabled. Not allowed in league.");
+		else
+			if (!::C4AulDebug::InitDebug(DebugPassword.getData(), DebugHost.getData()))
+				return false;
+	}
+
 	if (!fLoadSection)
 	{
 
@@ -2225,16 +2236,10 @@ bool C4Game::LinkScriptEngine()
 
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
-
-	// Activate debugger if requested
-	if (DebugPort)
-	{
-		if (Parameters.isLeague())
-			Log("Debugger disabled. Not allowed in league.");
-		else
-			if (!::C4AulDebug::InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), !!DebugWait))
-				return false;
-	}
+	
+	if (C4AulDebug *pDebug = C4AulDebug::GetDebugger())
+		if (!pDebug->Listen(DebugPort, !!DebugWait))
+			return false;
 
 	return true;
 }

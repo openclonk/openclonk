@@ -30,7 +30,8 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 public:
 	C4AulDebug();
 	~C4AulDebug();
-	static bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+	static bool InitDebug(const char *szPassword, const char *szHost);
+	bool Listen(uint16_t iPort, bool fWait);
 	static inline C4AulDebug *GetDebugger() { return pDebug; }
 
 private:
@@ -82,16 +83,22 @@ public:
 	void ControlScriptEvaluated(const char* script, const char* result);
 
 	void OnLog(const char *szLine);
-	void DebugStep(C4AulBCC *pCPos);
-	void DebugStepIn(C4AulBCC *pCPos);
-	void DebugStepOut(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal);
+	void DebugStep(C4AulBCC *pCPos, C4Value* stackTop);
 
 private:
-	void StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx = NULL, C4Value *pRVal = NULL);
+	struct ProcessLineResult
+	{
+		bool okay;
+		std::string answer;
+		ProcessLineResult(bool okay, const std::string answer)
+			: okay(okay), answer(answer) {}
+	};
+
+	void StepPoint(C4AulBCC *pCPos, C4Value *stackTop = NULL);
 
 	StdStrBuf FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos);
 
-	void ProcessLine(const StdStrBuf &Line);
+	ProcessLineResult ProcessLine(const StdStrBuf &Line);
 
 	bool SendLine(const char *szType, const char *szData = NULL);
 };

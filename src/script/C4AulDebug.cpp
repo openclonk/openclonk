@@ -46,7 +46,7 @@ C4AulDebug::~C4AulDebug()
 	if (pDebug == this) pDebug = NULL;
 }
 
-bool C4AulDebug::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
+bool C4AulDebug::InitDebug(const char *szPassword, const char *szHost)
 {
 	// Create debug object
 	if (!pDebug) pDebug = new C4AulDebug();
@@ -54,17 +54,22 @@ bool C4AulDebug::InitDebug(uint16_t iPort, const char *szPassword, const char *s
 	pDebug->SetPassword(szPassword);
 	pDebug->SetAllowed(szHost);
 	pDebug->SetEngine(&AulExec);
-	if (!pDebug->Init(iPort))
+	return true;
+}
+
+bool C4AulDebug::Listen(uint16_t iPort, bool fWait)
+{
+	if (!Init(iPort))
 		{ LogFatal("C4Aul debugger failed to initialize!"); return false; }
 	// Log
 	LogF("C4Aul debugger initialized on port %d", iPort);
 	// Add to application
-	Application.Add(pDebug);
+	Application.Add(this);
 	// Wait for connection
 	if (fWait)
 	{
 		Log("C4Aul debugger waiting for connection...");
-		while (!pDebug->isConnected())
+		while (!isConnected())
 			if (!Application.ScheduleProcs())
 				return false;
 	}
@@ -100,7 +105,11 @@ size_t C4AulDebug::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &add
 	StdStrBuf Buf; Buf.Copy(getBufPtr<char>(rInBuf), iLength);
 	// Password line?
 	if (fConnected)
-		ProcessLine(Buf);
+	{
+		ProcessLineResult result = ProcessLine(Buf);
+		// Send answer
+		SendLine(result.okay ? "OK" : "ERR", result.answer.length() > 0 ? result.answer.c_str() : NULL);
+	}
 	else if (!Password.getSize() || Password == Buf)
 	{
 		fConnected = true;
@@ -196,7 +205,7 @@ void C4AulDebug::OnLog(const char *szLine)
 	SendLine("LOG", szLine);
 }
 
-void C4AulDebug::ProcessLine(const StdStrBuf &Line)
+C4AulDebug::ProcessLineResult C4AulDebug::ProcessLine(const StdStrBuf &Line)
 {
 	// Get command
 	StdStrBuf Cmd;
@@ -206,12 +215,8 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	if (*szData) szData++;
 	// Identify command
 	const char *szCmd = Cmd.getData();
-	bool fOkay = true;
-	const char *szAnswer = NULL;
 	if (SEqualNoCase(szCmd, "HELP"))
-	{
-		fOkay = false; szAnswer = "Yeah, like I'm going to explain that /here/";
-	}
+		return ProcessLineResult(false, "Yeah, like I'm going to explain that /here/");
 	else if (SEqualNoCase(szCmd, "BYE") || SEqualNoCase(szCmd, "QUIT"))
 		C4NetIOTCP::Close(PeerAddr);
 	else if (SEqualNoCase(szCmd, "SAY"))
@@ -238,12 +243,12 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		if (Game.IsPaused())
 		{
 			Game.Unpause();
-			szAnswer = "Game unpaused.";
+			return ProcessLineResult(true, "Game unpaused.");
 		}
 		else
 		{
 			Game.Pause();
-			szAnswer = "Game paused.";
+			return ProcessLineResult(true, "Game paused.");
 		}
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
@@ -256,65 +261,58 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	// toggle breakpoint
 	else if (SEqualNoCase(szCmd, "TBR"))
 	{
+		using namespace std;
 		// FIXME: this doesn't find functions which were included/appended
-		StdStrBuf scriptPath;
-		scriptPath.CopyUntil(szData, ':');
-		const char* lineStart = szData+1+scriptPath.getLength();
-		int line = strtol(szData+1+scriptPath.getLength(), const_cast<char**>(&lineStart), 10);
+		string scriptPath = szData;
+		size_t colonPos = scriptPath.find(':');
+		if (colonPos == string::npos)
+			return ProcessLineResult(false, "Missing line in breakpoint request");
+		int line = atoi(&scriptPath[colonPos+1]);
+		scriptPath.erase(colonPos);
 
-		C4AulScript* script;
+		C4AulScript *script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
-			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.getData()))
+			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.c_str()))
 				break;
 		}
 
-		if (script && script->GetScriptHost())
+		auto sh = script ? script->GetScriptHost() : NULL;
+		if (sh)
 		{
-			C4AulBCC* foundDebugChunk = NULL;
-			C4ScriptHost * sh = script->GetScriptHost();
-			const char* scriptText = sh->GetScript();
-			for (C4String *pFn = sh->GetPropList()->EnumerateOwnFuncs(); pFn; pFn = sh->GetPropList()->EnumerateOwnFuncs(pFn))
+			C4AulBCC * found = NULL;
+			for (auto script = ::ScriptEngine.Child0; script; script = script->Next)
+			for (C4PropList *props = script->GetPropList(); props; props = props->GetPrototype())
+			for (auto fname = props->EnumerateOwnFuncs(); fname; fname = props->EnumerateOwnFuncs(fname))
 			{
-				C4AulScriptFunc *pSFunc = sh->GetPropList()->GetFunc(pFn)->SFunc();
-				while (pSFunc)
+				C4Value val;
+				if (!props->GetPropertyByS(fname, &val)) continue;
+				auto func = val.getFunction();
+				if (!func) continue;
+				auto sfunc = func->SFunc();
+				if (!sfunc) continue;
+				if (sfunc->pOrgScript != sh) continue;
+				for (auto chunk = sfunc->GetCode(); chunk->bccType != AB_EOFN; chunk++)
 				{
-					for (C4AulBCC* chunk = pSFunc->GetCode(); chunk->bccType != AB_EOFN; chunk++)
+					if (chunk->bccType == AB_DEBUG)
 					{
-						if (chunk->bccType == AB_DEBUG)
+						int lineOfThisOne = sfunc->GetLineOfCode(chunk);
+						if (lineOfThisOne == line)
 						{
-							int lineOfThisOne = pSFunc->GetLineOfCode(chunk);
-							if (lineOfThisOne == line)
-							{
-								foundDebugChunk = chunk;
-								goto Done;
-							}
-							/*else {
-							  DebugLogF("Debug chunk at %d", lineOfThisOne);
-							}*/
+							found = chunk;
+							goto Found;
 						}
 					}
-					pSFunc = pSFunc->OwnerOverloaded ? pSFunc->OwnerOverloaded->SFunc() : 0;
 				}
 			}
-Done:
-			if (foundDebugChunk)
-			{
-				foundDebugChunk->Par.i = !foundDebugChunk->Par.i; // activate breakpoint
-			}
+			Found:
+			if (found)
+				found->Par.i = !found->Par.i; // activate breakpoint
 			else
-			{
-				szAnswer = "Can't set breakpoint (wrong line?)";
-				fOkay = false;
-			}
+				return ProcessLineResult(false, "Can't set breakpoint (wrong line?)");
 		}
 		else
-		{
-			fOkay = false;
-			szAnswer = "Can't find script";
-		}
-
-
+			return ProcessLineResult(false, "Can't find script");
 	}
 	else if (SEqualNoCase(szCmd, "SST"))
 	{
@@ -347,12 +345,9 @@ Done:
 		SendLine("VAR", output.getData());
 	}
 	else
-	{
-		fOkay = false;
-		szAnswer = "Can't do that";
-	}
-	// Send answer
-	SendLine(fOkay ? "OK" : "ERR", szAnswer);
+		return ProcessLineResult(false, "Can't do that");
+	
+	return ProcessLineResult(true, "");
 }
 
 bool C4AulDebug::SendLine(const char *szType, const char *szData)
@@ -361,7 +356,7 @@ bool C4AulDebug::SendLine(const char *szType, const char *szData)
 	return Send(C4NetIOPacket(Line.getData(), Line.getSize(), false, PeerAddr));
 }
 
-void C4AulDebug::DebugStep(C4AulBCC *pCPos)
+void C4AulDebug::DebugStep(C4AulBCC *pCPos, C4Value* stackTop)
 {
 	// Get top context
 	//C4AulScriptContext *pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
@@ -376,59 +371,16 @@ void C4AulDebug::DebugStep(C4AulBCC *pCPos)
 	if (pCPos->Par.i)
 		eState = DS_Step;
 
-	StepPoint(pCPos);
+	StepPoint(pCPos, stackTop);
 }
 
-void C4AulDebug::DebugStepIn(C4AulBCC *pCPos)
-{
-
-}
-
-void C4AulDebug::DebugStepOut(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal)
-{
-
-	// Ignore if already suspended, see above.
-	if (eState == DS_Stop)
-		return;
-
-	// This counts as a regular step point
-	StepPoint(pCPos, pRetCtx, pRVal);
-
-}
-
-void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value *pRVal)
+void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4Value *stackTop)
 {
 
 	// Maybe got a command in the meantime?
 	Execute(0);
 
-	// Get current script context
 	int iCallDepth = pExec->GetContextDepth();
-	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
-
-	// When we're stepping out of a script function, the context of the returning
-	// function hasn't been removed yet.
-	if (pCtx == pRetCtx)
-	{
-		iCallDepth--;
-		// Check if we are returning to a script function
-		if (pCtx->Return)
-			pCtx--;
-		else
-			pCtx = NULL;
-	}
-
-	// Stepped out?
-	if (pRVal && eState != DS_Go && iCallDepth <= iStepCallDepth)
-	{
-		StdStrBuf FuncDump = pRetCtx->ReturnDump();
-		StdStrBuf ReturnDump = pRVal->GetDataString();
-		SendLine("RET", FormatString("%s = %s", FuncDump.getData(), ReturnDump.getData()).getData());
-
-		// Ignore as step point if we didn't "really" step out
-		if (iCallDepth >= iStepCallDepth) return;
-	}
-
 	// Stop?
 	switch (eState)
 	{
@@ -451,6 +403,10 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 			return;
 		break;
 	}
+	
+	// Get current script context
+	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
+	//bool isReturn = pCPos[1].bccType = AB_RETURN;
 
 	// Let's stop here
 	eState = DS_Stop;
