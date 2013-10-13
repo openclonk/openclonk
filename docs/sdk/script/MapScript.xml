@@ -62,8 +62,8 @@ var copy_layer = Duplicate();
 Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
 </code>
     <text>Note: If you are using the target layer in a drawing command, always draw from a copy. Otherwise, the result is undefined.</text>
-    <h>SCRIPTALGO_Layer</h><part>
-    <text>Returns the pixel value at the x,y position of the given layer. Instead of passing a SCRIPTALGO_Layer prop list, layers can also be passed directly as algorithms.</text>
+    <h>MAPALGO_Layer</h><part>
+    <text>Returns the pixel value at the x,y position of the given layer. Instead of passing a MAPALGO_Layer prop list, layers can also be passed directly as algorithms.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
             <col>Layer</col>
@@ -71,7 +71,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>The layer from which pixel values are taken.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_RndChecker</h><part>
+    <h>MAPALGO_RndChecker</h><part>
     <text>Returns values from a checkerboard pattern of rectangles that are filled with ones or zeros.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -96,7 +96,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>If true, the pattern always starts at position (0,0). Otherwise, it is offset by a random phase.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Rect</h><part>
+    <h>MAPALGO_Rect</h><part>
     <text>Returns one if the position is in a given rectangle and zero otherwise.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -117,7 +117,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Height of rectangle.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Ellipsis</h><part>
+    <h>MAPALGO_Ellipsis</h><part>
     <text>Returns one if the position is in a given ellipsis and zero otherwise.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -138,7 +138,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Vertical radius of ellipsis</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Polygon</h><part>
+    <h>MAPALGO_Polygon</h><part>
     <text>Returns one if the position is in a given polygon or on its border and zero otherwise.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -163,7 +163,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>If true, the last segment of the polygon is not drawn. Useful to draw lines. Only valid if Empty is true.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Lines</h><part>
+    <h>MAPALGO_Lines</h><part>
     <text>Returns one if the point is on regular stripes and zero otherwise.</text>
     <text>Vector (X,Y) determines both width and direction of the stripes. So, for instance, if you want to draw vertical stripes of 10 pixels width and a gap of 5 pixels between them, you would set X=10, Y=0, Distance=15.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
@@ -189,7 +189,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Distance between two stripes. Includes the stripe width!</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_And</h><part>
+    <h>MAPALGO_And</h><part>
     <text>Returns zero if any of the operands is zero. Otherwise, returns the value of the last operand. If there are zero operands, always returns zero.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -198,7 +198,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Array of algorithms that are tested.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Or</h><part>
+    <h>MAPALGO_Or</h><part>
     <text>Returns the first operand that is nonzero. If all operands are zero, returns zero. If there are zero operands, always returns zero.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -207,7 +207,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Array of algorithms that are tested.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Not</h><part>
+    <h>MAPALGO_Not</h><part>
     <text>Returns one if the operand is zero. Returns zero otherwise.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -216,7 +216,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Algorithms that is negated.</col>
           </row>
         </table></text></part>
-    <h>SCRIPTALGO_Xor</h><part>
+    <h>MAPALGO_Xor</h><part>
     <text>If exactly one of the two operands is nonzero, returns that operand. Otherwise, returns zero.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -225,7 +225,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Array of two algorithms that are tested.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Offset</h><part>
+    <h>MAPALGO_Offset</h><part>
     <text>Moves its operand by an offset.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -242,7 +242,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Vertical offset downwards.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Scale</h><part>
+    <h>MAPALGO_Scale</h><part>
     <text>Scales its operand by a point.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -267,7 +267,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Y position of fixed point that remains in position.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Rotate</h><part>
+    <h>MAPALGO_Rotate</h><part>
     <text>Rotates its operand around a point.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -288,7 +288,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Y position of fixed point that remains in position.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Turbulence</h><part>
+    <h>MAPALGO_Turbulence</h><part>
     <text>Jumbles its operand around by moving points by a randomized offset.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -309,7 +309,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Number of times each point is pushed around. The amplitude of the n'th successive push is reduced by 1/n.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Border</h><part>
+    <h>MAPALGO_Border</h><part>
     <text>Returns true for positions that lie on an inner or outer border of an operand. An inner border is defined as a position where the operand is nonzero and a position where it is zero lies within inner border width range. An outer border is defined as a position where the operand is zero and a position where it is nonzero lies within outer border width range. Note that borders are only searched in four directions (left, right, upwards, downwards) and not diagonally. This means that for a square, outer borders to not catch the corners.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>
@@ -338,7 +338,7 @@ Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
             <col>Border width downwards. Definition like Wdt. Falls back to Wdt if not specified.</col>
           </row>
        </table></text></part>
-    <h>SCRIPTALGO_Filter</h><part>
+    <h>MAPALGO_Filter</h><part>
     <text>Return only pixel values of the operand that match the mask specification. Returns zero for other pixels.</text>
       <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
           <row>

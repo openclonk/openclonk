@@ -193,7 +193,7 @@ C4MapScriptAlgoLines::C4MapScriptAlgoLines(const C4PropList *props)
 {
 	// Get MAPALGO_Lines properties
 	lx = props->GetPropertyInt(P_X);
-	ly = props->GetPropertyInt(P_X);
+	ly = props->GetPropertyInt(P_Y);
 	if (!lx && !ly) throw new C4AulExecError("C4MapScriptAlgoLines: Invalid direction vector. Either \"X\" or \"Y\" must be nonzero!");
 	ox = props->GetPropertyInt(P_OffX);
 	oy = props->GetPropertyInt(P_OffY);

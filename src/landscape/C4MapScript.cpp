@@ -518,6 +518,7 @@ void C4MapScriptHost::InitFunctionMap(C4AulScriptEngine *pEngine)
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Xor", C4VInt(MAPALGO_Xor));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Not", C4VInt(MAPALGO_Not));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Scale", C4VInt(MAPALGO_Scale));
+	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Rotate", C4VInt(MAPALGO_Rotate));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Offset", C4VInt(MAPALGO_Offset));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Rect", C4VInt(MAPALGO_Rect));
 	::ScriptEngine.RegisterGlobalConstant("MAPALGO_Ellipsis", C4VInt(MAPALGO_Ellipsis));
