@@ -28,7 +28,6 @@ HomeBaseMaterial=Clonk=1
 
 [Landscape]
 Sky=Clouds1
-SkyScrollMode=1
 TopOpen=1
 BottomOpen=1
 LeftOpen=2400

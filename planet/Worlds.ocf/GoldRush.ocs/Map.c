@@ -15,7 +15,7 @@ static const SCENOPT_MapSize = 1;
 protected func InitializeMap(proplist map)
 {
 	// Retrieve the settings according to the MapSize setting.
-	var map_size, main_size, nr_islands;
+	var map_size;
 	if (SCENOPT_MapSize == 1)
 		map_size = [100, 75]; 
 	if (SCENOPT_MapSize == 2)
