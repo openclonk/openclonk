@@ -1,9 +1,6 @@
 /*-- Arrow target --*/
 
 local gate;
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
 
 protected func Initialize()
 {
@@ -51,6 +48,7 @@ protected func Tumble()
 }
 
 func Definition(def) {
+	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 
 Fall = {

@@ -85,8 +85,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	return 1;
 }
 
-public func HoldingEnabled() { return true; }
-
 func ControlUseHolding(object clonk, ix, iy)
 {
 	var angle = Angle(0,0,ix,iy);

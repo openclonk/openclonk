@@ -15,8 +15,6 @@ local fAiming;
 local hook;
 local hook_attach;
 
-public func GetCarryMode() {  if(hook && hook->Contained() == nil) return CARRY_Back; return CARRY_HandBack; }
-
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 public func GetCarryBone2(clonk) { return "main2"; }
 public func GetCarryMode(clonk) { if(hook && hook->Contained() == nil) return CARRY_Back; if(fAiming >= 0) return CARRY_Grappler; }

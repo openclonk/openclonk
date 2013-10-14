@@ -3,10 +3,6 @@
 local ysin;
 local load;
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
 protected func Initialize()
 {
 	ysin = 0;
@@ -61,6 +57,7 @@ func FxFlyOffTimer(target, effect, time)
 }
 
 func Definition(def) {
+	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 
 Float = {

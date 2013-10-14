@@ -1,9 +1,5 @@
 /*-- Arrow target --*/
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
 protected func Initialize()
 {
 	SetAction("Attach");
@@ -44,6 +40,7 @@ protected func Tumble()
 }
 
 func Definition(def) {
+	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 
 Fall = {
