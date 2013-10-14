@@ -20,9 +20,8 @@ func Place(int amount, proplist rectangle, proplist settings, bool foreground)
 		{
 			plants[GetLength(plants)] = plant;
 			if (settings.keep_area)
-				plant->KeepArea(rectangle);
+				plant->~KeepArea(rectangle);
 		}
-		plant = nil;
 	}
 	
 	// Coniferous
