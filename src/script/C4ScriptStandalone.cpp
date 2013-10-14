@@ -62,9 +62,7 @@ C4MaterialMap::~C4MaterialMap() {}
 void C4MaterialMap::UpdateScriptPointers() {}
 
 C4AulDebug *C4AulDebug::pDebug;
-void C4AulDebug::DebugStepIn(C4AulBCC*) {}
-void C4AulDebug::DebugStepOut(C4AulBCC*, C4AulScriptContext*, C4Value*) {}
-void C4AulDebug::DebugStep(C4AulBCC*) {}
+void C4AulDebug::DebugStep(C4AulBCC*,C4Value*) {}
 
 C4GameObjects Objects;
 C4GameObjects::C4GameObjects() {}
