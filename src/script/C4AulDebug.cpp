@@ -358,9 +358,6 @@ bool C4AulDebug::SendLine(const char *szType, const char *szData)
 
 void C4AulDebug::DebugStep(C4AulBCC *pCPos, C4Value* stackTop)
 {
-	// Get top context
-	//C4AulScriptContext *pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
-
 	// Already stopped? Ignore.
 	// This means we are doing some calculation with suspended script engine.
 	// We do /not/ want to have recursive suspensions...
@@ -408,6 +405,13 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4Value *stackTop)
 	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
 	//bool isReturn = pCPos[1].bccType = AB_RETURN;
 
+	if (!fConnected)
+	{
+		// not connected anymore? nevermind
+		eState = DS_Go;
+		return;
+	}
+
 	// Let's stop here
 	eState = DS_Stop;
 	iStepCallDepth = iCallDepth;
@@ -432,7 +436,7 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4Value *stackTop)
 	SendLine("POS", StackTrace.front()->getData());
 
 	// Suspend until we get some command
-	while (eState == DS_Stop)
+	while (fConnected && eState == DS_Stop)
 		if (!Application.ScheduleProcs())
 		{
 			Close();
