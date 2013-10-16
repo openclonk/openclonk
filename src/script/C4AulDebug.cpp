@@ -368,15 +368,6 @@ void C4AulDebug::DebugStep(C4AulBCC *pCPos, C4Value* stackTop)
 	if (pCPos->Par.i)
 		eState = DS_Step;
 
-	StepPoint(pCPos, stackTop);
-}
-
-void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4Value *stackTop)
-{
-
-	// Maybe got a command in the meantime?
-	Execute(0);
-
 	int iCallDepth = pExec->GetContextDepth();
 	// Stop?
 	switch (eState)
@@ -411,6 +402,9 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4Value *stackTop)
 		eState = DS_Go;
 		return;
 	}
+	
+	// Maybe got a command in the meantime?
+	Execute(0);
 
 	// Let's stop here
 	eState = DS_Stop;

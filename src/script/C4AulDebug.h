@@ -94,8 +94,6 @@ private:
 			: okay(okay), answer(answer) {}
 	};
 
-	void StepPoint(C4AulBCC *pCPos, C4Value *stackTop = NULL);
-
 	StdStrBuf FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos);
 
 	ProcessLineResult ProcessLine(const StdStrBuf &Line);
