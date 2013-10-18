@@ -129,7 +129,7 @@ void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	Active=true;
 	Output=cgo;
 	Startup=fStartup;
-	iLineHgt=::GraphicsResource.FontRegular.iLineHgt;
+	iLineHgt=::GraphicsResource.FontRegular.GetLineHeight();
 	LogBuffer.SetLBWidth(Output.Wdt);
 
 	if (!Startup)

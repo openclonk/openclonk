@@ -1536,7 +1536,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 						fctCursor.Draw(cgo.Surface,cgo.X+cox,cgo.Y+coy,cphase);
 						if (cursor->Info)
 						{
-							int32_t texthgt = ::GraphicsResource.FontRegular.iLineHgt;
+							int32_t texthgt = ::GraphicsResource.FontRegular.GetLineHeight();
 							StdStrBuf str;
 							if (cursor->Info->Rank>0)
 							{
@@ -1708,7 +1708,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 
 		// Fullscreen
 		pDraw->Blit(FullScreen.pSurface,
-		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
+		                        0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.GetLineHeight()),
 		                        sfcPic,0,0,iSfcWdt,iSfcHgt);
 
 		bool fOkay=true;

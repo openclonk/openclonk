@@ -132,8 +132,9 @@ protected:
 	}
 	C4Facet &GetUnicodeCharacterFacet(uint32_t c);
 
-public:
 	int iLineHgt;        // height of one line of font (in pixels)
+
+public:
 	// draw ine line of text
 	void DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom);
 

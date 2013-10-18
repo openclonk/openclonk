@@ -316,7 +316,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 	{
 		pDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 		                           FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
-		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
+		                           C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.GetLineHeight()*2,
 		                           C4Draw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
 	}

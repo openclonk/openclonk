@@ -931,7 +931,7 @@ bool C4Draw::TextOut(const char *szText, CStdFont &rFont, float fZoom, C4Surface
 {
 	C4Markup Markup(true);
 	static char szLinebuf[2500+1];
-	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.iLineHgt))
+	for (int cnt=0; SCopySegmentEx(szText,cnt,szLinebuf,fDoMarkup ? '|' : '\n','\n',2500); cnt++,iTy+=int(fZoom*rFont.GetLineHeight()))
 		if (!StringOut(szLinebuf,sfcDest,iTx,iTy,dwFCol,byForm,fDoMarkup,Markup,&rFont,fZoom)) return false;
 	return true;
 }
