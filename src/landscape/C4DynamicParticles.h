@@ -48,6 +48,7 @@ class C4DynamicParticleValueProvider;
 typedef float (C4DynamicParticleValueProvider::*C4DynamicParticleValueProviderFunction) (C4DynamicParticle*);
 typedef bool (C4DynamicParticleProperties::*C4DynamicParticleCollisionCallback) (C4DynamicParticle*);
 
+#ifndef USE_CONSOLE
 class C4DynamicParticleValueProvider
 {
 protected:
@@ -231,6 +232,7 @@ protected:
 	float lifetime, startingLifetime;
 
 	C4DynamicParticleProperties properties;
+
 public:
 	float GetAge() const { return startingLifetime - lifetime; }
 	float GetLifetime() const { return lifetime; }
@@ -311,9 +313,11 @@ public:
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode);
 };
+#endif
 
 class C4DynamicParticleSystem
 {
+#ifndef USE_CONSOLE
 	class CalculationThread : public StdThread
 	{
 	protected:
@@ -321,6 +325,7 @@ class C4DynamicParticleSystem
 	public:
 		CalculationThread() { StdThread::Start(); }
 	};
+	friend class CalculationThread;
 
 private:
 	std::vector<uint32_t> primitiveRestartIndices;
@@ -336,29 +341,44 @@ private:
 	void ExecuteCalculation();
 
 	C4DynamicParticleList *globalParticles;
+#endif
+
 public:
+#ifndef USE_CONSOLE
 	C4DynamicParticleSystem() : frameCounterAdvancedEvent(false)
 	{
 		currentSimulationTime = 0;
 		globalParticles = 0;
 	}
 	~C4DynamicParticleSystem();
+#endif
 	// called to allow the particle system the simulation of another step
-	void CalculateNextStep() { frameCounterAdvancedEvent.Set(); }
+	void CalculateNextStep()
+	{
+#ifndef USE_CONSOLE
+		frameCounterAdvancedEvent.Set();
+#endif
+	}
 
 	void Clear();
-	void DrawGlobalParticles(C4TargetFacet cgo) { if (globalParticles) globalParticles->Draw(cgo, 0); } 
+	void DrawGlobalParticles(C4TargetFacet cgo)
+	{
+#ifndef USE_CONSOLE
+		if (globalParticles) globalParticles->Draw(cgo, 0);
+#endif
+	} 
 
 	C4DynamicParticleList *GetNewParticleList(C4Object *forTarget = 0);
 	// releases up to 2 lists
 	void ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second = 0);
 
+#ifndef USE_CONSOLE
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
 	void Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+#endif
 
-	friend class CalculationThread;
 };
 
 extern C4DynamicParticleSystem DynamicParticles;

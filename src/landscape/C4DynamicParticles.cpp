@@ -18,6 +18,7 @@
 #include <C4Include.h>
 #include <C4DynamicParticles.h>
 
+#ifndef USE_CONSOLE
 #include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
@@ -25,7 +26,9 @@
 #include <C4DrawGL.h>
 #include <C4Random.h>
 #include <C4Landscape.h>
+#endif
 
+#ifndef USE_CONSOLE
 const int C4DynamicParticle::DrawingData::vertexCountPerParticle(4);
 
 void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, float rotation, float stretch)
@@ -475,7 +478,7 @@ void C4DynamicParticleValueProvider::Set(const C4Value &value)
 	if (valueArray != 0)
 		Set(*valueArray);
 	else
-		Set((float)value.getInt());	
+		Set((float)value.getInt());
 }
 
 void C4DynamicParticleValueProvider::Set(float to)
@@ -953,9 +956,13 @@ void C4DynamicParticleSystem::ExecuteCalculation()
 		particleListAccessMutex.Leave();
 	}
 }
+#endif
 
 C4DynamicParticleList *C4DynamicParticleSystem::GetNewParticleList(C4Object *forObject)
 {
+#ifdef USE_CONSOLE
+	return 0;
+#else
 	C4DynamicParticleList *newList = 0;
 
 	particleListAccessMutex.Enter();
@@ -964,10 +971,12 @@ C4DynamicParticleList *C4DynamicParticleSystem::GetNewParticleList(C4Object *for
 	particleListAccessMutex.Leave();
 
 	return newList;
+#endif
 }
 
 void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second)
 {
+#ifndef USE_CONSOLE
 	particleListAccessMutex.Enter();
 
 	for(std::list<C4DynamicParticleList>::iterator iter = particleLists.begin(); iter != particleLists.end();)
@@ -984,8 +993,10 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 	}
 
 	particleListAccessMutex.Leave();
+#endif
 }
 
+#ifndef USE_CONSOLE
 void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4DynamicParticleList *pxList, C4Object *object)
 {
 	// todo: check amount etc
@@ -1065,14 +1076,17 @@ void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 		}
 	}
 }
+#endif
 
 void C4DynamicParticleSystem::Clear()
 {
+#ifndef USE_CONSOLE
 	currentSimulationTime = 0;
 
 	particleListAccessMutex.Enter();
 	particleLists.clear();
 	particleListAccessMutex.Leave();
+#endif
 }
 
 C4DynamicParticleSystem DynamicParticles;

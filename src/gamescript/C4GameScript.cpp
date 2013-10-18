@@ -1538,6 +1538,7 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	// safety
 	C4Object *obj = Object(_this);
 	if (obj && !_this->Status) return false;
+#ifndef USE_CONSOLE
 	if (amount <= 0) amount = 1;
 	
 	// local offset
@@ -1556,6 +1557,7 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	valueLifetime.Set(lifetime);
 	// create
 	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
+#endif
 	// success, even if not created
 	return true;
 }
