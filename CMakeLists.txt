@@ -70,8 +70,10 @@ else()
 	SET(INITIAL_USE_OPEN_AL OFF)
 endif()
 option(USE_OPEN_AL "Use OpenAL to play sounds" ${INITIAL_USE_OPEN_AL})
-option(OC_BUILD_MULTIPROCESSOR "Use all processor cores to build" OFF)
 option(WITH_AUTOMATIC_UPDATE "Automatic updates are downloaded from the project website." OFF)
+
+# Remove obsolete options
+unset(OC_BUILD_MULTIPROCESSOR CACHE)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -105,14 +107,9 @@ CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATI
 set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 
 if(MSVC_VERSION GREATER 1499)
-	# Activate minimal rebuild
-	if(OC_BUILD_MULTIPROCESSOR)
 		list(APPEND OC_CXX_FLAGS /MP)
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
-	else()
-		list(REMOVE_ITEM OC_CXX_FLAGS /MP)
-		list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
-	endif()
+
 	if (NOT CMAKE_CL_64)
 		# Activate edit-and-continue
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
