@@ -1892,6 +1892,7 @@ bool C4Object::SetPhase(int32_t iPhase)
 
 void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
+#ifndef USE_CONSOLE
 	C4Facet ccgo;
 
 	// Status
@@ -2173,11 +2174,12 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 
 	// Restore visibility inside FoW
 	if (fOldClrModEnabled) pDraw->SetClrModMapEnabled(fOldClrModEnabled);
-
+#endif
 }
 
 void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, float offX, float offY)
 {
+#ifndef USE_CONSOLE
 	// Status
 	if (!Status || !Def) return;
 	// visible?
@@ -2284,10 +2286,12 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	}
 	// end of color modulation
 	if (!eDrawMode) FinishedDrawing();
+#endif
 }
 
 void C4Object::DrawLine(C4TargetFacet &cgo)
 {
+#ifndef USE_CONSOLE
 	// Audibility
 	SetAudibilityAt(cgo, Shape.VtxX[0],Shape.VtxY[0]);
 	SetAudibilityAt(cgo, Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1]);
@@ -2308,6 +2312,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 						color0, color1);
 	// reset blit mode
 	FinishedDrawing();
+#endif
 }
 
 void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
