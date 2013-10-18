@@ -43,28 +43,28 @@ void C4DynamicParticle::DrawingData::SetPosition(float x, float y, float size, f
 
 	if (rotation == 0.f)
 	{
-		vertices[0].x = x - sizeX;
-		vertices[0].y = y + sizeY;
-		vertices[1].x = x - sizeX;
-		vertices[1].y = y - sizeY;
-		vertices[2].x = x + sizeX;
-		vertices[2].y = y + sizeY;
-		vertices[3].x = x + sizeX;
-		vertices[3].y = y - sizeY;
+		vertices[0].x = x - sizeX + offsetX;
+		vertices[0].y = y + sizeY + offsetY;
+		vertices[1].x = x - sizeX + offsetX;
+		vertices[1].y = y - sizeY + offsetY;
+		vertices[2].x = x + sizeX + offsetX;
+		vertices[2].y = y + sizeY + offsetY;
+		vertices[3].x = x + sizeX + offsetX;
+		vertices[3].y = y - sizeY + offsetY;
 	}
 	else
 	{
 		float sine = sinf(rotation);
 		float cosine = cosf(rotation);
 
-		vertices[0].x = x + ((-sizeX) * cosine - (+sizeY) * sine);
-		vertices[0].y = y + ((-sizeX) *   sine + (+sizeY) * cosine);
-		vertices[1].x = x + ((-sizeX) * cosine - (-sizeY) * sine);
-		vertices[1].y = y + ((-sizeX) *   sine + (-sizeY) * cosine);
-		vertices[2].x = x + ((+sizeX) * cosine - (+sizeY) * sine);
-		vertices[2].y = y + ((+sizeX) *   sine + (+sizeY) * cosine);
-		vertices[3].x = x + ((+sizeX) * cosine - (-sizeY) * sine);
-		vertices[3].y = y + ((+sizeX) *   sine + (-sizeY) * cosine);
+		vertices[0].x = x + ((-sizeX) * cosine - (+sizeY) * sine) + offsetX;
+		vertices[0].y = y + ((-sizeX) *   sine + (+sizeY) * cosine) + offsetY;
+		vertices[1].x = x + ((-sizeX) * cosine - (-sizeY) * sine) + offsetX;
+		vertices[1].y = y + ((-sizeX) *   sine + (-sizeY) * cosine) + offsetY;
+		vertices[2].x = x + ((+sizeX) * cosine - (+sizeY) * sine) + offsetX;
+		vertices[2].y = y + ((+sizeX) *   sine + (+sizeY) * cosine) + offsetY;
+		vertices[3].x = x + ((+sizeX) * cosine - (-sizeY) * sine) + offsetX;
+		vertices[3].y = y + ((+sizeX) *   sine + (-sizeY) * cosine) + offsetY;
 	}
 }
 
@@ -598,6 +598,11 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 			// needs to be constant
 			blitMode = (uint32_t) property.getInt();
 		}
+		else if(&Strings.P[P_Attach] == key)
+		{
+			// needs to be constant
+			attachment = (uint32_t) property.getInt();
+		}
 		else if(&Strings.P[P_Phase] == key)
 		{
 			phase.Set(property);
@@ -770,6 +775,17 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	C4TexRef *textureRef = (*sourceDefinition->Gfx.GetFace().ppTex);
 	assert(textureRef != 0 && "Particle definition had no texture assigned.");
 
+	
+
+	// use a relative offset?
+	bool resetMatrix(false);
+	if ((attachment & C4ATTACH_MoveRelative) && (obj != 0))
+	{
+		resetMatrix = true;
+		glPushMatrix();
+		glTranslatef((float)obj->GetX(), (float)obj->GetY(), 0.0f);
+	}
+
 	glBlendFunc(GL_SRC_ALPHA, (blitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -780,11 +796,14 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	glTexCoordPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].u));
 	glColorPointer(4, GL_FLOAT, stride, &(vertexCoordinates[0].r));
 	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
+
+	if (resetMatrix)
+		glPopMatrix();
 }
 
-bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode) const
+bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t _attachment) const
 {
-	return def == sourceDefinition && blitMode == _blitMode;
+	return def == sourceDefinition && blitMode == _blitMode && attachment == _attachment;
 }
 
 C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
@@ -888,19 +907,19 @@ void C4DynamicParticleList::Clear()
 	accessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode)
+C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment)
 {
 	accessMutex.Enter();
 
 	// if not cached, find correct chunk in list
 	C4DynamicParticleChunk *chunk = 0;
-	if (lastAccessedChunk && lastAccessedChunk->IsOfType(def, blitMode))
+	if (lastAccessedChunk && lastAccessedChunk->IsOfType(def, blitMode, attachment))
 		chunk = lastAccessedChunk;
 	else
 	{
 		for (std::list<C4DynamicParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
 		{
-			if (!iter->IsOfType(def, blitMode)) continue;
+			if (!iter->IsOfType(def, blitMode, attachment)) continue;
 			chunk = &(*iter);
 			break;
 		}
@@ -913,6 +932,7 @@ C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uin
 		chunk = &particleChunks.back();
 		chunk->sourceDefinition = def;
 		chunk->blitMode = blitMode;
+		chunk->attachment = attachment;
 	}
 
 	assert(chunk && "No suitable particle chunk could be found or created.");
@@ -997,20 +1017,12 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 }
 
 #ifndef USE_CONSOLE
-void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4DynamicParticleList *pxList, C4Object *object)
+void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4Object *object)
 {
 	// todo: check amount etc
 
-	if (!pxList) 
-	{
-		pxList = globalParticles;
-	}
+	C4DynamicParticleList * pxList(globalParticles);
 
-	if (pxList == globalParticles && globalParticles == 0)
-	{
-		globalParticles = GetNewParticleList();
-		pxList = globalParticles;
-	}
 
 	// initialize the particle properties
 	// this is done here, because it would also be the right place to implement caching
@@ -1020,6 +1032,36 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 	speedX.Floatify(10.f);
 	speedY.Floatify(10.f);
 
+	// position offset that will be added to the particle
+	float xoff(0.f), yoff(0.f);
+	
+	// offset only for the drawing position - this is needed so that particles relative to an object work correctly
+	float drawingOffsetX(0.f), drawingOffsetY(0.f);
+
+	if (object != 0)
+	{
+		// for all types of particles add object's offset (mainly for collision etc.)
+		xoff = object->GetX();
+		yoff = object->GetY();
+
+		// figure out particle list to use
+		if (particleProperties.attachment & C4ATTACH_Front) pxList = object->DynamicFrontParticles;
+		else if (particleProperties.attachment & C4ATTACH_Back) pxList = object->DynamicBackParticles;
+
+		if (particleProperties.attachment & C4ATTACH_MoveRelative)
+		{
+			drawingOffsetX = -xoff;
+			drawingOffsetY = -yoff;
+		}
+	}
+
+	// sanity for global particles - might have to be created first
+	if (pxList == globalParticles && globalParticles == 0)
+	{
+		globalParticles = GetNewParticleList();
+		pxList = globalParticles;
+	}
+
 	while (amount--)
 	{
 		if (speedX.IsRandom()) speedX.RollRandom();
@@ -1027,7 +1069,7 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 		if (lifetime.IsRandom()) lifetime.RollRandom();
 		
 		// create a particle in the fitting chunk
-		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode);
+		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode, particleProperties.attachment);
 
 		// initialize some more properties
 		particle->properties = particleProperties;
@@ -1039,7 +1081,8 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 		particle->currentSpeedX = speedX.GetValue(particle);
 		particle->currentSpeedY = speedY.GetValue(particle);
 		particle->drawingData.aspect = of_def->Aspect;
-		particle->SetPosition(x, y);
+		particle->drawingData.SetOffset(drawingOffsetX, drawingOffsetY);
+		particle->SetPosition(x + xoff, y + yoff);
 		particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
 	}
 }

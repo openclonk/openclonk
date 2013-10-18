@@ -133,12 +133,17 @@
 		<row>
           <col>CollisionVertex</col>
           <col>0 to 1000</col>
-          <col>The offset of the particle's hit point relative to its width. When set, the particle will collide with the landscape. If unsure, something around 750 should be fine.</col>
+          <col>The offset of the particle's hit point relative to its width. When set, the particle will collide with the landscape. 0 means the particle will collide with its center.</col>
         </row>
 		<row>
           <col>OnCollision</col>
           <col><funclink>PC_Die</funclink>, <funclink>PC_Bounce</funclink></col>
           <col>Defines what happens when the particle collides with the landscape.</col>
+        </row>
+		<row>
+          <col>Attach</col>
+          <col>bit mask</col>
+          <col>Defines the attachment of the particles to the calling object. Can be a combination of ATTACH_Front, ATTACH_Back, and ATTACH_MoveRelative. For example <code>ATTACH_Front | ATTACH_MoveRelative</code></col>
         </row>
       </table>
     </text>

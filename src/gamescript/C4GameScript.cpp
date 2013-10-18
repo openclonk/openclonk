@@ -1533,7 +1533,7 @@ static bool FnCreateParticle(C4PropList * _this, C4String *szName, long iX, long
 	return true;
 }
 
-static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount, int attachment)
+static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount)
 {
 	// safety
 	C4Object *obj = Object(_this);
@@ -1541,12 +1541,6 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 #ifndef USE_CONSOLE
 	if (amount <= 0) amount = 1;
 	
-	// local offset
-	if (obj)
-	{
-		x += obj->GetX();
-		y += obj->GetY();
-	}
 	// get particle
 	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(name));
 	if (!pDef) return false;
@@ -1556,7 +1550,7 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, long x, long 
 	valueSpeedY.Set(speedY);
 	valueLifetime.Set(lifetime);
 	// create
-	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj ? (attachment == 1 ? obj->DynamicBackParticles : obj->DynamicFrontParticles) : NULL, obj);
+	::DynamicParticles.Create(pDef, (float)x, (float)y, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj);
 #endif
 	// success, even if not created
 	return true;
@@ -2683,6 +2677,10 @@ C4ScriptConstDef C4ScriptGameConstMap[]=
 	{ "PLRZOOM_NoDecrease"        ,C4V_Int,      PLRZOOM_NoDecrease },
 	{ "PLRZOOM_LimitMin"          ,C4V_Int,      PLRZOOM_LimitMin },
 	{ "PLRZOOM_LimitMax"          ,C4V_Int,      PLRZOOM_LimitMax },
+
+	{ "ATTACH_Front"              ,C4V_Int,      C4ATTACH_Front },
+	{ "ATTACH_Back"               ,C4V_Int,      C4ATTACH_Back },
+	{ "ATTACH_MoveRelative"       ,C4V_Int,      C4ATTACH_MoveRelative },
 
 	{ NULL, C4V_Nil, 0}
 };

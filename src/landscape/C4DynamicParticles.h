@@ -33,6 +33,14 @@ enum C4ParticleValueProviderID
 	C4PV_Speed,
 };
 
+enum C4ParticleAttachmentPropertyID
+{
+	C4ATTACH_None = 0,
+	C4ATTACH_Front = 1,
+	C4ATTACH_Back = 2,
+	C4ATTACH_MoveRelative = 4
+};
+
 enum C4ParticleCollisionFuncID
 {
 	C4PC_Die,
@@ -148,6 +156,8 @@ public:
 
 	uint32_t blitMode;
 
+	uint32_t attachment;
+
 	C4DynamicParticleProperties();
 
 	
@@ -190,6 +200,14 @@ public:
 		float sizeX, sizeY;
 		float aspect;
 
+		float offsetX, offsetY;
+
+		void SetOffset(float x, float y)
+		{
+			offsetX = x;
+			offsetY = y;
+		}
+
 		void SetPointer(Vertex *startingVertex, bool initial = false)
 		{
 			vertices = startingVertex;
@@ -221,7 +239,7 @@ public:
 		void SetPosition(float x, float y, float size, float rotation = 0.f, float stretch = 1.f);
 		void SetPhase(int phase, C4ParticleDef *sourceDef);
 
-		DrawingData() : currentStretch(1.f), originalSize(0.0001f), aspect(1.f)
+		DrawingData() : currentStretch(1.f), originalSize(0.0001f), aspect(1.f), offsetX(0.f), offsetY(0.f)
 		{
 		}
 
@@ -260,7 +278,11 @@ class C4DynamicParticleChunk
 {
 private:
 	C4ParticleDef *sourceDefinition;
+
 	uint32_t blitMode;
+	
+	// whether the particles are translated according to the object's position
+	uint32_t attachment;
 
 	std::vector<C4DynamicParticle*> particles;
 	std::vector<C4DynamicParticle::DrawingData::Vertex> vertexCoordinates;
@@ -269,7 +291,7 @@ private:
 	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
 	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
 public:
-	C4DynamicParticleChunk() : sourceDefinition(0), blitMode(0), particleCount(0)
+	C4DynamicParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0)
 	{
 
 	}
@@ -281,7 +303,7 @@ public:
 	void Clear();
 	bool Exec(C4Object *obj, float timeDelta);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode) const;
+	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
 
 	C4DynamicParticle *AddNewParticle();
 
@@ -301,17 +323,19 @@ private:
 
 	// for making sure that the list is not drawn and calculated at the same time
 	CStdCSec accessMutex;
+
 public:
 	C4DynamicParticleList(C4Object *obj = 0) : targetObject(obj), lastAccessedChunk(0)
 	{
 
 	}
+
 	// deletes all the particles
 	void Clear();
 
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode);
+	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment);
 };
 #endif
 
@@ -376,7 +400,7 @@ public:
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	void Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4DynamicParticleList *pxList=NULL, C4Object *object=NULL);
+	void Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
 #endif
 
 };
