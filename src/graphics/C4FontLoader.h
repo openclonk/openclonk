@@ -53,7 +53,11 @@ public:
 	// enum of different fonts used in the clonk engine
 	enum FontType { C4FT_Log, C4FT_MainSmall, C4FT_Main, C4FT_Caption, C4FT_Title };
 
-	C4FontLoader(): pLastUsedFont(NULL), LastUsedGrpID(0) { } // ctor
+	C4FontLoader()
+#ifndef USE_CONSOLE
+		: pLastUsedFont(NULL), LastUsedGrpID(0)
+#endif
+	{ } // ctor
 	~C4FontLoader() { Clear(); } // dtor
 
 	void Clear();                   // clear loaded fonts
@@ -62,6 +66,7 @@ public:
 	bool InitFont(CStdFont * Font, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow=true);
 
 protected:
+#ifndef USE_CONSOLE
 	CStdVectorFont * pLastUsedFont; // cache
 	StdCopyStrBuf LastUsedName;
 	int32_t LastUsedGrpID;
@@ -70,6 +75,7 @@ protected:
 	CStdVectorFont * CreateFont(const char *szFaceName);
 	void DestroyFont(CStdVectorFont * pFont);
 	friend class CStdFont;
+#endif
 };
 
 extern C4FontLoader FontLoader;
@@ -92,6 +98,7 @@ public:
 	int id;                // used by the engine to keep track of where the font came from
 
 protected:
+#ifndef USE_CONSOLE
 	DWORD dwDefFontHeight; // configured font size (in points)
 	char szFontName[80+1]; // used font name (or surface file name)
 
@@ -113,14 +120,7 @@ protected:
 
 	CustomImages *pCustomImages; // callback class for custom images
 
-#if defined _WIN32 && !(defined HAVE_FREETYPE)
-	HDC hDC;
-	HBITMAP hbmBitmap;
-	DWORD *pBitmapBits; int iBitmapSize;
-	HFONT hFont;
-#elif (defined HAVE_FREETYPE)
 	CStdVectorFont *pVectorFont; // class assumed to be held externally!
-#endif
 
 	bool AddSurface();
 	bool CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt);
@@ -133,6 +133,7 @@ protected:
 	C4Facet &GetUnicodeCharacterFacet(uint32_t c);
 
 	int iLineHgt;        // height of one line of font (in pixels)
+#endif
 
 public:
 	// draw ine line of text
@@ -141,8 +142,14 @@ public:
 	// get text size
 	bool GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup = true);
 	// get height of a line
-	inline int GetLineHeight() { return iLineHgt; }
-	// Sometimes, only the width of a text is needed
+	inline int GetLineHeight() const
+	{
+#ifdef USE_CONSOLE
+		return 0;
+#else
+		return iLineHgt;
+#endif
+	}	// Sometimes, only the width of a text is needed
 	int32_t GetTextWidth(const char *szText, bool fCheckMarkup = true) { int32_t x, y; GetTextExtent(szText, x, y, fCheckMarkup); return x; }
 	// insert line breaks into a message and return overall height - uses and regards '|' as line breaks
 	int BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOutLen, bool fCheckMarkup, float fZoom=1.0f);
@@ -161,17 +168,39 @@ public:
 	void Clear(); // clear font
 
 	// query whether font is initialized
-	bool IsInitialized() { return !!*szFontName; }
+	bool IsInitialized() const {
+#ifdef USE_CONSOLE
+		return true;
+#else
+		return !!*szFontName;
+#endif
+	}
 
 	// query whether font is already initialized with certain data
-	bool IsSameAsID(const char *szCFontName, int iCID, int iCIndent)
-	{ return SEqual(szCFontName, szFontName) && iCID==id && iCIndent==-iHSpace; }
-	bool IsSameAs(const char *szCFontName, DWORD iCHeight, DWORD dwCWeight)
-	{ return SEqual(szCFontName, szFontName) && !id && iCHeight==dwDefFontHeight && dwCWeight==dwWeight; }
+	bool IsSameAsID(const char *szCFontName, int iCID, int iCIndent) const
+	{
+#ifdef USE_CONSOLE
+		return true;
+#else
+		return SEqual(szCFontName, szFontName) && iCID==id && iCIndent==-iHSpace;
+#endif
+	}
+	bool IsSameAs(const char *szCFontName, DWORD iCHeight, DWORD dwCWeight) const
+	{
+#ifdef USE_CONSOLE
+		return true;
+#else
+		return SEqual(szCFontName, szFontName) && !id && iCHeight==dwDefFontHeight && dwCWeight==dwWeight;
+#endif
+	}
 
 	// set custom image request handler
 	void SetCustomImages(CustomImages *pHandler)
-	{ pCustomImages = pHandler; }
+	{
+#ifndef USE_CONSOLE
+		pCustomImages = pHandler;
+#endif
+	}
 
 	bool GetFontImageSize(const char* szTag, int& width, int& height) const;
 };

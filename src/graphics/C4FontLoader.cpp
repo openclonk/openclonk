@@ -4,7 +4,7 @@
  * Copyright (c) 2003-2007  Sven Eberhardt
  * Copyright (c) 2005-2007, 2009-2012  Günther Brammer
  * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009-2010  Nicolas Hake
+ * Copyright (c) 2009-2010, 2013  Nicolas Hake
  * Copyright (c) 2009, 2012  Armin Burgmeier
  * Copyright (c) 2010  Benjamin Herr
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -26,6 +26,7 @@
 #include <C4Include.h>
 #include "C4FontLoader.h"
 
+#ifndef USE_CONSOLE
 #include <C4Components.h>
 #include <C4Config.h>
 #include <C4Draw.h>
@@ -41,10 +42,9 @@
 #include <C4windowswrapper.h>
 #endif
 
-#ifdef HAVE_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#endif // HAVE_FREETYPE
+#endif
 
 /* Initialization */
 
@@ -52,7 +52,7 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 {
 #ifdef USE_CONSOLE
 	return true;
-#endif
+#else
 	// safety
 	assert(szFontName);
 	if (!szFontName || !*szFontName)
@@ -177,16 +177,19 @@ bool C4FontLoader::InitFont(CStdFont * rFont, const char *szFontName, FontType e
 		LogFatal(LoadResStr("IDS_ERR_INITFONTS"));
 		return false;
 	}
+#endif
 }
 
 void C4FontLoader::Clear()
 {
+#ifndef USE_CONSOLE
 	// delete vector font cache
 	DestroyFont(pLastUsedFont);
 	pLastUsedFont = NULL;
+#endif
 }
 
-#ifdef HAVE_FREETYPE
+#ifndef USE_CONSOLE
 class CStdVectorFont
 {
 	FT_Library library;
@@ -195,7 +198,7 @@ class CStdVectorFont
 public:
 	CStdVectorFont(const char * FontFaceName): RefCnt(1)
 	{
-#if defined(_WIN32) && defined(HAVE_FREETYPE)
+#if defined(_WIN32)
 	// Win32 using freetype: Load TrueType-data from WinGDI into Data-buffer to be used by FreeType
 	bool fSuccess = false;
 	HDC hDC = ::CreateCompatibleDC(NULL);
@@ -279,24 +282,13 @@ void C4FontLoader::DestroyFont(CStdVectorFont * pFont)
 	if (!pFont->RefCnt)
 		delete pFont;
 }
-#else
-CStdVectorFont * C4FontLoader::CreateFont(StdBuf & Data)
-{
-	return 0;
-}
-CStdVectorFont * C4FontLoader::CreateFont(const char *szFaceName)
-{
-	return 0;
-}
-void C4FontLoader::DestroyFont(CStdVectorFont * pFont)
-{
-}
 #endif
 
 C4FontLoader FontLoader;
 
 CStdFont::CStdFont()
 {
+#ifndef USE_CONSOLE
 	// set default values
 	psfcFontData = NULL;
 	sfcCurrent = NULL;
@@ -312,11 +304,11 @@ CStdFont::CStdFont()
 	*szFontName=0;
 	id=0;
 	pCustomImages=NULL;
-#if defined HAVE_FREETYPE
 	pVectorFont = NULL;
 #endif
 }
 
+#ifndef USE_CONSOLE
 bool CStdFont::AddSurface()
 {
 	// add new surface as render target; copy old ones
@@ -357,7 +349,6 @@ bool CStdFont::CheckRenderedCharSpace(uint32_t iCharWdt, uint32_t iCharHgt)
 
 bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 {
-#if defined HAVE_FREETYPE
 	if (!pVectorFont) return false;
 	// Freetype character rendering
 	FT_Set_Pixel_Sizes(*pVectorFont, dwDefFontHeight, dwDefFontHeight);
@@ -434,7 +425,6 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, C4Facet *pfctTarget)
 	sfcCurrent->Unlock();
 	// Save the position of the glyph for the rendering code
 	pfctTarget->Set(sfcCurrent, iCurrentSfcX, iCurrentSfcY, width, iGfxLineHgt);
-#endif  // end of freetype rendering - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// advance texture position
 	iCurrentSfcX += pfctTarget->Wdt;
@@ -450,9 +440,11 @@ C4Facet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 	// rendering might have failed, in which case rFacet remains empty. Should be OK; char won't be printed then
 	return rFacet;
 }
+#endif
 
 void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWORD dwHeight, DWORD dwFontWeight, bool fDoShadow)
 {
+#ifndef USE_CONSOLE
 	// clear previous
 	Clear();
 	// set values
@@ -475,8 +467,6 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 		throw std::runtime_error(std::string("Cannot create surface (") + szFontName + ")");
 	}
 
-#if defined HAVE_FREETYPE
-
 	// Store vector font
 	pVectorFont = &VectorFont;
 	++(pVectorFont->RefCnt);
@@ -484,9 +474,6 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	// FIXME: use bbox or dynamically determined line heights here
 	iLineHgt = (VectorFont->ascender - VectorFont->descender) * dwHeight / VectorFont->units_per_EM;
 	iGfxLineHgt = iLineHgt + fDoShadow; // vertical shadow
-#else
-	throw std::runtime_error("You have a engine without Truetype support.");
-#endif // HAVE_FREETYPE
 
 	// loop through all ASCII printable characters and prepare them
 	// Non-ASCII Unicode characters will be created on the fly
@@ -513,14 +500,15 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 			StdStrBuf pngfilename = FormatString("%s%u%s_%d.png",szFontName,static_cast<unsigned int>(dwHeight),fDoShadow ? "_shadow" : "",i);
 			psfcFontData[i]->SavePNG(pngfilename.getData(), true, false, false);
 		}
+#endif
 }
 
 void CStdFont::Clear()
 {
-#if defined HAVE_FREETYPE
+#ifndef USE_CONSOLE
 	FontLoader.DestroyFont(pVectorFont);
 	pVectorFont = NULL;
-#endif
+
 	// clear font sfcs
 	if (psfcFontData)
 	{
@@ -542,6 +530,7 @@ void CStdFont::Clear()
 	// font not yet initialized
 	*szFontName=0;
 	id=0;
+#endif
 }
 
 /* Text size measurement */
@@ -550,6 +539,9 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 	// safety
 	if (!szText) return false;
 	assert(IsValidUtf8(szText));
+#ifdef USE_CONSOLE
+	rsx = rsy = 0;
+#else
 	// keep track of each row's size
 	int iRowWdt=0,iWdt=0,iHgt=iLineHgt;
 	// ignore any markup
@@ -596,11 +588,15 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 	// store output
 	rsx=iWdt; rsy=iHgt;
 	// done, success
+#endif
 	return true;
 }
 
 int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOutLen, bool fCheckMarkup, float fZoom)
 {
+#ifdef USE_CONSOLE
+	return 0;
+#else
 	// 2do: Implement this in terms of StdStrBuf-version
 	// note iMaxOutLen does not include terminating null character
 	// safety
@@ -749,10 +745,14 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			}
 	// return text height
 	return iHgt;
+#endif
 }
 
 int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fCheckMarkup, float fZoom)
 {
+#ifdef USE_CONSOLE
+	return 0;
+#else
 	// safety
 	if (!szMsg || !pOut) return 0;
 	pOut->Clear();
@@ -875,12 +875,16 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	pOut->Append(szLastPos, szPos - szLastPos);
 	// return text height
 	return iHgt;
+#endif
 }
 
 // get message break and pos after message break
 // 2do: Function not ready for UTF-8, markup or inline images. Remove its usage using standardized BreakMessage
 int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBreakWidth, float fZoom)
 {
+#ifdef USE_CONSOLE
+	*ppNewPos = szMsg; return 0;
+#else
 	// safety
 	if (!szMsg || !*szMsg) { *ppNewPos = szMsg; return 0; }
 	const char *szPos = szMsg; unsigned char c;
@@ -923,6 +927,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 	if (*szPos2 == ' ') ++*ppNewPos;
 	// return output string length
 	return szPos2 - szMsg;
+#endif
 }
 
 
@@ -933,6 +938,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 
 void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, C4Markup &Markup, float fZoom)
 {
+#ifndef USE_CONSOLE
 	assert(IsValidUtf8(szText));
 	C4DrawTransform bt, *pbt=NULL;
 	// set blit color
@@ -1049,10 +1055,14 @@ void CStdFont::DrawText(C4Surface * sfcDest, float iX, float iY, DWORD dwColor, 
 		pDraw->ActivateBlitModulation(dwOldModClr);
 	else
 		pDraw->DeactivateBlitModulation();
+#endif
 }
 
 bool CStdFont::GetFontImageSize(const char* szTag, int& width, int& height) const
 {
+#ifdef USE_CONSOLE
+	width = height = 0;
+#else
 	const float aspect = pCustomImages ? pCustomImages->GetFontImageAspect(szTag) : -1.0f;
 
 	// aspect < 0 means there is no such image
@@ -1070,6 +1080,7 @@ bool CStdFont::GetFontImageSize(const char* szTag, int& width, int& height) cons
 		width = height;//static_cast<int32_t>(width*scale + 0.5f);
 		height = static_cast<int32_t>(height*scale + 0.5f);
 	}
+#endif
 
 	return true;
 }
