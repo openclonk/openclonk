@@ -856,9 +856,8 @@ if(NOT WIN32)
 endif()
 
 if(NOT USE_CONSOLE)
-	find_package(Freetype)
+	find_package(Freetype REQUIRED)
 	include_directories(${FREETYPE_INCLUDE_DIRS})
-	SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
 endif()
 
 # FINDLIB works the same as find_library, but also marks the resulting var as

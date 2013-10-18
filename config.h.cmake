@@ -13,9 +13,6 @@
 /* Whether FMOD shall be used */
 #cmakedefine HAVE_FMOD 1
 
-/* Define to 1 if you have FreeType2. */
-#cmakedefine HAVE_FREETYPE 1
-
 /* Define to 1 if you have the <history.h> header file. */
 #cmakedefine HAVE_HISTORY_H 1
 

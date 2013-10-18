@@ -281,7 +281,6 @@ if test $enable_console = no; then
       AC_MSG_ERROR([Freetype not found.])
     fi
   ])
-  AC_DEFINE(HAVE_FREETYPE, 1, [Define to 1 if you have FreeType2.])
 fi
 
 # X11, Xrandr
