@@ -26,6 +26,7 @@
 #include <C4DrawGL.h>
 #include <C4Random.h>
 #include <C4Landscape.h>
+#include <C4Weather.h>
 #endif
 
 #ifndef USE_CONSOLE
@@ -247,7 +248,7 @@ void C4DynamicParticleValueProvider::Floatify(float denominator)
 			//LogF("KF is %f @ %f", keyFrames[2 * i + 1], keyFrames[2 * i]);
 		}
 	}
-	else if (valueFunction == &C4DynamicParticleValueProvider::Speed)
+	else if (valueFunction == &C4DynamicParticleValueProvider::Speed || valueFunction == &C4DynamicParticleValueProvider::Wind || valueFunction == &C4DynamicParticleValueProvider::Gravity)
 	{
 		FloatifyParameterValue(&C4DynamicParticleValueProvider::speedFactor, 1000.0f);
 	}
@@ -337,6 +338,16 @@ float C4DynamicParticleValueProvider::Speed(C4DynamicParticle *forParticle)
 	return startValue + speedFactor * speed;
 }
 
+float C4DynamicParticleValueProvider::Wind(C4DynamicParticle *forParticle)
+{
+	return startValue + (speedFactor * ::Weather.GetWind((int)forParticle->positionX, (int)forParticle->positionY));
+}
+
+float C4DynamicParticleValueProvider::Gravity(C4DynamicParticle *forParticle)
+{
+	return startValue + (speedFactor * ::Landscape.Gravity);
+}
+
 void C4DynamicParticleValueProvider::SetType(C4ParticleValueProviderID what)
 {
 	switch (what)
@@ -361,6 +372,12 @@ void C4DynamicParticleValueProvider::SetType(C4ParticleValueProviderID what)
 		break;
 	case C4PV_Speed:
 		valueFunction = &C4DynamicParticleValueProvider::Speed;
+		break;
+	case C4PV_Wind:
+		valueFunction = &C4DynamicParticleValueProvider::Wind;
+		break;
+	case C4PV_Gravity:
+		valueFunction = &C4DynamicParticleValueProvider::Gravity;
 		break;
 	default:
 		assert(false && "Invalid C4DynamicParticleValueProvider ID passed");
@@ -461,6 +478,22 @@ void C4DynamicParticleValueProvider::Set(const C4ValueArray &fromArray)
 		if (arraySize >= 3)
 		{
 			SetType(C4PV_Speed);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::speedFactor);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::startValue);
+		}
+		break;
+	case C4PV_Wind:
+		if (arraySize >= 3)
+		{
+			SetType(C4PV_Wind);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::speedFactor);
+			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::startValue);
+		}
+		break;
+	case C4PV_Gravity:
+		if (arraySize >= 3)
+		{
+			SetType(C4PV_Gravity);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[1], &C4DynamicParticleValueProvider::speedFactor);
 			SetParameterValue(VAL_TYPE_FLOAT, fromArray[2], &C4DynamicParticleValueProvider::startValue);
 		}
@@ -643,6 +676,9 @@ void C4DynamicParticleProperties::SetCollisionFunc(const C4Value &source)
 		if (arraySize >= 2)
 			bouncyness = ((float)(*valueArray)[1].getInt());
 		break;
+	case C4PC_Stop:
+		collisionCallback = &C4DynamicParticleProperties::CollisionStop;
+		break;
 	default:
 		assert(false);
 		break;
@@ -653,6 +689,13 @@ bool C4DynamicParticleProperties::CollisionBounce(C4DynamicParticle *forParticle
 {
 	forParticle->currentSpeedX = -forParticle->currentSpeedX * bouncyness;
 	forParticle->currentSpeedY = -forParticle->currentSpeedY * bouncyness;
+	return true;
+}
+
+bool C4DynamicParticleProperties::CollisionStop(C4DynamicParticle *forParticle)
+{
+	forParticle->currentSpeedX = 0.f;
+	forParticle->currentSpeedY = 0.f;
 	return true;
 }
 

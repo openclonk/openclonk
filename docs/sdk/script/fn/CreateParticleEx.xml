@@ -84,8 +84,11 @@ var particles =
       <funclink>PV_Step</funclink>
       <funclink>PV_Speed</funclink>
       <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PV_Gravity</funclink>
       <funclink>PC_Die</funclink>
       <funclink>PC_Bounce</funclink>
+      <funclink>PC_Stop</funclink>
     </related>
   </func>
   <author>Zapper</author><date>2013-10</date>

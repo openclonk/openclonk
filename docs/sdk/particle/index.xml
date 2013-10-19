@@ -56,6 +56,8 @@
       <funclink>PV_Step</funclink>
       <funclink>PV_Speed</funclink>
       <funclink>PV_KeyFrames</funclink>
+      <funclink>PV_Wind</funclink>
+      <funclink>PV_Gravity</funclink>
 	  </text>
     <text>
       <table>
@@ -137,7 +139,7 @@
         </row>
 		<row>
           <col>OnCollision</col>
-          <col><funclink>PC_Die</funclink>, <funclink>PC_Bounce</funclink></col>
+          <col><funclink>PC_Die</funclink>, <funclink>PC_Bounce</funclink>, <funclink>PC_Stop</funclink></col>
           <col>Defines what happens when the particle collides with the landscape.</col>
         </row>
 		<row>

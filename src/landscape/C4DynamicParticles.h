@@ -31,6 +31,8 @@ enum C4ParticleValueProviderID
 	C4PV_Direction,
 	C4PV_Step,
 	C4PV_Speed,
+	C4PV_Wind,
+	C4PV_Gravity,
 };
 
 enum C4ParticleAttachmentPropertyID
@@ -45,6 +47,7 @@ enum C4ParticleCollisionFuncID
 {
 	C4PC_Die,
 	C4PC_Bounce,
+	C4PC_Stop,
 };
 
 class C4DynamicParticleList;
@@ -70,7 +73,7 @@ protected:
 		int rerollInterval; // for Random
 		size_t keyFrameCount; // for KeyFrames
 		float delay; // for Step
-		float speedFactor; // for Speed
+		float speedFactor; // for Speed & Wind & Gravity
 	};
 
 	union
@@ -134,6 +137,8 @@ public:
 	float Direction(C4DynamicParticle *forParticle);
 	float Step(C4DynamicParticle *forParticle);
 	float Speed(C4DynamicParticle *forParticle);
+	float Wind(C4DynamicParticle *forParticle);
+	float Gravity(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticleProperties
@@ -168,6 +173,7 @@ public:
 	
 	bool CollisionDie(C4DynamicParticle *forParticle) { return false; }
 	bool CollisionBounce(C4DynamicParticle *forParticle);
+	bool CollisionStop(C4DynamicParticle *forParticle);
 };
 
 class C4DynamicParticle

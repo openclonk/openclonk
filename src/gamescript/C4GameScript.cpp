@@ -1682,7 +1682,25 @@ static C4ValueArray* FnPV_Speed(C4PropList * _this, C4Value factor, C4Value star
 {
 	C4ValueArray *pArray = new C4ValueArray(3);
 	pArray->SetItem(0, C4VInt(C4PV_Speed));
-	pArray->SetItem(1, factor);
+	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
+	pArray->SetItem(2, startValue);
+	return pArray;
+}
+
+static C4ValueArray* FnPV_Wind(C4PropList * _this, C4Value factor, C4Value startValue)
+{
+	C4ValueArray *pArray = new C4ValueArray(3);
+	pArray->SetItem(0, C4VInt(C4PV_Wind));
+	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
+	pArray->SetItem(2, startValue);
+	return pArray;
+}
+
+static C4ValueArray* FnPV_Gravity(C4PropList * _this, C4Value factor, C4Value startValue)
+{
+	C4ValueArray *pArray = new C4ValueArray(3);
+	pArray->SetItem(0, C4VInt(C4PV_Gravity));
+	pArray->SetItem(1, factor.GetType() == C4V_Nil ? C4VInt(1000) : factor);
 	pArray->SetItem(2, startValue);
 	return pArray;
 }
@@ -1699,6 +1717,13 @@ static C4ValueArray* FnPC_Bounce(C4PropList * _this, C4Value bouncyness)
 	C4ValueArray *pArray = new C4ValueArray(2);
 	pArray->SetItem(0, C4VInt(C4PC_Bounce));
 	pArray->SetItem(1, bouncyness.GetType() != C4V_Nil ? bouncyness : C4VInt(1000));
+	return pArray;
+}
+
+static C4ValueArray* FnPC_Stop(C4PropList * _this)
+{
+	C4ValueArray *pArray = new C4ValueArray(1);
+	pArray->SetItem(0, C4VInt(C4PC_Stop));
 	return pArray;
 }
 
@@ -2548,9 +2573,12 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	F(PV_Direction);
 	F(PV_Step);
 	F(PV_Speed);
+	F(PV_Wind);
+	F(PV_Gravity);
 	// F(PV_KeyFrames); added below
 	F(PC_Die);
 	F(PC_Bounce);
+	F(PC_Stop);
 
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
