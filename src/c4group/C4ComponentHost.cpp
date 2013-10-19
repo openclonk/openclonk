@@ -25,6 +25,7 @@
 
 #include <C4Include.h>
 #include <C4ComponentHost.h>
+#include <C4Language.h>
 
 #include <StdRegistry.h>
 
@@ -102,6 +103,12 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	CopyFilePathFromGroup(*hGroupSet.GetGroup(0));
 	// Not loaded
 	return false;
+}
+
+bool C4ComponentHost::LoadEx(C4Group &hGroup, const char *szFilename, const char *szLanguage)
+{
+	C4GroupSet hGroups = Languages.GetPackGroups(hGroup);
+	return Load(hGroups, szFilename, szLanguage);
 }
 
 void C4ComponentHost::FinishLoad(const StdStrBuf & name, C4Group &hGroup)

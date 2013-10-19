@@ -371,7 +371,6 @@ set(OC_CLONK_SOURCES
 	src/lib/StdMeshMath.h
 	src/lib/StdMeshUpdate.cpp
 	src/lib/StdMeshUpdate.h
-	src/lib/StdResStr.h
 	src/network/C4Client.cpp
 	src/network/C4Client.h
 	src/network/C4GameControlNetwork.cpp
@@ -1013,7 +1012,6 @@ src/lib/StdCompiler.h
 src/lib/C4Markup.cpp
 src/lib/C4Markup.h
 src/lib/StdResStr2.cpp
-src/lib/StdResStr2.h
 src/network/C4NetIO.cpp
 src/network/C4NetIO.h
 src/platform/GetTime.cpp

@@ -101,7 +101,7 @@ inline void operator delete(void *p, const char *, long)
 #include "C4Real.h"
 #include "StdBuf.h"
 #include "StdFile.h"
-#include "StdResStr2.h"
+#include "C4Language.h"
 #include "C4Log.h"
 #include "C4Reloc.h"
 #include "C4Config.h"

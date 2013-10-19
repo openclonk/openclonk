@@ -6,6 +6,7 @@
  * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2011  Armin Burgmeier
  * Copyright (c) 2011  Peter Wortmann
+ * Copyright (c) 2013  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -36,6 +37,8 @@
 #include <C4Log.h>
 #include <C4Config.h>
 #include <C4Game.h>
+
+#include <regex>
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
@@ -383,6 +386,49 @@ void C4Language::InitInfos()
 		}
 }
 
+namespace
+{
+	std::string GetResStr(const char *id, const char *stringtbl)
+	{
+		static std::regex line_pattern("^([^=]+)=(.*)\\r?$", std::regex_constants::optimize);
+		assert(stringtbl);
+		if (!stringtbl)
+		{
+			return std::string();
+		}
+
+		// Get beginning and end iterators of stringtbl
+		const char *begin = stringtbl;
+		const char *end = begin + std::char_traits<char>::length(begin);
+
+		for (auto it = std::cregex_iterator(begin, end, line_pattern); it != std::cregex_iterator(); ++it)
+		{
+			assert(it->size() == 3);
+			if (it->size() != 3)
+				continue;
+
+			std::string key = (*it)[1];
+			if (key != id)
+				continue;
+
+			std::string val = (*it)[2];
+			return val;
+		}
+
+		// If we get here, there was no such string in the string table
+		// return the input string so there's at least *something*
+		return id;
+	}
+
+	template<size_t N>
+	void CopyResStr(const char *id, const char *stringtbl, char (&dest)[N])
+	{
+		std::string value = GetResStr(id, stringtbl);
+		std::strncpy(dest, value.c_str(), N);
+		dest[N - 1] = '\0';
+	}
+}
+
 void C4Language::LoadInfos(C4Group &hGroup)
 {
 	char strEntry[_MAX_FNAME + 1];
@@ -403,9 +449,9 @@ void C4Language::LoadInfos(C4Group &hGroup)
 				SCopy(GetFilenameOnly(strEntry) + SLen(GetFilenameOnly(strEntry)) - 2, pInfo->Code, 2);
 				SCapitalize(pInfo->Code);
 				// Get language name, info, fallback from table
-				SCopy(GetResStr("IDS_LANG_NAME", strTable), pInfo->Name, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_INFO", strTable), pInfo->Info, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_FALLBACK", strTable), pInfo->Fallback, C4MaxLanguageInfo);
+				CopyResStr("IDS_LANG_NAME", strTable, pInfo->Name);
+				CopyResStr("IDS_LANG_INFO", strTable, pInfo->Info);
+				CopyResStr("IDS_LANG_FALLBACK", strTable, pInfo->Fallback);
 				// Safety: pipe character is not allowed in any language info string
 				SReplaceChar(pInfo->Name, '|', ' ');
 				SReplaceChar(pInfo->Info, '|', ' ');
@@ -481,11 +527,9 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	char strEntry[_MAX_FNAME + 1];
 	sprintf(strEntry, "Language%s.txt", strCode); // ...should use C4CFN_Language here
 	// Load string table
-	char *strTable;
-	if (!hGroup.LoadEntry(strEntry, &strTable, 0, true))
+	if (!system_string_table.Load(hGroup, strEntry))
 		return false;
-	// Set string table
-	SetResStrTable(strTable);
+	
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
 	const char * const to_set = nl_langinfo(CODESET);
@@ -502,10 +546,22 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	return true;
 }
 
+const char* C4Language::LoadResStr(const char *id) const
+{
+	try
+	{
+		return system_string_table.Translate(id).c_str();
+	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		return id;
+	}
+}
+
 void C4Language::ClearLanguage()
 {
 	// Clear resource string table
-	ClearResStrTable();
+	system_string_table.Clear();
 }
 
 // Closes any open language pack that has the specified path.

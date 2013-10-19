@@ -135,7 +135,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	// Load language string table
 	if (!Languages.LoadLanguage(Config.General.LanguageEx))
 		// No language table was loaded - bad luck...
-		if (!IsResStrTableLoaded())
+		if (!Languages.HasStringTable())
 			Log("WARNING: No language string table loaded!");
 
 #if defined(WIN32) && defined(WITH_AUTOMATIC_UPDATE)
@@ -565,7 +565,7 @@ void C4Application::Clear()
 	// close system group (System.ocg)
 	SystemGroup.Close();
 	// Log
-	if (IsResStrTableLoaded()) // Avoid (double and undefined) message on (second?) shutdown...
+	if (::Languages.HasStringTable()) // Avoid (double and undefined) message on (second?) shutdown...
 		Log(LoadResStr("IDS_PRC_DEINIT"));
 	// Clear external language packs and string table
 	Languages.Clear();

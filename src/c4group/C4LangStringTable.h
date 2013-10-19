@@ -35,7 +35,7 @@ class C4LangStringTable : public C4ComponentHost
 	void PopulateStringTable() const;
 public:
 	C4LangStringTable();
-	std::string Translate(const std::string &text) const;
+	const std::string &Translate(const std::string &text) const;
 	bool HasTranslation(const std::string &text) const;
 	// do replacement in buffer
 	// if any replacement is done, the buffer will be realloced

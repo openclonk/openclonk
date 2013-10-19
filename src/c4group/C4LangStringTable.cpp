@@ -37,7 +37,7 @@ bool C4LangStringTable::HasTranslation(const std::string &text) const
 	return strings.find(text) != strings.end();
 }
 
-std::string C4LangStringTable::Translate(const std::string &text) const
+const std::string &C4LangStringTable::Translate(const std::string &text) const
 {
 	if (strings.empty())
 		PopulateStringTable();
