@@ -64,6 +64,16 @@ func FxAutoSellValuablesTimer(_, effect, time)
 	fm->FadeOut(2, 10);
 	fm->SetSpeed(0, -5);
 	
+	var dust_particles =
+	{
+		Prototype = Particles_Dust(),
+		Size = PV_KeyFrames(0, 0, 0, 100, 10, 1000, 0),
+		Alpha = PV_KeyFrames(0, 0, 255, 750, 255, 1000, 0),
+		R = 200,
+		G = 125,
+		B = 125,
+	};
+	
 	for(var valuable in to_remove)
 	{
 		if(valuable->~QueryOnSell(valuable->GetController())) continue;
@@ -73,7 +83,7 @@ func FxAutoSellValuablesTimer(_, effect, time)
 		value += valuable->GetValue();
 		
 		CreateParticle("Flash", valuable->GetX() - GetX(), valuable->GetY() - GetY(), 0, 0, 10 * Max(5, Max(valuable->GetDefWidth(), valuable->GetDefHeight())), RGB(255,255,50));
-		CastParticles("Dust2", 4, 10, valuable->GetX() - GetX(), valuable->GetY() - GetY(), 50, 70, RGB(100, 100, 100), RGB(200,125,125));
+		CreateParticleEx("Dust", valuable->GetX() - GetX(), valuable->GetY() - GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(18, 36), dust_particles, 10);
 		valuable->RemoveObject();
 	}
 	

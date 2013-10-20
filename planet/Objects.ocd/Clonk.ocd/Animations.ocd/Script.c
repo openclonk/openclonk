@@ -385,8 +385,14 @@ func Footstep()
 	{
 		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
-		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticleEx("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 		Sound("StepSoft?");
 	}
 }
@@ -1030,8 +1036,14 @@ func Hit(int iXSpeed, int iYSpeed)
 			if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 			{
 				var clr = GetAverageTextureColor(GetTexture(0,10));
-				for(var i = -3; i < 4; i++)
-					CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+				var particles =
+				{
+					Prototype = Particles_Dust(),
+					R = (clr >> 16) & 0xff,
+					G = (clr >> 8) & 0xff,
+					B = clr & 0xff,
+				};
+				CreateParticleEx("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 			}
 		}
 	}
@@ -1041,8 +1053,14 @@ func Hit(int iXSpeed, int iYSpeed)
 		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 		{
 			var clr = GetAverageTextureColor(GetTexture(0,10));
-			for(var i = -3; i < 4; i++)
-				CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+			var particles =
+			{
+				Prototype = Particles_Dust(),
+				R = (clr >> 16) & 0xff,
+				G = (clr >> 8) & 0xff,
+				B = clr & 0xff,
+			};
+			CreateParticleEx("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 		}
 	}
 }
@@ -1103,8 +1121,15 @@ func FxRollingTimer(object target, int num, int timer)
 	{
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		var dir = GetDir()*2-1;
-		CreateParticle("Dust2", dir*-3, 8, dir*-3, -3, 60+Random(10), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-2, 8, dir*-2, -4, 60+Random(10), DoRGBaValue(clr,-150,0));
+		
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticleEx("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
 	}
 }
 

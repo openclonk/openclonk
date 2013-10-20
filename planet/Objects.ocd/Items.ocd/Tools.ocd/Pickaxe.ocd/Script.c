@@ -112,8 +112,15 @@ protected func DoSwing(object clonk, int ix, int iy)
 		if(is_solid && GetMaterialVal("DigFree","Material",mat))
 		{
 			var clr = GetAverageTextureColor(tex);
-			var a = 80;
-			CreateParticle("Dust",x2,y2,RandomX(-3,3),RandomX(-3,3),RandomX(10,250),DoRGBaValue(clr,-255+a,0));
+			var particles =
+			{
+				Prototype = Particles_Dust(),
+				R = (clr >> 16) & 0xff,
+				G = (clr >> 8) & 0xff,
+				B = clr & 0xff,
+				Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(2, 50), 1000, 0),
+			};
+			CreateParticleEx("Dust", x2, y2, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 3);
 			Sound("Dig?");
 		}
 		//It's solid, but not diggable. So it is a hard mineral.
