@@ -171,12 +171,12 @@ bool C4ParticleDef::Load(C4Group &group)
 		if (!(InitProc = ParticleSystem.GetProc(InitFn.getData())))
 		{
 			DebugLogF("init proc for particle '%s' not found: '%s'", Name.getData(), InitFn.getData());
-			return false;
+			InitProc = &fxStdInit;
 		}
 		if (!(ExecProc = ParticleSystem.GetProc(ExecFn.getData())))
 		{
 			DebugLogF("exec proc for particle '%s' not found: '%s'", Name.getData(), ExecFn.getData());
-			return false;
+			ExecProc = &fxStdExec;
 		}
 		if (CollisionFn && CollisionFn[0]) if (!(CollisionProc = ParticleSystem.GetProc(CollisionFn.getData())))
 			{
@@ -186,7 +186,7 @@ bool C4ParticleDef::Load(C4Group &group)
 		if (!(DrawProc = ParticleSystem.GetDrawProc(DrawFn.getData())))
 		{
 			DebugLogF("draw proc for particle '%s' not found: '%s'", Name.getData(), DrawFn.getData());
-			return false;
+			DrawProc = &fxStdDraw;
 		}
 		// particle overloading
 		C4ParticleDef *def_overload;

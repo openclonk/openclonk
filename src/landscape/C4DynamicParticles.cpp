@@ -340,7 +340,7 @@ float C4DynamicParticleValueProvider::Speed(C4DynamicParticle *forParticle)
 
 float C4DynamicParticleValueProvider::Wind(C4DynamicParticle *forParticle)
 {
-	return startValue + (speedFactor * ::Weather.GetWind((int)forParticle->positionX, (int)forParticle->positionY));
+	return startValue + (0.01f * speedFactor * ::Weather.GetWind((int)forParticle->positionX, (int)forParticle->positionY));
 }
 
 float C4DynamicParticleValueProvider::Gravity(C4DynamicParticle *forParticle)
@@ -523,6 +523,7 @@ void C4DynamicParticleValueProvider::Set(float to)
 C4DynamicParticleProperties::C4DynamicParticleProperties()
 {
 	blitMode = 0;
+	attachment = C4ATTACH_None;
 	hasConstantColor = false;
 	hasCollisionVertex = false;
 	collisionCallback = 0;
@@ -710,7 +711,11 @@ bool C4DynamicParticle::Exec(C4Object *obj, float timeDelta, C4ParticleDef *sour
 {
 	// die of old age? :<
 	lifetime -= timeDelta;
-	if (lifetime <= 0.f) return false;
+	// check only if we had a maximum lifetime to begin with (for permanent particles)
+	if (startingLifetime > 0.f)
+	{
+		if (lifetime <= 0.f) return false;
+	}
 
 	// movement
 	float currentForceX = properties.forceX.GetValue(this);
@@ -1060,7 +1065,7 @@ void C4DynamicParticleSystem::ReleaseParticleList(C4DynamicParticleList *first, 
 }
 
 #ifndef USE_CONSOLE
-void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4Object *object)
+void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleValueProvider &x, C4DynamicParticleValueProvider &y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount, C4Object *object)
 {
 	// todo: check amount etc
 
@@ -1087,15 +1092,19 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 		xoff = object->GetX();
 		yoff = object->GetY();
 
-		// figure out particle list to use
-		if (particleProperties.attachment & C4ATTACH_Front) pxList = object->DynamicFrontParticles;
-		else if (particleProperties.attachment & C4ATTACH_Back) pxList = object->DynamicBackParticles;
-
 		if (particleProperties.attachment & C4ATTACH_MoveRelative)
 		{
 			drawingOffsetX = -xoff;
 			drawingOffsetY = -yoff;
+
+			// move relative implies that the particle needs to be in the object's particle list (back OR front)
+			// just select the front particles here - will be overwritten below if necessary
+			pxList = object->DynamicFrontParticles;
 		}
+
+		// figure out particle list to use
+		if (particleProperties.attachment & C4ATTACH_Front) pxList = object->DynamicFrontParticles;
+		else if (particleProperties.attachment & C4ATTACH_Back) pxList = object->DynamicBackParticles;
 	}
 
 	// sanity for global particles - might have to be created first
@@ -1107,6 +1116,8 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 
 	while (amount--)
 	{
+		if (x.IsRandom()) x.RollRandom();
+		if (y.IsRandom()) y.RollRandom();
 		if (speedX.IsRandom()) speedX.RollRandom();
 		if (speedY.IsRandom()) speedY.RollRandom();
 		if (lifetime.IsRandom()) lifetime.RollRandom();
@@ -1125,7 +1136,7 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, float x, float y, C4
 		particle->currentSpeedY = speedY.GetValue(particle);
 		particle->drawingData.aspect = of_def->Aspect;
 		particle->drawingData.SetOffset(drawingOffsetX, drawingOffsetY);
-		particle->SetPosition(x + xoff, y + yoff);
+		particle->SetPosition(x.GetValue(particle) + xoff, y.GetValue(particle) + yoff);
 		particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
 	}
 }

@@ -260,7 +260,7 @@ protected:
 public:
 	float GetAge() const { return startingLifetime - lifetime; }
 	float GetLifetime() const { return lifetime; }
-	float GetRelativeAge() const { return 1.0f - (lifetime / startingLifetime);}
+	float GetRelativeAge() const { return (startingLifetime != 0.f) ? (1.0f - (lifetime / startingLifetime)) : 0.f; }
 
 	void Init();
 	C4DynamicParticle() { Init(); }
@@ -406,7 +406,7 @@ public:
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
-	void Create(C4ParticleDef *of_def, float x, float y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
+	void Create(C4ParticleDef *of_def, C4DynamicParticleValueProvider &x, C4DynamicParticleValueProvider &y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
 #endif
 
 };
