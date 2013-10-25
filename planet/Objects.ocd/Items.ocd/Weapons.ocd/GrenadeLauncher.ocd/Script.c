@@ -177,7 +177,8 @@ private func FireWeapon(object clonk, int angle)
 		CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2),-Cos(r,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,50));
 	}
 	CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),450,RGB(255,255,255),clonk);
-	CreateParticle("Flash",0,0,0,0,800,RGBa(255,255,64,150));
+	
+	CreateParticleEx("Flash", 0, 0, 0, 0, 8, Particles_Flash());
 }
 
 func RejectCollect(id shotid, object shot)

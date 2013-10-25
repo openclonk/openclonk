@@ -275,7 +275,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	var dist = 25;
 	var px = Cos(r/angPrec - 90,dist);
 	var py = Sin(r/angPrec - 90,dist) - 4;
-	CreateParticle("Flash",px,py,0,0,420,RGB(255,255,255));
+	CreateParticleEx("Flash", px, py, 0, 0, 8, Particles_Flash());
 	for(var i=0; i<15; ++i) //liberated from musket script... I'm horrible at particles :p
 	{
 		var speed = RandomX(0,10);
