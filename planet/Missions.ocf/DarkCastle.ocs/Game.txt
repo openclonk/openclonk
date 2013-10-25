@@ -1794,7 +1794,6 @@ OCF=12846145
 ActionTime=74541
 Component=Rock=6;Metal=3
 Contents=3225;3224;3219
-Effects=(1,74541,1,3082,SteamEngine,3083;false;"Name"=s"IntScheduleCall","Repeats"=i-74541,"Function"=s"CollectionZone","Pars"=E52,"NoStop"=b1)
 
   [Mesh]
   Valid=true

@@ -34,24 +34,8 @@ global func FxIntScheduleTimer(object obj, proplist effect)
 }
 
 // Adds a timed call to an object, replacement of DefCore TimerCall.
-global func AddTimer(
-	call_function /* function that will be called every time step. string of name or function pointer. */
-	, int interval /* interval in frames in which the function will be called */)
+global func AddTimer(call_function, int interval)
 {
-/*
-// script for a mine that checks for enemies every second
-func Initialize()
-{
-	AddTimer("CheckForEnemies", 36);
-}
-
-func CheckForEnemies()
-{
-	if(FindObject(Find_AtPoint(), Find_OCF(OCF_Alive)))
-		Explode(30);
-}
-*/
-
 	if (!this)
 		return false;
 	// Default to one second.
