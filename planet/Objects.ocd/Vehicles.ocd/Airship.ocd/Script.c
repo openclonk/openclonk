@@ -88,8 +88,14 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 		if (effect.AnimDir == DIR_Right) 
 			i = -25; 
 		if (graphic->GetAnimationPosition(turnanim) == graphic->GetAnimationLength("TurnLeft")) //Don't smoke if turning... airship blocks view
-			CreateParticle("EngineSmoke", i, 18,0,0,RandomX(20,40),RGBa(colour,colour,colour,colour));
-
+		{
+			var particles = 
+			{
+				Prototype = Particles_Smoke(),
+				R = colour, G = colour, B = colour
+			};
+			CreateParticleEx("EngineSmoke", i, 18, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+		}
 		// Fan-blade sound
 		if (!enginesound)
 		{

@@ -209,7 +209,13 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 
 		//Vfx
 		var colour = 255 - (GetDamage() * 3);
-		CreateParticle("EngineSmoke",0,0,0,0,RandomX(70,90),RGB(colour,colour,colour));
+		var particles = 
+		{
+			Prototype = Particles_Smoke(),
+			R = colour, G = colour, B = colour,
+			Size = PV_Linear(PV_Random(20, 30), PV_Random(70, 100))
+		};
+		CreateParticleEx("EngineSmoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 	}
 
 	//Throttle-to-thrust lag
