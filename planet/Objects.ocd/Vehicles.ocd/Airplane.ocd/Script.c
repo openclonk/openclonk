@@ -215,7 +215,7 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 			R = colour, G = colour, B = colour,
 			Size = PV_Linear(PV_Random(20, 30), PV_Random(70, 100))
 		};
-		CreateParticleEx("EngineSmoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+		CreateParticleEx("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 	}
 
 	//Throttle-to-thrust lag

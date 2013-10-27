@@ -1,3 +1,0 @@
-[Particle]
-Name=EngineSmoke
-Face=0,0,64,64,-32,-32
