@@ -181,6 +181,9 @@
 /* Developer mode */
 #cmakedefine WITH_DEVELOPER_MODE 1
 
+/* Define to 1 if you want to use Boost.Regex instead of <regex>. */
+#cmakedefine USE_BOOST_REGEX 1
+
 /* Glib */
 #cmakedefine WITH_GLIB 1
 

@@ -38,7 +38,14 @@
 #include <C4Config.h>
 #include <C4Game.h>
 
-#include <regex>
+#ifdef USE_BOOST_REGEX
+#	undef new
+#	include <boost/regex.hpp>
+	namespace re = boost;
+#else
+#	include <regex>
+	namespace re = std;
+#endif
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H
@@ -390,7 +397,7 @@ namespace
 {
 	std::string GetResStr(const char *id, const char *stringtbl)
 	{
-		static std::regex line_pattern("^([^=]+)=(.*)\\r?$", std::regex_constants::optimize);
+		static re::regex line_pattern("^([^=]+)=(.*)\\r?$", re::regex_constants::optimize);
 		assert(stringtbl);
 		if (!stringtbl)
 		{
@@ -401,7 +408,7 @@ namespace
 		const char *begin = stringtbl;
 		const char *end = begin + std::char_traits<char>::length(begin);
 
-		for (auto it = std::cregex_iterator(begin, end, line_pattern); it != std::cregex_iterator(); ++it)
+		for (auto it = re::cregex_iterator(begin, end, line_pattern); it != re::cregex_iterator(); ++it)
 		{
 			assert(it->size() == 3);
 			if (it->size() != 3)

@@ -1,7 +1,7 @@
 # OpenClonk, http://www.openclonk.org
 #
 # Copyright (c) 2009-2011  Günther Brammer
-# Copyright (c) 2009-2012  Nicolas Hake
+# Copyright (c) 2009-2013  Nicolas Hake
 # Copyright (c) 2009  David Dormagen
 # Copyright (c) 2009-2012  Armin Burgmeier
 # Copyright (c) 2009-2010  Sven Eberhardt
@@ -105,6 +105,14 @@ CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RV
 CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
 CHECK_CXX_SOURCE_COMPILES("int main() { static_assert(true, \"\"); }" HAVE_STATIC_ASSERT)
 set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
+
+# g++'s libstdc++ doesn't properly support <regex> until 4.8.1 (maybe later?).
+# They ship a header that declares functions, but they don't ship an
+# implementation for some things (like std::regex_iterator).
+# This needs to test *linking*, not compilation; cmake does both at the same
+# time, so the test below works.
+CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
+CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
 
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
@@ -842,12 +850,8 @@ include(FindPNG)
 include(FindZLIB)
 include_directories(${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR})
 
-find_package("Boost" 1.40.0)
-if(NOT Boost_INCLUDE_DIR)
-	message(SEND_ERROR "Could not find the Boost C++ Libraries")
-else()
-	include_directories(SYSTEM ${Boost_INCLUDE_DIR})
-endif()
+find_package("Boost" 1.40.0 REQUIRED)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 include(FindThreads)
 if(NOT WIN32)
@@ -1421,6 +1425,15 @@ endif()
 if(HAVE_UPNP)
 	include_directories(${UPNP_INCLUDE_DIR})
 	target_link_libraries(openclonk ${UPNP_LIBRARIES})
+endif()
+
+if(USE_BOOST_REGEX)
+	SET(Boost_USE_STATIC_LIBS ON)
+	find_package(Boost 1.40.0 REQUIRED COMPONENTS regex)
+	# Disable automatic linking, we'll do it ourselves
+	add_definitions(-DBOOST_REGEX_NO_LIB)
+	target_link_libraries(libc4script ${Boost_REGEX_LIBRARY})
+	target_link_libraries(c4group ${Boost_REGEX_LIBRARY})
 endif()
 
 add_subdirectory(tests EXCLUDE_FROM_ALL)
