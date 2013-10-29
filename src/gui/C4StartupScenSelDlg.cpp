@@ -128,7 +128,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	Clear();
 	// load localization info
 	C4LangStringTable LangTable;
-	bool fHasLangTable = !!LangTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	bool fHasLangTable = C4Language::LoadComponentHost(&LangTable, hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 	// load core data
 	StdStrBuf Buf;
 	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, &Buf)) return false;
@@ -483,7 +483,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			return false;
 		// Load entry name
 		C4ComponentHost DefNames;
-		if (DefNames.LoadEx(Group, C4CFN_Title, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefNames, Group, C4CFN_Title, Config.General.LanguageEx))
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
 		// load entry icon
@@ -524,7 +524,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	{
 		// load desc
 		C4ComponentHost DefDesc;
-		if (DefDesc.LoadEx(Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefDesc, Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 		{
 			C4RTFFile rtf;
 			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));

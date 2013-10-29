@@ -360,7 +360,7 @@ bool C4Def::Load(C4Group &hGroup,
 		}
 
 	// Read string table
-	StringTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, szLanguage);
+	C4Language::LoadComponentHost(&StringTable, hGroup, C4CFN_ScriptStringTbl, szLanguage);
 
 	// Register ID with script engine
 	::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
@@ -384,7 +384,7 @@ bool C4Def::Load(C4Group &hGroup,
 		{
 			// create new
 			pClonkNames = new C4ComponentHost();
-			if (!pClonkNames->LoadEx(hGroup, C4CFN_ClonkNames, szLanguage))
+			if (!C4Language::LoadComponentHost(pClonkNames, hGroup, C4CFN_ClonkNames, szLanguage))
 			{
 				delete pClonkNames; pClonkNames = NULL;
 			}

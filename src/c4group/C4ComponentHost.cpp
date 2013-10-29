@@ -105,12 +105,6 @@ bool C4ComponentHost::Load(C4GroupSet &hGroupSet,
 	return false;
 }
 
-bool C4ComponentHost::LoadEx(C4Group &hGroup, const char *szFilename, const char *szLanguage)
-{
-	C4GroupSet hGroups = Languages.GetPackGroups(hGroup);
-	return Load(hGroups, szFilename, szLanguage);
-}
-
 void C4ComponentHost::FinishLoad(const StdStrBuf & name, C4Group &hGroup)
 {
 	Data.EnsureUnicode();

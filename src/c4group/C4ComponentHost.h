@@ -36,7 +36,6 @@ public:
 	size_t GetDataSize() const { return Data.getLength(); }
 	bool Load(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
 	bool Load(C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
-	bool LoadEx(C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
 	bool GetLanguageString(const char *szLanguage, class StdStrBuf &rTarget);
 protected:
 	// The component host's Data has changed. This callback can be used by

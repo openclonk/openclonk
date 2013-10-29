@@ -66,6 +66,9 @@ public:
 	// Handling of external language packs
 	int GetPackCount();
 	C4GroupSet GetPackGroups(C4Group &);
+	// Load a C4ComponentHost from all loaded language packs
+	static bool LoadComponentHost(C4ComponentHost *host, C4Group &hGroup, const char *szFilename, const char *szLanguage);
+
 	// Handling of language info loaded from string tables
 	int GetInfoCount();
 	C4LanguageInfo *GetInfo(int iIndex);

@@ -252,12 +252,12 @@ bool C4Game::OpenScenario()
 #endif
 
 	// Title
-	Title.LoadEx(ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
+	C4Language::LoadComponentHost(&Title, ScenarioFile, C4CFN_Title, Config.General.LanguageEx);
 	if (!Title.GetLanguageString(Config.General.LanguageEx, ScenarioTitle))
 		ScenarioTitle.Copy(C4S.Head.Title);
 
 	// String tables
-	ScenarioLangStringTable.LoadEx(ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	C4Language::LoadComponentHost(&ScenarioLangStringTable, ScenarioFile, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
 	// Load parameters (not as network client, because then team info has already been sent by host)
 	if (!Network.isEnabled() || Network.isHost())
@@ -2655,7 +2655,7 @@ bool C4Game::LoadAdditionalSystemGroup(C4Group &parent_group)
 	if (SysGroup.OpenAsChild(&parent_group, C4CFN_System))
 	{
 		C4LangStringTable SysGroupString;
-		SysGroupString.LoadEx(SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		C4Language::LoadComponentHost(&SysGroupString, SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 		// load custom scenario control definitions
 		if (SysGroup.FindEntry(C4CFN_PlayerControls))
 		{
@@ -2797,7 +2797,7 @@ bool C4Game::InitKeyboard()
 void C4Game::UpdateLanguage()
 {
 	// Reload System.ocg string table
-	MainSysLangStringTable.LoadEx(Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	C4Language::LoadComponentHost(&MainSysLangStringTable, Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 }
 
 bool C4Game::InitPlayerControlSettings()

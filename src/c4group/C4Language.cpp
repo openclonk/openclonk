@@ -373,6 +373,14 @@ C4GroupSet C4Language::GetPackGroups(C4Group & hGroup)
 	return r;
 }
 
+bool C4Language::LoadComponentHost(C4ComponentHost *host, C4Group &hGroup, const char *szFilename, const char *szLanguage)
+{
+	assert(host);
+	if (!host) return false;
+	C4GroupSet hGroups = ::Languages.GetPackGroups(hGroup);
+	return host->Load(hGroups, szFilename, szLanguage);
+}
+
 void C4Language::InitInfos()
 {
 	C4Group hGroup;
