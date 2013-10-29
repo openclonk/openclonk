@@ -47,8 +47,13 @@ public:
 	public:
 		NoSuchTranslation(const std::string &text) : std::runtime_error("No such translation: \"" + text + "\"") {}
 	};
+
+	static inline C4LangStringTable &GetSystemStringTable() { return system_string_table; }
 protected:
 	virtual void OnLoad() { strings.clear(); } // Make sure we re-populate when the string table is reloaded
+
+private:
+	static C4LangStringTable system_string_table;
 };
 
 #endif // INC_C4LangStringTable

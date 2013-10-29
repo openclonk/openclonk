@@ -79,8 +79,7 @@ public:
 	static StdStrBuf IconvClonk(const char * string);
 	static StdStrBuf IconvSystem(const char * string);
 
-	const char *LoadResStr(const char *id) const;
-	inline bool HasStringTable() const { return !system_string_table.GetDataBuf().isNull(); }
+	inline bool HasStringTable() const { return !C4LangStringTable::GetSystemStringTable().GetDataBuf().isNull(); }
 
 private:
 	// Handling of language info loaded from string tables
@@ -94,13 +93,21 @@ private:
 	static iconv_t host_to_local;
 	static StdStrBuf Iconv(const char * string, iconv_t cd);
 #endif
-
-	C4LangStringTable system_string_table;
 };
 
 extern C4Language Languages;
 
-inline const char *LoadResStr(const char *id) { return ::Languages.LoadResStr(id); }
+inline const char *LoadResStr(const char *id)
+{
+	try
+	{
+		return C4LangStringTable::GetSystemStringTable().Translate(id).c_str();
+	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		return id;
+	}
+}
 const char *LoadResStrNoAmp(const char *id);
 
 #endif

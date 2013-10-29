@@ -542,7 +542,7 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	char strEntry[_MAX_FNAME + 1];
 	sprintf(strEntry, "Language%s.txt", strCode); // ...should use C4CFN_Language here
 	// Load string table
-	if (!system_string_table.Load(hGroup, strEntry))
+	if (!C4LangStringTable::GetSystemStringTable().Load(hGroup, strEntry))
 		return false;
 	
 #ifdef HAVE_ICONV
@@ -561,22 +561,10 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 	return true;
 }
 
-const char* C4Language::LoadResStr(const char *id) const
-{
-	try
-	{
-		return system_string_table.Translate(id).c_str();
-	}
-	catch (C4LangStringTable::NoSuchTranslation &)
-	{
-		return id;
-	}
-}
-
 void C4Language::ClearLanguage()
 {
 	// Clear resource string table
-	system_string_table.Clear();
+	C4LangStringTable::GetSystemStringTable().Clear();
 }
 
 // Closes any open language pack that has the specified path.
