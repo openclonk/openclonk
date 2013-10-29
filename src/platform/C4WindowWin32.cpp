@@ -36,7 +36,6 @@
 #include <C4Config.h>
 #include <C4Console.h>
 #include <C4DrawGL.h>
-#include <C4DrawD3D.h>
 #include <C4FullScreen.h>
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
@@ -114,7 +113,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		// fall through to next case
 	case WM_ACTIVATEAPP:
 		Application.Active = wParam != 0;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 		if (pGL)
 		{
 			if (Application.Active)
@@ -139,12 +138,6 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				}
 			}
 		}
-#endif
-#ifdef USE_DIRECTX
-		if (pD3D && Application.Active)
-			pD3D->TaskIn();
-		if (pD3D && !Application.Active)
-			pD3D->TaskOut();
 #endif
 		// redraw background
 		::GraphicsSystem.InvalidateBg();
@@ -753,13 +746,9 @@ void C4Window::FlashWindow()
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	if(pGL && pGL->pMainCtx)
 		samples = pGL->pMainCtx->EnumerateMultiSamples();
-#endif
-
-#ifdef USE_DIRECTX
-	// TODO: Enumerate multi samples
 #endif
 }
 
@@ -884,16 +873,7 @@ void C4AbstractApp::RestoreVideoMode()
 
 bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
 {
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		if (!pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen))
-			return false;
-		OnResolutionChanged(iXRes, iYRes);
-		return true;
-	}
-#endif
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
 	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 	// change mode
@@ -995,14 +975,8 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 #endif
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(_GAMMARAMP &ramp)
 {
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		return pD3D->SaveDefaultGammaRamp(ramp);
-	}
-#endif
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)
 	{
@@ -1017,14 +991,8 @@ bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
 	return false;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP &ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(_GAMMARAMP &ramp, bool fForce)
 {
-#ifdef USE_DIRECTX
-	if (pD3D)
-	{
-		return pD3D->ApplyGammaRamp(ramp, fForce);
-	}
-#endif
 	if (!Active && !fForce) return false;
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)

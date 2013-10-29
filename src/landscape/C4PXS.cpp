@@ -252,12 +252,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	C4Rect VisibleRect(cgo.TargetX, cgo.TargetY, cgo.Wdt, cgo.Hgt);
 	VisibleRect.Enlarge(20);
 
-	// Lock primary surface
-#ifdef USE_DIRECTX
-	if (pD3D)
-		cgo.Surface->Lock();
-#endif
-
 	// First pass: draw simple PXS (lines/pixels)
 	float cgox = cgo.X - cgo.TargetX, cgoy = cgo.Y - cgo.TargetY;
 	unsigned int cnt;
@@ -288,12 +282,6 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 						pDraw->DrawPix(cgo.Surface, fixtof(pxp->x) + cgox, fixtof(pxp->y) + cgoy, dwMatClr);
 				}
 		}
-
-	// Unlock primary surface
-#ifdef USE_DIRECTX
-	if (pD3D)
-		cgo.Surface->Unlock();
-#endif
 
 	// PXS graphics disabled?
 	if (!Config.Graphics.PXSGfx)

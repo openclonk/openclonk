@@ -97,8 +97,8 @@ public:
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 	// Gamma
-	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
+	virtual bool ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _GAMMARAMP &ramp);
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	C4Window * pWindow;

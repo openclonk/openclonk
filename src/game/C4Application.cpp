@@ -172,8 +172,8 @@ bool C4Application::DoInit(int argc, char * argv[])
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
-	// Initialize D3D/OpenGL
-	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	// Initialize OpenGL
+	bool success = DDrawInit(this, !!isEditor, false, GetConfigWidth(), GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.Monitor);
 	if (!success) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); ShowGfxErrorDialog(); return false; }
 
 	if (!isEditor)

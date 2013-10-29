@@ -111,7 +111,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BitDepth,              "BitDepth",             32            ,false, true));
 	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
-	pComp->Value(mkNamingAdapt(Engine,                "Engine"  ,             1             ,false, true));
 	pComp->Value(mkNamingAdapt(Gamma1,                "Gamma1"  ,             0             ));
 	pComp->Value(mkNamingAdapt(Gamma2,                "Gamma2"  ,             0x808080      ));
 	pComp->Value(mkNamingAdapt(Gamma3,                "Gamma3"  ,             0xffffff      ));
@@ -357,10 +356,6 @@ bool C4Config::Load(const char *szConfigFile)
 	if (fWinSock) WSACleanup();
 #endif
 	General.DefaultLanguage();
-#if defined USE_GL && !defined USE_DIRECTX
-	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
-		Graphics.Engine = GFXENGN_OPENGL;
-#endif
 	// bit depth sanity check (might be corrupted by resolution check bug in old version)
 	if (Graphics.BitDepth < 16)
 	{

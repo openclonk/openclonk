@@ -53,9 +53,6 @@ endfunction()
 include(CMakeDependentOption)
 option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_CONSOLE "Build dedicated server" OFF)
-CMAKE_DEPENDENT_OPTION(USE_GL "Enable OpenGL support" ON "NOT USE_CONSOLE" OFF)
-# DirectX is disabled because it misses essential features
-CMAKE_DEPENDENT_OPTION(USE_DIRECTX "Enable DirectX support" OFF "WIN32 AND NOT USE_CONSOLE" OFF)
 CMAKE_DEPENDENT_OPTION(USE_SDL_MAINLOOP "Use SDL to create windows etc." OFF "NOT USE_CONSOLE" OFF)
 CMAKE_DEPENDENT_OPTION(USE_X11 "Use X11 to create windows etc." ON
 	"UNIX AND NOT APPLE AND NOT USE_SDL_MAINLOOP AND NOT USE_CONSOLE" OFF)
@@ -220,10 +217,6 @@ set(OC_CLONK_SOURCES
 	src/graphics/Bitmap256.cpp
 	src/graphics/Bitmap256.h
 	src/graphics/C4Draw.cpp
-	src/graphics/C4DrawD3D.cpp
-	src/graphics/C4DrawD3D.h
-	src/graphics/C4DrawD3DShader.cpp
-	src/graphics/C4DrawD3DShader.h
 	src/graphics/C4DrawGL.cpp
 	src/graphics/C4DrawGLCtx.cpp
 	src/graphics/C4DrawGL.h
@@ -1310,7 +1303,7 @@ if(WIN32)
 	set(HAVE_DBGHELP ${DBGHELP_FOUND})
 endif()
 
-if(USE_GL)
+if(NOT USE_CONSOLE)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	FIND_PATH(GLEW_INCLUDE_DIR NAMES GL/glew.h)
@@ -1319,28 +1312,6 @@ if(USE_GL)
 		${OPENGL_LIBRARIES}
 	)
 	include_directories(${GLEW_INCLUDE_DIR})
-endif()
-if(USE_DIRECTX)
-	if(EXISTS $ENV{DXSDK_DIR})
-		list(APPEND CMAKE_INCLUDE_PATH $ENV{DXSDK_DIR}/Include)
-		if(CMAKE_CL_64)
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
-		else()
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
-		endif()
-	endif()
-	FINDLIB(DIRECT3D_LIBRARIES d3d9)
-	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
-	FIND_PATH(DIRECT3D_INCLUDE_DIR NAMES d3d9.h)
-	FIND_PATH(DIRECT3DX_INCLUDE_DIR NAMES d3dx9.h)
-	target_link_libraries(openclonk
-		${DIRECT3D_LIBRARIES}
-		${DIRECT3DX_LIBRARIES}
-	)
-	include_directories(
-		${DIRECT3D_INCLUDE_DIR}
-		${DIRECT3DX_INCLUDE_DIR}
-	)
 endif()
 if(USE_GTK)
 	SET(WITH_DEVELOPER_MODE ${GTK_FOUND})

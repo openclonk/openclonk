@@ -26,7 +26,6 @@
 #include <C4AppWin32Impl.h>
 #include "C4ConsoleGUI.h"
 #include <C4DrawGL.h>
-#include <C4DrawD3D.h>
 #include <C4Landscape.h>
 #include <C4Object.h>
 #include <C4PlayerList.h>
@@ -309,9 +308,7 @@ class C4ToolsDlg::State: public C4ConsoleGUI::InternalState<class C4ToolsDlg>
 {
 public:
 	HWND hDialog;
-#ifdef USE_GL
 	CStdGLCtx* pGLCtx;
-#endif
 	friend INT_PTR CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 	HBITMAP hbmBrush,hbmBrush2;
 	HBITMAP hbmLine,hbmLine2;
@@ -372,13 +369,11 @@ public:
 		if (hbmFill) DeleteObject(hbmFill);
 		if (hbmIFT) DeleteObject(hbmIFT);
 		if (hbmNoIFT) DeleteObject(hbmNoIFT);
-#ifdef USE_GL
 		if (pGLCtx)
 		{
 			delete pGLCtx;
 			pGLCtx = NULL;
 		}
-#endif
 		if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
 	}
 
@@ -954,10 +949,8 @@ bool C4ConsoleGUI::ToolsDlgOpen(C4ToolsDlg *dlg)
 	// Load bitmaps if necessary
 	dlg->state->LoadBitmaps(Application.GetInstance());
 	// create target ctx for OpenGL rendering
-#ifdef USE_GL
 	if (pDraw && !dlg->state->pGLCtx)
 		dlg->state->pGLCtx = pDraw->CreateContext(GetDlgItem(dlg->state->hDialog,IDC_PREVIEW), &Application);
-#endif
 	// Show window
 	RestoreWindowPosition(dlg->state->hDialog, "Property", Config.GetSubkeyPath("Console"));
 	SetWindowPos(dlg->state->hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
@@ -1083,14 +1076,6 @@ void C4ToolsDlg::NeedPreviewUpdate()
 
 	//Application.DDraw->AttachPrimaryPalette(sfcPreview);
 
-#ifdef USE_DIRECTX
-	if (pD3D)
-		pD3D->BlitSurface2Window( sfcPreview,
-		                          0,0,iPrvWdt,iPrvHgt,
-		                          GetDlgItem(state->hDialog,IDC_PREVIEW),
-		                          rect.left,rect.top,rect.right,rect.bottom);
-#endif
-#ifdef USE_GL
 	// FIXME: This activates the wrong GL context. To avoid breaking the main window display,
 	// FIXME: it has been disabled for the moment
     //if (pGLCtx->Select())
@@ -1098,7 +1083,6 @@ void C4ToolsDlg::NeedPreviewUpdate()
 	//	pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
 	//	Application.pWindow->pSurface->PageFlip();
 	//}
-#endif
 	delete sfcPreview;
 }
 

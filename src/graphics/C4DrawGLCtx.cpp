@@ -30,7 +30,7 @@
 #include <C4Window.h>
 #include <C4Config.h>
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 void CStdGLCtx::SelectCommon()
 {
@@ -565,4 +565,4 @@ bool CStdGLCtx::PageFlip()
 
 #endif //USE_X11/USE_SDL_MAINLOOP
 
-#endif // USE_GL
+#endif // USE_CONSOLE

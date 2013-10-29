@@ -29,14 +29,9 @@
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
-#ifdef USE_DIRECTX
-#include <d3d9.h>
-#undef DrawText
-#else
 typedef void* IDirect3DSurface9;
-#endif
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 #include <GL/glew.h>
 #endif
 
@@ -61,12 +56,7 @@ typedef void* IDirect3DSurface9;
 
 const int ALeft=0,ACenter=1,ARight=2;
 
-#ifdef USE_DIRECTX
-class CStdD3D;
-extern CStdD3D *pD3D;
-#endif
-
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 class CStdGL;
 class CStdGLCtx;
 extern CStdGL *pGL;
@@ -95,29 +85,9 @@ public:
 #ifdef _DEBUG
 	int *dbg_idx;
 #endif
-#if defined(USE_DIRECTX) && defined(USE_GL)
-	union
-	{
-		struct // D3D values
-		{
-#endif
-#ifdef USE_DIRECTX
-			IDirect3DSurface9 *pSfc;      // surface (primary sfc)
-			D3DFORMAT dwClrFormat;        // used color format in textures
-#endif
-#if defined(USE_DIRECTX) && defined(USE_GL)
-
-		};
-		struct // OpenGL values
-		{
-#endif
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			GLenum Format;                // used color format in textures
 			CStdGLCtx * pCtx;
-#endif
-#if defined(USE_DIRECTX) && defined(USE_GL)
-		};
-	};
 #endif
 	C4TexRef **ppTex;              // textures
 	BYTE byBytesPP;               // bytes per pixel (2 or 4)
@@ -152,7 +122,7 @@ public:
 	bool Copy(C4Surface &fromSfc);
 	bool CreateColorByOwner(C4Surface *pBySurface);  // create ColorByOwner-surface
 	bool SetAsClrByOwnerOf(C4Surface *pOfSurface);   // assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	bool CreatePrimaryGLTextures();                 // create primary textures from back buffer
 #endif
 	// Only for surfaces which map to a window
@@ -177,9 +147,6 @@ public:
 	bool ReadBMP(CStdStream &hGroup);
 
 	bool AttachPalette();
-#ifdef USE_DIRECTX
-	IDirect3DSurface9 *GetSurface(); // get internal surface
-#endif
 	bool GetSurfaceSize(int &irX, int &irY); // get surface size
 	void SetClr(DWORD toClr) { ClrByOwnerClr=toClr; }
 	DWORD GetClr() { return ClrByOwnerClr; }
@@ -197,39 +164,19 @@ protected:
 	friend class CStdGL;
 };
 
-#ifndef USE_DIRECTX
 typedef struct _D3DLOCKED_RECT
 {
 	int                 Pitch;
 	unsigned char *     pBits;
 } D3DLOCKED_RECT;
-#endif
 
 // one texture encapsulation
 class C4TexRef
 {
 public:
 	D3DLOCKED_RECT texLock;   // current lock-data
-#if defined(USE_DIRECTX) && defined(USE_GL)
-	union
-	{
-		struct // D3D
-		{
-#endif
-#ifdef USE_DIRECTX
-			IDirect3DTexture9 *pTex;  // texture
-#endif
-#if defined(USE_DIRECTX) && defined(USE_GL)
-		};
-		struct // OpenGL
-		{
-#endif
-#ifdef USE_GL
-			GLuint texName;
-#endif
-#if defined(USE_DIRECTX) && defined(USE_GL)
-		};
-	};
+#ifndef USE_CONSOLE
+	GLuint texName;
 #endif
 	int iSizeX;
 	int iSizeY;

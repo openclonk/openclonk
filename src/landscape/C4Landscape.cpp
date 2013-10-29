@@ -1325,7 +1325,7 @@ bool C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 	}
 
 	// Create renderer
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	if (!pLandscapeRender && ::Config.Graphics.HighResLandscape)
 		pLandscapeRender = new C4LandscapeRenderGL();
 #endif

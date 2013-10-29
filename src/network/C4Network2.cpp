@@ -368,9 +368,7 @@ bool C4Network2::DoLobby()
 		ChangeGameStatus(GS_Lobby, 0);
 
 	// determine lobby type
-	bool fFullscreenLobby = !Console.Active && (pDraw->GetEngine() != GFXENGN_NOGFX);
-
-	if (!fFullscreenLobby)
+	if (Console.Active)
 	{
 		// console lobby - update console
 		if (Console.Active) Console.UpdateMenus();

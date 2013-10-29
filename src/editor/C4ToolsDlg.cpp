@@ -33,8 +33,7 @@
 #include <C4Game.h>
 #include <C4GameControl.h>
 #include <StdRegistry.h>
-#include <C4DrawD3D.h>
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 #include <C4DrawGL.h>
 #endif
 

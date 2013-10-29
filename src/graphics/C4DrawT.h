@@ -26,12 +26,8 @@
 class CStdNoGfx : public C4Draw
 {
 public:
-	CStdNoGfx();
-	virtual ~CStdNoGfx();
-public:
 	virtual bool BeginScene() { return true; }
 	virtual void EndScene() { }
-	virtual int GetEngine() { return GFXENGN_NOGFX; }
 	virtual void TaskOut() { }
 	virtual void TaskIn() { }
 	virtual bool UpdateClipper() { return true; }

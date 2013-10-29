@@ -28,7 +28,6 @@
 #include "C4App.h"
 #include <C4FontLoader.h>
 #include <C4Window.h>
-#include <C4DrawD3D.h>
 #include <C4DrawGL.h>
 #include <C4DrawT.h>
 #include <C4Markup.h>
@@ -1189,21 +1188,14 @@ void C4Draw::RemoveZoom(float & X, float & Y)
 	Y = (Y - ZoomY) / Zoom + ZoomY;
 }
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor)
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 {
 	// create engine
-	switch (Engine)
-	{
-	default: // Use the first engine possible if none selected
-#ifdef USE_DIRECTX
-	case GFXENGN_DIRECTX: pDraw = new CStdD3D(false); break;
-	case GFXENGN_DIRECTXS: pDraw = new CStdD3D(true); break;
-#endif
-#ifdef USE_GL
-	case GFXENGN_OPENGL: pDraw = new CStdGL(); break;
-#endif
-	case GFXENGN_NOGFX: pDraw = new CStdNoGfx(); break;
-	}
+    #ifndef USE_CONSOLE
+	  pDraw = new CStdGL();
+    #else
+	  pDraw = new CStdNoGfx();
+    #endif
 	if (!pDraw) return false;
 	// init it
 	if (!pDraw->Init(pApp, Editor, fUsePageLock, iXRes, iYRes, iBitDepth, iMonitor))

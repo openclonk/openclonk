@@ -11,7 +11,7 @@
 #include "C4DrawGL.h"
 #include "StdColors.h"
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 // Automatically reload shaders when changed at runtime?
 #define AUTO_RELOAD_SHADERS

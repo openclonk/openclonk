@@ -225,7 +225,7 @@ namespace C4GUI
 		{
 			pSurface->Wdt = r.Wdt;
 			pSurface->Hgt = r.Hgt;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			pGL->PrepareRendering(pSurface);
 			glClear(GL_COLOR_BUFFER_BIT);
 #endif

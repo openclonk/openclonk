@@ -129,7 +129,6 @@ private:
 	void OnWindowedModeComboFill(C4GUI::ComboBox_FillCB *pFiller);
 	bool OnWindowedModeComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection);
 	void OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox);
-	void OnGfxEngineCheck(C4GUI::Element *pCheckBox);
 	void OnGfxTroubleCheck(C4GUI::Element *pCheckBox)
 	{ SaveGfxTroubleshoot(); } // immediate save and test
 	void OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller);
@@ -142,7 +141,7 @@ private:
 	const char * GetWindowedName(int32_t mode = -1);
 	void OnEffectsSliderChange(int32_t iNewVal);
 
-	C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
+	C4GUI::CheckBox *pCheckGfxClrDepth[2];
 	C4GUI::GroupBox *pGroupTrouble;
 	C4GUI::CheckBox *pShaders;
 	int32_t iGfxTexIndent;

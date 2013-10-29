@@ -36,7 +36,7 @@
 #include "C4Config.h"
 #include "C4Application.h"
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 // MSVC doesn't define M_PI in math.h unless requested
 #ifdef  _MSC_VER
@@ -995,4 +995,4 @@ void CStdGL::Default()
 	iClrDpt=0;
 }
 
-#endif // USE_GL
+#endif // USE_CONSOLE

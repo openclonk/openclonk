@@ -93,8 +93,8 @@ bool C4AbstractApp::IsClipboardFull(bool fClipboard)
 	return false;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP&, bool) { return true; }
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP&) { return true; }
+bool C4AbstractApp::ApplyGammaRamp(_GAMMARAMP&, bool) { return true; }
+bool C4AbstractApp::SaveDefaultGammaRamp(_GAMMARAMP&) { return true; }
 void C4AbstractApp::MessageDialog(const char * message) {}
 
 bool C4AbstractApp::FlushMessages()

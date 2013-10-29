@@ -157,12 +157,6 @@
 /* dedicated server mode */
 #cmakedefine USE_CONSOLE 1
 
-/* DirectX graphics */
-#cmakedefine USE_DIRECTX 1
-
-/* OpenGL graphics */
-#cmakedefine USE_GL 1
-
 /* MP3 music */
 #cmakedefine USE_MP3 1
 

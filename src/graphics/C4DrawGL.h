@@ -21,7 +21,8 @@
 
 /* OpenGL implementation of NewGfx */
 
-#if !defined(INC_StdGL) && defined(USE_GL)
+
+#if !defined(INC_StdGL) && !defined(USE_CONSOLE)
 #define INC_StdGL
 
 #ifdef _WIN32
@@ -106,7 +107,6 @@ public:
 	// General
 	void Clear();
 	void Default();
-	virtual int GetEngine() { return 1; }   // get indexed engine
 	virtual bool IsOpenGL() { return true; }
 	virtual bool IsShaderific() { return shaders[0] != 0; }
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution

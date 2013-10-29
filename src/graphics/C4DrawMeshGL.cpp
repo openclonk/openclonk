@@ -23,7 +23,7 @@
 
 #include "StdMesh.h"
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 
 namespace
 {
@@ -1038,4 +1038,4 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-#endif // USE_GL
+#endif // USE_CONSOLE

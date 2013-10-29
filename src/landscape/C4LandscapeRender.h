@@ -72,7 +72,7 @@ public:
 	virtual void Draw(const C4TargetFacet &cgo) = 0;
 };
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 class C4LandscapeRenderGL : public C4LandscapeRender
 {
 public:

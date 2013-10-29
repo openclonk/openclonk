@@ -21,16 +21,6 @@
 #include <C4DrawT.h>
 #include <StdMeshMaterial.h>
 
-CStdNoGfx::CStdNoGfx()
-{
-	Default();
-}
-
-CStdNoGfx::~CStdNoGfx()
-{
-	Clear();
-}
-
 bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 {
 	Log("Graphics disabled.");

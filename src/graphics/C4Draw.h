@@ -30,12 +30,6 @@
 #include <C4windowswrapper.h>
 #endif
 
-// engines
-#define GFXENGN_DIRECTX  0
-#define GFXENGN_OPENGL   1
-#define GFXENGN_DIRECTXS 2
-#define GFXENGN_NOGFX    3
-
 // Global Draw access pointer
 extern C4Draw *pDraw;
 
@@ -130,14 +124,12 @@ struct C4BltData
 
 
 // This structure is used by StdGL, too
-#ifndef USE_DIRECTX
-typedef struct _D3DGAMMARAMP
+typedef struct _GAMMARAMP
 {
 	WORD                red  [256];
 	WORD                green[256];
 	WORD                blue [256];
-} D3DGAMMARAMP;
-#endif
+} GAMMARAMP;
 
 // gamma ramp control
 class C4GammaControl
@@ -146,7 +138,7 @@ private:
 	void SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3); // set color channel ramp
 
 protected:
-	D3DGAMMARAMP ramp;
+	GAMMARAMP ramp;
 
 public:
 	C4GammaControl() { Default(); } // ctor
@@ -212,7 +204,6 @@ public:
 #ifdef _WIN32
 	virtual CStdGLCtx *CreateContext(HWND, C4AbstractApp *) { return NULL; }
 #endif
-	virtual int GetEngine() = 0;    // get indexed engine
 	virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 	virtual bool IsOpenGL() { return false; }
 	virtual bool IsShaderific() { return false; }
@@ -325,7 +316,6 @@ protected:
 	friend class C4Surface;
 	friend class C4TexRef;
 	friend class C4Pattern;
-	friend class CStdD3DShader;
 };
 
 struct ZoomDataStackItem: public ZoomData
@@ -340,5 +330,5 @@ bool UnLockSurfaceGlobal(C4Surface * sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+bool DDrawInit(C4AbstractApp * pApp, bool Editor, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 #endif // INC_STDDDRAW2
