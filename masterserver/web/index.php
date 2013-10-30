@@ -20,10 +20,9 @@ require_once('frontend.php');
         <title>OpenClonk Masterserver</title>
         <meta charset='utf-8'>
         <link rel='stylesheet' href='masterserver.css'>
-        <link rel='stylesheet' href='http://www.openclonk.org/header/header.css'>
     </head>
     <body>
-		<?php include("http://www.openclonk.org/header/header.php?p=masterserver"); ?>
+		<?php readfile($_SERVER['DOCUMENT_ROOT'].'../www/header/header.html'); ?>
         <div id="masterserver">
             <h1>Masterserver</h1>
             <?php
