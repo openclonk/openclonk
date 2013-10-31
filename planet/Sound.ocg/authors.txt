@@ -58,3 +58,4 @@ alienistcog		- WoodCreak* (http://freesound.org/people/alienistcog/sounds/123712
 fryzu82			- Boiling (http://freesound.org/people/fryzu82/sounds/142333/)
 Adam_N			- Blowout (http://freesound.org/people/Adam_N/sounds/166126/)
 BenNevis		- SteamEngine (http://freesound.org/people/BenNevis/sounds/203175/)
+felix.blume		- Pumpjack (http://freesound.org/people/felix.blume/sounds/203990/)

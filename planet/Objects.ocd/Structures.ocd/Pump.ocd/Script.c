@@ -33,6 +33,7 @@ local ActMap = {
 		Name = "Pump",
 		Length = 30,
 		Delay = 3,
+		Sound = "Pumpjack",
 		NextAction = "Pump",
 		StartCall = "CheckState",
 		PhaseCall = "Pumping"
