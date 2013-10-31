@@ -42,6 +42,7 @@ adcbicycle		- SoftTouch* (http://www.freesound.org/people/adcbicycle/sounds/1387
 				- GeneralHit2 (http://www.freesound.org/people/adcbicycle/sounds/13899/)
 				- DullMetalHit1 (http://www.freesound.org/people/adcbicycle/sounds/13854/)
 				- DullMetalHit2 (http://www.freesound.org/people/adcbicycle/sounds/13876/)
+				- DullMetalHit3 (http://freesound.org/people/adcbicycle/sounds/13831/)
 				- DullWoodHit2 (http://www.freesound.org/people/adcbicycle/sounds/13958/)
 				- GlassHit1 (http://www.freesound.org/people/adcbicycle/sounds/13936/)
 				- GlassHit2 (http://www.freesound.org/people/adcbicycle/sounds/13931/)

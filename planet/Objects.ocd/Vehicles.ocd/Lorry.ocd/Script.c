@@ -43,6 +43,11 @@ protected func ContactRight()
 		SetRDir(RandomX(-7, +7));
 }
 
+func Hit3()
+{
+	Sound("DullMetalHit?");
+}
+
 /*-- Contents --*/
 
 private func MaxContentsCount()
