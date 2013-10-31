@@ -75,6 +75,14 @@ func Wind2Turn()
 
 	// adjust wheel speed
 	this.wheel->SetRDir(current_wind*90, this->MinRevolutionTime());
+	// make sounds
+	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
+	{
+		if (!Random(2))
+			Sound("WoodCreak?",false,nil,nil,0,false, 75);
+		else
+			Sound("HingeCreak?",false,nil,nil,0,false, 75);
+	}
 }
 
 func Definition(def) {

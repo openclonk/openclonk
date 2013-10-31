@@ -30,6 +30,7 @@ Anton			- DullWoodHit1 (http://www.freesound.org/people/Anton/sounds/1257/)
 CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
 dobroide		- Fire (http://www.freesound.org/people/dobroide/sounds/4211/)
 bennychico11	- FHurt1, FHurt2 (http://www.freesound.org/people/bennychico11/sounds/80438/)
+cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/126302/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 
@@ -51,3 +52,4 @@ mbezzola		- RockHit* (http://www.freesound.org/people/mbezzola/sounds/105282/)
 RytmenPinnen	- Fuse/FuseLoop (http://www.freesound.org/people/RytmenPinnen/sounds/102264/)
 kibibu			- LightMetalHit2 (http://www.freesound.org/people/kibibu/sounds/22435/)
 prozaciswack	- Earthquake (http://www.freesound.org/people/prozaciswack/sounds/82722/)
+alienistcog		- WoodCreak* (http://freesound.org/people/alienistcog/sounds/123712/)
