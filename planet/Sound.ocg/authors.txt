@@ -31,6 +31,7 @@ CGEffex			- Inflame (http://www.freesound.org/people/CGEffex/sounds/94102/)
 dobroide		- Fire (http://www.freesound.org/people/dobroide/sounds/4211/)
 bennychico11	- FHurt1, FHurt2 (http://www.freesound.org/people/bennychico11/sounds/80438/)
 cmusounddesign	- HingeCreak* (http://freesound.org/people/cmusounddesign/sounds/126302/)
+earthsounds		- WheelsTurn (http://freesound.org/people/earthsounds/sounds/101486/)
 
 The following sound effects are licensed under the CC 0 license (public domain):
 

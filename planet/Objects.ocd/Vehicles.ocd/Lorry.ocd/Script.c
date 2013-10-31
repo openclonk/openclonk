@@ -17,6 +17,7 @@ public func IsToolProduct() { return true; }
 
 local drive_anim;
 local tremble_anim;
+local wheel_sound;
 
 protected func Initialize()
 {
@@ -103,6 +104,16 @@ func TurnWheels()
 		if(iTremble < 0) iTremble += 2000;
 		if(iTremble > 2000) iTremble -= 2000;
 		SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
+	}
+	if (Abs(GetXDir()) > 1 && !wheel_sound)
+	{
+		if (!wheel_sound) Sound("WheelsTurn", false, nil, nil, 1);
+		wheel_sound = true;
+	}
+	else if (wheel_sound && !GetXDir())
+	{
+		Sound("WheelsTurn", false, nil, nil, -1);
+		wheel_sound = false;
 	}
 }
 
