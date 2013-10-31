@@ -189,7 +189,10 @@ void C4AbstractApp::RestoreVideoMode()
 		XRRFreeScreenConfigInfo(conf);
 		fDspModeSet = false;
 	}
-	gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
+	// pWindow may be unset when C4AbstractApp gets destroyed during the
+	// initialization code, before a window has been created
+	if (pWindow)
+		gtk_window_unfullscreen(GTK_WINDOW(pWindow->window));
 }
 
 bool C4AbstractApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, int32_t *piRefreshRate, uint32_t iMonitor)
