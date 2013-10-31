@@ -97,6 +97,7 @@ func FxCreatesPowerStart(target, effect, temp)
 	MakePowerProducer(SteamEngine_produced_power);
 	
 	AddEffect("Smoking", this, 1, 5, this);
+	Sound("SteamEngine", false, nil, nil, 1);
 }
 
 func FxCreatesPowerTimer(target, effect)
@@ -113,6 +114,7 @@ func FxCreatesPowerStop(target, effect, reason, temp)
 	
 	if(GetEffect("Smoking", this))
 		RemoveEffect("Smoking", this);
+	Sound("SteamEngine", false, nil, nil, -1);
 }
 
 func FxSmokingTimer()
