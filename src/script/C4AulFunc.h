@@ -77,10 +77,10 @@ public:
 	virtual C4AulScriptFunc *SFunc() { return NULL; } // type check func...
 
 	// Wether this function should be visible to players
-	virtual bool GetPublic() { return false; }
-	virtual int GetParCount() { return C4AUL_MAX_Par; }
-	virtual C4V_Type* GetParType() = 0;
-	virtual C4V_Type GetRetType() = 0;
+	virtual bool GetPublic() const { return false; }
+	virtual int GetParCount() const { return C4AUL_MAX_Par; }
+	virtual const C4V_Type* GetParType() const = 0;
+	virtual C4V_Type GetRetType() const = 0;
 	C4Value Exec(C4PropList * p = NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false)
 	{
 		return Exec(p, pPars->Par, fPassErrors);

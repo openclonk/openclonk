@@ -241,8 +241,8 @@ public:
 	~C4AulDefFuncHelper()
 	{
 	}
-	virtual C4V_Type* GetParType() { return ParType; }
-	virtual bool GetPublic() { return Public; }
+	virtual const C4V_Type* GetParType() const { return ParType; }
+	virtual bool GetPublic() const { return Public; }
 protected:
 	C4V_Type ParType[10];// type of the parameters
 	bool Public;
@@ -280,8 +280,8 @@ public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
     typedef RType (*Func)(C4PropList * LIST(N, PARS)); \
-    virtual int GetParCount() { return N; }   \
-    virtual C4V_Type GetRetType()             \
+    virtual int GetParCount() const { return N; } \
+    virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
@@ -298,8 +298,8 @@ public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
     typedef RType (*Func)(C4Object * LIST(N, PARS)); \
-    virtual int GetParCount() { return N; }   \
-    virtual C4V_Type GetRetType()             \
+    virtual int GetParCount() const { return N; } \
+    virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefObjectFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
@@ -376,9 +376,9 @@ public:
 	C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef);
 	~C4AulDefFunc();
 
-	virtual bool GetPublic() { return !!Def->Public; }
-	virtual C4V_Type* GetParType() { return Def->ParType; }
-	virtual C4V_Type GetRetType() { return Def->RetType; }
+	virtual bool GetPublic() const { return !!Def->Public; }
+	virtual const C4V_Type* GetParType() const { return Def->ParType; }
+	virtual C4V_Type GetRetType() const { return Def->RetType; }
 
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false);
 };

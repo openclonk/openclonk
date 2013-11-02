@@ -196,14 +196,20 @@ protected:
 	C4AulBCC *GetLastCode() { return Code.empty() ? NULL : &Code.back(); }
 	std::vector<C4AulBCC> Code;
 	std::vector<const char *> PosForCode;
+	int ParCount;
+	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
 
 public:
 	const char *Script; // script pos
 	C4ValueMapNames VarNamed; // list of named vars in this function
 	C4ValueMapNames ParNamed; // list of named pars in this function
-	int ParCount;
-	C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-	void AddPar(const char * Idtf) { ParNamed.AddName(Idtf); ++ParCount; }
+	void AddPar(const char * Idtf)
+	{
+		assert(ParCount < C4AUL_MAX_Par);
+		assert(ParCount == ParNamed.iSize);
+		ParNamed.AddName(Idtf);
+		++ParCount;
+	}
 	C4ScriptHost *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 	C4AulScriptFunc(C4AulScript *pOwner, C4ScriptHost *pOrgScript, const char *pName, const char *Script);
@@ -212,10 +218,10 @@ public:
 
 	void ParseFn(C4AulScriptContext* context = NULL);
 
-	virtual bool GetPublic() { return true; }
-	virtual int GetParCount() { return ParCount; }
-	virtual C4V_Type *GetParType() { return ParType; }
-	virtual C4V_Type GetRetType() { return C4V_Any; }
+	virtual bool GetPublic() const { return true; }
+	virtual int GetParCount() const { return ParCount; }
+	virtual const C4V_Type *GetParType() const { return ParType; }
+	virtual C4V_Type GetRetType() const { return C4V_Any; }
 	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false); // execute func
 
 	int GetLineOfCode(C4AulBCC * bcc);
