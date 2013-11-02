@@ -74,7 +74,7 @@ protected func InitializePlayer(int plr)
 private func GivePlayerKnowledge(int plr)
 {
 	var structures = [Flagpole, WindGenerator, SteamEngine, Compensator, Foundry, Sawmill, Elevator, Pump, ToolsWorkshop, ChemicalLab, Armory, Chest, Windmill, Kitchen];
-	var items = [Loam, GoldBar, Metal, Shovel, Axe, Hammer, Pickaxe, Barrel, Bucket, Dynamite, DynamiteBox, PowderKeg, Pipe, TeleGlove, WindBag, GrappleBow, Boompack];
+	var items = [Loam, GoldBar, Metal, Shovel, Axe, Hammer, Pickaxe, Barrel, Bucket, Dynamite, DynamiteBox, PowderKeg, Pipe, TeleGlove, WindBag, GrappleBow, Boompack, Balloon];
 	var weapons = [Bow, Arrow, Club, Sword, Javelin, Shield, Musket, LeadShot, IronBomb, GrenadeLauncher];
 	var vehicles = [Lorry, Catapult, Cannon, Airship, Plane];
 	for (var structure in structures)
@@ -363,7 +363,10 @@ private func ProvideIsland(array island, int number, int amount)
 	if (number >= 6)
 	{
 		var chest = CreateObject(Chest, spot.x, spot.y);
-		chest->CreateContents(GrappleBow, Random(amount + 1));
+		if (!Random(2))
+			chest->CreateContents(GrappleBow, Random(amount + 1));
+		else
+			chest->CreateContents(Balloon, Random(amount + 1));
 		chest->CreateContents(Loam, Random(amount + 1));
 		chest->CreateContents(GoldBar, Random(amount + 1));
 		chest->CreateContents(Dynamite, 2 + Random(amount + 1));
