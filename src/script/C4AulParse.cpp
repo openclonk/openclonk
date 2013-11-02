@@ -1410,7 +1410,14 @@ void C4AulParse::Parse_Function()
 		owner->GetPropList()->SetPropertyByS(Fn->Name, C4VFunction(Fn));
 	}
 	assert(Fn);
-	if (Type == PARSER)
+	if (Type == PREPARSER)
+	{
+		// This might be a reload, clear all parameters and local vars
+		Fn->ParCount = 0;
+		Fn->ParNamed.Reset();
+		Fn->VarNamed.Reset();
+	}
+	else if (Type == PARSER)
 	{
 		Fn->ClearCode();
 	}
