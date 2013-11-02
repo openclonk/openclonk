@@ -107,7 +107,7 @@ private func Redraw()
 	}
 }
 
-private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int sizeFifths, int color)
+private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, int y2, int distance, int size_fifths, int color)
 {
 	distance = Max(distance, 1);
 	var angle = Angle(x1, y1, x2, y2);
@@ -118,9 +118,17 @@ private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, in
 	var count = Max(2, Distance(x1, y1, x2, y2) / distance);
 	var deltax = x2 - x1, deltay = y2 - y1;
 	//Log("DrawRPL: %s in %d steps, angle %d xdir %d ydir %d", particle, count, angle, xdir, ydir);
+	var particle_prop = 
+	{
+		R = GetRGBaValue(color, 1),
+		G = GetRGBaValue(color, 2),
+		B = GetRGBaValue(color, 3),
+		Alpha = PV_Linear(255, 0),
+		Size = size_fifths / 5
+	};
 	for (var i = count+1; --i; )
 	{
-		CreateParticle(particle, x1 + deltax * i / count, y1 + deltay * i / count, xdir, ydir, sizeFifths, color);
+		CreateParticleEx(particle, x1 + deltax * i / count, y1 + deltay * i / count, xdir, ydir, 26, particle_prop);
 	}
 }
 
