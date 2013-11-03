@@ -1161,7 +1161,7 @@ public func ControlThrow(object target, int x, int y)
 	var throwAngle = Angle(0,0,x,y);
 
 	// walking (later with animation: flight, scale, hangle?) and hands free
-	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" || GetAction() == "Dive")
+	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" ||  GetAction() == "WallJump" || GetAction() == "Dive")
 		&& this->~HasHandAction())
 	{
 		if (throwAngle < 180) SetDir(DIR_Right);
