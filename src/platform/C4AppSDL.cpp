@@ -274,12 +274,12 @@ void C4AbstractApp::RestoreVideoMode()
 {
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP& ramp, bool fForce)
 {
 	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP& ramp)
 {
 	return SDL_GetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }

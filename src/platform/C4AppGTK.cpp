@@ -250,7 +250,7 @@ static XRROutputInfo* GetXRROutputInfoForWindow(Display* dpy, Window w)
 	return info;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP& ramp, bool fForce)
 {
 	if (!Active && !fForce) return false;
 	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
@@ -269,7 +269,7 @@ bool C4AbstractApp::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
 	return true;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP& ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP& ramp)
 {
 	if (Priv->xrandr_major_version < 1 || (Priv->xrandr_major_version == 1 && Priv->xrandr_minor_version < 3)) return false;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());

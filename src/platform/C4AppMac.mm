@@ -187,7 +187,7 @@ bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigne
 	return true;
 }
 
-bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce)
 {
 	CGGammaValue r[256];
 	CGGammaValue g[256];
@@ -202,7 +202,7 @@ bool C4AbstractApp::ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce)
 	return true;
 }
 
-bool C4AbstractApp::SaveDefaultGammaRamp(_D3DGAMMARAMP &ramp)
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP &ramp)
 {
 	CGGammaValue r[256];
 	CGGammaValue g[256];
