@@ -115,12 +115,22 @@
 	// better not to draw anything when the game has already finished
 	if (Application.fQuitMsgReceived)
 		return;
+
 	// don't draw if tab-switched away from fullscreen
-	if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
-		return;
-	if ([self.window isMiniaturized] || ![self.window isVisible])
-		return;
-	//[self.context update];
+	if ([NSApp respondsToSelector:@selector(occlusionState)])
+	{
+		// Mavericks - query app occlusion state
+		if (([NSApp occlusionState] & NSApplicationOcclusionStateVisible) == 0)
+			return;
+	}
+	else
+	{
+		if ([self.controller isFullScreenConsideringLionFullScreen] && ![NSApp isActive])
+			return;
+		if ([self.window isMiniaturized] || ![self.window isVisible])
+			return;
+	}
+
 	C4Window* stdWindow = self.controller.stdWindow;
 	
 	if (stdWindow)
