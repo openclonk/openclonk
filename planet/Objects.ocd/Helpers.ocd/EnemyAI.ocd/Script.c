@@ -53,7 +53,6 @@ func SetGuardRange(object clonk, int x, int y, int wdt, int hgt)
 {
 	var fx = GetEffect("S2AI", clonk);
 	if (!fx || !clonk) return false;
-	fx.guard_range_check = Find_AtRect(x-GetX(),y-GetY(),wdt,hgt);
 	fx.guard_range = {x=x, y=y, wdt=wdt, hgt=hgt};
 	clonk->Call(S2AI.UpdateDebugDisplay, fx);
 	return true;
@@ -563,7 +562,7 @@ private func ExecuteIdle(fx)
 private func FindTarget(fx)
 {
 	// could search for hostile...for now, just search for all other players
-	for (var target in FindObjects(fx.guard_range_check, Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Sort_Random()))
+	for (var target in FindObjects(Find_AtRect(fx.guard_range.x-GetX(),fx.guard_range.y-GetY(),fx.guard_range.wdt,fx.guard_range.hgt), Find_OCF(OCF_Alive), Find_Not(Find_Owner(GetOwner())), Sort_Random()))
 		if (PathFree(GetX(),GetY(),target->GetX(),target->GetY()))
 			return target;
 	// nothing found
