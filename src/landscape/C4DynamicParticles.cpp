@@ -1138,6 +1138,7 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		particle->drawingData.SetOffset(drawingOffsetX, drawingOffsetY);
 		particle->SetPosition(x.GetValue(particle) + xoff, y.GetValue(particle) + yoff);
 		particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
+		particle->drawingData.SetPhase((int)(particle->properties.phase.GetValue(particle) + 0.5f), of_def);
 	}
 }
 
