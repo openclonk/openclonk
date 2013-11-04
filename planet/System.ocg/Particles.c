@@ -156,3 +156,12 @@ global func Particles_Material(int color)
 		B = (color >>  0) & 0xff
 	};
 }
+
+global func Particles_Trajectory()
+{
+	return
+	{
+		BlitMode = GFX_BLIT_Additive,
+		Attach = ATTACH_Front | ATTACH_MoveRelative
+	};
+}
