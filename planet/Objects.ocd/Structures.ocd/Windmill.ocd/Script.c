@@ -111,7 +111,16 @@ protected func Collection()
 
 public func FxCrushingTimer(object target, proplist effect, int time)
 {
-	CreateParticle("Axe_WoodChip", 12 * GetCalcDir(), 40, -(5 - Random(11)) * GetCalcDir(), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
+	var dir = GetCalcDir();
+	var particles =
+	{
+		Prototype = Particle_WoodChip(),
+		R = 255,
+		G = 200,
+		B = 100
+	};
+	CreateParticleEx("Dust", PV_Random(11 * dir, 13 * dir), 40, PV_Random(-5, 5), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 3);
+	
 	return 1;
 }
 

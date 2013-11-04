@@ -189,15 +189,12 @@ func FxIntAxeTimer(object clonk, effect, int time)
 		var x = 10;
 		if(clonk->GetDirection() == COMD_Left) x = x * -1;
 		
-		//Create the woodchip particle
-		var i;
-		while(i != 4)
-		{
-			//random speed & angle
-			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree, clonk.Plane < effect.tree.Plane);
-		}
-
+		//Create the woodchip particles
+		var particles = Particle_WoodChip();
+		// need to be behind the Clonk?
+		if (clonk.Plane > effect.tree.Plane)
+			particles = {Prototype = Particle_WoodChip(), Attach = ATTACH_Back};
+		clonk->CreateParticleEx("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 10);
 		// Damage tree
 		effect.tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
 	}
@@ -240,13 +237,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 		if(clonk->GetDirection() == COMD_Left) x = x * -1;
 
 		//Create the woodchip particle
-		var i;
-		while(i != 4)
-		{
-			//random speed & angle
-			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), effect.tree);
-		}
+		clonk->CreateParticleEx("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), Particle_WoodChip(), 10);
 	}
 	// Tree split!
 	if ((axe_swing_time * 12) / time == 1)

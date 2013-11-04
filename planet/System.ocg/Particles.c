@@ -165,3 +165,20 @@ global func Particles_Trajectory()
 		Attach = ATTACH_Front | ATTACH_MoveRelative
 	};
 }
+
+global func Particle_WoodChip()
+{
+	return
+	{
+		Size = PV_Random(1, 3),
+		Phase = PV_Linear(0, 3),
+		Alpha = PV_KeyFrames(0, 0, 255, 900, 255, 1000, 0),
+		CollisionVertex = 500,
+		OnCollision = PC_Stop(),
+		ForceX = PV_Wind(50),
+		ForceY = PV_Gravity(100),
+		DampingX = 975, DampingY = 975,
+		Rotation = PV_Direction(PV_Random(750, 1250)),
+		Attach = ATTACH_Front
+	};
+}
