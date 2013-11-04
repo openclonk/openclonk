@@ -964,10 +964,21 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
 			if(iTime%5 == 0)
 			{
-				var particle_name = "WaveLeft";
-				if( GetDir() == 1 ) particle_name = "WaveRight";
+				var phases = PV_Linear(0, 7);
+				if (GetDir() == 1) phases = PV_Linear(8, 15);
 				var color = GetAverageTextureColor(GetTexture(0, 0));
-				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, color, this, 1);
+				var particles =
+				{
+					Size = 16,
+					Phase = phases,
+					CollisionVertex = 750,
+					OnCollision = PC_Die(),
+					R = (color >> 16) & 0xff,
+					G = (color >>  8) & 0xff,
+					B = (color >>  0) & 0xff,
+					Attach = ATTACH_Front,
+				};
+				CreateParticleEx("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
 			}
 			Sound("Splash?");
 		}
