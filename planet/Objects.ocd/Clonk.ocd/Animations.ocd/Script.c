@@ -960,8 +960,6 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 		percent = (percent%100);
 		if( percent < 40 )
 		{
-			for(var i = 0; i < 2; i++)
-				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
 			if(iTime%5 == 0)
 			{
 				var phases = PV_Linear(0, 7);
