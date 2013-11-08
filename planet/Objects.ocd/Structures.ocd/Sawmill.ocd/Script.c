@@ -128,7 +128,7 @@ public func FxSawingTimer(object target, proplist effect, int time)
 {
 	var dir = GetCalcDir();
 	if (time >= this.SpinStep * 3 && time % 5)
-		CreateParticleEx("WoodChip", PV_Random(-7 * dir, -3 * dir), PV_Random(3, 6), PV_Random(-5 * dir, -11 * dir), PV_Random(-4, -2), PV_Random(36 * 3, 36 * 10), Particle_WoodChip(), 3);
+		CreateParticleEx("WoodChip", PV_Random(-7 * dir, -3 * dir), PV_Random(3, 6), PV_Random(-5 * dir, -11 * dir), PV_Random(-4, -2), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 3);
 
 	if (!(time % 20))
 		Smoke(10 * GetCalcDir(),10,10);

@@ -114,7 +114,7 @@ public func FxCrushingTimer(object target, proplist effect, int time)
 	var dir = GetCalcDir();
 	var particles =
 	{
-		Prototype = Particle_WoodChip(),
+		Prototype = Particles_WoodChip(),
 		R = 255,
 		G = 200,
 		B = 100
