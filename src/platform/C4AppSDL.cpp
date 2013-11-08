@@ -168,7 +168,7 @@ void C4AbstractApp::HandleSDLEvent(SDL_Event& e)
 		break;
 	case SDL_KEYDOWN:
 	{
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 		if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
 		{
 			Config.Graphics.Windowed = !Config.Graphics.Windowed;

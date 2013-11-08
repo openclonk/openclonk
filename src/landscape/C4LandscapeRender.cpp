@@ -1128,4 +1128,4 @@ void C4LandscapeRenderGL::Draw(const C4TargetFacet &cgo)
 	}
 }
 
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE

@@ -55,7 +55,7 @@
 
 // Some helper functions for choosing a proper visual
 
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 // Returns which XVisual attribute for two given attributes is greater.
 static int CompareVisualAttribute(Display* dpy, XVisualInfo* first, XVisualInfo* second, int attrib)
 {
@@ -207,7 +207,7 @@ static std::vector<XVisualInfo> EnumerateVisuals(Display* dpy)
 	XFree(infos);
 	return selected_infos;
 }
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE
 static void OnDestroyStatic(GtkWidget* widget, gpointer data)
 {
 	C4Window* wnd = static_cast<C4Window*>(data);
@@ -644,7 +644,7 @@ C4Window::~C4Window ()
 
 bool C4Window::FindInfo(int samples, void** info)
 {
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
 	for(unsigned int i = 0; i < infos.size(); ++i)
@@ -662,14 +662,14 @@ bool C4Window::FindInfo(int samples, void** info)
 	}
 #else
 	// TODO: Do we need to handle this case?
-#endif // USE_GL
+#endif // #ifndef USE_CONSOLE
 
 	return false;
 }
 
 void C4Window::EnumerateMultiSamples(std::vector<int>& samples) const
 {
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	std::vector<XVisualInfo> infos = EnumerateVisuals(dpy);
 	for(unsigned int i = 0; i < infos.size(); ++i)
@@ -893,7 +893,7 @@ bool C4Window::ReInit(C4AbstractApp* pApp)
 {
 	// Check whether multisampling settings was changed. If not then we
 	// don't need to ReInit anything.
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 	int value;
 	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 	glXGetConfig(dpy, static_cast<XVisualInfo*>(Info), GLX_SAMPLES_ARB, &value);
