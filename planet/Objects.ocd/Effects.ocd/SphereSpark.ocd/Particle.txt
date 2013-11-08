@@ -1,5 +1,5 @@
 [Particle]
-Name=PSpark
+Name=SphereSpark
 MaxCount=2000
 InitFn=StdInit
 ExecFn=StdExec

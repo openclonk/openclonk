@@ -26,6 +26,9 @@ static const PARKOUR_CP_Ordered = 16;
 static const PARKOUR_CP_Team = 32;
 static const PARKOUR_CP_Bonus = 64;
 
+// particle definition used for the effect around the check point
+local checkpoint_particles;
+
 public func SetCPMode(int mode)
 {
 	// PARKOUR_CP_Start always occurs alone.
@@ -87,6 +90,12 @@ local cleared_by_plr; // Array to keep track of players which were already here.
 
 protected func Initialize()
 {
+	checkpoint_particles =
+	{
+		Size = PV_KeyFrames(0, 0, 0, 250, 10, 500, 0, 750, 10),
+		Alpha = PV_KeyFrames(0, 0, 255, 500, 0, 501, 255, 1000, 0),
+		BlitMode = GFX_BLIT_Additive
+	};
 	cleared_by_plr = [];
 	cp_mode = PARKOUR_CP_Check;
 	cp_size = 20;
@@ -282,10 +291,10 @@ protected func UpdateGraphics(int time)
 	// Create two sparks at opposite sides.
 	var angle = (time * 10) % 360;
 	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
-	angle = (angle + 180) % 360;
-	var color = GetColorByAngle(angle);
-	CreateParticle("PSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 32, color);
+	checkpoint_particles.R = (color >> 16) & 0xff;
+	checkpoint_particles.G = (color >>  8) & 0xff;
+	checkpoint_particles.B = (color >>  0) & 0xff;
+	CreateParticleEx("SphereSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 18 * 5, checkpoint_particles);
 	return;
 }
 
