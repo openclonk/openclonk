@@ -1168,7 +1168,7 @@ bool StdMeshInstance::UpdateBoneTransforms()
 
 		// Compute transformation for each vertex. We could later think about
 		// doing this on the GPU using a vertex shader. This would then probably
-		// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
+		// need to go to CStdGL::PerformMesh.
 		// But first, we need to move vertex data to the GPU.
 		if(!Mesh->GetSharedVertices().empty())
 			ApplyBoneTransformToVertices(Mesh->GetSharedVertices(), SharedVertices);

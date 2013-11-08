@@ -29,7 +29,6 @@
 #ifdef _WIN32
 #include <C4windowswrapper.h>
 #endif
-typedef void* IDirect3DSurface9;
 
 #ifndef USE_CONSOLE
 #include <GL/glew.h>
@@ -160,21 +159,20 @@ protected:
 
 	friend class C4Draw;
 	friend class C4Pattern;
-	friend class CStdD3D;
 	friend class CStdGL;
 };
 
-typedef struct _D3DLOCKED_RECT
+typedef struct _LOCKED_RECT
 {
 	int                 Pitch;
 	unsigned char *     pBits;
-} D3DLOCKED_RECT;
+} LOCKED_RECT;
 
 // one texture encapsulation
 class C4TexRef
 {
 public:
-	D3DLOCKED_RECT texLock;   // current lock-data
+	LOCKED_RECT texLock;   // current lock-data
 #ifndef USE_CONSOLE
 	GLuint texName;
 #endif

@@ -149,7 +149,6 @@ public:
 	DWORD ApplyTo(DWORD dwClr);   // apply gamma to color value
 
 	friend class C4Draw;
-	friend class CStdD3D;
 	friend class CStdGL;
 };
 
