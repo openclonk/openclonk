@@ -405,7 +405,7 @@ namespace
 {
 	std::string GetResStr(const char *id, const char *stringtbl)
 	{
-		static re::regex line_pattern("^([^=]+)=(.*)\\r?$", re::regex_constants::optimize);
+		static re::regex line_pattern("^([^=]+)=(.*?)\r?$", static_cast<re::regex::flag_type>(re::regex_constants::optimize | re::regex_constants::ECMAScript));
 		assert(stringtbl);
 		if (!stringtbl)
 		{
