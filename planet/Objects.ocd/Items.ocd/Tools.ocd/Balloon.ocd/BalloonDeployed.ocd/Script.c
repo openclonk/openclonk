@@ -13,12 +13,7 @@ protected func Initialize()
 	AddEffect("Float",this,1,1,this);
 
 	//Special Effects
-	var i = 0;
-	while(i <= 7)
-	{
-		CreateParticle("Air", 0,16,-3 + Random(7),Random(2),RandomX(70,150),RGB(255,255,255), this);
-		++i;
-	}
+	CreateParticleEx("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
 }
 
 private func Deflate()
@@ -33,7 +28,8 @@ private func Deflate()
 
 private func DeflateEffect()
 {
-	CreateParticle("Air",0,16,0,0,GetActTime()*3,RGB(255,255,255));
+	var act_time = GetActTime();
+	CreateParticleEx("Air", PV_Random(-1, 1), PV_Random(-1, 5), PV_Random(-act_time, act_time), PV_Random(-act_time, act_time), 18, Particles_Air(), act_time);
 }
 
 private func Pack()
