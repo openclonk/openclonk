@@ -262,9 +262,10 @@ public:
 	virtual void DrawQuadDw(C4Surface * sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4) = 0;
 	// gamma
 	void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);  // set gamma ramp
+	void ResetGamma();                                        // reset all gamma ramps to default
 	void ApplyGamma();                                        // apply gamma ramp to ddraw
-	void DisableGamma();                                      // reset gamma ramp to default
-	void EnableGamma();                                       // set current gamma ramp
+	void DisableGamma();                                      // temporarily reset app gamma to default
+	void EnableGamma();                                       // set current gamma ramp in app
 	DWORD ApplyGammaTo(DWORD dwClr);                          // apply gamma to given color
 	// blit states
 	void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color

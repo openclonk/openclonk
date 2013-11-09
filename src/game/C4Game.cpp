@@ -581,6 +581,7 @@ void C4Game::Clear()
 	Control.Clear();
 
 	// Clear
+	if (pDraw) { pDraw->ResetGamma(); pDraw->ApplyGamma(); }
 	Scoreboard.Clear();
 	MouseControl.Clear();
 	Players.Clear();

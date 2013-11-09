@@ -402,6 +402,7 @@ void C4Draw::Default()
 
 void C4Draw::Clear()
 {
+	ResetGamma();
 	DisableGamma();
 	Active=BlitModulated=fUseClrModMap=false;
 	dwBlitMode = 0;
@@ -1122,6 +1123,13 @@ void C4Draw::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampInd
 	dwGamma[iRampIndex+2]=dwClr3;
 	// mark gamma ramp to be recalculated
 	fSetGamma=true;
+}
+
+void C4Draw::ResetGamma()
+{
+	// reset all color channels to default
+	for (int32_t iRampIndex = 0; iRampIndex < C4MaxGammaRamps; ++iRampIndex)
+		SetGamma(0x00, 0x80, 0xff, iRampIndex);
 }
 
 void C4Draw::ApplyGamma()
