@@ -586,6 +586,8 @@ if(WIN32)
 		src/res/resource.h
 	)
 
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/res/openclonk.manifest" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.manifest" COPYONLY)
+
 	if(MINGW)
 		# cmake does not support compiling resources with MinGW
 		# natively, see http://www.cmake.org/Bug/view.php?id=4068.
@@ -1162,6 +1164,11 @@ if(MSVC)
 	oc_set_target_names(c4group)
 	oc_set_target_names(c4script)
 	oc_set_target_names(netpuncher)
+
+	# cmake does not support embedding arbitrary manifests,
+	# so we add it to the resource file ourselves and tell
+	# MSVC not to create its own.
+	set_property(TARGET openclonk APPEND PROPERTY LINK_FLAGS "/MANIFEST:NO")
 endif()
 
 ############################################################################
