@@ -858,11 +858,11 @@ void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 		else phase = (phase+1) / -def->FadeOutDelay + def->Length;
 	}
 	// get rotation
-	int32_t r=0;
+	float r=0;
 	if ((def->RByV == 1) || (def->RByV == 2)) // rotation by direction
-		r = Angle(0,0, (int32_t) (dxdir*10.0f), (int32_t) (dydir*10.0f))*100;
+		r = Angle(0,0, (int32_t) (dxdir*10.0f), (int32_t) (dydir*10.0f));
 	if (def->RByV == 3) // random rotation - currently a pseudo random rotation by x/y position
-		r = (((int32_t)(particle->x * 23 + particle->y * 12)) % 360) * 100;
+		r = fmodf(particle->x * 23 + particle->y * 12, 360.0f);
 	// draw at pos
 	pDraw->ActivateBlitModulation(particle->b);
 	pDraw->StorePrimaryClipper();

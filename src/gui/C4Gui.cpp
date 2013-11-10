@@ -354,7 +354,7 @@ namespace C4GUI
 	{
 		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
 		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		C4DrawTransform trf; trf.SetRotate(-90*100, (float)(cgo.TargetX+rcBounds.x+rcBounds.Hgt/2), (float)(cgo.TargetY+rcBounds.y+rcBounds.Hgt/2));
+		C4DrawTransform trf; trf.SetRotate(-90.0f, (float)(cgo.TargetX+rcBounds.x+rcBounds.Hgt/2), (float)(cgo.TargetY+rcBounds.y+rcBounds.Hgt/2));
 		rFacets.fctBegin.DrawT(cgo.Surface, x0,y0, 0, 0, &trf);
 		while (iY < rcBounds.Wdt-5)
 		{

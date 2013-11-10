@@ -243,7 +243,7 @@ void C4Facet::DrawXR(C4Surface * sfcTarget, int32_t iX, int32_t iY, int32_t iWdt
 {
 	if (!pDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 	C4BltTransform rot;
-	rot.SetRotate(r, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
+	rot.SetRotate(r / 100.0f, (float) (iX+iX+iWdt)/2, (float) (iY+iY+iHgt)/2);
 	pDraw->Blit(Surface,
 	              float(X+Wdt*iSectionX),float(Y+Hgt*iSectionY),float(Wdt),float(Hgt),
 	              sfcTarget,
