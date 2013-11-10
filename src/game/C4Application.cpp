@@ -643,6 +643,7 @@ void C4Application::GameTick()
 		if (!PreInit()) Quit();
 		break;
 	case C4AS_Startup:
+		SoundSystem.Execute();
 		// wait for the user to start a game
 		break;
 	case C4AS_StartGame:
