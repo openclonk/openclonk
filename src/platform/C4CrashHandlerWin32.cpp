@@ -543,6 +543,31 @@ namespace {
 
 void InstallCrashHandler()
 {
+	// Disable process-wide callback filter for exceptions on Windows Vista.
+	// Newer versions of Windows already get this disabled by the application
+	// manifest. Without turning this off, we won't be able to handle crashes
+	// inside window procedures on 64-bit Windows, regardless of whether we
+	// are 32 or 64 bit ourselves.
+	typedef BOOL (WINAPI *SetProcessUserModeExceptionPolicyProc)(DWORD);
+	typedef BOOL (WINAPI *GetProcessUserModeExceptionPolicyProc)(LPDWORD);
+	HMODULE kernel32 = LoadLibrary(TEXT("kernel32"));
+	const SetProcessUserModeExceptionPolicyProc SetProcessUserModeExceptionPolicy =
+		(SetProcessUserModeExceptionPolicyProc)GetProcAddress(kernel32, "SetProcessUserModeExceptionPolicy");
+	const GetProcessUserModeExceptionPolicyProc GetProcessUserModeExceptionPolicy =
+		(GetProcessUserModeExceptionPolicyProc)GetProcAddress(kernel32, "GetProcessUserModeExceptionPolicy");
+#ifndef PROCESS_CALLBACK_FILTER_ENABLED
+#	define PROCESS_CALLBACK_FILTER_ENABLED 0x1
+#endif
+	if (SetProcessUserModeExceptionPolicy && GetProcessUserModeExceptionPolicy)
+	{
+		DWORD flags;
+		if (GetProcessUserModeExceptionPolicy(&flags))
+		{
+			SetProcessUserModeExceptionPolicy(flags & ~PROCESS_CALLBACK_FILTER_ENABLED);
+		}
+	}
+	FreeLibrary(kernel32);
+
 	SetUnhandledExceptionFilter(GenerateDump);
 
 #ifndef NDEBUG
