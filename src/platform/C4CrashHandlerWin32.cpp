@@ -56,7 +56,7 @@ namespace {
 	char SymbolBuffer[DumpBufferSize];
 	// Dump crash info in a human readable format. Uses a static buffer to avoid heap allocations
 	// from an exception handler. For the same reason, this also doesn't use Log/LogF etc.
-	void SafeTextDump(LPEXCEPTION_POINTERS exc, int fd)
+	void SafeTextDump(LPEXCEPTION_POINTERS exc, int fd, const wchar_t *dump_filename)
 	{
 #if defined(_MSC_VER)
 #	define LOG_SNPRINTF _snprintf
@@ -86,6 +86,17 @@ namespace {
 		LOG_STATIC_TEXT("* UNHANDLED EXCEPTION\n");
 		if (OC_BUILD_ID[0] != '\0')
 			LOG_STATIC_TEXT("* Build Identifier: " OC_BUILD_ID "\n");
+		if (exc->ExceptionRecord->ExceptionCode != STATUS_ASSERTION_FAILURE && dump_filename && dump_filename[0] != L'\0')
+		{
+			int cch = WideCharToMultiByte(CP_UTF8, 0, dump_filename, -1, SymbolBuffer, sizeof(SymbolBuffer), nullptr, nullptr);
+			if (cch > 0)
+			{
+				LOG_STATIC_TEXT("* A crash dump may have been written to ");
+				write(fd, SymbolBuffer, cch - 1);
+				LOG_STATIC_TEXT("\n");
+				LOG_STATIC_TEXT("* If this file exists, please send it to a developer for investigation.\n");
+			}
+		}
 		LOG_STATIC_TEXT("**********************************************************************\n");
 		// Log exception type
 		switch (exc->ExceptionRecord->ExceptionCode)
@@ -342,10 +353,6 @@ namespace {
 			}
 			CloseHandle(snapshot);
 		}
-
-		// (Try to) log it
-		if (exc->ExceptionRecord->ExceptionCode != STATUS_ASSERTION_FAILURE)
-		LOG_STATIC_TEXT("FATAL: Clonk crashed! Some developer might be interested in Clonk.dmp...");
 #undef POINTER_FORMAT_SUFFIX
 #undef POINTER_FORMAT
 #undef LOG_SNPRINTF
@@ -364,31 +371,88 @@ LONG WINAPI GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	FirstCrash = false;
 
 	// Open dump file
-	const wchar_t *szFilename = L"Clonk.dmp"; // dump to working directory
-	HANDLE file = CreateFile(szFilename, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 0, 0);
-
-	// Write dump (human readable format)
-	SafeTextDump(pExceptionPointers, GetLogFD());
-
-	MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
-	MINIDUMP_USER_STREAM user_stream = {0};
-	char build_id[] = OC_BUILD_ID;
-	if (OC_BUILD_ID[0] != '\0')
+	// Work on the assumption that the config isn't corrupted
+	wchar_t *filename = reinterpret_cast<wchar_t*>(DumpBuffer);
+	const size_t filename_buffer_size = DumpBufferSize / sizeof(wchar_t);
+	if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, ::Config.General.UserDataPath, strnlen(::Config.General.UserDataPath, sizeof(::Config.General.UserDataPath)), filename, filename_buffer_size))
 	{
-		user_stream.Type = MDST_BuildId;
-		user_stream.Buffer = build_id;
-		user_stream.BufferSize = sizeof(build_id) - 1;	// don't need the terminating NUL
-		user_stream_info.UserStreamCount = 1;
-		user_stream_info.UserStreamArray = &user_stream;
+		// Conversion failed; the likely reason for this is a corrupted config.
+		assert (GetLastError() == ERROR_NO_UNICODE_TRANSLATION);
+		// Fall back to the temporary files directory to write dump.
+		DWORD temp_size = GetTempPath(filename_buffer_size, filename);
+		if (temp_size == 0 || temp_size > filename_buffer_size)
+		{
+			// Getting the temp path failed as well; dump to current working directory as a last resort.
+			temp_size = GetCurrentDirectory(filename_buffer_size, filename);
+			if (temp_size == 0 || temp_size > filename_buffer_size)
+			{
+				// We don't really have any directory where we can store the dump, so just
+				// write the text log (we already have a FD for that)
+				filename[0] = L'\0';
+			}
+		}
+	}
+	HANDLE file = INVALID_HANDLE_VALUE;
+
+	if (filename[0] != L'\0')
+	{
+		// There is some path where we want to store our data
+		const wchar_t tmpl[] = TEXT(C4ENGINENICK) L"-crash-YYYY-MM-DD-HH-MM-SS.dmp";
+		size_t path_len = wcslen(filename);
+		if (path_len + sizeof(tmpl) / sizeof(*tmpl) > filename_buffer_size)
+		{
+			// Somehow the length of the required path is too long to fit in
+			// our buffer. Don't dump anything then.
+			filename[0] = L'\0';
+		}
+		else
+		{
+			// Make sure the path ends in a backslash.
+			if (filename[path_len - 1] != L'\\')
+			{
+				filename[path_len] = L'\\';
+				filename[++path_len] = L'\0';
+			}
+			SYSTEMTIME st;
+			GetSystemTime(&st);
+			wsprintf(&filename[path_len], L"%s-crash-%04d-%02d-%02d-%02d-%02d-%02d.dmp",
+				TEXT(C4ENGINENICK), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+		}
 	}
 
-	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
-	ExpParam.ThreadId = GetCurrentThreadId();
-	ExpParam.ExceptionPointers = pExceptionPointers;
-	ExpParam.ClientPointers = true;
-	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-	                  file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
-	CloseHandle(file);
+	if (filename[0] != L'\0')
+	{
+		file = CreateFile(filename, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_DELETE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+		// If we can't create a *new* file to dump into, don't dump at all.
+		if (file == INVALID_HANDLE_VALUE)
+			filename[0] = L'\0';
+	}
+
+	// Write dump (human readable format)
+	SafeTextDump(pExceptionPointers, GetLogFD(), filename);
+
+	if (file != INVALID_HANDLE_VALUE)
+	{
+		MINIDUMP_USER_STREAM_INFORMATION user_stream_info = {0};
+		MINIDUMP_USER_STREAM user_stream = {0};
+		char build_id[] = OC_BUILD_ID;
+		if (OC_BUILD_ID[0] != '\0')
+		{
+			user_stream.Type = MDST_BuildId;
+			user_stream.Buffer = build_id;
+			user_stream.BufferSize = sizeof(build_id) - 1;	// don't need the terminating NUL
+			user_stream_info.UserStreamCount = 1;
+			user_stream_info.UserStreamArray = &user_stream;
+		}
+
+		MINIDUMP_EXCEPTION_INFORMATION ExpParam;
+		ExpParam.ThreadId = GetCurrentThreadId();
+		ExpParam.ExceptionPointers = pExceptionPointers;
+		ExpParam.ClientPointers = true;
+		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
+							file, MiniDumpNormal, &ExpParam, &user_stream_info, NULL);
+		CloseHandle(file);
+	}
 
 	// Pass exception
 	return EXCEPTION_EXECUTE_HANDLER;
@@ -505,7 +569,7 @@ namespace {
 		eptr.ExceptionRecord = &erec;
 
 		// Log
-		SafeTextDump(&eptr, GetLogFD());
+		SafeTextDump(&eptr, GetLogFD(), nullptr);
 
 		// Continue caller
 		if (ResumeThread(data->thread) == -1)
