@@ -166,7 +166,7 @@ global func Particles_Trajectory()
 	};
 }
 
-global func Particle_WoodChip()
+global func Particles_WoodChip()
 {
 	return
 	{
@@ -180,5 +180,42 @@ global func Particle_WoodChip()
 		DampingX = 975, DampingY = 975,
 		Rotation = PV_Direction(PV_Random(750, 1250)),
 		Attach = ATTACH_Front
+	};
+}
+
+global func Particles_Air()
+{
+	return
+	{
+		Stretch = PV_Speed(500, 1000),
+		Alpha = PV_Linear(255, 0),
+		Phase = PV_Random(0, 3),
+		DampingX = 990, DampingY = 990,
+		ForceX = PV_Random(-5, 5, 30),
+		ForceY = PV_Gravity(10, PV_Random(-5, 5)),
+		Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(20, 30), 1000, 0),
+		Rotation = PV_Direction(),
+		CollisionVertex = 1000,
+		OnCollision = PC_Bounce(500)
+	};
+}
+
+
+global func Particles_Thrust(int size)
+{
+	size = size ?? 10;
+	return
+	{
+		Size = PV_KeyFrames(0, 0, 0, 50, size, 1000, size * 2),
+		Alpha = PV_Linear(255, 0),
+		R = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
+		G = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
+		B = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
+		Phase = PV_Random(0, 3, 10),
+		Rotation = PV_Random(0, 360),
+		DampingX = 950, DampingY = 950,
+		ForceY = PV_KeyFrames(0, 0, 0, 500, 0, 1000, PV_Gravity(20)),
+		ForceX = PV_KeyFrames(0, 0, 0, 500, 0, 1000, PV_Wind(50)),
+		CollisionVertex = 750
 	};
 }
