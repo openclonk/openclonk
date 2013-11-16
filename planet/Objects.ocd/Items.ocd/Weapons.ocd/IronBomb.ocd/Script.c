@@ -59,7 +59,7 @@ func DoExplode()
 		Sound("BlastLiquid2");
 	else
 		Sound("BlastMetal");
-	CreateParticle("ExploSmoke", 0,0,0,0,390,RGBa(255,255,255,165));
+	CreateParticleEx("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), 0, 0, PV_Random(40, 60), Particles_Smoke(), 60);
 	Explode(24);
 }
 

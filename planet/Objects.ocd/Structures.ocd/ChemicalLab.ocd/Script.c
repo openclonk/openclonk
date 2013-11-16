@@ -56,7 +56,7 @@ protected func FxWorkingTimer()
 
 private func Smoking()
 {
-	if(Random(3)) CreateParticle("ExploSmoke", -10,-40, 0,-5,100 + Random(150),RGBa(128,255,128,55));
+	Smoke(-10, -40, 6);
 }
 
 local ActMap = {

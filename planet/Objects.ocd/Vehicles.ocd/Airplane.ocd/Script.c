@@ -69,12 +69,10 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 		var IX = Sin(GetR(), 30);
 		var IY = -Cos(GetR(), 30);
 
-		for(var i=0; i<10; ++i)
-		{
-			var speed = RandomX(0,10);
-			var r = angle;
-			CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2) + GetXDir()/2,-Cos(r,speed)+RandomX(-2,2) + GetYDir()/2,RandomX(100,400),RGBa(255,255,255,50));
-		}
+		var x = Sin(angle, 20);
+		var y = -Cos(angle, 20);
+		CreateParticleEx("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+		
 		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
 		CreateParticleEx("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
 

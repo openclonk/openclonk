@@ -22,5 +22,5 @@ func Hit()
 func DoSmoke()
 {
 	++time;
-	CreateParticle("ExploSmokeFastFade", RandomX(-5,5), RandomX(-5,5), 0, 0, Max(10, 300 - time * 5), RGB(100, 100, 100));
+	Smoke(RandomX(-5, 5), RandomX(-5, 5), 2);
 }
