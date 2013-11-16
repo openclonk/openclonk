@@ -73,7 +73,7 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 		var y = -Cos(angle, 20);
 		CreateParticleEx("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 		
-		CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),600,RGB(255,255,255),this);
+		CreateMuzzleFlash(IX, IY, angle, 20);
 		CreateParticleEx("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
 
 		AddEffect("IntCooldown", this,1,1,this);

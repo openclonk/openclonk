@@ -1,7 +1,20 @@
 /**
-	This file contains some default particle behavior definitions.
+	This file contains some default particle behavior definitions as well as helper functions.
 */
 
+/* particle helper/effect functions */
+
+global func CreateMuzzleFlash(int x, int y, int angle, int size)
+{
+	// main muzzle flash
+	CreateParticleEx("MuzzleFlash", x, y, 0, 0, 10, {Prototype = Particles_MuzzleFlash(), Size = size, Rotation = angle});
+	// and some additional little sparks
+	var xdir = Sin(angle, size * 2);
+	var ydir = -Cos(angle, size * 2);
+	CreateParticleEx("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
+}
+
+/* particle definitions */
 global func Particles_Dust()
 {
 	return
@@ -217,5 +230,36 @@ global func Particles_Thrust(int size)
 		ForceY = PV_KeyFrames(0, 0, 0, 500, 0, 1000, PV_Gravity(20)),
 		ForceX = PV_KeyFrames(0, 0, 0, 500, 0, 1000, PV_Wind(50)),
 		CollisionVertex = 750
+	};
+}
+
+global func Particles_MuzzleFlash()
+{
+	return
+	{
+		Attach = ATTACH_Front | ATTACH_MoveRelative,
+		Size = 20,
+		Phase = PV_Linear(0, 5),
+		BlitMode = GFX_BLIT_Additive
+	};
+}
+
+global func Particles_Glimmer()
+{
+	return
+	{
+		Size = PV_Linear(2, 0),
+	    ForceY = GetGravity(),
+		DampingY = PV_Linear(1000,700),
+		DampingX = PV_Linear(1000,700),
+		Stretch = PV_Speed(1000, 500),
+		Rotation = PV_Direction(),
+		OnCollision = PC_Die(),
+		CollisionVertex = 500,
+	    R = 255,
+	    G = PV_Linear(128,32),
+	    B = PV_Random(0, 128, 2),
+	    Alpha = PV_Random(255,0,3),
+		BlitMode = GFX_BLIT_Additive,
 	};
 }

@@ -280,9 +280,7 @@ protected func DoFire(object iammo, object clonk, int angle)
 	var x = Sin(r/angPrec, 20);
 	var y = -Cos(r/angPrec, 20);
 	CreateParticleEx("Smoke", px, py, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
-	
-	CreateParticle("MuzzleFlash",px,py,px,py+4,700,RGB(255,255,255)); //muzzle flash uses speed as Rotation... so I negate the -4
-
+	CreateMuzzleFlash(px, py, r / angPrec, 60);
 	//sound
 	Sound("Blast3");
 }

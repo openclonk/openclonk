@@ -174,8 +174,7 @@ private func FireWeapon(object clonk, int angle)
 	var y = -Cos(angle, 20);
 	CreateParticleEx("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 	
-	CreateParticle("MuzzleFlash",IX,IY,+Sin(angle,500),-Cos(angle,500),450,RGB(255,255,255),clonk);
-	
+	clonk->CreateMuzzleFlash(IX, IY, angle, 40);	
 	CreateParticleEx("Flash", 0, 0, 0, 0, 8, Particles_Flash());
 }
 
