@@ -6,6 +6,111 @@
 		TODO: documentation.
 --*/
 
+/*--
+Particle definitions used by the explosion effect.
+They will be initialized lazily whenever the first blast goes off.
+--*/
+static ExplosionParticles_Smoke;
+static ExplosionParticles_Blast;
+static ExplosionParticles_BlastSmooth;
+static ExplosionParticles_BlastSmoothBackground;
+static ExplosionParticles_Star;
+static ExplosionParticles_Shockwave;
+static ExplosionParticles_Glimmer;
+
+global func ExplosionParticles_Init()
+{
+	ExplosionParticles_Smoke =
+	{	    
+		Size = PV_KeyFrames(0, 180, 25, 1000, 50),
+	    DampingY = PV_Random(890, 920, 5),
+		DampingX = PV_Random(900, 930, 5),
+		ForceY=-1,
+		ForceX = PV_Wind(20, PV_Random(-2, 2)),
+		Rotation=PV_Random(0,360,0),
+		R=PV_KeyFrames(0, 0, 255, 260, 64, 1000, 64),
+		G=PV_KeyFrames(0, 0, 128,  260, 64, 1000, 64),
+		B=PV_KeyFrames(0, 0, 0, 260, 108, 1000, 108),
+	    Alpha = PV_KeyFrames(0, 0, 0, 100, 20, 500, 20, 1000, 0)
+	};
+	
+	ExplosionParticles_Blast =
+	{
+		Size = PV_KeyFrames(0, 0, 0, 260, 25, 1000, 40),
+		DampingY = PV_Random(890, 920, 0),
+		DampingX = PV_Random(900, 930, 0),
+		ForceY = PV_Random(-8,-2,0),
+		ForceX = PV_Random(-5,5,0),
+		R = 255,
+		G = PV_Random(64, 120, 0),
+		Rotation = PV_Random(0, 360, 0),
+		B = 0,
+		Alpha = PV_KeyFrames(0, 260, 100, 1000, 0),
+		BlitMode = GFX_BLIT_Additive,
+		Phase = PV_Random(0, 1)
+	};
+	
+	ExplosionParticles_BlastSmooth =
+	{
+		Size = PV_KeyFrames(0, 0, 0, 250, PV_Random(30, 50), 1000, 80),
+		R = PV_KeyFrames(0, 0, 255, 250, 128, 1000, 0),
+		G = PV_KeyFrames(0, 0, 255, 125, 64, 1000, 0),
+		Rotation = PV_Random(0, 360, 0),
+		B = PV_KeyFrames(0, 0, 100, 250, 64, 100, 0),
+		Alpha = PV_KeyFrames(0, 0, 255, 750, 250, 1000, 0),
+		BlitMode = GFX_BLIT_Additive
+	};
+	
+	ExplosionParticles_BlastSmoothBackground =
+	{
+		Prototype = ExplosionParticles_BlastSmooth,
+		BlitMode = nil,
+		R = PV_Linear(50, 0),
+		G = PV_Linear(50, 0),
+		B = PV_Linear(50, 0),
+		Alpha = PV_Linear(128, 0)
+	};
+	
+	ExplosionParticles_Star =
+    {
+        Size = PV_KeyFrames(0, 0, 0, 500, 60, 1000, 0),
+        R = PV_KeyFrames(0, 750, 255, 1000, 0),
+        G = PV_KeyFrames(0, 300, 255, 1000, 0),
+        B = PV_KeyFrames(0, 300, 255, 500, 0),
+		Rotation = PV_Random(0, 360, 4),
+        Alpha = PV_KeyFrames(0, 750, 255, 1000, 0),
+		BlitMode = GFX_BLIT_Additive,
+		Stretch = PV_Speed(1000, 1000)
+    };
+    
+	ExplosionParticles_Shockwave =
+    {
+        Size = PV_Linear(0, 120),
+        R = 255,
+        G = 128,
+        B = PV_KeyFrames(0, 0, 128, 200, 0),
+		Rotation = PV_Step(20),
+		BlitMode = GFX_BLIT_Additive,
+        Alpha = PV_Linear(255, 0)
+    };
+    
+    ExplosionParticles_Glimmer=
+	{
+		Size = PV_Linear(2, 0),
+	    ForceY = GetGravity(),
+		DampingY = PV_Linear(1000,700),
+		DampingX = PV_Linear(1000,700),
+		Stretch = PV_Speed(1000, 500),
+		Rotation = PV_Direction(),
+		OnCollision = PC_Die(),
+		CollisionVertex = 500,
+	    R = 255,
+	    G = PV_Linear(128,32),
+	    B = PV_Random(0, 128, 2),
+	    Alpha = PV_Random(255,0,3),
+		BlitMode = GFX_BLIT_Additive,
+	};
+}
 
 /*-- Explosion --*/
 
@@ -77,27 +182,61 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	return true;
 }
 
-global func ExplosionEffect(int level, int x, int y)
+/*
+Creates a visual explosion effect at a position.
+smoothness (in percent) determines how round the effect will look like
+*/
+global func ExplosionEffect(int level, int x, int y, int smoothness)
 {
-	// Blast particle.
-	CreateParticle("Blast", x, y, 0, 0, level * 10, RGBa(255, 255, 255, 100));
-	if(!GBackLiquid(x,y)) CastParticles("Spark", 10, 80 + level, x, y, 35, 40, RGB(255, 200, 0), RGB(255, 255, 150));
-	if(GBackLiquid(x,y) && Global.CastBubbles) Global->CastBubbles(level * 7 / 10, level, x, y);
-	//CastParticles("FSpark", level/5+1, level, x,y, level*5+10,level*10+10, 0x00ef0000,0xffff1010));
-
-	// Smoke trails.
-	var i = 0, count = 3 + level / 8, angle = Random(360);
-	while (count > 0 && ++i < count * 10)
+	// possibly init particle definitions?
+	if (!ExplosionParticles_Blast)
+		ExplosionParticles_Init();
+	
+	smoothness = smoothness ?? 0;
+	var level_pow = level ** 2;
+	var level_pow_fraction = Max(level_pow / 25, 5 * level);
+	var wilderness_level = level * (100 - smoothness) / 100;
+	var smoothness_level = level * smoothness / 100;
+	
+	var smoke_size = PV_KeyFrames(0, 180, level, 1000, level * 2);
+	var blast_size = PV_KeyFrames(0, 0, 0, 260, level * 2, 1000, level);
+	var blast_smooth_size = PV_KeyFrames(0, 0, 0, 250, PV_Random(level, level * 2), 1000, level);
+	var star_size = PV_KeyFrames(0, 0, 0, 500, level * 2, 1000, 0);
+	var shockwave_size = PV_Linear(0, level * 4);
+	
+	CreateParticleEx("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = ExplosionParticles_Smoke, Size = smoke_size}, Max(2, wilderness_level / 10));
+	CreateParticleEx("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmoothBackground, Size = blast_smooth_size}, smoothness_level / 5);
+	CreateParticleEx("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmooth, Size = blast_smooth_size}, smoothness_level / 5);
+	CreateParticleEx("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = ExplosionParticles_Blast, Size = blast_size}, smoothness_level / 5);
+	CreateParticleEx("StarFlash", PV_Random(x - 6, x + 6), PV_Random(y - 6, y + 6), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(10, 12), {Prototype = ExplosionParticles_Star, Size = star_size}, wilderness_level / 3);
+	CreateParticleEx("Shockwave", x, y, 0, 0, 15, {Prototype = ExplosionParticles_Shockwave, Size = shockwave_size}, nil);
+	
+	// cast either some sparks on land or bubbles under water
+	if(GBackLiquid(x, y) && Global.CastBubbles)
+	{
+		Global->CastBubbles(level * 7 / 10, level, x, y);
+	}
+	else
+	{
+		CreateParticleEx("Magic", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(25, 70), ExplosionParticles_Glimmer, level);
+	}
+	
+	// very wild explosion? Smoke trails!
+	var smoke_trail_count = wilderness_level / 15;
+	var angle  = Random(360);
+	var failsafe = 0; // against infinite loops
+	while (smoke_trail_count > 0 && (++failsafe < smoke_trail_count * 10))
 	{
 		angle += RandomX(40, 80);
 		var smokex = Sin(angle, RandomX(level / 4, level / 2));
 		var smokey = -Cos(angle, RandomX(level / 4, level / 2));
 		if (GBackSolid(x + smokex, y + smokey))
 			continue;
-		var lvl = 16 * level / 10;
+		var lvl = wilderness_level;
 		CreateSmokeTrail(lvl, angle, x + smokex, y + smokey);
-		count--;
+		smoke_trail_count--;
 	}
+
 	return;
 }
 
