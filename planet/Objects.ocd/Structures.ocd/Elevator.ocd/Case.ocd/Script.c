@@ -397,8 +397,7 @@ func SetMoveDirection(int dir, bool user_requested, bool drill)
 		SetAction(action);
 		SetComDir(COMD_None);
 		ForceSync();
-		
-		Sound("ElevatorStart");
+
 		elevator->StartEngine();
 	}
 	else
@@ -418,7 +417,6 @@ func Halt(bool user_requested, bool power_out)
 	{
 		if(elevator)
 			elevator->StopEngine();
-		Sound("ElevatorStop");
 	}
 	
 	// clear speed
@@ -662,7 +660,6 @@ local ActMap = {
 			Wdt = 24,
 			Hgt = 26,
 			NextAction = "Drive",
-			Sound = "ElevatorMoving"
 		},
 		DriveIdle = {
 			Prototype = Action,
