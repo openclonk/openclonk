@@ -222,7 +222,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 	}
 	
 	// very wild explosion? Smoke trails!
-	var smoke_trail_count = wilderness_level / 15;
+	var smoke_trail_count = wilderness_level / 10;
 	var angle  = Random(360);
 	var failsafe = 0; // against infinite loops
 	while (smoke_trail_count > 0 && (++failsafe < smoke_trail_count * 10))
@@ -232,7 +232,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 		var smokey = -Cos(angle, RandomX(level / 4, level / 2));
 		if (GBackSolid(x + smokex, y + smokey))
 			continue;
-		var lvl = wilderness_level;
+		var lvl = 2 * wilderness_level;
 		CreateSmokeTrail(lvl, angle, x + smokex, y + smokey);
 		smoke_trail_count--;
 	}
@@ -462,45 +462,71 @@ global func FxShakeEffectStop()
 
 /*-- Smoke trails --*/
 
-global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, bool noblast) {
+global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, bool noblast)
+{
 	x += GetX();
 	y += GetY();
-	var effect = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, strength, angle, x, y);
-	if (!color)
-		color = RGBa(130, 130, 130, 70);
-	effect.color = color;
-	effect.noblast = noblast;
+	if (angle % 90 == 1) angle = 1;
+	
+	var effect = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, color);
+	EffectCall(nil, effect, "SetAdditionalParameters", x, y, angle, strength, noblast);
 	return;
 }
 
-global func FxSmokeTrailStart(object target, proplist effect, int temp, strength, angle, x, y)
+global func FxSmokeTrailSetAdditionalParameters(object target, proplist effect, int x, int y, int angle, int strength, bool noblast)
+{
+	effect.x = x;
+	effect.y = y;
+	effect.strength = strength;
+	effect.curr_strength = strength;
+	effect.xdir = Sin(angle, strength * 40);
+	effect.ydir = -Cos(angle, strength * 40);
+	effect.noblast = noblast;
+}
+
+global func FxSmokeTrailStart(object target, proplist effect, int temp, color)
 {
 	if (temp)
 		return;
-	
-	if (angle % 90 == 1)
-		angle += 1;
-	strength = Max(strength, 5);
 
-	effect.strength = strength;
-	effect.curr_strength = strength;
-	effect.x = x;
-	effect.y = y;
-	effect.xdir = Sin(angle, strength * 40);
-	effect.ydir = -Cos(angle, strength * 40);
+	effect.color = color ?? RGBa(255, 128, 0, 200);
+	var alpha = (effect.color >> 24) & 0xff;
+	effect.particles_smoke =
+	{
+		R = PV_KeyFrames(0, 0, 200, 400, 0, 1000, 0),
+		G = PV_KeyFrames(0, 0, 200, 400, 0, 1000, 0),
+		B = PV_KeyFrames(0, 0, 200, 400, 0, 1000, 0),
+		Alpha = PV_KeyFrames(0, 0, 0, 300, alpha, 600, (alpha * 4) / 5, 1000, 0),
+		Rotation = PV_Random(0, 360),
+		ForceX = PV_Wind(20),
+		ForceY = PV_Gravity(-10),
+	};
+	
+	effect.particles_blast =
+	{
+		R = PV_Linear((effect.color >> 16) & 0xff, 0),
+		G = PV_Linear((effect.color >>  8) & 0xff, 0),
+		B = PV_Linear((effect.color >>  0) & 0xff, 0),
+		Alpha = PV_KeyFrames(0, 0, alpha, 600, (alpha * 4) / 5, 1000, 0),
+		Rotation = PV_Direction(),
+		BlitMode = GFX_BLIT_Additive,
+		Stretch = PV_Speed(1500, 1000)
+	};
 }
 
 global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 {
 	var strength = effect.strength;
+	effect.curr_strength = (effect.curr_strength * 5) / 6;
+	if (effect.curr_strength < 5) return -1;
+	
 	var str = effect.curr_strength;
 	var x = effect.x;
 	var y = effect.y;
+	
 	var x_dir = effect.xdir;
 	var y_dir = effect.ydir;
 
-	str = Max(1, str - str / 5);
-	str--;
 	y_dir += GetGravity() * 10 / 3;
 
 	var x_dir = x_dir * str / strength;
@@ -511,17 +537,22 @@ global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 	y += RandomX(-3,3);
 	
 	// draw
-	CreateParticle("ExploSmoke", x, y, RandomX(-2, 2), RandomX(-2, 4), 150 + str * 12, effect.color);
+	effect.particles_smoke.Size = PV_KeyFrames(0, 0, 0, 250, str / 2, 1000, str);
+	effect.particles_blast.Size = PV_KeyFrames(0, 0, 0, 100, str / 3, 1000, 0);
 	if (!effect.noblast)
-		CreateParticle("Blast", x, y, 0, 0, 10 + str * 8, RGBa(255, 100, 50, 150));
+	{
+		var x_dir_blast = x_dir / 200;
+		var y_dir_blast = y_dir / 200;
+		CreateParticleEx("SmokeDirty", x, y, PV_Random(x_dir_blast - 2, x_dir_blast + 2), PV_Random(y_dir_blast - 2, y_dir_blast + 2), 18, effect.particles_blast, 2);
+	}
+	CreateParticleEx("Smoke", x, y, PV_Random(-2, 2), PV_Random(-2, 2), 50, effect.particles_smoke, 2);
 
+		
 	// then calc next position
 	x += x_dir / 100;
 	y += y_dir / 100;
 	
 	if (GBackSemiSolid(x, y))
-		return -1;
-	if (str <= 3)
 		return -1;
 	
 	effect.curr_strength = str;
