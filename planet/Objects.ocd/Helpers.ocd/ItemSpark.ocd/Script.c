@@ -126,10 +126,6 @@ func FxCheckStuckTimer(_, effect)
 
 func FxSparkleTimer(_, effect)
 {
-	//var x=RandomX(-4, 4);
-	//var p="ItemSpark";
-	//if(Random(2)) p="ItemSparkA";
-	//CreateParticle(p, x, (4-Abs(x))/2, -x/2, -3, 40, RGBa(50,50,150+Random(100), 200), nil);
 	CreateParticleEx("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 36, ItemSpark_particle, 5); 
 	CreateParticleEx("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 20, ItemSpark_particle_additive, 5); 
 	
