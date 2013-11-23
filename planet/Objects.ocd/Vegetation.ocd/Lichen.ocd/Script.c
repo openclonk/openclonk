@@ -24,8 +24,18 @@ public func Harvest(object clonk)
 {
 	var moss = CreateObject(Moss, 0, GetObjHeight()/2, NO_OWNER);
 	clonk->Collect(moss);
-	CreateParticle("Lichen", 0,0, 10, -2, 75, RGBa(128,128,128,255));
-	CreateParticle("Lichen", 0,0,-10, -2, 75, RGBa(128,128,128,255));
+	var particles = 
+	{
+		Size = PV_Random(3, 7),
+		Alpha = PV_KeyFrames(0, 0, 255, 900, 255, 1000, 0),
+		ForceY = PV_Gravity(40),
+		DampingX = 900, DampingY = 900,
+		CollisionVertex = 750,
+		OnCollision = PC_Stop(),
+		Rotation = PV_Direction(PV_Random(900, 1100)),
+		Phase = PV_Random(0, 1)
+	};
+	CreateParticleEx("Lichen", PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(36, 36 * 4), particles, 40);
 
 	if (grow_stage)
 	{
