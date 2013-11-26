@@ -109,7 +109,8 @@ func Execute()
 						var blast_size = 5+Random(5);
 						BlastFree(x,y-3,blast_size,GetController());
 						// gfx
-						CreateParticle("MagicFire", x,y-3, 0,0, blast_size*5, 0xffffffff);
+						var particle_speed = blast_size * 3;
+						CreateParticleEx("FireDense", PV_Random(x - 1, x + 1), PV_Random(y - 4, y - 2), PV_Random(-particle_speed, particle_speed), PV_Random(-particle_speed, particle_speed), PV_Random(30, 40), Particles_Fire(), 5);
 						if (!Random(5)) SoundAt("RockHit*", x,y-3, 100);
 					}
 					else if (speed <=50)
