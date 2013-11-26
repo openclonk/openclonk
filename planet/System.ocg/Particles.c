@@ -14,6 +14,22 @@ global func CreateMuzzleFlash(int x, int y, int angle, int size)
 	CreateParticleEx("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
 }
 
+global func Smoke(int x, int y, int level, int color)
+{
+	level = level ?? 10;
+	var particles = Particles_Smoke();
+	if (color)
+	{
+		particles.Alpha = PV_Linear((color >> 24) & 0xff, 0);
+		particles.R = (color >> 16) & 0xff;
+		particles.G = (color >>  8) & 0xff;
+		particles.B = (color >>  0) & 0xff;
+	}
+	particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
+	CreateParticleEx("Smoke", x, y, PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
+}
+
+
 /* particle definitions */
 global func Particles_Dust()
 {
@@ -261,5 +277,27 @@ global func Particles_Glimmer()
 	    B = PV_Random(0, 128, 2),
 	    Alpha = PV_Random(255,0,3),
 		BlitMode = GFX_BLIT_Additive,
+	};
+}
+
+global func Particles_ElectroSpark1()
+{
+	return
+	{
+		Size = PV_Random(5, 9),
+		Phase = PV_Linear(0, 5),
+		BlitMode = GFX_BLIT_Additive,
+		CollisionVertex = 750,
+		OnCollision = PC_Die(),
+		Rotation = PV_Direction()
+	};
+}
+
+global func Particles_ElectroSpark2()
+{
+	return
+	{
+		Prototype = Particles_ElectroSpark1(),
+		Phase = PV_Linear(6, 11),
 	};
 }
