@@ -16,6 +16,7 @@ local stream_density = 20;
 local stream_border_dist = 20;
 local map, map_res1, map_res2, map_size1, map_size2, map_off1, map_off2;
 //local debug_map;
+local storm_particles; // storm particle definition, for pretty visuals
 
 local StormStream;
 
@@ -27,6 +28,15 @@ func Initialize()
 	g_storm = this;
 	SetPosition();
 	// defaults
+	storm_particles = 
+	{
+		Size = 1,
+		Stretch = PV_Speed(PV_Linear(4000, 0), 0),
+		Alpha = PV_KeyFrames(0, 0, 0, 100, 255, 1000, 255),
+		Rotation = PV_Direction(),
+		CollisionVertex = 1000,
+		OnCollision = PC_Die()
+	};
 	StormStream = {
 		max_segment_stretch = 100, // maximum number of pixels per segment that can be deviated from dir in either direction
 		max_segment_stretch_want = 5, // maximum movement back into original position that is preferred (i.e.: speed at which gaps behind sky islands close)
@@ -218,7 +228,7 @@ private func ExecuteStream(proplist s)
 			//Log("segment %d", i_segment);
 			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
 			if (storm_debug)
-				CreateParticle("Magic", s.x[i_segment], s.y[i_segment], 0,0, 60, 0xffff0000);
+				CreateParticleEx("SphereSpark", s.x[i_segment], s.y[i_segment], 0, 0, 36, {Size =  12});
 			continue;
 		}
 		// current segment base point
@@ -227,11 +237,11 @@ private func ExecuteStream(proplist s)
 		// determine direction of current segment
 		var vx = tx - x;
 		var vy = ty - y;
-		//CreateParticle("Magic", x, y, vx,vy, 60, 0xff00ff00);
+
 		// determine where we want to go
 		var want_vx = s.x0+(i_segment+1)*s.dir_x - x;
 		var want_vy = s.y0+(i_segment+1)*s.dir_y - y;
-		//CreateParticle("Magic", x, y, want_vx,want_vy, 60, 0xff0000ff);
+
 		var want_stretch = (s.dir_x*want_vy-s.dir_y*want_vx) / s.dir_len;
 		//if (i_segment==8) Log("%v", want_stretch);
 		// can turn?
@@ -315,8 +325,7 @@ private func ExecuteStream(proplist s)
 					var v = Distance(vx,vy);
 					vx = vx * s.dir_len / v;
 					vy = vy * s.dir_len / v / 2;
-					for (var i_part = 5; i_part<local_strength*6; ++i_part)
-						CreateParticle("StormParticle", x+Random(vx+20)-10, y+Random(vy+20)-10, vx*(Random(40)+80)/100,vy*(Random(40)+100)/100, 40, 0xffffffff);
+					CreateParticleEx("Dust", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), PV_Random(vx * 80 / 100, vx * 120 / 100), PV_Random(vy, vy * 140 / 100), PV_Random(20, 40), storm_particles,local_strength); 
 				}
 			}
 		}

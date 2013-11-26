@@ -19,8 +19,6 @@ global func FxFireScorchingTimer(object target, proplist effect, int time)
 	if (time >= effect.duration) { RemoveObject(); return FX_Execute_Kill; }
 	// particles
 	var wind = BoundBy(GetWind(), -5, 5);
-	var smoke_color = RGBa(255,255,255, 50); 
-	var size = (50 + Random(200)) * effect.strength / 100;
-	CreateParticle("ExploSmoke", RandomX(-5, 5), RandomX(-5, 5), wind, -effect.strength/8, size, smoke_color);
+	CreateParticleEx("SmokeDirty", PV_Random(-5, 5), PV_Random(-5, 5), wind, -effect.strength/8, PV_Random(20, 40), Particles_SmokeTrail(), 2);
 	return FX_OK;
 }
