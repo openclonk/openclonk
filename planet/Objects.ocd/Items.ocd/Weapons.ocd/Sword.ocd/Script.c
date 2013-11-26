@@ -242,14 +242,19 @@ func CheckStrike(iTime)
 							DoWeaponSlow(obj, 300);
 					
 					// Particle effect
-					var x=-1;
-					var p="Slice2";
-					if(Contained()->GetDir() == DIR_Right)
+					var particle =
 					{
-						x=1;
-						p="Slice1";
+						Size = 20,
+						BlitMode = GFX_BLIT_Additive,
+						Attach = ATTACH_Front | ATTACH_MoveRelative,
+						Phase = PV_Linear(0, 3)
+					};
+
+					if(Contained()->GetDir() == DIR_Left)
+					{
+						particle.Phase = PV_Linear(4, 7);
 					} 
-					CreateParticle(p, AbsX(obj->GetX())+RandomX(-1,1), AbsY(obj->GetY())+RandomX(-1,1), 0, 0, 100, RGB(255,255,255), obj);
+					obj->CreateParticleEx("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
 				}
 				
 				// sound and done. We can only hit one target
