@@ -214,7 +214,7 @@ public:
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
-	const StdMeshFace* GetFaces() const { return &Faces[0]; }
+	const StdMeshFace* GetFaces() const { return Faces.size() > 0 ? &Faces[0] : 0; }
 	size_t GetNumFaces() const { return Faces.size(); }
 
 	unsigned int GetTexturePhase(size_t pass, size_t texunit) const { return PassData[pass].TexUnits[texunit].Phase; }

@@ -1221,7 +1221,9 @@ void StdMeshInstance::ReorderFaces(StdMeshMatrix* global_trans)
 	for (unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 	{
 		StdSubMeshInstance& inst = *SubMeshInstances[i];
-		if(inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
+		assert((inst.Faces.size() > 0) && "StdMeshInstance sub-mesh instance has zero faces");
+
+		if(inst.Faces.size() > 0 && inst.CurrentFaceOrdering != StdSubMeshInstance::FO_Fixed)
 		{
 			StdMeshInstanceFaceOrderingCmpPred pred(*this, inst, inst.CurrentFaceOrdering, global_trans ? *global_trans : StdMeshMatrix::Identity());
 
