@@ -1131,7 +1131,10 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		particle->properties.Floatify();
 
 		// setup some more non-property attributes of the particle
-		particle->lifetime = particle->startingLifetime = lifetime.GetValue(particle);
+		float lifetime_value = lifetime.GetValue(particle);
+		if (lifetime_value < 0.0f) lifetime_value = 0.0f; // negative values not allowed (would crash later); using a value of 0 is most likely visible to the scripter
+		particle->lifetime = particle->startingLifetime = lifetime_value;
+
 		particle->currentSpeedX = speedX.GetValue(particle);
 		particle->currentSpeedY = speedY.GetValue(particle);
 		particle->drawingData.aspect = of_def->Aspect;
