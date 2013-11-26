@@ -259,7 +259,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var transfer, index = target->ContentsCount();
 		while (transfer = target->Contents(--index))
 			transfer->Enter(clonk);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

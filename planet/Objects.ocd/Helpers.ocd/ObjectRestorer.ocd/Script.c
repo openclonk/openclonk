@@ -9,8 +9,21 @@
 
 /*-- Object Restoration --*/
 
+local particles;
+
 protected func Initialize()
 {
+	particles =
+	{
+		Size = PV_Linear(10, 0),
+		Stretch = PV_Speed(1000, 1000),
+		Rotation = PV_Direction(),
+		Alpha = PV_KeyFrames(0, 0, 0, 100, 64, 1000, 64),
+		R = PV_Random(180, 200),
+		G = PV_Random(180, 200),
+		B = PV_Random(220, 255),
+		DampingX = 900, DampingY = 900
+	};
 	return;
 }
 
@@ -59,6 +72,7 @@ protected func FxRestoreTimer(object target, effect, int time)
 		effect.to_restore->RemoveObject();
 		return -1;		
 	}
+
 	// Move to the object with a weighed sin-wave centered around the halfway point.
 	var length = Distance(init_x, init_y, to_x, to_y);
 	// Remove effect if animation is done.
@@ -75,14 +89,8 @@ protected func FxRestoreTimer(object target, effect, int time)
 	var x = init_x + Sin(angle, 2 * time);
 	var y = init_y - Cos(angle, 2 * time);
 	target->SetPosition(x, y);
-	// Draw Particles.
-	x = init_x + Sin(angle, 2 * time) + Cos(angle, Sin(20 * time, dev)) - target->GetX();
-	y = init_y - Cos(angle, 2 * time) + Sin(angle, Sin(20 * time, dev)) - target->GetY();
-	var color = RGB(128 + Cos(4 * time, 127), 128 + Cos(4 * time + 120, 127), 128 + Cos(4 * time + 240, 127));
-	CreateParticle("PSpark", x, y, 0, 0, 32, color);
-	x = init_x + Sin(angle, 2 * time) - Cos(angle, Sin(20 * time, dev)) - target->GetX();
-	y = init_y - Cos(angle, 2 * time) - Sin(angle, Sin(20 * time, dev)) - target->GetY();
-	CreateParticle("PSpark", x, y, 0, 0, 32, color);
+	
+	CreateParticleEx("SphereSpark", 0, 0, 0, 0, 36, particles, 1);
 	return 1;
 }
 
@@ -128,8 +136,7 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 				to_x = to_container->GetX();
 				to_y = to_container->GetY();			
 			}
-			var color = RGB(128 + Cos(18 * i, 127), 128 + Cos(18 * i + 120, 127), 128 + Cos(18 * i + 240, 127));
-			CreateParticle("PSpark", to_x - GetX(), to_y - GetY(), RandomX(-10, 10), RandomX(-10, 10), 32, color);			
+			CreateParticleEx("SphereSpark", to_x - GetX(), to_y - GetY(), PV_Random(-50, 50), PV_Random(-50, 50), PV_Random(2, 10), particles, 10);		
 		}
 		// Sound.
 		//TODO new sound.
