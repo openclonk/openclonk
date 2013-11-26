@@ -2462,6 +2462,12 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		// object needs to be resorted? May happen if there's unsorted objects in savegame
 		if (Unsorted) Game.fResortAnyObject = true;
 
+		// initialize empty particle lists
+		if (DynamicFrontParticles == 0)
+			DynamicFrontParticles = DynamicParticles.GetNewParticleList(this);
+		if (DynamicBackParticles == 0)
+			DynamicBackParticles = DynamicParticles.GetNewParticleList(this);
+
 	}
 
 }
