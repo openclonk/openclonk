@@ -98,11 +98,9 @@ protected func FxIntMeteorTimer()
 	// Sound.
 
 	// Burning and friction decrease size.
-	if (!Random(5))
+	if (size > 10 && !Random(5))
 		DoCon(-1);
-	// Removal if size < 10.
-	if (size < 10)
-		RemoveObject();
+
 	return 1;
 }
 
@@ -118,8 +116,8 @@ protected func Hit(int xdir, int ydir)
 	};
 	CreateParticleEx("Fire", PV_Random(-size / 4, size / 4), PV_Random(-size / 4, size / 4), PV_Random(-size/4, size/4), PV_Random(-size/4, size/4), 30, particles, 20 + size);
 	// Explode meteor, explode size scales with the energy of the meteor.	
-	var dam = size * speed2 / 750;
-	dam = BoundBy(dam, 5, 30);
+	var dam = size * speed2 / 500;
+	dam = BoundBy(size/2, 5, 30);
 	Explode(dam);
 	return;
 }
