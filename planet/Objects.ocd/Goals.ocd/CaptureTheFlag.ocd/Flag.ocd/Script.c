@@ -78,14 +78,25 @@ protected func FxFlagReturnDelayTimer() { return -1; }
 protected func FxFlagCarriedStart(object target, effect, int temp)
 {
 	ReducePhysicals(target, effect);
-	if (temp == 0)
+	if (temp) return;
+	
+	effect.x=target->GetX();
+	effect.y=target->GetY();
+	var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
+	effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
+	this.Visibility = VIS_None;
+	
+	var color = GetTeamColor(this->GetTeam());
+	effect.tracer_particles = 
 	{
-		effect.x=target->GetX();
-		effect.y=target->GetY();
-		var trans = Trans_Mul(Trans_Translate(0, -17000, 0), Trans_Rotate(-90, 0, 1, 0));
-		effect.mesh_id = target->AttachMesh(this, "pos_back1", "main", trans);
-		this.Visibility = VIS_None;
-	}
+		Size = PV_KeyFrames(0, 0, 0, 200, 5, 900, 10, 1000, 0),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		Alpha = 200,
+		Attach = ATTACH_Back
+	};
+	
 	return 1;
 }
 
@@ -99,9 +110,9 @@ protected func FxFlagCarriedTimer(object target, effect)
 	var newx = target->GetX();
 	var newy = target->GetY();
 	// Draw partical line following the flag.
-	if (Distance(x, y, newx, newy) > 2)
+	if (Distance(x, y, newx, newy) > 5)
 	{
-		DrawParticleLine("FlagTracer",AbsX(x),AbsY(y),AbsX(newx),AbsY(newy),4,30-Random(4),GetTeamColor(this->GetTeam()) | 255 <<24,GetTeamColor(this->GetTeam()) | 255 <<24);
+		target->CreateParticleEx("SphereSpark", 0, 0, 0, 0, PV_Random(36 * 3, 36 * 3 + 10), effect.tracer_particles);
 		effect.x=newx;
 		effect.y=newy;
 	}
