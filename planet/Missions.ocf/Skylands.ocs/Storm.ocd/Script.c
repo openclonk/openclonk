@@ -161,19 +161,6 @@ func FxIntExecuteTimer()
 		++execution_index;
 		execution_index %= n_streams;
 	}
-	// Bouncy particles
-	var t = FrameCounter();
-	var push_interval = 10;
-	if (!(t % push_interval))
-	{
-		t += Sin(t, 300);
-		var phase_len = 120;
-		var push_strength = 3;
-		var partpush = Cos(FrameCounter() * 360 / phase_len, push_strength);
-		var partpush_x = partpush * StormStream.dir_y / StormStream.dir_len;
-		var partpush_y = partpush * StormStream.dir_x / StormStream.dir_len;
-		if (partpush_x || partpush_y) PushParticles("StormParticle", partpush_x, partpush_y);
-	}
 }
 
 private func CreateStream(int x0, int y0)

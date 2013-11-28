@@ -1,7 +1,4 @@
 [Particle]
 Name=LightningBolt
-InitFn=StdInit
-ExecFn=StdExec
-DrawFn=Std
 Face=0,0,32,32,-16,-16
 
