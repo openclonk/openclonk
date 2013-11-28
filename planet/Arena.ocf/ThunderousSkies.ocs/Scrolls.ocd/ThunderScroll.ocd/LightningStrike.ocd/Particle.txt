@@ -1,14 +1,3 @@
 [Particle]
 Name=LightningStrike
-MaxCount=1500
-InitFn=StdInit
-ExecFn=StdExec
-CollisionFn=Bounce
-DrawFn=Std
 Face=0,0,16,2000,-8,0
-Delay=0
-Repeats=0
-GravityAcc=0
-AlphaFade=20
-Additive=1
-Attach=1
