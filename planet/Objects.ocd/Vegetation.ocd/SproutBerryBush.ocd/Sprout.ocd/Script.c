@@ -212,7 +212,7 @@ func Damage()
 {
 	// splatter
 	if(grow_anim)
-		CastParticles("MaterialParticle", 20, 30, 0, 0, 10, 20, RGB(200, 200, 200), RGB(200, 255, 200));
+		CreateParticleEx("Dust", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(20, 60), Particles_Material(RGB(50, 50, 255)), 30);
 		
 	// ouch!
 	Die(false);

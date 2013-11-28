@@ -35,7 +35,7 @@ public func IsProjectileTarget(target,shooter)
 
 public func OnProjectileHit(object projectile)
 {
-	CastParticles("Air",20,5,0,-10,170,190,RGB(255,255,255),RGB(255,255,255));
+	CreateParticleEx("Air", 0, -10, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Air(), 10);
 	if(load) load->~Fall(projectile->GetController());
 	RemoveObject();
 }

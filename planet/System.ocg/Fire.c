@@ -300,37 +300,22 @@ global func FxFireTimer(object target, proplist effect, int time)
 		return FX_OK;
 	
 	// particles
-	//var smoke;//, sparks, bright;
-	//smoke=BoundBy(effect.strength, 0, 100);
-	//sparks=BoundBy((effect.strength*3)/4, 0, 100);
-	//bright=BoundBy((effect.strength-50), 0, 100);
 	if(time % 4 == 0)
 	{
-		var size = BoundBy(10*Max(width, height), 50, 800);
-		if (size > 300) 
+		var size = BoundBy(Max(width, height), 5, 50);
+		if (size > 40) 
 			if (time % 8 == 0)
 				return;
 		
-		var wind = BoundBy(GetWind(target->GetX(), target->GetY()), -5, 5);
 		var smoke_color; 
 		if(effect.strength < 50)
 			smoke_color = RGBa(255,255,255, 50); 
 		else
 			smoke_color = RGBa(100, 100, 100, 50);
-		
-		CreateParticle("ExploSmoke", RandomX(-width, width), RandomX(-height, height), wind, -effect.strength/8, size, smoke_color);
+
+		Smoke(RandomX(-width, width), RandomX(-height, height), size, smoke_color);
 	}
-	
-	/*for(var i=0;i<Max(1, sparks/20);++i)
-	{
-		CreateParticle("MagicSpark", RandomX(-width, width), RandomX(-height, height), wind/2, -10, 100, RGBa(255,255,255, 200), target, Random(2));
-	}*/
-	
-	/*for(var i=0;i<bright/10;++i)
-	{
-		CreateParticle("Flash", RandomX(-width, width), RandomX(-height, height), wind, -10, 5*Max(width, height)*Max(1, bright/15), RGBa(255,200,100, 50), target, Random(2));
-	}*/
-	
+		
 	return FX_OK;
 }
 

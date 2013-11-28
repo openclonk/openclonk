@@ -126,7 +126,7 @@ protected func DoSwing(object clonk, int ix, int iy)
 		//It's solid, but not diggable. So it is a hard mineral.
 		else
 		{
-			CastParticles("Spark",RandomX(3,9),35,x2*9/10,y2*9/10,10,30,RGB(255,255,150),RGB(255,255,200));
+			CreateParticleEx("Spark", x2*9/10,y2*9/10, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 10);
 			Sound("Clang?");
 		}
 		

@@ -26,8 +26,14 @@ func Footstep()
 	{
 		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
-		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticleEx("Dust", PV_Random(dir * -5, dir * -3), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 		Sound("StepSoft?");
 	}
 }

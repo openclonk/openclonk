@@ -39,5 +39,5 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 protected func FxParticlesTimer(object target, effect, int time)
 {
 	var angle = time*10 % 360;
-	CreateParticle("PSpark", Sin(angle, 13), -Cos(angle, 13), 0, 0, 16, RGBa(255, 255, 255, 150), this);
+	CreateParticleEx("SphereSpark", Sin(angle, 13), -Cos(angle, 13), 0, 0, PV_Random(20, 30), Particles_Spark());
 }
