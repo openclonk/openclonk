@@ -568,60 +568,38 @@ global func Fireworks(int color, int x, int y)
 	if (!color)
 		color = HSL(Random(8) * 32, 255, 127);
 	
-	var speed = 12;
-	for (var i = 0; i < 36; ++i)
+	var glimmer = 
 	{
-		var oangle = Random(70);
-		var eff = AddEffect("Firework", nil, 300, 1, nil, nil, Cos(oangle,speed), i * 10 + Random(5), x + GetX(), y + GetY());
-		eff.color = color;
-	}
+		Prototype = Particles_Glimmer(),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+	};
+	CreateParticleEx("MagicFire", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(20, 200), glimmer, 100);
 	
-	for (var i = 0; i < 16; ++i)
+	Smoke(x, y, 30);
+	
+	var sparks =
 	{
-		CreateParticle("ExploSmoke", RandomX(-80, 80), RandomX(-80, 80), 0, 0, RandomX(500, 700), RGBa(255, 255, 255, 90));
-	}
-	CastParticles("Spark", 60, 190, 0, 0, 40, 70, color, color);
+		Prototype = Particles_Spark(),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+		DampingX = 900, DampingY = 900,
+		ForceY = PV_Random(-10, 10),
+		ForceX = PV_Random(-10, 10),
+		Stretch = PV_Speed(500, 1000)
+	};
+	CreateParticleEx("Spark", x, y, PV_Random(-200, 200), PV_Random(-200, 200), PV_Random(20, 60), sparks, 100);
 	
-	CreateParticle("Flash", 0, 0, 0, 0, 3500, color | (200 & 255) << 24);
+	var flash =
+	{
+		Prototype = Particles_Flash(),
+		R = (color >> 16) & 0xff,
+		G = (color >>  8) & 0xff,
+		B = (color >>  0) & 0xff,
+	};
+	CreateParticleEx("Flash", x, y, 0, 0, 8, flash);
 	return;
 }
 
-global func FxFireworkStart(object target, effect, int tmp, speed, angle, x, y, color)
-{
-	if (tmp)
-		return;
-
-	effect.speed = speed * 100;
-	effect.angle = angle;
-	effect.x = x * 100;
-	effect.y = y * 100;
-}
-
-global func FxFireworkTimer(object target, effect, int time)
-{
-	var speed = effect.speed;
-	var angle = effect.angle;
-	var x = effect.x;
-	var y = effect.y;
-	
-	if (time > 65) return -1;
-	
-	if (GBackSemiSolid(x / 100, y / 100))
-		return -1;
-	
-	// lose speed
-	speed = 25 * speed / 26;
-	
-	var x_dir = Sin(angle, speed);
-	var y_dir = -Cos(angle, speed);
-	
-	CreateParticle("Flash", x / 100, y / 100, x_dir / 100, y_dir / 100, 50, effect.color | (200 & 255) << 24);
-	
-	// gravity
-	y_dir += GetGravity() * 18 / 20;
-	
-	effect.speed = speed;
-	effect.angle = Angle(0, 0, x_dir, y_dir);
-	effect.x = x + x_dir;
-	effect.y = y + y_dir;
-}
