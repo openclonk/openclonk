@@ -23,7 +23,7 @@ public func OnShockwaveHit()
 
 private func Destroy()
 {
-	CastParticles("Grass", 10, 35, 0, 0, 30, 50, RGB(255,255,255), RGB(255,255,255));
+	CreateParticleEx("Grass", 0, 0, PV_Random(-20, 20), PV_Random(-20, 10), PV_Random(30, 100), Particles_Straw(), 30);
 	RemoveObject();
 }
 
