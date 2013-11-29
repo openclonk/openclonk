@@ -930,6 +930,7 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	}
 	// apply zoom
 	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	glLoadIdentity();
 
 	glTranslatef(cgo.X, cgo.Y, 0.0f);
@@ -953,6 +954,8 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glPopMatrix();
 
 	if (!DynamicParticles.usePrimitiveRestartIndexWorkaround)
 	{
