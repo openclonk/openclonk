@@ -454,7 +454,37 @@ static C4Void FnBlastFree(C4PropList * _this, long iX, long iY, long iLevel, Nil
 	return C4Void();
 }
 
-static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, bool fMultiple, long iCustomFalloffDistance)
+static bool FnSoundAt(C4PropList * _this, C4String *szSound, long iX, long iY, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iCustomFalloffDistance)
+{
+	// play here?
+	if (!iAtPlayer.IsNil())
+	{
+		// get player to play at
+		C4Player *pPlr = ::Players.Get(iAtPlayer);
+		// not existant? fail
+		if (!pPlr) return false;
+		// network client: don't play here
+		// return true for network sync
+		if (!pPlr->LocalControl) return true;
+	}
+	// even less than nothing?
+	if (iLevel<0) return true;
+	// default sound level
+	if (iLevel.IsNil() || iLevel>100)
+		iLevel=100;
+	// target object
+	C4Object *pObj = Object(_this);
+	if (pObj)
+	{
+		iX += pObj->GetX();
+		iY += pObj->GetY();
+	}
+	StartSoundEffectAt(FnStringPar(szSound),iX,iY,iLevel,iCustomFalloffDistance);
+	// always return true (network safety!)
+	return true;
+}
+
+static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillable<long> iLevel, Nillable<long> iAtPlayer, long iLoop, long iCustomFalloffDistance)
 {
 	// play here?
 	if (!iAtPlayer.IsNil())
@@ -476,7 +506,7 @@ static bool FnSound(C4PropList * _this, C4String *szSound, bool fGlobal, Nillabl
 	C4Object *pObj = NULL;
 	if (!fGlobal) pObj = Object(_this);
 	// already playing?
-	if (iLoop >= 0 && !fMultiple && GetSoundInstance(FnStringPar(szSound), pObj))
+	if (iLoop >= 0 && GetSoundInstance(FnStringPar(szSound), pObj))
 		return false;
 	// try to play effect
 	if (iLoop >= 0)
@@ -2418,6 +2448,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
 	AddFunc(pEngine, "CheckConstructionSite", FnCheckConstructionSite);
 	AddFunc(pEngine, "Sound", FnSound);
+	AddFunc(pEngine, "SoundAt", FnSoundAt);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
 	AddFunc(pEngine, "SetPlayList", FnSetPlayList);

@@ -108,7 +108,7 @@ public func ControlUse(object clonk, int x, int y)
 	magic_number = ObjectNumber();
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	
-	this->Sound("WeaponSwing?", false, nil, nil, nil);
+	this->Sound("WeaponSwing?");
 	return true;
 }
 

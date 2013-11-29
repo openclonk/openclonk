@@ -628,12 +628,12 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 	return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
 }
 
-C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume, int32_t iCustomFallofDistance)
 {
 	// Sound check
 	if (!Config.Sound.RXSound) return NULL;
 	// Create
-	C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
+	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, NULL, iCustomFallofDistance);
 	// Set volume by position
 	if (pInst) pInst->SetVolumeByPos(iX, iY);
 	// Return

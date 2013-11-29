@@ -79,9 +79,9 @@ func Wind2Turn()
 	if (Abs(current_wind) >= 10 && Random(15 - Abs(current_wind / 10)) < 5)
 	{
 		if (!Random(2))
-			Sound("WoodCreak?",false,nil,nil,0,false, 75);
+			Sound("WoodCreak?",false,nil,nil,nil, 75);
 		else
-			Sound("HingeCreak?",false,nil,nil,0,false, 75);
+			Sound("HingeCreak?",false,nil,nil,nil, 75);
 	}
 }
 
