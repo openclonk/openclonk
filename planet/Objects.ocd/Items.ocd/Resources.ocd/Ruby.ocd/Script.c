@@ -3,6 +3,7 @@
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 480;
 
 // returns the color of the gem (used for effects)
 func GetGemColor()

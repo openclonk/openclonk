@@ -170,3 +170,4 @@ local Description = "$Description$";
 local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
 local BridgeLength = 37; // bridge length in pixels
+local Plane = 470;

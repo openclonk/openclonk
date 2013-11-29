@@ -37,3 +37,4 @@ private func Freeze()
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 450;
