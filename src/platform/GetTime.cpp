@@ -24,7 +24,7 @@
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 
-unsigned int GetTime()
+time_t GetTime()
 {
 	return timeGetTime();
 }
@@ -37,7 +37,7 @@ unsigned int GetTime()
 #include <time.h>
 #endif
 
-unsigned int GetTime()
+time_t GetTime()
 {
 #ifdef __APPLE__
 	static time_t sec_offset;

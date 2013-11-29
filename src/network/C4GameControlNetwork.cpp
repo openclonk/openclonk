@@ -33,10 +33,10 @@
 C4GameControlNetwork::C4GameControlNetwork(C4GameControl *pnParent)
 		: fEnabled(false), fRunning(false), iClientID(C4ClientIDUnknown),
 		fActivated(false), iTargetTick(-1),
-		iControlPreSend(1), iWaitStart(-1), iAvgControlSendTime(0), iTargetFPS(38),
+		iControlPreSend(1), tWaitStart(0), iAvgControlSendTime(0), iTargetFPS(38),
 		iControlSent(0), iControlReady(0),
 		pCtrlStack(NULL),
-		iNextControlReqeust(0),
+		tNextControlRequest(0),
 		pParent(pnParent)
 {
 	assert(pParent);
@@ -62,7 +62,8 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	pNetwork->Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_ControlReq, C4PacketControlReq(iControlReady + 1)));
 	// ok
 	fEnabled = true; fRunning = false;
-	iTargetFPS = 38; iNextControlReqeust = GetTime() + C4ControlRequestInterval;
+	iTargetFPS = 38;
+	tNextControlRequest = GetTime() + C4ControlRequestInterval;
 	return true;
 }
 
@@ -88,8 +89,8 @@ void C4GameControlNetwork::Execute() // by main thread
 		return;
 
 	// Save time the control tick was reached
-	if (iWaitStart == -1)
-		iWaitStart = GetTime();
+	if (!tWaitStart)
+		tWaitStart = GetTime();
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -116,7 +117,7 @@ bool C4GameControlNetwork::GetControl(C4Control *pCtrl, int32_t iTick) // by mai
 	pCtrl->Append(pPkt->getControl());
 	// calc performance
 	CalcPerformance(iTick);
-	iWaitStart = -1;
+	tWaitStart = 0;
 	// ok
 	return true;
 }
@@ -421,7 +422,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 		C4GameControlPacket *pCtrl = getCtrl(pClient->getClientID(), iCtrlTick);
 		if (!pCtrl) continue;
 		// calc stats
-		pClient->AddPerf(pCtrl->getTime() - iWaitStart);
+		pClient->AddPerf(pCtrl->getTime() - tWaitStart);
 	}
 	// Now do PreSend-calcs based on ping times
 	int32_t iControlSendTime;
@@ -735,7 +736,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 	// target ctrl tick to reach?
 	if (iControlReady < iTargetTick &&
 	    (!fActivated || iControlSent > iControlReady) &&
-	    GetTime() >= iNextControlReqeust)
+	    GetTime() >= tNextControlRequest)
 	{
 		Application.InteractiveThread.ThreadLogS("Network: Recovering: Requesting control for tick %d...", iControlReady + 1);
 		// make request
@@ -746,7 +747,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		else
 			::Network.Clients.BroadcastMsgToConnClients(Pkt);
 		// set time for next request
-		iNextControlReqeust = GetTime() + C4ControlRequestInterval;
+		tNextControlRequest = GetTime() + C4ControlRequestInterval;
 	}
 }
 
@@ -764,7 +765,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	{
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
-		if (eMode != CNM_Async || iWaitStart == -1 || GetTime() <= uint32_t(iWaitStart + iMaxWait))
+		if (eMode != CNM_Async || !tWaitStart || GetTime() <= tWaitStart + iMaxWait)
 			return NULL;
 	}
 
@@ -795,7 +796,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
 	// advance control request time
-	iNextControlReqeust = Max<uint32_t>(iNextControlReqeust, GetTime() + C4ControlRequestInterval);
+	tNextControlRequest = Max(tNextControlRequest, GetTime() + C4ControlRequestInterval);
 
 	// return
 	return pComplete;
@@ -851,7 +852,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
-		iTime(GetTime()),
+		tTime(GetTime()),
 		pNext(NULL)
 {
 
@@ -860,7 +861,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-		iTime(GetTime()),
+		tTime(GetTime()),
 		pNext(NULL)
 {
 	Ctrl.Copy(Pkt2.getControl());

@@ -64,7 +64,8 @@ protected:
 	volatile int32_t iControlPreSend;
 
 	// statistics
-	int32_t iWaitStart;
+	time_t tWaitStart;
+
 	int32_t iAvgControlSendTime;
 	int32_t iTargetFPS; // used for PreSend-colculation
 
@@ -84,7 +85,7 @@ protected:
 	C4GameControlPacket *pSyncCtrlQueue;
 
 	// control request timing
-	uint32_t iNextControlReqeust;
+	time_t tNextControlRequest;
 
 	// links
 	C4GameControl *const pParent;
@@ -181,7 +182,7 @@ public:
 protected:
 	// header
 	int32_t iClientID, iCtrlTick;
-	int32_t iTime;
+	time_t tTime;
 
 	// data
 	C4Control Ctrl;
@@ -192,7 +193,7 @@ protected:
 public:
 	int32_t          getClientID()  const { return iClientID; }
 	int32_t          getCtrlTick()  const { return iCtrlTick; }
-	int32_t          getTime()      const { return iTime; }
+	time_t          getTime()      const { return tTime; }
 	const C4Control &getControl()   const { return Ctrl; }
 
 	void Set(int32_t iClientID, int32_t iCtrlTick);

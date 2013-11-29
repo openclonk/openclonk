@@ -47,12 +47,6 @@ struct pollfd;
 #endif // HAVE_PTHREAD
 #endif // _WIN32
 
-// helper
-inline int MaxTimeout(int iTimeout1, int iTimeout2)
-{
-	return (iTimeout1 == -1 || iTimeout2 == -1) ? -1 : Max(iTimeout1, iTimeout2);
-}
-
 typedef struct _GMainLoop GMainLoop;
 
 // Abstract class for a process
@@ -76,8 +70,9 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	// -1 means no timeout (infinity).
-	virtual int GetNextTick(int Now) { return -1; }
+	virtual time_t GetNextTick(time_t tNow) { return 0; };
+
+	virtual bool IsScheduledExecution() { return false; }
 
 	// Is the process signal currently set?
 	bool IsSignaled();
@@ -91,30 +86,33 @@ public:
 class CStdTimerProc : public StdSchedulerProc
 {
 public:
-	CStdTimerProc(uint32_t iDelay) : iLastTimer(0), iDelay(iDelay) { }
+	CStdTimerProc(uint32_t iDelay) : tLastTimer(0), iDelay(iDelay) { }
 	~CStdTimerProc() { }
 
 private:
-	uint32_t iLastTimer, iDelay;
+	time_t tLastTimer;
+	uint32_t iDelay;
 
 public:
-	void Set() { iLastTimer = 0; }
+	void Set() { tLastTimer = 0; }
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool CheckAndReset()
 	{
-		if (GetTime() < iLastTimer + iDelay) return false;
+		if (GetTime() < tLastTimer + iDelay) return false;
 		// Compensate light drifting
-		uint32_t iTime = GetTime();
-		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
-		iLastTimer = iTime - Min(iDrift, iDelay / 2);
+		time_t tTime = GetTime();
+		uint32_t iDrift = tTime - tLastTimer - iDelay; // >= 0 because of Check()
+		tLastTimer = tTime - Min(iDrift, iDelay / 2);
 		return true;
 	}
 
 	// StdSchedulerProc override
-	virtual int GetNextTick(int Now)
+	virtual time_t GetNextTick(time_t tNow)
 	{
-		return iLastTimer + iDelay;
+		return tLastTimer + iDelay;
 	}
+
+	virtual bool IsScheduledExecution() { return true; }
 };
 
 // A simple alertable proc

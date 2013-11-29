@@ -218,7 +218,6 @@ public:
 #else
 	virtual void GetFDs(std::vector<struct pollfd> & FDs);
 #endif
-	virtual int GetNextTick(int Now);
 
 	// statistics
 	virtual bool GetStatistic(int *pBroadcastRate);
@@ -373,7 +372,6 @@ public:
 #else
 	virtual void GetFDs(std::vector<struct pollfd> & FDs);
 #endif
-	virtual int GetNextTick(int Now);
 
 	// not implemented
 	virtual bool Connect(const addr_t &addr) { assert(false); return false; }
@@ -460,7 +458,8 @@ public:
 	virtual bool Broadcast(const C4NetIOPacket &rPacket);
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true);
 
-	virtual int GetNextTick(int Now);
+	virtual time_t GetNextTick(time_t tNow);
+	virtual bool IsScheduledExecution() { return true; }
 
 	virtual bool GetStatistic(int *pBroadcastRate);
 	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
@@ -622,11 +621,11 @@ protected:
 		CStdCSec OutCSec;
 
 		// connection check time limit
-		unsigned int iNextReCheck;
+		time_t tNextReCheck;
 		unsigned int iLastPacketAsked, iLastMCPacketAsked;
 
 		// timeout
-		unsigned int iTimeout;
+		time_t tTimeout;
 		unsigned int iRetries;
 
 		// statistics
@@ -662,7 +661,7 @@ protected:
 		unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
 
 		// timeout checking
-		int GetTimeout() { return iTimeout; }
+		time_t GetTimeout() { return tTimeout; }
 		void CheckTimeout();
 
 		// selected for broadcast?
@@ -728,7 +727,7 @@ protected:
 	bool fDelayedLoopbackTest;
 
 	// check timing
-	unsigned int iNextCheck;
+	time_t tNextCheck;
 
 	// outgoing packet list (for multicast)
 	PacketList OPackets;

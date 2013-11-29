@@ -430,11 +430,20 @@ bool C4Network2HTTPClient::Execute(int iMaxTime)
 	return C4NetIOTCP::Execute(iMaxTime);
 }
 
-int C4Network2HTTPClient::GetNextTick(int Now)
+time_t C4Network2HTTPClient::GetNextTick(time_t tNow)
 {
+	time_t iNetIOTCPTick = C4NetIOTCP::GetNextTick(tNow);
 	if (!fBusy)
-		return C4NetIOTCP::GetNextTick(Now);
-	return MaxTimeout(C4NetIOTCP::GetNextTick(Now), Now + 1000 * Max<int>(iRequestTimeout - time(NULL), 0));
+		return iNetIOTCPTick;
+
+	time_t iHTTPClientTick = tNow + 1000 * Max<time_t>(iRequestTimeout - time(NULL), 0);
+
+	return Max(iNetIOTCPTick, iHTTPClientTick);
+}
+
+bool C4Network2HTTPClient::IsScheduledExecution()
+{
+	return C4NetIOTCP::IsScheduledExecution();
 }
 
 bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)

@@ -150,7 +150,7 @@ namespace C4GUI
 		// reset selection
 		iSelectionStart = iSelectionEnd = 0;
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=GetTime();
+		tLastInputTime=GetTime();
 	}
 
 	void Edit::DeleteSelection()
@@ -162,7 +162,7 @@ namespace C4GUI
 		// adjust cursor pos
 		if (iCursorPos > iSelBegin) iCursorPos = Max(iSelBegin, iCursorPos - iSelEnd + iSelBegin);
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=GetTime();
+		tLastInputTime=GetTime();
 		// nothing selected
 		iSelectionStart = iSelectionEnd = iSelBegin;
 	}
@@ -189,7 +189,7 @@ namespace C4GUI
 			// advance cursor
 			iCursorPos += iTextLen;
 			// cursor moved: ensure it is shown
-			dwLastInputTime=GetTime();
+			tLastInputTime=GetTime();
 			ScrollCursorInView();
 		}
 		// done; return whether everything was inserted
@@ -452,7 +452,7 @@ namespace C4GUI
 			iCursorPos += iMoveLength;
 		}
 		// show cursor
-		dwLastInputTime=GetTime();
+		tLastInputTime=GetTime();
 		ScrollCursorInView();
 		// operation recognized
 		return true;
@@ -556,7 +556,7 @@ namespace C4GUI
 		// select all
 		iSelectionStart=0; iSelectionEnd=iCursorPos=SLen(Text);
 		// begin with a flashing cursor
-		dwLastInputTime=GetTime();
+		tLastInputTime=GetTime();
 	}
 
 	void Edit::OnLooseFocus()
@@ -629,7 +629,7 @@ namespace C4GUI
 		// draw edit text
 		pDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
 		// draw cursor
-		if (HasDrawFocus() && !(((dwLastInputTime-GetTime())/500)%2))
+		if (HasDrawFocus() && !(((tLastInputTime-GetTime())/500)%2))
 		{
 			char cAtCursor = pDrawText[iCursorPos]; pDrawText[iCursorPos]=0; int32_t w,h,wc;
 			pFont->GetTextExtent(pDrawText, w, h, false);

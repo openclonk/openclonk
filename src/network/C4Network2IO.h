@@ -89,10 +89,11 @@ protected:
 	bool fExclusiveConn;
 
 	// timer & ping
-	unsigned long iLastExecute, iLastPing;
+	time_t tLastExecute;
+	time_t tLastPing;
 
 	// statistics
-	unsigned long iLastStatistic;
+	time_t tLastStatistic;
 	int iTCPIRate, iTCPORate, iTCPBCRate,
 	iUDPIRate, iUDPORate, iUDPBCRate;
 
@@ -162,7 +163,8 @@ protected:
 	virtual void OnError(const char *strError, C4NetIO *pNetIO);
 	// StdSchedulerProc
 	virtual bool Execute(int iTimeout, pollfd *);
-	virtual int GetNextTick(int Now);
+	virtual time_t GetNextTick(time_t Now);
+	virtual bool IsScheduledExecution() { return true; }
 	// Event callback by C4InteractiveThread
 	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData); // by main thread
 
@@ -229,8 +231,8 @@ protected:
 	bool fBroadcastTarget;                  // broadcast target?
 	time_t iTimestamp;                      // timestamp of last status change
 	int iPingTime;                          // ping
-	unsigned long iLastPing;                // if > iLastPong, it's the first ping that hasn't been answered yet
-	unsigned long iLastPong;                // last pong received
+	time_t tLastPing;                       // if > iLastPong, it's the first ping that hasn't been answered yet
+	time_t tLastPong;                       // last pong received
 	C4ClientCore CCore;                     // client core (>= CS_HalfAccepted)
 	CStdCSec CCoreCSec;
 	int iIRate, iORate;                     // input/output rates (by C4NetIO, in b/s)
@@ -333,7 +335,7 @@ public:
 	C4PacketPing(uint32_t iPacketCounter = 0, uint32_t iRemotePacketCounter = 0);
 
 protected:
-	uint32_t iTime;
+	time_t tTime;
 	uint32_t iPacketCounter;
 
 public:

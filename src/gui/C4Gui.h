@@ -1233,7 +1233,7 @@ namespace C4GUI
 		int32_t iCursorPos;            // cursor position: char, before which the cursor is located
 		int32_t iSelectionStart, iSelectionEnd; // selection range (start may be larger than end)
 		int32_t iMaxTextLength;        // maximum number of characters to be input here
-		DWORD dwLastInputTime;     // time of last input (for cursor flashing)
+		time_t tLastInputTime;     // time of last input (for cursor flashing)
 		int32_t iXScroll;              // horizontal scrolling
 		char cPasswordMask;         // character to be used for masking the contents. 0 for none.
 

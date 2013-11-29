@@ -181,7 +181,8 @@ public:
 	// Overridden
 	virtual bool Execute(int iMaxTime, pollfd * readyfds) { return Execute(iMaxTime); }
 	virtual bool Execute(int iMaxTime = TO_INF);
-	virtual int GetNextTick(int Now);
+	virtual time_t GetNextTick(time_t tNow);
+	virtual bool IsScheduledExecution();
 
 private:
 	bool ReadHeader(StdStrBuf Data);
