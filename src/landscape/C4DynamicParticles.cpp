@@ -843,8 +843,15 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	glVertexPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].x));
 	glTexCoordPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].u));
 	glColorPointer(4, GL_FLOAT, stride, &(vertexCoordinates[0].r));
-	glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
 
+	if (!DynamicParticles.usePrimitiveRestartIndexWorkaround)
+	{
+		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
+	}
+	else
+	{
+		glMultiDrawElements(GL_TRIANGLE_STRIP, ::DynamicParticles.GetMultiDrawElementsCountArray(), GL_UNSIGNED_INT, (const GLvoid**) ::DynamicParticles.GetMultiDrawElementsIndexArray(), (GLsizei) particleCount);
+	}
 	if (resetMatrix)
 		glPopMatrix();
 }
@@ -916,8 +923,11 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	
 	glEnable(GL_TEXTURE_2D);
 
-	glPrimitiveRestartIndex(0xffffffff);
-
+	if (!DynamicParticles.usePrimitiveRestartIndexWorkaround)
+	{
+		glPrimitiveRestartIndex(0xffffffff);
+		glEnable(GL_PRIMITIVE_RESTART);
+	}
 	// apply zoom
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -929,7 +939,7 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnable(GL_PRIMITIVE_RESTART);
+	
 
 	accessMutex.Enter();
 
@@ -943,8 +953,11 @@ void C4DynamicParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisable(GL_PRIMITIVE_RESTART);
 
+	if (!DynamicParticles.usePrimitiveRestartIndexWorkaround)
+	{
+		glDisable(GL_PRIMITIVE_RESTART);
+	}
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -995,10 +1008,32 @@ void C4DynamicParticleSystem::CalculationThread::Execute()
 	DynamicParticles.ExecuteCalculation();
 }
 
+C4DynamicParticleSystem::C4DynamicParticleSystem() : frameCounterAdvancedEvent(false)
+{
+	currentSimulationTime = 0;
+	globalParticles = 0;
+	usePrimitiveRestartIndexWorkaround = false;
+}
+
 C4DynamicParticleSystem::~C4DynamicParticleSystem()
 {
 	calculationThread.SignalStop();
 	CalculateNextStep();
+
+	for (std::vector<uint32_t *>::iterator iter = multiDrawElementsIndexArray.begin(); iter != multiDrawElementsIndexArray.end(); ++iter)
+		delete (*iter);
+}
+
+void C4DynamicParticleSystem::DoInit()
+{
+#ifndef USE_CONSOLE
+	// we use features that are only supported from 3.1 upwards. Check whether the graphics card supports that and - if not - use workarounds
+	if (!GLEW_VERSION_3_1 || (&glPrimitiveRestartIndex == 0))
+	{
+		usePrimitiveRestartIndexWorkaround = true;
+		Log("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
+	}
+#endif
 }
 
 void C4DynamicParticleSystem::ExecuteCalculation()
@@ -1147,32 +1182,57 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 
 void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)
 {
-	const uint32_t PRI = 0xffffffff;
-	size_t neededAmount = 5 * forAmount;
-
-	if (primitiveRestartIndices.size() < neededAmount)
+	if (!usePrimitiveRestartIndexWorkaround)
 	{
-		uint32_t oldValue = 0;
+		// prepare array with indices, separated by special primitive restart index
+		const uint32_t PRI = 0xffffffff;
+		size_t neededAmount = 5 * forAmount;
 
-		if (primitiveRestartIndices.size() > 2)
+		if (primitiveRestartIndices.size() < neededAmount)
 		{
-			oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-1];
-			if (oldValue == PRI)
-				oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-2];
-			++oldValue;
-		}
-		size_t oldSize = primitiveRestartIndices.size();
-		primitiveRestartIndices.resize(neededAmount);
+			uint32_t oldValue = 0;
 
-		for (size_t i = oldSize; i < neededAmount; ++i)
-		{
-			if (((i+1) % 5 == 0) && (i != 0))
+			if (primitiveRestartIndices.size() > 2)
 			{
-				primitiveRestartIndices[i] = PRI;
+				oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-1];
+				if (oldValue == PRI)
+					oldValue = primitiveRestartIndices[primitiveRestartIndices.size()-2];
+				++oldValue;
 			}
-			else
+			size_t oldSize = primitiveRestartIndices.size();
+			primitiveRestartIndices.resize(neededAmount);
+
+			for (size_t i = oldSize; i < neededAmount; ++i)
 			{
-				primitiveRestartIndices[i] = oldValue++;
+				if (((i+1) % 5 == 0) && (i != 0))
+				{
+					primitiveRestartIndices[i] = PRI;
+				}
+				else
+				{
+					primitiveRestartIndices[i] = oldValue++;
+				}
+			}
+		}
+	}
+	else
+	{
+		// prepare arrays for glMultiDrawElements
+		if (multiDrawElementsCountArray.size() <= forAmount)
+		{
+			multiDrawElementsCountArray.resize(forAmount, 4);
+		}
+
+		if (multiDrawElementsIndexArray.size() <= forAmount)
+		{
+			uint32_t oldSize = multiDrawElementsIndexArray.size();
+			multiDrawElementsIndexArray.resize(forAmount);
+
+			for (; oldSize < forAmount; ++oldSize)
+			{
+				multiDrawElementsIndexArray[oldSize] = new uint32_t[4];
+				for (uint32_t i = 0; i < 4; ++i)
+					multiDrawElementsIndexArray[oldSize][i] = 4 * oldSize + i;	
 			}
 		}
 	}

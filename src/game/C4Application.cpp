@@ -46,6 +46,7 @@
 #include <C4GameLobby.h>
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
+#include <C4DynamicParticles.h>
 
 #include <getopt.h>
 
@@ -181,6 +182,9 @@ bool C4Application::DoInit(int argc, char * argv[])
 		if (!SetVideoMode(Application.GetConfigWidth(), Application.GetConfigHeight(), Config.Graphics.BitDepth, Config.Graphics.RefreshRate, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.WindowX, Config.Graphics.WindowY);
 	}
+
+	// after initializing graphics, the particle system can check for compatibility
+	::DynamicParticles.DoInit();
 
 	// Initialize gamepad
 	if (!pGamePadControl && Config.General.GamepadEnabled)

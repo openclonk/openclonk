@@ -358,7 +358,12 @@ class C4DynamicParticleSystem
 	friend class CalculationThread;
 
 private:
+	// contains an array with indices for vertices, separated by a primitive restart index
 	std::vector<uint32_t> primitiveRestartIndices;
+	// these are fallbacks for if primitiveRestartIndex is not supported by the graphics card
+	std::vector<uint32_t> multiDrawElementsCountArray;
+	std::vector<uint32_t *> multiDrawElementsIndexArray;
+
 	std::list<C4DynamicParticleList> particleLists;
 
 	CalculationThread calculationThread;
@@ -375,11 +380,7 @@ private:
 
 public:
 #ifndef USE_CONSOLE
-	C4DynamicParticleSystem() : frameCounterAdvancedEvent(false)
-	{
-		currentSimulationTime = 0;
-		globalParticles = 0;
-	}
+	C4DynamicParticleSystem();
 	~C4DynamicParticleSystem();
 #endif
 	// called to allow the particle system the simulation of another step
@@ -389,7 +390,7 @@ public:
 		frameCounterAdvancedEvent.Set();
 #endif
 	}
-
+	void DoInit();
 	void Clear();
 	void DrawGlobalParticles(C4TargetFacet cgo)
 	{
@@ -403,6 +404,12 @@ public:
 	void ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second = 0);
 
 #ifndef USE_CONSOLE
+	// on some graphics card, glPrimitiveRestartIndex might not be supported
+	bool usePrimitiveRestartIndexWorkaround;
+	GLsizei *GetMultiDrawElementsCountArray() { return (GLsizei*) &multiDrawElementsCountArray[0]; }
+	void **GetMultiDrawElementsIndexArray() { return (void**) &multiDrawElementsIndexArray[0]; }
+
+	// usually, the following methods are used for drawing
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
