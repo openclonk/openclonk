@@ -286,76 +286,79 @@ inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * const & e)
 
 enum C4PropertyName
 {
-	P_Prototype,
-	P_Name,
-	P_Priority,
-	P_Interval,
-	P_CommandTarget,
-	P_Time,
-	P_Collectible,
-	P_Touchable,
-	P_ActMap,
-	P_Attach,
-	P_Visibility,
-	P_Parallaxity,
-	P_LineColors,
-	P_LineAttach,
-	P_LineMaxDistance,
-	P_PictureTransformation,
-	P_MeshTransformation,
-	P_Procedure,
-	P_Speed,
-	P_Accel,
-	P_Decel,
-	P_Directions,
-	P_FlipDir,
-	P_Length,
-	P_Delay,
-	P_X,
-	P_Y,
-	P_Wdt,
-	P_Hgt,
-	P_OffX,
-	P_OffY,
-	P_FacetBase,
-	P_FacetTopFace,
-	P_FacetTargetStretch,
-	P_NextAction,
-	P_Hold,
-	P_Idle,
-	P_NoOtherAction,
-	P_StartCall,
-	P_EndCall,
-	P_AbortCall,
-	P_PhaseCall,
-	P_Sound,
-	P_ObjectDisabled,
-	P_DigFree,
-	P_InLiquidAction,
-	P_TurnAction,
-	P_Reverse,
-	P_Step,
-	P_MouseDrag,
-	P_MouseDragImage,
-	P_Animation,
-	P_Action,
-	P_BreatheWater,
-	P_CorrosionResist,
-	P_MaxEnergy,
-	P_MaxBreath,
-	P_ThrowSpeed,
-	P_Mode,
-	P_CausedBy,
-	P_Blasted,
-	P_IncineratingObj,
-	P_Plane,
-	P_Tooltip,
-	P_Placement,
-	P_BlastIncinerate,
-	P_ContactIncinerate,
-	P_Global,
+	// TODO: documentation comments can be removed
+	// as soon as all properties are documented
+
+	P_Prototype,			// UNDOCUMENTED 
+	P_Name,					// documented
+	P_Priority,				
+	P_Interval,				
+	P_CommandTarget,		
+	P_Time,					
+	P_Collectible,			// documented
+	P_Touchable,			// documented
+	P_ActMap,				// documented
+	P_Attach,				// DOCUMENTATION OBSOLETE (ActMap)
+	P_Visibility,			// documented
+	P_Parallaxity,			// documented
+	P_LineColors,			// documented
+	P_LineAttach,			// documented
+	P_LineMaxDistance,		// unused?
+	P_PictureTransformation,// documented
+	P_MeshTransformation,	// documented
+	P_Procedure,			// DOCUMENTATION OBSOLETE (ActMap/Procedures)
+	P_Speed,				// documented (ActMap)
+	P_Accel,				// documented (ActMap)
+	P_Decel,				// documented (ActMap)
+	P_Directions,			// documented (ActMap)
+	P_FlipDir,				// documented (ActMap)
+	P_Length,				// documented (ActMap)
+	P_Delay,				// documented (ActMap)
+	P_X,					// documented (ActMap)
+	P_Y,					// documented (ActMap)
+	P_Wdt,					// documented (ActMap)
+	P_Hgt,					// documented (ActMap)
+	P_OffX,					// UNDOCUMENTED (ActMap)
+	P_OffY,					// UNDOCUMENTED (ActMap)
+	P_FacetBase,			// documented (ActMap)
+	P_FacetTopFace,			// documented (ActMap)
+	P_FacetTargetStretch,	// documented (ActMap)
+	P_NextAction,			// documented (ActMap)
+	P_Hold,					// UNDOCUMENTED (ActMap)
+	P_Idle,					// UNDOCUMENTED (ActMap)
+	P_NoOtherAction,		// documented (ActMap)
+	P_StartCall,			// documented (ActMap)
+	P_EndCall,				// documented (ActMap)
+	P_AbortCall,			// documented (ActMap)
+	P_PhaseCall,			// documented (ActMap)
+	P_Sound,				// documented (ActMap), should link to FnSound for more flexibility though
+	P_ObjectDisabled,		// documented (ActMap)
+	P_DigFree,				// documented (ActMap)
+	P_InLiquidAction,		// documented (ActMap)
+	P_TurnAction,			// UNDOCUMENTED (FnSetDir)
+	P_Reverse,				// documented (ActMap)
+	P_Step,					// UNDOCUMENTED (ActMap)
+	P_MouseDrag,			// documented
+	P_MouseDragImage,		// documented
+	P_Animation,			// documented
+	P_Action,				// documented
+	P_BreatheWater,			// documented
+	P_CorrosionResist,		// documented
+	P_MaxEnergy,			// documented
+	P_MaxBreath,			// documented
+	P_ThrowSpeed,			// documented
+	P_Mode,					// unused?
+	P_CausedBy,				// unused?
+	P_Blasted,				// unused?
+	P_IncineratingObj,		// unused?
+	P_Plane,				// documented
+	P_Tooltip,				// documented
+	P_Placement,			// documented
+	P_BlastIncinerate,		// documented
+	P_ContactIncinerate,	// documented
+	P_Global,				// unused?
 	P_Scenario,
-	P_JumpSpeed,
+	P_JumpSpeed,			// documented
 	P_Algo,
 	P_Layer,
 	P_Seed,
