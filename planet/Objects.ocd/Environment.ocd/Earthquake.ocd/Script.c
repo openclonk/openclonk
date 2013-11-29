@@ -67,6 +67,7 @@ protected func FxIntEarthquakeStop(object target, effect)
 {
 	// Stop sound.
 	Sound("Earthquake", true, 100, nil, -1);
+	Sound("EarthquakeEnd",true);
 	return FX_OK;
 }
 
