@@ -90,7 +90,7 @@ public:
 protected:
 	C4SoundEffect *pEffect;
 	int32_t iVolume, iPan, iChannel;
-	unsigned long iStarted;
+	time_t tStarted;
 	int32_t iNearInstanceMax;
 	bool fLooping;
 	C4Object *pObj;

@@ -837,7 +837,7 @@ bool C4Application::FullScreenMode()
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
 		: CStdMultimediaTimerProc(26),
-		iLastGameTick(0), iGameTickDelay(0)
+		tLastGameTick(0), iGameTickDelay(0)
 {
 }
 
@@ -864,18 +864,18 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 {
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
-	unsigned int Now = GetTime();
+	time_t tNow = GetTime();
 	// Execute
-	if (Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
+	if (tNow >= tLastGameTick + iGameTickDelay || Game.GameGo)
 	{
 		if(iGameTickDelay)
-			iLastGameTick += iGameTickDelay;
+			tLastGameTick += iGameTickDelay;
 		else
-			iLastGameTick = Now;
+			tLastGameTick = tNow;
 
 		// Compensate if things get too slow
-		if (Now > iLastGameTick + iGameTickDelay)
-			iLastGameTick += (Now - iLastGameTick) / 2;
+		if (tNow > tLastGameTick + iGameTickDelay)
+			tLastGameTick += (tNow - tLastGameTick) / 2;
 
 		Application.GameTick();
 	}

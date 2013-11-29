@@ -350,7 +350,7 @@ bool C4Game::Init()
 	C4ValueNumbers numbers;
 	IsRunning = false;
 
-	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
+	InitProgress=0; LastInitProgress=0;
 	SetInitProgress(0);
 
 	// reinit keyboard to reflect any config changes that might have been done
@@ -1445,7 +1445,7 @@ void C4Game::Default()
 	TimeGo=false;
 	Time=0;
 	StartTime=0;
-	InitProgress=0; LastInitProgress=0; LastInitProgressShowTime=0;
+	InitProgress=0; LastInitProgress=0;
 	FPS=cFPS=0;
 	fScriptCreatedObjects=false;
 	fLobby=fObserve=false;
@@ -3135,7 +3135,6 @@ void C4Game::SetInitProgress(float fToProgress)
 	if (InitProgress > LastInitProgress)
 	{
 		LastInitProgress=InitProgress;
-		LastInitProgressShowTime=GetTime();
 		GraphicsSystem.MessageBoard.LogNotify();
 	}
 	// Cheap hack to get the Console window updated while loading

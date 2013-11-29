@@ -59,7 +59,7 @@ public:
 	inline void Start()
 	{
 		if (!iStartCalled)
-			iStartTick = GetTime();
+			tStartTime = GetTime();
 		iCount ++;
 		iCountPart ++;
 		iStartCalled ++;
@@ -71,10 +71,10 @@ public:
 		iStartCalled --;
 		if (!iStartCalled && iCount >= 100)
 		{
-			unsigned int iTime = GetTime() - iStartTick;
+			time_t tTime = GetTime() - tStartTime;
 
-			iTimeSum += iTime;
-			iTimeSumPart += iTime;
+			tTimeSum += tTime;
+			tTimeSumPart += tTime;
 		}
 	}
 
@@ -89,9 +89,7 @@ protected:
 	C4Stat* pNext;
 	C4Stat* pPrev;
 
-
-	// start tick
-	unsigned int iStartTick;
+	time_t tStartTime;
 
 	// start-call depth
 	unsigned int iStartCalled;
@@ -100,7 +98,7 @@ protected:
 	// ** statistic data
 
 	// sum of times
-	unsigned int iTimeSum;
+	time_t tTimeSum;
 
 	// number of starts called
 	unsigned int iCount;
@@ -108,7 +106,7 @@ protected:
 	// ** statistic data (partial stat)
 
 	// sum of times
-	unsigned int iTimeSumPart;
+	time_t tTimeSumPart;
 
 	// number of starts called
 	unsigned int iCountPart;

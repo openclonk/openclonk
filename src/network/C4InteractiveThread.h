@@ -85,7 +85,7 @@ private:
 		C4InteractiveEventType Type;
 		void *Data;
 #ifdef _DEBUG
-		int Time;
+		time_t Time;
 #endif
 		Event *Next;
 	};
