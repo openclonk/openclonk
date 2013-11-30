@@ -128,7 +128,7 @@
       <row>
         <literal_col>NextAction</literal_col>
         <col>String</col>
-        <col>Next action being set after the current one has reached its end. </col>
+        <col>Next action being set after the current one has reached its end. If it is not specified, the action will be kept and the animation phase resets to 0 and the animation begins anew. If it is "Hold", the action will also be kept but stops at the last animation frame. If it is "Idle", the object will have no action after this one.</col>
       </row>
       <row>
         <literal_col>NoOtherAction</literal_col>
