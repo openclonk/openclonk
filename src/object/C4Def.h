@@ -143,9 +143,7 @@ public:
 	int32_t Oversize;
 	int32_t Fragile;
 	int32_t Projectile;
-	int32_t Explosive;
 	int32_t NoPushEnter;
-	int32_t DragImagePicture;
 	int32_t VehicleControl;
 	int32_t Pathfinder;
 	int32_t MoveToRange;
@@ -158,7 +156,6 @@ public:
 	int32_t NoBreath;         // object does not need to breath, although it's living
 	int32_t ConSizeOff;       // number of pixels to be subtracted from the needed height for this building
 	int32_t NoGet;            // if set, object can't be taken out of a containers manually (doesn't appear in get/activate-menus)
-	int32_t NeededGfxMode;    // if set, the def will only be loaded in given gfx mode
 	int32_t RotatedEntrance;  // 0 entrance not rotateable, 1 entrance always, 2-360 entrance within this rotation
 	int32_t NoTransferZones;
 	int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values

@@ -75,9 +75,7 @@ void C4Def::DefaultDefCore()
 	Oversize=0;
 	Fragile=0;
 	NoPushEnter=0;
-	Explosive=0;
 	Projectile=0;
-	DragImagePicture=0;
 	VehicleControl=0;
 	Pathfinder=0;
 	NoComponentMass=0;
@@ -180,11 +178,11 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SolidMask,                     "SolidMask",          TargetRect0       ));
 	pComp->Value(mkNamingAdapt(TopFace,                       "TopFace",            TargetRect0       ));
 	pComp->Value(mkNamingAdapt(PictureRect,                   "Picture",            Rect0             ));
-	pComp->Value(mkNamingAdapt(StdNullAdapt(),                "PictureFE"                             ));
 	pComp->Value(mkNamingAdapt(Entrance,                      "Entrance",           Rect0             ));
 	pComp->Value(mkNamingAdapt(Collection,                    "Collection",         Rect0             ));
 	pComp->Value(mkNamingAdapt(Exclusive,                     "Exclusive",          0                 ));
 	pComp->Value(mkNamingAdapt(Line,                          "Line",               0                 ));
+	// <Newton> undocumented, but obsolete? I don't understand the sense of this value.
 	pComp->Value(mkNamingAdapt(LineIntersect,                 "LineIntersect",      0                 ));
 	pComp->Value(mkNamingAdapt(CrewMember,                    "CrewMember",         0                 ));
 	pComp->Value(mkNamingAdapt(NativeCrew,                    "NoStandardCrew",     0                 ));
@@ -216,11 +214,12 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(IncompleteActivity,            "IncompleteActivity", 0                 ));
 	pComp->Value(mkNamingAdapt(AttractLightning,              "AttractLightning",   0                 ));
 	pComp->Value(mkNamingAdapt(Oversize,                      "Oversize",           0                 ));
+	// <Newton> Fragile and Projectile are kinda obsolete.
+	// Only used at one point in the command system. Should rather be solved with properties if at all
 	pComp->Value(mkNamingAdapt(Fragile,                       "Fragile",            0                 ));
-	pComp->Value(mkNamingAdapt(Explosive,                     "Explosive",          0                 ));
 	pComp->Value(mkNamingAdapt(Projectile,                    "Projectile",         0                 ));
+
 	pComp->Value(mkNamingAdapt(NoPushEnter,                   "NoPushEnter",        0                 ));
-	pComp->Value(mkNamingAdapt(DragImagePicture,              "DragImagePicture",   0                 ));
 	pComp->Value(mkNamingAdapt(VehicleControl,                "VehicleControl",     0                 ));
 	pComp->Value(mkNamingAdapt(Pathfinder,                    "Pathfinder",         0                 ));
 	pComp->Value(mkNamingAdapt(MoveToRange,                   "MoveToRange",        0                 ));
@@ -234,7 +233,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
-	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));
+	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));	// obsolete?
 
 	const StdBitfieldEntry<int32_t> AllowPictureStackModes[] =
 	{
@@ -246,7 +245,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 		{ NULL,             0            }
 	};
 
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt<int32_t>(AllowPictureStack, AllowPictureStackModes),		//undocumented
 	                           "AllowPictureStack",   0                ));
 }
 

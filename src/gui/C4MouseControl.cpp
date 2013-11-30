@@ -434,7 +434,6 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			C4TargetFacet ccgo;
 			ccgo.Set(cgo.Surface, XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(ImageWdt)*ZoomDraw, float(ImageHgt)*ZoomDraw);
 
-			// TODO: Take pDef->DragImagePicture into account
 			if (DragImageObject)
 			{
 				uint32_t ColorMod = DragImageObject->ColorMod;

@@ -15,5 +15,4 @@ Components=Sulphur=1
 Rotate=1
 Projectile=1
 Fragile=1
-Explosive=1
 
