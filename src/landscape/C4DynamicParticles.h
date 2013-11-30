@@ -71,7 +71,6 @@ protected:
 	union
 	{
 		int rerollInterval; // for Random
-		size_t keyFrameCount; // for KeyFrames
 		float delay; // for Step
 		float speedFactor; // for Speed & Wind & Gravity
 	};
@@ -82,6 +81,7 @@ protected:
 		int smoothing; // for KeyFrames
 	};
 	
+	size_t keyFrameCount;
 	std::vector<float> keyFrames;
 
 	C4DynamicParticleValueProviderFunction valueFunction;
@@ -111,7 +111,7 @@ public:
 
 	bool IsConstant() const { return isConstant; }
 	bool IsRandom() const { return valueFunction == &C4DynamicParticleValueProvider::Random; }
-	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
+	C4DynamicParticleValueProvider() : startValue(0.f), endValue(0.f), currentValue(0.f), rerollInterval(0), smoothing(0), valueFunction(0), keyFrameCount(0), isConstant(true), floatValueToChange(0), typeOfValueToChange(VAL_TYPE_FLOAT) { }
 	~C4DynamicParticleValueProvider()
 	{
 		for (std::vector<C4DynamicParticleValueProvider*>::iterator iter = childrenValueProviders.begin(); iter != childrenValueProviders.end(); ++iter)
@@ -358,12 +358,13 @@ class C4DynamicParticleSystem
 	friend class CalculationThread;
 
 private:
+#ifndef USE_CONSOLE
 	// contains an array with indices for vertices, separated by a primitive restart index
 	std::vector<uint32_t> primitiveRestartIndices;
 	// these are fallbacks for if primitiveRestartIndex is not supported by the graphics card
-	std::vector<uint32_t> multiDrawElementsCountArray;
+	std::vector<GLsizei> multiDrawElementsCountArray;
 	std::vector<uint32_t *> multiDrawElementsIndexArray;
-
+#endif
 	std::list<C4DynamicParticleList> particleLists;
 
 	CalculationThread calculationThread;
@@ -406,8 +407,8 @@ public:
 #ifndef USE_CONSOLE
 	// on some graphics card, glPrimitiveRestartIndex might not be supported
 	bool usePrimitiveRestartIndexWorkaround;
-	GLsizei *GetMultiDrawElementsCountArray() { return (GLsizei*) &multiDrawElementsCountArray[0]; }
-	void **GetMultiDrawElementsIndexArray() { return (void**) &multiDrawElementsIndexArray[0]; }
+	GLsizei *GetMultiDrawElementsCountArray() { return &multiDrawElementsCountArray[0]; } 
+	GLvoid **GetMultiDrawElementsIndexArray() { return reinterpret_cast<GLvoid**> (&multiDrawElementsIndexArray[0]); }
 
 	// usually, the following methods are used for drawing
 	void PreparePrimitiveRestartIndices(uint32_t forSize);

@@ -101,7 +101,11 @@ C4DynamicParticleValueProvider & C4DynamicParticleValueProvider::operator= (cons
 	isConstant = other.isConstant;
 	keyFrameCount = other.keyFrameCount;
 
-	keyFrames.assign(other.keyFrames.begin(), other.keyFrames.end());
+	if (keyFrameCount > 0)
+	{
+		keyFrames.reserve(2 * keyFrameCount);
+		keyFrames.assign(other.keyFrames.begin(), other.keyFrames.end());
+	}
 
 	typeOfValueToChange = other.typeOfValueToChange;
 	switch (typeOfValueToChange)
@@ -846,11 +850,11 @@ void C4DynamicParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	if (!DynamicParticles.usePrimitiveRestartIndexWorkaround)
 	{
-		glDrawElements(GL_TRIANGLE_STRIP, (GLsizei) (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
+		glDrawElements(GL_TRIANGLE_STRIP, static_cast<GLsizei> (5 * particleCount), GL_UNSIGNED_INT, ::DynamicParticles.GetPrimitiveRestartArray());
 	}
 	else
 	{
-		glMultiDrawElements(GL_TRIANGLE_STRIP, ::DynamicParticles.GetMultiDrawElementsCountArray(), GL_UNSIGNED_INT, (const GLvoid**) ::DynamicParticles.GetMultiDrawElementsIndexArray(), (GLsizei) particleCount);
+		glMultiDrawElements(GL_TRIANGLE_STRIP, ::DynamicParticles.GetMultiDrawElementsCountArray(), GL_UNSIGNED_INT, const_cast<const GLvoid**>(::DynamicParticles.GetMultiDrawElementsIndexArray()), static_cast<GLsizei> (particleCount));
 	}
 	if (resetMatrix)
 		glPopMatrix();
@@ -1029,14 +1033,12 @@ C4DynamicParticleSystem::~C4DynamicParticleSystem()
 
 void C4DynamicParticleSystem::DoInit()
 {
-#ifndef USE_CONSOLE
 	// we use features that are only supported from 3.1 upwards. Check whether the graphics card supports that and - if not - use workarounds
 	if (!GLEW_VERSION_3_1 || (&glPrimitiveRestartIndex == 0))
 	{
 		usePrimitiveRestartIndexWorkaround = true;
 		Log("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
 	}
-#endif
 }
 
 void C4DynamicParticleSystem::ExecuteCalculation()
