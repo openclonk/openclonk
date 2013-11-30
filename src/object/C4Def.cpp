@@ -88,7 +88,6 @@ void C4Def::DefaultDefCore()
 	NoBreath=0;
 	ConSizeOff=0;
 	NoGet=0;
-	NeededGfxMode=0;
 	NoTransferZones=0;
 }
 
@@ -233,7 +232,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ConSizeOff,                    "ConSizeOff",         0                 ));
 	pComp->Value(mkNamingAdapt(NoGet,                         "NoGet",              0                 ));
 	pComp->Value(mkNamingAdapt(NoTransferZones,               "NoTransferZones",    0                 ));
-	pComp->Value(mkNamingAdapt(NeededGfxMode,                 "NeededGfxMode",      0                 ));	// obsolete?
 
 	const StdBitfieldEntry<int32_t> AllowPictureStackModes[] =
 	{
