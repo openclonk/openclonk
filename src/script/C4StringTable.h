@@ -289,7 +289,7 @@ enum C4PropertyName
 	// TODO: documentation comments can be removed
 	// as soon as all properties are documented
 
-	P_Prototype,			// UNDOCUMENTED 
+	P_Prototype,			// documented (ActMap), UNDOCUMENTED 
 	P_Name,					// documented
 	P_Priority,				
 	P_Interval,				
@@ -298,7 +298,7 @@ enum C4PropertyName
 	P_Collectible,			// documented
 	P_Touchable,			// documented
 	P_ActMap,				// documented
-	P_Attach,				// DOCUMENTATION OBSOLETE (ActMap)
+	P_Attach,				// documented (ActMap)
 	P_Visibility,			// documented
 	P_Parallaxity,			// documented
 	P_LineColors,			// documented
@@ -306,7 +306,7 @@ enum C4PropertyName
 	P_LineMaxDistance,		// unused?
 	P_PictureTransformation,// documented
 	P_MeshTransformation,	// documented
-	P_Procedure,			// DOCUMENTATION OBSOLETE (ActMap/Procedures)
+	P_Procedure,			// documented (ActMap)
 	P_Speed,				// documented (ActMap)
 	P_Accel,				// documented (ActMap)
 	P_Decel,				// documented (ActMap)
@@ -318,8 +318,8 @@ enum C4PropertyName
 	P_Y,					// documented (ActMap)
 	P_Wdt,					// documented (ActMap)
 	P_Hgt,					// documented (ActMap)
-	P_OffX,					// UNDOCUMENTED (ActMap)
-	P_OffY,					// UNDOCUMENTED (ActMap)
+	P_OffX,					// documented (ActMap)
+	P_OffY,					// documented (ActMap)
 	P_FacetBase,			// documented (ActMap)
 	P_FacetTopFace,			// documented (ActMap)
 	P_FacetTargetStretch,	// documented (ActMap)
@@ -331,13 +331,13 @@ enum C4PropertyName
 	P_EndCall,				// documented (ActMap)
 	P_AbortCall,			// documented (ActMap)
 	P_PhaseCall,			// documented (ActMap)
-	P_Sound,				// documented (ActMap), should link to FnSound for more flexibility though
+	P_Sound,				// documented (ActMap)
 	P_ObjectDisabled,		// documented (ActMap)
 	P_DigFree,				// documented (ActMap)
 	P_InLiquidAction,		// documented (ActMap)
-	P_TurnAction,			// UNDOCUMENTED (FnSetDir)
+	P_TurnAction,			// documented (FnSetDir)
 	P_Reverse,				// documented (ActMap)
-	P_Step,					// UNDOCUMENTED (ActMap)
+	P_Step,					// documented (ActMap)
 	P_MouseDrag,			// documented
 	P_MouseDragImage,		// documented
 	P_Animation,			// documented
