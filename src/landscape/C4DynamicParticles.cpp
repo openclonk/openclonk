@@ -1034,7 +1034,7 @@ C4DynamicParticleSystem::~C4DynamicParticleSystem()
 void C4DynamicParticleSystem::DoInit()
 {
 	// we use features that are only supported from 3.1 upwards. Check whether the graphics card supports that and - if not - use workarounds
-	if (!GLEW_VERSION_3_1 || (&glPrimitiveRestartIndex == 0))
+	if (!GLEW_VERSION_3_1 || (glPrimitiveRestartIndex == 0))
 	{
 		usePrimitiveRestartIndexWorkaround = true;
 		Log("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
