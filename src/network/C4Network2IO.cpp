@@ -848,7 +848,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 		time_t tTime = GetTime();
 		// StdStrBuf PacketDump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdaptrPacket);
 		StdStrBuf PacketHeader = FormatString("HandlePacket: %d:%02d:%02d:%03d by %s:%d (%lu bytes, counter %d)",
-		                                      (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
+		                                      int(tTime / 1000 / 60 / 60), int(tTime / 1000 / 60) % 60, int(tTime / 1000) % 60, int(tTime) % 1000,
 		                                      inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
 		                                      static_cast<unsigned long>(rPacket.getSize()), pConn->getInPacketCounter());
 		StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));
@@ -1193,9 +1193,10 @@ void C4Network2IO::CheckTimeout()
 			}
 		// ping timeout
 		if (pConn->isAccepted())
-			if ((pConn->getLag() != -1 ? pConn->getLag() : 1000 * (time(NULL) - pConn->getTimestamp()))
+			if ((pConn->getLag() != -1 ? pConn->getLag() : 1000 * difftime(time(NULL), pConn->getTimestamp()))
 			    > C4NetPingTimeout)
 			{
+				Application.InteractiveThread.ThreadLogS("%d %d %d", (int)pConn->getLag(), (int)time(NULL), (int)pConn->getTimestamp());
 				Application.InteractiveThread.ThreadLogS("Network: ping timeout to %s:%d", inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
 				pConn->Close();
 			}
