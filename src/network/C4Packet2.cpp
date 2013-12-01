@@ -527,7 +527,7 @@ void C4PacketPing::CompileFunc(StdCompiler *pComp)
 {
 	// FIXME: the compiler can't compile 64bit integers (yet), the ping will
 	// return wrong times if GetTime() returns integers too large for uint32
-	uint32_t time;
+	uint32_t time = tTime;
 	pComp->Value(mkNamingAdapt(time, "Time", 0U));
 	tTime = time;
 
