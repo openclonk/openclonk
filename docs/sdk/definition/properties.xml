@@ -88,7 +88,7 @@ Stand = {
         <row>
           <col><code>Tooltip</code></col>
           <col>string</col>
-          <col>A tooltip that is displayed for objects of the category <emlink href="definition/category.html">C4D_MouseSelect</emlink>. This string should be <emlink href="lang.html">">internationalized</em>.</col>
+          <col>A tooltip that is displayed for objects of the category <emlink href="definition/category.html">C4D_MouseSelect</emlink>. This string should be <emlink href="lang.html">internationalized</emlink>.</col>
         </row>
         <row>
           <col><code>Action</code></col>
