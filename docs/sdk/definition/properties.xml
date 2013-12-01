@@ -33,7 +33,7 @@ Stand = {
         <row>
           <col><code>Name</code></col>
           <col>string</col>
-          <col>Name of the object. This string should be <emlink href="lang.html">">internationalized</em>.</col>
+          <col>Name of the object. This string should be <emlink href="lang.html">internationalized</emlink>.</col>
         </row>
         <row>
           <col><code>Collectible</code></col>
