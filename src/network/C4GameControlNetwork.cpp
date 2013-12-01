@@ -795,8 +795,8 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	if (eMode != CNM_Decentral)
 		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
-	// advance control request time
-	tNextControlRequest = Max(tNextControlRequest, GetTime() + C4ControlRequestInterval);
+	// advance control request time (note: this is buggy if time_t values overflow after ~1 month on 32Bit Windows)
+	tNextControlRequest = Max(tNextControlRequest, time_t(GetTime() + C4ControlRequestInterval));
 
 	// return
 	return pComplete;
