@@ -975,9 +975,10 @@ void C4DynamicParticleList::Clear()
 	accessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment)
+C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked)
 {
-	accessMutex.Enter();
+	if (!alreadyLocked)
+		accessMutex.Enter();
 
 	// if not cached, find correct chunk in list
 	C4DynamicParticleChunk *chunk = 0;
@@ -1006,7 +1007,9 @@ C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uin
 	assert(chunk && "No suitable particle chunk could be found or created.");
 	lastAccessedChunk = chunk;
 
-	accessMutex.Leave();
+	if (!alreadyLocked)
+		accessMutex.Leave();
+	
 	return chunk->AddNewParticle();
 }
 
@@ -1154,6 +1157,11 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		pxList = globalParticles;
 	}
 
+	// It is necessary to lock the particle list, because we will have it create a particle first that we are going to modify.
+	// Inbetween creation of the particle and modification, the particle list's calculations should not be executed
+	// (this could f.e. lead to the particle being removed before it was fully instantiated).
+	pxList->Lock();
+
 	while (amount--)
 	{
 		if (x.IsRandom()) x.RollRandom();
@@ -1162,8 +1170,8 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		if (speedY.IsRandom()) speedY.RollRandom();
 		if (lifetime.IsRandom()) lifetime.RollRandom();
 		
-		// create a particle in the fitting chunk
-		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode, particleProperties.attachment);
+		// create a particle in the fitting chunk (note that we tell the particle list, we already locked it)
+		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode, particleProperties.attachment, true);
 
 		// initialize some more properties
 		particle->properties = particleProperties;
@@ -1183,6 +1191,8 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		particle->drawingData.SetColor(particle->properties.colorR.GetValue(particle), particle->properties.colorG.GetValue(particle), particle->properties.colorB.GetValue(particle), particle->properties.colorAlpha.GetValue(particle));
 		particle->drawingData.SetPhase((int)(particle->properties.phase.GetValue(particle) + 0.5f), of_def);
 	}
+
+	pxList->Unlock();
 }
 
 void C4DynamicParticleSystem::PreparePrimitiveRestartIndices(uint32_t forAmount)

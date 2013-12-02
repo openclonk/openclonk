@@ -335,13 +335,17 @@ public:
 	{
 
 	}
+	
+	// this enables third-parties to lock the particle list (for example because a particle in the list is modified from outside)
+	void Lock() { accessMutex.Enter(); }
+	void Unlock() { accessMutex.Leave(); }
 
 	// deletes all the particles
 	void Clear();
 
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment);
+	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked);
 };
 #endif
 
