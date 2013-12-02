@@ -1037,7 +1037,7 @@ void C4DynamicParticleSystem::DoInit()
 	if (!GLEW_VERSION_3_1 || (glPrimitiveRestartIndex == 0))
 	{
 		usePrimitiveRestartIndexWorkaround = true;
-		Log("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
+		LogSilent("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
 	}
 }
 
