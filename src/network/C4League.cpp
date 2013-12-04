@@ -325,8 +325,8 @@ bool C4LeagueClient::GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdS
 	// No success?
 	if (!Head.isSuccess())
 		return false;
-	// Got no CSID?
-	if (!Head.getCSID() || !*Head.getCSID())
+	// Got no CSID or empty CSID?
+	if (!Head.getCSID() || !*Head.getCSID() || *Head.getCSID() == '\0')
 	{
 		if (pMessage)
 			pMessage->Copy(LoadResStr("IDS_LGA_INVALIDRESPONSE3"));
