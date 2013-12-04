@@ -153,10 +153,10 @@ namespace C4GUI
 		if (iAlign == ALeft) iXOff += 5;
 		if (tAutoScrollDelay)
 		{
-			time_t tNow = GetTime();
+			C4TimeMilliseconds tNow = GetTime();
 			if (!tLastChangeTime)
-				tLastChangeTime = tNow;
-			else if (tNow - tLastChangeTime >= tAutoScrollDelay)
+				tLastChangeTime = new C4TimeMilliseconds(tNow);
+			else if (tNow - *tLastChangeTime >= tAutoScrollDelay)
 			{
 				if (!iScrollDir) iScrollDir=1;
 				int32_t iMaxScroll = Max<int32_t>(pFont->GetTextWidth(sText.getData(), true) + (x0 - rcBounds.x) + iXOff + GetRightIndent() - rcBounds.Wdt, 0);
@@ -167,7 +167,7 @@ namespace C4GUI
 					{
 						iScrollDir = -iScrollDir;
 						iScrollPos += iScrollDir;
-						tLastChangeTime = tNow;
+						*tLastChangeTime = tNow;
 					}
 				}
 			}
@@ -198,6 +198,15 @@ namespace C4GUI
 		UpdateOwnPos();
 	}
 
+	void WoodenLabel::ResetAutoScroll()
+	{
+		if(tLastChangeTime)
+		{
+			delete tLastChangeTime;
+			tLastChangeTime=NULL;
+		}
+		iScrollPos = iScrollDir = 0;
+	}
 
 // --------------------------------------------------
 // MultilineLabel

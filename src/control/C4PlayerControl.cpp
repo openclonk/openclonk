@@ -362,7 +362,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 	// check if combo is currently fulfilled (assuming TriggerKey is already matched)
 	if (fComboIsSequence)
 	{
-		time_t tKeyLast = GetTime();
+		C4TimeMilliseconds tKeyLast = GetTime();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
 		KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1;
@@ -372,7 +372,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 			if (ri == RecentKeys.rend()) return false;
 			const C4PlayerControlRecentKey &rk = *ri;
 			// user waited for too long?
-			time_t tKeyRecent = rk.tTime;
+			C4TimeMilliseconds tKeyRecent = rk.tTime;
 			if (tKeyLast - tKeyRecent > C4PlayerControl::MaxSequenceKeyDelay) return false;
 			// key doesn't match?
 			const KeyComboItem &k = *i;
@@ -1288,8 +1288,8 @@ void C4PlayerControl::Execute()
 		}
 	}
 	// cleanup old recent keys
+	C4TimeMilliseconds tNow = GetTime();
 	C4PlayerControlRecentKeyList::iterator irk;
-	time_t tNow = GetTime();
 	for (irk = RecentKeys.begin(); irk != RecentKeys.end(); ++irk)
 	{
 		C4PlayerControlRecentKey &rk = *irk;

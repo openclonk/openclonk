@@ -71,7 +71,7 @@ public:
 		iStartCalled --;
 		if (!iStartCalled && iCount >= 100)
 		{
-			time_t tTime = GetTime() - tStartTime;
+			uint32_t tTime = GetTime() - tStartTime;
 
 			tTimeSum += tTime;
 			tTimeSumPart += tTime;
@@ -89,7 +89,7 @@ protected:
 	C4Stat* pNext;
 	C4Stat* pPrev;
 
-	time_t tStartTime;
+	C4TimeMilliseconds tStartTime;
 
 	// start-call depth
 	unsigned int iStartCalled;

@@ -146,7 +146,7 @@ C4Network2::C4Network2()
 		pLobby(NULL), fLobbyRunning(false), pLobbyCountdown(NULL),
 		iNextClientID(0),
 		iLastChaseTargetUpdate(0),
-		tLastActivateRequest(0),
+		tLastActivateRequest(NULL),
 		iLastReferenceUpdate(0),
 		iLastLeagueUpdate(0),
 		pLeagueClient(NULL),
@@ -664,7 +664,12 @@ void C4Network2::Clear()
 	// stuff
 	fAllowJoin = false;
 	iDynamicTick = -1; fDynamicNeeded = false;
-	tLastActivateRequest = iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
+	if(tLastActivateRequest)
+	{
+		delete tLastActivateRequest;
+		tLastActivateRequest = NULL;
+	}
+	iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
 	fDelayedActivateReq = false;
 	delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
@@ -1503,7 +1508,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 	C4GUI::ProgressDialog *pDlg = NULL;
 	bool fLog = false;
 	int32_t iProcess = -1;
-	time_t tTimeout = GetTime() + iTimeoutLen;
+	C4TimeMilliseconds tTimeout = GetTime() + iTimeoutLen;
 	// wait for resource
 	while (isEnabled())
 	{
@@ -1511,6 +1516,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 		C4Network2Res::Ref pRes = ResList.getRefRes(Core.getID());
 		// res not found?
 		if (!pRes)
+		{
 			if (Core.isNull())
 			{
 				// should wait for core?
@@ -1521,6 +1527,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 				// start loading
 				pRes = ResList.AddByCore(Core);
 			}
+		}
 		// res found and loaded completely
 		else if (!pRes->isLoading())
 		{
@@ -1762,7 +1769,11 @@ void C4Network2::RequestActivate()
 	// neither observer nor activated?
 	if (Game.Clients.getLocal()->isObserver() || Game.Clients.getLocal()->isActivated())
 	{
-		tLastActivateRequest = 0;
+		if(tLastActivateRequest)
+		{
+			delete tLastActivateRequest;
+			tLastActivateRequest = NULL;
+		}
 		return;
 	}
 	// host? just do it
@@ -1775,8 +1786,9 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (tLastActivateRequest && GetTime() < tLastActivateRequest + C4NetActivationReqInterval)
-		return;
+	if (tLastActivateRequest)
+		if(GetTime() < *tLastActivateRequest + C4NetActivationReqInterval)
+			return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
 	{
@@ -1786,7 +1798,10 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	tLastActivateRequest = GetTime();
+	if(!tLastActivateRequest)
+		tLastActivateRequest = new C4TimeMilliseconds(GetTime());
+	else
+		*tLastActivateRequest = GetTime();
 }
 
 void C4Network2::DeactivateInactiveClients()

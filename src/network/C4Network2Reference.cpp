@@ -430,15 +430,15 @@ bool C4Network2HTTPClient::Execute(int iMaxTime)
 	return C4NetIOTCP::Execute(iMaxTime);
 }
 
-time_t C4Network2HTTPClient::GetNextTick(time_t tNow)
+C4TimeMilliseconds C4Network2HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
 {
-	time_t iNetIOTCPTick = C4NetIOTCP::GetNextTick(tNow);
+	C4TimeMilliseconds tNetIOTCPTick = C4NetIOTCP::GetNextTick(tNow);
 	if (!fBusy)
-		return iNetIOTCPTick;
+		return tNetIOTCPTick;
 
-	time_t iHTTPClientTick = tNow + 1000 * Max<time_t>(iRequestTimeout - time(NULL), 0);
+	C4TimeMilliseconds tHTTPClientTick = tNow + 1000 * Max<time_t>(iRequestTimeout - time(NULL), 0);
 
-	return Max(iNetIOTCPTick, iHTTPClientTick);
+	return Max(tNetIOTCPTick, tHTTPClientTick);
 }
 
 bool C4Network2HTTPClient::IsScheduledExecution()

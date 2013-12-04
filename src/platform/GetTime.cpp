@@ -18,15 +18,16 @@
  */
 
 #include "C4Include.h"
+#include "C4TimeMilliseconds.h"
 
 #ifdef _WIN32
 
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 
-time_t GetTime()
+C4TimeMilliseconds GetTime()
 {
-	return timeGetTime();
+	return C4TimeMilliseconds(timeGetTime());
 }
 
 #else
@@ -37,21 +38,20 @@ time_t GetTime()
 #include <time.h>
 #endif
 
-time_t GetTime()
+C4TimeMilliseconds GetTime()
 {
 #ifdef __APPLE__
 	static time_t sec_offset;
 	timeval tv;
 	gettimeofday(&tv, 0);
 	if (!sec_offset) sec_offset = tv.tv_sec;
-	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000;
+	return C4TimeMilliseconds((tv.tv_sec - sec_offset) * 1000 + tv.tv_usec / 1000);
 #else
 	timespec tv;
 	clock_gettime(CLOCK_MONOTONIC, &tv);
 	static time_t sec_offset = tv.tv_sec;
-	return (tv.tv_sec - sec_offset) * 1000 + tv.tv_nsec / 1000000;
+	return C4TimeMilliseconds((tv.tv_sec - sec_offset) * 1000 + tv.tv_nsec / 1000000);
 #endif
 }
 
 #endif
-

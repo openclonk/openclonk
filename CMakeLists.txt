@@ -456,6 +456,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
+	src/platform/C4TimeMilliseconds.h	
 	src/platform/C4StdInProc.cpp
 	src/platform/C4StdInProc.h
 	src/platform/C4Video.cpp

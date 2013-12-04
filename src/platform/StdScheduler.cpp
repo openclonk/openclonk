@@ -65,17 +65,17 @@ bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 			if (!Execute())
 				return false;
 	// Calculate endpoint
-	time_t tStopTime = GetTime() + iTimeout;
+	C4TimeMilliseconds tStopTime = GetTime() + iTimeout;
 	for (;;)
 	{
 		// Call execute with given timeout
 		if (!Execute(Max(iTimeout, 0)))
 			return false;
 		// Calculate timeout
-		time_t tTime = GetTime();
+		C4TimeMilliseconds tTime = GetTime();
 		if (tTime >= tStopTime)
 			break;
-		iTimeout = int(tStopTime - tTime);
+		iTimeout = tStopTime - tTime;
 	}
 	// All ok.
 	return true;
@@ -176,15 +176,17 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 
 	// Get timeout
 	int i;
-	time_t tProcTick;
-	time_t tNow = GetTime();
+	C4TimeMilliseconds tProcTick;
+	C4TimeMilliseconds tNow = GetTime();
 	for (i = 0; i < iProcCnt; i++)
 	{
 		if(ppProcs[i]->IsScheduledExecution())
 		{
 			tProcTick = ppProcs[i]->GetNextTick(tNow);
-			if (iTimeout == -1 || iTimeout + tNow > tProcTick)
-				iTimeout = Max<time_t>(tProcTick - tNow, 0);
+			if (iTimeout == -1 || tNow + iTimeout > tProcTick)
+			{
+				iTimeout = Max<uint32_t>(tProcTick - tNow, 0);
+			}
 		}
 	}
 

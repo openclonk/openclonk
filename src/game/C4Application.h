@@ -112,7 +112,7 @@ class C4ApplicationGameTimer : public CStdMultimediaTimerProc
 public:
 	C4ApplicationGameTimer();
 private:
-	time_t tLastGameTick;
+	C4TimeMilliseconds tLastGameTick;
 	unsigned int iGameTickDelay;
 public:
 	void SetGameTickDelay(uint32_t iDelay);

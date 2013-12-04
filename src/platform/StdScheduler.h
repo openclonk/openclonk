@@ -70,7 +70,7 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	virtual time_t GetNextTick(time_t tNow) { return 0; };
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) { return 0; };
 
 	virtual bool IsScheduledExecution() { return false; }
 
@@ -86,30 +86,44 @@ public:
 class CStdTimerProc : public StdSchedulerProc
 {
 public:
-	CStdTimerProc(uint32_t iDelay) : tLastTimer(0), iDelay(iDelay) { }
-	~CStdTimerProc() { }
+	CStdTimerProc(uint32_t iDelay) : tLastTimer(NULL), iDelay(iDelay) { }
+	~CStdTimerProc() { Set(); }
 
 private:
-	time_t tLastTimer;
+	C4TimeMilliseconds *tLastTimer;
 	uint32_t iDelay;
 
 public:
-	void Set() { tLastTimer = 0; }
+	void Set()
+	{
+		delete tLastTimer;
+		tLastTimer = NULL;
+	}
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool CheckAndReset()
 	{
-		if (GetTime() < tLastTimer + iDelay) return false;
+		C4TimeMilliseconds tTime = GetTime();
+		// first execution
+		if(!tLastTimer)
+		{
+			tLastTimer = new C4TimeMilliseconds(tTime - iDelay / 2);
+			return true;
+		}
+		// too early to execute
+		if (tTime < *tLastTimer + iDelay) return false;
 		// Compensate light drifting
-		time_t tTime = GetTime();
-		uint32_t iDrift = tTime - tLastTimer - iDelay; // >= 0 because of Check()
-		tLastTimer = tTime - Min(iDrift, iDelay / 2);
+		uint32_t iDrift = tTime - (*tLastTimer + iDelay); // a positive time difference because of above check
+		*tLastTimer = tTime - Min(iDrift, iDelay / 2);
 		return true;
 	}
 
 	// StdSchedulerProc override
-	virtual time_t GetNextTick(time_t tNow)
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow)
 	{
-		return tLastTimer + iDelay;
+		// never executed yet? Execute now
+		if(!tLastTimer) return tNow;
+		// otherwise, last time executed plus specified delay
+		return *tLastTimer + iDelay;
 	}
 
 	virtual bool IsScheduledExecution() { return true; }

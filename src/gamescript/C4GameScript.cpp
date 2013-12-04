@@ -1479,7 +1479,7 @@ static long FnGetTime(C4PropList * _this)
 {
 	// check network, record, etc
 	if (::Control.SyncMode()) return 0;
-	return GetTime();
+	return GetTime().AsInt();
 }
 
 static C4Value FnSetPlrExtraData(C4PropList * _this, int iPlayer, C4String * DataName, const C4Value & Data)

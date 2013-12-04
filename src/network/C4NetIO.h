@@ -458,7 +458,7 @@ public:
 	virtual bool Broadcast(const C4NetIOPacket &rPacket);
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true);
 
-	virtual time_t GetNextTick(time_t tNow);
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
 	virtual bool IsScheduledExecution() { return true; }
 
 	virtual bool GetStatistic(int *pBroadcastRate);
@@ -620,12 +620,12 @@ protected:
 		// output critical section
 		CStdCSec OutCSec;
 
-		// connection check time limit
-		time_t tNextReCheck;
+		// connection check time limit. NULL if no recheck time yet
+		C4TimeMilliseconds *tNextReCheck;
 		unsigned int iLastPacketAsked, iLastMCPacketAsked;
 
-		// timeout
-		time_t tTimeout;
+		// timeout time. NULL if no timeout time set yet
+		C4TimeMilliseconds *tTimeout;
 		unsigned int iRetries;
 
 		// statistics
@@ -661,7 +661,7 @@ protected:
 		unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
 
 		// timeout checking
-		time_t GetTimeout() { return tTimeout; }
+		C4TimeMilliseconds *GetTimeout() { return tTimeout; }
 		void CheckTimeout();
 
 		// selected for broadcast?
@@ -726,8 +726,8 @@ protected:
 	addr_t MCLoopbackAddr;
 	bool fDelayedLoopbackTest;
 
-	// check timing
-	time_t tNextCheck;
+	// check timing. NULL if no next check yet
+	C4TimeMilliseconds *tNextCheck;
 
 	// outgoing packet list (for multicast)
 	PacketList OPackets;

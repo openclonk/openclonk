@@ -506,7 +506,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 			return false;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	time_t tTime = GetTime();
+	uint32_t tTime = GetTime().AsInt();
 	ThreadLogS("OnConn: %u:%02u:%02u:%03u: %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           getNetIOName(pNetIO));
@@ -561,7 +561,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 			return;
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	time_t tTime = GetTime();
+	uint32_t tTime = GetTime().AsInt();
 	ThreadLogS("OnDisconn: %u:%02u:%02u:%03u: %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           getNetIOName(pNetIO));
@@ -591,7 +591,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
 #if(C4NET2IO_DUMP_LEVEL > 1)
-	time_t tTime = GetTime();
+	uint32_t tTime = GetTime().AsInt();
 	ThreadLogS("OnPacket: %u:%02u:%02u:%03u: status %02x %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           rPacket.getStatus(), getNetIOName(pNetIO));
@@ -629,14 +629,14 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 	CheckTimeout();
 
 	// ping all open connections
-	if (!Inside(tLastPing, GetTime() - C4NetPingFreq, GetTime()))
+	if (!Inside(tLastPing, tLastExecute - C4NetPingFreq, tLastExecute))
 	{
 		Ping();
 		tLastPing = tLastExecute;
 	}
 
 	// do statistics
-	if (!Inside(tLastStatistic, GetTime() - C4NetStatisticsFreq, GetTime()))
+	if (!Inside(tLastStatistic, tLastExecute - C4NetStatisticsFreq, tLastExecute))
 	{
 		GenerateStatistics(tLastExecute - tLastStatistic);
 		tLastStatistic = tLastExecute;
@@ -649,7 +649,7 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 	return true;
 }
 
-time_t C4Network2IO::GetNextTick(time_t tNow)
+C4TimeMilliseconds C4Network2IO::GetNextTick(C4TimeMilliseconds tNow)
 {
 	return tLastExecute + C4NetTimer;
 }
@@ -845,7 +845,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 #if(C4NET2IO_DUMP_LEVEL > 0)
 	if (fThread && Pkt.getPktType() != PID_Ping && Pkt.getPktType() != PID_Pong && Pkt.getPktType() != PID_NetResData)
 	{
-		time_t tTime = GetTime();
+		uint32_t tTime = GetTime().AsInt();
 		// StdStrBuf PacketDump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdaptrPacket);
 		StdStrBuf PacketHeader = FormatString("HandlePacket: %u:%02u:%02u:%03u by %s:%d (%lu bytes, counter %d)",
 		                                      tTime / 1000 / 60 / 60, (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
@@ -870,15 +870,18 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 				{
 					fHandled = true;
 #if(C4NET2IO_DUMP_LEVEL > 2)
-					time_t tStart = GetTime();
+					C4TimeMilliseconds tStart = GetTime();
 #endif
 
 					// call handler(s)
 					CallHandlers(pHData->HandlerID, &Pkt, pConn, fThread);
 
 #if(C4NET2IO_DUMP_LEVEL > 2)
-					if (fThread && GetTime() - tStart > 100)
-						ThreadLogS("HandlePacket: ... blocked for %d ms!", GetTime() - tStart);
+					uint32_t iBlockedTime = GetTime() - tStart;
+					if (fThread && iBlockedTime > 100)
+					{
+						ThreadLogS("HandlePacket: ... blocked for %u ms!", iBlockedTime);
+					}
 #endif
 
 				}
@@ -1209,8 +1212,7 @@ void C4Network2IO::CheckTimeout()
 
 void C4Network2IO::GenerateStatistics(int iInterval)
 {
-	int iTCPIRateSum = 0, iTCPORateSum = 0,
-	                                     iUDPIRateSum = 0, iUDPORateSum = 0;
+	int iTCPIRateSum = 0, iTCPORateSum = 0, iUDPIRateSum = 0, iUDPORateSum = 0;
 
 	// acquire lock, get connection statistics
 	CStdLock ConnListLock(&ConnListCSec);
@@ -1303,7 +1305,7 @@ C4Network2IOConnection::C4Network2IOConnection()
 		fBroadcastTarget(false),
 		iTimestamp(0),
 		iPingTime(-1),
-		tLastPing(ULONG_MAX), tLastPong(ULONG_MAX),
+		tLastPing(NULL), tLastPong(NULL),
 		fConnSent(false),
 		fPostMortemSent(false),
 		iOutPacketCounter(0), iInPacketCounter(0),
@@ -1320,17 +1322,23 @@ C4Network2IOConnection::~C4Network2IOConnection()
 	if (pNetClass && !isClosed()) Close();
 	// clear the packet log
 	ClearPacketLog();
+
+	delete tLastPing;
+	delete tLastPong;
 }
 
 int C4Network2IOConnection::getLag() const
 {
-	// Last ping not answered yet?
-	if (iPingTime != -1 && tLastPing != ULONG_MAX && (tLastPong == ~0u || tLastPing > tLastPong))
+	if (iPingTime != -1)
 	{
-		int iPingLag = GetTime() - tLastPing;
-		// Use it for lag measurement once it's larger then the last ping time
-		// (the ping time won't be better than this anyway once the pong's here)
-		return Max(iPingLag, iPingTime);
+		// Last ping not answered yet?
+		if(tLastPing && (!tLastPong || *tLastPing > *tLastPong))
+		{
+			int iPingLag = GetTime() - *tLastPing;
+			// Use it for lag measurement once it's larger then the last ping time
+			// (the ping time won't be better than this anyway once the pong's here)
+			return Max(iPingLag, iPingTime);
+		}
 	}
 	// Last ping result
 	return iPingTime;
@@ -1363,10 +1371,13 @@ void C4Network2IOConnection::SetPeerAddr(const C4NetIO::addr_t &nPeerAddr)
 void C4Network2IOConnection::OnPing()
 {
 	// Still no pong for the last ping?
-	if (tLastPong < tLastPing)
-		return;
+	if(tLastPing && tLastPong)
+		if (*tLastPong < *tLastPing)
+			return;
+
 	// Save time
-	tLastPing = GetTime();
+	if(!tLastPing) tLastPing = new C4TimeMilliseconds();
+	*tLastPing = GetTime();
 }
 
 void C4Network2IOConnection::SetPingTime(int inPingTime)
@@ -1374,7 +1385,8 @@ void C4Network2IOConnection::SetPingTime(int inPingTime)
 	// save it
 	iPingTime = inPingTime;
 	// pong received - save timestamp
-	tLastPong = GetTime();
+	if(!tLastPong) tLastPong = new C4TimeMilliseconds();
+	*tLastPong = GetTime();
 }
 
 void C4Network2IOConnection::SetStatus(C4Network2IOConnStatus nStatus)

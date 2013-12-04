@@ -25,6 +25,7 @@
 #include "C4KeyboardInput.h"
 #include "C4LangStringTable.h"
 #include "C4Id.h"
+#include "C4TimeMilliseconds.h"
 
 #include <list>
 
@@ -134,8 +135,8 @@ public:
 struct C4PlayerControlRecentKey
 {
 	C4KeyCodeEx pressed_key, matched_key;
-	time_t tTime;
-	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, time_t tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
+	C4TimeMilliseconds tTime;
+	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, C4TimeMilliseconds tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
 	bool operator ==(const C4KeyCodeEx &cmp) { return pressed_key==cmp; } // comparison op for finding items in lists: Search for the pressed key only
 };
 

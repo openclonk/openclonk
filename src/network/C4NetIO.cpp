@@ -1795,7 +1795,7 @@ C4NetIOUDP::C4NetIOUDP()
 		pPeerList(NULL),
 		fSavePacket(false),
 		fDelayedLoopbackTest(false),
-		tNextCheck(0),
+		tNextCheck(NULL),
 		OPackets(iMaxOPacketBacklog),
 		iOPacketCounter(0),
 		iBroadcastRate(0)
@@ -1805,6 +1805,7 @@ C4NetIOUDP::C4NetIOUDP()
 
 C4NetIOUDP::~C4NetIOUDP()
 {
+	delete tNextCheck;
 	Close();
 }
 
@@ -1829,7 +1830,9 @@ bool C4NetIOUDP::Init(uint16_t inPort)
 	// set flags
 	fInit = true;
 	fMultiCast = false;
-	tNextCheck = GetTime() + iCheckInterval;
+
+	if(!tNextCheck) tNextCheck = new C4TimeMilliseconds();
+	*tNextCheck = GetTime() + iCheckInterval;
 
 	// ok, that's all for now.
 	// call InitBroadcast for more initialization fun
@@ -2001,17 +2004,18 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 	ResetError();
 
 	// adjust maximum block time
-	time_t tNow = GetTime();
-	int iMaxBlock = GetNextTick(tNow) - tNow;
-	if (iMaxTime == TO_INF || iMaxTime > iMaxBlock) iMaxTime = iMaxBlock;
+	C4TimeMilliseconds tNow = GetTime();
+	uint32_t iMaxBlock = GetNextTick(tNow) - tNow;
+	if (iMaxTime == TO_INF || iMaxTime > (int) iMaxBlock) iMaxTime = iMaxBlock;
 
 	// execute subclass
 	if (!C4NetIOSimpleUDP::Execute(iMaxTime))
 		return false;
 
 	// connection check needed?
-	if (tNextCheck <= GetTime())
-		DoCheck();
+	if (tNextCheck)
+		if (*tNextCheck <= GetTime())
+			DoCheck();
 	// client timeout?
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (!pPeer->Closed())
@@ -2095,16 +2099,17 @@ bool C4NetIOUDP::SetBroadcast(const addr_t &addr, bool fSet) // (mt-safe)
 	return true;
 }
 
-time_t C4NetIOUDP::GetNextTick(time_t tNow) // (mt-safe)
+C4TimeMilliseconds C4NetIOUDP::GetNextTick(C4TimeMilliseconds tNow) // (mt-safe)
 {
 	// maximum time: check interval
-	time_t tTiming = Max(tNow, tNextCheck);
+	C4TimeMilliseconds tTiming = tNextCheck ? Max(tNow, *tNextCheck): tNow;
+	
 	// client timeouts (e.g. connection timeout)
 	CStdShareLock PeerListLock(&PeerListCSec);
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (!pPeer->Closed())
-			if (pPeer->GetTimeout() > 0)
-				tTiming = Min(tTiming, pPeer->GetTimeout());
+			if (pPeer->GetTimeout())
+				tTiming = Min(tTiming, *pPeer->GetTimeout());
 	// return timing value
 	return tTiming;
 }
@@ -2485,7 +2490,7 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 		iIPacketCounter(0), iRIPacketCounter(0),
 		iIMCPacketCounter(0), iRIMCPacketCounter(0),
 		iMCAckPacketCounter(0),
-		tNextReCheck(0),
+		tNextReCheck(NULL),
 		iIRate(0), iORate(0), iLoss(0)
 {
 	ZeroMem(&addr2, sizeof(addr2));
@@ -2494,6 +2499,8 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 
 C4NetIOUDP::Peer::~Peer()
 {
+	delete tNextReCheck;
+	delete tTimeout;
 	// send close-packet
 	Close("deleted");
 }
@@ -2533,7 +2540,7 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	if (eStatus != CS_Works) return true;
 	// prevent re-check (check floods)
 	// instead, ask for other packets that are missing until recheck is allowed
-	bool fNoReCheck = !!tNextReCheck && tNextReCheck > GetTime();
+	bool fNoReCheck = !!tNextReCheck && *tNextReCheck > GetTime();
 	if (!fNoReCheck) iLastPacketAsked = iLastMCPacketAsked = 0;
 	unsigned int iStartAt = fNoReCheck ? Max(iLastPacketAsked + 1, iIPacketCounter) : iIPacketCounter;
 	unsigned int iStartAtMC = fNoReCheck ? Max(iLastMCPacketAsked + 1, iIMCPacketCounter) : iIMCPacketCounter;
@@ -2551,7 +2558,10 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 	int iEAskCnt = iAskCnt + iMCAskCnt;
 	// no re-check limit? set it
 	if (!fNoReCheck)
-		tNextReCheck = iEAskCnt ? GetTime() + iReCheckInterval : 0;
+	{
+		if(!tNextReCheck) tNextReCheck = new C4TimeMilliseconds();
+		*tNextReCheck = iEAskCnt ? GetTime() + iReCheckInterval : 0;
+	}
 	// something to ask for? (or check forced?)
 	if (iEAskCnt || fForceCheck)
 		return DoCheck(iAskCnt, iMCAskCnt, iAskList);
@@ -2616,7 +2626,15 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		else
 			iRIPacketCounter = iIPacketCounter = pPkt->Nr;
 		// clear incoming packets
-		IPackets.Clear(); IMCPackets.Clear(); tNextReCheck = 0;
+		IPackets.Clear();
+		IMCPackets.Clear();
+		
+		if(tNextReCheck)
+		{
+			delete tNextReCheck;
+			tNextReCheck = NULL;
+		}
+
 		iLastPacketAsked = iLastMCPacketAsked = 0;
 		// Activate Multicast?
 		if (!pParent->fMultiCast)
@@ -2777,7 +2795,7 @@ void C4NetIOUDP::Peer::CheckTimeout()
 	// timeout set?
 	if (!tTimeout) return;
 	// check
-	if (GetTime() > tTimeout)
+	if (GetTime() > *tTimeout)
 		OnTimeout();
 }
 
@@ -2926,9 +2944,15 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 void C4NetIOUDP::Peer::SetTimeout(int iLength, int iRetryCnt) // (mt-safe)
 {
 	if (iLength != TO_INF)
-		tTimeout = GetTime() + iLength;
+	{
+		if(!tTimeout) tTimeout = new C4TimeMilliseconds();
+		*tTimeout = GetTime() + iLength;
+	}
 	else
-		tTimeout = 0;
+	{
+		delete tTimeout;
+		tTimeout = NULL;
+	}
 	iRetries = iRetryCnt;
 }
 
@@ -3144,8 +3168,10 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (pPeer->Open())
 			pPeer->Check();
+
 	// set time for next check
-	tNextCheck = GetTime() + iCheckInterval;
+	if(!tNextCheck) tNextCheck = new C4TimeMilliseconds();
+	*tNextCheck = GetTime() + iCheckInterval;
 }
 
 // debug
@@ -3193,7 +3219,7 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	time_t tTime = GetTime();
+	uint32_t tTime = GetTime().AsInt();
 	O.Format("%s %u:%02u:%02u:%03u %s:%d:", fOut ? "out" : "in ",
 	         (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));

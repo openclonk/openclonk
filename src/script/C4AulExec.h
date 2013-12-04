@@ -50,7 +50,8 @@ private:
 
 	int iTraceStart;
 	bool fProfiling;
-	time_t tDirectExecStart, tDirectExecTotal; // profiler time for DirectExec
+	C4TimeMilliseconds tDirectExecStart;
+	uint32_t tDirectExecTotal; // profiler time for DirectExec
 	C4AulScript *pProfiledScript;
 
 	C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
