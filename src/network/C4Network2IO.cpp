@@ -507,7 +507,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	time_t tTime = GetTime();
-	ThreadLogS("OnConn: %d:%02d:%02d:%03d: %s",
+	ThreadLogS("OnConn: %u:%02u:%02u:%03u: %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           getNetIOName(pNetIO));
 #endif
@@ -562,7 +562,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	time_t tTime = GetTime();
-	ThreadLogS("OnDisconn: %d:%02d:%02d:%03d: %s",
+	ThreadLogS("OnDisconn: %u:%02u:%02u:%03u: %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           getNetIOName(pNetIO));
 #endif
@@ -592,7 +592,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	time_t tTime = GetTime();
-	ThreadLogS("OnPacket: %d:%02d:%02d:%03d: status %02x %s",
+	ThreadLogS("OnPacket: %u:%02u:%02u:%03u: status %02x %s",
 	           (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
@@ -847,8 +847,8 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	{
 		time_t tTime = GetTime();
 		// StdStrBuf PacketDump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdaptrPacket);
-		StdStrBuf PacketHeader = FormatString("HandlePacket: %d:%02d:%02d:%03d by %s:%d (%lu bytes, counter %d)",
-		                                      int(tTime / 1000 / 60 / 60), int(tTime / 1000 / 60) % 60, int(tTime / 1000) % 60, int(tTime) % 1000,
+		StdStrBuf PacketHeader = FormatString("HandlePacket: %u:%02u:%02u:%03u by %s:%d (%lu bytes, counter %d)",
+		                                      tTime / 1000 / 60 / 60, (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 		                                      inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
 		                                      static_cast<unsigned long>(rPacket.getSize()), pConn->getInPacketCounter());
 		StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));

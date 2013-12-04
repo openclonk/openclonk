@@ -3194,7 +3194,7 @@ void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
 	time_t tTime = GetTime();
-	O.Format("%s %d:%02d:%02d:%03d %s:%d:", fOut ? "out" : "in ",
+	O.Format("%s %u:%02u:%02u:%03u %s:%d:", fOut ? "out" : "in ",
 	         (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
 

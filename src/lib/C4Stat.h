@@ -98,7 +98,7 @@ protected:
 	// ** statistic data
 
 	// sum of times
-	time_t tTimeSum;
+	uint32_t tTimeSum;
 
 	// number of starts called
 	unsigned int iCount;
@@ -106,7 +106,7 @@ protected:
 	// ** statistic data (partial stat)
 
 	// sum of times
-	time_t tTimeSumPart;
+	uint32_t tTimeSumPart;
 
 	// number of starts called
 	unsigned int iCountPart;

@@ -140,8 +140,8 @@ void C4MainStat::Show()
 
 		// output it!
 		if (pAkt->iCount)
-			LogSilentF("%s: n = %d, t = %d, td = %.2f",
-			           pAkt->strName, pAkt->iCount, int(pAkt->tTimeSum),
+			LogSilentF("%s: n = %u, t = %u, td = %.2f",
+			           pAkt->strName, pAkt->iCount, pAkt->tTimeSum,
 			           double(pAkt->tTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
 
 	}
@@ -162,7 +162,7 @@ void C4MainStat::ShowPart(int FrameCounter)
 
 	// insert all stats
 	for (pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
-		LogSilentF("%s: n=%d, t=%d", pAkt->strName, pAkt->iCountPart, int(pAkt->tTimeSumPart));
+		LogSilentF("%s: n=%u, t=%u", pAkt->strName, pAkt->iCountPart, pAkt->tTimeSumPart);
 
 	// insert part stat end idtf
 	LogSilentF("** PartStat end\n");
