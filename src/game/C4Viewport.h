@@ -53,7 +53,7 @@ public:
 	void ClearPointers(C4Object *pObj);
 	void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
 	void UpdateViewPosition(); // update view position: Clip properly; update border variables
-	void InitZoom();
+	void CalculateZoom();
 	void ChangeZoom(float by_factor);
 	void SetZoom(float to_zoom, bool direct=false);
 	void SetZoomLimits(float to_min_zoom, float to_max_zoom);
@@ -75,6 +75,7 @@ protected:
 	float Zoom;
 	float ZoomTarget;
 	float ZoomLimitMin,ZoomLimitMax;
+	bool ZoomInitialized;
 	int32_t Player;
 	bool PlayerLock;
 	int32_t OutX,OutY;
@@ -87,6 +88,7 @@ protected:
 	void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
 	void DrawMenu(C4TargetFacet &cgo);
 	void DrawPlayerInfo(C4TargetFacet &cgo);
+	void InitZoom();
 	void BlitOutput();
 	void AdjustPosition();
 public:

@@ -354,24 +354,36 @@ void C4Viewport::Execute()
 	BlitOutput();
 }
 
+/* This method is called whenever the viewport size is changed. Thus, its job 
+   is to recalculate the zoom and zoom limits with the new values for ViewWdt
+   and ViewHgt. */
+void C4Viewport::CalculateZoom()
+{
+	if(!ZoomInitialized)
+		InitZoom();
+
+	C4Player *plr = Players.Get(Player);
+	if (plr)
+		plr->ZoomLimitsToViewport(this);
+	else
+		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
+
+}
+
 void C4Viewport::InitZoom()
 {
-	// player viewport: Init zoom by view range parameters
 	C4Player *plr = Players.Get(Player);
 	if (plr)
 	{
-		// Note this affects all viewports for this player (not just
-		// this one), but it is a noop for the others.
-		plr->ZoomLimitsToViewport(this);
 		plr->ZoomToViewport(this, true);
 	}
 	else
 	{
-		// general viewport? Default zoom parameters
 		ZoomTarget = Max<float>(float(ViewWdt)/GBackWdt, 1.0f);
 		Zoom = ZoomTarget;
-		SetZoomLimits(0.8*Min<float>(float(ViewWdt)/GBackWdt,float(ViewHgt)/GBackHgt), 8);
 	}
+
+	ZoomInitialized = true;
 }
 
 void C4Viewport::ChangeZoom(float by_factor)
@@ -447,7 +459,7 @@ void C4Viewport::AdjustPosition()
 
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	C4Player *pPlr = ::Players.Get(Player);
-	if (ZoomTarget < 0.000001f) InitZoom();
+	if (ZoomTarget < 0.000001f) CalculateZoom();
 	// Change Zoom
 	assert(Zoom>0);
 	assert(ZoomTarget>0);
@@ -578,6 +590,7 @@ void C4Viewport::Default()
 	DrawX=DrawY=0;
 	Zoom = 1.0;
 	ZoomTarget = 0.0;
+	ZoomInitialized = false;
 	ZoomLimitMin=ZoomLimitMax=0; // no limit
 	Next=NULL;
 	PlayerLock=true;
@@ -664,7 +677,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	DrawX=iDrawX; DrawY=iDrawY;
 	OutX=iOutX; OutY=iOutY;
 	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
-	InitZoom();
+	CalculateZoom();
 	UpdateViewPosition();
 	// Reset menus
 	ResetMenuPositions=true;
