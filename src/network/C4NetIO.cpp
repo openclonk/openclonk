@@ -2104,7 +2104,7 @@ time_t C4NetIOUDP::GetNextTick(time_t tNow) // (mt-safe)
 	for (Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
 		if (!pPeer->Closed())
 			if (pPeer->GetTimeout() > 0)
-				tTiming = Min(tTiming, tNow + pPeer->GetTimeout());
+				tTiming = Min(tTiming, pPeer->GetTimeout());
 	// return timing value
 	return tTiming;
 }
