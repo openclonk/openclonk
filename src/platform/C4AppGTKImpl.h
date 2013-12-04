@@ -77,7 +77,7 @@ public:
 		// without g_main_context_iteration. This might be less hacky.
 
 		// Finish current iteration first
-		C4TimeMilliseconds old_query_time = NULL;
+		C4TimeMilliseconds * old_query_time = NULL;
 		if (query_time)
 		{
 			old_query_time = new C4TimeMilliseconds(*query_time);
@@ -106,7 +106,7 @@ public:
 	{
 		query(Now);
 		if (timeout < 0) return timeout;
-		return query_time + timeout;
+		return *query_time + timeout;
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
