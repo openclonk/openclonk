@@ -2006,7 +2006,7 @@ bool C4NetIOUDP::Execute(int iMaxTime, pollfd *) // (mt-safe)
 	if (iMaxTime == TO_INF || iMaxTime > iMaxBlock) iMaxTime = iMaxBlock;
 
 	// execute subclass
-	if (!C4NetIOSimpleUDP::Execute(iMaxBlock))
+	if (!C4NetIOSimpleUDP::Execute(iMaxTime))
 		return false;
 
 	// connection check needed?
