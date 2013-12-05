@@ -1,6 +1,7 @@
 /*-- Mushroom --*/
 
 #include Library_Plant
+#include Library_Crop
 
 private func SeedChance() { return 400; }
 private func SeedArea() { return 150; }

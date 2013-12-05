@@ -1,6 +1,7 @@
 /*-- Lichen --*/
 
 #include Library_Plant
+#include Library_Crop
 
 local grow_stage;
 

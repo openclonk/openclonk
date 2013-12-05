@@ -6,6 +6,7 @@
 */
 
 #include Library_Plant
+#include Library_Crop
 
 private func SeedArea() { return 50; }
 private func SeedChance() {	return 250; }

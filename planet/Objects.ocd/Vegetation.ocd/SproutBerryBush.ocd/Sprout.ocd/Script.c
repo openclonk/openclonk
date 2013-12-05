@@ -1,6 +1,4 @@
-// is a plant but does not have the Seed-timer-call!
-// only for the harvesting
-#include Library_Plant
+#include Library_Crop
 
 local Name = "$Name$";
 local Description = "$Description$";

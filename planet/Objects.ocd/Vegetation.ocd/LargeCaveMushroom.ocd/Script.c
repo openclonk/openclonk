@@ -1,6 +1,7 @@
 /*-- Large Cave Mushroom --*/
 
 #include Library_Plant
+#include Library_Tree
 
 func Place(int amount, proplist rectangle, proplist settings)
 {
@@ -113,8 +114,6 @@ func Growing()
 	if(GBackSolid(0, Min(-5, top))) return;
 	DoCon(1);
 }
-
-public func IsTree() { return true; }
 
 public func ChopDown()
 {
