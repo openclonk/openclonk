@@ -337,33 +337,42 @@ namespace C4GUI
 
 	void Element::DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		rFacets.fctBegin.Draw(cgo.Surface, x0,y0);
-		while (iY < rcBounds.Hgt-5)
-		{
-			int32_t h2=Min(h, rcBounds.Hgt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.Draw(cgo.Surface, x0, y0+iY);
-			iY += h;
-		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.Draw(cgo.Surface, x0, y0+rcBounds.Hgt-rFacets.fctEnd.Hgt);
+		C4DrawTransform trf(1);
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Hgt);
 	}
 
 	void Element::DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		C4DrawTransform trf; trf.SetRotate(-90.0f, (float)(cgo.TargetX+rcBounds.x+rcBounds.Hgt/2), (float)(cgo.TargetY+rcBounds.y+rcBounds.Hgt/2));
-		rFacets.fctBegin.DrawT(cgo.Surface, x0,y0, 0, 0, &trf);
-		while (iY < rcBounds.Wdt-5)
+		C4DrawTransform trf;
+		float fOffX = cgo.TargetX + rcBounds.x + rcBounds.Hgt/2;
+		float fOffY = cgo.TargetY + rcBounds.y + rcBounds.Hgt/2;
+		trf.SetRotate(-90.0f, fOffX, fOffY);
+
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Wdt);
+	}
+
+	void Element::DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength)
+	{
+		int32_t y0 = cgo.TargetY + rcBounds.y;
+		int32_t x0 = cgo.TargetX + rcBounds.x;
+
+		// draw up arrow
+		rFacets.fctBegin.DrawT(cgo.Surface, x0, y0, 0, 0, &trf);
+
+		// draw middle part
+		int32_t h = rFacets.fctMiddle.Hgt;
+		int32_t barHeight = iMiddleLength - (rFacets.fctBegin.Hgt + rFacets.fctEnd.Hgt);
+
+		for (int32_t iY = 0; iY <= barHeight; iY += h)
 		{
-			int32_t h2=Min(h, rcBounds.Wdt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0+iY, 0, 0, &trf);
-			iY += h;
+			int32_t h2 = Min(h, barHeight - iY);
+			rFacets.fctMiddle.Hgt = h2;
+			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0 + rFacets.fctBegin.Hgt + iY, 0, 0, &trf);
 		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0+rcBounds.Wdt-rFacets.fctEnd.Hgt, 0, 0, &trf);
+		rFacets.fctMiddle.Hgt = h;
+
+		// draw lower arrow
+		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0 + iMiddleLength - rFacets.fctEnd.Hgt, 0, 0, &trf);
 	}
 
 	C4Rect Element::GetToprightCornerRect(int32_t iWidth, int32_t iHeight, int32_t iHIndent, int32_t iVIndent, int32_t iIndexX)

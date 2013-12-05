@@ -409,6 +409,7 @@ namespace C4GUI
 		void DrawBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets); // draw gfx bar within element bounds
 		void DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets);  // draw horizontal gfx bar within element bounds, using gfx of vertical one
+		void DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength);
 
 		virtual bool IsOwnPtrElement() { return false; } // if true is returned, item will not be deleted when container is cleared
 		virtual bool IsExternalDrawDialog() { return false; }
