@@ -868,7 +868,7 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 {
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
-	C4TimeMilliseconds tNow = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	// Execute
 	if (tNow >= tLastGameTick + iGameTickDelay || Game.GameGo)
 	{

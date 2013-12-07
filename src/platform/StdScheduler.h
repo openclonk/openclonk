@@ -102,7 +102,7 @@ public:
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool CheckAndReset()
 	{
-		C4TimeMilliseconds tTime = GetTime();
+		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
 		// first execution
 		if(!tLastTimer)
 		{

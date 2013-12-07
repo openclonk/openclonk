@@ -1,7 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005, 2011  GÃ¼nther Brammer
+ * Copyright (c) 2013  Tobias Zwick
+ * Copyright (c) 2005, 2011  Günther Brammer
  * Copyright (c) 2012  Martin Plicht
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -17,7 +18,6 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#include "C4Include.h"
 #include "C4TimeMilliseconds.h"
 
 #ifdef _WIN32
@@ -25,7 +25,7 @@
 #include <C4windowswrapper.h>
 #include <mmsystem.h>
 
-C4TimeMilliseconds GetTime()
+C4TimeMilliseconds C4TimeMilliseconds::Now()
 {
 	return C4TimeMilliseconds(timeGetTime());
 }
@@ -38,7 +38,7 @@ C4TimeMilliseconds GetTime()
 #include <time.h>
 #endif
 
-C4TimeMilliseconds GetTime()
+C4TimeMilliseconds C4TimeMilliseconds::Now()
 {
 #ifdef __APPLE__
 	static time_t sec_offset;

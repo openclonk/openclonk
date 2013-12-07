@@ -59,7 +59,7 @@ public:
 	inline void Start()
 	{
 		if (!iStartCalled)
-			tStartTime = GetTime();
+			tStartTime = C4TimeMilliseconds::Now();
 		iCount ++;
 		iCountPart ++;
 		iStartCalled ++;
@@ -71,7 +71,7 @@ public:
 		iStartCalled --;
 		if (!iStartCalled && iCount >= 100)
 		{
-			uint32_t tTime = GetTime() - tStartTime;
+			uint32_t tTime = C4TimeMilliseconds::Now() - tStartTime;
 
 			tTimeSum += tTime;
 			tTimeSumPart += tTime;

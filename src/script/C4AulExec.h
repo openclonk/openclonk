@@ -21,6 +21,7 @@
 #define C4AULEXEC_H
 
 #include <C4Aul.h>
+#include "C4TimeMilliseconds.h"
 
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
@@ -65,8 +66,8 @@ public:
 	void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
 	void StopProfiling(); // stop the profiler and displays results
 	void AbortProfiling() { fProfiling=false; }
-	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = GetTime(); }
-	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += GetTime() - tDirectExecStart; }
+	inline void StartDirectExec() { if (fProfiling) tDirectExecStart = C4TimeMilliseconds::Now(); }
+	inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += C4TimeMilliseconds::Now() - tDirectExecStart; }
 
 	int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }

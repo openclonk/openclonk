@@ -99,7 +99,7 @@ public:
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
-		if (!query_time) query(GetTime());
+		if (!query_time) query(C4TimeMilliseconds::Now());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds Now)

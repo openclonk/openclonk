@@ -513,14 +513,14 @@ void C4PacketJoinData::CompileFunc(StdCompiler *pComp)
 // *** C4PacketPing
 
 C4PacketPing::C4PacketPing(uint32_t iPacketCounter, uint32_t iRemotePacketCounter)
-		: tTime(GetTime()),
+		: tTime(C4TimeMilliseconds::Now()),
 		iPacketCounter(iPacketCounter)
 {
 }
 
 uint32_t C4PacketPing::getTravelTime() const
 {
-	return GetTime() - tTime;
+	return C4TimeMilliseconds::Now() - tTime;
 }
 
 void C4PacketPing::CompileFunc(StdCompiler *pComp)

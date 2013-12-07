@@ -539,7 +539,7 @@ namespace C4GUI
 
 	public:
 		WoodenLabel(const char *szLblText, const C4Rect &rcBounds, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, int32_t iAlign=ACenter, bool fMarkup=true) // ctor
-				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), iAutoScrollDelay(0), tLastChangeTime(GetTime()), iScrollPos(0), iScrollDir(0), iRightIndent(0)
+				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), iAutoScrollDelay(0), tLastChangeTime(C4TimeMilliseconds::Now()), iScrollPos(0), iScrollDir(0), iRightIndent(0)
 		{ SetAutosize(false); this->rcBounds=rcBounds; }// ctor - re-sets bounds after SetText
 
 		static int32_t GetDefaultHeight(CStdFont *pUseFont=NULL);
@@ -2451,7 +2451,7 @@ namespace C4GUI
 		int32_t LDownX, LDownY;       // position where left button was pressed last
 		DWORD dwKeys;             // shift, ctrl, etc.
 		bool fActive;
-		C4TimeMilliseconds tLastMovementTime; // GetTime() when the mouse pos changed last
+		C4TimeMilliseconds tLastMovementTime; // C4TimeMilliseconds::Now() when the mouse pos changed last
 
 		// whether last input was done by mouse
 		// set to true whenever mouse pos changes or buttons are pressed
@@ -2482,8 +2482,8 @@ namespace C4GUI
 
 		void SetOwnedMouse(bool fToVal) { fActive=fToVal; }
 
-		void ResetToolTipTime() { tLastMovementTime = GetTime(); }
-		bool IsMouseStill() { return GetTime()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
+		void ResetToolTipTime() { tLastMovementTime = C4TimeMilliseconds::Now(); }
+		bool IsMouseStill() { return C4TimeMilliseconds::Now()-tLastMovementTime >= C4GUI_ToolTipShowTime; }
 		void ResetActiveInput() { fActiveInput = false; }
 		bool IsActiveInput() { return fActiveInput; }
 

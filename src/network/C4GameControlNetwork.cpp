@@ -63,7 +63,7 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	// ok
 	fEnabled = true; fRunning = false;
 	iTargetFPS = 38;
-	tNextControlRequest = GetTime() + C4ControlRequestInterval;
+	tNextControlRequest = C4TimeMilliseconds::Now() + C4ControlRequestInterval;
 	if(tWaitStart)
 	{
 		delete tWaitStart;
@@ -95,7 +95,7 @@ void C4GameControlNetwork::Execute() // by main thread
 
 	// Save time the control tick was reached
 	if (!tWaitStart)
-		tWaitStart = new C4TimeMilliseconds(GetTime());
+		tWaitStart = new C4TimeMilliseconds(C4TimeMilliseconds::Now());
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -745,7 +745,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 	// target ctrl tick to reach?
 	if (iControlReady < iTargetTick &&
 	    (!fActivated || iControlSent > iControlReady) &&
-	    GetTime() >= tNextControlRequest)
+	    C4TimeMilliseconds::Now() >= tNextControlRequest)
 	{
 		Application.InteractiveThread.ThreadLogS("Network: Recovering: Requesting control for tick %d...", iControlReady + 1);
 		// make request
@@ -756,7 +756,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		else
 			::Network.Clients.BroadcastMsgToConnClients(Pkt);
 		// set time for next request
-		tNextControlRequest = GetTime() + C4ControlRequestInterval;
+		tNextControlRequest = C4TimeMilliseconds::Now() + C4ControlRequestInterval;
 	}
 }
 
@@ -774,7 +774,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	{
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
-		if (eMode != CNM_Async || !tWaitStart || GetTime() <= *tWaitStart + iMaxWait)
+		if (eMode != CNM_Async || !tWaitStart || C4TimeMilliseconds::Now() <= *tWaitStart + iMaxWait)
 			return NULL;
 	}
 
@@ -805,7 +805,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
 	// advance control request time
-	tNextControlRequest = Max(tNextControlRequest, GetTime() + C4ControlRequestInterval);
+	tNextControlRequest = Max(tNextControlRequest, C4TimeMilliseconds::Now() + C4ControlRequestInterval);
 
 	// return
 	return pComplete;
@@ -861,7 +861,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
-		tTime(GetTime()),
+		tTime(C4TimeMilliseconds::Now()),
 		pNext(NULL)
 {
 
@@ -870,7 +870,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-		tTime(GetTime()),
+		tTime(C4TimeMilliseconds::Now()),
 		pNext(NULL)
 {
 	Ctrl.Copy(Pkt2.getControl());

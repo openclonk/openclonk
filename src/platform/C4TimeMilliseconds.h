@@ -40,6 +40,8 @@ private:
 	uint32_t time;
 
 public:
+	static C4TimeMilliseconds Now();
+
 	C4TimeMilliseconds() : time(0) { }
 	C4TimeMilliseconds(uint32_t millis) : time(millis) { }
 	C4TimeMilliseconds(const C4TimeMilliseconds& rhs) : time(rhs.time) { }

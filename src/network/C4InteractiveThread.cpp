@@ -88,7 +88,7 @@ bool C4InteractiveThread::PushEvent(C4InteractiveEventType eEvent, void *pData)
 	pEvent->Type = eEvent;
 	pEvent->Data = pData;
 #ifdef _DEBUG
-	pEvent->Time = GetTime();
+	pEvent->Time = C4TimeMilliseconds::Now();
 #endif
 	pEvent->Next = NULL;
 	// add item (at end)
@@ -118,7 +118,7 @@ bool C4InteractiveThread::PopEvent(C4InteractiveEventType *pEventType, void **pp
 		*ppData = pEvent->Data;
 #ifdef _DEBUG
 	if (Game.IsRunning)
-		AvgNetEvDelay += ((GetTime() - pEvent->Time) - AvgNetEvDelay) / 100;
+		AvgNetEvDelay += ((C4TimeMilliseconds::Now() - pEvent->Time) - AvgNetEvDelay) / 100;
 #endif
 	// remove
 	delete pFirstEvent;

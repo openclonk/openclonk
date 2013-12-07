@@ -153,7 +153,7 @@ namespace C4GUI
 		if (iAlign == ALeft) iXOff += 5;
 		if (iAutoScrollDelay)
 		{
-			C4TimeMilliseconds tNow = GetTime();
+			C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 			if (tNow - tLastChangeTime >= iAutoScrollDelay)
 			{
 				if (!iScrollDir) iScrollDir=1;

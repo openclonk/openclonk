@@ -108,6 +108,4 @@ inline void operator delete(void *p, const char *, long)
 
 #include "C4Game.h"
 
-#include "C4TimeMilliseconds.h"
-
 #endif // INC_C4Include

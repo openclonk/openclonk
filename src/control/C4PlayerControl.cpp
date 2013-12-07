@@ -362,7 +362,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 	// check if combo is currently fulfilled (assuming TriggerKey is already matched)
 	if (fComboIsSequence)
 	{
-		C4TimeMilliseconds tKeyLast = GetTime();
+		C4TimeMilliseconds tKeyLast = C4TimeMilliseconds::Now();
 		// combo is a sequence: The last keys of RecentKeys must match the sequence
 		// the last ComboKey is the TriggerKey, which is omitted because it has already been matched and is not to be found in RecentKeys yet
 		KeyComboVec::const_reverse_iterator i = KeyCombo.rbegin()+1;
@@ -1038,7 +1038,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 {
 	// add key to local "down" list if it's not already in there
 	// except for some mouse events for which a down state does not make sense
-	C4PlayerControlRecentKey RKey(pressed_key,matched_key,GetTime());
+	C4PlayerControlRecentKey RKey(pressed_key,matched_key,C4TimeMilliseconds::Now());
 	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
 	{
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
@@ -1288,7 +1288,7 @@ void C4PlayerControl::Execute()
 		}
 	}
 	// cleanup old recent keys
-	C4TimeMilliseconds tNow = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	C4PlayerControlRecentKeyList::iterator irk;
 	for (irk = RecentKeys.begin(); irk != RecentKeys.end(); ++irk)
 	{

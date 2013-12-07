@@ -65,14 +65,14 @@ bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 			if (!Execute())
 				return false;
 	// Calculate endpoint
-	C4TimeMilliseconds tStopTime = GetTime() + iTimeout;
+	C4TimeMilliseconds tStopTime = C4TimeMilliseconds::Now() + iTimeout;
 	for (;;)
 	{
 		// Call execute with given timeout
 		if (!Execute(Max(iTimeout, 0)))
 			return false;
 		// Calculate timeout
-		C4TimeMilliseconds tTime = GetTime();
+		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
 		if (tTime >= tStopTime)
 			break;
 		iTimeout = tStopTime - tTime;
@@ -177,7 +177,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Get timeout
 	int i;
 	C4TimeMilliseconds tProcTick;
-	C4TimeMilliseconds tNow = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
 	{
 		if(ppProcs[i]->IsScheduledExecution())
@@ -234,7 +234,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	}
 
 	// Execute all processes with timeout
-	tNow = GetTime();
+	tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
 	{
 		if(ppProcs[i]->IsScheduledExecution())
@@ -272,7 +272,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	if (cnt >= 0)
 	{
 		bool any_executed = false;
-		tNow = GetTime();
+		tNow = C4TimeMilliseconds::Now();
 		// Which process?
 		for (i = 0; i < iProcCnt; i++)
 		{
