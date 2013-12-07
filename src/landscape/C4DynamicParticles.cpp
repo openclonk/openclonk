@@ -574,18 +574,14 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 {
 	if (!dataSource) return;
 
-	// get properties from proplist
-	// todo: make sure to delete the array later, we took ownership
-	C4ValueArray *properties = dataSource->GetProperties();
+	C4PropList::Iterator iter = dataSource->begin(), end = dataSource->end();
 
-	for (int32_t i = 0; i < properties->GetSize(); ++i)
+	for (;iter != end; ++iter)
 	{
-		const C4Value &entry = properties->GetItem(i);
-		C4String *key = entry.getStr();
+		const C4Property * p = *iter;
+		C4String *key = p->Key;
 		assert(key && "PropList returns non-string as key");
-
-		C4Value property;
-		dataSource->GetPropertyByS(key, &property);
+		const C4Value &property = p->Value;
 
 		if(&Strings.P[P_R] == key)
 		{
@@ -657,7 +653,6 @@ void C4DynamicParticleProperties::Set(C4PropList *dataSource)
 		}
 	}
 
-	delete properties;
 }
 
 void C4DynamicParticleProperties::SetCollisionFunc(const C4Value &source)
@@ -865,10 +860,27 @@ bool C4DynamicParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode, ui
 	return def == sourceDefinition && blitMode == _blitMode && attachment == _attachment;
 }
 
+void C4DynamicParticleChunk::ReserveSpace(uint32_t forAmount)
+{
+	uint32_t newSize = static_cast<uint32_t>(particleCount) + forAmount + 1;
+	::DynamicParticles.PreparePrimitiveRestartIndices(newSize);
+	if (particles.capacity() < newSize)
+		particles.reserve(std::max<uint32_t>(newSize, particles.capacity() * 2));
+
+	// resizing the points vector is relatively costly, hopefully we only do it rarely
+	while (vertexCoordinates.capacity() <= newSize * C4DynamicParticle::DrawingData::vertexCountPerParticle)
+	{
+		vertexCoordinates.reserve(std::max<uint32_t>(C4DynamicParticle::DrawingData::vertexCountPerParticle * newSize, vertexCoordinates.capacity() * 2));
+
+		// update all existing particles' pointers..
+		for (size_t i = 0; i < particleCount; ++i)
+			particles[i]->drawingData.SetPointer(&vertexCoordinates[i * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
+	}
+}
+
 C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
 {
 	size_t currentIndex = particleCount++;
-	::DynamicParticles.PreparePrimitiveRestartIndices(particleCount);
 
 	if (currentIndex < particles.size())
 	{
@@ -877,17 +889,9 @@ C4DynamicParticle *C4DynamicParticleChunk::AddNewParticle()
 	else
 	{
 		particles.push_back(new C4DynamicParticle());
-		// resizing the points vector is relatively costly, hopefully we only do it rarely
-		while (vertexCoordinates.capacity() <= particleCount * C4DynamicParticle::DrawingData::vertexCountPerParticle)
-		{
-			vertexCoordinates.reserve(C4DynamicParticle::DrawingData::vertexCountPerParticle + vertexCoordinates.capacity() * 2);
-
-			// update all existing particles' pointers..
-			for (size_t i = 0; i < currentIndex; ++i)
-				particles[i]->drawingData.SetPointer(&vertexCoordinates[i * C4DynamicParticle::DrawingData::vertexCountPerParticle]);
-		}
 		vertexCoordinates.resize(vertexCoordinates.size() + C4DynamicParticle::DrawingData::vertexCountPerParticle);
 	}
+
 	C4DynamicParticle *newParticle = particles[currentIndex];
 	newParticle->drawingData.SetPointer(&vertexCoordinates[currentIndex * C4DynamicParticle::DrawingData::vertexCountPerParticle], true);
 	return newParticle;
@@ -975,7 +979,7 @@ void C4DynamicParticleList::Clear()
 	accessMutex.Leave();
 }
 
-C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked)
+C4DynamicParticleChunk *C4DynamicParticleList::GetFittingParticleChunk(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked)
 {
 	if (!alreadyLocked)
 		accessMutex.Enter();
@@ -1010,7 +1014,7 @@ C4DynamicParticle *C4DynamicParticleList::AddNewParticle(C4ParticleDef *def, uin
 	if (!alreadyLocked)
 		accessMutex.Leave();
 	
-	return chunk->AddNewParticle();
+	return chunk;
 }
 
 void C4DynamicParticleSystem::CalculationThread::Execute()
@@ -1162,6 +1166,12 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 	// (this could f.e. lead to the particle being removed before it was fully instantiated).
 	pxList->Lock();
 
+	// retrieve the fitting chunk for the particle (note that we tell the particle list, we already locked it)
+	C4DynamicParticleChunk *chunk = pxList->GetFittingParticleChunk(of_def, particleProperties.blitMode, particleProperties.attachment, true);
+	
+	// set up chunk to be able to contain enough particles
+	chunk->ReserveSpace(static_cast<uint32_t>(amount));
+
 	while (amount--)
 	{
 		if (x.IsRandom()) x.RollRandom();
@@ -1171,7 +1181,7 @@ void C4DynamicParticleSystem::Create(C4ParticleDef *of_def, C4DynamicParticleVal
 		if (lifetime.IsRandom()) lifetime.RollRandom();
 		
 		// create a particle in the fitting chunk (note that we tell the particle list, we already locked it)
-		C4DynamicParticle *particle = pxList->AddNewParticle(of_def, particleProperties.blitMode, particleProperties.attachment, true);
+		C4DynamicParticle *particle = chunk->AddNewParticle();
 
 		// initialize some more properties
 		particle->properties = particleProperties;

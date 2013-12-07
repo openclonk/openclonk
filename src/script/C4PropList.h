@@ -22,6 +22,8 @@
 
 /* Property lists */
 
+#include <memory>
+
 #include "C4Value.h"
 #include "C4StringTable.h"
 
@@ -157,6 +159,44 @@ private:
 	friend class C4ScriptHost;
 public:
 	int32_t Status;
+
+	class Iterator
+	{
+	private:
+		std::shared_ptr<std::vector<const C4Property*> > properties;
+		std::vector<const C4Property*>::iterator iter;
+		// needed when constructing the iterator
+		// adds a property or overwrites existing property with same name
+		void AddProperty(const C4Property * prop);
+		void Reserve(size_t additionalAmount);
+		// Initializes internal iterator. Needs to be called before actually using the iterator.
+		void Init();
+	public:
+		Iterator() : properties(0) { }
+
+		const C4Property * operator*() const { return *iter; }
+		const C4Property * operator->() const { return *iter; }
+		void operator++() { ++iter; };
+		void operator++(int) { operator++(); }
+
+		bool operator==(const Iterator & other) const
+		{
+			if ((properties == 0 || iter == properties->end()) && (other.properties == 0 || other.iter == other.properties->end()))
+				return true;
+			return properties == other.properties && iter == other.iter;
+		}
+
+		bool operator!=(const Iterator & other) const
+		{
+			return !(*this == other);
+		}
+
+		friend class C4PropList;
+	};
+
+	// do not modify the proplist while iterating over it!
+	Iterator begin();
+	Iterator end() { return Iterator(); }
 };
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);

@@ -311,7 +311,10 @@ public:
 	void Draw(C4TargetFacet cgo, C4Object *obj);
 	bool IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t attachment) const;
 
+	// before adding a particle, you should ReserveSpace for it
 	C4DynamicParticle *AddNewParticle();
+	// sets up internal data structures to be large enough for the passed amount of ADDITIONAL particles
+	void ReserveSpace(uint32_t forAmount);
 
 	friend class C4DynamicParticleList;
 };
@@ -345,7 +348,8 @@ public:
 
 	void Exec(float timeDelta = 1.f);
 	void Draw(C4TargetFacet cgo, C4Object *obj);
-	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked);
+	C4DynamicParticleChunk *GetFittingParticleChunk(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked);
+	C4DynamicParticle *AddNewParticle(C4ParticleDef *def, uint32_t blitMode, uint32_t attachment, bool alreadyLocked, int remaining = 0);
 };
 #endif
 

@@ -666,6 +666,58 @@ void C4PropList::ResetProperty(C4String * k)
 	Properties.Remove(k);
 }
 
+void C4PropList::Iterator::Init()
+{
+	iter = properties->begin();
+}
+
+void C4PropList::Iterator::Reserve(size_t additionalAmount)
+{
+	properties->reserve(properties->size() + additionalAmount);
+}
+
+void C4PropList::Iterator::AddProperty(const C4Property * prop)
+{
+	std::vector<const C4Property*>::size_type i = 0, len = properties->size();
+	for(;i < len; ++i)
+	{
+		const C4Property *oldProperty = (*properties)[i];
+		if (oldProperty->Key == prop->Key)
+		{
+			(*properties)[i] = prop;
+			return;
+		}
+	}
+	// not already in vector?
+	properties->push_back(prop);
+}
+
+C4PropList::Iterator C4PropList::begin()
+{
+	C4PropList::Iterator iter;
+
+	if (prototype)
+	{
+		iter = prototype->begin();
+	}
+	else
+	{
+		iter.properties = std::make_shared<std::vector<const C4Property*> >();
+	}
+	iter.Reserve(Properties.GetSize());
+
+	const C4Property * p = Properties.First();
+	while (p)
+	{
+		iter.AddProperty(p);
+		p = Properties.Next(p);
+	}
+
+	iter.Init();
+	return iter;
+}
+
+
 template<> template<>
 unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int const & e)
 {
