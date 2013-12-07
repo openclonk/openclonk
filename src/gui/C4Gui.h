@@ -523,10 +523,10 @@ namespace C4GUI
 	class WoodenLabel : public Label
 	{
 	private:
-		time_t tAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
+		uint32_t iAutoScrollDelay; // if set and text is longer than would fit, the label will automatically start moving if not changed and displayed for a while
 
 		// Time when the label text was changed last. NULL if not initialized; set upon first drawing
-		C4TimeMilliseconds *tLastChangeTime;  
+		C4TimeMilliseconds tLastChangeTime;  
 		int32_t iScrollPos, iScrollDir;
 		int32_t iRightIndent;
 	protected:
@@ -539,14 +539,13 @@ namespace C4GUI
 
 	public:
 		WoodenLabel(const char *szLblText, const C4Rect &rcBounds, DWORD dwFClr=0xffffffff, CStdFont *pFont=NULL, int32_t iAlign=ACenter, bool fMarkup=true) // ctor
-				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), tAutoScrollDelay(0), tLastChangeTime(NULL), iScrollPos(0), iScrollDir(0), iRightIndent(0)
+				: Label(szLblText, rcBounds, iAlign, dwFClr, pFont, true, true, fMarkup), iAutoScrollDelay(0), tLastChangeTime(GetTime()), iScrollPos(0), iScrollDir(0), iRightIndent(0)
 		{ SetAutosize(false); this->rcBounds=rcBounds; }// ctor - re-sets bounds after SetText
-		~WoodenLabel() { delete tLastChangeTime; }
 
 		static int32_t GetDefaultHeight(CStdFont *pUseFont=NULL);
 
 		void SetIcon(const C4Facet &rfctIcon);
-		void SetAutoScrollTime(time_t tDelay) { tAutoScrollDelay=tDelay; ResetAutoScroll(); }
+		void SetAutoScrollTime(uint32_t tDelay) { iAutoScrollDelay=tDelay; ResetAutoScroll(); }
 		void ResetAutoScroll();
 
 		void SetRightIndent(int32_t iNewIndent) { iRightIndent = iNewIndent; }

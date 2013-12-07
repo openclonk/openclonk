@@ -151,12 +151,10 @@ namespace C4GUI
 		// calculations for automatic scrolling
 		int32_t iXOff = 0;
 		if (iAlign == ALeft) iXOff += 5;
-		if (tAutoScrollDelay)
+		if (iAutoScrollDelay)
 		{
 			C4TimeMilliseconds tNow = GetTime();
-			if (!tLastChangeTime)
-				tLastChangeTime = new C4TimeMilliseconds(tNow);
-			else if (tNow - *tLastChangeTime >= tAutoScrollDelay)
+			if (tNow - tLastChangeTime >= iAutoScrollDelay)
 			{
 				if (!iScrollDir) iScrollDir=1;
 				int32_t iMaxScroll = Max<int32_t>(pFont->GetTextWidth(sText.getData(), true) + (x0 - rcBounds.x) + iXOff + GetRightIndent() - rcBounds.Wdt, 0);
@@ -167,7 +165,7 @@ namespace C4GUI
 					{
 						iScrollDir = -iScrollDir;
 						iScrollPos += iScrollDir;
-						*tLastChangeTime = tNow;
+						tLastChangeTime = tNow;
 					}
 				}
 			}
@@ -200,11 +198,6 @@ namespace C4GUI
 
 	void WoodenLabel::ResetAutoScroll()
 	{
-		if(tLastChangeTime)
-		{
-			delete tLastChangeTime;
-			tLastChangeTime=NULL;
-		}
 		iScrollPos = iScrollDir = 0;
 	}
 
