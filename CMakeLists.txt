@@ -456,6 +456,7 @@ set(OC_CLONK_SOURCES
 	src/platform/C4SoundLoaders.h
 	src/platform/C4SoundSystem.cpp
 	src/platform/C4SoundSystem.h
+	src/platform/C4TimeMilliseconds.cpp 
 	src/platform/C4TimeMilliseconds.h	
 	src/platform/C4StdInProc.cpp
 	src/platform/C4StdInProc.h
@@ -1014,7 +1015,6 @@ src/lib/C4Markup.h
 src/lib/StdResStr2.cpp
 src/network/C4NetIO.cpp
 src/network/C4NetIO.h
-src/platform/GetTime.cpp
 src/platform/StdFile.cpp
 src/platform/StdFile.h
 src/platform/StdRegistry.cpp
