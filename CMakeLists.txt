@@ -1021,6 +1021,8 @@ src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
 src/platform/StdScheduler.h
+src/platform/C4TimeMilliseconds.cpp 
+src/platform/C4TimeMilliseconds.h	
 src/zlib/gzio.c
 src/zlib/gzio.h
 src/zlib/zutil.h
