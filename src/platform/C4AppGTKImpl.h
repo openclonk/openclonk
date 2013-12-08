@@ -23,16 +23,15 @@
 class C4GLibProc: public StdSchedulerProc
 {
 public:
-	C4GLibProc(GMainContext *context): context(context), query_time(NULL) { fds.resize(1); g_main_context_ref(context); }
+	C4GLibProc(GMainContext *context): context(context), query_time(C4TimeMilliseconds::NegativeInfinity) { fds.resize(1); g_main_context_ref(context); }
 	~C4GLibProc()
 	{
 		g_main_context_unref(context);
-		if (query_time) delete query_time;
 	}
 
 	GMainContext *context;
 	std::vector<pollfd> fds;
-	C4TimeMilliseconds *query_time;
+	C4TimeMilliseconds query_time;
 	int timeout;
 	int max_priority;
 
@@ -46,7 +45,7 @@ private:
 		// If Execute() has not yet been called, then finish the current iteration first.
 		// Note that we cannot simply ignore the query() call, as new
 		// FDs or Timeouts may have been added to the Glib loop in the meanwhile
-		if (query_time)
+		if (!query_time.IsInfinite())
 		{
 			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
 			Execute();
@@ -61,8 +60,7 @@ private:
 		}
 		// Make sure we don't report more FDs than there are available
 		fds.resize(fd_count);
-		if(!query_time) query_time = new C4TimeMilliseconds(Now);
-		else *query_time = Now;
+		query_time = Now;
 	}
 
 public:
@@ -77,13 +75,12 @@ public:
 		// without g_main_context_iteration. This might be less hacky.
 
 		// Finish current iteration first
-		C4TimeMilliseconds * old_query_time = NULL;
-		if (query_time)
+		C4TimeMilliseconds old_query_time = C4TimeMilliseconds::NegativeInfinity;
+		if (!query_time.IsInfinite())
 		{
-			old_query_time = new C4TimeMilliseconds(*query_time);
+			old_query_time = query_time;
 			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
-			//delete query_time;
-			//query_time = NULL;
+			//query_time = C4TimeMilliseconds::NegativeInfinity;
 			Execute();
 		}
 
@@ -92,21 +89,21 @@ public:
 			g_main_context_iteration(context, false);
 
 		// Return to original state
-		if (old_query_time)
-			query(*old_query_time);
+		if (!old_query_time.IsInfinite())
+			query(old_query_time);
 	}
 
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
-		if (!query_time) query(C4TimeMilliseconds::Now());
+		if (query_time.IsInfinite()) query(C4TimeMilliseconds::Now());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds Now)
 	{
 		query(Now);
 		if (timeout < 0) return timeout;
-		return *query_time + timeout;
+		return query_time + timeout;
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
@@ -119,8 +116,7 @@ public:
 		// g_main_context_check() twice for the current iteration.
 		// This would otherwise lead to a freeze since
 		// g_main_context_check() seems to block when called twice.
-		delete query_time;
-		query_time = NULL;
+		query_time = C4TimeMilliseconds::NegativeInfinity;
 		g_main_context_dispatch(context);
 		return true;
 	}
