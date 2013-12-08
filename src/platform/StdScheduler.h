@@ -86,44 +86,33 @@ public:
 class CStdTimerProc : public StdSchedulerProc
 {
 public:
-	CStdTimerProc(uint32_t iDelay) : tLastTimer(NULL), iDelay(iDelay) { }
+	CStdTimerProc(uint32_t iDelay) : tLastTimer(C4TimeMilliseconds::NegativeInfinity), iDelay(iDelay) { }
 	~CStdTimerProc() { Set(); }
 
 private:
-	C4TimeMilliseconds *tLastTimer;
+	C4TimeMilliseconds tLastTimer;
 	uint32_t iDelay;
 
 public:
 	void Set()
 	{
-		delete tLastTimer;
-		tLastTimer = NULL;
+		tLastTimer = C4TimeMilliseconds::NegativeInfinity;
 	}
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool CheckAndReset()
 	{
 		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
-		// first execution
-		if(!tLastTimer)
-		{
-			tLastTimer = new C4TimeMilliseconds(tTime - iDelay / 2);
-			return true;
-		}
-		// too early to execute
-		if (tTime < *tLastTimer + iDelay) return false;
+		if (tTime < tLastTimer + iDelay) return false;
 		// Compensate light drifting
-		uint32_t iDrift = tTime - (*tLastTimer + iDelay); // a positive time difference because of above check
-		*tLastTimer = tTime - Min(iDrift, iDelay / 2);
+		int32_t iDrift = tTime - (tLastTimer + iDelay); // a positive time difference because of above check
+		tLastTimer = tTime - Min(iDrift, (int32_t) iDelay / 2);
 		return true;
 	}
 
 	// StdSchedulerProc override
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow)
 	{
-		// never executed yet? Execute now
-		if(!tLastTimer) return tNow;
-		// otherwise, last time executed plus specified delay
-		return *tLastTimer + iDelay;
+		return tLastTimer + iDelay;
 	}
 
 	virtual bool IsScheduledExecution() { return true; }

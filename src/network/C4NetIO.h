@@ -620,12 +620,12 @@ protected:
 		// output critical section
 		CStdCSec OutCSec;
 
-		// connection check time limit. NULL if no recheck time yet
-		C4TimeMilliseconds *tNextReCheck;
+		// connection check time limit.
+		C4TimeMilliseconds tNextReCheck;
 		unsigned int iLastPacketAsked, iLastMCPacketAsked;
 
-		// timeout time. NULL if no timeout time set yet
-		C4TimeMilliseconds *tTimeout;
+		// timeout time.
+		C4TimeMilliseconds tTimeout;
 		unsigned int iRetries;
 
 		// statistics
@@ -661,7 +661,7 @@ protected:
 		unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
 
 		// timeout checking
-		C4TimeMilliseconds *GetTimeout() { return tTimeout; }
+		C4TimeMilliseconds GetTimeout() { return tTimeout; }
 		void CheckTimeout();
 
 		// selected for broadcast?
@@ -726,8 +726,8 @@ protected:
 	addr_t MCLoopbackAddr;
 	bool fDelayedLoopbackTest;
 
-	// check timing. NULL if no next check yet
-	C4TimeMilliseconds *tNextCheck;
+	// check timing.
+	C4TimeMilliseconds tNextCheck;
 
 	// outgoing packet list (for multicast)
 	PacketList OPackets;

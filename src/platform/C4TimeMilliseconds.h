@@ -62,6 +62,9 @@ public:
 	/* Returns the stored time. Do not use this for comparisons because this method always
 	   returns the stored time, independent of whether this variable is actually infinite. */
 	uint32_t AsInt() const { return time; }
+	/* Returns whether this variable is set to some infinity. This does normally mean that
+	   the variable is not initialized yet. */
+	bool IsInfinite() const { return inf != NoInfinity; }
 	/* Returns a string representation useful for debugging and logging purposes. */
 	const char* AsString() const;
 

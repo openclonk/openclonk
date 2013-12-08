@@ -33,7 +33,7 @@
 C4GameControlNetwork::C4GameControlNetwork(C4GameControl *pnParent)
 		: fEnabled(false), fRunning(false), iClientID(C4ClientIDUnknown),
 		fActivated(false), iTargetTick(-1),
-		iControlPreSend(1), tWaitStart(NULL), iAvgControlSendTime(0), iTargetFPS(38),
+		iControlPreSend(1), tWaitStart(C4TimeMilliseconds::PositiveInfinity), iAvgControlSendTime(0), iTargetFPS(38),
 		iControlSent(0), iControlReady(0),
 		pCtrlStack(NULL),
 		tNextControlRequest(0),
@@ -64,11 +64,7 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	fEnabled = true; fRunning = false;
 	iTargetFPS = 38;
 	tNextControlRequest = C4TimeMilliseconds::Now() + C4ControlRequestInterval;
-	if(tWaitStart)
-	{
-		delete tWaitStart;
-		tWaitStart = NULL;
-	}
+	tWaitStart = C4TimeMilliseconds::PositiveInfinity;
 	return true;
 }
 
@@ -94,8 +90,7 @@ void C4GameControlNetwork::Execute() // by main thread
 		return;
 
 	// Save time the control tick was reached
-	if (!tWaitStart)
-		tWaitStart = new C4TimeMilliseconds(C4TimeMilliseconds::Now());
+	tWaitStart = C4TimeMilliseconds::Now();
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -122,11 +117,7 @@ bool C4GameControlNetwork::GetControl(C4Control *pCtrl, int32_t iTick) // by mai
 	pCtrl->Append(pPkt->getControl());
 	// calc performance
 	CalcPerformance(iTick);
-	if(tWaitStart)
-	{
-		delete tWaitStart;
-		tWaitStart = NULL;
-	}
+	tWaitStart = C4TimeMilliseconds::PositiveInfinity;
 	// ok
 	return true;
 }
@@ -429,9 +420,9 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 		// Performance statistics
 		// find control (may not be found, if we only got the complete ctrl)
 		C4GameControlPacket *pCtrl = getCtrl(pClient->getClientID(), iCtrlTick);
-		if (!pCtrl || !tWaitStart) continue;
+		if (!pCtrl || tWaitStart.IsInfinite()) continue;
 		// calc stats
-		pClient->AddPerf(pCtrl->getTime() - *tWaitStart);
+		pClient->AddPerf(pCtrl->getTime() - tWaitStart);
 	}
 	// Now do PreSend-calcs based on ping times
 	int32_t iControlSendTime;
@@ -774,7 +765,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	{
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
-		if (eMode != CNM_Async || !tWaitStart || C4TimeMilliseconds::Now() <= *tWaitStart + iMaxWait)
+		if (eMode != CNM_Async || C4TimeMilliseconds::Now() <= tWaitStart + iMaxWait)
 			return NULL;
 	}
 

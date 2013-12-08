@@ -231,8 +231,8 @@ protected:
 	bool fBroadcastTarget;                  // broadcast target?
 	time_t iTimestamp;                      // timestamp of last status change
 	int iPingTime;                          // ping
-	C4TimeMilliseconds *tLastPing;                 // if > iLastPong, it's the first ping that hasn't been answered yet, NULL if no ping received yet
-	C4TimeMilliseconds *tLastPong;                 // last pong received, NULL if no pong received yet
+	C4TimeMilliseconds tLastPing;          // if > iLastPong, it's the first ping that hasn't been answered yet, NULL if no ping received yet
+	C4TimeMilliseconds tLastPong;          // last pong received, NULL if no pong received yet
 	C4ClientCore CCore;                     // client core (>= CS_HalfAccepted)
 	CStdCSec CCoreCSec;
 	int iIRate, iORate;                     // input/output rates (by C4NetIO, in b/s)

@@ -146,7 +146,7 @@ C4Network2::C4Network2()
 		pLobby(NULL), fLobbyRunning(false), pLobbyCountdown(NULL),
 		iNextClientID(0),
 		iLastChaseTargetUpdate(0),
-		tLastActivateRequest(NULL),
+		tLastActivateRequest(C4TimeMilliseconds::NegativeInfinity),
 		iLastReferenceUpdate(0),
 		iLastLeagueUpdate(0),
 		pLeagueClient(NULL),
@@ -624,7 +624,7 @@ void C4Network2::Execute()
 	else
 	{
 		// request activate, if neccessary
-		if (tLastActivateRequest) RequestActivate();
+		if (!tLastActivateRequest.IsInfinite()) RequestActivate();
 	}
 }
 
@@ -664,11 +664,7 @@ void C4Network2::Clear()
 	// stuff
 	fAllowJoin = false;
 	iDynamicTick = -1; fDynamicNeeded = false;
-	if(tLastActivateRequest)
-	{
-		delete tLastActivateRequest;
-		tLastActivateRequest = NULL;
-	}
+	tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
 	iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
 	fDelayedActivateReq = false;
 	delete pVoteDialog; pVoteDialog = NULL;
@@ -1769,11 +1765,7 @@ void C4Network2::RequestActivate()
 	// neither observer nor activated?
 	if (Game.Clients.getLocal()->isObserver() || Game.Clients.getLocal()->isActivated())
 	{
-		if(tLastActivateRequest)
-		{
-			delete tLastActivateRequest;
-			tLastActivateRequest = NULL;
-		}
+		tLastActivateRequest = C4TimeMilliseconds::NegativeInfinity;
 		return;
 	}
 	// host? just do it
@@ -1786,9 +1778,8 @@ void C4Network2::RequestActivate()
 		return;
 	}
 	// ensure interval
-	if (tLastActivateRequest)
-		if(C4TimeMilliseconds::Now() < *tLastActivateRequest + C4NetActivationReqInterval)
-			return;
+	if(C4TimeMilliseconds::Now() < tLastActivateRequest + C4NetActivationReqInterval)
+		return;
 	// status not reached yet? May be chasing, let's delay this.
 	if (!fStatusReached)
 	{
@@ -1798,10 +1789,7 @@ void C4Network2::RequestActivate()
 	// request
 	Clients.SendMsgToHost(MkC4NetIOPacket(PID_ClientActReq, C4PacketActivateReq(Game.FrameCounter)));
 	// store time
-	if(!tLastActivateRequest)
-		tLastActivateRequest = new C4TimeMilliseconds(C4TimeMilliseconds::Now());
-	else
-		*tLastActivateRequest = C4TimeMilliseconds::Now();
+	tLastActivateRequest = C4TimeMilliseconds::Now();
 }
 
 void C4Network2::DeactivateInactiveClients()

@@ -66,8 +66,8 @@ protected:
 	// statistics
 
 
-	// time started to wait. NULL if not set yet
-	C4TimeMilliseconds *tWaitStart;
+	// time started to wait.
+	C4TimeMilliseconds tWaitStart;
 
 	int32_t iAvgControlSendTime;
 	int32_t iTargetFPS; // used for PreSend-colculation

@@ -1303,7 +1303,8 @@ C4Network2IOConnection::C4Network2IOConnection()
 		fBroadcastTarget(false),
 		iTimestamp(0),
 		iPingTime(-1),
-		tLastPing(NULL), tLastPong(NULL),
+		tLastPing(C4TimeMilliseconds::NegativeInfinity),
+		tLastPong(C4TimeMilliseconds::NegativeInfinity),
 		fConnSent(false),
 		fPostMortemSent(false),
 		iOutPacketCounter(0), iInPacketCounter(0),
@@ -1320,9 +1321,6 @@ C4Network2IOConnection::~C4Network2IOConnection()
 	if (pNetClass && !isClosed()) Close();
 	// clear the packet log
 	ClearPacketLog();
-
-	delete tLastPing;
-	delete tLastPong;
 }
 
 int C4Network2IOConnection::getLag() const
@@ -1330,9 +1328,9 @@ int C4Network2IOConnection::getLag() const
 	if (iPingTime != -1)
 	{
 		// Last ping not answered yet?
-		if(tLastPing && (!tLastPong || *tLastPing > *tLastPong))
+		if(tLastPing > tLastPong)
 		{
-			int iPingLag = C4TimeMilliseconds::Now() - *tLastPing;
+			int iPingLag = C4TimeMilliseconds::Now() - tLastPing;
 			// Use it for lag measurement once it's larger then the last ping time
 			// (the ping time won't be better than this anyway once the pong's here)
 			return Max(iPingLag, iPingTime);
@@ -1369,13 +1367,11 @@ void C4Network2IOConnection::SetPeerAddr(const C4NetIO::addr_t &nPeerAddr)
 void C4Network2IOConnection::OnPing()
 {
 	// Still no pong for the last ping?
-	if(tLastPing && tLastPong)
-		if (*tLastPong < *tLastPing)
-			return;
+	if (tLastPong < tLastPing)
+		return;
 
 	// Save time
-	if(!tLastPing) tLastPing = new C4TimeMilliseconds();
-	*tLastPing = C4TimeMilliseconds::Now();
+	tLastPing = C4TimeMilliseconds::Now();
 }
 
 void C4Network2IOConnection::SetPingTime(int inPingTime)
@@ -1383,8 +1379,7 @@ void C4Network2IOConnection::SetPingTime(int inPingTime)
 	// save it
 	iPingTime = inPingTime;
 	// pong received - save timestamp
-	if(!tLastPong) tLastPong = new C4TimeMilliseconds();
-	*tLastPong = C4TimeMilliseconds::Now();
+	tLastPong = C4TimeMilliseconds::Now();
 }
 
 void C4Network2IOConnection::SetStatus(C4Network2IOConnStatus nStatus)
