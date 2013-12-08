@@ -3219,9 +3219,8 @@ void C4NetIOUDP::CloseDebugLog()
 void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
-	uint32_t tTime = C4TimeMilliseconds::Now().AsInt();
-	O.Format("%s %u:%02u:%02u:%03u %s:%d:", fOut ? "out" : "in ",
-	         (tTime / 1000 / 60 / 60), (tTime / 1000 / 60) % 60, (tTime / 1000) % 60, tTime % 1000,
+	O.Format("%s %s %s:%d:", fOut ? "out" : "in ",
+	         C4TimeMilliseconds::Now().AsString(),
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
 
 	// header?

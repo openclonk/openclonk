@@ -56,3 +56,10 @@ C4TimeMilliseconds C4TimeMilliseconds::Now()
 }
 
 #endif
+
+const char* C4TimeMilliseconds::AsString() const
+{
+	StdStrBuf string;
+	string.Format("%u:%02u:%02u:%03u:",time / 1000 / 60 / 60, (time / 1000 / 60) % 60, (time / 1000) % 60, time % 1000);
+	return string.getData();
+}

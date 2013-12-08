@@ -33,7 +33,7 @@
 
    Otherwise, there should be no use case other than for printing, or packing/
    unpacking for network to have a uint32_t representation of this. You can use
-   AsInt() for that. */
+   AsInt()/AsString() for that. */
 class C4TimeMilliseconds
 {
 private:
@@ -48,6 +48,7 @@ public:
 	~C4TimeMilliseconds() { }
 
 	uint32_t AsInt() const { return time; }
+	const char* AsString() const;
 
 	C4TimeMilliseconds& operator=(const C4TimeMilliseconds& rhs)  { time = rhs.time; return *this; }
 	
