@@ -164,7 +164,6 @@ protected:
 	// StdSchedulerProc
 	virtual bool Execute(int iTimeout, pollfd *);
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
-	virtual bool IsScheduledExecution() { return true; }
 	// Event callback by C4InteractiveThread
 	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData); // by main thread
 

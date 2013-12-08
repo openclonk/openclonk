@@ -70,9 +70,7 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) { return 0; };
-
-	virtual bool IsScheduledExecution() { return false; }
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) { return C4TimeMilliseconds::PositiveInfinity; };
 
 	// Is the process signal currently set?
 	bool IsSignaled();
@@ -114,8 +112,6 @@ public:
 	{
 		return tLastTimer + iDelay;
 	}
-
-	virtual bool IsScheduledExecution() { return true; }
 };
 
 // A simple alertable proc

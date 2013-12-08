@@ -441,11 +441,6 @@ C4TimeMilliseconds C4Network2HTTPClient::GetNextTick(C4TimeMilliseconds tNow)
 	return Max(tNetIOTCPTick, tHTTPClientTick);
 }
 
-bool C4Network2HTTPClient::IsScheduledExecution()
-{
-	return C4NetIOTCP::IsScheduledExecution();
-}
-
 bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 {
 	if (Server.isNull()) return false;

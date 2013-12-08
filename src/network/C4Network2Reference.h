@@ -182,7 +182,6 @@ public:
 	virtual bool Execute(int iMaxTime, pollfd * readyfds) { return Execute(iMaxTime); }
 	virtual bool Execute(int iMaxTime = TO_INF);
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
-	virtual bool IsScheduledExecution();
 
 private:
 	bool ReadHeader(StdStrBuf Data);

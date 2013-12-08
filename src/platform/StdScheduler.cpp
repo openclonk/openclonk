@@ -180,13 +180,10 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
 	{
-		if(ppProcs[i]->IsScheduledExecution())
+		tProcTick = ppProcs[i]->GetNextTick(tNow);
+		if (iTimeout == -1 || tNow + iTimeout > tProcTick)
 		{
-			tProcTick = ppProcs[i]->GetNextTick(tNow);
-			if (iTimeout == -1 || tNow + iTimeout > tProcTick)
-			{
-				iTimeout = Max<uint32_t>(tProcTick - tNow, 0);
-			}
+			iTimeout = Max<uint32_t>(tProcTick - tNow, 0);
 		}
 	}
 
@@ -237,16 +234,13 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
 	{
-		if(ppProcs[i]->IsScheduledExecution())
-		{
-			tProcTick = ppProcs[i]->GetNextTick(tNow);
-			if (tProcTick <= tNow)
-				if (!ppProcs[i]->Execute(0))
-				{
-					OnError(ppProcs[i]);
-					fSuccess = false;
-				}
-		}
+		tProcTick = ppProcs[i]->GetNextTick(tNow);
+		if (tProcTick <= tNow)
+			if (!ppProcs[i]->Execute(0))
+			{
+				OnError(ppProcs[i]);
+				fSuccess = false;
+			}
 	}
 
 #else
@@ -276,45 +270,42 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 		// Which process?
 		for (i = 0; i < iProcCnt; i++)
 		{
-			if (ppProcs[i]->IsScheduledExecution())
+			tProcTick = ppProcs[i]->GetNextTick(tNow);
+			if (tProcTick <= tNow)
 			{
-				tProcTick = ppProcs[i]->GetNextTick(tNow);
-				if (tProcTick <= tNow)
+				struct pollfd * pfd = 0;
+				if (fds_for_proc.find(ppProcs[i]) != fds_for_proc.end())
+					pfd = &fds[fds_for_proc[ppProcs[i]].first];
+				if (!ppProcs[i]->Execute(0, pfd))
 				{
-					struct pollfd * pfd = 0;
-					if (fds_for_proc.find(ppProcs[i]) != fds_for_proc.end())
-						pfd = &fds[fds_for_proc[ppProcs[i]].first];
-					if (!ppProcs[i]->Execute(0, pfd))
+					OnError(ppProcs[i]);
+					fSuccess = false;
+				}
+				any_executed = true;
+				continue;
+			}
+			// no fds?
+			if (fds_for_proc.find(ppProcs[i]) == fds_for_proc.end())
+				continue;
+			// Check intersection
+			unsigned int begin = fds_for_proc[ppProcs[i]].first;
+			unsigned int end = fds_for_proc[ppProcs[i]].second;
+			for (unsigned int j = begin; j < end; ++j)
+			{
+				if (fds[j].events & fds[j].revents)
+				{
+					if (any_executed && ppProcs[i]->IsLowPriority())
+						break;
+					if (!ppProcs[i]->Execute(0, &fds[begin]))
 					{
 						OnError(ppProcs[i]);
 						fSuccess = false;
 					}
 					any_executed = true;
-					continue;
-				}
-				// no fds?
-				if (fds_for_proc.find(ppProcs[i]) == fds_for_proc.end())
-					continue;
-				// Check intersection
-				unsigned int begin = fds_for_proc[ppProcs[i]].first;
-				unsigned int end = fds_for_proc[ppProcs[i]].second;
-				for (unsigned int j = begin; j < end; ++j)
-				{
-					if (fds[j].events & fds[j].revents)
-					{
-						if (any_executed && ppProcs[i]->IsLowPriority())
-							break;
-						if (!ppProcs[i]->Execute(0, &fds[begin]))
-						{
-							OnError(ppProcs[i]);
-							fSuccess = false;
-						}
-						any_executed = true;
-						// the list of procs might have been changed, but procs must be in both ppProcs and
-						// fds_for_proc to be executed, which prevents execution of any proc not polled this round
-						// or deleted. Some procs might be skipped or executed twice, but that should be save.
-						break;
-					}
+					// the list of procs might have been changed, but procs must be in both ppProcs and
+					// fds_for_proc to be executed, which prevents execution of any proc not polled this round
+					// or deleted. Some procs might be skipped or executed twice, but that should be save.
+					break;
 				}
 			}
 		}

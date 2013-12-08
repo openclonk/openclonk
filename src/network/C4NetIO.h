@@ -459,7 +459,6 @@ public:
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true);
 
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
-	virtual bool IsScheduledExecution() { return true; }
 
 	virtual bool GetStatistic(int *pBroadcastRate);
 	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
