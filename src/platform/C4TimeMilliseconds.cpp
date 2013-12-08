@@ -20,6 +20,7 @@
 
 #include <C4Include.h>
 #include "C4TimeMilliseconds.h"
+#include <limits>
 
 #ifdef _WIN32
 
@@ -103,8 +104,8 @@ int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs)
 	{
 		int infinityTo = lhs.inf - rhs.inf;
 		
-		if (infinityTo < 0) return INT32_MIN;
-		if (infinityTo > 0) return INT32_MAX;
+		if (infinityTo < 0) return std::numeric_limits<int32_t>::min();
+		if (infinityTo > 0) return std::numeric_limits<int32_t>::max();
 		return 0;
 	}
 	// otherwise, as usual
