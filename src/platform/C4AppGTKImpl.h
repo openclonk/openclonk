@@ -102,7 +102,7 @@ public:
 	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds Now)
 	{
 		query(Now);
-		if (timeout < 0) return timeout;
+		if (timeout < 0) return C4TimeMilliseconds::PositiveInfinity;
 		return query_time + timeout;
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
