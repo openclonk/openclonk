@@ -154,7 +154,7 @@ namespace C4GUI
 		if (iAutoScrollDelay)
 		{
 			C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
-			if (tNow - tLastChangeTime >= iAutoScrollDelay)
+			if (tNow >= tLastChangeTime + iAutoScrollDelay)
 			{
 				if (!iScrollDir) iScrollDir=1;
 				int32_t iMaxScroll = Max<int32_t>(pFont->GetTextWidth(sText.getData(), true) + (x0 - rcBounds.x) + iXOff + GetRightIndent() - rcBounds.Wdt, 0);

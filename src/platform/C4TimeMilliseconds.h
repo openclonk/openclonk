@@ -34,45 +34,58 @@
    Otherwise, there should be no use case other than for printing, or packing/
    unpacking for network to have a uint32_t representation of this. You can use
    AsInt()/AsString() for that. */
+
 class C4TimeMilliseconds
 {
+public:
+	enum Infinity
+	{
+		NegativeInfinity = -1,
+		NoInfinity = 0,
+		PositiveInfinity = 1
+};
+
 private:
 	uint32_t time;
+	Infinity inf;
 
 public:
+	
 	static C4TimeMilliseconds Now();
 
-	C4TimeMilliseconds() : time(0) { }
-	C4TimeMilliseconds(uint32_t millis) : time(millis) { }
-	C4TimeMilliseconds(const C4TimeMilliseconds& rhs) : time(rhs.time) { }
+	C4TimeMilliseconds() : time(0), inf(NoInfinity) { }
+	C4TimeMilliseconds(uint32_t millis) : time(millis), inf(NoInfinity) { }
+	C4TimeMilliseconds(C4TimeMilliseconds::Infinity infinity) : time(0), inf(infinity) { }
+	C4TimeMilliseconds(const C4TimeMilliseconds& rhs) : time(rhs.time), inf(rhs.inf) { }
 	~C4TimeMilliseconds() { }
 
+	/* Returns the stored time. Do not use this for comparisons because this method always
+	   returns the stored time, independent of whether this variable is actually infinite. */
 	uint32_t AsInt() const { return time; }
+	/* Returns a string representation useful for debugging and logging purposes. */
 	const char* AsString() const;
 
-	C4TimeMilliseconds& operator=(const C4TimeMilliseconds& rhs)  { time = rhs.time; return *this; }
+	C4TimeMilliseconds& operator=(const C4TimeMilliseconds& rhs);
 	
 	inline C4TimeMilliseconds& operator-=(const uint32_t& rhs) { time -= rhs; return *this; }
 	inline C4TimeMilliseconds& operator+=(const uint32_t& rhs) { time += rhs; return *this; }
 
+	friend bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs );
+	friend bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs );
+	friend int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs);
 };
 
-inline bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs ) { return lhs.AsInt() == rhs.AsInt(); }
+bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs );
+bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs );
+
 inline bool operator!=( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs ) { return !(lhs == rhs); }
-inline bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )  { return int32_t(lhs.AsInt() - rhs.AsInt()) < 0; }
 inline bool operator>( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )  { return rhs < lhs; }
 inline bool operator<=( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs ) { return !(lhs > rhs); }
 inline bool operator>=( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs ) { return !(lhs < rhs); }
 
-inline uint32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs) { return lhs.AsInt() - rhs.AsInt(); }
+int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs);
 
 inline C4TimeMilliseconds operator+(C4TimeMilliseconds lhs, const uint32_t& rhs)        { lhs += rhs; return lhs; }
 inline C4TimeMilliseconds operator-(C4TimeMilliseconds lhs, const uint32_t& rhs)        { lhs -= rhs; return lhs; }
-
-/* the following operations make no sense and should rather be not defined to
-   throw a compiler error than being defined for the sake of it */
-
-//inline uint32_t operator+(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs) { return lhs.AsInt() + rhs.AsInt(); }
-
 
 #endif

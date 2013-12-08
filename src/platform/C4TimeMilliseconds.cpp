@@ -59,7 +59,54 @@ C4TimeMilliseconds C4TimeMilliseconds::Now()
 
 const char* C4TimeMilliseconds::AsString() const
 {
+	if (inf == PositiveInfinity)
+	{
+		return "POSITIVE INFINITY";
+	}
+	if (inf == NegativeInfinity)
+	{
+		return "NEGATIVE INFINITY";
+	}
 	StdStrBuf string;
 	string.Format("%u:%02u:%02u:%03u:",time / 1000 / 60 / 60, (time / 1000 / 60) % 60, (time / 1000) % 60, time % 1000);
 	return string.getData();
+}
+
+C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs)
+{
+	time = rhs.time;
+	inf = rhs.inf;
+	return *this;
+}
+
+bool operator==( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
+{
+	return lhs.inf == rhs.inf && 
+	       lhs.time == rhs.time;
+}
+
+bool operator<( const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs )
+{
+	if (lhs.inf != C4TimeMilliseconds::NoInfinity ||
+	    rhs.inf != C4TimeMilliseconds::NoInfinity)
+	{
+		return lhs.inf < rhs.inf;
+	}
+	return int32_t(lhs.time - rhs.time) < 0;
+}
+
+int32_t operator-(const C4TimeMilliseconds& lhs, const C4TimeMilliseconds& rhs)
+{
+	// if infinity is set, nothing else than infinity matters (infinity + 100 == infinity)
+	if (lhs.inf != C4TimeMilliseconds::NoInfinity ||
+	    rhs.inf != C4TimeMilliseconds::NoInfinity)
+	{
+		int infinityTo = lhs.inf - rhs.inf;
+		
+		if (infinityTo < 0) return INT32_MIN;
+		if (infinityTo > 0) return INT32_MAX;
+		return 0;
+	}
+	// otherwise, as usual
+	return int32_t(lhs.time - rhs.time);
 }
