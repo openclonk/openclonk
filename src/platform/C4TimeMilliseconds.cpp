@@ -58,19 +58,19 @@ C4TimeMilliseconds C4TimeMilliseconds::Now()
 
 #endif
 
-const char* C4TimeMilliseconds::AsString() const
+StdCopyStrBuf C4TimeMilliseconds::AsString() const
 {
 	if (inf == PositiveInfinity)
 	{
-		return "POSITIVE INFINITY";
+		return StdCopyStrBuf("POSITIVE INFINITY");
 	}
 	if (inf == NegativeInfinity)
 	{
-		return "NEGATIVE INFINITY";
+		return StdCopyStrBuf("NEGATIVE INFINITY");
 	}
-	StdStrBuf string;
+	StdCopyStrBuf string;
 	string.Format("%u:%02u:%02u:%03u:",time / 1000 / 60 / 60, (time / 1000 / 60) % 60, (time / 1000) % 60, time % 1000);
-	return string.getData();
+	return StdCopyStrBuf(string);
 }
 
 C4TimeMilliseconds& C4TimeMilliseconds::operator=(const C4TimeMilliseconds& rhs)

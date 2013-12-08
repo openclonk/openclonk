@@ -507,7 +507,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	ThreadLogS("OnConn: %s %s",
-	           C4TimeMilliseconds::Now().AsString(),
+	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
 	// search connection
@@ -561,7 +561,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 		}
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	ThreadLogS("OnDisconn: %s %s",
-	           C4TimeMilliseconds::Now().AsString(),
+	           C4TimeMilliseconds::Now().AsString().getData(),
 	           getNetIOName(pNetIO));
 #endif
 	// find connection
@@ -590,7 +590,7 @@ void C4Network2IO::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
 #if(C4NET2IO_DUMP_LEVEL > 1)
 	ThreadLogS("OnPacket: %s status %02x %s",
-	           C4TimeMilliseconds::Now().AsString(),
+	           C4TimeMilliseconds::Now().AsString().getData(),
 	           rPacket.getStatus(), getNetIOName(pNetIO));
 #endif
 	if (!rPacket.getSize()) return;
@@ -846,7 +846,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	{
 		// StdStrBuf PacketDump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdaptrPacket);
 		StdStrBuf PacketHeader = FormatString("HandlePacket: %s by %s:%d (%lu bytes, counter %d)",
-		                                      C4TimeMilliseconds::Now().AsString(),
+		                                      C4TimeMilliseconds::Now().AsString().getData(),
 		                                      inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
 		                                      static_cast<unsigned long>(rPacket.getSize()), pConn->getInPacketCounter());
 		StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));

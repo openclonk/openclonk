@@ -2487,7 +2487,7 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 		iIPacketCounter(0), iRIPacketCounter(0),
 		iIMCPacketCounter(0), iRIMCPacketCounter(0),
 		iMCAckPacketCounter(0),
-		tNextReCheck(C4TimeMilliseconds::PositiveInfinity),
+		tNextReCheck(C4TimeMilliseconds::NegativeInfinity),
 		iIRate(0), iORate(0), iLoss(0)
 {
 	ZeroMem(&addr2, sizeof(addr2));
@@ -2626,7 +2626,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 		IPackets.Clear();
 		IMCPackets.Clear();
 		
-		tNextReCheck = C4TimeMilliseconds::PositiveInfinity;
+		tNextReCheck = C4TimeMilliseconds::NegativeInfinity;
 
 		iLastPacketAsked = iLastMCPacketAsked = 0;
 		// Activate Multicast?
@@ -3208,7 +3208,7 @@ void C4NetIOUDP::DebugLogPkt(bool fOut, const C4NetIOPacket &Pkt)
 {
 	StdStrBuf O;
 	O.Format("%s %s %s:%d:", fOut ? "out" : "in ",
-	         C4TimeMilliseconds::Now().AsString(),
+	         C4TimeMilliseconds::Now().AsString().getData(),
 	         inet_ntoa(Pkt.getAddr().sin_addr), htons(Pkt.getAddr().sin_port));
 
 	// header?

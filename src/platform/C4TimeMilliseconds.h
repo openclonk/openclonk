@@ -66,7 +66,7 @@ public:
 	   the variable is not initialized yet. */
 	bool IsInfinite() const { return inf != NoInfinity; }
 	/* Returns a string representation useful for debugging and logging purposes. */
-	const char* AsString() const;
+	StdCopyStrBuf AsString() const;
 
 	C4TimeMilliseconds& operator=(const C4TimeMilliseconds& rhs);
 	
