@@ -23,12 +23,15 @@
 class C4GLibProc: public StdSchedulerProc
 {
 public:
-	C4GLibProc(GMainContext *context): context(context), query_time(-1) { fds.resize(1); g_main_context_ref(context); }
-	~C4GLibProc() { g_main_context_unref(context); }
+	C4GLibProc(GMainContext *context): context(context), query_time(C4TimeMilliseconds::NegativeInfinity) { fds.resize(1); g_main_context_ref(context); }
+	~C4GLibProc()
+	{
+		g_main_context_unref(context);
+	}
 
 	GMainContext *context;
 	std::vector<pollfd> fds;
-	int query_time;
+	C4TimeMilliseconds query_time;
 	int timeout;
 	int max_priority;
 
@@ -37,12 +40,12 @@ private:
 	// to the StdScheduler in GetFDs() and GetNextTick() so that it can
 	// poll the file descriptors, along with the file descriptors from
 	// other sources that it might have.
-	void query(int Now)
+	void query(C4TimeMilliseconds Now)
 	{
 		// If Execute() has not yet been called, then finish the current iteration first.
 		// Note that we cannot simply ignore the query() call, as new
 		// FDs or Timeouts may have been added to the Glib loop in the meanwhile
-		if (query_time >= 0)
+		if (!query_time.IsInfinite())
 		{
 			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
 			Execute();
@@ -72,11 +75,12 @@ public:
 		// without g_main_context_iteration. This might be less hacky.
 
 		// Finish current iteration first
-		int old_query_time = query_time;
-		if (query_time >= 0)
+		C4TimeMilliseconds old_query_time = C4TimeMilliseconds::NegativeInfinity;
+		if (!query_time.IsInfinite())
 		{
+			old_query_time = query_time;
 			//g_main_context_check(context, max_priority, fds.empty() ? NULL : (GPollFD*) &fds[0], fds.size());
-			//query_time = -1;
+			//query_time = C4TimeMilliseconds::NegativeInfinity;
 			Execute();
 		}
 
@@ -85,25 +89,25 @@ public:
 			g_main_context_iteration(context, false);
 
 		// Return to original state
-		if (old_query_time >= 0)
+		if (!old_query_time.IsInfinite())
 			query(old_query_time);
 	}
 
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
-		if (query_time < 0) query(GetTime());
+		if (query_time.IsInfinite()) query(C4TimeMilliseconds::Now());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
-	virtual int GetNextTick(int Now)
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds Now)
 	{
 		query(Now);
-		if (timeout < 0) return timeout;
+		if (timeout < 0) return C4TimeMilliseconds::PositiveInfinity;
 		return query_time + timeout;
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
-		if (query_time < 0) return true;
+		if (query_time.IsInfinite()) return true;
 		g_main_context_check(context, max_priority, fds.empty() ? NULL : readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
 
 		// g_main_context_dispatch makes callbacks from the main loop.
@@ -112,7 +116,7 @@ public:
 		// g_main_context_check() twice for the current iteration.
 		// This would otherwise lead to a freeze since
 		// g_main_context_check() seems to block when called twice.
-		query_time = -1;
+		query_time = C4TimeMilliseconds::NegativeInfinity;
 		g_main_context_dispatch(context);
 		return true;
 	}

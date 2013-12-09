@@ -43,12 +43,13 @@ char DummyData[1024 * 1024];
 
 class MyCBClass : public C4NetIOMan
 {
-	unsigned int iTime, iPcks;
+	unsigned int tTime, iPcks;
 public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-		iTime = GetTime(); iPcks = 0;
+		tTime = C4TimeMilliseconds::Now();
+		iPcks = 0;
 
 #ifdef ASYNC_CONNECT
 		if (!fHost)
@@ -62,10 +63,12 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-		if (GetTime() > iTime + 1000)
+		C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
+		if (tNow > tTime + 1000)
 		{
-			cout << iPcks << " packets in " << GetTime() - iTime << " ms (" << iPcks * 1000 / (GetTime() - iTime) << " per second, " << (iPcks ? (GetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-			iTime = GetTime(); iPcks = 0;
+			cout << iPcks << " packets in " << tNow - tTime << " ms (" << iPcks * 1000 / (tNow - tTime) << " per second, " << (iPcks ? (tNow - tTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			tTime = C4TimeMilliseconds::Now();
+			iPcks = 0;
 		}
 		if (!rPacket.getStatus())
 		{

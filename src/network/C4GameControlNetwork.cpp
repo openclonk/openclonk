@@ -33,7 +33,7 @@
 C4GameControlNetwork::C4GameControlNetwork(C4GameControl *pnParent)
 		: fEnabled(false), fRunning(false), iClientID(C4ClientIDUnknown),
 		fActivated(false), iTargetTick(-1),
-		iControlPreSend(1), tWaitStart(0), iAvgControlSendTime(0), iTargetFPS(38),
+		iControlPreSend(1), tWaitStart(C4TimeMilliseconds::PositiveInfinity), iAvgControlSendTime(0), iTargetFPS(38),
 		iControlSent(0), iControlReady(0),
 		pCtrlStack(NULL),
 		tNextControlRequest(0),
@@ -63,7 +63,8 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	// ok
 	fEnabled = true; fRunning = false;
 	iTargetFPS = 38;
-	tNextControlRequest = GetTime() + C4ControlRequestInterval;
+	tNextControlRequest = C4TimeMilliseconds::Now() + C4ControlRequestInterval;
+	tWaitStart = C4TimeMilliseconds::PositiveInfinity;
 	return true;
 }
 
@@ -89,8 +90,7 @@ void C4GameControlNetwork::Execute() // by main thread
 		return;
 
 	// Save time the control tick was reached
-	if (!tWaitStart)
-		tWaitStart = GetTime();
+	tWaitStart = C4TimeMilliseconds::Now();
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -117,7 +117,7 @@ bool C4GameControlNetwork::GetControl(C4Control *pCtrl, int32_t iTick) // by mai
 	pCtrl->Append(pPkt->getControl());
 	// calc performance
 	CalcPerformance(iTick);
-	tWaitStart = 0;
+	tWaitStart = C4TimeMilliseconds::PositiveInfinity;
 	// ok
 	return true;
 }
@@ -420,7 +420,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 		// Performance statistics
 		// find control (may not be found, if we only got the complete ctrl)
 		C4GameControlPacket *pCtrl = getCtrl(pClient->getClientID(), iCtrlTick);
-		if (!pCtrl) continue;
+		if (!pCtrl || tWaitStart.IsInfinite()) continue;
 		// calc stats
 		pClient->AddPerf(pCtrl->getTime() - tWaitStart);
 	}
@@ -736,7 +736,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 	// target ctrl tick to reach?
 	if (iControlReady < iTargetTick &&
 	    (!fActivated || iControlSent > iControlReady) &&
-	    GetTime() >= tNextControlRequest)
+	    C4TimeMilliseconds::Now() >= tNextControlRequest)
 	{
 		Application.InteractiveThread.ThreadLogS("Network: Recovering: Requesting control for tick %d...", iControlReady + 1);
 		// make request
@@ -747,7 +747,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		else
 			::Network.Clients.BroadcastMsgToConnClients(Pkt);
 		// set time for next request
-		tNextControlRequest = GetTime() + C4ControlRequestInterval;
+		tNextControlRequest = C4TimeMilliseconds::Now() + C4ControlRequestInterval;
 	}
 }
 
@@ -765,7 +765,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	{
 		// async mode: wait n extra frames for slow clients
 		const int iMaxWait = (Config.Network.AsyncMaxWait * 1000) / iTargetFPS;
-		if (eMode != CNM_Async || !tWaitStart || GetTime() <= tWaitStart + iMaxWait)
+		if (eMode != CNM_Async || C4TimeMilliseconds::Now() <= tWaitStart + iMaxWait)
 			return NULL;
 	}
 
@@ -795,8 +795,8 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 	if (eMode != CNM_Decentral)
 		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
-	// advance control request time (note: this is buggy if time_t values overflow after ~1 month on 32Bit Windows)
-	tNextControlRequest = Max(tNextControlRequest, time_t(GetTime() + C4ControlRequestInterval));
+	// advance control request time
+	tNextControlRequest = Max(tNextControlRequest, C4TimeMilliseconds::Now() + C4ControlRequestInterval);
 
 	// return
 	return pComplete;
@@ -852,7 +852,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 C4GameControlPacket::C4GameControlPacket()
 		: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
-		tTime(GetTime()),
+		tTime(C4TimeMilliseconds::Now()),
 		pNext(NULL)
 {
 
@@ -861,7 +861,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 		: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-		tTime(GetTime()),
+		tTime(C4TimeMilliseconds::Now()),
 		pNext(NULL)
 {
 	Ctrl.Copy(Pkt2.getControl());

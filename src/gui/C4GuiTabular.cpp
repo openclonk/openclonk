@@ -364,7 +364,7 @@ namespace C4GUI
 	void Tabular::DoCaptionScroll(int32_t iDir)
 	{
 		// store time of scrolling change
-		tLastScrollTime = GetTime();
+		tLastScrollTime = C4TimeMilliseconds::Now();
 		// change scrolling within max range
 		int32_t iAvailableTabSpace = rcBounds.Wdt;
 		int32_t iScrollPinSize = GetTopSize();
@@ -377,7 +377,8 @@ namespace C4GUI
 		if (!fDrawSelf) return;
 		bool fGfx = HasGfx();
 		// execute scrolling
-		if ((fScrollingLeftDown || fScrollingRightDown) && GetTime()-tLastScrollTime >= C4GUI_TabCaptionScrollTime)
+		bool fCaptionScrollDelayOver = C4TimeMilliseconds::Now() - tLastScrollTime >= C4GUI_TabCaptionScrollTime;
+		if ((fScrollingLeftDown || fScrollingRightDown) && fCaptionScrollDelayOver)
 			DoCaptionScroll(fScrollingRightDown - fScrollingLeftDown);
 		// border
 		if (!fGfx) Draw3DFrame(cgo, false, 1, 0xaf, eTabPos!=tbTop, GetTopSize(), eTabPos!=tbLeft, GetLeftSize());

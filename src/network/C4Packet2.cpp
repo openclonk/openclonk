@@ -513,23 +513,21 @@ void C4PacketJoinData::CompileFunc(StdCompiler *pComp)
 // *** C4PacketPing
 
 C4PacketPing::C4PacketPing(uint32_t iPacketCounter, uint32_t iRemotePacketCounter)
-		: tTime(GetTime()),
+		: tTime(C4TimeMilliseconds::Now()),
 		iPacketCounter(iPacketCounter)
 {
 }
 
 uint32_t C4PacketPing::getTravelTime() const
 {
-	return GetTime() - tTime;
+	return C4TimeMilliseconds::Now() - tTime;
 }
 
 void C4PacketPing::CompileFunc(StdCompiler *pComp)
 {
-	// FIXME: the compiler can't compile 64bit integers (yet), the ping will
-	// return wrong times if GetTime() returns integers too large for uint32
-	uint32_t time = tTime;
+	uint32_t time = tTime.AsInt();
 	pComp->Value(mkNamingAdapt(time, "Time", 0U));
-	tTime = time;
+	tTime = C4TimeMilliseconds(time);
 
 	pComp->Value(mkNamingAdapt(iPacketCounter, "PacketCounter", 0U));
 }

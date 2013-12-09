@@ -229,10 +229,6 @@ bool IsGermanSystem();
 // open a weblink in an external browser
 bool OpenURL(const char* szURL);
 
-// Get a monotonically increasing timestamp in milliseconds
-#include <time.h>
-time_t GetTime();
-
 #ifdef _WIN32
 #include <io.h>
 #define F_OK 0

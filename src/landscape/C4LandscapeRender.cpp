@@ -929,7 +929,7 @@ void C4LandscapeRenderGL::BuildMatMap(GLfloat *pFMap, GLubyte *pIMap)
 		while(p = strchr(p, '-')) { p++; iPhases++; }
 		// Hard-coded hack. Fix me!
 		const int iPhaseLength = 300;
-		float phase = (iPhases == 1 ? 0 : float(GetTime() % (iPhases * iPhaseLength)) / iPhaseLength);
+		float phase = (iPhases == 1 ? 0 : float(C4TimeMilliseconds::Now().AsInt() % (iPhases * iPhaseLength)) / iPhaseLength);
 
 		// Find our transition
 		const char *pFrom = pEntry->GetTextureName();

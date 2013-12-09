@@ -59,7 +59,7 @@ public:
 	inline void Start()
 	{
 		if (!iStartCalled)
-			tStartTime = GetTime();
+			tStartTime = C4TimeMilliseconds::Now();
 		iCount ++;
 		iCountPart ++;
 		iStartCalled ++;
@@ -71,7 +71,7 @@ public:
 		iStartCalled --;
 		if (!iStartCalled && iCount >= 100)
 		{
-			time_t tTime = GetTime() - tStartTime;
+			uint32_t tTime = C4TimeMilliseconds::Now() - tStartTime;
 
 			tTimeSum += tTime;
 			tTimeSumPart += tTime;
@@ -89,7 +89,7 @@ protected:
 	C4Stat* pNext;
 	C4Stat* pPrev;
 
-	time_t tStartTime;
+	C4TimeMilliseconds tStartTime;
 
 	// start-call depth
 	unsigned int iStartCalled;
@@ -98,7 +98,7 @@ protected:
 	// ** statistic data
 
 	// sum of times
-	time_t tTimeSum;
+	uint32_t tTimeSum;
 
 	// number of starts called
 	unsigned int iCount;
@@ -106,7 +106,7 @@ protected:
 	// ** statistic data (partial stat)
 
 	// sum of times
-	time_t tTimeSumPart;
+	uint32_t tTimeSumPart;
 
 	// number of starts called
 	unsigned int iCountPart;

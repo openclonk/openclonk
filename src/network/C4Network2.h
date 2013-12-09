@@ -166,8 +166,8 @@ protected:
 	// chase
 	uint32_t iLastChaseTargetUpdate;
 
-	// activation
-	time_t tLastActivateRequest;
+	// time of last activation request.
+	C4TimeMilliseconds tLastActivateRequest;
 
 	// reference
 	uint32_t iLastReferenceUpdate;

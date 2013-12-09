@@ -37,10 +37,13 @@
 
 static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& flags)
 {
-	static int lastLeftClick = 0, lastRightClick = 0;
+	C4TimeMilliseconds lastLeftClick = C4TimeMilliseconds::Now();
+	C4TimeMilliseconds lastRightClick = C4TimeMilliseconds::Now();
 	static int lastX = 0, lastY = 0;
+	
 	static const int clickDist = 2;
-
+	static const int clickDelay = 400;
+	
 	button = C4MC_Button_None;
 	flags = 0;
 
@@ -48,14 +51,14 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 	{
 	case SDL_BUTTON_LEFT:
 		if (e.state == SDL_PRESSED)
-			if (GetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+			if (C4TimeMilliseconds::Now() - lastLeftClick < clickDelay && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
 			{
 				lastLeftClick = 0;
 				button = C4MC_Button_LeftDouble;
 			}
 			else
 			{
-				lastLeftClick = GetTime();
+				lastLeftClick = C4TimeMilliseconds::Now();
 				button = C4MC_Button_LeftDown;
 			}
 		else
@@ -63,14 +66,14 @@ static void sdlToC4MCBtn(const SDL_MouseButtonEvent &e, int32_t& button, DWORD& 
 		break;
 	case SDL_BUTTON_RIGHT:
 		if (e.state == SDL_PRESSED)
-			if (GetTime() - lastRightClick < 400)
+			if (C4TimeMilliseconds::Now() - lastRightClick < clickDelay)
 			{
 				lastRightClick = 0;
 				button = C4MC_Button_RightDouble;
 			}
 			else
 			{
-				lastRightClick = GetTime();
+				lastRightClick = C4TimeMilliseconds::Now();
 				button = C4MC_Button_RightDown;
 			}
 		else

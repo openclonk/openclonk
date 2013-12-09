@@ -941,7 +941,7 @@ void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
 	fProfiling = true;
 	// resets profling times and starts recording the times
 	this->pProfiledScript = pProfiledScript;
-	time_t tNow = GetTime();
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	tDirectExecStart = tNow; // in case profiling is started from DirectExec
 	tDirectExecTotal = 0;
 	pProfiledScript->ResetProfilerTimes();
@@ -974,7 +974,7 @@ void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 		pCurCtx->dump(Buf);
 	}
 	// Profiler: Safe time to measure difference afterwards
-	if (fProfiling) pCurCtx->tTime = GetTime();
+	if (fProfiling) pCurCtx->tTime = C4TimeMilliseconds::Now();
 }
 
 void C4AulExec::PopContext()
@@ -984,8 +984,8 @@ void C4AulExec::PopContext()
 	// Profiler adding up times
 	if (fProfiling)
 	{
-		time_t dt = GetTime() - pCurCtx->tTime;
-		if (dt && pCurCtx->Func)
+		uint32_t dt = C4TimeMilliseconds::Now() - pCurCtx->tTime;
+		if (pCurCtx->Func)
 			pCurCtx->Func->tProfileTime += dt;
 	}
 	// Trace done?
@@ -1014,7 +1014,7 @@ void C4AulProfiler::Abort()
 	AulExec.AbortProfiling();
 }
 
-void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime)
+void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime)
 {
 	// zero entries are not collected to have a cleaner list
 	if (!tProfileTime) return;
@@ -1036,7 +1036,7 @@ void C4AulProfiler::Show()
 	for (EntryList::iterator i = Times.begin(); i!=Times.end(); ++i)
 	{
 		Entry &e = (*i);
-		LogF("%05dms\t%s", (int) e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
+		LogF("%05ums\t%s", e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
 	}
 	Log("==============================");
 	// done!

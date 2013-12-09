@@ -174,7 +174,7 @@ struct C4AulScriptContext
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	C4AulBCC *CPos;
-	time_t tTime; // initialized only by profiler if active
+	C4TimeMilliseconds tTime; // initialized only by profiler if active
 
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
@@ -227,7 +227,7 @@ public:
 	int GetLineOfCode(C4AulBCC * bcc);
 	C4AulBCC * GetCode();
 
-	time_t tProfileTime; // internally set by profiler
+	uint32_t tProfileTime; // internally set by profiler
 
 	friend class C4AulParse;
 	friend class C4ScriptHost;
@@ -272,7 +272,7 @@ private:
 	struct Entry
 	{
 		C4AulScriptFunc *pFunc;
-		time_t tProfileTime;
+		uint32_t tProfileTime;
 
 		bool operator < (const Entry &e2) const { return tProfileTime < e2.tProfileTime ; }
 	};
@@ -281,7 +281,7 @@ private:
 	std::vector<Entry> Times;
 
 public:
-	void CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime);
+	void CollectEntry(C4AulScriptFunc *pFunc, uint32_t tProfileTime);
 	void Show();
 
 	static void Abort();
