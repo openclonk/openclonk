@@ -107,7 +107,7 @@ public:
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
 	{
-		if (!query_time) return true;
+		if (query_time.IsInfinite()) return true;
 		g_main_context_check(context, max_priority, fds.empty() ? NULL : readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
 
 		// g_main_context_dispatch makes callbacks from the main loop.
