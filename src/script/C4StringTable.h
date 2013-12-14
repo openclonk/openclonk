@@ -391,6 +391,7 @@ enum C4PropertyName
 	P_CollisionVertex,
 	P_OnCollision,
 	P_Distance,
+	P_Smoke,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

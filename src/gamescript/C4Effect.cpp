@@ -627,9 +627,8 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 {
-	if (::Particles.pSmoke)
-	{
-		::Particles.Create(::Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
-		return;
-	}
+	// Use scripted function (global func Smoke) to create smoke
+	// Caution: This makes engine internal smoking a synced call.
+	C4AulParSet pars(C4VInt(tx), C4VInt(ty), C4VInt(level), C4VInt(dwClr));
+	::ScriptEngine.GetPropList()->Call(P_Smoke, &pars);
 }

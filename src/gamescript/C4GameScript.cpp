@@ -325,13 +325,6 @@ static C4Value FnFindObjects(C4PropList * _this, C4Value *pPars)
 	return C4VArray(pResult);
 }
 
-static bool FnSmoke(C4PropList * _this, long tx, long ty, long level, long dwClr)
-{
-	if (Object(_this)) { tx+=Object(_this)->GetX(); ty+=Object(_this)->GetY(); }
-	Smoke(tx,ty,level,dwClr);
-	return true;
-}
-
 static bool FnInsertMaterial(C4PropList * _this, long mat, long x, long y, long vx, long vy, C4PropList *insert_position)
 {
 	if (Object(_this)) { x+=Object(_this)->GetX(); y+=Object(_this)->GetY(); }
@@ -2434,7 +2427,6 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 		new C4AulDefFunc(pEngine, pDef);
 #define F(f) AddFunc(pEngine, #f, Fn##f)
 //  AddFunc(pEngine, "SetSaturation", FnSetSaturation); //public: 0
-	AddFunc(pEngine, "Smoke", FnSmoke);
 
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);

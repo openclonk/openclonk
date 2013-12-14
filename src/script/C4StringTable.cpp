@@ -184,6 +184,7 @@ C4StringTable::C4StringTable()
 	P[P_CollisionVertex] = "CollisionVertex";
 	P[P_OnCollision] = "OnCollision";
 	P[P_Distance] = "Distance";
+	P[P_Smoke] = "Smoke";
 	P[DFA_WALK] = "WALK";
 	P[DFA_FLIGHT] = "FLIGHT";
 	P[DFA_KNEEL] = "KNEEL";
