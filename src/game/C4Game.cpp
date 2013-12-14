@@ -1640,7 +1640,33 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 	{
 		pComp->Value(mkParAdapt(ScriptEngine, numbers));
 	}
-	pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+	if (comp.fScenarioSection && pComp->isCompiler())
+	{
+		// loading scenario section: Merge effects
+		// Must keep old effects here even if they're dead, because the LoadScenarioSection call typically came from execution of a global effect
+		// and otherwise dead pointers would remain on the stack
+		C4Effect *pOldGlobalEffects, *pNextOldGlobalEffects=pGlobalEffects;
+		pGlobalEffects = NULL;
+		try
+		{
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+		}
+		catch (...)
+		{
+			delete pNextOldGlobalEffects;
+			throw;
+		}
+		while ((pOldGlobalEffects=pNextOldGlobalEffects))
+		{
+			pNextOldGlobalEffects = pOldGlobalEffects->pNext;
+			pOldGlobalEffects->Register(NULL, Abs(pOldGlobalEffects->iPriority));
+		}
+	}
+	else
+	{
+		// Otherwise, just compile effects
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(pGlobalEffects, "Effects"), numbers));
+	}
 	pComp->Value(mkNamingAdapt(*numbers, "Values"));
 	pComp->NameEnd();
 }
@@ -3275,7 +3301,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		}
 	DeleteObjects(false);
 	// remove global effects
-	if (pGlobalEffects) if (~dwFlags | C4S_KEEP_EFFECTS)
+	if (pGlobalEffects) if (!(dwFlags & C4S_KEEP_EFFECTS))
 		{
 			pGlobalEffects->ClearAll(NULL, C4FxCall_RemoveClear);
 			// scenario section call might have been done from a global effect

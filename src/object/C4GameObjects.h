@@ -35,7 +35,9 @@ public:
 	void Default();
 	void Init(int32_t iWidth, int32_t iHeight);
 	void Clear(bool fClearInactive); // clear objects
-	void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
+	// don't use default parameters so we get a correct vtbl entry
+	// don't clear internal objects, because they should not be cleared on section load
+	void Clear() { Clear(false); }
 
 private:
 	uint32_t LastUsedMarker; // last used value for C4Object::Marker

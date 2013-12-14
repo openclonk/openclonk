@@ -67,7 +67,6 @@ C4PropList * C4Effect::GetCallbackScript()
 
 C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t iTimerInterval, C4Object *pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
 {
-	C4Effect *pPrev, *pCheck;
 	// assign values
 	iPriority = 0; // effect is not yet valid; some callbacks to other effects are done before
 	iInterval = iTimerInterval;
@@ -75,10 +74,16 @@ C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t i
 	CommandTarget = pCmdTarget;
 	idCommandTarget = idCmdTarget;
 	AcquireNumber();
+	Register(pForObj, iPrio);
+	// Set name and callback functions
+	SetProperty(P_Name, C4VString(szName));
+}
+
+void C4Effect::Register(C4Object *pForObj, int32_t iPrio)
+{
 	// get effect target
 	C4Effect **ppEffectList = pForObj ? &pForObj->pEffects : &Game.pGlobalEffects;
-	// register into object
-	pPrev = *ppEffectList;
+	C4Effect *pCheck, *pPrev = *ppEffectList;
 	if (pPrev && Abs(pPrev->iPriority) < iPrio)
 	{
 		while ((pCheck = pPrev->pNext))
@@ -93,8 +98,6 @@ C4Effect::C4Effect(C4Object *pForObj, C4String *szName, int32_t iPrio, int32_t i
 		pNext = *ppEffectList;
 		*ppEffectList = this;
 	}
-	// Set name and callback functions
-	SetProperty(P_Name, C4VString(szName));
 }
 
 C4Effect * C4Effect::New(C4Object * pForObj, C4String * szName, int32_t iPrio, int32_t iTimerInterval, C4Object * pCmdTarget, C4ID idCmdTarget, const C4Value &rVal1, const C4Value &rVal2, const C4Value &rVal3, const C4Value &rVal4)
