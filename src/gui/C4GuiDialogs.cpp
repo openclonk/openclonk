@@ -526,8 +526,10 @@ namespace C4GUI
 
 	bool Dialog::KeyHotkey(const C4KeyCodeEx &key)
 	{
-		WORD wKey = WORD(key.Key);
+		StdStrBuf sKey = C4KeyCodeEx::KeyCode2String(key.Key, true, true);
 		// do hotkey procs for standard alphanumerics only
+		if (sKey.getLength() != 1) return false;
+		WORD wKey = WORD(*sKey.getData());
 		if (Inside<WORD>(TOUPPERIFX11(wKey), 'A', 'Z')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		if (Inside<WORD>(TOUPPERIFX11(wKey), '0', '9')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		return false;
