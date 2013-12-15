@@ -177,9 +177,12 @@ public:
 	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
+	static void ClearAllProplistNumbers(); // unnumber all proplists. To be used on remaining objects before a savegame load.
+	static void AcquireAllProplistNumbers(); // acquire a number on all proplists that are currently unnumbered
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
-	void AcquireNumber();
+	void AcquireNumber(bool check_double_add=false); // acquire a number and add to internal list. if check_double_add is set, check if the proplist is already in the list before
+	void ClearNumber();
 
 	static C4Set<C4PropListNumbered *> PropLists;
 	static int32_t EnumerationIndex;

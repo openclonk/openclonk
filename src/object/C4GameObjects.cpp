@@ -239,12 +239,6 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	for (cLnk = Last; cLnk; cLnk = cLnk->Prev)
 	{
 		C4Object *pObj = cLnk->Obj;
-		// check object number collision with inactive list
-		if (fKeepInactive)
-		{
-			for (C4ObjectLink *clnk = InactiveObjects.First; clnk; clnk=clnk->Next)
-				if (clnk->Obj->Number == pObj->Number) fObjectNumberCollision = true;
-		}
 		// keep track of numbers
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
 		// add to list of foreobjects
@@ -254,22 +248,21 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	}
 
 	// Denumerate pointers
-	// if object numbers collideded, numbers will be adjusted afterwards
+	// on section load, inactive object numbers will be adjusted afterwards
 	// so fake inactive object list empty meanwhile
+	// note this has to be done to prevent even if object numbers did not collide
+	// to prevent an assertion fail when denumerating non-enumerated inactive objects
 	C4ObjectLink *pInFirst = NULL;
-	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
+	if (fKeepInactive) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate(numbers);
 	// update object enumeration index now, because calls like UpdateTransferZone might create objects
 	C4PropListNumbered::SetEnumerationIndex(iMaxObjectNumber);
 	// end faking and adjust object numbers
-	if (fObjectNumberCollision)
+	if (fKeepInactive)
 	{
 		InactiveObjects.First=pInFirst;
-		// simply renumber all inactive objects
-		for (cLnk=InactiveObjects.First; cLnk; cLnk=cLnk->Next)
-			if ((pObj=cLnk->Obj)->Status)
-				pObj->Number = ++C4PropListNumbered::EnumerationIndex;
+		C4PropListNumbered::AcquireAllProplistNumbers();
 	}
 
 	// special checks:

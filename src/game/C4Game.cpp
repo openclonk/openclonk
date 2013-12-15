@@ -1633,6 +1633,10 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, numbers), FormatString("Player%d", pPlr->ID).getData()));
 	}
 
+	// Section load: Clear existing prop list numbering to make room for the new objects
+	// Numbers will be re-acquired in C4GameObjects::PostLoad
+	if (comp.fScenarioSection) C4PropListNumbered::ClearAllProplistNumbers();
+
 	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
 
 	pComp->Name("Script");

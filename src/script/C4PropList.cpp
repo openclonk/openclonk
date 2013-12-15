@@ -108,17 +108,45 @@ void C4PropListNumbered::ResetEnumerationIndex()
 	EnumerationIndex = 0;
 }
 
+void C4PropListNumbered::ClearAllProplistNumbers()
+{
+	// unnumber all proplists. To be used on remaining objects before a savegame load.
+	C4PropListNumbered *const* p = PropLists.First();
+	while (p)
+	{
+		(*p)->ClearNumber();
+		p = PropLists.Next(p);
+	}
+}
+
+void C4PropListNumbered::AcquireAllProplistNumbers()
+{
+	C4PropListNumbered *const* p = PropLists.First();
+	while (p)
+	{
+		if (!(*p)->Number) (*p)->AcquireNumber(true);
+		p = PropLists.Next(p);
+	}
+}
+
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
 
-void C4PropListNumbered::AcquireNumber()
+void C4PropListNumbered::AcquireNumber(bool check_double_add)
 {
 	// Enumerate object
 	do
 		Number = ++EnumerationIndex;
 	while (PropLists.Get(Number));
-	PropLists.Add(this);
+	// Add to list (unless it's already in there)
+	if (!check_double_add || !C4PropListNumbered::CheckPropList(this)) PropLists.Add(this);
+}
+
+void C4PropListNumbered::ClearNumber()
+{
+	// Make proplist invisible during denumeration process
+	Number = 0;
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
