@@ -234,7 +234,6 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	// Process objects
 	C4ObjectLink *cLnk;
 	C4Object *pObj;
-	bool fObjectNumberCollision = false;
 	int32_t iMaxObjectNumber = 0;
 	for (cLnk = Last; cLnk; cLnk = cLnk->Prev)
 	{
@@ -262,7 +261,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	if (fKeepInactive)
 	{
 		InactiveObjects.First=pInFirst;
-		C4PropListNumbered::AcquireAllProplistNumbers();
+		C4PropListNumbered::UnshelveNumberedPropLists();
 	}
 
 	// special checks:

@@ -177,14 +177,16 @@ public:
 	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
-	static void ClearAllProplistNumbers(); // unnumber all proplists. To be used on remaining objects before a savegame load.
-	static void AcquireAllProplistNumbers(); // acquire a number on all proplists that are currently unnumbered
+	static void ShelveNumberedPropLists(); // unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	static void UnshelveNumberedPropLists(); // re-insert shelved proplists into main list
+	static void ClearShelve();
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
-	void AcquireNumber(bool check_double_add=false); // acquire a number and add to internal list. if check_double_add is set, check if the proplist is already in the list before
-	void ClearNumber();
+	void AcquireNumber(); // acquire a number and add to internal list
+	void ClearNumber(); // clear number and remove from internal list
 
 	static C4Set<C4PropListNumbered *> PropLists;
+	static std::vector<C4PropListNumbered *> ShelvedPropLists; // temporary storage for existing proplists while a new section loaded
 	static int32_t EnumerationIndex;
 	friend class C4Game;
 	friend class C4GameObjects;

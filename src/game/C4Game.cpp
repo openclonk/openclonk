@@ -617,6 +617,7 @@ void C4Game::Clear()
 	::FontLoader.Clear();
 #endif
 
+	C4PropListNumbered::ClearShelve(); // may be nonempty if there was a fatal error during section load
 	ScriptEngine.Clear();
 	MainSysLangStringTable.Clear();
 	ScenarioLangStringTable.Clear();
@@ -1635,7 +1636,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp, C4ValueNumber
 
 	// Section load: Clear existing prop list numbering to make room for the new objects
 	// Numbers will be re-acquired in C4GameObjects::PostLoad
-	if (comp.fScenarioSection) C4PropListNumbered::ClearAllProplistNumbers();
+	if (comp.fScenarioSection) C4PropListNumbered::ShelveNumberedPropLists();
 
 	pComp->Value(mkParAdapt(Objects, !comp.fExact, numbers));
 
@@ -3330,6 +3331,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 		DebugLog("LoadScenarioSection: Error reiniting game");
 		return false;
 	}
+	// restore shelved proplists in case loading failed
+	C4PropListNumbered::UnshelveNumberedPropLists();
 	// set new current section
 	pCurrentScenarioSection = pLoadSect;
 	SCopy(pCurrentScenarioSection->szName, CurrentScenarioSection);

@@ -108,45 +108,60 @@ void C4PropListNumbered::ResetEnumerationIndex()
 	EnumerationIndex = 0;
 }
 
-void C4PropListNumbered::ClearAllProplistNumbers()
+void C4PropListNumbered::ShelveNumberedPropLists()
 {
-	// unnumber all proplists. To be used on remaining objects before a savegame load.
-	C4PropListNumbered *const* p = PropLists.First();
-	while (p)
+	// unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	assert(ShelvedPropLists.empty());
+	ShelvedPropLists.reserve(PropLists.GetSize());
+	C4PropListNumbered *const* p_next = PropLists.First(), *const* p;
+	while ((p = p_next))
 	{
-		(*p)->ClearNumber();
-		p = PropLists.Next(p);
+		p_next = PropLists.Next(p);
+		C4PropListNumbered *pl = *p;
+		if (pl->Number != -1)
+		{
+			pl->ClearNumber();
+			ShelvedPropLists.push_back(pl);
+		}
 	}
 }
 
-void C4PropListNumbered::AcquireAllProplistNumbers()
+void C4PropListNumbered::UnshelveNumberedPropLists()
 {
-	C4PropListNumbered *const* p = PropLists.First();
-	while (p)
-	{
-		if (!(*p)->Number) (*p)->AcquireNumber(true);
-		p = PropLists.Next(p);
-	}
+	// re-insert shelved proplists into main list and give them a number
+	for (std::vector<C4PropListNumbered *>::iterator i=ShelvedPropLists.begin(); i!=ShelvedPropLists.end(); ++i)
+		(*i)->AcquireNumber();
+	ShelvedPropLists.clear();
+}
+
+void C4PropListNumbered::ClearShelve()
+{
+	// cleanup shelve - used in game clear, un unsuccessful section load, etc.
+	ShelvedPropLists.clear();
 }
 
 C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
 {
 }
 
-void C4PropListNumbered::AcquireNumber(bool check_double_add)
+void C4PropListNumbered::AcquireNumber()
 {
 	// Enumerate object
 	do
 		Number = ++EnumerationIndex;
 	while (PropLists.Get(Number));
-	// Add to list (unless it's already in there)
-	if (!check_double_add || !C4PropListNumbered::CheckPropList(this)) PropLists.Add(this);
+	// Add to list
+	PropLists.Add(this);
 }
 
 void C4PropListNumbered::ClearNumber()
 {
 	// Make proplist invisible during denumeration process
-	Number = 0;
+	if (Number != -1)
+	{
+		PropLists.Remove(this);
+		Number = -1;
+	}
 }
 
 C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
