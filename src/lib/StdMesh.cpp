@@ -453,7 +453,8 @@ void StdSubMeshInstance::LoadFacesForCompletion(StdMeshInstance& instance, const
 		g_pred = NULL;
 
 		// Third: Only use the first few ones
-		Faces.resize(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5));
+		assert(submesh.GetNumFaces() >= 1);
+		Faces.resize(BoundBy<unsigned int>(static_cast<unsigned int>(completion * submesh.GetNumFaces() + 0.5), 1, submesh.GetNumFaces()));
 	}
 }
 
