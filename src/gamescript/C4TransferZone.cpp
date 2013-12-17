@@ -119,7 +119,7 @@ bool C4TransferZones::Add(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4
 void C4TransferZones::Synchronize()
 {
 	Clear();
-	::Objects.UpdateTransferZones();
+	::Objects.OnSynchronized();
 }
 
 C4TransferZone* C4TransferZones::Find(int32_t iX, int32_t iY)

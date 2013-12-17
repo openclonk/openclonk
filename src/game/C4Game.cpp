@@ -2949,7 +2949,7 @@ void C4Game::Synchronize(bool fSavePlayerFiles)
 	// callback to network
 	if (Network.isEnabled()) Network.OnGameSynchronized();
 	// TransferZone synchronization: Must do this after dynamic creation to avoid synchronization loss
-	// if UpdateTransferZone-callbacks do sync-relevant changes
+	// if OnSynchronized-callbacks do sync-relevant changes
 	TransferZones.Synchronize();
 }
 

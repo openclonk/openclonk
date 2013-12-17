@@ -664,7 +664,7 @@ private func ReorderCrewSelectors(object leaveout)
 
 
 /* When loading a savegame, make sure the GUI still works */
-protected func UpdateTransferZone()
+func OnSynchronized()
 {
 	ScheduleCall(this, "Reset", 1);
 }

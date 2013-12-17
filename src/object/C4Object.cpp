@@ -4741,7 +4741,7 @@ bool C4Object::StatusActivate()
 	UpdateGraphics(false);
 	UpdateFace(true);
 	UpdatePos();
-	Call(PSF_UpdateTransferZone);
+	Call(PSF_OnSynchronized);
 	// done, success
 	return true;
 }

@@ -98,7 +98,7 @@ bool C4PropListNumbered::CheckPropList(C4PropList *pObj)
 
 void C4PropListNumbered::SetEnumerationIndex(int32_t iMaxObjectNumber)
 {
-	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	// update object enumeration index now, because calls like OnSynchronized might create objects
 	EnumerationIndex = Max(EnumerationIndex, iMaxObjectNumber);
 }
 

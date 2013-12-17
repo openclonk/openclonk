@@ -143,8 +143,8 @@
           <col>object obj, int x, int y</col>
           <col>When an object (obj) using the internal pathfinding algorithm is trying to pass the transfer zone of this object on its way to point x/y. The transfer function can then help the object along by giving special script commands and returning <code>true</code>. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
         </row>
-        <row id="UpdateTransferZone">
-          <literal_col>UpdateTransferZone</literal_col>
+        <row id="OnSynchronized">
+          <literal_col>OnSynchronized</literal_col>
           <col></col>
           <col>When an object is loaded from a savegame or network synchronization is performed. Objects with a transfer zone should reset the zone in this call. Also see <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col>
         </row>

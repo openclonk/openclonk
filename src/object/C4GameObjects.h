@@ -80,7 +80,7 @@ public:
 	void AssignPlrViewRange();
 	void SyncClearance();
 	void ResetAudibility();
-	void UpdateTransferZones();
+	void OnSynchronized();
 	void SetOCF();
 
 	uint32_t GetNextMarker(); // Get a new marker. If all markers are exceeded (LastUsedMarker is 0xffffffff), restart marker at 1 and reset all object markers to zero.

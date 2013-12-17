@@ -255,7 +255,7 @@ int C4GameObjects::PostLoad(bool fKeepInactive, C4ValueNumbers * numbers)
 	if (fKeepInactive) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate(numbers);
-	// update object enumeration index now, because calls like UpdateTransferZone might create objects
+	// update object enumeration index now, because calls like OnSynchronized might create objects
 	C4PropListNumbered::SetEnumerationIndex(iMaxObjectNumber);
 	// end faking and adjust object numbers
 	if (fKeepInactive)
@@ -520,11 +520,11 @@ void C4GameObjects::SyncClearance()
 			cLnk->Obj->SyncClearance();
 }
 
-void C4GameObjects::UpdateTransferZones()
+void C4GameObjects::OnSynchronized()
 {
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Call(PSF_UpdateTransferZone);
+		cobj->Call(PSF_OnSynchronized);
 }
 
 void C4GameObjects::ResetAudibility()

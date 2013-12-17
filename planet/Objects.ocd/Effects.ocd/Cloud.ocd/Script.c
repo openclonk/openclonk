@@ -44,7 +44,7 @@ func Show(int clr, int layer, int size,bool diffuse)
 }
 
 // re-draw the particles of the cloud
-func UpdateTransferZone()
+func OnSynchronized()
 {
 	Show();
 }

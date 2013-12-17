@@ -25,7 +25,7 @@ func Initialize()
 	return _inherited(...);
 }
 
-func UpdateTransferZone()
+func OnSynchronized()
 {
 	// Create timer if it doesn't exist yet
 	RecheckGoalTimer();
