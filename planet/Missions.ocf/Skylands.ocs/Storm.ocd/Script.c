@@ -215,7 +215,7 @@ private func ExecuteStream(proplist s)
 			//Log("segment %d", i_segment);
 			if (!s.is_blocked[i_segment+1]) StreamBlockVertex(s, i_segment+1);
 			if (storm_debug)
-				CreateParticleEx("SphereSpark", s.x[i_segment], s.y[i_segment], 0, 0, 36, {Size =  12});
+				CreateParticle("SphereSpark", s.x[i_segment], s.y[i_segment], 0, 0, 36, {Size =  12});
 			continue;
 		}
 		// current segment base point
@@ -312,7 +312,7 @@ private func ExecuteStream(proplist s)
 					var v = Distance(vx,vy);
 					vx = vx * s.dir_len / v;
 					vy = vy * s.dir_len / v / 2;
-					CreateParticleEx("Dust", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), PV_Random(vx * 80 / 100, vx * 120 / 100), PV_Random(vy, vy * 140 / 100), PV_Random(20, 40), storm_particles,local_strength); 
+					CreateParticle("Dust", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), PV_Random(vx * 80 / 100, vx * 120 / 100), PV_Random(vy, vy * 140 / 100), PV_Random(20, 40), storm_particles,local_strength); 
 				}
 			}
 		}

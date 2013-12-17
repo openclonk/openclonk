@@ -19,7 +19,7 @@ private func Initialize()
 
 public func Incineration()
 {
-	CreateParticleEx("Grass", 0, 0, PV_Random(-20, 20), PV_Random(-20, 10), PV_Random(30, 100), Particles_Straw(), 30);
+	CreateParticle("Grass", 0, 0, PV_Random(-20, 20), PV_Random(-20, 10), PV_Random(30, 100), Particles_Straw(), 30);
 	RemoveObject();
 }
 

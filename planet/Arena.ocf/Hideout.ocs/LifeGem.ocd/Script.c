@@ -29,7 +29,7 @@ func FxSparkleStart(target, effect, temp)
 func FxSparkleTimer(target, effect, effect_time)
 {
 	if(this()->Contained() || !Random(2)) return FX_OK;
-	CreateParticleEx("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
+	CreateParticle("MagicRing", 0, 0, 0, 0, effect.Interval, effect.particles, 1);
 	return FX_OK;
 }
 
@@ -74,10 +74,10 @@ func FxGemHealingTimer(target, effect, effect_time)
 	
 	target->DoEnergy(500, true);
 
-	target->CreateParticleEx("Magic", PV_Random(-5, +5), PV_Random(-8, 8), PV_Random(-1, 1), PV_Random(-10, -5), PV_Random(10, 20), effect.glimmer_particles, 3);
+	target->CreateParticle("Magic", PV_Random(-5, +5), PV_Random(-8, 8), PV_Random(-1, 1), PV_Random(-10, -5), PV_Random(10, 20), effect.glimmer_particles, 3);
 	if(!Random(10)) effect.switcher = !effect.switcher;
 	if(effect.switcher)
-		target->CreateParticleEx("MagicSpark", PV_Random(-3, 3), PV_Random(0, 8), PV_Random(-1, 1), PV_Random(-2, -1), PV_Random(20, 30), effect.sparks, 2);
+		target->CreateParticle("MagicSpark", PV_Random(-3, 3), PV_Random(0, 8), PV_Random(-1, 1), PV_Random(-2, -1), PV_Random(20, 30), effect.sparks, 2);
 }
 
 func FxGemHealingDamage(target, effect, damage, cause)

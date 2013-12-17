@@ -84,7 +84,7 @@ protected func Load()
 				sound=true;
 			}
 			Amount += 2; //Air is sucked in.
-			CreateParticleEx("Air", SX, SY, Sin(A + R,-D / 2), Cos(A + R,-D / 2), 18, {Prototype = Particles_Air(), Size = PV_KeyFrames(0, 0, 0, 250, 3, 1000, 0)});
+			CreateParticle("Air", SX, SY, Sin(A + R,-D / 2), Cos(A + R,-D / 2), 18, {Prototype = Particles_Air(), Size = PV_KeyFrames(0, 0, 0, 250, 3, 1000, 0)});
 		}
 		else if(GBackSolid(0,0) || GBackLiquid(0,0))
 		{
@@ -124,7 +124,7 @@ private func FireWeapon(object pClonk,iX,iY)
 		
 		if(!GBackSolid(SX,SY))
 		{
-			CreateParticleEx("Air", SX, SY, Sin(180 - iAngle + (R),(Amount / 2) + 25), Cos(180 - iAngle + (R),(Amount / 2) + 25), 36, Particles_Air());
+			CreateParticle("Air", SX, SY, Sin(180 - iAngle + (R),(Amount / 2) + 25), Cos(180 - iAngle + (R),(Amount / 2) + 25), 36, Particles_Air());
 		}
 	}
 	

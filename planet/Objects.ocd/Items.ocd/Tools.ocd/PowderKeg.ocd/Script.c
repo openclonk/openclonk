@@ -86,7 +86,7 @@ public func Incineration()
 
 public func FxFuseTimer(object target, effect, int timer)
 {
-	CreateParticleEx("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
+	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
 	if(timer > 90)
 	{
 		//17-32 explosion radius

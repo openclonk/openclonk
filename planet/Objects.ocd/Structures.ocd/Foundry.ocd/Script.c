@@ -76,7 +76,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 {
 	//Message(Format("Smelting %d",timer));
 	// Fire in the furnace.
-	CreateParticleEx("Fire", -10 * GetCalcDir(), 20, PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(18, 36), Particles_Fire(), 2);
+	CreateParticle("Fire", -10 * GetCalcDir(), 20, PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(18, 36), Particles_Fire(), 2);
 
 	// Smoke from the pipes.
 	Smoke( -9*GetCalcDir(), -31, 6);
@@ -96,7 +96,7 @@ public func FxSmeltingTimer(object target, proplist effect, int time)
 
 	// Fire from the pouring exit.
 	if (Inside(time, 244, 290))
-		CreateParticleEx("Fire", 17 * GetCalcDir(), 19, PV_Random(-2, 0), PV_Random(1, 3), PV_Random(18, 36), Particles_Fire(), 2);
+		CreateParticle("Fire", 17 * GetCalcDir(), 19, PV_Random(-2, 0), PV_Random(1, 3), PV_Random(18, 36), Particles_Fire(), 2);
 
 	if (time == 290)
 	{

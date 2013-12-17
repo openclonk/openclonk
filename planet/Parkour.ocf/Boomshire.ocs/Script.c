@@ -91,7 +91,7 @@ global func FxAutoOpenTimer(object pTarget, effect, int timer)
 
 global func FxSparklingAttentionTimer(object pTarget, effect, int timer)
 {
-	CreateParticleEx("Flash", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(8, 15), {Prototype = Particles_Flash(), Size = 10}, 10);
+	CreateParticle("Flash", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(8, 15), {Prototype = Particles_Flash(), Size = 10}, 10);
 }
 
 protected func Decoration()

@@ -90,7 +90,7 @@ func FxIntFusingTimer()
 	fuse_x += Sin(iAngle, speed);
 	fuse_y +=-Cos(iAngle, speed);
 
-	CreateParticleEx("Fire", fuse_x/10-GetX(), fuse_y/10-GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 40), Particles_Glimmer(), 3);
+	CreateParticle("Fire", fuse_x/10-GetX(), fuse_y/10-GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 40), Particles_Glimmer(), 3);
 	SetVertexXY(fuse_vertex, fuse_x/10, fuse_y/10);
 }
 

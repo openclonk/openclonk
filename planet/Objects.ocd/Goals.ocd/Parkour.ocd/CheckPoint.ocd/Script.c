@@ -294,7 +294,7 @@ protected func UpdateGraphics(int time)
 	checkpoint_particles.R = (color >> 16) & 0xff;
 	checkpoint_particles.G = (color >>  8) & 0xff;
 	checkpoint_particles.B = (color >>  0) & 0xff;
-	CreateParticleEx("SphereSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 18 * 5, checkpoint_particles);
+	CreateParticle("SphereSpark", Sin(angle, cp_size), -Cos(angle, cp_size), 0, 0, 18 * 5, checkpoint_particles);
 	return;
 }
 

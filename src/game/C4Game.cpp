@@ -592,7 +592,7 @@ void C4Game::Clear()
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
-	DynamicParticles.Clear();
+	Particles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
 	//::GraphicsResource.Clear();
@@ -686,7 +686,7 @@ C4ST_NEW(ControlStat,       "C4Game::Execute ExecuteControl")
 C4ST_NEW(ExecObjectsStat,   "C4Game::Execute ExecObjects")
 C4ST_NEW(GEStats,           "C4Game::Execute pGlobalEffects->Execute")
 C4ST_NEW(PXSStat,           "C4Game::Execute PXS.Execute")
-C4ST_NEW(DynPartStat,       "C4Game::Execute DynamicParticles.Execute")
+C4ST_NEW(DynPartStat,       "C4Game::Execute Particles.Execute")
 C4ST_NEW(MassMoverStat,     "C4Game::Execute MassMover.Execute")
 C4ST_NEW(WeatherStat,       "C4Game::Execute Weather.Execute")
 C4ST_NEW(PlayersStat,       "C4Game::Execute Players.Execute")
@@ -732,7 +732,7 @@ bool C4Game::Execute() // Returns true if the game is over
 		AddDbgRec(RCT_DbgFrame, &FrameCounter, sizeof(int32_t));
 
 	// allow the particle system to execute the next frame BEFORE the other game stuff is calculated since it will run in parallel to the main thread
-	DynamicParticles.CalculateNextStep();
+	Particles.CalculateNextStep();
 
 	// Game
 
@@ -1957,7 +1957,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	// safety
 	if (!szName) return false;
 	// get particle def
-	C4ParticleDef *pDef = DynamicParticles.definitions.GetDef(szName);
+	C4ParticleDef *pDef = Particles.definitions.GetDef(szName);
 	if (!pDef) return false;
 	// verbose
 	LogF("Reloading particle %s from %s",pDef->Name.getData(),GetFilename(pDef->Filename.getData()));
@@ -1965,7 +1965,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	if (!pDef->Reload())
 	{
 		// safer: remove all particles
-		::DynamicParticles.ClearAllParticles();
+		::Particles.ClearAllParticles();
 		// clear def
 		delete pDef;
 		// log
@@ -3308,7 +3308,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			//delete pGlobalEffects; pGlobalEffects=NULL;
 		}
 	// del particles as well
-	DynamicParticles.ClearAllParticles();
+	Particles.ClearAllParticles();
 	// clear transfer zones
 	TransferZones.Clear();
 	// backup old sky

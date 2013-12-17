@@ -112,7 +112,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 		particles = ThunderousSkies_air_particles_red;
 		duration *= 2;
 	}
-	king->CreateParticleEx("Air", 0, 8, PV_Random(-10, 10),PV_Random(0, 10), PV_Random(duration, 2 * duration), particles, 4);
+	king->CreateParticle("Air", 0, 8, PV_Random(-10, 10),PV_Random(0, 10), PV_Random(duration, 2 * duration), particles, 4);
 	return 1;
 }
 
@@ -128,8 +128,8 @@ global func FxChanneledWindTimer()
 		obj->SetYDir(Max(obj->GetYDir()-5,-50));
 		obj->SetXDir(obj->GetXDir()+RandomX(-1,1));
 	}
-	CreateParticleEx("Air", 230+Random(40),398,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
-	CreateParticleEx("Air", 700+Random(60),348,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
+	CreateParticle("Air", 230+Random(40),398,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
+	CreateParticle("Air", 700+Random(60),348,RandomX(-1,1),-30, PV_Random(10, 30), ThunderousSkies_air_particles);
 }
 
 global func FxBalloonsTimer()
@@ -159,7 +159,7 @@ global func FxBalloonsTimer()
 	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 	balloon->SetProperty("load",target);
 	target->SetAction("Attach", balloon);
-	CreateParticleEx("Flash", x, y, 0, 0, 8, Particles_Flash());
+	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 	AddEffect("HorizontalMoving", balloon, 1, 1, balloon);
 	balloon->SetXDir(((Random(2)*2)-1) * (Random(4)+3));
 }
@@ -201,7 +201,7 @@ private func MakeTarget(int x, int y)
 	var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 	balloon->SetProperty("load",target);
 	target->SetAction("Attach", balloon);
-	CreateParticleEx("Flash", x, y, 0, 0, 8, Particles_Flash());
+	CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 
 }
 

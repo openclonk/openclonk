@@ -59,14 +59,14 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			if(!(i%5))
 				for(var k=0; k<y[i+wdt]; k+=10+Random(5))
 				{	
-					CreateParticleEx("ElectroSpark", i+move,k, PV_Random(-12, 12), PV_Random(-40, -10), PV_Random(20, 40), Particles_ElectroSpark1(), 3);
+					CreateParticle("ElectroSpark", i+move,k, PV_Random(-12, 12), PV_Random(-40, -10), PV_Random(20, 40), Particles_ElectroSpark1(), 3);
 				}
 			
 			for(var l=0; l<3; l++)
-				CreateParticleEx("ElectroSpark", i+move, y[i+wdt]-l-2, PV_Random(-20, 20), PV_Random(-20, -30), PV_Random(10, 20), particles, 3);
+				CreateParticle("ElectroSpark", i+move, y[i+wdt]-l-2, PV_Random(-20, 20), PV_Random(-20, -30), PV_Random(10, 20), particles, 3);
 
 			if(i%3 == 0)
-				CreateParticleEx("LightningStrike", i+move, y[i+wdt]-32, 0, 0, PV_Random(3, 10), particles_lightning);
+				CreateParticle("LightningStrike", i+move, y[i+wdt]-32, 0, 0, PV_Random(3, 10), particles_lightning);
 			for(var t in FindObjects(Find_Or(Find_And(Find_ID(Clonk),Find_OCF(OCF_Alive)), Find_ID(TargetBalloon)),Find_OnLine(i+move,-0,i+move,y[i+wdt])))
 			{
 				var add=true;
@@ -103,7 +103,7 @@ global func FxThunderStrikeTimer(pTarget, effect, iEffectTime)
 			while(!GBackSolid(x+move+5,y) && y < LandscapeHeight())
 			{
 				var add=Random((iEffectTime*5))*((Random(2)*2) -1);
-				CreateParticleEx("Air", x+move+5+add, y, PV_Random(-2, 2), PV_Random(-10, -5), PV_Random(5, 20), effect.particles_air);
+				CreateParticle("Air", x+move+5+add, y, PV_Random(-2, 2), PV_Random(-10, -5), PV_Random(5, 20), effect.particles_air);
 				y+=Random(4)+3;
 			}
 		}

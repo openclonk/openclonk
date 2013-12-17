@@ -90,7 +90,7 @@ protected func FxRestoreTimer(object target, effect, int time)
 	var y = init_y - Cos(angle, 2 * time);
 	target->SetPosition(x, y);
 	
-	CreateParticleEx("SphereSpark", 0, 0, 0, 0, 36, particles, 1);
+	CreateParticle("SphereSpark", 0, 0, 0, 0, 36, particles, 1);
 	return 1;
 }
 
@@ -136,7 +136,7 @@ protected func FxRestoreStop(object target, effect, int reason, bool temporary)
 				to_x = to_container->GetX();
 				to_y = to_container->GetY();			
 			}
-			CreateParticleEx("SphereSpark", to_x - GetX(), to_y - GetY(), PV_Random(-50, 50), PV_Random(-50, 50), PV_Random(2, 10), particles, 10);		
+			CreateParticle("SphereSpark", to_x - GetX(), to_y - GetY(), PV_Random(-50, 50), PV_Random(-50, 50), PV_Random(2, 10), particles, 10);		
 		}
 		// Sound.
 		//TODO new sound.

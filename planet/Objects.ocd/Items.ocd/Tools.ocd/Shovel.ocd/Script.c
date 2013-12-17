@@ -152,7 +152,7 @@ public func Dust(object target)
 			B = clr & 0xff,
 			Size = PV_KeyFrames(0, 0, 0, 300, 40, 1000, 15),
 		};
-		CreateParticleEx("Dust", groundx, groundy, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 3);
+		CreateParticle("Dust", groundx, groundy, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 3);
 	}
 }
 

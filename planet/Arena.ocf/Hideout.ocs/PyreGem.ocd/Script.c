@@ -87,7 +87,7 @@ global func FxGemPyreTimer(object target, effect, int time)
 		if(e)clr=RGB(190+Random(10),0,20+Random(20));
 		var xoff = Sin(r, d);
 		var yoff = -Cos(r, d);
-		CreateParticleEx("Air", x + xoff, y + yoff, PV_Random(xoff - 3, xoff + 3), PV_Random(yoff - 3, yoff + 3), PV_Random(5, 10), effect.particles, 2);
+		CreateParticle("Air", x + xoff, y + yoff, PV_Random(xoff - 3, xoff + 3), PV_Random(yoff - 3, yoff + 3), PV_Random(5, 10), effect.particles, 2);
 	}
 	
 	for(var obj in FindObjects(Find_NoContainer(), Find_OCF(OCF_Alive), Find_Distance(((time/2)+1)*6,x,y),Find_Not(Find_Distance((time/2)*4,x,y)),Find_ID(Clonk)))
@@ -99,7 +99,7 @@ global func FxGemPyreTimer(object target, effect, int time)
 		if(PathFree(x,y,obj->GetX(),obj->GetY()))
 		{
 			obj->DoEnergy((-BoundBy((30-time),1,26)*3)/5,0,0,effect.thrower);
-			obj->CreateParticleEx("MagicFire", 0, 0, PV_Random(-15, 15), PV_Random(-15, 15), PV_Random(5, 10), effect.particles, 20);
+			obj->CreateParticle("MagicFire", 0, 0, PV_Random(-15, 15), PV_Random(-15, 15), PV_Random(5, 10), effect.particles, 20);
 			obj->Fling(RandomX(-2,2),-2-(BoundBy((30-time),10,30)/10));
 			effect.objects[GetLength(effect.objects)] = obj;
 		}	

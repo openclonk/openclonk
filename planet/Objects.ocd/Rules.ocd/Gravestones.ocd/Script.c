@@ -41,7 +41,7 @@ public func FxIntGravestoneStart(object clonk, proplist effect)
 		B = 50,
 		Size = PV_KeyFrames(0, 0, 0, 300, 40, 1000, 15)
 	};
-	effect.grave->CreateParticleEx("Dust", 0, 0, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 6);
+	effect.grave->CreateParticle("Dust", 0, 0, PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(18, 1 * 36), particles, 6);
 }
 
 public func FxIntGravestoneStop(object clonk, proplist effect, int reason)

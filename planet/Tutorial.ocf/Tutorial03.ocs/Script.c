@@ -180,12 +180,12 @@ private func MakeTarget(int x, int y, bool flying)
 	{
 		var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 		target->SetAction("Attach", balloon);
-		CreateParticleEx("Flash", x, y - 50, 0, 0, 8, Particles_Flash());
+		CreateParticle("Flash", x, y - 50, 0, 0, 8, Particles_Flash());
 	}
 
 	if (flying == false)
 	{
-		CreateParticleEx("Flash", x, y, 0, 0, 8, Particles_Flash());
+		CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 		target->SetAction("Float");
 	}
 	return target;

@@ -99,7 +99,7 @@ global func FxGeysirExplosionTimer(object target, effect)
 		y-=3;
 		for(var i=0; i<(45); i++)InsertMaterial(Material("Water"),x+RandomX(-9,9),y-Random(5),RandomX(-10,10)+RandomX(-5,5)+RandomX(-10,10),-(10+Random(50)+Random(30)+Random(60)));
 		for(var i=0; i<(25); i++)InsertMaterial(Material("Water"),x+RandomX(-16,16),y-Random(5),RandomX(-10,10)+RandomX(-15,15)+RandomX(-20,20),-(10+Random(50)));
-		CreateParticleEx("Air", PV_Random(x-6, x+6), PV_Random(y-3, y), PV_Random(-15, 15), PV_Random(-90, -5), PV_Random(20, 100), Particles_Air());
+		CreateParticle("Air", PV_Random(x-6, x+6), PV_Random(y-3, y), PV_Random(-15, 15), PV_Random(-90, -5), PV_Random(20, 100), Particles_Air());
 		if(effect.counter>2072) effect.counter=0;
 		for(var obj in FindObjects(Find_InRect(x-30,y-200,60,210)))
 		{

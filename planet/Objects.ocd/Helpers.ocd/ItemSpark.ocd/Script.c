@@ -126,8 +126,8 @@ func FxCheckStuckTimer(_, effect)
 
 func FxSparkleTimer(_, effect)
 {
-	CreateParticleEx("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 36, ItemSpark_particle, 5); 
-	CreateParticleEx("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 20, ItemSpark_particle_additive, 5); 
+	CreateParticle("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 36, ItemSpark_particle, 5); 
+	CreateParticle("ItemSpark", PV_Random(0, GetXDir()/10), PV_Random(0, GetYDir()/10), GetXDir(), GetYDir(), 20, ItemSpark_particle_additive, 5); 
 	
 	if(!Random(36))
 	for(var i=0;i<3;++i)
@@ -161,8 +161,8 @@ func FxSparkleDeathTimer(_, effect, effect_time)
 		effect.velY*=-1;
 	}
 	
-	effect.from->CreateParticleEx("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 18, ItemSpark_particle, 1); 
-	effect.from->CreateParticleEx("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 10, ItemSpark_particle_additive, 1); 
+	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 18, ItemSpark_particle, 1); 
+	effect.from->CreateParticle("ItemSpark", AbsX(effect.x), AbsY(effect.y), 0, 0, 10, ItemSpark_particle_additive, 1); 
 	
 	effect.xT+=effect.velX;
 	effect.yT+=effect.velY;

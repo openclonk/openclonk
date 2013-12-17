@@ -134,7 +134,7 @@ protected func FxFlightTimer(object pTarget, effect, int iEffectTime)
 
 	var xdir = GetXDir() / 2;
 	var ydir = GetYDir() / 2;
-	CreateParticleEx("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
+	CreateParticle("FireDense", x, y, PV_Random(xdir - 4, xdir + 4), PV_Random(ydir - 4, ydir + 4), PV_Random(16, 38), Particles_Thrust(), 5);
 	
 	fuel--;
 }

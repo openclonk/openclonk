@@ -133,7 +133,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 	if(distp < reach)
 	{
 		//Particles moving towards object
-		CreateParticleEx("ElectroSpark", ix + xs, iy + ys, PV_Random(-xs/2, -xs/4), PV_Random(-ys/2, -ys/4), PV_Random(5, 10), particles, 5);
+		CreateParticle("ElectroSpark", ix + xs, iy + ys, PV_Random(-xs/2, -xs/4), PV_Random(-ys/2, -ys/4), PV_Random(5, 10), particles, 5);
 		
 		//Particles emitting from clonk
 		var wp = 1;
@@ -143,7 +143,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		var xdir = Sin(xp, 10);
 		var ydir = -Cos(yp, 10);
 		var distance = Random(distp);
-		CreateParticleEx("ElectroSpark", Sin(xp, distance), -Cos(yp, distance), PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 2, ydir + 2), PV_Random(5, 10), particles, 5);
+		CreateParticle("ElectroSpark", Sin(xp, distance), -Cos(yp, distance), PV_Random(xdir - 5, xdir + 5), PV_Random(ydir - 2, ydir + 2), PV_Random(5, 10), particles, 5);
 	}
 
 	var target;
@@ -188,7 +188,7 @@ public func ControlUseHolding(object clonk, ix, iy)
 		target_object->SetSpeed(Sin(angle, speed), -Cos(angle, speed));
 
 		//Particles emitting from object
-		target_object->CreateParticleEx("ElectroSpark", 0, 0, PV_Random(xs/8, xs/10), PV_Random(ys/8, ys/10), PV_Random(5, 10), particles, 5);
+		target_object->CreateParticle("ElectroSpark", 0, 0, PV_Random(xs/8, xs/10), PV_Random(ys/8, ys/10), PV_Random(5, 10), particles, 5);
 	}
 	else
 		LostTargetObject(target_object);

@@ -21,7 +21,7 @@
     <desc>The value depends on the current angle of movement of the particle. Usually the factor-parameter can be left out, since the original purpose of this function is to be used for the rotation-property.</desc>
     <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
-      <funclink>CreateParticleEx</funclink>
+      <funclink>CreateParticle</funclink>
       <funclink>PV_Linear</funclink>
       <funclink>PV_Random</funclink>
       <funclink>PV_Step</funclink>

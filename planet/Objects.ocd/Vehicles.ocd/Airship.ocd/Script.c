@@ -94,7 +94,7 @@ public func FxIntAirshipMovementTimer(object target, proplist effect, int time)
 				Prototype = Particles_Smoke(),
 				R = colour, G = colour, B = colour
 			};
-			CreateParticleEx("Smoke", i, 18, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+			CreateParticle("Smoke", i, 18, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 		}
 		// Fan-blade sound
 		if (!enginesound)

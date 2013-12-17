@@ -98,7 +98,7 @@ protected func OnPlayerRelaunch(int plr)
 
 func OnClonkLeftRelaunch(object clonk)
 {
-	clonk->CreateParticleEx("Fire", 0, 0, PV_Random(-20, 20), PV_Random(-40, 5), PV_Random(20, 90), Particles_Glimmer(), 30);
+	clonk->CreateParticle("Fire", 0, 0, PV_Random(-20, 20), PV_Random(-40, 5), PV_Random(20, 90), Particles_Glimmer(), 30);
 	clonk->SetYDir(-5);
 	return;
 }

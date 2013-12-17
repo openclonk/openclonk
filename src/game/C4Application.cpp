@@ -46,7 +46,7 @@
 #include <C4GameLobby.h>
 #include <C4Network2.h>
 #include <C4Network2IRC.h>
-#include <C4DynamicParticles.h>
+#include <C4Particles.h>
 
 #include <getopt.h>
 
@@ -184,7 +184,7 @@ bool C4Application::DoInit(int argc, char * argv[])
 	}
 
 	// after initializing graphics, the particle system can check for compatibility
-	::DynamicParticles.DoInit();
+	::Particles.DoInit();
 
 	// Initialize gamepad
 	if (!pGamePadControl && Config.General.GamepadEnabled)

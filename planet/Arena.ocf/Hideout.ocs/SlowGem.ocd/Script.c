@@ -78,7 +78,7 @@ global func FxGemSlowFieldTimer(object target, effect, int time)
 		var r=Random(360);
 		var d=Min(Random(20)+Random(130),62);
 		if(!PathFree(x,y,x + Sin(r,d), y - Cos(r,d))) continue;
-		CreateParticleEx("MagicFire", x + Sin(r,d), y - Cos(r,d), PV_Random(-2, 2), PV_Random(0, 4), PV_Random(10, 40), effect.particles, 2);
+		CreateParticle("MagicFire", x + Sin(r,d), y - Cos(r,d), PV_Random(-2, 2), PV_Random(0, 4), PV_Random(10, 40), effect.particles, 2);
 	}
 	for(var obj in FindObjects(Find_Distance(62,x,y)))
 	{

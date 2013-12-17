@@ -108,7 +108,7 @@ func BurstIntoAshes()
 		
 		for(var mirror = -1; mirror <= 1; mirror += 2)
 		{
-			CreateParticleEx("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
+			CreateParticle("Dust", x * mirror, y * mirror, PV_Random(-3, 3), PV_Random(-3, -3), PV_Random(18, 1 * 36), particles, 2);
 			CastPXS("Ashes", 5, 30, x * mirror, y * mirror);
 		}
 	}

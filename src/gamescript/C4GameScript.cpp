@@ -1537,7 +1537,7 @@ static long FnDrawDefMap(C4PropList * _this, long iX, long iY, long iWdt, long i
 	return ::Landscape.DrawDefMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef), true);
 }
 
-static bool FnCreateParticleEx(C4PropList * _this, C4String *name, C4Value x, C4Value y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount)
+static bool FnCreateParticle(C4PropList * _this, C4String *name, C4Value x, C4Value y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount)
 {
 	// safety
 	C4Object *obj = Object(_this);
@@ -1546,17 +1546,17 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, C4Value x, C4
 	if (amount <= 0) amount = 1;
 	
 	// get particle
-	C4ParticleDef *pDef = ::DynamicParticles.definitions.GetDef(FnStringPar(name));
+	C4ParticleDef *pDef = ::Particles.definitions.GetDef(FnStringPar(name));
 	if (!pDef) return false;
 	// construct data
-	C4DynamicParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
+	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
 	valueX.Set(x);
 	valueY.Set(y);
 	valueSpeedX.Set(speedX);
 	valueSpeedY.Set(speedY);
 	valueLifetime.Set(lifetime);
 	// create
-	::DynamicParticles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj);
+	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, obj);
 #endif
 	// success, even if not created
 	return true;
@@ -1567,15 +1567,15 @@ static bool FnClearParticles(C4PropList * _this)
 	C4Object *obj;
 	if (obj = Object(_this))
 	{
-		if (obj->DynamicBackParticles)
-			obj->DynamicBackParticles->Clear();
-		if (obj->DynamicFrontParticles)
-			obj->DynamicFrontParticles->Clear();
+		if (obj->BackParticles)
+			obj->BackParticles->Clear();
+		if (obj->FrontParticles)
+			obj->FrontParticles->Clear();
 	}
 	else
 	{
-		if (::DynamicParticles.GetGlobalParticles())
-			::DynamicParticles.GetGlobalParticles()->Clear();
+		if (::Particles.GetGlobalParticles())
+			::Particles.GetGlobalParticles()->Clear();
 	}
 
 	// always return true
@@ -2452,7 +2452,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "MaterialName", FnMaterialName);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
-	AddFunc(pEngine, "CreateParticleEx", FnCreateParticleEx);
+	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
 	AddFunc(pEngine, "ClearParticles", FnClearParticles);
 	AddFunc(pEngine, "SetSkyAdjust", FnSetSkyAdjust);
 	AddFunc(pEngine, "SetMatAdjust", FnSetMatAdjust);

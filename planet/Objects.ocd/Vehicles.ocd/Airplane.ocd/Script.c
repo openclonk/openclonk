@@ -71,10 +71,10 @@ public func ContainedUseStop(object clonk, int ix, int iy)
 
 		var x = Sin(angle, 20);
 		var y = -Cos(angle, 20);
-		CreateParticleEx("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+		CreateParticle("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 		
 		CreateMuzzleFlash(IX, IY, angle, 20);
-		CreateParticleEx("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
+		CreateParticle("Flash", 0, 0, GetXDir(), GetYDir(), 8, Particles_Flash());
 
 		AddEffect("IntCooldown", this,1,1,this);
 	}
@@ -213,7 +213,7 @@ private func FxIntPlaneTimer(object target, effect, int timer)
 			R = colour, G = colour, B = colour,
 			Size = PV_Linear(PV_Random(20, 30), PV_Random(70, 100))
 		};
-		CreateParticleEx("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
+		CreateParticle("Smoke", 0, 0, 0, 0, PV_Random(36, 2 * 36), particles, 2);
 	}
 
 	//Throttle-to-thrust lag

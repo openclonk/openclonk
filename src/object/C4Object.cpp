@@ -170,7 +170,7 @@ void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfW
 
 C4Object::C4Object()
 {
-	DynamicFrontParticles = DynamicBackParticles = 0;
+	FrontParticles = BackParticles = 0;
 
 	Default();
 }
@@ -232,10 +232,10 @@ void C4Object::Default()
 	pGfxOverlay=NULL;
 	iLastAttachMovementFrame=-1;
 
-	if (DynamicFrontParticles == 0)
-		DynamicFrontParticles = DynamicParticles.GetNewParticleList(this);
-	if (DynamicBackParticles == 0)
-		DynamicBackParticles = DynamicParticles.GetNewParticleList(this);
+	if (FrontParticles == 0)
+		FrontParticles = Particles.GetNewParticleList(this);
+	if (BackParticles == 0)
+		BackParticles = Particles.GetNewParticleList(this);
 }
 
 bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
@@ -367,9 +367,9 @@ void C4Object::AssignRemoval(bool fExitContents)
 		if (!Status) return;
 	}
 	// remove particles
-	if (DynamicFrontParticles != NULL)
-		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
-	DynamicFrontParticles = DynamicBackParticles = NULL;
+	if (FrontParticles != NULL)
+		Particles.ReleaseParticleList(FrontParticles, BackParticles);
+	FrontParticles = BackParticles = NULL;
 	// Action idle
 	SetAction(0);
 	// Object system operation
@@ -1900,7 +1900,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (Def->Line) { DrawLine(cgo); return; }
 
 	// background particles (bounds not checked)
-	if (DynamicBackParticles) DynamicBackParticles->Draw(cgo, this);
+	if (BackParticles) BackParticles->Draw(cgo, this);
 
 	// Object output position
 	float newzoom;
@@ -1928,7 +1928,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY()+Action.FacetY,cgo.Y-Action.Facet.Hgt,cgo.Y+cgo.Hgt)) )
 				{
-					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
+					if (FrontParticles && !Contained) FrontParticles->Draw(cgo, this);
 					return;
 				}
 		}
@@ -1937,7 +1937,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			if ( !Inside<float>(offX+Shape.GetX(),cgo.X-Shape.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY(),cgo.Y-Shape.Hgt,cgo.Y+cgo.Hgt)) )
 				{
-					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
+					if (FrontParticles && !Contained) FrontParticles->Draw(cgo, this);
 					return; 
 				}
 	}
@@ -2114,8 +2114,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// local particles in front of the object
 	if (eDrawMode!=ODM_BaseOnly) 
 	{
-		if (DynamicFrontParticles)
-			DynamicFrontParticles->Draw(cgo, this);
+		if (FrontParticles)
+			FrontParticles->Draw(cgo, this);
 	}
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
@@ -2454,10 +2454,10 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		if (Unsorted) Game.fResortAnyObject = true;
 
 		// initialize empty particle lists
-		if (DynamicFrontParticles == 0)
-			DynamicFrontParticles = DynamicParticles.GetNewParticleList(this);
-		if (DynamicBackParticles == 0)
-			DynamicBackParticles = DynamicParticles.GetNewParticleList(this);
+		if (FrontParticles == 0)
+			FrontParticles = Particles.GetNewParticleList(this);
+		if (BackParticles == 0)
+			BackParticles = Particles.GetNewParticleList(this);
 
 	}
 
@@ -2591,9 +2591,9 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 
 void C4Object::Clear()
 {
-	if (DynamicFrontParticles != NULL)
-		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
-	DynamicFrontParticles = DynamicBackParticles = NULL;
+	if (FrontParticles != NULL)
+		Particles.ReleaseParticleList(FrontParticles, BackParticles);
+	FrontParticles = BackParticles = NULL;
 
 	if (pEffects) { delete pEffects; pEffects=NULL; }
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
@@ -4738,9 +4738,9 @@ bool C4Object::StatusActivate()
 bool C4Object::StatusDeactivate(bool fClearPointers)
 {
 	// clear particles
-	if (DynamicFrontParticles != NULL)
-		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
-	DynamicFrontParticles = DynamicBackParticles = NULL;
+	if (FrontParticles != NULL)
+		Particles.ReleaseParticleList(FrontParticles, BackParticles);
+	FrontParticles = BackParticles = NULL;
 
 	// put into inactive list
 	::Objects.Remove(this);

@@ -392,7 +392,7 @@ func Footstep()
 			G = (clr >> 8) & 0xff,
 			B = clr & 0xff,
 		};
-		CreateParticleEx("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 		Sound("StepSoft?");
 	}
 }
@@ -976,7 +976,7 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 					B = (color >>  0) & 0xff,
 					Attach = ATTACH_Front,
 				};
-				CreateParticleEx("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
+				CreateParticle("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
 			}
 			Sound("Splash?");
 		}
@@ -1052,7 +1052,7 @@ func Hit(int iXSpeed, int iYSpeed)
 					G = (clr >> 8) & 0xff,
 					B = clr & 0xff,
 				};
-				CreateParticleEx("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
+				CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 			}
 		}
 	}
@@ -1069,7 +1069,7 @@ func Hit(int iXSpeed, int iYSpeed)
 				G = (clr >> 8) & 0xff,
 				B = clr & 0xff,
 			};
-			CreateParticleEx("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
+			CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 		}
 	}
 }
@@ -1138,7 +1138,7 @@ func FxRollingTimer(object target, int num, int timer)
 			G = (clr >> 8) & 0xff,
 			B = clr & 0xff,
 		};
-		CreateParticleEx("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
 	}
 }
 

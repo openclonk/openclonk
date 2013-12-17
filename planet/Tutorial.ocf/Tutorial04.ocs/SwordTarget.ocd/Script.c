@@ -12,7 +12,7 @@ protected func Initialize()
 
 public func Burst()
 {
-	CreateParticleEx("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
+	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
 	RemoveObject();
 	return;
 }

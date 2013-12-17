@@ -2278,11 +2278,11 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	x.y += DrawTransform(1,3);
 	x.z += DrawTransform(2,3);
 	// get particle
-	C4ParticleDef *pDef=::DynamicParticles.definitions.GetDef(FnStringPar(szName));
+	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
 	if (!pDef) return false;
 
 	// construct data
-	C4DynamicParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
+	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
 	valueX.Set(x.x);
 	valueY.Set(x.y);
 	valueSpeedX.Set(dir.x);
@@ -2290,7 +2290,7 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	valueLifetime.Set(lifetime);
 
 	// cast
-	::DynamicParticles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
+	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
 	// success, even if not created
 	return true;
 

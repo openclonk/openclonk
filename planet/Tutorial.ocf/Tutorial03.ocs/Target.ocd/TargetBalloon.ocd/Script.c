@@ -27,7 +27,7 @@ public func IsProjectileTarget(target,shooter)
 
 public func OnProjectileHit()
 {
-	CreateParticleEx("Air", 0, -10, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Air(), 10);
+	CreateParticle("Air", 0, -10, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Air(), 10);
 	Sound("BalloonPop");
 	RemoveObject();
 }

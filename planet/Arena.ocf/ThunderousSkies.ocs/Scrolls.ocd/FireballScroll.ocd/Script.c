@@ -64,9 +64,9 @@ public func FxFireballTimer(pTarget, effect, iEffectTime)
 		var xspeed = Sin(angle, 6);
 		var yspeed = -Cos(angle, 6);
 
-		CreateParticleEx("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(30, 60), Particles_SmokeTrail(), 1);
-		CreateParticleEx("FireDense", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 20), Particles_Fire(), 10);
-		CreateParticleEx("Fire", x, y, PV_Random(0, - 10 * xspeed), PV_Random(0, - 10 * yspeed), PV_Random(20, 90), Particles_Glimmer(), 10);
+		CreateParticle("SmokeDirty", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(30, 60), Particles_SmokeTrail(), 1);
+		CreateParticle("FireDense", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 20), Particles_Fire(), 10);
+		CreateParticle("Fire", x, y, PV_Random(0, - 10 * xspeed), PV_Random(0, - 10 * yspeed), PV_Random(20, 90), Particles_Glimmer(), 10);
 
 		effect.x += xspeed;
 		effect.y += yspeed;

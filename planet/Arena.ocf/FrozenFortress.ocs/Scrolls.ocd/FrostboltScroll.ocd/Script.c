@@ -85,8 +85,8 @@ public func FxFrostboltTimer(pTarget, effect, iEffectTime)
 		effect.x=x;
 		effect.y=y;
 
-		CreateParticleEx("Air", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 5, effect.air_particles, 10);
-		CreateParticleEx("MagicFire", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 10, effect.air_particles, 10);
+		CreateParticle("Air", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 5, effect.air_particles, 10);
+		CreateParticle("MagicFire", PV_Random(x - 3, x + 3), PV_Random(y - 3, y + 3), PV_Random(-10, 10), PV_Random(-10, 10), 10, effect.air_particles, 10);
 		
 	}
 

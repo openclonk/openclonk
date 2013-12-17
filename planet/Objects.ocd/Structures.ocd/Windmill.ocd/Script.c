@@ -119,7 +119,7 @@ public func FxCrushingTimer(object target, proplist effect, int time)
 		G = 200,
 		B = 100
 	};
-	CreateParticleEx("Dust", PV_Random(11 * dir, 13 * dir), 40, PV_Random(-5, 5), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 3);
+	CreateParticle("Dust", PV_Random(11 * dir, 13 * dir), 40, PV_Random(-5, 5), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 3);
 	
 	return 1;
 }
