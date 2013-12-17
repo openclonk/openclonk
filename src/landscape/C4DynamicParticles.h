@@ -15,9 +15,11 @@
 * See clonk_trademark_license.txt for full license.
 */
 
-#include <C4Particles.h>
+#include <C4FacetEx.h>
+
 #include <StdScheduler.h>
 #include <boost/noncopyable.hpp>
+
 
 #ifndef INC_C4DynamicParticles
 #define INC_C4DynamicParticles
@@ -50,16 +52,54 @@ enum C4ParticleCollisionFuncID
 	C4PC_Stop,
 };
 
+class C4ParticleDefCore;
+class C4ParticleDef;
 class C4DynamicParticleList;
 class C4DynamicParticleChunk;
 class C4DynamicParticle;
 class C4DynamicParticleProperties;
 class C4DynamicParticleValueProvider;
 
+// core for particle defs
+class C4ParticleDefCore
+{
+public:
+	StdStrBuf Name;                   // name
+	C4Rect GfxFace;                   // rect for graphics
+
+	C4ParticleDefCore();          // ctor
+	void CompileFunc(StdCompiler * compiler);
+
+	bool Compile(char *particle_source, const char *name); // compile from def file
+};
+
+// one particle definition
+class C4ParticleDef : public C4ParticleDefCore
+{
+public:
+	C4ParticleDef *previous, *next; // linked list members
+
+	StdStrBuf Filename; // path to group this particle was loaded from (for EM reloading)
+
+	C4FacetSurface Gfx;               // graphics
+	int32_t Length;                   // number of phases in gfx
+	int32_t PhasesX;                  // number of phases per line in gfx
+	float Aspect;                     // height:width
+
+	C4ParticleDef();      // ctor
+	~C4ParticleDef();     // dtor
+
+	void Clear();             // free mem associated with this class
+
+	bool Load(C4Group &group);   // load particle from group; assume file to be accessed already
+	bool Reload();              // reload particle from stored position
+};
+
 typedef float (C4DynamicParticleValueProvider::*C4DynamicParticleValueProviderFunction) (C4DynamicParticle*);
 typedef bool (C4DynamicParticleProperties::*C4DynamicParticleCollisionCallback) (C4DynamicParticle*);
 
 #ifndef USE_CONSOLE
+// the value providers are used to change the attributes of a particle over the lifetime
 class C4DynamicParticleValueProvider
 {
 protected:
@@ -141,6 +181,7 @@ public:
 	float Gravity(C4DynamicParticle *forParticle);
 };
 
+// the properties are part of every particle and contain certain changeable attributes
 class C4DynamicParticleProperties
 {
 public:
@@ -176,6 +217,7 @@ public:
 	bool CollisionStop(C4DynamicParticle *forParticle);
 };
 
+// one single particle
 class C4DynamicParticle
 {
 public:
@@ -280,6 +322,7 @@ public:
 	friend class C4DynamicParticleSystem;
 };
 
+// a chunk contains all of the single particles that can be drawn with one draw call (~"have certain similar attributes")
 class C4DynamicParticleChunk
 {
 private:
@@ -320,6 +363,7 @@ public:
 };
 
 // this class must not be copied, because deleting the contained CStdCSec twice would be fatal
+// a particle list belongs to a game-world entity (objects or global particles) and contains the chunks associated with that entity
 class C4DynamicParticleList : public boost::noncopyable
 {
 private:
@@ -353,6 +397,23 @@ public:
 };
 #endif
 
+// cares for the management of particle definitions
+class C4DynamicParticleSystemDefinitionList
+{
+#ifndef USE_CONSOLE
+private:
+	// pointers to the last and first element of linked list of particle definitions
+	C4ParticleDef *first, *last;
+public:
+	C4DynamicParticleSystemDefinitionList() : first(0), last(0) {}
+	void Clear();
+#endif
+	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=0);
+
+	friend class C4ParticleDef;
+};
+
+// the global particle system interface class
 class C4DynamicParticleSystem
 {
 #ifndef USE_CONSOLE
@@ -400,6 +461,7 @@ public:
 #endif
 	}
 	void DoInit();
+	// resets the internal state of the particle system and unloads all definitions
 	void Clear();
 	void DrawGlobalParticles(C4TargetFacet cgo)
 	{
@@ -408,9 +470,21 @@ public:
 #endif
 	} 
 
+	C4DynamicParticleList *GetGlobalParticles()
+	{
+#ifndef USE_CONSOLE
+		return globalParticles;
+#else
+		return 0;
+#endif
+	}
+
 	C4DynamicParticleList *GetNewParticleList(C4Object *forTarget = 0);
 	// releases up to 2 lists
 	void ReleaseParticleList(C4DynamicParticleList *first, C4DynamicParticleList *second = 0);
+
+	// interface for particle definitions
+	C4DynamicParticleSystemDefinitionList definitions;
 
 #ifndef USE_CONSOLE
 	// on some graphics card, glPrimitiveRestartIndex might not be supported
@@ -422,7 +496,12 @@ public:
 	void PreparePrimitiveRestartIndices(uint32_t forSize);
 	void *GetPrimitiveRestartArray() { return (void*)&primitiveRestartIndices[0]; }
 
+	// creates a new particle
 	void Create(C4ParticleDef *of_def, C4DynamicParticleValueProvider &x, C4DynamicParticleValueProvider &y, C4DynamicParticleValueProvider &speedX, C4DynamicParticleValueProvider &speedY, C4DynamicParticleValueProvider &lifetime, C4PropList *properties, int amount = 1, C4Object *object=NULL);
+	
+	// removes all of the existing particles (used f.e. for scenario section loading)
+	void ClearAllParticles();
+
 #endif
 
 };

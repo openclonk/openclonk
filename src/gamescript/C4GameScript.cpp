@@ -1537,25 +1537,6 @@ static long FnDrawDefMap(C4PropList * _this, long iX, long iY, long iWdt, long i
 	return ::Landscape.DrawDefMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef), true);
 }
 
-static bool FnCreateParticle(C4PropList * _this, C4String *szName, long iX, long iY, long iXDir, long iYDir, long a, long b, C4Object *pObj, bool fBack)
-{
-	// safety
-	if (pObj && !pObj->Status) return false;
-	// local offset
-	if (Object(_this))
-	{
-		iX+=Object(_this)->GetX();
-		iY+=Object(_this)->GetY();
-	}
-	// get particle
-	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
-	if (!pDef) return false;
-	// create
-	::Particles.Create(pDef, (float) iX, (float) iY, (float) iXDir/10.0f, (float) iYDir/10.0f, (float) a/10.0f, b, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
-	// success, even if not created
-	return true;
-}
-
 static bool FnCreateParticleEx(C4PropList * _this, C4String *name, C4Value x, C4Value y, C4Value speedX, C4Value speedY, C4Value lifetime, C4PropList *properties, int amount)
 {
 	// safety
@@ -1565,7 +1546,7 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, C4Value x, C4
 	if (amount <= 0) amount = 1;
 	
 	// get particle
-	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(name));
+	C4ParticleDef *pDef = ::DynamicParticles.definitions.GetDef(FnStringPar(name));
 	if (!pDef) return false;
 	// construct data
 	C4DynamicParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
@@ -1581,68 +1562,23 @@ static bool FnCreateParticleEx(C4PropList * _this, C4String *name, C4Value x, C4
 	return true;
 }
 
-static bool FnCastAParticles(C4PropList * _this, C4String *szName, long iAmount, long iLevel, long iX, long iY, long a0, long a1, long b0, long b1, C4Object *pObj, bool fBack)
+static bool FnClearParticles(C4PropList * _this)
 {
-	// safety
-	if (pObj && !pObj->Status) return false;
-	// local offset
-	if (Object(_this))
+	C4Object *obj;
+	if (obj = Object(_this))
 	{
-		iX+=Object(_this)->GetX();
-		iY+=Object(_this)->GetY();
-	}
-	// get particle
-	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
-	if (!pDef) return false;
-	// cast
-	::Particles.Cast(pDef, iAmount, (float) iX, (float) iY, iLevel, (float) a0/10.0f, b0, (float) a1/10.0f, b1, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
-	// success, even if not created
-	return true;
-}
-
-static bool FnCastParticles(C4PropList * _this, C4String *szName, long iAmount, long iLevel, long iX, long iY, long a0, long a1, long b0, long b1, C4Object *pObj)
-{
-	return FnCastAParticles(_this, szName, iAmount, iLevel, iX, iY, a0, a1, b0, b1, pObj, false);
-}
-
-static bool FnCastBackParticles(C4PropList * _this, C4String *szName, long iAmount, long iLevel, long iX, long iY, long a0, long a1, long b0, long b1, C4Object *pObj)
-{
-	return FnCastAParticles(_this, szName, iAmount, iLevel, iX, iY, a0, a1, b0, b1, pObj, true);
-}
-
-static bool FnPushParticles(C4PropList * _this, C4String *szName, long iAX, long iAY)
-{
-	// particle given?
-	C4ParticleDef *pDef=NULL;
-	if (szName)
-	{
-		pDef=::Particles.GetDef(FnStringPar(szName));
-		if (!pDef) return false;
-	}
-	// push them
-	::Particles.Push(pDef, (float) iAX/10.0f, (float)iAY/10.0f);
-	// success
-	return true;
-}
-
-static bool FnClearParticles(C4PropList * _this, C4String *szName, C4Object *pObj)
-{
-	// particle given?
-	C4ParticleDef *pDef=NULL;
-	if (szName)
-	{
-		pDef=::Particles.GetDef(FnStringPar(szName));
-		if (!pDef) return false;
-	}
-	// delete them
-	if (pObj)
-	{
-		pObj->FrontParticles.Remove(pDef);
-		pObj->BackParticles.Remove(pDef);
+		if (obj->DynamicBackParticles)
+			obj->DynamicBackParticles->Clear();
+		if (obj->DynamicFrontParticles)
+			obj->DynamicFrontParticles->Clear();
 	}
 	else
-		::Particles.GlobalParticles.Remove(pDef);
-	// success
+	{
+		if (::DynamicParticles.GetGlobalParticles())
+			::DynamicParticles.GetGlobalParticles()->Clear();
+	}
+
+	// always return true
 	return true;
 }
 
@@ -2516,11 +2452,7 @@ void InitGameFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "MaterialName", FnMaterialName);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
-	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
 	AddFunc(pEngine, "CreateParticleEx", FnCreateParticleEx);
-	AddFunc(pEngine, "CastParticles", FnCastParticles);
-	AddFunc(pEngine, "CastBackParticles", FnCastBackParticles);
-	AddFunc(pEngine, "PushParticles", FnPushParticles);
 	AddFunc(pEngine, "ClearParticles", FnClearParticles);
 	AddFunc(pEngine, "SetSkyAdjust", FnSetSkyAdjust);
 	AddFunc(pEngine, "SetMatAdjust", FnSetMatAdjust);

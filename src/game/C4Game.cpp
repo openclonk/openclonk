@@ -157,9 +157,6 @@ bool C4Game::InitDefs()
 	// build quick access table
 	::Definitions.BuildTable();
 
-	// get default particles
-	Particles.SetDefParticles();
-
 	// Done
 	return true;
 }
@@ -595,7 +592,6 @@ void C4Game::Clear()
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
-	Particles.Clear();
 	DynamicParticles.Clear();
 	::MaterialMap.Clear();
 	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
@@ -690,7 +686,6 @@ C4ST_NEW(ControlStat,       "C4Game::Execute ExecuteControl")
 C4ST_NEW(ExecObjectsStat,   "C4Game::Execute ExecObjects")
 C4ST_NEW(GEStats,           "C4Game::Execute pGlobalEffects->Execute")
 C4ST_NEW(PXSStat,           "C4Game::Execute PXS.Execute")
-C4ST_NEW(PartStat,          "C4Game::Execute Particles.Execute")
 C4ST_NEW(DynPartStat,       "C4Game::Execute DynamicParticles.Execute")
 C4ST_NEW(MassMoverStat,     "C4Game::Execute MassMover.Execute")
 C4ST_NEW(WeatherStat,       "C4Game::Execute Weather.Execute")
@@ -745,7 +740,6 @@ bool C4Game::Execute() // Returns true if the game is over
 	if (pGlobalEffects)
 		EXEC_S_DR(  pGlobalEffects->Execute(NULL);  , GEStats             , "GEEx\0");
 	EXEC_S_DR(  PXS.Execute();                    , PXSStat             , "PXSEx")
-	EXEC_S_DR(  Particles.GlobalParticles.Exec(); , PartStat            , "ParEx")
 	EXEC_S_DR(  MassMover.Execute();              , MassMoverStat       , "MMvEx")
 	EXEC_S_DR(  Weather.Execute();                , WeatherStat         , "WtrEx")
 	EXEC_S_DR(  Landscape.Execute();              , LandscapeStat       , "LdsEx")
@@ -1963,7 +1957,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	// safety
 	if (!szName) return false;
 	// get particle def
-	C4ParticleDef *pDef=Particles.GetDef(szName);
+	C4ParticleDef *pDef = DynamicParticles.definitions.GetDef(szName);
 	if (!pDef) return false;
 	// verbose
 	LogF("Reloading particle %s from %s",pDef->Name.getData(),GetFilename(pDef->Filename.getData()));
@@ -1971,7 +1965,7 @@ bool C4Game::ReloadParticle(const char *szName)
 	if (!pDef->Reload())
 	{
 		// safer: remove all particles
-		ParticleSystem.ClearParticles();
+		::DynamicParticles.ClearAllParticles();
 		// clear def
 		delete pDef;
 		// log
@@ -3314,7 +3308,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 			//delete pGlobalEffects; pGlobalEffects=NULL;
 		}
 	// del particles as well
-	Particles.ClearParticles();
+	DynamicParticles.ClearAllParticles();
 	// clear transfer zones
 	TransferZones.Clear();
 	// backup old sky

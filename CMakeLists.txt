@@ -323,8 +323,6 @@ set(OC_CLONK_SOURCES
 	src/landscape/C4Material.h
 	src/landscape/C4MaterialList.cpp
 	src/landscape/C4MaterialList.h
-	src/landscape/C4Particles.cpp
-	src/landscape/C4Particles.h
 	src/landscape/C4DynamicParticles.cpp
 	src/landscape/C4DynamicParticles.h
 	src/landscape/C4PathFinder.cpp

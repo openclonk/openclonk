@@ -367,8 +367,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 		if (!Status) return;
 	}
 	// remove particles
-	if (FrontParticles) FrontParticles.Clear();
-	if (BackParticles) BackParticles.Clear();
 	if (DynamicFrontParticles != NULL)
 		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
 	DynamicFrontParticles = DynamicBackParticles = NULL;
@@ -1059,9 +1057,6 @@ void C4Object::Execute()
 	// Movement
 	ExecMovement();
 	if (!Status) return;
-	// particles
-	if (BackParticles) BackParticles.Exec(this);
-	if (FrontParticles) FrontParticles.Exec(this);
 	// effects
 	if (pEffects)
 	{
@@ -1905,7 +1900,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	if (Def->Line) { DrawLine(cgo); return; }
 
 	// background particles (bounds not checked)
-	if (BackParticles && !Contained && eDrawMode!=ODM_BaseOnly) BackParticles.Draw(cgo,this);
 	if (DynamicBackParticles) DynamicBackParticles->Draw(cgo, this);
 
 	// Object output position
@@ -1934,7 +1928,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			if ( !Inside<float>(offX+Shape.GetX()+Action.FacetX,cgo.X-Action.Facet.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY()+Action.FacetY,cgo.Y-Action.Facet.Hgt,cgo.Y+cgo.Hgt)) )
 				{
-					if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); 
 					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
 					return;
 				}
@@ -1944,7 +1937,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 			if ( !Inside<float>(offX+Shape.GetX(),cgo.X-Shape.Wdt,cgo.X+cgo.Wdt)
 			     || (!Inside<float>(offY+Shape.GetY(),cgo.Y-Shape.Hgt,cgo.Y+cgo.Hgt)) )
 				{
-					if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); 
 					if (DynamicFrontParticles && !Contained) DynamicFrontParticles->Draw(cgo, this);
 					return; 
 				}
@@ -2057,7 +2049,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	}
 
 	// Fire facet - always draw, even if particles are drawn as well
-	if (OnFire /*&& !::Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
+	if (OnFire && eDrawMode!=ODM_BaseOnly)
 		{
 			C4Facet fgo;
 			// Straight: Full Shape.Rect on fire
@@ -2122,7 +2114,6 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode, f
 	// local particles in front of the object
 	if (eDrawMode!=ODM_BaseOnly) 
 	{
-		if (FrontParticles) FrontParticles.Draw(cgo,this);
 		if (DynamicFrontParticles)
 			DynamicFrontParticles->Draw(cgo, this);
 	}
@@ -2605,8 +2596,6 @@ void C4Object::Clear()
 	DynamicFrontParticles = DynamicBackParticles = NULL;
 
 	if (pEffects) { delete pEffects; pEffects=NULL; }
-	if (FrontParticles) FrontParticles.Clear();
-	if (BackParticles) BackParticles.Clear();
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	if (Menu) delete Menu; Menu=NULL;
 	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
@@ -4753,8 +4742,6 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 		DynamicParticles.ReleaseParticleList(DynamicFrontParticles, DynamicBackParticles);
 	DynamicFrontParticles = DynamicBackParticles = NULL;
 
-	if (FrontParticles) FrontParticles.Clear();
-	if (BackParticles) BackParticles.Clear();
 	// put into inactive list
 	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;

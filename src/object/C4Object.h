@@ -31,7 +31,6 @@
 #include "C4Def.h"
 #include "C4Sector.h"
 #include "C4Value.h"
-#include "C4Particles.h"
 #include "C4DynamicParticles.h"
 #include "C4PropList.h"
 #include "C4ObjectPtr.h"
@@ -177,7 +176,6 @@ public:
 	C4DefGraphics *pGraphics; // currently set object graphics
 	StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 	C4Effect *pEffects; // linked list of effects
-	C4ParticleList FrontParticles, BackParticles; // lists of object local particles
 	C4DynamicParticleList *DynamicFrontParticles, *DynamicBackParticles; // the same only for the dynamic particle system
 
 	uint32_t ColorMod; // color by which the object-drawing is modulated

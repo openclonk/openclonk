@@ -9,7 +9,6 @@
     <text>Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead.</text>
     <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored.</text>
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
-	<text>For a description of the old particle system, see the <a href="legacy.html">legacy particle system</a>. This page describes the particle system starting in OC 4.3.3.</text>
     <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
       <dt><img height="16" src="../../images/icon_text.png" width="16"/>Particle.txt</dt>

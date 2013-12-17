@@ -18,7 +18,13 @@
 #include <C4Include.h>
 #include <C4DynamicParticles.h>
 
+// headers for particle loading
+#include <C4Log.h>
+#include <C4Components.h>
+#include <C4Config.h>
+
 #ifndef USE_CONSOLE
+// headers for particle excution
 #include <C4AulDefFunc.h>
 #include <C4Value.h>
 #include <C4ValueArray.h>
@@ -28,6 +34,117 @@
 #include <C4Landscape.h>
 #include <C4Weather.h>
 #endif
+
+
+void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
+{
+	pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),       "Name",       ""));
+	pComp->Value(mkNamingAdapt(GfxFace,                 "Face"));
+}
+
+C4ParticleDefCore::C4ParticleDefCore()
+{
+	GfxFace.Default();
+}
+
+bool C4ParticleDefCore::Compile(char *particle_source, const char *name)
+{
+	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "Particle"),
+	       StdStrBuf(particle_source), name);
+}
+
+C4ParticleDef::C4ParticleDef() : C4ParticleDefCore()
+{
+	// zero fields
+	Gfx.Default();
+	// link into list
+	if (!DynamicParticles.definitions.first)
+	{
+		previous = NULL;
+		DynamicParticles.definitions.first = this;
+	}
+	else
+	{
+		previous = DynamicParticles.definitions.last;
+		previous->next = this;
+	}
+	DynamicParticles.definitions.last = this;
+	next = 0;
+}
+
+C4ParticleDef::~C4ParticleDef()
+{
+	// clear
+	Clear();
+	// unlink from list
+	if (previous) previous->next = next; else DynamicParticles.definitions.first = next;
+	if (next) next->previous = previous; else DynamicParticles.definitions.last = previous;
+}
+
+void C4ParticleDef::Clear()
+{
+	Name.Clear();
+}
+
+bool C4ParticleDef::Load(C4Group &group)
+{
+	// store file
+	Filename.Copy(group.GetFullName());
+	// load
+	char *particle_source;
+	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,NULL,1))
+	{
+		if (!Compile(particle_source, Filename.getData()))
+		{
+			DebugLogF("invalid particle def at '%s'", group.GetFullName().getData());
+			delete [] particle_source; return false;
+		}
+		delete [] particle_source;
+		// load graphics
+		if (!Gfx.Load(group, C4CFN_DefGraphics))
+		{
+			DebugLogF("particle %s has no valid graphics defined", Name.getData());
+			return false;
+		}
+		// set facet, if assigned - otherwise, assume full surface
+		if (GfxFace.Wdt) Gfx.Set(Gfx.Surface, GfxFace.x, GfxFace.y, GfxFace.Wdt, GfxFace.Hgt);
+		// set phase num
+		int32_t Q; Gfx.GetPhaseNum(PhasesX, Q);
+		Length = PhasesX * Q;
+		if (!Length)
+		{
+			DebugLogF("invalid facet for particle '%s'", Name.getData());
+			return false;
+		}
+				// calc aspect
+		Aspect=(float) Gfx.Hgt/Gfx.Wdt;
+		
+		// particle overloading
+		C4ParticleDef *def_overload;
+		if ((def_overload = DynamicParticles.definitions.GetDef(Name.getData(), this)))
+		{
+			if (Config.Graphics.VerboseObjectLoading >= 1)
+				{ char ostr[250]; sprintf(ostr,LoadResStr("IDS_PRC_DEFOVERLOAD"),def_overload->Name.getData(),"<particle>"); Log(ostr); }
+			delete def_overload;
+		}
+		// success
+		return true;
+	}
+	return false;
+}
+
+bool C4ParticleDef::Reload()
+{
+	// no file?
+	if (!Filename[0]) return false;
+	// open group
+	C4Group group;
+	if (!group.Open(Filename.getData())) return false;
+	// reset class
+	Clear();
+	// load
+	return Load(group);
+}
 
 #ifndef USE_CONSOLE
 const int C4DynamicParticle::DrawingData::vertexCountPerParticle(4);
@@ -1031,6 +1148,8 @@ C4DynamicParticleSystem::C4DynamicParticleSystem() : frameCounterAdvancedEvent(f
 
 C4DynamicParticleSystem::~C4DynamicParticleSystem()
 {
+	Clear();
+
 	calculationThread.SignalStop();
 	CalculateNextStep();
 
@@ -1268,11 +1387,37 @@ void C4DynamicParticleSystem::Clear()
 {
 #ifndef USE_CONSOLE
 	currentSimulationTime = 0;
+	ClearAllParticles();
+#endif
+	// clear definitions even in console mode
+	definitions.Clear();
+}
 
+void C4DynamicParticleSystem::ClearAllParticles()
+{
 	particleListAccessMutex.Enter();
 	particleLists.clear();
 	particleListAccessMutex.Leave();
-#endif
 }
 
+C4ParticleDef *C4DynamicParticleSystemDefinitionList::GetDef(const char *name, C4ParticleDef *exclude)
+{
+#ifndef USE_CONSOLE
+	// seek list
+	for (C4ParticleDef *def = first; def != 0; def=def->next)
+		if (def != exclude && def->Name == name)
+			return def;
+#endif
+	// nothing found
+	return 0;
+}
+
+#ifndef USE_CONSOLE
+void C4DynamicParticleSystemDefinitionList::Clear()
+{
+	// the particle definitions update the list in their destructor
+	while (first)
+		delete first;
+}
+#endif
 C4DynamicParticleSystem DynamicParticles;
