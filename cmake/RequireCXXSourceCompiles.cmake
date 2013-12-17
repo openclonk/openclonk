@@ -1,14 +1,15 @@
 # OpenClonk, http://www.openclonk.org
 #
-# Copyright (c) 2013  Nicolas Hake
+# Copyright (c) 2013, The OpenClonk Team and contributors
 #
-# Permission to use, copy, modify, and/or distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-# See isc_license.txt for full license and disclaimer.
+# Distributed under the terms of the ISC license; see accompanying file
+# "COPYING" for details.
 #
-# "Clonk" is a registered trademark of Matthes Bender.
-# See clonk_trademark_license.txt for full license.
+# "Clonk" is a registered trademark of Matthes Bender, used with permission.
+# See accompanying file "TRADEMARK" for details.
+#
+# To redistribute this file separately, substitute the full license texts
+# for the above references.
 
 include(CheckCXXSourceCompiles)
 macro(REQUIRE_CXX_SOURCE_COMPILES _code _var)
