@@ -407,11 +407,17 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 					{
 						C4PlayerInfo *pNewInfo = new C4PlayerInfo();
 						if (pNewInfo->LoadFromLocalFile(szPlrFile))
+						{
 							// player def loaded; register and count it
 							ppPlayers[iPlayerCount++] = pNewInfo;
+						}
 						else
+						{
 							// loading failure; clear info class
 							delete pNewInfo;
+							// 
+							LogFatal(FormatString(LoadResStr("IDS_ERR_LOAD_PLAYER"), szPlrFile).getData());
+						}
 					}
 			}
 			if (pAddInfo)

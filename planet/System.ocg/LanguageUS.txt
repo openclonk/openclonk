@@ -392,6 +392,7 @@ IDS_ERR_USERCANCEL=User abort
 IDS_ERR_WRITENEWTITLE=Error writing new title for file "%s": %s
 IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN=You have been removed by vote. (%s)
 IDS_ERR_YOUSURRENDEREDTHELEAGUEGA=You have surrendered the league game.
+IDS_ERR_LOAD_PLAYER=Error loading player "%s"
 IDS_FAIL_DELETE=Delete failure.
 IDS_FAIL_MODIFY=File modification failure.
 IDS_FAIL_RENAME=Rename failure.

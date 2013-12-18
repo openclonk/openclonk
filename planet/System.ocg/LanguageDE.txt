@@ -392,6 +392,7 @@ IDS_ERR_USERCANCEL=Benutzerabbruch
 IDS_ERR_WRITENEWTITLE=Fehler beim Speichern des neuen Titels in Datei "%s": %s
 IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN=Du wurdest per Abstimmung aus dem Spiel entfernt. (%s)
 IDS_ERR_YOUSURRENDEREDTHELEAGUEGA=Du hast das Ligaspiel aufgegeben.
+IDS_ERR_LOAD_PLAYER=Fehler beim Laden des Spielers "%s"
 IDS_FAIL_DELETE=Fehler beim Löschen.
 IDS_FAIL_MODIFY=Fehler beim Bearbeiten der Datei.
 IDS_FAIL_RENAME=Fehler beim Umbenennen.
