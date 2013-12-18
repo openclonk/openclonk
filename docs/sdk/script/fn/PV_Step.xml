@@ -32,7 +32,7 @@
     <desc>PV_Step can be used for values that do not depend on the particle age (unlike f.e. <funclink>PV_Linear</funclink>).</desc>
     <remark>See the <emlink href="particle/index.html">particle documentation</emlink> for further explanations of the particle system.</remark>
     <related>
-      <funclink>CreateParticleEx</funclink>
+      <funclink>CreateParticle</funclink>
       <funclink>PV_Linear</funclink>
       <funclink>PV_Direction</funclink>
       <funclink>PV_Random</funclink>

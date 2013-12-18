@@ -133,7 +133,7 @@ private func Fusing()
 
 	// Effekt
 	if(GetActTime() < FuseTime() - 20)
-		CreateParticleEx("Fire", x, y, PV_Random(x - 5, x + 5), PV_Random(y - 15, y + 5), PV_Random(10, 40), Particles_Glimmer(), 3);
+		CreateParticle("Fire", x, y, PV_Random(x - 5, x + 5), PV_Random(y - 15, y + 5), PV_Random(10, 40), Particles_Glimmer(), 3);
 	// Explosion
 	else if(GetActTime() > FuseTime())
 		DoExplode();

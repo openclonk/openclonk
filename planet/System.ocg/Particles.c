@@ -7,11 +7,11 @@
 global func CreateMuzzleFlash(int x, int y, int angle, int size)
 {
 	// main muzzle flash
-	CreateParticleEx("MuzzleFlash", x, y, 0, 0, 10, {Prototype = Particles_MuzzleFlash(), Size = size, Rotation = angle});
+	CreateParticle("MuzzleFlash", x, y, 0, 0, 10, {Prototype = Particles_MuzzleFlash(), Size = size, Rotation = angle});
 	// and some additional little sparks
 	var xdir = Sin(angle, size * 2);
 	var ydir = -Cos(angle, size * 2);
-	CreateParticleEx("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
+	CreateParticle("StarFlash", x, y, PV_Random(xdir - size, xdir + size), PV_Random(ydir - size, ydir + size), PV_Random(20, 60), Particles_Glimmer(), size);
 }
 
 global func Smoke(int x, int y, int level, int color)
@@ -26,7 +26,7 @@ global func Smoke(int x, int y, int level, int color)
 		particles.B = (color >>  0) & 0xff;
 	}
 	particles.Size = PV_Linear(PV_Random(level/2, level), PV_Random(2 * level, 3 * level));
-	CreateParticleEx("Smoke", x, y, PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
+	CreateParticle("Smoke", x, y, PV_Random(-level/3, level/3), PV_Random(-level/2, -level/3), PV_Random(level * 2, level * 10), particles, BoundBy(level/5, 3, 20));
 }
 
 

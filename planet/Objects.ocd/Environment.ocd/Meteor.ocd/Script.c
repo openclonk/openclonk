@@ -91,10 +91,10 @@ protected func FxIntMeteorTimer()
 	ydir -= size * ydir ** 2 / 11552000; // Magic number.
 	SetYDir(ydir, 100);
 	// Smoke trail.
-	CreateParticleEx("Smoke", PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-3, 3), 30 + Random(60), Particles_SmokeTrail(), 5);
+	CreateParticle("Smoke", PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(-3, 3), PV_Random(-3, 3), 30 + Random(60), Particles_SmokeTrail(), 5);
 	// Fire trail.
-	CreateParticleEx("MagicSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), 16, Particles_SparkFire(), 4);
-	CreateParticleEx("Fire", PV_Random(-size / 8, size / 8), PV_Random(-size / 8, size / 8), PV_Random(-1, 1), PV_Random(-1, 1), 30, Particles_FireTrail(), 6 + size / 10);
+	CreateParticle("MagicSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), 16, Particles_SparkFire(), 4);
+	CreateParticle("Fire", PV_Random(-size / 8, size / 8), PV_Random(-size / 8, size / 8), PV_Random(-1, 1), PV_Random(-1, 1), 30, Particles_FireTrail(), 6 + size / 10);
 	// Sound.
 
 	// Burning and friction decrease size.
@@ -114,7 +114,7 @@ protected func Hit(int xdir, int ydir)
 		Prototype = Particles_Fire(),
 		Attach = nil
 	};
-	CreateParticleEx("Fire", PV_Random(-size / 4, size / 4), PV_Random(-size / 4, size / 4), PV_Random(-size/4, size/4), PV_Random(-size/4, size/4), 30, particles, 20 + size);
+	CreateParticle("Fire", PV_Random(-size / 4, size / 4), PV_Random(-size / 4, size / 4), PV_Random(-size/4, size/4), PV_Random(-size/4, size/4), 30, particles, 20 + size);
 	// Explode meteor, explode size scales with the energy of the meteor.	
 	var dam = size * speed2 / 500;
 	dam = BoundBy(size/2, 5, 30);

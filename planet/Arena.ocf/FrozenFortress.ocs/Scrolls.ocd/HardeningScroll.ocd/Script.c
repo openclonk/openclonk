@@ -31,7 +31,7 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 	var x = effect.x;
 	var y = effect.y;
 
-	CreateParticleEx("Air", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), xdir, ydir, PV_Random(20, 40), Particles_Air(), 4);
+	CreateParticle("Air", PV_Random(x - 10, x + 10), PV_Random(y - 10, y + 10), xdir, ydir, PV_Random(20, 40), Particles_Air(), 4);
 	
 	if(!GBackSolid(x,y))
 	{
@@ -48,7 +48,7 @@ public func FxHardeningSpellTimer(pTarget, effect, iEffectTime)
 		if(GetMaterial(x,y) == Material("Snow"))
 		{
 			DrawMaterialQuad("Ice",x,y,x+1,y,x+1,y+1,x,y+1);
-			CreateParticleEx("Air", x , y, xdir/3, ydir/3, PV_Random(20, 40), Particles_Air());
+			CreateParticle("Air", x , y, xdir/3, ydir/3, PV_Random(20, 40), Particles_Air());
 		}
 	}
 	if(iEffectTime > 360) { return -1; }

@@ -17,7 +17,7 @@ protected func Hit()
 	
 		Sound("BulletHitGround?");
 		
-		CreateParticleEx("Spark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
+		CreateParticle("Spark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 		
 		RemoveObject();
 	}

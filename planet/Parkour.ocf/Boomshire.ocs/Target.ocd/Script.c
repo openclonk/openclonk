@@ -32,7 +32,7 @@ public func OnProjectileHit()
 public func Burst()
 {
 	DrawParticleLine("Straw", 0, 0, AbsX(gate->GetX()), AbsY(gate->GetY()), 6, PV_Random(-5, 5), PV_Random(-5, 0), PV_Random(30, 60), Particles_Straw());
-	CreateParticleEx("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
+	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
 	gate->OpenDoor();
 	RemoveObject();
 }

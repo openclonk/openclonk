@@ -39,7 +39,7 @@ func Show(int clr, int layer, int size,bool diffuse)
 		x = Sin(angle,+radius);
 		y = Cos(angle,-radius/3);
 		
-		CreateParticleEx("Cloud", x, y, PV_Random(-diffuse, +diffuse), 0, 0, particles);
+		CreateParticle("Cloud", x, y, PV_Random(-diffuse, +diffuse), 0, 0, particles);
 	}
 }
 

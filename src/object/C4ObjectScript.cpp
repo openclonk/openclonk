@@ -2172,10 +2172,11 @@ static bool FnSetMeshMaterial(C4Object *Obj, C4String* Material, int iSubMesh)
 	return true;
 }
 
-static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* szBoneName, C4ValueArray* Pos, C4ValueArray* Dir, long a, long b, C4Object* pTarget, bool fBehindTarget)
+
+static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* szBoneName, C4ValueArray* Pos, C4ValueArray* Dir, C4Value lifetime, C4PropList *properties, int amount)
 {
 	// safety
-	if(pTarget && !pTarget->Status) return false;
+	if(!Obj || !Obj->Status) return false;
 	// Get bone
 	if(!Obj->pMeshInstance) return false;
 	const StdMesh& mesh = Obj->pMeshInstance->GetMesh();
@@ -2277,10 +2278,19 @@ static bool FnCreateParticleAtBone(C4Object* Obj, C4String* szName, C4String* sz
 	x.y += DrawTransform(1,3);
 	x.z += DrawTransform(2,3);
 	// get particle
-	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
+	C4ParticleDef *pDef=::Particles.definitions.GetDef(FnStringPar(szName));
 	if (!pDef) return false;
+
+	// construct data
+	C4ParticleValueProvider valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime;
+	valueX.Set(x.x);
+	valueY.Set(x.y);
+	valueSpeedX.Set(dir.x);
+	valueSpeedY.Set(dir.y);
+	valueLifetime.Set(lifetime);
+
 	// cast
-	::Particles.Create(pDef, x.x, x.y, dir.x, dir.y, (float) a/10.0f, b, pTarget ? (fBehindTarget ? &pTarget->BackParticles : &pTarget->FrontParticles) : NULL, pTarget);
+	::Particles.Create(pDef, valueX, valueY, valueSpeedX, valueSpeedY, valueLifetime, properties, amount, Obj);
 	// success, even if not created
 	return true;
 

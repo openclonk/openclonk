@@ -254,7 +254,7 @@ func CheckStrike(iTime)
 					{
 						particle.Phase = PV_Linear(4, 7);
 					} 
-					obj->CreateParticleEx("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
+					obj->CreateParticle("SwordSlice", RandomX(-1,1), RandomX(-1,1), 0, 0, 6, particle);
 				}
 				
 				// sound and done. We can only hit one target

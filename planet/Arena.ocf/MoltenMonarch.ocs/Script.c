@@ -73,7 +73,7 @@ global func FxBlessTheKingTimer(object target, effect, int timer)
 	
 	if(king->Contents(0)) king->Contents(0)->~MakeKingSize();
 	if(king->Contents(1)) king->Contents(1)->~MakeKingSize();
-	king->CreateParticleEx("Fire", PV_Random(-4, 4), PV_Random(-11, 8), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 30), effect.particles, 10);
+	king->CreateParticle("Fire", PV_Random(-4, 4), PV_Random(-11, 8), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(10, 30), effect.particles, 10);
 	return 1;
 }
 
@@ -90,7 +90,7 @@ global func FxDeathByFireTimer(object target, effect, int timer)
 	for(var obj in FindObjects(Find_InRect(55,0,50,30),Find_OCF(OCF_Alive),Find_Not(Find_ID(MovingBrick))))
 		obj->RemoveObject();	
 		
-	CreateParticleEx("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), Particles_Fire(), 20);
+	CreateParticle("Fire", PV_Random(55, 90), PV_Random(0, 40), PV_Random(-1, 1), PV_Random(0, 20), PV_Random(10, 40), Particles_Fire(), 20);
 }
 
 global func FxLavaBrickResetTimer(object target, effect, int timer)

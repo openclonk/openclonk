@@ -13,7 +13,7 @@ protected func Initialize()
 	AddEffect("Float",this,1,1,this);
 
 	//Special Effects
-	CreateParticleEx("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
+	CreateParticle("Air", PV_Random(-1, 1), PV_Random(15, 17), PV_Random(-3, 3), PV_Random(0, 2), 18, Particles_Air(), 20);
 }
 
 private func Deflate()
@@ -29,7 +29,7 @@ private func Deflate()
 private func DeflateEffect()
 {
 	var act_time = GetActTime();
-	CreateParticleEx("Air", PV_Random(-1, 1), PV_Random(-1, 5), PV_Random(-act_time, act_time), PV_Random(-act_time, act_time), 18, Particles_Air(), act_time);
+	CreateParticle("Air", PV_Random(-1, 1), PV_Random(-1, 5), PV_Random(-act_time, act_time), PV_Random(-act_time, act_time), 18, Particles_Air(), act_time);
 }
 
 private func Pack()
@@ -73,7 +73,7 @@ public func IsProjectileTarget(target,shooter)
 public func OnProjectileHit()
 {
 	//Pop!
-	CreateParticleEx("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
+	CreateParticle("Air", 0, -10, PV_Random(-10, 10), PV_Random(-10, 10), 10, Particles_Air(), 30);
 	Sound("BalloonPop");
 	if (rider)
 	{

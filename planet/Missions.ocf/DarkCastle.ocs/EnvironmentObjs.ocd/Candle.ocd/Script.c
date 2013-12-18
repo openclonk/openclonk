@@ -19,7 +19,7 @@ protected func Construction() {
 
 private func Shining()
 {
-	CreateParticleEx("Fire", 0, -5, 0, PV_Random(-1, 1), 20, Particles_Fire(), 2);
+	CreateParticle("Fire", 0, -5, 0, PV_Random(-1, 1), 20, Particles_Fire(), 2);
 
 	//check if position changed
 	if (x != GetX() && y != GetY())

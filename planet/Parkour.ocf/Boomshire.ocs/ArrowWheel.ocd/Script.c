@@ -20,7 +20,7 @@ public func ControlUp(object clonk)
 		var arrw= CreateObject(Arrow,x,y,-1);
 		arrw->Launch(30,80, clonk);
 		arrw->SetGraphics("1");
-		CreateParticleEx("Straw", 0, 0, PV_Random(-20, 20), PV_Random(-20,20), PV_Random(30, 120), Particles_Straw(), 20);
+		CreateParticle("Straw", 0, 0, PV_Random(-20, 20), PV_Random(-20,20), PV_Random(30, 120), Particles_Straw(), 20);
 	}
 	if(GetEffect("SparklingAttention",this)) RemoveEffect("SparklingAttention",this);
 }

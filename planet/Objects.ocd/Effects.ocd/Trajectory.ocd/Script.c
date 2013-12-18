@@ -55,7 +55,7 @@ global func AddTrajectory(object pObj, int iX, int iY, int iXDir, int iYDir, int
 		// If we are far enough away insert a new point
 		if(Distance((iXOld - iX) / iFaktor, (iYOld - iY) / iFaktor) >= spacing)
 		{
-			pTrajectory->CreateParticleEx("Magic", iX/iFaktor - pTrajectory->GetX(), iY/iFaktor - pTrajectory->GetY(), 0, 0, 0, particles);
+			pTrajectory->CreateParticle("Magic", iX/iFaktor - pTrajectory->GetX(), iY/iFaktor - pTrajectory->GetY(), 0, 0, 0, particles);
 			iXOld = iX; iYOld = iY;
 		}
 		// Or is it here already?

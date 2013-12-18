@@ -9,7 +9,6 @@
     <text>Particles are lightweight objects which are not synchronized in a network game. This means that on the one hand you can create huge amounts of particles without slowing down the game too much but on the other hand there are only limited options for control of particle behaviour. If the particles are not sufficient for a given effect you have in mind, you can always use true objects instead.</text>
     <text>If a particle is defined in a ocd group, any object definition located in the same group is ignored.</text>
     <text>Particles are not stored in savegames and are designed for temporary visual effects only.</text>
-	<text>For a description of the old particle system, see the <a href="legacy.html">legacy particle system</a>. This page describes the particle system starting in OC 4.3.3.</text>
     <h id="PartikelKomponentenOCD">Particle Components (ocd)</h>
     <dl>
       <dt><img height="16" src="../../images/icon_text.png" width="16"/>Particle.txt</dt>
@@ -48,7 +47,7 @@
     <text>The coordinates for the source rectangle within Graphics.png of a particle specify the first phase of the particle graphics the other phases should follow to the right and can be continued in the next row. The animation length is then automatically determined from the image size.</text>
 	<h id="properties">Properties</h>
     <text>Each particle has different attributes like position, lifetime, size and more. These are set by script when creating the particle.</text>
-    <text>The following properties can be contained in a proplist passed to <funclink>CreateParticleEx</funclink>. For an example, see <funclink>CreateParticleEx</funclink></text>
+    <text>The following properties can be contained in a proplist passed to <funclink>CreateParticle</funclink>. For an example, see <funclink>CreateParticle</funclink></text>
 	<text>You can assign either constants to the properties (f.e. <code>R = 200</code>) or use certain value provider functions (f.e. <code>R = <funclink>PV_Linear</funclink>(200, 0)</code>). Available value provider functions are:
 	  <funclink>PV_Linear</funclink>
       <funclink>PV_Direction</funclink>

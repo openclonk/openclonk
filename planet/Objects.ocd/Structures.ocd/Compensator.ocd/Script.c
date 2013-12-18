@@ -143,7 +143,7 @@ func FxSparkleTimer(target, effect, time)
 {
 	effect.Interval *= 2;
 	if(effect.Interval > 35*3) return -1;
-	CreateParticleEx("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
+	CreateParticle("StarSpark", PV_Random(-3, 3), PV_Random(-14, -10), PV_Random(-5, 5), PV_Random(-8, 0), 10, Particles_Magic(), 4);
 }
 
 func FxProducePowerTimer(target, effect, time)

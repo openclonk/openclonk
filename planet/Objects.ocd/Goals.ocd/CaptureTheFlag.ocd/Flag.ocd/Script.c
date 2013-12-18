@@ -112,7 +112,7 @@ protected func FxFlagCarriedTimer(object target, effect)
 	// Draw partical line following the flag.
 	if (Distance(x, y, newx, newy) > 5)
 	{
-		target->CreateParticleEx("SphereSpark", 0, 0, 0, 0, PV_Random(36 * 3, 36 * 3 + 10), effect.tracer_particles);
+		target->CreateParticle("SphereSpark", 0, 0, 0, 0, PV_Random(36 * 3, 36 * 3 + 10), effect.tracer_particles);
 		effect.x=newx;
 		effect.y=newy;
 	}

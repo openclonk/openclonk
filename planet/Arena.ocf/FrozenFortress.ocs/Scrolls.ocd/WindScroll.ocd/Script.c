@@ -41,12 +41,12 @@ public func FxWindScrollStormTimer(pTarget, effect, iEffectTime)
 	{
 		var r=Random(360);
 		var d=Random(40);
-		CreateParticleEx("Air", Sin(r,d)+x,-Cos(r,d)+y, xdir/3, ydir/3, PV_Random(10, 30), effect.particles, 1);
+		CreateParticle("Air", Sin(r,d)+x,-Cos(r,d)+y, xdir/3, ydir/3, PV_Random(10, 30), effect.particles, 1);
 		return 1;
 	}
 	else if(iEffectTime<180 ) 
 	{
-		CreateParticleEx("Air", PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), xdir/2, ydir/2, PV_Random(10, 30), effect.particles, 5);
+		CreateParticle("Air", PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), xdir/2, ydir/2, PV_Random(10, 30), effect.particles, 5);
 		for(var obj in FindObjects(Find_Distance(40,x,y),Find_Not(Find_Category(C4D_Structure))))
 		{
 			if(PathFree(x,y,obj->GetX(),obj->GetY()))

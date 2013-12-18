@@ -82,8 +82,8 @@ func FxAutoSellValuablesTimer(_, effect, time)
 		
 		value += valuable->GetValue();
 		
-		CreateParticleEx("Flash", valuable->GetX() - GetX(), valuable->GetY() - GetY(), 0, 0, 8, { Prototype = Particles_Flash(), Size = 2 * Max(5, Max(valuable->GetDefWidth(), valuable->GetDefHeight())) });
-		CreateParticleEx("Dust", valuable->GetX() - GetX(), valuable->GetY() - GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(18, 36), dust_particles, 10);
+		CreateParticle("Flash", valuable->GetX() - GetX(), valuable->GetY() - GetY(), 0, 0, 8, { Prototype = Particles_Flash(), Size = 2 * Max(5, Max(valuable->GetDefWidth(), valuable->GetDefHeight())) });
+		CreateParticle("Dust", valuable->GetX() - GetX(), valuable->GetY() - GetY(), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(18, 36), dust_particles, 10);
 		valuable->RemoveObject();
 	}
 	

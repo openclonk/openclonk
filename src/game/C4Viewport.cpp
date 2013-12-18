@@ -255,14 +255,9 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	::Objects.Draw(cgo, Player, 1, 2147483647 /* INT32_MAX */);
 	C4ST_STOP(ObjStat)
 
-	// draw global particles
-	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Particles")
-	::Particles.GlobalParticles.Draw(cgo,NULL);
-	C4ST_STOP(PartStat)
-
 	// draw global dynamic particles
 	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Dynamic Particles")
-	::DynamicParticles.DrawGlobalParticles(cgo);
+	::Particles.DrawGlobalParticles(cgo);
 	C4ST_STOP(PartStat)
 
 	// Draw PathFinder

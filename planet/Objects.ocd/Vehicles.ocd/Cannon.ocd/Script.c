@@ -275,11 +275,11 @@ protected func DoFire(object iammo, object clonk, int angle)
 	var dist = 25;
 	var px = Cos(r/angPrec - 90,dist);
 	var py = Sin(r/angPrec - 90,dist) - 4;
-	CreateParticleEx("Flash", px, py, 0, 0, 8, Particles_Flash());
+	CreateParticle("Flash", px, py, 0, 0, 8, Particles_Flash());
 
 	var x = Sin(r/angPrec, 20);
 	var y = -Cos(r/angPrec, 20);
-	CreateParticleEx("Smoke", px, py, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+	CreateParticle("Smoke", px, py, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 	CreateMuzzleFlash(px, py, r / angPrec, 60);
 	//sound
 	Sound("Blast3");

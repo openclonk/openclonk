@@ -56,7 +56,7 @@ private func Destroy()
 		Rotation = PV_Direction(PV_Random(900, 1100)),
 		Phase = PV_Random(0, 1)
 	};
-	CreateParticleEx("Lichen", PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(36, 36 * 4), particles, 40);
+	CreateParticle("Lichen", PV_Random(-5, 5), PV_Random(-5, 5), PV_Random(-30, 30), PV_Random(-30, 30), PV_Random(36, 36 * 4), particles, 40);
 	RemoveObject();
 }
 

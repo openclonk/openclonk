@@ -31,7 +31,7 @@ func FxSelfdestructionStart(target, effect, temp)
 
 func FxSelfdestructionTimer(object target, effect, int timer)
 {
-	CreateParticleEx("Magic", PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(10, 30), effect.particles, 3);
+	CreateParticle("Magic", PV_Random(-4, 4), PV_Random(-4, 4), PV_Random(-3, 3), PV_Random(-3, 3), PV_Random(10, 30), effect.particles, 3);
  	if(timer>175) target->RemoveObject();
  	return 1;
 }

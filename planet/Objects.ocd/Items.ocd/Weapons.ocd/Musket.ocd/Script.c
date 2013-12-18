@@ -170,10 +170,10 @@ private func FireWeapon(object clonk, int angle)
 	// Muzzle Flash & gun smoke
 	var x = Sin(angle, 20);
 	var y = -Cos(angle, 20);
-	CreateParticleEx("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
+	CreateParticle("Smoke", IX, IY, PV_Random(x - 20, x + 20), PV_Random(y - 20, y + 20), PV_Random(40, 60), Particles_Smoke(), 20);
 	clonk->CreateMuzzleFlash(IX, IY, angle, 20);
 
-	CreateParticleEx("Flash", 0, 0, 0, 0, 8, Particles_Flash());
+	CreateParticle("Flash", 0, 0, 0, 0, 8, Particles_Flash());
 }
 
 func RejectCollect(id shotid, object shot)

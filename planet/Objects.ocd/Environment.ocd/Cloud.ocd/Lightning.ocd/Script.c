@@ -128,7 +128,7 @@ private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, in
 	};
 	for (var i = count+1; --i; )
 	{
-		CreateParticleEx(particle, x1 + deltax * i / count, y1 + deltay * i / count, 0, 0, 18, particle_prop);
+		CreateParticle(particle, x1 + deltax * i / count, y1 + deltay * i / count, 0, 0, 18, particle_prop);
 	}
 }
 

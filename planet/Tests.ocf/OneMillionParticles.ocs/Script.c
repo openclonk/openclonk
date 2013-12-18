@@ -29,7 +29,7 @@ func Initialize()
 global func Test1()
 {
 	var t = GetTime();
-	CreateParticleEx("FireDense", PV_Random(0, LandscapeWidth()), PV_Random(0, LandscapeHeight()/2), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(100, 300), PARTICLES, PARTICLES_PER_RUN);
+	CreateParticle("FireDense", PV_Random(0, LandscapeWidth()), PV_Random(0, LandscapeHeight()/2), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(100, 300), PARTICLES, PARTICLES_PER_RUN);
 	t = GetTime() - t;
 	FixLenLog("Test1 - batch creation", t, LOG_LINE_LEN, "ms");
 	MEASUREMENTS[0] = t;
@@ -41,7 +41,7 @@ global func Test2()
 {
 	var t = GetTime();
 	for (var i = 0; i < PARTICLES_PER_RUN; ++i)
-		CreateParticleEx("FireDense", PV_Random(0, LandscapeWidth()), PV_Random(0, LandscapeHeight()/2), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(100, 300), PARTICLES);
+		CreateParticle("FireDense", PV_Random(0, LandscapeWidth()), PV_Random(0, LandscapeHeight()/2), PV_Random(-10, 10), PV_Random(-10, 10), PV_Random(100, 300), PARTICLES);
 	t = GetTime() - t;
 	FixLenLog("Test2 - seperate creation", t, LOG_LINE_LEN, "ms");
 	MEASUREMENTS[1] = t;
@@ -95,14 +95,14 @@ global func FxScorchEverythingTimer(target, effect, time)
 	var glimmer_count = strength / 2;
 	var fire_density = (strength - 30) / 10;
 	var glimmer_speed = strength / 4;
-	CreateParticleEx("Fire", effect.x, effect.y, PV_Random(-glimmer_speed, glimmer_speed), PV_Random(-glimmer_speed, 5), PV_Random(Max(30, strength), Max(60, strength * 2)), effect.glimmer, glimmer_count);
+	CreateParticle("Fire", effect.x, effect.y, PV_Random(-glimmer_speed, glimmer_speed), PV_Random(-glimmer_speed, 5), PV_Random(Max(30, strength), Max(60, strength * 2)), effect.glimmer, glimmer_count);
 	if (fire_density > 0)
 	{	
 		var speed = 2 * fire_density;
 		var size = 2 * fire_density;
 		effect.fire.Size = PV_KeyFrames(0, 0, 0, 100, PV_Random(size, 2 * size), 900, PV_Random(2 * size, 3 * size), 1000, 0);
-		CreateParticleEx("FireDense", effect.x, effect.y, PV_Random(-speed, speed), PV_Random(-speed, speed), PV_Random(30, Min(60, fire_density * 20)), effect.fire_na, fire_density);
-		CreateParticleEx("Fire", effect.x, effect.y, PV_Random(-speed, speed), PV_Random(-speed, speed), PV_Random(30, Min(60, fire_density * 20)), effect.fire, fire_density);
+		CreateParticle("FireDense", effect.x, effect.y, PV_Random(-speed, speed), PV_Random(-speed, speed), PV_Random(30, Min(60, fire_density * 20)), effect.fire_na, fire_density);
+		CreateParticle("Fire", effect.x, effect.y, PV_Random(-speed, speed), PV_Random(-speed, speed), PV_Random(30, Min(60, fire_density * 20)), effect.fire, fire_density);
 	}
 }
 

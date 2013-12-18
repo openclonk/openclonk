@@ -204,12 +204,12 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 	var star_size = PV_KeyFrames(0, 0, 0, 500, level * 2, 1000, 0);
 	var shockwave_size = PV_Linear(0, level * 4);
 	
-	CreateParticleEx("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = ExplosionParticles_Smoke, Size = smoke_size}, Max(2, wilderness_level / 10));
-	CreateParticleEx("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmoothBackground, Size = blast_smooth_size}, smoothness_level / 5);
-	CreateParticleEx("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmooth, Size = blast_smooth_size}, smoothness_level / 5);
-	CreateParticleEx("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = ExplosionParticles_Blast, Size = blast_size}, smoothness_level / 5);
-	CreateParticleEx("StarFlash", PV_Random(x - 6, x + 6), PV_Random(y - 6, y + 6), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(10, 12), {Prototype = ExplosionParticles_Star, Size = star_size}, wilderness_level / 3);
-	CreateParticleEx("Shockwave", x, y, 0, 0, 15, {Prototype = ExplosionParticles_Shockwave, Size = shockwave_size}, nil);
+	CreateParticle("SmokeDirty", PV_Random(x - 10,x + 10), PV_Random(y - 10, y + 10), 0, PV_Random(-2, 0), PV_Random(50, 100), {Prototype = ExplosionParticles_Smoke, Size = smoke_size}, Max(2, wilderness_level / 10));
+	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmoothBackground, Size = blast_smooth_size}, smoothness_level / 5);
+	CreateParticle("SmokeDirty", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(20, 40), {Prototype = ExplosionParticles_BlastSmooth, Size = blast_smooth_size}, smoothness_level / 5);
+	CreateParticle("Dust", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), 0, 0, PV_Random(18, 25), {Prototype = ExplosionParticles_Blast, Size = blast_size}, smoothness_level / 5);
+	CreateParticle("StarFlash", PV_Random(x - 6, x + 6), PV_Random(y - 6, y + 6), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(-wilderness_level/4, wilderness_level/4), PV_Random(10, 12), {Prototype = ExplosionParticles_Star, Size = star_size}, wilderness_level / 3);
+	CreateParticle("Shockwave", x, y, 0, 0, 15, {Prototype = ExplosionParticles_Shockwave, Size = shockwave_size}, nil);
 	
 	// cast either some sparks on land or bubbles under water
 	if(GBackLiquid(x, y) && Global.CastBubbles)
@@ -218,7 +218,7 @@ global func ExplosionEffect(int level, int x, int y, int smoothness)
 	}
 	else
 	{
-		CreateParticleEx("Magic", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(25, 70), ExplosionParticles_Glimmer, level);
+		CreateParticle("Magic", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(-level_pow_fraction, level_pow_fraction), PV_Random(25, 70), ExplosionParticles_Glimmer, level);
 	}
 	
 	// very wild explosion? Smoke trails!
@@ -543,9 +543,9 @@ global func FxSmokeTrailTimer(object target, proplist effect, int fxtime)
 	{
 		var x_dir_blast = x_dir / 200;
 		var y_dir_blast = y_dir / 200;
-		CreateParticleEx("SmokeDirty", x, y, PV_Random(x_dir_blast - 2, x_dir_blast + 2), PV_Random(y_dir_blast - 2, y_dir_blast + 2), 18, effect.particles_blast, 2);
+		CreateParticle("SmokeDirty", x, y, PV_Random(x_dir_blast - 2, x_dir_blast + 2), PV_Random(y_dir_blast - 2, y_dir_blast + 2), 18, effect.particles_blast, 2);
 	}
-	CreateParticleEx("Smoke", x, y, PV_Random(-2, 2), PV_Random(-2, 2), 50, effect.particles_smoke, 2);
+	CreateParticle("Smoke", x, y, PV_Random(-2, 2), PV_Random(-2, 2), 50, effect.particles_smoke, 2);
 
 		
 	// then calc next position
@@ -575,7 +575,7 @@ global func Fireworks(int color, int x, int y)
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
 	};
-	CreateParticleEx("MagicFire", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(20, 200), glimmer, 100);
+	CreateParticle("MagicFire", x, y, PV_Random(-100, 100), PV_Random(-100, 100), PV_Random(20, 200), glimmer, 100);
 	
 	Smoke(x, y, 30);
 	
@@ -590,7 +590,7 @@ global func Fireworks(int color, int x, int y)
 		ForceX = PV_Random(-10, 10),
 		Stretch = PV_Speed(500, 1000)
 	};
-	CreateParticleEx("Spark", x, y, PV_Random(-200, 200), PV_Random(-200, 200), PV_Random(20, 60), sparks, 100);
+	CreateParticle("Spark", x, y, PV_Random(-200, 200), PV_Random(-200, 200), PV_Random(20, 60), sparks, 100);
 	
 	var flash =
 	{
@@ -599,7 +599,7 @@ global func Fireworks(int color, int x, int y)
 		G = (color >>  8) & 0xff,
 		B = (color >>  0) & 0xff,
 	};
-	CreateParticleEx("Flash", x, y, 0, 0, 8, flash);
+	CreateParticle("Flash", x, y, 0, 0, 8, flash);
 	return;
 }
 

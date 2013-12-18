@@ -132,7 +132,7 @@ global func DrawParticleLine(string particle, int x0, int y0, int x1, int y1, in
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
 
-		CreateParticleEx(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, xdir, ydir, lifetime, properties, 1);
+		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, xdir, ydir, lifetime, properties, 1);
 	}
 	// Succes, return number of created particles.
 	return prtnum;
