@@ -337,10 +337,15 @@ private:
 	std::vector<C4Particle::DrawingData::Vertex> vertexCoordinates;
 	size_t particleCount;
 
+	// OpenGL optimizations
+	GLuint drawingDataVertexBufferObject;
+	GLuint drawingDataVertexArraysObject;
+	void ClearBufferObjects();
+
 	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
 	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
 public:
-	C4ParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0)
+	C4ParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
 	{
 
 	}
@@ -491,6 +496,9 @@ public:
 	bool usePrimitiveRestartIndexWorkaround;
 	GLsizei *GetMultiDrawElementsCountArray() { return &multiDrawElementsCountArray[0]; } 
 	GLvoid **GetMultiDrawElementsIndexArray() { return reinterpret_cast<GLvoid**> (&multiDrawElementsIndexArray[0]); }
+
+	// if true, OpenGL buffer objects will not be used (instead the slower direct calls will be made)
+	bool useBufferObjectWorkaround;
 
 	// usually, the following methods are used for drawing
 	void PreparePrimitiveRestartIndices(uint32_t forSize);

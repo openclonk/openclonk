@@ -901,6 +901,9 @@ void C4ParticleChunk::Clear()
 	particleCount = 0;
 	particles.clear();
 	vertexCoordinates.clear();
+
+	if (!Particles.useBufferObjectWorkaround)
+		ClearBufferObjects();
 }
 
 void C4ParticleChunk::DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom)
@@ -956,9 +959,50 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	glClientActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureRef->texName);
 
-	glVertexPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].x));
-	glTexCoordPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].u));
-	glColorPointer(4, GL_FLOAT, stride, &(vertexCoordinates[0].r));
+	if (!Particles.useBufferObjectWorkaround)
+	{
+		// generate the buffer as necessary
+		if (drawingDataVertexBufferObject == 0)
+		{
+			// clear up old data
+			ClearBufferObjects();
+			// generate new buffer objects
+			glGenBuffers(1, &drawingDataVertexBufferObject);
+			assert (drawingDataVertexBufferObject != 0 && "Could not generate OpenGL buffer object.");
+
+			// generate new vertex arrays object
+			glGenVertexArrays(1, &drawingDataVertexArraysObject);
+			assert (drawingDataVertexArraysObject != 0 && "Could not generate OpenGL vertex arrays object.");
+			
+			// set up the vertex array structure once
+			glBindVertexArray(drawingDataVertexArraysObject);
+			glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_COLOR_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glVertexPointer(2, GL_FLOAT, stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, x)));
+			glTexCoordPointer(2, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, u)));
+			glColorPointer(4, GL_FLOAT , stride, reinterpret_cast<GLvoid*>(offsetof(C4Particle::DrawingData::Vertex, r)));
+			glBindVertexArray(0);
+		}
+
+		assert ((drawingDataVertexArraysObject != 0) && "No vertex arrays object has been created yet.");
+		assert ((drawingDataVertexBufferObject != 0) && "No buffer object has been created yet.");
+
+		// bind the VBO and push the new vertex data
+		// this has to be done before binding the vertex arrays object
+		glBindBuffer(GL_ARRAY_BUFFER, drawingDataVertexBufferObject);
+		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(C4Particle::DrawingData::Vertex) * particleCount, &vertexCoordinates[0], GL_DYNAMIC_DRAW);
+
+		// bind VAO and set correct state
+		glBindVertexArray(drawingDataVertexArraysObject);
+	}
+	else
+	{
+		glVertexPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].x));
+		glTexCoordPointer(2, GL_FLOAT, stride, &(vertexCoordinates[0].u));
+		glColorPointer(4, GL_FLOAT, stride, &(vertexCoordinates[0].r));
+	}
 
 	if (!Particles.usePrimitiveRestartIndexWorkaround)
 	{
@@ -970,11 +1014,29 @@ void C4ParticleChunk::Draw(C4TargetFacet cgo, C4Object *obj)
 	}
 	if (resetMatrix)
 		glPopMatrix();
+
+	// reset buffer data
+	if (!Particles.useBufferObjectWorkaround)
+	{
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 }
 
 bool C4ParticleChunk::IsOfType(C4ParticleDef *def, uint32_t _blitMode, uint32_t _attachment) const
 {
 	return def == sourceDefinition && blitMode == _blitMode && attachment == _attachment;
+}
+
+void C4ParticleChunk::ClearBufferObjects()
+{
+	if (drawingDataVertexBufferObject != 0) // the value 0 as a buffer index is reserved and will never be returned by glGenBuffers
+		glDeleteBuffers(1, &drawingDataVertexBufferObject);
+	if (drawingDataVertexArraysObject != 0)
+		glDeleteVertexArrays(1, &drawingDataVertexArraysObject);
+
+	drawingDataVertexArraysObject = 0;
+	drawingDataVertexBufferObject = 0;
 }
 
 void C4ParticleChunk::ReserveSpace(uint32_t forAmount)
@@ -1062,10 +1124,12 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 	glScalef(cgo.Zoom, cgo.Zoom, 1.0f);
 	glTranslatef(-cgo.TargetX, -cgo.TargetY, 0.0f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	
+	if (Particles.useBufferObjectWorkaround)
+	{
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
 
 	accessMutex.Enter();
 
@@ -1076,9 +1140,12 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	accessMutex.Leave();
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	if (Particles.useBufferObjectWorkaround)
+	{
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
 
 	glPopMatrix();
 
@@ -1144,6 +1211,7 @@ C4ParticleSystem::C4ParticleSystem() : frameCounterAdvancedEvent(false)
 	currentSimulationTime = 0;
 	globalParticles = 0;
 	usePrimitiveRestartIndexWorkaround = false;
+	useBufferObjectWorkaround = false;
 }
 
 C4ParticleSystem::~C4ParticleSystem()
@@ -1165,6 +1233,9 @@ void C4ParticleSystem::DoInit()
 		usePrimitiveRestartIndexWorkaround = true;
 		LogSilent("WARNING (particle system): Your graphics card does not support glPrimitiveRestartIndex - a (slower) fallback will be used!");
 	}
+
+	assert (glGenBuffers != 0 && "Your graphics card does not seem to support buffer objects.");
+	useBufferObjectWorkaround = false;
 }
 
 void C4ParticleSystem::ExecuteCalculation()
