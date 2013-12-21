@@ -546,7 +546,7 @@ global func FxDynamiteRestoreStop(object target, effect, int reason, bool  tempo
 		restorer->SetPosition(x, y);
 		var to_container = effect.to_container;
 		var restored = CreateObject(DynamiteBox, 0, 0, target->GetOwner());
-		restorer->SetRestoreObject(restored, to_container, nil, nil, "DynamiteRestore");
+		restorer->SetRestoreObject(restored, to_container, nil, nil, nil, "DynamiteRestore");
 	}
 	return 1;
 }

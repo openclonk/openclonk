@@ -42,7 +42,7 @@ func GetBuyObject(int iIndex)
 	var idDef = GetHomebaseMaterial(GetOwner(), nil, iIndex, C4D_All);
 	aBuy[0] = idDef;
 	aBuy[1] = GetHomebaseMaterial(GetOwner(), idDef, 0);
-	if(!idDef) return 0;
+	if(!idDef) return nil;
 	// The default implementation returns the Homebasemaerial of the playeer
 	return aBuy;
 }

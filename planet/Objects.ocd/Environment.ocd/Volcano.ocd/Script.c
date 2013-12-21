@@ -77,7 +77,7 @@ public func Launch(int x, int y, int strength, string material, int angle)
 	// Volcano material.
 	mat = Material(material);
 	// Direction of the volcano.
-	angle = angle;
+	this.angle = angle;
 	// Safety check.
 	if (!InGround())
 	{
