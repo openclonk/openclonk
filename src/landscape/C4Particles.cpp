@@ -1312,7 +1312,7 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 {
 	// todo: check amount etc
 
-	C4ParticleList * pxList(globalParticles);
+	C4ParticleList * pxList(0);
 
 
 	// initialize the particle properties
@@ -1342,18 +1342,27 @@ void C4ParticleSystem::Create(C4ParticleDef *of_def, C4ParticleValueProvider &x,
 
 			// move relative implies that the particle needs to be in the object's particle list (back OR front)
 			// just select the front particles here - will be overwritten below if necessary
-			pxList = object->FrontParticles;
+			if (!(particleProperties.attachment & C4ATTACH_Front) && !(particleProperties.attachment & C4ATTACH_Back))
+				particleProperties.attachment |= C4ATTACH_Front;
 		}
 
 		// figure out particle list to use
-		if (particleProperties.attachment & C4ATTACH_Front) pxList = object->FrontParticles;
-		else if (particleProperties.attachment & C4ATTACH_Back) pxList = object->BackParticles;
+		if (particleProperties.attachment & C4ATTACH_Front) 
+		{
+			if (!object->FrontParticles) object->FrontParticles = GetNewParticleList(object);
+			pxList = object->FrontParticles;
+		}
+		else if (particleProperties.attachment & C4ATTACH_Back)
+		{
+			if (!object->BackParticles) object->BackParticles = GetNewParticleList(object);
+			pxList = object->BackParticles;
+		}
 	}
 
-	// sanity for global particles - might have to be created first
-	if (pxList == globalParticles && globalParticles == 0)
+	// no assigned list implies that we are going to use the global particles
+	if (!pxList)
 	{
-		globalParticles = GetNewParticleList();
+		if (!globalParticles) globalParticles = GetNewParticleList();
 		pxList = globalParticles;
 	}
 

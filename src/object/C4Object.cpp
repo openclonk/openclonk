@@ -171,7 +171,6 @@ void C4Action::GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfW
 C4Object::C4Object()
 {
 	FrontParticles = BackParticles = 0;
-
 	Default();
 }
 
@@ -232,10 +231,7 @@ void C4Object::Default()
 	pGfxOverlay=NULL;
 	iLastAttachMovementFrame=-1;
 
-	if (FrontParticles == 0)
-		FrontParticles = Particles.GetNewParticleList(this);
-	if (BackParticles == 0)
-		BackParticles = Particles.GetNewParticleList(this);
+	ClearParticleLists();
 }
 
 bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
@@ -335,6 +331,15 @@ C4Object::~C4Object()
 #endif
 }
 
+void C4Object::ClearParticleLists()
+{
+	if (FrontParticles != 0)
+		Particles.ReleaseParticleList(FrontParticles);
+	if (BackParticles != 0)
+		Particles.ReleaseParticleList(BackParticles);
+	FrontParticles = BackParticles = 0;
+}
+
 void C4Object::AssignRemoval(bool fExitContents)
 {
 	// check status
@@ -367,9 +372,7 @@ void C4Object::AssignRemoval(bool fExitContents)
 		if (!Status) return;
 	}
 	// remove particles
-	if (FrontParticles != NULL)
-		Particles.ReleaseParticleList(FrontParticles, BackParticles);
-	FrontParticles = BackParticles = NULL;
+	ClearParticleLists();
 	// Action idle
 	SetAction(0);
 	// Object system operation
@@ -2452,13 +2455,6 @@ void C4Object::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 		// object needs to be resorted? May happen if there's unsorted objects in savegame
 		if (Unsorted) Game.fResortAnyObject = true;
-
-		// initialize empty particle lists
-		if (FrontParticles == 0)
-			FrontParticles = Particles.GetNewParticleList(this);
-		if (BackParticles == 0)
-			BackParticles = Particles.GetNewParticleList(this);
-
 	}
 
 }
@@ -2591,9 +2587,7 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 
 void C4Object::Clear()
 {
-	if (FrontParticles != NULL)
-		Particles.ReleaseParticleList(FrontParticles, BackParticles);
-	FrontParticles = BackParticles = NULL;
+	ClearParticleLists();
 
 	if (pEffects) { delete pEffects; pEffects=NULL; }
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
@@ -4738,9 +4732,7 @@ bool C4Object::StatusActivate()
 bool C4Object::StatusDeactivate(bool fClearPointers)
 {
 	// clear particles
-	if (FrontParticles != NULL)
-		Particles.ReleaseParticleList(FrontParticles, BackParticles);
-	FrontParticles = BackParticles = NULL;
+	ClearParticleLists();
 
 	// put into inactive list
 	::Objects.Remove(this);

@@ -176,7 +176,9 @@ public:
 	C4DefGraphics *pGraphics; // currently set object graphics
 	StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 	C4Effect *pEffects; // linked list of effects
-	C4ParticleList *FrontParticles, *BackParticles; // the same only for the dynamic particle system
+	// particle lists that are bound to this object (either in front of behind it)
+	C4ParticleList *FrontParticles, *BackParticles;
+	void ClearParticleLists();
 
 	uint32_t ColorMod; // color by which the object-drawing is modulated
 	uint32_t BlitMode; // extra blitting flags (like additive, ClrMod2, etc.)

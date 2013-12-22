@@ -390,6 +390,8 @@ public:
 
 	}
 	
+	~C4ParticleList() { Clear(); }
+
 	// this enables third-parties to lock the particle list (for example because a particle in the list is modified from outside)
 	void Lock() { accessMutex.Enter(); }
 	void Unlock() { accessMutex.Leave(); }
