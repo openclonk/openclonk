@@ -70,6 +70,9 @@ public func AttachTargetLost()
 	RemoveObject();
 }
 
+// Don't save in scenarios
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 Attach = {
 	Prototype = Action,

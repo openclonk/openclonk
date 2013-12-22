@@ -228,6 +228,20 @@ public func GetFillLevel() { return in_bucket_amount; }
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 
+public func SetFilled(string mat, int amount)
+{
+	in_bucket_mat = mat;
+	in_bucket_amount = amount;
+	return true;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (in_bucket_mat) props->AddCall("Fill", this, "SetFilled", Format("%v", in_bucket_mat), in_bucket_amount);
+	return true;
+}
+
 protected func Definition(def)
 {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(500,400,0), Trans_Rotate(-10,1,0,0), Trans_Rotate(30,0,1,0), Trans_Rotate(+25,0,0,1), Trans_Scale(1350)),def);

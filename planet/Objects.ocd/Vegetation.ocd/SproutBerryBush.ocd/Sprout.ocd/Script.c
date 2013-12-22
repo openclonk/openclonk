@@ -457,3 +457,6 @@ func FxQuickFadeTimer(target, effect, time)
 	if(effect.alpha <= 0) return -1;
 	return 1;
 }
+
+// Only save main bush object
+func SaveScenarioObject() { return false; }

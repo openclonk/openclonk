@@ -472,4 +472,9 @@ global func MakePowerConsumer(int amount /* the amount of power to request, 0 to
 	return (Library_Power->GetPowerHelperForObject(this))->AddPowerConsumer(this, amount);
 }
 
-// helper object
+// helper object should not be saved
+func SaveScenarioObject()
+{
+	if (GetID() == Library_Power) return false;
+	return inherited(...);
+}

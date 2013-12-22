@@ -2,6 +2,8 @@
 
 // I'm just a mindless worker
 
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 		Be = {
 			Prototype = Action,

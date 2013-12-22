@@ -37,6 +37,9 @@ public func SetSwingSpeed(int delay)
 	SetPhase(phase);
 }
 
+// Only save main wheat object
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 		Swing = {
 			Prototype = Action,

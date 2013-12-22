@@ -144,3 +144,6 @@ func Flip()
 		SetObjDrawTransform(1000,0,0, 0,1000,0, GFX_StructureOverlay);
 	}
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

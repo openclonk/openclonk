@@ -18,6 +18,7 @@
 #include <C4Include.h>
 #include <C4Scenario.h>
 #include <C4Components.h>
+#include <C4ScriptHost.h>
 
 // scenario sections
 
@@ -36,6 +37,7 @@ C4ScenarioSection::C4ScenarioSection(char *szName)
 	// zero fields
 	szTempFilename = szFilename = 0;
 	fModified = false;
+	pObjectScripts = NULL;
 	// link into main list
 	pNext = Game.pScenarioSections;
 	Game.pScenarioSections = this;
@@ -63,7 +65,7 @@ C4ScenarioSection::~C4ScenarioSection()
 	if (szName != C4ScenSect_Main) delete szName;
 }
 
-bool C4ScenarioSection::ScenarioLoad(char *szFilename)
+bool C4ScenarioSection::ScenarioLoad(C4Group &rGrp, char *szFilename)
 {
 	// safety
 	if (this->szFilename || !szFilename) return false;
@@ -72,6 +74,26 @@ bool C4ScenarioSection::ScenarioLoad(char *szFilename)
 	SCopy(szFilename, this->szFilename, _MAX_FNAME);
 	// extract if it's not an open folder
 	if (Game.ScenarioFile.IsPacked()) if (!EnsureTempStore(true, true)) return false;
+	// load section object script
+	if (!SEqualNoCase(szName, C4ScenSect_Main))
+	{
+		C4Group GrpSect, *pGrp;
+		if ((pGrp = GetGroupfile(GrpSect)) && pGrp->FindEntry(C4CFN_ScenarioObjectsScript))
+		{
+			pObjectScripts = new C4ScenarioObjectsScriptHost();
+			pObjectScripts->Reg2List(&::ScriptEngine);
+			pObjectScripts->Load(*pGrp, C4CFN_ScenarioObjectsScript, Config.General.LanguageEx, &::Game.ScenarioLangStringTable);
+		}
+		else
+		{
+			pObjectScripts = NULL;
+		}
+	}
+	else
+	{
+		// Object script for main section
+		pObjectScripts = ::Game.pScenarioObjectsScript;
+	}
 	// donce, success
 	return true;
 }

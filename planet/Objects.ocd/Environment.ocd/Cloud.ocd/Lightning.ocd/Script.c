@@ -132,4 +132,7 @@ private func DrawRotatedParticleLine(string particle, int x1, int y1, int x2, in
 	}
 }
 
+// Don't save in scenarios
+func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

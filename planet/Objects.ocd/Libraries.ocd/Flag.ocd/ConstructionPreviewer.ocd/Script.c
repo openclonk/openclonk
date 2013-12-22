@@ -53,3 +53,6 @@ func Destruction()
 	for (var arrow in neighbour_flag_arrows) if (arrow) arrow->RemoveObject();
 	return _inherited(...);
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

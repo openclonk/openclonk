@@ -248,3 +248,15 @@ private func TryPutInto(object into)
 	UpdateStackDisplay();
 	return false;
 }
+
+// Save stack counts in saved scenarios
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (IsInfiniteStackCount())
+		props->AddCall("Stack", this, "SetInfiniteStackCount");
+	else if (GetStackCount() != MaxStackCount())
+		props->AddCall("Stack", this, "SetStackCount", GetStackCount());
+	return true;
+}

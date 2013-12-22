@@ -85,6 +85,21 @@ func SetFragile()
     segments[i].fragile = 1;
 }
 
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Category");
+	// Save bridge creation on scenario save
+	if (objects && objects[0] && objects[1])
+	{
+		var o1 = objects[0][0], o2 = objects[1][0];
+		if (o1 && o2) props->AddCall("Bridge", this, "MakeBridge", o1, o2);
+	}
+	return true;
+}
+
+
+
 /* --------------------- Callbacks form the rope ---------------------- */
 
 /* To be overloaded for special segment behaviour */

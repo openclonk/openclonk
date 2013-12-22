@@ -390,3 +390,10 @@ func CreateConstructionPreview(object constructing_clonk)
 public func GetFlagRadius(){if (lflag) return lflag.radius; else return DefaultFlagRadius;}
 public func GetFlagConstructionTime() {return lflag.construction_time;}
 public func GetFlagMarkerID(){return LibraryFlag_Marker;}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (lflag && lflag.radius != DefaultFlagRadius) props->AddCall("Radius", this, "SetFlagRadius", lflag.radius);
+	return true;
+}

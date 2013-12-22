@@ -36,6 +36,10 @@ private func FxIntEvaporateTimer(object target, proplist effect, int time)
 	return 1;
 }
 
+// Volcanoes aren't stored. But store lava chunks because authors might use them
+// in other places.
+//func func SaveScenarioObject() { return false; }
+
 /*-- Proplist --*/
 
 local Name = "$Name$";

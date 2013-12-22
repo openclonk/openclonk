@@ -454,6 +454,14 @@ func Hit()
 	Sound("WoodHit?");
 }
 
+// Save unrolled ladders in scenario
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (UnrollDir) props->AddCall("Unroll", this, "Unroll", UnrollDir);
+	return true;
+}
+
 public func IsTool() { return true; }
 public func IsToolProduct() { return true; }
 

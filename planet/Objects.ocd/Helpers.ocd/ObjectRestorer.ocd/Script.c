@@ -198,5 +198,16 @@ global func FxRestoreModeStop(object target, effect, int reason, bool  temporary
 	return 1;
 }
 
+/* Scenario saving: Objects with restoration effect are stored. Restorations "on the way" are not. */
+
+func SaveScenarioObject() { return false; }
+
+global func FxRestoreModeSaveScen(obj, effect, props)
+{
+	props->AddCall("Restore", obj, "AddRestoreMode", effect.to_container, effect.to_x, effect.to_y);
+	return true;
+}
+
+
 local Name = "$Name$";
 local Description = "$Description$";

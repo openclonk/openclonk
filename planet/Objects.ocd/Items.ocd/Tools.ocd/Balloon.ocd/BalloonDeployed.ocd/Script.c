@@ -2,12 +2,11 @@
 
 local rider;
 local parent;
-local idir,dir;
+local idir;
 
 protected func Initialize()
 {
 	idir = 0;
-	dir = 0;
 	SetAction("Inflate");
 	SetComDir(COMD_None);
 	AddEffect("Float",this,1,1,this);
@@ -107,6 +106,11 @@ private func FxFloatTimer(object target, effect, int time)
 		return 1;
 	}
 }
+
+// Could store and restore the deployed balloon, but all the
+// dependencies to be set when recreating this mid-animation
+// will probably cause more upwards incompatibilities than benefit
+func SaveScenarioObject() { return false; }
 
 local ActMap = {
 

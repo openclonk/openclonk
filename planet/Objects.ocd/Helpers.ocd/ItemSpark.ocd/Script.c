@@ -89,6 +89,12 @@ global func FxGlobalItemSparksTimer(_, effect, time)
 	s.toSpawn=what;
 }
 
+global func FxGlobalItemSparksSaveScen(_, effect, props)
+{
+	props->Add("Sparks", "StartItemSparks(%d, %v)", effect.rate, effect.mirror);
+	return true;
+}
+
 protected func Initialize()
 {
 	if (!ItemSpark_particle)
@@ -213,3 +219,5 @@ func Hit()
 	if(GetEffect("Off", this)) return SetSpeed();
 	DoSpawn();
 }
+
+func SaveScenarioObject() { return false; }

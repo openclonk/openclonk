@@ -99,6 +99,9 @@ func FxIntFusingStop()
 	Sound("FuseLoop",false,75,nil,-1);
 }
 
+// Only the main dynamite pack is stored.
+public func SaveScenarioObject() { return false;}
+
 public func IsFuse() { return true; }
 
 local ActMap = {

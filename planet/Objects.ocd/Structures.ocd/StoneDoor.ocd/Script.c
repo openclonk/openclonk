@@ -91,6 +91,12 @@ protected func FxAutoControlTimer(object target, effect, int time)
 	return 1;
 }
 
+func FxAutoControlSaveScen(obj, fx, props)
+{
+	props->AddCall("AutoControl", obj, "SetAutoControl", fx.team);
+	return true;
+}
+
 /*-- Destruction --*/
 
 private func GetStrength() { return 180; }

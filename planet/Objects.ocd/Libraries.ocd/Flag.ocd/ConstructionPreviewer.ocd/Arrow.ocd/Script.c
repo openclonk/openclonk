@@ -6,6 +6,9 @@ protected func Initialize()
 	return;
 }
 
+// UI not saved.
+func SaveScenarioObject() { return false; }
+
 /*-- Proplist --*/
 
 local ActMap = {

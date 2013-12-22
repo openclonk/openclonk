@@ -45,6 +45,13 @@ protected func FxIntMeteorControlTimer(object target, proplist effect, int time)
 	return FX_OK;
 }
 
+// Scenario saving
+func FxIntMeteorControlSaveScen(obj, fx, props)
+{
+	props->Add("Meteor", "Meteor->SetChance(%d)", fx.chance);
+	return true;
+}
+
 global func LaunchMeteor(int x, int y, int size, int xdir, int ydir)
 {
 	var meteor = CreateObject(Meteor);
@@ -121,6 +128,13 @@ protected func Hit(int xdir, int ydir)
 	Explode(dam);
 	return;
 }
+
+// Scenario saving
+func FxIntMeteorSaveScen(obj, fx, props)
+{
+	props->AddCall("Meteor", obj, "AddEffect", "\"IntMeteor\"", obj, 100, 1, obj);
+	return true;
+	}
 
 /*-- Proplist --*/
 

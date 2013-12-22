@@ -36,6 +36,13 @@ protected func FxIntEarthquakeControlTimer(object target, proplist effect, int t
 	return FX_OK;
 }
 
+// Scenario saving
+func FxIntEarthquakeControlSaveScen(obj, fx, props)
+{
+	props->Add("Earthquake", "Earthquake->SetChance(%d)", fx.chance);
+	return true;
+}
+
 // Launches an earthquake with epicenter (x,y).
 global func LaunchEarthquake(int x, int y, int strength)
 {

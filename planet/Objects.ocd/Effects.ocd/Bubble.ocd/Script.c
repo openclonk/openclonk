@@ -85,3 +85,6 @@ func OnClonkBreath(object clonk)
 
 // Bubbles can be breathed in by anything but their creator
 func CanBeBreathed(object by_clonk) { return !creator || (by_clonk != creator); }
+
+// No need to blow up scenario object list with bubble spam
+func SaveScenarioObject() { return false; }

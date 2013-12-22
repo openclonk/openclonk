@@ -51,4 +51,6 @@ func FxTimerTimer()
 	this->SetClrModulation(origin->GetStarColor(Sin(this->GetActTime(), 50)));
 }
 
+public func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

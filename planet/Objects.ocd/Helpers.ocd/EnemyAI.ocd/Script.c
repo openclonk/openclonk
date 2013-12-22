@@ -89,6 +89,24 @@ func SetEncounterCB(object clonk, string cb_fn)
 	return true;
 }
 
+/* Scenario saving */
+
+func FxS2AISaveScen(clonk, fx, props)
+{
+	if (!clonk) return false;
+	props->AddCall("S2AI", S2AI, "AddAI", clonk);
+	if (fx.home_x != clonk->GetX() || fx.home_y != clonk->GetY() || fx.home_dir != clonk->GetDir())
+		props->AddCall("S2AI", S2AI, "SetHome", clonk, fx.home_x, fx.home_y, GetConstantNameByValueSafe(fx.home_dir, "DIR_"));
+	props->AddCall("S2AI", S2AI, "SetGuardRange", clonk, fx.guard_range.x, fx.guard_range.y, fx.guard_range.wdt, fx.guard_range.hgt);
+	if (fx.max_aggro_distance != S2AI_DefMaxAggroDistance)
+		props->AddCall("S2AI", S2AI, "SetMaxAggroDistance", clonk, fx.max_aggro_distance);
+	if (fx.ally_alert_range)
+		props->AddCall("S2AI", S2AI, "SetAllyAlertRange", clonk, fx.ally_alert_range);
+	if (fx.encounter_cb)
+		props->AddCall("S2AI", S2AI, "SetEncounterCB", clonk, Format("%v", fx.encounter_cb));
+	return true;
+}
+
 
 /* AI effect callback functions */
 

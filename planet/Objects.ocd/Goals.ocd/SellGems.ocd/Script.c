@@ -29,6 +29,17 @@ func OnGemSold()
 	return true;
 }
 
+
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (gems_to_sell) props->AddCall("Goal", this, "SetTargetAmount", gems_to_sell);
+	return true;
+}
+
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if no more gems need to be sold

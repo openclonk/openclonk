@@ -12,6 +12,13 @@ private func Check()
 	if(!GBackLiquid()) SetAction("Limp");
 }
 
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetPhase()) props->AddCall("Phase", this, "SetPhase", GetPhase()); // ensure that not all seaweed are synced on scenario load
+	return true;
+}
+
 
 
 local Name = "$Name$";
@@ -48,3 +55,4 @@ local ActMap = {
 		Animation = "Limp",
 	},
 };
+

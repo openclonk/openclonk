@@ -317,3 +317,9 @@ public func OnMouseOutItem(object out_item, object dragged_item)
 	return _inherited(out_item, dragged_item, ...);
 }
 
+// Don't save open menus in scenarios
+public func SaveScenarioObject()
+{
+	if (GetID() == Library_ProductionMenu) return false;
+	return inherited(...);
+}

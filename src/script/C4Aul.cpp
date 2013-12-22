@@ -200,6 +200,7 @@ void C4AulScriptEngine::Clear()
 	RegisterGlobalConstant("Global", GlobalPropList);
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
+	UserFiles.clear();
 }
 
 void C4AulScriptEngine::RegisterGlobalConstant(const char *szName, const C4Value &rValue)
@@ -234,6 +235,7 @@ bool C4AulScriptEngine::Denumerate(C4ValueNumbers * numbers)
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 {
+	assert(UserFiles.empty()); // user files must not be kept open
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(mkParAdapt(GlobalNamed, numbers), "StaticVariables", GlobalNamedDefault));
@@ -264,6 +266,42 @@ std::list<const char*> C4AulScriptEngine::GetFunctionNames(C4PropList * p)
 	global_functions.sort();
 	functions.splice(functions.end(), global_functions);
 	return functions;
+}
+
+int32_t C4AulScriptEngine::CreateUserFile()
+{
+	// create new file and return handle
+	// find empty handle
+	int32_t last_handle = 1;
+	for (std::list<C4AulUserFile>::const_iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() >= last_handle)
+			last_handle = (*i).GetHandle()+1;
+	// Create new user file
+	UserFiles.push_back(C4AulUserFile(last_handle));
+	return last_handle;
+}
+
+void C4AulScriptEngine::CloseUserFile(int32_t handle)
+{
+	// close user file given by handle
+	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() == handle)
+		{
+			UserFiles.erase(i);
+			break;
+		}
+}
+
+C4AulUserFile *C4AulScriptEngine::GetUserFile(int32_t handle)
+{
+	// get user file given by handle
+	for (std::list<C4AulUserFile>::iterator i = UserFiles.begin(); i != UserFiles.end(); ++i)
+		if ((*i).GetHandle() == handle)
+		{
+			return &*i;
+		}
+	// not found
+	return NULL;
 }
 
 /*--- C4AulFuncMap ---*/

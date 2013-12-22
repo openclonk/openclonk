@@ -345,5 +345,34 @@ public func ClearCPBack()
 	return;
 }
 
+// Storing checkpoints in Objects.c
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = GetCPSize();
+	if (v != 20) props->AddCall("Checkpoint", this, "SetCPSize", v);
+	// Checkpoints without a goal? Use regular saving.
+	if (!cp_con)
+	{
+		
+		if (v = GetCPMode()) props->AddCall("Checkpoint", this, "SetCPMode", GetBitmaskNameByValue(v, "PARKOUR_CP_"));
+		if (v = GetCPNumber()) props->AddCall("Checkpoint", this, "SetCPNumber", v);
+		return true;
+	}
+	// Special checkpoints
+	props->RemoveCreation();
+	if (cp_mode & PARKOUR_CP_Start)
+		props->AddCall(SAVEOBJ_Creation, cp_con, "SetStartpoint", GetX(), GetY());
+	else if (cp_mode & PARKOUR_CP_Finish)
+		props->AddCall(SAVEOBJ_Creation, cp_con, "SetFinishpoint", GetX(), GetY(), !!(cp_mode & PARKOUR_CP_Team));
+	else
+	{
+		var other_cp_modes = cp_mode & (~PARKOUR_CP_Finish) & (~PARKOUR_CP_Start);
+		props->AddCall(SAVEOBJ_Creation, cp_con, "AddCheckpoint", GetX(), GetY(), GetBitmaskNameByValue(other_cp_modes, "PARKOUR_CP_"));
+	}
+	return true;
+}
+
+
 /*-- Proplist --*/
 local Name = "$Name$";

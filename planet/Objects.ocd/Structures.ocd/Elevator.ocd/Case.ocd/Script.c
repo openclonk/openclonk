@@ -649,6 +649,8 @@ func Control2Master(string call, object clonk)
 	return partner->Call(call, clonk, ...);
 }
 
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 		Drive = {
 			Prototype = Action,

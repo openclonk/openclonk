@@ -209,6 +209,19 @@ public func IsBarrelForMaterial(string sznMaterial)
 
 public func IsLiquidContainer() { return true; }
 
+public func SetFilled(material, volume)
+{
+	szLiquid = material;
+	iVolume = volume;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (szLiquid) props->AddCall("Fill", this, "SetFilled", Format("%v", szLiquid), iVolume);
+	return true;
+}
+
 /**
 Extract liquid from barrel
 @param sznMaterial: Material to extract; Wildcardsupport

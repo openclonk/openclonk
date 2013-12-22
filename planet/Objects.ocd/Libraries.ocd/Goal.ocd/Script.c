@@ -130,3 +130,11 @@ protected func Activate(plr)
 		return(MessageWindow("$MsgGoalFulfilled$", plr));
 	return MessageWindow(GetProperty("Description"), plr);
 }
+
+// Scenario sacing
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (mission_password) props->AddCall("MissionAccess", this, "SetMissionAccess", Format("%v", mission_password));
+	return true;
+}

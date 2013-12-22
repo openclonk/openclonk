@@ -26,6 +26,9 @@ func DoInit(int first_player)
 	// Goal
 	CreateObject(Goal_Plane);
 	
+	// Rules
+	CreateObject(Rule_TeamAccount, 50, 50);
+	
 	// NPC: Merchant.
 	var merchant = CreateObject(Clonk, 170, 870);
 	merchant->MakeInvincible();

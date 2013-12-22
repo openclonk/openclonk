@@ -50,3 +50,6 @@ public func OnLadderClimb(clonk)
 	if(master != nil)
 		master->OnLadderClimb(clonk, index);
 }
+
+// Main ladder object is saved
+func SaveScenarioObject() { return false; }

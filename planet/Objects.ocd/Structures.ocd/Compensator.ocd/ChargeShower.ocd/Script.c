@@ -71,3 +71,5 @@ public func Initialize()
 	Set(to);
 	return true;
 }
+
+public func SaveScenarioObject() { return false; }

@@ -57,6 +57,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_PreInitializePlayer "~PreInitializePlayer" // iPlayer
 #define PSF_InitializePlayerControl "~InitializePlayerControl" // iPlayer, szControlSet, hasKeyboard, hasMouse, hasGamepad
 #define PSF_InitializeMap       "~InitializeMap" // map
+#define PSF_InitializeObjects   "~InitializeObjects"
 #define PSF_RemovePlayer        "~RemovePlayer" // iPlayer
 #define PSF_RelaunchPlayer      "~RelaunchPlayer" // iPlayer, iKilledBy
 #define PSF_Time1               "~Time1"
@@ -110,6 +111,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_EditCursorSelection   "~EditCursorSelection"
 #define PSF_EditCursorDeselection "~EditCursorDeselection"
 #define PSF_DigOutObject        "~DigOutObject" // C4Object *obj
+#define PSF_SaveScenarioObjects "~SaveScenarioObjects" // int file_handle
 
 // Effect callbacks
 

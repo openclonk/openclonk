@@ -33,6 +33,17 @@ public func SetResource(string resource)
 	return;
 }
 
+/*-- Scenario saving --*/
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	for (var resource in resource_list)
+		props->AddCall("Goal", this, "SetResource", Format("%v", resource));
+	return true;
+}
+
+
 /*-- Goal interface --*/
 
 // The goal is fulfilled if all specified resource have been mined.

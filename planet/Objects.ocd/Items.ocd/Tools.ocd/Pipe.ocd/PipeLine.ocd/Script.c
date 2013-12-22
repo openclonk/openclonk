@@ -62,3 +62,10 @@ private func BreakMessage()
 	line_end->Message("$TxtPipeBroke$");
 	return;
 }
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	SaveScenarioObjectAction(props);
+	return true;
+}

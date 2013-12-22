@@ -136,4 +136,6 @@ private func GiveWeapon(id weapon_id, bool alt)
 	return;
 }
 
+public func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

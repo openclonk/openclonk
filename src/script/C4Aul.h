@@ -282,6 +282,24 @@ public:
 };
 
 
+// user text file to which scripts can write using FileWrite().
+// actually just writes to an internal buffer
+class C4AulUserFile
+{	
+	StdCopyStrBuf sContents;
+	int32_t handle;
+
+public:
+	C4AulUserFile(int32_t handle) : handle(handle) {}
+	void Write(const char *data, size_t data_length) { sContents.Append(data, data_length); }
+
+	const char *GetFileContents() { return sContents.getData(); }
+	StdStrBuf GrabFileContents() { StdStrBuf r; r.Take(sContents); return r; }
+	size_t GetFileLength() { return sContents.getLength(); }
+	int32_t GetHandle() const { return handle; }
+};
+
+
 // script class
 class C4AulScript
 {
@@ -341,6 +359,10 @@ protected:
 	C4Value GlobalPropList;
 	C4AulScript *Child0, *ChildL; // tree structure
 
+	// all open user files
+	// user files aren't saved - they are just open temporary e.g. during game saving
+	std::list<C4AulUserFile> UserFiles;
+
 public:
 	int warnCnt, errCnt; // number of warnings/errors
 	int lineCnt; // line count parsed
@@ -381,6 +403,11 @@ public:
 
 	// Compile scenario script data (without strings and constants)
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
+
+	// Handle user files
+	int32_t CreateUserFile(); // create new file and return handle
+	void CloseUserFile(int32_t handle); // close user file given by handle
+	C4AulUserFile *GetUserFile(int32_t handle); // get user file given by handle
 
 	friend class C4AulFunc;
 	friend class C4ScriptHost;

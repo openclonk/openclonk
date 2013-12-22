@@ -27,6 +27,13 @@ private func Destroy()
 	RemoveObject();
 }
 
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Con");
+	return true;
+}
+
 global func PlaceGrass(int amount, int start, int end, int height, int bottom)
 {
 	if (!start)

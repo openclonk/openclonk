@@ -367,3 +367,6 @@ public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 }
 
 public func NoWindbagForce() {	return true; }
+
+// Only the grappler is stored.
+public func SaveScenarioObject() { return false; }

@@ -281,4 +281,12 @@ public func GetShortDescription(int plr)
 	return ""; // TODO
 }
 
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetPointLimit() != 10) props->AddCall("Goal", this, "SetPointLimit", GetPointLimit());
+	if (GetRadius() != 300) props->AddCall("Goal", this, "SetRadius", GetRadius());
+	return true;
+}
+
 local Name = "$Name$";

@@ -49,6 +49,13 @@ public func Harvest(object clonk)
 	return true;
 }
 
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetAction() != "Grow" || GetPhase()) SaveScenarioObjectAction(props);
+	return true;
+}
+
 local Name = "$Name$";
 local Description = "$Description$";
 local BlastIncinerate = 1;

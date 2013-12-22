@@ -55,6 +55,9 @@ public func SetAirshipParent(object airship)
 	parent = airship;
 }
 
+// Only save main airship object
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 		Attach = {
 			Prototype = Action,

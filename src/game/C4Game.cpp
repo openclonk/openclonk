@@ -588,6 +588,7 @@ void C4Game::Clear()
 	MessageInput.Clear();
 	Info.Clear();
 	Title.Clear();
+	pScenarioObjectsScript = NULL;
 	::MapScript.Clear();
 	::GameScript.Clear();
 	Names.Clear();
@@ -1684,19 +1685,51 @@ bool C4Game::CompileRuntimeData(C4Group &hGroup, bool fLoadSection, bool exact, 
 
 bool C4Game::SaveData(C4Group &hGroup, bool fSaveSection, bool fSaveExact, C4ValueNumbers * numbers)
 {
-	StdStrBuf Buf;
-	// Decompile (without players for scenario sections)
-	DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers), &Buf, "Game");
-
-	// Empty? All default; just remove from group then
-	if (!Buf.getLength())
+	if (fSaveExact)
 	{
-		hGroup.Delete(C4CFN_Game);
-		return true;
-	}
+		StdStrBuf Buf;
+		// Decompile (without players for scenario sections)
+		DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, CompileSettings(fSaveSection, !fSaveSection && fSaveExact, fSaveExact), numbers), &Buf, "Game");
 
-	// Save
-	return hGroup.Add(C4CFN_Game,Buf,false,true);
+		// Clear alternate saving method
+		hGroup.Delete(C4CFN_ScenarioObjectsScript);
+
+		// Empty? All default; just remove from group then
+		if (!Buf.getLength())
+		{
+			hGroup.Delete(C4CFN_Game);
+			return true;
+		}
+
+		// Save
+		return hGroup.Add(C4CFN_Game,Buf,false,true);
+	}
+	else
+	{
+		// Clear alternate saving method
+		hGroup.Delete(C4CFN_Game);
+
+		// Save objects to file using system scripts
+		int32_t objects_file_handle = ::ScriptEngine.CreateUserFile();
+		C4AulParSet pars(C4VInt(objects_file_handle));
+		bool result = !!::ScriptEngine.GetPropList()->Call(PSF_SaveScenarioObjects, &pars);
+		C4AulUserFile *file = ::ScriptEngine.GetUserFile(objects_file_handle);
+		if (!result || !file || !file->GetFileLength())
+		{
+			// Nothing written? Then we don't have objects.
+			hGroup.Delete(C4CFN_ScenarioObjectsScript);
+			// That's OK; not an error.
+			result = true;
+		}
+		else
+		{
+			// Write objects script to file!
+			StdStrBuf data = file->GrabFileContents();
+			result = hGroup.Add(C4CFN_ScenarioObjectsScript,data,false,true);
+		}
+		::ScriptEngine.CloseUserFile(objects_file_handle);
+		return result;
+	}
 }
 
 bool C4Game::SaveGameTitle(C4Group &hGroup)
@@ -2027,9 +2060,11 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetInitProgress(55);
 
 		// Scenario scripts (and local system.ocg)
-		GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
+		::GameScript.Load(ScenarioFile, C4CFN_Script, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// Map scripts
-		MapScript.Load(ScenarioFile, C4CFN_MapScript, Config.General.LanguageEx, &ScenarioLangStringTable);
+		::MapScript.Load(ScenarioFile, C4CFN_MapScript, Config.General.LanguageEx, &ScenarioLangStringTable);
+		// Scenario objects
+		pScenarioObjectsScript->Load(ScenarioFile, C4CFN_ScenarioObjectsScript, Config.General.LanguageEx, &ScenarioLangStringTable);
 		// After defs to get overloading priority
 		if (!LoadAdditionalSystemGroup(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
@@ -2054,7 +2089,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 		SetInitProgress(60);
 	}
 
-	// Load setion sounds
+	// Load section sounds
 	Application.SoundSystem.LoadEffects(hGroup);
 
 	// determine startup player count
@@ -2127,6 +2162,10 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky, C4Value
 
 	// Okay; everything in denumerated state from now on
 	PointersDenumerated = true;
+
+	// scenario objects script
+	if (!GameText.GetData() && pScenarioObjectsScript && pScenarioObjectsScript->GetPropList())
+		pScenarioObjectsScript->GetPropList()->Call(PSF_InitializeObjects);
 
 	// Environment
 	if (!C4S.Head.NoInitialize && fLandscapeLoaded)
@@ -2236,6 +2275,10 @@ bool C4Game::InitScriptEngine()
 	// if it's a physical group: watch out for changes
 	if (!File.IsPacked() && Game.pFileMonitor)
 		Game.pFileMonitor->AddDirectory(File.GetFullName().getData());
+
+	// Prepare host for Objects.c script
+	pScenarioObjectsScript = new C4ScenarioObjectsScriptHost();
+	pScenarioObjectsScript->Reg2List(&::ScriptEngine);
 
 	// load standard clonk names
 	Names.Load(File, C4CFN_Names);
@@ -2652,7 +2695,7 @@ bool C4Game::LoadScenarioComponents()
 		}
 		// load this section into temp store
 		C4ScenarioSection *pSection = new C4ScenarioSection(SctName);
-		if (!pSection->ScenarioLoad(fn))
+		if (!pSection->ScenarioLoad(ScenarioFile, fn))
 			{ LogFatal(FormatString(LoadResStr("IDS_ERR_SCENSECTION"), fn).getData()); return false; }
 
 	}
@@ -3306,6 +3349,8 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	C4S.Load(*pGrp, true);
 	// determine whether a new sky has to be loaded
 	bool fLoadNewSky = !SEqualNoCase(szOldSky, C4S.Landscape.SkyDef) || pGrp->FindEntry(C4CFN_Sky ".*");
+	// set new Objects.c source
+	Game.pScenarioObjectsScript = pLoadSect->pObjectScripts;
 	// re-init game in new section
 	C4ValueNumbers numbers;
 	if (!InitGame(*pGrp, true, fLoadNewSky, &numbers))

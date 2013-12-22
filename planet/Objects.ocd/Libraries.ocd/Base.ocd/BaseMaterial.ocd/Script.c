@@ -176,4 +176,8 @@ public func DoDoHomebaseProduction (id idID, int iChange)
 	return false;
 }
 
+// Internal management object not saved.
+// Use Scenario.txt to adjust homebase material
+func SaveScenarioObject() { return false; }
+
 local Name = "$Name$";

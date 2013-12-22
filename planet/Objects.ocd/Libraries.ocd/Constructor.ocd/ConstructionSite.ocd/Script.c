@@ -60,6 +60,15 @@ public func Set(id def, int dir, object stick)
 	ShowMissingComponents();
 }
 
+// Scenario saving
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (definition) props->AddCall("Definition", this, "Set", definition, direction, stick_to);
+	return true;
+}
+
 // only allow collection if needed
 public func RejectCollect(id def, object obj)
 {

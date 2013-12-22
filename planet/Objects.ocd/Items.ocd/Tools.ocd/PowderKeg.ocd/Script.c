@@ -115,6 +115,14 @@ func Hit()
 	Sound("DullWoodHit?");
 }
 
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = PowderCount();
+	if (v != 12) props->AddCall("Powder", this, "SetPowderCount", v);
+	return true;
+}
+
 func IsChemicalProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 

@@ -46,7 +46,7 @@ public func MoveHorizontal(int left, int right, int speed)
 	effect.Right = right;
 	if (speed != nil)
 		SetMoveSpeed(10 * speed);
-	SetComDir(COMD_Left);
+	if (GetComDir() != COMD_Right) SetComDir(COMD_Left);
 	return;
 }
 
@@ -72,7 +72,7 @@ public func MoveVertical(int top, int bottom, int speed)
 	effect.Bottom = bottom;
 	if (speed != nil)
 		SetMoveSpeed(10 * speed);
-	SetComDir(COMD_Up);
+	if (GetComDir() != COMD_Down) SetComDir(COMD_Up);
 	return;
 }
 
@@ -89,6 +89,30 @@ private func FxMoveVerticalTimer(object target, proplist effect)
 	return 1;
 }
 
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (size != 4) props->AddCall("Size", this, "SetSize", size);
+	if (ActMap.Moving.Speed != GetID().ActMap.Moving.Speed) props->AddCall("MoveSpeed", this, "SetMoveSpeed", ActMap.Moving.Speed); // TODO: Does SetMoveSpeed even work?
+	if (GetComDir() == COMD_None) props->Remove("ComDir");
+	return true;
+}
+
+func FxMoveHorizontalSaveScen(obj, fx, props)
+{
+	props->AddCall("Move", obj, "MoveHorizontal", fx.Left, fx.Right);
+	return true;
+}
+
+func FxMoveVerticalSaveScen(obj, fx, props)
+{
+	props->AddCall("Move", obj, "MoveVertical", fx.Top, fx.Bottom);
+	return true;
+}
+
+/* Properties */
 
 local ActMap = {
 	Moving = {

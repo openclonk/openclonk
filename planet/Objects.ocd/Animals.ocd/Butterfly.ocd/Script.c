@@ -116,6 +116,14 @@ private func GetHorizonHeight(int x)
 	return height;
 }
 
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("ClrModulation"); // randomized in Initialize
+	SaveScenarioObjectAction(props);
+	return true;
+}
+
 local ActMap = {
 
 Fly = {

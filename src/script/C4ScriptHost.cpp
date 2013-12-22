@@ -111,6 +111,7 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
+
 /*--- C4ExtraScriptHost ---*/
 
 C4ExtraScriptHost::C4ExtraScriptHost():

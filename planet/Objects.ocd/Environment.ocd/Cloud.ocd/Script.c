@@ -325,6 +325,24 @@ public func SetCloudAlpha(int alpha)
 	cloud_alpha = BoundBy(alpha, 0, 255);
 }
 
+
+/* Scenartio saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetComDir() == COMD_None) props->Remove("ComDir");
+	props->Remove("Con");
+	props->Remove("ClrModulation");
+	if (rain_mat) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", rain_mat), rain_amount);
+	if (lightning_chance) props->AddCall("Lightning", this, "SetLightning", lightning_chance);
+	if (rain) props->AddCall("Rain", this, "SetRain", rain);
+	return true;
+}
+
+
+/* Properties */
+
 local ActMap = {
 	Fly = {
 		Prototype = Action,

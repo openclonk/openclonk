@@ -65,6 +65,9 @@ func CreateDouble()
   }
 }
 
+// Main bridge object is saved
+func SaveScenarioObject() { return false; }
+
 local ActMap = {
 Attach = {
   Prototype = Action,

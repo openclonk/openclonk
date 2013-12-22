@@ -292,4 +292,23 @@ private func AdjustToTime()
 	DoSkyShade();
 }
 
+
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// Initialize function depends on this object implicitely
+	// So make sure it's created before this
+	var celestial_env = FindObject(Find_ID(Environment_Celestial));
+	if (celestial_env) celestial_env->MakeScenarioSaveName();
+	// Save time props
+	if (GetTime() != 43200) props->AddCall("Time", this, "SetTime", GetTime());
+	if (GetCycleSpeed() != 30) props->AddCall("CycleSpeed", this, "SetCycleSpeed", GetCycleSpeed());
+	return true;
+}
+
+
+/* Properties */
+
 local Name = "Time";

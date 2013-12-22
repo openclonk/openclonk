@@ -600,6 +600,18 @@ static bool FnSortArrayByArrayElement(C4PropList * _this, C4ValueArray *pArray, 
 	return true;
 }
 
+static bool FnFileWrite(C4PropList * _this, int32_t file_handle, C4String *data)
+{
+	// resolve file handle to user file
+	C4AulUserFile *file = ::ScriptEngine.GetUserFile(file_handle);
+	if (!file) throw new C4AulExecError("FileWrite: invalid file handle");
+	// prepare string to write
+	if (!data) return false; // write NULL? No.
+	// write it
+	file->Write(data->GetCStr(), data->GetData().getLength());
+	return true;
+}
+
 //=========================== C4Script Function Map ===================================
 
 C4ScriptConstDef C4ScriptConstMap[]=
@@ -682,6 +694,7 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(SortArrayByProperty);
 	F(SortArrayByArrayElement);
 	F(LocateFunc);
+	F(FileWrite);
 
 	F(eval);
 	F(GetConstantNameByValue);

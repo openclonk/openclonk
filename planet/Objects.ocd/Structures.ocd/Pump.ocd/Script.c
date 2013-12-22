@@ -100,6 +100,7 @@ func Initialize()
 	SetState("Wait");
 }
 
+
 /*-- Interaction --*/
 
 public func IsInteractable() { return GetCon() >= 100; }

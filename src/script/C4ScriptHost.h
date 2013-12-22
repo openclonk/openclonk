@@ -66,7 +66,7 @@ protected:
 	friend class C4AulDebug;
 };
 
-// script host for System.ocg scripts
+// script host for System.ocg scripts and scenario section Objects.c
 class C4ExtraScriptHost: public C4ScriptHost
 {
 	C4Value ParserPropList;
@@ -76,6 +76,13 @@ public:
 
 	bool Delete() { return true; }
 	virtual C4PropListStatic * GetPropList();
+};
+
+// script host for scenario section Objects.c
+class C4ScenarioObjectsScriptHost : public C4ExtraScriptHost
+{
+public:
+	C4ScenarioObjectsScriptHost() : C4ExtraScriptHost() {}
 };
 
 // script host for defs
