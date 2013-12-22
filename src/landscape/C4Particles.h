@@ -323,7 +323,8 @@ public:
 };
 
 // a chunk contains all of the single particles that can be drawn with one draw call (~"have certain similar attributes")
-class C4ParticleChunk
+// this is noncopyable to make sure that the OpenGL buffers are never freed multiple times
+class C4ParticleChunk : public boost::noncopyable
 {
 private:
 	C4ParticleDef *sourceDefinition;
@@ -344,6 +345,7 @@ private:
 
 	// delete the particle at indexTo. If possible, replace it with the particle at indexFrom to keep the particles tighly packed
 	void DeleteAndReplaceParticle(size_t indexToReplace, size_t indexFrom);
+
 public:
 	C4ParticleChunk() : sourceDefinition(0), blitMode(0), attachment(C4ATTACH_None), particleCount(0), drawingDataVertexBufferObject(0), drawingDataVertexArraysObject(0)
 	{
@@ -372,7 +374,7 @@ public:
 class C4ParticleList : public boost::noncopyable
 {
 private:
-	std::list<C4ParticleChunk> particleChunks;
+	std::list<C4ParticleChunk*> particleChunks;
 
 	C4Object *targetObject;
 

@@ -1082,9 +1082,10 @@ void C4ParticleList::Exec(float timeDelta)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end();)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end();)
 	{
-		if (iter->Exec(targetObject, timeDelta))
+		C4ParticleChunk *chunk = *iter;
+		if (chunk->Exec(targetObject, timeDelta))
 		{
 			++iter;
 		}
@@ -1133,9 +1134,9 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 
 	accessMutex.Enter();
 
-	for (std::list<C4ParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
 	{
-		iter->Draw(cgo, obj);
+		(*iter)->Draw(cgo, obj);
 	}
 
 	accessMutex.Leave();
@@ -1159,7 +1160,11 @@ void C4ParticleList::Draw(C4TargetFacet cgo, C4Object *obj)
 void C4ParticleList::Clear()
 {
 	accessMutex.Enter();
+
+	for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
+		delete *iter;
 	particleChunks.clear();
+
 	accessMutex.Leave();
 }
 
@@ -1174,10 +1179,11 @@ C4ParticleChunk *C4ParticleList::GetFittingParticleChunk(C4ParticleDef *def, uin
 		chunk = lastAccessedChunk;
 	else
 	{
-		for (std::list<C4ParticleChunk>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
+		for (std::list<C4ParticleChunk*>::iterator iter = particleChunks.begin(); iter != particleChunks.end(); ++iter)
 		{
-			if (!iter->IsOfType(def, blitMode, attachment)) continue;
-			chunk = &(*iter);
+			C4ParticleChunk *current = *iter;
+			if (!current->IsOfType(def, blitMode, attachment)) continue;
+			chunk = current;
 			break;
 		}
 	}
@@ -1185,8 +1191,8 @@ C4ParticleChunk *C4ParticleList::GetFittingParticleChunk(C4ParticleDef *def, uin
 	// add new chunk?
 	if (!chunk)
 	{
-		particleChunks.push_back(C4ParticleChunk());
-		chunk = &particleChunks.back();
+		particleChunks.push_back(new C4ParticleChunk());
+		chunk = particleChunks.back();
 		chunk->sourceDefinition = def;
 		chunk->blitMode = blitMode;
 		chunk->attachment = attachment;
