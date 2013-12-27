@@ -1504,8 +1504,16 @@ static long FnGetDefBottom(C4PropList * _this)
 	if (!_this || !_this->GetDef())
 		throw new NeedNonGlobalContext("GetDefBottom");
 
-	assert(!Object(_this) || Object(_this)->Def == _this->GetDef());
-	return _this->GetDef()->Shape.y+_this->GetDef()->Shape.Hgt + (Object(_this) ? Object(_this)->GetY() : 0);
+	C4Object *obj = Object(_this);
+	C4Def *def = _this->GetDef();
+	assert(!obj || obj->Def == def);
+	
+	if (obj)
+		return obj->GetY() + obj->Shape.GetBottom();
+	else if (def)
+		return def->Shape.GetBottom();
+	else
+		return 0;
 }
 
 static bool FnSetMenuSize(C4Object *Obj, long iCols, long iRows)
