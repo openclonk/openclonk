@@ -1163,6 +1163,14 @@ void C4ParticleList::Clear()
 		delete *iter;
 	particleChunks.clear();
 
+	if (targetObject)
+	{
+		if (this == targetObject->FrontParticles) targetObject->FrontParticles = NULL;
+		else if (this == targetObject->BackParticles) targetObject->BackParticles = NULL;
+	}
+	else
+		if(this == ::Particles.globalParticles) ::Particles.globalParticles = NULL;
+
 	accessMutex.Leave();
 }
 

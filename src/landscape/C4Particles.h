@@ -512,6 +512,8 @@ public:
 	// removes all of the existing particles (used f.e. for scenario section loading)
 	void ClearAllParticles();
 
+	friend class C4ParticleList;
+
 #endif
 
 };
