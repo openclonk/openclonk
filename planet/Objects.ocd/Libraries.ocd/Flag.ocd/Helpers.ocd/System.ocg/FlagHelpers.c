@@ -15,6 +15,7 @@ global func GetFlagpoleForPosition(
 	
 	for(var flag in LibraryFlag_flag_list)
 	{
+		if (!flag) continue; // safety in case this gets called during destruction of a flag
 		var d = Distance(GetX() + x, GetY() + y, flag->GetX(), flag->GetY());
 		if(d > flag->GetFlagRadius()) continue; 
 		
