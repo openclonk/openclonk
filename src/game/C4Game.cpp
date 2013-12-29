@@ -3242,6 +3242,7 @@ bool C4Game::LoadScenarioSection(const char *szSection, DWORD dwFlags)
 	if (!pCurrentScenarioSection)
 	{
 		pCurrentScenarioSection = new C4ScenarioSection(CurrentScenarioSection);
+		pCurrentScenarioSection->pObjectScripts = Game.pScenarioObjectsScript;
 		if (!*CurrentScenarioSection) SCopy(C4ScenSect_Main, CurrentScenarioSection, C4MaxName);
 	}
 	// save current section state
