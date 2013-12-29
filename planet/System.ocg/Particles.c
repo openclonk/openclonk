@@ -147,6 +147,27 @@ global func Particles_Spark()
 	};
 }
 
+global func Particles_Colored(prototype, color, color2)
+{
+	// Colors the given particle. If color2 is given, colors in a random fade between color and color2
+	if (GetType(color2))
+	{
+		return {
+			Prototype = prototype,
+			R = PV_Random((color >> 16) & 0xff, (color2 >> 16) & 0xff),
+			G = PV_Random((color >>  8) & 0xff, (color2 >>  8) & 0xff),
+			B = PV_Random((color >>  0) & 0xff, (color2 >>  0) & 0xff),
+		};
+	}
+	else
+		return {
+			Prototype = prototype,
+			R = (color >> 16) & 0xff,
+			G = (color >>  8) & 0xff,
+			B = (color >>  0) & 0xff
+		};
+}
+
 global func Particles_SparkFire()
 {
 	return
