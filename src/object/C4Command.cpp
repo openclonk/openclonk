@@ -1404,7 +1404,7 @@ bool C4Command::InitEvaluation()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CMD_Wait:
 		// Update interval by Data
-		if (!Data) UpdateInterval=Data.getInt();
+		if (!!Data) UpdateInterval=Data.getInt();
 		// Else update interval by Tx
 		else if (Tx._getInt()) UpdateInterval=Tx._getInt();
 		return true;
