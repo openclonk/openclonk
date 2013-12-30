@@ -41,6 +41,7 @@ public func SetMoveSpeed(int speed)
 
 public func MoveHorizontal(int left, int right, int speed)
 {
+	RemoveEffect("MoveHorizontal", this); RemoveEffect("MoveVertical", this);
 	var effect = AddEffect("MoveHorizontal", this, 100, 1, this);
 	effect.Left = left;
 	effect.Right = right;
@@ -67,6 +68,7 @@ private func FxMoveHorizontalTimer(object target, proplist effect)
 
 public func MoveVertical(int top, int bottom, int speed)
 {
+	RemoveEffect("MoveHorizontal", this); RemoveEffect("MoveVertical", this);
 	var effect = AddEffect("MoveVertical", this, 100, 1, this);
 	effect.Top = top;
 	effect.Bottom = bottom;
