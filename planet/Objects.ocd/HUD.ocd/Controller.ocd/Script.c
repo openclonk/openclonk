@@ -223,12 +223,12 @@ func UpdateInventory()
 	}
 	
 	// update hand-indicator
-	if(c->IsCarryingHeavy())
+	if(c->~IsCarryingHeavy())
 	{
 		carryheavy->SetSelected(-1);
 	}
 	else
-		for(var i=0; i < c->HandObjects(); ++i)
+		for(var i=0; i < c->~HandObjects(); ++i)
 		{
 			var handpos = c->GetHandItemPos(i);
 			if(inventory[handpos]) 
@@ -248,6 +248,7 @@ func SetProgressBarLinkForObject(object what, proplist e)
 // Removes it if it's nil
 func OnCarryHeavyChange(object obj)
 {
+	if (!carryheavy) return; // safety if called during construction/destruction process
 	carryheavy->SetSymbol(obj);
 
 	if(obj == nil)
