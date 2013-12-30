@@ -286,6 +286,7 @@ global func SaveScenarioObject(props)
 	v = GetEnergy();        if (v != def.MaxEnergy/1000)          props->AddCall("Energy",        this, "DoEnergy", v-def.MaxEnergy/1000);
 	v = this.Visibility;    if (v != def.Visibility)              props->AddSet ("Visibility",    this, "Visibility", GetBitmaskNameByValue(v, "VIS_"));
 	v = this.Plane;         if (v != def.Plane)                   props->AddSet ("Plane",         this, "Plane", v);
+	v = this.StaticSaveVar; if (v)                                props->AddSet ("StaticSaveVar", this, "StaticSaveVar", v);
 	// update position on objects that had a shape change through rotation because creation at def bottom would incur a vertical offset
 	if (GetR() && !Contained())                                   props->AddCall("SetPosition",   this, "SetPosition", GetX(), GetY());
 	// Commands: Could store the whole command stack using AppendCommand.
