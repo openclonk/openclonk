@@ -58,7 +58,7 @@ private func MaxContentsCount()
 protected func RejectCollect(id object_id, object obj)
 {
 	// objects can still be collected
-	if (ContentsCount() < MaxContentsCount())
+	if (ContentsCount() < this->MaxContentsCount())
 	{
 		Sound("Clonk");
 		return false;

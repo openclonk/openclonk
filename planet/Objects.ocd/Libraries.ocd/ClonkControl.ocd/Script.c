@@ -114,7 +114,7 @@ public func GetHandItem(int i)
 public func SetHandItemPos(int hand, int inv)
 {
 	// indices are in range?	
-	if(hand >= HandObjects() || inv >= MaxContentsCount())
+	if(hand >= HandObjects() || inv >= this->MaxContentsCount())
 		return nil;
 	if(hand < 0 || inv < 0) return nil;
 
@@ -222,8 +222,8 @@ public func GetItemPos(object item)
 public func Switch2Items(int one, int two)
 {
 	// no valid inventory index: cancel
-	if (!Inside(one,0,MaxContentsCount()-1)) return;
-	if (!Inside(two,0,MaxContentsCount()-1)) return;
+	if (!Inside(one,0,this->MaxContentsCount()-1)) return;
+	if (!Inside(two,0,this->MaxContentsCount()-1)) return;
 
 	// switch them around
 	var temp = inventory[one];
@@ -282,7 +282,7 @@ public func Collect(object item, bool ignoreOCF, int pos, bool force)
 		return success;
 	}
 	// fail if the specified slot is full
-	if (GetItem(pos) == nil && pos >= 0 && pos < MaxContentsCount())
+	if (GetItem(pos) == nil && pos >= 0 && pos < this->MaxContentsCount())
 	{
 		if (item)
 		{
@@ -366,7 +366,7 @@ protected func Collection2(object obj)
 	// otherwise, first empty slot
 	if(!success)
 	{
-		for(var i = 0; i < MaxContentsCount(); ++i)
+		for(var i = 0; i < this->MaxContentsCount(); ++i)
 		{
 			if (!GetItem(i))
 			{
@@ -440,7 +440,7 @@ protected func Ejection(object obj)
 			{
 				// look for following non-selected non-free slots
 				var found_slot = false;
-				for(var j=i; j < MaxContentsCount(); j++)
+				for(var j=i; j < this->MaxContentsCount(); j++)
 					if(GetItem(j) && !GetHandPosByItemPos(j))
 					{
 						found_slot = true;
@@ -547,7 +547,7 @@ protected func RejectCollect(id objid, object obj)
 			
 
 	// check max contents
-	if (ContentsCount() >= MaxContentsCount()) return true;
+	if (ContentsCount() >= this->MaxContentsCount()) return true;
 
 	// check if the two first slots are full. If the overloaded
 	// Collect() is called, this check will be skipped
@@ -562,7 +562,7 @@ protected func RejectCollect(id objid, object obj)
 public func AllowTransfer(object obj)
 {
 	// Only check max contents.
-	if (GetItemCount() >= MaxContentsCount()) 
+	if (GetItemCount() >= this->MaxContentsCount()) 
 		return false;
 
 	// don't allow picking up multiple carryheavy-objects
@@ -902,7 +902,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8SelectAlt) {hot = 8; hand=1; }
 	if (ctrl == CON_Hotkey9SelectAlt) {hot = 9; hand=1; }
 	
-	if(hot > 0  && hot <= MaxContentsCount())
+	if(hot > 0  && hot <= this->MaxContentsCount())
 	{
 		SetHandItemPos(hand, hot-1);
 		this->~OnInventoryHotkeyRelease(hot-1);
@@ -924,7 +924,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// only the last-pressed key is taken into consideration.
 	// if 2 hotkeys are held, the earlier one is beeing treated as released
-	if (hot > 0 && hot <= MaxContentsCount())
+	if (hot > 0 && hot <= this->MaxContentsCount())
 	{
 		// if released, we chose, if not chosen already
 		if(release)
