@@ -913,6 +913,14 @@ void CStdGL::ResetTexture()
 	glDisable(GL_TEXTURE_2D);
 }
 
+bool CStdGL::EnsureAnyContext()
+{
+	// Make sure some context is selected
+	if (pCurrCtx) return true;
+	if (!pMainCtx) return false;
+	return pMainCtx->Select();
+}
+
 bool CStdGL::Error(const char *szMsg)
 {
 #ifdef USE_WIN32_WINDOWS

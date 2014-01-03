@@ -23,6 +23,7 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
+#include <C4DrawGL.h>
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)
@@ -399,7 +400,10 @@ C4SolidMask::C4SolidMask(C4Object *pForObject) : pForObject(pForObject)
 	Last = this;
 	if (Prev) Prev->Next = this;
 	else First = this;
-	// copy solid mask from bitmap
+	// TODO: We need a valid OpenGL context to access surface pixels here
+	// This may not always be the case for console/editor mode if no viewport is opened, so work around this by selecting anything we have
+	// A better solution would be to define SolidMasks in their own graphics files which are not loaded into OpenGL
+	if(pGL) pGL->EnsureAnyContext();
 	int iNeededBufSize = pForObject->SolidMask.Wdt * pForObject->SolidMask.Hgt;
 	if (!(pSolidMask = new BYTE [iNeededBufSize])) return;
 	C4Surface * sfcBitmap = pForObject->GetGraphics()->GetBitmap();

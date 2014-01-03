@@ -132,6 +132,7 @@ public:
 	void SetTexture();
 	void ResetTexture();
 	bool DeviceReady() { return !!pMainCtx; }
+	bool EnsureAnyContext();
 
 protected:
 	bool CreatePrimarySurfaces(bool Editor, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);

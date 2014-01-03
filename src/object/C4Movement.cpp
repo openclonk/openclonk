@@ -234,13 +234,11 @@ void C4Object::DoMovement()
 			}
 		}
 
-	// store previous position
-	C4Real ix0=GetFixedX(); C4Real iy0=GetFixedY();
-
 	// store previous movement and ocf
 	C4Real oldxdir(xdir), oldydir(ydir);
 	uint32_t old_ocf = OCF;
 
+	bool fMoved = false;
 	C4Real new_x = fix_x + xdir;
 	C4Real new_y = fix_y + ydir;
 	SideBounds(new_x);
@@ -360,8 +358,11 @@ void C4Object::DoMovement()
 	}
 
 	if(fix_x != new_x || fix_y != new_y)
+	{
+		fMoved = true;
 		if (pSolidMaskData)
 			pSolidMaskData->Remove(true);
+	}
 	fix_x = new_x;
 	fix_y = new_y;
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -425,9 +426,8 @@ void C4Object::DoMovement()
 		if (target_r > +FixHalfCircle) { target_r -= FixFullCircle; }
 		fix_r = target_r;
 	}
-	// Reput solid mask: Might have been removed by motion or
-	// motion might be out of date from last frame.
-	UpdateSolidMask(true);
+	// Reput solid mask if moved by motion
+	if (fMoved || fTurned) UpdateSolidMask(true);
 	// Misc checks ===========================================================================================
 	// InLiquid check
 	// this equals C4Object::UpdateLiquid, but the "fNoAttach=false;"-line
@@ -468,7 +468,7 @@ void C4Object::DoMovement()
 		UpdateFace(true);
 	else
 		// pos changed?
-		if ((ix0-GetFixedX())|(iy0-GetFixedY())) UpdatePos();
+		if (fMoved) UpdatePos();
 }
 
 void C4Object::Stabilize()
