@@ -114,8 +114,8 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 /*--- C4ExtraScriptHost ---*/
 
-C4ExtraScriptHost::C4ExtraScriptHost():
-		ParserPropList(C4PropList::NewStatic(NULL, NULL, NULL))
+C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
+		ParserPropList(C4PropList::NewStatic(NULL, NULL, parent_key_name))
 {
 }
 
@@ -127,6 +127,15 @@ void C4ExtraScriptHost::Clear()
 C4PropListStatic * C4ExtraScriptHost::GetPropList()
 {
 	return ParserPropList._getPropList()->IsStatic();
+}
+
+
+/*--- C4ScenarioObjectsScriptHost ---*/
+
+C4ScenarioObjectsScriptHost::C4ScenarioObjectsScriptHost() : C4ExtraScriptHost(::Strings.RegString("ScenarioObjects"))
+{
+	// Note that "ScenarioObjects" is a fake key name under which you cannot access this prop list from script.
+	// It's just given to have a proper name when script errors are reported.
 }
 
 /*--- C4DefScriptHost ---*/

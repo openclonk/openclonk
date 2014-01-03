@@ -71,7 +71,7 @@ class C4ExtraScriptHost: public C4ScriptHost
 {
 	C4Value ParserPropList;
 public:
-	C4ExtraScriptHost();
+	C4ExtraScriptHost(C4String *parent_key_name = NULL);
 	void Clear();
 
 	bool Delete() { return true; }
@@ -82,7 +82,7 @@ public:
 class C4ScenarioObjectsScriptHost : public C4ExtraScriptHost
 {
 public:
-	C4ScenarioObjectsScriptHost() : C4ExtraScriptHost() {}
+	C4ScenarioObjectsScriptHost();
 };
 
 // script host for defs
