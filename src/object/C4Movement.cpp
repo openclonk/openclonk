@@ -266,7 +266,10 @@ void C4Object::DoMovement()
 				ApplyFriction(ydir,ContactVtxFriction(this));
 			}
 			else // Free horizontal movement
+			{
 				DoMotion(step, 0);
+				fMoved = true;
+			}
 		}
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
@@ -301,7 +304,10 @@ void C4Object::DoMovement()
 				}
 			}
 			else // Free vertical movement
+			{
 				DoMotion(0,step);
+				fMoved = true;
+			}
 		}
 	}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -353,6 +359,7 @@ void C4Object::DoMovement()
 				}
 			}
 			DoMotion(ctx - GetX(), cty - GetY());
+			fMoved = true;
 		}
 		while (fixtoi(new_x) != GetX() || fixtoi(new_y) != GetY());
 	}
@@ -360,11 +367,10 @@ void C4Object::DoMovement()
 	if(fix_x != new_x || fix_y != new_y)
 	{
 		fMoved = true;
-		if (pSolidMaskData)
-			pSolidMaskData->Remove(true);
+		if (pSolidMaskData) pSolidMaskData->Remove(true);
+		fix_x = new_x;
+		fix_y = new_y;
 	}
-	fix_x = new_x;
-	fix_y = new_y;
 	// Rotation  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (OCF & OCF_Rotate && !!rdir)
 	{
