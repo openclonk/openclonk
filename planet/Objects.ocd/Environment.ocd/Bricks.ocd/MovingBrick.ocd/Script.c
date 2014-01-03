@@ -97,7 +97,7 @@ func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
 	if (size != 4) props->AddCall("Size", this, "SetSize", size);
-	if (ActMap.Moving.Speed != GetID().ActMap.Moving.Speed) props->AddCall("MoveSpeed", this, "SetMoveSpeed", ActMap.Moving.Speed); // TODO: Does SetMoveSpeed even work?
+	if (ActMap.Moving.Speed != GetID().ActMap.Moving.Speed) props->AddCall("MoveSpeed", this, "SetMoveSpeed", ActMap.Moving.Speed);
 	if (GetComDir() == COMD_None) props->Remove("ComDir");
 	return true;
 }
