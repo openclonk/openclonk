@@ -12,7 +12,7 @@ public func IsFlagpole(){return true;}
 
 func RefreshAllFlagLinks()
 {
-	for(var f in LibraryFlag_flag_list)
+	for(var f in LibraryFlag_flag_list) if (f)
 	{
 		f->ScheduleRefreshLinkedFlags();
 	}
@@ -38,7 +38,7 @@ func RefreshAllPowerHelpers()
 	var neutral = nil;
 	for(var obj in Library_Power_power_compounds)
 	{
-		if(!obj.neutral) continue;
+		if(!obj || !obj.neutral) continue;
 		neutral = obj;
 		break;
 	}
@@ -52,6 +52,7 @@ func RefreshAllPowerHelpers()
 	for(var i = GetLength(Library_Power_power_compounds); --i >= 0;)
 	{
 		var obj = Library_Power_power_compounds[i];
+		if (!obj) continue;
 		if(GetLength(obj.power_links) == 0 && GetLength(obj.sleeping_links) == 0)
 		{
 			obj->RemoveObject();
@@ -71,7 +72,7 @@ func RedrawFlagRadius()
 	//var flags = FindObjects(Find_ID(FlagPole),Find_Exclude(target), Find_Not(Find_Owner(GetOwner())), /*Find_Distance(FLAG_DISTANCE*2 + 10,0,0)*/Sort_Func("GetLifeTime"));
 	var other_flags = [];
 	var i = 0;
-	for(var f in LibraryFlag_flag_list)
+	for(var f in LibraryFlag_flag_list) if (f)
 	{
 		//if(f->GetOwner() == GetOwner()) continue;
 		if(f == this) continue;
@@ -89,7 +90,7 @@ func RedrawFlagRadius()
 		var y=-Cos(i, lflag.radius);	
 		//var inEnemy = false;
 		
-		for(var f in other_flags)
+		for(var f in other_flags) if (f)
 		{
 			if(Distance(GetX()+x,GetY()+y,f->GetX(),f->GetY()) <= f->GetFlagRadius())
 			{
@@ -317,6 +318,7 @@ func RefreshPowerHelper(h)
 		if(o == nil) continue; // possible
 		
 		var actual = Library_Power->GetPowerHelperForObject(o.obj);
+		if (!actual) continue;
 		if(actual == h) continue; // right one already
 		// remove from old and add to new
 		h->RemovePowerLink(o.obj, true);
@@ -353,7 +355,7 @@ public func GetLinkedFlags(){return lflag.linked_flags;}
 private func ClearFlagMarkers()
 {
 	for(var obj in lflag.range_markers)
-		obj->RemoveObject();
+		if (obj) obj->RemoveObject();
 	lflag.range_markers = [];
 }
 

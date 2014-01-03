@@ -42,5 +42,5 @@ global func GetOwnerOfPosition(
 global func RedrawAllFlagRadiuses()
 {
 	for(var f in LibraryFlag_flag_list)
-		f->RedrawFlagRadius();
+		if (f) f->RedrawFlagRadius();
 }
