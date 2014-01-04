@@ -63,7 +63,7 @@ static const GUI_CS_Hotkey		= 12;
 
 protected func Construction()
 {
-	_inherited();
+	_inherited(...);
 	
 	breathbar = false;
 	magicbar = false;
