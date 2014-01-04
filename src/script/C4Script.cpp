@@ -700,5 +700,6 @@ void InitCoreFunctionMap(C4AulScriptEngine *pEngine)
 	F(GetConstantNameByValue);
 
 	AddFunc(pEngine, "Translate", C4AulExec::FnTranslate);
+	AddFunc(pEngine, "LogCallStack", C4AulExec::FnLogCallStack);
 #undef F
 }

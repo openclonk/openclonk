@@ -121,6 +121,12 @@ C4String *C4AulExec::FnTranslate(C4PropList * _this, C4String *text)
 	}
 }
 
+bool C4AulExec::FnLogCallStack(C4PropList * _this)
+{
+	AulExec.LogCallStack();
+	return true;
+}
+
 void C4AulExec::ClearPointers(C4Object * obj)
 {
 #if 0

@@ -72,6 +72,7 @@ public:
 	C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
 	void LogCallStack();
 	static C4String *FnTranslate(C4PropList * _this, C4String *text);
+	static bool FnLogCallStack(C4PropList * _this);
 	void ClearPointers(C4Object *);
 
 private:
