@@ -203,7 +203,7 @@ public func RemoveColumn(string key)
 	if (!key) FatalError("Scoreboard::RemoveColumn: Key required!");
 	// find key
 	for (col in Scoreboard_keys) if (col.key == key) break;
-	if (!col) return false; // key not found. fail but not fatal.
+	if (!col || col.key != key) return false; // key not found. fail but not fatal.
 	// for every row, remove data for key
 	for (data in Scoreboard_data)
 	{
