@@ -9,7 +9,7 @@ Vertices=2
 VertexX=0,0,
 VertexY=-19,19
 VertexCNAT=4,8
-SolidMask=8,0,8,40,0,0
+SolidMask=0,0,8,40,0,0
 Value=10
 Mass=1000
 Components=Rock=10;

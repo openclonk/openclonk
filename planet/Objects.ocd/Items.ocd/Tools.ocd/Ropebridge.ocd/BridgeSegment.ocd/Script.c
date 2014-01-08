@@ -1,10 +1,5 @@
 /*-- Ropelbridge_Segment --*/
 
-public func Initialize()
-{
-  SetSolidMask(50,0,2,8);
-}
-
 local master;
 local Plank;
 local fragile;

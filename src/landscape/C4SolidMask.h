@@ -35,7 +35,6 @@ protected:
 
 	C4TargetRect MaskPutRect; // absolute bounding screen rect at which the mask is put - tx and ty are offsets within pSolidMask (for rects outside the landscape)
 
-	BYTE *pSolidMask;        // solid mask data: 0x00 if not solid at this position; 0xff if solid
 	BYTE *pSolidMaskMatBuff; // material replaced by this solidmask. MCVehic if no solid mask data at this position OR another solidmask was already present during put
 
 	C4Object *pForObject;
@@ -56,12 +55,10 @@ protected:
 	// Remove the solidmask temporarily
 	void RemoveTemporary(C4Rect where);
 	void PutTemporary(C4Rect where);
-	static void RemoveSolidMasks();
-	static void PutSolidMasks();
 	// Reput and update Matbuf after landscape change underneath
 	void Repair(C4Rect where);
-	friend class C4Landscape;
 
+	friend class C4Landscape;
 	friend class DensityProvider;
 
 public:
@@ -84,6 +81,11 @@ public:
 #else
 	static bool CheckConsistency() { return true; }
 #endif
+
+	static void RemoveSolidMasks();
+	static void PutSolidMasks();
+
+	static CSurface8 *LoadMaskFromFile(class C4Group &hGroup, const char *szFilename);
 };
 
 #endif

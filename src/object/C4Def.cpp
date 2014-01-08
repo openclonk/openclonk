@@ -27,6 +27,7 @@
 #include <C4Object.h>
 #include <C4RankSystem.h>
 #include <C4SoundSystem.h>
+#include <C4SolidMask.h>
 
 void C4Def::DefaultDefCore()
 {
@@ -265,6 +266,7 @@ void C4Def::Default()
 	pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
 	iNumRankSymbols=1;
+	pSolidMask = NULL;
 }
 
 C4Def::~C4Def()
@@ -284,6 +286,7 @@ void C4Def::Clear()
 	if (pRankNames && fRankNamesOwned) delete pRankNames; pRankNames=NULL;
 	if (pRankSymbols && fRankSymbolsOwned) delete pRankSymbols; pRankSymbols=NULL;
 	fClonkNamesOwned = fRankNamesOwned = fRankSymbolsOwned = false;
+	delete pSolidMask; pSolidMask = NULL;
 }
 
 bool C4Def::Load(C4Group &hGroup,
@@ -338,6 +341,22 @@ bool C4Def::Load(C4Group &hGroup,
 				pSoundSystem->LoadEffects(hGroup);
 
 		return false;
+	}
+
+	// Read and parse SolidMask bitmap
+	if (hGroup.FindEntry(C4CFN_SolidMask))
+	{
+		pSolidMask = C4SolidMask::LoadMaskFromFile(hGroup, C4CFN_SolidMask);
+		if (!pSolidMask)
+		{
+			DebugLogF("  Error loading SolidMask of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
+			return false;
+		}
+	}
+	else if (SolidMask.Wdt)
+	{
+		// Warning in case someone wants to define SolidMasks the old way (in the main graphics file)
+		DebugLogF("WARNING: Definition %s (%s) defines SolidMask in DefCore but has no SolidMask file!", hGroup.GetFullName().getData(), id.ToString());
 	}
 
 	// Read surface bitmap

@@ -1,7 +1,7 @@
 /**
 	Airship
 	Lighter-than-air travel and transport vehicle. The airship uses several objects to function; the base control/collision object,
-	an attached graphics object (due to engine limitations with solidmasks), and a hitbox for the balloon.
+	an attached graphics object (due to former engine limitations with solidmasks), and a hitbox for the balloon.
 
 	@authors Ringwaul
 */

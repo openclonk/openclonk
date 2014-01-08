@@ -184,6 +184,7 @@ public:
 	C4FacetSurface *pRankSymbols; bool fRankSymbolsOwned;
 	int32_t iNumRankSymbols;    // number of rank symbols available, if loaded
 	C4DefGraphics Graphics; // base graphics. points to additional graphics
+	CSurface8 *pSolidMask; // SolidMask-bitmap. Nonzero pixels are solid.
 
 protected:
 	C4Facet MainFace;

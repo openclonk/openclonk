@@ -73,7 +73,7 @@
         <row>
           <literal_col>SolidMask</literal_col>
           <col>6 integers</col>
-          <col>Solid areas of the object. Target rectangle from the source graphics onto the object.</col>
+          <col>Solid areas of the object. Target rectangle from the <emlink href="definition/index.html#SolidMask">SolidMask.png</emlink> graphics onto the object.</col>
         </row>
         <row>
           <literal_col>TopFace</literal_col>

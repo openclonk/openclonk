@@ -28,6 +28,8 @@ public func SetSize(int to_size)
 	// Update graphics.
 	var graph = Format("Size%dN%d", size, 1 + Random(1));
 	SetGraphics(graph);
+	// Update solid
+	SetSolidMask(0,size*8-8,10*size,8);
 	return;
 }
 

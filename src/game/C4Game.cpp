@@ -71,6 +71,7 @@
 #include <C4AulExec.h>
 #include <StdFile.h>
 #include <C4MapScript.h>
+#include <C4SolidMask.h>
 
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 {
@@ -1932,6 +1933,8 @@ bool C4Game::ReloadDef(C4ID id)
 	// syncronize (close menus with dead surfaces, etc.)
 	// no need to sync back player files, though
 	Synchronize(false);
+	// SolidMasks might be updated
+	C4SolidMask::RemoveSolidMasks();
 	// reload def
 	C4ObjectLink *clnk;
 	C4Def *pDef = ::Definitions.ID2Def(id);
@@ -1967,6 +1970,8 @@ bool C4Game::ReloadDef(C4ID id)
 	}
 	// update game messages
 	::Messages.UpdateDef(id);
+	// re-put removed SolidMasks
+	C4SolidMask::PutSolidMasks();
 	// done
 	return fSucc;
 }

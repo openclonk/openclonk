@@ -14,22 +14,22 @@
         <param>
           <type>int</type>
           <name>x</name>
-          <desc>X position of the top left corner of the new SolidMask rectangle within the definition graphic.</desc>
+          <desc>X position of the top left corner of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
         </param>
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y position of the top left corner of the new SolidMask rectangle within the definition graphic.</desc>
+          <desc>Y position of the top left corner of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
         </param>
         <param>
           <type>int</type>
           <name>width</name>
-          <desc>Width of the new SolidMask rectangle within the definition graphic.</desc>
+          <desc>Width of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
         </param>
         <param>
           <type>int</type>
           <name>height</name>
-          <desc>Height of the new SolidMask rectangle within the definition graphic.</desc>
+          <desc>Height of the new SolidMask rectangle within the definition's SolidMask.png image.</desc>
         </param>
         <param>
           <type>int</type>
@@ -43,7 +43,7 @@
         </param>
       </params>
     </syntax>
-    <desc>Sets the solid area of an object. The source rectangle determines which pixels from the definition graphic should be used. All pixels within the rectangle of less than 50% transparency will be solid. Also see the SolidMask entry in <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <desc>Sets the solid area of an object. The source rectangle determines which pixels from the definition's SolidMask.png graphic should be used. All pixels within the rectangle of less than 50% transparency will be solid. Also see the SolidMask entry in <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
     <remark>Solid areas will internally be drawn in the landscape using the "Vehicle" material.</remark>
     <examples>
       <example>
@@ -52,5 +52,5 @@
       </example>
     </examples>
   </func>
-  <author>Sven2</author><date>2003-06</date>
+  <author>Sven2</author><date>2014-01</date>
 </funcs>

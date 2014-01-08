@@ -477,17 +477,9 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 {
 	// check color
 	if (!fTemp) if (!pGraphics->IsColorByOwner()) Color=0;
-	// new grafics: update face + solidmask
+	// new grafics: update face
 	if (fGraphicsChanged)
 	{
-		// update solid
-		if (pSolidMaskData && !fTemp)
-		{
-			delete pSolidMaskData; pSolidMaskData = NULL;
-			// ensure SolidMask-rect lies within new graphics-rect
-			CheckSolidMaskRect();
-		}
-
 		// Keep mesh instance if it uses the same underlying mesh
 		if(!pMeshInstance || pGraphics->Type != C4DefGraphics::TYPE_Mesh ||
 		   &pMeshInstance->GetMesh() != pGraphics->Mesh)
@@ -2648,7 +2640,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
 {
-	// remove osld
+	// remove old
 	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	// set new data
 	SolidMask.Set(iX,iY,iWdt,iHgt,iTX,iTY);
@@ -2658,12 +2650,14 @@ void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, 
 
 bool C4Object::CheckSolidMaskRect()
 {
-	// SolidMasks are only supported for bitmap graphics
-	if (GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap) return false;
-
-	// check NewGfx only, because invalid SolidMask-rects are OK in OldGfx
-	// the bounds-check is done in C4Draw::GetPixel()
-	C4Surface *sfcGraphics = GetGraphics()->GetBitmap();
+	// Ensure SolidMask rect lies within bounds of SolidMask bitmap in definition
+	CSurface8 *sfcGraphics = Def->pSolidMask;
+	if (!sfcGraphics)
+	{
+		// no graphics to set solid in
+		SolidMask.Set(0,0,0,0,0,0);
+		return false;
+	}
 	SolidMask.Set(Max<int32_t>(SolidMask.x,0), Max<int32_t>(SolidMask.y,0),
 	              Min<int32_t>(SolidMask.Wdt,sfcGraphics->Wdt-SolidMask.x), Min<int32_t>(SolidMask.Hgt, sfcGraphics->Hgt-SolidMask.y),
 	              SolidMask.tx, SolidMask.ty);
@@ -4626,7 +4620,7 @@ bool C4Object::SetGraphics(const char *szGraphicsName, C4Def *pSourceDef)
 	//if (pGraphics == pGrp) return true; // that's not exactly true because the graphics itself might have changed, for example on def reload
 	// set new graphics
 	pGraphics = pGrp;
-	// update Color, SolidMask, etc.
+	// update Color, etc.
 	UpdateGraphics(true);
 	// success
 	return true;

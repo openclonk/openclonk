@@ -14,6 +14,6 @@ Value=50
 Mass=5000
 Components=Metal=4;Wood=4;Rope=2;
 Float=-27;
-SolidMask=64,0,64,54,0,0
+SolidMask=0,0,36,4,11,49
 Picture=128,0,128,128,0,0
 BorderBound=7
