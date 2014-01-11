@@ -13,6 +13,8 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include <GL/glew.h>
+
 #include <C4Include.h>
 #include <C4Console.h>
 #include <C4Application.h>
