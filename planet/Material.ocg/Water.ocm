@@ -12,3 +12,4 @@ TempConvStrength=3
 BelowTempConvert=-10
 BelowTempConvertTo=Ice
 Placement=10
+TextureOverlay=water
