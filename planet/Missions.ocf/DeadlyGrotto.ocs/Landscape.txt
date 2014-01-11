@@ -15,7 +15,7 @@ map AcidCave {
   VaryTex { mat=Granite; y=80px; zoomX=30; a=5;};
   VaryTex { mat=Coal; a=7; wdt=140px; };
   VaryTex { mat=Ore; a=8; };
-  VaryTex { mat=Sulphur; a=8; y=50px; };
+  VaryTex { mat=Firestone; a=8; y=50px; };
   VaryTex { mat=Gold; hgt=30px; a=10; };
 
   // Top caves for mushrooms

@@ -1,6 +1,6 @@
 /**
 	Iron Peak
-	A mountain peak filled with iron ore, sulphur and coal, the crust consists 
+	A mountain peak filled with iron ore, firestone and coal, the crust consists 
 	of granite, rock, ice and some entrances.
 	
 	@authors Maikel
@@ -60,7 +60,7 @@ public func DrawMountainMaterials(proplist surface)
 	DrawMaterial("Rock-rock", surface);
 	DrawMaterial("Tunnel", surface);
 	DrawMaterial("Ore", surface);
-	DrawMaterial("Sulphur", surface, 3, 15);
+	DrawMaterial("Firestone", surface, 3, 15);
 	DrawMaterial("Coal", surface, 3, 15);
 	
 	// Draw some diagonal tunnels to allow the players to move.

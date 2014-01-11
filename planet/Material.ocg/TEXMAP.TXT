@@ -30,7 +30,7 @@
 50=Rock-rock
 51=Rock-rock_cracked
 
-53=Sulphur-sulphur
+53=Firestone-firestone
 
 54=Coal-coal
 

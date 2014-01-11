@@ -182,7 +182,7 @@ func DrawBackground()
 	Draw("Rock");
 	DrawVariations("Rock-rock_cracked", 50, 5,15);
 	DrawVariations("Ore", 10, 8,8);
-	DrawVariations("Sulphur", 8, 12,3);
+	DrawVariations("Firestone", 8, 12,3);
 	DrawVariations("Coal", 8, 8,3);
 	DrawVariations("Gold", 5, 4,4);
 	DrawVariations("Granite", 14, 15,5);

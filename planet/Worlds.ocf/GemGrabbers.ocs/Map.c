@@ -37,7 +37,7 @@ protected func InitializeMap(proplist map)
 	map->DrawMainIsland(map, main_size);
 	
 	// Draw a number of sky islands at random positions, each with different resources.
-	var resources = [["Coal", "Ore"], ["Coal", "Gold"], ["Sulphur", "Coal"], ["Rock", "Ore"], ["Rock", "Coal", "Sulphur"], ["Gold", "Ore", "Coal"]];
+	var resources = [["Coal", "Ore"], ["Coal", "Gold"], ["Firestone", "Coal"], ["Rock", "Ore"], ["Rock", "Coal", "Firestone"], ["Gold", "Ore", "Coal"]];
 	while (nr_islands > 0)
 	{
 		var x = 12 + Random(map.Wdt - 24);
@@ -77,7 +77,7 @@ public func DrawMainIsland(proplist map, int size)
 	DrawIslandMat("Water", island, 4, 8);
 	DrawIslandMat("Gold", island, 3, 6);
 	DrawIslandMat("Ore", island, 6, 12);
-	DrawIslandMat("Sulphur", island, 6, 12);
+	DrawIslandMat("Firestone", island, 6, 12);
 	DrawIslandMat("Coal", island, 6, 12);
 	
 	// Draw a top border out of sand and top soil.

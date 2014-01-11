@@ -1,2 +1,0 @@
-Name=Feuerstein spalten
-Description=Spaltet einen Feuerstein in dessen natürliche Komponenten, Kohle und Schwefel.

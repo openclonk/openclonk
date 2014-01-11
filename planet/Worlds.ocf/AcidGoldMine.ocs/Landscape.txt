@@ -61,7 +61,7 @@ map AcidWorld {
     };
 
     // Ground materials
-    Mats { mat=Sulphur; y=84px; hgt=140px; turbulence=1000; };
+    Mats { mat=Firestone; y=84px; hgt=140px; turbulence=1000; };
     Mats { mat=Rock; zoomX=10; a=5; VaryTex { mat=rock; tex=rock_cracked;};};
     Mats { mat=Coal; y=56px; hgt=140px; turbulence=1000; };
     Mats { mat=Ore; y=84px; hgt=112px; turbulence=10; };
