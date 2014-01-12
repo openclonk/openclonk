@@ -977,6 +977,9 @@ add_executable(c4group
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
 	src/platform/StdScheduler.cpp
+	src/platform/StdSchedulerWin32.cpp
+	src/platform/StdSchedulerPoll.cpp
+	src/platform/StdSchedulerMac.mm
 	src/netpuncher/main.cpp
 )
 
@@ -1006,6 +1009,9 @@ src/platform/StdFile.h
 src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
+src/platform/StdSchedulerWin32.cpp
+src/platform/StdSchedulerPoll.cpp
+src/platform/StdSchedulerMac.mm
 src/platform/StdScheduler.h
 src/platform/C4TimeMilliseconds.cpp 
 src/platform/C4TimeMilliseconds.h	

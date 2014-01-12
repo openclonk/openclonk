@@ -125,14 +125,14 @@
 	{
 		NSLog(@"Game running, only simulating Esc key");
 		[self simulateKeyPressed:K_ESCAPE];
-		return;
 	}
 	else
 	{
 		if (Application.isEditor)
 			Console.FileClose();
 		Application.fQuitMsgReceived = true;
-		return;
+		Application.ScheduleProcs();
+		Application.Quit();
 	}
 }
 

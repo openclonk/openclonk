@@ -114,6 +114,7 @@ public:
 	virtual bool CloseBroadcast() = 0;
 
 	virtual bool Execute(int iTimeout = -1, pollfd * = 0) = 0; // (for StdSchedulerProc)
+	virtual bool IsNotify() { return true; }
 
 	// * multithreading safe
 	virtual bool Connect(const addr_t &addr) = 0; // async!
