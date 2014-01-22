@@ -23,7 +23,7 @@
         <row>
           <col>ColorAnimation</col>
           <col>Integer</col>
-          <col>0 oder 1. Color animation.</col>
+          <col>0 or 1. Color animation.</col>
         </row>
         <row>
           <col>Shape</col>
@@ -33,7 +33,7 @@
         <row>
           <col>Density</col>
           <col>Integer</col>
-          <col>Density: 50 solid, 25 liquid (other values not allowed).</col>
+          <col>A density of 25 and above is liquid. 50 and above is solid. <funclink>BlastFree</funclink> offers a parameter to only blast solid materials of a given density or lower.</col>
         </row>
         <row>
           <col>Friction</col>
@@ -43,12 +43,12 @@
         <row>
           <col>DigFree</col>
           <col>Integer</col>
-          <col>0 oder 1. Determines wether the material can be dug into.</col>
+          <col>0 or 1. Determines wether the material can be dug into.</col>
         </row>
         <row>
           <col>BlastFree</col>
           <col>Integer</col>
-          <col>0 oder 1. Determines whether the material can be blasted away.</col>
+          <col>0 or 1. Determines whether the material can be blasted away.</col>
         </row>
         <row>
           <col>Blast2Object</col>
@@ -83,7 +83,7 @@
         <row>
           <col>Instable</col>
           <col>Integer</col>
-          <col>0 oder 1. Stability.</col>
+          <col>0 or 1. Stability.</col>
         </row>
         <row>
           <col>MaxAirSpeed</col>
