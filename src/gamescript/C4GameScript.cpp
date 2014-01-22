@@ -42,6 +42,7 @@
 #include <C4Weather.h>
 #include <C4Viewport.h>
 
+// undocumented!
 static bool FnIncinerateLandscape(C4PropList * _this, long iX, long iY)
 {
 	if (Object(_this)) { iX += Object(_this)->GetX(); iY += Object(_this)->GetY(); }
@@ -59,6 +60,7 @@ static long FnGetGravity(C4PropList * _this)
 	return fixtoi(::Landscape.Gravity * 100);
 }
 
+// undocumented!
 static bool FnPlayerObjectCommand(C4PropList * _this, int iPlr, C4String * szCommand,
                                   C4Object * pTarget, int iTx, int iTy,
                                   C4Object * pTarget2, const C4Value & Data)
@@ -93,6 +95,7 @@ static long FnGetPlayerColor(C4PropList * _this, long iPlayer)
 	return plr ? plr->ColorDw : 0;
 }
 
+// undocumented!
 static Nillable<long> FnGetPlrClonkSkin(C4PropList * _this, long iPlayer)
 {
 	C4Player *plr = ::Players.Get(iPlayer);
@@ -341,7 +344,6 @@ static bool FnCanInsertMaterial(C4PropList * _this, long mat, long x, long y, C4
 	}
 	return true;
 }
-
 
 static long FnGetMaterialCount(C4PropList * _this, long iMaterial, bool fReal)
 {
@@ -592,6 +594,7 @@ static C4Value FnMessage(C4PropList * _this, C4Value * Pars)
 	return C4VBool(true);
 }
 
+// undocumented!
 static C4Value FnAddMessage(C4PropList * _this, C4Value * Pars)
 {
 	if (!Object(_this)) throw new NeedObjectContext("AddMessage");
@@ -913,6 +916,7 @@ static long FnEliminatePlayer(C4PropList * _this, long iPlr, bool fRemoveDirect)
 	return true;
 }
 
+// undocumented!
 static bool FnSurrenderPlayer(C4PropList * _this, long iPlr)
 {
 	C4Player *pPlr=::Players.Get(iPlr);
@@ -922,6 +926,7 @@ static bool FnSurrenderPlayer(C4PropList * _this, long iPlr)
 	return true;
 }
 
+// undocumented!
 static bool FnSetLeaguePerformance(C4PropList * _this, long iScore)
 {
 	Game.RoundResults.SetLeaguePerformance(iScore);
@@ -965,6 +970,7 @@ static C4Object *FnGetCursor(C4PropList * _this, long iPlr)
 	return pPlr->Cursor;
 }
 
+// undocumented!
 static C4Object *FnGetViewCursor(C4PropList * _this, long iPlr)
 {
 	// get player
@@ -981,6 +987,7 @@ static bool FnSetCursor(C4PropList * _this, long iPlr, C4Object *pObj, bool fNoS
 	return true;
 }
 
+// undocumented!
 static bool FnSetViewCursor(C4PropList * _this, long iPlr, C4Object *pObj)
 {
 	// get player
@@ -1077,6 +1084,7 @@ static bool FnPathFree(C4PropList * _this, long X1, long Y1, long X2, long Y2)
 	return !!PathFree(X1, Y1, X2, Y2);
 }
 
+// undocumented!
 static C4ValueArray* FnPathFree2(C4PropList * _this, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
 	int32_t x = -1, y = -1;
@@ -1115,6 +1123,7 @@ static C4Object * FnEditCursor(C4PropList * _this)
 
 static bool FnIsNetwork(C4PropList * _this) { return Game.Parameters.IsNetworkGame; }
 
+// undocumented!
 static C4String *FnGetLeague(C4PropList * _this, long idx)
 {
 	// get indexed league
@@ -1123,6 +1132,7 @@ static C4String *FnGetLeague(C4PropList * _this, long idx)
 	return String(sIdxLeague.getData());
 }
 
+// undocumented!
 static bool FnTestMessageBoard(C4PropList * _this, long iForPlr, bool fTestIfInUse)
 {
 	// multi-query-MessageBoard is always available if the player is valid =)
@@ -1134,6 +1144,7 @@ static bool FnTestMessageBoard(C4PropList * _this, long iForPlr, bool fTestIfInU
 	return pPlr->HasMessageBoardQuery();
 }
 
+// undocumented!
 static bool FnCallMessageBoard(C4PropList * _this, C4Object *pObj, bool fUpperCase, C4String *szQueryString, long iForPlr)
 {
 	if (!pObj) pObj=Object(_this);
@@ -1146,6 +1157,7 @@ static bool FnCallMessageBoard(C4PropList * _this, C4Object *pObj, bool fUpperCa
 	return true;
 }
 
+// undocumented!
 static bool FnAbortMessageBoard(C4PropList * _this, C4Object *pObj, long iForPlr)
 {
 	if (!pObj) pObj=Object(_this);
@@ -1507,6 +1519,7 @@ static C4Value FnGetPlrExtraData(C4PropList * _this, int iPlayer, C4String * Dat
 	return pPlayer->ExtraData[ival];
 }
 
+// undocumented!
 static long FnDrawMatChunks(C4PropList * _this, long tx, long ty, long twdt, long thgt, long icntx, long icnty, C4String *strMaterial, C4String *strTexture, bool bIFT)
 {
 	return ::Landscape.DrawChunks(tx, ty, twdt, thgt, icntx, icnty, FnStringPar(strMaterial), FnStringPar(strTexture), bIFT != 0);
@@ -1730,6 +1743,7 @@ static bool FnResetGamma(C4PropList * _this, long iRampIndex)
 	return true;
 }
 
+// undocumented!
 static long FnFrameCounter(C4PropList * _this) { return Game.FrameCounter; }
 
 struct PathInfo
@@ -1758,12 +1772,14 @@ static Nillable<long> FnGetPathLength(C4PropList * _this, long iFromX, long iFro
 	return PathInfo.ilen + Distance(PathInfo.ilx, PathInfo.ily, iToX, iToY);
 }
 
+// undocumented!
 static long FnSetTextureIndex(C4PropList * _this, C4String *psMatTex, long iNewIndex, bool fInsert)
 {
 	if (!Inside(iNewIndex, 0l, 255l)) return false;
 	return ::Landscape.SetTextureIndex(FnStringPar(psMatTex), BYTE(iNewIndex), !!fInsert);
 }
 
+// undocumented!
 static long FnRemoveUnusedTexMapEntries(C4PropList * _this)
 {
 	::Landscape.RemoveUnusedTexMapEntries();
@@ -1771,8 +1787,8 @@ static long FnRemoveUnusedTexMapEntries(C4PropList * _this)
 }
 
 static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
-                               DMQ_Sub = 1, // draw w/ tunnel IFT
-                                         DMQ_Bridge = 2; // draw only over materials you can bridge over
+                     DMQ_Sub = 1, // draw w/ tunnel IFT
+                     DMQ_Bridge = 2; // draw only over materials you can bridge over
 
 static bool FnDrawMaterialQuad(C4PropList * _this, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, int draw_mode)
 {
@@ -1849,6 +1865,7 @@ static C4ValueArray* FnSimFlight(C4PropList * _this, int X, int Y, Nillable<int>
 	return pResults;
 }
 
+// undocumented!
 static long FnLoadScenarioSection(C4PropList * _this, C4String *pstrSection, long dwFlags)
 {
 	// safety
@@ -1965,6 +1982,7 @@ static bool FnSetViewOffset(C4PropList * _this, long iPlayer, long iX, long iY)
 	return 1;
 }
 
+// undocumented!
 static bool FnSetPreSend(C4PropList * _this, long iToVal, C4String *pNewName)
 {
 	if (!::Control.isNetwork()) return true;
@@ -2051,6 +2069,7 @@ static bool FnSetPlayerTeam(C4PropList * _this, long iPlayer, long idNewTeam, bo
 	return true;
 }
 
+// undocumented!
 static long FnGetTeamConfig(C4PropList * _this, long iConfigValue)
 {
 	// query value
@@ -2093,6 +2112,7 @@ static long FnGetTeamCount(C4PropList * _this)
 	return Game.Teams.GetTeamCount();
 }
 
+// undocumented!
 static bool FnInitScenarioPlayer(C4PropList * _this, long iPlayer, long idTeam)
 {
 	C4Player *pPlr = ::Players.Get(iPlayer);
@@ -2106,11 +2126,13 @@ static bool FnSetScoreboardData(C4PropList * _this, long iRowID, long iColID, C4
 	return true;
 }
 
+// undocumented!
 static C4String *FnGetScoreboardString(C4PropList * _this, long iRowID, long iColID)
 {
 	return String(Game.Scoreboard.GetCellString(iColID, iRowID));
 }
 
+// undocumented!
 static int32_t FnGetScoreboardData(C4PropList * _this, long iRowID, long iColID)
 {
 	return Game.Scoreboard.GetCellData(iColID, iRowID);
@@ -2135,6 +2157,7 @@ static bool FnSortScoreboard(C4PropList * _this, long iByColID, bool fReverse)
 	return Game.Scoreboard.SortBy(iByColID, !!fReverse);
 }
 
+// undocumented!
 static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long idPlayer)
 {
 	// safety
@@ -2146,6 +2169,7 @@ static bool FnAddEvaluationData(C4PropList * _this, C4String *pText, long idPlay
 	return true;
 }
 
+// undocumented!
 static C4Void FnHideSettlementScoreInEvaluation(C4PropList * _this, bool fHide)
 {
 	Game.RoundResults.HideSettlementScore(fHide);
@@ -2201,6 +2225,7 @@ static bool FnCustomMessage(C4PropList * _this, C4String *pMsg, C4Object *pObj, 
   return pDraw->SetSaturation(BoundBy(s,0l,255l));
   }*/
 
+// undocumented!
 static bool FnPauseGame(C4PropList * _this, bool fToggle)
 {
 	// not in replay (film)
@@ -2245,6 +2270,7 @@ static bool FnSetNextMission(C4PropList * _this, C4String *szNextMission, C4Stri
 	return true;
 }
 
+// undocumented!
 static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl)
 {
 	// get control set to check
@@ -2271,6 +2297,7 @@ static long FnGetPlayerControlState(C4PropList * _this, long iPlr, long iControl
 	return pControlState->DownState.iStrength;
 }
 
+// undocumented!
 static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, bool is_enabled)
 {
 	// get control set to check
@@ -2295,6 +2322,7 @@ static bool FnSetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl, 
 	return plrctrl->SetControlDisabled(ctrl, !is_enabled);
 }
 
+// undocumented!
 static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
 {
 	// get control set to check
@@ -2316,6 +2344,7 @@ static bool FnGetPlayerControlEnabled(C4PropList * _this, long iplr, long ctrl)
 	return !plrctrl->IsControlDisabled(ctrl);
 }
 
+// undocumented!
 static C4String *FnGetPlayerControlAssignment(C4PropList * _this, long player, long control, bool human_readable, bool short_name)
 {
 	// WARNING: As many functions returning strings, the result is not sync safe!
