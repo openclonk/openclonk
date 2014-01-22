@@ -5,7 +5,7 @@
 <funcs>
   <func>
     <title>CreateParticleAtBone</title>
-    <category>Particle</category>
+    <category>Particles</category>
     <version>5.4 OC</version>
     <syntax>
       <rtype>bool</rtype>
