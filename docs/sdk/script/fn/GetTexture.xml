@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetTexture</title>
+    <category>Landscape</category>
+    <subcat>Material</subcat>
+    <version>5.4 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate at which to check the texture. Offset in local calls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate at which to check the texture. Offset in local calls.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Returns the name of the texture used for the material at the given position.</desc>
+    <examples>
+      <example>
+        <code>func ControlUse(object clonk)<br/>
+{<br/>
+	var tex_name = clonk->GetTexture(0,0);<br/>
+	var tex_color = <funclink>GetAverageTextureColor</funclink>();<br/>
+	clonk-><funclink>SetColor</funclink>(tex_color);
+	clonk-><funclink>PlayerMessage</funclink>(clonk-><funclink>GetOwner()</funclink>, &quot;Camoflaging Clonk to look like %s&quot;, tex_name);<br/>
+}</code>
+        <text>A script for a carmoflage item. When used, the clonk's overlay color is set to the average color of the texture where he is currently standing and he announces the name of the texture he is carmoflaging as.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAverageTextureColor</funclink>
+    </related>
+  </func>
+  <date>2014-01</date>
+</funcs>
