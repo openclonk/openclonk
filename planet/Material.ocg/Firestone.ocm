@@ -4,6 +4,7 @@ Shape=Smooth
 Density=60
 Friction=75
 BlastFree=1
+DigFree=1
 Dig2Object=Firestone
 Dig2ObjectRatio=80
 Blast2Object=Firestone
