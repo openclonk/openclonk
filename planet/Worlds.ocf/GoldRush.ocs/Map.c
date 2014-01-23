@@ -60,9 +60,9 @@ public func DrawMaterials(proplist rect, proplist surface)
 	mask = {Algo = MAPALGO_Rect, X = x,  Y = y, Wdt = wdt, Hgt = hgt / 4};
 	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
 	mask = {Algo = MAPALGO_And, Op = [surface, mask]}; 
-	DrawMaterial("Sulphur", mask, 4, 5);
+	DrawMaterial("Firestone", mask, 4, 5);
 	DrawMaterial("Coal", mask, 4, 5);
-	DrawMaterial("Sulphur", mask);
+	DrawMaterial("Firestone", mask);
 	DrawMaterial("Coal", mask);
 	
 	// Some small lakes as well in a second layer .
@@ -70,7 +70,7 @@ public func DrawMaterials(proplist rect, proplist surface)
 	mask = {Algo = MAPALGO_Turbulence, Iterations = 4, Op = mask};
 	mask = {Algo = MAPALGO_And, Op = [surface, mask]};
 	DrawMaterial("Coal", mask, 3, 8);
-	DrawMaterial("Sulphur", mask, 4, 5);
+	DrawMaterial("Firestone", mask, 4, 5);
 	DrawMaterial("Water", mask, 4, 10);
 	
 	// Ore and rock in the third layer.

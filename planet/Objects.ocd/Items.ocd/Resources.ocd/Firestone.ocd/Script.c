@@ -9,7 +9,13 @@ protected func Construction()
 
 func Hit()
 {
-	Explode(20);
+	Sound("Fuse");
+	CreateParticle("Fire", 0, 0, PV_Random(-5, 5), PV_Random(-15, 5), PV_Random(10, 40), Particles_Glimmer(), 5);
+}
+
+func Hit2()
+{
+	Explode(18);
 }
 
 local Collectible = 1;

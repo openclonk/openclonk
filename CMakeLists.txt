@@ -1504,7 +1504,8 @@ endif()
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
 
 # Install binaries
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk DESTINATION games/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
 
 ############################################################################
 # setup_openclonk.exe

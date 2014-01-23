@@ -334,8 +334,25 @@ global func FxFireSaveScen(object obj, proplist fx, proplist props)
 // Helper function to turn values of several types into a strings to be written to Objects.c
 global func SaveScenarioValue2String(v, bitmask_prefix)
 {
+	var rval;
 	if (bitmask_prefix) return GetConstantNameByValueSafe(v, bitmask_prefix);
 	if (GetType(v) == C4V_C4Object) return v->MakeScenarioSaveName();
+	if (GetType(v) == C4V_Array) // save procedure for arrays: recurse into contents (cannot save arrays pointing into itself that way)
+	{
+		for (var el in v)
+		{
+			if (rval) rval = Format("%s,%s", rval, SaveScenarioValue2String(el));
+			else rval = SaveScenarioValue2String(el);
+		}
+		if (rval) rval = Format("[%s]", rval); else rval = "[]";
+		return rval;
+	}
+	if (GetType(v) == C4V_PropList || GetType(v) == C4V_Def) // custom save procedure for some prop lists or definitions
+	{
+		rval = v->~ToString();
+		if (rval) return rval;
+	}
+	// Otherwise, rely on the default %v formatting
 	return Format("%v", v);
 }
 

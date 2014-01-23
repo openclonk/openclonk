@@ -1385,9 +1385,14 @@ bool C4Game::DropDef(C4ID id, float X, float Y)
 	return false;
 }
 
-void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner, int32_t iController)
+void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner, int32_t iController, C4ValueArray *out_objects)
 {
-	int32_t cnt;
+	int32_t cnt, out_obj_size=0;
+	if (out_objects)
+	{
+		out_obj_size = out_objects->GetSize();
+		out_objects->SetSize(out_obj_size + num);
+	}
 	for (cnt=0; cnt<num; cnt++)
 	{
 		// Must do these calculation steps separately, because the order of
@@ -1396,11 +1401,12 @@ void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level
 		C4Real xdir = C4REAL10(Random(2*level+1)-level);
 		C4Real ydir = C4REAL10(Random(2*level+1)-level);
 		C4Real rdir = itofix(Random(3)+1);
-		CreateObject(id,pCreator,iOwner,
+		C4Object *obj = CreateObject(id,pCreator,iOwner,
 		             tx,ty,angle,
 		             xdir,
 		             ydir,
 		             rdir, iController);
+		if (obj && obj->Status && out_objects) (*out_objects)[out_obj_size+cnt] = C4VObj(obj);
 	}
 }
 

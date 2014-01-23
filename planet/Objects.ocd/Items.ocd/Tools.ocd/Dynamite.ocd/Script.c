@@ -149,7 +149,7 @@ public func DoExplode()
 	// Activate all fuses
 	for(var obj in FindObjects(Find_Category(C4D_StaticBack), Find_Func("IsFuse"), Find_ActionTargets(this)))
 		obj->~StartFusing(this);
-	Explode(18);
+	Explode(26);
 }
 
 public func IsChemicalProduct() { return true; }

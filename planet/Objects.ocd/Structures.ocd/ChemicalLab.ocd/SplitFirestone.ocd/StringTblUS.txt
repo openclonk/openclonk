@@ -1,2 +1,0 @@
-Name=Split firestone
-Description=Split a firestone to get its natural components, coal and sulphur.

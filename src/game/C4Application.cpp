@@ -554,8 +554,11 @@ void C4Application::Clear()
 	Game.Clear();
 	NextMission.Clear();
 	// stop timer
-	Remove(pGameTimer);
-	delete pGameTimer; pGameTimer = NULL;
+	if (pGameTimer)
+	{
+		Remove(pGameTimer);
+		delete pGameTimer; pGameTimer = NULL;
+	}
 	// quit irc
 	IRCClient.Close();
 	// close system group (System.ocg)

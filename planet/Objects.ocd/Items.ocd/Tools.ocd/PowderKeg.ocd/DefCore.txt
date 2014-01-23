@@ -11,6 +11,6 @@ VertexY=-6,-6,6,6,0,0
 VertexFriction=60,60,60,60,60,60
 Value=20
 Mass=20
-Components=Barrel=1;Sulphur=1;Coal=1;
+Components=Barrel=1;Coal=1;
 NoComponentMass=1
 Rotate=1

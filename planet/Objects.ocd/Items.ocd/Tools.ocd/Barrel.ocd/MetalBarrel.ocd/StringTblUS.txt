@@ -1,2 +1,7 @@
 Name=Metal Barrel
 Description=Solid container for transporting hazardous liquids like acid.
+MaterialLava=lava
+MaterialDuroLava=lava
+MaterialWater=water
+MaterialFirefluid=fire stuff
+MaterialAcid=acid

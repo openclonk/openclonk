@@ -14,7 +14,7 @@ map CrystalCaves {
   VaryTex { mat=Granite; y=80px; zoomX=30; a=5;};
   VaryTex { mat=Coal; a=10; };
   VaryTex { mat=Ore; a=10; };
-  VaryTex { mat=Sulphur; y=40px; a=8; hgt=50px;x=60px;};
+  VaryTex { mat=Firestone; y=40px; a=8; hgt=50px;x=60px;};
   VaryTex { mat=Gold; y=70px; a=20; };
 
   // Top caves for mushyrooms

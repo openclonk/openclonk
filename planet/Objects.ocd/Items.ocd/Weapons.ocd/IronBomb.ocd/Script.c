@@ -60,7 +60,7 @@ func DoExplode()
 	else
 		Sound("BlastMetal");
 	CreateParticle("Smoke", PV_Random(-30, 30), PV_Random(-30, 30), 0, 0, PV_Random(40, 60), Particles_Smoke(), 60);
-	Explode(24);
+	Explode(30);
 }
 
 protected func Hit(x, y)

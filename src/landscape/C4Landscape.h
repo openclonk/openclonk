@@ -247,12 +247,15 @@ private:
 	C4Rect getBoundingBox(int *vtcs, int length) const;
 
 	void DigMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, C4Object *pCollect = NULL);
-	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str);
+	void BlastMaterial2Objects(int32_t tx, int32_t ty, C4MaterialList *mat_list, int32_t caused_by, int32_t str, C4ValueArray *out_objects);
 
 	bool DigFreePix(int32_t tx, int32_t ty);
 	bool DigFreePixNoInstability(int32_t tx, int32_t ty);
 	bool BlastFreePix(int32_t tx, int32_t ty);
 	bool ShakeFreePix(int32_t tx, int32_t ty);
+
+	C4ValueArray *PrepareFreeShape(C4Rect &BoundingBox, C4Object *by_object);
+	void PostFreeShape(C4ValueArray *dig_objects, C4Object *by_object);
 
 public:
 	void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky

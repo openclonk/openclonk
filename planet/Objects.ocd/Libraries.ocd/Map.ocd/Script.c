@@ -61,7 +61,7 @@ func DrawSpots(string mat, int num, sizex, sizey, array rect, inmat, vary_mats)
 }
 
 func DrawCoal(int num, array rect) { return DrawSpots("Coal", num, [20,60], [4,8], rect, nil); }
-func DrawSulphur(int num, array rect) { return DrawSpots("Sulphur", num, [20,60], [8,12], rect, nil); }
+func DrawFirestone(int num, array rect) { return DrawSpots("Firestone", num, [20,60], [8,12], rect, nil); }
 func DrawOre(int num, array rect) { return DrawSpots("Ore", num, [8,12], [14,20], rect, nil); }
 func DrawGold(int num, array rect) { return DrawSpots("Gold", num, [10,14], [10,14], rect, nil); }
 func DrawRock(int num, array rect) { return DrawSpots("Rock-rock", num, [20,80], [6,8], rect, nil, [["Rock-rock_cracked", 3,10], ["Granite", 6,2]]); }

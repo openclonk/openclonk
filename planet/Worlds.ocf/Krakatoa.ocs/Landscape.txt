@@ -68,7 +68,7 @@ map Volcano {
 			RandomMat & overlay { mat=Granite; tex=granite; };
 			RandomMat & overlay { mat=Rock; tex=rock_cracked; }; 
 			RandomMat & overlay { mat=Ore; tex=ore; };
-			RandomMat & overlay { mat=Sulphur; tex=sulphur; };
+			RandomMat & overlay { mat=Firestone; tex=firestone; };
 			RandomMat & overlay { mat=Coal; tex=coal; };
 			RandomMat & overlay { mat=Rock; tex=rock; };
 			RandomSpots & overlay { mat=Ore; tex=ore; }; 
@@ -80,7 +80,7 @@ map Volcano {
  			RandomSpots & overlay { mat=Earth; tex=earth_midsoil; };
 		}; 		
 		
-		// Middle volcano layer: Mostly with necessary resources like ore, coal, sulphur.
+		// Middle volcano layer: Mostly with necessary resources like ore, coal, firestone.
 		overlay {
 			algo=sin;
 			ox=-44; oy=50;
@@ -91,7 +91,7 @@ map Volcano {
  			RandomMat & overlay { mat=Granite; tex=granite; };
  			RandomMat & overlay { mat=Earth; tex=earth_topsoil; }; 
 			RandomMat & overlay { mat=Ore; tex=ore; };
-			RandomMat & overlay { mat=Sulphur; tex=sulphur; };
+			RandomMat & overlay { mat=Firestone; tex=firestone; };
 			RandomMat & overlay { mat=Coal; tex=coal; };
 			RandomMat & overlay { mat=Rock; tex=rock; };
 			RandomSpots & overlay { mat=Ore; tex=ore; }; 			
@@ -112,7 +112,7 @@ map Volcano {
 			RandomMat & overlay { mat=Granite; tex=granite; };
  			RandomMat & overlay { mat=Earth; tex=earth_topsoil; }; 
 			RandomMat & overlay { mat=Ore; tex=ore; };
-			RandomMat & overlay { mat=Sulphur; tex=sulphur; };
+			RandomMat & overlay { mat=Firestone; tex=firestone; };
 			RandomMat & overlay { mat=Coal; tex=coal; };
 			RandomMat & overlay { mat=Rock; tex=rock; }; 			
  			RandomMat & overlay { mat=Earth; tex=earth_rough; };
