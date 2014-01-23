@@ -19,4 +19,8 @@ func Definition(def) {
 }
 local Name = "$Name$";
 local Description = "$Description$";
+<<<<<<< HEAD
 local Touchable = 2;
+=======
+local Plane = 470;
+>>>>>>> master

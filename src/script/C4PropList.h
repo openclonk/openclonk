@@ -1,26 +1,21 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Property lists */
+
+#include <memory>
 
 #include "C4Value.h"
 #include "C4StringTable.h"
@@ -28,6 +23,21 @@
 #ifndef C4PROPLIST_H
 #define C4PROPLIST_H
 
+/* C4PropList have a somewhat complicated reference counting scheme. You can:
+ - Store a C4Proplist* in a C4Value. This is the preferred and often only way.
+ - Store a C4Object* from GetObject in a C4Object* or C4PropList* if there is a ClearPointer function for it
+   Use a C4ObjectPtr for help with storing the Object in Savegames.
+ - Store a C4Def* from GetDef() in a C4Def* or C4PropList*
+
+All PropLists can be destroyed while there are still C4Values referencing them, though
+Definitions do not get destroyed during the game. So always check for nullpointers.
+
+The linked list formed by C4PropList::FirstRef and C4Value::NextRef is used to
+change all C4Values referencing the destroyed Proplist to contain nil instead.
+Objects are also cleaned up via various ClearPointer functions.
+The list is also used as a reference count to remove unused Proplists.
+The exception are C4PropListNumbered and C4Def, which have implicit references
+from C4GameObjects, C4Object and C4DefList. They have to be destroyed when loosing that reference.*/
 
 class C4Property
 {
@@ -37,7 +47,12 @@ public:
 	{ assert(Key); Key->IncRef(); /*assert(Strings.Set.Has(Key));*/ }
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
-	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	{ if(o.Key) o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+#ifdef HAVE_RVALUE_REF
+	C4Property(C4Property && o) : Key(o.Key), Value(std::move(o.Value)) { o.Key = 0; }
+	C4Property & operator = (C4Property && o)
+	{ if (Key) Key->DecRef(); Key = o.Key; o.Key = 0; Value = std::move(o.Value); return *this; }
+#endif
 	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	C4String * Key;
@@ -45,33 +60,38 @@ public:
 	operator const void * () const { return Key; }
 	C4Property & operator = (void * p)
 	{ assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	bool operator < (const C4Property &cmp) const { return strcmp(GetSafeKey(), cmp.GetSafeKey())<0; }
+	const char *GetSafeKey() const { if (Key && Key->GetCStr()) return Key->GetCStr(); return ""; } // get key as C string; return "" if undefined. never return NULL
 };
 class C4PropListNumbered;
 class C4PropList
 {
 public:
-	void AddRef(C4Value *pRef);
-	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void Clear() { constant = false; Properties.Clear(); prototype = 0; }
 	const char *GetName() const;
 	virtual void SetName (const char *NewName = 0);
 
+	// These functions return this or a prototype.
 	virtual C4Def const * GetDef() const;
 	virtual C4Def * GetDef();
 	virtual C4Object * GetObject();
 	virtual C4Effect * GetEffect();
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() const { return prototype; }
+	virtual class C4MapScriptLayer * GetMapScriptLayer();
+	virtual class C4MapScriptMap * GetMapScriptMap();
 
-	// Whether this proplist should be saved as a reference to a C4Def/C4Object
-	virtual bool IsDef() const { return false; }
+	// saved as a reference to a global constant?
+	virtual class C4PropListStatic * IsStatic() { return NULL; }
+	// saved as a reference to separately saved objects?
 	virtual bool IsNumbered() const { return false; }
-	// Whether this proplist is a pure script proplist, not a host object
-	virtual bool IsScriptPropList() { return false; }
+	// some proplists have references that are not reference-counted
+	virtual bool Delete() { return false; }
 
-	// These three operate on properties as seen by script, which can be dynamic
+	// These four operate on properties as seen by script, which can be dynamic
 	// or reflect C++ variables
 	virtual bool GetPropertyByS(C4String *k, C4Value *pResult) const;
+	virtual C4ValueArray * GetProperties() const;
 	// not allowed on frozen proplists
 	virtual void SetPropertyByS(C4String * k, const C4Value & to);
 	virtual void ResetProperty(C4String * k);
@@ -84,22 +104,24 @@ public:
 	{ return GetFunc(&Strings.P[k]); }
 	C4AulFunc * GetFunc(C4String * k) const;
 	C4AulFunc * GetFunc(const char * k) const;
-	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0)
-	{ return Call(&Strings.P[k], pPars); }
-	C4Value Call(C4String * k, C4AulParSet *pPars=0);
-	C4Value Call(const char * k, C4AulParSet *pPars=0);
+	C4String * EnumerateOwnFuncs(C4String * prev = 0) const;
+	C4Value Call(C4PropertyName k, C4AulParSet *pPars=0, bool fPassErrors=false)
+	{ return Call(&Strings.P[k], pPars, fPassErrors); }
+	C4Value Call(C4String * k, C4AulParSet *pPars=0, bool fPassErrors=false);
+	C4Value Call(const char * k, C4AulParSet *pPars=0, bool fPassErrors=false);
 	C4PropertyName GetPropertyP(C4PropertyName k) const;
 	int32_t GetPropertyInt(C4PropertyName k) const;
-	bool HasProperty(C4String * k) { return Properties.Has(k); }
+	C4PropList *GetPropertyPropList(C4PropertyName k) const;
+	bool HasProperty(C4String * k) const { return Properties.Has(k); }
 	// not allowed on frozen proplists
 	void SetProperty(C4PropertyName k, const C4Value & to)
 	{ SetPropertyByS(&Strings.P[k], to); }
 
 	static C4PropList * New(C4PropList * prototype = 0);
-	static C4PropList * NewAnon(C4PropList * prototype = 0);
-	static C4PropList * NewScen(C4PropList * prototype = 0);
+	static C4PropListStatic * NewStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key);
 
 	// only freeze proplists which are not going to be modified
+	// FIXME: Only C4PropListStatic get frozen. Optimize accordingly.
 	void Freeze() { constant = true; }
 	void Thaw() { constant = false; }
 	bool IsFrozen() const { return constant; }
@@ -107,9 +129,8 @@ public:
 	virtual void Denumerate(C4ValueNumbers *);
 	virtual ~C4PropList();
 
-	// Every proplist has to be initialized by either Init or CompileFunc.
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
-	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3);
+	void AppendDataString(StdStrBuf * out, const char * delim, int depth = 3) const;
 
 	bool operator==(const C4PropList &b) const;
 #ifdef _DEBUG
@@ -118,20 +139,63 @@ public:
 
 protected:
 	C4PropList(C4PropList * prototype = 0);
-	C4Value *FirstRef; // No-Save
+	void ClearRefs() { while (FirstRef) FirstRef->Set0(); }
 
 private:
+	void AddRef(C4Value *pRef);
+	void DelRef(const C4Value *pRef, C4Value * pNextRef);
+	C4Value *FirstRef; // No-Save
 	C4Set<C4Property> Properties;
 	C4PropList * prototype;
 	bool constant; // if true, this proplist is not changeable
+	friend class C4Value;
+	friend class C4ScriptHost;
 public:
 	int32_t Status;
+
+	class Iterator
+	{
+	private:
+		std::shared_ptr<std::vector<const C4Property*> > properties;
+		std::vector<const C4Property*>::iterator iter;
+		// needed when constructing the iterator
+		// adds a property or overwrites existing property with same name
+		void AddProperty(const C4Property * prop);
+		void Reserve(size_t additionalAmount);
+		// Initializes internal iterator. Needs to be called before actually using the iterator.
+		void Init();
+	public:
+		Iterator() : properties(0) { }
+
+		const C4Property * operator*() const { return *iter; }
+		const C4Property * operator->() const { return *iter; }
+		void operator++() { ++iter; };
+		void operator++(int) { operator++(); }
+
+		bool operator==(const Iterator & other) const
+		{
+			if ((properties == 0 || iter == properties->end()) && (other.properties == 0 || other.iter == other.properties->end()))
+				return true;
+			return properties == other.properties && iter == other.iter;
+		}
+
+		bool operator!=(const Iterator & other) const
+		{
+			return !(*this == other);
+		}
+
+		friend class C4PropList;
+	};
+
+	// do not modify the proplist while iterating over it!
+	Iterator begin();
+	Iterator end() { return Iterator(); }
 };
 
 void CompileNewFunc(C4PropList *&pStruct, StdCompiler *pComp, C4ValueNumbers * const & rPar);
 
 // Proplists that are created during a game and get saved in a savegame
-// Examples: Objects, Effects, scriptcreated proplists
+// Examples: Objects, Effects
 class C4PropListNumbered: public C4PropList
 {
 public:
@@ -139,7 +203,6 @@ public:
 	~C4PropListNumbered();
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers);
 	virtual C4PropListNumbered * GetPropListNumbered();
-	void AcquireNumber();
 	virtual bool IsNumbered() const { return true; }
 
 	static C4PropList * GetByNumber(int32_t iNumber); // pointer by number
@@ -147,13 +210,19 @@ public:
 	static void SetEnumerationIndex(int32_t iMaxObjectNumber);
 	static int32_t GetEnumerationIndex() { return EnumerationIndex; }
 	static void ResetEnumerationIndex();
+	static void ShelveNumberedPropLists(); // unnumber all proplists and put them on the shelve. To be used on remaining objects before a savegame load.
+	static void UnshelveNumberedPropLists(); // re-insert shelved proplists into main list
+	static void ClearShelve();
 protected:
 	C4PropListNumbered(C4PropList * prototype = 0);
+	void AcquireNumber(); // acquire a number and add to internal list
+	void ClearNumber(); // clear number and remove from internal list
 
 	static C4Set<C4PropListNumbered *> PropLists;
+	static std::vector<C4PropListNumbered *> ShelvedPropLists; // temporary storage for existing proplists while a new section loaded
 	static int32_t EnumerationIndex;
-	friend class C4GameObjects;
 	friend class C4Game;
+	friend class C4GameObjects;
 };
 
 // Proplists created by script at runtime
@@ -161,8 +230,35 @@ class C4PropListScript: public C4PropList
 {
 public:
 	C4PropListScript(C4PropList * prototype = 0): C4PropList(prototype) { }
-	bool IsScriptPropList() { return true; }
+	bool Delete() { return true; }
 };
 
+// PropLists declared in the game data
+// examples: Definitions, local variable initializers
+class C4PropListStatic: public C4PropList
+{
+public:
+	C4PropListStatic(C4PropList * prototype, const C4PropListStatic * parent, C4String * key):
+		C4PropList(prototype), Parent(parent), ParentKeyName(key) { }
+	virtual ~C4PropListStatic() { }
+	bool Delete() { return true; }
+	virtual C4PropListStatic * IsStatic() { return this; }
+	void RefCompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers) const;
+	StdStrBuf GetDataString() const;
+	const C4PropListStatic * GetParent() { return Parent; }
+	const C4String * GetParentKeyName() { return ParentKeyName; }
+protected:
+	const C4PropListStatic * Parent;
+	C4RefCntPointer<C4String> ParentKeyName; // property in parent this proplist was created in
+};
+
+// static PropList of which another class owns the pointer
+class C4PropListStaticMember : public C4PropListStatic
+{
+public:
+	C4PropListStaticMember(C4PropList * prototype, const C4PropListStatic * parent, C4String * key):
+	  C4PropListStatic(prototype, parent, key) {}
+	virtual bool Delete() { return false; }
+};
 
 #endif // C4PROPLIST_H

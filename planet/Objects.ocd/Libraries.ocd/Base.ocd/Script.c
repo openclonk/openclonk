@@ -24,7 +24,7 @@ public func ExecAutoSell()
 {
 	// Search all objects for objects that want to be sold automatically
 	for(pObj in FindObjects(Find_Container(this), Find_Func("AutoSell")))
-		Sell(pObj);
+		Sell(pObj->GetOwner(), pObj, this);
 }
 
 // Does the base block enemies?
@@ -42,7 +42,7 @@ func GetBuyObject(int iIndex)
 	var idDef = GetHomebaseMaterial(GetOwner(), nil, iIndex, C4D_All);
 	aBuy[0] = idDef;
 	aBuy[1] = GetHomebaseMaterial(GetOwner(), idDef, 0);
-	if(!idDef) return 0;
+	if(!idDef) return nil;
 	// The default implementation returns the Homebasemaerial of the playeer
 	return aBuy;
 }

@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2006  Sven Eberhardt
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 
@@ -116,12 +112,16 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_Synchronize,  PC_Control, "Synchronize",                false,  true,   0,                        PKT_UNPACK(C4ControlSynchronize)},
 	{ CID_Set,          PC_Control, "Set",                        false,  true,   0,                        PKT_UNPACK(C4ControlSet)        },
 	{ CID_Script,       PC_Control, "Script",                     false,  true,   0,                        PKT_UNPACK(C4ControlScript)     },
+	{ CID_MsgBoardReply,PC_Control, "Message Board Reply",        false,  true,   0,                        PKT_UNPACK(C4ControlMsgBoardReply)},
+	{ CID_MsgBoardCmd  ,PC_Control, "Message Board Command",      false,  true,   0,                        PKT_UNPACK(C4ControlMsgBoardCmd)},
 	{ CID_PlrInfo,      PC_Control, "Player Info",                false,  true,   0,                        PKT_UNPACK(C4ControlPlayerInfo) },
 	{ CID_JoinPlr,      PC_Control, "Join Player",                false,  true,   0,                        PKT_UNPACK(C4ControlJoinPlayer) },
 	{ CID_RemovePlr,    PC_Control, "Remove Player",              false,  true,   0,                        PKT_UNPACK(C4ControlRemovePlr)  },
 	{ CID_PlrSelect,    PC_Control, "Player Select",              false,  true,   0,                        PKT_UNPACK(C4ControlPlayerSelect)},
 	{ CID_PlrControl,   PC_Control, "Player Control",             false,  true,   0,                        PKT_UNPACK(C4ControlPlayerControl)},
 	{ CID_PlrCommand,   PC_Control, "Player Command",             false,  true,   0,                        PKT_UNPACK(C4ControlPlayerCommand)},
+	{ CID_PlrAction,    PC_Control, "Player Self-Mgmt Action",    false,  true,   0,                        PKT_UNPACK(C4ControlPlayerAction)},
+	{ CID_PlrMouseMove, PC_Control, "Player Mouse Movement",      false,  true,   0,                        PKT_UNPACK(C4ControlPlayerMouse)},
 	{ CID_Message,      PC_Control, "Message",                    false,  true,   0,                        PKT_UNPACK(C4ControlMessage)    },
 	{ CID_EMMoveObj,    PC_Control, "EM Move Obj",                false,  true,   0,                        PKT_UNPACK(C4ControlEMMoveObject)},
 	{ CID_EMDrawTool,   PC_Control, "EM Draw Tool",               false,  true,   0,                        PKT_UNPACK(C4ControlEMDrawTool) },
@@ -408,12 +408,12 @@ void C4PacketList::CompileFunc(StdCompiler *pComp)
 // *** C4PacketConn
 
 C4PacketConn::C4PacketConn()
-		: iVer(C4XVER4)
+		: iVer(C4XVER1*10000 + C4XVER2*100 + C4XVER3)
 {
 }
 
 C4PacketConn::C4PacketConn(const C4ClientCore &nCCore, uint32_t inConnID, const char *szPassword)
-		: iVer(C4XVER4),
+		: iVer(C4XVER1*10000 + C4XVER2*100 + C4XVER3),
 		iConnID(inConnID),
 		CCore(nCCore),
 		Password(szPassword)
@@ -509,19 +509,22 @@ void C4PacketJoinData::CompileFunc(StdCompiler *pComp)
 // *** C4PacketPing
 
 C4PacketPing::C4PacketPing(uint32_t iPacketCounter, uint32_t iRemotePacketCounter)
-		: iTime(GetTime()),
+		: tTime(C4TimeMilliseconds::Now()),
 		iPacketCounter(iPacketCounter)
 {
 }
 
 uint32_t C4PacketPing::getTravelTime() const
 {
-	return GetTime() - iTime;
+	return C4TimeMilliseconds::Now() - tTime;
 }
 
 void C4PacketPing::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(iTime, "Time", 0U));
+	uint32_t time = tTime.AsInt();
+	pComp->Value(mkNamingAdapt(time, "Time", 0U));
+	tTime = C4TimeMilliseconds(time);
+
 	pComp->Value(mkNamingAdapt(iPacketCounter, "PacketCounter", 0U));
 }
 

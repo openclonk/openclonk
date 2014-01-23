@@ -9,7 +9,6 @@
 
 #include Library_MeleeWeapon
 
-local tree;
 local swing_anim;
 local using;
 local carry_bone;
@@ -51,21 +50,20 @@ public func ControlUseStart(object clonk, int iX, int iY)
 	if (!clonk->IsWalking() && !clonk->IsJumping())
 		return true;
 
-	tree = FindObject(Find_AtPoint(0,0), Find_Func("IsTree"), Sort_Distance(), Find_NoContainer());
-
+	// find tree that is closest to the clonk's axe when swung
+	var x_offs = 10;
+	if(clonk->GetDir() == DIR_Left) {
+		x_offs = -x_offs;
+	}
+	
 	// Chopping
-	if(tree && clonk->IsWalking())
+	if (clonk->IsWalking()) for (var tree in FindObjects(Find_AtPoint(x_offs,0), Find_Func("IsTree"), Sort_Distance(x_offs, 0), Find_NoContainer()))
 	{
 		//treedist - the x-distance the clonk is from the centre of a tree-trunk
-		var treedist = Abs(clonk->GetX() - tree->GetX());
-		if(tree->IsStanding() && treedist < 15 && treedist > 6)
+		var treedist = Abs(clonk->GetX() + x_offs - tree->GetX());
+		if(tree->IsStanding() && treedist <= 6)
 		{
 			using = 1;
-			//Set the clonk's dir to face the tree if he isn't
-			if(clonk->GetX() < tree->GetX() && clonk->GetDir() == 0)
-				clonk->SetDir(1);
-			else if(clonk->GetX() > tree->GetX() && clonk->GetDir() == 1)
-				clonk->SetDir(0);
 
 			//The clonk cannot hold other items in hand while swinging an axe
 			clonk->SetHandAction(1);
@@ -76,8 +74,8 @@ public func ControlUseStart(object clonk, int iX, int iY)
 
 			//Make sure the clonk is holding the axe in the correct position
 			var hand = "Chop.R";
-			if(clonk->GetDir() == 0) hand = "Chop.L";
-			swing_anim = clonk->PlayAnimation(hand, 10, Anim_Linear(0, 0, clonk->GetAnimationLength("Chop.R"), axe_swing_time, ANIM_Loop), Anim_Const(1000));
+			if((clonk->GetDir() == 0) != (clonk.Plane < tree.Plane)) hand = "Chop.L";
+			swing_anim = clonk->PlayAnimation(hand, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(hand), axe_swing_time, ANIM_Loop), Anim_Const(1000));
 
 			//The timed effect for when the axe actually hits the tree
 			AddEffect("IntAxe", clonk, 1, 1, this, 0, tree);
@@ -126,17 +124,17 @@ public func ControlUseStart(object clonk, int iX, int iY)
 		if(!GetEffect("AxeStrikeStop", clonk, 0))
 			AddEffect("AxeStrikeStop", clonk, 2, 50, this);
 	}
+	if(clonk->GetHandPosByItemPos(clonk->GetItemPos(this)) == 1)
+	{
+		arm = "L";
+		carry_bone = "pos_hand1";
+		animation  = Format("SwordSlash%d.%s", rand, arm);
+	}
 	if(clonk->IsJumping())
 	{
 		rand = 1;
 		if(clonk->GetYDir() < -5) rand = 2;
 		animation = Format("SwordJump%d.%s",rand,arm);
-	}
-
-	if(clonk->GetItemPos(this) == 1)
-	{
-		arm = "L";
-		carry_bone = "pos_hand1";
 	}
 
 	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
@@ -191,17 +189,14 @@ func FxIntAxeTimer(object clonk, effect, int time)
 		var x = 10;
 		if(clonk->GetDirection() == COMD_Left) x = x * -1;
 		
-		//Create the woodchip particle
-		var i;
-		while(i != 4)
-		{
-			//random speed & angle
-			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), tree);
-		}
-
+		//Create the woodchip particles
+		var particles = Particles_WoodChip();
+		// need to be behind the Clonk?
+		if (clonk.Plane > effect.tree.Plane)
+			particles = {Prototype = Particles_WoodChip(), Attach = ATTACH_Back};
+		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 10);
 		// Damage tree
-		tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
+		effect.tree->DoDamage(this.ChopStrength, 3, clonk->GetOwner()); // 3 = FX_Call_DmgChop
 	}
 	//Make sure the clonk does not move
 	clonk->SetComDir(COMD_Stop);
@@ -242,13 +237,7 @@ func FxIntSplitTimer(object clonk, effect, int time)
 		if(clonk->GetDirection() == COMD_Left) x = x * -1;
 
 		//Create the woodchip particle
-		var i;
-		while(i != 4)
-		{
-			//random speed & angle
-			i++;
-			CreateParticle("Axe_WoodChip", x, 4, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), tree);
-		}
+		clonk->CreateParticle("WoodChip", x, 4, PV_Random(-12, 12), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), Particles_WoodChip(), 10);
 	}
 	// Tree split!
 	if ((axe_swing_time * 12) / time == 1)
@@ -288,7 +277,6 @@ public func Reset(clonk)
 	clonk->SetTurnForced(-1);
 	clonk->StopAnimation(swing_anim);
 	swing_anim = nil;
-	tree = nil;
 	RemoveEffect("IntAxe", clonk);
 	RemoveEffect("IntSplit", clonk);
 }
@@ -320,7 +308,7 @@ func CheckStrike(iTime)
 			// don't hit objects twice
 			if(!GetEffect(effect_name, obj))
 			{
-				AddEffect(effect_name, obj, 1, 60 /* arbitrary */, 0, 0);
+				AddEffect(effect_name, obj, 1, 60 /* arbitrary */, nil, 0);
 
 				if(GetEffect(axe_name, obj))
 				{
@@ -328,7 +316,7 @@ func CheckStrike(iTime)
 				}
 				else
 				{
-					AddEffect(axe_name, obj, 1, 40, 0, 0);
+					AddEffect(axe_name, obj, 1, 40, nil, 0);
 				}
 
 				// Reduce damage by shield
@@ -387,5 +375,6 @@ public func IsToolProduct() { return true; }
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;
 local ChopStrength = 10;

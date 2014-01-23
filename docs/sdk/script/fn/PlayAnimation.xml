@@ -53,6 +53,7 @@ var swim_comb = swim_down + 1;</code>
       </example>
     </examples>
     <related>
+      <funclink>TransformBone</funclink>
       <funclink>StopAnimation</funclink>
       <funclink>SetAnimationPosition</funclink>
       <funclink>SetAnimationWeight</funclink>

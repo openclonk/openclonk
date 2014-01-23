@@ -20,6 +20,8 @@ protected func Construction() {
 	inherited(...);
 }
 
+
+/** Sets the symbol that is displayed in the menu background */
 public func SetSymbol(symbol)
 {
 	SetGraphics("BG", this, 2, GFXOV_MODE_Base);
@@ -43,7 +45,7 @@ public func SetSymbol(symbol)
 
 
 
-// Determines the item position for the nth circle for a certain number of circles.
+/** Determines the item position for the nth circle for a certain number of circles. */
 private func GetItemPosition(int n, int total)
 {
 	// Safety.
@@ -53,7 +55,7 @@ private func GetItemPosition(int n, int total)
 	// Packing 7 or less circles.
 	if (total <= 7)
 	{
-		if (n == 7)
+		if (n == 0)
 			return [0, 0];
 		else
 		{	
@@ -66,7 +68,7 @@ private func GetItemPosition(int n, int total)
 	// Packing 19 or less circles.
 	if (total <= 19)
 	{
-		if (n == 7)
+		if (n == 0)
 			return [0, 0];
 		else if (n < 7)
 		{	
@@ -76,8 +78,8 @@ private func GetItemPosition(int n, int total)
 		}
 		else
 		{
-			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 40);
-			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 40);
+			var x = -Cos(30 * (n-4) + 15, 31 * MENU_Radius / 40);
+			var y = -Sin(30 * (n-4) + 15, 31 * MENU_Radius / 40);
 			return [x, y];
 		}		
 	}
@@ -85,7 +87,7 @@ private func GetItemPosition(int n, int total)
 	// Packing 37 or less circles.
 	if (total <= 37)
 	{
-		if (n == 7)
+		if (n == 0)
 			return [0, 0];
 		else if (n < 7)
 		{	
@@ -93,16 +95,16 @@ private func GetItemPosition(int n, int total)
 			var y = -Sin(60 * (n+1), 2 * MENU_Radius / 7);
 			return [x, y];
 		}
-		else if (n <= 19)
+		else if (n < 19)
 		{
-			var x = -Cos(30 * (n-5) + 15, 31 * MENU_Radius / 56);
-			var y = -Sin(30 * (n-5) + 15, 31 * MENU_Radius / 56);
+			var x = -Cos(30 * (n-4) + 15, 31 * MENU_Radius / 56);
+			var y = -Sin(30 * (n-4) + 15, 31 * MENU_Radius / 56);
 			return [x, y];
 		}	
 		else
 		{
-			var x = -Cos(30 * (n-17), 61 * MENU_Radius / 72);
-			var y = -Sin(30 * (n-17), 61 * MENU_Radius / 72);
+			var x = -Cos(30 * (n-16), 61 * MENU_Radius / 72);
+			var y = -Sin(30 * (n-16), 61 * MENU_Radius / 72);
 			return [x, y];
 		}		
 	}
@@ -110,7 +112,7 @@ private func GetItemPosition(int n, int total)
 	return;
 }
 
-// Gives the radius for an item.
+/** Gives the radius for an item. */
 private func GetItemRadius(int total)
 {
 	if (total <= 7)
@@ -122,6 +124,7 @@ private func GetItemRadius(int total)
 	return 1;
 }
 
+/** Redraws the menu */
 public func UpdateMenu()
 {
 	// Safety: check for items.
@@ -134,7 +137,7 @@ public func UpdateMenu()
 	
 	for (var i = 0; i < item_count; i++)
 	{
-		var pos = GetItemPosition(i + 1, item_count);
+		var pos = GetItemPosition(i, item_count);
 		var item = menu_items[i];
 		if (item)
 		{
@@ -146,6 +149,7 @@ public func UpdateMenu()
 }
 
 public func OnMouseOverItem(object item, object dragged)
+
 {
 	// make it appear bigger
 	item->SetObjDrawTransform(1100, 0, 0, 0, 1100, 0, 1);

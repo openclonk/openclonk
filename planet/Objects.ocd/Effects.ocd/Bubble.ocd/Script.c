@@ -1,5 +1,6 @@
 /*-- Bubble --*/
 
+local creator; // The object that has created this bubble. Used to prevent Clonk from breathing from his own bubbles.
 
 global func Bubble(int amount, int x, int y)
 {
@@ -7,8 +8,16 @@ global func Bubble(int amount, int x, int y)
 		amount=3;
 
 	for (var i = 0; i < amount; i++)
-		CreateObject(Fx_Bubble, x, y, NO_OWNER);
+	{
+		var bubble = CreateObject(Fx_Bubble, x, y, NO_OWNER);
+		if (bubble) bubble.creator = this;
+	}
 	return;
+}
+
+global func CastBubbles(int num, int level, int x, int y)
+{
+	return CastObjects(Fx_Bubble, num, level, x, y);
 }
 
 protected func Initialize()
@@ -65,3 +74,17 @@ public func FxFadeTimer(object target, effect)
 	effect.alpha = alpha - 5;
 	return 1;
 }
+
+func OnClonkBreath(object clonk)
+{
+	// A Clonk is breathing us in
+	clonk->DoBreath(GetCon()); // sound would be cool
+	RemoveObject();
+	return true;
+}
+
+// Bubbles can be breathed in by anything but their creator
+func CanBeBreathed(object by_clonk) { return !creator || (by_clonk != creator); }
+
+// No need to blow up scenario object list with bubble spam
+func SaveScenarioObject() { return false; }

@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002-2003, 2005-2007  Sven Eberhardt
- * Copyright (c) 2003  Matthes Bender
- * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
- * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // startup screen
 
@@ -159,7 +155,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);
 	// draw scenario title
-	pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.iLineHgt, 0xdddddddd, ARight, false);
+	pDraw->StringOut(Game.ScenarioTitle.getData(), TitleFont, 1.0f, cgo.Surface, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt-iVMargin-TitleFont.GetLineHeight(), 0xdddddddd, ARight, false);
 	// draw info
 	/*if (szInfo)
 	  pDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
@@ -176,13 +172,13 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		pDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
 	}
 	pDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
-	                             cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff,
+	                             cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.GetLineHeight()/2-iProgressBarHgt/2, 0xffffffff,
 	                             ACenter, true);
 	// draw log box
 	if (pLog)
 	{
 		pDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent, 0x7f000000);
-		int iLineHgt=int(fLogBoxFontZoom*LogFont.iLineHgt); if (!iLineHgt) iLineHgt=5;
+		int iLineHgt=int(fLogBoxFontZoom*LogFont.GetLineHeight()); if (!iLineHgt) iLineHgt=5;
 		int iLinesVisible = (iLogBoxHgt-2*iLogBoxMargin)/iLineHgt;
 		int iX = iHIndent+iLogBoxMargin;
 		int iY = cgo.Hgt-iVIndent-iLogBoxHgt+iLogBoxMargin;

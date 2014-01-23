@@ -9,8 +9,8 @@
     <text>The keywords <code>break</code> and <code>continue</code> are used for finer control of loops:</text>
     <text>
       <ul>
-        <li><code>break</code> ends the enclosing loop. Execution is continued after the end of the loop.</li>
-        <li><code>continue</code> ends the current loop execution and continues with the next loop item from the beginning of the loop.</li>
+        <li id="break"><code>break</code> ends the enclosing loop. Execution is continued after the end of the loop.</li>
+        <li id="continue"><code>continue</code> ends the current loop execution and continues with the next loop item from the beginning of the loop.</li>
       </ul>
     </text>
     <h>Example:</h>

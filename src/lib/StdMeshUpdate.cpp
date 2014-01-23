@@ -1,18 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Armin Burgmeier
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "C4Include.h"
@@ -82,13 +80,13 @@ void StdMeshMaterialUpdate::Add(const StdMeshMaterial* material)
 }
 
 StdMeshUpdate::StdMeshUpdate(const StdMesh& old_mesh):
-	OldMesh(&old_mesh), BoneNames(OldMesh->GetNumBones())
+	OldMesh(&old_mesh), BoneNamesByIndex(OldMesh->GetNumBones())
 {
 	for(std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = OldMesh->Animations.begin(); iter != OldMesh->Animations.end(); ++iter)
 		AnimationNames[&iter->second] = iter->first;
 
 	for(unsigned int i = 0; i < OldMesh->GetNumBones(); ++i)
-		BoneNames[i] = OldMesh->GetBone(i).Name;
+		BoneNamesByIndex[i] = OldMesh->GetBone(i).Name;
 }
 
 void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) const
@@ -110,7 +108,7 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 	// in the updated mesh, then detach the mesh from its parent
 	if(instance->AttachParent)
 	{
-		if(!instance->AttachParent->SetChildBone(BoneNames[instance->AttachParent->ChildBone]))
+		if(!instance->AttachParent->SetChildBone(BoneNamesByIndex[instance->AttachParent->ChildBone]))
 		{
 			bool OwnChild = instance->AttachParent->OwnChild;
 			instance->AttachParent->Parent->DetachMesh(instance->AttachParent->Number);
@@ -127,7 +125,7 @@ void StdMeshUpdate::Update(StdMeshInstance* instance, const StdMesh& new_mesh) c
 	std::vector<unsigned int> Removal;
 	for(StdMeshInstance::AttachedMeshIter iter = instance->AttachedMeshesBegin(); iter != instance->AttachedMeshesEnd(); ++iter)
 	{
-		if(!(*iter)->SetParentBone(BoneNames[(*iter)->ParentBone]))
+		if(!(*iter)->SetParentBone(BoneNamesByIndex[(*iter)->ParentBone]))
 		{
 			// Do not detach the mesh right here so we can finish iterating over
 			// all attached meshes first.
@@ -164,6 +162,15 @@ bool StdMeshUpdate::UpdateAnimationNode(StdMeshInstance* instance, const StdMesh
 			C4Real min = Fix0;
 			C4Real max = ftofix(node->GetAnimation()->Length);
 			provider->Value = BoundBy(provider->Value, min, max);
+			return true;
+		}
+	case StdMeshInstance::AnimationNode::CustomNode:
+		{
+			// Update bone index by bone name
+			StdCopyStrBuf bone_name = BoneNamesByIndex[node->Custom.BoneIndex];
+			const StdMeshBone* bone = new_mesh.GetBoneByName(bone_name);
+			if(!bone) return false;
+			node->Custom.BoneIndex = bone->Index;
 			return true;
 		}
 	case StdMeshInstance::AnimationNode::LinearInterpolationNode:

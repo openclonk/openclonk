@@ -1,0 +1,42 @@
+material ConsSiteSign
+{
+	receive_shadows on
+
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			//scene_blend alpha_blend
+			diffuse 1 1 1 1.0
+
+			texture_unit Overlay
+			{
+				texture Overlay.png
+				tex_address_mode wrap
+				filtering trilinear
+				//colour_op_ex modulate src_texture src_player_colour
+				// take alpha from texture only, ignore player alpha
+				alpha_op_ex source1 src_texture src_player_colour
+			}
+
+			texture_unit Sign
+			{
+				texture ConsSignTex.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex blend_current_alpha src_current src_texture
+				// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
+				alpha_op_ex add src_current src_texture
+			}
+			texture_unit Light
+			{
+				// apply lighting
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
+		}
+	}
+}
+
+

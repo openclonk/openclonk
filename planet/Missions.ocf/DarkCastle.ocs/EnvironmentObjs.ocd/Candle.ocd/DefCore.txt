@@ -1,0 +1,6 @@
+[DefCore]
+id=EnvPack_Candle
+Category=C4D_StaticBack
+Width=4
+Height=10
+Offset=-2,-5

@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_Scarecrow
+Category=C4D_StaticBack
+Width=10
+Height=18
+Offset=-5,-9
+StretchGrowth=1

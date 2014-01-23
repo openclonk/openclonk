@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2005, 2007-2008  Sven Eberhardt
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2008  Peter Wortmann
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // game saving functionality
 
@@ -68,7 +62,7 @@ bool C4GameSave::SaveCore()
 	rC4S = Game.C4S;
 	// Always mark current engine version
 	rC4S.Head.C4XVer[0]=C4XVER1; rC4S.Head.C4XVer[1]=C4XVER2;
-	rC4S.Head.C4XVer[2]=C4XVER3; rC4S.Head.C4XVer[3]=C4XVER4;
+	rC4S.Head.C4XVer[2]=C4XVER3;
 	// Some flags are not to be set for initial settings:
 	//  They depend on whether specific runtime data is present, which may simply not be stored into initial
 	//  saves, because they rely on any data present and up-to-date within the scenario!
@@ -213,7 +207,7 @@ bool C4GameSave::SaveRuntimeData()
 	if (GetSaveUserPlayers() || GetSaveScriptPlayers())
 	{
 		// player infos
-		// the stored player info filenames will point into the scenario file, and no ressource information
+		// the stored player info filenames will point into the scenario file, and no resource information
 		// will be saved. PlayerInfo must be saved first, because those will generate the storage filenames to be used by
 		// C4PlayerList
 		C4PlayerInfoList RestoreInfos;
@@ -303,7 +297,7 @@ void C4GameSave::WriteDescGameTime(StdStrBuf &sBuf)
 
 void C4GameSave::WriteDescEngine(StdStrBuf &sBuf)
 {
-	char ver[5]; sprintf(ver, "%03d", (int) C4XVER4);
+	char ver[32]; sprintf(ver, "%d.%d.%d", (int)C4XVER1, (int)C4XVER2, (int)C4XVER3);
 	sBuf.AppendFormat(LoadResStr("IDS_DESC_VERSION"), ver);
 	WriteDescLineFeed(sBuf);
 }
@@ -444,7 +438,7 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 	// remove: Title text, image and icon if specified
 	if (!GetKeepTitle())
 	{
-		pSaveGroup->Delete(C4CFN_ScenarioTitle);
+		pSaveGroup->Delete(FormatString("%s.*",C4CFN_ScenarioTitle).getData());
 		pSaveGroup->Delete(C4CFN_ScenarioIcon);
 		pSaveGroup->Delete(FormatString(C4CFN_ScenarioDesc,"*").getData());
 		pSaveGroup->Delete(C4CFN_Titles);
@@ -545,7 +539,7 @@ void C4GameSaveRecord::AdjustCore(C4Scenario &rC4S)
 	rC4S.Head.Icon=29;
 	// default record title
 	char buf[1024 + 1];
-	sprintf(buf, "%03i %s [%d]", iNum, Game.ScenarioTitle.getData(), (int) C4XVER4);
+	sprintf(buf, "%03i %s [%d.%d.%d]", iNum, Game.ScenarioTitle.getData(), (int)C4XVER1, (int)C4XVER2, (int)C4XVER3);
 	SCopy(buf, rC4S.Head.Title, C4MaxTitle);
 }
 

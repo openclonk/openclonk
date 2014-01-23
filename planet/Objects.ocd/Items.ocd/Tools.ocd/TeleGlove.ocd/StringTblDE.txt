@@ -1,2 +1,3 @@
-Name=Telekinetischer Gyrohandschuh
-Description=Du kannst ein frei herumliegendes Objekt durch die Landschaft ziehen, indem Du darauf zeigst und dabei die Maustaste gedrückt hälst.
+Name=Telehandschuh
+Description=Dieser experimentelle Handschuh ermöglicht es, kleine Objekte telekinetisch durch die Luft zu bewegen und sogar zu verschleudern.
+UsageHelp=Ziele auf ein kleines Objekt in deiner Nähe und halte [Benutzen] gedrückt um es durch die Luft zu bewegen.

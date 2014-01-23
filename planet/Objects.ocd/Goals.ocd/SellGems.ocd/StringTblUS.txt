@@ -1,0 +1,5 @@
+Name=Sell gems
+
+#Goal window
+MsgGoalFulfilled=You've sold enough gems!
+MsgGoalUnfulfilled=You need to sell %d more gems.

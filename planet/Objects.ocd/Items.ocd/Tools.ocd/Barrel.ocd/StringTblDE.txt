@@ -1,2 +1,4 @@
 Name=Holzfass
-Description=In einem Holzfass können Flüssigkeiten transportiert werden.
+Description=Behälter zum Transport von Flüssigkeiten.
+NameWith=mit
+MaterialWater=Wasser

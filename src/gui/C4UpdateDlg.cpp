@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2007  Günther Brammer
- * Copyright (c) 2007  Sven Eberhardt
- * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // dialogs for update, and the actual update application code
 // is only compiled WITH_AUTOMATIC_UPDATE
@@ -209,10 +203,17 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (IsWindowsWithUAC()) strUpdateProgEx.Copy(Config.AtTempPath("setup.exe"));
 	// Extract update program (the update should be applied using the new version)
 	C4Group UpdateGroup, SubGroup;
-	if (!UpdateGroup.Open(strUpdateFile)) return false;
+	if (!UpdateGroup.Open(strUpdateFile))
+	{
+		LogF("Error opening \"%s\": %s", strUpdateFile, UpdateGroup.GetError());
+		return false;
+	}
 	// Look for update program at top level
 	if (!UpdateGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData()))
+	{
+		LogF("Error extracting \"%s\": %s", strUpdateProg.getData(), UpdateGroup.GetError());
 		return false;
+	}
 #if 0
 	char strSubGroup[1024+1];
 		// ASK: What is this? Why should an update program not be found at the top
@@ -317,7 +318,7 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 
 	C4Network2UpdateClient UpdateClient;
 	bool fSuccess = false, fAborted = false;
-	StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+	StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
 	StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s&action=version", Config.Network.UpdateServerAddress, strVersion.getData(), C4_OS);
 	if (UpdateClient.Init() && UpdateClient.SetServer(strQuery.getData()) && UpdateClient.QueryUpdateURL())
 	{

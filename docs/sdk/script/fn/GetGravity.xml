@@ -8,11 +8,11 @@
     <category>Global</category>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Returns the current gravity in percent.</desc>
+    <desc>Returns the current gravity in 1/100 pixel/tick².</desc>
     <examples>
       <example>
         <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100)))
-  obj-&gt;<funclink>SetYDir</funclink>(obj-&gt;<funclink>GetYDir</funclink>(500) - GetGravity(), 500);</code>
+  obj-&gt;<funclink>SetYDir</funclink>(obj-&gt;<funclink>GetYDir</funclink>(100) - GetGravity(), 100);</code>
         <text>Makes the gravitation within a radius of 100 pixels vanish if called every frame.</text>
       </example>
     </examples>

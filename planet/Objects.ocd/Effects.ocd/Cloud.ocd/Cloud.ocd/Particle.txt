@@ -1,11 +1,3 @@
 [Particle]
 Name=Cloud
-MaxCount=50
-InitFn=StdInit
-ExecFn=StdExec
-DrawFn=Std
 Face=0,0,512,350,-256,-175
-Delay=0
-Repeats=1
-WindDrift=20
-Attach=1

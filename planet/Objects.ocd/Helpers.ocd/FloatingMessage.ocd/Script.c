@@ -75,3 +75,5 @@ public func Initialize()
 	b = 255;
 	return true;
 }
+
+func SaveScenarioObject() { return false; }

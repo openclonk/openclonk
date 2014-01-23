@@ -1,0 +1,7 @@
+[DefCore]
+id=EnvPack_WineBarrel
+Category=C4D_StaticBack
+Width=20
+Height=20
+Offset=-4,-4
+StretchGrowth=1

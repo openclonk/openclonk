@@ -1,2 +1,0 @@
-Name=LockButton
-Description=Locks/Unlocks the inventory bar.

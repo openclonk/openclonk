@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2009, 2011  Armin Burgmeier
- * Copyright (c) 2011  Tobias Zwick
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Known component file names */
@@ -25,8 +21,6 @@
 #define INC_C4Components
 
 //========================= Component File Names ============================================
-
-#define C4CFN_Engine          "Clonk.exe"
 
 #define C4CFN_Material        "Material.ocg"
 #define C4CFN_Sound           "Sound.ocg"
@@ -65,11 +59,13 @@
 #define C4CFN_DiffLandscape   "DiffLandscape.bmp"
 #define C4CFN_Sky             "Sky"
 #define C4CFN_Script          "Script.c|Script%s.c|C4Script%s.c"
+#define C4CFN_MapScript       "Map.c"
 #define C4CFN_ScriptStringTbl "StringTbl.txt|StringTbl%s.txt"
 #define C4CFN_Info            "Info.txt"
 #define C4CFN_Author          "Author.txt"
 #define C4CFN_Version         "Version.txt"
 #define C4CFN_Game            "Game.txt"
+#define C4CFN_ScenarioObjectsScript "Objects.c"
 #define C4CFN_PXS             "PXS.ocb"
 #define C4CFN_MassMover       "MassMover.ocb"
 #define C4CFN_CtrlRec         "CtrlRec.ocb"
@@ -79,22 +75,26 @@
 #define C4CFN_MatMap          "MatMap.txt"
 #define C4CFN_Title           "Title%s.txt|Title.txt"
 #define C4CFN_WriteTitle      "Title.txt" // file that is generated if a title is set automatically
-#define C4CFN_ScenarioTitle   "Title.bmp"
-#define C4CFN_ScenarioTitlePNG "Title.png"
+#define C4CFN_ScenarioTitle   "Title"
 #define C4CFN_ScenarioIcon    "Icon.bmp"
 #define C4CFN_IconPNG         "Icon.png"
 #define C4CFN_ScenarioObjects "Objects.txt"
 #define C4CFN_ScenarioDesc    "Desc%s.rtf"
 #define C4CFN_DefMaterials    "*.material"
-#define C4CFN_DefMesh         "Graphics.mesh"
-#define C4CFN_DefMeshXml      (C4CFN_DefMesh ".xml")
-#define C4CFN_DefGraphicsPNG  "Graphics.png"
-#define C4CFN_ClrByOwnerPNG   "Overlay.png"
-#define C4CFN_DefGraphicsEx   "Graphics*.bmp"
-#define C4CFN_DefGraphicsExPNG "Graphics*.png"
-#define C4CFN_DefGraphicsScaled    "Graphics.*.bmp"
-#define C4CFN_DefGraphicsScaledPNG "Graphics.*.png"
-#define C4CFN_ClrByOwnerExPNG "Overlay*.png"
+
+#define C4CFN_DefMesh              "Graphics.mesh"
+#define C4CFN_DefMeshXml           C4CFN_DefMesh ".xml"
+#define C4CFN_DefGraphicsExMesh    "Graphics*.mesh"
+#define C4CFN_DefGraphicsExMeshXml C4CFN_DefGraphicsExMesh ".xml"
+
+#define C4CFN_DefGraphics          "Graphics.png"
+#define C4CFN_ClrByOwner           "Overlay.png"
+#define C4CFN_DefGraphicsEx        "Graphics*.png"
+#define C4CFN_ClrByOwnerEx         "Overlay*.png"
+
+#define C4CFN_DefGraphicsScaled    "Graphics.*.png"
+#define C4CFN_ClrByOwnerScaled     "Graphics.*.png"
+
 #define C4CFN_DefDesc         "Desc%s.txt"
 #define C4CFN_BigIcon         "BigIcon.png"
 #define C4CFN_UpperBoard      "UpperBoard"
@@ -107,6 +107,7 @@
 #define C4CFN_RankNameFiles   "Rank*.txt"
 #define C4CFN_RankFacesPNG    "Rank.png"
 #define C4CFN_ClonkRank       "Rank.png" // custom rank in info file: One rank image only
+#define C4CFN_SolidMask       "SolidMask.png"
 #define C4CFN_LeagueInfo      "League.txt" // read by frontend only
 #define C4CFN_PlayerInfos     "PlayerInfos.txt"
 #define C4CFN_SavePlayerInfos "SavePlayerInfos.txt"
@@ -125,14 +126,12 @@
 #define C4CFN_Language        "Language*.txt"
 #define C4CFN_KeyConfig       "KeyConfig.txt"
 
-#define C4CFN_Log             "Clonk.log"
-#define C4CFN_LogEx           "Clonk%d.log" // created if regular logfile is in use
+#define C4CFN_Log             "OpenClonk.log"
+#define C4CFN_LogEx           "OpenClonk%d.log" // created if regular logfile is in use
 #define C4CFN_Intro           "Clonk4.avi"
 #define C4CFN_Names           "Names.txt"
 #define C4CFN_Titles          "Title*.txt|Title.txt"
 #define C4CFN_DefNameFiles    "Names*.txt|Names.txt"
-
-#define C4CFN_Splash          "Splash.ocv"
 
 #define C4CFN_TempMusic       "~Music.tmp"
 #define C4CFN_TempMusic2      "~Music2.tmp"
@@ -169,14 +168,14 @@
 
 // TODO: proper sorting of scaled def graphics (once we know what order we might load them in...)
 
-#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.bmp|Title.png|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|System.ocg"
-#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt"
+#define C4FLS_Scenario  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Fonts.txt|Scenario.txt|Title*.txt|Info.txt|Desc*.rtf|Icon.png|Icon.bmp|Game.txt|StringTbl*.txt|Teams.txt|Parameters.txt|Info.txt|Sect*.ocg|Music.ocg|*.mid|*.wav|Desc*.rtf|Title.png|Title.jpg|*.ocd|Material.ocg|MatMap.txt|Landscape.bmp|Landscape.png|" C4CFN_DiffLandscape "|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|RoundResults.txt|Author.txt|Version.txt|Names.txt|*.ocd|Script.c|Script*.c|Map.c|Objects.c|System.ocg"
+#define C4FLS_Section   "Scenario.txt|Game.txt|Landscape.bmp|Landscape.png|Sky.bmp|Sky.png|Sky.jpeg|Sky.jpg|PXS.ocb|MassMover.ocb|CtrlRec.ocb|Strings.txt|Objects.txt|Objects.c"
 #define C4FLS_SectionLandscape "Scenario.txt|Landscape.bmp|Landscape.png|PXS.ocb|MassMover.ocb"
-#define C4FLS_SectionObjects   "Strings.txt|Objects.txt"
-#define C4FLS_Def       "Particle.txt|DefCore.txt|*.material|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Title.png|Icon.bmp|Author.txt|Version.txt|*.wav|*.ogg|*.ocd"
+#define C4FLS_SectionObjects   "Strings.txt|Objects.txt|Objects.c"
+#define C4FLS_Def       "Particle.txt|DefCore.txt|*.material|SolidMask.png|Graphics.png|Overlay.png|Graphics*.png|Overlay*.png|*.png|*.jpg|Graphics.mesh|*.skeleton|StringTbl*.txt|Script.c|Script*.c|C4Script.c|Names*.txt|Title*.txt|ClonkNames.txt|Rank.txt|Rank*.txt|Rank.png|Desc*.txt|Author.txt|Version.txt|*.wav|*.ogg|*.ocd"
 #define C4FLS_Player    "Player.txt|*.oci"
 #define C4FLS_Object    "ObjectInfo.txt"
-#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.bmp|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
+#define C4FLS_Folder    "Folder.txt|Title*.txt|Info.txt|Desc*.rtf|Title.png|Title.jpg|Icon.png|Icon.bmp|Author.txt|Version.txt|*.ocs|Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|FolderMap.txt|FolderMap.png"
 #define C4FLS_Material  "TexMap.txt|*.bmp|*.png|*.ocm"
 #define C4FLS_Graphics  "Loader*.bmp|Loader*.png|Loader*.jpeg|Loader*.jpg|Font*.png"\
             "|Control.png|Fire.png|Background.png|Flag.png|Crew.png|Wealth.png|Player.png|Rank.png|Captain.png|Cursor.png|SelectMark.png|MenuSymbol.png|Menu.png|Logo.png|Construction.png|Energy.png|Options.png|UpperBoard.png|Arrow.png|Exit.png|Hand.png|Gamepad.png|Build.png"\

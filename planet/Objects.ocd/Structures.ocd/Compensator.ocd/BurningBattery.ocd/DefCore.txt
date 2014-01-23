@@ -14,6 +14,3 @@ Components=Compensatory_BurningBattery=1
 Projectile=1
 Rotate=1
 NoStabilize=1
-Timer=2
-TimerCall=DoSmoke
-

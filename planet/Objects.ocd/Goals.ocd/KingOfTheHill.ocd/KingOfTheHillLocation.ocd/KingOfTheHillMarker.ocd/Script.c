@@ -8,6 +8,7 @@ local origin;
 func Initialize()
 {
 	AddEffect("Timer", this, 10, 1, this);
+	SetGraphics(nil, KingOfTheHill_Star, 0);
 }
 
 func SetOrigin(object o)
@@ -49,5 +50,7 @@ func FxTimerTimer()
 	
 	this->SetClrModulation(origin->GetStarColor(Sin(this->GetActTime(), 50)));
 }
+
+public func SaveScenarioObject() { return false; }
 
 local Name = "$Name$";

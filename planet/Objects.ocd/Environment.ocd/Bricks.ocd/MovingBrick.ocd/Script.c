@@ -28,6 +28,8 @@ public func SetSize(int to_size)
 	// Update graphics.
 	var graph = Format("Size%dN%d", size, 1 + Random(1));
 	SetGraphics(graph);
+	// Update solid
+	SetSolidMask(0,size*8-8,10*size,8);
 	return;
 }
 
@@ -41,12 +43,13 @@ public func SetMoveSpeed(int speed)
 
 public func MoveHorizontal(int left, int right, int speed)
 {
+	RemoveEffect("MoveHorizontal", this); RemoveEffect("MoveVertical", this);
 	var effect = AddEffect("MoveHorizontal", this, 100, 1, this);
 	effect.Left = left;
 	effect.Right = right;
 	if (speed != nil)
 		SetMoveSpeed(10 * speed);
-	SetComDir(COMD_Left);
+	if (GetComDir() != COMD_Right) SetComDir(COMD_Left);
 	return;
 }
 
@@ -67,12 +70,13 @@ private func FxMoveHorizontalTimer(object target, proplist effect)
 
 public func MoveVertical(int top, int bottom, int speed)
 {
+	RemoveEffect("MoveHorizontal", this); RemoveEffect("MoveVertical", this);
 	var effect = AddEffect("MoveVertical", this, 100, 1, this);
 	effect.Top = top;
 	effect.Bottom = bottom;
 	if (speed != nil)
 		SetMoveSpeed(10 * speed);
-	SetComDir(COMD_Up);
+	if (GetComDir() != COMD_Down) SetComDir(COMD_Up);
 	return;
 }
 
@@ -89,6 +93,30 @@ private func FxMoveVerticalTimer(object target, proplist effect)
 	return 1;
 }
 
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (size != 4) props->AddCall("Size", this, "SetSize", size);
+	if (ActMap.Moving.Speed != GetID().ActMap.Moving.Speed) props->AddCall("MoveSpeed", this, "SetMoveSpeed", ActMap.Moving.Speed);
+	if (GetComDir() == COMD_None) props->Remove("ComDir");
+	return true;
+}
+
+func FxMoveHorizontalSaveScen(obj, fx, props)
+{
+	props->AddCall("Move", obj, "MoveHorizontal", fx.Left, fx.Right);
+	return true;
+}
+
+func FxMoveVerticalSaveScen(obj, fx, props)
+{
+	props->AddCall("Move", obj, "MoveVertical", fx.Top, fx.Bottom);
+	return true;
+}
+
+/* Properties */
 
 local ActMap = {
 	Moving = {

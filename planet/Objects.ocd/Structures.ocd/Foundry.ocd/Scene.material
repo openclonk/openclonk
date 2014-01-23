@@ -47,7 +47,7 @@ material Foundry
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture Foundry.png
+				texture Foundry.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

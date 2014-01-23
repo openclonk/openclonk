@@ -1,24 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001-2002, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2003-2005  Peter Wortmann
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2006-2007, 2009, 2011  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles script file components (calls, inheritance, function maps) */
@@ -34,21 +28,32 @@
 C4ScriptHost::C4ScriptHost()
 {
 	Script = NULL;
-	Code.clear();
-	LastCode = NULL;
 	stringTable = 0;
 	SourceScripts.push_back(this);
+	LocalNamed.Reset();
+	// prepare include list
+	IncludesResolved = false;
+	Resolving=false;
+	Includes.clear();
+	Appends.clear();
 }
-C4ScriptHost::~C4ScriptHost() { Clear(); }
+C4ScriptHost::~C4ScriptHost()
+{
+	Clear();
+}
 
 void C4ScriptHost::Clear()
 {
 	C4AulScript::Clear();
 	ComponentHost.Clear();
 	Script.Clear();
-	ClearCode();
+	LocalNamed.Reset();
+	LocalValues.Clear();
 	SourceScripts.clear();
 	SourceScripts.push_back(this);
+	// remove includes
+	Includes.clear();
+	Appends.clear();
 }
 
 bool C4ScriptHost::Load(C4Group &hGroup, const char *szFilename,
@@ -106,28 +111,38 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 }
 
+
 /*--- C4ExtraScriptHost ---*/
 
-C4ExtraScriptHost::C4ExtraScriptHost():
-		ParserPropList(C4PropList::NewAnon())
+C4ExtraScriptHost::C4ExtraScriptHost(C4String *parent_key_name):
+		ParserPropList(C4PropList::NewStatic(NULL, NULL, parent_key_name))
 {
 }
 
 void C4ExtraScriptHost::Clear()
 {
-	ParserPropList.getPropList()->Clear();
+	ParserPropList._getPropList()->Clear();
 }
 
-C4PropList * C4ExtraScriptHost::GetPropList()
+C4PropListStatic * C4ExtraScriptHost::GetPropList()
 {
-	return ParserPropList.getPropList();
+	return ParserPropList._getPropList()->IsStatic();
+}
+
+
+/*--- C4ScenarioObjectsScriptHost ---*/
+
+C4ScenarioObjectsScriptHost::C4ScenarioObjectsScriptHost() : C4ExtraScriptHost(::Strings.RegString("ScenarioObjects"))
+{
+	// Note that "ScenarioObjects" is a fake key name under which you cannot access this prop list from script.
+	// It's just given to have a proper name when script errors are reported.
 }
 
 /*--- C4DefScriptHost ---*/
 
-bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
+bool C4DefScriptHost::Parse()
 {
-	bool r = C4ScriptHost::Load(g, f, l, t);
+	bool r = C4ScriptHost::Parse();
 	assert(Def);
 
 	// Check category
@@ -152,7 +167,7 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 			case C4D_Living | C4D_Foreground: Plane = 1400; break;
 			case C4D_Object | C4D_Foreground: Plane = 1500; break;
 			default:
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+				Warn("Def %s (%s) has invalid category", Def->GetName(), Def->id.ToString());
 				gotplane = false;
 				break;
 		}
@@ -160,30 +175,32 @@ bool C4DefScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangSt
 	}
 	if (!Def->GetPlane())
 	{
-		DebugLogF("WARNING: Def %s (%s) at %s has invalid Plane!", Def->GetName(), Def->id.ToString(), g.GetFullName().getData());
+		Warn("Def %s (%s) has invalid Plane", Def->GetName(), Def->id.ToString());
 		Def->SetProperty(P_Plane, C4VInt(1));
 	}
 	return r;
 }
 
-void C4DefScriptHost::Clear()
-{
-	if (Def) Def->TimerCall = 0;
-	C4ScriptHost::Clear();
-}
+C4PropListStatic * C4DefScriptHost::GetPropList() { return Def; }
 
-void C4DefScriptHost::AfterLink()
+class C4PropListScen: public C4PropListStatic
 {
-	C4ScriptHost::AfterLink();
-	if (Def && Def->STimerCall[0])
+public:
+	C4PropListScen(const C4PropListStatic * parent, C4String * key): C4PropListStatic(NULL, parent, key)
 	{
-		Def->TimerCall = Def->GetFunc(Def->STimerCall);
-		if (!Def->TimerCall)
-			DebugLogF("Error getting function \"%s\" for TimerCall of %s", Def->STimerCall, Def->id.ToString());
+		C4PropList * proto = C4PropList::NewStatic(ScriptEngine.GetPropList(), this, &::Strings.P[P_Prototype]);
+		C4PropListStatic::SetPropertyByS(&::Strings.P[P_Prototype], C4VPropList(proto));
 	}
-}
-
-C4PropList * C4DefScriptHost::GetPropList() { return Def; }
+	virtual void SetPropertyByS(C4String * k, const C4Value & to)
+	{
+		if (k == &Strings.P[P_Prototype])
+		{
+			DebugLog("ERROR: Attempt to set Scenario.Prototype.");
+			return;
+		}
+		C4PropListStatic::SetPropertyByS(k, to);
+	}
+};
 
 /*--- C4GameScriptHost ---*/
 
@@ -193,30 +210,30 @@ C4GameScriptHost::~C4GameScriptHost() { }
 bool C4GameScriptHost::Load(C4Group & g, const char * f, const char * l, C4LangStringTable * t)
 {
 	assert(ScriptEngine.GetPropList());
-	ScenPrototype = C4PropList::NewScen(ScriptEngine.GetPropList());
-	ScenPropList = C4PropList::NewScen(ScenPrototype);
-	::ScriptEngine.RegisterGlobalConstant("Scenario", C4VPropList(ScenPropList));
+	C4PropListStatic * pScen = new C4PropListScen(NULL, &::Strings.P[P_Scenario]);
+	ScenPropList.SetPropList(pScen);
+	::ScriptEngine.RegisterGlobalConstant("Scenario", ScenPropList);
+	ScenPrototype.SetPropList(pScen->GetPropertyPropList(P_Prototype));
 	Reg2List(&ScriptEngine);
 	return C4ScriptHost::Load(g, f, l, t);
 }
 
 void C4GameScriptHost::Clear()
 {
-	delete ScenPropList; ScenPropList = 0;
-	delete ScenPrototype; ScenPrototype = 0;
 	C4ScriptHost::Clear();
+	ScenPropList.Set0();
+	ScenPrototype.Set0();
 }
 
-void C4GameScriptHost::AfterLink()
+C4PropListStatic * C4GameScriptHost::GetPropList()
 {
-	C4ScriptHost::AfterLink();
-	ScenPrototype->Freeze();
+	C4PropList * p = ScenPrototype._getPropList();
+	return p ? p->IsStatic() : 0;
 }
 
 C4Value C4GameScriptHost::Call(const char *szFunction, C4AulParSet *Pars, bool fPassError)
 {
-	// FIXME: Does fPassError make sense?
-	return ScenPropList->Call(szFunction, Pars);
+	return ScenPropList._getPropList()->Call(szFunction, Pars, fPassError);
 }
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)

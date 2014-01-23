@@ -7,6 +7,8 @@ local selected;
 local position;
 local controller;
 
+local progress_bar, progress_bar_last_max;
+
 public func SetHUDController(object c) { controller = c; }
 
 protected func Construction()
@@ -50,7 +52,6 @@ public func SetUnselected()
 	SetGraphics(nil,nil,5);
 }
 
-
 // SetSymbol from GUI_RingMenu_Icon
 public func SetSymbol(obj)
 {
@@ -63,11 +64,12 @@ public func SetSymbol(obj)
 		//SetGraphics(nil, nil, 3);
 		SetName("");
 		this.MouseDragImage = nil;
+		this.Tooltip = nil;
 	}
 	else
 	{
 		if (GetType(obj) == C4V_C4Object)
-			SetGraphics(nil, nil, 2, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetGraphics(nil, nil, 2, GFXOV_MODE_ObjectPicture, nil, 0, obj);
 		else
 			SetGraphics(nil,obj, 2, GFXOV_MODE_IngamePicture);
 		
@@ -77,7 +79,6 @@ public func SetSymbol(obj)
 			SetGraphics(nil, nil, 1, GFXOV_MODE_ObjectPicture, nil, nil, obj->Contents());
 			SetClrModulation(RGBa(255,255,255,200),1);
 			SetObjDrawTransform(900,0,0,0,900,0,1);
-			//SetObjDrawTransform(1000,0,32000,0,1000,-28000,2);
 		}
 		// or otherwise, remove it
 		else
@@ -87,6 +88,11 @@ public func SetSymbol(obj)
 		
 		SetName(obj->GetName());
 		this.MouseDragImage = obj->GetID();
+		
+		// set tooltip
+		var desc = obj.UsageHelp;
+		if(!desc) desc = obj.Description;
+		this.Tooltip = desc;
 	}
 }
 
@@ -167,15 +173,13 @@ public func OnMouseDragDone(self, object target)
 	}
 }
 
-// highlight and block hiding
+// highlight
 public func OnMouseOver(int plr)
 {
 	if(!controller || GetOwner() == NO_OWNER)
 		return nil;
 	
 	SetGraphics("Focussed", GUI_Backpack_Slot_Icon);
-	
-	controller->ShowInventory();
 }
 
 public func OnMouseOut(int plr)
@@ -184,6 +188,61 @@ public func OnMouseOut(int plr)
 		return nil;
 	
 	SetGraphics(nil, nil);
+}
+
+// progress bar handling
+// "link" always refers to an effect with the properties "max" and "current"
+func ClearProgressBarLink()
+{
+	if(GetEffect("UpdateProgressBar", this))
+		RemoveEffect("UpdateProgressBar", this);
+	if(progress_bar)
+	{
+		progress_bar->Close();
+		progress_bar = nil;
+	}
+}
+
+func SetProgressBarLink(proplist effect)
+{
+	if(GetEffect("UpdateProgressBar", this)) return; // not another one
+	AddEffect("UpdateProgressBar", this, 1, Min(effect.Interval, 25), this, nil, effect);
+}
+
+func FxUpdateProgressBarStart(target, effect, temp, delegate)
+{
+	if(temp) return;
+	effect.other = delegate;
+}
+
+func FxUpdateProgressBarTimer(target, effect, time)
+{
+	if(!effect.other) return -1;
+	SetProgressBarValue(effect.other.current, effect.other.max);
+}
+
+public func SetProgressBarValue(int value, int max)
+{
+	if(value == nil)
+	{
+		if(progress_bar) progress_bar->Close();
+		return true;
+	}
 	
-	controller->ScheduleHideInventory();
+	if(progress_bar_last_max != max)
+		if(progress_bar)
+		{
+			progress_bar->Close();
+			progress_bar = nil;
+		}
+	progress_bar_last_max = max;
+	
+	if(!progress_bar)
+	{
+		progress_bar = this->CreateProgressBar(GUI_PieProgressBar, max, value, 30, GetOwner(), {x=0, y=0}, VIS_Owner, {size=1600, color = RGB(100, 255, 25), back_color = RGBa(100, 50, 0, 100)}); 
+		progress_bar->MakeHUDElement();
+		progress_bar->SetPlane(this.Plane-1);
+	}
+	progress_bar->SetValue(value);
+	return true;
 }

@@ -1,7 +1,7 @@
 [Material]
 Name=Granite
 Shape=Rough
-Density=50
+Density=80
 Friction=100
 MaxAirSpeed=100
 MaxSlide=250

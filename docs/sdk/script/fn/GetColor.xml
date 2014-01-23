@@ -9,7 +9,7 @@
     <subcat>Display</subcat>
     <version>5.1 OC</version>
     <syntax><rtype>int</rtype></syntax>
-    <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink>, <funclink>SetColor</funclink> or <placeholder-3/>.</desc>
+    <desc>Gets the RGB color value of the ColorByOwner areas of an object. These are controlled by <funclink>SetOwner</funclink> or <funclink>SetColor</funclink>.</desc>
     <examples>
       <example>
         <code>otherclonk-&gt;<funclink>SetColor</funclink>(GetColor());</code>

@@ -1,1 +1,2 @@
-TxtHandsFull=Hände sind voll; Kein Platz im Rucksack!
+TxtHandsFull=Hände sind voll!
+TxtPutDown=%s abstellen

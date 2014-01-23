@@ -86,7 +86,7 @@ public func Incineration()
 
 public func FxFuseTimer(object target, effect, int timer)
 {
-	CastParticles("Spark",1,10,0,0,20,30,RGB(255,255,0),RGB(255,255,0));
+	CreateParticle("Fire", 0, 0, PV_Random(-10, 10), PV_Random(-20, 10), PV_Random(10, 40), Particles_Glimmer(), 6);
 	if(timer > 90)
 	{
 		//17-32 explosion radius
@@ -100,7 +100,7 @@ public func IsProjectileTarget(target,shooter)
 	return 1;
 }
 
-public func Damage(int change, int byplayer)
+public func Damage()
 {
 	Incinerate();
 }
@@ -115,7 +115,15 @@ func Hit()
 	Sound("DullWoodHit?");
 }
 
-func IsAlchemyProduct() { return true; }
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	var v = PowderCount();
+	if (v != 12) props->AddCall("Powder", this, "SetPowderCount", v);
+	return true;
+}
+
+func IsChemicalProduct() { return true; }
 func AlchemyProcessTime() { return 100; }
 
 local Collectible = false;
@@ -123,3 +131,6 @@ local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
+local BlastIncinerate = 1;
+local NoBurnDecay = 1;
+local ContactIncinerate = 2;

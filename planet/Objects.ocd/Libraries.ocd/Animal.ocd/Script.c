@@ -85,5 +85,3 @@ protected func RejectEntrance(object pContainer)
 	// All other cases depend on the global settings (game rule)
 	return 1;// !Library_Animal_IsCollectible(pContainer); TODO create this rule :-)
 }
-
-local Name = "$Name$";

@@ -1,2 +1,0 @@
-Name=Boompack
-Description=Ziele und drücke [Benutzen], um die Rakete zu zünden und auf ihr in eine beliebige Richtung katapultiert zu werden.

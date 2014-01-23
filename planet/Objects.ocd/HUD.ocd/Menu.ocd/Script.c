@@ -34,8 +34,10 @@ protected func Construction()
 	return;
 }
 
+/** Returns whether drag and drop is enabled for this menu */
 public func IsDragDropMenu() { return menu_isdragdrop; }
 
+/** Sets whether drag and drop is enabled for this menu */
 public func SetDragDropMenu(bool is_dragdrop)
 {
 	menu_isdragdrop = is_dragdrop;
@@ -44,27 +46,27 @@ public func SetDragDropMenu(bool is_dragdrop)
 	return;	
 }
 
-// Sets the commander of this menu.
+/** Sets the commander object of this menu. */
 public func SetCommander(object commander)
 {
 	menu_commander = commander;
 	return;
 }
 
-// Returns the commander of this menu.
+/** Returns the commander object of this menu. */
 public func GetCommander()
 {
 	return menu_commander;
 }
 
-// Sets the menu object for this menu.
+/** Sets the object for which the menu is shown. */
 public func SetMenuObject(object menuobject)
 {
 	menu_object = menuobject;
 	return;
 }
 
-// Returns the menu object for this menu.
+/** Returns the menu object for this menu. **/
 public func GetMenuObject()
 {
 	return menu_object;
@@ -138,18 +140,41 @@ public func GetItems()
 */
 public func RemoveItem(object item)
 {
-	for (var mitem in menu_items)
+	var length = GetLength(menu_items);
+	for(var i = 0; i < length; i++)
 	{
-		if (mitem = item)
-			mitem->RemoveObject();	
+		if (menu_items[i] == item)
+		{
+			menu_items[i]->RemoveObject();
+			break;
+		}	
 	}
+	// close gap
+	for(; i < length-1; i++)
+		menu_items[i] = menu_items[i+1];
+	
+	SetLength(menu_items, length-1);
+
 	UpdateMenu();
 	return;
 }
 
+/** Removes all items from the menu. */
+public func Clear()
+{
+	for (var mitem in menu_items)
+	{
+			mitem->RemoveObject();	
+	}
+	menu_items = [];
+	UpdateMenu();
+	return;
+}
+
+
 /* Callbacks from the menu items, to be forwarded to the commander. */
 
-// Called when an item has been selected (left mouse button).
+/** Called when an item has been selected (left mouse button). **/
 public func OnItemSelection(object item)
 {
 	if (!menu_commander)
@@ -158,7 +183,7 @@ public func OnItemSelection(object item)
 	return menu_commander->~OnItemSelection(this, item);
 }
 
-// Called when an item has been selected (right mouse button).
+/** Called when an item has been selected (right mouse button). **/
 public func OnItemSelectionAlt(object item)
 {
 	if (!menu_commander)
@@ -167,7 +192,7 @@ public func OnItemSelectionAlt(object item)
 	return menu_commander->~OnItemSelectionAlt(this, item);
 }
 
-// Called when an object is dragged onto the menu
+/** Called when an object is dragged onto the menu **/
 public func OnMouseDrop(int plr, obj)
 {
 	// Check if the owners match.
@@ -183,7 +208,7 @@ public func OnMouseDrop(int plr, obj)
 	return menu_commander->~OnItemDropped(this, obj, nil);
 }
 
-// Shows the menu.
+/** Shows the menu. */
 public func Show()
 {
 	UpdateMenu();
@@ -196,6 +221,7 @@ public func Show()
 	return;
 }
 
+/** Hides the menu. */
 public func Hide()
 {
 	// Change visibility.
@@ -206,6 +232,13 @@ public func Hide()
 	CustomMessage("", this, menu_object->GetOwner());
 	menu_shown = false;
 	return;
+}
+
+public func Close() 
+{
+	if(menu_object)
+		menu_object->~MenuClosed(this);
+	RemoveObject();
 }
 
 // Engine callback: if the menu is destroyed, the items must follow.

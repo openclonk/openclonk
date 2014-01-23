@@ -14,7 +14,12 @@ func Incineration()
 public func IsFuel() { return true; }
 public func GetFuelAmount() { return 30; }
 
+// Main bridge object is saved
+func SaveScenarioObject() { return false; }
+
 local Collectible = 0;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = false;
+local BlastIncinerate = 5;
+local ContactIncinerate = 1;

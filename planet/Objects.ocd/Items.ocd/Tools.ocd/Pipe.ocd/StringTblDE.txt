@@ -1,7 +1,8 @@
 Name=Rohr
-Description=Press [Use] in front of a liquid pump to create a source or drain pipe.
+UsageHelp=Drücke [Benutzen] vor einer Pumpe um von dort ein Zu- oder Abflussrohr zu legen.
+Description=Rohre können in Verbindung mit Pumpen zum Transport von Flüssigkeiten verwendet werden.
 
-MsgNoNewPipe=Cannot create a new pipe here.
-MsgCreatedSource=Connected source pipe.
-MsgCreatedDrain=Connected drain pipe.
-MsgHasPipes=No new connection available.
+MsgNoNewPipe=Hier ist keine Pumpe.
+MsgCreatedSource=Zuflussrohr angeschlossen.
+MsgCreatedDrain=Abflussrohr angeschlossen.
+MsgHasPipes=Die Pumpe hat schon ein Zu- und Abflussrohr.

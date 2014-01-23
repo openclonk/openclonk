@@ -218,7 +218,7 @@
       <row>
         <literal_col>BottomOpen</literal_col>
         <col>Integer</col>
-        <col>0 or 1. Determines wether the bottom of the game world should be open.</col>
+        <col>0, 1 or 2. Determines wether the bottom of the game world should be open. 0=Bottom is closed, 1=Bottom is open, 2=Bottom is closed if the corresponding map pixel in the bottom row has tunnel background and open otherwise.</col>
       </row>
       <row>
         <literal_col>TopOpen</literal_col>
@@ -329,6 +329,11 @@
         <literal_col>FoWRes</literal_col>
         <col>Integer</col>
         <col>Granularity of the Fog of War. Default: 64. Warning: smaller values will improve the looks of the FoW but will also severely increase processing times.</col>
+      </row>
+      <row>
+        <literal_col>FlatChunkShapes</literal_col>
+        <col>Integer</col>
+        <col>0 or 1. If 1, all landscape chunks are drawn flat when the map is zoomed to draw the landscape. Set this while drawing a static map in console mode to fix small gaps of lower order materials hidden behind materials of chunky shape.</col>
       </row>
     </table>
   </text>

@@ -1,2 +1,2 @@
 Name=Stein
-Description=Wichtiges Baumaterial.
+Description=Wichtiges Baumaterial und Waffe.

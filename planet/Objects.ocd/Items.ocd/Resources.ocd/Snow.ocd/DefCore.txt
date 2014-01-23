@@ -2,8 +2,6 @@
 id=Snow
 Version=5,2,0,1
 Category=C4D_Object
-Timer=30
-TimerCall=Check
 Width=8
 Height=8
 Offset=-4,-4

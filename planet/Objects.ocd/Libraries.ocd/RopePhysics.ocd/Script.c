@@ -23,7 +23,7 @@ local Max_Length;
 
 func GetRopeGravity()
 {
-	return GetGravity()*Rope_Precision/500;
+	return GetGravity()*Rope_Precision/100;
 }
 
 /** Starts a rope

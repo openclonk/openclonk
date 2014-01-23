@@ -1,9 +1,6 @@
-local Name = "$Name$";
-local Description = "$Description$";
-
 public func CanBeOwned(){return true;}
 
-public func OnOwnerChanged(int old_owner)
+public func OnOwnerChanged(int new_owner, int old_owner)
 {
 	// ...
 }

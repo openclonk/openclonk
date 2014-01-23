@@ -1,0 +1,3 @@
+Name=Wall kit
+Description=You can create solid walls with the wall kit.
+UsageHelp=Hold down the [Use] key to see a preview in the direction you are pointing. Let go to build there.

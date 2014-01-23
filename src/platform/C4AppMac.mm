@@ -20,12 +20,15 @@
 // based on SDL implementation
 
 #include <GL/glew.h>
-#import <Cocoa/Cocoa.h>
-#import "ClonkWindowController.h"
+#include <string>
 
 #include <C4Include.h>
 #include <C4Window.h>
-#include <string>
+#include <C4Draw.h>
+
+#import <Cocoa/Cocoa.h>
+#import "C4WindowController.h"
+#import "C4DrawGLMac.h"
 
 #include "C4App.h"
 
@@ -104,21 +107,10 @@ bool C4AbstractApp::FlushMessages()
 	NSEvent* event;
 	while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:[NSDate distantPast] inMode:NSEventTrackingRunLoopMode dequeue:YES]) != nil)
 	{
-		HandleNSEvent(event);
+		[NSApp sendEvent:event];
+		[NSApp updateWindows];
 	}
 	return true;
-}
-
-void C4AbstractApp::HandleNSEvent(void* event)
-{
-	NSEvent* the_event = (NSEvent*)event;
-	KeyMask = [the_event modifierFlags] & (MK_SHIFT|MK_CONTROL|MK_ALT); // MK_* and NS*KeyMask values correspond
-	[NSApp sendEvent:the_event];
-	[NSApp updateWindows];
-	/*
-    // Everything else goes to the window.
-	if (pWindow)
-		pWindow->HandleMessage(event);*/
 }
 
 static int32_t bitDepthFromPixelEncoding(CFStringRef encoding)
@@ -159,6 +151,71 @@ void C4AbstractApp::RestoreVideoMode()
 StdStrBuf C4AbstractApp::GetGameDataPath()
 {
 	return StdCopyStrBuf([[[NSBundle mainBundle] resourcePath] fileSystemRepresentation]);
+}
+
+bool C4AbstractApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen)
+{
+	fFullScreen &= !lionAndBeyond(); // Always false for Lion since then Lion's true(tm) Fullscreen is used
+	C4WindowController* controller = pWindow->objectiveCObject<C4WindowController>();
+	NSWindow* window = controller.window;
+
+	size_t dw = CGDisplayPixelsWide(C4OpenGLView.displayID);
+	size_t dh = CGDisplayPixelsHigh(C4OpenGLView.displayID);
+	if (iXRes == -1)
+		iXRes = dw;
+	if (iYRes == -1)
+		iYRes = dh;
+	ActualFullscreenX = iXRes;
+	ActualFullscreenY = iYRes;
+	[C4OpenGLView setSurfaceBackingSizeOf:[C4OpenGLView mainContext] width:ActualFullscreenX height:ActualFullscreenY];
+	if ((window.styleMask & NSFullScreenWindowMask) == 0)
+	{
+		[window setResizeIncrements:NSMakeSize(1.0, 1.0)];
+		pWindow->SetSize(iXRes, iYRes);
+		[controller setFullscreen:fFullScreen];
+		[window setAspectRatio:[[window contentView] frame].size];
+		[window center];
+	}
+	else
+	{
+		[window toggleFullScreen:window];
+		pWindow->SetSize(dw, dh);
+	}
+	if (!fFullScreen)
+		[window makeKeyAndOrderFront:nil];
+	OnResolutionChanged(iXRes, iYRes);
+	return true;
+}
+
+bool C4AbstractApp::ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce)
+{
+	CGGammaValue r[256];
+	CGGammaValue g[256];
+	CGGammaValue b[256];
+	for (int i = 0; i < 256; i++)
+	{
+		r[i] = static_cast<float>(ramp.red[i])/65535.0;
+		g[i] = static_cast<float>(ramp.green[i])/65535.0;
+		b[i] = static_cast<float>(ramp.blue[i])/65535.0;
+	}
+	CGSetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b);
+	return true;
+}
+
+bool C4AbstractApp::SaveDefaultGammaRamp(struct _GAMMARAMP &ramp)
+{
+	CGGammaValue r[256];
+	CGGammaValue g[256];
+	CGGammaValue b[256];
+	uint32_t count;
+	CGGetDisplayTransferByTable(C4OpenGLView.displayID, 256, r, g, b, &count);
+	for (int i = 0; i < 256; i++)
+	{
+		ramp.red[i]   = r[i]*65535;
+		ramp.green[i] = g[i]*65535;
+		ramp.blue[i]  = b[i]*65535;
+	}
+	return true;
 }
 
 #endif

@@ -1,18 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2010  Martin Plicht
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifdef USE_OPEN_AL
@@ -36,7 +34,7 @@ namespace C4SoundLoaders
 #endif
 		C4SoundHandle final_handle;
 
-		SoundInfo(): sound_data(), final_handle(NULL) {}
+		SoundInfo(): sound_data(), final_handle(0) {}
 	};
 	
 	class SoundLoader
@@ -88,7 +86,17 @@ namespace C4SoundLoaders
 	protected:
 		static VorbisLoader singleton;
 	};
-#endif
+#ifndef __APPLE__
+	// non-apple wav loader: using ALUT
+	class WavLoader: public SoundLoader
+	{
+	public:
+		virtual bool ReadInfo(SoundInfo* result, BYTE* data, size_t data_length, uint32_t);
+	protected:
+		static WavLoader singleton;
+	};
+#endif // apple
+#endif // openal
 
 #ifdef HAVE_LIBSDL_MIXER
 	class SDLMixerSoundLoader: public SoundLoader

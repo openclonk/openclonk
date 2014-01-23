@@ -1,0 +1,5 @@
+Name=Acid drilling
+
+#Goal window
+MsgGoalFulfilled=Done! The basin is filled with acid.
+MsgGoalUnfulfilled=Fill the basin with acid!

@@ -1,0 +1,2 @@
+Name=Energy bar above buildings
+Description=Buildings show their damage with energy bars above them.

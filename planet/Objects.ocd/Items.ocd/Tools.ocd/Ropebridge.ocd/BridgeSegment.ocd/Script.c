@@ -1,10 +1,5 @@
 /*-- Ropelbridge_Segment --*/
 
-public func Initialize()
-{
-  SetSolidMask(50,0,2,8);
-}
-
 local master;
 local Plank;
 local fragile;
@@ -64,6 +59,9 @@ func CreateDouble()
     //Double->SetAction("Attach", this);
   }
 }
+
+// Main bridge object is saved
+func SaveScenarioObject() { return false; }
 
 local ActMap = {
 Attach = {

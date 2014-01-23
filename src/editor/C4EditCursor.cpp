@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003  Matthes Bender
- * Copyright (c) 2001, 2005-2007  Sven Eberhardt
- * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005-2011  Günther Brammer
- * Copyright (c) 2006, 2010  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles viewport editing in console mode */
@@ -61,15 +54,6 @@ C4EditCursor::~C4EditCursor()
 
 void C4EditCursor::Execute()
 {
-	// alt check
-	bool fAltIsDown = Application.IsAltDown();
-	if (fAltIsDown != fAltWasDown)
-	{
-		if ((fAltWasDown = fAltIsDown))
-			AltDown();
-		else
-			AltUp();
-	}
 	// drawing
 	switch (Mode)
 	{
@@ -131,8 +115,23 @@ void C4EditCursor::ClearPointers(C4Object *pObj)
 		OnSelectionChanged();
 }
 
-bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
+bool C4EditCursor::Move(float iX, float iY, DWORD dwKeyState)
 {
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
 	// Offset movement
 	float xoff = iX-X; float yoff = iY-Y;
 	X=iX; Y=iY;
@@ -145,18 +144,18 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 		if (!DragFrame && Hold)
 		{
 			MoveSelection(ftofix(xoff),ftofix(yoff));
-			UpdateDropTarget(wKeyFlags);
+			UpdateDropTarget(dwKeyState);
 		}
 		// Update target
 		// Shift always indicates a target outside the current selection
 		else
 		{
-			Target = ((wKeyFlags & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
+			Target = ((dwKeyState & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
 			do
 			{
-				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
+				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, Target);
 			}
-			while ((wKeyFlags & MK_SHIFT) && Target && Selection.GetLink(Target));
+			while ((dwKeyState & MK_SHIFT) && Target && Selection.GetLink(Target));
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -207,7 +206,38 @@ void C4EditCursor::OnSelectionChanged()
 	Console.ObjectListDlg.Update(Selection);
 }
 
-bool C4EditCursor::LeftButtonDown(bool fControl)
+void C4EditCursor::AddToSelection(C4Object *add_obj)
+{
+	if (!add_obj || !add_obj->Status) return;
+	// add object to selection and do script callback
+	Selection.Add(add_obj, C4ObjectList::stNone);
+	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Select, Fix0, Fix0, add_obj), CDT_Decide);
+}
+
+bool C4EditCursor::RemoveFromSelection(C4Object *remove_obj)
+{
+	if (!remove_obj || !remove_obj->Status) return false;
+	// remove object from selection and do script callback
+	if (!Selection.Remove(remove_obj)) return false;
+	::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, remove_obj), CDT_Decide);
+	return true;
+}
+
+void C4EditCursor::ClearSelection()
+{
+	// remove all objects from selection and do script callbacks
+	// iterate safely because callback might delete selected objects!
+	C4Object *obj;
+	while (obj = Selection.GetObject(0))
+	{
+		Selection.Remove(obj);
+		if (obj->Status)
+			::Control.DoInput(CID_EMMoveObj, new C4ControlEMMoveObject(EMMO_Deselect, Fix0, Fix0, obj), CDT_Decide);
+	}
+	Selection.Clear();
+}
+
+bool C4EditCursor::LeftButtonDown(DWORD dwKeyState)
 {
 
 	// Hold
@@ -217,12 +247,12 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
-		if (fControl)
+		if (dwKeyState & MK_CONTROL)
 		{
 			// Toggle target
 			if (Target)
-				if (!Selection.Remove(Target))
-					Selection.Add(Target, C4ObjectList::stNone);
+				if (!RemoveFromSelection(Target))
+					AddToSelection(Target);
 		}
 		else
 		{
@@ -235,11 +265,11 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 						break;
 				}
 				if(!it) // means loop didn't break
-					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+					{ ClearSelection(); AddToSelection(Target); }
 			}
 			// Click on nothing: drag frame
 			if (!Target)
-				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
+				{ ClearSelection(); DragFrame=true; X2=X; Y2=Y; }
 		}
 		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -265,14 +295,14 @@ bool C4EditCursor::LeftButtonDown(bool fControl)
 	return true;
 }
 
-bool C4EditCursor::RightButtonDown(bool fControl)
+bool C4EditCursor::RightButtonDown(DWORD dwKeyState)
 {
 
 	switch (Mode)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	case C4CNS_ModeEdit:
-		if (!fControl)
+		if ( (dwKeyState & MK_CONTROL) == 0)
 		{
 			// Check whether cursor is on anything in the selection
 			bool fCursorIsOnSelection = false;
@@ -287,10 +317,10 @@ bool C4EditCursor::RightButtonDown(bool fControl)
 				// Click on unselected
 				if (Target && !Selection.GetLink(Target))
 				{
-					Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone);
+					ClearSelection(); AddToSelection(Target);
 				}
 				// Click on nothing
-				if (!Target) Selection.Clear();
+				if (!Target) ClearSelection();
 			}
 		}
 		break;
@@ -301,7 +331,7 @@ bool C4EditCursor::RightButtonDown(bool fControl)
 	return true;
 }
 
-bool C4EditCursor::LeftButtonUp()
+bool C4EditCursor::LeftButtonUp(DWORD dwKeyState)
 {
 	// Finish edit/tool
 	switch (Mode)
@@ -336,6 +366,50 @@ bool C4EditCursor::LeftButtonUp()
 	return true;
 }
 
+bool C4EditCursor::KeyDown(C4KeyCode KeyCode, DWORD dwKeyState)
+{
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	fAltIsDown = fAltIsDown || KeyCode == K_ALT_L || KeyCode == K_ALT_R;
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	fShiftIsDown = fShiftIsDown || KeyCode == K_SHIFT_L || KeyCode == K_SHIFT_R;
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
+	return true;
+}
+
+bool C4EditCursor::KeyUp(C4KeyCode KeyCode, DWORD dwKeyState)
+{
+	// alt check
+	bool fAltIsDown = (dwKeyState & MK_ALT) != 0;
+	fAltIsDown = fAltIsDown && !( KeyCode == K_ALT_L || KeyCode == K_ALT_R);
+	if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
+
+	// shift check
+	bool fShiftIsDown = (dwKeyState & MK_SHIFT) != 0;
+	fShiftIsDown = fShiftIsDown && !(KeyCode == K_SHIFT_L || KeyCode == K_SHIFT_R);
+	if(fShiftIsDown != fShiftWasDown)
+		fShiftWasDown = fShiftIsDown;
+
+	return true;
+}
+
 #ifdef USE_WIN32_WINDOWS
 bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 {
@@ -357,11 +431,11 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 }
 #endif
 
-bool C4EditCursor::RightButtonUp()
+bool C4EditCursor::RightButtonUp(DWORD dwKeyState)
 {
 	Target=NULL;
 
-	DoContextMenu();
+	DoContextMenu(dwKeyState);
 
 	// Update
 	UpdateStatusBar();
@@ -420,7 +494,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo)
 		};
 		DrawSelectMark(cgo, frame);
 		// highlight selection if shift is pressed
-		if (Application.IsShiftDown())
+		if (fShiftWasDown)
 		{
 			uint32_t dwOldMod = cobj->ColorMod;
 			uint32_t dwOldBlitMode = cobj->BlitMode;
@@ -490,13 +564,13 @@ void C4EditCursor::MoveSelection(C4Real XOff, C4Real YOff)
 
 void C4EditCursor::FrameSelection()
 {
-	Selection.Clear();
+	ClearSelection();
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
 				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
-					Selection.Add(cobj, C4ObjectList::stNone);
+					AddToSelection(cobj);
 			}
 	OnSelectionChanged();
 }
@@ -510,6 +584,7 @@ bool C4EditCursor::In(const char *szText)
 void C4EditCursor::Default()
 {
 	fAltWasDown=false;
+	fShiftWasDown=false;
 	Mode=C4CNS_ModePlay;
 	X=Y=X2=Y2=0;
 	Target=DropTarget=NULL;
@@ -624,7 +699,7 @@ void C4EditCursor::ApplyToolFill()
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
 }
 
-bool C4EditCursor::DoContextMenu()
+bool C4EditCursor::DoContextMenu(DWORD dwKeyState)
 {
 	bool fObjectSelected = !!Selection.ObjectCount();
 #ifdef USE_WIN32_WINDOWS
@@ -683,7 +758,7 @@ bool C4EditCursor::DoContextMenu()
 		for(std::vector<ObjselItemDt>::iterator it = itemsObjselect.begin() + 1; it != itemsObjselect.end(); ++it)
 			if(it->ItemId == iItem)
 			{
-				DoContextObjsel(it->Object);
+				DoContextObjsel(it->Object, (dwKeyState & MK_SHIFT) == 0);
 				break;
 			}
 		break;
@@ -740,13 +815,13 @@ void C4EditCursor::GrabContents()
 	EMMoveObject(EMMO_Exit, Fix0, Fix0, NULL, &Selection);
 }
 
-void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
+void C4EditCursor::UpdateDropTarget(DWORD dwKeyState)
 {
 	C4Object *cobj; C4ObjectLink *clnk;
 
 	DropTarget=NULL;
 
-	if (wKeyFlags & MK_CONTROL)
+	if (dwKeyState & MK_CONTROL)
 		if (Selection.GetObject())
 			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 				if (cobj->Status)
@@ -799,20 +874,24 @@ void C4EditCursor::ApplyToolPicker()
 	switch (::Landscape.Mode)
 	{
 	case C4LSC_Static:
-		// Material-texture from map
-		if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 		{
-			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
-			if (pTex)
+			bool material_set = false;
+			// Material-texture from map
+			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 			{
-				Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
-				Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-				Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+				if (pTex && pTex->GetMaterialName() && *pTex->GetMaterialName())
+				{
+					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
+					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
+					Console.ToolsDlg.SetIFT(!!(byIndex & ~(IFT-1)));
+					material_set = true;
+				}
 			}
+			// default to sky, because invalid materials are always rendered as sky
+			if (!material_set) Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
+			break;
 		}
-		else
-			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
-		break;
 	case C4LSC_Exact:
 		// Material only from landscape
 		if (MatValid(iMaterial=GBackMat(X,Y)))
@@ -870,7 +949,19 @@ void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 
 void C4EditCursor::OnObjselect(GtkWidget* widget, gpointer data)
 {
-	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object);
+	bool IsShiftDown = false;
+	GdkEvent* event = gtk_get_current_event();
+	if(event)
+	{
+		if(event->type == GDK_BUTTON_PRESS)
+			IsShiftDown = ( ((GdkEventButton*)event)->state & MK_SHIFT) != 0;
+		else if(event->type == GDK_KEY_PRESS)
+			IsShiftDown = ( ((GdkEventKey*)event)->state & MK_SHIFT) != 0;
+
+		gdk_event_free(event);
+	}
+
+	static_cast<ObjselItemDt*>(data)->EditCursor->DoContextObjsel(static_cast<ObjselItemDt*>(data)->Object, !IsShiftDown);
 	static_cast<ObjselItemDt*>(data)->EditCursor->ObjselectDelItems();
 }
 
@@ -913,10 +1004,11 @@ bool C4EditCursor::AltUp()
 	return false;
 }
 
-void C4EditCursor::DoContextObjsel(C4Object * obj)
+void C4EditCursor::DoContextObjsel(C4Object * obj, bool clear)
 {
-	if(!Application.IsControlDown())
+	if(clear)
 		Selection.Clear();
+
 	Selection.Add(obj, C4ObjectList::stNone);
 	OnSelectionChanged();
 }

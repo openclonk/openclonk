@@ -10,8 +10,8 @@ public func Initialize()
 	aWires = CreateArray(iCount);
 	for(var i = 0; i < iCount; i++)
 	{
-		aDynamites[i] = 0;
-		aWires[i] = 0;
+		aDynamites[i] = nil;
+		aWires[i] = nil;
 	}
 
 	this.PictureTransformation = Trans_Scale(); // Hide it TODO: Remove if the mesh isn't shown if there is a picture set
@@ -156,13 +156,14 @@ func FxIntLengthStop(pTarget, effect, iReason, fTmp)
 }
 
 public func IsTool() { return true; }
-public func IsToolProduct() { return true; }
-public func IsAlchemyProduct() { return true; }
+public func IsChemicalProduct() { return true; }
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(150, 1, 0, 0), Trans_Rotate(140, 0, 1, 0)), def);
 }
+
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local UsageHelp = "$UsageHelp$";
 local Rebuy = true;

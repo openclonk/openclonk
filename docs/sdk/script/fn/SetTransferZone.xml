@@ -34,12 +34,12 @@
       </params>
     </syntax>
     <desc>Sets the transfer zone of the object. If the pathfinding trail of another object leads through this transfer zone (a transfer zone is always considered completely passable in pathfinding) ControlTransfer calls will be made to the transfer zone object for the passing clonk. In these calls, the necessary script commands should be given to the clonk so he can pass the object and reach his destination.</desc>
-    <remark>Transfer zones have to be set anew when the object has moved. Also, they should be set anew in response to a UpdateTransferZone callback made by the engine.</remark>
+    <remark>Transfer zones have to be set anew when the object has moved. Also, they should be set anew in response to a OnSynchronized callback made by the engine.</remark>
     <examples>
       <example>
-        <code>protected func Initialize() { <funclink>return</funclink> UpdateTransferZone(); }
+        <code>protected func Initialize() { <funclink>return</funclink> OnSynchronized(); }
 
-protected func UpdateTransferZone() { <funclink>return</funclink> SetTransferZone(-<funclink>GetX</funclink>(), -<funclink>GetY</funclink>(), <funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>());
+protected func OnSynchronized() { <funclink>return</funclink> SetTransferZone(-<funclink>GetX</funclink>(), -<funclink>GetY</funclink>(), <funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>());
 
 protected func ControlTransfer(clonk, endx, endy)
   {

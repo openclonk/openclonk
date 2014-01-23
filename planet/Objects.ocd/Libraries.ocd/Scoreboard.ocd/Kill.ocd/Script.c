@@ -19,17 +19,19 @@ protected func Initialize()
 {
 	// Make sure it is a list.
 	score_kill_list = [];
-	// Set scoreboard kill count caption.
-	SetScoreboardData(SBRD_Caption, GetKillCol(), "{{Scoreboard_Kill}}", SBRD_Caption);
+	// init scoreboard
+	Scoreboard->Init(
+		[{key = "kills", title = Scoreboard_Kill, sorted = true, desc = true, default = 0, priority = 50}]
+		);
 	return _inherited(...);
 }
 
 protected func InitializePlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
-	// Create scoreboard kill count entry for this player.
+	// init scoreboard for player
 	score_kill_list[plrid] = 0;
-	SetScoreboardData(plrid, GetKillCol(), Format("%d", score_kill_list[plrid]), score_kill_list[plrid]);
+	Scoreboard->NewPlayerEntry(plr);
 	return _inherited(plr, ...);
 }
 
@@ -44,15 +46,12 @@ protected func RelaunchPlayer(int plr, int killer)
 		return _inherited(plr, killer, ...);
 	// Modify scoreboard kill count entry for killer.
 	score_kill_list[plrid]++;
-	SetScoreboardData(plrid, GetKillCol(), Format("%d", score_kill_list[plrid]), score_kill_list[plrid]);
+	Scoreboard->SetPlayerData(killer, "kills", score_kill_list[plrid]);
 	return _inherited(plr, killer, ...);
 }
 
 protected func RemovePlayer(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	// Clear scoreboard kill count entry for this player.
-	SetScoreboardData(plrid, GetKillCol(), nil, nil);
 	return _inherited(plr, ...);
 }
 
@@ -62,6 +61,7 @@ public func SetKillCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_kill_list[plrid] = value;
+	Scoreboard->SetPlayerData(plr, "kills", score_kill_list[plrid]);
 	return;
 }
 
@@ -75,13 +75,8 @@ public func DoKillCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_kill_list[plrid] += value;
+	Scoreboard->SetPlayerData(plr, "kills", score_kill_list[plrid]);
 	return;
-}
-
-public func GetKillCol()
-{
-	//return ScoreboardCol(Scoreboard_Kill);
-	return 107;
 }
 
 local Name = "Scoreboard Kills";

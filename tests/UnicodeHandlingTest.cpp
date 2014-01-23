@@ -15,7 +15,6 @@
 /* Verify correct behavior of UTF-8 handling code. */
 
 #include "lib/Standard.h"
-#include "lib/Standard.cpp"
 #include <gtest/gtest.h>
 
 TEST(UnicodeHandlingTest, AcceptsEmptyString)
@@ -188,8 +187,6 @@ TEST(UnicodeHandlingTest, RejectsInvalidMultiByteUtf8)
 }
 
 #include "lib/StdBuf.h"
-#include "lib/StdBuf.cpp"
-size_t FileSize(int) { return 0; }
 
 #ifdef _WIN32
 TEST(UnicodeHandlingTest, WideStringConversion)
@@ -209,7 +206,6 @@ TEST(UnicodeHandlingTest, WideStringConversion)
 
 #ifdef _WIN32
 #include "platform/StdRegistry.h"
-#include "platform/StdRegistry.cpp"
 char StdCompiler::SeparatorToChar(enum StdCompiler::Sep) { return ' '; }
 TEST(UnicodeHandlingTest, RegistryAccess)
 {

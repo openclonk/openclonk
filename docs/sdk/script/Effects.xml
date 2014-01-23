@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE doc
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
@@ -71,12 +71,12 @@ func Activate(object caster, object caster2)
 
 func FxInvisPSpellStart(object target, proplist effect)
 {
-  // Vorherige Sichtbarkeit des Zauberers speichern
+  // Save the casters previous visibility
   effect.visibility = target.Visibility;
   effect.old_mod = target-&gt;<funclink>GetClrModulation</funclink>();
-  // Zauberer unsichtbar machen
+  // Make the caster invisible
   target.Visibility = <funclink>VIS_Owner</funclink> | <funclink>VIS_Allies</funclink> | <funclink>VIS_God</funclink>;
-  // Halbdurchsichtig bläulich für den Besitzer und Verbündete
+  // Semitransparent and slightly blue for owner and allies
   target-&gt;SetClrModulation(<funclink>ModulateColor</funclink>(effect.old_mod, RGBa(127,127,255,127)));
   // Fertig
   return true;
@@ -505,26 +505,32 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <text>
         <table>
           <rowh>
+            <col>Script constant</col>
             <col>reason</col>
             <col>Meaning</col>
           </rowh>
           <row>
+            <col>FX_Call_Normal</col>
             <col>0</col>
             <col>Normal removal</col>
           </row>
           <row>
+            <col>FX_Call_Temp</col>
             <col>1</col>
             <col>Temporary removal (temporary is 1).</col>
           </row>
           <row>
+            <col>FX_Call_TempAddForRemoval</col>
             <col>2</col>
             <col>Not used</col>
           </row>
           <row>
+            <col>FX_Call_RemoveClear</col>
             <col>3</col>
             <col>The target object has been deleted</col>
           </row>
           <row>
+            <col>FX_Call_RemoveDeath</col>
             <col>4</col>
             <col>The target object has died</col>
           </row>
@@ -551,7 +557,7 @@ global func FxExplodeOnDeathCurseStop(object target, proplist effect, int reason
       <h>Fx*Damage</h>
       <text><code>int Fx*Damage (object target, proplist effect, int damage, int cause);</code></text>
       <text>Every effect receives this callback whenever the energy or damage value of the target object is to change. If the function is defined, it should then return whether to allow the change.</text>
-      <text>This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
+      <text id="damagecause">This callback is made upon life energy changes in living beings and damage value changes in non-livings - but not vice versa. cause contains the value change and reason:</text>
       <text>
         <table>
           <rowh>

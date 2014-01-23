@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2007  Sven Eberhardt
- * Copyright (c) 2005, 2007, 2009-2011  Günther Brammer
- * Copyright (c) 2007  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // room for textual deconvolution
@@ -80,13 +74,13 @@ namespace C4GUI
 		pKeyCursorEnd   = RegisterCursorOp(COP_END   , K_END   , "GUIEditCursorEnd", eKeyPrio);
 		pKeyEnter = new C4KeyBinding(C4KeyCodeEx(K_RETURN), "GUIEditConfirm", KEYSCOPE_Gui,
 		                             new ControlKeyCB<Edit>(*this, &Edit::KeyEnter), eKeyPrio);
-		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(KEY_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
+		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
 		                            new ControlKeyCB<Edit>(*this, &Edit::KeyCopy), eKeyPrio);
-		pKeyPaste = new C4KeyBinding(C4KeyCodeEx(KEY_V, KEYS_Control), "GUIEditPaste", KEYSCOPE_Gui,
+		pKeyPaste = new C4KeyBinding(C4KeyCodeEx(K_V, KEYS_Control), "GUIEditPaste", KEYSCOPE_Gui,
 		                             new ControlKeyCB<Edit>(*this, &Edit::KeyPaste), eKeyPrio);
-		pKeyCut = new C4KeyBinding(C4KeyCodeEx(KEY_X, KEYS_Control), "GUIEditCut", KEYSCOPE_Gui,
+		pKeyCut = new C4KeyBinding(C4KeyCodeEx(K_X, KEYS_Control), "GUIEditCut", KEYSCOPE_Gui,
 		                           new ControlKeyCB<Edit>(*this, &Edit::KeyCut), eKeyPrio);
-		pKeySelAll = new C4KeyBinding(C4KeyCodeEx(KEY_A, KEYS_Control), "GUIEditSelAll", KEYSCOPE_Gui,
+		pKeySelAll = new C4KeyBinding(C4KeyCodeEx(K_A, KEYS_Control), "GUIEditSelAll", KEYSCOPE_Gui,
 		                              new ControlKeyCB<Edit>(*this, &Edit::KeySelectAll), eKeyPrio);
 	}
 
@@ -150,7 +144,7 @@ namespace C4GUI
 		// reset selection
 		iSelectionStart = iSelectionEnd = 0;
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=GetTime();
+		tLastInputTime = C4TimeMilliseconds::Now();
 	}
 
 	void Edit::DeleteSelection()
@@ -162,7 +156,7 @@ namespace C4GUI
 		// adjust cursor pos
 		if (iCursorPos > iSelBegin) iCursorPos = Max(iSelBegin, iCursorPos - iSelEnd + iSelBegin);
 		// cursor might have moved: ensure it is shown
-		dwLastInputTime=GetTime();
+		tLastInputTime = C4TimeMilliseconds::Now();
 		// nothing selected
 		iSelectionStart = iSelectionEnd = iSelBegin;
 	}
@@ -189,7 +183,7 @@ namespace C4GUI
 			// advance cursor
 			iCursorPos += iTextLen;
 			// cursor moved: ensure it is shown
-			dwLastInputTime=GetTime();
+			tLastInputTime = C4TimeMilliseconds::Now();
 			ScrollCursorInView();
 		}
 		// done; return whether everything was inserted
@@ -452,7 +446,7 @@ namespace C4GUI
 			iCursorPos += iMoveLength;
 		}
 		// show cursor
-		dwLastInputTime=GetTime();
+		tLastInputTime = C4TimeMilliseconds::Now();
 		ScrollCursorInView();
 		// operation recognized
 		return true;
@@ -556,7 +550,7 @@ namespace C4GUI
 		// select all
 		iSelectionStart=0; iSelectionEnd=iCursorPos=SLen(Text);
 		// begin with a flashing cursor
-		dwLastInputTime=GetTime();
+		tLastInputTime = C4TimeMilliseconds::Now();
 	}
 
 	void Edit::OnLooseFocus()
@@ -629,7 +623,8 @@ namespace C4GUI
 		// draw edit text
 		pDraw->TextOut(pDrawText, *pFont, 1.0f, cgo.Surface, rcClientRect.x + cgo.TargetX - iXScroll, iY0 + cgo.TargetY - 1, dwFontClr, ALeft, false);
 		// draw cursor
-		if (HasDrawFocus() && !(((dwLastInputTime-GetTime())/500)%2))
+		bool fBlink = ((tLastInputTime - C4TimeMilliseconds::Now())/500)%2 == 0;
+		if (HasDrawFocus() && fBlink)
 		{
 			char cAtCursor = pDrawText[iCursorPos]; pDrawText[iCursorPos]=0; int32_t w,h,wc;
 			pFont->GetTextExtent(pDrawText, w, h, false);

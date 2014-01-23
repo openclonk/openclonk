@@ -25,8 +25,6 @@
 
 #import <Foundation/Foundation.h>
 
-namespace {const NSTimeInterval FileMonitor_Latency = 0.3;}
-
 // Implementation using FSEvents
 
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback(pCallback)
@@ -37,13 +35,11 @@ C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback
 	context.retain = NULL;
 	context.release = NULL;
 	context.copyDescription = NULL;
-	watchedDirectories = CFArrayCreateMutable(kCFAllocatorDefault, 10, &kCFTypeArrayCallBacks);
+	setObjectiveCObject([NSMutableArray arrayWithCapacity:10]);
 }
 
 C4FileMonitor::~C4FileMonitor()
 {
-	CFRelease(watchedDirectories);
-	watchedDirectories = NULL;
 	if (fStarted)
 		StopStream();
 }
@@ -68,7 +64,7 @@ static void FSEvents_Callback(
 			NSString* fullPath = [dir stringByAppendingPathComponent:str];
 			NSDictionary* attribs = [[NSFileManager defaultManager] attributesOfItemAtPath:fullPath error:NULL];
 			NSDate* modified = [attribs fileModificationDate];
-			if (modified && abs([modified timeIntervalSinceNow]) <= FileMonitor_Latency)
+			if (modified && -[modified timeIntervalSinceNow] <= 3.0)
 				mon->OnThreadEvent(Ev_FileChange, (void*)[fullPath UTF8String]);
 		}
 	}
@@ -76,7 +72,7 @@ static void FSEvents_Callback(
 
 void C4FileMonitor::StartStream()
 {
-	eventStream = FSEventStreamCreate(kCFAllocatorDefault, &FSEvents_Callback, &context, watchedDirectories, kFSEventStreamEventIdSinceNow, FileMonitor_Latency,
+	eventStream = FSEventStreamCreate(kCFAllocatorDefault, &FSEvents_Callback, &context, (__bridge CFArrayRef)objectiveCObject<NSMutableArray>(), kFSEventStreamEventIdSinceNow, 0.3,
 		kFSEventStreamCreateFlagNone);
 	FSEventStreamScheduleWithRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 	FSEventStreamStart(eventStream);
@@ -105,7 +101,7 @@ void C4FileMonitor::AddDirectory(const char *szDir)
 	NSString* fullPath = [path characterAtIndex:0] == '/'
 		? path
 		: [NSString stringWithFormat:@"%@/%@", [[NSFileManager defaultManager] currentDirectoryPath], path];
-	CFArrayAppendValue(watchedDirectories, fullPath);
+	[objectiveCObject<NSMutableArray>() addObject:fullPath];
 }
 
 void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void* pEventData)

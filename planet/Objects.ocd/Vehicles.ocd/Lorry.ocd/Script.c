@@ -11,11 +11,13 @@ protected func Construction()
 }
 
 public func IsLorry() { return true; }
+public func IsVehicle() { return true; }
 public func IsContainer() { return true; }
 public func IsToolProduct() { return true; }
 
 local drive_anim;
 local tremble_anim;
+local wheel_sound;
 
 protected func Initialize()
 {
@@ -24,6 +26,7 @@ protected func Initialize()
 
 	iRotWheels = 0;
 	iTremble = 0;
+	AddTimer("TurnWheels", 1);
 }
 
 /*-- Movement --*/
@@ -40,6 +43,11 @@ protected func ContactRight()
 		SetRDir(RandomX(-7, +7));
 }
 
+func Hit3()
+{
+	Sound("DullMetalHit?");
+}
+
 /*-- Contents --*/
 
 private func MaxContentsCount()
@@ -50,7 +58,7 @@ private func MaxContentsCount()
 protected func RejectCollect(id object_id, object obj)
 {
 	// objects can still be collected
-	if (ContentsCount() < MaxContentsCount())
+	if (ContentsCount() < this->MaxContentsCount())
 	{
 		Sound("Clonk");
 		return false;
@@ -101,6 +109,16 @@ func TurnWheels()
 		if(iTremble < 0) iTremble += 2000;
 		if(iTremble > 2000) iTremble -= 2000;
 		SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
+	}
+	if (Abs(GetXDir()) > 1 && !wheel_sound)
+	{
+		if (!wheel_sound) Sound("WheelsTurn", false, nil, nil, 1);
+		wheel_sound = true;
+	}
+	else if (wheel_sound && !GetXDir())
+	{
+		Sound("WheelsTurn", false, nil, nil, -1);
+		wheel_sound = false;
 	}
 }
 

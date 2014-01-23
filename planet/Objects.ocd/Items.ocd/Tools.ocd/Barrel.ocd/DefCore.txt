@@ -2,7 +2,6 @@
 id=Barrel
 Version=5,2,0,1
 Category=C4D_Object
-TimerCall=Check
 Width=16
 Height=16
 Offset=-8,-8
@@ -13,6 +12,5 @@ VertexFriction=60,60,60,60,60,60
 Value=12
 Mass=20
 Components=Wood=2;Metal=1;
-ContactIncinerate=2
 Rotate=1
 Float=1

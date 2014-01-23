@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2007, 2011  Sven Eberhardt
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2009  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Julius Michaelis
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // scenario record functionality
 
@@ -37,20 +30,13 @@
 
 #define IMMEDIATEREC
 
-//#define DEBUGREC_EXTFILE "DbgRec.ocb" // if defined, an external file is used for debugrec writing (replays only)
-//#define DEBUGREC_EXTFILE_WRITE        // if defined, the external file is used for debugrec writing. Otherwise read/check
-
-#ifdef DEBUGREC
-#ifdef DEBUGREC_EXTFILE
 CStdFile DbgRecFile;
-#endif
 int DoNoDebugRec=0; // debugrec disable counter
 
 void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 {
 	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 }
-#endif
 
 C4DebugRecOff::C4DebugRecOff() : fDoOff(true)
 {
@@ -216,9 +202,8 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 	LogRec.Close();
 
 	// pack group
-#ifndef DEBUGREC
-	if (!C4Group_PackDirectory(sFilename.getData())) return false;
-#endif
+	if (!Config.General.DebugRec)
+		if (!C4Group_PackDirectory(sFilename.getData())) return false;
 
 	// return record data
 	if (pRecordName)
@@ -409,9 +394,14 @@ bool C4Playback::Open(C4Group &rGrp)
 {
 	// clean up
 	Clear();
-	fLoadSequential = !rGrp.IsPacked();
 	iLastSequentialFrame = 0;
 	bool fStrip = false;
+
+	// open group? Then do some sequential reading for large files
+	// Can't do this when a dump is forced, because the dump needs all data
+	// Also can't do this when stripping is desired
+	fLoadSequential = !rGrp.IsPacked() && !Game.RecordDumpFile.getLength() && !fStrip;
+
 	// get text record file
 	StdStrBuf TextBuf;
 	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, &TextBuf))
@@ -421,10 +411,6 @@ bool C4Playback::Open(C4Group &rGrp)
 	}
 	else
 	{
-		// open group? Then do some sequential reading for large files
-		// Can't do this when a dump is forced, because the dump needs all data
-		// Also can't do this when stripping is desired
-		if (!rGrp.IsPacked()) if (!Game.RecordDumpFile.getLength()) if (!fStrip) fLoadSequential = true;
 		// get record file
 		if (fLoadSequential)
 		{
@@ -501,23 +487,27 @@ bool C4Playback::Open(C4Group &rGrp)
 	currChunk = chunks.begin();
 	Finished = false;
 	// external debugrec file
-#if defined(DEBUGREC_EXTFILE) && defined(DEBUGREC)
-#ifdef DEBUGREC_EXTFILE_WRITE
-	if (!DbgRecFile.Create(DEBUGREC_EXTFILE))
+	if (Config.General.DebugRecExternalFile[0] && Config.General.DebugRec)
 	{
-		LogFatal("DbgRec: Creation of external file \"" DEBUGREC_EXTFILE "\" failed!");
-		return false;
+		if (Config.General.DebugRecWrite)
+		{
+			if (!DbgRecFile.Create(Config.General.DebugRecExternalFile))
+			{
+				LogFatal(FormatString("DbgRec: Creation of external file \"%s\" failed!", Config.General.DebugRecExternalFile).getData());
+				return false;
+			}
+			else LogF("DbgRec: Writing to \"%s\"...", Config.General.DebugRecExternalFile);
+		}
+		else
+		{
+			if (!DbgRecFile.Open(Config.General.DebugRecExternalFile))
+			{
+				LogFatal(FormatString("DbgRec: Opening of external file \"%s\" failed!", Config.General.DebugRecExternalFile).getData());
+				return false;
+			}
+			else LogF("DbgRec: Checking against \"%s\"...", Config.General.DebugRecExternalFile);
+		}
 	}
-	else Log("DbgRec: Writing to \"" DEBUGREC_EXTFILE "\"...");
-#else
-	if (!DbgRecFile.Open(DEBUGREC_EXTFILE))
-	{
-		LogFatal("DbgRec: Opening of external file \"" DEBUGREC_EXTFILE "\" failed!");
-		return false;
-	}
-	else Log("DbgRec: Checking against \"" DEBUGREC_EXTFILE "\"...");
-#endif
-#endif
 	// ok
 	return true;
 }
@@ -860,11 +850,12 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 	// still playbacking?
 	if (currChunk == chunks.end()) return false;
 	if (Finished) { Finish(); return false; }
-#ifdef DEBUGREC
-	if (DebugRec.firstPkt())
-		DebugRecError("Debug rec overflow!");
-	DebugRec.Clear();
-#endif
+	if (Config.General.DebugRec)
+	{
+		if (DebugRec.firstPkt())
+			DebugRecError("Debug rec overflow!");
+		DebugRec.Clear();
+	}
 	// return all control until this frame
 	while (currChunk != chunks.end() && currChunk->Frame <= iFrame)
 	{
@@ -887,28 +878,22 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 			Finished=true;
 			break;
 
-#ifdef DEBUGREC
 		default: // expect it to be debug rec
-			// append to debug rec buffer
-			if (currChunk->pDbg)
+			if (Config.General.DebugRec)
 			{
-				DebugRec.Add(CID_DebugRec, currChunk->pDbg);
-				// the debugrec buffer is now responsible for deleting the packet
-				currChunk->pDbg = NULL;
+				// append to debug rec buffer
+				if (currChunk->pDbg)
+				{
+					DebugRec.Add(CID_DebugRec, currChunk->pDbg);
+					// the debugrec buffer is now responsible for deleting the packet
+					currChunk->pDbg = NULL;
+				}
+				break;
 			}
-			break;
-#endif
-
 		}
 		// next chunk
 		NextChunk();
 	}
-	// Debug log
-#ifdef DEBUGREC
-	//sprintf(OSTR, "-- Frame %d:", Game.FrameCounter); Log(OSTR);
-	//char Indent[256+1]; strcpy(Indent, "");
-	//pCtrl->deb_print(Indent);
-#endif
 	return true;
 }
 
@@ -937,13 +922,13 @@ void C4Playback::Clear()
 	playbackFile.Close();
 	sequentialBuffer.Clear();
 	fLoadSequential = false;
-#ifdef DEBUGREC
-	C4IDPacket *pkt;
-	while (pkt = DebugRec.firstPkt()) DebugRec.Delete(pkt);
-#ifdef DEBUGREC_EXTFILE
-	DbgRecFile.Close();
-#endif
-#endif
+	if (Config.General.DebugRec)
+	{
+		C4IDPacket *pkt;
+		while (pkt = DebugRec.firstPkt()) DebugRec.Delete(pkt);
+		if (Config.General.DebugRecExternalFile[0])
+			DbgRecFile.Close();
+	}
 	// done
 	Finished = true;
 }
@@ -1012,7 +997,6 @@ StdStrBuf GetDbgRecPktData(C4RecordChunkType eType, const StdBuf & RawData)
 	return r;
 }
 
-#ifdef DEBUGREC
 void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 {
 	// only if enabled
@@ -1021,66 +1005,72 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 
 	C4PktDebugRec PktInReplay;
 	bool fHasPacketFromHead = false;
-#ifdef DEBUGREC_EXTFILE
-#ifdef DEBUGREC_EXTFILE_WRITE
-	// writing of external debugrec file
-	DbgRecFile.Write(&eType, sizeof eType);
-	int32_t iSize32 = iSize;
-	DbgRecFile.Write(&iSize32, sizeof iSize32);
-	DbgRecFile.Write(pData, iSize);
-	return;
-#else
-	int32_t iSize32 = 0;
-	C4RecordChunkType eTypeRec = RCT_Undefined;
-	DbgRecFile.Read(&eTypeRec, sizeof eTypeRec);
-	DbgRecFile.Read(&iSize32, sizeof iSize32);
-	if (iSize32)
+	if (Config.General.DebugRecExternalFile[0])
 	{
-		StdBuf buf;
-		buf.SetSize(iSize32);
-		DbgRecFile.Read(buf.getMData(), iSize32);
-		PktInReplay = C4PktDebugRec(eTypeRec, buf);
-	}
-#endif
-#else
-	// check debug rec in list
-	C4IDPacket *pkt;
-	if (pkt = DebugRec.firstPkt())
-	{
-		// copy from list
-		PktInReplay = *static_cast<C4PktDebugRec *>(pkt->getPkt());
-		DebugRec.Delete(pkt);
+		if (Config.General.DebugRecWrite)
+		{
+			// writing of external debugrec file
+			DbgRecFile.Write(&eType, sizeof eType);
+			int32_t iSize32 = iSize;
+			DbgRecFile.Write(&iSize32, sizeof iSize32);
+			DbgRecFile.Write(pData, iSize);
+			return;
+		}
+		else
+		{
+			int32_t iSize32 = 0;
+			C4RecordChunkType eTypeRec = RCT_Undefined;
+			DbgRecFile.Read(&eTypeRec, sizeof eTypeRec);
+			DbgRecFile.Read(&iSize32, sizeof iSize32);
+			if (iSize32)
+			{
+				StdBuf buf;
+				buf.SetSize(iSize32);
+				DbgRecFile.Read(buf.getMData(), iSize32);
+				PktInReplay = C4PktDebugRec(eTypeRec, buf);
+			}
+		}
 	}
 	else
 	{
-		// special sync check skip...
-		while (currChunk != chunks.end() && currChunk->Type == RCT_CtrlPkt)
+		// check debug rec in list
+		C4IDPacket *pkt;
+		if (pkt = DebugRec.firstPkt())
 		{
-			C4IDPacket Packet(*currChunk->pPkt);
-			C4ControlPacket *pCtrlPck = static_cast<C4ControlPacket *>(Packet.getPkt());
-			assert(!pCtrlPck->Sync());
-			::Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
-			NextChunk();
+			// copy from list
+			PktInReplay = *static_cast<C4PktDebugRec *>(pkt->getPkt());
+			DebugRec.Delete(pkt);
 		}
-		// record end?
-		if (currChunk == chunks.end() || currChunk->Type == RCT_End || Finished)
+		else
 		{
-			Log("DebugRec end: All in sync!");
-			++DoNoDebugRec;
-			return;
-		}
-		// unpack directly from head
-		if (currChunk->Type != eType)
-		{
-			DebugRecError(FormatString("Playback type %x, this type %x", currChunk->Type, eType).getData());
-			return;
-		}
-		if (currChunk->pDbg)
-			PktInReplay = *currChunk->pDbg;
+			// special sync check skip...
+			while (currChunk != chunks.end() && currChunk->Type == RCT_CtrlPkt)
+			{
+				C4IDPacket Packet(*currChunk->pPkt);
+				C4ControlPacket *pCtrlPck = static_cast<C4ControlPacket *>(Packet.getPkt());
+				assert(!pCtrlPck->Sync());
+				::Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
+				NextChunk();
+			}
+			// record end?
+			if (currChunk == chunks.end() || currChunk->Type == RCT_End || Finished)
+			{
+				Log("DebugRec end: All in sync!");
+				++DoNoDebugRec;
+				return;
+			}
+			// unpack directly from head
+			if (currChunk->Type != eType)
+			{
+				DebugRecError(FormatString("Playback type %x, this type %x", currChunk->Type, eType).getData());
+				return;
+			}
+			if (currChunk->pDbg)
+				PktInReplay = *currChunk->pDbg;
 
-		fHasPacketFromHead = true;
+			fHasPacketFromHead = true;
+		}
 	}
-#endif // DEBUGREC_EXTFILE
 	// record end?
 	if (PktInReplay.getType() == RCT_End)
 	{
@@ -1121,7 +1111,6 @@ void C4Playback::DebugRecError(const char *szError)
 	LogF("Playback error: %s", szError);
 	BREAKPOINT_HERE;
 }
-#endif
 
 bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 {

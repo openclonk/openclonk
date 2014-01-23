@@ -26,6 +26,6 @@ Dig2Object=Snow
 Dig2ObjectRatio=400
 
 [Reaction]
-Type=Convert
+Type=Poof
 TargetSpec=Incindiary
-ConvertMat=Water
+

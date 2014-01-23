@@ -1,7 +1,8 @@
 Name=Pipe
-Description=Press [Use] in front of a liquid pump to create a source or drain pipe.
+UsageHelp=Press [Use] in front of a pump to create a source or drain pipe.
+Description=In conjunction with pumps, pipes can be used to transport liquids.
 
-MsgNoNewPipe=Cannot create a new pipe here.
+MsgNoNewPipe=There is no pump here.
 MsgCreatedSource=Connected source pipe.
 MsgCreatedDrain=Connected drain pipe.
-MsgHasPipes=No new connection available.
+MsgHasPipes=Pump already has a source and a drain pipe.

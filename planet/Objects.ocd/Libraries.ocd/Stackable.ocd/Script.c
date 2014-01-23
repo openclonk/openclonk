@@ -12,6 +12,7 @@
 	To take one object of the stack, call TakeObject(). As long
 	as the object exists, one can always take an object, even if it is the last
 	one (self). This object is always outside.
+	Infinite stackable count can by achieved using SetInfiniteStackCount.
 	
 	On entrance (or to be more precise: on RejectEntrance), it will be checked
 	if the entering stackable object can be distributed over the other objects
@@ -37,7 +38,19 @@
 --*/
 
 
-local count;
+local count, count_is_infinite;
+
+// Max size of stack
+static const Stackable_Max_Count = 999;
+
+// What GetStackCount should return if the count is set to infinite
+// Set this to a fairly large number and not e.g. -1, so naive
+// implementations that update their graphics by GetStackCount() show a
+// bunch of items. However, the number shouldn't be too large so the
+// object doesn't get overly heavy.
+// Note that count_is_infinite is a separate variable, so we can support
+// stacks >999 but <Inf in the future.
+static const Stackable_Infinite_Count = 50;
 
 public func IsStackable() { return true; }
 public func GetStackCount() { return Max(1, count); }
@@ -46,6 +59,7 @@ public func MaxStackCount() { return 20; }
 protected func Construction()
 {
 	count = MaxStackCount();
+	return _inherited(...);
 }
 
 public func Stack(object obj)
@@ -53,9 +67,17 @@ public func Stack(object obj)
 	if (obj->GetID() != GetID())
 		return 0;
 	
+	// Infinite stacks can always take everything
+	if (IsInfiniteStackCount()) return obj->GetStackCount();
+	if (obj->~IsInfiniteStackCount())
+	{
+		SetInfiniteStackCount();
+		return obj->GetStackCount();
+	}
+	
 	var howmany = Min(obj->GetStackCount(), MaxStackCount() - GetStackCount());
 	
-	if (count + howmany > 999)
+	if (count + howmany > Stackable_Max_Count)
 		return 0;
 	
 	SetStackCount(count + howmany);
@@ -65,8 +87,20 @@ public func Stack(object obj)
 
 public func SetStackCount(int amount)
 {
-	count = BoundBy(amount, 0, 999);
-	Update();
+	count = BoundBy(amount, 0, Stackable_Max_Count);
+	count_is_infinite = false;
+	UpdateStackDisplay();
+	return true;
+}
+
+public func IsInfiniteStackCount() { return count_is_infinite; }
+
+public func SetInfiniteStackCount()
+{
+	count = Stackable_Infinite_Count;
+	count_is_infinite = true;
+	UpdateStackDisplay();
+	return true;
 }
 
 public func TakeObject()
@@ -78,15 +112,15 @@ public func TakeObject()
 	}
 	else if (count > 1)
 	{
-		SetStackCount(count - 1);
+		if (!count_is_infinite) SetStackCount(count - 1);
 		var take = CreateObject(GetID(), 0, 0, GetOwner());
 		take->SetStackCount(1);
-		Update();
+		if (!count_is_infinite) UpdateStackDisplay();
 		return take;
 	}
 }
 
-public func Update()
+public func UpdateStackDisplay()
 {
 	UpdatePicture();
 	UpdateMass();
@@ -109,38 +143,54 @@ public func Update()
 
 private func UpdatePicture()
 {
-	var one = GetStackCount() % 10;
-	var ten = (GetStackCount() / 10) % 10;
-	var hun = (GetStackCount() / 100) % 10;
-	
+	// Put a small number showing the stack count in the bottom right 
+	// corner of the picture
 	var s = 400;
 	var yoffs = 14000;
 	var xoffs = 22000;
 	var spacing = 14000;
-	
-	if (hun > 0)
-	{
-		SetGraphics(Format("%d", hun), Icon_Number, 10, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs - 2 * spacing, 0, s, yoffs, 10);
-	}
-	else
-		SetGraphics(nil, nil, 10);
 
-	if (ten > 0 || hun > 0)
+	if  (count_is_infinite)
 	{
-		SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
-		SetObjDrawTransform(s, 0, xoffs - spacing, 0, s, yoffs, 11);
+		SetGraphics(nil, nil, 10);
+		SetGraphics(nil, nil, 11);
+		SetGraphics("Inf", Icon_Number, 12, GFXOV_MODE_Picture);
+		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
 	}
 	else
-		SetGraphics(nil, nil, 11);
+	{
+		var one = GetStackCount() % 10;
+		var ten = (GetStackCount() / 10) % 10;
+		var hun = (GetStackCount() / 100) % 10;
 		
-	SetGraphics(Format("%d", one), Icon_Number, 12, GFXOV_MODE_Picture);
-	SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+		if (hun > 0)
+		{
+			SetGraphics(Format("%d", hun), Icon_Number, 10, GFXOV_MODE_Picture);
+			SetObjDrawTransform(s, 0, xoffs - 2 * spacing, 0, s, yoffs, 10);
+		}
+		else
+			SetGraphics(nil, nil, 10);
+
+		if (ten > 0 || hun > 0)
+		{
+			SetGraphics(Format("%d", ten), Icon_Number, 11, GFXOV_MODE_Picture);
+			SetObjDrawTransform(s, 0, xoffs - spacing, 0, s, yoffs, 11);
+		}
+		else
+			SetGraphics(nil, nil, 11);
+			
+		SetGraphics(Format("%d", one), Icon_Number, 12, GFXOV_MODE_Picture);
+		SetObjDrawTransform(s, 0, xoffs, 0, s, yoffs, 12);
+	}
+	return _inherited(...);
 }
 
 private func UpdateName()
 {
-	SetName(Format("%dx %s", GetStackCount(), GetID()->GetName()));
+	if (IsInfiniteStackCount())
+		SetName(Format("$Infinite$ %s", GetID()->GetName()));
+	else
+		SetName(Format("%dx %s", GetStackCount(), GetID()->GetName()));
 }
 
 private func UpdateMass()
@@ -195,6 +245,18 @@ private func TryPutInto(object into)
 				}
 	}
 	
-	Update();
+	UpdateStackDisplay();
 	return false;
+}
+
+// Save stack counts in saved scenarios
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Name");
+	if (IsInfiniteStackCount())
+		props->AddCall("Stack", this, "SetInfiniteStackCount");
+	else if (GetStackCount() != MaxStackCount())
+		props->AddCall("Stack", this, "SetStackCount", GetStackCount());
+	return true;
 }

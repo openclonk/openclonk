@@ -66,7 +66,6 @@ Find_* and Sort_* function for FindObject().
 OnFire() - Checks whether the object is on fire.
 Extinguish() - Extinguishes the object.
 Incinerate() - Set the object on fire.
-OnBlastIncinerationDamage() - Explosion callback in inflammable objects.
 OnInIncendiaryMaterial() - Callback if an inflammable object falls into incendiary material.
 MakeNonFlammable() - Makes the object immune to fire.
 

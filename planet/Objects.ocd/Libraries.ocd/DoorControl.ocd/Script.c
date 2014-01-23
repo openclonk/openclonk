@@ -61,4 +61,3 @@ func Collection2(obj)
 	return _inherited (obj);
 }
 
-local Name = "$Name$";

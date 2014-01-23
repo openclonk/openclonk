@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006, 2009  Peter Wortmann
- * Copyright (c) 2006, 2009, 2011  Günther Brammer
- * Copyright (c) 2008  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* A simple scheduler for ccoperative multitasking */
 
@@ -47,12 +42,6 @@ struct pollfd;
 #endif // HAVE_PTHREAD
 #endif // _WIN32
 
-// helper
-inline int MaxTimeout(int iTimeout1, int iTimeout2)
-{
-	return (iTimeout1 == -1 || iTimeout2 == -1) ? -1 : Max(iTimeout1, iTimeout2);
-}
-
 typedef struct _GMainLoop GMainLoop;
 
 // Abstract class for a process
@@ -76,8 +65,7 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	// -1 means no timeout (infinity).
-	virtual int GetNextTick(int Now) { return -1; }
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) { return C4TimeMilliseconds::PositiveInfinity; };
 
 	// Is the process signal currently set?
 	bool IsSignaled();
@@ -91,29 +79,33 @@ public:
 class CStdTimerProc : public StdSchedulerProc
 {
 public:
-	CStdTimerProc(uint32_t iDelay) : iLastTimer(0), iDelay(iDelay) { }
-	~CStdTimerProc() { }
+	CStdTimerProc(uint32_t iDelay) : tLastTimer(C4TimeMilliseconds::NegativeInfinity), iDelay(iDelay) { }
+	~CStdTimerProc() { Set(); }
 
 private:
-	uint32_t iLastTimer, iDelay;
+	C4TimeMilliseconds tLastTimer;
+	uint32_t iDelay;
 
 public:
-	void Set() { iLastTimer = 0; }
+	void Set()
+	{
+		tLastTimer = C4TimeMilliseconds::NegativeInfinity;
+	}
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool CheckAndReset()
 	{
-		if (GetTime() < iLastTimer + iDelay) return false;
+		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
+		if (tTime < tLastTimer + iDelay) return false;
 		// Compensate light drifting
-		uint32_t iTime = GetTime();
-		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
-		iLastTimer = iTime - Min(iDrift, iDelay / 2);
+		int32_t iDrift = tTime - (tLastTimer + iDelay); // a positive time difference because of above check
+		tLastTimer = tTime - Min(iDrift, (int32_t) iDelay / 2);
 		return true;
 	}
 
 	// StdSchedulerProc override
-	virtual int GetNextTick(int Now)
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow)
 	{
-		return iLastTimer + iDelay;
+		return tLastTimer + iDelay;
 	}
 };
 

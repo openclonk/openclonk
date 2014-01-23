@@ -1,21 +1,19 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005-2006, 2010-2011  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2009  Peter Wortmann
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 2005, Sven Eberhardt
+ * Copyright (c) 2005-2006, Günther Brammer
+ * Copyright (c) 2006, Armin Burgmeier
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_STDAPP
@@ -23,14 +21,13 @@
 
 #include <StdScheduler.h>
 #include <StdSync.h>
+#include <C4StdInProc.h>
 
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
 
 #if defined(USE_X11)
-// do not include xlib.h
-typedef struct _XDisplay Display;
 // from X.h:
 //#define ShiftMask   (1<<0)
 //#define ControlMask   (1<<2)
@@ -43,8 +40,10 @@ typedef struct _XDisplay Display;
 #define MK_CONTROL (KMOD_LCTRL | KMOD_RCTRL)
 #define MK_ALT (KMOD_LALT | KMOD_RALT)
 #elif defined(USE_CONSOLE)
+#ifndef _WIN32
 #define MK_SHIFT 0
 #define MK_CONTROL 0
+#endif
 #define MK_ALT 0
 #elif defined(USE_COCOA)
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
@@ -53,6 +52,9 @@ extern int MK_CONTROL;
 extern int MK_ALT;
 #elif defined(USE_WIN32_WINDOWS)
 #include <C4windowswrapper.h>
+#ifndef MK_ALT
+#define MK_ALT 0x20 // as defined in oleidl.h
+#endif
 #endif
 
 #ifdef USE_WIN32_WINDOWS
@@ -75,27 +77,6 @@ public:
 };
 #endif
 
-#ifdef USE_CONSOLE
-// A simple alertable proc
-class CStdInProc : public StdSchedulerProc
-{
-public:
-	CStdInProc();
-	~CStdInProc();
-
-	// StdSchedulerProc override
-	virtual bool Execute(int iTimeout, pollfd *);
-	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-	{
-		pollfd pfd = { 0, POLLIN, 0 };
-		checkfds.push_back(pfd);
-	}
-private:
-	// commands from stdin
-	StdCopyStrBuf CmdBuf;
-};
-#endif
-
 class C4AbstractApp : public StdScheduler
 {
 public:
@@ -114,8 +95,8 @@ public:
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iRefreshRate, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
 	// Gamma
-	virtual bool ApplyGammaRamp(struct _D3DGAMMARAMP &ramp, bool fForce);
-	virtual bool SaveDefaultGammaRamp(struct _D3DGAMMARAMP &ramp);
+	virtual bool ApplyGammaRamp(struct _GAMMARAMP &ramp, bool fForce);
+	virtual bool SaveDefaultGammaRamp(struct _GAMMARAMP &ramp);
 	bool ScheduleProcs(int iTimeout = -1);
 	bool FlushMessages();
 	C4Window * pWindow;
@@ -131,6 +112,8 @@ public:
 	virtual void OnCommand(const char *szCmd) = 0; // callback
 	// Callback from SetVideoMode
 	virtual void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0;
+	// Keyboard layout changed
+	virtual void OnKeyboardLayoutChanged() = 0;
 	// notify user to get back to the program
 	void NotifyUserIfInactive();
 	void MessageDialog(const char * message);
@@ -141,6 +124,8 @@ public:
 private:
 	HINSTANCE hInstance;
 	HANDLE hMainThread; // handle to main thread that initialized the app
+
+	void SetLastErrorFromOS();
 
 public:
 	void SetInstance(HINSTANCE hInst) { hInstance = hInst; }
@@ -166,17 +151,8 @@ public:
 #endif
 
 #if defined(USE_X11)
-public:
-	Display * dpy;
-	int xf86vmode_major_version, xf86vmode_minor_version;
-	int xrandr_major_version, xrandr_minor_version;
-	// These must be public to be callable from callback functions from
-	// the glib main loop that are in an anonymous namespace in
-	// StdXApp.cpp.
-	void OnXInput();
 protected:
 	class C4X11AppImpl * Priv;
-	void HandleXMessage();
 
 #elif defined(USE_SDL_MAINLOOP)
 public:
@@ -184,21 +160,20 @@ public:
 
 #elif defined(USE_COCOA)
 public:
-	void HandleNSEvent(/*NSEvent*/void* event);
 	StdStrBuf GetGameDataPath();
 
 #elif defined(USE_CONSOLE)
 protected:
-	CStdInProc InProc;
+	C4StdInProc InProc;
 #endif
 
 #ifdef USE_WIN32_WINDOWS
 private:
 	CStdMessageProc MessageProc;
 public:
-	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
+/*	bool IsShiftDown() { return GetKeyState(VK_SHIFT) < 0; }
 	bool IsControlDown() { return GetKeyState(VK_CONTROL) < 0; }
-	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }
+	bool IsAltDown() { return GetKeyState(VK_MENU) < 0; }*/
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
@@ -207,16 +182,16 @@ protected:
 	DEVMODEW dspMode, OldDspMode;// display mode for fullscreen
 #else
 public:
-	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
+/*	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & MK_ALT; }
-	unsigned int KeyMask;
+	unsigned int KeyMask;*/
 #endif
 
 protected:
 	StdStrBuf sLastError;
 	bool fDspModeSet;           // true if display mode was changed
-	virtual bool DoInit(int argc, char * argv[]) = 0;;
+	virtual bool DoInit(int argc, char * argv[]) = 0;
 
 	friend class CStdGL;
 	friend class CStdGLCtx;

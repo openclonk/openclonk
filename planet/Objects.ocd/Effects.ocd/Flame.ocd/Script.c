@@ -4,6 +4,7 @@ local Description = "$Description$";
 public func Initialize()
 {
 	Incinerate();
+	AddTimer("Burning");
 	return true;
 }
 
@@ -20,4 +21,12 @@ func Burning()
 		SetCon(GetCon()/2);
 		
 	}
+}
+
+// Don't incinerate twice in saved scenarios
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("Fire");
+	return true;
 }

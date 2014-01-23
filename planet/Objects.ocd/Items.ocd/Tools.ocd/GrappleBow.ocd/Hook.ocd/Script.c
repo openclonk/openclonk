@@ -152,7 +152,7 @@ public func Entrance(object container)
 
 public func OnRopeBreak()
 {
-	RemoveEffect(0, clonk, fx_hook);
+	RemoveEffect(nil, clonk, fx_hook);
 	RemoveObject();
 	return;
 }
@@ -366,4 +366,7 @@ public func FxIntGrappleControlStop(object target, fxnum, int reason, int tmp)
 	}
 }
 
-public func NoWindjarForce() {	return true; }
+public func NoWindbagForce() {	return true; }
+
+// Only the grappler is stored.
+public func SaveScenarioObject() { return false; }

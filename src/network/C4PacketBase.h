@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2005, 2007  Peter Wortmann
- * Copyright (c) 2005  Günther Brammer
- * Copyright (c) 2008  Sven Eberhardt
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #ifndef INC_C4PacketBase
 #define INC_C4PacketBase
@@ -126,7 +122,7 @@ enum C4PacketType
 	// * lobby
 	PID_LobbyCountdown = 0x20,
 
-	// * ressources
+	// * resources
 	PID_NetResDis     = 0x30,
 	PID_NetResStat    = 0x31,
 	PID_NetResDerive  = 0x32,
@@ -153,6 +149,8 @@ enum C4PacketType
 	CID_Synchronize   = CID_First | 0x06,
 	CID_Set           = CID_First | 0x07,
 	CID_Script        = CID_First | 0x08,
+	CID_MsgBoardReply = CID_First | 0x09,
+	CID_MsgBoardCmd   = CID_First | 0x0A,
 
 	CID_PlrInfo       = CID_First | 0x10,
 	CID_JoinPlr       = CID_First | 0x11,
@@ -162,6 +160,8 @@ enum C4PacketType
 	CID_PlrControl    = CID_First | 0x21,
 	CID_PlrCommand    = CID_First | 0x22,
 	CID_Message       = CID_First | 0x23,
+	CID_PlrAction     = CID_First | 0x24,
+	CID_PlrMouseMove  = CID_First | 0x25,
 
 	CID_EMMoveObj     = CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
@@ -184,7 +184,7 @@ enum C4PacketHandlerID
 	PH_C4GUIMainDlg           = 1 << 2,   // network lobby class
 	PH_C4Network2ClientList   = 1 << 3,   // client list class
 	PH_C4Network2Players      = 1 << 4,   // player list class
-	PH_C4Network2ResList      = 1 << 5,   // ressource list class
+	PH_C4Network2ResList      = 1 << 5,   // resource list class
 	PH_C4GameControlNetwork   = 1 << 6      // network control class
 };
 

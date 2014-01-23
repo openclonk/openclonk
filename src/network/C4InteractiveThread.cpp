@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2007  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 #include "C4InteractiveThread.h"
@@ -87,7 +83,7 @@ bool C4InteractiveThread::PushEvent(C4InteractiveEventType eEvent, void *pData)
 	pEvent->Type = eEvent;
 	pEvent->Data = pData;
 #ifdef _DEBUG
-	pEvent->Time = GetTime();
+	pEvent->Time = C4TimeMilliseconds::Now();
 #endif
 	pEvent->Next = NULL;
 	// add item (at end)
@@ -117,7 +113,7 @@ bool C4InteractiveThread::PopEvent(C4InteractiveEventType *pEventType, void **pp
 		*ppData = pEvent->Data;
 #ifdef _DEBUG
 	if (Game.IsRunning)
-		AvgNetEvDelay += ((GetTime() - pEvent->Time) - AvgNetEvDelay) / 100;
+		AvgNetEvDelay += ((C4TimeMilliseconds::Now() - pEvent->Time) - AvgNetEvDelay) / 100;
 #endif
 	// remove
 	delete pFirstEvent;

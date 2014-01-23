@@ -51,24 +51,42 @@ global func FindPosInMat(string sMat, int iXStart, int iYStart, int iWidth, int 
 	return 0; // No location found.
 }
 
-// Removes a material pixel from the specified location, if the material is a liquid.
-// \par x X coordinate. Offset if called in object context.
-// \par y Y coordinate. Offset if called in object context.
-// \returns The material index of the removed pixel, or -1 if no liquid was found.
+/** Removes a material pixel from the specified location, if the material is a liquid.
+	@param x X coordinate
+	@param y Y coordinate
+	@return The material index of the removed pixel, or -1 if no liquid was found. */
 global func ExtractLiquid(int x, int y)
 {
-	var mat = GetMaterial(x, y);
-	var density = GetMaterialVal("Density", "Material", mat);
-	if (density < C4M_Liquid || density >= C4M_Solid)
-		return -1;
-	ExtractMaterialAmount(x, y, mat, 1);
-	return mat;
+	var result = ExtractLiquidAmount(x, y, 1);
+	if(!result) return -1;
+	
+	return result[0];
 }
 
-// Removes a material pixel from the specified location, if the material is flammable.
-// \par x X coordinate. Offset if called in object context.
-// \par y Y coordinate. Offset if called in object context.
-// \returns \c true if material was removed, \c false otherwise.
+/** Tries to remove amount material pixels from the specified location if the material is a liquid.
+	@param x X coordinate
+	@param y Y coordinate
+	@param amount amount of liquid that should be extracted
+	@return an array with the first position being the material index being extracted and the second the
+			actual amount of pixels extracted OR nil if there was no liquid at all */
+global func ExtractLiquidAmount(int x, int y, int amount)
+{
+	var mat = GetMaterial(x, y);
+	if(mat == -1)
+		return nil;
+	var density = GetMaterialVal("Density", "Material", mat);
+	if (density < C4M_Liquid || density >= C4M_Solid)
+		return nil;
+	var amount = ExtractMaterialAmount(x, y, mat, amount);
+	if (amount <= 0)
+		return nil;
+	return [mat, amount];
+}
+
+/** Removes a material pixel from the specified location, if the material is flammable
+	@param x X coordinate. Offset if called in object context.
+	@param y Y coordinate. Offset if called in object context.
+	@return true if material was removed, false otherwise. */
 global func FlameConsumeMaterial(int x, int y)
 {
 	var mat = GetMaterial(x, y);

@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
- * Copyright (c) 2001, 2005-2006, 2008  Sven Eberhardt
- * Copyright (c) 2003-2005  Peter Wortmann
- * Copyright (c) 2005-2006, 2009, 2011  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles the sound bank and plays effects using DSoundX */
@@ -44,7 +37,7 @@ using namespace C4SoundLoaders;
 
 C4SoundEffect::C4SoundEffect():
 		Instances (0),
-		pSample (NULL),
+		pSample (0),
 		FirstInst (NULL),
 		Next (NULL)
 {
@@ -68,7 +61,7 @@ void C4SoundEffect::Clear()
 #ifdef USE_OPEN_AL
 	if (pSample) alDeleteBuffers(1, &pSample);
 #endif
-	pSample = NULL;
+	pSample = 0;
 }
 
 bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup)
@@ -231,7 +224,7 @@ bool C4SoundInstance::Create(C4SoundEffect *pnEffect, bool fLoop, int32_t inVolu
 	// Set effect
 	pEffect = pnEffect;
 	// Set
-	iStarted = GetTime();
+	tStarted = C4TimeMilliseconds::Now();
 	iVolume = inVolume; iPan = 0; iChannel = -1;
 	iNearInstanceMax = inNearInstanceMax;
 	this->iFalloffDistance = iFalloffDistance;
@@ -247,7 +240,7 @@ bool C4SoundInstance::CheckStart()
 	// already started?
 	if (isStarted()) return true;
 	// don't bother if half the time is up and the sound is not looping
-	if (GetTime() > iStarted + pEffect->Length / 2 && !fLooping)
+	if (C4TimeMilliseconds::Now() > tStarted + pEffect->Length / 2 && !fLooping)
 		return false;
 	// do near-instances check
 	int32_t iNearInstances = pObj ? pEffect->GetStartedInstanceCount(pObj->GetX(), pObj->GetY(), C4NearSoundRadius)
@@ -267,10 +260,10 @@ bool C4SoundInstance::Start()
 	if (!FSOUND_SetLoopMode(iChannel, fLooping ? FSOUND_LOOP_NORMAL : FSOUND_LOOP_OFF))
 		{ Stop(); return false; }
 	// set position
-	if (GetTime() > iStarted + 20)
+	if (C4TimeMilliseconds::Now() > tStarted + 20)
 	{
 		assert(pEffect->Length > 0);
-		int32_t iTime = (GetTime() - iStarted) % pEffect->Length;
+		int32_t iTime = (C4TimeMilliseconds::Now() - tStarted) % pEffect->Length;
 		FSOUND_SetCurrentPosition(iChannel, iTime / 10 * pEffect->SampleRate / 100);
 	}
 #elif defined HAVE_LIBSDL_MIXER
@@ -282,10 +275,13 @@ bool C4SoundInstance::Start()
 	Application.MusicSystem.SelectContext();
 	alGenSources(1, (ALuint*)&iChannel);
 	alSourcei(iChannel, AL_BUFFER, pEffect->pSample);
+	alSourcei(iChannel, AL_LOOPING,  fLooping ? AL_TRUE : AL_FALSE);
 	alSourcePlay(iChannel);
 #else
 	return false;
 #endif
+	// Safety: Don't execute if start failed, or Execute() would try to start again
+	if (!isStarted()) return false;
 	// Update volume
 	Execute();
 	return true;
@@ -306,11 +302,15 @@ bool C4SoundInstance::Stop()
 		Mix_HaltChannel(iChannel);
 #endif
 #ifdef USE_OPEN_AL
-	if (Playing())
-		alSourceStop(iChannel);
+	if (iChannel != -1)
+	{
+		if (Playing()) alSourceStop(iChannel);
+		ALuint c = iChannel;
+		alDeleteSources(1, &c);
+	}
 #endif
 	iChannel = -1;
-	iStarted = 0;
+	tStarted = 0;
 	fLooping = false;
 	return fRet;
 }
@@ -321,7 +321,7 @@ bool C4SoundInstance::Playing()
 #ifdef HAVE_FMOD
 	if (fLooping) return true;
 	return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
-	       : GetTime() < iStarted + pEffect->Length;
+	       : C4TimeMilliseconds::Now() < tStarted + pEffect->Length;
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
@@ -393,7 +393,7 @@ void C4SoundInstance::Execute()
 #endif
 #ifdef USE_OPEN_AL
 		alSource3f(iChannel, AL_POSITION, 0, 0, 0); // FIXME
-		alSourcef(iChannel, AL_GAIN, iVol / 100);
+		alSourcef(iChannel, AL_GAIN, float(iVol) / (100.0f*256.0f));
 #endif
 	}
 }
@@ -620,12 +620,12 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 	return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
 }
 
-C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, int32_t iVolume, int32_t iCustomFallofDistance)
 {
 	// Sound check
 	if (!Config.Sound.RXSound) return NULL;
 	// Create
-	C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
+	C4SoundInstance *pInst = StartSoundEffect(szSndName, false, iVolume, NULL, iCustomFallofDistance);
 	// Set volume by position
 	if (pInst) pInst->SetVolumeByPos(iX, iY);
 	// Return

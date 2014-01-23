@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=OpenClonk
+Comment=An action-packed game of strategy, tactics, and skill.
+Comment[de]=Ein actiongeladenes Taktikspiel.
+GenericName=Multiplayer action, tactics and skill game
+Icon=openclonk
+Exec=openclonk
+Categories=Game;ActionGame;
+StartupNotify=true

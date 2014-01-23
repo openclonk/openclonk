@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2009  Peter Wortmann
- * Copyright (c) 2006-2007, 2009, 2011  Günther Brammer
- * Copyright (c) 2008  Sven Eberhardt
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 #include "StdScheduler.h"
@@ -65,17 +58,17 @@ bool StdSchedulerProc::ExecuteUntil(int iTimeout)
 			if (!Execute())
 				return false;
 	// Calculate endpoint
-	unsigned int iStopTime = GetTime() + iTimeout;
+	C4TimeMilliseconds tStopTime = C4TimeMilliseconds::Now() + iTimeout;
 	for (;;)
 	{
 		// Call execute with given timeout
 		if (!Execute(Max(iTimeout, 0)))
 			return false;
 		// Calculate timeout
-		unsigned int iTime = GetTime();
-		if (iTime >= iStopTime)
+		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
+		if (tTime >= tStopTime)
 			break;
-		iTimeout = int(iStopTime - iTime);
+		iTimeout = tStopTime - tTime;
 	}
 	// All ok.
 	return true;
@@ -175,11 +168,17 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	if (!iProcCnt) return false;
 
 	// Get timeout
-	int i; int iProcTick; int Now = GetTime();
+	int i;
+	C4TimeMilliseconds tProcTick;
+	C4TimeMilliseconds tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
-		if ((iProcTick = ppProcs[i]->GetNextTick(Now)) >= 0)
-			if (iTimeout == -1 || iTimeout + Now > iProcTick)
-				iTimeout = Max(iProcTick - Now, 0);
+	{
+		tProcTick = ppProcs[i]->GetNextTick(tNow);
+		if (iTimeout == -1 || tNow + iTimeout > tProcTick)
+		{
+			iTimeout = Max<uint32_t>(tProcTick - tNow, 0);
+		}
+	}
 
 #ifdef STDSCHEDULER_USE_EVENTS
 
@@ -225,11 +224,11 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	}
 
 	// Execute all processes with timeout
-	Now = GetTime();
+	tNow = C4TimeMilliseconds::Now();
 	for (i = 0; i < iProcCnt; i++)
 	{
-		iProcTick = ppProcs[i]->GetNextTick(Now);
-		if (iProcTick >= 0 && iProcTick <= Now)
+		tProcTick = ppProcs[i]->GetNextTick(tNow);
+		if (tProcTick <= tNow)
 			if (!ppProcs[i]->Execute(0))
 			{
 				OnError(ppProcs[i]);
@@ -260,12 +259,12 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	if (cnt >= 0)
 	{
 		bool any_executed = false;
-		Now = GetTime();
+		tNow = C4TimeMilliseconds::Now();
 		// Which process?
 		for (i = 0; i < iProcCnt; i++)
 		{
-			iProcTick = ppProcs[i]->GetNextTick(Now);
-			if (iProcTick >= 0 && iProcTick <= Now)
+			tProcTick = ppProcs[i]->GetNextTick(tNow);
+			if (tProcTick <= tNow)
 			{
 				struct pollfd * pfd = 0;
 				if (fds_for_proc.find(ppProcs[i]) != fds_for_proc.end())

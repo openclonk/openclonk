@@ -12,5 +12,5 @@ VertexFriction=50,50,50,50
 Picture=0,0,64,64
 Value=16
 Mass=30
-Components=Wood=1;Metal=1;Coal=2;Sulphur=3
+Components=Wood=1;Coal=2;Firestone=2
 Rotate=1

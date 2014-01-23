@@ -1,2 +1,1 @@
 Name=Hängebrücke
-Description=Drücke an einem Abgrund [Benutzen], um die Strickleiter auszurollen. Du kannst sie auch beim Klettern oder Hangeln benutzen.

@@ -13,11 +13,11 @@
         <param>
           <type>int</type>
           <name>gravity</name>
-          <desc>New gravity: value -300 til 300 (in percent)</desc>
+          <desc>New gravity in 1/100 pixel/tick²</desc>
         </param>
       </params>
     </syntax>
-    <desc>Sets the gravity. Normal gravity is 100% and results in an acceleration of 0.2 pixels per Tick. (increasing YDir by 2 per Tick with precision=10).</desc>
+    <desc>Sets the gravity. It is usually a good idea to set this to a multiple or a fraction of the previous value.</desc>
     <related><funclink>GetGravity</funclink></related>
   </func>
   <author>jwk</author><date>2002-08</date>

@@ -1,25 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2003-2008, 2010-2011  Sven Eberhardt
- * Copyright (c) 2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // dialog base classes and some user dialogs
@@ -38,18 +31,8 @@
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 
-#include <StdGL.h>
+#include <C4DrawGL.h>
 #include <StdRegistry.h>
-
-#ifdef _WIN32
-#include "resource.h"
-#endif
-
-#ifdef USE_X11
-#define None Die_XLib_Die
-#include <X11/Xlib.h>
-#undef None
-#endif
 
 namespace C4GUI
 {
@@ -194,245 +177,35 @@ namespace C4GUI
 // DialogWindow
 
 #ifdef USE_WIN32_WINDOWS
-	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
+
+	C4Window * DialogWindow::Init(C4AbstractApp * pApp, const char * Title, const C4Rect &rcBounds, const char *szID)
 	{
-		Active = true;
-		// calculate required size
-		RECT rtSize;
-		rtSize.left = 0;
-		rtSize.top = 0;
-		rtSize.right = rcBounds.Wdt;
-		rtSize.bottom = rcBounds.Hgt;
-		if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0)) return false;
-		// create it!
-		if (!Title || !*Title) Title = "???";
-		hWindow = ::CreateWindowExW  (
-		            0,
-		            ConsoleDlgClassName, GetWideChar(Title),
-		            ConsoleDlgWindowStyle,
-		            CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
-		            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
-		if (hWindow)
+		C4Window * result = C4Window::Init(C4Window::W_GuiWindow, pApp, Title, &rcBounds);
+		if (result)
 		{
-			hRenderWindow = hWindow;
 			// update pos
 			if (szID && *szID)
 				RestoreWindowPosition(hWindow, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			// and show
 			::ShowWindow(hWindow, SW_SHOW);
 		}
-		return hWindow ? this : 0;
+		return result;
 	}
 
-// --------------------------------------------------
-// Dialog
-	LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		// Determine dialog
-		Dialog *pDlg = ::pGUI->GetDialog(hwnd);
-		if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
-
-		// Process message
-		switch (uMsg)
-		{
-			//---------------------------------------------------------------------------------------------------------------------------
-		case WM_KEYDOWN:
-			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
-			break;
-			//---------------------------------------------------------------------------------------------------------------------------
-		case WM_KEYUP:
-			if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg)) return 0;
-			break;
-			//------------------------------------------------------------------------------------------------------------
-		case WM_SYSKEYDOWN:
-			if (wParam == 18) break;
-			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
-			break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_DESTROY:
-		{
-			const char *szID = pDlg->GetID();
-			if (szID && *szID)
-				StoreWindowPosition(hwnd, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
-		}
-		break;
-		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_CLOSE:
-			pDlg->Close(false);
-			break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_SIZE:
-			// UpdateOutputSize
-			break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_PAINT:
-			// 2do: only draw specific dlg?
-			//::GraphicsSystem.Execute();
-			break;
-			return 0;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);  break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEMOVE:
-			//SetCursor(NULL);
-			::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
-			break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_MOUSEWHEEL:
-			::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
-			break;
-			//----------------------------------------------------------------------------------------------------------------------------------
-		}
-
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
-	}
-
-	bool Dialog::RegisterWindowClass(HINSTANCE hInst)
-	{
-		// register landscape viewport class
-		WNDCLASSEXW WndClass;
-		WndClass.cbSize=sizeof(WNDCLASSEX);
-		WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
-		WndClass.lpfnWndProc   = DialogWinProc;
-		WndClass.cbClsExtra    = 0;
-		WndClass.cbWndExtra    = 0;
-		WndClass.hInstance     = hInst;
-		WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
-		WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-		WndClass.lpszMenuName  = NULL;
-		WndClass.lpszClassName = ConsoleDlgClassName;
-		WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-		WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-		return !!RegisterClassExW(&WndClass);
-	}
 #else
-	C4Window * DialogWindow::Init(C4Window::WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, const C4Rect &rcBounds, const char *szID)
+	C4Window * DialogWindow::Init(C4AbstractApp * pApp, const char * Title, const C4Rect &rcBounds, const char *szID)
 	{
-		C4Window *result;
-		if (C4Window::Init(windowKind, pApp, Title, pParent, false))
+		C4Window * result = C4Window::Init(C4Window::W_GuiWindow, pApp, Title, &rcBounds);
+		if (result)
 		{
 			// update pos
 			if (szID && *szID)
 				RestorePosition(FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			else
 				SetSize(rcBounds.Wdt, rcBounds.Hgt);
-			result = this;
 		}
-		else
-			result = NULL;
 		return result;
 	}
-#ifdef USE_X11
-	void DialogWindow::HandleMessage (XEvent &e)
-	{
-		// Parent handling
-		C4Window::HandleMessage(e);
-
-		// Determine dialog
-		Dialog *pDlg = ::pGUI->GetDialog(this);
-		if (!pDlg) return;
-
-		switch (e.type)
-		{
-		case KeyPress:
-		{
-			// Do not take into account the state of the various modifiers and locks
-			// we don't need that for keyboard control
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			Game.DoKeyboardInput(key, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg);
-			break;
-		}
-		case KeyRelease:
-		{
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			Game.DoKeyboardInput(key, KEYEV_Up, e.xkey.state & Mod1Mask, e.xkey.state & ControlMask, e.xkey.state & ShiftMask, false, pDlg);
-			break;
-		}
-		case ButtonPress:
-		{
-			static int last_left_click, last_right_click;
-			switch (e.xbutton.button)
-			{
-			case Button1:
-				if (GetTime() - last_left_click < 400)
-				{
-					::pGUI->MouseInput(C4MC_Button_LeftDouble,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = 0;
-				}
-				else
-				{
-					::pGUI->MouseInput(C4MC_Button_LeftDown,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_left_click = GetTime();
-				}
-				break;
-			case Button2:
-				::pGUI->MouseInput(C4MC_Button_MiddleDown,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button3:
-				if (GetTime() - last_right_click < 400)
-				{
-					::pGUI->MouseInput(C4MC_Button_RightDouble,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = 0;
-				}
-				else
-				{
-					::pGUI->MouseInput(C4MC_Button_RightDown,
-					                   e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-					last_right_click = GetTime();
-				}
-				break;
-			case Button4:
-				::pGUI->MouseInput(C4MC_Button_Wheel,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(32) << 16), pDlg, NULL);
-				break;
-			case Button5:
-				::pGUI->MouseInput(C4MC_Button_Wheel,
-				                   e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-32) << 16), pDlg, NULL);
-				break;
-			default:
-				break;
-			}
-		}
-		break;
-		case ButtonRelease:
-			switch (e.xbutton.button)
-			{
-			case Button1:
-				::pGUI->MouseInput(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button2:
-				::pGUI->MouseInput(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			case Button3:
-				::pGUI->MouseInput(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-				break;
-			default:
-				break;
-			}
-			break;
-		case MotionNotify:
-			::pGUI->MouseInput(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
-			break;
-		case ConfigureNotify:
-			pSurface->UpdateSize(e.xconfigure.width, e.xconfigure.height);
-			break;
-		}
-	}
-#endif
 #endif // _WIN32
 
 	void DialogWindow::PerformUpdate()
@@ -445,7 +218,7 @@ namespace C4GUI
 		{
 			pSurface->Wdt = r.Wdt;
 			pSurface->Hgt = r.Hgt;
-#ifdef USE_GL
+#ifndef USE_CONSOLE
 			pGL->PrepareRendering(pSurface);
 			glClear(GL_COLOR_BUFFER_BIT);
 #endif
@@ -468,7 +241,7 @@ namespace C4GUI
 		if (pWindow) return true;
 		// create it!
 		pWindow = new DialogWindow();
-		if (!pWindow->Init(C4Window::W_GuiWindow, &Application, TitleString.getData(), &Console, rcBounds, GetID()))
+		if (!pWindow->Init(&Application, TitleString.getData(), rcBounds, GetID()))
 		{
 			delete pWindow;
 			pWindow = NULL;
@@ -630,17 +403,7 @@ namespace C4GUI
 		// update assigned window
 		if (pWindow)
 		{
-#ifdef _WIN32
-			RECT rtSize;
-			rtSize.left = 0;
-			rtSize.top = 0;
-			rtSize.right = rcBounds.Wdt;
-			rtSize.bottom = rcBounds.Hgt;
-			if (::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
-				pWindow->SetSize(rtSize.right-rtSize.left,rtSize.bottom-rtSize.top);
-#else
 			pWindow->SetSize(rcBounds.Wdt,rcBounds.Hgt);
-#endif // _WIN32
 		}
 	}
 
@@ -756,8 +519,10 @@ namespace C4GUI
 
 	bool Dialog::KeyHotkey(const C4KeyCodeEx &key)
 	{
-		WORD wKey = WORD(key.Key);
+		StdStrBuf sKey = C4KeyCodeEx::KeyCode2String(key.Key, true, true);
 		// do hotkey procs for standard alphanumerics only
+		if (sKey.getLength() != 1) return false;
+		WORD wKey = WORD(*sKey.getData());
 		if (Inside<WORD>(TOUPPERIFX11(wKey), 'A', 'Z')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		if (Inside<WORD>(TOUPPERIFX11(wKey), '0', '9')) if (OnHotkey(char(TOUPPERIFX11(wKey)))) return true;
 		return false;
@@ -995,7 +760,7 @@ namespace C4GUI
 // FullscreenDialog
 
 	FullscreenDialog::FullscreenDialog(const char *szTitle, const char *szSubtitle)
-			: Dialog(Screen::GetScreenS()->GetClientRect().Wdt, Screen::GetScreenS()->GetClientRect().Hgt, NULL /* create own title */, false), pFullscreenTitle(NULL), pBtnHelp(NULL)
+			: Dialog(Screen::GetScreenS()->GetClientRect().Wdt, Screen::GetScreenS()->GetClientRect().Hgt, NULL /* create own title */, false), pFullscreenTitle(NULL)
 	{
 		// set margins
 		int32_t iScreenX = Screen::GetScreenS()->GetClientRect().Wdt;
@@ -1013,18 +778,6 @@ namespace C4GUI
 			pSubTitle->SetToolTip(szTitle);
 		}
 		else pSubTitle = NULL;
-		// titled dialogs always have a help button in the top right corner
-		if (szTitle && *szTitle)
-		{
-			// help button disabled; use meaningful captions instead
-			//pBtnHelp = new CallbackButton<FullscreenDialog, IconButton>(Ico_UnknownClient /* 2do: Help icon */, C4Rect(0,0,32,32), 'H' /* 2do */, &FullscreenDialog::OnHelpBtn, this);
-			//C4Facet fctHelp = ::GraphicsResource.fctOKCancel;
-			//fctHelp.Y += fctHelp.Hgt;
-			//pBtnHelp->SetFacet(fctHelp);
-			//pBtnHelp->SetToolTip("[.!]Help button: Press this button and hover the element you want help for!");
-			//UpdateHelpButtonPos();
-			//AddElement(pBtnHelp);
-		}
 	}
 
 	void FullscreenDialog::SetTitle(const char *szTitle)
@@ -1055,38 +808,21 @@ namespace C4GUI
 	{
 		// inherited to update client rect
 		Dialog::UpdateOwnPos();
-		// reposition help button
-		UpdateHelpButtonPos();
-	}
-
-	void FullscreenDialog::UpdateHelpButtonPos()
-	{
-		// reposition help button
-		if (pBtnHelp) pBtnHelp->SetBounds(C4Rect(GetBounds().Wdt-4-32-GetMarginLeft(), 4-GetMarginTop(), 32,32));
 	}
 
 	void FullscreenDialog::DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct)
 	{
 		// draw across fullscreen bounds - zoom 1px border to prevent flashing borders by blit offsets
 		Screen *pScr = GetScreen();
-		C4Facet cgoScreen = cgo;
 		C4Rect &rcScreenBounds = pScr ? pScr->GetBounds() : GetBounds();
-		cgoScreen.X = rcScreenBounds.x-1; cgoScreen.Y = rcScreenBounds.y-1;
-		cgoScreen.Wdt = rcScreenBounds.Wdt+2; cgoScreen.Hgt = rcScreenBounds.Hgt+2;
-		rFromFct.DrawFullScreen(cgoScreen);
+		rFromFct.DrawFullScreen(cgo);
 	}
-
-	void FullscreenDialog::OnHelpBtn(C4GUI::Control *pBtn)
-	{
-		::MouseControl.SetHelp();
-	}
-
 
 // --------------------------------------------------
 // MessageDialog
 
 	MessageDialog::MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize, int32_t *piConfigDontShowAgainSetting, bool fDefaultNo)
-			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting)
+			: Dialog(eSize, 100 /* will be resized */, szCaption, false), piConfigDontShowAgainSetting(piConfigDontShowAgainSetting), pKeyCopy(NULL), sCopyText()
 	{
 		CStdFont &rUseFont = ::GraphicsResource.TextFont;
 		// get positions
@@ -1188,7 +924,23 @@ namespace C4GUI
 		if (btnFocus) SetFocus(btnFocus, false);
 		// resize to actually needed size
 		SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
+		// Control+C copies text to clipboard
+		sCopyText.Format("[%s] %s", szCaption ? szCaption : "", szMessage ? szMessage : "");
+		pKeyCopy = new C4KeyBinding(C4KeyCodeEx(K_C, KEYS_Control), "GUIEditCopy", KEYSCOPE_Gui,
+		               new DlgKeyCB<MessageDialog>(*this, &MessageDialog::KeyCopy), C4CustomKey::PRIO_CtrlOverride);
 	}
+
+MessageDialog::~MessageDialog()
+{
+	delete pKeyCopy;
+}
+
+bool MessageDialog::KeyCopy()
+{
+	// Copy text to clipboard
+	::Application.Copy(sCopyText);
+	return true;
+}
 
 
 // --------------------------------------------------

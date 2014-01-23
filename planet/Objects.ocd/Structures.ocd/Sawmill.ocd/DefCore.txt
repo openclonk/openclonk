@@ -2,8 +2,6 @@
 id=Sawmill
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=FindTrees
-Timer=35
 Width=50
 Height=31
 Offset=-25,-15
@@ -13,10 +11,8 @@ VertexY=-14,-13,14,-13,14,14
 VertexFriction=50,50,100,50,100,100
 Value=50
 Mass=1500
-Components=Rock=4;Wood=2;
-Collection=0,0,13,13
-#Entrance=-30,-15,30,30
+Components=Rock=4;Wood=1;
 Exclusive=1
-BlastIncinerate=100
 Construction=1
 ContainBlast=1
+IncompleteActivity=1

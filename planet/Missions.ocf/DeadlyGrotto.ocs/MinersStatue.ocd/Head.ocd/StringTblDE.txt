@@ -1,0 +1,2 @@
+Name=Statuenkopf
+Description=Ein wichtiger Teil der Statue.

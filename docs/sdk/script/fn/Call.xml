@@ -7,12 +7,12 @@
     <title>Call</title>
     <category>Script</category>
     <subcat>Function call</subcat>
-    <version>5.1 OC</version>
+    <version>5.1 OC<extversion>5.4 OC</extversion></version>
     <syntax>
       <rtype>any</rtype>
       <params>
         <param>
-          <type>string</type>
+          <type>string or function</type>
           <name>function</name>
           <desc>Function to be called.</desc>
         </param>
@@ -23,11 +23,12 @@
         </param>
       </params>
     </syntax>
-    <desc>Calls the local function function. If "~" is prepended to the function name then the call does not fail if the function does not exist.</desc>
+    <desc>Calls the specified function. If given a string, the function is looked up in the context object (<code>this</code>). For example, <code>obj->Call("Foo")</code> is the same as <code>obj->Foo()</code>. Using Call like this is primarily useful when the name of the function can vary. If "~" is prepended to the function name then the call does not fail if the function does not exist.</desc>
     <related>
       <funclink>GameCall</funclink>
       <funclink>eval</funclink>
     </related>
   </func>
   <author>jwk</author><date>2002-04</date>
+  <author>Günther</author><date>2012</date>
 </funcs>

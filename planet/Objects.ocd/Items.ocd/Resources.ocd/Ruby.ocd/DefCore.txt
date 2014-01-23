@@ -1,0 +1,14 @@
+[DefCore]
+id=Ruby
+Version=5,2,0,1
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=4
+VertexX=-4,0,4,0
+VertexY=0,-4,0,4
+VertexFriction=70,70,70,70
+Value=50
+Mass=10
+Rotate=1

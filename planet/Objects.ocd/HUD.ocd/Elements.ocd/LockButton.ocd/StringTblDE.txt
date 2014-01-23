@@ -1,2 +1,0 @@
-Name=LockButton
-Description=Sperrt/Entsperrt die Inventar-Leiste

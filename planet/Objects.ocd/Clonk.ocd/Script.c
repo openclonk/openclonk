@@ -2,7 +2,7 @@
 	Clonk
 	Author: Randrian
 
-	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+	The protoganist of the game. Witty and nimble if skillfully controlled ;-)
 */
 
 
@@ -45,19 +45,21 @@ protected func Construction()
 	AddEffect("IntEyes", this, 1, 35+Random(4), this);
 
 	AttachBackpack();
+	iHandMesh = [0,0];
+
+	SetSkin(0);
 }
-
-
 
 /* When adding to the crew of a player */
 
 protected func Recruitment(int iPlr)
 {
 	//The clonk's appearance
-	//In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
+	//Player settings can be overwritten for individual Clonks. In your clonk file: "ExtraData=1;Skin=iX" (X = chosen skin)
 	var skin = GetCrewExtraData("Skin");
 	if (skin == nil) skin = GetPlrClonkSkin(iPlr);
-	if(skin) SetSkin(skin);
+	if(skin != nil) SetSkin(skin);
+	else SetSkin(Random(GetSkinCount()));
 
 	// Broadcast for crew
 	GameCallEx("OnClonkRecruitment", this, iPlr);
@@ -118,7 +120,7 @@ protected func Hurt()
 	if(gender == 0)
 		Sound("Hurt?");
 	else
-		Sound("FHurt?"); //female 'ouch' sounds TODO :/
+		Sound("FHurt?");
 }
 	
 protected func Grab(object pTarget, bool fGrab)
@@ -148,11 +150,13 @@ protected func Death(int killed_by)
 	if (GetAlive())
 		return;
 	
+	// Some effects on dying.
 	if(gender == 0)
 		Sound("Die");
 	else
 		Sound("FDie");
-
+	CloseEyes(1);
+	
 	DeathAnnounce();
 	return;
 }
@@ -196,13 +200,21 @@ public func Eat(object food)
 	}
 }
 
+func DigOutObject(object obj)
+{
+	// Collect fragile objects when dug out
+	if (obj->GetDefFragile())
+		return Collect(obj,nil,nil,true);
+	return false;
+}
+
 /* Status */
 
 // TODO: Make this more sophisticated, readd turn animation and other
 // adaptions
 public func IsClonk() { return true; }
 
-public func IsJumping(){return GetProcedure() == "FLIGHT";}
+public func IsJumping(){return WildcardMatch(GetAction(), "*Jump*");}
 public func IsWalking(){return GetProcedure() == "WALK";}
 
 /* Carry items on the clonk */
@@ -244,7 +256,6 @@ func DetachHandItem(bool secondary)
 
 func AttachHandItem(bool secondary)
 {
-	if(!iHandMesh) iHandMesh = [0,0];
 	DetachHandItem(secondary);
 	UpdateAttach();
 }
@@ -449,7 +460,7 @@ func SetMeshTransformation(array transformation, int layer)
 	if(GetLength(mesh_transformation_list) < layer)
 		SetLength(mesh_transformation_list, layer+1);
 	mesh_transformation_list[layer] = transformation;
-	var all_transformations = 0;
+	var all_transformations = nil;
 	for(var trans in mesh_transformation_list)
 	{
 		if(!trans) continue;
@@ -492,7 +503,7 @@ func OnMaterialChanged(int new, int old)
 	var oldliquid = (olddens >= C4M_Liquid) && (olddens < C4M_Solid);
 	// into water
 	if(newliquid && !oldliquid)
-		AddEffect("Bubble", this, 1, 52, this);
+		AddEffect("Bubble", this, 1, 8, this);
 	// out of water
 	else if(!newliquid && oldliquid)
 		RemoveEffect("Bubble", this);
@@ -502,8 +513,21 @@ func FxBubbleTimer(pTarget, effect, iTime)
 {
 	if(GBackLiquid(0,-5))
 	{
+		var mouth_off = GetCon()/11;
 		var iRot = GetSwimRotation();
-		Bubble(1, +Sin(iRot, 9), Cos(iRot, 9));
+		var mouth_off_x = Sin(iRot, mouth_off), mouth_off_y = Cos(iRot, mouth_off);
+		// Search for bubbles to breath from
+		var bubble = FindObject(Find_Func("CanBeBreathed", this), Find_AtRect(mouth_off_x-mouth_off/2, mouth_off_y, mouth_off, mouth_off/3));
+		if (bubble)
+		{
+			bubble->~OnClonkBreath(this);
+		}
+		else if (!Random(6))
+		{
+			// Make your own bubbles
+			
+			Bubble(1, mouth_off_x, mouth_off_y);
+		}
 	}
 }
 
@@ -536,17 +560,17 @@ func SetSkin(int skin)
 
 	//Steampunk
 	if(skin == 1)
-	{	SetGraphics(nil, Skin_Steampunk);
+	{	SetGraphics("Steampunk");
 		gender = 1; }
 
 	//Alchemist
 	if(skin == 2)
-	{	SetGraphics(nil, Skin_Alchemist);
+	{	SetGraphics("Alchemist");
 		gender = 0;	}
 	
 	//Farmer
 	if(skin == 3)
-	{	SetGraphics(nil, Skin_Farmer);
+	{	SetGraphics("Farmer");
 		gender = 1;	}
 
 	RemoveBackpack(); //add a backpack
@@ -555,6 +579,37 @@ func SetSkin(int skin)
 
 	return skin;
 }
+func GetSkinCount() { return 4; }
+
+/* Scenario saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	// Direction is randomized at creation and there's no good way to find
+	// out if the user wanted that specific direction. So just always save
+	// it, because that's what scenario designer usually wants.
+	if (!props->HasProp("Dir")) props->AddCall("Dir", this, "SetDir", GetConstantNameByValueSafe(GetDir(),"DIR_"));
+	return true;
+}
+
+
+/* AI editor helper */
+
+func EditCursorSelection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorSelection, ai);
+	return _inherited(...);
+}
+
+func EditCursorDeselection()
+{
+	var ai = S2AI->GetAI(this);
+	if (ai) Call(S2AI.EditCursorDeselection, ai);
+	return _inherited(...);
+}
+
 
 /* Act Map */
 
@@ -630,7 +685,6 @@ Scale = {
 	Procedure = DFA_SCALE,
 	Speed = 60,
 	Accel = 20,
-	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
@@ -882,9 +936,11 @@ Eat = {
 };
 local Name = "Clonk";
 local MaxEnergy = 50000;
-local MaxBreath = 252; // Clonk can breathe for 7 seconds under water.
+local MaxBreath = 720; // Clonk can breathe for 20 seconds under water.
 local JumpSpeed = 400;
 local ThrowSpeed = 294;
+local NoBurnDecay = 1;
+local ContactIncinerate = 10;
 
 func Definition(def) {
 	// Set perspective

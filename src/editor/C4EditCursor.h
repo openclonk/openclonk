@@ -1,22 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001, 2005  Sven Eberhardt
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles viewport editing in console mode */
@@ -40,6 +36,7 @@ public:
 	~C4EditCursor();
 protected:
 	bool fAltWasDown;
+	bool fShiftWasDown;
 	int32_t Mode;
 	float X,Y,X2,Y2;
 	bool Hold,DragFrame,DragLine;
@@ -79,11 +76,13 @@ public:
 	bool OpenPropTools();
 	bool Delete();
 	void GrabContents();
-	bool LeftButtonUp();
-	bool LeftButtonDown(bool fControl);
-	bool RightButtonUp();
-	bool RightButtonDown(bool fControl);
-	bool Move(float iX, float iY, WORD wKeyFlags);
+	bool LeftButtonUp(DWORD dwKeyState);
+	bool LeftButtonDown(DWORD dwKeyState);
+	bool RightButtonUp(DWORD dwKeyState);
+	bool RightButtonDown(DWORD dwKeyState);
+	bool KeyDown(C4KeyCode KeyCode, DWORD dwKeyState);
+	bool KeyUp(C4KeyCode KeyCode, DWORD dwKeyState);
+	bool Move(float iX, float iY, DWORD dwKeyState);
 	bool Init();
 	bool EditingOK();
 	C4ObjectList &GetSelection() { return Selection; }
@@ -96,8 +95,8 @@ protected:
 	void ApplyToolPicker();
 	void ToolFailure();
 	void PutContents();
-	void UpdateDropTarget(WORD wKeyFlags);
-	bool DoContextMenu();
+	void UpdateDropTarget(DWORD dwKeyState);
+	bool DoContextMenu(DWORD dwKeyState);
 	void ApplyToolFill();
 	void ApplyToolRect();
 	void ApplyToolLine();
@@ -107,8 +106,12 @@ protected:
 	void MoveSelection(C4Real iXOff, C4Real iYOff);
 	void EMMoveObject(enum C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
 	void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
-	void DoContextObjsel(C4Object *);
+	void DoContextObjsel(C4Object *, bool clear);
 	void ObjselectDelItems();
+
+	void AddToSelection(C4Object *add_obj);         // add object to selection and do script callback. Doesn't do OnSelectionChanged().
+	bool RemoveFromSelection(C4Object *remove_obj); // remove object from selection and do script callback. return true if object was in selection before. Doesn't do OnSelectionChanged().
+	void ClearSelection();                          // remove all objects from selection and do script callback. Doesn't do OnSelectionChanged().
 
 #ifdef WITH_DEVELOPER_MODE
 	static void OnDelete(GtkWidget* widget, gpointer data);

@@ -1,0 +1,17 @@
+[DefCore]
+id=LiftTower
+Version=5,2,0,1
+Category=C4D_Structure
+Width=23
+Height=68
+Offset=-11,-10
+Vertices=4
+VertexX=-11,11,-11,11
+VertexY=-10,-10,58,58
+VertexFriction=50,50,100,100
+Value=200
+Mass=4500
+Components=Metal=2;Wood=4;
+Exclusive=1
+Construction=1
+ContainBlast=1

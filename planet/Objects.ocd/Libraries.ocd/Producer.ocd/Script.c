@@ -45,7 +45,7 @@ public func IsInteractable() { return GetCon() >= 100; }
 
 public func GetInteractionMetaInfo(object clonk)
 {
-	return { Description = "Produce items", IconName = nil, IconID = nil };
+	return { Description = "$DescInteraction$", IconName = nil, IconID = nil };
 }
 
 // On interaction the production menu should be opened.
@@ -100,21 +100,24 @@ private func IsProduct(id product_id)
 /** Returns an array with the ids of products which can be produced at this producer.
 	@return array with products.
 */
-public func GetProducts()
+public func GetProducts(object for_clonk)
 {
+	var for_plr = GetOwner();
+	if (for_clonk)
+		for_plr = for_clonk-> GetOwner();
 	var products = [];
 	// Cycle through all definitions to find the ones this producer can produce.
 	var index = 0, product;
-	if (!IgnoreKnowledge() && GetOwner() != NO_OWNER)
+	if (!IgnoreKnowledge() && for_plr != NO_OWNER)
 	{
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Object))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Object))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
 			index++;
 		}
 		index = 0;
-		while (product = GetPlrKnowledge(GetOwner(), nil, index, C4D_Vehicle))
+		while (product = GetPlrKnowledge(for_plr, nil, index, C4D_Vehicle))
 		{
 			if (IsProduct(product))
 				products[GetLength(products)] = product;
@@ -336,6 +339,7 @@ protected func FxProcessQueueTimer(object target, proplist effect)
 private func ProductionTime(id product) { return product->~GetProductionTime(); }
 private func FuelNeed(id product) { return product->~GetFuelNeed(); }
 private func LiquidNeed(id product) { return product->~GetLiquidNeed(); }
+private func MaterialNeed(id product) { return product->~GetMaterialNeed(); }
 
 private func PowerNeed() { return 200; }
 
@@ -347,16 +351,19 @@ private func Produce(id product)
 		
 	// Check if components are available.
 	if (!CheckComponents(product))
-		return false;	
+		return false;
 	// Check need for fuel.
 	if (!CheckFuel(product))
-		return false;	
+		return false;
 	// Check need for liquids.
 	if (!CheckLiquids(product))
-		return false;	
+		return false;
+	// Check need for materials.
+	if (!CheckMaterials(product))
+		return false;
 	// Check need for power.
 	if (!CheckForPower())
-		return false;	
+		return false;
 
 	// Everything available? Start production.
 	// Remove needed components, fuel and liquid.
@@ -364,6 +371,7 @@ private func Produce(id product)
 	CheckComponents(product, true);
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
+	CheckMaterials(product, true);
 	
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
@@ -377,8 +385,7 @@ private func CheckComponents(id product, bool remove)
 	{
 		var mat_id = item[0];
 		var mat_cost = item[1];
-		var mat_av = ObjectCount(Find_Container(this), Find_ID(mat_id));
-		if (mat_av < mat_cost)
+		if (!CheckComponent(mat_id, mat_cost))
 			return false; // Components missing.
 		else if (remove)
 		{
@@ -389,7 +396,13 @@ private func CheckComponents(id product, bool remove)
 	return true;
 }
 
-private func CheckFuel(id product, bool remove)
+public func CheckComponent(id component, int amount)
+{
+	// check if at least the given amount of the given component is available to be used for production
+	return (ObjectCount(Find_Container(this), Find_ID(component)) >= amount);
+}
+
+public func CheckFuel(id product, bool remove)
 {
 	if (FuelNeed(product) > 0)
 	{
@@ -415,7 +428,7 @@ private func CheckFuel(id product, bool remove)
 	return true;
 }
 
-private func CheckLiquids(id product, bool remove)
+public func CheckLiquids(id product, bool remove)
 {
 	var liq_need = LiquidNeed(product);
 	if (liq_need)
@@ -441,6 +454,36 @@ private func CheckLiquids(id product, bool remove)
 					break;			
 			}			
 		}		
+	}
+	return true;
+}
+
+public func CheckMaterials(id product, bool remove)
+{
+	var mat_need = MaterialNeed(product);
+	if (mat_need)
+	{
+		var material_amount = 0;
+		var material = mat_need[0];
+		var need = mat_need[1];
+		// Find liquid containers in this producer.
+		for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			if (mat_container->~GetContainedMaterial() == material)
+				material_amount += mat_container->~GetFillLevel();
+		if (material_amount < need)
+			return false;
+		else if (remove)
+		{
+			// Remove the material needed.
+			var extracted = 0;
+			for (var mat_container in FindObjects(Find_Container(this), Find_Func("IsMaterialContainer")))
+			{
+				var val = mat_container->~RemoveContainedMaterial(material, need - extracted);
+				extracted += val;
+				if (extracted >= need)
+					break;
+			}
+		}
 	}
 	return true;
 }
@@ -518,7 +561,7 @@ protected func FxProcessProductionTimer(object target, proplist effect, int time
 	//Log("Production in progress on %i, %d frames, %d time", effect.Product, effect.Duration, time);
 	
 	// Check if production time has been reached.
-	if (effect.Duration >= ProductionTime())
+	if (effect.Duration >= ProductionTime(effect.Product))
 		return -1;
 	
 	return 1;
@@ -529,7 +572,7 @@ protected func FxProcessProductionStop(object target, proplist effect, int reaso
 	if(temp) return;
 	
 	// no need to consume power anymore
-	MakePowerConsumer(0);
+	UnmakePowerConsumer();
 		
 	if (reason != 0)
 		return 1;
@@ -552,7 +595,12 @@ public func OnProductEjection(object product)
 	{
 		var x = GetX();
 		var y = GetY() + GetDefHeight()/2 - product->GetDefHeight()/2;
-		product->SetPosition(x, y);	
+		product->SetPosition(x, y);
+		// Sometimes, there is material in front of the building. Move vehicles upwards in that case
+		var max_unstick_range = Max(GetDefHeight()/5,5); // 8 pixels for tools workshop
+		var y_off = 0;
+		while (product->Stuck() && y_off < max_unstick_range)
+			product->SetPosition(x, y-++y_off);
 	}
 	// Items should stay inside.
 	else
@@ -639,6 +687,13 @@ protected func RejectEntrance(object obj)
 	{
 		for (var product in GetProducts())
 			if (LiquidNeed(product))
+				return false;
+	}
+	// Material containers may be collected if a product needs them.
+	if (obj->~IsMaterialContainer())
+	{
+		for (var product in GetProducts())
+			if (MaterialNeed(product))
 				return false;
 	}
 	return true;

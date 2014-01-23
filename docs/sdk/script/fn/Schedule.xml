@@ -37,11 +37,11 @@
     <remark>Accordingly, the specified script can be a single command only. It may not contain multiple commands separated by ";".</remark>
     <examples>
       <example>
-        <code>Schedule(&quot;<funclink>Explode</funclink>(50)&quot;, 1000, 0, <funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)));</code>
+        <code>Schedule(<funclink>FindObject</funclink>(<funclink>Find_ID</funclink>(Clonk)), &quot;<funclink>Explode</funclink>(50)&quot;<funclink></funclink>, 1000);</code>
         <text>Makes a clonk explode after 1000 ticks delay.</text>
       </example>
       <example>
-        <code>Schedule(&quot;<funclink>SetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), <funclink>GetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0)) + 1)&quot;, 1, 100);</code>
+        <code>Schedule(nil, &quot;<funclink>DoWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), 1)&quot;<funclink></funclink>, 1, 100);</code>
         <text>Gives one unit of money per frame to the first player for 100 frames. Notice that if the first player is eliminated, the donations will continue for the next (first) player, since the receiving player is determined anew in each execution.</text>
       </example>
     </examples>

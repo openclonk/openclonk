@@ -1,27 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2005-2006, 2008-2010  Günther Brammer
- * Copyright (c) 2005, 2007-2008  Matthes Bender
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2008  Peter Wortmann
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2011  Armin Burgmeier
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Startup screen for non-parameterized engine start: Scenario selection dialog
 
@@ -127,7 +117,7 @@ bool C4MapFolderData::Load(C4Group &hGroup, C4ScenarioListLoader::Folder *pScenL
 	Clear();
 	// load localization info
 	C4LangStringTable LangTable;
-	bool fHasLangTable = !!LangTable.LoadEx(hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	bool fHasLangTable = C4Language::LoadComponentHost(&LangTable, hGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 	// load core data
 	StdStrBuf Buf;
 	if (!hGroup.LoadEntryString(C4CFN_MapFolderData, &Buf)) return false;
@@ -482,7 +472,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 			return false;
 		// Load entry name
 		C4ComponentHost DefNames;
-		if (DefNames.LoadEx(Group, C4CFN_Title, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefNames, Group, C4CFN_Title, Config.General.LanguageEx))
 			if (DefNames.GetLanguageString(Config.General.LanguageEx, sName))
 				fNameLoaded = true;
 		// load entry icon
@@ -523,15 +513,14 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 	{
 		// load desc
 		C4ComponentHost DefDesc;
-		if (DefDesc.LoadEx(Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+		if (C4Language::LoadComponentHost(&DefDesc, Group, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 		{
 			C4RTFFile rtf;
 			rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
 			sDesc.Take(rtf.GetPlainText());
 		}
 		// load title
-		if (!fctTitle.Load(Group, C4CFN_ScenarioTitlePNG, C4FCT_Full, C4FCT_Full, false, true))
-			fctTitle.Load(Group, C4CFN_ScenarioTitle, C4FCT_Full, C4FCT_Full, true, true);
+		fctTitle.Load(Group, C4CFN_ScenarioTitle,C4FCT_Full,C4FCT_Full,false,true);
 		fExLoaded = true;
 		// load version
 		Group.LoadEntryString(C4CFN_Version, &sVersion);
@@ -939,7 +928,11 @@ bool C4ScenarioListLoader::SubFolder::LoadCustom(C4Group &rGrp, bool fNameLoaded
 {
 	// default icon fallback
 	if (!fIconLoaded)
-		fctIcon.Set(C4Startup::Get()->Graphics.fctScenSelIcons.GetSection(C4StartupScenSel_DefaultIcon_Folder));
+	{
+		if(WildcardMatch(C4CFN_Savegames, GetFilename(sFilename.getData()))) iIconIndex = C4StartupScenSel_DefaultIcon_SavegamesFolder;
+		else iIconIndex = C4StartupScenSel_DefaultIcon_Folder;
+		fctIcon.Set(C4Startup::Get()->Graphics.fctScenSelIcons.GetSection(iIconIndex));	
+	}
 	// folder index
 	iFolderIndex = C4F.Head.Index;
 	return true;
@@ -1342,22 +1335,29 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/8),rcBounds.Wdt/(rcBounds.Wdt >= 700 ? 128 : 256),0);
 	C4Rect rcMap = caMain.GetCentered(caMain.GetWidth(), caMain.GetHeight());
+#if 0
+	// Was used for the custom map scenario selection style
 	int iYOversize = caMain.GetHeight()/10; // overlap of map to top
 	rcMap.y -= iYOversize; rcMap.Hgt += iYOversize;
-	C4GUI::ComponentAligner caMap(rcMap, 0,0, true);
+#endif
+	C4GUI::ComponentAligner caMap(rcMap, caMain.GetWidth()/10,0, true);
+#if 0
 	caMap.ExpandTop(-iYOversize);
-	C4GUI::ComponentAligner caBook(caMap.GetCentered(caMap.GetWidth()*11/12-4*iExtraHPadding, caMap.GetHeight()), rcBounds.Wdt/30,iExtraVPadding, false);
-	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+#endif
 
 	// tabular for different scenario selection designs
 	pScenSelStyleTabular = new C4GUI::Tabular(rcMap, C4GUI::Tabular::tbNone);
 	pScenSelStyleTabular->SetSheetMargin(0);
-	pScenSelStyleTabular->SetDrawDecoration(false);
+	//pScenSelStyleTabular->SetDrawDecoration(false);
+	pScenSelStyleTabular->SetGfx(&C4Startup::Get()->Graphics.fctDlgPaper, &C4Startup::Get()->Graphics.fctOptionsTabClip, &C4Startup::Get()->Graphics.fctOptionsIcons, &C4Startup::Get()->Graphics.BookSmallFont, false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
 	/* C4GUI::Tabular::Sheet *pSheetMap = */ pScenSelStyleTabular->AddSheet(NULL);
 
 	// scenario selection list
+	C4GUI::ComponentAligner caBook(pSheetBook->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/20, true);
+	C4GUI::ComponentAligner caBookLeft(caBook.GetFromLeft(iBookPageWidth=caBook.GetWidth()*4/9+4-iExtraHPadding*2), 0,5);
+
 	CStdFont &rScenSelCaptionFont = C4Startup::Get()->Graphics.BookFontTitle;
 	pScenSelCaption = new C4GUI::Label("", caBookLeft.GetFromTop(rScenSelCaptionFont.GetLineHeight()), ACenter, ClrScenarioItem, &rScenSelCaptionFont, false);
 	pSheetBook->AddElement(pScenSelCaption);
@@ -1373,7 +1373,21 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pSheetBook->AddElement(pScenSelProgressLabel);
 
 	// right side of book: Displaying current selection
-	pSelectionInfo = new C4GUI::TextWindow(caBook.GetFromRight(iBookPageWidth), C4StartupScenSel_TitlePictureWdt+2*C4StartupScenSel_TitleOverlayMargin, C4StartupScenSel_TitlePictureHgt+2*C4StartupScenSel_TitleOverlayMargin,
+	C4Rect bounds = caBook.GetFromRight(iBookPageWidth);
+	const int32_t AvailWidth = bounds.Wdt;
+	const int32_t AvailHeight = 2 * bounds.Hgt / 5;
+	int32_t PictureWidth, PictureHeight;
+	if(AvailWidth * C4StartupScenSel_TitlePictureHgt < AvailHeight * C4StartupScenSel_TitlePictureWdt)
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailWidth / C4StartupScenSel_TitlePictureWdt;
+	}
+	else
+	{
+		PictureWidth = C4StartupScenSel_TitlePictureWdt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+		PictureHeight = C4StartupScenSel_TitlePictureHgt * AvailHeight / C4StartupScenSel_TitlePictureHgt;
+	}
+	pSelectionInfo = new C4GUI::TextWindow(bounds, PictureWidth+2*C4StartupScenSel_TitleOverlayMargin, PictureHeight+2*C4StartupScenSel_TitleOverlayMargin,
 	                                       C4StartupScenSel_TitlePicturePadding, 100, 4096, NULL, true, &C4Startup::Get()->Graphics.fctScenSelTitleOverlay, C4StartupScenSel_TitleOverlayMargin);
 	pSelectionInfo->SetDecoration(false, false, &C4Startup::Get()->Graphics.sfctBookScroll, true);
 	pSheetBook->AddElement(pSelectionInfo);
@@ -1409,7 +1423,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyRename), C4CustomKey::PRIO_CtrlOverride);
 	pKeyDelete = new C4KeyBinding(C4KeyCodeEx(K_DELETE), "StartupScenSelDelete", KEYSCOPE_Gui,
 	                              new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyDelete), C4CustomKey::PRIO_CtrlOverride);
-	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(KEY_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
+	pKeyCheat = new C4KeyBinding(C4KeyCodeEx(K_M, KEYS_Alt), "StartupScenSelCheat", KEYSCOPE_Gui,
 	                             new C4GUI::ControlKeyDlgCB<C4StartupScenSelDlg>(pScenSelList, *this, &C4StartupScenSelDlg::KeyCheat), C4CustomKey::PRIO_CtrlOverride);
 }
 
@@ -1430,8 +1444,10 @@ void C4StartupScenSelDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background
 	if (pfctBackground)
 		DrawBackground(cgo, *pfctBackground);
+#if 0
 	else
 		DrawBackground(cgo, C4Startup::Get()->Graphics.fctScenSelBG);
+#endif
 }
 
 void C4StartupScenSelDlg::OnShown()

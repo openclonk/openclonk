@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2002, 2005  Sven Eberhardt
- * Copyright (c) 2002, 2004-2005, 2007, 2009  Peter Wortmann
- * Copyright (c) 2005, 2007  Günther Brammer
- * Copyright (c) 2010  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Fixed point math extracted from ALLEGRO by Shawn Hargreaves */
@@ -42,7 +37,12 @@
 // activate to switch to classic fixed-point math
 #define C4REAL_USE_FIXNUM 1
 #define inline ALWAYS_INLINE
-#define FIXED_EMULATE_64BIT
+
+// gcc 4.6 generates better code for FIXED_EMULATE_64BIT disablen for both
+// 32 and 64 bit. It properly recognizes that the 32,32->64 multiplication
+// instruction of the x86 is the right choice for the job whereas the more
+// complicated FIXED_EMULATE_64BIT version requires multiple multiplications
+//#define FIXED_EMULATE_64BIT
 
 // note: C4Fixed has to be defined even though it isn't used
 //       any more. It is used to convert old-format fixed values
@@ -99,13 +99,10 @@ private:
 	int32_t to_int() const
 	{
 		int32_t r = val;
-		// be careful not to overflow
-		r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
-		// ensure that -x.50 is rounded to -(x+1)
-		r -= (val < 0);
-		r >>= FIXED_SHIFT;
-		// round 32767.5 to 32768 (not that anybody cares)
-		r += (val > 0x7fffffff - FIXED_FPF / 2);
+		// round towards positive infinity
+		r >>= (FIXED_SHIFT - 1);
+		r += 1;
+		r >>= 1;
 		return r;
 	}
 	int32_t to_int(int32_t prec) const
@@ -113,7 +110,6 @@ private:
 		int64_t r = val;
 		r *= prec;
 		r += FIXED_FPF / 2;
-		r -= (val < 0);
 		r >>= FIXED_SHIFT;
 		return int32_t(r);
 	}
@@ -148,11 +144,11 @@ public:
 #ifndef FIXED_EMULATE_64BIT
 		val = int32_t( (int64_t(val) * fVal2.val) / FIXED_FPF );
 #else
-		int32_t x0 = val & (FIXED_FPF - 1),
-		             x1 = val >> FIXED_SHIFT;
-		int32_t y0 = fVal2.val & (FIXED_FPF - 1),
-		             y1 = fVal2.val >> FIXED_SHIFT;
-		val = x0*y0/FIXED_FPF + x0*y1 + x1*y0 + x1*y1*FIXED_FPF;
+		uint32_t x0 = val & (FIXED_FPF - 1);
+		int32_t x1 = val >> FIXED_SHIFT;
+		uint32_t y0 = fVal2.val & (FIXED_FPF - 1);
+		int32_t y1 = fVal2.val >> FIXED_SHIFT;
+		val = int32_t(x0*y0/FIXED_FPF) + int32_t(x0)*y1 + x1*int32_t(y0) + x1*y1*FIXED_FPF;
 #endif
 		return *this;
 	}
@@ -333,6 +329,7 @@ inline C4Real C4REAL10(int x) { return float(x) / 10; }
 #endif
 // define 0
 const C4Real Fix0 = itofix(0);
+const C4Real Fix1 = itofix(1);
 
 // conversion...
 // note: keep out! really dirty casts!

@@ -10,8 +10,6 @@
 local szLiquid;
 local iVolume;
 
-local debug;
-
 public func GetCarryTransform(clonk)
 {
 	if(GetCarrySpecial(clonk))
@@ -27,7 +25,7 @@ public func GetCarryPhase()
 protected func Initialize()
 {
 	iVolume = 0;
-	debug = 0;
+	AddTimer("Check", 5);
 }
 
 private func Hit()
@@ -50,34 +48,36 @@ private func Check()
 	if (GBackLiquid(0, iSource))
 	{
 		FillWithLiquid();
+		this.Name = this.Prototype.Name;
 	}
 	
 	if (iVolume == 0)
 	{
-		SetGraphics();
+		SetColor(RGB(0,0,0));
 		szLiquid = nil;
 	}
 	
 	//Value. Base value is 10.
 	if (iVolume == 0)
 		SetProperty("Value", 10);
-	//if(szLiquid == Oil)	SetProperty("Value", 10 + (iVolume / 15)); //No oil in current build
 	
-	//Debug/Testing Purposes
-	if (debug == 1)
-		Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
+	//Message("Volume:|%d|Liquid:|%s", iVolume, szLiquid);
 }
 
-//over-ridden with metal barrel
 private func FillWithLiquid()
 {
 	var mat = GetMaterial();
-	
-	if (mat == Material("Water"))
+	if (AcceptMaterial(mat))
 	{
 		FillBarrel(MaterialName(mat));
-		SetMeshMaterial("Barrel_Water");
+		UpdateBarrel();
 	}
+}
+
+private func AcceptMaterial(int material)
+{
+	// Accepts only water.
+	return material == Material("Water");
 }
 
 private func FillBarrel(string szMat)
@@ -95,21 +95,40 @@ private func FillBarrel(string szMat)
 	szLiquid = szMat;
 }
 
-private func EmptyBarrel(int iAngle, int iStrength)
+private func EmptyBarrel(int angle, int strength, object clonk)
 {
-	if (!iAngle)
-		iAngle = 0;
-	if (!iStrength)
-		iStrength = 30;
-	CastPXS(szLiquid, iVolume, iStrength, 0, 0, iAngle, 30);
+	if (!angle)
+		angle = 0;
+	if (!strength)
+		strength = 30;
+	CastPXS(szLiquid, iVolume, strength, 0, 0, angle, 30);
+	var spray = {};
+	spray.Liquid = szLiquid;
+	spray.Volume = iVolume;
+	spray.Strength = strength;
+	spray.Angle = angle;
+	spray.Clonk = clonk;
+	AddEffect("ExtinguishingSpray", clonk, 100, 1, this, nil, spray);
 	iVolume = 0;
-	OriginalTex();
+	UpdateBarrel();
 }
 
-//over-ridden with metal barrel
-private func OriginalTex()
+private func UpdateBarrel()
 {
-	SetMeshMaterial("Barrel");
+	if (iVolume == 0)
+	{
+		SetColor(RGB(0,0,0));
+		this.Name = this.Prototype.Name;
+	}
+	else
+	{
+		var tex = GetMaterialVal("TextureOverlay","Material",Material(szLiquid));
+		var color = GetAverageTextureColor(tex);
+		SetColor(color);
+		var materialTranslation = Translate(Format("Material%s",szLiquid));
+		this.Name = Format("%s $NameWith$ %s", this.Prototype.Name, materialTranslation);
+	}
+	return;
 }
 
 public func ControlUse(object clonk, int iX, int iY)
@@ -117,7 +136,7 @@ public func ControlUse(object clonk, int iX, int iY)
 	var AimAngle = Angle(0, 0, iX, iY);
 	if (iVolume >= 1)
 	{
-		EmptyBarrel(AimAngle, 50);
+		EmptyBarrel(AimAngle, 50, clonk);
 		if (iX > 1)
 			Contained()->SetDir(1);
 		if (iX < -1)
@@ -126,14 +145,42 @@ public func ControlUse(object clonk, int iX, int iY)
 	return 1;
 }
 
-public func IsToolProduct() { return true; }
-
-public func Definition(proplist def)
+protected func FxExtinguishingSprayStart(object target, proplist effect, int temp, proplist spray)
 {
-	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
+	if (temp)
+		return FX_OK;
+	// Only for extinguishing materials.	
+	if (!GetMaterialVal("Extinguisher", "Material",	Material(spray.Liquid)))
+		return FX_Start_Deny;		
+	// If used by an object also extinguish that.
+	if (spray.Clonk)
+		spray.Clonk->Extinguish(Min(100, spray.Volume/3));
+	// Store spray parameters.	
+	effect.Volume = spray.Volume;
+	effect.Strength = spray.Strength;
+	effect.Angle = spray.Angle;
+	return FX_OK;
 }
 
+protected func FxExtinguishingSprayTimer(object target, proplist effect, int time)
+{
+	// Move three lines from the barrel outwards along the defined angle.
+	// And extinguish all objects on these lines.
+	if (time > 20)
+		return FX_Execute_Kill;
+	var d = effect.Strength * time / 25;
+	for (var dev = -10; dev <= 10; dev+= 10)
+	{ 
+		var x = Sin(effect.Angle + dev, d);
+		var y = -Cos(effect.Angle + dev, d);
+		if (PathFree(GetX(), GetY(), GetX() + x, GetY() + y))
+			for (var obj in FindObjects(Find_AtPoint(x, y), Find_OCF(OCF_OnFire)))
+				obj->Extinguish(Max(0, effect.Volume/3 - 2 * d));
+	}
+	return FX_OK;
+}
 
+public func IsToolProduct() { return true; }
 
 public func BarrelMaxFillLevel()
 {
@@ -175,6 +222,41 @@ public func IsBarrelForMaterial(string sznMaterial)
 
 public func IsLiquidContainer() { return true; }
 
+public func SetFilled(material, volume)
+{
+	szLiquid = material;
+	iVolume = volume;
+}
+
+public func CalcValue(object in_base, int for_player)
+{
+	var val = GetDefValue();
+	if (iVolume > 0)
+	{
+		val += GetValueOf(szLiquid) * iVolume / 300;
+	}
+	return val;
+}
+
+private func GetValueOf(string szMaterial) // 300 px of...
+{
+	// just some provisional values, feel free to change them
+	// for gameplay reasons
+	if (szMaterial == "Water") return -6;
+	if (szMaterial == "Lava") return -10;
+	if (szMaterial == "DuroLava") return -10;
+	if (szMaterial == "Acid") return -8;
+	if (szMaterial == "Firefluid") return 10;
+	return 0;
+}
+
+public func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (szLiquid) props->AddCall("Fill", this, "SetFilled", Format("%v", szLiquid), iVolume);
+	return true;
+}
+
 /**
 Extract liquid from barrel
 @param sznMaterial: Material to extract; Wildcardsupport
@@ -191,6 +273,7 @@ public func GetLiquid(string sznMaterial, int inMaxAmount, object pnTarget)
 		inMaxAmount = 0;
 	inMaxAmount = Min(inMaxAmount, iVolume);
 	iVolume -= inMaxAmount;
+	UpdateBarrel();
 	return [szLiquid, inMaxAmount];
 }
 
@@ -205,13 +288,19 @@ public func PutLiquid(string sznMaterial, int inMaxAmount, object pnSource)
 {
 	//Wrong material?
 	if (sznMaterial != szLiquid)
-		if (iVolume>0)
+		if (iVolume > 0)
 			return 0;
 		else if (IsBarrelForMaterial(sznMaterial))
-			szLiquid=sznMaterial;
+			szLiquid = sznMaterial;
 	inMaxAmount = BoundBy(BarrelMaxFillLevel() - iVolume, 0, inMaxAmount);
 	iVolume += inMaxAmount;
+	UpdateBarrel();
 	return inMaxAmount;
+}
+
+public func Definition(proplist def)
+{
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(0, 1000, 0), Trans_Rotate(-40, 1, 0, 0), Trans_Rotate(20, 0, 0, 1)), def);
 }
 
 local Collectible = false;
@@ -219,3 +308,4 @@ local Touchable = 2;
 local Name = "$Name$";
 local Description = "$Description$";
 local Rebuy = true;
+local ContactIncinerate = 2;

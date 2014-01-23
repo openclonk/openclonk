@@ -17,11 +17,13 @@ global func SetSpeed(int x_dir, int y_dir, int prec)
 // Can set either speed or angle of velocity, or both
 global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 {
+	if(!precSpd) precSpd = 10;
+	if(!precAng) precAng = 1;
 	if(!speed)
 		speed = Distance(0,0, GetXDir(precSpd), GetYDir(precSpd));
 	if(!angle)
 		angle = Angle(0,0, GetXDir(precSpd), GetYDir(precSpd), precAng);
-	if(!precAng) precAng = 1;
+		
 	var x_dir = Sin(angle, speed, precAng);
 	var y_dir = -Cos(angle, speed, precAng);
 
@@ -34,6 +36,11 @@ global func SetVelocity(int angle, int speed, int precAng, int precSpd)
 global func SetCon(int new_con)
 {
 	return DoCon(new_con - GetCon());
+}
+
+global func GetObjAlpha()
+{
+	return (GetClrModulation() >> 24) & 0xFF;
 }
 
 // Sets the object's transparency.
@@ -68,16 +75,25 @@ global func MovePosition(int x, int y, int prec)
 	SetPosition(GetX(prec) + x, GetY(prec) + y, nil, prec);
 }
 
+// Returns the position as an array
+global func GetPosition(int prec)
+{
+	return [GetX(prec), GetY(prec)];
+}
+
 // Speed the calling object into the given direction (angle)
-global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool rel_x)
+global func LaunchProjectile(int angle, int dist, int speed, int x, int y, int precAng, int precSpd, bool rel_x)
 {
 	// dist: Distance object travels on angle. Offset from calling object.
 	// x: X offset from container's center
 	// y: Y offset from container's center
 	// rel_x: if true, makes the X offset relative to container direction. (x=+30 will become x=-30 when Clonk turns left. This way offset always stays in front of a Clonk.)
 
-	var x_offset = Sin(angle, dist);
-	var y_offset = -Cos(angle, dist);
+	var x_offset = x ?? Sin(angle, dist, precAng);
+	var y_offset = y ?? -Cos(angle, dist, precAng);
+	
+	if(!precAng) precAng = 1;
+	if(!precSpd) precSpd = 10;
 
 	if (Contained() != nil && rel_x == true)
 		if (Contained()->GetDir() == 0)
@@ -85,16 +101,16 @@ global func LaunchProjectile(int angle, int dist, int speed, int x, int y, bool 
 
 	if (Contained() != nil)
 	{
-		Exit(x_offset + x, y_offset + y, angle);
-		SetVelocity(angle, speed);
+		Exit(x_offset, y_offset, angle / precAng);
+		SetVelocity(angle, speed, precAng, precSpd);
 		return true;
 	}
 
 	if (Contained() == nil)
 	{
-		SetPosition(GetX() + x_offset + x, GetY() + y_offset + y);
-		SetR(angle);
-		SetVelocity(angle, speed);
+		SetPosition(GetX() + x_offset, GetY() + y_offset);
+		SetR(angle/precAng);
+		SetVelocity(angle, speed, precAng, precSpd);
 		return true;
 	}
 	return false;
@@ -142,9 +158,12 @@ global func GetMaxBreath()
 }
 
 // Makes an object gain Con until it is FullCon
-global func StartGrowth(int value)
+global func StartGrowth(int value /* the value the object grows approx. every second, in tenths of percent */)
 {
-	return AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+	var effect;
+	effect = AddEffect("IntGrowth", this, 1, 35, nil, nil, value);
+	effect.Time = Random(35);
+	return effect;
 }
 
 global func StopGrowth()
@@ -289,4 +308,36 @@ global func GetBase ()
 {
 	if(!(this->~IsBase())) return NO_OWNER;
 	return GetOwner();
+}
+
+
+/* GetXEdge returns the position of the objects top/bottom/left/right edge */
+global func GetLeftEdge()
+{
+	return GetX()-GetObjWidth()/2;
+}
+
+global func GetRightEdge()
+{
+	return GetX()+GetObjWidth()/2;
+}
+
+global func GetTopEdge()
+{
+	return GetY()-GetObjHeight()/2;
+}
+
+global func GetBottomEdge()
+{
+	return GetY()+GetObjHeight()/2;
+}
+
+// Returns if the object is standing in front of the back-object
+global func InFrontOf(object back)
+{
+	var front = this;
+	if(!front)
+		return;
+	
+	return front->FindObject(front->Find_AtPoint(), Find_Not(Find_Exclude(back))) != nil;
 }

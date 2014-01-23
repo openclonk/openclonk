@@ -5,15 +5,11 @@
 #appendto Javelin
 
 // Infinite ammo.
-public func SetStackCount(int amount)
+protected func Construction()
 {
-	count = MaxStackCount();
-	Update();
-}
-
-public func UpdatePicture()
-{
-	SetGraphics("1");
+	var ret = _inherited(...);
+	SetInfiniteStackCount();
+	return ret;
 }
 
 // Ammo fades out after some time.

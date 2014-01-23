@@ -1,27 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2006, 2008-2010  Sven Eberhardt
- * Copyright (c) 2005-2006  Günther Brammer
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005-2006, 2008-2010  Asmageddon
- * Copyright (c) 2008  Julian Raschke
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009-2010  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Keyboard input mapping to engine functions
 
@@ -33,8 +23,9 @@
 #include <C4Window.h>
 
 #ifdef USE_X11
-#include <X11/Xlib.h>
-#include <X11/Xutil.h> // XConvertCase
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+#include <X11/XKBlib.h>
 #endif
 
 #include <algorithm>
@@ -109,229 +100,126 @@ struct C4KeyCodeMapEntry
 	const char *szShortName;
 };
 
-#ifdef _WIN32
-const C4KeyCodeMapEntry KeyCodeMap [] =
-{
-	{ VK_CANCEL         , "Cancel"        , NULL },
-
-	{ VK_BACK           , "Backspace"     , NULL },
-	{ VK_TAB            , "Tab"           , NULL },
-	{ VK_CLEAR          , "Clear"         , NULL },
-	{ VK_RETURN         , "Return"        , NULL },
-
-	{ VK_SHIFT          , "KeyShift"      , "Shift" },
-	{ VK_CONTROL        , "KeyControl"    , "Control" },
-	{ VK_MENU           , "Menu"          , NULL },
-	{ VK_PAUSE          , "Pause"         , NULL },
-
-	{ VK_CAPITAL        , "Capital"       , NULL },
-	{ VK_KANA           , "Kana"          , NULL },
-	{ VK_HANGEUL        , "Hangeul"       , NULL },
-	{ VK_HANGUL         , "Hangul"        , NULL },
-	{ VK_JUNJA          , "Junja"         , NULL },
-	{ VK_FINAL          , "Final"         , NULL },
-	{ VK_HANJA          , "Hanja"         , NULL },
-	{ VK_KANJI          , "Kanji"         , NULL },
-	{ VK_ESCAPE         , "Escape"        , "Esc" },
-	{ VK_ESCAPE         , "Esc"           ,NULL },
-	{ VK_CONVERT        , "Convert"       , NULL },
-	{ VK_NONCONVERT     , "Noconvert"     , NULL },
-	{ VK_ACCEPT         , "Accept"        , NULL },
-	{ VK_MODECHANGE     , "Modechange"    , NULL },
-
-	{ VK_SPACE          , "Space"         , "Sp" },
-
-	{ VK_PRIOR          , "Prior"         , NULL },
-	{ VK_NEXT           , "Next"          , NULL },
-	{ VK_END            , "End"           , NULL },
-	{ VK_HOME           , "Home"          , NULL },
-	{ VK_LEFT           , "Left"          , NULL },
-	{ VK_UP             , "Up"            , NULL },
-	{ VK_RIGHT          , "Right"         , NULL },
-	{ VK_DOWN           , "Down"          , NULL },
-	{ VK_SELECT         , "Select"        , NULL },
-	{ VK_PRINT          , "Print"         , NULL },
-	{ VK_EXECUTE        , "Execute"       , NULL },
-	{ VK_SNAPSHOT       , "Snapshot"      , NULL },
-	{ VK_INSERT         , "Insert"        , "Ins" },
-	{ VK_DELETE         , "Delete"        , "Del" },
-	{ VK_HELP           , "Help"          , NULL },
-
-	{ '0'               , "0"         , NULL },
-	{ '1'               , "1"         , NULL },
-	{ '2'               , "2"         , NULL },
-	{ '3'               , "3"         , NULL },
-	{ '4'               , "4"         , NULL },
-	{ '5'               , "5"         , NULL },
-	{ '6'               , "6"         , NULL },
-	{ '7'               , "7"         , NULL },
-	{ '8'               , "8"         , NULL },
-	{ '9'               , "9"         , NULL },
-
-	{ 'A'               , "A"         , NULL },
-	{ 'B'               , "B"         , NULL },
-	{ 'C'               , "C"         , NULL },
-	{ 'D'               , "D"         , NULL },
-	{ 'E'               , "E"         , NULL },
-	{ 'F'               , "F"         , NULL },
-	{ 'G'               , "G"         , NULL },
-	{ 'H'               , "H"         , NULL },
-	{ 'I'               , "I"         , NULL },
-	{ 'J'               , "J"         , NULL },
-	{ 'K'               , "K"         , NULL },
-	{ 'L'               , "L"         , NULL },
-	{ 'M'               , "M"         , NULL },
-	{ 'N'               , "N"         , NULL },
-	{ 'O'               , "O"         , NULL },
-	{ 'P'               , "P"         , NULL },
-	{ 'Q'               , "Q"         , NULL },
-	{ 'R'               , "R"         , NULL },
-	{ 'S'               , "S"         , NULL },
-	{ 'T'               , "T"         , NULL },
-	{ 'U'               , "U"         , NULL },
-	{ 'V'               , "V"         , NULL },
-	{ 'W'               , "W"         , NULL },
-	{ 'X'               , "X"         , NULL },
-	{ 'Y'               , "Y"         , NULL },
-	{ 'Z'               , "Z"         , NULL },
-	{ VK_OEM_COMMA      , "Comma"     , NULL },
-	{ VK_OEM_PERIOD     , "Period"    , NULL },
-	{ VK_OEM_7          , "Apostrophe", NULL },
-
-	{ VK_LWIN           , "WinLeft"      , NULL },
-	{ VK_RWIN           , "WinRight"     , NULL },
-	{ VK_APPS           , "Apps"         , NULL },
-
-	{ VK_NUMPAD0        , "Num0"         , "N0" },
-	{ VK_NUMPAD1        , "Num1"         , "N1" },
-	{ VK_NUMPAD2        , "Num2"         , "N2" },
-	{ VK_NUMPAD3        , "Num3"         , "N3" },
-	{ VK_NUMPAD4        , "Num4"         , "N4" },
-	{ VK_NUMPAD5        , "Num5"         , "N5" },
-	{ VK_NUMPAD6        , "Num6"         , "N6" },
-	{ VK_NUMPAD7        , "Num7"         , "N7" },
-	{ VK_NUMPAD8        , "Num8"         , "N8" },
-	{ VK_NUMPAD9        , "Num9"         , "N9" },
-	{ VK_MULTIPLY       , "Multiply"     , "N*" },
-	{ VK_ADD            , "Add"          , "N+" },
-	{ VK_SEPARATOR      , "Separator"    , "NSep" },
-	{ VK_SUBTRACT       , "Subtract"     , "N-" },
-	{ VK_DECIMAL        , "Decimal"      , "N," },
-	{ VK_DIVIDE         , "Divide"       , "N/" },
-	{ VK_F1             , "F1"           , NULL },
-	{ VK_F2             , "F2"           , NULL },
-	{ VK_F3             , "F3"           , NULL },
-	{ VK_F4             , "F4"           , NULL },
-	{ VK_F5             , "F5"           , NULL },
-	{ VK_F6             , "F6"           , NULL },
-	{ VK_F7             , "F7"           , NULL },
-	{ VK_F8             , "F8"           , NULL },
-	{ VK_F9             , "F9"           , NULL },
-	{ VK_F10            , "F10"          , NULL },
-	{ VK_F11            , "F11"          , NULL },
-	{ VK_F12            , "F12"          , NULL },
-	{ VK_F13            , "F13"          , NULL },
-	{ VK_F14            , "F14"          , NULL },
-	{ VK_F15            , "F15"          , NULL },
-	{ VK_F16            , "F16"          , NULL },
-	{ VK_F17            , "F17"          , NULL },
-	{ VK_F18            , "F18"          , NULL },
-	{ VK_F19            , "F19"          , NULL },
-	{ VK_F20            , "F20"          , NULL },
-	{ VK_F21            , "F21"          , NULL },
-	{ VK_F22            , "F22"          , NULL },
-	{ VK_F23            , "F23"          , NULL },
-	{ VK_F24            , "F24"          , NULL },
-	{ VK_NUMLOCK        , "NumLock"      , "NLock" },
-	{ VK_SCROLL         , "Scroll"        , NULL },
-
-	{ VK_PROCESSKEY     , "PROCESSKEY"   , NULL },
-
-#if defined VK_SLEEP && defined VK_OEM_NEC_EQUAL
-	{ VK_SLEEP          , "Sleep"        , NULL },
-
-	{ VK_OEM_NEC_EQUAL  , "OEM_NEC_EQUAL"     , NULL },
-
-	{ VK_OEM_FJ_JISHO   , "OEM_FJ_JISHO"      , NULL },
-	{ VK_OEM_FJ_MASSHOU , "OEM_FJ_MASSHOU"    , NULL },
-	{ VK_OEM_FJ_TOUROKU , "OEM_FJ_TOUROKU"    , NULL },
-	{ VK_OEM_FJ_LOYA    , "OEM_FJ_LOYA"       , NULL },
-	{ VK_OEM_FJ_ROYA    , "OEM_FJ_ROYA"       , NULL },
-
-	{ VK_BROWSER_BACK        , "BROWSER_BACK"         , NULL },
-	{ VK_BROWSER_FORWARD     , "BROWSER_FORWARD"      , NULL },
-	{ VK_BROWSER_REFRESH     , "BROWSER_REFRESH"      , NULL },
-	{ VK_BROWSER_STOP        , "BROWSER_STOP"         , NULL },
-	{ VK_BROWSER_SEARCH      , "BROWSER_SEARCH"       , NULL },
-	{ VK_BROWSER_FAVORITES   , "BROWSER_FAVORITES"    , NULL },
-	{ VK_BROWSER_HOME        , "BROWSER_HOME"         , NULL },
-
-	{ VK_VOLUME_MUTE         , "VOLUME_MUTE"          , NULL },
-	{ VK_VOLUME_DOWN         , "VOLUME_DOWN"          , NULL },
-	{ VK_VOLUME_UP           , "VOLUME_UP"            , NULL },
-	{ VK_MEDIA_NEXT_TRACK    , "MEDIA_NEXT_TRACK"     , NULL },
-	{ VK_MEDIA_PREV_TRACK    , "MEDIA_PREV_TRACK"     , NULL },
-	{ VK_MEDIA_STOP          , "MEDIA_STOP"           , NULL },
-	{ VK_MEDIA_PLAY_PAUSE    , "MEDIA_PLAY_PAUSE"     , NULL },
-	{ VK_LAUNCH_MAIL         , "LAUNCH_MAIL"          , NULL },
-	{ VK_LAUNCH_MEDIA_SELECT , "LAUNCH_MEDIA_SELECT"  , NULL },
-	{ VK_LAUNCH_APP1         , "LAUNCH_APP1"          , NULL },
-	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
-
-	{ VK_OEM_1          , "Comma_US"    , "Ü" }, // German hax
-	{ VK_OEM_PLUS       , "OEM +"   , "+" },
-	{ VK_OEM_COMMA      , "OEM ,"   , "," },
-	{ VK_OEM_MINUS      , "OEM -"   , "-" },
-	{ VK_OEM_PERIOD     , "OEM ."   , "." },
-	{ VK_OEM_2          , "OEM 2"   , "2" },
-	{ VK_OEM_3          , "OEM Ö"   , "Ö" }, // German hax
-	{ VK_OEM_4          , "OEM 4"   , "4" },
-	{ VK_OEM_5          , "OEM 5"   , "5" },
-	{ VK_OEM_6          , "OEM 6"   , "6" },
-	{ VK_OEM_7          , "OEM Ä"   , "Ä" }, // German hax
-	{ VK_OEM_8          , "OEM 8"   , "8" },
-	{ VK_OEM_AX         , "AX"      , "AX" },
-	{ VK_OEM_102        , "Less" , "<" }, // German hax
-	{ VK_OEM_102        , "Backslash", NULL }, // German hax
-	{ VK_ICO_HELP       , "Help"    , "Help" },
-	{ VK_ICO_00         , "ICO_00"  , "00" },
-
-	{ VK_ICO_CLEAR      , "ICO_CLEAR"     , NULL },
-
-	{ VK_PACKET         , "PACKET"        , NULL },
-
-	{ VK_OEM_RESET      , "OEM_RESET"     , NULL },
-	{ VK_OEM_JUMP       , "OEM_JUMP"      , NULL },
-	{ VK_OEM_PA1        , "OEM_PA1"       , NULL },
-	{ VK_OEM_PA2        , "OEM_PA2"       , NULL },
-	{ VK_OEM_PA3        , "OEM_PA3"       , NULL },
-	{ VK_OEM_WSCTRL     , "OEM_WSCTRL"    , NULL },
-	{ VK_OEM_CUSEL      , "OEM_CUSEL"     , NULL },
-	{ VK_OEM_ATTN       , "OEM_ATTN"      , NULL },
-	{ VK_OEM_FINISH     , "OEM_FINISH"    , NULL },
-	{ VK_OEM_COPY       , "OEM_COPY"      , NULL },
-	{ VK_OEM_AUTO       , "OEM_AUTO"      , NULL },
-	{ VK_OEM_ENLW       , "OEM_ENLW"      , NULL },
-	{ VK_OEM_BACKTAB    , "OEM_BACKTAB"   , NULL },
-#endif
-
-	{ VK_ATTN           , "ATTN"          , NULL },
-	{ VK_CRSEL          , "CRSEL"         , NULL },
-	{ VK_EXSEL          , "EXSEL"         , NULL },
-	{ VK_EREOF          , "EREOF"         , NULL },
-	{ VK_PLAY           , "PLAY"          , NULL },
-	{ VK_ZOOM           , "ZOOM"          , NULL },
-	{ VK_NONAME         , "NONAME"        , NULL },
-	{ VK_PA1            , "PA1"           , NULL },
-	{ VK_OEM_CLEAR      , "OEM_CLEAR"     , NULL },
-
-	{ KEY_Any, "Any"     , NULL},
-	{ KEY_Default, "None", NULL},
-	{ KEY_Undefined, NULL, NULL }
+#if defined(USE_WIN32_WINDOWS) || defined(USE_X11)
+const C4KeyCodeMapEntry KeyCodeMap[] = {
+	{K_ESCAPE,		"Escape",	"Esc"},
+    {K_1,			"1",			NULL},
+    {K_2,			"2",			NULL},
+    {K_3,			"3",			NULL},
+    {K_4,			"4",			NULL},
+    {K_5,			"5",			NULL},
+    {K_6,			"6",			NULL},
+    {K_7,			"7",			NULL},
+    {K_8,			"8",			NULL},
+    {K_9,			"9",			NULL},
+    {K_0,			"0",			NULL},
+    {K_MINUS,		"Minus",		"-"},
+    {K_EQUAL,		"Equal",		"="},
+	{K_BACK,		"BackSpace",	NULL},
+	{K_TAB,			"Tab",			NULL},
+    {K_Q,			"Q",			NULL},
+    {K_W,			"W",			NULL},
+    {K_E,			"E",			NULL},
+    {K_R,			"R",			NULL},
+    {K_T,			"T",			NULL},
+    {K_Y,			"Y",			NULL},
+    {K_U,			"U",			NULL},
+    {K_I,			"I",			NULL},
+    {K_O,			"O",			NULL},
+    {K_P,			"P",			NULL},
+    {K_LEFT_BRACKET,"LeftBracket",	"["},
+    {K_RIGHT_BRACKET,"RightBracket","]"},
+	{K_RETURN,		"Return",		"Ret"},
+	{K_CONTROL_L,	"LeftControl",	"LCtrl"},
+    {K_A,			"A",			NULL},
+    {K_S,			"S",			NULL},
+    {K_D,			"D",			NULL},
+    {K_F,			"F",			NULL},
+    {K_G,			"G",			NULL},
+    {K_H,			"H",			NULL},
+    {K_J,			"J",			NULL},
+    {K_K,			"K",			NULL},
+    {K_L,			"L",			NULL},
+    {K_SEMICOLON,	"Semicolon",	";"},
+    {K_APOSTROPHE,	"Apostrophe",	"'"},
+	{K_GRAVE_ACCENT,"GraveAccent",	"`"},
+	{K_SHIFT_L,		"LeftShift",	"LShift"},
+    {K_BACKSLASH,	"Backslash",	"\\"},
+    {K_Z,			"Z",			NULL},
+    {K_X,			"X",			NULL},
+    {K_C,			"C",			NULL},
+    {K_V,			"V",			NULL},
+    {K_B,			"B",			NULL},
+    {K_N,			"N",			NULL},
+    {K_M,			"M",			NULL},
+    {K_COMMA,		"Comma",		","},
+    {K_PERIOD,		"Period",		"."},
+    {K_SLASH,		"Slash",		"/"},
+	{K_SHIFT_R,		"RightShift",	"RShift"},
+	{K_MULTIPLY,	"Multiply",		"N*"},
+	{K_ALT_L,		"LeftAlt",		"LAlt"},
+	{K_SPACE,		"Space",		"Sp"},
+	{K_CAPS,		"Capslock",		NULL},
+	{K_F1,			"F1",			NULL},
+	{K_F2,			"F2",			NULL},
+	{K_F3,			"F3",			NULL},
+	{K_F4,			"F4",			NULL},
+	{K_F5,			"F5",			NULL},
+	{K_F6,			"F6",			NULL},
+	{K_F7,			"F7",			NULL},
+	{K_F8,			"F8",			NULL},
+	{K_F9,			"F9",			NULL},
+	{K_F10,			"F10",			NULL},
+	{K_NUM,			"NumLock",		"NLock"},
+	{K_SCROLL,		"ScrollLock",	"SLock"},
+	{K_NUM7,		"Num7", 		"N7"},
+	{K_NUM8,		"Num8", 		"N8"},
+	{K_NUM9,		"Num9", 		"N9"},
+	{K_SUBTRACT,	"Subtract",		"N-"},
+	{K_NUM4,		"Num4", 		"N4"},
+	{K_NUM5,		"Num5", 		"N5"},
+	{K_NUM6,		"Num6", 		"N6"},
+	{K_ADD,			"Add",			"N+"},
+	{K_NUM1,		"Num1", 		"N1"},
+	{K_NUM2,		"Num2", 		"N2"},
+	{K_NUM3,		"Num3", 		"N3"},
+	{K_NUM0,		"Num0",			"N0"},
+	{K_DECIMAL,		"Decimal",		"N,"},
+	{K_86,			"|<>",			NULL},
+	{K_F11,			"F11",			NULL},
+	{K_F12,			"F12",			NULL},
+	{K_NUM_RETURN,	"NumReturn",	"NRet"},
+	{K_CONTROL_R,	"RightControl",	"RCtrl"},
+	{K_DIVIDE,		"Divide",		"N/"},
+	{K_ALT_R,		"RightAlt",		"RAlt"},
+	{K_HOME,		"Home",			NULL},
+	{K_UP,			"Up",			NULL},
+	{K_PAGEUP,		"PageUp",		NULL},
+	{K_LEFT,		"Left",			NULL},
+	{K_RIGHT,		"Right", 		NULL},
+	{K_END,			"End",			NULL},
+	{K_DOWN,		"Down",			NULL},
+	{K_PAGEDOWN,	"PageDown",		NULL},
+	{K_INSERT,		"Insert",		"Ins"},
+	{K_DELETE,		"Delete",		"Del"},
+	{K_PAUSE,		"Pause",		NULL},
+	{K_WIN_L,		"LeftWin",		"LWin"},
+	{K_WIN_R,		"RightWin",		"RWin"},
+	{K_MENU,		"Menu",			NULL},
+	{K_PRINT,		"Print",		NULL},
+    {0x00,	NULL, 			NULL}
 };
 #elif defined(USE_COCOA)
 #include "CocoaKeycodeMap.h"
 #endif
+
+C4KeyCode C4KeyCodeEx::GetKeyByScanCode(const char *scan_code)
+{
+	// scan code is in hex format
+	unsigned int scan_code_int;
+	if (sscanf(scan_code, "$%x", &scan_code_int) != 1) return KEY_Undefined;
+	return scan_code_int;
+}
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 {
@@ -340,6 +228,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	{
 		unsigned int dwRVal;
 		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
+		// scan code
+		if (*sName.getData() == '$') return GetKeyByScanCode(sName.getData());
 		// direct gamepad code
 #ifdef _WIN32
 		if (!strnicmp(sName.getData(), "Joy", 3))
@@ -432,29 +322,16 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		}
 
 	}
-#if defined(_WIN32) || defined(USE_COCOA)
+#if defined(USE_WIN32_WINDOWS) || defined(USE_COCOA) || defined(USE_X11)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
-	while (pCheck->szName)
-			if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
-	return pCheck->wCode;
-#elif defined(USE_X11)
-	KeySym result = XStringToKeysym(sName.getData());
-	// Some keysysm strings start with a lowercase letter, so also check that.
-	if (!result)
-	{
-		StdCopyStrBuf sName2(sName);
-		sName2.ToLowerCase();
-		result = XStringToKeysym(sName2.getData());
-		if(!result)
-			return KEY_Undefined;
+	while (pCheck->szName) {
+		if (SEqualNoCase(sName.getData(), pCheck->szName)) {
+			return(pCheck->wCode);
+		}
+		++pCheck;
 	}
-
-	// Use the lowercase keysym in case there is a difference because this
-	// is what's reported for actual key presses.
-	KeySym lower, upper;
-	XConvertCase(result, &lower, &upper);
-	return lower;
+	return KEY_Undefined;
 #elif defined(USE_SDL_MAINLOOP)
 	for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
 	{
@@ -529,7 +406,12 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		}
 	}
 
-#if defined(_WIN32) || defined(USE_COCOA)
+	// it's a keyboard key
+	if (!fHumanReadable) {
+		// for config files and such: dump scancode
+		return FormatString("$%x", static_cast<unsigned int>(wCode));
+	}
+#if defined(_WIN32)
 
 //  TODO: Works?
 //  StdStrBuf Name; Name.SetLength(1000);
@@ -541,6 +423,13 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 //  Name.SetLength(res);
 //  return Name;
 
+	wchar_t buf[100];
+	int len = GetKeyNameText(wCode<<16, buf, 100);
+	if (len > 0) {
+		// buf is nullterminated name
+		return StdStrBuf(buf);
+	}
+#elif defined (USE_COCOA)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName)
@@ -548,15 +437,29 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 	// not found: Compose as direct code
 	return FormatString("\\x%x", static_cast<unsigned int>(wCode));
 #elif defined(USE_X11)
-	return StdStrBuf(XKeysymToString(wCode));
+	Display * const dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+	KeySym keysym = (KeySym)XkbKeycodeToKeysym(dpy,wCode+8,0,0);
+	char* name = NULL;
+	if (keysym != NoSymbol) { // is the keycode without shift modifiers mapped to a symbol?
+		#if defined(USE_GTK3)
+		name = gtk_accelerator_get_label_with_keycode(dpy, keysym, wCode+8, (GdkModifierType)0);
+		#else
+		name = gtk_accelerator_get_label(keysym, (GdkModifierType)0);
+		#endif
+	}
+	if (name) { // is there a string representation of the keysym?
+		// prevent memleak
+		StdStrBuf buf;
+		buf.Take(name);
+		return buf;
+	}
 #elif defined(USE_SDL_MAINLOOP)
 	return StdStrBuf(getKeyName(wCode).c_str());
-#else
-	return StdStrBuf("unknown");
 #endif
+	return FormatString("$%x", static_cast<unsigned int>(wCode));
 }
 
-StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
+StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort) const
 {
 	static StdStrBuf sResult;
 	sResult.Clear();
@@ -583,16 +486,25 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
 
 /* ----------------- C4KeyCodeEx ------------------ */
 
-void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
+void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBuf)
 {
 	if (pComp->isCompiler())
 	{
 		// reading from file
 		StdStrBuf sCode;
+		bool is_scan_code;
+		// read shifts
 		DWORD dwSetShift = 0;
 		for (;;)
 		{
+			is_scan_code = pComp->Separator(StdCompiler::SEP_DOLLAR);
+			if (!is_scan_code) pComp->NoSeparator();
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));
+			if (is_scan_code) // scan codes start with $. Reassamble the two tokens that were split by StdCompiler
+			{
+				sCode.Take(FormatString("$%s", sCode.getData()));
+				break;
+			}
 			if (!pComp->Separator(StdCompiler::SEP_PLUS)) break; // no more separator: Parse this as keyboard code
 			// try to convert to shift state
 			C4KeyShiftState eAddState = String2KeyShift(sCode);
@@ -607,10 +519,9 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			C4KeyCode eCode = String2KeyCode(sCode);
 			if (eCode == KEY_Undefined)
 			{
-				if (pOutBufIfUndefined)
+				if (pOutBuf)
 				{
-					// unknown key, but an output buffer for unknown keys was provided. Use it.
-					pOutBufIfUndefined->Take(std::move(sCode));
+					// unknown key, but an output buffer for unknown keys was provided. No failure; caller might resolve key.
 					eCode = KEY_Default;
 				}
 				else
@@ -620,6 +531,7 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			}
 			dwShift = dwSetShift;
 			Key = eCode;
+			if (pOutBuf) pOutBuf->Take(std::move(sCode));
 		}
 	}
 	else

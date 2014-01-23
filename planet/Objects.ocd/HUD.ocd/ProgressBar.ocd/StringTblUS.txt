@@ -1,0 +1,2 @@
+Name=GUI_ProgressBar
+Description=Provides the interface used by different progress bars.

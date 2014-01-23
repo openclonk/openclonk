@@ -1,5 +1,6 @@
 /*-- Ropeladder_Grabber --*/
 
+func SaveScenarioObject() { return false; }
 
 public func Interact(object clonk)
 {
@@ -28,5 +29,4 @@ local ActMap = {
 		},
 };
 local Name = "$Name$";
-local Description = "$Description$";
 	

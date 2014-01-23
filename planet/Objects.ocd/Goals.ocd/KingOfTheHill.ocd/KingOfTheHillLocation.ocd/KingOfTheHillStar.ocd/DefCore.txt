@@ -2,7 +2,7 @@
 id=KingOfTheHill_Star
 Version=5,2,0,1
 Category=C4D_StaticBack | C4D_IgnoreFoW
-Width=30
-Height=30
-Offset=-7,-7
+Width=16
+Height=16
+Offset=-8,-8
 Rotate=1

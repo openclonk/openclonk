@@ -5,6 +5,7 @@ protected func Construction()
 	var graphic = Random(5);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
+	AddTimer("Check", 30);
 }
 
 protected func Check()
@@ -27,3 +28,4 @@ private func Hit()
 local Collectible = 1;
 local Name = "$Name$";
 local Description = "$Description$";
+local Plane = 450;

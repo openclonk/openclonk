@@ -1,0 +1,14 @@
+[DefCore]
+id=WindBag
+Category=C4D_Object
+Width=18
+Height=10
+Offset=-9,-5
+Vertices=4
+VertexX=-8,6,0
+VertexY=-1,-3,4
+VertexFriction=50,50,50
+Value=14
+Mass=12
+Components=Cloth=1;Metal=1;
+Rotate=1

@@ -107,7 +107,7 @@ global func FxTutorialScaleTimer(object target, effect, int timer)
 			RemoveEffect("TutorialIntro*");
 		guide->ClearGuideMessage();
 		guide->AddGuideMessage("$MsgTutScale$");
-		AddEffect("TutorialHangle", 0, 100, 18);
+		AddEffect("TutorialHangle", nil, 100, 18);
 		return -1;
 	}
 }
@@ -117,7 +117,7 @@ global func FxTutorialHangleTimer(object target, effect, int timer)
 	if (FindObject(Find_ID(Clonk), Find_InRect(820, 940, 190, 140)))
 	{
 		guide->AddGuideMessage("$MsgTutHangle$");
-		AddEffect("TutorialSwim", 0, 100, 18);
+		AddEffect("TutorialSwim", nil, 100, 18);
 		return -1;
 	}
 }
@@ -127,7 +127,7 @@ global func FxTutorialSwimTimer(object target, effect, int timer)
 	if (FindObject(Find_ID(Clonk), Find_InRect(1120, 1030, 140, 60)))
 	{
 		guide->AddGuideMessage("$MsgTutSwim$");
-		AddEffect("TutorialDig", 0, 100, 18);
+		AddEffect("TutorialDig", nil, 100, 18);
 		return -1;
 	}
 }
@@ -154,8 +154,8 @@ global func FxShovelGetTimer(object target, effect, int timer)
 		if (GetEffect("TutorialDig"))
 			RemoveEffect("TutorialDig");
 		guide->AddGuideMessage("$MsgTutTools$");
-		AddEffect("TutorialChest", 0, 100, 18);
-		AddEffect("TutorialFlint", 0, 100, 18);
+		AddEffect("TutorialChest", nil, 100, 18);
+		AddEffect("TutorialFlint", nil, 100, 18);
 		return -1;
 	}
 }
@@ -175,7 +175,7 @@ global func FxLoamGetTimer(object target, effect, int timer)
 	{
 		guide->AddGuideMessage("$MsgTutLoam$");
 		RemoveEffect("TutorialChest");
-		AddEffect("TutorialFlint", 0, 100, 18);
+		AddEffect("TutorialFlint", nil, 100, 18);
 		return -1;
 	}
 }
@@ -212,8 +212,8 @@ protected func OnGuideMessageShown(int plr, int index)
 	// Show inventory slots.
 	if (index == 9)
 	{
-		TutArrowShowGUIPos(248 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
-		TutArrowShowGUIPos(341 + GUI_ObjectSelector->GetDefHeight() / 2, -16 - GUI_ObjectSelector->GetDefHeight() / 2, 180, 60);
+		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 153 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
+		TutArrowShowGUIPos(78 - GUI_ObjectSelector->GetDefHeight() / 2, 225 + GUI_ObjectSelector->GetDefHeight() / 2, 270, 60);
 	}
 	return;
 }
@@ -260,7 +260,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		clonk->GrabObjectInfo(target);
 		SetCursor(plr, clonk);
 		clonk->DoEnergy(100000);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

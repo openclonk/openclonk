@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
- * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // the ingame-lobby
 
@@ -94,7 +86,7 @@ namespace C4GameLobby
 				StdStrBuf sDesc;
 				// load desc
 				C4ComponentHost DefDesc;
-				if (DefDesc.LoadEx(ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
+				if (C4Language::LoadComponentHost(&DefDesc, ScenarioFile, C4CFN_ScenarioDesc, Config.General.LanguageEx))
 				{
 					C4RTFFile rtf;
 					rtf.Load(StdBuf(DefDesc.GetData(), SLen(DefDesc.GetData())));
@@ -205,7 +197,7 @@ namespace C4GameLobby
 		//C4GUI::CallbackButton<MainDlg> *btnTest = new C4GUI::CallbackButton<MainDlg>("test", caBottom.GetFromRight(90), &MainDlg::OnTestBtn);
 		pGameOptionButtons = new C4GameOptionButtons(caBottom.GetCentered(caBottom.GetInnerWidth(), Min<int32_t>(C4GUI_IconExHgt, caBottom.GetHeight())), true, fHost, true);
 
-		// players / ressources sidebar
+		// players / resources sidebar
 		C4GUI::ComponentAligner caRight(caMain.GetFromRight(iClientListWdt), iIndentX3,iIndentY4);
 		pRightTabLbl = new C4GUI::WoodenLabel("", caRight.GetFromTop(C4GUI::WoodenLabel::GetDefaultHeight(&(::GraphicsResource.TextFont))), C4GUI_CaptionFontClr, &::GraphicsResource.TextFont, ALeft);
 		caRight.ExpandTop(iIndentY4*2 + 1); // undo margin, so client list is located directly under label
@@ -258,7 +250,7 @@ namespace C4GameLobby
 		AddElement(pLbl); AddElement(pEdt); // chat
 
 		AddElement(pRightTabLbl);
-		//(new C4GUI::ContextButton(pRightTabLbl, true))->SetToolTip("[.!] Switches between player and ressource view"); // right tab label+ctx menu
+		//(new C4GUI::ContextButton(pRightTabLbl, true))->SetToolTip("[.!] Switches between player and resource view"); // right tab label+ctx menu
 		if (btnTeams) AddElement(btnTeams);
 		AddElement(btnPlayers);
 		AddElement(btnResources);
@@ -446,164 +438,7 @@ namespace C4GameLobby
 			// store input in backbuffer before processing commands
 			// because those might kill the edit field
 			::MessageInput.StoreBackBuffer(szInputText);
-			bool fProcessed = false;
-			// CAUTION when implementing special commands (like /quit) here:
-			// those must not be executed when text is pasted, because that could crash the GUI system
-			// when there are additional lines to paste, but the edit field is destructed by the command
-			if (!fProcessed && *szInputText == '/')
-			{
-				// must be 1 char longer than the longest command only. If given commands are longer, they will be truncated, and such a command won't exist anyway
-				const int32_t MaxCommandLen = 20;
-				char Command[MaxCommandLen+1];
-				const char *szPar = szInputText;
-				// parse command until first space
-				int32_t iParPos = SCharPos(' ', szInputText);
-				if (iParPos<0)
-				{
-					// command w/o par
-					SCopy(szInputText, Command, MaxCommandLen);
-					szPar += SLen(szPar);
-				}
-				else
-				{
-					// command with following par
-					SCopy(szInputText, Command, Min(MaxCommandLen, iParPos));
-					szPar += iParPos+1;
-				}
-				fProcessed = true;
-				// evaluate lobby-only commands
-				// ------------------------------------------------------
-				if (SEqualNoCase(Command, "/joinplr"))
-				{
-					// compose path from given filename
-					StdStrBuf plrPath;
-					plrPath.Format("%s%s", Config.General.UserDataPath, szPar);
-					// player join - check filename
-					if (!ItemExists(plrPath.getData()))
-					{
-						LobbyError(FormatString(LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData()).getData());
-					}
-					else
-						::Network.Players.JoinLocalPlayer(plrPath.getData(), true);
-				}
-				// ------------------------------------------------------
-				else if (SEqualNoCase(Command, "/plrclr"))
-				{
-					// get player name from input text
-					int iSepPos = SCharPos(' ', szPar, 0);
-					C4PlayerInfo *pNfo=NULL;
-					int32_t idLocalClient = -1;
-					if (::Network.Clients.GetLocal()) idLocalClient = ::Network.Clients.GetLocal()->getID();
-					if (iSepPos>0)
-					{
-						// a player name is given: Parse it
-						StdStrBuf sPlrName;
-						sPlrName.Copy(szPar, iSepPos);
-						szPar += iSepPos+1; int32_t id=0;
-						while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(id)))
-						{
-							id = pNfo->GetID();
-							if (WildcardMatch(sPlrName.getData(), pNfo->GetName())) break;
-						}
-					}
-					else
-						// no player name: Set local player
-						pNfo = Game.PlayerInfos.GetPrimaryInfoByClientID(idLocalClient);
-					C4ClientPlayerInfos *pCltNfo=NULL;
-					if (pNfo) pCltNfo = Game.PlayerInfos.GetClientInfoByPlayerID(pNfo->GetID());
-					if (!pCltNfo)
-					{
-						LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_NOPLAYER"));
-					}
-					else
-					{
-						// may color of this client be set?
-						if (pCltNfo->GetClientID() != idLocalClient && !::Network.isHost())
-						{
-							LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_NOACCESS"));
-						}
-						else
-						{
-							// get color to set
-							uint32_t dwNewClr;
-							if (sscanf(szPar, "%x", &dwNewClr) != 1)
-							{
-								LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_USAGE"));
-							}
-							else
-							{
-								// color validation
-								dwNewClr |= 0xff000000;
-								if (!dwNewClr) ++dwNewClr;
-								// request a color change to this color
-								C4ClientPlayerInfos LocalInfoRequest = *pCltNfo;
-								C4PlayerInfo *pPlrInfo = LocalInfoRequest.GetPlayerInfoByID(pNfo->GetID());
-								assert(pPlrInfo);
-								if (pPlrInfo)
-								{
-									pPlrInfo->SetOriginalColor(dwNewClr); // set this as a new color wish
-									::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
-								}
-							}
-						}
-					}
-				}
-				// ------------------------------------------------------
-				else if (SEqualNoCase(Command, "/start"))
-				{
-					// timeout given?
-					int32_t iTimeout = Config.Lobby.CountdownTime;
-					if (!::Network.isHost())
-						LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
-					else if (szPar && *szPar && (!sscanf(szPar, "%d", &iTimeout) || iTimeout<0))
-						LobbyError(LoadResStr("IDS_MSG_CMD_START_USAGE"));
-					else
-					{
-						// abort previous countdown
-						if (eCountdownState) ::Network.AbortLobbyCountdown();
-						// start new countdown (aborts previous if necessary)
-						Start(iTimeout);
-					}
-				}
-				// ------------------------------------------------------
-				else if (SEqualNoCase(Command, "/abort"))
-				{
-					if (!::Network.isHost())
-						LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
-					else if (eCountdownState)
-						::Network.AbortLobbyCountdown();
-					else
-						LobbyError(LoadResStr("IDS_MSG_CMD_ABORT_NOCOUNTDOWN"));
-				}
-				// ------------------------------------------------------
-				else if (SEqualNoCase(Command, "/help"))
-				{
-					Log(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGLO"));
-					LogF("/start [time] - %s", LoadResStr("IDS_TEXT_STARTTHEROUNDWITHSPECIFIE"));
-					LogF("/abort - %s", LoadResStr("IDS_TEXT_ABORTSTARTCOUNTDOWN"));
-					LogF("/alert - %s", LoadResStr("IDS_TEXT_ALERTTHEHOSTIFTHEHOSTISAW"));
-					LogF("/joinplr [filename] - %s", LoadResStr("IDS_TEXT_JOINALOCALPLAYERFROMTHESP"));
-					LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
-					LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));
-					LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
-					LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
-					LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
-					LogF("/plrclr [player] [RGB] - %s", LoadResStr("IDS_TEXT_CHANGETHECOLOROFTHESPECIF"));
-					LogF("/plrclr [RGB] - %s", LoadResStr("IDS_TEXT_CHANGEYOUROWNPLAYERCOLOR"));
-					LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
-					LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-					LogF("/set maxplayer [number] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
-					LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
-				}
-				// ------------------------------------------------------
-				else
-				{
-					// command not known or not a specific lobby command - forward to messageinput
-					fProcessed = false;
-				}
-			}
-			// not processed? Then forward to messageinput, which parses additional commands and sends regular messages
-			if (!fProcessed) ::MessageInput.ProcessInput(szInputText);
+			::MessageInput.ProcessInput(szInputText);
 		}
 		// clear edit field after text has been processed
 		pEdt->SelectAll(); pEdt->DeleteSelection();
@@ -711,7 +546,7 @@ namespace C4GameLobby
 	{
 		// create context menu
 		C4GUI::ContextMenu *pMenu = new C4GUI::ContextMenu();
-		// players/ressources
+		// players/resources
 		C4GUI::Tabular::Sheet *pPlayerSheet = pRightTab->GetSheet(0);
 		C4GUI::Tabular::Sheet *pResSheet = pRightTab->GetSheet(1);
 		C4GUI::Tabular::Sheet *pOptionsSheet = pRightTab->GetSheet(2);
@@ -862,6 +697,7 @@ namespace C4GameLobby
 		// get lobby
 		MainDlg *pLobby = ::Network.GetLobby();
 		if (pLobby) pLobby->OnError(szErrorMsg);
+		else Log(szErrorMsg);
 	}
 
 

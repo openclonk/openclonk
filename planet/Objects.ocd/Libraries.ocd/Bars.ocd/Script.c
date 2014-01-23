@@ -70,3 +70,6 @@ public func SetBarProgress(int promille, int num)
 
 	return true;
 }
+
+// UI not saved.
+func SaveScenarioObject() { return false; }

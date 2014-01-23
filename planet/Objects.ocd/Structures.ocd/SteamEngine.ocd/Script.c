@@ -1,33 +1,39 @@
 /*-- Steam engine --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 200;
 
 static const SteamEngine_produced_power = 300;
 
 local iFuelAmount;
 local power_seconds;
 
-func Construction()
+func Construction(object creator)
 {
 	iFuelAmount = 0;
 	power_seconds = 0;
-	return _inherited(...);
+
+	SetAction("Default");
+	AddTimer("ContentsCheck", 30);
+	return _inherited(creator, ...);
 }
 
 public func IsContainer() { return true; }
 
-protected func RejectEntrance(object obj)
+func RejectCollect(id item, object obj)
 {
-	if (obj->~IsFuel()) 
+	if (obj->~IsFuel())
 		return false;
 	return true;
 }
 
-protected func RejectCollect(id item, object obj)
+func Collection(object obj, bool put)
 {
-	// Just return RejectEntrance for this object.
-	return RejectEntrance(obj);
+	Sound("Clonk");
 }
 
 func ContentsCheck()
@@ -41,7 +47,7 @@ func ContentsCheck()
 	}
 	
 	// Still active?
-	if(!ActIdle()) return true;
+	if(GetAction() == "Work") return true;
 	// or still warm water in the tank?!
 	if(GetEffect("CreatesPower", this))
 		return true;
@@ -79,7 +85,7 @@ func ConsumeFuel()
 	// All used up?
 	if(!iFuelAmount || ((GetPendingPowerAmount() == 0) && (GetCurrentPowerBalance() >= SteamEngine_produced_power)))
 	{
-		SetAction("Idle");
+		SetAction("Default");
 		ContentsCheck();
 	}
 }
@@ -91,6 +97,7 @@ func FxCreatesPowerStart(target, effect, temp)
 	MakePowerProducer(SteamEngine_produced_power);
 	
 	AddEffect("Smoking", this, 1, 5, this);
+	Sound("SteamEngine", false, nil, nil, 1);
 }
 
 func FxCreatesPowerTimer(target, effect)
@@ -107,30 +114,46 @@ func FxCreatesPowerStop(target, effect, reason, temp)
 	
 	if(GetEffect("Smoking", this))
 		RemoveEffect("Smoking", this);
+	Sound("SteamEngine", false, nil, nil, -1);
 }
 
 func FxSmokingTimer()
 {
-	Smoke(20, -15, 10);
+	Smoke(-20 * GetCalcDir(), -15, 10);
 	return 1;
 }
 
 local ActMap = {
-Work = {
-	Prototype = Action,
-	Name = "Work",
-	Procedure = DFA_NONE,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 20,
-	Delay = 2,
-	NextAction = "Work",
-	Animation = "Work",
-	EndCall = "ConsumeFuel",
-},
+	Default = {
+		Prototype = Action,
+		Name = "Default",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 1,
+		Delay = 0,
+		FacetBase=1,
+		NextAction = "Default",
+	},
+	Work = {
+		Prototype = Action,
+		Name = "Work",
+		Procedure = DFA_NONE,
+		Directions = 2,
+		FlipDir = 1,
+		Length = 20,
+		Delay = 2,
+		FacetBase = 1,
+		NextAction = "Work",
+		Animation = "Work",
+		EndCall = "ConsumeFuel",
+	},
 };
-local Name = "$Name$";
 
 func Definition(def) {
 	SetProperty("MeshTransformation", Trans_Mul(Trans_Rotate(25,0,1,0), Trans_Scale(625)), def);
 }
+local BlastIncinerate = 130;
+local HitPoints = 100;
+local Name = "$Name$";
+local Description = "$Description$";

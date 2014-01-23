@@ -1,2 +1,0 @@
-Name=Mushroom
-PickMushroom=Pick mushroom

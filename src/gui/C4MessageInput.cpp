@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2006  Peter Wortmann
- * Copyright (c) 2005-2008  Sven Eberhardt
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2008  Matthes Bender
- * Copyright (c) 2009  David Dormagen
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // handles input dialogs, last-message-buffer, MessageBoard-commands
 
@@ -106,8 +98,7 @@ void C4ChatInputDialog::OnChatCancel()
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 		{
 			// there was an associated query - it must be removed on all clients synchronized via queue
-			// do this by calling OnMessageBoardAnswer without an answer
-			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(nullptr, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		}
 	}
 }
@@ -147,10 +138,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		}
 		// then do a script callback, incorporating the input into the answer
 		if (fUppercase) SCapitalize(szInputText);
-		StdStrBuf sInput;
-		sInput.Copy(szInputText);
-		sInput.EscapeString();
-		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_MsgBoardReply, new C4ControlMsgBoardReply(szInputText, pTarget ? pTarget->Number : 0, iPlr), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 	}
 	else
@@ -377,6 +365,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		eMsgType = C4CMT_Sound;
 		szMsg = szText+7;
 	}
+	// Disabled due to spamming
 	// Starts with "/alert": Taskbar flash (message optional)
 	else if (SEqual2NoCase(szText, "/alert ") || SEqualNoCase(szText, "/alert"))
 	{
@@ -444,30 +433,160 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 {
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	// command
-	char szCmdName[C4MaxName + 1];
-	SCopyUntil(szCommand + 1, szCmdName, ' ', C4MaxName);
+	// must be 1 char longer than the longest command only. If given commands are longer, they will be truncated, and such a command won't exist anyway
+	const int32_t MaxCommandLen = 20;
+	char szCmdName[MaxCommandLen + 1];
+	SCopyUntil(szCommand + 1, szCmdName, ' ', MaxCommandLen);
 	// parameter
 	const char *pCmdPar = SSearch(szCommand, " ");
 	if (!pCmdPar) pCmdPar = "";
 
-	// dev-scripts
+	// CAUTION when implementing special commands (like /quit) here:
+	// those must not be executed when text is pasted, because that could crash the GUI system
+	// when there are additional lines to paste, but the edit field is destructed by the command
+
+	// lobby-only commands
+	if (!Game.IsRunning && SEqualNoCase(szCmdName, "joinplr"))
+	{
+		// compose path from given filename
+		StdStrBuf plrPath;
+		plrPath.Format("%s%s", Config.General.UserDataPath, pCmdPar);
+		// player join - check filename
+		if (!ItemExists(plrPath.getData()))
+		{
+			C4GameLobby::LobbyError(FormatString(LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData()).getData());
+		}
+		else
+			::Network.Players.JoinLocalPlayer(plrPath.getData(), true);
+		return true;
+	}
+	if (!Game.IsRunning && SEqualNoCase(szCmdName, "plrclr"))
+	{
+		// get player name from input text
+		int iSepPos = SCharPos(' ', pCmdPar, 0);
+		C4PlayerInfo *pNfo=NULL;
+		int32_t idLocalClient = -1;
+		if (::Network.Clients.GetLocal()) idLocalClient = ::Network.Clients.GetLocal()->getID();
+		if (iSepPos>0)
+		{
+			// a player name is given: Parse it
+			StdStrBuf sPlrName;
+			sPlrName.Copy(pCmdPar, iSepPos);
+			pCmdPar += iSepPos+1; int32_t id=0;
+			while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(id)))
+			{
+				id = pNfo->GetID();
+				if (WildcardMatch(sPlrName.getData(), pNfo->GetName())) break;
+			}
+		}
+		else
+			// no player name: Set local player
+			pNfo = Game.PlayerInfos.GetPrimaryInfoByClientID(idLocalClient);
+		C4ClientPlayerInfos *pCltNfo=NULL;
+		if (pNfo) pCltNfo = Game.PlayerInfos.GetClientInfoByPlayerID(pNfo->GetID());
+		if (!pCltNfo)
+		{
+			C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_NOPLAYER"));
+		}
+		else
+		{
+			// may color of this client be set?
+			if (pCltNfo->GetClientID() != idLocalClient && !::Network.isHost())
+			{
+				C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_NOACCESS"));
+			}
+			else
+			{
+				// get color to set
+				uint32_t dwNewClr;
+				if (sscanf(pCmdPar, "%x", &dwNewClr) != 1)
+				{
+					C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_USAGE"));
+				}
+				else
+				{
+					// color validation
+					dwNewClr |= 0xff000000;
+					if (!dwNewClr) ++dwNewClr;
+					// request a color change to this color
+					C4ClientPlayerInfos LocalInfoRequest = *pCltNfo;
+					C4PlayerInfo *pPlrInfo = LocalInfoRequest.GetPlayerInfoByID(pNfo->GetID());
+					assert(pPlrInfo);
+					if (pPlrInfo)
+					{
+						pPlrInfo->SetOriginalColor(dwNewClr); // set this as a new color wish
+						::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+					}
+				}
+			}
+		}
+		return true;
+	}
+	if (!Game.IsRunning && SEqualNoCase(szCmdName, "start"))
+	{
+		// timeout given?
+		int32_t iTimeout = Config.Lobby.CountdownTime;
+		if (!::Network.isHost())
+			C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
+		else if (pCmdPar && *pCmdPar && (!sscanf(pCmdPar, "%d", &iTimeout) || iTimeout<0))
+			C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_START_USAGE"));
+		else if (pLobby)
+		{
+			// abort previous countdown
+			if (::Network.isLobbyCountDown()) ::Network.AbortLobbyCountdown();
+			// start new countdown (aborts previous if necessary)
+			pLobby->Start(iTimeout);
+		}
+		else
+		{
+			if (iTimeout)
+				::Network.StartLobbyCountdown(iTimeout);
+			else
+				::Network.Start();
+		}
+		return true;
+	}
+	if (!Game.IsRunning && SEqualNoCase(szCmdName, "abort"))
+	{
+		if (!::Network.isHost())
+			C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
+		else if (::Network.isLobbyCountDown())
+			::Network.AbortLobbyCountdown();
+		else
+			C4GameLobby::LobbyError(LoadResStr("IDS_MSG_CMD_ABORT_NOCOUNTDOWN"));
+		return true;
+	}
+
 	if (SEqual(szCmdName, "help"))
 	{
-		Log(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGGA"));
-		LogF("/private [player] [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOTHES"));
-		LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
-		LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
-		LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
+		Log(LoadResStr(pLobby ? "IDS_TEXT_COMMANDSAVAILABLEDURINGLO" : "IDS_TEXT_COMMANDSAVAILABLEDURINGGA"));
+		if (!Game.IsRunning)
+		{
+			LogF("/start [time] - %s", LoadResStr("IDS_TEXT_STARTTHEROUNDWITHSPECIFIE"));
+			LogF("/abort - %s", LoadResStr("IDS_TEXT_ABORTSTARTCOUNTDOWN"));
+			LogF("/alert - %s", LoadResStr("IDS_TEXT_ALERTTHEHOSTIFTHEHOSTISAW"));
+			LogF("/joinplr [filename] - %s", LoadResStr("IDS_TEXT_JOINALOCALPLAYERFROMTHESP"));
+			LogF("/plrclr [player] [RGB] - %s", LoadResStr("IDS_TEXT_CHANGETHECOLOROFTHESPECIF"));
+			LogF("/plrclr [RGB] - %s", LoadResStr("IDS_TEXT_CHANGEYOUROWNPLAYERCOLOR"));
+		}
+		else
+		{
+			LogF("/fast [x] - %s", LoadResStr("IDS_TEXT_SETTOFASTMODESKIPPINGXFRA"));
+			LogF("/slow - %s", LoadResStr("IDS_TEXT_SETTONORMALSPEEDMODE"));
+			LogF("/chart - %s", LoadResStr("IDS_TEXT_DISPLAYNETWORKSTATISTICS"));
+			LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
+			LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
+			LogF("/screenshot [zoom] - %s", LoadResStr("IDS_TEXT_SAFEZOOMEDFULLSCREENSHOT"));
+		}
 		LogF("/kick [client] - %s", LoadResStr("IDS_TEXT_KICKTHESPECIFIEDCLIENT"));
 		LogF("/observer [client] - %s", LoadResStr("IDS_TEXT_SETTHESPECIFIEDCLIENTTOOB"));
-		LogF("/fast [x] - %s", LoadResStr("IDS_TEXT_SETTOFASTMODESKIPPINGXFRA"));
-		LogF("/slow - %s", LoadResStr("IDS_TEXT_SETTONORMALSPEEDMODE"));
-		LogF("/chart - %s", LoadResStr("IDS_TEXT_DISPLAYNETWORKSTATISTICS"));
-		LogF("/nodebug - %s", LoadResStr("IDS_TEXT_PREVENTDEBUGMODEINTHISROU"));
+		LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
+		LogF("/sound [sound] - %s", LoadResStr("IDS_TEXT_PLAYASOUNDFROMTHEGLOBALSO"));
+		if (Game.IsRunning) LogF("/private [player] [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOTHES"));
+		LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
 		LogF("/set comment [comment] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKCOMMENT"));
 		LogF("/set password [password] - %s", LoadResStr("IDS_TEXT_SETANEWNETWORKPASSWORD"));
-		LogF("/set maxplayer [4] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
-		LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
+		LogF("/set maxplayer [number] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 		LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
 		return true;
 	}
@@ -479,10 +598,10 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (!::Network.isEnabled() && Game.ScenarioFile.IsPacked()) return false;
 		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
-		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console), CDT_Decide);
 		return true;
 	}
-	// set runtimte properties
+	// set runtime properties
 	if (SEqual(szCmdName, "set"))
 	{
 		if (SEqual2(pCmdPar, "maxplayer "))
@@ -602,7 +721,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "nodebug"))
 	{
 		if (!Game.IsRunning) return false;
-		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_DisableDebug, 0), CDT_Decide);
 		return true;
 	}
 
@@ -644,47 +763,33 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	}
 
 	// show chart
-	if (Game.IsRunning) if (SEqual(szCmdName, "chart"))
+	if (Game.IsRunning)
+		if (SEqual(szCmdName, "chart"))
 			return Game.ToggleChart();
+
+	// whole map screenshot
+	if (SEqual(szCmdName, "screenshot"))
+	{
+		double zoom = atof(pCmdPar);
+		if (zoom<=0) return false;
+		::GraphicsSystem.SaveScreenshot(true, zoom);
+		return true;
+	}
 
 	// custom command
 	C4MessageBoardCommand *pCmd;
-	if (Game.IsRunning) if ((pCmd = GetCommand(szCmdName)))
+	if (Game.IsRunning)
+		if ((pCmd = GetCommand(szCmdName)))
 		{
-			StdStrBuf Script, CmdScript;
-			// replace %player% by calling player number
-			if (SSearch(pCmd->Script, "%player%"))
-			{
-				int32_t iLocalPlr = NO_OWNER;
-				C4Player *pLocalPlr = ::Players.GetLocalByIndex(0);
-				if (pLocalPlr) iLocalPlr = pLocalPlr->Number;
-				StdStrBuf sLocalPlr; sLocalPlr.Format("%d", iLocalPlr);
-				CmdScript.Copy(pCmd->Script);
-				CmdScript.Replace("%player%", sLocalPlr.getData());
-			}
-			else
-			{
-				CmdScript.Ref(pCmd->Script);
-			}
-			// insert parameters
-			if (SSearch(CmdScript.getData(), "%d"))
-			{
-				// make sure it's a number by converting
-				Script.Format(CmdScript.getData(), (int) atoi(pCmdPar));
-			}
-			else if (SSearch(CmdScript.getData(), "%s"))
-			{
-				// escape strings
-				StdStrBuf Par;
-				Par.Copy(pCmdPar);
-				Par.EscapeString();
-				// compose script
-				Script.Format(CmdScript.getData(), Par.getData());
-			}
-			else
-				Script = CmdScript.getData();
-			// add script
-			::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+			// get player number of first local player; if multiple players
+			// share one computer, we can't distinguish between them anyway
+			int32_t player_num = NO_OWNER;
+			C4Player *player = ::Players.GetLocalByIndex(0);
+			if (player) player_num = player->Number;
+
+			// send command to network
+			::Control.DoInput(CID_MsgBoardCmd, new C4ControlMsgBoardCmd(szCmdName, pCmdPar, player_num), CDT_Decide);
+
 			// ok
 			return true;
 		}

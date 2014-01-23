@@ -1,0 +1,13 @@
+[DefCore]
+id=Elevator_Case_Front
+Version=5,2,0,1
+Width=24
+Height=34
+Offset=-12,-17
+Category=C4D_StaticBack
+
+# for attachment
+Vertices=1
+VertexX=-12
+VertexY=-5
+VertexFriction=0

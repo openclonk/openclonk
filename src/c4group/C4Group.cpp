@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2003-2005, 2007  Matthes Bender
- * Copyright (c) 2001-2003, 2005-2008  Sven Eberhardt
- * Copyright (c) 2002-2008  Peter Wortmann
- * Copyright (c) 2004-2009, 2011  Günther Brammer
- * Copyright (c) 2005  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Carl-Philip Hänsch
- * Copyright (c) 2010-2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles group files */
@@ -78,7 +70,7 @@ int iC4GroupRewindFilePtrNoWarn=0;
 //---------------------------- Global C4Group_Functions -------------------------------------------
 
 char C4Group_TempPath[_MAX_PATH+1]="";
-char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db";
+char C4Group_Ignore[_MAX_PATH+1]="cvs;CVS;Thumbs.db;.orig;.svn";
 const char **C4Group_SortList = NULL;
 time_t C4Group_AssumeTimeOffset=0;
 bool (*C4Group_ProcessCallback)(const char *, int)=NULL;
@@ -501,7 +493,7 @@ void C4Group::Init()
 	SearchPtr=NULL;
 	// Folder only
 	//hFdt=-1;
-	FolderSearch.Reset();
+	FolderSearch.Clear();
 	// Error status
 	SCopy("No Error",ErrorString,C4GroupMaxError);
 }
@@ -1041,13 +1033,13 @@ bool C4Group::AppendEntry2StdFile(C4GroupEntry *centry, CStdFile &hTarget)
 	return true;
 }
 
-void C4Group::ResetSearch()
+void C4Group::ResetSearch(bool reload_contents)
 {
 	switch (Status)
 	{
 	case GRPF_Folder:
 		SearchPtr=NULL;
-		FolderSearch.Reset(FileName);
+		FolderSearch.Reset(FileName, reload_contents);
 		if (*FolderSearch)
 		{
 			FolderSearchEntry.Set(FolderSearch,FileName);
@@ -1465,6 +1457,8 @@ bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
 			if (!EraseItem(szPath)) return false;
 		}
 		break;
+		// refresh file list
+		ResetSearch(true);
 	}
 	return true;
 }
@@ -1493,6 +1487,8 @@ bool C4Group::Rename(const char *szFile, const char *szNewName)
 		char path2[_MAX_FNAME+1]; SCopy(FileName,path2,_MAX_PATH-1);
 		AppendBackslash(path2); SAppend(szNewName,path2,_MAX_PATH);
 		if (!RenameFile(path,path2)) return Error("Rename: Failure");
+		// refresh file list
+		ResetSearch(true);
 		break;
 	}
 
@@ -1585,7 +1581,7 @@ bool C4Group::ExtractEntry(const char *szFilename, const char *szExtractTo)
 	case GRPF_File: // Copy entry to target
 		// Get entry
 		C4GroupEntry *pEntry;
-		if (!(pEntry=GetEntry(szFilename))) return false;
+		if (!(pEntry=GetEntry(szFilename))) return Error("Extract: Entry not found");
 		// Create dummy file to reserve target file name
 		hDummy.Create(szTargetFName,false);
 		hDummy.Write("Dummy",5);
@@ -2094,7 +2090,7 @@ bool C4Group::EnsureChildFilePtr(C4Group *pChild)
 	if ( !ItemIdentical( StdFile.Name, szChildPath ) )
 	{
 		// Reopen correct child stdfile
-		if ( !SetFilePtr2Entry( GetFilename(pChild->FileName) ) )
+		if ( !SetFilePtr2Entry( GetFilename(pChild->FileName), true ) )
 			return false;
 		// Advance to child's old file ptr
 		if ( !AdvanceFilePtr( pChild->EntryOffset + pChild->FilePtr ) )
@@ -2114,7 +2110,7 @@ StdStrBuf C4Group::GetFullName() const
 	{
 		if (*str) SInsert(str, sep, 0, _MAX_PATH);
 		// Avoid double slash
-		if (SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
+		if (pGroup == this || SLen(pGroup->FileName) > 1 || pGroup->FileName[0] != '/')
 			SInsert(str, pGroup->FileName, 0, _MAX_PATH);
 		if (pGroup->Status == GRPF_Folder) break; // Folder is assumed to have full path
 	}

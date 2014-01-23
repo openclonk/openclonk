@@ -40,12 +40,8 @@ public func SetBG(bool newbg) {
 
 public func SetNothing() // No item, no image, no whatever, just a plain button
 {
-	SetAmount(0);
+	SetAmount(nil);
 	SetSymbol();
-	SetGraphics(nil,nil,9);
-	SetGraphics(nil,nil,10);
-	SetGraphics(nil,nil,11);
-	SetGraphics(nil,nil,12);
 }
 
 public func SetSize(int s) // in px *1000
@@ -80,7 +76,7 @@ public func SetSymbol(obj)
 	{
 		if (GetType(obj) == C4V_C4Object)
 		{
-			SetGraphics(nil, nil, MI_ICON_LAYER, GFXOV_MODE_ObjectPicture, 0, 0, obj);
+			SetGraphics(nil, nil, MI_ICON_LAYER, GFXOV_MODE_ObjectPicture, nil, 0, obj);
 			SetObjDrawTransform(size, 0, 0, 0, size, 0, MI_ICON_LAYER);
 			if (obj->~HasExtraSlot())
 			{
@@ -91,7 +87,7 @@ public func SetSymbol(obj)
 				var content = obj->Contents(0);
 				if (content)
 				{
-					SetGraphics(nil, nil, MI_EXTRASLOT_LAYER, GFXOV_MODE_ObjectPicture, 0, 0, content);
+					SetGraphics(nil, nil, MI_EXTRASLOT_LAYER, GFXOV_MODE_ObjectPicture, nil, 0, content);
 					SetObjDrawTransform(size/3, 0, 16*size, 0, size/3, 16*size, MI_EXTRASLOT_LAYER);
 				}
 				else
@@ -122,9 +118,15 @@ public func SetExtraData(extradata)
 }
 public func SetAmount(Amount)
 {
-
-	amnt=Amount;
-	if(Amount==1) return ;
+	amnt = Amount;
+	if (Amount == nil)
+	{
+		SetGraphics(nil,nil,MI_AMOUNTX_LAYER);
+		SetGraphics(nil,nil,MI_AMOUNT1_LAYER);
+		SetGraphics(nil,nil,MI_AMOUNT10_LAYER);
+		SetGraphics(nil,nil,MI_AMOUNT100_LAYER);	
+		return;
+	}	
 	var one = Amount%10;
 	var ten = (Amount/10)%10;
 	var hun = (Amount/100)%10;

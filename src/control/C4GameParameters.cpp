@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004, 2006-2007, 2009  Sven Eberhardt
- * Copyright (c) 2005-2007  Peter Wortmann
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009, 2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 #include "C4GameParameters.h"
@@ -231,7 +226,7 @@ void C4GameResList::LoadFoldersWithLocalDefs(const char *szPath)
 	// if we didn't handle this properly and the user would have no clue what was
 	// going on. See also http://forum.openclonk.org/topic_show.pl?tid=905.
 	char control[3] = { DirectorySeparator, AltDirectorySeparator, '\0' };
-	const size_t len = strlen(szPath);
+	const int32_t len = (int32_t)strlen(szPath);
 	for (int32_t iPrev=0; (iBackslash = strcspn(szPath+iPrev, control) + iPrev) < len; iPrev = iBackslash + 1)
 #else
 	for (int32_t cnt=0; (iBackslash=SCharPos(DirectorySeparator,szPath,cnt)) > -1; cnt++)

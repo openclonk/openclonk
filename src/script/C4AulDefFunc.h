@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2006, 2010  Peter Wortmann
- * Copyright (c) 2006-2007, 2009-2011  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // Template helper to export C++ functions to C4Script
 
@@ -23,26 +19,8 @@
 #define INC_C4AulDefFunc
 
 #include <C4Object.h>
-#include <C4Effects.h>
+#include <C4Effect.h>
 #include <C4DefList.h>
-
-typedef int32_t t_int;
-typedef bool t_bool;
-typedef C4ID t_id;
-typedef C4Object *t_object;
-typedef C4String *t_string;
-typedef C4Value t_any;
-typedef C4ValueArray *t_array;
-
-inline t_int getPar_int(C4Value *pVal) { return pVal->getInt(); }
-inline t_bool getPar_bool(C4Value *pVal) { return pVal->getBool(); }
-inline t_id getPar_id(C4Value *pVal) { return pVal->getC4ID(); }
-inline t_object getPar_object(C4Value *pVal) { return pVal->getObj(); }
-inline t_string getPar_string(C4Value *pVal) { return pVal->getStr(); }
-inline t_any getPar_any(C4Value *pVal) { return *pVal; }
-inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
-
-#define PAR(type, name) t_##type name = getPar_##type(pPars++)
 
 inline const static char *FnStringPar(C4String *pString)
 {
@@ -52,12 +30,15 @@ inline C4String *String(const char * str)
 {
 	return str ? ::Strings.RegString(str) : NULL;
 }
-StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
-                                C4Value * Par4=0, C4Value * Par5=0, C4Value * Par6=0, C4Value * Par7=0, C4Value * Par8=0, C4Value * Par9=0);
-enum { MaxFnStringParLen=500 };
+inline C4Object * Object(C4PropList * _this)
+{
+	return _this ? _this->GetObject() : NULL;
+}
+StdStrBuf FnStringFormat(C4PropList * _this, C4String *szFormatPar, C4Value * Pars, int ParCount);
 
 template <typename T> struct C4ValueConv;
-// Allow parameters to be nil
+// Allow integer and boolean parameters to be nil
+// pointer parameters represent nil via plain NULL
 template<typename T>
 class Nillable
 {
@@ -97,17 +78,12 @@ public:
 	inline bool IsNil() const { return true; }
 };
 
-// Some functions require object context.
-// Using this type instead of C4AulContext guarantees validity of Obj member.
-// Don't add any members to this class, or breakage will occur.
-class C4AulObjectContext : public C4AulContext {};
-
 // Some functions are callable in definition context only.
 // This exception gets thrown if they are called from anywhere else.
 class NeedDefinitionContext : public C4AulExecError
 {
 public:
-	NeedDefinitionContext(const char *function) : C4AulExecError(NULL, FormatString("%s: must be called from definition context", function).getData()) {}
+	NeedDefinitionContext(const char *function) : C4AulExecError(FormatString("%s: must be called from definition context", function).getData()) {}
 };
 
 // Other functions are callable in object context only.
@@ -115,7 +91,7 @@ public:
 class NeedObjectContext : public C4AulExecError
 {
 public:
-	NeedObjectContext(const char *function) : C4AulExecError(NULL, FormatString("%s: must be called from object context", function).getData()) {}
+	NeedObjectContext(const char *function) : C4AulExecError(FormatString("%s: must be called from object context", function).getData()) {}
 };
 
 // Then there's functions that don't care, but need either defn or object context.
@@ -123,7 +99,7 @@ public:
 class NeedNonGlobalContext : public C4AulExecError
 {
 public:
-	NeedNonGlobalContext(const char *function) : C4AulExecError(NULL, FormatString("%s: call must not be from global context", function).getData()) {}
+	NeedNonGlobalContext(const char *function) : C4AulExecError(FormatString("%s: call must not be from global context", function).getData()) {}
 };
 
 // return type of functions returning nil
@@ -259,10 +235,9 @@ public:
 	}
 	~C4AulDefFuncHelper()
 	{
-		assert(!Owner);
 	}
-	virtual C4V_Type* GetParType() { return ParType; }
-	virtual bool GetPublic() { return Public; }
+	virtual const C4V_Type* GetParType() const { return ParType; }
+	virtual bool GetPublic() const { return Public; }
 protected:
 	C4V_Type ParType[10];// type of the parameters
 	bool Public;
@@ -299,18 +274,16 @@ class C4AulDefFunc##N:                        \
 public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4AulContext * LIST(N, PARS)); \
-    virtual int GetParCount() { return N; }   \
-    virtual C4V_Type GetRetType()             \
+    typedef RType (*Func)(C4PropList * LIST(N, PARS)); \
+    virtual int GetParCount() const { return N; } \
+    virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
       C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Avoid hiding base class function */        \
-    using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
-    { return C4ValueConv<RType>::ToC4V(pFunc(pContext LIST(N, CONV_FROM_C4V))); } \
+    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
+    { return C4ValueConv<RType>::ToC4V(pFunc(_this LIST(N, CONV_FROM_C4V))); } \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
@@ -319,31 +292,29 @@ class C4AulDefObjectFunc##N:                  \
 public C4AulDefFuncHelper {                   \
   public:                                     \
 /* A pointer to the function which this class wraps */ \
-    typedef RType (*Func)(C4AulObjectContext * LIST(N, PARS)); \
-    virtual int GetParCount() { return N; }   \
-    virtual C4V_Type GetRetType()             \
+    typedef RType (*Func)(C4Object * LIST(N, PARS)); \
+    virtual int GetParCount() const { return N; } \
+    virtual C4V_Type GetRetType() const       \
     { return C4ValueConv<RType>::Type(); }    \
 /* Constructor, using the base class to create the ParType array */ \
     C4AulDefObjectFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
       C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
-/* Avoid hiding base class function */        \
-    using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
-    virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
+    virtual C4Value Exec(C4PropList * _this, C4Value pPars[], bool fPassErrors) \
     { \
-      if (!pContext->Obj) throw new NeedObjectContext(GetName()); \
-      return C4ValueConv<RType>::ToC4V(pFunc(static_cast<C4AulObjectContext*>(pContext) LIST(N, CONV_FROM_C4V))); \
+      C4Object * Obj; if (!_this || !(Obj = _this->GetObject())) throw new NeedObjectContext(GetName()); \
+      return C4ValueConv<RType>::ToC4V(pFunc(Obj LIST(N, CONV_FROM_C4V))); \
     } \
   protected:                                  \
     Func pFunc;                               \
   };                                          \
-template <typename RType LIST(N, TYPENAMES)> \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulContext * LIST(N, PARS)), bool Public=true) \
+template <typename RType LIST(N, TYPENAMES)>  \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4PropList * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   } \
 template <typename RType LIST(N, TYPENAMES)> \
-inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4AulObjectContext * LIST(N, PARS)), bool Public=true) \
+inline void AddFunc(C4AulScript * pOwner, const char * Name, RType (*pFunc)(C4Object * LIST(N, PARS)), bool Public=true) \
   { \
   new C4AulDefObjectFunc##N<RType LIST(N, PARS)>(pOwner, Name, pFunc, Public); \
   }
@@ -379,5 +350,32 @@ TEMPLATE(10)
 #undef CONV_TYPE
 #undef CONV_FROM_C4V
 #undef TEMPLATE
+
+
+// a definition of a function exported to script
+struct C4ScriptFnDef
+{
+	const char* Identifier; // the name of the func in the script
+	bool Public;
+	C4V_Type RetType; // type returned. ignored when C4V
+	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
+	C4Value (*FunctionC4V)(C4PropList * _this, C4Value *);
+};
+
+// defined function class
+class C4AulDefFunc : C4AulFunc
+{
+public:
+	C4ScriptFnDef* Def;
+
+	C4AulDefFunc(C4AulScript *pOwner, C4ScriptFnDef* pDef);
+	~C4AulDefFunc();
+
+	virtual bool GetPublic() const { return !!Def->Public; }
+	virtual const C4V_Type* GetParType() const { return Def->ParType; }
+	virtual C4V_Type GetRetType() const { return Def->RetType; }
+
+	virtual C4Value Exec(C4PropList * p, C4Value pPars[], bool fPassErrors=false);
+};
 
 #endif

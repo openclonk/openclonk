@@ -82,7 +82,7 @@ func FxIntTurnTimer(pTarget, effect, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
 	var iRot = effect.rot;
-	if( (effect.dir != GetDirection() && GetAction() != "Jump") || effect.turn_type != lAnim.turnType) 
+	if( (effect.dir != GetDirection() && (GetAction() != "Jump") || this->~IsAiming()) || effect.turn_type != lAnim.turnType) 
 	{
 		effect.dir = GetDirection();
 		if(effect.dir == COMD_Right)
@@ -216,7 +216,7 @@ public func ReplaceAction(string action, byaction)
 			}
 		}
 	}
-	SetProperty(action, byaction, PropAnimations);
+	else SetProperty(action, byaction, PropAnimations);
 //	if(ActualReplace != nil)
 //		SetAnimationWeight(ActualReplace, Anim_Const(byaction[2]));
 	ResetAnimationEffects();
@@ -383,10 +383,16 @@ func Footstep()
 		Sound("StepHard?");
 	else
 	{
-		var dir = GetXDir() / Abs(GetXDir());
+		var dir = Sign(GetXDir());
 		var clr = GetAverageTextureColor(GetTexture(0,10));
-		CreateParticle("Dust2", dir*-4, 8, dir*-2, -2, 25+Random(5), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-4, 8, dir*-3, -3, 25+Random(5), DoRGBaValue(clr,-150,0));
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -3), PV_Random(36, 2 * 36), particles, 5);
 		Sound("StepSoft?");
 	}
 }
@@ -399,8 +405,15 @@ func GetWalkAnimationPosition(string anim, int pos)
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", anim), PropAnimations))
 		{
-			var length = GetAnimationLength(anim);
-			if(GetProperty(anim, PropAnimations)) length = GetAnimationLength(GetProperty(anim, PropAnimations));
+			var length = GetAnimationLength(anim), replacement;
+			if(replacement = GetProperty(anim, PropAnimations))
+			{
+				// at this point /replacement/ may contain an array of two animations that signal a merge
+				// in that case, just take the first one..
+				if(GetType(replacement) == C4V_Array)
+					replacement = replacement[0];
+				length = GetAnimationLength(replacement);
+			}
 			return Anim_X(pos, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations)*dir);
 		}
 	// TODO: Choose proper starting positions, depending on the current
@@ -442,7 +455,7 @@ func FxIntWalkStart(pTarget, effect, fTmp)
 func FxIntWalkTimer(pTarget, effect)
 {
 	// Test Waterlevel
-	if(GBackLiquid(0, -5) && !Contained())
+	if(InLiquid() && GBackLiquid(0, -5) && !Contained())
 	{
 		SetAction("Swim");
 		if(GetComDir() == COMD_Left)
@@ -556,20 +569,11 @@ func StopScale()
 	if(GetAction() != "Scale") RemoveEffect("IntScale", this);
 }
 
-func CheckPosition(int off_x, int off_y)
-{
-	var free = 1;
-	SetPosition(GetX()+off_x, GetY()+off_y);
-	if(Stuck()) free = 0;
-	SetPosition(GetX()-off_x, GetY()-off_y);
-	return free;
-}
-
 func CheckScaleTop()
 {
 	// Test whether the clonk has reached a top corner
-	if(GBackSolid(-8+16*GetDir(),-8)) return false;
-	if(!CheckPosition(-7*(-1+2*GetDir()),-17)) return false;
+	// That is, the leg vertices are the only ones attached to the wall
+	if(GBackSolid(-3+6*GetDir(),-3) || GBackSolid(-5+10*GetDir(),2)) return false;
 	return true;
 }
 
@@ -588,24 +592,20 @@ func FxIntScaleTimer(target, number, time)
 	{
 		// If the animation is not already set
 		var dist = 0;
-		while(!GBackSolid(-8+16*GetDir(),dist-8) && dist < 10) dist++;
+		while(!(GBackSolid(-3+6*GetDir(),dist-3) || GBackSolid(-5+10*GetDir(),dist+2)) && dist < 8) dist++;
 		dist *= 100;
-		dist += GetY(100)-GetY()*100;
+		// add the fractional part of the position (dist counts in the opposite direction of y)
+		dist -= GetY(100)-GetY()*100;
 		if(number.animation_mode != 1)
 		{
-			number.animation_id = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			number.animation_id = PlayAnimation("ScaleTop", 5, Anim_Const(GetAnimationLength("ScaleTop")*dist/800), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 			number.animation_mode = 1;
 		}
 		this.dist = dist;
-		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/1000));
+		SetAnimationPosition(number.animation_id, Anim_Const(GetAnimationLength("ScaleTop")*dist/800));
 		// The animation's graphics has to be shifet a bit to adjust to the clonk movement
 		var pos = GetAnimationPosition(number.animation_id);
-		//var percent = pos*1000/GetAnimationLength("ScaleTop");
-		var offset_list = [[0,0], [0,-1], [-1,-2], [-2,-3], [-2,-5], [-2,-7], [-4,-8], [-6,-10], [-7,-9], [-8,-8]];
-		var offset = offset_list[dist/100-1];
-		var rot = 0;
-		if(dist/100-1 > 5) rot = 5*dist/100-25;
-		SetScaleRotation(0, -offset[0]*(-1+2*GetDir())*1000, offset[1]*1000, -rot*(-1+2*GetDir()), 0, 1);
+		SetScaleRotation(0, 0, 0, 0, 0, 1);
 	}
 	else if(!GBackSolid(-10+20*GetDir(), 8))
 	{
@@ -728,17 +728,20 @@ func StartJump()
 	UpdateAttach();
 	// Set proper turn type
 	SetTurnType(0);
-	//Dive jump
-	var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
-			if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
-			{
-				PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-				return 1;
-			}
+	//Dive jump (only if not aiming)
+	if(!this->~IsAiming())
+	{
+		var flight = SimFlight(AbsX(GetX()), AbsY(GetY()), GetXDir()*2, GetYDir()*2, 25); //I have no clue why the dirs must be doubled... but it seems to fix it
+		if(GBackLiquid(flight[0] - GetX(), flight[1] - GetY()) && GBackLiquid(flight[0] - GetX(), flight[1] + GetDefHeight() / 2 - GetY()))
+		{
+			PlayAnimation("JumpDive", 5, Anim_Linear(0, 0, GetAnimationLength("JumpDive"), 60, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			return 1;
+		}
+	}
 
-		if(!GetEffect("Fall", this))
-			AddEffect("Fall",this,1,1,this);
-		RemoveEffect("WallKick",this);
+	if(!GetEffect("Fall", this))
+		AddEffect("Fall",this,1,1,this);
+	RemoveEffect("WallKick",this);
 }
 
 func FxFallEffect(string new_name, object target)
@@ -840,6 +843,8 @@ func FxIntHangleStop(pTarget, effect, iReasonm, fTmp)
 {
 	PopActionSpeed("Hangle");
 	if(fTmp) return;
+	// Delayed stop request
+	if (effect.request_stop) SetComDir(COMD_Stop);
 }
 
 func FxIntHangleTimer(pTarget, effect, iTime)
@@ -915,15 +920,32 @@ func StartSwim()
 {
 /*	if(Clonk_SwimStates == nil)
 		Clonk_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
+	if(!InLiquid()) return;
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
-	SetVertex(1,VTX_Y,-4,2);
+	
+	return SetSwimmingVertices(true);
 }
 
 func StopSwim()
 {
 	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
-	SetVertex(1,VTX_Y,-7,2);
+	
+	return SetSwimmingVertices(false);
+}
+
+func SetSwimmingVertices(bool is_swimming)
+{
+	var vtx_list = [[0,2,0], [0,-7,4], [0,9,11], [-2,-3,1], [2,-3,2], [-4,2,1], [4,2,2], [-2,6,1], [2,6,2]];
+	if (is_swimming)
+		vtx_list = [[0,3,0], [0,-2,4], [0,7,11], [-4,0,1], [4,0,2], [-5,3,1], [5,3,2], [-4,4,1], [4,4,2]];
+	for (var i = 0; i < GetVertexNum(); i++)
+	{
+		SetVertex(i, VTX_X, vtx_list[i][0], 2);
+		SetVertex(i, VTX_Y, vtx_list[i][1], 2);
+		SetVertex(i, VTX_CNAT, vtx_list[i][2], 2);
+	}
+	return;
 }
 
 func FxIntSwimStart(pTarget, effect, fTmp)
@@ -966,14 +988,23 @@ func FxIntSwimTimer(pTarget, effect, iTime)
 		percent = (percent%100);
 		if( percent < 40 )
 		{
-			for(var i = 0; i < 2; i++)
-				CreateParticle("Splash", (-1+2*GetDir())*7+RandomX(-5,5), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, -2, RandomX(30,50), RGB(240+Random(10),240+Random(10),255));
 			if(iTime%5 == 0)
 			{
-				var particle_name = "WaveLeft";
-				if( GetDir() == 1 ) particle_name = "WaveRight";
+				var phases = PV_Linear(0, 7);
+				if (GetDir() == 1) phases = PV_Linear(8, 15);
 				var color = GetAverageTextureColor(GetTexture(0, 0));
-				CreateParticle(particle_name, (0), -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 100, color, this, 1);
+				var particles =
+				{
+					Size = 16,
+					Phase = phases,
+					CollisionVertex = 750,
+					OnCollision = PC_Die(),
+					R = (color >> 16) & 0xff,
+					G = (color >>  8) & 0xff,
+					B = (color >>  0) & 0xff,
+					Attach = ATTACH_Front,
+				};
+				CreateParticle("Wave", 0, -4, (RandomX(-5,5)-(-1+2*GetDir())*4)/4, 0, 16, particles);
 			}
 			Sound("Splash?");
 		}
@@ -1042,8 +1073,14 @@ func Hit(int iXSpeed, int iYSpeed)
 			if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 			{
 				var clr = GetAverageTextureColor(GetTexture(0,10));
-				for(var i = -3; i < 4; i++)
-					CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+				var particles =
+				{
+					Prototype = Particles_Dust(),
+					R = (clr >> 16) & 0xff,
+					G = (clr >> 8) & 0xff,
+					B = clr & 0xff,
+				};
+				CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 			}
 		}
 	}
@@ -1053,8 +1090,14 @@ func Hit(int iXSpeed, int iYSpeed)
 		if (GetMaterialVal("DigFree", "Material", GetMaterial(0,10)))
 		{
 			var clr = GetAverageTextureColor(GetTexture(0,10));
-			for(var i = -3; i < 4; i++)
-				CreateParticle("Dust2", i, 8, i*2, -3, 40+Random(10), DoRGBaValue(clr,-150,0));
+			var particles =
+			{
+				Prototype = Particles_Dust(),
+				R = (clr >> 16) & 0xff,
+				G = (clr >> 8) & 0xff,
+				B = clr & 0xff,
+			};
+			CreateParticle("Dust", PV_Random(-4, 4), 8, PV_Random(-3, 3), PV_Random(-2, -4), PV_Random(36, 2 * 36), particles, 12);
 		}
 	}
 }
@@ -1115,8 +1158,15 @@ func FxRollingTimer(object target, int num, int timer)
 	{
 		var clr = GetAverageTextureColor(GetTexture(0,10));
 		var dir = GetDir()*2-1;
-		CreateParticle("Dust2", dir*-3, 8, dir*-3, -3, 60+Random(10), DoRGBaValue(clr,-150,0));
-		CreateParticle("Dust2", dir*-2, 8, dir*-2, -4, 60+Random(10), DoRGBaValue(clr,-150,0));
+		
+		var particles =
+		{
+			Prototype = Particles_Dust(),
+			R = (clr >> 16) & 0xff,
+			G = (clr >> 8) & 0xff,
+			B = clr & 0xff,
+		};
+		CreateParticle("Dust", PV_Random(dir * -2, dir * -1), 8, PV_Random(dir * 2, dir * 1), PV_Random(-2, -5), PV_Random(36, 2 * 36), particles, 6);
 	}
 }
 

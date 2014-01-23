@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2002  Peter Wortmann
- * Copyright (c) 2009-2010  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* string table: holds all strings used by script engine */
 
@@ -59,7 +56,7 @@ public:
 	template <class U> C4RefCntPointer(const C4RefCntPointer<U> & r): p(r.p) { IncRef(); }
 #ifdef HAVE_RVALUE_REF
 	// Move constructor
-	template <class U> C4RefCntPointer(const C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
+	template <class U> C4RefCntPointer(C4RefCntPointer<U> RREF r): p(r.p) { r.p = 0; }
 	// Move assignment
 	template <class U> C4RefCntPointer& operator = (C4RefCntPointer<U> RREF r)
 	{
@@ -104,7 +101,7 @@ template<typename T> class C4Set
 	unsigned int Capacity;
 	unsigned int Size;
 	T * Table;
-	T * AddInternal(T e)
+	T * GetPlaceFor(T const & e)
 	{
 		unsigned int h = Hash(e);
 		T * p = &Table[h % Capacity];
@@ -112,13 +109,43 @@ template<typename T> class C4Set
 		{
 			p = &Table[++h % Capacity];
 		}
+		return p;
+	}
+	T * AddInternal(T const & e)
+	{
+		T * p = GetPlaceFor(e);
 		*p = e;
 		return p;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * AddInternal(T && e)
+	{
+		T * p = GetPlaceFor(e);
+		*p = std::move(e);
+		return p;
+	}
+#endif
+	void MaintainCapacity()
+	{
+		if (Capacity - Size < Max(2u, Capacity / 4))
+		{
+			unsigned int OCapacity = Capacity;
+			Capacity *= 2;
+			T * OTable = Table;
+			Table = new T[Capacity];
+			Clear();
+			for (unsigned int i = 0; i < OCapacity; ++i)
+			{
+				if (OTable[i])
+					AddInternal(std::move(OTable[i]));
+			}
+			delete [] OTable;
+		}
+	}
 public:
-	template<typename H> static unsigned int Hash(H);
-	template<typename H> static bool Equals(T, H);
-	static bool Equals(T a, T b) { return a == b; }
+	template<typename H> static unsigned int Hash(const H &);
+	template<typename H> static bool Equals(const T &, const H &);
+	static bool Equals(const T & a, const T & b) { return a == b; }
 	C4Set(): Capacity(2), Size(0), Table(new T[Capacity])
 	{
 		Clear();
@@ -139,6 +166,7 @@ public:
 		Table = new T[Capacity];
 		for (unsigned int i = 0; i < Capacity; ++i)
 			Table[i] = b.Table[i];
+		return *this;
 	}
 	void CompileFunc(StdCompiler *pComp, C4ValueNumbers *);
 	void Clear()
@@ -167,26 +195,22 @@ public:
 		return !!*r;
 	}
 	unsigned int GetSize() const { return Size; }
-	T * Add(T e)
+	T * Add(T const & e)
 	{
-		if (Capacity - Size < Max(2u, Capacity / 4))
-		{
-			unsigned int OCapacity = Capacity;
-			Capacity *= 2;
-			T * OTable = Table;
-			Table = new T[Capacity];
-			Clear();
-			for (unsigned int i = 0; i < OCapacity; ++i)
-			{
-				if (OTable[i])
-					AddInternal(OTable[i]);
-			}
-			delete [] OTable;
-		}
+		MaintainCapacity();
 		T * r = AddInternal(e);
 		++Size;
 		return r;
 	}
+#ifdef HAVE_RVALUE_REF
+	T * Add(T && e)
+	{
+		MaintainCapacity();
+		T * r = AddInternal(std::move(e));
+		++Size;
+		return r;
+	}
+#endif
 	template<typename H> void Remove(H e)
 	{
 		unsigned int h = Hash(e);
@@ -203,7 +227,7 @@ public:
 		{
 			T m = *r;
 			*r = 0;
-			AddInternal(m);
+			AddInternal(std::move(m));
 		}
 	}
 	T const * First() const { return Next(Table - 1); }
@@ -215,21 +239,52 @@ public:
 		}
 		return 0;
 	}
+	void Swap(C4Set<T> * S2)
+	{
+		unsigned int Capacity2 = S2->Capacity;
+		unsigned int Size2 = S2->Size;
+		T * Table2 = S2->Table;
+		S2->Capacity = Capacity;
+		S2->Size = Size;
+		S2->Table = Table;
+		Capacity = Capacity2;
+		Size = Size2;
+		Table = Table2;
+	}
+	static bool SortFunc(const T *p1, const T*p2)
+	{
+		// elements are guarantueed to be non-NULL
+		return *p1<*p2;
+	}
+	std::list<const T *> GetSortedListOfElementPointers() const
+	{
+		// return a list of pointers to all elements in this set sorted by the standard less-than operation
+		// of the elements
+		// elements of resulting lists are guarantueed to be non-NULL
+		// list remains valid as long as this set is not changed
+		std::list<const T *> result;
+		for (const T *p = First(); p; p = Next(p)) result.push_back(p);
+		result.sort(C4Set<T>::SortFunc);
+		return result;
+	}
 };
 
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * const & e)
 {
 	return e->Hash;
 }
 template<> template<>
-inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
+inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * const & e)
 {
 	return e->Hash;
 }
 
 enum C4PropertyName
 {
+	// TODO: documentation comments can be removed
+	// as soon as all properties are documented
+
 	P_Prototype,
 	P_Name,
 	P_Priority,
@@ -244,6 +299,7 @@ enum C4PropertyName
 	P_Parallaxity,
 	P_LineColors,
 	P_LineAttach,
+	P_LineMaxDistance,		// unused?
 	P_PictureTransformation,
 	P_MeshTransformation,
 	P_Procedure,
@@ -287,11 +343,51 @@ enum C4PropertyName
 	P_MaxEnergy,
 	P_MaxBreath,
 	P_ThrowSpeed,
-	P_Mode,
-	P_CausedBy,
-	P_Blasted,
-	P_IncineratingObj,
+	P_Mode,					// unused?
+	P_CausedBy,				// unused?
+	P_Blasted,				// unused?
+	P_IncineratingObj,		// unused?
 	P_Plane,
+	P_Tooltip,
+	P_Placement,
+	P_BlastIncinerate,
+	P_ContactIncinerate,
+	P_Global,
+	P_Scenario,
+	P_JumpSpeed,
+	P_Algo,
+	P_Layer,
+	P_Seed,
+	P_Ratio,
+	P_FixedOffset,
+	P_Op,
+	P_R,
+	P_Scale,
+	P_Amplitude,
+	P_Iterations,
+	P_Empty,
+	P_Open,
+	P_Left,
+	P_Top,
+	P_Right,
+	P_Bottom,
+	P_Filter,
+	P_ForceX,
+	P_ForceY,
+	P_G,
+	P_B,
+	P_Alpha,
+	P_DampingX,
+	P_DampingY,
+	P_Size,
+	P_Rotation,
+	P_BlitMode,
+	P_Phase,
+	P_Stretch,
+	P_CollisionVertex,
+	P_OnCollision,
+	P_Distance,
+	P_Smoke,
 // Default Action Procedures
 	DFA_WALK,
 	DFA_FLIGHT,

@@ -72,7 +72,6 @@
     </examples>
     <related>
       <funclink>InsertMaterial</funclink>
-      <funclink>SetLandscapePixel</funclink>
     </related>
   </func>
   <author>Sven2</author><date>2002-05</date>

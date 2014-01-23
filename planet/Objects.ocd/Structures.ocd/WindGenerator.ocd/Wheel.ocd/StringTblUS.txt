@@ -1,0 +1,2 @@
+Name=Wheel.ocd
+Description=Invisible helper object. Takes care of collisions.

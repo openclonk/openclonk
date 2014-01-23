@@ -1,7 +1,7 @@
 [Material]
 Name=Gold
 Shape=Rough
-Density=50
+Density=70
 Friction=100
 BlastFree=1
 Blast2Object=Nugget

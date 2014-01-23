@@ -1,0 +1,2 @@
+Name=Lichen
+Description=Thrives in dark, wet tunnels. Moss can be harvested from it.

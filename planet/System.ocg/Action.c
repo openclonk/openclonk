@@ -27,3 +27,10 @@ static const Action = {
 	Step = 1,
 	Procedure = DFA_NONE,
 };
+
+global func GameCall(string fn) {
+	if (!fn) return;
+	var f = Scenario[fn];
+	if (!f) return;
+	return Scenario->Call(f, ...);
+}

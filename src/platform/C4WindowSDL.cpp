@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006  Julian Raschke
- * Copyright (c) 2010  Peter Wortmann
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2011  Günther Brammer
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2010-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
@@ -25,8 +19,8 @@
 #include <C4Include.h>
 #include <C4Window.h>
 
-#include <StdGL.h>
-#include <StdDDraw2.h>
+#include <C4Application.h>
+#include <C4DrawGL.h>
 #include <StdFile.h>
 #include <StdBuf.h>
 
@@ -46,17 +40,20 @@ C4Window::~C4Window ()
 	Clear();
 }
 
-C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent, bool HideCursor)
+C4Window * C4Window::Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size)
 {
+	if (windowKind != W_Fullscreen)
+		return NULL;
 	Active = true;
 	// SDL doesn't support multiple monitors.
-	if (!SDL_SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
+	if (!SDL_SetVideoMode(Application.GetConfigWidth()  == -1 ? 0 : Application.GetConfigWidth(),
+	                      Application.GetConfigHeight() == -1 ? 0 : Application.GetConfigHeight(),
+	                      Config.Graphics.BitDepth, SDL_OPENGL | (Config.Graphics.Windowed ? 0 : SDL_FULLSCREEN)))
 	{
 		Log(SDL_GetError());
 		return 0;
 	}
-	SDL_ShowCursor(HideCursor ? SDL_DISABLE : SDL_ENABLE);
-	SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
+	SDL_ShowCursor(SDL_DISABLE);
 	SetTitle(Title);
 	return this;
 }
@@ -85,13 +82,13 @@ bool C4Window::RestorePosition(const char *, const char *, bool) { return true; 
 bool C4Window::GetSize(C4Rect * pRect)
 {
 	pRect->x = pRect->y = 0;
-	pRect->Wdt = width, pRect->Hgt = height;
+	const SDL_VideoInfo * info = SDL_GetVideoInfo();
+	pRect->Wdt = info->current_w, pRect->Hgt = info->current_h;
 	return true;
 }
 
 void C4Window::SetSize(unsigned int X, unsigned int Y)
 {
-	width = X, height = Y;
 }
 
 void C4Window::SetTitle(const char * Title)

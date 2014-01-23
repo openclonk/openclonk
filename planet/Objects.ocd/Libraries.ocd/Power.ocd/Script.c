@@ -10,13 +10,11 @@
 	
 	globals:
 	MakePowerConsumer(int amount)
+		Note: power consumers include the library Library_PowerConsumer and should use UnmakePowerConsumer to turn off as power consumers
 	MakePowerProducer(int amount)
 	IsPowerAvailable(int amount)
 	
 */
-
-local Name = "$Name$";
-local Description = "$Description$";
 
 static Library_Power_power_compounds;
 
@@ -59,17 +57,13 @@ func AddPowerConsumer(object p, int a)
 				// message
 				var diff = 0;
 				{
-					var t = CreateObject(FloatingMessage, o.obj->GetX() - GetX(), o.obj->GetY() - GetY(), NO_OWNER);
-					t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
-					t->SetColor(255, 0, 0);
-					t->SetYDir(-10);
-					t->FadeOut(4, 8);
+					VisualizePowerChange(o.obj, 0, o.amount, false);
 				}
 				
 				o.obj->~OnRemovedFromPowerSleepingQueue();
 				return true;
 			}
-			sleeping_links[i].amount = a;
+			sleeping_links[i].amount = -a;
 			return true;
 		}
 	}
@@ -111,10 +105,10 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 		
 		diff = a - o.amount;
 		power_balance += diff;
+		before = power_links[i].amount;
 		
 		if(a == 0)
 		{
-			before = power_links[i].amount;
 			power_links[i] = nil;
 		}
 		else power_links[i] = n;
@@ -135,22 +129,13 @@ func AddPowerLink(object p, int a, bool surpress_balance_check)
 		power_balance += diff;
 	}
 	
-	diff = n.amount;
-	if((diff > 0) || ((a == 0) && (before > 0)))
+	if((n.amount > 0) || ((n.amount == 0) && (before > 0)))
 	{
-		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("+%d</c>{{Library_PowerConsumer}}", diff));
-		t->SetColor(0, 255, 0);
-		t->SetYDir(-10);
-		t->FadeOut(4, 8);
+		VisualizePowerChange(n.obj, n.amount, before, false);
 	}
-	else if((diff < 0) || ((a == 0) && (before < 0)))
+	else if((n.amount < 0) || ((n.amount == 0) && (before < 0)))
 	{
-		var t = CreateObject(FloatingMessage, n.obj->GetX() - GetX(), n.obj->GetY() - GetY(), NO_OWNER);
-		t->SetMessage(Format("%d</c>{{Library_PowerConsumer}}", diff));
-		t->SetColor(255, 0, 0);
-		t->SetYDir(-10);
-		t->FadeOut(4, 8);
+		VisualizePowerChange(n.obj, n.amount, before, false);
 	}
 	if(n.amount < 0)
 		n.obj->~OnEnoughPower(); // might be reverted soon, though
@@ -278,6 +263,7 @@ func SleepLink(int index)
 	
 	// sadly not enough power anymore
 	o.obj->~OnNotEnoughPower();
+	VisualizePowerChange(o.obj, 0, o.amount, true);
 	
 	return true;
 }
@@ -326,6 +312,68 @@ public func Init()
 }
 
 // static
+func VisualizePowerChange(object obj, int to, int before, bool loss)
+{
+	var before_current = nil;
+	var e = GetEffect("VisualPowerChange", obj);
+	if(!e)
+		e = AddEffect("VisualPowerChange", obj, 1, 5, nil, Library_Power);
+	else before_current = e.current;
+	
+	var to_abs = Abs(to);
+	var before_abs = Abs(before);
+	
+	e.max = Max(to_abs, before_abs);
+	e.current = before_current ?? before_abs;
+	e.to = to_abs;
+	
+	
+	
+	if(loss)
+		e.back_graphics_name = "Red";
+	else e.back_graphics_name = nil;
+	
+	if(to < 0) e.graphics_name = "Yellow";
+	else if(to > 0) e.graphics_name = "Green";
+	else // off now
+	{
+		if(before < 0) e.graphics_name = "Yellow";
+		else e.graphics_name = "Green";
+	}
+
+	EffectCall(obj, e, "Refresh");
+}
+
+func FxVisualPowerChangeRefresh(target, effect)
+{
+	if(effect.bar) effect.bar->Close();
+	var vis = VIS_Allies | VIS_Owner;
+	var controller = target->GetController();
+	if(controller == NO_OWNER) vis = VIS_All;
+	var off_x = -(target->GetDefCoreVal("Width", "DefCore") * 3) / 8;
+	var off_y = target->GetDefCoreVal("Height", "DefCore") / 2 - 10;
+	
+	effect.bar = target->CreateProgressBar(GUI_BarProgressBar, effect.max, effect.current, 35
+		, controller, {x = off_x, y = off_y}, vis
+		, {size = 1000, bars = effect.max / 25, graphics_name = effect.graphics_name, back_graphics_name = effect.back_graphics_name, image = Icon_Lightbulb, fade_speed = 1});
+	// appear on a GUI level in front of other objects (f.e. trees)
+	effect.bar->SetPlane(1010);
+}
+
+func FxVisualPowerChangeTimer(target, effect, time)
+{
+	if(!effect.bar) return -1;
+	if(effect.current == effect.to) return 1;
+	
+	if(effect.to < effect.current) effect.current = Max(effect.current - 15, effect.to);
+	else effect.current = Min(effect.current + 15, effect.to);
+
+	effect.bar->SetValue(effect.current);
+	return 1;
+}
+
+
+// static
 func GetPowerHelperForObject(object who)
 {
 	var w;
@@ -341,7 +389,7 @@ func GetPowerHelperForObject(object who)
 	{
 		for(var obj in Library_Power_power_compounds)
 		{
-			if(!obj.neutral) continue;
+			if(!obj || !obj.neutral) continue;
 			helper = obj;
 			break;
 		}
@@ -377,6 +425,7 @@ func GetPowerHelperForObject(object who)
 	return helper;
 }
 
+// returns the amount of unavailable power that is currently being request 
 global func GetPendingPowerAmount()
 {
 	if(!this) return 0;
@@ -384,6 +433,8 @@ global func GetPendingPowerAmount()
 	return (Library_Power->GetPowerHelperForObject(this))->GetPendingPowerAmount();
 }
 
+// returns the current power balance of the area an object is in.
+// this is roughly equivalent to produced_power - consumed_power 
 global func GetCurrentPowerBalance()
 {
 	if(!this) return 0;
@@ -391,13 +442,23 @@ global func GetCurrentPowerBalance()
 	return (Library_Power->GetPowerHelperForObject(this))->GetPowerBalance();
 }
 
-global func MakePowerProducer(int amount)
+// turns the object into a power producer that produces /amount/ power until the function is called again with amount = 0
+global func MakePowerProducer(int amount /* the amount of power to produce constantly, 0 to turn off */)
 {
 	if(!this) return false;
 	Library_Power->Init();
-	return (Library_Power->GetPowerHelperForObject(this))->AddPowerProducer(this, amount);
+	var power_helper = Library_Power->GetPowerHelperForObject(this);
+	if (!power_helper) return false;
+	return power_helper->AddPowerProducer(this, amount);
 }
 
+/** Turns the power producer into an object that does not produce power */
+global func UnmakePowerProducer()
+{
+	MakePowerProducer(0);
+}
+
+// returns true if the current power balance is bigger or equal amount
 global func IsPowerAvailable(int amount)
 {
 	if(!this) return false;
@@ -405,11 +466,17 @@ global func IsPowerAvailable(int amount)
 	return (Library_Power->GetPowerHelperForObject(this))->IsPowerAvailable(this, amount);
 }
 
-global func MakePowerConsumer(int amount)
+// turns the object into a power consumer
+global func MakePowerConsumer(int amount /* the amount of power to request, 0 to turn off */)
 {
 	if(!this) return false;
 	Library_Power->Init();
 	return (Library_Power->GetPowerHelperForObject(this))->AddPowerConsumer(this, amount);
 }
 
-// helper object
+// helper object should not be saved
+func SaveScenarioObject()
+{
+	if (GetID() == Library_Power) return false;
+	return inherited(...);
+}

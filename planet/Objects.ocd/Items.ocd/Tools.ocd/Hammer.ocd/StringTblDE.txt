@@ -1,5 +1,6 @@
-TxtNoconstructionplansa=Keine Baupläne verfügbar
+﻿TxtNoconstructionplansa=Keine Baupläne verfügbar
 TxtConstructions=Konstruktion: %s
 TxtCantConstruct=%s kann nicht bauen.
 Name=Hammer
-Description=Drücke [Benutzen], um ein Gebäude zu errichten.
+Description=Mit dem Hammer können neue Gebäude errichtet werden.
+UsageHelp=Drücke [Benutzen], um ein Gebäude zu errichten.

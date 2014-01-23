@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
- * Copyright (c) 2004-2006, 2008  Peter Wortmann
- * Copyright (c) 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // scenario record functionality
 
@@ -27,16 +23,10 @@ class C4Record;
 #include "C4Group.h"
 #include "C4Control.h"
 
-#ifdef DEBUGREC
 extern int DoNoDebugRec; // debugrec disable counter in C4Record.cpp
 
 #define DEBUGREC_OFF ++DoNoDebugRec;
 #define DEBUGREC_ON --DoNoDebugRec;
-
-#else
-#define DEBUGREC_OFF
-#define DEBUGREC_ON
-#endif
 
 // turn off debugrecs in current block
 class C4DebugRecOff
@@ -93,15 +83,14 @@ enum C4RecordChunkType // record file chunk type
 	RCT_OCF      = 0xA3,  // OCF setting of updating
 	RCT_DirectExec = 0xA4,  // a DirectExec-script
 	RCT_Definition = 0xA5,  // Definition callback
+	RCT_SetProperty= 0xA6, // set a property in a proplist
 
 	RCT_Custom  = 0xc0, // varies
 
 	RCT_Undefined = 0xff
 };
 
-#ifdef DEBUGREC
 void AddDbgRec(C4RecordChunkType eType, const void *pData=NULL, int iSize=0); // record debug stuff
-#endif
 
 #pragma pack(1)
 
@@ -305,9 +294,7 @@ private:
 	StdBuf sequentialBuffer; // buffer to manage sequential reads
 	uint32_t iLastSequentialFrame; // frame number of last chunk read
 	void Finish(); // end playback
-#ifdef DEBUGREC
 	C4PacketList DebugRec;
-#endif
 public:
 	C4Playback(); // constructor; init playback
 	~C4Playback(); // destructor; deinit playback
@@ -323,10 +310,8 @@ public:
 	bool ExecuteControl(C4Control *pCtrl, int iFrame); // assign control
 	bool IsFinished() { return Finished; }
 	void Clear();
-#ifdef DEBUGREC
 	void Check(C4RecordChunkType eType, const uint8_t *pData, int iSize); // compare with debugrec
 	void DebugRecError(const char *szError);
-#endif
 	static bool StreamToRecord(const char *szStream, StdStrBuf *pRecord);
 };
 

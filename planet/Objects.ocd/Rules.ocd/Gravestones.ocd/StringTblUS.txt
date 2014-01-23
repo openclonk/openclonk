@@ -1,0 +1,2 @@
+Name=Gravestones
+Description=Gravestones are created to cover a clonk's corpse, providing monuments for the dead.

@@ -1,0 +1,2 @@
+Name=JumpEffect
+Description=Visual.

@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2004-2008, 2010  Sven Eberhardt
- * Copyright (c) 2005-2007  Peter Wortmann
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2007  Julian Raschke
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // permanent player information management
 // see header for some additional information
@@ -90,11 +82,11 @@ bool C4PlayerInfo::LoadFromLocalFile(const char *szFilename)
 	this->szFilename = szFilename;
 	dwColor = dwOriginalColor = 0xff000000 | (C4P.PrefColorDw & 0xffffff); // ignore alpha
 	dwAlternateColor = 0xff000000 | (C4P.PrefColor2Dw & 0xffffff); // ignore alpha
-	// network: ressource (not for replays, because everyone has the player files there...)
+	// network: resource (not for replays, because everyone has the player files there...)
 	if (::Network.isEnabled() && !Game.C4S.Head.Replay)
 	{
-		// add ressource
-		// 2do: rejoining players need to update their ressource version when saving the player
+		// add resource
+		// 2do: rejoining players need to update their resource version when saving the player
 		// otherwise, player file versions may differ
 		pRes = ::Network.ResList.getRefRes(szFilename, true);
 		// not found? add
@@ -126,9 +118,9 @@ bool C4PlayerInfo::SetAsScriptPlayer(const char *szName, uint32_t dwColor, uint3
 
 const char *C4PlayerInfo::GetLocalJoinFilename() const
 {
-	// preferred: by ressource
+	// preferred: by resource
 	if (pRes) return pRes->getFile();
-	// if no ressource is known (replay or non-net), return filename
+	// if no resource is known (replay or non-net), return filename
 	return szFilename.getData();
 }
 
@@ -297,8 +289,8 @@ void C4PlayerInfo::LoadResource()
 	if (IsRemoved() || !(dwFlags & PIF_HasRes) || pRes) return;
 	// Ignore res if a local file is to be used
 	// the PIF_InScenarioFile is not set for startup players in initial replays,
-	// because ressources are used for player joins but emulated in playback control
-	// if there will ever be ressources in replay mode, this special case can be removed
+	// because resources are used for player joins but emulated in playback control
+	// if there will ever be resources in replay mode, this special case can be removed
 	if (Game.C4S.Head.Replay || (dwFlags & PIF_InScenarioFile))
 		dwFlags &= ~PIF_HasRes;
 	else
@@ -306,7 +298,7 @@ void C4PlayerInfo::LoadResource()
 		if (!(pRes = ::Network.ResList.AddByCore(ResCore)))
 		{
 			dwFlags &= ~PIF_HasRes;
-			// add failed? invalid ressource??! -- TODO: may be too large to load
+			// add failed? invalid resource??! -- TODO: may be too large to load
 			LogF("Error: Could not add resource %d for player %s! Player file too large to load?", (int) ResCore.getID(), (const char *) GetFilename());
 		}
 }
@@ -406,11 +398,17 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 					{
 						C4PlayerInfo *pNewInfo = new C4PlayerInfo();
 						if (pNewInfo->LoadFromLocalFile(szPlrFile))
+						{
 							// player def loaded; register and count it
 							ppPlayers[iPlayerCount++] = pNewInfo;
+						}
 						else
+						{
 							// loading failure; clear info class
 							delete pNewInfo;
+							// 
+							LogFatal(FormatString(LoadResStr("IDS_ERR_LOAD_PLAYER"), szPlrFile).getData());
+						}
 					}
 			}
 			if (pAddInfo)
@@ -608,7 +606,7 @@ C4PlayerInfo *C4ClientPlayerInfos::GetPlayerInfoByRes(int32_t idResID) const
 	{
 		if ((pRes = (*ppCurrPlrInfo)->GetRes()))
 			if (pRes->getResID() == idResID)
-				// only if the player is actually using the ressource
+				// only if the player is actually using the resource
 				if ((*ppCurrPlrInfo)->IsUsingPlayerFile())
 					return *ppCurrPlrInfo;
 		++ppCurrPlrInfo;
@@ -1493,7 +1491,7 @@ bool C4PlayerInfoList::RecreatePlayerFiles()
 				else
 				{
 					// regular player in savegame being resumed in network or normal mode:
-					// the filenames and/or ressources should have been assigned
+					// the filenames and/or resources should have been assigned
 					// a) either in lobby mode during player re-acquisition
 					// b) or when players from rSavegamePlayers were taken over
 				}
@@ -1552,7 +1550,7 @@ bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 			{
 				// get filename to join from
 				const char *szFilename = pInfo->GetLocalJoinFilename();
-				// ensure ressource is loaded, if joining from ressource
+				// ensure resource is loaded, if joining from resource
 				// this may display a waiting dialog and block the thread for a while
 				C4Network2Res *pJoinRes = pInfo->GetRes();
 				if (szFilename && pJoinRes && pJoinRes->isLoading())
@@ -1567,7 +1565,7 @@ bool C4PlayerInfoList::RecreatePlayers(C4ValueNumbers * numbers)
 				{
 					if (pInfo->GetType() == C4PT_User)
 					{
-						// for user players, this could happen only if the user cancelled the ressource
+						// for user players, this could happen only if the user cancelled the resource
 						const char *szPlrName = pInfo->GetName(); if (!szPlrName) szPlrName = "???";
 						LogF(LoadResStr("IDS_ERR_LOAD_RECR_NOFILEFROMNET"), szPlrName);
 						continue;

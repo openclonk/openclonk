@@ -180,12 +180,12 @@ private func MakeTarget(int x, int y, bool flying)
 	{
 		var balloon = CreateObject(TargetBalloon, x, y-30, NO_OWNER);
 		target->SetAction("Attach", balloon);
-		CreateParticle("Flash", x, y - 50, 0, 0, 500, RGB(255, 255, 255));
+		CreateParticle("Flash", x, y - 50, 0, 0, 8, Particles_Flash());
 	}
 
 	if (flying == false)
 	{
-		CreateParticle("Flash", x, y, 0, 0, 500, RGB(255, 255, 255));
+		CreateParticle("Flash", x, y, 0, 0, 8, Particles_Flash());
 		target->SetAction("Float");
 	}
 	return target;
@@ -259,7 +259,7 @@ global func FxClonkRestoreStop(object target, effect, int reason, bool  temporar
 		var transfer, index = target->ContentsCount();
 		while (transfer = target->Contents(--index))
 			transfer->Enter(clonk);
-		restorer->SetRestoreObject(clonk, nil, to_x, to_y, "ClonkRestore");
+		restorer->SetRestoreObject(clonk, nil, to_x, to_y, 0, "ClonkRestore");
 	}
 	return 1;
 }

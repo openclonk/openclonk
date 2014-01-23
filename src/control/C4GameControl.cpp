@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2005-2010  Sven Eberhardt
- * Copyright (c) 2006, 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 /* control management */
 
@@ -52,7 +48,7 @@ C4GameControl::~C4GameControl()
 
 bool C4GameControl::InitLocal(C4Client *pLocal)
 {
-	eMode = CM_Local; fPreInit = fInitComplete = true;
+	eMode = CM_Local; fInitComplete = true;
 	fHost = true; iClientID = pLocal->getID();
 	ControlRate = 1;
 	// ok
@@ -65,7 +61,7 @@ bool C4GameControl::InitNetwork(C4Client *pLocal)
 	if (!Network.IsEnabled())
 		return false;
 	// set mode
-	eMode = CM_Network; fPreInit = fInitComplete = true;
+	eMode = CM_Network; fInitComplete = true;
 	fHost = pLocal->isHost(); iClientID = pLocal->getID();
 	// control rate by parameters
 	ControlRate = Game.Parameters.ControlRate;
@@ -184,9 +180,8 @@ void C4GameControl::RequestRuntimeRecord()
 	fRecordNeeded = true;
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
-#ifndef DEBUGREC
-	::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
-#endif
+	if (Config.General.DebugRec)
+		::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
 }
 
 bool C4GameControl::IsRuntimeRecordPossible() const
@@ -219,7 +214,7 @@ void C4GameControl::Default()
 	Input.Clear();
 	Network.Clear();
 	eMode = CM_None;
-	fHost = fPreInit = fInitComplete = false;
+	fHost = fInitComplete = false;
 	iClientID = C4ClientIDUnknown;
 	pRecord = NULL;
 	pPlayback = NULL;
@@ -388,13 +383,11 @@ void C4GameControl::SetActivated(bool fnActivated)
 
 void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4ControlDeliveryType eDelivery)
 {
-	assert(fPreInit);
+	assert(fInitComplete || pPkt->Lobby());
 
 	// check if the control can be executed
 	if (eDelivery == CDT_Direct || eDelivery == CDT_Private)
 		assert(!pPkt->Sync());
-	if (!fInitComplete)
-		assert(pPkt->Lobby());
 
 	// decide control type
 	if (eDelivery == CDT_Decide)
@@ -424,18 +417,19 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 
 void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t iSize)
 {
-#ifdef DEBUGREC
-	if (DoNoDebugRec>0) return;
-	// record data
-	if (pRecord)
+	if (Config.General.DebugRec)
 	{
-		C4PktDebugRec dr(eType, StdBuf(pData, iSize));
-		pRecord->Rec(Game.FrameCounter, DecompileToBuf<StdCompilerBinWrite>(dr), eType);
+		if (DoNoDebugRec>0) return;
+		// record data
+		if (pRecord)
+		{
+			C4PktDebugRec dr(eType, StdBuf(pData, iSize));
+			pRecord->Rec(Game.FrameCounter, DecompileToBuf<StdCompilerBinWrite>(dr), eType);
+		}
+		// check against playback
+		if (pPlayback)
+			pPlayback->Check(eType, pData, iSize);
 	}
-	// check against playback
-	if (pPlayback)
-		pPlayback->Check(eType, pData, iSize);
-#endif // DEBUGREC
 }
 
 C4ControlDeliveryType C4GameControl::DecideControlDelivery()

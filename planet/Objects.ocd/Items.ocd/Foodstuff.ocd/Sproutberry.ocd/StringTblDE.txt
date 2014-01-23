@@ -1,2 +1,3 @@
 Name=Sprossenbeere
 Description=Süßlich. Keimt sehr schnell und ist schlecht zu lagern.
+UsageHelp=Drücke [Benutzen] um die Beere zu essen.

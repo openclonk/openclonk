@@ -40,10 +40,31 @@ protected func Recruitment(int plr)
 	if (!HUDcontroller)
 		HUDcontroller = CreateObject(GUI_Controller, 10, 10, plr);
 	
-	HUDcontroller->ScheduleUpdateBackpack();
-	HUDcontroller->UpdateHealthTube();
+	HUDcontroller->OnCrewRecruitment(this, plr, ...);
+	HUDcontroller->ScheduleUpdateInventory();
 	
 	return _inherited(plr, ...);
+}
+
+protected func DeRecruitment(int plr)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeRecruitment(this, plr, ...);
+	
+	return _inherited(plr, ...);
+}
+
+protected func Death(int killed_by)
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDeath(this, killed_by, ...);
+
+	return _inherited(killed_by,...);
+}
+
+protected func Destruction()
+{
+	if (HUDcontroller) HUDcontroller->OnCrewDestruction(this, ...);
+
+	return _inherited(...);
 }
 
 public func OnDisplayInfoMessage()
@@ -62,24 +83,18 @@ protected func OnPromotion()
 
 protected func OnEnergyChange()	
 {
-	if (HUDcontroller) 
-		HUDcontroller->UpdateHealthTube();
 	if (HUDselector)
 		HUDselector->UpdateHealthBar();
 	return _inherited(...);
 
 }
 protected func OnBreathChange() {
-	if (HUDcontroller)
-		HUDcontroller->UpdateBreathTube();
 	if (HUDselector)
 		HUDselector->UpdateBreathBar();
 	return _inherited(...);
 }
 
 protected func OnMagicEnergyChange() {
-	if (HUDselector)
-		HUDselector->UpdateMagicBar();
 	return _inherited(...);
 }
 
@@ -150,6 +165,14 @@ protected func OnSlotEmpty(int slot)
 	return _inherited(slot, ...);
 }
 
+// used to add a progress bar to an inventory slot
+// "effect" refers to an effect with the properties "max" and "current" that is used to keep the progress bar state up-to-date
+func SetProgressBarLinkForObject(object what, proplist effect)
+{
+	if(HUDcontroller)
+		HUDcontroller->SetProgressBarLinkForObject(what, effect);
+	return _inherited(what, effect, ...);
+}
 
 protected func OnHandSelectionChange(int old, int new, int handslot)
 {
@@ -176,15 +199,16 @@ protected func OnInventoryHotkeyRelease(int slot)
 protected func OnInventoryChange()
 {
 	if (HUDcontroller)
-		HUDcontroller->ScheduleUpdateBackpack();
+		HUDcontroller->ScheduleUpdateInventory();
 	return _inherited(...);
 }
 
 // when a carryheavy object is picked up/dropped
-func OnCarryHeavyChange(object carried)
+protected func OnCarryHeavyChange(object carried)
 {
 	if(HUDcontroller)
-		HUDcontroller->OnCarryHeavyChange(carried);
+		if(GetCursor(GetOwner()) == this)
+			HUDcontroller->OnCarryHeavyChange(carried);
 		
 	return _inherited(carried, ...);
 }
@@ -192,20 +216,20 @@ func OnCarryHeavyChange(object carried)
 func Collection2()
 {
 	if (HUDcontroller)
-		HUDcontroller->ScheduleUpdateBackpack();
+		HUDcontroller->ScheduleUpdateInventory();
 	return _inherited(...);
 }
 
 func Ejection()
 {
 	if (HUDcontroller)
-		HUDcontroller->ScheduleUpdateBackpack();
+		HUDcontroller->ScheduleUpdateInventory();
 	return _inherited(...);
 }
 
 func ControlContents()
 {
 	if (HUDcontroller)
-		HUDcontroller->ScheduleUpdateBackpack();
+		HUDcontroller->ScheduleUpdateInventory();
 	return _inherited(...);
 }

@@ -1,2 +1,0 @@
-Name=Plant
-Harvest= Harvest %s

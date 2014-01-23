@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2003-2008  Sven Eberhardt
- * Copyright (c) 2006-2010  Günther Brammer
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // generic user interface
 // all generic classes that do not fit into other C4Gui*-files
@@ -337,33 +332,42 @@ namespace C4GUI
 
 	void Element::DrawVBar(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		rFacets.fctBegin.Draw(cgo.Surface, x0,y0);
-		while (iY < rcBounds.Hgt-5)
-		{
-			int32_t h2=Min(h, rcBounds.Hgt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.Draw(cgo.Surface, x0, y0+iY);
-			iY += h;
-		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.Draw(cgo.Surface, x0, y0+rcBounds.Hgt-rFacets.fctEnd.Hgt);
+		C4DrawTransform trf(1);
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Hgt);
 	}
 
 	void Element::DrawHBarByVGfx(C4TargetFacet &cgo, DynBarFacet &rFacets)
 	{
-		int32_t y0=cgo.TargetY+rcBounds.y, x0=cgo.TargetX+rcBounds.x;
-		int32_t iY = rFacets.fctBegin.Hgt, h=rFacets.fctMiddle.Hgt;
-		C4DrawTransform trf; trf.SetRotate(-90*100, (float)(cgo.TargetX+rcBounds.x+rcBounds.Hgt/2), (float)(cgo.TargetY+rcBounds.y+rcBounds.Hgt/2));
-		rFacets.fctBegin.DrawT(cgo.Surface, x0,y0, 0, 0, &trf);
-		while (iY < rcBounds.Wdt-5)
+		C4DrawTransform trf;
+		float fOffX = cgo.TargetX + rcBounds.x + rcBounds.Hgt/2;
+		float fOffY = cgo.TargetY + rcBounds.y + rcBounds.Hgt/2;
+		trf.SetRotate(-90.0f, fOffX, fOffY);
+
+		DrawHVBar(cgo, rFacets, trf, rcBounds.Wdt);
+	}
+
+	void Element::DrawHVBar(C4TargetFacet &cgo, DynBarFacet &rFacets, C4DrawTransform &trf, int32_t iMiddleLength)
+	{
+		int32_t y0 = cgo.TargetY + rcBounds.y;
+		int32_t x0 = cgo.TargetX + rcBounds.x;
+
+		// draw up arrow
+		rFacets.fctBegin.DrawT(cgo.Surface, x0, y0, 0, 0, &trf);
+
+		// draw middle part
+		int32_t h = rFacets.fctMiddle.Hgt;
+		int32_t barHeight = iMiddleLength - (rFacets.fctBegin.Hgt + rFacets.fctEnd.Hgt);
+
+		for (int32_t iY = 0; iY <= barHeight; iY += h)
 		{
-			int32_t h2=Min(h, rcBounds.Wdt-5-iY); rFacets.fctMiddle.Hgt=h2;
-			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0+iY, 0, 0, &trf);
-			iY += h;
+			int32_t h2 = Min(h, barHeight - iY);
+			rFacets.fctMiddle.Hgt = h2;
+			rFacets.fctMiddle.DrawT(cgo.Surface, x0, y0 + rFacets.fctBegin.Hgt + iY, 0, 0, &trf);
 		}
-		rFacets.fctMiddle.Hgt=h;
-		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0+rcBounds.Wdt-rFacets.fctEnd.Hgt, 0, 0, &trf);
+		rFacets.fctMiddle.Hgt = h;
+
+		// draw lower arrow
+		rFacets.fctEnd.DrawT(cgo.Surface, x0, y0 + iMiddleLength - rFacets.fctEnd.Hgt, 0, 0, &trf);
 	}
 
 	C4Rect Element::GetToprightCornerRect(int32_t iWidth, int32_t iHeight, int32_t iHIndent, int32_t iVIndent, int32_t iIndexX)
@@ -462,8 +466,6 @@ namespace C4GUI
 		int32_t iOffsetX = -GfxR->fctMouseCursor.Wdt/2;
 		int32_t iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
-		if (::MouseControl.IsHelp())
-			GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);
 		// ToolTip
 		if (fDrawToolTip && pMouseOverElement)
 		{
@@ -541,10 +543,7 @@ namespace C4GUI
 	{
 		Mouse.x = tx+twdt/2;
 		Mouse.y = ty+thgt/2;
-		// calculate zoom
-		float fZoomX = float(Config.Graphics.ResX) / twdt;
-		float fZoomY = float(Config.Graphics.ResY) / thgt;
-		fZoom = Min<float>(fZoomX, fZoomY);
+		fZoom = 1.0f;
 		// set size - calcs client area as well
 		SetBounds(C4Rect(tx,ty,twdt,thgt));
 		SetPreferredDlgRect(C4Rect(0,0,twdt,thgt));
@@ -709,7 +708,7 @@ namespace C4GUI
 	void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 		// draw mouse cursor
-		Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || ::MouseControl.IsHelp());
+		Mouse.Draw(cgo, Mouse.IsMouseStill() && Mouse.IsActiveInput());
 	}
 
 	void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
@@ -809,27 +808,6 @@ namespace C4GUI
 		float fZoom = pForDlg ? 1.0f : GetZoom(); // Developer mode dialogs are currently drawn unzoomed
 		float fX = float(iPxX) / fZoom;
 		float fY = float(iPxY) / fZoom;
-		// help mode and button pressed: Abort help and discard button
-		if (::MouseControl.IsHelp())
-		{
-			switch (iButton)
-			{
-			case C4MC_Button_None:
-				// just movement
-				break;
-			case C4MC_Button_LeftDown:
-			case C4MC_Button_RightDown:
-				// special for left/right down: Just ignore them, but don't stop help yet
-				// help should be stopped on button-up, so these won't be processed
-				iButton = C4MC_Button_None;
-				break;
-			default:
-				// buttons stop help
-				::MouseControl.AbortHelp();
-				iButton = C4MC_Button_None;
-				break;
-			}
-		}
 		// forward to mouse
 		Mouse.Input(iButton, fX, fY, dwKeyParam);
 		// dragging

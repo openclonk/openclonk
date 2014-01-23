@@ -1,21 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001, 2006-2007  Sven Eberhardt
- * Copyright (c) 2001-2002, 2004, 2007  Peter Wortmann
- * Copyright (c) 2006-2009, 2011  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // links aul scripts; i.e. resolves includes & appends, etc
 
@@ -28,9 +24,19 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 
+bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
+{
+	return false;
+}
+
+bool C4AulScript::ResolveAppends(C4DefList *rDefs)
+{
+	return false;
+}
+
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
-bool C4AulScript::ResolveAppends(C4DefList *rDefs)
+bool C4ScriptHost::ResolveAppends(C4DefList *rDefs)
 {
 	// resolve local appends
 	if (State != ASS_PREPARSED) return false;
@@ -49,7 +55,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				Warn("script to #appendto not found: ", a->ToString());
+				Warn("#appendto %s not found", a->ToString());
 			}
 		}
 		else
@@ -69,7 +75,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 	return true;
 }
 
-bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
+bool C4ScriptHost::ResolveIncludes(C4DefList *rDefs)
 {
 	// Had been preparsed?
 	if (State != ASS_PREPARSED) return false;
@@ -91,7 +97,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 		if (Def)
 		{
 			// resolve #includes in included script first (#include-chains :( )
-			if (!((C4AulScript &)Def->Script).IncludesResolved)
+			if (!Def->Script.IncludesResolved)
 				if (!Def->Script.ResolveIncludes(rDefs))
 					continue; // skip this #include
 
@@ -106,7 +112,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 			// save id in buffer because AulWarn will use the buffer of C4IdText
 			// to get the id of the object in which the error occurs...
 			// (stupid static buffers...)
-			Warn("script to #include not found: ", i->ToString());
+			Warn("#include %s not found", i->ToString());
 		}
 	}
 	IncludesResolved = true;
@@ -118,29 +124,16 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 
 void C4AulScript::UnLink()
 {
-	// do not unlink temporary (e.g., DirectExec-script in ReloadDef)
-	if (Temporary) return;
 
+}
+
+void C4ScriptHost::UnLink()
+{
 	C4PropList * p = GetPropList();
-	if (p) p->C4PropList::Thaw();
-
-	// delete included/appended functions
-	C4AulFunc* pFunc = Func0;
-	while (pFunc)
+	if (p)
 	{
-		C4AulFunc* pNextFunc = pFunc->Next;
-
-		// clear stuff that's set in AfterLink
-		pFunc->UnLink();
-
-		if (pFunc->SFunc())
-			if (pFunc->Owner != pFunc->SFunc()->pOrgScript)
-			{
-				pFunc->RemoveFromScript();
-				pFunc->DecRef();
-			}
-
-		pFunc = pNextFunc;
+		p->C4PropList::Clear();
+		p->SetProperty(P_Prototype, C4VPropList(Engine->GetPropList()));
 	}
 
 	// includes will have to be re-resolved now
@@ -149,23 +142,23 @@ void C4AulScript::UnLink()
 	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
 }
 
-void C4AulScriptFunc::UnLink()
+void C4AulScriptEngine::UnLink()
 {
-	OwnerOverloaded = NULL;
-
-	C4AulFunc::UnLink();
+	// unlink scripts
+	for (C4AulScript *s = Child0; s; s = s->Next)
+		s->UnLink();
+	GetPropList()->Thaw();
+	if (State > ASS_PREPARSED) State = ASS_PREPARSED;
+	// Do not clear global variables and constants, because they are registered by the
+	// preparser or other parts. Note that keeping those fields means that you cannot delete a global
+	// variable or constant at runtime by removing it from the script.
+	//GlobalNamedNames.Reset();
+	//GlobalConstNames.Reset();
 }
-
-void C4AulScript::AfterLink() { }
 
 bool C4AulScript::ReloadScript(const char *szPath, const char *szLanguage)
 {
 	return false;
-}
-
-void C4AulScriptEngine::AfterLink()
-{
-	GlobalPropList->Freeze();
 }
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
@@ -181,9 +174,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->ResolveIncludes(rDefs);
 
-		// put script functions into the proplist
-		LinkFunctions();
-
 		// parse the scripts to byte code
 		for (C4AulScript *s = Child0; s; s = s->Next)
 			s->Parse();
@@ -191,15 +181,16 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// engine is always parsed (for global funcs)
 		State = ASS_PARSED;
 
-		// get common funcs
-		for (C4AulScript *s = Child0; s; s = s->Next)
-			s->AfterLink();
-		AfterLink();
-
 		// update material pointers
 		::MaterialMap.UpdateScriptPointers();
 
 		rDefs->CallEveryDefinition();
+
+		// Done modifying the proplists now
+		for (C4AulScript *s = Child0; s; s = s->Next)
+			s->GetPropList()->Freeze();
+		GetPropList()->Freeze();
+
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
 		     lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));

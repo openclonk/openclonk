@@ -1,2 +1,3 @@
 Name=Enterhaken
-Description=Schieße den Enterhaken an eine Decke, um Dich daran zu sichern.
+Description=Sehr nützliches Werkzeug zum Erklimmen von schwierigem Terrain.
+UsageHelp=Schieße den Enterhaken an eine Decke, um Dich daran zu sichern.

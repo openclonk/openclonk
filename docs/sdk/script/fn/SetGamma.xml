@@ -78,7 +78,7 @@
     <examples>
       <example>
         <code>SetGamma(<funclink>RGB</funclink>(50,0,0), <funclink>RGB</funclink>(140,100,100), <funclink>RGB</funclink>(255,220,220));</code>
-        <text>Adds a light blue hue to the game.</text>
+        <text>Adds a light red hue to the game.</text>
       </example>
     </examples>
     <related>

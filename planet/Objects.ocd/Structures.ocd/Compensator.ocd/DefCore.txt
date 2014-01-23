@@ -2,8 +2,6 @@
 id=Compensator
 Version=5,2,0,1
 Category=C4D_Structure
-TimerCall=EnergyCheck
-Timer=100
 Width=30
 Height=20
 Offset=-15,-10
@@ -15,6 +13,5 @@ Value=20
 Mass=100
 Components=Coal=1;Metal=1
 Exclusive=1
-BlastIncinerate=1
-ContactIncinerate=1
 Construction=1
+IncompleteActivity=1

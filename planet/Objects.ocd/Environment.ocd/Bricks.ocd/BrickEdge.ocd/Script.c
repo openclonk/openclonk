@@ -43,6 +43,14 @@ public func SetP(int p)
 	dir=p;
 }
 
+// Edges in saved scenarios
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (dir) props->AddCall("P", this, "SetP", dir);
+	return true;
+}
+
 public func GetD() { return dir; }
 
 global func MakeEdgeFunction(bool fExact)

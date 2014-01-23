@@ -1,0 +1,14 @@
+[DefCore]
+id=Lichen
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=2
+VertexX=0,0
+VertexY=7,12
+VertexFriction=50,100
+VertexCNAT=16,8
+Components=Moss=4
+Mass=10

@@ -1,23 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2001-2002, 2004-2006  Peter Wortmann
- * Copyright (c) 2001, 2005-2006  Sven Eberhardt
- * Copyright (c) 2006-2011  Günther Brammer
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
@@ -58,6 +52,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "def";
 	case C4V_Effect:
 		return "effect";
+	case C4V_Function:
+		return "function";
 	default:
 		return "!Fehler!";
 	}
@@ -134,17 +130,14 @@ StdStrBuf C4Value::GetDataString(int depth) const
 	{
 		if (Data.PropList == ScriptEngine.GetPropList())
 			return StdStrBuf("Global");
+		C4Object * Obj = Data.PropList->GetObject();
+		if (Obj == Data.PropList)
+			return FormatString("Object(%d)", Obj->Number);
+		const C4PropListStatic * Def = Data.PropList->IsStatic();
+		if (Def)
+			return Def->GetDataString();
 		StdStrBuf DataString;
 		DataString = "{";
-		if (Data.PropList->GetObject())
-		{
-			if (Data.PropList->GetObject()->Status == C4OS_NORMAL)
-				DataString.AppendFormat("#%d, ", Data.PropList->GetObject()->Number);
-			else
-				DataString.AppendFormat("(#%d), ", Data.PropList->GetObject()->Number);
-		}
-		else if (Data.PropList->GetDef())
-			DataString.AppendFormat("%s, ", Data.PropList->GetDef()->id.ToString());
 		Data.PropList->AppendDataString(&DataString, ", ", depth);
 		DataString.AppendChar('}');
 		return DataString;
@@ -208,7 +201,7 @@ void C4Value::Denumerate(class C4ValueNumbers * numbers)
 		Data.Array->Denumerate(numbers); break;
 	case C4V_PropList:
 		// objects and effects are denumerated via the main object list
-		if (!Data.PropList->IsNumbered() && !Data.PropList->IsDef())
+		if (!Data.PropList->IsNumbered() && !Data.PropList->IsStatic())
 			Data.PropList->Denumerate(numbers);
 		break;
 	case C4V_C4ObjectEnum:
@@ -264,23 +257,17 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		case C4V_Bool:
 			cC4VID = 'b'; break;
 		case C4V_PropList:
-			if (getPropList()->IsDef())
+			if (getPropList()->IsStatic())
 				cC4VID = 'D';
 			else if (getPropList()->IsNumbered())
 				cC4VID = 'O';
-			else if (getPropList() == GameScript.ScenPropList)
-				cC4VID = 'c';
-			else if (getPropList() == GameScript.ScenPrototype)
-				cC4VID = 't';
-			else if (getPropList() == ScriptEngine.GetPropList())
-				cC4VID = 'g';
 			else
 				cC4VID = 'E';
 			break;
 		case C4V_Array:
 			cC4VID = 'E'; break;
 		case C4V_Function:
-			cC4VID = 'f'; break;
+			cC4VID = 'D'; break;
 		case C4V_String:
 			cC4VID = 's'; break;
 		default:
@@ -301,7 +288,7 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 	case 'b':
 		iTmp = Data.Int;
 		pComp->Value(iTmp);
-		SetBool(iTmp);
+		SetBool(!!iTmp);
 		break;
 
 	case 'E':
@@ -328,22 +315,42 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 
 	case 'D':
 	{
-		C4ID id;
-		if (!fCompiler)
-			id = getPropList()->GetDef()->id;
-		pComp->Value(id);
-		if (fCompiler)
+		if (!pComp->isCompiler())
 		{
-			C4PropList * p = Definitions.ID2Def(id);
-			if (!p)
+			C4PropList * p = getPropList();
+			if (getFunction())
 			{
-				Set0();
-				pComp->Warn("ERROR: Definition %s is missing.", id.ToString());
+				p = Data.Fn->Owner->GetPropList();
+				assert(p);
+				assert(p->GetFunc(Data.Fn->GetName()) == Data.Fn);
+				assert(p->IsStatic());
 			}
-			else
+			p->IsStatic()->RefCompileFunc(pComp, numbers);
+			if (getFunction())
 			{
-				SetPropList(p);
+				pComp->Separator(StdCompiler::SEP_PART);
+				StdStrBuf s; s.Ref(Data.Fn->GetName());
+				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
 			}
+		}
+		else
+		{
+			StdStrBuf s;
+			C4Value temp;
+			pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+			if (!::ScriptEngine.GetGlobalConstant(s.getData(), &temp))
+				pComp->excCorrupt("Cannot find global constant %s", s.getData());
+			while(pComp->Separator(StdCompiler::SEP_PART))
+			{
+				C4PropList * p = temp.getPropList();
+				if (!p)
+					pComp->excCorrupt("static proplist %s is not a proplist anymore", s.getData());
+				pComp->Value(mkParAdapt(s, StdCompiler::RCT_ID));
+				C4String * c4s = ::Strings.FindString(s.getData());
+				if (!c4s || !p->GetPropertyByS(c4s, &temp))
+					pComp->excCorrupt("Cannot find property %s in %s", s.getData(), GetDataString().getData());
+			}
+			Set(temp);
 		}
 		break;
 	}
@@ -359,14 +366,15 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 		break;
 	}
 
+	// FIXME: remove these three once Game.txt were re-saved with current version
 	case 'c':
 		if (fCompiler)
-			SetPropList(GameScript.ScenPropList);
+			Set(GameScript.ScenPropList);
 		break;
 
 	case 't':
 		if (fCompiler)
-			SetPropList(GameScript.ScenPrototype);
+			Set(GameScript.ScenPrototype);
 		break;
 
 	case 'g':
@@ -380,34 +388,6 @@ void C4Value::CompileFunc(StdCompiler *pComp, C4ValueNumbers * numbers)
 			Set0();
 		// doesn't have a value, so nothing to store
 		break;
-
-	case 'f':
-	{
-		C4Value Owner;
-		if (!fCompiler)
-		{
-			Owner.SetPropList(Data.Fn->Owner->GetPropList());
-			assert(Owner._getPropList() && Owner._getPropList()->GetFunc(Data.Fn->GetName()) == Data.Fn);
-		}
-		pComp->Value(mkParAdapt(Owner, numbers));
-		pComp->Separator(StdCompiler::SEP_PART);
-		StdStrBuf s;
-		if (!fCompiler)
-			s = Data.Fn->GetName();
-		pComp->Value(s);
-		if (fCompiler)
-		{
-			// Owner was a definition or singleton, so shouldn't have to be denumerated
-			if (!Owner.getPropList())
-			{
-				Set0();
-				pComp->Warn("ERROR: Owner of function %s is missing.", s.getData());
-			}
-			else
-				SetFunction(Owner._getPropList()->GetFunc(s.getData()));
-		}
-		break;
-	}
 
 	default:
 		// shouldn't happen
@@ -500,41 +480,83 @@ void C4ValueNumbers::CompileFunc(StdCompiler * pComp)
 	}
 }
 
-bool C4Value::operator == (const C4Value& Value2) const
+inline bool ComparisonImpl(const C4Value &Value1, const C4Value &Value2)
 {
-	switch (Type)
+	C4V_Type Type1 = Value1.GetType();
+	C4V_Data Data1 = Value1.GetData();
+	C4V_Type Type2 = Value2.GetType();
+	C4V_Data Data2 = Value2.GetData();
+	switch (Type1)
 	{
-	case C4V_Any:
-		assert(!Data);
-		return Value2.Type == Type;
+	case C4V_Nil:
+		assert(!Data1);
+		return Type1 == Type2;
 	case C4V_Int:
 	case C4V_Bool:
-		switch (Value2.Type)
+		return (Type2 == C4V_Int || Type2 == C4V_Bool) &&
+		       Data1.Int == Data2.Int;
+	case C4V_PropList:
+		return Type1 == Type2 && *Data1.PropList == *Data2.PropList;
+	case C4V_String:
+		return Type1 == Type2 && Data1.Str == Data2.Str;
+	case C4V_Array:
+		return Type1 == Type2 &&
+		       (Data1.Array == Data2.Array || *(Data1.Array) == *(Data2.Array));
+	case C4V_Function:
+		return Type1 == Type2 && Data1.Fn == Data2.Fn;
+	default:
+		assert(!"Unexpected C4Value type (denumeration missing?)");
+		return Data1 == Data2;
+	}
+}
+
+bool C4Value::operator == (const C4Value& Value2) const
+{
+	// recursion guard using a linked list of Seen structures on the stack
+	// NOT thread-safe
+	struct Seen
+	{
+		Seen *prev;
+		const C4Value *left;
+		const C4Value *right;
+		inline Seen(Seen *prev, const C4Value *left, const C4Value *right):
+			prev(prev), left(left), right(right) {}
+		inline bool operator == (const Seen& other)
 		{
-		case C4V_Int:
-		case C4V_Bool:
-			return Data == Value2.Data;
-		default:
+			return left == other.left && right == other.right;
+		}
+		inline bool recursion(Seen *new_top)
+		{
+			for (Seen *s = this; s; s = s->prev)
+				if (*s == *new_top)
+					return true;
 			return false;
 		}
-	case C4V_PropList:
-		if (Value2.Type == C4V_PropList)
+		inline Seen *first()
 		{
-			// Compare as equal if and only if the proplists are indistinguishable
-			// If one or both are mutable, they have to be the same
-			// otherwise, they have to have the same contents
-			if (Data.PropList == Value2.Data.PropList) return true;
-			if (!Data.PropList->IsFrozen() || !Value2.Data.PropList->IsFrozen()) return false;
-			return (*Data.PropList == *Value2.Data.PropList);
+			Seen *s = this;
+			while (s->prev) s = s->prev;
+			return s;
 		}
-	case C4V_String:
-		return Type == Value2.Type && Data.Str == Value2.Data.Str;
-	case C4V_Array:
-		return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
-	default:
-		return Data == Value2.Data;
+	};
+	static Seen *top = NULL;
+	Seen here(top, this, &Value2);
+	
+	bool recursion = top && top->recursion(&here);
+	if (recursion)
+	{
+		Seen *first = top->first();
+		// GetDataString is fine for recursive values since after
+		// some text length has been exceeded ... will be used instead of complete values
+		LogF("Caught infinite recursion comparing %s and %s",
+			first->left->GetDataString().getData(),
+			first->right->GetDataString().getData());
+		return false;
 	}
-	return GetData() == Value2.GetData();
+	top = &here;
+	bool result = ComparisonImpl(*this, Value2);
+	top = here.prev;
+	return result;
 }
 
 bool C4Value::operator != (const C4Value& Value2) const

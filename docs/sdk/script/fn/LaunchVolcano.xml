@@ -18,8 +18,7 @@
         <param>
           <type>int</type>
           <name>y</name>
-          <desc>Y target position. Default: Bottom of the landscape.</desc>
-          <optional />
+          <desc>Y position</desc>
         </param>
         <param>
           <type>int</type>
@@ -33,6 +32,12 @@
           <desc>Name of the material. The default is "Lava"</desc>
           <optional />
         </param>
+        <param>
+          <type>int</type>
+          <name>angle</name>
+          <desc>Direction into which to erupt. 0 (default) is straight up.</desc>
+          <optional />
+        </param>
       </params>
     </syntax>
     <desc>Launches a volcano at the specified position.</desc>
@@ -41,5 +46,5 @@
       <funclink>LaunchEarthquake</funclink>
     </related>
   </func>
-  <author>Newton</author><date>2009-07</date>
+  <author>Newton</author><date>2013-12</date>
 </funcs>

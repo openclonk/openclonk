@@ -23,58 +23,68 @@
     <!ELEMENT remark       (#PCDATA | br | ul | li | table | %text;)*>
     <!ELEMENT examples     (example+)>
       <!ELEMENT example    (code | text)*>
-        <!ELEMENT code     (#PCDATA | funclink | emlink | em | strong)*>
+        <!ELEMENT code     (#PCDATA | funclink | emlink | em | i | strong)*>
+          <!ATTLIST code
+            id CDATA #IMPLIED>
+          <!ELEMENT i      (#PCDATA)>
         <!ELEMENT text     (#PCDATA | br | ul | li | table | %text;)*>
+          <!ATTLIST text
+            id CDATA #IMPLIED>
     <!ELEMENT related      (funclink | emlink)+>
       <!ELEMENT funclink   (#PCDATA)>
-      <!ELEMENT emlink     (#PCDATA)>
+      <!ELEMENT emlink     (#PCDATA | %text;)*>
         <!ATTLIST emlink href CDATA #REQUIRED>
   <!ELEMENT author         (#PCDATA)>
   <!ELEMENT date           (#PCDATA)>
   <!ELEMENT search         EMPTY>
-<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img | search)*)>
-  <!ELEMENT part (h | text | part | code | dl | search)*>
+<!ELEMENT doc (title, (h | text | table | part | code | dl | ul | img | search | examples)+, related?, (author, date?)+)>
+  <!ELEMENT part ((h | text | table | part | code | dl | ul | img | search | examples)+, related?)>
+  <!ELEMENT h     (#PCDATA | %text;)*>
+    <!ATTLIST h
+      id CDATA #IMPLIED>
+
 
 <!ELEMENT br EMPTY>
 
 <!ELEMENT table (#PCDATA | caption | rowh | row | bitmask)*>
   <!ELEMENT caption (#PCDATA)>
     <!ATTLIST caption
-      id ID #IMPLIED>
+      id CDATA #IMPLIED>
   <!ELEMENT row   (#PCDATA | col | literal_col)*>
     <!ATTLIST row
-      id ID #IMPLIED>
+      id CDATA #IMPLIED>
   <!ELEMENT rowh  (#PCDATA | col | literal_col)*>
-  <!ELEMENT col   (#PCDATA | %text;)*>
+  <!ELEMENT col   (#PCDATA | table | text | %text;)*>
     <!ATTLIST col
+      id CDATA #IMPLIED
       colspan CDATA #IMPLIED>
-  <!ELEMENT literal_col   (#PCDATA | %text;)*>
+  <!ELEMENT literal_col   (#PCDATA | table | text | %text;)*>
     <!ATTLIST literal_col
       colspan CDATA #IMPLIED>
   <!ELEMENT bitmask (#PCDATA)>
 
 <!ELEMENT ul    (#PCDATA | li)*>
-  <!ELEMENT li    (#PCDATA | br | %text;)*>
+  <!ELEMENT li    (#PCDATA | br | table | text | %text;)*>
+    <!ATTLIST li
+      id CDATA #IMPLIED>
 
 <!ELEMENT dl    (#PCDATA | dd | dt)*>
   <!ELEMENT dt    (#PCDATA | br | %text;)*>
     <!ATTLIST dt
-      id ID #IMPLIED>
+      id CDATA #IMPLIED>
   <!ELEMENT dd    (#PCDATA | text | code)*>
 
 <!ELEMENT em    (#PCDATA)>
 <!ELEMENT strong (#PCDATA)>
 
-<!ELEMENT h     (#PCDATA)>
-  <!ATTLIST h
-    id ID #IMPLIED>
-
 <!ELEMENT img   EMPTY>
   <!ATTLIST img
     src CDATA #REQUIRED
-    width CDATA "0"
-    height CDATA "0"
-    id ID #IMPLIED>
+    alt CDATA #IMPLIED
+    class CDATA #IMPLIED
+    width CDATA #IMPLIED
+    height CDATA #IMPLIED
+    id CDATA #IMPLIED>
 
 <!ELEMENT a     (#PCDATA)>
   <!ATTLIST a

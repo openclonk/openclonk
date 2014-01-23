@@ -1,0 +1,11 @@
+[DefCore]
+id=Library_Flag_ConstructionPreviewer_Arrow
+Version=5,2,0,1
+Category=C4D_StaticBack
+Width=16
+Height=36
+Offset=-8,-18
+Vertices=1
+VertexX=0
+VertexY=15
+Rotate=1

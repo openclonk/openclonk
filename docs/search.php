@@ -107,11 +107,7 @@ text-decoration: none;
 </head>
 <body>
 <?php
-if ($lang == 'de') {
-	readfile("http://www.openclonk.org/header/header.php?p=docsde");
-} else {
-	readfile("http://www.openclonk.org/header/header.php?p=docs");
-}
+	readfile("http://www.openclonk.org/header/header.html");
 ?>
 <div id="iframe"><iframe src="sdk/content.html"></iframe></div>
 <div id="content">

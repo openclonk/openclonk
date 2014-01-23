@@ -1,0 +1,31 @@
+// grenade_launcher genrated by blender2ogre 0.6.0
+
+material grenade_launcher
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass grenade_launcher
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.02459016442298889 0.02459016442298889 0.02459016442298889 1.0 2.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture grenadelauncher.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+material EnvPack_WineBarrel
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			cull_hardware none
+			scene_blend alpha_blend
+			ambient 0.200000 0.200000 0.200000 1.000000
+			diffuse 0.900000 0.900000 0.900000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 2.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			texture_unit
+			{
+				texture winebarrel.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+	}
+}

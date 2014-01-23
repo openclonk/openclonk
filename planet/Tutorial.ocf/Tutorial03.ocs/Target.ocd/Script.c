@@ -1,9 +1,5 @@
 /*-- Arrow target --*/
 
-func Definition(def) {
-	SetProperty("Name", "$Name$", def);
-}
-
 protected func Initialize()
 {
 	SetAction("Attach");
@@ -29,8 +25,8 @@ public func OnProjectileHit()
 
 public func Burst()
 {
+	CreateParticle("Straw", 0, 0, PV_Random(-30, 30), PV_Random(-30,30), PV_Random(30, 120), Particles_Straw(), 200);
 	RemoveObject();
-	CastParticles("Straw",130,30,0,-3,30,40,RGB(255,255,255),RGB(255,255,255));
 }
 
 public func Hit()
@@ -44,6 +40,7 @@ protected func Tumble()
 }
 
 func Definition(def) {
+	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 
 Fall = {

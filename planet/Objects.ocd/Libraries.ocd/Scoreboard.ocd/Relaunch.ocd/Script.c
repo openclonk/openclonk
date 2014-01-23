@@ -13,23 +13,33 @@
 
 local score_relaunch_list; // Here the relaunch count of all players is stored, access through plrid.
 
+// Overload this.
+public func RelaunchCount()
+{
+	return 5;
+}
+
 /*-- Callbacks --*/
 
 protected func Initialize()
 {
 	// Make sure it is a list.
 	score_relaunch_list = [];
-	// Set scoreboard relaunch count caption.
-	SetScoreboardData(SBRD_Caption, GetRelaunchCol(), "{{Scoreboard_Relaunch}}", SBRD_Caption);
+	// init scoreboard
+	// init scoreboard, uses the condition of Scoreboard_Deaths too
+	Scoreboard->Init(
+		[{key = "relaunches", title = Scoreboard_Relaunch, sorted = true, desc = true, default = "", priority = 75, conditional = Scoreboard_Death.ScoreboardCondition}]
+		);
 	return _inherited(...);
 }
 
 protected func InitializePlayer(int plr)
 {
 	var plrid = GetPlayerID(plr);
-	// Create scoreboard relaunch count entry for this player.
+	// create scoreboard entry
 	score_relaunch_list[plrid] = RelaunchCount();
-	SetScoreboardData(plrid, GetRelaunchCol(), Format("%d", score_relaunch_list[plrid]), score_relaunch_list[plrid]);
+	Scoreboard->NewPlayerEntry(plr);
+	Scoreboard->SetPlayerData(plr, "relaunches", score_relaunch_list[plrid]);
 	return _inherited(plr, ...);
 }
 
@@ -38,15 +48,12 @@ protected func RelaunchPlayer(int plr, int killer)
 	var plrid = GetPlayerID(plr);
 	// Modify scoreboard relaunch count entry for this player.
 	score_relaunch_list[plrid]--;
-	SetScoreboardData(plrid, GetRelaunchCol(), Format("%d", score_relaunch_list[plrid]), score_relaunch_list[plrid]);
+	Scoreboard->SetPlayerData(plr, "relaunches", score_relaunch_list[plrid]);
 	return _inherited(plr, killer, ...);
 }
 
 protected func RemovePlayer(int plr)
 {
-	var plrid = GetPlayerID(plr);
-	// Clear scoreboard relaunch count entry for this player.
-	SetScoreboardData(plrid, GetRelaunchCol(), nil, nil);
 	return _inherited(plr, ...);
 }
 
@@ -56,6 +63,7 @@ public func SetRelaunchCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_relaunch_list[plrid] = value;
+	Scoreboard->SetPlayerData(plr, "relaunches", score_relaunch_list[plrid]);
 	return;
 }
 
@@ -69,19 +77,8 @@ public func DoRelaunchCount(int plr, int value)
 {
 	var plrid = GetPlayerID(plr);
 	score_relaunch_list[plrid] += value;
+	Scoreboard->SetPlayerData(plr, "relaunches", score_relaunch_list[plrid]);
 	return;
-}
-
-public func GetRelaunchCol()
-{
-	//return ScoreboardCol(Scoreboard_Relaunch);
-	return 103;
-}
-
-// Overload this.
-public func RelaunchCount()
-{
-	return 5;
 }
 
 local Name = "Scoreboard Relaunches";

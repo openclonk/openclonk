@@ -1,24 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2009  Sven Eberhardt
- * Copyright (c) 2005-2006, 2009-2010  Günther Brammer
- * Copyright (c) 2005, 2007  Peter Wortmann
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 // dialogs for network information
 
@@ -122,7 +115,7 @@ void C4Network2ClientDlg::UpdateText()
 // C4Network2ClientListBox::ClientListItem
 
 C4Network2ClientListBox::ClientListItem::ClientListItem(class C4Network2ClientListBox *pForDlg, int iClientID) // ctor
-		: ListItem(pForDlg, iClientID), pStatusIcon(NULL), pName(NULL), pPing(NULL), pActivateBtn(NULL), pKickBtn(NULL)
+		: ListItem(pForDlg, iClientID), pStatusIcon(NULL), pName(NULL), pPing(NULL), pActivateBtn(NULL), pKickBtn(NULL), last_sound_time(0)
 {
 	// get associated client
 	const C4Client *pClient = GetClient();
@@ -234,6 +227,21 @@ void C4Network2ClientListBox::ClientListItem::Update()
 			break;
 		}
 	}
+	// sound icon?
+	if (last_sound_time)
+	{
+		time_t dt = time(NULL) - last_sound_time;
+		if (dt >= SoundIconShowTime)
+		{
+			// stop showing sound icon
+			last_sound_time = 0;
+		}
+		else
+		{
+			// time not up yet: show sound icon
+			icoStatus = C4GUI::Ico_Sound;
+		}
+	}
 	// network OK - control ready?
 	if (!pForDlg->IsStartup() && (icoStatus == C4GUI::Ico_Ready))
 	{
@@ -250,6 +258,22 @@ void C4Network2ClientListBox::ClientListItem::Update()
 const C4Client *C4Network2ClientListBox::ClientListItem::GetClient() const
 {
 	return Game.Clients.getClientByID(iClientID);
+}
+
+C4Network2ClientListBox::ClientListItem *C4Network2ClientListBox::GetClientListItem(int32_t client_id)
+{
+	// find list item that is not the connection item
+	// search through listbox
+	for (C4GUI::Element *list_item = GetFirst(); list_item; list_item = list_item->GetNext())
+	{
+		// only playerlistitems in this box
+		ListItem *list_item2 = static_cast<ListItem *>(list_item);
+		if (list_item2->GetClientID() == client_id)
+			if (list_item2->GetConnectionID() == -1)
+				return static_cast<ClientListItem *>(list_item2);
+	}
+	// nothing found
+	return NULL;
 }
 
 void C4Network2ClientListBox::ClientListItem::OnButtonActivate(C4GUI::Control *pButton)
@@ -272,6 +296,14 @@ void C4Network2ClientListBox::ClientListItem::OnButtonKick(C4GUI::Control *pButt
 		::Network.Vote(VT_Kick, true, iClientID);
 	else
 		Game.Clients.CtrlRemove(GetClient(), LoadResStr(pForDlg->IsStartup() ? "IDS_MSG_KICKFROMSTARTUPDLG" : "IDS_MSG_KICKFROMCLIENTLIST"));
+}
+
+void C4Network2ClientListBox::ClientListItem::SetSoundIcon()
+{
+	// remember time for reset
+	last_sound_time = time(NULL);
+	// force icon
+	Update();
 }
 
 
@@ -452,6 +484,13 @@ void C4Network2ClientListBox::Update()
 	}
 }
 
+void C4Network2ClientListBox::SetClientSoundIcon(int32_t client_id)
+{
+	// sound icon on client element
+	ClientListItem *item = GetClientListItem(client_id);
+	if (item) item->SetSoundIcon();
+}
+
 
 // --------------------------------------------------
 // C4Network2ClientListDlg
@@ -502,6 +541,11 @@ bool C4Network2ClientListDlg::Toggle()
 	if (pInstance) { pInstance->Close(true); return true; }
 	// toggle on!
 	return ::pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
+}
+
+void C4Network2ClientListDlg::OnSound(class C4Client *singer)
+{
+	if (singer) pListBox->SetClientSoundIcon(singer->getID());
 }
 
 

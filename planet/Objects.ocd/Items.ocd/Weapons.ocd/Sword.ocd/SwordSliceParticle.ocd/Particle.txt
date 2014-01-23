@@ -1,0 +1,3 @@
+[Particle]
+Name=SwordSlice
+Face=0,0,50,50,-25,-25

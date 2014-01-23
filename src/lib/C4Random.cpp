@@ -1,20 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2005, 2009  Günther Brammer
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Network-safe random number generator */
@@ -26,23 +24,30 @@
 int RandomCount = 0;
 unsigned int RandomHold = 0;
 
-#ifdef DEBUGREC
 int Random(int iRange)
 {
-	// next pseudorandom value
-	RandomCount++;
-	C4RCRandom rc;
-	rc.Cnt=RandomCount;
-	rc.Range=iRange;
-	if (iRange==0)
-		rc.Val=0;
+	if (Config.General.DebugRec)
+	{
+		// next pseudorandom value
+		RandomCount++;
+		C4RCRandom rc;
+		rc.Cnt=RandomCount;
+		rc.Range=iRange;
+		if (iRange<=0)
+			rc.Val=0;
+		else
+		{
+			RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
+			rc.Val = RandomHold % iRange;
+		}
+		AddDbgRec(RCT_Random, &rc, sizeof(rc));
+		return rc.Val;
+	}
 	else
 	{
-		RandomHold = RandomHold * 214013L + 2531011L;
-		rc.Val=(RandomHold >> 16) % iRange;
+		RandomCount++;
+		if (iRange<=0) return 0;
+		RandomHold = ((uint64_t)RandomHold * 16807) % 2147483647;
+		return RandomHold % iRange;
 	}
-	AddDbgRec(RCT_Random, &rc, sizeof(rc));
-	return rc.Val;
 }
-#endif
-

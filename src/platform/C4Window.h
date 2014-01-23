@@ -1,25 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005-2007, 2009-2010  Günther Brammer
- * Copyright (c) 2005  Sven Eberhardt
- * Copyright (c) 2005, 2009  Peter Wortmann
- * Copyright (c) 2006  Julian Raschke
- * Copyright (c) 2006, 2008, 2010  Armin Burgmeier
- * Copyright (c) 2007  Alexander Post
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* A wrapper class to OS dependent event and window interfaces */
@@ -29,95 +21,162 @@
 
 #include <StdBuf.h>
 
-#ifdef USE_WIN32_WINDOWS
-#include <C4windowswrapper.h>
-#define K_ALT VK_MENU
-#define K_ESCAPE VK_ESCAPE
-#define K_PAUSE VK_PAUSE
-#define K_TAB VK_TAB
-#define K_RETURN VK_RETURN
-#define K_DELETE VK_DELETE
-#define K_INSERT VK_INSERT
-#define K_BACK VK_BACK
-#define K_SPACE VK_SPACE
-#define K_F1 VK_F1
-#define K_F2 VK_F2
-#define K_F3 VK_F3
-#define K_F4 VK_F4
-#define K_F5 VK_F5
-#define K_F6 VK_F6
-#define K_F7 VK_F7
-#define K_F8 VK_F8
-#define K_F9 VK_F9
-#define K_F10 VK_F10
-#define K_F11 VK_F11
-#define K_F12 VK_F12
-#define K_ADD VK_ADD
-#define K_SUBTRACT VK_SUBTRACT
-#define K_MULTIPLY VK_MULTIPLY
-#define K_UP VK_UP
-#define K_DOWN VK_DOWN
-#define K_LEFT VK_LEFT
-#define K_RIGHT VK_RIGHT
-#define K_HOME VK_HOME
-#define K_END VK_END
-#define K_SCROLL VK_SCROLL
-#define K_MENU VK_APPS
-#define K_PAGEUP VK_PRIOR
-#define K_PAGEDOWN VK_NEXT
-#define KEY_A ((WORD) 'A') // select all in GUI-editbox
-#define KEY_C ((WORD) 'C') // copy in GUI-editbox
-#define KEY_I ((WORD) 'I') // console mode control key
-#define KEY_M ((WORD) 'M') // console mode control key
-#define KEY_T ((WORD) 'T') // console mode control key
-#define KEY_V ((WORD) 'V') // paste in GUI-editbox
-#define KEY_W ((WORD) 'W') // console mode control key
-#define KEY_X ((WORD) 'X') // cut from GUI-editbox
-#elif defined(USE_X11)
-#include <X11/keysym.h>
-#define K_F1 XK_F1
-#define K_F2 XK_F2
-#define K_F3 XK_F3
-#define K_F4 XK_F4
-#define K_F5 XK_F5
-#define K_F6 XK_F6
-#define K_F7 XK_F7
-#define K_F8 XK_F8
-#define K_F9 XK_F9
-#define K_F10 XK_F10
-#define K_F11 XK_F11
-#define K_F12 XK_F12
-#define K_ADD XK_KP_Add
-#define K_SUBTRACT XK_KP_Subtract
-#define K_MULTIPLY XK_KP_Multiply
-#define K_ESCAPE XK_Escape
-#define K_PAUSE XK_Pause
-#define K_TAB XK_Tab
-#define K_RETURN XK_Return
-#define K_DELETE XK_Delete
-#define K_INSERT XK_Insert
-#define K_BACK XK_BackSpace
-#define K_SPACE XK_space
-#define K_UP XK_Up
-#define K_DOWN XK_Down
-#define K_LEFT XK_Left
-#define K_RIGHT XK_Right
-#define K_HOME XK_Home
-#define K_END XK_End
-#define K_SCROLL XK_Scroll_Lock
-#define K_MENU XK_Menu
-#define K_PAGEUP XK_Page_Up
-#define K_PAGEDOWN XK_Page_Down
-#define KEY_A XK_a // select all in GUI-editbox
-#define KEY_C XK_c // copy in GUI-editbox
-#define KEY_I XK_i // console mode control key
-#define KEY_M XK_m // console mode control key
-#define KEY_T XK_t // console mode control key
-#define KEY_V XK_v // paste in GUI-editbox
-#define KEY_W XK_w // console mode control key
-#define KEY_X XK_x // cut from GUI-editbox
+#if defined(USE_WIN32_WINDOWS) || defined(USE_X11) || defined(USE_CONSOLE)
+#define K_ESCAPE 1
+#define K_1 2
+#define K_2 3
+#define K_3 4
+#define K_4 5
+#define K_5 6
+#define K_6 7
+#define K_7 8
+#define K_8 9
+#define K_9 10
+#define K_0 11
+#define K_MINUS 12
+#define K_EQUAL 13
+#define K_BACK 14
+#define K_TAB 15
+#define K_Q 16
+#define K_W 17
+#define K_E 18
+#define K_R 19
+#define K_T 20
+#define K_Y 21
+#define K_U 22
+#define K_I 23
+#define K_O 24
+#define K_P 25
+#define K_LEFT_BRACKET 26
+#define K_RIGHT_BRACKET 27
+#define K_RETURN 28
+#define K_CONTROL_L 29
+#define K_A 30
+#define K_S 31
+#define K_D 32
+#define K_F 33
+#define K_G 34
+#define K_H 35
+#define K_J 36
+#define K_K 37
+#define K_L 38
+#define K_SEMICOLON 39
+#define K_APOSTROPHE 40
+#define K_GRAVE_ACCENT 41
+#define K_SHIFT_L 42
+#define K_BACKSLASH 43
+#define K_Z 44
+#define K_X 45
+#define K_C 46
+#define K_V 47
+#define K_B 48
+#define K_N 49
+#define K_M 50
+#define K_COMMA 51
+#define K_PERIOD 52
+#define K_SLASH 53
+#define K_SHIFT_R 54
+#define K_MULTIPLY 55
+#define K_ALT_L 56 
+#define K_SPACE 57
+#define K_CAPS 58
+#define K_F1 59
+#define K_F2 60
+#define K_F3 61
+#define K_F4 62
+#define K_F5 63
+#define K_F6 64
+#define K_F7 65
+#define K_F8 66
+#define K_F9 67
+#define K_F10 68
+#define K_NUM 69
+#define K_SCROLL 70
+#define K_SUBTRACT 74
+#define K_ADD 78
+#define K_86 86
+#define K_F11 87
+#define K_F12 88
+
+/*
+// starting from here, scancodes between windows and linux differ
+// this is not used because the windows scancodes are converted to
+// unix scancodes in C4WindowWin32.cpp ConvertToUnixScancode
+#if defined(USE_WIN32_WINDOWS)
+#define K_HOME 71
+#define K_UP 72
+#define K_PAGEUP 73
+#define K_LEFT 75
+#define K_CENTER 76
+#define K_RIGHT 77
+#define K_END 79
+#define K_DOWN 80
+#define K_PAGEDOWN 81
+#define K_INSERT 82
+#define K_DELETE 83
+#define K_WIN_L 91
+#define K_WIN_R 92
+#define K_MENU 93
+#define K_PAUSE 69 // same as numlock?!
+#define K_PRINT 55 // same as multiply?!
+#define K_ALT_R K_ALT_L // 29 56
+#define K_CONTROL_R K_CONTROL_L // 29 29
+#define K_NUM_RETURN K_RETURN // 28 57
+#define K_NUM7 K_HOME
+#define K_NUM8 K_UP
+#define K_NUM9 K_PAGEUP
+#define K_NUM4 K_LEFT
+#define K_NUM5 K_CENTER
+#define K_NUM6 K_RIGHT
+#define K_NUM1 K_END
+#define K_NUM2 K_DOWN
+#define K_NUM3 K_PAGEDOWN
+#define K_NUM0 K_INSERT
+#define K_DECIMAL K_DELETE
+#define K_DIVIDE K_SLASH
+#elif defined(USE_X11) || defined(USE_CONSOLE)
+*/
+#define K_NUM7 71
+#define K_NUM8 72
+#define K_NUM9 73
+#define K_NUM4 75
+#define K_NUM5 76
+#define K_NUM6 77
+#define K_NUM1 79
+#define K_NUM2 80
+#define K_NUM3 81
+#define K_NUM0 82
+#define K_DECIMAL 83
+#define K_DIVIDE 98
+
+#define K_ALT_R 100
+#define K_CONTROL_R 97
+#define K_NUM_RETURN 96
+
+#define K_HOME 102
+#define K_UP 103
+#define K_PAGEUP 104
+#define K_LEFT 105
+#define K_RIGHT 106
+#define K_END 107
+#define K_DOWN 108
+#define K_PAGEDOWN 109
+#define K_INSERT 110
+#define K_DELETE 111
+#define K_WIN_L 125
+#define K_WIN_R 126
+#define K_MENU 127
+#define K_PAUSE 119
+#define K_PRINT 99
+#define K_CENTER 76
+
 #elif defined(USE_SDL_MAINLOOP)
 #include <SDL.h>
+// FIXME
+#define K_SHIFT_L SDLK_LSHIFT
+#define K_SHIFT_R SDLK_RSHIFT
+#define K_ALT_L SDLK_LALT
+#define K_ALT_R SDLK_RALT
 #define K_F1 SDLK_F1
 #define K_F2 SDLK_F2
 #define K_F3 SDLK_F3
@@ -151,100 +210,64 @@
 #define K_MENU SDLK_MENU
 #define K_PAGEUP SDLK_PAGEUP
 #define K_PAGEDOWN SDLK_PAGEDOWN
-#define KEY_M SDLK_m
-#define KEY_T SDLK_t
-#define KEY_W SDLK_w
-#define KEY_I SDLK_i
-#define KEY_C SDLK_c
-#define KEY_V SDLK_v
-#define KEY_X SDLK_x
-#define KEY_A SDLK_a
-#elif defined(USE_CONSOLE)
-#define K_F1 0
-#define K_F2 0
-#define K_F3 0
-#define K_F4 0
-#define K_F5 0
-#define K_F6 0
-#define K_F7 0
-#define K_F8 0
-#define K_F9 0
-#define K_F10 0
-#define K_F11 0
-#define K_F12 0
-#define K_ADD 0
-#define K_SUBTRACT 0
-#define K_MULTIPLY 0
-#define K_ESCAPE 0
-#define K_PAUSE 0
-#define K_TAB 0
-#define K_RETURN 0
-#define K_DELETE 0
-#define K_INSERT 0
-#define K_BACK 0
-#define K_SPACE 0
-#define K_UP 0
-#define K_DOWN 0
-#define K_LEFT 0
-#define K_RIGHT 0
-#define K_HOME 0
-#define K_END 0
-#define K_SCROLL 0
-#define K_MENU 0
-#define K_PAGEUP 0
-#define K_PAGEDOWN 0
-#define KEY_M 0
-#define KEY_T 0
-#define KEY_W 0
-#define KEY_I 0
-#define KEY_C 0
-#define KEY_V 0
-#define KEY_X 0
-#define KEY_A 0
+#define K_M SDLK_m
+#define K_T SDLK_t
+#define K_W SDLK_w
+#define K_I SDLK_i
+#define K_C SDLK_c
+#define K_V SDLK_v
+#define K_X SDLK_x
+#define K_A SDLK_a
 #elif defined(USE_COCOA)
+#import "ObjectiveCAssociated.h"
+// FIXME
 // declare as extern variables and initialize them in StdMacWindow.mm so as to not include objc headers
 const int CocoaKeycodeOffset = 300;
-extern int K_F1;
-extern int K_F2;
-extern int K_F3;
-extern int K_F4;
-extern int K_F5;
-extern int K_F6;
-extern int K_F7;
-extern int K_F8;
-extern int K_F9;
-extern int K_F10;
-extern int K_F11;
-extern int K_F12;
-extern int K_ADD;
-extern int K_SUBTRACT;
-extern int K_MULTIPLY;
-extern int K_ESCAPE;
-extern int K_PAUSE;
-extern int K_TAB;
-extern int K_RETURN;
-extern int K_DELETE;
-extern int K_INSERT;
-extern int K_BACK;
-extern int K_SPACE;
-extern int K_UP;
-extern int K_DOWN;
-extern int K_LEFT;
-extern int K_RIGHT;
-extern int K_HOME;
-extern int K_END;
-extern int K_SCROLL;
-extern int K_MENU;
-extern int K_PAGEUP;
-extern int K_PAGEDOWN;
-extern int KEY_M;
-extern int KEY_T;
-extern int KEY_W;
-extern int KEY_I;
-extern int KEY_C;
-extern int KEY_V;
-extern int KEY_X;
-extern int KEY_A;
+extern C4KeyCode K_SHIFT_L;
+extern C4KeyCode K_SHIFT_R;
+extern C4KeyCode K_ALT_L;
+extern C4KeyCode K_ALT_R;
+extern C4KeyCode K_F1;
+extern C4KeyCode K_F2;
+extern C4KeyCode K_F3;
+extern C4KeyCode K_F4;
+extern C4KeyCode K_F5;
+extern C4KeyCode K_F6;
+extern C4KeyCode K_F7;
+extern C4KeyCode K_F8;
+extern C4KeyCode K_F9;
+extern C4KeyCode K_F10;
+extern C4KeyCode K_F11;
+extern C4KeyCode K_F12;
+extern C4KeyCode K_ADD;
+extern C4KeyCode K_SUBTRACT;
+extern C4KeyCode K_MULTIPLY;
+extern C4KeyCode K_ESCAPE;
+extern C4KeyCode K_PAUSE;
+extern C4KeyCode K_TAB;
+extern C4KeyCode K_RETURN;
+extern C4KeyCode K_DELETE;
+extern C4KeyCode K_INSERT;
+extern C4KeyCode K_BACK;
+extern C4KeyCode K_SPACE;
+extern C4KeyCode K_UP;
+extern C4KeyCode K_DOWN;
+extern C4KeyCode K_LEFT;
+extern C4KeyCode K_RIGHT;
+extern C4KeyCode K_HOME;
+extern C4KeyCode K_END;
+extern C4KeyCode K_SCROLL;
+extern C4KeyCode K_MENU;
+extern C4KeyCode K_PAGEUP;
+extern C4KeyCode K_PAGEDOWN;
+extern C4KeyCode K_M;
+extern C4KeyCode K_T;
+extern C4KeyCode K_W;
+extern C4KeyCode K_I;
+extern C4KeyCode K_C;
+extern C4KeyCode K_V;
+extern C4KeyCode K_X;
+extern C4KeyCode K_A;
 #endif
 
 #ifdef USE_X11
@@ -254,11 +277,15 @@ typedef struct _XDisplay Display;
 #endif
 
 class C4Window
+#ifdef USE_COCOA
+	: public ObjectiveCAssociated
+#endif
 {
 public:
 	enum WindowKind
 	{
 		W_GuiWindow,
+		W_Console,
 		W_Viewport,
 		W_Fullscreen
 	};
@@ -273,7 +300,6 @@ public:
 	virtual void Close() = 0;
 	// Keypress(es) translated to a char
 	virtual void CharIn(const char *) { }
-	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, C4Window * pParent = 0, bool HideCursor = true);
 
 	// Reinitialize the window with updated configuration settings.
 	// Keep window kind, title and size as they are. Currently the only point
@@ -291,46 +317,39 @@ public:
 	void SetSize(unsigned int cx, unsigned int cy); // resize
 	void SetTitle(const char * Title);
 	void FlashWindow();
+	// request that this window be redrawn in the near future (including immediately)
+	virtual void RequestUpdate();
+	// Invokes actual drawing code - should not be called directly
+	virtual void PerformUpdate();
 
 #ifdef USE_WIN32_WINDOWS
 public:
 	HWND hWindow;
 	HWND hRenderWindow;
 	virtual bool Win32DialogMessageHandling(MSG * msg) { return false; };
-#elif defined(USE_X11)
+#elif defined(WITH_GLIB)
+public:
+	/*GtkWidget*/void * window;
+	// Set by Init to the widget which is used as a
+	// render target, which can be the whole window.
+	/*GtkWidget*/void * render_widget;
 protected:
 	bool FindInfo(int samples, void** info);
 
 	unsigned long wnd;
 	unsigned long renderwnd;
-	Display * dpy;
-	virtual void HandleMessage (XEvent &);
-	// The currently set window hints
-	void * Hints;
-	bool HasFocus; // To clear urgency hint
 	// The XVisualInfo the window was created with
 	void * Info;
-#elif defined(USE_SDL_MAINLOOP)
-private:
-	int width, height;
-#elif defined(USE_COCOA)
-protected:
-	/*ClonkWindowController*/void* controller;
-	virtual void HandleMessage(/*NSEvent*/void*);
-public:	
-	/*ClonkWindowController*/void* GetController() {return controller;}
+	unsigned long handlerDestroy;
+
+	friend class C4X11AppImpl;
 #endif
-public:
-	// request that this window be redrawn in the near future (including immediately)
-	virtual void RequestUpdate();
-	// Invokes actual drawing code - should not be called directly
-	virtual void PerformUpdate();
-public:
+protected:
+	virtual C4Window * Init(WindowKind windowKind, C4AbstractApp * pApp, const char * Title, const C4Rect * size);
 	friend class C4Draw;
 	friend class CStdGL;
 	friend class CStdGLCtx;
 	friend class C4AbstractApp;
-	friend class C4GtkWindow;
 };
 
 #endif // INC_STDWINDOW

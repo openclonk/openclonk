@@ -1,26 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001, 2005, 2007  Sven Eberhardt
- * Copyright (c) 2001  Carlo Teubner
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2002-2003  Peter Wortmann
- * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles Music.ocg and randomly plays songs */
@@ -40,6 +32,10 @@
 #include <fmod_errors.h>
 #elif defined HAVE_LIBSDL_MIXER
 #include <SDL.h>
+#endif
+
+#if defined(USE_OPEN_AL) && !defined(__APPLE__)
+#include <AL/alut.h>
 #endif
 
 C4MusicSystem::C4MusicSystem():
@@ -77,7 +73,9 @@ bool C4MusicSystem::InitializeMOD()
 		break;
 	case 1:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
+#ifdef USE_WIN32_WINDOWS
 		FSOUND_SetHWND(Application.pWindow->hWindow);
+#endif
 		break;
 	case 2:
 		FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND);
@@ -123,10 +121,24 @@ bool C4MusicSystem::InitializeMOD()
 #elif defined(USE_OPEN_AL)
 	alcDevice = alcOpenDevice(NULL);
 	if (!alcDevice)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
 	alcContext = alcCreateContext(alcDevice, NULL);
 	if (!alcContext)
+	{
+		LogF("Sound system: OpenAL create context error");
 		return false;
+	}
+#ifndef __APPLE__
+	if (!alutInitWithoutContext(NULL, NULL))
+	{
+		LogF("Sound system: ALUT init error");
+		return false;
+	}
+#endif
+	MODInitialized = true;
 	return true;
 #endif
 	return false;
@@ -144,6 +156,9 @@ void C4MusicSystem::DeinitializeMOD()
 	Mix_CloseAudio();
 	SDL_Quit();
 #elif defined(USE_OPEN_AL)
+#ifndef __APPLE__
+	alutExit();
+#endif
 	alcDestroyContext(alcContext);
 	alcCloseDevice(alcDevice);
 	alcContext = NULL;

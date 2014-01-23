@@ -1,30 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2006-2007  Sven Eberhardt
- * Copyright (c) 2006, 2008-2010  Günther Brammer
- * Copyright (c) 2006-2007  Peter Wortmann
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2007-2008  Matthes Bender
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Julius Michaelis
- * Copyright (c) 2010  Tobias Zwick
- * Copyright (c) 2010  Armin Burgmeier
- * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-"Clonk" is a registered trademark of Matthes Bender. */
+ * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
+ *
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
+ */
 // Startup screen for non-parameterized engine start: Network game selection dialog
 
 #include <C4Include.h>
@@ -762,7 +750,11 @@ C4StartupNetDlg::~C4StartupNetDlg()
 void C4StartupNetDlg::DrawElement(C4TargetFacet &cgo)
 {
 	// draw background
+	typedef C4GUI::FullscreenDialog Base;
+	Base::DrawElement(cgo);
+#if 0
 	DrawBackground(cgo, C4Startup::Get()->Graphics.fctNetBG);
+#endif
 }
 
 void C4StartupNetDlg::OnShown()
@@ -871,7 +863,7 @@ void C4StartupNetDlg::UpdateMasterserver()
 	else
 	{
 		pMasterserverClient = new C4StartupNetListEntry(pGameSelList, NULL, this);
-		StdStrBuf strVersion; strVersion.Format("%d.%d.%d.%d", C4XVER1, C4XVER2, C4XVER3, C4XVER4);
+		StdStrBuf strVersion; strVersion.Format("%d.%d.%d", C4XVER1, C4XVER2, C4XVER3);
 		StdStrBuf strQuery; strQuery.Format("%s?version=%s&platform=%s", Config.Network.GetLeagueServerAddress(), strVersion.getData(), C4_OS);
 		pMasterserverClient->SetRefQuery(strQuery.getData(), C4StartupNetListEntry::NRQT_Masterserver);
 	}

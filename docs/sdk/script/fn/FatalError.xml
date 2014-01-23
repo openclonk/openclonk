@@ -11,10 +11,10 @@
       <rtype>bool</rtype>
       <params>
         <param>
-		  <optional/>
           <type>string</type>
           <name>message</name>
           <desc>Error message to be displayed</desc>
+          <optional/>
         </param>
       </params>
     </syntax>
@@ -42,6 +42,9 @@
 }</code><text></text>
       </example>
     </examples>
+    <related>
+      <funclink>LogCallStack</funclink>
+    </related>
   </func>
   <author>Newton</author><date>2011-09</date>
 </funcs>

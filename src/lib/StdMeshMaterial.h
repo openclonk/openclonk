@@ -1,20 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009-2011  Armin Burgmeier
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #ifndef INC_StdMeshMaterial
@@ -269,10 +266,40 @@ public:
 	float Emissive[4];
 	float Shininess;
 
+	bool DepthCheck;
 	bool DepthWrite;
+
 	CullHardwareType CullHardware;
 	SceneBlendType SceneBlendFactors[2];
 	bool AlphaToCoverage;
+
+	// An abstract shader class. This is supposed to be implemented by the
+	// GFX implementation, such as C4DrawGL.
+	class Shader { public: virtual ~Shader() {} };
+
+	// This is a simple reference to a shader. It is allowed to be copied as long
+	// as the shader is not set.
+	class ShaderRef
+	{
+	public:
+		ShaderRef(): Program(NULL) {}
+		ShaderRef(const ShaderRef& other) { Program = NULL; /* don't copy the program pointer */ }
+		~ShaderRef() { delete Program; }
+
+		ShaderRef& operator=(Shader* NewProgram) { assert(Program == NULL); Program = NewProgram; return *this; }
+		ShaderRef& operator=(const ShaderRef& other) { assert(Program == NULL); assert(other.Program == NULL); Program = NULL; return *this; }
+
+		const Shader* operator->() const { return Program; }
+		const Shader& operator*() const { return *Program; }
+		operator const Shader*() const { return Program; }
+
+		Shader* Program;
+	};
+
+	// A compiled shader which applies the blending between the texture units,
+	// and also applies color modulation and MOD2.
+	// The actual compilation is being done in PrepareMaterial() of the C4Draw.
+	ShaderRef Program;
 };
 
 class StdMeshMaterialTechnique

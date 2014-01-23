@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2005  Peter Wortmann
- * Copyright (c) 2005, 2007-2008, 2010-2011  Günther Brammer
- * Copyright (c) 2005, 2007  Sven Eberhardt
- * Copyright (c) 2009, 2011  Nicolas Hake
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #include "C4Include.h"
 #include <StdBuf.h>
@@ -238,7 +233,16 @@ void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
 		// Grow
 		Grow(512);
 		// Try output
-		iBytes = vsnprintf(getMPtr(iStart), getLength() - iStart, szFmt, args);
+		va_list args_copy;
+		#ifdef va_copy
+			va_copy(args_copy, args);
+		#else
+			args_copy = args;
+		#endif
+		iBytes = vsnprintf(getMPtr(iStart), getLength() - iStart, szFmt, args_copy);
+		#ifdef va_copy
+			va_end(args_copy);
+		#endif
 	}
 	while (iBytes < 0 || (unsigned int)(iBytes) >= getLength() - iStart);
 	// Calculate real length, if vsnprintf didn't return anything of value

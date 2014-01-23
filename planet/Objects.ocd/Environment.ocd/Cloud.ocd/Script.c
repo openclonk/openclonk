@@ -24,6 +24,11 @@ local rain_mat; // Precipitation type from scenario or other.
 local rain_amount; // Precipitation amount from scenario or other.
 local rain_max; // Max rain the cloud can hold.
 
+local cloud_shade; // Cloud shade.
+local cloud_alpha; // Cloud alpha.
+
+// This is an environment object (e.g., shouldn't be a target for the lift tower)
+public func IsEnvironment() { return true; }
 
 protected func Initialize()
 {
@@ -37,6 +42,8 @@ protected func Initialize()
 	
 	// Cloud defaults
 	lightning_chance = 0;
+	cloud_shade = 0;
+	cloud_alpha = 255;
 	evap_x = 0;
 
 	DoCon(Random(75));
@@ -45,14 +52,15 @@ protected func Initialize()
 	SetComDir(COMD_None);
 	SetPhase(RandomX(1,16));
 
-	//Push low flying clouds up to proper height
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true)
+	// Push low flying clouds up to proper height
+	while (MaterialDepthCheck(GetX(), GetY(), "Sky", 150) != true)
 	{
-		SetPosition(GetX(),GetY()-1);
+		SetPosition(GetX(), GetY()-1);
 	}
 
-	//Failsafe for stupid grounded clouds
-	if (GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
+	// Failsafe for stupid grounded clouds
+	if (GetMaterial(0, 30) != Material("Sky")) 
+		SetPosition(GetX(), GetY() - 180);
 	
 	// Add effect to process all cloud features.
 	AddEffect("ProcessCloud", this, 100, 5, this);
@@ -93,7 +101,7 @@ public func SetPrecipitation(string mat, int amount)
 		rain_mat = mat;
 		rain_amount = amount;
 		// Also change rain content.
-		rain = amount * rain_max / 100; 
+		rain = BoundBy(amount * rain_max / 100, 0, 960); 
 	}
 	return;
 }
@@ -165,19 +173,24 @@ protected func FxProcessCloudTimer()
 
 private func MoveCloud()
 {
+	// Get wind speed from various locations of the cloud.
+	var con = GetCon();
+	var wdt = GetDefWidth() * con / 250;
+	var hgt = GetDefHeight() * con / 350;
+	var wind = (GetWind() + GetWind(wdt, hgt) + GetWind(wdt, -hgt) + GetWind(-wdt, -hgt) + GetWind(-wdt, hgt) + GetWind(nil, nil, true)) / 6;
+	
 	// Move according to wind.
-	var wind = GetWind();
-	if (wind >= 7)
-		SetXDir(Random(355), 1000);
-	else if (wind <= -7)
-		SetXDir(-Random(355), 1000);
+	if (Abs(wind) < 7)
+		SetXDir(0);
 	else
-		SetXDir();
+		SetXDir(wind * 10, 1000);
+		
 	// Loop clouds around the map.
 	if (GetX() >= LandscapeWidth() - 10) 
 		SetPosition(12, GetY());
 	if (GetX() <= 10) 
 		SetPosition(LandscapeWidth()-12, GetY());
+		
 	// Some other safety.
 	if (GetY() <= 5) 
 		SetPosition(0, 6);
@@ -195,8 +208,8 @@ private func Precipitation()
 	// Precipitaion: water or snow.
 	if (rain > 0)
 	{
-		RainDrop(rain_mat);
-		rain--;	
+		if (RainDrop(rain_mat));
+			rain--;	
 	}	
 	// If out of liquids, skip mode.
 	if (rain == 0)
@@ -207,15 +220,22 @@ private func Precipitation()
 // Raindrop somewhere from the cloud.
 private func RainDrop(string mat)
 {
+	// Find Random Position.
+	var con = GetCon();
+	var wdt = GetDefWidth() * con / 500;
+	var hgt = GetDefHeight() * con / 700;
+	var x = RandomX(-wdt, wdt);
+	var y = RandomX(-hgt, hgt);
+	if (!GBackSky(x, y))
+		return false;
 	// Check if liquid is maybe in frozen form.
 	var temp = GetTemperature();
 	var melt_temp = GetMaterialVal("BelowTempConvert", "Material", Material(mat));
 	if (temp < melt_temp)
-		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));	
-	// Create rain drop.
-	var angle = RandomX(0, 359);
-	var dist = Random(51);
-	CastPXS(mat, 1, 1, Sin(angle,dist),Cos(angle,dist));
+		mat = GetMaterialVal("BelowTempConvertTo", "Material", Material(mat));		
+	// Create rain drop.	
+	CastPXS(mat, 1, 1, x, y);
+	return true;
 }
 
 // Launches possibly one thunder strike from the cloud.
@@ -224,7 +244,7 @@ private func ThunderStrike()
 	// Determine whether to launch a strike.
 	if (rain < 100)
 		return;
-	if (Random(100) >= lightning_chance || Random(15))
+	if (Random(100) >= lightning_chance || Random(80))
 		return;
 	
 	// Find random position in the cloud.
@@ -233,6 +253,14 @@ private func ThunderStrike()
 	var hgt = GetDefHeight() * con / 350;
 	var x = GetX() + RandomX(-wdt, wdt);
 	var y = GetY() + RandomX(-hgt, hgt);
+	
+	var pix = 0;
+	// Check if there is sky for at least 60 pixels.
+	while (GBackSky(x - GetX(), y - GetY() + pix) && pix <= 60)
+		pix++;
+	if (pix < 60)
+		return; 
+	
 	var str = 2 * con / 3 + RandomX(-15, 15);
 	// Launch lightning.
 	return LaunchLightning(x, y, str, 0, str / 5, str / 10, str / 10, true);
@@ -278,15 +306,42 @@ protected func Evaporation()
 //Shades the clouds based on iSize: the water density value of the cloud.
 private func ShadeCloud()
 {
-	var shade = Min((rain+50)*425/1000, 255);
-	var shade2 = Min(rain-600, 255);
+	var alpha = (cloud_alpha + ((rain + 40) * 255) / 960) / 2;
+	var alpha = Min(alpha, 255);
+	var shade = BoundBy(cloud_shade, 0, 255);
 
-	if (rain <= 600) 
-		SetObjAlpha(shade);
-	if (rain > 600) 
-		SetClrModulation(RGBa(255-shade2, 255-shade2, 255-shade2, 255));
-	return;
+	SetClrModulation(RGBa(255-shade, 255-shade, 255-shade, alpha));
 }
+
+// Utilized by time to make clouds invisible at night
+public func SetLightingShade(int darkness)
+{
+	cloud_shade = darkness;
+}
+
+// Utilized by time to make clouds invisible at night
+public func SetCloudAlpha(int alpha)
+{
+	cloud_alpha = BoundBy(alpha, 0, 255);
+}
+
+
+/* Scenartio saving */
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (GetComDir() == COMD_None) props->Remove("ComDir");
+	props->Remove("Con");
+	props->Remove("ClrModulation");
+	if (rain_mat) props->AddCall("Precipitation", this, "SetPrecipitation", Format("%v", rain_mat), rain_amount);
+	if (lightning_chance) props->AddCall("Lightning", this, "SetLightning", lightning_chance);
+	if (rain) props->AddCall("Rain", this, "SetRain", rain);
+	return true;
+}
+
+
+/* Properties */
 
 local ActMap = {
 	Fly = {

@@ -3,12 +3,10 @@
 // concatenates two arrays and returns a new array
 global func Concatenate(array first, array second)
 {
-	var result = CreateArray(GetLength(first)+GetLength(second));
-	var i = 0;
-	for (var something in first)
-		result[i++] = something;
-	for (var something in second)
-		result[i++] = something;
+	var len_first = GetLength(first);
+	var result = CreateArray(len_first+GetLength(second));
+	result[:len_first] = first;
+	result[len_first:] = second;
 	return result;
 }
 
@@ -102,9 +100,9 @@ global func ShuffleArray(array arr)
   
 	while(--len >= 0)
 	{
-		var i = Random(GetLength(working));
+		var i = Random(len);
 		arr[len] = working[i];
-		RemoveArrayIndexUnstable(working, i);
+		working[i] = working[-1];
 	}
   
 	return true;
@@ -116,10 +114,7 @@ global func RemoveArrayIndex(array arr, int index, bool unstable)
 	if(unstable == true)
 		return RemoveArrayIndexUnstable(arr, index);
 	// move all elements right of index to the left
-	var len = GetLength(arr);
-	for(var i = index; i < len - 1; ++i)
-		arr[i] = arr[i+1];
-	SetLength(arr, GetLength(arr) - 1); 
+	arr[index:] = arr[index+1:];
 	return true;
 }
 
@@ -141,11 +136,9 @@ global func PushBack(array arr, /*any*/ value)
 // inserts an element at the beginning of an array
 global func PushFront(array arr, /*any*/ value)
 {
-	SetLength(arr, GetLength(arr) + 1);
-	
 	// move elements one to the right
-	for(var i = GetLength(arr)-1; i > 0;--i)
-		arr[i] = arr[i-1];
+	arr[1:] = arr;
+	
 	arr[0] = value;
 	return true;
 }
@@ -156,20 +149,16 @@ global func PopBack(array arr)
 	if(GetLength(arr) == 0)
 		return nil;
 	var o = arr[-1];
-	SetLength(arr, GetLength(arr) - 1);
+	arr[:] = arr[:-1];
 	return o;
 }
 
 // removes the first element from an array and returns it
-// obviously a bit slower than PopBack
 global func PopFront(array arr)
 {
-	var len = GetLength(arr);
-	if(len == 0)
+	if(!GetLength(arr))
 		return nil;
 	var o = arr[0];
-	for(var i = 1; i < len; ++i)
-		arr[i - 1] = arr[i];
-	SetLength(arr, GetLength(arr) - 1);
+	arr[:] = arr[1:];
 	return o;
 }

@@ -1,2 +1,0 @@
-Name=Ownable
-Description=Objects that can be owned.

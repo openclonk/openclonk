@@ -5,64 +5,48 @@
 	Crushes seeds into flour using power - is an own power producer too
 --*/
 
+#include Library_Structure
 #include Library_Ownable
 #include Library_Producer
 #include Library_PowerConsumer
 #include Library_PowerProducer
+#include Library_Flag
+
+local DefaultFlagRadius = 90;
 
 local wind_anim;
 local last_wind;
 
-protected func Construction()
+func TurnAnimation(){return "Spin";}
+func MinRevolutionTime(){return 18000;} // in frames
+
+protected func Construction(object creator)
 {
 	SetProperty("MeshTransformation", Trans_Rotate(-30,0,1,0));
-	return _inherited(...);
+	SetAction("Default");
+	
+	// uses functions of the wind generator
+	this.Wind2TurnEx = WindGenerator.Wind2Turn;
+	this.GetWeightedWind = WindGenerator.GetWeightedWind;	
+	AddTimer("CollectionZone", 1);
+	
+	return _inherited(creator, ...);
 }
 
 protected func Initialize()
 {
+	// create wheel
+	(this.wheel = CreateObject(WindGenerator_Wheel, 0, 0, NO_OWNER))->Set(this, 150);
+	
 	// Set initial position
-	wind_anim = PlayAnimation("Spin", 5, Anim_Const(0), Anim_Const(1000));
-	Wind2Turn();
+	wind_anim = PlayAnimation(TurnAnimation(), 5, this.wheel->Anim_R(GetAnimationLength(TurnAnimation()), 0), Anim_Const(1000));
 	return _inherited(...);
 }
 
 func Wind2Turn()
-{
-	if(GetCon()  < 100) return;
-	
-	// Fade linearly in time until next timer call
-	var start = 0;
-	var end = GetAnimationLength("Spin");
-	if(GetWind() < 0)
-	{
-		start = end;
-		end = 0;
-	}
-	
-	var power = Abs(GetWind());
-	if(power < 5) power = 0;
-	else power = Max(((power + 5) / 25), 1) * 50;
-	
-	if(last_wind != power)
-	{
-		last_wind = power;
-		MakePowerProducer(last_wind);
-	}
-	
-	// Number of frames for one revolution: the more wind the more revolutions per frame.
-	if(last_wind == 0) last_wind = 1;
-	var l = 18000/last_wind;
-
-	// Note ending is irrelevant since this is called again after 35 frames
-	if(l > 0)
-	{
-		SetAnimationPosition(wind_anim, Anim_Linear(GetAnimationPosition(wind_anim), start, end, l, ANIM_Loop));
-	}
-	else
-	{
-		SetAnimationPosition(wind_anim, Anim_Const(GetAnimationPosition(wind_anim)));
-	}
+{	
+	// dummy, uses the function of the WindGenerator
+	this->Wind2TurnEx();
 }
 
 
@@ -74,7 +58,7 @@ private func IsProduct(id product_id)
 {
 	return product_id->~IsWindmillProduct();
 }
-private func ProductionTime() { return 290; }
+private func ProductionTime(id toProduce) { return 290; }
 private func PowerNeed() { return 75; }
 
 public func NeedRawMaterial(id rawmat_id)
@@ -108,6 +92,17 @@ public func OnProductionFinish(id product)
 	return;
 }	
 
+// Timer, check for objects to collect in the designated collection zone
+func CollectionZone()
+{
+	if (GetCon() < 100) return;
+
+	if (!(FrameCounter() % 35)) Wind2Turn();
+
+	for (var object in FindObjects(Find_InRect(-18 + 21 * GetDir(),35,15,15), Find_OCF(OCF_Collectible), Find_NoContainer(), Find_Layer(GetObjectLayer())))
+		Collect(object);
+}
+
 protected func Collection()
 {
 	Sound("Clonk");
@@ -116,13 +111,22 @@ protected func Collection()
 
 public func FxCrushingTimer(object target, proplist effect, int time)
 {
-	CreateParticle("Axe_WoodChip", -12, 40, 5 - Random(11), RandomX(6,13) * -1, 20, RGB(255,255,255), this);
+	var dir = GetCalcDir();
+	var particles =
+	{
+		Prototype = Particles_WoodChip(),
+		R = 255,
+		G = 200,
+		B = 100
+	};
+	CreateParticle("Dust", PV_Random(11 * dir, 13 * dir), 40, PV_Random(-5, 5), PV_Random(-13, -6), PV_Random(36 * 3, 36 * 10), particles, 3);
+	
 	return 1;
 }
 
 public func OnProductEjection(object product)
 {
-	product->SetPosition(GetX() + 25, GetY() + 40);
+	product->SetPosition(GetX() - 25 * GetCalcDir(), GetY() + 40);
 	product->SetSpeed(0, -17);
 	product->SetR(30 - Random(59));
 	Sound("Pop");
@@ -136,7 +140,26 @@ protected func RejectCollect(id item, object collect)
 		return true;
 }
 
+func IsInteractable() { return true; }
+
+local ActMap = {
+		Default = {
+			Prototype = Action,
+			Name = "Default",
+			Procedure = DFA_NONE,
+			Directions = 2,
+			FlipDir = 1,
+			Length = 1,
+			Delay = 0,
+			FacetBase = 1,
+			NextAction = "Default",
+		},
+};
+
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Translate(2000,0,7000),Trans_Rotate(-20,1,0,0),Trans_Rotate(30,0,1,0)), def);
 }
+local BlastIncinerate = 100;
+local HitPoints = 70;
 local Name = "$Name$";
+local Description = "$Description$";

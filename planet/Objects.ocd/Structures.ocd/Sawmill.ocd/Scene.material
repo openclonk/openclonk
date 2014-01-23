@@ -47,7 +47,7 @@ material SawmillBelt
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture Belt.png
+				texture Belt.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}
@@ -81,7 +81,7 @@ material Sawmill
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture Sawmill.png
+				texture Sawmill.jpg
 				tex_address_mode wrap
 				filtering trilinear
 			}

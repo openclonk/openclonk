@@ -1,26 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
- * Copyright (c) 1998-2000, 2003-2004, 2007-2008  Matthes Bender
- * Copyright (c) 2002, 2006-2008, 2011  Sven Eberhardt
- * Copyright (c) 2003, 2005-2007  Peter Wortmann
- * Copyright (c) 2005-2009, 2011  Günther Brammer
- * Copyright (c) 2006  Alexander Post
- * Copyright (c) 2006-2007  Julian Raschke
- * Copyright (c) 2008, 2011  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
- *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Game configuration as stored in registry */
@@ -90,16 +81,16 @@ void C4ConfigDeveloper::CompileFunc(StdCompiler *pComp)
 
 void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",          800           ,false, true));
-	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",          600           ,false, true));
+	pComp->Value(mkNamingAdapt(ResX,                  "ResolutionX",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(ResY,                  "ResolutionY",         -1             ,false, true));
+	pComp->Value(mkNamingAdapt(WindowX,               "WindowX",              800           ,false, true));
+	pComp->Value(mkNamingAdapt(WindowY,               "WindowY",              600           ,false, true));
 	pComp->Value(mkNamingAdapt(RefreshRate,           "RefreshRate",          0             ));
-	pComp->Value(mkNamingAdapt(GuiResX,                 "GuiResolutionX",       800           ,false, true));
-	pComp->Value(mkNamingAdapt(GuiResY,                 "GuiResolutionY",       600           ,false, true));
 	pComp->Value(mkNamingAdapt(ShowAllResolutions,    "ShowAllResolutions",   0             ,false, true));
 	pComp->Value(mkNamingAdapt(SplitscreenDividers,   "SplitscreenDividers",  1             ));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,   "ShowStartupMessages",  1             ,false, true));
 	pComp->Value(mkNamingAdapt(ColorAnimation,        "ColorAnimation",       0             ,false, true));
-	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     0             ,false, true));
+	pComp->Value(mkNamingAdapt(HighResLandscape,      "HighResLandscape",     1             ,false, true));
 	pComp->Value(mkNamingAdapt(SmokeLevel,            "SmokeLevel",           200           ,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,  "VerboseObjectLoading", 0             ));
 	pComp->Value(mkNamingAdapt(VideoModule,           "VideoModule",          0             ,false, true));
@@ -111,7 +102,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BitDepth,              "BitDepth",             32            ,false, true));
 	pComp->Value(mkNamingAdapt(Windowed,              "Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(PXSGfx,                "PXSGfx"  ,             1             ));
-	pComp->Value(mkNamingAdapt(Engine,                "Engine"  ,             1             ,false, true));
 	pComp->Value(mkNamingAdapt(Gamma1,                "Gamma1"  ,             0             ));
 	pComp->Value(mkNamingAdapt(Gamma2,                "Gamma2"  ,             0x808080      ));
 	pComp->Value(mkNamingAdapt(Gamma3,                "Gamma3"  ,             0xffffff      ));
@@ -357,10 +347,6 @@ bool C4Config::Load(const char *szConfigFile)
 	if (fWinSock) WSACleanup();
 #endif
 	General.DefaultLanguage();
-#if defined USE_GL && !defined USE_DIRECTX
-	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
-		Graphics.Engine = GFXENGN_OPENGL;
-#endif
 	// bit depth sanity check (might be corrupted by resolution check bug in old version)
 	if (Graphics.BitDepth < 16)
 	{
@@ -721,7 +707,6 @@ void C4ConfigStartup::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(HideMsgPlrNoTakeOver,        "HideMsgPlrNoTakeOver",       0));
 	pComp->Value(mkNamingAdapt(HideMsgNoOfficialLeague,     "HideMsgNoOfficialLeague",    0));
 	pComp->Value(mkNamingAdapt(HideMsgIRCDangerous,         "HideMsgIRCDangerous",        0));
-	pComp->Value(mkNamingAdapt(NoSplash,                    "NoSplash",                   1));
 	pComp->Value(mkNamingAdapt(AlphabeticalSorting,         "AlphabeticalSorting",        0));
 	pComp->Value(mkNamingAdapt(LastPortraitFolderIdx,       "LastPortraitFolderIdx",      0));
 }

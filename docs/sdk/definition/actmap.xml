@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE doc
   SYSTEM '../../clonk.dtd'>
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
@@ -15,6 +15,11 @@
         <col>Data type</col>
         <col>Description</col>
       </rowh>
+      <row>
+        <literal_col>Prototype</literal_col>
+        <col>proplist</col>
+        <col>Must be Action. See below in the example.</col>
+      </row>
       <row>
         <literal_col>Name</literal_col>
         <col>String</col>
@@ -43,7 +48,7 @@
       <row>
         <literal_col>Directions</literal_col>
         <col>Integer</col>
-        <col>Number of animation directions. Animation directions are arranged vertically in Graphics.png.</col>
+        <col>Number of animation directions. Animation directions are arranged vertically in Graphics.png. Default 1.</col>
       </row>
       <row>
         <literal_col>FlipDir</literal_col>
@@ -53,7 +58,7 @@
       <row>
         <literal_col>Length</literal_col>
         <col>Integer</col>
-        <col>Number of animation phases for this activity (arranged horizontally in Graphics.png)</col>
+        <col>Number of animation phases for this activity (arranged horizontally in Graphics.png). Default 1.</col>
       </row>
       <row>
         <literal_col>Reverse</literal_col>
@@ -66,14 +71,44 @@
         <col>Time difference in frames (ticks) between two animation phases.</col>
       </row>
       <row>
-        <literal_col>Attach</literal_col>
+        <literal_col>Step</literal_col>
         <col>Integer</col>
-        <col>Attachment to surfaces: <emlink href="definition/cnat.html">CNAT Value</emlink>, e.g. value 8 if the object should attach to the floor like a walking clonk does; or 4 for attachment to the ceiling like a hangling clonk. Only evaluated if the procedure is NONE.</col>
+        <col>How many animation phases the animation should advance after Delay frames. Default 1.</col>
       </row>
       <row>
-        <literal_col>Facet</literal_col>
-        <col>6 integers</col>
-        <col>Animation graphics: Target rectangle from Graphics.png relative to upper left corner of unrotated object shape.</col>
+        <literal_col>Attach</literal_col>
+        <col>Integer</col>
+        <col>A bitmask for the attachment to surfaces. See <emlink href="definition/cnat.html">CNAT Values</emlink> for a documentation of possible values. Only evaluated if the procedure is NONE.</col>
+      </row>
+      <row>
+        <literal_col>X</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: X coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Y</literal_col>
+        <col>Integer</col>
+        <col>Animation graphics: Y coordinate from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Wdt</literal_col>
+        <col>Integer</col>
+        <col>Width of the animation graphic from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>Hgt</literal_col>
+        <col>Integer</col>
+        <col>Height of the animation graphic from Graphics.png.</col>
+      </row>
+      <row>
+        <literal_col>OffX</literal_col>
+        <col>Integer</col>
+        <col>X-Offset at which to display the animation graphics.</col>
+      </row>
+      <row>
+        <literal_col>OffY</literal_col>
+        <col>Integer</col>
+        <col>Y-Offset at which to display the animation graphics.</col>
       </row>
       <row>
         <literal_col>FacetBase</literal_col>
@@ -87,13 +122,13 @@
       </row>
       <row>
         <literal_col>FacetTargetStretch</literal_col>
-        <col>Boolean</col>
+        <col>Integer</col>
         <col>0 or 1. If 1, the graphics will be stretched down towards the upper border of the ActionTarget. Used e.g. for the elevator line.</col>
       </row>
       <row>
         <literal_col>NextAction</literal_col>
         <col>String</col>
-        <col>Next action being set after the current one has reached its end.</col>
+        <col>Next action being set after the current one has reached its end. If it is not specified, the action will be kept and the animation phase resets to 0 and the animation begins anew. If it is "Hold", the action will also be kept but stops at the last animation frame. If it is "Idle", the object will have no action after this one.</col>
       </row>
       <row>
         <literal_col>NoOtherAction</literal_col>
@@ -102,22 +137,22 @@
       </row>
       <row>
         <literal_col>StartCall</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Object script function which is called when the activity is started.</col>
       </row>
       <row>
         <literal_col>EndCall</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Called when an activity reaches the end of its animation.</col>
       </row>
       <row>
         <literal_col>PhaseCall</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Called whenever the animation phase changes.</col>
       </row>
       <row>
         <literal_col>AbortCall</literal_col>
-        <col>String (max. 30 chars)</col>
+        <col>String</col>
         <col>Called if an activity is being replaced by another before its regular end; i.e. not by a transition through NextAction. Parameters are the previous animation phase, previous ActionTarget and previous ActionTarget2.</col>
       </row>
       <row>
@@ -127,8 +162,8 @@
       </row>
       <row>
         <literal_col>Sound</literal_col>
-        <col>String (max. 30 chars)</col>
-        <col>Permanent sound being played during this action.</col>
+        <col>String</col>
+        <col>Permanent sound being played during this action. The same can be achieved with <funclink>Sound</funclink> which is the more flexible solution.</col>
       </row>
       <row>
         <literal_col>ObjectDisabled</literal_col>
@@ -143,7 +178,7 @@
       <row>
         <literal_col>Animation</literal_col>
         <col>String</col>
-        <col>Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animationen</emlink> for further documentation on animations.</col>
+        <col>Specifies the animation to be played in the mesh of the object. Works only if the object uses a mesh for its graphics. If given all of Facet, FacetBase, FacetTopFace and FacetTargetStretch are ignored. The Length times Delay possible animation phases are mapped linearly on the animation length. If Delay equals 0 only Length will be used and the animation does not play automatically. See <emlink href="definition/animations.html">Animations</emlink> for further documentation on animations.</col>
       </row>
     </table>
   </text>

@@ -1,23 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2001  Sven Eberhardt
- * Copyright (c) 2005, 2009  Günther Brammer
- * Copyright (c) 2006  Armin Burgmeier
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Handles engine execution in developer mode */
@@ -43,13 +38,6 @@ const int C4CNS_ModePlay = 0,
 #define IDM_VIEWPORT_NEW1 10400
 #define IDM_VIEWPORT_NEW2 10500
 
-#ifdef WITH_DEVELOPER_MODE
-#include <C4WindowGTK.h>
-typedef C4GtkWindow C4ConsoleBase;
-#else
-typedef C4Window C4ConsoleBase;
-#endif
-
 class C4Console: public C4ConsoleGUI
 {
 public:
@@ -58,7 +46,7 @@ public:
 	void Default();
 	virtual void Clear();
 	virtual void Close();
-	using C4ConsoleBase::Init;
+	using C4Window::Init;
 	virtual C4Window * Init(C4AbstractApp * app);
 	void Execute();
 	void ClearPointers(C4Object *pObj);
@@ -101,12 +89,7 @@ public:
 
 	int FrameCounter;
 	int Time,FPS;
-#if defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
-	virtual void HandleMessage (XEvent &);
-#endif
 };
-
-#define C4ConsoleWindowClassname "C4Console"
 
 extern C4Console      Console;
 

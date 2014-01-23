@@ -21,6 +21,11 @@ protected func Initialize()
 	SetAction("Fly");
 	SetComDir(COMD_None);
 	MoveToTarget();
+	AddTimer("Activity");
+	
+	// Make butterflies a bit more colorful.
+	SetClrModulation(HSL(Random(256), 255, 100 + Random(60)));
+	
 	return 1;
 }
 
@@ -29,8 +34,6 @@ func FxButterflyTurnTimer(object target, int num, int timer)
 	TurnButterfly();
 }
 	
-/* TimerCall */
-
 private func Activity()
 {
 	// Underwater
@@ -101,7 +104,7 @@ private func MoveToTarget()
 {
 	var x = Random(LandscapeWidth());
 	var y = Random(GetHorizonHeight(x)-60)+30;
-	SetCommand("MoveTo",0,x,y);
+	SetCommand("MoveTo",nil,x,y);
 	return 1;
 }
 
@@ -111,6 +114,14 @@ private func GetHorizonHeight(int x)
 	while ( height < LandscapeHeight() && !GBackSemiSolid(x,height))
 		height += 10;
 	return height;
+}
+
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	props->Remove("ClrModulation"); // randomized in Initialize
+	SaveScenarioObjectAction(props);
+	return true;
 }
 
 local ActMap = {
@@ -156,6 +167,8 @@ Flutter = {
 local Name = "Butterfly";
 local MaxEnergy = 40000;
 local MaxBreath = 125;
+local Placement = 2;
+local NoBurnDecay = 1;
 
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);

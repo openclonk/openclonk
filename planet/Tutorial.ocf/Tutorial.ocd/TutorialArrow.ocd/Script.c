@@ -53,6 +53,14 @@ global func TutArrowShowPos(int x, int y, int angle, int dist)
 */
 global func TutArrowShowTarget(object target, int angle, int dist)
 {
+	var container = target->Contained(), index;
+	if (container &&
+	    container.Prototype == Clonk &&
+		(index = GetIndexOf(container.inventory, target)) != -1) // Is the object inventory in a clonk?
+	{
+		var itemslot = container.HUDcontroller.inventory[index];
+		return TutArrowShowGUIPos(itemslot->GetX(), itemslot->GetY(), -90, itemslot->GetDefHeight() / 2);
+	}
 	if (angle == nil) 
 		angle = 135;
 	if (dist == nil) 

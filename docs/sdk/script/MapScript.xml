@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE doc
+  SYSTEM '../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+  <title>Map script</title>
+  <h>Map script</h>
+  <part>
+     <text>Map scripts provide a powerful method to generate diverse, dynamic maps with just a few lines of simple script code. Map scripts can be used to generate new maps, as well as modify existing maps defined as static Map.bmp or dynamic Landscape.txt.</text>
+    <h>Introduction</h>
+    <text>A map script is simply a script file called Map.c placed in a scenario. On scenario initialization, the engine calls the local function called InitializeMap in this script. If the function returns true, the map will be used by the engine. If false is returned, the map is discarded and the regular fallback map is created.</text>
+    <text>Here an example of a simple map script:</text>
+    <code>/* A simple map */
+
+#include Library_Map
+
+func InitializeMap(proplist map)
+{
+	// Create a big map
+	Resize(150,150);
+	// Draw earth
+	DrawRegularGround();
+	// Draw some resources into the ground
+	DrawWaterVeins(3, [0,map.Hgt/3,map.Wdt,map.Hgt*2/3]);
+	DrawCoal(6);
+	DrawSulphur(4);
+	DrawRock(15);
+	DrawOre(4);
+	DrawGold(2*GetStartupPlayerCount()); // amount of gold depends on player count!
+	// Make sure liquids don't border tunnel or sky sideways
+	FixLiquidBorders();
+	// Done. Use this map.
+	return true;
+}</code>
+    <text>This draws a pretty boring standard map with basic resources. It makes use of some high-level helper functions such as DrawRegularGround or DrawCoal. which are included in the definition named Library_Map in Objects.ocd/Libraries.ocd. All map scripts should include this definition.</text>
+
+  <h>Layers</h>
+  <part>
+    <text>All map draw functions work on layers, which are simply 8 bit image surfaces. The map itself is a layer, but additional layers can be created as temporary buffers using the CreateLayer or Duplicate script functions. Additional layers are bound to the map they were created from and destroyed alongside with it when map drawing is complete.</text>
+    <text>In C4Script, map layers are represented as prop lists. They have the implicit properties Wdt and Hgt, which contain the width and height of the surface respectively. To resize a map or layer, use the Resize() function. Do not modify Wdt or Hgt directly.</text>
+    <text>For example, the following code:</text>
+    <code>var layer = CreateLayer("Earth");
+layer->DrawCoal();
+Blit(layer, [0,0,layer.Wdt/2,layer.Hgt]);</code>
+		<text>would create a secondary layer filled with earth. It would then draw coal onto the layer and finally copy only the left half of its contents to the main map.</text>
+  </part>
+
+  <h>Algorithms</h>
+  <part>
+    <text>Algorithms are the core concept of dynamic map creation to point drawing operations to specific subregions of the map only. An algorithm is a function that maps a position (int x, int y) to either a pixel color (int) or a mask value (bool).</text>
+    <text>Algorithms are defined as prop list with the Algo property set to one of the MAPALGO_* constants and additional algorithm parameters set as properties. They can then be passed to one of the drawing functions (Draw or Blit), which will evaluate the algorithm at all positions and draw pixel values accordingly.</text>
+    <text>For example, the following code would draw rectangles of earth in a checkerboard pattern:</text>
+    <code>Draw("Earth", {Algo=MAPALGO_RndChecker, Wdt=5, Hgt=5});</code>
+    <text>In addition to pattern-generating algorithms, there are also modifier algorithms that take other algorithms as parameters. For example, the Turbulence algorithm jumbles all pixels of the underlying algorithm around to create a noisy pattern:</text>
+    <code>var checkerboard = {Algo=MAPALGO_RndChecker, Wdt=10, Hgt=10};
+var jumbled_checkerboard = {Algo=MAPALGO_Turbulence, Amplitude=10, Scale=10};
+Draw("Earth", jumbled_checkerboard);</code>
+    <text>Modifier algorithms can also be applied to layer contents directly. For example, to flip the contents of the current map, one could write:</text>
+    <code>// Backup contents of current map
+var copy_layer = Duplicate();
+// Redraw flipped horizontally
+Blit({Algo=MAPALGO_Scale, OffX=Wdt/2, X=-100, Op=copy_layer});
+</code>
+    <text>Note: If you are using the target layer in a drawing command, always draw from a copy. Otherwise, the result is undefined.</text>
+    <h>MAPALGO_Layer</h><part>
+    <text>Returns the pixel value at the x,y position of the given layer. Instead of passing a MAPALGO_Layer prop list, layers can also be passed directly as algorithms.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Layer</col>
+            <col></col>
+            <col>The layer from which pixel values are taken.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_RndChecker</h><part>
+    <text>Returns values from a checkerboard pattern of rectangles that are filled with ones or zeros.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Seed</col>
+            <col>Random(65536)</col>
+            <col>If nonzero, the checkerboard pattern is generated from a fixed seed.</col>
+          </row><row>
+            <col>Ratio</col>
+            <col>50</col>
+            <col>Percentage of checkerboard fields that are one.</col>
+          </row><row>
+            <col>Wdt</col>
+            <col>10</col>
+            <col>Width of rectangles.</col>
+          </row><row>
+            <col>Hgt</col>
+            <col>10</col>
+            <col>Height of rectangles</col>
+          </row><row>
+            <col>FixedOffset</col>
+            <col>false</col>
+            <col>If true, the pattern always starts at position (0,0). Otherwise, it is offset by a random phase.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Rect</h><part>
+    <text>Returns one if the position is in a given rectangle and zero otherwise.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>X</col>
+            <col>0</col>
+            <col>Left side of rectangle (pixel is included).</col>
+          </row><row>
+            <col>Y</col>
+            <col>0</col>
+            <col>Top side of rectangle (pixel is included).</col>
+          </row><row>
+            <col>Wdt</col>
+            <col>0</col>
+            <col>Width of rectangle.</col>
+          </row><row>
+            <col>Hgt</col>
+            <col>0</col>
+            <col>Height of rectangle.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Ellipsis</h><part>
+    <text>Returns one if the position is in a given ellipsis and zero otherwise.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>X</col>
+            <col>0</col>
+            <col>Horizontal center of ellipsis.</col>
+          </row><row>
+            <col>Y</col>
+            <col>0</col>
+            <col>Vertical center of ellipsis.</col>
+          </row><row>
+            <col>Wdt</col>
+            <col>10</col>
+            <col>Horizontal radius of ellipsis.</col>
+          </row><row>
+            <col>Hgt</col>
+            <col>10</col>
+            <col>Vertical radius of ellipsis</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Polygon</h><part>
+    <text>Returns one if the position is in a given polygon or on its border and zero otherwise.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>X</col>
+            <col></col>
+            <col>Array of x coordinates of polygon points.</col>
+          </row><row>
+            <col>Y</col>
+            <col></col>
+            <col>Array of y coordinates of polygon points.</col>
+          </row><row>
+            <col>Wdt</col>
+            <col>1</col>
+            <col>Width of border lines of polygon.</col>
+          </row><row>
+            <col>Empty</col>
+            <col>false</col>
+            <col>If true, the polygon is not filled and only the border is drawn.</col>
+          </row><row>
+            <col>Open</col>
+            <col>false</col>
+            <col>If true, the last segment of the polygon is not drawn. Useful to draw lines. Only valid if Empty is true.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Lines</h><part>
+    <text>Returns one if the point is on regular stripes and zero otherwise.</text>
+    <text>Vector (X,Y) determines both width and direction of the stripes. So, for instance, if you want to draw vertical stripes of 10 pixels width and a gap of 5 pixels between them, you would set X=10, Y=0, Distance=15.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>X</col>
+            <col>0</col>
+            <col>X size of vector that points perpendicular to stripes.</col>
+          </row><row>
+            <col>Y</col>
+            <col>0</col>
+            <col>Y size of vector that points perpendicular to stripes.</col>
+          </row><row>
+            <col>OffX</col>
+            <col>0</col>
+            <col>Offset of stripes. If unspecified, stripes begin at (0,0).</col>
+          </row><row>
+            <col>OffY</col>
+            <col>0</col>
+            <col>Offset of stripes.</col>
+          </row><row>
+            <col>Distance</col>
+            <col>2*Sqrt(X*X+Y*Y)</col>
+            <col>Distance between two stripes. Includes the stripe width!</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_And</h><part>
+    <text>Returns zero if any of the operands is zero. Otherwise, returns the value of the last operand. If there are zero operands, always returns zero.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Array of algorithms that are tested.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Or</h><part>
+    <text>Returns the first operand that is nonzero. If all operands are zero, returns zero. If there are zero operands, always returns zero.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Array of algorithms that are tested.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Not</h><part>
+    <text>Returns one if the operand is zero. Returns zero otherwise.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithms that is negated.</col>
+          </row>
+        </table></text></part>
+    <h>MAPALGO_Xor</h><part>
+    <text>If exactly one of the two operands is nonzero, returns that operand. Otherwise, returns zero.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Array of two algorithms that are tested.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Offset</h><part>
+    <text>Moves its operand by an offset.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithms that is being manipulated.</col>
+          </row><row>
+            <col>OffX</col>
+            <col>0</col>
+            <col>Horizontal offset to the right.</col>
+          </row><row>
+            <col>OffY</col>
+            <col></col>
+            <col>Vertical offset downwards.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Scale</h><part>
+    <text>Scales its operand by a point.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithms that is being manipulated.</col>
+          </row><row>
+            <col>X</col>
+            <col>100</col>
+            <col>Horizontal scaling in percent. Values smaller than zero flip the operand horizontally.</col>
+          </row><row>
+            <col>Y</col>
+            <col>100</col>
+            <col>Vertical scaling in percent. Values smaller than zero flip the operand vertically.</col>
+          </row><row>
+            <col>OffX</col>
+            <col>0</col>
+            <col>X position of fixed point that remains in position.</col>
+          </row><row>
+            <col>OffY</col>
+            <col>0</col>
+            <col>Y position of fixed point that remains in position.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Rotate</h><part>
+    <text>Rotates its operand around a point.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithms that is being manipulated.</col>
+          </row><row>
+            <col>R</col>
+            <col>0</col>
+            <col>Rotation angle in degrees (0 to 360). Positive values rotate counter-clockwise.</col>
+          </row><row>
+            <col>OffX</col>
+            <col>0</col>
+            <col>X position of fixed point that remains in position.</col>
+          </row><row>
+            <col>OffY</col>
+            <col>0</col>
+            <col>Y position of fixed point that remains in position.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Turbulence</h><part>
+    <text>Jumbles its operand around by moving points by a randomized offset.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Seed</col>
+            <col>Random(65536)</col>
+            <col>If nonzero, the offset map is generated from a fixed seed.</col>
+          </row><row>
+            <col>Amplitude</col>
+            <col>10</col>
+            <col>Maximum range by which pixels may be moved in a single step. Movement in any direction is half of the amplitude. Can be an single integer for equal movement in both dimensions or an array of two integers for separate amplitudes for horizontal and vertical movement.</col>
+          </row><row>
+            <col>Scale</col>
+            <col>10</col>
+            <col>Distance of points for which the amplitude is randomized. A large scale relative to the amplitude creates more broadly scaled, regular turbulence, while a small scale can cause borders to look more jumpey. Can be an single integer for equal scale in both dimensions or an array of two integers for separate scales horizontally and vertically.</col>
+          </row><row>
+            <col>Iterations</col>
+            <col>2</col>
+            <col>Number of times each point is pushed around. The amplitude of the n'th successive push is reduced by 1/n.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Border</h><part>
+    <text>Returns true for positions that lie on an inner or outer border of an operand. An inner border is defined as a position where the operand is nonzero and a position where it is zero lies within inner border width range. An outer border is defined as a position where the operand is zero and a position where it is nonzero lies within outer border width range. Note that borders are only searched in four directions (left, right, upwards, downwards) and not diagonally. This means that for a square, outer borders to not catch the corners.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Algorithm of which the border is to be determined.</col>
+          </row><row>
+            <col>Wdt</col>
+            <col>1</col>
+            <col>Border width in all directions. Positive integer for inner border; negative integer for outer border. Can also be an array of two integers of opposing signs for inner and outer borders.</col>
+          </row><row>
+            <col>Left</col>
+            <col></col>
+            <col>Border width to the left side. Definition like Wdt. Falls back to Wdt if not specified.</col>
+          </row><row>
+            <col>Top</col>
+            <col></col>
+            <col>Border width upwards. Definition like Wdt. Falls back to Wdt if not specified.</col>
+          </row><row>
+            <col>Right</col>
+            <col></col>
+            <col>Border width to the right side. Definition like Wdt. Falls back to Wdt if not specified.</col>
+          </row><row>
+            <col>Bottom</col>
+            <col></col>
+            <col>Border width downwards. Definition like Wdt. Falls back to Wdt if not specified.</col>
+          </row>
+       </table></text></part>
+    <h>MAPALGO_Filter</h><part>
+    <text>Return only pixel values of the operand that match the mask specification. Returns zero for other pixels.</text>
+      <text><table><rowh><col>Parameter</col><col>Default</col><col>Meaning</col></rowh>
+          <row>
+            <col>Op</col>
+            <col></col>
+            <col>Operand algorithm that is being filtered.</col>
+          </row><row>
+            <col>Filter</col>
+            <col></col>
+            <col>Mask specification (see section "Material-texture masks" below)</col>
+          </row>
+       </table></text></part>
+  </part>
+  
+  <h>Script function parameters</h>
+  <part>
+    Map drawing functions follow a common syntax for passing certain structures:
+    <h>Rectangles (array rect)</h>
+    <text>All rectangles are given in the format <code>[left, top, width, height]</code>, where the left and top pixel rows are included and left+width and top+height pixel rows are excluded. Unless otherwise specified, rect can always be nil, in which case the area defaults to the whole map or layer (<code>[0,0,this.Wdt,this.Hgt]</code>).</text>
+    <h>Material-texture definitions (string mattex)</h>
+    <text>When a material is specified for the drawing functions, the following definitions are valid:</text>
+      <text>
+        <table>
+          <rowh>
+            <col>String</col>
+            <col>Example</col>
+            <col>Meaning</col>
+          </rowh>
+          <row>
+            <col>Material</col>
+            <col>Earth</col>
+            <col>Draws the given material in its default texture as underground (tunnel background) material.</col>
+          </row>
+          <row>
+            <col>Material-Texture</col>
+            <col>Earth-earth_topSoil</col>
+            <col>Draws the given material with the given texture as underground material.</col>
+          </row>
+          <row>
+            <col>^Material</col>
+            <col>^Water</col>
+            <col>Draws the given material with its default texture as overground (sky background) material.</col>
+          </row>
+          <row>
+            <col>^Material-Texture</col>
+            <col>^Earth-earth_rough</col>
+            <col>Draws the given material with the given texture as overground material.</col>
+          </row>
+          <row>
+            <col>Sky</col>
+            <col>Sky</col>
+            <col>Draws a sky material. Within the map generator, explicit sky is drawn as IFT (0x80), which is converted to index zero on map drawing. That way, sky can be blitted to other layers without being transparent.</col>
+          </row>
+          <row>
+            <col>Transparent</col>
+            <col>Transparent</col>
+            <col>Draws with index 0.</col>
+          </row>
+        </table>
+      </text>
+    <h>Material-texture masks (string mask_spec)</h>
+    <text>When a material is specified as a masking function, the following definitions are valid:</text>
+      <text>
+        <table>
+          <rowh>
+            <col>String</col>
+            <col>Example</col>
+            <col>Meaning</col>
+          </rowh>
+          <row>
+            <col>Material</col>
+            <col>Earth</col>
+            <col>True for given material with any texture and any (sky or tunnel) background.</col>
+          </row>
+          <row>
+            <col>Material-Texture</col>
+            <col>Earth-earth_topSoil</col>
+            <col>True for the given material with the given texture and any (sky or tunnel) background.</col>
+          </row>
+          <row>
+            <col>Sky</col>
+            <col>Sky</col>
+            <col>True for explicit sky material (0x80) only. Not true for transaprent (0) pixels.</col>
+          </row>
+          <row>
+            <col>Transparent</col>
+            <col>Transparent</col>
+            <col>True for transparent pixels (index 0) only.</col>
+          </row>
+          <row>
+            <col>Background</col>
+            <col>Background</col>
+            <col>True for all background materials (e.g. Tunnel, BrickBack and Sky).</col>
+          </row>
+          <row>
+            <col>Liquid</col>
+            <col>Liquid</col>
+            <col>True for all liquids (e.g. Water, Acid, Lava and DuroLava).</col>
+          </row>
+          <row>
+            <col>Solid</col>
+            <col>Solid</col>
+            <col>True for solid materials (e.g. Earth, Rock, Brick, etc.).</col>
+          </row>
+          <row>
+            <col>*</col>
+            <col>*</col>
+            <col>True for all materials.</col>
+          </row>
+          <row>
+            <col>^Definition</col>
+            <col>^Rock-rock_cracked</col>
+            <col>True for the definition if overground (sky background) only.</col>
+          </row>
+          <row>
+            <col>&amp;Definition</col>
+            <col>&amp;Liquid</col>
+            <col>True for the definition if underground (tunnel background) only. The example would match all underground liquids.</col>
+          </row>
+          <row>
+            <col>~Definition</col>
+            <col>~^*</col>
+            <col>Inverts the definition, i.e. true only if the definition would originally be false. The example would match all underground materials.</col>
+          </row>
+        </table>
+      </text>
+  </part>
+
+  <h>Script functions</h>
+  <part>
+    <text>All drawing functions are defined in the MapLayer static prop list. Because the Map.c script file is also evaluated in this context with the current map as this pointer, all drawing functions can be called directly by name in that script (e.g.: Resize(150,150)). In other script contexts or if the function is to be executed on a layer instead of on the main map, the base object must be given explicitely (e.g.: map->Resize(150,150), where map is the parameter passed to InitializeMap).</text>
+    <text>Because layers derive from the MapLayer prop list, all script functions defined in the Map.c and included script files are also available on any layer.</text>
+    <h>Internal engine functions</h>
+    <part>
+      <text><code>bool Draw(string mattex, proplist mask_algo, array rect);</code></text>
+      <text>Draws the material given by mattex on all pixels within rect if the algorithm given by mask_algo returns a value other than zero. Returns true on success.</text>
+      <text><code>bool Blit(proplist mask_algo, array rect);</code></text>
+      <text>Same as draw, but draws the result of evaluation of mask_algo directly instead of a material given by mattex. Because mask_algo can also be a layer, this function can be used to copy layer contents onto other layers or the map. If mask_algo evaluates to zero, nothing is drawn and the original pixel value is kept.</text>
+      <text><code>proplist CreateLayer(string mattex_fill, int width, int height);</code></text>
+      <text>Creates a new layer of size width,height. If no size is given, the layer is created in the same size as the calling context layer or map. The new layer is filled with the pixel color given by mattex_fill, or with zeroes if mattex_fill is nil. Returns the newly created layer.</text>
+      <text><code>bool Resize(int new_width, int new_height);</code></text>
+      <text>Recreates the calling layer or map surface in the given size. All contents are deleted and the layer is filled with zeroes. Use functions Duplicate and Blit to backup and restore any old layer contents if you want to extent the map without losing its contents. Returns true on success.</text>
+      <text><code>proplist Duplicate(any mask_spec, array rect);</code></text>
+      <text>Creates a new layer with the same size and surface contents as this layer. If a rect is given, the new layer is smaller and contains only the portion included in rect. If mask_spec is given, only pixels passing the mask are set and all other pixels in the new layer are zero.</text>
+      <text><code>int GetPixel(int x, int y);</code></text>
+      <text>Gets the pixel color at the given position in this layer. If x,y is outside the layer, zero is returned.</text>
+      <text><code>bool SetPixel(int x, int y, int new_color);</code></text>
+      <text>Sets the pixel at position x,y in this layer to new_color. Returns true on success.</text>
+      <text><code>int GetPixelCount(any mask_spec, array rect);</code></text>
+      <text>Returns number of pixels on this layer or map within rect that fulfill mask_spec.</text>
+      <text><code>bool FindPosition(proplist out_pos, mask_spec, array rect, int max_tries);</code></text>
+      <text>Tries to find a position on this layer for which the pixel color matches mask_spec. If a position is found, true is returned and the position is set as X and Y parameters in the out_pos prop list. If no position is found after max_tries, the function will walk through all pixels of the layer starting from a random starting position to find a point. If still no position is found, false is returned and out_pos is not changed. max_tries defaults to 500.</text>
+      <text><code>array CreateMatTexMask(any mask_spec);</code></text>
+      <text>Returns mask_spec as an array of 256 bools to be used e.g. in conjunction with the return value of GetPixel.</text>
+     </part>
+  </part>
+
+  
+  </part>
+  <author>Sven2</author><date>2013-03</date>
+</doc>

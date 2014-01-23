@@ -8,7 +8,7 @@ protected func Construction()
 
 protected func Hit()
 {
-	Sound("MetalHit?");
+	Sound("GeneralHit?");
 	return 1;
 }
 
@@ -19,3 +19,4 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = 1;
 local Rebuy = true;
+local Plane = 470;

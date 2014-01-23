@@ -1,0 +1,5 @@
+MsgIntro1=Help! Tyrant Horax has destroyed our village, drank all our beer and taken our women. We are too chicken to face him ourselves; can you please stop him?
+MsgEncounterCave=An intruder tries to steal out gold. Catch him!
+MsgEncounterOutpost=Stop, in the name of the king!
+MsgEncounterKing=Ah, %s. I have been awaiting you.
+MsgEncounterShrooms=What is this smell? We better stay away from those plants...

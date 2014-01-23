@@ -1,0 +1,18 @@
+material Chemlab
+{
+    receive_shadows on
+	technique
+    {
+		pass
+        {
+			diffuse 1.0 1.0 1.0 1.0
+			scene_blend alpha_blend
+			texture_unit
+			{
+				texture chemtex.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
+		}
+    }
+}

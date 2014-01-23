@@ -1,0 +1,2 @@
+Name=Scaffold wall
+Description=Allows you to build greater structures.

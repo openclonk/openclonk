@@ -350,11 +350,13 @@
   </xsl:template>
 
   <xsl:template match="search">
-    <form action="../search.php" method="get">
-      <input name="search" type="text"></input> 
-      <input type="submit" name="func" value="Search"></input>
-      <input type="submit" name="fulltext" value="Fulltext"></input>
-    </form>
+    <xsl:if test="not($chm)">
+      <form action="../search.php" method="get">
+        <input name="search" type="text"></input>
+        <input type="submit" name="func" value="Search"></input>
+        <input type="submit" name="fulltext" value="Fulltext"></input>
+      </form>
+    </xsl:if>
   </xsl:template>
   
   <xsl:template match="table/bitmask">
@@ -514,7 +516,7 @@
   <xsl:template name="color2">
     <xsl:param name="s" select="." />
     <!-- the list of keywords -->
-    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|int|proplist|object|array|string|bool|any|return|if|else|break|continue|while|for|func|true|false|nil|'" />
+    <xsl:param name="t" select="'#include|#appendto|public|private|protected|global|static|var|local|const|any|int|bool|def|effect|object|proplist|string|array|func|return|if|else|break|continue|while|for|true|false|nil|'" />
     <xsl:param name="w" select="substring-before($t, '|')" />
     <!-- text before the keyword -->
     <xsl:variable name="l" select="substring-before($s, $w)" />

@@ -1,26 +1,27 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
- * Copyright (c) 2002, 2005  Sven Eberhardt
- * Copyright (c) 2006-2007, 2010  Armin Burgmeier
- * Copyright (c) 2007, 2009-2011  Günther Brammer
- * Copyright (c) 2010  Martin Plicht
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2002, 2005, Sven Eberhardt
+ * Copyright (c) 2006-2007, Armin Burgmeier
+ * Copyright (c) 2007, Günther Brammer
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include <C4Include.h>
 #include <C4Console.h>
 
+#include <C4ConsoleGTKDlg.h>
+#include <C4Language.h>
 #include <C4Aul.h>
 #include <C4Application.h>
 #include <C4GameSave.h>
@@ -40,28 +41,9 @@
 #include <StdFile.h>
 #include <StdRegistry.h>
 
-# include <gdk/gdkx.h>
-# include <gtk/gtk.h>
-
-# include <res/Play.h>
-# include <res/Halt.h>
-# include <res/Mouse.h>
-# include <res/Cursor.h>
-# include <res/Brush.h>
-# include <C4Language.h>
-# include <C4DevmodeDlg.h>
-
-# include <res/Line.h>
-# include <res/Rect.h>
-# include <res/Fill.h>
-# include <res/Picker.h>
-
-# include <res/Dynamic.h>
-# include <res/Static.h>
-# include <res/Exact.h>
-
-# include <res/Ift.h>
-# include <res/NoIft.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+#include <editor-icons.h>
 
 using namespace OpenFileFlags;
 
@@ -312,18 +294,13 @@ void C4ConsoleGUI::State::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 C4Window* C4ConsoleGUI::CreateConsoleWindow(C4AbstractApp* pApp)
 {
-	// Calls InitGUI
-	C4Window* retval = C4ConsoleBase::Init(C4Window::W_GuiWindow, pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
+	C4Rect r(0, 0, 320, 320);
+	C4Window* retval = C4Window::Init(C4Window::W_Console, pApp, LoadResStr("IDS_CNS_CONSOLE"), &r);
+	state->InitGUI();
 	UpdateHaltCtrls(true);
 	EnableControls(fGameOpen);
 	ClearViewportMenu();
 	return retval;
-}
-
-GtkWidget* C4ConsoleGUI::InitGUI()
-{
-	state->InitGUI();
-	return C4ConsoleBase::InitGUI();
 }
 
 void C4ConsoleGUI::State::InitGUI()
@@ -481,9 +458,8 @@ void C4ConsoleGUI::State::InitGUI()
 	gtk_box_pack_start(GTK_BOX(box), txtScript, false, false, 3);
 	gtk_box_pack_start(GTK_BOX(box), status_frame, false, false, 0);
 
-	gtk_window_set_default_size(GTK_WINDOW(GetOwner()->window), 320, 320);
-
 	gtk_container_add(GTK_CONTAINER(GetOwner()->window), box);
+	gtk_widget_show_all(GTK_WIDGET(GetOwner()->window));
 
 	// ------------ Signals ---------------------
 	handlerDestroy = g_signal_connect(G_OBJECT(GetOwner()->window), "destroy", G_CALLBACK(OnDestroy), this);
@@ -586,7 +562,7 @@ void C4ConsoleGUI::AddMenuItemForPlayer(C4Player *player, StdStrBuf &player_text
 void C4ConsoleGUI::SetCursor(Cursor cursor)
 {
 	// Seems not to work. Don't know why...
-	GdkDisplay * display = gtk_widget_get_display(window);
+	GdkDisplay * display = gtk_widget_get_display(GTK_WIDGET(window));
 	GdkCursor * gdkcursor;
 
 	if (cursor == CURSOR_Wait)
@@ -594,11 +570,7 @@ void C4ConsoleGUI::SetCursor(Cursor cursor)
 	else
 		gdkcursor = NULL;
 
-#if GTK_CHECK_VERSION(2,14,0)
-	GdkWindow* window_wnd = gtk_widget_get_window(window);
-#else
-	GdkWindow* window_wnd = window->window;
-#endif
+	GdkWindow* window_wnd = gtk_widget_get_window(GTK_WIDGET(window));
 
 	gdk_window_set_cursor(window_wnd, gdkcursor);
 	gdk_display_flush(display);
@@ -996,18 +968,14 @@ void C4ConsoleGUI::PropertyDlgUpdate(C4ObjectList &rSelection)
 {
 	if (!state->propertydlg) return;
 	if (!C4DevmodeDlg::GetWindow()) return;
-#if GTK_CHECK_VERSION(2,18,0)
 	if (!gtk_widget_get_visible(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#else
-	if (!GTK_WIDGET_VISIBLE(GTK_WIDGET(C4DevmodeDlg::GetWindow()))) return;
-#endif
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(state->propertydlg_textview));
 	gtk_text_buffer_set_text(buffer, rSelection.GetDataString().getData(), -1);
 
 	if (PropertyDlgObject == rSelection.GetObject()) return;
 	PropertyDlgObject = rSelection.GetObject();
 	
-	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject ? &PropertyDlgObject->Def->Script : 0);
+	std::list<const char *> functions = ::ScriptEngine.GetFunctionNames(PropertyDlgObject);
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(state->propertydlg_entry));
 	GtkListStore* store;
 
@@ -1317,11 +1285,7 @@ void C4ToolsDlg::State::UpdatePreview()
 			}
 		}
 	}
-#if GTK_CHECK_VERSION(2,18,0)
 	if (gtk_widget_is_sensitive(preview))
-#else
-	if (GTK_WIDGET_SENSITIVE(preview))
-#endif
 		pDraw->DrawPatternedCircle( sfcPreview,
 		                              iPrvWdt/2,iPrvHgt/2,
 		                              dlg->Grade,
@@ -1553,7 +1517,9 @@ void C4ConsoleGUI::State::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4ConsoleGUI::State::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	::Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
+	C4Player *plr = ::Players.Get(GPOINTER_TO_INT(data));
+	if (!plr) return;
+	::Control.Input.Add(CID_PlrAction, C4ControlPlayerAction::Eliminate(plr));	
 }
 
 void C4ConsoleGUI::State::OnViewNew(GtkWidget* item, gpointer data)

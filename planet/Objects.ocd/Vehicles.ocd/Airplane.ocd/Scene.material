@@ -23,7 +23,7 @@ material Airplane
 			}
 			texture_unit Plane
 			{
-				texture airplane.png
+				texture airplane.jpg
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op_ex blend_current_alpha src_current src_texture

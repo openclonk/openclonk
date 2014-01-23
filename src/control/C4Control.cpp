@@ -1,28 +1,18 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000, 2007  Matthes Bender
- * Copyright (c) 2001  Michael Käser
- * Copyright (c) 2001-2002, 2004-2009  Sven Eberhardt
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2006, 2009-2010  Günther Brammer
- * Copyright (c) 2006  Florian Groß
- * Copyright (c) 2006, 2011  Armin Burgmeier
- * Copyright (c) 2009  Nicolas Hake
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2010  Martin Plicht
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 1998-2000, Matthes Bender
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 /* Control packets contain all player input in the message queue */
@@ -33,6 +23,7 @@
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>
+#include <C4Network2Dialogs.h>
 #include <C4Random.h>
 #include <C4Console.h>
 #include <C4Log.h>
@@ -48,6 +39,8 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include "gui/C4MessageInput.h"
+#include "object/C4DefList.h"
 
 #ifndef NOAULDEBUG
 #include <C4AulDebug.h>
@@ -175,18 +168,17 @@ void C4ControlSet::Execute() const
 		::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),::Control.ControlRate,Game.FrameCounter).getData());
 		break;
 
-	case C4CVT_AllowDebug: // allow debug mode?
+	case C4CVT_DisableDebug: // force debug mode disabled
 	{
-		bool fSet = !!iData;
-		// disable debug
-		if (!fSet && Game.DebugMode)
+		if (Game.DebugMode)
 		{
 			Game.DebugMode=false;
 			::GraphicsSystem.DeactivateDebugOutput();
 		}
 		// save flag, log
-		Game.Parameters.AllowDebug = fSet;
-		Log(fSet ? "Debug ON" : "Debug OFF");
+		Game.Parameters.AllowDebug = false;
+		C4Client *client = ::Game.Clients.getClientByID(iByClient);
+		LogF("Debug mode forced disabled by %s", client ? client->getName() : "<unknown client>");
 		break;
 	}
 	break;
@@ -235,7 +227,10 @@ void C4ControlScript::Execute() const
 {
 	const char *szScript = Script.getData();
 	// user script: from host only
-	if (!fInternal && (iByClient != C4ClientIDHost) && !Console.Active) return;
+	if ((iByClient != C4ClientIDHost) && !Console.Active) return;
+	// only allow scripts when debug mode is not forbidden
+	if (!Game.Parameters.AllowDebug) return;
+
 	// execute
 	C4Object *pObj = NULL;
 	C4AulScript *pScript;
@@ -257,38 +252,100 @@ void C4ControlScript::Execute() const
 	}
 #endif
 	// show messages
-	if (!fInternal)
+	// print script
+	if (pObj)
+		LogF("-> %s::%s", pObj->Def->GetName(), szScript);
+	else
+		LogF("-> %s", szScript);
+	// print result
+	if (!LocalControl())
 	{
-		// print script
-		if (pObj)
-			LogF("-> %s::%s", pObj->Def->GetName(), szScript);
+		C4Network2Client *pClient = NULL;
+		if (::Network.isEnabled())
+			pClient = ::Network.Clients.GetClientByID(iByClient);
+		if (pClient)
+			LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
 		else
-			LogF("-> %s", szScript);
-		// print result
-		if (!LocalControl())
-		{
-			C4Network2Client *pClient = NULL;
-			if (::Network.isEnabled())
-				pClient = ::Network.Clients.GetClientByID(iByClient);
-			if (pClient)
-				LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
-			else
-				LogF(" = %s (by client %d)", rVal.GetDataString().getData(), iByClient);
-		}
-		else
-			LogF(" = %s", rVal.GetDataString().getData());
+			LogF(" = %s (by client %d)", rVal.GetDataString().getData(), iByClient);
 	}
+	else
+		LogF(" = %s", rVal.GetDataString().getData());
 }
 
 void C4ControlScript::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
-	pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
 	pComp->Value(mkNamingAdapt(fUseVarsFromCallerContext, "UseVarsFromCallerContext", false));
 	pComp->Value(mkNamingAdapt(Script, "Script", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
+// *** C4ControlMsgBoardReply
+void C4ControlMsgBoardReply::Execute() const
+{
+	C4Object *target_object = ::Objects.SafeObjectPointer(target);
+	C4Player *target_player = ::Players.Get(player);
+
+	// remove query
+	if (!target_player) return;
+	if (!target_player->RemoveMessageBoardQuery(target_object)) return;
+
+	// execute callback if answer present
+	if (!reply) return;
+	C4AulParSet pars(C4VString(reply), C4VInt(player));
+	if (target_object)
+		target_object->Call(PSF_InputCallback, &pars);
+	else
+		::GameScript.Call(PSF_InputCallback, &pars);
+}
+
+void C4ControlMsgBoardReply::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(target, "TargetObj", -1));
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(reply, "Reply", nullptr));
+	C4ControlPacket::CompileFunc(pComp);
+}
+
+// *** C4ControlMsgBoardCmd
+void C4ControlMsgBoardCmd::Execute() const
+{
+	C4Player *source_player = ::Players.Get(player);
+
+	// don't handle this if the game isn't actually running
+	if (!::Game.IsRunning) return;
+
+	// fetch command script
+	C4MessageBoardCommand *cmd = ::MessageInput.GetCommand(command.getData());
+	if (!cmd) return;
+	StdCopyStrBuf script(cmd->Script);
+
+	// interpolate parameters as required
+	script.Replace("%player%", FormatString("%d", player).getData());
+	if (parameter)
+	{
+		script.Replace("%d", FormatString("%d", std::atoi(parameter.getData())).getData());
+		StdCopyStrBuf escaped_param(parameter);
+		escaped_param.EscapeString();
+		script.Replace("%s", escaped_param.getData());
+	}
+
+	// Run script
+	C4Value rv(::ScriptEngine.DirectExec(nullptr, script.getData(), "message board command"));
+#ifndef NOAULDEBUG
+	C4AulDebug* pDebug = C4AulDebug::GetDebugger();
+	if (pDebug)
+		pDebug->ControlScriptEvaluated(script.getData(), rv.GetDataString().getData());
+#endif
+}
+
+void C4ControlMsgBoardCmd::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(command, "Command"));
+	pComp->Value(mkNamingAdapt(parameter, "Parameter"));
+	C4ControlPacket::CompileFunc(pComp);
+}
 // *** C4ControlPlayerSelect
 
 C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt)
@@ -378,6 +435,75 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 	C4ControlPacket::CompileFunc(pComp);
 }
 
+// *** C4ControlPlayerMouse
+C4ControlPlayerMouse *C4ControlPlayerMouse::Hover(const C4Player *player, const C4Object *target, const C4Object *old_target, const C4Object *drag)
+{
+	assert(player != nullptr);
+	if (!player) return nullptr;
+
+	auto control = new C4ControlPlayerMouse();
+	control->action = CPM_Hover;
+	control->player = player->Number;
+	control->drag_obj = drag ? drag->Number : 0;
+	control->target_obj = target ? target->Number : 0;
+	control->old_obj = old_target ? old_target->Number : 0;
+	return control;
+}
+C4ControlPlayerMouse *C4ControlPlayerMouse::DragDrop(const C4Player *player, const C4Object *target, const C4Object *drag)
+{
+	assert(player != nullptr);
+	if (!player) return nullptr;
+
+	auto control = new C4ControlPlayerMouse();
+	control->action = CPM_Drop;
+	control->player = player->Number;
+	control->drag_obj = drag ? drag->Number : 0;
+	control->target_obj = target ? target->Number : 0;
+	return control;
+}
+
+void C4ControlPlayerMouse::Execute() const
+{
+	const char *callback_name = nullptr;
+	C4AulParSet pars(C4VInt(player));
+
+	switch (action)
+	{
+	case CPM_NoAction:
+		return;
+
+	case CPM_Hover:
+		// Mouse movement, object hover state changed
+		callback_name = PSF_MouseHover;
+		pars[1] = C4VObj(::Objects.SafeObjectPointer(old_obj));
+		pars[2] = C4VObj(::Objects.SafeObjectPointer(target_obj));
+		pars[3] = C4VObj(::Objects.SafeObjectPointer(drag_obj));
+		break;
+	
+	case CPM_Drop:
+		// Drag/Drop operation
+		callback_name = PSF_MouseDragDrop;
+		pars[1] = C4VObj(::Objects.SafeObjectPointer(drag_obj));
+		pars[2] = C4VObj(::Objects.SafeObjectPointer(target_obj));
+		break;
+	}
+	
+	// Do call
+	if (!callback_name) return;
+	if (callback_name[0] == '~') ++callback_name;
+	C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
+	if (!callback) return;
+	callback->Exec(nullptr, &pars);
+}
+
+void C4ControlPlayerMouse::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(action, "Action"));
+	pComp->Value(mkNamingAdapt(player, "Player", NO_OWNER));
+	pComp->Value(mkNamingAdapt(target_obj, "TargetObj"));
+	pComp->Value(mkNamingAdapt(drag_obj, "DragObj"));
+	pComp->Value(mkNamingAdapt(old_obj, "OldObj"));
+}
 
 // *** C4ControlPlayerCommand
 
@@ -415,6 +541,204 @@ void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iTarget2, "Target2", 0));
 	pComp->Value(mkNamingAdapt(iData, "Data", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddMode), "AddMode", 0));
+	C4ControlPacket::CompileFunc(pComp);
+}
+
+// *** C4ControlPlayerAction
+C4ControlPlayerAction::C4ControlPlayerAction(const C4Player *source)
+	: action(CPA_NoAction), source(source ? source->Number : NO_OWNER), target(NO_OWNER), param_int(0)
+{
+}
+
+C4ControlPlayerAction *C4ControlPlayerAction::Surrender(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_Surrender;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::Eliminate(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_Eliminate;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::ActivateGoal(const C4Player *source, const C4Object *goal)
+{
+	assert(source);
+	assert(goal);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_ActivateGoal;
+	control->target = goal->Number;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::ActivateGoalMenu(const C4Player *source)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_ActivateGoalMenu;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::SetHostility(const C4Player *source, const C4Player *target, bool hostile)
+{
+	assert(source);
+	assert(target);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_SetHostility;
+	control->target = target ? target->Number : NO_OWNER;
+	control->param_int = hostile;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::SetTeam(const C4Player *source, int32_t team)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_SetTeam;
+	control->target = team;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::InitScenarioPlayer(const C4Player *source, int32_t team)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_InitScenarioPlayer;
+	control->target = team;
+	return control;
+}
+C4ControlPlayerAction *C4ControlPlayerAction::InitPlayerControl(const C4Player *source, const C4PlayerControlAssignmentSet *ctrl_set)
+{
+	assert(source);
+	C4ControlPlayerAction *control = new C4ControlPlayerAction(source);
+	control->action = CPA_InitPlayerControl;
+	if (ctrl_set)
+	{
+		control->param_str = ctrl_set->GetName();
+		if (ctrl_set->HasKeyboard())
+			control->param_int |= CPA_IPC_HasKeyboard;
+		if (ctrl_set->HasMouse())
+			control->param_int |= CPA_IPC_HasMouse;
+		if (ctrl_set->HasGamepad())
+			control->param_int |= CPA_IPC_HasGamepad;
+	}
+	return control;
+}
+
+void C4ControlPlayerAction::Execute() const
+{
+	// The originating player must exist
+	C4Player *source_player = ::Players.Get(source);
+	if (!source_player) return;
+
+	switch (action)
+	{
+	case CPA_Surrender:
+		source_player->Surrender();
+		break;
+
+	case CPA_Eliminate:
+		source_player->Eliminate();
+		break;
+	
+	case CPA_ActivateGoal:
+	{
+		// Make sure the object actually exists
+		C4Object *goal = ::Objects.SafeObjectPointer(target);
+		if (!goal) return;
+		// Call it
+		C4AulParSet pars(C4VInt(source_player->Number));
+		goal->Call("Activate", &pars);
+		break;
+	}
+
+	case CPA_ActivateGoalMenu:
+		// open menu
+		source_player->Menu.ActivateGoals(source_player->Number, source_player->LocalControl && !::Control.isReplay());
+		break;
+
+	case CPA_SetHostility:
+	{
+		// Can only set hostility towards a player that exists
+		C4Player *target_player = ::Players.Get(target);
+		if (!target_player) return;
+		
+		// Proxy the hostility change through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target_player->Number), C4VBool(param_int != 0));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetHostility"));
+		assert(callback); // this should always exist since the engine provides a default implementation
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_SetTeam:
+	{
+		// Make sure team switching is allowed in the first place
+		if (!::Game.Teams.IsTeamSwitchAllowed()) return;
+
+		// We can't change teams to one that doesn't exist
+		C4Team *team = ::Game.Teams.GetTeamByID(target);
+		if (!team && target != TEAMID_New) return;
+
+		// Proxy the team switch through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("SetPlayerTeam"));
+		assert(callback);
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_InitScenarioPlayer:
+	{
+		// Proxy the call through C4Aul, in case a script wants to capture it
+		C4AulParSet pars(C4VInt(source_player->Number), C4VInt(target));
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString("InitScenarioPlayer"));
+		assert(callback);
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+
+	case CPA_InitPlayerControl:
+	{
+		// Notify scripts about player control selection
+		const char *callback_name = PSF_InitializePlayerControl;
+		if (callback_name[0] == '~') ++callback_name;
+		C4AulFunc *callback = ::ScriptEngine.GetFirstFunc(::Strings.RegString(callback_name));
+		if (!callback) return;
+		
+		C4AulParSet pars(C4VInt(source_player->Number));
+		// If the player is using a control set, its name is stored in param_str
+		if (param_str)
+		{
+			pars[1] = C4VString(param_str);
+			pars[2] = C4VBool(CPA_IPC_HasKeyboard == (param_int & CPA_IPC_HasKeyboard));
+			pars[3] = C4VBool(CPA_IPC_HasMouse == (param_int & CPA_IPC_HasMouse));
+			pars[4] = C4VBool(CPA_IPC_HasGamepad == (param_int & CPA_IPC_HasGamepad));
+		}
+		callback->Exec(nullptr, &pars);
+		break;
+	}
+	}
+}
+
+void C4ControlPlayerAction::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(source, "Player", NO_OWNER));
+	const StdEnumEntry<Action> ActionNames[] =
+	{
+		{ "Surrender",             CPA_Surrender  },
+		{ "ActivateGoal",          CPA_ActivateGoal  },
+		{ "ActivateGoalMenu",      CPA_ActivateGoalMenu  },
+		{ "Eliminate",             CPA_Eliminate  },
+		{ "SetHostility",          CPA_SetHostility  },
+		{ "SetTeam",               CPA_SetTeam  },
+		{ "InitScenarioPlayer",    CPA_InitScenarioPlayer  },
+		{ "InitPlayerControl",     CPA_InitPlayerControl  },
+		{ NULL, CPA_NoAction }
+	};
+	pComp->Value(mkNamingAdapt(mkEnumAdapt<Action, int32_t>(action, ActionNames), "Action", CPA_NoAction));
+	pComp->Value(mkNamingAdapt(target, "Target", NO_OWNER));
+	pComp->Value(mkNamingAdapt(param_int, "DataI", 0));
+	pComp->Value(mkNamingAdapt(param_str, "DataS", nullptr));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
@@ -756,7 +1080,7 @@ void C4ControlJoinPlayer::Execute() const
 	}
 	else if (::Control.isNetwork())
 	{
-		// Find ressource
+		// Find resource
 		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if (pRes && pRes->isComplete())
 			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
@@ -810,7 +1134,7 @@ bool C4ControlJoinPlayer::PreExecute() const
 	if (!Game.Clients.getClientByID(iAtClient)) return true;
 	// network only
 	if (!::Control.isNetwork()) return true;
-	// search ressource
+	// search resource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
 	if (!pRes) { pRes = ::Network.ResList.AddByCore(ResCore, true); }
@@ -861,9 +1185,16 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, C4Real tx, C4Real ty, C4Object *pTargetObj,
     int32_t iObjectNum, int32_t *pObjects, const char *szScript)
 		: eAction(eAction), tx(tx), ty(ty), iTargetObj(pTargetObj ? pTargetObj->Number : 0),
-		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
+		iObjectNum(iObjectNum), pObjects(pObjects), StringParam(szScript, true)
 {
 
+}
+
+C4ControlEMMoveObject *C4ControlEMMoveObject::CreateObject(const C4ID &id, C4Real x, C4Real y)
+{
+	auto ctl = new C4ControlEMMoveObject(EMMO_Create, x, y, nullptr);
+	ctl->StringParam = id.ToString();
+	return ctl;
 }
 
 C4ControlEMMoveObject::~C4ControlEMMoveObject()
@@ -926,7 +1257,7 @@ void C4ControlEMMoveObject::Execute() const
 	{
 		if (!pObjects) return;
 		// execute script ...
-		C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global, false);
+		C4ControlScript ScriptCtrl(StringParam.getData(), C4ControlScript::SCOPE_Global);
 		ScriptCtrl.SetByClient(iByClient);
 		// ... for each object in selection
 		for (int i=0; i<iObjectNum; ++i)
@@ -953,7 +1284,21 @@ void C4ControlEMMoveObject::Execute() const
 		C4Object *pObj;
 		for (int i=0; i<iObjectNum; ++i)
 			if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
-				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
+				pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->GetR());
+	}
+	break;
+	case EMMO_Select:
+	case EMMO_Deselect:
+	{
+		// callback to script
+		C4Object *target = ::Objects.SafeObjectPointer(iTargetObj);
+		if (!target) return;
+		target->Call(eAction == EMMO_Select ? PSF_EditCursorSelection : PSF_EditCursorDeselection);
+	}
+	break;
+	case EMMO_Create:
+	{
+		::Game.CreateObject(C4ID(StringParam), nullptr, NO_OWNER, fixtoi(tx), fixtoi(ty));
 	}
 	break;
 	}
@@ -972,7 +1317,9 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 	if (pComp->isCompiler()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjects, iObjectNum), "Objs", -1));
 	if (eAction == EMMO_Script)
-		pComp->Value(mkNamingAdapt(Script, "Script", ""));
+		pComp->Value(mkNamingAdapt(StringParam, "Script", ""));
+	else if (eAction == EMMO_Create)
+		pComp->Value(mkNamingAdapt(StringParam, "ID", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
@@ -1022,7 +1369,11 @@ void C4ControlEMDrawTool::Execute() const
 		int iMat = ::MaterialMap.Get(szMaterial);
 		if (!MatValid(iMat)) return;
 		for (int cnt=0; cnt<iGrade; cnt++)
-			::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
+		{
+			int32_t itX=iX+Random(iGrade)-iGrade/2;
+			int32_t itY=iY+Random(iGrade)-iGrade/2;
+			::Landscape.InsertMaterial(iMat,&itX,&itY);
+		}
 	}
 	break;
 	default:
@@ -1141,12 +1492,18 @@ void C4ControlMessage::Execute() const
 	break;
 
 	case C4CMT_Sound:
+	{
 		// tehehe, sound!
-		if (StartSoundEffect(szMessage, false, 100, NULL))
-		{
-			if (pLobby) pLobby->OnClientSound(Game.Clients.getClientByID(iByClient));
-		}
+		C4Client *singer = Game.Clients.getClientByID(iByClient);
+		if (!singer || !singer->IsIgnored())
+			if (!StartSoundEffect(szMessage, false, 100, NULL))
+				// probably wrong sound file name
+				break;
+		// Sound icon even if someone you ignored just tried. So you know you still need to ignore.
+		if (pLobby) pLobby->OnClientSound(singer);
+		if (C4Network2ClientListDlg::GetInstance()) C4Network2ClientListDlg::GetInstance()->OnSound(singer);
 		break;
+	}
 
 	case C4CMT_Alert:
 		// notify inactive users

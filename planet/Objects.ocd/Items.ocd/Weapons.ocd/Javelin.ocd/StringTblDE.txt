@@ -1,2 +1,3 @@
 Name=Wurfspeer
-Description=Ziele und werfe einen der Wurfspeere mit [Benutzen]. Mit Anlauf kannst Du den Wurfspeer wesentlich weiter werfen.
+Description=Wurfwaffe, kann nach dem Wurf wieder aufgesammelt werden.
+UsageHelp=Ziele und werfe einen der Wurfspeere mit [Benutzen].

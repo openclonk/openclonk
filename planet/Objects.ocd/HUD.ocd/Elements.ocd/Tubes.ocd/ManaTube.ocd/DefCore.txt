@@ -1,8 +1,0 @@
-[DefCore]
-id=GUI_ManaTube
-Version=5,2,0,1
-Category=C4D_StaticBack | C4D_IgnoreFoW | C4D_Foreground | C4D_Parallax
-Width=400
-Height=200
-Offset=-200,-199
-Rotate=1

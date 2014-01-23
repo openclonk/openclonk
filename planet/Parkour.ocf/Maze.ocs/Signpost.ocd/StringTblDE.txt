@@ -1,0 +1,3 @@
+Name=Schild
+MsgRead=Lesen
+MsgUnreadable=Unlesbar.

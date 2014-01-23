@@ -1,0 +1,12 @@
+[DefCore]
+id=GUI_SimpleProgressBar
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=16
+Height=16
+Offset=-8,-8
+Vertices=1
+VertexX=0
+VertexY=0
+VertexFriction=20
+

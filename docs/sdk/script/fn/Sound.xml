@@ -39,7 +39,13 @@
           <desc>Increases or decreases the number of sounds running in a continuous loop. Value +1 will play this sound indefinitely until it is stopped by calling this function again with value -1. Value 0 will play the sound once normally.</desc>
           <optional />
         </param>
-      </params>
+        <param>
+          <type>int</type>
+          <name>custom_falloff_distance</name>
+          <desc>The further away the sound effect from the player, the more quiet it is played. By default, the sound will not be hearable anymore in a distance of 700 pixels. A custom distance can be specified here.</desc>
+          <optional />
+        </param>
+	</params>
     </syntax>
     <desc>Plays a sound. The specified sound file has to be available in the group Sound.ocg, in the active scenario file, or in any loaded object definition. The audibility of object local sounds will depend on the position of the object relative to the visible viewports.</desc>
     <examples>
@@ -48,6 +54,7 @@
         <text>Plays a 'Fanfare' sound next to the first found wind generator at half volume.</text>
       </example>
     </examples>
+    <related><funclink>SoundAt</funclink></related>
     <related><funclink>Music</funclink></related>
   </func>
   <author>Sven2</author><date>2002-08</date>

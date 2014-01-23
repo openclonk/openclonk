@@ -1,22 +1,17 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2004-2007  Sven Eberhardt
- * Copyright (c) 2004-2008  Peter Wortmann
- * Copyright (c) 2006  Günther Brammer
- * Copyright (c) 2010  Benjamin Herr
- * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de/
+ * Copyright (c) 2009-2013, The OpenClonk Team and contributors
  *
- * Portions might be copyrighted by other authors who have contributed
- * to OpenClonk.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- * See isc_license.txt for full license and disclaimer.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
  *
- * "Clonk" is a registered trademark of Matthes Bender.
- * See clonk_trademark_license.txt for full license.
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 #ifndef INC_C4Network2
 #define INC_C4Network2
@@ -42,7 +37,7 @@ const int16_t C4NetStdPortTCP = 11112,
               C4NetStdPortPuncher = 11115,
               C4NetStdPortHTTP = 80;
 
-// ressource retrieve wait timeout
+// resource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
@@ -118,7 +113,7 @@ public:
 	// network i/o class
 	C4Network2IO NetIO;
 
-	// ressource list
+	// resource list
 	C4Network2ResList ResList;
 
 	// client list
@@ -141,7 +136,7 @@ protected:
 	// join resource
 	C4Network2ResCore ResDynamic;
 
-	// ressources
+	// resources
 	int32_t iDynamicTick;
 	bool fDynamicNeeded;
 
@@ -166,8 +161,8 @@ protected:
 	// chase
 	uint32_t iLastChaseTargetUpdate;
 
-	// activation
-	uint32_t iLastActivateRequest;
+	// time of last activation request.
+	C4TimeMilliseconds tLastActivateRequest;
 
 	// reference
 	uint32_t iLastReferenceUpdate;
@@ -232,7 +227,6 @@ public:
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
 	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
-	bool InitHostRessources();
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -298,6 +292,7 @@ public:
 	// lobby countdown
 	void StartLobbyCountdown(int32_t iCountdownTime);
 	void AbortLobbyCountdown();
+	bool isLobbyCountDown() { return pLobbyCountdown != 0; }
 
 	// streaming
 	size_t getPendingStreamData() const { return StreamingBuf.getSize() - StreamCompressor.avail_out; }
@@ -333,7 +328,7 @@ protected:
 
 	void SendJoinData(C4Network2Client *pClient);
 
-	// ressource list
+	// resource list
 	bool CreateDynamic(bool fInit);
 	void RemoveDynamic();
 

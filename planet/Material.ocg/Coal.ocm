@@ -1,13 +1,13 @@
 [Material]
 Name=Coal
 Shape=Rough
-Density=50
+Density=60
 Friction=75
 DigFree=1
 BlastFree=1
 Blast2Object=Coal
 Dig2Object=Coal
-Dig2ObjectRatio=200
+Dig2ObjectRatio=140
 Blast2ObjectRatio=200
 MaxAirSpeed=100
 MaxSlide=1

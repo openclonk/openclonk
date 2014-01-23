@@ -56,8 +56,9 @@ public func FxElevatorControlStart(object vehicle, proplist effect, int temp, ob
 
 public func FxElevatorControlTimer(object vehicle, proplist effect)
 {
-	if (ObjectDistance(effect.case, vehicle) > 12)
-		return -1;
+	if(!effect.case) return -1;
+	if(effect.case->OutOfRange(vehicle)) return -1;
+
 	if (effect.controlled && !FindObject(Find_Action("Push"), Find_ActionTarget(vehicle)))
 	{
 		effect.case->ControlStop(vehicle, effect.controlled);

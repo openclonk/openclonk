@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs
+  SYSTEM '../../../clonk.dtd'>
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>BlastFree</title>
+    <category>Landscape</category>
+    <version>5.1 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>x</name>
+          <desc>X coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>y</name>
+          <desc>Y coordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>radius</name>
+          <desc>Radius</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>caused_by</name>
+          <desc>The controller of objects that are created by the blast. See Blast2Objects in <emlink href="material/ocm.html">material definitions</emlink>. If not set, the controller is the owner of the calling object.</desc>
+		  <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>max_density</name>
+          <desc>Only materials of the given density or lower are blasted by this explosion. If not specified, any material is blasted.</desc>
+		  <optional />
+        </param>
+      </params>
+    </syntax>
+    <desc>Blasts a hole in solid materials. </desc>
+    <examples>
+      <example>
+        <code>BlastFree(300, 300, 40, nil, 70);</code>
+        <text>Blasts a hole into the landscape with the center of the blast being 300,300. Additionally, only materials of a density of 70 or lower are blasted, so this blast does not blast granite.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Explode</funclink>
+    </related>
+  </func>
+  <date>2014-01</date>
+</funcs>

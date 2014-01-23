@@ -18,6 +18,8 @@ public func GetCarrySpecial(clonk)
 		return "skeleton_body";
 }
 
+public func GetDropDescription() { return Format("$TxtPutDown$", GetName()); }
+
 public func Grabbed(object clonk, bool grab)
 {
 	if(grab)
@@ -43,23 +45,30 @@ public func Grabbed(object clonk, bool grab)
 }
 
 
-private func DoLift()
+private func DoLift(bool forceEnter)
 {
 	if(!liftheavy_carrier)
 		return;
 	if(!IsCarryingHeavy(liftheavy_carrier))
-		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this);
+		AddEffect("IntLiftHeavy", liftheavy_carrier, 1, 1, this, nil, forceEnter);
 }
 
 // ------------------
 // Lifting the object
 // ------------------
 static const lift_heavy_time = 60;
-func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp)
+func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp, bool forceEnter)
 {
 	if(tmp) return;
 	if(!clonk) return -1;
 	if(Contained() != clonk) return -1;
+	
+	// if the clonk is inside, we can skip the animation
+	if(clonk->Contained())
+	{
+		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		return -1;
+	}
 
 	//Stop the clonk from moving, and tell the clonk's control library
 	//it now has a hand action
@@ -74,7 +83,7 @@ func FxIntLiftHeavyStart(object clonk, proplist effect, bool tmp)
 	//Play the animation of the clonk picking up the object
 	effect.anim = clonk->PlayAnimation("CarryArmsPickup", 10, Anim_Linear(0,0,clonk->GetAnimationLength("CarryArmsPickup"), lift_heavy_time, ANIM_Remove), Anim_Const(1000));
 	
-	effect.noExit = true;
+	effect.doExit = !forceEnter; // default: true
 }
 
 func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
@@ -87,7 +96,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 		{
 			if(clonk->GetAction() != "Stand" || clonk->IsJumping() || Abs(clonk->GetXDir()) > 0)
 			{
-				Exit();
 				return -1;
 			}
 		}
@@ -98,7 +106,6 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 			if(clonk->GetAction() != "Stand")
 			{
 				//If the clonk moved when he was disabled from doing so (or jumped), cancel lifting
-				Exit();
 				return -1;
 			}
 		}
@@ -108,13 +115,23 @@ func FxIntLiftHeavyTimer(object clonk, proplist effect, int timer)
 	if(timer >= lift_heavy_time)
 	{
 		AddEffect("IntCarryHeavy", clonk, 1, 1, this);
+		// don't exit the object
+		effect.doExit = false;
 		return -1;
 	}
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
+		return -1;
 }
 
 func FxIntLiftHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 {
 	if(tmp) return;
+	
+	// drop the object
+	if(effect.doExit && Contained()==clonk) // only if still in the clonk
+		Exit();
 	
 	clonk->DetachMesh(effect.mesh);
 	clonk->StopAnimation(effect.anim);
@@ -163,9 +180,16 @@ func FxIntDropHeavyStart(object clonk, proplist effect, bool tmp)
 	if(clonk->GetEffect("IntCarryHeavy"))
 		clonk->RemoveEffect("IntCarryHeavy");
 
+	// if the clonk is inside, we don't play the animation
+	if(clonk->Contained())
+		return -1;
+
 	clonk->SetTurnForced(clonk->GetDir());
 	clonk->SetHandAction(1);
 	clonk->SetAction("Stand");
+	
+	//Stop the clonk if he is moving
+	if(clonk->GetXDir() != 0) clonk->SetXDir();
 
 	//Attach the mesh of the object. It is not displayed normally because the
 	//hands are told they have an action in the next few lines
@@ -187,6 +211,10 @@ func FxIntDropHeavyTimer(object clonk, proplist effect, int timer)
 	// animation finished?
 	if(timer >= lift_heavy_time)
 		return -1;
+	
+	// we got moved out during lifting
+	if(Contained() != clonk)
+		return -1;
 }
 
 func FxIntDropHeavyStop(object clonk, proplist effect, int reason, bool tmp)
@@ -204,7 +232,7 @@ func FxIntDropHeavyStop(object clonk, proplist effect, int reason, bool tmp)
 		if(clonk->GetDir() == DIR_Left)
 			dir = -1;
 		// Set down at barrel position
-		Exit(7*dir, 12);
+		Exit(6*dir, 9);
 	}
 	
 	UndoLift(clonk);
@@ -244,7 +272,10 @@ protected func Entrance(object obj)
 		if(obj->~GetCarryHeavy() == this)
 		{
 			liftheavy_carrier = obj;
-			DoLift();
+			if(obj->GetAction() == "Walk" && !obj->Contained())
+				DoLift(true);
+			else
+				AddEffect("IntCarryHeavy",obj, 1, 1, this);
 		}
 }
 

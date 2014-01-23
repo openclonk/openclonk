@@ -1,19 +1,16 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2011-2012  Günther Brammer
+ * Copyright (c) 2011-2013, The OpenClonk Team and contributors
  *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Distributed under the terms of the ISC license; see accompanying file
+ * "COPYING" for details.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * "Clonk" is a registered trademark of Matthes Bender, used with permission.
+ * See accompanying file "TRADEMARK" for details.
+ *
+ * To redistribute this file separately, substitute the full license texts
+ * for the above references.
  */
 
 #include "../../include/c4script/c4script.h"
@@ -30,6 +27,16 @@
 #include <C4Material.h>
 #include <C4Reloc.h>
 #include <C4Record.h>
+#include <C4MapScript.h>
+
+#ifdef _DEBUG
+C4Set<C4PropList *> C4PropList::PropLists;
+#endif
+C4Set<C4PropListNumbered *> C4PropListNumbered::PropLists;
+std::vector<C4PropListNumbered *> C4PropListNumbered::ShelvedPropLists;
+int32_t C4PropListNumbered::EnumerationIndex = 0;
+C4StringTable Strings;
+C4AulScriptEngine ScriptEngine;
 
 C4Config Config;
 C4Config::C4Config() {}
@@ -53,9 +60,7 @@ C4MaterialMap::~C4MaterialMap() {}
 void C4MaterialMap::UpdateScriptPointers() {}
 
 C4AulDebug *C4AulDebug::pDebug;
-void C4AulDebug::DebugStepIn(C4AulBCC*) {}
-void C4AulDebug::DebugStepOut(C4AulBCC*, C4AulScriptContext*, C4Value*) {}
-void C4AulDebug::DebugStep(C4AulBCC*) {}
+void C4AulDebug::DebugStep(C4AulBCC*,C4Value*) {}
 
 C4GameObjects Objects;
 C4GameObjects::C4GameObjects() {}
@@ -67,7 +72,6 @@ bool C4GameObjects::Remove(C4Object*) {return 0;}
 bool C4GameObjects::AssignInfo() {return 0;}
 bool C4GameObjects::ValidateOwners() {return 0;}
 C4Value C4GameObjects::GRBroadcast(char const*, C4AulParSet*, bool, bool) {return C4Value();}
-C4Object * C4GameObjects::ObjectPointer(int) {return 0;}
 
 C4ObjectList::C4ObjectList() {}
 C4ObjectList::~C4ObjectList() {}
@@ -92,6 +96,14 @@ void C4LSector::Clear() {}
 void C4Def::IncludeDefinition(C4Def*) {}
 bool EraseItemSafe(const char *szFilename) {return false;}
 void AddDbgRec(C4RecordChunkType, const void *, int) {}
+
+C4MapScriptHost MapScript;
+C4MapScriptHost::C4MapScriptHost() {}
+C4MapScriptHost::~C4MapScriptHost() {}
+void C4MapScriptHost::Clear() {}
+C4PropListStatic *C4MapScriptHost::GetPropList() {return NULL;}
+bool C4MapScriptHost::Load(C4Group &, const char *, const char *, C4LangStringTable *) { return false; }
+void C4MapScriptHost::AddEngineFunctions() {}
 
 int c4s_runscript(const char * filename)
 {
