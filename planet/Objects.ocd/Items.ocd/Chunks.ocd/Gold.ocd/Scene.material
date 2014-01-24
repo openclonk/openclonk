@@ -1,0 +1,14 @@
+material GoldChunk
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.649770 0.594821 0.122168 1.000000
+			specular 0.652682 0.652682 0.652682 1.000000 18.000000
+			emissive 0.348690 0.319202 0.065559 1.000000
+		}
+	}
+}

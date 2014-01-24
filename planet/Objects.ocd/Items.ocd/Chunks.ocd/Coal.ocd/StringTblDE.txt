@@ -1,0 +1,2 @@
+Name=Kohle
+Description=Kohle kann dazu benutzt werden, Strom zu erzeugen oder Metall zu produzieren.

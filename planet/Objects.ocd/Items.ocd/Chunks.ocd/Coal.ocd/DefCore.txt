@@ -1,0 +1,15 @@
+[DefCore]
+id=Chunk_Coal
+Version=4,10,0,0
+Category=C4D_Object
+Width=12
+Height=12
+Offset=-6,-6
+Vertices=3
+VertexX=0,4,-4
+VertexY=3,-3,-3
+VertexFriction=40,40,40
+Value=16
+Mass=36
+Components=Coal=4
+Rotate=1

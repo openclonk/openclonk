@@ -1,0 +1,2 @@
+Name=Golderzbrocken
+Description=Ewiges Objekt der Begierde eines jeden Bergarbeiters.

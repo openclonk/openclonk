@@ -1,0 +1,2 @@
+Name=Rock
+Description=Basic construction material and weapon.

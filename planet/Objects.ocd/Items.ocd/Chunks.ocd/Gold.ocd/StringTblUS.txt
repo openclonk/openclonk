@@ -1,0 +1,2 @@
+Name=Gold chunk
+Description=A very prized find, indeed!

@@ -1,0 +1,2 @@
+Name=Iron Ore
+Description=Raw material for metal production in the foundry.
