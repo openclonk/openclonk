@@ -62,7 +62,7 @@ void C4StartupAboutDlg::DoBack()
 
 void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
 {
-	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false, 0, 0, true);
+	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, true, 0, 0, true);
 }
 
 #ifdef WITH_AUTOMATIC_UPDATE
