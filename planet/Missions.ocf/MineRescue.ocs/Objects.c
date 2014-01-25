@@ -102,9 +102,6 @@ func InitializeObjects()
 
 	CreateObject(Tree_Coniferous, 300, 134);
 
-	var LargeCaveMushroom0092 = CreateObject(LargeCaveMushroom, 114, 394);
-	LargeCaveMushroom0092->SetCon(40);
-	LargeCaveMushroom0092->SetClrModulation(0xffd1dedc);
 	var LargeCaveMushroom0096 = CreateObject(LargeCaveMushroom, 144, 513);
 	LargeCaveMushroom0096->SetCon(60);
 	LargeCaveMushroom0096->SetClrModulation(0xff788cc8);
@@ -185,7 +182,7 @@ func InitializeObjects()
 	var Clonk0242 = CreateObject(Clonk, 149, 387);
 	Clonk0242->SetColor(0xff78f03c);
 	Clonk0242->SetDir(DIR_Left);
-	var Clonk0248 = CreateObject(Clonk, 80, 367);
+	var Clonk0248 = CreateObject(Clonk, 80, 387);
 	Clonk0248->SetDir(DIR_Right);
 	Clonk0248->SetColor(0xfff078f0);
 	var Clonk0254 = CreateObject(Clonk, 520, 553);
