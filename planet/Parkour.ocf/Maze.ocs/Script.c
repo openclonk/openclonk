@@ -10,9 +10,9 @@ local goal_cave;
 
 func InitializePlayer(int plr)
 {
-	// Harsh zoom range
+	// Harsher zoom range
 	for (var flag in [PLRZOOM_LimitMax, PLRZOOM_Direct])
-		SetPlayerZoomByViewRange(plr,300,200,flag);
+		SetPlayerZoomByViewRange(plr,240,160,flag);
 		//SetPlayerZoomByViewRange(plr,LandscapeWidth(),LandscapeHeight(),flag);
 	SetPlayerViewLock(plr, true);
 	// Position and materials

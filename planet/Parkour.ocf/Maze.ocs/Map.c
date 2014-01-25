@@ -211,7 +211,7 @@ func DrawTunnels()
 		for (var cave2 in cave.links)
 		{
 			if (cave2.done) continue;
-			var tunnel_algo = {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=3, Open=1, Empty=1 };
+			var tunnel_algo = {Algo=MAPALGO_Polygon, X=[cave.X, cave2.X], Y=[cave.Y, cave2.Y], Wdt=2, Open=1, Empty=1 };
 			var turb_algo = {Algo=MAPALGO_Turbulence, Amplitude=9, Scale=10, Op=tunnel_algo};
 			Draw("Tunnel", turb_algo);
 		}
