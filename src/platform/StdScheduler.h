@@ -42,12 +42,21 @@ struct pollfd;
 #endif // HAVE_PTHREAD
 #endif // _WIN32
 
+
+#include <vector>
+
 typedef struct _GMainLoop GMainLoop;
 
 // Abstract class for a process
 class StdSchedulerProc
 {
+private:
+	class StdScheduler *scheduler;
+protected:
+	void Changed();
 public:
+
+	StdSchedulerProc(): scheduler(NULL) {}
 	virtual ~StdSchedulerProc() { }
 
 	// Do whatever the process wishes to do. Should not block longer than the timeout value.
@@ -65,13 +74,17 @@ public:
 #endif
 
 	// Call Execute() after this time has elapsed
-	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow) { return C4TimeMilliseconds::PositiveInfinity; };
+	virtual C4TimeMilliseconds GetNextTick(C4TimeMilliseconds tNow);
 
 	// Is the process signal currently set?
 	bool IsSignaled();
 
 	// Is this the expensive game tick?
 	virtual bool IsLowPriority() { return false; }
+	virtual bool IsNotify() { return false; }
+	virtual uint32_t TimerInterval() { return 0; }
+
+	friend class StdScheduler;
 
 };
 
@@ -91,7 +104,7 @@ public:
 	{
 		tLastTimer = C4TimeMilliseconds::NegativeInfinity;
 	}
-	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
+	void SetDelay(uint32_t inDelay) { iDelay = inDelay; Changed(); }
 	bool CheckAndReset()
 	{
 		C4TimeMilliseconds tTime = C4TimeMilliseconds::Now();
@@ -107,6 +120,7 @@ public:
 	{
 		return tLastTimer + iDelay;
 	}
+	virtual uint32_t TimerInterval() { return iDelay; }
 };
 
 // A simple alertable proc
@@ -117,6 +131,7 @@ public:
 
 	void Notify();
 	bool CheckAndReset();
+	virtual bool IsNotify() { return true; }
 
 #ifdef STDSCHEDULER_USE_EVENTS
 	~CStdNotifyProc() { }
@@ -197,8 +212,8 @@ public:
 
 private:
 	// Process list
-	StdSchedulerProc **ppProcs;
-	int iProcCnt, iProcCapacity;
+	std::vector<StdSchedulerProc*> procs;
+	bool isInManualLoop;
 
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
@@ -209,21 +224,25 @@ private:
 
 	// Dummy lists (preserved to reduce allocs)
 #ifdef STDSCHEDULER_USE_EVENTS
-	HANDLE *pEventHandles;
-	StdSchedulerProc **ppEventProcs;
+	std::vector<HANDLE> eventHandles;
+	std::vector<StdSchedulerProc*> eventProcs;
 #endif
 
 public:
-	int getProcCnt() const { return iProcCnt-1; } // ignore internal NoopNotifyProc
-	int getProc(StdSchedulerProc *pProc);
-	bool hasProc(StdSchedulerProc *pProc) { return getProc(pProc) >= 0; }
+	int getProcCnt() const { return procs.size()-1; } // ignore internal NoopNotifyProc
+	bool hasProc(StdSchedulerProc *pProc) { return std::find(procs.begin(), procs.end(), pProc) != procs.end(); }
+	bool IsInManualLoop() { return isInManualLoop; }
 
 	void Clear();
 	void Set(StdSchedulerProc **ppProcs, int iProcCnt);
 	void Add(StdSchedulerProc *pProc);
 	void Remove(StdSchedulerProc *pProc);
+	
+	void Added(StdSchedulerProc *pProc);
+	void Removing(StdSchedulerProc *pProc);
+	void Changed(StdSchedulerProc *pProc);
 
-	bool ScheduleProcs(int iTimeout = -1);
+	virtual bool ScheduleProcs(int iTimeout = -1);
 	void UnBlock();
 
 protected:
@@ -231,8 +250,7 @@ protected:
 	virtual void OnError(StdSchedulerProc *) { }
 
 private:
-	void Enlarge(int iBy);
-
+	bool DoScheduleProcs(int iTimeout);
 };
 
 // A simple process scheduler thread
@@ -245,7 +263,7 @@ public:
 private:
 
 	// thread control
-	bool fRunThreadRun, fWait;
+	bool fRunThreadRun;
 
 	bool fThread;
 #ifdef HAVE_WINTHREAD

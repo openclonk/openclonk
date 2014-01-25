@@ -94,7 +94,7 @@ void C4AbstractApp::Clear() {}
 
 void C4AbstractApp::Quit()
 {
-	fQuitMsgReceived = true;
+	[NSApp terminate:[NSApp delegate]];
 }
 
 bool C4AbstractApp::FlushMessages()

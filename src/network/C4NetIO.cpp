@@ -927,6 +927,8 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 
 	// clear add-lock
 	PeerListAddLock.Clear();
+	
+	Changed();
 
 	// ask callback if connection should be permitted
 	if (pCB && !pCB->OnConn(addr, caddr, NULL, this))
@@ -989,6 +991,7 @@ bool C4NetIOTCP::Listen(uint16_t inListenPort)
 
 	// ok
 	iListenPort = inListenPort;
+	Changed();
 	return true;
 }
 
@@ -1063,6 +1066,7 @@ void C4NetIOTCP::AddConnectWait(SOCKET sock, const addr_t &addr) // (mt-safe)
 	// unblock, so new FD can be realized
 	UnBlock();
 #endif
+	Changed();
 }
 
 C4NetIOTCP::ConnectWait *C4NetIOTCP::GetConnectWait(const addr_t &addr) // (mt-safe)
@@ -3067,6 +3071,7 @@ void C4NetIOUDP::AddPeer(Peer *pPeer)
 	// add
 	pPeer->Next = pPeerList;
 	pPeerList = pPeer;
+	Changed();
 }
 
 void C4NetIOUDP::OnShareFree(CStdCSecEx *pCSec)
