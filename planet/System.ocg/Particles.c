@@ -39,9 +39,9 @@ global func Particles_Dust()
 		OnCollision = PC_Stop(),
 		ForceX = PV_Wind(20),
 		ForceY = PV_Gravity(25),
-		Alpha = PV_Linear(30, 0),
+		Alpha = PV_KeyFrames(0, 0, 0, 250, 60, 1000, 0),
 		Rotation = PV_Random(0, 360),
-		Size = PV_KeyFrames(0, 0, 0, 100, 25, 1000, 15)
+		Size = PV_KeyFrames(0, 0, 5, 100, 12, 1000, 7)
 	};
 }
 
@@ -186,7 +186,6 @@ global func Particles_SmokeTrail()
 		ForceX = PV_Wind(20),
 		DampingX = 950, DampingY = 950,
 		Alpha = PV_Linear(128, 0),
-		R = 50, G = 50, B = 50,
 		Size = PV_KeyFrames(0, 0, 0, 200, PV_Random(10, 30), 1000, PV_Random(25, 35))
 	};
 }
@@ -269,9 +268,9 @@ global func Particles_Thrust(int size)
 	{
 		Size = PV_KeyFrames(0, 0, 0, 50, size, 1000, size * 2),
 		Alpha = PV_Linear(255, 0),
-		R = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
-		G = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
-		B = PV_KeyFrames(0, 0, 255, 500, 0, 1000, 0),
+		R = PV_KeyFrames(0, 0, 255, 500, 100, 1000, 50),
+		G = PV_KeyFrames(0, 0, 255, 500, 100, 1000, 50),
+		B = PV_KeyFrames(0, 0, 255, 500, 100, 1000, 50),
 		Phase = PV_Random(0, 3, 10),
 		Rotation = PV_Random(0, 360),
 		DampingX = 950, DampingY = 950,
