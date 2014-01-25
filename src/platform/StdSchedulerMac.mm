@@ -22,7 +22,7 @@ using namespace std;
 
 @interface SCHNotify : SCHAddition
 {
-	list<CFRunLoopSourceRef> socketSources;
+	list<pair<CFRunLoopSourceRef, CFSocketRef>> socketSources;
 }
 - (void) registerAt:(SCHAdditions*) _additions;
 - (void) unregisterFrom:(SCHAdditions*) _additions;
@@ -207,15 +207,19 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 		);
 		auto runLoopSource = CFSocketCreateRunLoopSource(NULL, socket, 0);
 		CFRunLoopAddSource([_additions.runLoop getCFRunLoop], runLoopSource, kCFRunLoopDefaultMode);
-		socketSources.push_back(runLoopSource);
+		socketSources.push_back(make_pair(runLoopSource, socket));
 	}
 }
 - (void) unregisterFrom:(SCHAdditions*) _additions
 {
+	auto runLoop = [_additions.runLoop getCFRunLoop];
 	for (auto r : socketSources)
 	{
-		CFRunLoopSourceInvalidate(r);
-		CFRelease(r);
+		CFRunLoopRemoveSource(runLoop, r.first, kCFRunLoopDefaultMode);
+		CFSocketDisableCallBacks(r.second, kCFSocketReadCallBack|kCFSocketWriteCallBack);
+		CFRunLoopSourceInvalidate(r.first);
+		CFRelease(r.second);
+		CFRelease(r.first);
 	}
 	socketSources.clear();
 	[super unregisterFrom:_additions];
@@ -224,6 +228,8 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 
 void StdScheduler::Added(StdSchedulerProc *pProc)
 {
+	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
+		return; // scrap using that for other (network...) threads for now
 	auto x = [SCHAdditions requestAdditionForScheduler:this];
 	auto addition = [x assignAdditionForProc:pProc];
 	if (addition)
@@ -232,12 +238,16 @@ void StdScheduler::Added(StdSchedulerProc *pProc)
 
 void StdScheduler::Removing(StdSchedulerProc *pProc)
 {
+	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
+		return; // scrap using that for other (network...) threads for now
 	auto x = [SCHAdditions requestAdditionForScheduler:this];
 	[x removeAdditionForProc:pProc];
 }
 
 void StdScheduler::Changed(StdSchedulerProc* pProc)
 {
+	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
+		return; // scrap using that for other (network...) threads for now
 	auto x = [SCHAdditions requestAdditionForScheduler:this];
 	auto addition = [x additionForProc:pProc];
 	if (addition)
