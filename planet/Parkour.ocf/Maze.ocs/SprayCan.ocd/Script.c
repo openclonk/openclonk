@@ -2,6 +2,7 @@
 
 local last_x, last_y, last_ldx, last_ldy;
 local paint_col;
+local max_dist = 50;
 
 static SprayCan_last_col;
 
@@ -14,8 +15,10 @@ protected func Construction()
 func SetPaintCol(int idx)
 {
 	idx %= 5;
-	if (idx) SetGraphics(Format("%d",idx)); else SetGraphics();
-	paint_col = Format("Tunnel-Paint%s", ["Red", "Green", "Teal", "Yellow", "White"][idx]);
+	var tex_name = Format("Paint%s",["Red", "Green", "Teal", "Yellow", "White"][idx]);
+	var tex_color = GetAverageTextureColor(tex_name);
+	SetColor(tex_color);
+	paint_col = Format("Tunnel-%s", tex_name);
 	return true;
 }
 
@@ -28,6 +31,8 @@ func Hit()
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {
+	if (Distance(0,0,x,y) > max_dist) return true;
+
 	x += GetX(); y += GetY();
 	last_x = x; last_y = y;
 	last_ldx=last_ldy=0;
@@ -41,9 +46,20 @@ func ControlUseStart(object clonk, int x, int y)
 func HoldingEnabled() { return true; }
 
 func ControlUseHolding(object clonk, int new_x, int new_y)
-{
+{	
 	new_x += GetX(); new_y += GetY();
 	if (new_x==last_x && new_y == last_y) return true;
+
+	if (Distance(GetX(),GetY(),new_x,new_y) > max_dist)
+	{
+		last_x = new_x;
+		last_y = new_y;
+		SetAction("Idle");
+		return true;
+	}
+
+	if (GetAction() != "Spraying") SetAction("Spraying");
+	
 	var wdt = 2;
 	var dx=new_x-last_x, dy=new_y-last_y;
 	var d = Distance(dx,dy);
@@ -79,6 +95,9 @@ local ActMap = {
 	}
 };
 
+func Definition(def) {
+	SetProperty("PictureTransformation",Trans_Rotate(-30,0,1,1),def);
+}
 
 local Collectible = 1;
 local Name = "$Name$";
