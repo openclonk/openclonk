@@ -12,5 +12,5 @@ VertexCNAT=4,8
 SolidMask=0,0,8,40,0,0
 Value=10
 Mass=1000
-Components=Rock=10;
+Components=Chunk_Rock=3;
 HorizontalFix=1

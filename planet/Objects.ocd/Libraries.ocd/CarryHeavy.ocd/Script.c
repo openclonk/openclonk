@@ -165,6 +165,7 @@ func FxIntCarryHeavyStop(object clonk, proplist effect, int reason, bool temp)
 	if (temp) return;
 	clonk->EnableScale();
 	clonk->EnableHangle();
+	Log("hey");
 	clonk.ThrowSpeed += effect.throw;
 }
 

@@ -11,6 +11,8 @@ protected func Hit(x, y)
 	return true;
 }
 
+public func IsChunk() { return true; }
+
 func Definition(def) {
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
 }

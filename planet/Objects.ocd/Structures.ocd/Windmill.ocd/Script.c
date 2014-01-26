@@ -106,7 +106,7 @@ func CollectionZone()
 protected func Collection()
 {
 	Sound("Clonk");
-	return;
+	return _inherited(...);
 }
 
 public func FxCrushingTimer(object target, proplist effect, int time)

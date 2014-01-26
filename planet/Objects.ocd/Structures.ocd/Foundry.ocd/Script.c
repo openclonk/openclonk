@@ -69,7 +69,7 @@ func CollectionZone()
 func Collection()
 {
 	Sound("Clonk");
-	return;
+	return _inherited(...);
 }
 
 public func FxSmeltingTimer(object target, proplist effect, int time)

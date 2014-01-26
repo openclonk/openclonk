@@ -122,6 +122,7 @@ func CollectionZone()
 protected func Collection()
 {
 	Sound("Clonk");
+	return _inherited(...);
 }
 
 public func FxSawingTimer(object target, proplist effect, int time)

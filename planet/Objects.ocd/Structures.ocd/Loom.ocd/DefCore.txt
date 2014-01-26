@@ -11,7 +11,7 @@ VertexY=-4,-3,14,14
 VertexFriction=50,50,100,100
 Value=100
 Mass=1000
-Components=Wood=3;Metal=1;Rock=1
+Components=Wood=3;Metal=1;Chunk_Rock=1
 Exclusive=1
 Construction=1
 ContainBlast=1

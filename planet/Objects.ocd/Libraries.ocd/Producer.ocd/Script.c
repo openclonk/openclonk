@@ -159,7 +159,7 @@ public func ProductionCosts(id item_id)
 	{
 		var amount = GetComponent(comp_id, index, nil, item_id);
 		comp_list[index] = [comp_id, amount];
-		index++;		
+		index++;
 	}
 	return comp_list;
 }
@@ -347,8 +347,7 @@ private func Produce(id product)
 {
 	// Already producing? Wait a little.
 	if (IsProducing())
-		return false;	
-		
+		return false;
 	// Check if components are available.
 	if (!CheckComponents(product))
 		return false;
@@ -372,7 +371,7 @@ private func Produce(id product)
 	CheckFuel(product, true);
 	CheckLiquids(product, true);
 	CheckMaterials(product, true);
-	
+
 	// Add production effect.
 	AddEffect("ProcessProduction", this, 100, 2, this, nil, product);
 
@@ -651,6 +650,15 @@ public func RequestObject(id obj_id, int amount)
 
 /*-- Storage --*/
 
+// Split chunks
+func Collection2(object obj)
+{
+	if (obj->~IsChunk())
+		Schedule(obj, "Split2Components()", 1);
+		// 1 frame delay, so the chunk can trigger the appriopriate carry heavy ending calls
+		// i.e. FxIntCarryHeavyStop
+}
+
 protected func RejectCollect(id item, object obj)
 {
 	// Just return RejectEntrance for this object.
@@ -663,10 +671,14 @@ protected func RejectEntrance(object obj)
 	// Products itself may be collected.
 	if (IsProduct(obj_id))
 		return false;
-		
-	// Components of products may be collected.
+
+	// Items may force themselves into containers (for whatever reason they choose)
+	if (obj->~ForceEnterProducer(this->GetID()))
+		return false;
+
 	for (var product in GetProducts())
 	{
+		// Components of products may be collected.
 		var i = 0, comp_id;
 		while (comp_id = GetComponent(nil, i, nil, product))
 		{
@@ -674,27 +686,19 @@ protected func RejectEntrance(object obj)
 				return false;
 			i++;
 		}
-	}
-	// Fuel for products may be collected.
-	if (obj->~IsFuel())
-	{
-		for (var product in GetProducts())
-			if (FuelNeed(product) > 0)
+		// Fuel for products may be collected.
+		if (FuelNeed(product) > 0)
+			if (obj->~IsFuel())
+				return false;
+		// Liquid containers may be collected if a product needs them.
+		if (LiquidNeed(product))
+			if (obj->~IsLiquidContainer())
+				return false;
+		// Material containers may be collected if a product needs them.
+		if (MaterialNeed(product))
+			if (obj->~IsMaterialContainer())
 				return false;
 	}
-	// Liquid containers may be collected if a product needs them.
-	if (obj->~IsLiquidContainer())
-	{
-		for (var product in GetProducts())
-			if (LiquidNeed(product))
-				return false;
-	}
-	// Material containers may be collected if a product needs them.
-	if (obj->~IsMaterialContainer())
-	{
-		for (var product in GetProducts())
-			if (MaterialNeed(product))
-				return false;
-	}
+
 	return true;
 }
