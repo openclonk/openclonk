@@ -12,6 +12,8 @@ func Initialize()
 	// Rules
 	if (!ObjectCount(Find_ID(Rule_TeamAccount))) CreateObject(Rule_TeamAccount);
 	if (!ObjectCount(Find_ID(Rule_BuyAtFlagpole))) CreateObject(Rule_BuyAtFlagpole);
+	// Environment
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	return true;
 }
 

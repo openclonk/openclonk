@@ -38,7 +38,6 @@ HomeBaseProduction=Clonk=50;Bread=50;Wood=50;Metal=50;DynamiteBox=50;Dynamite=50
 
 [Landscape]
 Sky=Clouds1
-SkyScrollMode=1
 TopOpen=0
 BottomOpen=0
 MapWidth=300

@@ -18,7 +18,8 @@ protected func Initialize()
 	
 	//Enviroment.
 	CreateObject(Rule_ObjectFade)->DoFadeTime(10 * 36);
-	SetSkyAdjust(RGB(255,128,0));	
+	SetSkyAdjust(RGB(255,128,0));
+	SetSkyParallax(1, 20,20, 0,0, nil, nil);
 	CreateObject(Column,160,304)->SetClrModulation(RGB(255,100,80));
 	CreateObject(Column,448,272)->SetClrModulation(RGB(255,100,80));
 	

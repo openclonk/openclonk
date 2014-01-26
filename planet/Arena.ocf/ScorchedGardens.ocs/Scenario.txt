@@ -24,7 +24,6 @@ Crew=Clonk=1
 
 [Landscape]
 Sky=Clouds1
-SkyScrollMode=1
 
 [Weather]
 Climate=00,0,0,00

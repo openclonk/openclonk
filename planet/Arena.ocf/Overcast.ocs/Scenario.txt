@@ -27,7 +27,6 @@ Sky=Clouds1
 MapWidth=100
 MapHeight=75
 BottomOpen=1
-SkyScrollMode=1
 
 [Animals]
 Nest=Firestone=30;Loam=20;Rock=15;
