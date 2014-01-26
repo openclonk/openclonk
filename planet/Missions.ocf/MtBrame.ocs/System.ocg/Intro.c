@@ -29,6 +29,11 @@ global func IntroAddPlayer(int plr)
 		container->SetAction("Walk");
 		crew->Enter(container);
 
+		container.ActMap = { Prototype = Clonk.ActMap };
+		container.ActMap.Walk = { Prototype = Clonk.ActMap.Walk, Decel = 100 };
+		container.ActMap.Jump = { Prototype = Clonk.ActMap.Jump, Speed = 0, Accel = 0 };
+		container.JumpSpeed = 0;
+
 		SetPlrView(plr, crew);
 		SetPlayerViewLock(plr, true);
 		SetPlayerZoomByViewRange(plr, 320, 240);
@@ -69,6 +74,10 @@ global func FxIntIntroStart(object target, proplist effect)
 	effect.Sister->SetColor(RGB(213, 68, 172));
 	effect.Sister->SetObjectLayer(effect.Sister);
 	effect.Sister->SetDir(DIR_Right);
+	effect.Sister.ActMap = { Prototype = Clonk.ActMap };
+	effect.Sister.ActMap.Walk = { Prototype = Clonk.ActMap.Walk, Decel = 100 };
+	effect.Sister.ActMap.Jump = { Prototype = Clonk.ActMap.Jump, Speed = 0, Accel=0 };
+	effect.Sister.JumpSpeed = 0;
 
 	effect.Dialog = effect.Sister->SetDialogue("Sister");
 	effect.Rock = effect.Sister->CreateContents(Rock);
@@ -140,7 +149,7 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	if(effect.Time == 556)
 	{
 		for(var crew in effect.Players)
-			crew->Contained()->Fling(3,-3);
+			crew->Contained()->Fling(2,-2);
 	}
 
 	if(effect.Time == 570)
