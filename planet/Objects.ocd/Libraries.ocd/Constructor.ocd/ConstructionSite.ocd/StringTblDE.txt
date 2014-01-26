@@ -1,3 +1,4 @@
-TxtTransfer=Baumaterial transferieren
+TxtTransfer=Baumaterial einsetzen
 TxtAbort=Konstruktion abbrechen
 TxtConstruction=Baustelle: %s
+TxtNoConstructionHere=Der Untergrund eignet sich nicht mehr zur Konstruktion!

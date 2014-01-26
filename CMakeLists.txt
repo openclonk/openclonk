@@ -562,6 +562,7 @@ if(APPLE)
 		src/platform/C4FileMonitorMac.mm
 		src/platform/C4AppDelegate.h
 		src/platform/C4AppDelegate.mm
+		src/platform/StdSchedulerMac.mm
 	)
 else()
 	list(APPEND OC_SYSTEM_SOURCES
@@ -977,6 +978,8 @@ add_executable(c4group
 
 add_executable(netpuncher EXCLUDE_FROM_ALL
 	src/platform/StdScheduler.cpp
+	src/platform/StdSchedulerWin32.cpp
+	src/platform/StdSchedulerPoll.cpp
 	src/netpuncher/main.cpp
 )
 
@@ -1006,6 +1009,8 @@ src/platform/StdFile.h
 src/platform/StdRegistry.cpp
 src/platform/StdRegistry.h
 src/platform/StdScheduler.cpp
+src/platform/StdSchedulerWin32.cpp
+src/platform/StdSchedulerPoll.cpp
 src/platform/StdScheduler.h
 src/platform/C4TimeMilliseconds.cpp 
 src/platform/C4TimeMilliseconds.h	
@@ -1418,10 +1423,6 @@ endif()
 ############################################################################
 # installation
 ############################################################################
-# Install the icon into share/icons/hicolor/48x48/apps/openclonk.png. Do this by
-# extracting the correct size from oc.ico. Currently this is layer 2 - let's
-# hope that it stays this way.
-
 # Don't allow installation for WITH_AUTOMATIC_UPDATE because otherwise
 # the installed binary wouldn't find its game data in the system data path.
 IF(WITH_AUTOMATIC_UPDATE)
@@ -1438,21 +1439,37 @@ install(
 	)"
 )
 
-FIND_PACKAGE(ImageMagick COMPONENTS convert)
-if(ImageMagick_convert_FOUND)
-	add_custom_command(
-		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-		COMMAND "${ImageMagick_convert_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico[2]" "${CMAKE_CURRENT_BINARY_DIR}/openclonk.png"
-		MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc.ico
-		VERBATIM
-	)
-	add_custom_target(icon DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png)
-	add_dependencies(data icon)
-	install(
-		FILES ${CMAKE_CURRENT_BINARY_DIR}/openclonk.png
-		DESTINATION share/icons/hicolor/48x48/apps
-	)
-endif()
+add_custom_target(icon32 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png)
+add_custom_target(icon64 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png)
+add_custom_target(icon128 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png)
+add_custom_target(icon256 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png)
+add_custom_target(icon512 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png)
+add_dependencies(data icon32 icon64 icon128 icon256 icon512)
+install(
+	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png
+	DESTINATION share/icons/hicolor/32x32/apps
+	RENAME openclonk.png
+)
+install(
+	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png
+	DESTINATION share/icons/hicolor/64x64/apps
+	RENAME openclonk.png
+)
+install(
+	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png
+	DESTINATION share/icons/hicolor/128x128/apps
+	RENAME openclonk.png
+)
+install(
+	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png
+	DESTINATION share/icons/hicolor/256x256/apps
+	RENAME openclonk.png
+)
+install(
+	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png
+	DESTINATION share/icons/hicolor/512x512/apps
+	RENAME openclonk.png
+)
 
 set(OC_C4GROUPS
 	Graphics.ocg

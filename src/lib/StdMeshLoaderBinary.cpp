@@ -37,12 +37,8 @@ namespace
 			switch (element.semantic)
 			{
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Texcoords:
-				// Normally, you can use multiple texture coordinates, but we currently support only one.
-				// So complain if we get multiple sets.
-				if (semanticSeen[element.semantic])
-				{
-					DebugLogF("[FIXME] %s: Vertex declaration with multiple sets of texture coordinates found; game will only use the first.", filename && *filename ? filename : "<unknown>");
-				}
+				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
+				// currently only the first set is read, any additional ones are ignored
 				break;
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Position:
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Normals:

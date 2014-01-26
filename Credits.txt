@@ -1,25 +1,30 @@
 <Engine and Tools>
 Armin Burgmeier (Clonk-Karl)
-Günther Brammer (Günther)
-Nicolas Hake (Isilkor)
+GÃ¼nther Brammer (GÃ¼nther)
 Sven Eberhardt (Sven2)
+Nicolas Hake (Isilkor)
 Martin Plicht (Mortimer)
 Peter Wortmann (PeterW)
 Julius Michaelis (Caesar)
+
+<Scripting and Content>
+Maikel de Vries (Maikel)
+David Dormagen (Zapper)
+Felix Wagner (Clonkonaut)
+Bernhard Bonigl (Boni)
 
 <Art and Content>
 Charles Spurrill (Ringwaul)
 Richard Gerum (Randrian)
 Timo Stabbert (Mimmo)
+Matthias RottlÃ¤nder (Matthi)
+Felix Riese (Fungiform)
+Florian Graier (Nachtfalter)
 
-<Scripting and Content>
-Maikel de Vries (Maikel)
-Bernhard Bonigl (Boni)
-Felix Wagner (Clonkonaut)
-David Dormagen (Zapper)
-
-<Coordination, Administration>
+<Coordination>
 Tobias Zwick (Newton)
 
-<Thanks to Contributors>
-Benjamin Herr (Loriel), Matthias Rottländer (Matthi), Felix Riese (Fungiform), Manuel Riecke (MrBeast), Benedict Etzel (B_E), Carl-Philip Hänsch (Carli), Alexander Semeniuk (AlteredARMOR), Florian Graier (Nachtfalter), Daniel Theuke (ST-DDT), Asmageddon, Merten Ehmig (Pluto), Mark Haßelbusch (Marky), Luchs, Peewee, Lauri Niskanen (Ape), Dominik Bayerl (Kanibal), Faby, Checkmaty, Gurkenglas, Clonkine, mizipzor, mixi, Pyrit, grgecko, Koronis, RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.
+<Special Thanks to Contributors>
+Benjamin Herr (Loriel), Benedict Etzel (B_E), Oliver Schneider (ker), Philipp Kern (pkern), Carl-Philip HÃ¤nsch (Carli), Manuel Rieke (MrBeast), Alexander Semeniuk (AlteredARMOR), Merten Ehmig (Pluto) Daniel Theuke (ST-DDT), Asmageddon, Faby, Russel, Peewee, Tim Blume (End), Andriel, Gurkenglas, Pyrit, Luchs, grgecko, Dominik Bayerl (Kannibal), Lauri Niskanen (Ape), Clonkine, Checkmaty, Sven-Hendrik Haase, Johannes Nixdorf (mixi), Stan, Koronis, mizipzor, Mark HaÃŸelbusch (Marky), Sebastian RÃ¼hl and TomyLobo.
+ 
+Also, big thanks to RedWolf Design GmbH and all those who contributed to previous Clonk titles for the passion they put into the game and for agreeing to make Clonk open source.

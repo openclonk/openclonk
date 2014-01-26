@@ -14,7 +14,7 @@ func DoInit(int first_player)
 
 	elevator->CreateShaft(240);
 	elevator->SetOwner(first_player);
-	elevator.case->SetPosition(elevator.case->GetX(), elevator.case->GetY()+210);
+	elevator.case->SetPosition(elevator.case->GetX(), elevator.case->GetY()+190);
 	// Create the start buildings: 2 x flag, windmill, armory, cabin
 	CreateObject(Flagpole, 193*8, 43*8, first_player);
 	CreateObject(Flagpole, 221*8, 46*8, first_player);

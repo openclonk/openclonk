@@ -25,7 +25,7 @@ protected func Hit()
 	ShakeFree(6);
 	RemoveEffect("HitCheck",this);
 	Sound("BulletHitGround?");
-	CreateParticle("Spark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
+	CreateParticle("StarSpark", 0, 0, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(10, 20), Particles_Glimmer(), 3);
 	
 	RemoveObject();
 }
