@@ -180,6 +180,8 @@ void StdMeshLoader::StdMeshXML::LoadGeometry(StdMesh& mesh, std::vector<StdSubMe
 
 			if(attributes & TEXCOORDS)
 			{
+				// FIXME: The Ogre format supports denoting multiple texture coordinates, but the rendering code only supports one
+				// currently only the first set is read, any additional ones are ignored
 				TiXmlElement* texcoord_elem = RequireFirstChild(vertex_elem, "texcoord");
 				vertices[i].u = RequireFloatAttribute(texcoord_elem, "u");
 				vertices[i].v = RequireFloatAttribute(texcoord_elem, "v");
