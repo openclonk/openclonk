@@ -7,3 +7,6 @@ func Damage()
 
 // No lightbulbs
 func MakePowerProducer(power) { return false; }
+
+//No triangles
+func RedrawFlagRadius() { return; }
