@@ -69,13 +69,13 @@ bool StdScheduler::DoScheduleProcs(int iTimeout)
 
 	// Execute all processes with timeout
 	auto tNow = C4TimeMilliseconds::Now();
-	for (auto proc : procs)
+	for (auto proc = procs.begin(); proc != procs.end(); ++proc)
 	{
-		auto tProcTick = proc->GetNextTick(tNow);
+		auto tProcTick = (*proc)->GetNextTick(tNow);
 		if (tProcTick <= tNow)
-			if (!proc->Execute(0))
+			if (!(*proc)->Execute(0))
 			{
-				OnError(proc);
+				OnError(*proc);
 				fSuccess = false;
 			}
 	}
