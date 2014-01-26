@@ -1,6 +1,8 @@
 # Static Map Material/Texture Table 
 # Index +128 for underground materials
 
+1=Vehicle-none
+
 10=Tunnel-tunnel
 12=Tunnel-brickback
 
