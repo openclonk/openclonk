@@ -158,6 +158,8 @@ else {
 
 function registerRelease()
 {
+	global $config, $link, $prefix;
+
 	// check request validity
 
 	if (ParseINI::parseValue('oc_enable_update', $config) != 1)
