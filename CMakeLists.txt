@@ -922,7 +922,7 @@ endif()
 if(APPLE)
 
 	list(APPEND OC_BUNDLE_RESOURCES
-		src/res/Clonk.icns
+		src/res/oc.icns
 		src/res/ocd.icns src/res/ocf.icns src/res/ocg.icns
 		src/res/C4P.icns src/res/ocs.icns src/res/ocu.icns
 		src/res/MainMenu.xib
