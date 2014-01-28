@@ -654,7 +654,7 @@ public func RequestObject(id obj_id, int amount)
 func Collection2(object obj)
 {
 	if (obj->~IsChunk())
-		Schedule(obj, "Split2Components()", 1);
+		obj->Split2Components();
 		// 1 frame delay, so the chunk can trigger the appriopriate carry heavy ending calls
 		// i.e. FxIntCarryHeavyStop
 }
