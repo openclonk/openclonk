@@ -10,6 +10,6 @@ VertexX=0,4,-4
 VertexY=3,-3,-3
 VertexFriction=40,40,40
 Value=16
-Mass=36
-Components=Coal=4
+Mass=20
+Components=Coal=3
 Rotate=1

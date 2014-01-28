@@ -9,7 +9,7 @@ Vertices=3
 VertexX=0,4,-4
 VertexY=3,-3,-3
 VertexFriction=40,40,40
-Value=5
-Mass=50
-Components=Rock=5
+Value=3
+Mass=25
+Components=Rock=3
 Rotate=1

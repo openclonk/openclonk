@@ -9,7 +9,7 @@ Vertices=3
 VertexX=0,4,-4
 VertexY=3,-3,-3
 VertexFriction=40,40,40
-Value=18
-Mass=36
-Components=Ore=4
+Value=15
+Mass=25
+Components=Ore=3
 Rotate=1
