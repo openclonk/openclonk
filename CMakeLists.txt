@@ -949,6 +949,14 @@ if(APPLE)
 			src/res/EditorViewport.xib
 			src/res/Editor.xib
 		)
+	else()
+		list(APPEND OC_BUNDLE_RESOURCES
+			src/res/nib/MainMenu.nib
+			src/res/nib/FullScreen.nib
+			src/res/nib/EditorGUIWindow.nib
+			src/res/nib/EditorViewport.nib
+			src/res/nib/Editor.nib
+		)
 	endif()
 
 	# Add icon resources
@@ -1251,17 +1259,7 @@ if (APPLE)
 	# linking with static freetype library requires it
 	target_link_libraries(openclonk "/usr/lib/libbz2.dylib")
 
-	if (NOT CMAKE_GENERATOR STREQUAL Xcode)
-		add_custom_command(TARGET openclonk POST_BUILD
-			# yadda, hardcoding openclonk.app - WHO CARES
-			COMMAND ibtool "${CMAKE_CURRENT_SOURCE_DIR}/src/res/MainMenu.xib" --compile "${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources/MainMenu.nib"
-			COMMAND ibtool "${CMAKE_CURRENT_SOURCE_DIR}/src/res/FullScreen.xib" --compile "${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources/FullScreen.nib"
-			COMMAND ibtool "${CMAKE_CURRENT_SOURCE_DIR}/src/res/EditorGUIWindow.xib" --compile "${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources/EditorGUIWindow.nib"
-			COMMAND ibtool "${CMAKE_CURRENT_SOURCE_DIR}/src/res/EditorViewport.xib" --compile "${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources/EditorViewport.nib"
-			COMMAND ibtool "${CMAKE_CURRENT_SOURCE_DIR}/src/res/Editor.xib" --compile "${CMAKE_CURRENT_BINARY_DIR}/openclonk.app/Contents/Resources/Editor.nib"
-			VERBATIM
-		)
-	else()
+	if(CMAKE_GENERATOR STREQUAL Xcode)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
 		set(CMAKE_XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/C4Include.h")
 		set_target_properties(openclonk PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER YES)
