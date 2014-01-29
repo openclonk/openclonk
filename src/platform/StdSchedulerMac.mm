@@ -46,7 +46,7 @@ using namespace std;
 - (SCHAddition*) assignAdditionForProc:(StdSchedulerProc*) proc;
 + (SCHAdditions*) requestAdditionForScheduler:(StdScheduler*) scheduler;
 - (BOOL) removeAdditionForProc:(StdSchedulerProc*) proc;
-@property(readonly) NSRunLoop* runLoop;
+@property(readonly) __weak NSRunLoop* runLoop;
 @property(readonly) StdScheduler* scheduler;
 @end
 
@@ -197,8 +197,12 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 	[super registerAt:_additions];
 	vector<struct pollfd> vecs;
 	proc->GetFDs(vecs);
-	CFSocketContext ctx = {};
-	ctx.info = (__bridge void*)self;
+	CFSocketContext ctx =
+	{
+		.info = (__bridge void*)self,
+		.retain = CFRetain,
+		.release = CFRelease
+	};
 	for (auto p : vecs)
 	{
 		auto socket = CFSocketCreateWithNative(NULL,
