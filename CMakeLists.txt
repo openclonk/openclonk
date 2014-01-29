@@ -1455,37 +1455,39 @@ install(
 	)"
 )
 
-add_custom_target(icon32 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png)
-add_custom_target(icon64 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png)
-add_custom_target(icon128 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png)
-add_custom_target(icon256 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png)
-add_custom_target(icon512 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png)
-add_dependencies(data icon32 icon64 icon128 icon256 icon512)
-install(
-	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png
-	DESTINATION share/icons/hicolor/32x32/apps
-	RENAME openclonk.png
-)
-install(
-	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png
-	DESTINATION share/icons/hicolor/64x64/apps
-	RENAME openclonk.png
-)
-install(
-	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png
-	DESTINATION share/icons/hicolor/128x128/apps
-	RENAME openclonk.png
-)
-install(
-	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png
-	DESTINATION share/icons/hicolor/256x256/apps
-	RENAME openclonk.png
-)
-install(
-	FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png
-	DESTINATION share/icons/hicolor/512x512/apps
-	RENAME openclonk.png
-)
+if (NOT APPLE)
+	add_custom_target(icon32 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png)
+	add_custom_target(icon64 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png)
+	add_custom_target(icon128 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png)
+	add_custom_target(icon256 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png)
+	add_custom_target(icon512 DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png)
+	add_dependencies(data icon32 icon64 icon128 icon256 icon512)
+	install(
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc32.png
+		DESTINATION share/icons/hicolor/32x32/apps
+		RENAME openclonk.png
+	)
+	install(
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc64.png
+		DESTINATION share/icons/hicolor/64x64/apps
+		RENAME openclonk.png
+	)
+	install(
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc128.png
+		DESTINATION share/icons/hicolor/128x128/apps
+		RENAME openclonk.png
+	)
+	install(
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc256.png
+		DESTINATION share/icons/hicolor/256x256/apps
+		RENAME openclonk.png
+	)
+	install(
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/res/oc512.png
+		DESTINATION share/icons/hicolor/512x512/apps
+		RENAME openclonk.png
+	)
+endif()
 
 set(OC_C4GROUPS
 	Graphics.ocg
@@ -1533,17 +1535,25 @@ foreach(group ${OC_C4GROUPS})
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${group} DESTINATION share/games/openclonk)
 	endif()
 endforeach()
+
 if (NOT APPLE)
 	add_custom_target(groups DEPENDS ${OC_C4GROUPS})
 	add_dependencies(data groups)
+	
+	# Install new files
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
+
+	# Install binaries
+	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk DESTINATION games/)
+	install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
+else()
+	install(TARGETS openclonk
+		BUNDLE DESTINATION .
+	)
+	install(TARGETS c4group c4script
+		RUNTIME DESTINATION .
+	)
 endif()
-
-# Install new files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/openclonk.desktop DESTINATION share/applications)
-
-# Install binaries
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/openclonk DESTINATION games/)
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/c4group DESTINATION bin/)
 
 ############################################################################
 # setup_openclonk.exe

@@ -12,15 +12,15 @@ should_update() {
 	return 1
 }
 
-if [ "$CONFIGURATION" == "Release" ]
-then if should_update
+if [ "$CONFIGURATION" == "Debug" ]
+then echo Linking $TARGET_GROUP...
+	rm -f $TARGET_GROUP
+	ln -sf $SRC_GROUP $TARGET_GROUP
+else if should_update
 	then echo Packing $TARGET_GROUP...
 		rm -f $TARGET_GROUP
 		cd $RESOURCES
 		$C4GROUP $SRC_GROUP -t $TARGET_GROUP
 	else echo No changes found for $TARGET_GROUP, skipping
 	fi
-else echo Linking $TARGET_GROUP...
-	rm -f $TARGET_GROUP
-	ln -sf $SRC_GROUP $TARGET_GROUP
 fi
