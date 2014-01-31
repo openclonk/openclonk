@@ -1520,6 +1520,8 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 	if (!fInit) { SetError("not yet initialized"); return false; }
 	ResetError();
 
+	iMaxTime = fix_poll_timeout(iMaxTime);
+
 	// wait for socket / timeout
 	WaitResult eWR = WaitForSocket(iMaxTime);
 	if (eWR == WR_Error) return false;
@@ -1538,7 +1540,6 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 		// The FIONREAD ioctl call takes an int on unix
 		int iMaxMsgSize;
 #endif
-		iMaxTime = fix_poll_timeout(iMaxTime);
 		if (::ioctlsocket(sock, FIONREAD, &iMaxMsgSize) == SOCKET_ERROR)
 		{
 			SetError("Could not determine the amount of data that can be read from socket", true);
