@@ -41,11 +41,13 @@ using namespace std;
 {
 	NSMutableDictionary* procAdditions;
 }
++ (SCHAdditions*) requestAdditionsForScheduler:(StdScheduler*) scheduler;
 - (id) initWithScheduler:(StdScheduler*) scheduler;
 - (SCHAddition*) additionForProc:(StdSchedulerProc*) proc;
 - (SCHAddition*) assignAdditionForProc:(StdSchedulerProc*) proc;
-+ (SCHAdditions*) requestAdditionForScheduler:(StdScheduler*) scheduler;
+- (void) changed:(SCHAddition*)addition;
 - (BOOL) removeAdditionForProc:(StdSchedulerProc*) proc;
+- (void) start;
 @property(readonly) __weak NSRunLoop* runLoop;
 @property(readonly) StdScheduler* scheduler;
 @end
@@ -54,12 +56,13 @@ using namespace std;
 
 static NSMutableDictionary* additionsDictionary;
 
+- (int) numberOfAdditions { return [additionsDictionary count]; }
+
 - (id) initWithScheduler:(StdScheduler*) scheduler
 {
 	if (self = [super init])
 	{
 		_scheduler = scheduler;
-		_runLoop = [NSRunLoop currentRunLoop];
 		procAdditions = [NSMutableDictionary new];
 		return self;
 	} else
@@ -95,12 +98,40 @@ static NSMutableDictionary* additionsDictionary;
 	if (addition)
 	{
 		[procAdditions setObject:addition forKey:[NSNumber valueWithPointer:proc]];
+		if (_runLoop)
+			[addition registerAt:self];
 		return addition;
 	} else
 		return nullptr;
 }
 
-+ (SCHAdditions*) requestAdditionForScheduler:(StdScheduler *)scheduler
+- (void) start
+{
+	auto current = [NSRunLoop currentRunLoop];
+	if (current != [NSRunLoop mainRunLoop])
+		return; // oh well
+	_runLoop = current;
+	[procAdditions enumerateKeysAndObjectsUsingBlock:
+		^void (id key, SCHAddition* obj, BOOL* stop) { [obj registerAt:self]; }];
+}
+
+- (void) changed:(SCHAddition*)addition
+{
+	[addition unregisterFrom:self];
+	if (_runLoop)
+		[addition registerAt:self];
+}
+
++ (void) removeAdditions:(SCHAdditions*)additions
+{
+	auto key = [NSNumber valueWithPointer:additions.scheduler];
+	@synchronized (additionsDictionary)
+	{
+		[additionsDictionary removeObjectForKey:key];
+	}
+}
+
++ (SCHAdditions*) requestAdditionsForScheduler:(StdScheduler *)scheduler
 {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken,
@@ -132,6 +163,8 @@ static NSMutableDictionary* additionsDictionary;
 }
 - (bool) shouldExecuteProc
 {
+	if (!proc)
+		return false;
 	auto s = schedulerAdditions;
 	return s && !s.scheduler->IsInManualLoop();
 }
@@ -145,9 +178,7 @@ static NSMutableDictionary* additionsDictionary;
 }
 - (void) changed
 {
-	auto s = schedulerAdditions;
-	[self unregisterFrom:s];
-	[self registerAt:s];
+	[schedulerAdditions changed:self];
 }
 @end
 
@@ -230,31 +261,26 @@ void callback (CFSocketRef s, CFSocketCallBackType type, CFDataRef address, cons
 }
 @end
 
+void StdScheduler::StartOnCurrentThread()
+{
+	[[SCHAdditions requestAdditionsForScheduler:this] start];
+}
+
 void StdScheduler::Added(StdSchedulerProc *pProc)
 {
-	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
-		return; // scrap using that for other (network...) threads for now
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
-	auto addition = [x assignAdditionForProc:pProc];
-	if (addition)
-		[addition registerAt:x];
+	[[SCHAdditions requestAdditionsForScheduler:this] assignAdditionForProc:pProc];
 }
 
 void StdScheduler::Removing(StdSchedulerProc *pProc)
 {
-	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
-		return; // scrap using that for other (network...) threads for now
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
+	auto x = [SCHAdditions requestAdditionsForScheduler:this];
 	[x removeAdditionForProc:pProc];
+	if ([x numberOfAdditions] == 0)
+		[SCHAdditions removeAdditions:x];
 }
 
 void StdScheduler::Changed(StdSchedulerProc* pProc)
 {
-	if ([NSRunLoop currentRunLoop] != [NSRunLoop mainRunLoop])
-		return; // scrap using that for other (network...) threads for now
-	auto x = [SCHAdditions requestAdditionForScheduler:this];
-	auto addition = [x additionForProc:pProc];
-	if (addition)
-		[addition changed];
+	[[[SCHAdditions requestAdditionsForScheduler:this] additionForProc:pProc] changed];
 }
 #endif

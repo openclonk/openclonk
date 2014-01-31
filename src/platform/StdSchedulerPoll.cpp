@@ -236,6 +236,7 @@ void CStdMultimediaTimerProc::GetFDs(std::vector<struct pollfd> & checkfds)
 void StdScheduler::Added(StdSchedulerProc *pProc) {}
 void StdScheduler::Removing(StdSchedulerProc *pProc) {}
 void StdScheduler::Changed(StdSchedulerProc* pProc) {}
+void StdScheduler::StartOnCurrentThread() {}
 #endif
 
 void *StdThread::_ThreadFunc(void *pPar)

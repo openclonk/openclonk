@@ -157,6 +157,10 @@ void StdScheduler::Changed(StdSchedulerProc* pProc)
 {
 }
 
+void StdScheduler::StartOnCurrentThread()
+{
+}
+
 bool CStdMultimediaTimerProc::CheckAndReset()
 {
 	if (!Check()) return false;
