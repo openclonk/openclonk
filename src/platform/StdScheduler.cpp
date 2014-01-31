@@ -269,6 +269,7 @@ void *StdSchedulerThread::_ThreadFunc(void *pPar)
 
 unsigned int StdSchedulerThread::ThreadFunc()
 {
+	StartOnCurrentThread();
 	// Keep calling Execute until someone gets fed up and calls StopThread()
 	while (fRunThreadRun)
 		ScheduleProcs(1000);

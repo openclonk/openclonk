@@ -149,6 +149,7 @@
 #ifdef USE_COCOA
 - (void) delayedRun:(id)sender
 {
+	Application.StartOnCurrentThread();
 	running = YES;
 	//while (!Application.fQuitMsgReceived)
 	//	Application.ScheduleProcs();

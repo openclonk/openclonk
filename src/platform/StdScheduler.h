@@ -238,9 +238,13 @@ public:
 	void Add(StdSchedulerProc *pProc);
 	void Remove(StdSchedulerProc *pProc);
 	
+	// extra events for above Add/Remove methods
 	void Added(StdSchedulerProc *pProc);
 	void Removing(StdSchedulerProc *pProc);
+	// called by StdSchedulerProcs when something important about their configuration changed
 	void Changed(StdSchedulerProc *pProc);
+	// needs to be called on thread tasks for this scheduler are meant to be run on
+	void StartOnCurrentThread();
 
 	virtual bool ScheduleProcs(int iTimeout = -1);
 	void UnBlock();
