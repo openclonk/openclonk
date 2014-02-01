@@ -44,8 +44,8 @@ CON_MenuSelect=Menu - Select
 CON_MenuSelect_Desc=Confirm a selection in a menu.
 CON_MenuCancel=Menu - Close
 CON_MenuCancel_Desc=Close a menu without having selected anything.
-CON_MenuOKAll=Menü: okay, alle
-CON_MenuOK=Menü: OK
+CON_MenuOKAll=Menu: okay, all
+CON_MenuOK=Menu: OK
 CON_MenuOK_Desc=Confirm in a menu.
 
 CON_NextCrew=Next Clonk
