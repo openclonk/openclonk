@@ -47,6 +47,7 @@ global func FxIntIntroStart(object target, proplist effect)
 	effect.Pilot->SetDir(DIR_Left);
 	effect.Pilot->SetObjectLayer(effect.Pilot);
 	effect.Dialog = effect.Pilot->SetDialogue("Pilot");
+	effect.Dialog->SetInteraction(false);
 
 	effect.Plane->FaceRight();
 	effect.Plane->StartInstantFlight(90, 15);
@@ -106,10 +107,11 @@ global func FxIntIntroTimer(object target, proplist effect, int time)
 	if(effect.Time == 500)
 		for(var i = 0; i < GetPlayerCount(); ++i)
 			GetCursor(GetPlayerByIndex(i))->CloseMenu();
-
+	
 	if(effect.Time >= 830)
 	{
 		effect.Pilot->SetCommand("MoveTo", effect.Pilot, 120 - effect.Pilot->GetX(), 860 - effect.Pilot->GetY());
+		effect.Dialog->SetInteraction(true);
 		return -1;
 	}
 }
