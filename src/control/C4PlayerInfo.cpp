@@ -407,7 +407,7 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 							// loading failure; clear info class
 							delete pNewInfo;
 							// 
-							LogFatal(FormatString(LoadResStr("IDS_ERR_LOAD_PLAYER"), szPlrFile).getData());
+							Log(FormatString(LoadResStr("IDS_ERR_LOAD_PLAYER"), szPlrFile).getData());
 						}
 					}
 			}
