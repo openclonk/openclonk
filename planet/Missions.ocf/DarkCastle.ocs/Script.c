@@ -47,8 +47,8 @@ func DoInit(int first_player)
 			enemy->AddEnergyBar();
 		}
 	// Intro. Message 250 frames + regular message time
-	Dialogue->MessageBoxAll("$MsgIntro1$", Object(2648), true);
-	Schedule(nil, "Dialogue->MessageBoxAll(\"$MsgIntro1$\", Object(2648))", 250, 1);
+	DialogueCastle->MessageBoxAll("$MsgIntro1$", Object(2648), true);
+	Schedule(nil, "DialogueCastle->MessageBoxAll(\"$MsgIntro1$\", Object(2648))", 250, 1);
 	return true;
 }
 
@@ -106,20 +106,20 @@ func JoinPlayer(int plr)
 
 func EncounterCave(object enemy, object player)
 {
-	Dialogue->MessageBoxAll("$MsgEncounterCave$", enemy);
+	DialogueCastle->MessageBoxAll("$MsgEncounterCave$", enemy);
 	return true;
 }
 
 func EncounterOutpost(object enemy, object player)
 {
-	Dialogue->MessageBoxAll("$MsgEncounterOutpost$", enemy);
+	DialogueCastle->MessageBoxAll("$MsgEncounterOutpost$", enemy);
 	return true;
 }
 
 func EncounterKing(object enemy, object player)
 {
 	if (!player) player = enemy; // Leads to a funny message, but better than a null pointer.
-	Dialogue->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
+	DialogueCastle->MessageBoxAll(Format("$MsgEncounterKing$", player->GetName()), enemy);
 	return true;
 }
 
@@ -130,7 +130,7 @@ func ShroomCaveCheck()
 {
 	var intruder = FindObject(Find_InRect(1252,1342,320,138), Find_OCF(OCF_CrewMember));
 	if (!intruder) return true;
-	Dialogue->MessageBoxAll("$MsgEncounterShrooms$", intruder);
+	DialogueCastle->MessageBoxAll("$MsgEncounterShrooms$", intruder);
 	ClearScheduleCall(nil, Scenario.ShroomCaveCheck);
 	return true;
 }
