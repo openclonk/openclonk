@@ -10,6 +10,7 @@ local dlg_name;
 local dlg_info;
 local dlg_progress;
 local dlg_status;
+local dlg_interact;
 
 static const DLG_Status_Active = 0;
 static const DLG_Status_Stop = 1;
@@ -50,9 +51,10 @@ protected func Initialize()
 {
 	// Dialogue progress to one.
 	dlg_progress = 1;
-	
+	// Dialogue allows interaction by default.
+	dlg_interact = true;
+	// Dialogue is active by default.
 	dlg_status = DLG_Status_Active;
-
 	return;
 }
 
@@ -85,8 +87,12 @@ private func UpdateDialogue()
 public func SetDialogueInfo()
 {
 
+	return;
+}
 
-
+public func SetInteraction(bool allow)
+{
+	dlg_interact = allow;
 	return;
 }
 
@@ -105,7 +111,7 @@ public func SetDialogueStatus(int status)
 /*-- Interaction --*/
 
 // Players can talk to NPC via the interaction bar.
-public func IsInteractable() { return true; }
+public func IsInteractable() { return dlg_interact; }
 
 // Adapt appearance in the interaction bar.
 public func GetInteractionMetaInfo(object clonk)
@@ -119,6 +125,10 @@ public func GetInteractionMetaInfo(object clonk)
 // Called on player interaction.
 public func Interact(object clonk)
 {
+	// Should not happen: not active -> stop interaction
+	if (!dlg_interact)
+		return true;	
+	
 	// Currently in a dialogue: abort that dialogue.
 	if (InDialogue(clonk))
 		clonk->CloseMenu();	
@@ -147,9 +157,7 @@ public func Interact(object clonk)
 	var progress = dlg_progress;
 	dlg_progress++;
 	// Then call relevant functions.
-	Call(Format("Dlg_%s_%d", dlg_name, progress), clonk);
-
-	
+	Call(Format("Dlg_%s_%d", dlg_name, progress), clonk);	
 
 	return true;
 }
@@ -176,11 +184,11 @@ private func MessageBox(string message, object clonk, object talker)
 	
 	// Add NPC portrait.
 	//var portrait = Format("%i", talker->GetID()); //, Dialogue, talker->GetColor(), "1");
-	clonk->AddMenuItem("", "", Dialogue, nil, nil, nil, C4MN_Add_ImgObject, talker); //TextSpec);
+	clonk->AddMenuItem("", "MenuOK", Dialogue, nil, clonk, nil, C4MN_Add_ImgObject, talker); //TextSpec);
 
 	// Add NPC message.
 	var msg = Format("<c %x>%s:</c> %s", talker->GetColor(), talker->GetName(), message);
-	clonk->AddMenuItem(msg, "", nil, nil, nil, nil, C4MN_Add_ForceNoDesc);
+	clonk->AddMenuItem(msg, "MenuOK", nil, nil, clonk, nil, C4MN_Add_ForceNoDesc);
 	
 	// Add answers.
 	//for (var i = 0; i < GetLength(message.Answers); i++)
@@ -201,6 +209,13 @@ private func MessageBox(string message, object clonk, object talker)
 	clonk->SetMenuTextProgress(n_length + 1);
 
 	return;
+}
+
+public func MenuOK(proplist menu_id, object clonk)
+{
+	// prevent the menu from closing when pressing MenuOK
+	if (dlg_interact)
+		Interact(clonk);
 }
 
 local ActMap = {
