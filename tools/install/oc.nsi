@@ -97,6 +97,10 @@ Section
   ; delete obsolete folders
   Delete "BackToTheRocks.ocf"
   Delete "BeyondTheRocks.ocf"
+  ; these got in in release 4.0, bug #1029
+  Delete "Issues.ocf"
+  Delete "Experimental.ocd"
+  Delete "Experimental.ocf"
 
   File "${SRCDIR}\planet\AUTHORS"
   File "${SRCDIR}\planet\COPYING"
