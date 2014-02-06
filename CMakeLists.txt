@@ -99,6 +99,12 @@ set(CMAKE_REQUIRED_FLAGS "${SAFE_CMAKE_REQUIRED_FLAGS}")
 CHECK_CXX_SOURCE_COMPILES("#include <regex>\nint main() { std::cregex_iterator ri; }" HAVE_WORKING_REGEX)
 CMAKE_DEPENDENT_OPTION(USE_BOOST_REGEX "Use Boost.Regex even if the C++ runtime has a working implementation of <regex>" OFF "HAVE_WORKING_REGEX" ON)
 
+# We link Boost statically because that makes it easier for us to distribute
+# the resulting binary. Distributions have the ability to guarantee a certain
+# version of the library exists on the system though, so they may prefer
+# dynamic linking.
+option(USE_STATIC_BOOST "Link Boost libraries statically" ON)
+
 if(MSVC_VERSION GREATER 1499)
 		list(APPEND OC_CXX_FLAGS /MP)
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Gm)
@@ -1414,7 +1420,7 @@ if(HAVE_UPNP)
 endif()
 
 if(USE_BOOST_REGEX)
-	SET(Boost_USE_STATIC_LIBS ON)
+	SET(Boost_USE_STATIC_LIBS ${USE_STATIC_BOOST})
 	find_package(Boost 1.40.0 REQUIRED COMPONENTS regex)
 	# Disable automatic linking, we'll do it ourselves
 	add_definitions(-DBOOST_REGEX_NO_LIB)
