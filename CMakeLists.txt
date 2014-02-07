@@ -1471,6 +1471,10 @@ install(
 	RENAME openclonk.png
 )
 
+# NOTE: The scripts that does the autobuilds and ultimately the automated
+# releases as well do keep their own list of group files around currently.
+# So if you change anything here, change it in the release scripts as well.
+# See openclonk-release-scripts.git/groupcontent.py
 set(OC_C4GROUPS
 	Graphics.ocg
 	Material.ocg
