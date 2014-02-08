@@ -157,7 +157,8 @@ public func Interact(object clonk)
 	var progress = dlg_progress;
 	dlg_progress++;
 	// Then call relevant functions.
-	Call(Format("Dlg_%s_%d", dlg_name, progress), clonk);	
+	if (!Call(Format("Dlg_%s_%d", dlg_name, progress), clonk))
+		GameCall(Format("Dlg_%s_%d", dlg_name, progress), this, clonk, dlg_target);
 
 	return true;
 }
@@ -217,6 +218,22 @@ public func MenuOK(proplist menu_id, object clonk)
 	if (dlg_interact)
 		Interact(clonk);
 }
+
+/* Scenario saving */
+
+// Scenario saving
+func SaveScenarioObject(props)
+{
+	if (!inherited(props, ...)) return false;
+	if (!dlg_target) return false; // don't save dead dialogue object
+	// Dialog has its own creation procedure
+	props->RemoveCreation();
+	props->Add(SAVEOBJ_Creation, "%s->SetDialogue(%v)", dlg_target->MakeScenarioSaveName(), dlg_name);
+	return true;
+}
+
+
+/* Properties */
 
 local ActMap = {
 	Dialogue = {
